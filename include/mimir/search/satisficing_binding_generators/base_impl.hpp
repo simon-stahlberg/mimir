@@ -271,7 +271,8 @@ SatisficingBindingGenerator<Derived_>::SatisficingBindingGenerator(ConjunctiveCo
     m_fluent_assignment_set(m_problem_context.get_problem()->get_objects().size(), m_problem_context.get_problem()->get_domain()->get_predicates<Fluent>()),
     m_derived_assignment_set(m_problem_context.get_problem()->get_objects().size(),
                              m_problem_context.get_problem()->get_problem_and_domain_derived_predicates()),
-    m_numeric_assignment_set(m_problem_context.get_problem()->get_objects().size(), m_problem_context.get_problem()->get_domain()->get_functions<Fluent>()),
+    m_numeric_assignment_set(m_problem_context.get_problem()->get_objects().size(),
+                             m_problem_context.get_problem()->get_domain()->get_function_skeletons<Fluent>()),
     m_full_consistency_graph(m_static_consistency_graph.get_vertices().size(), boost::dynamic_bitset<>(m_static_consistency_graph.get_vertices().size())),
     m_consistent_vertices(m_static_consistency_graph.get_vertices().size()),
     m_kpkc_workspace(KPKCWorkspace(m_static_consistency_graph.get_vertices_by_parameter_index()))

@@ -45,8 +45,8 @@ ProblemBuilder::ProblemBuilder(Domain domain) :
     m_derived_predicates(),
     m_static_initial_literals(),
     m_fluent_initial_literals(),
-    m_static_function_values(),
-    m_fluent_function_values(),
+    m_static_initial_function_values(),
+    m_fluent_initial_function_values(),
     m_auxiliary_function_value(std::nullopt),
     m_static_goal_condition(),
     m_fluent_goal_condition(),
@@ -87,8 +87,12 @@ Problem ProblemBuilder::get_result(Index problem_index)
     std::sort(m_static_initial_literals.begin(), m_static_initial_literals.end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
     std::sort(m_fluent_initial_literals.begin(), m_fluent_initial_literals.end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
 
-    std::sort(m_static_function_values.begin(), m_static_function_values.end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
-    std::sort(m_fluent_function_values.begin(), m_fluent_function_values.end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
+    std::sort(m_static_initial_function_values.begin(),
+              m_static_initial_function_values.end(),
+              [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
+    std::sort(m_fluent_initial_function_values.begin(),
+              m_fluent_initial_function_values.end(),
+              [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
 
     std::sort(m_static_goal_condition.begin(), m_static_goal_condition.end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
     std::sort(m_fluent_goal_condition.begin(), m_fluent_goal_condition.end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
@@ -113,8 +117,8 @@ Problem ProblemBuilder::get_result(Index problem_index)
                                                         std::move(problem_and_domain_derived_predicates),
                                                         std::move(m_static_initial_literals),
                                                         std::move(m_fluent_initial_literals),
-                                                        std::move(m_static_function_values),
-                                                        std::move(m_fluent_function_values),
+                                                        std::move(m_static_initial_function_values),
+                                                        std::move(m_fluent_initial_function_values),
                                                         std::move(m_auxiliary_function_value),
                                                         std::move(m_static_goal_condition),
                                                         std::move(m_fluent_goal_condition),
@@ -132,27 +136,45 @@ std::string& ProblemBuilder::get_name() { return m_name; }
 Requirements& ProblemBuilder::get_requirements() { return m_requirements; }
 ObjectList& ProblemBuilder::get_objects() { return m_objects; }
 PredicateList<Derived>& ProblemBuilder::get_derived_predicates() { return m_derived_predicates; }
-GroundLiteralList<Static>& ProblemBuilder::get_static_initial_literals() { return m_static_initial_literals; }
-GroundLiteralList<Fluent>& ProblemBuilder::get_fluent_initial_literals() { return m_fluent_initial_literals; }
-template<StaticOrFluentTag F>
-GroundFunctionValueList<F>& ProblemBuilder::get_function_values()
+template<StaticOrFluentTag P>
+GroundLiteralList<P>& ProblemBuilder::get_initial_literals()
 {
-    if constexpr (std::is_same_v<F, Static>)
+    if constexpr (std::is_same_v<P, Static>)
     {
-        return m_static_function_values;
+        return m_static_initial_literals;
     }
-    else if constexpr (std::is_same_v<F, Fluent>)
+    else if constexpr (std::is_same_v<P, Fluent>)
     {
-        return m_fluent_function_values;
+        return m_fluent_initial_literals;
     }
     else
     {
-        static_assert(dependent_false<F>::value, "ProblemBuilder::get_function_values(): Missing implementation for StaticOrFluent type.");
+        static_assert(dependent_false<P>::value, "ProblemBuilder::get_initial_literals(): Missing implementation for StaticOrFluent type.");
     }
 }
 
-template GroundFunctionValueList<Static>& ProblemBuilder::get_function_values();
-template GroundFunctionValueList<Fluent>& ProblemBuilder::get_function_values();
+template GroundLiteralList<Static>& ProblemBuilder::get_initial_literals();
+template GroundLiteralList<Fluent>& ProblemBuilder::get_initial_literals();
+
+template<StaticOrFluentTag F>
+GroundFunctionValueList<F>& ProblemBuilder::get_initial_function_values()
+{
+    if constexpr (std::is_same_v<F, Static>)
+    {
+        return m_static_initial_function_values;
+    }
+    else if constexpr (std::is_same_v<F, Fluent>)
+    {
+        return m_fluent_initial_function_values;
+    }
+    else
+    {
+        static_assert(dependent_false<F>::value, "ProblemBuilder::get_initial_function_values(): Missing implementation for StaticOrFluent type.");
+    }
+}
+
+template GroundFunctionValueList<Static>& ProblemBuilder::get_initial_function_values();
+template GroundFunctionValueList<Fluent>& ProblemBuilder::get_initial_function_values();
 
 std::optional<GroundFunctionValue<Auxiliary>>& ProblemBuilder::get_auxiliary_function_value() { return m_auxiliary_function_value; }
 template<StaticOrFluentOrDerived P>
@@ -172,7 +194,7 @@ GroundLiteralList<P>& ProblemBuilder::get_goal_condition()
     }
     else
     {
-        static_assert(dependent_false<P>::value, "ProblemBuilder::get_function_values(): Missing implementation for StaticOrFluent type.");
+        static_assert(dependent_false<P>::value, "ProblemBuilder::get_initial_function_values(): Missing implementation for StaticOrFluent type.");
     }
 }
 

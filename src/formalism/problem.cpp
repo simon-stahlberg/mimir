@@ -56,8 +56,8 @@ ProblemImpl::ProblemImpl(Index index,
                          PredicateList<Derived> problem_and_domain_derived_predicates,
                          GroundLiteralList<Static> static_initial_literals,
                          GroundLiteralList<Fluent> fluent_initial_literals,
-                         GroundFunctionValueList<Static> static_function_values,
-                         GroundFunctionValueList<Fluent> fluent_function_values,
+                         GroundFunctionValueList<Static> static_initial_function_values,
+                         GroundFunctionValueList<Fluent> fluent_initial_function_values,
                          std::optional<GroundFunctionValue<Auxiliary>> auxiliary_function_value,
                          GroundLiteralList<Static> static_goal_condition,
                          GroundLiteralList<Fluent> fluent_goal_condition,
@@ -78,8 +78,8 @@ ProblemImpl::ProblemImpl(Index index,
     m_problem_and_domain_derived_predicates(std::move(problem_and_domain_derived_predicates)),
     m_static_initial_literals(std::move(static_initial_literals)),
     m_fluent_initial_literals(std::move(fluent_initial_literals)),
-    m_static_function_values(std::move(static_function_values)),
-    m_fluent_function_values(std::move(fluent_function_values)),
+    m_static_initial_function_values(std::move(static_initial_function_values)),
+    m_fluent_initial_function_values(std::move(fluent_initial_function_values)),
     m_auxiliary_function_value(auxiliary_function_value),
     m_static_goal_condition(std::move(static_goal_condition)),
     m_fluent_goal_condition(std::move(fluent_goal_condition)),
@@ -92,7 +92,7 @@ ProblemImpl::ProblemImpl(Index index,
     m_positive_static_initial_atoms_bitset(),
     m_positive_static_initial_atoms_indices(),
     m_positive_static_initial_assignment_set(AssignmentSet<Static>(m_objects.size(), m_domain->get_predicates<Static>())),
-    m_static_initial_numeric_assignment_set(NumericAssignmentSet<Static>(m_objects.size(), m_domain->get_functions<Static>())),
+    m_static_initial_numeric_assignment_set(NumericAssignmentSet<Static>(m_objects.size(), m_domain->get_function_skeletons<Static>())),
     m_positive_fluent_initial_atoms(to_ground_atoms(m_fluent_initial_literals)),
     m_static_function_to_value(),
     m_fluent_function_to_value(),
@@ -121,7 +121,7 @@ ProblemImpl::ProblemImpl(Index index,
     assert(is_all_unique(m_derived_predicates));
     assert(is_all_unique(m_static_initial_literals));
     assert(is_all_unique(m_fluent_initial_literals));
-    assert(is_all_unique(m_static_function_values));
+    assert(is_all_unique(m_static_initial_function_values));
     assert(is_all_unique(m_static_goal_condition));
     assert(is_all_unique(m_fluent_goal_condition));
     assert(is_all_unique(m_derived_goal_condition));
@@ -135,11 +135,11 @@ ProblemImpl::ProblemImpl(Index index,
     assert(std::is_sorted(m_fluent_initial_literals.begin(),
                           m_fluent_initial_literals.end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(m_static_function_values.begin(),
-                          m_static_function_values.end(),
+    assert(std::is_sorted(m_static_initial_function_values.begin(),
+                          m_static_initial_function_values.end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(m_fluent_function_values.begin(),
-                          m_fluent_function_values.end(),
+    assert(std::is_sorted(m_fluent_initial_function_values.begin(),
+                          m_fluent_initial_function_values.end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(std::is_sorted(m_static_goal_condition.begin(),
                           m_static_goal_condition.end(),
@@ -157,7 +157,7 @@ ProblemImpl::ProblemImpl(Index index,
 
     /* Initial state */
 
-    for (const auto& literal : get_static_initial_literals())
+    for (const auto& literal : get_initial_literals<Static>())
     {
         if (!literal->is_negated())
         {
@@ -175,7 +175,7 @@ ProblemImpl::ProblemImpl(Index index,
     // As the ground functions in the goal might not necessarily be defined, we fill the gaps with undefined.
     // In principle, we could compress and define those values during search when applying an action that assigns it.
     auto static_functions = GroundFunctionList<Static> {};
-    for (const auto static_numeric_value : m_static_function_values)
+    for (const auto static_numeric_value : m_static_initial_function_values)
     {
         const auto function = static_numeric_value->get_function();
         const auto index = function->get_index();
@@ -190,7 +190,7 @@ ProblemImpl::ProblemImpl(Index index,
     }
     m_static_initial_numeric_assignment_set.insert_ground_function_values(static_functions, m_static_function_to_value);
 
-    for (const auto fluent_numeric_value : m_fluent_function_values)
+    for (const auto fluent_numeric_value : m_fluent_initial_function_values)
     {
         const auto index = fluent_numeric_value->get_function()->get_index();
         const auto value = fluent_numeric_value->get_number();
@@ -271,7 +271,7 @@ ProblemImpl::ProblemImpl(Index index,
      * Error checking
      */
 
-    for (const auto& literal : get_fluent_initial_literals())
+    for (const auto& literal : get_initial_literals<Fluent>())
     {
         if (literal->is_negated())
         {
@@ -279,7 +279,7 @@ ProblemImpl::ProblemImpl(Index index,
         }
     }
 
-    for (const auto& literal : get_static_initial_literals())
+    for (const auto& literal : get_initial_literals<Static>())
     {
         if (literal->is_negated())
         {
@@ -316,20 +316,36 @@ const PredicateList<Derived>& ProblemImpl::get_derived_predicates() const { retu
 
 const PredicateList<Derived>& ProblemImpl::get_problem_and_domain_derived_predicates() const { return m_problem_and_domain_derived_predicates; }
 
-const GroundLiteralList<Static>& ProblemImpl::get_static_initial_literals() const { return m_static_initial_literals; }
+template<StaticOrFluentTag P>
+const GroundLiteralList<P>& ProblemImpl::get_initial_literals() const
+{
+    if constexpr (std::is_same_v<P, Static>)
+    {
+        return m_static_initial_literals;
+    }
+    else if constexpr (std::is_same_v<P, Fluent>)
+    {
+        return m_fluent_initial_literals;
+    }
+    else
+    {
+        static_assert(dependent_false<P>::value, "ProblemBuilder::get_initial_literals(): Missing implementation for StaticOrFluent type.");
+    }
+}
 
-const GroundLiteralList<Fluent>& ProblemImpl::get_fluent_initial_literals() const { return m_fluent_initial_literals; }
+template const GroundLiteralList<Static>& ProblemImpl::get_initial_literals() const;
+template const GroundLiteralList<Fluent>& ProblemImpl::get_initial_literals() const;
 
 template<StaticOrFluentTag F>
-const GroundFunctionValueList<F>& ProblemImpl::get_function_values() const
+const GroundFunctionValueList<F>& ProblemImpl::get_initial_function_values() const
 {
     if constexpr (std::is_same_v<F, Static>)
     {
-        return m_static_function_values;
+        return m_static_initial_function_values;
     }
     else if constexpr (std::is_same_v<F, Fluent>)
     {
-        return m_fluent_function_values;
+        return m_fluent_initial_function_values;
     }
     else
     {
@@ -337,8 +353,8 @@ const GroundFunctionValueList<F>& ProblemImpl::get_function_values() const
     }
 }
 
-template const GroundFunctionValueList<Static>& ProblemImpl::get_function_values() const;
-template const GroundFunctionValueList<Fluent>& ProblemImpl::get_function_values() const;
+template const GroundFunctionValueList<Static>& ProblemImpl::get_initial_function_values() const;
+template const GroundFunctionValueList<Fluent>& ProblemImpl::get_initial_function_values() const;
 
 const std::optional<GroundFunctionValue<Auxiliary>>& ProblemImpl::get_auxiliary_function_value() const { return m_auxiliary_function_value; }
 

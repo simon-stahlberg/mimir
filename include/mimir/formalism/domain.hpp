@@ -35,9 +35,9 @@ private:
     PredicateList<Static> m_static_predicates;
     PredicateList<Fluent> m_fluent_predicates;
     PredicateList<Derived> m_derived_predicates;
-    FunctionSkeletonList<Static> m_static_functions;
-    FunctionSkeletonList<Fluent> m_fluent_functions;
-    std::optional<FunctionSkeleton<Auxiliary>> m_auxiliary_function;
+    FunctionSkeletonList<Static> m_static_function_skeletons;
+    FunctionSkeletonList<Fluent> m_fluent_function_skeletons;
+    std::optional<FunctionSkeleton<Auxiliary>> m_auxiliary_function_skeleton;
     ActionList m_actions;
     AxiomList m_axioms;
 
@@ -55,9 +55,9 @@ private:
                PredicateList<Static> static_predicates,
                PredicateList<Fluent> fluent_predicates,
                PredicateList<Derived> derived_predicates,
-               FunctionSkeletonList<Static> static_functions,
-               FunctionSkeletonList<Fluent> fluent_functions,
-               std::optional<FunctionSkeleton<Auxiliary>> auxiliary_function,
+               FunctionSkeletonList<Static> static_function_skeletons,
+               FunctionSkeletonList<Fluent> fluent_function_skeletons,
+               std::optional<FunctionSkeleton<Auxiliary>> auxiliary_function_skeleton,
                ActionList actions,
                AxiomList axioms);
 
@@ -79,8 +79,8 @@ public:
     template<StaticOrFluentOrDerived P>
     const PredicateList<P>& get_predicates() const;
     template<StaticOrFluentTag F>
-    const FunctionSkeletonList<F>& get_functions() const;
-    const std::optional<FunctionSkeleton<Auxiliary>>& get_auxiliary_function() const;
+    const FunctionSkeletonList<F>& get_function_skeletons() const;
+    const std::optional<FunctionSkeleton<Auxiliary>>& get_auxiliary_function_skeleton() const;
     const ActionList& get_actions() const;
     const AxiomList& get_axioms() const;
 
@@ -99,9 +99,9 @@ public:
                                      std::as_const(m_static_predicates),
                                      std::as_const(m_fluent_predicates),
                                      std::as_const(m_derived_predicates),
-                                     std::as_const(m_static_functions),
-                                     std::as_const(m_fluent_functions),
-                                     std::as_const(m_auxiliary_function),
+                                     std::as_const(m_static_function_skeletons),
+                                     std::as_const(m_fluent_function_skeletons),
+                                     std::as_const(m_auxiliary_function_skeleton),
                                      std::as_const(m_actions),
                                      std::as_const(m_axioms));
     }

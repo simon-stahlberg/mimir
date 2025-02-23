@@ -26,19 +26,26 @@
 namespace mimir
 {
 
-Parser::Parser(const fs::path& domain_filepath, const loki::Options& options) : m_loki_parser(domain_filepath, options)
+Parser::Parser(const fs::path& domain_filepath, const loki::Options& options) :
+    m_loki_parser(domain_filepath, options),
+    m_loki_domain_translation_result(loki::translate(m_loki_parser.get_domain()))
 {
+    auto loki_translated_domain = m_loki_domain_translation_result.get_translated_domain();
+
     auto to_mimir_structures_translator = ToMimirStructures();
     auto builder = DomainBuilder();
-    m_domain = to_mimir_structures_translator.translate(m_loki_parser.get_domain(), builder);
+    m_domain = to_mimir_structures_translator.translate(loki_translated_domain, builder);
 }
 
 Problem Parser::parse_problem(const fs::path& problem_filepath, const loki::Options& options)
 {
+    auto loki_problem = m_loki_parser.parse_problem(problem_filepath, options);
+    auto loki_translated_problem = loki::translate(loki_problem, m_loki_domain_translation_result);
+
     auto to_mimir_structures_translator = ToMimirStructures();
     auto builder = ProblemBuilder(m_domain);
 
-    return to_mimir_structures_translator.translate(m_loki_parser.parse_problem(problem_filepath, options), builder);
+    return to_mimir_structures_translator.translate(loki_translated_problem, builder);
 }
 
 const Domain& Parser::get_domain() const { return m_domain; }

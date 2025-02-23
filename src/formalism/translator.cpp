@@ -21,6 +21,8 @@
 #include "mimir/formalism/domain_builder.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/problem_builder.hpp"
+#include "mimir/formalism/translator/encode_numeric_constraint_terms_in_functions.hpp"
+#include "mimir/formalism/translator/encode_parameter_index_in_variables.hpp"
 
 namespace mimir
 {
@@ -36,7 +38,11 @@ DomainTranslationResult translate(const Domain& domain)
     std::cout << "Given domain" << std::endl;
     std::cout << *domain << std::endl;
 
-    return DomainTranslationResult(domain, domain);
+    auto encode_parameter_index_in_variables_translator = EncodeParameterIndexInVariables();
+    auto builder = DomainBuilder();
+    auto translated_domain = encode_parameter_index_in_variables_translator.translate_level_0(domain, builder);
+
+    return DomainTranslationResult(domain, translated_domain);
 }
 
 const Domain& DomainTranslationResult::get_original_domain() const { return original_domain; }

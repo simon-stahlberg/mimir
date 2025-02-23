@@ -40,8 +40,8 @@ private:
     PredicateList<Derived> m_derived_predicates;
     GroundLiteralList<Static> m_static_initial_literals;
     GroundLiteralList<Fluent> m_fluent_initial_literals;
-    GroundFunctionValueList<Static> m_static_function_values;
-    GroundFunctionValueList<Fluent> m_fluent_function_values;
+    GroundFunctionValueList<Static> m_static_initial_function_values;
+    GroundFunctionValueList<Fluent> m_fluent_initial_function_values;
     std::optional<GroundFunctionValue<Auxiliary>> m_auxiliary_function_value;
     GroundLiteralList<Static> m_static_goal_condition;
     GroundLiteralList<Fluent> m_fluent_goal_condition;
@@ -79,10 +79,10 @@ public:
     Requirements& get_requirements();
     ObjectList& get_objects();
     PredicateList<Derived>& get_derived_predicates();
-    GroundLiteralList<Static>& get_static_initial_literals();
-    GroundLiteralList<Fluent>& get_fluent_initial_literals();
+    template<StaticOrFluentTag P>
+    GroundLiteralList<P>& get_initial_literals();
     template<StaticOrFluentTag F>
-    GroundFunctionValueList<F>& get_function_values();
+    GroundFunctionValueList<F>& get_initial_function_values();
     std::optional<GroundFunctionValue<Auxiliary>>& get_auxiliary_function_value();
     template<StaticOrFluentOrDerived P>
     GroundLiteralList<P>& get_goal_condition();

@@ -294,34 +294,35 @@ void PDDLFormatter::write(const DomainImpl& element, std::ostream& out)
         m_indent -= m_add_indent;
         out << "\n" << std::string(m_indent, ' ') << ")\n";
     }
-    if (!(element.get_functions<Static>().empty() && element.get_functions<Fluent>().empty() && !element.get_auxiliary_function().has_value()))
+    if (!(element.get_function_skeletons<Static>().empty() && element.get_function_skeletons<Fluent>().empty()
+          && !element.get_auxiliary_function_skeleton().has_value()))
     {
         out << std::string(m_indent, ' ') << "(:functions ";
         m_indent += m_add_indent;
-        if (!element.get_functions<Static>().empty())
+        if (!element.get_function_skeletons<Static>().empty())
         {
             out << "\n" << std::string(m_indent, ' ') << "; static functions:\n" << std::string(m_indent, ' ');
         }
-        for (size_t i = 0; i < element.get_functions<Static>().size(); ++i)
+        for (size_t i = 0; i < element.get_function_skeletons<Static>().size(); ++i)
         {
             if (i != 0)
                 out << " ";
-            write(*element.get_functions<Static>()[i], out);
+            write(*element.get_function_skeletons<Static>()[i], out);
         }
-        if (!element.get_functions<Fluent>().empty())
+        if (!element.get_function_skeletons<Fluent>().empty())
         {
             out << "\n" << std::string(m_indent, ' ') << "; fluent functions:\n" << std::string(m_indent, ' ');
         }
-        for (size_t i = 0; i < element.get_functions<Fluent>().size(); ++i)
+        for (size_t i = 0; i < element.get_function_skeletons<Fluent>().size(); ++i)
         {
             if (i != 0)
                 out << " ";
-            write(*element.get_functions<Fluent>()[i], out);
+            write(*element.get_function_skeletons<Fluent>()[i], out);
         }
-        if (element.get_auxiliary_function().has_value())
+        if (element.get_auxiliary_function_skeleton().has_value())
         {
             out << "\n" << std::string(m_indent, ' ') << "; auxiliary function:\n" << std::string(m_indent, ' ');
-            write(*element.get_auxiliary_function().value(), out);
+            write(*element.get_auxiliary_function_skeleton().value(), out);
         }
 
         m_indent -= m_add_indent;
@@ -704,51 +705,52 @@ void PDDLFormatter::write(const ProblemImpl& element, std::ostream& out)
         out << ")" << std::endl;
     }
 
-    if (!(element.get_static_initial_literals().empty() && element.get_fluent_initial_literals().empty() && element.get_function_values<Static>().empty()
-          && element.get_function_values<Fluent>().empty() && !element.get_auxiliary_function_value().has_value()))
+    if (!(element.get_initial_literals<Static>().empty() && element.get_initial_literals<Fluent>().empty()
+          && element.get_initial_function_values<Static>().empty() && element.get_initial_function_values<Fluent>().empty()
+          && !element.get_auxiliary_function_value().has_value()))
     {
         out << std::string(m_indent, ' ') << "(:init ";
         m_indent += m_add_indent;
 
-        if (!element.get_static_initial_literals().empty())
+        if (!element.get_initial_literals<Static>().empty())
         {
             out << "\n" << std::string(m_indent, ' ') << "; static literals:\n" << std::string(m_indent, ' ');
         }
-        for (size_t i = 0; i < element.get_static_initial_literals().size(); ++i)
+        for (size_t i = 0; i < element.get_initial_literals<Static>().size(); ++i)
         {
             if (i != 0)
                 out << " ";
-            write(*element.get_static_initial_literals()[i], out);
+            write(*element.get_initial_literals<Static>()[i], out);
         }
-        if (!element.get_fluent_initial_literals().empty())
+        if (!element.get_initial_literals<Fluent>().empty())
         {
             out << "\n" << std::string(m_indent, ' ') << "; fluent literals:\n" << std::string(m_indent, ' ');
         }
-        for (size_t i = 0; i < element.get_fluent_initial_literals().size(); ++i)
+        for (size_t i = 0; i < element.get_initial_literals<Fluent>().size(); ++i)
         {
             if (i != 0)
                 out << " ";
-            write(*element.get_fluent_initial_literals()[i], out);
+            write(*element.get_initial_literals<Fluent>()[i], out);
         }
-        if (!element.get_function_values<Static>().empty())
+        if (!element.get_initial_function_values<Static>().empty())
         {
             out << "\n" << std::string(m_indent, ' ') << "; static function values:\n" << std::string(m_indent, ' ');
         }
-        for (size_t i = 0; i < element.get_function_values<Static>().size(); ++i)
+        for (size_t i = 0; i < element.get_initial_function_values<Static>().size(); ++i)
         {
             if (i != 0)
                 out << " ";
-            write(*element.get_function_values<Static>()[i], out);
+            write(*element.get_initial_function_values<Static>()[i], out);
         }
-        if (!element.get_function_values<Fluent>().empty())
+        if (!element.get_initial_function_values<Fluent>().empty())
         {
             out << "\n" << std::string(m_indent, ' ') << "; fluent function values:\n" << std::string(m_indent, ' ');
         }
-        for (size_t i = 0; i < element.get_function_values<Fluent>().size(); ++i)
+        for (size_t i = 0; i < element.get_initial_function_values<Fluent>().size(); ++i)
         {
             if (i != 0)
                 out << " ";
-            write(*element.get_function_values<Fluent>()[i], out);
+            write(*element.get_initial_function_values<Fluent>()[i], out);
         }
         if (element.get_auxiliary_function_value().has_value())
         {

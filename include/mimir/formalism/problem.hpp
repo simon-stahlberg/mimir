@@ -55,8 +55,8 @@ private:
     PredicateList<Derived> m_problem_and_domain_derived_predicates;  ///< Includes domain derived predicates
     GroundLiteralList<Static> m_static_initial_literals;
     GroundLiteralList<Fluent> m_fluent_initial_literals;
-    GroundFunctionValueList<Static> m_static_function_values;
-    GroundFunctionValueList<Fluent> m_fluent_function_values;
+    GroundFunctionValueList<Static> m_static_initial_function_values;
+    GroundFunctionValueList<Fluent> m_fluent_initial_function_values;
     std::optional<GroundFunctionValue<Auxiliary>> m_auxiliary_function_value;
     GroundLiteralList<Static> m_static_goal_condition;
     GroundLiteralList<Fluent> m_fluent_goal_condition;
@@ -140,8 +140,8 @@ private:
                 PredicateList<Derived> problem_and_domain_derived_predicates,
                 GroundLiteralList<Static> static_initial_literals,
                 GroundLiteralList<Fluent> fluent_initial_literals,
-                GroundFunctionValueList<Static> static_function_values,
-                GroundFunctionValueList<Fluent> fluent_function_values,
+                GroundFunctionValueList<Static> static_initial_function_values,
+                GroundFunctionValueList<Fluent> fluent_initial_function_values,
                 std::optional<GroundFunctionValue<Auxiliary>> auxiliary_function_value,
                 GroundLiteralList<Static> static_goal_condition,
                 GroundLiteralList<Fluent> fluent_goal_condition,
@@ -171,10 +171,10 @@ public:
     const ObjectList& get_problem_and_domain_objects() const;
     const PredicateList<Derived>& get_derived_predicates() const;
     const PredicateList<Derived>& get_problem_and_domain_derived_predicates() const;
-    const GroundLiteralList<Static>& get_static_initial_literals() const;
-    const GroundLiteralList<Fluent>& get_fluent_initial_literals() const;
+    template<StaticOrFluentTag P>
+    const GroundLiteralList<P>& get_initial_literals() const;
     template<StaticOrFluentTag F>
-    const GroundFunctionValueList<F>& get_function_values() const;
+    const GroundFunctionValueList<F>& get_initial_function_values() const;
     const std::optional<GroundFunctionValue<Auxiliary>>& get_auxiliary_function_value() const;
     template<StaticOrFluentOrDerived P>
     const GroundLiteralList<P>& get_goal_condition() const;
@@ -194,8 +194,8 @@ public:
                                      std::as_const(m_derived_predicates),
                                      std::as_const(m_static_initial_literals),
                                      std::as_const(m_fluent_initial_literals),
-                                     std::as_const(m_static_function_values),
-                                     std::as_const(m_fluent_function_values),
+                                     std::as_const(m_static_initial_function_values),
+                                     std::as_const(m_fluent_initial_function_values),
                                      std::as_const(m_auxiliary_function_value),
                                      std::as_const(m_static_goal_condition),
                                      std::as_const(m_fluent_goal_condition),

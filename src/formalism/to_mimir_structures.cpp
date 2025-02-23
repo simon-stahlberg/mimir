@@ -101,7 +101,7 @@ void ToMimirStructures::prepare(loki::Condition condition)
             }
             else
             {
-                // std::cout << std::visit([](auto&& arg) { return arg.str(); }, *part) << std::endl;
+                std::visit([](auto&& arg) { std::cout << arg << std::endl; }, part->get_condition());
 
                 throw std::logic_error("Expected literal in conjunctive condition.");
             }
@@ -225,7 +225,7 @@ void ToMimirStructures::prepare(loki::Domain domain)
     prepare(domain->get_types());
     prepare(domain->get_constants());
     prepare(domain->get_predicates());
-    prepare(domain->get_functions());
+    prepare(domain->get_function_skeletons());
     prepare(domain->get_actions());
     prepare(domain->get_axioms());
 }
@@ -237,7 +237,7 @@ void ToMimirStructures::prepare(loki::Problem problem)
     prepare(problem->get_objects());
     prepare(problem->get_predicates());
     prepare(problem->get_initial_literals());
-    prepare(problem->get_function_values());
+    prepare(problem->get_initial_function_values());
     if (problem->get_goal_condition().has_value())
     {
         prepare(problem->get_goal_condition().value());
@@ -297,7 +297,7 @@ Object ToMimirStructures::translate_common(loki::Object object, PDDLRepositories
 {
     for (const auto& base : object->get_bases())
     {
-        std::cout << *base << std::endl;
+        std::cout << *base << " " << *object << std::endl;
     }
     assert(object->get_bases().empty());
     return repositories.get_or_create_object(object->get_name());
@@ -594,11 +594,16 @@ ToMimirStructures::translate_lifted(loki::Effect effect, const VariableList& par
         /* 3. Parse effect part */
         if (const auto& effect_literal = std::get_if<loki::EffectLiteral>(&tmp_effect->get_effect()))
         {
+            std::cout << **effect_literal << std::endl;
             const auto static_or_fluent_or_derived_effect = translate_lifted((*effect_literal)->get_literal(), repositories);
 
             if (std::get_if<Literal<Derived>>(&static_or_fluent_or_derived_effect))
             {
                 throw std::runtime_error("Only fluent literals are allowed in effects!");
+            }
+            else if (std::get_if<Literal<Static>>(&static_or_fluent_or_derived_effect))
+            {
+                throw std::logic_error("Expected fluent effect literal but it was static!");
             }
 
             const auto fluent_effect = std::get<Literal<Fluent>>(static_or_fluent_or_derived_effect);
@@ -1022,6 +1027,9 @@ template GroundFunctionValue<Auxiliary> get_or_create_total_cost_function_value(
 
 Domain ToMimirStructures::translate(const loki::Domain& domain, DomainBuilder& builder)
 {
+    /* Perform static type analysis */
+    prepare(domain);
+
     auto& repositories = builder.get_repositories();
 
     /* Requirements section */
@@ -1065,7 +1073,7 @@ Domain ToMimirStructures::translate(const loki::Domain& domain, DomainBuilder& b
     auto static_functions = FunctionSkeletonList<Static> {};
     auto fluent_functions = FunctionSkeletonList<Fluent> {};
     auto auxiliary_function = std::optional<FunctionSkeleton<Auxiliary>> { std::nullopt };
-    for (const auto& static_or_fluent_or_auxiliary_function : translate_common(domain->get_functions(), repositories))
+    for (const auto& static_or_fluent_or_auxiliary_function : translate_common(domain->get_function_skeletons(), repositories))
     {
         std::visit(
             [&static_functions, &fluent_functions, &auxiliary_function](auto&& arg)
@@ -1114,6 +1122,9 @@ Domain ToMimirStructures::translate(const loki::Domain& domain, DomainBuilder& b
 
 Problem ToMimirStructures::translate(const loki::Problem& problem, ProblemBuilder& builder)
 {
+    /* Perform static type analysis */
+    prepare(problem);
+
     auto& repositories = builder.get_repositories();
 
     /* Requirements section */
@@ -1187,7 +1198,7 @@ Problem ToMimirStructures::translate(const loki::Problem& problem, ProblemBuilde
     auto static_function_values = GroundFunctionValueList<Static> {};
     auto fluent_function_values = GroundFunctionValueList<Fluent> {};
     auto auxiliary_function_value = std::optional<GroundFunctionValue<Auxiliary>> {};
-    for (const auto static_or_fluent_or_auxiliary_function_value : translate_grounded(problem->get_function_values(), repositories))
+    for (const auto static_or_fluent_or_auxiliary_function_value : translate_grounded(problem->get_initial_function_values(), repositories))
     {
         std::visit(
             [&static_function_values, &fluent_function_values, &auxiliary_function_value](auto&& arg)
@@ -1242,10 +1253,14 @@ Problem ToMimirStructures::translate(const loki::Problem& problem, ProblemBuilde
     builder.get_requirements() = requirements;
     builder.get_objects().insert(builder.get_objects().end(), objects.begin(), objects.end());
     builder.get_derived_predicates().insert(builder.get_derived_predicates().end(), derived_predicates.begin(), derived_predicates.end());
-    builder.get_static_initial_literals().insert(builder.get_static_initial_literals().end(), static_initial_literals.begin(), static_initial_literals.end());
-    builder.get_fluent_initial_literals().insert(builder.get_fluent_initial_literals().end(), fluent_initial_literals.begin(), fluent_initial_literals.end());
-    builder.get_function_values<Static>().insert(builder.get_function_values<Static>().end(), static_function_values.begin(), static_function_values.end());
-    builder.get_function_values<Fluent>().insert(builder.get_function_values<Fluent>().end(), fluent_function_values.begin(), fluent_function_values.end());
+    builder.get_initial_literals<Static>().insert(builder.get_initial_literals<Static>().end(), static_initial_literals.begin(), static_initial_literals.end());
+    builder.get_initial_literals<Fluent>().insert(builder.get_initial_literals<Fluent>().end(), fluent_initial_literals.begin(), fluent_initial_literals.end());
+    builder.get_initial_function_values<Static>().insert(builder.get_initial_function_values<Static>().end(),
+                                                         static_function_values.begin(),
+                                                         static_function_values.end());
+    builder.get_initial_function_values<Fluent>().insert(builder.get_initial_function_values<Fluent>().end(),
+                                                         fluent_function_values.begin(),
+                                                         fluent_function_values.end());
     builder.get_auxiliary_function_value() = auxiliary_function_value;
     builder.get_goal_condition<Static>().insert(builder.get_goal_condition<Static>().end(), static_goal_literals.begin(), static_goal_literals.end());
     builder.get_goal_condition<Fluent>().insert(builder.get_goal_condition<Fluent>().end(), fluent_goal_literals.begin(), fluent_goal_literals.end());
