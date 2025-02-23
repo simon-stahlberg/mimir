@@ -90,9 +90,6 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    /* Predicate */
-    PredicateList<Derived> m_problem_and_domain_derived_predicates;
-
     /* Initial state */
     GroundAtomList<Static> m_positive_static_initial_atoms;
     FlatBitset m_positive_static_initial_atoms_bitset;
@@ -129,7 +126,6 @@ private:
     FlatIndexList m_negative_derived_goal_atoms_indices;
 
     /* Axioms */
-    AxiomList m_problem_and_domain_axioms;
     std::vector<AxiomPartition> m_problem_and_domain_axiom_partitioning;  ///< Obtained from stratification
 
     ProblemImpl(Index index,
@@ -156,8 +152,7 @@ private:
                 AxiomList problem_and_domain_axioms);
 
     // Give access to the constructor.
-    template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class ProblemBuilder;
 
 public:
     // moveable but not copyable
@@ -214,9 +209,6 @@ public:
      * Additional members
      */
 
-    /* Predicate */
-    const PredicateList<Derived>& get_problem_and_domain_derived_predicates() const;
-
     /* Initial state */
     const GroundAtomList<Static>& get_static_initial_atoms() const;
     const FlatBitset& get_static_initial_positive_atoms_bitset() const;
@@ -251,7 +243,6 @@ public:
     const FlatIndexList& get_negative_goal_atoms_indices() const;
 
     /* Axioms */
-    const AxiomList& get_problem_and_domain_axioms() const;
     const std::vector<AxiomPartition>& get_problem_and_domain_axiom_partitioning() const;
 
     /* Grounding */

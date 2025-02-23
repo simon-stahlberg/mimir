@@ -65,7 +65,7 @@ ProblemBuilder::ProblemBuilder(Domain domain) :
                           });
 }
 
-Problem ProblemBuilder::get_result(size_t problem_index)
+Problem ProblemBuilder::get_result(Index problem_index)
 {
     auto problem_and_domain_objects = m_objects;
     problem_and_domain_objects.insert(problem_and_domain_objects.end(), m_domain->get_constants().begin(), m_domain->get_constants().end());
@@ -101,28 +101,28 @@ Problem ProblemBuilder::get_result(size_t problem_index)
 
     m_requirements = (m_requirements) ? m_requirements : m_repositories.get_or_create_requirements(loki::RequirementEnumSet { loki::RequirementEnum::STRIPS });
 
-    return std::make_shared<ProblemImpl>(problem_index,
-                                         std::move(m_repositories),
-                                         std::move(m_filepath),
-                                         std::move(m_domain),
-                                         std::move(m_name),
-                                         std::move(m_requirements),
-                                         std::move(m_objects),
-                                         std::move(problem_and_domain_objects),
-                                         std::move(m_derived_predicates),
-                                         std::move(problem_and_domain_derived_predicates),
-                                         std::move(m_static_initial_literals),
-                                         std::move(m_fluent_initial_literals),
-                                         std::move(m_static_function_values),
-                                         std::move(m_fluent_function_values),
-                                         std::move(m_auxiliary_function_value),
-                                         std::move(m_static_goal_condition),
-                                         std::move(m_fluent_goal_condition),
-                                         std::move(m_derived_goal_condition),
-                                         std::move(m_numeric_goal_condition),
-                                         std::move(m_optimization_metric),
-                                         std::move(m_axioms),
-                                         std::move(problem_and_domain_axioms));
+    return std::shared_ptr<ProblemImpl>(new ProblemImpl(problem_index,
+                                                        std::move(m_repositories),
+                                                        std::move(m_filepath),
+                                                        std::move(m_domain),
+                                                        std::move(m_name),
+                                                        std::move(m_requirements),
+                                                        std::move(m_objects),
+                                                        std::move(problem_and_domain_objects),
+                                                        std::move(m_derived_predicates),
+                                                        std::move(problem_and_domain_derived_predicates),
+                                                        std::move(m_static_initial_literals),
+                                                        std::move(m_fluent_initial_literals),
+                                                        std::move(m_static_function_values),
+                                                        std::move(m_fluent_function_values),
+                                                        std::move(m_auxiliary_function_value),
+                                                        std::move(m_static_goal_condition),
+                                                        std::move(m_fluent_goal_condition),
+                                                        std::move(m_derived_goal_condition),
+                                                        std::move(m_numeric_goal_condition),
+                                                        std::move(m_optimization_metric),
+                                                        std::move(m_axioms),
+                                                        std::move(problem_and_domain_axioms)));
 }
 
 PDDLRepositories& ProblemBuilder::get_repositories() { return m_repositories; }

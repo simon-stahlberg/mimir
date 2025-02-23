@@ -66,7 +66,7 @@ public:
     /// @brief Finalizes the `Problem` and returns it.
     /// The `ProblemBuilder` is in an invalid state afterwards.
     /// @return the resulting `Problem`.
-    Problem get_result(size_t problem_index);
+    Problem get_result(Index problem_index);
 
     /**
      * Get and modify components of the problem.

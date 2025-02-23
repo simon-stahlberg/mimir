@@ -1241,10 +1241,10 @@ Problem ToMimirStructures::translate(const loki::Problem& problem, ProblemBuilde
     builder.get_static_initial_literals().insert(builder.get_static_initial_literals().end(), static_initial_literals.begin(), static_initial_literals.end());
     builder.get_fluent_initial_literals().insert(builder.get_fluent_initial_literals().end(), fluent_initial_literals.begin(), fluent_initial_literals.end());
     builder.get_function_values<Static>().insert(builder.get_function_values<Static>().end(), static_function_values.begin(), static_function_values.end());
-    builder.get_function_values<Fluent>().insert(builder.get_function_values<Fluent>().end(), static_function_values.begin(), static_function_values.end());
+    builder.get_function_values<Fluent>().insert(builder.get_function_values<Fluent>().end(), fluent_function_values.begin(), fluent_function_values.end());
     builder.get_auxiliary_function_value() = auxiliary_function_value;
     builder.get_goal_condition<Static>().insert(builder.get_goal_condition<Static>().end(), static_goal_literals.begin(), static_goal_literals.end());
-    builder.get_goal_condition<Fluent>().insert(builder.get_goal_condition<Fluent>().end(), static_goal_literals.begin(), static_goal_literals.end());
+    builder.get_goal_condition<Fluent>().insert(builder.get_goal_condition<Fluent>().end(), fluent_goal_literals.begin(), fluent_goal_literals.end());
     builder.get_goal_condition<Derived>().insert(builder.get_goal_condition<Derived>().end(), derived_goal_literals.begin(), derived_goal_literals.end());
     builder.get_numeric_goal_condition().insert(builder.get_numeric_goal_condition().end(), numeric_goal_constraints.begin(), numeric_goal_constraints.end());
     builder.get_optimization_metric() = metric;

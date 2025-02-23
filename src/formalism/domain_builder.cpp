@@ -66,19 +66,19 @@ Domain DomainBuilder::get_result()
 
     m_requirements = (m_requirements) ? m_requirements : m_repositories.get_or_create_requirements(loki::RequirementEnumSet { loki::RequirementEnum::STRIPS });
 
-    return std::make_shared<const DomainImpl>(std::move(m_repositories),
-                                              std::move(m_filepath),
-                                              std::move(m_name),
-                                              std::move(m_requirements),
-                                              std::move(m_constants),
-                                              std::move(m_static_predicates),
-                                              std::move(m_fluent_predicates),
-                                              std::move(m_derived_predicates),
-                                              std::move(m_static_function_skeletons),
-                                              std::move(m_fluent_function_skeletons),
-                                              std::move(m_auxiliary_function_skeleton),
-                                              std::move(m_actions),
-                                              std::move(m_axioms));
+    return std::shared_ptr<const DomainImpl>(new DomainImpl(std::move(m_repositories),
+                                                            std::move(m_filepath),
+                                                            std::move(m_name),
+                                                            std::move(m_requirements),
+                                                            std::move(m_constants),
+                                                            std::move(m_static_predicates),
+                                                            std::move(m_fluent_predicates),
+                                                            std::move(m_derived_predicates),
+                                                            std::move(m_static_function_skeletons),
+                                                            std::move(m_fluent_function_skeletons),
+                                                            std::move(m_auxiliary_function_skeleton),
+                                                            std::move(m_actions),
+                                                            std::move(m_axioms)));
 }
 
 PDDLRepositories& DomainBuilder::get_repositories() { return m_repositories; }
