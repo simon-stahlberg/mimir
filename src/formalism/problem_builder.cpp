@@ -150,6 +150,10 @@ GroundFunctionValueList<F>& ProblemBuilder::get_function_values()
         static_assert(dependent_false<F>::value, "ProblemBuilder::get_function_values(): Missing implementation for StaticOrFluent type.");
     }
 }
+
+template GroundFunctionValueList<Static>& ProblemBuilder::get_function_values();
+template GroundFunctionValueList<Fluent>& ProblemBuilder::get_function_values();
+
 std::optional<GroundFunctionValue<Auxiliary>>& ProblemBuilder::get_auxiliary_function_value() { return m_auxiliary_function_value; }
 template<StaticOrFluentOrDerived P>
 GroundLiteralList<P>& ProblemBuilder::get_goal_condition()
@@ -171,6 +175,11 @@ GroundLiteralList<P>& ProblemBuilder::get_goal_condition()
         static_assert(dependent_false<P>::value, "ProblemBuilder::get_function_values(): Missing implementation for StaticOrFluent type.");
     }
 }
+
+template GroundLiteralList<Static>& ProblemBuilder::get_goal_condition();
+template GroundLiteralList<Fluent>& ProblemBuilder::get_goal_condition();
+template GroundLiteralList<Derived>& ProblemBuilder::get_goal_condition();
+
 GroundNumericConstraintList& ProblemBuilder::get_numeric_goal_condition() { return m_numeric_goal_condition; }
 OptimizationMetric& ProblemBuilder::get_optimization_metric() { return m_optimization_metric; }
 AxiomList& ProblemBuilder::get_axioms() { return m_axioms; }

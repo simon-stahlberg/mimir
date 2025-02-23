@@ -1,0 +1,592 @@
+/*
+ * Copyright (C) 2023 Dominik Drexler and Simon Stahlberg
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+#ifndef MIMIR_FORMALISM_TRANSLATOR_RECURSIVE_CACHED_BASE_HPP_
+#define MIMIR_FORMALISM_TRANSLATOR_RECURSIVE_CACHED_BASE_HPP_
+
+#include "mimir/formalism/domain.hpp"
+#include "mimir/formalism/domain_builder.hpp"
+#include "mimir/formalism/problem.hpp"
+#include "mimir/formalism/problem_builder.hpp"
+#include "mimir/formalism/repositories.hpp"
+#include "mimir/formalism/translator/interface.hpp"
+
+#include <deque>
+#include <loki/loki.hpp>
+#include <unordered_map>
+
+namespace mimir
+{
+
+/**
+ * Base implementation recursively calls prepare, followed by recursively calls transform and caches the results.
+ */
+template<typename Derived_>
+class RecursiveCachedBaseTranslator : public ITranslator<RecursiveCachedBaseTranslator<Derived_>>
+{
+private:
+    RecursiveCachedBaseTranslator() = default;
+    friend Derived_;
+
+    /// @brief Helper to cast to Derived.
+    constexpr const auto& self() const { return static_cast<const Derived_&>(*this); }
+    constexpr auto& self() { return static_cast<Derived_&>(*this); }
+
+protected:
+    PDDLRepositories& m_pddl_repositories;
+
+    template<typename T>
+    using TranslatorCache = boost::hana::pair<boost::hana::type<T>, std::unordered_map<T, T, loki::Hash<T>, loki::EqualTo<T>>>;
+
+    using TranslatorCaches = boost::hana::map<TranslatorCache<Requirements>,
+                                              TranslatorCache<Object>,
+                                              TranslatorCache<Variable>,
+                                              TranslatorCache<Term>,
+                                              TranslatorCache<Predicate<Static>>,
+                                              TranslatorCache<Predicate<Fluent>>,
+                                              TranslatorCache<Predicate<Derived>>,
+                                              TranslatorCache<Atom<Static>>,
+                                              TranslatorCache<Atom<Fluent>>,
+                                              TranslatorCache<Atom<Derived>>,
+                                              TranslatorCache<GroundAtom<Static>>,
+                                              TranslatorCache<GroundAtom<Fluent>>,
+                                              TranslatorCache<GroundAtom<Derived>>,
+                                              TranslatorCache<Literal<Static>>,
+                                              TranslatorCache<Literal<Fluent>>,
+                                              TranslatorCache<Literal<Derived>>,
+                                              TranslatorCache<GroundLiteral<Static>>,
+                                              TranslatorCache<GroundLiteral<Fluent>>,
+                                              TranslatorCache<GroundLiteral<Derived>>,
+                                              TranslatorCache<GroundFunctionValue<Static>>,
+                                              TranslatorCache<GroundFunctionValue<Fluent>>,
+                                              TranslatorCache<GroundFunctionValue<Auxiliary>>,
+                                              TranslatorCache<NumericEffect<Fluent>>,
+                                              TranslatorCache<NumericEffect<Auxiliary>>,
+                                              TranslatorCache<ConjunctiveEffect>,
+                                              TranslatorCache<ConditionalEffect>,
+                                              TranslatorCache<FunctionExpressionNumber>,
+                                              TranslatorCache<FunctionExpressionBinaryOperator>,
+                                              TranslatorCache<FunctionExpressionMultiOperator>,
+                                              TranslatorCache<FunctionExpressionMinus>,
+                                              TranslatorCache<FunctionExpressionFunction<Static>>,
+                                              TranslatorCache<FunctionExpressionFunction<Fluent>>,
+                                              TranslatorCache<FunctionExpressionFunction<Auxiliary>>,
+                                              TranslatorCache<FunctionExpression>,
+                                              TranslatorCache<GroundFunctionExpressionNumber>,
+                                              TranslatorCache<GroundFunctionExpressionBinaryOperator>,
+                                              TranslatorCache<GroundFunctionExpressionMultiOperator>,
+                                              TranslatorCache<GroundFunctionExpressionMinus>,
+                                              TranslatorCache<GroundFunctionExpressionFunction<Static>>,
+                                              TranslatorCache<GroundFunctionExpressionFunction<Fluent>>,
+                                              TranslatorCache<GroundFunctionExpressionFunction<Auxiliary>>,
+                                              TranslatorCache<GroundFunctionExpression>,
+                                              TranslatorCache<FunctionSkeleton<Static>>,
+                                              TranslatorCache<FunctionSkeleton<Fluent>>,
+                                              TranslatorCache<FunctionSkeleton<Auxiliary>>,
+                                              TranslatorCache<Function<Static>>,
+                                              TranslatorCache<Function<Fluent>>,
+                                              TranslatorCache<Function<Auxiliary>>,
+                                              TranslatorCache<GroundFunction<Static>>,
+                                              TranslatorCache<GroundFunction<Fluent>>,
+                                              TranslatorCache<GroundFunction<Auxiliary>>,
+                                              TranslatorCache<NumericConstraint>,
+                                              TranslatorCache<GroundNumericConstraint>,
+                                              TranslatorCache<ConjunctiveCondition>,
+                                              TranslatorCache<Action>,
+                                              TranslatorCache<Axiom>,
+                                              TranslatorCache<OptimizationMetric>>;
+
+    TranslatorCaches m_cache;
+
+protected:
+    /* Implement ITranslator interface */
+    friend class ITranslator<RecursiveCachedBaseTranslator<Derived_>>;
+
+    template<std::ranges::forward_range Range>
+    void prepare_level_1(const Range& range)
+    {
+        self().prepare_level_2(range);
+    }
+    template<std::ranges::forward_range Range>
+    void prepare_level_2(const Range& range)
+    {
+        std::ranges::for_each(range, [this](auto&& arg) { this->prepare_level_0(arg); });
+    }
+
+    /// @brief Collect information.
+    ///        Default implementation recursively calls prepare.
+    template<typename T>
+    void prepare_level_1(const std::optional<T>& element)
+    {
+        if (element.has_value())
+        {
+            self().prepare_level_2(element.value());
+        }
+    }
+    template<typename T>
+    void prepare_level_1(const T& element)
+    {
+        self().prepare_level_2(element);
+    }
+
+    void prepare_level_2(Requirements requirements) {}
+    void prepare_level_2(Object object) {}
+    void prepare_level_2(Variable variable) {}
+    void prepare_level_2(Term term)
+    {
+        std::visit([this](auto&& arg) { return this->prepare_level_0(arg); }, term->get_variant());
+    }
+    template<StaticOrFluentOrDerived P>
+    void prepare_level_2(Predicate<P> predicate)
+    {
+        this->prepare_level_0(predicate->get_parameters());
+    }
+    template<StaticOrFluentOrDerived P>
+    void prepare_level_2(Atom<P> atom)
+    {
+        this->prepare_level_0(atom->get_predicate());
+        this->prepare_level_0(atom->get_terms());
+    }
+    template<StaticOrFluentOrDerived P>
+    void prepare_level_2(GroundAtom<P> atom)
+    {
+        this->prepare_level_0(atom->get_predicate());
+        this->prepare_level_0(atom->get_objects());
+    }
+    template<StaticOrFluentOrDerived P>
+    void prepare_level_2(Literal<P> literal)
+    {
+        this->prepare_level_0(literal->get_atom());
+    }
+    template<StaticOrFluentOrDerived P>
+    void prepare_level_2(GroundLiteral<P> literal)
+    {
+        this->prepare_level_0(literal->get_atom());
+    }
+    template<StaticOrFluentOrAuxiliary F>
+    void prepare_level_2(GroundFunctionValue<F> function_value)
+    {
+        this->prepare_level_0(function_value->get_function());
+    }
+    template<FluentOrAuxiliary F>
+    void prepare_level_2(NumericEffect<F> effect)
+    {
+        this->prepare_level_0(effect->get_function());
+        this->prepare_level_0(effect->get_function_expression());
+    }
+    void prepare_level_2(ConjunctiveEffect effect)
+    {
+        this->prepare_level_0(effect->get_parameters());
+        this->prepare_level_0(effect->get_literals());
+        this->prepare_level_0(effect->get_fluent_numeric_effects());
+        this->prepare_level_0(effect->get_auxiliary_numeric_effect());
+    }
+    void prepare_level_2(ConditionalEffect effect)
+    {
+        this->prepare_level_0(effect->get_conjunctive_condition());
+        this->prepare_level_0(effect->get_conjunctive_effect());
+    }
+    void prepare_level_2(NumericConstraint condition)
+    {
+        this->prepare_level_0(condition->get_left_function_expression());
+        this->prepare_level_0(condition->get_right_function_expression());
+        this->prepare_level_0(condition->get_terms());
+    }
+    void prepare_level_2(GroundNumericConstraint condition)
+    {
+        this->prepare_level_0(condition->get_left_function_expression());
+        this->prepare_level_0(condition->get_right_function_expression());
+    }
+    void prepare_level_2(ConjunctiveCondition condition)
+    {
+        this->prepare_level_0(condition->get_parameters());
+        this->prepare_level_0(condition->get_literals<Static>());
+        this->prepare_level_0(condition->get_literals<Fluent>());
+        this->prepare_level_0(condition->get_literals<Derived>());
+        this->prepare_level_0(condition->get_numeric_constraints());
+    }
+    void prepare_level_2(FunctionExpressionNumber function_expression) {}
+    void prepare_level_2(FunctionExpressionBinaryOperator function_expression)
+    {
+        this->prepare_level_0(function_expression->get_left_function_expression());
+        this->prepare_level_0(function_expression->get_right_function_expression());
+    }
+    void prepare_level_2(FunctionExpressionMultiOperator function_expression) { this->prepare_level_0(function_expression->get_function_expressions()); }
+    void prepare_level_2(FunctionExpressionMinus function_expression) { this->prepare_level_0(function_expression->get_function_expression()); }
+    template<StaticOrFluentOrAuxiliary F>
+    void prepare_level_2(FunctionExpressionFunction<F> function_expression)
+    {
+        this->prepare_level_0(function_expression->get_function());
+    }
+    void prepare_level_2(FunctionExpression function_expression)
+    {
+        std::visit([this](auto&& arg) { return this->prepare_level_0(arg); }, function_expression->get_variant());
+    }
+    void prepare_level_2(GroundFunctionExpressionNumber function_expression) {}
+    void prepare_level_2(GroundFunctionExpressionBinaryOperator function_expression)
+    {
+        this->prepare_level_0(function_expression->get_left_function_expression());
+        this->prepare_level_0(function_expression->get_right_function_expression());
+    }
+    void prepare_level_2(GroundFunctionExpressionMultiOperator function_expression) { this->prepare_level_0(function_expression->get_function_expressions()); }
+    void prepare_level_2(GroundFunctionExpressionMinus function_expression) { this->prepare_level_0(function_expression->get_function_expression()); }
+    template<StaticOrFluentOrAuxiliary F>
+    void prepare_level_2(GroundFunctionExpressionFunction<F> function_expression)
+    {
+        this->prepare_level_0(function_expression->get_function());
+    }
+    void prepare_level_2(GroundFunctionExpression function_expression)
+    {
+        std::visit([this](auto&& arg) { return this->prepare_level_0(arg); }, function_expression->get_variant());
+    }
+    template<StaticOrFluentOrAuxiliary F>
+    void prepare_level_2(FunctionSkeleton<F> function_skeleton)
+    {
+        this->prepare_level_0(function_skeleton->get_parameters());
+    }
+    template<StaticOrFluentOrAuxiliary F>
+    void prepare_level_2(Function<F> function)
+    {
+        this->prepare_level_0(function->get_function_skeleton());
+        this->prepare_level_0(function->get_terms());
+    }
+    template<StaticOrFluentOrAuxiliary F>
+    void prepare_level_2(GroundFunction<F> function)
+    {
+        this->prepare_level_0(function->get_function_skeleton());
+        this->prepare_level_0(function->get_objects());
+    }
+    void prepare_level_2(Action action)
+    {
+        this->prepare_level_0(action->get_conjunctive_condition());
+        this->prepare_level_0(action->get_conjunctive_effect());
+        this->prepare_level_0(action->get_conditional_effects());
+    }
+    void prepare_level_2(Axiom axiom)
+    {
+        this->prepare_level_0(axiom->get_conjunctive_condition());
+        this->prepare_level_0(axiom->get_literal());
+    }
+    void prepare_level_2(Domain domain)
+    {
+        this->prepare_level_0(domain->get_requirements());
+        this->prepare_level_0(domain->get_constants());
+        this->prepare_level_0(domain->get_predicates<Static>());
+        this->prepare_level_0(domain->get_predicates<Fluent>());
+        this->prepare_level_0(domain->get_predicates<Derived>());
+        this->prepare_level_0(domain->get_functions<Static>());
+        this->prepare_level_0(domain->get_functions<Fluent>());
+        this->prepare_level_0(domain->get_auxiliary_function());
+        this->prepare_level_0(domain->get_actions());
+        this->prepare_level_0(domain->get_axioms());
+    }
+    void prepare_level_2(OptimizationMetric metric) { this->prepare(metric->get_function_expression()); }
+    void prepare_level_2(Problem problem)
+    {
+        this->prepare_level_0(problem->get_domain());
+        this->prepare_level_0(problem->get_requirements());
+        this->prepare_level_0(problem->get_objects());
+        this->prepare_level_0(problem->get_derived_predicates());
+        this->prepare_level_0(problem->get_static_initial_literals());
+        this->prepare_level_0(problem->get_fluent_initial_literals());
+        this->prepare_level_0(problem->get_function_values<Static>());
+        this->prepare_level_0(problem->get_function_values<Fluent>());
+        this->prepare_level_0(problem->get_auxiliary_function_value());
+        this->prepare_level_0(problem->get_goal_condition<Static>());
+        this->prepare_level_0(problem->get_goal_condition<Fluent>());
+        this->prepare_level_0(problem->get_goal_condition<Derived>());
+        this->prepare_level_0(problem->get_numeric_goal_condition());
+        this->prepare_level_0(problem->get_optimization_metric());
+        this->prepare_level_0(problem->get_axioms());
+    }
+
+    /// @brief Retrieve or create cache entry of translation to avoid recomputations.
+    template<typename Impl, typename TransformFunc>
+    auto cached_translate_impl(Impl impl, std::unordered_map<Impl, Impl, loki::Hash<Impl>, loki::EqualTo<Impl>>& cache, const TransformFunc& transformFunc)
+    {
+        // Access from cache
+        auto it = cache.find(impl);
+        if (it != cache.end())
+        {
+            return it->second;
+        }
+
+        // Translate
+        auto transformed = transformFunc(impl);
+
+        // Insert into cache
+        cache.emplace(impl, transformed);
+
+        return transformed;
+    }
+    /// @brief Translate a container of elements into a container of elements.
+    template<IsBackInsertibleRange Range>
+    auto translate_level_1(const Range& input, PDDLRepositories& repositories)
+    {
+        return self().translate_level_2(input, repositories);
+    }
+    /// @brief Translate a container of elements into a container of elements.
+    template<IsBackInsertibleRange Range>
+    auto translate_level_2(const Range& input, PDDLRepositories& repositories)
+    {
+        std::remove_cvref_t<Range> output;
+
+        if constexpr (requires { output.reserve(std::ranges::size(input)); })
+        {
+            output.reserve(std::ranges::size(input));
+        }
+
+        std::ranges::transform(input, std::back_inserter(output), [&](auto&& arg) { return this->translate_level_0(arg, repositories); });
+
+        return output;
+    }
+    template<typename T>
+    auto translate_level_1(const std::optional<T>& element, PDDLRepositories& repositories)
+    {
+        return element.has_value() ? this->translate_level_0(element.value(), repositories) : std::optional<T> { std::nullopt };
+    }
+    template<typename T>
+    auto translate_level_1(const T& element, PDDLRepositories& repositories)
+    {
+        return cached_translate_impl(element,
+                                     boost::hana::at_key(m_cache, boost::hana::type<T> {}),
+                                     [&](auto&& arg) { return self().translate_level_2(arg, repositories); });
+    }
+
+    Requirements translate_level_2(Requirements requirements, PDDLRepositories& repositories)
+    {
+        return repositories.get_or_create_requirements(requirements->get_requirements());
+    }
+    Object translate_level_2(Object object, PDDLRepositories& repositories) { return repositories.get_or_create_object(object->get_name()); }
+    Variable translate_level_2(Variable variable, PDDLRepositories& repositories)
+    {
+        return repositories.get_or_create_variable(variable->get_name(), variable->get_parameter_index());
+    }
+    Term translate_level_2(Term term, PDDLRepositories& repositories)
+    {
+        return std::visit(
+            [&](auto&& arg) -> Term
+            {
+                using ArgType = std::decay_t<decltype(arg)>;
+
+                if constexpr (std::is_same_v<ArgType, Variable>)
+                {
+                    return repositories.get_or_create_term(this->translate_level_0(arg, repositories));
+                }
+                else if constexpr (std::is_same_v<ArgType, Object>)
+                {
+                    return repositories.get_or_create_term(this->translate_level_0(arg, repositories));
+                }
+                else
+                {
+                    static_assert(dependent_false<ArgType>::value, "Missing implementation for ArgType.");
+                }
+            },
+            term->get_variant());
+    }
+    template<StaticOrFluentOrDerived P>
+    Predicate<P> translate_level_2(Predicate<P> predicate, PDDLRepositories& repositories)
+    {
+        return repositories.template get_or_create_predicate<P>(predicate->get_name(), this->translate_level_0(predicate->get_parameters(), repositories));
+    }
+    template<StaticOrFluentOrDerived P>
+    Atom<P> translate_level_2(Atom<P> atom, PDDLRepositories& repositories)
+    {
+        return repositories.get_or_create_atom(this->translate_level_0(atom->get_predicate(), repositories),
+                                               this->translate_level_0(atom->get_terms(), repositories));
+    }
+    template<StaticOrFluentOrDerived P>
+    GroundAtom<P> translate_level_2(GroundAtom<P> atom, PDDLRepositories& repositories)
+    {
+        return repositories.get_or_create_ground_atom(this->translate_level_0(atom->get_predicate(), repositories),
+                                                      this->translate_level_0(atom->get_objects(), repositories));
+    }
+    template<StaticOrFluentOrDerived P>
+    Literal<P> translate_level_2(Literal<P> literal, PDDLRepositories& repositories)
+    {
+        return repositories.get_or_create_literal(literal->is_negated(), this->translate_level_0(literal->get_atom(), repositories));
+    }
+    template<StaticOrFluentOrDerived P>
+    GroundLiteral<P> translate_level_2(GroundLiteral<P> literal, PDDLRepositories& repositories)
+    {
+        return repositories.get_or_create_ground_literal(literal->is_negated(), this->translate_level_0(literal->get_atom(), repositories));
+    }
+    template<StaticOrFluentOrAuxiliary F>
+    GroundFunctionValue<F> translate_level_2(GroundFunctionValue<F> function_value, PDDLRepositories& repositories)
+    {
+        return repositories.get_or_create_ground_function_value(this->translate_level_0(function_value->get_function(), repositories),
+                                                                function_value->get_number());
+    }
+    template<FluentOrAuxiliary F>
+    NumericEffect<F> translate_level_2(NumericEffect<F> effect, PDDLRepositories& repositories)
+    {
+        return repositories.get_or_create_numeric_effect(effect->get_assign_operator(),
+                                                         this->translate_level_0(effect->get_function(), repositories),
+                                                         this->translate_level_0(effect->get_function_expression(), repositories));
+    }
+    ConjunctiveEffect translate_level_2(ConjunctiveEffect effect, PDDLRepositories& repositories)
+    {
+        return repositories.get_or_create_conjunctive_effect(this->translate_level_0(effect->get_parameters(), repositories),
+                                                             this->translate_level_0(effect->get_literals(), repositories),
+                                                             this->translate_level_0(effect->get_fluent_numeric_effects(), repositories),
+                                                             this->translate_level_0(effect->get_auxiliary_numeric_effect(), repositories));
+    }
+    ConditionalEffect translate_level_2(ConditionalEffect effect, PDDLRepositories& repositories)
+    {
+        return repositories.get_or_create_conditional_effect(this->translate_level_0(effect->get_conjunctive_condition(), repositories),
+                                                             this->translate_level_0(effect->get_conjunctive_effect(), repositories));
+    }
+    NumericConstraint translate_level_2(NumericConstraint condition, PDDLRepositories& repositories)
+    {
+        return repositories.get_or_create_numeric_constraint(condition->get_binary_comparator(),
+                                                             this->translate_level_0(condition->get_left_function_expression(), repositories),
+                                                             this->translate_level_0(condition->get_right_function_expression(), repositories),
+                                                             this->translate_level_0(condition->get_terms(), repositories));
+    }
+    GroundNumericConstraint translate_level_2(GroundNumericConstraint condition, PDDLRepositories& repositories)
+    {
+        return repositories.get_or_create_ground_numeric_constraint(condition->get_binary_comparator(),
+                                                                    this->translate_level_0(condition->get_left_function_expression(), repositories),
+                                                                    this->translate_level_0(condition->get_right_function_expression(), repositories));
+    }
+    ConjunctiveCondition translate_level_2(ConjunctiveCondition condition, PDDLRepositories& repositories)
+    {
+        return repositories.get_or_create_conjunctive_condition(this->translate_level_0(condition->get_parameters(), repositories),
+                                                                this->translate_level_0(condition->get_literals<Static>(), repositories),
+                                                                this->translate_level_0(condition->get_literals<Fluent>(), repositories),
+                                                                this->translate_level_0(condition->get_literals<Derived>(), repositories),
+                                                                this->translate_level_0(condition->get_numeric_constraints(), repositories));
+    }
+    FunctionExpressionNumber translate_level_2(FunctionExpressionNumber function_expression, PDDLRepositories& repositories)
+    {
+        return repositories.get_or_create_function_expression_number(function_expression->get_number());
+    }
+    FunctionExpressionBinaryOperator translate_level_2(FunctionExpressionBinaryOperator function_expression, PDDLRepositories& repositories)
+    {
+        return repositories.get_or_create_function_expression_binary_operator(
+            function_expression->get_binary_operator(),
+            this->translate_level_0(function_expression->get_left_function_expression(), repositories),
+            this->translate_level_0(function_expression->get_right_function_expression(), repositories));
+    }
+    FunctionExpressionMultiOperator translate_level_2(FunctionExpressionMultiOperator function_expression, PDDLRepositories& repositories)
+    {
+        return repositories.get_or_create_function_expression_multi_operator(
+            function_expression->get_multi_operator(),
+            this->translate_level_0(function_expression->get_function_expressions(), repositories));
+    }
+    FunctionExpressionMinus translate_level_2(FunctionExpressionMinus function_expression, PDDLRepositories& repositories)
+    {
+        return repositories.get_or_create_function_expression_minus(this->translate_level_0(function_expression->get_function_expression(), repositories));
+    }
+    template<StaticOrFluentOrAuxiliary F>
+    FunctionExpressionFunction<F> translate_level_2(FunctionExpressionFunction<F> function_expression, PDDLRepositories& repositories)
+    {
+        return repositories.get_or_create_function_expression_function(this->translate_level_0(function_expression->get_function(), repositories));
+    }
+    FunctionExpression translate_level_2(FunctionExpression function_expression, PDDLRepositories& repositories)
+    {
+        return std::visit([&](auto&& arg) { return repositories.get_or_create_function_expression(this->translate_level_0(arg, repositories)); },
+                          function_expression->get_variant());
+    }
+    GroundFunctionExpressionNumber translate_level_2(GroundFunctionExpressionNumber function_expression, PDDLRepositories& repositories)
+    {
+        return repositories.get_or_create_ground_function_expression_number(function_expression->get_number());
+    }
+    GroundFunctionExpressionBinaryOperator translate_level_2(GroundFunctionExpressionBinaryOperator function_expression, PDDLRepositories& repositories)
+    {
+        return repositories.get_or_create_ground_function_expression_binary_operator(
+            function_expression->get_binary_operator(),
+            this->translate_level_0(function_expression->get_left_function_expression(), repositories),
+            this->translate_level_0(function_expression->get_right_function_expression(), repositories));
+    }
+    GroundFunctionExpressionMultiOperator translate_level_2(GroundFunctionExpressionMultiOperator function_expression, PDDLRepositories& repositories)
+    {
+        return repositories.get_or_create_ground_function_expression_multi_operator(
+            function_expression->get_multi_operator(),
+            this->translate_level_0(function_expression->get_function_expressions(), repositories));
+    }
+    GroundFunctionExpressionMinus translate_level_2(GroundFunctionExpressionMinus function_expression, PDDLRepositories& repositories)
+    {
+        return repositories.get_or_create_ground_function_expression_minus(
+            this->translate_level_0(function_expression->get_function_expression(), repositories));
+    }
+    template<StaticOrFluentOrAuxiliary F>
+    GroundFunctionExpressionFunction<F> translate_level_2(GroundFunctionExpressionFunction<F> function_expression, PDDLRepositories& repositories)
+    {
+        return repositories.get_or_create_ground_function_expression_function(this->translate_level_0(function_expression->get_function(), repositories));
+    }
+    GroundFunctionExpression translate_level_2(GroundFunctionExpression function_expression, PDDLRepositories& repositories)
+    {
+        return std::visit([&](auto&& arg) -> GroundFunctionExpression
+                          { return repositories.get_or_create_ground_function_expression(this->translate_level_0(arg, repositories)); },
+                          function_expression->get_variant());
+    }
+    template<StaticOrFluentOrAuxiliary F>
+    FunctionSkeleton<F> translate_level_2(FunctionSkeleton<F> function_skeleton, PDDLRepositories& repositories)
+    {
+        return repositories.template get_or_create_function_skeleton<F>(function_skeleton->get_name(),
+                                                                        this->translate_level_0(function_skeleton->get_parameters(), repositories));
+    }
+    template<StaticOrFluentOrAuxiliary F>
+    Function<F> translate_level_2(Function<F> function, PDDLRepositories& repositories)
+    {
+        return repositories.get_or_create_function(this->translate_level_0(function->get_function_skeleton(), repositories),
+                                                   this->translate_level_0(function->get_terms(), repositories),
+                                                   function->get_parent_terms_to_terms_mapping());
+    }
+    template<StaticOrFluentOrAuxiliary F>
+    GroundFunction<F> translate_level_2(GroundFunction<F> function, PDDLRepositories& repositories)
+    {
+        return repositories.get_or_create_ground_function(this->translate_level_0(function->get_function_skeleton(), repositories),
+                                                          this->translate_level_0(function->get_objects(), repositories));
+    }
+    Action translate_level_2(Action action, PDDLRepositories& repositories)
+    {
+        return repositories.get_or_create_action(action->get_name(),
+                                                 action->get_original_arity(),
+                                                 this->translate_level_0(action->get_conjunctive_condition(), repositories),
+                                                 this->translate_level_0(action->get_conjunctive_effect(), repositories),
+                                                 this->translate_level_0(action->get_conditional_effects(), repositories));
+    }
+    Axiom translate_level_2(Axiom axiom, PDDLRepositories& repositories)
+    {
+        return repositories.get_or_create_axiom(this->translate_level_0(axiom->get_conjunctive_condition(), repositories),
+                                                this->translate_level_0(axiom->get_literal(), repositories));
+    }
+    OptimizationMetric translate_level_2(OptimizationMetric metric, PDDLRepositories& repositories)
+    {
+        return repositories.get_or_create_optimization_metric(metric->get_optimization_metric(),
+                                                              this->translate_level_0(metric->get_function_expression(), repositories));
+    }
+
+    auto translate_level_1(const Domain& domain, DomainBuilder& builder) { return self().translate_level_2(domain, builder); }
+
+    auto translate_level_2(const Domain& domain, DomainBuilder& builder)
+    {
+        // TODO
+    }
+
+    auto translate_level_1(const Problem& problem, ProblemBuilder& builder) { return self().translate_level_2(problem, builder); }
+
+    auto translate_level_2(const Problem& problem, ProblemBuilder& builder)
+    {
+        // TODO
+    }
+};
+}
+
+#endif

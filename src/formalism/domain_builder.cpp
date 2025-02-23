@@ -106,6 +106,11 @@ PredicateList<P>& DomainBuilder::get_predicates()
         static_assert(dependent_false<P>::value, "ToMimirStructures::translate_lifted: Missing implementation for Function type.");
     }
 }
+
+template PredicateList<Static>& DomainBuilder::get_predicates();
+template PredicateList<Fluent>& DomainBuilder::get_predicates();
+template PredicateList<Derived>& DomainBuilder::get_predicates();
+
 template<StaticOrFluentTag F>
 FunctionSkeletonList<F>& DomainBuilder::get_function_skeletons()
 {
@@ -122,6 +127,10 @@ FunctionSkeletonList<F>& DomainBuilder::get_function_skeletons()
         static_assert(dependent_false<F>::value, "ToMimirStructures::translate_lifted: Missing implementation for Function type.");
     }
 }
+
+template FunctionSkeletonList<Static>& DomainBuilder::get_function_skeletons();
+template FunctionSkeletonList<Fluent>& DomainBuilder::get_function_skeletons();
+
 std::optional<FunctionSkeleton<Auxiliary>>& DomainBuilder::get_auxiliary_function_skeleton() { return m_auxiliary_function_skeleton; }
 ActionList& DomainBuilder::get_actions() { return m_actions; }
 AxiomList& DomainBuilder::get_axioms() { return m_axioms; }

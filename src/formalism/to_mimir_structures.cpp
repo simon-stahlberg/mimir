@@ -295,6 +295,10 @@ Variable ToMimirStructures::translate_common(loki::Variable variable, PDDLReposi
 
 Object ToMimirStructures::translate_common(loki::Object object, PDDLRepositories& repositories)
 {
+    for (const auto& base : object->get_bases())
+    {
+        std::cout << *base << std::endl;
+    }
     assert(object->get_bases().empty());
     return repositories.get_or_create_object(object->get_name());
 }

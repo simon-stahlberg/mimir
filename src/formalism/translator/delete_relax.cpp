@@ -1,0 +1,171 @@
+/*
+ * Copyright (C) 2023 Dominik Drexler and Simon Stahlberg
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+#include "mimir/formalism/translator/delete_relax.hpp"
+
+#include "mimir/common/collections.hpp"
+
+namespace mimir
+{
+
+template<StaticOrFluentOrDerived P>
+static LiteralList<P> filter_positive_literals(const LiteralList<P>& literals)
+{
+    auto positive_literals = LiteralList<P> {};
+    for (const auto& literal : literals)
+    {
+        if (!literal->is_negated())
+        {
+            positive_literals.push_back(literal);
+        }
+    }
+    return positive_literals;
+}
+
+template<StaticOrFluentOrDerived P>
+LiteralList<P> DeleteRelaxTransformer::translate_level_2(const LiteralList<P>& literals, PDDLRepositories& repositories)
+{
+    auto positive_literals = LiteralList<P> {};
+    for (const auto& literal : literals)
+    {
+        const auto positive_literal = this->translate_level_0(literal, repositories);
+        if (positive_literal)
+        {
+            positive_literals.push_back(positive_literal);
+        }
+    }
+    return positive_literals;
+}
+
+template LiteralList<Static> DeleteRelaxTransformer::translate_level_2(const LiteralList<Static>& literals, PDDLRepositories& repositories);
+template LiteralList<Fluent> DeleteRelaxTransformer::translate_level_2(const LiteralList<Fluent>& literals, PDDLRepositories& repositories);
+template LiteralList<Derived> DeleteRelaxTransformer::translate_level_2(const LiteralList<Derived>& literals, PDDLRepositories& repositories);
+
+ConditionalEffectList DeleteRelaxTransformer::translate_level_2(const ConditionalEffectList& effects, PDDLRepositories& repositories)
+{
+    auto positive_conditional_effects = ConditionalEffectList {};
+    for (const auto& conditional_effect : effects)
+    {
+        positive_conditional_effects.push_back(this->translate_level_0(conditional_effect, repositories));
+    }
+    return uniquify_elements(positive_conditional_effects);
+}
+
+ActionList DeleteRelaxTransformer::translate_level_2(const ActionList& actions, PDDLRepositories& repositories)
+{
+    auto relaxed_actions = ActionList {};
+    for (const auto& action : actions)
+    {
+        relaxed_actions.push_back(this->translate_level_0(action, repositories));
+    }
+    return uniquify_elements(relaxed_actions);
+}
+
+AxiomList DeleteRelaxTransformer::translate_level_2(const AxiomList& axioms, PDDLRepositories& repositories)
+{
+    auto relaxed_axioms = AxiomList {};
+    for (const auto& axiom : axioms)
+    {
+        relaxed_axioms.push_back(this->translate_level_0(axiom, repositories));
+    }
+    return uniquify_elements(relaxed_axioms);
+}
+
+template<StaticOrFluentOrDerived P>
+Literal<P> DeleteRelaxTransformer::translate_level_2(Literal<P> literal, PDDLRepositories& repositories)
+{
+    if (literal->is_negated())
+    {
+        return nullptr;
+    }
+
+    const auto atom = this->translate_level_0(literal->get_atom(), repositories);
+
+    return repositories.get_or_create_literal(false, atom);
+}
+
+template Literal<Static> DeleteRelaxTransformer::translate_level_2(Literal<Static> literal, PDDLRepositories& repositories);
+template Literal<Fluent> DeleteRelaxTransformer::translate_level_2(Literal<Fluent> literal, PDDLRepositories& repositories);
+template Literal<Derived> DeleteRelaxTransformer::translate_level_2(Literal<Derived> literal, PDDLRepositories& repositories);
+
+ConjunctiveCondition DeleteRelaxTransformer::translate_level_2(ConjunctiveCondition condition, PDDLRepositories& repositories)
+{
+    auto parameters = this->translate_level_0(condition->get_parameters(), repositories);
+    auto static_literals = filter_positive_literals(this->translate_level_0(condition->get_literals<Static>(), repositories));
+    auto fluent_literals = filter_positive_literals(this->translate_level_0(condition->get_literals<Fluent>(), repositories));
+    auto derived_literals = filter_positive_literals(this->translate_level_0(condition->get_literals<Derived>(), repositories));
+    auto numeric_constraints = NumericConstraintList {};
+
+    return repositories.get_or_create_conjunctive_condition(std::move(parameters),
+                                                            std::move(static_literals),
+                                                            std::move(fluent_literals),
+                                                            std::move(derived_literals),
+                                                            std::move(numeric_constraints));
+}
+
+ConjunctiveEffect DeleteRelaxTransformer::translate_level_2(ConjunctiveEffect effect, PDDLRepositories& repositories)
+{
+    auto fluent_literals = filter_positive_literals(this->translate_level_0(effect->get_literals(), repositories));
+    auto fluent_numeric_effects = NumericEffectList<Fluent> {};
+    auto auxiliary_numeric_effect = std::optional<NumericEffect<Auxiliary>> { std::nullopt };
+
+    return repositories.get_or_create_conjunctive_effect(effect->get_parameters(),
+                                                         std::move(fluent_literals),
+                                                         std::move(fluent_numeric_effects),
+                                                         std::move(auxiliary_numeric_effect));
+}
+
+ConditionalEffect DeleteRelaxTransformer::translate_level_2(ConditionalEffect effect, PDDLRepositories& repositories)
+{
+    auto transformed_conjunctive_condition = this->translate_level_0(effect->get_conjunctive_condition(), repositories);
+    auto transformed_conjunctive_effect = this->translate_level_0(effect->get_conjunctive_effect(), repositories);
+
+    return repositories.get_or_create_conditional_effect(transformed_conjunctive_condition, transformed_conjunctive_effect);
+}
+
+Action DeleteRelaxTransformer::translate_level_2(Action action, PDDLRepositories& repositories)
+{
+    auto conjunctive_effect = this->translate_level_0(action->get_conjunctive_effect(), repositories);
+    auto conditional_effects = this->translate_level_0(action->get_conditional_effects(), repositories);
+
+    auto conjunctive_condition = this->translate_level_0(action->get_conjunctive_condition(), repositories);
+
+    auto delete_relaxed_action =
+        repositories.get_or_create_action(action->get_name(), action->get_original_arity(), conjunctive_condition, conjunctive_effect, conditional_effects);
+
+    m_delete_to_normal_actions[delete_relaxed_action].push_back(action);
+
+    return delete_relaxed_action;
+}
+
+Axiom DeleteRelaxTransformer::translate_level_2(Axiom axiom, PDDLRepositories& repositories)
+{
+    auto conjunctive_condition = this->translate_level_0(axiom->get_conjunctive_condition(), repositories);
+    const auto literal = this->translate_level_0(axiom->get_literal(), repositories);
+
+    auto delete_relaxed_axiom = repositories.get_or_create_axiom(conjunctive_condition, literal);
+
+    m_delete_to_normal_axioms[delete_relaxed_axiom].push_back(axiom);
+
+    return delete_relaxed_axiom;
+}
+
+const ActionList& DeleteRelaxTransformer::get_unrelaxed_actions(Action action) const { return m_delete_to_normal_actions.at(action); }
+
+const AxiomList& DeleteRelaxTransformer::get_unrelaxed_axioms(Axiom axiom) const { return m_delete_to_normal_axioms.at(axiom); }
+
+}

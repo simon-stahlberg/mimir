@@ -168,6 +168,7 @@ private:
     translate_grounded(loki::Condition condition, PDDLRepositories& repositories);
     OptimizationMetric translate_grounded(loki::OptimizationMetric optimization_metric, PDDLRepositories& repositories);
 
+public:
     Domain translate(const loki::Domain& domain, DomainBuilder& builder);
 
     Problem translate(const loki::Problem& problem, ProblemBuilder& builder);
