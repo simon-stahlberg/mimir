@@ -50,7 +50,9 @@ private:
     std::string m_name;
     Requirements m_requirements;
     ObjectList m_objects;
+    ObjectList m_problem_and_domain_objects;  ///< Includes domain constants
     PredicateList<Derived> m_derived_predicates;
+    PredicateList<Derived> m_problem_and_domain_derived_predicates;  ///< Includes domain derived predicates
     GroundLiteralList<Static> m_static_initial_literals;
     GroundLiteralList<Fluent> m_fluent_initial_literals;
     GroundFunctionValueList<Static> m_static_function_values;
@@ -62,6 +64,7 @@ private:
     GroundNumericConstraintList m_numeric_goal_condition;
     OptimizationMetric m_optimization_metric;
     AxiomList m_axioms;
+    AxiomList m_problem_and_domain_axioms;  ///< Includes domain axioms
 
     /* Grounding */
 
@@ -136,7 +139,9 @@ private:
                 std::string name,
                 Requirements requirements,
                 ObjectList objects,
+                ObjectList problem_and_domain_objects,
                 PredicateList<Derived> derived_predicates,
+                PredicateList<Derived> problem_and_domain_derived_predicates,
                 GroundLiteralList<Static> static_initial_literals,
                 GroundLiteralList<Fluent> fluent_initial_literals,
                 GroundFunctionValueList<Static> static_function_values,
@@ -147,7 +152,8 @@ private:
                 GroundLiteralList<Derived> derived_goal_condition,
                 GroundNumericConstraintList numeric_goal_condition,
                 OptimizationMetric optimization_metric,
-                AxiomList axioms);
+                AxiomList axioms,
+                AxiomList problem_and_domain_axioms);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -167,7 +173,9 @@ public:
     const std::string& get_name() const;
     const Requirements& get_requirements() const;
     const ObjectList& get_objects() const;
+    const ObjectList& get_problem_and_domain_objects() const;
     const PredicateList<Derived>& get_derived_predicates() const;
+    const PredicateList<Derived>& get_problem_and_domain_derived_predicates() const;
     const GroundLiteralList<Static>& get_static_initial_literals() const;
     const GroundLiteralList<Fluent>& get_fluent_initial_literals() const;
     template<StaticOrFluentTag F>
@@ -178,6 +186,7 @@ public:
     const GroundNumericConstraintList& get_numeric_goal_condition() const;
     const OptimizationMetric& get_optimization_metric() const;
     const AxiomList& get_axioms() const;
+    const AxiomList& get_problem_and_domain_axioms() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.

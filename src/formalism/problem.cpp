@@ -51,7 +51,9 @@ ProblemImpl::ProblemImpl(Index index,
                          std::string name,
                          Requirements requirements,
                          ObjectList objects,
+                         ObjectList problem_and_domain_objects,
                          PredicateList<Derived> derived_predicates,
+                         PredicateList<Derived> problem_and_domain_derived_predicates,
                          GroundLiteralList<Static> static_initial_literals,
                          GroundLiteralList<Fluent> fluent_initial_literals,
                          GroundFunctionValueList<Static> static_function_values,
@@ -62,7 +64,8 @@ ProblemImpl::ProblemImpl(Index index,
                          GroundLiteralList<Derived> derived_goal_condition,
                          GroundNumericConstraintList numeric_goal_condition,
                          OptimizationMetric optimization_metric,
-                         AxiomList axioms) :
+                         AxiomList axioms,
+                         AxiomList problem_and_domain_axioms) :
     m_index(index),
     m_repositories(std::move(repositories)),
     m_filepath(std::move(filepath)),
@@ -70,7 +73,9 @@ ProblemImpl::ProblemImpl(Index index,
     m_name(std::move(name)),
     m_requirements(std::move(requirements)),
     m_objects(std::move(objects)),
+    m_problem_and_domain_objects(std::move(problem_and_domain_objects)),
     m_derived_predicates(std::move(derived_predicates)),
+    m_problem_and_domain_derived_predicates(std::move(problem_and_domain_derived_predicates)),
     m_static_initial_literals(std::move(static_initial_literals)),
     m_fluent_initial_literals(std::move(fluent_initial_literals)),
     m_static_function_values(std::move(static_function_values)),
@@ -82,7 +87,7 @@ ProblemImpl::ProblemImpl(Index index,
     m_numeric_goal_condition(std::move(numeric_goal_condition)),
     m_optimization_metric(std::move(optimization_metric)),
     m_axioms(std::move(axioms)),
-    m_problem_and_domain_derived_predicates(),
+    m_problem_and_domain_axioms(std::move(problem_and_domain_axioms)),
     m_positive_static_initial_atoms(to_ground_atoms(m_static_initial_literals)),
     m_positive_static_initial_atoms_bitset(),
     m_positive_static_initial_atoms_indices(),
@@ -110,7 +115,6 @@ ProblemImpl::ProblemImpl(Index index,
     m_negative_static_goal_atoms_indices(),
     m_negative_fluent_goal_atoms_indices(),
     m_negative_derived_goal_atoms_indices(),
-    m_problem_and_domain_axioms(),
     m_problem_and_domain_axiom_partitioning()
 {
     assert(is_all_unique(m_objects));
@@ -150,14 +154,6 @@ ProblemImpl::ProblemImpl(Index index,
                           m_numeric_goal_condition.end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(std::is_sorted(m_axioms.begin(), m_axioms.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-
-    /* Additional */
-
-    m_problem_and_domain_derived_predicates = m_domain->get_predicates<Derived>();
-    m_problem_and_domain_derived_predicates.insert(m_problem_and_domain_derived_predicates.end(),
-                                                   get_derived_predicates().begin(),
-                                                   get_derived_predicates().end());
-    assert(is_all_unique(m_problem_and_domain_derived_predicates));
 
     /* Initial state */
 
@@ -269,10 +265,6 @@ ProblemImpl::ProblemImpl(Index index,
 
     /* Axioms */
 
-    m_problem_and_domain_axioms = m_domain->get_axioms();
-    m_problem_and_domain_axioms.insert(m_problem_and_domain_axioms.end(), m_axioms.begin(), m_axioms.end());
-    assert(is_all_unique(m_problem_and_domain_axioms));
-
     m_problem_and_domain_axiom_partitioning = compute_axiom_partitioning(m_problem_and_domain_axioms, m_problem_and_domain_derived_predicates);
 
     /**
@@ -318,7 +310,11 @@ const Requirements& ProblemImpl::get_requirements() const { return m_requirement
 
 const ObjectList& ProblemImpl::get_objects() const { return m_objects; }
 
+const ObjectList& ProblemImpl::get_problem_and_domain_objects() const { return m_problem_and_domain_objects; }
+
 const PredicateList<Derived>& ProblemImpl::get_derived_predicates() const { return m_derived_predicates; }
+
+const PredicateList<Derived>& ProblemImpl::get_problem_and_domain_derived_predicates() const { return m_problem_and_domain_derived_predicates; }
 
 const GroundLiteralList<Static>& ProblemImpl::get_static_initial_literals() const { return m_static_initial_literals; }
 
@@ -377,12 +373,11 @@ const OptimizationMetric& ProblemImpl::get_optimization_metric() const { return 
 
 const AxiomList& ProblemImpl::get_axioms() const { return m_axioms; }
 
+const AxiomList& ProblemImpl::get_problem_and_domain_axioms() const { return m_problem_and_domain_axioms; }
+
 /**
  * Additional members
  */
-
-/* Predicates */
-const PredicateList<Derived>& ProblemImpl::get_problem_and_domain_derived_predicates() const { return m_problem_and_domain_derived_predicates; }
 
 /* Initial state */
 
@@ -595,7 +590,6 @@ template const FlatIndexList& ProblemImpl::get_negative_goal_atoms_indices<Fluen
 template const FlatIndexList& ProblemImpl::get_negative_goal_atoms_indices<Derived>() const;
 
 /* Axioms */
-const AxiomList& ProblemImpl::get_problem_and_domain_axioms() const { return m_problem_and_domain_axioms; }
 
 const std::vector<AxiomPartition>& ProblemImpl::get_problem_and_domain_axiom_partitioning() const { return m_problem_and_domain_axiom_partitioning; }
 

@@ -74,7 +74,7 @@ public:
 
     PDDLRepositories& get_repositories();
     std::optional<fs::path>& get_filepath();
-    Domain& get_domain();
+    const Domain& get_domain() const;  ///< Modifying domain is prohibitted!
     std::string& get_name();
     Requirements& get_requirements();
     ObjectList& get_objects();

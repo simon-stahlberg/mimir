@@ -49,8 +49,6 @@ using StaticOrFluentOrAuxiliaryGroundFunctionExpressionFunction =
 class ToMimirStructures
 {
 private:
-    PDDLRepositories& m_pddl_repositories;
-
     /* Computed in prepare step */
 
     // For type analysis of predicates.
@@ -173,9 +171,6 @@ private:
     Domain translate(const loki::Domain& domain, DomainBuilder& builder);
 
     Problem translate(const loki::Problem& problem, ProblemBuilder& builder);
-
-public:
-    ToMimirStructures() = default;
 };
 
 }
