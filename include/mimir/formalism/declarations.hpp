@@ -74,7 +74,7 @@ using GroundAxiomList = std::vector<GroundAxiom>;
 using GroundAxiomSet = std::unordered_set<GroundAxiom>;
 
 class DomainImpl;
-using Domain = const DomainImpl*;
+using Domain = std::shared_ptr<const DomainImpl>;
 using DomainList = std::vector<Domain>;
 
 template<FluentOrAuxiliary F>
@@ -220,7 +220,7 @@ template<typename Key, StaticOrFluentOrDerived P, typename Hash = loki::Hash<Key
 using ToPredicateMap = std::unordered_map<Key, Predicate<P>, Hash, KeyEqual>;
 
 class ProblemImpl;
-using Problem = const ProblemImpl*;
+using Problem = std::shared_ptr<ProblemImpl>;
 using ProblemList = std::vector<Problem>;
 
 class RequirementsImpl;

@@ -19,22 +19,15 @@
 #define MIMIR_FORMALISM_DOMAIN_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/repositories.hpp"
 
 namespace mimir
 {
-/*
-Regarding the issue of sharing a domain across different problems:
 
-After a little bit of extra thinking I am coming to the conclusion that all translators in the formalism component need to be rewritten to accept a set of
-problems to ensure that the indexing schemas are synchronized after each step. Furthermore, problem-specific substitutions must be prohibitted. Furthermore2,
-the SegmentedRepository is currently not powerful enough to combine domain constants and problem specific objects into indexing schemas. Same with predicates,
-which might occur when translating complicated goals into derived predicates + axioms. It is not something that can be implemented quickly and requires a decent
-understanding of the whole translation process and the overall internals of the library.
-*/
 class DomainImpl
 {
 private:
-    Index m_index;
+    PDDLRepositories m_repositories;
     std::optional<fs::path> m_filepath;
     std::string m_name;
     Requirements m_requirements;
@@ -54,7 +47,7 @@ private:
     ToPredicateMap<std::string, Fluent> m_name_to_fluent_predicate;
     ToPredicateMap<std::string, Derived> m_name_to_derived_predicate;
 
-    DomainImpl(Index index,
+    DomainImpl(PDDLRepositories repositories,
                std::optional<fs::path> filepath,
                std::string name,
                Requirements requirements,
@@ -79,7 +72,7 @@ public:
     DomainImpl(DomainImpl&& other) = default;
     DomainImpl& operator=(DomainImpl&& other) = default;
 
-    Index get_index() const;
+    const PDDLRepositories& get_repositories() const;
     const std::optional<fs::path>& get_filepath() const;
     const std::string& get_name() const;
     const Requirements& get_requirements() const;

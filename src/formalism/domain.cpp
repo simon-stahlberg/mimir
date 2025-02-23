@@ -36,7 +36,7 @@ using namespace std;
 
 namespace mimir
 {
-DomainImpl::DomainImpl(Index index,
+DomainImpl::DomainImpl(PDDLRepositories repositories,
                        std::optional<fs::path> filepath,
                        std::string name,
                        Requirements requirements,
@@ -49,7 +49,7 @@ DomainImpl::DomainImpl(Index index,
                        std::optional<FunctionSkeleton<Auxiliary>> auxiliary_function,
                        ActionList actions,
                        AxiomList axioms) :
-    m_index(index),
+    m_repositories(std::move(repositories)),
     m_filepath(std::move(filepath)),
     m_name(std::move(name)),
     m_requirements(std::move(requirements)),
@@ -105,7 +105,7 @@ DomainImpl::DomainImpl(Index index,
     }
 }
 
-Index DomainImpl::get_index() const { return m_index; }
+const PDDLRepositories& DomainImpl::get_repositories() const { return m_repositories; }
 
 const std::optional<fs::path>& DomainImpl::get_filepath() const { return m_filepath; }
 

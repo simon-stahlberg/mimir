@@ -22,6 +22,7 @@
 #include "mimir/formalism/assignment_set.hpp"
 #include "mimir/formalism/axiom_stratification.hpp"
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/repositories.hpp"
 
 namespace mimir
 {
@@ -29,6 +30,7 @@ class ProblemImpl
 {
 private:
     Index m_index;
+    PDDLRepositories m_repositories;
     std::optional<fs::path> m_filepath;
     Domain m_domain;
     std::string m_name;
@@ -92,6 +94,7 @@ private:
     std::vector<AxiomPartition> m_problem_and_domain_axiom_partitioning;  ///< Obtained from stratification
 
     ProblemImpl(Index index,
+                PDDLRepositories repositories,
                 std::optional<fs::path> filepath,
                 Domain domain,
                 std::string name,
@@ -122,6 +125,7 @@ public:
     ProblemImpl& operator=(ProblemImpl&& other) = default;
 
     Index get_index() const;
+    const PDDLRepositories& repositories() const;
     const std::optional<fs::path>& get_filepath() const;
     const Domain& get_domain() const;
     const std::string& get_name() const;

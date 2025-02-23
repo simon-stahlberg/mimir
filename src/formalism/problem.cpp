@@ -44,6 +44,7 @@ using namespace std;
 namespace mimir
 {
 ProblemImpl::ProblemImpl(Index index,
+                         PDDLRepositories repositories,
                          std::optional<fs::path> filepath,
                          Domain domain,
                          std::string name,
@@ -62,6 +63,7 @@ ProblemImpl::ProblemImpl(Index index,
                          OptimizationMetric optimization_metric,
                          AxiomList axioms) :
     m_index(index),
+    m_repositories(std::move(repositories)),
     m_filepath(std::move(filepath)),
     m_domain(std::move(domain)),
     m_name(std::move(name)),
@@ -302,6 +304,8 @@ ProblemImpl::ProblemImpl(Index index,
 }
 
 Index ProblemImpl::get_index() const { return m_index; }
+
+const PDDLRepositories& ProblemImpl::repositories() const { return m_repositories; }
 
 const std::optional<fs::path>& ProblemImpl::get_filepath() const { return m_filepath; }
 

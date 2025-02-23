@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Dominik Drexler and Simon Stahlberg
+ * Copyright (C) 2023 Dominik Drexler
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,29 +15,31 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_FORMALISM_PARSER_HPP_
-#define MIMIR_FORMALISM_PARSER_HPP_
+#ifndef MIMIR_FORMALISM_TRANSLATOR_HPP_
+#define MIMIR_FORMALISM_TRANSLATOR_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-
-#include <loki/loki.hpp>
 
 namespace mimir
 {
 
-class PDDLParser
+class DomainTranslationResult
 {
-public:
-    PDDLParser(const fs::path& domain_filepath, const loki::Options& options = loki::Options());
-
-    Problem parse_problem(const fs::path& problem_filepath, const loki::Options& options = loki::Options());
-
-    const Domain& get_domain() const;
-
 private:
-    Domain m_domain;              ///< The parsed domain.
-    size_t m_next_problem_index;  ///< The index for the next problem.
+    Domain original_domain;  ///< used to check that a problem can be translated with this result.
+
+    Domain translated_domain;
+
+public:
+    DomainTranslationResult(Domain original_domain, Domain translated_domain);
+
+    const Domain& get_original_domain() const;
+    const Domain& get_translated_domain() const;
 };
+
+extern DomainTranslationResult translate(const Domain& domain);
+
+extern Problem translate(const Problem& problem, const DomainTranslationResult& result);
 
 }
 

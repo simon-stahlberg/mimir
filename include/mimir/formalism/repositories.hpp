@@ -167,9 +167,7 @@ using PDDLTypeToRepository = boost::hana::map<
     boost::hana::pair<boost::hana::type<ConjunctiveConditionImpl>, ConjunctiveConditionRepository>,
     boost::hana::pair<boost::hana::type<ActionImpl>, ActionRepository>,
     boost::hana::pair<boost::hana::type<AxiomImpl>, AxiomRepository>,
-    boost::hana::pair<boost::hana::type<OptimizationMetricImpl>, OptimizationMetricRepository>,
-    boost::hana::pair<boost::hana::type<DomainImpl>, DomainRepository>,
-    boost::hana::pair<boost::hana::type<ProblemImpl>, ProblemRepository>>;
+    boost::hana::pair<boost::hana::type<OptimizationMetricImpl>, OptimizationMetricRepository>>;
 
 // A table for each pair (is_negated,predicate_index) since those are context independent.
 template<typename T>
