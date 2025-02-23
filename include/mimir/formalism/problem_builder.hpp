@@ -34,7 +34,6 @@ private:
 
     Domain m_domain;  ///< Immutable planning domain
     std::optional<fs::path> m_filepath;
-    Domain m_domain;
     std::string m_name;
     Requirements m_requirements;
     ObjectList m_objects;
@@ -73,7 +72,7 @@ public:
      * Get and modify components of the problem.
      */
 
-    PDDLRepositories& repositories();
+    PDDLRepositories& get_repositories();
     std::optional<fs::path>& get_filepath();
     Domain& get_domain();
     std::string& get_name();

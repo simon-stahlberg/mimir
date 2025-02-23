@@ -22,7 +22,6 @@
 #include "mimir/formalism/atom.hpp"
 #include "mimir/formalism/axiom.hpp"
 #include "mimir/formalism/conjunctive_condition.hpp"
-#include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/effects.hpp"
 #include "mimir/formalism/function.hpp"
 #include "mimir/formalism/function_expressions.hpp"
@@ -36,13 +35,11 @@
 #include "mimir/formalism/ground_function_value.hpp"
 #include "mimir/formalism/ground_literal.hpp"
 #include "mimir/formalism/ground_numeric_constraint.hpp"
-#include "mimir/formalism/grounding_table.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/metric.hpp"
 #include "mimir/formalism/numeric_constraint.hpp"
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/predicate.hpp"
-#include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/requirements.hpp"
 #include "mimir/formalism/term.hpp"
 #include "mimir/formalism/variable.hpp"
@@ -105,10 +102,8 @@ using ConjunctiveConditionRepository = SegmentedPDDLRepository<ConjunctiveCondit
 using ActionRepository = SegmentedPDDLRepository<ActionImpl>;
 using AxiomRepository = SegmentedPDDLRepository<AxiomImpl>;
 using OptimizationMetricRepository = SegmentedPDDLRepository<OptimizationMetricImpl>;
-using DomainRepository = SegmentedPDDLRepository<DomainImpl>;
-using ProblemRepository = SegmentedPDDLRepository<ProblemImpl>;
 
-using PDDLTypeToRepository = boost::hana::map<
+using HanaPDDLRepositories = boost::hana::map<
     boost::hana::pair<boost::hana::type<RequirementsImpl>, RequirementsRepository>,
     boost::hana::pair<boost::hana::type<VariableImpl>, VariableRepository>,
     boost::hana::pair<boost::hana::type<TermImpl>, TermRepository>,
@@ -169,53 +164,23 @@ using PDDLTypeToRepository = boost::hana::map<
     boost::hana::pair<boost::hana::type<AxiomImpl>, AxiomRepository>,
     boost::hana::pair<boost::hana::type<OptimizationMetricImpl>, OptimizationMetricRepository>>;
 
-// A table for each pair (is_negated,predicate_index) since those are context independent.
-template<typename T>
-using LiteralGroundingTableList = std::array<std::vector<GroundingTable<T>>, 2>;
-
-using PDDLTypeToGroundingTable =
-    boost::hana::map<boost::hana::pair<boost::hana::type<GroundLiteral<Static>>, LiteralGroundingTableList<GroundLiteral<Static>>>,
-                     boost::hana::pair<boost::hana::type<GroundLiteral<Fluent>>, LiteralGroundingTableList<GroundLiteral<Fluent>>>,
-                     boost::hana::pair<boost::hana::type<GroundLiteral<Derived>>, LiteralGroundingTableList<GroundLiteral<Derived>>>,
-                     boost::hana::pair<boost::hana::type<GroundFunction<Static>>, GroundingTableList<GroundFunction<Static>>>,
-                     boost::hana::pair<boost::hana::type<GroundFunction<Fluent>>, GroundingTableList<GroundFunction<Fluent>>>,
-                     boost::hana::pair<boost::hana::type<GroundFunction<Auxiliary>>, GroundingTableList<GroundFunction<Auxiliary>>>,
-                     boost::hana::pair<boost::hana::type<GroundFunctionExpression>, GroundingTableList<GroundFunctionExpression>>>;
-
 /// @brief Collection of factories for the unique creation of PDDL objects.
 class PDDLRepositories
 {
 private:
-    PDDLTypeToRepository m_repositories;
-
-    PDDLTypeToGroundingTable m_grounding_tables;
-
-    /* For ground actions and axioms we also create a reusable builder. */
-
-    GroundActionImplSet m_actions;
-    GroundActionList m_actions_by_index;
-
-    using PerActionData = std::tuple<GroundActionImpl,               ///< Builder
-                                     GroundingTable<GroundAction>>;  ///< Cache
-
-    std::unordered_map<Action, PerActionData> m_per_action_datas;
-
-    GroundAxiomImplSet m_axioms;
-    GroundAxiomList m_axioms_by_index;
-
-    using PerAxiomData = std::tuple<GroundAxiomImpl,               ///< Builder
-                                    GroundingTable<GroundAxiom>>;  ///< Cache
-
-    std::unordered_map<Axiom, PerAxiomData> m_per_axiom_data;
+    HanaPDDLRepositories m_repositories;
 
 public:
-    PDDLRepositories();
+    PDDLRepositories() = default;
 
     // delete copy and allow move
     PDDLRepositories(const PDDLRepositories& other) = delete;
     PDDLRepositories& operator=(const PDDLRepositories& other) = delete;
-    PDDLRepositories(PDDLRepositories&& other);
-    PDDLRepositories& operator=(PDDLRepositories&& other);
+    PDDLRepositories(PDDLRepositories&& other) = default;
+    PDDLRepositories& operator=(PDDLRepositories&& other) = default;
+
+    HanaPDDLRepositories& get_hana_repositories();
+    const HanaPDDLRepositories& get_hana_repositories() const;
 
     /// @brief Get or create requriements for the given parameters.
     Requirements get_or_create_requirements(loki::RequirementEnumSet requirement_set);
@@ -363,102 +328,7 @@ public:
     template<StaticOrFluentOrAuxiliary F>
     GroundFunctionValue<F> get_or_create_ground_function_value(GroundFunction<F> function, double number);
 
-    /// @brief Get or create a domain for the given parameters.
-    Domain get_or_create_domain(std::optional<fs::path> filepath,
-                                std::string name,
-                                Requirements requirements,
-                                ObjectList constants,
-                                PredicateList<Static> static_predicates,
-                                PredicateList<Fluent> fluent_predicates,
-                                PredicateList<Derived> derived_predicates,
-                                FunctionSkeletonList<Static> static_functions,
-                                FunctionSkeletonList<Fluent> fluent_functions,
-                                std::optional<FunctionSkeleton<Auxiliary>> auxiliary_function,
-                                ActionList actions,
-                                AxiomList axioms);
-
-    /// @brief Get or create a problem for the given parameters.
-    Problem get_or_create_problem(std::optional<fs::path> filepath,
-                                  Domain domain,
-                                  std::string name,
-                                  Requirements requirements,
-                                  ObjectList objects,
-                                  PredicateList<Derived> derived_predicates,
-                                  GroundLiteralList<Static> static_initial_literals,
-                                  GroundLiteralList<Fluent> fluent_initial_literals,
-                                  GroundFunctionValueList<Static> static_function_values,
-                                  GroundFunctionValueList<Fluent> fluent_function_values,
-                                  std::optional<GroundFunctionValue<Auxiliary>> auxiliary_function_value,
-                                  GroundLiteralList<Static> static_goal_condition,
-                                  GroundLiteralList<Fluent> fluent_goal_condition,
-                                  GroundLiteralList<Derived> derived_goal_condition,
-                                  GroundNumericConstraintList numeric_goal_condition,
-                                  OptimizationMetric optimization_metric,
-                                  AxiomList axioms);
-
-    /* Grounding */
-
-    template<StaticOrFluentOrDerived P>
-    GroundLiteral<P> ground(Literal<P> literal, const ObjectList& binding);
-
-    template<StaticOrFluentOrDerived P>
-    void ground_and_fill_bitset(const std::vector<Literal<P>>& literals,
-                                FlatBitset& ref_positive_bitset,
-                                FlatBitset& ref_negative_bitset,
-                                const ObjectList& binding);
-
-    template<StaticOrFluentOrDerived P>
-    void ground_and_fill_vector(const std::vector<Literal<P>>& literals,
-                                FlatIndexList& ref_positive_indices,
-                                FlatIndexList& ref_negative_indices,
-                                const ObjectList& binding);
-
-    GroundFunctionExpression ground(FunctionExpression fexpr, Problem problem, const ObjectList& binding);
-
-    GroundNumericConstraint ground(NumericConstraint numeric_constraint, Problem problem, const ObjectList& binding);
-
-    template<FluentOrAuxiliary F>
-    GroundNumericEffect<F> ground(NumericEffect<F> numeric_effect, Problem problem, const ObjectList& binding);
-
-    template<StaticOrFluentOrAuxiliary F>
-    GroundFunction<F> ground(Function<F> function, const ObjectList& binding);
-
-    void ground_and_fill_vector(const NumericConstraintList& numeric_constraints,
-                                Problem problem,
-                                const ObjectList& binding,
-                                FlatExternalPtrList<const GroundNumericConstraintImpl>& ref_numeric_constraints);
-
-    void ground_and_fill_vector(const NumericEffectList<Fluent>& numeric_effects,
-                                Problem problem,
-                                const ObjectList& binding,
-                                GroundNumericEffectList<Fluent>& ref_numeric_effects);
-
-    void ground_and_fill_optional(const std::optional<NumericEffect<Auxiliary>>& numeric_effect,
-                                  Problem problem,
-                                  const ObjectList& binding,
-                                  cista::optional<FlatExternalPtr<const GroundNumericEffectImpl<Auxiliary>>>& ref_numeric_effect);
-
-    GroundAction ground(Action action,
-                        Problem problem,
-                        ObjectList binding,
-                        const std::vector<std::vector<IndexList>>& candidate_conditional_effect_objects_by_parameter_index);
-
-    const GroundActionList& get_ground_actions() const;
-    GroundAction get_ground_action(Index action_index) const;
-    size_t get_num_ground_actions() const;
-    size_t get_estimated_memory_usage_in_bytes_for_actions() const;
-
-    GroundAxiom ground(Axiom axiom, Problem problem, ObjectList binding);
-
-    const GroundAxiomList& get_ground_axioms() const;
-    GroundAxiom get_ground_axiom(Index axiom_index) const;
-    size_t get_num_ground_axioms() const;
-    size_t get_estimated_memory_usage_in_bytes_for_axioms() const;
-
     /* Accessors */
-
-    // Factory
-    const PDDLTypeToRepository& get_pddl_type_to_factory() const;
 
     // GroundNumericConstraint
     GroundNumericConstraint get_ground_numeric_constraint(size_t numeric_constraint_index) const;

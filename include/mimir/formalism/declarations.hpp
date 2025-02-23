@@ -76,6 +76,7 @@ using GroundAxiomSet = std::unordered_set<GroundAxiom>;
 class DomainImpl;
 using Domain = std::shared_ptr<const DomainImpl>;
 using DomainList = std::vector<Domain>;
+class DomainBuilder;
 
 template<FluentOrAuxiliary F>
 class NumericEffectImpl;
@@ -222,6 +223,7 @@ using ToPredicateMap = std::unordered_map<Key, Predicate<P>, Hash, KeyEqual>;
 class ProblemImpl;
 using Problem = std::shared_ptr<ProblemImpl>;
 using ProblemList = std::vector<Problem>;
+class ProblemBuilder;
 
 class RequirementsImpl;
 using Requirements = const RequirementsImpl*;
