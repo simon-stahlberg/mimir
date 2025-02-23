@@ -161,6 +161,8 @@ public:
     ProblemImpl(ProblemImpl&& other) = default;
     ProblemImpl& operator=(ProblemImpl&& other) = default;
 
+    static Problem create(const fs::path& domain_filepath, const fs::path& problem_filepath, const loki::Options& options = loki::Options());
+
     Index get_index() const;
     const PDDLRepositories& repositories() const;
     const std::optional<fs::path>& get_filepath() const;
