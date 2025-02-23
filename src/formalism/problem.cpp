@@ -328,7 +328,7 @@ const PredicateList<Derived>& ProblemImpl::get_derived_predicates() const { retu
 
 const PredicateList<Derived>& ProblemImpl::get_problem_and_domain_derived_predicates() const { return m_problem_and_domain_derived_predicates; }
 
-template<StaticOrFluentTag P>
+template<StaticOrFluent P>
 const GroundLiteralList<P>& ProblemImpl::get_initial_literals() const
 {
     if constexpr (std::is_same_v<P, Static>)
@@ -348,7 +348,7 @@ const GroundLiteralList<P>& ProblemImpl::get_initial_literals() const
 template const GroundLiteralList<Static>& ProblemImpl::get_initial_literals() const;
 template const GroundLiteralList<Fluent>& ProblemImpl::get_initial_literals() const;
 
-template<StaticOrFluentTag F>
+template<StaticOrFluent F>
 const GroundFunctionValueList<F>& ProblemImpl::get_initial_function_values() const
 {
     if constexpr (std::is_same_v<F, Static>)
@@ -425,7 +425,7 @@ const NumericAssignmentSet<Static>& ProblemImpl::get_static_initial_numeric_assi
 
 const GroundAtomList<Fluent>& ProblemImpl::get_fluent_initial_atoms() const { return m_positive_fluent_initial_atoms; }
 
-template<StaticOrFluentTag F>
+template<StaticOrFluent F>
 const FlatDoubleList& ProblemImpl::get_function_to_value() const
 {
     if constexpr (std::is_same_v<F, Static>)
@@ -445,7 +445,7 @@ const FlatDoubleList& ProblemImpl::get_function_to_value() const
 template const FlatDoubleList& ProblemImpl::get_function_to_value<Static>() const;
 template const FlatDoubleList& ProblemImpl::get_function_to_value<Fluent>() const;
 
-template<StaticOrFluentTag F>
+template<StaticOrFluent F>
 ContinuousCost ProblemImpl::get_function_value(GroundFunction<F> function) const
 {
     const auto& function_to_value = get_function_to_value<F>();
@@ -815,7 +815,7 @@ template GroundFunction<Auxiliary> ProblemImpl::ground(Function<Auxiliary> funct
 
 // FunctionExpression
 
-GroundFunctionExpression ProblemImpl::ground(FunctionExpression fexpr, Problem problem, const ObjectList& binding)
+GroundFunctionExpression ProblemImpl::ground(FunctionExpression fexpr, const ObjectList& binding)
 {
     /* 1. Access the type specific grounding tables. */
     auto& grounding_tables = boost::hana::at_key(m_grounding_tables, boost::hana::type<GroundFunctionExpression> {});
@@ -852,8 +852,8 @@ GroundFunctionExpression ProblemImpl::ground(FunctionExpression fexpr, Problem p
             else if constexpr (std::is_same_v<T, FunctionExpressionBinaryOperator>)
             {
                 const auto op = arg->get_binary_operator();
-                const auto ground_lhs = ground(arg->get_left_function_expression(), problem, binding);
-                const auto ground_rhs = ground(arg->get_right_function_expression(), problem, binding);
+                const auto ground_lhs = ground(arg->get_left_function_expression(), binding);
+                const auto ground_rhs = ground(arg->get_right_function_expression(), binding);
 
                 if (std::holds_alternative<GroundFunctionExpressionNumber>(ground_lhs->get_variant())
                     && std::holds_alternative<GroundFunctionExpressionNumber>(ground_rhs->get_variant()))
@@ -874,7 +874,7 @@ GroundFunctionExpression ProblemImpl::ground(FunctionExpression fexpr, Problem p
                 auto fexpr_others = GroundFunctionExpressionList {};
                 for (const auto& child_fexpr : arg->get_function_expressions())
                 {
-                    const auto ground_child_fexpr = ground(child_fexpr, problem, binding);
+                    const auto ground_child_fexpr = ground(child_fexpr, binding);
                     std::holds_alternative<GroundFunctionExpressionNumber>(ground_child_fexpr->get_variant()) ? fexpr_numbers.push_back(ground_child_fexpr) :
                                                                                                                 fexpr_others.push_back(ground_child_fexpr);
                 }
@@ -898,7 +898,7 @@ GroundFunctionExpression ProblemImpl::ground(FunctionExpression fexpr, Problem p
             }
             else if constexpr (std::is_same_v<T, FunctionExpressionMinus>)
             {
-                const auto ground_fexpr = ground(arg->get_function_expression(), problem, binding);
+                const auto ground_fexpr = ground(arg->get_function_expression(), binding);
 
                 return std::holds_alternative<GroundFunctionExpressionNumber>(ground_fexpr->get_variant()) ?
                            m_repositories.get_or_create_ground_function_expression(m_repositories.get_or_create_ground_function_expression_number(
@@ -908,7 +908,7 @@ GroundFunctionExpression ProblemImpl::ground(FunctionExpression fexpr, Problem p
             else if constexpr (std::is_same_v<T, FunctionExpressionFunction<Static>>)
             {
                 return m_repositories.get_or_create_ground_function_expression(
-                    m_repositories.get_or_create_ground_function_expression_number(problem->get_function_value<Static>(ground(arg->get_function(), binding))));
+                    m_repositories.get_or_create_ground_function_expression_number(get_function_value<Static>(ground(arg->get_function(), binding))));
             }
             else if constexpr (std::is_same_v<T, FunctionExpressionFunction<Fluent>>)
             {
@@ -933,65 +933,60 @@ GroundFunctionExpression ProblemImpl::ground(FunctionExpression fexpr, Problem p
 }
 
 // NumericConstraint
-GroundNumericConstraint ProblemImpl::ground(NumericConstraint numeric_constraint, Problem problem, const ObjectList& binding)
+GroundNumericConstraint ProblemImpl::ground(NumericConstraint numeric_constraint, const ObjectList& binding)
 {
     return m_repositories.get_or_create_ground_numeric_constraint(numeric_constraint->get_binary_comparator(),
-                                                                  ground(numeric_constraint->get_left_function_expression(), problem, binding),
-                                                                  ground(numeric_constraint->get_right_function_expression(), problem, binding));
+                                                                  ground(numeric_constraint->get_left_function_expression(), binding),
+                                                                  ground(numeric_constraint->get_right_function_expression(), binding));
 }
 
 // NumericEffect
 template<FluentOrAuxiliary F>
-GroundNumericEffect<F> ProblemImpl::ground(NumericEffect<F> numeric_effect, Problem problem, const ObjectList& binding)
+GroundNumericEffect<F> ProblemImpl::ground(NumericEffect<F> numeric_effect, const ObjectList& binding)
 {
     return m_repositories.get_or_create_ground_numeric_effect(numeric_effect->get_assign_operator(),
                                                               ground(numeric_effect->get_function(), binding),
-                                                              ground(numeric_effect->get_function_expression(), problem, binding));
+                                                              ground(numeric_effect->get_function_expression(), binding));
 }
 
-template GroundNumericEffect<Fluent> ProblemImpl::ground(NumericEffect<Fluent> numeric_effect, Problem problem, const ObjectList& binding);
-template GroundNumericEffect<Auxiliary> ProblemImpl::ground(NumericEffect<Auxiliary> numeric_effect, Problem problem, const ObjectList& binding);
+template GroundNumericEffect<Fluent> ProblemImpl::ground(NumericEffect<Fluent> numeric_effect, const ObjectList& binding);
+template GroundNumericEffect<Auxiliary> ProblemImpl::ground(NumericEffect<Auxiliary> numeric_effect, const ObjectList& binding);
 
 // Action
 
 void ProblemImpl::ground_and_fill_vector(const NumericConstraintList& numeric_constraints,
-                                         Problem problem,
                                          const ObjectList& binding,
                                          FlatExternalPtrList<const GroundNumericConstraintImpl>& ref_numeric_constraints)
 {
     for (const auto& condition : numeric_constraints)
     {
-        ref_numeric_constraints.push_back(ground(condition, problem, binding));
+        ref_numeric_constraints.push_back(ground(condition, binding));
     }
 }
 
 void ProblemImpl::ground_and_fill_vector(const NumericEffectList<Fluent>& numeric_effects,
-                                         Problem problem,
                                          const ObjectList& binding,
                                          GroundNumericEffectList<Fluent>& ref_numeric_effects)
 {
     for (const auto& effect : numeric_effects)
     {
-        ref_numeric_effects.push_back(ground(effect, problem, binding));
+        ref_numeric_effects.push_back(ground(effect, binding));
     }
 }
 
 void ProblemImpl::ground_and_fill_optional(const std::optional<NumericEffect<Auxiliary>>& numeric_effect,
-                                           Problem problem,
                                            const ObjectList& binding,
                                            cista::optional<FlatExternalPtr<const GroundNumericEffectImpl<Auxiliary>>>& ref_numeric_effect)
 {
     if (numeric_effect.has_value())
     {
         assert(!ref_numeric_effect.has_value());
-        ref_numeric_effect = ground(numeric_effect.value(), problem, binding);
+        ref_numeric_effect = ground(numeric_effect.value(), binding);
     }
 }
 
-GroundAction ProblemImpl::ground(Action action,
-                                 Problem problem,
-                                 ObjectList binding,
-                                 const std::vector<std::vector<IndexList>>& candidate_conditional_effect_objects_by_parameter_index)
+GroundAction
+ProblemImpl::ground(Action action, ObjectList binding, const std::vector<std::vector<IndexList>>& candidate_conditional_effect_objects_by_parameter_index)
 {
     /* 1. Check if grounding is cached */
 
@@ -1052,7 +1047,7 @@ GroundAction ProblemImpl::ground(Action action,
         negative_static_precondition.compress();
         positive_derived_precondition.compress();
         negative_derived_precondition.compress();
-        ground_and_fill_vector(action->get_conjunctive_condition()->get_numeric_constraints(), problem, binding, numeric_constraints);
+        ground_and_fill_vector(action->get_conjunctive_condition()->get_numeric_constraints(), binding, numeric_constraints);
 
         /* Conjunctive propositional effects */
         auto& conjunctive_effect = action_builder.get_conjunctive_effect();
@@ -1069,8 +1064,8 @@ GroundAction ProblemImpl::ground(Action action,
         auto& auxiliary_numerical_effect = conjunctive_effect.get_auxiliary_numeric_effect();
         fluent_numerical_effects.clear();
         auxiliary_numerical_effect = std::nullopt;
-        ground_and_fill_vector(action->get_conjunctive_effect()->get_fluent_numeric_effects(), problem, binding, fluent_numerical_effects);
-        ground_and_fill_optional(action->get_conjunctive_effect()->get_auxiliary_numeric_effect(), problem, binding, auxiliary_numerical_effect);
+        ground_and_fill_vector(action->get_conjunctive_effect()->get_fluent_numeric_effects(), binding, fluent_numerical_effects);
+        ground_and_fill_optional(action->get_conjunctive_effect()->get_auxiliary_numeric_effect(), binding, auxiliary_numerical_effect);
     }
 
     /* Conditional effects */
@@ -1153,7 +1148,6 @@ GroundAction ProblemImpl::ground(Action action,
                     cond_positive_derived_precondition_j.compress();
                     cond_negative_derived_precondition_j.compress();
                     ground_and_fill_vector(lifted_cond_effect->get_conjunctive_condition()->get_numeric_constraints(),
-                                           problem,
                                            binding_cond_effect,
                                            cond_numeric_constraints_j);
 
@@ -1170,11 +1164,9 @@ GroundAction ProblemImpl::ground(Action action,
                     cond_auxiliary_numerical_effect_j = std::nullopt;
 
                     ground_and_fill_vector(lifted_cond_effect->get_conjunctive_effect()->get_fluent_numeric_effects(),
-                                           problem,
                                            binding_cond_effect,
                                            cond_fluent_numerical_effects_j);
                     ground_and_fill_optional(lifted_cond_effect->get_conjunctive_effect()->get_auxiliary_numeric_effect(),
-                                             problem,
                                              binding_cond_effect,
                                              cond_auxiliary_numerical_effect_j);
                 }
@@ -1228,7 +1220,7 @@ GroundAction ProblemImpl::ground(Action action,
                 cond_negative_static_precondition.compress();
                 cond_positive_derived_precondition.compress();
                 cond_negative_derived_precondition.compress();
-                ground_and_fill_vector(lifted_cond_effect->get_conjunctive_condition()->get_numeric_constraints(), problem, binding, cond_numeric_constraints);
+                ground_and_fill_vector(lifted_cond_effect->get_conjunctive_condition()->get_numeric_constraints(), binding, cond_numeric_constraints);
 
                 /* Propositional effect */
                 ground_and_fill_vector(lifted_cond_effect->get_conjunctive_effect()->get_literals(), cond_positive_effect, cond_negative_effect, binding);
@@ -1239,12 +1231,8 @@ GroundAction ProblemImpl::ground(Action action,
                 cond_fluent_numerical_effects_j.clear();
                 cond_auxiliary_numerical_effects_j = std::nullopt;
 
-                ground_and_fill_vector(lifted_cond_effect->get_conjunctive_effect()->get_fluent_numeric_effects(),
-                                       problem,
-                                       binding,
-                                       cond_fluent_numerical_effects_j);
+                ground_and_fill_vector(lifted_cond_effect->get_conjunctive_effect()->get_fluent_numeric_effects(), binding, cond_fluent_numerical_effects_j);
                 ground_and_fill_optional(lifted_cond_effect->get_conjunctive_effect()->get_auxiliary_numeric_effect(),
-                                         problem,
                                          binding,
                                          cond_auxiliary_numerical_effects_j);
             }
@@ -1291,7 +1279,7 @@ size_t ProblemImpl::get_estimated_memory_usage_in_bytes_for_actions() const
 
 // Axiom
 
-GroundAxiom ProblemImpl::ground(Axiom axiom, Problem problem, ObjectList binding)
+GroundAxiom ProblemImpl::ground(Axiom axiom, ObjectList binding)
 {
     /* 1. Check if grounding is cached */
 
@@ -1341,7 +1329,7 @@ GroundAxiom ProblemImpl::ground(Axiom axiom, Problem problem, ObjectList binding
     negative_static_precondition.compress();
     positive_derived_precondition.compress();
     negative_derived_precondition.compress();
-    ground_and_fill_vector(axiom->get_conjunctive_condition()->get_numeric_constraints(), problem, binding, numeric_constraints);
+    ground_and_fill_vector(axiom->get_conjunctive_condition()->get_numeric_constraints(), binding, numeric_constraints);
 
     /* Effect */
 

@@ -33,7 +33,7 @@ namespace mimir
 class LiftedApplicableActionGenerator : public IApplicableActionGenerator
 {
 private:
-    ProblemContext m_problem_context;
+    Problem m_problem;
     std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> m_event_handler;
 
     std::unordered_map<Action, std::pair<ActionSatisficingBindingGenerator, std::vector<std::vector<IndexList>>>> m_action_grounding_data;
@@ -49,10 +49,10 @@ private:
 
 public:
     /// @brief Simplest construction
-    explicit LiftedApplicableActionGenerator(ProblemContext problem_context);
+    explicit LiftedApplicableActionGenerator(Problem problem);
 
     /// @brief Complete construction
-    LiftedApplicableActionGenerator(ProblemContext problem_context, std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> event_handler);
+    LiftedApplicableActionGenerator(ProblemContext problem, std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> event_handler);
 
     // Uncopyable
     LiftedApplicableActionGenerator(const LiftedApplicableActionGenerator& other) = delete;
@@ -71,7 +71,7 @@ public:
      * Getters
      */
 
-    const ProblemContext& get_problem_context() const override;
+    const Problem& get_problem() const override;
 };
 
 }  // namespace mimir

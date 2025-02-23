@@ -44,7 +44,7 @@ class ProblemContext;
 
 template<StaticOrFluentOrDerived P>
 class AssignmentSet;
-template<StaticOrFluentTag F>
+template<StaticOrFluent F>
 class NumericAssignmentSet;
 
 class ActionImpl;

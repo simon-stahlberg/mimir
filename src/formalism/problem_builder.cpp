@@ -136,7 +136,7 @@ std::string& ProblemBuilder::get_name() { return m_name; }
 Requirements& ProblemBuilder::get_requirements() { return m_requirements; }
 ObjectList& ProblemBuilder::get_objects() { return m_objects; }
 PredicateList<Derived>& ProblemBuilder::get_derived_predicates() { return m_derived_predicates; }
-template<StaticOrFluentTag P>
+template<StaticOrFluent P>
 GroundLiteralList<P>& ProblemBuilder::get_initial_literals()
 {
     if constexpr (std::is_same_v<P, Static>)
@@ -156,7 +156,7 @@ GroundLiteralList<P>& ProblemBuilder::get_initial_literals()
 template GroundLiteralList<Static>& ProblemBuilder::get_initial_literals();
 template GroundLiteralList<Fluent>& ProblemBuilder::get_initial_literals();
 
-template<StaticOrFluentTag F>
+template<StaticOrFluent F>
 GroundFunctionValueList<F>& ProblemBuilder::get_initial_function_values()
 {
     if constexpr (std::is_same_v<F, Static>)

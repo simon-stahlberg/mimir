@@ -32,27 +32,23 @@ using namespace std::string_literals;
 namespace mimir
 {
 
-LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(ProblemContext problem_context) :
-    LiftedApplicableActionGenerator(std::move(problem_context), std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>())
+LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem) :
+    LiftedApplicableActionGenerator(std::move(problem), std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>())
 {
 }
 
-LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(ProblemContext problem_context,
-                                                                 std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> event_handler) :
-    m_problem_context(std::move(problem_context)),
+LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem, std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> event_handler) :
+    m_problem(std::move(problem)),
     m_event_handler(event_handler),
     m_action_grounding_data(),
     m_dense_state(),
     m_fluent_atoms(),
     m_derived_atoms(),
     m_fluent_functions(),
-    m_fluent_assignment_set(m_problem_context.get_problem()->get_objects().size(), m_problem_context.get_problem()->get_domain()->get_predicates<Fluent>()),
-    m_derived_assignment_set(m_problem_context.get_problem()->get_objects().size(),
-                             m_problem_context.get_problem()->get_problem_and_domain_derived_predicates()),
-    m_numeric_assignment_set(m_problem_context.get_problem()->get_objects().size(), m_problem_context.get_problem()->get_domain()->get_functions<Fluent>())
+    m_fluent_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_domain()->get_predicates<Fluent>()),
+    m_derived_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_problem_and_domain_derived_predicates()),
+    m_numeric_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_domain()->get_functions<Fluent>())
 {
-    const auto problem = m_problem_context.get_problem();
-
     /* 2. Initialize the condition grounders for each action schema. */
     for (const auto& action : problem->get_domain()->get_actions())
     {
@@ -62,7 +58,7 @@ LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(ProblemContext 
         for (const auto& conditional_effect : action->get_conditional_effects())
         {
             auto [vertices_, vertices_by_parameter_index_, objects_by_parameter_index_] =
-                consistency_graph::StaticConsistencyGraph::compute_vertices(problem,
+                consistency_graph::StaticConsistencyGraph::compute_vertices(*problem,
                                                                             action->get_arity(),
                                                                             action->get_arity() + conditional_effect->get_arity(),
                                                                             conditional_effect->get_conjunctive_condition()->get_literals<Static>());
@@ -70,8 +66,7 @@ LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(ProblemContext 
             cond_effect_candidate_objects.push_back(std::move(objects_by_parameter_index_));
         }
 
-        m_action_grounding_data.emplace(action,
-                                        std::make_pair(ActionSatisficingBindingGenerator(action, m_problem_context), std::move(cond_effect_candidate_objects)));
+        m_action_grounding_data.emplace(action, std::make_pair(ActionSatisficingBindingGenerator(action, m_problem), std::move(cond_effect_candidate_objects)));
     }
 }
 
@@ -88,22 +83,21 @@ mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicabl
     auto& dense_derived_atoms = dense_state.get_atoms<Derived>();
     auto& dense_numeric_variables = dense_state.get_numeric_variables();
 
-    const auto problem = m_problem_context.get_problem();
-    auto& pddl_repositories = *m_problem_context.get_repositories();
+    const auto& problem = *m_problem;
 
-    pddl_repositories.get_ground_atoms_from_indices(dense_fluent_atoms, m_fluent_atoms);
+    problem.get_ground_atoms_from_indices(dense_fluent_atoms, m_fluent_atoms);
     m_fluent_assignment_set.reset();
     m_fluent_assignment_set.insert_ground_atoms(m_fluent_atoms);
 
-    pddl_repositories.get_ground_atoms_from_indices(dense_derived_atoms, m_derived_atoms);
+    problem.get_ground_atoms_from_indices(dense_derived_atoms, m_derived_atoms);
     m_derived_assignment_set.reset();
     m_derived_assignment_set.insert_ground_atoms(m_derived_atoms);
 
     m_numeric_assignment_set.reset();
-    pddl_repositories.get_ground_functions(dense_numeric_variables.size(), m_fluent_functions);
+    problem.get_ground_functions(dense_numeric_variables.size(), m_fluent_functions);
     m_numeric_assignment_set.insert_ground_function_values(m_fluent_functions, dense_numeric_variables);
 
-    const auto& static_numeric_assignment_set = problem->get_static_initial_numeric_assignment_set();
+    const auto& static_numeric_assignment_set = problem.get_static_initial_numeric_assignment_set();
 
     /* Generate applicable actions */
 
@@ -125,16 +119,16 @@ mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicabl
                                                                           static_numeric_assignment_set,
                                                                           m_numeric_assignment_set))
         {
-            const auto num_ground_actions = pddl_repositories.get_num_ground_actions();
+            const auto num_ground_actions = problem.get_num_ground_actions();
 
-            const auto ground_action = pddl_repositories.ground(action, problem, std::move(binding), conditional_effects_candidate_objects);
+            const auto ground_action = problem.ground(action, std::move(binding), conditional_effects_candidate_objects);
 
             assert(is_applicable(ground_action, problem, dense_state));
 
             m_event_handler->on_ground_action(ground_action);
 
-            (pddl_repositories.get_num_ground_actions() > num_ground_actions) ? m_event_handler->on_ground_action_cache_miss(ground_action) :
-                                                                                m_event_handler->on_ground_action_cache_hit(ground_action);
+            (problem.get_num_ground_actions() > num_ground_actions) ? m_event_handler->on_ground_action_cache_miss(ground_action) :
+                                                                      m_event_handler->on_ground_action_cache_hit(ground_action);
 
             co_yield ground_action;
         }

@@ -51,7 +51,7 @@ template<typename T>
 concept StaticOrFluentOrAuxiliary = std::is_same_v<T, Static> || std::is_same_v<T, Fluent> || std::is_same_v<T, Auxiliary>;
 
 template<typename T>
-concept StaticOrFluentTag = std::is_same_v<T, Static> || std::is_same_v<T, Fluent>;
+concept StaticOrFluent = std::is_same_v<T, Static> || std::is_same_v<T, Fluent>;
 
 template<typename T>
 concept FluentOrAuxiliary = std::is_same_v<T, Fluent> || std::is_same_v<T, Auxiliary>;

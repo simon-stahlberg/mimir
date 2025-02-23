@@ -36,7 +36,7 @@ namespace mimir
 class GroundedApplicableActionGenerator : public IApplicableActionGenerator
 {
 private:
-    ProblemContext m_problem_context;
+    Problem m_problem;
     std::unique_ptr<match_tree::MatchTree<GroundActionImpl>> m_match_tree;
 
     std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> m_event_handler;
@@ -46,10 +46,10 @@ private:
 
 public:
     /// @brief Simplest construction
-    GroundedApplicableActionGenerator(ProblemContext problem_context, std::unique_ptr<match_tree::MatchTree<GroundActionImpl>>&& match_tree);
+    GroundedApplicableActionGenerator(Problem problem, std::unique_ptr<match_tree::MatchTree<GroundActionImpl>>&& match_tree);
 
     /// @brief Complete construction
-    GroundedApplicableActionGenerator(ProblemContext problem_context,
+    GroundedApplicableActionGenerator(Problem problem,
                                       std::unique_ptr<match_tree::MatchTree<GroundActionImpl>>&& match_tree,
                                       std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> event_handler);
 
@@ -74,7 +74,7 @@ public:
      * Getters
      */
 
-    const ProblemContext& get_problem_context() const override;
+    const Problem& get_problem() const override;
 };
 
 }

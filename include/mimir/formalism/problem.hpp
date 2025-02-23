@@ -173,9 +173,9 @@ public:
     const ObjectList& get_problem_and_domain_objects() const;
     const PredicateList<Derived>& get_derived_predicates() const;
     const PredicateList<Derived>& get_problem_and_domain_derived_predicates() const;
-    template<StaticOrFluentTag P>
+    template<StaticOrFluent P>
     const GroundLiteralList<P>& get_initial_literals() const;
-    template<StaticOrFluentTag F>
+    template<StaticOrFluent F>
     const GroundFunctionValueList<F>& get_initial_function_values() const;
     const std::optional<GroundFunctionValue<Auxiliary>>& get_auxiliary_function_value() const;
     template<StaticOrFluentOrDerived P>
@@ -220,9 +220,9 @@ public:
 
     const GroundAtomList<Fluent>& get_fluent_initial_atoms() const;
 
-    template<StaticOrFluentTag F>
+    template<StaticOrFluent F>
     const FlatDoubleList& get_function_to_value() const;
-    template<StaticOrFluentTag F>
+    template<StaticOrFluent F>
     ContinuousCost get_function_value(GroundFunction<F> function) const;
 
     /* Goal */
@@ -264,42 +264,35 @@ public:
                                 FlatIndexList& ref_negative_indices,
                                 const ObjectList& binding);
 
-    GroundFunctionExpression ground(FunctionExpression fexpr, Problem problem, const ObjectList& binding);
+    GroundFunctionExpression ground(FunctionExpression fexpr, const ObjectList& binding);
 
-    GroundNumericConstraint ground(NumericConstraint numeric_constraint, Problem problem, const ObjectList& binding);
+    GroundNumericConstraint ground(NumericConstraint numeric_constraint, const ObjectList& binding);
 
     template<FluentOrAuxiliary F>
-    GroundNumericEffect<F> ground(NumericEffect<F> numeric_effect, Problem problem, const ObjectList& binding);
+    GroundNumericEffect<F> ground(NumericEffect<F> numeric_effect, const ObjectList& binding);
 
     template<StaticOrFluentOrAuxiliary F>
     GroundFunction<F> ground(Function<F> function, const ObjectList& binding);
 
     void ground_and_fill_vector(const NumericConstraintList& numeric_constraints,
-                                Problem problem,
                                 const ObjectList& binding,
                                 FlatExternalPtrList<const GroundNumericConstraintImpl>& ref_numeric_constraints);
 
-    void ground_and_fill_vector(const NumericEffectList<Fluent>& numeric_effects,
-                                Problem problem,
-                                const ObjectList& binding,
-                                GroundNumericEffectList<Fluent>& ref_numeric_effects);
+    void
+    ground_and_fill_vector(const NumericEffectList<Fluent>& numeric_effects, const ObjectList& binding, GroundNumericEffectList<Fluent>& ref_numeric_effects);
 
     void ground_and_fill_optional(const std::optional<NumericEffect<Auxiliary>>& numeric_effect,
-                                  Problem problem,
                                   const ObjectList& binding,
                                   cista::optional<FlatExternalPtr<const GroundNumericEffectImpl<Auxiliary>>>& ref_numeric_effect);
 
-    GroundAction ground(Action action,
-                        Problem problem,
-                        ObjectList binding,
-                        const std::vector<std::vector<IndexList>>& candidate_conditional_effect_objects_by_parameter_index);
+    GroundAction ground(Action action, ObjectList binding, const std::vector<std::vector<IndexList>>& candidate_conditional_effect_objects_by_parameter_index);
 
     const GroundActionList& get_ground_actions() const;
     GroundAction get_ground_action(Index action_index) const;
     size_t get_num_ground_actions() const;
     size_t get_estimated_memory_usage_in_bytes_for_actions() const;
 
-    GroundAxiom ground(Axiom axiom, Problem problem, ObjectList binding);
+    GroundAxiom ground(Axiom axiom, ObjectList binding);
 
     const GroundAxiomList& get_ground_axioms() const;
     GroundAxiom get_ground_axiom(Index axiom_index) const;

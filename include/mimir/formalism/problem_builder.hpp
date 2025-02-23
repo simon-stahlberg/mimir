@@ -79,9 +79,9 @@ public:
     Requirements& get_requirements();
     ObjectList& get_objects();
     PredicateList<Derived>& get_derived_predicates();
-    template<StaticOrFluentTag P>
+    template<StaticOrFluent P>
     GroundLiteralList<P>& get_initial_literals();
-    template<StaticOrFluentTag F>
+    template<StaticOrFluent F>
     GroundFunctionValueList<F>& get_initial_function_values();
     std::optional<GroundFunctionValue<Auxiliary>>& get_auxiliary_function_value();
     template<StaticOrFluentOrDerived P>

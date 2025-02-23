@@ -336,7 +336,7 @@ static bool consistent_literals_helper(const LiteralList<P>& literals, const Ass
     return true;
 }
 
-template<StaticOrFluentTag F, typename AssignmentType>
+template<StaticOrFluent F, typename AssignmentType>
 static Bounds<ContinuousCost> remap_assignment_and_retrieve_bounds_from_assignment_set(FunctionExpressionFunction<F> fexpr,
                                                                                        const AssignmentType& assignment,
                                                                                        const NumericAssignmentSet<F>& numeric_assignment_set)

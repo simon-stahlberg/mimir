@@ -120,7 +120,7 @@ template class AssignmentSet<Derived>;
  * NumericAssignmentSet
  */
 
-template<StaticOrFluentTag F>
+template<StaticOrFluent F>
 NumericAssignmentSet<F>::NumericAssignmentSet(size_t num_objects, const FunctionSkeletonList<F>& function_skeletons) :
     m_num_objects(num_objects),
     m_per_function_skeleton_bounds_set()
@@ -143,7 +143,7 @@ NumericAssignmentSet<F>::NumericAssignmentSet(size_t num_objects, const Function
     reset();
 }
 
-template<StaticOrFluentTag F>
+template<StaticOrFluent F>
 void NumericAssignmentSet<F>::reset()
 {
     for (auto& assignment_set : m_per_function_skeleton_bounds_set)
@@ -152,7 +152,7 @@ void NumericAssignmentSet<F>::reset()
     }
 }
 
-template<StaticOrFluentTag F>
+template<StaticOrFluent F>
 void NumericAssignmentSet<F>::insert_ground_function_values(const GroundFunctionList<F>& ground_fluent_functions, const FlatDoubleList& fluent_numeric_values)
 {
     /* Validate inputs. */

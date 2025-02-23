@@ -35,9 +35,6 @@ DomainTranslationResult::DomainTranslationResult(Domain original_domain, Domain 
 
 DomainTranslationResult translate(const Domain& domain)
 {
-    std::cout << "Given domain" << std::endl;
-    std::cout << *domain << std::endl;
-
     auto encode_parameter_index_in_variables_translator = EncodeParameterIndexInVariables();
     auto builder = DomainBuilder();
     auto translated_domain = encode_parameter_index_in_variables_translator.translate_level_0(domain, builder);

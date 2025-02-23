@@ -153,7 +153,7 @@ FunctionExpressionMinus PDDLRepositories::get_or_create_function_expression_minu
     return boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionMinusImpl> {}).get_or_create(std::move(function_expression));
 }
 
-template<StaticOrFluentTag F>
+template<StaticOrFluent F>
 FunctionExpressionFunction<F> PDDLRepositories::get_or_create_function_expression_function(Function<F> function)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionFunctionImpl<F>> {}).get_or_create(std::move(function));
@@ -182,7 +182,7 @@ FunctionExpression PDDLRepositories::get_or_create_function_expression(FunctionE
     return boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionImpl> {}).get_or_create(fexpr);
 }
 
-template<StaticOrFluentTag F>
+template<StaticOrFluent F>
 FunctionExpression PDDLRepositories::get_or_create_function_expression(FunctionExpressionFunction<F> fexpr)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionImpl> {}).get_or_create(fexpr);

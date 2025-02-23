@@ -66,7 +66,7 @@ public:
     ObjectList& get_constants();
     template<StaticOrFluentOrDerived P>
     PredicateList<P>& get_predicates();
-    template<StaticOrFluentTag F>
+    template<StaticOrFluent F>
     FunctionSkeletonList<F>& get_function_skeletons();
     std::optional<FunctionSkeleton<Auxiliary>>& get_auxiliary_function_skeleton();
     ActionList& get_actions();

@@ -101,7 +101,7 @@ void ToMimirStructures::prepare(loki::Condition condition)
             }
             else
             {
-                std::visit([](auto&& arg) { std::cout << arg << std::endl; }, part->get_condition());
+                // std::visit([](auto&& arg) { std::cout << arg << std::endl; }, part->get_condition());
 
                 throw std::logic_error("Expected literal in conjunctive condition.");
             }
@@ -295,10 +295,6 @@ Variable ToMimirStructures::translate_common(loki::Variable variable, PDDLReposi
 
 Object ToMimirStructures::translate_common(loki::Object object, PDDLRepositories& repositories)
 {
-    for (const auto& base : object->get_bases())
-    {
-        std::cout << *base << " " << *object << std::endl;
-    }
     assert(object->get_bases().empty());
     return repositories.get_or_create_object(object->get_name());
 }
@@ -535,28 +531,6 @@ ConjunctiveCondition ToMimirStructures::translate_lifted(loki::Condition conditi
     throw std::logic_error("Expected conjunctive condition.");
 }
 
-template<FluentOrAuxiliary F>
-static NumericEffect<F> get_or_create_total_cost_numeric_effect(FunctionSkeleton<F> total_cost_function,
-                                                                bool action_costs_enabled,
-                                                                NumericEffectList<F>& numeric_effects,
-                                                                PDDLRepositories& repositories)
-{
-    for (const auto& effect : numeric_effects)
-    {
-        if (effect->get_function()->get_function_skeleton()->get_name() == "total-cost")
-            return effect;
-    }
-
-    const auto total_cost_numeric_effect = repositories.get_or_create_numeric_effect(
-        loki::AssignOperatorEnum::INCREASE,
-        repositories.get_or_create_function(total_cost_function, TermList {}),
-        repositories.get_or_create_function_expression(repositories.get_or_create_function_expression_number(action_costs_enabled ? 0 : 1)));
-
-    numeric_effects.push_back(total_cost_numeric_effect);
-
-    return total_cost_numeric_effect;
-}
-
 std::tuple<ConjunctiveEffect, ConditionalEffectList>
 ToMimirStructures::translate_lifted(loki::Effect effect, const VariableList& parameters, PDDLRepositories& repositories)
 {
@@ -594,7 +568,6 @@ ToMimirStructures::translate_lifted(loki::Effect effect, const VariableList& par
         /* 3. Parse effect part */
         if (const auto& effect_literal = std::get_if<loki::EffectLiteral>(&tmp_effect->get_effect()))
         {
-            std::cout << **effect_literal << std::endl;
             const auto static_or_fluent_or_derived_effect = translate_lifted((*effect_literal)->get_literal(), repositories);
 
             if (std::get_if<Literal<Derived>>(&static_or_fluent_or_derived_effect))
@@ -996,34 +969,6 @@ OptimizationMetric ToMimirStructures::translate_grounded(loki::OptimizationMetri
     return repositories.get_or_create_optimization_metric(optimization_metric->get_optimization_metric(),
                                                           translate_grounded(optimization_metric->get_function_expression(), repositories));
 }
-
-template<FluentOrAuxiliary F>
-static GroundFunctionValue<F>
-get_or_create_total_cost_function_value(FunctionSkeleton<F> total_cost_function, GroundFunctionValueList<F>& function_values, PDDLRepositories& repositories)
-{
-    for (const auto& function_value : function_values)
-    {
-        if (function_value->get_function()->get_function_skeleton() == total_cost_function)
-        {
-            return function_value;
-        }
-    }
-
-    const auto total_cost_function_value =
-        repositories.get_or_create_ground_function_value(repositories.get_or_create_ground_function(total_cost_function, ObjectList {}), 0.);
-
-    std::cout << "[ToMimir] Adding default " << total_cost_function_value << " to \":init\"." << std::endl;
-
-    function_values.push_back(total_cost_function_value);
-    return total_cost_function_value;
-}
-
-template GroundFunctionValue<Fluent> get_or_create_total_cost_function_value(FunctionSkeleton<Fluent> total_cost_function,
-                                                                             GroundFunctionValueList<Fluent>& function_values,
-                                                                             PDDLRepositories& repositories);
-template GroundFunctionValue<Auxiliary> get_or_create_total_cost_function_value(FunctionSkeleton<Auxiliary> total_cost_function,
-                                                                                GroundFunctionValueList<Auxiliary>& function_values,
-                                                                                PDDLRepositories& repositories);
 
 Domain ToMimirStructures::translate(const loki::Domain& domain, DomainBuilder& builder)
 {

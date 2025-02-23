@@ -29,14 +29,14 @@ namespace mimir
 class GroundedAxiomEvaluator : public IAxiomEvaluator
 {
 private:
-    ProblemContext m_problem_context;
+    Problem m_problem;
     std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>> m_match_tree_partitioning;
     std::shared_ptr<IGroundedAxiomEvaluatorEventHandler> m_event_handler;
 
 public:
-    GroundedAxiomEvaluator(ProblemContext problem_context, std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>>&& match_tree_partitioning);
+    GroundedAxiomEvaluator(Problem problem, std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>>&& match_tree_partitioning);
 
-    GroundedAxiomEvaluator(ProblemContext problem_context,
+    GroundedAxiomEvaluator(Problem problem,
                            std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>>&& match_tree_partitioning,
                            std::shared_ptr<IGroundedAxiomEvaluatorEventHandler> event_handler);
 
@@ -56,7 +56,7 @@ public:
      * Getters
      */
 
-    const ProblemContext& get_problem_context() const override;
+    const Problem& get_problem() const override;
     const std::shared_ptr<IGroundedAxiomEvaluatorEventHandler>& get_event_handler() const;
 };
 

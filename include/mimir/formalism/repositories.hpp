@@ -226,7 +226,7 @@ public:
     FunctionExpressionMinus get_or_create_function_expression_minus(FunctionExpression function_expression);
 
     /// @brief Get or create a function function expression for the given parameters.
-    template<StaticOrFluentTag F>
+    template<StaticOrFluent F>
     FunctionExpressionFunction<F> get_or_create_function_expression_function(Function<F> function);
 
     /// @brief Get or create a function expression for the given parameters.
@@ -234,7 +234,7 @@ public:
     FunctionExpression get_or_create_function_expression(FunctionExpressionBinaryOperator fexpr);
     FunctionExpression get_or_create_function_expression(FunctionExpressionMultiOperator fexpr);
     FunctionExpression get_or_create_function_expression(FunctionExpressionMinus fexpr);
-    template<StaticOrFluentTag F>
+    template<StaticOrFluent F>
     FunctionExpression get_or_create_function_expression(FunctionExpressionFunction<F> fexpr);
 
     /// @brief Get or create a number function expression for the given parameters.

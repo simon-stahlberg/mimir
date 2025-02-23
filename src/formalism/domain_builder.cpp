@@ -111,7 +111,7 @@ template PredicateList<Static>& DomainBuilder::get_predicates();
 template PredicateList<Fluent>& DomainBuilder::get_predicates();
 template PredicateList<Derived>& DomainBuilder::get_predicates();
 
-template<StaticOrFluentTag F>
+template<StaticOrFluent F>
 FunctionSkeletonList<F>& DomainBuilder::get_function_skeletons()
 {
     if constexpr (std::is_same_v<F, Static>)

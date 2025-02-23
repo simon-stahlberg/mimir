@@ -26,18 +26,15 @@
 namespace mimir
 {
 
-GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(ProblemContext problem_context,
-                                                                     std::unique_ptr<match_tree::MatchTree<GroundActionImpl>>&& match_tree) :
-    GroundedApplicableActionGenerator(std::move(problem_context),
-                                      std::move(match_tree),
-                                      std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>())
+GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem problem, std::unique_ptr<match_tree::MatchTree<GroundActionImpl>>&& match_tree) :
+    GroundedApplicableActionGenerator(std::move(problem), std::move(match_tree), std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>())
 {
 }
 
-GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(ProblemContext problem_context,
+GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem problem,
                                                                      std::unique_ptr<match_tree::MatchTree<GroundActionImpl>>&& match_tree,
                                                                      std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> event_handler) :
-    m_problem_context(std::move(problem_context)),
+    m_problem(std::move(problem)),
     m_match_tree(std::move(match_tree)),
     m_event_handler(std::move(event_handler)),
     m_dense_state()
@@ -54,16 +51,16 @@ mimir::generator<GroundAction> GroundedApplicableActionGenerator::create_applica
 mimir::generator<GroundAction> GroundedApplicableActionGenerator::create_applicable_action_generator(const DenseState& dense_state)
 {
     auto ground_actions = GroundActionList {};
-    m_match_tree->generate_applicable_elements_iteratively(dense_state, m_problem_context.get_problem(), ground_actions);
+    m_match_tree->generate_applicable_elements_iteratively(dense_state, *m_problem, ground_actions);
 
     for (const auto& ground_action : ground_actions)
     {
-        assert(is_applicable(ground_action, m_problem_context.get_problem(), dense_state));
+        assert(is_applicable(ground_action, *m_problem, dense_state));
         co_yield ground_action;
     }
 }
 
-const ProblemContext& GroundedApplicableActionGenerator::get_problem_context() const { return m_problem_context; }
+const ProblemContext& GroundedApplicableActionGenerator::get_problem() const { return m_problem; }
 
 void GroundedApplicableActionGenerator::on_finish_search_layer() { m_event_handler->on_finish_search_layer(); }
 

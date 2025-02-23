@@ -19,7 +19,6 @@
 #define MIMIR_SEARCH_DELETE_RELAXED_PROBLEM_EXPLORATOR_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/problem_context.hpp"
 #include "mimir/formalism/transformers/delete_relax.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/match_tree/declarations.hpp"
@@ -34,7 +33,7 @@ namespace mimir
 class DeleteRelaxedProblemExplorator
 {
 private:
-    ProblemContext m_problem_context;
+    Problem m_problem;
 
     /* We store all delete-free info separately, allowing us to discard it after instantiating the generator and evaluator. */
     std::shared_ptr<PDDLRepositories> m_delete_free_pddl_repositories;

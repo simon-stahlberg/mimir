@@ -81,7 +81,7 @@ public:
 ///   2. the assignment [i/o] results in partial function evaluation [l,r]
 /// Using the `NumericAssignmentSet` we can efficiently evaluate numeric constraints partially.
 
-template<StaticOrFluentTag F>
+template<StaticOrFluent F>
 class NumericAssignmentSet
 {
 private:

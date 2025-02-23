@@ -30,7 +30,7 @@ namespace mimir
 class LiftedAxiomEvaluator : public IAxiomEvaluator
 {
 private:
-    ProblemContext m_problem_context;
+    Problem m_problem;
     std::shared_ptr<ILiftedAxiomEvaluatorEventHandler> m_event_handler;
 
     std::unordered_map<Axiom, AxiomSatisficingBindingGenerator> m_condition_grounders;
@@ -44,9 +44,9 @@ private:
     NumericAssignmentSet<Fluent> m_numeric_assignment_set;
 
 public:
-    explicit LiftedAxiomEvaluator(ProblemContext problem_context);
+    explicit LiftedAxiomEvaluator(Problem problem);
 
-    LiftedAxiomEvaluator(ProblemContext problem_context, std::shared_ptr<ILiftedAxiomEvaluatorEventHandler> event_handler);
+    LiftedAxiomEvaluator(Problem problem, std::shared_ptr<ILiftedAxiomEvaluatorEventHandler> event_handler);
 
     // Uncopyable
     LiftedAxiomEvaluator(const LiftedAxiomEvaluator& other) = delete;
@@ -64,7 +64,7 @@ public:
      * Getters.
      */
 
-    const ProblemContext& get_problem_context() const override;
+    const Problem& get_problem() const override;
     const std::shared_ptr<ILiftedAxiomEvaluatorEventHandler>& get_event_handler() const;
 };
 

@@ -38,11 +38,11 @@ int main(int argc, char** argv)
     // 1. Parse the domain
     auto parser = mimir::Parser(domain_file, options);
     const auto domain = parser.get_domain();
-    std::cout << *domain << std::endl << std::endl;
+    // cstd::cout << *domain << std::endl << std::endl;
 
     // 2. Parse the problem
     const auto problem = parser.parse_problem(problem_file, options);
-    std::cout << *problem << std::endl;
+    // std::cout << *problem << std::endl;
 
     // 3. Translate the domain
     const auto domain_translation_result = mimir::translate(domain);

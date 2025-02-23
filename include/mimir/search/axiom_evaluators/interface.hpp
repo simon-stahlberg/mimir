@@ -20,7 +20,6 @@
 
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/problem_context.hpp"
 #include "mimir/search/declarations.hpp"
 
 namespace mimir
@@ -45,7 +44,7 @@ public:
      * Getters
      */
 
-    virtual const ProblemContext& get_problem_context() const = 0;
+    virtual const Problem& get_problem() const = 0;
 };
 
 }
