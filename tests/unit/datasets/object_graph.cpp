@@ -19,6 +19,7 @@
 
 #include "mimir/algorithms/nauty.hpp"
 #include "mimir/datasets/generalized_state_space.hpp"
+#include "mimir/formalism/problem.hpp"
 
 #include <gtest/gtest.h>
 #include <unordered_set>
@@ -31,23 +32,20 @@ TEST(MimirTests, DataSetsObjectGraphDenseTest)
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
 
-    auto search_context = SearchContext(ProblemContext(domain_file, problem_file));
+    auto search_context = SearchContext(ProblemImpl::create(domain_file, problem_file));
 
     auto options = GeneralizedStateSpace::Options();
     options.problem_options.symmetry_pruning = false;
     const auto problem_class_state_space = GeneralizedStateSpace(search_context, options);
 
-    const auto color_function = ProblemColorFunction(search_context.get_problem_context().get_problem());
+    const auto color_function = ProblemColorFunction(*search_context.get_problem());
     auto certificates = std::unordered_set<nauty_wrapper::Certificate, loki::Hash<nauty_wrapper::Certificate>, loki::EqualTo<nauty_wrapper::Certificate>> {};
 
     for (const auto& vertex : problem_class_state_space.get_class_state_space().get_graph().get_vertices())
     {
         const auto state = get_state(problem_class_state_space.get_problem_vertex(vertex));
 
-        const auto object_graph = create_object_graph(state,
-                                                      search_context.get_problem_context().get_problem(),
-                                                      *search_context.get_problem_context().get_repositories(),
-                                                      color_function);
+        const auto object_graph = create_object_graph(state, *search_context.get_problem(), color_function);
 
         auto certificate = nauty_wrapper::DenseGraph(object_graph).compute_certificate();
 
@@ -62,23 +60,20 @@ TEST(MimirTests, DataSetsObjectGraphSparseTest)
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
 
-    auto search_context = SearchContext(ProblemContext(domain_file, problem_file));
+    auto search_context = SearchContext(ProblemImpl::create(domain_file, problem_file));
 
     auto options = GeneralizedStateSpace::Options();
     options.problem_options.symmetry_pruning = false;
     const auto problem_class_state_space = GeneralizedStateSpace(search_context, options);
 
-    const auto color_function = ProblemColorFunction(search_context.get_problem_context().get_problem());
+    const auto color_function = ProblemColorFunction(*search_context.get_problem());
     auto certificates = std::unordered_set<nauty_wrapper::Certificate, loki::Hash<nauty_wrapper::Certificate>, loki::EqualTo<nauty_wrapper::Certificate>> {};
 
     for (const auto& vertex : problem_class_state_space.get_class_state_space().get_graph().get_vertices())
     {
         const auto state = get_state(problem_class_state_space.get_problem_vertex(vertex));
 
-        const auto object_graph = create_object_graph(state,
-                                                      search_context.get_problem_context().get_problem(),
-                                                      *search_context.get_problem_context().get_repositories(),
-                                                      color_function);
+        const auto object_graph = create_object_graph(state, *search_context.get_problem(), color_function);
 
         auto certificate = nauty_wrapper::SparseGraph(object_graph).compute_certificate();
 

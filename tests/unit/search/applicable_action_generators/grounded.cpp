@@ -15,6 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/algorithms.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
@@ -33,9 +34,9 @@ TEST(MimirTests, SearchApplicableActionGeneratorsGroundedTest)
 {
     const auto domain_file = fs::path(std::string(DATA_DIR) + "miconic-fulladl/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "miconic-fulladl/test_problem.pddl");
-    const auto problem_context = ProblemContext(domain_file, problem_file);
+    const auto problem = ProblemImpl::create(domain_file, problem_file);
 
-    auto delete_free_problem_explorator = DeleteRelaxedProblemExplorator(problem_context);
+    auto delete_free_problem_explorator = DeleteRelaxedProblemExplorator(problem);
     const auto applicable_action_generator_event_handler = std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>();
     const auto applicable_action_generator =
         delete_free_problem_explorator.create_grounded_applicable_action_generator(match_tree::Options(), applicable_action_generator_event_handler);
@@ -44,7 +45,7 @@ TEST(MimirTests, SearchApplicableActionGeneratorsGroundedTest)
         delete_free_problem_explorator.create_grounded_axiom_evaluator(match_tree::Options(), axiom_evaluator_event_handler));
     const auto state_repository = std::make_shared<StateRepository>(axiom_evaluator);
     const auto brfs_event_handler = std::make_shared<DefaultBrFSAlgorithmEventHandler>();
-    const auto search_context = SearchContext(problem_context, applicable_action_generator, state_repository);
+    const auto search_context = SearchContext(problem, applicable_action_generator, state_repository);
 
     const auto result = find_solution_brfs(search_context, std::nullopt, brfs_event_handler);
     EXPECT_EQ(result.status, SearchStatus::SOLVED);

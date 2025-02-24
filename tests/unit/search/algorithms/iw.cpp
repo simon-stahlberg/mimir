@@ -39,7 +39,7 @@ namespace mimir::tests
 class LiftedIWPlanner
 {
 private:
-    ProblemContext m_problem_context;
+    Problem m_problem;
     size_t m_arity;
     std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> m_applicable_action_generator_event_handler;
     std::shared_ptr<LiftedApplicableActionGenerator> m_applicable_action_generator;
@@ -52,16 +52,16 @@ private:
 
 public:
     LiftedIWPlanner(const fs::path& domain_file, const fs::path& problem_file, size_t arity) :
-        m_problem_context(domain_file, problem_file),
+        m_problem(ProblemImpl::create(domain_file, problem_file)),
         m_arity(arity),
         m_applicable_action_generator_event_handler(std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>()),
-        m_applicable_action_generator(std::make_shared<LiftedApplicableActionGenerator>(m_problem_context, m_applicable_action_generator_event_handler)),
+        m_applicable_action_generator(std::make_shared<LiftedApplicableActionGenerator>(m_problem, m_applicable_action_generator_event_handler)),
         m_axiom_evaluator_event_handler(std::make_shared<DefaultLiftedAxiomEvaluatorEventHandler>()),
-        m_axiom_evaluator(std::make_shared<LiftedAxiomEvaluator>(m_problem_context, m_axiom_evaluator_event_handler)),
+        m_axiom_evaluator(std::make_shared<LiftedAxiomEvaluator>(m_problem, m_axiom_evaluator_event_handler)),
         m_state_repository(std::make_shared<StateRepository>(m_axiom_evaluator)),
         m_brfs_event_handler(std::make_shared<DefaultBrFSAlgorithmEventHandler>()),
         m_iw_event_handler(std::make_shared<DefaultIWAlgorithmEventHandler>()),
-        m_search_context(m_problem_context, m_applicable_action_generator, m_state_repository)
+        m_search_context(m_problem, m_applicable_action_generator, m_state_repository)
     {
     }
 
@@ -81,7 +81,7 @@ public:
 class GroundedIWPlanner
 {
 private:
-    ProblemContext m_problem_context;
+    Problem m_problem;
     size_t m_arity;
     DeleteRelaxedProblemExplorator m_delete_relaxed_problem_explorator;
     std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> m_applicable_action_generator_event_handler;
@@ -95,9 +95,9 @@ private:
 
 public:
     GroundedIWPlanner(const fs::path& domain_file, const fs::path& problem_file, size_t arity) :
-        m_problem_context(domain_file, problem_file),
+        m_problem(ProblemImpl::create(domain_file, problem_file)),
         m_arity(arity),
-        m_delete_relaxed_problem_explorator(m_problem_context),
+        m_delete_relaxed_problem_explorator(m_problem),
         m_applicable_action_generator_event_handler(std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>()),
         m_applicable_action_generator(
             m_delete_relaxed_problem_explorator.create_grounded_applicable_action_generator(match_tree::Options(),
@@ -107,7 +107,7 @@ public:
         m_state_repository(std::make_shared<StateRepository>(m_axiom_evaluator)),
         m_brfs_event_handler(std::make_shared<DefaultBrFSAlgorithmEventHandler>()),
         m_iw_event_handler(std::make_shared<DefaultIWAlgorithmEventHandler>()),
-        m_search_context(m_problem_context, m_applicable_action_generator, m_state_repository)
+        m_search_context(m_problem, m_applicable_action_generator, m_state_repository)
     {
     }
 

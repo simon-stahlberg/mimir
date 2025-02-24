@@ -17,6 +17,7 @@
 
 #include "mimir/search/state_repository.hpp"
 
+#include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/axiom_evaluators.hpp"
@@ -34,12 +35,12 @@ TEST(MimirTests, SearchStateRepositoryTest)
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl");
 
-    auto search_context = SearchContext(ProblemContext(domain_file, problem_file), SearchContext::Options(SearchContext::SearchMode::LIFTED));
+    auto search_context = SearchContext(ProblemImpl::create(domain_file, problem_file), SearchContext::Options(SearchContext::SearchMode::LIFTED));
 
     auto& applicable_action_generator = *search_context.get_applicable_action_generator();
     auto& state_repository = *search_context.get_state_repository();
     auto initial_state = state_repository.get_or_create_initial_state();
-    auto initial_state_metric_value = compute_initial_state_metric_value(search_context.get_problem_context().get_problem());
+    auto initial_state_metric_value = compute_initial_state_metric_value(*search_context.get_problem());
 
     for (const auto& action : applicable_action_generator.create_applicable_action_generator(initial_state))
     {

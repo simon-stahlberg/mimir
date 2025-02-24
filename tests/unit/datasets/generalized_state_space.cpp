@@ -17,6 +17,7 @@
 
 #include "mimir/datasets/generalized_state_space.hpp"
 
+#include "mimir/formalism/problem.hpp"
 #include "mimir/search/search_context.hpp"
 
 #include <gtest/gtest.h>
@@ -34,7 +35,7 @@ TEST(MimirTests, DatasetsGeneralizedStateSpaceConstructorTest)
     const auto problem2_file = fs::path(std::string(DATA_DIR) + "spanner/p-1-1-2-1(2).pddl");
 
     auto search_contexts =
-        SearchContextList { SearchContext(ProblemContext(domain_file, problem1_file)), SearchContext(ProblemContext(domain_file, problem2_file)) };
+        SearchContextList { SearchContext(ProblemImpl::create(domain_file, problem1_file)), SearchContext(ProblemImpl::create(domain_file, problem2_file)) };
 
     {
         /* Without symmetry reduction */

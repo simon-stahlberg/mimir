@@ -42,7 +42,7 @@ enum class HeuristicType
 class LiftedAStarPlanner
 {
 private:
-    ProblemContext m_problem_context;
+    Problem m_problem;
     std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> m_applicable_action_generator_event_handler;
     std::shared_ptr<LiftedApplicableActionGenerator> m_applicable_action_generator;
     std::shared_ptr<ILiftedAxiomEvaluatorEventHandler> m_axiom_evaluator_event_handler;
@@ -54,20 +54,20 @@ private:
 
 public:
     LiftedAStarPlanner(const fs::path& domain_file, const fs::path& problem_file, HeuristicType type) :
-        m_problem_context(domain_file, problem_file),
+        m_problem(ProblemImpl::create(domain_file, problem_file)),
         m_applicable_action_generator_event_handler(std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>()),
-        m_applicable_action_generator(std::make_shared<LiftedApplicableActionGenerator>(m_problem_context, m_applicable_action_generator_event_handler)),
+        m_applicable_action_generator(std::make_shared<LiftedApplicableActionGenerator>(m_problem, m_applicable_action_generator_event_handler)),
         m_axiom_evaluator_event_handler(std::make_shared<DefaultLiftedAxiomEvaluatorEventHandler>()),
-        m_axiom_evaluator(std::make_shared<LiftedAxiomEvaluator>(m_problem_context, m_axiom_evaluator_event_handler)),
+        m_axiom_evaluator(std::make_shared<LiftedAxiomEvaluator>(m_problem, m_axiom_evaluator_event_handler)),
         m_state_repository(std::make_shared<StateRepository>(m_axiom_evaluator)),
         m_astar_event_handler(std::make_shared<DefaultAStarAlgorithmEventHandler>(false)),
-        m_search_context(m_problem_context, m_applicable_action_generator, m_state_repository)
+        m_search_context(m_problem, m_applicable_action_generator, m_state_repository)
     {
         switch (type)
         {
             case HeuristicType::BLIND:
             {
-                m_heuristic = std::make_shared<BlindHeuristic>(m_problem_context.get_problem());
+                m_heuristic = std::make_shared<BlindHeuristic>(m_problem);
                 break;
             }
             case HeuristicType::HSTAR:
@@ -98,7 +98,7 @@ public:
 class GroundedAStarPlanner
 {
 private:
-    ProblemContext m_problem_context;
+    Problem m_problem;
     DeleteRelaxedProblemExplorator m_delete_relaxed_problem_explorator;
     std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> m_applicable_action_generator_event_handler;
     std::shared_ptr<GroundedApplicableActionGenerator> m_applicable_action_generator;
@@ -111,8 +111,8 @@ private:
 
 public:
     GroundedAStarPlanner(const fs::path& domain_file, const fs::path& problem_file, HeuristicType type) :
-        m_problem_context(domain_file, problem_file),
-        m_delete_relaxed_problem_explorator(m_problem_context),
+        m_problem(ProblemImpl::create(domain_file, problem_file)),
+        m_delete_relaxed_problem_explorator(m_problem),
         m_applicable_action_generator_event_handler(std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>()),
         m_applicable_action_generator(
             m_delete_relaxed_problem_explorator.create_grounded_applicable_action_generator(match_tree::Options(),
@@ -121,13 +121,13 @@ public:
         m_axiom_evaluator(m_delete_relaxed_problem_explorator.create_grounded_axiom_evaluator(match_tree::Options(), m_axiom_evaluator_event_handler)),
         m_state_repository(std::make_shared<StateRepository>(m_axiom_evaluator)),
         m_astar_event_handler(std::make_shared<DefaultAStarAlgorithmEventHandler>()),
-        m_search_context(m_problem_context, m_applicable_action_generator, m_state_repository)
+        m_search_context(m_problem, m_applicable_action_generator, m_state_repository)
     {
         switch (type)
         {
             case HeuristicType::BLIND:
             {
-                m_heuristic = std::make_shared<BlindHeuristic>(m_problem_context.get_problem());
+                m_heuristic = std::make_shared<BlindHeuristic>(m_problem);
                 break;
             }
             case HeuristicType::HSTAR:

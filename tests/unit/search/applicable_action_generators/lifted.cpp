@@ -15,6 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/algorithms.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
@@ -32,17 +33,16 @@ TEST(MimirTests, SearchApplicableActionGeneratorsLiftedTest)
 {
     const auto domain_file = fs::path(std::string(DATA_DIR) + "miconic-fulladl/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "miconic-fulladl/test_problem.pddl");
-    const auto problem_context = ProblemContext(domain_file, problem_file);
+    const auto problem = ProblemImpl::create(domain_file, problem_file);
 
     const auto applicable_action_generator_event_handler = std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>();
-    const auto applicable_action_generator = std::make_shared<LiftedApplicableActionGenerator>(problem_context, applicable_action_generator_event_handler);
+    const auto applicable_action_generator = std::make_shared<LiftedApplicableActionGenerator>(problem, applicable_action_generator_event_handler);
     const auto axiom_evaluator_event_handler =
         std::dynamic_pointer_cast<ILiftedAxiomEvaluatorEventHandler>(std::make_shared<DefaultLiftedAxiomEvaluatorEventHandler>());
-    const auto axiom_evaluator =
-        std::dynamic_pointer_cast<IAxiomEvaluator>(std::make_shared<LiftedAxiomEvaluator>(problem_context, axiom_evaluator_event_handler));
+    const auto axiom_evaluator = std::dynamic_pointer_cast<IAxiomEvaluator>(std::make_shared<LiftedAxiomEvaluator>(problem, axiom_evaluator_event_handler));
     const auto state_repository = std::make_shared<StateRepository>(axiom_evaluator);
     const auto brfs_event_handler = std::make_shared<DefaultBrFSAlgorithmEventHandler>();
-    const auto search_context = SearchContext(problem_context, applicable_action_generator, state_repository);
+    const auto search_context = SearchContext(problem, applicable_action_generator, state_repository);
 
     const auto result = find_solution_brfs(search_context, std::nullopt, brfs_event_handler);
     EXPECT_EQ(result.status, SearchStatus::SOLVED);

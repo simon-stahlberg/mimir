@@ -43,8 +43,10 @@ private:
     StartSymbolsContainer m_start_symbols;
     DerivationRulesContainer m_derivation_rules;
 
+    Domain m_domain;
+
 public:
-    Grammar(ConstructorRepositories repositories, StartSymbolsContainer start_symbols, DerivationRulesContainer derivation_rules);
+    Grammar(ConstructorRepositories repositories, StartSymbolsContainer start_symbols, DerivationRulesContainer derivation_rules, Domain domain);
 
     /// @brief Create a grammar from a BNF description for a given domain.
     /// The domain is used for error checking only to ensure that predicates or constants are available.

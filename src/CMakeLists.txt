@@ -1,6 +1,4 @@
 # List of subdirectory names
-# set(SUBDIRECTORIES "algorithms" "buffering" "common" "datasets" "formalism" "graphs" "search" "languages")
-
 set(SUBDIRECTORIES "algorithms" "buffering" "common" "formalism" "search" "datasets" "graphs" "languages")
 
 # Initialize empty lists for source and header files

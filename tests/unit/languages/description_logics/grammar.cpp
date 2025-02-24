@@ -20,6 +20,7 @@
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/parser.hpp"
 #include "mimir/formalism/predicate.hpp"
+#include "mimir/formalism/problem.hpp"
 #include "mimir/languages/description_logics/constructor_repositories.hpp"
 #include "mimir/languages/description_logics/constructors.hpp"
 
@@ -50,9 +51,10 @@ TEST(MimirTests, LanguagesDescriptionLogicsGrammarParseTest)
         <role> ::= <role_at_state> | <role_at_goal> | <role_undefined>
     )");
 
-        auto parser = PDDLParser(fs::path(std::string(DATA_DIR) + "gripper/domain.pddl"), fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl"));
+        auto problem =
+            ProblemImpl::create(fs::path(std::string(DATA_DIR) + "gripper/domain.pddl"), fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl"));
 
-        EXPECT_ANY_THROW(dl::grammar::Grammar(bnf_description, parser.get_domain()));
+        EXPECT_ANY_THROW(dl::grammar::Grammar(bnf_description, problem->get_domain()));
     }
 
     {
@@ -71,9 +73,10 @@ TEST(MimirTests, LanguagesDescriptionLogicsGrammarParseTest)
         <role> ::= <role_at_state> | <role_at_goal> | <role_intersection>
     )");
 
-        auto parser = PDDLParser(fs::path(std::string(DATA_DIR) + "gripper/domain.pddl"), fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl"));
+        auto problem =
+            ProblemImpl::create(fs::path(std::string(DATA_DIR) + "gripper/domain.pddl"), fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl"));
 
-        EXPECT_ANY_THROW(dl::grammar::Grammar(bnf_description, parser.get_domain()));
+        EXPECT_ANY_THROW(dl::grammar::Grammar(bnf_description, problem->get_domain()));
     }
 
     {
@@ -95,9 +98,10 @@ TEST(MimirTests, LanguagesDescriptionLogicsGrammarParseTest)
         <role> ::= <role_at_state> | <role_at_goal> | <role_intersection>
     )");
 
-        auto parser = PDDLParser(fs::path(std::string(DATA_DIR) + "gripper/domain.pddl"), fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl"));
+        auto problem =
+            ProblemImpl::create(fs::path(std::string(DATA_DIR) + "gripper/domain.pddl"), fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl"));
 
-        EXPECT_ANY_THROW(dl::grammar::Grammar(bnf_description, parser.get_domain()));
+        EXPECT_ANY_THROW(dl::grammar::Grammar(bnf_description, problem->get_domain()));
     }
 
     {
@@ -119,9 +123,10 @@ TEST(MimirTests, LanguagesDescriptionLogicsGrammarParseTest)
         <role> ::= <role_at_state> | <role_at_goal> | <role_intersection>
     )");
 
-        auto parser = PDDLParser(fs::path(std::string(DATA_DIR) + "gripper/domain.pddl"), fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl"));
+        auto problem =
+            ProblemImpl::create(fs::path(std::string(DATA_DIR) + "gripper/domain.pddl"), fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl"));
 
-        EXPECT_ANY_THROW(dl::grammar::Grammar(bnf_description, parser.get_domain()));
+        EXPECT_ANY_THROW(dl::grammar::Grammar(bnf_description, problem->get_domain()));
     }
 }
 
@@ -145,18 +150,18 @@ TEST(MimirTests, LanguagesDescriptionLogicsGrammarTestMatchTest)
         <role> ::= <role_at_state> | <role_at_goal> | <role_intersection>
 )");
 
-    auto parser = PDDLParser(fs::path(std::string(DATA_DIR) + "gripper/domain.pddl"), fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl"));
+    auto problem = ProblemImpl::create(fs::path(std::string(DATA_DIR) + "gripper/domain.pddl"), fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl"));
 
-    auto grammar = dl::grammar::Grammar(bnf_description, parser.get_domain());
+    auto grammar = dl::grammar::Grammar(bnf_description, problem->get_domain());
 
     auto constructor_repositories = dl::ConstructorRepositories();
 
-    const auto predicate_at_robby = parser.get_domain()->get_name_to_predicate<Fluent>().at("at-robby");
+    const auto predicate_at_robby = problem->get_domain()->get_name_to_predicate<Fluent>().at("at-robby");
     const auto concept_at_robby =
         boost::hana::at_key(constructor_repositories, boost::hana::type<dl::ConceptAtomicStateImpl<Fluent>> {}).get_or_create(predicate_at_robby);
     EXPECT_TRUE(grammar.test_match(concept_at_robby));
 
-    const auto predicate_ball = parser.get_domain()->get_name_to_predicate<Static>().at("ball");
+    const auto predicate_ball = problem->get_domain()->get_name_to_predicate<Static>().at("ball");
     const auto concept_ball =
         boost::hana::at_key(constructor_repositories, boost::hana::type<dl::ConceptAtomicStateImpl<Static>> {}).get_or_create(predicate_ball);
     EXPECT_FALSE(grammar.test_match(concept_ball));

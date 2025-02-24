@@ -29,7 +29,7 @@
 namespace mimir::dl::grammar
 {
 
-static Constructor<Concept> parse(const dl::ast::Constructor<Concept>& node, Domain domain, ConstructorRepositories& ref_repositories)
+static Constructor<Concept> parse(const dl::ast::Constructor<Concept>& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
     return boost::apply_visitor(
         [&](const auto& arg) -> Constructor<Concept>
@@ -54,7 +54,7 @@ static Constructor<Concept> parse(const dl::ast::Constructor<Concept>& node, Dom
         node);
 }
 
-static Constructor<Role> parse(const dl::ast::Constructor<Role>& node, Domain domain, ConstructorRepositories& ref_repositories)
+static Constructor<Role> parse(const dl::ast::Constructor<Role>& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
     return boost::apply_visitor(
         [&](const auto& arg) -> Constructor<Role>
@@ -78,53 +78,53 @@ static Constructor<Role> parse(const dl::ast::Constructor<Role>& node, Domain do
 }
 
 template<ConceptOrRole D>
-static NonTerminal<D> parse(const dl::ast::NonTerminal<D>& node, Domain domain, ConstructorRepositories& ref_repositories)
+static NonTerminal<D> parse(const dl::ast::NonTerminal<D>& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
     return ref_repositories.get_or_create_nonterminal<D>(node.name);
 }
 
 template<ConceptOrRole D>
-static ConstructorOrNonTerminal<D> parse(const dl::ast::ConstructorOrNonTerminal<D>& node, Domain domain, ConstructorRepositories& ref_repositories)
+static ConstructorOrNonTerminal<D> parse(const dl::ast::ConstructorOrNonTerminal<D>& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
     return boost::apply_visitor([&](const auto& arg) -> ConstructorOrNonTerminal<D>
                                 { return ref_repositories.template get_or_create_constructor_or_nonterminal<D>(parse(arg, domain, ref_repositories)); },
                                 node);
 }
 
-static ConceptBot parse(const dl::ast::ConceptBot& node, Domain domain, ConstructorRepositories& ref_repositories)
+static ConceptBot parse(const dl::ast::ConceptBot& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
     return ref_repositories.get_or_create_concept_bot();
 }
 
-static ConceptTop parse(const dl::ast::ConceptTop& node, Domain domain, ConstructorRepositories& ref_repositories)
+static ConceptTop parse(const dl::ast::ConceptTop& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
     return ref_repositories.get_or_create_concept_top();
 }
 
 static std::variant<ConceptAtomicState<Static>, ConceptAtomicState<Fluent>, ConceptAtomicState<Derived>>
-parse(const dl::ast::ConceptAtomicState& node, Domain domain, ConstructorRepositories& ref_repositories)
+parse(const dl::ast::ConceptAtomicState& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
-    if (domain->get_name_to_predicate<Static>().count(node.predicate_name))
+    if (domain.get_name_to_predicate<Static>().count(node.predicate_name))
     {
-        const auto predicate = domain->get_name_to_predicate<Static>().at(node.predicate_name);
+        const auto predicate = domain.get_name_to_predicate<Static>().at(node.predicate_name);
         if (predicate->get_arity() != 1)
         {
             throw std::runtime_error("Cannot construct ConceptAtomicState from predicates with arity != 1.");
         }
         return ref_repositories.template get_or_create_concept_atomic_state<Static>(predicate);
     }
-    else if (domain->get_name_to_predicate<Fluent>().count(node.predicate_name))
+    else if (domain.get_name_to_predicate<Fluent>().count(node.predicate_name))
     {
-        const auto predicate = domain->get_name_to_predicate<Fluent>().at(node.predicate_name);
+        const auto predicate = domain.get_name_to_predicate<Fluent>().at(node.predicate_name);
         if (predicate->get_arity() != 1)
         {
             throw std::runtime_error("Cannot construct ConceptAtomicState from predicates with arity != 1.");
         }
         return ref_repositories.template get_or_create_concept_atomic_state<Fluent>(predicate);
     }
-    else if (domain->get_name_to_predicate<Derived>().count(node.predicate_name))
+    else if (domain.get_name_to_predicate<Derived>().count(node.predicate_name))
     {
-        const auto predicate = domain->get_name_to_predicate<Derived>().at(node.predicate_name);
+        const auto predicate = domain.get_name_to_predicate<Derived>().at(node.predicate_name);
         if (predicate->get_arity() != 1)
         {
             throw std::runtime_error("Cannot construct ConceptAtomicState from predicates with arity != 1.");
@@ -138,29 +138,29 @@ parse(const dl::ast::ConceptAtomicState& node, Domain domain, ConstructorReposit
 }
 
 static std::variant<ConceptAtomicGoal<Static>, ConceptAtomicGoal<Fluent>, ConceptAtomicGoal<Derived>>
-parse(const dl::ast::ConceptAtomicGoal& node, Domain domain, ConstructorRepositories& ref_repositories)
+parse(const dl::ast::ConceptAtomicGoal& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
-    if (domain->get_name_to_predicate<Static>().count(node.predicate_name))
+    if (domain.get_name_to_predicate<Static>().count(node.predicate_name))
     {
-        const auto predicate = domain->get_name_to_predicate<Static>().at(node.predicate_name);
+        const auto predicate = domain.get_name_to_predicate<Static>().at(node.predicate_name);
         if (predicate->get_arity() != 1)
         {
             throw std::runtime_error("Cannot construct ConceptAtomicGoal from predicates with arity != 1.");
         }
         return ref_repositories.template get_or_create_concept_atomic_goal<Static>(predicate, node.is_negated);
     }
-    else if (domain->get_name_to_predicate<Fluent>().count(node.predicate_name))
+    else if (domain.get_name_to_predicate<Fluent>().count(node.predicate_name))
     {
-        const auto predicate = domain->get_name_to_predicate<Fluent>().at(node.predicate_name);
+        const auto predicate = domain.get_name_to_predicate<Fluent>().at(node.predicate_name);
         if (predicate->get_arity() != 1)
         {
             throw std::runtime_error("Cannot construct ConceptAtomicGoal from predicates with arity != 1.");
         }
         return ref_repositories.template get_or_create_concept_atomic_goal<Fluent>(predicate, node.is_negated);
     }
-    else if (domain->get_name_to_predicate<Derived>().count(node.predicate_name))
+    else if (domain.get_name_to_predicate<Derived>().count(node.predicate_name))
     {
-        const auto predicate = domain->get_name_to_predicate<Derived>().at(node.predicate_name);
+        const auto predicate = domain.get_name_to_predicate<Derived>().at(node.predicate_name);
         if (predicate->get_arity() != 1)
         {
             throw std::runtime_error("Cannot construct ConceptAtomicGoal from predicates with arity != 1.");
@@ -173,86 +173,88 @@ parse(const dl::ast::ConceptAtomicGoal& node, Domain domain, ConstructorReposito
     }
 }
 
-static ConceptIntersection parse(const dl::ast::ConceptIntersection& node, Domain domain, ConstructorRepositories& ref_repositories)
+static ConceptIntersection parse(const dl::ast::ConceptIntersection& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
     return ref_repositories.get_or_create_concept_intersection(parse(node.concept_or_non_terminal_left, domain, ref_repositories),
                                                                parse(node.concept_or_non_terminal_right, domain, ref_repositories));
 }
 
-static ConceptUnion parse(const dl::ast::ConceptUnion& node, Domain domain, ConstructorRepositories& ref_repositories)
+static ConceptUnion parse(const dl::ast::ConceptUnion& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
     return ref_repositories.get_or_create_concept_union(parse(node.concept_or_non_terminal_left, domain, ref_repositories),
                                                         parse(node.concept_or_non_terminal_right, domain, ref_repositories));
 }
 
-static ConceptNegation parse(const dl::ast::ConceptNegation& node, Domain domain, ConstructorRepositories& ref_repositories)
+static ConceptNegation parse(const dl::ast::ConceptNegation& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
     return ref_repositories.get_or_create_concept_negation(parse(node.concept_or_non_terminal, domain, ref_repositories));
 }
 
-static ConceptValueRestriction parse(const dl::ast::ConceptValueRestriction& node, Domain domain, ConstructorRepositories& ref_repositories)
+static ConceptValueRestriction parse(const dl::ast::ConceptValueRestriction& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
     return ref_repositories.get_or_create_concept_value_restriction(parse(node.role_or_non_terminal, domain, ref_repositories),
                                                                     parse(node.concept_or_non_terminal, domain, ref_repositories));
 }
 
-static ConceptExistentialQuantification parse(const dl::ast::ConceptExistentialQuantification& node, Domain domain, ConstructorRepositories& ref_repositories)
+static ConceptExistentialQuantification
+parse(const dl::ast::ConceptExistentialQuantification& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
     return ref_repositories.get_or_create_concept_existential_quantification(parse(node.role_or_non_terminal, domain, ref_repositories),
                                                                              parse(node.concept_or_non_terminal, domain, ref_repositories));
 }
 
-static ConceptRoleValueMapContainment parse(const dl::ast::ConceptRoleValueMapContainment& node, Domain domain, ConstructorRepositories& ref_repositories)
+static ConceptRoleValueMapContainment
+parse(const dl::ast::ConceptRoleValueMapContainment& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
     return ref_repositories.get_or_create_concept_role_value_map_containment(parse(node.role_or_non_terminal_left, domain, ref_repositories),
                                                                              parse(node.role_or_non_terminal_right, domain, ref_repositories));
 }
 
-static ConceptRoleValueMapEquality parse(const dl::ast::ConceptRoleValueMapEquality& node, Domain domain, ConstructorRepositories& ref_repositories)
+static ConceptRoleValueMapEquality parse(const dl::ast::ConceptRoleValueMapEquality& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
     return ref_repositories.get_or_create_concept_role_value_map_equality(parse(node.role_or_non_terminal_left, domain, ref_repositories),
                                                                           parse(node.role_or_non_terminal_right, domain, ref_repositories));
 }
 
-static ConceptNominal parse(const dl::ast::ConceptNominal& node, Domain domain, ConstructorRepositories& ref_repositories)
+static ConceptNominal parse(const dl::ast::ConceptNominal& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
-    if (!domain->get_name_to_constants().contains(node.object_name))
+    if (!domain.get_name_to_constants().contains(node.object_name))
     {
         throw std::runtime_error("Domain has no constant with name \"" + node.object_name + "\".");
     }
 
-    return ref_repositories.get_or_create_concept_nominal(domain->get_name_to_constants().at(node.object_name));
+    return ref_repositories.get_or_create_concept_nominal(domain.get_name_to_constants().at(node.object_name));
 }
 
-static RoleUniversal parse(const dl::ast::RoleUniversal& node, Domain domain, ConstructorRepositories& ref_repositories)
+static RoleUniversal parse(const dl::ast::RoleUniversal& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
     return ref_repositories.get_or_create_role_universal();
 }
 
 static std::variant<RoleAtomicState<Static>, RoleAtomicState<Fluent>, RoleAtomicState<Derived>>
-parse(const dl::ast::RoleAtomicState& node, Domain domain, ConstructorRepositories& ref_repositories)
+parse(const dl::ast::RoleAtomicState& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
-    if (domain->get_name_to_predicate<Static>().count(node.predicate_name))
+    if (domain.get_name_to_predicate<Static>().count(node.predicate_name))
     {
-        const auto predicate = domain->get_name_to_predicate<Static>().at(node.predicate_name);
+        const auto predicate = domain.get_name_to_predicate<Static>().at(node.predicate_name);
         if (predicate->get_arity() != 2)
         {
             throw std::runtime_error("Cannot construct RoleAtomicState from predicates with arity != 2.");
         }
         return ref_repositories.template get_or_create_role_atomic_state<Static>(predicate);
     }
-    else if (domain->get_name_to_predicate<Fluent>().count(node.predicate_name))
+    else if (domain.get_name_to_predicate<Fluent>().count(node.predicate_name))
     {
-        const auto predicate = domain->get_name_to_predicate<Fluent>().at(node.predicate_name);
+        const auto predicate = domain.get_name_to_predicate<Fluent>().at(node.predicate_name);
         if (predicate->get_arity() != 2)
         {
             throw std::runtime_error("Cannot construct RoleAtomicState from predicates with arity != 2.");
         }
         return ref_repositories.template get_or_create_role_atomic_state<Fluent>(predicate);
     }
-    else if (domain->get_name_to_predicate<Derived>().count(node.predicate_name))
+    else if (domain.get_name_to_predicate<Derived>().count(node.predicate_name))
     {
-        const auto predicate = domain->get_name_to_predicate<Derived>().at(node.predicate_name);
+        const auto predicate = domain.get_name_to_predicate<Derived>().at(node.predicate_name);
         if (predicate->get_arity() != 2)
         {
             throw std::runtime_error("Cannot construct RoleAtomicState from predicates with arity != 2.");
@@ -266,29 +268,29 @@ parse(const dl::ast::RoleAtomicState& node, Domain domain, ConstructorRepositori
 }
 
 static std::variant<RoleAtomicGoal<Static>, RoleAtomicGoal<Fluent>, RoleAtomicGoal<Derived>>
-parse(const dl::ast::RoleAtomicGoal& node, Domain domain, ConstructorRepositories& ref_repositories)
+parse(const dl::ast::RoleAtomicGoal& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
-    if (domain->get_name_to_predicate<Static>().count(node.predicate_name))
+    if (domain.get_name_to_predicate<Static>().count(node.predicate_name))
     {
-        const auto predicate = domain->get_name_to_predicate<Static>().at(node.predicate_name);
+        const auto predicate = domain.get_name_to_predicate<Static>().at(node.predicate_name);
         if (predicate->get_arity() != 2)
         {
             throw std::runtime_error("Cannot construct RoleAtomicGoal from predicates with arity != 2.");
         }
         return ref_repositories.template get_or_create_role_atomic_goal<Static>(predicate, node.is_negated);
     }
-    else if (domain->get_name_to_predicate<Fluent>().count(node.predicate_name))
+    else if (domain.get_name_to_predicate<Fluent>().count(node.predicate_name))
     {
-        const auto predicate = domain->get_name_to_predicate<Fluent>().at(node.predicate_name);
+        const auto predicate = domain.get_name_to_predicate<Fluent>().at(node.predicate_name);
         if (predicate->get_arity() != 2)
         {
             throw std::runtime_error("Cannot construct RoleAtomicGoal from predicates with arity != 2.");
         }
         return ref_repositories.template get_or_create_role_atomic_goal<Fluent>(predicate, node.is_negated);
     }
-    else if (domain->get_name_to_predicate<Derived>().count(node.predicate_name))
+    else if (domain.get_name_to_predicate<Derived>().count(node.predicate_name))
     {
-        const auto predicate = domain->get_name_to_predicate<Derived>().at(node.predicate_name);
+        const auto predicate = domain.get_name_to_predicate<Derived>().at(node.predicate_name);
         if (predicate->get_arity() != 2)
         {
             throw std::runtime_error("Cannot construct RoleAtomicGoal from predicates with arity != 2.");
@@ -301,51 +303,52 @@ parse(const dl::ast::RoleAtomicGoal& node, Domain domain, ConstructorRepositorie
     }
 }
 
-static RoleIntersection parse(const dl::ast::RoleIntersection& node, Domain domain, ConstructorRepositories& ref_repositories)
+static RoleIntersection parse(const dl::ast::RoleIntersection& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
     return ref_repositories.get_or_create_role_intersection(parse(node.role_or_non_terminal_left, domain, ref_repositories),
                                                             parse(node.role_or_non_terminal_right, domain, ref_repositories));
 }
 
-static RoleUnion parse(const dl::ast::RoleUnion& node, Domain domain, ConstructorRepositories& ref_repositories)
+static RoleUnion parse(const dl::ast::RoleUnion& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
     return ref_repositories.get_or_create_role_union(parse(node.role_or_non_terminal_left, domain, ref_repositories),
                                                      parse(node.role_or_non_terminal_right, domain, ref_repositories));
 }
 
-static RoleComplement parse(const dl::ast::RoleComplement& node, Domain domain, ConstructorRepositories& ref_repositories)
+static RoleComplement parse(const dl::ast::RoleComplement& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
     return ref_repositories.get_or_create_role_complement(parse(node.role_or_non_terminal, domain, ref_repositories));
 }
 
-static RoleInverse parse(const dl::ast::RoleInverse& node, Domain domain, ConstructorRepositories& ref_repositories)
+static RoleInverse parse(const dl::ast::RoleInverse& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
     return ref_repositories.get_or_create_role_inverse(parse(node.role_or_non_terminal, domain, ref_repositories));
 }
 
-static RoleComposition parse(const dl::ast::RoleComposition& node, Domain domain, ConstructorRepositories& ref_repositories)
+static RoleComposition parse(const dl::ast::RoleComposition& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
     return ref_repositories.get_or_create_role_composition(parse(node.role_or_non_terminal_left, domain, ref_repositories),
                                                            parse(node.role_or_non_terminal_right, domain, ref_repositories));
 }
 
-static RoleTransitiveClosure parse(const dl::ast::RoleTransitiveClosure& node, Domain domain, ConstructorRepositories& ref_repositories)
+static RoleTransitiveClosure parse(const dl::ast::RoleTransitiveClosure& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
     return ref_repositories.get_or_create_role_transitive_closure(parse(node.role_or_non_terminal, domain, ref_repositories));
 }
 
-static RoleReflexiveTransitiveClosure parse(const dl::ast::RoleReflexiveTransitiveClosure& node, Domain domain, ConstructorRepositories& ref_repositories)
+static RoleReflexiveTransitiveClosure
+parse(const dl::ast::RoleReflexiveTransitiveClosure& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
     return ref_repositories.get_or_create_role_reflexive_transitive_closure(parse(node.role_or_non_terminal, domain, ref_repositories));
 }
 
-static RoleRestriction parse(const dl::ast::RoleRestriction& node, Domain domain, ConstructorRepositories& ref_repositories)
+static RoleRestriction parse(const dl::ast::RoleRestriction& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
     return ref_repositories.get_or_create_role_restriction(parse(node.role_or_non_terminal, domain, ref_repositories),
                                                            parse(node.concept_or_non_terminal, domain, ref_repositories));
 }
 
-static RoleIdentity parse(const dl::ast::RoleIdentity& node, Domain domain, ConstructorRepositories& ref_repositories)
+static RoleIdentity parse(const dl::ast::RoleIdentity& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
     return ref_repositories.get_or_create_role_identity(parse(node.concept_or_non_terminal, domain, ref_repositories));
 }
@@ -355,7 +358,7 @@ static RoleIdentity parse(const dl::ast::RoleIdentity& node, Domain domain, Cons
  */
 
 template<ConceptOrRole D>
-static DerivationRule<D> parse(const dl::ast::DerivationRule<D>& node, Domain domain, ConstructorRepositories& ref_repositories)
+static DerivationRule<D> parse(const dl::ast::DerivationRule<D>& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
     auto non_terminal = parse<D>(node.non_terminal, domain, ref_repositories);
     auto constructor_or_non_terminals = ConstructorOrNonTerminalList<D> {};
@@ -366,7 +369,7 @@ static DerivationRule<D> parse(const dl::ast::DerivationRule<D>& node, Domain do
     return ref_repositories.template get_or_create_derivation_rule<D>(non_terminal, std::move(constructor_or_non_terminals));
 }
 
-static StartSymbolsContainer parse(const dl::ast::GrammarHead& node, Domain domain, ConstructorRepositories& ref_repositories)
+static StartSymbolsContainer parse(const dl::ast::GrammarHead& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
     auto start_symbols = StartSymbolsContainer();
 
@@ -383,7 +386,7 @@ static StartSymbolsContainer parse(const dl::ast::GrammarHead& node, Domain doma
     return start_symbols;
 }
 
-static DerivationRulesContainer parse(const dl::ast::GrammarBody& node, Domain domain, ConstructorRepositories& ref_repositories)
+static DerivationRulesContainer parse(const dl::ast::GrammarBody& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
     auto derivation_rules = DerivationRulesContainer {};
 
@@ -395,21 +398,16 @@ static DerivationRulesContainer parse(const dl::ast::GrammarBody& node, Domain d
     return derivation_rules;
 }
 
-Grammar parse(const dl::ast::Grammar& node, Domain domain)
-{
-    auto repositories = ConstructorRepositories();
-    auto start_symbols = parse(node.head, domain, repositories);
-    auto derivation_rules = parse(node.body, domain, repositories);
-
-    return Grammar(std::move(repositories), std::move(start_symbols), std::move(derivation_rules));
-}
-
 Grammar parse(const std::string& bnf_description, Domain domain)
 {
     auto ast = dl::ast::Grammar();
     dl::parse_ast(bnf_description, dl::grammar_parser(), ast);
 
-    return parse(ast, domain);
+    auto repositories = ConstructorRepositories();
+    auto start_symbols = parse(ast.head, *domain, repositories);
+    auto derivation_rules = parse(ast.body, *domain, repositories);
+
+    return Grammar(std::move(repositories), std::move(start_symbols), std::move(derivation_rules), std::move(domain));
 }
 
 }

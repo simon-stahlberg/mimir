@@ -28,11 +28,6 @@ add_gtest(datasets_generalized_state_space_test            "datasets/generalized
 add_gtest(datasets_knowledge_base_test                     "datasets/knowledge_base.cpp")
 add_gtest(datasets_object_graph_test                       "datasets/object_graph.cpp")
 
-add_gtest(formalism_to_disjunctive_normal_form_test        "formalism/translators/to_disjunctive_normal_form.cpp")
-add_gtest(formalism_to_negation_normal_form_test           "formalism/translators/to_negation_normal_form.cpp")
-add_gtest(formalism_remove_types_test                      "formalism/translators/remove_types.cpp")
-add_gtest(formalism_remove_universal_quantifiers_test      "formalism/translators/remove_universal_quantifiers.cpp")
-
 add_gtest(graphs_algorithms_color_refinement_test          "graphs/algorithms/color_refinement.cpp")
 add_gtest(graphs_algorithms_folklore_weisfeiler_leman_test "graphs/algorithms/folklore_weisfeiler_leman.cpp")
 add_gtest(graphs_static_graph_boost_adapter_test           "graphs/static_graph_boost_adapter.cpp")
