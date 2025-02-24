@@ -172,14 +172,6 @@ ProblemImpl::ProblemImpl(Index index,
                    std::back_inserter(m_positive_static_initial_atoms_indices),
                    [](unsigned long val) { return static_cast<Index>(val); });
 
-    for (const auto& x : m_domain->get_predicates<Static>())
-    {
-        std::cout << x->get_index() << " " << *x << std::endl;
-    }
-    for (const auto& y : m_positive_static_initial_atoms)
-    {
-        std::cout << y->get_predicate()->get_index() << " " << *y->get_predicate() << " " << *y << std::endl;
-    }
     m_positive_static_initial_assignment_set.insert_ground_atoms(m_positive_static_initial_atoms);
 
     // As the ground functions in the goal might not necessarily be defined, we fill the gaps with undefined.
