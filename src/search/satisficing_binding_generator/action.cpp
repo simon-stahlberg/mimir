@@ -43,16 +43,36 @@ bool ActionSatisficingBindingGenerator::is_valid_binding_impl(const DenseState& 
 template<FluentOrAuxiliary F>
 bool ActionSatisficingBindingGenerator::is_valid_binding(NumericEffect<F> effect, const FlatDoubleList& fluent_numeric_variables, const ObjectList& binding)
 {
-    auto& problem = *this->m_problem;
-
-    return (evaluate(problem.ground(effect->get_function_expression(), binding), problem.get_function_to_value<Static>(), fluent_numeric_variables)
-            != UNDEFINED_CONTINUOUS_COST);
+    throw std::logic_error("Should not be called.");
 }
 
-template bool
-ActionSatisficingBindingGenerator::is_valid_binding(NumericEffect<Fluent> effect, const FlatDoubleList& fluent_numeric_variables, const ObjectList& binding);
-template bool
-ActionSatisficingBindingGenerator::is_valid_binding(NumericEffect<Auxiliary> effect, const FlatDoubleList& fluent_numeric_variables, const ObjectList& binding);
+template<>
+bool ActionSatisficingBindingGenerator::is_valid_binding(NumericEffect<Fluent> effect,
+                                                         const FlatDoubleList& fluent_numeric_variables,
+                                                         const ObjectList& binding)
+{
+    // For fluent, we have to check that the target function is well-defined.
+    const auto ground_target_function = m_problem->ground(effect->get_function(), binding);
+    const auto ground_function_expression = m_problem->ground(effect->get_function_expression(), binding);
+
+    const auto result =
+        (ground_target_function->get_index() < fluent_numeric_variables.size())
+        && (fluent_numeric_variables[ground_target_function->get_index()] != UNDEFINED_CONTINUOUS_COST)
+        && (evaluate(ground_function_expression, m_problem->get_function_to_value<Static>(), fluent_numeric_variables) != UNDEFINED_CONTINUOUS_COST);
+
+    return result;
+}
+
+template<>
+bool ActionSatisficingBindingGenerator::is_valid_binding(NumericEffect<Auxiliary> effect,
+                                                         const FlatDoubleList& fluent_numeric_variables,
+                                                         const ObjectList& binding)
+{
+    // For auxiliary total-cost, we assume it is well-defined in the initial state.
+    const auto ground_function_expression = m_problem->ground(effect->get_function_expression(), binding);
+
+    return (evaluate(ground_function_expression, m_problem->get_function_to_value<Static>(), fluent_numeric_variables) != UNDEFINED_CONTINUOUS_COST);
+}
 
 template<FluentOrAuxiliary F>
 bool ActionSatisficingBindingGenerator::is_valid_binding(const NumericEffectList<F>& effects,
@@ -61,7 +81,7 @@ bool ActionSatisficingBindingGenerator::is_valid_binding(const NumericEffectList
 {
     for (const auto& effect : effects)
     {
-        if (is_valid_binding(effect, fluent_numeric_variables, binding) == UNDEFINED_CONTINUOUS_COST)
+        if (!is_valid_binding(effect, fluent_numeric_variables, binding))
         {
             return false;
         }

@@ -1140,6 +1140,10 @@ Problem ToMimirStructures::translate(const loki::Problem& problem, ProblemBuilde
             },
             static_or_fluent_or_derived_ground_literal);
     }
+    static_initial_literals = uniquify_elements(static_initial_literals);  ///< filter duplicates
+    fluent_initial_literals = uniquify_elements(fluent_initial_literals);  ///< filter duplicates
+    assert(derived_initial_literals.empty());
+
     auto static_function_values = GroundFunctionValueList<Static> {};
     auto fluent_function_values = GroundFunctionValueList<Fluent> {};
     auto auxiliary_function_value = std::optional<GroundFunctionValue<Auxiliary>> {};
