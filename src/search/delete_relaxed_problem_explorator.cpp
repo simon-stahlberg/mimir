@@ -149,8 +149,6 @@ DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator(const match_tree
 
             auto ground_axiom = problem.ground(axiom, std::move(binding));
 
-            std::cout << std::make_tuple(ground_axiom, std::cref(problem)) << std::endl;
-
             if (is_statically_applicable(ground_axiom->get_conjunctive_condition(), problem.get_static_initial_positive_atoms_bitset()))
             {
                 ground_axiom_partitioning.at(axiom_to_partition.at(axiom)).push_back(ground_axiom);

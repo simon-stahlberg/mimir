@@ -118,8 +118,6 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state)
 
                     const auto ground_axiom = m_problem->ground(axiom, std::move(binding));
 
-                    std::cout << std::make_tuple(ground_axiom, std::cref(problem)) << std::endl;
-
                     assert(is_applicable(ground_axiom, problem, dense_state));
 
                     m_event_handler->on_ground_axiom(ground_axiom);

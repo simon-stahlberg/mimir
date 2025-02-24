@@ -17,8 +17,10 @@
 
 #include "mimir/search/applicable_action_generators/lifted.hpp"
 
+#include "mimir/common/printers.hpp"
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/ground_action.hpp"
+#include "mimir/formalism/object.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/applicability.hpp"

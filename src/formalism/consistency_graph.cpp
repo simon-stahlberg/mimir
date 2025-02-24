@@ -619,6 +619,7 @@ std::tuple<Vertices, std::vector<IndexList>, std::vector<IndexList>> StaticConsi
         {
             const auto object_index = object->get_index();
             const auto vertex_index = static_cast<Index>(vertices.size());
+
             auto vertex = Vertex(vertex_index, parameter_index, object_index);
 
             if (vertex.consistent_literals(static_conditions, static_assignment_set))
@@ -687,7 +688,7 @@ namespace mimir
 template<>
 std::ostream& operator<<(std::ostream& out, const std::tuple<const consistency_graph::StaticConsistencyGraph&, const ProblemImpl&>& data)
 {
-    const auto& [graph, pddl_repositories] = data;
+    const auto& [graph, problem] = data;
 
     const auto create_node = [](const consistency_graph::Vertex& vertex, const ProblemImpl& problem, std::ostream& out)
     {
@@ -703,7 +704,7 @@ std::ostream& operator<<(std::ostream& out, const std::tuple<const consistency_g
     // Define the nodes
     for (const auto& vertex : graph.get_vertices())
     {
-        create_node(vertex, pddl_repositories, out);
+        create_node(vertex, problem, out);
     }
     // Define the edges
     for (const auto& edge : graph.get_edges())

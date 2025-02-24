@@ -18,6 +18,7 @@
 #ifndef MIMIR_SEARCH_SATISFICING_BINDING_GENERATOR_BASE_IMPL_HPP_
 #define MIMIR_SEARCH_SATISFICING_BINDING_GENERATOR_BASE_IMPL_HPP_
 
+#include "mimir/formalism/consistency_graph.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/effects.hpp"
@@ -221,7 +222,6 @@ mimir::generator<ObjectList> SatisficingBindingGenerator<Derived_>::general_case
     // parameters) tends to be very small.
 
     const auto& problem = *m_problem;
-    const auto& pddl_repositories = problem.get_repositories();
 
     const auto& vertices = m_static_consistency_graph.get_vertices();
     const auto& partitions = m_static_consistency_graph.get_vertices_by_parameter_index();
@@ -234,7 +234,7 @@ mimir::generator<ObjectList> SatisficingBindingGenerator<Derived_>::general_case
             const auto& vertex = vertices[clique[index]];
             const auto parameter_index = vertex.get_parameter_index();
             const auto object_index = vertex.get_object_index();
-            binding[parameter_index] = pddl_repositories.get_object(object_index);
+            binding[parameter_index] = problem.get_problem_and_domain_objects()[object_index];
         }
 
         if (is_valid_binding(dense_state, binding))
@@ -245,7 +245,7 @@ mimir::generator<ObjectList> SatisficingBindingGenerator<Derived_>::general_case
         {
             m_event_handler->on_invalid_binding(binding, problem);
         }
-    };
+    }
 }
 
 template<typename Derived_>
@@ -395,7 +395,6 @@ const consistency_graph::StaticConsistencyGraph& SatisficingBindingGenerator<Der
 {
     return m_static_consistency_graph;
 }
-
 }
 
 #endif
