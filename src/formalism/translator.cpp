@@ -39,6 +39,10 @@ DomainTranslationResult translate(const Domain& domain)
     auto builder = DomainBuilder();
     auto translated_domain = encode_parameter_index_in_variables_translator.translate_level_0(domain, builder);
 
+    auto encode_numeric_constraint_terms_in_function = EncodeNumericConstraintTermsInFunctions();
+    builder = DomainBuilder();
+    translated_domain = encode_numeric_constraint_terms_in_function.translate_level_0(translated_domain, builder);
+
     return DomainTranslationResult(domain, translated_domain);
 }
 
@@ -53,7 +57,15 @@ Problem translate(const Problem& problem, const DomainTranslationResult& result)
         throw std::runtime_error("translate(problem, result): domain in problem must match original domain in DomainTranslationResult.");
     }
 
-    return problem;
+    auto encode_parameter_index_in_variables_translator = EncodeNumericConstraintTermsInFunctions();
+    auto builder = ProblemBuilder(result.get_translated_domain());
+    auto translated_problem = encode_parameter_index_in_variables_translator.translate_level_0(problem, builder);
+
+    auto encode_numeric_constraint_terms_in_function = EncodeParameterIndexInVariables();
+    builder = ProblemBuilder(result.get_translated_domain());
+    translated_problem = encode_numeric_constraint_terms_in_function.translate_level_0(problem, builder);
+
+    return translated_problem;
 }
 
 }

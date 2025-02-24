@@ -745,6 +745,8 @@ void ProblemImpl::ground_and_fill_vector(const std::vector<Literal<P>>& literals
     {
         const auto grounded_literal = ground(literal, binding);
 
+        std::cout << *literal << " " << binding << " " << *grounded_literal << std::endl;
+
         if (grounded_literal->is_negated())
         {
             ref_negative_indices.push_back(grounded_literal->get_atom()->get_index());
