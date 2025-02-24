@@ -30,7 +30,7 @@ namespace mimir
  * ProblemColorFunction
  */
 
-ProblemColorFunction::ProblemColorFunction(Problem problem) : m_problem(problem), m_name_to_color(), m_color_to_name() { initialize_predicates(); }
+ProblemColorFunction::ProblemColorFunction(const ProblemImpl& problem) : m_problem(problem), m_name_to_color(), m_color_to_name() { initialize_predicates(); }
 
 void ProblemColorFunction::initialize_predicates()
 {
@@ -44,9 +44,9 @@ void ProblemColorFunction::initialize_predicates()
         }
     };
 
-    add_predicates(m_problem->get_domain()->get_predicates<Static>());
-    add_predicates(m_problem->get_domain()->get_predicates<Fluent>());
-    add_predicates(m_problem->get_domain()->get_predicates<Derived>());
+    add_predicates(m_problem.get_domain()->get_predicates<Static>());
+    add_predicates(m_problem.get_domain()->get_predicates<Fluent>());
+    add_predicates(m_problem.get_domain()->get_predicates<Derived>());
 
     // Sort the vector lexicographically by the string in the pair
     std::sort(lexicographically_sorted_predicates.begin(),
@@ -114,7 +114,7 @@ template Color ProblemColorFunction::get_color(State state, GroundLiteral<Derive
 
 Color ProblemColorFunction::get_color(State state, GroundLiteral<Static> literal, size_t pos, bool mark_true_goal_literal) const
 {
-    bool is_satisfied_in_goal = m_problem->static_literal_holds(literal);
+    bool is_satisfied_in_goal = m_problem.static_literal_holds(literal);
     return m_name_to_color.at(literal->get_atom()->get_predicate()->get_name() + ":g"
                               + (mark_true_goal_literal ? (is_satisfied_in_goal ? ":true" : ":false") : "") + ":" + std::to_string(pos));
 }
@@ -128,7 +128,7 @@ const std::string& ProblemColorFunction::get_color_name(Color color) const
     return m_color_to_name.at(color);
 }
 
-Problem ProblemColorFunction::get_problem() const { return m_problem; }
+const ProblemImpl& ProblemColorFunction::get_problem() const { return m_problem; }
 
 const std::unordered_map<std::string, Color>& ProblemColorFunction::get_name_to_color() const { return m_name_to_color; }
 

@@ -20,6 +20,7 @@
 
 #include "mimir/common/types.hpp"
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/generalized_problem.hpp"
 #include "mimir/graphs/declarations.hpp"
 #include "mimir/graphs/graph_edges.hpp"
 #include "mimir/graphs/graph_vertices.hpp"

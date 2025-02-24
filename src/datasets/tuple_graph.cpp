@@ -17,19 +17,19 @@
 
 #include "mimir/datasets/tuple_graph.hpp"
 
-#include "mimir/formalism/repositories.hpp"
+#include "mimir/formalism/problem.hpp"
 #include "tuple_graph_factory.hpp"
 
 namespace mimir
 {
-TupleGraph::TupleGraph(const ProblemContext& context,
+TupleGraph::TupleGraph(const ProblemImpl& problem,
                        const ProblemGraph& problem_graph,
                        const ClassGraph& class_graph,
                        const TupleIndexMapper& index_mapper,
                        InternalTupleGraph graph,
                        IndexGroupedVector<const Index> vertices_grouped_by_distance,
                        IndexGroupedVector<const Index> problem_vertices_grouped_by_distance) :
-    m_context(context),
+    m_problem(problem),
     m_problem_graph(problem_graph),
     m_class_graph(class_graph),
     m_index_mapper(index_mapper),
@@ -39,7 +39,7 @@ TupleGraph::TupleGraph(const ProblemContext& context,
 {
 }
 
-const ProblemContext& TupleGraph::get_context() const { return m_context; }
+const ProblemImpl& TupleGraph::get_problem() const { return m_problem; }
 
 const ClassGraph& TupleGraph::get_class_graph() const { return m_class_graph; }
 
@@ -59,21 +59,18 @@ TupleGraphCollection::TupleGraphCollection(const GeneralizedStateSpace& state_sp
 {
     for (const auto& search_context : state_space.get_search_contexts())
     {
-        m_per_problem_index_mapper.push_back(
-            TupleIndexMapper(options.width,
-                             boost::hana::at_key(search_context.get_problem_context().get_repositories()->get_pddl_type_to_factory(),
-                                                 boost::hana::type<GroundAtomImpl<Fluent>> {})
-                                     .size()
-                                 + boost::hana::at_key(search_context.get_problem_context().get_repositories()->get_pddl_type_to_factory(),
-                                                       boost::hana::type<GroundAtomImpl<Derived>> {})
-                                       .size()));
+        m_per_problem_index_mapper.push_back(TupleIndexMapper(
+            options.width,
+            boost::hana::at_key(search_context.get_problem()->get_repositories().get_hana_repositories(), boost::hana::type<GroundAtomImpl<Fluent>> {}).size()
+                + boost::hana::at_key(search_context.get_problem()->get_repositories().get_hana_repositories(), boost::hana::type<GroundAtomImpl<Derived>> {})
+                      .size()));
     }
     for (const auto& class_vertex : state_space.get_class_state_space().get_graph().get_vertices())
     {
         m_per_class_vertex_tuple_graph.push_back(create_tuple_graph(state_space.get_problem_vertex(class_vertex),
                                                                     state_space.get_problem_graph(class_vertex),
                                                                     state_space.get_class_state_space().get_graph(),
-                                                                    state_space.get_search_contexts().at(get_problem_index(class_vertex)).get_problem_context(),
+                                                                    *state_space.get_search_contexts().at(get_problem_index(class_vertex)).get_problem(),
                                                                     m_per_problem_index_mapper.at(get_problem_index(class_vertex)),
                                                                     options));
     }
@@ -83,8 +80,8 @@ const TupleGraphList& TupleGraphCollection::get_per_class_vertex_tuple_graph() c
 
 std::ostream& operator<<(std::ostream& out, const TupleGraph& tuple_graph)
 {
-    const auto problem = tuple_graph.get_context().get_problem();
-    const auto& pddl_repositories = *tuple_graph.get_context().get_repositories();
+    const auto& problem = tuple_graph.get_problem();
+    const auto& pddl_repositories = problem.get_repositories();
     auto atom_indices = AtomIndexList {};
 
     out << "digraph {\n"
@@ -118,7 +115,7 @@ std::ostream& operator<<(std::ostream& out, const TupleGraph& tuple_graph)
                 {
                     out << "<BR/>";
                 }
-                out << std::make_tuple(problem, state, std::cref(pddl_repositories));
+                out << std::make_tuple(state, std::cref(problem));
             }
             out << "]>]\n";
         }

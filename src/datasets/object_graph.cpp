@@ -17,7 +17,7 @@
 
 #include "mimir/datasets/object_graph.hpp"
 
-#include "mimir/formalism/repositories.hpp"
+#include "mimir/formalism/problem.hpp"
 #include "mimir/search/state.hpp"
 
 namespace mimir
@@ -27,11 +27,8 @@ namespace mimir
  * ObjectGraph
  */
 
-static std::unordered_map<Object, VertexIndex> add_objects_graph_structures(State state,
-                                                                            Problem problem,
-                                                                            const PDDLRepositories& pddl_repositories,
-                                                                            const ProblemColorFunction& color_function,
-                                                                            StaticVertexColoredDigraph& out_digraph)
+static std::unordered_map<Object, VertexIndex>
+add_objects_graph_structures(State state, const ProblemImpl& problem, const ProblemColorFunction& color_function, StaticVertexColoredDigraph& out_digraph)
 {
     std::unordered_map<Object, VertexIndex> object_to_vertex_index;
 
@@ -47,17 +44,17 @@ static std::unordered_map<Object, VertexIndex> add_objects_graph_structures(Stat
         }
     };
 
-    for (const auto& atom : problem->get_static_initial_atoms())
+    for (const auto& atom : problem.get_static_initial_atoms())
     {
         add_atom_objects_func(atom);
     }
     for (const auto& atom_index : state->get_atoms<Fluent>())
     {
-        add_atom_objects_func(pddl_repositories.get_ground_atom<Fluent>(atom_index));
+        add_atom_objects_func(problem.get_repositories().get_ground_atom<Fluent>(atom_index));
     }
     for (const auto& atom_index : state->get_atoms<Derived>())
     {
-        add_atom_objects_func(pddl_repositories.get_ground_atom<Fluent>(atom_index));
+        add_atom_objects_func(problem.get_repositories().get_ground_atom<Fluent>(atom_index));
     }
 
     return object_to_vertex_index;
@@ -82,21 +79,20 @@ static void add_ground_atom_graph_structures(const ProblemColorFunction& color_f
 }
 
 static void add_ground_atoms_graph_structures(State state,
-                                              Problem problem,
-                                              const PDDLRepositories& pddl_repositories,
+                                              const ProblemImpl& problem,
                                               const ProblemColorFunction& color_function,
                                               const std::unordered_map<Object, VertexIndex>& object_to_vertex_index,
                                               StaticVertexColoredDigraph& out_digraph)
 {
-    for (const auto& atom : pddl_repositories.get_ground_atoms_from_indices<Static>(problem->get_static_initial_positive_atoms_bitset()))
+    for (const auto& atom : problem.get_repositories().get_ground_atoms_from_indices<Static>(problem.get_static_initial_positive_atoms_bitset()))
     {
         add_ground_atom_graph_structures(color_function, object_to_vertex_index, atom, out_digraph);
     }
-    for (const auto& atom : pddl_repositories.get_ground_atoms_from_indices<Fluent>(state->get_atoms<Fluent>()))
+    for (const auto& atom : problem.get_repositories().get_ground_atoms_from_indices<Fluent>(state->get_atoms<Fluent>()))
     {
         add_ground_atom_graph_structures(color_function, object_to_vertex_index, atom, out_digraph);
     }
-    for (const auto& atom : pddl_repositories.get_ground_atoms_from_indices<Derived>(state->get_atoms<Derived>()))
+    for (const auto& atom : problem.get_repositories().get_ground_atoms_from_indices<Derived>(state->get_atoms<Derived>()))
     {
         add_ground_atom_graph_structures(color_function, object_to_vertex_index, atom, out_digraph);
     }
@@ -123,48 +119,38 @@ static void add_ground_literal_graph_structures(State state,
 }
 
 static void add_ground_goal_literals_graph_structures(State state,
-                                                      Problem problem,
-                                                      const PDDLRepositories& pddl_repositories,
+                                                      const ProblemImpl& problem,
                                                       const ProblemColorFunction& color_function,
                                                       bool mark_true_goal_literals,
                                                       const std::unordered_map<Object, VertexIndex>& object_to_vertex_index,
                                                       StaticVertexColoredDigraph& out_digraph)
 {
-    for (const auto& literal : problem->get_goal_condition<Static>())
+    for (const auto& literal : problem.get_goal_condition<Static>())
     {
         add_ground_literal_graph_structures(state, color_function, object_to_vertex_index, mark_true_goal_literals, literal, out_digraph);
     }
-    for (const auto& literal : problem->get_goal_condition<Fluent>())
+    for (const auto& literal : problem.get_goal_condition<Fluent>())
     {
         add_ground_literal_graph_structures(state, color_function, object_to_vertex_index, mark_true_goal_literals, literal, out_digraph);
     }
-    for (const auto& literal : problem->get_goal_condition<Derived>())
+    for (const auto& literal : problem.get_goal_condition<Derived>())
     {
         add_ground_literal_graph_structures(state, color_function, object_to_vertex_index, mark_true_goal_literals, literal, out_digraph);
     }
 }
 
-StaticVertexColoredDigraph create_object_graph(State state,
-                                               Problem problem,
-                                               const PDDLRepositories& pddl_repositories,
-                                               const ProblemColorFunction& color_function,
-                                               bool mark_true_goal_literals)
+StaticVertexColoredDigraph
+create_object_graph(State state, const ProblemImpl& problem, const ProblemColorFunction& color_function, bool mark_true_goal_literals)
 {
     // TODO: perhaps we could store a partially initialized object graph in the problem that we can simply copy? :)
 
     auto vertex_colored_digraph = StaticVertexColoredDigraph();
 
-    const auto object_to_vertex_index = add_objects_graph_structures(state, problem, pddl_repositories, color_function, vertex_colored_digraph);
+    const auto object_to_vertex_index = add_objects_graph_structures(state, problem, color_function, vertex_colored_digraph);
 
-    add_ground_atoms_graph_structures(state, problem, pddl_repositories, color_function, object_to_vertex_index, vertex_colored_digraph);
+    add_ground_atoms_graph_structures(state, problem, color_function, object_to_vertex_index, vertex_colored_digraph);
 
-    add_ground_goal_literals_graph_structures(state,
-                                              problem,
-                                              pddl_repositories,
-                                              color_function,
-                                              mark_true_goal_literals,
-                                              object_to_vertex_index,
-                                              vertex_colored_digraph);
+    add_ground_goal_literals_graph_structures(state, problem, color_function, mark_true_goal_literals, object_to_vertex_index, vertex_colored_digraph);
 
     return vertex_colored_digraph;
 }

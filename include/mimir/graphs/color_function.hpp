@@ -39,7 +39,7 @@ public:
 class ProblemColorFunction : public ColorFunction
 {
 private:
-    Problem m_problem;
+    const ProblemImpl& m_problem;
 
     std::unordered_map<std::string, Color> m_name_to_color;
     std::unordered_map<Color, std::string> m_color_to_name;
@@ -47,7 +47,7 @@ private:
     void initialize_predicates();
 
 public:
-    explicit ProblemColorFunction(Problem problem);
+    explicit ProblemColorFunction(const ProblemImpl& problem);
 
     /// @brief get color of object.
     Color get_color(Object object) const;
@@ -69,7 +69,7 @@ public:
     /**
      * Getters
      */
-    Problem get_problem() const;
+    const ProblemImpl& get_problem() const;
     const std::unordered_map<std::string, Color>& get_name_to_color() const;
     const std::unordered_map<Color, std::string>& get_color_to_name() const;
 };

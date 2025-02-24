@@ -25,7 +25,7 @@ private:
     const ProblemVertex& m_problem_vertex;
     const ProblemGraph& m_problem_graph;
     const ClassGraph& m_class_graph;
-    const ProblemContext& m_context;
+    const ProblemImpl& m_problem;
     const TupleIndexMapper& m_index_mapper;
     const TupleGraphCollection::Options& m_options;
 
@@ -73,13 +73,13 @@ public:
     TupleGraphArityZeroComputation(const ProblemVertex& problem_vertex,
                                    const ProblemGraph& problem_graph,
                                    const ClassGraph& class_graph,
-                                   const ProblemContext& context,
+                                   const ProblemImpl& problem,
                                    const TupleIndexMapper& index_mapper,
                                    const TupleGraphCollection::Options& options) :
         m_problem_vertex(problem_vertex),
         m_problem_graph(problem_graph),
         m_class_graph(class_graph),
-        m_context(context),
+        m_problem(problem),
         m_index_mapper(index_mapper),
         m_options(options),
         m_internal_tuple_graph(),
@@ -94,7 +94,7 @@ public:
 
         compute_distance_one_vertices();
 
-        return TupleGraph(m_context,
+        return TupleGraph(m_problem,
                           m_problem_graph,
                           m_class_graph,
                           m_index_mapper,
@@ -107,11 +107,11 @@ public:
 static TupleGraph create_tuple_graph_width_zero(const ProblemVertex& problem_vertex,
                                                 const ProblemGraph& problem_graph,
                                                 const ClassGraph& class_graph,
-                                                const ProblemContext& context,
+                                                const ProblemImpl& problem,
                                                 const TupleIndexMapper& index_mapper,
                                                 const TupleGraphCollection::Options& options)
 {
-    return TupleGraphArityZeroComputation(problem_vertex, problem_graph, class_graph, context, index_mapper, options).compute_and_get_result();
+    return TupleGraphArityZeroComputation(problem_vertex, problem_graph, class_graph, problem, index_mapper, options).compute_and_get_result();
 }
 
 class TupleGraphArityGreaterZeroComputation
@@ -120,7 +120,7 @@ private:
     const ProblemVertex& m_problem_vertex;
     const ProblemGraph& m_problem_graph;
     const ClassGraph& m_class_graph;
-    const ProblemContext& m_context;
+    const ProblemImpl& m_problem;
     const TupleIndexMapper& m_index_mapper;
     const TupleGraphCollection::Options& m_options;
 
@@ -407,13 +407,13 @@ public:
     TupleGraphArityGreaterZeroComputation(const ProblemVertex& problem_vertex,
                                           const ProblemGraph& problem_graph,
                                           const ClassGraph& class_graph,
-                                          const ProblemContext& context,
+                                          const ProblemImpl& problem,
                                           const TupleIndexMapper& index_mapper,
                                           const TupleGraphCollection::Options& options) :
         m_problem_vertex(problem_vertex),
         m_problem_graph(problem_graph),
         m_class_graph(class_graph),
-        m_context(context),
+        m_problem(problem),
         m_index_mapper(index_mapper),
         m_options(options),
         m_internal_tuple_graph(),
@@ -451,7 +451,7 @@ public:
             }
         }
 
-        return TupleGraph(m_context,
+        return TupleGraph(m_problem,
                           m_problem_graph,
                           m_class_graph,
                           m_index_mapper,
@@ -464,21 +464,21 @@ public:
 static TupleGraph create_tuple_graph_width_greater_zero(const ProblemVertex& problem_vertex,
                                                         const ProblemGraph& problem_graph,
                                                         const ClassGraph& class_graph,
-                                                        const ProblemContext& context,
+                                                        const ProblemImpl& problem,
                                                         const TupleIndexMapper& index_mapper,
                                                         const TupleGraphCollection::Options& options)
 {
-    return TupleGraphArityGreaterZeroComputation(problem_vertex, problem_graph, class_graph, context, index_mapper, options).compute_and_get_result();
+    return TupleGraphArityGreaterZeroComputation(problem_vertex, problem_graph, class_graph, problem, index_mapper, options).compute_and_get_result();
 }
 
 TupleGraph create_tuple_graph(const ProblemVertex& problem_vertex,
                               const ProblemGraph& problem_graph,
                               const ClassGraph& class_graph,
-                              const ProblemContext& context,
+                              const ProblemImpl& problem,
                               const TupleIndexMapper& index_mapper,
                               const TupleGraphCollection::Options& options)
 {
-    return (options.width == 0) ? create_tuple_graph_width_zero(problem_vertex, problem_graph, class_graph, context, index_mapper, options) :
-                                  create_tuple_graph_width_greater_zero(problem_vertex, problem_graph, class_graph, context, index_mapper, options);
+    return (options.width == 0) ? create_tuple_graph_width_zero(problem_vertex, problem_graph, class_graph, problem, index_mapper, options) :
+                                  create_tuple_graph_width_greater_zero(problem_vertex, problem_graph, class_graph, problem, index_mapper, options);
 }
 }
