@@ -24,7 +24,7 @@ if (NOT loki_FOUND)
     ExternalProject_Add(
             loki
             GIT_REPOSITORY https://github.com/drexlerd/Loki.git
-            GIT_TAG 8ff3c6cccd8ef52a87d5d696ac98d93b13965445
+            GIT_TAG 8d021a93da1ecafe3d3eaddbac3151b7457c32bd
             PREFIX ${CMAKE_BINARY_DIR}/loki
             DEPENDS boost abseil
             CMAKE_ARGS ${CMAKE_ARGS}
