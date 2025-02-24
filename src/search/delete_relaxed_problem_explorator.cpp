@@ -32,14 +32,14 @@
 namespace mimir
 {
 
-DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem) :
-    m_problem(std::move(problem)),
-    m_delete_relax_transformer(),
-    m_delete_free_problem()
+DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem) : m_problem(problem), m_delete_relax_transformer(), m_delete_free_problem()
 {
     std::cout << "[DeleteRelaxedProblemExplorator] Started delete relaxed exploration." << std::endl;
 
-    auto delete_relax_builder = ProblemBuilder(m_problem->get_domain());
+    auto domain_delete_free_builder = DomainBuilder();
+    auto delete_free_domain = m_delete_relax_transformer.translate_level_0(m_problem->get_domain(), domain_delete_free_builder);
+
+    auto delete_relax_builder = ProblemBuilder(delete_free_domain);
     m_delete_free_problem = m_delete_relax_transformer.translate_level_0(m_problem, delete_relax_builder);
 
     auto delete_free_applicable_action_generator = LiftedApplicableActionGenerator(m_delete_free_problem);
@@ -221,7 +221,7 @@ DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator(cons
     }
 
     auto ground_actions = GroundActionList {};
-    for (const auto& delete_free_ground_action : problem.get_ground_actions())
+    for (const auto& delete_free_ground_action : m_delete_free_problem->get_ground_actions())
     {
         // Map relaxed to unrelaxed actions and ground them with the same arguments.
         for (const auto& action : m_delete_relax_transformer.get_unrelaxed_actions(
