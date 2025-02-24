@@ -1172,7 +1172,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedTransportTest)
 
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
 
-    EXPECT_EQ(applicable_action_generator_statistics.statistics.num_nodes, 231);
+    EXPECT_EQ(applicable_action_generator_statistics.statistics.num_nodes, 230);
 
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
 
@@ -1267,7 +1267,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedWoodworkingTest)
 
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
 
-    EXPECT_EQ(applicable_action_generator_statistics.statistics.num_nodes, 77);
+    EXPECT_EQ(applicable_action_generator_statistics.statistics.num_nodes, 79);
 
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
 
