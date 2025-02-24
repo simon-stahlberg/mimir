@@ -21,7 +21,7 @@
 #include "mimir/common/hash_cista.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/ground_function_expressions.hpp"
-#include "mimir/formalism/repositories.hpp"
+#include "mimir/formalism/problem.hpp"
 
 #include <ostream>
 #include <tuple>
@@ -60,30 +60,30 @@ const GroundEffectConditionalList& GroundActionImpl::get_conditional_effects() c
  */
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const PDDLRepositories&, FullActionFormatterTag>& data)
+std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const ProblemImpl&, FullActionFormatterTag>& data)
 {
-    const auto& [action, pddl_repositories, tag] = data;
+    const auto& [action, problem, tag] = data;
 
     auto binding = ObjectList {};
     for (const auto object_index : action->get_object_indices())
     {
-        binding.push_back(pddl_repositories.get_object(object_index));
+        binding.push_back(problem.get_repositories().get_object(object_index));
     }
 
     const auto& conjunctive_condition = action->get_conjunctive_condition();
     const auto& conjunctive_effect = action->get_conjunctive_effect();
     const auto& conditional_effects = action->get_conditional_effects();
 
-    os << "Action("                                                                                //
-       << "index=" << action->get_index() << ", "                                                  //
-       << "name=" << pddl_repositories.get_action(action->get_action_index())->get_name() << ", "  //
-       << "binding=" << binding << ", "                                                            //
-       << std::make_tuple(conjunctive_condition, std::cref(pddl_repositories)) << ", "             //
-       << std::make_tuple(conjunctive_effect, std::cref(pddl_repositories))                        //
+    os << "Action("                                                                                         //
+       << "index=" << action->get_index() << ", "                                                           //
+       << "name=" << problem.get_repositories().get_action(action->get_action_index())->get_name() << ", "  //
+       << "binding=" << binding << ", "                                                                     //
+       << std::make_tuple(conjunctive_condition, std::cref(problem)) << ", "                                //
+       << std::make_tuple(conjunctive_effect, std::cref(problem))                                           //
        << ", " << "conditional_effects=[";
     for (const auto& cond_effect : conditional_effects)
     {
-        os << "[" << std::make_tuple(cond_effect, std::cref(pddl_repositories)) << "], ";
+        os << "[" << std::make_tuple(cond_effect, std::cref(problem)) << "], ";
     }
     os << "])";
 
@@ -91,16 +91,16 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const 
 }
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const PDDLRepositories&, PlanActionFormatterTag>& data)
+std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const ProblemImpl&, PlanActionFormatterTag>& data)
 {
-    const auto& [ground_action, pddl_repositories, tag] = data;
+    const auto& [ground_action, problem, tag] = data;
 
-    const auto action = pddl_repositories.get_action(ground_action->get_action_index());
+    const auto action = problem.get_repositories().get_action(ground_action->get_action_index());
     os << "(" << action->get_name();
     // Only take objects w.r.t. to the original action parameters
     for (size_t i = 0; i < action->get_original_arity(); ++i)
     {
-        os << " " << *pddl_repositories.get_object(ground_action->get_object_indices()[i]);
+        os << " " << *problem.get_repositories().get_object(ground_action->get_object_indices()[i]);
     }
     os << ")";
     return os;

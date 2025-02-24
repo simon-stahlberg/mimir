@@ -38,40 +38,27 @@ public:
     virtual ~IBrFSAlgorithmEventHandler() = default;
 
     /// @brief React on expanding a state. This is called immediately after popping from the queue.
-    virtual void on_expand_state(State state, Problem problem, const PDDLRepositories& pddl_repositories) = 0;
+    virtual void on_expand_state(State state, const ProblemImpl& problem) = 0;
 
     /// @brief React on expanding a goal `state`. This may be called after on_expand_state.
-    virtual void on_expand_goal_state(State state, Problem problem, const PDDLRepositories& pddl_repositories) = 0;
+    virtual void on_expand_goal_state(State state, const ProblemImpl& problem) = 0;
 
     /// @brief React on generating a state by applying an action.
-    virtual void on_generate_state(State state,
-                                   GroundAction action,
-                                   ContinuousCost action_cost,
-                                   State successor_state,
-                                   Problem problem,
-                                   const PDDLRepositories& pddl_repositories) = 0;
+    virtual void on_generate_state(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem) = 0;
 
     /// @brief React on generating a state in the search tree by applying an action.
-    virtual void on_generate_state_in_search_tree(State state,
-                                                  GroundAction action,
-                                                  ContinuousCost action_cost,
-                                                  State successor_state,
-                                                  Problem problem,
-                                                  const PDDLRepositories& pddl_repositories) = 0;
+    virtual void
+    on_generate_state_in_search_tree(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem) = 0;
 
     /// @brief React on generating a state not in the search tree by applying an action.
-    virtual void on_generate_state_not_in_search_tree(State state,
-                                                      GroundAction action,
-                                                      ContinuousCost action_cost,
-                                                      State successor_state,
-                                                      Problem problem,
-                                                      const PDDLRepositories& pddl_repositories) = 0;
+    virtual void
+    on_generate_state_not_in_search_tree(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem) = 0;
 
     /// @brief React on finishing expanding a g-layer.
     virtual void on_finish_g_layer() = 0;
 
     /// @brief React on starting a search.
-    virtual void on_start_search(State start_state, Problem problem, const PDDLRepositories& pddl_repositories) = 0;
+    virtual void on_start_search(State start_state, const ProblemImpl& problem) = 0;
 
     /// @brief React on ending a search.
     virtual void on_end_search(uint64_t num_reached_fluent_atoms,
@@ -87,7 +74,7 @@ public:
                                uint64_t num_axioms) = 0;
 
     /// @brief React on solving a search.
-    virtual void on_solved(const Plan& plan, const PDDLRepositories& pddl_repositories) = 0;
+    virtual void on_solved(const Plan& plan, const ProblemImpl& problem) = 0;
 
     /// @brief React on proving unsolvability during a search.
     virtual void on_unsolvable() = 0;
@@ -122,49 +109,40 @@ private:
 public:
     explicit BrFSAlgorithmEventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
 
-    void on_expand_state(State state, Problem problem, const PDDLRepositories& pddl_repositories) override
+    void on_expand_state(State state, const ProblemImpl& problem) override
     {
         m_statistics.increment_num_expanded();
 
         if (!m_quiet)
         {
-            self().on_expand_state_impl(state, problem, pddl_repositories);
+            self().on_expand_state_impl(state, problem);
         }
     }
 
-    void on_expand_goal_state(State state, Problem problem, const PDDLRepositories& pddl_repositories) override
+    void on_expand_goal_state(State state, const ProblemImpl& problem) override
     {
         if (!m_quiet)
         {
-            self().on_expand_goal_state_impl(state, problem, pddl_repositories);
+            self().on_expand_goal_state_impl(state, problem);
         }
     }
 
-    void on_generate_state(State state,
-                           GroundAction action,
-                           ContinuousCost action_cost,
-                           State successor_state,
-                           Problem problem,
-                           const PDDLRepositories& pddl_repositories) override
+    void on_generate_state(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem) override
     {
         m_statistics.increment_num_generated();
 
         if (!m_quiet)
         {
-            self().on_generate_state_impl(state, action, action_cost, successor_state, problem, pddl_repositories);
+            self().on_generate_state_impl(state, action, action_cost, successor_state, problem);
         }
     }
 
-    void on_generate_state_in_search_tree(State state,
-                                          GroundAction action,
-                                          ContinuousCost action_cost,
-                                          State successor_state,
-                                          Problem problem,
-                                          const PDDLRepositories& pddl_repositories) override
+    void
+    on_generate_state_in_search_tree(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem) override
     {
         if (!m_quiet)
         {
-            self().on_generate_state_in_search_tree_impl(state, action, action_cost, successor_state, problem, pddl_repositories);
+            self().on_generate_state_in_search_tree_impl(state, action, action_cost, successor_state, problem);
         }
     }
 
@@ -172,12 +150,11 @@ public:
                                               GroundAction action,
                                               ContinuousCost action_cost,
                                               State successor_state,
-                                              Problem problem,
-                                              const PDDLRepositories& pddl_repositories) override
+                                              const ProblemImpl& problem) override
     {
         if (!m_quiet)
         {
-            self().on_generate_state_not_in_search_tree_impl(state, action, action_cost, successor_state, problem, pddl_repositories);
+            self().on_generate_state_not_in_search_tree_impl(state, action, action_cost, successor_state, problem);
         }
     }
 
@@ -194,7 +171,7 @@ public:
         }
     }
 
-    void on_start_search(State start_state, Problem problem, const PDDLRepositories& pddl_repositories) override
+    void on_start_search(State start_state, const ProblemImpl& problem) override
     {
         m_statistics = BrFSAlgorithmStatistics();
 
@@ -202,7 +179,7 @@ public:
 
         if (!m_quiet)
         {
-            self().on_start_search_impl(start_state, problem, pddl_repositories);
+            self().on_start_search_impl(start_state, problem);
         }
     }
 
@@ -247,11 +224,11 @@ public:
         }
     }
 
-    void on_solved(const Plan& plan, const PDDLRepositories& pddl_repositories) override
+    void on_solved(const Plan& plan, const ProblemImpl& problem) override
     {
         if (!m_quiet)
         {
-            self().on_solved_impl(plan, pddl_repositories);
+            self().on_solved_impl(plan, problem);
         }
     }
 

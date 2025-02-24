@@ -17,7 +17,9 @@
 
 #include "mimir/search/applicable_action_generators/lifted.hpp"
 
+#include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/ground_action.hpp"
+#include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/applicability.hpp"
 #include "mimir/search/applicable_action_generators/lifted/event_handlers.hpp"
@@ -47,7 +49,7 @@ LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem
     m_fluent_functions(),
     m_fluent_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_domain()->get_predicates<Fluent>()),
     m_derived_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_problem_and_domain_derived_predicates()),
-    m_numeric_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_domain()->get_functions<Fluent>())
+    m_numeric_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_domain()->get_function_skeletons<Fluent>())
 {
     /* 2. Initialize the condition grounders for each action schema. */
     for (const auto& action : problem->get_domain()->get_actions())
@@ -84,17 +86,18 @@ mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicabl
     auto& dense_numeric_variables = dense_state.get_numeric_variables();
 
     const auto& problem = *m_problem;
+    const auto& pddl_repositories = problem.get_repositories();
 
-    problem.get_ground_atoms_from_indices(dense_fluent_atoms, m_fluent_atoms);
+    pddl_repositories.get_ground_atoms_from_indices(dense_fluent_atoms, m_fluent_atoms);
     m_fluent_assignment_set.reset();
     m_fluent_assignment_set.insert_ground_atoms(m_fluent_atoms);
 
-    problem.get_ground_atoms_from_indices(dense_derived_atoms, m_derived_atoms);
+    pddl_repositories.get_ground_atoms_from_indices(dense_derived_atoms, m_derived_atoms);
     m_derived_assignment_set.reset();
     m_derived_assignment_set.insert_ground_atoms(m_derived_atoms);
 
     m_numeric_assignment_set.reset();
-    problem.get_ground_functions(dense_numeric_variables.size(), m_fluent_functions);
+    pddl_repositories.get_ground_functions(dense_numeric_variables.size(), m_fluent_functions);
     m_numeric_assignment_set.insert_ground_function_values(m_fluent_functions, dense_numeric_variables);
 
     const auto& static_numeric_assignment_set = problem.get_static_initial_numeric_assignment_set();
@@ -121,7 +124,7 @@ mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicabl
         {
             const auto num_ground_actions = problem.get_num_ground_actions();
 
-            const auto ground_action = problem.ground(action, std::move(binding), conditional_effects_candidate_objects);
+            const auto ground_action = m_problem->ground(action, std::move(binding), conditional_effects_candidate_objects);
 
             assert(is_applicable(ground_action, problem, dense_state));
 
@@ -137,7 +140,7 @@ mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicabl
     m_event_handler->on_end_generating_applicable_actions();
 }
 
-const ProblemContext& LiftedApplicableActionGenerator::get_problem_context() const { return m_problem_context; }
+const Problem& LiftedApplicableActionGenerator::get_problem() const { return m_problem; }
 
 void LiftedApplicableActionGenerator::on_finish_search_layer() { m_event_handler->on_finish_search_layer(); }
 

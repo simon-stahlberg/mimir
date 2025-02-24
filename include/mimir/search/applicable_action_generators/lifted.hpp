@@ -52,7 +52,7 @@ public:
     explicit LiftedApplicableActionGenerator(Problem problem);
 
     /// @brief Complete construction
-    LiftedApplicableActionGenerator(ProblemContext problem, std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> event_handler);
+    LiftedApplicableActionGenerator(Problem problem, std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> event_handler);
 
     // Uncopyable
     LiftedApplicableActionGenerator(const LiftedApplicableActionGenerator& other) = delete;

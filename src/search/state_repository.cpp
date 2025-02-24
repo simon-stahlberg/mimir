@@ -23,7 +23,6 @@
 #include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/ground_literal.hpp"
 #include "mimir/formalism/problem.hpp"
-#include "mimir/formalism/problem_context.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/applicability.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
@@ -35,8 +34,7 @@ namespace mimir
 
 StateRepository::StateRepository(std::shared_ptr<IAxiomEvaluator> axiom_evaluator) :
     m_axiom_evaluator(std::move(axiom_evaluator)),
-    m_problem_or_domain_has_axioms(!m_axiom_evaluator->get_problem_context().get_problem()->get_axioms().empty()
-                                   || !m_axiom_evaluator->get_problem_context().get_problem()->get_domain()->get_axioms().empty()),
+    m_problem_or_domain_has_axioms(!m_axiom_evaluator->get_problem()->get_problem_and_domain_axioms().empty()),
     m_states(),
     m_derived_atoms_set(),
     m_reached_fluent_atoms(),
@@ -52,7 +50,7 @@ StateRepository::StateRepository(std::shared_ptr<IAxiomEvaluator> axiom_evaluato
 
 State StateRepository::get_or_create_initial_state()
 {
-    const auto problem = m_axiom_evaluator->get_problem_context().get_problem();
+    const auto problem = m_axiom_evaluator->get_problem();
     return get_or_create_state(problem->get_fluent_initial_atoms(), problem->get_function_to_value<Fluent>());
 }
 
@@ -242,7 +240,7 @@ static void collect_applied_auxiliary_numeric_effects(const GroundNumericEffect<
 }
 
 static void apply_action_effects(GroundAction action,
-                                 Problem problem,
+                                 const ProblemImpl& problem,
                                  State state,
                                  const DenseState& dense_state,
                                  FlatBitset& ref_dense_fluent_atoms,
@@ -253,7 +251,7 @@ static void apply_action_effects(GroundAction action,
 {
     const auto& conjunctive_effect = action->get_conjunctive_effect();
     const auto& const_fluent_numeric_variables = state->get_numeric_variables();
-    const auto& const_static_numeric_variables = problem->get_function_to_value<Static>();
+    const auto& const_static_numeric_variables = problem.get_function_to_value<Static>();
 
     insert_into_bitset(conjunctive_effect.get_negative_effects(), ref_negative_applied_effects);
     insert_into_bitset(conjunctive_effect.get_positive_effects(), ref_positive_applied_effects);
@@ -295,17 +293,17 @@ static void apply_action_effects(GroundAction action,
     ref_dense_fluent_atoms |= ref_positive_applied_effects;
 
     // Update metric in case of a fluent one.
-    if (!problem->get_domain()->get_auxiliary_function().has_value())
+    if (!problem.get_domain()->get_auxiliary_function_skeleton().has_value())
     {
         ref_successor_state_metric_score =
-            evaluate(problem->get_optimization_metric()->get_function_expression(), const_static_numeric_variables, ref_fluent_numeric_variables);
+            evaluate(problem.get_optimization_metric()->get_function_expression(), const_static_numeric_variables, ref_fluent_numeric_variables);
     }
 }
 
 std::pair<State, ContinuousCost>
 StateRepository::get_or_create_successor_state(State state, DenseState& dense_state, GroundAction action, ContinuousCost state_metric_value)
 {
-    const auto problem = m_axiom_evaluator->get_problem_context().get_problem();
+    const auto& problem = *m_axiom_evaluator->get_problem();
 
     m_applied_negative_effect_atoms.unset_all();
     m_applied_positive_effect_atoms.unset_all();
@@ -387,7 +385,7 @@ StateRepository::get_or_create_successor_state(State state, DenseState& dense_st
     return { m_states.insert(m_state_builder).first->get(), successor_state_metric_value };
 }
 
-const ProblemContext& StateRepository::get_problem_context() const { return m_axiom_evaluator->get_problem_context(); }
+const Problem& StateRepository::get_problem() const { return m_axiom_evaluator->get_problem(); }
 
 size_t StateRepository::get_state_count() const { return m_states.size(); }
 

@@ -84,10 +84,10 @@ using GroundAxiomImplSet = mimir::buffering::UnorderedSet<GroundAxiomImpl>;
  */
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundEffectDerivedLiteral, const PDDLRepositories&>& data);
+std::ostream& operator<<(std::ostream& os, const std::tuple<GroundEffectDerivedLiteral, const ProblemImpl&>& data);
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAxiom, const PDDLRepositories&>& data);
+std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAxiom, const ProblemImpl&>& data);
 }
 
 #endif

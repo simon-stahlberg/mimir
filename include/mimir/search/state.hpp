@@ -110,7 +110,7 @@ using StateImplSet = mimir::buffering::UnorderedSet<StateImpl>;
  */
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<Problem, State, const PDDLRepositories&>& data);
+std::ostream& operator<<(std::ostream& os, const std::tuple<State, const ProblemImpl&>& data);
 }
 
 #endif

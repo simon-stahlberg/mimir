@@ -42,47 +42,33 @@ public:
     virtual ~IAStarAlgorithmEventHandler() = default;
 
     /// @brief React on expanding a state. This is called immediately after popping from the queue.
-    virtual void on_expand_state(State state, Problem problem, const PDDLRepositories& pddl_repositories) = 0;
+    virtual void on_expand_state(State state, const ProblemImpl& problem) = 0;
 
     /// @brief React on expanding a goal `state`. This may be called after on_expand_state.
-    virtual void on_expand_goal_state(State state, Problem problem, const PDDLRepositories& pddl_repositories) = 0;
+    virtual void on_expand_goal_state(State state, const ProblemImpl& problem) = 0;
 
     /// @brief React on generating a successor `state` by applying an action.
-    virtual void on_generate_state(State state,
-                                   GroundAction action,
-                                   ContinuousCost action_cost,
-                                   State successor_state,
-                                   Problem problem,
-                                   const PDDLRepositories& pddl_repositories) = 0;
+    virtual void on_generate_state(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem) = 0;
 
     /// @brief React on generating a relaxed successor `state` by applying an action where
     /// a successor state is relaxed if the f value decreases.
-    virtual void on_generate_state_relaxed(State state,
-                                           GroundAction action,
-                                           ContinuousCost action_cost,
-                                           State successor_state,
-                                           Problem problem,
-                                           const PDDLRepositories& pddl_repositories) = 0;
+    virtual void on_generate_state_relaxed(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem) = 0;
 
     /// @brief React on generated an unrelaxed successor state by applying an action.
     /// a successors state is unrelaxed iff it is not relaxed.
-    virtual void on_generate_state_not_relaxed(State state,
-                                               GroundAction action,
-                                               ContinuousCost action_cost,
-                                               State successor_state,
-                                               Problem problem,
-                                               const PDDLRepositories& pddl_repositories) = 0;
+    virtual void
+    on_generate_state_not_relaxed(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem) = 0;
 
-    virtual void on_close_state(State state, Problem problem, const PDDLRepositories& pddl_repositories) = 0;
+    virtual void on_close_state(State state, const ProblemImpl& problem) = 0;
 
     /// @brief React on finishing expanding a g-layer.
     virtual void on_finish_f_layer(double f_value) = 0;
 
     /// @brief React on pruning a state.
-    virtual void on_prune_state(State state, Problem problem, const PDDLRepositories& pddl_repositories) = 0;
+    virtual void on_prune_state(State state, const ProblemImpl& problem) = 0;
 
     /// @brief React on starting a search.
-    virtual void on_start_search(State start_state, Problem problem, const PDDLRepositories& pddl_repositories) = 0;
+    virtual void on_start_search(State start_state, const ProblemImpl& problem) = 0;
 
     /// @brief React on ending a search.
     virtual void on_end_search(uint64_t num_reached_fluent_atoms,
@@ -98,7 +84,7 @@ public:
                                uint64_t num_axioms) = 0;
 
     /// @brief React on solving a search.
-    virtual void on_solved(const Plan& plan, const PDDLRepositories& pddl_repositories) = 0;
+    virtual void on_solved(const Plan& plan, const ProblemImpl& problem) = 0;
 
     /// @brief React on proving unsolvability during a search.
     virtual void on_unsolvable() = 0;
@@ -137,70 +123,55 @@ private:
 public:
     explicit StaticAStarAlgorithmEventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
 
-    void on_expand_state(State state, Problem problem, const PDDLRepositories& pddl_repositories) override
+    void on_expand_state(State state, const ProblemImpl& problem) override
     {
         m_statistics.increment_num_expanded();
 
         if (!m_quiet)
         {
-            self().on_expand_state_impl(state, problem, pddl_repositories);
+            self().on_expand_state_impl(state, problem);
         }
     }
 
-    void on_expand_goal_state(State state, Problem problem, const PDDLRepositories& pddl_repositories) override
+    void on_expand_goal_state(State state, const ProblemImpl& problem) override
     {
         if (!m_quiet)
         {
-            self().on_expand_goal_state_impl(state, problem, pddl_repositories);
+            self().on_expand_goal_state_impl(state, problem);
         }
     }
 
-    void on_generate_state(State state,
-                           GroundAction action,
-                           ContinuousCost action_cost,
-                           State successor_state,
-                           Problem problem,
-                           const PDDLRepositories& pddl_repositories) override
+    void on_generate_state(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem) override
     {
         m_statistics.increment_num_generated();
 
         if (!m_quiet)
         {
-            self().on_generate_state_impl(state, action, action_cost, successor_state, problem, pddl_repositories);
+            self().on_generate_state_impl(state, action, action_cost, successor_state, problem);
         }
     }
 
-    void on_generate_state_relaxed(State state,
-                                   GroundAction action,
-                                   ContinuousCost action_cost,
-                                   State successor_state,
-                                   Problem problem,
-                                   const PDDLRepositories& pddl_repositories) override
+    void on_generate_state_relaxed(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem) override
     {
         if (!m_quiet)
         {
-            self().on_generate_state_relaxed_impl(state, action, action_cost, successor_state, problem, pddl_repositories);
+            self().on_generate_state_relaxed_impl(state, action, action_cost, successor_state, problem);
         }
     }
 
-    void on_generate_state_not_relaxed(State state,
-                                       GroundAction action,
-                                       ContinuousCost action_cost,
-                                       State successor_state,
-                                       Problem problem,
-                                       const PDDLRepositories& pddl_repositories) override
+    void on_generate_state_not_relaxed(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem) override
     {
         if (!m_quiet)
         {
-            self().on_generate_state_relaxed_impl(state, action, action_cost, successor_state, problem, pddl_repositories);
+            self().on_generate_state_relaxed_impl(state, action, action_cost, successor_state, problem);
         }
     }
 
-    void on_close_state(State state, Problem problem, const PDDLRepositories& pddl_repositories) override
+    void on_close_state(State state, const ProblemImpl& problem) override
     {
         if (!m_quiet)
         {
-            self().on_close_state_impl(state, problem, pddl_repositories);
+            self().on_close_state_impl(state, problem);
         }
     }
 
@@ -217,17 +188,17 @@ public:
         }
     }
 
-    void on_prune_state(State state, Problem problem, const PDDLRepositories& pddl_repositories) override
+    void on_prune_state(State state, const ProblemImpl& problem) override
     {
         m_statistics.increment_num_pruned();
 
         if (!m_quiet)
         {
-            self().on_prune_state_impl(state, problem, pddl_repositories);
+            self().on_prune_state_impl(state, problem);
         }
     }
 
-    void on_start_search(State start_state, Problem problem, const PDDLRepositories& pddl_repositories) override
+    void on_start_search(State start_state, const ProblemImpl& problem) override
     {
         m_statistics = AStarAlgorithmStatistics();
 
@@ -235,7 +206,7 @@ public:
 
         if (!m_quiet)
         {
-            self().on_start_search_impl(start_state, problem, pddl_repositories);
+            self().on_start_search_impl(start_state, problem);
         }
     }
 
@@ -281,11 +252,11 @@ public:
         }
     }
 
-    void on_solved(const Plan& plan, const PDDLRepositories& pddl_repositories) override
+    void on_solved(const Plan& plan, const ProblemImpl& problem) override
     {
         if (!m_quiet)
         {
-            self().on_solved_impl(plan, pddl_repositories);
+            self().on_solved_impl(plan, problem);
         }
     }
 
@@ -327,42 +298,26 @@ protected:
 public:
     explicit DynamicAStarAlgorithmEventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
 
-    virtual void on_expand_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories) {}
+    virtual void on_expand_state_impl(State state, const ProblemImpl& problem) {}
 
-    virtual void on_generate_state_impl(State state,
-                                        GroundAction action,
-                                        ContinuousCost action_cost,
-                                        State successor_state,
-                                        Problem problem,
-                                        const PDDLRepositories& pddl_repositories)
+    virtual void on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem) {}
+
+    virtual void on_generate_state_relaxed_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem)
     {
     }
 
-    virtual void on_generate_state_relaxed_impl(State state,
-                                                GroundAction action,
-                                                ContinuousCost action_cost,
-                                                State successor_state,
-                                                Problem problem,
-                                                const PDDLRepositories& pddl_repositories)
+    virtual void
+    on_generate_state_not_relaxed_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem)
     {
     }
 
-    virtual void on_generate_state_not_relaxed_impl(State state,
-                                                    GroundAction action,
-                                                    ContinuousCost action_cost,
-                                                    State successor_state,
-                                                    Problem problem,
-                                                    const PDDLRepositories& pddl_repositories)
-    {
-    }
-
-    virtual void on_close_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories) {}
+    virtual void on_close_state_impl(State state, const ProblemImpl& problem) {}
 
     virtual void on_finish_f_layer_impl(double f_value, uint64_t num_expanded_states, uint64_t num_generated_states) {}
 
-    virtual void on_prune_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories) {}
+    virtual void on_prune_state_impl(State state, const ProblemImpl& problem) {}
 
-    virtual void on_start_search_impl(State start_state, Problem problem, const PDDLRepositories& pddl_repositories) {}
+    virtual void on_start_search_impl(State start_state, const ProblemImpl& problem) {}
 
     virtual void on_end_search_impl(uint64_t num_reached_fluent_atoms,
                                     uint64_t num_reached_derived_atoms,
@@ -378,68 +333,53 @@ public:
     {
     }
 
-    virtual void on_solved_impl(const Plan& plan, const PDDLRepositories& pddl_repositories) {}
+    virtual void on_solved_impl(const Plan& plan, const ProblemImpl& problem) {}
 
     virtual void on_unsolvable_impl() {}
 
     virtual void on_exhausted_impl() {}
 
-    void on_expand_state(State state, Problem problem, const PDDLRepositories& pddl_repositories) override
+    void on_expand_state(State state, const ProblemImpl& problem) override
     {
         m_statistics.increment_num_expanded();
 
         if (!m_quiet)
         {
-            on_expand_state_impl(state, problem, pddl_repositories);
+            on_expand_state_impl(state, problem);
         }
     }
 
-    void on_generate_state(State state,
-                           GroundAction action,
-                           ContinuousCost action_cost,
-                           State successor_state,
-                           Problem problem,
-                           const PDDLRepositories& pddl_repositories) override
+    void on_generate_state(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem) override
     {
         m_statistics.increment_num_generated();
 
         if (!m_quiet)
         {
-            on_generate_state_impl(state, action, action_cost, successor_state, problem, pddl_repositories);
+            on_generate_state_impl(state, action, action_cost, successor_state, problem);
         }
     }
 
-    void on_generate_state_relaxed(State state,
-                                   GroundAction action,
-                                   ContinuousCost action_cost,
-                                   State successor_state,
-                                   Problem problem,
-                                   const PDDLRepositories& pddl_repositories) override
+    void on_generate_state_relaxed(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem) override
     {
         if (!m_quiet)
         {
-            on_generate_state_relaxed_impl(state, action, action_cost, successor_state, problem, pddl_repositories);
+            on_generate_state_relaxed_impl(state, action, action_cost, successor_state, problem);
         }
     }
 
-    void on_generate_state_not_relaxed(State state,
-                                       GroundAction action,
-                                       ContinuousCost action_cost,
-                                       State successor_state,
-                                       Problem problem,
-                                       const PDDLRepositories& pddl_repositories) override
+    void on_generate_state_not_relaxed(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem) override
     {
         if (!m_quiet)
         {
-            on_generate_state_relaxed_impl(state, action, action_cost, successor_state, problem, pddl_repositories);
+            on_generate_state_relaxed_impl(state, action, action_cost, successor_state, problem);
         }
     }
 
-    void on_close_state(State state, Problem problem, const PDDLRepositories& pddl_repositories) override
+    void on_close_state(State state, const ProblemImpl& problem) override
     {
         if (!m_quiet)
         {
-            on_close_state_impl(state, problem, pddl_repositories);
+            on_close_state_impl(state, problem);
         }
     }
 
@@ -456,17 +396,17 @@ public:
         }
     }
 
-    void on_prune_state(State state, Problem problem, const PDDLRepositories& pddl_repositories) override
+    void on_prune_state(State state, const ProblemImpl& problem) override
     {
         m_statistics.increment_num_pruned();
 
         if (!m_quiet)
         {
-            on_prune_state_impl(state, problem, pddl_repositories);
+            on_prune_state_impl(state, problem);
         }
     }
 
-    void on_start_search(State start_state, Problem problem, const PDDLRepositories& pddl_repositories) override
+    void on_start_search(State start_state, const ProblemImpl& problem) override
     {
         m_statistics = AStarAlgorithmStatistics();
 
@@ -474,7 +414,7 @@ public:
 
         if (!m_quiet)
         {
-            on_start_search_impl(start_state, problem, pddl_repositories);
+            on_start_search_impl(start_state, problem);
         }
     }
 
@@ -508,11 +448,11 @@ public:
         }
     }
 
-    void on_solved(const Plan& plan, const PDDLRepositories& pddl_repositories) override
+    void on_solved(const Plan& plan, const ProblemImpl& problem) override
     {
         if (!m_quiet)
         {
-            on_solved_impl(plan, pddl_repositories);
+            on_solved_impl(plan, problem);
         }
     }
 

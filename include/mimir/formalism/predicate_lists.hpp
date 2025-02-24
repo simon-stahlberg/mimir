@@ -15,32 +15,34 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_PLAN_HPP_
-#define MIMIR_SEARCH_PLAN_HPP_
+#ifndef MIMIR_FORMALISM_PREDICATE_LISTS_HPP_
+#define MIMIR_FORMALISM_PREDICATE_LISTS_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/declarations.hpp"
+
+#include <boost/hana.hpp>
 
 namespace mimir
 {
-
-class Plan
+template<StaticOrFluentOrDerived... P>
+class PredicateLists
 {
 private:
-    GroundActionList m_actions;
-    ContinuousCost m_cost;
+    boost::hana::map<boost::hana::pair<boost::hana::type<P>, PredicateList<P>>...> m_data;
 
 public:
-    Plan(GroundActionList actions, ContinuousCost cost);
+    template<StaticOrFluentOrDerived P_>
+    PredicateList<P_>& get()
+    {
+        return boost::hana::at_key(m_data, boost::hana::type<P_> {});
+    }
 
-    const GroundActionList& get_actions() const;
-
-    ContinuousCost get_cost() const;
+    template<StaticOrFluentOrDerived P_>
+    const PredicateList<P_>& get() const
+    {
+        return boost::hana::at_key(m_data, boost::hana::type<P_> {});
+    }
 };
-
-/// @brief Write the plan to an ostream.
-extern std::ostream& operator<<(std::ostream& os, const std::tuple<const Plan&, const ProblemImpl&>& data);
-
 }
 
 #endif

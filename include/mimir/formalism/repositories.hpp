@@ -368,7 +368,7 @@ public:
 
     // GroundFunction
     template<StaticOrFluentOrAuxiliary F>
-    void get_ground_functions(size_t num_ground_functions, GroundFunctionList<F>& out_ground_functions);
+    void get_ground_functions(size_t num_ground_functions, GroundFunctionList<F>& out_ground_functions) const;
 
     template<StaticOrFluentOrAuxiliary F>
     void get_ground_function_values(const FlatDoubleList& values, std::vector<std::pair<GroundFunction<F>, ContinuousCost>>& out_ground_function_values) const;

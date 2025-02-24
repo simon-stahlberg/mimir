@@ -20,8 +20,6 @@
 #include "mimir/formalism/ground_function_expressions.hpp"
 #include "mimir/formalism/metric.hpp"
 #include "mimir/formalism/problem.hpp"
-#include "mimir/formalism/problem_context.hpp"
-#include "mimir/formalism/repositories.hpp"
 #include "mimir/search/algorithms/astar/event_handlers.hpp"
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 #include "mimir/search/algorithms/strategies/pruning_strategy.hpp"
@@ -77,14 +75,13 @@ SearchResult find_solution_astar(const SearchContext& context,
 {
     assert(heuristic);
 
-    const auto problem = context.get_problem_context().get_problem();
-    auto& pddl_repositories = *context.get_problem_context().get_repositories();
+    auto& problem = *context.get_problem();
     auto& applicable_action_generator = *context.get_applicable_action_generator();
     auto& state_repository = *context.get_state_repository();
 
     const auto start_state = (start_state_.has_value()) ? start_state_.value() : state_repository.get_or_create_initial_state();
     const auto event_handler = (event_handler_.has_value()) ? event_handler_.value() : std::make_shared<DefaultAStarAlgorithmEventHandler>();
-    const auto goal_strategy = (goal_strategy_.has_value()) ? goal_strategy_.value() : std::make_shared<ProblemGoal>(problem);
+    const auto goal_strategy = (goal_strategy_.has_value()) ? goal_strategy_.value() : std::make_shared<ProblemGoal>(context.get_problem());
     const auto pruning_strategy = (pruning_strategy_.has_value()) ? pruning_strategy_.value() : std::make_shared<NoStatePruning>();
 
     auto result = SearchResult();
@@ -107,7 +104,7 @@ SearchResult find_solution_astar(const SearchContext& context,
 
     auto openlist = PriorityQueue<State>();
 
-    event_handler->on_start_search(start_state, problem, pddl_repositories);
+    event_handler->on_start_search(start_state, problem);
 
     const auto start_g_value = compute_initial_state_metric_value(problem);
     if (start_g_value == UNDEFINED_CONTINUOUS_COST)
@@ -176,19 +173,19 @@ SearchResult find_solution_astar(const SearchContext& context,
 
         if (search_node->get_status() == SearchNodeStatus::GOAL)
         {
-            event_handler->on_expand_goal_state(state, problem, pddl_repositories);
+            event_handler->on_expand_goal_state(state, problem);
 
             event_handler->on_end_search(state_repository.get_reached_fluent_ground_atoms_bitset().count(),
                                          state_repository.get_reached_derived_ground_atoms_bitset().count(),
                                          state_repository.get_estimated_memory_usage_in_bytes_for_unextended_state_portion(),
                                          state_repository.get_estimated_memory_usage_in_bytes_for_extended_state_portion(),
                                          search_nodes.get_estimated_memory_usage_in_bytes(),
-                                         pddl_repositories.get_estimated_memory_usage_in_bytes_for_actions(),
-                                         pddl_repositories.get_estimated_memory_usage_in_bytes_for_axioms(),
+                                         problem.get_estimated_memory_usage_in_bytes_for_actions(),
+                                         problem.get_estimated_memory_usage_in_bytes_for_axioms(),
                                          state_repository.get_state_count(),
                                          search_nodes.size(),
-                                         pddl_repositories.get_num_ground_actions(),
-                                         pddl_repositories.get_num_ground_axioms());
+                                         problem.get_num_ground_actions(),
+                                         problem.get_num_ground_axioms());
             if (!event_handler->is_quiet())
             {
                 applicable_action_generator.on_end_search();
@@ -205,14 +202,14 @@ SearchResult find_solution_astar(const SearchContext& context,
             result.goal_state = state;
             result.status = SearchStatus::SOLVED;
 
-            event_handler->on_solved(result.plan.value(), pddl_repositories);
+            event_handler->on_solved(result.plan.value(), problem);
 
             return result;
         }
 
         /* Expand the successors of the state. */
 
-        event_handler->on_expand_state(state, problem, pddl_repositories);
+        event_handler->on_expand_state(state, problem);
 
         for (const auto& action : applicable_action_generator.create_applicable_action_generator(state))
         {
@@ -226,7 +223,7 @@ SearchResult find_solution_astar(const SearchContext& context,
                 throw std::runtime_error("find_solution_astar(...): evaluating the metric on the successor state yielded NaN.");
             }
 
-            event_handler->on_generate_state(state, action, action_cost, successor_state, problem, pddl_repositories);
+            event_handler->on_generate_state(state, action, action_cost, successor_state, problem);
 
             const bool is_new_successor_state = (successor_search_node->get_status() == SearchNodeStatus::NEW);
 
@@ -234,7 +231,7 @@ SearchResult find_solution_astar(const SearchContext& context,
 
             if (pruning_strategy->test_prune_successor_state(state, successor_state, is_new_successor_state))
             {
-                event_handler->on_prune_state(successor_state, problem, pddl_repositories);
+                event_handler->on_prune_state(successor_state, problem);
                 continue;
             }
 
@@ -270,21 +267,21 @@ SearchResult find_solution_astar(const SearchContext& context,
                     continue;
                 }
 
-                event_handler->on_generate_state_relaxed(state, action, action_cost, successor_state, problem, pddl_repositories);
+                event_handler->on_generate_state_relaxed(state, action, action_cost, successor_state, problem);
 
                 const auto successor_f_value = get_g_value(successor_search_node) + get_h_value(successor_search_node);
                 openlist.insert(successor_f_value, successor_state);
             }
             else
             {
-                event_handler->on_generate_state_not_relaxed(state, action, action_cost, successor_state, problem, pddl_repositories);
+                event_handler->on_generate_state_not_relaxed(state, action, action_cost, successor_state, problem);
             }
         }
 
         /* Close state. */
 
         search_node->get_status() = SearchNodeStatus::CLOSED;
-        event_handler->on_close_state(state, problem, pddl_repositories);
+        event_handler->on_close_state(state, problem);
     }
 
     event_handler->on_end_search(state_repository.get_reached_fluent_ground_atoms_bitset().count(),
@@ -292,12 +289,12 @@ SearchResult find_solution_astar(const SearchContext& context,
                                  state_repository.get_estimated_memory_usage_in_bytes_for_unextended_state_portion(),
                                  state_repository.get_estimated_memory_usage_in_bytes_for_extended_state_portion(),
                                  search_nodes.get_estimated_memory_usage_in_bytes(),
-                                 pddl_repositories.get_estimated_memory_usage_in_bytes_for_actions(),
-                                 pddl_repositories.get_estimated_memory_usage_in_bytes_for_axioms(),
+                                 problem.get_estimated_memory_usage_in_bytes_for_actions(),
+                                 problem.get_estimated_memory_usage_in_bytes_for_axioms(),
                                  state_repository.get_state_count(),
                                  search_nodes.size(),
-                                 pddl_repositories.get_num_ground_actions(),
-                                 pddl_repositories.get_num_ground_axioms());
+                                 problem.get_num_ground_actions(),
+                                 problem.get_num_ground_axioms());
     event_handler->on_exhausted();
 
     result.status = SearchStatus::EXHAUSTED;

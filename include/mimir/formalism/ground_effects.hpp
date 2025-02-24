@@ -138,10 +138,10 @@ template<FluentOrAuxiliary F>
 std::ostream& operator<<(std::ostream& out, GroundNumericEffect<F> element);
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConjunctiveEffect, const PDDLRepositories&>& data);
+std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConjunctiveEffect, const ProblemImpl&>& data);
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConditionalEffect, const PDDLRepositories&>& data);
+std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConditionalEffect, const ProblemImpl&>& data);
 
 }
 

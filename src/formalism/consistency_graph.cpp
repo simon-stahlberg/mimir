@@ -599,10 +599,12 @@ Index Edge::get_object_if_overlap(const Term& term) const
  * StaticConsistencyGraph
  */
 
-std::tuple<Vertices, std::vector<IndexList>, std::vector<IndexList>>
-StaticConsistencyGraph::compute_vertices(Problem problem, Index begin_parameter_index, Index end_parameter_index, const LiteralList<Static>& static_conditions)
+std::tuple<Vertices, std::vector<IndexList>, std::vector<IndexList>> StaticConsistencyGraph::compute_vertices(const ProblemImpl& problem,
+                                                                                                              Index begin_parameter_index,
+                                                                                                              Index end_parameter_index,
+                                                                                                              const LiteralList<Static>& static_conditions)
 {
-    const auto& static_assignment_set = problem->get_static_assignment_set();
+    const auto& static_assignment_set = problem.get_static_assignment_set();
 
     auto vertices = Vertices {};
     auto vertices_by_parameter_index = std::vector<IndexList> {};
@@ -613,7 +615,7 @@ StaticConsistencyGraph::compute_vertices(Problem problem, Index begin_parameter_
         IndexList vertex_partition;
         IndexList object_partition;
 
-        for (const auto& object : problem->get_objects())
+        for (const auto& object : problem.get_problem_and_domain_objects())
         {
             const auto object_index = object->get_index();
             const auto vertex_index = static_cast<Index>(vertices.size());
@@ -633,9 +635,9 @@ StaticConsistencyGraph::compute_vertices(Problem problem, Index begin_parameter_
     return std::make_tuple(std::move(vertices), std::move(vertices_by_parameter_index), std::move(objects_by_parameter_index));
 }
 
-Edges StaticConsistencyGraph::compute_edges(Problem problem, const LiteralList<Static>& static_conditions, const Vertices& vertices)
+Edges StaticConsistencyGraph::compute_edges(const ProblemImpl& problem, const LiteralList<Static>& static_conditions, const Vertices& vertices)
 {
-    const auto& static_assignment_set = problem->get_static_assignment_set();
+    const auto& static_assignment_set = problem.get_static_assignment_set();
 
     auto edges = Edges {};
 
@@ -663,7 +665,7 @@ Edges StaticConsistencyGraph::compute_edges(Problem problem, const LiteralList<S
     return edges;
 }
 
-StaticConsistencyGraph::StaticConsistencyGraph(Problem problem,
+StaticConsistencyGraph::StaticConsistencyGraph(const ProblemImpl& problem,
                                                Index begin_parameter_index,
                                                Index end_parameter_index,
                                                const LiteralList<Static>& static_conditions)
@@ -683,14 +685,14 @@ StaticConsistencyGraph::StaticConsistencyGraph(Problem problem,
 namespace mimir
 {
 template<>
-std::ostream& operator<<(std::ostream& out, const std::tuple<const consistency_graph::StaticConsistencyGraph&, const PDDLRepositories&>& data)
+std::ostream& operator<<(std::ostream& out, const std::tuple<const consistency_graph::StaticConsistencyGraph&, const ProblemImpl&>& data)
 {
     const auto& [graph, pddl_repositories] = data;
 
-    const auto create_node = [](const consistency_graph::Vertex& vertex, const PDDLRepositories& pddl_repositories, std::ostream& out)
+    const auto create_node = [](const consistency_graph::Vertex& vertex, const ProblemImpl& problem, std::ostream& out)
     {
         out << "  \"" << vertex.get_index() << "\" [label=\"#" << vertex.get_parameter_index() << " <- "
-            << *pddl_repositories.get_object(vertex.get_object_index()) << "\"];\n";
+            << problem.get_repositories().get_object(vertex.get_object_index()) << "\"];\n";
     };
 
     const auto create_edge = [](const consistency_graph::Edge& edge, std::ostream& out)

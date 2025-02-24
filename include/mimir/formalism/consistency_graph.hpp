@@ -129,13 +129,13 @@ public:
     /// More specifically:
     ///  1. for action parameters, we set first to 0 and last to 0 + arity(action)
     ///  2. for universal effects, we set first to arity(action) and last to arity(action) + arity(effect)
-    StaticConsistencyGraph(Problem problem, Index begin_parameter_index, Index end_parameter_index, const LiteralList<Static>& static_conditions);
+    StaticConsistencyGraph(const ProblemImpl& problem, Index begin_parameter_index, Index end_parameter_index, const LiteralList<Static>& static_conditions);
 
     /// @brief Useful to compute possible substitutions for conditional effects
     static std::tuple<Vertices, std::vector<IndexList>, std::vector<IndexList>>
-    compute_vertices(Problem problem, Index begin_parameter_index, Index end_parameter_index, const LiteralList<Static>& static_conditions);
+    compute_vertices(const ProblemImpl& problem, Index begin_parameter_index, Index end_parameter_index, const LiteralList<Static>& static_conditions);
 
-    static Edges compute_edges(Problem problem, const LiteralList<Static>& static_conditions, const Vertices& vertices);
+    static Edges compute_edges(const ProblemImpl& problem, const LiteralList<Static>& static_conditions, const Vertices& vertices);
 
     /// @brief Get the vertices.
     const Vertices& get_vertices() const { return m_vertices; }

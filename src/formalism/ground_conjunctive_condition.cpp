@@ -21,7 +21,7 @@
 #include "mimir/common/hash_cista.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/ground_function_expressions.hpp"
-#include "mimir/formalism/repositories.hpp"
+#include "mimir/formalism/problem.hpp"
 
 #include <ostream>
 #include <tuple>
@@ -152,10 +152,10 @@ const FlatExternalPtrList<const GroundNumericConstraintImpl>& GroundConjunctiveC
  */
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConjunctiveCondition, const PDDLRepositories&>& data)
+std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConjunctiveCondition, const ProblemImpl&>& data)
 {
     // TODO(numerical): add numeric constraints
-    const auto& [conjunctive_condition, pddl_repositories] = data;
+    const auto& [conjunctive_condition, problem] = data;
 
     const auto& positive_static_precondition_indices = conjunctive_condition.get_positive_precondition<Static>();
     const auto& negative_static_precondition_indices = conjunctive_condition.get_negative_precondition<Static>();
@@ -172,12 +172,12 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConjunctiveCon
     auto negative_derived_precondition = GroundAtomList<Derived> {};
     const auto& ground_numeric_constraints = conjunctive_condition.get_numeric_constraints();
 
-    pddl_repositories.get_ground_atoms_from_indices<Static>(positive_static_precondition_indices, positive_static_precondition);
-    pddl_repositories.get_ground_atoms_from_indices<Static>(negative_static_precondition_indices, negative_static_precondition);
-    pddl_repositories.get_ground_atoms_from_indices<Fluent>(positive_fluent_precondition_indices, positive_fluent_precondition);
-    pddl_repositories.get_ground_atoms_from_indices<Fluent>(negative_fluent_precondition_indices, negative_fluent_precondition);
-    pddl_repositories.get_ground_atoms_from_indices<Derived>(positive_derived_precondition_indices, positive_derived_precondition);
-    pddl_repositories.get_ground_atoms_from_indices<Derived>(negative_derived_precondition_indices, negative_derived_precondition);
+    problem.get_repositories().get_ground_atoms_from_indices<Static>(positive_static_precondition_indices, positive_static_precondition);
+    problem.get_repositories().get_ground_atoms_from_indices<Static>(negative_static_precondition_indices, negative_static_precondition);
+    problem.get_repositories().get_ground_atoms_from_indices<Fluent>(positive_fluent_precondition_indices, positive_fluent_precondition);
+    problem.get_repositories().get_ground_atoms_from_indices<Fluent>(negative_fluent_precondition_indices, negative_fluent_precondition);
+    problem.get_repositories().get_ground_atoms_from_indices<Derived>(positive_derived_precondition_indices, positive_derived_precondition);
+    problem.get_repositories().get_ground_atoms_from_indices<Derived>(negative_derived_precondition_indices, negative_derived_precondition);
 
     os << "positive static precondition=" << positive_static_precondition << ", " << "negative static precondition=" << negative_static_precondition << ", "
        << "positive fluent precondition=" << positive_fluent_precondition << ", " << "negative fluent precondition=" << negative_fluent_precondition << ", "

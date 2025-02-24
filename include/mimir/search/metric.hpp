@@ -25,7 +25,7 @@
 namespace mimir
 {
 
-extern ContinuousCost compute_initial_state_metric_value(Problem problem);
+extern ContinuousCost compute_initial_state_metric_value(const ProblemImpl& problem);
 
 }
 

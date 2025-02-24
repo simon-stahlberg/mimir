@@ -27,16 +27,15 @@
 namespace mimir
 {
 
-void DefaultBrFSAlgorithmEventHandler::on_expand_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories) const {}
+void DefaultBrFSAlgorithmEventHandler::on_expand_state_impl(State state, const ProblemImpl& problem) const {}
 
-void DefaultBrFSAlgorithmEventHandler::on_expand_goal_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories) const {}
+void DefaultBrFSAlgorithmEventHandler::on_expand_goal_state_impl(State state, const ProblemImpl& problem) const {}
 
 void DefaultBrFSAlgorithmEventHandler::on_generate_state_impl(State state,
                                                               GroundAction action,
                                                               ContinuousCost action_cost,
                                                               State successor_state,
-                                                              Problem problem,
-                                                              const PDDLRepositories& pddl_repositories) const
+                                                              const ProblemImpl& problem) const
 {
 }
 
@@ -44,8 +43,7 @@ void DefaultBrFSAlgorithmEventHandler::on_generate_state_in_search_tree_impl(Sta
                                                                              GroundAction action,
                                                                              ContinuousCost action_cost,
                                                                              State successor_state,
-                                                                             Problem problem,
-                                                                             const PDDLRepositories& pddl_repositories) const
+                                                                             const ProblemImpl& problem) const
 {
 }
 
@@ -53,8 +51,7 @@ void DefaultBrFSAlgorithmEventHandler::on_generate_state_not_in_search_tree_impl
                                                                                  GroundAction action,
                                                                                  ContinuousCost action_cost,
                                                                                  State successor_state,
-                                                                                 Problem problem,
-                                                                                 const PDDLRepositories& pddl_repositories) const
+                                                                                 const ProblemImpl& problem) const
 {
 }
 
@@ -65,7 +62,7 @@ void DefaultBrFSAlgorithmEventHandler::on_finish_g_layer_impl(uint32_t g_value, 
               << " and num generated states " << num_generated_states << " (" << now_time_ms - m_start_time_ms << " ms)" << std::endl;
 }
 
-void DefaultBrFSAlgorithmEventHandler::on_start_search_impl(State start_state, Problem problem, const PDDLRepositories& pddl_repositories) const
+void DefaultBrFSAlgorithmEventHandler::on_start_search_impl(State start_state, const ProblemImpl& problem) const
 {
     std::cout << "[BrFS] Search started." << std::endl;
     m_start_time_ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
@@ -86,14 +83,14 @@ void DefaultBrFSAlgorithmEventHandler::on_end_search_impl(uint64_t num_reached_f
     std::cout << "[BrFS] Search ended.\n" << m_statistics << std::endl;
 }
 
-void DefaultBrFSAlgorithmEventHandler::on_solved_impl(const Plan& plan, const PDDLRepositories& pddl_repositories) const
+void DefaultBrFSAlgorithmEventHandler::on_solved_impl(const Plan& plan, const ProblemImpl& problem) const
 {
     std::cout << "[BrFS] Plan found.\n"
               << "[BrFS] Plan cost: " << plan.get_cost() << "\n"
               << "[BrFS] Plan length: " << plan.get_actions().size() << std::endl;
     for (size_t i = 0; i < plan.get_actions().size(); ++i)
     {
-        std::cout << "[BrFS] " << i + 1 << ". " << std::make_tuple(plan.get_actions()[i], std::cref(pddl_repositories), PlanActionFormatterTag {}) << std::endl;
+        std::cout << "[BrFS] " << i + 1 << ". " << std::make_tuple(plan.get_actions()[i], std::cref(problem), PlanActionFormatterTag {}) << std::endl;
     }
 }
 

@@ -32,13 +32,13 @@ ContinuousCost Plan::get_cost() const { return m_cost; }
 
 /* Utility */
 
-std::ostream& operator<<(std::ostream& os, const std::tuple<const Plan&, const PDDLRepositories&>& data)
+std::ostream& operator<<(std::ostream& os, const std::tuple<const Plan&, const ProblemImpl&>& data)
 {
-    const auto& [plan, pddl_repositories] = data;
+    const auto& [plan, problem] = data;
 
     for (const auto& action : plan.get_actions())
     {
-        os << std::make_tuple(action, std::cref(pddl_repositories), PlanActionFormatterTag {}) << "\n";
+        os << std::make_tuple(action, std::cref(problem), PlanActionFormatterTag {}) << "\n";
     }
     os << "; cost = " << plan.get_cost();
 

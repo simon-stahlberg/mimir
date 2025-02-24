@@ -18,7 +18,7 @@
 #include "mimir/search/algorithms/iw.hpp"
 
 #include "mimir/common/printers.hpp"
-#include "mimir/formalism/problem_context.hpp"
+#include "mimir/formalism/problem.hpp"
 #include "mimir/search/algorithms/brfs.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers.hpp"
 #include "mimir/search/algorithms/iw/dynamic_novelty_table.hpp"
@@ -858,8 +858,7 @@ SearchResult find_solution_iw(const SearchContext& context,
                               std::optional<std::shared_ptr<IBrFSAlgorithmEventHandler>> brfs_event_handler_,
                               std::optional<std::shared_ptr<IGoalStrategy>> goal_strategy_)
 {
-    const auto problem = context.get_problem_context().get_problem();
-    auto& pddl_repositories = *context.get_problem_context().get_repositories();
+    const auto& problem = *context.get_problem();
     auto& applicable_action_generator = *context.get_applicable_action_generator();
     auto& state_repository = *context.get_state_repository();
 
@@ -867,7 +866,7 @@ SearchResult find_solution_iw(const SearchContext& context,
     const auto start_state = (start_state_.has_value()) ? start_state_.value() : state_repository.get_or_create_initial_state();
     const auto iw_event_handler = (iw_event_handler_.has_value()) ? iw_event_handler_.value() : std::make_shared<DefaultIWAlgorithmEventHandler>();
     const auto brfs_event_handler = (brfs_event_handler_.has_value()) ? brfs_event_handler_.value() : std::make_shared<DefaultBrFSAlgorithmEventHandler>();
-    const auto goal_strategy = (goal_strategy_.has_value()) ? goal_strategy_.value() : std::make_shared<ProblemGoal>(problem);
+    const auto goal_strategy = (goal_strategy_.has_value()) ? goal_strategy_.value() : std::make_shared<ProblemGoal>(context.get_problem());
 
     if (max_arity >= MAX_ARITY)
     {
@@ -875,12 +874,12 @@ SearchResult find_solution_iw(const SearchContext& context,
                                  + std::to_string(MAX_ARITY) + ") compile time constant.");
     }
 
-    iw_event_handler->on_start_search(problem, start_state, pddl_repositories);
+    iw_event_handler->on_start_search(start_state, problem);
 
     size_t cur_arity = 0;
     while (cur_arity <= max_arity)
     {
-        iw_event_handler->on_start_arity_search(problem, start_state, pddl_repositories, cur_arity);
+        iw_event_handler->on_start_arity_search(start_state, problem, cur_arity);
 
         const auto result =
             (cur_arity > 0) ?
@@ -901,7 +900,7 @@ SearchResult find_solution_iw(const SearchContext& context,
                 applicable_action_generator.on_end_search();
                 state_repository.get_axiom_evaluator()->on_end_search();
             }
-            iw_event_handler->on_solved(result.plan.value(), pddl_repositories);
+            iw_event_handler->on_solved(result.plan.value(), problem);
 
             return result;
         }

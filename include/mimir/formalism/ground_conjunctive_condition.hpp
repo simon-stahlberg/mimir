@@ -69,7 +69,7 @@ public:
  */
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConjunctiveCondition, const PDDLRepositories&>& data);
+std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConjunctiveCondition, const ProblemImpl&>& data);
 
 }
 

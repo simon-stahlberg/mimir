@@ -60,7 +60,7 @@ mimir::generator<GroundAction> GroundedApplicableActionGenerator::create_applica
     }
 }
 
-const ProblemContext& GroundedApplicableActionGenerator::get_problem() const { return m_problem; }
+const Problem& GroundedApplicableActionGenerator::get_problem() const { return m_problem; }
 
 void GroundedApplicableActionGenerator::on_finish_search_layer() { m_event_handler->on_finish_search_layer(); }
 

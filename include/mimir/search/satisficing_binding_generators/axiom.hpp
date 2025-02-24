@@ -41,7 +41,7 @@ public:
     using SatisficingBindingGenerator<AxiomSatisficingBindingGenerator>::get_static_consistency_graph;
 
     AxiomSatisficingBindingGenerator(Axiom axiom,
-                                     ProblemContext problem_context,
+                                     Problem problem,
                                      std::optional<std::shared_ptr<ISatisficingBindingGeneratorEventHandler>> event_handler = std::nullopt);
 };
 

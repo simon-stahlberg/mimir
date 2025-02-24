@@ -34,7 +34,7 @@ ElementGeneratorNode_Perfect<E>::ElementGeneratorNode_Perfect(std::span<const E*
 
 template<HasConjunctiveCondition E>
 void ElementGeneratorNode_Perfect<E>::generate_applicable_actions_impl(const DenseState& state,
-                                                                       Problem problem,
+                                                                       const ProblemImpl& problem,
                                                                        std::vector<const E*>& ref_applicable_elements) const
 {
     if constexpr (std::is_same_v<E, GroundActionImpl>)
@@ -84,7 +84,7 @@ ElementGeneratorNode_Imperfect<E>::ElementGeneratorNode_Imperfect(std::span<cons
 
 template<HasConjunctiveCondition E>
 void ElementGeneratorNode_Imperfect<E>::generate_applicable_actions_impl(const DenseState& state,
-                                                                         Problem problem,
+                                                                         const ProblemImpl& problem,
                                                                          std::vector<const E*>& ref_applicable_elements) const
 {
     for (const auto& element : this->m_elements)

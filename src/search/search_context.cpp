@@ -25,13 +25,13 @@
 namespace mimir
 {
 
-SearchContext::SearchContext(ProblemContext problem_context, const Options& options) : m_problem_context(problem_context)
+SearchContext::SearchContext(Problem problem, const Options& options) : m_problem(problem)
 {
     switch (options.mode)
     {
         case SearchMode::GROUNDED:
         {
-            auto delete_relaxed_explorator = DeleteRelaxedProblemExplorator(m_problem_context);
+            auto delete_relaxed_explorator = DeleteRelaxedProblemExplorator(m_problem);
             m_state_repository = std::make_shared<StateRepository>(delete_relaxed_explorator.create_grounded_axiom_evaluator());
             m_applicable_action_generator =
                 std::dynamic_pointer_cast<IApplicableActionGenerator>(delete_relaxed_explorator.create_grounded_applicable_action_generator());
@@ -39,9 +39,8 @@ SearchContext::SearchContext(ProblemContext problem_context, const Options& opti
         }
         case SearchMode::LIFTED:
         {
-            m_state_repository = std::make_shared<StateRepository>(std::make_shared<LiftedAxiomEvaluator>(m_problem_context));
-            m_applicable_action_generator =
-                std::dynamic_pointer_cast<IApplicableActionGenerator>(std::make_shared<LiftedApplicableActionGenerator>(m_problem_context));
+            m_state_repository = std::make_shared<StateRepository>(std::make_shared<LiftedAxiomEvaluator>(m_problem));
+            m_applicable_action_generator = std::dynamic_pointer_cast<IApplicableActionGenerator>(std::make_shared<LiftedApplicableActionGenerator>(m_problem));
             break;
         }
         default:
@@ -51,26 +50,26 @@ SearchContext::SearchContext(ProblemContext problem_context, const Options& opti
     }
 }
 
-SearchContext::SearchContext(ProblemContext problem_context,
+SearchContext::SearchContext(Problem problem,
                              std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
                              std::shared_ptr<StateRepository> state_repository) :
-    m_problem_context(std::move(problem_context)),
+    m_problem(std::move(problem)),
     m_applicable_action_generator(std::move(applicable_action_generator)),
     m_state_repository(std::move(state_repository))
 {
 }
 
-std::vector<SearchContext> SearchContext::create(ProblemContextList problem_contexts, const Options& options)
+std::vector<SearchContext> SearchContext::create(const ProblemList& problems, const Options& options)
 {
     auto result = SearchContextList {};
-    for (auto& problem_context : problem_contexts)
+    for (auto& problem : problems)
     {
-        result.emplace_back(std::move(problem_context), options);
+        result.emplace_back(std::move(problem), options);
     }
     return result;
 }
 
-const ProblemContext& SearchContext::get_problem_context() const { return m_problem_context; }
+const Problem& SearchContext::get_problem() const { return m_problem; }
 
 const std::shared_ptr<IApplicableActionGenerator> SearchContext::get_applicable_action_generator() const { return m_applicable_action_generator; }
 

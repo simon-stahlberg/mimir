@@ -24,24 +24,23 @@
 
 namespace mimir
 {
-void DebugBrFSAlgorithmEventHandler::on_expand_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories) const
+void DebugBrFSAlgorithmEventHandler::on_expand_state_impl(State state, const ProblemImpl& problem) const
 {
     std::cout << "[BrFS] ----------------------------------------\n"
-              << "[BrFS] State: " << std::make_tuple(problem, state, std::cref(pddl_repositories)) << std::endl
+              << "[BrFS] State: " << std::make_tuple(state, std::cref(problem)) << std::endl
               << std::endl;
 }
 
-void DebugBrFSAlgorithmEventHandler::on_expand_goal_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories) const {}
+void DebugBrFSAlgorithmEventHandler::on_expand_goal_state_impl(State state, const ProblemImpl& problem) const {}
 
 void DebugBrFSAlgorithmEventHandler::on_generate_state_impl(State state,
                                                             GroundAction action,
                                                             ContinuousCost action_cost,
                                                             State successor_state,
-                                                            Problem problem,
-                                                            const PDDLRepositories& pddl_repositories) const
+                                                            const ProblemImpl& problem) const
 {
-    std::cout << "[BrFS] Action: " << std::make_tuple(action, std::cref(pddl_repositories), FullActionFormatterTag {}) << "\n"
-              << "[BrFS] Successor: " << std::make_tuple(problem, successor_state, std::cref(pddl_repositories)) << "\n"
+    std::cout << "[BrFS] Action: " << std::make_tuple(action, std::cref(problem), FullActionFormatterTag {}) << "\n"
+              << "[BrFS] Successor: " << std::make_tuple(successor_state, std::cref(problem)) << "\n"
               << std::endl;
 }
 
@@ -49,8 +48,7 @@ void DebugBrFSAlgorithmEventHandler::on_generate_state_in_search_tree_impl(State
                                                                            GroundAction action,
                                                                            ContinuousCost action_cost,
                                                                            State successor_state,
-                                                                           Problem problem,
-                                                                           const PDDLRepositories& pddl_repositories) const
+                                                                           const ProblemImpl& problem) const
 {
 }
 
@@ -58,8 +56,7 @@ void DebugBrFSAlgorithmEventHandler::on_generate_state_not_in_search_tree_impl(S
                                                                                GroundAction action,
                                                                                ContinuousCost action_cost,
                                                                                State successor_state,
-                                                                               Problem problem,
-                                                                               const PDDLRepositories& pddl_repositories) const
+                                                                               const ProblemImpl& problem) const
 {
 }
 
@@ -69,10 +66,10 @@ void DebugBrFSAlgorithmEventHandler::on_finish_g_layer_impl(uint32_t g_value, ui
               << " and num generated states " << num_generated_states << std::endl;
 }
 
-void DebugBrFSAlgorithmEventHandler::on_start_search_impl(State start_state, Problem problem, const PDDLRepositories& pddl_repositories) const
+void DebugBrFSAlgorithmEventHandler::on_start_search_impl(State start_state, const ProblemImpl& problem) const
 {
     std::cout << "[BrFS] Search started.\n"
-              << "[BrFS] Initial: " << std::make_tuple(problem, start_state, std::cref(pddl_repositories)) << std::endl;
+              << "[BrFS] Initial: " << std::make_tuple(start_state, std::cref(problem)) << std::endl;
 }
 
 void DebugBrFSAlgorithmEventHandler::on_end_search_impl(uint64_t num_reached_fluent_atoms,
@@ -90,14 +87,14 @@ void DebugBrFSAlgorithmEventHandler::on_end_search_impl(uint64_t num_reached_flu
     std::cout << "[BrFS] Search ended.\n" << m_statistics << std::endl;
 }
 
-void DebugBrFSAlgorithmEventHandler::on_solved_impl(const Plan& plan, const PDDLRepositories& pddl_repositories) const
+void DebugBrFSAlgorithmEventHandler::on_solved_impl(const Plan& plan, const ProblemImpl& problem) const
 {
     std::cout << "[BrFS] Plan found.\n"
               << "[BrFS] Plan cost: " << plan.get_cost() << "\n"
               << "[BrFS] Plan length: " << plan.get_actions().size() << std::endl;
     for (size_t i = 0; i < plan.get_actions().size(); ++i)
     {
-        std::cout << "[BrFS] " << i + 1 << ". " << std::make_tuple(plan.get_actions()[i], std::cref(pddl_repositories), PlanActionFormatterTag {}) << std::endl;
+        std::cout << "[BrFS] " << i + 1 << ". " << std::make_tuple(plan.get_actions()[i], std::cref(problem), PlanActionFormatterTag {}) << std::endl;
     }
 }
 

@@ -310,7 +310,7 @@ Problem ProblemImpl::create(const fs::path& domain_filepath, const fs::path& pro
 
 Index ProblemImpl::get_index() const { return m_index; }
 
-const PDDLRepositories& ProblemImpl::repositories() const { return m_repositories; }
+const PDDLRepositories& ProblemImpl::get_repositories() const { return m_repositories; }
 
 const std::optional<fs::path>& ProblemImpl::get_filepath() const { return m_filepath; }
 
@@ -621,6 +621,10 @@ template const FlatIndexList& ProblemImpl::get_negative_goal_atoms_indices<Deriv
 
 const std::vector<AxiomPartition>& ProblemImpl::get_problem_and_domain_axiom_partitioning() const { return m_problem_and_domain_axiom_partitioning; }
 
+/* Modifiers*/
+
+Object ProblemImpl::get_or_create_object(std::string name) { return m_repositories.get_or_create_object(std::move(name)); }
+
 /* Grounding */
 
 // Terms
@@ -647,6 +651,7 @@ static void ground_terms(const TermList& terms, const ObjectList& binding, Objec
             term->get_variant());
     }
 }
+
 // Literal
 
 template<StaticOrFluentOrDerived P>

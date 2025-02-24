@@ -94,7 +94,7 @@ public:
      * Getters
      */
 
-    const ProblemContext& get_problem_context() const;
+    const Problem& get_problem() const;
 
     /// @brief Return the number of created states.
     /// @return the number of created states.

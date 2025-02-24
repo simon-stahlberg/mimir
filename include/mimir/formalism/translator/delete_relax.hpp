@@ -23,7 +23,7 @@
 namespace mimir
 {
 
-class DeleteRelaxTransformer : public RecursiveCachedBaseTranslator<DeleteRelaxTransformer>
+class DeleteRelaxTranslator : public RecursiveCachedBaseTranslator<DeleteRelaxTranslator>
 {
 private:
     // There can be a one to many relationship between relaxed and unrelaxed.
@@ -31,10 +31,10 @@ private:
     std::unordered_map<Axiom, AxiomList> m_delete_to_normal_axioms;
 
     /* Implement RecursiveCachedBaseTranslator interface. */
-    friend class RecursiveCachedBaseTranslator<DeleteRelaxTransformer>;
+    friend class RecursiveCachedBaseTranslator<DeleteRelaxTranslator>;
 
     // Provide default implementations
-    using RecursiveCachedBaseTranslator<DeleteRelaxTransformer>::translate_level_2;
+    using RecursiveCachedBaseTranslator<DeleteRelaxTranslator>::translate_level_2;
 
     template<StaticOrFluentOrDerived P>
     LiteralList<P> translate_level_2(const LiteralList<P>& literals, PDDLRepositories& repositories);

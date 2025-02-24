@@ -42,7 +42,7 @@ public:
     ElementGeneratorNodeBase& operator=(ElementGeneratorNodeBase&& other) = delete;
 
     void generate_applicable_actions(const DenseState& state,
-                                     Problem problem,
+                                     const ProblemImpl& problem,
                                      std::vector<const INode<E>*>&,
                                      std::vector<const E*>& ref_applicable_elements) const override
     {
@@ -58,7 +58,7 @@ template<HasConjunctiveCondition E>
 class ElementGeneratorNode_Perfect : public ElementGeneratorNodeBase<ElementGeneratorNode_Perfect<E>, E>
 {
 private:
-    void generate_applicable_actions_impl(const DenseState& state, Problem problem, std::vector<const E*>& ref_applicable_elements) const;
+    void generate_applicable_actions_impl(const DenseState& state, const ProblemImpl& problem, std::vector<const E*>& ref_applicable_elements) const;
 
     void visit_impl(INodeVisitor<E>& visitor) const;
 
@@ -74,7 +74,7 @@ template<HasConjunctiveCondition E>
 class ElementGeneratorNode_Imperfect : public ElementGeneratorNodeBase<ElementGeneratorNode_Imperfect<E>, E>
 {
 private:
-    void generate_applicable_actions_impl(const DenseState& state, Problem problem, std::vector<const E*>& ref_applicable_elements) const;
+    void generate_applicable_actions_impl(const DenseState& state, const ProblemImpl& problem, std::vector<const E*>& ref_applicable_elements) const;
 
     void visit_impl(INodeVisitor<E>& visitor) const;
 

@@ -23,7 +23,7 @@
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/ground_function_expressions.hpp"
-#include "mimir/formalism/repositories.hpp"
+#include "mimir/formalism/problem.hpp"
 
 #include <ostream>
 #include <tuple>
@@ -149,9 +149,9 @@ template std::ostream& operator<<(std::ostream& out, GroundNumericEffect<Fluent>
 template std::ostream& operator<<(std::ostream& out, GroundNumericEffect<Auxiliary> element);
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConjunctiveEffect, const PDDLRepositories&>& data)
+std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConjunctiveEffect, const ProblemImpl&>& data)
 {
-    const auto& [conjunctive_effect, pddl_repositories] = data;
+    const auto& [conjunctive_effect, problem] = data;
 
     const auto& positive_literal_indices = conjunctive_effect.get_positive_effects();
     const auto& negative_literal_indices = conjunctive_effect.get_negative_effects();
@@ -161,8 +161,8 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConjunctiveEff
     const auto& fluent_numeric_effects = conjunctive_effect.get_fluent_numeric_effects();
     const auto& auxiliary_numeric_effect = conjunctive_effect.get_auxiliary_numeric_effect();
 
-    pddl_repositories.get_ground_atoms_from_indices<Fluent>(positive_literal_indices, positive_literals);
-    pddl_repositories.get_ground_atoms_from_indices<Fluent>(negative_literal_indices, negative_literals);
+    problem.get_repositories().get_ground_atoms_from_indices<Fluent>(positive_literal_indices, positive_literals);
+    problem.get_repositories().get_ground_atoms_from_indices<Fluent>(negative_literal_indices, negative_literals);
 
     os << "delete effects=" << negative_literals << ", " << "add effects=" << positive_literals << ", fluent numeric effects=" << fluent_numeric_effects;
     if (auxiliary_numeric_effect)
@@ -178,12 +178,12 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConjunctiveEff
 }
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConditionalEffect, const PDDLRepositories&>& data)
+std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConditionalEffect, const ProblemImpl&>& data)
 {
-    const auto& [cond_effect_proxy, pddl_repositories] = data;
+    const auto& [cond_effect_proxy, problem] = data;
 
-    os << std::make_tuple(cond_effect_proxy.get_conjunctive_condition(), std::cref(pddl_repositories)) << ", "
-       << std::make_tuple(cond_effect_proxy.get_conjunctive_effect(), std::cref(pddl_repositories));
+    os << std::make_tuple(cond_effect_proxy.get_conjunctive_condition(), std::cref(problem)) << ", "
+       << std::make_tuple(cond_effect_proxy.get_conjunctive_effect(), std::cref(problem));
 
     return os;
 }

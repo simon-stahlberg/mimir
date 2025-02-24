@@ -28,7 +28,7 @@ class ISatisficingBindingGeneratorEventHandler
 public:
     virtual ~ISatisficingBindingGeneratorEventHandler() = default;
 
-    virtual void on_invalid_binding(const ObjectList& binding, PDDLRepositories& ref_pddl_repositories) = 0;
+    virtual void on_invalid_binding(const ObjectList& binding, const ProblemImpl& problem) = 0;
 };
 
 }

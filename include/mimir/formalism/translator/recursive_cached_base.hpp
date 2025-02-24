@@ -47,8 +47,6 @@ private:
     constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 protected:
-    PDDLRepositories& m_pddl_repositories;
-
     template<typename T>
     using TranslatorCache = boost::hana::pair<boost::hana::type<T>, std::unordered_map<T, T, loki::Hash<T>, loki::EqualTo<T>>>;
 
@@ -661,7 +659,7 @@ protected:
         builder.get_numeric_goal_condition().insert(builder.get_numeric_goal_condition().end(),
                                                     translated_numeric_goal_condition.begin(),
                                                     translated_numeric_goal_condition.end());
-        problem->get_optimization_metric() = this->translate_level_0(problem->get_optimization_metric(), repositories);
+        builder.get_optimization_metric() = this->translate_level_0(problem->get_optimization_metric(), repositories);
         const auto translated_axioms = this->translate_level_0(problem->get_axioms(), repositories);
         builder.get_axioms().insert(builder.get_axioms().end(), translated_axioms.begin(), translated_axioms.end());
 

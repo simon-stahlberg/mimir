@@ -66,7 +66,7 @@ public:
     NumericConstraintSelectorNode_T(Node<E>&& true_child, GroundNumericConstraint constraint);
 
     void generate_applicable_actions(const DenseState& state,
-                                     Problem problem,
+                                     const ProblemImpl& problem,
                                      std::vector<const INode<E>*>& ref_applicable_nodes,
                                      std::vector<const E*>&) const override;
 
@@ -93,7 +93,7 @@ public:
     NumericConstraintSelectorNode_TX(Node<E>&& true_child, Node<E>&& dontcare_child, GroundNumericConstraint constraint);
 
     void generate_applicable_actions(const DenseState& state,
-                                     Problem problem,
+                                     const ProblemImpl& problem,
                                      std::vector<const INode<E>*>& ref_applicable_nodes,
                                      std::vector<const E*>&) const override;
 

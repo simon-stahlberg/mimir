@@ -96,10 +96,10 @@ struct PlanActionFormatterTag
 };
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const PDDLRepositories&, FullActionFormatterTag>& data);
+std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const ProblemImpl&, FullActionFormatterTag>& data);
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const PDDLRepositories&, PlanActionFormatterTag>& data);
+std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const ProblemImpl&, PlanActionFormatterTag>& data);
 
 }
 

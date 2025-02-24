@@ -28,16 +28,16 @@
 
 namespace mimir
 {
-GroundedAxiomEvaluator::GroundedAxiomEvaluator(ProblemContext problem_context,
+GroundedAxiomEvaluator::GroundedAxiomEvaluator(Problem problem,
                                                std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>>&& match_tree_partitioning) :
-    GroundedAxiomEvaluator(std::move(problem_context), std::move(match_tree_partitioning), std::make_shared<DefaultGroundedAxiomEvaluatorEventHandler>())
+    GroundedAxiomEvaluator(std::move(problem), std::move(match_tree_partitioning), std::make_shared<DefaultGroundedAxiomEvaluatorEventHandler>())
 {
 }
 
-GroundedAxiomEvaluator::GroundedAxiomEvaluator(ProblemContext problem_context,
+GroundedAxiomEvaluator::GroundedAxiomEvaluator(Problem problem,
                                                std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>>&& match_tree_partitioning,
                                                std::shared_ptr<IGroundedAxiomEvaluatorEventHandler> event_handler) :
-    m_problem_context(std::move(problem_context)),
+    m_problem(std::move(problem)),
     m_match_tree_partitioning(std::move(match_tree_partitioning)),
     m_event_handler(std::move(event_handler))
 {
@@ -61,13 +61,13 @@ void GroundedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state)
 
             applicable_axioms.clear();
 
-            match_tree->generate_applicable_elements_iteratively(dense_state, m_problem_context.get_problem(), applicable_axioms);
+            match_tree->generate_applicable_elements_iteratively(dense_state, *m_problem, applicable_axioms);
 
             /* Apply applicable axioms */
 
             for (const auto& grounded_axiom : applicable_axioms)
             {
-                assert(is_applicable(grounded_axiom, m_problem_context.get_problem(), dense_state));
+                assert(is_applicable(grounded_axiom, *m_problem, dense_state));
 
                 assert(!grounded_axiom->get_derived_effect().is_negated);
 
@@ -90,7 +90,7 @@ void GroundedAxiomEvaluator::on_finish_search_layer() { m_event_handler->on_fini
 
 void GroundedAxiomEvaluator::on_end_search() { m_event_handler->on_end_search(); }
 
-const ProblemContext& GroundedAxiomEvaluator::get_problem_context() const { return m_problem_context; }
+const Problem& GroundedAxiomEvaluator::get_problem() const { return m_problem; }
 
 const std::shared_ptr<IGroundedAxiomEvaluatorEventHandler>& GroundedAxiomEvaluator::get_event_handler() const { return m_event_handler; }
 }

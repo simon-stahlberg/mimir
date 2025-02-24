@@ -29,7 +29,7 @@ class DefaultSatisficingBindingGeneratorEventHandler : public ISatisficingBindin
 public:
     DefaultSatisficingBindingGeneratorEventHandler() : ISatisficingBindingGeneratorEventHandler() {}
 
-    void on_invalid_binding(const ObjectList& binding, PDDLRepositories& ref_pddl_repositories) {}
+    void on_invalid_binding(const ObjectList& binding, const ProblemImpl& problem) {}
 };
 
 }

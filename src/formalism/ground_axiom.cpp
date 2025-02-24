@@ -18,7 +18,7 @@
 #include "mimir/formalism/ground_axiom.hpp"
 
 #include "mimir/common/hash_cista.hpp"
-#include "mimir/formalism/repositories.hpp"
+#include "mimir/formalism/problem.hpp"
 
 namespace mimir
 {
@@ -72,24 +72,24 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundEffectDerivedL
 }
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAxiom, const PDDLRepositories&>& data)
+std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAxiom, const ProblemImpl&>& data)
 {
-    const auto [axiom, pddl_repositories] = data;
+    const auto [axiom, problem] = data;
 
     auto binding = ObjectList {};
     for (const auto object_index : axiom->get_object_indices())
     {
-        binding.push_back(pddl_repositories.get_object(object_index));
+        binding.push_back(problem.get_repositories().get_object(object_index));
     }
 
     const auto& conjunctive_condition = axiom->get_conjunctive_condition();
 
-    os << "Axiom("                                                                                                                          //
-       << "index=" << axiom->get_index() << ", "                                                                                            //
-       << "name=" << pddl_repositories.get_axiom(axiom->get_axiom_index())->get_literal()->get_atom()->get_predicate()->get_name() << ", "  //
-       << "binding=" << binding << ", "                                                                                                     //
-       << std::make_tuple(conjunctive_condition, std::cref(pddl_repositories)) << ", "                                                      //
-       << "effect=" << std::make_tuple(axiom->get_derived_effect(), std::cref(pddl_repositories)) << ")";
+    os << "Axiom("                                                                                                                                   //
+       << "index=" << axiom->get_index() << ", "                                                                                                     //
+       << "name=" << problem.get_repositories().get_axiom(axiom->get_axiom_index())->get_literal()->get_atom()->get_predicate()->get_name() << ", "  //
+       << "binding=" << binding << ", "                                                                                                              //
+       << std::make_tuple(conjunctive_condition, std::cref(problem)) << ", "                                                                         //
+       << "effect=" << std::make_tuple(axiom->get_derived_effect(), std::cref(problem)) << ")";
 
     return os;
 }

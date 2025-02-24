@@ -57,7 +57,7 @@ static bool nullary_literals_hold(const GroundLiteralList<P>& literals, const Fl
     return true;
 }
 
-bool nullary_conditions_hold(ConjunctiveCondition conjunctive_condition, Problem problem, const DenseState& dense_state)
+bool nullary_conditions_hold(ConjunctiveCondition conjunctive_condition, const ProblemImpl& problem, const DenseState& dense_state)
 {
     // Note: checking nullary constraints doesnt work because its value is problem-dependent!
     return nullary_literals_hold(conjunctive_condition->get_nullary_ground_literals<Fluent>(), dense_state.get_atoms<Fluent>())
@@ -104,11 +104,11 @@ static bool is_applicable(const GroundConjunctiveCondition& conjunctive_conditio
     return true;
 }
 
-bool is_dynamically_applicable(const GroundConjunctiveCondition& conjunctive_condition, Problem problem, const DenseState& dense_state)
+bool is_dynamically_applicable(const GroundConjunctiveCondition& conjunctive_condition, const ProblemImpl& problem, const DenseState& dense_state)
 {
     return is_applicable<Fluent>(conjunctive_condition, dense_state.get_atoms<Fluent>())
            && is_applicable<Derived>(conjunctive_condition, dense_state.get_atoms<Derived>())
-           && is_applicable(conjunctive_condition, problem->get_function_to_value<Static>(), dense_state.get_numeric_variables());
+           && is_applicable(conjunctive_condition, problem.get_function_to_value<Static>(), dense_state.get_numeric_variables());
 }
 
 bool is_statically_applicable(const GroundConjunctiveCondition& conjunctive_condition, const FlatBitset& static_positive_atoms)
@@ -118,10 +118,10 @@ bool is_statically_applicable(const GroundConjunctiveCondition& conjunctive_cond
            && is_statically_applicable<Derived>(conjunctive_condition);
 }
 
-bool is_applicable(const GroundConjunctiveCondition& conjunctive_condition, Problem problem, const DenseState& dense_state)
+bool is_applicable(const GroundConjunctiveCondition& conjunctive_condition, const ProblemImpl& problem, const DenseState& dense_state)
 {
     return is_dynamically_applicable(conjunctive_condition, problem, dense_state)
-           && is_statically_applicable(conjunctive_condition, problem->get_static_initial_positive_atoms_bitset());
+           && is_statically_applicable(conjunctive_condition, problem.get_static_initial_positive_atoms_bitset());
 }
 
 /**
@@ -167,12 +167,12 @@ is_applicable(const GroundNumericEffectList<F>& effects, const FlatDoubleList& s
     return true;
 }
 
-bool is_applicable(const GroundConjunctiveEffect& conjunctive_effect, Problem problem, const DenseState& dense_state)
+bool is_applicable(const GroundConjunctiveEffect& conjunctive_effect, const ProblemImpl& problem, const DenseState& dense_state)
 {
-    return is_applicable(conjunctive_effect.get_fluent_numeric_effects(), problem->get_function_to_value<Static>(), dense_state.get_numeric_variables())
+    return is_applicable(conjunctive_effect.get_fluent_numeric_effects(), problem.get_function_to_value<Static>(), dense_state.get_numeric_variables())
            && (!conjunctive_effect.get_auxiliary_numeric_effect().has_value()
                || is_applicable(conjunctive_effect.get_auxiliary_numeric_effect().value().get(),
-                                problem->get_function_to_value<Static>(),
+                                problem.get_function_to_value<Static>(),
                                 dense_state.get_numeric_variables()));
 }
 
@@ -180,13 +180,13 @@ bool is_applicable(const GroundConjunctiveEffect& conjunctive_effect, Problem pr
  * GroundConditionalEffect
  */
 
-bool is_applicable(const GroundConditionalEffect& conditional_effect, Problem problem, const DenseState& dense_state)
+bool is_applicable(const GroundConditionalEffect& conditional_effect, const ProblemImpl& problem, const DenseState& dense_state)
 {
     return is_applicable(conditional_effect.get_conjunctive_condition(), problem, dense_state)  //
            && is_applicable(conditional_effect.get_conjunctive_effect(), problem, dense_state);
 }
 
-bool is_applicable_if_fires(const GroundConditionalEffect& conditional_effect, Problem problem, const DenseState& dense_state)
+bool is_applicable_if_fires(const GroundConditionalEffect& conditional_effect, const ProblemImpl& problem, const DenseState& dense_state)
 {
     return !(!is_applicable(conditional_effect.get_conjunctive_effect(), problem, dense_state)  //
              && is_applicable(conditional_effect.get_conjunctive_condition(), problem, dense_state));
@@ -196,7 +196,7 @@ bool is_applicable_if_fires(const GroundConditionalEffect& conditional_effect, P
  * GroundAction
  */
 
-bool is_dynamically_applicable(GroundAction action, Problem problem, const DenseState& dense_state)
+bool is_dynamically_applicable(GroundAction action, const ProblemImpl& problem, const DenseState& dense_state)
 {
     return is_dynamically_applicable(action->get_conjunctive_condition(), problem, dense_state)  //
            && is_applicable(action->get_conjunctive_effect(), problem, dense_state)
@@ -205,7 +205,7 @@ bool is_dynamically_applicable(GroundAction action, Problem problem, const Dense
                           [&](auto&& arg) { return is_applicable_if_fires(arg, problem, dense_state); });
 }
 
-bool is_applicable(GroundAction action, Problem problem, const DenseState& dense_state)
+bool is_applicable(GroundAction action, const ProblemImpl& problem, const DenseState& dense_state)
 {
     return is_applicable(action->get_conjunctive_condition(), problem, dense_state)  //
            && is_applicable(action->get_conjunctive_effect(), problem, dense_state)
@@ -218,12 +218,12 @@ bool is_applicable(GroundAction action, Problem problem, const DenseState& dense
  * GroundAxiom
  */
 
-bool is_dynamically_applicable(GroundAxiom axiom, Problem problem, const DenseState& dense_state)
+bool is_dynamically_applicable(GroundAxiom axiom, const ProblemImpl& problem, const DenseState& dense_state)
 {
     return is_dynamically_applicable(axiom->get_conjunctive_condition(), problem, dense_state);
 }
 
-bool is_applicable(GroundAxiom axiom, Problem problem, const DenseState& dense_state)
+bool is_applicable(GroundAxiom axiom, const ProblemImpl& problem, const DenseState& dense_state)
 {
     return is_applicable(axiom->get_conjunctive_condition(), problem, dense_state);
 }

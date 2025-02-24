@@ -24,9 +24,9 @@ namespace mimir
 {
 
 AxiomSatisficingBindingGenerator::AxiomSatisficingBindingGenerator(Axiom axiom,
-                                                                   ProblemContext problem_context,
+                                                                   Problem problem,
                                                                    std::optional<std::shared_ptr<ISatisficingBindingGeneratorEventHandler>> event_handler) :
-    SatisficingBindingGenerator<AxiomSatisficingBindingGenerator>(axiom->get_conjunctive_condition(), std::move(problem_context), event_handler),
+    SatisficingBindingGenerator<AxiomSatisficingBindingGenerator>(axiom->get_conjunctive_condition(), std::move(problem), event_handler),
     m_axiom(axiom)
 {
 }

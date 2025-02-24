@@ -467,7 +467,7 @@ template GroundAtom<Derived> PDDLRepositories::get_ground_atom<Derived>(size_t a
 // GroundFunction
 
 template<StaticOrFluentOrAuxiliary F>
-void PDDLRepositories::get_ground_functions(size_t num_ground_functions, GroundFunctionList<F>& out_ground_functions)
+void PDDLRepositories::get_ground_functions(size_t num_ground_functions, GroundFunctionList<F>& out_ground_functions) const
 {
     out_ground_functions.clear();
 
@@ -476,9 +476,9 @@ void PDDLRepositories::get_ground_functions(size_t num_ground_functions, GroundF
     out_ground_functions.insert(out_ground_functions.end(), ground_functions.begin(), ground_functions.begin() + num_ground_functions);
 }
 
-template void PDDLRepositories::get_ground_functions(size_t num_ground_functions, GroundFunctionList<Static>& out_ground_functions);
-template void PDDLRepositories::get_ground_functions(size_t num_ground_functions, GroundFunctionList<Fluent>& out_ground_functions);
-template void PDDLRepositories::get_ground_functions(size_t num_ground_functions, GroundFunctionList<Auxiliary>& out_ground_functions);
+template void PDDLRepositories::get_ground_functions(size_t num_ground_functions, GroundFunctionList<Static>& out_ground_functions) const;
+template void PDDLRepositories::get_ground_functions(size_t num_ground_functions, GroundFunctionList<Fluent>& out_ground_functions) const;
+template void PDDLRepositories::get_ground_functions(size_t num_ground_functions, GroundFunctionList<Auxiliary>& out_ground_functions) const;
 
 template<StaticOrFluentOrAuxiliary F>
 void PDDLRepositories::get_ground_function_values(const FlatDoubleList& values,

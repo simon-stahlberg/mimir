@@ -18,7 +18,7 @@
 #ifndef MIMIR_FORMALISM_SEARCH_CONTEXT_HPP_
 #define MIMIR_FORMALISM_SEARCH_CONTEXT_HPP_
 
-#include "mimir/formalism/problem_context.hpp"
+#include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
 
 namespace mimir
@@ -27,7 +27,7 @@ namespace mimir
 class SearchContext
 {
 private:
-    ProblemContext m_problem_context;
+    Problem m_problem;
     std::shared_ptr<IApplicableActionGenerator> m_applicable_action_generator;
     std::shared_ptr<StateRepository> m_state_repository;
 
@@ -46,14 +46,12 @@ public:
         explicit Options(SearchMode mode) : mode(mode) {}
     };
 
-    SearchContext(ProblemContext problem_context, const Options& options = Options());
-    SearchContext(ProblemContext problem_context,
-                  std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                  std::shared_ptr<StateRepository> state_repository);
+    SearchContext(Problem problem, const Options& options = Options());
+    SearchContext(Problem problem, std::shared_ptr<IApplicableActionGenerator> applicable_action_generator, std::shared_ptr<StateRepository> state_repository);
 
-    static std::vector<SearchContext> create(ProblemContextList problem_contexts, const Options& options = Options());
+    static std::vector<SearchContext> create(const ProblemList& problems, const Options& options = Options());
 
-    const ProblemContext& get_problem_context() const;
+    const Problem& get_problem() const;
     const std::shared_ptr<IApplicableActionGenerator> get_applicable_action_generator() const;
     const std::shared_ptr<StateRepository> get_state_repository() const;
 };

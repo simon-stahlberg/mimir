@@ -23,7 +23,6 @@
 #include "mimir/formalism/assignment_set.hpp"
 #include "mimir/formalism/consistency_graph.hpp"
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/problem_context.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/dense_state.hpp"
 #include "mimir/search/satisficing_binding_generators/event_handlers/interface.hpp"
@@ -42,7 +41,7 @@ class SatisficingBindingGenerator
 {
 protected:
     ConjunctiveCondition m_conjunctive_condition;
-    ProblemContext m_problem_context;
+    Problem m_problem;
     std::shared_ptr<ISatisficingBindingGeneratorEventHandler> m_event_handler;
 
     consistency_graph::StaticConsistencyGraph m_static_consistency_graph;
@@ -90,7 +89,7 @@ protected:
 
 public:
     SatisficingBindingGenerator(ConjunctiveCondition conjunctive_condition,
-                                ProblemContext problem_context,
+                                Problem problem,
                                 std::optional<std::shared_ptr<ISatisficingBindingGeneratorEventHandler>> event_handler = std::nullopt);
 
     mimir::generator<ObjectList> create_binding_generator(State state,
@@ -116,7 +115,7 @@ public:
      */
 
     const ConjunctiveCondition& get_conjunctive_condition() const;
-    const ProblemContext& get_problem_context() const;
+    const Problem& get_problem() const;
     const std::shared_ptr<ISatisficingBindingGeneratorEventHandler>& get_event_handler() const;
     const consistency_graph::StaticConsistencyGraph& get_static_consistency_graph() const;
 };

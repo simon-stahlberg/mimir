@@ -18,6 +18,7 @@
 #include "mimir/search/state.hpp"
 
 #include "mimir/common/concepts.hpp"
+#include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
 
 #include <ostream>
@@ -142,19 +143,19 @@ FlatExternalPtr<const FlatDoubleList>& StateImpl::get_numeric_variables() { retu
  */
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<Problem, State, const PDDLRepositories&>& data)
+std::ostream& operator<<(std::ostream& os, const std::tuple<State, const ProblemImpl&>& data)
 {
-    const auto [problem, state, pddl_repositories] = data;
+    const auto& [state, problem] = data;
 
     auto fluent_ground_atoms = GroundAtomList<Fluent> {};
     auto static_ground_atoms = GroundAtomList<Static> {};
     auto derived_ground_atoms = GroundAtomList<Derived> {};
     auto fluent_function_values = std::vector<std::pair<GroundFunction<Fluent>, ContinuousCost>> {};
 
-    pddl_repositories.get_ground_atoms_from_indices(state->get_atoms<Fluent>(), fluent_ground_atoms);
-    pddl_repositories.get_ground_atoms_from_indices(problem->get_static_initial_positive_atoms_bitset(), static_ground_atoms);
-    pddl_repositories.get_ground_atoms_from_indices(state->get_atoms<Derived>(), derived_ground_atoms);
-    pddl_repositories.get_ground_function_values(state->get_numeric_variables(), fluent_function_values);
+    problem.get_repositories().get_ground_atoms_from_indices(state->get_atoms<Fluent>(), fluent_ground_atoms);
+    problem.get_repositories().get_ground_atoms_from_indices(problem.get_static_initial_positive_atoms_bitset(), static_ground_atoms);
+    problem.get_repositories().get_ground_atoms_from_indices(state->get_atoms<Derived>(), derived_ground_atoms);
+    problem.get_repositories().get_ground_function_values(state->get_numeric_variables(), fluent_function_values);
 
     // Sort by name for easier comparison
     std::sort(fluent_ground_atoms.begin(), fluent_ground_atoms.end(), [](const auto& lhs, const auto& rhs) { return to_string(*lhs) < to_string(*rhs); });

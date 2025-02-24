@@ -577,7 +577,7 @@ protected:
         builder.get_numeric_goal_condition().insert(builder.get_numeric_goal_condition().end(),
                                                     translated_numeric_goal_condition.begin(),
                                                     translated_numeric_goal_condition.end());
-        problem->get_optimization_metric() = this->translate_level_0(problem->get_optimization_metric(), repositories);
+        builder.get_optimization_metric() = this->translate_level_0(problem->get_optimization_metric(), repositories);
         const auto translated_axioms = this->translate_level_0(problem->get_axioms(), repositories);
         builder.get_axioms().insert(builder.get_axioms().end(), translated_axioms.begin(), translated_axioms.end());
 

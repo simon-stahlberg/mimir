@@ -18,6 +18,7 @@
 #include "mimir/search/delete_relaxed_problem_explorator.hpp"
 
 #include "mimir/formalism/repositories.hpp"
+#include "mimir/formalism/translator/delete_relax.hpp"
 #include "mimir/search/applicability.hpp"
 #include "mimir/search/applicable_action_generators/grounded.hpp"
 #include "mimir/search/applicable_action_generators/grounded/event_handlers.hpp"
@@ -31,21 +32,23 @@
 namespace mimir
 {
 
-DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(ProblemContext problem_context) :
-    m_problem_context(std::move(problem_context)),
-    m_delete_free_pddl_repositories(std::make_shared<PDDLRepositories>()),
-    m_delete_relax_transformer(*m_delete_free_pddl_repositories),
-    m_delete_free_problem(m_delete_relax_transformer.run(m_problem_context.get_problem())),
-    m_delete_free_problem_context(ProblemContext(m_delete_free_problem, m_delete_free_pddl_repositories)),
-    m_delete_free_applicable_action_generator(std::make_shared<LiftedApplicableActionGenerator>(m_delete_free_problem_context)),
-    m_delete_free_axiom_evalator(std::make_shared<LiftedAxiomEvaluator>(m_delete_free_problem_context)),
-    m_delete_free_state_repository(StateRepository(std::static_pointer_cast<IAxiomEvaluator>(m_delete_free_axiom_evalator)))
+DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem) :
+    m_problem(std::move(problem)),
+    m_delete_relax_transformer(),
+    m_delete_free_problem()
 {
     std::cout << "[DeleteRelaxedProblemExplorator] Started delete relaxed exploration." << std::endl;
 
+    auto delete_relax_builder = ProblemBuilder(m_problem->get_domain());
+    m_delete_free_problem = m_delete_relax_transformer.translate_level_0(m_problem, delete_relax_builder);
+
+    auto delete_free_applicable_action_generator = LiftedApplicableActionGenerator(m_delete_free_problem);
+    auto delete_free_axiom_evalator = std::make_shared<LiftedAxiomEvaluator>(m_delete_free_problem);
+    auto delete_free_state_repository = StateRepository(std::static_pointer_cast<IAxiomEvaluator>(delete_free_axiom_evalator));
+
     const auto start_time = std::chrono::high_resolution_clock::now();
 
-    auto initial_state = m_delete_free_state_repository.get_or_create_initial_state();
+    auto initial_state = delete_free_state_repository.get_or_create_initial_state();
 
     auto dense_state = DenseState(initial_state);
     auto state = initial_state;
@@ -57,24 +60,24 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(ProblemContext pr
     {
         reached_delete_free_explore_fixpoint = true;
 
-        auto num_atoms_before = m_delete_free_state_repository.get_reached_fluent_ground_atoms_bitset().count();
+        auto num_atoms_before = delete_free_state_repository.get_reached_fluent_ground_atoms_bitset().count();
 
         // Create and all applicable actions and apply them
         // Attention1: we cannot just apply newly generated actions because conditional effects might trigger later.
         // Attention2: we incrementally keep growing the atoms in the dense state.
-        for (const auto& action : m_delete_free_applicable_action_generator->create_applicable_action_generator(dense_state))
+        for (const auto& action : delete_free_applicable_action_generator.create_applicable_action_generator(dense_state))
         {
             // Note that get_or_create_successor_state already modifies dense_state to be the successor state.
             // TODO(numeric): in the delete relaxation, we have to remove all numeric constraints and effects.
-            const auto [successor_state, metric_value] = m_delete_free_state_repository.get_or_create_successor_state(state, dense_state, action, 0);
+            const auto [successor_state, metric_value] = delete_free_state_repository.get_or_create_successor_state(state, dense_state, action, 0);
             state = successor_state;
         }
 
         // Create and all applicable axioms and apply them
-        m_delete_free_axiom_evalator->generate_and_apply_axioms(dense_state);
+        delete_free_axiom_evalator->generate_and_apply_axioms(dense_state);
 
         // Note: checking fluent atoms suffices because derived are implied by those.
-        auto num_atoms_after = m_delete_free_state_repository.get_reached_fluent_ground_atoms_bitset().count();
+        auto num_atoms_after = delete_free_state_repository.get_reached_fluent_ground_atoms_bitset().count();
 
         if (num_atoms_before != num_atoms_after)
         {
@@ -88,18 +91,18 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(ProblemContext pr
 
     std::cout << "[DeleteRelaxedProblemExplorator] Total time for delete relaxed exploration: " << total_time << "\n"
               << "[DeleteRelaxedProblemExplorator] Number of fluent grounded atoms reachable in delete-free problem: "
-              << m_delete_free_state_repository.get_reached_fluent_ground_atoms_bitset().count() << "\n"
+              << delete_free_state_repository.get_reached_fluent_ground_atoms_bitset().count() << "\n"
               << "[DeleteRelaxedProblemExplorator] Number of derived grounded atoms reachable in delete-free problem: "
-              << m_delete_free_state_repository.get_reached_derived_ground_atoms_bitset().count() << std::endl;
+              << delete_free_state_repository.get_reached_derived_ground_atoms_bitset().count() << std::endl;
 }
 
-static ObjectList translate_into_pddl_repositories(const ObjectList& objects, PDDLRepositories& ref_repositories)
+static ObjectList translate_into_pddl_repositories(const ObjectList& objects, ProblemImpl& problem)
 {
     auto result = ObjectList {};
     result.reserve(objects.size());
     for (const auto& object : objects)
     {
-        result.push_back(ref_repositories.get_or_create_object(object->get_name()));
+        result.push_back(problem.get_or_create_object(object->get_name()));
     }
     return result;
 }
@@ -116,15 +119,15 @@ DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator(const match_tree
     event_handler->on_start_ground_axiom_instantiation();
     auto start_time = std::chrono::high_resolution_clock::now();
 
-    const auto problem = m_problem_context.get_problem();
-    auto& pddl_repositories = *m_problem_context.get_repositories();
+    auto& problem = *m_problem;
+    auto& pddl_repositories = problem.get_repositories();
 
     /* Initialize bookkeeping to map ground axioms into corresponding partition. */
-    const auto num_partitions = problem->get_problem_and_domain_axiom_partitioning().size();
+    const auto num_partitions = problem.get_problem_and_domain_axiom_partitioning().size();
     auto axiom_to_partition = std::unordered_map<Axiom, size_t> {};
     for (size_t i = 0; i < num_partitions; ++i)
     {
-        const auto& partition = problem->get_problem_and_domain_axiom_partitioning()[i];
+        const auto& partition = problem.get_problem_and_domain_axiom_partitioning()[i];
         for (const auto& axiom : partition.get_axioms())
         {
             axiom_to_partition.emplace(axiom, i);
@@ -134,19 +137,19 @@ DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator(const match_tree
     /* Store ground axioms in corresponding partition. */
     auto ground_axiom_partitioning = std::vector<GroundAxiomList>(num_partitions);
 
-    for (const auto& delete_free_ground_axiom : m_delete_free_pddl_repositories->get_ground_axioms())
+    for (const auto& delete_free_ground_axiom : m_delete_free_problem->get_ground_axioms())
     {
         // Map relaxed to unrelaxed actions and ground them with the same arguments.
         for (const auto& axiom :
-             m_delete_relax_transformer.get_unrelaxed_axioms(m_delete_free_pddl_repositories->get_axiom(delete_free_ground_axiom->get_axiom_index())))
+             m_delete_relax_transformer.get_unrelaxed_axioms(m_delete_free_problem->get_repositories().get_axiom(delete_free_ground_axiom->get_axiom_index())))
         {
-            auto binding =
-                translate_into_pddl_repositories(m_delete_free_pddl_repositories->get_objects_from_indices(delete_free_ground_axiom->get_object_indices()),
-                                                 pddl_repositories);
+            auto binding = translate_into_pddl_repositories(
+                m_delete_free_problem->get_repositories().get_objects_from_indices(delete_free_ground_axiom->get_object_indices()),
+                problem);
 
-            auto ground_axiom = pddl_repositories.ground(axiom, problem, std::move(binding));
+            auto ground_axiom = problem.ground(axiom, std::move(binding));
 
-            if (is_statically_applicable(ground_axiom->get_conjunctive_condition(), problem->get_static_initial_positive_atoms_bitset()))
+            if (is_statically_applicable(ground_axiom->get_conjunctive_condition(), problem.get_static_initial_positive_atoms_bitset()))
             {
                 ground_axiom_partitioning.at(axiom_to_partition.at(axiom)).push_back(ground_axiom);
             }
@@ -179,7 +182,7 @@ DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator(const match_tree
     total_time = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
     event_handler->on_finish_build_axiom_match_trees(total_time);
 
-    return std::make_shared<GroundedAxiomEvaluator>(m_problem_context, std::move(match_tree_partitioning), std::move(event_handler));
+    return std::make_shared<GroundedAxiomEvaluator>(m_problem, std::move(match_tree_partitioning), std::move(event_handler));
 }
 
 std::shared_ptr<GroundedApplicableActionGenerator>
@@ -194,11 +197,11 @@ DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator(cons
     event_handler->on_start_ground_action_instantiation();
     const auto start_time = std::chrono::high_resolution_clock::now();
 
-    const auto problem = m_problem_context.get_problem();
-    auto& pddl_repositories = *m_problem_context.get_repositories();
+    auto& problem = *m_problem;
+    auto& pddl_repositories = problem.get_repositories();
 
     auto per_action_conditional_effects_candidate_objects = std::unordered_map<Action, std::vector<std::vector<IndexList>>> {};
-    for (const auto& action : problem->get_domain()->get_actions())
+    for (const auto& action : problem.get_domain()->get_actions())
     {
         auto cond_effect_candidate_objects = std::vector<std::vector<IndexList>> {};
         cond_effect_candidate_objects.reserve(action->get_conditional_effects().size());
@@ -218,21 +221,21 @@ DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator(cons
     }
 
     auto ground_actions = GroundActionList {};
-    for (const auto& delete_free_ground_action : m_delete_free_pddl_repositories->get_ground_actions())
+    for (const auto& delete_free_ground_action : problem.get_ground_actions())
     {
         // Map relaxed to unrelaxed actions and ground them with the same arguments.
-        for (const auto& action :
-             m_delete_relax_transformer.get_unrelaxed_actions(m_delete_free_pddl_repositories->get_action(delete_free_ground_action->get_action_index())))
+        for (const auto& action : m_delete_relax_transformer.get_unrelaxed_actions(
+                 m_delete_free_problem->get_repositories().get_action(delete_free_ground_action->get_action_index())))
         {
-            auto binding =
-                translate_into_pddl_repositories(m_delete_free_pddl_repositories->get_objects_from_indices(delete_free_ground_action->get_object_indices()),
-                                                 pddl_repositories);
+            auto binding = translate_into_pddl_repositories(
+                m_delete_free_problem->get_repositories().get_objects_from_indices(delete_free_ground_action->get_object_indices()),
+                *m_problem);
 
             const auto& conditional_effect_candidate_objects = per_action_conditional_effects_candidate_objects.at(action);
 
-            auto grounded_action = pddl_repositories.ground(action, problem, std::move(binding), conditional_effect_candidate_objects);
+            auto grounded_action = problem.ground(action, std::move(binding), conditional_effect_candidate_objects);
 
-            if (is_statically_applicable(grounded_action->get_conjunctive_condition(), problem->get_static_initial_positive_atoms_bitset()))
+            if (is_statically_applicable(grounded_action->get_conjunctive_condition(), problem.get_static_initial_positive_atoms_bitset()))
             {
                 ground_actions.push_back(grounded_action);
             }
@@ -249,9 +252,9 @@ DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator(cons
 
     event_handler->on_finish_build_action_match_tree(*match_tree);
 
-    return std::make_shared<GroundedApplicableActionGenerator>(m_problem_context, std::move(match_tree), std::move(event_handler));
+    return std::make_shared<GroundedApplicableActionGenerator>(m_problem, std::move(match_tree), std::move(event_handler));
 }
 
-const ProblemContext& DeleteRelaxedProblemExplorator::get_problem_context() const { return m_problem_context; }
+const Problem& DeleteRelaxedProblemExplorator::get_problem() const { return m_problem; }
 
 }  // namespace mimir
