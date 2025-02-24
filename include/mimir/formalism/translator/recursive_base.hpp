@@ -564,7 +564,7 @@ protected:
         const auto translated_static_goal_condition = this->translate_level_0(problem->get_goal_condition<Static>(), repositories);
         builder.get_goal_condition<Static>().insert(builder.get_goal_condition<Static>().end(),
                                                     translated_static_goal_condition.begin(),
-                                                    translated_initial_static_literals.end());
+                                                    translated_static_goal_condition.end());
         const auto translated_fluent_goal_condition = this->translate_level_0(problem->get_goal_condition<Fluent>(), repositories);
         builder.get_goal_condition<Fluent>().insert(builder.get_goal_condition<Fluent>().end(),
                                                     translated_fluent_goal_condition.begin(),

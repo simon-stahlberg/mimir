@@ -33,7 +33,7 @@ LiftedAxiomEvaluator::LiftedAxiomEvaluator(Problem problem) :
 }
 
 LiftedAxiomEvaluator::LiftedAxiomEvaluator(Problem problem, std::shared_ptr<ILiftedAxiomEvaluatorEventHandler> event_handler) :
-    m_problem(std::move(problem)),
+    m_problem(problem),
     m_event_handler(event_handler),
     m_condition_grounders(),
     m_fluent_atoms(),

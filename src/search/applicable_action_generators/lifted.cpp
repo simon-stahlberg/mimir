@@ -40,7 +40,7 @@ LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem
 }
 
 LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem, std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> event_handler) :
-    m_problem(std::move(problem)),
+    m_problem(problem),
     m_event_handler(event_handler),
     m_action_grounding_data(),
     m_dense_state(),
