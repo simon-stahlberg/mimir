@@ -50,11 +50,11 @@ const GroundEffectDerivedLiteral& GroundAxiomImpl::get_derived_effect() const { 
  */
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundEffectDerivedLiteral, const PDDLRepositories&>& data)
+std::ostream& operator<<(std::ostream& os, const std::tuple<GroundEffectDerivedLiteral, const ProblemImpl&>& data)
 {
-    const auto [derived_effect, pddl_repositories] = data;
+    const auto [derived_effect, problem] = data;
 
-    const auto& ground_atom = pddl_repositories.get_ground_atom<Derived>(derived_effect.atom_index);
+    const auto& ground_atom = problem.get_repositories().get_ground_atom<Derived>(derived_effect.atom_index);
 
     if (derived_effect.is_negated)
     {
