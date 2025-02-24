@@ -182,6 +182,10 @@ public:
     HanaPDDLRepositories& get_hana_repositories();
     const HanaPDDLRepositories& get_hana_repositories() const;
 
+    ///////////////////////////////////////////////////////////////////////////
+    /// Modifiers
+    ///////////////////////////////////////////////////////////////////////////
+
     /// @brief Get or create requriements for the given parameters.
     Requirements get_or_create_requirements(loki::RequirementEnumSet requirement_set);
 
@@ -328,7 +332,9 @@ public:
     template<StaticOrFluentOrAuxiliary F>
     GroundFunctionValue<F> get_or_create_ground_function_value(GroundFunction<F> function, double number);
 
-    /* Accessors */
+    ///////////////////////////////////////////////////////////////////////////
+    /// Accessors
+    ///////////////////////////////////////////////////////////////////////////
 
     // GroundNumericConstraint
     GroundNumericConstraint get_ground_numeric_constraint(size_t numeric_constraint_index) const;

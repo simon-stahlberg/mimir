@@ -621,9 +621,9 @@ template const FlatIndexList& ProblemImpl::get_negative_goal_atoms_indices<Deriv
 
 const std::vector<AxiomPartition>& ProblemImpl::get_problem_and_domain_axiom_partitioning() const { return m_problem_and_domain_axiom_partitioning; }
 
-/* Modifiers*/
-
-Object ProblemImpl::get_or_create_object(std::string name) { return m_repositories.get_or_create_object(std::move(name)); }
+/**
+ * Modifiers
+ */
 
 /* Grounding */
 

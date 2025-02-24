@@ -32,7 +32,11 @@
 namespace mimir
 {
 
-DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem) : m_problem(problem), m_delete_relax_transformer(), m_delete_free_problem()
+DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem) :
+    m_problem(problem),
+    m_delete_relax_transformer(),
+    m_delete_free_problem(),
+    m_delete_free_object_to_unrelaxed_object()
 {
     std::cout << "[DeleteRelaxedProblemExplorator] Started delete relaxed exploration." << std::endl;
 
@@ -45,6 +49,16 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem) 
     auto delete_free_applicable_action_generator = LiftedApplicableActionGenerator(m_delete_free_problem);
     auto delete_free_axiom_evalator = std::make_shared<LiftedAxiomEvaluator>(m_delete_free_problem);
     auto delete_free_state_repository = StateRepository(std::static_pointer_cast<IAxiomEvaluator>(delete_free_axiom_evalator));
+
+    auto unrelaxed_objects_by_name = std::unordered_map<std::string, Object> {};
+    for (const auto& object : m_problem->get_problem_and_domain_objects())
+    {
+        unrelaxed_objects_by_name.emplace(object->get_name(), object);
+    }
+    for (const auto& object : m_delete_free_problem->get_problem_and_domain_objects())
+    {
+        m_delete_free_object_to_unrelaxed_object.emplace(object, unrelaxed_objects_by_name.at(object->get_name()));
+    }
 
     const auto start_time = std::chrono::high_resolution_clock::now();
 
@@ -96,13 +110,13 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem) 
               << delete_free_state_repository.get_reached_derived_ground_atoms_bitset().count() << std::endl;
 }
 
-static ObjectList translate_into_pddl_repositories(const ObjectList& objects, ProblemImpl& problem)
+static ObjectList translate_from_delete_free_to_unrelaxed_problem(const ObjectList& objects, const ToObjectMap<Object>& delete_free_object_to_unrelaxed_object)
 {
     auto result = ObjectList {};
     result.reserve(objects.size());
     for (const auto& object : objects)
     {
-        result.push_back(problem.get_or_create_object(object->get_name()));
+        result.push_back(delete_free_object_to_unrelaxed_object.at(object));
     }
     return result;
 }
@@ -143,9 +157,9 @@ DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator(const match_tree
         for (const auto& axiom :
              m_delete_relax_transformer.get_unrelaxed_axioms(m_delete_free_problem->get_repositories().get_axiom(delete_free_ground_axiom->get_axiom_index())))
         {
-            auto binding = translate_into_pddl_repositories(
+            auto binding = translate_from_delete_free_to_unrelaxed_problem(
                 m_delete_free_problem->get_repositories().get_objects_from_indices(delete_free_ground_axiom->get_object_indices()),
-                problem);
+                m_delete_free_object_to_unrelaxed_object);
 
             auto ground_axiom = problem.ground(axiom, std::move(binding));
 
@@ -227,9 +241,9 @@ DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator(cons
         for (const auto& action : m_delete_relax_transformer.get_unrelaxed_actions(
                  m_delete_free_problem->get_repositories().get_action(delete_free_ground_action->get_action_index())))
         {
-            auto binding = translate_into_pddl_repositories(
+            auto binding = translate_from_delete_free_to_unrelaxed_problem(
                 m_delete_free_problem->get_repositories().get_objects_from_indices(delete_free_ground_action->get_object_indices()),
-                *m_problem);
+                m_delete_free_object_to_unrelaxed_object);
 
             const auto& conditional_effect_candidate_objects = per_action_conditional_effects_candidate_objects.at(action);
 

@@ -38,6 +38,7 @@ private:
     /* We store all delete-free info separately, allowing us to discard it after instantiating the generator and evaluator. */
     DeleteRelaxTranslator m_delete_relax_transformer;
     Problem m_delete_free_problem;
+    ToObjectMap<Object> m_delete_free_object_to_unrelaxed_object;
 
 public:
     explicit DeleteRelaxedProblemExplorator(Problem problem);

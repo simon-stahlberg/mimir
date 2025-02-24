@@ -185,28 +185,6 @@ public:
     const AxiomList& get_axioms() const;
     const AxiomList& get_problem_and_domain_axioms() const;
 
-    /// @brief Return a tuple of const references to the members that uniquely identify an object.
-    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
-    /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const
-    {
-        return std::forward_as_tuple(std::as_const(m_domain),
-                                     std::as_const(m_requirements),
-                                     std::as_const(m_objects),
-                                     std::as_const(m_derived_predicates),
-                                     std::as_const(m_static_initial_literals),
-                                     std::as_const(m_fluent_initial_literals),
-                                     std::as_const(m_static_initial_function_values),
-                                     std::as_const(m_fluent_initial_function_values),
-                                     std::as_const(m_auxiliary_function_value),
-                                     std::as_const(m_static_goal_condition),
-                                     std::as_const(m_fluent_goal_condition),
-                                     std::as_const(m_derived_goal_condition),
-                                     std::as_const(m_numeric_goal_condition),
-                                     std::as_const(m_optimization_metric),
-                                     std::as_const(m_axioms));
-    }
-
     /**
      * Additional members
      */
@@ -247,9 +225,9 @@ public:
     /* Axioms */
     const std::vector<AxiomPartition>& get_problem_and_domain_axiom_partitioning() const;
 
-    /* Grounding */
-
-    Object get_or_create_object(std::string name);
+    /**
+     * Modifiers (Grounding)
+     */
 
     template<StaticOrFluentOrDerived P>
     GroundLiteral<P> ground(Literal<P> literal, const ObjectList& binding);
@@ -300,6 +278,28 @@ public:
     GroundAxiom get_ground_axiom(Index axiom_index) const;
     size_t get_num_ground_axioms() const;
     size_t get_estimated_memory_usage_in_bytes_for_axioms() const;
+
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
+    auto identifying_members() const
+    {
+        return std::forward_as_tuple(std::as_const(m_domain),
+                                     std::as_const(m_requirements),
+                                     std::as_const(m_objects),
+                                     std::as_const(m_derived_predicates),
+                                     std::as_const(m_static_initial_literals),
+                                     std::as_const(m_fluent_initial_literals),
+                                     std::as_const(m_static_initial_function_values),
+                                     std::as_const(m_fluent_initial_function_values),
+                                     std::as_const(m_auxiliary_function_value),
+                                     std::as_const(m_static_goal_condition),
+                                     std::as_const(m_fluent_goal_condition),
+                                     std::as_const(m_derived_goal_condition),
+                                     std::as_const(m_numeric_goal_condition),
+                                     std::as_const(m_optimization_metric),
+                                     std::as_const(m_axioms));
+    }
 };
 
 extern std::ostream& operator<<(std::ostream& out, const ProblemImpl& element);
