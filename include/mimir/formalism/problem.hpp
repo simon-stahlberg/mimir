@@ -193,17 +193,23 @@ public:
 
     template<StaticOrFluentOrDerived P>
     const GroundAtomList<P>& get_positive_goal_atoms() const;
+    const GroundAtomLists<Static, Fluent, Derived>& get_hana_positive_goal_atoms() const;
     template<StaticOrFluentOrDerived P>
     const FlatBitset& get_positive_goal_atoms_bitset() const;
+    const FlatBitsets<Static, Fluent, Derived>& get_hana_positive_goal_atoms_bitset() const;
     template<StaticOrFluentOrDerived P>
     const FlatIndexList& get_positive_goal_atoms_indices() const;
+    const FlatIndexLists<Static, Fluent, Derived>& get_hana_positive_goal_atoms_indices() const;
 
     template<StaticOrFluentOrDerived P>
     const GroundAtomList<P>& get_negative_goal_atoms() const;
+    const GroundAtomLists<Static, Fluent, Derived>& get_hana_negative_goal_atoms() const;
     template<StaticOrFluentOrDerived P>
     const FlatBitset& get_negative_goal_atoms_bitset() const;
+    const FlatBitsets<Static, Fluent, Derived>& get_hana_negative_goal_atoms_bitset() const;
     template<StaticOrFluentOrDerived P>
     const FlatIndexList& get_negative_goal_atoms_indices() const;
+    const FlatIndexLists<Static, Fluent, Derived>& get_hana_negative_goal_atoms_indices() const;
 
     /* Axioms */
     const std::vector<AxiomPartition>& get_problem_and_domain_axiom_partitioning() const;

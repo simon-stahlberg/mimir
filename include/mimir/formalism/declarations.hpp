@@ -45,6 +45,8 @@ template<typename... Ts>
 using FlatBitsets = boost::hana::map<boost::hana::pair<boost::hana::type<Ts>, FlatBitset>...>;
 template<typename... Ts>
 using FlatIndexLists = boost::hana::map<boost::hana::pair<boost::hana::type<Ts>, FlatIndexList>...>;
+template<typename... Ts>
+using FlatDoubleLists = boost::hana::map<boost::hana::pair<boost::hana::type<Ts>, FlatDoubleList>...>;
 
 template<StaticOrFluentOrDerived P>
 class AssignmentSet;

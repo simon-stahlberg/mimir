@@ -418,6 +418,8 @@ template const GroundAtomList<Static>& ProblemImpl::get_positive_goal_atoms<Stat
 template const GroundAtomList<Fluent>& ProblemImpl::get_positive_goal_atoms<Fluent>() const;
 template const GroundAtomList<Derived>& ProblemImpl::get_positive_goal_atoms<Derived>() const;
 
+const GroundAtomLists<Static, Fluent, Derived>& ProblemImpl::get_hana_positive_goal_atoms() const { return m_positive_goal_atoms; }
+
 template<StaticOrFluentOrDerived P>
 const FlatBitset& ProblemImpl::get_positive_goal_atoms_bitset() const
 {
@@ -427,6 +429,8 @@ const FlatBitset& ProblemImpl::get_positive_goal_atoms_bitset() const
 template const FlatBitset& ProblemImpl::get_positive_goal_atoms_bitset<Static>() const;
 template const FlatBitset& ProblemImpl::get_positive_goal_atoms_bitset<Fluent>() const;
 template const FlatBitset& ProblemImpl::get_positive_goal_atoms_bitset<Derived>() const;
+
+const FlatBitsets<Static, Fluent, Derived>& ProblemImpl::get_hana_positive_goal_atoms_bitset() const { return m_positive_goal_atoms_bitset; }
 
 template<StaticOrFluentOrDerived P>
 const FlatIndexList& ProblemImpl::get_positive_goal_atoms_indices() const
@@ -438,6 +442,8 @@ template const FlatIndexList& ProblemImpl::get_positive_goal_atoms_indices<Stati
 template const FlatIndexList& ProblemImpl::get_positive_goal_atoms_indices<Fluent>() const;
 template const FlatIndexList& ProblemImpl::get_positive_goal_atoms_indices<Derived>() const;
 
+const FlatIndexLists<Static, Fluent, Derived>& ProblemImpl::get_hana_positive_goal_atoms_indices() const { return m_positive_goal_atoms_indices; }
+
 template<StaticOrFluentOrDerived P>
 const GroundAtomList<P>& ProblemImpl::get_negative_goal_atoms() const
 {
@@ -447,6 +453,8 @@ const GroundAtomList<P>& ProblemImpl::get_negative_goal_atoms() const
 template const GroundAtomList<Static>& ProblemImpl::get_negative_goal_atoms<Static>() const;
 template const GroundAtomList<Fluent>& ProblemImpl::get_negative_goal_atoms<Fluent>() const;
 template const GroundAtomList<Derived>& ProblemImpl::get_negative_goal_atoms<Derived>() const;
+
+const GroundAtomLists<Static, Fluent, Derived>& ProblemImpl::get_hana_negative_goal_atoms() const { return m_negative_goal_atoms; }
 
 template<StaticOrFluentOrDerived P>
 const FlatBitset& ProblemImpl::get_negative_goal_atoms_bitset() const
@@ -458,6 +466,8 @@ template const FlatBitset& ProblemImpl::get_negative_goal_atoms_bitset<Static>()
 template const FlatBitset& ProblemImpl::get_negative_goal_atoms_bitset<Fluent>() const;
 template const FlatBitset& ProblemImpl::get_negative_goal_atoms_bitset<Derived>() const;
 
+const FlatBitsets<Static, Fluent, Derived>& ProblemImpl::get_hana_negative_goal_atoms_bitset() const { return m_negative_goal_atoms_bitset; }
+
 template<StaticOrFluentOrDerived P>
 const FlatIndexList& ProblemImpl::get_negative_goal_atoms_indices() const
 {
@@ -467,6 +477,8 @@ const FlatIndexList& ProblemImpl::get_negative_goal_atoms_indices() const
 template const FlatIndexList& ProblemImpl::get_negative_goal_atoms_indices<Static>() const;
 template const FlatIndexList& ProblemImpl::get_negative_goal_atoms_indices<Fluent>() const;
 template const FlatIndexList& ProblemImpl::get_negative_goal_atoms_indices<Derived>() const;
+
+const FlatIndexLists<Static, Fluent, Derived>& ProblemImpl::get_hana_negative_goal_atoms_indices() const { return m_negative_goal_atoms_indices; }
 
 /* Axioms */
 
