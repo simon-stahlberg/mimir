@@ -277,21 +277,15 @@ protected:
     {
         return element.has_value() ? this->translate_level_0(element.value(), repositories) : std::optional<T> { std::nullopt };
     }
-    auto translate_level_1(const boost::hana::map<boost::hana::pair<boost::hana::type<Static>, LiteralList<Static>>,
-                                                  boost::hana::pair<boost::hana::type<Fluent>, LiteralList<Fluent>>,
-                                                  boost::hana::pair<boost::hana::type<Derived>, LiteralList<Derived>>>& literals,
-                           PDDLRepositories& repositories)
+    template<IsHanaMap T>
+    auto translate_level_1(const T& map, PDDLRepositories& repositories)
     {
-        auto result = LiteralLists<Static, Fluent, Derived> {};
-        boost::hana::for_each(literals,
-                              [&](auto&& pair)
-                              {
-                                  const auto& key = boost::hana::first(pair);
-                                  const auto& value = boost::hana::second(pair);
-
-                                  boost::hana::at_key(result, key) = self().translate_level_0(value, repositories);
-                              });
-        return result;
+        return boost::hana::unpack(
+            map,
+            [&](auto... pairs) {
+                return boost::hana::make_map(
+                    boost::hana::make_pair(boost::hana::first(pairs), self().translate_level_0(boost::hana::second(pairs), repositories))...);
+            });
     }
     template<IsPDDLPrimitive T>
     auto translate_level_1(const T& element, PDDLRepositories& repositories)

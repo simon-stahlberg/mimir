@@ -18,6 +18,7 @@
 #ifndef MIMIR_COMMON_CONCEPTS_HPP_
 #define MIMIR_COMMON_CONCEPTS_HPP_
 
+#include <boost/hana.hpp>
 #include <concepts>
 #include <cstddef>
 #include <memory>
@@ -60,6 +61,8 @@ concept IsBackInsertibleRange = std::ranges::forward_range<T> &&                
 template<typename T, typename... Ts>
 concept InTypes = (std::same_as<T, Ts> || ...);
 
+template<typename T>
+concept IsHanaMap = std::same_as<typename boost::hana::tag_of<T>::type, boost::hana::map_tag>;
 }
 
 #endif

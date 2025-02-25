@@ -105,16 +105,13 @@ template Literal<Derived> DeleteRelaxTranslator::translate_level_2(Literal<Deriv
 ConjunctiveCondition DeleteRelaxTranslator::translate_level_2(ConjunctiveCondition condition, PDDLRepositories& repositories)
 {
     auto translated_parameters = this->translate_level_0(condition->get_parameters(), repositories);
-    auto translated_literals = LiteralLists<Static, Fluent, Derived> {};
-    boost::hana::for_each(condition->get_hana_literals(),
-                          [&](auto&& pair)
-                          {
-                              const auto& key = boost::hana::first(pair);
-                              const auto& value = boost::hana::second(pair);
-
-                              boost::hana::at_key(translated_literals, key) = filter_positive_literals(self().translate_level_0(value, repositories));
-                          });
-
+    auto translated_literals = boost::hana::unpack(condition->get_hana_literals(),
+                                                   [&](auto... pairs)
+                                                   {
+                                                       return boost::hana::make_map(boost::hana::make_pair(
+                                                           boost::hana::first(pairs),
+                                                           filter_positive_literals(self().translate_level_0(boost::hana::second(pairs), repositories)))...);
+                                                   });
     auto numeric_constraints = NumericConstraintList {};
 
     return repositories.get_or_create_conjunctive_condition(std::move(translated_parameters), std::move(translated_literals), std::move(numeric_constraints));
