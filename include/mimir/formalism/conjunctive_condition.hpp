@@ -27,24 +27,16 @@ class ConjunctiveConditionImpl
 private:
     Index m_index;
     VariableList m_parameters;
-    LiteralList<Static> m_static_conditions;
-    LiteralList<Fluent> m_fluent_conditions;
-    LiteralList<Derived> m_derived_conditions;
-    GroundLiteralList<Static> m_nullary_static_conditions;    ///< Exploit this problem-independency :)
-    GroundLiteralList<Fluent> m_nullary_fluent_conditions;    ///< Exploit this problem-independency :)
-    GroundLiteralList<Derived> m_nullary_derived_conditions;  ///< Exploit this problem-independency :)
+    LiteralLists<Static, Fluent, Derived> m_literals;
+    GroundLiteralLists<Static, Fluent, Derived> m_nullary_ground_literals;
     NumericConstraintList m_numeric_constraints;
 
     // Below: add additional members if needed and initialize them in the constructor
 
     ConjunctiveConditionImpl(Index index,
                              VariableList parameters,
-                             LiteralList<Static> static_conditions,
-                             LiteralList<Fluent> fluent_conditions,
-                             LiteralList<Derived> derived_conditions,
-                             GroundLiteralList<Static> nullary_static_conditions,
-                             GroundLiteralList<Fluent> nullary_fluent_conditions,
-                             GroundLiteralList<Derived> nullary_derived_conditions,
+                             LiteralLists<Static, Fluent, Derived> literals,
+                             GroundLiteralLists<Static, Fluent, Derived> nullary_ground_literals,
                              NumericConstraintList numeric_constraints);
 
     // Give access to the constructor.
@@ -52,6 +44,8 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
+    using PDDLPrimitive = void;
+
     // moveable but not copyable
     ConjunctiveConditionImpl(const ConjunctiveConditionImpl& other) = delete;
     ConjunctiveConditionImpl& operator=(const ConjunctiveConditionImpl& other) = delete;
@@ -62,8 +56,10 @@ public:
     const VariableList& get_parameters() const;
     template<StaticOrFluentOrDerived P>
     const LiteralList<P>& get_literals() const;
+    const LiteralLists<Static, Fluent, Derived>& get_hana_literals() const;
     template<StaticOrFluentOrDerived P>
     const GroundLiteralList<P>& get_nullary_ground_literals() const;
+    const GroundLiteralLists<Static, Fluent, Derived>& get_hana_nullary_ground_literals() const;
     const NumericConstraintList& get_numeric_constraints() const;
 
     size_t get_arity() const;
@@ -73,11 +69,11 @@ public:
     /// @return a tuple containing const references to the members defining the object's identity.
     auto identifying_members() const
     {
-        return std::forward_as_tuple(std::as_const(m_parameters),
-                                     std::as_const(m_static_conditions),
-                                     std::as_const(m_fluent_conditions),
-                                     std::as_const(m_derived_conditions),
-                                     std::as_const(m_numeric_constraints));
+        return std::forward_as_tuple(std::as_const(get_parameters()),
+                                     std::as_const(get_literals<Static>()),
+                                     std::as_const(get_literals<Fluent>()),
+                                     std::as_const(get_literals<Derived>()),
+                                     std::as_const(get_numeric_constraints()));
     }
 };
 

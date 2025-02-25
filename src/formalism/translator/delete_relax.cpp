@@ -104,48 +104,54 @@ template Literal<Derived> DeleteRelaxTranslator::translate_level_2(Literal<Deriv
 
 ConjunctiveCondition DeleteRelaxTranslator::translate_level_2(ConjunctiveCondition condition, PDDLRepositories& repositories)
 {
-    auto parameters = this->translate_level_0(condition->get_parameters(), repositories);
-    auto static_literals = filter_positive_literals(this->translate_level_0(condition->get_literals<Static>(), repositories));
-    auto fluent_literals = filter_positive_literals(this->translate_level_0(condition->get_literals<Fluent>(), repositories));
-    auto derived_literals = filter_positive_literals(this->translate_level_0(condition->get_literals<Derived>(), repositories));
+    auto translated_parameters = this->translate_level_0(condition->get_parameters(), repositories);
+    auto translated_literals = LiteralLists<Static, Fluent, Derived> {};
+    boost::hana::for_each(condition->get_hana_literals(),
+                          [&](auto&& pair)
+                          {
+                              const auto& key = boost::hana::first(pair);
+                              const auto& value = boost::hana::second(pair);
+
+                              boost::hana::at_key(translated_literals, key) = filter_positive_literals(self().translate_level_0(value, repositories));
+                          });
+
     auto numeric_constraints = NumericConstraintList {};
 
-    return repositories.get_or_create_conjunctive_condition(std::move(parameters),
-                                                            std::move(static_literals),
-                                                            std::move(fluent_literals),
-                                                            std::move(derived_literals),
-                                                            std::move(numeric_constraints));
+    return repositories.get_or_create_conjunctive_condition(std::move(translated_parameters), std::move(translated_literals), std::move(numeric_constraints));
 }
 
 ConjunctiveEffect DeleteRelaxTranslator::translate_level_2(ConjunctiveEffect effect, PDDLRepositories& repositories)
 {
-    auto fluent_literals = filter_positive_literals(this->translate_level_0(effect->get_literals(), repositories));
-    auto fluent_numeric_effects = NumericEffectList<Fluent> {};
-    auto auxiliary_numeric_effect = std::optional<NumericEffect<Auxiliary>> { std::nullopt };
+    auto translated_fluent_literals = filter_positive_literals(this->translate_level_0(effect->get_literals(), repositories));
+    auto translated_fluent_numeric_effects = NumericEffectList<Fluent> {};
+    auto translated_auxiliary_numeric_effect = std::optional<NumericEffect<Auxiliary>> { std::nullopt };
 
     return repositories.get_or_create_conjunctive_effect(effect->get_parameters(),
-                                                         std::move(fluent_literals),
-                                                         std::move(fluent_numeric_effects),
-                                                         std::move(auxiliary_numeric_effect));
+                                                         std::move(translated_fluent_literals),
+                                                         std::move(translated_fluent_numeric_effects),
+                                                         std::move(translated_auxiliary_numeric_effect));
 }
 
 ConditionalEffect DeleteRelaxTranslator::translate_level_2(ConditionalEffect effect, PDDLRepositories& repositories)
 {
-    auto transformed_conjunctive_condition = this->translate_level_0(effect->get_conjunctive_condition(), repositories);
-    auto transformed_conjunctive_effect = this->translate_level_0(effect->get_conjunctive_effect(), repositories);
+    auto translated__conjunctive_condition = this->translate_level_0(effect->get_conjunctive_condition(), repositories);
+    auto translated__conjunctive_effect = this->translate_level_0(effect->get_conjunctive_effect(), repositories);
 
-    return repositories.get_or_create_conditional_effect(transformed_conjunctive_condition, transformed_conjunctive_effect);
+    return repositories.get_or_create_conditional_effect(translated__conjunctive_condition, translated__conjunctive_effect);
 }
 
 Action DeleteRelaxTranslator::translate_level_2(Action action, PDDLRepositories& repositories)
 {
-    auto conjunctive_effect = this->translate_level_0(action->get_conjunctive_effect(), repositories);
-    auto conditional_effects = this->translate_level_0(action->get_conditional_effects(), repositories);
+    auto translated_conjunctive_effect = this->translate_level_0(action->get_conjunctive_effect(), repositories);
+    auto translated_conditional_effects = this->translate_level_0(action->get_conditional_effects(), repositories);
 
-    auto conjunctive_condition = this->translate_level_0(action->get_conjunctive_condition(), repositories);
+    auto translated_conjunctive_condition = this->translate_level_0(action->get_conjunctive_condition(), repositories);
 
-    auto delete_relaxed_action =
-        repositories.get_or_create_action(action->get_name(), action->get_original_arity(), conjunctive_condition, conjunctive_effect, conditional_effects);
+    auto delete_relaxed_action = repositories.get_or_create_action(action->get_name(),
+                                                                   action->get_original_arity(),
+                                                                   translated_conjunctive_condition,
+                                                                   translated_conjunctive_effect,
+                                                                   translated_conditional_effects);
 
     m_delete_to_normal_actions[delete_relaxed_action].push_back(action);
 
@@ -154,10 +160,10 @@ Action DeleteRelaxTranslator::translate_level_2(Action action, PDDLRepositories&
 
 Axiom DeleteRelaxTranslator::translate_level_2(Axiom axiom, PDDLRepositories& repositories)
 {
-    auto conjunctive_condition = this->translate_level_0(axiom->get_conjunctive_condition(), repositories);
-    const auto literal = this->translate_level_0(axiom->get_literal(), repositories);
+    auto translated_conjunctive_condition = this->translate_level_0(axiom->get_conjunctive_condition(), repositories);
+    auto translated_literal = this->translate_level_0(axiom->get_literal(), repositories);
 
-    auto delete_relaxed_axiom = repositories.get_or_create_axiom(conjunctive_condition, literal);
+    auto delete_relaxed_axiom = repositories.get_or_create_axiom(translated_conjunctive_condition, translated_literal);
 
     m_delete_to_normal_axioms[delete_relaxed_axiom].push_back(axiom);
 

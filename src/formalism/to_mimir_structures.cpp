@@ -406,36 +406,22 @@ StaticOrFluentOrAuxiliaryFunction ToMimirStructures::translate_lifted(loki::Func
 
 ConjunctiveCondition ToMimirStructures::translate_lifted(loki::Condition condition, const VariableList& parameters, PDDLRepositories& repositories)
 {
-    const auto func_insert_literal = [](const StaticOrFluentOrDerivedLiteral& static_or_fluent_or_derived_literal,
-                                        LiteralList<Static>& ref_static_literals,
-                                        LiteralList<Fluent>& ref_fluent_literals,
-                                        LiteralList<Derived>& ref_derived_literals)
+    const auto func_insert_literal =
+        [](const StaticOrFluentOrDerivedLiteral& static_or_fluent_or_derived_literal, LiteralLists<Static, Fluent, Derived>& ref_literals)
     {
         std::visit(
-            [&ref_static_literals, &ref_fluent_literals, &ref_derived_literals](auto&& arg)
+            [&ref_literals](auto&& arg)
             {
-                using T = std::decay_t<decltype(arg)>;
-                if constexpr (std::is_same_v<T, Literal<Static>>)
-                {
-                    ref_static_literals.push_back(arg);
-                }
-                else if constexpr (std::is_same_v<T, Literal<Fluent>>)
-                {
-                    ref_fluent_literals.push_back(arg);
-                }
-                else if constexpr (std::is_same_v<T, Literal<Derived>>)
-                {
-                    ref_derived_literals.push_back(arg);
-                }
+                using Type = typename std::decay_t<decltype(*arg)>::Type;
+
+                boost::hana::at_key(ref_literals, boost::hana::type<Type> {}).push_back(arg);
             },
             static_or_fluent_or_derived_literal);
     };
 
     if (const auto condition_and = std::get_if<loki::ConditionAnd>(&condition->get_condition()))
     {
-        auto static_literals = LiteralList<Static> {};
-        auto fluent_literals = LiteralList<Fluent> {};
-        auto derived_literals = LiteralList<Derived> {};
+        auto literals = LiteralLists<Static, Fluent, Derived> {};
         auto numeric_constraints = NumericConstraintList {};
 
         for (const auto& part : (*condition_and)->get_conditions())
@@ -444,7 +430,7 @@ ConjunctiveCondition ToMimirStructures::translate_lifted(loki::Condition conditi
             {
                 const auto static_or_fluent_literal = translate_lifted((*condition_literal)->get_literal(), repositories);
 
-                func_insert_literal(static_or_fluent_literal, static_literals, fluent_literals, derived_literals);
+                func_insert_literal(static_or_fluent_literal, literals);
             }
             else if (const auto condition_numeric_constraint = std::get_if<loki::ConditionNumericConstraint>(&part->get_condition()))
             {
@@ -459,20 +445,18 @@ ConjunctiveCondition ToMimirStructures::translate_lifted(loki::Condition conditi
                 throw std::logic_error("Expected literal in conjunctive condition.");
             }
         }
-        return repositories.get_or_create_conjunctive_condition(parameters, static_literals, fluent_literals, derived_literals, numeric_constraints);
+        return repositories.get_or_create_conjunctive_condition(parameters, literals, numeric_constraints);
     }
     else if (const auto condition_literal = std::get_if<loki::ConditionLiteral>(&condition->get_condition()))
     {
-        auto static_literals = LiteralList<Static> {};
-        auto fluent_literals = LiteralList<Fluent> {};
-        auto derived_literals = LiteralList<Derived> {};
+        auto literals = LiteralLists<Static, Fluent, Derived> {};
         auto numeric_constraints = NumericConstraintList {};
 
         const auto static_or_fluent_or_derived_literal = translate_lifted((*condition_literal)->get_literal(), repositories);
 
-        func_insert_literal(static_or_fluent_or_derived_literal, static_literals, fluent_literals, derived_literals);
+        func_insert_literal(static_or_fluent_or_derived_literal, literals);
 
-        return repositories.get_or_create_conjunctive_condition(parameters, static_literals, fluent_literals, derived_literals, numeric_constraints);
+        return repositories.get_or_create_conjunctive_condition(parameters, literals, numeric_constraints);
     }
 
     // std::cout << std::visit([](auto&& arg) { return arg.str(); }, *condition_ptr) << std::endl;

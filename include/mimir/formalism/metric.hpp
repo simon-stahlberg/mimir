@@ -38,6 +38,8 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
+    using PDDLPrimitive = void;
+
     // moveable but not copyable
     OptimizationMetricImpl(const OptimizationMetricImpl& other) = delete;
     OptimizationMetricImpl& operator=(const OptimizationMetricImpl& other) = delete;

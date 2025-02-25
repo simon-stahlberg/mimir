@@ -49,6 +49,8 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
+    using PDDLPrimitive = void;
+
     // moveable but not copyable
     GroundNumericEffectImpl(const GroundNumericEffectImpl& other) = delete;
     GroundNumericEffectImpl& operator=(const GroundNumericEffectImpl& other) = delete;

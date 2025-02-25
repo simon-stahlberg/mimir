@@ -30,49 +30,44 @@ namespace mimir
 {
 ConjunctiveConditionImpl::ConjunctiveConditionImpl(Index index,
                                                    VariableList parameters,
-                                                   LiteralList<Static> static_conditions,
-                                                   LiteralList<Fluent> fluent_conditions,
-                                                   LiteralList<Derived> derived_conditions,
-                                                   GroundLiteralList<Static> nullary_static_conditions,
-                                                   GroundLiteralList<Fluent> nullary_fluent_conditions,
-                                                   GroundLiteralList<Derived> nullary_derived_conditions,
+                                                   LiteralLists<Static, Fluent, Derived> literals,
+                                                   GroundLiteralLists<Static, Fluent, Derived> nullary_ground_literals,
                                                    NumericConstraintList numeric_constraints) :
     m_index(index),
     m_parameters(std::move(parameters)),
-    m_static_conditions(std::move(static_conditions)),
-    m_fluent_conditions(std::move(fluent_conditions)),
-    m_derived_conditions(std::move(derived_conditions)),
-    m_nullary_static_conditions(std::move(nullary_static_conditions)),
-    m_nullary_fluent_conditions(std::move(nullary_fluent_conditions)),
-    m_nullary_derived_conditions(std::move(nullary_derived_conditions)),
+    m_literals(std::move(literals)),
+    m_nullary_ground_literals(std::move(nullary_ground_literals)),
     m_numeric_constraints(std::move(numeric_constraints))
 {
-    assert(is_all_unique(m_parameters));
-    assert(is_all_unique(m_static_conditions));
-    assert(is_all_unique(m_fluent_conditions));
-    assert(is_all_unique(m_derived_conditions));
-    assert(is_all_unique(m_nullary_static_conditions));
-    assert(is_all_unique(m_nullary_fluent_conditions));
-    assert(is_all_unique(m_nullary_derived_conditions));
-    assert(is_all_unique(m_numeric_constraints));
+    assert(is_all_unique(get_parameters()));
+    assert(is_all_unique(get_literals<Static>()));
+    assert(is_all_unique(get_literals<Fluent>()));
+    assert(is_all_unique(get_literals<Derived>()));
+    assert(is_all_unique(get_nullary_ground_literals<Static>()));
+    assert(is_all_unique(get_nullary_ground_literals<Fluent>()));
+    assert(is_all_unique(get_nullary_ground_literals<Derived>()));
+    assert(is_all_unique(get_numeric_constraints()));
 
-    assert(
-        std::is_sorted(m_static_conditions.begin(), m_static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(
-        std::is_sorted(m_fluent_conditions.begin(), m_fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(
-        std::is_sorted(m_derived_conditions.begin(), m_derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(m_nullary_static_conditions.begin(),
-                          m_nullary_static_conditions.end(),
+    assert(std::is_sorted(get_literals<Static>().begin(),
+                          get_literals<Static>().end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(m_nullary_fluent_conditions.begin(),
-                          m_nullary_fluent_conditions.end(),
+    assert(std::is_sorted(get_literals<Fluent>().begin(),
+                          get_literals<Fluent>().end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(m_nullary_derived_conditions.begin(),
-                          m_nullary_derived_conditions.end(),
+    assert(std::is_sorted(get_literals<Derived>().begin(),
+                          get_literals<Derived>().end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(m_numeric_constraints.begin(),
-                          m_numeric_constraints.end(),
+    assert(std::is_sorted(get_nullary_ground_literals<Static>().begin(),
+                          get_nullary_ground_literals<Static>().end(),
+                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(get_nullary_ground_literals<Fluent>().begin(),
+                          get_nullary_ground_literals<Fluent>().end(),
+                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(get_nullary_ground_literals<Derived>().begin(),
+                          get_nullary_ground_literals<Derived>().end(),
+                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(get_numeric_constraints().begin(),
+                          get_numeric_constraints().end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
 }
 
@@ -83,52 +78,26 @@ const VariableList& ConjunctiveConditionImpl::get_parameters() const { return m_
 template<StaticOrFluentOrDerived P>
 const LiteralList<P>& ConjunctiveConditionImpl::get_literals() const
 {
-    if constexpr (std::is_same_v<P, Static>)
-    {
-        return m_static_conditions;
-    }
-    else if constexpr (std::is_same_v<P, Fluent>)
-    {
-        return m_fluent_conditions;
-    }
-    else if constexpr (std::is_same_v<P, Derived>)
-    {
-        return m_derived_conditions;
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
-    }
+    return boost::hana::at_key(m_literals, boost::hana::type<P> {});
 }
 
 template const LiteralList<Static>& ConjunctiveConditionImpl::get_literals<Static>() const;
 template const LiteralList<Fluent>& ConjunctiveConditionImpl::get_literals<Fluent>() const;
 template const LiteralList<Derived>& ConjunctiveConditionImpl::get_literals<Derived>() const;
 
+const LiteralLists<Static, Fluent, Derived>& ConjunctiveConditionImpl::get_hana_literals() const { return m_literals; }
+
 template<StaticOrFluentOrDerived P>
 const GroundLiteralList<P>& ConjunctiveConditionImpl::get_nullary_ground_literals() const
 {
-    if constexpr (std::is_same_v<P, Static>)
-    {
-        return m_nullary_static_conditions;
-    }
-    else if constexpr (std::is_same_v<P, Fluent>)
-    {
-        return m_nullary_fluent_conditions;
-    }
-    else if constexpr (std::is_same_v<P, Derived>)
-    {
-        return m_nullary_derived_conditions;
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
-    }
+    return boost::hana::at_key(m_nullary_ground_literals, boost::hana::type<P> {});
 }
 
 template const GroundLiteralList<Static>& ConjunctiveConditionImpl::get_nullary_ground_literals<Static>() const;
 template const GroundLiteralList<Fluent>& ConjunctiveConditionImpl::get_nullary_ground_literals<Fluent>() const;
 template const GroundLiteralList<Derived>& ConjunctiveConditionImpl::get_nullary_ground_literals<Derived>() const;
+
+const GroundLiteralLists<Static, Fluent, Derived>& ConjunctiveConditionImpl::get_hana_nullary_ground_literals() const { return m_nullary_ground_literals; }
 
 const NumericConstraintList& ConjunctiveConditionImpl::get_numeric_constraints() const { return m_numeric_constraints; }
 

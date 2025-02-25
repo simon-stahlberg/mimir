@@ -48,6 +48,8 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
+    using PDDLPrimitive = void;
+
     // moveable but not copyable
     NumericConstraintImpl(const NumericConstraintImpl& other) = delete;
     NumericConstraintImpl& operator=(const NumericConstraintImpl& other) = delete;

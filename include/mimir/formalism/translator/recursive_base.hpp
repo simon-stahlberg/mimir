@@ -277,7 +277,23 @@ protected:
     {
         return element.has_value() ? this->translate_level_0(element.value(), repositories) : std::optional<T> { std::nullopt };
     }
-    template<typename T>
+    auto translate_level_1(const boost::hana::map<boost::hana::pair<boost::hana::type<Static>, LiteralList<Static>>,
+                                                  boost::hana::pair<boost::hana::type<Fluent>, LiteralList<Fluent>>,
+                                                  boost::hana::pair<boost::hana::type<Derived>, LiteralList<Derived>>>& literals,
+                           PDDLRepositories& repositories)
+    {
+        auto result = LiteralLists<Static, Fluent, Derived> {};
+        boost::hana::for_each(literals,
+                              [&](auto&& pair)
+                              {
+                                  const auto& key = boost::hana::first(pair);
+                                  const auto& value = boost::hana::second(pair);
+
+                                  boost::hana::at_key(result, key) = self().translate_level_0(value, repositories);
+                              });
+        return result;
+    }
+    template<IsPDDLPrimitive T>
     auto translate_level_1(const T& element, PDDLRepositories& repositories)
     {
         return self().translate_level_2(element, repositories);
@@ -382,9 +398,7 @@ protected:
     ConjunctiveCondition translate_level_2(ConjunctiveCondition condition, PDDLRepositories& repositories)
     {
         return repositories.get_or_create_conjunctive_condition(this->translate_level_0(condition->get_parameters(), repositories),
-                                                                this->translate_level_0(condition->get_literals<Static>(), repositories),
-                                                                this->translate_level_0(condition->get_literals<Fluent>(), repositories),
-                                                                this->translate_level_0(condition->get_literals<Derived>(), repositories),
+                                                                this->translate_level_0(condition->get_hana_literals(), repositories),
                                                                 this->translate_level_0(condition->get_numeric_constraints(), repositories));
     }
     FunctionExpressionNumber translate_level_2(FunctionExpressionNumber function_expression, PDDLRepositories& repositories)

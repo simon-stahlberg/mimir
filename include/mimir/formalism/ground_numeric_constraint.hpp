@@ -43,6 +43,8 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
+    using PDDLPrimitive = void;
+
     // moveable but not copyable
     GroundNumericConstraintImpl(const GroundNumericConstraintImpl& other) = delete;
     GroundNumericConstraintImpl& operator=(const GroundNumericConstraintImpl& other) = delete;

@@ -40,7 +40,8 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
-    using Category = P;
+    using PDDLPrimitive = void;
+    using Type = P;
 
     // moveable but not copyable
     LiteralImpl(const LiteralImpl& other) = delete;

@@ -37,6 +37,8 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
+    using PDDLPrimitive = void;
+
     // moveable but not copyable
     RequirementsImpl(const RequirementsImpl& other) = delete;
     RequirementsImpl& operator=(const RequirementsImpl& other) = delete;

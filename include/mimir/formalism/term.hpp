@@ -36,6 +36,8 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
+    using PDDLPrimitive = void;
+
     // moveable but not copyable
     TermImpl(const TermImpl& other) = delete;
     TermImpl& operator=(const TermImpl& other) = delete;

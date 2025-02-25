@@ -366,36 +366,29 @@ GroundNumericConstraint PDDLRepositories::get_or_create_ground_numeric_constrain
 }
 
 ConjunctiveCondition PDDLRepositories::get_or_create_conjunctive_condition(VariableList parameters,
-                                                                           LiteralList<Static> static_conditions,
-                                                                           LiteralList<Fluent> fluent_conditions,
-                                                                           LiteralList<Derived> derived_conditions,
+                                                                           LiteralLists<Static, Fluent, Derived> literals,
                                                                            NumericConstraintList numeric_constraints)
 {
-    /* Canonize before uniqueness test */
-    std::sort(static_conditions.begin(), static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(fluent_conditions.begin(), fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(derived_conditions.begin(), derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(numeric_constraints.begin(), numeric_constraints.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    auto nullary_ground_literals = GroundLiteralLists<Static, Fluent, Derived> {};
+    boost::hana::for_each(literals,
+                          [&](auto&& pair)
+                          {
+                              const auto& key = boost::hana::first(pair);
+                              auto& key_literals = boost::hana::second(pair);
 
-    auto nullary_static_conditions = ground_nullary_literals(static_conditions, *this);
-    auto nullary_fluent_conditions = ground_nullary_literals(fluent_conditions, *this);
-    auto nullary_derived_conditions = ground_nullary_literals(derived_conditions, *this);
+                              /* Canonize before uniqueness test */
+                              std::sort(key_literals.begin(), key_literals.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
 
-    std::sort(nullary_static_conditions.begin(), nullary_static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(nullary_fluent_conditions.begin(), nullary_fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(nullary_derived_conditions.begin(),
-              nullary_derived_conditions.end(),
-              [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+                              auto& key_nullary_ground_literals = boost::hana::at_key(nullary_ground_literals, key);
+                              key_nullary_ground_literals = ground_nullary_literals(key_literals, *this);
+
+                              std::sort(key_nullary_ground_literals.begin(),
+                                        key_nullary_ground_literals.end(),
+                                        [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+                          });
 
     return boost::hana::at_key(m_repositories, boost::hana::type<ConjunctiveConditionImpl> {})
-        .get_or_create(std::move(parameters),
-                       std::move(static_conditions),
-                       std::move(fluent_conditions),
-                       std::move(derived_conditions),
-                       std::move(nullary_static_conditions),
-                       std::move(nullary_fluent_conditions),
-                       std::move(nullary_derived_conditions),
-                       std::move(numeric_constraints));
+        .get_or_create(std::move(parameters), std::move(literals), std::move(nullary_ground_literals), std::move(numeric_constraints));
 }
 
 Action PDDLRepositories::get_or_create_action(std::string name,

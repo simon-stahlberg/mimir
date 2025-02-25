@@ -192,6 +192,8 @@ template<StaticOrFluentOrDerived P>
 using Literal = const LiteralImpl<P>*;
 template<StaticOrFluentOrDerived P>
 using LiteralList = std::vector<Literal<P>>;
+template<StaticOrFluentOrDerived... Ps>
+using LiteralLists = boost::hana::map<boost::hana::pair<boost::hana::type<Ps>, LiteralList<Ps>>...>;
 template<StaticOrFluentOrDerived P>
 using LiteralSet = std::unordered_set<Literal<P>>;
 
@@ -259,6 +261,9 @@ class GroundConjunctiveCondition;
 class TermImpl;
 using Term = const TermImpl*;
 using TermList = std::vector<Term>;
+
+template<typename T>
+concept IsPDDLPrimitive = requires { typename std::remove_pointer_t<T>::PDDLPrimitive; };
 
 }
 

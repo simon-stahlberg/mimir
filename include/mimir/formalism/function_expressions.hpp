@@ -41,6 +41,8 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
+    using PDDLPrimitive = void;
+
     // moveable but not copyable
     FunctionExpressionNumberImpl(const FunctionExpressionNumberImpl& other) = delete;
     FunctionExpressionNumberImpl& operator=(const FunctionExpressionNumberImpl& other) = delete;
@@ -77,6 +79,8 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
+    using PDDLPrimitive = void;
+
     // moveable but not copyable
     FunctionExpressionBinaryOperatorImpl(const FunctionExpressionBinaryOperatorImpl& other) = delete;
     FunctionExpressionBinaryOperatorImpl& operator=(const FunctionExpressionBinaryOperatorImpl& other) = delete;
@@ -114,6 +118,8 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
+    using PDDLPrimitive = void;
+
     // moveable but not copyable
     FunctionExpressionMultiOperatorImpl(const FunctionExpressionMultiOperatorImpl& other) = delete;
     FunctionExpressionMultiOperatorImpl& operator=(const FunctionExpressionMultiOperatorImpl& other) = delete;
@@ -146,6 +152,8 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
+    using PDDLPrimitive = void;
+
     // moveable but not copyable
     FunctionExpressionMinusImpl(const FunctionExpressionMinusImpl& other) = delete;
     FunctionExpressionMinusImpl& operator=(const FunctionExpressionMinusImpl& other) = delete;
@@ -178,6 +186,8 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
+    using PDDLPrimitive = void;
+
     // moveable but not copyable
     FunctionExpressionFunctionImpl(const FunctionExpressionFunctionImpl& other) = delete;
     FunctionExpressionFunctionImpl& operator=(const FunctionExpressionFunctionImpl& other) = delete;
@@ -219,6 +229,8 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
+    using PDDLPrimitive = void;
+
     // moveable but not copyable
     FunctionExpressionImpl(const FunctionExpressionImpl& other) = delete;
     FunctionExpressionImpl& operator=(const FunctionExpressionImpl& other) = delete;

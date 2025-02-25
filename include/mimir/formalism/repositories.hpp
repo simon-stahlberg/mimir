@@ -309,11 +309,8 @@ public:
                                                                     GroundFunctionExpression function_expression_right);
 
     /// @brief Get or create a existentially quantified conjunctive condition for the given parameters.
-    ConjunctiveCondition get_or_create_conjunctive_condition(VariableList parameters,
-                                                             LiteralList<Static> static_conditions,
-                                                             LiteralList<Fluent> fluent_conditions,
-                                                             LiteralList<Derived> derived_conditions,
-                                                             NumericConstraintList numeric_constraints);
+    ConjunctiveCondition
+    get_or_create_conjunctive_condition(VariableList parameters, LiteralLists<Static, Fluent, Derived> literals, NumericConstraintList numeric_constraints);
 
     /// @brief Get or create an action for the given parameters.
     Action get_or_create_action(std::string name,

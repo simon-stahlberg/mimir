@@ -39,6 +39,8 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
+    using PDDLPrimitive = void;
+
     // moveable but not copyable
     VariableImpl(const VariableImpl& other) = delete;
     VariableImpl& operator=(const VariableImpl& other) = delete;
@@ -54,6 +56,9 @@ public:
     /// @return a tuple containing const references to the members defining the object's identity.
     auto identifying_members() const { return std::forward_as_tuple(std::as_const(m_name), std::as_const(m_parameter_index)); }
 };
+
+static_assert(IsPDDLPrimitive<VariableImpl>);
+static_assert(IsPDDLPrimitive<Variable>);
 
 extern std::ostream& operator<<(std::ostream& out, const VariableImpl& element);
 
