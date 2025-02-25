@@ -19,6 +19,7 @@
 #define MIMIR_FORMALISM_DOMAIN_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/predicate_lists.hpp"
 #include "mimir/formalism/repositories.hpp"
 
 namespace mimir
@@ -35,6 +36,7 @@ private:
     PredicateList<Static> m_static_predicates;
     PredicateList<Fluent> m_fluent_predicates;
     PredicateList<Derived> m_derived_predicates;
+    List<Predicate, Static, Fluent, Derived> m_predicates;
     FunctionSkeletonList<Static> m_static_function_skeletons;
     FunctionSkeletonList<Fluent> m_fluent_function_skeletons;
     std::optional<FunctionSkeleton<Auxiliary>> m_auxiliary_function_skeleton;

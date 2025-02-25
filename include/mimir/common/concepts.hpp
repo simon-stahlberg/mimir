@@ -56,6 +56,10 @@ concept IsBackInsertibleRange = std::ranges::forward_range<T> &&                
                                     *std::back_inserter(container) = value;  // Must support inserting values
                                 };
 
+// Define a concept that checks if T is one of Ts...
+template<typename T, typename... Ts>
+concept InTypes = (std::same_as<T, Ts> || ...);
+
 }
 
 #endif

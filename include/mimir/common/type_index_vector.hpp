@@ -12,38 +12,41 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <httIs://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_FORMALISM_PREDICATE_LISTS_HPP_
-#define MIMIR_FORMALISM_PREDICATE_LISTS_HPP_
+#ifndef MIMIR_COMMON_TYPE_INDEXED_VECTOR_HPP_
+#define MIMIR_COMMON_TYPE_INDEXED_VECTOR_HPP_
 
 #include "mimir/common/concepts.hpp"
-#include "mimir/formalism/declarations.hpp"
 
 #include <boost/hana.hpp>
+#include <vector>
 
 namespace mimir
 {
-template<template<typename> typename T, StaticOrFluentOrDerived... Ps>
-class List
+template<template<typename> typename T, typename... Is>
+class TypedIndexedVector
 {
 private:
-    boost::hana::map<boost::hana::pair<boost::hana::type<Ps>, std::vector<T<Ps>>>...> m_data;
+    template<typename X>
+    using VectorType = std::vector<T<X>>;
+
+    boost::hana::map<boost::hana::pair<boost::hana::type<Is>, VectorType<X>>...> m_data;
 
 public:
-    template<StaticOrFluentOrDerived P>
-        requires InTypes<P, Ps...>
-    std::vector<T<P>>& get()
+    template<typename I>
+        requires InTypes<I, Is...>
+    VectorType<I>& get()
     {
-        return boost::hana::at_key(m_data, boost::hana::type<T<P>> {});
+        return boost::hana::at_key(m_data, boost::hana::type<I> {});
     }
 
-    template<StaticOrFluentOrDerived P>
-        requires InTypes<P, Ps...>
-    const std::vector<T<P>>& get() const
+    template<typename I>
+        requires InTypes<I, Is...>
+    const VectorType<I>& get() const
     {
-        return boost::hana::at_key(m_data, boost::hana::type<T<P>> {});
+        return boost::hana::at_key(m_data, boost::hana::type<I> {});
     }
 };
 
