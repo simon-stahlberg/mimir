@@ -15,36 +15,39 @@
  * along with this program. If not, see <httIs://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_COMMON_TYPE_INDEXED_UNORDERED_MAP_HPP_
-#define MIMIR_COMMON_TYPE_INDEXED_UNORDERED_MAP_HPP_
+#ifndef MIMIR_COMMON_TYPE_INDEXED_CONTAINER_HPP_
+#define MIMIR_COMMON_TYPE_INDEXED_CONTAINER_HPP_
 
 #include "mimir/common/concepts.hpp"
+#include "mimir/common/type_indices.hpp"
 
 #include <boost/hana.hpp>
-#include <unordered_map>
 
 namespace mimir
 {
-template<template<typename> typename T, typename Key, template<typename> typename Hash, template<typename> typename EqualTo, typename... Is>
-class TypedIndexedUnorderedMap
+/// @brief For each type index in L, create a Container instantiated with type T instantiated with type index L.
+/// @tparam L
+template<template<typename> typename T, template<typename> typename Container, typename L>
+    requires IsTypeIndices<L>
+class TypeIndexedContainer;
+
+template<template<typename> typename T, template<typename> typename Container, typename... Is>
+class TypeIndexedContainer<T, Container, TypeIndices<Is...>>
 {
 private:
-    template<typename X>
-    using MapType = std::unordered_map<Key, T<X>, Hash<Key>, EqualTo<Key>>;
-
-    boost::hana::map<boost::hana::pair<boost::hana::type<Is>, MapType<Is>>...> m_data;
+    boost::hana::map<boost::hana::pair<boost::hana::type<Is>, Container<T<Is>>>...> m_data;
 
 public:
     template<typename I>
         requires InTypes<I, Is...>
-    MapType<I>& get()
+    Container<T<I>>& get()
     {
         return boost::hana::at_key(m_data, boost::hana::type<I> {});
     }
 
     template<typename I>
         requires InTypes<I, Is...>
-    const MapType<I>& get() const
+    const Container<T<I>>& get() const
     {
         return boost::hana::at_key(m_data, boost::hana::type<I> {});
     }

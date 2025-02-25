@@ -15,36 +15,41 @@
  * along with this program. If not, see <httIs://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_COMMON_TYPE_INDEXED_VECTOR_HPP_
-#define MIMIR_COMMON_TYPE_INDEXED_VECTOR_HPP_
+#ifndef MIMIR_COMMON_TYPE_INDEXED_HPP_
+#define MIMIR_COMMON_TYPE_INDEXED_HPP_
 
 #include "mimir/common/concepts.hpp"
+#include "mimir/common/type_indices.hpp"
 
 #include <boost/hana.hpp>
 #include <vector>
 
 namespace mimir
 {
-template<template<typename> typename T, typename... Is>
-class TypedIndexedVector
+/// @brief For each type index in L, create a T.
+/// @tparam T
+/// @tparam L
+template<typename T, typename L>
+    requires IsTypeIndices<L>
+class TypeIndexed;
+
+template<typename T, typename... Is>
+class TypeIndexed<T, TypeIndices<Is...>>
 {
 private:
-    template<typename X>
-    using VectorType = std::vector<T<X>>;
-
-    boost::hana::map<boost::hana::pair<boost::hana::type<Is>, VectorType<X>>...> m_data;
+    boost::hana::map<boost::hana::pair<boost::hana::type<Is>, T>...> m_data;
 
 public:
     template<typename I>
         requires InTypes<I, Is...>
-    VectorType<I>& get()
+    T& get()
     {
         return boost::hana::at_key(m_data, boost::hana::type<I> {});
     }
 
     template<typename I>
         requires InTypes<I, Is...>
-    const VectorType<I>& get() const
+    const T& get() const
     {
         return boost::hana::at_key(m_data, boost::hana::type<I> {});
     }
