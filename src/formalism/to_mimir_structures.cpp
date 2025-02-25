@@ -317,58 +317,19 @@ Term ToMimirStructures::translate_lifted(loki::Term term, PDDLRepositories& repo
 
 StaticOrFluentOrDerivedAtom ToMimirStructures::translate_lifted(loki::Atom atom, PDDLRepositories& repositories)
 {
-    auto static_or_fluent__or_derived_predicate = translate_common(atom->get_predicate(), repositories);
+    auto static_or_fluent_or_derived_predicate = translate_common(atom->get_predicate(), repositories);
 
-    return std::visit(
-        [&](auto&& arg) -> StaticOrFluentOrDerivedAtom
-        {
-            using T = std::decay_t<decltype(arg)>;
-            if constexpr (std::is_same_v<T, Predicate<Static>>)
-            {
-                return repositories.get_or_create_atom(arg, translate_lifted(atom->get_terms(), repositories));
-            }
-            else if constexpr (std::is_same_v<T, Predicate<Fluent>>)
-            {
-                return repositories.get_or_create_atom(arg, translate_lifted(atom->get_terms(), repositories));
-            }
-            else if constexpr (std::is_same_v<T, Predicate<Derived>>)
-            {
-                return repositories.get_or_create_atom(arg, translate_lifted(atom->get_terms(), repositories));
-            }
-            else
-            {
-                static_assert(dependent_false<T>::value, "ToMimirStructures::translate_lifted: Missing implementation for Predicate type.");
-            }
-        },
-        static_or_fluent__or_derived_predicate);
+    return std::visit([&](auto&& arg) -> StaticOrFluentOrDerivedAtom
+                      { return repositories.get_or_create_atom(arg, translate_lifted(atom->get_terms(), repositories)); },
+                      static_or_fluent_or_derived_predicate);
 }
 
 StaticOrFluentOrDerivedLiteral ToMimirStructures::translate_lifted(loki::Literal literal, PDDLRepositories& repositories)
 {
     auto static_or_fluent_or_derived_atom = translate_lifted(literal->get_atom(), repositories);
 
-    return std::visit(
-        [&](auto&& arg) -> StaticOrFluentOrDerivedLiteral
-        {
-            using T = std::decay_t<decltype(arg)>;
-            if constexpr (std::is_same_v<T, Atom<Static>>)
-            {
-                return repositories.get_or_create_literal(literal->is_negated(), arg);
-            }
-            else if constexpr (std::is_same_v<T, Atom<Fluent>>)
-            {
-                return repositories.get_or_create_literal(literal->is_negated(), arg);
-            }
-            else if constexpr (std::is_same_v<T, Atom<Derived>>)
-            {
-                return repositories.get_or_create_literal(literal->is_negated(), arg);
-            }
-            else
-            {
-                static_assert(dependent_false<T>::value, "ToMimirStructures::translate_lifted: Missing implementation for Atom type.");
-            }
-        },
-        static_or_fluent_or_derived_atom);
+    return std::visit([&](auto&& arg) -> StaticOrFluentOrDerivedLiteral { return repositories.get_or_create_literal(literal->is_negated(), arg); },
+                      static_or_fluent_or_derived_atom);
 }
 
 FunctionExpression ToMimirStructures::translate_lifted(loki::FunctionExpressionNumber function_expression, PDDLRepositories& repositories)
@@ -726,56 +687,18 @@ StaticOrFluentOrDerivedGroundAtom ToMimirStructures::translate_grounded(loki::At
 {
     auto static_or_fluent_or_derived_predicate = translate_common(atom->get_predicate(), repositories);
 
-    return std::visit(
-        [&](auto&& arg) -> StaticOrFluentOrDerivedGroundAtom
-        {
-            using T = std::decay_t<decltype(arg)>;
-            if constexpr (std::is_same_v<T, Predicate<Static>>)
-            {
-                return repositories.get_or_create_ground_atom(arg, translate_grounded(atom->get_terms(), repositories));
-            }
-            else if constexpr (std::is_same_v<T, Predicate<Fluent>>)
-            {
-                return repositories.get_or_create_ground_atom(arg, translate_grounded(atom->get_terms(), repositories));
-            }
-            else if constexpr (std::is_same_v<T, Predicate<Derived>>)
-            {
-                return repositories.get_or_create_ground_atom(arg, translate_grounded(atom->get_terms(), repositories));
-            }
-            else
-            {
-                static_assert(dependent_false<T>::value, "ToMimirStructures::translate_lifted: Missing implementation for Predicate type.");
-            }
-        },
-        static_or_fluent_or_derived_predicate);
+    return std::visit([&](auto&& arg) -> StaticOrFluentOrDerivedGroundAtom
+                      { return repositories.get_or_create_ground_atom(arg, translate_grounded(atom->get_terms(), repositories)); },
+                      static_or_fluent_or_derived_predicate);
 }
 
 StaticOrFluentOrDerivedGroundLiteral ToMimirStructures::translate_grounded(loki::Literal literal, PDDLRepositories& repositories)
 {
     auto static_or_fluent_or_derived_ground_atom = translate_grounded(literal->get_atom(), repositories);
 
-    return std::visit(
-        [&literal, &repositories](auto&& arg) -> StaticOrFluentOrDerivedGroundLiteral
-        {
-            using T = std::decay_t<decltype(arg)>;
-            if constexpr (std::is_same_v<T, GroundAtom<Static>>)
-            {
-                return repositories.get_or_create_ground_literal(literal->is_negated(), arg);
-            }
-            else if constexpr (std::is_same_v<T, GroundAtom<Fluent>>)
-            {
-                return repositories.get_or_create_ground_literal(literal->is_negated(), arg);
-            }
-            else if constexpr (std::is_same_v<T, GroundAtom<Derived>>)
-            {
-                return repositories.get_or_create_ground_literal(literal->is_negated(), arg);
-            }
-            else
-            {
-                static_assert(dependent_false<T>::value, "ToMimirStructures::translate_lifted: Missing implementation for GroundAtom type.");
-            }
-        },
-        static_or_fluent_or_derived_ground_atom);
+    return std::visit([&literal, &repositories](auto&& arg) -> StaticOrFluentOrDerivedGroundLiteral
+                      { return repositories.get_or_create_ground_literal(literal->is_negated(), arg); },
+                      static_or_fluent_or_derived_ground_atom);
 }
 
 StaticOrFluentOrAuxiliaryGroundFunctionValue ToMimirStructures::translate_grounded(loki::FunctionValue function_value, PDDLRepositories& repositories)
@@ -818,25 +741,7 @@ GroundFunctionExpression ToMimirStructures::translate_grounded(loki::FunctionExp
 {
     return std::visit(
         [&](auto&& ground_function)
-        {
-            using T = std::decay_t<decltype(ground_function)>;
-            if constexpr (std::is_same_v<T, GroundFunction<Static>>)
-            {
-                return repositories.get_or_create_ground_function_expression(repositories.get_or_create_ground_function_expression_function(ground_function));
-            }
-            else if constexpr (std::is_same_v<T, GroundFunction<Fluent>>)
-            {
-                return repositories.get_or_create_ground_function_expression(repositories.get_or_create_ground_function_expression_function(ground_function));
-            }
-            else if constexpr (std::is_same_v<T, GroundFunction<Auxiliary>>)
-            {
-                return repositories.get_or_create_ground_function_expression(repositories.get_or_create_ground_function_expression_function(ground_function));
-            }
-            else
-            {
-                static_assert(dependent_false<T>::value, "ToMimirStructures::translate_lifted: Missing implementation for GroundFunction type.");
-            }
-        },
+        { return repositories.get_or_create_ground_function_expression(repositories.get_or_create_ground_function_expression_function(ground_function)); },
         translate_grounded(function_expression->get_function(), repositories));
 }
 
@@ -986,22 +891,21 @@ Domain ToMimirStructures::translate(const loki::Domain& domain, DomainBuilder& b
     }
 
     /* Functions section */
-    auto static_functions = FunctionSkeletonList<Static> {};
-    auto fluent_functions = FunctionSkeletonList<Fluent> {};
+    auto function_skeletons = FunctionSkeletonLists<Static, Fluent> {};
     auto auxiliary_function = std::optional<FunctionSkeleton<Auxiliary>> { std::nullopt };
     for (const auto& static_or_fluent_or_auxiliary_function : translate_common(domain->get_function_skeletons(), repositories))
     {
         std::visit(
-            [&static_functions, &fluent_functions, &auxiliary_function](auto&& arg)
+            [&function_skeletons, &auxiliary_function](auto&& arg)
             {
                 using T = std::decay_t<decltype(arg)>;
                 if constexpr (std::is_same_v<T, FunctionSkeleton<Static>>)
                 {
-                    static_functions.push_back(arg);
+                    boost::hana::at_key(function_skeletons, boost::hana::type<Static> {}).push_back(arg);
                 }
                 else if constexpr (std::is_same_v<T, FunctionSkeleton<Fluent>>)
                 {
-                    fluent_functions.push_back(arg);
+                    boost::hana::at_key(function_skeletons, boost::hana::type<Fluent> {}).push_back(arg);
                 }
                 else if constexpr (std::is_same_v<T, FunctionSkeleton<Auxiliary>>)
                 {
@@ -1023,21 +927,12 @@ Domain ToMimirStructures::translate(const loki::Domain& domain, DomainBuilder& b
     builder.get_filepath() = domain->get_filepath();
     builder.get_name() = domain->get_name();
     builder.get_requirements() = requirements;
-    builder.get_constants().insert(builder.get_constants().end(), constants.begin(), constants.end());
-    boost::hana::for_each(predicates,
-                          [&](auto&& pair)
-                          {
-                              const auto& key = boost::hana::first(pair);
-                              const auto& value = boost::hana::second(pair);
-
-                              auto& builder_predicates = boost::hana::at_key(builder.get_hana_predicates(), key);
-                              builder_predicates.insert(builder_predicates.end(), value.begin(), value.end());
-                          });
-    builder.get_function_skeletons<Static>().insert(builder.get_function_skeletons<Static>().end(), static_functions.begin(), static_functions.end());
-    builder.get_function_skeletons<Fluent>().insert(builder.get_function_skeletons<Fluent>().end(), fluent_functions.begin(), fluent_functions.end());
+    builder.get_constants() = std::move(constants);
+    builder.get_hana_predicates() = std::move(predicates);
+    builder.get_hana_function_skeletons() = std::move(function_skeletons);
     builder.get_auxiliary_function_skeleton() = auxiliary_function;
-    builder.get_actions().insert(builder.get_actions().end(), actions.begin(), actions.end());
-    builder.get_axioms().insert(builder.get_axioms().end(), axioms.begin(), axioms.end());
+    builder.get_actions() = std::move(actions);
+    builder.get_axioms() = std::move(axioms);
 
     return builder.get_result();
 }
@@ -1178,23 +1073,19 @@ Problem ToMimirStructures::translate(const loki::Problem& problem, ProblemBuilde
     builder.get_filepath() = problem->get_filepath();
     builder.get_name() = problem->get_name();
     builder.get_requirements() = requirements;
-    builder.get_objects().insert(builder.get_objects().end(), objects.begin(), objects.end());
-    builder.get_derived_predicates().insert(builder.get_derived_predicates().end(), derived_predicates.begin(), derived_predicates.end());
-    builder.get_initial_literals<Static>().insert(builder.get_initial_literals<Static>().end(), static_initial_literals.begin(), static_initial_literals.end());
-    builder.get_initial_literals<Fluent>().insert(builder.get_initial_literals<Fluent>().end(), fluent_initial_literals.begin(), fluent_initial_literals.end());
-    builder.get_initial_function_values<Static>().insert(builder.get_initial_function_values<Static>().end(),
-                                                         static_function_values.begin(),
-                                                         static_function_values.end());
-    builder.get_initial_function_values<Fluent>().insert(builder.get_initial_function_values<Fluent>().end(),
-                                                         fluent_function_values.begin(),
-                                                         fluent_function_values.end());
+    builder.get_objects() = std::move(objects);
+    builder.get_derived_predicates() = std::move(derived_predicates);
+    builder.get_initial_literals<Static>() = std::move(static_initial_literals);
+    builder.get_initial_literals<Fluent>() = std::move(fluent_initial_literals);
+    builder.get_initial_function_values<Static>() = std::move(static_function_values);
+    builder.get_initial_function_values<Fluent>() = std::move(fluent_function_values);
     builder.get_auxiliary_function_value() = auxiliary_function_value;
-    builder.get_goal_condition<Static>().insert(builder.get_goal_condition<Static>().end(), static_goal_literals.begin(), static_goal_literals.end());
-    builder.get_goal_condition<Fluent>().insert(builder.get_goal_condition<Fluent>().end(), fluent_goal_literals.begin(), fluent_goal_literals.end());
-    builder.get_goal_condition<Derived>().insert(builder.get_goal_condition<Derived>().end(), derived_goal_literals.begin(), derived_goal_literals.end());
-    builder.get_numeric_goal_condition().insert(builder.get_numeric_goal_condition().end(), numeric_goal_constraints.begin(), numeric_goal_constraints.end());
+    builder.get_goal_condition<Static>() = std::move(static_goal_literals);
+    builder.get_goal_condition<Fluent>() = std::move(fluent_goal_literals);
+    builder.get_goal_condition<Derived>() = std::move(derived_goal_literals);
+    builder.get_numeric_goal_condition() = std::move(numeric_goal_constraints);
     builder.get_optimization_metric() = metric;
-    builder.get_axioms().insert(builder.get_axioms().end(), axioms.begin(), axioms.end());
+    builder.get_axioms() = std::move(axioms);
 
     return builder.get_result(problem->get_index());
 }

@@ -123,6 +123,8 @@ template<StaticOrFluentOrAuxiliary F>
 using FunctionSkeleton = const FunctionSkeletonImpl<F>*;
 template<StaticOrFluentOrAuxiliary F>
 using FunctionSkeletonList = std::vector<FunctionSkeleton<F>>;
+template<StaticOrFluentOrAuxiliary... Fs>
+using FunctionSkeletonLists = boost::hana::map<boost::hana::pair<boost::hana::type<Fs>, FunctionSkeletonList<Fs>>...>;
 
 template<StaticOrFluentOrAuxiliary F>
 class FunctionImpl;
@@ -204,8 +206,8 @@ using GroundNumericConstraintList = std::vector<GroundNumericConstraint>;
 class ObjectImpl;
 using Object = const ObjectImpl*;
 using ObjectList = std::vector<Object>;
-template<typename Key, typename Hash = loki::Hash<Key>, typename KeyEqual = loki::EqualTo<Key>>
-using ToObjectMap = std::unordered_map<Key, Object, Hash, KeyEqual>;
+template<typename Key>
+using ToObjectMap = std::unordered_map<Key, Object, loki::Hash<Key>, loki::EqualTo<Key>>;
 
 class PDDLRepositories;
 
@@ -215,12 +217,14 @@ template<StaticOrFluentOrDerived P>
 using Predicate = const PredicateImpl<P>*;
 template<StaticOrFluentOrDerived P>
 using PredicateList = std::vector<Predicate<P>>;
-template<StaticOrFluentOrDerived P>
-using PredicateSet = std::unordered_set<Predicate<P>>;
-template<typename Key, StaticOrFluentOrDerived P, typename Hash = loki::Hash<Key>, typename KeyEqual = loki::EqualTo<Key>>
-using ToPredicateMap = std::unordered_map<Key, Predicate<P>, Hash, KeyEqual>;
 template<StaticOrFluentOrDerived... Ps>
 using PredicateLists = boost::hana::map<boost::hana::pair<boost::hana::type<Ps>, PredicateList<Ps>>...>;
+template<StaticOrFluentOrDerived P>
+using PredicateSet = std::unordered_set<Predicate<P>>;
+template<typename Key, StaticOrFluentOrDerived P>
+using ToPredicateMap = std::unordered_map<Key, Predicate<P>, loki::Hash<Key>, loki::EqualTo<Key>>;
+template<typename Key, StaticOrFluentOrDerived... Ps>
+using ToPredicateMaps = boost::hana::map<boost::hana::pair<boost::hana::type<Ps>, ToPredicateMap<Key, Ps>>...>;
 
 class ProblemImpl;
 using Problem = std::shared_ptr<ProblemImpl>;

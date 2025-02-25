@@ -37,8 +37,7 @@ private:
     Requirements m_requirements;
     ObjectList m_constants;
     PredicateLists<Static, Fluent, Derived> m_predicates;
-    FunctionSkeletonList<Static> m_static_function_skeletons;
-    FunctionSkeletonList<Fluent> m_fluent_function_skeletons;
+    FunctionSkeletonLists<Static, Fluent> m_function_skeletons;
     std::optional<FunctionSkeleton<Auxiliary>> m_auxiliary_function_skeleton;
     ActionList m_actions;
     AxiomList m_axioms;
@@ -67,6 +66,7 @@ public:
     PredicateLists<Static, Fluent, Derived>& get_hana_predicates();
     template<StaticOrFluent F>
     FunctionSkeletonList<F>& get_function_skeletons();
+    FunctionSkeletonLists<Static, Fluent>& get_hana_function_skeletons();
     std::optional<FunctionSkeleton<Auxiliary>>& get_auxiliary_function_skeleton();
     ActionList& get_actions();
     AxiomList& get_axioms();

@@ -218,12 +218,12 @@ static ConceptRoleValueMapEquality parse(const dl::ast::ConceptRoleValueMapEqual
 
 static ConceptNominal parse(const dl::ast::ConceptNominal& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
-    if (!domain.get_name_to_constants().contains(node.object_name))
+    if (!domain.get_name_to_constant().contains(node.object_name))
     {
         throw std::runtime_error("Domain has no constant with name \"" + node.object_name + "\".");
     }
 
-    return ref_repositories.get_or_create_concept_nominal(domain.get_name_to_constants().at(node.object_name));
+    return ref_repositories.get_or_create_concept_nominal(domain.get_name_to_constant().at(node.object_name));
 }
 
 static RoleUniversal parse(const dl::ast::RoleUniversal& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)

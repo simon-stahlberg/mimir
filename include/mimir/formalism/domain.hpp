@@ -33,17 +33,14 @@ private:
     Requirements m_requirements;
     ObjectList m_constants;
     PredicateLists<Static, Fluent, Derived> m_predicates;
-    FunctionSkeletonList<Static> m_static_function_skeletons;
-    FunctionSkeletonList<Fluent> m_fluent_function_skeletons;
+    FunctionSkeletonLists<Static, Fluent> m_function_skeletons;
     std::optional<FunctionSkeleton<Auxiliary>> m_auxiliary_function_skeleton;
     ActionList m_actions;
     AxiomList m_axioms;
 
     // Below: add additional members if needed and initialize them in the constructor
-    ToObjectMap<std::string> m_name_to_constants;
-    ToPredicateMap<std::string, Static> m_name_to_static_predicate;
-    ToPredicateMap<std::string, Fluent> m_name_to_fluent_predicate;
-    ToPredicateMap<std::string, Derived> m_name_to_derived_predicate;
+    ToObjectMap<std::string> m_name_to_constant;
+    ToPredicateMaps<std::string, Static, Fluent, Derived> m_name_to_predicate;
 
     DomainImpl(PDDLRepositories repositories,
                std::optional<fs::path> filepath,
@@ -51,8 +48,7 @@ private:
                Requirements requirements,
                ObjectList constants,
                PredicateLists<Static, Fluent, Derived> predicates,
-               FunctionSkeletonList<Static> static_function_skeletons,
-               FunctionSkeletonList<Fluent> fluent_function_skeletons,
+               FunctionSkeletonLists<Static, Fluent> m_function_skeletons,
                std::optional<FunctionSkeleton<Auxiliary>> auxiliary_function_skeleton,
                ActionList actions,
                AxiomList axioms);
@@ -77,30 +73,32 @@ public:
     const PredicateLists<Static, Fluent, Derived>& get_hana_predicates() const;
     template<StaticOrFluent F>
     const FunctionSkeletonList<F>& get_function_skeletons() const;
+    const FunctionSkeletonLists<Static, Fluent>& get_hana_function_skeletons() const;
     const std::optional<FunctionSkeleton<Auxiliary>>& get_auxiliary_function_skeleton() const;
     const ActionList& get_actions() const;
     const AxiomList& get_axioms() const;
 
-    const ToObjectMap<std::string> get_name_to_constants() const;
+    const ToObjectMap<std::string> get_name_to_constant() const;
     template<StaticOrFluentOrDerived P>
     const ToPredicateMap<std::string, P>& get_name_to_predicate() const;
+    const ToPredicateMaps<std::string, Static, Fluent, Derived>& get_hana_name_to_predicate();
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
     auto identifying_members() const
     {
-        return std::forward_as_tuple(std::as_const(m_name),
-                                     std::as_const(m_requirements),
-                                     std::as_const(m_constants),
+        return std::forward_as_tuple(std::as_const(get_name()),
+                                     std::as_const(get_requirements()),
+                                     std::as_const(get_constants()),
                                      std::as_const(get_predicates<Static>()),
                                      std::as_const(get_predicates<Fluent>()),
                                      std::as_const(get_predicates<Derived>()),
-                                     std::as_const(m_static_function_skeletons),
-                                     std::as_const(m_fluent_function_skeletons),
-                                     std::as_const(m_auxiliary_function_skeleton),
-                                     std::as_const(m_actions),
-                                     std::as_const(m_axioms));
+                                     std::as_const(get_function_skeletons<Static>()),
+                                     std::as_const(get_function_skeletons<Fluent>()),
+                                     std::as_const(get_auxiliary_function_skeleton()),
+                                     std::as_const(get_actions()),
+                                     std::as_const(get_axioms()));
     }
 };
 

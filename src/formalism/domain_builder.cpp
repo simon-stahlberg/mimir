@@ -48,15 +48,15 @@ Domain DomainBuilder::get_result()
     std::sort(get_predicates<Derived>().begin(), get_predicates<Derived>().end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
     verify_indexing_scheme(get_predicates<Derived>(), "DomainBuilder::get_result: derived predicates must follow and indexing scheme.");
 
-    std::sort(m_static_function_skeletons.begin(),
-              m_static_function_skeletons.end(),
+    std::sort(get_function_skeletons<Static>().begin(),
+              get_function_skeletons<Static>().end(),
               [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
-    verify_indexing_scheme(m_static_function_skeletons, "DomainBuilder::get_result: functions must follow and indexing scheme.");
+    verify_indexing_scheme(get_function_skeletons<Static>(), "DomainBuilder::get_result: functions must follow and indexing scheme.");
 
-    std::sort(m_fluent_function_skeletons.begin(),
-              m_fluent_function_skeletons.end(),
+    std::sort(get_function_skeletons<Fluent>().begin(),
+              get_function_skeletons<Fluent>().end(),
               [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
-    verify_indexing_scheme(m_fluent_function_skeletons, "DomainBuilder::get_result: functions must follow and indexing scheme.");
+    verify_indexing_scheme(get_function_skeletons<Fluent>(), "DomainBuilder::get_result: functions must follow and indexing scheme.");
 
     std::sort(m_actions.begin(), m_actions.end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
     verify_indexing_scheme(m_actions, "DomainBuilder::get_result: actions must follow and indexing scheme.");
@@ -72,8 +72,7 @@ Domain DomainBuilder::get_result()
                                                             std::move(m_requirements),
                                                             std::move(m_constants),
                                                             std::move(m_predicates),
-                                                            std::move(m_static_function_skeletons),
-                                                            std::move(m_fluent_function_skeletons),
+                                                            std::move(m_function_skeletons),
                                                             std::move(m_auxiliary_function_skeleton),
                                                             std::move(m_actions),
                                                             std::move(m_axioms)));
@@ -99,22 +98,13 @@ PredicateLists<Static, Fluent, Derived>& DomainBuilder::get_hana_predicates() { 
 template<StaticOrFluent F>
 FunctionSkeletonList<F>& DomainBuilder::get_function_skeletons()
 {
-    if constexpr (std::is_same_v<F, Static>)
-    {
-        return m_static_function_skeletons;
-    }
-    else if constexpr (std::is_same_v<F, Fluent>)
-    {
-        return m_fluent_function_skeletons;
-    }
-    else
-    {
-        static_assert(dependent_false<F>::value, "ToMimirStructures::translate_lifted: Missing implementation for Function type.");
-    }
+    return boost::hana::at_key(m_function_skeletons, boost::hana::type<F> {});
 }
 
 template FunctionSkeletonList<Static>& DomainBuilder::get_function_skeletons();
 template FunctionSkeletonList<Fluent>& DomainBuilder::get_function_skeletons();
+
+FunctionSkeletonLists<Static, Fluent>& DomainBuilder::get_hana_function_skeletons() { return m_function_skeletons; }
 
 std::optional<FunctionSkeleton<Auxiliary>>& DomainBuilder::get_auxiliary_function_skeleton() { return m_auxiliary_function_skeleton; }
 ActionList& DomainBuilder::get_actions() { return m_actions; }
