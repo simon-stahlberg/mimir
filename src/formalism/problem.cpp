@@ -88,8 +88,7 @@ ProblemImpl::ProblemImpl(Index index,
     m_positive_static_initial_assignment_set(AssignmentSet<Static>(m_problem_and_domain_objects.size(), m_domain->get_predicates<Static>())),
     m_static_initial_numeric_assignment_set(NumericAssignmentSet<Static>(m_problem_and_domain_objects.size(), m_domain->get_function_skeletons<Static>())),
     m_positive_fluent_initial_atoms(to_ground_atoms(get_initial_literals<Fluent>())),
-    m_static_function_to_value(),
-    m_fluent_function_to_value(),
+    m_initial_function_to_value(),
     m_static_goal_holds(false),
     m_positive_goal_atoms(),
     m_positive_goal_atoms_bitset(),
@@ -159,40 +158,41 @@ ProblemImpl::ProblemImpl(Index index,
 
     // As the ground functions in the goal might not necessarily be defined, we fill the gaps with undefined.
     // In principle, we could compress and define those values during search when applying an action that assigns it.
+    boost::hana::for_each(get_hana_initial_function_values(),
+                          [this](auto&& pair)
+                          {
+                              const auto& key = boost::hana::first(pair);
+                              const auto& function_values = boost::hana::second(pair);
+
+                              for (const auto& function_value : function_values)
+                              {
+                                  const auto function = function_value->get_function();
+                                  const auto index = function->get_index();
+                                  const auto value = function_value->get_number();
+
+                                  auto& function_to_value = boost::hana::at_key(m_initial_function_to_value, key);
+
+                                  if (index >= function_to_value.size())
+                                  {
+                                      function_to_value.resize(index + 1, UNDEFINED_CONTINUOUS_COST);
+                                  }
+                                  function_to_value[index] = value;
+                              }
+                          });
+
     auto static_functions = GroundFunctionList<Static> {};
-    for (const auto static_numeric_value : get_initial_function_values<Static>())
+    for (const auto& function_value : get_initial_function_values<Static>())
     {
-        const auto function = static_numeric_value->get_function();
+        const auto function = function_value->get_function();
         const auto index = function->get_index();
-        const auto value = static_numeric_value->get_number();
-        if (index >= m_static_function_to_value.size())
+        if (index >= static_functions.size())
         {
             static_functions.resize(index + 1, nullptr);
-            m_static_function_to_value.resize(index + 1, UNDEFINED_CONTINUOUS_COST);
         }
-        m_static_function_to_value[index] = value;
         static_functions[index] = function;
     }
-    m_static_initial_numeric_assignment_set.insert_ground_function_values(static_functions, m_static_function_to_value);
 
-    for (const auto fluent_numeric_value : get_initial_function_values<Fluent>())
-    {
-        const auto index = fluent_numeric_value->get_function()->get_index();
-        const auto value = fluent_numeric_value->get_number();
-        if (index >= m_fluent_function_to_value.size())
-        {
-            m_fluent_function_to_value.resize(index + 1, UNDEFINED_CONTINUOUS_COST);
-        }
-        m_fluent_function_to_value[index] = value;
-    }
-    for (size_t i = 0; i < m_fluent_function_to_value.size(); ++i)
-    {
-        if (m_fluent_function_to_value[i] == UNDEFINED_CONTINUOUS_COST)
-        {
-            std::cout << "Problem::Problem(...): m_fluent_function_to_value contains undefined values. We could optimize by compressing the indexing."
-                      << std::endl;
-        }
-    }
+    m_static_initial_numeric_assignment_set.insert_ground_function_values(static_functions, get_initial_function_to_value<Static>());
 
     /* Goal */
 
@@ -367,29 +367,20 @@ const NumericAssignmentSet<Static>& ProblemImpl::get_static_initial_numeric_assi
 const GroundAtomList<Fluent>& ProblemImpl::get_fluent_initial_atoms() const { return m_positive_fluent_initial_atoms; }
 
 template<StaticOrFluent F>
-const FlatDoubleList& ProblemImpl::get_function_to_value() const
+const FlatDoubleList& ProblemImpl::get_initial_function_to_value() const
 {
-    if constexpr (std::is_same_v<F, Static>)
-    {
-        return m_static_function_to_value;
-    }
-    else if constexpr (std::is_same_v<F, Fluent>)
-    {
-        return m_fluent_function_to_value;
-    }
-    else
-    {
-        static_assert(dependent_false<F>::value, "Missing implementation for StaticOrFluentOrAuxiliary.");
-    }
+    return boost::hana::at_key(m_initial_function_to_value, boost::hana::type<F> {});
 }
 
-template const FlatDoubleList& ProblemImpl::get_function_to_value<Static>() const;
-template const FlatDoubleList& ProblemImpl::get_function_to_value<Fluent>() const;
+template const FlatDoubleList& ProblemImpl::get_initial_function_to_value<Static>() const;
+template const FlatDoubleList& ProblemImpl::get_initial_function_to_value<Fluent>() const;
+
+const FlatDoubleLists<Static, Fluent>& ProblemImpl::get_hana_initial_function_to_value() const { return m_initial_function_to_value; }
 
 template<StaticOrFluent F>
-ContinuousCost ProblemImpl::get_function_value(GroundFunction<F> function) const
+ContinuousCost ProblemImpl::get_initial_function_value(GroundFunction<F> function) const
 {
-    const auto& function_to_value = get_function_to_value<F>();
+    const auto& function_to_value = get_initial_function_to_value<F>();
     if (function->get_index() >= function_to_value.size())
     {
         return UNDEFINED_CONTINUOUS_COST;
@@ -397,8 +388,8 @@ ContinuousCost ProblemImpl::get_function_value(GroundFunction<F> function) const
     return function_to_value[function->get_index()];
 }
 
-template ContinuousCost ProblemImpl::get_function_value(GroundFunction<Static> function) const;
-template ContinuousCost ProblemImpl::get_function_value(GroundFunction<Fluent> function) const;
+template ContinuousCost ProblemImpl::get_initial_function_value(GroundFunction<Static> function) const;
+template ContinuousCost ProblemImpl::get_initial_function_value(GroundFunction<Fluent> function) const;
 
 /* Goal */
 bool ProblemImpl::static_goal_holds() const { return m_static_goal_holds; }
@@ -776,7 +767,7 @@ GroundFunctionExpression ProblemImpl::ground(FunctionExpression fexpr, const Obj
             else if constexpr (std::is_same_v<T, FunctionExpressionFunction<Static>>)
             {
                 return m_repositories.get_or_create_ground_function_expression(
-                    m_repositories.get_or_create_ground_function_expression_number(get_function_value<Static>(ground(arg->get_function(), binding))));
+                    m_repositories.get_or_create_ground_function_expression_number(get_initial_function_value<Static>(ground(arg->get_function(), binding))));
             }
             else if constexpr (std::is_same_v<T, FunctionExpressionFunction<Fluent>>)
             {

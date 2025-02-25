@@ -39,6 +39,7 @@ private:
     AxiomList m_axioms;
 
     // Below: add additional members if needed and initialize them in the constructor
+
     ToObjectMap<std::string> m_name_to_constant;
     ToPredicateMaps<std::string, Static, Fluent, Derived> m_name_to_predicate;
 
@@ -77,6 +78,8 @@ public:
     const std::optional<FunctionSkeleton<Auxiliary>>& get_auxiliary_function_skeleton() const;
     const ActionList& get_actions() const;
     const AxiomList& get_axioms() const;
+
+    /* Additional members */
 
     const ToObjectMap<std::string> get_name_to_constant() const;
     template<StaticOrFluentOrDerived P>

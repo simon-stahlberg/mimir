@@ -58,7 +58,7 @@ bool ActionSatisficingBindingGenerator::is_valid_binding(NumericEffect<Fluent> e
     const auto result =
         (ground_target_function->get_index() < fluent_numeric_variables.size())
         && (fluent_numeric_variables[ground_target_function->get_index()] != UNDEFINED_CONTINUOUS_COST)
-        && (evaluate(ground_function_expression, m_problem->get_function_to_value<Static>(), fluent_numeric_variables) != UNDEFINED_CONTINUOUS_COST);
+        && (evaluate(ground_function_expression, m_problem->get_initial_function_to_value<Static>(), fluent_numeric_variables) != UNDEFINED_CONTINUOUS_COST);
 
     return result;
 }
@@ -71,7 +71,7 @@ bool ActionSatisficingBindingGenerator::is_valid_binding(NumericEffect<Auxiliary
     // For auxiliary total-cost, we assume it is well-defined in the initial state.
     const auto ground_function_expression = m_problem->ground(effect->get_function_expression(), binding);
 
-    return (evaluate(ground_function_expression, m_problem->get_function_to_value<Static>(), fluent_numeric_variables) != UNDEFINED_CONTINUOUS_COST);
+    return (evaluate(ground_function_expression, m_problem->get_initial_function_to_value<Static>(), fluent_numeric_variables) != UNDEFINED_CONTINUOUS_COST);
 }
 
 template<FluentOrAuxiliary F>

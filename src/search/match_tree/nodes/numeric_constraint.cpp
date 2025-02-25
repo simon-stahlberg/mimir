@@ -45,7 +45,7 @@ void NumericConstraintSelectorNode_T<E>::generate_applicable_actions(const Dense
                                                                      std::vector<const INode<E>*>& ref_applicable_nodes,
                                                                      std::vector<const E*>&) const
 {
-    if (evaluate(this->m_constraint, problem.get_function_to_value<Static>(), state.get_numeric_variables()))
+    if (evaluate(this->m_constraint, problem.get_initial_function_to_value<Static>(), state.get_numeric_variables()))
     {
         ref_applicable_nodes.push_back(m_true_child.get());
     }
@@ -84,7 +84,7 @@ void NumericConstraintSelectorNode_TX<E>::generate_applicable_actions(const Dens
 {
     ref_applicable_nodes.push_back(m_dontcare_child.get());
 
-    if (evaluate(this->m_constraint, problem.get_function_to_value<Static>(), state.get_numeric_variables()))
+    if (evaluate(this->m_constraint, problem.get_initial_function_to_value<Static>(), state.get_numeric_variables()))
     {
         ref_applicable_nodes.push_back(m_true_child.get());
     }

@@ -108,7 +108,7 @@ bool is_dynamically_applicable(const GroundConjunctiveCondition& conjunctive_con
 {
     return is_applicable<Fluent>(conjunctive_condition, dense_state.get_atoms<Fluent>())
            && is_applicable<Derived>(conjunctive_condition, dense_state.get_atoms<Derived>())
-           && is_applicable(conjunctive_condition, problem.get_function_to_value<Static>(), dense_state.get_numeric_variables());
+           && is_applicable(conjunctive_condition, problem.get_initial_function_to_value<Static>(), dense_state.get_numeric_variables());
 }
 
 bool is_statically_applicable(const GroundConjunctiveCondition& conjunctive_condition, const FlatBitset& static_positive_atoms)
@@ -169,10 +169,10 @@ is_applicable(const GroundNumericEffectList<F>& effects, const FlatDoubleList& s
 
 bool is_applicable(const GroundConjunctiveEffect& conjunctive_effect, const ProblemImpl& problem, const DenseState& dense_state)
 {
-    return is_applicable(conjunctive_effect.get_fluent_numeric_effects(), problem.get_function_to_value<Static>(), dense_state.get_numeric_variables())
+    return is_applicable(conjunctive_effect.get_fluent_numeric_effects(), problem.get_initial_function_to_value<Static>(), dense_state.get_numeric_variables())
            && (!conjunctive_effect.get_auxiliary_numeric_effect().has_value()
                || is_applicable(conjunctive_effect.get_auxiliary_numeric_effect().value().get(),
-                                problem.get_function_to_value<Static>(),
+                                problem.get_initial_function_to_value<Static>(),
                                 dense_state.get_numeric_variables()));
 }
 

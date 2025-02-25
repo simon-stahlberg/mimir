@@ -154,7 +154,6 @@ const FlatExternalPtrList<const GroundNumericConstraintImpl>& GroundConjunctiveC
 template<>
 std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConjunctiveCondition, const ProblemImpl&>& data)
 {
-    // TODO(numerical): add numeric constraints
     const auto& [conjunctive_condition, problem] = data;
 
     const auto& positive_static_precondition_indices = conjunctive_condition.get_positive_precondition<Static>();

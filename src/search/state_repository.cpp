@@ -51,7 +51,7 @@ StateRepositoryImpl::StateRepositoryImpl(AxiomEvaluator axiom_evaluator) :
 State StateRepositoryImpl::get_or_create_initial_state()
 {
     const auto problem = m_axiom_evaluator->get_problem();
-    return get_or_create_state(problem->get_fluent_initial_atoms(), problem->get_function_to_value<Fluent>());
+    return get_or_create_state(problem->get_fluent_initial_atoms(), problem->get_initial_function_to_value<Fluent>());
 }
 
 static void translate_dense_into_sorted_compressed_sparse(const FlatBitset& dense, FlatIndexList& ref_sparse)
@@ -251,7 +251,7 @@ static void apply_action_effects(GroundAction action,
 {
     const auto& conjunctive_effect = action->get_conjunctive_effect();
     const auto& const_fluent_numeric_variables = state->get_numeric_variables();
-    const auto& const_static_numeric_variables = problem.get_function_to_value<Static>();
+    const auto& const_static_numeric_variables = problem.get_initial_function_to_value<Static>();
 
     insert_into_bitset(conjunctive_effect.get_negative_effects(), ref_negative_applied_effects);
     insert_into_bitset(conjunctive_effect.get_positive_effects(), ref_positive_applied_effects);

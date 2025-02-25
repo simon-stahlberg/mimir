@@ -83,7 +83,7 @@ bool SatisficingBindingGenerator<Derived_>::is_valid_binding(const NumericConstr
 {
     for (const auto& constraint : constraints)
     {
-        if (!evaluate(m_problem->ground(constraint, binding), m_problem->get_function_to_value<Static>(), fluent_numeric_variables))
+        if (!evaluate(m_problem->ground(constraint, binding), m_problem->get_initial_function_to_value<Static>(), fluent_numeric_variables))
         {
             return false;
         }

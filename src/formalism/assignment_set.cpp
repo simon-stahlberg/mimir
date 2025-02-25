@@ -159,6 +159,7 @@ void NumericAssignmentSet<F>::insert_ground_function_values(const GroundFunction
     assert(ground_fluent_functions.size() == fluent_numeric_values.size());
     for (size_t i = 0; i < ground_fluent_functions.size(); ++i)
     {
+        assert(ground_fluent_functions[i]);
         assert(ground_fluent_functions[i]->get_index() == i);
     }
 

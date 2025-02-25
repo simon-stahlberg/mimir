@@ -60,8 +60,7 @@ private:
 
     GroundAtomList<Fluent> m_positive_fluent_initial_atoms;
 
-    FlatDoubleList m_static_function_to_value;
-    FlatDoubleList m_fluent_function_to_value;
+    FlatDoubleLists<Static, Fluent> m_initial_function_to_value;
 
     /* Goal */
     bool m_static_goal_holds;
@@ -182,9 +181,10 @@ public:
     const GroundAtomList<Fluent>& get_fluent_initial_atoms() const;
 
     template<StaticOrFluent F>
-    const FlatDoubleList& get_function_to_value() const;
+    const FlatDoubleList& get_initial_function_to_value() const;
+    const FlatDoubleLists<Static, Fluent>& get_hana_initial_function_to_value() const;
     template<StaticOrFluent F>
-    ContinuousCost get_function_value(GroundFunction<F> function) const;
+    ContinuousCost get_initial_function_value(GroundFunction<F> function) const;
 
     /* Goal */
     bool static_literal_holds(const GroundLiteral<Static> literal) const;  // TODO: probably can go in the future
@@ -215,7 +215,7 @@ public:
     const std::vector<AxiomPartition>& get_problem_and_domain_axiom_partitioning() const;
 
     /**
-     * Modifiers (Grounding)
+     * Grounding
      */
 
     template<StaticOrFluentOrDerived P>
