@@ -56,14 +56,11 @@ ProblemImpl::ProblemImpl(Index index,
                          ObjectList problem_and_domain_objects,
                          PredicateList<Derived> derived_predicates,
                          PredicateList<Derived> problem_and_domain_derived_predicates,
-                         GroundLiteralList<Static> static_initial_literals,
-                         GroundLiteralList<Fluent> fluent_initial_literals,
+                         GroundLiteralLists<Static, Fluent> initial_literals,
                          GroundFunctionValueList<Static> static_initial_function_values,
                          GroundFunctionValueList<Fluent> fluent_initial_function_values,
                          std::optional<GroundFunctionValue<Auxiliary>> auxiliary_function_value,
-                         GroundLiteralList<Static> static_goal_condition,
-                         GroundLiteralList<Fluent> fluent_goal_condition,
-                         GroundLiteralList<Derived> derived_goal_condition,
+                         GroundLiteralLists<Static, Fluent, Derived> goal_condition,
                          GroundNumericConstraintList numeric_goal_condition,
                          std::optional<OptimizationMetric> optimization_metric,
                          AxiomList axioms,
@@ -78,39 +75,36 @@ ProblemImpl::ProblemImpl(Index index,
     m_problem_and_domain_objects(std::move(problem_and_domain_objects)),
     m_derived_predicates(std::move(derived_predicates)),
     m_problem_and_domain_derived_predicates(std::move(problem_and_domain_derived_predicates)),
-    m_static_initial_literals(std::move(static_initial_literals)),
-    m_fluent_initial_literals(std::move(fluent_initial_literals)),
+    m_initial_literals(std::move(initial_literals)),
     m_static_initial_function_values(std::move(static_initial_function_values)),
     m_fluent_initial_function_values(std::move(fluent_initial_function_values)),
     m_auxiliary_function_value(auxiliary_function_value),
-    m_static_goal_condition(std::move(static_goal_condition)),
-    m_fluent_goal_condition(std::move(fluent_goal_condition)),
-    m_derived_goal_condition(std::move(derived_goal_condition)),
+    m_goal_condition(std::move(goal_condition)),
     m_numeric_goal_condition(std::move(numeric_goal_condition)),
     m_optimization_metric(std::move(optimization_metric)),
     m_axioms(std::move(axioms)),
     m_problem_and_domain_axioms(std::move(problem_and_domain_axioms)),
-    m_positive_static_initial_atoms(to_ground_atoms(m_static_initial_literals)),
+    m_positive_static_initial_atoms(to_ground_atoms(get_initial_literals<Static>())),
     m_positive_static_initial_atoms_bitset(),
     m_positive_static_initial_atoms_indices(),
     m_positive_static_initial_assignment_set(AssignmentSet<Static>(m_problem_and_domain_objects.size(), m_domain->get_predicates<Static>())),
     m_static_initial_numeric_assignment_set(NumericAssignmentSet<Static>(m_problem_and_domain_objects.size(), m_domain->get_function_skeletons<Static>())),
-    m_positive_fluent_initial_atoms(to_ground_atoms(m_fluent_initial_literals)),
+    m_positive_fluent_initial_atoms(to_ground_atoms(get_initial_literals<Fluent>())),
     m_static_function_to_value(),
     m_fluent_function_to_value(),
     m_static_goal_holds(false),
-    m_positive_static_goal_atoms(filter_ground_atoms(m_static_goal_condition, true)),
-    m_positive_fluent_goal_atoms(filter_ground_atoms(m_fluent_goal_condition, true)),
-    m_positive_derived_goal_atoms(filter_ground_atoms(m_derived_goal_condition, true)),
+    m_positive_static_goal_atoms(filter_ground_atoms(get_goal_condition<Static>(), true)),
+    m_positive_fluent_goal_atoms(filter_ground_atoms(get_goal_condition<Fluent>(), true)),
+    m_positive_derived_goal_atoms(filter_ground_atoms(get_goal_condition<Derived>(), true)),
     m_positive_static_goal_atoms_bitset(),
     m_positive_fluent_goal_atoms_bitset(),
     m_positive_derived_goal_atoms_bitset(),
     m_positive_static_goal_atoms_indices(),
     m_positive_fluent_goal_atoms_indices(),
     m_positive_derived_goal_atoms_indices(),
-    m_negative_static_goal_atoms(filter_ground_atoms(m_static_goal_condition, false)),
-    m_negative_fluent_goal_atoms(filter_ground_atoms(m_fluent_goal_condition, false)),
-    m_negative_derived_goal_atoms(filter_ground_atoms(m_derived_goal_condition, false)),
+    m_negative_static_goal_atoms(filter_ground_atoms(get_goal_condition<Static>(), false)),
+    m_negative_fluent_goal_atoms(filter_ground_atoms(get_goal_condition<Fluent>(), false)),
+    m_negative_derived_goal_atoms(filter_ground_atoms(get_goal_condition<Derived>(), false)),
     m_negative_static_goal_atoms_bitset(),
     m_negative_fluent_goal_atoms_bitset(),
     m_negative_derived_goal_atoms_bitset(),
@@ -119,23 +113,25 @@ ProblemImpl::ProblemImpl(Index index,
     m_negative_derived_goal_atoms_indices(),
     m_problem_and_domain_axiom_partitioning()
 {
-    assert(is_all_unique(m_objects));
-    assert(is_all_unique(m_derived_predicates));
-    assert(is_all_unique(m_static_initial_literals));
-    assert(is_all_unique(m_fluent_initial_literals));
+    assert(is_all_unique(get_objects()));
+    assert(is_all_unique(get_derived_predicates()));
+    assert(is_all_unique(get_initial_literals<Static>()));
+    assert(is_all_unique(get_initial_literals<Fluent>()));
     assert(is_all_unique(m_static_initial_function_values));
-    assert(is_all_unique(m_static_goal_condition));
-    assert(is_all_unique(m_fluent_goal_condition));
-    assert(is_all_unique(m_derived_goal_condition));
-    assert(is_all_unique(m_axioms));
-    assert(std::is_sorted(m_objects.begin(), m_objects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(
-        std::is_sorted(m_derived_predicates.begin(), m_derived_predicates.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(m_static_initial_literals.begin(),
-                          m_static_initial_literals.end(),
+    assert(is_all_unique(get_goal_condition<Static>()));
+    assert(is_all_unique(get_goal_condition<Fluent>()));
+    assert(is_all_unique(get_goal_condition<Derived>()));
+    assert(is_all_unique(get_numeric_goal_condition()));
+    assert(is_all_unique(get_axioms()));
+    assert(std::is_sorted(get_objects().begin(), get_objects().end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(get_derived_predicates().begin(),
+                          get_derived_predicates().end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(m_fluent_initial_literals.begin(),
-                          m_fluent_initial_literals.end(),
+    assert(std::is_sorted(get_initial_literals<Static>().begin(),
+                          get_initial_literals<Static>().end(),
+                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(get_initial_literals<Fluent>().begin(),
+                          get_initial_literals<Fluent>().end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(std::is_sorted(m_static_initial_function_values.begin(),
                           m_static_initial_function_values.end(),
@@ -143,19 +139,19 @@ ProblemImpl::ProblemImpl(Index index,
     assert(std::is_sorted(m_fluent_initial_function_values.begin(),
                           m_fluent_initial_function_values.end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(m_static_goal_condition.begin(),
-                          m_static_goal_condition.end(),
+    assert(std::is_sorted(get_goal_condition<Static>().begin(),
+                          get_goal_condition<Static>().end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(m_fluent_goal_condition.begin(),
-                          m_fluent_goal_condition.end(),
+    assert(std::is_sorted(get_goal_condition<Fluent>().begin(),
+                          get_goal_condition<Fluent>().end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(m_derived_goal_condition.begin(),
-                          m_derived_goal_condition.end(),
+    assert(std::is_sorted(get_goal_condition<Derived>().begin(),
+                          get_goal_condition<Derived>().end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(m_numeric_goal_condition.begin(),
-                          m_numeric_goal_condition.end(),
+    assert(std::is_sorted(get_numeric_goal_condition().begin(),
+                          get_numeric_goal_condition().end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(m_axioms.begin(), m_axioms.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(get_axioms().begin(), get_axioms().end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
 
     /* Initial state */
 
@@ -331,22 +327,13 @@ const PredicateList<Derived>& ProblemImpl::get_problem_and_domain_derived_predic
 template<StaticOrFluent P>
 const GroundLiteralList<P>& ProblemImpl::get_initial_literals() const
 {
-    if constexpr (std::is_same_v<P, Static>)
-    {
-        return m_static_initial_literals;
-    }
-    else if constexpr (std::is_same_v<P, Fluent>)
-    {
-        return m_fluent_initial_literals;
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "ProblemBuilder::get_initial_literals(): Missing implementation for StaticOrFluent type.");
-    }
+    return boost::hana::at_key(m_initial_literals, boost::hana::type<P> {});
 }
 
 template const GroundLiteralList<Static>& ProblemImpl::get_initial_literals() const;
 template const GroundLiteralList<Fluent>& ProblemImpl::get_initial_literals() const;
+
+const GroundLiteralLists<Static, Fluent>& ProblemImpl::get_hana_initial_literals() const { return m_initial_literals; }
 
 template<StaticOrFluent F>
 const GroundFunctionValueList<F>& ProblemImpl::get_initial_function_values() const
@@ -373,27 +360,14 @@ const std::optional<GroundFunctionValue<Auxiliary>>& ProblemImpl::get_auxiliary_
 template<StaticOrFluentOrDerived P>
 const GroundLiteralList<P>& ProblemImpl::get_goal_condition() const
 {
-    if constexpr (std::is_same_v<P, Static>)
-    {
-        return m_static_goal_condition;
-    }
-    else if constexpr (std::is_same_v<P, Fluent>)
-    {
-        return m_fluent_goal_condition;
-    }
-    else if constexpr (std::is_same_v<P, Derived>)
-    {
-        return m_derived_goal_condition;
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
-    }
+    return boost::hana::at_key(m_goal_condition, boost::hana::type<P> {});
 }
 
 template const GroundLiteralList<Static>& ProblemImpl::get_goal_condition<Static>() const;
 template const GroundLiteralList<Fluent>& ProblemImpl::get_goal_condition<Fluent>() const;
 template const GroundLiteralList<Derived>& ProblemImpl::get_goal_condition<Derived>() const;
+
+const GroundLiteralLists<Static, Fluent, Derived>& ProblemImpl::get_hana_goal_condition() const { return m_goal_condition; }
 
 const GroundNumericConstraintList& ProblemImpl::get_numeric_goal_condition() const { return m_numeric_goal_condition; }
 

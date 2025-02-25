@@ -39,6 +39,8 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
+    using Type = F;
+
     // moveable but not copyable
     GroundFunctionValueImpl(const GroundFunctionValueImpl& other) = delete;
     GroundFunctionValueImpl& operator=(const GroundFunctionValueImpl& other) = delete;

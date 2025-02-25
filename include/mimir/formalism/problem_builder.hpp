@@ -38,14 +38,11 @@ private:
     Requirements m_requirements;
     ObjectList m_objects;
     PredicateList<Derived> m_derived_predicates;
-    GroundLiteralList<Static> m_static_initial_literals;
-    GroundLiteralList<Fluent> m_fluent_initial_literals;
+    GroundLiteralLists<Static, Fluent> m_initial_literals;
     GroundFunctionValueList<Static> m_static_initial_function_values;
     GroundFunctionValueList<Fluent> m_fluent_initial_function_values;
     std::optional<GroundFunctionValue<Auxiliary>> m_auxiliary_function_value;
-    GroundLiteralList<Static> m_static_goal_condition;
-    GroundLiteralList<Fluent> m_fluent_goal_condition;
-    GroundLiteralList<Derived> m_derived_goal_condition;
+    GroundLiteralLists<Static, Fluent, Derived> m_goal_condition;
     GroundNumericConstraintList m_numeric_goal_condition;
     std::optional<OptimizationMetric> m_optimization_metric;
     AxiomList m_axioms;
@@ -81,11 +78,13 @@ public:
     PredicateList<Derived>& get_derived_predicates();
     template<StaticOrFluent P>
     GroundLiteralList<P>& get_initial_literals();
+    GroundLiteralLists<Static, Fluent>& get_hana_initial_literals();
     template<StaticOrFluent F>
     GroundFunctionValueList<F>& get_initial_function_values();
     std::optional<GroundFunctionValue<Auxiliary>>& get_auxiliary_function_value();
     template<StaticOrFluentOrDerived P>
     GroundLiteralList<P>& get_goal_condition();
+    GroundLiteralLists<Static, Fluent, Derived>& get_hana_goal_condition();
     GroundNumericConstraintList& get_numeric_goal_condition();
     std::optional<OptimizationMetric>& get_optimization_metric();
     AxiomList& get_axioms();

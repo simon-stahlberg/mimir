@@ -173,6 +173,8 @@ template<StaticOrFluentOrDerived P>
 using GroundLiteral = const GroundLiteralImpl<P>*;
 template<StaticOrFluentOrDerived P>
 using GroundLiteralList = std::vector<GroundLiteral<P>>;
+template<StaticOrFluentOrDerived... Ps>
+using GroundLiteralLists = boost::hana::map<boost::hana::pair<boost::hana::type<Ps>, GroundLiteralList<Ps>>...>;
 template<StaticOrFluentOrDerived P>
 using GroundLiteralSet = std::unordered_set<GroundLiteral<P>>;
 

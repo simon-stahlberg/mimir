@@ -43,14 +43,11 @@ ProblemBuilder::ProblemBuilder(Domain domain) :
     m_requirements(nullptr),
     m_objects(),
     m_derived_predicates(),
-    m_static_initial_literals(),
-    m_fluent_initial_literals(),
+    m_initial_literals(),
     m_static_initial_function_values(),
     m_fluent_initial_function_values(),
     m_auxiliary_function_value(std::nullopt),
-    m_static_goal_condition(),
-    m_fluent_goal_condition(),
-    m_derived_goal_condition(),
+    m_goal_condition(),
     m_numeric_goal_condition(),
     m_optimization_metric(nullptr),
     m_axioms()
@@ -67,13 +64,13 @@ ProblemBuilder::ProblemBuilder(Domain domain) :
 
 Problem ProblemBuilder::get_result(Index problem_index)
 {
-    auto problem_and_domain_objects = m_objects;
+    auto problem_and_domain_objects = get_objects();
     problem_and_domain_objects.insert(problem_and_domain_objects.end(), m_domain->get_constants().begin(), m_domain->get_constants().end());
     std::sort(problem_and_domain_objects.begin(), problem_and_domain_objects.end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
     verify_indexing_scheme(problem_and_domain_objects, "ProblemBuilder::get_result: problem_and_domain_objects must follow and indexing scheme");
-    std::sort(m_objects.begin(), m_objects.end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
+    std::sort(get_objects().begin(), get_objects().end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
 
-    auto problem_and_domain_derived_predicates = m_derived_predicates;
+    auto problem_and_domain_derived_predicates = get_derived_predicates();
     problem_and_domain_derived_predicates.insert(problem_and_domain_derived_predicates.end(),
                                                  m_domain->get_predicates<Derived>().begin(),
                                                  m_domain->get_predicates<Derived>().end());
@@ -82,10 +79,14 @@ Problem ProblemBuilder::get_result(Index problem_index)
               [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
     verify_indexing_scheme(problem_and_domain_derived_predicates,
                            "ProblemBuilder::get_result: problem_and_domain_derived_predicates must follow and indexing scheme");
-    std::sort(m_derived_predicates.begin(), m_derived_predicates.end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
+    std::sort(get_derived_predicates().begin(), get_derived_predicates().end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
 
-    std::sort(m_static_initial_literals.begin(), m_static_initial_literals.end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
-    std::sort(m_fluent_initial_literals.begin(), m_fluent_initial_literals.end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
+    std::sort(get_initial_literals<Static>().begin(),
+              get_initial_literals<Static>().end(),
+              [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
+    std::sort(get_initial_literals<Fluent>().begin(),
+              get_initial_literals<Fluent>().end(),
+              [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
 
     std::sort(m_static_initial_function_values.begin(),
               m_static_initial_function_values.end(),
@@ -94,14 +95,22 @@ Problem ProblemBuilder::get_result(Index problem_index)
               m_fluent_initial_function_values.end(),
               [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
 
-    std::sort(m_static_goal_condition.begin(), m_static_goal_condition.end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
-    std::sort(m_fluent_goal_condition.begin(), m_fluent_goal_condition.end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
-    std::sort(m_derived_goal_condition.begin(), m_derived_goal_condition.end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
-    std::sort(m_numeric_goal_condition.begin(), m_numeric_goal_condition.end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
+    std::sort(get_goal_condition<Static>().begin(),
+              get_goal_condition<Static>().end(),
+              [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
+    std::sort(get_goal_condition<Fluent>().begin(),
+              get_goal_condition<Fluent>().end(),
+              [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
+    std::sort(get_goal_condition<Derived>().begin(),
+              get_goal_condition<Derived>().end(),
+              [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
+    std::sort(get_numeric_goal_condition().begin(),
+              get_numeric_goal_condition().end(),
+              [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
 
-    auto problem_and_domain_axioms = m_axioms;
+    auto problem_and_domain_axioms = get_axioms();
     problem_and_domain_axioms.insert(problem_and_domain_axioms.end(), m_domain->get_axioms().begin(), m_domain->get_axioms().end());
-    std::sort(m_axioms.begin(), m_axioms.end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
+    std::sort(get_axioms().begin(), get_axioms().end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
 
     m_requirements = (m_requirements) ? m_requirements : m_repositories.get_or_create_requirements(loki::RequirementEnumSet { loki::RequirementEnum::STRIPS });
 
@@ -115,14 +124,11 @@ Problem ProblemBuilder::get_result(Index problem_index)
                                                         std::move(problem_and_domain_objects),
                                                         std::move(m_derived_predicates),
                                                         std::move(problem_and_domain_derived_predicates),
-                                                        std::move(m_static_initial_literals),
-                                                        std::move(m_fluent_initial_literals),
+                                                        std::move(m_initial_literals),
                                                         std::move(m_static_initial_function_values),
                                                         std::move(m_fluent_initial_function_values),
                                                         std::move(m_auxiliary_function_value),
-                                                        std::move(m_static_goal_condition),
-                                                        std::move(m_fluent_goal_condition),
-                                                        std::move(m_derived_goal_condition),
+                                                        std::move(m_goal_condition),
                                                         std::move(m_numeric_goal_condition),
                                                         std::move(m_optimization_metric),
                                                         std::move(m_axioms),
@@ -139,22 +145,13 @@ PredicateList<Derived>& ProblemBuilder::get_derived_predicates() { return m_deri
 template<StaticOrFluent P>
 GroundLiteralList<P>& ProblemBuilder::get_initial_literals()
 {
-    if constexpr (std::is_same_v<P, Static>)
-    {
-        return m_static_initial_literals;
-    }
-    else if constexpr (std::is_same_v<P, Fluent>)
-    {
-        return m_fluent_initial_literals;
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "ProblemBuilder::get_initial_literals(): Missing implementation for StaticOrFluent type.");
-    }
+    return boost::hana::at_key(m_initial_literals, boost::hana::type<P> {});
 }
 
 template GroundLiteralList<Static>& ProblemBuilder::get_initial_literals();
 template GroundLiteralList<Fluent>& ProblemBuilder::get_initial_literals();
+
+GroundLiteralLists<Static, Fluent>& ProblemBuilder::get_hana_initial_literals() { return m_initial_literals; }
 
 template<StaticOrFluent F>
 GroundFunctionValueList<F>& ProblemBuilder::get_initial_function_values()
@@ -180,27 +177,14 @@ std::optional<GroundFunctionValue<Auxiliary>>& ProblemBuilder::get_auxiliary_fun
 template<StaticOrFluentOrDerived P>
 GroundLiteralList<P>& ProblemBuilder::get_goal_condition()
 {
-    if constexpr (std::is_same_v<P, Static>)
-    {
-        return m_static_goal_condition;
-    }
-    else if constexpr (std::is_same_v<P, Fluent>)
-    {
-        return m_fluent_goal_condition;
-    }
-    else if constexpr (std::is_same_v<P, Derived>)
-    {
-        return m_derived_goal_condition;
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "ProblemBuilder::get_initial_function_values(): Missing implementation for StaticOrFluent type.");
-    }
+    return boost::hana::at_key(m_goal_condition, boost::hana::type<P> {});
 }
 
 template GroundLiteralList<Static>& ProblemBuilder::get_goal_condition();
 template GroundLiteralList<Fluent>& ProblemBuilder::get_goal_condition();
 template GroundLiteralList<Derived>& ProblemBuilder::get_goal_condition();
+
+GroundLiteralLists<Static, Fluent, Derived>& ProblemBuilder::get_hana_goal_condition() { return m_goal_condition; }
 
 GroundNumericConstraintList& ProblemBuilder::get_numeric_goal_condition() { return m_numeric_goal_condition; }
 std::optional<OptimizationMetric>& ProblemBuilder::get_optimization_metric() { return m_optimization_metric; }

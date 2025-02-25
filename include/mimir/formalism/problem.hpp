@@ -53,14 +53,11 @@ private:
     ObjectList m_problem_and_domain_objects;  ///< Includes domain constants
     PredicateList<Derived> m_derived_predicates;
     PredicateList<Derived> m_problem_and_domain_derived_predicates;  ///< Includes domain derived predicates
-    GroundLiteralList<Static> m_static_initial_literals;
-    GroundLiteralList<Fluent> m_fluent_initial_literals;
+    GroundLiteralLists<Static, Fluent> m_initial_literals;
     GroundFunctionValueList<Static> m_static_initial_function_values;
     GroundFunctionValueList<Fluent> m_fluent_initial_function_values;
     std::optional<GroundFunctionValue<Auxiliary>> m_auxiliary_function_value;
-    GroundLiteralList<Static> m_static_goal_condition;
-    GroundLiteralList<Fluent> m_fluent_goal_condition;
-    GroundLiteralList<Derived> m_derived_goal_condition;
+    GroundLiteralLists<Static, Fluent, Derived> m_goal_condition;
     GroundNumericConstraintList m_numeric_goal_condition;
     std::optional<OptimizationMetric> m_optimization_metric;
     AxiomList m_axioms;
@@ -138,14 +135,11 @@ private:
                 ObjectList problem_and_domain_objects,
                 PredicateList<Derived> derived_predicates,
                 PredicateList<Derived> problem_and_domain_derived_predicates,
-                GroundLiteralList<Static> static_initial_literals,
-                GroundLiteralList<Fluent> fluent_initial_literals,
+                GroundLiteralLists<Static, Fluent> initial_literals,
                 GroundFunctionValueList<Static> static_initial_function_values,
                 GroundFunctionValueList<Fluent> fluent_initial_function_values,
                 std::optional<GroundFunctionValue<Auxiliary>> auxiliary_function_value,
-                GroundLiteralList<Static> static_goal_condition,
-                GroundLiteralList<Fluent> fluent_goal_condition,
-                GroundLiteralList<Derived> derived_goal_condition,
+                GroundLiteralLists<Static, Fluent, Derived> goal_condition,
                 GroundNumericConstraintList numeric_goal_condition,
                 std::optional<OptimizationMetric> optimization_metric,
                 AxiomList axioms,
@@ -175,11 +169,13 @@ public:
     const PredicateList<Derived>& get_problem_and_domain_derived_predicates() const;
     template<StaticOrFluent P>
     const GroundLiteralList<P>& get_initial_literals() const;
+    const GroundLiteralLists<Static, Fluent>& get_hana_initial_literals() const;
     template<StaticOrFluent F>
     const GroundFunctionValueList<F>& get_initial_function_values() const;
     const std::optional<GroundFunctionValue<Auxiliary>>& get_auxiliary_function_value() const;
     template<StaticOrFluentOrDerived P>
     const GroundLiteralList<P>& get_goal_condition() const;
+    const GroundLiteralLists<Static, Fluent, Derived>& get_hana_goal_condition() const;
     const GroundNumericConstraintList& get_numeric_goal_condition() const;
     const std::optional<OptimizationMetric>& get_optimization_metric() const;
     const AxiomList& get_axioms() const;
@@ -284,18 +280,18 @@ public:
     /// @return a tuple containing const references to the members defining the object's identity.
     auto identifying_members() const
     {
-        return std::forward_as_tuple(std::as_const(m_domain),
-                                     std::as_const(m_requirements),
-                                     std::as_const(m_objects),
-                                     std::as_const(m_derived_predicates),
-                                     std::as_const(m_static_initial_literals),
-                                     std::as_const(m_fluent_initial_literals),
+        return std::forward_as_tuple(std::as_const(get_domain()),
+                                     std::as_const(get_requirements()),
+                                     std::as_const(get_objects()),
+                                     std::as_const(get_derived_predicates()),
+                                     std::as_const(get_initial_literals<Static>()),
+                                     std::as_const(get_initial_literals<Fluent>()),
                                      std::as_const(m_static_initial_function_values),
                                      std::as_const(m_fluent_initial_function_values),
                                      std::as_const(m_auxiliary_function_value),
-                                     std::as_const(m_static_goal_condition),
-                                     std::as_const(m_fluent_goal_condition),
-                                     std::as_const(m_derived_goal_condition),
+                                     std::as_const(get_goal_condition<Static>()),
+                                     std::as_const(get_goal_condition<Fluent>()),
+                                     std::as_const(get_goal_condition<Derived>()),
                                      std::as_const(m_numeric_goal_condition),
                                      std::as_const(m_optimization_metric),
                                      std::as_const(m_axioms));

@@ -58,11 +58,11 @@ Domain DomainBuilder::get_result()
               [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
     verify_indexing_scheme(get_function_skeletons<Fluent>(), "DomainBuilder::get_result: functions must follow and indexing scheme.");
 
-    std::sort(m_actions.begin(), m_actions.end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
-    verify_indexing_scheme(m_actions, "DomainBuilder::get_result: actions must follow and indexing scheme.");
+    std::sort(get_actions().begin(), get_actions().end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
+    verify_indexing_scheme(get_actions(), "DomainBuilder::get_result: actions must follow and indexing scheme.");
 
-    std::sort(m_axioms.begin(), m_axioms.end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
-    verify_indexing_scheme(m_axioms, "DomainBuilder::get_result: axioms must follow and indexing scheme.");
+    std::sort(get_axioms().begin(), get_axioms().end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
+    verify_indexing_scheme(get_axioms(), "DomainBuilder::get_result: axioms must follow and indexing scheme.");
 
     m_requirements = (m_requirements) ? m_requirements : m_repositories.get_or_create_requirements(loki::RequirementEnumSet { loki::RequirementEnum::STRIPS });
 

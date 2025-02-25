@@ -40,7 +40,7 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
-    using Category = P;
+    using Type = P;
 
     // moveable but not copyable
     GroundAtomImpl(const GroundAtomImpl& other) = delete;

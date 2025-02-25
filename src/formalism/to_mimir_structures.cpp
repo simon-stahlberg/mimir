@@ -948,73 +948,44 @@ Problem ToMimirStructures::translate(const loki::Problem& problem, ProblemBuilde
     const auto requirements = translate_common(problem->get_requirements(), repositories);
 
     /* Objects section */
-    const auto objects = translate_common(problem->get_objects(), repositories);
+    auto objects = translate_common(problem->get_objects(), repositories);
 
     /* Predicates section */
-    const auto predicates = translate_common(problem->get_predicates(), repositories);
-    auto static_predicates = PredicateList<Static> {};
-    auto fluent_predicates = PredicateList<Fluent> {};
-    auto derived_predicates = PredicateList<Derived> {};
+    auto predicates = PredicateLists<Static, Fluent, Derived> {};
     for (const auto& static_or_fluent_or_derived_predicate : translate_common(problem->get_predicates(), repositories))
     {
         std::visit(
-            [&static_predicates, &fluent_predicates, &derived_predicates](auto&& arg)
+            [&predicates](auto&& arg)
             {
-                using T = std::decay_t<decltype(arg)>;
-                if constexpr (std::is_same_v<T, Predicate<Static>>)
-                {
-                    static_predicates.push_back(arg);
-                }
-                else if constexpr (std::is_same_v<T, Predicate<Fluent>>)
-                {
-                    fluent_predicates.push_back(arg);
-                }
-                else if constexpr (std::is_same_v<T, Predicate<Derived>>)
-                {
-                    derived_predicates.push_back(arg);
-                }
-                else
-                {
-                    static_assert(dependent_false<T>::value, "ToMimirStructures::translate_lifted: Missing implementation for Predicate type.");
-                }
+                using Type = typename std::decay_t<decltype(*arg)>::Type;
+
+                boost::hana::at_key(predicates, boost::hana::type<Type> {}).push_back(arg);
             },
             static_or_fluent_or_derived_predicate);
     }
-    assert(static_predicates.empty());
-    assert(fluent_predicates.empty());
+    assert(boost::hana::at_key(predicates, boost::hana::type<Static> {}).empty());
+    assert(boost::hana::at_key(predicates, boost::hana::type<Fluent> {}).empty());
+    auto derived_predicates = boost::hana::at_key(predicates, boost::hana::type<Derived> {});
 
     /* Initial section */
-    auto static_initial_literals = GroundLiteralList<Static> {};
-    auto fluent_initial_literals = GroundLiteralList<Fluent> {};
-    auto derived_initial_literals = GroundLiteralList<Derived> {};
+    auto tmp_initial_literals = GroundLiteralLists<Static, Fluent, Derived> {};
     for (const auto& static_or_fluent_or_derived_ground_literal : translate_grounded(problem->get_initial_literals(), repositories))
     {
         std::visit(
-            [&static_initial_literals, &fluent_initial_literals, &derived_initial_literals](auto&& arg)
+            [&tmp_initial_literals](auto&& arg)
             {
-                using T = std::decay_t<decltype(arg)>;
-                if constexpr (std::is_same_v<T, GroundLiteral<Static>>)
-                {
-                    static_initial_literals.push_back(arg);
-                }
-                else if constexpr (std::is_same_v<T, GroundLiteral<Fluent>>)
-                {
-                    fluent_initial_literals.push_back(arg);
-                }
-                else if constexpr (std::is_same_v<T, GroundLiteral<Derived>>)
-                {
-                    derived_initial_literals.push_back(arg);
-                }
-                else
-                {
-                    static_assert(dependent_false<T>::value, "ToMimirStructures::translate_lifted: Missing implementation for GroundLiteral type.");
-                }
+                using Type = typename std::decay_t<decltype(*arg)>::Type;
+
+                boost::hana::at_key(tmp_initial_literals, boost::hana::type<Type> {}).push_back(arg);
             },
             static_or_fluent_or_derived_ground_literal);
     }
-    static_initial_literals = uniquify_elements(static_initial_literals);  ///< filter duplicates
-    fluent_initial_literals = uniquify_elements(fluent_initial_literals);  ///< filter duplicates
-    assert(derived_initial_literals.empty());
+    auto initial_literals = GroundLiteralLists<Static, Fluent> {};
+    boost::hana::at_key(initial_literals, boost::hana::type<Static> {}) =
+        uniquify_elements(boost::hana::at_key(tmp_initial_literals, boost::hana::type<Static> {}));  ///< filter duplicates
+    boost::hana::at_key(initial_literals, boost::hana::type<Fluent> {}) =
+        uniquify_elements(boost::hana::at_key(tmp_initial_literals, boost::hana::type<Fluent> {}));  ///< filter duplicates
+    assert(boost::hana::at_key(tmp_initial_literals, boost::hana::type<Derived> {}).empty());        ///< ensure that no derived ground atom appears in initial
 
     auto static_function_values = GroundFunctionValueList<Static> {};
     auto fluent_function_values = GroundFunctionValueList<Fluent> {};
@@ -1047,18 +1018,16 @@ Problem ToMimirStructures::translate(const loki::Problem& problem, ProblemBuilde
     }
 
     /* Goal section */
-    auto static_goal_literals = GroundLiteralList<Static> {};
-    auto fluent_goal_literals = GroundLiteralList<Fluent> {};
-    auto derived_goal_literals = GroundLiteralList<Derived> {};
+    auto goal_literals = GroundLiteralLists<Static, Fluent, Derived> {};
     auto numeric_goal_constraints = GroundNumericConstraintList {};
     if (problem->get_goal_condition().has_value())
     {
         const auto [static_goal_literals_, fluent_goal_literals_, derived_goal_literals_, numeric_goal_constraints_] =
             translate_grounded(problem->get_goal_condition().value(), repositories);
 
-        static_goal_literals = static_goal_literals_;
-        fluent_goal_literals = fluent_goal_literals_;
-        derived_goal_literals = derived_goal_literals_;
+        boost::hana::at_key(goal_literals, boost::hana::type<Static> {}) = static_goal_literals_;
+        boost::hana::at_key(goal_literals, boost::hana::type<Fluent> {}) = fluent_goal_literals_;
+        boost::hana::at_key(goal_literals, boost::hana::type<Derived> {}) = derived_goal_literals_;
         numeric_goal_constraints = numeric_goal_constraints_;
     }
 
@@ -1075,14 +1044,11 @@ Problem ToMimirStructures::translate(const loki::Problem& problem, ProblemBuilde
     builder.get_requirements() = requirements;
     builder.get_objects() = std::move(objects);
     builder.get_derived_predicates() = std::move(derived_predicates);
-    builder.get_initial_literals<Static>() = std::move(static_initial_literals);
-    builder.get_initial_literals<Fluent>() = std::move(fluent_initial_literals);
+    builder.get_hana_initial_literals() = std::move(initial_literals);
     builder.get_initial_function_values<Static>() = std::move(static_function_values);
     builder.get_initial_function_values<Fluent>() = std::move(fluent_function_values);
     builder.get_auxiliary_function_value() = auxiliary_function_value;
-    builder.get_goal_condition<Static>() = std::move(static_goal_literals);
-    builder.get_goal_condition<Fluent>() = std::move(fluent_goal_literals);
-    builder.get_goal_condition<Derived>() = std::move(derived_goal_literals);
+    builder.get_hana_goal_condition() = std::move(goal_literals);
     builder.get_numeric_goal_condition() = std::move(numeric_goal_constraints);
     builder.get_optimization_metric() = metric;
     builder.get_axioms() = std::move(axioms);
