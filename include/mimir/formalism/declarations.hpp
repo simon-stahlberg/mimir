@@ -20,6 +20,7 @@
 
 // Do not include headers with transitive dependencies.
 #include "mimir/common/types.hpp"
+#include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/tags.hpp"
 
 #include <cassert>

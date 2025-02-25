@@ -35,8 +35,6 @@ namespace mimir
  * ProblemGraph
  */
 
-using ProblemContextList = std::vector<ProblemContext>;
-
 /// @brief `ProblemVertex` encapsulates information about a state in the context of a `GeneralizedStateSpace`.
 /// The `Index` is the index of the corresponding `ClassVertex` in the `GeneralizedStateSpace`.
 /// The `State` is the underlying planning state.

@@ -41,37 +41,38 @@ int main(int argc, char** argv)
 
     std::cout << "Parsing PDDL files..." << std::endl;
 
-    auto problem_context = ProblemContext(domain_file_path, problem_file_path);
+    auto problem = ProblemImpl::create(domain_file_path, problem_file_path);
 
     if (debug)
     {
         std::cout << "Domain:" << std::endl;
-        std::cout << *problem_context.get_problem()->get_domain() << std::endl;
+        std::cout << problem->get_domain() << std::endl;
 
         std::cout << std::endl;
         std::cout << "Problem:" << std::endl;
-        std::cout << *problem_context.get_problem() << std::endl;
+        std::cout << *problem << std::endl;
 
         std::cout << std::endl;
         std::cout << "Static Predicates:" << std::endl;
-        std::cout << problem_context.get_problem()->get_domain()->get_predicates<Static>() << std::endl;
+        std::cout << problem->get_domain()->get_predicates<Static>() << std::endl;
 
         std::cout << std::endl;
         std::cout << "Fluent Predicates:" << std::endl;
-        std::cout << problem_context.get_problem()->get_domain()->get_predicates<Fluent>() << std::endl;
+        std::cout << problem->get_domain()->get_predicates<Fluent>() << std::endl;
 
         std::cout << std::endl;
         std::cout << "Derived Predicates:" << std::endl;
-        std::cout << problem_context.get_problem()->get_domain()->get_predicates<Derived>() << std::endl;
+        std::cout << problem->get_domain()->get_predicates<Derived>() << std::endl;
         std::cout << std::endl;
     }
 
     auto applicable_action_generator = ApplicableActionGenerator(nullptr);
     auto axiom_evaluator = AxiomEvaluator(nullptr);
     auto state_repository = StateRepository(nullptr);
+
     if (grounded)
     {
-        auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(problem_context);
+        auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(problem);
         applicable_action_generator =
             std::dynamic_pointer_cast<IApplicableActionGenerator>(delete_relaxed_problem_explorator.create_grounded_applicable_action_generator(
                 match_tree::Options(),
@@ -84,10 +85,21 @@ int main(int argc, char** argv)
     else
     {
         applicable_action_generator = std::dynamic_pointer_cast<IApplicableActionGenerator>(
-            std::make_shared<LiftedApplicableActionGenerator>(problem_context, std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>(false)));
+            std::make_shared<LiftedApplicableActionGenerator>(problem, std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>(false)));
         axiom_evaluator = std::dynamic_pointer_cast<IAxiomEvaluator>(
-            std::make_shared<LiftedAxiomEvaluator>(problem_context, std::make_shared<DefaultLiftedAxiomEvaluatorEventHandler>(false)));
+            std::make_shared<LiftedAxiomEvaluator>(problem, std::make_shared<DefaultLiftedAxiomEvaluatorEventHandler>(false)));
         state_repository = std::make_shared<StateRepositoryImpl>(axiom_evaluator);
+    }
+
+    if (debug)
+    {
+        std::shared_ptr<LiftedApplicableActionGenerator> lifted_applicable_action_generator =
+            std::dynamic_pointer_cast<LiftedApplicableActionGenerator>(applicable_action_generator);
+
+        if (lifted_applicable_action_generator)
+        {
+            // std::cout << *lifted_applicable_action_generator << std::endl;
+        }
     }
 
     if (debug)
@@ -104,7 +116,7 @@ int main(int argc, char** argv)
     auto event_handler = (debug) ? BrFSAlgorithmEventHandler { std::make_shared<DebugBrFSAlgorithmEventHandler>(false) } :
                                    BrFSAlgorithmEventHandler { std::make_shared<DefaultBrFSAlgorithmEventHandler>(false) };
 
-    auto search_context = SearchContext(problem_context, applicable_action_generator, state_repository);
+    auto search_context = SearchContext(problem, applicable_action_generator, state_repository);
 
     auto result = find_solution_brfs(search_context, std::nullopt, event_handler);
 
@@ -120,7 +132,7 @@ int main(int argc, char** argv)
             std::cerr << "Error opening file!" << std::endl;
             return 1;
         }
-        plan_file << std::make_tuple(std::cref(result.plan.value()), std::cref(*problem_context.get_repositories()));
+        plan_file << std::make_tuple(std::cref(result.plan.value()), std::cref(*problem));
         plan_file.close();
     }
 

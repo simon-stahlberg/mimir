@@ -50,6 +50,8 @@ public:
 
     SearchContext(Problem problem, ApplicableActionGenerator applicable_action_generator, StateRepository state_repository);
 
+    static std::vector<SearchContext> create(const ProblemList& problems, const Options& options = Options());
+
     const Problem& get_problem() const;
     const ApplicableActionGenerator get_applicable_action_generator() const;
     const StateRepository get_state_repository() const;

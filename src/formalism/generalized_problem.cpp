@@ -35,6 +35,17 @@ GeneralizedProblem::GeneralizedProblem(const fs::path& domain_filepath, const st
     }
 }
 
+GeneralizedProblem::GeneralizedProblem(const fs::path& domain_filepath, const fs::path& problems_directory, const loki::Options& options)
+{
+    auto parser = Parser(domain_filepath, options);
+    auto domain_translation_result = translate(parser.get_domain());
+    for (const auto& problem_filepath : fs::directory_iterator(problems_directory))
+    {
+        auto problem = parser.parse_problem(problem_filepath, options);
+        m_problems.push_back(translate(problem, domain_translation_result));
+    }
+}
+
 const ProblemList& GeneralizedProblem::get_problems() const { return m_problems; }
 
 }

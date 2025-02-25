@@ -29,6 +29,7 @@ private:
 
 public:
     GeneralizedProblem(const fs::path& domain_filepath, const std::vector<fs::path>& problem_filepaths, const loki::Options& options = loki::Options());
+    GeneralizedProblem(const fs::path& domain_filepath, const fs::path& problems_directory, const loki::Options& options = loki::Options());
 
     const ProblemList& get_problems() const;
 };

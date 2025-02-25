@@ -148,10 +148,5 @@ int main(int argc, char** argv)
         plan_file.close();
     }
 
-    for (const auto& ground_axiom : problem->get_ground_axioms())
-    {
-        // std::cout << std::make_tuple(ground_axiom, std::cref(*problem)) << std::endl;
-    }
-
     return 0;
 }

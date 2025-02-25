@@ -91,24 +91,12 @@ ProblemImpl::ProblemImpl(Index index,
     m_static_function_to_value(),
     m_fluent_function_to_value(),
     m_static_goal_holds(false),
-    m_positive_static_goal_atoms(filter_ground_atoms(get_goal_condition<Static>(), true)),
-    m_positive_fluent_goal_atoms(filter_ground_atoms(get_goal_condition<Fluent>(), true)),
-    m_positive_derived_goal_atoms(filter_ground_atoms(get_goal_condition<Derived>(), true)),
-    m_positive_static_goal_atoms_bitset(),
-    m_positive_fluent_goal_atoms_bitset(),
-    m_positive_derived_goal_atoms_bitset(),
-    m_positive_static_goal_atoms_indices(),
-    m_positive_fluent_goal_atoms_indices(),
-    m_positive_derived_goal_atoms_indices(),
-    m_negative_static_goal_atoms(filter_ground_atoms(get_goal_condition<Static>(), false)),
-    m_negative_fluent_goal_atoms(filter_ground_atoms(get_goal_condition<Fluent>(), false)),
-    m_negative_derived_goal_atoms(filter_ground_atoms(get_goal_condition<Derived>(), false)),
-    m_negative_static_goal_atoms_bitset(),
-    m_negative_fluent_goal_atoms_bitset(),
-    m_negative_derived_goal_atoms_bitset(),
-    m_negative_static_goal_atoms_indices(),
-    m_negative_fluent_goal_atoms_indices(),
-    m_negative_derived_goal_atoms_indices(),
+    m_positive_goal_atoms(),
+    m_positive_goal_atoms_bitset(),
+    m_positive_goal_atoms_indices(),
+    m_negative_goal_atoms(),
+    m_negative_goal_atoms_bitset(),
+    m_negative_goal_atoms_indices(),
     m_problem_and_domain_axiom_partitioning()
 {
     assert(is_all_unique(get_objects()));
@@ -218,47 +206,36 @@ ProblemImpl::ProblemImpl(Index index,
         }
     }
 
-    for (const auto& literal : get_goal_condition<Static>())
-    {
-        literal->is_negated() ? m_negative_static_goal_atoms_bitset.set(literal->get_atom()->get_index()) :
-                                m_positive_static_goal_atoms_bitset.set(literal->get_atom()->get_index());
-    }
-    std::transform(m_negative_static_goal_atoms_bitset.begin(),
-                   m_negative_static_goal_atoms_bitset.end(),
-                   std::back_inserter(m_negative_static_goal_atoms_indices),
-                   [](unsigned long val) { return static_cast<Index>(val); });
-    std::transform(m_positive_static_goal_atoms_bitset.begin(),
-                   m_positive_static_goal_atoms_bitset.end(),
-                   std::back_inserter(m_positive_static_goal_atoms_indices),
-                   [](unsigned long val) { return static_cast<Index>(val); });
+    boost::hana::for_each(get_hana_goal_condition(),
+                          [this](auto&& pair)
+                          {
+                              const auto& key = boost::hana::first(pair);
+                              const auto& value = boost::hana::second(pair);
 
-    for (const auto& literal : get_goal_condition<Fluent>())
-    {
-        literal->is_negated() ? m_negative_fluent_goal_atoms_bitset.set(literal->get_atom()->get_index()) :
-                                m_positive_fluent_goal_atoms_bitset.set(literal->get_atom()->get_index());
-    }
-    std::transform(m_negative_fluent_goal_atoms_bitset.begin(),
-                   m_negative_fluent_goal_atoms_bitset.end(),
-                   std::back_inserter(m_negative_fluent_goal_atoms_indices),
-                   [](unsigned long val) { return static_cast<Index>(val); });
-    std::transform(m_positive_fluent_goal_atoms_bitset.begin(),
-                   m_positive_fluent_goal_atoms_bitset.end(),
-                   std::back_inserter(m_positive_fluent_goal_atoms_indices),
-                   [](unsigned long val) { return static_cast<Index>(val); });
+                              boost::hana::at_key(m_negative_goal_atoms, key) = filter_ground_atoms(value, false);
+                              boost::hana::at_key(m_positive_goal_atoms, key) = filter_ground_atoms(value, true);
 
-    for (const auto& literal : get_goal_condition<Derived>())
-    {
-        literal->is_negated() ? m_negative_derived_goal_atoms_bitset.set(literal->get_atom()->get_index()) :
-                                m_positive_derived_goal_atoms_bitset.set(literal->get_atom()->get_index());
-    }
-    std::transform(m_negative_derived_goal_atoms_bitset.begin(),
-                   m_negative_derived_goal_atoms_bitset.end(),
-                   std::back_inserter(m_negative_derived_goal_atoms_indices),
-                   [](unsigned long val) { return static_cast<Index>(val); });
-    std::transform(m_positive_derived_goal_atoms_bitset.begin(),
-                   m_positive_derived_goal_atoms_bitset.end(),
-                   std::back_inserter(m_positive_derived_goal_atoms_indices),
-                   [](unsigned long val) { return static_cast<Index>(val); });
+                              for (const auto& literal : value)
+                              {
+                                  if (literal->is_negated())
+                                  {
+                                      boost::hana::at_key(m_negative_goal_atoms_bitset, key).set(literal->get_atom()->get_index());
+                                  }
+                                  else
+                                  {
+                                      boost::hana::at_key(m_positive_goal_atoms_bitset, key).set(literal->get_atom()->get_index());
+                                  }
+                              }
+
+                              for (const auto& atom_index : boost::hana::at_key(m_negative_goal_atoms_bitset, key))
+                              {
+                                  boost::hana::at_key(m_negative_goal_atoms_indices, key).push_back(atom_index);
+                              }
+                              for (const auto& atom_index : boost::hana::at_key(m_positive_goal_atoms_bitset, key))
+                              {
+                                  boost::hana::at_key(m_positive_goal_atoms_indices, key).push_back(atom_index);
+                              }
+                          });
 
     /* Axioms */
 
@@ -434,22 +411,7 @@ bool ProblemImpl::static_literal_holds(const GroundLiteral<Static> literal) cons
 template<StaticOrFluentOrDerived P>
 const GroundAtomList<P>& ProblemImpl::get_positive_goal_atoms() const
 {
-    if constexpr (std::is_same_v<P, Static>)
-    {
-        return m_positive_static_goal_atoms;
-    }
-    else if constexpr (std::is_same_v<P, Fluent>)
-    {
-        return m_positive_fluent_goal_atoms;
-    }
-    else if constexpr (std::is_same_v<P, Derived>)
-    {
-        return m_positive_derived_goal_atoms;
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
-    }
+    return boost::hana::at_key(m_positive_goal_atoms, boost::hana::type<P> {});
 }
 
 template const GroundAtomList<Static>& ProblemImpl::get_positive_goal_atoms<Static>() const;
@@ -459,22 +421,7 @@ template const GroundAtomList<Derived>& ProblemImpl::get_positive_goal_atoms<Der
 template<StaticOrFluentOrDerived P>
 const FlatBitset& ProblemImpl::get_positive_goal_atoms_bitset() const
 {
-    if constexpr (std::is_same_v<P, Static>)
-    {
-        return m_positive_static_goal_atoms_bitset;
-    }
-    else if constexpr (std::is_same_v<P, Fluent>)
-    {
-        return m_positive_fluent_goal_atoms_bitset;
-    }
-    else if constexpr (std::is_same_v<P, Derived>)
-    {
-        return m_positive_derived_goal_atoms_bitset;
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
-    }
+    return boost::hana::at_key(m_positive_goal_atoms_bitset, boost::hana::type<P> {});
 }
 
 template const FlatBitset& ProblemImpl::get_positive_goal_atoms_bitset<Static>() const;
@@ -484,22 +431,7 @@ template const FlatBitset& ProblemImpl::get_positive_goal_atoms_bitset<Derived>(
 template<StaticOrFluentOrDerived P>
 const FlatIndexList& ProblemImpl::get_positive_goal_atoms_indices() const
 {
-    if constexpr (std::is_same_v<P, Static>)
-    {
-        return m_positive_static_goal_atoms_indices;
-    }
-    else if constexpr (std::is_same_v<P, Fluent>)
-    {
-        return m_positive_fluent_goal_atoms_indices;
-    }
-    else if constexpr (std::is_same_v<P, Derived>)
-    {
-        return m_positive_derived_goal_atoms_indices;
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
-    }
+    return boost::hana::at_key(m_positive_goal_atoms_indices, boost::hana::type<P> {});
 }
 
 template const FlatIndexList& ProblemImpl::get_positive_goal_atoms_indices<Static>() const;
@@ -509,22 +441,7 @@ template const FlatIndexList& ProblemImpl::get_positive_goal_atoms_indices<Deriv
 template<StaticOrFluentOrDerived P>
 const GroundAtomList<P>& ProblemImpl::get_negative_goal_atoms() const
 {
-    if constexpr (std::is_same_v<P, Static>)
-    {
-        return m_negative_static_goal_atoms;
-    }
-    else if constexpr (std::is_same_v<P, Fluent>)
-    {
-        return m_negative_fluent_goal_atoms;
-    }
-    else if constexpr (std::is_same_v<P, Derived>)
-    {
-        return m_negative_derived_goal_atoms;
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
-    }
+    return boost::hana::at_key(m_negative_goal_atoms, boost::hana::type<P> {});
 }
 
 template const GroundAtomList<Static>& ProblemImpl::get_negative_goal_atoms<Static>() const;
@@ -534,22 +451,7 @@ template const GroundAtomList<Derived>& ProblemImpl::get_negative_goal_atoms<Der
 template<StaticOrFluentOrDerived P>
 const FlatBitset& ProblemImpl::get_negative_goal_atoms_bitset() const
 {
-    if constexpr (std::is_same_v<P, Static>)
-    {
-        return m_negative_static_goal_atoms_bitset;
-    }
-    else if constexpr (std::is_same_v<P, Fluent>)
-    {
-        return m_negative_fluent_goal_atoms_bitset;
-    }
-    else if constexpr (std::is_same_v<P, Derived>)
-    {
-        return m_negative_derived_goal_atoms_bitset;
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
-    }
+    return boost::hana::at_key(m_negative_goal_atoms_bitset, boost::hana::type<P> {});
 }
 
 template const FlatBitset& ProblemImpl::get_negative_goal_atoms_bitset<Static>() const;
@@ -559,22 +461,7 @@ template const FlatBitset& ProblemImpl::get_negative_goal_atoms_bitset<Derived>(
 template<StaticOrFluentOrDerived P>
 const FlatIndexList& ProblemImpl::get_negative_goal_atoms_indices() const
 {
-    if constexpr (std::is_same_v<P, Static>)
-    {
-        return m_negative_static_goal_atoms_indices;
-    }
-    else if constexpr (std::is_same_v<P, Fluent>)
-    {
-        return m_negative_fluent_goal_atoms_indices;
-    }
-    else if constexpr (std::is_same_v<P, Derived>)
-    {
-        return m_negative_derived_goal_atoms_indices;
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
-    }
+    return boost::hana::at_key(m_negative_goal_atoms_indices, boost::hana::type<P> {});
 }
 
 template const FlatIndexList& ProblemImpl::get_negative_goal_atoms_indices<Static>() const;

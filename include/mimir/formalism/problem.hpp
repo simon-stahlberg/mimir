@@ -101,25 +101,13 @@ private:
     /* Goal */
     bool m_static_goal_holds;
 
-    GroundAtomList<Static> m_positive_static_goal_atoms;
-    GroundAtomList<Fluent> m_positive_fluent_goal_atoms;
-    GroundAtomList<Derived> m_positive_derived_goal_atoms;
-    FlatBitset m_positive_static_goal_atoms_bitset;
-    FlatBitset m_positive_fluent_goal_atoms_bitset;
-    FlatBitset m_positive_derived_goal_atoms_bitset;
-    FlatIndexList m_positive_static_goal_atoms_indices;
-    FlatIndexList m_positive_fluent_goal_atoms_indices;
-    FlatIndexList m_positive_derived_goal_atoms_indices;
+    GroundAtomLists<Static, Fluent, Derived> m_positive_goal_atoms;
+    FlatBitsets<Static, Fluent, Derived> m_positive_goal_atoms_bitset;
+    FlatIndexLists<Static, Fluent, Derived> m_positive_goal_atoms_indices;
 
-    GroundAtomList<Static> m_negative_static_goal_atoms;
-    GroundAtomList<Fluent> m_negative_fluent_goal_atoms;
-    GroundAtomList<Derived> m_negative_derived_goal_atoms;
-    FlatBitset m_negative_static_goal_atoms_bitset;
-    FlatBitset m_negative_fluent_goal_atoms_bitset;
-    FlatBitset m_negative_derived_goal_atoms_bitset;
-    FlatIndexList m_negative_static_goal_atoms_indices;
-    FlatIndexList m_negative_fluent_goal_atoms_indices;
-    FlatIndexList m_negative_derived_goal_atoms_indices;
+    GroundAtomLists<Static, Fluent, Derived> m_negative_goal_atoms;
+    FlatBitsets<Static, Fluent, Derived> m_negative_goal_atoms_bitset;
+    FlatIndexLists<Static, Fluent, Derived> m_negative_goal_atoms_indices;
 
     /* Axioms */
     std::vector<AxiomPartition> m_problem_and_domain_axiom_partitioning;  ///< Obtained from stratification

@@ -39,37 +39,65 @@ int main(int argc, char** argv)
 
     std::cout << "Parsing PDDL files..." << std::endl;
 
-    auto parser = PDDLParser(domain_file_path, problem_file_path);
+    auto problem = ProblemImpl::create(domain_file_path, problem_file_path);
 
-    std::cout << "Domain:" << std::endl;
-    std::cout << *parser.get_domain() << std::endl;
+    if (debug)
+    {
+        std::cout << "Domain:" << std::endl;
+        std::cout << problem->get_domain() << std::endl;
 
-    std::cout << std::endl;
-    std::cout << "Problem:" << std::endl;
-    std::cout << *parser.get_problem() << std::endl;
+        std::cout << std::endl;
+        std::cout << "Problem:" << std::endl;
+        std::cout << *problem << std::endl;
 
-    auto grounder = std::make_shared<Grounder>(parser.get_problem(), parser.get_pddl_repositories());
+        std::cout << std::endl;
+        std::cout << "Static Predicates:" << std::endl;
+        std::cout << problem->get_domain()->get_predicates<Static>() << std::endl;
+
+        std::cout << std::endl;
+        std::cout << "Fluent Predicates:" << std::endl;
+        std::cout << problem->get_domain()->get_predicates<Fluent>() << std::endl;
+
+        std::cout << std::endl;
+        std::cout << "Derived Predicates:" << std::endl;
+        std::cout << problem->get_domain()->get_predicates<Derived>() << std::endl;
+        std::cout << std::endl;
+    }
+
     auto applicable_action_generator = ApplicableActionGenerator(nullptr);
     auto axiom_evaluator = AxiomEvaluator(nullptr);
     auto state_repository = StateRepository(nullptr);
+
     if (grounded)
     {
-        auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(grounder);
+        auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(problem);
         applicable_action_generator =
             std::dynamic_pointer_cast<IApplicableActionGenerator>(delete_relaxed_problem_explorator.create_grounded_applicable_action_generator(
+                match_tree::Options(),
                 std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>(false)));
         axiom_evaluator = std::dynamic_pointer_cast<IAxiomEvaluator>(
-            delete_relaxed_problem_explorator.create_grounded_axiom_evaluator(std::make_shared<DefaultGroundedAxiomEvaluatorEventHandler>(false)));
+            delete_relaxed_problem_explorator.create_grounded_axiom_evaluator(match_tree::Options(),
+                                                                              std::make_shared<DefaultGroundedAxiomEvaluatorEventHandler>(false)));
         state_repository = std::make_shared<StateRepositoryImpl>(axiom_evaluator);
     }
     else
     {
         applicable_action_generator = std::dynamic_pointer_cast<IApplicableActionGenerator>(
-            std::make_shared<LiftedApplicableActionGenerator>(grounder->get_action_grounder(),
-                                                              std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>(false)));
+            std::make_shared<LiftedApplicableActionGenerator>(problem, std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>(false)));
         axiom_evaluator = std::dynamic_pointer_cast<IAxiomEvaluator>(
-            std::make_shared<LiftedAxiomEvaluator>(grounder->get_axiom_grounder(), std::make_shared<DefaultLiftedAxiomEvaluatorEventHandler>(false)));
+            std::make_shared<LiftedAxiomEvaluator>(problem, std::make_shared<DefaultLiftedAxiomEvaluatorEventHandler>(false)));
         state_repository = std::make_shared<StateRepositoryImpl>(axiom_evaluator);
+    }
+
+    if (debug)
+    {
+        std::shared_ptr<LiftedApplicableActionGenerator> lifted_applicable_action_generator =
+            std::dynamic_pointer_cast<LiftedApplicableActionGenerator>(applicable_action_generator);
+
+        if (lifted_applicable_action_generator)
+        {
+            // std::cout << *lifted_applicable_action_generator << std::endl;
+        }
     }
 
     auto brfs_event_handler = (debug) ? BrFSAlgorithmEventHandler { std::make_shared<DebugBrFSAlgorithmEventHandler>() } :
@@ -79,8 +107,9 @@ int main(int argc, char** argv)
 
     auto siw_event_handler = std::make_shared<DefaultSIWAlgorithmEventHandler>(false);
 
-    auto result =
-        find_solution_siw(applicable_action_generator, state_repository, std::nullopt, arity, siw_event_handler, iw_event_handler, brfs_event_handler);
+    auto search_context = SearchContext(problem, applicable_action_generator, state_repository);
+
+    auto result = find_solution_siw(search_context, std::nullopt, arity, siw_event_handler, iw_event_handler, brfs_event_handler);
 
     if (result.status == SearchStatus::SOLVED)
     {
@@ -91,7 +120,7 @@ int main(int argc, char** argv)
             std::cerr << "Error opening file!" << std::endl;
             return 1;
         }
-        plan_file << std::make_tuple(std::cref(result.plan.value()), std::cref(*parser.get_pddl_repositories()));
+        plan_file << std::make_tuple(std::cref(result.plan.value()), std::cref(*problem));
         plan_file.close();
     }
 
