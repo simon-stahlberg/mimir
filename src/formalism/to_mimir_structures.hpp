@@ -64,6 +64,14 @@ private:
     {
         std::for_each(std::begin(range), std::end(range), [&](auto&& arg) { this->prepare(arg); });
     }
+    template<typename T>
+    void prepare(const std::optional<T>& element)
+    {
+        if (element.has_value())
+        {
+            this->prepare(element.value());
+        }
+    }
     void prepare(loki::FunctionSkeleton function_skeleton);
     void prepare(loki::Object object);
     void prepare(loki::Parameter parameter);
@@ -101,6 +109,11 @@ private:
         output.reserve(input.size());
         std::transform(std::begin(input), std::end(input), std::back_inserter(output), [&](auto&& arg) { return this->translate_common(arg, repositories); });
         return output;
+    }
+    template<typename T>
+    auto translate_common(const std::optional<T>& element, PDDLRepositories& repositories)
+    {
+        return element.has_value() ? this->translate_common(element.value(), repositories) : std::optional<T> { std::nullopt };
     }
     StaticOrFluentOrAuxiliaryFunctionSkeleton translate_common(loki::FunctionSkeleton function_skeleton, PDDLRepositories& repositories);
     Object translate_common(loki::Object object, PDDLRepositories& repositories);

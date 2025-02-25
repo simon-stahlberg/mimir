@@ -296,7 +296,9 @@ static void apply_action_effects(GroundAction action,
     if (!problem.get_domain()->get_auxiliary_function_skeleton().has_value())
     {
         ref_successor_state_metric_score =
-            evaluate(problem.get_optimization_metric()->get_function_expression(), const_static_numeric_variables, ref_fluent_numeric_variables);
+            problem.get_optimization_metric().has_value() ?
+                evaluate(problem.get_optimization_metric().value()->get_function_expression(), const_static_numeric_variables, ref_fluent_numeric_variables) :
+                ref_successor_state_metric_score + 1;
     }
 }
 

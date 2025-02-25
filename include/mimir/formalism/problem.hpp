@@ -62,7 +62,7 @@ private:
     GroundLiteralList<Fluent> m_fluent_goal_condition;
     GroundLiteralList<Derived> m_derived_goal_condition;
     GroundNumericConstraintList m_numeric_goal_condition;
-    OptimizationMetric m_optimization_metric;
+    std::optional<OptimizationMetric> m_optimization_metric;
     AxiomList m_axioms;
     AxiomList m_problem_and_domain_axioms;  ///< Includes domain axioms
 
@@ -147,7 +147,7 @@ private:
                 GroundLiteralList<Fluent> fluent_goal_condition,
                 GroundLiteralList<Derived> derived_goal_condition,
                 GroundNumericConstraintList numeric_goal_condition,
-                OptimizationMetric optimization_metric,
+                std::optional<OptimizationMetric> optimization_metric,
                 AxiomList axioms,
                 AxiomList problem_and_domain_axioms);
 
@@ -181,7 +181,7 @@ public:
     template<StaticOrFluentOrDerived P>
     const GroundLiteralList<P>& get_goal_condition() const;
     const GroundNumericConstraintList& get_numeric_goal_condition() const;
-    const OptimizationMetric& get_optimization_metric() const;
+    const std::optional<OptimizationMetric>& get_optimization_metric() const;
     const AxiomList& get_axioms() const;
     const AxiomList& get_problem_and_domain_axioms() const;
 

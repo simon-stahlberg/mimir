@@ -199,14 +199,8 @@ void ToMimirStructures::prepare(loki::Effect effect)
 void ToMimirStructures::prepare(loki::Action action)
 {
     prepare(action->get_parameters());
-    if (action->get_condition().has_value())
-    {
-        prepare(action->get_condition().value());
-    }
-    if (action->get_effect().has_value())
-    {
-        prepare(action->get_effect().value());
-    }
+    prepare(action->get_condition());
+    prepare(action->get_effect());
 }
 void ToMimirStructures::prepare(loki::Axiom axiom)
 {
@@ -238,14 +232,8 @@ void ToMimirStructures::prepare(loki::Problem problem)
     prepare(problem->get_predicates());
     prepare(problem->get_initial_literals());
     prepare(problem->get_initial_function_values());
-    if (problem->get_goal_condition().has_value())
-    {
-        prepare(problem->get_goal_condition().value());
-    }
-    if (problem->get_optimization_metric().has_value())
-    {
-        prepare(problem->get_optimization_metric().value());
-    }
+    prepare(problem->get_goal_condition());
+    prepare(problem->get_optimization_metric());
     prepare(problem->get_axioms());
 
     for (const auto& derived_predicate : problem->get_predicates())
@@ -1191,8 +1179,9 @@ Problem ToMimirStructures::translate(const loki::Problem& problem, ProblemBuilde
     }
 
     /* Metric section */
-    assert(problem->get_optimization_metric().has_value());  ///< Ensure that loki InitializeMetricTranslator was used
-    const auto metric = translate_grounded(problem->get_optimization_metric().value(), repositories);
+    const auto metric = (problem->get_optimization_metric().has_value()) ?
+                            std::optional<OptimizationMetric>(translate_grounded(problem->get_optimization_metric().value(), repositories)) :
+                            std::nullopt;
 
     /* Structures section */
     const auto axioms = translate_lifted(problem->get_axioms(), repositories);

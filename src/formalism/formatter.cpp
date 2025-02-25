@@ -790,9 +790,12 @@ void PDDLFormatter::write(const ProblemImpl& element, std::ostream& out)
         out << "))" << std::endl;
     }
 
-    out << std::string(m_indent, ' ') << "(:metric ";
-    write(*element.get_optimization_metric(), out);
-    out << ")" << std::endl;
+    if (element.get_optimization_metric().has_value())
+    {
+        out << std::string(m_indent, ' ') << "(:metric ";
+        write(*element.get_optimization_metric().value(), out);
+        out << ")" << std::endl;
+    }
 
     for (const auto& axiom : element.get_axioms())
     {

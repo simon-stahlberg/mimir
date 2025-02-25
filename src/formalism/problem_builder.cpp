@@ -203,6 +203,6 @@ template GroundLiteralList<Fluent>& ProblemBuilder::get_goal_condition();
 template GroundLiteralList<Derived>& ProblemBuilder::get_goal_condition();
 
 GroundNumericConstraintList& ProblemBuilder::get_numeric_goal_condition() { return m_numeric_goal_condition; }
-OptimizationMetric& ProblemBuilder::get_optimization_metric() { return m_optimization_metric; }
+std::optional<OptimizationMetric>& ProblemBuilder::get_optimization_metric() { return m_optimization_metric; }
 AxiomList& ProblemBuilder::get_axioms() { return m_axioms; }
 }

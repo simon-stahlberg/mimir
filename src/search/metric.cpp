@@ -31,9 +31,10 @@ ContinuousCost compute_initial_state_metric_value(const ProblemImpl& problem)
         return problem.get_auxiliary_function_value().value()->get_number();
     }
 
-    return evaluate(problem.get_optimization_metric()->get_function_expression(),
-                    problem.get_function_to_value<Static>(),
-                    problem.get_function_to_value<Fluent>());
+    return problem.get_optimization_metric().has_value() ? evaluate(problem.get_optimization_metric().value()->get_function_expression(),
+                                                                    problem.get_function_to_value<Static>(),
+                                                                    problem.get_function_to_value<Fluent>()) :
+                                                           0.;
 }
 
 }

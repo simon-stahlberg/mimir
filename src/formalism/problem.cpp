@@ -65,7 +65,7 @@ ProblemImpl::ProblemImpl(Index index,
                          GroundLiteralList<Fluent> fluent_goal_condition,
                          GroundLiteralList<Derived> derived_goal_condition,
                          GroundNumericConstraintList numeric_goal_condition,
-                         OptimizationMetric optimization_metric,
+                         std::optional<OptimizationMetric> optimization_metric,
                          AxiomList axioms,
                          AxiomList problem_and_domain_axioms) :
     m_index(index),
@@ -397,7 +397,7 @@ template const GroundLiteralList<Derived>& ProblemImpl::get_goal_condition<Deriv
 
 const GroundNumericConstraintList& ProblemImpl::get_numeric_goal_condition() const { return m_numeric_goal_condition; }
 
-const OptimizationMetric& ProblemImpl::get_optimization_metric() const { return m_optimization_metric; }
+const std::optional<OptimizationMetric>& ProblemImpl::get_optimization_metric() const { return m_optimization_metric; }
 
 const AxiomList& ProblemImpl::get_axioms() const { return m_axioms; }
 
