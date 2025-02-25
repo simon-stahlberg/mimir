@@ -18,7 +18,6 @@
 #ifndef MIMIR_FORMALISM_DOMAIN_HPP_
 #define MIMIR_FORMALISM_DOMAIN_HPP_
 
-#include "mimir/common/type_indexed_container.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/repositories.hpp"
 
@@ -33,10 +32,7 @@ private:
     std::string m_name;
     Requirements m_requirements;
     ObjectList m_constants;
-    PredicateList<Static> m_static_predicates;
-    PredicateList<Fluent> m_fluent_predicates;
-    PredicateList<Derived> m_derived_predicates;
-    TypeIndexedContainer<Predicate, std::vector, TypeIndices<Static, Fluent, Derived>> m_predicates;
+    PredicateLists<Static, Fluent, Derived> m_predicates;
     FunctionSkeletonList<Static> m_static_function_skeletons;
     FunctionSkeletonList<Fluent> m_fluent_function_skeletons;
     std::optional<FunctionSkeleton<Auxiliary>> m_auxiliary_function_skeleton;
@@ -54,9 +50,7 @@ private:
                std::string name,
                Requirements requirements,
                ObjectList constants,
-               PredicateList<Static> static_predicates,
-               PredicateList<Fluent> fluent_predicates,
-               PredicateList<Derived> derived_predicates,
+               PredicateLists<Static, Fluent, Derived> predicates,
                FunctionSkeletonList<Static> static_function_skeletons,
                FunctionSkeletonList<Fluent> fluent_function_skeletons,
                std::optional<FunctionSkeleton<Auxiliary>> auxiliary_function_skeleton,
@@ -80,6 +74,7 @@ public:
     const ObjectList& get_constants() const;
     template<StaticOrFluentOrDerived P>
     const PredicateList<P>& get_predicates() const;
+    const PredicateLists<Static, Fluent, Derived>& get_hana_predicates() const;
     template<StaticOrFluent F>
     const FunctionSkeletonList<F>& get_function_skeletons() const;
     const std::optional<FunctionSkeleton<Auxiliary>>& get_auxiliary_function_skeleton() const;
@@ -98,9 +93,9 @@ public:
         return std::forward_as_tuple(std::as_const(m_name),
                                      std::as_const(m_requirements),
                                      std::as_const(m_constants),
-                                     std::as_const(m_static_predicates),
-                                     std::as_const(m_fluent_predicates),
-                                     std::as_const(m_derived_predicates),
+                                     std::as_const(get_predicates<Static>()),
+                                     std::as_const(get_predicates<Fluent>()),
+                                     std::as_const(get_predicates<Derived>()),
                                      std::as_const(m_static_function_skeletons),
                                      std::as_const(m_fluent_function_skeletons),
                                      std::as_const(m_auxiliary_function_skeleton),

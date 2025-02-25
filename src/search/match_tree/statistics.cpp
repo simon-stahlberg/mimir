@@ -215,8 +215,8 @@ std::ostream& operator<<(std::ostream& os, const Statistics& statistics)
 {
     const auto num_elements = std::accumulate(statistics.generator_distribution.begin(), statistics.generator_distribution.end(), 0);
     const auto num_generators = statistics.generator_distribution.size();
-    assert(num_generators > 0);
-    const auto num_elements_per_generator = static_cast<double>(num_elements) / num_generators;
+    const auto num_elements_per_generator =
+        (num_generators > 0) ? static_cast<double>(num_elements) / num_generators : std::numeric_limits<double>::quiet_NaN();
 
     const auto num_perfect_elements = std::accumulate(statistics.perfect_generator_distribution.begin(), statistics.perfect_generator_distribution.end(), 0);
     const auto num_perfect_generators = statistics.perfect_generator_distribution.size();

@@ -36,17 +36,17 @@ static void verify_indexing_scheme(const std::vector<const T*>& elements, const 
 
 Domain DomainBuilder::get_result()
 {
-    std::sort(m_constants.begin(), m_constants.end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
-    verify_indexing_scheme(m_constants, "DomainBuilder::get_result: constants must follow and indexing scheme.");
+    std::sort(get_constants().begin(), get_constants().end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
+    verify_indexing_scheme(get_constants(), "DomainBuilder::get_result: constants must follow and indexing scheme.");
 
-    std::sort(m_static_predicates.begin(), m_static_predicates.end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
-    verify_indexing_scheme(m_static_predicates, "DomainBuilder::get_result: static predicates must follow and indexing scheme.");
+    std::sort(get_predicates<Static>().begin(), get_predicates<Static>().end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
+    verify_indexing_scheme(get_predicates<Static>(), "DomainBuilder::get_result: static predicates must follow and indexing scheme.");
 
-    std::sort(m_fluent_predicates.begin(), m_fluent_predicates.end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
-    verify_indexing_scheme(m_fluent_predicates, "DomainBuilder::get_result: fluent predicates must follow and indexing scheme.");
+    std::sort(get_predicates<Fluent>().begin(), get_predicates<Fluent>().end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
+    verify_indexing_scheme(get_predicates<Fluent>(), "DomainBuilder::get_result: fluent predicates must follow and indexing scheme.");
 
-    std::sort(m_derived_predicates.begin(), m_derived_predicates.end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
-    verify_indexing_scheme(m_derived_predicates, "DomainBuilder::get_result: derived predicates must follow and indexing scheme.");
+    std::sort(get_predicates<Derived>().begin(), get_predicates<Derived>().end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
+    verify_indexing_scheme(get_predicates<Derived>(), "DomainBuilder::get_result: derived predicates must follow and indexing scheme.");
 
     std::sort(m_static_function_skeletons.begin(),
               m_static_function_skeletons.end(),
@@ -71,9 +71,7 @@ Domain DomainBuilder::get_result()
                                                             std::move(m_name),
                                                             std::move(m_requirements),
                                                             std::move(m_constants),
-                                                            std::move(m_static_predicates),
-                                                            std::move(m_fluent_predicates),
-                                                            std::move(m_derived_predicates),
+                                                            std::move(m_predicates),
                                                             std::move(m_static_function_skeletons),
                                                             std::move(m_fluent_function_skeletons),
                                                             std::move(m_auxiliary_function_skeleton),
@@ -89,27 +87,14 @@ ObjectList& DomainBuilder::get_constants() { return m_constants; }
 template<StaticOrFluentOrDerived P>
 PredicateList<P>& DomainBuilder::get_predicates()
 {
-    if constexpr (std::is_same_v<P, Static>)
-    {
-        return m_static_predicates;
-    }
-    else if constexpr (std::is_same_v<P, Fluent>)
-    {
-        return m_fluent_predicates;
-    }
-    else if constexpr (std::is_same_v<P, Derived>)
-    {
-        return m_derived_predicates;
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "ToMimirStructures::translate_lifted: Missing implementation for Function type.");
-    }
+    return boost::hana::at_key(m_predicates, boost::hana::type<P> {});
 }
 
 template PredicateList<Static>& DomainBuilder::get_predicates();
 template PredicateList<Fluent>& DomainBuilder::get_predicates();
 template PredicateList<Derived>& DomainBuilder::get_predicates();
+
+PredicateLists<Static, Fluent, Derived>& DomainBuilder::get_hana_predicates() { return m_predicates; }
 
 template<StaticOrFluent F>
 FunctionSkeletonList<F>& DomainBuilder::get_function_skeletons()

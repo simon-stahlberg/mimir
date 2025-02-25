@@ -41,9 +41,7 @@ DomainImpl::DomainImpl(PDDLRepositories repositories,
                        std::string name,
                        Requirements requirements,
                        ObjectList constants,
-                       PredicateList<Static> static_predicates,
-                       PredicateList<Fluent> fluent_predicates,
-                       PredicateList<Derived> derived_predicates,
+                       PredicateLists<Static, Fluent, Derived> predicates,
                        FunctionSkeletonList<Static> static_function_skeletons,
                        FunctionSkeletonList<Fluent> fluent_function_skeletons,
                        std::optional<FunctionSkeleton<Auxiliary>> auxiliary_function_skeleton,
@@ -54,9 +52,7 @@ DomainImpl::DomainImpl(PDDLRepositories repositories,
     m_name(std::move(name)),
     m_requirements(std::move(requirements)),
     m_constants(std::move(constants)),
-    m_static_predicates(std::move(static_predicates)),
-    m_fluent_predicates(std::move(fluent_predicates)),
-    m_derived_predicates(std::move(derived_predicates)),
+    m_predicates(std::move(predicates)),
     m_static_function_skeletons(std::move(static_function_skeletons)),
     m_fluent_function_skeletons(std::move(fluent_function_skeletons)),
     m_auxiliary_function_skeleton(std::move(auxiliary_function_skeleton)),
@@ -66,21 +62,24 @@ DomainImpl::DomainImpl(PDDLRepositories repositories,
     m_name_to_fluent_predicate(),
     m_name_to_derived_predicate()
 {
-    assert(is_all_unique(m_constants));
-    assert(is_all_unique(m_static_predicates));
-    assert(is_all_unique(m_fluent_predicates));
-    assert(is_all_unique(m_derived_predicates));
+    assert(is_all_unique(get_constants()));
+    assert(is_all_unique(get_predicates<Static>()));
+    assert(is_all_unique(get_predicates<Fluent>()));
+    assert(is_all_unique(get_predicates<Derived>()));
     assert(is_all_unique(m_static_function_skeletons));
     assert(is_all_unique(m_fluent_function_skeletons));
     assert(is_all_unique(m_actions));
     assert(is_all_unique(m_axioms));
-    assert(std::is_sorted(m_constants.begin(), m_constants.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(
-        std::is_sorted(m_static_predicates.begin(), m_static_predicates.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(
-        std::is_sorted(m_fluent_predicates.begin(), m_fluent_predicates.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(
-        std::is_sorted(m_derived_predicates.begin(), m_derived_predicates.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(get_constants().begin(), get_constants().end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(get_predicates<Static>().begin(),
+                          get_predicates<Static>().end(),
+                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(get_predicates<Fluent>().begin(),
+                          get_predicates<Fluent>().end(),
+                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(get_predicates<Derived>().begin(),
+                          get_predicates<Derived>().end(),
+                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(std::is_sorted(m_static_function_skeletons.begin(),
                           m_static_function_skeletons.end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
@@ -95,15 +94,15 @@ DomainImpl::DomainImpl(PDDLRepositories repositories,
     {
         m_name_to_constants.emplace(object->get_name(), object);
     }
-    for (const auto& predicate : m_static_predicates)
+    for (const auto& predicate : get_predicates<Static>())
     {
         m_name_to_static_predicate.emplace(predicate->get_name(), predicate);
     }
-    for (const auto& predicate : m_fluent_predicates)
+    for (const auto& predicate : get_predicates<Fluent>())
     {
         m_name_to_fluent_predicate.emplace(predicate->get_name(), predicate);
     }
-    for (const auto& predicate : m_derived_predicates)
+    for (const auto& predicate : get_predicates<Derived>())
     {
         m_name_to_derived_predicate.emplace(predicate->get_name(), predicate);
     }
@@ -122,27 +121,14 @@ const ObjectList& DomainImpl::get_constants() const { return m_constants; }
 template<StaticOrFluentOrDerived P>
 const PredicateList<P>& DomainImpl::get_predicates() const
 {
-    if constexpr (std::is_same_v<P, Static>)
-    {
-        return m_static_predicates;
-    }
-    else if constexpr (std::is_same_v<P, Fluent>)
-    {
-        return m_fluent_predicates;
-    }
-    else if constexpr (std::is_same_v<P, Derived>)
-    {
-        return m_derived_predicates;
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
-    }
+    return boost::hana::at_key(m_predicates, boost::hana::type<P> {});
 }
 
 template const PredicateList<Static>& DomainImpl::get_predicates<Static>() const;
 template const PredicateList<Fluent>& DomainImpl::get_predicates<Fluent>() const;
 template const PredicateList<Derived>& DomainImpl::get_predicates<Derived>() const;
+
+const PredicateLists<Static, Fluent, Derived>& DomainImpl::get_hana_predicates() const { return m_predicates; }
 
 template<StaticOrFluent F>
 const FunctionSkeletonList<F>& DomainImpl::get_function_skeletons() const

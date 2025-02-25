@@ -36,9 +36,7 @@ private:
     std::string m_name;
     Requirements m_requirements;
     ObjectList m_constants;
-    PredicateList<Static> m_static_predicates;
-    PredicateList<Fluent> m_fluent_predicates;
-    PredicateList<Derived> m_derived_predicates;
+    PredicateLists<Static, Fluent, Derived> m_predicates;
     FunctionSkeletonList<Static> m_static_function_skeletons;
     FunctionSkeletonList<Fluent> m_fluent_function_skeletons;
     std::optional<FunctionSkeleton<Auxiliary>> m_auxiliary_function_skeleton;
@@ -66,6 +64,7 @@ public:
     ObjectList& get_constants();
     template<StaticOrFluentOrDerived P>
     PredicateList<P>& get_predicates();
+    PredicateLists<Static, Fluent, Derived>& get_hana_predicates();
     template<StaticOrFluent F>
     FunctionSkeletonList<F>& get_function_skeletons();
     std::optional<FunctionSkeleton<Auxiliary>>& get_auxiliary_function_skeleton();

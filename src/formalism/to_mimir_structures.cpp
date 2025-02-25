@@ -972,32 +972,15 @@ Domain ToMimirStructures::translate(const loki::Domain& domain, DomainBuilder& b
     const auto constants = translate_common(domain->get_constants(), repositories);
 
     /* Predicates section */
-    auto predicates = translate_common(domain->get_predicates(), repositories);
-    auto static_predicates = PredicateList<Static> {};
-    auto fluent_predicates = PredicateList<Fluent> {};
-    auto derived_predicates = PredicateList<Derived> {};
+    auto predicates = PredicateLists<Static, Fluent, Derived> {};
     for (const auto& static_or_fluent_or_derived_predicate : translate_common(domain->get_predicates(), repositories))
     {
         std::visit(
-            [&static_predicates, &fluent_predicates, &derived_predicates](auto&& arg)
+            [&predicates](auto&& arg)
             {
-                using T = std::decay_t<decltype(arg)>;
-                if constexpr (std::is_same_v<T, Predicate<Static>>)
-                {
-                    static_predicates.push_back(arg);
-                }
-                else if constexpr (std::is_same_v<T, Predicate<Fluent>>)
-                {
-                    fluent_predicates.push_back(arg);
-                }
-                else if constexpr (std::is_same_v<T, Predicate<Derived>>)
-                {
-                    derived_predicates.push_back(arg);
-                }
-                else
-                {
-                    static_assert(dependent_false<T>::value, "ToMimirStructures::translate_lifted: Missing implementation for Predicate type.");
-                }
+                using Type = typename std::decay_t<decltype(*arg)>::Type;
+
+                boost::hana::at_key(predicates, boost::hana::type<Type> {}).push_back(arg);
             },
             static_or_fluent_or_derived_predicate);
     }
@@ -1041,9 +1024,15 @@ Domain ToMimirStructures::translate(const loki::Domain& domain, DomainBuilder& b
     builder.get_name() = domain->get_name();
     builder.get_requirements() = requirements;
     builder.get_constants().insert(builder.get_constants().end(), constants.begin(), constants.end());
-    builder.get_predicates<Static>().insert(builder.get_predicates<Static>().end(), static_predicates.begin(), static_predicates.end());
-    builder.get_predicates<Fluent>().insert(builder.get_predicates<Fluent>().end(), fluent_predicates.begin(), fluent_predicates.end());
-    builder.get_predicates<Derived>().insert(builder.get_predicates<Derived>().end(), derived_predicates.begin(), derived_predicates.end());
+    boost::hana::for_each(predicates,
+                          [&](auto&& pair)
+                          {
+                              const auto& key = boost::hana::first(pair);
+                              const auto& value = boost::hana::second(pair);
+
+                              auto& builder_predicates = boost::hana::at_key(builder.get_hana_predicates(), key);
+                              builder_predicates.insert(builder_predicates.end(), value.begin(), value.end());
+                          });
     builder.get_function_skeletons<Static>().insert(builder.get_function_skeletons<Static>().end(), static_functions.begin(), static_functions.end());
     builder.get_function_skeletons<Fluent>().insert(builder.get_function_skeletons<Fluent>().end(), fluent_functions.begin(), fluent_functions.end());
     builder.get_auxiliary_function_skeleton() = auxiliary_function;

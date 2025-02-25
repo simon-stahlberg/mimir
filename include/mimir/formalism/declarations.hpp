@@ -219,6 +219,8 @@ template<StaticOrFluentOrDerived P>
 using PredicateSet = std::unordered_set<Predicate<P>>;
 template<typename Key, StaticOrFluentOrDerived P, typename Hash = loki::Hash<Key>, typename KeyEqual = loki::EqualTo<Key>>
 using ToPredicateMap = std::unordered_map<Key, Predicate<P>, Hash, KeyEqual>;
+template<StaticOrFluentOrDerived... Ps>
+using PredicateLists = boost::hana::map<boost::hana::pair<boost::hana::type<Ps>, PredicateList<Ps>>...>;
 
 class ProblemImpl;
 using Problem = std::shared_ptr<ProblemImpl>;
