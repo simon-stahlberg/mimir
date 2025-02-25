@@ -27,19 +27,6 @@
 
 namespace mimir
 {
-// A table for each pair (is_negated,predicate_index) since those are context independent.
-template<typename T>
-using LiteralGroundingTableList = std::array<std::vector<GroundingTable<T>>, 2>;
-
-using PDDLTypeToGroundingTable =
-    boost::hana::map<boost::hana::pair<boost::hana::type<GroundLiteral<Static>>, LiteralGroundingTableList<GroundLiteral<Static>>>,
-                     boost::hana::pair<boost::hana::type<GroundLiteral<Fluent>>, LiteralGroundingTableList<GroundLiteral<Fluent>>>,
-                     boost::hana::pair<boost::hana::type<GroundLiteral<Derived>>, LiteralGroundingTableList<GroundLiteral<Derived>>>,
-                     boost::hana::pair<boost::hana::type<GroundFunction<Static>>, GroundingTableList<GroundFunction<Static>>>,
-                     boost::hana::pair<boost::hana::type<GroundFunction<Fluent>>, GroundingTableList<GroundFunction<Fluent>>>,
-                     boost::hana::pair<boost::hana::type<GroundFunction<Auxiliary>>, GroundingTableList<GroundFunction<Auxiliary>>>,
-                     boost::hana::pair<boost::hana::type<GroundFunctionExpression>, GroundingTableList<GroundFunctionExpression>>>;
-
 class ProblemImpl
 {
 private:
@@ -61,28 +48,6 @@ private:
     std::optional<OptimizationMetric> m_optimization_metric;
     AxiomList m_axioms;
     AxiomList m_problem_and_domain_axioms;  ///< Includes domain axioms
-
-    /* Grounding */
-
-    PDDLTypeToGroundingTable m_grounding_tables;
-
-    /* For ground actions and axioms we also create a reusable builder. */
-
-    GroundActionImplSet m_ground_actions;
-    GroundActionList m_ground_actions_by_index;
-
-    using PerActionData = std::tuple<GroundActionImpl,               ///< Builder
-                                     GroundingTable<GroundAction>>;  ///< Cache
-
-    std::unordered_map<Action, PerActionData> m_per_action_datas;
-
-    GroundAxiomImplSet m_ground_axioms;
-    GroundAxiomList m_ground_axioms_by_index;
-
-    using PerAxiomData = std::tuple<GroundAxiomImpl,               ///< Builder
-                                    GroundingTable<GroundAxiom>>;  ///< Cache
-
-    std::unordered_map<Axiom, PerAxiomData> m_per_axiom_data;
 
     // Below: add additional members if needed and initialize them in the constructor
 
@@ -111,6 +76,41 @@ private:
 
     /* Axioms */
     std::vector<AxiomPartition> m_problem_and_domain_axiom_partitioning;  ///< Obtained from stratification
+
+    /* Grounding */
+
+    // A table for each pair (is_negated,predicate_index) since those are context independent.
+    template<typename T>
+    using LiteralGroundingTableList = std::array<std::vector<GroundingTable<T>>, 2>;
+
+    using PDDLTypeToGroundingTable =
+        boost::hana::map<boost::hana::pair<boost::hana::type<GroundLiteral<Static>>, LiteralGroundingTableList<GroundLiteral<Static>>>,
+                         boost::hana::pair<boost::hana::type<GroundLiteral<Fluent>>, LiteralGroundingTableList<GroundLiteral<Fluent>>>,
+                         boost::hana::pair<boost::hana::type<GroundLiteral<Derived>>, LiteralGroundingTableList<GroundLiteral<Derived>>>,
+                         boost::hana::pair<boost::hana::type<GroundFunction<Static>>, GroundingTableList<GroundFunction<Static>>>,
+                         boost::hana::pair<boost::hana::type<GroundFunction<Fluent>>, GroundingTableList<GroundFunction<Fluent>>>,
+                         boost::hana::pair<boost::hana::type<GroundFunction<Auxiliary>>, GroundingTableList<GroundFunction<Auxiliary>>>,
+                         boost::hana::pair<boost::hana::type<GroundFunctionExpression>, GroundingTableList<GroundFunctionExpression>>>;
+
+    PDDLTypeToGroundingTable m_grounding_tables;
+
+    /* For ground actions and axioms we also create a reusable builder. */
+
+    GroundActionImplSet m_ground_actions;
+    GroundActionList m_ground_actions_by_index;
+
+    using PerActionData = std::tuple<GroundActionImpl,               ///< Builder
+                                     GroundingTable<GroundAction>>;  ///< Cache
+
+    std::unordered_map<Action, PerActionData> m_per_action_datas;
+
+    GroundAxiomImplSet m_ground_axioms;
+    GroundAxiomList m_ground_axioms_by_index;
+
+    using PerAxiomData = std::tuple<GroundAxiomImpl,               ///< Builder
+                                    GroundingTable<GroundAxiom>>;  ///< Cache
+
+    std::unordered_map<Axiom, PerAxiomData> m_per_axiom_data;
 
     ProblemImpl(Index index,
                 PDDLRepositories repositories,
