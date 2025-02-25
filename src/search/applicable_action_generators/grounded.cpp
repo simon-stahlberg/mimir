@@ -33,7 +33,7 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem pro
 
 GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem problem,
                                                                      std::unique_ptr<match_tree::MatchTree<GroundActionImpl>>&& match_tree,
-                                                                     std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> event_handler) :
+                                                                     GroundedApplicableActionGeneratorEventHandler event_handler) :
     m_problem(std::move(problem)),
     m_match_tree(std::move(match_tree)),
     m_event_handler(std::move(event_handler)),

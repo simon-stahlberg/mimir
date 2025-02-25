@@ -42,7 +42,7 @@ class SatisficingBindingGenerator
 protected:
     ConjunctiveCondition m_conjunctive_condition;
     Problem m_problem;
-    std::shared_ptr<ISatisficingBindingGeneratorEventHandler> m_event_handler;
+    SatisficingBindingGeneratorEventHandler m_event_handler;
 
     consistency_graph::StaticConsistencyGraph m_static_consistency_graph;
 
@@ -90,7 +90,7 @@ protected:
 public:
     SatisficingBindingGenerator(ConjunctiveCondition conjunctive_condition,
                                 Problem problem,
-                                std::optional<std::shared_ptr<ISatisficingBindingGeneratorEventHandler>> event_handler = std::nullopt);
+                                std::optional<SatisficingBindingGeneratorEventHandler> event_handler = std::nullopt);
 
     mimir::generator<ObjectList> create_binding_generator(State state,
                                                           const AssignmentSet<Fluent>& fluent_assignment_set,
@@ -116,7 +116,7 @@ public:
 
     const ConjunctiveCondition& get_conjunctive_condition() const;
     const Problem& get_problem() const;
-    const std::shared_ptr<ISatisficingBindingGeneratorEventHandler>& get_event_handler() const;
+    const SatisficingBindingGeneratorEventHandler& get_event_handler() const;
     const consistency_graph::StaticConsistencyGraph& get_static_consistency_graph() const;
 };
 

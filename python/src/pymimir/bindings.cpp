@@ -1120,7 +1120,7 @@ void init_pymimir(py::module_& m)
         .def("get_axiom_grounder", &Grounder::get_axiom_grounder, py::return_value_policy::copy);
 
     /* ApplicableActionGenerators */
-    py::class_<IApplicableActionGenerator, std::shared_ptr<IApplicableActionGenerator>>(m, "IApplicableActionGenerator")
+    py::class_<IApplicableActionGenerator, ApplicableActionGenerator>(m, "IApplicableActionGenerator")
         .def("get_problem", &IApplicableActionGenerator::get_problem, py::return_value_policy::reference_internal)
         .def("get_pddl_repositories", &IApplicableActionGenerator::get_pddl_repositories, py::return_value_policy::copy)
         .def(
@@ -1140,9 +1140,8 @@ void init_pymimir(py::module_& m)
         .def("get_action_grounder", &IApplicableActionGenerator::get_action_grounder, py::return_value_policy::copy);
 
     // Lifted
-    py::class_<ILiftedApplicableActionGeneratorEventHandler, std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler>>(
-        m,
-        "ILiftedApplicableActionGeneratorEventHandler");  //
+    py::class_<ILiftedApplicableActionGeneratorEventHandler, LiftedApplicableActionGeneratorEventHandler>(m,
+                                                                                                          "ILiftedApplicableActionGeneratorEventHandler");  //
     py::class_<DefaultLiftedApplicableActionGeneratorEventHandler,
                ILiftedApplicableActionGeneratorEventHandler,
                std::shared_ptr<DefaultLiftedApplicableActionGeneratorEventHandler>>(m,
@@ -1157,12 +1156,10 @@ void init_pymimir(py::module_& m)
         m,
         "LiftedApplicableActionGenerator")  //
         .def(py::init<std::shared_ptr<ActionGrounder>>(), py::arg("action_grounder"))
-        .def(py::init<std::shared_ptr<ActionGrounder>, std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler>>(),
-             py::arg("action_grounder"),
-             py::arg("event_handler"));
+        .def(py::init<std::shared_ptr<ActionGrounder>, LiftedApplicableActionGeneratorEventHandler>(), py::arg("action_grounder"), py::arg("event_handler"));
 
     // Grounded
-    py::class_<IGroundedApplicableActionGeneratorEventHandler, std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler>>(
+    py::class_<IGroundedApplicableActionGeneratorEventHandler, GroundedApplicableActionGeneratorEventHandler>(
         m,
         "IGroundedApplicableActionGeneratorEventHandler");  //
     py::class_<DefaultGroundedApplicableActionGeneratorEventHandler,
@@ -1180,13 +1177,13 @@ void init_pymimir(py::module_& m)
         "GroundedApplicableActionGenerator");
 
     /* IAxiomEvaluator */
-    py::class_<IAxiomEvaluator, std::shared_ptr<IAxiomEvaluator>>(m, "IAxiomEvaluator")  //
+    py::class_<IAxiomEvaluator, AxiomEvaluator>(m, "IAxiomEvaluator")  //
         .def("get_problem", &IAxiomEvaluator::get_problem, py::return_value_policy::reference_internal)
         .def("get_pddl_repositories", &IAxiomEvaluator::get_pddl_repositories, py::return_value_policy::copy)
         .def("get_axiom_grounder", &IAxiomEvaluator::get_axiom_grounder, py::return_value_policy::copy);
 
     // Lifted
-    py::class_<ILiftedAxiomEvaluatorEventHandler, std::shared_ptr<ILiftedAxiomEvaluatorEventHandler>>(m, "ILiftedAxiomEvaluatorEventHandler");  //
+    py::class_<ILiftedAxiomEvaluatorEventHandler, LiftedAxiomEvaluatorEventHandler>(m, "ILiftedAxiomEvaluatorEventHandler");  //
     py::class_<DefaultLiftedAxiomEvaluatorEventHandler, ILiftedAxiomEvaluatorEventHandler, std::shared_ptr<DefaultLiftedAxiomEvaluatorEventHandler>>(
         m,
         "DefaultLiftedAxiomEvaluatorEventHandler")  //
@@ -1197,12 +1194,10 @@ void init_pymimir(py::module_& m)
         .def(py::init<>());
     py::class_<LiftedAxiomEvaluator, IAxiomEvaluator, std::shared_ptr<LiftedAxiomEvaluator>>(m, "LiftedAxiomEvaluator")  //
         .def(py::init<std::shared_ptr<AxiomGrounder>>(), py::arg("axiom_grounder"))
-        .def(py::init<std::shared_ptr<AxiomGrounder>, std::shared_ptr<ILiftedAxiomEvaluatorEventHandler>>(),
-             py::arg("axiom_grounder"),
-             py::arg("event_handler"));
+        .def(py::init<std::shared_ptr<AxiomGrounder>, LiftedAxiomEvaluatorEventHandler>(), py::arg("axiom_grounder"), py::arg("event_handler"));
 
     // Grounded
-    py::class_<IGroundedAxiomEvaluatorEventHandler, std::shared_ptr<IGroundedAxiomEvaluatorEventHandler>>(m, "IGroundedAxiomEvaluatorEventHandler");  //
+    py::class_<IGroundedAxiomEvaluatorEventHandler, GroundedAxiomEvaluatorEventHandler>(m, "IGroundedAxiomEvaluatorEventHandler");  //
     py::class_<DefaultGroundedAxiomEvaluatorEventHandler, IGroundedAxiomEvaluatorEventHandler, std::shared_ptr<DefaultGroundedAxiomEvaluatorEventHandler>>(
         m,
         "DefaultGroundedAxiomEvaluatorEventHandler")  //
@@ -1232,7 +1227,7 @@ void init_pymimir(py::module_& m)
 
     /* StateRepository */
     py::class_<StateRepository, std::shared_ptr<StateRepository>>(m, "StateRepository")  //
-        .def(py::init<std::shared_ptr<IAxiomEvaluator>>(), py::arg("axiom_evaluator"))
+        .def(py::init<AxiomEvaluator>(), py::arg("axiom_evaluator"))
         .def("get_or_create_initial_state", &StateRepository::get_or_create_initial_state, py::return_value_policy::reference_internal)
         .def("get_or_create_state",
              &StateRepository::get_or_create_state,
@@ -1250,7 +1245,7 @@ void init_pymimir(py::module_& m)
         .def("get_reached_derived_ground_atoms_bitset", &StateRepository::get_reached_derived_ground_atoms_bitset, py::return_value_policy::copy);
 
     /* Heuristics */
-    py::class_<IHeuristic, IPyHeuristic, std::shared_ptr<IHeuristic>>(m, "IHeuristic").def(py::init<>());
+    py::class_<IHeuristic, IPyHeuristic, Heuristic>(m, "IHeuristic").def(py::init<>());
     py::class_<BlindHeuristic, IHeuristic, std::shared_ptr<BlindHeuristic>>(m, "BlindHeuristic").def(py::init<Problem>());
 
     /* Algorithms */
@@ -1272,8 +1267,8 @@ void init_pymimir(py::module_& m)
         .def("get_num_expanded_until_f_value", &AStarAlgorithmStatistics::get_num_expanded_until_f_value)
         .def("get_num_deadends_until_f_value", &AStarAlgorithmStatistics::get_num_deadends_until_f_value)
         .def("get_num_pruned_until_f_value", &AStarAlgorithmStatistics::get_num_pruned_until_f_value);
-    py::class_<IAStarAlgorithmEventHandler, std::shared_ptr<IAStarAlgorithmEventHandler>>(m,
-                                                                                          "IAStarAlgorithmEventHandler")  //
+    py::class_<IAStarAlgorithmEventHandler, AStarAlgorithmEventHandler>(m,
+                                                                        "IAStarAlgorithmEventHandler")  //
         .def("get_statistics", &IAStarAlgorithmEventHandler::get_statistics);
     py::class_<DefaultAStarAlgorithmEventHandler, IAStarAlgorithmEventHandler, std::shared_ptr<DefaultAStarAlgorithmEventHandler>>(
         m,
@@ -1310,7 +1305,7 @@ void init_pymimir(py::module_& m)
         .def("get_num_expanded_until_g_value", &BrFSAlgorithmStatistics::get_num_expanded_until_g_value)
         .def("get_num_deadends_until_g_value", &BrFSAlgorithmStatistics::get_num_deadends_until_g_value)
         .def("get_num_pruned_until_g_value", &BrFSAlgorithmStatistics::get_num_pruned_until_g_value);
-    py::class_<IBrFSAlgorithmEventHandler, std::shared_ptr<IBrFSAlgorithmEventHandler>>(m, "IBrFSAlgorithmEventHandler")
+    py::class_<IBrFSAlgorithmEventHandler, BrFSAlgorithmEventHandler>(m, "IBrFSAlgorithmEventHandler")
         .def("get_statistics", &IBrFSAlgorithmEventHandler::get_statistics);
     py::class_<DefaultBrFSAlgorithmEventHandler, IBrFSAlgorithmEventHandler, std::shared_ptr<DefaultBrFSAlgorithmEventHandler>>(
         m,
@@ -1352,7 +1347,7 @@ void init_pymimir(py::module_& m)
     py::class_<IWAlgorithmStatistics>(m, "IWAlgorithmStatistics")  //
         .def("get_effective_width", &IWAlgorithmStatistics::get_effective_width)
         .def("get_brfs_statistics_by_arity", &IWAlgorithmStatistics::get_brfs_statistics_by_arity);
-    py::class_<IIWAlgorithmEventHandler, std::shared_ptr<IIWAlgorithmEventHandler>>(m, "IIWAlgorithmEventHandler")
+    py::class_<IIWAlgorithmEventHandler, IWAlgorithmEventHandler>(m, "IIWAlgorithmEventHandler")
         .def("get_statistics", &IIWAlgorithmEventHandler::get_statistics);
     py::class_<DefaultIWAlgorithmEventHandler, IIWAlgorithmEventHandler, std::shared_ptr<DefaultIWAlgorithmEventHandler>>(m, "DefaultIWAlgorithmEventHandler")
         .def(py::init<>());
@@ -1372,7 +1367,7 @@ void init_pymimir(py::module_& m)
         .def("get_maximum_effective_width", &SIWAlgorithmStatistics::get_maximum_effective_width)
         .def("get_average_effective_width", &SIWAlgorithmStatistics::get_average_effective_width)
         .def("get_iw_statistics_by_subproblem", &SIWAlgorithmStatistics::get_iw_statistics_by_subproblem);
-    py::class_<ISIWAlgorithmEventHandler, std::shared_ptr<ISIWAlgorithmEventHandler>>(m, "ISIWAlgorithmEventHandler")
+    py::class_<ISIWAlgorithmEventHandler, SIWAlgorithmEventHandler>(m, "ISIWAlgorithmEventHandler")
         .def("get_statistics", &ISIWAlgorithmEventHandler::get_statistics);
     py::class_<DefaultSIWAlgorithmEventHandler, ISIWAlgorithmEventHandler, std::shared_ptr<DefaultSIWAlgorithmEventHandler>>(m,
                                                                                                                              "DefaultSIWAlgorithmEventHandler")
@@ -1465,9 +1460,8 @@ void init_pymimir(py::module_& m)
             py::arg("options") = StateSpaceOptions())
         .def_static(
             "create",
-            [](std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-               std::shared_ptr<StateRepository> state_repository,
-               const StateSpaceOptions& options) { return StateSpace::create(applicable_action_generator, state_repository, options); },
+            [](ApplicableActionGenerator applicable_action_generator, std::shared_ptr<StateRepository> state_repository, const StateSpaceOptions& options)
+            { return StateSpace::create(applicable_action_generator, state_repository, options); },
             py::arg("applicable_action_generator"),
             py::arg("state_repository"),
             py::arg("options") = StateSpaceOptions())
@@ -1483,8 +1477,8 @@ void init_pymimir(py::module_& m)
             py::arg("options") = StateSpacesOptions())
         .def_static(
             "create",
-            [](const std::vector<std::tuple<std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>& memories,
-               const StateSpacesOptions& options) { return StateSpace::create(memories, options); },
+            [](const std::vector<std::tuple<ApplicableActionGenerator, std::shared_ptr<StateRepository>>>& memories, const StateSpacesOptions& options)
+            { return StateSpace::create(memories, options); },
             py::arg("memories"),
             py::arg("options") = StateSpacesOptions())
         .def("compute_shortest_forward_distances_from_states",
@@ -1684,7 +1678,7 @@ void init_pymimir(py::module_& m)
             py::arg("options") = FaithfulAbstractionOptions())
         .def_static(
             "create",
-            [](std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
+            [](ApplicableActionGenerator applicable_action_generator,
                std::shared_ptr<StateRepository> state_repository,
                const FaithfulAbstractionOptions& options) { return FaithfulAbstraction::create(applicable_action_generator, state_repository, options); },
             py::arg("applicable_action_generator"),
@@ -1702,8 +1696,8 @@ void init_pymimir(py::module_& m)
             py::arg("options") = FaithfulAbstractionsOptions())
         .def_static(
             "create",
-            [](const std::vector<std::tuple<std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>& memories,
-               const FaithfulAbstractionsOptions& options) { return FaithfulAbstraction::create(memories, options); },
+            [](const std::vector<std::tuple<ApplicableActionGenerator, std::shared_ptr<StateRepository>>>& memories, const FaithfulAbstractionsOptions& options)
+            { return FaithfulAbstraction::create(memories, options); },
             py::arg("memories"),
             py::arg("options") = FaithfulAbstractionOptions())
         .def("compute_shortest_forward_distances_from_states",
@@ -1841,8 +1835,8 @@ void init_pymimir(py::module_& m)
             py::arg("options") = FaithfulAbstractionsOptions())
         .def_static(
             "create",
-            [](const std::vector<std::tuple<std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>& memories,
-               const FaithfulAbstractionsOptions& options) { return GlobalFaithfulAbstraction::create(memories, options); },
+            [](const std::vector<std::tuple<ApplicableActionGenerator, std::shared_ptr<StateRepository>>>& memories, const FaithfulAbstractionsOptions& options)
+            { return GlobalFaithfulAbstraction::create(memories, options); },
             py::arg("memories"),
             py::arg("options") = FaithfulAbstractionsOptions())
         .def("compute_shortest_forward_distances_from_states",

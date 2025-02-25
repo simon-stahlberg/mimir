@@ -38,14 +38,14 @@ class LiftedSIWPlanner
 private:
     Problem m_problem;
     size_t m_arity;
-    std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> m_applicable_action_generator_event_handler;
+    LiftedApplicableActionGeneratorEventHandler m_applicable_action_generator_event_handler;
     std::shared_ptr<LiftedApplicableActionGenerator> m_applicable_action_generator;
-    std::shared_ptr<ILiftedAxiomEvaluatorEventHandler> m_axiom_evaluator_event_handler;
+    LiftedAxiomEvaluatorEventHandler m_axiom_evaluator_event_handler;
     std::shared_ptr<LiftedAxiomEvaluator> m_axiom_evaluator;
-    std::shared_ptr<StateRepository> m_state_repository;
-    std::shared_ptr<IBrFSAlgorithmEventHandler> m_brfs_event_handler;
-    std::shared_ptr<IIWAlgorithmEventHandler> m_iw_event_handler;
-    std::shared_ptr<ISIWAlgorithmEventHandler> m_siw_event_handler;
+    StateRepository m_state_repository;
+    BrFSAlgorithmEventHandler m_brfs_event_handler;
+    IWAlgorithmEventHandler m_iw_event_handler;
+    SIWAlgorithmEventHandler m_siw_event_handler;
     SearchContext m_search_context;
 
 public:
@@ -56,7 +56,7 @@ public:
         m_applicable_action_generator(std::make_shared<LiftedApplicableActionGenerator>(m_problem, m_applicable_action_generator_event_handler)),
         m_axiom_evaluator_event_handler(std::make_shared<DefaultLiftedAxiomEvaluatorEventHandler>()),
         m_axiom_evaluator(std::make_shared<LiftedAxiomEvaluator>(m_problem, m_axiom_evaluator_event_handler)),
-        m_state_repository(std::make_shared<StateRepository>(m_axiom_evaluator)),
+        m_state_repository(std::make_shared<StateRepositoryImpl>(m_axiom_evaluator)),
         m_brfs_event_handler(std::make_shared<DefaultBrFSAlgorithmEventHandler>()),
         m_iw_event_handler(std::make_shared<DefaultIWAlgorithmEventHandler>()),
         m_siw_event_handler(std::make_shared<DefaultSIWAlgorithmEventHandler>()),
@@ -86,14 +86,14 @@ private:
     Problem m_problem;
     size_t m_arity;
     DeleteRelaxedProblemExplorator m_delete_relaxed_problem_explorator;
-    std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> m_applicable_action_generator_event_handler;
+    GroundedApplicableActionGeneratorEventHandler m_applicable_action_generator_event_handler;
     std::shared_ptr<GroundedApplicableActionGenerator> m_applicable_action_generator;
-    std::shared_ptr<IGroundedAxiomEvaluatorEventHandler> m_axiom_evaluator_event_handler;
+    GroundedAxiomEvaluatorEventHandler m_axiom_evaluator_event_handler;
     std::shared_ptr<GroundedAxiomEvaluator> m_axiom_evaluator;
-    std::shared_ptr<StateRepository> m_state_repository;
-    std::shared_ptr<IBrFSAlgorithmEventHandler> m_brfs_event_handler;
-    std::shared_ptr<IIWAlgorithmEventHandler> m_iw_event_handler;
-    std::shared_ptr<ISIWAlgorithmEventHandler> m_siw_event_handler;
+    StateRepository m_state_repository;
+    BrFSAlgorithmEventHandler m_brfs_event_handler;
+    IWAlgorithmEventHandler m_iw_event_handler;
+    SIWAlgorithmEventHandler m_siw_event_handler;
     SearchContext m_search_context;
 
 public:
@@ -107,7 +107,7 @@ public:
                                                                                             m_applicable_action_generator_event_handler)),
         m_axiom_evaluator_event_handler(std::make_shared<DefaultGroundedAxiomEvaluatorEventHandler>()),
         m_axiom_evaluator(m_delete_relaxed_problem_explorator.create_grounded_axiom_evaluator(match_tree::Options(), m_axiom_evaluator_event_handler)),
-        m_state_repository(std::make_shared<StateRepository>(m_axiom_evaluator)),
+        m_state_repository(std::make_shared<StateRepositoryImpl>(m_axiom_evaluator)),
         m_brfs_event_handler(std::make_shared<DefaultBrFSAlgorithmEventHandler>()),
         m_iw_event_handler(std::make_shared<DefaultIWAlgorithmEventHandler>()),
         m_siw_event_handler(std::make_shared<DefaultSIWAlgorithmEventHandler>()),

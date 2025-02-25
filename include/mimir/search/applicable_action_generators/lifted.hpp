@@ -34,7 +34,7 @@ class LiftedApplicableActionGenerator : public IApplicableActionGenerator
 {
 private:
     Problem m_problem;
-    std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> m_event_handler;
+    LiftedApplicableActionGeneratorEventHandler m_event_handler;
 
     std::unordered_map<Action, std::pair<ActionSatisficingBindingGenerator, std::vector<std::vector<IndexList>>>> m_action_grounding_data;
 
@@ -52,7 +52,7 @@ public:
     explicit LiftedApplicableActionGenerator(Problem problem);
 
     /// @brief Complete construction
-    LiftedApplicableActionGenerator(Problem problem, std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> event_handler);
+    LiftedApplicableActionGenerator(Problem problem, LiftedApplicableActionGeneratorEventHandler event_handler);
 
     // Uncopyable
     LiftedApplicableActionGenerator(const LiftedApplicableActionGenerator& other) = delete;

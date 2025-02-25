@@ -48,7 +48,7 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem) 
 
     auto delete_free_applicable_action_generator = LiftedApplicableActionGenerator(m_delete_free_problem);
     auto delete_free_axiom_evalator = std::make_shared<LiftedAxiomEvaluator>(m_delete_free_problem);
-    auto delete_free_state_repository = StateRepository(std::static_pointer_cast<IAxiomEvaluator>(delete_free_axiom_evalator));
+    auto delete_free_state_repository = StateRepositoryImpl(std::static_pointer_cast<IAxiomEvaluator>(delete_free_axiom_evalator));
 
     auto unrelaxed_objects_by_name = std::unordered_map<std::string, Object> {};
     for (const auto& object : m_problem->get_problem_and_domain_objects())
@@ -121,9 +121,8 @@ static ObjectList translate_from_delete_free_to_unrelaxed_problem(const ObjectLi
     return result;
 }
 
-std::shared_ptr<GroundedAxiomEvaluator>
-DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator(const match_tree::Options& options,
-                                                                std::shared_ptr<IGroundedAxiomEvaluatorEventHandler> event_handler) const
+std::shared_ptr<GroundedAxiomEvaluator> DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator(const match_tree::Options& options,
+                                                                                                        GroundedAxiomEvaluatorEventHandler event_handler) const
 {
     if (!event_handler)
     {
@@ -201,7 +200,7 @@ DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator(const match_tree
 
 std::shared_ptr<GroundedApplicableActionGenerator>
 DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator(const match_tree::Options& options,
-                                                                            std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> event_handler) const
+                                                                            GroundedApplicableActionGeneratorEventHandler event_handler) const
 {
     if (!event_handler)
     {

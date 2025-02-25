@@ -29,7 +29,7 @@
 namespace mimir::tests
 {
 
-TEST(MimirTests, SearchStateRepositoryTest)
+TEST(MimirTests, SearchStateRepositoryImplTest)
 {
     // Instantiate lifted version
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");

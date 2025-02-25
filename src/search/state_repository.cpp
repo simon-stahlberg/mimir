@@ -32,7 +32,7 @@
 namespace mimir
 {
 
-StateRepository::StateRepository(std::shared_ptr<IAxiomEvaluator> axiom_evaluator) :
+StateRepositoryImpl::StateRepositoryImpl(AxiomEvaluator axiom_evaluator) :
     m_axiom_evaluator(std::move(axiom_evaluator)),
     m_problem_or_domain_has_axioms(!m_axiom_evaluator->get_problem()->get_problem_and_domain_axioms().empty()),
     m_states(),
@@ -48,7 +48,7 @@ StateRepository::StateRepository(std::shared_ptr<IAxiomEvaluator> axiom_evaluato
 {
 }
 
-State StateRepository::get_or_create_initial_state()
+State StateRepositoryImpl::get_or_create_initial_state()
 {
     const auto problem = m_axiom_evaluator->get_problem();
     return get_or_create_state(problem->get_fluent_initial_atoms(), problem->get_function_to_value<Fluent>());
@@ -78,7 +78,7 @@ static void update_state_numeric_variables_ptr(const FlatDoubleList& state_numer
     state_numeric_variables_ptr = &state_numeric_variables;
 }
 
-State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms, const FlatDoubleList& fluent_numeric_variables)
+State StateRepositoryImpl::get_or_create_state(const GroundAtomList<Fluent>& atoms, const FlatDoubleList& fluent_numeric_variables)
 {
     // Index
     auto& state_index = m_state_builder.get_index();
@@ -160,7 +160,7 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms, 
     return m_states.insert(m_state_builder).first->get();
 }
 
-std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(State state, GroundAction action, ContinuousCost state_metric_value)
+std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_successor_state(State state, GroundAction action, ContinuousCost state_metric_value)
 {
     DenseState::translate(state, m_dense_state_builder);
 
@@ -303,7 +303,7 @@ static void apply_action_effects(GroundAction action,
 }
 
 std::pair<State, ContinuousCost>
-StateRepository::get_or_create_successor_state(State state, DenseState& dense_state, GroundAction action, ContinuousCost state_metric_value)
+StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dense_state, GroundAction action, ContinuousCost state_metric_value)
 {
     const auto& problem = *m_axiom_evaluator->get_problem();
 
@@ -387,19 +387,19 @@ StateRepository::get_or_create_successor_state(State state, DenseState& dense_st
     return { m_states.insert(m_state_builder).first->get(), successor_state_metric_value };
 }
 
-const Problem& StateRepository::get_problem() const { return m_axiom_evaluator->get_problem(); }
+const Problem& StateRepositoryImpl::get_problem() const { return m_axiom_evaluator->get_problem(); }
 
-size_t StateRepository::get_state_count() const { return m_states.size(); }
+size_t StateRepositoryImpl::get_state_count() const { return m_states.size(); }
 
-const FlatBitset& StateRepository::get_reached_fluent_ground_atoms_bitset() const { return m_reached_fluent_atoms; }
+const FlatBitset& StateRepositoryImpl::get_reached_fluent_ground_atoms_bitset() const { return m_reached_fluent_atoms; }
 
-const FlatBitset& StateRepository::get_reached_derived_ground_atoms_bitset() const { return m_reached_derived_atoms; }
+const FlatBitset& StateRepositoryImpl::get_reached_derived_ground_atoms_bitset() const { return m_reached_derived_atoms; }
 
-const std::shared_ptr<IAxiomEvaluator>& StateRepository::get_axiom_evaluator() const { return m_axiom_evaluator; }
+const AxiomEvaluator& StateRepositoryImpl::get_axiom_evaluator() const { return m_axiom_evaluator; }
 
-size_t StateRepository::get_estimated_memory_usage_in_bytes_for_unextended_state_portion() const { return m_states.get_estimated_memory_usage_in_bytes(); }
+size_t StateRepositoryImpl::get_estimated_memory_usage_in_bytes_for_unextended_state_portion() const { return m_states.get_estimated_memory_usage_in_bytes(); }
 
-size_t StateRepository::get_estimated_memory_usage_in_bytes_for_extended_state_portion() const
+size_t StateRepositoryImpl::get_estimated_memory_usage_in_bytes_for_extended_state_portion() const
 {
     return m_derived_atoms_set.get_estimated_memory_usage_in_bytes();
 }

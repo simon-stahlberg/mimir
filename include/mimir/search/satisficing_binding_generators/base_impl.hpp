@@ -251,7 +251,7 @@ mimir::generator<ObjectList> SatisficingBindingGenerator<Derived_>::general_case
 template<typename Derived_>
 SatisficingBindingGenerator<Derived_>::SatisficingBindingGenerator(ConjunctiveCondition conjunctive_condition,
                                                                    Problem problem,
-                                                                   std::optional<std::shared_ptr<ISatisficingBindingGeneratorEventHandler>> event_handler) :
+                                                                   std::optional<SatisficingBindingGeneratorEventHandler> event_handler) :
     m_conjunctive_condition(conjunctive_condition),
     m_problem(std::move(problem)),
     m_event_handler(event_handler.value_or(std::make_shared<DefaultSatisficingBindingGeneratorEventHandler>())),
@@ -385,7 +385,7 @@ const Problem& SatisficingBindingGenerator<Derived_>::get_problem() const
 }
 
 template<typename Derived_>
-const std::shared_ptr<ISatisficingBindingGeneratorEventHandler>& SatisficingBindingGenerator<Derived_>::get_event_handler() const
+const SatisficingBindingGeneratorEventHandler& SatisficingBindingGenerator<Derived_>::get_event_handler() const
 {
     return m_event_handler;
 }

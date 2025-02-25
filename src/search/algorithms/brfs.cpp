@@ -67,9 +67,9 @@ get_or_create_search_node(size_t state_index, const BrFSSearchNodeImpl& default_
 
 SearchResult find_solution_brfs(const SearchContext& context,
                                 std::optional<State> start_state_,
-                                std::optional<std::shared_ptr<IBrFSAlgorithmEventHandler>> event_handler_,
-                                std::optional<std::shared_ptr<IGoalStrategy>> goal_strategy_,
-                                std::optional<std::shared_ptr<IPruningStrategy>> pruning_strategy_,
+                                std::optional<BrFSAlgorithmEventHandler> event_handler_,
+                                std::optional<GoalStrategy> goal_strategy_,
+                                std::optional<PruningStrategy> pruning_strategy_,
                                 bool exhaustive)
 {
     const auto& problem = *context.get_problem();

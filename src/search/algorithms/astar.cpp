@@ -67,11 +67,11 @@ get_or_create_search_node(size_t state_index, const AStarSearchNodeImpl& default
  */
 
 SearchResult find_solution_astar(const SearchContext& context,
-                                 std::shared_ptr<IHeuristic> heuristic,
+                                 Heuristic heuristic,
                                  std::optional<State> start_state_,
-                                 std::optional<std::shared_ptr<IAStarAlgorithmEventHandler>> event_handler_,
-                                 std::optional<std::shared_ptr<IGoalStrategy>> goal_strategy_,
-                                 std::optional<std::shared_ptr<IPruningStrategy>> pruning_strategy_)
+                                 std::optional<AStarAlgorithmEventHandler> event_handler_,
+                                 std::optional<GoalStrategy> goal_strategy_,
+                                 std::optional<PruningStrategy> pruning_strategy_)
 {
     assert(heuristic);
 

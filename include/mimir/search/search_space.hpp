@@ -35,7 +35,7 @@ inline ContinuousCost extract_ground_action_sequence(State start_state,
                                                      ContinuousCost start_state_metric_value,
                                                      const IndexList& state_trajectory,
                                                      IApplicableActionGenerator& applicable_action_generator,
-                                                     StateRepository& state_repository,
+                                                     StateRepositoryImpl& state_repository,
                                                      GroundActionList& out_ground_action_sequence)
 {
     if (start_state->get_index() != state_trajectory.front())

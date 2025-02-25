@@ -36,7 +36,7 @@ GroundedAxiomEvaluator::GroundedAxiomEvaluator(Problem problem,
 
 GroundedAxiomEvaluator::GroundedAxiomEvaluator(Problem problem,
                                                std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>>&& match_tree_partitioning,
-                                               std::shared_ptr<IGroundedAxiomEvaluatorEventHandler> event_handler) :
+                                               GroundedAxiomEvaluatorEventHandler event_handler) :
     m_problem(std::move(problem)),
     m_match_tree_partitioning(std::move(match_tree_partitioning)),
     m_event_handler(std::move(event_handler))
@@ -92,5 +92,5 @@ void GroundedAxiomEvaluator::on_end_search() { m_event_handler->on_end_search();
 
 const Problem& GroundedAxiomEvaluator::get_problem() const { return m_problem; }
 
-const std::shared_ptr<IGroundedAxiomEvaluatorEventHandler>& GroundedAxiomEvaluator::get_event_handler() const { return m_event_handler; }
+const GroundedAxiomEvaluatorEventHandler& GroundedAxiomEvaluator::get_event_handler() const { return m_event_handler; }
 }

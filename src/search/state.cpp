@@ -107,7 +107,7 @@ const FlatIndexList& StateImpl::get_atoms() const
         {
             return StateImpl::s_empty_derived_atoms;
         }
-        // StateRepository ensures that m_derived_atoms is a valid pointer to a FlatIndexList.
+        // StateRepositoryImpl ensures that m_derived_atoms is a valid pointer to a FlatIndexList.
         assert(std::is_sorted(m_derived_atoms->begin(), m_derived_atoms->end()));
         return *m_derived_atoms;
     }
@@ -126,7 +126,7 @@ const FlatDoubleList& StateImpl::get_numeric_variables() const
     {
         return StateImpl::s_empty_numeric_variables;
     }
-    // StateRepository ensures that m_numeric_variables is a valid pointer to a FlatDoubleList.
+    // StateRepositoryImpl ensures that m_numeric_variables is a valid pointer to a FlatDoubleList.
     return *m_numeric_variables;
 }
 

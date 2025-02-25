@@ -40,9 +40,7 @@ public:
     using SatisficingBindingGenerator<AxiomSatisficingBindingGenerator>::get_event_handler;
     using SatisficingBindingGenerator<AxiomSatisficingBindingGenerator>::get_static_consistency_graph;
 
-    AxiomSatisficingBindingGenerator(Axiom axiom,
-                                     Problem problem,
-                                     std::optional<std::shared_ptr<ISatisficingBindingGeneratorEventHandler>> event_handler = std::nullopt);
+    AxiomSatisficingBindingGenerator(Axiom axiom, Problem problem, std::optional<SatisficingBindingGeneratorEventHandler> event_handler = std::nullopt);
 };
 
 }

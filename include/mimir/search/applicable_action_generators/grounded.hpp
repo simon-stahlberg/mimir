@@ -39,7 +39,7 @@ private:
     Problem m_problem;
     std::unique_ptr<match_tree::MatchTree<GroundActionImpl>> m_match_tree;
 
-    std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> m_event_handler;
+    GroundedApplicableActionGeneratorEventHandler m_event_handler;
 
     /* Memory for reuse */
     DenseState m_dense_state;
@@ -51,7 +51,7 @@ public:
     /// @brief Complete construction
     GroundedApplicableActionGenerator(Problem problem,
                                       std::unique_ptr<match_tree::MatchTree<GroundActionImpl>>&& match_tree,
-                                      std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> event_handler);
+                                      GroundedApplicableActionGeneratorEventHandler event_handler);
 
     // Uncopyable
     GroundedApplicableActionGenerator(const GroundedApplicableActionGenerator& other) = delete;

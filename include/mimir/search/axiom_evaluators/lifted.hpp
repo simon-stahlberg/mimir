@@ -31,7 +31,7 @@ class LiftedAxiomEvaluator : public IAxiomEvaluator
 {
 private:
     Problem m_problem;
-    std::shared_ptr<ILiftedAxiomEvaluatorEventHandler> m_event_handler;
+    LiftedAxiomEvaluatorEventHandler m_event_handler;
 
     std::unordered_map<Axiom, AxiomSatisficingBindingGenerator> m_condition_grounders;
 
@@ -46,7 +46,7 @@ private:
 public:
     explicit LiftedAxiomEvaluator(Problem problem);
 
-    LiftedAxiomEvaluator(Problem problem, std::shared_ptr<ILiftedAxiomEvaluatorEventHandler> event_handler);
+    LiftedAxiomEvaluator(Problem problem, LiftedAxiomEvaluatorEventHandler event_handler);
 
     // Uncopyable
     LiftedAxiomEvaluator(const LiftedAxiomEvaluator& other) = delete;
@@ -65,7 +65,7 @@ public:
      */
 
     const Problem& get_problem() const override;
-    const std::shared_ptr<ILiftedAxiomEvaluatorEventHandler>& get_event_handler() const;
+    const LiftedAxiomEvaluatorEventHandler& get_event_handler() const;
 };
 
 }  // namespace mimir

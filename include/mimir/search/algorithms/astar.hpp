@@ -31,11 +31,11 @@ namespace mimir
 {
 
 extern SearchResult find_solution_astar(const SearchContext& context,
-                                        std::shared_ptr<IHeuristic> heuristic,
+                                        Heuristic heuristic,
                                         std::optional<State> start_state = std::nullopt,
-                                        std::optional<std::shared_ptr<IAStarAlgorithmEventHandler>> event_handler = std::nullopt,
-                                        std::optional<std::shared_ptr<IGoalStrategy>> goal_strategy = std::nullopt,
-                                        std::optional<std::shared_ptr<IPruningStrategy>> pruning_strategy = std::nullopt);
+                                        std::optional<AStarAlgorithmEventHandler> event_handler = std::nullopt,
+                                        std::optional<GoalStrategy> goal_strategy = std::nullopt,
+                                        std::optional<PruningStrategy> pruning_strategy = std::nullopt);
 
 }
 

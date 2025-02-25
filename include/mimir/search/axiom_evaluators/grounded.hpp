@@ -31,14 +31,14 @@ class GroundedAxiomEvaluator : public IAxiomEvaluator
 private:
     Problem m_problem;
     std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>> m_match_tree_partitioning;
-    std::shared_ptr<IGroundedAxiomEvaluatorEventHandler> m_event_handler;
+    GroundedAxiomEvaluatorEventHandler m_event_handler;
 
 public:
     GroundedAxiomEvaluator(Problem problem, std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>>&& match_tree_partitioning);
 
     GroundedAxiomEvaluator(Problem problem,
                            std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>>&& match_tree_partitioning,
-                           std::shared_ptr<IGroundedAxiomEvaluatorEventHandler> event_handler);
+                           GroundedAxiomEvaluatorEventHandler event_handler);
 
     // Uncopyable
     GroundedAxiomEvaluator(const GroundedAxiomEvaluator& other) = delete;
@@ -57,7 +57,7 @@ public:
      */
 
     const Problem& get_problem() const override;
-    const std::shared_ptr<IGroundedAxiomEvaluatorEventHandler>& get_event_handler() const;
+    const GroundedAxiomEvaluatorEventHandler& get_event_handler() const;
 };
 
 }

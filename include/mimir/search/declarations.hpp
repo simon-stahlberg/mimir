@@ -30,8 +30,9 @@ namespace mimir
 
 class SearchContext;
 
-// StateRepository
-class StateRepository;
+// StateRepositoryImpl
+class StateRepositoryImpl;
+using StateRepository = std::shared_ptr<StateRepositoryImpl>;
 
 // State
 struct StateImpl;
@@ -48,22 +49,29 @@ class DeleteRelaxedProblemExplorator;
 
 /* ApplicableActionGenerators */
 class IApplicableActionGenerator;
+using ApplicableActionGenerator = std::shared_ptr<IApplicableActionGenerator>;
 class GroundedApplicableActionGenerator;
 class LiftedApplicableActionGenerator;
 
 class IGroundedApplicableActionGeneratorEventHandler;
+using GroundedApplicableActionGeneratorEventHandler = std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler>;
 class ILiftedApplicableActionGeneratorEventHandler;
+using LiftedApplicableActionGeneratorEventHandler = std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler>;
 
 /* AxiomEvaluators */
 class IAxiomEvaluator;
+using AxiomEvaluator = std::shared_ptr<IAxiomEvaluator>;
 class GroundedAxiomEvaluator;
 class LiftedAxiomEvaluator;
 
 class IGroundedAxiomEvaluatorEventHandler;
+using GroundedAxiomEvaluatorEventHandler = std::shared_ptr<IGroundedAxiomEvaluatorEventHandler>;
 class ILiftedAxiomEvaluatorEventHandler;
+using LiftedAxiomEvaluatorEventHandler = std::shared_ptr<ILiftedAxiomEvaluatorEventHandler>;
 
 /* SatisficingBindingGenerator */
 class ISatisficingBindingGeneratorEventHandler;
+using SatisficingBindingGeneratorEventHandler = std::shared_ptr<ISatisficingBindingGeneratorEventHandler>;
 
 /* MatchTree */
 template<typename T>
@@ -71,23 +79,30 @@ class MatchTree;
 
 /* Heuristics */
 class IHeuristic;
+using Heuristic = std::shared_ptr<IHeuristic>;
 
 /* Algorithms */
 
 class IPruningStrategy;
+using PruningStrategy = std::shared_ptr<IPruningStrategy>;
 class IGoalStrategy;
+using GoalStrategy = std::shared_ptr<IGoalStrategy>;
 
 // AStar
 class IAStarAlgorithmEventHandler;
+using AStarAlgorithmEventHandler = std::shared_ptr<IAStarAlgorithmEventHandler>;
 
 // Breadth-first search
 class IBrFSAlgorithmEventHandler;
+using BrFSAlgorithmEventHandler = std::shared_ptr<IBrFSAlgorithmEventHandler>;
 
 // Iterative width search
 class IIWAlgorithmEventHandler;
+using IWAlgorithmEventHandler = std::shared_ptr<IIWAlgorithmEventHandler>;
 
 // Serialized iterative width search
 class ISIWAlgorithmEventHandler;
+using SIWAlgorithmEventHandler = std::shared_ptr<ISIWAlgorithmEventHandler>;
 
 // Plan
 class Plan;

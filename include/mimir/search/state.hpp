@@ -86,7 +86,7 @@ struct StateImpl
 private:
     /* Mutable Getters */
 
-    friend class StateRepository;  ///< Given exclusive write access to a state.
+    friend class StateRepositoryImpl;  ///< Given exclusive write access to a state.
 
     Index& get_index();
 

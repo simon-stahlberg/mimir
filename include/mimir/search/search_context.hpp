@@ -28,8 +28,8 @@ class SearchContext
 {
 private:
     Problem m_problem;
-    std::shared_ptr<IApplicableActionGenerator> m_applicable_action_generator;
-    std::shared_ptr<StateRepository> m_state_repository;
+    ApplicableActionGenerator m_applicable_action_generator;
+    StateRepository m_state_repository;
 
 public:
     enum class SearchMode
@@ -47,13 +47,13 @@ public:
     };
 
     SearchContext(Problem problem, const Options& options = Options());
-    SearchContext(Problem problem, std::shared_ptr<IApplicableActionGenerator> applicable_action_generator, std::shared_ptr<StateRepository> state_repository);
+    SearchContext(Problem problem, ApplicableActionGenerator applicable_action_generator, StateRepository state_repository);
 
     static std::vector<SearchContext> create(const ProblemList& problems, const Options& options = Options());
 
     const Problem& get_problem() const;
-    const std::shared_ptr<IApplicableActionGenerator> get_applicable_action_generator() const;
-    const std::shared_ptr<StateRepository> get_state_repository() const;
+    const ApplicableActionGenerator get_applicable_action_generator() const;
+    const StateRepository get_state_repository() const;
 };
 
 using SearchContextList = std::vector<SearchContext>;

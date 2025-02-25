@@ -32,7 +32,7 @@ LiftedAxiomEvaluator::LiftedAxiomEvaluator(Problem problem) :
 {
 }
 
-LiftedAxiomEvaluator::LiftedAxiomEvaluator(Problem problem, std::shared_ptr<ILiftedAxiomEvaluatorEventHandler> event_handler) :
+LiftedAxiomEvaluator::LiftedAxiomEvaluator(Problem problem, LiftedAxiomEvaluatorEventHandler event_handler) :
     m_problem(problem),
     m_event_handler(event_handler),
     m_condition_grounders(),
@@ -165,5 +165,5 @@ void LiftedAxiomEvaluator::on_end_search() { m_event_handler->on_end_search(); }
 
 const Problem& LiftedAxiomEvaluator::get_problem() const { return m_problem; }
 
-const std::shared_ptr<ILiftedAxiomEvaluatorEventHandler>& LiftedAxiomEvaluator::get_event_handler() const { return m_event_handler; }
+const LiftedAxiomEvaluatorEventHandler& LiftedAxiomEvaluator::get_event_handler() const { return m_event_handler; }
 }

@@ -43,13 +43,13 @@ class LiftedAStarPlanner
 {
 private:
     Problem m_problem;
-    std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> m_applicable_action_generator_event_handler;
+    LiftedApplicableActionGeneratorEventHandler m_applicable_action_generator_event_handler;
     std::shared_ptr<LiftedApplicableActionGenerator> m_applicable_action_generator;
-    std::shared_ptr<ILiftedAxiomEvaluatorEventHandler> m_axiom_evaluator_event_handler;
+    LiftedAxiomEvaluatorEventHandler m_axiom_evaluator_event_handler;
     std::shared_ptr<LiftedAxiomEvaluator> m_axiom_evaluator;
-    std::shared_ptr<StateRepository> m_state_repository;
-    std::shared_ptr<IHeuristic> m_heuristic;
-    std::shared_ptr<IAStarAlgorithmEventHandler> m_astar_event_handler;
+    StateRepository m_state_repository;
+    Heuristic m_heuristic;
+    AStarAlgorithmEventHandler m_astar_event_handler;
     SearchContext m_search_context;
 
 public:
@@ -59,7 +59,7 @@ public:
         m_applicable_action_generator(std::make_shared<LiftedApplicableActionGenerator>(m_problem, m_applicable_action_generator_event_handler)),
         m_axiom_evaluator_event_handler(std::make_shared<DefaultLiftedAxiomEvaluatorEventHandler>()),
         m_axiom_evaluator(std::make_shared<LiftedAxiomEvaluator>(m_problem, m_axiom_evaluator_event_handler)),
-        m_state_repository(std::make_shared<StateRepository>(m_axiom_evaluator)),
+        m_state_repository(std::make_shared<StateRepositoryImpl>(m_axiom_evaluator)),
         m_astar_event_handler(std::make_shared<DefaultAStarAlgorithmEventHandler>(false)),
         m_search_context(m_problem, m_applicable_action_generator, m_state_repository)
     {
@@ -100,13 +100,13 @@ class GroundedAStarPlanner
 private:
     Problem m_problem;
     DeleteRelaxedProblemExplorator m_delete_relaxed_problem_explorator;
-    std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> m_applicable_action_generator_event_handler;
+    GroundedApplicableActionGeneratorEventHandler m_applicable_action_generator_event_handler;
     std::shared_ptr<GroundedApplicableActionGenerator> m_applicable_action_generator;
-    std::shared_ptr<IGroundedAxiomEvaluatorEventHandler> m_axiom_evaluator_event_handler;
+    GroundedAxiomEvaluatorEventHandler m_axiom_evaluator_event_handler;
     std::shared_ptr<GroundedAxiomEvaluator> m_axiom_evaluator;
-    std::shared_ptr<StateRepository> m_state_repository;
-    std::shared_ptr<IHeuristic> m_heuristic;
-    std::shared_ptr<IAStarAlgorithmEventHandler> m_astar_event_handler;
+    StateRepository m_state_repository;
+    Heuristic m_heuristic;
+    AStarAlgorithmEventHandler m_astar_event_handler;
     SearchContext m_search_context;
 
 public:
@@ -119,7 +119,7 @@ public:
                                                                                             m_applicable_action_generator_event_handler)),
         m_axiom_evaluator_event_handler(std::make_shared<DefaultGroundedAxiomEvaluatorEventHandler>()),
         m_axiom_evaluator(m_delete_relaxed_problem_explorator.create_grounded_axiom_evaluator(match_tree::Options(), m_axiom_evaluator_event_handler)),
-        m_state_repository(std::make_shared<StateRepository>(m_axiom_evaluator)),
+        m_state_repository(std::make_shared<StateRepositoryImpl>(m_axiom_evaluator)),
         m_astar_event_handler(std::make_shared<DefaultAStarAlgorithmEventHandler>()),
         m_search_context(m_problem, m_applicable_action_generator, m_state_repository)
     {

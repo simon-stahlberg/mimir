@@ -27,11 +27,11 @@
 namespace mimir
 {
 
-class StateRepository
+class StateRepositoryImpl
 {
 private:
-    std::shared_ptr<IAxiomEvaluator> m_axiom_evaluator;  ///< The axiom evaluator.
-    bool m_problem_or_domain_has_axioms;                 ///< flag that indicates whether axiom evaluation must trigger.
+    AxiomEvaluator m_axiom_evaluator;     ///< The axiom evaluator.
+    bool m_problem_or_domain_has_axioms;  ///< flag that indicates whether axiom evaluation must trigger.
 
     StateImplSet m_states;  ///< Stores all created extended states.
     // TODO: merge both members below?
@@ -53,12 +53,12 @@ private:
     FlatIndexList m_state_derived_atoms;
 
 public:
-    explicit StateRepository(std::shared_ptr<IAxiomEvaluator> axiom_evaluator);
+    explicit StateRepositoryImpl(AxiomEvaluator axiom_evaluator);
 
-    StateRepository(const StateRepository& other) = delete;
-    StateRepository& operator=(const StateRepository& other) = delete;
-    StateRepository(StateRepository&& other) = delete;
-    StateRepository& operator=(StateRepository&& other) = delete;
+    StateRepositoryImpl(const StateRepositoryImpl& other) = delete;
+    StateRepositoryImpl& operator=(const StateRepositoryImpl& other) = delete;
+    StateRepositoryImpl(StateRepositoryImpl&& other) = delete;
+    StateRepositoryImpl& operator=(StateRepositoryImpl&& other) = delete;
 
     /// @brief Get or create the extended initial state of the underlying problem.
     /// @return the extended initial state.
@@ -110,7 +110,7 @@ public:
 
     /// @brief Get the underlying axiom evaluator.
     /// @return the axiom evaluator.
-    const std::shared_ptr<IAxiomEvaluator>& get_axiom_evaluator() const;
+    const AxiomEvaluator& get_axiom_evaluator() const;
 
     /// @brief Get the total number of bytes used for storing the unextended state portions.
     /// @return the number of bytes for storing storing the unextended state portions.

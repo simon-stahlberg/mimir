@@ -49,9 +49,9 @@ int main(int argc, char** argv)
     std::cout << *parser.get_problem() << std::endl;
 
     auto grounder = std::make_shared<Grounder>(parser.get_problem(), parser.get_pddl_repositories());
-    auto applicable_action_generator = std::shared_ptr<IApplicableActionGenerator>(nullptr);
-    auto axiom_evaluator = std::shared_ptr<IAxiomEvaluator>(nullptr);
-    auto state_repository = std::shared_ptr<StateRepository>(nullptr);
+    auto applicable_action_generator = ApplicableActionGenerator(nullptr);
+    auto axiom_evaluator = AxiomEvaluator(nullptr);
+    auto state_repository = StateRepository(nullptr);
     if (grounded)
     {
         auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(grounder);
@@ -60,7 +60,7 @@ int main(int argc, char** argv)
                 std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>(false)));
         axiom_evaluator = std::dynamic_pointer_cast<IAxiomEvaluator>(
             delete_relaxed_problem_explorator.create_grounded_axiom_evaluator(std::make_shared<DefaultGroundedAxiomEvaluatorEventHandler>(false)));
-        state_repository = std::make_shared<StateRepository>(axiom_evaluator);
+        state_repository = std::make_shared<StateRepositoryImpl>(axiom_evaluator);
     }
     else
     {
@@ -69,11 +69,11 @@ int main(int argc, char** argv)
                                                               std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>(false)));
         axiom_evaluator = std::dynamic_pointer_cast<IAxiomEvaluator>(
             std::make_shared<LiftedAxiomEvaluator>(grounder->get_axiom_grounder(), std::make_shared<DefaultLiftedAxiomEvaluatorEventHandler>(false)));
-        state_repository = std::make_shared<StateRepository>(axiom_evaluator);
+        state_repository = std::make_shared<StateRepositoryImpl>(axiom_evaluator);
     }
 
-    auto brfs_event_handler = (debug) ? std::shared_ptr<IBrFSAlgorithmEventHandler> { std::make_shared<DebugBrFSAlgorithmEventHandler>() } :
-                                        std::shared_ptr<IBrFSAlgorithmEventHandler> { std::make_shared<DefaultBrFSAlgorithmEventHandler>() };
+    auto brfs_event_handler = (debug) ? BrFSAlgorithmEventHandler { std::make_shared<DebugBrFSAlgorithmEventHandler>() } :
+                                        BrFSAlgorithmEventHandler { std::make_shared<DefaultBrFSAlgorithmEventHandler>() };
 
     auto iw_event_handler = std::make_shared<DefaultIWAlgorithmEventHandler>(false);
 

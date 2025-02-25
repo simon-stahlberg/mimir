@@ -32,14 +32,14 @@ SearchContext::SearchContext(Problem problem, const Options& options) : m_proble
         case SearchMode::GROUNDED:
         {
             auto delete_relaxed_explorator = DeleteRelaxedProblemExplorator(m_problem);
-            m_state_repository = std::make_shared<StateRepository>(delete_relaxed_explorator.create_grounded_axiom_evaluator());
+            m_state_repository = std::make_shared<StateRepositoryImpl>(delete_relaxed_explorator.create_grounded_axiom_evaluator());
             m_applicable_action_generator =
                 std::dynamic_pointer_cast<IApplicableActionGenerator>(delete_relaxed_explorator.create_grounded_applicable_action_generator());
             break;
         }
         case SearchMode::LIFTED:
         {
-            m_state_repository = std::make_shared<StateRepository>(std::make_shared<LiftedAxiomEvaluator>(m_problem));
+            m_state_repository = std::make_shared<StateRepositoryImpl>(std::make_shared<LiftedAxiomEvaluator>(m_problem));
             m_applicable_action_generator = std::dynamic_pointer_cast<IApplicableActionGenerator>(std::make_shared<LiftedApplicableActionGenerator>(m_problem));
             break;
         }
@@ -50,9 +50,7 @@ SearchContext::SearchContext(Problem problem, const Options& options) : m_proble
     }
 }
 
-SearchContext::SearchContext(Problem problem,
-                             std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                             std::shared_ptr<StateRepository> state_repository) :
+SearchContext::SearchContext(Problem problem, ApplicableActionGenerator applicable_action_generator, StateRepository state_repository) :
     m_problem(std::move(problem)),
     m_applicable_action_generator(std::move(applicable_action_generator)),
     m_state_repository(std::move(state_repository))
@@ -71,8 +69,8 @@ std::vector<SearchContext> SearchContext::create(const ProblemList& problems, co
 
 const Problem& SearchContext::get_problem() const { return m_problem; }
 
-const std::shared_ptr<IApplicableActionGenerator> SearchContext::get_applicable_action_generator() const { return m_applicable_action_generator; }
+const ApplicableActionGenerator SearchContext::get_applicable_action_generator() const { return m_applicable_action_generator; }
 
-const std::shared_ptr<StateRepository> SearchContext::get_state_repository() const { return m_state_repository; }
+const StateRepository SearchContext::get_state_repository() const { return m_state_repository; }
 
 }

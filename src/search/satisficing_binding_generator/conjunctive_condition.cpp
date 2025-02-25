@@ -25,7 +25,7 @@ namespace mimir
 ConjunctiveConditionSatisficingBindingGenerator::ConjunctiveConditionSatisficingBindingGenerator(
     ConjunctiveCondition conjunctive_condition,
     Problem problem,
-    std::optional<std::shared_ptr<ISatisficingBindingGeneratorEventHandler>> event_handler) :
+    std::optional<SatisficingBindingGeneratorEventHandler> event_handler) :
     SatisficingBindingGenerator<ConjunctiveConditionSatisficingBindingGenerator>(conjunctive_condition, std::move(problem), event_handler)
 {
 }

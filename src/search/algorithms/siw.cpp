@@ -67,10 +67,10 @@ bool ProblemGoalCounter::test_dynamic_goal(State state) { return count_unsatisfi
 SearchResult find_solution_siw(const SearchContext& context,
                                std::optional<State> start_state_,
                                std::optional<size_t> max_arity_,
-                               std::optional<std::shared_ptr<ISIWAlgorithmEventHandler>> siw_event_handler_,
-                               std::optional<std::shared_ptr<IIWAlgorithmEventHandler>> iw_event_handler_,
-                               std::optional<std::shared_ptr<IBrFSAlgorithmEventHandler>> brfs_event_handler_,
-                               std::optional<std::shared_ptr<IGoalStrategy>> goal_strategy_)
+                               std::optional<SIWAlgorithmEventHandler> siw_event_handler_,
+                               std::optional<IWAlgorithmEventHandler> iw_event_handler_,
+                               std::optional<BrFSAlgorithmEventHandler> brfs_event_handler_,
+                               std::optional<GoalStrategy> goal_strategy_)
 {
     const auto& problem = *context.get_problem();
     auto& applicable_action_generator = *context.get_applicable_action_generator();

@@ -51,11 +51,11 @@ public:
     DeleteRelaxedProblemExplorator& operator=(DeleteRelaxedProblemExplorator&& other) = delete;
 
     std::shared_ptr<GroundedAxiomEvaluator> create_grounded_axiom_evaluator(const match_tree::Options& options = match_tree::Options(),
-                                                                            std::shared_ptr<IGroundedAxiomEvaluatorEventHandler> event_handler = nullptr) const;
+                                                                            GroundedAxiomEvaluatorEventHandler event_handler = nullptr) const;
 
     std::shared_ptr<GroundedApplicableActionGenerator>
     create_grounded_applicable_action_generator(const match_tree::Options& options = match_tree::Options(),
-                                                std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> event_handler = nullptr) const;
+                                                GroundedApplicableActionGeneratorEventHandler event_handler = nullptr) const;
 
     const Problem& get_problem() const;
 };

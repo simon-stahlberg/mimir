@@ -40,7 +40,7 @@ TEST(MimirTests, SearchApplicableActionGeneratorsLiftedTest)
     const auto axiom_evaluator_event_handler =
         std::dynamic_pointer_cast<ILiftedAxiomEvaluatorEventHandler>(std::make_shared<DefaultLiftedAxiomEvaluatorEventHandler>());
     const auto axiom_evaluator = std::dynamic_pointer_cast<IAxiomEvaluator>(std::make_shared<LiftedAxiomEvaluator>(problem, axiom_evaluator_event_handler));
-    const auto state_repository = std::make_shared<StateRepository>(axiom_evaluator);
+    const auto state_repository = std::make_shared<StateRepositoryImpl>(axiom_evaluator);
     const auto brfs_event_handler = std::make_shared<DefaultBrFSAlgorithmEventHandler>();
     const auto search_context = SearchContext(problem, applicable_action_generator, state_repository);
 

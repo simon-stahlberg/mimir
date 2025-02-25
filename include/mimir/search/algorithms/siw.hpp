@@ -26,10 +26,10 @@ namespace mimir
 extern SearchResult find_solution_siw(const SearchContext& context,
                                       std::optional<State> start_state = std::nullopt,
                                       std::optional<size_t> max_arity = std::nullopt,
-                                      std::optional<std::shared_ptr<ISIWAlgorithmEventHandler>> siw_event_handler = std::nullopt,
-                                      std::optional<std::shared_ptr<IIWAlgorithmEventHandler>> iw_event_handler = std::nullopt,
-                                      std::optional<std::shared_ptr<IBrFSAlgorithmEventHandler>> brfs_event_handler = std::nullopt,
-                                      std::optional<std::shared_ptr<IGoalStrategy>> goal_strategy = std::nullopt);
+                                      std::optional<SIWAlgorithmEventHandler> siw_event_handler = std::nullopt,
+                                      std::optional<IWAlgorithmEventHandler> iw_event_handler = std::nullopt,
+                                      std::optional<BrFSAlgorithmEventHandler> brfs_event_handler = std::nullopt,
+                                      std::optional<GoalStrategy> goal_strategy = std::nullopt);
 }
 
 #endif

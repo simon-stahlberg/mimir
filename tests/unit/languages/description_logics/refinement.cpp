@@ -94,7 +94,7 @@ TEST(MimirTests, LanguagesDescriptionLogicsRefinementBrfsTest)
     auto applicable_action_generator = std::make_shared<LiftedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories());
     auto axiom_evaluator =
         std::dynamic_pointer_cast<IAxiomEvaluator>(std::make_shared<LiftedAxiomEvaluator>(parser.get_problem(), parser.get_pddl_repositories()));
-    auto state_repository = std::make_shared<StateRepository>(axiom_evaluator);
+    auto state_repository = std::make_shared<StateRepositoryImpl>(axiom_evaluator);
     auto state_space = StateSpace::create(applicable_action_generator, state_repository);
     auto state_list = StateList();
     for (const auto& state_vertex : state_space.value().get_vertices())
