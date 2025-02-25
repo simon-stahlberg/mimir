@@ -39,6 +39,8 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
+    using Type = F;
+
     // moveable but not copyable
     FunctionSkeletonImpl(const FunctionSkeletonImpl& other) = delete;
     FunctionSkeletonImpl& operator=(const FunctionSkeletonImpl& other) = delete;

@@ -44,8 +44,7 @@ ProblemBuilder::ProblemBuilder(Domain domain) :
     m_objects(),
     m_derived_predicates(),
     m_initial_literals(),
-    m_static_initial_function_values(),
-    m_fluent_initial_function_values(),
+    m_initial_function_values(),
     m_auxiliary_function_value(std::nullopt),
     m_goal_condition(),
     m_numeric_goal_condition(),
@@ -88,11 +87,11 @@ Problem ProblemBuilder::get_result(Index problem_index)
               get_initial_literals<Fluent>().end(),
               [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
 
-    std::sort(m_static_initial_function_values.begin(),
-              m_static_initial_function_values.end(),
+    std::sort(get_initial_function_values<Static>().begin(),
+              get_initial_function_values<Static>().end(),
               [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
-    std::sort(m_fluent_initial_function_values.begin(),
-              m_fluent_initial_function_values.end(),
+    std::sort(get_initial_function_values<Fluent>().begin(),
+              get_initial_function_values<Fluent>().end(),
               [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
 
     std::sort(get_goal_condition<Static>().begin(),
@@ -125,8 +124,7 @@ Problem ProblemBuilder::get_result(Index problem_index)
                                                         std::move(m_derived_predicates),
                                                         std::move(problem_and_domain_derived_predicates),
                                                         std::move(m_initial_literals),
-                                                        std::move(m_static_initial_function_values),
-                                                        std::move(m_fluent_initial_function_values),
+                                                        std::move(m_initial_function_values),
                                                         std::move(m_auxiliary_function_value),
                                                         std::move(m_goal_condition),
                                                         std::move(m_numeric_goal_condition),
@@ -156,22 +154,13 @@ GroundLiteralLists<Static, Fluent>& ProblemBuilder::get_hana_initial_literals() 
 template<StaticOrFluent F>
 GroundFunctionValueList<F>& ProblemBuilder::get_initial_function_values()
 {
-    if constexpr (std::is_same_v<F, Static>)
-    {
-        return m_static_initial_function_values;
-    }
-    else if constexpr (std::is_same_v<F, Fluent>)
-    {
-        return m_fluent_initial_function_values;
-    }
-    else
-    {
-        static_assert(dependent_false<F>::value, "ProblemBuilder::get_initial_function_values(): Missing implementation for StaticOrFluent type.");
-    }
+    return boost::hana::at_key(m_initial_function_values, boost::hana::type<F> {});
 }
 
 template GroundFunctionValueList<Static>& ProblemBuilder::get_initial_function_values();
 template GroundFunctionValueList<Fluent>& ProblemBuilder::get_initial_function_values();
+
+GroundFunctionValueLists<Static, Fluent>& ProblemBuilder::get_hana_initial_function_values() { return m_initial_function_values; }
 
 std::optional<GroundFunctionValue<Auxiliary>>& ProblemBuilder::get_auxiliary_function_value() { return m_auxiliary_function_value; }
 template<StaticOrFluentOrDerived P>

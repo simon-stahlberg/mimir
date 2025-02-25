@@ -40,7 +40,10 @@ namespace mimir
  * Forward declarations
  */
 
-class ProblemContext;
+template<typename... Ts>
+using FlatBitsets = boost::hana::map<boost::hana::pair<boost::hana::type<Ts>, FlatBitset>...>;
+template<typename... Ts>
+using FlatIndexLists = boost::hana::map<boost::hana::pair<boost::hana::type<Ts>, FlatIndexList>...>;
 
 template<StaticOrFluentOrDerived P>
 class AssignmentSet;
@@ -139,6 +142,8 @@ template<StaticOrFluentOrDerived P>
 using GroundAtom = const GroundAtomImpl<P>*;
 template<StaticOrFluentOrDerived P>
 using GroundAtomList = std::vector<GroundAtom<P>>;
+template<StaticOrFluentOrDerived... Ps>
+using GroundAtomLists = boost::hana::map<boost::hana::pair<boost::hana::type<Ps>, GroundAtomList<Ps>>...>;
 template<StaticOrFluentOrDerived P>
 using GroundAtomSet = std::unordered_set<GroundAtom<P>>;
 
@@ -196,6 +201,8 @@ template<StaticOrFluentOrAuxiliary F>
 using GroundFunctionValue = const GroundFunctionValueImpl<F>*;
 template<StaticOrFluentOrAuxiliary F>
 using GroundFunctionValueList = std::vector<GroundFunctionValue<F>>;
+template<StaticOrFluent... Fs>
+using GroundFunctionValueLists = boost::hana::map<boost::hana::pair<boost::hana::type<Fs>, GroundFunctionValueList<Fs>>...>;
 
 class NumericConstraintImpl;
 using NumericConstraint = const NumericConstraintImpl*;

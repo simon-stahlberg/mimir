@@ -57,8 +57,7 @@ ProblemImpl::ProblemImpl(Index index,
                          PredicateList<Derived> derived_predicates,
                          PredicateList<Derived> problem_and_domain_derived_predicates,
                          GroundLiteralLists<Static, Fluent> initial_literals,
-                         GroundFunctionValueList<Static> static_initial_function_values,
-                         GroundFunctionValueList<Fluent> fluent_initial_function_values,
+                         GroundFunctionValueLists<Static, Fluent> initial_function_values,
                          std::optional<GroundFunctionValue<Auxiliary>> auxiliary_function_value,
                          GroundLiteralLists<Static, Fluent, Derived> goal_condition,
                          GroundNumericConstraintList numeric_goal_condition,
@@ -76,8 +75,7 @@ ProblemImpl::ProblemImpl(Index index,
     m_derived_predicates(std::move(derived_predicates)),
     m_problem_and_domain_derived_predicates(std::move(problem_and_domain_derived_predicates)),
     m_initial_literals(std::move(initial_literals)),
-    m_static_initial_function_values(std::move(static_initial_function_values)),
-    m_fluent_initial_function_values(std::move(fluent_initial_function_values)),
+    m_initial_function_values(std::move(initial_function_values)),
     m_auxiliary_function_value(auxiliary_function_value),
     m_goal_condition(std::move(goal_condition)),
     m_numeric_goal_condition(std::move(numeric_goal_condition)),
@@ -117,7 +115,8 @@ ProblemImpl::ProblemImpl(Index index,
     assert(is_all_unique(get_derived_predicates()));
     assert(is_all_unique(get_initial_literals<Static>()));
     assert(is_all_unique(get_initial_literals<Fluent>()));
-    assert(is_all_unique(m_static_initial_function_values));
+    assert(is_all_unique(get_initial_function_values<Static>()));
+    assert(is_all_unique(get_initial_function_values<Fluent>()));
     assert(is_all_unique(get_goal_condition<Static>()));
     assert(is_all_unique(get_goal_condition<Fluent>()));
     assert(is_all_unique(get_goal_condition<Derived>()));
@@ -133,11 +132,11 @@ ProblemImpl::ProblemImpl(Index index,
     assert(std::is_sorted(get_initial_literals<Fluent>().begin(),
                           get_initial_literals<Fluent>().end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(m_static_initial_function_values.begin(),
-                          m_static_initial_function_values.end(),
+    assert(std::is_sorted(get_initial_function_values<Static>().begin(),
+                          get_initial_function_values<Static>().end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(m_fluent_initial_function_values.begin(),
-                          m_fluent_initial_function_values.end(),
+    assert(std::is_sorted(get_initial_function_values<Fluent>().begin(),
+                          get_initial_function_values<Fluent>().end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(std::is_sorted(get_goal_condition<Static>().begin(),
                           get_goal_condition<Static>().end(),
@@ -173,7 +172,7 @@ ProblemImpl::ProblemImpl(Index index,
     // As the ground functions in the goal might not necessarily be defined, we fill the gaps with undefined.
     // In principle, we could compress and define those values during search when applying an action that assigns it.
     auto static_functions = GroundFunctionList<Static> {};
-    for (const auto static_numeric_value : m_static_initial_function_values)
+    for (const auto static_numeric_value : get_initial_function_values<Static>())
     {
         const auto function = static_numeric_value->get_function();
         const auto index = function->get_index();
@@ -188,7 +187,7 @@ ProblemImpl::ProblemImpl(Index index,
     }
     m_static_initial_numeric_assignment_set.insert_ground_function_values(static_functions, m_static_function_to_value);
 
-    for (const auto fluent_numeric_value : m_fluent_initial_function_values)
+    for (const auto fluent_numeric_value : get_initial_function_values<Fluent>())
     {
         const auto index = fluent_numeric_value->get_function()->get_index();
         const auto value = fluent_numeric_value->get_number();
@@ -338,19 +337,10 @@ const GroundLiteralLists<Static, Fluent>& ProblemImpl::get_hana_initial_literals
 template<StaticOrFluent F>
 const GroundFunctionValueList<F>& ProblemImpl::get_initial_function_values() const
 {
-    if constexpr (std::is_same_v<F, Static>)
-    {
-        return m_static_initial_function_values;
-    }
-    else if constexpr (std::is_same_v<F, Fluent>)
-    {
-        return m_fluent_initial_function_values;
-    }
-    else
-    {
-        static_assert(dependent_false<F>::value, "Missing implementation for StaticOrFluentOrAuxiliary.");
-    }
+    return boost::hana::at_key(m_initial_function_values, boost::hana::type<F> {});
 }
+
+const GroundFunctionValueLists<Static, Fluent>& ProblemImpl::get_hana_initial_function_values() const { return m_initial_function_values; }
 
 template const GroundFunctionValueList<Static>& ProblemImpl::get_initial_function_values() const;
 template const GroundFunctionValueList<Fluent>& ProblemImpl::get_initial_function_values() const;

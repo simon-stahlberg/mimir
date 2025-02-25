@@ -39,8 +39,7 @@ private:
     ObjectList m_objects;
     PredicateList<Derived> m_derived_predicates;
     GroundLiteralLists<Static, Fluent> m_initial_literals;
-    GroundFunctionValueList<Static> m_static_initial_function_values;
-    GroundFunctionValueList<Fluent> m_fluent_initial_function_values;
+    GroundFunctionValueLists<Static, Fluent> m_initial_function_values;
     std::optional<GroundFunctionValue<Auxiliary>> m_auxiliary_function_value;
     GroundLiteralLists<Static, Fluent, Derived> m_goal_condition;
     GroundNumericConstraintList m_numeric_goal_condition;
@@ -81,6 +80,7 @@ public:
     GroundLiteralLists<Static, Fluent>& get_hana_initial_literals();
     template<StaticOrFluent F>
     GroundFunctionValueList<F>& get_initial_function_values();
+    GroundFunctionValueLists<Static, Fluent>& get_hana_initial_function_values();
     std::optional<GroundFunctionValue<Auxiliary>>& get_auxiliary_function_value();
     template<StaticOrFluentOrDerived P>
     GroundLiteralList<P>& get_goal_condition();

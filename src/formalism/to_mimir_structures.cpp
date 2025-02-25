@@ -899,13 +899,11 @@ Domain ToMimirStructures::translate(const loki::Domain& domain, DomainBuilder& b
             [&function_skeletons, &auxiliary_function](auto&& arg)
             {
                 using T = std::decay_t<decltype(arg)>;
-                if constexpr (std::is_same_v<T, FunctionSkeleton<Static>>)
+                if constexpr (std::is_same_v<T, FunctionSkeleton<Static>> || std::is_same_v<T, FunctionSkeleton<Fluent>>)
                 {
-                    boost::hana::at_key(function_skeletons, boost::hana::type<Static> {}).push_back(arg);
-                }
-                else if constexpr (std::is_same_v<T, FunctionSkeleton<Fluent>>)
-                {
-                    boost::hana::at_key(function_skeletons, boost::hana::type<Fluent> {}).push_back(arg);
+                    using Type = typename std::decay_t<decltype(*arg)>::Type;
+
+                    boost::hana::at_key(function_skeletons, boost::hana::type<Type> {}).push_back(arg);
                 }
                 else if constexpr (std::is_same_v<T, FunctionSkeleton<Auxiliary>>)
                 {
@@ -987,27 +985,24 @@ Problem ToMimirStructures::translate(const loki::Problem& problem, ProblemBuilde
         uniquify_elements(boost::hana::at_key(tmp_initial_literals, boost::hana::type<Fluent> {}));  ///< filter duplicates
     assert(boost::hana::at_key(tmp_initial_literals, boost::hana::type<Derived> {}).empty());        ///< ensure that no derived ground atom appears in initial
 
-    auto static_function_values = GroundFunctionValueList<Static> {};
-    auto fluent_function_values = GroundFunctionValueList<Fluent> {};
-    auto auxiliary_function_value = std::optional<GroundFunctionValue<Auxiliary>> {};
+    auto initial_function_values = GroundFunctionValueLists<Static, Fluent> {};
+    auto initial_auxiliary_function_value = std::optional<GroundFunctionValue<Auxiliary>> {};
     for (const auto static_or_fluent_or_auxiliary_function_value : translate_grounded(problem->get_initial_function_values(), repositories))
     {
         std::visit(
-            [&static_function_values, &fluent_function_values, &auxiliary_function_value](auto&& arg)
+            [&initial_function_values, &initial_auxiliary_function_value](auto&& arg)
             {
                 using T = std::decay_t<decltype(arg)>;
-                if constexpr (std::is_same_v<T, GroundFunctionValue<Static>>)
+                if constexpr (std::is_same_v<T, GroundFunctionValue<Static>> || std::is_same_v<T, GroundFunctionValue<Fluent>>)
                 {
-                    static_function_values.push_back(arg);
-                }
-                else if constexpr (std::is_same_v<T, GroundFunctionValue<Fluent>>)
-                {
-                    fluent_function_values.push_back(arg);
+                    using Type = typename std::decay_t<decltype(*arg)>::Type;
+
+                    boost::hana::at_key(initial_function_values, boost::hana::type<Type> {}).push_back(arg);
                 }
                 else if constexpr (std::is_same_v<T, GroundFunctionValue<Auxiliary>>)
                 {
-                    assert(!auxiliary_function_value.has_value());
-                    auxiliary_function_value = arg;
+                    assert(!initial_auxiliary_function_value.has_value());
+                    initial_auxiliary_function_value = arg;
                 }
                 else
                 {
@@ -1045,9 +1040,8 @@ Problem ToMimirStructures::translate(const loki::Problem& problem, ProblemBuilde
     builder.get_objects() = std::move(objects);
     builder.get_derived_predicates() = std::move(derived_predicates);
     builder.get_hana_initial_literals() = std::move(initial_literals);
-    builder.get_initial_function_values<Static>() = std::move(static_function_values);
-    builder.get_initial_function_values<Fluent>() = std::move(fluent_function_values);
-    builder.get_auxiliary_function_value() = auxiliary_function_value;
+    builder.get_hana_initial_function_values() = std::move(initial_function_values);
+    builder.get_auxiliary_function_value() = initial_auxiliary_function_value;
     builder.get_hana_goal_condition() = std::move(goal_literals);
     builder.get_numeric_goal_condition() = std::move(numeric_goal_constraints);
     builder.get_optimization_metric() = metric;
