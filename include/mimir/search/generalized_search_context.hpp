@@ -15,21 +15,21 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_FORMALISM_SEARCH_CONTEXT_HPP_
-#define MIMIR_FORMALISM_SEARCH_CONTEXT_HPP_
+#ifndef MIMIR_FORMALISM_GENERALIZED_SEARCH_CONTEXT_HPP_
+#define MIMIR_FORMALISM_GENERALIZED_SEARCH_CONTEXT_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/generalized_problem.hpp"
 #include "mimir/search/declarations.hpp"
+#include "mimir/search/search_context.hpp"
 
 namespace mimir
 {
 
-class SearchContext
+class GeneralizedSearchContext
 {
 private:
-    Problem m_problem;
-    ApplicableActionGenerator m_applicable_action_generator;
-    StateRepository m_state_repository;
+    SearchContextList m_search_contexts;
 
 public:
     enum class SearchMode
@@ -38,21 +38,11 @@ public:
         LIFTED = 1
     };
 
-    struct Options
-    {
-        SearchMode mode;
+    GeneralizedSearchContext(GeneralizedProblem problem, const SearchContext::Options& options = SearchContext::Options());
 
-        Options() : mode(SearchMode::GROUNDED) {}
-        explicit Options(SearchMode mode) : mode(mode) {}
-    };
+    explicit GeneralizedSearchContext(SearchContextList search_contexts);
 
-    SearchContext(Problem problem, const Options& options = Options());
-
-    SearchContext(Problem problem, ApplicableActionGenerator applicable_action_generator, StateRepository state_repository);
-
-    const Problem& get_problem() const;
-    const ApplicableActionGenerator get_applicable_action_generator() const;
-    const StateRepository get_state_repository() const;
+    const SearchContextList& get_search_contexts() const;
 };
 
 using SearchContextList = std::vector<SearchContext>;

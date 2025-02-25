@@ -35,7 +35,7 @@ class DeleteRelaxedProblemExplorator
 private:
     Problem m_problem;
 
-    /* We store all delete-free info separately, allowing us to discard it after instantiating the generator and evaluator. */
+    /* Delete free info to instantiate the grounded generators. */
     DeleteRelaxTranslator m_delete_relax_transformer;
     Problem m_delete_free_problem;
     ToObjectMap<Object> m_delete_free_object_to_unrelaxed_object;

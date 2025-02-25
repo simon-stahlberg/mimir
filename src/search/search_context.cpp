@@ -57,16 +57,6 @@ SearchContext::SearchContext(Problem problem, ApplicableActionGenerator applicab
 {
 }
 
-std::vector<SearchContext> SearchContext::create(const ProblemList& problems, const Options& options)
-{
-    auto result = SearchContextList {};
-    for (auto& problem : problems)
-    {
-        result.emplace_back(std::move(problem), options);
-    }
-    return result;
-}
-
 const Problem& SearchContext::get_problem() const { return m_problem; }
 
 const ApplicableActionGenerator SearchContext::get_applicable_action_generator() const { return m_applicable_action_generator; }
