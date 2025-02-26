@@ -109,6 +109,8 @@ Problem ProblemBuilder::get_result(Index problem_index)
 
     auto problem_and_domain_axioms = get_axioms();
     problem_and_domain_axioms.insert(problem_and_domain_axioms.end(), m_domain->get_axioms().begin(), m_domain->get_axioms().end());
+    std::sort(problem_and_domain_axioms.begin(), problem_and_domain_axioms.end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
+    verify_indexing_scheme(problem_and_domain_axioms, "ProblemBuilder::get_result: problem_and_domain_axioms must follow and indexing scheme");
     std::sort(get_axioms().begin(), get_axioms().end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
 
     m_requirements = (m_requirements) ? m_requirements : m_repositories.get_or_create_requirements(loki::RequirementEnumSet { loki::RequirementEnum::STRIPS });

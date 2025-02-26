@@ -23,6 +23,7 @@
 #include "mimir/formalism/axiom_stratification.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/grounding_table.hpp"
+#include "mimir/formalism/problem_details.hpp"
 #include "mimir/formalism/repositories.hpp"
 
 namespace mimir
@@ -72,6 +73,10 @@ private:
     GroundAtomLists<Static, Fluent, Derived> m_negative_goal_atoms;
     FlatBitsets<Static, Fluent, Derived> m_negative_goal_atoms_bitset;
     FlatIndexLists<Static, Fluent, Derived> m_negative_goal_atoms_indices;
+
+    /* Actions */
+    mutable std::optional<ActionGroundingInfoList> m_action_infos;  ///< lazyly initialized
+    const ActionGroundingInfoList& get_action_infos() const;        ///< lazily initializes problem-specific action infos.
 
     /* Axioms */
     std::vector<AxiomPartition> m_problem_and_domain_axiom_partitioning;  ///< Obtained from stratification
@@ -254,7 +259,7 @@ public:
                                   const ObjectList& binding,
                                   cista::optional<FlatExternalPtr<const GroundNumericEffectImpl<Auxiliary>>>& ref_numeric_effect);
 
-    GroundAction ground(Action action, ObjectList binding, const std::vector<std::vector<IndexList>>& candidate_conditional_effect_objects_by_parameter_index);
+    GroundAction ground(Action action, ObjectList binding);
 
     const GroundActionList& get_ground_actions() const;
     GroundAction get_ground_action(Index action_index) const;

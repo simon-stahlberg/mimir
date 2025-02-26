@@ -33,7 +33,7 @@ private:
     Problem m_problem;
     LiftedAxiomEvaluatorEventHandler m_event_handler;
 
-    std::unordered_map<Axiom, AxiomSatisficingBindingGenerator> m_condition_grounders;
+    AxiomSatisficingBindingGeneratorList m_condition_grounders;
 
     /* Memory for reuse */
     GroundAtomList<Fluent> m_fluent_atoms;

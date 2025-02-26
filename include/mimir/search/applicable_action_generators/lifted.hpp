@@ -36,7 +36,7 @@ private:
     Problem m_problem;
     LiftedApplicableActionGeneratorEventHandler m_event_handler;
 
-    std::unordered_map<Action, std::pair<ActionSatisficingBindingGenerator, std::vector<std::vector<IndexList>>>> m_action_grounding_data;
+    ActionSatisficingBindingGeneratorList m_action_grounding_data;
 
     /* Memory for reuse */
     DenseState m_dense_state;

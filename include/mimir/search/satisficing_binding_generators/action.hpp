@@ -55,7 +55,11 @@ public:
     using SatisficingBindingGenerator<ActionSatisficingBindingGenerator>::get_static_consistency_graph;
 
     ActionSatisficingBindingGenerator(Action action, Problem problem, std::optional<SatisficingBindingGeneratorEventHandler> event_handler = std::nullopt);
+
+    const Action& get_action() const;
 };
+
+using ActionSatisficingBindingGeneratorList = std::vector<ActionSatisficingBindingGenerator>;
 
 }
 

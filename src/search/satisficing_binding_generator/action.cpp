@@ -27,10 +27,12 @@ namespace mimir
 ActionSatisficingBindingGenerator::ActionSatisficingBindingGenerator(Action action,
                                                                      Problem problem,
                                                                      std::optional<SatisficingBindingGeneratorEventHandler> event_handler) :
-    SatisficingBindingGenerator<ActionSatisficingBindingGenerator>(action->get_conjunctive_condition(), std::move(problem), event_handler),
+    SatisficingBindingGenerator<ActionSatisficingBindingGenerator>(action->get_conjunctive_condition(), problem, event_handler),
     m_action(action)
 {
 }
+
+const Action& ActionSatisficingBindingGenerator::get_action() const { return m_action; }
 
 bool ActionSatisficingBindingGenerator::is_valid_binding_impl(const DenseState& dense_state, const ObjectList& binding)
 {

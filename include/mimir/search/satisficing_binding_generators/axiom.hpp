@@ -43,6 +43,8 @@ public:
     AxiomSatisficingBindingGenerator(Axiom axiom, Problem problem, std::optional<SatisficingBindingGeneratorEventHandler> event_handler = std::nullopt);
 };
 
+using AxiomSatisficingBindingGeneratorList = std::vector<AxiomSatisficingBindingGenerator>;
+
 }
 
 #endif

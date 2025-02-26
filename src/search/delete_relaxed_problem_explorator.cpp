@@ -213,26 +213,6 @@ DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator(cons
     auto& problem = *m_problem;
     auto& pddl_repositories = problem.get_repositories();
 
-    auto per_action_conditional_effects_candidate_objects = std::unordered_map<Action, std::vector<std::vector<IndexList>>> {};
-    for (const auto& action : problem.get_domain()->get_actions())
-    {
-        auto cond_effect_candidate_objects = std::vector<std::vector<IndexList>> {};
-        cond_effect_candidate_objects.reserve(action->get_conditional_effects().size());
-
-        for (const auto& conditional_effect : action->get_conditional_effects())
-        {
-            auto [vertices_, vertices_by_parameter_index_, objects_by_parameter_index_] =
-                consistency_graph::StaticConsistencyGraph::compute_vertices(problem,
-                                                                            action->get_arity(),
-                                                                            action->get_arity() + conditional_effect->get_arity(),
-                                                                            conditional_effect->get_conjunctive_condition()->get_literals<Static>());
-
-            cond_effect_candidate_objects.push_back(std::move(objects_by_parameter_index_));
-        }
-
-        per_action_conditional_effects_candidate_objects.emplace(action, std::move(cond_effect_candidate_objects));
-    }
-
     auto ground_actions = GroundActionList {};
     for (const auto& delete_free_ground_action : m_delete_free_problem->get_ground_actions())
     {
@@ -244,9 +224,7 @@ DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator(cons
                 m_delete_free_problem->get_repositories().get_objects_from_indices(delete_free_ground_action->get_object_indices()),
                 m_delete_free_object_to_unrelaxed_object);
 
-            const auto& conditional_effect_candidate_objects = per_action_conditional_effects_candidate_objects.at(action);
-
-            auto grounded_action = problem.ground(action, std::move(binding), conditional_effect_candidate_objects);
+            auto grounded_action = problem.ground(action, std::move(binding));
 
             if (is_statically_applicable(grounded_action->get_conjunctive_condition(), problem.get_static_initial_positive_atoms_bitset()))
             {

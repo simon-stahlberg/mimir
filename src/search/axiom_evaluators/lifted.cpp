@@ -44,9 +44,12 @@ LiftedAxiomEvaluator::LiftedAxiomEvaluator(Problem problem, LiftedAxiomEvaluator
     m_numeric_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_domain()->get_function_skeletons<Fluent>())
 {
     /* 3. Initialize condition grounders */
-    for (const auto& axiom : m_problem->get_problem_and_domain_axioms())
+    const auto& axioms = m_problem->get_problem_and_domain_axioms();
+    for (size_t i = 0; i < axioms.size(); ++i)
     {
-        m_condition_grounders.emplace(axiom, AxiomSatisficingBindingGenerator(axiom, m_problem));
+        const auto& axiom = axioms[i];
+        assert(axiom->get_index() == i);
+        m_condition_grounders.emplace_back(AxiomSatisficingBindingGenerator(axiom, m_problem));
     }
 }
 
@@ -106,7 +109,7 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state)
                     continue;
                 }
 
-                auto& condition_grounder = m_condition_grounders.at(axiom);
+                auto& condition_grounder = m_condition_grounders.at(axiom->get_index());
 
                 for (auto&& binding : condition_grounder.create_binding_generator(dense_state,
                                                                                   m_fluent_assignment_set,

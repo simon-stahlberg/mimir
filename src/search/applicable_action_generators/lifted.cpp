@@ -54,23 +54,12 @@ LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem
     m_numeric_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_domain()->get_function_skeletons<Fluent>())
 {
     /* 2. Initialize the condition grounders for each action schema. */
-    for (const auto& action : problem->get_domain()->get_actions())
+    const auto& actions = problem->get_domain()->get_actions();
+    for (size_t i = 0; i < actions.size(); ++i)
     {
-        auto cond_effect_candidate_objects = std::vector<std::vector<IndexList>> {};
-        cond_effect_candidate_objects.reserve(action->get_conditional_effects().size());
-
-        for (const auto& conditional_effect : action->get_conditional_effects())
-        {
-            auto [vertices_, vertices_by_parameter_index_, objects_by_parameter_index_] =
-                consistency_graph::StaticConsistencyGraph::compute_vertices(*problem,
-                                                                            action->get_arity(),
-                                                                            action->get_arity() + conditional_effect->get_arity(),
-                                                                            conditional_effect->get_conjunctive_condition()->get_literals<Static>());
-
-            cond_effect_candidate_objects.push_back(std::move(objects_by_parameter_index_));
-        }
-
-        m_action_grounding_data.emplace(action, std::make_pair(ActionSatisficingBindingGenerator(action, m_problem), std::move(cond_effect_candidate_objects)));
+        const auto& action = actions[i];
+        assert(action->get_index() == i);
+        m_action_grounding_data.push_back(ActionSatisficingBindingGenerator(action, m_problem));
     }
 }
 
@@ -108,12 +97,10 @@ mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicabl
 
     m_event_handler->on_start_generating_applicable_actions();
 
-    for (auto& [action, grounding_data] : m_action_grounding_data)
+    for (auto& condition_grounder : m_action_grounding_data)
     {
-        auto& [condition_grounder, conditional_effects_candidate_objects] = grounding_data;
-
         // We move this check here to avoid unnecessary creations of mimir::generator.
-        if (!nullary_conditions_hold(action->get_conjunctive_condition(), problem, dense_state))
+        if (!nullary_conditions_hold(condition_grounder.get_conjunctive_condition(), problem, dense_state))
         {
             continue;
         }
@@ -126,7 +113,7 @@ mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicabl
         {
             const auto num_ground_actions = problem.get_num_ground_actions();
 
-            const auto ground_action = m_problem->ground(action, std::move(binding), conditional_effects_candidate_objects);
+            const auto ground_action = m_problem->ground(condition_grounder.get_action(), std::move(binding));
 
             assert(is_applicable(ground_action, problem, dense_state));
 

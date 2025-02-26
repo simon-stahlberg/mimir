@@ -23,6 +23,7 @@
 #include "mimir/common/itertools.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/axiom.hpp"
+#include "mimir/formalism/consistency_graph.hpp"
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/ground_function.hpp"
@@ -96,6 +97,7 @@ ProblemImpl::ProblemImpl(Index index,
     m_negative_goal_atoms(),
     m_negative_goal_atoms_bitset(),
     m_negative_goal_atoms_indices(),
+    m_action_infos(std::nullopt),
     m_problem_and_domain_axiom_partitioning()
 {
     assert(is_all_unique(get_objects()));
@@ -844,8 +846,7 @@ void ProblemImpl::ground_and_fill_optional(const std::optional<NumericEffect<Aux
     }
 }
 
-GroundAction
-ProblemImpl::ground(Action action, ObjectList binding, const std::vector<std::vector<IndexList>>& candidate_conditional_effect_objects_by_parameter_index)
+GroundAction ProblemImpl::ground(Action action, ObjectList binding)
 {
     /* 1. Check if grounding is cached */
 
@@ -935,6 +936,8 @@ ProblemImpl::ground(Action action, ObjectList binding, const std::vector<std::ve
     // and at the same time we need to use the original binding as cache key.
     auto binding_cond_effect = binding;
 
+    const auto& action_info = get_action_infos().at(action->get_index());
+
     const auto num_lifted_cond_effects = action->get_conditional_effects().size();
     if (num_lifted_cond_effects > 0)
     {
@@ -946,7 +949,7 @@ ProblemImpl::ground(Action action, ObjectList binding, const std::vector<std::ve
 
             if (lifted_cond_effect->get_arity() > 0)
             {
-                const auto& objects_by_parameter_index = candidate_conditional_effect_objects_by_parameter_index.at(i);
+                const auto& objects_by_parameter_index = action_info.conditional_effect_infos.at(i).candidate_variable_bindings;
 
                 // Resize binding to have additional space for all variables in quantified effect.
                 binding_cond_effect.resize(binding.size() + lifted_cond_effect->get_arity());
@@ -1241,6 +1244,34 @@ size_t ProblemImpl::get_estimated_memory_usage_in_bytes_for_axioms() const
     }
 
     return usage1 + usage2 + usage3;
+}
+
+const ActionGroundingInfoList& ProblemImpl::get_action_infos() const
+{
+    if (!m_action_infos.has_value())
+    {
+        m_action_infos = ActionGroundingInfoList {};
+
+        for (const auto& action : get_domain()->get_actions())
+        {
+            auto conditional_effect_infos = ConditionalEffectGroundingInfoList {};
+
+            for (const auto& conditional_effect : action->get_conditional_effects())
+            {
+                auto [vertices_, vertices_by_parameter_index_, objects_by_parameter_index_] =
+                    consistency_graph::StaticConsistencyGraph::compute_vertices(*this,
+                                                                                action->get_arity(),
+                                                                                action->get_arity() + conditional_effect->get_arity(),
+                                                                                conditional_effect->get_conjunctive_condition()->get_literals<Static>());
+
+                conditional_effect_infos.emplace_back(std::move(objects_by_parameter_index_));
+            }
+
+            m_action_infos->emplace_back(std::move(conditional_effect_infos));
+        }
+    }
+
+    return *m_action_infos;
 }
 
 /* Printing */
