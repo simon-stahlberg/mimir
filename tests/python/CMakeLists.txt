@@ -6,7 +6,7 @@ find_package(pybind11)
 
 add_executable(pymimir_tests
         main_tests.cpp
-        test_bindings.cpp
+        test_graphs.cpp
         )
 
 target_link_libraries(pymimir_tests

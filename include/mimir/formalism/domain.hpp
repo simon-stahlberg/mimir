@@ -41,7 +41,7 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    domain::Details m_details;
+    domain::Details m_details;  ///< We hide the details in a struct.
 
     DomainImpl(PDDLRepositories repositories,
                std::optional<fs::path> filepath,

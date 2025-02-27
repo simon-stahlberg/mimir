@@ -8,7 +8,11 @@
 #include <pybind11/pybind11.h>
 
 // necessary to replicate the module here to use it in-place (verify against python/src/mimir/main.cpp)
-PYBIND11_MODULE(_pymimir, m) { init_pymimir(m); }
+PYBIND11_MODULE(_pymimir, m)
+{
+    init_formalism(m);
+    init_graphs(m);
+}
 
 PyMODINIT_FUNC PyInit__pymimir();
 

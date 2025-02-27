@@ -27,6 +27,7 @@
  */
 
 #include "mimir/common/printers.hpp"
+#include "mimir/common/types_cista.hpp"
 
 /**
  * Formalism

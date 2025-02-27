@@ -4,7 +4,10 @@ find_package(pybind11)
 
 add_library(_pymimir_objects
         OBJECT
-        pymimir/bindings.cpp
+        pymimir/init_declarations.hpp
+        pymimir/type_casters.cpp
+        pymimir/formalism/bindings.cpp
+        pymimir/graphs/bindings.cpp
 )
 target_include_directories(_pymimir_objects
         PUBLIC
