@@ -15,24 +15,15 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SRC_MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_VISITOR_INTERFACE_IMPL_HPP_
-#define SRC_MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_VISITOR_INTERFACE_IMPL_HPP_
+#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GRAMMAR_CNF_TRANSLATOR_HPP_
+#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GRAMMAR_CNF_TRANSLATOR_HPP_
 
-#include "mimir/languages/description_logics/constructor_visitor_interface.hpp"
-#include "mimir/languages/description_logics/constructors.hpp"
+#include "mimir/languages/description_logics/cnf_grammar.hpp"
+#include "mimir/languages/description_logics/declarations.hpp"
 
-namespace mimir::dl
+namespace mimir::dl::grammar
 {
-
-template<std::ranges::forward_range Range>
-void Visitor::visit(const Range& range)
-{
-    for (const auto& element : range)
-    {
-        this->visit(element);
-    }
-}
-
+extern cnf_grammar::Grammar translate_to_cnf(const Grammar& grammar);
 }
 
 #endif

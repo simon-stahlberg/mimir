@@ -50,7 +50,7 @@ public:
     virtual Denotation<D> evaluate(EvaluationContext& context) const = 0;
 
     /// @brief Accept a visitor.
-    virtual void accept(Visitor& visitor) const = 0;
+    virtual void accept(ConstructorVisitor<D>& visitor) const = 0;
 };
 
 }

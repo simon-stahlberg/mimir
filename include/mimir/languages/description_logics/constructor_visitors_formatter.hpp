@@ -27,7 +27,13 @@
 namespace mimir::dl
 {
 
-class BNFFormatterVisitor : public Visitor
+template<ConceptOrRole D>
+class BNFFormatterVisitor : public ConstructorVisitor<D>
+{
+};
+
+template<>
+class BNFFormatterVisitor<Concept> : public ConstructorVisitor<Concept>
 {
 protected:
     std::ostream& m_out;
@@ -52,6 +58,16 @@ public:
     void visit(ConceptRoleValueMapContainment constructor) override;
     void visit(ConceptRoleValueMapEquality constructor) override;
     void visit(ConceptNominal constructor) override;
+};
+
+template<>
+class BNFFormatterVisitor<Role> : public ConstructorVisitor<Role>
+{
+protected:
+    std::ostream& m_out;
+
+public:
+    explicit BNFFormatterVisitor(std::ostream& out);
 
     /* Roles */
     void visit(RoleUniversal constructor) override;

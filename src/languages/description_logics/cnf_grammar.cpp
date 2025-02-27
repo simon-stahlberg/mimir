@@ -17,6 +17,7 @@
 
 #include "mimir/languages/description_logics/cnf_grammar.hpp"
 
+#include "grammar_cnf_translator.hpp"
 #include "parser.hpp"
 
 namespace mimir::dl::cnf_grammar
@@ -24,15 +25,17 @@ namespace mimir::dl::cnf_grammar
 
 Grammar::Grammar(const grammar::Grammar& grammar)
 {
-    /* 1. Substitute primitives in composite rule bodies. */
-
-    /* 2. Decompose complicated rules into simple rules. */
+    auto cnf_grammar = translate_to_cnf(grammar);
+    m_repositories = std::move(cnf_grammar.m_repositories);
+    m_start_symbols = std::move(cnf_grammar.m_start_symbols);
+    m_derivation_rules = std::move(cnf_grammar.m_derivation_rules);
+    m_domain = std::move(cnf_grammar.m_domain);
 }
 
 template<ConceptOrRole D>
 bool Grammar::test_match(dl::Constructor<D> constructor) const
 {
-    const auto& start_symbol = get_start_symbol<D>();
+    const auto& start_symbol = m_start_symbols.get<D>();
 
     if (!start_symbol)
     {
@@ -40,7 +43,7 @@ bool Grammar::test_match(dl::Constructor<D> constructor) const
     }
 
     // Check whether constructor matches primitive rules.
-    const auto& primitive_rules = get_rules<D, Primitive>(start_symbol.value());
+    const auto& primitive_rules = m_derivation_rules.get<D, Primitive>(start_symbol.value());
 
     if (std::any_of(primitive_rules.begin(), primitive_rules.end(), [&, constructor](auto&& rule) { return rule->test_match(constructor, *this); }))
     {
@@ -48,7 +51,7 @@ bool Grammar::test_match(dl::Constructor<D> constructor) const
     }
 
     // Check whether constructor matches composite rules.
-    const auto& composite_rules = get_rules<D, Composite>(start_symbol.value());
+    const auto& composite_rules = m_derivation_rules.get<D, Composite>(start_symbol.value());
 
     if (std::any_of(composite_rules.begin(), composite_rules.end(), [&, constructor](auto&& rule) { return rule->test_match(constructor, *this); }))
     {

@@ -34,7 +34,13 @@ namespace mimir::dl
  * GrammarVisitor
  */
 
-class GrammarVisitor : public Visitor
+template<ConceptOrRole D>
+class CNFGrammarConstructorVisitor : public ConstructorVisitor<D>
+{
+};
+
+template<>
+class CNFGrammarConstructorVisitor<Concept> : public ConstructorVisitor<Concept>
 {
 protected:
     // Default implementations always return false
@@ -59,6 +65,17 @@ public:
     void visit(ConceptRoleValueMapEquality constructor) override {}
     void visit(ConceptNominal constructor) override {}
 
+    bool get_result() const { return m_result; }
+};
+
+template<>
+class CNFGrammarConstructorVisitor<Role> : public ConstructorVisitor<Role>
+{
+protected:
+    // Default implementations always return false
+    bool m_result = false;
+
+public:
     /* Roles */
     void visit(RoleUniversal constructor) override {}
     void visit(RoleAtomicState<Static> constructor) override {}
@@ -84,7 +101,7 @@ public:
  * ConceptVisitors
  */
 
-class ConceptBotGrammarVisitor : public GrammarVisitor
+class ConceptBotGrammarVisitor : public CNFGrammarConstructorVisitor<Concept>
 {
 private:
     [[maybe_unused]] cnf_grammar::ConceptBot m_grammar_constructor;
@@ -96,7 +113,7 @@ public:
     void visit(ConceptBot constructor) override;
 };
 
-class ConceptTopGrammarVisitor : public GrammarVisitor
+class ConceptTopGrammarVisitor : public CNFGrammarConstructorVisitor<Concept>
 {
 private:
     [[maybe_unused]] cnf_grammar::ConceptTop m_grammar_constructor;
@@ -109,7 +126,7 @@ public:
 };
 
 template<StaticOrFluentOrDerived P>
-class ConceptAtomicStateGrammarVisitor : public GrammarVisitor
+class ConceptAtomicStateGrammarVisitor : public CNFGrammarConstructorVisitor<Concept>
 {
 private:
     cnf_grammar::ConceptAtomicState<P> m_grammar_constructor;
@@ -122,7 +139,7 @@ public:
 };
 
 template<StaticOrFluentOrDerived P>
-class ConceptAtomicGoalGrammarVisitor : public GrammarVisitor
+class ConceptAtomicGoalGrammarVisitor : public CNFGrammarConstructorVisitor<Concept>
 {
 private:
     cnf_grammar::ConceptAtomicGoal<P> m_grammar_constructor;
@@ -134,7 +151,7 @@ public:
     void visit(ConceptAtomicGoal<P> constructor) override;
 };
 
-class ConceptIntersectionGrammarVisitor : public GrammarVisitor
+class ConceptIntersectionGrammarVisitor : public CNFGrammarConstructorVisitor<Concept>
 {
 private:
     cnf_grammar::ConceptIntersection m_grammar_constructor;
@@ -146,7 +163,7 @@ public:
     void visit(ConceptIntersection constructor) override;
 };
 
-class ConceptUnionGrammarVisitor : public GrammarVisitor
+class ConceptUnionGrammarVisitor : public CNFGrammarConstructorVisitor<Concept>
 {
 private:
     cnf_grammar::ConceptUnion m_grammar_constructor;
@@ -158,7 +175,7 @@ public:
     void visit(ConceptUnion constructor) override;
 };
 
-class ConceptNegationGrammarVisitor : public GrammarVisitor
+class ConceptNegationGrammarVisitor : public CNFGrammarConstructorVisitor<Concept>
 {
 private:
     cnf_grammar::ConceptNegation m_grammar_constructor;
@@ -170,7 +187,7 @@ public:
     void visit(ConceptNegation constructor) override;
 };
 
-class ConceptValueRestrictionGrammarVisitor : public GrammarVisitor
+class ConceptValueRestrictionGrammarVisitor : public CNFGrammarConstructorVisitor<Concept>
 {
 private:
     cnf_grammar::ConceptValueRestriction m_grammar_constructor;
@@ -182,7 +199,7 @@ public:
     void visit(ConceptValueRestriction constructor) override;
 };
 
-class ConceptExistentialQuantificationGrammarVisitor : public GrammarVisitor
+class ConceptExistentialQuantificationGrammarVisitor : public CNFGrammarConstructorVisitor<Concept>
 {
 private:
     cnf_grammar::ConceptExistentialQuantification m_grammar_constructor;
@@ -195,7 +212,7 @@ public:
     void visit(ConceptExistentialQuantification constructor) override;
 };
 
-class ConceptRoleValueMapContainmentGrammarVisitor : public GrammarVisitor
+class ConceptRoleValueMapContainmentGrammarVisitor : public CNFGrammarConstructorVisitor<Concept>
 {
 private:
     cnf_grammar::ConceptRoleValueMapContainment m_grammar_constructor;
@@ -207,7 +224,7 @@ public:
     void visit(ConceptRoleValueMapContainment constructor) override;
 };
 
-class ConceptRoleValueMapEqualityGrammarVisitor : public GrammarVisitor
+class ConceptRoleValueMapEqualityGrammarVisitor : public CNFGrammarConstructorVisitor<Concept>
 {
 private:
     cnf_grammar::ConceptRoleValueMapEquality m_grammar_constructor;
@@ -219,7 +236,7 @@ public:
     void visit(ConceptRoleValueMapEquality constructor) override;
 };
 
-class ConceptNominalGrammarVisitor : public GrammarVisitor
+class ConceptNominalGrammarVisitor : public CNFGrammarConstructorVisitor<Concept>
 {
 private:
     [[maybe_unused]] cnf_grammar::ConceptNominal m_grammar_constructor;
@@ -235,7 +252,7 @@ public:
  * RoleVisitors
  */
 
-class RoleUniversalGrammarVisitor : public GrammarVisitor
+class RoleUniversalGrammarVisitor : public CNFGrammarConstructorVisitor<Role>
 {
 private:
     [[maybe_unused]] cnf_grammar::RoleUniversal m_grammar_constructor;
@@ -248,7 +265,7 @@ public:
 };
 
 template<StaticOrFluentOrDerived P>
-class RoleAtomicStateGrammarVisitor : public GrammarVisitor
+class RoleAtomicStateGrammarVisitor : public CNFGrammarConstructorVisitor<Role>
 {
 private:
     cnf_grammar::RoleAtomicState<P> m_grammar_constructor;
@@ -261,7 +278,7 @@ public:
 };
 
 template<StaticOrFluentOrDerived P>
-class RoleAtomicGoalGrammarVisitor : public GrammarVisitor
+class RoleAtomicGoalGrammarVisitor : public CNFGrammarConstructorVisitor<Role>
 {
 private:
     cnf_grammar::RoleAtomicGoal<P> m_grammar_constructor;
@@ -273,7 +290,7 @@ public:
     void visit(RoleAtomicGoal<P> constructor) override;
 };
 
-class RoleIntersectionGrammarVisitor : public GrammarVisitor
+class RoleIntersectionGrammarVisitor : public CNFGrammarConstructorVisitor<Role>
 {
 private:
     cnf_grammar::RoleIntersection m_grammar_constructor;
@@ -285,7 +302,7 @@ public:
     void visit(RoleIntersection constructor) override;
 };
 
-class RoleUnionGrammarVisitor : public GrammarVisitor
+class RoleUnionGrammarVisitor : public CNFGrammarConstructorVisitor<Role>
 {
 private:
     cnf_grammar::RoleUnion m_grammar_constructor;
@@ -297,7 +314,7 @@ public:
     void visit(RoleUnion constructor) override;
 };
 
-class RoleComplementGrammarVisitor : public GrammarVisitor
+class RoleComplementGrammarVisitor : public CNFGrammarConstructorVisitor<Role>
 {
 private:
     cnf_grammar::RoleComplement m_grammar_constructor;
@@ -309,7 +326,7 @@ public:
     void visit(RoleComplement constructor) override;
 };
 
-class RoleInverseGrammarVisitor : public GrammarVisitor
+class RoleInverseGrammarVisitor : public CNFGrammarConstructorVisitor<Role>
 {
 private:
     cnf_grammar::RoleInverse m_grammar_constructor;
@@ -321,7 +338,7 @@ public:
     void visit(RoleInverse constructor) override;
 };
 
-class RoleCompositionGrammarVisitor : public GrammarVisitor
+class RoleCompositionGrammarVisitor : public CNFGrammarConstructorVisitor<Role>
 {
 private:
     cnf_grammar::RoleComposition m_grammar_constructor;
@@ -333,7 +350,7 @@ public:
     void visit(RoleComposition constructor) override;
 };
 
-class RoleTransitiveClosureGrammarVisitor : public GrammarVisitor
+class RoleTransitiveClosureGrammarVisitor : public CNFGrammarConstructorVisitor<Role>
 {
 private:
     cnf_grammar::RoleTransitiveClosure m_grammar_constructor;
@@ -345,7 +362,7 @@ public:
     void visit(RoleTransitiveClosure constructor) override;
 };
 
-class RoleReflexiveTransitiveClosureGrammarVisitor : public GrammarVisitor
+class RoleReflexiveTransitiveClosureGrammarVisitor : public CNFGrammarConstructorVisitor<Role>
 {
 private:
     cnf_grammar::RoleReflexiveTransitiveClosure m_grammar_constructor;
@@ -357,7 +374,7 @@ public:
     void visit(RoleReflexiveTransitiveClosure constructor) override;
 };
 
-class RoleRestrictionGrammarVisitor : public GrammarVisitor
+class RoleRestrictionGrammarVisitor : public CNFGrammarConstructorVisitor<Role>
 {
 private:
     cnf_grammar::RoleRestriction m_grammar_constructor;
@@ -369,7 +386,7 @@ public:
     void visit(RoleRestriction constructor) override;
 };
 
-class RoleIdentityGrammarVisitor : public GrammarVisitor
+class RoleIdentityGrammarVisitor : public CNFGrammarConstructorVisitor<Role>
 {
 private:
     cnf_grammar::RoleIdentity m_grammar_constructor;

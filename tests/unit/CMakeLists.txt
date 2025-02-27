@@ -37,6 +37,7 @@ add_gtest(graphs_static_graph_test                         "graphs/static_graph.
 add_gtest(languages_dl_constructors_test                   "languages/description_logics/constructors.cpp")
 add_gtest(languages_dl_parser_test                         "languages/description_logics/parser.cpp")
 add_gtest(languages_dl_grammar_test                        "languages/description_logics/grammar.cpp")
+add_gtest(languages_dl_cnf_grammar_test                    "languages/description_logics/cnf_grammar.cpp")
 # add_gtest(languages_dl_refinement_test                     "languages/description_logics/refinement.cpp")
 
 add_gtest(search_astar_test                                "search/algorithms/astar.cpp")

@@ -59,7 +59,7 @@ void ConceptBotImpl::evaluate_impl(EvaluationContext& context) const
     // Result is computed.
 }
 
-void ConceptBotImpl::accept_impl(Visitor& visitor) const { visitor.visit(this); }
+void ConceptBotImpl::accept_impl(ConstructorVisitor<Concept>& visitor) const { visitor.visit(this); }
 
 Index ConceptBotImpl::get_index() const { return m_index; }
 
@@ -83,7 +83,7 @@ void ConceptTopImpl::evaluate_impl(EvaluationContext& context) const
     }
 }
 
-void ConceptTopImpl::accept_impl(Visitor& visitor) const { visitor.visit(this); }
+void ConceptTopImpl::accept_impl(ConstructorVisitor<Concept>& visitor) const { visitor.visit(this); }
 
 Index ConceptTopImpl::get_index() const { return m_index; }
 
@@ -141,7 +141,7 @@ void ConceptAtomicStateImpl<Static>::evaluate_impl(EvaluationContext& context) c
 }
 
 template<StaticOrFluentOrDerived P>
-void ConceptAtomicStateImpl<P>::accept_impl(Visitor& visitor) const
+void ConceptAtomicStateImpl<P>::accept_impl(ConstructorVisitor<Concept>& visitor) const
 {
     return visitor.visit(this);
 }
@@ -197,7 +197,7 @@ void ConceptAtomicGoalImpl<P>::evaluate_impl(EvaluationContext& context) const
 }
 
 template<StaticOrFluentOrDerived P>
-void ConceptAtomicGoalImpl<P>::accept_impl(Visitor& visitor) const
+void ConceptAtomicGoalImpl<P>::accept_impl(ConstructorVisitor<Concept>& visitor) const
 {
     return visitor.visit(this);
 }
@@ -250,7 +250,7 @@ void ConceptIntersectionImpl::evaluate_impl(EvaluationContext& context) const
     bitset &= eval_right->get_data();
 }
 
-void ConceptIntersectionImpl::accept_impl(Visitor& visitor) const { visitor.visit(this); }
+void ConceptIntersectionImpl::accept_impl(ConstructorVisitor<Concept>& visitor) const { visitor.visit(this); }
 
 Index ConceptIntersectionImpl::get_index() const { return m_index; }
 
@@ -284,7 +284,7 @@ void ConceptUnionImpl::evaluate_impl(EvaluationContext& context) const
     bitset |= eval_right->get_data();
 }
 
-void ConceptUnionImpl::accept_impl(Visitor& visitor) const { visitor.visit(this); }
+void ConceptUnionImpl::accept_impl(ConstructorVisitor<Concept>& visitor) const { visitor.visit(this); }
 
 Index ConceptUnionImpl::get_index() const { return m_index; }
 
@@ -318,7 +318,7 @@ void ConceptNegationImpl::evaluate_impl(EvaluationContext& context) const
     }
 }
 
-void ConceptNegationImpl::accept_impl(Visitor& visitor) const { visitor.visit(this); }
+void ConceptNegationImpl::accept_impl(ConstructorVisitor<Concept>& visitor) const { visitor.visit(this); }
 
 Index ConceptNegationImpl::get_index() const { return m_index; }
 
@@ -363,7 +363,7 @@ void ConceptValueRestrictionImpl::evaluate_impl(EvaluationContext& context) cons
     }
 }
 
-void ConceptValueRestrictionImpl::accept_impl(Visitor& visitor) const { visitor.visit(this); }
+void ConceptValueRestrictionImpl::accept_impl(ConstructorVisitor<Concept>& visitor) const { visitor.visit(this); }
 
 Index ConceptValueRestrictionImpl::get_index() const { return m_index; }
 
@@ -407,7 +407,7 @@ void ConceptExistentialQuantificationImpl::evaluate_impl(EvaluationContext& cont
     }
 }
 
-void ConceptExistentialQuantificationImpl::accept_impl(Visitor& visitor) const { visitor.visit(this); }
+void ConceptExistentialQuantificationImpl::accept_impl(ConstructorVisitor<Concept>& visitor) const { visitor.visit(this); }
 
 Index ConceptExistentialQuantificationImpl::get_index() const { return m_index; }
 
@@ -455,7 +455,7 @@ void ConceptRoleValueMapContainmentImpl::evaluate_impl(EvaluationContext& contex
     }
 }
 
-void ConceptRoleValueMapContainmentImpl::accept_impl(Visitor& visitor) const { visitor.visit(this); }
+void ConceptRoleValueMapContainmentImpl::accept_impl(ConstructorVisitor<Concept>& visitor) const { visitor.visit(this); }
 
 Index ConceptRoleValueMapContainmentImpl::get_index() const { return m_index; }
 
@@ -503,7 +503,7 @@ void ConceptRoleValueMapEqualityImpl::evaluate_impl(EvaluationContext& context) 
     }
 }
 
-void ConceptRoleValueMapEqualityImpl::accept_impl(Visitor& visitor) const { visitor.visit(this); }
+void ConceptRoleValueMapEqualityImpl::accept_impl(ConstructorVisitor<Concept>& visitor) const { visitor.visit(this); }
 
 Index ConceptRoleValueMapEqualityImpl::get_index() const { return m_index; }
 
@@ -530,7 +530,7 @@ void ConceptNominalImpl::evaluate_impl(EvaluationContext& context) const
     bitset.set(m_object->get_index());
 }
 
-void ConceptNominalImpl::accept_impl(Visitor& visitor) const { visitor.visit(this); }
+void ConceptNominalImpl::accept_impl(ConstructorVisitor<Concept>& visitor) const { visitor.visit(this); }
 
 Index ConceptNominalImpl::get_index() const { return m_index; }
 
@@ -563,7 +563,7 @@ void RoleUniversalImpl::evaluate_impl(EvaluationContext& context) const
     }
 }
 
-void RoleUniversalImpl::accept_impl(Visitor& visitor) const { visitor.visit(this); }
+void RoleUniversalImpl::accept_impl(ConstructorVisitor<Role>& visitor) const { visitor.visit(this); }
 
 Index RoleUniversalImpl::get_index() const { return m_index; }
 
@@ -639,7 +639,7 @@ void RoleAtomicStateImpl<Static>::evaluate_impl(EvaluationContext& context) cons
 }
 
 template<StaticOrFluentOrDerived P>
-void RoleAtomicStateImpl<P>::accept_impl(Visitor& visitor) const
+void RoleAtomicStateImpl<P>::accept_impl(ConstructorVisitor<Role>& visitor) const
 {
     return visitor.visit(this);
 }
@@ -704,7 +704,7 @@ void RoleAtomicGoalImpl<P>::evaluate_impl(EvaluationContext& context) const
 }
 
 template<StaticOrFluentOrDerived P>
-void RoleAtomicGoalImpl<P>::accept_impl(Visitor& visitor) const
+void RoleAtomicGoalImpl<P>::accept_impl(ConstructorVisitor<Role>& visitor) const
 {
     return visitor.visit(this);
 }
@@ -766,7 +766,7 @@ void RoleIntersectionImpl::evaluate_impl(EvaluationContext& context) const
     }
 }
 
-void RoleIntersectionImpl::accept_impl(Visitor& visitor) const { visitor.visit(this); }
+void RoleIntersectionImpl::accept_impl(ConstructorVisitor<Role>& visitor) const { visitor.visit(this); }
 
 Index RoleIntersectionImpl::get_index() const { return m_index; }
 
@@ -809,7 +809,7 @@ void RoleUnionImpl::evaluate_impl(EvaluationContext& context) const
     }
 }
 
-void RoleUnionImpl::accept_impl(Visitor& visitor) const { visitor.visit(this); }
+void RoleUnionImpl::accept_impl(ConstructorVisitor<Role>& visitor) const { visitor.visit(this); }
 
 Index RoleUnionImpl::get_index() const { return m_index; }
 
@@ -850,7 +850,7 @@ void RoleComplementImpl::evaluate_impl(EvaluationContext& context) const
     }
 }
 
-void RoleComplementImpl::accept_impl(Visitor& visitor) const { visitor.visit(this); }
+void RoleComplementImpl::accept_impl(ConstructorVisitor<Role>& visitor) const { visitor.visit(this); }
 
 Index RoleComplementImpl::get_index() const { return m_index; }
 
@@ -889,7 +889,7 @@ void RoleInverseImpl::evaluate_impl(EvaluationContext& context) const
     }
 }
 
-void RoleInverseImpl::accept_impl(Visitor& visitor) const { visitor.visit(this); }
+void RoleInverseImpl::accept_impl(ConstructorVisitor<Role>& visitor) const { visitor.visit(this); }
 
 Index RoleInverseImpl::get_index() const { return m_index; }
 
@@ -934,7 +934,7 @@ void RoleCompositionImpl::evaluate_impl(EvaluationContext& context) const
     }
 }
 
-void RoleCompositionImpl::accept_impl(Visitor& visitor) const { visitor.visit(this); }
+void RoleCompositionImpl::accept_impl(ConstructorVisitor<Role>& visitor) const { visitor.visit(this); }
 
 Index RoleCompositionImpl::get_index() const { return m_index; }
 
@@ -979,7 +979,7 @@ void RoleTransitiveClosureImpl::evaluate_impl(EvaluationContext& context) const
     }
 }
 
-void RoleTransitiveClosureImpl::accept_impl(Visitor& visitor) const { visitor.visit(this); }
+void RoleTransitiveClosureImpl::accept_impl(ConstructorVisitor<Role>& visitor) const { visitor.visit(this); }
 
 Index RoleTransitiveClosureImpl::get_index() const { return m_index; }
 
@@ -1027,7 +1027,7 @@ void RoleReflexiveTransitiveClosureImpl::evaluate_impl(EvaluationContext& contex
     }
 }
 
-void RoleReflexiveTransitiveClosureImpl::accept_impl(Visitor& visitor) const { visitor.visit(this); }
+void RoleReflexiveTransitiveClosureImpl::accept_impl(ConstructorVisitor<Role>& visitor) const { visitor.visit(this); }
 
 Index RoleReflexiveTransitiveClosureImpl::get_index() const { return m_index; }
 
@@ -1072,7 +1072,7 @@ void RoleRestrictionImpl::evaluate_impl(EvaluationContext& context) const
     }
 }
 
-void RoleRestrictionImpl::accept_impl(Visitor& visitor) const { visitor.visit(this); }
+void RoleRestrictionImpl::accept_impl(ConstructorVisitor<Role>& visitor) const { visitor.visit(this); }
 
 Index RoleRestrictionImpl::get_index() const { return m_index; }
 
@@ -1110,7 +1110,7 @@ void RoleIdentityImpl::evaluate_impl(EvaluationContext& context) const
     }
 }
 
-void RoleIdentityImpl::accept_impl(Visitor& visitor) const { visitor.visit(this); }
+void RoleIdentityImpl::accept_impl(ConstructorVisitor<Role>& visitor) const { visitor.visit(this); }
 
 Index RoleIdentityImpl::get_index() const { return m_index; }
 

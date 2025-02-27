@@ -20,6 +20,7 @@
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/languages/description_logics/cnf_grammar_constructor_repositories.hpp"
+#include "mimir/languages/description_logics/cnf_grammar_containers.hpp"
 #include "mimir/languages/description_logics/declarations.hpp"
 
 #include <loki/loki.hpp>
@@ -52,8 +53,10 @@ private:
     GrammarConstructorRepositories m_repositories;
 
     /* The rules of the grammar. */
-    StartSymbols m_start_symbols;
-    GrammarRules m_rules;
+    StartSymbolsContainer m_start_symbols;
+    DerivationRulesContainer m_derivation_rules;
+
+    Domain m_domain;
 
 public:
     /// @brief Translate a grammar to CNF.
@@ -69,21 +72,8 @@ public:
      * Getters
      */
 
-    template<ConceptOrRole D>
-    const std::optional<NonTerminal<D>>& get_start_symbol() const
-    {
-        return boost::hana::at_key(m_start_symbols, boost::hana::type<D> {});
-    }
-
-    const StartSymbols& get_start_symbols() const { return m_start_symbols; }
-
-    template<ConceptOrRole D, PrimitiveOrComposite C>
-    const ConstructorList<D, C>& get_rules(NonTerminal<D> non_terminal) const
-    {
-        return boost::hana::at_key(boost::hana::at_key(m_rules, boost::hana::type<D> {}), boost::hana::type<C> {}).at(non_terminal);
-    }
-
-    const GrammarRules& get_rules() const { return m_rules; }
+    const StartSymbolsContainer& get_start_symbols_container() const { return m_start_symbols; }
+    const DerivationRulesContainer& get_derivation_rules_container() const { return m_derivation_rules; }
 };
 }
 

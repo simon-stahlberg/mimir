@@ -37,14 +37,14 @@ NonTerminalImpl<D>::NonTerminalImpl(Index index, std::string name) : m_index(ind
 template<dl::ConceptOrRole D>
 bool NonTerminalImpl<D>::test_match(dl::Constructor<D> constructor, const Grammar& grammar) const
 {
-    const auto& primitive_rules = grammar.get_rules<D, Primitive>(this);
+    const auto& primitive_rules = grammar.get_derivation_rules_container().get<D, Primitive>(this);
 
     if (std::any_of(primitive_rules.begin(), primitive_rules.end(), [&, constructor](auto&& rule) { return rule->test_match(constructor, grammar); }))
     {
         return true;
     }
 
-    const auto& composite_rules = grammar.get_rules<D, Composite>(this);
+    const auto& composite_rules = grammar.get_derivation_rules_container().get<D, Composite>(this);
 
     if (std::any_of(composite_rules.begin(), composite_rules.end(), [&, constructor](auto&& rule) { return rule->test_match(constructor, grammar); }))
     {

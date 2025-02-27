@@ -24,18 +24,21 @@
 namespace mimir::dl
 {
 
-// TODO split visitor for consistency!
-
-class Visitor
+template<ConceptOrRole D>
+class ConstructorVisitor
 {
-public:
-    virtual ~Visitor() {}
+};
 
-    /**
-     * Generic visits.
-     */
-    template<std::ranges::forward_range Range>
-    void visit(const Range& range);
+template<>
+class ConstructorVisitor<Concept>
+{
+protected:
+    ConstructorVisitor<Role>* m_role_visitor;
+
+public:
+    virtual ~ConstructorVisitor() = default;
+
+    virtual void initialize(ConstructorVisitor<Role>& role_visitor);
 
     /* Concepts */
     virtual void visit(ConceptBot constructor);
@@ -54,6 +57,18 @@ public:
     virtual void visit(ConceptRoleValueMapContainment constructor);
     virtual void visit(ConceptRoleValueMapEquality constructor);
     virtual void visit(ConceptNominal constructor);
+};
+
+template<>
+class ConstructorVisitor<Role>
+{
+protected:
+    ConstructorVisitor<Concept>* m_concept_visitor;
+
+public:
+    virtual void initialize(ConstructorVisitor<Concept>& concept_visitor);
+
+    virtual ~ConstructorVisitor() = default;
 
     /* Roles */
     virtual void visit(RoleUniversal constructor);
@@ -73,7 +88,6 @@ public:
     virtual void visit(RoleRestriction constructor);
     virtual void visit(RoleIdentity constructor);
 };
-
 }
 
 #endif

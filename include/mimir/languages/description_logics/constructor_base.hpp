@@ -59,7 +59,7 @@ public:
         return context.get_denotation_repository<D>().insert(this, context.get_state()->get_index(), context.get_denotation_builder<D>());
     };
 
-    void accept(Visitor& visitor) const override { return self().accept_impl(visitor); }
+    void accept(ConstructorVisitor<D>& visitor) const override { return self().accept_impl(visitor); }
 };
 
 }

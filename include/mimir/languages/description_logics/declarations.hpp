@@ -126,7 +126,14 @@ using RoleIdentity = const RoleIdentityImpl*;
  * Visitors
  */
 
-class Visitor;
+template<ConceptOrRole D>
+class ConstructorVisitor;
+
+template<ConceptOrRole D>
+class GrammarConstructorVisitor;
+
+template<ConceptOrRole D>
+class CNFGrammarConstructorVisitor;
 
 namespace grammar
 {
@@ -272,6 +279,8 @@ template<dl::ConceptOrRole D, PrimitiveOrComposite C>
 using Constructor = const ConstructorImpl<D, C>*;
 template<dl::ConceptOrRole D, PrimitiveOrComposite C>
 using ConstructorList = std::vector<Constructor<D, C>>;
+template<dl::ConceptOrRole D, PrimitiveOrComposite C>
+using ConstructorSet = std::unordered_set<Constructor<D, C>>;
 
 /* NonTerminal */
 template<dl::ConceptOrRole D>

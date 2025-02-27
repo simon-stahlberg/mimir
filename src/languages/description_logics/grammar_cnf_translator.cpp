@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/languages/description_logics/grammar_cnf_translator.hpp"
+#include "grammar_cnf_translator.hpp"
 
 #include "mimir/languages/description_logics/grammar.hpp"
 #include "mimir/languages/description_logics/grammar_visitor_interface.hpp"
@@ -68,7 +68,7 @@ static NonTerminalMap<std::string> collect_nonterminals_from_grammar(const Gramm
     return nonterminal_map;
 }
 
-Grammar translate_to_cnf(const Grammar& grammar)
+cnf_grammar::Grammar translate_to_cnf(const Grammar& grammar)
 {
     /* Collect all non-terminals to assign new names during translation */
     auto nonterminal_map = collect_nonterminals_from_grammar(grammar);
