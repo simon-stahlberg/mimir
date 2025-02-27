@@ -19,6 +19,7 @@
 #define MIMIR_FORMALISM_DOMAIN_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/domain_details.hpp"
 #include "mimir/formalism/repositories.hpp"
 
 namespace mimir
@@ -40,8 +41,7 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    ToObjectMap<std::string> m_name_to_constant;
-    ToPredicateMaps<std::string, Static, Fluent, Derived> m_name_to_predicate;
+    domain::Details m_details;
 
     DomainImpl(PDDLRepositories repositories,
                std::optional<fs::path> filepath,

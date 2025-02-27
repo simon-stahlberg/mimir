@@ -83,7 +83,7 @@ ProblemImpl::ProblemImpl(Index index,
     m_optimization_metric(std::move(optimization_metric)),
     m_axioms(std::move(axioms)),
     m_problem_and_domain_axioms(std::move(problem_and_domain_axioms)),
-    m_details(*this)
+    m_details()
 {
     assert(is_all_unique(get_objects()));
     assert(is_all_unique(get_derived_predicates()));
@@ -126,12 +126,6 @@ ProblemImpl::ProblemImpl(Index index,
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(std::is_sorted(get_axioms().begin(), get_axioms().end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
 
-    /* Initial state */
-
-    /* Goal */
-
-    /* Axioms */
-
     /**
      * Error checking
      */
@@ -159,6 +153,12 @@ ProblemImpl::ProblemImpl(Index index,
             throw std::runtime_error("Negative literals in axiom heads is not supported.");
         }
     }
+
+    /**
+     * Details
+     */
+
+    m_details = problem::Details(*this);
 }
 
 Problem ProblemImpl::create(const fs::path& domain_filepath, const fs::path& problem_filepath, const loki::Options& options)
@@ -1188,14 +1188,14 @@ const problem::ActionGroundingInfoList& problem::GroundingDetails::get_action_in
     {
         action_infos = ActionGroundingInfoList {};
 
-        for (const auto& action : parent.get_domain()->get_actions())
+        for (const auto& action : parent->get_domain()->get_actions())
         {
             auto conditional_effect_infos = ConditionalEffectGroundingInfoList {};
 
             for (const auto& conditional_effect : action->get_conditional_effects())
             {
                 auto [vertices_, vertices_by_parameter_index_, objects_by_parameter_index_] =
-                    consistency_graph::StaticConsistencyGraph::compute_vertices(parent,
+                    consistency_graph::StaticConsistencyGraph::compute_vertices(*parent,
                                                                                 action->get_arity(),
                                                                                 action->get_arity() + conditional_effect->get_arity(),
                                                                                 conditional_effect->get_conjunctive_condition()->get_literals<Static>());
@@ -1214,8 +1214,10 @@ const problem::ActionGroundingInfoList& problem::GroundingDetails::get_action_in
  * Details
  */
 
+problem::InitialDetails::InitialDetails() : parent(nullptr) {}
+
 problem::InitialDetails::InitialDetails(const ProblemImpl& problem) :
-    parent(problem),
+    parent(&problem),
     positive_static_initial_atoms(to_ground_atoms(problem.get_initial_literals<Static>())),
     positive_static_initial_atoms_bitset(),
     positive_static_initial_atoms_indices(),
@@ -1277,11 +1279,15 @@ problem::InitialDetails::InitialDetails(const ProblemImpl& problem) :
         static_functions[index] = function;
     }
 
-    static_initial_numeric_assignment_set.insert_ground_function_values(static_functions, problem.get_initial_function_to_value<Static>());
+    const auto& static_function_to_values = boost::hana::at_key(initial_function_to_value, boost::hana::type<Static> {});
+
+    static_initial_numeric_assignment_set.insert_ground_function_values(static_functions, static_function_to_values);
 }
 
+problem::GoalDetails::GoalDetails() : parent(nullptr) {}
+
 problem::GoalDetails::GoalDetails(const ProblemImpl& problem, const InitialDetails& initial) :
-    parent(problem),
+    parent(&problem),
     m_static_goal_holds(false),
     positive_goal_atoms(),
     positive_goal_atoms_bitset(),
@@ -1331,21 +1337,27 @@ problem::GoalDetails::GoalDetails(const ProblemImpl& problem, const InitialDetai
                           });
 }
 
-problem::AxiomDetails::AxiomDetails(const ProblemImpl& problem) : parent(problem), problem_and_domain_axiom_partitioning()
+problem::AxiomDetails::AxiomDetails() : parent(nullptr) {}
+
+problem::AxiomDetails::AxiomDetails(const ProblemImpl& problem) : parent(&problem), problem_and_domain_axiom_partitioning()
 {
     problem_and_domain_axiom_partitioning =
         compute_axiom_partitioning(problem.get_problem_and_domain_axioms(), problem.get_problem_and_domain_derived_predicates());
 }
 
+problem::GroundingDetails::GroundingDetails() : parent(nullptr) {}
+
 problem::GroundingDetails::GroundingDetails(const ProblemImpl& problem) :
-    parent(problem),
+    parent(&problem),
     action_infos(std::nullopt),
     per_action_data(problem.get_domain()->get_actions().size()),
     per_axiom_data(problem.get_problem_and_domain_axioms().size())
 {
 }
 
-problem::Details::Details(const ProblemImpl& problem) : parent(problem), initial(problem), goal(problem, initial), axiom(problem), grounding(problem) {}
+problem::Details::Details() : parent(nullptr) {}
+
+problem::Details::Details(const ProblemImpl& problem) : parent(&problem), initial(problem), goal(problem, initial), axiom(problem), grounding(problem) {}
 
 /* Printing */
 std::ostream& operator<<(std::ostream& out, const ProblemImpl& element)

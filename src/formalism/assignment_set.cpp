@@ -34,6 +34,11 @@ namespace mimir
  */
 
 template<StaticOrFluentOrDerived P>
+AssignmentSet<P>::AssignmentSet() : m_num_objects(0), m_per_predicate_assignment_set()
+{
+}
+
+template<StaticOrFluentOrDerived P>
 AssignmentSet<P>::AssignmentSet(size_t num_objects, const PredicateList<P>& predicates) : m_num_objects(num_objects), m_per_predicate_assignment_set()
 {
     /* Allocate */
@@ -119,6 +124,11 @@ template class AssignmentSet<Derived>;
 /**
  * NumericAssignmentSet
  */
+
+template<StaticOrFluent F>
+NumericAssignmentSet<F>::NumericAssignmentSet() : m_num_objects(0), m_per_function_skeleton_bounds_set()
+{
+}
 
 template<StaticOrFluent F>
 NumericAssignmentSet<F>::NumericAssignmentSet(size_t num_objects, const FunctionSkeletonList<F>& function_skeletons) :

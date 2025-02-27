@@ -51,6 +51,8 @@ private:
     std::vector<std::vector<bool>> m_per_predicate_assignment_set;
 
 public:
+    AssignmentSet();
+
     /// @brief Construct from a given set of ground atoms.
     AssignmentSet(size_t num_objects, const PredicateList<P>& predicates);
 
@@ -95,6 +97,8 @@ private:
     std::vector<std::pair<GroundFunction<F>, ContinuousCost>> m_ground_function_to_value;
 
 public:
+    NumericAssignmentSet();
+
     /// @brief Construct from a given set of ground atoms.
     NumericAssignmentSet(size_t num_objects, const FunctionSkeletonList<F>& function_skeletons);
 

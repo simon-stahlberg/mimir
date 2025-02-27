@@ -55,9 +55,7 @@ DomainImpl::DomainImpl(PDDLRepositories repositories,
     m_function_skeletons(std::move(function_skeletons)),
     m_auxiliary_function_skeleton(std::move(auxiliary_function_skeleton)),
     m_actions(std::move(actions)),
-    m_axioms(std::move(axioms)),
-    m_name_to_constant(),
-    m_name_to_predicate()
+    m_axioms(std::move(axioms))
 {
     assert(is_all_unique(get_constants()));
     assert(is_all_unique(get_predicates<Static>()));
@@ -86,22 +84,11 @@ DomainImpl::DomainImpl(PDDLRepositories repositories,
     assert(std::is_sorted(get_actions().begin(), get_actions().end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(std::is_sorted(get_axioms().begin(), get_axioms().end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
 
-    /* Additional */
-    for (const auto& object : get_constants())
-    {
-        m_name_to_constant.emplace(object->get_name(), object);
-    }
+    /**
+     * Details
+     */
 
-    boost::hana::for_each(get_hana_predicates(),
-                          [&](auto&& pair)
-                          {
-                              const auto& key = boost::hana::first(pair);
-                              const auto& value = boost::hana::second(pair);
-                              for (const auto& predicate : value)
-                              {
-                                  boost::hana::at_key(m_name_to_predicate, key).emplace(predicate->get_name(), predicate);
-                              }
-                          });
+    m_details = domain::Details(*this);
 }
 
 const PDDLRepositories& DomainImpl::get_repositories() const { return m_repositories; }
@@ -143,19 +130,57 @@ const ActionList& DomainImpl::get_actions() const { return m_actions; }
 
 const AxiomList& DomainImpl::get_axioms() const { return m_axioms; }
 
-const ToObjectMap<std::string> DomainImpl::get_name_to_constant() const { return m_name_to_constant; }
+const ToObjectMap<std::string> DomainImpl::get_name_to_constant() const { return m_details.constant.name_to_constant; }
 
 template<StaticOrFluentOrDerived P>
 const ToPredicateMap<std::string, P>& DomainImpl::get_name_to_predicate() const
 {
-    return boost::hana::at_key(m_name_to_predicate, boost::hana::type<P> {});
+    return boost::hana::at_key(m_details.predicate.name_to_predicate, boost::hana::type<P> {});
 }
 
 template const ToPredicateMap<std::string, Static>& DomainImpl::get_name_to_predicate<Static>() const;
 template const ToPredicateMap<std::string, Fluent>& DomainImpl::get_name_to_predicate<Fluent>() const;
 template const ToPredicateMap<std::string, Derived>& DomainImpl::get_name_to_predicate<Derived>() const;
 
-const ToPredicateMaps<std::string, Static, Fluent, Derived>& DomainImpl::get_hana_name_to_predicate() { return m_name_to_predicate; }
+const ToPredicateMaps<std::string, Static, Fluent, Derived>& DomainImpl::get_hana_name_to_predicate() { return m_details.predicate.name_to_predicate; }
+
+/**
+ * Details
+ */
+
+domain::ConstantDetails::ConstantDetails() : parent(nullptr), name_to_constant() {}
+
+domain::ConstantDetails::ConstantDetails(const DomainImpl& domain) : parent(&domain), name_to_constant()
+{
+    for (const auto& object : domain.get_constants())
+    {
+        name_to_constant.emplace(object->get_name(), object);
+    }
+}
+
+domain::PredicateDetails::PredicateDetails() : parent(nullptr), name_to_predicate() {}
+
+domain::PredicateDetails::PredicateDetails(const DomainImpl& domain) : parent(&domain), name_to_predicate()
+{
+    boost::hana::for_each(domain.get_hana_predicates(),
+                          [&](auto&& pair)
+                          {
+                              const auto& key = boost::hana::first(pair);
+                              const auto& value = boost::hana::second(pair);
+                              for (const auto& predicate : value)
+                              {
+                                  boost::hana::at_key(name_to_predicate, key).emplace(predicate->get_name(), predicate);
+                              }
+                          });
+}
+
+domain::Details::Details() : parent(nullptr), constant(), predicate() {}
+
+domain::Details::Details(const DomainImpl& domain) : parent(&domain), constant(domain), predicate(domain) {}
+
+/**
+ * Printing
+ */
 
 std::ostream& operator<<(std::ostream& out, const DomainImpl& element)
 {
@@ -169,5 +194,4 @@ std::ostream& operator<<(std::ostream& out, Domain element)
     out << *element;
     return out;
 }
-
 }

@@ -36,7 +36,7 @@ namespace mimir::problem
 
 struct InitialDetails
 {
-    const ProblemImpl& parent;
+    const ProblemImpl* parent;
 
     GroundAtomList<Static> positive_static_initial_atoms;
     FlatBitset positive_static_initial_atoms_bitset;
@@ -48,6 +48,7 @@ struct InitialDetails
 
     FlatDoubleLists<Static, Fluent> initial_function_to_value;
 
+    InitialDetails();
     InitialDetails(const ProblemImpl& problem);
 };
 
@@ -57,7 +58,7 @@ struct InitialDetails
 
 struct GoalDetails
 {
-    const ProblemImpl& parent;
+    const ProblemImpl* parent;
 
     bool m_static_goal_holds;
 
@@ -69,6 +70,7 @@ struct GoalDetails
     FlatBitsets<Static, Fluent, Derived> negative_goal_atoms_bitset;
     FlatIndexLists<Static, Fluent, Derived> negative_goal_atoms_indices;
 
+    GoalDetails();
     GoalDetails(const ProblemImpl& problem, const InitialDetails& initial);
 };
 
@@ -78,10 +80,11 @@ struct GoalDetails
 
 struct AxiomDetails
 {
-    const ProblemImpl& parent;
+    const ProblemImpl* parent;
 
     std::vector<AxiomPartition> problem_and_domain_axiom_partitioning;  ///< Obtained from stratification
 
+    AxiomDetails();
     AxiomDetails(const ProblemImpl& problem);
 };
 
@@ -108,7 +111,7 @@ using ActionGroundingInfoList = std::vector<ActionGroundingInfo>;
 
 struct GroundingDetails
 {
-    const ProblemImpl& parent;
+    const ProblemImpl* parent;
 
     mutable std::optional<ActionGroundingInfoList> action_infos;  ///< lazyly initialized
     const ActionGroundingInfoList& get_action_infos() const;      ///< lazily initializes problem-specific action infos.
@@ -139,18 +142,20 @@ struct GroundingDetails
     GroundAxiomList ground_axioms_by_index;
     std::vector<std::pair<GroundAxiomImpl, GroundingTable<GroundAxiom>>> per_axiom_data;
 
+    GroundingDetails();
     GroundingDetails(const ProblemImpl& problem);
 };
 
 struct Details
 {
-    const ProblemImpl& parent;
+    const ProblemImpl* parent;
 
     InitialDetails initial;
     GoalDetails goal;
     AxiomDetails axiom;
     GroundingDetails grounding;
 
+    Details();
     Details(const ProblemImpl& problem);
 };
 }
