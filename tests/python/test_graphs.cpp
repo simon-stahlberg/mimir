@@ -12,7 +12,8 @@ constexpr std::string_view project_dir = "../../../";
 TEST_F(PymimirFixture, static_graphs)
 {
     {
-        auto graph = pymimir().attr("EmptyVertexEmptyEdgeStaticGraph")();
+        // Test mutable graph
+        auto graph = pymimir().attr("BasicStaticGraph")();
         const auto v0 = graph.attr("add_vertex")().cast<VertexIndex>();
         const auto v1 = graph.attr("add_vertex")().cast<VertexIndex>();
 
@@ -20,5 +21,9 @@ TEST_F(PymimirFixture, static_graphs)
 
         EXPECT_EQ(v0, 0);
         EXPECT_EQ(v1, 1);
+
+        // Test immutable graph
+        auto immutable_graph = pymimir().attr("BasicStaticGraphImmutable")(graph);
+        EXPECT_ANY_THROW(immutable_graph.attr("add_vertex")().cast<VertexIndex>());
     }
 }

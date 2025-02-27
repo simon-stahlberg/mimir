@@ -2,8 +2,9 @@
 
 # Formalism
 from _pymimir import (
-    EmptyVertexEmptyEdgeStaticGraph,
-    ColoredVertexEmptyEdgeStaticGraph,
-    ColoredVertexColoredEdgeStaticGraph,
-    Something
+    BasicStaticGraph,
+    VertexColoredStaticGraph,
+    EdgeColoredStaticGraph,
+    BasicStaticGraphImmutable,
+    Immutable
 )
