@@ -19,10 +19,7 @@
 #define MIMIR_FORMALISM_PROBLEM_HPP_
 
 #include "mimir/common/types_cista.hpp"
-#include "mimir/formalism/assignment_set.hpp"
-#include "mimir/formalism/axiom_stratification.hpp"
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/grounding_table.hpp"
 #include "mimir/formalism/problem_details.hpp"
 #include "mimir/formalism/repositories.hpp"
 
@@ -52,69 +49,7 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    /* Initial state */
-    GroundAtomList<Static> m_positive_static_initial_atoms;
-    FlatBitset m_positive_static_initial_atoms_bitset;
-    FlatIndexList m_positive_static_initial_atoms_indices;
-    AssignmentSet<Static> m_positive_static_initial_assignment_set;
-    NumericAssignmentSet<Static> m_static_initial_numeric_assignment_set;
-
-    GroundAtomList<Fluent> m_positive_fluent_initial_atoms;
-
-    FlatDoubleLists<Static, Fluent> m_initial_function_to_value;
-
-    /* Goal */
-    bool m_static_goal_holds;
-
-    GroundAtomLists<Static, Fluent, Derived> m_positive_goal_atoms;
-    FlatBitsets<Static, Fluent, Derived> m_positive_goal_atoms_bitset;
-    FlatIndexLists<Static, Fluent, Derived> m_positive_goal_atoms_indices;
-
-    GroundAtomLists<Static, Fluent, Derived> m_negative_goal_atoms;
-    FlatBitsets<Static, Fluent, Derived> m_negative_goal_atoms_bitset;
-    FlatIndexLists<Static, Fluent, Derived> m_negative_goal_atoms_indices;
-
-    /* Actions */
-    mutable std::optional<ActionGroundingInfoList> m_action_infos;  ///< lazyly initialized
-    const ActionGroundingInfoList& get_action_infos() const;        ///< lazily initializes problem-specific action infos.
-
-    /* Axioms */
-    std::vector<AxiomPartition> m_problem_and_domain_axiom_partitioning;  ///< Obtained from stratification
-
-    /* Grounding */
-
-    // A table for each pair (is_negated,predicate_index) since those are context independent.
-    template<typename T>
-    using LiteralGroundingTableList = std::array<std::vector<GroundingTable<T>>, 2>;
-
-    using PDDLTypeToGroundingTable =
-        boost::hana::map<boost::hana::pair<boost::hana::type<GroundLiteral<Static>>, LiteralGroundingTableList<GroundLiteral<Static>>>,
-                         boost::hana::pair<boost::hana::type<GroundLiteral<Fluent>>, LiteralGroundingTableList<GroundLiteral<Fluent>>>,
-                         boost::hana::pair<boost::hana::type<GroundLiteral<Derived>>, LiteralGroundingTableList<GroundLiteral<Derived>>>,
-                         boost::hana::pair<boost::hana::type<GroundFunction<Static>>, GroundingTableList<GroundFunction<Static>>>,
-                         boost::hana::pair<boost::hana::type<GroundFunction<Fluent>>, GroundingTableList<GroundFunction<Fluent>>>,
-                         boost::hana::pair<boost::hana::type<GroundFunction<Auxiliary>>, GroundingTableList<GroundFunction<Auxiliary>>>,
-                         boost::hana::pair<boost::hana::type<GroundFunctionExpression>, GroundingTableList<GroundFunctionExpression>>>;
-
-    PDDLTypeToGroundingTable m_grounding_tables;
-
-    /* For ground actions and axioms we also create a reusable builder. */
-
-    GroundActionImplSet m_ground_actions;
-    GroundActionList m_ground_actions_by_index;
-
-    using PerActionData = std::tuple<GroundActionImpl,               ///< Builder
-                                     GroundingTable<GroundAction>>;  ///< Cache
-
-    std::unordered_map<Action, PerActionData> m_per_action_datas;
-
-    GroundAxiomImplSet m_ground_axioms;
-    GroundAxiomList m_ground_axioms_by_index;
-
-    using PerAxiomData = std::tuple<GroundAxiomImpl,               ///< Builder
-                                    GroundingTable<GroundAxiom>>;  ///< Cache
-
-    std::unordered_map<Axiom, PerAxiomData> m_per_axiom_data;
+    problem::Details m_details;  ///< We hide the details in a struct.
 
     ProblemImpl(Index index,
                 PDDLRepositories repositories,
@@ -139,11 +74,11 @@ private:
     friend class ProblemBuilder;
 
 public:
-    // moveable but not copyable
+    // not moveable and not copieable
     ProblemImpl(const ProblemImpl& other) = delete;
     ProblemImpl& operator=(const ProblemImpl& other) = delete;
-    ProblemImpl(ProblemImpl&& other) = default;
-    ProblemImpl& operator=(ProblemImpl&& other) = default;
+    ProblemImpl(ProblemImpl&& other) = delete;
+    ProblemImpl& operator=(ProblemImpl&& other) = delete;
 
     static Problem create(const fs::path& domain_filepath, const fs::path& problem_filepath, const loki::Options& options = loki::Options());
 
@@ -192,6 +127,7 @@ public:
     ContinuousCost get_initial_function_value(GroundFunction<F> function) const;
 
     /* Goal */
+
     bool static_literal_holds(const GroundLiteral<Static> literal) const;  // TODO: probably can go in the future
 
     bool static_goal_holds() const;
@@ -217,26 +153,13 @@ public:
     const FlatIndexLists<Static, Fluent, Derived>& get_hana_negative_goal_atoms_indices() const;
 
     /* Axioms */
+
     const std::vector<AxiomPartition>& get_problem_and_domain_axiom_partitioning() const;
 
-    /**
-     * Grounding
-     */
+    /* Grounding */
 
     template<StaticOrFluentOrDerived P>
     GroundLiteral<P> ground(Literal<P> literal, const ObjectList& binding);
-
-    template<StaticOrFluentOrDerived P>
-    void ground_and_fill_bitset(const std::vector<Literal<P>>& literals,
-                                FlatBitset& ref_positive_bitset,
-                                FlatBitset& ref_negative_bitset,
-                                const ObjectList& binding);
-
-    template<StaticOrFluentOrDerived P>
-    void ground_and_fill_vector(const std::vector<Literal<P>>& literals,
-                                FlatIndexList& ref_positive_indices,
-                                FlatIndexList& ref_negative_indices,
-                                const ObjectList& binding);
 
     GroundFunctionExpression ground(FunctionExpression fexpr, const ObjectList& binding);
 
@@ -247,17 +170,6 @@ public:
 
     template<StaticOrFluentOrAuxiliary F>
     GroundFunction<F> ground(Function<F> function, const ObjectList& binding);
-
-    void ground_and_fill_vector(const NumericConstraintList& numeric_constraints,
-                                const ObjectList& binding,
-                                FlatExternalPtrList<const GroundNumericConstraintImpl>& ref_numeric_constraints);
-
-    void
-    ground_and_fill_vector(const NumericEffectList<Fluent>& numeric_effects, const ObjectList& binding, GroundNumericEffectList<Fluent>& ref_numeric_effects);
-
-    void ground_and_fill_optional(const std::optional<NumericEffect<Auxiliary>>& numeric_effect,
-                                  const ObjectList& binding,
-                                  cista::optional<FlatExternalPtr<const GroundNumericEffectImpl<Auxiliary>>>& ref_numeric_effect);
 
     GroundAction ground(Action action, ObjectList binding);
 
