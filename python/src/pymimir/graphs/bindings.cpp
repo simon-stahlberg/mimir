@@ -57,6 +57,7 @@ void bind_static_graph(py::module_& m)
                                    args.cast<PropertiesTuple>()  // Cast Python arguments to the expected tuple
                  );
              })
+        .def("add_vertex", [](const StaticGraph<V, E>& self, py::args args) { throw std::runtime_error("ERROR"); })
         .def("add_vertex", [](StaticGraph<V, E>& self, const V& vertex) { return self.add_vertex(vertex); });
 }
 

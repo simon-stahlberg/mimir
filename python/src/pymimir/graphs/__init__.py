@@ -4,5 +4,6 @@
 from _pymimir import (
     EmptyVertexEmptyEdgeStaticGraph,
     ColoredVertexEmptyEdgeStaticGraph,
-    ColoredVertexColoredEdgeStaticGraph
+    ColoredVertexColoredEdgeStaticGraph,
+    Something
 )
