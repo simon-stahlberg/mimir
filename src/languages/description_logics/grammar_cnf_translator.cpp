@@ -17,7 +17,9 @@
 
 #include "grammar_cnf_translator.hpp"
 
+#include "mimir/common/printers.hpp"
 #include "mimir/languages/description_logics/grammar.hpp"
+#include "mimir/languages/description_logics/grammar_visitor_formatter.hpp"
 #include "mimir/languages/description_logics/grammar_visitor_interface.hpp"
 
 namespace mimir::dl::grammar
@@ -68,13 +70,38 @@ static NonTerminalMap<std::string> collect_nonterminals_from_grammar(const Gramm
     return nonterminal_map;
 }
 
+template<ConceptOrRole D>
+struct EliminateNonTerminalVisitor : public RecurseNonTerminalVisitor<D>
+{
+};
+
+template<ConceptOrRole D>
+struct EliminateDerivationRuleVisitor : public RecurseDerivationRuleVisitor<D>
+{
+};
+
+static Grammar eliminate_rules_with_nonsolitary_terminals(const Grammar& grammar)
+{
+    auto repositories = ConstructorRepositories();
+    auto start_symbols_container = grammar.get_start_symbols_container();
+    auto derivation_rules_container = DerivationRulesContainer();
+
+    return Grammar(std::move(repositories), std::move(start_symbols_container), std::move(derivation_rules_container), grammar.get_domain());
+}
+
 cnf_grammar::Grammar translate_to_cnf(const Grammar& grammar)
 {
-    /* Collect all non-terminals to assign new names during translation */
+    std::cout << "translate_to_cnf" << std::endl;
+
     auto nonterminal_map = collect_nonterminals_from_grammar(grammar);
 
-    // auto repositories = GrammarConstructorRepositories();
+    mimir::operator<<(std::cout, nonterminal_map.get());
+    std::cout << std::endl;
 
-    /* Step 1: flatten A ::= B | C  ==> A ::= B and A::= C */
+    std::cout << grammar << std::endl;
+
+    auto translated_grammar = eliminate_rules_with_nonsolitary_terminals(grammar);
+
+    exit(1);
 }
 }

@@ -73,6 +73,7 @@ public:
 
     const StartSymbolsContainer& get_start_symbols_container() const;
     const DerivationRulesContainer& get_derivation_rules_container() const;
+    const Domain& get_domain() const;
 };
 }
 

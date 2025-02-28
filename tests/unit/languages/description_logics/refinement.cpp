@@ -108,12 +108,12 @@ TEST(MimirTests, LanguagesDescriptionLogicsRefinementBrfsTest)
 
     for (const auto& concept_ : boost::hana::at_key(result.constructors, boost::hana::type<dl::Concept> {}))
     {
-        std::cout << std::make_tuple(concept_, dl::BNFFormatterVisitorTag {}) << std::endl;
+        std::cout << concept_ << std::endl;
     }
 
     for (const auto& role_ : boost::hana::at_key(result.constructors, boost::hana::type<dl::Role> {}))
     {
-        std::cout << std::make_tuple(role_, dl::BNFFormatterVisitorTag {}) << std::endl;
+        std::cout << role_ << std::endl;
     }
 
     // EXPECT_EQ(boost::hana::at_key(result.statistics.num_generated, boost::hana::type<dl::Concept> {}), 28);

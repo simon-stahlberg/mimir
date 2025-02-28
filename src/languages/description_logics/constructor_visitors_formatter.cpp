@@ -25,170 +25,169 @@
 namespace mimir::dl
 {
 
-BNFFormatterVisitor<Concept>::BNFFormatterVisitor(std::ostream& out) : m_out(out) {}
+FormatterVisitor<Concept>::FormatterVisitor(std::ostream& out) : m_out(out) {}
 
 /* Concepts */
-void BNFFormatterVisitor<Concept>::visit(ConceptBot constructor) { m_out << keywords::concept_bot; }
-void BNFFormatterVisitor<Concept>::visit(ConceptTop constructor) { m_out << keywords::concept_top; }
-void BNFFormatterVisitor<Concept>::visit(ConceptAtomicState<Static> constructor)
+void FormatterVisitor<Concept>::visit(ConceptBot constructor) { m_out << keywords::concept_bot; }
+void FormatterVisitor<Concept>::visit(ConceptTop constructor) { m_out << keywords::concept_top; }
+void FormatterVisitor<Concept>::visit(ConceptAtomicState<Static> constructor)
 {
     m_out << keywords::concept_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
-void BNFFormatterVisitor<Concept>::visit(ConceptAtomicState<Fluent> constructor)
+void FormatterVisitor<Concept>::visit(ConceptAtomicState<Fluent> constructor)
 {
     m_out << keywords::concept_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
-void BNFFormatterVisitor<Concept>::visit(ConceptAtomicState<Derived> constructor)
+void FormatterVisitor<Concept>::visit(ConceptAtomicState<Derived> constructor)
 {
     m_out << keywords::concept_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
-void BNFFormatterVisitor<Concept>::visit(ConceptAtomicGoal<Static> constructor)
+void FormatterVisitor<Concept>::visit(ConceptAtomicGoal<Static> constructor)
 {
     m_out << keywords::concept_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->is_negated() ? "false" : "true");
 }
-void BNFFormatterVisitor<Concept>::visit(ConceptAtomicGoal<Fluent> constructor)
+void FormatterVisitor<Concept>::visit(ConceptAtomicGoal<Fluent> constructor)
 {
     m_out << keywords::concept_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->is_negated() ? "false" : "true");
 }
-void BNFFormatterVisitor<Concept>::visit(ConceptAtomicGoal<Derived> constructor)
+void FormatterVisitor<Concept>::visit(ConceptAtomicGoal<Derived> constructor)
 {
     m_out << keywords::concept_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->is_negated() ? "false" : "true");
 }
-void BNFFormatterVisitor<Concept>::visit(ConceptIntersection constructor)
+void FormatterVisitor<Concept>::visit(ConceptIntersection constructor)
 {
     m_out << keywords::concept_intersection << " ";
     constructor->get_concept_left()->accept(*this);
     m_out << " ";
     constructor->get_concept_right()->accept(*this);
 }
-void BNFFormatterVisitor<Concept>::visit(ConceptUnion constructor)
+void FormatterVisitor<Concept>::visit(ConceptUnion constructor)
 {
     m_out << keywords::concept_union << " ";
     constructor->get_concept_left()->accept(*this);
     m_out << " ";
     constructor->get_concept_right()->accept(*this);
 }
-void BNFFormatterVisitor<Concept>::visit(ConceptNegation constructor)
+void FormatterVisitor<Concept>::visit(ConceptNegation constructor)
 {
     m_out << keywords::concept_negation << " ";
     constructor->get_concept()->accept(*this);
 }
-void BNFFormatterVisitor<Concept>::visit(ConceptValueRestriction constructor)
+void FormatterVisitor<Concept>::visit(ConceptValueRestriction constructor)
 {
     m_out << keywords::concept_value_restriction << " ";
     constructor->get_role()->accept(*m_role_visitor);
     m_out << " ";
     constructor->get_concept()->accept(*this);
 }
-void BNFFormatterVisitor<Concept>::visit(ConceptExistentialQuantification constructor)
+void FormatterVisitor<Concept>::visit(ConceptExistentialQuantification constructor)
 {
     m_out << keywords::concept_existential_quantification << " ";
     constructor->get_role()->accept(*m_role_visitor);
     m_out << " ";
     constructor->get_concept()->accept(*this);
 }
-void BNFFormatterVisitor<Concept>::visit(ConceptRoleValueMapContainment constructor)
+void FormatterVisitor<Concept>::visit(ConceptRoleValueMapContainment constructor)
 {
     m_out << keywords::concept_role_value_map_containment << " ";
     constructor->get_role_left()->accept(*m_role_visitor);
     m_out << " ";
     constructor->get_role_right()->accept(*m_role_visitor);
 }
-void BNFFormatterVisitor<Concept>::visit(ConceptRoleValueMapEquality constructor)
+void FormatterVisitor<Concept>::visit(ConceptRoleValueMapEquality constructor)
 {
     m_out << keywords::concept_role_value_map_equality << " ";
     constructor->get_role_left()->accept(*m_role_visitor);
     m_out << " ";
     constructor->get_role_right()->accept(*m_role_visitor);
 }
-void BNFFormatterVisitor<Concept>::visit(ConceptNominal constructor) { m_out << keywords::concept_nominal << " " << constructor->get_object()->get_name(); }
+void FormatterVisitor<Concept>::visit(ConceptNominal constructor) { m_out << keywords::concept_nominal << " " << constructor->get_object()->get_name(); }
 
 /* Roles */
-void BNFFormatterVisitor<Role>::visit(RoleUniversal constructor) { m_out << keywords::role_universal; }
-void BNFFormatterVisitor<Role>::visit(RoleAtomicState<Static> constructor)
+void FormatterVisitor<Role>::visit(RoleUniversal constructor) { m_out << keywords::role_universal; }
+void FormatterVisitor<Role>::visit(RoleAtomicState<Static> constructor)
 {
     m_out << keywords::role_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
-void BNFFormatterVisitor<Role>::visit(RoleAtomicState<Fluent> constructor)
+void FormatterVisitor<Role>::visit(RoleAtomicState<Fluent> constructor)
 {
     m_out << keywords::role_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
-void BNFFormatterVisitor<Role>::visit(RoleAtomicState<Derived> constructor)
+void FormatterVisitor<Role>::visit(RoleAtomicState<Derived> constructor)
 {
     m_out << keywords::role_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
-void BNFFormatterVisitor<Role>::visit(RoleAtomicGoal<Static> constructor)
+void FormatterVisitor<Role>::visit(RoleAtomicGoal<Static> constructor)
 {
     m_out << keywords::role_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->is_negated() ? "false" : "true");
 }
-void BNFFormatterVisitor<Role>::visit(RoleAtomicGoal<Fluent> constructor)
+void FormatterVisitor<Role>::visit(RoleAtomicGoal<Fluent> constructor)
 {
     m_out << keywords::role_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->is_negated() ? "false" : "true");
 }
-void BNFFormatterVisitor<Role>::visit(RoleAtomicGoal<Derived> constructor)
+void FormatterVisitor<Role>::visit(RoleAtomicGoal<Derived> constructor)
 {
     m_out << keywords::role_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->is_negated() ? "false" : "true");
 }
-void BNFFormatterVisitor<Role>::visit(RoleIntersection constructor)
+void FormatterVisitor<Role>::visit(RoleIntersection constructor)
 {
     m_out << keywords::role_intersection << " ";
     constructor->get_role_left()->accept(*this);
     m_out << " ";
     constructor->get_role_right()->accept(*this);
 }
-void BNFFormatterVisitor<Role>::visit(RoleUnion constructor)
+void FormatterVisitor<Role>::visit(RoleUnion constructor)
 {
     m_out << keywords::role_union << " ";
     constructor->get_role_left()->accept(*this);
     m_out << " ";
     constructor->get_role_right()->accept(*this);
 }
-void BNFFormatterVisitor<Role>::visit(RoleComplement constructor)
+void FormatterVisitor<Role>::visit(RoleComplement constructor)
 {
     m_out << keywords::role_complement << " ";
     constructor->get_role()->accept(*this);
 }
-void BNFFormatterVisitor<Role>::visit(RoleInverse constructor)
+void FormatterVisitor<Role>::visit(RoleInverse constructor)
 {
     m_out << keywords::role_inverse << " ";
     constructor->get_role()->accept(*this);
 }
-void BNFFormatterVisitor<Role>::visit(RoleComposition constructor)
+void FormatterVisitor<Role>::visit(RoleComposition constructor)
 {
     m_out << keywords::role_composition << " ";
     constructor->get_role_left()->accept(*this);
     m_out << " ";
     constructor->get_role_right()->accept(*this);
 }
-void BNFFormatterVisitor<Role>::visit(RoleTransitiveClosure constructor)
+void FormatterVisitor<Role>::visit(RoleTransitiveClosure constructor)
 {
     m_out << keywords::role_transitive_closure << " ";
     constructor->get_role()->accept(*this);
 }
-void BNFFormatterVisitor<Role>::visit(RoleReflexiveTransitiveClosure constructor)
+void FormatterVisitor<Role>::visit(RoleReflexiveTransitiveClosure constructor)
 {
     m_out << keywords::role_reflexive_transitive_closure << " ";
     constructor->get_role()->accept(*this);
 }
-void BNFFormatterVisitor<Role>::visit(RoleRestriction constructor)
+void FormatterVisitor<Role>::visit(RoleRestriction constructor)
 {
     m_out << keywords::role_restriction << " ";
     constructor->get_role()->accept(*this);
     m_out << " ";
     constructor->get_concept()->accept(*m_concept_visitor);
 }
-void BNFFormatterVisitor<Role>::visit(RoleIdentity constructor)
+void FormatterVisitor<Role>::visit(RoleIdentity constructor)
 {
     m_out << keywords::role_identity << " ";
     constructor->get_concept()->accept(*m_concept_visitor);
 }
 
 template<ConceptOrRole D>
-extern std::ostream& operator<<(std::ostream& out, const std::tuple<Constructor<D>, BNFFormatterVisitorTag>& data)
+extern std::ostream& operator<<(std::ostream& out, const Constructor<D>& constructor)
 {
-    const auto& [constructor, tag] = data;
-    auto concept_visitor = BNFFormatterVisitor<Concept>(out);
-    auto role_visitor = BNFFormatterVisitor<Role>(out);
+    auto concept_visitor = FormatterVisitor<Concept>(out);
+    auto role_visitor = FormatterVisitor<Role>(out);
     concept_visitor.initialize(role_visitor);
     role_visitor.initialize(concept_visitor);
     if constexpr (std::is_same_v<D, Concept>)
@@ -202,18 +201,7 @@ extern std::ostream& operator<<(std::ostream& out, const std::tuple<Constructor<
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, const std::tuple<Constructor<Concept>, BNFFormatterVisitorTag>& data);
-template std::ostream& operator<<(std::ostream& out, const std::tuple<Constructor<Role>, BNFFormatterVisitorTag>& data);
-
-template<ConceptOrRole D>
-std::ostream& operator<<(std::ostream& out, const std::tuple<std::string, Constructor<D>, BNFFormatterVisitorTag>& data)
-{
-    const auto& [name, constructor, tag] = data;
-    out << name << " ::= " << std::make_tuple(constructor, tag);
-    return out;
-}
-
-template std::ostream& operator<<(std::ostream& out, const std::tuple<std::string, Constructor<Concept>, BNFFormatterVisitorTag>& data);
-template std::ostream& operator<<(std::ostream& out, const std::tuple<std::string, Constructor<Role>, BNFFormatterVisitorTag>& data);
+template std::ostream& operator<<(std::ostream& out, const Constructor<Concept>& data);
+template std::ostream& operator<<(std::ostream& out, const Constructor<Role>& data);
 
 }

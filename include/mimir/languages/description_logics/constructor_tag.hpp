@@ -19,6 +19,7 @@
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_CATEGORY_HPP_
 
 #include <concepts>
+#include <string>
 
 namespace mimir::dl
 {
@@ -31,10 +32,12 @@ namespace mimir::dl
 
 struct Concept
 {
+    static constexpr std::string name = "concept";
 };
 
 struct Role
 {
+    static constexpr std::string name = "role";
 };
 
 /**

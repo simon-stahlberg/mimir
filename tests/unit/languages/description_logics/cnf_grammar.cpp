@@ -57,7 +57,7 @@ TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarParseTest)
 
         auto grammar = dl::grammar::Grammar(bnf_description, problem->get_domain());
 
-        // auto cnf_grammar = dl::cnf_grammar::Grammar(grammar);
+        auto cnf_grammar = dl::cnf_grammar::Grammar(grammar);
     }
 }
 

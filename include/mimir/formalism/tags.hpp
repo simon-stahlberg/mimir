@@ -19,6 +19,7 @@
 #define MIMIR_FORMALISM_TAGS_HPP_
 
 #include <concepts>
+#include <string>
 #include <type_traits>
 
 namespace mimir
@@ -30,15 +31,19 @@ namespace mimir
 
 struct Static
 {
+    static constexpr std::string name = "static";
 };
 struct Fluent
 {
+    static constexpr std::string name = "fluent";
 };
 struct Derived
 {
+    static constexpr std::string name = "derived";
 };
 struct Auxiliary
 {
+    static constexpr std::string name = "auxiliary";
 };
 
 template<typename T>

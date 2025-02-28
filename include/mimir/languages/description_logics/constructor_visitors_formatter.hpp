@@ -28,18 +28,18 @@ namespace mimir::dl
 {
 
 template<ConceptOrRole D>
-class BNFFormatterVisitor : public ConstructorVisitor<D>
+class FormatterVisitor : public ConstructorVisitor<D>
 {
 };
 
 template<>
-class BNFFormatterVisitor<Concept> : public ConstructorVisitor<Concept>
+class FormatterVisitor<Concept> : public ConstructorVisitor<Concept>
 {
 protected:
     std::ostream& m_out;
 
 public:
-    explicit BNFFormatterVisitor(std::ostream& out);
+    explicit FormatterVisitor(std::ostream& out);
 
     /* Concepts */
     void visit(ConceptBot constructor) override;
@@ -61,13 +61,13 @@ public:
 };
 
 template<>
-class BNFFormatterVisitor<Role> : public ConstructorVisitor<Role>
+class FormatterVisitor<Role> : public ConstructorVisitor<Role>
 {
 protected:
     std::ostream& m_out;
 
 public:
-    explicit BNFFormatterVisitor(std::ostream& out);
+    explicit FormatterVisitor(std::ostream& out);
 
     /* Roles */
     void visit(RoleUniversal constructor) override;
@@ -88,25 +88,12 @@ public:
     void visit(RoleIdentity constructor) override;
 };
 
-struct BNFFormatterVisitorTag
-{
-};
+/**
+ * Printing
+ */
 
-/// @brief Print BNF derivation rule body to ostream.
-/// @tparam D
-/// @param out
-/// @param data
-/// @return
 template<ConceptOrRole D>
-extern std::ostream& operator<<(std::ostream& out, const std::tuple<Constructor<D>, BNFFormatterVisitorTag>& data);
-
-/// @brief Print BNF derivation rule to ostream.
-/// @tparam D
-/// @param out
-/// @param data
-/// @return
-template<ConceptOrRole D>
-extern std::ostream& operator<<(std::ostream& out, const std::tuple<std::string, Constructor<D>, BNFFormatterVisitorTag>& data);
+extern std::ostream& operator<<(std::ostream& out, const Constructor<D>& constructor);
 
 }
 

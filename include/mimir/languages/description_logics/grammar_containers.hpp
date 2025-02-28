@@ -44,8 +44,8 @@ private:
 
 public:
     StartSymbolsContainer() = default;
-    StartSymbolsContainer(const StartSymbolsContainer& other) = delete;
-    StartSymbolsContainer& operator=(const StartSymbolsContainer& other) = delete;
+    StartSymbolsContainer(const StartSymbolsContainer& other) = default;
+    StartSymbolsContainer& operator=(const StartSymbolsContainer& other) = default;
     StartSymbolsContainer(StartSymbolsContainer&& other) = default;
     StartSymbolsContainer& operator=(StartSymbolsContainer&& other) = default;
 
@@ -82,8 +82,8 @@ private:
 
 public:
     DerivationRulesContainer() = default;
-    DerivationRulesContainer(const DerivationRulesContainer& other) = delete;
-    DerivationRulesContainer& operator=(const DerivationRulesContainer& other) = delete;
+    DerivationRulesContainer(const DerivationRulesContainer& other) = default;
+    DerivationRulesContainer& operator=(const DerivationRulesContainer& other) = default;
     DerivationRulesContainer(DerivationRulesContainer&& other) = default;
     DerivationRulesContainer& operator=(DerivationRulesContainer&& other) = default;
 

@@ -77,4 +77,6 @@ const StartSymbolsContainer& Grammar::get_start_symbols_container() const { retu
 
 const DerivationRulesContainer& Grammar::get_derivation_rules_container() const { return m_derivation_rules; }
 
+const Domain& Grammar::get_domain() const { return m_domain; }
+
 }

@@ -62,7 +62,7 @@ static bool try_insert_into_search_space(Problem problem,
         ++boost::hana::at_key(ref_statistics.num_rejected_by_grammar, boost::hana::type<D> {});
 
         if (options.verbosity >= 2)
-            std::cout << "rejected constructor: " << std::make_tuple(Constructor<D>(constructor), BNFFormatterVisitorTag {}) << std::endl;
+            std::cout << "rejected constructor: " << constructor << std::endl;
 
         return false;
     }
@@ -76,14 +76,14 @@ static bool try_insert_into_search_space(Problem problem,
         boost::hana::at_key(ref_search_space.constructors_by_complexity, boost::hana::type<D> {}).at(complexity).push_back(constructor);
 
         if (options.verbosity >= 2)
-            std::cout << "generated constructor: " << std::make_tuple(Constructor<D>(constructor), BNFFormatterVisitorTag {}) << std::endl;
+            std::cout << "generated constructor: " << constructor << std::endl;
     }
     else
     {
         ++boost::hana::at_key(ref_statistics.num_pruned, boost::hana::type<D> {});
 
         if (options.verbosity >= 2)
-            std::cout << "pruned constructor: " << std::make_tuple(Constructor<D>(constructor), BNFFormatterVisitorTag {}) << std::endl;
+            std::cout << "pruned constructor: " << constructor << std::endl;
 
         return false;
     }

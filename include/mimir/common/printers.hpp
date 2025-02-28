@@ -18,6 +18,8 @@
 #ifndef MIMIR_COMMON_PRINTERS_HPP_
 #define MIMIR_COMMON_PRINTERS_HPP_
 
+#include "mimir/common/concepts.hpp"
+
 #include <array>
 #include <map>
 #include <memory>
@@ -79,6 +81,9 @@ std::ostream& operator<<(std::ostream& os, const std::unordered_set<Key, Hash, K
 
 template<typename T, typename Allocator>
 std::ostream& operator<<(std::ostream& os, const std::vector<T, Allocator>& vec);
+
+template<IsHanaMap Map>
+std::ostream& operator<<(std::ostream& os, const Map& map);
 
 /**
  * Definitions
@@ -207,6 +212,24 @@ template<typename T1, typename T2, typename T3>
 std::ostream& operator<<(std::ostream& os, const std::variant<T1, T2, T3>& variant)
 {
     std::visit([&](auto&& arg) { os << arg; }, variant);
+    return os;
+}
+
+template<IsHanaMap Map>
+std::ostream& operator<<(std::ostream& os, const Map& map)
+{
+    os << "{ ";
+    boost::hana::for_each(map,
+                          [&os](auto&& pair)
+                          {
+                              const auto& key = boost::hana::first(pair);
+                              const auto& value = boost::hana::second(pair);
+
+                              using KeyType = typename decltype(+key)::type;
+
+                              os << "{ " << KeyType::name << " : " << value << " }, ";
+                          });
+    os << " }";
     return os;
 }
 
