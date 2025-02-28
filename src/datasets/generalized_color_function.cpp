@@ -40,17 +40,24 @@ GeneralizedColorFunction::GeneralizedColorFunction(GeneralizedProblem generalize
                               for (const auto& predicate : value)
                               {
                                   boost::hana::at_key(m_predicate_colors, key).emplace(predicate, next_color);
-                                  m_color_to_name.emplace(next_color, to_string(predicate));
-                                  next_color += 3;  // offset: 0 for ground atom, 1 for true, and 2 for false literal
+                                  m_color_to_name.emplace(next_color++, to_string(predicate));
+                                  m_color_to_name.emplace(next_color++, to_string(predicate) + "_true");
+                                  m_color_to_name.emplace(next_color++, to_string(predicate) + "_false");
                               }
                           });
+
+    /* Problem specific colors differ from problem to problem.
+       This is a current limitation of this implementation, which limits to problems with conjunctive goal atoms.
+       Since description logics also has this limitation, we can live with this.
+    */
     for (const auto& problem : m_generalized_problem.get_problems())
     {
         for (const auto& predicate : problem->get_derived_predicates())
         {
             boost::hana::at_key(m_predicate_colors, boost::hana::type<Derived> {}).emplace(predicate, next_color);
-            m_color_to_name.emplace(next_color, to_string(predicate));
-            next_color += 3;  // offset: 0 for ground atom, 1 for true, and 2 for false literal
+            m_color_to_name.emplace(next_color++, to_string(predicate));
+            m_color_to_name.emplace(next_color++, to_string(predicate) + "_true");
+            m_color_to_name.emplace(next_color++, to_string(predicate) + "_false");
         }
     }
 }

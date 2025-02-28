@@ -47,7 +47,7 @@ public:
     template<StaticOrFluentOrDerived P>
     Color get_color(GroundAtom<P> atom, size_t pos) const;
 
-    /// @brief Get unique color of dynamic goal literal.
+    /// @brief Get unique color of goal literal.
     template<StaticOrFluentOrDerived P>
     Color get_color(GroundLiteral<P> literal, size_t pos, State state, const ProblemImpl& problem, bool mark_true_goal_literal = false) const;
 

@@ -786,6 +786,11 @@ GeneralizedStateSpace::GeneralizedStateSpace(SearchContextList contexts, const G
     }
 }
 
+GeneralizedStateSpace::GeneralizedStateSpace(Problem problem, const Options& options) :
+    GeneralizedStateSpace(SearchContextList { SearchContext(problem) }, options)
+{
+}
+
 GeneralizedStateSpace::GeneralizedStateSpace(SearchContext context, const GeneralizedStateSpace::Options& options) :
     GeneralizedStateSpace(SearchContextList { std::move(context) }, options)
 {

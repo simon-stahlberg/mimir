@@ -55,6 +55,14 @@ SearchContext::SearchContext(Problem problem, ApplicableActionGenerator applicab
     m_applicable_action_generator(std::move(applicable_action_generator)),
     m_state_repository(std::move(state_repository))
 {
+    if (m_applicable_action_generator->get_problem() != m_problem)
+    {
+        throw std::runtime_error("SearchContext::SearchContext: Expected the given applicable action generator to be defined over the given problem.");
+    }
+    if (m_state_repository->get_problem() != m_problem)
+    {
+        throw std::runtime_error("SearchContext::SearchContext: Expected the given state repository to be defined over the given problem.");
+    }
 }
 
 std::vector<SearchContext> SearchContext::create(const ProblemList& problems, const Options& options)

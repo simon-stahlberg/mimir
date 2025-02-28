@@ -18,6 +18,7 @@
 #include "mimir/formalism/generalized_problem.hpp"
 
 #include "mimir/formalism/parser.hpp"
+#include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/translator.hpp"
 
 namespace mimir
@@ -45,6 +46,14 @@ GeneralizedProblem::GeneralizedProblem(const fs::path& domain_filepath, const fs
     {
         auto problem = parser.parse_problem(problem_filepath, options);
         m_problems.push_back(translate(problem, domain_translation_result));
+    }
+}
+
+GeneralizedProblem::GeneralizedProblem(Domain domain, ProblemList problems) : m_domain(std::move(domain)), m_problems(std::move(problems))
+{
+    if (!all_of(m_problems.begin(), m_problems.end(), [this](auto&& arg) { return arg->get_domain() == m_domain; }))
+    {
+        throw std::runtime_error("GeneralizedProblem::GeneralizedProblem: Expected all given problems to be defined over the given domain.");
     }
 }
 

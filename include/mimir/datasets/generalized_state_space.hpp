@@ -200,7 +200,11 @@ public:
      */
 
     /* Construct from contexts. */
+    GeneralizedStateSpace(GeneralizedProblem generalized_problem, const Options& options = Options());
     GeneralizedStateSpace(SearchContextList contexts, const Options& options = Options());
+
+    /* Construct for single problem */
+    GeneralizedStateSpace(Problem problem, const Options& options = Options());
     GeneralizedStateSpace(SearchContext context, const Options& options = Options());
 
     /**

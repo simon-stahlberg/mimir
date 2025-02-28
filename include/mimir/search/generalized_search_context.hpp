@@ -29,23 +29,34 @@ namespace mimir
 class GeneralizedSearchContext
 {
 private:
+    Domain m_domain;
+
     SearchContextList m_search_contexts;
 
 public:
-    enum class SearchMode
-    {
-        GROUNDED = 0,
-        LIFTED = 1
-    };
+    /// @brief Construction from `GeneralizedProblem` construction API.
+    /// @param domain_filepath
+    /// @param problem_filepaths
+    /// @param options
+    GeneralizedSearchContext(const fs::path& domain_filepath,
+                             const std::vector<fs::path>& problem_filepaths,
+                             const SearchContext::Options& options = SearchContext::Options());
+    GeneralizedSearchContext(const fs::path& domain_filepath,
+                             const fs::path& problems_directory,
+                             const SearchContext::Options& options = SearchContext::Options());
 
-    GeneralizedSearchContext(GeneralizedProblem problem, const SearchContext::Options& options = SearchContext::Options());
+    /// @brief Construction from a `GeneralizedProblem`
+    /// @param problem
+    /// @param options
+    GeneralizedSearchContext(GeneralizedProblem generalized_problem, const SearchContext::Options& options = SearchContext::Options());
 
-    explicit GeneralizedSearchContext(SearchContextList search_contexts);
+    /// @brief Expert interface: fully customizable construction.
+    /// @param search_contexts
+    GeneralizedSearchContext(Domain domain, SearchContextList search_contexts);
 
+    const Domain& get_domain() const;
     const SearchContextList& get_search_contexts() const;
 };
-
-using SearchContextList = std::vector<SearchContext>;
 }
 
 #endif
