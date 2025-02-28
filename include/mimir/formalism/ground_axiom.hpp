@@ -46,6 +46,8 @@ private:
     GroundEffectDerivedLiteral m_literal = GroundEffectDerivedLiteral();
 
 public:
+    using PDDLEntity = void;
+
     Index& get_index();
     Index get_index() const;
 

@@ -135,7 +135,7 @@ protected:
             self().prepare_level_2(element.value());
         }
     }
-    template<typename T>
+    template<IsPDDLEntity T>
     void prepare_level_1(const T& element)
     {
         self().prepare_level_2(element);
@@ -367,7 +367,7 @@ protected:
                     boost::hana::make_pair(boost::hana::first(pairs), self().translate_level_0(boost::hana::second(pairs), repositories))...);
             });
     }
-    template<IsPDDLPrimitive T>
+    template<IsPDDLEntity T>
     auto translate_level_1(const T& element, PDDLRepositories& repositories)
     {
         return cached_translate_impl(element,
@@ -386,25 +386,7 @@ protected:
     }
     Term translate_level_2(Term term, PDDLRepositories& repositories)
     {
-        return std::visit(
-            [&](auto&& arg) -> Term
-            {
-                using ArgType = std::decay_t<decltype(arg)>;
-
-                if constexpr (std::is_same_v<ArgType, Variable>)
-                {
-                    return repositories.get_or_create_term(this->translate_level_0(arg, repositories));
-                }
-                else if constexpr (std::is_same_v<ArgType, Object>)
-                {
-                    return repositories.get_or_create_term(this->translate_level_0(arg, repositories));
-                }
-                else
-                {
-                    static_assert(dependent_false<ArgType>::value, "Missing implementation for ArgType.");
-                }
-            },
-            term->get_variant());
+        return std::visit([&](auto&& arg) -> Term { return repositories.get_or_create_term(this->translate_level_0(arg, repositories)); }, term->get_variant());
     }
     template<StaticOrFluentOrDerived P>
     Predicate<P> translate_level_2(Predicate<P> predicate, PDDLRepositories& repositories)

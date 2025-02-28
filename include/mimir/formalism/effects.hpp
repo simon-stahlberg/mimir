@@ -41,7 +41,7 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
-    using PDDLPrimitive = void;
+    using PDDLEntity = void;
 
     // moveable but not copyable
     NumericEffectImpl(const NumericEffectImpl& other) = delete;
@@ -88,7 +88,7 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
-    using PDDLPrimitive = void;
+    using PDDLEntity = void;
 
     // moveable but not copyable
     ConjunctiveEffectImpl(const ConjunctiveEffectImpl& other) = delete;
@@ -130,7 +130,7 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
-    using PDDLPrimitive = void;
+    using PDDLEntity = void;
 
     // moveable but not copyable
     ConditionalEffectImpl(const ConditionalEffectImpl& other) = delete;

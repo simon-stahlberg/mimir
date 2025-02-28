@@ -39,6 +39,8 @@ private:
     FlatExternalPtrList<const GroundNumericConstraintImpl> m_numeric_constraints = FlatExternalPtrList<const GroundNumericConstraintImpl>();
 
 public:
+    using PDDLEntity = void;
+
     template<StaticOrFluentOrDerived P>
     FlatIndexList& get_positive_precondition();
     template<StaticOrFluentOrDerived P>

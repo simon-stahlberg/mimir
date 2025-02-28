@@ -271,7 +271,7 @@ using Term = const TermImpl*;
 using TermList = std::vector<Term>;
 
 template<typename T>
-concept IsPDDLPrimitive = requires { typename std::remove_pointer_t<T>::PDDLPrimitive; };
+concept IsPDDLEntity = requires { typename std::remove_pointer_t<T>::PDDLEntity; };
 
 static_assert(IsHanaMap<PredicateLists<Static>>);
 

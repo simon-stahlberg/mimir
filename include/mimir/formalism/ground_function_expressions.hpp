@@ -40,7 +40,7 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
-    using PDDLPrimitive = void;
+    using PDDLEntity = void;
 
     // moveable but not copyable
     GroundFunctionExpressionNumberImpl(const GroundFunctionExpressionNumberImpl& other) = delete;
@@ -78,7 +78,7 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
-    using PDDLPrimitive = void;
+    using PDDLEntity = void;
 
     // moveable but not copyable
     GroundFunctionExpressionBinaryOperatorImpl(const GroundFunctionExpressionBinaryOperatorImpl& other) = delete;
@@ -117,7 +117,7 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
-    using PDDLPrimitive = void;
+    using PDDLEntity = void;
 
     // moveable but not copyable
     GroundFunctionExpressionMultiOperatorImpl(const GroundFunctionExpressionMultiOperatorImpl& other) = delete;
@@ -151,7 +151,7 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
-    using PDDLPrimitive = void;
+    using PDDLEntity = void;
 
     // moveable but not copyable
     GroundFunctionExpressionMinusImpl(const GroundFunctionExpressionMinusImpl& other) = delete;
@@ -185,7 +185,7 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
-    using PDDLPrimitive = void;
+    using PDDLEntity = void;
 
     // moveable but not copyable
     GroundFunctionExpressionFunctionImpl(const GroundFunctionExpressionFunctionImpl& other) = delete;
@@ -224,7 +224,7 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
-    using PDDLPrimitive = void;
+    using PDDLEntity = void;
 
     // moveable but not copyable
     GroundFunctionExpressionImpl(const GroundFunctionExpressionImpl& other) = delete;

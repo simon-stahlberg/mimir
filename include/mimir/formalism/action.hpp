@@ -46,7 +46,7 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
-    using PDDLPrimitive = void;
+    using PDDLEntity = void;
 
     // moveable but not copyable
     ActionImpl(const ActionImpl& other) = delete;

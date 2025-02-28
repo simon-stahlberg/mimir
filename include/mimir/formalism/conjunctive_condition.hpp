@@ -44,7 +44,7 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
-    using PDDLPrimitive = void;
+    using PDDLEntity = void;
 
     // moveable but not copyable
     ConjunctiveConditionImpl(const ConjunctiveConditionImpl& other) = delete;

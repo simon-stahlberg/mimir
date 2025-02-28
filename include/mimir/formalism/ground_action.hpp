@@ -42,6 +42,8 @@ private:
     GroundEffectConditionalList m_conditional_effects = GroundEffectConditionalList();
 
 public:
+    using PDDLEntity = void;
+
     Index& get_index();
     Index& get_action_index();
     FlatIndexList& get_objects();

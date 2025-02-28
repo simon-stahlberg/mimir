@@ -58,6 +58,8 @@ private:
     friend class DomainBuilder;
 
 public:
+    using PDDLEntity = void;
+
     // moveable but not copyable
     DomainImpl(const DomainImpl& other) = delete;
     DomainImpl& operator=(const DomainImpl& other) = delete;

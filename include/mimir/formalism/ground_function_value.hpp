@@ -39,7 +39,7 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
-    using PDDLPrimitive = void;
+    using PDDLEntity = void;
     using Type = F;
 
     // moveable but not copyable
