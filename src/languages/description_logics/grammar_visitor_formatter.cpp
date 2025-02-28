@@ -307,11 +307,19 @@ void FormatterDerivationRuleVisitor<D>::visit(DerivationRule<D> constructor)
     assert(m_nonterminal_visitor && m_constructor_or_nonterminal_visitor);
 
     constructor->get_non_terminal()->accept(*m_nonterminal_visitor);
+
     m_out << " ::= ";
+
+    bool first = true;
+
     for (const auto& constructor_or_nonterminal : constructor->get_constructor_or_non_terminals())
     {
+        if (!first)
+            m_out << " | ";
+
         constructor_or_nonterminal->accept(*m_constructor_or_nonterminal_visitor);
-        m_out << " ";
+
+        first = false;
     }
 }
 
@@ -326,47 +334,84 @@ FormatterGrammarVisitor::FormatterGrammarVisitor(std::ostream& out) : m_out(out)
 
 void FormatterGrammarVisitor::visit(const Grammar& grammar)
 {
-    m_out << "[start_symbols]\n";
+    {
+        m_out << "[start_symbols]\n";
 
-    boost::hana::for_each(grammar.get_start_symbols_container().get(),
-                          [&](auto&& pair)
-                          {
-                              const auto& key = boost::hana::first(pair);
-                              const auto& second = boost::hana::second(pair);
-                              using KeyType = typename decltype(+key)::type;
+        bool first_0 = true;
 
-                              if (second.has_value())
+        boost::hana::for_each(grammar.get_start_symbols_container().get(),
+                              [&](auto&& pair)
                               {
-                                  m_out << "   " << KeyType::name << " = ";
-
-                                  second.value()->accept(*boost::hana::at_key(m_start_symbol_visitor, key));
-
-                                  m_out << "\n";
-                              }
-                          });
-
-    m_out << "[grammar_rules]\n";
-
-    boost::hana::for_each(grammar.get_derivation_rules_container().get(),
-                          [&](auto&& pair)
-                          {
-                              auto key = boost::hana::first(pair);
-                              const auto& second = boost::hana::second(pair);
-
-                              for (const auto& non_terminal_and_rules : second)
-                              {
-                                  const auto& [non_terminal, rules] = non_terminal_and_rules;
-
-                                  m_out << "    ";
-
-                                  for (const auto& rule : rules)
+                                  if (!first_0)
                                   {
-                                      rule->accept(*boost::hana::at_key(m_derivation_rule_visitor, key));
+                                      m_out << "\n";
                                   }
 
-                                  m_out << "\n";
-                              }
-                          });
+                                  const auto& key = boost::hana::first(pair);
+                                  const auto& second = boost::hana::second(pair);
+                                  using KeyType = typename decltype(+key)::type;
+
+                                  bool first = true;
+
+                                  if (second.has_value())
+                                  {
+                                      if (!first)
+                                          m_out << "\n";
+
+                                      m_out << "    " << KeyType::name << " = ";
+
+                                      second.value()->accept(*boost::hana::at_key(m_start_symbol_visitor, key));
+
+                                      first = false;
+                                  }
+
+                                  first_0 = false;
+                              });
+    }
+
+    {
+        m_out << "\n[grammar_rules]\n";
+
+        bool first_0 = true;
+
+        boost::hana::for_each(grammar.get_derivation_rules_container().get(),
+                              [&](auto&& pair)
+                              {
+                                  if (!first_0)
+                                      m_out << "\n";
+
+                                  auto key = boost::hana::first(pair);
+                                  const auto& second = boost::hana::second(pair);
+
+                                  bool first_1 = true;
+
+                                  for (const auto& non_terminal_and_rules : second)
+                                  {
+                                      if (!first_1)
+                                          m_out << "\n";
+
+                                      const auto& [non_terminal, rules] = non_terminal_and_rules;
+
+                                      bool first_2 = true;
+
+                                      for (const auto& rule : rules)
+                                      {
+                                          if (!first_2)
+                                              m_out << "\n";
+
+                                          m_out << "    ";
+
+                                          rule->accept(*boost::hana::at_key(m_derivation_rule_visitor, key));
+
+                                          first_2 = false;
+                                      }
+
+                                      first_1 = false;
+                                  }
+
+                                  first_0 = false;
+                              });
+    }
 }
 
 void FormatterGrammarVisitor::initialize(FormatterNonTerminalVisitor<Concept>& concept_start_symbol_visitor,
