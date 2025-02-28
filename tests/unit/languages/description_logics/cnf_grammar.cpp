@@ -45,7 +45,8 @@ TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarParseTest)
         <concept_at-robby_state> ::= @concept_atomic_state "at-robby"
         <concept_at-robby_goal> ::= @concept_atomic_goal "at-robby" false
         <concept_intersection> ::= @concept_intersection <concept_at-robby_state> <concept_at-robby_goal>
-        <concept> ::= <concept_at-robby_state> | <concept_at-robby_goal> | <concept_intersection>
+        <concept_composite> ::= @concept_intersection @concept_intersection @concept_atomic_state "at-robby" @concept_atomic_goal "at-robby" false  @concept_atomic_state "at-robby"
+        <concept> ::= <concept_at-robby_state> | <concept_at-robby_goal> | <concept_intersection> | <concept_composite>
         <role_at_state> ::= @role_atomic_state "at"
         <role_at_goal> ::= @role_atomic_goal "at" false
         <role_intersection> ::= @role_intersection <role> <role_at_goal>

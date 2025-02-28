@@ -283,7 +283,14 @@ void RecurseGrammarVisitor::initialize(RecurseNonTerminalVisitor<Concept>& conce
 /// Recursive Copy Visitor
 ////////////////////////////
 
-CopyConstructorVisitor<Concept>::CopyConstructorVisitor(ConstructorRepositories& repositories) : m_repositories(repositories) {}
+CopyConstructorVisitor<Concept>::CopyConstructorVisitor(ConstructorRepositories& repositories,
+                                                        StartSymbolsContainer& start_symbols,
+                                                        DerivationRulesContainer& derivation_rules) :
+    m_repositories(repositories),
+    m_start_symbols(start_symbols),
+    m_derivation_rules(derivation_rules)
+{
+}
 
 void CopyConstructorVisitor<Concept>::initialize(CopyConstructorOrNonTerminalVisitor<Concept>& concept_or_nonterminal_visitor,
                                                  CopyConstructorOrNonTerminalVisitor<Role>& role_or_nonterminal_visitor)
@@ -292,14 +299,32 @@ void CopyConstructorVisitor<Concept>::initialize(CopyConstructorOrNonTerminalVis
     m_role_or_nonterminal_visitor = &role_or_nonterminal_visitor;
 }
 
-void CopyConstructorVisitor<Concept>::visit(ConceptBot constructor) {}
-void CopyConstructorVisitor<Concept>::visit(ConceptTop constructor) {}
-void CopyConstructorVisitor<Concept>::visit(ConceptAtomicState<Static> constructor) {}
-void CopyConstructorVisitor<Concept>::visit(ConceptAtomicState<Fluent> constructor) {}
-void CopyConstructorVisitor<Concept>::visit(ConceptAtomicState<Derived> constructor) {}
-void CopyConstructorVisitor<Concept>::visit(ConceptAtomicGoal<Static> constructor) {}
-void CopyConstructorVisitor<Concept>::visit(ConceptAtomicGoal<Fluent> constructor) {}
-void CopyConstructorVisitor<Concept>::visit(ConceptAtomicGoal<Derived> constructor) {}
+void CopyConstructorVisitor<Concept>::visit(ConceptBot constructor) { m_result = m_repositories.get_or_create_concept_bot(); }
+void CopyConstructorVisitor<Concept>::visit(ConceptTop constructor) { m_result = m_repositories.get_or_create_concept_top(); }
+void CopyConstructorVisitor<Concept>::visit(ConceptAtomicState<Static> constructor)
+{
+    m_result = m_repositories.get_or_create_concept_atomic_state(constructor->get_predicate());
+}
+void CopyConstructorVisitor<Concept>::visit(ConceptAtomicState<Fluent> constructor)
+{
+    m_result = m_repositories.get_or_create_concept_atomic_state(constructor->get_predicate());
+}
+void CopyConstructorVisitor<Concept>::visit(ConceptAtomicState<Derived> constructor)
+{
+    m_result = m_repositories.get_or_create_concept_atomic_state(constructor->get_predicate());
+}
+void CopyConstructorVisitor<Concept>::visit(ConceptAtomicGoal<Static> constructor)
+{
+    m_result = m_repositories.get_or_create_concept_atomic_goal(constructor->get_predicate(), constructor->is_negated());
+}
+void CopyConstructorVisitor<Concept>::visit(ConceptAtomicGoal<Fluent> constructor)
+{
+    m_result = m_repositories.get_or_create_concept_atomic_goal(constructor->get_predicate(), constructor->is_negated());
+}
+void CopyConstructorVisitor<Concept>::visit(ConceptAtomicGoal<Derived> constructor)
+{
+    m_result = m_repositories.get_or_create_concept_atomic_goal(constructor->get_predicate(), constructor->is_negated());
+}
 void CopyConstructorVisitor<Concept>::visit(ConceptIntersection constructor)
 {
     assert(m_concept_or_nonterminal_visitor);
@@ -356,13 +381,20 @@ void CopyConstructorVisitor<Concept>::visit(ConceptRoleValueMapEquality construc
 }
 void CopyConstructorVisitor<Concept>::visit(ConceptNominal constructor) { m_result = m_repositories.get_or_create_concept_nominal(constructor->get_object()); }
 
-const Constructor<Concept>& CopyConstructorVisitor<Concept>::get_result() const { return m_result; }
+Constructor<Concept> CopyConstructorVisitor<Concept>::get_result() const { return m_result; }
 
 /**
  * Role
  */
 
-CopyConstructorVisitor<Role>::CopyConstructorVisitor(ConstructorRepositories& repositories) : m_repositories(repositories) {}
+CopyConstructorVisitor<Role>::CopyConstructorVisitor(ConstructorRepositories& repositories,
+                                                     StartSymbolsContainer& start_symbols,
+                                                     DerivationRulesContainer& derivation_rules) :
+    m_repositories(repositories),
+    m_start_symbols(start_symbols),
+    m_derivation_rules(derivation_rules)
+{
+}
 
 void CopyConstructorVisitor<Role>::initialize(CopyConstructorOrNonTerminalVisitor<Concept>& concept_or_nonterminal_visitor,
                                               CopyConstructorOrNonTerminalVisitor<Role>& role_or_nonterminal_visitor)
@@ -371,13 +403,31 @@ void CopyConstructorVisitor<Role>::initialize(CopyConstructorOrNonTerminalVisito
     m_role_or_nonterminal_visitor = &role_or_nonterminal_visitor;
 }
 
-void CopyConstructorVisitor<Role>::visit(RoleUniversal constructor) {}
-void CopyConstructorVisitor<Role>::visit(RoleAtomicState<Static> constructor) {}
-void CopyConstructorVisitor<Role>::visit(RoleAtomicState<Fluent> constructor) {}
-void CopyConstructorVisitor<Role>::visit(RoleAtomicState<Derived> constructor) {}
-void CopyConstructorVisitor<Role>::visit(RoleAtomicGoal<Static> constructor) {}
-void CopyConstructorVisitor<Role>::visit(RoleAtomicGoal<Fluent> constructor) {}
-void CopyConstructorVisitor<Role>::visit(RoleAtomicGoal<Derived> constructor) {}
+void CopyConstructorVisitor<Role>::visit(RoleUniversal constructor) { m_result = m_repositories.get_or_create_role_universal(); }
+void CopyConstructorVisitor<Role>::visit(RoleAtomicState<Static> constructor)
+{
+    m_result = m_repositories.get_or_create_role_atomic_state(constructor->get_predicate());
+}
+void CopyConstructorVisitor<Role>::visit(RoleAtomicState<Fluent> constructor)
+{
+    m_result = m_repositories.get_or_create_role_atomic_state(constructor->get_predicate());
+}
+void CopyConstructorVisitor<Role>::visit(RoleAtomicState<Derived> constructor)
+{
+    m_result = m_repositories.get_or_create_role_atomic_state(constructor->get_predicate());
+}
+void CopyConstructorVisitor<Role>::visit(RoleAtomicGoal<Static> constructor)
+{
+    m_result = m_repositories.get_or_create_role_atomic_goal(constructor->get_predicate(), constructor->is_negated());
+}
+void CopyConstructorVisitor<Role>::visit(RoleAtomicGoal<Fluent> constructor)
+{
+    m_result = m_repositories.get_or_create_role_atomic_goal(constructor->get_predicate(), constructor->is_negated());
+}
+void CopyConstructorVisitor<Role>::visit(RoleAtomicGoal<Derived> constructor)
+{
+    m_result = m_repositories.get_or_create_role_atomic_goal(constructor->get_predicate(), constructor->is_negated());
+}
 void CopyConstructorVisitor<Role>::visit(RoleIntersection constructor)
 {
     assert(m_role_or_nonterminal_visitor);
@@ -440,14 +490,19 @@ void CopyConstructorVisitor<Role>::visit(RoleIdentity constructor)
     m_result = m_repositories.get_or_create_role_identity(m_concept_or_nonterminal_visitor->get_result());
 }
 
-const Constructor<Role>& CopyConstructorVisitor<Role>::get_result() const { return m_result; }
+Constructor<Role> CopyConstructorVisitor<Role>::get_result() const { return m_result; }
 
 /**
  * CopyConstructorOrRoleNonTerminal
  */
 
 template<ConceptOrRole D>
-CopyConstructorOrNonTerminalVisitor<D>::CopyConstructorOrNonTerminalVisitor(ConstructorRepositories& repositories) : m_repositories(repositories)
+CopyConstructorOrNonTerminalVisitor<D>::CopyConstructorOrNonTerminalVisitor(ConstructorRepositories& repositories,
+                                                                            StartSymbolsContainer& start_symbols,
+                                                                            DerivationRulesContainer& derivation_rules) :
+    m_repositories(repositories),
+    m_start_symbols(start_symbols),
+    m_derivation_rules(derivation_rules)
 {
 }
 
@@ -487,7 +542,7 @@ void CopyConstructorOrNonTerminalVisitor<D>::visit(ConstructorOrNonTerminal<D> c
 }
 
 template<ConceptOrRole D>
-const ConstructorOrNonTerminal<D>& CopyConstructorOrNonTerminalVisitor<D>::get_result() const
+ConstructorOrNonTerminal<D> CopyConstructorOrNonTerminalVisitor<D>::get_result() const
 {
     return m_result;
 }
@@ -500,7 +555,12 @@ template class CopyConstructorOrNonTerminalVisitor<Role>;
  */
 
 template<ConceptOrRole D>
-CopyNonTerminalVisitor<D>::CopyNonTerminalVisitor(ConstructorRepositories& repositories) : m_repositories(repositories)
+CopyNonTerminalVisitor<D>::CopyNonTerminalVisitor(ConstructorRepositories& repositories,
+                                                  StartSymbolsContainer& start_symbols,
+                                                  DerivationRulesContainer& derivation_rules) :
+    m_repositories(repositories),
+    m_start_symbols(start_symbols),
+    m_derivation_rules(derivation_rules)
 {
 }
 
@@ -511,7 +571,7 @@ void CopyNonTerminalVisitor<D>::visit(NonTerminal<D> constructor)
 }
 
 template<ConceptOrRole D>
-const NonTerminal<D>& CopyNonTerminalVisitor<D>::get_result() const
+NonTerminal<D> CopyNonTerminalVisitor<D>::get_result() const
 {
     return m_result;
 }
@@ -524,7 +584,12 @@ template class CopyNonTerminalVisitor<Role>;
  */
 
 template<ConceptOrRole D>
-CopyDerivationRuleVisitor<D>::CopyDerivationRuleVisitor(ConstructorRepositories& repositories) : m_repositories(repositories)
+CopyDerivationRuleVisitor<D>::CopyDerivationRuleVisitor(ConstructorRepositories& repositories,
+                                                        StartSymbolsContainer& start_symbols,
+                                                        DerivationRulesContainer& derivation_rules) :
+    m_repositories(repositories),
+    m_start_symbols(start_symbols),
+    m_derivation_rules(derivation_rules)
 {
 }
 
@@ -555,7 +620,7 @@ void CopyDerivationRuleVisitor<D>::visit(DerivationRule<D> constructor)
 }
 
 template<ConceptOrRole D>
-const DerivationRule<D>& CopyDerivationRuleVisitor<D>::get_result() const
+DerivationRule<D> CopyDerivationRuleVisitor<D>::get_result() const
 {
     return m_result;
 }
@@ -567,7 +632,14 @@ template class CopyDerivationRuleVisitor<Role>;
  * Grammar
  */
 
-CopyGrammarVisitor::CopyGrammarVisitor(ConstructorRepositories& repositories) : m_repositories(repositories) {}
+CopyGrammarVisitor::CopyGrammarVisitor(ConstructorRepositories& repositories,
+                                       StartSymbolsContainer& start_symbols,
+                                       DerivationRulesContainer& derivation_rules) :
+    m_repositories(repositories),
+    m_start_symbols(start_symbols),
+    m_derivation_rules(derivation_rules)
+{
+}
 
 void CopyGrammarVisitor::visit(const Grammar& grammar)
 {

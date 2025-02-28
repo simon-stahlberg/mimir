@@ -340,14 +340,16 @@ template<>
 class CopyConstructorVisitor<Concept> : public ConstructorVisitor<Concept>
 {
 protected:
-    ConstructorRepositories& m_repositories;  ///< the container that stores the result
-    Constructor<Concept> m_result;            ///< the result of a visitation
+    ConstructorRepositories& m_repositories;
+    StartSymbolsContainer& m_start_symbols;
+    DerivationRulesContainer& m_derivation_rules;
+    Constructor<Concept> m_result;  ///< the result of a visitation
 
     CopyConstructorOrNonTerminalVisitor<Concept>* m_concept_or_nonterminal_visitor;
     CopyConstructorOrNonTerminalVisitor<Role>* m_role_or_nonterminal_visitor;
 
 public:
-    explicit CopyConstructorVisitor(ConstructorRepositories& repositories);
+    CopyConstructorVisitor(ConstructorRepositories& repositories, StartSymbolsContainer& start_symbols, DerivationRulesContainer& derivation_rules);
 
     virtual void initialize(CopyConstructorOrNonTerminalVisitor<Concept>& concept_or_nonterminal_visitor,
                             CopyConstructorOrNonTerminalVisitor<Role>& role_or_nonterminal_visitor);
@@ -369,7 +371,7 @@ public:
     void visit(ConceptRoleValueMapEquality constructor) override;
     void visit(ConceptNominal constructor) override;
 
-    const Constructor<Concept>& get_result() const;
+    Constructor<Concept> get_result() const;
 };
 
 /**
@@ -380,14 +382,16 @@ template<>
 class CopyConstructorVisitor<Role> : public ConstructorVisitor<Role>
 {
 protected:
-    ConstructorRepositories& m_repositories;  ///< the container that stores the result
-    Constructor<Role> m_result;               ///< the result of a visitation
+    ConstructorRepositories& m_repositories;
+    StartSymbolsContainer& m_start_symbols;
+    DerivationRulesContainer& m_derivation_rules;
+    Constructor<Role> m_result;  ///< the result of a visitation
 
     CopyConstructorOrNonTerminalVisitor<Concept>* m_concept_or_nonterminal_visitor;
     CopyConstructorOrNonTerminalVisitor<Role>* m_role_or_nonterminal_visitor;
 
 public:
-    explicit CopyConstructorVisitor(ConstructorRepositories& repositories);
+    CopyConstructorVisitor(ConstructorRepositories& repositories, StartSymbolsContainer& start_symbols, DerivationRulesContainer& derivation_rules);
 
     virtual void initialize(CopyConstructorOrNonTerminalVisitor<Concept>& concept_or_nonterminal_visitor,
                             CopyConstructorOrNonTerminalVisitor<Role>& role_or_nonterminal_visitor);
@@ -409,7 +413,7 @@ public:
     void visit(RoleRestriction constructor) override;
     void visit(RoleIdentity constructor) override;
 
-    const Constructor<Role>& get_result() const;
+    Constructor<Role> get_result() const;
 };
 
 /**
@@ -420,20 +424,24 @@ template<ConceptOrRole D>
 class CopyConstructorOrNonTerminalVisitor : public ConstructorOrNonTerminalVisitor<D>
 {
 protected:
-    ConstructorRepositories& m_repositories;  ///< the container that stores the result
-    ConstructorOrNonTerminal<D> m_result;     ///< the result of a visitation
+    ConstructorRepositories& m_repositories;
+    StartSymbolsContainer& m_start_symbols;
+    DerivationRulesContainer& m_derivation_rules;
+    ConstructorOrNonTerminal<D> m_result;  ///< the result of a visitation
 
     CopyNonTerminalVisitor<D>* m_nonterminal_visitor;
     CopyConstructorVisitor<D>* m_constructor_visitor;
 
 public:
-    explicit CopyConstructorOrNonTerminalVisitor(ConstructorRepositories& repositories);
+    CopyConstructorOrNonTerminalVisitor(ConstructorRepositories& repositories,
+                                        StartSymbolsContainer& start_symbols,
+                                        DerivationRulesContainer& derivation_rules);
 
     virtual void initialize(CopyNonTerminalVisitor<D>& nonterminal_visitor, CopyConstructorVisitor<D>& constructor_visitor);
 
     void visit(ConstructorOrNonTerminal<D> constructor) override;
 
-    const ConstructorOrNonTerminal<D>& get_result() const;
+    ConstructorOrNonTerminal<D> get_result() const;
 };
 
 /**
@@ -444,15 +452,17 @@ template<ConceptOrRole D>
 class CopyNonTerminalVisitor : public NonTerminalVisitor<D>
 {
 protected:
-    ConstructorRepositories& m_repositories;  ///< the container that stores the result
-    NonTerminal<D> m_result;                  ///< the result of a visitation
+    ConstructorRepositories& m_repositories;
+    StartSymbolsContainer& m_start_symbols;
+    DerivationRulesContainer& m_derivation_rules;
+    NonTerminal<D> m_result;  ///< the result of a visitation
 
 public:
-    explicit CopyNonTerminalVisitor(ConstructorRepositories& repositories);
+    CopyNonTerminalVisitor(ConstructorRepositories& repositories, StartSymbolsContainer& start_symbols, DerivationRulesContainer& derivation_rules);
 
     void visit(NonTerminal<D> constructor) override;
 
-    const NonTerminal<D>& get_result() const;
+    NonTerminal<D> get_result() const;
 };
 
 /**
@@ -463,28 +473,30 @@ template<ConceptOrRole D>
 class CopyDerivationRuleVisitor : public DerivationRuleVisitor<D>
 {
 protected:
-    ConstructorRepositories& m_repositories;  ///< the container that stores the result
-    DerivationRule<D> m_result;               ///< the result of a visitation
+    ConstructorRepositories& m_repositories;
+    StartSymbolsContainer& m_start_symbols;
+    DerivationRulesContainer& m_derivation_rules;
+    DerivationRule<D> m_result;  ///< the result of a visitation
 
     CopyNonTerminalVisitor<D>* m_nonterminal_visitor;
     CopyConstructorOrNonTerminalVisitor<D>* m_constructor_or_nonterminal_visitor;
 
 public:
-    explicit CopyDerivationRuleVisitor(ConstructorRepositories& repositories);
+    CopyDerivationRuleVisitor(ConstructorRepositories& repositories, StartSymbolsContainer& start_symbols, DerivationRulesContainer& derivation_rules);
 
     virtual void initialize(CopyNonTerminalVisitor<D>& nonterminal_visitor, CopyConstructorOrNonTerminalVisitor<D>& constructor_or_nonterminal_visitor);
 
     virtual void visit(DerivationRule<D> constructor) override;
 
-    const DerivationRule<D>& get_result() const;
+    DerivationRule<D> get_result() const;
 };
 
 class CopyGrammarVisitor : public GrammarVisitor
 {
 protected:
-    ConstructorRepositories& m_repositories;      ///< the container that stores the result
-    StartSymbolsContainer m_start_symbols;        ///< the result of a visitation
-    DerivationRulesContainer m_derivation_rules;  ///< the result of a visitation
+    ConstructorRepositories& m_repositories;
+    StartSymbolsContainer& m_start_symbols;
+    DerivationRulesContainer& m_derivation_rules;
 
     boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, CopyNonTerminalVisitor<Concept>*>,
                      boost::hana::pair<boost::hana::type<Role>, CopyNonTerminalVisitor<Role>*>>
@@ -495,7 +507,7 @@ protected:
         m_derivation_rule_visitor;
 
 public:
-    explicit CopyGrammarVisitor(ConstructorRepositories& repositories);
+    CopyGrammarVisitor(ConstructorRepositories& repositories, StartSymbolsContainer& start_symbols, DerivationRulesContainer& derivation_rules);
 
     virtual void visit(const Grammar& grammar) override;
 
