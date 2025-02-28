@@ -29,7 +29,7 @@ namespace mimir
 class GeneralizedSearchContext
 {
 private:
-    Domain m_domain;
+    GeneralizedProblem m_generalized_problem;
 
     SearchContextList m_search_contexts;
 
@@ -52,9 +52,9 @@ public:
 
     /// @brief Expert interface: fully customizable construction.
     /// @param search_contexts
-    GeneralizedSearchContext(Domain domain, SearchContextList search_contexts);
+    GeneralizedSearchContext(GeneralizedProblem generalized_problem, SearchContextList search_contexts);
 
-    const Domain& get_domain() const;
+    const GeneralizedProblem& get_generalized_problem() const;
     const SearchContextList& get_search_contexts() const;
 };
 }

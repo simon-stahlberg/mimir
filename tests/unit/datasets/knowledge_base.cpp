@@ -34,8 +34,7 @@ TEST(MimirTests, DatasetsKnowledgeBaseConstructorTest)
     // The spanner is at location 2.
     const auto problem2_file = fs::path(std::string(DATA_DIR) + "spanner/p-1-1-2-1(2).pddl");
 
-    auto search_contexts =
-        SearchContextList { SearchContext(ProblemImpl::create(domain_file, problem1_file)), SearchContext(ProblemImpl::create(domain_file, problem2_file)) };
+    auto context = GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem1_file, problem2_file });
 
     {
         /* Without symmetry reduction */
@@ -45,7 +44,7 @@ TEST(MimirTests, DatasetsKnowledgeBaseConstructorTest)
         auto tuple_graph_options = TupleGraphCollection::Options();
         tuple_graph_options.width = 2;
 
-        auto kb = KnowledgeBase::create(search_contexts, KnowledgeBase::Options(state_space_options, tuple_graph_options));
+        auto kb = KnowledgeBase::create(context, KnowledgeBase::Options(state_space_options, tuple_graph_options));
 
         // Test generalized state space.
         const auto& problem_class_state_space = kb->get_generalized_state_space();
@@ -82,7 +81,7 @@ TEST(MimirTests, DatasetsKnowledgeBaseConstructorTest)
         auto tuple_graph_options = TupleGraphCollection::Options();
         tuple_graph_options.width = 2;
 
-        auto kb = KnowledgeBase::create(search_contexts, KnowledgeBase::Options(state_space_options, tuple_graph_options));
+        auto kb = KnowledgeBase::create(context, KnowledgeBase::Options(state_space_options, tuple_graph_options));
 
         // Test generalized state space.
         const auto& problem_class_state_space = kb->get_generalized_state_space();

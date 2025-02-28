@@ -19,27 +19,16 @@
 
 namespace mimir
 {
-KnowledgeBase::KnowledgeBase(SearchContextList contexts, const Options& options) :
+KnowledgeBase::KnowledgeBase(GeneralizedSearchContext contexts, const Options& options) :
     m_state_space(contexts, options.state_space_options),
     m_tuple_graphs(options.tuple_graph_options ? std::optional<TupleGraphCollection>(TupleGraphCollection(m_state_space, options.tuple_graph_options.value())) :
                                                  std::nullopt)
 {
 }
-KnowledgeBase::KnowledgeBase(SearchContext context, const Options& options) :
-    m_state_space(context, options.state_space_options),
-    m_tuple_graphs(options.tuple_graph_options ? std::optional<TupleGraphCollection>(TupleGraphCollection(m_state_space, options.tuple_graph_options.value())) :
-                                                 std::nullopt)
-{
-}
 
-std::unique_ptr<KnowledgeBase> KnowledgeBase::create(SearchContextList contexts, const Options& options)
+std::unique_ptr<KnowledgeBase> KnowledgeBase::create(GeneralizedSearchContext contexts, const Options& options)
 {
     return std::make_unique<KnowledgeBase>(contexts, options);
-}
-
-std::unique_ptr<KnowledgeBase> KnowledgeBase::create(SearchContext context, const Options& options)
-{
-    return std::make_unique<KnowledgeBase>(context, options);
 }
 
 /**

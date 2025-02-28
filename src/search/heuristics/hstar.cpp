@@ -18,18 +18,21 @@
 #include "mimir/search/heuristics/hstar.hpp"
 
 #include "mimir/datasets/generalized_state_space.hpp"
+#include "mimir/formalism/problem.hpp"
 #include "mimir/search/state_repository.hpp"
 
 namespace mimir
 {
 
-HStarHeuristic::HStarHeuristic(const SearchContext& search_context) : m_estimates()
+HStarHeuristic::HStarHeuristic(const SearchContext& context) : m_estimates()
 {
     // We simply create a state space and copy the estimates
     auto class_options = GeneralizedStateSpace::Options();
     class_options.problem_options.remove_if_unsolvable = false;
 
-    auto problem_class_state_space = GeneralizedStateSpace(search_context, class_options);
+    auto problem_class_state_space = GeneralizedStateSpace(
+        GeneralizedSearchContext(GeneralizedProblem(context.get_problem()->get_domain(), ProblemList { context.get_problem() }), SearchContextList { context }),
+        class_options);
 
     const auto& class_graph = problem_class_state_space.get_class_state_space().get_graph();
 
@@ -41,5 +44,4 @@ HStarHeuristic::HStarHeuristic(const SearchContext& search_context) : m_estimate
 }
 
 double HStarHeuristic::compute_heuristic(State state, bool is_goal_state) { return m_estimates.at(state); }
-
 }

@@ -36,7 +36,8 @@ TEST(MimirTests, DataSetsObjectGraphDenseTest)
 
     auto options = GeneralizedStateSpace::Options();
     options.problem_options.symmetry_pruning = false;
-    const auto problem_class_state_space = GeneralizedStateSpace(search_context, options);
+    const auto context = GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem_file });
+    const auto problem_class_state_space = GeneralizedStateSpace(context, options);
 
     const auto color_function = ProblemColorFunction(*search_context.get_problem());
     auto certificates = std::unordered_set<nauty_wrapper::Certificate, loki::Hash<nauty_wrapper::Certificate>, loki::EqualTo<nauty_wrapper::Certificate>> {};
@@ -64,7 +65,8 @@ TEST(MimirTests, DataSetsObjectGraphSparseTest)
 
     auto options = GeneralizedStateSpace::Options();
     options.problem_options.symmetry_pruning = false;
-    const auto problem_class_state_space = GeneralizedStateSpace(search_context, options);
+    const auto context = GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem_file });
+    const auto problem_class_state_space = GeneralizedStateSpace(context, options);
 
     const auto color_function = ProblemColorFunction(*search_context.get_problem());
     auto certificates = std::unordered_set<nauty_wrapper::Certificate, loki::Hash<nauty_wrapper::Certificate>, loki::EqualTo<nauty_wrapper::Certificate>> {};

@@ -17,6 +17,7 @@
 
 #include "mimir/search/search_context.hpp"
 
+#include "mimir/formalism/problem.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/axiom_evaluators.hpp"
 #include "mimir/search/delete_relaxed_problem_explorator.hpp"
@@ -24,6 +25,14 @@
 
 namespace mimir
 {
+
+SearchContext::SearchContext(const fs::path& domain_filepath, const fs::path& problem_filepath, const Options& options) :
+    m_problem(ProblemImpl::create(domain_filepath, problem_filepath))
+{
+    auto search_context = SearchContext(m_problem, options);
+    m_applicable_action_generator = std::move(search_context.m_applicable_action_generator);
+    m_state_repository = std::move(search_context.m_state_repository);
+}
 
 SearchContext::SearchContext(Problem problem, const Options& options) : m_problem(problem)
 {
@@ -63,16 +72,6 @@ SearchContext::SearchContext(Problem problem, ApplicableActionGenerator applicab
     {
         throw std::runtime_error("SearchContext::SearchContext: Expected the given state repository to be defined over the given problem.");
     }
-}
-
-std::vector<SearchContext> SearchContext::create(const ProblemList& problems, const Options& options)
-{
-    auto result = SearchContextList {};
-    for (auto& problem : problems)
-    {
-        result.emplace_back(std::move(problem), options);
-    }
-    return result;
 }
 
 const Problem& SearchContext::get_problem() const { return m_problem; }

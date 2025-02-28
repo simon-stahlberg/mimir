@@ -29,7 +29,7 @@ namespace mimir
 class HStarHeuristic : public IHeuristic
 {
 public:
-    explicit HStarHeuristic(const SearchContext& search_context);
+    explicit HStarHeuristic(const SearchContext& context);
 
     double compute_heuristic(State state, bool is_goal_state) override;
 

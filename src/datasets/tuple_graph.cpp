@@ -57,7 +57,7 @@ TupleGraphCollection::TupleGraphCollection(const GeneralizedStateSpace& state_sp
     m_per_problem_index_mapper(),
     m_per_class_vertex_tuple_graph()
 {
-    for (const auto& search_context : state_space.get_search_contexts())
+    for (const auto& search_context : state_space.get_generalized_search_context().get_search_contexts())
     {
         m_per_problem_index_mapper.push_back(TupleIndexMapper(
             options.width,
@@ -67,12 +67,13 @@ TupleGraphCollection::TupleGraphCollection(const GeneralizedStateSpace& state_sp
     }
     for (const auto& class_vertex : state_space.get_class_state_space().get_graph().get_vertices())
     {
-        m_per_class_vertex_tuple_graph.push_back(create_tuple_graph(state_space.get_problem_vertex(class_vertex),
-                                                                    state_space.get_problem_graph(class_vertex),
-                                                                    state_space.get_class_state_space().get_graph(),
-                                                                    *state_space.get_search_contexts().at(get_problem_index(class_vertex)).get_problem(),
-                                                                    m_per_problem_index_mapper.at(get_problem_index(class_vertex)),
-                                                                    options));
+        m_per_class_vertex_tuple_graph.push_back(
+            create_tuple_graph(state_space.get_problem_vertex(class_vertex),
+                               state_space.get_problem_graph(class_vertex),
+                               state_space.get_class_state_space().get_graph(),
+                               *state_space.get_generalized_search_context().get_search_contexts().at(get_problem_index(class_vertex)).get_problem(),
+                               m_per_problem_index_mapper.at(get_problem_index(class_vertex)),
+                               options));
     }
 }
 

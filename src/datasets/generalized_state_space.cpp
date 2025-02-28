@@ -520,31 +520,31 @@ static std::optional<ProblemStateSpace> compute_problem_graph_without_symmetry_r
 }
 
 static std::vector<std::tuple<ProblemStateSpace, CertificateList, SearchContext>>
-compute_problem_graphs_with_symmetry_reduction(const SearchContextList& contexts, const GeneralizedStateSpace::Options::ProblemSpecific& options)
+compute_problem_graphs_with_symmetry_reduction(const GeneralizedSearchContext& context, const GeneralizedStateSpace::Options::ProblemSpecific& options)
 {
     auto problem_graphs = std::vector<std::tuple<ProblemStateSpace, CertificateList, SearchContext>> {};
-    for (const auto& context : contexts)
+    for (const auto& search_context : context.get_search_contexts())
     {
-        auto result = compute_problem_graph_with_symmetry_reduction(context, options);
+        auto result = compute_problem_graph_with_symmetry_reduction(search_context, options);
 
         if (!result)
         {
             continue;
         }
 
-        problem_graphs.emplace_back(std::move(result->first), std::move(result->second), context);
+        problem_graphs.emplace_back(std::move(result->first), std::move(result->second), search_context);
     }
 
     return problem_graphs;
 }
 
-static std::vector<ProblemStateSpace> compute_problem_graphs_without_symmetry_reduction(const SearchContextList& contexts,
+static std::vector<ProblemStateSpace> compute_problem_graphs_without_symmetry_reduction(const GeneralizedSearchContext& context,
                                                                                         const GeneralizedStateSpace::Options::ProblemSpecific& options)
 {
     auto problem_graphs = std::vector<ProblemStateSpace> {};
-    for (const auto& context : contexts)
+    for (const auto& search_context : context.get_search_contexts())
     {
-        auto result = compute_problem_graph_without_symmetry_reduction(context, options);
+        auto result = compute_problem_graph_without_symmetry_reduction(search_context, options);
 
         if (!result)
         {
@@ -557,10 +557,10 @@ static std::vector<ProblemStateSpace> compute_problem_graphs_without_symmetry_re
     return problem_graphs;
 }
 
-static std::tuple<ProblemGraphList, ClassStateSpace, SearchContextList>
-compute_problem_and_class_state_spaces_with_symmetry_reduction(const SearchContextList& contexts, const GeneralizedStateSpace::Options& options)
+static std::tuple<ProblemGraphList, ClassStateSpace, GeneralizedSearchContext>
+compute_problem_and_class_state_spaces_with_symmetry_reduction(const GeneralizedSearchContext& context, const GeneralizedStateSpace::Options& options)
 {
-    auto result = compute_problem_graphs_with_symmetry_reduction(contexts, options.problem_options);
+    auto result = compute_problem_graphs_with_symmetry_reduction(context, options.problem_options);
 
     if (options.sort_ascending_by_num_states)
     {
@@ -573,7 +573,8 @@ compute_problem_and_class_state_spaces_with_symmetry_reduction(const SearchConte
         Meanwhile, translate each `StaticProblemGraph` into a `ProblemGraph` that maps to the `ClassVertices` and `ClassEdges`
      */
 
-    auto final_problem_contexts = SearchContextList {};
+    auto final_problems = ProblemList {};
+    auto final_search_contexts = SearchContextList {};
     auto final_problem_graphs = ProblemGraphList {};
 
     auto class_graph = StaticClassGraph {};
@@ -582,7 +583,7 @@ compute_problem_and_class_state_spaces_with_symmetry_reduction(const SearchConte
 
     auto problem_idx = Index(0);
 
-    for (auto& [problem_state_space, vertex_certificates, problem_context] : result)
+    for (auto& [problem_state_space, vertex_certificates, search_context] : result)
     {
         const auto& problem_graph = problem_state_space.get_graph();
         auto& problem_goal_vertices = problem_state_space.get_goal_vertices();
@@ -677,20 +678,23 @@ compute_problem_and_class_state_spaces_with_symmetry_reduction(const SearchConte
         }
 
         final_problem_graphs.push_back(ProblemGraph(std::move(final_problem_graph)));
-        final_problem_contexts.push_back(problem_context);
+        final_problems.push_back(search_context.get_problem());
+        final_search_contexts.push_back(search_context);
 
         ++problem_idx;
     }
 
     auto class_state_space = ClassStateSpace(ClassGraph(std::move(class_graph)));
 
-    return { std::move(final_problem_graphs), std::move(class_state_space), std::move(final_problem_contexts) };
+    return { std::move(final_problem_graphs),
+             std::move(class_state_space),
+             GeneralizedSearchContext(GeneralizedProblem(context.get_generalized_problem().get_domain(), final_problems), final_search_contexts) };
 }
 
-static std::tuple<ProblemGraphList, ClassStateSpace, SearchContextList>
-compute_problem_and_class_state_spaces_without_symmetry_reduction(const SearchContextList& contexts, const GeneralizedStateSpace::Options& options)
+static std::tuple<ProblemGraphList, ClassStateSpace, GeneralizedSearchContext>
+compute_problem_and_class_state_spaces_without_symmetry_reduction(const GeneralizedSearchContext& context, const GeneralizedStateSpace::Options& options)
 {
-    auto problem_graphs = compute_problem_graphs_without_symmetry_reduction(contexts, options.problem_options);
+    auto problem_graphs = compute_problem_graphs_without_symmetry_reduction(context, options.problem_options);
 
     if (options.sort_ascending_by_num_states)
     {
@@ -763,40 +767,30 @@ compute_problem_and_class_state_spaces_without_symmetry_reduction(const SearchCo
 
     auto class_state_space = ClassStateSpace(ClassGraph(std::move(class_graph)));
 
-    return { std::move(final_problem_graphs), std::move(class_state_space), contexts };
+    return { std::move(final_problem_graphs), std::move(class_state_space), context };
 }
 
-GeneralizedStateSpace::GeneralizedStateSpace(SearchContextList contexts, const GeneralizedStateSpace::Options& options)
+GeneralizedStateSpace::GeneralizedStateSpace(GeneralizedSearchContext context, const GeneralizedStateSpace::Options& options) : m_context(std::move(context))
 {
     /* We write separate code for the two cases where symmetry pruning is either enabled or disabled
        because in the latter case we can write much simpler code and we dont have to always check again the option. */
     if (options.problem_options.symmetry_pruning)
     {
-        auto [problem_state_spaces_, class_state_space_, contexts_] = compute_problem_and_class_state_spaces_with_symmetry_reduction(contexts, options);
+        auto [problem_state_spaces_, class_state_space_, context_] = compute_problem_and_class_state_spaces_with_symmetry_reduction(m_context, options);
         m_problem_graphs = std::move(problem_state_spaces_);
         m_class_state_space = std::move(class_state_space_);
-        m_search_contexts = std::move(contexts_);
+        m_context = std::move(context_);
     }
     else
     {
-        auto [problem_state_spaces_, class_state_space_, contexts_] = compute_problem_and_class_state_spaces_without_symmetry_reduction(contexts, options);
+        auto [problem_state_spaces_, class_state_space_, context_] = compute_problem_and_class_state_spaces_without_symmetry_reduction(m_context, options);
         m_problem_graphs = std::move(problem_state_spaces_);
         m_class_state_space = std::move(class_state_space_);
-        m_search_contexts = std::move(contexts_);
+        m_context = std::move(context_);
     }
 }
 
-GeneralizedStateSpace::GeneralizedStateSpace(Problem problem, const Options& options) :
-    GeneralizedStateSpace(SearchContextList { SearchContext(problem) }, options)
-{
-}
-
-GeneralizedStateSpace::GeneralizedStateSpace(SearchContext context, const GeneralizedStateSpace::Options& options) :
-    GeneralizedStateSpace(SearchContextList { std::move(context) }, options)
-{
-}
-
-const SearchContextList& GeneralizedStateSpace::get_search_contexts() const { return m_search_contexts; }
+const GeneralizedSearchContext& GeneralizedStateSpace::get_generalized_search_context() const { return m_context; }
 
 const ProblemGraphList& GeneralizedStateSpace::get_problem_graphs() const { return m_problem_graphs; }
 

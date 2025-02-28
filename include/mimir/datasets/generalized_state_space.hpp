@@ -26,7 +26,7 @@
 #include "mimir/graphs/graph_vertices.hpp"
 #include "mimir/graphs/static_graph.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/search_context.hpp"
+#include "mimir/search/generalized_search_context.hpp"
 
 namespace mimir
 {
@@ -159,7 +159,8 @@ public:
 class GeneralizedStateSpace
 {
 private:
-    SearchContextList m_search_contexts;  ///< The search contexts.
+    GeneralizedSearchContext m_context;  ///< The search contexts, possibly filtered and sorted.
+
     ProblemGraphList m_problem_graphs;    ///< The child-level graphs.
     ClassStateSpace m_class_state_space;  ///< The top-level state space.
 
@@ -199,19 +200,13 @@ public:
      * Constructors
      */
 
-    /* Construct from contexts. */
-    GeneralizedStateSpace(GeneralizedProblem generalized_problem, const Options& options = Options());
-    GeneralizedStateSpace(SearchContextList contexts, const Options& options = Options());
-
-    /* Construct for single problem */
-    GeneralizedStateSpace(Problem problem, const Options& options = Options());
-    GeneralizedStateSpace(SearchContext context, const Options& options = Options());
+    GeneralizedStateSpace(GeneralizedSearchContext context, const Options& options = Options());
 
     /**
      * Getters
      */
 
-    const SearchContextList& get_search_contexts() const;
+    const GeneralizedSearchContext& get_generalized_search_context() const;
     const ProblemGraphList& get_problem_graphs() const;
     const ClassStateSpace& get_class_state_space() const;
 

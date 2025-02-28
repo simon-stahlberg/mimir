@@ -20,7 +20,7 @@
 
 #include "mimir/datasets/generalized_state_space.hpp"
 #include "mimir/datasets/tuple_graph.hpp"
-#include "mimir/search/search_context.hpp"
+#include "mimir/search/generalized_search_context.hpp"
 
 namespace mimir
 {
@@ -56,11 +56,9 @@ public:
      * Constructors
      */
 
-    KnowledgeBase(SearchContextList contexts, const Options& options = Options());
-    KnowledgeBase(SearchContext context, const Options& options = Options());
+    KnowledgeBase(GeneralizedSearchContext contexts, const Options& options = Options());
 
-    static std::unique_ptr<KnowledgeBase> create(SearchContextList contexts, const Options& options = Options());
-    static std::unique_ptr<KnowledgeBase> create(SearchContext context, const Options& options = Options());
+    static std::unique_ptr<KnowledgeBase> create(GeneralizedSearchContext contexts, const Options& options = Options());
 
     /**
      * Getters

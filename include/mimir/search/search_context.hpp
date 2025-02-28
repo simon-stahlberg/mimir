@@ -46,11 +46,22 @@ public:
         explicit Options(SearchMode mode) : mode(mode) {}
     };
 
+    /// @brief Construction from `ProblemImpl` construction API.
+    /// @param domain_filepath
+    /// @param problem_filepath
+    /// @param options
+    SearchContext(const fs::path& domain_filepath, const fs::path& problem_filepath, const Options& options = Options());
+
+    /// @brief Construct for a given problem
+    /// @param problem
+    /// @param options
     SearchContext(Problem problem, const Options& options = Options());
 
+    /// @brief Expert interface: fully customizable construction.
+    /// @param problem
+    /// @param applicable_action_generator
+    /// @param state_repository
     SearchContext(Problem problem, ApplicableActionGenerator applicable_action_generator, StateRepository state_repository);
-
-    static std::vector<SearchContext> create(const ProblemList& problems, const Options& options = Options());
 
     const Problem& get_problem() const;
     const ApplicableActionGenerator get_applicable_action_generator() const;

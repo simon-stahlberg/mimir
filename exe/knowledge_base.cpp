@@ -39,11 +39,8 @@ int main(int argc, char** argv)
     auto tuple_graph_options = TupleGraphCollection::Options();
     tuple_graph_options.width = 2;
 
-    auto generalized_problem = GeneralizedProblem(domain_file_path, problems_directory);
-
-    auto search_contexts = SearchContext::create(generalized_problem.get_problems());
-
-    auto kb = KnowledgeBase::create(search_contexts, KnowledgeBase::Options(state_space_options, tuple_graph_options));
+    auto kb =
+        KnowledgeBase::create(GeneralizedSearchContext(domain_file_path, problems_directory), KnowledgeBase::Options(state_space_options, tuple_graph_options));
     const auto& pcss = kb->get_generalized_state_space();
 
     for (size_t i = 0; i < pcss.get_problem_graphs().size(); ++i)
