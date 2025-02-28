@@ -62,6 +62,8 @@ using GroundAction = const GroundActionImpl*;
 using GroundActionList = std::vector<GroundAction>;
 using GroundActionSet = std::unordered_set<GroundAction>;
 
+class GeneralizedProblem;
+
 template<StaticOrFluentOrDerived P>
 class AtomImpl;
 template<StaticOrFluentOrDerived P>
@@ -222,6 +224,8 @@ using Object = const ObjectImpl*;
 using ObjectList = std::vector<Object>;
 template<typename Key>
 using ToObjectMap = std::unordered_map<Key, Object, loki::Hash<Key>, loki::EqualTo<Key>>;
+template<typename Value>
+using ObjectMap = std::unordered_map<Object, Value>;
 
 class PDDLRepositories;
 
@@ -239,6 +243,10 @@ template<typename Key, StaticOrFluentOrDerived P>
 using ToPredicateMap = std::unordered_map<Key, Predicate<P>, loki::Hash<Key>, loki::EqualTo<Key>>;
 template<typename Key, StaticOrFluentOrDerived... Ps>
 using ToPredicateMaps = boost::hana::map<boost::hana::pair<boost::hana::type<Ps>, ToPredicateMap<Key, Ps>>...>;
+template<typename Value, StaticOrFluentOrDerived P>
+using PredicateMap = std::unordered_map<Predicate<P>, Value>;
+template<typename Value, StaticOrFluentOrDerived... Ps>
+using PredicateMaps = boost::hana::map<boost::hana::pair<boost::hana::type<Ps>, PredicateMap<Value, Ps>>...>;
 
 class ProblemImpl;
 using Problem = std::shared_ptr<ProblemImpl>;

@@ -28,6 +28,7 @@ GeneralizedProblem::GeneralizedProblem(const fs::path& domain_filepath, const st
 {
     auto parser = Parser(domain_filepath, options);
     auto domain_translation_result = translate(parser.get_domain());
+    m_domain = domain_translation_result.get_translated_domain();
     for (const auto& problem_filepath : problem_filepaths)
     {
         auto problem = parser.parse_problem(problem_filepath, options);
@@ -39,6 +40,7 @@ GeneralizedProblem::GeneralizedProblem(const fs::path& domain_filepath, const fs
 {
     auto parser = Parser(domain_filepath, options);
     auto domain_translation_result = translate(parser.get_domain());
+    m_domain = domain_translation_result.get_translated_domain();
     for (const auto& problem_filepath : fs::directory_iterator(problems_directory))
     {
         auto problem = parser.parse_problem(problem_filepath, options);
@@ -46,6 +48,7 @@ GeneralizedProblem::GeneralizedProblem(const fs::path& domain_filepath, const fs
     }
 }
 
+const Domain& GeneralizedProblem::get_domain() const { return m_domain; }
 const ProblemList& GeneralizedProblem::get_problems() const { return m_problems; }
 
 }

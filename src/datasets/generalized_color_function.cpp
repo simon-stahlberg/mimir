@@ -1,0 +1,84 @@
+/*
+ * Copyright (C) 2023 Dominik Drexler and Simon Stahlberg
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+#include "mimir/datasets/generalized_color_function.hpp"
+
+#include "mimir/formalism/domain.hpp"
+#include "mimir/formalism/problem.hpp"
+#include "mimir/search/state.hpp"
+
+namespace mimir
+{
+
+GeneralizedColorFunction::GeneralizedColorFunction(GeneralizedProblem generalized_problem) :
+    m_generalized_problem(std::move(generalized_problem)),
+    m_color_to_name(),
+    m_predicate_colors()
+{
+    auto next_color = 1;  // 0 is reserved for objects
+
+    boost::hana::for_each(m_generalized_problem.get_domain()->get_hana_predicates(),
+                          [&](auto&& pair)
+                          {
+                              const auto& key = boost::hana::first(pair);
+                              const auto& value = boost::hana::second(pair);
+
+                              for (const auto& predicate : value)
+                              {
+                                  boost::hana::at_key(m_predicate_colors, key).emplace(predicate, next_color);
+                                  m_color_to_name.emplace(next_color, to_string(predicate));
+                                  next_color += 3;  // offset: 0 for ground atom, 1 for true, and 2 for false literal
+                              }
+                          });
+    for (const auto& problem : m_generalized_problem.get_problems())
+    {
+        for (const auto& predicate : problem->get_derived_predicates())
+        {
+            boost::hana::at_key(m_predicate_colors, boost::hana::type<Derived> {}).emplace(predicate, next_color);
+            m_color_to_name.emplace(next_color, to_string(predicate));
+            next_color += 3;  // offset: 0 for ground atom, 1 for true, and 2 for false literal
+        }
+    }
+}
+
+Color GeneralizedColorFunction::get_color(Object object) const { return 0; }
+
+template<StaticOrFluentOrDerived P>
+Color GeneralizedColorFunction::get_color(GroundAtom<P> atom, size_t pos) const
+{
+    boost::hana::at_key(m_predicate_colors, boost::hana::type<Static> {}).at(atom->get_predicate());
+}
+
+template<StaticOrFluentOrDerived P>
+Color GeneralizedColorFunction::get_color(GroundLiteral<P> literal, size_t pos, State state, const ProblemImpl& problem, bool mark_true_goal_literal) const
+{
+    bool is_satisfied_in_goal = state->literal_holds(literal);
+    const auto literal_color_offset = (!mark_true_goal_literal || is_satisfied_in_goal) ? 1 : 2;
+    return boost::hana::at_key(m_predicate_colors, boost::hana::type<Static> {}).at(literal->get_atom()->get_predicate()) + literal_color_offset;
+}
+
+template<>
+Color GeneralizedColorFunction::get_color(GroundLiteral<Static> literal, size_t pos, State state, const ProblemImpl& problem, bool mark_true_goal_literal) const
+{
+    bool is_satisfied_in_goal = problem.static_literal_holds(literal);
+    const auto literal_color_offset = (!mark_true_goal_literal || is_satisfied_in_goal) ? 1 : 2;
+    return boost::hana::at_key(m_predicate_colors, boost::hana::type<Static> {}).at(literal->get_atom()->get_predicate()) + literal_color_offset;
+}
+
+const std::string& GeneralizedColorFunction::get_color_name(Color color) const { return m_color_to_name.at(color); }
+
+}
