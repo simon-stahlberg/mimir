@@ -515,9 +515,6 @@ public:
                             CopyNonTerminalVisitor<Role>& role_start_symbol_visitor,
                             CopyDerivationRuleVisitor<Concept>& concept_rule_visitor,
                             CopyDerivationRuleVisitor<Role>& role_rule_visitor);
-
-    StartSymbolsContainer get_result_start_symbols();        ///< this move the result out
-    DerivationRulesContainer get_result_derivation_rules();  ///< this move the result out
 };
 
 }

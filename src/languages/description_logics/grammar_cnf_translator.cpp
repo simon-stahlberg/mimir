@@ -18,6 +18,7 @@
 #include "grammar_cnf_translator.hpp"
 
 #include "mimir/common/printers.hpp"
+#include "mimir/languages/description_logics/cnf_grammar.hpp"
 #include "mimir/languages/description_logics/grammar.hpp"
 #include "mimir/languages/description_logics/grammar_visitor_formatter.hpp"
 #include "mimir/languages/description_logics/grammar_visitor_interface.hpp"
@@ -69,6 +70,10 @@ static NonTerminalMap<std::string> collect_nonterminals_from_grammar(const Gramm
 
     return nonterminal_map;
 }
+
+/**
+ * Eliminate choice rules by introducing additional rules
+ */
 
 template<ConceptOrRole D>
 struct EliminateChoiceDerivationRuleVisitor : public CopyDerivationRuleVisitor<D>
@@ -140,9 +145,6 @@ public:
                                   }
                               });
     }
-
-    StartSymbolsContainer get_result_start_symbols() { return std::move(m_start_symbols); }
-    DerivationRulesContainer get_result_derivation_rules() { return std::move(m_derivation_rules); }
 };
 
 static Grammar eliminate_choices_in_rules(const Grammar& grammar)
@@ -176,6 +178,10 @@ static Grammar eliminate_choices_in_rules(const Grammar& grammar)
     return Grammar(std::move(repositories), std::move(start_symbols), std::move(derivation_rules), grammar.get_domain());
 }
 
+/**
+ * Eliminate nested constructors by introducing additional rules
+ */
+
 template<ConceptOrRole D>
 class EliminateNestedConstructorsL2ConstructorOrNonTerminalVisitor : public CopyConstructorOrNonTerminalVisitor<D>
 {
@@ -186,25 +192,10 @@ private:
 
     std::string get_free_nonterminal_name()
     {
-        const char* prefix;
-        if constexpr (std::is_same_v<D, Concept>)
-        {
-            prefix = "<concept_";
-        }
-        else if constexpr (std::is_same_v<D, Role>)
-        {
-            prefix = "<role_";
-        }
-        else
-        {
-            static_assert(dependent_false<D>::value, "Missing implementation for constructor type.");
-        }
-
-        // Find a free index
         std::string candidate_name;
         do
         {
-            candidate_name = prefix + std::to_string(m_next_index++) + ">";
+            candidate_name = "<" + D::name + "_" + std::to_string(m_next_index++) + ">";
         } while (m_existing_nonterminals.template contains<D>(candidate_name));
 
         return candidate_name;
@@ -353,6 +344,14 @@ static Grammar eliminate_nested_constructors(const Grammar& grammar)
     return Grammar(std::move(repositories), std::move(start_symbols), std::move(derivation_rules), grammar.get_domain());
 }
 
+static cnf_grammar::Grammar parse_cnf_grammar(const Grammar& grammar)
+{
+    auto repositories = cnf_grammar::ConstructorRepositories();
+    auto start_symbols = cnf_grammar::StartSymbolsContainer();
+    auto derivation_rules = cnf_grammar::DerivationRulesContainer();
+    auto substitution_rules = cnf_grammar::SubstitutionRulesContainer();
+}
+
 cnf_grammar::Grammar translate_to_cnf(const Grammar& grammar)
 {
     std::cout << "translate_to_cnf" << std::endl;
@@ -366,5 +365,7 @@ cnf_grammar::Grammar translate_to_cnf(const Grammar& grammar)
     std::cout << translated_grammar << std::endl;
 
     exit(1);
+
+    // return parse_cnf_grammar(translated_grammar);
 }
 }

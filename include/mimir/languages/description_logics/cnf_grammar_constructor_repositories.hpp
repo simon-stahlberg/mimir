@@ -67,7 +67,7 @@ using RoleReflexiveTransitiveClosureRepository = SegmentedDLRepository<RoleRefle
 using RoleRestrictionRepository = SegmentedDLRepository<RoleRestrictionImpl>;
 using RoleIdentityFactory = SegmentedDLRepository<RoleIdentityImpl>;
 
-using GrammarConstructorRepositories =
+using ConstructorRepositories =
     boost::hana::map<boost::hana::pair<boost::hana::type<NonTerminalImpl<Concept>>, NonTerminalFactory<Concept>>,
                      boost::hana::pair<boost::hana::type<ConceptBotImpl>, ConceptBotRepository>,
                      boost::hana::pair<boost::hana::type<ConceptTopImpl>, ConceptTopRepository>,

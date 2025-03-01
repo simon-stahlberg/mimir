@@ -37,7 +37,7 @@ class Grammar
 {
 private:
     /* Memory */
-    GrammarConstructorRepositories m_repositories;
+    ConstructorRepositories m_repositories;
 
     /* The rules of the grammar. */
     StartSymbolsContainer m_start_symbols;
