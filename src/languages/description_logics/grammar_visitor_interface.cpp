@@ -283,14 +283,7 @@ void RecurseGrammarVisitor::initialize(RecurseNonTerminalVisitor<Concept>& conce
 /// Recursive Copy Visitor
 ////////////////////////////
 
-CopyConstructorVisitor<Concept>::CopyConstructorVisitor(ConstructorRepositories& repositories,
-                                                        StartSymbolsContainer& start_symbols,
-                                                        DerivationRulesContainer& derivation_rules) :
-    m_repositories(repositories),
-    m_start_symbols(start_symbols),
-    m_derivation_rules(derivation_rules)
-{
-}
+CopyConstructorVisitor<Concept>::CopyConstructorVisitor(ConstructorRepositories& repositories) : m_repositories(repositories) {}
 
 void CopyConstructorVisitor<Concept>::initialize(CopyConstructorOrNonTerminalVisitor<Concept>& concept_or_nonterminal_visitor,
                                                  CopyConstructorOrNonTerminalVisitor<Role>& role_or_nonterminal_visitor)
@@ -387,14 +380,7 @@ Constructor<Concept> CopyConstructorVisitor<Concept>::get_result() const { retur
  * Role
  */
 
-CopyConstructorVisitor<Role>::CopyConstructorVisitor(ConstructorRepositories& repositories,
-                                                     StartSymbolsContainer& start_symbols,
-                                                     DerivationRulesContainer& derivation_rules) :
-    m_repositories(repositories),
-    m_start_symbols(start_symbols),
-    m_derivation_rules(derivation_rules)
-{
-}
+CopyConstructorVisitor<Role>::CopyConstructorVisitor(ConstructorRepositories& repositories) : m_repositories(repositories) {}
 
 void CopyConstructorVisitor<Role>::initialize(CopyConstructorOrNonTerminalVisitor<Concept>& concept_or_nonterminal_visitor,
                                               CopyConstructorOrNonTerminalVisitor<Role>& role_or_nonterminal_visitor)
@@ -497,12 +483,7 @@ Constructor<Role> CopyConstructorVisitor<Role>::get_result() const { return m_re
  */
 
 template<ConceptOrRole D>
-CopyConstructorOrNonTerminalVisitor<D>::CopyConstructorOrNonTerminalVisitor(ConstructorRepositories& repositories,
-                                                                            StartSymbolsContainer& start_symbols,
-                                                                            DerivationRulesContainer& derivation_rules) :
-    m_repositories(repositories),
-    m_start_symbols(start_symbols),
-    m_derivation_rules(derivation_rules)
+CopyConstructorOrNonTerminalVisitor<D>::CopyConstructorOrNonTerminalVisitor(ConstructorRepositories& repositories) : m_repositories(repositories)
 {
 }
 
@@ -555,12 +536,7 @@ template class CopyConstructorOrNonTerminalVisitor<Role>;
  */
 
 template<ConceptOrRole D>
-CopyNonTerminalVisitor<D>::CopyNonTerminalVisitor(ConstructorRepositories& repositories,
-                                                  StartSymbolsContainer& start_symbols,
-                                                  DerivationRulesContainer& derivation_rules) :
-    m_repositories(repositories),
-    m_start_symbols(start_symbols),
-    m_derivation_rules(derivation_rules)
+CopyNonTerminalVisitor<D>::CopyNonTerminalVisitor(ConstructorRepositories& repositories) : m_repositories(repositories)
 {
 }
 
@@ -584,12 +560,7 @@ template class CopyNonTerminalVisitor<Role>;
  */
 
 template<ConceptOrRole D>
-CopyDerivationRuleVisitor<D>::CopyDerivationRuleVisitor(ConstructorRepositories& repositories,
-                                                        StartSymbolsContainer& start_symbols,
-                                                        DerivationRulesContainer& derivation_rules) :
-    m_repositories(repositories),
-    m_start_symbols(start_symbols),
-    m_derivation_rules(derivation_rules)
+CopyDerivationRuleVisitor<D>::CopyDerivationRuleVisitor(ConstructorRepositories& repositories) : m_repositories(repositories)
 {
 }
 

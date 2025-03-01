@@ -341,15 +341,13 @@ class CopyConstructorVisitor<Concept> : public ConstructorVisitor<Concept>
 {
 protected:
     ConstructorRepositories& m_repositories;
-    StartSymbolsContainer& m_start_symbols;
-    DerivationRulesContainer& m_derivation_rules;
     Constructor<Concept> m_result;  ///< the result of a visitation
 
     CopyConstructorOrNonTerminalVisitor<Concept>* m_concept_or_nonterminal_visitor;
     CopyConstructorOrNonTerminalVisitor<Role>* m_role_or_nonterminal_visitor;
 
 public:
-    CopyConstructorVisitor(ConstructorRepositories& repositories, StartSymbolsContainer& start_symbols, DerivationRulesContainer& derivation_rules);
+    explicit CopyConstructorVisitor(ConstructorRepositories& repositories);
 
     virtual void initialize(CopyConstructorOrNonTerminalVisitor<Concept>& concept_or_nonterminal_visitor,
                             CopyConstructorOrNonTerminalVisitor<Role>& role_or_nonterminal_visitor);
@@ -383,15 +381,13 @@ class CopyConstructorVisitor<Role> : public ConstructorVisitor<Role>
 {
 protected:
     ConstructorRepositories& m_repositories;
-    StartSymbolsContainer& m_start_symbols;
-    DerivationRulesContainer& m_derivation_rules;
     Constructor<Role> m_result;  ///< the result of a visitation
 
     CopyConstructorOrNonTerminalVisitor<Concept>* m_concept_or_nonterminal_visitor;
     CopyConstructorOrNonTerminalVisitor<Role>* m_role_or_nonterminal_visitor;
 
 public:
-    CopyConstructorVisitor(ConstructorRepositories& repositories, StartSymbolsContainer& start_symbols, DerivationRulesContainer& derivation_rules);
+    explicit CopyConstructorVisitor(ConstructorRepositories& repositories);
 
     virtual void initialize(CopyConstructorOrNonTerminalVisitor<Concept>& concept_or_nonterminal_visitor,
                             CopyConstructorOrNonTerminalVisitor<Role>& role_or_nonterminal_visitor);
@@ -425,17 +421,13 @@ class CopyConstructorOrNonTerminalVisitor : public ConstructorOrNonTerminalVisit
 {
 protected:
     ConstructorRepositories& m_repositories;
-    StartSymbolsContainer& m_start_symbols;
-    DerivationRulesContainer& m_derivation_rules;
     ConstructorOrNonTerminal<D> m_result;  ///< the result of a visitation
 
     CopyNonTerminalVisitor<D>* m_nonterminal_visitor;
     CopyConstructorVisitor<D>* m_constructor_visitor;
 
 public:
-    CopyConstructorOrNonTerminalVisitor(ConstructorRepositories& repositories,
-                                        StartSymbolsContainer& start_symbols,
-                                        DerivationRulesContainer& derivation_rules);
+    explicit CopyConstructorOrNonTerminalVisitor(ConstructorRepositories& repositories);
 
     virtual void initialize(CopyNonTerminalVisitor<D>& nonterminal_visitor, CopyConstructorVisitor<D>& constructor_visitor);
 
@@ -453,12 +445,10 @@ class CopyNonTerminalVisitor : public NonTerminalVisitor<D>
 {
 protected:
     ConstructorRepositories& m_repositories;
-    StartSymbolsContainer& m_start_symbols;
-    DerivationRulesContainer& m_derivation_rules;
     NonTerminal<D> m_result;  ///< the result of a visitation
 
 public:
-    CopyNonTerminalVisitor(ConstructorRepositories& repositories, StartSymbolsContainer& start_symbols, DerivationRulesContainer& derivation_rules);
+    explicit CopyNonTerminalVisitor(ConstructorRepositories& repositories);
 
     void visit(NonTerminal<D> constructor) override;
 
@@ -474,15 +464,13 @@ class CopyDerivationRuleVisitor : public DerivationRuleVisitor<D>
 {
 protected:
     ConstructorRepositories& m_repositories;
-    StartSymbolsContainer& m_start_symbols;
-    DerivationRulesContainer& m_derivation_rules;
     DerivationRule<D> m_result;  ///< the result of a visitation
 
     CopyNonTerminalVisitor<D>* m_nonterminal_visitor;
     CopyConstructorOrNonTerminalVisitor<D>* m_constructor_or_nonterminal_visitor;
 
 public:
-    CopyDerivationRuleVisitor(ConstructorRepositories& repositories, StartSymbolsContainer& start_symbols, DerivationRulesContainer& derivation_rules);
+    explicit CopyDerivationRuleVisitor(ConstructorRepositories& repositories);
 
     virtual void initialize(CopyNonTerminalVisitor<D>& nonterminal_visitor, CopyConstructorOrNonTerminalVisitor<D>& constructor_or_nonterminal_visitor);
 
