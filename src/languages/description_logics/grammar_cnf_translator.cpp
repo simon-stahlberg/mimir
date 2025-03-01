@@ -182,6 +182,7 @@ class EliminateNestedConstructorsL2ConstructorOrNonTerminalVisitor : public Copy
 private:
     NonTerminalMap<std::string>& m_existing_nonterminals;
     size_t m_next_index;
+    std::unordered_map<Constructor<D>, ConstructorOrNonTerminal<D>> m_remapped;
 
     std::string get_free_nonterminal_name()
     {
@@ -216,7 +217,8 @@ public:
                                                                  NonTerminalMap<std::string>& existing_nonterminals) :
         CopyConstructorOrNonTerminalVisitor<D>(repositories, start_symbols, derivation_rules),
         m_existing_nonterminals(existing_nonterminals),
-        m_next_index(0)
+        m_next_index(0),
+        m_remapped()
     {
     }
 
@@ -231,18 +233,27 @@ public:
                     assert(this->m_constructor_visitor);
                     arg->accept(*this->m_constructor_visitor);
 
-                    const auto non_terminal = this->m_repositories.template get_or_create_nonterminal<D>(get_free_nonterminal_name());
+                    const auto it = m_remapped.find(arg);
 
-                    this->m_derivation_rules.insert(this->m_repositories.template get_or_create_derivation_rule<D>(
-                        non_terminal,
-                        ConstructorOrNonTerminalList<D> {
-                            this->m_repositories.template get_or_create_constructor_or_nonterminal<D>(this->m_constructor_visitor->get_result()) }));
+                    if (it != m_remapped.end())
+                    {
+                        this->m_result = it->second;
+                        return;
+                    }
+
+                    const auto non_terminal = this->m_repositories.template get_or_create_nonterminal<D>(get_free_nonterminal_name());
 
                     this->m_result = this->m_repositories.template get_or_create_constructor_or_nonterminal<D>(non_terminal);
 
-                    // assert(this->m_constructor_visitor);
-                    // arg->accept(*this->m_constructor_visitor);
-                    // this->m_result = this->m_repositories.template get_or_create_constructor_or_nonterminal<D>(this->m_constructor_visitor->get_result());
+                    m_remapped.emplace(arg, this->m_result);
+
+                    const auto constructor =
+                        this->m_repositories.template get_or_create_constructor_or_nonterminal<D>(this->m_constructor_visitor->get_result());
+
+                    const auto derivation_rule =
+                        this->m_repositories.template get_or_create_derivation_rule<D>(non_terminal, ConstructorOrNonTerminalList<D> { constructor });
+
+                    this->m_derivation_rules.insert(derivation_rule);
                 }
                 else if constexpr (std::is_same_v<T, NonTerminal<D>>)
                 {
@@ -307,8 +318,8 @@ static Grammar eliminate_nested_constructors(const Grammar& grammar)
 
     auto nonterminal_map = collect_nonterminals_from_grammar(grammar);
 
-    mimir::operator<<(std::cout, nonterminal_map.get());
-    std::cout << std::endl;
+    // mimir::operator<<(std::cout, nonterminal_map.get());
+    // std::cout << std::endl;
 
     auto concept_visitor = CopyConstructorVisitor<Concept>(repositories, start_symbols, derivation_rules);
     auto role_visitor = CopyConstructorVisitor<Role>(repositories, start_symbols, derivation_rules);

@@ -39,6 +39,13 @@ using HanaDerivationRules = boost::hana::map<
         boost::hana::map<boost::hana::pair<boost::hana::type<Primitive>, std::unordered_map<NonTerminal<Role>, ConstructorSet<Role, Primitive>>>,
                          boost::hana::pair<boost::hana::type<Composite>, std::unordered_map<NonTerminal<Role>, ConstructorSet<Role, Composite>>>>>>;
 
+template<ConceptOrRole D>
+using SubstitutionRule = std::pair<NonTerminal<D>, NonTerminal<D>>;
+template<ConceptOrRole D>
+using SubstitutionRuleList = std::vector<SubstitutionRule<D>>;
+using HanaSubstitutionRules = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, SubstitutionRuleList<Concept>>,
+                                               boost::hana::pair<boost::hana::type<Role>, SubstitutionRuleList<Role>>>;
+
 class StartSymbolsContainer
 {
 private:
@@ -112,6 +119,42 @@ public:
 
     HanaDerivationRules& get() { return m_derivation_rules; }
     const HanaDerivationRules& get() const { return m_derivation_rules; }
+};
+
+class SubstitutionRulesContainer
+{
+private:
+    HanaSubstitutionRules m_substitution_rules;
+
+public:
+    SubstitutionRulesContainer() = default;
+    SubstitutionRulesContainer(const SubstitutionRulesContainer& other) = delete;
+    SubstitutionRulesContainer& operator=(const SubstitutionRulesContainer& other) = delete;
+    SubstitutionRulesContainer(SubstitutionRulesContainer&& other) = default;
+    SubstitutionRulesContainer& operator=(SubstitutionRulesContainer&& other) = default;
+
+    /**
+     * Modifiers
+     */
+
+    template<ConceptOrRole D>
+    auto push_back(SubstitutionRule<D> substitution_rule)
+    {
+        boost::hana::at_key(m_substitution_rules, boost::hana::type<D> {}).push_back(substitution_rule);
+    }
+
+    /**
+     * Accessors
+     */
+
+    template<ConceptOrRole D>
+    const SubstitutionRuleList<D>& get() const
+    {
+        return boost::hana::at_key(m_substitution_rules, boost::hana::type<D> {});
+    }
+
+    HanaSubstitutionRules& get() { return m_substitution_rules; }
+    const HanaSubstitutionRules& get() const { return m_substitution_rules; }
 };
 
 }

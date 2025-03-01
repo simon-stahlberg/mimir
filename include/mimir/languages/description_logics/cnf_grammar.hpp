@@ -28,19 +28,6 @@
 namespace mimir::dl::cnf_grammar
 {
 
-using StartSymbols = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::optional<NonTerminal<Concept>>>,
-                                      boost::hana::pair<boost::hana::type<Role>, std::optional<NonTerminal<Role>>>>;
-
-using GrammarRules = boost::hana::map<
-    boost::hana::pair<
-        boost::hana::type<Concept>,
-        boost::hana::map<boost::hana::pair<boost::hana::type<Primitive>, std::unordered_map<NonTerminal<Concept>, ConstructorList<Concept, Primitive>>>,
-                         boost::hana::pair<boost::hana::type<Composite>, std::unordered_map<NonTerminal<Concept>, ConstructorList<Concept, Composite>>>>>,
-    boost::hana::pair<
-        boost::hana::type<Role>,
-        boost::hana::map<boost::hana::pair<boost::hana::type<Primitive>, std::unordered_map<NonTerminal<Role>, ConstructorList<Role, Primitive>>>,
-                         boost::hana::pair<boost::hana::type<Composite>, std::unordered_map<NonTerminal<Role>, ConstructorList<Role, Composite>>>>>>;
-
 enum class GrammarSpecificationEnum
 {
     FRANCES_ET_AL_AAAI2021 = 0,
@@ -55,6 +42,7 @@ private:
     /* The rules of the grammar. */
     StartSymbolsContainer m_start_symbols;
     DerivationRulesContainer m_derivation_rules;
+    SubstitutionRulesContainer m_substitution_rules;
 
     Domain m_domain;
 
@@ -74,6 +62,7 @@ public:
 
     const StartSymbolsContainer& get_start_symbols_container() const { return m_start_symbols; }
     const DerivationRulesContainer& get_derivation_rules_container() const { return m_derivation_rules; }
+    const SubstitutionRulesContainer& get_substitution_rules() const { return m_substitution_rules; }
 };
 }
 
