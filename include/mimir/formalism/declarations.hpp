@@ -222,6 +222,7 @@ using GroundNumericConstraintList = std::vector<GroundNumericConstraint>;
 class ObjectImpl;
 using Object = const ObjectImpl*;
 using ObjectList = std::vector<Object>;
+using ObjectSet = std::unordered_set<Object>;
 template<typename Key>
 using ToObjectMap = std::unordered_map<Key, Object, loki::Hash<Key>, loki::EqualTo<Key>>;
 template<typename Value>

@@ -177,7 +177,7 @@ static Grammar eliminate_choices_in_rules(const Grammar& grammar)
 }
 
 template<ConceptOrRole D>
-class EliminateNonsolitaryTerminalsL2ConstructorOrNonTerminalVisitor : public CopyConstructorOrNonTerminalVisitor<D>
+class EliminateNestedConstructorsL2ConstructorOrNonTerminalVisitor : public CopyConstructorOrNonTerminalVisitor<D>
 {
 private:
     NonTerminalMap<std::string>& m_existing_nonterminals;
@@ -210,10 +210,10 @@ private:
     }
 
 public:
-    EliminateNonsolitaryTerminalsL2ConstructorOrNonTerminalVisitor(ConstructorRepositories& repositories,
-                                                                   StartSymbolsContainer& start_symbols,
-                                                                   DerivationRulesContainer& derivation_rules,
-                                                                   NonTerminalMap<std::string>& existing_nonterminals) :
+    EliminateNestedConstructorsL2ConstructorOrNonTerminalVisitor(ConstructorRepositories& repositories,
+                                                                 StartSymbolsContainer& start_symbols,
+                                                                 DerivationRulesContainer& derivation_rules,
+                                                                 NonTerminalMap<std::string>& existing_nonterminals) :
         CopyConstructorOrNonTerminalVisitor<D>(repositories, start_symbols, derivation_rules),
         m_existing_nonterminals(existing_nonterminals),
         m_next_index(0)
@@ -261,12 +261,12 @@ public:
 };
 
 template<ConceptOrRole D>
-class EliminateNonsolitaryTerminalsL1ConstructorOrNonTerminalVisitor : public CopyConstructorOrNonTerminalVisitor<D>
+class EliminateNestedConstructorsL1ConstructorOrNonTerminalVisitor : public CopyConstructorOrNonTerminalVisitor<D>
 {
 public:
-    EliminateNonsolitaryTerminalsL1ConstructorOrNonTerminalVisitor(ConstructorRepositories& repositories,
-                                                                   StartSymbolsContainer& start_symbols,
-                                                                   DerivationRulesContainer& derivation_rules) :
+    EliminateNestedConstructorsL1ConstructorOrNonTerminalVisitor(ConstructorRepositories& repositories,
+                                                                 StartSymbolsContainer& start_symbols,
+                                                                 DerivationRulesContainer& derivation_rules) :
         CopyConstructorOrNonTerminalVisitor<D>(repositories, start_symbols, derivation_rules)
     {
     }
@@ -313,12 +313,12 @@ static Grammar eliminate_nested_constructors(const Grammar& grammar)
     auto concept_visitor = CopyConstructorVisitor<Concept>(repositories, start_symbols, derivation_rules);
     auto role_visitor = CopyConstructorVisitor<Role>(repositories, start_symbols, derivation_rules);
     auto concept_or_nonterminal_l1_visitor =
-        EliminateNonsolitaryTerminalsL1ConstructorOrNonTerminalVisitor<Concept>(repositories, start_symbols, derivation_rules);
-    auto role_or_nonterminal_l1_visitor = EliminateNonsolitaryTerminalsL1ConstructorOrNonTerminalVisitor<Role>(repositories, start_symbols, derivation_rules);
+        EliminateNestedConstructorsL1ConstructorOrNonTerminalVisitor<Concept>(repositories, start_symbols, derivation_rules);
+    auto role_or_nonterminal_l1_visitor = EliminateNestedConstructorsL1ConstructorOrNonTerminalVisitor<Role>(repositories, start_symbols, derivation_rules);
     auto concept_or_nonterminal_l2_visitor =
-        EliminateNonsolitaryTerminalsL2ConstructorOrNonTerminalVisitor<Concept>(repositories, start_symbols, derivation_rules, nonterminal_map);
+        EliminateNestedConstructorsL2ConstructorOrNonTerminalVisitor<Concept>(repositories, start_symbols, derivation_rules, nonterminal_map);
     auto role_or_nonterminal_l2_visitor =
-        EliminateNonsolitaryTerminalsL2ConstructorOrNonTerminalVisitor<Role>(repositories, start_symbols, derivation_rules, nonterminal_map);
+        EliminateNestedConstructorsL2ConstructorOrNonTerminalVisitor<Role>(repositories, start_symbols, derivation_rules, nonterminal_map);
     auto concept_nonterminal_visitor = CopyNonTerminalVisitor<Concept>(repositories, start_symbols, derivation_rules);
     auto role_nonterminal_visitor = CopyNonTerminalVisitor<Role>(repositories, start_symbols, derivation_rules);
     auto concept_derivation_rule_visitor = CopyDerivationRuleVisitor<Concept>(repositories, start_symbols, derivation_rules);

@@ -27,6 +27,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cmath>
 #include <iostream>
 #include <loki/details/utils/hash.hpp>
 #include <map>

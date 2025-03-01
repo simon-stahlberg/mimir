@@ -67,15 +67,19 @@ Color GeneralizedColorFunction::get_color(Object object) const { return 0; }
 template<StaticOrFluentOrDerived P>
 Color GeneralizedColorFunction::get_color(GroundAtom<P> atom, size_t pos) const
 {
-    boost::hana::at_key(m_predicate_colors, boost::hana::type<Static> {}).at(atom->get_predicate());
+    return boost::hana::at_key(m_predicate_colors, boost::hana::type<P> {}).at(atom->get_predicate());
 }
+
+template Color GeneralizedColorFunction::get_color(GroundAtom<Static> atom, size_t pos) const;
+template Color GeneralizedColorFunction::get_color(GroundAtom<Fluent> atom, size_t pos) const;
+template Color GeneralizedColorFunction::get_color(GroundAtom<Derived> atom, size_t pos) const;
 
 template<StaticOrFluentOrDerived P>
 Color GeneralizedColorFunction::get_color(GroundLiteral<P> literal, size_t pos, State state, const ProblemImpl& problem, bool mark_true_goal_literal) const
 {
     bool is_satisfied_in_goal = state->literal_holds(literal);
     const auto literal_color_offset = (!mark_true_goal_literal || is_satisfied_in_goal) ? 1 : 2;
-    return boost::hana::at_key(m_predicate_colors, boost::hana::type<Static> {}).at(literal->get_atom()->get_predicate()) + literal_color_offset;
+    return boost::hana::at_key(m_predicate_colors, boost::hana::type<P> {}).at(literal->get_atom()->get_predicate()) + literal_color_offset;
 }
 
 template<>
@@ -85,6 +89,11 @@ Color GeneralizedColorFunction::get_color(GroundLiteral<Static> literal, size_t 
     const auto literal_color_offset = (!mark_true_goal_literal || is_satisfied_in_goal) ? 1 : 2;
     return boost::hana::at_key(m_predicate_colors, boost::hana::type<Static> {}).at(literal->get_atom()->get_predicate()) + literal_color_offset;
 }
+
+template Color
+GeneralizedColorFunction::get_color(GroundLiteral<Fluent> literal, size_t pos, State state, const ProblemImpl& problem, bool mark_true_goal_literal) const;
+template Color
+GeneralizedColorFunction::get_color(GroundLiteral<Derived> literal, size_t pos, State state, const ProblemImpl& problem, bool mark_true_goal_literal) const;
 
 const std::string& GeneralizedColorFunction::get_color_name(Color color) const { return m_color_to_name.at(color); }
 

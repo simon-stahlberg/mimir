@@ -30,6 +30,7 @@ class KnowledgeBase;
 class GeneralizedStateSpace;
 class TupleGraph;
 class TupleGraphCollection;
+class GeneralizedColorFunction;
 }
 
 #endif

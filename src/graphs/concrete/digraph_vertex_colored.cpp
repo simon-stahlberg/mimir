@@ -26,20 +26,17 @@ namespace mimir
  * Pretty printing
  */
 
-std::ostream& operator<<(std::ostream& out, const std::tuple<const StaticVertexColoredDigraph&, const ColorFunction&>& data)
+std::ostream& operator<<(std::ostream& out, const StaticVertexColoredDigraph& graph)
 {
-    const auto& [vertex_colored_digraph, color_function] = data;
-
     out << "digraph {\n";
-    for (const auto& vertex : vertex_colored_digraph.get_vertices())
+    for (const auto& vertex : graph.get_vertices())
     {
-        const auto& color_name = color_function.get_color_name(get_color(vertex));
         out << "t" << vertex.get_index() << "[";
-        out << "label=\"" << color_name << " (" << get_color(vertex) << ")" << "\"]\n";
+        out << "label=\"" << get_color(vertex) << "\"]\n";
     }
-    for (const auto& vertex : vertex_colored_digraph.get_vertices())
+    for (const auto& vertex : graph.get_vertices())
     {
-        for (const auto& succ_vertex : vertex_colored_digraph.template get_adjacent_vertices<ForwardTraversal>(vertex.get_index()))
+        for (const auto& succ_vertex : graph.template get_adjacent_vertices<ForwardTraversal>(vertex.get_index()))
         {
             out << "t" << vertex.get_index() << "->" << "t" << succ_vertex.get_index() << "\n";
         }

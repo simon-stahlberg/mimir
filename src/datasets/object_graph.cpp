@@ -17,6 +17,7 @@
 
 #include "mimir/datasets/object_graph.hpp"
 
+#include "mimir/datasets/generalized_color_function.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/state.hpp"
 
@@ -28,7 +29,7 @@ namespace mimir
  */
 
 static std::unordered_map<Object, VertexIndex>
-add_objects_graph_structures(State state, const ProblemImpl& problem, const ProblemColorFunction& color_function, StaticVertexColoredDigraph& out_digraph)
+add_objects_graph_structures(State state, const ProblemImpl& problem, const GeneralizedColorFunction& color_function, StaticVertexColoredDigraph& out_digraph)
 {
     std::unordered_map<Object, VertexIndex> object_to_vertex_index;
 
@@ -61,7 +62,7 @@ add_objects_graph_structures(State state, const ProblemImpl& problem, const Prob
 }
 
 template<StaticOrFluentOrDerived P>
-static void add_ground_atom_graph_structures(const ProblemColorFunction& color_function,
+static void add_ground_atom_graph_structures(const GeneralizedColorFunction& color_function,
                                              const std::unordered_map<Object, VertexIndex>& object_to_vertex_index,
                                              GroundAtom<P> atom,
                                              StaticVertexColoredDigraph& out_digraph)
@@ -80,7 +81,7 @@ static void add_ground_atom_graph_structures(const ProblemColorFunction& color_f
 
 static void add_ground_atoms_graph_structures(State state,
                                               const ProblemImpl& problem,
-                                              const ProblemColorFunction& color_function,
+                                              const GeneralizedColorFunction& color_function,
                                               const std::unordered_map<Object, VertexIndex>& object_to_vertex_index,
                                               StaticVertexColoredDigraph& out_digraph)
 {
@@ -100,7 +101,8 @@ static void add_ground_atoms_graph_structures(State state,
 
 template<StaticOrFluentOrDerived P>
 static void add_ground_literal_graph_structures(State state,
-                                                const ProblemColorFunction& color_function,
+                                                const ProblemImpl& problem,
+                                                const GeneralizedColorFunction& color_function,
                                                 const std::unordered_map<Object, VertexIndex>& object_to_vertex_index,
                                                 bool mark_true_goal_literals,
                                                 GroundLiteral<P> literal,
@@ -108,7 +110,7 @@ static void add_ground_literal_graph_structures(State state,
 {
     for (size_t pos = 0; pos < literal->get_atom()->get_arity(); ++pos)
     {
-        const auto vertex_color = color_function.get_color(state, literal, pos, mark_true_goal_literals);
+        const auto vertex_color = color_function.get_color(literal, pos, state, problem, mark_true_goal_literals);
         const auto vertex_index = out_digraph.add_vertex(vertex_color);
         out_digraph.add_undirected_edge(vertex_index, object_to_vertex_index.at(literal->get_atom()->get_objects().at(pos)));
         if (pos > 0)
@@ -120,27 +122,27 @@ static void add_ground_literal_graph_structures(State state,
 
 static void add_ground_goal_literals_graph_structures(State state,
                                                       const ProblemImpl& problem,
-                                                      const ProblemColorFunction& color_function,
+                                                      const GeneralizedColorFunction& color_function,
                                                       bool mark_true_goal_literals,
                                                       const std::unordered_map<Object, VertexIndex>& object_to_vertex_index,
                                                       StaticVertexColoredDigraph& out_digraph)
 {
     for (const auto& literal : problem.get_goal_condition<Static>())
     {
-        add_ground_literal_graph_structures(state, color_function, object_to_vertex_index, mark_true_goal_literals, literal, out_digraph);
+        add_ground_literal_graph_structures(state, problem, color_function, object_to_vertex_index, mark_true_goal_literals, literal, out_digraph);
     }
     for (const auto& literal : problem.get_goal_condition<Fluent>())
     {
-        add_ground_literal_graph_structures(state, color_function, object_to_vertex_index, mark_true_goal_literals, literal, out_digraph);
+        add_ground_literal_graph_structures(state, problem, color_function, object_to_vertex_index, mark_true_goal_literals, literal, out_digraph);
     }
     for (const auto& literal : problem.get_goal_condition<Derived>())
     {
-        add_ground_literal_graph_structures(state, color_function, object_to_vertex_index, mark_true_goal_literals, literal, out_digraph);
+        add_ground_literal_graph_structures(state, problem, color_function, object_to_vertex_index, mark_true_goal_literals, literal, out_digraph);
     }
 }
 
 StaticVertexColoredDigraph
-create_object_graph(State state, const ProblemImpl& problem, const ProblemColorFunction& color_function, bool mark_true_goal_literals)
+create_object_graph(State state, const ProblemImpl& problem, const GeneralizedColorFunction& color_function, bool mark_true_goal_literals)
 {
     // TODO: perhaps we could store a partially initialized object graph in the problem that we can simply copy? :)
 

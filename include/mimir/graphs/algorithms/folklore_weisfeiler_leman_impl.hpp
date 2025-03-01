@@ -28,6 +28,7 @@
 #include "mimir/graphs/graph_vertices.hpp"
 
 #include <cassert>
+#include <cmath>
 #include <loki/details/utils/hash.hpp>
 #include <map>
 #include <set>

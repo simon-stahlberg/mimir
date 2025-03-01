@@ -90,6 +90,7 @@
  * DataSet
  */
 
+#include "mimir/datasets/generalized_color_function.hpp"
 #include "mimir/datasets/generalized_state_space.hpp"
 #include "mimir/datasets/knowledge_base.hpp"
 #include "mimir/datasets/object_graph.hpp"
@@ -101,7 +102,6 @@
 
 #include "mimir/graphs/algorithms/color_refinement.hpp"
 #include "mimir/graphs/algorithms/folklore_weisfeiler_leman.hpp"
-#include "mimir/graphs/color_function.hpp"
 #include "mimir/graphs/concrete/digraph.hpp"
 #include "mimir/graphs/concrete/digraph_edge_colored.hpp"
 #include "mimir/graphs/concrete/digraph_vertex_colored.hpp"

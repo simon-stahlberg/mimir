@@ -19,6 +19,7 @@
 
 #include "mimir/algorithms/nauty.hpp"
 #include "mimir/common/timers.hpp"
+#include "mimir/datasets/generalized_color_function.hpp"
 #include "mimir/datasets/object_graph.hpp"
 #include "mimir/formalism/ground_action.hpp"
 #include "mimir/formalism/parser.hpp"
@@ -144,12 +145,12 @@ using CertificateList = std::vector<std::unique_ptr<const nauty_wrapper::Certifi
 
 struct SymmetriesData
 {
-    ProblemColorFunction color_function;
+    const GeneralizedColorFunction& color_function;
     CertificateSet equiv_classes;
     CertificateList per_state_equiv_class;
     StateSet representative_states;
 
-    explicit SymmetriesData(const ProblemImpl& problem) : color_function(ProblemColorFunction(problem)), equiv_classes(), per_state_equiv_class() {}
+    explicit SymmetriesData(const GeneralizedColorFunction& color_function) : color_function(color_function), equiv_classes(), per_state_equiv_class() {}
 };
 
 /// @brief `SymmetryStatePruning` extends the brfs pruning strategy by additionally pruning symmetric states.
@@ -369,7 +370,9 @@ public:
 };
 
 static std::optional<std::pair<ProblemStateSpace, CertificateList>>
-compute_problem_graph_with_symmetry_reduction(const SearchContext& context, const GeneralizedStateSpace::Options::ProblemSpecific& options)
+compute_problem_graph_with_symmetry_reduction(const SearchContext& context,
+                                              const GeneralizedColorFunction& color_function,
+                                              const GeneralizedStateSpace::Options::ProblemSpecific& options)
 {
     const auto& problem = *context.get_problem();
     const auto applicable_action_generator = context.get_applicable_action_generator();
@@ -387,7 +390,7 @@ compute_problem_graph_with_symmetry_reduction(const SearchContext& context, cons
     auto graph = StaticProblemGraph();
     auto goal_vertices = IndexSet {};
 
-    auto symm_data = SymmetriesData(problem);
+    auto symm_data = SymmetriesData(color_function);
 
     auto goal_test = std::make_shared<ProblemGoal>(context.get_problem());
     auto event_handler = std::make_shared<SymmetryReducedProblemGraphBrFSAlgorithmEventHandler>(options, graph, goal_vertices, symm_data, false);
@@ -463,8 +466,6 @@ static std::optional<ProblemStateSpace> compute_problem_graph_without_symmetry_r
     auto graph = StaticProblemGraph();
     auto goal_vertices = IndexSet {};
 
-    auto symm_data = options.symmetry_pruning ? std::optional<SymmetriesData>(problem) : std::nullopt;
-
     auto goal_test = std::make_shared<ProblemGoal>(context.get_problem());
     auto event_handler = std::make_shared<ProblemGraphBrFSAlgorithmEventHandler>(options, graph, goal_vertices, false);
     auto pruning_strategy = std::make_shared<DuplicateStatePruning>();
@@ -522,10 +523,12 @@ static std::optional<ProblemStateSpace> compute_problem_graph_without_symmetry_r
 static std::vector<std::tuple<ProblemStateSpace, CertificateList, SearchContext>>
 compute_problem_graphs_with_symmetry_reduction(const GeneralizedSearchContext& context, const GeneralizedStateSpace::Options::ProblemSpecific& options)
 {
+    auto color_function = GeneralizedColorFunction(context.get_generalized_problem());
+
     auto problem_graphs = std::vector<std::tuple<ProblemStateSpace, CertificateList, SearchContext>> {};
     for (const auto& search_context : context.get_search_contexts())
     {
-        auto result = compute_problem_graph_with_symmetry_reduction(search_context, options);
+        auto result = compute_problem_graph_with_symmetry_reduction(search_context, color_function, options);
 
         if (!result)
         {
