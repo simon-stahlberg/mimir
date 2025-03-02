@@ -27,75 +27,8 @@
 #include <memory>
 #include <vector>
 
-namespace mimir::dl
+namespace mimir::dl::grammar
 {
-
-/**
- * GrammarVisitor
- */
-
-template<ConceptOrRole D>
-class GrammarConstructorVisitor : public ConstructorVisitor<D>
-{
-};
-
-template<>
-class GrammarConstructorVisitor<Concept> : public ConstructorVisitor<Concept>
-{
-protected:
-    // Default implementations always return false
-    bool m_result = false;
-
-public:
-    /* Concepts */
-    void visit(ConceptBot constructor) override {}
-    void visit(ConceptTop constructor) override {}
-    void visit(ConceptAtomicState<Static> constructor) override {}
-    void visit(ConceptAtomicState<Fluent> constructor) override {}
-    void visit(ConceptAtomicState<Derived> constructor) override {}
-    void visit(ConceptAtomicGoal<Static> constructor) override {}
-    void visit(ConceptAtomicGoal<Fluent> constructor) override {}
-    void visit(ConceptAtomicGoal<Derived> constructor) override {}
-    void visit(ConceptIntersection constructor) override {}
-    void visit(ConceptUnion constructor) override {}
-    void visit(ConceptNegation constructor) override {}
-    void visit(ConceptValueRestriction constructor) override {}
-    void visit(ConceptExistentialQuantification constructor) override {}
-    void visit(ConceptRoleValueMapContainment constructor) override {}
-    void visit(ConceptRoleValueMapEquality constructor) override {}
-    void visit(ConceptNominal constructor) override {}
-
-    bool get_result() const { return m_result; }
-};
-
-template<>
-class GrammarConstructorVisitor<Role> : public ConstructorVisitor<Role>
-{
-protected:
-    // Default implementations always return false
-    bool m_result = false;
-
-public:
-    /* Roles */
-    void visit(RoleUniversal constructor) override {}
-    void visit(RoleAtomicState<Static> constructor) override {}
-    void visit(RoleAtomicState<Fluent> constructor) override {}
-    void visit(RoleAtomicState<Derived> constructor) override {}
-    void visit(RoleAtomicGoal<Static> constructor) override {}
-    void visit(RoleAtomicGoal<Fluent> constructor) override {}
-    void visit(RoleAtomicGoal<Derived> constructor) override {}
-    void visit(RoleIntersection constructor) override {}
-    void visit(RoleUnion constructor) override {}
-    void visit(RoleComplement constructor) override {}
-    void visit(RoleInverse constructor) override {}
-    void visit(RoleComposition constructor) override {}
-    void visit(RoleTransitiveClosure constructor) override {}
-    void visit(RoleReflexiveTransitiveClosure constructor) override {}
-    void visit(RoleRestriction constructor) override {}
-    void visit(RoleIdentity constructor) override {}
-
-    bool get_result() const { return m_result; }
-};
 
 /**
  * ConceptVisitors
@@ -104,147 +37,147 @@ public:
 class ConceptBotGrammarVisitor : public GrammarConstructorVisitor<Concept>
 {
 private:
-    [[maybe_unused]] grammar::ConceptBot m_grammar_constructor;
-    [[maybe_unused]] const grammar::Grammar& m_grammar;
+    [[maybe_unused]] ConceptBot m_grammar_constructor;
+    [[maybe_unused]] const Grammar& m_grammar;
 
 public:
-    explicit ConceptBotGrammarVisitor(grammar::ConceptBot grammar_constructor, const grammar::Grammar& grammar);
+    explicit ConceptBotGrammarVisitor(ConceptBot grammar_constructor, const Grammar& grammar);
 
-    void visit(ConceptBot constructor) override;
+    void visit(dl::ConceptBot constructor) override;
 };
 
 class ConceptTopGrammarVisitor : public GrammarConstructorVisitor<Concept>
 {
 private:
-    [[maybe_unused]] grammar::ConceptTop m_grammar_constructor;
-    [[maybe_unused]] const grammar::Grammar& m_grammar;
+    [[maybe_unused]] ConceptTop m_grammar_constructor;
+    [[maybe_unused]] const Grammar& m_grammar;
 
 public:
-    explicit ConceptTopGrammarVisitor(grammar::ConceptTop grammar_constructor, const grammar::Grammar& grammar);
+    explicit ConceptTopGrammarVisitor(ConceptTop grammar_constructor, const Grammar& grammar);
 
-    void visit(ConceptTop constructor) override;
+    void visit(dl::ConceptTop constructor) override;
 };
 
 template<StaticOrFluentOrDerived P>
 class ConceptAtomicStateGrammarVisitor : public GrammarConstructorVisitor<Concept>
 {
 private:
-    grammar::ConceptAtomicState<P> m_grammar_constructor;
-    const grammar::Grammar& m_grammar;
+    ConceptAtomicState<P> m_grammar_constructor;
+    const Grammar& m_grammar;
 
 public:
-    explicit ConceptAtomicStateGrammarVisitor(grammar::ConceptAtomicState<P> grammar_constructor, const grammar::Grammar& grammar);
+    explicit ConceptAtomicStateGrammarVisitor(ConceptAtomicState<P> grammar_constructor, const Grammar& grammar);
 
-    void visit(ConceptAtomicState<P> constructor) override;
+    void visit(dl::ConceptAtomicState<P> constructor) override;
 };
 
 template<StaticOrFluentOrDerived P>
 class ConceptAtomicGoalGrammarVisitor : public GrammarConstructorVisitor<Concept>
 {
 private:
-    grammar::ConceptAtomicGoal<P> m_grammar_constructor;
-    const grammar::Grammar& m_grammar;
+    ConceptAtomicGoal<P> m_grammar_constructor;
+    const Grammar& m_grammar;
 
 public:
-    explicit ConceptAtomicGoalGrammarVisitor(grammar::ConceptAtomicGoal<P> grammar_constructor, const grammar::Grammar& grammar);
+    explicit ConceptAtomicGoalGrammarVisitor(ConceptAtomicGoal<P> grammar_constructor, const Grammar& grammar);
 
-    void visit(ConceptAtomicGoal<P> constructor) override;
+    void visit(dl::ConceptAtomicGoal<P> constructor) override;
 };
 
 class ConceptIntersectionGrammarVisitor : public GrammarConstructorVisitor<Concept>
 {
 private:
-    grammar::ConceptIntersection m_grammar_constructor;
-    const grammar::Grammar& m_grammar;
+    ConceptIntersection m_grammar_constructor;
+    const Grammar& m_grammar;
 
 public:
-    explicit ConceptIntersectionGrammarVisitor(grammar::ConceptIntersection grammar_constructor, const grammar::Grammar& grammar);
+    explicit ConceptIntersectionGrammarVisitor(ConceptIntersection grammar_constructor, const Grammar& grammar);
 
-    void visit(ConceptIntersection constructor) override;
+    void visit(dl::ConceptIntersection constructor) override;
 };
 
 class ConceptUnionGrammarVisitor : public GrammarConstructorVisitor<Concept>
 {
 private:
-    grammar::ConceptUnion m_grammar_constructor;
-    const grammar::Grammar& m_grammar;
+    ConceptUnion m_grammar_constructor;
+    const Grammar& m_grammar;
 
 public:
-    explicit ConceptUnionGrammarVisitor(grammar::ConceptUnion grammar_constructor, const grammar::Grammar& grammar);
+    explicit ConceptUnionGrammarVisitor(ConceptUnion grammar_constructor, const Grammar& grammar);
 
-    void visit(ConceptUnion constructor) override;
+    void visit(dl::ConceptUnion constructor) override;
 };
 
 class ConceptNegationGrammarVisitor : public GrammarConstructorVisitor<Concept>
 {
 private:
-    grammar::ConceptNegation m_grammar_constructor;
-    const grammar::Grammar& m_grammar;
+    ConceptNegation m_grammar_constructor;
+    const Grammar& m_grammar;
 
 public:
-    explicit ConceptNegationGrammarVisitor(grammar::ConceptNegation grammar_constructor, const grammar::Grammar& grammar);
+    explicit ConceptNegationGrammarVisitor(ConceptNegation grammar_constructor, const Grammar& grammar);
 
-    void visit(ConceptNegation constructor) override;
+    void visit(dl::ConceptNegation constructor) override;
 };
 
 class ConceptValueRestrictionGrammarVisitor : public GrammarConstructorVisitor<Concept>
 {
 private:
-    grammar::ConceptValueRestriction m_grammar_constructor;
-    const grammar::Grammar& m_grammar;
+    ConceptValueRestriction m_grammar_constructor;
+    const Grammar& m_grammar;
 
 public:
-    explicit ConceptValueRestrictionGrammarVisitor(grammar::ConceptValueRestriction grammar_constructor, const grammar::Grammar& grammar);
+    explicit ConceptValueRestrictionGrammarVisitor(ConceptValueRestriction grammar_constructor, const Grammar& grammar);
 
-    void visit(ConceptValueRestriction constructor) override;
+    void visit(dl::ConceptValueRestriction constructor) override;
 };
 
 class ConceptExistentialQuantificationGrammarVisitor : public GrammarConstructorVisitor<Concept>
 {
 private:
-    grammar::ConceptExistentialQuantification m_grammar_constructor;
-    const grammar::Grammar& m_grammar;
+    ConceptExistentialQuantification m_grammar_constructor;
+    const Grammar& m_grammar;
 
 public:
-    explicit ConceptExistentialQuantificationGrammarVisitor(grammar::ConceptExistentialQuantification grammar_constructor, const grammar::Grammar& grammar);
+    explicit ConceptExistentialQuantificationGrammarVisitor(ConceptExistentialQuantification grammar_constructor, const Grammar& grammar);
 
-    void visit(ConceptExistentialQuantification constructor) override;
+    void visit(dl::ConceptExistentialQuantification constructor) override;
 };
 
 class ConceptRoleValueMapContainmentGrammarVisitor : public GrammarConstructorVisitor<Concept>
 {
 private:
-    grammar::ConceptRoleValueMapContainment m_grammar_constructor;
-    const grammar::Grammar& m_grammar;
+    ConceptRoleValueMapContainment m_grammar_constructor;
+    const Grammar& m_grammar;
 
 public:
-    explicit ConceptRoleValueMapContainmentGrammarVisitor(grammar::ConceptRoleValueMapContainment grammar_constructor, const grammar::Grammar& grammar);
+    explicit ConceptRoleValueMapContainmentGrammarVisitor(ConceptRoleValueMapContainment grammar_constructor, const Grammar& grammar);
 
-    void visit(ConceptRoleValueMapContainment constructor) override;
+    void visit(dl::ConceptRoleValueMapContainment constructor) override;
 };
 
 class ConceptRoleValueMapEqualityGrammarVisitor : public GrammarConstructorVisitor<Concept>
 {
 private:
-    grammar::ConceptRoleValueMapEquality m_grammar_constructor;
-    const grammar::Grammar& m_grammar;
+    ConceptRoleValueMapEquality m_grammar_constructor;
+    const Grammar& m_grammar;
 
 public:
-    explicit ConceptRoleValueMapEqualityGrammarVisitor(grammar::ConceptRoleValueMapEquality grammar_constructor, const grammar::Grammar& grammar);
+    explicit ConceptRoleValueMapEqualityGrammarVisitor(ConceptRoleValueMapEquality grammar_constructor, const Grammar& grammar);
 
-    void visit(ConceptRoleValueMapEquality constructor) override;
+    void visit(dl::ConceptRoleValueMapEquality constructor) override;
 };
 
 class ConceptNominalGrammarVisitor : public GrammarConstructorVisitor<Concept>
 {
 private:
-    [[maybe_unused]] grammar::ConceptNominal m_grammar_constructor;
-    [[maybe_unused]] const grammar::Grammar& m_grammar;
+    [[maybe_unused]] ConceptNominal m_grammar_constructor;
+    [[maybe_unused]] const Grammar& m_grammar;
 
 public:
-    explicit ConceptNominalGrammarVisitor(grammar::ConceptNominal grammar_constructor, const grammar::Grammar& grammar);
+    explicit ConceptNominalGrammarVisitor(ConceptNominal grammar_constructor, const Grammar& grammar);
 
-    void visit(ConceptNominal constructor) override;
+    void visit(dl::ConceptNominal constructor) override;
 };
 
 /**
@@ -254,147 +187,147 @@ public:
 class RoleUniversalGrammarVisitor : public GrammarConstructorVisitor<Role>
 {
 private:
-    [[maybe_unused]] grammar::RoleUniversal m_grammar_constructor;
-    [[maybe_unused]] const grammar::Grammar& m_grammar;
+    [[maybe_unused]] RoleUniversal m_grammar_constructor;
+    [[maybe_unused]] const Grammar& m_grammar;
 
 public:
-    explicit RoleUniversalGrammarVisitor(grammar::RoleUniversal grammar_constructor, const grammar::Grammar& grammar);
+    explicit RoleUniversalGrammarVisitor(RoleUniversal grammar_constructor, const Grammar& grammar);
 
-    void visit(RoleUniversal constructor) override;
+    void visit(dl::RoleUniversal constructor) override;
 };
 
 template<StaticOrFluentOrDerived P>
 class RoleAtomicStateGrammarVisitor : public GrammarConstructorVisitor<Role>
 {
 private:
-    grammar::RoleAtomicState<P> m_grammar_constructor;
-    const grammar::Grammar& m_grammar;
+    RoleAtomicState<P> m_grammar_constructor;
+    const Grammar& m_grammar;
 
 public:
-    explicit RoleAtomicStateGrammarVisitor(grammar::RoleAtomicState<P> grammar_constructor, const grammar::Grammar& grammar);
+    explicit RoleAtomicStateGrammarVisitor(RoleAtomicState<P> grammar_constructor, const Grammar& grammar);
 
-    void visit(RoleAtomicState<P> constructor) override;
+    void visit(dl::RoleAtomicState<P> constructor) override;
 };
 
 template<StaticOrFluentOrDerived P>
 class RoleAtomicGoalGrammarVisitor : public GrammarConstructorVisitor<Role>
 {
 private:
-    grammar::RoleAtomicGoal<P> m_grammar_constructor;
-    const grammar::Grammar& m_grammar;
+    RoleAtomicGoal<P> m_grammar_constructor;
+    const Grammar& m_grammar;
 
 public:
-    explicit RoleAtomicGoalGrammarVisitor(grammar::RoleAtomicGoal<P> grammar_constructor, const grammar::Grammar& grammar);
+    explicit RoleAtomicGoalGrammarVisitor(RoleAtomicGoal<P> grammar_constructor, const Grammar& grammar);
 
-    void visit(RoleAtomicGoal<P> constructor) override;
+    void visit(dl::RoleAtomicGoal<P> constructor) override;
 };
 
 class RoleIntersectionGrammarVisitor : public GrammarConstructorVisitor<Role>
 {
 private:
-    grammar::RoleIntersection m_grammar_constructor;
-    const grammar::Grammar& m_grammar;
+    RoleIntersection m_grammar_constructor;
+    const Grammar& m_grammar;
 
 public:
-    explicit RoleIntersectionGrammarVisitor(grammar::RoleIntersection grammar_constructor, const grammar::Grammar& grammar);
+    explicit RoleIntersectionGrammarVisitor(RoleIntersection grammar_constructor, const Grammar& grammar);
 
-    void visit(RoleIntersection constructor) override;
+    void visit(dl::RoleIntersection constructor) override;
 };
 
 class RoleUnionGrammarVisitor : public GrammarConstructorVisitor<Role>
 {
 private:
-    grammar::RoleUnion m_grammar_constructor;
-    const grammar::Grammar& m_grammar;
+    RoleUnion m_grammar_constructor;
+    const Grammar& m_grammar;
 
 public:
-    explicit RoleUnionGrammarVisitor(grammar::RoleUnion grammar_constructor, const grammar::Grammar& grammar);
+    explicit RoleUnionGrammarVisitor(RoleUnion grammar_constructor, const Grammar& grammar);
 
-    void visit(RoleUnion constructor) override;
+    void visit(dl::RoleUnion constructor) override;
 };
 
 class RoleComplementGrammarVisitor : public GrammarConstructorVisitor<Role>
 {
 private:
-    grammar::RoleComplement m_grammar_constructor;
-    const grammar::Grammar& m_grammar;
+    RoleComplement m_grammar_constructor;
+    const Grammar& m_grammar;
 
 public:
-    explicit RoleComplementGrammarVisitor(grammar::RoleComplement grammar_constructor, const grammar::Grammar& grammar);
+    explicit RoleComplementGrammarVisitor(RoleComplement grammar_constructor, const Grammar& grammar);
 
-    void visit(RoleComplement constructor) override;
+    void visit(dl::RoleComplement constructor) override;
 };
 
 class RoleInverseGrammarVisitor : public GrammarConstructorVisitor<Role>
 {
 private:
-    grammar::RoleInverse m_grammar_constructor;
-    const grammar::Grammar& m_grammar;
+    RoleInverse m_grammar_constructor;
+    const Grammar& m_grammar;
 
 public:
-    explicit RoleInverseGrammarVisitor(grammar::RoleInverse grammar_constructor, const grammar::Grammar& grammar);
+    explicit RoleInverseGrammarVisitor(RoleInverse grammar_constructor, const Grammar& grammar);
 
-    void visit(RoleInverse constructor) override;
+    void visit(dl::RoleInverse constructor) override;
 };
 
 class RoleCompositionGrammarVisitor : public GrammarConstructorVisitor<Role>
 {
 private:
-    grammar::RoleComposition m_grammar_constructor;
-    const grammar::Grammar& m_grammar;
+    RoleComposition m_grammar_constructor;
+    const Grammar& m_grammar;
 
 public:
-    explicit RoleCompositionGrammarVisitor(grammar::RoleComposition grammar_constructor, const grammar::Grammar& grammar);
+    explicit RoleCompositionGrammarVisitor(RoleComposition grammar_constructor, const Grammar& grammar);
 
-    void visit(RoleComposition constructor) override;
+    void visit(dl::RoleComposition constructor) override;
 };
 
 class RoleTransitiveClosureGrammarVisitor : public GrammarConstructorVisitor<Role>
 {
 private:
-    grammar::RoleTransitiveClosure m_grammar_constructor;
-    const grammar::Grammar& m_grammar;
+    RoleTransitiveClosure m_grammar_constructor;
+    const Grammar& m_grammar;
 
 public:
-    explicit RoleTransitiveClosureGrammarVisitor(grammar::RoleTransitiveClosure grammar_constructor, const grammar::Grammar& grammar);
+    explicit RoleTransitiveClosureGrammarVisitor(RoleTransitiveClosure grammar_constructor, const Grammar& grammar);
 
-    void visit(RoleTransitiveClosure constructor) override;
+    void visit(dl::RoleTransitiveClosure constructor) override;
 };
 
 class RoleReflexiveTransitiveClosureGrammarVisitor : public GrammarConstructorVisitor<Role>
 {
 private:
-    grammar::RoleReflexiveTransitiveClosure m_grammar_constructor;
-    const grammar::Grammar& m_grammar;
+    RoleReflexiveTransitiveClosure m_grammar_constructor;
+    const Grammar& m_grammar;
 
 public:
-    explicit RoleReflexiveTransitiveClosureGrammarVisitor(grammar::RoleReflexiveTransitiveClosure grammar_constructor, const grammar::Grammar& grammar);
+    explicit RoleReflexiveTransitiveClosureGrammarVisitor(RoleReflexiveTransitiveClosure grammar_constructor, const Grammar& grammar);
 
-    void visit(RoleReflexiveTransitiveClosure constructor) override;
+    void visit(dl::RoleReflexiveTransitiveClosure constructor) override;
 };
 
 class RoleRestrictionGrammarVisitor : public GrammarConstructorVisitor<Role>
 {
 private:
-    grammar::RoleRestriction m_grammar_constructor;
-    const grammar::Grammar& m_grammar;
+    RoleRestriction m_grammar_constructor;
+    const Grammar& m_grammar;
 
 public:
-    explicit RoleRestrictionGrammarVisitor(grammar::RoleRestriction grammar_constructor, const grammar::Grammar& grammar);
+    explicit RoleRestrictionGrammarVisitor(RoleRestriction grammar_constructor, const Grammar& grammar);
 
-    void visit(RoleRestriction constructor) override;
+    void visit(dl::RoleRestriction constructor) override;
 };
 
 class RoleIdentityGrammarVisitor : public GrammarConstructorVisitor<Role>
 {
 private:
-    grammar::RoleIdentity m_grammar_constructor;
-    const grammar::Grammar& m_grammar;
+    RoleIdentity m_grammar_constructor;
+    const Grammar& m_grammar;
 
 public:
-    explicit RoleIdentityGrammarVisitor(grammar::RoleIdentity grammar_constructor, const grammar::Grammar& grammar);
+    explicit RoleIdentityGrammarVisitor(RoleIdentity grammar_constructor, const Grammar& grammar);
 
-    void visit(RoleIdentity constructor) override;
+    void visit(dl::RoleIdentity constructor) override;
 };
 
 }

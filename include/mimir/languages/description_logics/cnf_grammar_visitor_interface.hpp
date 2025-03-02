@@ -41,6 +41,32 @@ public:
 };
 
 /**
+ * DerivationRule
+ */
+
+template<ConceptOrRole D, PrimitiveOrComposite C>
+class DerivationRuleVisitor
+{
+public:
+    virtual ~DerivationRuleVisitor() = default;
+
+    virtual void visit(DerivationRule<D, C> rule) = 0;
+};
+
+/**
+ * SubstitutionRule
+ */
+
+template<ConceptOrRole D>
+class SubstitutionRuleVisitor
+{
+public:
+    virtual ~SubstitutionRuleVisitor() = 0;
+
+    virtual void visit(SubstitutionRule<D> rule) = 0;
+};
+
+/**
  * Constructors
  */
 

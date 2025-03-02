@@ -23,6 +23,9 @@
 #include "mimir/languages/description_logics/grammar_constructor_repositories.hpp"
 
 #include <loki/loki.hpp>
+#include <optional>
+#include <unordered_map>
+#include <utility>
 
 namespace mimir::dl::cnf_grammar
 {
@@ -32,19 +35,16 @@ using HanaStartSymbols = boost::hana::map<boost::hana::pair<boost::hana::type<Co
 using HanaDerivationRules = boost::hana::map<
     boost::hana::pair<
         boost::hana::type<Concept>,
-        boost::hana::map<boost::hana::pair<boost::hana::type<Primitive>, std::unordered_map<NonTerminal<Concept>, ConstructorSet<Concept, Primitive>>>,
-                         boost::hana::pair<boost::hana::type<Composite>, std::unordered_map<NonTerminal<Concept>, ConstructorSet<Concept, Composite>>>>>,
+        boost::hana::map<boost::hana::pair<boost::hana::type<Primitive>, std::unordered_map<NonTerminal<Concept>, DerivationRuleSet<Concept, Primitive>>>,
+                         boost::hana::pair<boost::hana::type<Composite>, std::unordered_map<NonTerminal<Concept>, DerivationRuleSet<Concept, Composite>>>>>,
     boost::hana::pair<
         boost::hana::type<Role>,
-        boost::hana::map<boost::hana::pair<boost::hana::type<Primitive>, std::unordered_map<NonTerminal<Role>, ConstructorSet<Role, Primitive>>>,
-                         boost::hana::pair<boost::hana::type<Composite>, std::unordered_map<NonTerminal<Role>, ConstructorSet<Role, Composite>>>>>>;
+        boost::hana::map<boost::hana::pair<boost::hana::type<Primitive>, std::unordered_map<NonTerminal<Role>, DerivationRuleSet<Role, Primitive>>>,
+                         boost::hana::pair<boost::hana::type<Composite>, std::unordered_map<NonTerminal<Role>, DerivationRuleSet<Role, Composite>>>>>>;
 
-template<ConceptOrRole D>
-using SubstitutionRule = std::pair<NonTerminal<D>, NonTerminal<D>>;
-template<ConceptOrRole D>
-using SubstitutionRuleList = std::vector<SubstitutionRule<D>>;
-using HanaSubstitutionRules = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, SubstitutionRuleList<Concept>>,
-                                               boost::hana::pair<boost::hana::type<Role>, SubstitutionRuleList<Role>>>;
+using HanaSubstitutionRules =
+    boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::unordered_map<NonTerminal<Concept>, SubstitutionRuleSet<Concept>>>,
+                     boost::hana::pair<boost::hana::type<Role>, std::unordered_map<NonTerminal<Role>, SubstitutionRuleSet<Role>>>>;
 
 class StartSymbolsContainer
 {
@@ -101,10 +101,9 @@ public:
      */
 
     template<ConceptOrRole D, PrimitiveOrComposite C>
-    auto insert(ConstructorSet<D, C> rule)
+    auto insert(DerivationRule<D, C> rule)
     {
-        return boost::hana::at_key(boost::hana::at_key(m_derivation_rules, boost::hana::type<D> {}), boost::hana::type<C> {})[rule->get_non_terminal()].insert(
-            rule);
+        return boost::hana::at_key(boost::hana::at_key(m_derivation_rules, boost::hana::type<D> {}), boost::hana::type<C> {})[rule->get_head()].insert(rule);
     }
 
     /**
@@ -112,7 +111,7 @@ public:
      */
 
     template<ConceptOrRole D, PrimitiveOrComposite C>
-    const ConstructorSet<D, C>& get(NonTerminal<D> non_terminal) const
+    const std::unordered_map<NonTerminal<D>, DerivationRuleSet<D, C>>& get(NonTerminal<D> non_terminal) const
     {
         return boost::hana::at_key(boost::hana::at_key(m_derivation_rules, boost::hana::type<D> {}), boost::hana::type<C> {}).at(non_terminal);
     }
@@ -138,9 +137,9 @@ public:
      */
 
     template<ConceptOrRole D>
-    auto push_back(SubstitutionRule<D> substitution_rule)
+    auto insert(SubstitutionRule<D> substitution_rule)
     {
-        boost::hana::at_key(m_substitution_rules, boost::hana::type<D> {}).push_back(substitution_rule);
+        return boost::hana::at_key(m_substitution_rules, boost::hana::type<D> {})[substitution_rule->get_head()].insert(substitution_rule);
     }
 
     /**
@@ -148,7 +147,7 @@ public:
      */
 
     template<ConceptOrRole D>
-    const SubstitutionRuleList<D>& get() const
+    const std::unordered_map<NonTerminal<D>, SubstitutionRuleSet<D>>& get() const
     {
         return boost::hana::at_key(m_substitution_rules, boost::hana::type<D> {});
     }

@@ -268,6 +268,33 @@ class ConstructorRepositories;
 
 namespace cnf_grammar
 {
+
+/* NonTerminal */
+template<dl::ConceptOrRole D>
+class NonTerminalImpl;
+template<dl::ConceptOrRole D>
+using NonTerminal = const NonTerminalImpl<D>*;
+
+/* DerivationRule */
+template<dl::ConceptOrRole D, PrimitiveOrComposite C>
+class DerivationRuleImpl;
+template<dl::ConceptOrRole D, PrimitiveOrComposite C>
+using DerivationRule = const DerivationRuleImpl<D, C>*;
+template<dl::ConceptOrRole D, PrimitiveOrComposite C>
+using DerivationRuleList = std::vector<DerivationRule<D, C>>;
+template<dl::ConceptOrRole D, PrimitiveOrComposite C>
+using DerivationRuleSet = std::unordered_set<DerivationRule<D, C>>;
+
+/* SubstitutionRule */
+template<dl::ConceptOrRole D>
+class SubstitutionRuleImpl;
+template<dl::ConceptOrRole D>
+using SubstitutionRule = const SubstitutionRuleImpl<D>*;
+template<dl::ConceptOrRole D>
+using SubstitutionRuleList = std::vector<SubstitutionRule<D>>;
+template<dl::ConceptOrRole D>
+using SubstitutionRuleSet = std::unordered_set<SubstitutionRule<D>>;
+
 /**
  * Constructors
  */
@@ -281,12 +308,6 @@ template<dl::ConceptOrRole D, PrimitiveOrComposite C>
 using ConstructorList = std::vector<Constructor<D, C>>;
 template<dl::ConceptOrRole D, PrimitiveOrComposite C>
 using ConstructorSet = std::unordered_set<Constructor<D, C>>;
-
-/* NonTerminal */
-template<dl::ConceptOrRole D>
-class NonTerminalImpl;
-template<dl::ConceptOrRole D>
-using NonTerminal = const NonTerminalImpl<D>*;
 
 /* Concrete concepts */
 class ConceptTopImpl;
@@ -357,6 +378,14 @@ class ConstructorVisitor;
 
 template<ConceptOrRole D>
 class NonTerminalVisitor;
+
+template<ConceptOrRole D, PrimitiveOrComposite C>
+class DerivationRuleVisitor;
+
+template<ConceptOrRole D>
+class SubstitutionRuleVisitor;
+
+class GrammarVisitor;
 
 /**
  * Grammar

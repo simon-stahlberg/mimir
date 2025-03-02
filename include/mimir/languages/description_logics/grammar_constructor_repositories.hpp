@@ -142,19 +142,19 @@ public:
     ConceptAtomicState<P> get_or_create_concept_atomic_state(Predicate<P> predicate);
     template<StaticOrFluentOrDerived P>
     ConceptAtomicGoal<P> get_or_create_concept_atomic_goal(Predicate<P> predicate, bool is_negated);
-    ConceptIntersection get_or_create_concept_intersection(ConstructorOrNonTerminal<Concept> concept_or_non_terminal_left,
-                                                           ConstructorOrNonTerminal<Concept> concept_or_non_terminal_right);
-    ConceptUnion get_or_create_concept_union(ConstructorOrNonTerminal<Concept> concept_or_non_terminal_left,
-                                             ConstructorOrNonTerminal<Concept> concept_or_non_terminal_right);
-    ConceptNegation get_or_create_concept_negation(ConstructorOrNonTerminal<Concept> concept_or_non_terminal);
-    ConceptValueRestriction get_or_create_concept_value_restriction(ConstructorOrNonTerminal<Role> role_or_non_terminal,
-                                                                    ConstructorOrNonTerminal<Concept> concept_or_non_terminal);
-    ConceptExistentialQuantification get_or_create_concept_existential_quantification(ConstructorOrNonTerminal<Role> role_or_non_terminal,
-                                                                                      ConstructorOrNonTerminal<Concept> concept_or_non_terminal);
-    ConceptRoleValueMapContainment get_or_create_concept_role_value_map_containment(ConstructorOrNonTerminal<Role> role_or_non_terminal_left,
-                                                                                    ConstructorOrNonTerminal<Role> role_or_non_terminal_right);
-    ConceptRoleValueMapEquality get_or_create_concept_role_value_map_equality(ConstructorOrNonTerminal<Role> role_or_non_terminal_left,
-                                                                              ConstructorOrNonTerminal<Role> role_or_non_terminal_right);
+    ConceptIntersection get_or_create_concept_intersection(ConstructorOrNonTerminal<Concept> left_concept_or_nonterminal,
+                                                           ConstructorOrNonTerminal<Concept> right_concept_or_nonterminal);
+    ConceptUnion get_or_create_concept_union(ConstructorOrNonTerminal<Concept> left_concept_or_nonterminal,
+                                             ConstructorOrNonTerminal<Concept> right_concept_or_nonterminal);
+    ConceptNegation get_or_create_concept_negation(ConstructorOrNonTerminal<Concept> concept_or_nonterminal);
+    ConceptValueRestriction get_or_create_concept_value_restriction(ConstructorOrNonTerminal<Role> role_or_nonterminal,
+                                                                    ConstructorOrNonTerminal<Concept> concept_or_nonterminal);
+    ConceptExistentialQuantification get_or_create_concept_existential_quantification(ConstructorOrNonTerminal<Role> role_or_nonterminal,
+                                                                                      ConstructorOrNonTerminal<Concept> concept_or_nonterminal);
+    ConceptRoleValueMapContainment get_or_create_concept_role_value_map_containment(ConstructorOrNonTerminal<Role> left_role_or_nonterminal,
+                                                                                    ConstructorOrNonTerminal<Role> right_role_or_nonterminal);
+    ConceptRoleValueMapEquality get_or_create_concept_role_value_map_equality(ConstructorOrNonTerminal<Role> left_role_or_nonterminal,
+                                                                              ConstructorOrNonTerminal<Role> right_role_or_nonterminal);
     ConceptNominal get_or_create_concept_nominal(Object object);
 
     /* Roles */
@@ -163,18 +163,18 @@ public:
     RoleAtomicState<P> get_or_create_role_atomic_state(Predicate<P> predicate);
     template<StaticOrFluentOrDerived P>
     RoleAtomicGoal<P> get_or_create_role_atomic_goal(Predicate<P> predicate, bool is_negated);
-    RoleIntersection get_or_create_role_intersection(ConstructorOrNonTerminal<Role> role_or_non_terminal_left,
-                                                     ConstructorOrNonTerminal<Role> role_or_non_terminal_right);
-    RoleUnion get_or_create_role_union(ConstructorOrNonTerminal<Role> role_or_non_terminal_left, ConstructorOrNonTerminal<Role> role_or_non_terminal_right);
-    RoleComplement get_or_create_role_complement(ConstructorOrNonTerminal<Role> role_or_non_terminal);
-    RoleInverse get_or_create_role_inverse(ConstructorOrNonTerminal<Role> role_or_non_terminal);
-    RoleComposition get_or_create_role_composition(ConstructorOrNonTerminal<Role> role_or_non_terminal_left,
-                                                   ConstructorOrNonTerminal<Role> role_or_non_terminal_right);
-    RoleTransitiveClosure get_or_create_role_transitive_closure(ConstructorOrNonTerminal<Role> role_or_non_terminal);
-    RoleReflexiveTransitiveClosure get_or_create_role_reflexive_transitive_closure(ConstructorOrNonTerminal<Role> role_or_non_terminal);
-    RoleRestriction get_or_create_role_restriction(ConstructorOrNonTerminal<Role> role_or_non_terminal,
-                                                   ConstructorOrNonTerminal<Concept> concept_or_non_terminal);
-    RoleIdentity get_or_create_role_identity(ConstructorOrNonTerminal<Concept> concept_or_non_terminal);
+    RoleIntersection get_or_create_role_intersection(ConstructorOrNonTerminal<Role> left_role_or_nonterminal,
+                                                     ConstructorOrNonTerminal<Role> right_role_or_nonterminal);
+    RoleUnion get_or_create_role_union(ConstructorOrNonTerminal<Role> left_role_or_nonterminal, ConstructorOrNonTerminal<Role> right_role_or_nonterminal);
+    RoleComplement get_or_create_role_complement(ConstructorOrNonTerminal<Role> role_or_nonterminal);
+    RoleInverse get_or_create_role_inverse(ConstructorOrNonTerminal<Role> role_or_nonterminal);
+    RoleComposition get_or_create_role_composition(ConstructorOrNonTerminal<Role> left_role_or_nonterminal,
+                                                   ConstructorOrNonTerminal<Role> right_role_or_nonterminal);
+    RoleTransitiveClosure get_or_create_role_transitive_closure(ConstructorOrNonTerminal<Role> role_or_nonterminal);
+    RoleReflexiveTransitiveClosure get_or_create_role_reflexive_transitive_closure(ConstructorOrNonTerminal<Role> role_or_nonterminal);
+    RoleRestriction get_or_create_role_restriction(ConstructorOrNonTerminal<Role> role_or_nonterminal,
+                                                   ConstructorOrNonTerminal<Concept> concept_or_nonterminal);
+    RoleIdentity get_or_create_role_identity(ConstructorOrNonTerminal<Concept> concept_or_nonterminal);
 };
 
 }

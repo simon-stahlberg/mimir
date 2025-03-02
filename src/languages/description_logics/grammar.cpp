@@ -63,9 +63,7 @@ bool Grammar::test_match(dl::Constructor<D> constructor) const
         return false;  ///< sentence is not part of language.
     }
 
-    const auto& rules = m_derivation_rules.template get<D>(start_symbol.value());
-
-    return std::any_of(rules.begin(), rules.end(), [&, constructor](auto&& rule) { return rule->test_match(constructor, *this); });
+    return start_symbol.value()->test_match(constructor, *this);
 }
 
 template bool Grammar::test_match(dl::Constructor<Concept> constructor) const;
