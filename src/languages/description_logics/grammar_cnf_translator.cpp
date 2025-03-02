@@ -21,7 +21,6 @@
 #include "mimir/languages/description_logics/cnf_grammar.hpp"
 #include "mimir/languages/description_logics/grammar.hpp"
 #include "mimir/languages/description_logics/grammar_visitor_formatter.hpp"
-#include "mimir/languages/description_logics/grammar_visitor_interface.hpp"
 
 namespace mimir::dl::grammar
 {
@@ -310,224 +309,494 @@ static Grammar eliminate_nested_constructors(const Grammar& grammar)
  * ToCnfGrammar
  */
 
-template<ConceptOrRole D>
-class ToCNFConstructorVisitor;
-
-template<ConceptOrRole D>
-class ToCNFConstructorOrNonTerminalVisitor;
-
-template<ConceptOrRole D>
-class ToCNFNonTerminalVisitor;
-
-template<ConceptOrRole D>
-class ToCNFDerivationRuleVisitor;
-
-class ToCNFGrammarVisitor;
-}
-
-namespace mimir::dl::cnf_grammar
-{
-template<ConceptOrRole D>
-using ConstructorVariant = std::variant<Constructor<D, Primitive>, Constructor<D, Composite>>;
-
-template<ConceptOrRole D>
-using ConstructorVariantOrNonTerminal = std::variant<ConstructorVariant<D>, NonTerminal<D>>;
-
-template<ConceptOrRole D>
-using DerivationOrSubstitutionRule = std::variant<ConstructorVariant<D>, SubstitutionRule<D>>;
-}
-
-namespace mimir::dl::grammar
-{
 /**
  * Concept
  */
 
-template<ConceptOrRole D>
-class ToCNFConstructorVisitor : public ConstructorVisitor<D>
+ToCNFConstructorVisitor<Concept>::ToCNFConstructorVisitor(cnf_grammar::ConstructorRepositories& repositories) : m_repositories(repositories) {}
+
+void ToCNFConstructorVisitor<Concept>::initialize(ToCNFNonTerminalConstructorOrNonTerminalVisitor<Concept>& nonterminal_concept_visitor,
+                                                  ToCNFNonTerminalConstructorOrNonTerminalVisitor<Role>& nonterminal_role_visitor)
 {
-};
+    m_nonterminal_concept_visitor = &nonterminal_concept_visitor;
+    m_nonterminal_role_visitor = &nonterminal_role_visitor;
+}
 
-template<>
-class ToCNFConstructorVisitor<Concept> : public ConstructorVisitor<Concept>
+void ToCNFConstructorVisitor<Concept>::visit(ConceptBot constructor) { m_result = m_repositories.get_or_create_concept_bot(); }
+void ToCNFConstructorVisitor<Concept>::visit(ConceptTop constructor) { m_result = m_repositories.get_or_create_concept_top(); }
+void ToCNFConstructorVisitor<Concept>::visit(ConceptAtomicState<Static> constructor)
 {
-protected:
-    cnf_grammar::ConstructorRepositories& m_repositories;
-    cnf_grammar::ConstructorVariant<Concept> m_result;  ///< the result of a visitation
+    m_result = m_repositories.get_or_create_concept_atomic_state(constructor->get_predicate());
+}
+void ToCNFConstructorVisitor<Concept>::visit(ConceptAtomicState<Fluent> constructor)
+{
+    m_result = m_repositories.get_or_create_concept_atomic_state(constructor->get_predicate());
+}
+void ToCNFConstructorVisitor<Concept>::visit(ConceptAtomicState<Derived> constructor)
+{
+    m_result = m_repositories.get_or_create_concept_atomic_state(constructor->get_predicate());
+}
+void ToCNFConstructorVisitor<Concept>::visit(ConceptAtomicGoal<Static> constructor)
+{
+    m_result = m_repositories.get_or_create_concept_atomic_goal(constructor->get_predicate(), constructor->is_negated());
+}
+void ToCNFConstructorVisitor<Concept>::visit(ConceptAtomicGoal<Fluent> constructor)
+{
+    m_result = m_repositories.get_or_create_concept_atomic_goal(constructor->get_predicate(), constructor->is_negated());
+}
+void ToCNFConstructorVisitor<Concept>::visit(ConceptAtomicGoal<Derived> constructor)
+{
+    m_result = m_repositories.get_or_create_concept_atomic_goal(constructor->get_predicate(), constructor->is_negated());
+}
+void ToCNFConstructorVisitor<Concept>::visit(ConceptIntersection constructor)
+{
+    assert(m_nonterminal_concept_visitor);
+    constructor->get_concept_or_non_terminal_left()->accept(*m_nonterminal_concept_visitor);
+    const auto left_nonterminal = m_nonterminal_concept_visitor->get_result();
+    constructor->get_concept_or_non_terminal_right()->accept(*m_nonterminal_concept_visitor);
+    const auto right_nonterminal = m_nonterminal_concept_visitor->get_result();
+    m_result = m_repositories.get_or_create_concept_intersection(left_nonterminal, right_nonterminal);
+}
+void ToCNFConstructorVisitor<Concept>::visit(ConceptUnion constructor)
+{
+    assert(m_nonterminal_concept_visitor);
+    constructor->get_concept_or_non_terminal_left()->accept(*m_nonterminal_concept_visitor);
+    const auto left_nonterminal = m_nonterminal_concept_visitor->get_result();
+    constructor->get_concept_or_non_terminal_right()->accept(*m_nonterminal_concept_visitor);
+    const auto right_nonterminal = m_nonterminal_concept_visitor->get_result();
+    m_result = m_repositories.get_or_create_concept_union(left_nonterminal, right_nonterminal);
+}
+void ToCNFConstructorVisitor<Concept>::visit(ConceptNegation constructor)
+{
+    assert(m_nonterminal_concept_visitor);
+    constructor->get_concept_or_non_terminal()->accept(*m_nonterminal_concept_visitor);
+    const auto nonterminal = m_nonterminal_concept_visitor->get_result();
+    m_result = m_repositories.get_or_create_concept_negation(nonterminal);
+}
+void ToCNFConstructorVisitor<Concept>::visit(ConceptValueRestriction constructor)
+{
+    assert(m_nonterminal_concept_visitor && m_nonterminal_role_visitor);
+    constructor->get_role_or_non_terminal()->accept(*m_nonterminal_role_visitor);
+    const auto left_nonterminal = m_nonterminal_role_visitor->get_result();
+    constructor->get_concept_or_non_terminal()->accept(*m_nonterminal_concept_visitor);
+    const auto right_nonterminal = m_nonterminal_concept_visitor->get_result();
+    m_result = m_repositories.get_or_create_concept_value_restriction(left_nonterminal, right_nonterminal);
+}
+void ToCNFConstructorVisitor<Concept>::visit(ConceptExistentialQuantification constructor)
+{
+    assert(m_nonterminal_concept_visitor && m_nonterminal_role_visitor);
+    constructor->get_role_or_non_terminal()->accept(*m_nonterminal_role_visitor);
+    const auto left_nonterminal = m_nonterminal_role_visitor->get_result();
+    constructor->get_concept_or_non_terminal()->accept(*m_nonterminal_concept_visitor);
+    const auto right_nonterminal = m_nonterminal_concept_visitor->get_result();
+    m_result = m_repositories.get_or_create_concept_existential_quantification(left_nonterminal, right_nonterminal);
+}
+void ToCNFConstructorVisitor<Concept>::visit(ConceptRoleValueMapContainment constructor)
+{
+    assert(m_nonterminal_role_visitor);
+    constructor->get_role_or_non_terminal_left()->accept(*m_nonterminal_role_visitor);
+    const auto left_nonterminal = m_nonterminal_role_visitor->get_result();
+    constructor->get_role_or_non_terminal_right()->accept(*m_nonterminal_role_visitor);
+    const auto right_nonterminal = m_nonterminal_role_visitor->get_result();
+    m_result = m_repositories.get_or_create_concept_role_value_map_containment(left_nonterminal, right_nonterminal);
+}
+void ToCNFConstructorVisitor<Concept>::visit(ConceptRoleValueMapEquality constructor)
+{
+    assert(m_nonterminal_role_visitor);
+    constructor->get_role_or_non_terminal_left()->accept(*m_nonterminal_role_visitor);
+    const auto left_nonterminal = m_nonterminal_role_visitor->get_result();
+    constructor->get_role_or_non_terminal_right()->accept(*m_nonterminal_role_visitor);
+    const auto right_nonterminal = m_nonterminal_role_visitor->get_result();
+    m_result = m_repositories.get_or_create_concept_role_value_map_equality(left_nonterminal, right_nonterminal);
+}
+void ToCNFConstructorVisitor<Concept>::visit(ConceptNominal constructor) { m_result = m_repositories.get_or_create_concept_nominal(constructor->get_object()); }
 
-    ToCNFConstructorOrNonTerminalVisitor<Concept>* m_concept_or_nonterminal_visitor;
-    ToCNFConstructorOrNonTerminalVisitor<Role>* m_role_or_nonterminal_visitor;
-
-public:
-    explicit ToCNFConstructorVisitor(cnf_grammar::ConstructorRepositories& repositories);
-
-    virtual void initialize(ToCNFConstructorOrNonTerminalVisitor<Concept>& concept_or_nonterminal_visitor,
-                            ToCNFConstructorOrNonTerminalVisitor<Role>& role_or_nonterminal_visitor);
-
-    void visit(ConceptBot constructor) override;
-    void visit(ConceptTop constructor) override;
-    void visit(ConceptAtomicState<Static> constructor) override;
-    void visit(ConceptAtomicState<Fluent> constructor) override;
-    void visit(ConceptAtomicState<Derived> constructor) override;
-    void visit(ConceptAtomicGoal<Static> constructor) override;
-    void visit(ConceptAtomicGoal<Fluent> constructor) override;
-    void visit(ConceptAtomicGoal<Derived> constructor) override;
-    void visit(ConceptIntersection constructor) override;
-    void visit(ConceptUnion constructor) override;
-    void visit(ConceptNegation constructor) override;
-    void visit(ConceptValueRestriction constructor) override;
-    void visit(ConceptExistentialQuantification constructor) override;
-    void visit(ConceptRoleValueMapContainment constructor) override;
-    void visit(ConceptRoleValueMapEquality constructor) override;
-    void visit(ConceptNominal constructor) override;
-
-    cnf_grammar::ConstructorVariant<Concept> get_result() const;
-};
+cnf_grammar::ConstructorVariant<Concept> ToCNFConstructorVisitor<Concept>::get_result() const { return m_result; }
 
 /**
  * Role
  */
 
-template<>
-class ToCNFConstructorVisitor<Role> : public ConstructorVisitor<Role>
+ToCNFConstructorVisitor<Role>::ToCNFConstructorVisitor(cnf_grammar::ConstructorRepositories& repositories) : m_repositories(repositories) {}
+
+void ToCNFConstructorVisitor<Role>::initialize(ToCNFNonTerminalConstructorOrNonTerminalVisitor<Concept>& nonterminal_concept_visitor,
+                                               ToCNFNonTerminalConstructorOrNonTerminalVisitor<Role>& nonterminal_role_visitor)
 {
-protected:
-    cnf_grammar::ConstructorRepositories& m_repositories;
-    cnf_grammar::ConstructorVariant<Role> m_result;  ///< the result of a visitation
+    m_nonterminal_concept_visitor = &nonterminal_concept_visitor;
+    m_nonterminal_role_visitor = &nonterminal_role_visitor;
+}
 
-    ToCNFConstructorOrNonTerminalVisitor<Concept>* m_concept_or_nonterminal_visitor;
-    ToCNFConstructorOrNonTerminalVisitor<Role>* m_role_or_nonterminal_visitor;
+void ToCNFConstructorVisitor<Role>::visit(RoleUniversal constructor) { m_result = m_repositories.get_or_create_role_universal(); }
+void ToCNFConstructorVisitor<Role>::visit(RoleAtomicState<Static> constructor)
+{
+    m_result = m_repositories.get_or_create_role_atomic_state(constructor->get_predicate());
+}
+void ToCNFConstructorVisitor<Role>::visit(RoleAtomicState<Fluent> constructor)
+{
+    m_result = m_repositories.get_or_create_role_atomic_state(constructor->get_predicate());
+}
+void ToCNFConstructorVisitor<Role>::visit(RoleAtomicState<Derived> constructor)
+{
+    m_result = m_repositories.get_or_create_role_atomic_state(constructor->get_predicate());
+}
+void ToCNFConstructorVisitor<Role>::visit(RoleAtomicGoal<Static> constructor)
+{
+    m_result = m_repositories.get_or_create_role_atomic_goal(constructor->get_predicate(), constructor->is_negated());
+}
+void ToCNFConstructorVisitor<Role>::visit(RoleAtomicGoal<Fluent> constructor)
+{
+    m_result = m_repositories.get_or_create_role_atomic_goal(constructor->get_predicate(), constructor->is_negated());
+}
+void ToCNFConstructorVisitor<Role>::visit(RoleAtomicGoal<Derived> constructor)
+{
+    m_result = m_repositories.get_or_create_role_atomic_goal(constructor->get_predicate(), constructor->is_negated());
+}
+void ToCNFConstructorVisitor<Role>::visit(RoleIntersection constructor)
+{
+    assert(m_nonterminal_role_visitor);
+    constructor->get_role_or_non_terminal_left()->accept(*m_nonterminal_role_visitor);
+    const auto left_nonterminal = m_nonterminal_role_visitor->get_result();
+    constructor->get_role_or_non_terminal_right()->accept(*m_nonterminal_role_visitor);
+    const auto right_nonterminal = m_nonterminal_role_visitor->get_result();
+    m_result = m_repositories.get_or_create_role_intersection(left_nonterminal, right_nonterminal);
+}
+void ToCNFConstructorVisitor<Role>::visit(RoleUnion constructor)
+{
+    assert(m_nonterminal_role_visitor);
+    constructor->get_role_or_non_terminal_left()->accept(*m_nonterminal_role_visitor);
+    const auto left_nonterminal = m_nonterminal_role_visitor->get_result();
+    constructor->get_role_or_non_terminal_right()->accept(*m_nonterminal_role_visitor);
+    const auto right_nonterminal = m_nonterminal_role_visitor->get_result();
+    m_result = m_repositories.get_or_create_role_union(left_nonterminal, right_nonterminal);
+}
+void ToCNFConstructorVisitor<Role>::visit(RoleComplement constructor)
+{
+    assert(m_nonterminal_role_visitor);
+    constructor->get_role_or_non_terminal()->accept(*m_nonterminal_role_visitor);
+    const auto nonterminal = m_nonterminal_role_visitor->get_result();
+    m_result = m_repositories.get_or_create_role_complement(nonterminal);
+}
+void ToCNFConstructorVisitor<Role>::visit(RoleInverse constructor)
+{
+    assert(m_nonterminal_role_visitor);
+    constructor->get_role_or_non_terminal()->accept(*m_nonterminal_role_visitor);
+    const auto nonterminal = m_nonterminal_role_visitor->get_result();
+    m_result = m_repositories.get_or_create_role_inverse(nonterminal);
+}
+void ToCNFConstructorVisitor<Role>::visit(RoleComposition constructor)
+{
+    assert(m_nonterminal_role_visitor);
+    constructor->get_role_or_non_terminal_left()->accept(*m_nonterminal_role_visitor);
+    const auto left_nonterminal = m_nonterminal_role_visitor->get_result();
+    constructor->get_role_or_non_terminal_right()->accept(*m_nonterminal_role_visitor);
+    const auto right_nonterminal = m_nonterminal_role_visitor->get_result();
+    m_result = m_repositories.get_or_create_role_composition(left_nonterminal, right_nonterminal);
+}
+void ToCNFConstructorVisitor<Role>::visit(RoleTransitiveClosure constructor)
+{
+    assert(m_nonterminal_role_visitor);
+    constructor->get_role_or_non_terminal()->accept(*m_nonterminal_role_visitor);
+    const auto nonterminal = m_nonterminal_role_visitor->get_result();
+    m_result = m_repositories.get_or_create_role_transitive_closure(nonterminal);
+}
+void ToCNFConstructorVisitor<Role>::visit(RoleReflexiveTransitiveClosure constructor)
+{
+    assert(m_nonterminal_role_visitor);
+    constructor->get_role_or_non_terminal()->accept(*m_nonterminal_role_visitor);
+    const auto nonterminal = m_nonterminal_role_visitor->get_result();
+    m_result = m_repositories.get_or_create_role_reflexive_transitive_closure(nonterminal);
+}
+void ToCNFConstructorVisitor<Role>::visit(RoleRestriction constructor)
+{
+    assert(m_nonterminal_concept_visitor && m_nonterminal_role_visitor);
+    constructor->get_role_or_non_terminal()->accept(*m_nonterminal_role_visitor);
+    const auto left_nonterminal = m_nonterminal_role_visitor->get_result();
+    constructor->get_concept_or_non_terminal()->accept(*m_nonterminal_concept_visitor);
+    const auto right_nonterminal = m_nonterminal_concept_visitor->get_result();
+    m_result = m_repositories.get_or_create_role_restriction(left_nonterminal, right_nonterminal);
+}
+void ToCNFConstructorVisitor<Role>::visit(RoleIdentity constructor)
+{
+    assert(m_nonterminal_concept_visitor);
+    constructor->get_concept_or_non_terminal()->accept(*m_nonterminal_concept_visitor);
+    const auto nonterminal = m_nonterminal_concept_visitor->get_result();
+    m_result = m_repositories.get_or_create_role_identity(nonterminal);
+}
 
-public:
-    explicit ToCNFConstructorVisitor(cnf_grammar::ConstructorRepositories& repositories);
-
-    virtual void initialize(ToCNFConstructorOrNonTerminalVisitor<Concept>& concept_or_nonterminal_visitor,
-                            ToCNFConstructorOrNonTerminalVisitor<Role>& role_or_nonterminal_visitor);
-
-    void visit(RoleUniversal constructor) override;
-    void visit(RoleAtomicState<Static> constructor) override;
-    void visit(RoleAtomicState<Fluent> constructor) override;
-    void visit(RoleAtomicState<Derived> constructor) override;
-    void visit(RoleAtomicGoal<Static> constructor) override;
-    void visit(RoleAtomicGoal<Fluent> constructor) override;
-    void visit(RoleAtomicGoal<Derived> constructor) override;
-    void visit(RoleIntersection constructor) override;
-    void visit(RoleUnion constructor) override;
-    void visit(RoleComplement constructor) override;
-    void visit(RoleInverse constructor) override;
-    void visit(RoleComposition constructor) override;
-    void visit(RoleTransitiveClosure constructor) override;
-    void visit(RoleReflexiveTransitiveClosure constructor) override;
-    void visit(RoleRestriction constructor) override;
-    void visit(RoleIdentity constructor) override;
-
-    cnf_grammar::ConstructorVariant<Role> get_result() const;
-};
+cnf_grammar::ConstructorVariant<Role> ToCNFConstructorVisitor<Role>::get_result() const { return m_result; }
 
 /**
  * ConstructorOrRoleNonTerminal
  */
 
 template<ConceptOrRole D>
-class ToCNFConstructorOrNonTerminalVisitor : public ConstructorOrNonTerminalVisitor<D>
+ToCNFVariantConstructorOrNonTerminalVisitor<D>::ToCNFVariantConstructorOrNonTerminalVisitor(cnf_grammar::ConstructorRepositories& repositories) :
+    m_repositories(repositories)
 {
-protected:
-    cnf_grammar::ConstructorRepositories& m_repositories;
-    cnf_grammar::ConstructorVariantOrNonTerminal<D> m_result;  ///< the result of a visitation
+}
 
-    ToCNFNonTerminalVisitor<D>* m_nonterminal_visitor;
-    ToCNFConstructorVisitor<D>* m_constructor_visitor;
+template<ConceptOrRole D>
+void ToCNFVariantConstructorOrNonTerminalVisitor<D>::initialize(ToCNFNonTerminalVisitor<D>& nonterminal_visitor,
+                                                                ToCNFConstructorVisitor<D>& constructor_visitor)
+{
+    m_nonterminal_visitor = &nonterminal_visitor;
+    m_constructor_visitor = &constructor_visitor;
+}
 
-public:
-    explicit ToCNFConstructorOrNonTerminalVisitor(cnf_grammar::ConstructorRepositories& repositories);
+template<ConceptOrRole D>
+void ToCNFVariantConstructorOrNonTerminalVisitor<D>::visit(ConstructorOrNonTerminal<D> constructor)
+{
+    std::visit(
+        [this](auto&& arg)
+        {
+            using T = std::decay_t<decltype(arg)>;
+            if constexpr (std::is_same_v<T, Constructor<D>>)
+            {
+                assert(this->m_constructor_visitor);
+                arg->accept(*this->m_constructor_visitor);
+                m_result = this->m_constructor_visitor->get_result();
+            }
+            else if constexpr (std::is_same_v<T, NonTerminal<D>>)
+            {
+                assert(this->m_nonterminal_visitor);
+                arg->accept(*this->m_nonterminal_visitor);
+                m_result = this->m_nonterminal_visitor->get_result();
+            }
+            else
+            {
+                static_assert(dependent_false<D>::value,
+                              "ConstructorOrNonTerminalVisitor<D>::visit(constructor): Missing implementation for ConstructorOrNonTerminal type.");
+            }
+        },
+        constructor->get_constructor_or_non_terminal());
+}
 
-    virtual void initialize(ToCNFNonTerminalVisitor<D>& nonterminal_visitor, ToCNFConstructorVisitor<D>& constructor_visitor);
+template<ConceptOrRole D>
+cnf_grammar::ConstructorVariantOrNonTerminal<D> ToCNFVariantConstructorOrNonTerminalVisitor<D>::get_result() const
+{
+    return m_result;
+}
 
-    void visit(ConstructorOrNonTerminal<D> constructor) override;
+template class ToCNFVariantConstructorOrNonTerminalVisitor<Concept>;
+template class ToCNFVariantConstructorOrNonTerminalVisitor<Role>;
 
-    cnf_grammar::ConstructorVariantOrNonTerminal<D> get_result() const;
-};
+template<ConceptOrRole D>
+ToCNFNonTerminalConstructorOrNonTerminalVisitor<D>::ToCNFNonTerminalConstructorOrNonTerminalVisitor(cnf_grammar::ConstructorRepositories& repositories) :
+    m_repositories(repositories)
+{
+}
+
+template<ConceptOrRole D>
+void ToCNFNonTerminalConstructorOrNonTerminalVisitor<D>::initialize(ToCNFNonTerminalVisitor<D>& nonterminal_visitor)
+{
+    m_nonterminal_visitor = &nonterminal_visitor;
+}
+
+template<ConceptOrRole D>
+void ToCNFNonTerminalConstructorOrNonTerminalVisitor<D>::visit(ConstructorOrNonTerminal<D> constructor)
+{
+    std::visit(
+        [this](auto&& arg)
+        {
+            using T = std::decay_t<decltype(arg)>;
+            if constexpr (std::is_same_v<T, Constructor<D>>)
+            {
+                throw std::logic_error("ToCNFNonTerminalConstructorOrNonTerminalVisitor<D>::visit(constructor): Expected NonTerminal.");
+            }
+            else if constexpr (std::is_same_v<T, NonTerminal<D>>)
+            {
+                assert(this->m_nonterminal_visitor);
+                arg->accept(*this->m_nonterminal_visitor);
+                m_result = this->m_nonterminal_visitor->get_result();
+            }
+            else
+            {
+                static_assert(dependent_false<D>::value,
+                              "ConstructorOrNonTerminalVisitor<D>::visit(constructor): Missing implementation for ConstructorOrNonTerminal type.");
+            }
+        },
+        constructor->get_constructor_or_non_terminal());
+}
+
+template<ConceptOrRole D>
+cnf_grammar::NonTerminal<D> ToCNFNonTerminalConstructorOrNonTerminalVisitor<D>::get_result() const
+{
+    return m_result;
+}
+
+template class ToCNFNonTerminalConstructorOrNonTerminalVisitor<Concept>;
+template class ToCNFNonTerminalConstructorOrNonTerminalVisitor<Role>;
 
 /**
  * NonTerminal
  */
 
 template<ConceptOrRole D>
-class ToCNFNonTerminalVisitor : public NonTerminalVisitor<D>
+ToCNFNonTerminalVisitor<D>::ToCNFNonTerminalVisitor(cnf_grammar::ConstructorRepositories& repositories) : m_repositories(repositories)
 {
-protected:
-    cnf_grammar::ConstructorRepositories& m_repositories;
-    cnf_grammar::NonTerminal<D> m_result;  ///< the result of a visitation
+}
 
-public:
-    explicit ToCNFNonTerminalVisitor(cnf_grammar::ConstructorRepositories& repositories);
+template<ConceptOrRole D>
+void ToCNFNonTerminalVisitor<D>::visit(NonTerminal<D> constructor)
+{
+    m_result = m_repositories.template get_or_create_nonterminal<D>(constructor->get_name());
+}
 
-    void visit(NonTerminal<D> constructor) override;
+template<ConceptOrRole D>
+cnf_grammar::NonTerminal<D> ToCNFNonTerminalVisitor<D>::get_result() const
+{
+    return m_result;
+}
 
-    cnf_grammar::NonTerminal<D> get_result() const;
-};
+template class ToCNFNonTerminalVisitor<Concept>;
+template class ToCNFNonTerminalVisitor<Role>;
 
 /**
  * DerivationRule
  */
 
 template<ConceptOrRole D>
-class ToCNFDerivationRuleVisitor : public DerivationRuleVisitor<D>
+ToCNFDerivationRuleVisitor<D>::ToCNFDerivationRuleVisitor(cnf_grammar::ConstructorRepositories& repositories) : m_repositories(repositories)
 {
-protected:
-    cnf_grammar::ConstructorRepositories& m_repositories;
-    cnf_grammar::DerivationOrSubstitutionRule<D> m_result;  ///< the result of a visitation
+}
 
-    ToCNFNonTerminalVisitor<D>* m_nonterminal_visitor;
-    ToCNFConstructorOrNonTerminalVisitor<D>* m_constructor_or_nonterminal_visitor;
-
-public:
-    explicit ToCNFDerivationRuleVisitor(cnf_grammar::ConstructorRepositories& repositories);
-
-    virtual void initialize(ToCNFNonTerminalVisitor<D>& nonterminal_visitor, ToCNFConstructorOrNonTerminalVisitor<D>& constructor_or_nonterminal_visitor);
-
-    virtual void visit(DerivationRule<D> constructor) override;
-
-    cnf_grammar::DerivationOrSubstitutionRule<D> get_result() const;
-};
-
-class ToCNFGrammarVisitor : public GrammarVisitor
+template<ConceptOrRole D>
+void ToCNFDerivationRuleVisitor<D>::initialize(ToCNFNonTerminalVisitor<D>& nonterminal_visitor,
+                                               ToCNFVariantConstructorOrNonTerminalVisitor<D>& constructor_or_nonterminal_visitor)
 {
-protected:
-    cnf_grammar::ConstructorRepositories& m_repositories;
-    cnf_grammar::StartSymbolsContainer& m_start_symbols;
-    cnf_grammar::DerivationRulesContainer& m_derivation_rules;
-    cnf_grammar::SubstitutionRulesContainer& m_substitution_rules;
+    m_nonterminal_visitor = &nonterminal_visitor;
+    m_constructor_or_nonterminal_visitor = &constructor_or_nonterminal_visitor;
+}
 
-    boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, ToCNFNonTerminalVisitor<Concept>*>,
-                     boost::hana::pair<boost::hana::type<Role>, ToCNFNonTerminalVisitor<Role>*>>
-        m_start_symbol_visitor;
+template<ConceptOrRole D>
+void ToCNFDerivationRuleVisitor<D>::visit(DerivationRule<D> constructor)
+{
+    assert(this->m_nonterminal_visitor && this->m_constructor_or_nonterminal_visitor);
 
-    boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, ToCNFDerivationRuleVisitor<Concept>*>,
-                     boost::hana::pair<boost::hana::type<Role>, ToCNFDerivationRuleVisitor<Role>*>>
-        m_derivation_rule_visitor;
+    constructor->get_non_terminal()->accept(*m_nonterminal_visitor);
+    const auto head = m_nonterminal_visitor->get_result();
 
-public:
-    ToCNFGrammarVisitor(cnf_grammar::ConstructorRepositories& repositories,
-                        cnf_grammar::StartSymbolsContainer& start_symbols,
-                        cnf_grammar::DerivationRulesContainer& derivation_rules,
-                        cnf_grammar::SubstitutionRulesContainer& substitution_rules) :
-        m_repositories(repositories),
-        m_start_symbols(start_symbols),
-        m_derivation_rules(derivation_rules),
-        m_substitution_rules(substitution_rules)
+    if (constructor->get_constructor_or_non_terminals().size() != 1)
     {
+        throw std::logic_error("ToCNFDerivationRuleVisitor<D>::visit(constructor): Expected single choice");
     }
 
-    void visit(const Grammar& grammar) override {}
+    constructor->get_constructor_or_non_terminals().front()->accept(*m_constructor_or_nonterminal_visitor);
+    const auto body_variant = m_constructor_or_nonterminal_visitor->get_result();
 
-    void initialize(ToCNFNonTerminalVisitor<Concept>& concept_start_symbol_visitor,
-                    ToCNFNonTerminalVisitor<Role>& role_start_symbol_visitor,
-                    ToCNFDerivationRuleVisitor<Concept>& concept_rule_visitor,
-                    ToCNFDerivationRuleVisitor<Role>& role_rule_visitor)
-    {
-    }
-};
+    std::visit(
+        [&](auto&& arg)
+        {
+            using T = std::decay_t<decltype(arg)>;
+            if constexpr (std::is_same_v<T, cnf_grammar::ConstructorVariant<D>>)
+            {
+                std::visit([&](auto&& arg2) { m_result = this->m_repositories.get_or_create_derivation_rule(head, arg2); }, arg);
+            }
+            else if constexpr (std::is_same_v<T, cnf_grammar::NonTerminal<D>>)
+            {
+                m_result = this->m_repositories.get_or_create_substitution_rule(head, arg);
+            }
+            else
+            {
+                static_assert(dependent_false<T>::value,
+                              "ToCNFDerivationRuleVisitor<T>::visit(constructor): Missing implementation for ConstructorOrNonTerminal type.");
+            }
+        },
+        body_variant);
+}
+
+template<ConceptOrRole D>
+cnf_grammar::DerivationOrSubstitutionRule<D> ToCNFDerivationRuleVisitor<D>::get_result() const
+{
+    return m_result;
+}
+
+/**
+ * Grammar
+ */
+
+ToCNFGrammarVisitor::ToCNFGrammarVisitor(cnf_grammar::ConstructorRepositories& repositories,
+                                         cnf_grammar::StartSymbolsContainer& start_symbols,
+                                         cnf_grammar::DerivationRulesContainer& derivation_rules,
+                                         cnf_grammar::SubstitutionRulesContainer& substitution_rules) :
+    m_repositories(repositories),
+    m_start_symbols(start_symbols),
+    m_derivation_rules(derivation_rules),
+    m_substitution_rules(substitution_rules)
+{
+}
+
+void ToCNFGrammarVisitor::initialize(ToCNFNonTerminalVisitor<Concept>& concept_start_symbol_visitor,
+                                     ToCNFNonTerminalVisitor<Role>& role_start_symbol_visitor,
+                                     ToCNFDerivationRuleVisitor<Concept>& concept_rule_visitor,
+                                     ToCNFDerivationRuleVisitor<Role>& role_rule_visitor)
+{
+    boost::hana::at_key(m_start_symbol_visitor, boost::hana::type<Concept> {}) = &concept_start_symbol_visitor;
+    boost::hana::at_key(m_start_symbol_visitor, boost::hana::type<Role> {}) = &role_start_symbol_visitor;
+    boost::hana::at_key(m_derivation_rule_visitor, boost::hana::type<Concept> {}) = &concept_rule_visitor;
+    boost::hana::at_key(m_derivation_rule_visitor, boost::hana::type<Role> {}) = &role_rule_visitor;
+}
+
+void ToCNFGrammarVisitor::visit(const Grammar& grammar)
+{
+    boost::hana::for_each(grammar.get_start_symbols_container().get(),
+                          [&](auto&& pair)
+                          {
+                              auto key = boost::hana::first(pair);
+                              const auto& second = boost::hana::second(pair);
+
+                              if (second.has_value())
+                              {
+                                  auto& visitor = *boost::hana::at_key(m_start_symbol_visitor, key);
+                                  second.value()->accept(visitor);
+                                  boost::hana::at_key(m_start_symbols.get(), key) = visitor.get_result();
+                              }
+                          });
+
+    boost::hana::for_each(grammar.get_derivation_rules_container().get(),
+                          [&](auto&& pair)
+                          {
+                              auto key = boost::hana::first(pair);
+                              const auto& second = boost::hana::second(pair);
+
+                              for (const auto& non_terminal_and_rules : second)
+                              {
+                                  const auto& [non_terminal, rules] = non_terminal_and_rules;
+
+                                  for (const auto& rule : rules)
+                                  {
+                                      auto& visitor = *boost::hana::at_key(m_derivation_rule_visitor, key);
+                                      rule->accept(visitor);
+                                      const auto rule_variant = visitor.get_result();
+
+                                      std::visit(
+                                          [&](auto&& arg)
+                                          {
+                                              using T = std::decay_t<decltype(arg)>;
+                                              if constexpr (std::is_same_v<T, cnf_grammar::DerivationRule<Concept, cnf_grammar::Primitive>>
+                                                            || std::is_same_v<T, cnf_grammar::DerivationRule<Concept, cnf_grammar::Composite>>
+                                                            || std::is_same_v<T, cnf_grammar::DerivationRule<Role, cnf_grammar::Primitive>>
+                                                            || std::is_same_v<T, cnf_grammar::DerivationRule<Role, cnf_grammar::Composite>>)
+                                              {
+                                                  m_derivation_rules.insert(arg);
+                                              }
+                                              else if constexpr (std::is_same_v<T, cnf_grammar::SubstitutionRule<Concept>>
+                                                                 || std::is_same_v<T, cnf_grammar::SubstitutionRule<Role>>)
+                                              {
+                                                  m_substitution_rules.insert(arg);
+                                              }
+                                              else
+                                              {
+                                                  static_assert(
+                                                      dependent_false<T>::value,
+                                                      "ToCNFGrammarVisitor::visit(constructor): Missing implementation for DerivationOrSubstitutionRule type.");
+                                              }
+                                          },
+                                          rule_variant);
+                                  }
+                              }
+                          });
+}
 
 static cnf_grammar::Grammar parse_cnf_grammar(const Grammar& grammar)
 {
@@ -535,6 +804,36 @@ static cnf_grammar::Grammar parse_cnf_grammar(const Grammar& grammar)
     auto start_symbols = cnf_grammar::StartSymbolsContainer();
     auto derivation_rules = cnf_grammar::DerivationRulesContainer();
     auto substitution_rules = cnf_grammar::SubstitutionRulesContainer();
+
+    auto concept_constructor_visitor = ToCNFConstructorVisitor<Concept>(repositories);
+    auto role_constructor_visitor = ToCNFConstructorVisitor<Role>(repositories);
+    auto concept_variant_concept_or_nonterminal_visitor = ToCNFVariantConstructorOrNonTerminalVisitor<Concept>(repositories);
+    auto role_variant_role_or_nonterminal_visitor = ToCNFVariantConstructorOrNonTerminalVisitor<Role>(repositories);
+    auto concept_nonterminal_concept_or_nonterminal_visitor = ToCNFNonTerminalConstructorOrNonTerminalVisitor<Concept>(repositories);
+    auto role_nonterminal_role_or_nonterminal_visitor = ToCNFNonTerminalConstructorOrNonTerminalVisitor<Role>(repositories);
+    auto concept_nonterminal_visitor = ToCNFNonTerminalVisitor<Concept>(repositories);
+    auto role_nonterminal_visitor = ToCNFNonTerminalVisitor<Role>(repositories);
+    auto concept_derivation_rule_visitor = ToCNFDerivationRuleVisitor<Concept>(repositories);
+    auto role_derivation_rule_visitor = ToCNFDerivationRuleVisitor<Role>(repositories);
+    auto grammar_visitor = ToCNFGrammarVisitor(repositories, start_symbols, derivation_rules, substitution_rules);
+
+    concept_constructor_visitor.initialize(concept_nonterminal_concept_or_nonterminal_visitor, role_nonterminal_role_or_nonterminal_visitor);
+    role_constructor_visitor.initialize(concept_nonterminal_concept_or_nonterminal_visitor, role_nonterminal_role_or_nonterminal_visitor);
+    concept_variant_concept_or_nonterminal_visitor.initialize(concept_nonterminal_visitor, concept_constructor_visitor);
+    role_variant_role_or_nonterminal_visitor.initialize(role_nonterminal_visitor, role_constructor_visitor);
+    concept_nonterminal_concept_or_nonterminal_visitor.initialize(concept_nonterminal_visitor);
+    role_nonterminal_role_or_nonterminal_visitor.initialize(role_nonterminal_visitor);
+    concept_derivation_rule_visitor.initialize(concept_nonterminal_visitor, concept_variant_concept_or_nonterminal_visitor);
+    role_derivation_rule_visitor.initialize(role_nonterminal_visitor, role_variant_role_or_nonterminal_visitor);
+    grammar_visitor.initialize(concept_nonterminal_visitor, role_nonterminal_visitor, concept_derivation_rule_visitor, role_derivation_rule_visitor);
+
+    grammar_visitor.visit(grammar);
+
+    return cnf_grammar::Grammar(std::move(repositories),
+                                std::move(start_symbols),
+                                std::move(derivation_rules),
+                                std::move(substitution_rules),
+                                grammar.get_domain());
 }
 
 cnf_grammar::Grammar translate_to_cnf(const Grammar& grammar)
@@ -549,8 +848,6 @@ cnf_grammar::Grammar translate_to_cnf(const Grammar& grammar)
     translated_grammar = eliminate_nested_constructors(translated_grammar);
     std::cout << translated_grammar << std::endl;
 
-    exit(1);
-
-    // return parse_cnf_grammar(translated_grammar);
+    return parse_cnf_grammar(translated_grammar);
 }
 }

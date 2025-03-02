@@ -47,7 +47,12 @@ private:
     Domain m_domain;
 
 public:
-    /// @brief Translate a grammar to CNF.
+    Grammar(ConstructorRepositories repositories,
+            StartSymbolsContainer start_symbols,
+            DerivationRulesContainer derivation_rules,
+            SubstitutionRulesContainer substitution_rules,
+            Domain domain);
+
     explicit Grammar(const grammar::Grammar& grammar);
 
     /// @brief Tests whether a dl constructor satisfies the grammar specification.

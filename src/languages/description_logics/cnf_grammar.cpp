@@ -23,6 +23,19 @@
 namespace mimir::dl::cnf_grammar
 {
 
+Grammar::Grammar(ConstructorRepositories repositories,
+                 StartSymbolsContainer start_symbols,
+                 DerivationRulesContainer derivation_rules,
+                 SubstitutionRulesContainer substitution_rules,
+                 Domain domain) :
+    m_repositories(std::move(repositories)),
+    m_start_symbols(std::move(start_symbols)),
+    m_derivation_rules(std::move(derivation_rules)),
+    m_substitution_rules(std::move(substitution_rules)),
+    m_domain(std::move(domain))
+{
+}
+
 Grammar::Grammar(const grammar::Grammar& grammar)
 {
     auto cnf_grammar = translate_to_cnf(grammar);

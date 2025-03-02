@@ -322,55 +322,62 @@ void CopyConstructorVisitor<Concept>::visit(ConceptIntersection constructor)
 {
     assert(m_concept_or_nonterminal_visitor);
     constructor->get_concept_or_non_terminal_left()->accept(*m_concept_or_nonterminal_visitor);
-    const auto copied_concept_left = m_concept_or_nonterminal_visitor->get_result();
+    const auto left_concept_or_nonterminal = m_concept_or_nonterminal_visitor->get_result();
     constructor->get_concept_or_non_terminal_right()->accept(*m_concept_or_nonterminal_visitor);
-    m_result = m_repositories.get_or_create_concept_intersection(copied_concept_left, m_concept_or_nonterminal_visitor->get_result());
+    const auto right_concept_or_nonterminal = m_concept_or_nonterminal_visitor->get_result();
+    m_result = m_repositories.get_or_create_concept_intersection(left_concept_or_nonterminal, right_concept_or_nonterminal);
 }
 void CopyConstructorVisitor<Concept>::visit(ConceptUnion constructor)
 {
     assert(m_concept_or_nonterminal_visitor);
     constructor->get_concept_or_non_terminal_left()->accept(*m_concept_or_nonterminal_visitor);
-    const auto copied_concept_left = m_concept_or_nonterminal_visitor->get_result();
+    const auto left_concept_or_nonterminal = m_concept_or_nonterminal_visitor->get_result();
     constructor->get_concept_or_non_terminal_right()->accept(*m_concept_or_nonterminal_visitor);
-    m_result = m_repositories.get_or_create_concept_union(copied_concept_left, m_concept_or_nonterminal_visitor->get_result());
+    const auto right_concept_or_nonterminal = m_concept_or_nonterminal_visitor->get_result();
+    m_result = m_repositories.get_or_create_concept_union(left_concept_or_nonterminal, right_concept_or_nonterminal);
 }
 void CopyConstructorVisitor<Concept>::visit(ConceptNegation constructor)
 {
     assert(m_concept_or_nonterminal_visitor);
     constructor->get_concept_or_non_terminal()->accept(*m_concept_or_nonterminal_visitor);
-    m_result = m_repositories.get_or_create_concept_negation(m_concept_or_nonterminal_visitor->get_result());
+    const auto concept_or_nonterminal = m_concept_or_nonterminal_visitor->get_result();
+    m_result = m_repositories.get_or_create_concept_negation(concept_or_nonterminal);
 }
 void CopyConstructorVisitor<Concept>::visit(ConceptValueRestriction constructor)
 {
     assert(m_concept_or_nonterminal_visitor && m_role_or_nonterminal_visitor);
     constructor->get_role_or_non_terminal()->accept(*m_role_or_nonterminal_visitor);
+    const auto role_or_nonterminal = m_role_or_nonterminal_visitor->get_result();
     constructor->get_concept_or_non_terminal()->accept(*m_concept_or_nonterminal_visitor);
-    m_result =
-        m_repositories.get_or_create_concept_value_restriction(m_role_or_nonterminal_visitor->get_result(), m_concept_or_nonterminal_visitor->get_result());
+    const auto concept_or_nonterminal = m_concept_or_nonterminal_visitor->get_result();
+    m_result = m_repositories.get_or_create_concept_value_restriction(role_or_nonterminal, concept_or_nonterminal);
 }
 void CopyConstructorVisitor<Concept>::visit(ConceptExistentialQuantification constructor)
 {
     assert(m_concept_or_nonterminal_visitor && m_role_or_nonterminal_visitor);
     constructor->get_role_or_non_terminal()->accept(*m_role_or_nonterminal_visitor);
+    const auto role_or_nonterminal = m_role_or_nonterminal_visitor->get_result();
     constructor->get_concept_or_non_terminal()->accept(*m_concept_or_nonterminal_visitor);
-    m_result = m_repositories.get_or_create_concept_existential_quantification(m_role_or_nonterminal_visitor->get_result(),
-                                                                               m_concept_or_nonterminal_visitor->get_result());
+    const auto concept_or_nonterminal = m_concept_or_nonterminal_visitor->get_result();
+    m_result = m_repositories.get_or_create_concept_existential_quantification(role_or_nonterminal, concept_or_nonterminal);
 }
 void CopyConstructorVisitor<Concept>::visit(ConceptRoleValueMapContainment constructor)
 {
     assert(m_role_or_nonterminal_visitor);
     constructor->get_role_or_non_terminal_left()->accept(*m_role_or_nonterminal_visitor);
-    const auto copied_role_left = m_role_or_nonterminal_visitor->get_result();
+    const auto left_role_or_nonterminal = m_role_or_nonterminal_visitor->get_result();
     constructor->get_role_or_non_terminal_right()->accept(*m_role_or_nonterminal_visitor);
-    m_result = m_repositories.get_or_create_concept_role_value_map_containment(copied_role_left, m_role_or_nonterminal_visitor->get_result());
+    const auto right_role_or_nonterminal = m_role_or_nonterminal_visitor->get_result();
+    m_result = m_repositories.get_or_create_concept_role_value_map_containment(left_role_or_nonterminal, right_role_or_nonterminal);
 }
 void CopyConstructorVisitor<Concept>::visit(ConceptRoleValueMapEquality constructor)
 {
     assert(m_role_or_nonterminal_visitor);
     constructor->get_role_or_non_terminal_left()->accept(*m_role_or_nonterminal_visitor);
-    const auto copied_role_left = m_role_or_nonterminal_visitor->get_result();
+    const auto left_role_or_nonterminal = m_role_or_nonterminal_visitor->get_result();
     constructor->get_role_or_non_terminal_right()->accept(*m_role_or_nonterminal_visitor);
-    m_result = m_repositories.get_or_create_concept_role_value_map_equality(copied_role_left, m_role_or_nonterminal_visitor->get_result());
+    const auto right_role_or_nonterminal = m_role_or_nonterminal_visitor->get_result();
+    m_result = m_repositories.get_or_create_concept_role_value_map_equality(left_role_or_nonterminal, right_role_or_nonterminal);
 }
 void CopyConstructorVisitor<Concept>::visit(ConceptNominal constructor) { m_result = m_repositories.get_or_create_concept_nominal(constructor->get_object()); }
 
@@ -418,62 +425,72 @@ void CopyConstructorVisitor<Role>::visit(RoleIntersection constructor)
 {
     assert(m_role_or_nonterminal_visitor);
     constructor->get_role_or_non_terminal_left()->accept(*m_role_or_nonterminal_visitor);
-    const auto copied_role_left = m_role_or_nonterminal_visitor->get_result();
+    const auto left_role_or_nonterminal = m_role_or_nonterminal_visitor->get_result();
     constructor->get_role_or_non_terminal_right()->accept(*m_role_or_nonterminal_visitor);
-    m_result = m_repositories.get_or_create_role_intersection(copied_role_left, m_role_or_nonterminal_visitor->get_result());
+    const auto right_role_or_nonterminal = m_role_or_nonterminal_visitor->get_result();
+    m_result = m_repositories.get_or_create_role_intersection(left_role_or_nonterminal, right_role_or_nonterminal);
 }
 void CopyConstructorVisitor<Role>::visit(RoleUnion constructor)
 {
     assert(m_role_or_nonterminal_visitor);
     constructor->get_role_or_non_terminal_left()->accept(*m_role_or_nonterminal_visitor);
-    const auto copied_role_left = m_role_or_nonterminal_visitor->get_result();
+    const auto left_role_or_nonterminal = m_role_or_nonterminal_visitor->get_result();
     constructor->get_role_or_non_terminal_right()->accept(*m_role_or_nonterminal_visitor);
-    m_result = m_repositories.get_or_create_role_union(copied_role_left, m_role_or_nonterminal_visitor->get_result());
+    const auto right_role_or_nonterminal = m_role_or_nonterminal_visitor->get_result();
+    m_result = m_repositories.get_or_create_role_union(left_role_or_nonterminal, right_role_or_nonterminal);
 }
 void CopyConstructorVisitor<Role>::visit(RoleComplement constructor)
 {
     assert(m_role_or_nonterminal_visitor);
     constructor->get_role_or_non_terminal()->accept(*m_role_or_nonterminal_visitor);
-    m_result = m_repositories.get_or_create_role_complement(m_role_or_nonterminal_visitor->get_result());
+    const auto role_or_nonterminal = m_role_or_nonterminal_visitor->get_result();
+    m_result = m_repositories.get_or_create_role_complement(role_or_nonterminal);
 }
 void CopyConstructorVisitor<Role>::visit(RoleInverse constructor)
 {
     assert(m_role_or_nonterminal_visitor);
     constructor->get_role_or_non_terminal()->accept(*m_role_or_nonterminal_visitor);
-    m_result = m_repositories.get_or_create_role_inverse(m_role_or_nonterminal_visitor->get_result());
+    const auto role_or_nonterminal = m_role_or_nonterminal_visitor->get_result();
+    m_result = m_repositories.get_or_create_role_inverse(role_or_nonterminal);
 }
 void CopyConstructorVisitor<Role>::visit(RoleComposition constructor)
 {
     assert(m_role_or_nonterminal_visitor);
     constructor->get_role_or_non_terminal_left()->accept(*m_role_or_nonterminal_visitor);
-    const auto copied_role_left = m_role_or_nonterminal_visitor->get_result();
+    const auto left_role_or_nonterminal = m_role_or_nonterminal_visitor->get_result();
     constructor->get_role_or_non_terminal_right()->accept(*m_role_or_nonterminal_visitor);
-    m_result = m_repositories.get_or_create_role_composition(copied_role_left, m_role_or_nonterminal_visitor->get_result());
+    const auto right_role_or_nonterminal = m_role_or_nonterminal_visitor->get_result();
+    m_result = m_repositories.get_or_create_role_composition(left_role_or_nonterminal, right_role_or_nonterminal);
 }
 void CopyConstructorVisitor<Role>::visit(RoleTransitiveClosure constructor)
 {
     assert(m_role_or_nonterminal_visitor);
     constructor->get_role_or_non_terminal()->accept(*m_role_or_nonterminal_visitor);
-    m_result = m_repositories.get_or_create_role_transitive_closure(m_role_or_nonterminal_visitor->get_result());
+    const auto role_or_nonterminal = m_role_or_nonterminal_visitor->get_result();
+    m_result = m_repositories.get_or_create_role_transitive_closure(role_or_nonterminal);
 }
 void CopyConstructorVisitor<Role>::visit(RoleReflexiveTransitiveClosure constructor)
 {
     assert(m_role_or_nonterminal_visitor);
     constructor->get_role_or_non_terminal()->accept(*m_role_or_nonterminal_visitor);
-    m_result = m_repositories.get_or_create_role_reflexive_transitive_closure(m_role_or_nonterminal_visitor->get_result());
+    const auto role_or_nonterminal = m_role_or_nonterminal_visitor->get_result();
+    m_result = m_repositories.get_or_create_role_reflexive_transitive_closure(role_or_nonterminal);
 }
 void CopyConstructorVisitor<Role>::visit(RoleRestriction constructor)
 {
     assert(m_concept_or_nonterminal_visitor && m_role_or_nonterminal_visitor);
     constructor->get_role_or_non_terminal()->accept(*m_role_or_nonterminal_visitor);
+    const auto role_or_nonterminal = m_role_or_nonterminal_visitor->get_result();
     constructor->get_concept_or_non_terminal()->accept(*m_concept_or_nonterminal_visitor);
-    m_result = m_repositories.get_or_create_role_restriction(m_role_or_nonterminal_visitor->get_result(), m_concept_or_nonterminal_visitor->get_result());
+    const auto concept_or_nonterminal = m_concept_or_nonterminal_visitor->get_result();
+    m_result = m_repositories.get_or_create_role_restriction(role_or_nonterminal, concept_or_nonterminal);
 }
 void CopyConstructorVisitor<Role>::visit(RoleIdentity constructor)
 {
     assert(m_concept_or_nonterminal_visitor);
     constructor->get_concept_or_non_terminal()->accept(*m_concept_or_nonterminal_visitor);
-    m_result = m_repositories.get_or_create_role_identity(m_concept_or_nonterminal_visitor->get_result());
+    const auto concept_or_nonterminal = m_concept_or_nonterminal_visitor->get_result();
+    m_result = m_repositories.get_or_create_role_identity(concept_or_nonterminal);
 }
 
 Constructor<Role> CopyConstructorVisitor<Role>::get_result() const { return m_result; }
@@ -503,13 +520,13 @@ void CopyConstructorOrNonTerminalVisitor<D>::visit(ConstructorOrNonTerminal<D> c
             using T = std::decay_t<decltype(arg)>;
             if constexpr (std::is_same_v<T, Constructor<D>>)
             {
-                assert(m_constructor_visitor);
+                assert(this->m_constructor_visitor);
                 arg->accept(*this->m_constructor_visitor);
                 m_result = this->m_repositories.template get_or_create_constructor_or_nonterminal<D>(this->m_constructor_visitor->get_result());
             }
             else if constexpr (std::is_same_v<T, NonTerminal<D>>)
             {
-                assert(m_nonterminal_visitor);
+                assert(this->m_nonterminal_visitor);
                 arg->accept(*this->m_nonterminal_visitor);
                 m_result = this->m_repositories.template get_or_create_constructor_or_nonterminal<D>(this->m_nonterminal_visitor->get_result());
             }
