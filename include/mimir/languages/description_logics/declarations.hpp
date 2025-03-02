@@ -373,7 +373,7 @@ using RoleIdentity = const RoleIdentityImpl*;
  * Visitors
  */
 
-template<ConceptOrRole D>
+template<ConceptOrRole D, PrimitiveOrComposite C>
 class ConstructorVisitor;
 
 template<ConceptOrRole D>
