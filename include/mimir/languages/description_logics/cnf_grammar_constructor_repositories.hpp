@@ -36,6 +36,10 @@ using SegmentedDLRepository = loki::SegmentedRepository<T>;
 
 template<ConceptOrRole D>
 using NonTerminalFactory = SegmentedDLRepository<NonTerminalImpl<D>>;
+template<ConceptOrRole D, PrimitiveOrComposite C>
+using DerivationRuleRepository = SegmentedDLRepository<DerivationRuleImpl<D, C>>;
+template<ConceptOrRole D>
+using SubstitutionRuleRepository = SegmentedDLRepository<SubstitutionRuleImpl<D>>;
 
 using ConceptBotRepository = SegmentedDLRepository<ConceptBotImpl>;
 using ConceptTopRepository = SegmentedDLRepository<ConceptTopImpl>;
@@ -69,6 +73,12 @@ using RoleIdentityFactory = SegmentedDLRepository<RoleIdentityImpl>;
 
 using HanaConstructorRepositories =
     boost::hana::map<boost::hana::pair<boost::hana::type<NonTerminalImpl<Concept>>, NonTerminalFactory<Concept>>,
+                     boost::hana::pair<boost::hana::type<DerivationRuleImpl<Concept, Primitive>>, DerivationRuleRepository<Concept, Primitive>>,
+                     boost::hana::pair<boost::hana::type<DerivationRuleImpl<Concept, Composite>>, DerivationRuleRepository<Concept, Composite>>,
+                     boost::hana::pair<boost::hana::type<DerivationRuleImpl<Role, Primitive>>, DerivationRuleRepository<Role, Primitive>>,
+                     boost::hana::pair<boost::hana::type<DerivationRuleImpl<Role, Composite>>, DerivationRuleRepository<Role, Composite>>,
+                     boost::hana::pair<boost::hana::type<SubstitutionRuleImpl<Concept>>, SubstitutionRuleRepository<Concept>>,
+                     boost::hana::pair<boost::hana::type<SubstitutionRuleImpl<Role>>, SubstitutionRuleRepository<Role>>,
                      boost::hana::pair<boost::hana::type<ConceptBotImpl>, ConceptBotRepository>,
                      boost::hana::pair<boost::hana::type<ConceptTopImpl>, ConceptTopRepository>,
                      boost::hana::pair<boost::hana::type<ConceptAtomicStateImpl<Static>>, ConceptAtomicStateRepositoryImpl<Static>>,
@@ -120,6 +130,10 @@ public:
 
     template<ConceptOrRole D>
     NonTerminal<D> get_or_create_nonterminal(std::string name);
+    template<ConceptOrRole D, PrimitiveOrComposite C>
+    DerivationRule<D, C> get_or_create_derivation_rule(NonTerminal<D> head, Constructor<D, C> body);
+    template<ConceptOrRole D>
+    SubstitutionRule<D> get_or_create_substitution_rule(NonTerminal<D> head, NonTerminal<D> body);
 
     /* Concepts */
     ConceptBot get_or_create_concept_bot();
