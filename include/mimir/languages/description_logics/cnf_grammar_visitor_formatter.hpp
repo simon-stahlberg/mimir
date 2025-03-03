@@ -94,10 +94,6 @@ class FormatterConstructorVisitor<Concept, Composite> : public ConstructorVisito
 private:
     std::ostream& m_out;
 
-protected:
-    FormatterNonTerminalVisitor<Concept> m_concept_nonterminal_visitor;
-    FormatterNonTerminalVisitor<Role> m_role_nonterminal_visitor;
-
 public:
     FormatterConstructorVisitor(std::ostream& out);
 
@@ -138,10 +134,6 @@ class FormatterConstructorVisitor<Role, Composite> : public ConstructorVisitor<R
 private:
     std::ostream& m_out;
 
-protected:
-    FormatterNonTerminalVisitor<Concept> m_concept_nonterminal_visitor;
-    FormatterNonTerminalVisitor<Role> m_role_nonterminal_visitor;
-
 public:
     FormatterConstructorVisitor(std::ostream& out);
 
@@ -166,10 +158,6 @@ class FormatterDerivationRuleVisitor : public DerivationRuleVisitor<D, C>
 private:
     std::ostream& m_out;
 
-protected:
-    FormatterNonTerminalVisitor<D> m_nonterminal_visitor;
-    FormatterConstructorVisitor<D, C> m_constructor_visitor;
-
 public:
     FormatterDerivationRuleVisitor(std::ostream& out);
 
@@ -186,9 +174,6 @@ class FormatterSubstitutionRuleVisitor : public SubstitutionRuleVisitor<D>
 private:
     std::ostream& m_out;
 
-protected:
-    FormatterNonTerminalVisitor<D> m_nonterminal_visitor;
-
 public:
     FormatterSubstitutionRuleVisitor(std::ostream& out);
 
@@ -203,19 +188,6 @@ class FormatterGrammarVisitor : public GrammarVisitor
 {
 private:
     std::ostream& m_out;
-
-protected:
-    boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, FormatterNonTerminalVisitor<Concept>>,
-                     boost::hana::pair<boost::hana::type<Role>, FormatterNonTerminalVisitor<Role>>>
-        m_start_symbol_visitor;
-
-    boost::hana::map<boost::hana::pair<boost::hana::type<Concept>,
-                                       boost::hana::map<boost::hana::pair<boost::hana::type<Primitive>, FormatterDerivationRuleVisitor<Concept, Primitive>>,
-                                                        boost::hana::pair<boost::hana::type<Composite>, FormatterDerivationRuleVisitor<Concept, Composite>>>>,
-                     boost::hana::pair<boost::hana::type<Role>,
-                                       boost::hana::map<boost::hana::pair<boost::hana::type<Primitive>, FormatterDerivationRuleVisitor<Role, Primitive>>,
-                                                        boost::hana::pair<boost::hana::type<Composite>, FormatterDerivationRuleVisitor<Role, Composite>>>>>
-        m_derivation_rule_visitor;
 
 public:
     FormatterGrammarVisitor(std::ostream& out);

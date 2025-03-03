@@ -21,6 +21,7 @@
 #include "mimir/formalism/parser.hpp"
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/problem.hpp"
+#include "mimir/languages/description_logics/cnf_grammar_visitor_formatter.hpp"
 #include "mimir/languages/description_logics/constructor_repositories.hpp"
 #include "mimir/languages/description_logics/constructors.hpp"
 #include "mimir/languages/description_logics/grammar.hpp"
@@ -59,6 +60,8 @@ TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarParseTest)
         auto grammar = dl::grammar::Grammar(bnf_description, problem->get_domain());
 
         auto cnf_grammar = dl::cnf_grammar::Grammar(grammar);
+
+        std::cout << cnf_grammar << std::endl;
     }
 }
 

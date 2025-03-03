@@ -43,6 +43,7 @@ Grammar::Grammar(const grammar::Grammar& grammar)
     m_repositories = std::move(cnf_grammar.m_repositories);
     m_start_symbols = std::move(cnf_grammar.m_start_symbols);
     m_derivation_rules = std::move(cnf_grammar.m_derivation_rules);
+    m_substitution_rules = std::move(cnf_grammar.m_substitution_rules);
     m_domain = std::move(cnf_grammar.m_domain);
 }
 
