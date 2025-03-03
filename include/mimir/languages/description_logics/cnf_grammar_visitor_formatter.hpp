@@ -29,13 +29,13 @@ namespace mimir::dl::cnf_grammar
 /// Recursive Visitor
 ////////////////////////////
 
-template<ConceptOrRole D, PrimitiveOrComposite C>
+template<ConceptOrRole D>
 class FormatterConstructorVisitor;
 
 template<ConceptOrRole D>
 class FormatterNonTerminalVisitor;
 
-template<ConceptOrRole D, PrimitiveOrComposite C>
+template<ConceptOrRole D>
 class FormatterDerivationRuleVisitor;
 
 template<ConceptOrRole D>
@@ -63,13 +63,13 @@ public:
  * Concept
  */
 
-template<ConceptOrRole D, PrimitiveOrComposite C>
-class FormatterConstructorVisitor : public ConstructorVisitor<D, C>
+template<ConceptOrRole D>
+class FormatterConstructorVisitor : public ConstructorVisitor<D>
 {
 };
 
 template<>
-class FormatterConstructorVisitor<Concept, Primitive> : public ConstructorVisitor<Concept, Primitive>
+class FormatterConstructorVisitor<Concept> : public ConstructorVisitor<Concept>
 {
 private:
     std::ostream& m_out;
@@ -86,17 +86,6 @@ public:
     void visit(ConceptAtomicGoal<Fluent> constructor) override;
     void visit(ConceptAtomicGoal<Derived> constructor) override;
     void visit(ConceptNominal constructor) override;
-};
-
-template<>
-class FormatterConstructorVisitor<Concept, Composite> : public ConstructorVisitor<Concept, Composite>
-{
-private:
-    std::ostream& m_out;
-
-public:
-    FormatterConstructorVisitor(std::ostream& out);
-
     void visit(ConceptIntersection constructor) override;
     void visit(ConceptUnion constructor) override;
     void visit(ConceptNegation constructor) override;
@@ -111,7 +100,7 @@ public:
  */
 
 template<>
-class FormatterConstructorVisitor<Role, Primitive> : public ConstructorVisitor<Role, Primitive>
+class FormatterConstructorVisitor<Role> : public ConstructorVisitor<Role>
 {
 private:
     std::ostream& m_out;
@@ -126,17 +115,6 @@ public:
     void visit(RoleAtomicGoal<Static> constructor) override;
     void visit(RoleAtomicGoal<Fluent> constructor) override;
     void visit(RoleAtomicGoal<Derived> constructor) override;
-};
-
-template<>
-class FormatterConstructorVisitor<Role, Composite> : public ConstructorVisitor<Role, Composite>
-{
-private:
-    std::ostream& m_out;
-
-public:
-    FormatterConstructorVisitor(std::ostream& out);
-
     void visit(RoleIntersection constructor) override;
     void visit(RoleUnion constructor) override;
     void visit(RoleComplement constructor) override;
@@ -152,8 +130,8 @@ public:
  * DerivationRule
  */
 
-template<ConceptOrRole D, PrimitiveOrComposite C>
-class FormatterDerivationRuleVisitor : public DerivationRuleVisitor<D, C>
+template<ConceptOrRole D>
+class FormatterDerivationRuleVisitor : public DerivationRuleVisitor<D>
 {
 private:
     std::ostream& m_out;
@@ -161,7 +139,7 @@ private:
 public:
     FormatterDerivationRuleVisitor(std::ostream& out);
 
-    void visit(DerivationRule<D, C> constructor) override;
+    void visit(DerivationRule<D> constructor) override;
 };
 
 /**
@@ -199,14 +177,14 @@ public:
  * Printing
  */
 
-template<ConceptOrRole D, PrimitiveOrComposite C>
-extern std::ostream& operator<<(std::ostream& out, Constructor<D, C> element);
+template<ConceptOrRole D>
+extern std::ostream& operator<<(std::ostream& out, Constructor<D> element);
 
 template<ConceptOrRole D>
 extern std::ostream& operator<<(std::ostream& out, NonTerminal<D> element);
 
-template<ConceptOrRole D, PrimitiveOrComposite C>
-extern std::ostream& operator<<(std::ostream& out, DerivationRule<D, C> element);
+template<ConceptOrRole D>
+extern std::ostream& operator<<(std::ostream& out, DerivationRule<D> element);
 
 template<ConceptOrRole D>
 extern std::ostream& operator<<(std::ostream& out, SubstitutionRule<D> element);

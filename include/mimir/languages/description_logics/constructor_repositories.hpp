@@ -59,7 +59,7 @@ using RoleReflexiveTransitiveClosureRepository = SegmentedDLRepository<RoleRefle
 using RoleRestrictionRepository = SegmentedDLRepository<RoleRestrictionImpl>;
 using RoleIdentityFactory = SegmentedDLRepository<RoleIdentityImpl>;
 
-using ConstructorRepositories =
+using HanaConstructorRepositories =
     boost::hana::map<boost::hana::pair<boost::hana::type<ConceptBotImpl>, ConceptBotRepository>,  //
                      boost::hana::pair<boost::hana::type<ConceptTopImpl>, ConceptTopRepository>,
                      boost::hana::pair<boost::hana::type<ConceptAtomicStateImpl<Static>>, ConceptAtomicStateRepositoryImpl<Static>>,
@@ -92,6 +92,54 @@ using ConstructorRepositories =
                      boost::hana::pair<boost::hana::type<RoleReflexiveTransitiveClosureImpl>, RoleReflexiveTransitiveClosureRepository>,
                      boost::hana::pair<boost::hana::type<RoleRestrictionImpl>, RoleRestrictionRepository>,
                      boost::hana::pair<boost::hana::type<RoleIdentityImpl>, RoleIdentityFactory>>;
+
+class ConstructorRepositories
+{
+private:
+    HanaConstructorRepositories m_repositories;
+
+public:
+    ConstructorRepositories() = default;
+    ConstructorRepositories(const ConstructorRepositories& other) = delete;
+    ConstructorRepositories& operator=(const ConstructorRepositories& other) = delete;
+    ConstructorRepositories(ConstructorRepositories&& other) = default;
+    ConstructorRepositories& operator=(ConstructorRepositories&& other) = default;
+
+    HanaConstructorRepositories& get_repositories();
+    const HanaConstructorRepositories& get_repositories() const;
+
+    /* Concepts */
+    ConceptBot get_or_create_concept_bot();
+    ConceptTop get_or_create_concept_top();
+    template<StaticOrFluentOrDerived P>
+    ConceptAtomicState<P> get_or_create_concept_atomic_state(Predicate<P> predicate);
+    template<StaticOrFluentOrDerived P>
+    ConceptAtomicGoal<P> get_or_create_concept_atomic_goal(Predicate<P> predicate, bool is_negated);
+    ConceptIntersection get_or_create_concept_intersection(Constructor<Concept> left_concept, Constructor<Concept> right_concept);
+    ConceptUnion get_or_create_concept_union(Constructor<Concept> left_concept, Constructor<Concept> right_concept);
+    ConceptNegation get_or_create_concept_negation(Constructor<Concept> concept_);
+    ConceptValueRestriction get_or_create_concept_value_restriction(Constructor<Role> role, Constructor<Concept> concept_);
+    ConceptExistentialQuantification get_or_create_concept_existential_quantification(Constructor<Role> role, Constructor<Concept> concept_);
+    ConceptRoleValueMapContainment get_or_create_concept_role_value_map_containment(Constructor<Role> left_role, Constructor<Role> right_role);
+    ConceptRoleValueMapEquality get_or_create_concept_role_value_map_equality(Constructor<Role> left_role, Constructor<Role> right_role);
+    ConceptNominal get_or_create_concept_nominal(Object object);
+
+    /* Roles */
+    RoleUniversal get_or_create_role_universal();
+    template<StaticOrFluentOrDerived P>
+    RoleAtomicState<P> get_or_create_role_atomic_state(Predicate<P> predicate);
+    template<StaticOrFluentOrDerived P>
+    RoleAtomicGoal<P> get_or_create_role_atomic_goal(Predicate<P> predicate, bool is_negated);
+    RoleIntersection get_or_create_role_intersection(Constructor<Role> left_role, Constructor<Role> right_role);
+    RoleUnion get_or_create_role_union(Constructor<Role> left_role, Constructor<Role> right_role);
+    RoleComplement get_or_create_role_complement(Constructor<Role> role);
+    RoleInverse get_or_create_role_inverse(Constructor<Role> role);
+    RoleComposition get_or_create_role_composition(Constructor<Role> left_role, Constructor<Role> right_role);
+    RoleTransitiveClosure get_or_create_role_transitive_closure(Constructor<Role> role);
+    RoleReflexiveTransitiveClosure get_or_create_role_reflexive_transitive_closure(Constructor<Role> role);
+    RoleRestriction get_or_create_role_restriction(Constructor<Role> role, Constructor<Concept> concept_);
+    RoleIdentity get_or_create_role_identity(Constructor<Concept> concept_);
+};
 
 }
 

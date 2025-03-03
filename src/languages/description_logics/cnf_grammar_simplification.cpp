@@ -15,28 +15,29 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CNF_GRAMMAR_CONSTRUCTORS_TAG_HPP_
-#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CNF_GRAMMAR_CONSTRUCTORS_TAG_HPP_
-
-#include <concepts>
-#include <cstddef>
+#include "cnf_grammar_simplification.hpp"
 
 namespace mimir::dl::cnf_grammar
 {
 
-/// @brief `Primitive` only have to be generated in the first step
-struct Primitive
+Grammar eliminate_rules_with_identical_body(const Grammar& grammar)
 {
-};
-
-/// @brief `Composite` are refined in all subsequent steps
-struct Composite
-{
-};
-
-template<typename T>
-concept PrimitiveOrComposite = std::is_same<T, Primitive>::value || std::is_same<T, Composite>::value;
-
+    auto repositories = cnf_grammar::ConstructorRepositories();
+    auto start_symbols = cnf_grammar::StartSymbolsContainer();
+    auto derivation_rules = cnf_grammar::DerivationRulesContainer();
+    auto substitution_rules = cnf_grammar::SubstitutionRulesContainer();
 }
 
-#endif
+Grammar simplify(const Grammar& grammar)
+{
+    /* Step 1 Identify rules with same body */
+
+    /* Step 2 resubstitute substitution rules using fixed point */
+
+    // If right handside of substitution rule has a single rule
+
+    /* Step 3 order substitution rules in order of evaluation through topological sorting */
+
+    /* Step 4 remove rules of unreachable non-terminals */
+}
+}

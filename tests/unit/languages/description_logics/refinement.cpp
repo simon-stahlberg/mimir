@@ -89,7 +89,7 @@ TEST(MimirTests, LanguagesDescriptionLogicsRefinementBrfsTest)
     boost::hana::at_key(options.max_constructors, boost::hana::type<dl::Concept> {}) = std::numeric_limits<size_t>::max();
     boost::hana::at_key(options.max_constructors, boost::hana::type<dl::Role> {}) = std::numeric_limits<size_t>::max();
 
-    auto constructor_repositories = dl::ConstructorRepositories();
+    auto constructor_repositories = dl::HanaConstructorRepositories();
 
     auto applicable_action_generator = std::make_shared<LiftedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories());
     auto axiom_evaluator =

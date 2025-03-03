@@ -33,18 +33,14 @@ NonTerminal<D> ConstructorRepositories::get_or_create_nonterminal(std::string na
 template NonTerminal<Concept> ConstructorRepositories::get_or_create_nonterminal(std::string name);
 template NonTerminal<Role> ConstructorRepositories::get_or_create_nonterminal(std::string name);
 
-template<ConceptOrRole D, PrimitiveOrComposite C>
-DerivationRule<D, C> ConstructorRepositories::get_or_create_derivation_rule(NonTerminal<D> head, Constructor<D, C> body)
+template<ConceptOrRole D>
+DerivationRule<D> ConstructorRepositories::get_or_create_derivation_rule(NonTerminal<D> head, Constructor<D> body)
 {
-    return boost::hana::at_key(m_repositories, boost::hana::type<DerivationRuleImpl<D, C>> {}).get_or_create(head, body);
+    return boost::hana::at_key(m_repositories, boost::hana::type<DerivationRuleImpl<D>> {}).get_or_create(head, body);
 }
 
-template DerivationRule<Concept, Primitive> ConstructorRepositories::get_or_create_derivation_rule(NonTerminal<Concept> head,
-                                                                                                   Constructor<Concept, Primitive> body);
-template DerivationRule<Concept, Composite> ConstructorRepositories::get_or_create_derivation_rule(NonTerminal<Concept> head,
-                                                                                                   Constructor<Concept, Composite> body);
-template DerivationRule<Role, Primitive> ConstructorRepositories::get_or_create_derivation_rule(NonTerminal<Role> head, Constructor<Role, Primitive> body);
-template DerivationRule<Role, Composite> ConstructorRepositories::get_or_create_derivation_rule(NonTerminal<Role> head, Constructor<Role, Composite> body);
+template DerivationRule<Concept> ConstructorRepositories::get_or_create_derivation_rule(NonTerminal<Concept> head, Constructor<Concept> body);
+template DerivationRule<Role> ConstructorRepositories::get_or_create_derivation_rule(NonTerminal<Role> head, Constructor<Role> body);
 
 template<ConceptOrRole D>
 SubstitutionRule<D> ConstructorRepositories::get_or_create_substitution_rule(NonTerminal<D> head, NonTerminal<D> body)

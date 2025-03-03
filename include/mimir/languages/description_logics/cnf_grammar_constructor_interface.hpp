@@ -18,7 +18,6 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CNF_GRAMMAR_CONSTRUCTORS_INTERFACE_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CNF_GRAMMAR_CONSTRUCTORS_INTERFACE_HPP_
 
-#include "mimir/languages/description_logics/cnf_grammar_constructor_tag.hpp"
 #include "mimir/languages/description_logics/constructor_interface.hpp"
 
 #include <concepts>
@@ -30,7 +29,7 @@ namespace mimir::dl::cnf_grammar
  * Grammar constructor hierarchy parallel to dl constructors.
  */
 
-template<dl::ConceptOrRole D, PrimitiveOrComposite C>
+template<dl::ConceptOrRole D>
 class ConstructorImpl
 {
 protected:
@@ -50,7 +49,7 @@ public:
     virtual bool test_match(dl::Constructor<D> constructor, const Grammar& grammar) const = 0;
 
     /// @brief Accept a visitor.
-    virtual void accept(ConstructorVisitor<D, C>& visitor) const = 0;
+    virtual void accept(ConstructorVisitor<D>& visitor) const = 0;
 };
 
 }

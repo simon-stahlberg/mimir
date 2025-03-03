@@ -31,7 +31,7 @@ namespace mimir::dl::cnf_grammar
  * Constructors
  */
 
-template<ConceptOrRole D, PrimitiveOrComposite C>
+template<ConceptOrRole D>
 class ConstructorVisitor
 {
 };
@@ -41,7 +41,7 @@ class ConstructorVisitor
  */
 
 template<>
-class ConstructorVisitor<Concept, Primitive>
+class ConstructorVisitor<Concept>
 {
 public:
     virtual ~ConstructorVisitor() = default;
@@ -55,14 +55,6 @@ public:
     virtual void visit(ConceptAtomicGoal<Fluent> constructor) = 0;
     virtual void visit(ConceptAtomicGoal<Derived> constructor) = 0;
     virtual void visit(ConceptNominal constructor) = 0;
-};
-
-template<>
-class ConstructorVisitor<Concept, Composite>
-{
-public:
-    virtual ~ConstructorVisitor() = default;
-
     virtual void visit(ConceptIntersection constructor) = 0;
     virtual void visit(ConceptUnion constructor) = 0;
     virtual void visit(ConceptNegation constructor) = 0;
@@ -77,7 +69,7 @@ public:
  */
 
 template<>
-class ConstructorVisitor<Role, Primitive>
+class ConstructorVisitor<Role>
 {
 public:
     virtual ~ConstructorVisitor() = default;
@@ -89,14 +81,6 @@ public:
     virtual void visit(RoleAtomicGoal<Static> constructor) = 0;
     virtual void visit(RoleAtomicGoal<Fluent> constructor) = 0;
     virtual void visit(RoleAtomicGoal<Derived> constructor) = 0;
-};
-
-template<>
-class ConstructorVisitor<Role, Composite>
-{
-public:
-    virtual ~ConstructorVisitor() = default;
-
     virtual void visit(RoleIntersection constructor) = 0;
     virtual void visit(RoleUnion constructor) = 0;
     virtual void visit(RoleComplement constructor) = 0;
@@ -125,13 +109,13 @@ public:
  * DerivationRule
  */
 
-template<ConceptOrRole D, PrimitiveOrComposite C>
+template<ConceptOrRole D>
 class DerivationRuleVisitor
 {
 public:
     virtual ~DerivationRuleVisitor() = default;
 
-    virtual void visit(DerivationRule<D, C> rule) = 0;
+    virtual void visit(DerivationRule<D> rule) = 0;
 };
 
 /**

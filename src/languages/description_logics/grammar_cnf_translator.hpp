@@ -25,13 +25,10 @@
 namespace mimir::dl::cnf_grammar
 {
 template<ConceptOrRole D>
-using ConstructorVariant = std::variant<Constructor<D, Primitive>, Constructor<D, Composite>>;
+using ConstructorOrNonTerminal = std::variant<Constructor<D>, NonTerminal<D>>;
 
 template<ConceptOrRole D>
-using ConstructorVariantOrNonTerminal = std::variant<ConstructorVariant<D>, NonTerminal<D>>;
-
-template<ConceptOrRole D>
-using DerivationOrSubstitutionRule = std::variant<DerivationRule<D, Primitive>, DerivationRule<D, Composite>, SubstitutionRule<D>>;
+using DerivationOrSubstitutionRule = std::variant<DerivationRule<D>, SubstitutionRule<D>>;
 }
 
 namespace mimir::dl::grammar
@@ -64,7 +61,7 @@ class ToCNFConstructorVisitor<Concept> : public ConstructorVisitor<Concept>
 {
 protected:
     cnf_grammar::ConstructorRepositories& m_repositories;
-    cnf_grammar::ConstructorVariant<Concept> m_result;  ///< the result of a visitation
+    cnf_grammar::Constructor<Concept> m_result;  ///< the result of a visitation
 
     ToCNFNonTerminalConstructorOrNonTerminalVisitor<Concept>* m_nonterminal_concept_visitor;
     ToCNFNonTerminalConstructorOrNonTerminalVisitor<Role>* m_nonterminal_role_visitor;
@@ -92,7 +89,7 @@ public:
     void visit(ConceptRoleValueMapEquality constructor) override;
     void visit(ConceptNominal constructor) override;
 
-    cnf_grammar::ConstructorVariant<Concept> get_result() const;
+    cnf_grammar::Constructor<Concept> get_result() const;
 };
 
 /**
@@ -104,7 +101,7 @@ class ToCNFConstructorVisitor<Role> : public ConstructorVisitor<Role>
 {
 protected:
     cnf_grammar::ConstructorRepositories& m_repositories;
-    cnf_grammar::ConstructorVariant<Role> m_result;  ///< the result of a visitation
+    cnf_grammar::Constructor<Role> m_result;  ///< the result of a visitation
 
     ToCNFNonTerminalConstructorOrNonTerminalVisitor<Concept>* m_nonterminal_concept_visitor;
     ToCNFNonTerminalConstructorOrNonTerminalVisitor<Role>* m_nonterminal_role_visitor;
@@ -132,7 +129,7 @@ public:
     void visit(RoleRestriction constructor) override;
     void visit(RoleIdentity constructor) override;
 
-    cnf_grammar::ConstructorVariant<Role> get_result() const;
+    cnf_grammar::Constructor<Role> get_result() const;
 };
 
 /**
@@ -144,7 +141,7 @@ class ToCNFVariantConstructorOrNonTerminalVisitor : public ConstructorOrNonTermi
 {
 protected:
     cnf_grammar::ConstructorRepositories& m_repositories;
-    cnf_grammar::ConstructorVariantOrNonTerminal<D> m_result;  ///< the result of a visitation
+    cnf_grammar::ConstructorOrNonTerminal<D> m_result;  ///< the result of a visitation
 
     ToCNFNonTerminalVisitor<D>* m_nonterminal_visitor;
     ToCNFConstructorVisitor<D>* m_constructor_visitor;
@@ -156,7 +153,7 @@ public:
 
     void visit(ConstructorOrNonTerminal<D> constructor) override;
 
-    cnf_grammar::ConstructorVariantOrNonTerminal<D> get_result() const;
+    cnf_grammar::ConstructorOrNonTerminal<D> get_result() const;
 };
 
 template<ConceptOrRole D>

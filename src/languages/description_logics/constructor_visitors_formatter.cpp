@@ -104,6 +104,8 @@ void FormatterVisitor<Concept>::visit(ConceptRoleValueMapEquality constructor)
 void FormatterVisitor<Concept>::visit(ConceptNominal constructor) { m_out << keywords::concept_nominal << " " << constructor->get_object()->get_name(); }
 
 /* Roles */
+FormatterVisitor<Role>::FormatterVisitor(std::ostream& out) : m_out(out) {}
+
 void FormatterVisitor<Role>::visit(RoleUniversal constructor) { m_out << keywords::role_universal; }
 void FormatterVisitor<Role>::visit(RoleAtomicState<Static> constructor)
 {

@@ -19,7 +19,6 @@
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_DECLARATIONS_HPP_
 
 #include "mimir/formalism/tags.hpp"
-#include "mimir/languages/description_logics/cnf_grammar_constructor_tag.hpp"
 #include "mimir/languages/description_logics/constructor_tag.hpp"
 
 #include <boost/hana.hpp>
@@ -274,16 +273,18 @@ template<dl::ConceptOrRole D>
 class NonTerminalImpl;
 template<dl::ConceptOrRole D>
 using NonTerminal = const NonTerminalImpl<D>*;
+template<dl::ConceptOrRole D>
+using NonTerminalList = std::vector<NonTerminal<D>>;
 
 /* DerivationRule */
-template<dl::ConceptOrRole D, PrimitiveOrComposite C>
+template<dl::ConceptOrRole D>
 class DerivationRuleImpl;
-template<dl::ConceptOrRole D, PrimitiveOrComposite C>
-using DerivationRule = const DerivationRuleImpl<D, C>*;
-template<dl::ConceptOrRole D, PrimitiveOrComposite C>
-using DerivationRuleList = std::vector<DerivationRule<D, C>>;
-template<dl::ConceptOrRole D, PrimitiveOrComposite C>
-using DerivationRuleSet = std::unordered_set<DerivationRule<D, C>>;
+template<dl::ConceptOrRole D>
+using DerivationRule = const DerivationRuleImpl<D>*;
+template<dl::ConceptOrRole D>
+using DerivationRuleList = std::vector<DerivationRule<D>>;
+template<dl::ConceptOrRole D>
+using DerivationRuleSet = std::unordered_set<DerivationRule<D>>;
 
 /* SubstitutionRule */
 template<dl::ConceptOrRole D>
@@ -300,14 +301,14 @@ using SubstitutionRuleSet = std::unordered_set<SubstitutionRule<D>>;
  */
 
 /* Constructor */
-template<dl::ConceptOrRole D, PrimitiveOrComposite C>
+template<dl::ConceptOrRole D>
 class ConstructorImpl;
-template<dl::ConceptOrRole D, PrimitiveOrComposite C>
-using Constructor = const ConstructorImpl<D, C>*;
-template<dl::ConceptOrRole D, PrimitiveOrComposite C>
-using ConstructorList = std::vector<Constructor<D, C>>;
-template<dl::ConceptOrRole D, PrimitiveOrComposite C>
-using ConstructorSet = std::unordered_set<Constructor<D, C>>;
+template<dl::ConceptOrRole D>
+using Constructor = const ConstructorImpl<D>*;
+template<dl::ConceptOrRole D>
+using ConstructorList = std::vector<Constructor<D>>;
+template<dl::ConceptOrRole D>
+using ConstructorSet = std::unordered_set<Constructor<D>>;
 
 /* Concrete concepts */
 class ConceptTopImpl;
@@ -373,13 +374,13 @@ using RoleIdentity = const RoleIdentityImpl*;
  * Visitors
  */
 
-template<ConceptOrRole D, PrimitiveOrComposite C>
+template<ConceptOrRole D>
 class ConstructorVisitor;
 
 template<ConceptOrRole D>
 class NonTerminalVisitor;
 
-template<ConceptOrRole D, PrimitiveOrComposite C>
+template<ConceptOrRole D>
 class DerivationRuleVisitor;
 
 template<ConceptOrRole D>

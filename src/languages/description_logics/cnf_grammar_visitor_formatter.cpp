@@ -33,42 +33,40 @@ namespace mimir::dl::cnf_grammar
  * Concept
  */
 
-FormatterConstructorVisitor<Concept, Primitive>::FormatterConstructorVisitor(std::ostream& out) : m_out(out) {}
+FormatterConstructorVisitor<Concept>::FormatterConstructorVisitor(std::ostream& out) : m_out(out) {}
 
-void FormatterConstructorVisitor<Concept, Primitive>::visit(ConceptBot constructor) { m_out << keywords::concept_bot; }
-void FormatterConstructorVisitor<Concept, Primitive>::visit(ConceptTop constructor) { m_out << keywords::concept_top; }
-void FormatterConstructorVisitor<Concept, Primitive>::visit(ConceptAtomicState<Static> constructor)
+void FormatterConstructorVisitor<Concept>::visit(ConceptBot constructor) { m_out << keywords::concept_bot; }
+void FormatterConstructorVisitor<Concept>::visit(ConceptTop constructor) { m_out << keywords::concept_top; }
+void FormatterConstructorVisitor<Concept>::visit(ConceptAtomicState<Static> constructor)
 {
     m_out << keywords::concept_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
-void FormatterConstructorVisitor<Concept, Primitive>::visit(ConceptAtomicState<Fluent> constructor)
+void FormatterConstructorVisitor<Concept>::visit(ConceptAtomicState<Fluent> constructor)
 {
     m_out << keywords::concept_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
-void FormatterConstructorVisitor<Concept, Primitive>::visit(ConceptAtomicState<Derived> constructor)
+void FormatterConstructorVisitor<Concept>::visit(ConceptAtomicState<Derived> constructor)
 {
     m_out << keywords::concept_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
-void FormatterConstructorVisitor<Concept, Primitive>::visit(ConceptAtomicGoal<Static> constructor)
+void FormatterConstructorVisitor<Concept>::visit(ConceptAtomicGoal<Static> constructor)
 {
     m_out << keywords::concept_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->is_negated() ? "false" : "true");
 }
-void FormatterConstructorVisitor<Concept, Primitive>::visit(ConceptAtomicGoal<Fluent> constructor)
+void FormatterConstructorVisitor<Concept>::visit(ConceptAtomicGoal<Fluent> constructor)
 {
     m_out << keywords::concept_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->is_negated() ? "false" : "true");
 }
-void FormatterConstructorVisitor<Concept, Primitive>::visit(ConceptAtomicGoal<Derived> constructor)
+void FormatterConstructorVisitor<Concept>::visit(ConceptAtomicGoal<Derived> constructor)
 {
     m_out << keywords::concept_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->is_negated() ? "false" : "true");
 }
-void FormatterConstructorVisitor<Concept, Primitive>::visit(ConceptNominal constructor)
+void FormatterConstructorVisitor<Concept>::visit(ConceptNominal constructor)
 {
     m_out << keywords::concept_nominal << " " << constructor->get_object()->get_name();
 }
 
-FormatterConstructorVisitor<Concept, Composite>::FormatterConstructorVisitor(std::ostream& out) : m_out(out) {}
-
-void FormatterConstructorVisitor<Concept, Composite>::visit(ConceptIntersection constructor)
+void FormatterConstructorVisitor<Concept>::visit(ConceptIntersection constructor)
 {
     auto visitor = FormatterNonTerminalVisitor<Concept>(m_out);
     m_out << keywords::concept_intersection << " ";
@@ -76,7 +74,7 @@ void FormatterConstructorVisitor<Concept, Composite>::visit(ConceptIntersection 
     m_out << " ";
     constructor->get_concept_right()->accept(visitor);
 }
-void FormatterConstructorVisitor<Concept, Composite>::visit(ConceptUnion constructor)
+void FormatterConstructorVisitor<Concept>::visit(ConceptUnion constructor)
 {
     auto visitor = FormatterNonTerminalVisitor<Concept>(m_out);
     m_out << keywords::concept_union << " ";
@@ -84,13 +82,13 @@ void FormatterConstructorVisitor<Concept, Composite>::visit(ConceptUnion constru
     m_out << " ";
     constructor->get_concept_right()->accept(visitor);
 }
-void FormatterConstructorVisitor<Concept, Composite>::visit(ConceptNegation constructor)
+void FormatterConstructorVisitor<Concept>::visit(ConceptNegation constructor)
 {
     auto visitor = FormatterNonTerminalVisitor<Concept>(m_out);
     m_out << keywords::concept_negation << " ";
     constructor->get_concept()->accept(visitor);
 }
-void FormatterConstructorVisitor<Concept, Composite>::visit(ConceptValueRestriction constructor)
+void FormatterConstructorVisitor<Concept>::visit(ConceptValueRestriction constructor)
 {
     auto concept_visitor = FormatterNonTerminalVisitor<Concept>(m_out);
     auto role_visitor = FormatterNonTerminalVisitor<Role>(m_out);
@@ -99,7 +97,7 @@ void FormatterConstructorVisitor<Concept, Composite>::visit(ConceptValueRestrict
     m_out << " ";
     constructor->get_concept()->accept(concept_visitor);
 }
-void FormatterConstructorVisitor<Concept, Composite>::visit(ConceptExistentialQuantification constructor)
+void FormatterConstructorVisitor<Concept>::visit(ConceptExistentialQuantification constructor)
 {
     auto concept_visitor = FormatterNonTerminalVisitor<Concept>(m_out);
     auto role_visitor = FormatterNonTerminalVisitor<Role>(m_out);
@@ -108,7 +106,7 @@ void FormatterConstructorVisitor<Concept, Composite>::visit(ConceptExistentialQu
     m_out << " ";
     constructor->get_concept()->accept(concept_visitor);
 }
-void FormatterConstructorVisitor<Concept, Composite>::visit(ConceptRoleValueMapContainment constructor)
+void FormatterConstructorVisitor<Concept>::visit(ConceptRoleValueMapContainment constructor)
 {
     auto role_visitor = FormatterNonTerminalVisitor<Role>(m_out);
     m_out << keywords::concept_role_value_map_containment << " ";
@@ -116,7 +114,7 @@ void FormatterConstructorVisitor<Concept, Composite>::visit(ConceptRoleValueMapC
     m_out << " ";
     constructor->get_role_right()->accept(role_visitor);
 }
-void FormatterConstructorVisitor<Concept, Composite>::visit(ConceptRoleValueMapEquality constructor)
+void FormatterConstructorVisitor<Concept>::visit(ConceptRoleValueMapEquality constructor)
 {
     auto role_visitor = FormatterNonTerminalVisitor<Role>(m_out);
     m_out << keywords::concept_role_value_map_equality << " ";
@@ -129,37 +127,35 @@ void FormatterConstructorVisitor<Concept, Composite>::visit(ConceptRoleValueMapE
  * Role
  */
 
-FormatterConstructorVisitor<Role, Primitive>::FormatterConstructorVisitor(std::ostream& out) : m_out(out) {}
+FormatterConstructorVisitor<Role>::FormatterConstructorVisitor(std::ostream& out) : m_out(out) {}
 
-void FormatterConstructorVisitor<Role, Primitive>::visit(RoleUniversal constructor) { m_out << keywords::role_universal; }
-void FormatterConstructorVisitor<Role, Primitive>::visit(RoleAtomicState<Static> constructor)
+void FormatterConstructorVisitor<Role>::visit(RoleUniversal constructor) { m_out << keywords::role_universal; }
+void FormatterConstructorVisitor<Role>::visit(RoleAtomicState<Static> constructor)
 {
     m_out << keywords::role_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
-void FormatterConstructorVisitor<Role, Primitive>::visit(RoleAtomicState<Fluent> constructor)
+void FormatterConstructorVisitor<Role>::visit(RoleAtomicState<Fluent> constructor)
 {
     m_out << keywords::role_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
-void FormatterConstructorVisitor<Role, Primitive>::visit(RoleAtomicState<Derived> constructor)
+void FormatterConstructorVisitor<Role>::visit(RoleAtomicState<Derived> constructor)
 {
     m_out << keywords::role_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
-void FormatterConstructorVisitor<Role, Primitive>::visit(RoleAtomicGoal<Static> constructor)
+void FormatterConstructorVisitor<Role>::visit(RoleAtomicGoal<Static> constructor)
 {
     m_out << keywords::role_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->is_negated() ? "false" : "true");
 }
-void FormatterConstructorVisitor<Role, Primitive>::visit(RoleAtomicGoal<Fluent> constructor)
+void FormatterConstructorVisitor<Role>::visit(RoleAtomicGoal<Fluent> constructor)
 {
     m_out << keywords::role_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->is_negated() ? "false" : "true");
 }
-void FormatterConstructorVisitor<Role, Primitive>::visit(RoleAtomicGoal<Derived> constructor)
+void FormatterConstructorVisitor<Role>::visit(RoleAtomicGoal<Derived> constructor)
 {
     m_out << keywords::role_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->is_negated() ? "false" : "true");
 }
 
-FormatterConstructorVisitor<Role, Composite>::FormatterConstructorVisitor(std::ostream& out) : m_out(out) {}
-
-void FormatterConstructorVisitor<Role, Composite>::visit(RoleIntersection constructor)
+void FormatterConstructorVisitor<Role>::visit(RoleIntersection constructor)
 {
     auto role_visitor = FormatterNonTerminalVisitor<Role>(m_out);
     m_out << keywords::role_intersection << " ";
@@ -167,7 +163,7 @@ void FormatterConstructorVisitor<Role, Composite>::visit(RoleIntersection constr
     m_out << " ";
     constructor->get_role_right()->accept(role_visitor);
 }
-void FormatterConstructorVisitor<Role, Composite>::visit(RoleUnion constructor)
+void FormatterConstructorVisitor<Role>::visit(RoleUnion constructor)
 {
     auto role_visitor = FormatterNonTerminalVisitor<Role>(m_out);
     m_out << keywords::role_union << " ";
@@ -175,19 +171,19 @@ void FormatterConstructorVisitor<Role, Composite>::visit(RoleUnion constructor)
     m_out << " ";
     constructor->get_role_right()->accept(role_visitor);
 }
-void FormatterConstructorVisitor<Role, Composite>::visit(RoleComplement constructor)
+void FormatterConstructorVisitor<Role>::visit(RoleComplement constructor)
 {
     auto role_visitor = FormatterNonTerminalVisitor<Role>(m_out);
     m_out << keywords::role_complement << " ";
     constructor->get_role()->accept(role_visitor);
 }
-void FormatterConstructorVisitor<Role, Composite>::visit(RoleInverse constructor)
+void FormatterConstructorVisitor<Role>::visit(RoleInverse constructor)
 {
     auto role_visitor = FormatterNonTerminalVisitor<Role>(m_out);
     m_out << keywords::role_inverse << " ";
     constructor->get_role()->accept(role_visitor);
 }
-void FormatterConstructorVisitor<Role, Composite>::visit(RoleComposition constructor)
+void FormatterConstructorVisitor<Role>::visit(RoleComposition constructor)
 {
     auto role_visitor = FormatterNonTerminalVisitor<Role>(m_out);
     m_out << keywords::role_composition << " ";
@@ -195,19 +191,19 @@ void FormatterConstructorVisitor<Role, Composite>::visit(RoleComposition constru
     m_out << " ";
     constructor->get_role_right()->accept(role_visitor);
 }
-void FormatterConstructorVisitor<Role, Composite>::visit(RoleTransitiveClosure constructor)
+void FormatterConstructorVisitor<Role>::visit(RoleTransitiveClosure constructor)
 {
     auto role_visitor = FormatterNonTerminalVisitor<Role>(m_out);
     m_out << keywords::role_transitive_closure << " ";
     constructor->get_role()->accept(role_visitor);
 }
-void FormatterConstructorVisitor<Role, Composite>::visit(RoleReflexiveTransitiveClosure constructor)
+void FormatterConstructorVisitor<Role>::visit(RoleReflexiveTransitiveClosure constructor)
 {
     auto role_visitor = FormatterNonTerminalVisitor<Role>(m_out);
     m_out << keywords::role_reflexive_transitive_closure << " ";
     constructor->get_role()->accept(role_visitor);
 }
-void FormatterConstructorVisitor<Role, Composite>::visit(RoleRestriction constructor)
+void FormatterConstructorVisitor<Role>::visit(RoleRestriction constructor)
 {
     auto concept_visitor = FormatterNonTerminalVisitor<Concept>(m_out);
     auto role_visitor = FormatterNonTerminalVisitor<Role>(m_out);
@@ -216,7 +212,7 @@ void FormatterConstructorVisitor<Role, Composite>::visit(RoleRestriction constru
     m_out << " ";
     constructor->get_concept()->accept(concept_visitor);
 }
-void FormatterConstructorVisitor<Role, Composite>::visit(RoleIdentity constructor)
+void FormatterConstructorVisitor<Role>::visit(RoleIdentity constructor)
 {
     auto concept_visitor = FormatterNonTerminalVisitor<Concept>(m_out);
     m_out << keywords::role_identity << " ";
@@ -238,20 +234,23 @@ void FormatterNonTerminalVisitor<D>::visit(NonTerminal<D> constructor)
     m_out << constructor->get_name();
 }
 
+template class FormatterNonTerminalVisitor<Concept>;
+template class FormatterNonTerminalVisitor<Role>;
+
 /**
  * DerivationRule
  */
 
-template<ConceptOrRole D, PrimitiveOrComposite C>
-FormatterDerivationRuleVisitor<D, C>::FormatterDerivationRuleVisitor(std::ostream& out) : m_out(out)
+template<ConceptOrRole D>
+FormatterDerivationRuleVisitor<D>::FormatterDerivationRuleVisitor(std::ostream& out) : m_out(out)
 {
 }
 
-template<ConceptOrRole D, PrimitiveOrComposite C>
-void FormatterDerivationRuleVisitor<D, C>::visit(DerivationRule<D, C> constructor)
+template<ConceptOrRole D>
+void FormatterDerivationRuleVisitor<D>::visit(DerivationRule<D> constructor)
 {
     auto nonterminal_visitor = FormatterNonTerminalVisitor<D>(m_out);
-    auto constructor_visitor = FormatterConstructorVisitor<D, C>(m_out);
+    auto constructor_visitor = FormatterConstructorVisitor<D>(m_out);
 
     constructor->get_head()->accept(nonterminal_visitor);
 
@@ -259,6 +258,9 @@ void FormatterDerivationRuleVisitor<D, C>::visit(DerivationRule<D, C> constructo
 
     constructor->get_body()->accept(constructor_visitor);
 }
+
+template class FormatterDerivationRuleVisitor<Concept>;
+template class FormatterDerivationRuleVisitor<Role>;
 
 /**
  * SubstitutionRule
@@ -280,6 +282,9 @@ void FormatterSubstitutionRuleVisitor<D>::visit(SubstitutionRule<D> constructor)
 
     constructor->get_body()->accept(nonterminal_visitor);
 }
+
+template class FormatterSubstitutionRuleVisitor<Concept>;
+template class FormatterSubstitutionRuleVisitor<Role>;
 
 /**
  * Grammar
@@ -337,46 +342,37 @@ void FormatterGrammarVisitor::visit(const Grammar& grammar)
                                   const auto& second = boost::hana::second(pair);
                                   using ConstructorType = typename decltype(+key)::type;
 
-                                  boost::hana::for_each(second,
-                                                        [&](auto&& pair2)
-                                                        {
-                                                            auto key2 = boost::hana::first(pair2);
-                                                            const auto& second2 = boost::hana::second(pair2);
-                                                            using RuleType = typename decltype(+key2)::type;
+                                  if (!first_0)
+                                      m_out << "\n";
 
-                                                            if (!first_0)
-                                                                m_out << "\n";
+                                  bool first_1 = true;
 
-                                                            bool first_1 = true;
+                                  for (const auto& non_terminal_and_rules : second)
+                                  {
+                                      if (!first_1)
+                                          m_out << "\n";
 
-                                                            for (const auto& non_terminal_and_rules : second2)
-                                                            {
-                                                                if (!first_1)
-                                                                    m_out << "\n";
+                                      const auto& [non_terminal, rules] = non_terminal_and_rules;
 
-                                                                const auto& [non_terminal, rules] = non_terminal_and_rules;
+                                      bool first_2 = true;
 
-                                                                bool first_2 = true;
+                                      for (const auto& rule : rules)
+                                      {
+                                          if (!first_2)
+                                              m_out << "\n";
 
-                                                                for (const auto& rule : rules)
-                                                                {
-                                                                    if (!first_2)
-                                                                        m_out << "\n";
+                                          m_out << "    ";
 
-                                                                    m_out << "    ";
+                                          auto derivation_rule_visitor = FormatterDerivationRuleVisitor<ConstructorType>(m_out);
+                                          rule->accept(derivation_rule_visitor);
 
-                                                                    auto derivation_rule_visitor =
-                                                                        FormatterDerivationRuleVisitor<ConstructorType, RuleType>(m_out);
-                                                                    rule->accept(derivation_rule_visitor);
+                                          first_2 = false;
+                                      }
 
-                                                                    first_2 = false;
-                                                                }
+                                      first_1 = false;
+                                  }
 
-                                                                first_1 = false;
-                                                            }
-
-                                                            first_0 = false;
-                                                        });
+                                  first_0 = false;
                               });
 
         boost::hana::for_each(grammar.get_substitution_rules().get(),
@@ -425,14 +421,17 @@ void FormatterGrammarVisitor::visit(const Grammar& grammar)
  * Printing
  */
 
-template<ConceptOrRole D, PrimitiveOrComposite C>
-std::ostream& operator<<(std::ostream& out, Constructor<D, C> element)
+template<ConceptOrRole D>
+std::ostream& operator<<(std::ostream& out, Constructor<D> element)
 {
-    auto visitor = FormatterConstructorVisitor<D, C>(out);
+    auto visitor = FormatterConstructorVisitor<D>(out);
     element->accept(visitor);
 
     return out;
 }
+
+template std::ostream& operator<<(std::ostream& out, Constructor<Concept> element);
+template std::ostream& operator<<(std::ostream& out, Constructor<Role> element);
 
 template<ConceptOrRole D>
 std::ostream& operator<<(std::ostream& out, NonTerminal<D> element)
@@ -443,14 +442,20 @@ std::ostream& operator<<(std::ostream& out, NonTerminal<D> element)
     return out;
 }
 
-template<ConceptOrRole D, PrimitiveOrComposite C>
-std::ostream& operator<<(std::ostream& out, DerivationRule<D, C> element)
+template std::ostream& operator<<(std::ostream& out, NonTerminal<Concept> element);
+template std::ostream& operator<<(std::ostream& out, NonTerminal<Role> element);
+
+template<ConceptOrRole D>
+std::ostream& operator<<(std::ostream& out, DerivationRule<D> element)
 {
-    auto visitor = FormatterDerivationRuleVisitor<D, C>(out);
+    auto visitor = FormatterDerivationRuleVisitor<D>(out);
     element->accept(visitor);
 
     return out;
 }
+
+template std::ostream& operator<<(std::ostream& out, DerivationRule<Concept> element);
+template std::ostream& operator<<(std::ostream& out, DerivationRule<Role> element);
 
 template<ConceptOrRole D>
 std::ostream& operator<<(std::ostream& out, SubstitutionRule<D> element)
@@ -460,6 +465,9 @@ std::ostream& operator<<(std::ostream& out, SubstitutionRule<D> element)
 
     return out;
 }
+
+template std::ostream& operator<<(std::ostream& out, SubstitutionRule<Concept> element);
+template std::ostream& operator<<(std::ostream& out, SubstitutionRule<Role> element);
 
 std::ostream& operator<<(std::ostream& out, const Grammar& element)
 {

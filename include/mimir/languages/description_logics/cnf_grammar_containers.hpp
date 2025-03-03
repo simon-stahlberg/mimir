@@ -32,19 +32,13 @@ namespace mimir::dl::cnf_grammar
 using HanaStartSymbols = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::optional<NonTerminal<Concept>>>,
                                           boost::hana::pair<boost::hana::type<Role>, std::optional<NonTerminal<Role>>>>;
 
-using HanaDerivationRules = boost::hana::map<
-    boost::hana::pair<
-        boost::hana::type<Concept>,
-        boost::hana::map<boost::hana::pair<boost::hana::type<Primitive>, std::unordered_map<NonTerminal<Concept>, DerivationRuleSet<Concept, Primitive>>>,
-                         boost::hana::pair<boost::hana::type<Composite>, std::unordered_map<NonTerminal<Concept>, DerivationRuleSet<Concept, Composite>>>>>,
-    boost::hana::pair<
-        boost::hana::type<Role>,
-        boost::hana::map<boost::hana::pair<boost::hana::type<Primitive>, std::unordered_map<NonTerminal<Role>, DerivationRuleSet<Role, Primitive>>>,
-                         boost::hana::pair<boost::hana::type<Composite>, std::unordered_map<NonTerminal<Role>, DerivationRuleSet<Role, Composite>>>>>>;
+using HanaDerivationRules =
+    boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::unordered_map<NonTerminal<Concept>, DerivationRuleList<Concept>>>,
+                     boost::hana::pair<boost::hana::type<Role>, std::unordered_map<NonTerminal<Role>, DerivationRuleList<Role>>>>;
 
 using HanaSubstitutionRules =
-    boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::unordered_map<NonTerminal<Concept>, SubstitutionRuleSet<Concept>>>,
-                     boost::hana::pair<boost::hana::type<Role>, std::unordered_map<NonTerminal<Role>, SubstitutionRuleSet<Role>>>>;
+    boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::unordered_map<NonTerminal<Concept>, SubstitutionRuleList<Concept>>>,
+                     boost::hana::pair<boost::hana::type<Role>, std::unordered_map<NonTerminal<Role>, SubstitutionRuleList<Role>>>>;
 
 class StartSymbolsContainer
 {
@@ -100,20 +94,20 @@ public:
      * Modifiers
      */
 
-    template<ConceptOrRole D, PrimitiveOrComposite C>
-    auto insert(DerivationRule<D, C> rule)
+    template<ConceptOrRole D>
+    auto push_back(DerivationRule<D> rule)
     {
-        return boost::hana::at_key(boost::hana::at_key(m_derivation_rules, boost::hana::type<D> {}), boost::hana::type<C> {})[rule->get_head()].insert(rule);
+        return boost::hana::at_key(m_derivation_rules, boost::hana::type<D> {})[rule->get_head()].push_back(rule);
     }
 
     /**
      * Accessors
      */
 
-    template<ConceptOrRole D, PrimitiveOrComposite C>
-    const std::unordered_map<NonTerminal<D>, DerivationRuleSet<D, C>>& get(NonTerminal<D> non_terminal) const
+    template<ConceptOrRole D>
+    const std::unordered_map<NonTerminal<D>, DerivationRuleList<D>>& get(NonTerminal<D> non_terminal) const
     {
-        return boost::hana::at_key(boost::hana::at_key(m_derivation_rules, boost::hana::type<D> {}), boost::hana::type<C> {}).at(non_terminal);
+        return boost::hana::at_key(m_derivation_rules, boost::hana::type<D> {}).at(non_terminal);
     }
 
     HanaDerivationRules& get() { return m_derivation_rules; }
@@ -137,9 +131,9 @@ public:
      */
 
     template<ConceptOrRole D>
-    auto insert(SubstitutionRule<D> substitution_rule)
+    auto push_back(SubstitutionRule<D> substitution_rule)
     {
-        return boost::hana::at_key(m_substitution_rules, boost::hana::type<D> {})[substitution_rule->get_head()].insert(substitution_rule);
+        return boost::hana::at_key(m_substitution_rules, boost::hana::type<D> {})[substitution_rule->get_head()].push_back(substitution_rule);
     }
 
     /**
@@ -147,7 +141,7 @@ public:
      */
 
     template<ConceptOrRole D>
-    const std::unordered_map<NonTerminal<D>, SubstitutionRuleSet<D>>& get() const
+    const std::unordered_map<NonTerminal<D>, SubstitutionRuleList<D>>& get() const
     {
         return boost::hana::at_key(m_substitution_rules, boost::hana::type<D> {});
     }
