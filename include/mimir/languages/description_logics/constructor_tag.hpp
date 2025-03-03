@@ -40,6 +40,16 @@ struct Role
     static constexpr std::string name = "role";
 };
 
+struct Boolean
+{
+    static constexpr std::string name = "boolean";
+};
+
+struct Numerical
+{
+    static constexpr std::string name = "numerical";
+};
+
 /**
  * Concepts
  */

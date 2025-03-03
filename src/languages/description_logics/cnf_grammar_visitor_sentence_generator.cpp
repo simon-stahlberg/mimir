@@ -122,6 +122,7 @@ void GeneratorConstructorVisitor<Concept>::visit(ConceptUnion constructor)
             {
                 for (const auto& right_concept : m_sentences.get(constructor->get_concept_right(), j))
                 {
+                    std::cout << left_concept->get_index() << " " << left_concept << " " << right_concept->get_index() << " " << right_concept << std::endl;
                     if (left_concept->get_index() < right_concept->get_index())  // break symmetries
                         m_result.push_back(m_repositories.get_or_create_concept_union(left_concept, right_concept));
                 }
