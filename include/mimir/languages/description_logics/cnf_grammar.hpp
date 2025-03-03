@@ -61,6 +61,8 @@ public:
     template<ConceptOrRole D>
     bool test_match(dl::Constructor<D> constructor) const;
 
+    void accept(GrammarVisitor& visitor) const;
+
     /**
      * Getters
      */

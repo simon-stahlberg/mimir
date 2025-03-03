@@ -44,6 +44,22 @@ class FormatterSubstitutionRuleVisitor;
 class FormatterGrammarVisitor;
 
 /**
+ * NonTerminal
+ */
+
+template<ConceptOrRole D>
+class FormatterNonTerminalVisitor : public NonTerminalVisitor<D>
+{
+private:
+    std::ostream& m_out;
+
+public:
+    FormatterNonTerminalVisitor(std::ostream& out);
+
+    void visit(NonTerminal<D> constructor) override;
+};
+
+/**
  * Concept
  */
 
@@ -79,14 +95,11 @@ private:
     std::ostream& m_out;
 
 protected:
-    FormatterNonTerminalVisitor<Concept>* m_concept_or_nonterminal_visitor;
-    FormatterNonTerminalVisitor<Role>* m_role_or_nonterminal_visitor;
+    FormatterNonTerminalVisitor<Concept> m_concept_nonterminal_visitor;
+    FormatterNonTerminalVisitor<Role> m_role_nonterminal_visitor;
 
 public:
     FormatterConstructorVisitor(std::ostream& out);
-
-    virtual void initialize(FormatterNonTerminalVisitor<Concept>& concept_or_nonterminal_visitor,
-                            FormatterNonTerminalVisitor<Role>& role_or_nonterminal_visitor);
 
     void visit(ConceptIntersection constructor) override;
     void visit(ConceptUnion constructor) override;
@@ -126,14 +139,11 @@ private:
     std::ostream& m_out;
 
 protected:
-    FormatterNonTerminalVisitor<Concept>* m_concept_or_nonterminal_visitor;
-    FormatterNonTerminalVisitor<Role>* m_role_or_nonterminal_visitor;
+    FormatterNonTerminalVisitor<Concept> m_concept_nonterminal_visitor;
+    FormatterNonTerminalVisitor<Role> m_role_nonterminal_visitor;
 
 public:
     FormatterConstructorVisitor(std::ostream& out);
-
-    virtual void initialize(FormatterNonTerminalVisitor<Concept>& concept_or_nonterminal_visitor,
-                            FormatterNonTerminalVisitor<Role>& role_or_nonterminal_visitor);
 
     void visit(RoleIntersection constructor) override;
     void visit(RoleUnion constructor) override;
@@ -147,22 +157,6 @@ public:
 };
 
 /**
- * NonTerminal
- */
-
-template<ConceptOrRole D>
-class FormatterNonTerminalVisitor : public NonTerminalVisitor<D>
-{
-private:
-    std::ostream& m_out;
-
-public:
-    FormatterNonTerminalVisitor(std::ostream& out);
-
-    void visit(NonTerminal<D> constructor) override;
-};
-
-/**
  * DerivationRule
  */
 
@@ -173,15 +167,13 @@ private:
     std::ostream& m_out;
 
 protected:
-    FormatterNonTerminalVisitor<D, C>* m_nonterminal_visitor;
-    FormatterConstructorVisitor<D, C>* m_constructor_visitor;
+    FormatterNonTerminalVisitor<D> m_nonterminal_visitor;
+    FormatterConstructorVisitor<D, C> m_constructor_visitor;
 
 public:
     FormatterDerivationRuleVisitor(std::ostream& out);
 
-    virtual void initialize(FormatterNonTerminalVisitor<D, C>& nonterminal_visitor, FormatterConstructorVisitor<D, C>& constructor_visitor);
-
-    void visit(DerivationRule<D> constructor) override;
+    void visit(DerivationRule<D, C> constructor) override;
 };
 
 /**
@@ -195,14 +187,12 @@ private:
     std::ostream& m_out;
 
 protected:
-    FormatterNonTerminalVisitor<D>* m_nonterminal_visitor;
+    FormatterNonTerminalVisitor<D> m_nonterminal_visitor;
 
 public:
-    FormatterDerivationRuleVisitor(std::ostream& out);
+    FormatterSubstitutionRuleVisitor(std::ostream& out);
 
-    virtual void initialize(FormatterNonTerminalVisitor<D>& nonterminal_visitor);
-
-    void visit(DerivationRule<D> constructor) override;
+    void visit(SubstitutionRule<D> constructor) override;
 };
 
 /**
@@ -215,29 +205,22 @@ private:
     std::ostream& m_out;
 
 protected:
-    boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, FormatterNonTerminalVisitor<Concept>*>,
-                     boost::hana::pair<boost::hana::type<Role>, FormatterNonTerminalVisitor<Role>*>>
+    boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, FormatterNonTerminalVisitor<Concept>>,
+                     boost::hana::pair<boost::hana::type<Role>, FormatterNonTerminalVisitor<Role>>>
         m_start_symbol_visitor;
 
     boost::hana::map<boost::hana::pair<boost::hana::type<Concept>,
-                                       boost::hana::map<boost::hana::pair<boost::hana::type<Primitive>, FormatterDerivationRuleVisitor<Concept, Primitive>*>,
-                                                        boost::hana::pair<boost::hana::type<Composite>, FormatterDerivationRuleVisitor<Concept, Composite>*>>>,
+                                       boost::hana::map<boost::hana::pair<boost::hana::type<Primitive>, FormatterDerivationRuleVisitor<Concept, Primitive>>,
+                                                        boost::hana::pair<boost::hana::type<Composite>, FormatterDerivationRuleVisitor<Concept, Composite>>>>,
                      boost::hana::pair<boost::hana::type<Role>,
-                                       boost::hana::map<boost::hana::pair<boost::hana::type<Primitive>, FormatterDerivationRuleVisitor<Role, Primitive>*>,
-                                                        boost::hana::pair<boost::hana::type<Composite>, FormatterDerivationRuleVisitor<Role, Composite>*>>>>
+                                       boost::hana::map<boost::hana::pair<boost::hana::type<Primitive>, FormatterDerivationRuleVisitor<Role, Primitive>>,
+                                                        boost::hana::pair<boost::hana::type<Composite>, FormatterDerivationRuleVisitor<Role, Composite>>>>>
         m_derivation_rule_visitor;
 
 public:
     FormatterGrammarVisitor(std::ostream& out);
 
-    virtual void visit(const Grammar& grammar) override;
-
-    virtual void initialize(FormatterNonTerminalVisitor<Concept>& concept_start_symbol_visitor,
-                            FormatterNonTerminalVisitor<Role>& role_start_symbol_visitor,
-                            FormatterDerivationRuleVisitor<Concept, Primitive>& concept_primitive_rule_visitor,
-                            FormatterDerivationRuleVisitor<Concept, Composite>& concept_composite_rule_visitor,
-                            FormatterDerivationRuleVisitor<Role, Primitive>& role_primitive_rule_visitor,
-                            FormatterDerivationRuleVisitor<Role, Composite>& role_composite_rule_visitor);
+    void visit(const Grammar& grammar) override;
 };
 
 /**

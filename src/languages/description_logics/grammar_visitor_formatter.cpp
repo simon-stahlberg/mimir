@@ -304,7 +304,7 @@ void FormatterDerivationRuleVisitor<D>::initialize(FormatterNonTerminalVisitor<D
 template<ConceptOrRole D>
 void FormatterDerivationRuleVisitor<D>::visit(DerivationRule<D> constructor)
 {
-    assert(m_nonterminal_visitor && m_constructor_or_nonterminal_visitor);
+    assert(this->m_nonterminal_visitor && this->m_constructor_or_nonterminal_visitor);
 
     constructor->get_non_terminal()->accept(*m_nonterminal_visitor);
 
@@ -419,10 +419,11 @@ void FormatterGrammarVisitor::initialize(FormatterNonTerminalVisitor<Concept>& c
                                          FormatterDerivationRuleVisitor<Concept>& concept_rule_visitor,
                                          FormatterDerivationRuleVisitor<Role>& role_rule_visitor)
 {
-    boost::hana::at_key(m_start_symbol_visitor, boost::hana::type<Concept> {}) = &concept_start_symbol_visitor;
-    boost::hana::at_key(m_start_symbol_visitor, boost::hana::type<Role> {}) = &role_start_symbol_visitor;
-    boost::hana::at_key(m_derivation_rule_visitor, boost::hana::type<Concept> {}) = &concept_rule_visitor;
-    boost::hana::at_key(m_derivation_rule_visitor, boost::hana::type<Role> {}) = &role_rule_visitor;
+    m_start_symbol_visitor = boost::hana::make_map(boost::hana::make_pair(boost::hana::type<Concept> {}, &concept_start_symbol_visitor),
+                                                   boost::hana::make_pair(boost::hana::type<Role> {}, &role_start_symbol_visitor));
+
+    m_derivation_rule_visitor = boost::hana::make_map(boost::hana::make_pair(boost::hana::type<Concept> {}, &concept_rule_visitor),
+                                                      boost::hana::make_pair(boost::hana::type<Role> {}, &role_rule_visitor));
 }
 
 /**
