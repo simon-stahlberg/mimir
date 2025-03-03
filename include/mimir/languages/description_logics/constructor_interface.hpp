@@ -51,6 +51,9 @@ public:
 
     /// @brief Accept a visitor.
     virtual void accept(ConstructorVisitor<D>& visitor) const = 0;
+
+    /// @brief Return the index of the constructor.
+    virtual Index get_index() const = 0;
 };
 
 }

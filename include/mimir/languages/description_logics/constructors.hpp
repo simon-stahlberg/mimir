@@ -58,7 +58,7 @@ public:
     ConceptBotImpl(ConceptBotImpl&& other) = default;
     ConceptBotImpl& operator=(ConceptBotImpl&& other) = default;
 
-    Index get_index() const;
+    Index get_index() const override;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -90,7 +90,7 @@ public:
     ConceptTopImpl(ConceptTopImpl&& other) = default;
     ConceptTopImpl& operator=(ConceptTopImpl&& other) = default;
 
-    Index get_index() const;
+    Index get_index() const override;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -124,7 +124,7 @@ public:
     ConceptAtomicStateImpl(ConceptAtomicStateImpl&& other) = default;
     ConceptAtomicStateImpl& operator=(ConceptAtomicStateImpl&& other) = default;
 
-    Index get_index() const;
+    Index get_index() const override;
     Predicate<P> get_predicate() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
@@ -160,7 +160,7 @@ public:
     ConceptAtomicGoalImpl(ConceptAtomicGoalImpl&& other) = default;
     ConceptAtomicGoalImpl& operator=(ConceptAtomicGoalImpl&& other) = default;
 
-    Index get_index() const;
+    Index get_index() const override;
     Predicate<P> get_predicate() const;
     bool is_negated() const;
 
@@ -196,7 +196,7 @@ public:
     ConceptIntersectionImpl(ConceptIntersectionImpl&& other) = default;
     ConceptIntersectionImpl& operator=(ConceptIntersectionImpl&& other) = default;
 
-    Index get_index() const;
+    Index get_index() const override;
     Constructor<Concept> get_concept_left() const;
     Constructor<Concept> get_concept_right() const;
 
@@ -232,7 +232,7 @@ public:
     ConceptUnionImpl(ConceptUnionImpl&& other) = default;
     ConceptUnionImpl& operator=(ConceptUnionImpl&& other) = default;
 
-    Index get_index() const;
+    Index get_index() const override;
     Constructor<Concept> get_concept_left() const;
     Constructor<Concept> get_concept_right() const;
 
@@ -267,7 +267,7 @@ public:
     ConceptNegationImpl(ConceptNegationImpl&& other) = default;
     ConceptNegationImpl& operator=(ConceptNegationImpl&& other) = default;
 
-    Index get_index() const;
+    Index get_index() const override;
     Constructor<Concept> get_concept() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
@@ -302,7 +302,7 @@ public:
     ConceptValueRestrictionImpl(ConceptValueRestrictionImpl&& other) = default;
     ConceptValueRestrictionImpl& operator=(ConceptValueRestrictionImpl&& other) = default;
 
-    Index get_index() const;
+    Index get_index() const override;
     Constructor<Role> get_role() const;
     Constructor<Concept> get_concept() const;
 
@@ -338,7 +338,7 @@ public:
     ConceptExistentialQuantificationImpl(ConceptExistentialQuantificationImpl&& other) = default;
     ConceptExistentialQuantificationImpl& operator=(ConceptExistentialQuantificationImpl&& other) = default;
 
-    Index get_index() const;
+    Index get_index() const override;
     Constructor<Role> get_role() const;
     Constructor<Concept> get_concept() const;
 
@@ -374,7 +374,7 @@ public:
     ConceptRoleValueMapContainmentImpl(ConceptRoleValueMapContainmentImpl&& other) = default;
     ConceptRoleValueMapContainmentImpl& operator=(ConceptRoleValueMapContainmentImpl&& other) = default;
 
-    Index get_index() const;
+    Index get_index() const override;
     Constructor<Role> get_role_left() const;
     Constructor<Role> get_role_right() const;
 
@@ -410,7 +410,7 @@ public:
     ConceptRoleValueMapEqualityImpl(ConceptRoleValueMapEqualityImpl&& other) = default;
     ConceptRoleValueMapEqualityImpl& operator=(ConceptRoleValueMapEqualityImpl&& other) = default;
 
-    Index get_index() const;
+    Index get_index() const override;
     Constructor<Role> get_role_left() const;
     Constructor<Role> get_role_right() const;
 
@@ -445,7 +445,7 @@ public:
     ConceptNominalImpl(ConceptNominalImpl&& other) = default;
     ConceptNominalImpl& operator=(ConceptNominalImpl&& other) = default;
 
-    Index get_index() const;
+    Index get_index() const override;
     Object get_object() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
@@ -482,7 +482,7 @@ public:
     RoleUniversalImpl(RoleUniversalImpl&& other) = default;
     RoleUniversalImpl& operator=(RoleUniversalImpl&& other) = default;
 
-    Index get_index() const;
+    Index get_index() const override;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -516,7 +516,7 @@ public:
     RoleAtomicStateImpl(RoleAtomicStateImpl&& other) = default;
     RoleAtomicStateImpl& operator=(RoleAtomicStateImpl&& other) = default;
 
-    Index get_index() const;
+    Index get_index() const override;
     Predicate<P> get_predicate() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
@@ -552,7 +552,7 @@ public:
     RoleAtomicGoalImpl(RoleAtomicGoalImpl&& other) = default;
     RoleAtomicGoalImpl& operator=(RoleAtomicGoalImpl&& other) = default;
 
-    Index get_index() const;
+    Index get_index() const override;
     Predicate<P> get_predicate() const;
     bool is_negated() const;
 
@@ -588,7 +588,7 @@ public:
     RoleIntersectionImpl(RoleIntersectionImpl&& other) = default;
     RoleIntersectionImpl& operator=(RoleIntersectionImpl&& other) = default;
 
-    Index get_index() const;
+    Index get_index() const override;
     Constructor<Role> get_role_left() const;
     Constructor<Role> get_role_right() const;
 
@@ -624,7 +624,7 @@ public:
     RoleUnionImpl(RoleUnionImpl&& other) = default;
     RoleUnionImpl& operator=(RoleUnionImpl&& other) = default;
 
-    Index get_index() const;
+    Index get_index() const override;
     Constructor<Role> get_role_left() const;
     Constructor<Role> get_role_right() const;
 
@@ -659,7 +659,7 @@ public:
     RoleComplementImpl(RoleComplementImpl&& other) = default;
     RoleComplementImpl& operator=(RoleComplementImpl&& other) = default;
 
-    Index get_index() const;
+    Index get_index() const override;
     Constructor<Role> get_role() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
@@ -693,7 +693,7 @@ public:
     RoleInverseImpl(RoleInverseImpl&& other) = default;
     RoleInverseImpl& operator=(RoleInverseImpl&& other) = default;
 
-    Index get_index() const;
+    Index get_index() const override;
     Constructor<Role> get_role() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
@@ -728,7 +728,7 @@ public:
     RoleCompositionImpl(RoleCompositionImpl&& other) = default;
     RoleCompositionImpl& operator=(RoleCompositionImpl&& other) = default;
 
-    Index get_index() const;
+    Index get_index() const override;
     Constructor<Role> get_role_left() const;
     Constructor<Role> get_role_right() const;
 
@@ -763,7 +763,7 @@ public:
     RoleTransitiveClosureImpl(RoleTransitiveClosureImpl&& other) = default;
     RoleTransitiveClosureImpl& operator=(RoleTransitiveClosureImpl&& other) = default;
 
-    Index get_index() const;
+    Index get_index() const override;
     Constructor<Role> get_role() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
@@ -797,7 +797,7 @@ public:
     RoleReflexiveTransitiveClosureImpl(RoleReflexiveTransitiveClosureImpl&& other) = default;
     RoleReflexiveTransitiveClosureImpl& operator=(RoleReflexiveTransitiveClosureImpl&& other) = default;
 
-    Index get_index() const;
+    Index get_index() const override;
     Constructor<Role> get_role() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
@@ -832,7 +832,7 @@ public:
     RoleRestrictionImpl(RoleRestrictionImpl&& other) = default;
     RoleRestrictionImpl& operator=(RoleRestrictionImpl&& other) = default;
 
-    Index get_index() const;
+    Index get_index() const override;
     Constructor<Role> get_role() const;
     Constructor<Concept> get_concept() const;
 
@@ -867,7 +867,7 @@ public:
     RoleIdentityImpl(RoleIdentityImpl&& other) = default;
     RoleIdentityImpl& operator=(RoleIdentityImpl&& other) = default;
 
-    Index get_index() const;
+    Index get_index() const override;
     Constructor<Concept> get_concept() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.

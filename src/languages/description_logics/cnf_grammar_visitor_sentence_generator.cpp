@@ -103,7 +103,8 @@ void GeneratorConstructorVisitor<Concept>::visit(ConceptIntersection constructor
             {
                 for (const auto& right_concept : m_sentences.get(constructor->get_concept_right(), j))
                 {
-                    m_result.push_back(m_repositories.get_or_create_concept_intersection(left_concept, right_concept));
+                    if (left_concept->get_index() < right_concept->get_index())  // break symmetries
+                        m_result.push_back(m_repositories.get_or_create_concept_intersection(left_concept, right_concept));
                 }
             }
         }
@@ -121,7 +122,8 @@ void GeneratorConstructorVisitor<Concept>::visit(ConceptUnion constructor)
             {
                 for (const auto& right_concept : m_sentences.get(constructor->get_concept_right(), j))
                 {
-                    m_result.push_back(m_repositories.get_or_create_concept_union(left_concept, right_concept));
+                    if (left_concept->get_index() < right_concept->get_index())  // break symmetries
+                        m_result.push_back(m_repositories.get_or_create_concept_union(left_concept, right_concept));
                 }
             }
         }
@@ -203,7 +205,8 @@ void GeneratorConstructorVisitor<Concept>::visit(ConceptRoleValueMapEquality con
             {
                 for (const auto& right_role : m_sentences.get(constructor->get_role_right(), j))
                 {
-                    m_result.push_back(m_repositories.get_or_create_concept_role_value_map_equality(left_role, right_role));
+                    if (left_role->get_index() < right_role->get_index())  // break symmetries
+                        m_result.push_back(m_repositories.get_or_create_concept_role_value_map_equality(left_role, right_role));
                 }
             }
         }
@@ -272,7 +275,8 @@ void GeneratorConstructorVisitor<Role>::visit(RoleIntersection constructor)
             {
                 for (const auto& right_role : m_sentences.get(constructor->get_role_right(), j))
                 {
-                    m_result.push_back(m_repositories.get_or_create_role_intersection(left_role, right_role));
+                    if (left_role->get_index() < right_role->get_index())  // break symmetries
+                        m_result.push_back(m_repositories.get_or_create_role_intersection(left_role, right_role));
                 }
             }
         }
@@ -290,7 +294,8 @@ void GeneratorConstructorVisitor<Role>::visit(RoleUnion constructor)
             {
                 for (const auto& right_role : m_sentences.get(constructor->get_role_right(), j))
                 {
-                    m_result.push_back(m_repositories.get_or_create_role_union(left_role, right_role));
+                    if (left_role->get_index() < right_role->get_index())  // break symmetries
+                        m_result.push_back(m_repositories.get_or_create_role_union(left_role, right_role));
                 }
             }
         }
@@ -484,8 +489,6 @@ void GeneratorGrammarVisitor::visit(const Grammar& grammar)
                                   auto key = boost::hana::first(pair);
                                   const auto& second = boost::hana::second(pair);
                                   using ConstructorType = typename decltype(+key)::type;
-
-                                  bool first_1 = true;
 
                                   for (const auto& non_terminal_and_rules : second)
                                   {
