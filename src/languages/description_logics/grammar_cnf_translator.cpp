@@ -33,17 +33,20 @@ template<ConceptOrRole D>
 class CollectNonTerminalsNonTerminalVisitor : public RecurseNonTerminalVisitor<D>
 {
 private:
-    NonTerminalMap<std::string>& m_nonterminal_map;
+    ToNonTerminalMap<std::string, Concept, Role>& m_nonterminal_map;
 
 public:
-    CollectNonTerminalsNonTerminalVisitor(NonTerminalMap<std::string>& nonterminal_map) : m_nonterminal_map(nonterminal_map) {}
+    CollectNonTerminalsNonTerminalVisitor(ToNonTerminalMap<std::string, Concept, Role>& nonterminal_map) : m_nonterminal_map(nonterminal_map) {}
 
-    void visit(NonTerminal<D> constructor) override { m_nonterminal_map.insert(constructor->get_name(), constructor); }
+    void visit(NonTerminal<D> constructor) override
+    {
+        boost::hana::at_key(m_nonterminal_map, boost::hana::type<D> {}).emplace(constructor->get_name(), constructor);
+    }
 };
 
-static NonTerminalMap<std::string> collect_nonterminals_from_grammar(const Grammar& grammar)
+static ToNonTerminalMap<std::string, Concept, Role> collect_nonterminals_from_grammar(const Grammar& grammar)
 {
-    auto nonterminal_map = NonTerminalMap<std::string>();
+    auto nonterminal_map = ToNonTerminalMap<std::string, Concept, Role>();
 
     auto concept_visitor = RecurseConstructorVisitor<Concept>();
     auto role_visitor = RecurseConstructorVisitor<Role>();
@@ -123,7 +126,7 @@ public:
                                   {
                                       auto& visitor = *boost::hana::at_key(m_start_symbol_visitor, key);
                                       second.value()->accept(visitor);
-                                      boost::hana::at_key(m_start_symbols.get(), key) = visitor.get_result();
+                                      m_start_symbols.insert(visitor.get_result());
                                   }
                               });
 
@@ -133,15 +136,10 @@ public:
                                   auto key = boost::hana::first(pair);
                                   const auto& second = boost::hana::second(pair);
 
-                                  for (const auto& non_terminal_and_rules : second)
+                                  for (const auto& rule : second)
                                   {
-                                      const auto& [non_terminal, rules] = non_terminal_and_rules;
-
-                                      for (const auto& rule : rules)
-                                      {
-                                          auto& visitor = *boost::hana::at_key(m_derivation_rule_visitor, key);
-                                          rule->accept(visitor);
-                                      }
+                                      auto& visitor = *boost::hana::at_key(m_derivation_rule_visitor, key);
+                                      rule->accept(visitor);
                                   }
                               });
     }
@@ -187,7 +185,7 @@ class EliminateNestedConstructorsL2ConstructorOrNonTerminalVisitor : public Copy
 {
 private:
     DerivationRulesContainer& m_derivation_rules;
-    NonTerminalMap<std::string>& m_existing_nonterminals;
+    ToNonTerminalMap<std::string, Concept, Role>& m_existing_nonterminals;
 
     size_t m_next_index;
 
@@ -197,7 +195,7 @@ private:
         do
         {
             candidate_name = "<" + D::name + "_" + std::to_string(m_next_index++) + ">";
-        } while (m_existing_nonterminals.template contains<D>(candidate_name));
+        } while (boost::hana::at_key(m_existing_nonterminals, boost::hana::type<D> {}).contains(candidate_name));
 
         return candidate_name;
     }
@@ -205,7 +203,7 @@ private:
 public:
     EliminateNestedConstructorsL2ConstructorOrNonTerminalVisitor(ConstructorRepositories& repositories,
                                                                  DerivationRulesContainer& derivation_rules,
-                                                                 NonTerminalMap<std::string>& existing_nonterminals) :
+                                                                 ToNonTerminalMap<std::string, Concept, Role>& existing_nonterminals) :
         CopyConstructorOrNonTerminalVisitor<D>(repositories),
         m_derivation_rules(derivation_rules),
         m_existing_nonterminals(existing_nonterminals),
@@ -737,7 +735,7 @@ void ToCNFGrammarVisitor::visit(const Grammar& grammar)
                               {
                                   auto& visitor = *boost::hana::at_key(m_start_symbol_visitor, key);
                                   second.value()->accept(visitor);
-                                  boost::hana::at_key(m_start_symbols.get(), key) = visitor.get_result();
+                                  m_start_symbols.insert(visitor.get_result());
                               }
                           });
 
@@ -748,37 +746,31 @@ void ToCNFGrammarVisitor::visit(const Grammar& grammar)
             auto key = boost::hana::first(pair);
             const auto& second = boost::hana::second(pair);
 
-            for (const auto& non_terminal_and_rules : second)
+            for (const auto& rule : second)
             {
-                const auto& [non_terminal, rules] = non_terminal_and_rules;
+                auto& visitor = *boost::hana::at_key(m_derivation_rule_visitor, key);
+                rule->accept(visitor);
+                const auto rule_variant = visitor.get_result();
 
-                for (const auto& rule : rules)
-                {
-                    auto& visitor = *boost::hana::at_key(m_derivation_rule_visitor, key);
-                    rule->accept(visitor);
-                    const auto rule_variant = visitor.get_result();
-
-                    std::visit(
-                        [&](auto&& arg)
+                std::visit(
+                    [&](auto&& arg)
+                    {
+                        using T = std::decay_t<decltype(arg)>;
+                        if constexpr (std::is_same_v<T, cnf_grammar::DerivationRule<Concept>> || std::is_same_v<T, cnf_grammar::DerivationRule<Role>>)
                         {
-                            using T = std::decay_t<decltype(arg)>;
-                            if constexpr (std::is_same_v<T, cnf_grammar::DerivationRule<Concept>> || std::is_same_v<T, cnf_grammar::DerivationRule<Role>>)
-                            {
-                                m_derivation_rules.push_back(arg);
-                            }
-                            else if constexpr (std::is_same_v<T, cnf_grammar::SubstitutionRule<Concept>>
-                                               || std::is_same_v<T, cnf_grammar::SubstitutionRule<Role>>)
-                            {
-                                m_substitution_rules.push_back(arg);
-                            }
-                            else
-                            {
-                                static_assert(dependent_false<T>::value,
-                                              "ToCNFGrammarVisitor::visit(constructor): Missing implementation for DerivationOrSubstitutionRule type.");
-                            }
-                        },
-                        rule_variant);
-                }
+                            m_derivation_rules.push_back(arg);
+                        }
+                        else if constexpr (std::is_same_v<T, cnf_grammar::SubstitutionRule<Concept>> || std::is_same_v<T, cnf_grammar::SubstitutionRule<Role>>)
+                        {
+                            m_substitution_rules.push_back(arg);
+                        }
+                        else
+                        {
+                            static_assert(dependent_false<T>::value,
+                                          "ToCNFGrammarVisitor::visit(constructor): Missing implementation for DerivationOrSubstitutionRule type.");
+                        }
+                    },
+                    rule_variant);
             }
         });
 }

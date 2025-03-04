@@ -256,14 +256,9 @@ void RecurseGrammarVisitor::visit(const Grammar& grammar)
                               auto key = boost::hana::first(pair);
                               const auto& second = boost::hana::second(pair);
 
-                              for (const auto& non_terminal_and_rules : second)
+                              for (const auto& rule : second)
                               {
-                                  const auto& [non_terminal, rules] = non_terminal_and_rules;
-
-                                  for (const auto& rule : rules)
-                                  {
-                                      rule->accept(*boost::hana::at_key(m_derivation_rule_visitor, key));
-                                  }
+                                  rule->accept(*boost::hana::at_key(m_derivation_rule_visitor, key));
                               }
                           });
 }
@@ -641,7 +636,7 @@ void CopyGrammarVisitor::visit(const Grammar& grammar)
                               {
                                   auto& visitor = *boost::hana::at_key(m_start_symbol_visitor, key);
                                   second.value()->accept(visitor);
-                                  boost::hana::at_key(m_start_symbols.get(), key) = visitor.get_result();
+                                  m_start_symbols.insert(visitor.get_result());
                               }
                           });
 
@@ -651,17 +646,12 @@ void CopyGrammarVisitor::visit(const Grammar& grammar)
                               auto key = boost::hana::first(pair);
                               const auto& second = boost::hana::second(pair);
 
-                              for (const auto& non_terminal_and_rules : second)
+                              for (const auto& rule : second)
                               {
-                                  const auto& [non_terminal, rules] = non_terminal_and_rules;
-
-                                  for (const auto& rule : rules)
-                                  {
-                                      auto& visitor = *boost::hana::at_key(m_derivation_rule_visitor, key);
-                                      rule->accept(visitor);
-                                      const auto copied_rule = visitor.get_result();
-                                      boost::hana::at_key(m_derivation_rules.get(), key)[copied_rule->get_non_terminal()].insert(copied_rule);
-                                  }
+                                  auto& visitor = *boost::hana::at_key(m_derivation_rule_visitor, key);
+                                  rule->accept(visitor);
+                                  const auto copied_rule = visitor.get_result();
+                                  m_derivation_rules.insert(copied_rule);
                               }
                           });
 }

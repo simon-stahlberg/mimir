@@ -32,14 +32,6 @@ namespace mimir::dl::cnf_grammar
 using HanaStartSymbols = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::optional<NonTerminal<Concept>>>,
                                           boost::hana::pair<boost::hana::type<Role>, std::optional<NonTerminal<Role>>>>;
 
-using DerivationRulesMap =
-    boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::unordered_map<NonTerminal<Concept>, DerivationRuleList<Concept>>>,
-                     boost::hana::pair<boost::hana::type<Role>, std::unordered_map<NonTerminal<Role>, DerivationRuleList<Role>>>>;
-
-using SubstitutionRulesMap =
-    boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::unordered_map<NonTerminal<Concept>, SubstitutionRuleList<Concept>>>,
-                     boost::hana::pair<boost::hana::type<Role>, std::unordered_map<NonTerminal<Role>, SubstitutionRuleList<Role>>>>;
-
 class StartSymbolsContainer
 {
 private:
@@ -74,14 +66,13 @@ public:
         return boost::hana::at_key(m_symbols, boost::hana::type<D> {});
     }
 
-    HanaStartSymbols& get() { return m_symbols; }
     const HanaStartSymbols& get() const { return m_symbols; }
 };
 
 class DerivationRulesContainer
 {
 private:
-    DerivationRulesMap m_map;
+    NonTerminalMap<DerivationRuleList, Concept, Role> m_map;
     DerivationRuleLists<Concept, Role> m_lists;
 
     static const DerivationRuleLists<Concept, Role> empty_lists;
@@ -128,14 +119,13 @@ public:
         return boost::hana::at_key(m_lists, boost::hana::type<D> {});
     }
 
-    DerivationRuleLists<Concept, Role>& get() { return m_lists; }
     const DerivationRuleLists<Concept, Role>& get() const { return m_lists; }
 };
 
 class SubstitutionRulesContainer
 {
 private:
-    SubstitutionRulesMap m_map;
+    NonTerminalMap<SubstitutionRuleList, Concept, Role> m_map;
     SubstitutionRuleLists<Concept, Role> m_lists;
 
     static const SubstitutionRuleLists<Concept, Role> empty_lists;
@@ -182,7 +172,6 @@ public:
         return boost::hana::at_key(m_lists, boost::hana::type<D> {});
     }
 
-    SubstitutionRuleLists<Concept, Role>& get() { return m_lists; }
     const SubstitutionRuleLists<Concept, Role>& get() const { return m_lists; }
 };
 

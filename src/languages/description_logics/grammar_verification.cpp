@@ -95,24 +95,21 @@ void verify_grammar_is_well_defined(const Grammar& grammar)
                           {
                               auto value = boost::hana::second(pair);
 
-                              for (const auto& rules_entry : value)
+                              for (const auto& rule : value)
                               {
-                                  for (const auto& rule : rules_entry.second)
+                                  using T = std::decay_t<decltype(rule)>;
+                                  if constexpr (std::is_same_v<T, DerivationRule<Concept>>)
                                   {
-                                      using T = std::decay_t<decltype(rule)>;
-                                      if constexpr (std::is_same_v<T, DerivationRule<Concept>>)
-                                      {
-                                          rule->accept(concept_derivation_rule_visitor);
-                                      }
-                                      else if constexpr (std::is_same_v<T, DerivationRule<Role>>)
-                                      {
-                                          rule->accept(role_derivation_rule_visitor);
-                                      }
-                                      else
-                                      {
-                                          static_assert(dependent_false<T>::value,
-                                                        "verify_grammar_is_well_defined(grammar): Missing implementation for DerivationRule type.");
-                                      }
+                                      rule->accept(concept_derivation_rule_visitor);
+                                  }
+                                  else if constexpr (std::is_same_v<T, DerivationRule<Role>>)
+                                  {
+                                      rule->accept(role_derivation_rule_visitor);
+                                  }
+                                  else
+                                  {
+                                      static_assert(dependent_false<T>::value,
+                                                    "verify_grammar_is_well_defined(grammar): Missing implementation for DerivationRule type.");
                                   }
                               }
                           });

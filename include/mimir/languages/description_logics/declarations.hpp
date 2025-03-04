@@ -22,6 +22,8 @@
 #include "mimir/languages/description_logics/constructor_tag.hpp"
 
 #include <boost/hana.hpp>
+#include <loki/loki.hpp>
+#include <unordered_map>
 #include <unordered_set>
 #include <variant>
 #include <vector>
@@ -153,6 +155,11 @@ template<dl::ConceptOrRole D>
 class NonTerminalImpl;
 template<dl::ConceptOrRole D>
 using NonTerminal = const NonTerminalImpl<D>*;
+template<template<typename> typename Value, dl::ConceptOrRole... D>
+using NonTerminalMap = boost::hana::map<boost::hana::pair<boost::hana::type<D>, std::unordered_map<NonTerminal<D>, Value<D>>>...>;
+template<typename Key, dl::ConceptOrRole... D>
+using ToNonTerminalMap =
+    boost::hana::map<boost::hana::pair<boost::hana::type<D>, std::unordered_map<Key, NonTerminal<D>, loki::Hash<Key>, loki::EqualTo<Key>>>...>;
 
 /* ConstructorOrNonTerminal */
 template<dl::ConceptOrRole D>
@@ -167,12 +174,14 @@ template<dl::ConceptOrRole D>
 class DerivationRuleImpl;
 template<dl::ConceptOrRole D>
 using DerivationRule = const DerivationRuleImpl<D>*;
-template<ConceptOrRole D>
+template<dl::ConceptOrRole D>
 using DerivationRuleList = std::vector<DerivationRule<D>>;
+template<dl::ConceptOrRole... D>
+using DerivationRuleLists = boost::hana::map<boost::hana::pair<boost::hana::type<D>, DerivationRuleList<D>>...>;
 template<ConceptOrRole D>
 using DerivationRuleSet = std::unordered_set<DerivationRule<D>>;
-using ConceptOrRoleToDerivationRuleList = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, DerivationRuleList<Concept>>,
-                                                           boost::hana::pair<boost::hana::type<Role>, DerivationRuleList<Role>>>;
+template<dl::ConceptOrRole... D>
+using DerivationRuleSets = boost::hana::map<boost::hana::pair<boost::hana::type<D>, DerivationRuleSet<D>>...>;
 
 /* Concrete concepts */
 class ConceptTopImpl;
@@ -277,6 +286,8 @@ template<dl::ConceptOrRole D>
 using NonTerminal = const NonTerminalImpl<D>*;
 template<dl::ConceptOrRole D>
 using NonTerminalList = std::vector<NonTerminal<D>>;
+template<template<typename> typename Value, dl::ConceptOrRole... D>
+using NonTerminalMap = boost::hana::map<boost::hana::pair<boost::hana::type<D>, std::unordered_map<NonTerminal<D>, Value<D>>>...>;
 
 /* DerivationRule */
 template<dl::ConceptOrRole D>
