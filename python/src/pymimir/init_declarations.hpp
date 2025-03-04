@@ -20,6 +20,8 @@
 
 #include "mimir/mimir.hpp"
 
+#include <iostream>
+#include <iterator>
 #include <pybind11/attr.h>
 #include <pybind11/detail/common.h>
 #include <pybind11/pybind11.h>
@@ -29,53 +31,166 @@
 #define STRINGIFY(x) #x
 #define MACRO_STRINGIFY(x) STRINGIFY(x)
 
+namespace py = pybind11;
+namespace mm = mimir;
+
+/**
+ * Opague types
+ */
+
 // Formalism
-PYBIND11_MAKE_OPAQUE(mimir::ActionList);
-PYBIND11_MAKE_OPAQUE(mimir::AtomList<mimir::Static>);
-PYBIND11_MAKE_OPAQUE(mimir::AtomList<mimir::Fluent>);
-PYBIND11_MAKE_OPAQUE(mimir::AtomList<mimir::Derived>);
-PYBIND11_MAKE_OPAQUE(mimir::AxiomList);
-PYBIND11_MAKE_OPAQUE(mimir::ConditionalEffectList);
-PYBIND11_MAKE_OPAQUE(mimir::FunctionExpressionList);
-PYBIND11_MAKE_OPAQUE(mimir::FunctionSkeletonList<mimir::Static>);
-PYBIND11_MAKE_OPAQUE(mimir::FunctionSkeletonList<mimir::Fluent>);
-PYBIND11_MAKE_OPAQUE(mimir::FunctionSkeletonList<mimir::Auxiliary>);
-PYBIND11_MAKE_OPAQUE(mimir::FunctionList<mimir::Static>);
-PYBIND11_MAKE_OPAQUE(mimir::FunctionList<mimir::Fluent>);
-PYBIND11_MAKE_OPAQUE(mimir::FunctionList<mimir::Auxiliary>);
-PYBIND11_MAKE_OPAQUE(mimir::GroundAtomList<mimir::Static>);
-PYBIND11_MAKE_OPAQUE(mimir::GroundAtomList<mimir::Fluent>);
-PYBIND11_MAKE_OPAQUE(mimir::GroundAtomList<mimir::Derived>);
-PYBIND11_MAKE_OPAQUE(mimir::GroundFunctionExpressionList);
-PYBIND11_MAKE_OPAQUE(mimir::GroundLiteralList<mimir::Static>);
-PYBIND11_MAKE_OPAQUE(mimir::GroundLiteralList<mimir::Fluent>);
-PYBIND11_MAKE_OPAQUE(mimir::GroundLiteralList<mimir::Derived>);
-PYBIND11_MAKE_OPAQUE(mimir::GroundActionList);
-PYBIND11_MAKE_OPAQUE(mimir::GroundAxiomList);
-PYBIND11_MAKE_OPAQUE(mimir::LiteralList<mimir::Static>);
-PYBIND11_MAKE_OPAQUE(mimir::LiteralList<mimir::Fluent>);
-PYBIND11_MAKE_OPAQUE(mimir::LiteralList<mimir::Derived>);
-PYBIND11_MAKE_OPAQUE(mimir::GroundFunctionValueList<mimir::Static>);
-PYBIND11_MAKE_OPAQUE(mimir::GroundFunctionValueList<mimir::Fluent>);
-PYBIND11_MAKE_OPAQUE(mimir::GroundFunctionValueList<mimir::Auxiliary>);
-PYBIND11_MAKE_OPAQUE(mimir::ObjectList);
-PYBIND11_MAKE_OPAQUE(mimir::PredicateList<mimir::Static>);
-PYBIND11_MAKE_OPAQUE(mimir::PredicateList<mimir::Fluent>);
-PYBIND11_MAKE_OPAQUE(mimir::PredicateList<mimir::Derived>);
-PYBIND11_MAKE_OPAQUE(mimir::ToPredicateMap<std::string, mimir::Static>);
-PYBIND11_MAKE_OPAQUE(mimir::ToPredicateMap<std::string, mimir::Fluent>);
-PYBIND11_MAKE_OPAQUE(mimir::ToPredicateMap<std::string, mimir::Derived>);
-PYBIND11_MAKE_OPAQUE(mimir::ProblemList);
-PYBIND11_MAKE_OPAQUE(mimir::VariableList);
-PYBIND11_MAKE_OPAQUE(mimir::TermList);
+PYBIND11_MAKE_OPAQUE(mm::ActionList);
+PYBIND11_MAKE_OPAQUE(mm::AtomList<mm::Static>);
+PYBIND11_MAKE_OPAQUE(mm::AtomList<mm::Fluent>);
+PYBIND11_MAKE_OPAQUE(mm::AtomList<mm::Derived>);
+PYBIND11_MAKE_OPAQUE(mm::AxiomList);
+PYBIND11_MAKE_OPAQUE(mm::ConditionalEffectList);
+PYBIND11_MAKE_OPAQUE(mm::FunctionExpressionList);
+PYBIND11_MAKE_OPAQUE(mm::FunctionSkeletonList<mm::Static>);
+PYBIND11_MAKE_OPAQUE(mm::FunctionSkeletonList<mm::Fluent>);
+PYBIND11_MAKE_OPAQUE(mm::FunctionSkeletonList<mm::Auxiliary>);
+PYBIND11_MAKE_OPAQUE(mm::FunctionList<mm::Static>);
+PYBIND11_MAKE_OPAQUE(mm::FunctionList<mm::Fluent>);
+PYBIND11_MAKE_OPAQUE(mm::FunctionList<mm::Auxiliary>);
+PYBIND11_MAKE_OPAQUE(mm::GroundAtomList<mm::Static>);
+PYBIND11_MAKE_OPAQUE(mm::GroundAtomList<mm::Fluent>);
+PYBIND11_MAKE_OPAQUE(mm::GroundAtomList<mm::Derived>);
+PYBIND11_MAKE_OPAQUE(mm::GroundFunctionExpressionList);
+PYBIND11_MAKE_OPAQUE(mm::GroundLiteralList<mm::Static>);
+PYBIND11_MAKE_OPAQUE(mm::GroundLiteralList<mm::Fluent>);
+PYBIND11_MAKE_OPAQUE(mm::GroundLiteralList<mm::Derived>);
+PYBIND11_MAKE_OPAQUE(mm::GroundActionList);
+PYBIND11_MAKE_OPAQUE(mm::GroundAxiomList);
+PYBIND11_MAKE_OPAQUE(mm::LiteralList<mm::Static>);
+PYBIND11_MAKE_OPAQUE(mm::LiteralList<mm::Fluent>);
+PYBIND11_MAKE_OPAQUE(mm::LiteralList<mm::Derived>);
+PYBIND11_MAKE_OPAQUE(mm::GroundFunctionValueList<mm::Static>);
+PYBIND11_MAKE_OPAQUE(mm::GroundFunctionValueList<mm::Fluent>);
+PYBIND11_MAKE_OPAQUE(mm::GroundFunctionValueList<mm::Auxiliary>);
+PYBIND11_MAKE_OPAQUE(mm::ObjectList);
+PYBIND11_MAKE_OPAQUE(mm::PredicateList<mm::Static>);
+PYBIND11_MAKE_OPAQUE(mm::PredicateList<mm::Fluent>);
+PYBIND11_MAKE_OPAQUE(mm::PredicateList<mm::Derived>);
+PYBIND11_MAKE_OPAQUE(mm::ToPredicateMap<std::string, mm::Static>);
+PYBIND11_MAKE_OPAQUE(mm::ToPredicateMap<std::string, mm::Fluent>);
+PYBIND11_MAKE_OPAQUE(mm::ToPredicateMap<std::string, mm::Derived>);
+PYBIND11_MAKE_OPAQUE(mm::ProblemList);
+PYBIND11_MAKE_OPAQUE(mm::VariableList);
+PYBIND11_MAKE_OPAQUE(mm::TermList);
 // Search
-PYBIND11_MAKE_OPAQUE(mimir::StateList);
+PYBIND11_MAKE_OPAQUE(mm::StateList);
 
-//
-// init - declarations:
-//
-void init_formalism(pybind11::module_& m);
-void init_graphs(pybind11::module_& m);
-void init_search(pybind11::module_& m);
+/**
+ * Type casters
+ */
 
-#endif  // MIMIR_INIT_DECLARATIONS_HPP
+template<>
+struct py::detail::type_caster<mm::FlatIndexList>
+{
+public:
+    PYBIND11_TYPE_CASTER(mm::FlatIndexList, _("FlatIndexList"));
+
+    // Python -> C++
+    bool load(py::handle src, bool)
+    {
+        if (!py::isinstance<py::sequence>(src))
+            return false;
+
+        auto seq = py::reinterpret_borrow<py::sequence>(src);
+        value.clear();
+        // value.reserve(seq.size());
+        for (const auto& item : seq)
+        {
+            value.push_back(py::cast<mm::Index>(item));
+        }
+        return true;
+    }
+
+    // C++ -> Python
+    static py::handle cast(const mm::FlatIndexList& cpp_list, py::return_value_policy, py::handle)
+    {
+        py::list py_list;
+        for (const auto& cpp_item : cpp_list)
+        {
+            py_list.append(py::cast(cpp_item));
+        }
+        return py_list.release();
+    }
+};
+
+template<>
+struct py::detail::type_caster<mm::FlatDoubleList>
+{
+public:
+    PYBIND11_TYPE_CASTER(mm::FlatDoubleList, _("FlatDoubleList"));
+
+    // Python -> C++
+    bool load(py::handle src, bool convert)
+    {
+        if (!py::isinstance<py::sequence>(src))
+            return false;
+
+        auto seq = py::reinterpret_borrow<py::sequence>(src);
+        value.clear();
+        value.reserve(seq.size());
+        for (const auto& item : seq)
+        {
+            value.push_back(py::cast<double>(item));
+        }
+        return true;
+    }
+
+    // C++ -> Python
+    static py::handle cast(const mm::FlatDoubleList& cpp_list, py::return_value_policy, py::handle)
+    {
+        py::list py_list;
+        for (const auto& cpp_item : cpp_list)
+        {
+            py_list.append(py::cast(cpp_item));
+        }
+        return py_list.release();
+    }
+};
+
+template<>
+struct py::detail::type_caster<mm::FlatBitset>
+{
+public:
+    PYBIND11_TYPE_CASTER(mm::FlatBitset, _("FlatBitset"));
+
+    // Python -> C++
+    bool load(py::handle src, bool)
+    {
+        if (!py::isinstance<py::sequence>(src))
+            return false;
+
+        auto seq = py::reinterpret_borrow<py::sequence>(src);
+        value.unset_all();
+        for (const auto& item : seq)
+        {
+            value.set(py::cast<bool>(item));
+        }
+        return true;
+    }
+
+    // C++ -> Python
+    static py::handle cast(const mm::FlatBitset& cpp_bitset, py::return_value_policy, py::handle)
+    {
+        py::list py_list;
+        for (const auto& cpp_item : cpp_bitset)
+        {
+            py_list.append(py::cast(cpp_item));
+        }
+        return py_list.release();
+    }
+};
+
+/**
+ * init - declarations:
+ */
+
+void init_formalism(py::module_& m);
+void init_graphs(py::module_& m);
+void init_search(py::module_& m);
+
+#endif

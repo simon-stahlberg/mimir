@@ -49,7 +49,7 @@ Grammar eliminate_rules_with_identical_body(const Grammar& grammar)
                               const auto& key = boost::hana::first(pair);
                               const auto& body_to_heads = boost::hana::second(pair);
 
-                              for (const auto body_and_heads : body_to_heads)
+                              for (const auto& body_and_heads : body_to_heads)
                               {
                                   const auto& heads = body_and_heads.second;
 
