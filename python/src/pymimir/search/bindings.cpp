@@ -414,7 +414,7 @@ void init_search(py::module_& m)
              py::arg("axiom_evaluator_event_handler") = std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>());
 
     /* StateRepositoryImpl */
-    py::class_<StateRepositoryImpl, std::shared_ptr<StateRepositoryImpl>>(m, "StateRepositoryImpl")  //
+    py::class_<StateRepositoryImpl, std::shared_ptr<StateRepositoryImpl>>(m, "StateRepository")  //
         .def(py::init<AxiomEvaluator>(), py::arg("axiom_evaluator"))
         .def("get_or_create_initial_state", &StateRepositoryImpl::get_or_create_initial_state)
         .def("get_or_create_state", &StateRepositoryImpl::get_or_create_state, py::arg("atoms"), py::arg("numeric_variables"))
@@ -508,7 +508,7 @@ void init_search(py::module_& m)
           py::arg("exhaustive") = false);
 
     // IW
-    py::class_<TupleIndexMapper, std::shared_ptr<TupleIndexMapper>>(m, "TupleIndexMapper")  //
+    py::class_<TupleIndexMapper>(m, "TupleIndexMapper")  //
         .def("to_tuple_index", &TupleIndexMapper::to_tuple_index, py::arg("atom_indices"))
         .def(
             "to_atom_indices",

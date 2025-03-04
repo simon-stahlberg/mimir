@@ -44,7 +44,6 @@ from _pymimir import (
     SIWAlgorithmStatistics,
     State,
     StateRepository,
-    StateIndexGroupedVector,
     TupleIndexMapper,
 )
 
