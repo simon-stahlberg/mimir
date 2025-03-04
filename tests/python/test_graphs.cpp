@@ -13,29 +13,29 @@ TEST_F(PymimirFixture, static_graphs)
 {
     {
         // Test mutable graph
-        auto graph = pymimir().attr("EmptyStaticGraph")();
-        const auto v0 = graph.attr("add_vertex")().cast<VertexIndex>();
+        auto graph = pymimir().attr("VertexColoredStaticGraph")();
+        const auto v0 = graph.attr("add_vertex")(3).cast<VertexIndex>();
 
         EXPECT_EQ(v0, 0);
 
-        const auto v1 = graph.attr("add_vertex")().cast<VertexIndex>();
+        const auto v1 = graph.attr("add_vertex")(2).cast<VertexIndex>();
 
         EXPECT_EQ(v1, 1);
 
-        EXPECT_ANY_THROW(graph.attr("add_vertex")(1, 2, 3));  ///< EmptyVertex expects zero arguments
+        EXPECT_ANY_THROW(graph.attr("add_vertex")(1, 2, 3));  ///< ColoredVertex expects 1 arguments
 
-        EXPECT_EQ(graph.attr("get_num_vertices")(), 2);
+        EXPECT_EQ(graph.attr("get_num_vertices")().cast<size_t>(), 2);
 
         // Test immutable graph
-        auto immutable_graph = pymimir().attr("ImmutableEmptyStaticGraph")(graph);
+        auto immutable_graph = pymimir().attr("ImmutableVertexColoredStaticGraph")(graph);
 
         EXPECT_ANY_THROW(immutable_graph.attr("add_vertex")().cast<VertexIndex>());
 
-        EXPECT_EQ(immutable_graph.attr("get_num_vertices")(), 2);
+        EXPECT_EQ(immutable_graph.attr("get_num_vertices")().cast<size_t>(), 2);
 
         // Test translation
-        auto forward_graph = pymimir().attr("ForwardEmptyStaticGraph")(immutable_graph);
+        auto forward_graph = pymimir().attr("ForwardVertexColoredStaticGraph")(immutable_graph);
 
-        EXPECT_EQ(forward_graph.attr("get_num_vertices")(), 2);
+        EXPECT_EQ(forward_graph.attr("get_num_vertices")().cast<size_t>(), 2);
     }
 }

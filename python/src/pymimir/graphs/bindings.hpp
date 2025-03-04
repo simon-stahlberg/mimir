@@ -111,8 +111,100 @@ void bind_translated_static_graph(py::module_& m, const std::string& name, const
     py::class_<TranslatedGraphType>(m, (prefix + name).c_str())
         .def(py::init<GraphType>())
         .def(py::init([](const PyImmutableGraph& immutable) { return TranslatedGraphType(immutable.obj_); }))
+        .def(
+            "get_edge_indices",
+            [](const TranslatedGraphType& self)
+            {
+                auto range = self.get_edge_indices();
+                return py::make_iterator(range.begin(), range.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_forward_adjacent_vertices",
+            [](const TranslatedGraphType& self, mm::VertexIndex vertex)
+            {
+                auto range = self.template get_adjacent_vertices<mm::ForwardTraversal>(vertex);
+                return py::make_iterator(range.begin(), range.end());
+            },
+            py::keep_alive<0, 1>(),
+            py::arg("vertex_index"))
+        .def(
+            "get_backward_adjacent_vertices",
+            [](const TranslatedGraphType& self, mm::VertexIndex vertex)
+            {
+                auto range = self.template get_adjacent_vertices<mm::BackwardTraversal>(vertex);
+                return py::make_iterator(range.begin(), range.end());
+            },
+            py::keep_alive<0, 1>(),
+            py::arg("vertex_index"))
+        .def(
+            "get_forward_adjacent_vertex_indices",
+            [](const TranslatedGraphType& self, mm::VertexIndex vertex)
+            {
+                auto range = self.template get_adjacent_vertex_indices<mm::ForwardTraversal>(vertex);
+                return py::make_iterator(range.begin(), range.end());
+            },
+            py::keep_alive<0, 1>(),
+            py::arg("vertex_index"))
+        .def(
+            "get_backward_adjacent_vertex_indices",
+            [](const TranslatedGraphType& self, mm::VertexIndex vertex)
+            {
+                auto range = self.template get_adjacent_vertex_indices<mm::BackwardTraversal>(vertex);
+                return py::make_iterator(range.begin(), range.end());
+            },
+            py::keep_alive<0, 1>(),
+            py::arg("vertex_index"))
+        .def(
+            "get_forward_adjacent_edges",
+            [](const TranslatedGraphType& self, mm::VertexIndex vertex)
+            {
+                auto range = self.template get_adjacent_edges<mm::ForwardTraversal>(vertex);
+                return py::make_iterator(range.begin(), range.end());
+            },
+            py::keep_alive<0, 1>(),
+            py::arg("vertex_index"))
+        .def(
+            "get_backward_adjacent_edges",
+            [](const TranslatedGraphType& self, mm::VertexIndex vertex)
+            {
+                auto range = self.template get_adjacent_edges<mm::BackwardTraversal>(vertex);
+                return py::make_iterator(range.begin(), range.end());
+            },
+            py::keep_alive<0, 1>(),
+            py::arg("vertex_index"))
+        .def(
+            "get_forward_adjacent_edge_indices",
+            [](const TranslatedGraphType& self, mm::VertexIndex vertex)
+            {
+                auto range = self.template get_adjacent_edge_indices<mm::ForwardTraversal>(vertex);
+                return py::make_iterator(range.begin(), range.end());
+            },
+            py::keep_alive<0, 1>(),
+            py::arg("vertex_index"))
+        .def(
+            "get_backward_adjacent_edge_indices",
+            [](const TranslatedGraphType& self, mm::VertexIndex vertex)
+            {
+                auto range = self.template get_adjacent_edge_indices<mm::BackwardTraversal>(vertex);
+                return py::make_iterator(range.begin(), range.end());
+            },
+            py::keep_alive<0, 1>(),
+            py::arg("vertex_index"))
+        .def("get_vertices", &TranslatedGraphType::get_vertices)
+        .def("get_vertex", &TranslatedGraphType::get_vertex, py::arg("vertex_index"))
+        .def("get_edges", &TranslatedGraphType::get_vertices)
+        .def("get_edge", &TranslatedGraphType::get_vertex)
         .def("get_num_vertices", &TranslatedGraphType::get_num_vertices)
-        .def("get_num_edges", &TranslatedGraphType::get_num_edges);
+        .def("get_num_edges", &TranslatedGraphType::get_num_edges)
+        .def("get_forward_source", &TranslatedGraphType::template get_source<mm::ForwardTraversal>, py::arg("edge_index"))
+        .def("get_backward_source", &TranslatedGraphType::template get_source<mm::BackwardTraversal>, py::arg("edge_index"))
+        .def("get_forward_target", &TranslatedGraphType::template get_target<mm::ForwardTraversal>, py::arg("edge_index"))
+        .def("get_backward_target", &TranslatedGraphType::template get_target<mm::BackwardTraversal>, py::arg("edge_index"))
+        .def("get_forward_degrees", &TranslatedGraphType::template get_degrees<mm::ForwardTraversal>)
+        .def("get_backward_degrees", &TranslatedGraphType::template get_degrees<mm::BackwardTraversal>)
+        .def("get_forward_degree", &TranslatedGraphType::template get_degree<mm::ForwardTraversal>, py::arg("vertex_index"))
+        .def("get_backward_degree", &TranslatedGraphType::template get_degree<mm::BackwardTraversal>, py::arg("vertex_index"));
 }
 
 template<mm::IsVertex V, mm::IsEdge E>
@@ -126,6 +218,7 @@ void bind_static_graph(py::module_& m, const std::string& name)
 
     py::class_<GraphType>(m, name.c_str())
         .def(py::init<>())
+        .def("clear", &GraphType::clear)
         .def("add_vertex",
              [](GraphType& self, py::args args)
              {
@@ -144,8 +237,108 @@ void bind_static_graph(py::module_& m, const std::string& name)
              })
         .def("add_directed_edge",
              [](GraphType& self, mm::VertexIndex source, mm::VertexIndex target, const E& edge) { return self.add_directed_edge(source, target, edge); })
+        .def(
+            "get_vertex_indices",
+            [](const GraphType& self)
+            {
+                auto range = self.get_vertex_indices();
+                return py::make_iterator(range.begin(), range.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_edge_indices",
+            [](const GraphType& self)
+            {
+                auto range = self.get_edge_indices();
+                return py::make_iterator(range.begin(), range.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_forward_adjacent_vertices",
+            [](const GraphType& self, mm::VertexIndex vertex)
+            {
+                auto range = self.template get_adjacent_vertices<mm::ForwardTraversal>(vertex);
+                return py::make_iterator(range.begin(), range.end());
+            },
+            py::keep_alive<0, 1>(),
+            py::arg("vertex_index"))
+        .def(
+            "get_backward_adjacent_vertices",
+            [](const GraphType& self, mm::VertexIndex vertex)
+            {
+                auto range = self.template get_adjacent_vertices<mm::BackwardTraversal>(vertex);
+                return py::make_iterator(range.begin(), range.end());
+            },
+            py::keep_alive<0, 1>(),
+            py::arg("vertex_index"))
+        .def(
+            "get_forward_adjacent_vertex_indices",
+            [](const GraphType& self, mm::VertexIndex vertex)
+            {
+                auto range = self.template get_adjacent_vertex_indices<mm::ForwardTraversal>(vertex);
+                return py::make_iterator(range.begin(), range.end());
+            },
+            py::keep_alive<0, 1>(),
+            py::arg("vertex_index"))
+        .def(
+            "get_backward_adjacent_vertex_indices",
+            [](const GraphType& self, mm::VertexIndex vertex)
+            {
+                auto range = self.template get_adjacent_vertex_indices<mm::BackwardTraversal>(vertex);
+                return py::make_iterator(range.begin(), range.end());
+            },
+            py::keep_alive<0, 1>(),
+            py::arg("vertex_index"))
+        .def(
+            "get_forward_adjacent_edges",
+            [](const GraphType& self, mm::VertexIndex vertex)
+            {
+                auto range = self.template get_adjacent_edges<mm::ForwardTraversal>(vertex);
+                return py::make_iterator(range.begin(), range.end());
+            },
+            py::keep_alive<0, 1>(),
+            py::arg("vertex_index"))
+        .def(
+            "get_backward_adjacent_edges",
+            [](const GraphType& self, mm::VertexIndex vertex)
+            {
+                auto range = self.template get_adjacent_edges<mm::BackwardTraversal>(vertex);
+                return py::make_iterator(range.begin(), range.end());
+            },
+            py::keep_alive<0, 1>(),
+            py::arg("vertex_index"))
+        .def(
+            "get_forward_adjacent_edge_indices",
+            [](const GraphType& self, mm::VertexIndex vertex)
+            {
+                auto range = self.template get_adjacent_edge_indices<mm::ForwardTraversal>(vertex);
+                return py::make_iterator(range.begin(), range.end());
+            },
+            py::keep_alive<0, 1>(),
+            py::arg("vertex_index"))
+        .def(
+            "get_backward_adjacent_edge_indices",
+            [](const GraphType& self, mm::VertexIndex vertex)
+            {
+                auto range = self.template get_adjacent_edge_indices<mm::BackwardTraversal>(vertex);
+                return py::make_iterator(range.begin(), range.end());
+            },
+            py::keep_alive<0, 1>(),
+            py::arg("vertex_index"))
+        .def("get_vertices", &GraphType::get_vertices)
+        .def("get_vertex", &GraphType::get_vertex, py::arg("vertex_index"))
+        .def("get_edges", &GraphType::get_vertices)
+        .def("get_edge", &GraphType::get_vertex)
         .def("get_num_vertices", &GraphType::get_num_vertices)
-        .def("get_num_edges", &GraphType::get_num_edges);
+        .def("get_num_edges", &GraphType::get_num_edges)
+        .def("get_forward_source", &GraphType::template get_source<mm::ForwardTraversal>, py::arg("edge_index"))
+        .def("get_backward_source", &GraphType::template get_source<mm::BackwardTraversal>, py::arg("edge_index"))
+        .def("get_forward_target", &GraphType::template get_target<mm::ForwardTraversal>, py::arg("edge_index"))
+        .def("get_backward_target", &GraphType::template get_target<mm::BackwardTraversal>, py::arg("edge_index"))
+        .def("get_forward_degrees", &GraphType::template get_degrees<mm::ForwardTraversal>)
+        .def("get_backward_degrees", &GraphType::template get_degrees<mm::BackwardTraversal>)
+        .def("get_forward_degree", &GraphType::template get_degree<mm::ForwardTraversal>, py::arg("vertex_index"))
+        .def("get_backward_degree", &GraphType::template get_degree<mm::BackwardTraversal>, py::arg("vertex_index"));
 
     /**
      * Immutable version
@@ -153,8 +346,129 @@ void bind_static_graph(py::module_& m, const std::string& name)
 
     py::class_<PyImmutable<GraphType>>(m, ("Immutable" + name).c_str())  //
         .def(py::init<const GraphType&>())
+        .def(
+            "get_vertex_indices",
+            [](const PyImmutable<GraphType>& self)
+            {
+                auto range = self.obj_.get_vertex_indices();
+                return py::make_iterator(range.begin(), range.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_edge_indices",
+            [](const PyImmutable<GraphType>& self)
+            {
+                auto range = self.obj_.get_edge_indices();
+                return py::make_iterator(range.begin(), range.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_forward_adjacent_vertices",
+            [](const PyImmutable<GraphType>& self, mm::VertexIndex vertex)
+            {
+                auto range = self.obj_.template get_adjacent_vertices<mm::ForwardTraversal>(vertex);
+                return py::make_iterator(range.begin(), range.end());
+            },
+            py::keep_alive<0, 1>(),
+            py::arg("vertex_index"))
+        .def(
+            "get_backward_adjacent_vertices",
+            [](const PyImmutable<GraphType>& self, mm::VertexIndex vertex)
+            {
+                auto range = self.obj_.template get_adjacent_vertices<mm::BackwardTraversal>(vertex);
+                return py::make_iterator(range.begin(), range.end());
+            },
+            py::keep_alive<0, 1>(),
+            py::arg("vertex_index"))
+        .def(
+            "get_forward_adjacent_vertex_indices",
+            [](const PyImmutable<GraphType>& self, mm::VertexIndex vertex)
+            {
+                auto range = self.obj_.template get_adjacent_vertex_indices<mm::ForwardTraversal>(vertex);
+                return py::make_iterator(range.begin(), range.end());
+            },
+            py::keep_alive<0, 1>(),
+            py::arg("vertex_index"))
+        .def(
+            "get_backward_adjacent_vertex_indices",
+            [](const PyImmutable<GraphType>& self, mm::VertexIndex vertex)
+            {
+                auto range = self.obj_.template get_adjacent_vertex_indices<mm::BackwardTraversal>(vertex);
+                return py::make_iterator(range.begin(), range.end());
+            },
+            py::keep_alive<0, 1>(),
+            py::arg("vertex_index"))
+        .def(
+            "get_forward_adjacent_edges",
+            [](const PyImmutable<GraphType>& self, mm::VertexIndex vertex)
+            {
+                auto range = self.obj_.template get_adjacent_edges<mm::ForwardTraversal>(vertex);
+                return py::make_iterator(range.begin(), range.end());
+            },
+            py::keep_alive<0, 1>(),
+            py::arg("vertex_index"))
+        .def(
+            "get_backward_adjacent_edges",
+            [](const PyImmutable<GraphType>& self, mm::VertexIndex vertex)
+            {
+                auto range = self.obj_.template get_adjacent_edges<mm::BackwardTraversal>(vertex);
+                return py::make_iterator(range.begin(), range.end());
+            },
+            py::keep_alive<0, 1>(),
+            py::arg("vertex_index"))
+        .def(
+            "get_forward_adjacent_edge_indices",
+            [](const PyImmutable<GraphType>& self, mm::VertexIndex vertex)
+            {
+                auto range = self.obj_.template get_adjacent_edge_indices<mm::ForwardTraversal>(vertex);
+                return py::make_iterator(range.begin(), range.end());
+            },
+            py::keep_alive<0, 1>(),
+            py::arg("vertex_index"))
+        .def(
+            "get_backward_adjacent_edge_indices",
+            [](const PyImmutable<GraphType>& self, mm::VertexIndex vertex)
+            {
+                auto range = self.obj_.template get_adjacent_edge_indices<mm::BackwardTraversal>(vertex);
+                return py::make_iterator(range.begin(), range.end());
+            },
+            py::keep_alive<0, 1>(),
+            py::arg("vertex_index"))
+        .def("get_vertices", [](const PyImmutable<GraphType>& self) { return self.obj_.get_vertices(); })
+        .def(
+            "get_vertex",
+            [](const PyImmutable<GraphType>& self, mm::VertexIndex vertex) { return self.obj_.get_vertex(vertex); },
+            py::arg("vertex_index"))
+        .def("get_edges", [](const PyImmutable<GraphType>& self) { return self.obj_.get_edges(); })
+        .def("get_edge", [](const PyImmutable<GraphType>& self, mm::EdgeIndex edge) { return self.obj_.get_edge(edge); })
         .def("get_num_vertices", [](const PyImmutable<GraphType>& self) { return self.obj_.get_num_vertices(); })
-        .def("get_num_edges", [](const PyImmutable<GraphType>& self) { return self.obj_.get_num_edges(); });
+        .def("get_num_edges", [](const PyImmutable<GraphType>& self) { return self.obj_.get_num_edges(); })
+        .def(
+            "get_forward_source",
+            [](const PyImmutable<GraphType>& self, mm::EdgeIndex edge) { return self.obj_.template get_source<mm::ForwardTraversal>(edge); },
+            py::arg("edge_index"))
+        .def(
+            "get_backward_source",
+            [](const PyImmutable<GraphType>& self, mm::EdgeIndex edge) { return self.obj_.template get_source<mm::BackwardTraversal>(edge); },
+            py::arg("edge_index"))
+        .def(
+            "get_forward_target",
+            [](const PyImmutable<GraphType>& self, mm::EdgeIndex edge) { return self.obj_.template get_target<mm::ForwardTraversal>(edge); },
+            py::arg("edge_index"))
+        .def(
+            "get_backward_target",
+            [](const PyImmutable<GraphType>& self, mm::EdgeIndex edge) { return self.obj_.template get_target<mm::BackwardTraversal>(edge); },
+            py::arg("edge_index"))
+        .def("get_forward_degrees", [](const PyImmutable<GraphType>& self) { return self.obj_.template get_degrees<mm::ForwardTraversal>(); })
+        .def("get_backward_degrees", [](const PyImmutable<GraphType>& self) { return self.obj_.template get_degrees<mm::BackwardTraversal>(); })
+        .def(
+            "get_forward_degree",
+            [](const PyImmutable<GraphType>& self, mm::VertexIndex vertex) { return self.obj_.template get_degree<mm::ForwardTraversal>(vertex); },
+            py::arg("vertex_index"))
+        .def(
+            "get_backward_degree",
+            [](const PyImmutable<GraphType>& self, mm::VertexIndex vertex) { return self.obj_.template get_degree<mm::BackwardTraversal>(vertex); },
+            py::arg("vertex_index"));
 
     /**
      * Immutable forward version
