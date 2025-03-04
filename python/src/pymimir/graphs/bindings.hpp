@@ -57,46 +57,42 @@ struct PyImmutable
 /// Vertex
 ///////////////////////////////////////////////////////////////////////////////
 
-template<typename VertexType, std::size_t... Is>
-void bind_vertex_get_properties(py::class_<VertexType>& cls, std::index_sequence<Is...>)
+template<mm::IsVertex V, std::size_t... Is>
+void bind_vertex_get_properties(py::class_<V>& cls, std::index_sequence<Is...>)
 {
-    (cls.def(("get_property_" + std::to_string(Is)).c_str(), [](const VertexType& v) { return v.template get_property<Is>(); }), ...);
+    (cls.def(("get_property_" + std::to_string(Is)).c_str(), [](const V& v) { return v.template get_property<Is>(); }), ...);
 }
 
-template<typename... VertexProperties>
+template<mm::IsVertex V>
 void bind_vertex(py::module_& m, const std::string& name)
 {
-    using VertexType = mm::Vertex<VertexProperties...>;
+    auto cls = py::class_<V>(m, name.c_str())  //
+                   .def("get_index", &V::get_index);
 
-    auto cls = py::class_<VertexType>(m, name.c_str())  //
-                   .def("get_index", &VertexType::get_index);
-
-    constexpr std::size_t N = sizeof...(VertexProperties);
-    bind_vertex_get_properties<VertexType>(cls, std::make_index_sequence<N> {});
+    constexpr std::size_t N = std::tuple_size<typename V::VertexPropertiesTypes>::value;
+    bind_vertex_get_properties<V>(cls, std::make_index_sequence<N> {});
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Edge
 ///////////////////////////////////////////////////////////////////////////////
 
-template<typename EdgeType, std::size_t... Is>
-void bind_edge_get_properties(py::class_<EdgeType>& cls, std::index_sequence<Is...>)
+template<mm::IsEdge E, std::size_t... Is>
+void bind_edge_get_properties(py::class_<E>& cls, std::index_sequence<Is...>)
 {
-    (cls.def(("get_property_" + std::to_string(Is)).c_str(), [](const EdgeType& v) { return v.template get_property<Is>(); }), ...);
+    (cls.def(("get_property_" + std::to_string(Is)).c_str(), [](const E& v) { return v.template get_property<Is>(); }), ...);
 }
 
-template<typename... EdgeProperties>
+template<mm::IsEdge E>
 void bind_edge(py::module_& m, const std::string& name)
 {
-    using EdgeType = mm::Edge<EdgeProperties...>;
+    auto cls = py::class_<E>(m, name.c_str())  //
+                   .def("get_index", &E::get_index)
+                   .def("get_source", &E::get_source)
+                   .def("get_target", &E::get_target);
 
-    auto cls = py::class_<EdgeType>(m, name.c_str())  //
-                   .def("get_index", &EdgeType::get_index)
-                   .def("get_source", &EdgeType::get_index)
-                   .def("get_target", &EdgeType::get_index);
-
-    constexpr std::size_t N = sizeof...(EdgeProperties);
-    bind_edge_get_properties<EdgeType>(cls, std::make_index_sequence<N> {});
+    constexpr std::size_t N = std::tuple_size<typename E::EdgePropertiesTypes>::value;
+    bind_edge_get_properties<E>(cls, std::make_index_sequence<N> {});
 }
 
 ///////////////////////////////////////////////////////////////////////////////

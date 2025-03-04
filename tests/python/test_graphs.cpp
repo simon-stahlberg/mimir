@@ -18,6 +18,8 @@ TEST_F(PymimirFixture, static_graphs)
 
         EXPECT_EQ(v0, 0);
 
+        EXPECT_EQ(graph.attr("get_vertex")(v0).attr("get_property_0")().cast<Color>(), 3);
+
         const auto v1 = graph.attr("add_vertex")(2).cast<VertexIndex>();
 
         EXPECT_EQ(v1, 1);
