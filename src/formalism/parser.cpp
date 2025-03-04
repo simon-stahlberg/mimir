@@ -19,6 +19,7 @@
 
 #include "mimir/formalism/domain_builder.hpp"
 #include "mimir/formalism/problem_builder.hpp"
+#include "mimir/formalism/translator.hpp"
 #include "to_mimir_structures.hpp"
 
 #include <memory>

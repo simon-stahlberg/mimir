@@ -24,8 +24,10 @@ PYBIND11_MODULE(_pymimir, m)
 {
     m.doc() = "Python bindings for the Mimir planning library.";
 
-    void init_formalism(pybind11::module_ & m);
-    void init_graphs(pybind11::module_ & m);
+    init_formalism(m);
+    init_graphs(m);
+
+    init_search(m);
 
 #ifdef VERSION_INFO
     m.attr("__version__") = MACRO_STRINGIFY(VERSION_INFO);

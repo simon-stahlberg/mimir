@@ -34,5 +34,6 @@
 //
 void init_formalism(pybind11::module_& m);
 void init_graphs(pybind11::module_& m);
+void init_search(pybind11::module_& m);
 
 #endif  // MIMIR_INIT_DECLARATIONS_HPP

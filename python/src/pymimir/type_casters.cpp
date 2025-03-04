@@ -49,6 +49,23 @@ public:
 };
 
 template<>
+struct py::detail::type_caster<FlatDoubleList>
+{
+public:
+    PYBIND11_TYPE_CASTER(FlatDoubleList, _("FlatDoubleList"));
+
+    static py::handle cast(const FlatDoubleList& cpp_list, py::return_value_policy, py::handle)
+    {
+        py::list py_list;
+        for (const auto& cpp_item : cpp_list)
+        {
+            py_list.append(py::cast(cpp_item));
+        }
+        return py_list.release();
+    }
+};
+
+template<>
 struct py::detail::type_caster<FlatBitset>
 {
 public:

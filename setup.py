@@ -35,6 +35,7 @@ class CMakeBuild(build_ext):
         print("temp_directory", temp_directory)
 
         build_type = "Debug" if os.environ.get('PYMIMIR_DEBUG_BUILD') else "Release"
+        build_type = "Debug"
         print("Pymimir build type:", build_type)
 
         # Create the temporary build directory, if it does not already exist
@@ -48,7 +49,7 @@ class CMakeBuild(build_ext):
                 os.remove(file)
 
         subprocess.run(
-            ["cmake", "-S", f"{ext.sourcedir}/dependencies", "-B", f"{str(temp_directory)}/dependencies/build", f"-DCMAKE_BUILD_TYPE={build_type}", f"-DCMAKE_INSTALL_PREFIX={str(temp_directory)}/dependencies/installs", f"-DCMAKE_PREFIX_PATH={str(temp_directory)}/dependencies/installs"], cwd=str(temp_directory), check=True
+            ["cmake", "-S", f"{ext.sourcedir}/dependencies", "-B", f"{str(temp_directory)}/dependencies/build", f"-DCMAKE_BUILD_TYPE={build_type}", f"-DCMAKE_INSTALL_PREFIX={str(temp_directory)}/dependencies/installs", f"-DCMAKE_PREFIX_PATH={str(temp_directory)}/dependencies/installs", f"-DPYBIND11_DETAILED_ERROR_MESSAGES=On"], cwd=str(temp_directory), check=True
         )
 
         subprocess.run(

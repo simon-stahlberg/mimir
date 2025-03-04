@@ -300,6 +300,8 @@ public:
 
     virtual void on_expand_state_impl(State state, const ProblemImpl& problem) {}
 
+    virtual void on_expand_goal_state_impl(State state, const ProblemImpl& problem) {};
+
     virtual void on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem) {}
 
     virtual void on_generate_state_relaxed_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem)
@@ -346,6 +348,14 @@ public:
         if (!m_quiet)
         {
             on_expand_state_impl(state, problem);
+        }
+    }
+
+    void on_expand_goal_state(State state, const ProblemImpl& problem) override
+    {
+        if (!m_quiet)
+        {
+            on_expand_goal_state_impl(state, problem);
         }
     }
 

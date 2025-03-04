@@ -2,3 +2,5 @@
 
 from .formalism import *
 from .graphs import *
+
+from .search import *

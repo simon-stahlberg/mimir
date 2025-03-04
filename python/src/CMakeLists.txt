@@ -6,8 +6,10 @@ add_library(_pymimir_objects
         OBJECT
         pymimir/init_declarations.hpp
         pymimir/type_casters.cpp
+        
         pymimir/formalism/bindings.cpp
         pymimir/graphs/bindings.cpp
+        pymimir/search/bindings.cpp
 )
 target_include_directories(_pymimir_objects
         PUBLIC

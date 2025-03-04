@@ -1,4 +1,4 @@
-# Mimir: A Planning Library
+# Mimir: A Generalized Numeric Planning Library
 
 Mimir is a C++20-based planning library with Python bindings, designed for both grounded and lifted planning. Its primary focus lies at the intersection of planning and machine learning, making it a powerful tool for  research in learning-based planning. Unlike many planners, Mimir is designed to be used as a library rather than as a standalone application, offering seamless integration into both C++ and Python projects. Pre-compiled Python binaries are available via PyPI for easy installation and use.
 
