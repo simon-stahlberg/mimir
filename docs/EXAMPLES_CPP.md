@@ -1,3 +1,5 @@
+<!-- EXAMPLE NEEDS TO BE UPDATED -->
+
 # C++ Examples
 
 The following examples show some common use cases for Mimir.

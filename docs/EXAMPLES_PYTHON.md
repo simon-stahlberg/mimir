@@ -6,19 +6,20 @@ The following examples show some common use cases for Mimir.
 
 The following code snippet parses domain `domain.pddl` and problem `problem.pddl`, creates a _lifted applicable action generator_, a _lifted axiom evaluator_, a _state repository_, and solves the problem using breadth-first search.
 The result of the search is stored in `status` and `plan`.
-If the instance is solvable, `status` will say so, and `plan` will contain a list of ground actions.
+If the instance is solvable, `result.status` will say so, and `result.plan.get_actions()` will return a list of ground actions.
 
 ```python
 import pymimir as mm
 
 parser = mm.PDDLParser("domain.pddl", "problem.pddl")
-applicable_action_generator = mm.LiftedApplicableActionGenerator(parser.get_problem(), parser.get_pddl_repositories())
-axiom_evaluator = mm.LiftedAxiomEvaluator(parser.get_problem(), parser.get_pddl_repositories())
+grounder = mm.Grounder(parser.get_problem(), parser.get_pddl_repositories())
+successor_generator = mm.LiftedApplicableActionGenerator(grounder.get_action_grounder())
+axiom_evaluator = mm.LiftedAxiomEvaluator(grounder.get_axiom_grounder())
 state_repository = mm.StateRepository(axiom_evaluator)
-brfs = mm.BrFSAlgorithm(applicable_action_generator, state_repository)
-result = brfs.find_solution()
-status = result.status
-plan = result.plan
+initial_state = state_repository.get_or_create_initial_state()
+result = mm.find_solution_brfs(successor_generator, state_repository, initial_state)
+print(result.status)
+print(str.join(', ', [action.to_string_for_plan(parser.get_pddl_repositories()) for action in result.plan.get_actions()]))
 ```
 
 ## Learning General Policies

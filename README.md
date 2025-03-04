@@ -68,9 +68,9 @@ pip install pymimir
 
 See [examples](docs/EXAMPLES_PYTHON.md) on how to use the Python library.
 
-## Getting Started (C++)
+<!-- ## Getting Started (C++)
 
-See [build](docs/BUILD.md) for how to compile Mimir, and [examples](docs/EXAMPLES_CPP.md) for how to use the C++ library.
+See [build](docs/BUILD.md) for how to compile Mimir, and [examples](docs/EXAMPLES_CPP.md) for how to use the C++ library. -->
 
 ## Getting Involved
 
@@ -80,4 +80,3 @@ In the future, see [development guidelines](docs/DEVELOPER_GUIDELINES.md) for in
 ## Long Term Goals
 
 One of Mimir's long term goal is increasing the support of PDDL features towards non-deterministic, probabilistic, and numeric planning.
-
