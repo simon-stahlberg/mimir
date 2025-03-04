@@ -26,6 +26,12 @@ Grammar eliminate_rules_with_identical_body(const Grammar& grammar)
     auto start_symbols = cnf_grammar::StartSymbolsContainer();
     auto derivation_rules = cnf_grammar::DerivationRulesContainer();
     auto substitution_rules = cnf_grammar::SubstitutionRulesContainer();
+
+    using HanaInverseDerivationRules =
+        boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::unordered_map<Constructor<Concept>, NonTerminalList<Concept>>>,
+                         boost::hana::pair<boost::hana::type<Role>, std::unordered_map<Constructor<Role>, NonTerminalList<Role>>>>;
+
+    auto inverse_derivation_rules = HanaInverseDerivationRules();
 }
 
 Grammar simplify(const Grammar& grammar)

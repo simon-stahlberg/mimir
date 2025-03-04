@@ -60,6 +60,8 @@ template<ConceptOrRole D>
 using Constructor = const ConstructorImpl<D>*;
 template<ConceptOrRole D>
 using ConstructorList = std::vector<Constructor<D>>;
+template<ConceptOrRole... D>
+using ConstructorLists = boost::hana::map<boost::hana::pair<boost::hana::type<D>, dl::ConstructorList<D>>...>;
 
 /* Concrete concepts */
 class ConceptTopImpl;
@@ -283,6 +285,8 @@ template<dl::ConceptOrRole D>
 using DerivationRule = const DerivationRuleImpl<D>*;
 template<dl::ConceptOrRole D>
 using DerivationRuleList = std::vector<DerivationRule<D>>;
+template<dl::ConceptOrRole... D>
+using DerivationRuleLists = boost::hana::map<boost::hana::pair<boost::hana::type<D>, DerivationRuleList<D>>...>;
 template<dl::ConceptOrRole D>
 using DerivationRuleSet = std::unordered_set<DerivationRule<D>>;
 
@@ -293,6 +297,8 @@ template<dl::ConceptOrRole D>
 using SubstitutionRule = const SubstitutionRuleImpl<D>*;
 template<dl::ConceptOrRole D>
 using SubstitutionRuleList = std::vector<SubstitutionRule<D>>;
+template<dl::ConceptOrRole... D>
+using SubstitutionRuleLists = boost::hana::map<boost::hana::pair<boost::hana::type<D>, SubstitutionRuleList<D>>...>;
 template<dl::ConceptOrRole D>
 using SubstitutionRuleSet = std::unordered_set<SubstitutionRule<D>>;
 

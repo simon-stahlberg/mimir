@@ -40,9 +40,7 @@ private:
     using HanaGeneratedConstructorsMap = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, GeneratedConstructorsMap<Concept>>,
                                                           boost::hana::pair<boost::hana::type<Role>, GeneratedConstructorsMap<Role>>>;
 
-    static const boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, dl::ConstructorList<Concept>>,
-                                  boost::hana::pair<boost::hana::type<Role>, dl::ConstructorList<Role>>>
-        empty_constructor_lists;
+    static const ConstructorLists<Concept, Role> empty_lists;
 
     HanaGeneratedConstructorsMap m_generated_constructors;
 
@@ -61,15 +59,15 @@ public:
     template<ConceptOrRole D>
     const dl::ConstructorList<D>& get(NonTerminal<D> nonterminal, size_t complexity) const
     {
-        const auto& constructors = boost::hana::at_key(m_generated_constructors, boost::hana::type<D> {});
+        const auto& container = boost::hana::at_key(m_generated_constructors, boost::hana::type<D> {});
 
-        auto it = constructors.find(nonterminal);
-        if (it == constructors.end())
+        auto it = container.find(nonterminal);
+        if (it == container.end())
         {
-            return it->second.at(complexity);
+            return boost::hana::at_key(empty_lists, boost::hana::type<D> {});
         }
 
-        return boost::hana::at_key(m_generated_constructors, boost::hana::type<D> {}).at(nonterminal).at(complexity);
+        return it->second.at(complexity);
     }
 
     HanaGeneratedConstructorsMap& get_hana_generated_constructors() { return m_generated_constructors; }

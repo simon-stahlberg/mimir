@@ -32,11 +32,11 @@ namespace mimir::dl::cnf_grammar
 using HanaStartSymbols = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::optional<NonTerminal<Concept>>>,
                                           boost::hana::pair<boost::hana::type<Role>, std::optional<NonTerminal<Role>>>>;
 
-using HanaDerivationRules =
+using DerivationRulesMap =
     boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::unordered_map<NonTerminal<Concept>, DerivationRuleList<Concept>>>,
                      boost::hana::pair<boost::hana::type<Role>, std::unordered_map<NonTerminal<Role>, DerivationRuleList<Role>>>>;
 
-using HanaSubstitutionRules =
+using SubstitutionRulesMap =
     boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::unordered_map<NonTerminal<Concept>, SubstitutionRuleList<Concept>>>,
                      boost::hana::pair<boost::hana::type<Role>, std::unordered_map<NonTerminal<Role>, SubstitutionRuleList<Role>>>>;
 
@@ -81,7 +81,10 @@ public:
 class DerivationRulesContainer
 {
 private:
-    HanaDerivationRules m_derivation_rules;
+    DerivationRulesMap m_map;
+    DerivationRuleLists<Concept, Role> m_lists;
+
+    static const DerivationRuleLists<Concept, Role> empty_lists;
 
 public:
     DerivationRulesContainer() = default;
@@ -95,9 +98,10 @@ public:
      */
 
     template<ConceptOrRole D>
-    auto push_back(DerivationRule<D> rule)
+    void push_back(DerivationRule<D> rule)
     {
-        return boost::hana::at_key(m_derivation_rules, boost::hana::type<D> {})[rule->get_head()].push_back(rule);
+        boost::hana::at_key(m_map, boost::hana::type<D> {})[rule->get_head()].push_back(rule);
+        boost::hana::at_key(m_lists, boost::hana::type<D> {}).push_back(rule);
     }
 
     /**
@@ -105,19 +109,36 @@ public:
      */
 
     template<ConceptOrRole D>
-    const std::unordered_map<NonTerminal<D>, DerivationRuleList<D>>& get(NonTerminal<D> non_terminal) const
+    const DerivationRuleList<D>& get(NonTerminal<D> non_terminal) const
     {
-        return boost::hana::at_key(m_derivation_rules, boost::hana::type<D> {}).at(non_terminal);
+        const auto& container = boost::hana::at_key(m_map, boost::hana::type<D> {});
+
+        auto it = container.find(non_terminal);
+        if (it == container.end())
+        {
+            return boost::hana::at_key(empty_lists, boost::hana::type<D> {});
+        }
+
+        return it->second;
     }
 
-    HanaDerivationRules& get() { return m_derivation_rules; }
-    const HanaDerivationRules& get() const { return m_derivation_rules; }
+    template<ConceptOrRole D>
+    const DerivationRuleList<D>& get() const
+    {
+        return boost::hana::at_key(m_lists, boost::hana::type<D> {});
+    }
+
+    DerivationRuleLists<Concept, Role>& get() { return m_lists; }
+    const DerivationRuleLists<Concept, Role>& get() const { return m_lists; }
 };
 
 class SubstitutionRulesContainer
 {
 private:
-    HanaSubstitutionRules m_substitution_rules;
+    SubstitutionRulesMap m_map;
+    SubstitutionRuleLists<Concept, Role> m_lists;
+
+    static const SubstitutionRuleLists<Concept, Role> empty_lists;
 
 public:
     SubstitutionRulesContainer() = default;
@@ -131,9 +152,10 @@ public:
      */
 
     template<ConceptOrRole D>
-    auto push_back(SubstitutionRule<D> substitution_rule)
+    void push_back(SubstitutionRule<D> rule)
     {
-        return boost::hana::at_key(m_substitution_rules, boost::hana::type<D> {})[substitution_rule->get_head()].push_back(substitution_rule);
+        boost::hana::at_key(m_map, boost::hana::type<D> {})[rule->get_head()].push_back(rule);
+        boost::hana::at_key(m_lists, boost::hana::type<D> {}).push_back(rule);
     }
 
     /**
@@ -141,13 +163,27 @@ public:
      */
 
     template<ConceptOrRole D>
-    const std::unordered_map<NonTerminal<D>, SubstitutionRuleList<D>>& get() const
+    const SubstitutionRuleList<D>& get(NonTerminal<D> non_terminal) const
     {
-        return boost::hana::at_key(m_substitution_rules, boost::hana::type<D> {});
+        const auto& container = boost::hana::at_key(m_map, boost::hana::type<D> {});
+
+        auto it = container.find(non_terminal);
+        if (it == container.end())
+        {
+            return boost::hana::at_key(empty_lists, boost::hana::type<D> {});
+        }
+
+        return it->second;
     }
 
-    HanaSubstitutionRules& get() { return m_substitution_rules; }
-    const HanaSubstitutionRules& get() const { return m_substitution_rules; }
+    template<ConceptOrRole D>
+    const SubstitutionRuleList<D>& get() const
+    {
+        return boost::hana::at_key(m_lists, boost::hana::type<D> {});
+    }
+
+    SubstitutionRuleLists<Concept, Role>& get() { return m_lists; }
+    const SubstitutionRuleLists<Concept, Role>& get() const { return m_lists; }
 };
 
 }

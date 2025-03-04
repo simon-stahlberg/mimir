@@ -347,27 +347,15 @@ void FormatterGrammarVisitor::visit(const Grammar& grammar)
 
                                   bool first_1 = true;
 
-                                  for (const auto& non_terminal_and_rules : second)
+                                  for (const auto& rule : second)
                                   {
                                       if (!first_1)
                                           m_out << "\n";
 
-                                      const auto& [non_terminal, rules] = non_terminal_and_rules;
+                                      m_out << "    ";
 
-                                      bool first_2 = true;
-
-                                      for (const auto& rule : rules)
-                                      {
-                                          if (!first_2)
-                                              m_out << "\n";
-
-                                          m_out << "    ";
-
-                                          auto derivation_rule_visitor = FormatterDerivationRuleVisitor<ConstructorType>(m_out);
-                                          rule->accept(derivation_rule_visitor);
-
-                                          first_2 = false;
-                                      }
+                                      auto derivation_rule_visitor = FormatterDerivationRuleVisitor<ConstructorType>(m_out);
+                                      rule->accept(derivation_rule_visitor);
 
                                       first_1 = false;
                                   }
@@ -387,27 +375,15 @@ void FormatterGrammarVisitor::visit(const Grammar& grammar)
 
                                   bool first_1 = true;
 
-                                  for (const auto& non_terminal_and_rules : second)
+                                  for (const auto& rule : second)
                                   {
                                       if (!first_1)
                                           m_out << "\n";
 
-                                      const auto& [non_terminal, rules] = non_terminal_and_rules;
+                                      m_out << "    ";
 
-                                      bool first_2 = true;
-
-                                      for (const auto& rule : rules)
-                                      {
-                                          if (!first_2)
-                                              m_out << "\n";
-
-                                          m_out << "    ";
-
-                                          auto substitution_rule_visitor = FormatterSubstitutionRuleVisitor<ConstructorType>(m_out);
-                                          rule->accept(substitution_rule_visitor);
-
-                                          first_2 = false;
-                                      }
+                                      auto substitution_rule_visitor = FormatterSubstitutionRuleVisitor<ConstructorType>(m_out);
+                                      rule->accept(substitution_rule_visitor);
 
                                       first_1 = false;
                                   }

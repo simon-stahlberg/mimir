@@ -37,29 +37,11 @@ NonTerminalImpl<D>::NonTerminalImpl(Index index, std::string name) : m_index(ind
 template<dl::ConceptOrRole D>
 bool NonTerminalImpl<D>::test_match(dl::Constructor<D> constructor, const Grammar& grammar) const
 {
-    auto& derivation_rule_map = boost::hana::at_key(grammar.get_derivation_rules_container().get(), boost::hana::type<D> {});
+    const auto& derivation_rules = grammar.get_derivation_rules_container().get(this);
+    const auto& substitution_rules = grammar.get_substitution_rules().get(this);
 
-    auto it = derivation_rule_map.find(this);
-    if (it != derivation_rule_map.end())
-    {
-        const auto& derivation_rules = it->second;
-        bool matches_derivation_rule =
-            std::any_of(derivation_rules.begin(), derivation_rules.end(), [&](auto&& rule) { return rule->test_match(constructor, grammar); });
-
-        if (matches_derivation_rule)
-            return true;
-    }
-
-    const auto& substitution_rule_map = boost::hana::at_key(grammar.get_substitution_rules().get(), boost::hana::type<D> {});
-
-    auto it2 = substitution_rule_map.find(this);
-    if (it2 != substitution_rule_map.end())
-    {
-        const auto& substitution_rules = it2->second;
-        return std::any_of(substitution_rules.begin(), substitution_rules.end(), [&](auto&& rule) { return rule->test_match(constructor, grammar); });
-    }
-
-    return false;
+    return std::any_of(derivation_rules.begin(), derivation_rules.end(), [&](auto&& rule) { return rule->test_match(constructor, grammar); })
+           || std::any_of(substitution_rules.begin(), substitution_rules.end(), [&](auto&& rule) { return rule->test_match(constructor, grammar); });
 }
 
 template<dl::ConceptOrRole D>

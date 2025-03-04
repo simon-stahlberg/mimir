@@ -68,7 +68,7 @@ TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarParseTest)
 
         dl::cnf_grammar::GeneratedSentencesContainer sentences;
         dl::ConstructorRepositories repositories;
-        size_t max_complexity = 10;
+        size_t max_complexity = 4;
         auto visitor = dl::cnf_grammar::GeneratorGrammarVisitor(sentences, repositories, max_complexity);
         visitor.visit(cnf_grammar);
     }

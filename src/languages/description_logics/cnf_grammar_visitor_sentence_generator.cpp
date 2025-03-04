@@ -27,11 +27,9 @@
 namespace mimir::dl::cnf_grammar
 {
 
-const boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, dl::ConstructorList<Concept>>,
-                       boost::hana::pair<boost::hana::type<Role>, dl::ConstructorList<Role>>>
-    GeneratedSentencesContainer::empty_constructor_lists =
-        boost::hana::make_map(boost::hana::make_pair(boost::hana::type_c<Concept>, dl::ConstructorList<Concept> {}),
-                              boost::hana::make_pair(boost::hana::type_c<Role>, dl::ConstructorList<Role> {}));
+const ConstructorLists<Concept, Role> GeneratedSentencesContainer::empty_lists =
+    boost::hana::make_map(boost::hana::make_pair(boost::hana::type_c<Concept>, dl::ConstructorList<Concept> {}),
+                          boost::hana::make_pair(boost::hana::type_c<Role>, dl::ConstructorList<Role> {}));
 
 /**
  * Concept
@@ -103,8 +101,7 @@ void GeneratorConstructorVisitor<Concept>::visit(ConceptIntersection constructor
             {
                 for (const auto& right_concept : m_sentences.get(constructor->get_concept_right(), j))
                 {
-                    if (left_concept->get_index() < right_concept->get_index())  // break symmetries
-                        m_result.push_back(m_repositories.get_or_create_concept_intersection(left_concept, right_concept));
+                    m_result.push_back(m_repositories.get_or_create_concept_intersection(left_concept, right_concept));
                 }
             }
         }
@@ -122,9 +119,7 @@ void GeneratorConstructorVisitor<Concept>::visit(ConceptUnion constructor)
             {
                 for (const auto& right_concept : m_sentences.get(constructor->get_concept_right(), j))
                 {
-                    std::cout << left_concept->get_index() << " " << left_concept << " " << right_concept->get_index() << " " << right_concept << std::endl;
-                    if (left_concept->get_index() < right_concept->get_index())  // break symmetries
-                        m_result.push_back(m_repositories.get_or_create_concept_union(left_concept, right_concept));
+                    m_result.push_back(m_repositories.get_or_create_concept_union(left_concept, right_concept));
                 }
             }
         }
@@ -206,8 +201,7 @@ void GeneratorConstructorVisitor<Concept>::visit(ConceptRoleValueMapEquality con
             {
                 for (const auto& right_role : m_sentences.get(constructor->get_role_right(), j))
                 {
-                    if (left_role->get_index() < right_role->get_index())  // break symmetries
-                        m_result.push_back(m_repositories.get_or_create_concept_role_value_map_equality(left_role, right_role));
+                    m_result.push_back(m_repositories.get_or_create_concept_role_value_map_equality(left_role, right_role));
                 }
             }
         }
@@ -276,8 +270,7 @@ void GeneratorConstructorVisitor<Role>::visit(RoleIntersection constructor)
             {
                 for (const auto& right_role : m_sentences.get(constructor->get_role_right(), j))
                 {
-                    if (left_role->get_index() < right_role->get_index())  // break symmetries
-                        m_result.push_back(m_repositories.get_or_create_role_intersection(left_role, right_role));
+                    m_result.push_back(m_repositories.get_or_create_role_intersection(left_role, right_role));
                 }
             }
         }
@@ -295,8 +288,7 @@ void GeneratorConstructorVisitor<Role>::visit(RoleUnion constructor)
             {
                 for (const auto& right_role : m_sentences.get(constructor->get_role_right(), j))
                 {
-                    if (left_role->get_index() < right_role->get_index())  // break symmetries
-                        m_result.push_back(m_repositories.get_or_create_role_union(left_role, right_role));
+                    m_result.push_back(m_repositories.get_or_create_role_union(left_role, right_role));
                 }
             }
         }
@@ -473,14 +465,10 @@ void GeneratorGrammarVisitor::visit(const Grammar& grammar)
                                   const auto& second = boost::hana::second(pair);
                                   using ConstructorType = typename decltype(+key)::type;
 
-                                  for (const auto& non_terminal_and_rules : second)
+                                  for (const auto& rule : second)
                                   {
-                                      const auto& [non_terminal, rules] = non_terminal_and_rules;
-                                      for (const auto& rule : rules)
-                                      {
-                                          auto derivation_rule_visitor = GeneratorDerivationRuleVisitor<ConstructorType>(m_sentences, m_repositories, i);
-                                          rule->accept(derivation_rule_visitor);
-                                      }
+                                      auto derivation_rule_visitor = GeneratorDerivationRuleVisitor<ConstructorType>(m_sentences, m_repositories, i);
+                                      rule->accept(derivation_rule_visitor);
                                   }
                               });
 
@@ -491,15 +479,10 @@ void GeneratorGrammarVisitor::visit(const Grammar& grammar)
                                   const auto& second = boost::hana::second(pair);
                                   using ConstructorType = typename decltype(+key)::type;
 
-                                  for (const auto& non_terminal_and_rules : second)
+                                  for (const auto& rule : second)
                                   {
-                                      const auto& [non_terminal, rules] = non_terminal_and_rules;
-
-                                      for (const auto& rule : rules)
-                                      {
-                                          auto substitution_rule_visitor = GeneratorSubstitutionRuleVisitor<ConstructorType>(m_sentences, m_repositories, i);
-                                          rule->accept(substitution_rule_visitor);
-                                      }
+                                      auto substitution_rule_visitor = GeneratorSubstitutionRuleVisitor<ConstructorType>(m_sentences, m_repositories, i);
+                                      rule->accept(substitution_rule_visitor);
                                   }
                               });
     }
