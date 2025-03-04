@@ -27,11 +27,40 @@ Grammar eliminate_rules_with_identical_body(const Grammar& grammar)
     auto derivation_rules = cnf_grammar::DerivationRulesContainer();
     auto substitution_rules = cnf_grammar::SubstitutionRulesContainer();
 
-    using HanaInverseDerivationRules =
-        boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::unordered_map<Constructor<Concept>, NonTerminalList<Concept>>>,
-                         boost::hana::pair<boost::hana::type<Role>, std::unordered_map<Constructor<Role>, NonTerminalList<Role>>>>;
+    auto inverse_derivation_rules = ConstructorMap<NonTerminalList, Concept, Role>();
 
-    auto inverse_derivation_rules = HanaInverseDerivationRules();
+    boost::hana::for_each(grammar.get_derivation_rules_container().get(),
+                          [&](auto&& pair)
+                          {
+                              const auto& key = boost::hana::first(pair);
+                              const auto& second = boost::hana::second(pair);
+
+                              for (const auto& rule : second)
+                              {
+                                  boost::hana::at_key(inverse_derivation_rules, key)[rule->get_body()].push_back(rule->get_head());
+                              }
+                          });
+
+    auto substitution_map = NonTerminalMap<NonTerminal, Concept, Role>();
+
+    boost::hana::for_each(inverse_derivation_rules,
+                          [&](auto&& pair)
+                          {
+                              const auto& key = boost::hana::first(pair);
+                              const auto& body_to_heads = boost::hana::second(pair);
+
+                              for (const auto body_and_heads : body_to_heads)
+                              {
+                                  const auto& heads = body_and_heads.second;
+
+                                  const auto& representative_head = heads.front();
+
+                                  for (auto it = std::next(heads.begin()); it != heads.end(); ++it)
+                                  {
+                                      boost::hana::at_key(substitution_map, key).emplace(*it, representative_head);
+                                  }
+                              }
+                          });
 }
 
 Grammar simplify(const Grammar& grammar)

@@ -278,7 +278,6 @@ class ConstructorRepositories;
 
 namespace cnf_grammar
 {
-
 /* NonTerminal */
 template<dl::ConceptOrRole D>
 class NonTerminalImpl;
@@ -324,6 +323,8 @@ template<dl::ConceptOrRole D>
 using Constructor = const ConstructorImpl<D>*;
 template<dl::ConceptOrRole D>
 using ConstructorList = std::vector<Constructor<D>>;
+template<template<typename> typename Value, dl::ConceptOrRole... D>
+using ConstructorMap = boost::hana::map<boost::hana::pair<boost::hana::type<D>, std::unordered_map<Constructor<D>, Value<D>>>...>;
 template<dl::ConceptOrRole D>
 using ConstructorSet = std::unordered_set<Constructor<D>>;
 
@@ -410,6 +411,12 @@ class GrammarVisitor;
  */
 
 class Grammar;
+
+/**
+ * Repositories
+ */
+
+class ConstructorRepositories;
 }
 }
 

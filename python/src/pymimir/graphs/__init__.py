@@ -1,10 +1,30 @@
 # Import all classes for better IDE support
 
-# Formalism
+
 from _pymimir import (
-    BasicStaticGraph,
+    # Vertices
+    EmptyVertex,
+    ColoredVertex,
+
+    # Edges
+    EmptyEdge,
+    ColoredEdge,
+
+    # EmptyStaticGraph
+    EmptyStaticGraph,
+    ImmutableEmptyStaticGraph,
+    ForwardEmptyStaticGraph,
+    BidirectionalEmptyStaticGraph,
+
+    # VertexColoredStaticGraph
     VertexColoredStaticGraph,
+    ImmutableVertexColoredStaticGraph,
+    ForwardVertexColoredStaticGraph,
+    BidirectionalVertexColoredStaticGraph,
+
+    # EdgeColoredStaticGraph
     EdgeColoredStaticGraph,
-    BasicStaticGraphImmutable,
-    Immutable
+    ImmutableEdgeColoredStaticGraph,
+    ForwardEdgeColoredStaticGraph,
+    BidirectionalEdgeColoredStaticGraph,
 )

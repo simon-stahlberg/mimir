@@ -143,6 +143,144 @@ public:
     virtual void visit(const Grammar& grammar) = 0;
 };
 
+////////////////////////////
+/// Copy
+////////////////////////////
+
+/**
+ * Constructors
+ */
+
+template<ConceptOrRole D>
+class CopyConstructorVisitor : public ConstructorVisitor<D>
+{
+};
+
+/**
+ * Concept
+ */
+
+template<>
+class CopyConstructorVisitor<Concept> : public ConstructorVisitor<Concept>
+{
+protected:
+    ConstructorRepositories& m_repositories;
+
+public:
+    explicit CopyConstructorVisitor(ConstructorRepositories& repositories);
+
+    void visit(ConceptBot constructor) override;
+    void visit(ConceptTop constructor) override;
+    void visit(ConceptAtomicState<Static> constructor) override;
+    void visit(ConceptAtomicState<Fluent> constructor) override;
+    void visit(ConceptAtomicState<Derived> constructor) override;
+    void visit(ConceptAtomicGoal<Static> constructor) override;
+    void visit(ConceptAtomicGoal<Fluent> constructor) override;
+    void visit(ConceptAtomicGoal<Derived> constructor) override;
+    void visit(ConceptNominal constructor) override;
+    void visit(ConceptIntersection constructor) override;
+    void visit(ConceptUnion constructor) override;
+    void visit(ConceptNegation constructor) override;
+    void visit(ConceptValueRestriction constructor) override;
+    void visit(ConceptExistentialQuantification constructor) override;
+    void visit(ConceptRoleValueMapContainment constructor) override;
+    void visit(ConceptRoleValueMapEquality constructor) override;
+};
+
+/**
+ * Role
+ */
+
+template<>
+class CopyConstructorVisitor<Role> : public ConstructorVisitor<Role>
+{
+protected:
+    ConstructorRepositories& m_repositories;
+
+public:
+    explicit CopyConstructorVisitor(ConstructorRepositories& repositories);
+
+    void visit(RoleUniversal constructor) override;
+    void visit(RoleAtomicState<Static> constructor) override;
+    void visit(RoleAtomicState<Fluent> constructor) override;
+    void visit(RoleAtomicState<Derived> constructor) override;
+    void visit(RoleAtomicGoal<Static> constructor) override;
+    void visit(RoleAtomicGoal<Fluent> constructor) override;
+    void visit(RoleAtomicGoal<Derived> constructor) override;
+    void visit(RoleIntersection constructor) override;
+    void visit(RoleUnion constructor) override;
+    void visit(RoleComplement constructor) override;
+    void visit(RoleInverse constructor) override;
+    void visit(RoleComposition constructor) override;
+    void visit(RoleTransitiveClosure constructor) override;
+    void visit(RoleReflexiveTransitiveClosure constructor) override;
+    void visit(RoleRestriction constructor) override;
+    void visit(RoleIdentity constructor) override;
+};
+
+/**
+ * NonTerminal
+ */
+
+template<ConceptOrRole D>
+class CopyNonTerminalVisitor : public NonTerminalVisitor<D>
+{
+protected:
+    ConstructorRepositories& m_repositories;
+
+public:
+    explicit CopyNonTerminalVisitor(ConstructorRepositories& repositories);
+
+    void visit(NonTerminal<D> constructor) override;
+};
+
+/**
+ * DerivationRule
+ */
+
+template<ConceptOrRole D>
+class CopyDerivationRuleVisitor : public DerivationRuleVisitor<D>
+{
+protected:
+    ConstructorRepositories& m_repositories;
+
+public:
+    explicit CopyDerivationRuleVisitor(ConstructorRepositories& repositories);
+
+    void visit(DerivationRule<D> rule) override;
+};
+
+/**
+ * SubstitutionRule
+ */
+
+template<ConceptOrRole D>
+class CopySubstitutionRuleVisitor : public SubstitutionRuleVisitor<D>
+{
+protected:
+    ConstructorRepositories& m_repositories;
+
+public:
+    explicit CopySubstitutionRuleVisitor(ConstructorRepositories& repositories);
+
+    void visit(SubstitutionRule<D> rule) override;
+};
+
+/**
+ * Grammar
+ */
+
+class CopyGrammarVisitor : public GrammarVisitor
+{
+protected:
+    ConstructorRepositories& m_repositories;
+
+public:
+    explicit CopyGrammarVisitor(ConstructorRepositories& repositories);
+
+    void visit(const Grammar& grammar) override;
+};
+
 }
 
 #endif
