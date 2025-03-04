@@ -166,6 +166,8 @@ class CopyConstructorVisitor<Concept> : public ConstructorVisitor<Concept>
 protected:
     ConstructorRepositories& m_repositories;
 
+    Constructor<Concept> m_result;  ///< the result of a visitation
+
 public:
     explicit CopyConstructorVisitor(ConstructorRepositories& repositories);
 
@@ -185,6 +187,8 @@ public:
     void visit(ConceptExistentialQuantification constructor) override;
     void visit(ConceptRoleValueMapContainment constructor) override;
     void visit(ConceptRoleValueMapEquality constructor) override;
+
+    const Constructor<Concept>& get_result() const;
 };
 
 /**
@@ -196,6 +200,8 @@ class CopyConstructorVisitor<Role> : public ConstructorVisitor<Role>
 {
 protected:
     ConstructorRepositories& m_repositories;
+
+    Constructor<Role> m_result;  ///< the result of a visitation
 
 public:
     explicit CopyConstructorVisitor(ConstructorRepositories& repositories);
@@ -216,6 +222,8 @@ public:
     void visit(RoleReflexiveTransitiveClosure constructor) override;
     void visit(RoleRestriction constructor) override;
     void visit(RoleIdentity constructor) override;
+
+    const Constructor<Role>& get_result() const;
 };
 
 /**
@@ -228,10 +236,14 @@ class CopyNonTerminalVisitor : public NonTerminalVisitor<D>
 protected:
     ConstructorRepositories& m_repositories;
 
+    NonTerminal<D> m_result;
+
 public:
     explicit CopyNonTerminalVisitor(ConstructorRepositories& repositories);
 
     void visit(NonTerminal<D> constructor) override;
+
+    const NonTerminal<D>& get_result() const;
 };
 
 /**
@@ -244,10 +256,14 @@ class CopyDerivationRuleVisitor : public DerivationRuleVisitor<D>
 protected:
     ConstructorRepositories& m_repositories;
 
+    DerivationRule<D> m_result;
+
 public:
     explicit CopyDerivationRuleVisitor(ConstructorRepositories& repositories);
 
     void visit(DerivationRule<D> rule) override;
+
+    const DerivationRule<D>& get_result() const;
 };
 
 /**
@@ -260,10 +276,14 @@ class CopySubstitutionRuleVisitor : public SubstitutionRuleVisitor<D>
 protected:
     ConstructorRepositories& m_repositories;
 
+    SubstitutionRule<D> m_result;
+
 public:
     explicit CopySubstitutionRuleVisitor(ConstructorRepositories& repositories);
 
     void visit(SubstitutionRule<D> rule) override;
+
+    const SubstitutionRule<D>& get_result() const;
 };
 
 /**

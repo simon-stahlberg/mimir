@@ -43,6 +43,7 @@ from _pymimir import (
     SearchResult,
     SIWAlgorithmStatistics,
     State,
+    StateList,
     StateRepository,
     TupleIndexMapper,
 )

@@ -226,6 +226,7 @@ void init_search(py::module_& m)
             },
             py::arg("problem"))
         .def("get_index", py::overload_cast<>(&StateImpl::get_index, py::const_));
+    py::bind_vector<StateList>(m, "StateList");
 
     /* Plan */
     py::class_<Plan>(m, "Plan")  //
@@ -313,14 +314,14 @@ void init_search(py::module_& m)
             "generate_applicable_actions",
             [](IApplicableActionGenerator& self, State state)
             {
-                // TODO: pybind11 does not support std::generator. Is there a simple workaround WITHOUT introducing additional code?
-                auto actions = GroundActionList {};
+                auto actions = GroundActionList();
                 for (const auto& action : self.create_applicable_action_generator(state))
                 {
                     actions.push_back(action);
                 }
                 return actions;
             },
+            py::keep_alive<0, 1>(),
             py::arg("state"));
 
     // Lifted
@@ -416,16 +417,21 @@ void init_search(py::module_& m)
     /* StateRepositoryImpl */
     py::class_<StateRepositoryImpl, std::shared_ptr<StateRepositoryImpl>>(m, "StateRepository")  //
         .def(py::init<AxiomEvaluator>(), py::arg("axiom_evaluator"))
-        .def("get_or_create_initial_state", &StateRepositoryImpl::get_or_create_initial_state)
-        .def("get_or_create_state", &StateRepositoryImpl::get_or_create_state, py::arg("atoms"), py::arg("numeric_variables"))
+        .def("get_or_create_initial_state", &StateRepositoryImpl::get_or_create_initial_state, py::return_value_policy::reference_internal)
+        .def("get_or_create_state",
+             &StateRepositoryImpl::get_or_create_state,
+             py::arg("atoms"),
+             py::arg("numeric_variables"),
+             py::return_value_policy::reference_internal)
         .def("get_or_create_successor_state",
              py::overload_cast<State, GroundAction, ContinuousCost>(&StateRepositoryImpl::get_or_create_successor_state),
              py::arg("state"),
              py::arg("action"),
-             py::arg("state_metric_value"))
-        .def("get_state_count", &StateRepositoryImpl::get_state_count)
-        .def("get_reached_fluent_ground_atoms_bitset", &StateRepositoryImpl::get_reached_fluent_ground_atoms_bitset)
-        .def("get_reached_derived_ground_atoms_bitset", &StateRepositoryImpl::get_reached_derived_ground_atoms_bitset);
+             py::arg("state_metric_value"),
+             py::return_value_policy::copy)
+        .def("get_state_count", &StateRepositoryImpl::get_state_count, py::return_value_policy::copy)
+        .def("get_reached_fluent_ground_atoms_bitset", &StateRepositoryImpl::get_reached_fluent_ground_atoms_bitset, py::return_value_policy::copy)
+        .def("get_reached_derived_ground_atoms_bitset", &StateRepositoryImpl::get_reached_derived_ground_atoms_bitset, py::return_value_policy::copy);
 
     /* Heuristics */
     py::class_<IHeuristic, IPyHeuristic, Heuristic>(m, "IHeuristic").def(py::init<>());
