@@ -71,7 +71,7 @@ TupleGraphCollection::TupleGraphCollection(const GeneralizedStateSpace& state_sp
             create_tuple_graph(state_space.get_problem_vertex(class_vertex),
                                state_space.get_problem_graph(class_vertex),
                                state_space.get_class_state_space().get_graph(),
-                               *state_space.get_generalized_search_context().get_search_contexts().at(get_problem_index(class_vertex)).get_problem(),
+                               state_space.get_generalized_search_context().get_search_contexts().at(get_problem_index(class_vertex)),
                                m_per_problem_index_mapper.at(get_problem_index(class_vertex)),
                                options));
     }

@@ -25,7 +25,7 @@ namespace mimir
 extern TupleGraph create_tuple_graph(const ProblemVertex& problem_vertex,
                                      const ProblemGraph& problem_graph,
                                      const ClassGraph& class_graph,
-                                     const ProblemImpl& problem,
+                                     const SearchContext& context,
                                      const TupleIndexMapper& index_mapper,
                                      const TupleGraphCollection::Options& options);
 }

@@ -34,10 +34,10 @@ int main(int argc, char** argv)
     const auto problems_directory = fs::path { argv[2] };
 
     auto state_space_options = GeneralizedStateSpace::Options();
-    state_space_options.problem_options.symmetry_pruning = false;
+    state_space_options.problem_options.symmetry_pruning = true;
 
     auto tuple_graph_options = TupleGraphCollection::Options();
-    tuple_graph_options.width = 2;
+    tuple_graph_options.width = 1;
 
     auto kb =
         KnowledgeBase::create(GeneralizedSearchContext(domain_file_path, problems_directory), KnowledgeBase::Options(state_space_options, tuple_graph_options));
@@ -61,8 +61,8 @@ int main(int argc, char** argv)
         auto class_v_idx = size_t(0);
         for (const auto& tuple_graph : kb->get_tuple_graphs().value().get_per_class_vertex_tuple_graph())
         {
-            // std::cout << "Class vertex index: " << class_v_idx++ << std::endl;
-            // std::cout << tuple_graph << std::endl;
+            std::cout << "Class vertex index: " << class_v_idx++ << std::endl;
+            std::cout << tuple_graph << std::endl;
         }
     }
 

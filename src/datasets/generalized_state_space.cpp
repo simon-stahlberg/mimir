@@ -236,6 +236,7 @@ private:
             assert(m_graph.get_num_vertices() == m_symm_data.per_state_equiv_class.size());
             assert(m_graph.get_num_vertices() == m_state_to_vertex_index.size());
 
+            m_symm_data.representative_states.insert(successor_state);
             m_symm_data.per_state_equiv_class.push_back(std::move(certificate));
             m_symm_data.equiv_classes.insert(m_symm_data.per_state_equiv_class.back().get());
 

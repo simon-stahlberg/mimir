@@ -17,6 +17,9 @@
 
 #include "tuple_graph_factory.hpp"
 
+#include "mimir/search/applicable_action_generators/interface.hpp"
+#include "mimir/search/state_repository.hpp"
+
 namespace mimir
 {
 class TupleGraphArityZeroComputation
@@ -25,7 +28,7 @@ private:
     const ProblemVertex& m_problem_vertex;
     const ProblemGraph& m_problem_graph;
     const ClassGraph& m_class_graph;
-    const ProblemImpl& m_problem;
+    const SearchContext& m_context;
     const TupleIndexMapper& m_index_mapper;
     const TupleGraphCollection::Options& m_options;
 
@@ -73,13 +76,13 @@ public:
     TupleGraphArityZeroComputation(const ProblemVertex& problem_vertex,
                                    const ProblemGraph& problem_graph,
                                    const ClassGraph& class_graph,
-                                   const ProblemImpl& problem,
+                                   const SearchContext& context,
                                    const TupleIndexMapper& index_mapper,
                                    const TupleGraphCollection::Options& options) :
         m_problem_vertex(problem_vertex),
         m_problem_graph(problem_graph),
         m_class_graph(class_graph),
-        m_problem(problem),
+        m_context(context),
         m_index_mapper(index_mapper),
         m_options(options),
         m_internal_tuple_graph(),
@@ -94,7 +97,7 @@ public:
 
         compute_distance_one_vertices();
 
-        return TupleGraph(m_problem,
+        return TupleGraph(*m_context.get_problem(),
                           m_problem_graph,
                           m_class_graph,
                           m_index_mapper,
@@ -107,11 +110,11 @@ public:
 static TupleGraph create_tuple_graph_width_zero(const ProblemVertex& problem_vertex,
                                                 const ProblemGraph& problem_graph,
                                                 const ClassGraph& class_graph,
-                                                const ProblemImpl& problem,
+                                                const SearchContext& context,
                                                 const TupleIndexMapper& index_mapper,
                                                 const TupleGraphCollection::Options& options)
 {
-    return TupleGraphArityZeroComputation(problem_vertex, problem_graph, class_graph, problem, index_mapper, options).compute_and_get_result();
+    return TupleGraphArityZeroComputation(problem_vertex, problem_graph, class_graph, context, index_mapper, options).compute_and_get_result();
 }
 
 class TupleGraphArityGreaterZeroComputation
@@ -120,7 +123,7 @@ private:
     const ProblemVertex& m_problem_vertex;
     const ProblemGraph& m_problem_graph;
     const ClassGraph& m_class_graph;
-    const ProblemImpl& m_problem;
+    const SearchContext& m_context;
     const TupleIndexMapper& m_index_mapper;
     const TupleGraphCollection::Options& m_options;
 
@@ -132,6 +135,8 @@ private:
     IndexList m_prev_problem_v_idxs;
     IndexList m_curr_problem_v_idxs;
     IndexSet m_visited_problem_v_idxs;
+    StateSet m_visited_states;
+    StateSet m_curr_states;  ///< all states in current layer, strictly not symmetry reduced to derived tuple indices
     IndexList m_prev_v_idxs;
     IndexList m_curr_v_idxs;
     DynamicNoveltyTable m_novelty_table;  ///< it will never resize since the problem graph is complete.
@@ -176,6 +181,7 @@ private:
         m_problem_v_idxs_grouped_by_distance.add_group_element(root_problem_v_idx);
         m_curr_problem_v_idxs.clear();
         m_curr_problem_v_idxs.push_back(root_problem_v_idx);
+        m_curr_states.insert(get_state(m_problem_graph.get_vertex(root_problem_v_idx)));
         m_visited_problem_v_idxs.insert(root_problem_v_idx);
     }
 
@@ -194,6 +200,18 @@ private:
                     success = true;
                 }
             }
+
+            /* Compute all states in next layer, even those that are symmetric, to compute all tuple indices. */
+            const auto& state = get_state(m_problem_graph.get_vertex(prev_problem_v_idx));
+            for (const auto& action : m_context.get_applicable_action_generator()->create_applicable_action_generator(state))
+            {
+                const auto [successor_state, successor_state_metric_value] = m_context.get_state_repository()->get_or_create_successor_state(state, action, 0);
+                if (!m_visited_states.contains(successor_state))
+                {
+                    m_curr_states.insert(successor_state);
+                    m_visited_states.insert(successor_state);
+                }
+            }
         }
 
         return success;
@@ -204,6 +222,7 @@ private:
         // Swap prev and curr data structures.
         std::swap(m_curr_problem_v_idxs, m_prev_problem_v_idxs);
         std::swap(m_curr_v_idxs, m_prev_v_idxs);
+        m_curr_states.clear();
         m_curr_problem_v_idxs.clear();
         m_curr_v_idxs.clear();
 
@@ -281,6 +300,12 @@ private:
         m_novel_t_idxs_vec.clear();
         m_novel_t_idxs_vec.insert(m_novel_t_idxs_vec.end(), m_novel_t_idxs_set.begin(), m_novel_t_idxs_set.end());
         m_novelty_table.insert_tuple_indices(m_novel_t_idxs_vec);
+
+        /* Ensure that tuples of symmetric states are marked as not novel! */
+        for (const auto& state : m_curr_states)
+        {
+            m_novelty_table.test_novelty_and_update_table(state);
+        }
     }
 
     void extend_optimal_plans_from_prev_layer()
@@ -407,13 +432,13 @@ public:
     TupleGraphArityGreaterZeroComputation(const ProblemVertex& problem_vertex,
                                           const ProblemGraph& problem_graph,
                                           const ClassGraph& class_graph,
-                                          const ProblemImpl& problem,
+                                          const SearchContext& context,
                                           const TupleIndexMapper& index_mapper,
                                           const TupleGraphCollection::Options& options) :
         m_problem_vertex(problem_vertex),
         m_problem_graph(problem_graph),
         m_class_graph(class_graph),
-        m_problem(problem),
+        m_context(context),
         m_index_mapper(index_mapper),
         m_options(options),
         m_internal_tuple_graph(),
@@ -451,7 +476,7 @@ public:
             }
         }
 
-        return TupleGraph(m_problem,
+        return TupleGraph(*m_context.get_problem(),
                           m_problem_graph,
                           m_class_graph,
                           m_index_mapper,
@@ -464,21 +489,21 @@ public:
 static TupleGraph create_tuple_graph_width_greater_zero(const ProblemVertex& problem_vertex,
                                                         const ProblemGraph& problem_graph,
                                                         const ClassGraph& class_graph,
-                                                        const ProblemImpl& problem,
+                                                        const SearchContext& context,
                                                         const TupleIndexMapper& index_mapper,
                                                         const TupleGraphCollection::Options& options)
 {
-    return TupleGraphArityGreaterZeroComputation(problem_vertex, problem_graph, class_graph, problem, index_mapper, options).compute_and_get_result();
+    return TupleGraphArityGreaterZeroComputation(problem_vertex, problem_graph, class_graph, context, index_mapper, options).compute_and_get_result();
 }
 
 TupleGraph create_tuple_graph(const ProblemVertex& problem_vertex,
                               const ProblemGraph& problem_graph,
                               const ClassGraph& class_graph,
-                              const ProblemImpl& problem,
+                              const SearchContext& context,
                               const TupleIndexMapper& index_mapper,
                               const TupleGraphCollection::Options& options)
 {
-    return (options.width == 0) ? create_tuple_graph_width_zero(problem_vertex, problem_graph, class_graph, problem, index_mapper, options) :
-                                  create_tuple_graph_width_greater_zero(problem_vertex, problem_graph, class_graph, problem, index_mapper, options);
+    return (options.width == 0) ? create_tuple_graph_width_zero(problem_vertex, problem_graph, class_graph, context, index_mapper, options) :
+                                  create_tuple_graph_width_greater_zero(problem_vertex, problem_graph, class_graph, context, index_mapper, options);
 }
 }
