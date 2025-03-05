@@ -1,6 +1,11 @@
 # Import all classes for better IDE support
 
 from _pymimir import (
+    SearchContext,
+    GeneralizedSearchContext,
+)
+
+from _pymimir import (
     ActionSatisficingBindingGenerator,
     AxiomSatisficingBindingGenerator,
     ConjunctiveConditionSatisficingBindingGenerator

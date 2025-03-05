@@ -3,12 +3,11 @@ find_package(pybind11 CONFIG REQUIRED PATHS ${CMAKE_PREFIX_PATH} NO_DEFAULT_PATH
 find_package(pybind11)
 
 add_library(_pymimir_objects
-        OBJECT
-        pymimir/init_declarations.cpp
-        
+        OBJECT      
         pymimir/formalism/bindings.cpp
         pymimir/graphs/bindings.cpp
         pymimir/search/bindings.cpp
+        pymimir/datasets/bindings.cpp
 )
 target_include_directories(_pymimir_objects
         PUBLIC

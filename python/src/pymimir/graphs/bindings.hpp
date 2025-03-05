@@ -5,9 +5,6 @@
 #include "init_declarations.hpp"
 #include "mimir/graphs.hpp"
 
-#define STRINGIFY(x) #x
-#define MACRO_STRINGIFY(x) STRINGIFY(x)
-
 namespace mm = mimir;
 namespace py = pybind11;
 
@@ -43,14 +40,6 @@ template<>
 struct PyEdgeProperties<mm::ColoredEdge>
 {
     static constexpr std::string name = "ColoredEdge";
-};
-
-template<typename T>
-struct PyImmutable
-{
-    explicit PyImmutable(const T& obj) : obj_(obj) {}
-
-    const T& obj_;  // Read-only reference
 };
 
 ///////////////////////////////////////////////////////////////////////////////

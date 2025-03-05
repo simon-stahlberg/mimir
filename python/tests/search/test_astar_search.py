@@ -15,10 +15,9 @@ class CustomBlindHeuristic(mm.IHeuristic):
 
 
 class CustomGoalCountHeuristic(mm.IHeuristic):
-    def __init__(self, problem : mm.Problem, pddl_repositories: mm.PDDLRepositories):
+    def __init__(self, problem : mm.Problem):
         mm.IHeuristic.__init__(self)  # Without this, a TypeError is raised.
         self.problem = problem
-        self.pddl_repositories = pddl_repositories
 
         self.num_goal_literals = len(self.problem.get_fluent_goal_condition()) + len(self.problem.get_derived_goal_condition())
 
@@ -42,34 +41,37 @@ class CustomAStarAlgorithmEventHandler(mm.AStarAlgorithmEventHandlerBase):
         """
         mm.AStarAlgorithmEventHandlerBase.__init__(self, quiet)  # Without this, a TypeError is raised.
 
-    def on_expand_state_impl(self, state : mm.State, problem : mm.Problem, pddl_repositories : mm.PDDLRepositories):
+    def on_expand_state_impl(self, state : mm.State, problem : mm.Problem):
         pass
 
-    def on_generate_state_impl(self, state : mm.State, action : mm.GroundAction, g_value: float, problem : mm.Problem, pddl_repositories : mm.PDDLRepositories):
+    def on_expand_goal_state_impl(self, state : mm.State, problem : mm.Problem):
         pass
 
-    def on_generate_state_relaxed_impl(self, state : mm.State, action : mm.GroundAction, g_value: float, problem : mm.Problem, pddl_repositories : mm.PDDLRepositories):
+    def on_generate_state_impl(self, state : mm.State, action : mm.GroundAction, action_cost: float, successor_state: mm.State, problem : mm.Problem):
         pass
 
-    def on_generate_state_not_relaxed_impl(self, state : mm.State, action : mm.GroundAction, g_value: float, problem : mm.Problem, pddl_repositories : mm.PDDLRepositories):
+    def on_generate_state_relaxed_impl(self, state : mm.State, action : mm.GroundAction, action_cost: float, successor_state: mm.State, problem : mm.Problem):
         pass
 
-    def on_close_state_impl(self, state : mm.State, problem : mm.Problem, pddl_repositories : mm.PDDLRepositories):
+    def on_generate_state_not_relaxed_impl(self, state : mm.State, action : mm.GroundAction, action_cost: float, successor_state: mm.State, problem : mm.Problem):
+        pass
+
+    def on_close_state_impl(self, state : mm.State, problem : mm.Problem):
         pass
 
     def on_finish_f_layer_impl(self, f_value: float, num_expanded_states : int, num_generated_states : int):
         pass
 
-    def on_prune_state_impl(self, state : mm.State, problem : mm.Problem, pddl_repositories : mm.PDDLRepositories):
+    def on_prune_state_impl(self, state : mm.State, problem : mm.Problem):
         pass
 
-    def on_start_search_impl(self, start_state : mm.State, problem : mm.Problem, pddl_repositories : mm.PDDLRepositories):
+    def on_start_search_impl(self, start_state : mm.State, problem : mm.Problem):
         pass
 
     def on_end_search_impl(self, num_reached_fluent_atoms : int, num_reached_derived_atoms: int, num_bytes_for_unextended_state_portion: int, num_bytes_for_extended_state_portion: int, num_bytes_for_nodes: int, num_bytes_for_actions: int, num_bytes_for_axioms: int, num_states: int, num_nodes: int, num_actions: int, num_axioms: int):
         pass
 
-    def on_solved_impl(self, ground_action_plan: List[mm.GroundAction], pddl_repositories: mm.PDDLRepositories):
+    def on_solved_impl(self, ground_action_plan: List[mm.GroundAction], problem: mm.Problem):
         pass
 
     def on_unsolvable_impl(self):
@@ -83,17 +85,13 @@ def test_astar_search():
     """
     domain_filepath = str(ROOT_DIR / "data" / "gripper" / "domain.pddl")
     problem_filepath = str(ROOT_DIR / "data" / "gripper" / "test_problem.pddl")
-    parser = mm.PDDLParser(domain_filepath, problem_filepath)
-    grounder = mm.Grounder(parser.get_problem(), parser.get_pddl_repositories())
-    applicable_action_generator = mm.LiftedApplicableActionGenerator(grounder.get_action_grounder())
-    axiom_evaluator = mm.LiftedAxiomEvaluator(grounder.get_axiom_grounder())
-    state_repository = mm.StateRepository(axiom_evaluator)
+    search_context = mm.SearchContext(domain_filepath, problem_filepath)
 
     blind_heuristic = CustomBlindHeuristic()
-    goal_count_heuristic = CustomGoalCountHeuristic(parser.get_problem(), parser.get_pddl_repositories())
+    goal_count_heuristic = CustomGoalCountHeuristic(search_context.get_problem())
 
     event_handler = CustomAStarAlgorithmEventHandler(False)
-    result = mm.find_solution_astar(applicable_action_generator, state_repository, goal_count_heuristic, None, event_handler)
+    result = mm.find_solution_astar(search_context, goal_count_heuristic, None, event_handler)
 
     assert result.status == mm.SearchStatus.SOLVED
     assert len(result.plan) == 3

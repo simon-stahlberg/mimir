@@ -29,6 +29,8 @@ PYBIND11_MODULE(_pymimir, m)
 
     init_search(m);
 
+    init_datasets(m);
+
 #ifdef VERSION_INFO
     m.attr("__version__") = MACRO_STRINGIFY(VERSION_INFO);
 #else

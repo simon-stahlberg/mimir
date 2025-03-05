@@ -34,7 +34,7 @@ int main(int argc, char** argv)
     const auto problems_directory = fs::path { argv[2] };
 
     auto state_space_options = GeneralizedStateSpace::Options();
-    state_space_options.problem_options.symmetry_pruning = true;
+    state_space_options.problem_options.symmetry_pruning = false;
 
     auto tuple_graph_options = TupleGraphCollection::Options();
     tuple_graph_options.width = 2;
@@ -54,15 +54,15 @@ int main(int argc, char** argv)
     const auto& css = pcss.get_class_state_space();
 
     std::cout << "Class graph has num vertices: " << css.get_graph().get_num_vertices() << " and num edges: " << css.get_graph().get_num_edges() << std::endl;
-    // std::cout << css.get_graph() << std::endl;
+    std::cout << css.get_graph() << std::endl;
 
     if (kb->get_tuple_graphs().has_value())
     {
         auto class_v_idx = size_t(0);
         for (const auto& tuple_graph : kb->get_tuple_graphs().value().get_per_class_vertex_tuple_graph())
         {
-            std::cout << "Class vertex index: " << class_v_idx++ << std::endl;
-            std::cout << tuple_graph << std::endl;
+            // std::cout << "Class vertex index: " << class_v_idx++ << std::endl;
+            // std::cout << tuple_graph << std::endl;
         }
     }
 

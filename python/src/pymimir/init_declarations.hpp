@@ -186,11 +186,26 @@ public:
 };
 
 /**
+ * Constness
+ */
+
+template<typename T>
+struct PyImmutable
+{
+    explicit PyImmutable(const T& obj) : obj_(obj) {}
+
+    const T& obj_;  // Read-only reference
+};
+
+/**
  * init - declarations:
  */
 
 void init_formalism(py::module_& m);
 void init_graphs(py::module_& m);
+
 void init_search(py::module_& m);
+
+void init_datasets(py::module_& m);
 
 #endif
