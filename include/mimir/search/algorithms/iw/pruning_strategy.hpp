@@ -18,7 +18,7 @@
 #ifndef MIMIR_SEARCH_ALGORITHMS_IW_PRUNING_STRATEGY_HPP_
 #define MIMIR_SEARCH_ALGORITHMS_IW_PRUNING_STRATEGY_HPP_
 
-#include "mimir/search/algorithms/iw/dynamic_novelty_table.hpp"
+#include "mimir/search/algorithms/iw/novelty_table.hpp"
 #include "mimir/search/algorithms/iw/tuple_index_mapper.hpp"
 #include "mimir/search/algorithms/iw/types.hpp"
 #include "mimir/search/algorithms/strategies/pruning_strategy.hpp"
@@ -43,8 +43,7 @@ public:
 class ArityKNoveltyPruning : public IPruningStrategy
 {
 private:
-    TupleIndexMapper m_index_mapper;
-    DynamicNoveltyTable m_novelty_table;
+    NoveltyTable<DynamicSize> m_novelty_table;
 
     std::unordered_set<Index> m_generated_states;
 

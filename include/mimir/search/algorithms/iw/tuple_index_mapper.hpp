@@ -40,6 +40,7 @@ private:
     TupleIndex m_empty_tuple_index;
 
 public:
+    TupleIndexMapper(size_t arity);
     TupleIndexMapper(size_t arity, size_t num_atoms);
 
     void initialize(size_t arity, size_t num_atoms);

@@ -25,14 +25,14 @@ namespace mimir
 TupleGraph::TupleGraph(const ProblemImpl& problem,
                        const ProblemGraph& problem_graph,
                        const ClassGraph& class_graph,
-                       const TupleIndexMapper& index_mapper,
+                       TupleIndexMapper index_mapper,
                        InternalTupleGraph graph,
                        IndexGroupedVector<const Index> vertices_grouped_by_distance,
                        IndexGroupedVector<const Index> problem_vertices_grouped_by_distance) :
     m_problem(problem),
     m_problem_graph(problem_graph),
     m_class_graph(class_graph),
-    m_index_mapper(index_mapper),
+    m_index_mapper(std::move(index_mapper)),
     m_graph(std::move(graph)),
     m_v_idxs_grouped_by_distance(std::move(vertices_grouped_by_distance)),
     m_problem_v_idxs_grouped_by_distance(std::move(problem_vertices_grouped_by_distance))
@@ -53,18 +53,8 @@ const IndexGroupedVector<const Index>& TupleGraph::get_vertices_grouped_by_dista
 
 const IndexGroupedVector<const Index>& TupleGraph::get_problem_vertices_grouped_by_distance() const { return m_problem_v_idxs_grouped_by_distance; }
 
-TupleGraphCollection::TupleGraphCollection(const GeneralizedStateSpace& state_space, const Options& options) :
-    m_per_problem_index_mapper(),
-    m_per_class_vertex_tuple_graph()
+TupleGraphCollection::TupleGraphCollection(const GeneralizedStateSpace& state_space, const Options& options) : m_per_class_vertex_tuple_graph()
 {
-    for (const auto& search_context : state_space.get_generalized_search_context().get_search_contexts())
-    {
-        m_per_problem_index_mapper.push_back(TupleIndexMapper(
-            options.width,
-            boost::hana::at_key(search_context.get_problem()->get_repositories().get_hana_repositories(), boost::hana::type<GroundAtomImpl<Fluent>> {}).size()
-                + boost::hana::at_key(search_context.get_problem()->get_repositories().get_hana_repositories(), boost::hana::type<GroundAtomImpl<Derived>> {})
-                      .size()));
-    }
     for (const auto& class_vertex : state_space.get_class_state_space().get_graph().get_vertices())
     {
         m_per_class_vertex_tuple_graph.push_back(
@@ -72,7 +62,6 @@ TupleGraphCollection::TupleGraphCollection(const GeneralizedStateSpace& state_sp
                                state_space.get_problem_graph(class_vertex),
                                state_space.get_class_state_space().get_graph(),
                                state_space.get_generalized_search_context().get_search_contexts().at(get_problem_index(class_vertex)),
-                               m_per_problem_index_mapper.at(get_problem_index(class_vertex)),
                                options));
     }
 }

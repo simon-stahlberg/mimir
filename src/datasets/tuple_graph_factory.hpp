@@ -26,7 +26,6 @@ extern TupleGraph create_tuple_graph(const ProblemVertex& problem_vertex,
                                      const ProblemGraph& problem_graph,
                                      const ClassGraph& class_graph,
                                      const SearchContext& context,
-                                     const TupleIndexMapper& index_mapper,
                                      const TupleGraphCollection::Options& options);
 }
 

@@ -21,7 +21,7 @@
 #include "mimir/common/grouped_vector.hpp"
 #include "mimir/datasets/generalized_state_space.hpp"
 #include "mimir/graphs/static_graph.hpp"
-#include "mimir/search/algorithms/iw/dynamic_novelty_table.hpp"
+#include "mimir/search/algorithms/iw/novelty_table.hpp"
 #include "mimir/search/algorithms/iw/tuple_index_generators.hpp"
 #include "mimir/search/algorithms/iw/tuple_index_mapper.hpp"
 #include "mimir/search/state.hpp"
@@ -56,7 +56,7 @@ private:
     const ProblemImpl& m_problem;
     const ProblemGraph& m_problem_graph;  ///< child-level problem graph.
     const ClassGraph& m_class_graph;      ///< top-level class graph for convenience.
-    const TupleIndexMapper& m_index_mapper;
+    TupleIndexMapper m_index_mapper;
     InternalTupleGraph m_graph;
 
     IndexGroupedVector<const Index> m_v_idxs_grouped_by_distance;
@@ -66,7 +66,7 @@ public:
     TupleGraph(const ProblemImpl& problem,
                const ProblemGraph& problem_graph,
                const ClassGraph& class_graph,
-               const TupleIndexMapper& index_mapper,
+               TupleIndexMapper index_mapper,
                InternalTupleGraph graph,
                IndexGroupedVector<const Index> vertices_grouped_by_distance,
                IndexGroupedVector<const Index> problem_vertices_grouped_by_distance);
@@ -86,8 +86,6 @@ using TupleGraphList = std::vector<TupleGraph>;
 class TupleGraphCollection
 {
 private:
-    TupleIndexMapperList m_per_problem_index_mapper;
-
     TupleGraphList m_per_class_vertex_tuple_graph;
 
 public:

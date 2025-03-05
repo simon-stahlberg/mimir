@@ -21,9 +21,9 @@
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/algorithms/brfs.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers.hpp"
-#include "mimir/search/algorithms/iw/dynamic_novelty_table.hpp"
 #include "mimir/search/algorithms/iw/event_handlers.hpp"
 #include "mimir/search/algorithms/iw/event_handlers/interface.hpp"
+#include "mimir/search/algorithms/iw/novelty_table.hpp"
 #include "mimir/search/algorithms/iw/pruning_strategy.hpp"
 #include "mimir/search/algorithms/iw/tuple_index_generators.hpp"
 #include "mimir/search/algorithms/iw/tuple_index_mapper.hpp"
@@ -45,6 +45,8 @@ namespace mimir
  * TupleIndexMapper
  */
 
+TupleIndexMapper::TupleIndexMapper(size_t arity) : TupleIndexMapper(arity, 0) {}
+
 TupleIndexMapper::TupleIndexMapper(size_t arity, size_t num_atoms) : m_arity(arity), m_num_atoms(num_atoms), m_empty_tuple_index(0)
 {
     initialize(arity, num_atoms);
@@ -60,15 +62,10 @@ void TupleIndexMapper::initialize(size_t arity, size_t num_atoms)
     {
         throw std::runtime_error("TupleIndexMapper only works with 0 <= arity < " + std::to_string(MAX_ARITY) + ".");
     }
-    //  Initialize factors
+
     for (size_t i = 0; i < m_arity; ++i)
     {
-        m_factors[i] = std::pow(m_num_atoms, i);
-    }
-    // Initialize empty tuple index
-    for (size_t i = 0; i < m_arity; ++i)
-    {
-        m_empty_tuple_index += m_num_atoms * m_factors[i];
+        m_factors[i] = std::pow((m_num_atoms + 1), i);  ///< +1 to account for placeholder.
     }
 }
 
@@ -91,12 +88,13 @@ void TupleIndexMapper::to_atom_indices(TupleIndex tuple_index, AtomIndexList& ou
 
     for (int i = m_arity - 1; i >= 0; --i)
     {
-        // We need to use min to decode (m_num_atoms,...,m_num_atoms) correctly
-        const auto atom_index = std::min(m_num_atoms, tuple_index / m_factors[i]);
-        if (atom_index != m_num_atoms)
+        const auto atom_index = tuple_index / m_factors[i];
+
+        if (atom_index != m_num_atoms)  // filter placeholder
         {
             out_atom_indices.push_back(atom_index);
         }
+
         tuple_index -= atom_index * m_factors[i];
     }
     std::reverse(out_atom_indices.begin(), out_atom_indices.end());
@@ -122,13 +120,9 @@ size_t TupleIndexMapper::get_arity() const { return m_arity; }
 
 const std::array<size_t, MAX_ARITY>& TupleIndexMapper::get_factors() const { return m_factors; }
 
-TupleIndex TupleIndexMapper::get_max_tuple_index() const
-{
-    // x^0 + ... + x^n = (x^{n+1} - 1) / 2
-    return ((std::pow(get_num_atoms(), get_arity() + 1) - 1) / 2) - 1;
-}
+TupleIndex TupleIndexMapper::get_max_tuple_index() const { return get_empty_tuple_index(); }
 
-TupleIndex TupleIndexMapper::get_empty_tuple_index() const { return m_empty_tuple_index; }
+TupleIndex TupleIndexMapper::get_empty_tuple_index() const { return (std::pow(get_num_atoms() + 1, get_arity()) - 1); }
 
 /**
  * StateTupleIndexGenerator
@@ -685,31 +679,52 @@ StatePairTupleIndexGenerator::const_iterator StatePairTupleIndexGenerator::begin
 StatePairTupleIndexGenerator::const_iterator StatePairTupleIndexGenerator::end() const { return const_iterator(nullptr, false); }
 
 /**
- * DynamicNoveltyTable
+ * NoveltyTable
  */
 
-DynamicNoveltyTable::DynamicNoveltyTable(TupleIndexMapper tuple_index_mapper) :
-    m_tuple_index_mapper(tuple_index_mapper),
+template<StaticOrDynamicSize Mode>
+NoveltyTable<Mode>::NoveltyTable(size_t arity) :
+    m_tuple_index_mapper(arity),
     m_table(std::vector<bool>(m_tuple_index_mapper.get_max_tuple_index() + 1, false)),
     m_state_tuple_index_generator(&m_tuple_index_mapper),
     m_state_pair_tuple_index_generator(&m_tuple_index_mapper)
 {
 }
 
-void DynamicNoveltyTable::resize_to_fit(AtomIndex atom_index)
+template<StaticOrDynamicSize Mode>
+NoveltyTable<Mode>::NoveltyTable(size_t arity, size_t num_atoms) :
+    m_tuple_index_mapper(TupleIndexMapper(arity, num_atoms)),
+    m_table(std::vector<bool>(m_tuple_index_mapper.get_max_tuple_index() + 1, false)),
+    m_state_tuple_index_generator(&m_tuple_index_mapper),
+    m_state_pair_tuple_index_generator(&m_tuple_index_mapper)
 {
+}
+
+template<StaticOrDynamicSize Mode>
+void NoveltyTable<Mode>::resize_to_fit(AtomIndex atom_index)
+{
+    if constexpr (std::same_as<Mode, StaticSize>)
+    {
+        throw std::logic_error("NoveltyTable<Mode>::resize_to_fit: Resize in StaticSized mode is not allowed!");
+    }
+
+    if (atom_index < m_tuple_index_mapper.get_num_atoms())
+    {
+        return;  // atom fits.
+    }
+
     // Fetch data.
     const auto arity = m_tuple_index_mapper.get_arity();
-    const auto old_placeholder = m_tuple_index_mapper.get_num_atoms();
 
     // Compute size of new table
-    auto new_size = m_tuple_index_mapper.get_num_atoms();
+    auto new_size = std::max(size_t(1), m_tuple_index_mapper.get_num_atoms());
     while (new_size < atom_index + 1 + 1)  // additional +1 for placeholder
     {
-        // Use doubling strategy to get amortized cost O(arity) for resize.
-        new_size *= 2;
+        new_size *= 2;  ///< Use doubling strategy
     }
     const auto new_placeholder = new_size;
+
+    const auto old_tuple_index_mapper = m_tuple_index_mapper;  ///< backup old tuple index mapper for remapping
 
     m_tuple_index_mapper.initialize(arity, new_size);  ///< resize to fit all tuples
 
@@ -717,19 +732,20 @@ void DynamicNoveltyTable::resize_to_fit(AtomIndex atom_index)
 
     // Convert tuple indices that are not novel from old to new table.
     auto atom_indices = AtomIndexList(arity);
+
     for (TupleIndex tuple_index = 0; tuple_index < m_table.size(); ++tuple_index)
     {
         if (m_table[tuple_index])
         {
-            m_tuple_index_mapper.to_atom_indices(tuple_index, atom_indices);
-            for (size_t i = 0; i < arity; ++i)
+            old_tuple_index_mapper.to_atom_indices(tuple_index, atom_indices);
+
+            for (size_t i = atom_indices.size(); i < arity; ++i)
             {
-                if (atom_indices[i] == old_placeholder)
-                {
-                    atom_indices[i] = new_placeholder;
-                }
+                atom_indices.push_back(new_placeholder);
             }
+
             const auto new_tuple_index = m_tuple_index_mapper.to_tuple_index(atom_indices);
+
             new_table[new_tuple_index] = true;
         }
     }
@@ -738,9 +754,30 @@ void DynamicNoveltyTable::resize_to_fit(AtomIndex atom_index)
     m_table = std::move(new_table);
 }
 
-void DynamicNoveltyTable::compute_novel_tuple_indices(const State state, TupleIndexList& out_novel_tuple_indices)
+template<StaticOrDynamicSize Mode>
+void NoveltyTable<Mode>::resize_to_fit(State state)
+{
+    const auto& fluent_atoms = state->get_atoms<Fluent>();
+
+    const auto it = std::max_element(fluent_atoms.begin(), fluent_atoms.end());
+
+    if (it == fluent_atoms.end())
+    {
+        return;  ///< The state is empty. No atom must fit.
+    }
+
+    resize_to_fit(*it);
+}
+
+template<StaticOrDynamicSize Mode>
+void NoveltyTable<Mode>::compute_novel_tuple_indices(const State state, TupleIndexList& out_novel_tuple_indices)
 {
     out_novel_tuple_indices.clear();
+
+    if constexpr (std::same_as<Mode, DynamicSize>)
+    {
+        resize_to_fit(state);
+    }
 
     for (auto it = m_state_tuple_index_generator.begin(state); it != m_state_tuple_index_generator.end(); ++it)
     {
@@ -755,7 +792,8 @@ void DynamicNoveltyTable::compute_novel_tuple_indices(const State state, TupleIn
     }
 }
 
-void DynamicNoveltyTable::insert_tuple_indices(const TupleIndexList& tuple_indices)
+template<StaticOrDynamicSize Mode>
+void NoveltyTable<Mode>::insert_tuple_indices(const TupleIndexList& tuple_indices)
 {
     for (const auto& tuple_index : tuple_indices)
     {
@@ -765,13 +803,19 @@ void DynamicNoveltyTable::insert_tuple_indices(const TupleIndexList& tuple_indic
     }
 }
 
-bool DynamicNoveltyTable::test_novelty_and_update_table(const State state)
+template<StaticOrDynamicSize Mode>
+bool NoveltyTable<Mode>::test_novelty_and_update_table(const State state)
 {
+    if constexpr (std::same_as<Mode, DynamicSize>)
+    {
+        resize_to_fit(state);
+    }
+
     bool is_novel = false;
     for (auto it = m_state_tuple_index_generator.begin(state); it != m_state_tuple_index_generator.end(); ++it)
     {
         const auto tuple_index = *it;
-        // std::cout << tuple_index << " " << m_tuple_index_mapper->tuple_index_to_string(tuple_index) << std::endl;
+        // std::cout << tuple_index << " " << m_tuple_index_mapper.tuple_index_to_string(tuple_index) << std::endl;
 
         assert(tuple_index < m_table.size());
 
@@ -784,13 +828,20 @@ bool DynamicNoveltyTable::test_novelty_and_update_table(const State state)
     return is_novel;
 }
 
-bool DynamicNoveltyTable::test_novelty_and_update_table(const State state, const State succ_state)
+template<StaticOrDynamicSize Mode>
+bool NoveltyTable<Mode>::test_novelty_and_update_table(const State state, const State succ_state)
 {
+    if constexpr (std::same_as<Mode, DynamicSize>)
+    {
+        resize_to_fit(state);
+        resize_to_fit(succ_state);
+    }
+
     bool is_novel = false;
     for (auto it = m_state_pair_tuple_index_generator.begin(state, succ_state); it != m_state_pair_tuple_index_generator.end(); ++it)
     {
         const auto tuple_index = *it;
-        // std::cout << tuple_index << " " << m_tuple_index_mapper->tuple_index_to_string(tuple_index) << std::endl;
+        // std::cout << tuple_index << " " << m_tuple_index_mapper.tuple_index_to_string(tuple_index) << std::endl;
 
         assert(tuple_index < m_table.size());
 
@@ -803,7 +854,20 @@ bool DynamicNoveltyTable::test_novelty_and_update_table(const State state, const
     return is_novel;
 }
 
-void DynamicNoveltyTable::reset() { std::fill(m_table.begin(), m_table.end(), false); }
+template<StaticOrDynamicSize Mode>
+void NoveltyTable<Mode>::reset()
+{
+    std::fill(m_table.begin(), m_table.end(), false);
+}
+
+template<StaticOrDynamicSize Mode>
+const TupleIndexMapper& NoveltyTable<Mode>::get_tuple_index_mapper() const
+{
+    return m_tuple_index_mapper;
+}
+
+template class NoveltyTable<StaticSize>;
+template class NoveltyTable<DynamicSize>;
 
 /**
  * NoveltyPruning
@@ -818,7 +882,7 @@ bool ArityZeroNoveltyPruning::test_prune_successor_state(const State state, cons
     return state != m_initial_state || state == succ_state;
 }
 
-ArityKNoveltyPruning::ArityKNoveltyPruning(size_t arity, size_t num_atoms) : m_index_mapper(arity, num_atoms), m_novelty_table(m_index_mapper) {}
+ArityKNoveltyPruning::ArityKNoveltyPruning(size_t arity, size_t num_atoms) : m_novelty_table(arity) {}
 
 bool ArityKNoveltyPruning::test_prune_initial_state(const State state)
 {
