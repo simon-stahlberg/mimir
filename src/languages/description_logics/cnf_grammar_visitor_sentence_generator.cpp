@@ -97,6 +97,9 @@ void GeneratorConstructorVisitor<Concept>::visit(ConceptIntersection constructor
         {
             size_t j = m_complexity - i - 1;
 
+            if (i > j)
+                continue;  ///< partially break symmetries
+
             for (const auto& left_concept : m_sentences.get(constructor->get_concept_left(), i))
             {
                 for (const auto& right_concept : m_sentences.get(constructor->get_concept_right(), j))
@@ -114,6 +117,9 @@ void GeneratorConstructorVisitor<Concept>::visit(ConceptUnion constructor)
         for (size_t i = 1; i < m_complexity - 1; ++i)
         {
             size_t j = m_complexity - i - 1;
+
+            if (i > j)
+                continue;  ///< partially break symmetries
 
             for (const auto& left_concept : m_sentences.get(constructor->get_concept_left(), i))
             {
@@ -197,6 +203,9 @@ void GeneratorConstructorVisitor<Concept>::visit(ConceptRoleValueMapEquality con
         {
             size_t j = m_complexity - i - 1;
 
+            if (i > j)
+                continue;  ///< partially break symmetries
+
             for (const auto& left_role : m_sentences.get(constructor->get_role_left(), i))
             {
                 for (const auto& right_role : m_sentences.get(constructor->get_role_right(), j))
@@ -266,6 +275,9 @@ void GeneratorConstructorVisitor<Role>::visit(RoleIntersection constructor)
         {
             size_t j = m_complexity - i - 1;
 
+            if (i > j)
+                continue;  ///< partially break symmetries
+
             for (const auto& left_role : m_sentences.get(constructor->get_role_left(), i))
             {
                 for (const auto& right_role : m_sentences.get(constructor->get_role_right(), j))
@@ -283,6 +295,9 @@ void GeneratorConstructorVisitor<Role>::visit(RoleUnion constructor)
         for (size_t i = 1; i < m_complexity - 1; ++i)
         {
             size_t j = m_complexity - i - 1;
+
+            if (i > j)
+                continue;  ///< partially break symmetries
 
             for (const auto& left_role : m_sentences.get(constructor->get_role_left(), i))
             {
