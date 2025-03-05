@@ -143,7 +143,7 @@ public:
     }
 };
 
-Grammar eliminate_rules_with_identical_body(const Grammar& grammar)
+static Grammar eliminate_rules_with_identical_body(const Grammar& grammar)
 {
     auto inverse_derivation_rules = ConstructorMap<NonTerminalList, Concept, Role>();
 
@@ -215,6 +215,8 @@ Grammar eliminate_rules_with_identical_body(const Grammar& grammar)
 
     return Grammar(std::move(repositories), std::move(start_symbols), std::move(derivation_rules), std::move(substitution_rules), grammar.get_domain());
 }
+
+static Grammar order_substitution_rules(const Grammar& grammar) {}
 
 Grammar simplify(const Grammar& grammar)
 {
