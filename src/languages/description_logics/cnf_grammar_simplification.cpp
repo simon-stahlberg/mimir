@@ -20,13 +20,131 @@
 namespace mimir::dl::cnf_grammar
 {
 
+template<ConceptOrRole D>
+class EliminateRulesWithIdenticalBodyNonTerminalVisitor : public CopyNonTerminalVisitor<D>
+{
+protected:
+    const NonTerminalMap<NonTerminal, Concept, Role>& m_substitution_map;
+
+public:
+    EliminateRulesWithIdenticalBodyNonTerminalVisitor(ConstructorRepositories& repositories,
+                                                      const NonTerminalMap<NonTerminal, Concept, Role>& substitution_map) :
+        CopyNonTerminalVisitor<D>(repositories),
+        m_substitution_map(substitution_map)
+    {
+    }
+
+    void visit(NonTerminal<D> constructor) override
+    {
+        const auto& substitution_map = boost::hana::at_key(m_substitution_map, boost::hana::type<D> {});
+
+        const auto it = substitution_map.find(constructor);
+
+        if (it != substitution_map.end())
+        {
+            this->m_result = this->m_repositories.template get_or_create_nonterminal<D>(it->second->get_name());
+        }
+        else
+        {
+            this->m_result = this->m_repositories.template get_or_create_nonterminal<D>(constructor->get_name());
+        }
+    }
+};
+
+class EliminateRulesWithIdenticalBodyGrammarVisitor : public CopyGrammarVisitor
+{
+private:
+    const NonTerminalMap<NonTerminal, Concept, Role>& m_substitution_map;
+
+public:
+    EliminateRulesWithIdenticalBodyGrammarVisitor(ConstructorRepositories& repositories,
+                                                  StartSymbolsContainer& start_symbols,
+                                                  DerivationRulesContainer& derivation_rules,
+                                                  SubstitutionRulesContainer& substitution_rules,
+                                                  CopyNonTerminalVisitor<Concept>& concept_start_symbol_visitor,
+                                                  CopyNonTerminalVisitor<Role>& role_start_symbol_visitor,
+                                                  CopyDerivationRuleVisitor<Concept>& concept_derivation_rule_visitor,
+                                                  CopyDerivationRuleVisitor<Role>& role_derivation_rule_visitor,
+                                                  CopySubstitutionRuleVisitor<Concept>& concept_substitution_rule_visitor,
+                                                  CopySubstitutionRuleVisitor<Role>& role_substitution_rule_visitor,
+                                                  const NonTerminalMap<NonTerminal, Concept, Role>& substitution_map) :
+        CopyGrammarVisitor(repositories,
+                           start_symbols,
+                           derivation_rules,
+                           substitution_rules,
+                           concept_start_symbol_visitor,
+                           role_start_symbol_visitor,
+                           concept_derivation_rule_visitor,
+                           role_derivation_rule_visitor,
+                           concept_substitution_rule_visitor,
+                           role_substitution_rule_visitor),
+        m_substitution_map(substitution_map)
+    {
+    }
+
+    void visit(const Grammar& grammar) override
+    {
+        boost::hana::for_each(grammar.get_start_symbols_container().get(),
+                              [&](auto&& pair)
+                              {
+                                  auto key = boost::hana::first(pair);
+                                  const auto& second = boost::hana::second(pair);
+                                  using ConstructorType = typename decltype(+key)::type;
+
+                                  if (second.has_value())
+                                  {
+                                      auto& visitor = *boost::hana::at_key(m_start_symbol_visitor, boost::hana::type<ConstructorType> {});
+                                      second.value()->accept(visitor);
+                                      m_start_symbols.insert(visitor.get_result());
+                                  }
+                              });
+
+        boost::hana::for_each(grammar.get_derivation_rules_container().get(),
+                              [&](auto&& pair)
+                              {
+                                  auto key = boost::hana::first(pair);
+                                  const auto& second = boost::hana::second(pair);
+                                  using ConstructorType = typename decltype(+key)::type;
+
+                                  for (const auto& rule : second)
+                                  {
+                                      if (boost::hana::at_key(m_substitution_map, boost::hana::type<ConstructorType> {}).contains(rule->get_head()))
+                                      {
+                                          continue;  ///< non-terminal will be substituted, which renders the rule useless.
+                                      }
+
+                                      auto& visitor = *boost::hana::at_key(m_derivation_rule_visitor, boost::hana::type<ConstructorType> {});
+                                      rule->accept(visitor);
+                                      const auto copied_rule = visitor.get_result();
+                                      m_derivation_rules.push_back(copied_rule);
+                                  }
+                              });
+
+        boost::hana::for_each(grammar.get_substitution_rules().get(),
+                              [&](auto&& pair)
+                              {
+                                  auto key = boost::hana::first(pair);
+                                  const auto& second = boost::hana::second(pair);
+                                  using ConstructorType = typename decltype(+key)::type;
+
+                                  for (const auto& rule : second)
+                                  {
+                                      if (boost::hana::at_key(m_substitution_map, boost::hana::type<ConstructorType> {}).contains(rule->get_head()))
+                                      {
+                                          continue;  ///< non-terminal will be substituted, which renders the rule useless.
+                                      }
+
+                                      auto& visitor = *boost::hana::at_key(m_substitution_rule_visitor, boost::hana::type<ConstructorType> {});
+                                      rule->accept(visitor);
+                                      const auto copied_rule = visitor.get_result();
+                                      m_substitution_rules.push_back(copied_rule);
+                                  }
+                              });
+    }
+};
+
 Grammar eliminate_rules_with_identical_body(const Grammar& grammar)
 {
-    auto repositories = cnf_grammar::ConstructorRepositories();
-    auto start_symbols = cnf_grammar::StartSymbolsContainer();
-    auto derivation_rules = cnf_grammar::DerivationRulesContainer();
-    auto substitution_rules = cnf_grammar::SubstitutionRulesContainer();
-
     auto inverse_derivation_rules = ConstructorMap<NonTerminalList, Concept, Role>();
 
     boost::hana::for_each(grammar.get_derivation_rules_container().get(),
@@ -61,11 +179,48 @@ Grammar eliminate_rules_with_identical_body(const Grammar& grammar)
                                   }
                               }
                           });
+
+    auto repositories = cnf_grammar::ConstructorRepositories();
+    auto start_symbols = cnf_grammar::StartSymbolsContainer();
+    auto derivation_rules = cnf_grammar::DerivationRulesContainer();
+    auto substitution_rules = cnf_grammar::SubstitutionRulesContainer();
+
+    auto substitute_concept_nonterminal_visitor = EliminateRulesWithIdenticalBodyNonTerminalVisitor<Concept>(repositories, substitution_map);
+    auto substitute_role_nonterminal_visitor = EliminateRulesWithIdenticalBodyNonTerminalVisitor<Role>(repositories, substitution_map);
+
+    auto concept_constructor_visitor =
+        CopyConstructorVisitor<Concept>(repositories, substitute_concept_nonterminal_visitor, substitute_role_nonterminal_visitor);
+    auto role_constructor_visitor = CopyConstructorVisitor<Role>(repositories, substitute_concept_nonterminal_visitor, substitute_role_nonterminal_visitor);
+
+    auto concept_derivation_rule_visitor =
+        CopyDerivationRuleVisitor<Concept>(repositories, substitute_concept_nonterminal_visitor, concept_constructor_visitor);
+    auto role_derivation_rule_visitor = CopyDerivationRuleVisitor<Role>(repositories, substitute_role_nonterminal_visitor, role_constructor_visitor);
+
+    auto concept_substitution_rule_visitor = CopySubstitutionRuleVisitor<Concept>(repositories, substitute_concept_nonterminal_visitor);
+    auto role_substitution_rule_visitor = CopySubstitutionRuleVisitor<Role>(repositories, substitute_role_nonterminal_visitor);
+
+    auto grammar_visitor = EliminateRulesWithIdenticalBodyGrammarVisitor(repositories,
+                                                                         start_symbols,
+                                                                         derivation_rules,
+                                                                         substitution_rules,
+                                                                         substitute_concept_nonterminal_visitor,
+                                                                         substitute_role_nonterminal_visitor,
+                                                                         concept_derivation_rule_visitor,
+                                                                         role_derivation_rule_visitor,
+                                                                         concept_substitution_rule_visitor,
+                                                                         role_substitution_rule_visitor,
+                                                                         substitution_map);
+
+    grammar_visitor.visit(grammar);
+
+    return Grammar(std::move(repositories), std::move(start_symbols), std::move(derivation_rules), std::move(substitution_rules), grammar.get_domain());
 }
 
 Grammar simplify(const Grammar& grammar)
 {
     /* Step 1 Identify rules with same body */
+
+    auto simplified_grammar = eliminate_rules_with_identical_body(grammar);
 
     /* Step 2 resubstitute substitution rules using fixed point */
 
@@ -74,5 +229,7 @@ Grammar simplify(const Grammar& grammar)
     /* Step 3 order substitution rules in order of evaluation through topological sorting */
 
     /* Step 4 remove rules of unreachable non-terminals */
+
+    return simplified_grammar;
 }
 }

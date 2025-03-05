@@ -22,6 +22,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 option(BUILD_PYMIMIR "Build" OFF)
 option(BUILD_TESTS "Build" OFF)
+option(BUILD_EXECUTABLES "Build" OFF)
 option(BUILD_PROFILING "Build" OFF)
 
 
@@ -145,7 +146,9 @@ endif()
 # ----------
 # Target Exe
 # ----------
-add_subdirectory(exe)
+if (BUILD_EXECUTABLES)
+    add_subdirectory(exe)
+endif()
 
 # ----------------
 # Target Profiling

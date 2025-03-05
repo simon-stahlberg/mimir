@@ -17,6 +17,7 @@
 
 #include "mimir/languages/description_logics/cnf_grammar.hpp"
 
+#include "cnf_grammar_simplification.hpp"
 #include "grammar_cnf_translator.hpp"
 #include "mimir/languages/description_logics/cnf_grammar_visitor_interface.hpp"
 #include "parser.hpp"
@@ -40,6 +41,7 @@ Grammar::Grammar(ConstructorRepositories repositories,
 Grammar::Grammar(const grammar::Grammar& grammar)
 {
     auto cnf_grammar = translate_to_cnf(grammar);
+    cnf_grammar = simplify(cnf_grammar);
     m_repositories = std::move(cnf_grammar.m_repositories);
     m_start_symbols = std::move(cnf_grammar.m_start_symbols);
     m_derivation_rules = std::move(cnf_grammar.m_derivation_rules);

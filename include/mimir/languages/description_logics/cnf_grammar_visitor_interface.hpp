@@ -18,6 +18,7 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CNF_GRAMMAR_VISITOR_INTERFACE_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CNF_GRAMMAR_VISITOR_INTERFACE_HPP_
 
+#include "mimir/languages/description_logics/cnf_grammar_containers.hpp"
 #include "mimir/languages/description_logics/declarations.hpp"
 
 namespace mimir::dl::cnf_grammar
@@ -147,6 +148,20 @@ public:
 /// Copy
 ////////////////////////////
 
+template<ConceptOrRole D>
+class CopyConstructorVisitor;
+
+template<ConceptOrRole D>
+class CopyNonTerminalVisitor;
+
+template<ConceptOrRole D>
+class CopyDerivationRuleVisitor;
+
+template<ConceptOrRole D>
+class CopySubstitutionRuleVisitor;
+
+class CopyGrammarVisitor;
+
 /**
  * Constructors
  */
@@ -165,11 +180,15 @@ class CopyConstructorVisitor<Concept> : public ConstructorVisitor<Concept>
 {
 protected:
     ConstructorRepositories& m_repositories;
+    CopyNonTerminalVisitor<Concept>& m_concept_visitor;
+    CopyNonTerminalVisitor<Role>& m_role_visitor;
 
     Constructor<Concept> m_result;  ///< the result of a visitation
 
 public:
-    explicit CopyConstructorVisitor(ConstructorRepositories& repositories);
+    explicit CopyConstructorVisitor(ConstructorRepositories& repositories,
+                                    CopyNonTerminalVisitor<Concept>& concept_visitor,
+                                    CopyNonTerminalVisitor<Role>& role_visitor);
 
     void visit(ConceptBot constructor) override;
     void visit(ConceptTop constructor) override;
@@ -200,11 +219,15 @@ class CopyConstructorVisitor<Role> : public ConstructorVisitor<Role>
 {
 protected:
     ConstructorRepositories& m_repositories;
+    CopyNonTerminalVisitor<Concept>& m_concept_visitor;
+    CopyNonTerminalVisitor<Role>& m_role_visitor;
 
     Constructor<Role> m_result;  ///< the result of a visitation
 
 public:
-    explicit CopyConstructorVisitor(ConstructorRepositories& repositories);
+    explicit CopyConstructorVisitor(ConstructorRepositories& repositories,
+                                    CopyNonTerminalVisitor<Concept>& concept_visitor,
+                                    CopyNonTerminalVisitor<Role>& role_visitor);
 
     void visit(RoleUniversal constructor) override;
     void visit(RoleAtomicState<Static> constructor) override;
@@ -255,11 +278,15 @@ class CopyDerivationRuleVisitor : public DerivationRuleVisitor<D>
 {
 protected:
     ConstructorRepositories& m_repositories;
+    CopyNonTerminalVisitor<D>& m_nonterminal_visitor;
+    CopyConstructorVisitor<D>& m_constructor_visitor;
 
     DerivationRule<D> m_result;
 
 public:
-    explicit CopyDerivationRuleVisitor(ConstructorRepositories& repositories);
+    explicit CopyDerivationRuleVisitor(ConstructorRepositories& repositories,
+                                       CopyNonTerminalVisitor<D>& nonterminal_visitor,
+                                       CopyConstructorVisitor<D>& constructor_visitor);
 
     void visit(DerivationRule<D> rule) override;
 
@@ -275,11 +302,12 @@ class CopySubstitutionRuleVisitor : public SubstitutionRuleVisitor<D>
 {
 protected:
     ConstructorRepositories& m_repositories;
+    CopyNonTerminalVisitor<D>& m_nonterminal_visitor;
 
     SubstitutionRule<D> m_result;
 
 public:
-    explicit CopySubstitutionRuleVisitor(ConstructorRepositories& repositories);
+    explicit CopySubstitutionRuleVisitor(ConstructorRepositories& repositories, CopyNonTerminalVisitor<D>& nonterminal_visitor);
 
     void visit(SubstitutionRule<D> rule) override;
 
@@ -294,9 +322,33 @@ class CopyGrammarVisitor : public GrammarVisitor
 {
 protected:
     ConstructorRepositories& m_repositories;
+    StartSymbolsContainer& m_start_symbols;
+    DerivationRulesContainer& m_derivation_rules;
+    SubstitutionRulesContainer& m_substitution_rules;
+
+    boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, CopyNonTerminalVisitor<Concept>*>,
+                     boost::hana::pair<boost::hana::type<Role>, CopyNonTerminalVisitor<Role>*>>
+        m_start_symbol_visitor;
+
+    boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, CopyDerivationRuleVisitor<Concept>*>,
+                     boost::hana::pair<boost::hana::type<Role>, CopyDerivationRuleVisitor<Role>*>>
+        m_derivation_rule_visitor;
+
+    boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, CopySubstitutionRuleVisitor<Concept>*>,
+                     boost::hana::pair<boost::hana::type<Role>, CopySubstitutionRuleVisitor<Role>*>>
+        m_substitution_rule_visitor;
 
 public:
-    explicit CopyGrammarVisitor(ConstructorRepositories& repositories);
+    CopyGrammarVisitor(ConstructorRepositories& repositories,
+                       StartSymbolsContainer& start_symbols,
+                       DerivationRulesContainer& derivation_rules,
+                       SubstitutionRulesContainer& substitution_rules,
+                       CopyNonTerminalVisitor<Concept>& concept_start_symbol_visitor,
+                       CopyNonTerminalVisitor<Role>& role_start_symbol_visitor,
+                       CopyDerivationRuleVisitor<Concept>& concept_derivation_rule_visitor,
+                       CopyDerivationRuleVisitor<Role>& role_derivation_rule_visitor,
+                       CopySubstitutionRuleVisitor<Concept>& concept_substitution_rule_visitor,
+                       CopySubstitutionRuleVisitor<Role>& role_substitution_rule_visitor);
 
     void visit(const Grammar& grammar) override;
 };
