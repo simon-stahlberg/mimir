@@ -19,9 +19,9 @@ public:
     /* Trampoline (need one for each virtual function) */
     double compute_heuristic(State state, bool is_goal_state) override
     {
-        NB_OVERRIDE(compute_heuristic, /* Name of function in C++ (must match Python name) */
-                    state,             /* Argument(s) */
-                    is_goal_state);
+        NB_OVERRIDE_PURE(IHeuristic::compute_heuristic, /* Name of function in C++ (must match Python name) */
+                         state,                         /* Argument(s) */
+                         is_goal_state);
     }
 };
 
@@ -395,7 +395,8 @@ void bind_search(nb::module_& m)
         .def("get_reached_derived_ground_atoms_bitset", &StateRepositoryImpl::get_reached_derived_ground_atoms_bitset, nb::rv_policy::copy);
 
     /* Heuristics */
-    nb::class_<IHeuristic, IPyHeuristic>(m, "IHeuristic").def(nb::init<>());
+    nb::class_<IHeuristic, IPyHeuristic>(m, "IHeuristic")  //
+        .def(nb::init<>());
     nb::class_<BlindHeuristic, IHeuristic>(m, "BlindHeuristic").def(nb::init<Problem>());
 
     /* Algorithms */
