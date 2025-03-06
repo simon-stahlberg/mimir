@@ -6,6 +6,8 @@ include(ExternalProject)
 message(STATUS "Dependency \"nanobind\"...")
 
 # Attempt to find the installed library
+find_package(Python COMPONENTS Interpreter Development REQUIRED)  # Requires by find_package nanobind
+
 find_package(nanobind QUIET PATHS ${CMAKE_INSTALL_PREFIX} NO_DEFAULT_PATH)
 
 if (NOT nanobind_FOUND)

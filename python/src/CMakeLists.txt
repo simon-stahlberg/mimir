@@ -1,35 +1,36 @@
-find_package(pybind11 CONFIG REQUIRED PATHS ${CMAKE_PREFIX_PATH} NO_DEFAULT_PATH)
+find_package(Python 3.8 COMPONENTS Interpreter Development REQUIRED)
+
+find_package(nanobind CONFIG REQUIRED PATHS ${CMAKE_PREFIX_PATH} NO_DEFAULT_PATH)
 # Set result variables
-find_package(pybind11)
+find_package(nanobind)
 
-add_library(_pymimir_objects
-        OBJECT      
-        pymimir/formalism/bindings.cpp
-        pymimir/graphs/bindings.cpp
-        pymimir/search/bindings.cpp
-        pymimir/datasets/bindings.cpp
-)
-target_include_directories(_pymimir_objects
-        PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/pymimir
+nanobind_add_module(_pymimir 
+    pymimir/main.cpp 
+    pymimir/formalism/bindings.cpp 
+    pymimir/graphs/bindings.cpp 
+    pymimir/search/bindings.cpp 
+    pymimir/datasets/bindings.cpp
 )
 
-target_link_libraries(_pymimir_objects
-        PUBLIC
-        mimir::core
-        pybind11::module
+nanobind_add_stub(
+  pymimir_stub
+  INSTALL_TIME
+  MODULE _pymimir
+  OUTPUT _pymimir.pyi
+  PYTHON_PATH $<TARGET_FILE_DIR:_pymimir>
+  DEPENDS _pymimir
+  MARKER_FILE py.typed
 )
 
-pybind11_add_module(_pymimir MODULE)
-target_sources(_pymimir
-        PRIVATE
-        $<TARGET_OBJECTS:_pymimir_objects>
-        pymimir/main.cpp
-)
-target_link_libraries(_pymimir
-        PRIVATE
-        _pymimir_objects
-)
-target_compile_definitions(_pymimir PUBLIC MIMIR_VERSION_INFO="${MIMIR_VERSION_INFO}")
+# Install the compiled extension
+install(TARGETS _pymimir DESTINATION ".")
 
-target_compile_definitions(_pymimir PRIVATE PYBIND11_DETAILED_ERROR_MESSAGES)
+# Install stub and marker
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/_pymimir.pyi
+    ${CMAKE_CURRENT_BINARY_DIR}/py.typed
+    DESTINATION "."
+)
+
+# Install the Python package sources
+install(DIRECTORY pymimir/ DESTINATION "pymimir")

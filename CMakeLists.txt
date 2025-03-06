@@ -126,7 +126,6 @@ if(absl_FOUND)
   message(STATUS "Found absl: ${absl_DIR} (found version ${absl_VERSION})")
 endif()
 
-
 ##############################################################
 # Add library and executable targets
 ##############################################################

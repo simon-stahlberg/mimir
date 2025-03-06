@@ -15,11 +15,25 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <nanobind/nanobind.h>
+#include "init_declarations.hpp"
 
-namespace nb = nanobind;
-using namespace nb::literals;
+#define STRINGIFY(x) #x
+#define MACRO_STRINGIFY(x) STRINGIFY(x)
 
-int add(int a, int b) { return a + b; }
+PYBIND11_MODULE(_pymimir, m)
+{
+    m.doc() = "Python bindings for the Mimir planning library.";
 
-NB_MODULE(_pymimir, m) { m.def("add", &add); }
+    init_formalism(m);
+    init_graphs(m);
+
+    init_search(m);
+
+    init_datasets(m);
+
+#ifdef VERSION_INFO
+    m.attr("__version__") = MACRO_STRINGIFY(VERSION_INFO);
+#else
+    m.attr("__version__") = "dev";
+#endif
+}
