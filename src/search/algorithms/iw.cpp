@@ -916,21 +916,21 @@ bool ArityKNoveltyPruning::test_prune_successor_state(const State state, const S
 /* IterativeWidthAlgorithm */
 
 SearchResult find_solution_iw(const SearchContext& context,
-                              std::optional<State> start_state_,
-                              std::optional<size_t> max_arity_,
-                              std::optional<IWAlgorithmEventHandler> iw_event_handler_,
-                              std::optional<BrFSAlgorithmEventHandler> brfs_event_handler_,
-                              std::optional<GoalStrategy> goal_strategy_)
+                              State start_state_,
+                              size_t max_arity_,
+                              IWAlgorithmEventHandler iw_event_handler_,
+                              BrFSAlgorithmEventHandler brfs_event_handler_,
+                              GoalStrategy goal_strategy_)
 {
     const auto& problem = *context.get_problem();
     auto& applicable_action_generator = *context.get_applicable_action_generator();
     auto& state_repository = *context.get_state_repository();
 
-    const auto max_arity = (max_arity_.has_value()) ? max_arity_.value() : MAX_ARITY - 1;
-    const auto start_state = (start_state_.has_value()) ? start_state_.value() : state_repository.get_or_create_initial_state();
-    const auto iw_event_handler = (iw_event_handler_.has_value()) ? iw_event_handler_.value() : std::make_shared<DefaultIWAlgorithmEventHandler>();
-    const auto brfs_event_handler = (brfs_event_handler_.has_value()) ? brfs_event_handler_.value() : std::make_shared<DefaultBrFSAlgorithmEventHandler>();
-    const auto goal_strategy = (goal_strategy_.has_value()) ? goal_strategy_.value() : std::make_shared<ProblemGoal>(context.get_problem());
+    const auto max_arity = max_arity_;
+    const auto start_state = (start_state_) ? start_state_ : state_repository.get_or_create_initial_state();
+    const auto iw_event_handler = (iw_event_handler_) ? iw_event_handler_ : std::make_shared<DefaultIWAlgorithmEventHandler>();
+    const auto brfs_event_handler = (brfs_event_handler_) ? brfs_event_handler_ : std::make_shared<DefaultBrFSAlgorithmEventHandler>();
+    const auto goal_strategy = (goal_strategy_) ? goal_strategy_ : std::make_shared<ProblemGoal>(context.get_problem());
 
     if (max_arity >= MAX_ARITY)
     {

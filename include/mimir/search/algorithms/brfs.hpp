@@ -30,10 +30,10 @@ namespace mimir
 {
 
 extern SearchResult find_solution_brfs(const SearchContext& context,
-                                       std::optional<State> start_state = std::nullopt,
-                                       std::optional<BrFSAlgorithmEventHandler> event_handler = std::nullopt,
-                                       std::optional<GoalStrategy> goal_strategy = std::nullopt,
-                                       std::optional<PruningStrategy> pruning_strategy = std::nullopt,
+                                       State start_state = nullptr,
+                                       BrFSAlgorithmEventHandler event_handler = nullptr,
+                                       GoalStrategy goal_strategy = nullptr,
+                                       PruningStrategy pruning_strategy = nullptr,
                                        bool exhaustive = false);
 
 }

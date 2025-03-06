@@ -19,17 +19,18 @@
 #define MIMIR_SEARCH_ALGORITHMS_SIW_HPP_
 
 #include "mimir/search/algorithms/iw.hpp"
+#include "mimir/search/algorithms/iw/types.hpp"
 
 namespace mimir
 {
 
 extern SearchResult find_solution_siw(const SearchContext& context,
-                                      std::optional<State> start_state = std::nullopt,
-                                      std::optional<size_t> max_arity = std::nullopt,
-                                      std::optional<SIWAlgorithmEventHandler> siw_event_handler = std::nullopt,
-                                      std::optional<IWAlgorithmEventHandler> iw_event_handler = std::nullopt,
-                                      std::optional<BrFSAlgorithmEventHandler> brfs_event_handler = std::nullopt,
-                                      std::optional<GoalStrategy> goal_strategy = std::nullopt);
+                                      State start_state = nullptr,
+                                      size_t max_arity = MAX_ARITY - 1,
+                                      SIWAlgorithmEventHandler siw_event_handler = nullptr,
+                                      IWAlgorithmEventHandler iw_event_handler = nullptr,
+                                      BrFSAlgorithmEventHandler brfs_event_handler = nullptr,
+                                      GoalStrategy goal_strategy = nullptr);
 }
 
 #endif

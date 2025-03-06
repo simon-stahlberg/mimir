@@ -32,10 +32,10 @@ namespace mimir
 
 extern SearchResult find_solution_astar(const SearchContext& context,
                                         Heuristic heuristic,
-                                        std::optional<State> start_state = std::nullopt,
-                                        std::optional<AStarAlgorithmEventHandler> event_handler = std::nullopt,
-                                        std::optional<GoalStrategy> goal_strategy = std::nullopt,
-                                        std::optional<PruningStrategy> pruning_strategy = std::nullopt);
+                                        State start_state = nullptr,
+                                        AStarAlgorithmEventHandler event_handler = nullptr,
+                                        GoalStrategy goal_strategy = nullptr,
+                                        PruningStrategy pruning_strategy = nullptr);
 
 }
 

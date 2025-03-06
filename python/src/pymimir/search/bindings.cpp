@@ -5,12 +5,6 @@
 
 using namespace mimir;
 
-/**
- * IPyHeuristic
- *
- * Source: https://pybind11.readthedocs.io/en/stable/advanced/classes.html#overriding-virtual-functions-in-python
- */
-
 class IPyHeuristic : public IHeuristic
 {
 public:
@@ -19,85 +13,71 @@ public:
     /* Trampoline (need one for each virtual function) */
     double compute_heuristic(State state, bool is_goal_state) override
     {
-        NB_OVERRIDE_PURE(IHeuristic::compute_heuristic, /* Name of function in C++ (must match Python name) */
-                         state,                         /* Argument(s) */
+        NB_OVERRIDE_PURE(compute_heuristic, /* Name of function in C++ (must match Python name) */
+                         state,             /* Argument(s) */
                          is_goal_state);
     }
 };
 
-/**
- * IPyDynamicAStarAlgorithmEventHandlerBase
- *
- * Source: https://pybind11.readthedocs.io/en/stable/advanced/classes.html#overriding-virtual-functions-in-python
- */
-
-class IPyDynamicAStarAlgorithmEventHandlerBase : public DynamicAStarAlgorithmEventHandlerBase
+class IPyAStarAlgorithmEventHandler : public IAStarAlgorithmEventHandler
 {
 public:
-    NB_TRAMPOLINE(DynamicAStarAlgorithmEventHandlerBase, 13);
+    NB_TRAMPOLINE(IAStarAlgorithmEventHandler, 13);
 
     /* Trampoline (need one for each virtual function) */
-    void on_expand_state_impl(State state, const ProblemImpl& problem) override { NB_OVERRIDE(on_expand_state_impl, state, problem); }
+    void on_expand_state(State state, const ProblemImpl& problem) override { NB_OVERRIDE_PURE(on_expand_state, state, problem); }
 
-    void on_expand_goal_state_impl(State state, const ProblemImpl& problem) override { NB_OVERRIDE(on_expand_goal_state_impl, state, problem); }
+    void on_expand_goal_state(State state, const ProblemImpl& problem) override { NB_OVERRIDE_PURE(on_expand_goal_state, state, problem); }
 
-    void on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem) override
+    void on_generate_state(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem) override
     {
-        NB_OVERRIDE(on_generate_state_impl, state, action, action_cost, successor_state, problem);
+        NB_OVERRIDE_PURE(on_generate_state, state, action, action_cost, successor_state, problem);
     }
-    void
-    on_generate_state_relaxed_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem) override
+    void on_generate_state_relaxed(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem) override
     {
-        NB_OVERRIDE(on_generate_state_relaxed_impl, state, action, action_cost, successor_state, problem);
+        NB_OVERRIDE_PURE(on_generate_state_relaxed, state, action, action_cost, successor_state, problem);
     }
-    void
-    on_generate_state_not_relaxed_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem) override
+    void on_generate_state_not_relaxed(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem) override
     {
-        NB_OVERRIDE(on_generate_state_not_relaxed_impl, state, action, action_cost, successor_state, problem);
+        NB_OVERRIDE_PURE(on_generate_state_not_relaxed, state, action, action_cost, successor_state, problem);
     }
-    void on_close_state_impl(State state, const ProblemImpl& problem) override { NB_OVERRIDE(on_close_state_impl, state, problem); }
-    void on_finish_f_layer_impl(double f_value, uint64_t num_expanded_state, uint64_t num_generated_states) override
+    void on_close_state(State state, const ProblemImpl& problem) override { NB_OVERRIDE_PURE(on_close_state, state, problem); }
+    void on_finish_f_layer(double f_value) override { NB_OVERRIDE_PURE(on_finish_f_layer, f_value); }
+    void on_prune_state(State state, const ProblemImpl& problem) override { NB_OVERRIDE_PURE(on_prune_state, state, problem); }
+    void on_start_search(State start_state, const ProblemImpl& problem) override { NB_OVERRIDE_PURE(on_start_search, start_state, problem); }
+    void on_end_search(uint64_t num_reached_fluent_atoms,
+                       uint64_t num_reached_derived_atoms,
+                       uint64_t num_bytes_for_unextended_state_portion,
+                       uint64_t num_bytes_for_extended_state_portion,
+                       uint64_t num_bytes_for_nodes,
+                       uint64_t num_bytes_for_actions,
+                       uint64_t num_bytes_for_axioms,
+                       uint64_t num_states,
+                       uint64_t num_nodes,
+                       uint64_t num_actions,
+                       uint64_t num_axioms) override
     {
-        NB_OVERRIDE(on_finish_f_layer_impl, f_value, num_expanded_state, num_generated_states);
+        NB_OVERRIDE_PURE(on_end_search,
+                         num_reached_fluent_atoms,
+                         num_reached_derived_atoms,
+                         num_bytes_for_unextended_state_portion,
+                         num_bytes_for_extended_state_portion,
+                         num_bytes_for_nodes,
+                         num_bytes_for_actions,
+                         num_bytes_for_axioms,
+                         num_states,
+                         num_nodes,
+                         num_actions,
+                         num_axioms);
     }
-    void on_prune_state_impl(State state, const ProblemImpl& problem) override { NB_OVERRIDE(on_prune_state_impl, state, problem); }
-    void on_start_search_impl(State start_state, const ProblemImpl& problem) override { NB_OVERRIDE(on_start_search_impl, start_state, problem); }
-    /**
-     * Note the trailing commas in the NB_OVERRIDE calls to name() and bark(). These are needed to portably implement a trampoline for a function that
-     * does not take any arguments. For functions that take a nonzero number of arguments, the trailing comma must be omitted.
-     */
-    void on_end_search_impl(uint64_t num_reached_fluent_atoms,
-                            uint64_t num_reached_derived_atoms,
-                            uint64_t num_bytes_for_unextended_state_portion,
-                            uint64_t num_bytes_for_extended_state_portion,
-                            uint64_t num_bytes_for_nodes,
-                            uint64_t num_bytes_for_actions,
-                            uint64_t num_bytes_for_axioms,
-                            uint64_t num_states,
-                            uint64_t num_nodes,
-                            uint64_t num_actions,
-                            uint64_t num_axioms) override
-    {
-        NB_OVERRIDE(on_end_search_impl,
-                    num_reached_fluent_atoms,
-                    num_reached_derived_atoms,
-                    num_bytes_for_unextended_state_portion,
-                    num_bytes_for_extended_state_portion,
-                    num_bytes_for_nodes,
-                    num_bytes_for_actions,
-                    num_bytes_for_axioms,
-                    num_states,
-                    num_nodes,
-                    num_actions,
-                    num_axioms);
-    }
-    void on_solved_impl(const Plan& plan, const ProblemImpl& problem) override { NB_OVERRIDE(on_solved_impl, plan, problem); }
-    void on_unsolvable_impl() override { NB_OVERRIDE(on_unsolvable_impl, ); }
-    void on_exhausted_impl() override { NB_OVERRIDE(on_exhausted_impl, ); }
+    void on_solved(const Plan& plan, const ProblemImpl& problem) override { NB_OVERRIDE_PURE(on_solved, plan, problem); }
+    void on_unsolvable() override { NB_OVERRIDE_PURE(on_unsolvable); }
+    void on_exhausted() override { NB_OVERRIDE_PURE(on_exhausted); }
 };
 
 void bind_search(nb::module_& m)
-{ /* Enums */
+{
+    /* Enums */
     nb::enum_<SearchContext::SearchMode>(m, "SearchMode")
         .value("GROUNDED", SearchContext::SearchMode::GROUNDED)
         .value("LIFTED", SearchContext::SearchMode::LIFTED)
@@ -136,7 +116,7 @@ void bind_search(nb::module_& m)
             nb::arg("problem_filepath"),
             nb::arg("options") = SearchContext::Options())
 
-        .def(nb::init<Problem, const SearchContext::Options&>(), nb::arg("problem"), nb::arg("options") = SearchContext::Options())
+        .def(nb::init<Problem, SearchContext::Options>(), nb::arg("problem"), nb::arg("options") = SearchContext::Options())
 
         .def(nb::init<Problem, ApplicableActionGenerator, StateRepository>(),
              nb::arg("problem"),
@@ -353,28 +333,6 @@ void bind_search(nb::module_& m)
     nb::class_<GroundedAxiomEvaluator, IAxiomEvaluator>(m, "GroundedAxiomEvaluator")  //
         ;
 
-    /* DeleteRelaxedProblemExplorator */
-
-    nb::class_<match_tree::Options>(m, "MatchTreeOptions")
-        .def(nb::init<>())
-        .def_rw("enable_dump_dot_file", &match_tree::Options::enable_dump_dot_file)
-        .def_rw("output_dot_file", &match_tree::Options::output_dot_file)
-        .def_rw("max_num_nodes", &match_tree::Options::max_num_nodes)
-        .def_rw("split_strategy", &match_tree::Options::split_strategy)
-        .def_rw("split_metric", &match_tree::Options::split_metric)
-        .def_rw("optimization_direction", &match_tree::Options::optimization_direction);
-
-    nb::class_<DeleteRelaxedProblemExplorator>(m, "DeleteRelaxedProblemExplorator")
-        .def(nb::init<Problem>(), nb::arg("problem"))
-        .def("create_grounded_axiom_evaluator",
-             &DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator,
-             nb::arg("match_tree_options") = match_tree::Options(),
-             nb::arg("axiom_evaluator_event_handler") = std::make_shared<DefaultGroundedAxiomEvaluatorEventHandler>())
-        .def("create_grounded_applicable_action_generator",
-             &DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator,
-             nb::arg("match_tree_options") = match_tree::Options(),
-             nb::arg("axiom_evaluator_event_handler") = std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>());
-
     /* StateRepositoryImpl */
     nb::class_<StateRepositoryImpl>(m, "StateRepository")  //
         .def(nb::init<AxiomEvaluator>(), nb::arg("axiom_evaluator"))
@@ -394,9 +352,33 @@ void bind_search(nb::module_& m)
         .def("get_reached_fluent_ground_atoms_bitset", &StateRepositoryImpl::get_reached_fluent_ground_atoms_bitset, nb::rv_policy::copy)
         .def("get_reached_derived_ground_atoms_bitset", &StateRepositoryImpl::get_reached_derived_ground_atoms_bitset, nb::rv_policy::copy);
 
+    /* DeleteRelaxedProblemExplorator */
+
+    nb::class_<match_tree::Options>(m, "MatchTreeOptions")
+        .def(nb::init<>())
+        .def_rw("enable_dump_dot_file", &match_tree::Options::enable_dump_dot_file)
+        .def_rw("output_dot_file", &match_tree::Options::output_dot_file)
+        .def_rw("max_num_nodes", &match_tree::Options::max_num_nodes)
+        .def_rw("split_strategy", &match_tree::Options::split_strategy)
+        .def_rw("split_metric", &match_tree::Options::split_metric)
+        .def_rw("optimization_direction", &match_tree::Options::optimization_direction);
+
+    nb::class_<DeleteRelaxedProblemExplorator>(m, "DeleteRelaxedProblemExplorator")
+        .def(nb::init<Problem>(), nb::arg("problem"))
+        .def("create_grounded_axiom_evaluator",
+             &DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator,
+             nb::arg("match_tree_options") = match_tree::Options(),
+             nb::arg("axiom_evaluator_event_handler") = nullptr)
+        .def("create_grounded_applicable_action_generator",
+             &DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator,
+             nb::arg("match_tree_options") = match_tree::Options(),
+             nb::arg("axiom_evaluator_event_handler") = nullptr);
+
     /* Heuristics */
     nb::class_<IHeuristic, IPyHeuristic>(m, "IHeuristic")  //
-        .def(nb::init<>());
+        .def(nb::init<>())
+        .def("compute_heuristic", &IHeuristic::compute_heuristic);
+
     nb::class_<BlindHeuristic, IHeuristic>(m, "BlindHeuristic").def(nb::init<Problem>());
 
     /* Algorithms */
@@ -418,28 +400,39 @@ void bind_search(nb::module_& m)
         .def("get_num_expanded_until_f_value", &AStarAlgorithmStatistics::get_num_expanded_until_f_value)
         .def("get_num_deadends_until_f_value", &AStarAlgorithmStatistics::get_num_deadends_until_f_value)
         .def("get_num_pruned_until_f_value", &AStarAlgorithmStatistics::get_num_pruned_until_f_value);
-    nb::class_<IAStarAlgorithmEventHandler>(m,
-                                            "IAStarAlgorithmEventHandler")  //
-        .def("get_statistics", &IAStarAlgorithmEventHandler::get_statistics);
+
+    nb::class_<IAStarAlgorithmEventHandler, IPyAStarAlgorithmEventHandler>(m,
+                                                                           "IAStarAlgorithmEventHandler")  //
+        .def(nb::init<>())
+        .def("on_expand_state", &IAStarAlgorithmEventHandler::on_expand_state)
+        .def("on_expand_goal_state", &IAStarAlgorithmEventHandler::on_expand_goal_state)
+        .def("on_generate_state", &IAStarAlgorithmEventHandler::on_generate_state)
+        .def("on_generate_state_relaxed", &IAStarAlgorithmEventHandler::on_generate_state_relaxed)
+        .def("on_generate_state_not_relaxed", &IAStarAlgorithmEventHandler::on_generate_state_not_relaxed)
+        .def("on_close_state", &IAStarAlgorithmEventHandler::on_close_state)
+        .def("on_finish_f_layer", &IAStarAlgorithmEventHandler::on_finish_f_layer)
+        .def("on_prune_state", &IAStarAlgorithmEventHandler::on_prune_state)
+        .def("on_start_search", &IAStarAlgorithmEventHandler::on_start_search)
+        .def("on_end_search", &IAStarAlgorithmEventHandler::on_end_search)
+        .def("on_solved", &IAStarAlgorithmEventHandler::on_solved)
+        .def("on_unsolvable", &IAStarAlgorithmEventHandler::on_unsolvable)
+        .def("on_exhausted", &IAStarAlgorithmEventHandler::on_exhausted);
+
     nb::class_<DefaultAStarAlgorithmEventHandler, IAStarAlgorithmEventHandler>(m,
                                                                                "DefaultAStarAlgorithmEventHandler")  //
         .def(nb::init<bool>(), nb::arg("quiet") = true);
     nb::class_<DebugAStarAlgorithmEventHandler, IAStarAlgorithmEventHandler>(m,
                                                                              "DebugAStarAlgorithmEventHandler")  //
         .def(nb::init<bool>(), nb::arg("quiet") = true);
-    nb::class_<DynamicAStarAlgorithmEventHandlerBase, IAStarAlgorithmEventHandler, IPyDynamicAStarAlgorithmEventHandlerBase>(
-        m,
-        "AStarAlgorithmEventHandlerBase")  //
-        .def(nb::init<bool>(), nb::arg("quiet") = true);
 
     m.def("find_solution_astar",
           &find_solution_astar,
           nb::arg("search_context"),
-          nb::arg("heuristic") = std::nullopt,
-          nb::arg("start_state") = std::nullopt,
-          nb::arg("brfs_event_handler") = std::nullopt,
-          nb::arg("goal_strategy") = std::nullopt,
-          nb::arg("pruning_strategy") = std::nullopt);
+          nb::arg("heuristic"),
+          nb::arg("start_state") = nullptr,
+          nb::arg("astar_event_handler") = nullptr,
+          nb::arg("goal_strategy") = nullptr,
+          nb::arg("pruning_strategy") = nullptr);
 
     // BrFS
     nb::class_<BrFSAlgorithmStatistics>(m, "BrFSAlgorithmStatistics")  //
@@ -462,10 +455,10 @@ void bind_search(nb::module_& m)
     m.def("find_solution_brfs",
           &find_solution_brfs,
           nb::arg("search_context"),
-          nb::arg("start_state") = std::nullopt,
-          nb::arg("brfs_event_handler") = std::nullopt,
-          nb::arg("goal_strategy") = std::nullopt,
-          nb::arg("pruning_strategy") = std::nullopt,
+          nb::arg("start_state") = nullptr,
+          nb::arg("brfs_event_handler") = nullptr,
+          nb::arg("goal_strategy") = nullptr,
+          nb::arg("pruning_strategy") = nullptr,
           nb::arg("exhaustive") = false);
 
     // IW
@@ -496,11 +489,11 @@ void bind_search(nb::module_& m)
     m.def("find_solution_iw",
           &find_solution_iw,
           nb::arg("search_context"),
-          nb::arg("start_state") = std::nullopt,
-          nb::arg("max_arity") = std::nullopt,
-          nb::arg("iw_event_handler") = std::nullopt,
-          nb::arg("brfs_event_handler") = std::nullopt,
-          nb::arg("goal_strategy") = std::nullopt);
+          nb::arg("start_state") = nullptr,
+          nb::arg("max_arity") = nullptr,
+          nb::arg("iw_event_handler") = nullptr,
+          nb::arg("brfs_event_handler") = nullptr,
+          nb::arg("goal_strategy") = nullptr);
 
     // SIW
     nb::class_<SIWAlgorithmStatistics>(m, "SIWAlgorithmStatistics")  //
@@ -514,10 +507,10 @@ void bind_search(nb::module_& m)
     m.def("find_solution_siw",
           &find_solution_siw,
           nb::arg("search_context"),
-          nb::arg("start_state") = std::nullopt,
-          nb::arg("max_arity") = std::nullopt,
-          nb::arg("siw_event_handler") = std::nullopt,
-          nb::arg("iw_event_handler") = std::nullopt,
-          nb::arg("brfs_event_handler") = std::nullopt,
-          nb::arg("goal_strategy") = std::nullopt);
+          nb::arg("start_state") = nullptr,
+          nb::arg("max_arity") = nullptr,
+          nb::arg("siw_event_handler") = nullptr,
+          nb::arg("iw_event_handler") = nullptr,
+          nb::arg("brfs_event_handler") = nullptr,
+          nb::arg("goal_strategy") = nullptr);
 }

@@ -68,10 +68,10 @@ get_or_create_search_node(size_t state_index, const AStarSearchNodeImpl& default
 
 SearchResult find_solution_astar(const SearchContext& context,
                                  Heuristic heuristic,
-                                 std::optional<State> start_state_,
-                                 std::optional<AStarAlgorithmEventHandler> event_handler_,
-                                 std::optional<GoalStrategy> goal_strategy_,
-                                 std::optional<PruningStrategy> pruning_strategy_)
+                                 State start_state_,
+                                 AStarAlgorithmEventHandler event_handler_,
+                                 GoalStrategy goal_strategy_,
+                                 PruningStrategy pruning_strategy_)
 {
     assert(heuristic);
 
@@ -79,10 +79,10 @@ SearchResult find_solution_astar(const SearchContext& context,
     auto& applicable_action_generator = *context.get_applicable_action_generator();
     auto& state_repository = *context.get_state_repository();
 
-    const auto start_state = (start_state_.has_value()) ? start_state_.value() : state_repository.get_or_create_initial_state();
-    const auto event_handler = (event_handler_.has_value()) ? event_handler_.value() : std::make_shared<DefaultAStarAlgorithmEventHandler>();
-    const auto goal_strategy = (goal_strategy_.has_value()) ? goal_strategy_.value() : std::make_shared<ProblemGoal>(context.get_problem());
-    const auto pruning_strategy = (pruning_strategy_.has_value()) ? pruning_strategy_.value() : std::make_shared<NoStatePruning>();
+    const auto start_state = (start_state_) ? start_state_ : state_repository.get_or_create_initial_state();
+    const auto event_handler = (event_handler_) ? event_handler_ : std::make_shared<DefaultAStarAlgorithmEventHandler>();
+    const auto goal_strategy = (goal_strategy_) ? goal_strategy_ : std::make_shared<ProblemGoal>(context.get_problem());
+    const auto pruning_strategy = (pruning_strategy_) ? pruning_strategy_ : std::make_shared<NoStatePruning>();
 
     auto result = SearchResult();
 
@@ -186,11 +186,9 @@ SearchResult find_solution_astar(const SearchContext& context,
                                          search_nodes.size(),
                                          problem.get_num_ground_actions(),
                                          problem.get_num_ground_axioms());
-            if (!event_handler->is_quiet())
-            {
-                applicable_action_generator.on_end_search();
-                state_repository.get_axiom_evaluator()->on_end_search();
-            }
+
+            applicable_action_generator.on_end_search();
+            state_repository.get_axiom_evaluator()->on_end_search();
 
             auto plan_actions = GroundActionList {};
             auto state_trajectory = IndexList {};

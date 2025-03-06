@@ -11,7 +11,6 @@ from _pymimir import (
     ConjunctiveConditionSatisficingBindingGenerator
 )
 from _pymimir import (
-    AStarAlgorithmEventHandlerBase,
     AStarAlgorithmStatistics,
     BlindHeuristic,
     BrFSAlgorithmStatistics,

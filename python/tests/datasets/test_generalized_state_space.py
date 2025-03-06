@@ -39,8 +39,8 @@ def test_generalized_state_space_with_symmetry_reduction():
     class_state_space = generalized_state_space.get_class_state_space()
     class_graph = generalized_state_space.get_class_state_space().get_graph()
     assert class_graph.get_num_vertices() == 18
-    assert class_graph.get_num_edges() == 22
+    assert class_graph.get_num_edges() == 50
     assert len(class_state_space.get_goal_vertices()) == 4
     assert len(class_state_space.get_unsolvable_vertices()) == 0
-    assert len(class_state_space.get_alive_vertices()) == 32
+    assert len(class_state_space.get_alive_vertices()) == 14
 

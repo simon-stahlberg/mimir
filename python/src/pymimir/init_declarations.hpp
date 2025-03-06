@@ -20,15 +20,72 @@
 
 #include <iostream>
 #include <iterator>
-#include <mimir/common/types_cista.hpp>
 #include <mimir/mimir.hpp>
 #include <nanobind/nanobind.h>
-#include <nanobind/stl/bind_map.h>
-#include <nanobind/stl/bind_vector.h>
+#include <nanobind/stl/bind_map.h>     ///< TODO: implement our own with PyImmutable
+#include <nanobind/stl/bind_vector.h>  ///< TODO: implement our own with PyImmutable
+#include <nanobind/stl/map.h>
+#include <nanobind/stl/optional.h>  ///< for optional support
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>  ///< for shared ownerships
+#include <nanobind/stl/string.h>      ///< for string support
+#include <nanobind/stl/unordered_map.h>
+#include <nanobind/stl/unordered_set.h>
+#include <nanobind/stl/vector.h>
 
 namespace nb = nanobind;
 using namespace nb::literals;
 namespace mm = mimir;
+
+/**
+ * Opague types are exceptions to auto stl bindings
+ */
+
+// Formalism
+NB_MAKE_OPAQUE(mm::ActionList);
+NB_MAKE_OPAQUE(mm::AtomList<mm::Static>);
+NB_MAKE_OPAQUE(mm::AtomList<mm::Fluent>);
+NB_MAKE_OPAQUE(mm::AtomList<mm::Derived>);
+NB_MAKE_OPAQUE(mm::AxiomList);
+NB_MAKE_OPAQUE(mm::ConditionalEffectList);
+NB_MAKE_OPAQUE(mm::FunctionExpressionList);
+NB_MAKE_OPAQUE(mm::FunctionSkeletonList<mm::Static>);
+NB_MAKE_OPAQUE(mm::FunctionSkeletonList<mm::Fluent>);
+NB_MAKE_OPAQUE(mm::FunctionSkeletonList<mm::Auxiliary>);
+NB_MAKE_OPAQUE(mm::FunctionList<mm::Static>);
+NB_MAKE_OPAQUE(mm::FunctionList<mm::Fluent>);
+NB_MAKE_OPAQUE(mm::FunctionList<mm::Auxiliary>);
+NB_MAKE_OPAQUE(mm::GroundAtomList<mm::Static>);
+NB_MAKE_OPAQUE(mm::GroundAtomList<mm::Fluent>);
+NB_MAKE_OPAQUE(mm::GroundAtomList<mm::Derived>);
+NB_MAKE_OPAQUE(mm::GroundFunctionExpressionList);
+NB_MAKE_OPAQUE(mm::GroundLiteralList<mm::Static>);
+NB_MAKE_OPAQUE(mm::GroundLiteralList<mm::Fluent>);
+NB_MAKE_OPAQUE(mm::GroundLiteralList<mm::Derived>);
+NB_MAKE_OPAQUE(mm::GroundActionList);
+NB_MAKE_OPAQUE(mm::GroundAxiomList);
+NB_MAKE_OPAQUE(mm::LiteralList<mm::Static>);
+NB_MAKE_OPAQUE(mm::LiteralList<mm::Fluent>);
+NB_MAKE_OPAQUE(mm::LiteralList<mm::Derived>);
+NB_MAKE_OPAQUE(mm::GroundFunctionValueList<mm::Static>);
+NB_MAKE_OPAQUE(mm::GroundFunctionValueList<mm::Fluent>);
+NB_MAKE_OPAQUE(mm::GroundFunctionValueList<mm::Auxiliary>);
+NB_MAKE_OPAQUE(mm::GroundFunctionList<mm::Static>);
+NB_MAKE_OPAQUE(mm::GroundFunctionList<mm::Fluent>);
+NB_MAKE_OPAQUE(mm::GroundFunctionList<mm::Auxiliary>);
+NB_MAKE_OPAQUE(mm::NumericConstraintList);
+NB_MAKE_OPAQUE(mm::ObjectList);
+NB_MAKE_OPAQUE(mm::PredicateList<mm::Static>);
+NB_MAKE_OPAQUE(mm::PredicateList<mm::Fluent>);
+NB_MAKE_OPAQUE(mm::PredicateList<mm::Derived>);
+NB_MAKE_OPAQUE(mm::ToPredicateMap<std::string, mm::Static>);
+NB_MAKE_OPAQUE(mm::ToPredicateMap<std::string, mm::Fluent>);
+NB_MAKE_OPAQUE(mm::ToPredicateMap<std::string, mm::Derived>);
+NB_MAKE_OPAQUE(mm::ProblemList);
+NB_MAKE_OPAQUE(mm::VariableList);
+NB_MAKE_OPAQUE(mm::TermList);
+// Search
+NB_MAKE_OPAQUE(mm::StateList);
 
 /**
  * Constness

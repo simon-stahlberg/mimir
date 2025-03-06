@@ -66,20 +66,20 @@ get_or_create_search_node(size_t state_index, const BrFSSearchNodeImpl& default_
  */
 
 SearchResult find_solution_brfs(const SearchContext& context,
-                                std::optional<State> start_state_,
-                                std::optional<BrFSAlgorithmEventHandler> event_handler_,
-                                std::optional<GoalStrategy> goal_strategy_,
-                                std::optional<PruningStrategy> pruning_strategy_,
+                                State start_state_,
+                                BrFSAlgorithmEventHandler event_handler_,
+                                GoalStrategy goal_strategy_,
+                                PruningStrategy pruning_strategy_,
                                 bool exhaustive)
 {
     const auto& problem = *context.get_problem();
     auto& applicable_action_generator = *context.get_applicable_action_generator();
     auto& state_repository = *context.get_state_repository();
 
-    const auto start_state = (start_state_.has_value()) ? start_state_.value() : state_repository.get_or_create_initial_state();
-    const auto event_handler = (event_handler_.has_value()) ? event_handler_.value() : std::make_shared<DefaultBrFSAlgorithmEventHandler>();
-    const auto goal_strategy = (goal_strategy_.has_value()) ? goal_strategy_.value() : std::make_shared<ProblemGoal>(context.get_problem());
-    const auto pruning_strategy = (pruning_strategy_.has_value()) ? pruning_strategy_.value() : std::make_shared<DuplicateStatePruning>();
+    const auto start_state = (start_state_) ? start_state_ : state_repository.get_or_create_initial_state();
+    const auto event_handler = (event_handler_) ? event_handler_ : std::make_shared<DefaultBrFSAlgorithmEventHandler>();
+    const auto goal_strategy = (goal_strategy_) ? goal_strategy_ : std::make_shared<ProblemGoal>(context.get_problem());
+    const auto pruning_strategy = (pruning_strategy_) ? pruning_strategy_ : std::make_shared<DuplicateStatePruning>();
 
     auto result = SearchResult();
     auto default_search_node = BrFSSearchNodeImpl { SearchNodeStatus::NEW, std::numeric_limits<Index>::max(), DiscreteCost(0) };
