@@ -27,7 +27,7 @@ initial_vertices = generalized_state_space.get_initial_vertices()
 unsolvable_vertices = generalized_state_space.get_unsolvable_vertices()
 goal_vertices = generalized_state_space.get_goal_vertices()
 
-# Access graph
+# Access GeneralizedStateSpace graph
 graph = generalized_state_space.get_graph()
 
 # Iterate over vertices
