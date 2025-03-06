@@ -34,24 +34,23 @@ private:
     /* Implement AlgorithmEventHandlerBase interface */
     friend class StaticAStarAlgorithmEventHandlerBase<DebugAStarAlgorithmEventHandler>;
 
-    void on_expand_state_impl(State state, const ProblemImpl& problem) const;
+    void on_expand_state_impl(State state) const;
 
-    void on_expand_goal_state_impl(State state, const ProblemImpl& problem) const;
+    void on_expand_goal_state_impl(State state) const;
 
-    void on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem) const;
+    void on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const;
 
-    void on_generate_state_relaxed_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem) const;
+    void on_generate_state_relaxed_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const;
 
-    void
-    on_generate_state_not_relaxed_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem) const;
+    void on_generate_state_not_relaxed_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const;
 
-    void on_close_state_impl(State state, const ProblemImpl& problem) const;
+    void on_close_state_impl(State state) const;
 
     void on_finish_f_layer_impl(double f_value, uint64_t num_expanded_states, uint64_t num_generated_states) const;
 
-    void on_prune_state_impl(State state, const ProblemImpl& problem) const;
+    void on_prune_state_impl(State state) const;
 
-    void on_start_search_impl(State start_state, const ProblemImpl& problem) const;
+    void on_start_search_impl(State start_state) const;
 
     void on_end_search_impl(uint64_t num_reached_fluent_atoms,
                             uint64_t num_reached_derived_atoms,
@@ -65,14 +64,17 @@ private:
                             uint64_t num_actions,
                             uint64_t num_axioms) const;
 
-    void on_solved_impl(const Plan& plan, const ProblemImpl& problem) const;
+    void on_solved_impl(const Plan& plan) const;
 
     void on_unsolvable_impl() const;
 
     void on_exhausted_impl() const;
 
 public:
-    explicit DebugAStarAlgorithmEventHandler(bool quiet = true) : StaticAStarAlgorithmEventHandlerBase<DebugAStarAlgorithmEventHandler>(quiet) {}
+    explicit DebugAStarAlgorithmEventHandler(Problem problem, bool quiet = true) :
+        StaticAStarAlgorithmEventHandlerBase<DebugAStarAlgorithmEventHandler>(problem, quiet)
+    {
+    }
 };
 
 }

@@ -39,37 +39,37 @@ class CustomAStarAlgorithmEventHandler(mm.IAStarAlgorithmEventHandler):
     def __init__(self):
         super().__init__()
 
-    def on_expand_state(self, state : mm.State, problem : mm.Problem):
+    def on_expand_state(self, state : mm.State):
         pass
 
-    def on_expand_goal_state(self, state : mm.State, problem : mm.Problem):
+    def on_expand_goal_state(self, state : mm.State):
         pass
 
-    def on_generate_state(self, state : mm.State, action : mm.GroundAction, action_cost: float, successor_state: mm.State, problem : mm.Problem):
+    def on_generate_state(self, state : mm.State, action : mm.GroundAction, action_cost: float, successor_state: mm.State):
         pass
 
-    def on_generate_state_relaxed(self, state : mm.State, action : mm.GroundAction, action_cost: float, successor_state: mm.State, problem : mm.Problem):
+    def on_generate_state_relaxed(self, state : mm.State, action : mm.GroundAction, action_cost: float, successor_state: mm.State):
         pass
 
-    def on_generate_state_not_relaxed(self, state : mm.State, action : mm.GroundAction, action_cost: float, successor_state: mm.State, problem : mm.Problem):
+    def on_generate_state_not_relaxed(self, state : mm.State, action : mm.GroundAction, action_cost: float, successor_state: mm.State):
         pass
 
-    def on_close_state(self, state : mm.State, problem : mm.Problem):
+    def on_close_state(self, state : mm.State):
         pass
 
     def on_finish_f_layer(self, f_value: float):
         pass
 
-    def on_prune_state(self, state : mm.State, problem : mm.Problem):
+    def on_prune_state(self, state : mm.State):
         pass
 
-    def on_start_search(self, start_state : mm.State, problem : mm.Problem):
+    def on_start_search(self, start_state : mm.State):
         pass
 
     def on_end_search(self, num_reached_fluent_atoms : int, num_reached_derived_atoms: int, num_bytes_for_unextended_state_portion: int, num_bytes_for_extended_state_portion: int, num_bytes_for_nodes: int, num_bytes_for_actions: int, num_bytes_for_axioms: int, num_states: int, num_nodes: int, num_actions: int, num_axioms: int):
         pass
 
-    def on_solved(self, plan: mm.Plan, problem: mm.Problem):
+    def on_solved(self, plan: mm.Plan):
         pass
 
     def on_unsolvable(self):
@@ -89,8 +89,9 @@ def test_astar_search():
     goal_count_heuristic = CustomGoalCountHeuristic(search_context.get_problem())
     event_handler = CustomAStarAlgorithmEventHandler()
     initial_state = search_context.get_state_repository().get_or_create_initial_state()
+    default_event_handler = mm.DefaultAStarAlgorithmEventHandler(search_context.get_problem(), False)
 
-    result = mm.find_solution_astar(search_context, blind_heuristic, initial_state, mm.DefaultAStarAlgorithmEventHandler(False))
+    result = mm.find_solution_astar(search_context, blind_heuristic, initial_state, event_handler)
 
     assert result.status == mm.SearchStatus.SOLVED
     assert len(result.plan) == 3

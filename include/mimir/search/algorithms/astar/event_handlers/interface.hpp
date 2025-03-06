@@ -42,33 +42,32 @@ public:
     virtual ~IAStarAlgorithmEventHandler() = default;
 
     /// @brief React on expanding a state. This is called immediately after popping from the queue.
-    virtual void on_expand_state(State state, const ProblemImpl& problem) = 0;
+    virtual void on_expand_state(State state) = 0;
 
     /// @brief React on expanding a goal `state`. This may be called after on_expand_state.
-    virtual void on_expand_goal_state(State state, const ProblemImpl& problem) = 0;
+    virtual void on_expand_goal_state(State state) = 0;
 
     /// @brief React on generating a successor `state` by applying an action.
-    virtual void on_generate_state(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem) = 0;
+    virtual void on_generate_state(State state, GroundAction action, ContinuousCost action_cost, State successor_state) = 0;
 
     /// @brief React on generating a relaxed successor `state` by applying an action where
     /// a successor state is relaxed if the f value decreases.
-    virtual void on_generate_state_relaxed(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem) = 0;
+    virtual void on_generate_state_relaxed(State state, GroundAction action, ContinuousCost action_cost, State successor_state) = 0;
 
     /// @brief React on generated an unrelaxed successor state by applying an action.
     /// a successors state is unrelaxed iff it is not relaxed.
-    virtual void
-    on_generate_state_not_relaxed(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem) = 0;
+    virtual void on_generate_state_not_relaxed(State state, GroundAction action, ContinuousCost action_cost, State successor_state) = 0;
 
-    virtual void on_close_state(State state, const ProblemImpl& problem) = 0;
+    virtual void on_close_state(State state) = 0;
 
     /// @brief React on finishing expanding a g-layer.
     virtual void on_finish_f_layer(double f_value) = 0;
 
     /// @brief React on pruning a state.
-    virtual void on_prune_state(State state, const ProblemImpl& problem) = 0;
+    virtual void on_prune_state(State state) = 0;
 
     /// @brief React on starting a search.
-    virtual void on_start_search(State start_state, const ProblemImpl& problem) = 0;
+    virtual void on_start_search(State start_state) = 0;
 
     /// @brief React on ending a search.
     virtual void on_end_search(uint64_t num_reached_fluent_atoms,
@@ -84,7 +83,7 @@ public:
                                uint64_t num_axioms) = 0;
 
     /// @brief React on solving a search.
-    virtual void on_solved(const Plan& plan, const ProblemImpl& problem) = 0;
+    virtual void on_solved(const Plan& plan) = 0;
 
     /// @brief React on proving unsolvability during a search.
     virtual void on_unsolvable() = 0;
@@ -103,6 +102,7 @@ class StaticAStarAlgorithmEventHandlerBase : public IAStarAlgorithmEventHandler
 {
 protected:
     AStarAlgorithmStatistics m_statistics;
+    Problem m_problem;
     bool m_quiet;
 
 private:
@@ -114,57 +114,57 @@ private:
     constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 public:
-    explicit StaticAStarAlgorithmEventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
+    StaticAStarAlgorithmEventHandlerBase(Problem problem, bool quiet = true) : m_statistics(), m_problem(problem), m_quiet(quiet) {}
 
-    void on_expand_state(State state, const ProblemImpl& problem) override
+    void on_expand_state(State state) override
     {
         m_statistics.increment_num_expanded();
 
         if (!m_quiet)
         {
-            self().on_expand_state_impl(state, problem);
+            self().on_expand_state_impl(state);
         }
     }
 
-    void on_expand_goal_state(State state, const ProblemImpl& problem) override
+    void on_expand_goal_state(State state) override
     {
         if (!m_quiet)
         {
-            self().on_expand_goal_state_impl(state, problem);
+            self().on_expand_goal_state_impl(state);
         }
     }
 
-    void on_generate_state(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem) override
+    void on_generate_state(State state, GroundAction action, ContinuousCost action_cost, State successor_state) override
     {
         m_statistics.increment_num_generated();
 
         if (!m_quiet)
         {
-            self().on_generate_state_impl(state, action, action_cost, successor_state, problem);
+            self().on_generate_state_impl(state, action, action_cost, successor_state);
         }
     }
 
-    void on_generate_state_relaxed(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem) override
+    void on_generate_state_relaxed(State state, GroundAction action, ContinuousCost action_cost, State successor_state) override
     {
         if (!m_quiet)
         {
-            self().on_generate_state_relaxed_impl(state, action, action_cost, successor_state, problem);
+            self().on_generate_state_relaxed_impl(state, action, action_cost, successor_state);
         }
     }
 
-    void on_generate_state_not_relaxed(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem) override
+    void on_generate_state_not_relaxed(State state, GroundAction action, ContinuousCost action_cost, State successor_state) override
     {
         if (!m_quiet)
         {
-            self().on_generate_state_relaxed_impl(state, action, action_cost, successor_state, problem);
+            self().on_generate_state_relaxed_impl(state, action, action_cost, successor_state);
         }
     }
 
-    void on_close_state(State state, const ProblemImpl& problem) override
+    void on_close_state(State state) override
     {
         if (!m_quiet)
         {
-            self().on_close_state_impl(state, problem);
+            self().on_close_state_impl(state);
         }
     }
 
@@ -181,17 +181,17 @@ public:
         }
     }
 
-    void on_prune_state(State state, const ProblemImpl& problem) override
+    void on_prune_state(State state) override
     {
         m_statistics.increment_num_pruned();
 
         if (!m_quiet)
         {
-            self().on_prune_state_impl(state, problem);
+            self().on_prune_state_impl(state);
         }
     }
 
-    void on_start_search(State start_state, const ProblemImpl& problem) override
+    void on_start_search(State start_state) override
     {
         m_statistics = AStarAlgorithmStatistics();
 
@@ -199,7 +199,7 @@ public:
 
         if (!m_quiet)
         {
-            self().on_start_search_impl(start_state, problem);
+            self().on_start_search_impl(start_state);
         }
     }
 
@@ -245,11 +245,11 @@ public:
         }
     }
 
-    void on_solved(const Plan& plan, const ProblemImpl& problem) override
+    void on_solved(const Plan& plan) override
     {
         if (!m_quiet)
         {
-            self().on_solved_impl(plan, problem);
+            self().on_solved_impl(plan);
         }
     }
 

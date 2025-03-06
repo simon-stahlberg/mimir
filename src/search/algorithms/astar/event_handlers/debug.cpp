@@ -24,43 +24,34 @@
 
 namespace mimir
 {
-void DebugAStarAlgorithmEventHandler::on_expand_state_impl(State state, const ProblemImpl& problem) const
+void DebugAStarAlgorithmEventHandler::on_expand_state_impl(State state) const
 {
     std::cout << "[AStar] ----------------------------------------\n"
-              << "[AStar] State: " << std::make_tuple(state, std::cref(problem)) << std::endl
+              << "[AStar] State: " << std::make_tuple(state, std::cref(*m_problem)) << std::endl
               << std::endl;
 }
 
-void DebugAStarAlgorithmEventHandler::on_expand_goal_state_impl(State state, const ProblemImpl& problem) const {}
+void DebugAStarAlgorithmEventHandler::on_expand_goal_state_impl(State state) const {}
 
-void DebugAStarAlgorithmEventHandler::on_generate_state_impl(State state,
-                                                             GroundAction action,
-                                                             ContinuousCost action_cost,
-                                                             State successor_state,
-                                                             const ProblemImpl& problem) const
+void DebugAStarAlgorithmEventHandler::on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const
 {
-    std::cout << "[AStar] Action: " << std::make_tuple(action, std::cref(problem), FullActionFormatterTag {}) << " cost:" << action_cost << "\n"
-              << "[AStar] Successor: " << std::make_tuple(successor_state, std::cref(problem)) << "\n"
+    std::cout << "[AStar] Action: " << std::make_tuple(action, std::cref(*m_problem), FullActionFormatterTag {}) << " cost:" << action_cost << "\n"
+              << "[AStar] Successor: " << std::make_tuple(successor_state, std::cref(*m_problem)) << "\n"
               << std::endl;
 }
 
-void DebugAStarAlgorithmEventHandler::on_generate_state_relaxed_impl(State state,
-                                                                     GroundAction action,
-                                                                     ContinuousCost action_cost,
-                                                                     State successor_state,
-                                                                     const ProblemImpl& problem) const
+void DebugAStarAlgorithmEventHandler::on_generate_state_relaxed_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const
 {
 }
 
 void DebugAStarAlgorithmEventHandler::on_generate_state_not_relaxed_impl(State state,
                                                                          GroundAction action,
                                                                          ContinuousCost action_cost,
-                                                                         State successor_state,
-                                                                         const ProblemImpl& problem) const
+                                                                         State successor_state) const
 {
 }
 
-void DebugAStarAlgorithmEventHandler::on_close_state_impl(State state, const ProblemImpl& problem) const {}
+void DebugAStarAlgorithmEventHandler::on_close_state_impl(State state) const {}
 
 void DebugAStarAlgorithmEventHandler::on_finish_f_layer_impl(double f_value, uint64_t num_expanded_states, uint64_t num_generated_states) const
 {
@@ -68,12 +59,12 @@ void DebugAStarAlgorithmEventHandler::on_finish_f_layer_impl(double f_value, uin
               << " and num generated states " << num_generated_states << std::endl;
 }
 
-void DebugAStarAlgorithmEventHandler::on_prune_state_impl(State state, const ProblemImpl& problem) const {}
+void DebugAStarAlgorithmEventHandler::on_prune_state_impl(State state) const {}
 
-void DebugAStarAlgorithmEventHandler::on_start_search_impl(State start_state, const ProblemImpl& problem) const
+void DebugAStarAlgorithmEventHandler::on_start_search_impl(State start_state) const
 {
     std::cout << "[AStar] Search started.\n"
-              << "[AStar] Initial: " << std::make_tuple(start_state, std::cref(problem)) << std::endl;
+              << "[AStar] Initial: " << std::make_tuple(start_state, std::cref(*m_problem)) << std::endl;
 }
 
 void DebugAStarAlgorithmEventHandler::on_end_search_impl(uint64_t num_reached_fluent_atoms,
@@ -91,14 +82,14 @@ void DebugAStarAlgorithmEventHandler::on_end_search_impl(uint64_t num_reached_fl
     std::cout << "[AStar] Search ended.\n" << m_statistics << std::endl;
 }
 
-void DebugAStarAlgorithmEventHandler::on_solved_impl(const Plan& plan, const ProblemImpl& problem) const
+void DebugAStarAlgorithmEventHandler::on_solved_impl(const Plan& plan) const
 {
     std::cout << "[AStar] Plan found.\n"
               << "[AStar] Plan cost: " << plan.get_cost() << "\n"
               << "[AStar] Plan length: " << plan.get_actions().size() << std::endl;
     for (size_t i = 0; i < plan.get_actions().size(); ++i)
     {
-        std::cout << "[AStar] " << i + 1 << ". " << std::make_tuple(plan.get_actions()[i], std::cref(problem), PlanActionFormatterTag {}) << std::endl;
+        std::cout << "[AStar] " << i + 1 << ". " << std::make_tuple(plan.get_actions()[i], std::cref(*m_problem), PlanActionFormatterTag {}) << std::endl;
     }
 }
 

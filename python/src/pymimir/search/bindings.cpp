@@ -25,26 +25,26 @@ public:
     NB_TRAMPOLINE(IAStarAlgorithmEventHandler, 13);
 
     /* Trampoline (need one for each virtual function) */
-    void on_expand_state(State state, const ProblemImpl& problem) override { NB_OVERRIDE_PURE(on_expand_state, state, problem); }
+    void on_expand_state(State state) override { NB_OVERRIDE_PURE(on_expand_state, state); }
 
-    void on_expand_goal_state(State state, const ProblemImpl& problem) override { NB_OVERRIDE_PURE(on_expand_goal_state, state, problem); }
+    void on_expand_goal_state(State state) override { NB_OVERRIDE_PURE(on_expand_goal_state, state); }
 
-    void on_generate_state(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem) override
+    void on_generate_state(State state, GroundAction action, ContinuousCost action_cost, State successor_state) override
     {
-        NB_OVERRIDE_PURE(on_generate_state, state, action, action_cost, successor_state, problem);
+        NB_OVERRIDE_PURE(on_generate_state, state, action, action_cost, successor_state);
     }
-    void on_generate_state_relaxed(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem) override
+    void on_generate_state_relaxed(State state, GroundAction action, ContinuousCost action_cost, State successor_state) override
     {
-        NB_OVERRIDE_PURE(on_generate_state_relaxed, state, action, action_cost, successor_state, problem);
+        NB_OVERRIDE_PURE(on_generate_state_relaxed, state, action, action_cost, successor_state);
     }
-    void on_generate_state_not_relaxed(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem) override
+    void on_generate_state_not_relaxed(State state, GroundAction action, ContinuousCost action_cost, State successor_state) override
     {
-        NB_OVERRIDE_PURE(on_generate_state_not_relaxed, state, action, action_cost, successor_state, problem);
+        NB_OVERRIDE_PURE(on_generate_state_not_relaxed, state, action, action_cost, successor_state);
     }
-    void on_close_state(State state, const ProblemImpl& problem) override { NB_OVERRIDE_PURE(on_close_state, state, problem); }
+    void on_close_state(State state) override { NB_OVERRIDE_PURE(on_close_state, state); }
     void on_finish_f_layer(double f_value) override { NB_OVERRIDE_PURE(on_finish_f_layer, f_value); }
-    void on_prune_state(State state, const ProblemImpl& problem) override { NB_OVERRIDE_PURE(on_prune_state, state, problem); }
-    void on_start_search(State start_state, const ProblemImpl& problem) override { NB_OVERRIDE_PURE(on_start_search, start_state, problem); }
+    void on_prune_state(State state) override { NB_OVERRIDE_PURE(on_prune_state, state); }
+    void on_start_search(State start_state) override { NB_OVERRIDE_PURE(on_start_search, start_state); }
     void on_end_search(uint64_t num_reached_fluent_atoms,
                        uint64_t num_reached_derived_atoms,
                        uint64_t num_bytes_for_unextended_state_portion,
@@ -70,7 +70,7 @@ public:
                          num_actions,
                          num_axioms);
     }
-    void on_solved(const Plan& plan, const ProblemImpl& problem) override { NB_OVERRIDE_PURE(on_solved, plan, problem); }
+    void on_solved(const Plan& plan) override { NB_OVERRIDE_PURE(on_solved, plan); }
     void on_unsolvable() override { NB_OVERRIDE_PURE(on_unsolvable); }
     void on_exhausted() override { NB_OVERRIDE_PURE(on_exhausted); }
 };
@@ -420,10 +420,10 @@ void bind_search(nb::module_& m)
 
     nb::class_<DefaultAStarAlgorithmEventHandler, IAStarAlgorithmEventHandler>(m,
                                                                                "DefaultAStarAlgorithmEventHandler")  //
-        .def(nb::init<bool>(), nb::arg("quiet") = true);
+        .def(nb::init<Problem, bool>(), nb::arg("problem"), nb::arg("quiet") = true);
     nb::class_<DebugAStarAlgorithmEventHandler, IAStarAlgorithmEventHandler>(m,
                                                                              "DebugAStarAlgorithmEventHandler")  //
-        .def(nb::init<bool>(), nb::arg("quiet") = true);
+        .def(nb::init<Problem, bool>(), nb::arg("problem"), nb::arg("quiet") = true);
 
     m.def("find_solution_astar",
           &find_solution_astar,
