@@ -13,11 +13,16 @@ search_context_options.mode = mm.SearchMode.GROUNDED
 
 generalized_search_context = mm.GeneralizedSearchContext(domain_filepath, [problem_filepath_1, problem_filepath_2], search_context_options)
 
-generalized_state_space_options = mm.GeneralizedStateSpaceOptions()
-generalized_state_space_options.problem_options.symmetry_pruning = True
-generalized_state_space = mm.GeneralizedStateSpace(generalized_search_context, generalized_state_space_options)
+knowledge_base_options = mm.KnowledgeBaseOptions()
+knowledge_base_options.state_space_options.problem_options.symmetry_pruning = True
 
-# Access state space meta data
+# Create KnowledgeBase
+knowledge_base = mm.KnowledgeBase(generalized_search_context, knowledge_base_options)
+
+# Access GeneralizedStateSpace
+generalized_state_space = knowledge_base.get_generalized_state_space()
+
+# Access GeneralizedStateSpace meta data
 initial_vertices = generalized_state_space.get_initial_vertices()
 unsolvable_vertices = generalized_state_space.get_unsolvable_vertices()
 goal_vertices = generalized_state_space.get_goal_vertices()
