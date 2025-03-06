@@ -28,6 +28,7 @@
 #include <boost/graph/graph_concepts.hpp>
 #include <boost/graph/graph_traits.hpp>
 #include <boost/graph/strong_components.hpp>
+#include <boost/graph/topological_sort.hpp>
 #include <boost/property_map/property_map.hpp>
 #include <concepts>
 #include <limits>
@@ -379,6 +380,26 @@ floyd_warshall_all_pairs_shortest_paths(const TraversalDirectionTaggedType<Graph
     auto weight_map = VectorReadPropertyMap<edge_descriptor_type, ContinuousCost>(w);
 
     boost::floyd_warshall_all_pairs_shortest_paths(g, d, boost::weight_map(weight_map));
+
+    return d;
+}
+
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// boost::topological_sort
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+template<IsStaticGraph Graph, IsTraversalDirection Direction>
+std::vector<typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::vertex_descriptor>
+topological_sort(const TraversalDirectionTaggedType<Graph, Direction>& g)
+{
+    using vertex_descriptor_type = typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::vertex_descriptor;
+    using ColorMap = boost::iterator_property_map<std::vector<boost::default_color_type>::iterator, boost::identity_property_map>;
+
+    auto d = std::vector<vertex_descriptor_type> {};
+    auto color_vector = std::vector<boost::default_color_type>(g.get().get_num_vertices(), boost::white_color);
+    auto color_map = ColorMap(color_vector.begin(), boost::identity_property_map());
+
+    boost::topological_sort(g, std::back_inserter(d), boost::color_map(color_map));
 
     return d;
 }

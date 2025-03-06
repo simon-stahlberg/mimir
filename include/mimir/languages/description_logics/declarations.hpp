@@ -287,6 +287,8 @@ template<dl::ConceptOrRole D>
 using NonTerminalList = std::vector<NonTerminal<D>>;
 template<template<typename> typename Value, dl::ConceptOrRole... D>
 using NonTerminalMap = boost::hana::map<boost::hana::pair<boost::hana::type<D>, std::unordered_map<NonTerminal<D>, Value<D>>>...>;
+template<dl::ConceptOrRole D>
+using NonTerminalSet = std::unordered_set<NonTerminal<D>>;
 
 /* DerivationRule */
 template<dl::ConceptOrRole D>

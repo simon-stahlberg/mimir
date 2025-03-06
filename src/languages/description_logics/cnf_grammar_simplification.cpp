@@ -17,6 +17,11 @@
 
 #include "cnf_grammar_simplification.hpp"
 
+#include "mimir/common/printers.hpp"
+#include "mimir/graphs/static_graph.hpp"
+#include "mimir/graphs/static_graph_boost_adapter.hpp"
+#include "mimir/languages/description_logics/cnf_grammar_visitor_formatter.hpp"
+
 namespace mimir::dl::cnf_grammar
 {
 
@@ -216,7 +221,57 @@ static Grammar eliminate_rules_with_identical_body(const Grammar& grammar)
     return Grammar(std::move(repositories), std::move(start_symbols), std::move(derivation_rules), std::move(substitution_rules), grammar.get_domain());
 }
 
-static Grammar order_substitution_rules(const Grammar& grammar) {}
+static Grammar order_substitution_rules(const Grammar& grammar)
+{
+    boost::hana::for_each(grammar.get_substitution_rules().get(),
+                          [&](auto&& pair)
+                          {
+                              auto key = boost::hana::first(pair);
+                              const auto& second = boost::hana::second(pair);
+                              using D = typename decltype(+key)::type;
+
+                              auto non_terminals = NonTerminalSet<D> {};
+                              for (const auto& rule : second)
+                              {
+                                  non_terminals.insert(rule->get_head());
+                                  non_terminals.insert(rule->get_body());
+                              }
+
+                              using Vertex = mimir::Vertex<NonTerminal<D>>;
+                              auto graph = StaticGraph<Vertex, EmptyEdge>();
+
+                              auto non_terminal_to_vertex = std::unordered_map<NonTerminal<D>, size_t> {};
+                              for (const auto& non_terminal : non_terminals)
+                              {
+                                  non_terminal_to_vertex.emplace(non_terminal, graph.add_vertex(non_terminal));
+                              }
+
+                              for (const auto& rule : second)
+                              {
+                                  graph.add_directed_edge(non_terminal_to_vertex.at(rule->get_head()), non_terminal_to_vertex.at(rule->get_body()));
+                              }
+
+                              auto top_sort = topological_sort(TraversalDirectionTaggedType(graph, ForwardTraversal {}));
+
+                              mimir::operator<<(std::cout, top_sort);
+                              std::cout << std::endl;
+
+                              mimir::operator<<(std::cout, non_terminal_to_vertex);
+                              std::cout << std::endl;
+
+                              for (size_t i = 0; i < top_sort.size(); ++i)
+                              {
+                                  const auto& vertex = graph.get_vertex(top_sort.at(i));
+                                  const auto nonterminal = vertex.template get_property<0>();
+                                  non_terminal_to_vertex.at(nonterminal) = i;
+                              }
+
+                              mimir::operator<<(std::cout, non_terminal_to_vertex);
+                              std::cout << std::endl;
+                          });
+
+    exit(1);
+}
 
 Grammar simplify(const Grammar& grammar)
 {
@@ -229,6 +284,10 @@ Grammar simplify(const Grammar& grammar)
     // If right handside of substitution rule has a single rule
 
     /* Step 3 order substitution rules in order of evaluation through topological sorting */
+
+    std::cout << simplified_grammar << std::endl;
+
+    order_substitution_rules(simplified_grammar);
 
     /* Step 4 remove rules of unreachable non-terminals */
 
