@@ -928,8 +928,8 @@ SearchResult find_solution_iw(const SearchContext& context,
 
     const auto max_arity = max_arity_;
     const auto start_state = (start_state_) ? start_state_ : state_repository.get_or_create_initial_state();
-    const auto iw_event_handler = (iw_event_handler_) ? iw_event_handler_ : std::make_shared<DefaultIWAlgorithmEventHandler>();
-    const auto brfs_event_handler = (brfs_event_handler_) ? brfs_event_handler_ : std::make_shared<DefaultBrFSAlgorithmEventHandler>();
+    const auto iw_event_handler = (iw_event_handler_) ? iw_event_handler_ : std::make_shared<DefaultIWAlgorithmEventHandler>(context.get_problem());
+    const auto brfs_event_handler = (brfs_event_handler_) ? brfs_event_handler_ : std::make_shared<DefaultBrFSAlgorithmEventHandler>(context.get_problem());
     const auto goal_strategy = (goal_strategy_) ? goal_strategy_ : std::make_shared<ProblemGoal>(context.get_problem());
 
     if (max_arity >= MAX_ARITY)
@@ -938,12 +938,12 @@ SearchResult find_solution_iw(const SearchContext& context,
                                  + std::to_string(MAX_ARITY) + ") compile time constant.");
     }
 
-    iw_event_handler->on_start_search(start_state, problem);
+    iw_event_handler->on_start_search(start_state);
 
     size_t cur_arity = 0;
     while (cur_arity <= max_arity)
     {
-        iw_event_handler->on_start_arity_search(start_state, problem, cur_arity);
+        iw_event_handler->on_start_arity_search(start_state, cur_arity);
 
         const auto result =
             (cur_arity > 0) ?
@@ -964,7 +964,7 @@ SearchResult find_solution_iw(const SearchContext& context,
                 applicable_action_generator.on_end_search();
                 state_repository.get_axiom_evaluator()->on_end_search();
             }
-            iw_event_handler->on_solved(result.plan.value(), problem);
+            iw_event_handler->on_solved(result.plan.value());
 
             return result;
         }

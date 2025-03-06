@@ -190,14 +190,14 @@ private:
     /* Implement AlgorithmEventHandlerBase interface */
     friend class BrFSAlgorithmEventHandlerBase<SymmetryReducedProblemGraphBrFSAlgorithmEventHandler>;
 
-    std::unique_ptr<const nauty_wrapper::Certificate> compute_certificate(State state, const ProblemImpl& problem)
+    std::unique_ptr<const nauty_wrapper::Certificate> compute_certificate(State state)
     {
-        const auto object_graph = create_object_graph(state, problem, m_symm_data.color_function, m_options.mark_true_goal_literals);
+        const auto object_graph = create_object_graph(state, *m_problem, m_symm_data.color_function, m_options.mark_true_goal_literals);
 
         return std::make_unique<const nauty_wrapper::Certificate>(nauty_wrapper::SparseGraph(object_graph).compute_certificate());
     }
 
-    void on_expand_state_impl(State state, const ProblemImpl& problem)
+    void on_expand_state_impl(State state)
     {
         if (!m_state_to_vertex_index.contains(state))
         {
@@ -205,13 +205,13 @@ private:
         }
     }
 
-    void on_expand_goal_state_impl(State state, const ProblemImpl& problem) { m_goal_vertices.insert(m_state_to_vertex_index.at(state)); }
+    void on_expand_goal_state_impl(State state) { m_goal_vertices.insert(m_state_to_vertex_index.at(state)); }
 
-    void on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem)
+    void on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state)
     {
         const auto source_v_idx = m_state_to_vertex_index.at(state);
 
-        auto certificate = compute_certificate(successor_state, problem);
+        auto certificate = compute_certificate(successor_state);
         auto it = m_symm_data.equiv_classes.find(certificate.get());
         const auto is_symmetric = (it != m_symm_data.equiv_classes.end());
 
@@ -246,24 +246,19 @@ private:
         }
     }
 
-    void on_generate_state_in_search_tree_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem)
-    {
-    }
+    void on_generate_state_in_search_tree_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) {}
 
-    void
-    on_generate_state_not_in_search_tree_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem)
-    {
-    }
+    void on_generate_state_not_in_search_tree_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) {}
 
     void on_finish_g_layer_impl(uint32_t g_value, uint64_t num_expanded_states, uint64_t num_generated_states) {}
 
-    void on_start_search_impl(State start_state, const ProblemImpl& problem)
+    void on_start_search_impl(State start_state)
     {
         const auto v_idx = m_graph.add_vertex(VertexIndex(-1), start_state);
         m_state_to_vertex_index.emplace(start_state, v_idx);
 
         /* Compute certificate for start state. */
-        m_symm_data.per_state_equiv_class.push_back(compute_certificate(start_state, problem));
+        m_symm_data.per_state_equiv_class.push_back(compute_certificate(start_state));
         m_symm_data.equiv_classes.insert(m_symm_data.per_state_equiv_class.back().get());
         m_symm_data.representative_states.insert(start_state);
     }
@@ -282,19 +277,20 @@ private:
     {
     }
 
-    void on_solved_impl(const Plan& plan, const ProblemImpl& problem) {}
+    void on_solved_impl(const Plan& plan) {}
 
     void on_unsolvable_impl() {}
 
     void on_exhausted_impl() {}
 
 public:
-    explicit SymmetryReducedProblemGraphBrFSAlgorithmEventHandler(const GeneralizedStateSpace::Options::ProblemSpecific& options,
+    explicit SymmetryReducedProblemGraphBrFSAlgorithmEventHandler(Problem problem,
+                                                                  const GeneralizedStateSpace::Options::ProblemSpecific& options,
                                                                   StaticProblemGraph& graph,
                                                                   IndexSet& goal_vertices,
                                                                   SymmetriesData& symm_data,
                                                                   bool quiet = true) :
-        BrFSAlgorithmEventHandlerBase<SymmetryReducedProblemGraphBrFSAlgorithmEventHandler>(quiet),
+        BrFSAlgorithmEventHandlerBase<SymmetryReducedProblemGraphBrFSAlgorithmEventHandler>(problem, quiet),
         m_options(options),
         m_graph(graph),
         m_goal_vertices(goal_vertices),
@@ -315,15 +311,15 @@ private:
     /* Implement AlgorithmEventHandlerBase interface */
     friend class BrFSAlgorithmEventHandlerBase<ProblemGraphBrFSAlgorithmEventHandler>;
 
-    void on_expand_state_impl(State state, const ProblemImpl& problem)
+    void on_expand_state_impl(State state)
     {
         if (!m_state_to_vertex_index.contains(state))
             m_state_to_vertex_index.emplace(state, m_graph.add_vertex(VertexIndex(-1), state));
     }
 
-    void on_expand_goal_state_impl(State state, const ProblemImpl& problem) { m_goal_vertices.insert(m_state_to_vertex_index.at(state)); }
+    void on_expand_goal_state_impl(State state) { m_goal_vertices.insert(m_state_to_vertex_index.at(state)); }
 
-    void on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem)
+    void on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state)
     {
         const auto source_vertex_index = m_state_to_vertex_index.at(state);
         const auto target_vertex_index = m_state_to_vertex_index.contains(successor_state) ? m_state_to_vertex_index.at(successor_state) :
@@ -332,18 +328,13 @@ private:
         m_graph.add_directed_edge(source_vertex_index, target_vertex_index, EdgeIndex(-1), action, action_cost);
     }
 
-    void on_generate_state_in_search_tree_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem)
-    {
-    }
+    void on_generate_state_in_search_tree_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) {}
 
-    void
-    on_generate_state_not_in_search_tree_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state, const ProblemImpl& problem)
-    {
-    }
+    void on_generate_state_not_in_search_tree_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) {}
 
     void on_finish_g_layer_impl(uint32_t g_value, uint64_t num_expanded_states, uint64_t num_generated_states) {}
 
-    void on_start_search_impl(State start_state, const ProblemImpl& problem) {}
+    void on_start_search_impl(State start_state) {}
 
     void on_end_search_impl(uint64_t num_reached_fluent_atoms,
                             uint64_t num_reached_derived_atoms,
@@ -359,18 +350,19 @@ private:
     {
     }
 
-    void on_solved_impl(const Plan& plan, const ProblemImpl& problem) {}
+    void on_solved_impl(const Plan& plan) {}
 
     void on_unsolvable_impl() {}
 
     void on_exhausted_impl() {}
 
 public:
-    explicit ProblemGraphBrFSAlgorithmEventHandler(const GeneralizedStateSpace::Options::ProblemSpecific& options,
+    explicit ProblemGraphBrFSAlgorithmEventHandler(Problem problem,
+                                                   const GeneralizedStateSpace::Options::ProblemSpecific& options,
                                                    StaticProblemGraph& graph,
                                                    IndexSet& goal_vertices,
                                                    bool quiet = true) :
-        BrFSAlgorithmEventHandlerBase<ProblemGraphBrFSAlgorithmEventHandler>(quiet),
+        BrFSAlgorithmEventHandlerBase<ProblemGraphBrFSAlgorithmEventHandler>(problem, quiet),
         m_options(options),
         m_graph(graph),
         m_goal_vertices(goal_vertices)
@@ -402,7 +394,8 @@ compute_problem_graph_with_symmetry_reduction(const SearchContext& context,
     auto symm_data = SymmetriesData(color_function);
 
     auto goal_test = std::make_shared<ProblemGoal>(context.get_problem());
-    auto event_handler = std::make_shared<SymmetryReducedProblemGraphBrFSAlgorithmEventHandler>(options, graph, goal_vertices, symm_data, false);
+    auto event_handler =
+        std::make_shared<SymmetryReducedProblemGraphBrFSAlgorithmEventHandler>(context.get_problem(), options, graph, goal_vertices, symm_data, false);
     auto pruning_strategy = std::make_shared<SymmetryStatePruning>(symm_data);
     auto result = find_solution_brfs(context, state_repository->get_or_create_initial_state(), event_handler, goal_test, pruning_strategy, true);
 
@@ -477,7 +470,7 @@ static std::optional<ProblemStateSpace> compute_problem_graph_without_symmetry_r
     auto goal_vertices = IndexSet {};
 
     auto goal_test = std::make_shared<ProblemGoal>(context.get_problem());
-    auto event_handler = std::make_shared<ProblemGraphBrFSAlgorithmEventHandler>(options, graph, goal_vertices, false);
+    auto event_handler = std::make_shared<ProblemGraphBrFSAlgorithmEventHandler>(context.get_problem(), options, graph, goal_vertices, false);
     auto pruning_strategy = std::make_shared<DuplicateStatePruning>();
     auto result = find_solution_brfs(context, state_repository->get_or_create_initial_state(), event_handler, goal_test, pruning_strategy, true);
 

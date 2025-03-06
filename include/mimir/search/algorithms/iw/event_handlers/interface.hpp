@@ -39,10 +39,10 @@ public:
     virtual ~IIWAlgorithmEventHandler() = default;
 
     /// @brief React on starting a search.
-    virtual void on_start_search(State initial_state, const ProblemImpl& problem) = 0;
+    virtual void on_start_search(State initial_state) = 0;
 
     /// @brief React on starting a search.
-    virtual void on_start_arity_search(State initial_state, const ProblemImpl& problem, size_t arity) = 0;
+    virtual void on_start_arity_search(State initial_state, size_t arity) = 0;
 
     /// @brief React on starting a search.
     virtual void on_end_arity_search(const BrFSAlgorithmStatistics& brfs_statistics) = 0;
@@ -51,7 +51,7 @@ public:
     virtual void on_end_search() = 0;
 
     /// @brief React on solving a search.
-    virtual void on_solved(const Plan& plan, const ProblemImpl& problem) = 0;
+    virtual void on_solved(const Plan& plan) = 0;
 
     /// @brief React on proving unsolvability during a search.
     virtual void on_unsolvable() = 0;
@@ -73,6 +73,7 @@ class IWAlgorithmEventHandlerBase : public IIWAlgorithmEventHandler
 {
 protected:
     IWAlgorithmStatistics m_statistics;
+    Problem m_problem;
     bool m_quiet;
 
 private:
@@ -84,9 +85,9 @@ private:
     constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 public:
-    explicit IWAlgorithmEventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
+    explicit IWAlgorithmEventHandlerBase(Problem problem, bool quiet = true) : m_statistics(), m_problem(problem), m_quiet(quiet) {}
 
-    void on_start_search(State initial_state, const ProblemImpl& problem) override
+    void on_start_search(State initial_state) override
     {
         m_statistics = IWAlgorithmStatistics();
 
@@ -94,15 +95,15 @@ public:
 
         if (!m_quiet)
         {
-            self().on_start_search_impl(initial_state, problem);
+            self().on_start_search_impl(initial_state);
         }
     }
 
-    void on_start_arity_search(State initial_state, const ProblemImpl& problem, size_t arity) override
+    void on_start_arity_search(State initial_state, size_t arity) override
     {
         if (!m_quiet)
         {
-            self().on_start_arity_search_impl(initial_state, problem, arity);
+            self().on_start_arity_search_impl(initial_state, arity);
         }
     }
 
@@ -126,11 +127,11 @@ public:
         }
     }
 
-    void on_solved(const Plan& plan, const ProblemImpl& problem) override
+    void on_solved(const Plan& plan) override
     {
         if (!m_quiet)
         {
-            self().on_solved_impl(plan, problem);
+            self().on_solved_impl(plan);
         }
     }
 

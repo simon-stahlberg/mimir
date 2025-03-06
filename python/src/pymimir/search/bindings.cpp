@@ -447,10 +447,10 @@ void bind_search(nb::module_& m)
     nb::class_<IBrFSAlgorithmEventHandler>(m, "IBrFSAlgorithmEventHandler").def("get_statistics", &IBrFSAlgorithmEventHandler::get_statistics);
     nb::class_<DefaultBrFSAlgorithmEventHandler, IBrFSAlgorithmEventHandler>(m,
                                                                              "DefaultBrFSAlgorithmEventHandler")  //
-        .def(nb::init<>());
+        .def(nb::init<Problem, bool>(), nb::arg("problem"), nb::arg("quiet") = true);
     nb::class_<DebugBrFSAlgorithmEventHandler, IBrFSAlgorithmEventHandler>(m,
                                                                            "DebugBrFSAlgorithmEventHandler")  //
-        .def(nb::init<>());
+        .def(nb::init<Problem, bool>(), nb::arg("problem"), nb::arg("quiet") = true);
 
     m.def("find_solution_brfs",
           &find_solution_brfs,
@@ -484,7 +484,8 @@ void bind_search(nb::module_& m)
         .def("get_effective_width", &IWAlgorithmStatistics::get_effective_width)
         .def("get_brfs_statistics_by_arity", &IWAlgorithmStatistics::get_brfs_statistics_by_arity);
     nb::class_<IIWAlgorithmEventHandler>(m, "IIWAlgorithmEventHandler").def("get_statistics", &IIWAlgorithmEventHandler::get_statistics);
-    nb::class_<DefaultIWAlgorithmEventHandler, IIWAlgorithmEventHandler>(m, "DefaultIWAlgorithmEventHandler").def(nb::init<>());
+    nb::class_<DefaultIWAlgorithmEventHandler, IIWAlgorithmEventHandler>(m, "DefaultIWAlgorithmEventHandler")
+        .def(nb::init<Problem, bool>(), nb::arg("problem"), nb::arg("quiet") = true);
 
     m.def("find_solution_iw",
           &find_solution_iw,
@@ -502,7 +503,8 @@ void bind_search(nb::module_& m)
         .def("get_iw_statistics_by_subproblem", &SIWAlgorithmStatistics::get_iw_statistics_by_subproblem);
     nb::class_<ISIWAlgorithmEventHandler>(m, "ISIWAlgorithmEventHandler")  //
         .def("get_statistics", &ISIWAlgorithmEventHandler::get_statistics);
-    nb::class_<DefaultSIWAlgorithmEventHandler, ISIWAlgorithmEventHandler>(m, "DefaultSIWAlgorithmEventHandler").def(nb::init<>());
+    nb::class_<DefaultSIWAlgorithmEventHandler, ISIWAlgorithmEventHandler>(m, "DefaultSIWAlgorithmEventHandler")
+        .def(nb::init<Problem, bool>(), nb::arg("problem"), nb::arg("quiet") = true);
 
     m.def("find_solution_siw",
           &find_solution_siw,

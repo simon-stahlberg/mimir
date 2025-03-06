@@ -77,7 +77,7 @@ SearchResult find_solution_brfs(const SearchContext& context,
     auto& state_repository = *context.get_state_repository();
 
     const auto start_state = (start_state_) ? start_state_ : state_repository.get_or_create_initial_state();
-    const auto event_handler = (event_handler_) ? event_handler_ : std::make_shared<DefaultBrFSAlgorithmEventHandler>();
+    const auto event_handler = (event_handler_) ? event_handler_ : std::make_shared<DefaultBrFSAlgorithmEventHandler>(context.get_problem());
     const auto goal_strategy = (goal_strategy_) ? goal_strategy_ : std::make_shared<ProblemGoal>(context.get_problem());
     const auto pruning_strategy = (pruning_strategy_) ? pruning_strategy_ : std::make_shared<DuplicateStatePruning>();
 
@@ -86,7 +86,7 @@ SearchResult find_solution_brfs(const SearchContext& context,
     auto search_nodes = SearchNodeImplVector<DiscreteCost>();
     auto queue = std::deque<State>();
 
-    event_handler->on_start_search(start_state, problem);
+    event_handler->on_start_search(start_state);
 
     auto start_search_node = get_or_create_search_node(start_state->get_index(), default_search_node, search_nodes);
     start_search_node->get_status() = SearchNodeStatus::OPEN;
@@ -132,7 +132,7 @@ SearchResult find_solution_brfs(const SearchContext& context,
 
         if (goal_strategy->test_dynamic_goal(state))
         {
-            event_handler->on_expand_goal_state(state, problem);
+            event_handler->on_expand_goal_state(state);
 
             if (!exhaustive)
             {
@@ -161,13 +161,13 @@ SearchResult find_solution_brfs(const SearchContext& context,
                 result.plan = Plan(std::move(plan_actions), get_g_value(search_node));
                 result.status = SearchStatus::SOLVED;
 
-                event_handler->on_solved(result.plan.value(), problem);
+                event_handler->on_solved(result.plan.value());
 
                 return result;
             }
         }
 
-        event_handler->on_expand_state(state, problem);
+        event_handler->on_expand_state(state);
 
         for (const auto& action : applicable_action_generator.create_applicable_action_generator(state))
         {
@@ -177,13 +177,13 @@ SearchResult find_solution_brfs(const SearchContext& context,
             auto successor_search_node = get_or_create_search_node(successor_state->get_index(), default_search_node, search_nodes);
             auto action_cost = successor_state_metric_value - get_g_value(search_node);
 
-            event_handler->on_generate_state(state, action, action_cost, successor_state, problem);
+            event_handler->on_generate_state(state, action, action_cost, successor_state);
             if (pruning_strategy->test_prune_successor_state(state, successor_state, (successor_search_node->get_status() == SearchNodeStatus::NEW)))
             {
-                event_handler->on_generate_state_not_in_search_tree(state, action, action_cost, successor_state, problem);
+                event_handler->on_generate_state_not_in_search_tree(state, action, action_cost, successor_state);
                 continue;
             }
-            event_handler->on_generate_state_in_search_tree(state, action, action_cost, successor_state, problem);
+            event_handler->on_generate_state_in_search_tree(state, action, action_cost, successor_state);
 
             successor_search_node->get_status() = SearchNodeStatus::OPEN;
             successor_search_node->get_parent_state() = state->get_index();

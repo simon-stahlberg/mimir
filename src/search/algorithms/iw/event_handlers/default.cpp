@@ -23,9 +23,9 @@
 
 namespace mimir
 {
-void DefaultIWAlgorithmEventHandler::on_start_search_impl(State initial_state, const ProblemImpl& problem) const {}
+void DefaultIWAlgorithmEventHandler::on_start_search_impl(State initial_state) const {}
 
-void DefaultIWAlgorithmEventHandler::on_start_arity_search_impl(State initial_state, const ProblemImpl& problem, size_t arity) const
+void DefaultIWAlgorithmEventHandler::on_start_arity_search_impl(State initial_state, size_t arity) const
 {
     std::cout << "[IW] Start search with arity " << arity << std::endl;
 }
@@ -34,14 +34,14 @@ void DefaultIWAlgorithmEventHandler::on_end_arity_search_impl(const BrFSAlgorith
 
 void DefaultIWAlgorithmEventHandler::on_end_search_impl() const { std::cout << "[IW] Search ended.\n" << m_statistics << std::endl; }
 
-void DefaultIWAlgorithmEventHandler::on_solved_impl(const Plan& plan, const ProblemImpl& problem) const
+void DefaultIWAlgorithmEventHandler::on_solved_impl(const Plan& plan) const
 {
     std::cout << "[IW] Plan found.\n"
               << "[IW] Plan cost: " << plan.get_cost() << "\n"
               << "[IW] Plan length: " << plan.get_actions().size() << std::endl;
     for (size_t i = 0; i < plan.get_actions().size(); ++i)
     {
-        std::cout << "[IW] " << i + 1 << ". " << std::make_tuple(plan.get_actions()[i], std::cref(problem), PlanActionFormatterTag {}) << std::endl;
+        std::cout << "[IW] " << i + 1 << ". " << std::make_tuple(plan.get_actions()[i], std::cref(*m_problem), PlanActionFormatterTag {}) << std::endl;
     }
 }
 
@@ -49,5 +49,8 @@ void DefaultIWAlgorithmEventHandler::on_unsolvable_impl() const { std::cout << "
 
 void DefaultIWAlgorithmEventHandler::on_exhausted_impl() const { std::cout << "[IW] Exhausted!" << std::endl; }
 
-DefaultIWAlgorithmEventHandler::DefaultIWAlgorithmEventHandler(bool quiet) : IWAlgorithmEventHandlerBase<DefaultIWAlgorithmEventHandler>(quiet) {}
+DefaultIWAlgorithmEventHandler::DefaultIWAlgorithmEventHandler(Problem problem, bool quiet) :
+    IWAlgorithmEventHandlerBase<DefaultIWAlgorithmEventHandler>(problem, quiet)
+{
+}
 }

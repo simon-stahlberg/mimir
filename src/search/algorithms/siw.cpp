@@ -78,9 +78,9 @@ SearchResult find_solution_siw(const SearchContext& context,
 
     const auto max_arity = max_arity_;
     const auto start_state = (start_state_) ? start_state_ : state_repository.get_or_create_initial_state();
-    const auto siw_event_handler = (siw_event_handler_) ? siw_event_handler_ : std::make_shared<DefaultSIWAlgorithmEventHandler>();
-    const auto iw_event_handler = (iw_event_handler_) ? iw_event_handler_ : std::make_shared<DefaultIWAlgorithmEventHandler>();
-    const auto brfs_event_handler = (brfs_event_handler_) ? brfs_event_handler_ : std::make_shared<DefaultBrFSAlgorithmEventHandler>();
+    const auto siw_event_handler = (siw_event_handler_) ? siw_event_handler_ : std::make_shared<DefaultSIWAlgorithmEventHandler>(context.get_problem());
+    const auto iw_event_handler = (iw_event_handler_) ? iw_event_handler_ : std::make_shared<DefaultIWAlgorithmEventHandler>(context.get_problem());
+    const auto brfs_event_handler = (brfs_event_handler_) ? brfs_event_handler_ : std::make_shared<DefaultBrFSAlgorithmEventHandler>(context.get_problem());
     const auto goal_strategy = (goal_strategy_) ? goal_strategy_ : std::make_shared<ProblemGoal>(context.get_problem());
 
     if (max_arity >= MAX_ARITY)
@@ -91,7 +91,7 @@ SearchResult find_solution_siw(const SearchContext& context,
 
     auto result = SearchResult();
 
-    siw_event_handler->on_start_search(start_state, problem);
+    siw_event_handler->on_start_search(start_state);
 
     if (!goal_strategy->test_static_goal())
     {
@@ -106,7 +106,7 @@ SearchResult find_solution_siw(const SearchContext& context,
     while (!goal_strategy->test_dynamic_goal(cur_state))
     {
         // Run IW to decrease goal counter
-        siw_event_handler->on_start_subproblem_search(cur_state, problem);
+        siw_event_handler->on_start_subproblem_search(cur_state);
 
         auto partial_plan = std::optional<Plan> {};
 
@@ -149,7 +149,7 @@ SearchResult find_solution_siw(const SearchContext& context,
         state_repository.get_axiom_evaluator()->on_end_search();
     }
     result.plan = Plan(std::move(out_plan_actions), out_plan_cost);
-    siw_event_handler->on_solved(result.plan.value(), problem);
+    siw_event_handler->on_solved(result.plan.value());
     result.status = SearchStatus::SOLVED;
     return result;
 }
