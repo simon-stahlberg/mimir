@@ -47,16 +47,14 @@ TEST(MimirTests, DatasetsKnowledgeBaseConstructorTest)
         auto kb = KnowledgeBase::create(context, KnowledgeBase::Options(state_space_options, tuple_graph_options));
 
         // Test generalized state space.
-        const auto& problem_class_state_space = kb->get_generalized_state_space();
-        const auto& class_state_space = problem_class_state_space.get_class_state_space();
-        const auto& class_graph = class_state_space.get_graph();
+        const auto& generalized_state_space = kb->get_generalized_state_space();
+        const auto& class_graph = generalized_state_space.get_graph();
 
         EXPECT_EQ(class_graph.get_num_vertices(), 15);
         EXPECT_EQ(class_graph.get_num_edges(), 13);
-        EXPECT_EQ(class_state_space.get_initial_vertices().size(), 2);
-        EXPECT_EQ(class_state_space.get_goal_vertices().size(), 2);
-        EXPECT_EQ(class_state_space.get_unsolvable_vertices().size(), 3);
-        EXPECT_EQ(class_state_space.get_alive_vertices().size(), 10);
+        EXPECT_EQ(generalized_state_space.get_initial_vertices().size(), 2);
+        EXPECT_EQ(generalized_state_space.get_goal_vertices().size(), 2);
+        EXPECT_EQ(generalized_state_space.get_unsolvable_vertices().size(), 3);
 
         // Test tuple graph collection.
         EXPECT_EQ(kb->get_tuple_graphs().value().get_per_class_vertex_tuple_graph().size(), 15);
@@ -84,16 +82,14 @@ TEST(MimirTests, DatasetsKnowledgeBaseConstructorTest)
         auto kb = KnowledgeBase::create(context, KnowledgeBase::Options(state_space_options, tuple_graph_options));
 
         // Test generalized state space.
-        const auto& problem_class_state_space = kb->get_generalized_state_space();
-        const auto& class_state_space = problem_class_state_space.get_class_state_space();
-        const auto& class_graph = class_state_space.get_graph();
+        const auto& generalized_state_space = kb->get_generalized_state_space();
+        const auto& class_graph = generalized_state_space.get_graph();
 
         EXPECT_EQ(class_graph.get_num_vertices(), 12);
         EXPECT_EQ(class_graph.get_num_edges(), 11);
-        EXPECT_EQ(class_state_space.get_initial_vertices().size(), 2);
-        EXPECT_EQ(class_state_space.get_goal_vertices().size(), 1);
-        EXPECT_EQ(class_state_space.get_unsolvable_vertices().size(), 3);
-        EXPECT_EQ(class_state_space.get_alive_vertices().size(), 8);
+        EXPECT_EQ(generalized_state_space.get_initial_vertices().size(), 2);
+        EXPECT_EQ(generalized_state_space.get_goal_vertices().size(), 1);
+        EXPECT_EQ(generalized_state_space.get_unsolvable_vertices().size(), 3);
 
         // Test tuple graph collection.
         EXPECT_EQ(kb->get_tuple_graphs().value().get_per_class_vertex_tuple_graph().size(), 12);

@@ -90,6 +90,8 @@ public:
 
     /// @brief React on exhausting a search.
     virtual void on_exhausted() = 0;
+
+    virtual const AStarAlgorithmStatistics& get_statistics() const = 0;
 };
 
 /**
@@ -273,7 +275,7 @@ public:
      * Getters
      */
 
-    const AStarAlgorithmStatistics& get_statistics() const { return m_statistics; }
+    const AStarAlgorithmStatistics& get_statistics() const override { return m_statistics; }
     bool is_quiet() const { return m_quiet; }
 };
 

@@ -118,8 +118,8 @@ int main(int argc, char** argv)
         }
     }
 
-    auto event_handler = (debug) ? AStarAlgorithmEventHandler { std::make_shared<DebugAStarAlgorithmEventHandler>(false) } :
-                                   AStarAlgorithmEventHandler { std::make_shared<DefaultAStarAlgorithmEventHandler>(false) };
+    auto event_handler = (debug) ? AStarAlgorithmEventHandler { std::make_shared<DebugAStarAlgorithmEventHandler>(problem, false) } :
+                                   AStarAlgorithmEventHandler { std::make_shared<DefaultAStarAlgorithmEventHandler>(problem, false) };
 
     auto heuristic = Heuristic(nullptr);
     if (heuristic_type == 0)
@@ -130,7 +130,7 @@ int main(int argc, char** argv)
 
     auto search_context = SearchContext(problem, applicable_action_generator, state_repository);
 
-    auto result = find_solution_astar(search_context, heuristic, std::nullopt, event_handler);
+    auto result = find_solution_astar(search_context, heuristic, nullptr, event_handler);
 
     std::cout << "[AStar] Total time: " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time)
               << std::endl;

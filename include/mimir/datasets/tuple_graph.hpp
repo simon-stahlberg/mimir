@@ -95,6 +95,7 @@ public:
         bool enable_dominance_pruning;
 
         Options() : width(0), enable_dominance_pruning(true) {}
+        Options(size_t width, bool enable_dominance_pruning) : width(width), enable_dominance_pruning(enable_dominance_pruning) {}
     };
 
     TupleGraphCollection(const GeneralizedStateSpace& state_space, const Options& options = Options());

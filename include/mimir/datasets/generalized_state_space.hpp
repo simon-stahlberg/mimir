@@ -110,39 +110,6 @@ using StaticClassGraph = StaticGraph<ClassVertex, ClassEdge>;
 using ClassGraph = StaticBidirectionalGraph<StaticClassGraph>;
 
 /**
- * ClassStateSpace
- */
-
-/// @brief `ClassStateSpace` encapsulated state spaces of a collection of problems.
-class ClassStateSpace
-{
-private:
-    ClassGraph m_graph;  ///< Core data.
-
-    /* Initialize additional convenience data in the constructor! */
-
-    IndexSet m_initial_vertices;     ///< Convenience data.
-    IndexSet m_goal_vertices;        ///< Convenience data.
-    IndexSet m_unsolvable_vertices;  ///< Convenience data.
-    IndexSet m_alive_vertices;       ///< Convenience data.
-
-public:
-    ClassStateSpace() = default;
-    explicit ClassStateSpace(ClassGraph graph);
-    ClassStateSpace(const ClassStateSpace& other) = delete;
-    ClassStateSpace& operator=(const ClassStateSpace& other) = delete;
-    ClassStateSpace(ClassStateSpace&& other) = default;
-    ClassStateSpace& operator=(ClassStateSpace&& other) = default;
-
-    const ClassGraph& get_graph() const;  ///< Core data getter.
-
-    const IndexSet& get_initial_vertices() const;     ///< Convenience data getter.
-    const IndexSet& get_goal_vertices() const;        ///< Convenience data getter.
-    const IndexSet& get_unsolvable_vertices() const;  ///< Convenience data getter.
-    const IndexSet& get_alive_vertices() const;       ///< Convenience data getter.
-};
-
-/**
  * GeneralizedStateSpace
  */
 
@@ -161,8 +128,13 @@ class GeneralizedStateSpace
 private:
     GeneralizedSearchContext m_context;  ///< The search contexts, possibly filtered and sorted.
 
-    ProblemGraphList m_problem_graphs;    ///< The child-level graphs.
-    ClassStateSpace m_class_state_space;  ///< The top-level state space.
+    ProblemGraphList m_problem_graphs;  ///< The child-level graphs.
+
+    ClassGraph m_graph;  ///< Core data.
+
+    IndexSet m_initial_vertices;
+    IndexSet m_goal_vertices;
+    IndexSet m_unsolvable_vertices;
 
 public:
     /**
@@ -207,8 +179,14 @@ public:
      */
 
     const GeneralizedSearchContext& get_generalized_search_context() const;
+
     const ProblemGraphList& get_problem_graphs() const;
-    const ClassStateSpace& get_class_state_space() const;
+
+    const ClassGraph& get_graph() const;
+
+    const IndexSet& get_initial_vertices() const;
+    const IndexSet& get_goal_vertices() const;
+    const IndexSet& get_unsolvable_vertices() const;
 
     /// @brief Ground `Class` related structures to `Problem` related structures
     /// to access detailed problem specific information about the state.
@@ -222,17 +200,17 @@ public:
     const ClassEdge& get_class_edge(const ProblemEdge& edge) const;
 
     /**
-     * Construct subgraphs for learning from fragments of the `ClassStateSpace`.
+     * Construct subgraphs for learning from fragments of the `ClassGraph`.
      */
 
-    /// @brief Create the induced `ClassStateSpace` by the given `class_vertex_indices`.
+    /// @brief Create the induced `ClassGraph` by the given `class_vertex_indices`.
     /// This function copies the set of `ClassVertex`
     /// and all `ClassEdge` between those vertices into a new `ClassGraph`.
-    ClassStateSpace create_induced_subspace_from_class_vertex_indices(const IndexList& class_vertex_indices) const;
-    /// @brief Create the induced `ClassStateSpace` by the given `problem_indices`.
+    ClassGraph create_induced_subgraph_from_class_vertex_indices(const IndexList& class_vertex_indices) const;
+    /// @brief Create the induced `ClassGraph` by the given `problem_indices`.
     /// This function copies the corresponding sets of `ClassVertex`
     /// and `ClassEdge` into a new `ClassGraph`.
-    ClassStateSpace create_induced_subspace_from_problem_indices(const IndexList& problem_indices) const;
+    ClassGraph create_induced_subgraph_from_problem_indices(const IndexList& problem_indices) const;
 };
 
 /**

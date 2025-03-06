@@ -1,7 +1,14 @@
 # Import all classes for better IDE support
 
 from _pymimir import (
+    SearchMode,
+    SearchNodeStatus,
+    SearchStatus,
+)
+
+from _pymimir import (
     SearchContext,
+    SearchContextOptions,
     GeneralizedSearchContext,
 )
 
@@ -42,8 +49,6 @@ from _pymimir import (
     LiftedApplicableActionGenerator,
     LiftedAxiomEvaluator,
     Plan,
-    SearchNodeStatus,
-    SearchStatus,
     SearchResult,
     SIWAlgorithmStatistics,
     State,

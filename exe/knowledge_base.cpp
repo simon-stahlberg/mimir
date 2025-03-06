@@ -41,20 +41,19 @@ int main(int argc, char** argv)
 
     auto kb =
         KnowledgeBase::create(GeneralizedSearchContext(domain_file_path, problems_directory), KnowledgeBase::Options(state_space_options, tuple_graph_options));
-    const auto& pcss = kb->get_generalized_state_space();
+    const auto& generalized_state_space = kb->get_generalized_state_space();
 
-    for (size_t i = 0; i < pcss.get_problem_graphs().size(); ++i)
+    for (size_t i = 0; i < generalized_state_space.get_problem_graphs().size(); ++i)
     {
-        const auto& pss_i = pcss.get_problem_graphs()[i];
+        const auto& pss_i = generalized_state_space.get_problem_graphs()[i];
         std::cout << i << ". has num vertices: " << pss_i.get_graph().get_num_vertices() << " and num edges: " << pss_i.get_graph().get_num_edges()
                   << std::endl;
         // std::cout << pss_i.get_graph() << std::endl;
     }
 
-    const auto& css = pcss.get_class_state_space();
-
-    std::cout << "Class graph has num vertices: " << css.get_graph().get_num_vertices() << " and num edges: " << css.get_graph().get_num_edges() << std::endl;
-    std::cout << css.get_graph() << std::endl;
+    std::cout << "Class graph has num vertices: " << generalized_state_space.get_graph().get_num_vertices()
+              << " and num edges: " << generalized_state_space.get_graph().get_num_edges() << std::endl;
+    std::cout << generalized_state_space.get_graph() << std::endl;
 
     if (kb->get_tuple_graphs().has_value())
     {

@@ -60,7 +60,7 @@ public:
         m_axiom_evaluator_event_handler(std::make_shared<DefaultLiftedAxiomEvaluatorEventHandler>()),
         m_axiom_evaluator(std::make_shared<LiftedAxiomEvaluator>(m_problem, m_axiom_evaluator_event_handler)),
         m_state_repository(std::make_shared<StateRepositoryImpl>(m_axiom_evaluator)),
-        m_astar_event_handler(std::make_shared<DefaultAStarAlgorithmEventHandler>(false)),
+        m_astar_event_handler(std::make_shared<DefaultAStarAlgorithmEventHandler>(m_problem)),
         m_search_context(m_problem, m_applicable_action_generator, m_state_repository)
     {
         switch (type)
@@ -82,7 +82,7 @@ public:
         }
     }
 
-    SearchResult find_solution() { return find_solution_astar(m_search_context, m_heuristic, std::nullopt, m_astar_event_handler); }
+    SearchResult find_solution() { return find_solution_astar(m_search_context, m_heuristic, nullptr, m_astar_event_handler); }
 
     const AStarAlgorithmStatistics& get_algorithm_statistics() const { return m_astar_event_handler->get_statistics(); }
 
@@ -120,7 +120,7 @@ public:
         m_axiom_evaluator_event_handler(std::make_shared<DefaultGroundedAxiomEvaluatorEventHandler>()),
         m_axiom_evaluator(m_delete_relaxed_problem_explorator.create_grounded_axiom_evaluator(match_tree::Options(), m_axiom_evaluator_event_handler)),
         m_state_repository(std::make_shared<StateRepositoryImpl>(m_axiom_evaluator)),
-        m_astar_event_handler(std::make_shared<DefaultAStarAlgorithmEventHandler>()),
+        m_astar_event_handler(std::make_shared<DefaultAStarAlgorithmEventHandler>(m_problem)),
         m_search_context(m_problem, m_applicable_action_generator, m_state_repository)
     {
         switch (type)
@@ -142,7 +142,7 @@ public:
         }
     }
 
-    SearchResult find_solution() { return find_solution_astar(m_search_context, m_heuristic, std::nullopt, m_astar_event_handler); }
+    SearchResult find_solution() { return find_solution_astar(m_search_context, m_heuristic, nullptr, m_astar_event_handler); }
 
     const AStarAlgorithmStatistics& get_algorithm_statistics() const { return m_astar_event_handler->get_statistics(); }
 

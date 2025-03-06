@@ -41,7 +41,7 @@ TEST(MimirTests, DataSetsObjectGraphDenseTest)
 
     auto certificates = std::unordered_set<nauty_wrapper::Certificate, loki::Hash<nauty_wrapper::Certificate>, loki::EqualTo<nauty_wrapper::Certificate>> {};
 
-    for (const auto& vertex : problem_class_state_space.get_class_state_space().get_graph().get_vertices())
+    for (const auto& vertex : problem_class_state_space.get_graph().get_vertices())
     {
         const auto state = get_state(problem_class_state_space.get_problem_vertex(vertex));
         const auto problem_index = get_problem_index(vertex);
@@ -70,7 +70,7 @@ TEST(MimirTests, DataSetsObjectGraphSparseTest)
 
     auto certificates = std::unordered_set<nauty_wrapper::Certificate, loki::Hash<nauty_wrapper::Certificate>, loki::EqualTo<nauty_wrapper::Certificate>> {};
 
-    for (const auto& vertex : problem_class_state_space.get_class_state_space().get_graph().get_vertices())
+    for (const auto& vertex : problem_class_state_space.get_graph().get_vertices())
     {
         const auto state = get_state(problem_class_state_space.get_problem_vertex(vertex));
         const auto problem_index = get_problem_index(vertex);

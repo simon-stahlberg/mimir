@@ -100,16 +100,16 @@ int main(int argc, char** argv)
         }
     }
 
-    auto brfs_event_handler = (debug) ? BrFSAlgorithmEventHandler { std::make_shared<DebugBrFSAlgorithmEventHandler>() } :
-                                        BrFSAlgorithmEventHandler { std::make_shared<DefaultBrFSAlgorithmEventHandler>() };
+    auto brfs_event_handler = (debug) ? BrFSAlgorithmEventHandler { std::make_shared<DebugBrFSAlgorithmEventHandler>(problem) } :
+                                        BrFSAlgorithmEventHandler { std::make_shared<DefaultBrFSAlgorithmEventHandler>(problem) };
 
-    auto iw_event_handler = std::make_shared<DefaultIWAlgorithmEventHandler>();
+    auto iw_event_handler = std::make_shared<DefaultIWAlgorithmEventHandler>(problem);
 
-    auto siw_event_handler = std::make_shared<DefaultSIWAlgorithmEventHandler>(false);
+    auto siw_event_handler = std::make_shared<DefaultSIWAlgorithmEventHandler>(problem, false);
 
     auto search_context = SearchContext(problem, applicable_action_generator, state_repository);
 
-    auto result = find_solution_siw(search_context, std::nullopt, arity, siw_event_handler, iw_event_handler, brfs_event_handler);
+    auto result = find_solution_siw(search_context, nullptr, arity, siw_event_handler, iw_event_handler, brfs_event_handler);
 
     if (result.status == SearchStatus::SOLVED)
     {

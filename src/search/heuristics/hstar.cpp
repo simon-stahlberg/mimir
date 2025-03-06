@@ -34,7 +34,7 @@ HStarHeuristic::HStarHeuristic(const SearchContext& context) : m_estimates()
         GeneralizedSearchContext(GeneralizedProblem(context.get_problem()->get_domain(), ProblemList { context.get_problem() }), SearchContextList { context }),
         class_options);
 
-    const auto& class_graph = problem_class_state_space.get_class_state_space().get_graph();
+    const auto& class_graph = problem_class_state_space.get_graph();
 
     for (const auto& class_vertex : class_graph.get_vertices())
     {

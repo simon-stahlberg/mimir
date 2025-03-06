@@ -22,11 +22,12 @@ from _pymimir import (
     BidirectionalClassStaticGraph,
 
     # StateSpaces
-    ClassStateSpace,
     GeneralizedStateSpace,
     GeneralizedStateSpaceOptions,
     GeneralizedStateSpaceProblemOptions,
 
     # KnowledgeBase
     KnowledgeBase,
+    KnowledgeBaseOptions,
+    TupleGraphCollectionOptions,
 )

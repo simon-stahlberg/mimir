@@ -73,6 +73,7 @@ public:
     void on_solved(const Plan& plan) override { NB_OVERRIDE_PURE(on_solved, plan); }
     void on_unsolvable() override { NB_OVERRIDE_PURE(on_unsolvable); }
     void on_exhausted() override { NB_OVERRIDE_PURE(on_exhausted); }
+    const AStarAlgorithmStatistics& get_statistics() const override { NB_OVERRIDE_PURE(get_statistics); }
 };
 
 void bind_search(nb::module_& m)
@@ -416,7 +417,8 @@ void bind_search(nb::module_& m)
         .def("on_end_search", &IAStarAlgorithmEventHandler::on_end_search)
         .def("on_solved", &IAStarAlgorithmEventHandler::on_solved)
         .def("on_unsolvable", &IAStarAlgorithmEventHandler::on_unsolvable)
-        .def("on_exhausted", &IAStarAlgorithmEventHandler::on_exhausted);
+        .def("on_exhausted", &IAStarAlgorithmEventHandler::on_exhausted)
+        .def("get_statistics", &IAStarAlgorithmEventHandler::get_statistics);
 
     nb::class_<DefaultAStarAlgorithmEventHandler, IAStarAlgorithmEventHandler>(m,
                                                                                "DefaultAStarAlgorithmEventHandler")  //

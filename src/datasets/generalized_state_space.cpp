@@ -97,39 +97,6 @@ const DiscreteCostList& ProblemStateSpace::get_unit_goal_distances() const { ret
 const ContinuousCostList& ProblemStateSpace::get_action_goal_distances() const { return m_action_goal_distances; }
 
 /**
- * ClassStateSpace
- */
-
-ClassStateSpace::ClassStateSpace(ClassGraph graph) : m_graph(std::move(graph)), m_goal_vertices(), m_unsolvable_vertices()
-{
-    for (const auto& vertex : m_graph.get_vertices())
-    {
-        if (is_initial(vertex))
-        {
-            m_initial_vertices.insert(vertex.get_index());
-        }
-        if (is_goal(vertex))
-        {
-            m_goal_vertices.insert(vertex.get_index());
-        }
-        else if (is_unsolvable(vertex))
-        {
-            m_unsolvable_vertices.insert(vertex.get_index());
-        }
-        else
-        {
-            m_alive_vertices.insert(vertex.get_index());
-        }
-    }
-}
-
-const ClassGraph& ClassStateSpace::get_graph() const { return m_graph; }
-const IndexSet& ClassStateSpace::get_initial_vertices() const { return m_initial_vertices; }
-const IndexSet& ClassStateSpace::get_goal_vertices() const { return m_goal_vertices; }
-const IndexSet& ClassStateSpace::get_unsolvable_vertices() const { return m_unsolvable_vertices; }
-const IndexSet& ClassStateSpace::get_alive_vertices() const { return m_alive_vertices; }
-
-/**
  * GeneralizedStateSpace
  */
 
@@ -453,7 +420,6 @@ static std::optional<ProblemStateSpace> compute_problem_graph_without_symmetry_r
                                                                                          const GeneralizedStateSpace::Options::ProblemSpecific& options)
 {
     const auto& problem = *context.get_problem();
-    std::cout << problem.get_name() << std::endl;
     const auto applicable_action_generator = context.get_applicable_action_generator();
     const auto state_repository = context.get_state_repository();
 
@@ -563,7 +529,7 @@ compute_problem_graphs_without_symmetry_reduction(const GeneralizedSearchContext
     return problem_graphs;
 }
 
-static std::tuple<ProblemGraphList, ClassStateSpace, GeneralizedSearchContext>
+static std::tuple<ProblemGraphList, ClassGraph, GeneralizedSearchContext>
 compute_problem_and_class_state_spaces_with_symmetry_reduction(const GeneralizedSearchContext& context, const GeneralizedStateSpace::Options& options)
 {
     auto result = compute_problem_graphs_with_symmetry_reduction(context, options.problem_options);
@@ -690,14 +656,12 @@ compute_problem_and_class_state_spaces_with_symmetry_reduction(const Generalized
         ++problem_idx;
     }
 
-    auto class_state_space = ClassStateSpace(ClassGraph(std::move(class_graph)));
-
     return { std::move(final_problem_graphs),
-             std::move(class_state_space),
+             ClassGraph(std::move(class_graph)),
              GeneralizedSearchContext(GeneralizedProblem(context.get_generalized_problem().get_domain(), final_problems), final_search_contexts) };
 }
 
-static std::tuple<ProblemGraphList, ClassStateSpace, GeneralizedSearchContext>
+static std::tuple<ProblemGraphList, ClassGraph, GeneralizedSearchContext>
 compute_problem_and_class_state_spaces_without_symmetry_reduction(const GeneralizedSearchContext& context, const GeneralizedStateSpace::Options& options)
 {
     auto result = compute_problem_graphs_without_symmetry_reduction(context, options.problem_options);
@@ -775,14 +739,16 @@ compute_problem_and_class_state_spaces_without_symmetry_reduction(const Generali
         ++problem_idx;
     }
 
-    auto class_state_space = ClassStateSpace(ClassGraph(std::move(class_graph)));
-
     return { std::move(final_problem_graphs),
-             std::move(class_state_space),
+             ClassGraph(std::move(class_graph)),
              GeneralizedSearchContext(GeneralizedProblem(context.get_generalized_problem().get_domain(), final_problems), final_search_contexts) };
 }
 
-GeneralizedStateSpace::GeneralizedStateSpace(GeneralizedSearchContext context, const GeneralizedStateSpace::Options& options) : m_context(std::move(context))
+GeneralizedStateSpace::GeneralizedStateSpace(GeneralizedSearchContext context, const GeneralizedStateSpace::Options& options) :
+    m_context(std::move(context)),
+    m_initial_vertices(),
+    m_goal_vertices(),
+    m_unsolvable_vertices()
 {
     /* We write separate code for the two cases where symmetry pruning is either enabled or disabled
        because in the latter case we can write much simpler code and we dont have to always check again the option. */
@@ -790,15 +756,31 @@ GeneralizedStateSpace::GeneralizedStateSpace(GeneralizedSearchContext context, c
     {
         auto [problem_state_spaces_, class_state_space_, context_] = compute_problem_and_class_state_spaces_with_symmetry_reduction(m_context, options);
         m_problem_graphs = std::move(problem_state_spaces_);
-        m_class_state_space = std::move(class_state_space_);
+        m_graph = std::move(class_state_space_);
         m_context = std::move(context_);
     }
     else
     {
         auto [problem_state_spaces_, class_state_space_, context_] = compute_problem_and_class_state_spaces_without_symmetry_reduction(m_context, options);
         m_problem_graphs = std::move(problem_state_spaces_);
-        m_class_state_space = std::move(class_state_space_);
+        m_graph = std::move(class_state_space_);
         m_context = std::move(context_);
+    }
+
+    for (const auto& vertex : get_graph().get_vertices())
+    {
+        if (is_initial(vertex))
+        {
+            m_initial_vertices.insert(vertex.get_index());
+        }
+        if (is_goal(vertex))
+        {
+            m_goal_vertices.insert(vertex.get_index());
+        }
+        else if (is_unsolvable(vertex))
+        {
+            m_unsolvable_vertices.insert(vertex.get_index());
+        }
     }
 }
 
@@ -806,7 +788,13 @@ const GeneralizedSearchContext& GeneralizedStateSpace::get_generalized_search_co
 
 const ProblemGraphList& GeneralizedStateSpace::get_problem_graphs() const { return m_problem_graphs; }
 
-const ClassStateSpace& GeneralizedStateSpace::get_class_state_space() const { return m_class_state_space; }
+const ClassGraph& GeneralizedStateSpace::get_graph() const { return m_graph; }
+
+const IndexSet& GeneralizedStateSpace::get_initial_vertices() const { return m_initial_vertices; }
+
+const IndexSet& GeneralizedStateSpace::get_goal_vertices() const { return m_goal_vertices; }
+
+const IndexSet& GeneralizedStateSpace::get_unsolvable_vertices() const { return m_unsolvable_vertices; }
 
 const ProblemGraph& GeneralizedStateSpace::get_problem_graph(const ClassVertex& vertex) const { return m_problem_graphs.at(get_problem_index(vertex)); }
 
@@ -822,17 +810,11 @@ const ProblemEdge& GeneralizedStateSpace::get_problem_edge(const ClassEdge& edge
     return m_problem_graphs.at(get_problem_index(edge)).get_graph().get_edge(get_problem_edge_index(edge));
 }
 
-const ClassVertex& GeneralizedStateSpace::get_class_vertex(const ProblemVertex& vertex) const
-{
-    return m_class_state_space.get_graph().get_vertex(get_class_vertex_index(vertex));
-}
+const ClassVertex& GeneralizedStateSpace::get_class_vertex(const ProblemVertex& vertex) const { return get_graph().get_vertex(get_class_vertex_index(vertex)); }
 
-const ClassEdge& GeneralizedStateSpace::get_class_edge(const ProblemEdge& edge) const
-{
-    return m_class_state_space.get_graph().get_edge(get_class_edge_index(edge));
-}
+const ClassEdge& GeneralizedStateSpace::get_class_edge(const ProblemEdge& edge) const { return get_graph().get_edge(get_class_edge_index(edge)); }
 
-static ClassStateSpace create_induced_subspace_helper(const IndexSet& subgraph_class_v_idxs, const ClassGraph& complete_graph)
+static ClassGraph create_induced_subspace_helper(const IndexSet& subgraph_class_v_idxs, const ClassGraph& complete_graph)
 {
     auto sub_graph = StaticClassGraph();
 
@@ -864,17 +846,17 @@ static ClassStateSpace create_induced_subspace_helper(const IndexSet& subgraph_c
     }
 
     /* Return a `ClassStateSpace` that wraps a bidirectional `ClassGraph` obtained from the `StaticClassGraph`. */
-    return ClassStateSpace(ClassGraph(std::move(sub_graph)));
+    return ClassGraph(std::move(sub_graph));
 }
 
-ClassStateSpace GeneralizedStateSpace::create_induced_subspace_from_class_vertex_indices(const IndexList& class_vertex_indices) const
+ClassGraph GeneralizedStateSpace::create_induced_subgraph_from_class_vertex_indices(const IndexList& class_vertex_indices) const
 {
     auto unique_class_v_idxs = IndexSet(class_vertex_indices.begin(), class_vertex_indices.end());
 
-    return create_induced_subspace_helper(unique_class_v_idxs, m_class_state_space.get_graph());
+    return create_induced_subspace_helper(unique_class_v_idxs, get_graph());
 }
 
-ClassStateSpace GeneralizedStateSpace::create_induced_subspace_from_problem_indices(const IndexList& problem_indices) const
+ClassGraph GeneralizedStateSpace::create_induced_subgraph_from_problem_indices(const IndexList& problem_indices) const
 {
     /* Collect unique class vertices */
     auto unique_class_v_idxs = IndexSet {};
@@ -891,7 +873,7 @@ ClassStateSpace GeneralizedStateSpace::create_induced_subspace_from_problem_indi
         }
     }
 
-    return create_induced_subspace_helper(unique_class_v_idxs, m_class_state_space.get_graph());
+    return create_induced_subspace_helper(unique_class_v_idxs, get_graph());
 }
 
 std::ostream& operator<<(std::ostream& out, const ProblemVertex& vertex)
