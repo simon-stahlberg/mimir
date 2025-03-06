@@ -46,7 +46,7 @@ struct PyEdgeProperties<mm::ColoredEdge>
 template<mm::IsVertex V, std::size_t... Is>
 void bind_vertex_get_properties(nb::class_<V>& cls, std::index_sequence<Is...>)
 {
-    (cls.def(("get_property_" + std::to_string(Is)).c_str(), [](const V& v) { return v.template get_property<Is>(); }), ...);
+    (cls.def(("get_property_" + std::to_string(Is)).c_str(), [](const V& v) { return v.template get_property<Is>(); }, nb::rv_policy::reference_internal), ...);
 }
 
 template<mm::IsVertex V>
@@ -66,7 +66,7 @@ void bind_vertex(nb::module_& m, const std::string& name)
 template<mm::IsEdge E, std::size_t... Is>
 void bind_edge_get_properties(nb::class_<E>& cls, std::index_sequence<Is...>)
 {
-    (cls.def(("get_property_" + std::to_string(Is)).c_str(), [](const E& v) { return v.template get_property<Is>(); }), ...);
+    (cls.def(("get_property_" + std::to_string(Is)).c_str(), [](const E& v) { return v.template get_property<Is>(); }, nb::rv_policy::reference_internal), ...);
 }
 
 template<mm::IsEdge E>

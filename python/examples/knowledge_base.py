@@ -27,7 +27,7 @@ graph = generalized_state_space.get_graph()
 
 # Iterate over vertices
 for vertex in graph.get_vertices():
-    # Access vertex properties
+    # Access vertex properties (Sorry for the generic names!)
     vertex.get_index() # graph vertex index (int)
     vertex.get_property_0() # class vertex index (int)
     vertex.get_property_1() # problem index (int)
@@ -41,7 +41,7 @@ for vertex in graph.get_vertices():
 
 # Iterate over edges
 for edge in graph.get_edges():
-    # Access edge properties
+    # Access edge properties (Sorry for the generic names!)
     edge.get_index() # graph edge index (int)
     edge.get_source() # graph source index (int)
     edge.get_target() # graph target index (int)
@@ -83,12 +83,19 @@ for vertex in graph.get_vertices():
     problem_vertex = generalized_state_space.get_problem_vertex(vertex)
 
     problem_vertex.get_property_0() # class vertex index (int) maps back to the top level graph 
-    problem_vertex.get_property_1() # state (State)
+    state = problem_vertex.get_property_1() # state (State)
 
+    problem = generalized_state_space.get_problem(vertex)
+
+    print(state.to_string(problem))
 
 for edge in graph.get_edges():
     problem_edge = generalized_state_space.get_problem_edge(edge)
 
-    # problem_edge.get_property_0() # class edge index (int) maps back to the top level graph 
-    # problem_edge.get_property_1() # action (GroundAction)
-    # problem_edge.get_property_2() # cost (double)
+    problem_edge.get_property_0() # class edge index (int) maps back to the top level graph 
+    action = problem_edge.get_property_1() # action (GroundAction)
+    problem_edge.get_property_2() # cost (double)
+
+    problem = generalized_state_space.get_problem(edge)
+
+    print(action.to_string(problem))

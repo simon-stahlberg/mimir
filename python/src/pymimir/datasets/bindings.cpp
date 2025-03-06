@@ -42,6 +42,14 @@ void bind_datasets(nb::module_& m)
         .def("get_problem_graph", nb::overload_cast<const ClassEdge&>(&GeneralizedStateSpace::get_problem_graph, nb::const_), nb::rv_policy::reference_internal)
         .def("get_problem_vertex", &GeneralizedStateSpace::get_problem_vertex, nb::rv_policy::reference_internal)
         .def("get_problem_edge", &GeneralizedStateSpace::get_problem_edge, nb::rv_policy::reference_internal)
+        .def("get_problem",
+             static_cast<const Problem& (GeneralizedStateSpace::*) (const ClassVertex&) const>(&GeneralizedStateSpace::get_problem),
+             nb::arg("vertex"),
+             nb::rv_policy::reference_internal)
+        .def("get_problem",
+             static_cast<const Problem& (GeneralizedStateSpace::*) (const ClassEdge&) const>(&GeneralizedStateSpace::get_problem),
+             nb::arg("edge"),
+             nb::rv_policy::reference_internal)
         .def("get_class_vertex", &GeneralizedStateSpace::get_class_vertex, nb::rv_policy::reference_internal)
         .def("get_class_edge", &GeneralizedStateSpace::get_class_edge, nb::rv_policy::reference_internal)
         .def("create_induced_subgraph_from_class_vertex_indices",

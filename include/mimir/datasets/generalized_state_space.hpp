@@ -194,6 +194,8 @@ public:
     const ProblemGraph& get_problem_graph(const ClassEdge& edge) const;
     const ProblemVertex& get_problem_vertex(const ClassVertex& vertex) const;
     const ProblemEdge& get_problem_edge(const ClassEdge& edge) const;
+    const Problem& get_problem(const ClassVertex& vertex) const;
+    const Problem& get_problem(const ClassEdge& edge) const;
 
     /// @brief Lift `Problem` related structures to `Class` related structures.
     const ClassVertex& get_class_vertex(const ProblemVertex& vertex) const;

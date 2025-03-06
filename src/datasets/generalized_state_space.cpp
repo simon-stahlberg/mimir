@@ -810,6 +810,16 @@ const ProblemEdge& GeneralizedStateSpace::get_problem_edge(const ClassEdge& edge
     return m_problem_graphs.at(get_problem_index(edge)).get_graph().get_edge(get_problem_edge_index(edge));
 }
 
+const Problem& GeneralizedStateSpace::get_problem(const ClassVertex& vertex) const
+{
+    return m_context.get_generalized_problem().get_problems().at(get_problem_index(vertex));
+}
+
+const Problem& GeneralizedStateSpace::get_problem(const ClassEdge& edge) const
+{
+    return m_context.get_generalized_problem().get_problems().at(get_problem_index(edge));
+}
+
 const ClassVertex& GeneralizedStateSpace::get_class_vertex(const ProblemVertex& vertex) const { return get_graph().get_vertex(get_class_vertex_index(vertex)); }
 
 const ClassEdge& GeneralizedStateSpace::get_class_edge(const ProblemEdge& edge) const { return get_graph().get_edge(get_class_edge_index(edge)); }
