@@ -253,6 +253,8 @@ class ProblemImpl;
 using Problem = std::shared_ptr<ProblemImpl>;
 using ProblemList = std::vector<Problem>;
 class ProblemBuilder;
+template<typename Value>
+using ProblemMap = std::unordered_map<Problem, Value>;
 
 class RequirementsImpl;
 using Requirements = const RequirementsImpl*;

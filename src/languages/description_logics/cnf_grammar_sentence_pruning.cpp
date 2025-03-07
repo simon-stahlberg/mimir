@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/languages/description_logics/refinement.hpp"
+#include "mimir/languages/description_logics/cnf_grammar_sentence_pruning.hpp"
 
 #include "mimir/formalism/problem.hpp"
 
@@ -26,16 +26,11 @@ namespace mimir::dl
  * RefinementStateListPruningFunction
  */
 
-RefinementStateListPruningFunction::RefinementStateListPruningFunction(const PDDLRepositories& pddl_repositories, Problem problem, StateList states) :
+RefinementStateListPruningFunction::RefinementStateListPruningFunction(ProblemMap<StateList> state_partitioning) :
     RefinementPruningFunction(),
-    m_pddl_repositories(pddl_repositories),
-    m_problem(problem),
-    m_states(std::move(states)),
-    m_denotation_builder(),
-    m_denotation_repository()
+    m_state_partitioning(state_partitioning),
+    m_repositories()
 {
-    // Resize role denotation.
-    boost::hana::at_key(m_denotation_builder, boost::hana::type<Role> {}).get_data().resize(m_problem->get_objects().size());
 }
 
 bool RefinementStateListPruningFunction::should_prune(Constructor<Concept> concept_) { return should_prune_impl(concept_); }
@@ -46,15 +41,22 @@ template<ConceptOrRole D>
 bool RefinementStateListPruningFunction::should_prune_impl(Constructor<D> constructor)
 {
     auto denotations = DenotationsList();
-    denotations.reserve(m_states.size());
 
-    for (const auto& state : m_states)
+    for (const auto& [problem, states] : m_state_partitioning)
     {
-        auto evaluation_context = EvaluationContext(m_pddl_repositories, m_problem, state, m_denotation_builder, m_denotation_repository);
+        for (const auto& state : states)
+        {
+            auto builders = Denotations<Concept, Role>();
 
-        const auto eval = constructor->evaluate(evaluation_context);
+            // We resize role denotation here to avoid having to do that during evaluation.
+            boost::hana::at_key(builders, boost::hana::type<Role> {}).get_data().resize(problem->get_objects().size());
 
-        denotations.push_back(reinterpret_cast<uintptr_t>(eval));
+            auto evaluation_context = EvaluationContext(state, problem, builders, m_repositories);
+
+            const auto eval = constructor->evaluate(evaluation_context);
+
+            denotations.push_back(reinterpret_cast<uintptr_t>(eval));
+        }
     }
 
     return !m_denotations_repository.insert(denotations).second;

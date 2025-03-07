@@ -35,34 +35,26 @@ class EvaluationContext
 {
 private:
     /* Memory */
-    const PDDLRepositories& m_pddl_repositories;
-    Problem m_problem;
     State m_state;
-    ConceptOrRoleToDenotationType& m_denotation_builder;
-    ConceptOrRoleToDenotationRepository& m_denotation_repository;
+    Problem m_problem;
+    Denotations<Concept, Role>& m_builders;
+    DenotationRepositories<Concept, Role>& m_repositories;
 
 public:
-    EvaluationContext(const PDDLRepositories& pddl_repositories,
-                      Problem problem,
-                      State state,
-                      ConceptOrRoleToDenotationType& ref_denotation_builder,
-                      ConceptOrRoleToDenotationRepository& ref_denotation_repository);
+    EvaluationContext(State state, Problem problem, Denotations<Concept, Role>& ref_builders, DenotationRepositories<Concept, Role>& ref_repositories);
 
     /**
      * Getters
      */
-
-    const PDDLRepositories& get_pddl_repositories() const;
+    State get_state() const;
 
     Problem get_problem() const;
 
-    State get_state() const;
+    template<ConceptOrRole D>
+    DenotationImpl<D>& get_builder();
 
     template<ConceptOrRole D>
-    DenotationImpl<D>& get_denotation_builder();
-
-    template<ConceptOrRole D>
-    DenotationRepository<D>& get_denotation_repository();
+    DenotationRepository<D>& get_repository();
 };
 }
 

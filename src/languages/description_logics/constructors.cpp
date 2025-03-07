@@ -53,7 +53,7 @@ ConceptBotImpl::ConceptBotImpl(Index index) : m_index(index) {}
 void ConceptBotImpl::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
-    auto& bitset = context.get_denotation_builder<Concept>().get_data();
+    auto& bitset = context.get_builder<Concept>().get_data();
     bitset.unset_all();
 
     // Result is computed.
@@ -72,7 +72,7 @@ ConceptTopImpl::ConceptTopImpl(Index index) : m_index(index) {}
 void ConceptTopImpl::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
-    auto& bitset = context.get_denotation_builder<Concept>().get_data();
+    auto& bitset = context.get_builder<Concept>().get_data();
     bitset.unset_all();
 
     // Compute result
@@ -100,13 +100,13 @@ template<StaticOrFluentOrDerived P>
 void ConceptAtomicStateImpl<P>::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
-    auto& bitset = context.get_denotation_builder<Concept>().get_data();
+    auto& bitset = context.get_builder<Concept>().get_data();
     bitset.unset_all();
 
     // Compute result
     for (const auto& atom_index : context.get_state()->get_atoms<P>())
     {
-        const auto atom = context.get_pddl_repositories().get_ground_atom<P>(atom_index);
+        const auto atom = context.get_problem()->get_repositories().template get_ground_atom<P>(atom_index);
 
         if (atom->get_predicate() == m_predicate)
         {
@@ -122,13 +122,13 @@ template<>
 void ConceptAtomicStateImpl<Static>::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
-    auto& bitset = context.get_denotation_builder<Concept>().get_data();
+    auto& bitset = context.get_builder<Concept>().get_data();
     bitset.unset_all();
 
     // Compute result
     for (const auto& atom_index : context.get_problem()->get_static_initial_positive_atoms_bitset())
     {
-        const auto atom = context.get_pddl_repositories().get_ground_atom<Static>(atom_index);
+        const auto atom = context.get_problem()->get_repositories().template get_ground_atom<Static>(atom_index);
 
         if (atom->get_predicate() == m_predicate)
         {
@@ -178,7 +178,7 @@ template<StaticOrFluentOrDerived P>
 void ConceptAtomicGoalImpl<P>::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
-    auto& bitset = context.get_denotation_builder<Concept>().get_data();
+    auto& bitset = context.get_builder<Concept>().get_data();
     bitset.unset_all();
 
     // Compute result
@@ -242,7 +242,7 @@ void ConceptIntersectionImpl::evaluate_impl(EvaluationContext& context) const
     const auto eval_right = m_concept_left->evaluate(context);
 
     // Fetch data
-    auto& bitset = context.get_denotation_builder<Concept>().get_data();
+    auto& bitset = context.get_builder<Concept>().get_data();
     bitset.unset_all();
 
     // Compute result
@@ -276,7 +276,7 @@ void ConceptUnionImpl::evaluate_impl(EvaluationContext& context) const
     const auto eval_right = m_concept_left->evaluate(context);
 
     // Fetch data
-    auto& bitset = context.get_denotation_builder<Concept>().get_data();
+    auto& bitset = context.get_builder<Concept>().get_data();
     bitset.unset_all();
 
     // Compute result
@@ -305,7 +305,7 @@ void ConceptNegationImpl::evaluate_impl(EvaluationContext& context) const
 
     // Fetch data
     const auto num_objects = context.get_problem()->get_objects().size();
-    auto& bitset = context.get_denotation_builder<Concept>().get_data();
+    auto& bitset = context.get_builder<Concept>().get_data();
     bitset.unset_all();
 
     // Compute result
@@ -342,7 +342,7 @@ void ConceptValueRestrictionImpl::evaluate_impl(EvaluationContext& context) cons
 
     // Fetch data
     const auto num_objects = context.get_problem()->get_objects().size();
-    auto& bitset = context.get_denotation_builder<Concept>().get_data();
+    auto& bitset = context.get_builder<Concept>().get_data();
     bitset.unset_all();
 
     // Compute result
@@ -390,7 +390,7 @@ void ConceptExistentialQuantificationImpl::evaluate_impl(EvaluationContext& cont
 
     // Fetch data
     const auto num_objects = context.get_problem()->get_objects().size();
-    auto& bitset = context.get_denotation_builder<Concept>().get_data();
+    auto& bitset = context.get_builder<Concept>().get_data();
     bitset.unset_all();
 
     // Compute result
@@ -434,7 +434,7 @@ void ConceptRoleValueMapContainmentImpl::evaluate_impl(EvaluationContext& contex
 
     // Fetch data
     const auto num_objects = context.get_problem()->get_objects().size();
-    auto& bitset = context.get_denotation_builder<Concept>().get_data();
+    auto& bitset = context.get_builder<Concept>().get_data();
     bitset.unset_all();
 
     // Compute result
@@ -482,7 +482,7 @@ void ConceptRoleValueMapEqualityImpl::evaluate_impl(EvaluationContext& context) 
 
     // Fetch data
     const auto num_objects = context.get_problem()->get_objects().size();
-    auto& bitset = context.get_denotation_builder<Concept>().get_data();
+    auto& bitset = context.get_builder<Concept>().get_data();
     bitset.unset_all();
 
     // Compute result
@@ -523,7 +523,7 @@ void ConceptNominalImpl::evaluate_impl(EvaluationContext& context) const
     assert(m_object->get_index() < context.get_problem()->get_objects().size());
 
     // Fetch data
-    auto& bitset = context.get_denotation_builder<Concept>().get_data();
+    auto& bitset = context.get_builder<Concept>().get_data();
     bitset.unset_all();
 
     // Compute result
@@ -546,7 +546,7 @@ void RoleUniversalImpl::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
     const auto num_objects = context.get_problem()->get_objects().size();
-    auto& bitsets = context.get_denotation_builder<Role>().get_data();
+    auto& bitsets = context.get_builder<Role>().get_data();
     assert(bitsets.size() == num_objects);
     for (auto& bitset : bitsets)
     {
@@ -581,7 +581,7 @@ void RoleAtomicStateImpl<P>::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
     const auto num_objects = context.get_problem()->get_objects().size();
-    auto& bitsets = context.get_denotation_builder<Role>().get_data();
+    auto& bitsets = context.get_builder<Role>().get_data();
     assert(bitsets.size() == num_objects);
     for (auto& bitset : bitsets)
     {
@@ -591,7 +591,7 @@ void RoleAtomicStateImpl<P>::evaluate_impl(EvaluationContext& context) const
     // Compute result
     for (const auto& atom_index : context.get_state()->get_atoms<P>())
     {
-        const auto atom = context.get_pddl_repositories().get_ground_atom<P>(atom_index);
+        const auto atom = context.get_problem()->get_repositories().template get_ground_atom<P>(atom_index);
 
         if (atom->get_predicate() == m_predicate)
         {
@@ -612,7 +612,7 @@ void RoleAtomicStateImpl<Static>::evaluate_impl(EvaluationContext& context) cons
 {
     // Fetch data
     const auto num_objects = context.get_problem()->get_objects().size();
-    auto& bitsets = context.get_denotation_builder<Role>().get_data();
+    auto& bitsets = context.get_builder<Role>().get_data();
     assert(bitsets.size() == num_objects);
     for (auto& bitset : bitsets)
     {
@@ -622,7 +622,7 @@ void RoleAtomicStateImpl<Static>::evaluate_impl(EvaluationContext& context) cons
     // Compute result
     for (const auto& atom_index : context.get_problem()->get_static_initial_positive_atoms_bitset())
     {
-        const auto atom = context.get_pddl_repositories().get_ground_atom<Static>(atom_index);
+        const auto atom = context.get_problem()->get_repositories().template get_ground_atom<Static>(atom_index);
 
         if (atom->get_predicate() == m_predicate)
         {
@@ -677,7 +677,7 @@ void RoleAtomicGoalImpl<P>::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
     const auto num_objects = context.get_problem()->get_objects().size();
-    auto& bitsets = context.get_denotation_builder<Role>().get_data();
+    auto& bitsets = context.get_builder<Role>().get_data();
     assert(bitsets.size() == num_objects);
     for (auto& bitset : bitsets)
     {
@@ -750,7 +750,7 @@ void RoleIntersectionImpl::evaluate_impl(EvaluationContext& context) const
     const auto eval_right = m_role_right->evaluate(context);
 
     // Fetch data
-    auto& bitsets = context.get_denotation_builder<Role>().get_data();
+    auto& bitsets = context.get_builder<Role>().get_data();
     assert(bitsets.size() == num_objects);
     for (auto& bitset : bitsets)
     {
@@ -793,7 +793,7 @@ void RoleUnionImpl::evaluate_impl(EvaluationContext& context) const
 
     // Fetch data
     const auto num_objects = context.get_problem()->get_objects().size();
-    auto& bitsets = context.get_denotation_builder<Role>().get_data();
+    auto& bitsets = context.get_builder<Role>().get_data();
     assert(bitsets.size() == num_objects);
     for (auto& bitset : bitsets)
     {
@@ -830,7 +830,7 @@ void RoleComplementImpl::evaluate_impl(EvaluationContext& context) const
 
     // Fetch data
     const auto num_objects = context.get_problem()->get_objects().size();
-    auto& bitsets = context.get_denotation_builder<Role>().get_data();
+    auto& bitsets = context.get_builder<Role>().get_data();
     assert(bitsets.size() == num_objects);
     for (auto& bitset : bitsets)
     {
@@ -869,7 +869,7 @@ void RoleInverseImpl::evaluate_impl(EvaluationContext& context) const
 
     // Fetch data
     const auto num_objects = context.get_problem()->get_objects().size();
-    auto& bitsets = context.get_denotation_builder<Role>().get_data();
+    auto& bitsets = context.get_builder<Role>().get_data();
     assert(bitsets.size() == num_objects);
     for (auto& bitset : bitsets)
     {
@@ -914,7 +914,7 @@ void RoleCompositionImpl::evaluate_impl(EvaluationContext& context) const
 
     // Fetch data
     const auto num_objects = context.get_problem()->get_objects().size();
-    auto& bitsets = context.get_denotation_builder<Role>().get_data();
+    auto& bitsets = context.get_builder<Role>().get_data();
     assert(bitsets.size() == num_objects);
     for (auto& bitset : bitsets)
     {
@@ -955,7 +955,7 @@ void RoleTransitiveClosureImpl::evaluate_impl(EvaluationContext& context) const
 
     // Fetch data
     const auto num_objects = context.get_problem()->get_objects().size();
-    auto& bitsets = context.get_denotation_builder<Role>().get_data();
+    auto& bitsets = context.get_builder<Role>().get_data();
     assert(bitsets.size() == num_objects);
     for (auto& bitset : bitsets)
     {
@@ -998,7 +998,7 @@ void RoleReflexiveTransitiveClosureImpl::evaluate_impl(EvaluationContext& contex
 
     // Fetch data
     const auto num_objects = context.get_problem()->get_objects().size();
-    auto& bitsets = context.get_denotation_builder<Role>().get_data();
+    auto& bitsets = context.get_builder<Role>().get_data();
     assert(bitsets.size() == num_objects);
     for (auto& bitset : bitsets)
     {
@@ -1052,7 +1052,7 @@ void RoleRestrictionImpl::evaluate_impl(EvaluationContext& context) const
 
     // Fetch data
     const auto num_objects = context.get_problem()->get_objects().size();
-    auto& bitsets = context.get_denotation_builder<Role>().get_data();
+    auto& bitsets = context.get_builder<Role>().get_data();
     assert(bitsets.size() == num_objects);
     for (auto& bitset : bitsets)
     {
@@ -1093,7 +1093,7 @@ void RoleIdentityImpl::evaluate_impl(EvaluationContext& context) const
 
     // Fetch data
     const auto num_objects = context.get_problem()->get_objects().size();
-    auto& bitsets = context.get_denotation_builder<Role>().get_data();
+    auto& bitsets = context.get_builder<Role>().get_data();
     assert(bitsets.size() == num_objects);
     for (auto& bitset : bitsets)
     {

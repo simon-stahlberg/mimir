@@ -15,13 +15,17 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/languages/description_logics/refinement.hpp"
+#include "mimir/languages/description_logics/cnf_grammar_visitor_sentence_generator.hpp"
 
 #include "mimir/datasets/generalized_state_space.hpp"
+#include "mimir/datasets/knowledge_base.hpp"
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/parser.hpp"
 #include "mimir/formalism/predicate.hpp"
+#include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
+#include "mimir/languages/description_logics/cnf_grammar.hpp"
+#include "mimir/languages/description_logics/cnf_grammar_visitor_formatter.hpp"
 #include "mimir/languages/description_logics/constructor_repositories.hpp"
 #include "mimir/languages/description_logics/constructor_visitors_formatter.hpp"
 #include "mimir/languages/description_logics/constructors.hpp"
@@ -33,14 +37,16 @@
 namespace mimir::tests
 {
 
-TEST(MimirTests, LanguagesDescriptionLogicsRefinementBrfsTest)
+TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarVisitorSentenceGeneratorTest)
 {
     auto bnf_description = std::string(R"(
     [start_symbols]
-        concept = <concept>
-        role = <role>
+        concept = <concept_start>
+        role = <role_start>
 
     [grammar_rules]
+        <concept_start>                      ::= <concept>
+        <role_start>                         ::= <role>
         <concept_bot>                        ::= @concept_bot
         <concept_top>                        ::= @concept_top
         <concept_ball_state>                 ::= @concept_atomic_state "ball"
@@ -79,49 +85,47 @@ TEST(MimirTests, LanguagesDescriptionLogicsRefinementBrfsTest)
                                                  | <role_intersection>
 )");
 
-    auto parser = PDDLParser(fs::path(std::string(DATA_DIR) + "gripper/domain.pddl"), fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl"));
+    /* Test two spanner problems with two locations and a single spanner each. */
+    const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
+    // The spanner is at location 1.
+    const auto problem1_file = fs::path(std::string(DATA_DIR) + "gripper/p-1-0.pddl");
+    // The spanner is at location 2.
+    const auto problem2_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
 
-    auto grammar = dl::grammar::Grammar(bnf_description, parser.get_domain());
+    auto context = GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem1_file, problem2_file });
 
-    auto options = dl::refinement_brfs::Options();
-    options.verbosity = 2;
-    options.max_complexity = 5;
-    boost::hana::at_key(options.max_constructors, boost::hana::type<dl::Concept> {}) = std::numeric_limits<size_t>::max();
-    boost::hana::at_key(options.max_constructors, boost::hana::type<dl::Role> {}) = std::numeric_limits<size_t>::max();
+    auto state_space_options = GeneralizedStateSpace::Options();
+    state_space_options.problem_options.symmetry_pruning = false;
 
-    auto constructor_repositories = dl::HanaConstructorRepositories();
+    auto kb = KnowledgeBase::create(context, KnowledgeBase::Options(state_space_options));
 
-    auto applicable_action_generator = std::make_shared<LiftedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories());
-    auto axiom_evaluator =
-        std::dynamic_pointer_cast<IAxiomEvaluator>(std::make_shared<LiftedAxiomEvaluator>(parser.get_problem(), parser.get_pddl_repositories()));
-    auto state_repository = std::make_shared<StateRepositoryImpl>(axiom_evaluator);
-    auto state_space = StateSpace::create(applicable_action_generator, state_repository);
-    auto state_list = StateList();
-    for (const auto& state_vertex : state_space.value().get_vertices())
+    auto problem_to_states = ProblemMap<StateList> {};
+    for (const auto& vertex : kb->get_generalized_state_space().get_graph().get_vertices())
     {
-        state_list.push_back(get_state(state_vertex));
+        const auto& problem = kb->get_generalized_state_space().get_problem(vertex);
+        const auto& state = get_state(kb->get_generalized_state_space().get_problem_vertex(vertex));
+
+        problem_to_states[problem].push_back(state);
     }
 
-    auto pruning_function = dl::RefinementStateListPruningFunction(*parser.get_pddl_repositories(), parser.get_problem(), state_list);
+    auto pruning_function = dl::RefinementStateListPruningFunction(problem_to_states);
 
-    auto result = dl::refinement_brfs::refine(parser.get_problem(), grammar, options, constructor_repositories, pruning_function);
+    dl::cnf_grammar::GeneratedSentencesContainer sentences;
+    dl::ConstructorRepositories repositories;
+    size_t max_complexity = 4;
+    auto visitor = dl::cnf_grammar::GeneratorGrammarVisitor(pruning_function, sentences, repositories, max_complexity);
 
-    for (const auto& concept_ : boost::hana::at_key(result.constructors, boost::hana::type<dl::Concept> {}))
-    {
-        std::cout << concept_ << std::endl;
-    }
+    auto grammar =
+        dl::grammar::Grammar(bnf_description, kb->get_generalized_state_space().get_generalized_search_context().get_generalized_problem().get_domain());
 
-    for (const auto& role_ : boost::hana::at_key(result.constructors, boost::hana::type<dl::Role> {}))
-    {
-        std::cout << role_ << std::endl;
-    }
+    auto cnf_grammar = dl::cnf_grammar::Grammar(grammar);
+
+    visitor.visit(cnf_grammar);
 
     // EXPECT_EQ(boost::hana::at_key(result.statistics.num_generated, boost::hana::type<dl::Concept> {}), 28);
     // EXPECT_EQ(boost::hana::at_key(result.statistics.num_generated, boost::hana::type<dl::Role> {}), 5);
     // EXPECT_EQ(boost::hana::at_key(result.statistics.num_pruned, boost::hana::type<dl::Concept> {}), 634);
     // EXPECT_EQ(boost::hana::at_key(result.statistics.num_pruned, boost::hana::type<dl::Role> {}), 41);
-    // EXPECT_EQ(boost::hana::at_key(result.statistics.num_rejected_by_grammar, boost::hana::type<dl::Concept> {}), 84);
-    // EXPECT_EQ(boost::hana::at_key(result.statistics.num_rejected_by_grammar, boost::hana::type<dl::Role> {}), 229);
 }
 
 }

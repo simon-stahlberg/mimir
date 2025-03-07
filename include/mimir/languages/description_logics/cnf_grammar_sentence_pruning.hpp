@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_REFINEMENT_HPP_
-#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_REFINEMENT_HPP_
+#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CNF_GRAMMAR_SENTENCE_PRUNING_HPP_
+#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CNF_GRAMMAR_SENTENCE_PRUNING_HPP_
 
 #include "mimir/languages/description_logics/constructor_repositories.hpp"
 #include "mimir/languages/description_logics/constructors.hpp"
@@ -52,7 +52,7 @@ public:
 class RefinementStateListPruningFunction : public RefinementPruningFunction
 {
 public:
-    RefinementStateListPruningFunction(const PDDLRepositories& pddl_repositories, Problem problem, StateList states);
+    RefinementStateListPruningFunction(ProblemMap<StateList> state_partitioning);
 
     /// @brief Tests whether a concept should be pruned.
     /// @param concept_ The concept to evaluate.
@@ -68,13 +68,9 @@ private:
     template<ConceptOrRole D>
     bool should_prune_impl(Constructor<D> constructor);
 
-    const PDDLRepositories& m_pddl_repositories;  ///< The pddl factories.
-    Problem m_problem;                            ///< The problem definition used for evaluating features.
-    StateList m_states;                           ///< The list of states used for evaluating features and pruning.
+    ProblemMap<StateList> m_state_partitioning;
 
-    ConceptOrRoleToDenotationType m_denotation_builder;
-
-    ConceptOrRoleToDenotationRepository m_denotation_repository;
+    DenotationRepositories<Concept, Role> m_repositories;
 
     /// @brief Uniquely store feature denotations among all states.
     /// Each state feature denotation is uniquely identified by its memory address.

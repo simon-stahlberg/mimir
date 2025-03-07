@@ -18,6 +18,7 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CNF_GRAMMAR_VISITOR_SENTENCE_GENERATOR_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CNF_GRAMMAR_VISITOR_SENTENCE_GENERATOR_HPP_
 
+#include "mimir/languages/description_logics/cnf_grammar_sentence_pruning.hpp"
 #include "mimir/languages/description_logics/cnf_grammar_visitor_interface.hpp"
 #include "mimir/languages/description_logics/constructor_repositories.hpp"
 
@@ -163,12 +164,16 @@ template<ConceptOrRole D>
 class GeneratorDerivationRuleVisitor : public DerivationRuleVisitor<D>
 {
 private:
+    const RefinementPruningFunction& m_pruning_function;
     GeneratedSentencesContainer& m_sentences;
     dl::ConstructorRepositories& m_repositories;
     size_t m_complexity;
 
 public:
-    explicit GeneratorDerivationRuleVisitor(GeneratedSentencesContainer& sentences, dl::ConstructorRepositories& repositories, size_t complexity);
+    explicit GeneratorDerivationRuleVisitor(const RefinementPruningFunction& pruning_function,
+                                            GeneratedSentencesContainer& sentences,
+                                            dl::ConstructorRepositories& repositories,
+                                            size_t complexity);
 
     void visit(DerivationRule<D> rule) override;
 };
@@ -198,12 +203,16 @@ public:
 class GeneratorGrammarVisitor : public GrammarVisitor
 {
 private:
+    const RefinementPruningFunction& m_pruning_function;
     GeneratedSentencesContainer& m_sentences;
     dl::ConstructorRepositories& m_repositories;
     size_t m_max_syntactic_complexity;
 
 public:
-    explicit GeneratorGrammarVisitor(GeneratedSentencesContainer& sentences, dl::ConstructorRepositories& repositories, size_t max_syntactic_complexity);
+    explicit GeneratorGrammarVisitor(const RefinementPruningFunction& pruning_function,
+                                     GeneratedSentencesContainer& sentences,
+                                     dl::ConstructorRepositories& repositories,
+                                     size_t max_syntactic_complexity);
 
     void visit(const Grammar& grammar) override;
 };

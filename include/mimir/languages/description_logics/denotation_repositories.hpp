@@ -63,8 +63,8 @@ public:
 
 /// @brief Repository for managing denotations.
 /// This stores the computed denotation of each state.
-using ConceptOrRoleToDenotationRepository = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, DenotationRepository<Concept>>,
-                                                             boost::hana::pair<boost::hana::type<Role>, DenotationRepository<Role>>>;
+template<ConceptOrRole... Ds>
+using DenotationRepositories = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, DenotationRepository<Ds>>...>;
 
 }
 

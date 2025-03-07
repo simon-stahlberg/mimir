@@ -19,41 +19,37 @@
 
 namespace mimir::dl
 {
-EvaluationContext::EvaluationContext(const PDDLRepositories& pddl_repositories,
+EvaluationContext::EvaluationContext(State state,
                                      Problem problem,
-                                     State state,
-                                     ConceptOrRoleToDenotationType& ref_denotation_builder,
-                                     ConceptOrRoleToDenotationRepository& ref_denotation_repository) :
-    m_pddl_repositories(pddl_repositories),
-    m_problem(problem),
+                                     Denotations<Concept, Role>& ref_builders,
+                                     DenotationRepositories<Concept, Role>& ref_repositories) :
     m_state(state),
-    m_denotation_builder(ref_denotation_builder),
-    m_denotation_repository(ref_denotation_repository)
+    m_problem(problem),
+    m_builders(ref_builders),
+    m_repositories(ref_repositories)
 {
 }
-
-const PDDLRepositories& EvaluationContext::get_pddl_repositories() const { return m_pddl_repositories; }
-
-Problem EvaluationContext::get_problem() const { return m_problem; }
 
 State EvaluationContext::get_state() const { return m_state; }
 
-template<ConceptOrRole D>
-DenotationImpl<D>& EvaluationContext::get_denotation_builder()
-{
-    return boost::hana::at_key(m_denotation_builder, boost::hana::type<D> {});
-}
-
-template DenotationImpl<Concept>& EvaluationContext::get_denotation_builder<Concept>();
-template DenotationImpl<Role>& EvaluationContext::get_denotation_builder<Role>();
+Problem EvaluationContext::get_problem() const { return m_problem; }
 
 template<ConceptOrRole D>
-DenotationRepository<D>& EvaluationContext::get_denotation_repository()
+DenotationImpl<D>& EvaluationContext::get_builder()
 {
-    return boost::hana::at_key(m_denotation_repository, boost::hana::type<D> {});
+    return boost::hana::at_key(m_builders, boost::hana::type<D> {});
 }
 
-template DenotationRepository<Concept>& EvaluationContext::get_denotation_repository<Concept>();
-template DenotationRepository<Role>& EvaluationContext::get_denotation_repository<Role>();
+template DenotationImpl<Concept>& EvaluationContext::get_builder<Concept>();
+template DenotationImpl<Role>& EvaluationContext::get_builder<Role>();
+
+template<ConceptOrRole D>
+DenotationRepository<D>& EvaluationContext::get_repository()
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<D> {});
+}
+
+template DenotationRepository<Concept>& EvaluationContext::get_repository<Concept>();
+template DenotationRepository<Role>& EvaluationContext::get_repository<Role>();
 
 }

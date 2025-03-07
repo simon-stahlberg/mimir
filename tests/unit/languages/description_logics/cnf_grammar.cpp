@@ -22,7 +22,6 @@
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/languages/description_logics/cnf_grammar_visitor_formatter.hpp"
-#include "mimir/languages/description_logics/cnf_grammar_visitor_sentence_generator.hpp"
 #include "mimir/languages/description_logics/constructor_repositories.hpp"
 #include "mimir/languages/description_logics/constructors.hpp"
 #include "mimir/languages/description_logics/grammar.hpp"
@@ -65,12 +64,6 @@ TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarParseTest)
         auto cnf_grammar = dl::cnf_grammar::Grammar(grammar);
 
         std::cout << cnf_grammar << std::endl;
-
-        dl::cnf_grammar::GeneratedSentencesContainer sentences;
-        dl::ConstructorRepositories repositories;
-        size_t max_complexity = 4;
-        auto visitor = dl::cnf_grammar::GeneratorGrammarVisitor(sentences, repositories, max_complexity);
-        visitor.visit(cnf_grammar);
     }
 }
 

@@ -70,8 +70,8 @@ struct DenotationImpl<Role>
 
 /// @brief Denotation for temporary construction.
 /// This stores a computed denotation for a single state.
-using ConceptOrRoleToDenotationType =
-    boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, DenotationImpl<Concept>>, boost::hana::pair<boost::hana::type<Role>, DenotationImpl<Role>>>;
+template<ConceptOrRole... Ds>
+using Denotations = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, DenotationImpl<Ds>>...>;
 
 template<ConceptOrRole D>
 using DenotationImplSet = mimir::buffering::UnorderedSet<DenotationImpl<D>>;

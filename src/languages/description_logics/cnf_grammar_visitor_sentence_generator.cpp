@@ -403,9 +403,11 @@ const dl::ConstructorList<Role>& GeneratorConstructorVisitor<Role>::get_result()
  */
 
 template<ConceptOrRole D>
-GeneratorDerivationRuleVisitor<D>::GeneratorDerivationRuleVisitor(GeneratedSentencesContainer& sentences,
+GeneratorDerivationRuleVisitor<D>::GeneratorDerivationRuleVisitor(const RefinementPruningFunction& pruning_function,
+                                                                  GeneratedSentencesContainer& sentences,
                                                                   dl::ConstructorRepositories& repositories,
                                                                   size_t complexity) :
+    m_pruning_function(pruning_function),
     m_sentences(sentences),
     m_repositories(repositories),
     m_complexity(complexity)
@@ -459,9 +461,11 @@ template class GeneratorSubstitutionRuleVisitor<Role>;
  * Grammar
  */
 
-GeneratorGrammarVisitor::GeneratorGrammarVisitor(GeneratedSentencesContainer& sentences,
+GeneratorGrammarVisitor::GeneratorGrammarVisitor(const RefinementPruningFunction& pruning_function,
+                                                 GeneratedSentencesContainer& sentences,
                                                  dl::ConstructorRepositories& repositories,
                                                  size_t max_syntactic_complexity) :
+    m_pruning_function(pruning_function),
     m_sentences(sentences),
     m_repositories(repositories),
     m_max_syntactic_complexity(max_syntactic_complexity)
@@ -482,7 +486,8 @@ void GeneratorGrammarVisitor::visit(const Grammar& grammar)
 
                                   for (const auto& rule : second)
                                   {
-                                      auto derivation_rule_visitor = GeneratorDerivationRuleVisitor<ConstructorType>(m_sentences, m_repositories, i);
+                                      auto derivation_rule_visitor =
+                                          GeneratorDerivationRuleVisitor<ConstructorType>(m_pruning_function, m_sentences, m_repositories, i);
                                       rule->accept(derivation_rule_visitor);
                                   }
                               });
