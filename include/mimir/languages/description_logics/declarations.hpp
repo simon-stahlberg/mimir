@@ -39,8 +39,8 @@ class EvaluationContext;
  * Common
  */
 
-using ConceptOrRoleToSizeT =
-    boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::size_t>, boost::hana::pair<boost::hana::type<Role>, std::size_t>>;
+template<typename T, ConceptOrRole... Ds>
+using HanaContainer = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, T>...>;
 
 /**
  * Denotations

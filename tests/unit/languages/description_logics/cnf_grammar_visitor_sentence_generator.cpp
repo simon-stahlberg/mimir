@@ -122,10 +122,17 @@ TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarVisitorSentenceGeneratorTes
 
     visitor.visit(cnf_grammar);
 
-    // EXPECT_EQ(boost::hana::at_key(result.statistics.num_generated, boost::hana::type<dl::Concept> {}), 28);
-    // EXPECT_EQ(boost::hana::at_key(result.statistics.num_generated, boost::hana::type<dl::Role> {}), 5);
-    // EXPECT_EQ(boost::hana::at_key(result.statistics.num_pruned, boost::hana::type<dl::Concept> {}), 634);
-    // EXPECT_EQ(boost::hana::at_key(result.statistics.num_pruned, boost::hana::type<dl::Role> {}), 41);
+    const auto& concept_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::Concept> {});
+
+    EXPECT_EQ(concept_statistics.num_generated, 144);
+    EXPECT_EQ(concept_statistics.num_kept, 18);
+    EXPECT_EQ(concept_statistics.num_pruned, 126);
+
+    const auto& role_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::Role> {});
+
+    EXPECT_EQ(role_statistics.num_generated, 22);
+    EXPECT_EQ(role_statistics.num_kept, 5);
+    EXPECT_EQ(role_statistics.num_pruned, 17);
 }
 
 }

@@ -67,4 +67,13 @@ TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarParseTest)
     }
 }
 
+TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarFrancesTest)
+{
+    auto problem = ProblemImpl::create(fs::path(std::string(DATA_DIR) + "gripper/domain.pddl"), fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl"));
+
+    auto cnf_grammar = dl::cnf_grammar::Grammar::create(dl::cnf_grammar::GrammarSpecificationEnum::FRANCES_ET_AL_AAAI2021, problem->get_domain());
+
+    std::cout << cnf_grammar << std::endl;
+}
+
 }

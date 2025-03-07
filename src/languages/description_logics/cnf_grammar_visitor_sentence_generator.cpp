@@ -411,7 +411,8 @@ GeneratorDerivationRuleVisitor<D>::GeneratorDerivationRuleVisitor(RefinementPrun
     m_pruning_function(pruning_function),
     m_sentences(sentences),
     m_repositories(repositories),
-    m_complexity(complexity)
+    m_complexity(complexity),
+    m_statistics()
 {
 }
 
@@ -423,14 +424,26 @@ void GeneratorDerivationRuleVisitor<D>::visit(DerivationRule<D> rule)
     const auto& generated = visitor.get_result();
     for (const auto& sentence : generated)
     {
+        ++m_statistics.num_generated;
+
         if (!m_pruning_function.should_prune(sentence))
         {
+            ++m_statistics.num_kept;
+
             auto& target_location = m_sentences.get(rule->get_head(), m_complexity);
             target_location.push_back(sentence);
-            std::cout << sentence << std::endl;
         }
-        else {}
+        else
+        {
+            ++m_statistics.num_pruned;
+        }
     }
+}
+
+template<ConceptOrRole D>
+const GeneratorStatistics<D>& GeneratorDerivationRuleVisitor<D>::get_statistics() const
+{
+    return m_statistics;
 }
 
 template class GeneratorDerivationRuleVisitor<Concept>;
@@ -472,7 +485,8 @@ GeneratorGrammarVisitor::GeneratorGrammarVisitor(RefinementPruningFunction& prun
     m_pruning_function(pruning_function),
     m_sentences(sentences),
     m_repositories(repositories),
-    m_max_syntactic_complexity(max_syntactic_complexity)
+    m_max_syntactic_complexity(max_syntactic_complexity),
+    m_statistics()
 {
 }
 
@@ -493,6 +507,8 @@ void GeneratorGrammarVisitor::visit(const Grammar& grammar)
                                       auto derivation_rule_visitor =
                                           GeneratorDerivationRuleVisitor<ConstructorType>(m_pruning_function, m_sentences, m_repositories, i);
                                       rule->accept(derivation_rule_visitor);
+
+                                      boost::hana::at_key(m_statistics, key) += derivation_rule_visitor.get_statistics();
                                   }
                               });
 
@@ -511,4 +527,7 @@ void GeneratorGrammarVisitor::visit(const Grammar& grammar)
                               });
     }
 }
+
+const HanaGeneratorStatistics<Concept, Role>& GeneratorGrammarVisitor::get_statistics() const { return m_statistics; }
+
 }

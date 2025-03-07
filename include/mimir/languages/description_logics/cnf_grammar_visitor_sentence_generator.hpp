@@ -74,6 +74,26 @@ public:
     HanaGeneratedConstructorsMap& get_hana_generated_constructors() { return m_generated_constructors; }
 };
 
+template<ConceptOrRole D>
+struct GeneratorStatistics
+{
+    size_t num_generated = 0;
+    size_t num_pruned = 0;
+    size_t num_kept = 0;
+
+    GeneratorStatistics& operator+=(const GeneratorStatistics& other)
+    {
+        num_generated += other.num_generated;
+        num_pruned += other.num_pruned;
+        num_kept += other.num_kept;
+
+        return *this;
+    }
+};
+
+template<ConceptOrRole... Ds>
+using HanaGeneratorStatistics = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, GeneratorStatistics<Ds>>...>;
+
 /**
  * Constructors
  */
@@ -169,6 +189,8 @@ private:
     dl::ConstructorRepositories& m_repositories;
     size_t m_complexity;
 
+    GeneratorStatistics<D> m_statistics;
+
 public:
     explicit GeneratorDerivationRuleVisitor(RefinementPruningFunction& pruning_function,
                                             GeneratedSentencesContainer& sentences,
@@ -176,6 +198,8 @@ public:
                                             size_t complexity);
 
     void visit(DerivationRule<D> rule) override;
+
+    const GeneratorStatistics<D>& get_statistics() const;
 };
 
 /**
@@ -208,6 +232,8 @@ private:
     dl::ConstructorRepositories& m_repositories;
     size_t m_max_syntactic_complexity;
 
+    HanaGeneratorStatistics<Concept, Role> m_statistics;
+
 public:
     explicit GeneratorGrammarVisitor(RefinementPruningFunction& pruning_function,
                                      GeneratedSentencesContainer& sentences,
@@ -215,6 +241,8 @@ public:
                                      size_t max_syntactic_complexity);
 
     void visit(const Grammar& grammar) override;
+
+    const HanaGeneratorStatistics<Concept, Role>& get_statistics() const;
 };
 
 }

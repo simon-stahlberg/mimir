@@ -75,60 +75,6 @@ private:
     DenotationListSets<Concept, Role> m_denotations_repository;
 };
 
-/**
- * Brfs-style refinement.
- *
- * Generates concepts and roles with increasing complexity starting at 1.
- */
-
-namespace refinement_brfs
-{
-
-struct Options
-{
-    size_t verbosity = 0;  ///< 0=quiet, 1=normal, 2=debug
-
-    size_t max_complexity = 0;
-    size_t max_memory_usage_in_kb = 0;
-    size_t max_execution_time_in_ms = 0;
-
-    using ConceptOrRoleToSizeT =
-        boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::size_t>, boost::hana::pair<boost::hana::type<Role>, std::size_t>>;
-
-    ConceptOrRoleToSizeT max_constructors = ConceptOrRoleToSizeT();
-};
-
-struct Statistics
-{
-    size_t memory_usage_in_kb = 0;
-    size_t execution_time_ms = 0;
-
-    using ConceptOrRoleToSizeT =
-        boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::size_t>, boost::hana::pair<boost::hana::type<Role>, std::size_t>>;
-
-    ConceptOrRoleToSizeT num_generated = ConceptOrRoleToSizeT();
-    ConceptOrRoleToSizeT num_pruned = ConceptOrRoleToSizeT();
-    ConceptOrRoleToSizeT num_rejected_by_grammar = ConceptOrRoleToSizeT();
-};
-
-struct Result
-{
-    using ConceptOrRoleToConstructorList = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, ConstructorList<Concept>>,
-                                                            boost::hana::pair<boost::hana::type<Role>, ConstructorList<Role>>>;
-
-    ConceptOrRoleToConstructorList constructors = ConceptOrRoleToConstructorList();
-
-    Statistics statistics = Statistics();
-};
-
-extern Result refine(Problem problem,
-                     const grammar::Grammar& grammar,
-                     const Options& options,
-                     HanaConstructorRepositories& ref_constructor_repositories,
-                     RefinementPruningFunction& ref_pruning_function);
-
-}
-
 }
 
 #endif

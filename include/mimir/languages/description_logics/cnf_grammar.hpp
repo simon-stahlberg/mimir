@@ -55,6 +55,10 @@ public:
 
     explicit Grammar(const grammar::Grammar& grammar);
 
+    Grammar(const std::string& bnf_description, Domain domain);
+
+    static Grammar create(GrammarSpecificationEnum type, Domain domain);
+
     /// @brief Tests whether a dl constructor satisfies the grammar specification.
     /// @param constructor is the dl constructor to test.
     /// @return true iff the dl constructor satisfies the grammar specification, and false otherwise.
