@@ -221,8 +221,100 @@ static Grammar eliminate_rules_with_identical_body(const Grammar& grammar)
     return Grammar(std::move(repositories), std::move(start_symbols), std::move(derivation_rules), std::move(substitution_rules), grammar.get_domain());
 }
 
+using HanaSubstitutionNonTerminalOrderings = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::unordered_map<NonTerminal<Concept>, size_t>>,
+                                                              boost::hana::pair<boost::hana::type<Role>, std::unordered_map<NonTerminal<Role>, size_t>>>;
+
+class OrderSubstitutionRuleGrammarVisitor : public CopyGrammarVisitor
+{
+private:
+    const HanaSubstitutionNonTerminalOrderings& m_orderings;
+
+public:
+    OrderSubstitutionRuleGrammarVisitor(ConstructorRepositories& repositories,
+                                        StartSymbolsContainer& start_symbols,
+                                        DerivationRulesContainer& derivation_rules,
+                                        SubstitutionRulesContainer& substitution_rules,
+                                        CopyNonTerminalVisitor<Concept>& concept_start_symbol_visitor,
+                                        CopyNonTerminalVisitor<Role>& role_start_symbol_visitor,
+                                        CopyDerivationRuleVisitor<Concept>& concept_derivation_rule_visitor,
+                                        CopyDerivationRuleVisitor<Role>& role_derivation_rule_visitor,
+                                        CopySubstitutionRuleVisitor<Concept>& concept_substitution_rule_visitor,
+                                        CopySubstitutionRuleVisitor<Role>& role_substitution_rule_visitor,
+                                        const HanaSubstitutionNonTerminalOrderings& orderings) :
+        CopyGrammarVisitor(repositories,
+                           start_symbols,
+                           derivation_rules,
+                           substitution_rules,
+                           concept_start_symbol_visitor,
+                           role_start_symbol_visitor,
+                           concept_derivation_rule_visitor,
+                           role_derivation_rule_visitor,
+                           concept_substitution_rule_visitor,
+                           role_substitution_rule_visitor),
+        m_orderings(orderings)
+    {
+    }
+
+    void visit(const Grammar& grammar) override
+    {
+        boost::hana::for_each(grammar.get_start_symbols_container().get(),
+                              [&](auto&& pair)
+                              {
+                                  auto key = boost::hana::first(pair);
+                                  const auto& second = boost::hana::second(pair);
+                                  using ConstructorType = typename decltype(+key)::type;
+
+                                  if (second.has_value())
+                                  {
+                                      auto& visitor = *boost::hana::at_key(m_start_symbol_visitor, boost::hana::type<ConstructorType> {});
+                                      second.value()->accept(visitor);
+                                      m_start_symbols.insert(visitor.get_result());
+                                  }
+                              });
+
+        boost::hana::for_each(grammar.get_derivation_rules_container().get(),
+                              [&](auto&& pair)
+                              {
+                                  auto key = boost::hana::first(pair);
+                                  const auto& second = boost::hana::second(pair);
+                                  using ConstructorType = typename decltype(+key)::type;
+
+                                  for (const auto& rule : second)
+                                  {
+                                      auto& visitor = *boost::hana::at_key(m_derivation_rule_visitor, boost::hana::type<ConstructorType> {});
+                                      rule->accept(visitor);
+                                      const auto copied_rule = visitor.get_result();
+                                      m_derivation_rules.push_back(copied_rule);
+                                  }
+                              });
+
+        boost::hana::for_each(
+            grammar.get_substitution_rules().get(),
+            [&](auto&& pair)
+            {
+                auto key = boost::hana::first(pair);
+                auto second = boost::hana::second(pair);
+                using ConstructorType = typename decltype(+key)::type;
+
+                const auto& ordering = boost::hana::at_key(m_orderings, key);
+
+                std::sort(second.begin(), second.end(), [&](auto&& lhs, auto&& rhs) { return ordering.at(lhs->get_head()) < ordering.at(rhs->get_head()); });
+
+                for (const auto& rule : second)
+                {
+                    auto& visitor = *boost::hana::at_key(m_substitution_rule_visitor, boost::hana::type<ConstructorType> {});
+                    rule->accept(visitor);
+                    const auto copied_rule = visitor.get_result();
+                    m_substitution_rules.push_back(copied_rule);
+                }
+            });
+    }
+};
+
 static Grammar order_substitution_rules(const Grammar& grammar)
 {
+    auto orderings = HanaSubstitutionNonTerminalOrderings {};
+
     boost::hana::for_each(grammar.get_substitution_rules().get(),
                           [&](auto&& pair)
                           {
@@ -253,12 +345,6 @@ static Grammar order_substitution_rules(const Grammar& grammar)
 
                               auto top_sort = topological_sort(TraversalDirectionTaggedType(graph, ForwardTraversal {}));
 
-                              mimir::operator<<(std::cout, top_sort);
-                              std::cout << std::endl;
-
-                              mimir::operator<<(std::cout, non_terminal_to_vertex);
-                              std::cout << std::endl;
-
                               for (size_t i = 0; i < top_sort.size(); ++i)
                               {
                                   const auto& vertex = graph.get_vertex(top_sort.at(i));
@@ -266,11 +352,43 @@ static Grammar order_substitution_rules(const Grammar& grammar)
                                   non_terminal_to_vertex.at(nonterminal) = i;
                               }
 
-                              mimir::operator<<(std::cout, non_terminal_to_vertex);
-                              std::cout << std::endl;
+                              boost::hana::at_key(orderings, key) = std::move(non_terminal_to_vertex);
                           });
 
-    exit(1);
+    auto repositories = cnf_grammar::ConstructorRepositories();
+    auto start_symbols = cnf_grammar::StartSymbolsContainer();
+    auto derivation_rules = cnf_grammar::DerivationRulesContainer();
+    auto substitution_rules = cnf_grammar::SubstitutionRulesContainer();
+
+    auto substitute_concept_nonterminal_visitor = CopyNonTerminalVisitor<Concept>(repositories);
+    auto substitute_role_nonterminal_visitor = CopyNonTerminalVisitor<Role>(repositories);
+
+    auto concept_constructor_visitor =
+        CopyConstructorVisitor<Concept>(repositories, substitute_concept_nonterminal_visitor, substitute_role_nonterminal_visitor);
+    auto role_constructor_visitor = CopyConstructorVisitor<Role>(repositories, substitute_concept_nonterminal_visitor, substitute_role_nonterminal_visitor);
+
+    auto concept_derivation_rule_visitor =
+        CopyDerivationRuleVisitor<Concept>(repositories, substitute_concept_nonterminal_visitor, concept_constructor_visitor);
+    auto role_derivation_rule_visitor = CopyDerivationRuleVisitor<Role>(repositories, substitute_role_nonterminal_visitor, role_constructor_visitor);
+
+    auto concept_substitution_rule_visitor = CopySubstitutionRuleVisitor<Concept>(repositories, substitute_concept_nonterminal_visitor);
+    auto role_substitution_rule_visitor = CopySubstitutionRuleVisitor<Role>(repositories, substitute_role_nonterminal_visitor);
+
+    auto grammar_visitor = OrderSubstitutionRuleGrammarVisitor(repositories,
+                                                               start_symbols,
+                                                               derivation_rules,
+                                                               substitution_rules,
+                                                               substitute_concept_nonterminal_visitor,
+                                                               substitute_role_nonterminal_visitor,
+                                                               concept_derivation_rule_visitor,
+                                                               role_derivation_rule_visitor,
+                                                               concept_substitution_rule_visitor,
+                                                               role_substitution_rule_visitor,
+                                                               orderings);
+
+    grammar_visitor.visit(grammar);
+
+    return Grammar(std::move(repositories), std::move(start_symbols), std::move(derivation_rules), std::move(substitution_rules), grammar.get_domain());
 }
 
 Grammar simplify(const Grammar& grammar)
@@ -285,9 +403,7 @@ Grammar simplify(const Grammar& grammar)
 
     /* Step 3 order substitution rules in order of evaluation through topological sorting */
 
-    std::cout << simplified_grammar << std::endl;
-
-    order_substitution_rules(simplified_grammar);
+    simplified_grammar = order_substitution_rules(simplified_grammar);
 
     /* Step 4 remove rules of unreachable non-terminals */
 
