@@ -76,7 +76,7 @@ void ConceptTopImpl::evaluate_impl(EvaluationContext& context) const
     bitset.unset_all();
 
     // Compute result
-    const auto num_objects = context.get_problem()->get_objects().size();
+    const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     for (size_t i = 0; i < num_objects; ++i)
     {
         bitset.set(i);
@@ -111,7 +111,7 @@ void ConceptAtomicStateImpl<P>::evaluate_impl(EvaluationContext& context) const
         if (atom->get_predicate() == m_predicate)
         {
             // Ensure that object index is within bounds.
-            assert(atom->get_objects().at(0)->get_index() < context.get_problem()->get_objects().size());
+            assert(atom->get_objects().at(0)->get_index() < context.get_problem()->get_problem_and_domain_objects().size());
 
             bitset.set(atom->get_objects().at(0)->get_index());
         }
@@ -133,7 +133,7 @@ void ConceptAtomicStateImpl<Static>::evaluate_impl(EvaluationContext& context) c
         if (atom->get_predicate() == m_predicate)
         {
             // Ensure that object index is within bounds.
-            assert(atom->get_objects().at(0)->get_index() < context.get_problem()->get_objects().size());
+            assert(atom->get_objects().at(0)->get_index() < context.get_problem()->get_problem_and_domain_objects().size());
 
             bitset.set(atom->get_objects().at(0)->get_index());
         }
@@ -189,7 +189,7 @@ void ConceptAtomicGoalImpl<P>::evaluate_impl(EvaluationContext& context) const
         if (literal->is_negated() == m_is_negated && atom->get_predicate() == m_predicate)
         {
             // Ensure that object index is within bounds.
-            assert(atom->get_objects().at(0)->get_index() < context.get_problem()->get_objects().size());
+            assert(atom->get_objects().at(0)->get_index() < context.get_problem()->get_problem_and_domain_objects().size());
 
             bitset.set(atom->get_objects().at(0)->get_index());
         }
@@ -304,7 +304,7 @@ void ConceptNegationImpl::evaluate_impl(EvaluationContext& context) const
     const auto eval = m_concept->evaluate(context);
 
     // Fetch data
-    const auto num_objects = context.get_problem()->get_objects().size();
+    const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitset = context.get_builder<Concept>().get_data();
     bitset.unset_all();
 
@@ -341,7 +341,7 @@ void ConceptValueRestrictionImpl::evaluate_impl(EvaluationContext& context) cons
     const auto eval_concept = m_concept->evaluate(context);
 
     // Fetch data
-    const auto num_objects = context.get_problem()->get_objects().size();
+    const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitset = context.get_builder<Concept>().get_data();
     bitset.unset_all();
 
@@ -389,7 +389,7 @@ void ConceptExistentialQuantificationImpl::evaluate_impl(EvaluationContext& cont
     const auto eval_concept = m_concept->evaluate(context);
 
     // Fetch data
-    const auto num_objects = context.get_problem()->get_objects().size();
+    const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitset = context.get_builder<Concept>().get_data();
     bitset.unset_all();
 
@@ -433,7 +433,7 @@ void ConceptRoleValueMapContainmentImpl::evaluate_impl(EvaluationContext& contex
     const auto eval_role_right = m_role_right->evaluate(context);
 
     // Fetch data
-    const auto num_objects = context.get_problem()->get_objects().size();
+    const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitset = context.get_builder<Concept>().get_data();
     bitset.unset_all();
 
@@ -481,7 +481,7 @@ void ConceptRoleValueMapEqualityImpl::evaluate_impl(EvaluationContext& context) 
     const auto eval_role_right = m_role_right->evaluate(context);
 
     // Fetch data
-    const auto num_objects = context.get_problem()->get_objects().size();
+    const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitset = context.get_builder<Concept>().get_data();
     bitset.unset_all();
 
@@ -520,7 +520,7 @@ ConceptNominalImpl::ConceptNominalImpl(Index index, Object object) : m_index(ind
 void ConceptNominalImpl::evaluate_impl(EvaluationContext& context) const
 {
     // Ensure that object index is within bounds.
-    assert(m_object->get_index() < context.get_problem()->get_objects().size());
+    assert(m_object->get_index() < context.get_problem()->get_problem_and_domain_objects().size());
 
     // Fetch data
     auto& bitset = context.get_builder<Concept>().get_data();
@@ -545,7 +545,7 @@ RoleUniversalImpl::RoleUniversalImpl(Index index) : m_index(index) {}
 void RoleUniversalImpl::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
-    const auto num_objects = context.get_problem()->get_objects().size();
+    const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitsets = context.get_builder<Role>().get_data();
     assert(bitsets.size() == num_objects);
     for (auto& bitset : bitsets)
@@ -580,7 +580,7 @@ template<StaticOrFluentOrDerived P>
 void RoleAtomicStateImpl<P>::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
-    const auto num_objects = context.get_problem()->get_objects().size();
+    const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitsets = context.get_builder<Role>().get_data();
     assert(bitsets.size() == num_objects);
     for (auto& bitset : bitsets)
@@ -611,7 +611,7 @@ template<>
 void RoleAtomicStateImpl<Static>::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
-    const auto num_objects = context.get_problem()->get_objects().size();
+    const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitsets = context.get_builder<Role>().get_data();
     assert(bitsets.size() == num_objects);
     for (auto& bitset : bitsets)
@@ -676,7 +676,7 @@ template<StaticOrFluentOrDerived P>
 void RoleAtomicGoalImpl<P>::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
-    const auto num_objects = context.get_problem()->get_objects().size();
+    const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitsets = context.get_builder<Role>().get_data();
     assert(bitsets.size() == num_objects);
     for (auto& bitset : bitsets)
@@ -745,7 +745,7 @@ RoleIntersectionImpl::RoleIntersectionImpl(Index index, Constructor<Role> role_l
 void RoleIntersectionImpl::evaluate_impl(EvaluationContext& context) const
 {
     // Evaluate children
-    const auto num_objects = context.get_problem()->get_objects().size();
+    const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     const auto eval_left = m_role_left->evaluate(context);
     const auto eval_right = m_role_right->evaluate(context);
 
@@ -792,7 +792,7 @@ void RoleUnionImpl::evaluate_impl(EvaluationContext& context) const
     const auto eval_right = m_role_left->evaluate(context);
 
     // Fetch data
-    const auto num_objects = context.get_problem()->get_objects().size();
+    const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitsets = context.get_builder<Role>().get_data();
     assert(bitsets.size() == num_objects);
     for (auto& bitset : bitsets)
@@ -829,7 +829,7 @@ void RoleComplementImpl::evaluate_impl(EvaluationContext& context) const
     const auto eval_role = m_role->evaluate(context);
 
     // Fetch data
-    const auto num_objects = context.get_problem()->get_objects().size();
+    const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitsets = context.get_builder<Role>().get_data();
     assert(bitsets.size() == num_objects);
     for (auto& bitset : bitsets)
@@ -868,7 +868,7 @@ void RoleInverseImpl::evaluate_impl(EvaluationContext& context) const
     const auto eval_role = m_role->evaluate(context);
 
     // Fetch data
-    const auto num_objects = context.get_problem()->get_objects().size();
+    const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitsets = context.get_builder<Role>().get_data();
     assert(bitsets.size() == num_objects);
     for (auto& bitset : bitsets)
@@ -913,7 +913,7 @@ void RoleCompositionImpl::evaluate_impl(EvaluationContext& context) const
     const auto eval_role_right = m_role_right->evaluate(context);
 
     // Fetch data
-    const auto num_objects = context.get_problem()->get_objects().size();
+    const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitsets = context.get_builder<Role>().get_data();
     assert(bitsets.size() == num_objects);
     for (auto& bitset : bitsets)
@@ -954,7 +954,7 @@ void RoleTransitiveClosureImpl::evaluate_impl(EvaluationContext& context) const
     const auto eval_role = m_role->evaluate(context);
 
     // Fetch data
-    const auto num_objects = context.get_problem()->get_objects().size();
+    const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitsets = context.get_builder<Role>().get_data();
     assert(bitsets.size() == num_objects);
     for (auto& bitset : bitsets)
@@ -997,7 +997,7 @@ void RoleReflexiveTransitiveClosureImpl::evaluate_impl(EvaluationContext& contex
     const auto eval_role = m_role->evaluate(context);
 
     // Fetch data
-    const auto num_objects = context.get_problem()->get_objects().size();
+    const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitsets = context.get_builder<Role>().get_data();
     assert(bitsets.size() == num_objects);
     for (auto& bitset : bitsets)
@@ -1051,7 +1051,7 @@ void RoleRestrictionImpl::evaluate_impl(EvaluationContext& context) const
     const auto eval_concept = m_concept->evaluate(context);
 
     // Fetch data
-    const auto num_objects = context.get_problem()->get_objects().size();
+    const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitsets = context.get_builder<Role>().get_data();
     assert(bitsets.size() == num_objects);
     for (auto& bitset : bitsets)
@@ -1092,7 +1092,7 @@ void RoleIdentityImpl::evaluate_impl(EvaluationContext& context) const
     const auto eval_concept = m_concept->evaluate(context);
 
     // Fetch data
-    const auto num_objects = context.get_problem()->get_objects().size();
+    const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitsets = context.get_builder<Role>().get_data();
     assert(bitsets.size() == num_objects);
     for (auto& bitset : bitsets)

@@ -49,7 +49,7 @@ bool RefinementStateListPruningFunction::should_prune_impl(Constructor<D> constr
             auto builders = Denotations<Concept, Role>();
 
             // We resize role denotation here to avoid having to do that during evaluation.
-            boost::hana::at_key(builders, boost::hana::type<Role> {}).get_data().resize(problem->get_objects().size());
+            boost::hana::at_key(builders, boost::hana::type<Role> {}).get_data().resize(problem->get_problem_and_domain_objects().size());
 
             auto evaluation_context = EvaluationContext(state, problem, builders, m_repositories);
 
@@ -59,7 +59,9 @@ bool RefinementStateListPruningFunction::should_prune_impl(Constructor<D> constr
         }
     }
 
-    return !m_denotations_repository.insert(denotations).second;
+    const auto inserted = m_denotations_repository.insert(denotations).second;
+
+    return !inserted;
 }
 
 template bool RefinementStateListPruningFunction::should_prune_impl(Constructor<Concept> constructor);

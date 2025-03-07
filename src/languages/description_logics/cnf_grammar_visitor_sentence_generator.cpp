@@ -19,6 +19,7 @@
 
 #include "mimir/languages/description_logics/cnf_grammar.hpp"
 #include "mimir/languages/description_logics/cnf_grammar_constructors.hpp"
+#include "mimir/languages/description_logics/cnf_grammar_sentence_pruning.hpp"
 #include "mimir/languages/description_logics/constructor_visitors_formatter.hpp"
 
 #include <unordered_map>
@@ -403,7 +404,7 @@ const dl::ConstructorList<Role>& GeneratorConstructorVisitor<Role>::get_result()
  */
 
 template<ConceptOrRole D>
-GeneratorDerivationRuleVisitor<D>::GeneratorDerivationRuleVisitor(const RefinementPruningFunction& pruning_function,
+GeneratorDerivationRuleVisitor<D>::GeneratorDerivationRuleVisitor(RefinementPruningFunction& pruning_function,
                                                                   GeneratedSentencesContainer& sentences,
                                                                   dl::ConstructorRepositories& repositories,
                                                                   size_t complexity) :
@@ -419,13 +420,19 @@ void GeneratorDerivationRuleVisitor<D>::visit(DerivationRule<D> rule)
 {
     auto visitor = GeneratorConstructorVisitor<D>(m_sentences, m_repositories, m_complexity);
     rule->get_body()->accept(visitor);
-    const auto& result = visitor.get_result();
-    // TODO: add pruning here later
-    auto& target_location = m_sentences.get(rule->get_head(), m_complexity);
-    target_location.insert(target_location.end(), result.begin(), result.end());
-    for (const auto& r : result)
+    const auto& generated = visitor.get_result();
+    for (const auto& sentence : generated)
     {
-        std::cout << r << std::endl;
+        if (!m_pruning_function.should_prune(sentence))
+        {
+            auto& target_location = m_sentences.get(rule->get_head(), m_complexity);
+            target_location.push_back(sentence);
+            std::cout << "Generated: " << sentence << std::endl;
+        }
+        else
+        {
+            std::cout << "Pruned: " << sentence << std::endl;
+        }
     }
 }
 
@@ -461,7 +468,7 @@ template class GeneratorSubstitutionRuleVisitor<Role>;
  * Grammar
  */
 
-GeneratorGrammarVisitor::GeneratorGrammarVisitor(const RefinementPruningFunction& pruning_function,
+GeneratorGrammarVisitor::GeneratorGrammarVisitor(RefinementPruningFunction& pruning_function,
                                                  GeneratedSentencesContainer& sentences,
                                                  dl::ConstructorRepositories& repositories,
                                                  size_t max_syntactic_complexity) :
@@ -507,5 +514,4 @@ void GeneratorGrammarVisitor::visit(const Grammar& grammar)
                               });
     }
 }
-
 }

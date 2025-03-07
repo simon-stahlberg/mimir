@@ -164,13 +164,13 @@ template<ConceptOrRole D>
 class GeneratorDerivationRuleVisitor : public DerivationRuleVisitor<D>
 {
 private:
-    const RefinementPruningFunction& m_pruning_function;
+    RefinementPruningFunction& m_pruning_function;
     GeneratedSentencesContainer& m_sentences;
     dl::ConstructorRepositories& m_repositories;
     size_t m_complexity;
 
 public:
-    explicit GeneratorDerivationRuleVisitor(const RefinementPruningFunction& pruning_function,
+    explicit GeneratorDerivationRuleVisitor(RefinementPruningFunction& pruning_function,
                                             GeneratedSentencesContainer& sentences,
                                             dl::ConstructorRepositories& repositories,
                                             size_t complexity);
@@ -203,13 +203,13 @@ public:
 class GeneratorGrammarVisitor : public GrammarVisitor
 {
 private:
-    const RefinementPruningFunction& m_pruning_function;
+    RefinementPruningFunction& m_pruning_function;
     GeneratedSentencesContainer& m_sentences;
     dl::ConstructorRepositories& m_repositories;
     size_t m_max_syntactic_complexity;
 
 public:
-    explicit GeneratorGrammarVisitor(const RefinementPruningFunction& pruning_function,
+    explicit GeneratorGrammarVisitor(RefinementPruningFunction& pruning_function,
                                      GeneratedSentencesContainer& sentences,
                                      dl::ConstructorRepositories& repositories,
                                      size_t max_syntactic_complexity);

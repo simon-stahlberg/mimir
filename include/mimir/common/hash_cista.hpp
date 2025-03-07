@@ -107,12 +107,12 @@ struct loki::Hash<cista::tuple<Ts...>>
 
     size_t operator()(const Type& tuple) const
     {
-        constexpr std::size_t seed = sizeof...(Ts);
+        constexpr std::size_t aggregated_hash = sizeof...(Ts);
 
         [&]<std::size_t... Is>(std::index_sequence<Is...>)
-        { (loki::hash_combine(seed, cista::get<Is>(tuple)), ...); }(std::make_index_sequence<sizeof...(Ts)> {});
+        { (loki::hash_combine(aggregated_hash, cista::get<Is>(tuple)), ...); }(std::make_index_sequence<sizeof...(Ts)> {});
 
-        return seed;
+        return aggregated_hash;
     }
 };
 
@@ -125,15 +125,14 @@ struct loki::Hash<cista::basic_vector<T, Ptr, IndexPointers, TemplateSizeType, A
 
     size_t operator()(const Type& vector) const
     {
-        size_t seed = vector.size();
-        size_t hash[2] = { 0, 0 };
+        size_t aggregated_hash = vector.size();
 
-        loki::MurmurHash3_x64_128(vector.data(), vector.size() * sizeof(T), seed, hash);
+        for (const auto& element : vector)
+        {
+            loki::hash_combine(aggregated_hash, loki::Hash<T> {}(element));
+        }
 
-        loki::hash_combine(seed, hash[0]);
-        loki::hash_combine(seed, hash[1]);
-
-        return seed;
+        return aggregated_hash;
     }
 };
 
