@@ -21,6 +21,7 @@
 #include "mimir/buffering/unordered_set.h"
 #include "mimir/languages/description_logics/declarations.hpp"
 #include "mimir/languages/description_logics/denotations.hpp"
+#include "mimir/search/declarations.hpp"
 
 #include <unordered_map>
 #include <unordered_set>
@@ -37,28 +38,14 @@ private:
     // Store denotations uniquely.
     DenotationImplSet<D> m_storage;
 
-    struct Key
-    {
-        Constructor<D> constructor;
-        size_t state_index;
-    };
+    using Key = std::pair<Constructor<D>, State>;
 
-    struct KeyHash
-    {
-        size_t operator()(const Key& key) const;
-    };
-
-    struct KeyEqual
-    {
-        bool operator()(const Key& left, const Key& right) const;
-    };
-
-    std::unordered_map<Key, Denotation<D>, KeyHash, KeyEqual> m_cached_dynamic_denotations;
+    std::unordered_map<Key, Denotation<D>, loki::Hash<Key>, loki::EqualTo<Key>> m_cached_dynamic_denotations;
 
 public:
-    Denotation<D> insert(Constructor<D> constructor, size_t state_index, const DenotationImpl<D>& denotation);
+    Denotation<D> insert(Constructor<D> constructor, State state, const DenotationImpl<D>& denotation);
 
-    std::optional<Denotation<D>> get_if(Constructor<D> constructor, size_t state_index) const;
+    Denotation<D> get_if(Constructor<D> constructor, State state) const;
 };
 
 /// @brief Repository for managing denotations.

@@ -40,26 +40,26 @@ bool RefinementStateListPruningFunction::should_prune(Constructor<Role> role_) {
 template<ConceptOrRole D>
 bool RefinementStateListPruningFunction::should_prune_impl(Constructor<D> constructor)
 {
-    auto denotations = DenotationsList();
+    auto denotations = DenotationList<D>();
 
     for (const auto& [problem, states] : m_state_partitioning)
     {
+        auto builders = Denotations<Concept, Role>();
+
+        // We resize role denotation here to avoid having to do that during evaluation.
+        boost::hana::at_key(builders, boost::hana::type<Role> {}).get_data().resize(problem->get_problem_and_domain_objects().size());
+
         for (const auto& state : states)
         {
-            auto builders = Denotations<Concept, Role>();
-
-            // We resize role denotation here to avoid having to do that during evaluation.
-            boost::hana::at_key(builders, boost::hana::type<Role> {}).get_data().resize(problem->get_problem_and_domain_objects().size());
-
             auto evaluation_context = EvaluationContext(state, problem, builders, m_repositories);
 
-            const auto eval = constructor->evaluate(evaluation_context);
+            const auto denotation = constructor->evaluate(evaluation_context);
 
-            denotations.push_back(reinterpret_cast<uintptr_t>(eval));
+            denotations.push_back(denotation);
         }
     }
 
-    const auto inserted = m_denotations_repository.insert(denotations).second;
+    const auto inserted = boost::hana::at_key(m_denotations_repository, boost::hana::type<D> {}).insert(denotations).second;
 
     return !inserted;
 }

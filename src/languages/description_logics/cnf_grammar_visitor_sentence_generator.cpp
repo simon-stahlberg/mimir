@@ -427,12 +427,9 @@ void GeneratorDerivationRuleVisitor<D>::visit(DerivationRule<D> rule)
         {
             auto& target_location = m_sentences.get(rule->get_head(), m_complexity);
             target_location.push_back(sentence);
-            std::cout << "Generated: " << sentence << std::endl;
+            std::cout << sentence << std::endl;
         }
-        else
-        {
-            std::cout << "Pruned: " << sentence << std::endl;
-        }
+        else {}
     }
 }
 

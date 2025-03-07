@@ -72,12 +72,7 @@ private:
 
     DenotationRepositories<Concept, Role> m_repositories;
 
-    /// @brief Uniquely store feature denotations among all states.
-    /// Each state feature denotation is uniquely identified by its memory address.
-    /// These addresses are stored as vectors of `uintptr_t`.
-    /// Two identical vectors imply identical evaluations across all states.
-    using DenotationsList = std::vector<uintptr_t>;
-    std::unordered_set<DenotationsList, loki::Hash<DenotationsList>, loki::EqualTo<DenotationsList>> m_denotations_repository;
+    DenotationListSets<Concept, Role> m_denotations_repository;
 };
 
 /**

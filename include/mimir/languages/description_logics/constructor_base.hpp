@@ -46,17 +46,17 @@ public:
     Denotation<D> evaluate(EvaluationContext& context) const override
     {
         // Try to access cached result
-        auto denotation = context.get_repository<D>().get_if(this, context.get_state()->get_index());
-        if (denotation.has_value())
+        auto denotation = context.get_repository<D>().get_if(this, context.get_state());
+        if (denotation)
         {
-            return denotation.value();
+            return denotation;
         }
 
         // Compute the result in the derived class
         self().evaluate_impl(context);
 
         // Store and return result;
-        return context.get_repository<D>().insert(this, context.get_state()->get_index(), context.get_builder<D>());
+        return context.get_repository<D>().insert(this, context.get_state(), context.get_builder<D>());
     };
 
     void accept(ConstructorVisitor<D>& visitor) const override { return self().accept_impl(visitor); }

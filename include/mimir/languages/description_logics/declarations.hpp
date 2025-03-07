@@ -50,6 +50,12 @@ template<ConceptOrRole D>
 struct DenotationImpl;
 template<ConceptOrRole D>
 using Denotation = const DenotationImpl<D>*;
+template<ConceptOrRole D>
+using DenotationList = std::vector<Denotation<D>>;
+template<ConceptOrRole D>
+using DenotationListSet = std::unordered_set<DenotationList<D>, loki::Hash<DenotationList<D>>, loki::EqualTo<DenotationList<D>>>;
+template<ConceptOrRole... Ds>
+using DenotationListSets = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, DenotationListSet<Ds>>...>;
 
 /**
  * Constructors
@@ -63,7 +69,7 @@ using Constructor = const ConstructorImpl<D>*;
 template<ConceptOrRole D>
 using ConstructorList = std::vector<Constructor<D>>;
 template<ConceptOrRole... D>
-using ConstructorLists = boost::hana::map<boost::hana::pair<boost::hana::type<D>, dl::ConstructorList<D>>...>;
+using ConstructorLists = boost::hana::map<boost::hana::pair<boost::hana::type<D>, ConstructorList<D>>...>;
 
 /* Concrete concepts */
 class ConceptTopImpl;
