@@ -225,18 +225,18 @@ const Constructor<Role>& CopyConstructorVisitor<Role>::get_result() const { retu
  * NonTerminal
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 CopyNonTerminalVisitor<D>::CopyNonTerminalVisitor(ConstructorRepositories& repositories) : m_repositories(repositories)
 {
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 void CopyNonTerminalVisitor<D>::visit(NonTerminal<D> constructor)
 {
     m_result = m_repositories.get_or_create_nonterminal<D>(constructor->get_name());
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 const NonTerminal<D>& CopyNonTerminalVisitor<D>::get_result() const
 {
     return m_result;
@@ -249,7 +249,7 @@ template class CopyNonTerminalVisitor<Role>;
  * DerivationRule
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 CopyDerivationRuleVisitor<D>::CopyDerivationRuleVisitor(ConstructorRepositories& repositories,
                                                         CopyNonTerminalVisitor<D>& nonterminal_visitor,
                                                         CopyConstructorVisitor<D>& constructor_visitor) :
@@ -259,7 +259,7 @@ CopyDerivationRuleVisitor<D>::CopyDerivationRuleVisitor(ConstructorRepositories&
 {
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 void CopyDerivationRuleVisitor<D>::visit(DerivationRule<D> rule)
 {
     rule->get_head()->accept(m_nonterminal_visitor);
@@ -269,7 +269,7 @@ void CopyDerivationRuleVisitor<D>::visit(DerivationRule<D> rule)
     m_result = m_repositories.get_or_create_derivation_rule(head, body);
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 const DerivationRule<D>& CopyDerivationRuleVisitor<D>::get_result() const
 {
     return m_result;
@@ -282,14 +282,14 @@ template class CopyDerivationRuleVisitor<Role>;
  * SubstitutionRule
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 CopySubstitutionRuleVisitor<D>::CopySubstitutionRuleVisitor(ConstructorRepositories& repositories, CopyNonTerminalVisitor<D>& nonterminal_visitor) :
     m_repositories(repositories),
     m_nonterminal_visitor(nonterminal_visitor)
 {
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 void CopySubstitutionRuleVisitor<D>::visit(SubstitutionRule<D> rule)
 {
     rule->get_head()->accept(m_nonterminal_visitor);
@@ -299,7 +299,7 @@ void CopySubstitutionRuleVisitor<D>::visit(SubstitutionRule<D> rule)
     m_result = m_repositories.get_or_create_substitution_rule(head, body);
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 const SubstitutionRule<D>& CopySubstitutionRuleVisitor<D>::get_result() const
 {
     return m_result;

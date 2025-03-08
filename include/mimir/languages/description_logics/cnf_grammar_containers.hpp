@@ -48,7 +48,7 @@ public:
      * Modifiers
      */
 
-    template<ConceptOrRole D>
+    template<FeatureCategory D>
     auto insert(NonTerminal<D> start_symbol)
     {
         assert(boost::hana::at_key(m_symbols, boost::hana::type<D> {}) == std::nullopt);
@@ -60,7 +60,7 @@ public:
      * Accessors
      */
 
-    template<ConceptOrRole D>
+    template<FeatureCategory D>
     const std::optional<NonTerminal<D>>& get() const
     {
         return boost::hana::at_key(m_symbols, boost::hana::type<D> {});
@@ -88,7 +88,7 @@ public:
      * Modifiers
      */
 
-    template<ConceptOrRole D>
+    template<FeatureCategory D>
     void push_back(DerivationRule<D> rule)
     {
         boost::hana::at_key(m_map, boost::hana::type<D> {})[rule->get_head()].push_back(rule);
@@ -99,7 +99,7 @@ public:
      * Accessors
      */
 
-    template<ConceptOrRole D>
+    template<FeatureCategory D>
     const DerivationRuleList<D>& get(NonTerminal<D> non_terminal) const
     {
         const auto& container = boost::hana::at_key(m_map, boost::hana::type<D> {});
@@ -113,7 +113,7 @@ public:
         return it->second;
     }
 
-    template<ConceptOrRole D>
+    template<FeatureCategory D>
     const DerivationRuleList<D>& get() const
     {
         return boost::hana::at_key(m_lists, boost::hana::type<D> {});
@@ -141,7 +141,7 @@ public:
      * Modifiers
      */
 
-    template<ConceptOrRole D>
+    template<FeatureCategory D>
     void push_back(SubstitutionRule<D> rule)
     {
         boost::hana::at_key(m_map, boost::hana::type<D> {})[rule->get_head()].push_back(rule);
@@ -152,7 +152,7 @@ public:
      * Accessors
      */
 
-    template<ConceptOrRole D>
+    template<FeatureCategory D>
     const SubstitutionRuleList<D>& get(NonTerminal<D> non_terminal) const
     {
         const auto& container = boost::hana::at_key(m_map, boost::hana::type<D> {});
@@ -166,7 +166,7 @@ public:
         return it->second;
     }
 
-    template<ConceptOrRole D>
+    template<FeatureCategory D>
     const SubstitutionRuleList<D>& get() const
     {
         return boost::hana::at_key(m_lists, boost::hana::type<D> {});

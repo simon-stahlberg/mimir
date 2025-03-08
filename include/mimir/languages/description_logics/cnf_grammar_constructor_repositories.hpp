@@ -34,11 +34,11 @@ namespace mimir::dl::cnf_grammar
 template<typename T>
 using SegmentedDLRepository = loki::SegmentedRepository<T>;
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 using NonTerminalFactory = SegmentedDLRepository<NonTerminalImpl<D>>;
-template<ConceptOrRole D>
+template<FeatureCategory D>
 using DerivationRuleRepository = SegmentedDLRepository<DerivationRuleImpl<D>>;
-template<ConceptOrRole D>
+template<FeatureCategory D>
 using SubstitutionRuleRepository = SegmentedDLRepository<SubstitutionRuleImpl<D>>;
 
 using ConceptBotRepository = SegmentedDLRepository<ConceptBotImpl>;
@@ -126,11 +126,11 @@ public:
     HanaConstructorRepositories& get_repositories();
     const HanaConstructorRepositories& get_repositories() const;
 
-    template<ConceptOrRole D>
+    template<FeatureCategory D>
     NonTerminal<D> get_or_create_nonterminal(std::string name);
-    template<ConceptOrRole D>
+    template<FeatureCategory D>
     DerivationRule<D> get_or_create_derivation_rule(NonTerminal<D> head, Constructor<D> body);
-    template<ConceptOrRole D>
+    template<FeatureCategory D>
     SubstitutionRule<D> get_or_create_substitution_rule(NonTerminal<D> head, NonTerminal<D> body);
 
     /* Concepts */

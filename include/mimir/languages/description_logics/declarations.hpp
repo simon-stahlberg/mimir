@@ -39,22 +39,22 @@ class EvaluationContext;
  * Common
  */
 
-template<typename T, ConceptOrRole... Ds>
+template<typename T, FeatureCategory... Ds>
 using HanaContainer = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, T>...>;
 
 /**
  * Denotations
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 struct DenotationImpl;
-template<ConceptOrRole D>
+template<FeatureCategory D>
 using Denotation = const DenotationImpl<D>*;
-template<ConceptOrRole D>
+template<FeatureCategory D>
 using DenotationList = std::vector<Denotation<D>>;
-template<ConceptOrRole D>
+template<FeatureCategory D>
 using DenotationListSet = std::unordered_set<DenotationList<D>, loki::Hash<DenotationList<D>>, loki::EqualTo<DenotationList<D>>>;
-template<ConceptOrRole... Ds>
+template<FeatureCategory... Ds>
 using DenotationListSets = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, DenotationListSet<Ds>>...>;
 
 /**
@@ -62,13 +62,13 @@ using DenotationListSets = boost::hana::map<boost::hana::pair<boost::hana::type<
  */
 
 /* Constructor */
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class ConstructorImpl;
-template<ConceptOrRole D>
+template<FeatureCategory D>
 using Constructor = const ConstructorImpl<D>*;
-template<ConceptOrRole D>
+template<FeatureCategory D>
 using ConstructorList = std::vector<Constructor<D>>;
-template<ConceptOrRole... D>
+template<FeatureCategory... D>
 using ConstructorLists = boost::hana::map<boost::hana::pair<boost::hana::type<D>, ConstructorList<D>>...>;
 
 /* Concrete concepts */
@@ -135,13 +135,13 @@ using RoleIdentity = const RoleIdentityImpl*;
  * Visitors
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class ConstructorVisitor;
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class GrammarConstructorVisitor;
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class CNFGrammarConstructorVisitor;
 
 namespace grammar
@@ -151,42 +151,42 @@ namespace grammar
  */
 
 /* Constructor */
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 class ConstructorImpl;
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 using Constructor = const ConstructorImpl<D>*;
 
 /* NonTerminal */
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 class NonTerminalImpl;
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 using NonTerminal = const NonTerminalImpl<D>*;
-template<template<typename> typename Value, dl::ConceptOrRole... D>
+template<template<typename> typename Value, dl::FeatureCategory... D>
 using NonTerminalMap = boost::hana::map<boost::hana::pair<boost::hana::type<D>, std::unordered_map<NonTerminal<D>, Value<D>>>...>;
-template<typename Key, dl::ConceptOrRole... D>
+template<typename Key, dl::FeatureCategory... D>
 using ToNonTerminalMap =
     boost::hana::map<boost::hana::pair<boost::hana::type<D>, std::unordered_map<Key, NonTerminal<D>, loki::Hash<Key>, loki::EqualTo<Key>>>...>;
 
 /* ConstructorOrNonTerminal */
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 class ConstructorOrNonTerminalImpl;
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 using ConstructorOrNonTerminal = const ConstructorOrNonTerminalImpl<D>*;
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 using ConstructorOrNonTerminalList = std::vector<ConstructorOrNonTerminal<D>>;
 
 /* DerivationRule */
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 class DerivationRuleImpl;
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 using DerivationRule = const DerivationRuleImpl<D>*;
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 using DerivationRuleList = std::vector<DerivationRule<D>>;
-template<dl::ConceptOrRole... D>
+template<dl::FeatureCategory... D>
 using DerivationRuleLists = boost::hana::map<boost::hana::pair<boost::hana::type<D>, DerivationRuleList<D>>...>;
-template<ConceptOrRole D>
+template<FeatureCategory D>
 using DerivationRuleSet = std::unordered_set<DerivationRule<D>>;
-template<dl::ConceptOrRole... D>
+template<dl::FeatureCategory... D>
 using DerivationRuleSets = boost::hana::map<boost::hana::pair<boost::hana::type<D>, DerivationRuleSet<D>>...>;
 
 /* Concrete concepts */
@@ -253,16 +253,16 @@ using RoleIdentity = const RoleIdentityImpl*;
  * Visitors
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class ConstructorVisitor;
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class ConstructorOrNonTerminalVisitor;
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class NonTerminalVisitor;
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class DerivationRuleVisitor;
 
 class GrammarVisitor;
@@ -285,39 +285,39 @@ class ConstructorRepositories;
 namespace cnf_grammar
 {
 /* NonTerminal */
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 class NonTerminalImpl;
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 using NonTerminal = const NonTerminalImpl<D>*;
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 using NonTerminalList = std::vector<NonTerminal<D>>;
-template<template<typename> typename Value, dl::ConceptOrRole... D>
+template<template<typename> typename Value, dl::FeatureCategory... D>
 using NonTerminalMap = boost::hana::map<boost::hana::pair<boost::hana::type<D>, std::unordered_map<NonTerminal<D>, Value<D>>>...>;
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 using NonTerminalSet = std::unordered_set<NonTerminal<D>>;
 
 /* DerivationRule */
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 class DerivationRuleImpl;
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 using DerivationRule = const DerivationRuleImpl<D>*;
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 using DerivationRuleList = std::vector<DerivationRule<D>>;
-template<dl::ConceptOrRole... D>
+template<dl::FeatureCategory... D>
 using DerivationRuleLists = boost::hana::map<boost::hana::pair<boost::hana::type<D>, DerivationRuleList<D>>...>;
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 using DerivationRuleSet = std::unordered_set<DerivationRule<D>>;
 
 /* SubstitutionRule */
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 class SubstitutionRuleImpl;
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 using SubstitutionRule = const SubstitutionRuleImpl<D>*;
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 using SubstitutionRuleList = std::vector<SubstitutionRule<D>>;
-template<dl::ConceptOrRole... D>
+template<dl::FeatureCategory... D>
 using SubstitutionRuleLists = boost::hana::map<boost::hana::pair<boost::hana::type<D>, SubstitutionRuleList<D>>...>;
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 using SubstitutionRuleSet = std::unordered_set<SubstitutionRule<D>>;
 
 /**
@@ -325,15 +325,15 @@ using SubstitutionRuleSet = std::unordered_set<SubstitutionRule<D>>;
  */
 
 /* Constructor */
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 class ConstructorImpl;
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 using Constructor = const ConstructorImpl<D>*;
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 using ConstructorList = std::vector<Constructor<D>>;
-template<template<typename> typename Value, dl::ConceptOrRole... D>
+template<template<typename> typename Value, dl::FeatureCategory... D>
 using ConstructorMap = boost::hana::map<boost::hana::pair<boost::hana::type<D>, std::unordered_map<Constructor<D>, Value<D>>>...>;
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 using ConstructorSet = std::unordered_set<Constructor<D>>;
 
 /* Concrete concepts */
@@ -400,16 +400,16 @@ using RoleIdentity = const RoleIdentityImpl*;
  * Visitors
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class ConstructorVisitor;
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class NonTerminalVisitor;
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class DerivationRuleVisitor;
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class SubstitutionRuleVisitor;
 
 class GrammarVisitor;

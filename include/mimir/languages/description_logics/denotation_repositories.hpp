@@ -31,7 +31,7 @@ namespace mimir::dl
 {
 
 /// @brief DenotationRepository encapsulate logic for obtaining unique denotation views and caching.
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class DenotationRepository
 {
 private:
@@ -50,7 +50,7 @@ public:
 
 /// @brief Repository for managing denotations.
 /// This stores the computed denotation of each state.
-template<ConceptOrRole... Ds>
+template<FeatureCategory... Ds>
 using DenotationRepositories = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, DenotationRepository<Ds>>...>;
 
 }

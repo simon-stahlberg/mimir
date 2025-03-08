@@ -27,7 +27,7 @@
 namespace mimir::dl
 {
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class FormatterVisitor : public ConstructorVisitor<D>
 {
 };
@@ -92,7 +92,7 @@ public:
  * Printing
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 extern std::ostream& operator<<(std::ostream& out, const Constructor<D>& constructor);
 
 }

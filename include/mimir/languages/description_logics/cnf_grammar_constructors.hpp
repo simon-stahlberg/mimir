@@ -36,7 +36,7 @@ namespace mimir::dl::cnf_grammar
  * NonTerminal
  */
 
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 class NonTerminalImpl
 {
 private:
@@ -74,7 +74,7 @@ public:
  * DerivationRule
  */
 
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 class DerivationRuleImpl
 {
 private:
@@ -113,7 +113,7 @@ public:
  * SubstitutionRule
  */
 
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 class SubstitutionRuleImpl
 {
 private:

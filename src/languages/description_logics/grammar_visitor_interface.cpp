@@ -157,14 +157,14 @@ void RecurseConstructorVisitor<Role>::visit(RoleIdentity constructor)
  * ConstructorOrRoleNonTerminal
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 void RecurseConstructorOrNonTerminalVisitor<D>::initialize(RecurseNonTerminalVisitor<D>& nonterminal_visitor, RecurseConstructorVisitor<D>& constructor_visitor)
 {
     m_nonterminal_visitor = &nonterminal_visitor;
     m_constructor_visitor = &constructor_visitor;
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 void RecurseConstructorOrNonTerminalVisitor<D>::visit(ConstructorOrNonTerminal<D> constructor)
 {
     std::visit(
@@ -197,7 +197,7 @@ template class RecurseConstructorOrNonTerminalVisitor<Role>;
  * NonTerminal
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 void RecurseNonTerminalVisitor<D>::visit(NonTerminal<D> constructor)
 {
 }
@@ -209,7 +209,7 @@ template class RecurseNonTerminalVisitor<Role>;
  * DerivationRule
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 void RecurseDerivationRuleVisitor<D>::initialize(RecurseNonTerminalVisitor<D>& nonterminal_visitor,
                                                  RecurseConstructorOrNonTerminalVisitor<D>& constructor_or_nonterminal_visitor)
 {
@@ -217,7 +217,7 @@ void RecurseDerivationRuleVisitor<D>::initialize(RecurseNonTerminalVisitor<D>& n
     m_constructor_or_nonterminal_visitor = &constructor_or_nonterminal_visitor;
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 void RecurseDerivationRuleVisitor<D>::visit(DerivationRule<D> constructor)
 {
     assert(m_nonterminal_visitor && m_constructor_or_nonterminal_visitor);
@@ -494,19 +494,19 @@ Constructor<Role> CopyConstructorVisitor<Role>::get_result() const { return m_re
  * CopyConstructorOrRoleNonTerminal
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 CopyConstructorOrNonTerminalVisitor<D>::CopyConstructorOrNonTerminalVisitor(ConstructorRepositories& repositories) : m_repositories(repositories)
 {
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 void CopyConstructorOrNonTerminalVisitor<D>::initialize(CopyNonTerminalVisitor<D>& nonterminal_visitor, CopyConstructorVisitor<D>& constructor_visitor)
 {
     m_nonterminal_visitor = &nonterminal_visitor;
     m_constructor_visitor = &constructor_visitor;
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 void CopyConstructorOrNonTerminalVisitor<D>::visit(ConstructorOrNonTerminal<D> constructor)
 {
     std::visit(
@@ -534,7 +534,7 @@ void CopyConstructorOrNonTerminalVisitor<D>::visit(ConstructorOrNonTerminal<D> c
         constructor->get_constructor_or_non_terminal());
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 ConstructorOrNonTerminal<D> CopyConstructorOrNonTerminalVisitor<D>::get_result() const
 {
     return m_result;
@@ -547,18 +547,18 @@ template class CopyConstructorOrNonTerminalVisitor<Role>;
  * CopyNonTerminal
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 CopyNonTerminalVisitor<D>::CopyNonTerminalVisitor(ConstructorRepositories& repositories) : m_repositories(repositories)
 {
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 void CopyNonTerminalVisitor<D>::visit(NonTerminal<D> constructor)
 {
     m_result = m_repositories.template get_or_create_nonterminal<D>(constructor->get_name());
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 NonTerminal<D> CopyNonTerminalVisitor<D>::get_result() const
 {
     return m_result;
@@ -571,12 +571,12 @@ template class CopyNonTerminalVisitor<Role>;
  * CopyDerivationRule
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 CopyDerivationRuleVisitor<D>::CopyDerivationRuleVisitor(ConstructorRepositories& repositories) : m_repositories(repositories)
 {
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 void CopyDerivationRuleVisitor<D>::initialize(CopyNonTerminalVisitor<D>& nonterminal_visitor,
                                               CopyConstructorOrNonTerminalVisitor<D>& constructor_or_nonterminal_visitor)
 {
@@ -584,7 +584,7 @@ void CopyDerivationRuleVisitor<D>::initialize(CopyNonTerminalVisitor<D>& nonterm
     m_constructor_or_nonterminal_visitor = &constructor_or_nonterminal_visitor;
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 void CopyDerivationRuleVisitor<D>::visit(DerivationRule<D> constructor)
 {
     assert(m_nonterminal_visitor && m_constructor_or_nonterminal_visitor);
@@ -602,7 +602,7 @@ void CopyDerivationRuleVisitor<D>::visit(DerivationRule<D> constructor)
     m_result = m_repositories.template get_or_create_derivation_rule<D>(copied_non_terminal, std::move(copied_constructor_or_nonterminals));
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 DerivationRule<D> CopyDerivationRuleVisitor<D>::get_result() const
 {
     return m_result;

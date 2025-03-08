@@ -31,7 +31,7 @@ namespace mimir::dl::grammar
 /// Interface
 ////////////////////////////
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class ConstructorVisitor
 {
 };
@@ -92,7 +92,7 @@ public:
  * ConstructorOrRoleNonTerminal
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class ConstructorOrNonTerminalVisitor
 {
 public:
@@ -105,7 +105,7 @@ public:
  * NonTerminal
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class NonTerminalVisitor
 {
 public:
@@ -118,7 +118,7 @@ public:
  * DerivationRule
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class DerivationRuleVisitor
 {
 public:
@@ -143,16 +143,16 @@ public:
 /// Recursive Visitor
 ////////////////////////////
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class RecurseConstructorVisitor;
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class RecurseConstructorOrNonTerminalVisitor;
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class RecurseNonTerminalVisitor;
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class RecurseDerivationRuleVisitor;
 
 class RecurseGrammarVisitor;
@@ -161,7 +161,7 @@ class RecurseGrammarVisitor;
  * Concept
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class RecurseConstructorVisitor : public ConstructorVisitor<D>
 {
 };
@@ -236,7 +236,7 @@ public:
  * ConstructorOrRoleNonTerminal
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class RecurseConstructorOrNonTerminalVisitor : public ConstructorOrNonTerminalVisitor<D>
 {
 protected:
@@ -255,7 +255,7 @@ public:
  * NonTerminal
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class RecurseNonTerminalVisitor : public NonTerminalVisitor<D>
 {
 public:
@@ -268,7 +268,7 @@ public:
  * DerivationRule
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class RecurseDerivationRuleVisitor : public DerivationRuleVisitor<D>
 {
 protected:
@@ -313,16 +313,16 @@ public:
 /// Recursive Copy Visitor
 ////////////////////////////
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class CopyConstructorVisitor;
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class CopyConstructorOrNonTerminalVisitor;
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class CopyNonTerminalVisitor;
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class CopyDerivationRuleVisitor;
 
 class CopyGrammarVisitor;
@@ -331,7 +331,7 @@ class CopyGrammarVisitor;
  * Concept
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class CopyConstructorVisitor : public ConstructorVisitor<D>
 {
 };
@@ -416,7 +416,7 @@ public:
  * ConstructorOrRoleNonTerminal
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class CopyConstructorOrNonTerminalVisitor : public ConstructorOrNonTerminalVisitor<D>
 {
 protected:
@@ -440,7 +440,7 @@ public:
  * NonTerminal
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class CopyNonTerminalVisitor : public NonTerminalVisitor<D>
 {
 protected:
@@ -459,7 +459,7 @@ public:
  * DerivationRule
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class CopyDerivationRuleVisitor : public DerivationRuleVisitor<D>
 {
 protected:

@@ -40,19 +40,19 @@ using ascii::space;
 ///////////////////////////////////////////////////////////////////////////
 namespace parser
 {
-template<ConceptOrRole D>
+template<FeatureCategory D>
 struct ConstructorClass;
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 struct NonTerminalClass;
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 struct ConstructorOrNonTerminalClass;
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 struct DerivationRuleClass;
 
-struct ConceptOrRoleDerivationRuleClass;
+struct FeatureCategoryDerivationRuleClass;
 
 struct ConceptBotClass;
 struct ConceptTopClass;
@@ -79,6 +79,14 @@ struct RoleTransitiveClosureClass;
 struct RoleReflexiveTransitiveClosureClass;
 struct RoleRestrictionClass;
 struct RoleIdentityClass;
+
+struct ConceptOrRoleClass;
+
+struct BooleanAtomicStateClass;
+struct BooleanNonemptyClass;
+
+struct NumericalCountClass;
+struct NumericalDistanceClass;
 
 struct GrammarHeadClass;
 struct GrammarBodyClass;
@@ -117,7 +125,23 @@ typedef x3::rule<NonTerminalClass<Role>, ast::NonTerminal<Role>> role_non_termin
 typedef x3::rule<ConstructorOrNonTerminalClass<Role>, ast::ConstructorOrNonTerminal<Role>> role_choice_type;
 typedef x3::rule<DerivationRuleClass<Role>, ast::DerivationRule<Role>> role_derivation_rule_type;
 
-typedef x3::rule<ConceptOrRoleDerivationRuleClass, ast::ConceptOrRoleDerivationRule> concept_or_role_derivation_rule_type;
+typedef x3::rule<ConceptOrRoleClass, ast::ConceptOrRole> concept_or_role_type;
+
+typedef x3::rule<ConstructorClass<Boolean>, ast::Constructor<Boolean>> boolean_type;
+typedef x3::rule<BooleanAtomicStateClass, ast::BooleanAtomicState> boolean_atomic_state_type;
+typedef x3::rule<BooleanNonemptyClass, ast::BooleanNonempty> boolean_nonempty_type;
+typedef x3::rule<NonTerminalClass<Boolean>, ast::NonTerminal<Boolean>> boolean_non_terminal_type;
+typedef x3::rule<ConstructorOrNonTerminalClass<Boolean>, ast::ConstructorOrNonTerminal<Boolean>> boolean_choice_type;
+typedef x3::rule<DerivationRuleClass<Boolean>, ast::DerivationRule<Boolean>> boolean_derivation_rule_type;
+
+typedef x3::rule<ConstructorClass<Numerical>, ast::Constructor<Numerical>> numerical_type;
+typedef x3::rule<NumericalCountClass, ast::NumericalCount> numerical_count_type;
+typedef x3::rule<NumericalDistanceClass, ast::NumericalDistance> numerical_distance_type;
+typedef x3::rule<NonTerminalClass<Numerical>, ast::NonTerminal<Numerical>> numerical_non_terminal_type;
+typedef x3::rule<ConstructorOrNonTerminalClass<Numerical>, ast::ConstructorOrNonTerminal<Numerical>> numerical_choice_type;
+typedef x3::rule<DerivationRuleClass<Numerical>, ast::DerivationRule<Numerical>> numerical_derivation_rule_type;
+
+typedef x3::rule<FeatureCategoryDerivationRuleClass, ast::FeatureCategoryDerivationRule> feature_category_derivation_rule_type;
 
 typedef x3::rule<GrammarHeadClass, ast::GrammarHead> grammar_head_type;
 typedef x3::rule<GrammarBodyClass, ast::GrammarBody> grammar_body_type;
@@ -156,7 +180,23 @@ BOOST_SPIRIT_DECLARE(role_type,
                      role_choice_type,
                      role_derivation_rule_type)
 
-BOOST_SPIRIT_DECLARE(concept_or_role_derivation_rule_type, grammar_head_type, grammar_body_type)
+BOOST_SPIRIT_DECLARE(concept_or_role_type)
+
+BOOST_SPIRIT_DECLARE(boolean_type,
+                     boolean_atomic_state_type,
+                     boolean_nonempty_type,
+                     boolean_non_terminal_type,
+                     boolean_choice_type,
+                     boolean_derivation_rule_type)
+
+BOOST_SPIRIT_DECLARE(numerical_type,
+                     numerical_count_type,
+                     numerical_distance_type,
+                     numerical_non_terminal_type,
+                     numerical_choice_type,
+                     numerical_derivation_rule_type)
+
+BOOST_SPIRIT_DECLARE(feature_category_derivation_rule_type, grammar_head_type, grammar_body_type)
 
 }
 
@@ -194,7 +234,23 @@ parser::role_non_terminal_type const& role_non_terminal();
 parser::role_choice_type const& role_choice();
 parser::role_derivation_rule_type const& role_derivation_rule();
 
-parser::concept_or_role_derivation_rule_type const& concept_or_role_derivation_rule();
+parser::concept_or_role_type const& concept_or_role();
+
+parser::boolean_type const& boolean();
+parser::boolean_atomic_state_type const& boolean_atomic_state();
+parser::boolean_nonempty_type const& boolean_nonempty();
+parser::boolean_non_terminal_type const& boolean_non_terminal();
+parser::boolean_choice_type const& boolean_choice();
+parser::boolean_derivation_rule_type const& boolean_derivation_rule();
+
+parser::numerical_type const& numerical();
+parser::numerical_count_type const& numerical_count();
+parser::numerical_distance_type const& numerical_distance();
+parser::numerical_non_terminal_type const& numerical_non_terminal();
+parser::numerical_choice_type const& numerical_choice();
+parser::numerical_derivation_rule_type const& numerical_derivation_rule();
+
+parser::feature_category_derivation_rule_type const& feature_category_derivation_rule();
 
 parser::grammar_head_type const& grammar_head();
 parser::grammar_body_type const& grammar_body();

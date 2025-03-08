@@ -60,13 +60,19 @@ struct RoleReflexiveTransitiveClosure;
 struct RoleRestriction;
 struct RoleIdentity;
 
-struct ConceptOrRoleDerivationRule;
+struct BooleanAtomicState;
+struct BooleanNonempty;
+
+struct NumericalCount;
+struct NumericalDistance;
+
+struct FeatureCategoryDerivationRule;
 
 struct GrammarHead;
 struct GrammarBody;
 struct Grammar;
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 struct Constructor
 {
 };
@@ -111,13 +117,29 @@ struct Constructor<Role> :
     using base_type::operator=;
 };
 
-template<ConceptOrRole D>
+using ConceptOrRoleConstructor = x3::variant<Constructor<Concept>, Constructor<Role>>;
+
+template<>
+struct Constructor<Boolean> : x3::position_tagged, x3::variant<x3::forward_ast<BooleanAtomicState>, x3::forward_ast<BooleanNonempty>>
+{
+    using base_type::base_type;
+    using base_type::operator=;
+};
+
+template<>
+struct Constructor<Numerical> : x3::position_tagged, x3::variant<x3::forward_ast<NumericalCount>, x3::forward_ast<NumericalDistance>>
+{
+    using base_type::base_type;
+    using base_type::operator=;
+};
+
+template<FeatureCategory D>
 struct NonTerminal : x3::position_tagged
 {
     std::string name;
 };
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 struct ConstructorOrNonTerminal : x3::position_tagged, x3::variant<NonTerminal<D>, Constructor<D>>
 {
     using typename x3::variant<NonTerminal<D>, Constructor<D>>::base_type;
@@ -125,7 +147,7 @@ struct ConstructorOrNonTerminal : x3::position_tagged, x3::variant<NonTerminal<D
     using base_type::operator=;
 };
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 struct DerivationRule : x3::position_tagged
 {
     NonTerminal<D> non_terminal;
@@ -270,10 +292,50 @@ struct RoleIdentity : x3::position_tagged
 };
 
 /**
+ * ConceptOrRole
+ */
+
+struct ConceptOrRole : x3::variant<Constructor<Concept>, Constructor<Role>>
+{
+    using base_type::base_type;
+    using base_type::operator=;
+};
+
+/**
+ * Booleans
+ */
+
+struct BooleanAtomicState : x3::position_tagged
+{
+    std::string predicate_name;
+};
+struct BooleanNonempty : x3::position_tagged
+{
+    ConceptOrRole concept_or_role;
+};
+
+/**
+ * Numericals
+ */
+
+struct NumericalCount : x3::position_tagged
+{
+    ConceptOrRole concept_or_role;
+};
+struct NumericalDistance : x3::position_tagged
+{
+    Constructor<Concept> left_concept;
+    Constructor<Role> role;
+    Constructor<Concept> right_concept;
+};
+
+/**
  * Grammar
  */
 
-struct ConceptOrRoleDerivationRule : x3::position_tagged, x3::variant<DerivationRule<Concept>, DerivationRule<Role>>
+struct FeatureCategoryDerivationRule :
+    x3::position_tagged,
+    x3::variant<DerivationRule<Concept>, DerivationRule<Role>, DerivationRule<Boolean>, DerivationRule<Numerical>>
 {
     using base_type::base_type;
     using base_type::operator=;
@@ -283,11 +345,13 @@ struct GrammarHead : x3::position_tagged
 {
     boost::optional<NonTerminal<Concept>> concept_start;
     boost::optional<NonTerminal<Role>> role_start;
+    boost::optional<NonTerminal<Boolean>> boolean_start;
+    boost::optional<NonTerminal<Numerical>> numerical_start;
 };
 
 struct GrammarBody : x3::position_tagged
 {
-    std::vector<ConceptOrRoleDerivationRule> rules;
+    std::vector<FeatureCategoryDerivationRule> rules;
 };
 
 struct Grammar : x3::position_tagged

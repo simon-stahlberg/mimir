@@ -26,7 +26,7 @@ namespace mimir::dl::grammar
 using NonTerminalSet = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::unordered_set<NonTerminal<Concept>>>,
                                         boost::hana::pair<boost::hana::type<Role>, std::unordered_set<NonTerminal<Role>>>>;
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class CollectHeadAndBodyNonTerminalsDerivationRuleVisitor : public RecurseDerivationRuleVisitor<D>
 {
 private:
@@ -52,7 +52,7 @@ public:
     }
 };
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class CollectHeadAndBodyNonTerminalsNonTerminalVisitor : public RecurseNonTerminalVisitor<D>
 {
 private:

@@ -53,7 +53,7 @@ Grammar::Grammar(GrammarSpecificationEnum type, Domain domain)
     verify_grammar_is_well_defined(*this);
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 bool Grammar::test_match(dl::Constructor<D> constructor) const
 {
     const auto& start_symbol = m_start_symbols.template get<D>();

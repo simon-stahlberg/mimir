@@ -30,7 +30,7 @@
 namespace mimir::dl
 {
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class ConstructorImpl
 {
 protected:

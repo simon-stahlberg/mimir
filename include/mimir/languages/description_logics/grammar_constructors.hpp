@@ -36,7 +36,7 @@ namespace mimir::dl::grammar
  * NonTerminal
  */
 
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 class NonTerminalImpl
 {
 private:
@@ -74,7 +74,7 @@ public:
  * ConstructorOrNonTerminal
  */
 
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 class ConstructorOrNonTerminalImpl
 {
 private:
@@ -111,7 +111,7 @@ public:
  * DerivationRule
  */
 
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 class DerivationRuleImpl
 {
 protected:

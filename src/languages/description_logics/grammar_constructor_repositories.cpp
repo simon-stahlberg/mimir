@@ -24,7 +24,7 @@ HanaConstructorRepositories& ConstructorRepositories::get_repositories() { retur
 
 const HanaConstructorRepositories& ConstructorRepositories::get_repositories() const { return m_repositories; }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 DerivationRule<D> ConstructorRepositories::get_or_create_derivation_rule(NonTerminal<D> non_terminal,
                                                                          ConstructorOrNonTerminalList<D> constructor_or_non_terminals)
 {
@@ -37,7 +37,7 @@ template DerivationRule<Concept> ConstructorRepositories::get_or_create_derivati
 template DerivationRule<Role> ConstructorRepositories::get_or_create_derivation_rule(NonTerminal<Role> non_terminal,
                                                                                      ConstructorOrNonTerminalList<Role> constructor_or_non_terminals);
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 NonTerminal<D> ConstructorRepositories::get_or_create_nonterminal(std::string name)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<NonTerminalImpl<D>> {}).get_or_create(std::move(name));
@@ -46,7 +46,7 @@ NonTerminal<D> ConstructorRepositories::get_or_create_nonterminal(std::string na
 template NonTerminal<Concept> ConstructorRepositories::get_or_create_nonterminal(std::string name);
 template NonTerminal<Role> ConstructorRepositories::get_or_create_nonterminal(std::string name);
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 ConstructorOrNonTerminal<D> ConstructorRepositories::get_or_create_constructor_or_nonterminal(std::variant<Constructor<D>, NonTerminal<D>> choice)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<ConstructorOrNonTerminalImpl<D>> {}).get_or_create(std::move(choice));

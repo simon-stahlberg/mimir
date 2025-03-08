@@ -34,7 +34,7 @@ State EvaluationContext::get_state() const { return m_state; }
 
 Problem EvaluationContext::get_problem() const { return m_problem; }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 DenotationImpl<D>& EvaluationContext::get_builder()
 {
     return boost::hana::at_key(m_builders, boost::hana::type<D> {});
@@ -43,7 +43,7 @@ DenotationImpl<D>& EvaluationContext::get_builder()
 template DenotationImpl<Concept>& EvaluationContext::get_builder<Concept>();
 template DenotationImpl<Role>& EvaluationContext::get_builder<Role>();
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 DenotationRepository<D>& EvaluationContext::get_repository()
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<D> {});

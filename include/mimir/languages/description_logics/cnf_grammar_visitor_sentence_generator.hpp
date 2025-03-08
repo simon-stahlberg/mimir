@@ -35,7 +35,7 @@ namespace mimir::dl::cnf_grammar
 class GeneratedSentencesContainer
 {
 private:
-    template<ConceptOrRole D>
+    template<FeatureCategory D>
     using GeneratedConstructorsMap = std::unordered_map<NonTerminal<D>, std::vector<dl::ConstructorList<D>>>;
 
     using HanaGeneratedConstructorsMap = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, GeneratedConstructorsMap<Concept>>,
@@ -46,7 +46,7 @@ private:
     HanaGeneratedConstructorsMap m_generated_constructors;
 
 public:
-    template<ConceptOrRole D>
+    template<FeatureCategory D>
     dl::ConstructorList<D>& get(NonTerminal<D> nonterminal, size_t complexity)
     {
         auto& constructors_by_complexity = boost::hana::at_key(m_generated_constructors, boost::hana::type<D> {})[nonterminal];
@@ -57,7 +57,7 @@ public:
         return constructors_by_complexity[complexity];
     }
 
-    template<ConceptOrRole D>
+    template<FeatureCategory D>
     const dl::ConstructorList<D>& get(NonTerminal<D> nonterminal, size_t complexity) const
     {
         const auto& container = boost::hana::at_key(m_generated_constructors, boost::hana::type<D> {});
@@ -74,7 +74,7 @@ public:
     HanaGeneratedConstructorsMap& get_hana_generated_constructors() { return m_generated_constructors; }
 };
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 struct GeneratorStatistics
 {
     size_t num_generated = 0;
@@ -91,14 +91,14 @@ struct GeneratorStatistics
     }
 };
 
-template<ConceptOrRole... Ds>
+template<FeatureCategory... Ds>
 using HanaGeneratorStatistics = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, GeneratorStatistics<Ds>>...>;
 
 /**
  * Constructors
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class GeneratorConstructorVisitor : public ConstructorVisitor<D>
 {
 };
@@ -180,7 +180,7 @@ public:
  * DerivationRule
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class GeneratorDerivationRuleVisitor : public DerivationRuleVisitor<D>
 {
 private:
@@ -206,7 +206,7 @@ public:
  * SubstitutionRule
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class GeneratorSubstitutionRuleVisitor : public SubstitutionRuleVisitor<D>
 {
 private:

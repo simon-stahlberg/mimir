@@ -65,7 +65,7 @@ public:
     bool should_prune(Constructor<Role> role_) override;
 
 private:
-    template<ConceptOrRole D>
+    template<FeatureCategory D>
     bool should_prune_impl(Constructor<D> constructor);
 
     ProblemMap<StateList> m_state_partitioning;

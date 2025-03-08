@@ -24,34 +24,34 @@
 
 namespace mimir::dl::cnf_grammar
 {
-template<ConceptOrRole D>
+template<FeatureCategory D>
 using ConstructorOrNonTerminal = std::variant<Constructor<D>, NonTerminal<D>>;
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 using DerivationOrSubstitutionRule = std::variant<DerivationRule<D>, SubstitutionRule<D>>;
 }
 
 namespace mimir::dl::grammar
 {
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class ToCNFConstructorVisitor;
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class ToCNFVariantConstructorOrNonTerminalVisitor;
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class ToCNFNonTerminalConstructorOrNonTerminalVisitor;
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class ToCNFNonTerminalVisitor;
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class ToCNFDerivationRuleVisitor;
 
 class ToCNFGrammarVisitor;
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class ToCNFConstructorVisitor : public ConstructorVisitor<D>
 {
 };
@@ -136,7 +136,7 @@ public:
  * ConstructorOrRoleNonTerminal
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class ToCNFVariantConstructorOrNonTerminalVisitor : public ConstructorOrNonTerminalVisitor<D>
 {
 protected:
@@ -156,7 +156,7 @@ public:
     cnf_grammar::ConstructorOrNonTerminal<D> get_result() const;
 };
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class ToCNFNonTerminalConstructorOrNonTerminalVisitor : public ConstructorOrNonTerminalVisitor<D>
 {
 protected:
@@ -179,7 +179,7 @@ public:
  * NonTerminal
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class ToCNFNonTerminalVisitor : public NonTerminalVisitor<D>
 {
 protected:
@@ -198,7 +198,7 @@ public:
  * DerivationRule
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class ToCNFDerivationRuleVisitor : public DerivationRuleVisitor<D>
 {
 protected:

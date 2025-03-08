@@ -185,7 +185,7 @@ void FormatterVisitor<Role>::visit(RoleIdentity constructor)
     constructor->get_concept()->accept(*m_concept_visitor);
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 extern std::ostream& operator<<(std::ostream& out, const Constructor<D>& constructor)
 {
     auto concept_visitor = FormatterVisitor<Concept>(out);

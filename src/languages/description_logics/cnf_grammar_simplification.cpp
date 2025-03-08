@@ -25,7 +25,7 @@
 namespace mimir::dl::cnf_grammar
 {
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class EliminateRulesWithIdenticalBodyNonTerminalVisitor : public CopyNonTerminalVisitor<D>
 {
 protected:

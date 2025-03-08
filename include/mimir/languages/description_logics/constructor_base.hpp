@@ -34,7 +34,7 @@ namespace mimir::dl
  * Concept
  */
 
-template<ConceptOrRole D, typename Derived_>
+template<FeatureCategory D, typename Derived_>
 class ConstructorEvaluatorBase : public ConstructorImpl<D>
 {
 private:

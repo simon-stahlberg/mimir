@@ -37,7 +37,7 @@ bool RefinementStateListPruningFunction::should_prune(Constructor<Concept> conce
 
 bool RefinementStateListPruningFunction::should_prune(Constructor<Role> role_) { return should_prune_impl(role_); }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 bool RefinementStateListPruningFunction::should_prune_impl(Constructor<D> constructor)
 {
     auto denotations = DenotationList<D>();

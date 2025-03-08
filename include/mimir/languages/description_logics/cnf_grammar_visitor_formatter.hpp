@@ -29,16 +29,16 @@ namespace mimir::dl::cnf_grammar
 /// Recursive Visitor
 ////////////////////////////
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class FormatterConstructorVisitor;
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class FormatterNonTerminalVisitor;
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class FormatterDerivationRuleVisitor;
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class FormatterSubstitutionRuleVisitor;
 
 class FormatterGrammarVisitor;
@@ -47,7 +47,7 @@ class FormatterGrammarVisitor;
  * NonTerminal
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class FormatterNonTerminalVisitor : public NonTerminalVisitor<D>
 {
 private:
@@ -63,7 +63,7 @@ public:
  * Concept
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class FormatterConstructorVisitor : public ConstructorVisitor<D>
 {
 };
@@ -130,7 +130,7 @@ public:
  * DerivationRule
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class FormatterDerivationRuleVisitor : public DerivationRuleVisitor<D>
 {
 private:
@@ -146,7 +146,7 @@ public:
  * SubstitutionRule
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class FormatterSubstitutionRuleVisitor : public SubstitutionRuleVisitor<D>
 {
 private:
@@ -177,16 +177,16 @@ public:
  * Printing
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 extern std::ostream& operator<<(std::ostream& out, Constructor<D> element);
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 extern std::ostream& operator<<(std::ostream& out, NonTerminal<D> element);
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 extern std::ostream& operator<<(std::ostream& out, DerivationRule<D> element);
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 extern std::ostream& operator<<(std::ostream& out, SubstitutionRule<D> element);
 
 extern std::ostream& operator<<(std::ostream& out, const Grammar& element);

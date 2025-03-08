@@ -59,7 +59,23 @@ BOOST_SPIRIT_INSTANTIATE(role_non_terminal_type, iterator_type, context_type)
 BOOST_SPIRIT_INSTANTIATE(role_choice_type, iterator_type, context_type)
 BOOST_SPIRIT_INSTANTIATE(role_derivation_rule_type, iterator_type, context_type)
 
-BOOST_SPIRIT_INSTANTIATE(concept_or_role_derivation_rule_type, iterator_type, context_type)
+BOOST_SPIRIT_INSTANTIATE(concept_or_role_type, iterator_type, context_type)
+
+BOOST_SPIRIT_INSTANTIATE(boolean_type, iterator_type, context_type)
+BOOST_SPIRIT_INSTANTIATE(boolean_atomic_state_type, iterator_type, context_type)
+BOOST_SPIRIT_INSTANTIATE(boolean_nonempty_type, iterator_type, context_type)
+BOOST_SPIRIT_INSTANTIATE(boolean_non_terminal_type, iterator_type, context_type)
+BOOST_SPIRIT_INSTANTIATE(boolean_choice_type, iterator_type, context_type)
+BOOST_SPIRIT_INSTANTIATE(boolean_derivation_rule_type, iterator_type, context_type)
+
+BOOST_SPIRIT_INSTANTIATE(numerical_type, iterator_type, context_type)
+BOOST_SPIRIT_INSTANTIATE(numerical_count_type, iterator_type, context_type)
+BOOST_SPIRIT_INSTANTIATE(numerical_distance_type, iterator_type, context_type)
+BOOST_SPIRIT_INSTANTIATE(numerical_non_terminal_type, iterator_type, context_type)
+BOOST_SPIRIT_INSTANTIATE(numerical_choice_type, iterator_type, context_type)
+BOOST_SPIRIT_INSTANTIATE(numerical_derivation_rule_type, iterator_type, context_type)
+
+BOOST_SPIRIT_INSTANTIATE(feature_category_derivation_rule_type, iterator_type, context_type)
 
 BOOST_SPIRIT_INSTANTIATE(grammar_head_type, iterator_type, context_type)
 BOOST_SPIRIT_INSTANTIATE(grammar_body_type, iterator_type, context_type)

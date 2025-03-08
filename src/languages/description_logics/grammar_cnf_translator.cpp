@@ -29,7 +29,7 @@ namespace mimir::dl::grammar
  * Step 1: Collect all non terminals to assign novel names to newly generated ones.
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class CollectNonTerminalsNonTerminalVisitor : public RecurseNonTerminalVisitor<D>
 {
 private:
@@ -77,7 +77,7 @@ static ToNonTerminalMap<std::string, Concept, Role> collect_nonterminals_from_gr
  * Eliminate choice rules by introducing additional rules
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 struct EliminateChoiceDerivationRuleVisitor : public CopyDerivationRuleVisitor<D>
 {
     DerivationRulesContainer& m_derivation_rules;
@@ -180,7 +180,7 @@ static Grammar eliminate_choices_in_rules(const Grammar& grammar)
  * Eliminate nested constructors by introducing additional rules
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class EliminateNestedConstructorsL2ConstructorOrNonTerminalVisitor : public CopyConstructorOrNonTerminalVisitor<D>
 {
 private:
@@ -515,13 +515,13 @@ cnf_grammar::Constructor<Role> ToCNFConstructorVisitor<Role>::get_result() const
  * ConstructorOrRoleNonTerminal
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 ToCNFVariantConstructorOrNonTerminalVisitor<D>::ToCNFVariantConstructorOrNonTerminalVisitor(cnf_grammar::ConstructorRepositories& repositories) :
     m_repositories(repositories)
 {
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 void ToCNFVariantConstructorOrNonTerminalVisitor<D>::initialize(ToCNFNonTerminalVisitor<D>& nonterminal_visitor,
                                                                 ToCNFConstructorVisitor<D>& constructor_visitor)
 {
@@ -529,7 +529,7 @@ void ToCNFVariantConstructorOrNonTerminalVisitor<D>::initialize(ToCNFNonTerminal
     m_constructor_visitor = &constructor_visitor;
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 void ToCNFVariantConstructorOrNonTerminalVisitor<D>::visit(ConstructorOrNonTerminal<D> constructor)
 {
     std::visit(
@@ -557,7 +557,7 @@ void ToCNFVariantConstructorOrNonTerminalVisitor<D>::visit(ConstructorOrNonTermi
         constructor->get_constructor_or_non_terminal());
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 cnf_grammar::ConstructorOrNonTerminal<D> ToCNFVariantConstructorOrNonTerminalVisitor<D>::get_result() const
 {
     return m_result;
@@ -566,19 +566,19 @@ cnf_grammar::ConstructorOrNonTerminal<D> ToCNFVariantConstructorOrNonTerminalVis
 template class ToCNFVariantConstructorOrNonTerminalVisitor<Concept>;
 template class ToCNFVariantConstructorOrNonTerminalVisitor<Role>;
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 ToCNFNonTerminalConstructorOrNonTerminalVisitor<D>::ToCNFNonTerminalConstructorOrNonTerminalVisitor(cnf_grammar::ConstructorRepositories& repositories) :
     m_repositories(repositories)
 {
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 void ToCNFNonTerminalConstructorOrNonTerminalVisitor<D>::initialize(ToCNFNonTerminalVisitor<D>& nonterminal_visitor)
 {
     m_nonterminal_visitor = &nonterminal_visitor;
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 void ToCNFNonTerminalConstructorOrNonTerminalVisitor<D>::visit(ConstructorOrNonTerminal<D> constructor)
 {
     std::visit(
@@ -604,7 +604,7 @@ void ToCNFNonTerminalConstructorOrNonTerminalVisitor<D>::visit(ConstructorOrNonT
         constructor->get_constructor_or_non_terminal());
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 cnf_grammar::NonTerminal<D> ToCNFNonTerminalConstructorOrNonTerminalVisitor<D>::get_result() const
 {
     return m_result;
@@ -617,18 +617,18 @@ template class ToCNFNonTerminalConstructorOrNonTerminalVisitor<Role>;
  * NonTerminal
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 ToCNFNonTerminalVisitor<D>::ToCNFNonTerminalVisitor(cnf_grammar::ConstructorRepositories& repositories) : m_repositories(repositories)
 {
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 void ToCNFNonTerminalVisitor<D>::visit(NonTerminal<D> constructor)
 {
     m_result = m_repositories.template get_or_create_nonterminal<D>(constructor->get_name());
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 cnf_grammar::NonTerminal<D> ToCNFNonTerminalVisitor<D>::get_result() const
 {
     return m_result;
@@ -641,12 +641,12 @@ template class ToCNFNonTerminalVisitor<Role>;
  * DerivationRule
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 ToCNFDerivationRuleVisitor<D>::ToCNFDerivationRuleVisitor(cnf_grammar::ConstructorRepositories& repositories) : m_repositories(repositories)
 {
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 void ToCNFDerivationRuleVisitor<D>::initialize(ToCNFNonTerminalVisitor<D>& nonterminal_visitor,
                                                ToCNFVariantConstructorOrNonTerminalVisitor<D>& constructor_or_nonterminal_visitor)
 {
@@ -654,7 +654,7 @@ void ToCNFDerivationRuleVisitor<D>::initialize(ToCNFNonTerminalVisitor<D>& nonte
     m_constructor_or_nonterminal_visitor = &constructor_or_nonterminal_visitor;
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 void ToCNFDerivationRuleVisitor<D>::visit(DerivationRule<D> constructor)
 {
     assert(this->m_nonterminal_visitor && this->m_constructor_or_nonterminal_visitor);
@@ -691,7 +691,7 @@ void ToCNFDerivationRuleVisitor<D>::visit(DerivationRule<D> constructor)
         body_variant);
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 cnf_grammar::DerivationOrSubstitutionRule<D> ToCNFDerivationRuleVisitor<D>::get_result() const
 {
     return m_result;

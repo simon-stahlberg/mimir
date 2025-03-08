@@ -403,7 +403,7 @@ const dl::ConstructorList<Role>& GeneratorConstructorVisitor<Role>::get_result()
  * DerivationRule
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 GeneratorDerivationRuleVisitor<D>::GeneratorDerivationRuleVisitor(RefinementPruningFunction& pruning_function,
                                                                   GeneratedSentencesContainer& sentences,
                                                                   dl::ConstructorRepositories& repositories,
@@ -416,7 +416,7 @@ GeneratorDerivationRuleVisitor<D>::GeneratorDerivationRuleVisitor(RefinementPrun
 {
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 void GeneratorDerivationRuleVisitor<D>::visit(DerivationRule<D> rule)
 {
     auto visitor = GeneratorConstructorVisitor<D>(m_sentences, m_repositories, m_complexity);
@@ -440,7 +440,7 @@ void GeneratorDerivationRuleVisitor<D>::visit(DerivationRule<D> rule)
     }
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 const GeneratorStatistics<D>& GeneratorDerivationRuleVisitor<D>::get_statistics() const
 {
     return m_statistics;
@@ -453,7 +453,7 @@ template class GeneratorDerivationRuleVisitor<Role>;
  * SubstitutionRule
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 GeneratorSubstitutionRuleVisitor<D>::GeneratorSubstitutionRuleVisitor(GeneratedSentencesContainer& sentences,
                                                                       dl::ConstructorRepositories& repositories,
                                                                       size_t complexity) :
@@ -463,7 +463,7 @@ GeneratorSubstitutionRuleVisitor<D>::GeneratorSubstitutionRuleVisitor(GeneratedS
 {
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 void GeneratorSubstitutionRuleVisitor<D>::visit(SubstitutionRule<D> rule)
 {
     auto& source_location = m_sentences.get(rule->get_body(), m_complexity);

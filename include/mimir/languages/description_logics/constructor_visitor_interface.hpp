@@ -24,7 +24,7 @@
 namespace mimir::dl
 {
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class ConstructorVisitor
 {
 };
@@ -93,7 +93,7 @@ public:
  * GrammarVisitor
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class GrammarConstructorVisitor : public ConstructorVisitor<D>
 {
 };

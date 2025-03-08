@@ -223,12 +223,12 @@ void FormatterConstructorVisitor<Role>::visit(RoleIdentity constructor)
  * NonTerminal
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 FormatterNonTerminalVisitor<D>::FormatterNonTerminalVisitor(std::ostream& out) : m_out(out)
 {
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 void FormatterNonTerminalVisitor<D>::visit(NonTerminal<D> constructor)
 {
     m_out << constructor->get_name();
@@ -241,12 +241,12 @@ template class FormatterNonTerminalVisitor<Role>;
  * DerivationRule
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 FormatterDerivationRuleVisitor<D>::FormatterDerivationRuleVisitor(std::ostream& out) : m_out(out)
 {
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 void FormatterDerivationRuleVisitor<D>::visit(DerivationRule<D> constructor)
 {
     auto nonterminal_visitor = FormatterNonTerminalVisitor<D>(m_out);
@@ -266,12 +266,12 @@ template class FormatterDerivationRuleVisitor<Role>;
  * SubstitutionRule
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 FormatterSubstitutionRuleVisitor<D>::FormatterSubstitutionRuleVisitor(std::ostream& out) : m_out(out)
 {
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 void FormatterSubstitutionRuleVisitor<D>::visit(SubstitutionRule<D> constructor)
 {
     auto nonterminal_visitor = FormatterNonTerminalVisitor<D>(m_out);
@@ -397,7 +397,7 @@ void FormatterGrammarVisitor::visit(const Grammar& grammar)
  * Printing
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 std::ostream& operator<<(std::ostream& out, Constructor<D> element)
 {
     auto visitor = FormatterConstructorVisitor<D>(out);
@@ -409,7 +409,7 @@ std::ostream& operator<<(std::ostream& out, Constructor<D> element)
 template std::ostream& operator<<(std::ostream& out, Constructor<Concept> element);
 template std::ostream& operator<<(std::ostream& out, Constructor<Role> element);
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 std::ostream& operator<<(std::ostream& out, NonTerminal<D> element)
 {
     auto visitor = FormatterNonTerminalVisitor<D>(out);
@@ -421,7 +421,7 @@ std::ostream& operator<<(std::ostream& out, NonTerminal<D> element)
 template std::ostream& operator<<(std::ostream& out, NonTerminal<Concept> element);
 template std::ostream& operator<<(std::ostream& out, NonTerminal<Role> element);
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 std::ostream& operator<<(std::ostream& out, DerivationRule<D> element)
 {
     auto visitor = FormatterDerivationRuleVisitor<D>(out);
@@ -433,7 +433,7 @@ std::ostream& operator<<(std::ostream& out, DerivationRule<D> element)
 template std::ostream& operator<<(std::ostream& out, DerivationRule<Concept> element);
 template std::ostream& operator<<(std::ostream& out, DerivationRule<Role> element);
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 std::ostream& operator<<(std::ostream& out, SubstitutionRule<D> element)
 {
     auto visitor = FormatterSubstitutionRuleVisitor<D>(out);

@@ -45,7 +45,7 @@ public:
      * Modifiers
      */
 
-    template<ConceptOrRole D>
+    template<FeatureCategory D>
     auto insert(NonTerminal<D> start_symbol)
     {
         assert(boost::hana::at_key(m_symbols, boost::hana::type<D> {}) == std::nullopt);
@@ -57,7 +57,7 @@ public:
      * Accessors
      */
 
-    template<ConceptOrRole D>
+    template<FeatureCategory D>
     const std::optional<NonTerminal<D>>& get() const
     {
         return boost::hana::at_key(m_symbols, boost::hana::type<D> {});
@@ -83,7 +83,7 @@ public:
      * Modifiers
      */
 
-    template<ConceptOrRole D>
+    template<FeatureCategory D>
     void insert(DerivationRule<D> rule)
     {
         boost::hana::at_key(m_map, boost::hana::type<D> {})[rule->get_non_terminal()].insert(rule);
@@ -94,7 +94,7 @@ public:
      * Accessors
      */
 
-    template<ConceptOrRole D>
+    template<FeatureCategory D>
     const DerivationRuleSet<D>& at(NonTerminal<D> non_terminal) const
     {
         return boost::hana::at_key(m_map, boost::hana::type<D> {}).at(non_terminal);

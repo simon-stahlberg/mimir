@@ -178,7 +178,7 @@ Grammar Grammar::create(GrammarSpecificationEnum type, Domain domain)
     }
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 bool Grammar::test_match(dl::Constructor<D> constructor) const
 {
     const auto& start_symbol = m_start_symbols.get<D>();

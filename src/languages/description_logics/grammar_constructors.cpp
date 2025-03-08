@@ -28,12 +28,12 @@ namespace mimir::dl::grammar
  * NonTerminal
  */
 
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 NonTerminalImpl<D>::NonTerminalImpl(Index index, std::string name) : m_index(index), m_name(std::move(name))
 {
 }
 
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 bool NonTerminalImpl<D>::test_match(dl::Constructor<D> constructor, const Grammar& grammar) const
 {
     const auto& rules = grammar.get_derivation_rules_container().at(this);
@@ -41,19 +41,19 @@ bool NonTerminalImpl<D>::test_match(dl::Constructor<D> constructor, const Gramma
     return std::any_of(rules.begin(), rules.end(), [&, constructor](auto&& rule) { return rule->test_match(constructor, grammar); });
 }
 
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 void NonTerminalImpl<D>::accept(NonTerminalVisitor<D>& visitor) const
 {
     visitor.visit(this);
 }
 
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 Index NonTerminalImpl<D>::get_index() const
 {
     return m_index;
 }
 
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 const std::string& NonTerminalImpl<D>::get_name() const
 {
     return m_name;
@@ -66,32 +66,32 @@ template class NonTerminalImpl<Role>;
  * ConstructorOrNonTerminal
  */
 
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 ConstructorOrNonTerminalImpl<D>::ConstructorOrNonTerminalImpl(Index index, std::variant<Constructor<D>, NonTerminal<D>> choice) :
     m_index(index),
     m_choice(std::move(choice))
 {
 }
 
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 bool ConstructorOrNonTerminalImpl<D>::test_match(dl::Constructor<D> constructor, const Grammar& grammar) const
 {
     return std::visit([&, constructor](const auto& arg) -> bool { return arg->test_match(constructor, grammar); }, m_choice);
 }
 
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 void ConstructorOrNonTerminalImpl<D>::accept(ConstructorOrNonTerminalVisitor<D>& visitor) const
 {
     visitor.visit(this);
 }
 
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 Index ConstructorOrNonTerminalImpl<D>::get_index() const
 {
     return m_index;
 }
 
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 const std::variant<Constructor<D>, NonTerminal<D>>& ConstructorOrNonTerminalImpl<D>::get_constructor_or_non_terminal() const
 {
     return m_choice;
@@ -104,7 +104,7 @@ template class ConstructorOrNonTerminalImpl<Role>;
  * DerivationRule
  */
 
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 DerivationRuleImpl<D>::DerivationRuleImpl(Index index, NonTerminal<D> non_terminal, ConstructorOrNonTerminalList<D> constructor_or_non_terminals) :
     m_index(index),
     m_non_terminal(non_terminal),
@@ -116,7 +116,7 @@ DerivationRuleImpl<D>::DerivationRuleImpl(Index index, NonTerminal<D> non_termin
               [](const auto& lhs, const auto& rhs) { return lhs->get_index() < rhs->get_index(); });
 }
 
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 bool DerivationRuleImpl<D>::test_match(dl::Constructor<D> constructor, const Grammar& grammar) const
 {
     return std::any_of(m_constructor_or_non_terminals.begin(),
@@ -124,25 +124,25 @@ bool DerivationRuleImpl<D>::test_match(dl::Constructor<D> constructor, const Gra
                        [&, constructor](const auto& choice) { return choice->test_match(constructor, grammar); });
 }
 
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 void DerivationRuleImpl<D>::accept(DerivationRuleVisitor<D>& visitor) const
 {
     visitor.visit(this);
 }
 
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 Index DerivationRuleImpl<D>::get_index() const
 {
     return m_index;
 }
 
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 NonTerminal<D> DerivationRuleImpl<D>::get_non_terminal() const
 {
     return m_non_terminal;
 }
 
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 const ConstructorOrNonTerminalList<D>& DerivationRuleImpl<D>::get_constructor_or_non_terminals() const
 {
     return m_constructor_or_non_terminals;

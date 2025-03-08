@@ -55,7 +55,8 @@ struct Numerical
  */
 
 template<typename T>
-concept ConceptOrRole = std::is_same<T, Concept>::value || std::is_same<T, Role>::value;
+concept FeatureCategory =
+    std::is_same<T, Concept>::value || std::is_same<T, Role>::value || std::is_same<T, Boolean>::value || std::is_same<T, Numerical>::value;
 
 }
 

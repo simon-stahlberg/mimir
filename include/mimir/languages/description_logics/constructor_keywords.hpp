@@ -21,7 +21,6 @@
 namespace mimir::dl::keywords
 {
 // Concept keywords
-inline constexpr auto concept_start = "@concept_start";
 inline constexpr auto concept_bot = "@concept_bot";
 inline constexpr auto concept_top = "@concept_top";
 inline constexpr auto concept_atomic_state = "@concept_atomic_state";
@@ -36,7 +35,6 @@ inline constexpr auto concept_role_value_map_equality = "@concept_role_value_map
 inline constexpr auto concept_nominal = "@concept_nominal";
 
 // Role keywords
-inline constexpr auto role_start = "@role_start";
 inline constexpr auto role_universal = "@role_universal";
 inline constexpr auto role_atomic_state = "@role_atomic_state";
 inline constexpr auto role_atomic_goal = "@role_atomic_goal";
@@ -49,6 +47,14 @@ inline constexpr auto role_transitive_closure = "@role_transitive_closure";
 inline constexpr auto role_reflexive_transitive_closure = "@role_reflexive_transitive_closure";
 inline constexpr auto role_restriction = "@role_restriction";
 inline constexpr auto role_identity = "@role_identity";
+
+// Boolean keywords
+inline constexpr auto boolean_atomic_state = "@boolean_atomic_state";
+inline constexpr auto boolean_nonempty = "@boolean_nonempty";
+
+// Numerical keywords
+inline constexpr auto numerical_count = "@numerical_count";
+inline constexpr auto numerical_distance = "@numerical_distance";
 }
 
 #endif

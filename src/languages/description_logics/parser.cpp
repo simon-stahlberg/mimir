@@ -77,13 +77,13 @@ static Constructor<Role> parse(const dl::ast::Constructor<Role>& node, const Dom
         node);
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 static NonTerminal<D> parse(const dl::ast::NonTerminal<D>& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
     return ref_repositories.get_or_create_nonterminal<D>(node.name);
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 static ConstructorOrNonTerminal<D> parse(const dl::ast::ConstructorOrNonTerminal<D>& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
     return boost::apply_visitor([&](const auto& arg) -> ConstructorOrNonTerminal<D>
@@ -357,7 +357,7 @@ static RoleIdentity parse(const dl::ast::RoleIdentity& node, const DomainImpl& d
  * Grammar structure specific types.
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 static DerivationRule<D> parse(const dl::ast::DerivationRule<D>& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
     auto non_terminal = parse<D>(node.non_terminal, domain, ref_repositories);

@@ -224,12 +224,12 @@ void FormatterConstructorVisitor<Role>::visit(RoleIdentity constructor)
  * ConstructorOrRoleNonTerminal
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 FormatterConstructorOrNonTerminalVisitor<D>::FormatterConstructorOrNonTerminalVisitor(std::ostream& out) : m_out(out)
 {
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 void FormatterConstructorOrNonTerminalVisitor<D>::initialize(FormatterNonTerminalVisitor<D>& nonterminal_visitor,
                                                              FormatterConstructorVisitor<D>& constructor_visitor)
 {
@@ -237,7 +237,7 @@ void FormatterConstructorOrNonTerminalVisitor<D>::initialize(FormatterNonTermina
     m_constructor_visitor = &constructor_visitor;
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 void FormatterConstructorOrNonTerminalVisitor<D>::visit(ConstructorOrNonTerminal<D> constructor)
 {
     std::visit(
@@ -270,12 +270,12 @@ template class FormatterConstructorOrNonTerminalVisitor<Role>;
  * NonTerminal
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 FormatterNonTerminalVisitor<D>::FormatterNonTerminalVisitor(std::ostream& out) : m_out(out)
 {
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 void FormatterNonTerminalVisitor<D>::visit(NonTerminal<D> constructor)
 {
     m_out << constructor->get_name();
@@ -288,12 +288,12 @@ template class FormatterNonTerminalVisitor<Role>;
  * DerivationRule
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 FormatterDerivationRuleVisitor<D>::FormatterDerivationRuleVisitor(std::ostream& out) : m_out(out)
 {
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 void FormatterDerivationRuleVisitor<D>::initialize(FormatterNonTerminalVisitor<D>& nonterminal_visitor,
                                                    FormatterConstructorOrNonTerminalVisitor<D>& constructor_or_nonterminal_visitor)
 {
@@ -301,7 +301,7 @@ void FormatterDerivationRuleVisitor<D>::initialize(FormatterNonTerminalVisitor<D
     m_constructor_or_nonterminal_visitor = &constructor_or_nonterminal_visitor;
 }
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 void FormatterDerivationRuleVisitor<D>::visit(DerivationRule<D> constructor)
 {
     assert(this->m_nonterminal_visitor && this->m_constructor_or_nonterminal_visitor);
@@ -418,7 +418,7 @@ void FormatterGrammarVisitor::initialize(FormatterNonTerminalVisitor<Concept>& c
  * Printing
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 std::ostream& operator<<(std::ostream& out, Constructor<D> element)
 {
     auto concept_visitor = FormatterConstructorVisitor<Concept>(out);
@@ -447,7 +447,7 @@ std::ostream& operator<<(std::ostream& out, Constructor<D> element)
 template std::ostream& operator<<(std::ostream& out, Constructor<Concept> element);
 template std::ostream& operator<<(std::ostream& out, Constructor<Role> element);
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 std::ostream& operator<<(std::ostream& out, NonTerminal<D> element)
 {
     auto nonterminal_visitor = FormatterNonTerminalVisitor<D>(out);
@@ -460,7 +460,7 @@ std::ostream& operator<<(std::ostream& out, NonTerminal<D> element)
 template std::ostream& operator<<(std::ostream& out, NonTerminal<Concept> element);
 template std::ostream& operator<<(std::ostream& out, NonTerminal<Role> element);
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 std::ostream& operator<<(std::ostream& out, DerivationRule<D> element)
 {
     auto concept_visitor = FormatterConstructorVisitor<Concept>(out);

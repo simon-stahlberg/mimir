@@ -32,7 +32,7 @@ namespace mimir::dl::cnf_grammar
  * Constructors
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class ConstructorVisitor
 {
 };
@@ -97,7 +97,7 @@ public:
  * NonTerminal
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class NonTerminalVisitor
 {
 public:
@@ -110,7 +110,7 @@ public:
  * DerivationRule
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class DerivationRuleVisitor
 {
 public:
@@ -123,7 +123,7 @@ public:
  * SubstitutionRule
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class SubstitutionRuleVisitor
 {
 public:
@@ -148,16 +148,16 @@ public:
 /// Copy
 ////////////////////////////
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class CopyConstructorVisitor;
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class CopyNonTerminalVisitor;
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class CopyDerivationRuleVisitor;
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class CopySubstitutionRuleVisitor;
 
 class CopyGrammarVisitor;
@@ -166,7 +166,7 @@ class CopyGrammarVisitor;
  * Constructors
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class CopyConstructorVisitor : public ConstructorVisitor<D>
 {
 };
@@ -253,7 +253,7 @@ public:
  * NonTerminal
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class CopyNonTerminalVisitor : public NonTerminalVisitor<D>
 {
 protected:
@@ -273,7 +273,7 @@ public:
  * DerivationRule
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class CopyDerivationRuleVisitor : public DerivationRuleVisitor<D>
 {
 protected:
@@ -297,7 +297,7 @@ public:
  * SubstitutionRule
  */
 
-template<ConceptOrRole D>
+template<FeatureCategory D>
 class CopySubstitutionRuleVisitor : public SubstitutionRuleVisitor<D>
 {
 protected:

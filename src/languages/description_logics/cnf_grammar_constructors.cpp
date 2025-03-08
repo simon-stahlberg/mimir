@@ -29,12 +29,12 @@ namespace mimir::dl::cnf_grammar
  * NonTerminal
  */
 
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 NonTerminalImpl<D>::NonTerminalImpl(Index index, std::string name) : m_index(index), m_name(std::move(name))
 {
 }
 
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 bool NonTerminalImpl<D>::test_match(dl::Constructor<D> constructor, const Grammar& grammar) const
 {
     const auto& derivation_rules = grammar.get_derivation_rules_container().get(this);
@@ -44,19 +44,19 @@ bool NonTerminalImpl<D>::test_match(dl::Constructor<D> constructor, const Gramma
            || std::any_of(substitution_rules.begin(), substitution_rules.end(), [&](auto&& rule) { return rule->test_match(constructor, grammar); });
 }
 
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 void NonTerminalImpl<D>::accept(NonTerminalVisitor<D>& visitor) const
 {
     visitor.visit(this);
 }
 
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 Index NonTerminalImpl<D>::get_index() const
 {
     return m_index;
 }
 
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 const std::string& NonTerminalImpl<D>::get_name() const
 {
     return m_name;
@@ -69,36 +69,36 @@ template class NonTerminalImpl<Role>;
  * DerivationRule
  */
 
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 DerivationRuleImpl<D>::DerivationRuleImpl(Index index, NonTerminal<D> head, Constructor<D> body) : m_index(index), m_head(head), m_body(body)
 {
 }
 
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 bool DerivationRuleImpl<D>::test_match(dl::Constructor<D> constructor, const Grammar& grammar) const
 {
     return m_body->test_match(constructor, grammar);
 }
 
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 void DerivationRuleImpl<D>::accept(DerivationRuleVisitor<D>& visitor) const
 {
     visitor.visit(this);
 }
 
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 Index DerivationRuleImpl<D>::get_index() const
 {
     return m_index;
 }
 
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 const NonTerminal<D>& DerivationRuleImpl<D>::get_head() const
 {
     return m_head;
 }
 
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 const Constructor<D>& DerivationRuleImpl<D>::get_body() const
 {
     return m_body;
@@ -111,36 +111,36 @@ template class DerivationRuleImpl<Role>;
  * SubstitutionRule
  */
 
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 SubstitutionRuleImpl<D>::SubstitutionRuleImpl(Index index, NonTerminal<D> head, NonTerminal<D> body) : m_index(index), m_head(head), m_body(body)
 {
 }
 
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 bool SubstitutionRuleImpl<D>::test_match(dl::Constructor<D> constructor, const Grammar& grammar) const
 {
     return m_body->test_match(constructor, grammar);
 }
 
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 void SubstitutionRuleImpl<D>::accept(SubstitutionRuleVisitor<D>& visitor) const
 {
     visitor.visit(this);
 }
 
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 Index SubstitutionRuleImpl<D>::get_index() const
 {
     return m_index;
 }
 
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 const NonTerminal<D>& SubstitutionRuleImpl<D>::get_head() const
 {
     return m_head;
 }
 
-template<dl::ConceptOrRole D>
+template<dl::FeatureCategory D>
 const NonTerminal<D>& SubstitutionRuleImpl<D>::get_body() const
 {
     return m_body;

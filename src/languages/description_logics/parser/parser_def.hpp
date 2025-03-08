@@ -92,7 +92,23 @@ role_non_terminal_type const role_non_terminal = "role_non_terminal";
 role_choice_type const role_choice = "role_choice";
 role_derivation_rule_type const role_derivation_rule = "role_derivation_rule";
 
-concept_or_role_derivation_rule_type const concept_or_role_derivation_rule = "concept_or_role_derivation_rule";
+concept_or_role_type const concept_or_role = "concept_or_role";
+
+boolean_type const boolean = "boolean";
+boolean_atomic_state_type const boolean_atomic_state = "boolean_atomic_state";
+boolean_nonempty_type const boolean_nonempty = "boolean_nonempty";
+boolean_non_terminal_type const boolean_non_terminal = "boolean_non_terminal";
+boolean_choice_type const boolean_choice = "boolean_choice";
+boolean_derivation_rule_type const boolean_derivation_rule = "boolean_derivation_rule";
+
+numerical_type const numerical = "numerical";
+numerical_count_type const numerical_count = "numerical_count";
+numerical_distance_type const numerical_distance = "numerical_distance";
+numerical_non_terminal_type const numerical_non_terminal = "numerical_non_terminal";
+numerical_choice_type const numerical_choice = "numerical_choice";
+numerical_derivation_rule_type const numerical_derivation_rule = "numerical_derivation_rule";
+
+feature_category_derivation_rule_type const feature_category_derivation_rule = "feature_category_derivation_rule";
 
 grammar_head_type const grammar_head = "grammar_head";
 grammar_body_type const grammar_body = "grammar_body";
@@ -106,6 +122,8 @@ grammar_type const grammar = "grammar";
 inline auto separator_parser() { return (ascii::space | x3::eol | x3::eoi); }
 inline auto concept_non_terminal_parser() { return raw[lexeme["<concept" >> *(alnum | char_('-') | char_('_')) > ">"]]; }
 inline auto role_non_terminal_parser() { return raw[lexeme["<role" >> *(alnum | char_('-') | char_('_')) >> ">"]]; }
+inline auto boolean_non_terminal_parser() { return raw[lexeme["<boolean" >> *(alnum | char_('-') | char_('_')) >> ">"]]; }
+inline auto numerical_non_terminal_parser() { return raw[lexeme["<numerical" >> *(alnum | char_('-') | char_('_')) >> ">"]]; }
 inline auto predicate_name_parser() { return lexeme[omit[lit('"')]] > raw[lexeme[alpha >> *(alnum | char_('-') | char_('_'))]] > lexeme[omit[lit('"')]]; }
 inline auto object_name_parser() { return lexeme[omit[lit('"')]] > raw[lexeme[alpha >> *(alnum | char_('-') | char_('_'))]] > lexeme[omit[lit('"')]]; }
 inline auto bool_parser()
@@ -153,11 +171,29 @@ const auto role_non_terminal_def = role_non_terminal_parser();
 const auto role_choice_def = role_non_terminal | role;
 const auto role_derivation_rule_def = role_non_terminal > "::=" > (role_choice % lit("|"));
 
-const auto concept_or_role_derivation_rule_def = (concept_derivation_rule | role_derivation_rule);
+const auto concept_or_role_def = concept_ | role;
+
+const auto boolean_def = boolean_atomic_state | boolean_nonempty;
+const auto boolean_atomic_state_def = lit(keywords::boolean_atomic_state) > predicate_name_parser();
+const auto boolean_nonempty_def = lit(keywords::boolean_nonempty) > concept_or_role;
+const auto boolean_non_terminal_def = boolean_non_terminal_parser();
+const auto boolean_choice_def = boolean_non_terminal | boolean;
+const auto boolean_derivation_rule_def = boolean_non_terminal > "::=" > (boolean_choice % lit("|"));
+
+const auto numerical_def = numerical_count | numerical_distance;
+const auto numerical_count_def = lit(keywords::numerical_count) > concept_or_role;
+const auto numerical_distance_def = lit(keywords::numerical_distance) > concept_ > role > concept_;
+const auto numerical_non_terminal_def = numerical_non_terminal_parser();
+const auto numerical_choice_def = numerical_non_terminal | numerical;
+const auto numerical_derivation_rule_def = numerical_non_terminal > "::=" > (numerical_choice % lit("|"));
+
+const auto feature_category_derivation_rule_def = (concept_derivation_rule | role_derivation_rule | boolean_derivation_rule | numerical_derivation_rule);
 const auto grammar_head_def = lit("[start_symbols]")                                 //
                               > -(lit("concept") > lit("=") > concept_non_terminal)  //
-                              > -(lit("role") > lit("=") > role_non_terminal);
-const auto grammar_body_def = lit("[grammar_rules]") > *concept_or_role_derivation_rule;
+                              > -(lit("role") > lit("=") > role_non_terminal)        //
+                              > -(lit("boolean") > lit("=") > boolean_non_terminal)  //
+                              > -(lit("numerical") > lit("=") > numerical_non_terminal);
+const auto grammar_body_def = lit("[grammar_rules]") > *feature_category_derivation_rule;
 const auto grammar_def = grammar_head > grammar_body;
 
 BOOST_SPIRIT_DEFINE(concept_,
@@ -194,7 +230,13 @@ BOOST_SPIRIT_DEFINE(role,
                     role_choice,
                     role_derivation_rule)
 
-BOOST_SPIRIT_DEFINE(concept_or_role_derivation_rule, grammar_head, grammar_body, grammar)
+BOOST_SPIRIT_DEFINE(concept_or_role)
+
+BOOST_SPIRIT_DEFINE(boolean, boolean_atomic_state, boolean_nonempty, boolean_non_terminal, boolean_choice, boolean_derivation_rule)
+
+BOOST_SPIRIT_DEFINE(numerical, numerical_count, numerical_distance, numerical_non_terminal, numerical_choice, numerical_derivation_rule)
+
+BOOST_SPIRIT_DEFINE(feature_category_derivation_rule, grammar_head, grammar_body, grammar)
 
 ///////////////////////////////////////////////////////////////////////////
 // Annotation and Error handling
@@ -208,6 +250,14 @@ template<>
 struct ConstructorClass<Role> : x3::annotate_on_success
 {
 };
+template<>
+struct ConstructorClass<Boolean> : x3::annotate_on_success
+{
+};
+template<>
+struct ConstructorClass<Numerical> : x3::annotate_on_success
+{
+};
 
 template<>
 struct NonTerminalClass<Concept> : x3::annotate_on_success
@@ -215,6 +265,14 @@ struct NonTerminalClass<Concept> : x3::annotate_on_success
 };
 template<>
 struct NonTerminalClass<Role> : x3::annotate_on_success
+{
+};
+template<>
+struct NonTerminalClass<Boolean> : x3::annotate_on_success
+{
+};
+template<>
+struct NonTerminalClass<Numerical> : x3::annotate_on_success
 {
 };
 template<>
@@ -226,11 +284,27 @@ struct ConstructorOrNonTerminalClass<Role> : x3::annotate_on_success
 {
 };
 template<>
+struct ConstructorOrNonTerminalClass<Boolean> : x3::annotate_on_success
+{
+};
+template<>
+struct ConstructorOrNonTerminalClass<Numerical> : x3::annotate_on_success
+{
+};
+template<>
 struct DerivationRuleClass<Concept> : x3::annotate_on_success
 {
 };
 template<>
 struct DerivationRuleClass<Role> : x3::annotate_on_success
+{
+};
+template<>
+struct DerivationRuleClass<Boolean> : x3::annotate_on_success
+{
+};
+template<>
+struct DerivationRuleClass<Numerical> : x3::annotate_on_success
 {
 };
 
@@ -308,7 +382,25 @@ struct RoleIdentityClass : x3::annotate_on_success
 {
 };
 
-struct ConceptOrRoleDerivationRuleClass : x3::annotate_on_success
+struct ConceptOrRoleClass : x3::annotate_on_success
+{
+};
+
+struct BooleanAtomicStateClass : x3::annotate_on_success
+{
+};
+struct BooleanNonemptyClass : x3::annotate_on_success
+{
+};
+
+struct NumericalCountClass : x3::annotate_on_success
+{
+};
+struct NumericalDistanceClass : x3::annotate_on_success
+{
+};
+
+struct FeatureCategoryDerivationRuleClass : x3::annotate_on_success
 {
 };
 struct GrammarHeadClass : x3::annotate_on_success
@@ -358,7 +450,23 @@ parser::role_non_terminal_type const& role_non_terminal() { return parser::role_
 parser::role_choice_type const& role_choice() { return parser::role_choice; }
 parser::role_derivation_rule_type const& role_derivation_rule() { return parser::role_derivation_rule; }
 
-parser::concept_or_role_derivation_rule_type const& concept_or_role_derivation_rule() { return parser::concept_or_role_derivation_rule; }
+parser::concept_or_role_type const& concept_or_role() { return parser::concept_or_role; }
+
+parser::boolean_type const& boolean() { return parser::boolean; }
+parser::boolean_atomic_state_type const& boolean_atomic_state() { return parser::boolean_atomic_state; }
+parser::boolean_nonempty_type const& boolean_nonempty() { return parser::boolean_nonempty; }
+parser::boolean_non_terminal_type const& boolean_non_terminal() { return parser::boolean_non_terminal; }
+parser::boolean_choice_type const& boolean_choice() { return parser::boolean_choice; }
+parser::boolean_derivation_rule_type const& boolean_derivation_rule() { return parser::boolean_derivation_rule; }
+
+parser::numerical_type const& numerical() { return parser::numerical; }
+parser::numerical_count_type const& numerical_count() { return parser::numerical_count; }
+parser::numerical_distance_type const& numerical_distance() { return parser::numerical_distance; }
+parser::numerical_non_terminal_type const& numerical_non_terminal() { return parser::numerical_non_terminal; }
+parser::numerical_choice_type const& numerical_choice() { return parser::numerical_choice; }
+parser::numerical_derivation_rule_type const& numerical_derivation_rule() { return parser::numerical_derivation_rule; }
+
+parser::feature_category_derivation_rule_type const& feature_category_derivation_rule() { return parser::feature_category_derivation_rule; }
 parser::grammar_head_type const& grammar_head() { return parser::grammar_head; }
 parser::grammar_body_type const& grammar_body() { return parser::grammar_body; }
 parser::grammar_type const& grammar_parser() { return parser::grammar; }

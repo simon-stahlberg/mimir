@@ -50,10 +50,10 @@ public:
 
     Problem get_problem() const;
 
-    template<ConceptOrRole D>
+    template<FeatureCategory D>
     DenotationImpl<D>& get_builder();
 
-    template<ConceptOrRole D>
+    template<FeatureCategory D>
     DenotationRepository<D>& get_repository();
 };
 }
