@@ -408,4 +408,70 @@ void RoleIdentityGrammarVisitor::visit(dl::RoleIdentity constructor)
     m_result = m_grammar_constructor->get_concept_or_non_terminal()->test_match(constructor->get_concept(), m_grammar);
 }
 
+/**
+ * BooleanVisitors
+ */
+
+template<StaticOrFluentOrDerived P>
+BooleanAtomicStateGrammarVisitor<P>::BooleanAtomicStateGrammarVisitor(BooleanAtomicState<P> grammar_constructor, const Grammar& grammar) :
+    m_grammar_constructor(grammar_constructor),
+    m_grammar(grammar)
+{
+}
+
+template<StaticOrFluentOrDerived P>
+void BooleanAtomicStateGrammarVisitor<P>::visit(dl::BooleanAtomicState<P> constructor)
+{
+    m_result = (m_grammar_constructor->get_predicate() == constructor->get_predicate());
+}
+
+template class BooleanAtomicStateGrammarVisitor<Static>;
+template class BooleanAtomicStateGrammarVisitor<Fluent>;
+template class BooleanAtomicStateGrammarVisitor<Derived>;
+
+template<DescriptionLogicCategory D>
+BooleanNonemptyGrammarVisitor<D>::BooleanNonemptyGrammarVisitor(BooleanNonempty<D> grammar_constructor, const Grammar& grammar) :
+    m_grammar_constructor(grammar_constructor),
+    m_grammar(grammar)
+{
+}
+
+template<DescriptionLogicCategory D>
+void BooleanNonemptyGrammarVisitor<D>::visit(dl::BooleanNonempty<D> constructor)
+{
+    m_result = m_grammar_constructor->get_constructor_or_nonterminal()->test_match(constructor->get_constructor());
+}
+
+template class BooleanNonemptyGrammarVisitor<Concept>;
+template class BooleanNonemptyGrammarVisitor<Role>;
+
+/**
+ * NumericalVisitors
+ */
+
+template<DescriptionLogicCategory D>
+NumericalCountGrammarVisitor<D>::NumericalCountGrammarVisitor(NumericalCount<D> grammar_constructor, const Grammar& grammar) :
+    m_grammar_constructor(grammar_constructor),
+    m_grammar(grammar)
+{
+}
+
+template<DescriptionLogicCategory D>
+void NumericalCountGrammarVisitor<D>::visit(dl::NumericalCount<D> constructor)
+{
+}
+
+NumericalDistanceGrammarVisitor::NumericalDistanceGrammarVisitor(NumericalDistance grammar_constructor, const Grammar& grammar) :
+    m_grammar_constructor(grammar_constructor),
+    m_grammar(grammar)
+{
+}
+
+void NumericalDistanceGrammarVisitor::visit(dl::NumericalDistance constructor)
+{
+    m_result = m_grammar_constructor->get_left_concept_or_nonterminal()->test_match(constructor->get_left_concept())
+               && m_grammar_constructor->get_role_or_nonterminal()->test_match(constructor->get_role())
+               && m_grammar_constructor->get_right_concept_or_nonterminal()->test_match(constructor->get_right_concept());
+}
+
 }

@@ -876,6 +876,157 @@ public:
     auto identifying_members() const { return std::tuple(get_concept()); }
 };
 
+/**
+ * Booleans
+ */
+
+template<StaticOrFluentOrDerived P>
+class BooleanAtomicStateImpl : public ConstructorEvaluatorBase<Boolean, BooleanAtomicStateImpl<P>>
+{
+private:
+    Index m_index;
+    Predicate<P> m_predicate;
+
+    BooleanAtomicStateImpl(Index index, Predicate<P> predicate);
+
+    // Give access to the constructor.
+    template<typename T, typename Hash, typename EqualTo>
+    friend class loki::SegmentedRepository;
+
+    void evaluate_impl(EvaluationContext& context) const;
+
+    void accept_impl(ConstructorVisitor<Boolean>& visitor) const;
+
+    friend class ConstructorEvaluatorBase<Boolean, BooleanAtomicStateImpl<P>>;
+
+public:
+    // moveable but not copyable
+    BooleanAtomicStateImpl(const BooleanAtomicStateImpl& other) = delete;
+    BooleanAtomicStateImpl& operator=(const BooleanAtomicStateImpl& other) = delete;
+    BooleanAtomicStateImpl(BooleanAtomicStateImpl&& other) = default;
+    BooleanAtomicStateImpl& operator=(BooleanAtomicStateImpl&& other) = default;
+
+    Index get_index() const;
+    Predicate<P> get_predicate() const;
+
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
+    auto identifying_members() const { return std::tuple(get_predicate()); }
+};
+
+template<DescriptionLogicCategory D>
+class BooleanNonemptyImpl : public ConstructorEvaluatorBase<Boolean, BooleanNonemptyImpl<D>>
+{
+private:
+    Index m_index;
+    Constructor<D> m_constructor;
+
+    BooleanNonemptyImpl(Index index, Constructor<D> constructor);
+
+    // Give access to the constructor.
+    template<typename T, typename Hash, typename EqualTo>
+    friend class loki::SegmentedRepository;
+
+    void evaluate_impl(EvaluationContext& context) const;
+
+    void accept_impl(ConstructorVisitor<Boolean>& visitor) const;
+
+    friend class ConstructorEvaluatorBase<Boolean, BooleanNonemptyImpl<D>>;
+
+public:
+    // moveable but not copyable
+    BooleanNonemptyImpl(const BooleanNonemptyImpl& other) = delete;
+    BooleanNonemptyImpl& operator=(const BooleanNonemptyImpl& other) = delete;
+    BooleanNonemptyImpl(BooleanNonemptyImpl&& other) = default;
+    BooleanNonemptyImpl& operator=(BooleanNonemptyImpl&& other) = default;
+
+    Index get_index() const;
+    Constructor<D> get_constructor() const;
+
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
+    auto identifying_members() const { return std::tuple(get_constructor()); }
+};
+
+/**
+ * Numericals
+ */
+
+template<DescriptionLogicCategory D>
+class NumericalCountImpl : public ConstructorEvaluatorBase<Numerical, NumericalCountImpl<D>>
+{
+private:
+    Index m_index;
+    Constructor<D> m_constructor;
+
+    NumericalCountImpl(Index index, Constructor<D> constructor);
+
+    // Give access to the constructor.
+    template<typename T, typename Hash, typename EqualTo>
+    friend class loki::SegmentedRepository;
+
+    void evaluate_impl(EvaluationContext& context) const;
+
+    void accept_impl(ConstructorVisitor<Boolean>& visitor) const;
+
+    friend class ConstructorEvaluatorBase<Numerical, NumericalCountImpl<D>>;
+
+public:
+    // moveable but not copyable
+    NumericalCountImpl(const NumericalCountImpl& other) = delete;
+    NumericalCountImpl& operator=(const NumericalCountImpl& other) = delete;
+    NumericalCountImpl(NumericalCountImpl&& other) = default;
+    NumericalCountImpl& operator=(NumericalCountImpl&& other) = default;
+
+    Index get_index() const;
+    Constructor<D> get_constructor() const;
+
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
+    auto identifying_members() const { return std::tuple(get_constructor()); }
+};
+
+class NumericalDistanceImpl : public ConstructorEvaluatorBase<Numerical, NumericalDistanceImpl>
+{
+private:
+    Index m_index;
+    Constructor<Concept> m_left_concept;
+    Constructor<Role> m_role;
+    Constructor<Concept> m_right_concept;
+
+    NumericalDistanceImpl(Index index, Constructor<Concept> left_concept, Constructor<Role> role, Constructor<Concept> right_concept);
+
+    // Give access to the constructor.
+    template<typename T, typename Hash, typename EqualTo>
+    friend class loki::SegmentedRepository;
+
+    void evaluate_impl(EvaluationContext& context) const;
+
+    void accept_impl(ConstructorVisitor<Boolean>& visitor) const;
+
+    friend class ConstructorEvaluatorBase<Numerical, NumericalDistanceImpl>;
+
+public:
+    // moveable but not copyable
+    NumericalDistanceImpl(const NumericalDistanceImpl& other) = delete;
+    NumericalDistanceImpl& operator=(const NumericalDistanceImpl& other) = delete;
+    NumericalDistanceImpl(NumericalDistanceImpl&& other) = default;
+    NumericalDistanceImpl& operator=(NumericalDistanceImpl&& other) = default;
+
+    Index get_index() const;
+    Constructor<Concept> get_left_concept() const;
+    Constructor<Role> get_role() const;
+    Constructor<Concept> get_right_concept() const;
+
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
+    auto identifying_members() const { return std::tuple(get_left_concept(), get_role(), get_right_concept()); }
+};
+
 }
 
 #endif

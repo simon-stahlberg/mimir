@@ -945,6 +945,149 @@ public:
     /// @return a tuple containing const references to the members defining the object's identity.
     auto identifying_members() const { return std::tuple(get_concept()); }
 };
+
+/**
+ * Booleans
+ */
+
+template<StaticOrFluentOrDerived P>
+class BooleanAtomicStateImpl : public ConstructorImpl<Boolean>
+{
+private:
+    Index m_index;
+    Predicate<P> m_predicate;
+
+    BooleanAtomicStateImpl(Index index, Predicate<P> predicate);
+
+    // Give access to the constructor.
+    template<typename T, typename Hash, typename EqualTo>
+    friend class loki::SegmentedRepository;
+
+public:
+    // moveable but not copyable
+    BooleanAtomicStateImpl(const BooleanAtomicStateImpl& other) = delete;
+    BooleanAtomicStateImpl& operator=(const BooleanAtomicStateImpl& other) = delete;
+    BooleanAtomicStateImpl(BooleanAtomicStateImpl&& other) = default;
+    BooleanAtomicStateImpl& operator=(BooleanAtomicStateImpl&& other) = default;
+
+    bool test_match(dl::Constructor<Boolean> constructor, const Grammar& grammar) const override;
+
+    void accept(ConstructorVisitor<Boolean>& visitor) const override;
+
+    Index get_index() const;
+    Predicate<P> get_predicate() const;
+
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
+    auto identifying_members() const { return std::tuple(get_predicate()); }
+};
+
+template<DescriptionLogicCategory D>
+class BooleanNonemptyImpl : public ConstructorImpl<Boolean>
+{
+private:
+    Index m_index;
+    NonTerminal<D> m_nonterminal;
+
+    BooleanNonemptyImpl(Index index, NonTerminal<D> nonterminal);
+
+    // Give access to the constructor.
+    template<typename T, typename Hash, typename EqualTo>
+    friend class loki::SegmentedRepository;
+
+public:
+    // moveable but not copyable
+    BooleanNonemptyImpl(const BooleanNonemptyImpl& other) = delete;
+    BooleanNonemptyImpl& operator=(const BooleanNonemptyImpl& other) = delete;
+    BooleanNonemptyImpl(BooleanNonemptyImpl&& other) = default;
+    BooleanNonemptyImpl& operator=(BooleanNonemptyImpl&& other) = default;
+
+    bool test_match(dl::Constructor<Boolean> constructor, const Grammar& grammar) const override;
+
+    void accept(ConstructorVisitor<Boolean>& visitor) const override;
+
+    Index get_index() const;
+    NonTerminal<D> get_nonterminal() const;
+
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
+    auto identifying_members() const { return std::tuple(get_nonterminal()); }
+};
+
+/**
+ * Numericals
+ */
+
+template<DescriptionLogicCategory D>
+class NumericalCountImpl : public ConstructorImpl<Numerical>
+{
+private:
+    Index m_index;
+    NonTerminal<D> m_nonterminal;
+
+    NumericalCountImpl(Index index, NonTerminal<D> nonterminal);
+
+    // Give access to the constructor.
+    template<typename T, typename Hash, typename EqualTo>
+    friend class loki::SegmentedRepository;
+
+public:
+    // moveable but not copyable
+    NumericalCountImpl(const NumericalCountImpl& other) = delete;
+    NumericalCountImpl& operator=(const NumericalCountImpl& other) = delete;
+    NumericalCountImpl(NumericalCountImpl&& other) = default;
+    NumericalCountImpl& operator=(NumericalCountImpl&& other) = default;
+
+    bool test_match(dl::Constructor<Numerical> constructor, const Grammar& grammar) const override;
+
+    void accept(ConstructorVisitor<Numerical>& visitor) const override;
+
+    Index get_index() const;
+    NonTerminal<D> get_cnonterminal() const;
+
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
+    auto identifying_members() const { return std::tuple(get_nonterminal()); }
+};
+
+class NumericalDistanceImpl : public ConstructorImpl<Numerical>
+{
+private:
+    Index m_index;
+    NonTerminal<Concept> m_left_concept;
+    NonTerminal<Role> m_role;
+    NonTerminal<Concept> m_right_concept;
+
+    NumericalDistanceImpl(Index index, NonTerminal<Concept> left_concept, NonTerminal<Role> role, NonTerminal<Concept> right_concept);
+
+    // Give access to the constructor.
+    template<typename T, typename Hash, typename EqualTo>
+    friend class loki::SegmentedRepository;
+
+public:
+    // moveable but not copyable
+    NumericalDistanceImpl(const NumericalDistanceImpl& other) = delete;
+    NumericalDistanceImpl& operator=(const NumericalDistanceImpl& other) = delete;
+    NumericalDistanceImpl(NumericalDistanceImpl&& other) = default;
+    NumericalDistanceImpl& operator=(NumericalDistanceImpl&& other) = default;
+
+    bool test_match(dl::Constructor<Numerical> constructor, const Grammar& grammar) const override;
+
+    void accept(ConstructorVisitor<Numerical>& visitor) const override;
+
+    Index get_index() const;
+    NonTerminal<Concept> get_left_concept() const;
+    NonTerminal<Role> get_role() const;
+    NonTerminal<Concept> get_right_concept() const;
+
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
+    auto identifying_members() const { return std::tuple(get_left_concept(), get_role(), get_right_concept()); }
+};
 }
 
 #endif

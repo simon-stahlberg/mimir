@@ -103,4 +103,33 @@ void ConstructorVisitor<Role>::visit(RoleRestriction constructor)
 }
 void ConstructorVisitor<Role>::visit(RoleIdentity constructor) { constructor->get_concept()->accept(*m_concept_visitor); }
 
+/* Booleans */
+void ConstructorVisitor<Boolean>::initialize(ConstructorVisitor<Concept>& concept_visitor, ConstructorVisitor<Role>& role_visitor)
+{
+    m_concept_visitor = &concept_visitor;
+    m_role_visitor = &role_visitor;
+}
+
+void ConstructorVisitor<Boolean>::visit(BooleanAtomicState<Static> constructor) {}
+void ConstructorVisitor<Boolean>::visit(BooleanAtomicState<Fluent> constructor) {}
+void ConstructorVisitor<Boolean>::visit(BooleanAtomicState<Derived> constructor) {}
+void ConstructorVisitor<Boolean>::visit(BooleanNonempty<Concept> constructor) { constructor->get_constructor()->accept(*m_concept_visitor); }
+void ConstructorVisitor<Boolean>::visit(BooleanNonempty<Role> constructor) { constructor->get_constructor()->accept(*m_role_visitor); }
+
+/* Numericals */
+void ConstructorVisitor<Numerical>::initialize(ConstructorVisitor<Concept>& concept_visitor, ConstructorVisitor<Role>& role_visitor)
+{
+    m_concept_visitor = &concept_visitor;
+    m_role_visitor = &role_visitor;
+}
+
+void ConstructorVisitor<Numerical>::visit(NumericalCount<Concept> constructor) { constructor->get_constructor()->accept(*m_concept_visitor); }
+void ConstructorVisitor<Numerical>::visit(NumericalCount<Role> constructor) { constructor->get_constructor()->accept(*m_role_visitor); }
+void ConstructorVisitor<Numerical>::visit(NumericalDistance constructor)
+{
+    constructor->get_left_concept()->accept(*m_concept_visitor);
+    constructor->get_left_role()->accept(*m_role_visitor);
+    constructor->get_left_concept()->accept(*m_concept_visitor);
+}
+
 }

@@ -55,6 +55,9 @@ struct Numerical
  */
 
 template<typename T>
+concept DescriptionLogicCategory = std::is_same<T, Concept>::value || std::is_same<T, Role>::value;
+
+template<typename T>
 concept FeatureCategory =
     std::is_same<T, Concept>::value || std::is_same<T, Role>::value || std::is_same<T, Boolean>::value || std::is_same<T, Numerical>::value;
 

@@ -89,6 +89,38 @@ public:
 };
 
 /**
+ * Booleans
+ */
+
+template<>
+class ConstructorVisitor<Boolean>
+{
+public:
+    virtual ~ConstructorVisitor() = default;
+
+    virtual void visit(BooleanAtomicState<Static> constructor) = 0;
+    virtual void visit(BooleanAtomicState<Fluent> constructor) = 0;
+    virtual void visit(BooleanAtomicState<Derived> constructor) = 0;
+    virtual void visit(BooleanNonempty<Concept> constructor) = 0;
+    virtual void visit(BooleanNonempty<Role> constructor) = 0;
+};
+
+/**
+ * Numericals
+ */
+
+template<>
+class ConstructorVisitor<Numerical>
+{
+public:
+    virtual ~ConstructorVisitor() = default;
+
+    virtual void visit(NumericalCount<Concept> constructor) = 0;
+    virtual void visit(NumericalCount<Role> constructor) = 0;
+    virtual void visit(NumericalDistance constructor) = 0;
+};
+
+/**
  * ConstructorOrRoleNonTerminal
  */
 

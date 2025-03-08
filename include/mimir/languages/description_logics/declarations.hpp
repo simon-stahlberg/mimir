@@ -131,6 +131,24 @@ using RoleRestriction = const RoleRestrictionImpl*;
 class RoleIdentityImpl;
 using RoleIdentity = const RoleIdentityImpl*;
 
+/* Concrete Booleans */
+template<StaticOrFluentOrDerived P>
+class BooleanAtomicStateImpl;
+template<StaticOrFluentOrDerived P>
+using BooleanAtomicState = const BooleanAtomicStateImpl<P>*;
+template<DescriptionLogicCategory D>
+class BooleanNonemptyImpl;
+template<DescriptionLogicCategory D>
+using BooleanNonempty = const BooleanNonemptyImpl*;
+
+/* Concrete Numerical */
+template<DescriptionLogicCategory D>
+class NumericalCountImpl;
+template<DescriptionLogicCategory D>
+using NumericalCount = const NumericalCountImpl*;
+class NumericalDistanceImpl;
+using NumericalDistance = const NumericalDistanceImpl*;
+
 /**
  * Visitors
  */
@@ -248,6 +266,24 @@ class RoleRestrictionImpl;
 using RoleRestriction = const RoleRestrictionImpl*;
 class RoleIdentityImpl;
 using RoleIdentity = const RoleIdentityImpl*;
+
+/* Concrete Booleans */
+template<StaticOrFluentOrDerived P>
+class BooleanAtomicStateImpl;
+template<StaticOrFluentOrDerived P>
+using BooleanAtomicState = const BooleanAtomicStateImpl<P>*;
+template<DescriptionLogicCategory D>
+class BooleanNonemptyImpl;
+template<DescriptionLogicCategory D>
+using BooleanNonempty = const BooleanNonemptyImpl*;
+
+/* Concrete Numerical */
+template<DescriptionLogicCategory D>
+class NumericalCountImpl;
+template<DescriptionLogicCategory D>
+using NumericalCount = const NumericalCountImpl*;
+class NumericalDistanceImpl;
+using NumericalDistance = const NumericalDistanceImpl*;
 
 /**
  * Visitors
@@ -395,6 +431,24 @@ class RoleRestrictionImpl;
 using RoleRestriction = const RoleRestrictionImpl*;
 class RoleIdentityImpl;
 using RoleIdentity = const RoleIdentityImpl*;
+
+/* Concrete Booleans */
+template<StaticOrFluentOrDerived P>
+class BooleanAtomicStateImpl;
+template<StaticOrFluentOrDerived P>
+using BooleanAtomicState = const BooleanAtomicStateImpl<P>*;
+template<DescriptionLogicCategory D>
+class BooleanNonemptyImpl;
+template<DescriptionLogicCategory D>
+using BooleanNonempty = const BooleanNonemptyImpl*;
+
+/* Concrete Numerical */
+template<DescriptionLogicCategory D>
+class NumericalCountImpl;
+template<DescriptionLogicCategory D>
+using NumericalCount = const NumericalCountImpl*;
+class NumericalDistanceImpl;
+using NumericalDistance = const NumericalDistanceImpl*;
 
 /**
  * Visitors

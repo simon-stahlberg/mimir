@@ -330,6 +330,65 @@ public:
     void visit(dl::RoleIdentity constructor) override;
 };
 
+/**
+ * BooleanVisitors
+ */
+
+template<StaticOrFluentOrDerived P>
+class BooleanAtomicStateGrammarVisitor : public GrammarConstructorVisitor<Boolean>
+{
+private:
+    BooleanAtomicState<P> m_grammar_constructor;
+    const Grammar& m_grammar;
+
+public:
+    explicit BooleanAtomicStateGrammarVisitor(BooleanAtomicState<P> grammar_constructor, const Grammar& grammar);
+
+    void visit(dl::BooleanAtomicState<P> constructor) override;
+};
+
+template<DescriptionLogicCategory D>
+class BooleanNonemptyGrammarVisitor : public GrammarConstructorVisitor<Boolean>
+{
+private:
+    BooleanNonempty<D> m_grammar_constructor;
+    const Grammar& m_grammar;
+
+public:
+    explicit BooleanNonemptyGrammarVisitor(BooleanNonempty<D> grammar_constructor, const Grammar& grammar);
+
+    void visit(dl::BooleanNonempty<D> constructor) override;
+};
+
+/**
+ * NumericalVisitors
+ */
+
+template<DescriptionLogicCategory D>
+class NumericalCountGrammarVisitor : public GrammarConstructorVisitor<Numerical>
+{
+private:
+    NumericalCount<D> m_grammar_constructor;
+    const Grammar& m_grammar;
+
+public:
+    explicit NumericalCountGrammarVisitor(NumericalCount<D> grammar_constructor, const Grammar& grammar);
+
+    void visit(dl::NumericalCount<D> constructor) override;
+};
+
+class NumericalDistanceGrammarVisitor : public GrammarConstructorVisitor<Numerical>
+{
+private:
+    NumericalDistance m_grammar_constructor;
+    const Grammar& m_grammar;
+
+public:
+    explicit NumericalDistanceGrammarVisitor(NumericalDistance grammar_constructor, const Grammar& grammar);
+
+    void visit(dl::NumericalDistance constructor) override;
+};
+
 }
 
 #endif

@@ -1116,4 +1116,131 @@ Index RoleIdentityImpl::get_index() const { return m_index; }
 
 Constructor<Concept> RoleIdentityImpl::get_concept() const { return m_concept; }
 
+/**
+ * BooleanAtomicStateImpl
+ */
+
+template<StaticOrFluentOrDerived P>
+BooleanAtomicStateImpl<P>::BooleanAtomicStateImpl(Index index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
+{
+}
+
+template<StaticOrFluentOrDerived P>
+void BooleanAtomicStateImpl<P>::evaluate_impl(EvaluationContext& context) const
+{
+    // TODO
+}
+
+template<StaticOrFluentOrDerived P>
+void BooleanAtomicStateImpl<P>::accept_impl(ConstructorVisitor<Boolean>& visitor) const
+{
+    visitor.visit(this);
+}
+
+template<StaticOrFluentOrDerived P>
+Index BooleanAtomicStateImpl<P>::get_index() const
+{
+    return m_index;
+}
+
+template<StaticOrFluentOrDerived P>
+Predicate<P> BooleanAtomicStateImpl<P>::get_predicate() const
+{
+    return m_predicate;
+}
+
+template class BooleanAtomicStateImpl<Static>;
+template class BooleanAtomicStateImpl<Fluent>;
+template class BooleanAtomicStateImpl<Derived>;
+
+template<DescriptionLogicCategory D>
+BooleanNonemptyImpl<D>::BooleanNonemptyImpl(Index index, Constructor<D> constructor) : m_index(index), m_constructor(constructor)
+{
+}
+
+template<DescriptionLogicCategory D>
+void BooleanNonemptyImpl<D>::evaluate_impl(EvaluationContext& context) const
+{
+    // TODO
+}
+
+template<DescriptionLogicCategory D>
+void BooleanNonemptyImpl<D>::accept_impl(ConstructorVisitor<Boolean>& visitor) const
+{
+    visitor.visit(this);
+}
+
+template<DescriptionLogicCategory D>
+Index BooleanNonemptyImpl<D>::get_index() const
+{
+    return m_index;
+}
+
+template<DescriptionLogicCategory D>
+Constructor<D> BooleanNonemptyImpl<D>::get_constructor() const
+{
+    return m_constructor;
+}
+
+template class BooleanNonemptyImpl<Concept>;
+template class BooleanNonemptyImpl<Role>;
+
+/**
+ * Numericals
+ */
+
+template<DescriptionLogicCategory D>
+NumericalCountImpl<D>::NumericalCountImpl(Index index, Constructor<D> constructor) : m_index(index), m_constructor(constructor)
+{
+}
+
+template<DescriptionLogicCategory D>
+void NumericalCountImpl<D>::evaluate_impl(EvaluationContext& context) const
+{
+}
+
+template<DescriptionLogicCategory D>
+void NumericalCountImpl<D>::accept_impl(ConstructorVisitor<Boolean>& visitor) const
+{
+    visitor.visit(this);
+}
+
+template<DescriptionLogicCategory D>
+Index NumericalCountImpl<D>::get_index() const
+{
+    return m_index;
+}
+
+template<DescriptionLogicCategory D>
+Constructor<D> NumericalCountImpl<D>::get_constructor() const
+{
+    return m_constructor;
+}
+
+template class NumericalCountImpl<Concept>;
+template class NumericalCountImpl<Role>;
+
+NumericalDistanceImpl::NumericalDistanceImpl(Index index, Constructor<Concept> left_concept, Constructor<Role> role, Constructor<Concept> right_concept) :
+    m_index(index),
+    m_left_concept(left_concept),
+    m_role(role),
+    m_right_concept(right_concept)
+{
+}
+
+void NumericalDistanceImpl::evaluate_impl(EvaluationContext& context) const
+{
+    // TODO
+}
+
+void NumericalDistanceImpl::accept_impl(ConstructorVisitor<Boolean>& visitor) const { visitor.visit(this); }
+
+Index NumericalDistanceImpl::get_index() const { return m_index; }
+
+Constructor<Concept> NumericalDistanceImpl::get_left_concept() const { return m_left_concept; }
+
+Constructor<Role> NumericalDistanceImpl::get_role() const { return m_role; }
+
+Constructor<Concept> NumericalDistanceImpl::get_right_concept() const { return m_right_concept; }
+
 }

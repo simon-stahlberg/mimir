@@ -89,6 +89,42 @@ public:
     virtual void visit(RoleIdentity constructor);
 };
 
+template<>
+class ConstructorVisitor<Boolean>
+{
+protected:
+    ConstructorVisitor<Concept>* m_concept_visitor;
+    ConstructorVisitor<Role>* m_role_visitor;
+
+public:
+    virtual void initialize(ConstructorVisitor<Concept>& concept_visitor, ConstructorVisitor<Role>& role_visitor);
+
+    virtual ~ConstructorVisitor() = default;
+
+    virtual void visit(BooleanAtomicState<Static> constructor);
+    virtual void visit(BooleanAtomicState<Fluent> constructor);
+    virtual void visit(BooleanAtomicState<Derived> constructor);
+    virtual void visit(BooleanNonempty<Concept> constructor);
+    virtual void visit(BooleanNonempty<Role> constructor);
+};
+
+template<>
+class ConstructorVisitor<Numerical>
+{
+protected:
+    ConstructorVisitor<Concept>* m_concept_visitor;
+    ConstructorVisitor<Role>* m_role_visitor;
+
+public:
+    virtual void initialize(ConstructorVisitor<Concept>& concept_visitor, ConstructorVisitor<Role>& role_visitor);
+
+    virtual ~ConstructorVisitor() = default;
+
+    virtual void visit(NumericalCount<Concept> constructor);
+    virtual void visit(NumericalCount<Role> constructor);
+    virtual void visit(NumericalDistance constructor);
+};
+
 /**
  * GrammarVisitor
  */
@@ -152,6 +188,38 @@ public:
     void visit(RoleReflexiveTransitiveClosure constructor) override {}
     void visit(RoleRestriction constructor) override {}
     void visit(RoleIdentity constructor) override {}
+
+    bool get_result() const { return m_result; }
+};
+
+template<>
+class GrammarConstructorVisitor<Boolean> : public ConstructorVisitor<Boolean>
+{
+protected:
+    // Default implementations always return false
+    bool m_result = false;
+
+public:
+    void visit(BooleanAtomicState<Static> constructor) override {}
+    void visit(BooleanAtomicState<Fluent> constructor) override {}
+    void visit(BooleanAtomicState<Derived> constructor) override {}
+    void visit(BooleanNonempty<Concept> constructor) override {}
+    void visit(BooleanNonempty<Role> constructor) override {}
+
+    bool get_result() const { return m_result; }
+};
+
+template<>
+class GrammarConstructorVisitor<Numerical> : public ConstructorVisitor<Numerical>
+{
+protected:
+    // Default implementations always return false
+    bool m_result = false;
+
+public:
+    void visit(NumericalCount<Concept> constructor) override {}
+    void visit(NumericalCount<Role> constructor) override {}
+    void visit(NumericalDistance constructor) override {}
 
     bool get_result() const { return m_result; }
 };
