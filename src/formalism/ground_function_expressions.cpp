@@ -50,9 +50,9 @@ Index GroundFunctionExpressionBinaryOperatorImpl::get_index() const { return m_i
 
 loki::BinaryOperatorEnum GroundFunctionExpressionBinaryOperatorImpl::get_binary_operator() const { return m_binary_operator; }
 
-const GroundFunctionExpression& GroundFunctionExpressionBinaryOperatorImpl::get_left_function_expression() const { return m_left_function_expression; }
+GroundFunctionExpression GroundFunctionExpressionBinaryOperatorImpl::get_left_function_expression() const { return m_left_function_expression; }
 
-const GroundFunctionExpression& GroundFunctionExpressionBinaryOperatorImpl::get_right_function_expression() const { return m_right_function_expression; }
+GroundFunctionExpression GroundFunctionExpressionBinaryOperatorImpl::get_right_function_expression() const { return m_right_function_expression; }
 
 /* FunctionExpressionMultiOperator */
 GroundFunctionExpressionMultiOperatorImpl::GroundFunctionExpressionMultiOperatorImpl(Index index,
@@ -87,7 +87,7 @@ GroundFunctionExpressionMinusImpl::GroundFunctionExpressionMinusImpl(Index index
 
 Index GroundFunctionExpressionMinusImpl::get_index() const { return m_index; }
 
-const GroundFunctionExpression& GroundFunctionExpressionMinusImpl::get_function_expression() const { return m_function_expression; }
+GroundFunctionExpression GroundFunctionExpressionMinusImpl::get_function_expression() const { return m_function_expression; }
 
 /* FunctionExpressionFunction */
 template<StaticOrFluentOrAuxiliary F>
@@ -104,7 +104,7 @@ Index GroundFunctionExpressionFunctionImpl<F>::get_index() const
 }
 
 template<StaticOrFluentOrAuxiliary F>
-const GroundFunction<F>& GroundFunctionExpressionFunctionImpl<F>::get_function() const
+GroundFunction<F> GroundFunctionExpressionFunctionImpl<F>::get_function() const
 {
     return m_function;
 }
@@ -114,13 +114,13 @@ template class GroundFunctionExpressionFunctionImpl<Fluent>;
 template class GroundFunctionExpressionFunctionImpl<Auxiliary>;
 
 /* GroundFunctionExpression */
-GroundFunctionExpressionImpl::GroundFunctionExpressionImpl(size_t index, GroundFunctionExpressionVariant ground_function_expression) :
+GroundFunctionExpressionImpl::GroundFunctionExpressionImpl(Index index, GroundFunctionExpressionVariant ground_function_expression) :
     m_index(index),
     m_ground_function_expression(ground_function_expression)
 {
 }
 
-size_t GroundFunctionExpressionImpl::get_index() const { return m_index; }
+Index GroundFunctionExpressionImpl::get_index() const { return m_index; }
 
 const GroundFunctionExpressionVariant& GroundFunctionExpressionImpl::get_variant() const { return m_ground_function_expression; }
 

@@ -39,7 +39,7 @@ Index FunctionImpl<F>::get_index() const
 }
 
 template<StaticOrFluentOrAuxiliary F>
-const FunctionSkeleton<F>& FunctionImpl<F>::get_function_skeleton() const
+FunctionSkeleton<F> FunctionImpl<F>::get_function_skeleton() const
 {
     return m_function_skeleton;
 }

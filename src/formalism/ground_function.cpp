@@ -38,7 +38,7 @@ Index GroundFunctionImpl<F>::get_index() const
 }
 
 template<StaticOrFluentOrAuxiliary F>
-const FunctionSkeleton<F>& GroundFunctionImpl<F>::get_function_skeleton() const
+FunctionSkeleton<F> GroundFunctionImpl<F>::get_function_skeleton() const
 {
     return m_function_skeleton;
 }

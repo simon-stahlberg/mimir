@@ -89,8 +89,8 @@ public:
 
     Index get_index() const;
     loki::BinaryOperatorEnum get_binary_operator() const;
-    const FunctionExpression& get_left_function_expression() const;
-    const FunctionExpression& get_right_function_expression() const;
+    FunctionExpression get_left_function_expression() const;
+    FunctionExpression get_right_function_expression() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -158,7 +158,7 @@ public:
     FunctionExpressionMinusImpl& operator=(FunctionExpressionMinusImpl&& other) = default;
 
     Index get_index() const;
-    const FunctionExpression& get_function_expression() const;
+    FunctionExpression get_function_expression() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -192,7 +192,7 @@ public:
     FunctionExpressionFunctionImpl& operator=(FunctionExpressionFunctionImpl&& other) = default;
 
     Index get_index() const;
-    const Function<F>& get_function() const;
+    Function<F> get_function() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -212,10 +212,10 @@ using FunctionExpressionVariant = std::variant<FunctionExpressionNumber,
 class FunctionExpressionImpl
 {
 private:
-    size_t m_index;
+    Index m_index;
     FunctionExpressionVariant m_function_expression;
 
-    FunctionExpressionImpl(size_t index, FunctionExpressionVariant function_expression);
+    FunctionExpressionImpl(Index index, FunctionExpressionVariant function_expression);
 
     // Below: add additional members if needed and initialize them in the constructor
 
@@ -234,7 +234,7 @@ public:
     FunctionExpressionImpl(FunctionExpressionImpl&& other) = default;
     FunctionExpressionImpl& operator=(FunctionExpressionImpl&& other) = default;
 
-    size_t get_index() const;
+    Index get_index() const;
     const FunctionExpressionVariant& get_variant() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.

@@ -51,7 +51,7 @@ public:
 
     Index get_index() const;
     bool is_negated() const;
-    const GroundAtom<P>& get_atom() const;
+    GroundAtom<P> get_atom() const;
     Literal<P> lift(const TermList& terms, PDDLRepositories& pddl_repositories) const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.

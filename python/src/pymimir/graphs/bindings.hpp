@@ -1,6 +1,6 @@
 
-#ifndef MIMIR_GRAPHS_BINDINGS_HPP
-#define MIMIR_GRAPHS_BINDINGS_HPP
+#ifndef MIMIR_PYTHON_GRAPHS_BINDINGS_HPP
+#define MIMIR_PYTHON_GRAPHS_BINDINGS_HPP
 
 #include "../init_declarations.hpp"
 #include "mimir/graphs.hpp"

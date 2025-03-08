@@ -39,9 +39,9 @@ Index NumericConstraintImpl::get_index() const { return m_index; }
 
 loki::BinaryComparatorEnum NumericConstraintImpl::get_binary_comparator() const { return m_binary_comparator; }
 
-const FunctionExpression& NumericConstraintImpl::get_left_function_expression() const { return m_left_function_expression; }
+FunctionExpression NumericConstraintImpl::get_left_function_expression() const { return m_left_function_expression; }
 
-const FunctionExpression& NumericConstraintImpl::get_right_function_expression() const { return m_right_function_expression; }
+FunctionExpression NumericConstraintImpl::get_right_function_expression() const { return m_right_function_expression; }
 
 const TermList& NumericConstraintImpl::get_terms() const { return m_terms; }
 

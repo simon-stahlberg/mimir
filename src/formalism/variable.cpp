@@ -29,7 +29,7 @@ Index VariableImpl::get_index() const { return m_index; }
 
 const std::string& VariableImpl::get_name() const { return m_name; }
 
-const Index VariableImpl::get_parameter_index() const { return m_parameter_index; }
+Index VariableImpl::get_parameter_index() const { return m_parameter_index; }
 
 std::ostream& operator<<(std::ostream& out, const VariableImpl& element)
 {

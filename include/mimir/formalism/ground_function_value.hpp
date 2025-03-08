@@ -49,7 +49,7 @@ public:
     GroundFunctionValueImpl& operator=(GroundFunctionValueImpl&& other) = default;
 
     Index get_index() const;
-    const GroundFunction<F>& get_function() const;
+    GroundFunction<F> get_function() const;
     double get_number() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.

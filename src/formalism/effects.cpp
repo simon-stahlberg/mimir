@@ -60,13 +60,13 @@ loki::AssignOperatorEnum NumericEffectImpl<F>::get_assign_operator() const
 }
 
 template<FluentOrAuxiliary F>
-const Function<F>& NumericEffectImpl<F>::get_function() const
+Function<F> NumericEffectImpl<F>::get_function() const
 {
     return m_function;
 }
 
 template<FluentOrAuxiliary F>
-const FunctionExpression& NumericEffectImpl<F>::get_function_expression() const
+FunctionExpression NumericEffectImpl<F>::get_function_expression() const
 {
     return m_function_expression;
 }
@@ -104,7 +104,7 @@ const LiteralList<Fluent>& ConjunctiveEffectImpl::get_literals() const { return 
 
 const NumericEffectList<Fluent>& ConjunctiveEffectImpl::get_fluent_numeric_effects() const { return m_fluent_numeric_effects; }
 
-const std::optional<NumericEffect<Auxiliary>>& ConjunctiveEffectImpl::get_auxiliary_numeric_effect() const { return m_auxiliary_numeric_effect; }
+std::optional<NumericEffect<Auxiliary>> ConjunctiveEffectImpl::get_auxiliary_numeric_effect() const { return m_auxiliary_numeric_effect; }
 
 /**
  * Type 3 effect
@@ -121,9 +121,9 @@ ConditionalEffectImpl::ConditionalEffectImpl(Index index, ConjunctiveCondition c
 
 Index ConditionalEffectImpl::get_index() const { return m_index; }
 
-const ConjunctiveCondition& ConditionalEffectImpl::get_conjunctive_condition() const { return m_conjunctive_condition; }
+ConjunctiveCondition ConditionalEffectImpl::get_conjunctive_condition() const { return m_conjunctive_condition; }
 
-const ConjunctiveEffect& ConditionalEffectImpl::get_conjunctive_effect() const { return m_conjunctive_effect; }
+ConjunctiveEffect ConditionalEffectImpl::get_conjunctive_effect() const { return m_conjunctive_effect; }
 
 size_t ConditionalEffectImpl::get_arity() const { return m_conjunctive_condition->get_arity(); }
 

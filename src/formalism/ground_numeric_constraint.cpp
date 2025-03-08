@@ -40,9 +40,9 @@ Index GroundNumericConstraintImpl::get_index() const { return m_index; }
 
 loki::BinaryComparatorEnum GroundNumericConstraintImpl::get_binary_comparator() const { return m_binary_comparator; }
 
-const GroundFunctionExpression& GroundNumericConstraintImpl::get_left_function_expression() const { return m_left_function_expression; }
+GroundFunctionExpression GroundNumericConstraintImpl::get_left_function_expression() const { return m_left_function_expression; }
 
-const GroundFunctionExpression& GroundNumericConstraintImpl::get_right_function_expression() const { return m_right_function_expression; }
+GroundFunctionExpression GroundNumericConstraintImpl::get_right_function_expression() const { return m_right_function_expression; }
 
 /**
  * Utils

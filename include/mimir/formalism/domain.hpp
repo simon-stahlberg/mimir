@@ -69,7 +69,7 @@ public:
     const PDDLRepositories& get_repositories() const;
     const std::optional<fs::path>& get_filepath() const;
     const std::string& get_name() const;
-    const Requirements& get_requirements() const;
+    Requirements get_requirements() const;
     const ObjectList& get_constants() const;
     template<StaticOrFluentOrDerived P>
     const PredicateList<P>& get_predicates() const;

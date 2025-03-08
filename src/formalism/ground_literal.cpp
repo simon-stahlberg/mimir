@@ -42,7 +42,7 @@ bool GroundLiteralImpl<P>::is_negated() const
 }
 
 template<StaticOrFluentOrDerived P>
-const GroundAtom<P>& GroundLiteralImpl<P>::get_atom() const
+GroundAtom<P> GroundLiteralImpl<P>::get_atom() const
 {
     return m_atom;
 }

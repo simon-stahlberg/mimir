@@ -47,7 +47,7 @@ public:
     GroundFunctionImpl& operator=(GroundFunctionImpl&& other) = default;
 
     Index get_index() const;
-    const FunctionSkeleton<F>& get_function_skeleton() const;
+    FunctionSkeleton<F> get_function_skeleton() const;
     const ObjectList& get_objects() const;
     size_t get_arity() const;
 

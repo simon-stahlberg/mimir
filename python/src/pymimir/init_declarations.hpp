@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_INIT_DECLARATIONS_HPP
-#define MIMIR_INIT_DECLARATIONS_HPP
+#ifndef MIMIR_PYTHON_INIT_DECLARATIONS_HPP
+#define MIMIR_PYTHON_INIT_DECLARATIONS_HPP
 
 #include <iostream>
 #include <iterator>

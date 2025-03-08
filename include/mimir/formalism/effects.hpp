@@ -51,8 +51,8 @@ public:
 
     Index get_index() const;
     loki::AssignOperatorEnum get_assign_operator() const;
-    const Function<F>& get_function() const;
-    const FunctionExpression& get_function_expression() const;
+    Function<F> get_function() const;
+    FunctionExpression get_function_expression() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -97,7 +97,7 @@ public:
     const VariableList& get_parameters() const;
     const LiteralList<Fluent>& get_literals() const;
     const NumericEffectList<Fluent>& get_fluent_numeric_effects() const;
-    const std::optional<NumericEffect<Auxiliary>>& get_auxiliary_numeric_effect() const;
+    std::optional<NumericEffect<Auxiliary>> get_auxiliary_numeric_effect() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -136,8 +136,8 @@ public:
     ConditionalEffectImpl& operator=(ConditionalEffectImpl&& other) = default;
 
     Index get_index() const;
-    const ConjunctiveCondition& get_conjunctive_condition() const;
-    const ConjunctiveEffect& get_conjunctive_effect() const;
+    ConjunctiveCondition get_conjunctive_condition() const;
+    ConjunctiveEffect get_conjunctive_effect() const;
 
     size_t get_arity() const;
 

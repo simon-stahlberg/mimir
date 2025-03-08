@@ -181,7 +181,7 @@ const Domain& ProblemImpl::get_domain() const { return m_domain; }
 
 const std::string& ProblemImpl::get_name() const { return m_name; }
 
-const Requirements& ProblemImpl::get_requirements() const { return m_requirements; }
+Requirements ProblemImpl::get_requirements() const { return m_requirements; }
 
 const ObjectList& ProblemImpl::get_objects() const { return m_objects; }
 

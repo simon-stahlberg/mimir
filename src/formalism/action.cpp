@@ -147,9 +147,9 @@ size_t ActionImpl::get_original_arity() const { return m_original_arity; }
 
 const VariableList& ActionImpl::get_parameters() const { return m_conjunctive_condition->get_parameters(); }
 
-const ConjunctiveCondition& ActionImpl::get_conjunctive_condition() const { return m_conjunctive_condition; }
+ConjunctiveCondition ActionImpl::get_conjunctive_condition() const { return m_conjunctive_condition; }
 
-const ConjunctiveEffect& ActionImpl::get_conjunctive_effect() const { return m_conjunctive_effect; }
+ConjunctiveEffect ActionImpl::get_conjunctive_effect() const { return m_conjunctive_effect; }
 
 const ConditionalEffectList& ActionImpl::get_conditional_effects() const { return m_conditional_effects; }
 

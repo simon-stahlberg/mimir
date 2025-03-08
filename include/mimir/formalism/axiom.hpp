@@ -48,8 +48,8 @@ public:
 
     Index get_index() const;
     const VariableList& get_parameters() const;
-    const ConjunctiveCondition& get_conjunctive_condition() const;
-    const Literal<Derived>& get_literal() const;
+    ConjunctiveCondition get_conjunctive_condition() const;
+    Literal<Derived> get_literal() const;
 
     size_t get_arity() const;
 

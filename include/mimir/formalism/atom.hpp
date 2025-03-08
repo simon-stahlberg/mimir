@@ -51,8 +51,9 @@ public:
     Index get_index() const;
     Predicate<P> get_predicate() const;
     const TermList& get_terms() const;
-    VariableList get_variables() const;
     size_t get_arity() const;
+
+    VariableList get_variables() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.

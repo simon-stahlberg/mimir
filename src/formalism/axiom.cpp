@@ -42,9 +42,9 @@ Index AxiomImpl::get_index() const { return m_index; }
 
 const VariableList& AxiomImpl::get_parameters() const { return m_conjunctive_condition->get_parameters(); }
 
-const Literal<Derived>& AxiomImpl::get_literal() const { return m_literal; }
+Literal<Derived> AxiomImpl::get_literal() const { return m_literal; }
 
-const ConjunctiveCondition& AxiomImpl::get_conjunctive_condition() const { return m_conjunctive_condition; }
+ConjunctiveCondition AxiomImpl::get_conjunctive_condition() const { return m_conjunctive_condition; }
 
 size_t AxiomImpl::get_arity() const { return get_parameters().size(); }
 

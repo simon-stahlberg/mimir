@@ -41,7 +41,7 @@ bool LiteralImpl<P>::is_negated() const
 }
 
 template<StaticOrFluentOrDerived P>
-const Atom<P>& LiteralImpl<P>::get_atom() const
+Atom<P> LiteralImpl<P>::get_atom() const
 {
     return m_atom;
 }

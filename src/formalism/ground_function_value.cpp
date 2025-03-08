@@ -37,7 +37,7 @@ Index GroundFunctionValueImpl<F>::get_index() const
 }
 
 template<StaticOrFluentOrAuxiliary F>
-const GroundFunction<F>& GroundFunctionValueImpl<F>::get_function() const
+GroundFunction<F> GroundFunctionValueImpl<F>::get_function() const
 {
     return m_function;
 }

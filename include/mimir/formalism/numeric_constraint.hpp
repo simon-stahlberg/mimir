@@ -58,8 +58,8 @@ public:
 
     Index get_index() const;
     loki::BinaryComparatorEnum get_binary_comparator() const;
-    const FunctionExpression& get_left_function_expression() const;
-    const FunctionExpression& get_right_function_expression() const;
+    FunctionExpression get_left_function_expression() const;
+    FunctionExpression get_right_function_expression() const;
     const TermList& get_terms() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.

@@ -52,9 +52,9 @@ Index FunctionExpressionBinaryOperatorImpl::get_index() const { return m_index; 
 
 loki::BinaryOperatorEnum FunctionExpressionBinaryOperatorImpl::get_binary_operator() const { return m_binary_operator; }
 
-const FunctionExpression& FunctionExpressionBinaryOperatorImpl::get_left_function_expression() const { return m_left_function_expression; }
+FunctionExpression FunctionExpressionBinaryOperatorImpl::get_left_function_expression() const { return m_left_function_expression; }
 
-const FunctionExpression& FunctionExpressionBinaryOperatorImpl::get_right_function_expression() const { return m_right_function_expression; }
+FunctionExpression FunctionExpressionBinaryOperatorImpl::get_right_function_expression() const { return m_right_function_expression; }
 
 /* FunctionExpressionMultiOperator */
 FunctionExpressionMultiOperatorImpl::FunctionExpressionMultiOperatorImpl(Index index,
@@ -85,7 +85,7 @@ FunctionExpressionMinusImpl::FunctionExpressionMinusImpl(Index index, FunctionEx
 
 Index FunctionExpressionMinusImpl::get_index() const { return m_index; }
 
-const FunctionExpression& FunctionExpressionMinusImpl::get_function_expression() const { return m_function_expression; }
+FunctionExpression FunctionExpressionMinusImpl::get_function_expression() const { return m_function_expression; }
 
 /* FunctionExpressionFunction */
 template<StaticOrFluentOrAuxiliary F>
@@ -100,7 +100,7 @@ Index FunctionExpressionFunctionImpl<F>::get_index() const
 }
 
 template<StaticOrFluentOrAuxiliary F>
-const Function<F>& FunctionExpressionFunctionImpl<F>::get_function() const
+Function<F> FunctionExpressionFunctionImpl<F>::get_function() const
 {
     return m_function;
 }
@@ -110,13 +110,13 @@ template class FunctionExpressionFunctionImpl<Fluent>;
 template class FunctionExpressionFunctionImpl<Auxiliary>;
 
 /* FunctionExpression */
-FunctionExpressionImpl::FunctionExpressionImpl(size_t index, FunctionExpressionVariant function_expression) :
+FunctionExpressionImpl::FunctionExpressionImpl(Index index, FunctionExpressionVariant function_expression) :
     m_index(index),
     m_function_expression(function_expression)
 {
 }
 
-size_t FunctionExpressionImpl::get_index() const { return m_index; }
+Index FunctionExpressionImpl::get_index() const { return m_index; }
 
 const FunctionExpressionVariant& FunctionExpressionImpl::get_variant() const { return m_function_expression; }
 

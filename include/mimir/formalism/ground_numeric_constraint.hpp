@@ -53,8 +53,8 @@ public:
 
     Index get_index() const;
     loki::BinaryComparatorEnum get_binary_comparator() const;
-    const GroundFunctionExpression& get_left_function_expression() const;
-    const GroundFunctionExpression& get_right_function_expression() const;
+    GroundFunctionExpression get_left_function_expression() const;
+    GroundFunctionExpression get_right_function_expression() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.

@@ -59,8 +59,8 @@ public:
 
     Index get_index() const;
     loki::AssignOperatorEnum get_assign_operator() const;
-    const GroundFunction<F>& get_function() const;
-    const GroundFunctionExpression& get_function_expression() const;
+    GroundFunction<F> get_function() const;
+    GroundFunctionExpression get_function_expression() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.

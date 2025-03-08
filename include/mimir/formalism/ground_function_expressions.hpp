@@ -88,8 +88,8 @@ public:
 
     Index get_index() const;
     loki::BinaryOperatorEnum get_binary_operator() const;
-    const GroundFunctionExpression& get_left_function_expression() const;
-    const GroundFunctionExpression& get_right_function_expression() const;
+    GroundFunctionExpression get_left_function_expression() const;
+    GroundFunctionExpression get_right_function_expression() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -157,7 +157,7 @@ public:
     GroundFunctionExpressionMinusImpl& operator=(GroundFunctionExpressionMinusImpl&& other) = default;
 
     Index get_index() const;
-    const GroundFunctionExpression& get_function_expression() const;
+    GroundFunctionExpression get_function_expression() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -191,7 +191,7 @@ public:
     GroundFunctionExpressionFunctionImpl& operator=(GroundFunctionExpressionFunctionImpl&& other) = default;
 
     Index get_index() const;
-    const GroundFunction<F>& get_function() const;
+    GroundFunction<F> get_function() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -211,10 +211,10 @@ using GroundFunctionExpressionVariant = std::variant<GroundFunctionExpressionNum
 class GroundFunctionExpressionImpl
 {
 private:
-    size_t m_index;
+    Index m_index;
     GroundFunctionExpressionVariant m_ground_function_expression;
 
-    GroundFunctionExpressionImpl(size_t index, GroundFunctionExpressionVariant ground_function_expression);
+    GroundFunctionExpressionImpl(Index index, GroundFunctionExpressionVariant ground_function_expression);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -229,7 +229,7 @@ public:
     GroundFunctionExpressionImpl(GroundFunctionExpressionImpl&& other) = default;
     GroundFunctionExpressionImpl& operator=(GroundFunctionExpressionImpl&& other) = default;
 
-    size_t get_index() const;
+    Index get_index() const;
     const GroundFunctionExpressionVariant& get_variant() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.

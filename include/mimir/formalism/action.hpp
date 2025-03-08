@@ -58,8 +58,8 @@ public:
     const std::string& get_name() const;
     size_t get_original_arity() const;
     const VariableList& get_parameters() const;
-    const ConjunctiveCondition& get_conjunctive_condition() const;
-    const ConjunctiveEffect& get_conjunctive_effect() const;
+    ConjunctiveCondition get_conjunctive_condition() const;
+    ConjunctiveEffect get_conjunctive_effect() const;
     const ConditionalEffectList& get_conditional_effects() const;
 
     size_t get_arity() const;

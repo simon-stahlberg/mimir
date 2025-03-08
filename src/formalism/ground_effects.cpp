@@ -57,13 +57,13 @@ loki::AssignOperatorEnum GroundNumericEffectImpl<F>::get_assign_operator() const
 }
 
 template<FluentOrAuxiliary F>
-const GroundFunction<F>& GroundNumericEffectImpl<F>::get_function() const
+GroundFunction<F> GroundNumericEffectImpl<F>::get_function() const
 {
     return m_function;
 }
 
 template<FluentOrAuxiliary F>
-const GroundFunctionExpression& GroundNumericEffectImpl<F>::get_function_expression() const
+GroundFunctionExpression GroundNumericEffectImpl<F>::get_function_expression() const
 {
     return m_function_expression;
 }

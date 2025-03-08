@@ -1,6 +1,6 @@
 
-#ifndef MIMIR_DATASETS_BINDINGS_HPP
-#define MIMIR_DATASETS_BINDINGS_HPP
+#ifndef MIMIR_PYTHON_DATASETS_BINDINGS_HPP
+#define MIMIR_PYTHON_DATASETS_BINDINGS_HPP
 
 #include "../graphs/bindings.hpp"
 #include "../init_declarations.hpp"

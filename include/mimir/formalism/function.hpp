@@ -49,7 +49,7 @@ public:
     FunctionImpl& operator=(FunctionImpl&& other) = default;
 
     Index get_index() const;
-    const FunctionSkeleton<F>& get_function_skeleton() const;
+    FunctionSkeleton<F> get_function_skeleton() const;
     const TermList& get_terms() const;
     const IndexList& get_parent_terms_to_terms_mapping() const;
 
