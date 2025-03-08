@@ -190,21 +190,21 @@ public:
     /// @return a tuple containing const references to the members defining the object's identity.
     auto identifying_members() const
     {
-        return std::forward_as_tuple(std::as_const(get_domain()),
-                                     std::as_const(get_requirements()),
-                                     std::as_const(get_objects()),
-                                     std::as_const(get_derived_predicates()),
-                                     std::as_const(get_initial_literals<Static>()),
-                                     std::as_const(get_initial_literals<Fluent>()),
-                                     std::as_const(get_initial_function_values<Static>()),
-                                     std::as_const(get_initial_function_values<Fluent>()),
-                                     std::as_const(get_auxiliary_function_value()),
-                                     std::as_const(get_goal_condition<Static>()),
-                                     std::as_const(get_goal_condition<Fluent>()),
-                                     std::as_const(get_goal_condition<Derived>()),
-                                     std::as_const(get_numeric_goal_condition()),
-                                     std::as_const(get_optimization_metric()),
-                                     std::as_const(get_axioms()));
+        return std::tuple(std::cref(get_domain()),
+                          get_requirements(),
+                          std::cref(get_objects()),
+                          std::cref(get_derived_predicates()),
+                          std::cref(get_initial_literals<Static>()),
+                          std::cref(get_initial_literals<Fluent>()),
+                          std::cref(get_initial_function_values<Static>()),
+                          std::cref(get_initial_function_values<Fluent>()),
+                          get_auxiliary_function_value(),
+                          std::cref(get_goal_condition<Static>()),
+                          std::cref(get_goal_condition<Fluent>()),
+                          std::cref(get_goal_condition<Derived>()),
+                          get_numeric_goal_condition(),
+                          get_optimization_metric(),
+                          std::cref(get_axioms()));
     }
 };
 

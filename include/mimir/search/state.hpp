@@ -75,12 +75,8 @@ struct StateImpl
     /// @return a tuple containing const references to the members defining the object's identity.
     auto identifying_members() const
     {
-        // The pointers uniquely identify the object already.
-        return std::make_tuple(m_fluent_atoms.get(), m_numeric_variables.get());  // This works
-        // return std::forward_as_tuple(m_fluent_atoms.get(), m_numeric_variables.get());  // Why does this fail with my concept (see below)?
-
-        // Note: hashing the fluents and numeric variables gives stronger hash values, e.g., in the Expedition domain!
-        // return std::forward_as_tuple(*m_fluent_atoms.get(), *m_numeric_variables.get());
+        // The pointers uniquely identify the state, derived atoms not needed.
+        return std::make_tuple(m_fluent_atoms.get(), m_numeric_variables.get());
     }
 
 private:

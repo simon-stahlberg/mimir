@@ -69,11 +69,11 @@ public:
     /// @return a tuple containing const references to the members defining the object's identity.
     auto identifying_members() const
     {
-        return std::forward_as_tuple(std::as_const(get_parameters()),
-                                     std::as_const(get_literals<Static>()),
-                                     std::as_const(get_literals<Fluent>()),
-                                     std::as_const(get_literals<Derived>()),
-                                     std::as_const(get_numeric_constraints()));
+        return std::tuple(std::cref(get_parameters()),
+                          std::cref(get_literals<Static>()),
+                          std::cref(get_literals<Fluent>()),
+                          std::cref(get_literals<Derived>()),
+                          std::cref(get_numeric_constraints()));
     }
 };
 

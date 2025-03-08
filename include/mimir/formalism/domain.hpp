@@ -93,17 +93,17 @@ public:
     /// @return a tuple containing const references to the members defining the object's identity.
     auto identifying_members() const
     {
-        return std::forward_as_tuple(std::as_const(get_name()),
-                                     std::as_const(get_requirements()),
-                                     std::as_const(get_constants()),
-                                     std::as_const(get_predicates<Static>()),
-                                     std::as_const(get_predicates<Fluent>()),
-                                     std::as_const(get_predicates<Derived>()),
-                                     std::as_const(get_function_skeletons<Static>()),
-                                     std::as_const(get_function_skeletons<Fluent>()),
-                                     std::as_const(get_auxiliary_function_skeleton()),
-                                     std::as_const(get_actions()),
-                                     std::as_const(get_axioms()));
+        return std::tuple(std::cref(get_name()),
+                          get_requirements(),
+                          std::cref(get_constants()),
+                          std::cref(get_predicates<Static>()),
+                          std::cref(get_predicates<Fluent>()),
+                          std::cref(get_predicates<Derived>()),
+                          std::cref(get_function_skeletons<Static>()),
+                          std::cref(get_function_skeletons<Fluent>()),
+                          get_auxiliary_function_skeleton(),
+                          std::cref(get_actions()),
+                          std::cref(get_axioms()));
     }
 };
 

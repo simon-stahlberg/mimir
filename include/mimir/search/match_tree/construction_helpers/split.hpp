@@ -56,7 +56,7 @@ struct AtomSplit
 
     AtomSplitDistribution distribution;
 
-    auto identifying_members() const { return std::forward_as_tuple(std::as_const(feature)); }
+    auto identifying_members() const { return std::tuple(std::as_const(feature)); }
 };
 
 struct NumericConstraintSplitDistribution
@@ -70,7 +70,7 @@ struct NumericConstraintSplit
     GroundNumericConstraint feature;
     NumericConstraintSplitDistribution distribution;
 
-    auto identifying_members() const { return std::forward_as_tuple(std::as_const(feature)); }
+    auto identifying_members() const { return std::tuple(std::as_const(feature)); }
 };
 
 using Split = std::variant<AtomSplit<Fluent>, AtomSplit<Derived>, NumericConstraintSplit>;

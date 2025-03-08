@@ -69,11 +69,7 @@ public:
     /// @return a tuple containing const references to the members defining the object's identity.
     auto identifying_members() const
     {
-        return std::forward_as_tuple(std::as_const(m_name),
-                                     std::as_const(m_original_arity),
-                                     std::as_const(m_conjunctive_condition),
-                                     std::as_const(m_conjunctive_effect),
-                                     std::as_const(m_conditional_effects));
+        return std::tuple(std::cref(get_name()), get_arity(), get_conjunctive_condition(), get_conjunctive_effect(), std::cref(get_conditional_effects()));
     }
 };
 

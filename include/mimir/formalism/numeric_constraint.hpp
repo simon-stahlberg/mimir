@@ -67,10 +67,7 @@ public:
     /// @return a tuple containing const references to the members defining the object's identity.
     auto identifying_members() const
     {
-        return std::forward_as_tuple(std::as_const(m_binary_comparator),
-                                     std::as_const(m_left_function_expression),
-                                     std::as_const(m_right_function_expression),
-                                     std::as_const(m_terms));
+        return std::tuple(get_binary_comparator(), get_left_function_expression(), get_right_function_expression(), std::cref(get_terms()));
     }
 };
 
