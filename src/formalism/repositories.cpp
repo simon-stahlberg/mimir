@@ -349,20 +349,20 @@ ConditionalEffect PDDLRepositories::get_or_create_conditional_effect(Conjunctive
 }
 
 NumericConstraint PDDLRepositories::get_or_create_numeric_constraint(loki::BinaryComparatorEnum binary_comparator,
-                                                                     FunctionExpression function_expression_left,
-                                                                     FunctionExpression function_expression_right,
+                                                                     FunctionExpression left_function_expression,
+                                                                     FunctionExpression right_function_expression,
                                                                      TermList terms)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<NumericConstraintImpl> {})
-        .get_or_create(std::move(binary_comparator), std::move(function_expression_left), std::move(function_expression_right), std::move(terms));
+        .get_or_create(std::move(binary_comparator), std::move(left_function_expression), std::move(right_function_expression), std::move(terms));
 }
 
 GroundNumericConstraint PDDLRepositories::get_or_create_ground_numeric_constraint(loki::BinaryComparatorEnum binary_comparator,
-                                                                                  GroundFunctionExpression function_expression_left,
-                                                                                  GroundFunctionExpression function_expression_right)
+                                                                                  GroundFunctionExpression left_function_expression,
+                                                                                  GroundFunctionExpression right_function_expression)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundNumericConstraintImpl> {})
-        .get_or_create(std::move(binary_comparator), std::move(function_expression_left), std::move(function_expression_right));
+        .get_or_create(std::move(binary_comparator), std::move(left_function_expression), std::move(right_function_expression));
 }
 
 ConjunctiveCondition PDDLRepositories::get_or_create_conjunctive_condition(VariableList parameters,

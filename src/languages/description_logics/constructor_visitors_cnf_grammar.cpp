@@ -101,8 +101,8 @@ ConceptIntersectionGrammarVisitor::ConceptIntersectionGrammarVisitor(ConceptInte
 
 void ConceptIntersectionGrammarVisitor::visit(dl::ConceptIntersection constructor)
 {
-    m_result = m_grammar_constructor->get_concept_left()->test_match(constructor->get_concept_left(), m_grammar)  //
-               && m_grammar_constructor->get_concept_right()->test_match(constructor->get_concept_right(), m_grammar);
+    m_result = m_grammar_constructor->get_left_concept()->test_match(constructor->get_left_concept(), m_grammar)  //
+               && m_grammar_constructor->get_right_concept()->test_match(constructor->get_right_concept(), m_grammar);
 }
 
 /**
@@ -117,8 +117,8 @@ ConceptUnionGrammarVisitor::ConceptUnionGrammarVisitor(ConceptUnion grammar_cons
 
 void ConceptUnionGrammarVisitor::visit(dl::ConceptUnion constructor)
 {
-    m_result = m_grammar_constructor->get_concept_left()->test_match(constructor->get_concept_left(), m_grammar)  //
-               && m_grammar_constructor->get_concept_right()->test_match(constructor->get_concept_right(), m_grammar);
+    m_result = m_grammar_constructor->get_left_concept()->test_match(constructor->get_left_concept(), m_grammar)  //
+               && m_grammar_constructor->get_right_concept()->test_match(constructor->get_right_concept(), m_grammar);
 }
 
 /**
@@ -182,8 +182,8 @@ ConceptRoleValueMapContainmentGrammarVisitor::ConceptRoleValueMapContainmentGram
 
 void ConceptRoleValueMapContainmentGrammarVisitor::visit(dl::ConceptRoleValueMapContainment constructor)
 {
-    m_result = m_grammar_constructor->get_role_left()->test_match(constructor->get_role_left(), m_grammar)  //
-               && m_grammar_constructor->get_role_right()->test_match(constructor->get_role_right(), m_grammar);
+    m_result = m_grammar_constructor->get_left_role()->test_match(constructor->get_left_role(), m_grammar)  //
+               && m_grammar_constructor->get_right_role()->test_match(constructor->get_right_role(), m_grammar);
 }
 
 /**
@@ -198,8 +198,8 @@ ConceptRoleValueMapEqualityGrammarVisitor::ConceptRoleValueMapEqualityGrammarVis
 
 void ConceptRoleValueMapEqualityGrammarVisitor::visit(dl::ConceptRoleValueMapEquality constructor)
 {
-    m_result = m_grammar_constructor->get_role_left()->test_match(constructor->get_role_left(), m_grammar)  //
-               && m_grammar_constructor->get_role_right()->test_match(constructor->get_role_right(), m_grammar);
+    m_result = m_grammar_constructor->get_left_role()->test_match(constructor->get_left_role(), m_grammar)  //
+               && m_grammar_constructor->get_right_role()->test_match(constructor->get_right_role(), m_grammar);
 }
 
 /**
@@ -280,8 +280,8 @@ RoleIntersectionGrammarVisitor::RoleIntersectionGrammarVisitor(RoleIntersection 
 
 void RoleIntersectionGrammarVisitor::visit(dl::RoleIntersection constructor)
 {
-    m_result = m_grammar_constructor->get_role_left()->test_match(constructor->get_role_left(), m_grammar)
-               && m_grammar_constructor->get_role_right()->test_match(constructor->get_role_right(), m_grammar);
+    m_result = m_grammar_constructor->get_left_role()->test_match(constructor->get_left_role(), m_grammar)
+               && m_grammar_constructor->get_right_role()->test_match(constructor->get_right_role(), m_grammar);
 }
 
 /**
@@ -296,8 +296,8 @@ RoleUnionGrammarVisitor::RoleUnionGrammarVisitor(RoleUnion grammar_constructor, 
 
 void RoleUnionGrammarVisitor::visit(dl::RoleUnion constructor)
 {
-    m_result = m_grammar_constructor->get_role_left()->test_match(constructor->get_role_left(), m_grammar)
-               && m_grammar_constructor->get_role_right()->test_match(constructor->get_role_right(), m_grammar);
+    m_result = m_grammar_constructor->get_left_role()->test_match(constructor->get_left_role(), m_grammar)
+               && m_grammar_constructor->get_right_role()->test_match(constructor->get_right_role(), m_grammar);
 }
 
 /**
@@ -342,8 +342,8 @@ RoleCompositionGrammarVisitor::RoleCompositionGrammarVisitor(RoleComposition gra
 
 void RoleCompositionGrammarVisitor::visit(dl::RoleComposition constructor)
 {
-    m_result = m_grammar_constructor->get_role_left()->test_match(constructor->get_role_left(), m_grammar)
-               && m_grammar_constructor->get_role_right()->test_match(constructor->get_role_right(), m_grammar);
+    m_result = m_grammar_constructor->get_left_role()->test_match(constructor->get_left_role(), m_grammar)
+               && m_grammar_constructor->get_right_role()->test_match(constructor->get_right_role(), m_grammar);
 }
 
 /**

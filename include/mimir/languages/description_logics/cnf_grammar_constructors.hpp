@@ -284,10 +284,10 @@ class ConceptIntersectionImpl : public ConstructorImpl<Concept>
 {
 private:
     Index m_index;
-    NonTerminal<Concept> m_concept_left;
-    NonTerminal<Concept> m_concept_right;
+    NonTerminal<Concept> m_left_concept;
+    NonTerminal<Concept> m_right_concept;
 
-    ConceptIntersectionImpl(Index index, NonTerminal<Concept> concept_left, NonTerminal<Concept> concept_right);
+    ConceptIntersectionImpl(Index index, NonTerminal<Concept> left_concept, NonTerminal<Concept> right_concept);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -305,23 +305,23 @@ public:
     void accept(ConstructorVisitor<Concept>& visitor) const override;
 
     Index get_index() const;
-    NonTerminal<Concept> get_concept_left() const;
-    NonTerminal<Concept> get_concept_right() const;
+    NonTerminal<Concept> get_left_concept() const;
+    NonTerminal<Concept> get_right_concept() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::forward_as_tuple(std::as_const(m_concept_left), std::as_const(m_concept_right)); }
+    auto identifying_members() const { return std::forward_as_tuple(std::as_const(m_left_concept), std::as_const(m_right_concept)); }
 };
 
 class ConceptUnionImpl : public ConstructorImpl<Concept>
 {
 private:
     Index m_index;
-    NonTerminal<Concept> m_concept_left;
-    NonTerminal<Concept> m_concept_right;
+    NonTerminal<Concept> m_left_concept;
+    NonTerminal<Concept> m_right_concept;
 
-    ConceptUnionImpl(Index index, NonTerminal<Concept> concept_left, NonTerminal<Concept> concept_right);
+    ConceptUnionImpl(Index index, NonTerminal<Concept> left_concept, NonTerminal<Concept> right_concept);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -339,13 +339,13 @@ public:
     void accept(ConstructorVisitor<Concept>& visitor) const override;
 
     Index get_index() const;
-    NonTerminal<Concept> get_concept_left() const;
-    NonTerminal<Concept> get_concept_right() const;
+    NonTerminal<Concept> get_left_concept() const;
+    NonTerminal<Concept> get_right_concept() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::forward_as_tuple(std::as_const(m_concept_left), std::as_const(m_concept_right)); }
+    auto identifying_members() const { return std::forward_as_tuple(std::as_const(m_left_concept), std::as_const(m_right_concept)); }
 };
 
 class ConceptNegationImpl : public ConstructorImpl<Concept>
@@ -452,10 +452,10 @@ class ConceptRoleValueMapContainmentImpl : public ConstructorImpl<Concept>
 {
 private:
     Index m_index;
-    NonTerminal<Role> m_role_left;
-    NonTerminal<Role> m_role_right;
+    NonTerminal<Role> m_left_role;
+    NonTerminal<Role> m_right_role;
 
-    ConceptRoleValueMapContainmentImpl(Index index, NonTerminal<Role> role_left, NonTerminal<Role> role_right);
+    ConceptRoleValueMapContainmentImpl(Index index, NonTerminal<Role> left_role, NonTerminal<Role> right_role);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -473,23 +473,23 @@ public:
     void accept(ConstructorVisitor<Concept>& visitor) const override;
 
     Index get_index() const;
-    NonTerminal<Role> get_role_left() const;
-    NonTerminal<Role> get_role_right() const;
+    NonTerminal<Role> get_left_role() const;
+    NonTerminal<Role> get_right_role() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::forward_as_tuple(std::as_const(m_role_left), std::as_const(m_role_right)); }
+    auto identifying_members() const { return std::forward_as_tuple(std::as_const(m_left_role), std::as_const(m_right_role)); }
 };
 
 class ConceptRoleValueMapEqualityImpl : public ConstructorImpl<Concept>
 {
 private:
     Index m_index;
-    NonTerminal<Role> m_role_left;
-    NonTerminal<Role> m_role_right;
+    NonTerminal<Role> m_left_role;
+    NonTerminal<Role> m_right_role;
 
-    ConceptRoleValueMapEqualityImpl(Index index, NonTerminal<Role> role_left, NonTerminal<Role> role_right);
+    ConceptRoleValueMapEqualityImpl(Index index, NonTerminal<Role> left_role, NonTerminal<Role> right_role);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -507,13 +507,13 @@ public:
     void accept(ConstructorVisitor<Concept>& visitor) const override;
 
     Index get_index() const;
-    NonTerminal<Role> get_role_left() const;
-    NonTerminal<Role> get_role_right() const;
+    NonTerminal<Role> get_left_role() const;
+    NonTerminal<Role> get_right_role() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::forward_as_tuple(std::as_const(m_role_left), std::as_const(m_role_right)); }
+    auto identifying_members() const { return std::forward_as_tuple(std::as_const(m_left_role), std::as_const(m_right_role)); }
 };
 
 class ConceptNominalImpl : public ConstructorImpl<Concept>
@@ -654,10 +654,10 @@ class RoleIntersectionImpl : public ConstructorImpl<Role>
 {
 private:
     Index m_index;
-    NonTerminal<Role> m_role_left;
-    NonTerminal<Role> m_role_right;
+    NonTerminal<Role> m_left_role;
+    NonTerminal<Role> m_right_role;
 
-    RoleIntersectionImpl(Index index, NonTerminal<Role> role_left, NonTerminal<Role> role_right);
+    RoleIntersectionImpl(Index index, NonTerminal<Role> left_role, NonTerminal<Role> right_role);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -675,23 +675,23 @@ public:
     void accept(ConstructorVisitor<Role>& visitor) const override;
 
     Index get_index() const;
-    NonTerminal<Role> get_role_left() const;
-    NonTerminal<Role> get_role_right() const;
+    NonTerminal<Role> get_left_role() const;
+    NonTerminal<Role> get_right_role() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::forward_as_tuple(std::as_const(m_role_left), std::as_const(m_role_right)); }
+    auto identifying_members() const { return std::forward_as_tuple(std::as_const(m_left_role), std::as_const(m_right_role)); }
 };
 
 class RoleUnionImpl : public ConstructorImpl<Role>
 {
 private:
     Index m_index;
-    NonTerminal<Role> m_role_left;
-    NonTerminal<Role> m_role_right;
+    NonTerminal<Role> m_left_role;
+    NonTerminal<Role> m_right_role;
 
-    RoleUnionImpl(Index index, NonTerminal<Role> role_left, NonTerminal<Role> role_right);
+    RoleUnionImpl(Index index, NonTerminal<Role> left_role, NonTerminal<Role> right_role);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -709,13 +709,13 @@ public:
     void accept(ConstructorVisitor<Role>& visitor) const override;
 
     Index get_index() const;
-    NonTerminal<Role> get_role_left() const;
-    NonTerminal<Role> get_role_right() const;
+    NonTerminal<Role> get_left_role() const;
+    NonTerminal<Role> get_right_role() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::forward_as_tuple(std::as_const(m_role_left), std::as_const(m_role_right)); }
+    auto identifying_members() const { return std::forward_as_tuple(std::as_const(m_left_role), std::as_const(m_right_role)); }
 };
 
 class RoleComplementImpl : public ConstructorImpl<Role>
@@ -786,10 +786,10 @@ class RoleCompositionImpl : public ConstructorImpl<Role>
 {
 private:
     Index m_index;
-    NonTerminal<Role> m_role_left;
-    NonTerminal<Role> m_role_right;
+    NonTerminal<Role> m_left_role;
+    NonTerminal<Role> m_right_role;
 
-    RoleCompositionImpl(Index index, NonTerminal<Role> role_left, NonTerminal<Role> role_right);
+    RoleCompositionImpl(Index index, NonTerminal<Role> left_role, NonTerminal<Role> right_role);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -807,13 +807,13 @@ public:
     void accept(ConstructorVisitor<Role>& visitor) const override;
 
     Index get_index() const;
-    NonTerminal<Role> get_role_left() const;
-    NonTerminal<Role> get_role_right() const;
+    NonTerminal<Role> get_left_role() const;
+    NonTerminal<Role> get_right_role() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::forward_as_tuple(std::as_const(m_role_left), std::as_const(m_role_right)); }
+    auto identifying_members() const { return std::forward_as_tuple(std::as_const(m_left_role), std::as_const(m_right_role)); }
 };
 
 class RoleTransitiveClosureImpl : public ConstructorImpl<Role>

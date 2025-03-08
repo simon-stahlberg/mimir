@@ -45,14 +45,14 @@ void RecurseConstructorVisitor<Concept>::visit(ConceptAtomicGoal<Derived> constr
 void RecurseConstructorVisitor<Concept>::visit(ConceptIntersection constructor)
 {
     assert(m_concept_or_nonterminal_visitor);
-    constructor->get_concept_or_non_terminal_left()->accept(*m_concept_or_nonterminal_visitor);
-    constructor->get_concept_or_non_terminal_right()->accept(*m_concept_or_nonterminal_visitor);
+    constructor->get_left_concept_or_non_terminal()->accept(*m_concept_or_nonterminal_visitor);
+    constructor->get_right_concept_or_non_terminal()->accept(*m_concept_or_nonterminal_visitor);
 }
 void RecurseConstructorVisitor<Concept>::visit(ConceptUnion constructor)
 {
     assert(m_concept_or_nonterminal_visitor);
-    constructor->get_concept_or_non_terminal_left()->accept(*m_concept_or_nonterminal_visitor);
-    constructor->get_concept_or_non_terminal_right()->accept(*m_concept_or_nonterminal_visitor);
+    constructor->get_left_concept_or_non_terminal()->accept(*m_concept_or_nonterminal_visitor);
+    constructor->get_right_concept_or_non_terminal()->accept(*m_concept_or_nonterminal_visitor);
 }
 void RecurseConstructorVisitor<Concept>::visit(ConceptNegation constructor)
 {
@@ -74,14 +74,14 @@ void RecurseConstructorVisitor<Concept>::visit(ConceptExistentialQuantification 
 void RecurseConstructorVisitor<Concept>::visit(ConceptRoleValueMapContainment constructor)
 {
     assert(m_role_or_nonterminal_visitor);
-    constructor->get_role_or_non_terminal_left()->accept(*m_role_or_nonterminal_visitor);
-    constructor->get_role_or_non_terminal_right()->accept(*m_role_or_nonterminal_visitor);
+    constructor->get_left_role_or_non_terminal()->accept(*m_role_or_nonterminal_visitor);
+    constructor->get_right_role_or_non_terminal()->accept(*m_role_or_nonterminal_visitor);
 }
 void RecurseConstructorVisitor<Concept>::visit(ConceptRoleValueMapEquality constructor)
 {
     assert(m_role_or_nonterminal_visitor);
-    constructor->get_role_or_non_terminal_left()->accept(*m_role_or_nonterminal_visitor);
-    constructor->get_role_or_non_terminal_right()->accept(*m_role_or_nonterminal_visitor);
+    constructor->get_left_role_or_non_terminal()->accept(*m_role_or_nonterminal_visitor);
+    constructor->get_right_role_or_non_terminal()->accept(*m_role_or_nonterminal_visitor);
 }
 void RecurseConstructorVisitor<Concept>::visit(ConceptNominal constructor) {}
 
@@ -106,14 +106,14 @@ void RecurseConstructorVisitor<Role>::visit(RoleAtomicGoal<Derived> constructor)
 void RecurseConstructorVisitor<Role>::visit(RoleIntersection constructor)
 {
     assert(m_role_or_nonterminal_visitor);
-    constructor->get_role_or_non_terminal_left()->accept(*m_role_or_nonterminal_visitor);
-    constructor->get_role_or_non_terminal_right()->accept(*m_role_or_nonterminal_visitor);
+    constructor->get_left_role_or_non_terminal()->accept(*m_role_or_nonterminal_visitor);
+    constructor->get_right_role_or_non_terminal()->accept(*m_role_or_nonterminal_visitor);
 }
 void RecurseConstructorVisitor<Role>::visit(RoleUnion constructor)
 {
     assert(m_role_or_nonterminal_visitor);
-    constructor->get_role_or_non_terminal_left()->accept(*m_role_or_nonterminal_visitor);
-    constructor->get_role_or_non_terminal_right()->accept(*m_role_or_nonterminal_visitor);
+    constructor->get_left_role_or_non_terminal()->accept(*m_role_or_nonterminal_visitor);
+    constructor->get_right_role_or_non_terminal()->accept(*m_role_or_nonterminal_visitor);
 }
 void RecurseConstructorVisitor<Role>::visit(RoleComplement constructor)
 {
@@ -128,8 +128,8 @@ void RecurseConstructorVisitor<Role>::visit(RoleInverse constructor)
 void RecurseConstructorVisitor<Role>::visit(RoleComposition constructor)
 {
     assert(m_role_or_nonterminal_visitor);
-    constructor->get_role_or_non_terminal_left()->accept(*m_role_or_nonterminal_visitor);
-    constructor->get_role_or_non_terminal_right()->accept(*m_role_or_nonterminal_visitor);
+    constructor->get_left_role_or_non_terminal()->accept(*m_role_or_nonterminal_visitor);
+    constructor->get_right_role_or_non_terminal()->accept(*m_role_or_nonterminal_visitor);
 }
 void RecurseConstructorVisitor<Role>::visit(RoleTransitiveClosure constructor)
 {
@@ -316,18 +316,18 @@ void CopyConstructorVisitor<Concept>::visit(ConceptAtomicGoal<Derived> construct
 void CopyConstructorVisitor<Concept>::visit(ConceptIntersection constructor)
 {
     assert(m_concept_or_nonterminal_visitor);
-    constructor->get_concept_or_non_terminal_left()->accept(*m_concept_or_nonterminal_visitor);
+    constructor->get_left_concept_or_non_terminal()->accept(*m_concept_or_nonterminal_visitor);
     const auto left_concept_or_nonterminal = m_concept_or_nonterminal_visitor->get_result();
-    constructor->get_concept_or_non_terminal_right()->accept(*m_concept_or_nonterminal_visitor);
+    constructor->get_right_concept_or_non_terminal()->accept(*m_concept_or_nonterminal_visitor);
     const auto right_concept_or_nonterminal = m_concept_or_nonterminal_visitor->get_result();
     m_result = m_repositories.get_or_create_concept_intersection(left_concept_or_nonterminal, right_concept_or_nonterminal);
 }
 void CopyConstructorVisitor<Concept>::visit(ConceptUnion constructor)
 {
     assert(m_concept_or_nonterminal_visitor);
-    constructor->get_concept_or_non_terminal_left()->accept(*m_concept_or_nonterminal_visitor);
+    constructor->get_left_concept_or_non_terminal()->accept(*m_concept_or_nonterminal_visitor);
     const auto left_concept_or_nonterminal = m_concept_or_nonterminal_visitor->get_result();
-    constructor->get_concept_or_non_terminal_right()->accept(*m_concept_or_nonterminal_visitor);
+    constructor->get_right_concept_or_non_terminal()->accept(*m_concept_or_nonterminal_visitor);
     const auto right_concept_or_nonterminal = m_concept_or_nonterminal_visitor->get_result();
     m_result = m_repositories.get_or_create_concept_union(left_concept_or_nonterminal, right_concept_or_nonterminal);
 }
@@ -359,18 +359,18 @@ void CopyConstructorVisitor<Concept>::visit(ConceptExistentialQuantification con
 void CopyConstructorVisitor<Concept>::visit(ConceptRoleValueMapContainment constructor)
 {
     assert(m_role_or_nonterminal_visitor);
-    constructor->get_role_or_non_terminal_left()->accept(*m_role_or_nonterminal_visitor);
+    constructor->get_left_role_or_non_terminal()->accept(*m_role_or_nonterminal_visitor);
     const auto left_role_or_nonterminal = m_role_or_nonterminal_visitor->get_result();
-    constructor->get_role_or_non_terminal_right()->accept(*m_role_or_nonterminal_visitor);
+    constructor->get_right_role_or_non_terminal()->accept(*m_role_or_nonterminal_visitor);
     const auto right_role_or_nonterminal = m_role_or_nonterminal_visitor->get_result();
     m_result = m_repositories.get_or_create_concept_role_value_map_containment(left_role_or_nonterminal, right_role_or_nonterminal);
 }
 void CopyConstructorVisitor<Concept>::visit(ConceptRoleValueMapEquality constructor)
 {
     assert(m_role_or_nonterminal_visitor);
-    constructor->get_role_or_non_terminal_left()->accept(*m_role_or_nonterminal_visitor);
+    constructor->get_left_role_or_non_terminal()->accept(*m_role_or_nonterminal_visitor);
     const auto left_role_or_nonterminal = m_role_or_nonterminal_visitor->get_result();
-    constructor->get_role_or_non_terminal_right()->accept(*m_role_or_nonterminal_visitor);
+    constructor->get_right_role_or_non_terminal()->accept(*m_role_or_nonterminal_visitor);
     const auto right_role_or_nonterminal = m_role_or_nonterminal_visitor->get_result();
     m_result = m_repositories.get_or_create_concept_role_value_map_equality(left_role_or_nonterminal, right_role_or_nonterminal);
 }
@@ -419,18 +419,18 @@ void CopyConstructorVisitor<Role>::visit(RoleAtomicGoal<Derived> constructor)
 void CopyConstructorVisitor<Role>::visit(RoleIntersection constructor)
 {
     assert(m_role_or_nonterminal_visitor);
-    constructor->get_role_or_non_terminal_left()->accept(*m_role_or_nonterminal_visitor);
+    constructor->get_left_role_or_non_terminal()->accept(*m_role_or_nonterminal_visitor);
     const auto left_role_or_nonterminal = m_role_or_nonterminal_visitor->get_result();
-    constructor->get_role_or_non_terminal_right()->accept(*m_role_or_nonterminal_visitor);
+    constructor->get_right_role_or_non_terminal()->accept(*m_role_or_nonterminal_visitor);
     const auto right_role_or_nonterminal = m_role_or_nonterminal_visitor->get_result();
     m_result = m_repositories.get_or_create_role_intersection(left_role_or_nonterminal, right_role_or_nonterminal);
 }
 void CopyConstructorVisitor<Role>::visit(RoleUnion constructor)
 {
     assert(m_role_or_nonterminal_visitor);
-    constructor->get_role_or_non_terminal_left()->accept(*m_role_or_nonterminal_visitor);
+    constructor->get_left_role_or_non_terminal()->accept(*m_role_or_nonterminal_visitor);
     const auto left_role_or_nonterminal = m_role_or_nonterminal_visitor->get_result();
-    constructor->get_role_or_non_terminal_right()->accept(*m_role_or_nonterminal_visitor);
+    constructor->get_right_role_or_non_terminal()->accept(*m_role_or_nonterminal_visitor);
     const auto right_role_or_nonterminal = m_role_or_nonterminal_visitor->get_result();
     m_result = m_repositories.get_or_create_role_union(left_role_or_nonterminal, right_role_or_nonterminal);
 }
@@ -451,9 +451,9 @@ void CopyConstructorVisitor<Role>::visit(RoleInverse constructor)
 void CopyConstructorVisitor<Role>::visit(RoleComposition constructor)
 {
     assert(m_role_or_nonterminal_visitor);
-    constructor->get_role_or_non_terminal_left()->accept(*m_role_or_nonterminal_visitor);
+    constructor->get_left_role_or_non_terminal()->accept(*m_role_or_nonterminal_visitor);
     const auto left_role_or_nonterminal = m_role_or_nonterminal_visitor->get_result();
-    constructor->get_role_or_non_terminal_right()->accept(*m_role_or_nonterminal_visitor);
+    constructor->get_right_role_or_non_terminal()->accept(*m_role_or_nonterminal_visitor);
     const auto right_role_or_nonterminal = m_role_or_nonterminal_visitor->get_result();
     m_result = m_repositories.get_or_create_role_composition(left_role_or_nonterminal, right_role_or_nonterminal);
 }

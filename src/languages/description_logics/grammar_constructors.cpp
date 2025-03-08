@@ -276,11 +276,11 @@ template class ConceptAtomicGoalImpl<Derived>;
  * ConceptIntersection
  */
 ConceptIntersectionImpl::ConceptIntersectionImpl(Index index,
-                                                 ConstructorOrNonTerminal<Concept> concept_or_non_terminal_left,
-                                                 ConstructorOrNonTerminal<Concept> concept_or_non_terminal_right) :
+                                                 ConstructorOrNonTerminal<Concept> left_concept_or_non_terminal,
+                                                 ConstructorOrNonTerminal<Concept> right_concept_or_non_terminal) :
     m_index(index),
-    m_concept_or_non_terminal_left(concept_or_non_terminal_left),
-    m_concept_or_non_terminal_right(concept_or_non_terminal_right)
+    m_left_concept_or_non_terminal(left_concept_or_non_terminal),
+    m_right_concept_or_non_terminal(right_concept_or_non_terminal)
 {
 }
 
@@ -295,20 +295,20 @@ void ConceptIntersectionImpl::accept(ConstructorVisitor<Concept>& visitor) const
 
 Index ConceptIntersectionImpl::get_index() const { return m_index; }
 
-ConstructorOrNonTerminal<Concept> ConceptIntersectionImpl::get_concept_or_non_terminal_left() const { return m_concept_or_non_terminal_left; }
+ConstructorOrNonTerminal<Concept> ConceptIntersectionImpl::get_left_concept_or_non_terminal() const { return m_left_concept_or_non_terminal; }
 
-ConstructorOrNonTerminal<Concept> ConceptIntersectionImpl::get_concept_or_non_terminal_right() const { return m_concept_or_non_terminal_right; }
+ConstructorOrNonTerminal<Concept> ConceptIntersectionImpl::get_right_concept_or_non_terminal() const { return m_right_concept_or_non_terminal; }
 
 /**
  * ConceptUnion
  */
 
 ConceptUnionImpl::ConceptUnionImpl(Index index,
-                                   ConstructorOrNonTerminal<Concept> concept_or_non_terminal_left,
-                                   ConstructorOrNonTerminal<Concept> concept_or_non_terminal_right) :
+                                   ConstructorOrNonTerminal<Concept> left_concept_or_non_terminal,
+                                   ConstructorOrNonTerminal<Concept> right_concept_or_non_terminal) :
     m_index(index),
-    m_concept_or_non_terminal_left(concept_or_non_terminal_left),
-    m_concept_or_non_terminal_right(concept_or_non_terminal_right)
+    m_left_concept_or_non_terminal(left_concept_or_non_terminal),
+    m_right_concept_or_non_terminal(right_concept_or_non_terminal)
 {
 }
 
@@ -323,9 +323,9 @@ void ConceptUnionImpl::accept(ConstructorVisitor<Concept>& visitor) const { visi
 
 Index ConceptUnionImpl::get_index() const { return m_index; }
 
-ConstructorOrNonTerminal<Concept> ConceptUnionImpl::get_concept_or_non_terminal_left() const { return m_concept_or_non_terminal_left; }
+ConstructorOrNonTerminal<Concept> ConceptUnionImpl::get_left_concept_or_non_terminal() const { return m_left_concept_or_non_terminal; }
 
-ConstructorOrNonTerminal<Concept> ConceptUnionImpl::get_concept_or_non_terminal_right() const { return m_concept_or_non_terminal_right; }
+ConstructorOrNonTerminal<Concept> ConceptUnionImpl::get_right_concept_or_non_terminal() const { return m_right_concept_or_non_terminal; }
 
 /**
  * ConceptNegation
@@ -411,11 +411,11 @@ ConstructorOrNonTerminal<Concept> ConceptExistentialQuantificationImpl::get_conc
  */
 
 ConceptRoleValueMapContainmentImpl::ConceptRoleValueMapContainmentImpl(Index index,
-                                                                       ConstructorOrNonTerminal<Role> role_or_non_terminal_left,
-                                                                       ConstructorOrNonTerminal<Role> role_or_non_terminal_right) :
+                                                                       ConstructorOrNonTerminal<Role> left_role_or_non_terminal,
+                                                                       ConstructorOrNonTerminal<Role> right_role_or_non_terminal) :
     m_index(index),
-    m_role_or_non_terminal_left(role_or_non_terminal_left),
-    m_role_or_non_terminal_right(role_or_non_terminal_right)
+    m_left_role_or_non_terminal(left_role_or_non_terminal),
+    m_right_role_or_non_terminal(right_role_or_non_terminal)
 {
 }
 
@@ -430,20 +430,20 @@ void ConceptRoleValueMapContainmentImpl::accept(ConstructorVisitor<Concept>& vis
 
 Index ConceptRoleValueMapContainmentImpl::get_index() const { return m_index; }
 
-ConstructorOrNonTerminal<Role> ConceptRoleValueMapContainmentImpl::get_role_or_non_terminal_left() const { return m_role_or_non_terminal_left; }
+ConstructorOrNonTerminal<Role> ConceptRoleValueMapContainmentImpl::get_left_role_or_non_terminal() const { return m_left_role_or_non_terminal; }
 
-ConstructorOrNonTerminal<Role> ConceptRoleValueMapContainmentImpl::get_role_or_non_terminal_right() const { return m_role_or_non_terminal_right; }
+ConstructorOrNonTerminal<Role> ConceptRoleValueMapContainmentImpl::get_right_role_or_non_terminal() const { return m_right_role_or_non_terminal; }
 
 /**
  * ConceptRoleValueMapEquality
  */
 
 ConceptRoleValueMapEqualityImpl::ConceptRoleValueMapEqualityImpl(Index index,
-                                                                 ConstructorOrNonTerminal<Role> role_or_non_terminal_left,
-                                                                 ConstructorOrNonTerminal<Role> role_or_non_terminal_right) :
+                                                                 ConstructorOrNonTerminal<Role> left_role_or_non_terminal,
+                                                                 ConstructorOrNonTerminal<Role> right_role_or_non_terminal) :
     m_index(index),
-    m_role_or_non_terminal_left(role_or_non_terminal_left),
-    m_role_or_non_terminal_right(role_or_non_terminal_right)
+    m_left_role_or_non_terminal(left_role_or_non_terminal),
+    m_right_role_or_non_terminal(right_role_or_non_terminal)
 {
 }
 
@@ -458,9 +458,9 @@ void ConceptRoleValueMapEqualityImpl::accept(ConstructorVisitor<Concept>& visito
 
 Index ConceptRoleValueMapEqualityImpl::get_index() const { return m_index; }
 
-ConstructorOrNonTerminal<Role> ConceptRoleValueMapEqualityImpl::get_role_or_non_terminal_left() const { return m_role_or_non_terminal_left; }
+ConstructorOrNonTerminal<Role> ConceptRoleValueMapEqualityImpl::get_left_role_or_non_terminal() const { return m_left_role_or_non_terminal; }
 
-ConstructorOrNonTerminal<Role> ConceptRoleValueMapEqualityImpl::get_role_or_non_terminal_right() const { return m_role_or_non_terminal_right; }
+ConstructorOrNonTerminal<Role> ConceptRoleValueMapEqualityImpl::get_right_role_or_non_terminal() const { return m_right_role_or_non_terminal; }
 
 /**
  * ConceptNominal
@@ -590,11 +590,11 @@ template class RoleAtomicGoalImpl<Derived>;
  */
 
 RoleIntersectionImpl::RoleIntersectionImpl(Index index,
-                                           ConstructorOrNonTerminal<Role> role_or_non_terminal_left,
-                                           ConstructorOrNonTerminal<Role> role_or_non_terminal_right) :
+                                           ConstructorOrNonTerminal<Role> left_role_or_non_terminal,
+                                           ConstructorOrNonTerminal<Role> right_role_or_non_terminal) :
     m_index(index),
-    m_role_or_non_terminal_left(role_or_non_terminal_left),
-    m_role_or_non_terminal_right(role_or_non_terminal_right)
+    m_left_role_or_non_terminal(left_role_or_non_terminal),
+    m_right_role_or_non_terminal(right_role_or_non_terminal)
 {
 }
 
@@ -609,18 +609,18 @@ void RoleIntersectionImpl::accept(ConstructorVisitor<Role>& visitor) const { vis
 
 Index RoleIntersectionImpl::get_index() const { return m_index; }
 
-ConstructorOrNonTerminal<Role> RoleIntersectionImpl::get_role_or_non_terminal_left() const { return m_role_or_non_terminal_left; }
+ConstructorOrNonTerminal<Role> RoleIntersectionImpl::get_left_role_or_non_terminal() const { return m_left_role_or_non_terminal; }
 
-ConstructorOrNonTerminal<Role> RoleIntersectionImpl::get_role_or_non_terminal_right() const { return m_role_or_non_terminal_right; }
+ConstructorOrNonTerminal<Role> RoleIntersectionImpl::get_right_role_or_non_terminal() const { return m_right_role_or_non_terminal; }
 
 /**
  * RoleUnion
  */
 
-RoleUnionImpl::RoleUnionImpl(Index index, ConstructorOrNonTerminal<Role> role_or_non_terminal_left, ConstructorOrNonTerminal<Role> role_or_non_terminal_right) :
+RoleUnionImpl::RoleUnionImpl(Index index, ConstructorOrNonTerminal<Role> left_role_or_non_terminal, ConstructorOrNonTerminal<Role> right_role_or_non_terminal) :
     m_index(index),
-    m_role_or_non_terminal_left(role_or_non_terminal_left),
-    m_role_or_non_terminal_right(role_or_non_terminal_right)
+    m_left_role_or_non_terminal(left_role_or_non_terminal),
+    m_right_role_or_non_terminal(right_role_or_non_terminal)
 {
 }
 
@@ -635,9 +635,9 @@ void RoleUnionImpl::accept(ConstructorVisitor<Role>& visitor) const { visitor.vi
 
 Index RoleUnionImpl::get_index() const { return m_index; }
 
-ConstructorOrNonTerminal<Role> RoleUnionImpl::get_role_or_non_terminal_left() const { return m_role_or_non_terminal_left; }
+ConstructorOrNonTerminal<Role> RoleUnionImpl::get_left_role_or_non_terminal() const { return m_left_role_or_non_terminal; }
 
-ConstructorOrNonTerminal<Role> RoleUnionImpl::get_role_or_non_terminal_right() const { return m_role_or_non_terminal_right; }
+ConstructorOrNonTerminal<Role> RoleUnionImpl::get_right_role_or_non_terminal() const { return m_right_role_or_non_terminal; }
 
 /**
  * RoleComplement
@@ -690,11 +690,11 @@ ConstructorOrNonTerminal<Role> RoleInverseImpl::get_role_or_non_terminal() const
  */
 
 RoleCompositionImpl::RoleCompositionImpl(Index index,
-                                         ConstructorOrNonTerminal<Role> role_or_non_terminal_left,
-                                         ConstructorOrNonTerminal<Role> role_or_non_terminal_right) :
+                                         ConstructorOrNonTerminal<Role> left_role_or_non_terminal,
+                                         ConstructorOrNonTerminal<Role> right_role_or_non_terminal) :
     m_index(index),
-    m_role_or_non_terminal_left(role_or_non_terminal_left),
-    m_role_or_non_terminal_right(role_or_non_terminal_right)
+    m_left_role_or_non_terminal(left_role_or_non_terminal),
+    m_right_role_or_non_terminal(right_role_or_non_terminal)
 {
 }
 
@@ -709,9 +709,9 @@ void RoleCompositionImpl::accept(ConstructorVisitor<Role>& visitor) const { visi
 
 Index RoleCompositionImpl::get_index() const { return m_index; }
 
-ConstructorOrNonTerminal<Role> RoleCompositionImpl::get_role_or_non_terminal_left() const { return m_role_or_non_terminal_left; }
+ConstructorOrNonTerminal<Role> RoleCompositionImpl::get_left_role_or_non_terminal() const { return m_left_role_or_non_terminal; }
 
-ConstructorOrNonTerminal<Role> RoleCompositionImpl::get_role_or_non_terminal_right() const { return m_role_or_non_terminal_right; }
+ConstructorOrNonTerminal<Role> RoleCompositionImpl::get_right_role_or_non_terminal() const { return m_right_role_or_non_terminal; }
 
 /**
  * RoleTransitiveClosure

@@ -57,16 +57,16 @@ void FormatterVisitor<Concept>::visit(ConceptAtomicGoal<Derived> constructor)
 void FormatterVisitor<Concept>::visit(ConceptIntersection constructor)
 {
     m_out << keywords::concept_intersection << " ";
-    constructor->get_concept_left()->accept(*this);
+    constructor->get_left_concept()->accept(*this);
     m_out << " ";
-    constructor->get_concept_right()->accept(*this);
+    constructor->get_right_concept()->accept(*this);
 }
 void FormatterVisitor<Concept>::visit(ConceptUnion constructor)
 {
     m_out << keywords::concept_union << " ";
-    constructor->get_concept_left()->accept(*this);
+    constructor->get_left_concept()->accept(*this);
     m_out << " ";
-    constructor->get_concept_right()->accept(*this);
+    constructor->get_right_concept()->accept(*this);
 }
 void FormatterVisitor<Concept>::visit(ConceptNegation constructor)
 {
@@ -90,16 +90,16 @@ void FormatterVisitor<Concept>::visit(ConceptExistentialQuantification construct
 void FormatterVisitor<Concept>::visit(ConceptRoleValueMapContainment constructor)
 {
     m_out << keywords::concept_role_value_map_containment << " ";
-    constructor->get_role_left()->accept(*m_role_visitor);
+    constructor->get_left_role()->accept(*m_role_visitor);
     m_out << " ";
-    constructor->get_role_right()->accept(*m_role_visitor);
+    constructor->get_right_role()->accept(*m_role_visitor);
 }
 void FormatterVisitor<Concept>::visit(ConceptRoleValueMapEquality constructor)
 {
     m_out << keywords::concept_role_value_map_equality << " ";
-    constructor->get_role_left()->accept(*m_role_visitor);
+    constructor->get_left_role()->accept(*m_role_visitor);
     m_out << " ";
-    constructor->get_role_right()->accept(*m_role_visitor);
+    constructor->get_right_role()->accept(*m_role_visitor);
 }
 void FormatterVisitor<Concept>::visit(ConceptNominal constructor) { m_out << keywords::concept_nominal << " " << constructor->get_object()->get_name(); }
 
@@ -134,16 +134,16 @@ void FormatterVisitor<Role>::visit(RoleAtomicGoal<Derived> constructor)
 void FormatterVisitor<Role>::visit(RoleIntersection constructor)
 {
     m_out << keywords::role_intersection << " ";
-    constructor->get_role_left()->accept(*this);
+    constructor->get_left_role()->accept(*this);
     m_out << " ";
-    constructor->get_role_right()->accept(*this);
+    constructor->get_right_role()->accept(*this);
 }
 void FormatterVisitor<Role>::visit(RoleUnion constructor)
 {
     m_out << keywords::role_union << " ";
-    constructor->get_role_left()->accept(*this);
+    constructor->get_left_role()->accept(*this);
     m_out << " ";
-    constructor->get_role_right()->accept(*this);
+    constructor->get_right_role()->accept(*this);
 }
 void FormatterVisitor<Role>::visit(RoleComplement constructor)
 {
@@ -158,9 +158,9 @@ void FormatterVisitor<Role>::visit(RoleInverse constructor)
 void FormatterVisitor<Role>::visit(RoleComposition constructor)
 {
     m_out << keywords::role_composition << " ";
-    constructor->get_role_left()->accept(*this);
+    constructor->get_left_role()->accept(*this);
     m_out << " ";
-    constructor->get_role_right()->accept(*this);
+    constructor->get_right_role()->accept(*this);
 }
 void FormatterVisitor<Role>::visit(RoleTransitiveClosure constructor)
 {

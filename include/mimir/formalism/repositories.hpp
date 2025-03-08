@@ -299,14 +299,14 @@ public:
 
     /// @brief Get or create a numeric constraint for the given parameters.
     NumericConstraint get_or_create_numeric_constraint(loki::BinaryComparatorEnum binary_comparator,
-                                                       FunctionExpression function_expression_left,
-                                                       FunctionExpression function_expression_right,
+                                                       FunctionExpression left_function_expression,
+                                                       FunctionExpression right_function_expression,
                                                        TermList terms);
 
     /// @brief Get or create a numeric constraint for the given parameters.
     GroundNumericConstraint get_or_create_ground_numeric_constraint(loki::BinaryComparatorEnum binary_comparator,
-                                                                    GroundFunctionExpression function_expression_left,
-                                                                    GroundFunctionExpression function_expression_right);
+                                                                    GroundFunctionExpression left_function_expression,
+                                                                    GroundFunctionExpression right_function_expression);
 
     /// @brief Get or create a existentially quantified conjunctive condition for the given parameters.
     ConjunctiveCondition

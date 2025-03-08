@@ -96,8 +96,8 @@ void ToMimirStructures::prepare(loki::Condition condition)
             }
             else if (const auto condition_numeric = std::get_if<loki::ConditionNumericConstraint>(&part->get_condition()))
             {
-                prepare((*condition_numeric)->get_function_expression_left());
-                prepare((*condition_numeric)->get_function_expression_right());
+                prepare((*condition_numeric)->get_left_function_expression());
+                prepare((*condition_numeric)->get_right_function_expression());
             }
             else
             {
@@ -392,8 +392,8 @@ FunctionExpression ToMimirStructures::translate_lifted(loki::FunctionExpression 
 NumericConstraint ToMimirStructures::translate_lifted(loki::ConditionNumericConstraint condition, PDDLRepositories& repositories)
 {
     return repositories.get_or_create_numeric_constraint(condition->get_binary_comparator(),
-                                                         translate_lifted(condition->get_function_expression_left(), repositories),
-                                                         translate_lifted(condition->get_function_expression_right(), repositories),
+                                                         translate_lifted(condition->get_left_function_expression(), repositories),
+                                                         translate_lifted(condition->get_right_function_expression(), repositories),
                                                          TermList {});
 }
 
@@ -747,8 +747,8 @@ StaticOrFluentOrAuxiliaryGroundFunction ToMimirStructures::translate_grounded(lo
 GroundNumericConstraint ToMimirStructures::translate_grounded(loki::ConditionNumericConstraint condition, PDDLRepositories& repositories)
 {
     return repositories.get_or_create_ground_numeric_constraint(condition->get_binary_comparator(),
-                                                                translate_grounded(condition->get_function_expression_left(), repositories),
-                                                                translate_grounded(condition->get_function_expression_right(), repositories));
+                                                                translate_grounded(condition->get_left_function_expression(), repositories),
+                                                                translate_grounded(condition->get_right_function_expression(), repositories));
 }
 
 std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>, GroundNumericConstraintList>

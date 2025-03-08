@@ -157,14 +157,14 @@ struct ConceptAtomicGoal : x3::position_tagged
 
 struct ConceptIntersection : x3::position_tagged
 {
-    ConstructorOrNonTerminal<Concept> concept_or_non_terminal_left;
-    ConstructorOrNonTerminal<Concept> concept_or_non_terminal_right;
+    ConstructorOrNonTerminal<Concept> left_concept_or_non_terminal;
+    ConstructorOrNonTerminal<Concept> right_concept_or_non_terminal;
 };
 
 struct ConceptUnion : x3::position_tagged
 {
-    ConstructorOrNonTerminal<Concept> concept_or_non_terminal_left;
-    ConstructorOrNonTerminal<Concept> concept_or_non_terminal_right;
+    ConstructorOrNonTerminal<Concept> left_concept_or_non_terminal;
+    ConstructorOrNonTerminal<Concept> right_concept_or_non_terminal;
 };
 
 struct ConceptNegation : x3::position_tagged
@@ -186,14 +186,14 @@ struct ConceptExistentialQuantification : x3::position_tagged
 
 struct ConceptRoleValueMapContainment : x3::position_tagged
 {
-    ConstructorOrNonTerminal<Role> role_or_non_terminal_left;
-    ConstructorOrNonTerminal<Role> role_or_non_terminal_right;
+    ConstructorOrNonTerminal<Role> left_role_or_non_terminal;
+    ConstructorOrNonTerminal<Role> right_role_or_non_terminal;
 };
 
 struct ConceptRoleValueMapEquality : x3::position_tagged
 {
-    ConstructorOrNonTerminal<Role> role_or_non_terminal_left;
-    ConstructorOrNonTerminal<Role> role_or_non_terminal_right;
+    ConstructorOrNonTerminal<Role> left_role_or_non_terminal;
+    ConstructorOrNonTerminal<Role> right_role_or_non_terminal;
 };
 
 struct ConceptNominal : x3::position_tagged
@@ -222,14 +222,14 @@ struct RoleAtomicGoal : x3::position_tagged
 
 struct RoleIntersection : x3::position_tagged
 {
-    ConstructorOrNonTerminal<Role> role_or_non_terminal_left;
-    ConstructorOrNonTerminal<Role> role_or_non_terminal_right;
+    ConstructorOrNonTerminal<Role> left_role_or_non_terminal;
+    ConstructorOrNonTerminal<Role> right_role_or_non_terminal;
 };
 
 struct RoleUnion : x3::position_tagged
 {
-    ConstructorOrNonTerminal<Role> role_or_non_terminal_left;
-    ConstructorOrNonTerminal<Role> role_or_non_terminal_right;
+    ConstructorOrNonTerminal<Role> left_role_or_non_terminal;
+    ConstructorOrNonTerminal<Role> right_role_or_non_terminal;
 };
 
 struct RoleComplement : x3::position_tagged
@@ -244,8 +244,8 @@ struct RoleInverse : x3::position_tagged
 
 struct RoleComposition : x3::position_tagged
 {
-    ConstructorOrNonTerminal<Role> role_or_non_terminal_left;
-    ConstructorOrNonTerminal<Role> role_or_non_terminal_right;
+    ConstructorOrNonTerminal<Role> left_role_or_non_terminal;
+    ConstructorOrNonTerminal<Role> right_role_or_non_terminal;
 };
 
 struct RoleTransitiveClosure : x3::position_tagged

@@ -228,18 +228,18 @@ template class ConceptAtomicGoalImpl<Derived>;
  * ConceptIntersection
  */
 
-ConceptIntersectionImpl::ConceptIntersectionImpl(Index index, Constructor<Concept> concept_left, Constructor<Concept> concept_right) :
+ConceptIntersectionImpl::ConceptIntersectionImpl(Index index, Constructor<Concept> left_concept, Constructor<Concept> right_concept) :
     m_index(index),
-    m_concept_left(concept_left),
-    m_concept_right(concept_right)
+    m_left_concept(left_concept),
+    m_right_concept(right_concept)
 {
 }
 
 void ConceptIntersectionImpl::evaluate_impl(EvaluationContext& context) const
 {
     // Evaluate children
-    const auto eval_left = m_concept_left->evaluate(context);
-    const auto eval_right = m_concept_left->evaluate(context);
+    const auto eval_left = m_left_concept->evaluate(context);
+    const auto eval_right = m_left_concept->evaluate(context);
 
     // Fetch data
     auto& bitset = context.get_builder<Concept>().get_data();
@@ -254,26 +254,26 @@ void ConceptIntersectionImpl::accept_impl(ConstructorVisitor<Concept>& visitor) 
 
 Index ConceptIntersectionImpl::get_index() const { return m_index; }
 
-Constructor<Concept> ConceptIntersectionImpl::get_concept_left() const { return m_concept_left; }
+Constructor<Concept> ConceptIntersectionImpl::get_left_concept() const { return m_left_concept; }
 
-Constructor<Concept> ConceptIntersectionImpl::get_concept_right() const { return m_concept_right; }
+Constructor<Concept> ConceptIntersectionImpl::get_right_concept() const { return m_right_concept; }
 
 /**
  * ConceptUnion
  */
 
-ConceptUnionImpl::ConceptUnionImpl(Index index, Constructor<Concept> concept_left, Constructor<Concept> concept_right) :
+ConceptUnionImpl::ConceptUnionImpl(Index index, Constructor<Concept> left_concept, Constructor<Concept> right_concept) :
     m_index(index),
-    m_concept_left(concept_left),
-    m_concept_right(concept_right)
+    m_left_concept(left_concept),
+    m_right_concept(right_concept)
 {
 }
 
 void ConceptUnionImpl::evaluate_impl(EvaluationContext& context) const
 {
     // Evaluate children
-    const auto eval_left = m_concept_left->evaluate(context);
-    const auto eval_right = m_concept_left->evaluate(context);
+    const auto eval_left = m_left_concept->evaluate(context);
+    const auto eval_right = m_left_concept->evaluate(context);
 
     // Fetch data
     auto& bitset = context.get_builder<Concept>().get_data();
@@ -288,9 +288,9 @@ void ConceptUnionImpl::accept_impl(ConstructorVisitor<Concept>& visitor) const {
 
 Index ConceptUnionImpl::get_index() const { return m_index; }
 
-Constructor<Concept> ConceptUnionImpl::get_concept_left() const { return m_concept_left; }
+Constructor<Concept> ConceptUnionImpl::get_left_concept() const { return m_left_concept; }
 
-Constructor<Concept> ConceptUnionImpl::get_concept_right() const { return m_concept_right; }
+Constructor<Concept> ConceptUnionImpl::get_right_concept() const { return m_right_concept; }
 
 /**
  * ConceptNegation
@@ -419,18 +419,18 @@ Constructor<Concept> ConceptExistentialQuantificationImpl::get_concept() const {
  * ConceptRoleValueMapContainment
  */
 
-ConceptRoleValueMapContainmentImpl::ConceptRoleValueMapContainmentImpl(Index index, Constructor<Role> role_left, Constructor<Role> role_right) :
+ConceptRoleValueMapContainmentImpl::ConceptRoleValueMapContainmentImpl(Index index, Constructor<Role> left_role, Constructor<Role> right_role) :
     m_index(index),
-    m_role_left(role_left),
-    m_role_right(role_right)
+    m_left_role(left_role),
+    m_right_role(right_role)
 {
 }
 
 void ConceptRoleValueMapContainmentImpl::evaluate_impl(EvaluationContext& context) const
 {
     // Evaluate children
-    const auto eval_role_left = m_role_left->evaluate(context);
-    const auto eval_role_right = m_role_right->evaluate(context);
+    const auto eval_left_role = m_left_role->evaluate(context);
+    const auto eval_right_role = m_right_role->evaluate(context);
 
     // Fetch data
     const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
@@ -446,7 +446,7 @@ void ConceptRoleValueMapContainmentImpl::evaluate_impl(EvaluationContext& contex
     {
         for (size_t j = 0; j < num_objects; ++j)
         {
-            if (eval_role_left->get_data().at(i).get(j) && !eval_role_right->get_data().at(i).get(j))
+            if (eval_left_role->get_data().at(i).get(j) && !eval_right_role->get_data().at(i).get(j))
             {
                 bitset.unset(i);
                 break;
@@ -459,26 +459,26 @@ void ConceptRoleValueMapContainmentImpl::accept_impl(ConstructorVisitor<Concept>
 
 Index ConceptRoleValueMapContainmentImpl::get_index() const { return m_index; }
 
-Constructor<Role> ConceptRoleValueMapContainmentImpl::get_role_left() const { return m_role_left; }
+Constructor<Role> ConceptRoleValueMapContainmentImpl::get_left_role() const { return m_left_role; }
 
-Constructor<Role> ConceptRoleValueMapContainmentImpl::get_role_right() const { return m_role_right; }
+Constructor<Role> ConceptRoleValueMapContainmentImpl::get_right_role() const { return m_right_role; }
 
 /**
  * ConceptRoleValueMapEquality
  */
 
-ConceptRoleValueMapEqualityImpl::ConceptRoleValueMapEqualityImpl(Index index, Constructor<Role> role_left, Constructor<Role> role_right) :
+ConceptRoleValueMapEqualityImpl::ConceptRoleValueMapEqualityImpl(Index index, Constructor<Role> left_role, Constructor<Role> right_role) :
     m_index(index),
-    m_role_left(role_left),
-    m_role_right(role_right)
+    m_left_role(left_role),
+    m_right_role(right_role)
 {
 }
 
 void ConceptRoleValueMapEqualityImpl::evaluate_impl(EvaluationContext& context) const
 {
     // Evaluate children
-    const auto eval_role_left = m_role_left->evaluate(context);
-    const auto eval_role_right = m_role_right->evaluate(context);
+    const auto eval_left_role = m_left_role->evaluate(context);
+    const auto eval_right_role = m_right_role->evaluate(context);
 
     // Fetch data
     const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
@@ -494,7 +494,7 @@ void ConceptRoleValueMapEqualityImpl::evaluate_impl(EvaluationContext& context) 
     {
         for (size_t j = 0; j < num_objects; ++j)
         {
-            if (eval_role_left->get_data().at(i).get(j) != eval_role_right->get_data().at(i).get(j))
+            if (eval_left_role->get_data().at(i).get(j) != eval_right_role->get_data().at(i).get(j))
             {
                 bitset.unset(i);
                 break;
@@ -507,9 +507,9 @@ void ConceptRoleValueMapEqualityImpl::accept_impl(ConstructorVisitor<Concept>& v
 
 Index ConceptRoleValueMapEqualityImpl::get_index() const { return m_index; }
 
-Constructor<Role> ConceptRoleValueMapEqualityImpl::get_role_left() const { return m_role_left; }
+Constructor<Role> ConceptRoleValueMapEqualityImpl::get_left_role() const { return m_left_role; }
 
-Constructor<Role> ConceptRoleValueMapEqualityImpl::get_role_right() const { return m_role_right; }
+Constructor<Role> ConceptRoleValueMapEqualityImpl::get_right_role() const { return m_right_role; }
 
 /**
  * ConceptNominalImpl
@@ -735,10 +735,10 @@ template class RoleAtomicGoalImpl<Derived>;
  * RoleIntersection
  */
 
-RoleIntersectionImpl::RoleIntersectionImpl(Index index, Constructor<Role> role_left, Constructor<Role> role_right) :
+RoleIntersectionImpl::RoleIntersectionImpl(Index index, Constructor<Role> left_role, Constructor<Role> right_role) :
     m_index(index),
-    m_role_left(role_left),
-    m_role_right(role_right)
+    m_left_role(left_role),
+    m_right_role(right_role)
 {
 }
 
@@ -746,8 +746,8 @@ void RoleIntersectionImpl::evaluate_impl(EvaluationContext& context) const
 {
     // Evaluate children
     const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
-    const auto eval_left = m_role_left->evaluate(context);
-    const auto eval_right = m_role_right->evaluate(context);
+    const auto eval_left = m_left_role->evaluate(context);
+    const auto eval_right = m_right_role->evaluate(context);
 
     // Fetch data
     auto& bitsets = context.get_builder<Role>().get_data();
@@ -770,26 +770,26 @@ void RoleIntersectionImpl::accept_impl(ConstructorVisitor<Role>& visitor) const 
 
 Index RoleIntersectionImpl::get_index() const { return m_index; }
 
-Constructor<Role> RoleIntersectionImpl::get_role_left() const { return m_role_left; }
+Constructor<Role> RoleIntersectionImpl::get_left_role() const { return m_left_role; }
 
-Constructor<Role> RoleIntersectionImpl::get_role_right() const { return m_role_right; }
+Constructor<Role> RoleIntersectionImpl::get_right_role() const { return m_right_role; }
 
 /**
  * RoleUnion
  */
 
-RoleUnionImpl::RoleUnionImpl(Index index, Constructor<Role> role_left, Constructor<Role> role_right) :
+RoleUnionImpl::RoleUnionImpl(Index index, Constructor<Role> left_role, Constructor<Role> right_role) :
     m_index(index),
-    m_role_left(role_left),
-    m_role_right(role_right)
+    m_left_role(left_role),
+    m_right_role(right_role)
 {
 }
 
 void RoleUnionImpl::evaluate_impl(EvaluationContext& context) const
 {
     // Evaluate children
-    const auto eval_left = m_role_left->evaluate(context);
-    const auto eval_right = m_role_left->evaluate(context);
+    const auto eval_left = m_left_role->evaluate(context);
+    const auto eval_right = m_left_role->evaluate(context);
 
     // Fetch data
     const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
@@ -813,9 +813,9 @@ void RoleUnionImpl::accept_impl(ConstructorVisitor<Role>& visitor) const { visit
 
 Index RoleUnionImpl::get_index() const { return m_index; }
 
-Constructor<Role> RoleUnionImpl::get_role_left() const { return m_role_left; }
+Constructor<Role> RoleUnionImpl::get_left_role() const { return m_left_role; }
 
-Constructor<Role> RoleUnionImpl::get_role_right() const { return m_role_right; }
+Constructor<Role> RoleUnionImpl::get_right_role() const { return m_right_role; }
 
 /**
  * RoleComplement
@@ -899,18 +899,18 @@ Constructor<Role> RoleInverseImpl::get_role() const { return m_role; }
  * RoleComposition
  */
 
-RoleCompositionImpl::RoleCompositionImpl(Index index, Constructor<Role> role_left, Constructor<Role> role_right) :
+RoleCompositionImpl::RoleCompositionImpl(Index index, Constructor<Role> left_role, Constructor<Role> right_role) :
     m_index(index),
-    m_role_left(role_left),
-    m_role_right(role_right)
+    m_left_role(left_role),
+    m_right_role(right_role)
 {
 }
 
 void RoleCompositionImpl::evaluate_impl(EvaluationContext& context) const
 {
     // Evaluate the children
-    const auto eval_role_left = m_role_left->evaluate(context);
-    const auto eval_role_right = m_role_right->evaluate(context);
+    const auto eval_left_role = m_left_role->evaluate(context);
+    const auto eval_right_role = m_right_role->evaluate(context);
 
     // Fetch data
     const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
@@ -926,9 +926,9 @@ void RoleCompositionImpl::evaluate_impl(EvaluationContext& context) const
     {
         for (size_t j = 0; j < num_objects; ++j)
         {
-            if (eval_role_left->get_data().at(i).get(j))
+            if (eval_left_role->get_data().at(i).get(j))
             {
-                bitsets.at(i) |= eval_role_right->get_data().at(j);
+                bitsets.at(i) |= eval_right_role->get_data().at(j);
             }
         }
     }
@@ -938,9 +938,9 @@ void RoleCompositionImpl::accept_impl(ConstructorVisitor<Role>& visitor) const {
 
 Index RoleCompositionImpl::get_index() const { return m_index; }
 
-Constructor<Role> RoleCompositionImpl::get_role_left() const { return m_role_left; }
+Constructor<Role> RoleCompositionImpl::get_left_role() const { return m_left_role; }
 
-Constructor<Role> RoleCompositionImpl::get_role_right() const { return m_role_right; }
+Constructor<Role> RoleCompositionImpl::get_right_role() const { return m_right_role; }
 
 /**
  * RoleTransitiveClosure

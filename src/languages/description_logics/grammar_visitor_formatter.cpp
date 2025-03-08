@@ -64,17 +64,17 @@ void FormatterConstructorVisitor<Concept>::visit(ConceptIntersection constructor
 {
     assert(m_concept_or_nonterminal_visitor);
     m_out << keywords::concept_intersection << " ";
-    constructor->get_concept_or_non_terminal_left()->accept(*m_concept_or_nonterminal_visitor);
+    constructor->get_left_concept_or_non_terminal()->accept(*m_concept_or_nonterminal_visitor);
     m_out << " ";
-    constructor->get_concept_or_non_terminal_right()->accept(*m_concept_or_nonterminal_visitor);
+    constructor->get_right_concept_or_non_terminal()->accept(*m_concept_or_nonterminal_visitor);
 }
 void FormatterConstructorVisitor<Concept>::visit(ConceptUnion constructor)
 {
     assert(m_concept_or_nonterminal_visitor);
     m_out << keywords::concept_union << " ";
-    constructor->get_concept_or_non_terminal_left()->accept(*m_concept_or_nonterminal_visitor);
+    constructor->get_left_concept_or_non_terminal()->accept(*m_concept_or_nonterminal_visitor);
     m_out << " ";
-    constructor->get_concept_or_non_terminal_right()->accept(*m_concept_or_nonterminal_visitor);
+    constructor->get_right_concept_or_non_terminal()->accept(*m_concept_or_nonterminal_visitor);
 }
 void FormatterConstructorVisitor<Concept>::visit(ConceptNegation constructor)
 {
@@ -102,17 +102,17 @@ void FormatterConstructorVisitor<Concept>::visit(ConceptRoleValueMapContainment 
 {
     assert(m_role_or_nonterminal_visitor);
     m_out << keywords::concept_role_value_map_containment << " ";
-    constructor->get_role_or_non_terminal_left()->accept(*m_role_or_nonterminal_visitor);
+    constructor->get_left_role_or_non_terminal()->accept(*m_role_or_nonterminal_visitor);
     m_out << " ";
-    constructor->get_role_or_non_terminal_right()->accept(*m_role_or_nonterminal_visitor);
+    constructor->get_right_role_or_non_terminal()->accept(*m_role_or_nonterminal_visitor);
 }
 void FormatterConstructorVisitor<Concept>::visit(ConceptRoleValueMapEquality constructor)
 {
     assert(m_role_or_nonterminal_visitor);
     m_out << keywords::concept_role_value_map_equality << " ";
-    constructor->get_role_or_non_terminal_left()->accept(*m_role_or_nonterminal_visitor);
+    constructor->get_left_role_or_non_terminal()->accept(*m_role_or_nonterminal_visitor);
     m_out << " ";
-    constructor->get_role_or_non_terminal_right()->accept(*m_role_or_nonterminal_visitor);
+    constructor->get_right_role_or_non_terminal()->accept(*m_role_or_nonterminal_visitor);
 }
 void FormatterConstructorVisitor<Concept>::visit(ConceptNominal constructor)
 {
@@ -161,17 +161,17 @@ void FormatterConstructorVisitor<Role>::visit(RoleIntersection constructor)
 {
     assert(m_role_or_nonterminal_visitor);
     m_out << keywords::role_intersection << " ";
-    constructor->get_role_or_non_terminal_left()->accept(*m_role_or_nonterminal_visitor);
+    constructor->get_left_role_or_non_terminal()->accept(*m_role_or_nonterminal_visitor);
     m_out << " ";
-    constructor->get_role_or_non_terminal_right()->accept(*m_role_or_nonterminal_visitor);
+    constructor->get_right_role_or_non_terminal()->accept(*m_role_or_nonterminal_visitor);
 }
 void FormatterConstructorVisitor<Role>::visit(RoleUnion constructor)
 {
     assert(m_role_or_nonterminal_visitor);
     m_out << keywords::role_union << " ";
-    constructor->get_role_or_non_terminal_left()->accept(*m_role_or_nonterminal_visitor);
+    constructor->get_left_role_or_non_terminal()->accept(*m_role_or_nonterminal_visitor);
     m_out << " ";
-    constructor->get_role_or_non_terminal_right()->accept(*m_role_or_nonterminal_visitor);
+    constructor->get_right_role_or_non_terminal()->accept(*m_role_or_nonterminal_visitor);
 }
 void FormatterConstructorVisitor<Role>::visit(RoleComplement constructor)
 {
@@ -189,9 +189,9 @@ void FormatterConstructorVisitor<Role>::visit(RoleComposition constructor)
 {
     assert(m_role_or_nonterminal_visitor);
     m_out << keywords::role_composition << " ";
-    constructor->get_role_or_non_terminal_left()->accept(*m_role_or_nonterminal_visitor);
+    constructor->get_left_role_or_non_terminal()->accept(*m_role_or_nonterminal_visitor);
     m_out << " ";
-    constructor->get_role_or_non_terminal_right()->accept(*m_role_or_nonterminal_visitor);
+    constructor->get_right_role_or_non_terminal()->accept(*m_role_or_nonterminal_visitor);
 }
 void FormatterConstructorVisitor<Role>::visit(RoleTransitiveClosure constructor)
 {

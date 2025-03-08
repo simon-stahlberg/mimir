@@ -101,9 +101,9 @@ void GeneratorConstructorVisitor<Concept>::visit(ConceptIntersection constructor
             if (i > j)
                 continue;  ///< partially break symmetries
 
-            for (const auto& left_concept : m_sentences.get(constructor->get_concept_left(), i))
+            for (const auto& left_concept : m_sentences.get(constructor->get_left_concept(), i))
             {
-                for (const auto& right_concept : m_sentences.get(constructor->get_concept_right(), j))
+                for (const auto& right_concept : m_sentences.get(constructor->get_right_concept(), j))
                 {
                     m_result.push_back(m_repositories.get_or_create_concept_intersection(left_concept, right_concept));
                 }
@@ -122,9 +122,9 @@ void GeneratorConstructorVisitor<Concept>::visit(ConceptUnion constructor)
             if (i > j)
                 continue;  ///< partially break symmetries
 
-            for (const auto& left_concept : m_sentences.get(constructor->get_concept_left(), i))
+            for (const auto& left_concept : m_sentences.get(constructor->get_left_concept(), i))
             {
-                for (const auto& right_concept : m_sentences.get(constructor->get_concept_right(), j))
+                for (const auto& right_concept : m_sentences.get(constructor->get_right_concept(), j))
                 {
                     m_result.push_back(m_repositories.get_or_create_concept_union(left_concept, right_concept));
                 }
@@ -186,9 +186,9 @@ void GeneratorConstructorVisitor<Concept>::visit(ConceptRoleValueMapContainment 
         {
             size_t j = m_complexity - i - 1;
 
-            for (const auto& left_role : m_sentences.get(constructor->get_role_left(), i))
+            for (const auto& left_role : m_sentences.get(constructor->get_left_role(), i))
             {
-                for (const auto& right_role : m_sentences.get(constructor->get_role_right(), j))
+                for (const auto& right_role : m_sentences.get(constructor->get_right_role(), j))
                 {
                     m_result.push_back(m_repositories.get_or_create_concept_role_value_map_containment(left_role, right_role));
                 }
@@ -207,9 +207,9 @@ void GeneratorConstructorVisitor<Concept>::visit(ConceptRoleValueMapEquality con
             if (i > j)
                 continue;  ///< partially break symmetries
 
-            for (const auto& left_role : m_sentences.get(constructor->get_role_left(), i))
+            for (const auto& left_role : m_sentences.get(constructor->get_left_role(), i))
             {
-                for (const auto& right_role : m_sentences.get(constructor->get_role_right(), j))
+                for (const auto& right_role : m_sentences.get(constructor->get_right_role(), j))
                 {
                     m_result.push_back(m_repositories.get_or_create_concept_role_value_map_equality(left_role, right_role));
                 }
@@ -279,9 +279,9 @@ void GeneratorConstructorVisitor<Role>::visit(RoleIntersection constructor)
             if (i > j)
                 continue;  ///< partially break symmetries
 
-            for (const auto& left_role : m_sentences.get(constructor->get_role_left(), i))
+            for (const auto& left_role : m_sentences.get(constructor->get_left_role(), i))
             {
-                for (const auto& right_role : m_sentences.get(constructor->get_role_right(), j))
+                for (const auto& right_role : m_sentences.get(constructor->get_right_role(), j))
                 {
                     m_result.push_back(m_repositories.get_or_create_role_intersection(left_role, right_role));
                 }
@@ -300,9 +300,9 @@ void GeneratorConstructorVisitor<Role>::visit(RoleUnion constructor)
             if (i > j)
                 continue;  ///< partially break symmetries
 
-            for (const auto& left_role : m_sentences.get(constructor->get_role_left(), i))
+            for (const auto& left_role : m_sentences.get(constructor->get_left_role(), i))
             {
-                for (const auto& right_role : m_sentences.get(constructor->get_role_right(), j))
+                for (const auto& right_role : m_sentences.get(constructor->get_right_role(), j))
                 {
                     m_result.push_back(m_repositories.get_or_create_role_union(left_role, right_role));
                 }
@@ -338,9 +338,9 @@ void GeneratorConstructorVisitor<Role>::visit(RoleComposition constructor)
         {
             size_t j = m_complexity - i - 1;
 
-            for (const auto& left_role : m_sentences.get(constructor->get_role_left(), i))
+            for (const auto& left_role : m_sentences.get(constructor->get_left_role(), i))
             {
-                for (const auto& right_role : m_sentences.get(constructor->get_role_right(), j))
+                for (const auto& right_role : m_sentences.get(constructor->get_right_role(), j))
                 {
                     m_result.push_back(m_repositories.get_or_create_role_composition(left_role, right_role));
                 }

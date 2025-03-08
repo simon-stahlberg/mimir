@@ -175,14 +175,14 @@ parse(const dl::ast::ConceptAtomicGoal& node, const DomainImpl& domain, Construc
 
 static ConceptIntersection parse(const dl::ast::ConceptIntersection& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
-    return ref_repositories.get_or_create_concept_intersection(parse(node.concept_or_non_terminal_left, domain, ref_repositories),
-                                                               parse(node.concept_or_non_terminal_right, domain, ref_repositories));
+    return ref_repositories.get_or_create_concept_intersection(parse(node.left_concept_or_non_terminal, domain, ref_repositories),
+                                                               parse(node.right_concept_or_non_terminal, domain, ref_repositories));
 }
 
 static ConceptUnion parse(const dl::ast::ConceptUnion& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
-    return ref_repositories.get_or_create_concept_union(parse(node.concept_or_non_terminal_left, domain, ref_repositories),
-                                                        parse(node.concept_or_non_terminal_right, domain, ref_repositories));
+    return ref_repositories.get_or_create_concept_union(parse(node.left_concept_or_non_terminal, domain, ref_repositories),
+                                                        parse(node.right_concept_or_non_terminal, domain, ref_repositories));
 }
 
 static ConceptNegation parse(const dl::ast::ConceptNegation& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
@@ -206,14 +206,14 @@ parse(const dl::ast::ConceptExistentialQuantification& node, const DomainImpl& d
 static ConceptRoleValueMapContainment
 parse(const dl::ast::ConceptRoleValueMapContainment& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
-    return ref_repositories.get_or_create_concept_role_value_map_containment(parse(node.role_or_non_terminal_left, domain, ref_repositories),
-                                                                             parse(node.role_or_non_terminal_right, domain, ref_repositories));
+    return ref_repositories.get_or_create_concept_role_value_map_containment(parse(node.left_role_or_non_terminal, domain, ref_repositories),
+                                                                             parse(node.right_role_or_non_terminal, domain, ref_repositories));
 }
 
 static ConceptRoleValueMapEquality parse(const dl::ast::ConceptRoleValueMapEquality& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
-    return ref_repositories.get_or_create_concept_role_value_map_equality(parse(node.role_or_non_terminal_left, domain, ref_repositories),
-                                                                          parse(node.role_or_non_terminal_right, domain, ref_repositories));
+    return ref_repositories.get_or_create_concept_role_value_map_equality(parse(node.left_role_or_non_terminal, domain, ref_repositories),
+                                                                          parse(node.right_role_or_non_terminal, domain, ref_repositories));
 }
 
 static ConceptNominal parse(const dl::ast::ConceptNominal& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
@@ -305,14 +305,14 @@ parse(const dl::ast::RoleAtomicGoal& node, const DomainImpl& domain, Constructor
 
 static RoleIntersection parse(const dl::ast::RoleIntersection& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
-    return ref_repositories.get_or_create_role_intersection(parse(node.role_or_non_terminal_left, domain, ref_repositories),
-                                                            parse(node.role_or_non_terminal_right, domain, ref_repositories));
+    return ref_repositories.get_or_create_role_intersection(parse(node.left_role_or_non_terminal, domain, ref_repositories),
+                                                            parse(node.right_role_or_non_terminal, domain, ref_repositories));
 }
 
 static RoleUnion parse(const dl::ast::RoleUnion& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
-    return ref_repositories.get_or_create_role_union(parse(node.role_or_non_terminal_left, domain, ref_repositories),
-                                                     parse(node.role_or_non_terminal_right, domain, ref_repositories));
+    return ref_repositories.get_or_create_role_union(parse(node.left_role_or_non_terminal, domain, ref_repositories),
+                                                     parse(node.right_role_or_non_terminal, domain, ref_repositories));
 }
 
 static RoleComplement parse(const dl::ast::RoleComplement& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
@@ -327,8 +327,8 @@ static RoleInverse parse(const dl::ast::RoleInverse& node, const DomainImpl& dom
 
 static RoleComposition parse(const dl::ast::RoleComposition& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
-    return ref_repositories.get_or_create_role_composition(parse(node.role_or_non_terminal_left, domain, ref_repositories),
-                                                           parse(node.role_or_non_terminal_right, domain, ref_repositories));
+    return ref_repositories.get_or_create_role_composition(parse(node.left_role_or_non_terminal, domain, ref_repositories),
+                                                           parse(node.right_role_or_non_terminal, domain, ref_repositories));
 }
 
 static RoleTransitiveClosure parse(const dl::ast::RoleTransitiveClosure& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)

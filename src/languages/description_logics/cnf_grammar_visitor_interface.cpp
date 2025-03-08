@@ -62,17 +62,17 @@ void CopyConstructorVisitor<Concept>::visit(ConceptAtomicGoal<Derived> construct
 void CopyConstructorVisitor<Concept>::visit(ConceptNominal constructor) { m_result = m_repositories.get_or_create_concept_nominal(constructor->get_object()); }
 void CopyConstructorVisitor<Concept>::visit(ConceptIntersection constructor)
 {
-    constructor->get_concept_left()->accept(m_concept_visitor);
+    constructor->get_left_concept()->accept(m_concept_visitor);
     const auto left_nonterminal = m_concept_visitor.get_result();
-    constructor->get_concept_right()->accept(m_concept_visitor);
+    constructor->get_right_concept()->accept(m_concept_visitor);
     const auto right_nonterminal = m_concept_visitor.get_result();
     m_result = m_repositories.get_or_create_concept_intersection(left_nonterminal, right_nonterminal);
 }
 void CopyConstructorVisitor<Concept>::visit(ConceptUnion constructor)
 {
-    constructor->get_concept_left()->accept(m_concept_visitor);
+    constructor->get_left_concept()->accept(m_concept_visitor);
     const auto left_nonterminal = m_concept_visitor.get_result();
-    constructor->get_concept_right()->accept(m_concept_visitor);
+    constructor->get_right_concept()->accept(m_concept_visitor);
     const auto right_nonterminal = m_concept_visitor.get_result();
     m_result = m_repositories.get_or_create_concept_union(left_nonterminal, right_nonterminal);
 }
@@ -100,18 +100,18 @@ void CopyConstructorVisitor<Concept>::visit(ConceptExistentialQuantification con
 }
 void CopyConstructorVisitor<Concept>::visit(ConceptRoleValueMapContainment constructor)
 {
-    constructor->get_role_left()->accept(m_role_visitor);
+    constructor->get_left_role()->accept(m_role_visitor);
     const auto left_nonterminal = m_role_visitor.get_result();
-    constructor->get_role_right()->accept(m_role_visitor);
+    constructor->get_right_role()->accept(m_role_visitor);
     const auto right_nonterminal = m_role_visitor.get_result();
     m_result = m_repositories.get_or_create_concept_role_value_map_containment(left_nonterminal, right_nonterminal);
 }
 void CopyConstructorVisitor<Concept>::visit(ConceptRoleValueMapEquality constructor)
 {
     auto visitor = CopyNonTerminalVisitor<Role>(m_repositories);
-    constructor->get_role_left()->accept(m_role_visitor);
+    constructor->get_left_role()->accept(m_role_visitor);
     const auto left_nonterminal = m_role_visitor.get_result();
-    constructor->get_role_right()->accept(m_role_visitor);
+    constructor->get_right_role()->accept(m_role_visitor);
     const auto right_nonterminal = m_role_visitor.get_result();
     m_result = m_repositories.get_or_create_concept_role_value_map_equality(left_nonterminal, right_nonterminal);
 }
@@ -158,17 +158,17 @@ void CopyConstructorVisitor<Role>::visit(RoleAtomicGoal<Derived> constructor)
 }
 void CopyConstructorVisitor<Role>::visit(RoleIntersection constructor)
 {
-    constructor->get_role_left()->accept(m_role_visitor);
+    constructor->get_left_role()->accept(m_role_visitor);
     const auto left_nonterminal = m_role_visitor.get_result();
-    constructor->get_role_right()->accept(m_role_visitor);
+    constructor->get_right_role()->accept(m_role_visitor);
     const auto right_nonterminal = m_role_visitor.get_result();
     m_result = m_repositories.get_or_create_role_intersection(left_nonterminal, right_nonterminal);
 }
 void CopyConstructorVisitor<Role>::visit(RoleUnion constructor)
 {
-    constructor->get_role_left()->accept(m_role_visitor);
+    constructor->get_left_role()->accept(m_role_visitor);
     const auto left_nonterminal = m_role_visitor.get_result();
-    constructor->get_role_right()->accept(m_role_visitor);
+    constructor->get_right_role()->accept(m_role_visitor);
     const auto right_nonterminal = m_role_visitor.get_result();
     m_result = m_repositories.get_or_create_role_union(left_nonterminal, right_nonterminal);
 }
@@ -186,9 +186,9 @@ void CopyConstructorVisitor<Role>::visit(RoleInverse constructor)
 }
 void CopyConstructorVisitor<Role>::visit(RoleComposition constructor)
 {
-    constructor->get_role_left()->accept(m_role_visitor);
+    constructor->get_left_role()->accept(m_role_visitor);
     const auto left_nonterminal = m_role_visitor.get_result();
-    constructor->get_role_right()->accept(m_role_visitor);
+    constructor->get_right_role()->accept(m_role_visitor);
     const auto right_nonterminal = m_role_visitor.get_result();
     m_result = m_repositories.get_or_create_role_composition(left_nonterminal, right_nonterminal);
 }
