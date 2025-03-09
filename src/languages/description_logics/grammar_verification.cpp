@@ -93,10 +93,13 @@ void verify_grammar_is_well_defined(const Grammar& grammar)
     auto boolean_derivation_rule_visitor = CollectHeadAndBodyNonTerminalsDerivationRuleVisitor<Boolean>(head_nonterminals, body_nonterminals);
     auto numerical_derivation_rule_visitor = CollectHeadAndBodyNonTerminalsDerivationRuleVisitor<Numerical>(head_nonterminals, body_nonterminals);
 
-    concept_visitor.initialize(concept_or_nonterminal_visitor, role_or_nonterminal_visitor);
-    role_visitor.initialize(concept_or_nonterminal_visitor, role_or_nonterminal_visitor);
-    boolean_visitor.initialize(concept_or_nonterminal_visitor, role_or_nonterminal_visitor);
-    numerical_visitor.initialize(concept_or_nonterminal_visitor, role_or_nonterminal_visitor);
+    auto concept_and_role_nonterminal_visitors = boost::hana::make_map(boost::hana::make_pair(boost::hana::type<Concept> {}, &concept_or_nonterminal_visitor),
+                                                                       boost::hana::make_pair(boost::hana::type<Role> {}, &role_or_nonterminal_visitor));
+
+    concept_visitor.initialize(concept_and_role_nonterminal_visitors);
+    role_visitor.initialize(concept_and_role_nonterminal_visitors);
+    boolean_visitor.initialize(concept_and_role_nonterminal_visitors);
+    numerical_visitor.initialize(concept_and_role_nonterminal_visitors);
     concept_or_nonterminal_visitor.initialize(concept_nonterminal_visitor, concept_visitor);
     role_or_nonterminal_visitor.initialize(role_nonterminal_visitor, role_visitor);
     boolean_or_nonterminal_visitor.initialize(boolean_nonterminal_visitor, boolean_visitor);

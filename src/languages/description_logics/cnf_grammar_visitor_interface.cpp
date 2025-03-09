@@ -60,7 +60,7 @@ void CopyConstructorVisitor<Concept>::visit(ConceptAtomicGoal<Derived> construct
 void CopyConstructorVisitor<Concept>::visit(ConceptNominal constructor) { m_result = m_repositories.get_or_create_concept_nominal(constructor->get_object()); }
 void CopyConstructorVisitor<Concept>::visit(ConceptIntersection constructor)
 {
-    auto& concept_visitor = get_visitor<Concept>(m_nonterminal_visitors).get();
+    auto& concept_visitor = get_visitor<Concept>(m_nonterminal_visitors);
     constructor->get_left_concept()->accept(concept_visitor);
     const auto left_nonterminal = concept_visitor.get_result();
     constructor->get_right_concept()->accept(concept_visitor);
@@ -69,7 +69,7 @@ void CopyConstructorVisitor<Concept>::visit(ConceptIntersection constructor)
 }
 void CopyConstructorVisitor<Concept>::visit(ConceptUnion constructor)
 {
-    auto& concept_visitor = get_visitor<Concept>(m_nonterminal_visitors).get();
+    auto& concept_visitor = get_visitor<Concept>(m_nonterminal_visitors);
     constructor->get_left_concept()->accept(concept_visitor);
     const auto left_nonterminal = concept_visitor.get_result();
     constructor->get_right_concept()->accept(concept_visitor);
@@ -78,15 +78,15 @@ void CopyConstructorVisitor<Concept>::visit(ConceptUnion constructor)
 }
 void CopyConstructorVisitor<Concept>::visit(ConceptNegation constructor)
 {
-    auto& concept_visitor = get_visitor<Concept>(m_nonterminal_visitors).get();
+    auto& concept_visitor = get_visitor<Concept>(m_nonterminal_visitors);
     constructor->get_concept()->accept(concept_visitor);
     const auto nonterminal = concept_visitor.get_result();
     m_result = m_repositories.get_or_create_concept_negation(nonterminal);
 }
 void CopyConstructorVisitor<Concept>::visit(ConceptValueRestriction constructor)
 {
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors).get();
-    auto& concept_visitor = get_visitor<Concept>(m_nonterminal_visitors).get();
+    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
+    auto& concept_visitor = get_visitor<Concept>(m_nonterminal_visitors);
     constructor->get_role()->accept(role_visitor);
     const auto left_nonterminal = role_visitor.get_result();
     constructor->get_concept()->accept(concept_visitor);
@@ -95,8 +95,8 @@ void CopyConstructorVisitor<Concept>::visit(ConceptValueRestriction constructor)
 }
 void CopyConstructorVisitor<Concept>::visit(ConceptExistentialQuantification constructor)
 {
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors).get();
-    auto& concept_visitor = get_visitor<Concept>(m_nonterminal_visitors).get();
+    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
+    auto& concept_visitor = get_visitor<Concept>(m_nonterminal_visitors);
     constructor->get_role()->accept(role_visitor);
     const auto left_nonterminal = role_visitor.get_result();
     constructor->get_concept()->accept(concept_visitor);
@@ -105,7 +105,7 @@ void CopyConstructorVisitor<Concept>::visit(ConceptExistentialQuantification con
 }
 void CopyConstructorVisitor<Concept>::visit(ConceptRoleValueMapContainment constructor)
 {
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors).get();
+    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
     constructor->get_left_role()->accept(role_visitor);
     const auto left_nonterminal = role_visitor.get_result();
     constructor->get_right_role()->accept(role_visitor);
@@ -114,7 +114,7 @@ void CopyConstructorVisitor<Concept>::visit(ConceptRoleValueMapContainment const
 }
 void CopyConstructorVisitor<Concept>::visit(ConceptRoleValueMapEquality constructor)
 {
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors).get();
+    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
     auto visitor = CopyNonTerminalVisitor<Role>(m_repositories);
     constructor->get_left_role()->accept(role_visitor);
     const auto left_nonterminal = role_visitor.get_result();
@@ -162,7 +162,7 @@ void CopyConstructorVisitor<Role>::visit(RoleAtomicGoal<Derived> constructor)
 }
 void CopyConstructorVisitor<Role>::visit(RoleIntersection constructor)
 {
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors).get();
+    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
     constructor->get_left_role()->accept(role_visitor);
     const auto left_nonterminal = role_visitor.get_result();
     constructor->get_right_role()->accept(role_visitor);
@@ -171,7 +171,7 @@ void CopyConstructorVisitor<Role>::visit(RoleIntersection constructor)
 }
 void CopyConstructorVisitor<Role>::visit(RoleUnion constructor)
 {
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors).get();
+    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
     constructor->get_left_role()->accept(role_visitor);
     const auto left_nonterminal = role_visitor.get_result();
     constructor->get_right_role()->accept(role_visitor);
@@ -180,21 +180,21 @@ void CopyConstructorVisitor<Role>::visit(RoleUnion constructor)
 }
 void CopyConstructorVisitor<Role>::visit(RoleComplement constructor)
 {
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors).get();
+    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
     constructor->get_role()->accept(role_visitor);
     const auto nonterminal = role_visitor.get_result();
     m_result = m_repositories.get_or_create_role_complement(nonterminal);
 }
 void CopyConstructorVisitor<Role>::visit(RoleInverse constructor)
 {
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors).get();
+    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
     constructor->get_role()->accept(role_visitor);
     const auto nonterminal = role_visitor.get_result();
     m_result = m_repositories.get_or_create_role_inverse(nonterminal);
 }
 void CopyConstructorVisitor<Role>::visit(RoleComposition constructor)
 {
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors).get();
+    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
     constructor->get_left_role()->accept(role_visitor);
     const auto left_nonterminal = role_visitor.get_result();
     constructor->get_right_role()->accept(role_visitor);
@@ -203,22 +203,22 @@ void CopyConstructorVisitor<Role>::visit(RoleComposition constructor)
 }
 void CopyConstructorVisitor<Role>::visit(RoleTransitiveClosure constructor)
 {
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors).get();
+    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
     constructor->get_role()->accept(role_visitor);
     const auto nonterminal = role_visitor.get_result();
     m_result = m_repositories.get_or_create_role_transitive_closure(nonterminal);
 }
 void CopyConstructorVisitor<Role>::visit(RoleReflexiveTransitiveClosure constructor)
 {
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors).get();
+    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
     constructor->get_role()->accept(role_visitor);
     const auto nonterminal = role_visitor.get_result();
     m_result = m_repositories.get_or_create_role_reflexive_transitive_closure(nonterminal);
 }
 void CopyConstructorVisitor<Role>::visit(RoleRestriction constructor)
 {
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors).get();
-    auto& concept_visitor = get_visitor<Concept>(m_nonterminal_visitors).get();
+    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
+    auto& concept_visitor = get_visitor<Concept>(m_nonterminal_visitors);
     constructor->get_role()->accept(role_visitor);
     const auto left_nonterminal = role_visitor.get_result();
     constructor->get_concept()->accept(concept_visitor);
@@ -227,7 +227,7 @@ void CopyConstructorVisitor<Role>::visit(RoleRestriction constructor)
 }
 void CopyConstructorVisitor<Role>::visit(RoleIdentity constructor)
 {
-    auto& concept_visitor = get_visitor<Concept>(m_nonterminal_visitors).get();
+    auto& concept_visitor = get_visitor<Concept>(m_nonterminal_visitors);
     constructor->get_concept()->accept(concept_visitor);
     const auto nonterminal = concept_visitor.get_result();
     m_result = m_repositories.get_or_create_role_identity(nonterminal);
@@ -263,7 +263,7 @@ void CopyConstructorVisitor<Boolean>::visit(BooleanAtomicState<Derived> construc
 
 void CopyConstructorVisitor<Boolean>::visit(BooleanNonempty<Concept> constructor)
 {
-    auto& concept_visitor = get_visitor<Concept>(m_nonterminal_visitors).get();
+    auto& concept_visitor = get_visitor<Concept>(m_nonterminal_visitors);
     constructor->get_nonterminal()->accept(concept_visitor);
     const auto concept_nonterminal = concept_visitor.get_result();
     m_result = m_repositories.get_or_create_boolean_nonempty(concept_nonterminal);
@@ -271,7 +271,7 @@ void CopyConstructorVisitor<Boolean>::visit(BooleanNonempty<Concept> constructor
 
 void CopyConstructorVisitor<Boolean>::visit(BooleanNonempty<Role> constructor)
 {
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors).get();
+    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
     constructor->get_nonterminal()->accept(role_visitor);
     const auto role_nonterminal = role_visitor.get_result();
     m_result = m_repositories.get_or_create_boolean_nonempty(role_nonterminal);
@@ -292,7 +292,7 @@ CopyConstructorVisitor<Numerical>::CopyConstructorVisitor(ConstructorRepositorie
 
 void CopyConstructorVisitor<Numerical>::visit(NumericalCount<Concept> constructor)
 {
-    auto& concept_visitor = get_visitor<Concept>(m_nonterminal_visitors).get();
+    auto& concept_visitor = get_visitor<Concept>(m_nonterminal_visitors);
     constructor->get_nonterminal()->accept(concept_visitor);
     const auto concept_nonterminal = concept_visitor.get_result();
     m_result = m_repositories.get_or_create_numerical_count(concept_nonterminal);
@@ -300,7 +300,7 @@ void CopyConstructorVisitor<Numerical>::visit(NumericalCount<Concept> constructo
 
 void CopyConstructorVisitor<Numerical>::visit(NumericalCount<Role> constructor)
 {
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors).get();
+    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
     constructor->get_nonterminal()->accept(role_visitor);
     const auto role_nonterminal = role_visitor.get_result();
     m_result = m_repositories.get_or_create_numerical_count(role_nonterminal);
@@ -308,8 +308,8 @@ void CopyConstructorVisitor<Numerical>::visit(NumericalCount<Role> constructor)
 
 void CopyConstructorVisitor<Numerical>::visit(NumericalDistance constructor)
 {
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors).get();
-    auto& concept_visitor = get_visitor<Concept>(m_nonterminal_visitors).get();
+    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
+    auto& concept_visitor = get_visitor<Concept>(m_nonterminal_visitors);
     constructor->get_left_concept()->accept(concept_visitor);
     const auto left_concept_nonterminal = concept_visitor.get_result();
     constructor->get_role()->accept(role_visitor);
@@ -344,6 +344,8 @@ const NonTerminal<D>& CopyNonTerminalVisitor<D>::get_result() const
 
 template class CopyNonTerminalVisitor<Concept>;
 template class CopyNonTerminalVisitor<Role>;
+template class CopyNonTerminalVisitor<Boolean>;
+template class CopyNonTerminalVisitor<Numerical>;
 
 /**
  * DerivationRule
@@ -377,6 +379,8 @@ const DerivationRule<D>& CopyDerivationRuleVisitor<D>::get_result() const
 
 template class CopyDerivationRuleVisitor<Concept>;
 template class CopyDerivationRuleVisitor<Role>;
+template class CopyDerivationRuleVisitor<Boolean>;
+template class CopyDerivationRuleVisitor<Numerical>;
 
 /**
  * SubstitutionRule
@@ -407,6 +411,8 @@ const SubstitutionRule<D>& CopySubstitutionRuleVisitor<D>::get_result() const
 
 template class CopySubstitutionRuleVisitor<Concept>;
 template class CopySubstitutionRuleVisitor<Role>;
+template class CopySubstitutionRuleVisitor<Boolean>;
+template class CopySubstitutionRuleVisitor<Numerical>;
 
 /**
  * Grammar
@@ -440,7 +446,7 @@ void CopyGrammarVisitor::visit(const Grammar& grammar)
 
                               if (second.has_value())
                               {
-                                  auto& visitor = get_visitor<ConstructorType>(m_start_symbol_visitor).get();
+                                  auto& visitor = get_visitor<ConstructorType>(m_start_symbol_visitor);
                                   second.value()->accept(visitor);
                                   m_start_symbols.insert(visitor.get_result());
                               }
@@ -455,7 +461,7 @@ void CopyGrammarVisitor::visit(const Grammar& grammar)
 
                               for (const auto& rule : second)
                               {
-                                  auto& visitor = get_visitor<ConstructorType>(m_derivation_rule_visitor).get();
+                                  auto& visitor = get_visitor<ConstructorType>(m_derivation_rule_visitor);
                                   rule->accept(visitor);
                                   const auto copied_rule = visitor.get_result();
                                   m_derivation_rules.push_back(copied_rule);
@@ -471,7 +477,7 @@ void CopyGrammarVisitor::visit(const Grammar& grammar)
 
                               for (const auto& rule : second)
                               {
-                                  auto& visitor = get_visitor<ConstructorType>(m_substitution_rule_visitor).get();
+                                  auto& visitor = get_visitor<ConstructorType>(m_substitution_rule_visitor);
                                   rule->accept(visitor);
                                   const auto copied_rule = visitor.get_result();
                                   m_substitution_rules.push_back(copied_rule);

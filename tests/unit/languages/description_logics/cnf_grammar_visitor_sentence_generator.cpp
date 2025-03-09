@@ -120,6 +120,8 @@ TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarVisitorSentenceGeneratorTes
 
     auto cnf_grammar = dl::cnf_grammar::Grammar(grammar);
 
+    std::cout << cnf_grammar << std::endl;
+
     visitor.visit(cnf_grammar);
 
     const auto& concept_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::Concept> {});

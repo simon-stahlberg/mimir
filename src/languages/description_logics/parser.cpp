@@ -304,12 +304,6 @@ static Constructor<Role> parse(const dl::ast::RoleIdentity& node, const DomainIm
     return ref_repositories.get_or_create_role_identity(parse(node.concept_or_non_terminal, domain, ref_repositories));
 }
 
-static std::variant<ConstructorOrNonTerminal<Concept>, ConstructorOrNonTerminal<Role>>
-parse(const dl::ast::ConceptOrRoleNonterminal node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
-{
-    return boost::apply_visitor([&](auto&& arg) { return parse(arg, domain, ref_repositories); }, node);
-}
-
 static Constructor<Boolean> parse(const dl::ast::BooleanAtomicState& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
     if (domain.get_name_to_predicate<Static>().count(node.predicate_name))

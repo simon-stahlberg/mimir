@@ -70,5 +70,7 @@ bool RefinementStateListPruningFunction::should_prune_impl(Constructor<D> constr
 
 template bool RefinementStateListPruningFunction::should_prune_impl(Constructor<Concept> constructor);
 template bool RefinementStateListPruningFunction::should_prune_impl(Constructor<Role> constructor);
+template bool RefinementStateListPruningFunction::should_prune_impl(Constructor<Boolean> constructor);
+template bool RefinementStateListPruningFunction::should_prune_impl(Constructor<Numerical> constructor);
 
 }

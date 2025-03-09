@@ -297,6 +297,8 @@ void FormatterNonTerminalVisitor<D>::visit(NonTerminal<D> constructor)
 
 template class FormatterNonTerminalVisitor<Concept>;
 template class FormatterNonTerminalVisitor<Role>;
+template class FormatterNonTerminalVisitor<Boolean>;
+template class FormatterNonTerminalVisitor<Numerical>;
 
 /**
  * DerivationRule
@@ -322,6 +324,8 @@ void FormatterDerivationRuleVisitor<D>::visit(DerivationRule<D> constructor)
 
 template class FormatterDerivationRuleVisitor<Concept>;
 template class FormatterDerivationRuleVisitor<Role>;
+template class FormatterDerivationRuleVisitor<Boolean>;
+template class FormatterDerivationRuleVisitor<Numerical>;
 
 /**
  * SubstitutionRule
@@ -346,6 +350,8 @@ void FormatterSubstitutionRuleVisitor<D>::visit(SubstitutionRule<D> constructor)
 
 template class FormatterSubstitutionRuleVisitor<Concept>;
 template class FormatterSubstitutionRuleVisitor<Role>;
+template class FormatterSubstitutionRuleVisitor<Boolean>;
+template class FormatterSubstitutionRuleVisitor<Numerical>;
 
 /**
  * Grammar
@@ -358,43 +364,27 @@ void FormatterGrammarVisitor::visit(const Grammar& grammar)
     {
         m_out << "[start_symbols]\n";
 
-        bool first_0 = true;
-
         boost::hana::for_each(grammar.get_start_symbols_container().get(),
                               [&](auto&& pair)
                               {
-                                  if (!first_0)
-                                  {
-                                      m_out << "\n";
-                                  }
-
                                   const auto& key = boost::hana::first(pair);
                                   const auto& second = boost::hana::second(pair);
                                   using ConstructorType = typename decltype(+key)::type;
 
-                                  bool first = true;
-
                                   if (second.has_value())
                                   {
-                                      if (!first)
-                                          m_out << "\n";
-
                                       m_out << "    " << ConstructorType::name << " = ";
 
                                       auto nonterminal_visitor = FormatterNonTerminalVisitor<ConstructorType>(m_out);
                                       second.value()->accept(nonterminal_visitor);
 
-                                      first = false;
+                                      m_out << "\n";
                                   }
-
-                                  first_0 = false;
                               });
     }
 
     {
-        m_out << "\n[grammar_rules]\n";
-
-        bool first_0 = true;
+        m_out << "[grammar_rules]\n";
 
         boost::hana::for_each(grammar.get_derivation_rules_container().get(),
                               [&](auto&& pair)
@@ -403,53 +393,33 @@ void FormatterGrammarVisitor::visit(const Grammar& grammar)
                                   const auto& second = boost::hana::second(pair);
                                   using ConstructorType = typename decltype(+key)::type;
 
-                                  if (!first_0)
-                                      m_out << "\n";
-
-                                  bool first_1 = true;
-
                                   for (const auto& rule : second)
                                   {
-                                      if (!first_1)
-                                          m_out << "\n";
-
                                       m_out << "    ";
 
                                       auto derivation_rule_visitor = FormatterDerivationRuleVisitor<ConstructorType>(m_out);
                                       rule->accept(derivation_rule_visitor);
 
-                                      first_1 = false;
+                                      m_out << "\n";
                                   }
-
-                                  first_0 = false;
                               });
 
         boost::hana::for_each(grammar.get_substitution_rules().get(),
                               [&](auto&& pair)
                               {
-                                  if (!first_0)
-                                      m_out << "\n";
-
                                   auto key = boost::hana::first(pair);
                                   const auto& second = boost::hana::second(pair);
                                   using ConstructorType = typename decltype(+key)::type;
 
-                                  bool first_1 = true;
-
                                   for (const auto& rule : second)
                                   {
-                                      if (!first_1)
-                                          m_out << "\n";
-
                                       m_out << "    ";
 
                                       auto substitution_rule_visitor = FormatterSubstitutionRuleVisitor<ConstructorType>(m_out);
                                       rule->accept(substitution_rule_visitor);
 
-                                      first_1 = false;
+                                      m_out << "\n";
                                   }
-
-                                  first_0 = false;
                               });
     }
 }
@@ -469,6 +439,8 @@ std::ostream& operator<<(std::ostream& out, Constructor<D> element)
 
 template std::ostream& operator<<(std::ostream& out, Constructor<Concept> element);
 template std::ostream& operator<<(std::ostream& out, Constructor<Role> element);
+template std::ostream& operator<<(std::ostream& out, Constructor<Boolean> element);
+template std::ostream& operator<<(std::ostream& out, Constructor<Numerical> element);
 
 template<FeatureCategory D>
 std::ostream& operator<<(std::ostream& out, NonTerminal<D> element)
@@ -481,6 +453,8 @@ std::ostream& operator<<(std::ostream& out, NonTerminal<D> element)
 
 template std::ostream& operator<<(std::ostream& out, NonTerminal<Concept> element);
 template std::ostream& operator<<(std::ostream& out, NonTerminal<Role> element);
+template std::ostream& operator<<(std::ostream& out, NonTerminal<Boolean> element);
+template std::ostream& operator<<(std::ostream& out, NonTerminal<Numerical> element);
 
 template<FeatureCategory D>
 std::ostream& operator<<(std::ostream& out, DerivationRule<D> element)
@@ -493,6 +467,8 @@ std::ostream& operator<<(std::ostream& out, DerivationRule<D> element)
 
 template std::ostream& operator<<(std::ostream& out, DerivationRule<Concept> element);
 template std::ostream& operator<<(std::ostream& out, DerivationRule<Role> element);
+template std::ostream& operator<<(std::ostream& out, DerivationRule<Boolean> element);
+template std::ostream& operator<<(std::ostream& out, DerivationRule<Numerical> element);
 
 template<FeatureCategory D>
 std::ostream& operator<<(std::ostream& out, SubstitutionRule<D> element)
@@ -505,6 +481,8 @@ std::ostream& operator<<(std::ostream& out, SubstitutionRule<D> element)
 
 template std::ostream& operator<<(std::ostream& out, SubstitutionRule<Concept> element);
 template std::ostream& operator<<(std::ostream& out, SubstitutionRule<Role> element);
+template std::ostream& operator<<(std::ostream& out, SubstitutionRule<Boolean> element);
+template std::ostream& operator<<(std::ostream& out, SubstitutionRule<Numerical> element);
 
 std::ostream& operator<<(std::ostream& out, const Grammar& element)
 {

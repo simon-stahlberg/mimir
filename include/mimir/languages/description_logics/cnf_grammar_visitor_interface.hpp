@@ -200,10 +200,10 @@ class CopySubstitutionRuleVisitor;
 template<FeatureCategory... Ds>
 using HanaCopySubstitutionRuleVisitors = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, std::reference_wrapper<CopySubstitutionRuleVisitor<Ds>>>...>;
 
-template<FeatureCategory D, typename HanaMap>
-constexpr decltype(auto) get_visitor(HanaMap& map)
+template<FeatureCategory D, IsHanaMap M>
+auto& get_visitor(M& map)
 {
-    return boost::hana::at_key(map, boost::hana::type<D> {});
+    return boost::hana::at_key(map, boost::hana::type<D> {}).get();
 }
 
 class CopyGrammarVisitor;
@@ -231,7 +231,7 @@ protected:
     Constructor<Concept> m_result;  ///< the result of a visitation
 
 public:
-    explicit CopyConstructorVisitor(ConstructorRepositories& repositories, HanaCopyNonTerminalVisitors<Concept, Role> nonterminal_visitors);
+    CopyConstructorVisitor(ConstructorRepositories& repositories, HanaCopyNonTerminalVisitors<Concept, Role> nonterminal_visitors);
 
     void visit(ConceptBot constructor) override;
     void visit(ConceptTop constructor) override;
@@ -267,7 +267,7 @@ protected:
     Constructor<Role> m_result;  ///< the result of a visitation
 
 public:
-    explicit CopyConstructorVisitor(ConstructorRepositories& repositories, HanaCopyNonTerminalVisitors<Concept, Role> nonterminal_visitors);
+    CopyConstructorVisitor(ConstructorRepositories& repositories, HanaCopyNonTerminalVisitors<Concept, Role> nonterminal_visitors);
 
     void visit(RoleUniversal constructor) override;
     void visit(RoleAtomicState<Static> constructor) override;

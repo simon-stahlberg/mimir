@@ -46,5 +46,7 @@ Denotation<D> DenotationRepository<D>::get_if(Constructor<D> constructor, State 
 
 template class DenotationRepository<Concept>;
 template class DenotationRepository<Role>;
+template class DenotationRepository<Boolean>;
+template class DenotationRepository<Numerical>;
 
 }

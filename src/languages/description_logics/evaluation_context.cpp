@@ -42,6 +42,8 @@ DenotationImpl<D>& EvaluationContext::get_builder()
 
 template DenotationImpl<Concept>& EvaluationContext::get_builder<Concept>();
 template DenotationImpl<Role>& EvaluationContext::get_builder<Role>();
+template DenotationImpl<Boolean>& EvaluationContext::get_builder<Boolean>();
+template DenotationImpl<Numerical>& EvaluationContext::get_builder<Numerical>();
 
 template<FeatureCategory D>
 DenotationRepository<D>& EvaluationContext::get_repository()
@@ -51,5 +53,7 @@ DenotationRepository<D>& EvaluationContext::get_repository()
 
 template DenotationRepository<Concept>& EvaluationContext::get_repository<Concept>();
 template DenotationRepository<Role>& EvaluationContext::get_repository<Role>();
+template DenotationRepository<Boolean>& EvaluationContext::get_repository<Boolean>();
+template DenotationRepository<Numerical>& EvaluationContext::get_repository<Numerical>();
 
 }

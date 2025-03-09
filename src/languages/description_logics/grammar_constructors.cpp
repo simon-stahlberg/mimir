@@ -61,6 +61,8 @@ const std::string& NonTerminalImpl<D>::get_name() const
 
 template class NonTerminalImpl<Concept>;
 template class NonTerminalImpl<Role>;
+template class NonTerminalImpl<Boolean>;
+template class NonTerminalImpl<Numerical>;
 
 /**
  * ConstructorOrNonTerminal
@@ -99,6 +101,8 @@ const std::variant<Constructor<D>, NonTerminal<D>>& ConstructorOrNonTerminalImpl
 
 template class ConstructorOrNonTerminalImpl<Concept>;
 template class ConstructorOrNonTerminalImpl<Role>;
+template class ConstructorOrNonTerminalImpl<Boolean>;
+template class ConstructorOrNonTerminalImpl<Numerical>;
 
 /**
  * DerivationRule
@@ -150,6 +154,8 @@ const ConstructorOrNonTerminalList<D>& DerivationRuleImpl<D>::get_constructor_or
 
 template class DerivationRuleImpl<Concept>;
 template class DerivationRuleImpl<Role>;
+template class DerivationRuleImpl<Boolean>;
+template class DerivationRuleImpl<Numerical>;
 
 /**
  * ConceptBot

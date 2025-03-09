@@ -158,8 +158,6 @@ static std::string create_frances_et_al_aaai2021_bnf(Domain domain)
                               ss << "\n";
                           });
 
-    std::cout << ss.str() << std::endl;
-
     return ss.str();
 }
 

@@ -64,6 +64,8 @@ const std::string& NonTerminalImpl<D>::get_name() const
 
 template class NonTerminalImpl<Concept>;
 template class NonTerminalImpl<Role>;
+template class NonTerminalImpl<Boolean>;
+template class NonTerminalImpl<Numerical>;
 
 /**
  * DerivationRule
@@ -106,6 +108,8 @@ const Constructor<D>& DerivationRuleImpl<D>::get_body() const
 
 template class DerivationRuleImpl<Concept>;
 template class DerivationRuleImpl<Role>;
+template class DerivationRuleImpl<Boolean>;
+template class DerivationRuleImpl<Numerical>;
 
 /**
  * SubstitutionRule
@@ -148,6 +152,8 @@ const NonTerminal<D>& SubstitutionRuleImpl<D>::get_body() const
 
 template class SubstitutionRuleImpl<Concept>;
 template class SubstitutionRuleImpl<Role>;
+template class SubstitutionRuleImpl<Boolean>;
+template class SubstitutionRuleImpl<Numerical>;
 
 /**
  * ConceptBot
@@ -785,4 +791,140 @@ void RoleIdentityImpl::accept(ConstructorVisitor<Role>& visitor) const { visitor
 Index RoleIdentityImpl::get_index() const { return m_index; }
 
 NonTerminal<Concept> RoleIdentityImpl::get_concept() const { return m_concept; }
+
+/**
+ * Booleans
+ */
+
+template<StaticOrFluentOrDerived P>
+BooleanAtomicStateImpl<P>::BooleanAtomicStateImpl(Index index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
+{
+}
+
+template<StaticOrFluentOrDerived P>
+bool BooleanAtomicStateImpl<P>::test_match(dl::Constructor<Boolean> constructor, const Grammar& grammar) const
+{
+    auto visitor = BooleanAtomicStateGrammarVisitor<P>(this, grammar);
+    constructor->accept(visitor);
+    return visitor.get_result();
+}
+
+template<StaticOrFluentOrDerived P>
+void BooleanAtomicStateImpl<P>::accept(ConstructorVisitor<Boolean>& visitor) const
+{
+    visitor.visit(this);
+}
+
+template<StaticOrFluentOrDerived P>
+Index BooleanAtomicStateImpl<P>::get_index() const
+{
+    return m_index;
+}
+
+template<StaticOrFluentOrDerived P>
+Predicate<P> BooleanAtomicStateImpl<P>::get_predicate() const
+{
+    return m_predicate;
+}
+
+template class BooleanAtomicStateImpl<Static>;
+template class BooleanAtomicStateImpl<Fluent>;
+template class BooleanAtomicStateImpl<Derived>;
+
+template<DescriptionLogicCategory D>
+BooleanNonemptyImpl<D>::BooleanNonemptyImpl(Index index, NonTerminal<D> nonterminal) : m_index(index), m_nonterminal(nonterminal)
+{
+}
+
+template<DescriptionLogicCategory D>
+bool BooleanNonemptyImpl<D>::test_match(dl::Constructor<Boolean> constructor, const Grammar& grammar) const
+{
+    auto visitor = BooleanNonemptyGrammarVisitor<D>(this, grammar);
+    constructor->accept(visitor);
+    return visitor.get_result();
+}
+
+template<DescriptionLogicCategory D>
+void BooleanNonemptyImpl<D>::accept(ConstructorVisitor<Boolean>& visitor) const
+{
+    visitor.visit(this);
+}
+
+template<DescriptionLogicCategory D>
+Index BooleanNonemptyImpl<D>::get_index() const
+{
+    return m_index;
+}
+
+template<DescriptionLogicCategory D>
+NonTerminal<D> BooleanNonemptyImpl<D>::get_nonterminal() const
+{
+    return m_nonterminal;
+}
+
+template class BooleanNonemptyImpl<Concept>;
+template class BooleanNonemptyImpl<Role>;
+
+/**
+ * Numericals
+ */
+
+template<DescriptionLogicCategory D>
+NumericalCountImpl<D>::NumericalCountImpl(Index index, NonTerminal<D> nonterminal) : m_index(index), m_nonterminal(nonterminal)
+{
+}
+
+template<DescriptionLogicCategory D>
+bool NumericalCountImpl<D>::test_match(dl::Constructor<Numerical> constructor, const Grammar& grammar) const
+{
+    auto visitor = NumericalCountGrammarVisitor<D>(this, grammar);
+    constructor->accept(visitor);
+    return visitor.get_result();
+}
+
+template<DescriptionLogicCategory D>
+void NumericalCountImpl<D>::accept(ConstructorVisitor<Numerical>& visitor) const
+{
+    visitor.visit(this);
+}
+
+template<DescriptionLogicCategory D>
+Index NumericalCountImpl<D>::get_index() const
+{
+    return m_index;
+}
+
+template<DescriptionLogicCategory D>
+NonTerminal<D> NumericalCountImpl<D>::get_nonterminal() const
+{
+    return m_nonterminal;
+}
+
+template class NumericalCountImpl<Concept>;
+template class NumericalCountImpl<Role>;
+
+NumericalDistanceImpl::NumericalDistanceImpl(Index index, NonTerminal<Concept> left_concept, NonTerminal<Role> role, NonTerminal<Concept> right_concept) :
+    m_index(index),
+    m_left_concept(left_concept),
+    m_role(role),
+    m_right_concept(right_concept)
+{
+}
+
+bool NumericalDistanceImpl::test_match(dl::Constructor<Numerical> constructor, const Grammar& grammar) const
+{
+    auto visitor = NumericalDistanceGrammarVisitor(this, grammar);
+    constructor->accept(visitor);
+    return visitor.get_result();
+}
+
+void NumericalDistanceImpl::accept(ConstructorVisitor<Numerical>& visitor) const { visitor.visit(this); }
+
+Index NumericalDistanceImpl::get_index() const { return m_index; }
+
+NonTerminal<Concept> NumericalDistanceImpl::get_left_concept() const { return m_left_concept; }
+
+NonTerminal<Role> NumericalDistanceImpl::get_role() const { return m_role; }
+
+NonTerminal<Concept> NumericalDistanceImpl::get_right_concept() const { return m_right_concept; }
 }

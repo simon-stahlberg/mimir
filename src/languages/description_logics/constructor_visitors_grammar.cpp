@@ -461,6 +461,9 @@ void NumericalCountGrammarVisitor<D>::visit(dl::NumericalCount<D> constructor)
 {
 }
 
+template class NumericalCountGrammarVisitor<Concept>;
+template class NumericalCountGrammarVisitor<Role>;
+
 NumericalDistanceGrammarVisitor::NumericalDistanceGrammarVisitor(NumericalDistance grammar_constructor, const Grammar& grammar) :
     m_grammar_constructor(grammar_constructor),
     m_grammar(grammar)

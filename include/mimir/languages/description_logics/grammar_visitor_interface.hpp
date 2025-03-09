@@ -177,17 +177,31 @@ public:
 
 template<FeatureCategory D>
 class RecurseConstructorVisitor;
+template<FeatureCategory... Ds>
+using HanaRecurseConstructorVisitors = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, RecurseConstructorVisitor<Ds>*>...>;
 
 template<FeatureCategory D>
 class RecurseConstructorOrNonTerminalVisitor;
+template<FeatureCategory... Ds>
+using HanaRecurseConstructorOrNonTerminalVisitors = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, RecurseConstructorOrNonTerminalVisitor<Ds>*>...>;
 
 template<FeatureCategory D>
 class RecurseNonTerminalVisitor;
+template<FeatureCategory... Ds>
+using HanaRecurseNonTerminalVisitors = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, RecurseNonTerminalVisitor<Ds>*>...>;
 
 template<FeatureCategory D>
 class RecurseDerivationRuleVisitor;
+template<FeatureCategory... Ds>
+using HanaRecurseDerivationRuleVisitors = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, RecurseDerivationRuleVisitor<Ds>*>...>;
 
 class RecurseGrammarVisitor;
+
+template<FeatureCategory D, IsHanaMap M>
+auto& get_visitor(M& map)
+{
+    return boost::hana::at_key(map, boost::hana::type<D> {});
+}
 
 /**
  * Concept
@@ -202,14 +216,12 @@ template<>
 class RecurseConstructorVisitor<Concept> : public ConstructorVisitor<Concept>
 {
 protected:
-    RecurseConstructorOrNonTerminalVisitor<Concept>* m_concept_or_nonterminal_visitor;
-    RecurseConstructorOrNonTerminalVisitor<Role>* m_role_or_nonterminal_visitor;
+    HanaRecurseConstructorOrNonTerminalVisitors<Concept, Role> m_constructor_or_nonterminal_visitor;
 
 public:
     RecurseConstructorVisitor() = default;
 
-    virtual void initialize(RecurseConstructorOrNonTerminalVisitor<Concept>& concept_or_nonterminal_visitor,
-                            RecurseConstructorOrNonTerminalVisitor<Role>& role_or_nonterminal_visitor);
+    virtual void initialize(HanaRecurseConstructorOrNonTerminalVisitors<Concept, Role> constructor_or_nonterminal_visitor);
 
     void visit(ConceptBot constructor) override;
     void visit(ConceptTop constructor) override;
@@ -237,14 +249,12 @@ template<>
 class RecurseConstructorVisitor<Role> : public ConstructorVisitor<Role>
 {
 protected:
-    RecurseConstructorOrNonTerminalVisitor<Concept>* m_concept_or_nonterminal_visitor;
-    RecurseConstructorOrNonTerminalVisitor<Role>* m_role_or_nonterminal_visitor;
+    HanaRecurseConstructorOrNonTerminalVisitors<Concept, Role> m_constructor_or_nonterminal_visitor;
 
 public:
     RecurseConstructorVisitor() = default;
 
-    virtual void initialize(RecurseConstructorOrNonTerminalVisitor<Concept>& concept_or_nonterminal_visitor,
-                            RecurseConstructorOrNonTerminalVisitor<Role>& role_or_nonterminal_visitor);
+    virtual void initialize(HanaRecurseConstructorOrNonTerminalVisitors<Concept, Role> constructor_or_nonterminal_visitor);
 
     void visit(RoleUniversal constructor) override;
     void visit(RoleAtomicState<Static> constructor) override;
@@ -272,12 +282,10 @@ template<>
 class RecurseConstructorVisitor<Boolean> : public ConstructorVisitor<Boolean>
 {
 protected:
-    RecurseConstructorOrNonTerminalVisitor<Concept>* m_concept_or_nonterminal_visitor;
-    RecurseConstructorOrNonTerminalVisitor<Role>* m_role_or_nonterminal_visitor;
+    HanaRecurseConstructorOrNonTerminalVisitors<Concept, Role> m_constructor_or_nonterminal_visitor;
 
 public:
-    virtual void initialize(RecurseConstructorOrNonTerminalVisitor<Concept>& concept_or_nonterminal_visitor,
-                            RecurseConstructorOrNonTerminalVisitor<Role>& role_or_nonterminal_visitor);
+    virtual void initialize(HanaRecurseConstructorOrNonTerminalVisitors<Concept, Role> constructor_or_nonterminal_visitor);
 
     void visit(BooleanAtomicState<Static> constructor) override;
     void visit(BooleanAtomicState<Fluent> constructor) override;
@@ -294,12 +302,10 @@ template<>
 class RecurseConstructorVisitor<Numerical> : public ConstructorVisitor<Numerical>
 {
 protected:
-    RecurseConstructorOrNonTerminalVisitor<Concept>* m_concept_or_nonterminal_visitor;
-    RecurseConstructorOrNonTerminalVisitor<Role>* m_role_or_nonterminal_visitor;
+    HanaRecurseConstructorOrNonTerminalVisitors<Concept, Role> m_constructor_or_nonterminal_visitor;
 
 public:
-    virtual void initialize(RecurseConstructorOrNonTerminalVisitor<Concept>& concept_or_nonterminal_visitor,
-                            RecurseConstructorOrNonTerminalVisitor<Role>& role_or_nonterminal_visitor);
+    virtual void initialize(HanaRecurseConstructorOrNonTerminalVisitors<Concept, Role> constructor_or_nonterminal_visitor);
 
     void visit(NumericalCount<Concept> constructor) override;
     void visit(NumericalCount<Role> constructor) override;
@@ -364,23 +370,17 @@ public:
 class RecurseGrammarVisitor : public GrammarVisitor
 {
 protected:
-    boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, RecurseNonTerminalVisitor<Concept>*>,
-                     boost::hana::pair<boost::hana::type<Role>, RecurseNonTerminalVisitor<Role>*>>
-        m_start_symbol_visitor;
+    HanaRecurseNonTerminalVisitors<Concept, Role, Boolean, Numerical> m_start_symbol_visitors;
 
-    boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, RecurseDerivationRuleVisitor<Concept>*>,
-                     boost::hana::pair<boost::hana::type<Role>, RecurseDerivationRuleVisitor<Role>*>>
-        m_derivation_rule_visitor;
+    HanaRecurseDerivationRuleVisitors<Concept, Role, Boolean, Numerical> m_derivation_rule_visitors;
 
 public:
     RecurseGrammarVisitor() = default;
 
     virtual void visit(const Grammar& grammar) override;
 
-    virtual void initialize(RecurseNonTerminalVisitor<Concept>& concept_start_symbol_visitor,
-                            RecurseNonTerminalVisitor<Role>& role_start_symbol_visitor,
-                            RecurseDerivationRuleVisitor<Concept>& concept_rule_visitor,
-                            RecurseDerivationRuleVisitor<Role>& role_rule_visitor);
+    virtual void initialize(HanaRecurseNonTerminalVisitors<Concept, Role, Boolean, Numerical> start_symbol_visitors,
+                            HanaRecurseDerivationRuleVisitors<Concept, Role, Boolean, Numerical> derivation_rule_visitors);
 };
 
 ////////////////////////////

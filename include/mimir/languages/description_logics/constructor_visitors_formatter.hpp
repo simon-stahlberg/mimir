@@ -28,18 +28,18 @@ namespace mimir::dl
 {
 
 template<FeatureCategory D>
-class FormatterVisitor : public ConstructorVisitor<D>
+class FormatterConstructorVisitor : public ConstructorVisitor<D>
 {
 };
 
 template<>
-class FormatterVisitor<Concept> : public ConstructorVisitor<Concept>
+class FormatterConstructorVisitor<Concept> : public ConstructorVisitor<Concept>
 {
 protected:
     std::ostream& m_out;
 
 public:
-    explicit FormatterVisitor(std::ostream& out);
+    explicit FormatterConstructorVisitor(std::ostream& out);
 
     /* Concepts */
     void visit(ConceptBot constructor) override;
@@ -61,13 +61,13 @@ public:
 };
 
 template<>
-class FormatterVisitor<Role> : public ConstructorVisitor<Role>
+class FormatterConstructorVisitor<Role> : public ConstructorVisitor<Role>
 {
 protected:
     std::ostream& m_out;
 
 public:
-    explicit FormatterVisitor(std::ostream& out);
+    explicit FormatterConstructorVisitor(std::ostream& out);
 
     /* Roles */
     void visit(RoleUniversal constructor) override;
@@ -86,6 +86,44 @@ public:
     void visit(RoleReflexiveTransitiveClosure constructor) override;
     void visit(RoleRestriction constructor) override;
     void visit(RoleIdentity constructor) override;
+};
+
+/**
+ * Booleans
+ */
+
+template<>
+class FormatterConstructorVisitor<Boolean> : public ConstructorVisitor<Boolean>
+{
+private:
+    std::ostream& m_out;
+
+public:
+    FormatterConstructorVisitor(std::ostream& out);
+
+    void visit(BooleanAtomicState<Static> constructor) override;
+    void visit(BooleanAtomicState<Fluent> constructor) override;
+    void visit(BooleanAtomicState<Derived> constructor) override;
+    void visit(BooleanNonempty<Concept> constructor) override;
+    void visit(BooleanNonempty<Role> constructor) override;
+};
+
+/**
+ * Numericals
+ */
+
+template<>
+class FormatterConstructorVisitor<Numerical> : public ConstructorVisitor<Numerical>
+{
+private:
+    std::ostream& m_out;
+
+public:
+    FormatterConstructorVisitor(std::ostream& out);
+
+    void visit(NumericalCount<Concept> constructor) override;
+    void visit(NumericalCount<Role> constructor) override;
+    void visit(NumericalDistance constructor) override;
 };
 
 /**
