@@ -33,10 +33,13 @@ template<FeatureCategory D>
 class CollectNonTerminalsNonTerminalVisitor : public RecurseNonTerminalVisitor<D>
 {
 private:
-    ToNonTerminalMap<std::string, Concept, Role>& m_nonterminal_map;
+    ToNonTerminalMap<std::string, Concept, Role, Boolean, Numerical>& m_nonterminal_map;
 
 public:
-    CollectNonTerminalsNonTerminalVisitor(ToNonTerminalMap<std::string, Concept, Role>& nonterminal_map) : m_nonterminal_map(nonterminal_map) {}
+    CollectNonTerminalsNonTerminalVisitor(ToNonTerminalMap<std::string, Concept, Role, Boolean, Numerical>& nonterminal_map) :
+        m_nonterminal_map(nonterminal_map)
+    {
+    }
 
     void visit(NonTerminal<D> constructor) override
     {
@@ -44,9 +47,9 @@ public:
     }
 };
 
-static ToNonTerminalMap<std::string, Concept, Role> collect_nonterminals_from_grammar(const Grammar& grammar)
+static ToNonTerminalMap<std::string, Concept, Role, Boolean, Numerical> collect_nonterminals_from_grammar(const Grammar& grammar)
 {
-    auto nonterminal_map = ToNonTerminalMap<std::string, Concept, Role>();
+    auto nonterminal_map = ToNonTerminalMap<std::string, Concept, Role, Boolean, Numerical>();
 
     auto concept_visitor = RecurseConstructorVisitor<Concept>();
     auto role_visitor = RecurseConstructorVisitor<Role>();
@@ -153,23 +156,46 @@ static Grammar eliminate_choices_in_rules(const Grammar& grammar)
 
     auto concept_visitor = CopyConstructorVisitor<Concept>(repositories);
     auto role_visitor = CopyConstructorVisitor<Role>(repositories);
+    auto boolean_visitor = CopyConstructorVisitor<Boolean>(repositories);
+    auto numerical_visitor = CopyConstructorVisitor<Numerical>(repositories);
     auto concept_or_nonterminal_visitor = CopyConstructorOrNonTerminalVisitor<Concept>(repositories);
     auto role_or_nonterminal_visitor = CopyConstructorOrNonTerminalVisitor<Role>(repositories);
+    auto boolean_or_nonterminal_visitor = CopyConstructorOrNonTerminalVisitor<Boolean>(repositories);
+    auto numerical_or_nonterminal_visitor = CopyConstructorOrNonTerminalVisitor<Numerical>(repositories);
     auto concept_nonterminal_visitor = CopyNonTerminalVisitor<Concept>(repositories);
     auto role_nonterminal_visitor = CopyNonTerminalVisitor<Role>(repositories);
+    auto boolean_nonterminal_visitor = CopyNonTerminalVisitor<Boolean>(repositories);
+    auto numerical_nonterminal_visitor = CopyNonTerminalVisitor<Numerical>(repositories);
     auto concept_derivation_rule_visitor = EliminateChoiceDerivationRuleVisitor<Concept>(repositories, derivation_rules);
     auto role_derivation_rule_visitor = EliminateChoiceDerivationRuleVisitor<Role>(repositories, derivation_rules);
+    auto boolean_derivation_rule_visitor = EliminateChoiceDerivationRuleVisitor<Boolean>(repositories, derivation_rules);
+    auto numerical_derivation_rule_visitor = EliminateChoiceDerivationRuleVisitor<Numerical>(repositories, derivation_rules);
     auto concept_start_symbol_visitor = CopyNonTerminalVisitor<Concept>(repositories);
     auto role_start_symbol_visitor = CopyNonTerminalVisitor<Role>(repositories);
+    auto boolean_start_symbol_visitor = CopyNonTerminalVisitor<Boolean>(repositories);
+    auto numerical_start_symbol_visitor = CopyNonTerminalVisitor<Numerical>(repositories);
     auto grammar_visitor = EliminateChoiceGrammarVisitor(repositories, start_symbols, derivation_rules);
 
     concept_visitor.initialize(concept_or_nonterminal_visitor, role_or_nonterminal_visitor);
     role_visitor.initialize(concept_or_nonterminal_visitor, role_or_nonterminal_visitor);
+    boolean_visitor.initialize(concept_or_nonterminal_visitor, role_or_nonterminal_visitor);
+    numerical_visitor.initialize(concept_or_nonterminal_visitor, role_or_nonterminal_visitor);
     concept_or_nonterminal_visitor.initialize(concept_nonterminal_visitor, concept_visitor);
     role_or_nonterminal_visitor.initialize(role_nonterminal_visitor, role_visitor);
+    boolean_or_nonterminal_visitor.initialize(boolean_nonterminal_visitor, boolean_visitor);
+    numerical_or_nonterminal_visitor.initialize(numerical_nonterminal_visitor, numerical_visitor);
     concept_derivation_rule_visitor.initialize(concept_nonterminal_visitor, concept_or_nonterminal_visitor);
     role_derivation_rule_visitor.initialize(role_nonterminal_visitor, role_or_nonterminal_visitor);
-    grammar_visitor.initialize(concept_start_symbol_visitor, role_start_symbol_visitor, concept_derivation_rule_visitor, role_derivation_rule_visitor);
+    boolean_derivation_rule_visitor.initialize(boolean_nonterminal_visitor, boolean_or_nonterminal_visitor);
+    numerical_derivation_rule_visitor.initialize(numerical_nonterminal_visitor, numerical_or_nonterminal_visitor);
+    grammar_visitor.initialize(concept_start_symbol_visitor,
+                               role_start_symbol_visitor,
+                               boolean_start_symbol_visitor,
+                               numerical_start_symbol_visitor,
+                               concept_derivation_rule_visitor,
+                               role_derivation_rule_visitor,
+                               boolean_derivation_rule_visitor,
+                               numerical_derivation_rule_visitor);
 
     grammar.accept(grammar_visitor);
 
@@ -185,7 +211,7 @@ class EliminateNestedConstructorsL2ConstructorOrNonTerminalVisitor : public Copy
 {
 private:
     DerivationRulesContainer& m_derivation_rules;
-    ToNonTerminalMap<std::string, Concept, Role>& m_existing_nonterminals;
+    ToNonTerminalMap<std::string, Concept, Role, Boolean, Numerical>& m_existing_nonterminals;
 
     size_t m_next_index;
 
@@ -203,7 +229,7 @@ private:
 public:
     EliminateNestedConstructorsL2ConstructorOrNonTerminalVisitor(ConstructorRepositories& repositories,
                                                                  DerivationRulesContainer& derivation_rules,
-                                                                 ToNonTerminalMap<std::string, Concept, Role>& existing_nonterminals) :
+                                                                 ToNonTerminalMap<std::string, Concept, Role, Boolean, Numerical>& existing_nonterminals) :
         CopyConstructorOrNonTerminalVisitor<D>(repositories),
         m_derivation_rules(derivation_rules),
         m_existing_nonterminals(existing_nonterminals),
@@ -263,28 +289,57 @@ static Grammar eliminate_nested_constructors(const Grammar& grammar)
 
     auto concept_visitor = CopyConstructorVisitor<Concept>(repositories);
     auto role_visitor = CopyConstructorVisitor<Role>(repositories);
+    auto boolean_visitor = CopyConstructorVisitor<Boolean>(repositories);
+    auto numerical_visitor = CopyConstructorVisitor<Numerical>(repositories);
     auto concept_or_nonterminal_l1_visitor = CopyConstructorOrNonTerminalVisitor<Concept>(repositories);
     auto role_or_nonterminal_l1_visitor = CopyConstructorOrNonTerminalVisitor<Role>(repositories);
+    auto boolean_or_nonterminal_l1_visitor = CopyConstructorOrNonTerminalVisitor<Boolean>(repositories);
+    auto numerical_or_nonterminal_l1_visitor = CopyConstructorOrNonTerminalVisitor<Numerical>(repositories);
     auto concept_or_nonterminal_l2_visitor =
         EliminateNestedConstructorsL2ConstructorOrNonTerminalVisitor<Concept>(repositories, derivation_rules, nonterminal_map);
     auto role_or_nonterminal_l2_visitor = EliminateNestedConstructorsL2ConstructorOrNonTerminalVisitor<Role>(repositories, derivation_rules, nonterminal_map);
+    auto boolean_or_nonterminal_l2_visitor =
+        EliminateNestedConstructorsL2ConstructorOrNonTerminalVisitor<Boolean>(repositories, derivation_rules, nonterminal_map);
+    auto numerical_or_nonterminal_l2_visitor =
+        EliminateNestedConstructorsL2ConstructorOrNonTerminalVisitor<Numerical>(repositories, derivation_rules, nonterminal_map);
     auto concept_nonterminal_visitor = CopyNonTerminalVisitor<Concept>(repositories);
     auto role_nonterminal_visitor = CopyNonTerminalVisitor<Role>(repositories);
+    auto boolean_nonterminal_visitor = CopyNonTerminalVisitor<Boolean>(repositories);
+    auto numerical_nonterminal_visitor = CopyNonTerminalVisitor<Numerical>(repositories);
     auto concept_derivation_rule_visitor = CopyDerivationRuleVisitor<Concept>(repositories);
     auto role_derivation_rule_visitor = CopyDerivationRuleVisitor<Role>(repositories);
+    auto boolean_derivation_rule_visitor = CopyDerivationRuleVisitor<Boolean>(repositories);
+    auto numerical_derivation_rule_visitor = CopyDerivationRuleVisitor<Numerical>(repositories);
     auto concept_start_symbol_visitor = CopyNonTerminalVisitor<Concept>(repositories);
     auto role_start_symbol_visitor = CopyNonTerminalVisitor<Role>(repositories);
+    auto boolean_start_symbol_visitor = CopyNonTerminalVisitor<Boolean>(repositories);
+    auto numerical_start_symbol_visitor = CopyNonTerminalVisitor<Numerical>(repositories);
     auto grammar_visitor = CopyGrammarVisitor(repositories, start_symbols, derivation_rules);
 
     concept_visitor.initialize(concept_or_nonterminal_l2_visitor, role_or_nonterminal_l2_visitor);
     role_visitor.initialize(concept_or_nonterminal_l2_visitor, role_or_nonterminal_l2_visitor);
+    boolean_visitor.initialize(concept_or_nonterminal_l2_visitor, role_or_nonterminal_l2_visitor);
+    numerical_visitor.initialize(concept_or_nonterminal_l2_visitor, role_or_nonterminal_l2_visitor);
     concept_or_nonterminal_l1_visitor.initialize(concept_nonterminal_visitor, concept_visitor);
     role_or_nonterminal_l1_visitor.initialize(role_nonterminal_visitor, role_visitor);
+    boolean_or_nonterminal_l1_visitor.initialize(boolean_nonterminal_visitor, boolean_visitor);
+    numerical_or_nonterminal_l1_visitor.initialize(numerical_nonterminal_visitor, numerical_visitor);
     concept_or_nonterminal_l2_visitor.initialize(concept_nonterminal_visitor, concept_visitor);
     role_or_nonterminal_l2_visitor.initialize(role_nonterminal_visitor, role_visitor);
+    boolean_or_nonterminal_l2_visitor.initialize(boolean_nonterminal_visitor, boolean_visitor);
+    numerical_or_nonterminal_l2_visitor.initialize(numerical_nonterminal_visitor, numerical_visitor);
     concept_derivation_rule_visitor.initialize(concept_nonterminal_visitor, concept_or_nonterminal_l1_visitor);
     role_derivation_rule_visitor.initialize(role_nonterminal_visitor, role_or_nonterminal_l1_visitor);
-    grammar_visitor.initialize(concept_start_symbol_visitor, role_start_symbol_visitor, concept_derivation_rule_visitor, role_derivation_rule_visitor);
+    boolean_derivation_rule_visitor.initialize(boolean_nonterminal_visitor, boolean_or_nonterminal_l1_visitor);
+    numerical_derivation_rule_visitor.initialize(numerical_nonterminal_visitor, numerical_or_nonterminal_l1_visitor);
+    grammar_visitor.initialize(concept_start_symbol_visitor,
+                               role_start_symbol_visitor,
+                               boolean_start_symbol_visitor,
+                               numerical_start_symbol_visitor,
+                               concept_derivation_rule_visitor,
+                               role_derivation_rule_visitor,
+                               boolean_derivation_rule_visitor,
+                               numerical_derivation_rule_visitor);
 
     grammar.accept(grammar_visitor);
 
@@ -512,6 +567,89 @@ void ToCNFConstructorVisitor<Role>::visit(RoleIdentity constructor)
 cnf_grammar::Constructor<Role> ToCNFConstructorVisitor<Role>::get_result() const { return m_result; }
 
 /**
+ * Booleans
+ */
+
+ToCNFConstructorVisitor<Boolean>::ToCNFConstructorVisitor(cnf_grammar::ConstructorRepositories& repositories) : m_repositories(repositories) {}
+
+void ToCNFConstructorVisitor<Boolean>::initialize(ToCNFNonTerminalConstructorOrNonTerminalVisitor<Concept>& nonterminal_concept_visitor,
+                                                  ToCNFNonTerminalConstructorOrNonTerminalVisitor<Role>& nonterminal_role_visitor)
+{
+    m_nonterminal_concept_visitor = &nonterminal_concept_visitor;
+    m_nonterminal_role_visitor = &nonterminal_role_visitor;
+}
+
+void ToCNFConstructorVisitor<Boolean>::visit(BooleanAtomicState<Static> constructor)
+{
+    m_result = m_repositories.get_or_create_boolean_atomic_state(constructor->get_predicate());
+}
+void ToCNFConstructorVisitor<Boolean>::visit(BooleanAtomicState<Fluent> constructor)
+{
+    m_result = m_repositories.get_or_create_boolean_atomic_state(constructor->get_predicate());
+}
+void ToCNFConstructorVisitor<Boolean>::visit(BooleanAtomicState<Derived> constructor)
+{
+    m_result = m_repositories.get_or_create_boolean_atomic_state(constructor->get_predicate());
+}
+void ToCNFConstructorVisitor<Boolean>::visit(BooleanNonempty<Concept> constructor)
+{
+    assert(m_nonterminal_concept_visitor);
+    constructor->get_constructor_or_nonterminal()->accept(*m_nonterminal_concept_visitor);
+    const auto concept_or_nonterminal = m_nonterminal_concept_visitor->get_result();
+    m_result = m_repositories.get_or_create_boolean_nonempty(concept_or_nonterminal);
+}
+void ToCNFConstructorVisitor<Boolean>::visit(BooleanNonempty<Role> constructor)
+{
+    assert(m_nonterminal_role_visitor);
+    constructor->get_constructor_or_nonterminal()->accept(*m_nonterminal_role_visitor);
+    const auto role_or_nonterminal = m_nonterminal_role_visitor->get_result();
+    m_result = m_repositories.get_or_create_boolean_nonempty(role_or_nonterminal);
+}
+
+cnf_grammar::Constructor<Boolean> ToCNFConstructorVisitor<Boolean>::get_result() const { return m_result; }
+
+/**
+ * Numericals
+ */
+
+ToCNFConstructorVisitor<Numerical>::ToCNFConstructorVisitor(cnf_grammar::ConstructorRepositories& repositories) : m_repositories(repositories) {}
+
+void ToCNFConstructorVisitor<Numerical>::initialize(ToCNFNonTerminalConstructorOrNonTerminalVisitor<Concept>& nonterminal_concept_visitor,
+                                                    ToCNFNonTerminalConstructorOrNonTerminalVisitor<Role>& nonterminal_role_visitor)
+{
+    m_nonterminal_concept_visitor = &nonterminal_concept_visitor;
+    m_nonterminal_role_visitor = &nonterminal_role_visitor;
+}
+
+void ToCNFConstructorVisitor<Numerical>::visit(NumericalCount<Concept> constructor)
+{
+    assert(m_nonterminal_concept_visitor);
+    constructor->get_constructor_or_nonterminal()->accept(*m_nonterminal_concept_visitor);
+    const auto concept_or_nonterminal = m_nonterminal_concept_visitor->get_result();
+    m_result = m_repositories.get_or_create_numerical_count(concept_or_nonterminal);
+}
+void ToCNFConstructorVisitor<Numerical>::visit(NumericalCount<Role> constructor)
+{
+    assert(m_nonterminal_role_visitor);
+    constructor->get_constructor_or_nonterminal()->accept(*m_nonterminal_role_visitor);
+    const auto role_or_nonterminal = m_nonterminal_role_visitor->get_result();
+    m_result = m_repositories.get_or_create_numerical_count(role_or_nonterminal);
+}
+void ToCNFConstructorVisitor<Numerical>::visit(NumericalDistance constructor)
+{
+    assert(m_nonterminal_concept_visitor && m_nonterminal_role_visitor);
+    constructor->get_left_concept_or_nonterminal()->accept(*m_nonterminal_concept_visitor);
+    const auto left_concept_or_nonterminal = m_nonterminal_concept_visitor->get_result();
+    constructor->get_role_or_nonterminal()->accept(*m_nonterminal_role_visitor);
+    const auto role_or_nonterminal = m_nonterminal_role_visitor->get_result();
+    constructor->get_right_concept_or_nonterminal()->accept(*m_nonterminal_concept_visitor);
+    const auto right_concept_or_nonterminal = m_nonterminal_concept_visitor->get_result();
+    m_result = m_repositories.get_or_create_numerical_distance(left_concept_or_nonterminal, role_or_nonterminal, right_concept_or_nonterminal);
+}
+
+cnf_grammar::Constructor<Numerical> ToCNFConstructorVisitor<Numerical>::get_result() const { return m_result; }
+
+/**
  * ConstructorOrRoleNonTerminal
  */
 
@@ -714,13 +852,21 @@ ToCNFGrammarVisitor::ToCNFGrammarVisitor(cnf_grammar::ConstructorRepositories& r
 
 void ToCNFGrammarVisitor::initialize(ToCNFNonTerminalVisitor<Concept>& concept_start_symbol_visitor,
                                      ToCNFNonTerminalVisitor<Role>& role_start_symbol_visitor,
+                                     ToCNFNonTerminalVisitor<Boolean>& boolean_start_symbol_visitor,
+                                     ToCNFNonTerminalVisitor<Numerical>& numerical_start_symbol_visitor,
                                      ToCNFDerivationRuleVisitor<Concept>& concept_rule_visitor,
-                                     ToCNFDerivationRuleVisitor<Role>& role_rule_visitor)
+                                     ToCNFDerivationRuleVisitor<Role>& role_rule_visitor,
+                                     ToCNFDerivationRuleVisitor<Boolean>& boolean_rule_visitor,
+                                     ToCNFDerivationRuleVisitor<Numerical>& numerical_rule_visitor)
 {
     boost::hana::at_key(m_start_symbol_visitor, boost::hana::type<Concept> {}) = &concept_start_symbol_visitor;
     boost::hana::at_key(m_start_symbol_visitor, boost::hana::type<Role> {}) = &role_start_symbol_visitor;
+    boost::hana::at_key(m_start_symbol_visitor, boost::hana::type<Boolean> {}) = &boolean_start_symbol_visitor;
+    boost::hana::at_key(m_start_symbol_visitor, boost::hana::type<Numerical> {}) = &numerical_start_symbol_visitor;
     boost::hana::at_key(m_derivation_rule_visitor, boost::hana::type<Concept> {}) = &concept_rule_visitor;
     boost::hana::at_key(m_derivation_rule_visitor, boost::hana::type<Role> {}) = &role_rule_visitor;
+    boost::hana::at_key(m_derivation_rule_visitor, boost::hana::type<Boolean> {}) = &boolean_rule_visitor;
+    boost::hana::at_key(m_derivation_rule_visitor, boost::hana::type<Numerical> {}) = &numerical_rule_visitor;
 }
 
 void ToCNFGrammarVisitor::visit(const Grammar& grammar)
@@ -756,11 +902,14 @@ void ToCNFGrammarVisitor::visit(const Grammar& grammar)
                     [&](auto&& arg)
                     {
                         using T = std::decay_t<decltype(arg)>;
-                        if constexpr (std::is_same_v<T, cnf_grammar::DerivationRule<Concept>> || std::is_same_v<T, cnf_grammar::DerivationRule<Role>>)
+                        if constexpr (std::is_same_v<T, cnf_grammar::DerivationRule<Concept>> || std::is_same_v<T, cnf_grammar::DerivationRule<Role>>
+                                      || std::is_same_v<T, cnf_grammar::DerivationRule<Boolean>> || std::is_same_v<T, cnf_grammar::DerivationRule<Numerical>>)
                         {
                             m_derivation_rules.push_back(arg);
                         }
-                        else if constexpr (std::is_same_v<T, cnf_grammar::SubstitutionRule<Concept>> || std::is_same_v<T, cnf_grammar::SubstitutionRule<Role>>)
+                        else if constexpr (std::is_same_v<T, cnf_grammar::SubstitutionRule<Concept>> || std::is_same_v<T, cnf_grammar::SubstitutionRule<Role>>
+                                           || std::is_same_v<T, cnf_grammar::SubstitutionRule<Boolean>>
+                                           || std::is_same_v<T, cnf_grammar::SubstitutionRule<Numerical>>)
                         {
                             m_substitution_rules.push_back(arg);
                         }
@@ -784,25 +933,50 @@ static cnf_grammar::Grammar parse_cnf_grammar(const Grammar& grammar)
 
     auto concept_constructor_visitor = ToCNFConstructorVisitor<Concept>(repositories);
     auto role_constructor_visitor = ToCNFConstructorVisitor<Role>(repositories);
+    auto boolean_constructor_visitor = ToCNFConstructorVisitor<Boolean>(repositories);
+    auto numerical_constructor_visitor = ToCNFConstructorVisitor<Numerical>(repositories);
     auto concept_variant_concept_or_nonterminal_visitor = ToCNFVariantConstructorOrNonTerminalVisitor<Concept>(repositories);
     auto role_variant_role_or_nonterminal_visitor = ToCNFVariantConstructorOrNonTerminalVisitor<Role>(repositories);
+    auto boolean_variant_concept_or_nonterminal_visitor = ToCNFVariantConstructorOrNonTerminalVisitor<Boolean>(repositories);
+    auto numerical_variant_role_or_nonterminal_visitor = ToCNFVariantConstructorOrNonTerminalVisitor<Numerical>(repositories);
     auto concept_nonterminal_concept_or_nonterminal_visitor = ToCNFNonTerminalConstructorOrNonTerminalVisitor<Concept>(repositories);
     auto role_nonterminal_role_or_nonterminal_visitor = ToCNFNonTerminalConstructorOrNonTerminalVisitor<Role>(repositories);
+    auto boolean_nonterminal_concept_or_nonterminal_visitor = ToCNFNonTerminalConstructorOrNonTerminalVisitor<Boolean>(repositories);
+    auto numerical_nonterminal_role_or_nonterminal_visitor = ToCNFNonTerminalConstructorOrNonTerminalVisitor<Numerical>(repositories);
     auto concept_nonterminal_visitor = ToCNFNonTerminalVisitor<Concept>(repositories);
     auto role_nonterminal_visitor = ToCNFNonTerminalVisitor<Role>(repositories);
+    auto boolean_nonterminal_visitor = ToCNFNonTerminalVisitor<Boolean>(repositories);
+    auto numerical_nonterminal_visitor = ToCNFNonTerminalVisitor<Numerical>(repositories);
     auto concept_derivation_rule_visitor = ToCNFDerivationRuleVisitor<Concept>(repositories);
     auto role_derivation_rule_visitor = ToCNFDerivationRuleVisitor<Role>(repositories);
+    auto boolean_derivation_rule_visitor = ToCNFDerivationRuleVisitor<Boolean>(repositories);
+    auto numerical_derivation_rule_visitor = ToCNFDerivationRuleVisitor<Numerical>(repositories);
     auto grammar_visitor = ToCNFGrammarVisitor(repositories, start_symbols, derivation_rules, substitution_rules);
 
     concept_constructor_visitor.initialize(concept_nonterminal_concept_or_nonterminal_visitor, role_nonterminal_role_or_nonterminal_visitor);
     role_constructor_visitor.initialize(concept_nonterminal_concept_or_nonterminal_visitor, role_nonterminal_role_or_nonterminal_visitor);
+    boolean_constructor_visitor.initialize(concept_nonterminal_concept_or_nonterminal_visitor, role_nonterminal_role_or_nonterminal_visitor);
+    numerical_constructor_visitor.initialize(concept_nonterminal_concept_or_nonterminal_visitor, role_nonterminal_role_or_nonterminal_visitor);
     concept_variant_concept_or_nonterminal_visitor.initialize(concept_nonterminal_visitor, concept_constructor_visitor);
     role_variant_role_or_nonterminal_visitor.initialize(role_nonterminal_visitor, role_constructor_visitor);
+    boolean_variant_concept_or_nonterminal_visitor.initialize(boolean_nonterminal_visitor, boolean_constructor_visitor);
+    numerical_variant_role_or_nonterminal_visitor.initialize(numerical_nonterminal_visitor, numerical_constructor_visitor);
     concept_nonterminal_concept_or_nonterminal_visitor.initialize(concept_nonterminal_visitor);
     role_nonterminal_role_or_nonterminal_visitor.initialize(role_nonterminal_visitor);
+    boolean_nonterminal_concept_or_nonterminal_visitor.initialize(boolean_nonterminal_visitor);
+    numerical_nonterminal_role_or_nonterminal_visitor.initialize(numerical_nonterminal_visitor);
     concept_derivation_rule_visitor.initialize(concept_nonterminal_visitor, concept_variant_concept_or_nonterminal_visitor);
     role_derivation_rule_visitor.initialize(role_nonterminal_visitor, role_variant_role_or_nonterminal_visitor);
-    grammar_visitor.initialize(concept_nonterminal_visitor, role_nonterminal_visitor, concept_derivation_rule_visitor, role_derivation_rule_visitor);
+    boolean_derivation_rule_visitor.initialize(boolean_nonterminal_visitor, boolean_variant_concept_or_nonterminal_visitor);
+    numerical_derivation_rule_visitor.initialize(numerical_nonterminal_visitor, numerical_variant_role_or_nonterminal_visitor);
+    grammar_visitor.initialize(concept_nonterminal_visitor,
+                               role_nonterminal_visitor,
+                               boolean_nonterminal_visitor,
+                               numerical_nonterminal_visitor,
+                               concept_derivation_rule_visitor,
+                               role_derivation_rule_visitor,
+                               boolean_derivation_rule_visitor,
+                               numerical_derivation_rule_visitor);
 
     grammar_visitor.visit(grammar);
 

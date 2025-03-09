@@ -133,6 +133,62 @@ public:
 };
 
 /**
+ * Booleans
+ */
+
+template<>
+class ToCNFConstructorVisitor<Boolean> : public ConstructorVisitor<Boolean>
+{
+protected:
+    cnf_grammar::ConstructorRepositories& m_repositories;
+    cnf_grammar::Constructor<Boolean> m_result;  ///< the result of a visitation
+
+    ToCNFNonTerminalConstructorOrNonTerminalVisitor<Concept>* m_nonterminal_concept_visitor;
+    ToCNFNonTerminalConstructorOrNonTerminalVisitor<Role>* m_nonterminal_role_visitor;
+
+public:
+    explicit ToCNFConstructorVisitor(cnf_grammar::ConstructorRepositories& repositories);
+
+    void initialize(ToCNFNonTerminalConstructorOrNonTerminalVisitor<Concept>& concept_or_nonterminal_visitor,
+                    ToCNFNonTerminalConstructorOrNonTerminalVisitor<Role>& role_or_nonterminal_visitor);
+
+    void visit(BooleanAtomicState<Static> constructor) override;
+    void visit(BooleanAtomicState<Fluent> constructor) override;
+    void visit(BooleanAtomicState<Derived> constructor) override;
+    void visit(BooleanNonempty<Concept> constructor) override;
+    void visit(BooleanNonempty<Role> constructor) override;
+
+    cnf_grammar::Constructor<Boolean> get_result() const;
+};
+
+/**
+ * Numericals
+ */
+
+template<>
+class ToCNFConstructorVisitor<Numerical> : public ConstructorVisitor<Numerical>
+{
+protected:
+    cnf_grammar::ConstructorRepositories& m_repositories;
+    cnf_grammar::Constructor<Numerical> m_result;  ///< the result of a visitation
+
+    ToCNFNonTerminalConstructorOrNonTerminalVisitor<Concept>* m_nonterminal_concept_visitor;
+    ToCNFNonTerminalConstructorOrNonTerminalVisitor<Role>* m_nonterminal_role_visitor;
+
+public:
+    explicit ToCNFConstructorVisitor(cnf_grammar::ConstructorRepositories& repositories);
+
+    void initialize(ToCNFNonTerminalConstructorOrNonTerminalVisitor<Concept>& concept_or_nonterminal_visitor,
+                    ToCNFNonTerminalConstructorOrNonTerminalVisitor<Role>& role_or_nonterminal_visitor);
+
+    void visit(NumericalCount<Concept> constructor) override;
+    void visit(NumericalCount<Role> constructor) override;
+    void visit(NumericalDistance constructor) override;
+
+    cnf_grammar::Constructor<Numerical> get_result() const;
+};
+
+/**
  * ConstructorOrRoleNonTerminal
  */
 
@@ -227,11 +283,15 @@ protected:
     cnf_grammar::SubstitutionRulesContainer& m_substitution_rules;
 
     boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, ToCNFNonTerminalVisitor<Concept>*>,
-                     boost::hana::pair<boost::hana::type<Role>, ToCNFNonTerminalVisitor<Role>*>>
+                     boost::hana::pair<boost::hana::type<Role>, ToCNFNonTerminalVisitor<Role>*>,
+                     boost::hana::pair<boost::hana::type<Boolean>, ToCNFNonTerminalVisitor<Boolean>*>,
+                     boost::hana::pair<boost::hana::type<Numerical>, ToCNFNonTerminalVisitor<Numerical>*>>
         m_start_symbol_visitor;
 
     boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, ToCNFDerivationRuleVisitor<Concept>*>,
-                     boost::hana::pair<boost::hana::type<Role>, ToCNFDerivationRuleVisitor<Role>*>>
+                     boost::hana::pair<boost::hana::type<Role>, ToCNFDerivationRuleVisitor<Role>*>,
+                     boost::hana::pair<boost::hana::type<Boolean>, ToCNFDerivationRuleVisitor<Boolean>*>,
+                     boost::hana::pair<boost::hana::type<Numerical>, ToCNFDerivationRuleVisitor<Numerical>*>>
         m_derivation_rule_visitor;
 
 public:
@@ -244,8 +304,12 @@ public:
 
     void initialize(ToCNFNonTerminalVisitor<Concept>& concept_start_symbol_visitor,
                     ToCNFNonTerminalVisitor<Role>& role_start_symbol_visitor,
+                    ToCNFNonTerminalVisitor<Boolean>& boolean_start_symbol_visitor,
+                    ToCNFNonTerminalVisitor<Numerical>& numerical_start_symbol_visitor,
                     ToCNFDerivationRuleVisitor<Concept>& concept_rule_visitor,
-                    ToCNFDerivationRuleVisitor<Role>& role_rule_visitor);
+                    ToCNFDerivationRuleVisitor<Role>& role_rule_visitor,
+                    ToCNFDerivationRuleVisitor<Boolean>& boolean_rule_visitor,
+                    ToCNFDerivationRuleVisitor<Numerical>& numerical_rule_visitor);
 };
 
 extern cnf_grammar::Grammar translate_to_cnf(const Grammar& grammar);

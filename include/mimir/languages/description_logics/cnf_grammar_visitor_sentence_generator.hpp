@@ -118,7 +118,7 @@ private:
     dl::ConstructorList<Concept> m_result;
 
 public:
-    explicit GeneratorConstructorVisitor(const GeneratedSentencesContainer& sentences, dl::ConstructorRepositories& repositories, size_t complexity);
+    GeneratorConstructorVisitor(const GeneratedSentencesContainer& sentences, dl::ConstructorRepositories& repositories, size_t complexity);
 
     void visit(ConceptBot constructor) override;
     void visit(ConceptTop constructor) override;
@@ -147,6 +147,7 @@ public:
 template<>
 class GeneratorConstructorVisitor<Role> : public ConstructorVisitor<Role>
 {
+private:
     const GeneratedSentencesContainer& m_sentences;
     dl::ConstructorRepositories& m_repositories;
     size_t m_complexity;
@@ -154,7 +155,7 @@ class GeneratorConstructorVisitor<Role> : public ConstructorVisitor<Role>
     dl::ConstructorList<Role> m_result;
 
 public:
-    explicit GeneratorConstructorVisitor(const GeneratedSentencesContainer& sentences, dl::ConstructorRepositories& repositories, size_t complexity);
+    GeneratorConstructorVisitor(const GeneratedSentencesContainer& sentences, dl::ConstructorRepositories& repositories, size_t complexity);
 
     void visit(RoleUniversal constructor) override;
     void visit(RoleAtomicState<Static> constructor) override;
@@ -174,6 +175,56 @@ public:
     void visit(RoleIdentity constructor) override;
 
     const dl::ConstructorList<Role>& get_result() const;
+};
+
+/**
+ * Booleans
+ */
+
+template<>
+class GeneratorConstructorVisitor<Boolean> : public ConstructorVisitor<Boolean>
+{
+private:
+    const GeneratedSentencesContainer& m_sentences;
+    dl::ConstructorRepositories& m_repositories;
+    size_t m_complexity;
+
+    dl::ConstructorList<Boolean> m_result;
+
+public:
+    GeneratorConstructorVisitor(const GeneratedSentencesContainer& sentences, dl::ConstructorRepositories& repositories, size_t complexity);
+
+    void visit(BooleanAtomicState<Static> constructor) override;
+    void visit(BooleanAtomicState<Fluent> constructor) override;
+    void visit(BooleanAtomicState<Derived> constructor) override;
+    void visit(BooleanNonempty<Concept> constructor) override;
+    void visit(BooleanNonempty<Role> constructor) override;
+
+    const dl::ConstructorList<Boolean>& get_result() const;
+};
+
+/**
+ * Numericals
+ */
+
+template<>
+class GeneratorConstructorVisitor<Numerical> : public ConstructorVisitor<Numerical>
+{
+private:
+    const GeneratedSentencesContainer& m_sentences;
+    dl::ConstructorRepositories& m_repositories;
+    size_t m_complexity;
+
+    dl::ConstructorList<Numerical> m_result;
+
+public:
+    GeneratorConstructorVisitor(const GeneratedSentencesContainer& sentences, dl::ConstructorRepositories& repositories, size_t complexity);
+
+    void visit(NumericalCount<Concept> constructor) override;
+    void visit(NumericalCount<Role> constructor) override;
+    void visit(NumericalDistance constructor) override;
+
+    const dl::ConstructorList<Numerical>& get_result() const;
 };
 
 /**

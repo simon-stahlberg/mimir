@@ -347,13 +347,15 @@ static Constructor<Boolean> parse(const dl::ast::BooleanAtomicState& node, const
 
 static Constructor<Boolean> parse(const dl::ast::BooleanNonempty& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
-    return boost::apply_visitor([&](auto&& arg) { return ref_repositories.get_or_create_boolean_nonempty(parse(arg, domain, ref_repositories)); },
+    return boost::apply_visitor([&](auto&& arg) -> Constructor<Boolean>
+                                { return ref_repositories.get_or_create_boolean_nonempty(parse(arg, domain, ref_repositories)); },
                                 node.concept_or_role_nonterminal);
 }
 
 static Constructor<Numerical> parse(const dl::ast::NumericalCount& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
-    return boost::apply_visitor([&](auto&& arg) { return ref_repositories.get_or_create_numerical_count(parse(arg, domain, ref_repositories)); },
+    return boost::apply_visitor([&](auto&& arg) -> Constructor<Numerical>
+                                { return ref_repositories.get_or_create_numerical_count(parse(arg, domain, ref_repositories)); },
                                 node.concept_or_role_nonterminal);
 }
 

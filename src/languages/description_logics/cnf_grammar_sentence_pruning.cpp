@@ -35,7 +35,11 @@ RefinementStateListPruningFunction::RefinementStateListPruningFunction(ProblemMa
 
 bool RefinementStateListPruningFunction::should_prune(Constructor<Concept> concept_) { return should_prune_impl(concept_); }
 
-bool RefinementStateListPruningFunction::should_prune(Constructor<Role> role_) { return should_prune_impl(role_); }
+bool RefinementStateListPruningFunction::should_prune(Constructor<Role> role) { return should_prune_impl(role); }
+
+bool RefinementStateListPruningFunction::should_prune(Constructor<Boolean> boolean) { return should_prune_impl(boolean); }
+
+bool RefinementStateListPruningFunction::should_prune(Constructor<Numerical> numerical) { return should_prune_impl(numerical); }
 
 template<FeatureCategory D>
 bool RefinementStateListPruningFunction::should_prune_impl(Constructor<D> constructor)

@@ -402,6 +402,119 @@ void GeneratorConstructorVisitor<Role>::visit(RoleIdentity constructor)
 const dl::ConstructorList<Role>& GeneratorConstructorVisitor<Role>::get_result() const { return m_result; }
 
 /**
+ * Booleans
+ */
+
+GeneratorConstructorVisitor<Boolean>::GeneratorConstructorVisitor(const GeneratedSentencesContainer& sentences,
+                                                                  dl::ConstructorRepositories& repositories,
+                                                                  size_t complexity) :
+    m_sentences(sentences),
+    m_repositories(repositories),
+    m_complexity(complexity)
+{
+}
+
+void GeneratorConstructorVisitor<Boolean>::visit(BooleanAtomicState<Static> constructor)
+{
+    if (m_complexity == 1)
+        m_result.push_back(m_repositories.get_or_create_boolean_atomic_state(constructor->get_predicate()));
+}
+void GeneratorConstructorVisitor<Boolean>::visit(BooleanAtomicState<Fluent> constructor)
+{
+    if (m_complexity == 1)
+        m_result.push_back(m_repositories.get_or_create_boolean_atomic_state(constructor->get_predicate()));
+}
+void GeneratorConstructorVisitor<Boolean>::visit(BooleanAtomicState<Derived> constructor)
+{
+    if (m_complexity == 1)
+        m_result.push_back(m_repositories.get_or_create_boolean_atomic_state(constructor->get_predicate()));
+}
+void GeneratorConstructorVisitor<Boolean>::visit(BooleanNonempty<Concept> constructor)
+{
+    if (m_complexity >= 2)
+    {
+        for (const auto& concept_ : m_sentences.get(constructor->get_nonterminal(), m_complexity - 1))
+        {
+            m_result.push_back(m_repositories.get_or_create_boolean_nonempty(concept_));
+        }
+    }
+}
+void GeneratorConstructorVisitor<Boolean>::visit(BooleanNonempty<Role> constructor)
+{
+    if (m_complexity >= 2)
+    {
+        for (const auto& role : m_sentences.get(constructor->get_nonterminal(), m_complexity - 1))
+        {
+            m_result.push_back(m_repositories.get_or_create_boolean_nonempty(role));
+        }
+    }
+}
+
+const dl::ConstructorList<Boolean>& GeneratorConstructorVisitor<Boolean>::get_result() const { return m_result; }
+
+/**
+ * Numericals
+ */
+
+GeneratorConstructorVisitor<Numerical>::GeneratorConstructorVisitor(const GeneratedSentencesContainer& sentences,
+                                                                    dl::ConstructorRepositories& repositories,
+                                                                    size_t complexity) :
+    m_sentences(sentences),
+    m_repositories(repositories),
+    m_complexity(complexity)
+{
+}
+
+void GeneratorConstructorVisitor<Numerical>::visit(NumericalCount<Concept> constructor)
+{
+    if (m_complexity >= 2)
+    {
+        for (const auto& concept_ : m_sentences.get(constructor->get_nonterminal(), m_complexity - 1))
+        {
+            m_result.push_back(m_repositories.get_or_create_numerical_count(concept_));
+        }
+    }
+}
+
+void GeneratorConstructorVisitor<Numerical>::visit(NumericalCount<Role> constructor)
+{
+    if (m_complexity >= 2)
+    {
+        for (const auto& role : m_sentences.get(constructor->get_nonterminal(), m_complexity - 1))
+        {
+            m_result.push_back(m_repositories.get_or_create_numerical_count(role));
+        }
+    }
+}
+
+void GeneratorConstructorVisitor<Numerical>::visit(NumericalDistance constructor)
+{
+    if (m_complexity >= 3)
+    {
+        for (size_t i = 1; i < m_complexity - 2; ++i)
+        {
+            for (size_t j = 1; j < m_complexity - i - 1; ++j)
+            {
+                size_t k = m_complexity - i - j - 1;
+
+                for (const auto& concept_left : m_sentences.get(constructor->get_left_concept(), i))
+                {
+                    for (const auto& role : m_sentences.get(constructor->get_role(), i))
+                    {
+                        for (const auto& concept_right : m_sentences.get(constructor->get_right_concept(), k))
+                        {
+                            m_result.push_back(m_repositories.get_or_create_numerical_distance(concept_left, role, concept_right));
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+const dl::ConstructorList<Numerical>& GeneratorConstructorVisitor<Numerical>::get_result() const { return m_result; }
+
+/**
  * DerivationRule
  */
 
@@ -531,5 +644,4 @@ void GeneratorGrammarVisitor::visit(const Grammar& grammar)
 }
 
 const HanaGeneratorStatistics<Concept, Role, Boolean, Numerical>& GeneratorGrammarVisitor::get_statistics() const { return m_statistics; }
-
 }

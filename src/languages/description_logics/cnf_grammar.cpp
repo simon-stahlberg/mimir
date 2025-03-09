@@ -75,7 +75,7 @@ static std::string create_frances_et_al_aaai2021_bnf(Domain domain)
        << "    <concept_start> ::= <concept>" << "\n"
        << "    <role_start> ::= <role>" << "\n";
 
-    auto head_names = HanaContainer<std::vector<std::string>, Concept, Role> {};
+    auto head_names = HanaContainer<std::vector<std::string>, Concept, Role, Boolean, Numerical> {};
 
     boost::hana::for_each(domain->get_hana_predicates(),
                           [&](auto&& pair)

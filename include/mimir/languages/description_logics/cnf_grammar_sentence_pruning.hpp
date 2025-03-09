@@ -43,7 +43,17 @@ public:
     /// @brief Tests whether the given role should be pruned.
     /// @param role_ is the role to be tested
     /// @return true iff the role must be pruned, false otherwise.
-    virtual bool should_prune(Constructor<Role> role_) = 0;
+    virtual bool should_prune(Constructor<Role> role) = 0;
+
+    /// @brief Tests whether the given role should be pruned.
+    /// @param role_ is the role to be tested
+    /// @return true iff the role must be pruned, false otherwise.
+    virtual bool should_prune(Constructor<Boolean> boolean) = 0;
+
+    /// @brief Tests whether the given role should be pruned.
+    /// @param role_ is the role to be tested
+    /// @return true iff the role must be pruned, false otherwise.
+    virtual bool should_prune(Constructor<Numerical> numerical) = 0;
 };
 
 /// @brief `RefinementStateListPruningFunction` implements a pruning function based on a given state list.
@@ -62,7 +72,17 @@ public:
     /// @brief Tests whether a role should be pruned.
     /// @param role_ The role to evaluate.
     /// @return True if the role is pruned (i.e., its evaluation is not unique across states), false otherwise.
-    bool should_prune(Constructor<Role> role_) override;
+    bool should_prune(Constructor<Role> role) override;
+
+    /// @brief Tests whether a role should be pruned.
+    /// @param role_ The role to evaluate.
+    /// @return True if the role is pruned (i.e., its evaluation is not unique across states), false otherwise.
+    bool should_prune(Constructor<Boolean> boolean) override;
+
+    /// @brief Tests whether a role should be pruned.
+    /// @param role_ The role to evaluate.
+    /// @return True if the role is pruned (i.e., its evaluation is not unique across states), false otherwise.
+    bool should_prune(Constructor<Numerical> numerical) override;
 
 private:
     template<FeatureCategory D>

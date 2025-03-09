@@ -29,11 +29,11 @@ template<FeatureCategory D>
 class EliminateRulesWithIdenticalBodyNonTerminalVisitor : public CopyNonTerminalVisitor<D>
 {
 protected:
-    const NonTerminalMap<NonTerminal, Concept, Role>& m_substitution_map;
+    const NonTerminalMap<NonTerminal, Concept, Role, Boolean, Numerical>& m_substitution_map;
 
 public:
     EliminateRulesWithIdenticalBodyNonTerminalVisitor(ConstructorRepositories& repositories,
-                                                      const NonTerminalMap<NonTerminal, Concept, Role>& substitution_map) :
+                                                      const NonTerminalMap<NonTerminal, Concept, Role, Boolean, Numerical>& substitution_map) :
         CopyNonTerminalVisitor<D>(repositories),
         m_substitution_map(substitution_map)
     {
@@ -59,7 +59,7 @@ public:
 class EliminateRulesWithIdenticalBodyGrammarVisitor : public CopyGrammarVisitor
 {
 private:
-    const NonTerminalMap<NonTerminal, Concept, Role>& m_substitution_map;
+    const NonTerminalMap<NonTerminal, Concept, Role, Boolean, Numerical>& m_substitution_map;
 
 public:
     EliminateRulesWithIdenticalBodyGrammarVisitor(ConstructorRepositories& repositories,
@@ -72,7 +72,7 @@ public:
                                                   CopyDerivationRuleVisitor<Role>& role_derivation_rule_visitor,
                                                   CopySubstitutionRuleVisitor<Concept>& concept_substitution_rule_visitor,
                                                   CopySubstitutionRuleVisitor<Role>& role_substitution_rule_visitor,
-                                                  const NonTerminalMap<NonTerminal, Concept, Role>& substitution_map) :
+                                                  const NonTerminalMap<NonTerminal, Concept, Role, Boolean, Numerical>& substitution_map) :
         CopyGrammarVisitor(repositories,
                            start_symbols,
                            derivation_rules,
@@ -150,7 +150,7 @@ public:
 
 static Grammar eliminate_rules_with_identical_body(const Grammar& grammar)
 {
-    auto inverse_derivation_rules = ConstructorMap<NonTerminalList, Concept, Role>();
+    auto inverse_derivation_rules = ConstructorMap<NonTerminalList, Concept, Role, Boolean, Numerical>();
 
     boost::hana::for_each(grammar.get_derivation_rules_container().get(),
                           [&](auto&& pair)
@@ -164,7 +164,7 @@ static Grammar eliminate_rules_with_identical_body(const Grammar& grammar)
                               }
                           });
 
-    auto substitution_map = NonTerminalMap<NonTerminal, Concept, Role>();
+    auto substitution_map = NonTerminalMap<NonTerminal, Concept, Role, Boolean, Numerical>();
 
     boost::hana::for_each(inverse_derivation_rules,
                           [&](auto&& pair)

@@ -576,11 +576,15 @@ void CopyConstructorVisitor<Boolean>::visit(BooleanNonempty<Concept> constructor
 {
     assert(m_concept_or_nonterminal_visitor);
     constructor->get_constructor_or_nonterminal()->accept(*m_concept_or_nonterminal_visitor);
+    const auto concept_or_nonterminal = m_concept_or_nonterminal_visitor->get_result();
+    m_result = m_repositories.get_or_create_boolean_nonempty(concept_or_nonterminal);
 }
 void CopyConstructorVisitor<Boolean>::visit(BooleanNonempty<Role> constructor)
 {
     assert(m_role_or_nonterminal_visitor);
     constructor->get_constructor_or_nonterminal()->accept(*m_role_or_nonterminal_visitor);
+    const auto role_or_nonterminal = m_role_or_nonterminal_visitor->get_result();
+    m_result = m_repositories.get_or_create_boolean_nonempty(role_or_nonterminal);
 }
 
 Constructor<Boolean> CopyConstructorVisitor<Boolean>::get_result() const { return m_result; }
@@ -799,12 +803,20 @@ void CopyGrammarVisitor::visit(const Grammar& grammar)
 
 void CopyGrammarVisitor::initialize(CopyNonTerminalVisitor<Concept>& concept_start_symbol_visitor,
                                     CopyNonTerminalVisitor<Role>& role_start_symbol_visitor,
+                                    CopyNonTerminalVisitor<Boolean>& boolean_start_symbol_visitor,
+                                    CopyNonTerminalVisitor<Numerical>& numerical_start_symbol_visitor,
                                     CopyDerivationRuleVisitor<Concept>& concept_rule_visitor,
-                                    CopyDerivationRuleVisitor<Role>& role_rule_visitor)
+                                    CopyDerivationRuleVisitor<Role>& role_rule_visitor,
+                                    CopyDerivationRuleVisitor<Boolean>& boolean_rule_visitor,
+                                    CopyDerivationRuleVisitor<Numerical>& numerical_rule_visitor)
 {
     boost::hana::at_key(m_start_symbol_visitor, boost::hana::type<Concept> {}) = &concept_start_symbol_visitor;
     boost::hana::at_key(m_start_symbol_visitor, boost::hana::type<Role> {}) = &role_start_symbol_visitor;
+    boost::hana::at_key(m_start_symbol_visitor, boost::hana::type<Boolean> {}) = &boolean_start_symbol_visitor;
+    boost::hana::at_key(m_start_symbol_visitor, boost::hana::type<Numerical> {}) = &numerical_start_symbol_visitor;
     boost::hana::at_key(m_derivation_rule_visitor, boost::hana::type<Concept> {}) = &concept_rule_visitor;
     boost::hana::at_key(m_derivation_rule_visitor, boost::hana::type<Role> {}) = &role_rule_visitor;
+    boost::hana::at_key(m_derivation_rule_visitor, boost::hana::type<Boolean> {}) = &boolean_rule_visitor;
+    boost::hana::at_key(m_derivation_rule_visitor, boost::hana::type<Numerical> {}) = &numerical_rule_visitor;
 }
 }

@@ -617,11 +617,15 @@ protected:
     DerivationRulesContainer& m_derivation_rules;
 
     boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, CopyNonTerminalVisitor<Concept>*>,
-                     boost::hana::pair<boost::hana::type<Role>, CopyNonTerminalVisitor<Role>*>>
+                     boost::hana::pair<boost::hana::type<Role>, CopyNonTerminalVisitor<Role>*>,
+                     boost::hana::pair<boost::hana::type<Boolean>, CopyNonTerminalVisitor<Boolean>*>,
+                     boost::hana::pair<boost::hana::type<Numerical>, CopyNonTerminalVisitor<Numerical>*>>
         m_start_symbol_visitor;
 
     boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, CopyDerivationRuleVisitor<Concept>*>,
-                     boost::hana::pair<boost::hana::type<Role>, CopyDerivationRuleVisitor<Role>*>>
+                     boost::hana::pair<boost::hana::type<Role>, CopyDerivationRuleVisitor<Role>*>,
+                     boost::hana::pair<boost::hana::type<Boolean>, CopyDerivationRuleVisitor<Boolean>*>,
+                     boost::hana::pair<boost::hana::type<Numerical>, CopyDerivationRuleVisitor<Numerical>*>>
         m_derivation_rule_visitor;
 
 public:
@@ -631,8 +635,12 @@ public:
 
     virtual void initialize(CopyNonTerminalVisitor<Concept>& concept_start_symbol_visitor,
                             CopyNonTerminalVisitor<Role>& role_start_symbol_visitor,
+                            CopyNonTerminalVisitor<Boolean>& boolean_start_symbol_visitor,
+                            CopyNonTerminalVisitor<Numerical>& numerical_start_symbol_visitor,
                             CopyDerivationRuleVisitor<Concept>& concept_rule_visitor,
-                            CopyDerivationRuleVisitor<Role>& role_rule_visitor);
+                            CopyDerivationRuleVisitor<Role>& role_rule_visitor,
+                            CopyDerivationRuleVisitor<Boolean>& boolean_rule_visitor,
+                            CopyDerivationRuleVisitor<Numerical>& numerical_rule_visitor);
 };
 
 }
