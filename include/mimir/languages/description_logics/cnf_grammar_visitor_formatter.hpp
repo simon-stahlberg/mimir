@@ -127,6 +127,44 @@ public:
 };
 
 /**
+ * Booleans
+ */
+
+template<>
+class FormatterConstructorVisitor<Boolean> : public ConstructorVisitor<Boolean>
+{
+private:
+    std::ostream& m_out;
+
+public:
+    FormatterConstructorVisitor(std::ostream& out);
+
+    void visit(BooleanAtomicState<Static> constructor) override;
+    void visit(BooleanAtomicState<Fluent> constructor) override;
+    void visit(BooleanAtomicState<Derived> constructor) override;
+    void visit(BooleanNonempty<Concept> constructor) override;
+    void visit(BooleanNonempty<Role> constructor) override;
+};
+
+/**
+ * Numericals
+ */
+
+template<>
+class FormatterConstructorVisitor<Numerical> : public ConstructorVisitor<Numerical>
+{
+private:
+    std::ostream& m_out;
+
+public:
+    FormatterConstructorVisitor(std::ostream& out);
+
+    void visit(NumericalCount<Concept> constructor) override;
+    void visit(NumericalCount<Role> constructor) override;
+    void visit(NumericalDistance constructor) override;
+};
+
+/**
  * DerivationRule
  */
 

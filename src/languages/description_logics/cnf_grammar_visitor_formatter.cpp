@@ -220,6 +220,67 @@ void FormatterConstructorVisitor<Role>::visit(RoleIdentity constructor)
 }
 
 /**
+ * Booleans
+ */
+
+FormatterConstructorVisitor<Boolean>::FormatterConstructorVisitor(std::ostream& out) : m_out(out) {}
+
+void FormatterConstructorVisitor<Boolean>::visit(BooleanAtomicState<Static> constructor)
+{
+    m_out << keywords::boolean_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
+}
+void FormatterConstructorVisitor<Boolean>::visit(BooleanAtomicState<Fluent> constructor)
+{
+    m_out << keywords::boolean_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
+}
+void FormatterConstructorVisitor<Boolean>::visit(BooleanAtomicState<Derived> constructor)
+{
+    m_out << keywords::boolean_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
+}
+void FormatterConstructorVisitor<Boolean>::visit(BooleanNonempty<Concept> constructor)
+{
+    auto concept_visitor = FormatterNonTerminalVisitor<Concept>(m_out);
+    m_out << keywords::boolean_nonempty << " ";
+    constructor->get_nonterminal()->accept(concept_visitor);
+}
+void FormatterConstructorVisitor<Boolean>::visit(BooleanNonempty<Role> constructor)
+{
+    auto role_visitor = FormatterNonTerminalVisitor<Role>(m_out);
+    m_out << keywords::boolean_nonempty << " ";
+    constructor->get_nonterminal()->accept(role_visitor);
+}
+
+/**
+ * Numericals
+ */
+
+FormatterConstructorVisitor<Numerical>::FormatterConstructorVisitor(std::ostream& out) : m_out(out) {}
+
+void FormatterConstructorVisitor<Numerical>::visit(NumericalCount<Concept> constructor)
+{
+    auto concept_visitor = FormatterNonTerminalVisitor<Concept>(m_out);
+    m_out << keywords::numerical_count << " ";
+    constructor->get_nonterminal()->accept(concept_visitor);
+}
+void FormatterConstructorVisitor<Numerical>::visit(NumericalCount<Role> constructor)
+{
+    auto role_visitor = FormatterNonTerminalVisitor<Role>(m_out);
+    m_out << keywords::numerical_count << " ";
+    constructor->get_nonterminal()->accept(role_visitor);
+}
+void FormatterConstructorVisitor<Numerical>::visit(NumericalDistance constructor)
+{
+    auto concept_visitor = FormatterNonTerminalVisitor<Concept>(m_out);
+    auto role_visitor = FormatterNonTerminalVisitor<Role>(m_out);
+    m_out << keywords::numerical_distance << " ";
+    constructor->get_left_concept()->accept(concept_visitor);
+    m_out << " ";
+    constructor->get_role()->accept(role_visitor);
+    m_out << " ";
+    constructor->get_right_concept()->accept(concept_visitor);
+}
+
+/**
  * NonTerminal
  */
 
