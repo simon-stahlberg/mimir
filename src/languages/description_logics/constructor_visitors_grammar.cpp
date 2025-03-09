@@ -439,7 +439,7 @@ BooleanNonemptyGrammarVisitor<D>::BooleanNonemptyGrammarVisitor(BooleanNonempty<
 template<DescriptionLogicCategory D>
 void BooleanNonemptyGrammarVisitor<D>::visit(dl::BooleanNonempty<D> constructor)
 {
-    m_result = m_grammar_constructor->get_constructor_or_nonterminal()->test_match(constructor->get_constructor());
+    m_result = m_grammar_constructor->get_constructor_or_nonterminal()->test_match(constructor->get_constructor(), m_grammar);
 }
 
 template class BooleanNonemptyGrammarVisitor<Concept>;
@@ -469,9 +469,9 @@ NumericalDistanceGrammarVisitor::NumericalDistanceGrammarVisitor(NumericalDistan
 
 void NumericalDistanceGrammarVisitor::visit(dl::NumericalDistance constructor)
 {
-    m_result = m_grammar_constructor->get_left_concept_or_nonterminal()->test_match(constructor->get_left_concept())
-               && m_grammar_constructor->get_role_or_nonterminal()->test_match(constructor->get_role())
-               && m_grammar_constructor->get_right_concept_or_nonterminal()->test_match(constructor->get_right_concept());
+    m_result = m_grammar_constructor->get_left_concept_or_nonterminal()->test_match(constructor->get_left_concept(), m_grammar)
+               && m_grammar_constructor->get_role_or_nonterminal()->test_match(constructor->get_role(), m_grammar)
+               && m_grammar_constructor->get_right_concept_or_nonterminal()->test_match(constructor->get_right_concept(), m_grammar);
 }
 
 }

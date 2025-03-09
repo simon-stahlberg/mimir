@@ -1045,7 +1045,7 @@ public:
     void accept(ConstructorVisitor<Numerical>& visitor) const override;
 
     Index get_index() const;
-    NonTerminal<D> get_cnonterminal() const;
+    NonTerminal<D> get_nonterminal() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.

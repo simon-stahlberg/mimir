@@ -36,6 +36,10 @@ template DerivationRule<Concept> ConstructorRepositories::get_or_create_derivati
                                                                                         ConstructorOrNonTerminalList<Concept> constructor_or_non_terminals);
 template DerivationRule<Role> ConstructorRepositories::get_or_create_derivation_rule(NonTerminal<Role> non_terminal,
                                                                                      ConstructorOrNonTerminalList<Role> constructor_or_non_terminals);
+template DerivationRule<Boolean> ConstructorRepositories::get_or_create_derivation_rule(NonTerminal<Boolean> non_terminal,
+                                                                                        ConstructorOrNonTerminalList<Boolean> constructor_or_non_terminals);
+template DerivationRule<Numerical> ConstructorRepositories::get_or_create_derivation_rule(NonTerminal<Numerical> non_terminal,
+                                                                                          ConstructorOrNonTerminalList<Numerical> constructor_or_non_terminals);
 
 template<FeatureCategory D>
 NonTerminal<D> ConstructorRepositories::get_or_create_nonterminal(std::string name)
@@ -45,6 +49,8 @@ NonTerminal<D> ConstructorRepositories::get_or_create_nonterminal(std::string na
 
 template NonTerminal<Concept> ConstructorRepositories::get_or_create_nonterminal(std::string name);
 template NonTerminal<Role> ConstructorRepositories::get_or_create_nonterminal(std::string name);
+template NonTerminal<Boolean> ConstructorRepositories::get_or_create_nonterminal(std::string name);
+template NonTerminal<Numerical> ConstructorRepositories::get_or_create_nonterminal(std::string name);
 
 template<FeatureCategory D>
 ConstructorOrNonTerminal<D> ConstructorRepositories::get_or_create_constructor_or_nonterminal(std::variant<Constructor<D>, NonTerminal<D>> choice)
@@ -56,6 +62,10 @@ template ConstructorOrNonTerminal<Concept>
 ConstructorRepositories::get_or_create_constructor_or_nonterminal(std::variant<Constructor<Concept>, NonTerminal<Concept>> choice);
 template ConstructorOrNonTerminal<Role>
 ConstructorRepositories::get_or_create_constructor_or_nonterminal(std::variant<Constructor<Role>, NonTerminal<Role>> choice);
+template ConstructorOrNonTerminal<Boolean>
+ConstructorRepositories::get_or_create_constructor_or_nonterminal(std::variant<Constructor<Boolean>, NonTerminal<Boolean>> choice);
+template ConstructorOrNonTerminal<Numerical>
+ConstructorRepositories::get_or_create_constructor_or_nonterminal(std::variant<Constructor<Numerical>, NonTerminal<Numerical>> choice);
 
 /* Concepts */
 ConceptBot ConstructorRepositories::get_or_create_concept_bot()
@@ -214,6 +224,46 @@ RoleRestriction ConstructorRepositories::get_or_create_role_restriction(Construc
 RoleIdentity ConstructorRepositories::get_or_create_role_identity(ConstructorOrNonTerminal<Concept> concept_or_nonterminal)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<RoleIdentityImpl> {}).get_or_create(concept_or_nonterminal);
+}
+
+/* Booleans */
+
+template<StaticOrFluentOrDerived P>
+BooleanAtomicState<P> ConstructorRepositories::get_or_create_boolean_atomic_state(Predicate<P> predicate)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<BooleanAtomicStateImpl<P>> {}).get_or_create(predicate);
+}
+
+template BooleanAtomicState<Static> ConstructorRepositories::get_or_create_boolean_atomic_state(Predicate<Static> predicate);
+template BooleanAtomicState<Fluent> ConstructorRepositories::get_or_create_boolean_atomic_state(Predicate<Fluent> predicate);
+template BooleanAtomicState<Derived> ConstructorRepositories::get_or_create_boolean_atomic_state(Predicate<Derived> predicate);
+
+template<DescriptionLogicCategory D>
+BooleanNonempty<D> ConstructorRepositories::get_or_create_boolean_nonempty(ConstructorOrNonTerminal<D> constructor_or_nonterminal)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<BooleanNonemptyImpl<D>> {}).get_or_create(constructor_or_nonterminal);
+}
+
+template BooleanNonempty<Concept> ConstructorRepositories::get_or_create_boolean_nonempty(ConstructorOrNonTerminal<Concept> constructor_or_nonterminal);
+template BooleanNonempty<Role> ConstructorRepositories::get_or_create_boolean_nonempty(ConstructorOrNonTerminal<Role> constructor_or_nonterminal);
+
+/* Numericals */
+
+template<DescriptionLogicCategory D>
+NumericalCount<D> ConstructorRepositories::get_or_create_numerical_count(ConstructorOrNonTerminal<D> constructor_or_nonterminal)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<NumericalCountImpl<D>> {}).get_or_create(constructor_or_nonterminal);
+}
+
+template NumericalCount<Concept> ConstructorRepositories::get_or_create_numerical_count(ConstructorOrNonTerminal<Concept> constructor_or_nonterminal);
+template NumericalCount<Role> ConstructorRepositories::get_or_create_numerical_count(ConstructorOrNonTerminal<Role> constructor_or_nonterminal);
+
+NumericalDistance ConstructorRepositories::get_or_create_numerical_distance(ConstructorOrNonTerminal<Concept> left_concept_or_nonterminal,
+                                                                            ConstructorOrNonTerminal<Role> role_or_nonterminal,
+                                                                            ConstructorOrNonTerminal<Concept> right_concept_or_nonterminal)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<NumericalDistanceImpl> {})
+        .get_or_create(left_concept_or_nonterminal, role_or_nonterminal, right_concept_or_nonterminal);
 }
 
 }

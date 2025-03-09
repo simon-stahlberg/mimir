@@ -969,7 +969,7 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(ConstructorVisitor<Boolean>& visitor) const;
+    void accept_impl(ConstructorVisitor<Numerical>& visitor) const;
 
     friend class ConstructorEvaluatorBase<Numerical, NumericalCountImpl<D>>;
 
@@ -1005,7 +1005,7 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(ConstructorVisitor<Boolean>& visitor) const;
+    void accept_impl(ConstructorVisitor<Numerical>& visitor) const;
 
     friend class ConstructorEvaluatorBase<Numerical, NumericalDistanceImpl>;
 

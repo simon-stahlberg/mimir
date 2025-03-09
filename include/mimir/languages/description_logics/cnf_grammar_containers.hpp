@@ -30,7 +30,9 @@
 namespace mimir::dl::cnf_grammar
 {
 using HanaStartSymbols = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::optional<NonTerminal<Concept>>>,
-                                          boost::hana::pair<boost::hana::type<Role>, std::optional<NonTerminal<Role>>>>;
+                                          boost::hana::pair<boost::hana::type<Role>, std::optional<NonTerminal<Role>>>,
+                                          boost::hana::pair<boost::hana::type<Boolean>, std::optional<NonTerminal<Boolean>>>,
+                                          boost::hana::pair<boost::hana::type<Numerical>, std::optional<NonTerminal<Numerical>>>>;
 
 class StartSymbolsContainer
 {
@@ -72,10 +74,10 @@ public:
 class DerivationRulesContainer
 {
 private:
-    NonTerminalMap<DerivationRuleList, Concept, Role> m_map;
-    DerivationRuleLists<Concept, Role> m_lists;
+    NonTerminalMap<DerivationRuleList, Concept, Role, Boolean, Numerical> m_map;
+    DerivationRuleLists<Concept, Role, Boolean, Numerical> m_lists;
 
-    static const DerivationRuleLists<Concept, Role> empty_lists;
+    static const DerivationRuleLists<Concept, Role, Boolean, Numerical> empty_lists;
 
 public:
     DerivationRulesContainer() = default;
@@ -119,16 +121,16 @@ public:
         return boost::hana::at_key(m_lists, boost::hana::type<D> {});
     }
 
-    const DerivationRuleLists<Concept, Role>& get() const { return m_lists; }
+    const DerivationRuleLists<Concept, Role, Boolean, Numerical>& get() const { return m_lists; }
 };
 
 class SubstitutionRulesContainer
 {
 private:
-    NonTerminalMap<SubstitutionRuleList, Concept, Role> m_map;
-    SubstitutionRuleLists<Concept, Role> m_lists;
+    NonTerminalMap<SubstitutionRuleList, Concept, Role, Boolean, Numerical> m_map;
+    SubstitutionRuleLists<Concept, Role, Boolean, Numerical> m_lists;
 
-    static const SubstitutionRuleLists<Concept, Role> empty_lists;
+    static const SubstitutionRuleLists<Concept, Role, Boolean, Numerical> empty_lists;
 
 public:
     SubstitutionRulesContainer() = default;
@@ -172,7 +174,7 @@ public:
         return boost::hana::at_key(m_lists, boost::hana::type<D> {});
     }
 
-    const SubstitutionRuleLists<Concept, Role>& get() const { return m_lists; }
+    const SubstitutionRuleLists<Concept, Role, Boolean, Numerical>& get() const { return m_lists; }
 };
 
 }

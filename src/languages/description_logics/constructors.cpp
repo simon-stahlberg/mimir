@@ -1200,7 +1200,7 @@ void NumericalCountImpl<D>::evaluate_impl(EvaluationContext& context) const
 }
 
 template<DescriptionLogicCategory D>
-void NumericalCountImpl<D>::accept_impl(ConstructorVisitor<Boolean>& visitor) const
+void NumericalCountImpl<D>::accept_impl(ConstructorVisitor<Numerical>& visitor) const
 {
     visitor.visit(this);
 }
@@ -1233,7 +1233,7 @@ void NumericalDistanceImpl::evaluate_impl(EvaluationContext& context) const
     // TODO
 }
 
-void NumericalDistanceImpl::accept_impl(ConstructorVisitor<Boolean>& visitor) const { visitor.visit(this); }
+void NumericalDistanceImpl::accept_impl(ConstructorVisitor<Numerical>& visitor) const { visitor.visit(this); }
 
 Index NumericalDistanceImpl::get_index() const { return m_index; }
 

@@ -27,7 +27,9 @@
 namespace mimir::dl::grammar
 {
 using HanaStartSymbols = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::optional<NonTerminal<Concept>>>,
-                                          boost::hana::pair<boost::hana::type<Role>, std::optional<NonTerminal<Role>>>>;
+                                          boost::hana::pair<boost::hana::type<Role>, std::optional<NonTerminal<Role>>>,
+                                          boost::hana::pair<boost::hana::type<Boolean>, std::optional<NonTerminal<Boolean>>>,
+                                          boost::hana::pair<boost::hana::type<Numerical>, std::optional<NonTerminal<Numerical>>>>;
 
 class StartSymbolsContainer
 {
@@ -69,8 +71,8 @@ public:
 class DerivationRulesContainer
 {
 private:
-    NonTerminalMap<DerivationRuleSet, Concept, Role> m_map;
-    DerivationRuleSets<Concept, Role> m_lists;
+    NonTerminalMap<DerivationRuleSet, Concept, Role, Boolean, Numerical> m_map;
+    DerivationRuleSets<Concept, Role, Boolean, Numerical> m_lists;
 
 public:
     DerivationRulesContainer() = default;
@@ -100,7 +102,7 @@ public:
         return boost::hana::at_key(m_map, boost::hana::type<D> {}).at(non_terminal);
     }
 
-    const DerivationRuleSets<Concept, Role>& get() const { return m_lists; }
+    const DerivationRuleSets<Concept, Role, Boolean, Numerical>& get() const { return m_lists; }
 };
 
 }

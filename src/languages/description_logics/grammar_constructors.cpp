@@ -871,7 +871,7 @@ bool BooleanNonemptyImpl<D>::test_match(dl::Constructor<Boolean> constructor, co
 template<DescriptionLogicCategory D>
 void BooleanNonemptyImpl<D>::accept(ConstructorVisitor<Boolean>& visitor) const
 {
-    visitor.accept(this);
+    visitor.visit(this);
 }
 
 template<DescriptionLogicCategory D>
@@ -911,7 +911,7 @@ bool NumericalCountImpl<D>::test_match(dl::Constructor<Numerical> constructor, c
 template<DescriptionLogicCategory D>
 void NumericalCountImpl<D>::accept(ConstructorVisitor<Numerical>& visitor) const
 {
-    visitor.accept(this);
+    visitor.visit(this);
 }
 
 template<DescriptionLogicCategory D>
@@ -951,7 +951,7 @@ bool NumericalDistanceImpl::test_match(dl::Constructor<Numerical> constructor, c
     return visitor.get_result();
 }
 
-void NumericalDistanceImpl::accept(ConstructorVisitor<Numerical>& visitor) const { visitor.accept(this); }
+void NumericalDistanceImpl::accept(ConstructorVisitor<Numerical>& visitor) const { visitor.visit(this); }
 
 Index NumericalDistanceImpl::get_index() const { return m_index; }
 

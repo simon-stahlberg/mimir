@@ -139,13 +139,13 @@ using BooleanAtomicState = const BooleanAtomicStateImpl<P>*;
 template<DescriptionLogicCategory D>
 class BooleanNonemptyImpl;
 template<DescriptionLogicCategory D>
-using BooleanNonempty = const BooleanNonemptyImpl*;
+using BooleanNonempty = const BooleanNonemptyImpl<D>*;
 
 /* Concrete Numerical */
 template<DescriptionLogicCategory D>
 class NumericalCountImpl;
 template<DescriptionLogicCategory D>
-using NumericalCount = const NumericalCountImpl*;
+using NumericalCount = const NumericalCountImpl<D>*;
 class NumericalDistanceImpl;
 using NumericalDistance = const NumericalDistanceImpl*;
 
@@ -275,13 +275,13 @@ using BooleanAtomicState = const BooleanAtomicStateImpl<P>*;
 template<DescriptionLogicCategory D>
 class BooleanNonemptyImpl;
 template<DescriptionLogicCategory D>
-using BooleanNonempty = const BooleanNonemptyImpl*;
+using BooleanNonempty = const BooleanNonemptyImpl<D>*;
 
 /* Concrete Numerical */
 template<DescriptionLogicCategory D>
 class NumericalCountImpl;
 template<DescriptionLogicCategory D>
-using NumericalCount = const NumericalCountImpl*;
+using NumericalCount = const NumericalCountImpl<D>*;
 class NumericalDistanceImpl;
 using NumericalDistance = const NumericalDistanceImpl*;
 
@@ -440,13 +440,13 @@ using BooleanAtomicState = const BooleanAtomicStateImpl<P>*;
 template<DescriptionLogicCategory D>
 class BooleanNonemptyImpl;
 template<DescriptionLogicCategory D>
-using BooleanNonempty = const BooleanNonemptyImpl*;
+using BooleanNonempty = const BooleanNonemptyImpl<D>*;
 
 /* Concrete Numerical */
 template<DescriptionLogicCategory D>
 class NumericalCountImpl;
 template<DescriptionLogicCategory D>
-using NumericalCount = const NumericalCountImpl*;
+using NumericalCount = const NumericalCountImpl<D>*;
 class NumericalDistanceImpl;
 using NumericalDistance = const NumericalDistanceImpl*;
 

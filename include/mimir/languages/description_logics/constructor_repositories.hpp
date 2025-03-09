@@ -59,6 +59,15 @@ using RoleReflexiveTransitiveClosureRepository = SegmentedDLRepository<RoleRefle
 using RoleRestrictionRepository = SegmentedDLRepository<RoleRestrictionImpl>;
 using RoleIdentityFactory = SegmentedDLRepository<RoleIdentityImpl>;
 
+template<StaticOrFluentOrDerived P>
+using BooleanAtomicStateRepository = SegmentedDLRepository<BooleanAtomicStateImpl<P>>;
+template<DescriptionLogicCategory D>
+using BooleanNonemptyRepository = SegmentedDLRepository<BooleanNonemptyImpl<D>>;
+
+template<DescriptionLogicCategory D>
+using NumericalCountRepository = SegmentedDLRepository<NumericalCountImpl<D>>;
+using NumericalDistanceRepository = SegmentedDLRepository<NumericalDistanceImpl>;
+
 using HanaConstructorRepositories =
     boost::hana::map<boost::hana::pair<boost::hana::type<ConceptBotImpl>, ConceptBotRepository>,  //
                      boost::hana::pair<boost::hana::type<ConceptTopImpl>, ConceptTopRepository>,
@@ -91,7 +100,15 @@ using HanaConstructorRepositories =
                      boost::hana::pair<boost::hana::type<RoleTransitiveClosureImpl>, RoleTransitiveClosureRepository>,
                      boost::hana::pair<boost::hana::type<RoleReflexiveTransitiveClosureImpl>, RoleReflexiveTransitiveClosureRepository>,
                      boost::hana::pair<boost::hana::type<RoleRestrictionImpl>, RoleRestrictionRepository>,
-                     boost::hana::pair<boost::hana::type<RoleIdentityImpl>, RoleIdentityFactory>>;
+                     boost::hana::pair<boost::hana::type<RoleIdentityImpl>, RoleIdentityFactory>,
+                     boost::hana::pair<boost::hana::type<BooleanAtomicStateImpl<Static>>, BooleanAtomicStateRepository<Static>>,
+                     boost::hana::pair<boost::hana::type<BooleanAtomicStateImpl<Fluent>>, BooleanAtomicStateRepository<Fluent>>,
+                     boost::hana::pair<boost::hana::type<BooleanAtomicStateImpl<Derived>>, BooleanAtomicStateRepository<Derived>>,
+                     boost::hana::pair<boost::hana::type<BooleanNonemptyImpl<Concept>>, BooleanNonemptyRepository<Concept>>,
+                     boost::hana::pair<boost::hana::type<BooleanNonemptyImpl<Role>>, BooleanNonemptyRepository<Role>>,
+                     boost::hana::pair<boost::hana::type<NumericalCountImpl<Concept>>, NumericalCountRepository<Concept>>,
+                     boost::hana::pair<boost::hana::type<NumericalCountImpl<Role>>, NumericalCountRepository<Role>>,
+                     boost::hana::pair<boost::hana::type<NumericalDistanceImpl>, NumericalDistanceRepository>>;
 
 class ConstructorRepositories
 {
@@ -139,6 +156,17 @@ public:
     RoleReflexiveTransitiveClosure get_or_create_role_reflexive_transitive_closure(Constructor<Role> role);
     RoleRestriction get_or_create_role_restriction(Constructor<Role> role, Constructor<Concept> concept_);
     RoleIdentity get_or_create_role_identity(Constructor<Concept> concept_);
+
+    /* Booleans */
+    template<StaticOrFluentOrDerived P>
+    BooleanAtomicState<P> get_or_create_boolean_atomic_state(Predicate<P> predicate);
+    template<DescriptionLogicCategory D>
+    BooleanNonempty<D> get_or_create_boolean_nonempty(Constructor<D> constructor);
+
+    /* Numericals */
+    template<DescriptionLogicCategory D>
+    NumericalCount<D> get_or_create_numerical_count(Constructor<D> constructor);
+    NumericalDistance get_or_create_numerical_distance(Constructor<Concept> left_concept, Constructor<Role> role, Constructor<Concept> right_concept);
 };
 
 }

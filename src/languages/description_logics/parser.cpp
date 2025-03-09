@@ -29,44 +29,19 @@
 namespace mimir::dl::grammar
 {
 
-static Constructor<Concept> parse(const dl::ast::Constructor<Concept>& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
+template<DescriptionLogicCategory D>
+static Constructor<D> parse(const dl::ast::Constructor<D>& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
     return boost::apply_visitor(
-        [&](const auto& arg) -> Constructor<Concept>
+        [&](const auto& arg) -> Constructor<D>
         {
             auto parsed_result = parse(arg, domain, ref_repositories);
 
             // Check if the result is a variant
-            if constexpr (std::is_same_v<decltype(parsed_result),
-                                         std::variant<ConceptAtomicState<Static>, ConceptAtomicState<Fluent>, ConceptAtomicState<Derived>>>
-                          || std::is_same_v<decltype(parsed_result),
-                                            std::variant<ConceptAtomicGoal<Static>, ConceptAtomicGoal<Fluent>, ConceptAtomicGoal<Derived>>>)
+            if constexpr (IsVariant<std::decay_t<decltype(parsed_result)>>)
             {
                 // Visit the variant and process it
-                return std::visit([&](const auto& resolved_arg) -> Constructor<Concept> { return resolved_arg; }, parsed_result);
-            }
-            else
-            {
-                // Directly process non-variant results
-                return parsed_result;
-            }
-        },
-        node);
-}
-
-static Constructor<Role> parse(const dl::ast::Constructor<Role>& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
-{
-    return boost::apply_visitor(
-        [&](const auto& arg) -> Constructor<Role>
-        {
-            auto parsed_result = parse(arg, domain, ref_repositories);
-
-            // Check if the result is a variant
-            if constexpr (std::is_same_v<decltype(parsed_result), std::variant<RoleAtomicState<Static>, RoleAtomicState<Fluent>, RoleAtomicState<Derived>>>
-                          || std::is_same_v<decltype(parsed_result), std::variant<RoleAtomicGoal<Static>, RoleAtomicGoal<Fluent>, RoleAtomicGoal<Derived>>>)
-            {
-                // Visit the variant and process it
-                return std::visit([&](const auto& resolved_arg) -> Constructor<Role> { return resolved_arg; }, parsed_result);
+                return std::visit([&](const auto& resolved_arg) -> Constructor<D> { return resolved_arg; }, parsed_result);
             }
             else
             {

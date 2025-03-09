@@ -63,6 +63,10 @@ concept InTypes = (std::same_as<T, Ts> || ...);
 
 template<typename T>
 concept IsHanaMap = std::same_as<typename boost::hana::tag_of<T>::type, boost::hana::map_tag>;
+
+// Define a concept that checks whether T is a std::variant.
+template<typename T>
+concept IsVariant = requires { typename std::variant_size<T>::type; };
 }
 
 #endif

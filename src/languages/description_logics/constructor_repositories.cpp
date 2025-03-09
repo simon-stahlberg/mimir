@@ -168,4 +168,43 @@ RoleIdentity ConstructorRepositories::get_or_create_role_identity(Constructor<Co
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<RoleIdentityImpl> {}).get_or_create(concept_);
 }
+
+/* Booleans */
+
+template<StaticOrFluentOrDerived P>
+BooleanAtomicState<P> ConstructorRepositories::get_or_create_boolean_atomic_state(Predicate<P> predicate)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<BooleanAtomicStateImpl<P>> {}).get_or_create(predicate);
+}
+
+template BooleanAtomicState<Static> ConstructorRepositories::get_or_create_boolean_atomic_state(Predicate<Static> predicate);
+template BooleanAtomicState<Fluent> ConstructorRepositories::get_or_create_boolean_atomic_state(Predicate<Fluent> predicate);
+template BooleanAtomicState<Derived> ConstructorRepositories::get_or_create_boolean_atomic_state(Predicate<Derived> predicate);
+
+template<DescriptionLogicCategory D>
+BooleanNonempty<D> ConstructorRepositories::get_or_create_boolean_nonempty(Constructor<D> constructor)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<BooleanNonemptyImpl<D>> {}).get_or_create(constructor);
+}
+
+template BooleanNonempty<Concept> ConstructorRepositories::get_or_create_boolean_nonempty(Constructor<Concept> constructor);
+template BooleanNonempty<Role> ConstructorRepositories::get_or_create_boolean_nonempty(Constructor<Role> constructor);
+
+/* Numericals */
+
+template<DescriptionLogicCategory D>
+NumericalCount<D> ConstructorRepositories::get_or_create_numerical_count(Constructor<D> constructor)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<NumericalCountImpl<D>> {}).get_or_create(constructor);
+}
+
+template NumericalCount<Concept> ConstructorRepositories::get_or_create_numerical_count(Constructor<Concept> constructor);
+template NumericalCount<Role> ConstructorRepositories::get_or_create_numerical_count(Constructor<Role> constructor);
+
+NumericalDistance
+ConstructorRepositories::get_or_create_numerical_distance(Constructor<Concept> left_concept, Constructor<Role> role, Constructor<Concept> right_concept)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<NumericalDistanceImpl> {}).get_or_create(left_concept, role, right_concept);
+}
+
 }

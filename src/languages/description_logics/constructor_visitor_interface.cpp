@@ -128,7 +128,7 @@ void ConstructorVisitor<Numerical>::visit(NumericalCount<Role> constructor) { co
 void ConstructorVisitor<Numerical>::visit(NumericalDistance constructor)
 {
     constructor->get_left_concept()->accept(*m_concept_visitor);
-    constructor->get_left_role()->accept(*m_role_visitor);
+    constructor->get_role()->accept(*m_role_visitor);
     constructor->get_left_concept()->accept(*m_concept_visitor);
 }
 
