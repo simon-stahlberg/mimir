@@ -38,12 +38,12 @@ private:
     template<FeatureCategory D>
     using GeneratedConstructorsMap = std::unordered_map<NonTerminal<D>, std::vector<dl::ConstructorList<D>>>;
 
-    using HanaGeneratedConstructorsMap = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, GeneratedConstructorsMap<Concept>>,
-                                                          boost::hana::pair<boost::hana::type<Role>, GeneratedConstructorsMap<Role>>>;
+    template<FeatureCategory... Ds>
+    using HanaGeneratedConstructorsMaps = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, GeneratedConstructorsMap<Ds>>...>;
 
-    static const ConstructorLists<Concept, Role> empty_lists;
+    static const ConstructorLists<Concept, Role, Boolean, Numerical> empty_lists;
 
-    HanaGeneratedConstructorsMap m_generated_constructors;
+    HanaGeneratedConstructorsMaps<Concept, Role, Boolean, Numerical> m_generated_constructors;
 
 public:
     template<FeatureCategory D>
@@ -71,7 +71,7 @@ public:
         return it->second.at(complexity);
     }
 
-    HanaGeneratedConstructorsMap& get_hana_generated_constructors() { return m_generated_constructors; }
+    HanaGeneratedConstructorsMaps<Concept, Role, Boolean, Numerical>& get_hana_generated_constructors() { return m_generated_constructors; }
 };
 
 template<FeatureCategory D>
@@ -232,7 +232,7 @@ private:
     dl::ConstructorRepositories& m_repositories;
     size_t m_max_syntactic_complexity;
 
-    HanaGeneratorStatistics<Concept, Role> m_statistics;
+    HanaGeneratorStatistics<Concept, Role, Boolean, Numerical> m_statistics;
 
 public:
     explicit GeneratorGrammarVisitor(RefinementPruningFunction& pruning_function,
@@ -242,7 +242,7 @@ public:
 
     void visit(const Grammar& grammar) override;
 
-    const HanaGeneratorStatistics<Concept, Role>& get_statistics() const;
+    const HanaGeneratorStatistics<Concept, Role, Boolean, Numerical>& get_statistics() const;
 };
 
 }

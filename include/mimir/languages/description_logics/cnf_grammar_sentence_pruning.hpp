@@ -70,9 +70,9 @@ private:
 
     ProblemMap<StateList> m_state_partitioning;
 
-    DenotationRepositories<Concept, Role> m_repositories;
+    DenotationRepositories<Concept, Role, Boolean, Numerical> m_repositories;
 
-    DenotationListSets<Concept, Role> m_denotations_repository;
+    DenotationListSets<Concept, Role, Boolean, Numerical> m_denotations_repository;
 };
 
 }

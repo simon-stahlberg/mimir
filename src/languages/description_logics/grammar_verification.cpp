@@ -24,7 +24,9 @@ namespace mimir::dl::grammar
 {
 
 using NonTerminalSet = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::unordered_set<NonTerminal<Concept>>>,
-                                        boost::hana::pair<boost::hana::type<Role>, std::unordered_set<NonTerminal<Role>>>>;
+                                        boost::hana::pair<boost::hana::type<Role>, std::unordered_set<NonTerminal<Role>>>,
+                                        boost::hana::pair<boost::hana::type<Boolean>, std::unordered_set<NonTerminal<Boolean>>>,
+                                        boost::hana::pair<boost::hana::type<Numerical>, std::unordered_set<NonTerminal<Numerical>>>>;
 
 template<FeatureCategory D>
 class CollectHeadAndBodyNonTerminalsDerivationRuleVisitor : public RecurseDerivationRuleVisitor<D>
@@ -76,19 +78,33 @@ void verify_grammar_is_well_defined(const Grammar& grammar)
 
     auto concept_visitor = RecurseConstructorVisitor<Concept>();
     auto role_visitor = RecurseConstructorVisitor<Role>();
+    auto boolean_visitor = RecurseConstructorVisitor<Boolean>();
+    auto numerical_visitor = RecurseConstructorVisitor<Numerical>();
     auto concept_or_nonterminal_visitor = RecurseConstructorOrNonTerminalVisitor<Concept>();
     auto role_or_nonterminal_visitor = RecurseConstructorOrNonTerminalVisitor<Role>();
+    auto boolean_or_nonterminal_visitor = RecurseConstructorOrNonTerminalVisitor<Boolean>();
+    auto numerical_or_nonterminal_visitor = RecurseConstructorOrNonTerminalVisitor<Numerical>();
     auto concept_nonterminal_visitor = CollectHeadAndBodyNonTerminalsNonTerminalVisitor<Concept>(head_nonterminals, body_nonterminals);
     auto role_nonterminal_visitor = CollectHeadAndBodyNonTerminalsNonTerminalVisitor<Role>(head_nonterminals, body_nonterminals);
+    auto boolean_nonterminal_visitor = CollectHeadAndBodyNonTerminalsNonTerminalVisitor<Boolean>(head_nonterminals, body_nonterminals);
+    auto numerical_nonterminal_visitor = CollectHeadAndBodyNonTerminalsNonTerminalVisitor<Numerical>(head_nonterminals, body_nonterminals);
     auto concept_derivation_rule_visitor = CollectHeadAndBodyNonTerminalsDerivationRuleVisitor<Concept>(head_nonterminals, body_nonterminals);
     auto role_derivation_rule_visitor = CollectHeadAndBodyNonTerminalsDerivationRuleVisitor<Role>(head_nonterminals, body_nonterminals);
+    auto boolean_derivation_rule_visitor = CollectHeadAndBodyNonTerminalsDerivationRuleVisitor<Boolean>(head_nonterminals, body_nonterminals);
+    auto numerical_derivation_rule_visitor = CollectHeadAndBodyNonTerminalsDerivationRuleVisitor<Numerical>(head_nonterminals, body_nonterminals);
 
     concept_visitor.initialize(concept_or_nonterminal_visitor, role_or_nonterminal_visitor);
     role_visitor.initialize(concept_or_nonterminal_visitor, role_or_nonterminal_visitor);
+    boolean_visitor.initialize(concept_or_nonterminal_visitor, role_or_nonterminal_visitor);
+    numerical_visitor.initialize(concept_or_nonterminal_visitor, role_or_nonterminal_visitor);
     concept_or_nonterminal_visitor.initialize(concept_nonterminal_visitor, concept_visitor);
     role_or_nonterminal_visitor.initialize(role_nonterminal_visitor, role_visitor);
+    boolean_or_nonterminal_visitor.initialize(boolean_nonterminal_visitor, boolean_visitor);
+    numerical_or_nonterminal_visitor.initialize(numerical_nonterminal_visitor, numerical_visitor);
     concept_derivation_rule_visitor.initialize(concept_nonterminal_visitor, concept_or_nonterminal_visitor);
     role_derivation_rule_visitor.initialize(role_nonterminal_visitor, role_or_nonterminal_visitor);
+    boolean_derivation_rule_visitor.initialize(boolean_nonterminal_visitor, boolean_or_nonterminal_visitor);
+    numerical_derivation_rule_visitor.initialize(numerical_nonterminal_visitor, numerical_or_nonterminal_visitor);
 
     boost::hana::for_each(grammar.get_derivation_rules_container().get(),
                           [&](auto&& pair)
@@ -105,6 +121,14 @@ void verify_grammar_is_well_defined(const Grammar& grammar)
                                   else if constexpr (std::is_same_v<T, DerivationRule<Role>>)
                                   {
                                       rule->accept(role_derivation_rule_visitor);
+                                  }
+                                  else if constexpr (std::is_same_v<T, DerivationRule<Boolean>>)
+                                  {
+                                      rule->accept(boolean_derivation_rule_visitor);
+                                  }
+                                  else if constexpr (std::is_same_v<T, DerivationRule<Numerical>>)
+                                  {
+                                      rule->accept(numerical_derivation_rule_visitor);
                                   }
                                   else
                                   {

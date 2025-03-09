@@ -117,8 +117,6 @@ struct Constructor<Role> :
     using base_type::operator=;
 };
 
-using ConceptOrRoleConstructor = x3::variant<Constructor<Concept>, Constructor<Role>>;
-
 template<>
 struct Constructor<Boolean> : x3::position_tagged, x3::variant<x3::forward_ast<BooleanAtomicState>, x3::forward_ast<BooleanNonempty>>
 {
@@ -295,7 +293,7 @@ struct RoleIdentity : x3::position_tagged
  * ConceptOrRole
  */
 
-struct ConceptOrRole : x3::variant<Constructor<Concept>, Constructor<Role>>
+struct ConceptOrRoleNonterminal : x3::variant<ConstructorOrNonTerminal<Concept>, ConstructorOrNonTerminal<Role>>
 {
     using base_type::base_type;
     using base_type::operator=;
@@ -311,7 +309,7 @@ struct BooleanAtomicState : x3::position_tagged
 };
 struct BooleanNonempty : x3::position_tagged
 {
-    ConceptOrRole concept_or_role;
+    ConceptOrRoleNonterminal concept_or_role_nonterminal;
 };
 
 /**
@@ -320,13 +318,13 @@ struct BooleanNonempty : x3::position_tagged
 
 struct NumericalCount : x3::position_tagged
 {
-    ConceptOrRole concept_or_role;
+    ConceptOrRoleNonterminal concept_or_role_nonterminal;
 };
 struct NumericalDistance : x3::position_tagged
 {
-    Constructor<Concept> left_concept;
-    Constructor<Role> role;
-    Constructor<Concept> right_concept;
+    ConstructorOrNonTerminal<Concept> left_concept_or_nonterminal;
+    ConstructorOrNonTerminal<Role> role_or_nonterminal;
+    ConstructorOrNonTerminal<Concept> right_concept_or_nonterminal;
 };
 
 /**

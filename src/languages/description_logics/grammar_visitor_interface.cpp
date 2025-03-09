@@ -154,6 +154,58 @@ void RecurseConstructorVisitor<Role>::visit(RoleIdentity constructor)
 }
 
 /**
+ * Booleans
+ */
+
+void RecurseConstructorVisitor<Boolean>::initialize(RecurseConstructorOrNonTerminalVisitor<Concept>& concept_or_nonterminal_visitor,
+                                                    RecurseConstructorOrNonTerminalVisitor<Role>& role_or_nonterminal_visitor)
+{
+    m_concept_or_nonterminal_visitor = &concept_or_nonterminal_visitor;
+    m_role_or_nonterminal_visitor = &role_or_nonterminal_visitor;
+}
+void RecurseConstructorVisitor<Boolean>::visit(BooleanAtomicState<Static> constructor) {}
+void RecurseConstructorVisitor<Boolean>::visit(BooleanAtomicState<Fluent> constructor) {}
+void RecurseConstructorVisitor<Boolean>::visit(BooleanAtomicState<Derived> constructor) {}
+void RecurseConstructorVisitor<Boolean>::visit(BooleanNonempty<Concept> constructor)
+{
+    assert(m_concept_or_nonterminal_visitor);
+    constructor->get_constructor_or_nonterminal()->accept(*m_concept_or_nonterminal_visitor);
+}
+void RecurseConstructorVisitor<Boolean>::visit(BooleanNonempty<Role> constructor)
+{
+    assert(m_role_or_nonterminal_visitor);
+    constructor->get_constructor_or_nonterminal()->accept(*m_role_or_nonterminal_visitor);
+}
+
+/**
+ * Numericals
+ */
+
+void RecurseConstructorVisitor<Numerical>::initialize(RecurseConstructorOrNonTerminalVisitor<Concept>& concept_or_nonterminal_visitor,
+                                                      RecurseConstructorOrNonTerminalVisitor<Role>& role_or_nonterminal_visitor)
+{
+    m_concept_or_nonterminal_visitor = &concept_or_nonterminal_visitor;
+    m_role_or_nonterminal_visitor = &role_or_nonterminal_visitor;
+}
+void RecurseConstructorVisitor<Numerical>::visit(NumericalCount<Concept> constructor)
+{
+    assert(m_concept_or_nonterminal_visitor);
+    constructor->get_constructor_or_nonterminal()->accept(*m_concept_or_nonterminal_visitor);
+}
+void RecurseConstructorVisitor<Numerical>::visit(NumericalCount<Role> constructor)
+{
+    assert(m_role_or_nonterminal_visitor);
+    constructor->get_constructor_or_nonterminal()->accept(*m_role_or_nonterminal_visitor);
+}
+void RecurseConstructorVisitor<Numerical>::visit(NumericalDistance constructor)
+{
+    assert(m_concept_or_nonterminal_visitor && m_role_or_nonterminal_visitor);
+    constructor->get_left_concept_or_nonterminal()->accept(*m_concept_or_nonterminal_visitor);
+    constructor->get_role_or_nonterminal()->accept(*m_role_or_nonterminal_visitor);
+    constructor->get_right_concept_or_nonterminal()->accept(*m_concept_or_nonterminal_visitor);
+}
+
+/**
  * ConstructorOrRoleNonTerminal
  */
 
@@ -192,6 +244,8 @@ void RecurseConstructorOrNonTerminalVisitor<D>::visit(ConstructorOrNonTerminal<D
 
 template class RecurseConstructorOrNonTerminalVisitor<Concept>;
 template class RecurseConstructorOrNonTerminalVisitor<Role>;
+template class RecurseConstructorOrNonTerminalVisitor<Boolean>;
+template class RecurseConstructorOrNonTerminalVisitor<Numerical>;
 
 /**
  * NonTerminal
@@ -204,6 +258,8 @@ void RecurseNonTerminalVisitor<D>::visit(NonTerminal<D> constructor)
 
 template class RecurseNonTerminalVisitor<Concept>;
 template class RecurseNonTerminalVisitor<Role>;
+template class RecurseNonTerminalVisitor<Boolean>;
+template class RecurseNonTerminalVisitor<Numerical>;
 
 /**
  * DerivationRule
@@ -231,6 +287,8 @@ void RecurseDerivationRuleVisitor<D>::visit(DerivationRule<D> constructor)
 
 template class RecurseDerivationRuleVisitor<Concept>;
 template class RecurseDerivationRuleVisitor<Role>;
+template class RecurseDerivationRuleVisitor<Boolean>;
+template class RecurseDerivationRuleVisitor<Numerical>;
 
 /**
  * Grammar
@@ -491,6 +549,83 @@ void CopyConstructorVisitor<Role>::visit(RoleIdentity constructor)
 Constructor<Role> CopyConstructorVisitor<Role>::get_result() const { return m_result; }
 
 /**
+ * Booleans
+ */
+
+CopyConstructorVisitor<Boolean>::CopyConstructorVisitor(ConstructorRepositories& repositories) : m_repositories(repositories) {}
+
+void CopyConstructorVisitor<Boolean>::initialize(CopyConstructorOrNonTerminalVisitor<Concept>& concept_or_nonterminal_visitor,
+                                                 CopyConstructorOrNonTerminalVisitor<Role>& role_or_nonterminal_visitor)
+{
+    m_concept_or_nonterminal_visitor = &concept_or_nonterminal_visitor;
+    m_role_or_nonterminal_visitor = &role_or_nonterminal_visitor;
+}
+void CopyConstructorVisitor<Boolean>::visit(BooleanAtomicState<Static> constructor)
+{
+    m_result = m_repositories.get_or_create_boolean_atomic_state(constructor->get_predicate());
+}
+void CopyConstructorVisitor<Boolean>::visit(BooleanAtomicState<Fluent> constructor)
+{
+    m_result = m_repositories.get_or_create_boolean_atomic_state(constructor->get_predicate());
+}
+void CopyConstructorVisitor<Boolean>::visit(BooleanAtomicState<Derived> constructor)
+{
+    m_result = m_repositories.get_or_create_boolean_atomic_state(constructor->get_predicate());
+}
+void CopyConstructorVisitor<Boolean>::visit(BooleanNonempty<Concept> constructor)
+{
+    assert(m_concept_or_nonterminal_visitor);
+    constructor->get_constructor_or_nonterminal()->accept(*m_concept_or_nonterminal_visitor);
+}
+void CopyConstructorVisitor<Boolean>::visit(BooleanNonempty<Role> constructor)
+{
+    assert(m_role_or_nonterminal_visitor);
+    constructor->get_constructor_or_nonterminal()->accept(*m_role_or_nonterminal_visitor);
+}
+
+Constructor<Boolean> CopyConstructorVisitor<Boolean>::get_result() const { return m_result; }
+
+/**
+ * Numericals
+ */
+
+CopyConstructorVisitor<Numerical>::CopyConstructorVisitor(ConstructorRepositories& repositories) : m_repositories(repositories) {}
+
+void CopyConstructorVisitor<Numerical>::initialize(CopyConstructorOrNonTerminalVisitor<Concept>& concept_or_nonterminal_visitor,
+                                                   CopyConstructorOrNonTerminalVisitor<Role>& role_or_nonterminal_visitor)
+{
+    m_concept_or_nonterminal_visitor = &concept_or_nonterminal_visitor;
+    m_role_or_nonterminal_visitor = &role_or_nonterminal_visitor;
+}
+void CopyConstructorVisitor<Numerical>::visit(NumericalCount<Concept> constructor)
+{
+    assert(m_concept_or_nonterminal_visitor);
+    constructor->get_constructor_or_nonterminal()->accept(*m_concept_or_nonterminal_visitor);
+    const auto concept_or_nonterminal = m_concept_or_nonterminal_visitor->get_result();
+    m_result = m_repositories.get_or_create_numerical_count(concept_or_nonterminal);
+}
+void CopyConstructorVisitor<Numerical>::visit(NumericalCount<Role> constructor)
+{
+    assert(m_role_or_nonterminal_visitor);
+    constructor->get_constructor_or_nonterminal()->accept(*m_role_or_nonterminal_visitor);
+    const auto role_or_nonterminal = m_role_or_nonterminal_visitor->get_result();
+    m_result = m_repositories.get_or_create_numerical_count(role_or_nonterminal);
+}
+void CopyConstructorVisitor<Numerical>::visit(NumericalDistance constructor)
+{
+    assert(m_concept_or_nonterminal_visitor && m_role_or_nonterminal_visitor);
+    constructor->get_left_concept_or_nonterminal()->accept(*m_concept_or_nonterminal_visitor);
+    const auto left_concept_or_nonterminal = m_concept_or_nonterminal_visitor->get_result();
+    constructor->get_role_or_nonterminal()->accept(*m_role_or_nonterminal_visitor);
+    const auto role_or_nonterminal = m_role_or_nonterminal_visitor->get_result();
+    constructor->get_right_concept_or_nonterminal()->accept(*m_concept_or_nonterminal_visitor);
+    const auto right_concept_or_nonterminal = m_concept_or_nonterminal_visitor->get_result();
+    m_result = m_repositories.get_or_create_numerical_distance(left_concept_or_nonterminal, role_or_nonterminal, right_concept_or_nonterminal);
+}
+
+Constructor<Numerical> CopyConstructorVisitor<Numerical>::get_result() const { return m_result; }
+
+/**
  * CopyConstructorOrRoleNonTerminal
  */
 
@@ -542,6 +677,8 @@ ConstructorOrNonTerminal<D> CopyConstructorOrNonTerminalVisitor<D>::get_result()
 
 template class CopyConstructorOrNonTerminalVisitor<Concept>;
 template class CopyConstructorOrNonTerminalVisitor<Role>;
+template class CopyConstructorOrNonTerminalVisitor<Boolean>;
+template class CopyConstructorOrNonTerminalVisitor<Numerical>;
 
 /**
  * CopyNonTerminal
@@ -566,6 +703,8 @@ NonTerminal<D> CopyNonTerminalVisitor<D>::get_result() const
 
 template class CopyNonTerminalVisitor<Concept>;
 template class CopyNonTerminalVisitor<Role>;
+template class CopyNonTerminalVisitor<Boolean>;
+template class CopyNonTerminalVisitor<Numerical>;
 
 /**
  * CopyDerivationRule
@@ -610,6 +749,8 @@ DerivationRule<D> CopyDerivationRuleVisitor<D>::get_result() const
 
 template class CopyDerivationRuleVisitor<Concept>;
 template class CopyDerivationRuleVisitor<Role>;
+template class CopyDerivationRuleVisitor<Boolean>;
+template class CopyDerivationRuleVisitor<Numerical>;
 
 /**
  * Grammar
@@ -666,5 +807,4 @@ void CopyGrammarVisitor::initialize(CopyNonTerminalVisitor<Concept>& concept_sta
     boost::hana::at_key(m_derivation_rule_visitor, boost::hana::type<Concept> {}) = &concept_rule_visitor;
     boost::hana::at_key(m_derivation_rule_visitor, boost::hana::type<Role> {}) = &role_rule_visitor;
 }
-
 }

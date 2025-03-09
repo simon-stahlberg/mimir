@@ -21,8 +21,8 @@ namespace mimir::dl
 {
 EvaluationContext::EvaluationContext(State state,
                                      Problem problem,
-                                     Denotations<Concept, Role>& ref_builders,
-                                     DenotationRepositories<Concept, Role>& ref_repositories) :
+                                     Denotations<Concept, Role, Boolean, Numerical>& ref_builders,
+                                     DenotationRepositories<Concept, Role, Boolean, Numerical>& ref_repositories) :
     m_state(state),
     m_problem(problem),
     m_builders(ref_builders),

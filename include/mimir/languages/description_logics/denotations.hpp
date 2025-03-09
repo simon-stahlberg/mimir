@@ -68,6 +68,38 @@ struct DenotationImpl<Role>
     auto identifying_members() const { return std::tuple(std::cref(get_data())); }
 };
 
+template<>
+struct DenotationImpl<Boolean>
+{
+    using DenotationType = bool;
+
+    DenotationType m_data = DenotationType();
+
+    DenotationType get_data() { return m_data; }
+    DenotationType get_data() const { return m_data; }
+
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
+    auto identifying_members() const { return std::tuple(get_data()); }
+};
+
+template<>
+struct DenotationImpl<Numerical>
+{
+    using DenotationType = uint32_t;
+
+    DenotationType m_data = DenotationType();
+
+    DenotationType get_data() { return m_data; }
+    DenotationType get_data() const { return m_data; }
+
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
+    auto identifying_members() const { return std::tuple(get_data()); }
+};
+
 /// @brief Denotation for temporary construction.
 /// This stores a computed denotation for a single state.
 template<FeatureCategory... Ds>

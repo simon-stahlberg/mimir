@@ -58,10 +58,10 @@ BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::RoleRestriction, role_or_non_terminal,
 BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::RoleIdentity, concept_or_non_terminal)
 
 BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::BooleanAtomicState, predicate_name)
-BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::BooleanNonempty, concept_or_role)
+BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::BooleanNonempty, concept_or_role_nonterminal)
 
-BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::NumericalCount, concept_or_role)
-BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::NumericalDistance, left_concept, role, right_concept)
+BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::NumericalCount, concept_or_role_nonterminal)
+BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::NumericalDistance, left_concept_or_nonterminal, role_or_nonterminal, right_concept_or_nonterminal)
 
 BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::GrammarHead, concept_start, role_start, boolean_start, numerical_start)
 BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::GrammarBody, rules)

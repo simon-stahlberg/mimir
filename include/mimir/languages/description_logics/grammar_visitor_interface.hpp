@@ -265,6 +265,48 @@ public:
 };
 
 /**
+ * Booleans
+ */
+
+template<>
+class RecurseConstructorVisitor<Boolean> : public ConstructorVisitor<Boolean>
+{
+protected:
+    RecurseConstructorOrNonTerminalVisitor<Concept>* m_concept_or_nonterminal_visitor;
+    RecurseConstructorOrNonTerminalVisitor<Role>* m_role_or_nonterminal_visitor;
+
+public:
+    virtual void initialize(RecurseConstructorOrNonTerminalVisitor<Concept>& concept_or_nonterminal_visitor,
+                            RecurseConstructorOrNonTerminalVisitor<Role>& role_or_nonterminal_visitor);
+
+    void visit(BooleanAtomicState<Static> constructor) override;
+    void visit(BooleanAtomicState<Fluent> constructor) override;
+    void visit(BooleanAtomicState<Derived> constructor) override;
+    void visit(BooleanNonempty<Concept> constructor) override;
+    void visit(BooleanNonempty<Role> constructor) override;
+};
+
+/**
+ * Numericals
+ */
+
+template<>
+class RecurseConstructorVisitor<Numerical> : public ConstructorVisitor<Numerical>
+{
+protected:
+    RecurseConstructorOrNonTerminalVisitor<Concept>* m_concept_or_nonterminal_visitor;
+    RecurseConstructorOrNonTerminalVisitor<Role>* m_role_or_nonterminal_visitor;
+
+public:
+    virtual void initialize(RecurseConstructorOrNonTerminalVisitor<Concept>& concept_or_nonterminal_visitor,
+                            RecurseConstructorOrNonTerminalVisitor<Role>& role_or_nonterminal_visitor);
+
+    void visit(NumericalCount<Concept> constructor) override;
+    void visit(NumericalCount<Role> constructor) override;
+    void visit(NumericalDistance constructor) override;
+};
+
+/**
  * ConstructorOrRoleNonTerminal
  */
 
@@ -442,6 +484,62 @@ public:
     void visit(RoleIdentity constructor) override;
 
     Constructor<Role> get_result() const;
+};
+
+/**
+ * Booleans
+ */
+
+template<>
+class CopyConstructorVisitor<Boolean> : public ConstructorVisitor<Boolean>
+{
+protected:
+    ConstructorRepositories& m_repositories;
+    Constructor<Boolean> m_result;
+
+    CopyConstructorOrNonTerminalVisitor<Concept>* m_concept_or_nonterminal_visitor;
+    CopyConstructorOrNonTerminalVisitor<Role>* m_role_or_nonterminal_visitor;
+
+public:
+    explicit CopyConstructorVisitor(ConstructorRepositories& repositories);
+
+    virtual void initialize(CopyConstructorOrNonTerminalVisitor<Concept>& concept_or_nonterminal_visitor,
+                            CopyConstructorOrNonTerminalVisitor<Role>& role_or_nonterminal_visitor);
+
+    void visit(BooleanAtomicState<Static> constructor) override;
+    void visit(BooleanAtomicState<Fluent> constructor) override;
+    void visit(BooleanAtomicState<Derived> constructor) override;
+    void visit(BooleanNonempty<Concept> constructor) override;
+    void visit(BooleanNonempty<Role> constructor) override;
+
+    Constructor<Boolean> get_result() const;
+};
+
+/**
+ * Numericals
+ */
+
+template<>
+class CopyConstructorVisitor<Numerical> : public ConstructorVisitor<Numerical>
+{
+protected:
+    ConstructorRepositories& m_repositories;
+    Constructor<Numerical> m_result;
+
+    CopyConstructorOrNonTerminalVisitor<Concept>* m_concept_or_nonterminal_visitor;
+    CopyConstructorOrNonTerminalVisitor<Role>* m_role_or_nonterminal_visitor;
+
+public:
+    explicit CopyConstructorVisitor(ConstructorRepositories& repositories);
+
+    virtual void initialize(CopyConstructorOrNonTerminalVisitor<Concept>& concept_or_nonterminal_visitor,
+                            CopyConstructorOrNonTerminalVisitor<Role>& role_or_nonterminal_visitor);
+
+    void visit(NumericalCount<Concept> constructor) override;
+    void visit(NumericalCount<Role> constructor) override;
+    void visit(NumericalDistance constructor) override;
+
+    Constructor<Numerical> get_result() const;
 };
 
 /**

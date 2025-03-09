@@ -28,9 +28,11 @@
 namespace mimir::dl::cnf_grammar
 {
 
-const ConstructorLists<Concept, Role> GeneratedSentencesContainer::empty_lists =
+const ConstructorLists<Concept, Role, Boolean, Numerical> GeneratedSentencesContainer::empty_lists =
     boost::hana::make_map(boost::hana::make_pair(boost::hana::type_c<Concept>, dl::ConstructorList<Concept> {}),
-                          boost::hana::make_pair(boost::hana::type_c<Role>, dl::ConstructorList<Role> {}));
+                          boost::hana::make_pair(boost::hana::type_c<Role>, dl::ConstructorList<Role> {}),
+                          boost::hana::make_pair(boost::hana::type_c<Boolean>, dl::ConstructorList<Boolean> {}),
+                          boost::hana::make_pair(boost::hana::type_c<Numerical>, dl::ConstructorList<Numerical> {}));
 
 /**
  * Concept
@@ -528,6 +530,6 @@ void GeneratorGrammarVisitor::visit(const Grammar& grammar)
     }
 }
 
-const HanaGeneratorStatistics<Concept, Role>& GeneratorGrammarVisitor::get_statistics() const { return m_statistics; }
+const HanaGeneratorStatistics<Concept, Role, Boolean, Numerical>& GeneratorGrammarVisitor::get_statistics() const { return m_statistics; }
 
 }

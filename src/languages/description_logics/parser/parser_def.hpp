@@ -92,7 +92,7 @@ role_non_terminal_type const role_non_terminal = "role_non_terminal";
 role_choice_type const role_choice = "role_choice";
 role_derivation_rule_type const role_derivation_rule = "role_derivation_rule";
 
-concept_or_role_type const concept_or_role = "concept_or_role";
+concept_or_role_nonterminal_type const concept_or_role_nonterminal = "concept_or_role_nonterminal";
 
 boolean_type const boolean = "boolean";
 boolean_atomic_state_type const boolean_atomic_state = "boolean_atomic_state";
@@ -171,17 +171,17 @@ const auto role_non_terminal_def = role_non_terminal_parser();
 const auto role_choice_def = role_non_terminal | role;
 const auto role_derivation_rule_def = role_non_terminal > "::=" > (role_choice % lit("|"));
 
-const auto concept_or_role_def = concept_ | role;
+const auto concept_or_role_nonterminal_def = concept_choice | role_choice;
 
 const auto boolean_def = boolean_atomic_state | boolean_nonempty;
 const auto boolean_atomic_state_def = lit(keywords::boolean_atomic_state) > predicate_name_parser();
-const auto boolean_nonempty_def = lit(keywords::boolean_nonempty) > concept_or_role;
+const auto boolean_nonempty_def = lit(keywords::boolean_nonempty) > concept_or_role_nonterminal;
 const auto boolean_non_terminal_def = boolean_non_terminal_parser();
 const auto boolean_choice_def = boolean_non_terminal | boolean;
 const auto boolean_derivation_rule_def = boolean_non_terminal > "::=" > (boolean_choice % lit("|"));
 
 const auto numerical_def = numerical_count | numerical_distance;
-const auto numerical_count_def = lit(keywords::numerical_count) > concept_or_role;
+const auto numerical_count_def = lit(keywords::numerical_count) > concept_or_role_nonterminal;
 const auto numerical_distance_def = lit(keywords::numerical_distance) > concept_ > role > concept_;
 const auto numerical_non_terminal_def = numerical_non_terminal_parser();
 const auto numerical_choice_def = numerical_non_terminal | numerical;
@@ -230,7 +230,7 @@ BOOST_SPIRIT_DEFINE(role,
                     role_choice,
                     role_derivation_rule)
 
-BOOST_SPIRIT_DEFINE(concept_or_role)
+BOOST_SPIRIT_DEFINE(concept_or_role_nonterminal)
 
 BOOST_SPIRIT_DEFINE(boolean, boolean_atomic_state, boolean_nonempty, boolean_non_terminal, boolean_choice, boolean_derivation_rule)
 
@@ -382,7 +382,7 @@ struct RoleIdentityClass : x3::annotate_on_success
 {
 };
 
-struct ConceptOrRoleClass : x3::annotate_on_success
+struct ConceptOrRoleNonterminalClass : x3::annotate_on_success
 {
 };
 
@@ -450,7 +450,7 @@ parser::role_non_terminal_type const& role_non_terminal() { return parser::role_
 parser::role_choice_type const& role_choice() { return parser::role_choice; }
 parser::role_derivation_rule_type const& role_derivation_rule() { return parser::role_derivation_rule; }
 
-parser::concept_or_role_type const& concept_or_role() { return parser::concept_or_role; }
+parser::concept_or_role_nonterminal_type const& concept_or_role_nonterminal() { return parser::concept_or_role_nonterminal; }
 
 parser::boolean_type const& boolean() { return parser::boolean; }
 parser::boolean_atomic_state_type const& boolean_atomic_state() { return parser::boolean_atomic_state; }

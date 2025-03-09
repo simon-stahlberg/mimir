@@ -19,11 +19,15 @@
 
 namespace mimir::dl::cnf_grammar
 {
-const DerivationRuleLists<Concept, Role> DerivationRulesContainer::empty_lists =
+const DerivationRuleLists<Concept, Role, Boolean, Numerical> DerivationRulesContainer::empty_lists =
     boost::hana::make_map(boost::hana::make_pair(boost::hana::type_c<Concept>, DerivationRuleList<Concept> {}),
-                          boost::hana::make_pair(boost::hana::type_c<Role>, DerivationRuleList<Role> {}));
+                          boost::hana::make_pair(boost::hana::type_c<Role>, DerivationRuleList<Role> {}),
+                          boost::hana::make_pair(boost::hana::type_c<Boolean>, DerivationRuleList<Boolean> {}),
+                          boost::hana::make_pair(boost::hana::type_c<Numerical>, DerivationRuleList<Numerical> {}));
 
-const SubstitutionRuleLists<Concept, Role> SubstitutionRulesContainer::empty_lists =
+const SubstitutionRuleLists<Concept, Role, Boolean, Numerical> SubstitutionRulesContainer::empty_lists =
     boost::hana::make_map(boost::hana::make_pair(boost::hana::type_c<Concept>, SubstitutionRuleList<Concept> {}),
-                          boost::hana::make_pair(boost::hana::type_c<Role>, SubstitutionRuleList<Role> {}));
+                          boost::hana::make_pair(boost::hana::type_c<Role>, SubstitutionRuleList<Role> {}),
+                          boost::hana::make_pair(boost::hana::type_c<Boolean>, SubstitutionRuleList<Boolean> {}),
+                          boost::hana::make_pair(boost::hana::type_c<Numerical>, SubstitutionRuleList<Numerical> {}));
 }

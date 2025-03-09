@@ -80,7 +80,7 @@ struct RoleReflexiveTransitiveClosureClass;
 struct RoleRestrictionClass;
 struct RoleIdentityClass;
 
-struct ConceptOrRoleClass;
+struct ConceptOrRoleNonterminalClass;
 
 struct BooleanAtomicStateClass;
 struct BooleanNonemptyClass;
@@ -125,7 +125,7 @@ typedef x3::rule<NonTerminalClass<Role>, ast::NonTerminal<Role>> role_non_termin
 typedef x3::rule<ConstructorOrNonTerminalClass<Role>, ast::ConstructorOrNonTerminal<Role>> role_choice_type;
 typedef x3::rule<DerivationRuleClass<Role>, ast::DerivationRule<Role>> role_derivation_rule_type;
 
-typedef x3::rule<ConceptOrRoleClass, ast::ConceptOrRole> concept_or_role_type;
+typedef x3::rule<ConceptOrRoleNonterminalClass, ast::ConceptOrRoleNonterminal> concept_or_role_nonterminal_type;
 
 typedef x3::rule<ConstructorClass<Boolean>, ast::Constructor<Boolean>> boolean_type;
 typedef x3::rule<BooleanAtomicStateClass, ast::BooleanAtomicState> boolean_atomic_state_type;
@@ -180,7 +180,7 @@ BOOST_SPIRIT_DECLARE(role_type,
                      role_choice_type,
                      role_derivation_rule_type)
 
-BOOST_SPIRIT_DECLARE(concept_or_role_type)
+BOOST_SPIRIT_DECLARE(concept_or_role_nonterminal_type)
 
 BOOST_SPIRIT_DECLARE(boolean_type,
                      boolean_atomic_state_type,
@@ -234,7 +234,7 @@ parser::role_non_terminal_type const& role_non_terminal();
 parser::role_choice_type const& role_choice();
 parser::role_derivation_rule_type const& role_derivation_rule();
 
-parser::concept_or_role_type const& concept_or_role();
+parser::concept_or_role_nonterminal_type const& concept_or_role_nonterminal();
 
 parser::boolean_type const& boolean();
 parser::boolean_atomic_state_type const& boolean_atomic_state();
