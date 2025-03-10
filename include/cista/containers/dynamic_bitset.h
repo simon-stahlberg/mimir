@@ -422,6 +422,11 @@ struct basic_dynamic_bitset
      * Accessors
      */
 
+    constexpr bool any() const
+    {
+        return std::any_of(blocks_.begin(), blocks_.end(), [](auto&& arg) { return arg != 0; });
+    }
+
     constexpr size_t count() const
     {
         size_t count = 0;

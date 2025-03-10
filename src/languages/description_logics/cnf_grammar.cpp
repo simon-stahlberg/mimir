@@ -26,6 +26,9 @@
 #include "mimir/languages/description_logics/grammar.hpp"
 #include "parser.hpp"
 
+#include <fmt/core.h>
+#include <fmt/ranges.h>
+
 namespace mimir::dl::cnf_grammar
 {
 
@@ -65,69 +68,195 @@ Grammar::Grammar(const std::string& bnf_description, Domain domain)
     m_domain = std::move(cnf_grammar.m_domain);
 }
 
+static void add_frances_et_al_aaai2021_bnf_concept_intersection(std::stringstream& out, std::vector<std::string>& head_names)
+{
+    auto head_name = fmt::format("<{}>", dl::keywords::concept_intersection);
+    head_names.push_back(head_name);
+
+    auto body_name = fmt::format("@{} <concept> <concept>", dl::keywords::concept_intersection);
+
+    out << fmt::format("    {} ::= {}\n", head_name, body_name);
+}
+
+static void add_frances_et_al_aaai2021_bnf_concept_role_value_map_equality(std::stringstream& out, std::vector<std::string>& head_names)
+{
+    auto head_name = fmt::format("<{}>", dl::keywords::concept_intersection);
+    head_names.push_back(head_name);
+
+    auto body_name = fmt::format("@{} <role> <role>", dl::keywords::concept_role_value_map_equality);
+
+    out << fmt::format("    {} ::= {}\n", head_name, body_name);
+}
+
+static void add_frances_et_al_2021_bnf_atomic_state(const std::string& keyword,
+                                                    const std::string& predicate_name,
+                                                    std::stringstream& out,
+                                                    std::vector<std::string>& head_names)
+{
+    auto head_name = fmt::format("<{}_{}>", keyword, predicate_name);
+
+    head_names.push_back(head_name);
+
+    auto body_name = fmt::format("@{} \"{}\"", keyword, predicate_name);
+
+    out << fmt::format("    {} ::= {}\n", head_name, body_name);
+}
+
+static void add_frances_et_al_2021_bnf_atomic_goal(const std::string& keyword,
+                                                   const std::string& predicate_name,
+                                                   std::stringstream& out,
+                                                   std::vector<std::string>& head_names)
+{
+    for (const auto& polarity : { "true", "false" })
+    {
+        auto head_name = fmt::format("<{}_{}_{}>", keyword, polarity, predicate_name);
+        head_names.push_back(head_name);
+
+        auto body_name = fmt::format("@{} \"{}\" {}", keyword, predicate_name, polarity);
+
+        out << fmt::format("    {} ::= {}\n", head_name, body_name);
+    }
+}
+
+template<DescriptionLogicCategory D>
+static void add_frances_et_al_aaai2021_bnf_boolean_nonempy(std::stringstream& out, std::vector<std::string>& head_names)
+{
+    auto head_name = fmt::format("<{}>", dl::keywords::boolean_nonempty);
+    head_names.push_back(head_name);
+
+    auto body_name = fmt::format("@{} <{}>", dl::keywords::boolean_nonempty, D::name);
+
+    out << fmt::format("    {} ::= {}\n", head_name, body_name);
+}
+
+template<DescriptionLogicCategory D>
+static void add_frances_et_al_aaai2021_bnf_numeric_count(std::stringstream& out, std::vector<std::string>& head_names)
+{
+    auto head_name = fmt::format("<{}>", dl::keywords::numerical_count);
+    head_names.push_back(head_name);
+
+    auto body_name = fmt::format("@{} <{}>", dl::keywords::numerical_count, D::name);
+
+    out << fmt::format("    {} ::= {}\n", head_name, body_name);
+}
+
+static void add_frances_et_al_aaai2021_bnf_numeric_distance(std::stringstream& out, std::vector<std::string>& head_names)
+{
+    auto head_name = fmt::format("<{}>", dl::keywords::numerical_distance);
+    head_names.push_back(head_name);
+
+    auto body_name = fmt::format("@{} <concept> @role_restriction <role_primitive> <concept_primitive> <concept>", dl::keywords::numerical_distance);
+
+    out << fmt::format("    {} ::= {}\n", head_name, body_name);
+}
+
 static std::string create_frances_et_al_aaai2021_bnf(Domain domain)
 {
-    auto ss = std::stringstream {};
-    ss << "[start_symbols]" << "\n"
-       << "    concept = <concept_start>" << "\n"
-       << "    role = <role_start>" << "\n"
-       << "[grammar_rules]" << "\n"
-       << "    <concept_start> ::= <concept>" << "\n"
-       << "    <role_start> ::= <role>" << "\n";
-
+    // Collect head names to build choice rules.
+    auto primitive_head_names = HanaContainer<std::vector<std::string>, Concept, Role, Boolean, Numerical> {};
     auto head_names = HanaContainer<std::vector<std::string>, Concept, Role, Boolean, Numerical> {};
 
-    boost::hana::for_each(domain->get_hana_predicates(),
+    // Builder rules in a stringstream separate from start symbols.
+    auto rule_ss = std::stringstream {};
+    rule_ss << "[grammar_rules]" << "\n";
+
+    /**
+     * Primitives concepts and roles.
+     */
+
+    boost::hana::for_each(
+        domain->get_hana_predicates(),
+        [&](auto&& pair)
+        {
+            const auto& predicates = boost::hana::second(pair);
+
+            for (const auto& predicate : predicates)
+            {
+                if (predicate->get_arity() == 0)
+                {
+                    auto& boolean_head_names = boost::hana::at_key(primitive_head_names, boost::hana::type<Boolean> {});
+
+                    add_frances_et_al_2021_bnf_atomic_state(dl::keywords::boolean_atomic_state, predicate->get_name(), rule_ss, boolean_head_names);
+                }
+                else if (predicate->get_arity() == 1)
+                {
+                    auto& concept_head_names = boost::hana::at_key(primitive_head_names, boost::hana::type<Concept> {});
+
+                    add_frances_et_al_2021_bnf_atomic_state(dl::keywords::concept_atomic_state, predicate->get_name(), rule_ss, concept_head_names);
+
+                    add_frances_et_al_2021_bnf_atomic_goal(dl::keywords::concept_atomic_goal, predicate->get_name(), rule_ss, concept_head_names);
+                }
+                else if (predicate->get_arity() == 2)
+                {
+                    auto& role_head_names = boost::hana::at_key(primitive_head_names, boost::hana::type<Role> {});
+
+                    add_frances_et_al_2021_bnf_atomic_state(dl::keywords::role_atomic_state, predicate->get_name(), rule_ss, role_head_names);
+
+                    add_frances_et_al_2021_bnf_atomic_goal(dl::keywords::role_atomic_goal, predicate->get_name(), rule_ss, role_head_names);
+                }
+            }
+        });
+
+    // Create a rune alternative for primitives.
+    boost::hana::for_each(primitive_head_names,
                           [&](auto&& pair)
                           {
-                              const auto& predicates = boost::hana::second(pair);
+                              const auto& key = boost::hana::first(pair);
+                              const auto& second = boost::hana::second(pair);
+                              using KeyType = typename decltype(+key)::type;
 
-                              for (const auto& predicate : predicates)
+                              if (second.empty())
                               {
-                                  if (predicate->get_arity() == 1)
-                                  {
-                                      {
-                                          auto head_name = "<concept_atomic_state_" + predicate->get_name() + ">";
-                                          boost::hana::at_key(head_names, boost::hana::type<Concept> {}).push_back(head_name);
-
-                                          auto body_name = std::string(dl::keywords::concept_atomic_state) + " \"" + predicate->get_name() + "\"";
-
-                                          ss << "    " << head_name << " ::= " << body_name << "\n";
-                                      }
-
-                                      for (const auto& polarity : { "true", "false" })
-                                      {
-                                          auto head_name = std::string("<concept_atomic_goal_") + polarity + "_" + predicate->get_name() + ">";
-                                          boost::hana::at_key(head_names, boost::hana::type<Concept> {}).push_back(head_name);
-
-                                          auto body_name = std::string(dl::keywords::concept_atomic_goal) + " \"" + predicate->get_name() + "\" " + polarity;
-
-                                          ss << "    " << head_name << " ::= " << body_name << "\n";
-                                      }
-                                  }
-                                  else if (predicate->get_arity() == 2)
-                                  {
-                                      {
-                                          auto head_name = "<role_atomic_state_" + predicate->get_name() + ">";
-                                          boost::hana::at_key(head_names, boost::hana::type<Role> {}).push_back(head_name);
-
-                                          auto body_name = std::string(dl::keywords::role_atomic_state) + " \"" + predicate->get_name() + "\"";
-
-                                          ss << "    " << head_name << " ::= " << body_name << "\n";
-                                      }
-
-                                      for (const auto& polarity : { "true", "false" })
-                                      {
-                                          auto head_name = std::string("<role_atomic_goal_") + polarity + "_" + predicate->get_name() + ">";
-                                          boost::hana::at_key(head_names, boost::hana::type<Role> {}).push_back(head_name);
-
-                                          auto body_name = std::string(dl::keywords::role_atomic_goal) + " \"" + predicate->get_name() + "\" " + polarity;
-
-                                          ss << "    " << head_name << " ::= " << body_name << "\n";
-                                      }
-                                  }
+                                  return;
                               }
+
+                              // Construct the primitive head name
+                              std::string primitives_head_name = fmt::format("<{}_primitive>", KeyType::name);
+
+                              // Add it to head_names
+                              boost::hana::at_key(head_names, key).push_back(primitives_head_name);
+
+                              // Format rule with alternatives using fmt::join
+                              rule_ss << fmt::format("    {} ::= {}\n", primitives_head_name, fmt::join(second, " | "));
                           });
+
+    const bool has_primitive_concepts = !boost::hana::at_key(primitive_head_names, boost::hana::type<Concept> {}).empty();
+    const bool has_primitive_roles = !boost::hana::at_key(primitive_head_names, boost::hana::type<Role> {}).empty();
+
+    /**
+     * Composites
+     */
+
+    const bool has_concepts = !boost::hana::at_key(head_names, boost::hana::type<Concept> {}).empty();
+    const bool has_roles = !boost::hana::at_key(head_names, boost::hana::type<Role> {}).empty();
+
+    auto& concept_head_names = boost::hana::at_key(head_names, boost::hana::type<Concept> {});
+    auto& role_head_names = boost::hana::at_key(head_names, boost::hana::type<Role> {});
+
+    /* Concepts */
+
+    add_frances_et_al_aaai2021_bnf_concept_intersection(rule_ss, concept_head_names);
+
+    /* Roles */
+
+    /* Booleans */
+    auto& boolean_head_names = boost::hana::at_key(head_names, boost::hana::type<Boolean> {});
+
+    add_frances_et_al_aaai2021_bnf_boolean_nonempy<Concept>(rule_ss, boolean_head_names);
+
+    add_frances_et_al_aaai2021_bnf_boolean_nonempy<Role>(rule_ss, boolean_head_names);
+
+    /* Numerical */
+    auto& numerical_head_names = boost::hana::at_key(head_names, boost::hana::type<Numerical> {});
+
+    add_frances_et_al_aaai2021_bnf_numeric_count<Concept>(rule_ss, numerical_head_names);
+
+    add_frances_et_al_aaai2021_bnf_numeric_count<Role>(rule_ss, numerical_head_names);
+
+    add_frances_et_al_aaai2021_bnf_numeric_distance(rule_ss, numerical_head_names);
+
+    auto start_ss = std::stringstream {};
+    start_ss << "[start_symbols]" << "\n";
 
     boost::hana::for_each(head_names,
                           [&](auto&& pair)
@@ -136,27 +265,32 @@ static std::string create_frances_et_al_aaai2021_bnf(Domain domain)
                               const auto& second = boost::hana::second(pair);
                               using KeyType = typename decltype(+key)::type;
 
-                              if constexpr (std::same_as<KeyType, Concept>)
+                              if (second.empty())
                               {
-                                  ss << "    <concept> ::= ";
-                              }
-                              else if constexpr (std::same_as<KeyType, Role>)
-                              {
-                                  ss << "    <role> ::= ";
+                                  return;
                               }
 
-                              bool first = true;
-                              for (const auto& head_name : second)
+                              // Format start symbol
+                              start_ss << fmt::format("    {} = <{}_start>\n", KeyType::name, KeyType::name);
+
+                              // Format start rule
+                              rule_ss << fmt::format("    <{}_start> ::= <{}>\n", KeyType::name, KeyType::name);
+
+                              // Join elements using fmt::join
+                              std::string alternatives = fmt::format("{}", fmt::join(second, " | "));
+
+                              // Add primitive alternative if applicable
+                              if (!boost::hana::at_key(primitive_head_names, key).empty())
                               {
-                                  if (!first)
-                                      ss << " | ";
-
-                                  ss << head_name;
-
-                                  first = false;
+                                  alternatives = fmt::format("{} | <{}_primitive>", alternatives, KeyType::name);
                               }
-                              ss << "\n";
+
+                              rule_ss << fmt::format("    <{}> ::= {}\n", KeyType::name, alternatives);
                           });
+
+    auto ss = std::stringstream {};
+    ss << start_ss.str();
+    ss << rule_ss.str();
 
     return ss.str();
 }

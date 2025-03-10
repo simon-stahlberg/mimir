@@ -41,6 +41,8 @@
 #include "mimir/languages/description_logics/constructor_visitor_interface.hpp"
 #include "mimir/languages/description_logics/evaluation_context.hpp"
 
+#include <queue>
+
 namespace mimir::dl
 {
 
@@ -126,10 +128,8 @@ void ConceptAtomicStateImpl<Static>::evaluate_impl(EvaluationContext& context) c
     bitset.unset_all();
 
     // Compute result
-    for (const auto& atom_index : context.get_problem()->get_static_initial_positive_atoms_bitset())
+    for (const auto& atom : context.get_problem()->get_static_initial_atoms())
     {
-        const auto atom = context.get_problem()->get_repositories().template get_ground_atom<Static>(atom_index);
-
         if (atom->get_predicate() == m_predicate)
         {
             // Ensure that object index is within bounds.
@@ -620,10 +620,8 @@ void RoleAtomicStateImpl<Static>::evaluate_impl(EvaluationContext& context) cons
     }
 
     // Compute result
-    for (const auto& atom_index : context.get_problem()->get_static_initial_positive_atoms_bitset())
+    for (const auto& atom : context.get_problem()->get_static_initial_atoms())
     {
-        const auto atom = context.get_problem()->get_repositories().template get_ground_atom<Static>(atom_index);
-
         if (atom->get_predicate() == m_predicate)
         {
             const auto object_left_index = atom->get_objects().at(0)->get_index();
@@ -1128,7 +1126,39 @@ BooleanAtomicStateImpl<P>::BooleanAtomicStateImpl(Index index, Predicate<P> pred
 template<StaticOrFluentOrDerived P>
 void BooleanAtomicStateImpl<P>::evaluate_impl(EvaluationContext& context) const
 {
-    // TODO
+    // Fetch data
+    auto& boolean = context.get_builder<Boolean>().get_data();
+    boolean = false;
+
+    // Compute result
+    for (const auto& atom_index : context.get_state()->get_atoms<P>())
+    {
+        const auto atom = context.get_problem()->get_repositories().template get_ground_atom<P>(atom_index);
+
+        if (atom->get_predicate() == m_predicate)
+        {
+            boolean = true;
+            break;
+        }
+    }
+}
+
+template<>
+void BooleanAtomicStateImpl<Static>::evaluate_impl(EvaluationContext& context) const
+{
+    // Fetch data
+    auto& boolean = context.get_builder<Boolean>().get_data();
+    boolean = false;
+
+    // Compute result
+    for (const auto& atom : context.get_problem()->get_static_initial_atoms())
+    {
+        if (atom->get_predicate() == m_predicate)
+        {
+            boolean = true;
+            break;
+        }
+    }
 }
 
 template<StaticOrFluentOrDerived P>
@@ -1161,7 +1191,14 @@ BooleanNonemptyImpl<D>::BooleanNonemptyImpl(Index index, Constructor<D> construc
 template<DescriptionLogicCategory D>
 void BooleanNonemptyImpl<D>::evaluate_impl(EvaluationContext& context) const
 {
-    // TODO
+    // Evaluate the children
+    const auto eval_constructor = m_constructor->evaluate(context);
+
+    // Fetch data
+    auto& boolean = context.get_builder<Boolean>().get_data();
+
+    // Compute result
+    boolean = eval_constructor->any();
 }
 
 template<DescriptionLogicCategory D>
@@ -1197,6 +1234,14 @@ NumericalCountImpl<D>::NumericalCountImpl(Index index, Constructor<D> constructo
 template<DescriptionLogicCategory D>
 void NumericalCountImpl<D>::evaluate_impl(EvaluationContext& context) const
 {
+    // Evaluate the children
+    const auto eval_constructor = m_constructor->evaluate(context);
+
+    // Fetch data
+    auto& numerical = context.get_builder<Numerical>().get_data();
+
+    // Compute result
+    numerical = eval_constructor->count();
 }
 
 template<DescriptionLogicCategory D>
@@ -1230,7 +1275,64 @@ NumericalDistanceImpl::NumericalDistanceImpl(Index index, Constructor<Concept> l
 
 void NumericalDistanceImpl::evaluate_impl(EvaluationContext& context) const
 {
-    // TODO
+    // Evaluate the children
+    const auto eval_left_concept = m_left_concept->evaluate(context);
+    const auto eval_role = m_role->evaluate(context);
+    const auto eval_right_concept = m_right_concept->evaluate(context);
+
+    // Fetch data
+    auto& numerical = context.get_builder<Numerical>().get_data();
+    using DistanceType = typename DenotationImpl<Numerical>::DenotationType;
+    const auto MAX_DISTANCE = std::numeric_limits<DistanceType>::max();
+    numerical = MAX_DISTANCE;
+
+    // Compute result
+    if (!eval_left_concept->any() || !eval_right_concept->any())
+    {
+        return;  ///< there exists no path and the distance is trivially infinity.
+    }
+
+    if (!eval_left_concept->get_data().are_disjoint(eval_right_concept->get_data()))
+    {
+        numerical = 0;
+        return;  ///< sources intersects with targets and the distance is trivially zero.
+    }
+
+    auto deque = std::deque<Index> {};
+    auto distances = std::vector<DistanceType>(context.get_problem()->get_problem_and_domain_objects().size(), MAX_DISTANCE);
+    for (const auto& object_index : eval_left_concept->get_data())
+    {
+        deque.push_back(object_index);
+        distances[object_index] = 0;
+    }
+
+    while (!deque.empty())
+    {
+        const auto source = deque.front();
+        deque.pop_front();
+
+        const auto source_dist = distances[source];
+        assert(source_dist != MAX_DISTANCE);
+
+        for (const auto& target : eval_role->get_data().at(source))
+        {
+            const auto new_dist = source_dist + 1;
+
+            auto& target_dist = distances[target];
+
+            if (new_dist < target_dist)
+            {
+                target_dist = new_dist;
+                deque.push_back(target);
+            }
+
+            if (eval_right_concept->get_data().get(target))
+            {
+                numerical = target_dist;
+                return;
+            }
+        }
+    }
 }
 
 void NumericalDistanceImpl::accept_impl(ConstructorVisitor<Numerical>& visitor) const { visitor.visit(this); }

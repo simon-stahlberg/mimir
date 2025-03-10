@@ -29,15 +29,13 @@
 
 namespace mimir::dl::cnf_grammar
 {
-using HanaStartSymbols = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::optional<NonTerminal<Concept>>>,
-                                          boost::hana::pair<boost::hana::type<Role>, std::optional<NonTerminal<Role>>>,
-                                          boost::hana::pair<boost::hana::type<Boolean>, std::optional<NonTerminal<Boolean>>>,
-                                          boost::hana::pair<boost::hana::type<Numerical>, std::optional<NonTerminal<Numerical>>>>;
-
 class StartSymbolsContainer
 {
 private:
-    HanaStartSymbols m_symbols;
+    template<dl::FeatureCategory... Ds>
+    using HanaStartSymbols = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, std::optional<NonTerminal<Ds>>>...>;
+
+    HanaStartSymbols<Concept, Role, Boolean, Numerical> m_symbols;
 
 public:
     StartSymbolsContainer() = default;
@@ -68,7 +66,7 @@ public:
         return boost::hana::at_key(m_symbols, boost::hana::type<D> {});
     }
 
-    const HanaStartSymbols& get() const { return m_symbols; }
+    const HanaStartSymbols<Concept, Role, Boolean, Numerical>& get() const { return m_symbols; }
 };
 
 class DerivationRulesContainer

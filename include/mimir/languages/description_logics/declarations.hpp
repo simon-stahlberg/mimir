@@ -179,11 +179,15 @@ template<dl::FeatureCategory D>
 class NonTerminalImpl;
 template<dl::FeatureCategory D>
 using NonTerminal = const NonTerminalImpl<D>*;
-template<template<typename> typename Value, dl::FeatureCategory... D>
-using NonTerminalMap = boost::hana::map<boost::hana::pair<boost::hana::type<D>, std::unordered_map<NonTerminal<D>, Value<D>>>...>;
-template<typename Key, dl::FeatureCategory... D>
+template<dl::FeatureCategory D>
+using NonTerminalSet = std::unordered_set<NonTerminal<D>>;
+template<dl::FeatureCategory... Ds>
+using NonTerminalSets = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, NonTerminalSet<Ds>>...>;
+template<template<typename> typename Value, dl::FeatureCategory... Ds>
+using NonTerminalMap = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, std::unordered_map<NonTerminal<Ds>, Value<Ds>>>...>;
+template<typename Key, dl::FeatureCategory... Ds>
 using ToNonTerminalMap =
-    boost::hana::map<boost::hana::pair<boost::hana::type<D>, std::unordered_map<Key, NonTerminal<D>, loki::Hash<Key>, loki::EqualTo<Key>>>...>;
+    boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, std::unordered_map<Key, NonTerminal<Ds>, loki::Hash<Key>, loki::EqualTo<Key>>>...>;
 
 /* ConstructorOrNonTerminal */
 template<dl::FeatureCategory D>

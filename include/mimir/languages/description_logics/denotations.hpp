@@ -46,6 +46,9 @@ struct DenotationImpl<Concept>
     DenotationType& get_data() { return m_data; }
     const DenotationType& get_data() const { return m_data; }
 
+    bool any() const { return m_data.any(); }
+    size_t count() const { return m_data.count(); }
+
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
@@ -62,6 +65,15 @@ struct DenotationImpl<Role>
     DenotationType& get_data() { return m_data; }
     const DenotationType& get_data() const { return m_data; }
 
+    bool any() const
+    {
+        return std::any_of(m_data.begin(), m_data.end(), [](auto&& arg) { return arg.any(); });
+    }
+    size_t count() const
+    {
+        return std::accumulate(m_data.begin(), m_data.end(), size_t { 0 }, [](size_t sum, auto&& arg) { return sum + arg.count(); });
+    }
+
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
@@ -75,8 +87,8 @@ struct DenotationImpl<Boolean>
 
     DenotationType m_data = DenotationType();
 
-    DenotationType get_data() { return m_data; }
-    DenotationType get_data() const { return m_data; }
+    DenotationType& get_data() { return m_data; }
+    const DenotationType& get_data() const { return m_data; }
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -91,8 +103,8 @@ struct DenotationImpl<Numerical>
 
     DenotationType m_data = DenotationType();
 
-    DenotationType get_data() { return m_data; }
-    DenotationType get_data() const { return m_data; }
+    DenotationType& get_data() { return m_data; }
+    const DenotationType& get_data() const { return m_data; }
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.

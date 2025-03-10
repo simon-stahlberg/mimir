@@ -136,56 +136,56 @@ const auto concept__def = concept_bot | concept_top | concept_atomic_state | con
                           | concept_value_restriction | concept_existential_quantification | concept_role_value_map_containment
                           | concept_role_value_map_equality | concept_nominal;
 
-const auto concept_bot_def = lit(keywords::concept_bot) >> x3::attr(ast::ConceptBot {});
-const auto concept_top_def = lit(keywords::concept_top) >> x3::attr(ast::ConceptTop {});
-const auto concept_atomic_state_def = lit(keywords::concept_atomic_state) > predicate_name_parser();
-const auto concept_atomic_goal_def = lit(keywords::concept_atomic_goal) > predicate_name_parser() > bool_parser();
-const auto concept_intersection_def = lit(keywords::concept_intersection) > concept_choice > concept_choice;
-const auto concept_union_def = lit(keywords::concept_union) > concept_choice > concept_choice;
-const auto concept_negation_def = lit(keywords::concept_negation) > concept_choice;
-const auto concept_value_restriction_def = lit(keywords::concept_value_restriction) > role_choice > concept_choice;
-const auto concept_existential_quantification_def = lit(keywords::concept_existential_quantification) > role_choice > concept_choice;
-const auto concept_role_value_map_containment_def = lit(keywords::concept_role_value_map_containment) > role_choice > role_choice;
-const auto concept_role_value_map_equality_def = lit(keywords::concept_role_value_map_equality) > role_choice > role_choice;
-const auto concept_nominal_def = lit(keywords::concept_nominal) > object_name_parser();
+const auto concept_bot_def = lit(std::string("@") + keywords::concept_bot) >> x3::attr(ast::ConceptBot {});
+const auto concept_top_def = lit(std::string("@") + keywords::concept_top) >> x3::attr(ast::ConceptTop {});
+const auto concept_atomic_state_def = lit(std::string("@") + keywords::concept_atomic_state) > predicate_name_parser();
+const auto concept_atomic_goal_def = lit(std::string("@") + keywords::concept_atomic_goal) > predicate_name_parser() > bool_parser();
+const auto concept_intersection_def = lit(std::string("@") + keywords::concept_intersection) > concept_choice > concept_choice;
+const auto concept_union_def = lit(std::string("@") + keywords::concept_union) > concept_choice > concept_choice;
+const auto concept_negation_def = lit(std::string("@") + keywords::concept_negation) > concept_choice;
+const auto concept_value_restriction_def = lit(std::string("@") + keywords::concept_value_restriction) > role_choice > concept_choice;
+const auto concept_existential_quantification_def = lit(std::string("@") + keywords::concept_existential_quantification) > role_choice > concept_choice;
+const auto concept_role_value_map_containment_def = lit(std::string("@") + keywords::concept_role_value_map_containment) > role_choice > role_choice;
+const auto concept_role_value_map_equality_def = lit(std::string("@") + keywords::concept_role_value_map_equality) > role_choice > role_choice;
+const auto concept_nominal_def = lit(std::string("@") + keywords::concept_nominal) > object_name_parser();
 const auto concept_non_terminal_def = concept_non_terminal_parser();
 const auto concept_choice_def = concept_non_terminal | concept_;
-const auto concept_derivation_rule_def = concept_non_terminal > "::=" > (concept_choice % lit("|"));
+const auto concept_derivation_rule_def = concept_non_terminal > "::=" > -(concept_choice % lit("|"));
 
 const auto role_def = role_universal | role_atomic_state | role_atomic_goal | role_intersection | role_union | role_complement | role_inverse | role_composition
                       | role_transitive_closure | role_reflexive_transitive_closure | role_restriction | role_identity;
 
-const auto role_universal_def = lit(keywords::role_universal) >> x3::attr(ast::RoleUniversal {});
-const auto role_atomic_state_def = lit(keywords::role_atomic_state) > predicate_name_parser();
-const auto role_atomic_goal_def = lit(keywords::role_atomic_goal) > predicate_name_parser() > bool_parser();
-const auto role_intersection_def = lit(keywords::role_intersection) > role_choice > role_choice;
-const auto role_union_def = lit(keywords::role_union) > role_choice > role_choice;
-const auto role_complement_def = lit(keywords::role_complement) > role_choice;
-const auto role_inverse_def = lit(keywords::role_inverse) > role_choice;
-const auto role_composition_def = lit(keywords::role_composition) > role_choice > role_choice;
-const auto role_transitive_closure_def = lit(keywords::role_transitive_closure) > role_choice;
-const auto role_reflexive_transitive_closure_def = lit(keywords::role_reflexive_transitive_closure) > role_choice;
-const auto role_restriction_def = lit(keywords::role_restriction) > role_choice > concept_choice;
-const auto role_identity_def = lit(keywords::role_identity) > concept_choice;
+const auto role_universal_def = lit(std::string("@") + keywords::role_universal) >> x3::attr(ast::RoleUniversal {});
+const auto role_atomic_state_def = lit(std::string("@") + keywords::role_atomic_state) > predicate_name_parser();
+const auto role_atomic_goal_def = lit(std::string("@") + keywords::role_atomic_goal) > predicate_name_parser() > bool_parser();
+const auto role_intersection_def = lit(std::string("@") + keywords::role_intersection) > role_choice > role_choice;
+const auto role_union_def = lit(std::string("@") + keywords::role_union) > role_choice > role_choice;
+const auto role_complement_def = lit(std::string("@") + keywords::role_complement) > role_choice;
+const auto role_inverse_def = lit(std::string("@") + keywords::role_inverse) > role_choice;
+const auto role_composition_def = lit(std::string("@") + keywords::role_composition) > role_choice > role_choice;
+const auto role_transitive_closure_def = lit(std::string("@") + keywords::role_transitive_closure) > role_choice;
+const auto role_reflexive_transitive_closure_def = lit(std::string("@") + keywords::role_reflexive_transitive_closure) > role_choice;
+const auto role_restriction_def = lit(std::string("@") + keywords::role_restriction) > role_choice > concept_choice;
+const auto role_identity_def = lit(std::string("@") + keywords::role_identity) > concept_choice;
 const auto role_non_terminal_def = role_non_terminal_parser();
 const auto role_choice_def = role_non_terminal | role;
-const auto role_derivation_rule_def = role_non_terminal > "::=" > (role_choice % lit("|"));
+const auto role_derivation_rule_def = role_non_terminal > "::=" > -(role_choice % lit("|"));
 
 const auto concept_or_role_nonterminal_def = concept_choice | role_choice;
 
 const auto boolean_def = boolean_atomic_state | boolean_nonempty;
-const auto boolean_atomic_state_def = lit(keywords::boolean_atomic_state) > predicate_name_parser();
-const auto boolean_nonempty_def = lit(keywords::boolean_nonempty) > concept_or_role_nonterminal;
+const auto boolean_atomic_state_def = lit(std::string("@") + keywords::boolean_atomic_state) > predicate_name_parser();
+const auto boolean_nonempty_def = lit(std::string("@") + keywords::boolean_nonempty) > concept_or_role_nonterminal;
 const auto boolean_non_terminal_def = boolean_non_terminal_parser();
 const auto boolean_choice_def = boolean_non_terminal | boolean;
-const auto boolean_derivation_rule_def = boolean_non_terminal > "::=" > (boolean_choice % lit("|"));
+const auto boolean_derivation_rule_def = boolean_non_terminal > "::=" > -(boolean_choice % lit("|"));
 
 const auto numerical_def = numerical_count | numerical_distance;
-const auto numerical_count_def = lit(keywords::numerical_count) > concept_or_role_nonterminal;
-const auto numerical_distance_def = lit(keywords::numerical_distance) > concept_ > role > concept_;
+const auto numerical_count_def = lit(std::string("@") + keywords::numerical_count) > concept_or_role_nonterminal;
+const auto numerical_distance_def = lit(std::string("@") + keywords::numerical_distance) > concept_choice > role_choice > concept_choice;
 const auto numerical_non_terminal_def = numerical_non_terminal_parser();
 const auto numerical_choice_def = numerical_non_terminal | numerical;
-const auto numerical_derivation_rule_def = numerical_non_terminal > "::=" > (numerical_choice % lit("|"));
+const auto numerical_derivation_rule_def = numerical_non_terminal > "::=" > -(numerical_choice % lit("|"));
 
 const auto feature_category_derivation_rule_def = (concept_derivation_rule | role_derivation_rule | boolean_derivation_rule | numerical_derivation_rule);
 const auto grammar_head_def = lit("[start_symbols]")                                 //
