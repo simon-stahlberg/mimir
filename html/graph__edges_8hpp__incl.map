@@ -1,0 +1,9 @@
+<map id="include/mimir/graphs/graph_edges.hpp" name="include/mimir/graphs/graph_edges.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="168,5,328,45"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,93,160,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="213,48,132,89,130,85,210,43"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="185,93,311,133"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="251,46,251,79,245,79,245,46"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="335,93,462,133"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="282,43,355,84,353,89,280,48"/>
+</map>
