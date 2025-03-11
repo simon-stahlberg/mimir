@@ -120,6 +120,16 @@ public:
     }
 
     const DerivationRuleLists<Concept, Role, Boolean, Numerical>& get() const { return m_lists; }
+
+    size_t size() const
+    {
+        return boost::hana::fold(m_lists,
+                                 std::size_t { 0 },
+                                 [](std::size_t acc, auto pair)
+                                 {
+                                     return acc + boost::hana::second(pair).size();  // Sum up sizes
+                                 });
+    }
 };
 
 class SubstitutionRulesContainer
@@ -173,6 +183,16 @@ public:
     }
 
     const SubstitutionRuleLists<Concept, Role, Boolean, Numerical>& get() const { return m_lists; }
+
+    size_t size() const
+    {
+        return boost::hana::fold(m_lists,
+                                 std::size_t { 0 },
+                                 [](std::size_t acc, auto pair)
+                                 {
+                                     return acc + boost::hana::second(pair).size();  // Sum up sizes
+                                 });
+    }
 };
 
 }

@@ -126,15 +126,80 @@ TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarVisitorSentenceGeneratorTes
 
     const auto& concept_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::Concept> {});
 
-    EXPECT_EQ(concept_statistics.num_generated, 144);
-    EXPECT_EQ(concept_statistics.num_kept, 18);
-    EXPECT_EQ(concept_statistics.num_pruned, 126);
+    EXPECT_EQ(concept_statistics.num_generated, 232);
+    EXPECT_EQ(concept_statistics.num_kept, 22);
+    EXPECT_EQ(concept_statistics.num_pruned, 210);
 
     const auto& role_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::Role> {});
 
     EXPECT_EQ(role_statistics.num_generated, 22);
     EXPECT_EQ(role_statistics.num_kept, 5);
     EXPECT_EQ(role_statistics.num_pruned, 17);
+}
+
+TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarVisitorSentenceGeneratorFrancesEtAlAAAI2021Test)
+{
+    /* Test two spanner problems with two locations and a single spanner each. */
+    const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
+    // The spanner is at location 1.
+    const auto problem1_file = fs::path(std::string(DATA_DIR) + "gripper/p-1-0.pddl");
+    // The spanner is at location 2.
+    const auto problem2_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
+
+    auto context = GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem1_file, problem2_file });
+
+    auto state_space_options = GeneralizedStateSpace::Options();
+    state_space_options.problem_options.symmetry_pruning = false;
+
+    auto kb = KnowledgeBase::create(context, KnowledgeBase::Options(state_space_options));
+
+    auto problem_to_states = ProblemMap<StateList> {};
+    for (const auto& vertex : kb->get_generalized_state_space().get_graph().get_vertices())
+    {
+        const auto& problem = kb->get_generalized_state_space().get_problem(vertex);
+        const auto& state = get_state(kb->get_generalized_state_space().get_problem_vertex(vertex));
+
+        problem_to_states[problem].push_back(state);
+    }
+
+    auto pruning_function = dl::RefinementStateListPruningFunction(problem_to_states);
+
+    dl::cnf_grammar::GeneratedSentencesContainer sentences;
+    dl::ConstructorRepositories repositories;
+    size_t max_complexity = 9;
+    auto visitor = dl::cnf_grammar::GeneratorGrammarVisitor(pruning_function, sentences, repositories, max_complexity);
+
+    const auto domain = kb->get_generalized_state_space().get_generalized_search_context().get_generalized_problem().get_domain();
+
+    auto cnf_grammar = dl::cnf_grammar::Grammar::create(dl::cnf_grammar::GrammarSpecificationEnum::FRANCES_ET_AL_AAAI2021, domain);
+
+    std::cout << cnf_grammar << std::endl;
+
+    visitor.visit(cnf_grammar);
+
+    const auto& concept_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::Concept> {});
+
+    EXPECT_EQ(concept_statistics.num_generated, 4063);
+    EXPECT_EQ(concept_statistics.num_kept, 204);
+    EXPECT_EQ(concept_statistics.num_pruned, 3859);
+
+    const auto& role_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::Role> {});
+
+    EXPECT_EQ(role_statistics.num_generated, 38);
+    EXPECT_EQ(role_statistics.num_kept, 9);
+    EXPECT_EQ(role_statistics.num_pruned, 29);
+
+    const auto& boolean_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::Boolean> {});
+
+    EXPECT_EQ(boolean_statistics.num_generated, 173);
+    EXPECT_EQ(boolean_statistics.num_kept, 38);
+    EXPECT_EQ(boolean_statistics.num_pruned, 135);
+
+    const auto& numerical_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::Numerical> {});
+
+    EXPECT_EQ(numerical_statistics.num_generated, 2799);
+    EXPECT_EQ(numerical_statistics.num_kept, 203);
+    EXPECT_EQ(numerical_statistics.num_pruned, 2596);
 }
 
 }

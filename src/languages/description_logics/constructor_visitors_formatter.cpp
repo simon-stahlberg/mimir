@@ -57,49 +57,58 @@ void FormatterConstructorVisitor<Concept>::visit(ConceptAtomicGoal<Derived> cons
 void FormatterConstructorVisitor<Concept>::visit(ConceptIntersection constructor)
 {
     m_out << keywords::concept_intersection << " ";
-    constructor->get_left_concept()->accept(*this);
+    auto concept_visitor = FormatterConstructorVisitor<Concept>(m_out);
+    constructor->get_left_concept()->accept(concept_visitor);
     m_out << " ";
-    constructor->get_right_concept()->accept(*this);
+    constructor->get_right_concept()->accept(concept_visitor);
 }
 void FormatterConstructorVisitor<Concept>::visit(ConceptUnion constructor)
 {
     m_out << keywords::concept_union << " ";
-    constructor->get_left_concept()->accept(*this);
+    auto concept_visitor = FormatterConstructorVisitor<Concept>(m_out);
+    constructor->get_left_concept()->accept(concept_visitor);
     m_out << " ";
-    constructor->get_right_concept()->accept(*this);
+    constructor->get_right_concept()->accept(concept_visitor);
 }
 void FormatterConstructorVisitor<Concept>::visit(ConceptNegation constructor)
 {
     m_out << keywords::concept_negation << " ";
-    constructor->get_concept()->accept(*this);
+    auto concept_visitor = FormatterConstructorVisitor<Concept>(m_out);
+    constructor->get_concept()->accept(concept_visitor);
 }
 void FormatterConstructorVisitor<Concept>::visit(ConceptValueRestriction constructor)
 {
     m_out << keywords::concept_value_restriction << " ";
-    constructor->get_role()->accept(*m_role_visitor);
+    auto concept_visitor = FormatterConstructorVisitor<Concept>(m_out);
+    auto role_visitor = FormatterConstructorVisitor<Role>(m_out);
+    constructor->get_role()->accept(role_visitor);
     m_out << " ";
-    constructor->get_concept()->accept(*this);
+    constructor->get_concept()->accept(concept_visitor);
 }
 void FormatterConstructorVisitor<Concept>::visit(ConceptExistentialQuantification constructor)
 {
     m_out << keywords::concept_existential_quantification << " ";
-    constructor->get_role()->accept(*m_role_visitor);
+    auto concept_visitor = FormatterConstructorVisitor<Concept>(m_out);
+    auto role_visitor = FormatterConstructorVisitor<Role>(m_out);
+    constructor->get_role()->accept(role_visitor);
     m_out << " ";
-    constructor->get_concept()->accept(*this);
+    constructor->get_concept()->accept(concept_visitor);
 }
 void FormatterConstructorVisitor<Concept>::visit(ConceptRoleValueMapContainment constructor)
 {
     m_out << keywords::concept_role_value_map_containment << " ";
-    constructor->get_left_role()->accept(*m_role_visitor);
+    auto visitor = FormatterConstructorVisitor<Role>(m_out);
+    constructor->get_left_role()->accept(visitor);
     m_out << " ";
-    constructor->get_right_role()->accept(*m_role_visitor);
+    constructor->get_right_role()->accept(visitor);
 }
 void FormatterConstructorVisitor<Concept>::visit(ConceptRoleValueMapEquality constructor)
 {
     m_out << keywords::concept_role_value_map_equality << " ";
-    constructor->get_left_role()->accept(*m_role_visitor);
+    auto visitor = FormatterConstructorVisitor<Role>(m_out);
+    constructor->get_left_role()->accept(visitor);
     m_out << " ";
-    constructor->get_right_role()->accept(*m_role_visitor);
+    constructor->get_right_role()->accept(visitor);
 }
 void FormatterConstructorVisitor<Concept>::visit(ConceptNominal constructor)
 {
@@ -137,73 +146,65 @@ void FormatterConstructorVisitor<Role>::visit(RoleAtomicGoal<Derived> constructo
 void FormatterConstructorVisitor<Role>::visit(RoleIntersection constructor)
 {
     m_out << keywords::role_intersection << " ";
-    constructor->get_left_role()->accept(*this);
+    auto role_visitor = FormatterConstructorVisitor<Role>(m_out);
+    constructor->get_left_role()->accept(role_visitor);
     m_out << " ";
-    constructor->get_right_role()->accept(*this);
+    constructor->get_right_role()->accept(role_visitor);
 }
 void FormatterConstructorVisitor<Role>::visit(RoleUnion constructor)
 {
     m_out << keywords::role_union << " ";
-    constructor->get_left_role()->accept(*this);
+    auto role_visitor = FormatterConstructorVisitor<Role>(m_out);
+    constructor->get_left_role()->accept(role_visitor);
     m_out << " ";
-    constructor->get_right_role()->accept(*this);
+    constructor->get_right_role()->accept(role_visitor);
 }
 void FormatterConstructorVisitor<Role>::visit(RoleComplement constructor)
 {
     m_out << keywords::role_complement << " ";
-    constructor->get_role()->accept(*this);
+    auto role_visitor = FormatterConstructorVisitor<Role>(m_out);
+    constructor->get_role()->accept(role_visitor);
 }
 void FormatterConstructorVisitor<Role>::visit(RoleInverse constructor)
 {
     m_out << keywords::role_inverse << " ";
-    constructor->get_role()->accept(*this);
+    auto role_visitor = FormatterConstructorVisitor<Role>(m_out);
+    constructor->get_role()->accept(role_visitor);
 }
 void FormatterConstructorVisitor<Role>::visit(RoleComposition constructor)
 {
     m_out << keywords::role_composition << " ";
-    constructor->get_left_role()->accept(*this);
+    auto role_visitor = FormatterConstructorVisitor<Role>(m_out);
+    constructor->get_left_role()->accept(role_visitor);
     m_out << " ";
-    constructor->get_right_role()->accept(*this);
+    constructor->get_right_role()->accept(role_visitor);
 }
 void FormatterConstructorVisitor<Role>::visit(RoleTransitiveClosure constructor)
 {
     m_out << keywords::role_transitive_closure << " ";
-    constructor->get_role()->accept(*this);
+    auto role_visitor = FormatterConstructorVisitor<Role>(m_out);
+    constructor->get_role()->accept(role_visitor);
 }
 void FormatterConstructorVisitor<Role>::visit(RoleReflexiveTransitiveClosure constructor)
 {
     m_out << keywords::role_reflexive_transitive_closure << " ";
-    constructor->get_role()->accept(*this);
+    auto role_visitor = FormatterConstructorVisitor<Role>(m_out);
+    constructor->get_role()->accept(role_visitor);
 }
 void FormatterConstructorVisitor<Role>::visit(RoleRestriction constructor)
 {
     m_out << keywords::role_restriction << " ";
-    constructor->get_role()->accept(*this);
+    auto concept_visitor = FormatterConstructorVisitor<Concept>(m_out);
+    auto role_visitor = FormatterConstructorVisitor<Role>(m_out);
+    constructor->get_role()->accept(role_visitor);
     m_out << " ";
-    constructor->get_concept()->accept(*m_concept_visitor);
+    constructor->get_concept()->accept(concept_visitor);
 }
 void FormatterConstructorVisitor<Role>::visit(RoleIdentity constructor)
 {
     m_out << keywords::role_identity << " ";
-    constructor->get_concept()->accept(*m_concept_visitor);
-}
-
-template<FeatureCategory D>
-extern std::ostream& operator<<(std::ostream& out, const Constructor<D>& constructor)
-{
-    auto concept_visitor = FormatterConstructorVisitor<Concept>(out);
-    auto role_visitor = FormatterConstructorVisitor<Role>(out);
-    concept_visitor.initialize(role_visitor);
-    role_visitor.initialize(concept_visitor);
-    if constexpr (std::is_same_v<D, Concept>)
-    {
-        constructor->accept(concept_visitor);
-    }
-    else if constexpr (std::is_same_v<D, Role>)
-    {
-        constructor->accept(role_visitor);
-    }
-    return out;
+    auto concept_visitor = FormatterConstructorVisitor<Concept>(m_out);
+    constructor->get_concept()->accept(concept_visitor);
 }
 
 /**
@@ -245,13 +246,13 @@ FormatterConstructorVisitor<Numerical>::FormatterConstructorVisitor(std::ostream
 
 void FormatterConstructorVisitor<Numerical>::visit(NumericalCount<Concept> constructor)
 {
-    m_out << keywords::boolean_nonempty << " ";
+    m_out << keywords::numerical_count << " ";
     auto concept_visitor = FormatterConstructorVisitor<Concept>(m_out);
     constructor->get_constructor()->accept(concept_visitor);
 }
 void FormatterConstructorVisitor<Numerical>::visit(NumericalCount<Role> constructor)
 {
-    m_out << keywords::boolean_nonempty << " ";
+    m_out << keywords::numerical_count << " ";
     auto role_visitor = FormatterConstructorVisitor<Role>(m_out);
     constructor->get_constructor()->accept(role_visitor);
 }
@@ -265,6 +266,16 @@ void FormatterConstructorVisitor<Numerical>::visit(NumericalDistance constructor
     constructor->get_role()->accept(role_visitor);
     m_out << " ";
     constructor->get_right_concept()->accept(concept_visitor);
+}
+
+template<FeatureCategory D>
+extern std::ostream& operator<<(std::ostream& out, const Constructor<D>& constructor)
+{
+    auto visitor = FormatterConstructorVisitor<D>(out);
+
+    constructor->accept(visitor);
+
+    return out;
 }
 
 template std::ostream& operator<<(std::ostream& out, const Constructor<Concept>& data);

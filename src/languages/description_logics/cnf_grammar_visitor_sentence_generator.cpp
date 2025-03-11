@@ -608,7 +608,7 @@ GeneratorGrammarVisitor::GeneratorGrammarVisitor(RefinementPruningFunction& prun
 void GeneratorGrammarVisitor::visit(const Grammar& grammar)
 {
     /* Generate */
-    for (size_t i = 1; i < m_max_syntactic_complexity; ++i)
+    for (size_t i = 1; i <= m_max_syntactic_complexity; ++i)
     {
         boost::hana::for_each(grammar.get_derivation_rules_container().get(),
                               [&](auto&& pair)

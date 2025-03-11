@@ -18,7 +18,6 @@
 #include "mimir/languages/description_logics/cnf_grammar.hpp"
 
 #include "cnf_grammar_simplification.hpp"
-#include "cnf_grammar_verification.hpp"
 #include "grammar_cnf_translator.hpp"
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/predicate.hpp"
@@ -44,7 +43,6 @@ Grammar::Grammar(ConstructorRepositories repositories,
     m_substitution_rules(std::move(substitution_rules)),
     m_domain(std::move(domain))
 {
-    verify_grammar_is_well_defined(*this);
 }
 
 Grammar::Grammar(const grammar::Grammar& grammar)
@@ -56,8 +54,6 @@ Grammar::Grammar(const grammar::Grammar& grammar)
     m_derivation_rules = std::move(cnf_grammar.m_derivation_rules);
     m_substitution_rules = std::move(cnf_grammar.m_substitution_rules);
     m_domain = std::move(cnf_grammar.m_domain);
-
-    verify_grammar_is_well_defined(*this);
 }
 
 Grammar::Grammar(const std::string& bnf_description, Domain domain)
@@ -70,8 +66,6 @@ Grammar::Grammar(const std::string& bnf_description, Domain domain)
     m_derivation_rules = std::move(cnf_grammar.m_derivation_rules);
     m_substitution_rules = std::move(cnf_grammar.m_substitution_rules);
     m_domain = std::move(cnf_grammar.m_domain);
-
-    verify_grammar_is_well_defined(*this);
 }
 
 static void add_frances_et_al_aaai2021_bnf_concept_intersection(std::stringstream& out, std::vector<std::string>& head_names)
@@ -84,12 +78,92 @@ static void add_frances_et_al_aaai2021_bnf_concept_intersection(std::stringstrea
     out << fmt::format("    {} ::= {}\n", head_name, body_name);
 }
 
+static void add_frances_et_al_aaai2021_bnf_concept_negation(std::stringstream& out, std::vector<std::string>& head_names)
+{
+    auto head_name = fmt::format("<{}>", dl::keywords::concept_negation);
+    head_names.push_back(head_name);
+
+    auto body_name = fmt::format("@{} <concept>", dl::keywords::concept_negation);
+
+    out << fmt::format("    {} ::= {}\n", head_name, body_name);
+}
+
+static void add_frances_et_al_aaai2021_bnf_concept_existential_quantification(std::stringstream& out, std::vector<std::string>& head_names)
+{
+    auto head_name = fmt::format("<{}>", dl::keywords::concept_existential_quantification);
+    head_names.push_back(head_name);
+
+    auto body_name = fmt::format("@{} <role> <concept>", dl::keywords::concept_existential_quantification);
+
+    out << fmt::format("    {} ::= {}\n", head_name, body_name);
+}
+
+static void add_frances_et_al_aaai2021_bnf_concept_value_restriction(std::stringstream& out, std::vector<std::string>& head_names)
+{
+    auto head_name = fmt::format("<{}>", dl::keywords::concept_value_restriction);
+    head_names.push_back(head_name);
+
+    auto body_name = fmt::format("@{} <role> <concept>", dl::keywords::concept_value_restriction);
+
+    out << fmt::format("    {} ::= {}\n", head_name, body_name);
+}
+
 static void add_frances_et_al_aaai2021_bnf_concept_role_value_map_equality(std::stringstream& out, std::vector<std::string>& head_names)
 {
     auto head_name = fmt::format("<{}>", dl::keywords::concept_intersection);
     head_names.push_back(head_name);
 
     auto body_name = fmt::format("@{} <role> <role>", dl::keywords::concept_role_value_map_equality);
+
+    out << fmt::format("    {} ::= {}\n", head_name, body_name);
+}
+
+static void add_frances_et_al_aaai2021_bnf_concept_bot(std::stringstream& out, std::vector<std::string>& head_names)
+{
+    auto head_name = fmt::format("<{}>", dl::keywords::concept_bot);
+    head_names.push_back(head_name);
+
+    auto body_name = fmt::format("@{}", dl::keywords::concept_bot);
+
+    out << fmt::format("    {} ::= {}\n", head_name, body_name);
+}
+
+static void add_frances_et_al_aaai2021_bnf_concept_top(std::stringstream& out, std::vector<std::string>& head_names)
+{
+    auto head_name = fmt::format("<{}>", dl::keywords::concept_top);
+    head_names.push_back(head_name);
+
+    auto body_name = fmt::format("@{}", dl::keywords::concept_top);
+
+    out << fmt::format("    {} ::= {}\n", head_name, body_name);
+}
+
+static void add_frances_et_al_aaai2021_bnf_concept_nominal(Object constant, std::stringstream& out, std::vector<std::string>& head_names)
+{
+    auto head_name = fmt::format("<{}_{}>", dl::keywords::concept_nominal, constant->get_name());
+    head_names.push_back(head_name);
+
+    auto body_name = fmt::format("@{} \"{}\"", dl::keywords::concept_nominal, constant->get_name());
+
+    out << fmt::format("    {} ::= {}\n", head_name, body_name);
+}
+
+static void add_frances_et_al_aaai2021_bnf_role_transitive_closure(std::stringstream& out, std::vector<std::string>& head_names)
+{
+    auto head_name = fmt::format("<{}>", dl::keywords::role_transitive_closure);
+    head_names.push_back(head_name);
+
+    auto body_name = fmt::format("@{} <role_primitive>", dl::keywords::role_transitive_closure);
+
+    out << fmt::format("    {} ::= {}\n", head_name, body_name);
+}
+
+static void add_frances_et_al_aaai2021_bnf_role_inverse(std::stringstream& out, std::vector<std::string>& head_names)
+{
+    auto head_name = fmt::format("<{}>", dl::keywords::role_inverse);
+    head_names.push_back(head_name);
+
+    auto body_name = fmt::format("@{} <role_primitive>", dl::keywords::role_inverse);
 
     out << fmt::format("    {} ::= {}\n", head_name, body_name);
 }
@@ -170,6 +244,15 @@ static std::string create_frances_et_al_aaai2021_bnf(Domain domain)
      * Primitives concepts and roles.
      */
 
+    auto& primitive_concept_head_names = boost::hana::at_key(head_names, boost::hana::type<Concept> {});
+
+    add_frances_et_al_aaai2021_bnf_concept_bot(rule_ss, primitive_concept_head_names);
+
+    add_frances_et_al_aaai2021_bnf_concept_top(rule_ss, primitive_concept_head_names);
+
+    for (const auto& constant : domain->get_constants())
+        add_frances_et_al_aaai2021_bnf_concept_nominal(constant, rule_ss, primitive_concept_head_names);
+
     boost::hana::for_each(
         domain->get_hana_predicates(),
         [&](auto&& pair)
@@ -221,15 +304,9 @@ static std::string create_frances_et_al_aaai2021_bnf(Domain domain)
                               rule_ss << fmt::format("    {} ::= {}\n", primitives_head_name, fmt::join(second, " | "));
                           });
 
-    const bool has_primitive_concepts = !boost::hana::at_key(primitive_head_names, boost::hana::type<Concept> {}).empty();
-    const bool has_primitive_roles = !boost::hana::at_key(primitive_head_names, boost::hana::type<Role> {}).empty();
-
     /**
      * Composites
      */
-
-    const bool has_concepts = !boost::hana::at_key(head_names, boost::hana::type<Concept> {}).empty();
-    const bool has_roles = !boost::hana::at_key(head_names, boost::hana::type<Role> {}).empty();
 
     auto& concept_head_names = boost::hana::at_key(head_names, boost::hana::type<Concept> {});
     auto& role_head_names = boost::hana::at_key(head_names, boost::hana::type<Role> {});
@@ -238,7 +315,19 @@ static std::string create_frances_et_al_aaai2021_bnf(Domain domain)
 
     add_frances_et_al_aaai2021_bnf_concept_intersection(rule_ss, concept_head_names);
 
+    add_frances_et_al_aaai2021_bnf_concept_negation(rule_ss, concept_head_names);
+
+    add_frances_et_al_aaai2021_bnf_concept_existential_quantification(rule_ss, concept_head_names);
+
+    add_frances_et_al_aaai2021_bnf_concept_value_restriction(rule_ss, concept_head_names);
+
+    add_frances_et_al_aaai2021_bnf_concept_role_value_map_equality(rule_ss, concept_head_names);
+
     /* Roles */
+
+    add_frances_et_al_aaai2021_bnf_role_transitive_closure(rule_ss, role_head_names);
+
+    add_frances_et_al_aaai2021_bnf_role_inverse(rule_ss, role_head_names);
 
     /* Booleans */
     auto& boolean_head_names = boost::hana::at_key(head_names, boost::hana::type<Boolean> {});

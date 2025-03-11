@@ -63,7 +63,7 @@ public:
         const auto& container = boost::hana::at_key(m_generated_constructors, boost::hana::type<D> {});
 
         auto it = container.find(nonterminal);
-        if (it == container.end())
+        if (it == container.end() || complexity >= it->second.size())
         {
             return boost::hana::at_key(empty_lists, boost::hana::type<D> {});
         }
