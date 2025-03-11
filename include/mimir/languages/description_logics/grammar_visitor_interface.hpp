@@ -377,7 +377,7 @@ protected:
 public:
     RecurseGrammarVisitor() = default;
 
-    virtual void visit(const Grammar& grammar) override;
+    void visit(const Grammar& grammar) override;
 
     virtual void initialize(HanaRecurseNonTerminalVisitors<Concept, Role, Boolean, Numerical> start_symbol_visitors,
                             HanaRecurseDerivationRuleVisitors<Concept, Role, Boolean, Numerical> derivation_rule_visitors);
@@ -389,15 +389,23 @@ public:
 
 template<FeatureCategory D>
 class CopyConstructorVisitor;
+template<FeatureCategory... Ds>
+using HanaCopyConstructorVisitors = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, CopyConstructorVisitor<Ds>*>...>;
 
 template<FeatureCategory D>
 class CopyConstructorOrNonTerminalVisitor;
+template<FeatureCategory... Ds>
+using HanaCopyConstructorOrNonTerminalVisitors = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, CopyConstructorOrNonTerminalVisitor<Ds>*>...>;
 
 template<FeatureCategory D>
 class CopyNonTerminalVisitor;
+template<FeatureCategory... Ds>
+using HanaCopyNonTerminalVisitors = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, CopyNonTerminalVisitor<Ds>*>...>;
 
 template<FeatureCategory D>
 class CopyDerivationRuleVisitor;
+template<FeatureCategory... Ds>
+using HanaCopyDerivationRuleVisitors = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, CopyDerivationRuleVisitor<Ds>*>...>;
 
 class CopyGrammarVisitor;
 
@@ -417,14 +425,12 @@ protected:
     ConstructorRepositories& m_repositories;
     Constructor<Concept> m_result;  ///< the result of a visitation
 
-    CopyConstructorOrNonTerminalVisitor<Concept>* m_concept_or_nonterminal_visitor;
-    CopyConstructorOrNonTerminalVisitor<Role>* m_role_or_nonterminal_visitor;
+    HanaCopyConstructorOrNonTerminalVisitors<Concept, Role> m_constructor_or_nonterminal_visitor;
 
 public:
     explicit CopyConstructorVisitor(ConstructorRepositories& repositories);
 
-    virtual void initialize(CopyConstructorOrNonTerminalVisitor<Concept>& concept_or_nonterminal_visitor,
-                            CopyConstructorOrNonTerminalVisitor<Role>& role_or_nonterminal_visitor);
+    virtual void initialize(HanaCopyConstructorOrNonTerminalVisitors<Concept, Role> constructor_or_nonterminal_visitor);
 
     void visit(ConceptBot constructor) override;
     void visit(ConceptTop constructor) override;
@@ -457,14 +463,12 @@ protected:
     ConstructorRepositories& m_repositories;
     Constructor<Role> m_result;  ///< the result of a visitation
 
-    CopyConstructorOrNonTerminalVisitor<Concept>* m_concept_or_nonterminal_visitor;
-    CopyConstructorOrNonTerminalVisitor<Role>* m_role_or_nonterminal_visitor;
+    HanaCopyConstructorOrNonTerminalVisitors<Concept, Role> m_constructor_or_nonterminal_visitor;
 
 public:
     explicit CopyConstructorVisitor(ConstructorRepositories& repositories);
 
-    virtual void initialize(CopyConstructorOrNonTerminalVisitor<Concept>& concept_or_nonterminal_visitor,
-                            CopyConstructorOrNonTerminalVisitor<Role>& role_or_nonterminal_visitor);
+    virtual void initialize(HanaCopyConstructorOrNonTerminalVisitors<Concept, Role> constructor_or_nonterminal_visitor);
 
     void visit(RoleUniversal constructor) override;
     void visit(RoleAtomicState<Static> constructor) override;
@@ -497,14 +501,12 @@ protected:
     ConstructorRepositories& m_repositories;
     Constructor<Boolean> m_result;
 
-    CopyConstructorOrNonTerminalVisitor<Concept>* m_concept_or_nonterminal_visitor;
-    CopyConstructorOrNonTerminalVisitor<Role>* m_role_or_nonterminal_visitor;
+    HanaCopyConstructorOrNonTerminalVisitors<Concept, Role> m_constructor_or_nonterminal_visitor;
 
 public:
     explicit CopyConstructorVisitor(ConstructorRepositories& repositories);
 
-    virtual void initialize(CopyConstructorOrNonTerminalVisitor<Concept>& concept_or_nonterminal_visitor,
-                            CopyConstructorOrNonTerminalVisitor<Role>& role_or_nonterminal_visitor);
+    virtual void initialize(HanaCopyConstructorOrNonTerminalVisitors<Concept, Role> constructor_or_nonterminal_visitor);
 
     void visit(BooleanAtomicState<Static> constructor) override;
     void visit(BooleanAtomicState<Fluent> constructor) override;
@@ -526,14 +528,12 @@ protected:
     ConstructorRepositories& m_repositories;
     Constructor<Numerical> m_result;
 
-    CopyConstructorOrNonTerminalVisitor<Concept>* m_concept_or_nonterminal_visitor;
-    CopyConstructorOrNonTerminalVisitor<Role>* m_role_or_nonterminal_visitor;
+    HanaCopyConstructorOrNonTerminalVisitors<Concept, Role> m_constructor_or_nonterminal_visitor;
 
 public:
     explicit CopyConstructorVisitor(ConstructorRepositories& repositories);
 
-    virtual void initialize(CopyConstructorOrNonTerminalVisitor<Concept>& concept_or_nonterminal_visitor,
-                            CopyConstructorOrNonTerminalVisitor<Role>& role_or_nonterminal_visitor);
+    virtual void initialize(HanaCopyConstructorOrNonTerminalVisitors<Concept, Role> constructor_or_nonterminal_visitor);
 
     void visit(NumericalCount<Concept> constructor) override;
     void visit(NumericalCount<Role> constructor) override;
@@ -604,7 +604,7 @@ public:
 
     virtual void initialize(CopyNonTerminalVisitor<D>& nonterminal_visitor, CopyConstructorOrNonTerminalVisitor<D>& constructor_or_nonterminal_visitor);
 
-    virtual void visit(DerivationRule<D> constructor) override;
+    void visit(DerivationRule<D> constructor) override;
 
     DerivationRule<D> get_result() const;
 };
@@ -616,31 +616,17 @@ protected:
     StartSymbolsContainer& m_start_symbols;
     DerivationRulesContainer& m_derivation_rules;
 
-    boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, CopyNonTerminalVisitor<Concept>*>,
-                     boost::hana::pair<boost::hana::type<Role>, CopyNonTerminalVisitor<Role>*>,
-                     boost::hana::pair<boost::hana::type<Boolean>, CopyNonTerminalVisitor<Boolean>*>,
-                     boost::hana::pair<boost::hana::type<Numerical>, CopyNonTerminalVisitor<Numerical>*>>
-        m_start_symbol_visitor;
+    HanaCopyNonTerminalVisitors<Concept, Role, Boolean, Numerical> m_start_symbol_visitors;
 
-    boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, CopyDerivationRuleVisitor<Concept>*>,
-                     boost::hana::pair<boost::hana::type<Role>, CopyDerivationRuleVisitor<Role>*>,
-                     boost::hana::pair<boost::hana::type<Boolean>, CopyDerivationRuleVisitor<Boolean>*>,
-                     boost::hana::pair<boost::hana::type<Numerical>, CopyDerivationRuleVisitor<Numerical>*>>
-        m_derivation_rule_visitor;
+    HanaCopyDerivationRuleVisitors<Concept, Role, Boolean, Numerical> m_derivation_rule_visitors;
 
 public:
     CopyGrammarVisitor(ConstructorRepositories& repositories, StartSymbolsContainer& start_symbols, DerivationRulesContainer& derivation_rules);
 
-    virtual void visit(const Grammar& grammar) override;
+    void visit(const Grammar& grammar) override;
 
-    virtual void initialize(CopyNonTerminalVisitor<Concept>& concept_start_symbol_visitor,
-                            CopyNonTerminalVisitor<Role>& role_start_symbol_visitor,
-                            CopyNonTerminalVisitor<Boolean>& boolean_start_symbol_visitor,
-                            CopyNonTerminalVisitor<Numerical>& numerical_start_symbol_visitor,
-                            CopyDerivationRuleVisitor<Concept>& concept_rule_visitor,
-                            CopyDerivationRuleVisitor<Role>& role_rule_visitor,
-                            CopyDerivationRuleVisitor<Boolean>& boolean_rule_visitor,
-                            CopyDerivationRuleVisitor<Numerical>& numerical_rule_visitor);
+    virtual void initialize(HanaCopyNonTerminalVisitors<Concept, Role, Boolean, Numerical> start_symbol_visitors,
+                            HanaCopyDerivationRuleVisitors<Concept, Role, Boolean, Numerical> derivation_rule_visitors);
 };
 
 }

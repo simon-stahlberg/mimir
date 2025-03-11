@@ -17,7 +17,6 @@
 
 #include "mimir/languages/description_logics/grammar.hpp"
 
-#include "mimir/languages/description_logics/grammar_verification.hpp"
 #include "mimir/languages/description_logics/grammar_visitor_interface.hpp"
 #include "mimir/languages/description_logics/parser/parser.hpp"
 #include "mimir/languages/description_logics/parser/parser_wrapper.hpp"
@@ -32,7 +31,6 @@ Grammar::Grammar(ConstructorRepositories repositories, StartSymbolsContainer sta
     m_derivation_rules(std::move(derivation_rules)),
     m_domain(std::move(domain))
 {
-    verify_grammar_is_well_defined(*this);
 }
 
 Grammar::Grammar(std::string bnf_description, Domain domain)
@@ -42,15 +40,11 @@ Grammar::Grammar(std::string bnf_description, Domain domain)
     m_start_symbols = std::move(grammar.m_start_symbols);
     m_derivation_rules = std::move(grammar.m_derivation_rules);
     m_domain = std::move(grammar.m_domain);
-
-    verify_grammar_is_well_defined(*this);
 }
 
 Grammar::Grammar(GrammarSpecificationEnum type, Domain domain)
 {
     // TODO
-
-    verify_grammar_is_well_defined(*this);
 }
 
 template<FeatureCategory D>

@@ -18,6 +18,7 @@
 #include "mimir/languages/description_logics/cnf_grammar.hpp"
 
 #include "cnf_grammar_simplification.hpp"
+#include "cnf_grammar_verification.hpp"
 #include "grammar_cnf_translator.hpp"
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/predicate.hpp"
@@ -43,6 +44,7 @@ Grammar::Grammar(ConstructorRepositories repositories,
     m_substitution_rules(std::move(substitution_rules)),
     m_domain(std::move(domain))
 {
+    verify_grammar_is_well_defined(*this);
 }
 
 Grammar::Grammar(const grammar::Grammar& grammar)
@@ -54,6 +56,8 @@ Grammar::Grammar(const grammar::Grammar& grammar)
     m_derivation_rules = std::move(cnf_grammar.m_derivation_rules);
     m_substitution_rules = std::move(cnf_grammar.m_substitution_rules);
     m_domain = std::move(cnf_grammar.m_domain);
+
+    verify_grammar_is_well_defined(*this);
 }
 
 Grammar::Grammar(const std::string& bnf_description, Domain domain)
@@ -66,6 +70,8 @@ Grammar::Grammar(const std::string& bnf_description, Domain domain)
     m_derivation_rules = std::move(cnf_grammar.m_derivation_rules);
     m_substitution_rules = std::move(cnf_grammar.m_substitution_rules);
     m_domain = std::move(cnf_grammar.m_domain);
+
+    verify_grammar_is_well_defined(*this);
 }
 
 static void add_frances_et_al_aaai2021_bnf_concept_intersection(std::stringstream& out, std::vector<std::string>& head_names)
@@ -205,11 +211,6 @@ static std::string create_frances_et_al_aaai2021_bnf(Domain domain)
                               const auto& second = boost::hana::second(pair);
                               using KeyType = typename decltype(+key)::type;
 
-                              if (second.empty())
-                              {
-                                  return;
-                              }
-
                               // Construct the primitive head name
                               std::string primitives_head_name = fmt::format("<{}_primitive>", KeyType::name);
 
@@ -265,11 +266,6 @@ static std::string create_frances_et_al_aaai2021_bnf(Domain domain)
                               const auto& second = boost::hana::second(pair);
                               using KeyType = typename decltype(+key)::type;
 
-                              if (second.empty())
-                              {
-                                  return;
-                              }
-
                               // Format start symbol
                               start_ss << fmt::format("    {} = <{}_start>\n", KeyType::name, KeyType::name);
 
@@ -279,11 +275,8 @@ static std::string create_frances_et_al_aaai2021_bnf(Domain domain)
                               // Join elements using fmt::join
                               std::string alternatives = fmt::format("{}", fmt::join(second, " | "));
 
-                              // Add primitive alternative if applicable
-                              if (!boost::hana::at_key(primitive_head_names, key).empty())
-                              {
-                                  alternatives = fmt::format("{} | <{}_primitive>", alternatives, KeyType::name);
-                              }
+                              // Add primitive alternative
+                              alternatives = fmt::format("{} | <{}_primitive>", alternatives, KeyType::name);
 
                               rule_ss << fmt::format("    <{}> ::= {}\n", KeyType::name, alternatives);
                           });

@@ -15,12 +15,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GRAMMAR_VERIFICATION_HPP_
-#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GRAMMAR_VERIFICATION_HPP_
+#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CNF_GRAMMAR_VERIFICATION_HPP_
+#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CNF_GRAMMAR_VERIFICATION_HPP_
 
 #include "mimir/languages/description_logics/declarations.hpp"
 
-namespace mimir::dl::grammar
+namespace mimir::dl::cnf_grammar
 {
 extern void verify_grammar_is_well_defined(const Grammar& grammar);
 }

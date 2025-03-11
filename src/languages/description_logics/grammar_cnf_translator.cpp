@@ -155,12 +155,15 @@ public:
                               {
                                   auto key = boost::hana::first(pair);
                                   const auto& second = boost::hana::second(pair);
+                                  using FeatureType = typename decltype(+key)::type;
 
                                   if (second.has_value())
                                   {
-                                      auto& visitor = *boost::hana::at_key(m_start_symbol_visitor, key);
-                                      second.value()->accept(visitor);
-                                      m_start_symbols.insert(visitor.get_result());
+                                      auto visitor = get_visitor<FeatureType>(m_start_symbol_visitors);
+                                      assert(visitor);
+
+                                      second.value()->accept(*visitor);
+                                      m_start_symbols.insert(visitor->get_result());
                                   }
                               });
 
@@ -169,11 +172,14 @@ public:
                               {
                                   auto key = boost::hana::first(pair);
                                   const auto& second = boost::hana::second(pair);
+                                  using FeatureType = typename decltype(+key)::type;
 
                                   for (const auto& rule : second)
                                   {
-                                      auto& visitor = *boost::hana::at_key(m_derivation_rule_visitor, key);
-                                      rule->accept(visitor);
+                                      auto visitor = get_visitor<FeatureType>(m_derivation_rule_visitors);
+                                      assert(visitor);
+
+                                      rule->accept(*visitor);
                                   }
                               });
     }
@@ -207,10 +213,13 @@ static Grammar eliminate_choices_in_rules(const Grammar& grammar)
     auto numerical_start_symbol_visitor = CopyNonTerminalVisitor<Numerical>(repositories);
     auto grammar_visitor = EliminateChoiceGrammarVisitor(repositories, start_symbols, derivation_rules);
 
-    concept_visitor.initialize(concept_or_nonterminal_visitor, role_or_nonterminal_visitor);
-    role_visitor.initialize(concept_or_nonterminal_visitor, role_or_nonterminal_visitor);
-    boolean_visitor.initialize(concept_or_nonterminal_visitor, role_or_nonterminal_visitor);
-    numerical_visitor.initialize(concept_or_nonterminal_visitor, role_or_nonterminal_visitor);
+    auto concept_and_role_nonterminal_visitors = boost::hana::make_map(boost::hana::make_pair(boost::hana::type<Concept> {}, &concept_or_nonterminal_visitor),
+                                                                       boost::hana::make_pair(boost::hana::type<Role> {}, &role_or_nonterminal_visitor));
+
+    concept_visitor.initialize(concept_and_role_nonterminal_visitors);
+    role_visitor.initialize(concept_and_role_nonterminal_visitors);
+    boolean_visitor.initialize(concept_and_role_nonterminal_visitors);
+    numerical_visitor.initialize(concept_and_role_nonterminal_visitors);
     concept_or_nonterminal_visitor.initialize(concept_nonterminal_visitor, concept_visitor);
     role_or_nonterminal_visitor.initialize(role_nonterminal_visitor, role_visitor);
     boolean_or_nonterminal_visitor.initialize(boolean_nonterminal_visitor, boolean_visitor);
@@ -219,14 +228,19 @@ static Grammar eliminate_choices_in_rules(const Grammar& grammar)
     role_derivation_rule_visitor.initialize(role_nonterminal_visitor, role_or_nonterminal_visitor);
     boolean_derivation_rule_visitor.initialize(boolean_nonterminal_visitor, boolean_or_nonterminal_visitor);
     numerical_derivation_rule_visitor.initialize(numerical_nonterminal_visitor, numerical_or_nonterminal_visitor);
-    grammar_visitor.initialize(concept_start_symbol_visitor,
-                               role_start_symbol_visitor,
-                               boolean_start_symbol_visitor,
-                               numerical_start_symbol_visitor,
-                               concept_derivation_rule_visitor,
-                               role_derivation_rule_visitor,
-                               boolean_derivation_rule_visitor,
-                               numerical_derivation_rule_visitor);
+
+    auto nonterminal_visitors = boost::hana::make_map(boost::hana::make_pair(boost::hana::type<Concept> {}, &concept_nonterminal_visitor),
+                                                      boost::hana::make_pair(boost::hana::type<Role> {}, &role_nonterminal_visitor),
+                                                      boost::hana::make_pair(boost::hana::type<Boolean> {}, &boolean_nonterminal_visitor),
+                                                      boost::hana::make_pair(boost::hana::type<Numerical> {}, &numerical_nonterminal_visitor));
+
+    auto derivation_rule_visitors = boost::hana::make_map(
+        boost::hana::make_pair(boost::hana::type<Concept> {}, dynamic_cast<CopyDerivationRuleVisitor<Concept>*>(&concept_derivation_rule_visitor)),
+        boost::hana::make_pair(boost::hana::type<Role> {}, dynamic_cast<CopyDerivationRuleVisitor<Role>*>(&role_derivation_rule_visitor)),
+        boost::hana::make_pair(boost::hana::type<Boolean> {}, dynamic_cast<CopyDerivationRuleVisitor<Boolean>*>(&boolean_derivation_rule_visitor)),
+        boost::hana::make_pair(boost::hana::type<Numerical> {}, dynamic_cast<CopyDerivationRuleVisitor<Numerical>*>(&numerical_derivation_rule_visitor)));
+
+    grammar_visitor.initialize(nonterminal_visitors, derivation_rule_visitors);
 
     grammar.accept(grammar_visitor);
 
@@ -344,10 +358,14 @@ static Grammar eliminate_nested_constructors(const Grammar& grammar)
     auto numerical_start_symbol_visitor = CopyNonTerminalVisitor<Numerical>(repositories);
     auto grammar_visitor = CopyGrammarVisitor(repositories, start_symbols, derivation_rules);
 
-    concept_visitor.initialize(concept_or_nonterminal_l2_visitor, role_or_nonterminal_l2_visitor);
-    role_visitor.initialize(concept_or_nonterminal_l2_visitor, role_or_nonterminal_l2_visitor);
-    boolean_visitor.initialize(concept_or_nonterminal_l2_visitor, role_or_nonterminal_l2_visitor);
-    numerical_visitor.initialize(concept_or_nonterminal_l2_visitor, role_or_nonterminal_l2_visitor);
+    auto concept_and_role_nonterminal_l2_visitors = boost::hana::make_map(
+        boost::hana::make_pair(boost::hana::type<Concept> {}, dynamic_cast<CopyConstructorOrNonTerminalVisitor<Concept>*>(&concept_or_nonterminal_l2_visitor)),
+        boost::hana::make_pair(boost::hana::type<Role> {}, dynamic_cast<CopyConstructorOrNonTerminalVisitor<Role>*>(&role_or_nonterminal_l2_visitor)));
+
+    concept_visitor.initialize(concept_and_role_nonterminal_l2_visitors);
+    role_visitor.initialize(concept_and_role_nonterminal_l2_visitors);
+    boolean_visitor.initialize(concept_and_role_nonterminal_l2_visitors);
+    numerical_visitor.initialize(concept_and_role_nonterminal_l2_visitors);
     concept_or_nonterminal_l1_visitor.initialize(concept_nonterminal_visitor, concept_visitor);
     role_or_nonterminal_l1_visitor.initialize(role_nonterminal_visitor, role_visitor);
     boolean_or_nonterminal_l1_visitor.initialize(boolean_nonterminal_visitor, boolean_visitor);
@@ -360,14 +378,20 @@ static Grammar eliminate_nested_constructors(const Grammar& grammar)
     role_derivation_rule_visitor.initialize(role_nonterminal_visitor, role_or_nonterminal_l1_visitor);
     boolean_derivation_rule_visitor.initialize(boolean_nonterminal_visitor, boolean_or_nonterminal_l1_visitor);
     numerical_derivation_rule_visitor.initialize(numerical_nonterminal_visitor, numerical_or_nonterminal_l1_visitor);
-    grammar_visitor.initialize(concept_start_symbol_visitor,
-                               role_start_symbol_visitor,
-                               boolean_start_symbol_visitor,
-                               numerical_start_symbol_visitor,
-                               concept_derivation_rule_visitor,
-                               role_derivation_rule_visitor,
-                               boolean_derivation_rule_visitor,
-                               numerical_derivation_rule_visitor);
+
+    auto start_nonterminal_visitors = boost::hana::make_map(
+        boost::hana::make_pair(boost::hana::type<Concept> {}, dynamic_cast<CopyNonTerminalVisitor<Concept>*>(&concept_start_symbol_visitor)),
+        boost::hana::make_pair(boost::hana::type<Role> {}, dynamic_cast<CopyNonTerminalVisitor<Role>*>(&role_start_symbol_visitor)),
+        boost::hana::make_pair(boost::hana::type<Boolean> {}, dynamic_cast<CopyNonTerminalVisitor<Boolean>*>(&boolean_start_symbol_visitor)),
+        boost::hana::make_pair(boost::hana::type<Numerical> {}, dynamic_cast<CopyNonTerminalVisitor<Numerical>*>(&numerical_start_symbol_visitor)));
+
+    auto derivation_rule_visitors = boost::hana::make_map(
+        boost::hana::make_pair(boost::hana::type<Concept> {}, dynamic_cast<CopyDerivationRuleVisitor<Concept>*>(&concept_derivation_rule_visitor)),
+        boost::hana::make_pair(boost::hana::type<Role> {}, dynamic_cast<CopyDerivationRuleVisitor<Role>*>(&role_derivation_rule_visitor)),
+        boost::hana::make_pair(boost::hana::type<Boolean> {}, dynamic_cast<CopyDerivationRuleVisitor<Boolean>*>(&boolean_derivation_rule_visitor)),
+        boost::hana::make_pair(boost::hana::type<Numerical> {}, dynamic_cast<CopyDerivationRuleVisitor<Numerical>*>(&numerical_derivation_rule_visitor)));
+
+    grammar_visitor.initialize(start_nonterminal_visitors, derivation_rule_visitors);
 
     grammar.accept(grammar_visitor);
 
