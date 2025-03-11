@@ -1,0 +1,10 @@
+PROJECT_NAME           = "Mimir"
+OUTPUT_DIRECTORY       = "docs"
+GENERATE_HTML         = YES
+GENERATE_LATEX        = NO
+EXTRACT_ALL           = YES
+INPUT                 = \
+    "include/mimir/graphs/static_graph.hpp" \
+    "include/mimir/graphs/graph_vertices.hpp" \
+    "include/mimir/graphs/graph_edges.hpp"
+RECURSIVE             = NO
