@@ -113,7 +113,7 @@ TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarVisitorSentenceGeneratorTes
     dl::cnf_grammar::GeneratedSentencesContainer sentences;
     dl::ConstructorRepositories repositories;
     size_t max_complexity = 4;
-    auto visitor = dl::cnf_grammar::GeneratorGrammarVisitor(pruning_function, sentences, repositories, max_complexity);
+    auto visitor = dl::cnf_grammar::GeneratorVisitor(pruning_function, sentences, repositories, max_complexity);
 
     auto grammar =
         dl::grammar::Grammar(bnf_description, kb->get_generalized_state_space().get_generalized_search_context().get_generalized_problem().get_domain());
@@ -167,7 +167,7 @@ TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarVisitorSentenceGeneratorFra
     dl::cnf_grammar::GeneratedSentencesContainer sentences;
     dl::ConstructorRepositories repositories;
     size_t max_complexity = 9;
-    auto visitor = dl::cnf_grammar::GeneratorGrammarVisitor(pruning_function, sentences, repositories, max_complexity);
+    auto visitor = dl::cnf_grammar::GeneratorVisitor(pruning_function, sentences, repositories, max_complexity);
 
     const auto domain = kb->get_generalized_state_space().get_generalized_search_context().get_generalized_problem().get_domain();
 

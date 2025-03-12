@@ -184,7 +184,7 @@ private:
 
 class CopyVisitor : public Visitor
 {
-private:
+protected:
     ConstructorRepositories& m_repositories;
     StartSymbolsContainer& m_start_symbols;
     DerivationRulesContainer& m_derivation_rules;

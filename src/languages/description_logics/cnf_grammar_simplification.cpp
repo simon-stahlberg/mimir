@@ -25,21 +25,32 @@
 namespace mimir::dl::cnf_grammar
 {
 
-template<FeatureCategory D>
-class EliminateRulesWithIdenticalBodyNonTerminalVisitor : public CopyNonTerminalVisitor<D>
+class EliminateRulesWithIdenticalBodyNonTerminalVisitor : public CopyVisitor
 {
 protected:
     const NonTerminalMap<NonTerminal, Concept, Role, Boolean, Numerical>& m_substitution_map;
 
 public:
     EliminateRulesWithIdenticalBodyNonTerminalVisitor(ConstructorRepositories& repositories,
+                                                      StartSymbolsContainer& start_symbols,
+                                                      DerivationRulesContainer& derivation_rules,
+                                                      SubstitutionRulesContainer& substitution_rules,
                                                       const NonTerminalMap<NonTerminal, Concept, Role, Boolean, Numerical>& substitution_map) :
-        CopyNonTerminalVisitor<D>(repositories),
+        CopyVisitor(repositories, start_symbols, derivation_rules, substitution_rules),
         m_substitution_map(substitution_map)
     {
     }
 
-    void visit(NonTerminal<D> constructor) override
+    void visit(NonTerminal<Concept> constructor) override { visit_impl(constructor); }
+
+    void visit(NonTerminal<Role> constructor) override { visit_impl(constructor); }
+
+    void visit(NonTerminal<Boolean> constructor) override { visit_impl(constructor); }
+
+    void visit(NonTerminal<Numerical> constructor) override { visit_impl(constructor); }
+
+    template<FeatureCategory D>
+    void visit_impl(NonTerminal<D> constructor)
     {
         const auto& substitution_map = boost::hana::at_key(m_substitution_map, boost::hana::type<D> {});
 
@@ -54,36 +65,6 @@ public:
             this->m_result = this->m_repositories.template get_or_create_nonterminal<D>(constructor->get_name());
         }
     }
-};
-
-template<FeatureCategory... Ds>
-using HanaEliminateRulesWithIdenticalBodyNonTerminalVisitors =
-    boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, std::reference_wrapper<EliminateRulesWithIdenticalBodyNonTerminalVisitor<Ds>>>...>;
-
-class EliminateRulesWithIdenticalBodyGrammarVisitor : public CopyGrammarVisitor
-{
-private:
-    const NonTerminalMap<NonTerminal, Concept, Role, Boolean, Numerical>& m_substitution_map;
-
-public:
-    EliminateRulesWithIdenticalBodyGrammarVisitor(ConstructorRepositories& repositories,
-                                                  StartSymbolsContainer& start_symbols,
-                                                  DerivationRulesContainer& derivation_rules,
-                                                  SubstitutionRulesContainer& substitution_rules,
-                                                  HanaCopyNonTerminalVisitors<Concept, Role, Boolean, Numerical> start_symbol_visitors,
-                                                  HanaCopyDerivationRuleVisitors<Concept, Role, Boolean, Numerical> derivation_rule_visitors,
-                                                  HanaCopySubstitutionRuleVisitors<Concept, Role, Boolean, Numerical> substitution_rule_visitors,
-                                                  const NonTerminalMap<NonTerminal, Concept, Role, Boolean, Numerical>& substitution_map) :
-        CopyGrammarVisitor(repositories,
-                           start_symbols,
-                           derivation_rules,
-                           substitution_rules,
-                           start_symbol_visitors,
-                           derivation_rule_visitors,
-                           substitution_rule_visitors),
-        m_substitution_map(substitution_map)
-    {
-    }
 
     void visit(const Grammar& grammar) override
     {
@@ -96,9 +77,8 @@ public:
 
                                   if (second.has_value())
                                   {
-                                      auto& visitor = get_visitor<FeatureType>(m_start_symbol_visitor);
-                                      second.value()->accept(visitor);
-                                      m_start_symbols.insert(visitor.get_result());
+                                      second.value()->accept(*this);
+                                      m_start_symbols.insert(std::any_cast<NonTerminal<FeatureType>>(get_result()));
                                   }
                               });
 
@@ -116,10 +96,8 @@ public:
                                           continue;  ///< non-terminal will be substituted, which renders the rule useless.
                                       }
 
-                                      auto& visitor = get_visitor<FeatureType>(m_derivation_rule_visitor);
-                                      rule->accept(visitor);
-                                      const auto copied_rule = visitor.get_result();
-                                      m_derivation_rules.push_back(copied_rule);
+                                      rule->accept(*this);
+                                      m_derivation_rules.push_back(std::any_cast<DerivationRule<FeatureType>>(get_result()));
                                   }
                               });
 
@@ -137,10 +115,8 @@ public:
                                           continue;  ///< non-terminal will be substituted, which renders the rule useless.
                                       }
 
-                                      auto& visitor = get_visitor<FeatureType>(m_substitution_rule_visitor);
-                                      rule->accept(visitor);
-                                      const auto copied_rule = visitor.get_result();
-                                      m_substitution_rules.push_back(copied_rule);
+                                      rule->accept(*this);
+                                      m_substitution_rules.push_back(std::any_cast<SubstitutionRule<FeatureType>>(get_result()));
                                   }
                               });
     }
@@ -188,59 +164,9 @@ static Grammar eliminate_rules_with_identical_body(const Grammar& grammar)
     auto derivation_rules = cnf_grammar::DerivationRulesContainer();
     auto substitution_rules = cnf_grammar::SubstitutionRulesContainer();
 
-    auto concept_eliminate_nonterminal_visitor = EliminateRulesWithIdenticalBodyNonTerminalVisitor<Concept>(repositories, substitution_map);
-    auto role_eliminate_nonterminal_visitor = EliminateRulesWithIdenticalBodyNonTerminalVisitor<Role>(repositories, substitution_map);
-    auto boolean_eliminate_nonterminal_visitor = EliminateRulesWithIdenticalBodyNonTerminalVisitor<Boolean>(repositories, substitution_map);
-    auto numerical_eliminate_nonterminal_visitor = EliminateRulesWithIdenticalBodyNonTerminalVisitor<Numerical>(repositories, substitution_map);
+    auto visitor = EliminateRulesWithIdenticalBodyNonTerminalVisitor(repositories, start_symbols, derivation_rules, substitution_rules, substitution_map);
 
-    auto substitute_nonterminal_visitors = boost::hana::make_map(
-        boost::hana::make_pair(boost::hana::type<Concept> {}, std::ref(static_cast<CopyNonTerminalVisitor<Concept>&>(concept_eliminate_nonterminal_visitor))),
-        boost::hana::make_pair(boost::hana::type<Role> {}, std::ref(static_cast<CopyNonTerminalVisitor<Role>&>(role_eliminate_nonterminal_visitor))),
-        boost::hana::make_pair(boost::hana::type<Boolean> {}, std::ref(static_cast<CopyNonTerminalVisitor<Boolean>&>(boolean_eliminate_nonterminal_visitor))),
-        boost::hana::make_pair(boost::hana::type<Numerical> {},
-                               std::ref(static_cast<CopyNonTerminalVisitor<Numerical>&>(numerical_eliminate_nonterminal_visitor))));
-
-    auto concept_and_role_eliminate_nonterminal_visitor = boost::hana::make_map(
-        boost::hana::make_pair(boost::hana::type<Concept> {}, std::ref(static_cast<CopyNonTerminalVisitor<Concept>&>(concept_eliminate_nonterminal_visitor))),
-        boost::hana::make_pair(boost::hana::type<Role> {}, std::ref(static_cast<CopyNonTerminalVisitor<Role>&>(role_eliminate_nonterminal_visitor))));
-
-    auto concept_constructor_visitor = CopyConstructorVisitor<Concept>(repositories, concept_and_role_eliminate_nonterminal_visitor);
-    auto role_constructor_visitor = CopyConstructorVisitor<Role>(repositories, concept_and_role_eliminate_nonterminal_visitor);
-    auto boolean_constructor_visitor = CopyConstructorVisitor<Boolean>(repositories, concept_and_role_eliminate_nonterminal_visitor);
-    auto numerical_constructor_visitor = CopyConstructorVisitor<Numerical>(repositories, concept_and_role_eliminate_nonterminal_visitor);
-
-    auto concept_derivation_rule_visitor = CopyDerivationRuleVisitor<Concept>(repositories, concept_eliminate_nonterminal_visitor, concept_constructor_visitor);
-    auto role_derivation_rule_visitor = CopyDerivationRuleVisitor<Role>(repositories, role_eliminate_nonterminal_visitor, role_constructor_visitor);
-    auto boolean_derivation_rule_visitor = CopyDerivationRuleVisitor<Boolean>(repositories, boolean_eliminate_nonterminal_visitor, boolean_constructor_visitor);
-    auto numerical_derivation_rule_visitor =
-        CopyDerivationRuleVisitor<Numerical>(repositories, numerical_eliminate_nonterminal_visitor, numerical_constructor_visitor);
-
-    auto derivation_rule_visitors = boost::hana::make_map(boost::hana::make_pair(boost::hana::type<Concept> {}, std::ref(concept_derivation_rule_visitor)),
-                                                          boost::hana::make_pair(boost::hana::type<Role> {}, std::ref(role_derivation_rule_visitor)),
-                                                          boost::hana::make_pair(boost::hana::type<Boolean> {}, std::ref(boolean_derivation_rule_visitor)),
-                                                          boost::hana::make_pair(boost::hana::type<Numerical> {}, std::ref(numerical_derivation_rule_visitor)));
-
-    auto concept_substitution_rule_visitor = CopySubstitutionRuleVisitor<Concept>(repositories, concept_eliminate_nonterminal_visitor);
-    auto role_substitution_rule_visitor = CopySubstitutionRuleVisitor<Role>(repositories, role_eliminate_nonterminal_visitor);
-    auto boolean_substitution_rule_visitor = CopySubstitutionRuleVisitor<Boolean>(repositories, boolean_eliminate_nonterminal_visitor);
-    auto numerical_substitution_rule_visitor = CopySubstitutionRuleVisitor<Numerical>(repositories, numerical_eliminate_nonterminal_visitor);
-
-    auto substitution_rule_visitors =
-        boost::hana::make_map(boost::hana::make_pair(boost::hana::type<Concept> {}, std::ref(concept_substitution_rule_visitor)),
-                              boost::hana::make_pair(boost::hana::type<Role> {}, std::ref(role_substitution_rule_visitor)),
-                              boost::hana::make_pair(boost::hana::type<Boolean> {}, std::ref(boolean_substitution_rule_visitor)),
-                              boost::hana::make_pair(boost::hana::type<Numerical> {}, std::ref(numerical_substitution_rule_visitor)));
-
-    auto grammar_visitor = EliminateRulesWithIdenticalBodyGrammarVisitor(repositories,
-                                                                         start_symbols,
-                                                                         derivation_rules,
-                                                                         substitution_rules,
-                                                                         substitute_nonterminal_visitors,
-                                                                         derivation_rule_visitors,
-                                                                         substitution_rule_visitors,
-                                                                         substitution_map);
-
-    grammar_visitor.visit(grammar);
+    grammar.accept(visitor);
 
     return Grammar(std::move(repositories), std::move(start_symbols), std::move(derivation_rules), std::move(substitution_rules), grammar.get_domain());
 }
@@ -251,27 +177,18 @@ using HanaSubstitutionNonTerminalOrderings =
                      boost::hana::pair<boost::hana::type<Boolean>, std::unordered_map<NonTerminal<Boolean>, size_t>>,
                      boost::hana::pair<boost::hana::type<Numerical>, std::unordered_map<NonTerminal<Numerical>, size_t>>>;
 
-class OrderSubstitutionRuleGrammarVisitor : public CopyGrammarVisitor
+class OrderSubstitutionRuleVisitor : public CopyVisitor
 {
 private:
     const HanaSubstitutionNonTerminalOrderings& m_orderings;
 
 public:
-    OrderSubstitutionRuleGrammarVisitor(ConstructorRepositories& repositories,
-                                        StartSymbolsContainer& start_symbols,
-                                        DerivationRulesContainer& derivation_rules,
-                                        SubstitutionRulesContainer& substitution_rules,
-                                        HanaCopyNonTerminalVisitors<Concept, Role, Boolean, Numerical> start_symbol_visitors,
-                                        HanaCopyDerivationRuleVisitors<Concept, Role, Boolean, Numerical> derivation_rule_visitors,
-                                        HanaCopySubstitutionRuleVisitors<Concept, Role, Boolean, Numerical> substitution_rule_visitors,
-                                        const HanaSubstitutionNonTerminalOrderings& orderings) :
-        CopyGrammarVisitor(repositories,
-                           start_symbols,
-                           derivation_rules,
-                           substitution_rules,
-                           start_symbol_visitors,
-                           derivation_rule_visitors,
-                           substitution_rule_visitors),
+    OrderSubstitutionRuleVisitor(ConstructorRepositories& repositories,
+                                 StartSymbolsContainer& start_symbols,
+                                 DerivationRulesContainer& derivation_rules,
+                                 SubstitutionRulesContainer& substitution_rules,
+                                 const HanaSubstitutionNonTerminalOrderings& orderings) :
+        CopyVisitor(repositories, start_symbols, derivation_rules, substitution_rules),
         m_orderings(orderings)
     {
     }
@@ -287,9 +204,8 @@ public:
 
                                   if (second.has_value())
                                   {
-                                      auto& visitor = get_visitor<FeatureType>(m_start_symbol_visitor);
-                                      second.value()->accept(visitor);
-                                      m_start_symbols.insert(visitor.get_result());
+                                      second.value()->accept(*this);
+                                      m_start_symbols.insert(std::any_cast<NonTerminal<FeatureType>>(get_result()));
                                   }
                               });
 
@@ -305,10 +221,8 @@ public:
 
                 for (const auto& rule : second)
                 {
-                    auto& visitor = get_visitor<FeatureType>(m_derivation_rule_visitor);
-                    rule->accept(visitor);
-                    const auto copied_rule = visitor.get_result();
-                    m_derivation_rules.push_back(copied_rule);
+                    rule->accept(*this);
+                    m_derivation_rules.push_back(std::any_cast<DerivationRule<FeatureType>>(get_result()));
                 }
             });
 
@@ -326,10 +240,8 @@ public:
 
                 for (const auto& rule : second)
                 {
-                    auto& visitor = get_visitor<FeatureType>(m_substitution_rule_visitor);
-                    rule->accept(visitor);
-                    const auto copied_rule = visitor.get_result();
-                    m_substitution_rules.push_back(copied_rule);
+                    rule->accept(*this);
+                    m_substitution_rules.push_back(std::any_cast<SubstitutionRule<FeatureType>>(get_result()));
                 }
             });
     }
@@ -384,59 +296,9 @@ static Grammar order_substitution_rules(const Grammar& grammar)
     auto derivation_rules = cnf_grammar::DerivationRulesContainer();
     auto substitution_rules = cnf_grammar::SubstitutionRulesContainer();
 
-    auto concept_eliminate_nonterminal_visitor = CopyNonTerminalVisitor<Concept>(repositories);
-    auto role_eliminate_nonterminal_visitor = CopyNonTerminalVisitor<Role>(repositories);
-    auto boolean_eliminate_nonterminal_visitor = CopyNonTerminalVisitor<Boolean>(repositories);
-    auto numerical_eliminate_nonterminal_visitor = CopyNonTerminalVisitor<Numerical>(repositories);
+    auto visitor = OrderSubstitutionRuleVisitor(repositories, start_symbols, derivation_rules, substitution_rules, orderings);
 
-    auto nonterminal_visitors = boost::hana::make_map(
-        boost::hana::make_pair(boost::hana::type<Concept> {}, std::ref(static_cast<CopyNonTerminalVisitor<Concept>&>(concept_eliminate_nonterminal_visitor))),
-        boost::hana::make_pair(boost::hana::type<Role> {}, std::ref(static_cast<CopyNonTerminalVisitor<Role>&>(role_eliminate_nonterminal_visitor))),
-        boost::hana::make_pair(boost::hana::type<Boolean> {}, std::ref(static_cast<CopyNonTerminalVisitor<Boolean>&>(boolean_eliminate_nonterminal_visitor))),
-        boost::hana::make_pair(boost::hana::type<Numerical> {},
-                               std::ref(static_cast<CopyNonTerminalVisitor<Numerical>&>(numerical_eliminate_nonterminal_visitor))));
-
-    auto concept_and_role_nonterminal_visitors = boost::hana::make_map(
-        boost::hana::make_pair(boost::hana::type<Concept> {}, std::ref(static_cast<CopyNonTerminalVisitor<Concept>&>(concept_eliminate_nonterminal_visitor))),
-        boost::hana::make_pair(boost::hana::type<Role> {}, std::ref(static_cast<CopyNonTerminalVisitor<Role>&>(role_eliminate_nonterminal_visitor))));
-
-    auto concept_constructor_visitor = CopyConstructorVisitor<Concept>(repositories, concept_and_role_nonterminal_visitors);
-    auto role_constructor_visitor = CopyConstructorVisitor<Role>(repositories, concept_and_role_nonterminal_visitors);
-    auto boolean_constructor_visitor = CopyConstructorVisitor<Boolean>(repositories, concept_and_role_nonterminal_visitors);
-    auto numerical_constructor_visitor = CopyConstructorVisitor<Numerical>(repositories, concept_and_role_nonterminal_visitors);
-
-    auto concept_derivation_rule_visitor = CopyDerivationRuleVisitor<Concept>(repositories, concept_eliminate_nonterminal_visitor, concept_constructor_visitor);
-    auto role_derivation_rule_visitor = CopyDerivationRuleVisitor<Role>(repositories, role_eliminate_nonterminal_visitor, role_constructor_visitor);
-    auto boolean_derivation_rule_visitor = CopyDerivationRuleVisitor<Boolean>(repositories, boolean_eliminate_nonterminal_visitor, boolean_constructor_visitor);
-    auto numerical_derivation_rule_visitor =
-        CopyDerivationRuleVisitor<Numerical>(repositories, numerical_eliminate_nonterminal_visitor, numerical_constructor_visitor);
-
-    auto derivation_rule_visitors = boost::hana::make_map(boost::hana::make_pair(boost::hana::type<Concept> {}, std::ref(concept_derivation_rule_visitor)),
-                                                          boost::hana::make_pair(boost::hana::type<Role> {}, std::ref(role_derivation_rule_visitor)),
-                                                          boost::hana::make_pair(boost::hana::type<Boolean> {}, std::ref(boolean_derivation_rule_visitor)),
-                                                          boost::hana::make_pair(boost::hana::type<Numerical> {}, std::ref(numerical_derivation_rule_visitor)));
-
-    auto concept_substitution_rule_visitor = CopySubstitutionRuleVisitor<Concept>(repositories, concept_eliminate_nonterminal_visitor);
-    auto role_substitution_rule_visitor = CopySubstitutionRuleVisitor<Role>(repositories, role_eliminate_nonterminal_visitor);
-    auto boolean_substitution_rule_visitor = CopySubstitutionRuleVisitor<Boolean>(repositories, boolean_eliminate_nonterminal_visitor);
-    auto numerical_substitution_rule_visitor = CopySubstitutionRuleVisitor<Numerical>(repositories, numerical_eliminate_nonterminal_visitor);
-
-    auto substitution_rule_visitors =
-        boost::hana::make_map(boost::hana::make_pair(boost::hana::type<Concept> {}, std::ref(concept_substitution_rule_visitor)),
-                              boost::hana::make_pair(boost::hana::type<Role> {}, std::ref(role_substitution_rule_visitor)),
-                              boost::hana::make_pair(boost::hana::type<Boolean> {}, std::ref(boolean_substitution_rule_visitor)),
-                              boost::hana::make_pair(boost::hana::type<Numerical> {}, std::ref(numerical_substitution_rule_visitor)));
-
-    auto grammar_visitor = OrderSubstitutionRuleGrammarVisitor(repositories,
-                                                               start_symbols,
-                                                               derivation_rules,
-                                                               substitution_rules,
-                                                               nonterminal_visitors,
-                                                               derivation_rule_visitors,
-                                                               substitution_rule_visitors,
-                                                               orderings);
-
-    grammar_visitor.visit(grammar);
+    grammar.accept(visitor);
 
     return Grammar(std::move(repositories), std::move(start_symbols), std::move(derivation_rules), std::move(substitution_rules), grammar.get_domain());
 }
@@ -445,39 +307,46 @@ static Grammar order_substitution_rules(const Grammar& grammar)
  * Eliminate epsilon rules
  */
 
-template<FeatureCategory D>
-class CollectHeadAndBodyNonTerminalsDerivationRuleVisitor : public RecurseDerivationRuleVisitor<D>
-{
-private:
-    std::unordered_set<std::string>& m_head_non_terminals;
-
-public:
-    void visit(DerivationRule<D> constructor) override
-    {
-        // Store the head nonterminal but do not visit the head non terminal.
-        m_head_non_terminals.insert(constructor->get_head()->get_name());
-
-        constructor->get_body()->accept(this->m_constructor_visitor);
-    }
-
-    CollectHeadAndBodyNonTerminalsDerivationRuleVisitor(RecurseNonTerminalVisitor<D>& nonterminal_visitor,
-                                                        RecurseConstructorVisitor<D>& constructor_visitor,
-                                                        std::unordered_set<std::string>& head_non_terminals) :
-        RecurseDerivationRuleVisitor<D>(nonterminal_visitor, constructor_visitor),
-        m_head_non_terminals(head_non_terminals)
-    {
-    }
-};
-
-template<FeatureCategory D>
-class CollectHeadAndBodyNonTerminalsSubstitutionRuleVisitor : public RecurseSubstitutionRuleVisitor<D>
+class CollectHeadAndBodyNonTerminalsVisitor : public RecurseVisitor
 {
 private:
     std::unordered_set<std::string>& m_head_non_terminals;
     std::unordered_set<std::string>& m_body_non_terminals;
 
 public:
-    void visit(SubstitutionRule<D> constructor) override
+    CollectHeadAndBodyNonTerminalsVisitor(std::unordered_set<std::string>& head_non_terminals, std::unordered_set<std::string>& body_non_terminals) :
+        m_head_non_terminals(head_non_terminals),
+        m_body_non_terminals(body_non_terminals)
+    {
+    }
+
+    void visit(DerivationRule<Concept> constructor) override { visit_impl(constructor); }
+
+    void visit(DerivationRule<Role> constructor) override { visit_impl(constructor); }
+
+    void visit(DerivationRule<Boolean> constructor) override { visit_impl(constructor); }
+
+    void visit(DerivationRule<Numerical> constructor) override { visit_impl(constructor); }
+
+    template<FeatureCategory D>
+    void visit_impl(DerivationRule<D> constructor)
+    {
+        // Store the head nonterminal but do not visit the head non terminal.
+        m_head_non_terminals.insert(constructor->get_head()->get_name());
+
+        constructor->get_body()->accept(*this);
+    }
+
+    void visit(SubstitutionRule<Concept> constructor) override { visit_impl(constructor); }
+
+    void visit(SubstitutionRule<Role> constructor) override { visit_impl(constructor); }
+
+    void visit(SubstitutionRule<Boolean> constructor) override { visit_impl(constructor); }
+
+    void visit(SubstitutionRule<Numerical> constructor) override { visit_impl(constructor); }
+
+    template<FeatureCategory D>
+    void visit_impl(SubstitutionRule<D> constructor)
     {
         // Store the head nonterminal but do not visit the head non terminal.
         m_head_non_terminals.insert(constructor->get_head()->get_name());
@@ -485,26 +354,19 @@ public:
         m_body_non_terminals.insert(constructor->get_body()->get_name());
     }
 
-    CollectHeadAndBodyNonTerminalsSubstitutionRuleVisitor(RecurseNonTerminalVisitor<D>& nonterminal_visitor,
-                                                          std::unordered_set<std::string>& head_non_terminals,
-                                                          std::unordered_set<std::string>& body_non_terminals) :
-        RecurseSubstitutionRuleVisitor<D>(nonterminal_visitor),
-        m_head_non_terminals(head_non_terminals),
-        m_body_non_terminals(body_non_terminals)
+    void visit(NonTerminal<Concept> constructor) override { visit_impl(constructor); }
+
+    void visit(NonTerminal<Role> constructor) override { visit_impl(constructor); }
+
+    void visit(NonTerminal<Boolean> constructor) override { visit_impl(constructor); }
+
+    void visit(NonTerminal<Numerical> constructor) override { visit_impl(constructor); }
+
+    template<FeatureCategory D>
+    void visit_impl(NonTerminal<D> constructor)
     {
+        m_body_non_terminals.insert(constructor->get_name());
     }
-};
-
-template<FeatureCategory D>
-class CollectHeadAndBodyNonTerminalsNonTerminalVisitor : public RecurseNonTerminalVisitor<D>
-{
-private:
-    std::unordered_set<std::string>& m_body_non_terminals;
-
-public:
-    void visit(NonTerminal<D> constructor) override { m_body_non_terminals.insert(constructor->get_name()); }
-
-    explicit CollectHeadAndBodyNonTerminalsNonTerminalVisitor(std::unordered_set<std::string>& body_non_terminals) : m_body_non_terminals(body_non_terminals) {}
 };
 
 std::pair<std::unordered_set<std::string>, std::unordered_set<std::string>> collect_head_and_body_nonterminals(const Grammar& grammar)
@@ -512,66 +374,7 @@ std::pair<std::unordered_set<std::string>, std::unordered_set<std::string>> coll
     auto head_nonterminals = std::unordered_set<std::string> {};
     auto body_nonterminals = std::unordered_set<std::string> {};
 
-    auto body_concept_nonterminal_visitor = CollectHeadAndBodyNonTerminalsNonTerminalVisitor<Concept>(body_nonterminals);
-    auto body_role_nonterminal_visitor = CollectHeadAndBodyNonTerminalsNonTerminalVisitor<Role>(body_nonterminals);
-    auto body_boolean_nonterminal_visitor = CollectHeadAndBodyNonTerminalsNonTerminalVisitor<Boolean>(body_nonterminals);
-    auto body_numerical_nonterminal_visitor = CollectHeadAndBodyNonTerminalsNonTerminalVisitor<Numerical>(body_nonterminals);
-
-    auto body_concept_and_role_nonterminal_visitors = boost::hana::make_map(
-        boost::hana::make_pair(boost::hana::type<Concept> {}, std::ref(static_cast<RecurseNonTerminalVisitor<Concept>&>(body_concept_nonterminal_visitor))),
-        boost::hana::make_pair(boost::hana::type<Role> {}, std::ref(static_cast<RecurseNonTerminalVisitor<Role>&>(body_role_nonterminal_visitor))));
-
-    auto body_nonterminal_visitors = boost::hana::make_map(
-        boost::hana::make_pair(boost::hana::type<Concept> {}, std::ref(static_cast<RecurseNonTerminalVisitor<Concept>&>(body_concept_nonterminal_visitor))),
-        boost::hana::make_pair(boost::hana::type<Role> {}, std::ref(static_cast<RecurseNonTerminalVisitor<Role>&>(body_role_nonterminal_visitor))),
-        boost::hana::make_pair(boost::hana::type<Boolean> {}, std::ref(static_cast<RecurseNonTerminalVisitor<Boolean>&>(body_boolean_nonterminal_visitor))),
-        boost::hana::make_pair(boost::hana::type<Numerical> {},
-                               std::ref(static_cast<RecurseNonTerminalVisitor<Numerical>&>(body_numerical_nonterminal_visitor))));
-
-    auto concept_nonterminal_visitor = RecurseNonTerminalVisitor<Concept>();
-    auto role_nonterminal_visitor = RecurseNonTerminalVisitor<Role>();
-    auto boolean_nonterminal_visitor = RecurseNonTerminalVisitor<Boolean>();
-    auto numerical_nonterminal_visitor = RecurseNonTerminalVisitor<Numerical>();
-
-    auto concept_visitor = RecurseConstructorVisitor<Concept>(body_concept_and_role_nonterminal_visitors);
-    auto role_visitor = RecurseConstructorVisitor<Role>(body_concept_and_role_nonterminal_visitors);
-    auto boolean_visitor = RecurseConstructorVisitor<Boolean>(body_concept_and_role_nonterminal_visitors);
-    auto numerical_visitor = RecurseConstructorVisitor<Numerical>(body_concept_and_role_nonterminal_visitors);
-
-    auto concept_derivation_rule_visitor =
-        CollectHeadAndBodyNonTerminalsDerivationRuleVisitor<Concept>(concept_nonterminal_visitor, concept_visitor, head_nonterminals);
-    auto role_derivation_rule_visitor = CollectHeadAndBodyNonTerminalsDerivationRuleVisitor<Role>(role_nonterminal_visitor, role_visitor, head_nonterminals);
-    auto boolean_derivation_rule_visitor =
-        CollectHeadAndBodyNonTerminalsDerivationRuleVisitor<Boolean>(boolean_nonterminal_visitor, boolean_visitor, head_nonterminals);
-    auto numerical_derivation_rule_visitor =
-        CollectHeadAndBodyNonTerminalsDerivationRuleVisitor<Numerical>(numerical_nonterminal_visitor, numerical_visitor, head_nonterminals);
-
-    auto derivation_rule_visitors = boost::hana::make_map(
-        boost::hana::make_pair(boost::hana::type<Concept> {}, std::ref(static_cast<RecurseDerivationRuleVisitor<Concept>&>(concept_derivation_rule_visitor))),
-        boost::hana::make_pair(boost::hana::type<Role> {}, std::ref(static_cast<RecurseDerivationRuleVisitor<Role>&>(role_derivation_rule_visitor))),
-        boost::hana::make_pair(boost::hana::type<Boolean> {}, std::ref(static_cast<RecurseDerivationRuleVisitor<Boolean>&>(boolean_derivation_rule_visitor))),
-        boost::hana::make_pair(boost::hana::type<Numerical> {},
-                               std::ref(static_cast<RecurseDerivationRuleVisitor<Numerical>&>(numerical_derivation_rule_visitor))));
-
-    auto concept_substitution_rule_visitor =
-        CollectHeadAndBodyNonTerminalsSubstitutionRuleVisitor<Concept>(body_concept_nonterminal_visitor, head_nonterminals, body_nonterminals);
-    auto role_substitution_rule_visitor =
-        CollectHeadAndBodyNonTerminalsSubstitutionRuleVisitor<Role>(body_role_nonterminal_visitor, head_nonterminals, body_nonterminals);
-    auto boolean_substitution_rule_visitor =
-        CollectHeadAndBodyNonTerminalsSubstitutionRuleVisitor<Boolean>(body_boolean_nonterminal_visitor, head_nonterminals, body_nonterminals);
-    auto numerical_substitution_rule_visitor =
-        CollectHeadAndBodyNonTerminalsSubstitutionRuleVisitor<Numerical>(body_numerical_nonterminal_visitor, head_nonterminals, body_nonterminals);
-
-    auto substitution_rule_visitors = boost::hana::make_map(
-        boost::hana::make_pair(boost::hana::type<Concept> {},
-                               std::ref(static_cast<RecurseSubstitutionRuleVisitor<Concept>&>(concept_substitution_rule_visitor))),
-        boost::hana::make_pair(boost::hana::type<Role> {}, std::ref(static_cast<RecurseSubstitutionRuleVisitor<Role>&>(role_substitution_rule_visitor))),
-        boost::hana::make_pair(boost::hana::type<Boolean> {},
-                               std::ref(static_cast<RecurseSubstitutionRuleVisitor<Boolean>&>(boolean_substitution_rule_visitor))),
-        boost::hana::make_pair(boost::hana::type<Numerical> {},
-                               std::ref(static_cast<RecurseSubstitutionRuleVisitor<Numerical>&>(numerical_substitution_rule_visitor))));
-
-    auto grammar_visitor = RecurseGrammarVisitor(body_nonterminal_visitors, derivation_rule_visitors, substitution_rule_visitors);
+    auto grammar_visitor = CollectHeadAndBodyNonTerminalsVisitor(head_nonterminals, body_nonterminals);
 
     grammar.accept(grammar_visitor);
 
@@ -624,13 +427,7 @@ void verify_grammar_is_well_defined(const Grammar& grammar)
                           });
 }
 
-template<FeatureCategory D>
-class IsEpsilonRuleConstructorVisitor : public ConstructorVisitor<D>
-{
-};
-
-template<>
-class IsEpsilonRuleConstructorVisitor<Concept> : public ConstructorVisitor<Concept>
+class IsEpsilonRuleVisitor : public RecurseVisitor
 {
 protected:
     const std::unordered_set<std::string>& m_epsilon_nonterminals;
@@ -638,7 +435,7 @@ protected:
     bool m_result;
 
 public:
-    IsEpsilonRuleConstructorVisitor(const std::unordered_set<std::string>& epsilon_nonterminals) : m_epsilon_nonterminals(epsilon_nonterminals) {}
+    IsEpsilonRuleVisitor(const std::unordered_set<std::string>& epsilon_nonterminals) : m_epsilon_nonterminals(epsilon_nonterminals) {}
 
     void visit(ConceptBot constructor) override { m_result = false; }
     void visit(ConceptTop constructor) override { m_result = false; }
@@ -681,24 +478,6 @@ public:
                    || m_epsilon_nonterminals.contains(constructor->get_right_role()->get_name());
     }
 
-    bool get_result() const { return m_result; }
-};
-
-/**
- * Role
- */
-
-template<>
-class IsEpsilonRuleConstructorVisitor<Role> : public ConstructorVisitor<Role>
-{
-protected:
-    const std::unordered_set<std::string>& m_epsilon_nonterminals;
-
-    bool m_result;
-
-public:
-    explicit IsEpsilonRuleConstructorVisitor(const std::unordered_set<std::string>& epsilon_nonterminals) : m_epsilon_nonterminals(epsilon_nonterminals) {}
-
     void visit(RoleUniversal constructor) override { m_result = false; }
     void visit(RoleAtomicState<Static> constructor) override { m_result = false; }
     void visit(RoleAtomicState<Fluent> constructor) override { m_result = false; }
@@ -732,47 +511,11 @@ public:
     }
     void visit(RoleIdentity constructor) override { m_result = m_epsilon_nonterminals.contains(constructor->get_concept()->get_name()); }
 
-    bool get_result() const { return m_result; }
-};
-
-/**
- * Booleans
- */
-
-template<>
-class IsEpsilonRuleConstructorVisitor<Boolean> : public ConstructorVisitor<Boolean>
-{
-protected:
-    const std::unordered_set<std::string>& m_epsilon_nonterminals;
-
-    bool m_result;
-
-public:
-    explicit IsEpsilonRuleConstructorVisitor(const std::unordered_set<std::string>& epsilon_nonterminals) : m_epsilon_nonterminals(epsilon_nonterminals) {}
-
     void visit(BooleanAtomicState<Static> constructor) override { m_result = false; }
     void visit(BooleanAtomicState<Fluent> constructor) override { m_result = false; }
     void visit(BooleanAtomicState<Derived> constructor) override { m_result = false; }
     void visit(BooleanNonempty<Concept> constructor) override { m_result = m_epsilon_nonterminals.contains(constructor->get_nonterminal()->get_name()); }
     void visit(BooleanNonempty<Role> constructor) override { m_result = m_epsilon_nonterminals.contains(constructor->get_nonterminal()->get_name()); }
-
-    bool get_result() const { return m_result; }
-};
-
-/**
- * Numericals
- */
-
-template<>
-class IsEpsilonRuleConstructorVisitor<Numerical> : public ConstructorVisitor<Numerical>
-{
-protected:
-    const std::unordered_set<std::string>& m_epsilon_nonterminals;
-
-    bool m_result;
-
-public:
-    explicit IsEpsilonRuleConstructorVisitor(const std::unordered_set<std::string>& epsilon_nonterminals) : m_epsilon_nonterminals(epsilon_nonterminals) {}
 
     void visit(NumericalCount<Concept> constructor) override { m_result = m_epsilon_nonterminals.contains(constructor->get_nonterminal()->get_name()); }
     void visit(NumericalCount<Role> constructor) override { m_result = m_epsilon_nonterminals.contains(constructor->get_nonterminal()->get_name()); }
@@ -789,7 +532,7 @@ public:
 template<FeatureCategory D>
 bool is_epsilon_rule(DerivationRule<D> rule, const std::unordered_set<std::string>& epsilon_nonterminals)
 {
-    auto visitor = IsEpsilonRuleConstructorVisitor<D>(epsilon_nonterminals);
+    auto visitor = IsEpsilonRuleVisitor(epsilon_nonterminals);
     rule->get_body()->accept(visitor);
     return visitor.get_result();
 }
@@ -800,27 +543,18 @@ bool is_epsilon_rule(SubstitutionRule<D> rule, const std::unordered_set<std::str
     return epsilon_nonterminals.contains(rule->get_body()->get_name());
 }
 
-class EliminateEpsilonRuleGrammarVisitor : public CopyGrammarVisitor
+class EliminateEpsilonRuleVisitor : public CopyVisitor
 {
 private:
     const std::unordered_set<std::string>& m_epsilon_nonterminals;
 
 public:
-    EliminateEpsilonRuleGrammarVisitor(ConstructorRepositories& repositories,
-                                       StartSymbolsContainer& start_symbols,
-                                       DerivationRulesContainer& derivation_rules,
-                                       SubstitutionRulesContainer& substitution_rules,
-                                       HanaCopyNonTerminalVisitors<Concept, Role, Boolean, Numerical> start_symbol_visitors,
-                                       HanaCopyDerivationRuleVisitors<Concept, Role, Boolean, Numerical> derivation_rule_visitors,
-                                       HanaCopySubstitutionRuleVisitors<Concept, Role, Boolean, Numerical> substitution_rule_visitors,
-                                       const std::unordered_set<std::string>& epsilon_nonterminals) :
-        CopyGrammarVisitor(repositories,
-                           start_symbols,
-                           derivation_rules,
-                           substitution_rules,
-                           start_symbol_visitors,
-                           derivation_rule_visitors,
-                           substitution_rule_visitors),
+    EliminateEpsilonRuleVisitor(ConstructorRepositories& repositories,
+                                StartSymbolsContainer& start_symbols,
+                                DerivationRulesContainer& derivation_rules,
+                                SubstitutionRulesContainer& substitution_rules,
+                                const std::unordered_set<std::string>& epsilon_nonterminals) :
+        CopyVisitor(repositories, start_symbols, derivation_rules, substitution_rules),
         m_epsilon_nonterminals(epsilon_nonterminals)
     {
     }
@@ -836,9 +570,8 @@ public:
 
                                   if (second.has_value())
                                   {
-                                      auto& visitor = get_visitor<FeatureType>(m_start_symbol_visitor);
-                                      second.value()->accept(visitor);
-                                      m_start_symbols.insert(visitor.get_result());
+                                      second.value()->accept(*this);
+                                      m_start_symbols.insert(std::any_cast<NonTerminal<FeatureType>>(get_result()));
                                   }
                               });
 
@@ -856,10 +589,8 @@ public:
                                           continue;
                                       }
 
-                                      auto& visitor = get_visitor<FeatureType>(m_derivation_rule_visitor);
-                                      rule->accept(visitor);
-                                      const auto copied_rule = visitor.get_result();
-                                      m_derivation_rules.push_back(copied_rule);
+                                      rule->accept(*this);
+                                      m_derivation_rules.push_back(std::any_cast<DerivationRule<FeatureType>>(get_result()));
                                   }
                               });
 
@@ -877,10 +608,8 @@ public:
                                           continue;
                                       }
 
-                                      auto& visitor = get_visitor<FeatureType>(m_substitution_rule_visitor);
-                                      rule->accept(visitor);
-                                      const auto copied_rule = visitor.get_result();
-                                      m_substitution_rules.push_back(copied_rule);
+                                      rule->accept(*this);
+                                      m_substitution_rules.push_back(std::any_cast<SubstitutionRule<FeatureType>>(get_result()));
                                   }
                               });
     }
@@ -899,60 +628,9 @@ Grammar eliminate_epsilon_rules(const Grammar& grammar)
     auto start_symbols = cnf_grammar::StartSymbolsContainer();
     auto derivation_rules = cnf_grammar::DerivationRulesContainer();
     auto substitution_rules = cnf_grammar::SubstitutionRulesContainer();
+    auto visitor = EliminateEpsilonRuleVisitor(repositories, start_symbols, derivation_rules, substitution_rules, body_nonterminals);
 
-    auto concept_eliminate_nonterminal_visitor = CopyNonTerminalVisitor<Concept>(repositories);
-    auto role_eliminate_nonterminal_visitor = CopyNonTerminalVisitor<Role>(repositories);
-    auto boolean_eliminate_nonterminal_visitor = CopyNonTerminalVisitor<Boolean>(repositories);
-    auto numerical_eliminate_nonterminal_visitor = CopyNonTerminalVisitor<Numerical>(repositories);
-
-    auto nonterminal_visitors = boost::hana::make_map(
-        boost::hana::make_pair(boost::hana::type<Concept> {}, std::ref(static_cast<CopyNonTerminalVisitor<Concept>&>(concept_eliminate_nonterminal_visitor))),
-        boost::hana::make_pair(boost::hana::type<Role> {}, std::ref(static_cast<CopyNonTerminalVisitor<Role>&>(role_eliminate_nonterminal_visitor))),
-        boost::hana::make_pair(boost::hana::type<Boolean> {}, std::ref(static_cast<CopyNonTerminalVisitor<Boolean>&>(boolean_eliminate_nonterminal_visitor))),
-        boost::hana::make_pair(boost::hana::type<Numerical> {},
-                               std::ref(static_cast<CopyNonTerminalVisitor<Numerical>&>(numerical_eliminate_nonterminal_visitor))));
-
-    auto concept_and_role_nonterminal_visitors = boost::hana::make_map(
-        boost::hana::make_pair(boost::hana::type<Concept> {}, std::ref(static_cast<CopyNonTerminalVisitor<Concept>&>(concept_eliminate_nonterminal_visitor))),
-        boost::hana::make_pair(boost::hana::type<Role> {}, std::ref(static_cast<CopyNonTerminalVisitor<Role>&>(role_eliminate_nonterminal_visitor))));
-
-    auto concept_constructor_visitor = CopyConstructorVisitor<Concept>(repositories, concept_and_role_nonterminal_visitors);
-    auto role_constructor_visitor = CopyConstructorVisitor<Role>(repositories, concept_and_role_nonterminal_visitors);
-    auto boolean_constructor_visitor = CopyConstructorVisitor<Boolean>(repositories, concept_and_role_nonterminal_visitors);
-    auto numerical_constructor_visitor = CopyConstructorVisitor<Numerical>(repositories, concept_and_role_nonterminal_visitors);
-
-    auto concept_derivation_rule_visitor = CopyDerivationRuleVisitor<Concept>(repositories, concept_eliminate_nonterminal_visitor, concept_constructor_visitor);
-    auto role_derivation_rule_visitor = CopyDerivationRuleVisitor<Role>(repositories, role_eliminate_nonterminal_visitor, role_constructor_visitor);
-    auto boolean_derivation_rule_visitor = CopyDerivationRuleVisitor<Boolean>(repositories, boolean_eliminate_nonterminal_visitor, boolean_constructor_visitor);
-    auto numerical_derivation_rule_visitor =
-        CopyDerivationRuleVisitor<Numerical>(repositories, numerical_eliminate_nonterminal_visitor, numerical_constructor_visitor);
-
-    auto derivation_rule_visitors = boost::hana::make_map(boost::hana::make_pair(boost::hana::type<Concept> {}, std::ref(concept_derivation_rule_visitor)),
-                                                          boost::hana::make_pair(boost::hana::type<Role> {}, std::ref(role_derivation_rule_visitor)),
-                                                          boost::hana::make_pair(boost::hana::type<Boolean> {}, std::ref(boolean_derivation_rule_visitor)),
-                                                          boost::hana::make_pair(boost::hana::type<Numerical> {}, std::ref(numerical_derivation_rule_visitor)));
-
-    auto concept_substitution_rule_visitor = CopySubstitutionRuleVisitor<Concept>(repositories, concept_eliminate_nonterminal_visitor);
-    auto role_substitution_rule_visitor = CopySubstitutionRuleVisitor<Role>(repositories, role_eliminate_nonterminal_visitor);
-    auto boolean_substitution_rule_visitor = CopySubstitutionRuleVisitor<Boolean>(repositories, boolean_eliminate_nonterminal_visitor);
-    auto numerical_substitution_rule_visitor = CopySubstitutionRuleVisitor<Numerical>(repositories, numerical_eliminate_nonterminal_visitor);
-
-    auto substitution_rule_visitors =
-        boost::hana::make_map(boost::hana::make_pair(boost::hana::type<Concept> {}, std::ref(concept_substitution_rule_visitor)),
-                              boost::hana::make_pair(boost::hana::type<Role> {}, std::ref(role_substitution_rule_visitor)),
-                              boost::hana::make_pair(boost::hana::type<Boolean> {}, std::ref(boolean_substitution_rule_visitor)),
-                              boost::hana::make_pair(boost::hana::type<Numerical> {}, std::ref(numerical_substitution_rule_visitor)));
-
-    auto grammar_visitor = EliminateEpsilonRuleGrammarVisitor(repositories,
-                                                              start_symbols,
-                                                              derivation_rules,
-                                                              substitution_rules,
-                                                              nonterminal_visitors,
-                                                              derivation_rule_visitors,
-                                                              substitution_rule_visitors,
-                                                              body_nonterminals);
-
-    grammar_visitor.visit(grammar);
+    grammar.accept(visitor);
 
     return Grammar(std::move(repositories), std::move(start_symbols), std::move(derivation_rules), std::move(substitution_rules), grammar.get_domain());
 }

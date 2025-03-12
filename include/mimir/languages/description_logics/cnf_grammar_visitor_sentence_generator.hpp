@@ -99,7 +99,7 @@ using HanaGeneratorStatistics = boost::hana::map<boost::hana::pair<boost::hana::
  * Concept
  */
 
-class GeneratorVisitor : public Visitor
+class GeneratorVisitor : public RecurseVisitor
 {
 private:
     RefinementPruningFunction& m_pruning_function;
