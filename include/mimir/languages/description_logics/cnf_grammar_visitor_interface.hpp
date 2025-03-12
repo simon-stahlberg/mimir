@@ -21,6 +21,8 @@
 #include "mimir/languages/description_logics/cnf_grammar_containers.hpp"
 #include "mimir/languages/description_logics/declarations.hpp"
 
+#include <any>
+
 namespace mimir::dl::cnf_grammar
 {
 
@@ -188,6 +190,8 @@ private:
     DerivationRulesContainer& m_derivation_rules;
     SubstitutionRulesContainer& m_substitution_rules;
 
+    std::any m_result;
+
 public:
     CopyVisitor(ConstructorRepositories& repositories,
                 StartSymbolsContainer& start_symbols,
@@ -255,6 +259,8 @@ public:
     void visit(SubstitutionRule<Numerical> rule) override;
     /* Grammar */
     void visit(const Grammar& grammar) override;
+
+    const std::any& get_result() const;
 
 private:
     template<FeatureCategory D>

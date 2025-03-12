@@ -188,9 +188,8 @@ void RecurseVisitor::visit(DerivationRule<Numerical> constructor) { visit_impl(c
 template<FeatureCategory D>
 void RecurseVisitor::visit_impl(DerivationRule<D> constructor)
 {
-    assert(m_nonterminal_visitor && m_constructor_or_nonterminal_visitor);
-
     constructor->get_non_terminal()->accept(*this);
+
     for (const auto& constructor_or_nonterminal : constructor->get_constructor_or_non_terminals())
     {
         constructor_or_nonterminal->accept(*this);

@@ -28,71 +28,68 @@
 namespace mimir::dl::cnf_grammar
 {
 
-const ConstructorLists<Concept, Role, Boolean, Numerical> GeneratedSentencesContainer::empty_lists =
-    boost::hana::make_map(boost::hana::make_pair(boost::hana::type_c<Concept>, dl::ConstructorList<Concept> {}),
-                          boost::hana::make_pair(boost::hana::type_c<Role>, dl::ConstructorList<Role> {}),
-                          boost::hana::make_pair(boost::hana::type_c<Boolean>, dl::ConstructorList<Boolean> {}),
-                          boost::hana::make_pair(boost::hana::type_c<Numerical>, dl::ConstructorList<Numerical> {}));
-
 /**
  * Concept
  */
 
-GeneratorConstructorVisitor<Concept>::GeneratorConstructorVisitor(const GeneratedSentencesContainer& sentences,
-                                                                  dl::ConstructorRepositories& repositories,
-                                                                  size_t complexity) :
+GeneratorVisitor::GeneratorVisitor(RefinementPruningFunction& pruning_function,
+                                   GeneratedSentencesContainer& sentences,
+                                   dl::ConstructorRepositories& repositories,
+                                   size_t max_syntactic_complexity) :
+    m_pruning_function(pruning_function),
     m_sentences(sentences),
     m_repositories(repositories),
-    m_complexity(complexity)
+    m_max_syntactic_complexity(max_syntactic_complexity),
+    m_complexity(1)
 {
 }
 
-void GeneratorConstructorVisitor<Concept>::visit(ConceptBot constructor)
+void GeneratorVisitor::visit(ConceptBot constructor)
 {
     if (m_complexity == 1)
-        m_result.push_back(m_repositories.get_or_create_concept_bot());
+        m_result = dl::ConstructorList<Concept> { m_repositories.get_or_create_concept_bot() };
 }
-void GeneratorConstructorVisitor<Concept>::visit(ConceptTop constructor)
+void GeneratorVisitor::visit(ConceptTop constructor)
 {
     if (m_complexity == 1)
-        m_result.push_back(m_repositories.get_or_create_concept_top());
+        m_result = dl::ConstructorList<Concept> { m_repositories.get_or_create_concept_top() };
 }
-void GeneratorConstructorVisitor<Concept>::visit(ConceptAtomicState<Static> constructor)
+void GeneratorVisitor::visit(ConceptAtomicState<Static> constructor)
 {
     if (m_complexity == 1)
-        m_result.push_back(m_repositories.get_or_create_concept_atomic_state(constructor->get_predicate()));
+        m_result = dl::ConstructorList<Concept> { m_repositories.get_or_create_concept_atomic_state(constructor->get_predicate()) };
 }
-void GeneratorConstructorVisitor<Concept>::visit(ConceptAtomicState<Fluent> constructor)
+void GeneratorVisitor::visit(ConceptAtomicState<Fluent> constructor)
 {
     if (m_complexity == 1)
-        m_result.push_back(m_repositories.get_or_create_concept_atomic_state(constructor->get_predicate()));
+        m_result = dl::ConstructorList<Concept> { m_repositories.get_or_create_concept_atomic_state(constructor->get_predicate()) };
 }
-void GeneratorConstructorVisitor<Concept>::visit(ConceptAtomicState<Derived> constructor)
+void GeneratorVisitor::visit(ConceptAtomicState<Derived> constructor)
 {
     if (m_complexity == 1)
-        m_result.push_back(m_repositories.get_or_create_concept_atomic_state(constructor->get_predicate()));
+        m_result = dl::ConstructorList<Concept> { m_repositories.get_or_create_concept_atomic_state(constructor->get_predicate()) };
 }
-void GeneratorConstructorVisitor<Concept>::visit(ConceptAtomicGoal<Static> constructor)
+void GeneratorVisitor::visit(ConceptAtomicGoal<Static> constructor)
 {
     if (m_complexity == 1)
-        m_result.push_back(m_repositories.get_or_create_concept_atomic_goal(constructor->get_predicate(), constructor->is_negated()));
+        m_result = dl::ConstructorList<Concept> { m_repositories.get_or_create_concept_atomic_goal(constructor->get_predicate(), constructor->is_negated()) };
 }
-void GeneratorConstructorVisitor<Concept>::visit(ConceptAtomicGoal<Fluent> constructor)
+void GeneratorVisitor::visit(ConceptAtomicGoal<Fluent> constructor)
 {
     if (m_complexity == 1)
-        m_result.push_back(m_repositories.get_or_create_concept_atomic_goal(constructor->get_predicate(), constructor->is_negated()));
+        m_result = dl::ConstructorList<Concept> { m_repositories.get_or_create_concept_atomic_goal(constructor->get_predicate(), constructor->is_negated()) };
 }
-void GeneratorConstructorVisitor<Concept>::visit(ConceptAtomicGoal<Derived> constructor)
+void GeneratorVisitor::visit(ConceptAtomicGoal<Derived> constructor)
 {
     if (m_complexity == 1)
-        m_result.push_back(m_repositories.get_or_create_concept_atomic_goal(constructor->get_predicate(), constructor->is_negated()));
+        m_result = dl::ConstructorList<Concept> { m_repositories.get_or_create_concept_atomic_goal(constructor->get_predicate(), constructor->is_negated()) };
 }
-void GeneratorConstructorVisitor<Concept>::visit(ConceptNominal constructor)
+void GeneratorVisitor::visit(ConceptNominal constructor)
 {
     if (m_complexity == 1)
-        m_result.push_back(m_repositories.get_or_create_concept_nominal(constructor->get_object()));
+        m_result = dl::ConstructorList<Concept> { m_repositories.get_or_create_concept_nominal(constructor->get_object()) };
 }
-void GeneratorConstructorVisitor<Concept>::visit(ConceptIntersection constructor)
+void GeneratorVisitor::visit(ConceptIntersection constructor)
 {
     if (m_complexity >= 3)
     {
@@ -103,17 +100,21 @@ void GeneratorConstructorVisitor<Concept>::visit(ConceptIntersection constructor
             if (i > j)
                 continue;  ///< partially break symmetries
 
+            auto result = dl::ConstructorList<Concept> {};
+
             for (const auto& left_concept : m_sentences.get(constructor->get_left_concept(), i))
             {
                 for (const auto& right_concept : m_sentences.get(constructor->get_right_concept(), j))
                 {
-                    m_result.push_back(m_repositories.get_or_create_concept_intersection(left_concept, right_concept));
+                    result.push_back(m_repositories.get_or_create_concept_intersection(left_concept, right_concept));
                 }
             }
+
+            m_result = result;
         }
     }
 }
-void GeneratorConstructorVisitor<Concept>::visit(ConceptUnion constructor)
+void GeneratorVisitor::visit(ConceptUnion constructor)
 {
     if (m_complexity >= 3)
     {
@@ -124,27 +125,35 @@ void GeneratorConstructorVisitor<Concept>::visit(ConceptUnion constructor)
             if (i > j)
                 continue;  ///< partially break symmetries
 
+            auto result = dl::ConstructorList<Concept> {};
+
             for (const auto& left_concept : m_sentences.get(constructor->get_left_concept(), i))
             {
                 for (const auto& right_concept : m_sentences.get(constructor->get_right_concept(), j))
                 {
-                    m_result.push_back(m_repositories.get_or_create_concept_union(left_concept, right_concept));
+                    result.push_back(m_repositories.get_or_create_concept_union(left_concept, right_concept));
                 }
             }
+
+            m_result = result;
         }
     }
 }
-void GeneratorConstructorVisitor<Concept>::visit(ConceptNegation constructor)
+void GeneratorVisitor::visit(ConceptNegation constructor)
 {
     if (m_complexity >= 2)
     {
+        auto result = dl::ConstructorList<Concept> {};
+
         for (const auto& concept_ : m_sentences.get(constructor->get_concept(), m_complexity - 1))
         {
-            m_result.push_back(m_repositories.get_or_create_concept_negation(concept_));
+            result.push_back(m_repositories.get_or_create_concept_negation(concept_));
         }
+
+        m_result = result;
     }
 }
-void GeneratorConstructorVisitor<Concept>::visit(ConceptValueRestriction constructor)
+void GeneratorVisitor::visit(ConceptValueRestriction constructor)
 {
     if (m_complexity >= 3)
     {
@@ -152,17 +161,21 @@ void GeneratorConstructorVisitor<Concept>::visit(ConceptValueRestriction constru
         {
             size_t j = m_complexity - i - 1;
 
+            auto result = dl::ConstructorList<Concept> {};
+
             for (const auto& role : m_sentences.get(constructor->get_role(), i))
             {
                 for (const auto& concept_ : m_sentences.get(constructor->get_concept(), j))
                 {
-                    m_result.push_back(m_repositories.get_or_create_concept_value_restriction(role, concept_));
+                    result.push_back(m_repositories.get_or_create_concept_value_restriction(role, concept_));
                 }
             }
+
+            m_result = result;
         }
     }
 }
-void GeneratorConstructorVisitor<Concept>::visit(ConceptExistentialQuantification constructor)
+void GeneratorVisitor::visit(ConceptExistentialQuantification constructor)
 {
     if (m_complexity >= 3)
     {
@@ -170,35 +183,43 @@ void GeneratorConstructorVisitor<Concept>::visit(ConceptExistentialQuantificatio
         {
             size_t j = m_complexity - i - 1;
 
+            auto result = dl::ConstructorList<Concept> {};
+
             for (const auto& role : m_sentences.get(constructor->get_role(), i))
             {
                 for (const auto& concept_ : m_sentences.get(constructor->get_concept(), j))
                 {
-                    m_result.push_back(m_repositories.get_or_create_concept_existential_quantification(role, concept_));
+                    result.push_back(m_repositories.get_or_create_concept_existential_quantification(role, concept_));
                 }
             }
+
+            m_result = result;
         }
     }
 }
-void GeneratorConstructorVisitor<Concept>::visit(ConceptRoleValueMapContainment constructor)
+void GeneratorVisitor::visit(ConceptRoleValueMapContainment constructor)
 {
     if (m_complexity >= 3)
     {
         for (size_t i = 1; i < m_complexity - 1; ++i)
         {
             size_t j = m_complexity - i - 1;
+
+            auto result = dl::ConstructorList<Concept> {};
 
             for (const auto& left_role : m_sentences.get(constructor->get_left_role(), i))
             {
                 for (const auto& right_role : m_sentences.get(constructor->get_right_role(), j))
                 {
-                    m_result.push_back(m_repositories.get_or_create_concept_role_value_map_containment(left_role, right_role));
+                    result.push_back(m_repositories.get_or_create_concept_role_value_map_containment(left_role, right_role));
                 }
             }
+
+            m_result = result;
         }
     }
 }
-void GeneratorConstructorVisitor<Concept>::visit(ConceptRoleValueMapEquality constructor)
+void GeneratorVisitor::visit(ConceptRoleValueMapEquality constructor)
 {
     if (m_complexity >= 3)
     {
@@ -209,68 +230,61 @@ void GeneratorConstructorVisitor<Concept>::visit(ConceptRoleValueMapEquality con
             if (i > j)
                 continue;  ///< partially break symmetries
 
+            auto result = dl::ConstructorList<Concept> {};
+
             for (const auto& left_role : m_sentences.get(constructor->get_left_role(), i))
             {
                 for (const auto& right_role : m_sentences.get(constructor->get_right_role(), j))
                 {
-                    m_result.push_back(m_repositories.get_or_create_concept_role_value_map_equality(left_role, right_role));
+                    result.push_back(m_repositories.get_or_create_concept_role_value_map_equality(left_role, right_role));
                 }
             }
+
+            m_result = result;
         }
     }
 }
-
-const dl::ConstructorList<Concept>& GeneratorConstructorVisitor<Concept>::get_result() const { return m_result; }
 
 /**
  * Role
  */
 
-GeneratorConstructorVisitor<Role>::GeneratorConstructorVisitor(const GeneratedSentencesContainer& sentences,
-                                                               dl::ConstructorRepositories& repositories,
-                                                               size_t complexity) :
-    m_sentences(sentences),
-    m_repositories(repositories),
-    m_complexity(complexity)
-{
-}
-
-void GeneratorConstructorVisitor<Role>::visit(RoleUniversal constructor)
+void GeneratorVisitor::visit(RoleUniversal constructor)
 {
     if (m_complexity == 1)
-        m_result.push_back(m_repositories.get_or_create_role_universal());
+        m_result = dl::ConstructorList<Role> { m_repositories.get_or_create_role_universal() };
 }
-void GeneratorConstructorVisitor<Role>::visit(RoleAtomicState<Static> constructor)
+void GeneratorVisitor::visit(RoleAtomicState<Static> constructor)
 {
     if (m_complexity == 1)
-        m_result.push_back(m_repositories.get_or_create_role_atomic_state(constructor->get_predicate()));
+        m_result = dl::ConstructorList<Role> { m_repositories.get_or_create_role_atomic_state(constructor->get_predicate()) };
 }
-void GeneratorConstructorVisitor<Role>::visit(RoleAtomicState<Fluent> constructor)
+void GeneratorVisitor::visit(RoleAtomicState<Fluent> constructor)
 {
     if (m_complexity == 1)
-        m_result.push_back(m_repositories.get_or_create_role_atomic_state(constructor->get_predicate()));
+        m_result = dl::ConstructorList<Role> { m_repositories.get_or_create_role_atomic_state(constructor->get_predicate()) };
 }
-void GeneratorConstructorVisitor<Role>::visit(RoleAtomicState<Derived> constructor)
+void GeneratorVisitor::visit(RoleAtomicState<Derived> constructor)
 {
     if (m_complexity == 1)
-        m_result.push_back(m_repositories.get_or_create_role_atomic_state(constructor->get_predicate()));
+        m_result = dl::ConstructorList<Role> { m_repositories.get_or_create_role_atomic_state(constructor->get_predicate()) };
 }
-void GeneratorConstructorVisitor<Role>::visit(RoleAtomicGoal<Static> constructor)
+void GeneratorVisitor::visit(RoleAtomicGoal<Static> constructor)
 {
     if (m_complexity == 1)
-        m_result.push_back(m_repositories.get_or_create_role_atomic_goal(constructor->get_predicate(), constructor->is_negated()));
+        m_result = dl::ConstructorList<Role> { m_repositories.get_or_create_role_atomic_goal(constructor->get_predicate(), constructor->is_negated()) };
 }
-void GeneratorConstructorVisitor<Role>::visit(RoleAtomicGoal<Fluent> constructor)
+void GeneratorVisitor::visit(RoleAtomicGoal<Fluent> constructor)
 {
     if (m_complexity == 1)
-        m_result.push_back(m_repositories.get_or_create_role_atomic_goal(constructor->get_predicate(), constructor->is_negated()));
+        m_result = dl::ConstructorList<Role> { m_repositories.get_or_create_role_atomic_goal(constructor->get_predicate(), constructor->is_negated()) };
 }
-void GeneratorConstructorVisitor<Role>::visit(RoleAtomicGoal<Derived> constructor)
+void GeneratorVisitor::visit(RoleAtomicGoal<Derived> constructor)
 {
     if (m_complexity == 1)
-        m_result.push_back(m_repositories.get_or_create_role_atomic_goal(constructor->get_predicate(), constructor->is_negated()));
+        m_result = dl::ConstructorList<Role> { m_repositories.get_or_create_role_atomic_goal(constructor->get_predicate(), constructor->is_negated()) };
 }
-void GeneratorConstructorVisitor<Role>::visit(RoleIntersection constructor)
+void GeneratorVisitor::visit(RoleIntersection constructor)
 {
     if (m_complexity >= 3)
     {
@@ -281,17 +295,21 @@ void GeneratorConstructorVisitor<Role>::visit(RoleIntersection constructor)
             if (i > j)
                 continue;  ///< partially break symmetries
 
+            auto result = dl::ConstructorList<Role> {};
+
             for (const auto& left_role : m_sentences.get(constructor->get_left_role(), i))
             {
                 for (const auto& right_role : m_sentences.get(constructor->get_right_role(), j))
                 {
-                    m_result.push_back(m_repositories.get_or_create_role_intersection(left_role, right_role));
+                    result.push_back(m_repositories.get_or_create_role_intersection(left_role, right_role));
                 }
             }
+
+            m_result = result;
         }
     }
 }
-void GeneratorConstructorVisitor<Role>::visit(RoleUnion constructor)
+void GeneratorVisitor::visit(RoleUnion constructor)
 {
     if (m_complexity >= 3)
     {
@@ -302,37 +320,49 @@ void GeneratorConstructorVisitor<Role>::visit(RoleUnion constructor)
             if (i > j)
                 continue;  ///< partially break symmetries
 
+            auto result = dl::ConstructorList<Role> {};
+
             for (const auto& left_role : m_sentences.get(constructor->get_left_role(), i))
             {
                 for (const auto& right_role : m_sentences.get(constructor->get_right_role(), j))
                 {
-                    m_result.push_back(m_repositories.get_or_create_role_union(left_role, right_role));
+                    result.push_back(m_repositories.get_or_create_role_union(left_role, right_role));
                 }
             }
+
+            m_result = result;
         }
     }
 }
-void GeneratorConstructorVisitor<Role>::visit(RoleComplement constructor)
+void GeneratorVisitor::visit(RoleComplement constructor)
 {
     if (m_complexity >= 2)
     {
+        auto result = dl::ConstructorList<Role> {};
+
         for (const auto& role : m_sentences.get(constructor->get_role(), m_complexity - 1))
         {
-            m_result.push_back(m_repositories.get_or_create_role_complement(role));
+            result.push_back(m_repositories.get_or_create_role_complement(role));
         }
+
+        m_result = result;
     }
 }
-void GeneratorConstructorVisitor<Role>::visit(RoleInverse constructor)
+void GeneratorVisitor::visit(RoleInverse constructor)
 {
     if (m_complexity >= 2)
     {
+        auto result = dl::ConstructorList<Role> {};
+
         for (const auto& role : m_sentences.get(constructor->get_role(), m_complexity - 1))
         {
-            m_result.push_back(m_repositories.get_or_create_role_inverse(role));
+            result.push_back(m_repositories.get_or_create_role_inverse(role));
         }
+
+        m_result = result;
     }
 }
-void GeneratorConstructorVisitor<Role>::visit(RoleComposition constructor)
+void GeneratorVisitor::visit(RoleComposition constructor)
 {
     if (m_complexity >= 3)
     {
@@ -340,157 +370,173 @@ void GeneratorConstructorVisitor<Role>::visit(RoleComposition constructor)
         {
             size_t j = m_complexity - i - 1;
 
+            auto result = dl::ConstructorList<Role> {};
+
             for (const auto& left_role : m_sentences.get(constructor->get_left_role(), i))
             {
                 for (const auto& right_role : m_sentences.get(constructor->get_right_role(), j))
                 {
-                    m_result.push_back(m_repositories.get_or_create_role_composition(left_role, right_role));
+                    result.push_back(m_repositories.get_or_create_role_composition(left_role, right_role));
                 }
             }
+
+            m_result = result;
         }
     }
 }
-void GeneratorConstructorVisitor<Role>::visit(RoleTransitiveClosure constructor)
+void GeneratorVisitor::visit(RoleTransitiveClosure constructor)
 {
     if (m_complexity >= 2)
     {
+        auto result = dl::ConstructorList<Role> {};
+
         for (const auto& role : m_sentences.get(constructor->get_role(), m_complexity - 1))
         {
-            m_result.push_back(m_repositories.get_or_create_role_transitive_closure(role));
+            result.push_back(m_repositories.get_or_create_role_transitive_closure(role));
         }
+
+        m_result = result;
     }
 }
-void GeneratorConstructorVisitor<Role>::visit(RoleReflexiveTransitiveClosure constructor)
+void GeneratorVisitor::visit(RoleReflexiveTransitiveClosure constructor)
 {
     if (m_complexity >= 2)
     {
+        auto result = dl::ConstructorList<Role> {};
+
         for (const auto& role : m_sentences.get(constructor->get_role(), m_complexity - 1))
         {
-            m_result.push_back(m_repositories.get_or_create_role_reflexive_transitive_closure(role));
+            result.push_back(m_repositories.get_or_create_role_reflexive_transitive_closure(role));
         }
+
+        m_result = result;
     }
 }
-void GeneratorConstructorVisitor<Role>::visit(RoleRestriction constructor)
+void GeneratorVisitor::visit(RoleRestriction constructor)
 {
     if (m_complexity >= 3)
     {
         for (size_t i = 1; i < m_complexity - 1; ++i)
         {
             size_t j = m_complexity - i - 1;
+
+            auto result = dl::ConstructorList<Role> {};
 
             for (const auto& role : m_sentences.get(constructor->get_role(), i))
             {
                 for (const auto& concept_ : m_sentences.get(constructor->get_concept(), j))
                 {
-                    m_result.push_back(m_repositories.get_or_create_role_restriction(role, concept_));
+                    result.push_back(m_repositories.get_or_create_role_restriction(role, concept_));
                 }
             }
+
+            m_result = result;
         }
     }
 }
-void GeneratorConstructorVisitor<Role>::visit(RoleIdentity constructor)
+void GeneratorVisitor::visit(RoleIdentity constructor)
 {
     if (m_complexity >= 2)
     {
+        auto result = dl::ConstructorList<Role> {};
+
         for (const auto& concept_ : m_sentences.get(constructor->get_concept(), m_complexity - 1))
         {
-            m_result.push_back(m_repositories.get_or_create_role_identity(concept_));
+            result.push_back(m_repositories.get_or_create_role_identity(concept_));
         }
+
+        m_result = result;
     }
 }
-
-const dl::ConstructorList<Role>& GeneratorConstructorVisitor<Role>::get_result() const { return m_result; }
 
 /**
  * Booleans
  */
 
-GeneratorConstructorVisitor<Boolean>::GeneratorConstructorVisitor(const GeneratedSentencesContainer& sentences,
-                                                                  dl::ConstructorRepositories& repositories,
-                                                                  size_t complexity) :
-    m_sentences(sentences),
-    m_repositories(repositories),
-    m_complexity(complexity)
-{
-}
-
-void GeneratorConstructorVisitor<Boolean>::visit(BooleanAtomicState<Static> constructor)
+void GeneratorVisitor::visit(BooleanAtomicState<Static> constructor)
 {
     if (m_complexity == 1)
-        m_result.push_back(m_repositories.get_or_create_boolean_atomic_state(constructor->get_predicate()));
+        m_result = dl::ConstructorList<Boolean> { m_repositories.get_or_create_boolean_atomic_state(constructor->get_predicate()) };
 }
-void GeneratorConstructorVisitor<Boolean>::visit(BooleanAtomicState<Fluent> constructor)
+void GeneratorVisitor::visit(BooleanAtomicState<Fluent> constructor)
 {
     if (m_complexity == 1)
-        m_result.push_back(m_repositories.get_or_create_boolean_atomic_state(constructor->get_predicate()));
+        m_result = dl::ConstructorList<Boolean> { m_repositories.get_or_create_boolean_atomic_state(constructor->get_predicate()) };
 }
-void GeneratorConstructorVisitor<Boolean>::visit(BooleanAtomicState<Derived> constructor)
+void GeneratorVisitor::visit(BooleanAtomicState<Derived> constructor)
 {
     if (m_complexity == 1)
-        m_result.push_back(m_repositories.get_or_create_boolean_atomic_state(constructor->get_predicate()));
+        m_result = dl::ConstructorList<Boolean> { m_repositories.get_or_create_boolean_atomic_state(constructor->get_predicate()) };
 }
-void GeneratorConstructorVisitor<Boolean>::visit(BooleanNonempty<Concept> constructor)
+void GeneratorVisitor::visit(BooleanNonempty<Concept> constructor)
 {
     if (m_complexity >= 2)
     {
+        auto result = dl::ConstructorList<Boolean> {};
+
         for (const auto& concept_ : m_sentences.get(constructor->get_nonterminal(), m_complexity - 1))
         {
-            m_result.push_back(m_repositories.get_or_create_boolean_nonempty(concept_));
+            result.push_back(m_repositories.get_or_create_boolean_nonempty(concept_));
         }
+
+        m_result = result;
     }
 }
-void GeneratorConstructorVisitor<Boolean>::visit(BooleanNonempty<Role> constructor)
+void GeneratorVisitor::visit(BooleanNonempty<Role> constructor)
 {
     if (m_complexity >= 2)
     {
+        auto result = dl::ConstructorList<Boolean> {};
+
         for (const auto& role : m_sentences.get(constructor->get_nonterminal(), m_complexity - 1))
         {
-            m_result.push_back(m_repositories.get_or_create_boolean_nonempty(role));
+            result.push_back(m_repositories.get_or_create_boolean_nonempty(role));
         }
+
+        m_result = result;
     }
 }
-
-const dl::ConstructorList<Boolean>& GeneratorConstructorVisitor<Boolean>::get_result() const { return m_result; }
 
 /**
  * Numericals
  */
 
-GeneratorConstructorVisitor<Numerical>::GeneratorConstructorVisitor(const GeneratedSentencesContainer& sentences,
-                                                                    dl::ConstructorRepositories& repositories,
-                                                                    size_t complexity) :
-    m_sentences(sentences),
-    m_repositories(repositories),
-    m_complexity(complexity)
-{
-}
-
-void GeneratorConstructorVisitor<Numerical>::visit(NumericalCount<Concept> constructor)
+void GeneratorVisitor::visit(NumericalCount<Concept> constructor)
 {
     if (m_complexity >= 2)
     {
+        auto result = dl::ConstructorList<Numerical> {};
+
         for (const auto& concept_ : m_sentences.get(constructor->get_nonterminal(), m_complexity - 1))
         {
-            m_result.push_back(m_repositories.get_or_create_numerical_count(concept_));
+            result.push_back(m_repositories.get_or_create_numerical_count(concept_));
         }
+
+        m_result = result;
     }
 }
 
-void GeneratorConstructorVisitor<Numerical>::visit(NumericalCount<Role> constructor)
+void GeneratorVisitor::visit(NumericalCount<Role> constructor)
 {
     if (m_complexity >= 2)
     {
+        auto result = dl::ConstructorList<Numerical> {};
+
         for (const auto& role : m_sentences.get(constructor->get_nonterminal(), m_complexity - 1))
         {
-            m_result.push_back(m_repositories.get_or_create_numerical_count(role));
+            result.push_back(m_repositories.get_or_create_numerical_count(role));
         }
+
+        m_result = result;
     }
 }
 
-void GeneratorConstructorVisitor<Numerical>::visit(NumericalDistance constructor)
+void GeneratorVisitor::visit(NumericalDistance constructor)
 {
     if (m_complexity >= 3)
     {
+        auto result = dl::ConstructorList<Numerical> {};
+
         for (size_t i = 1; i < m_complexity - 2; ++i)
         {
             for (size_t j = 1; j < m_complexity - i - 1; ++j)
@@ -503,109 +549,91 @@ void GeneratorConstructorVisitor<Numerical>::visit(NumericalDistance constructor
                     {
                         for (const auto& concept_right : m_sentences.get(constructor->get_right_concept(), k))
                         {
-                            m_result.push_back(m_repositories.get_or_create_numerical_distance(concept_left, role, concept_right));
+                            result.push_back(m_repositories.get_or_create_numerical_distance(concept_left, role, concept_right));
                         }
                     }
                 }
             }
         }
+
+        m_result = result;
     }
 }
-
-const dl::ConstructorList<Numerical>& GeneratorConstructorVisitor<Numerical>::get_result() const { return m_result; }
 
 /**
  * DerivationRule
  */
 
-template<FeatureCategory D>
-GeneratorDerivationRuleVisitor<D>::GeneratorDerivationRuleVisitor(RefinementPruningFunction& pruning_function,
-                                                                  GeneratedSentencesContainer& sentences,
-                                                                  dl::ConstructorRepositories& repositories,
-                                                                  size_t complexity) :
-    m_pruning_function(pruning_function),
-    m_sentences(sentences),
-    m_repositories(repositories),
-    m_complexity(complexity),
-    m_statistics()
-{
-}
+void GeneratorVisitor::visit(DerivationRule<Concept> rule) { visit_impl(rule); }
+
+void GeneratorVisitor::visit(DerivationRule<Role> rule) { visit_impl(rule); }
+
+void GeneratorVisitor::visit(DerivationRule<Boolean> rule) { visit_impl(rule); }
+
+void GeneratorVisitor::visit(DerivationRule<Numerical> rule) { visit_impl(rule); }
 
 template<FeatureCategory D>
-void GeneratorDerivationRuleVisitor<D>::visit(DerivationRule<D> rule)
+void GeneratorVisitor::visit_impl(DerivationRule<D> rule)
 {
-    auto visitor = GeneratorConstructorVisitor<D>(m_sentences, m_repositories, m_complexity);
-    rule->get_body()->accept(visitor);
-    const auto& generated = visitor.get_result();
+    rule->get_body()->accept(*this);
+
+    auto& statistics = boost::hana::at_key(m_statistics, boost::hana::type<D> {});
+
+    const auto& generated = std::any_cast<const dl::ConstructorList<D>&>(get_result());
+
     for (const auto& sentence : generated)
     {
-        ++m_statistics.num_generated;
+        ++statistics.num_generated;
 
         if (!m_pruning_function.should_prune(sentence))
         {
-            ++m_statistics.num_kept;
+            ++statistics.num_kept;
 
             auto& target_location = m_sentences.get(rule->get_head(), m_complexity);
             target_location.push_back(sentence);
         }
         else
         {
-            ++m_statistics.num_pruned;
+            ++statistics.num_pruned;
         }
     }
 }
 
-template<FeatureCategory D>
-const GeneratorStatistics<D>& GeneratorDerivationRuleVisitor<D>::get_statistics() const
-{
-    return m_statistics;
-}
-
-template class GeneratorDerivationRuleVisitor<Concept>;
-template class GeneratorDerivationRuleVisitor<Role>;
+template void GeneratorVisitor::visit_impl(DerivationRule<Concept> rule);
+template void GeneratorVisitor::visit_impl(DerivationRule<Role> rule);
+template void GeneratorVisitor::visit_impl(DerivationRule<Boolean> rule);
+template void GeneratorVisitor::visit_impl(DerivationRule<Numerical> rule);
 
 /**
  * SubstitutionRule
  */
 
-template<FeatureCategory D>
-GeneratorSubstitutionRuleVisitor<D>::GeneratorSubstitutionRuleVisitor(GeneratedSentencesContainer& sentences,
-                                                                      dl::ConstructorRepositories& repositories,
-                                                                      size_t complexity) :
-    m_sentences(sentences),
-    m_repositories(repositories),
-    m_complexity(complexity)
-{
-}
+void GeneratorVisitor::visit(SubstitutionRule<Concept> rule) { visit_impl(rule); }
+
+void GeneratorVisitor::visit(SubstitutionRule<Role> rule) { visit_impl(rule); }
+
+void GeneratorVisitor::visit(SubstitutionRule<Boolean> rule) { visit_impl(rule); }
+
+void GeneratorVisitor::visit(SubstitutionRule<Numerical> rule) { visit_impl(rule); }
 
 template<FeatureCategory D>
-void GeneratorSubstitutionRuleVisitor<D>::visit(SubstitutionRule<D> rule)
+void GeneratorVisitor::visit_impl(SubstitutionRule<D> rule)
 {
     auto& source_location = m_sentences.get(rule->get_body(), m_complexity);
     auto& target_location = m_sentences.get(rule->get_head(), m_complexity);
     target_location.insert(target_location.end(), source_location.begin(), source_location.end());
 }
 
-template class GeneratorSubstitutionRuleVisitor<Concept>;
-template class GeneratorSubstitutionRuleVisitor<Role>;
+template void GeneratorVisitor::visit_impl(SubstitutionRule<Concept> rule);
+template void GeneratorVisitor::visit_impl(SubstitutionRule<Role> rule);
+template void GeneratorVisitor::visit_impl(SubstitutionRule<Boolean> rule);
+template void GeneratorVisitor::visit_impl(SubstitutionRule<Numerical> rule);
 
 /**
  * Grammar
  */
 
-GeneratorGrammarVisitor::GeneratorGrammarVisitor(RefinementPruningFunction& pruning_function,
-                                                 GeneratedSentencesContainer& sentences,
-                                                 dl::ConstructorRepositories& repositories,
-                                                 size_t max_syntactic_complexity) :
-    m_pruning_function(pruning_function),
-    m_sentences(sentences),
-    m_repositories(repositories),
-    m_max_syntactic_complexity(max_syntactic_complexity),
-    m_statistics()
-{
-}
-
-void GeneratorGrammarVisitor::visit(const Grammar& grammar)
+void GeneratorVisitor::visit(const Grammar& grammar)
 {
     /* Generate */
     for (size_t i = 1; i <= m_max_syntactic_complexity; ++i)
@@ -615,33 +643,28 @@ void GeneratorGrammarVisitor::visit(const Grammar& grammar)
                               {
                                   auto key = boost::hana::first(pair);
                                   const auto& second = boost::hana::second(pair);
-                                  using ConstructorType = typename decltype(+key)::type;
 
                                   for (const auto& rule : second)
                                   {
-                                      auto derivation_rule_visitor =
-                                          GeneratorDerivationRuleVisitor<ConstructorType>(m_pruning_function, m_sentences, m_repositories, i);
-                                      rule->accept(derivation_rule_visitor);
-
-                                      boost::hana::at_key(m_statistics, key) += derivation_rule_visitor.get_statistics();
+                                      rule->accept(*this);
                                   }
                               });
 
-        boost::hana::for_each(grammar.get_substitution_rules().get(),
+        boost::hana::for_each(grammar.get_substitution_rules_container().get(),
                               [&](auto&& pair)
                               {
                                   auto key = boost::hana::first(pair);
                                   const auto& second = boost::hana::second(pair);
-                                  using ConstructorType = typename decltype(+key)::type;
 
                                   for (const auto& rule : second)
                                   {
-                                      auto substitution_rule_visitor = GeneratorSubstitutionRuleVisitor<ConstructorType>(m_sentences, m_repositories, i);
-                                      rule->accept(substitution_rule_visitor);
+                                      rule->accept(*this);
                                   }
                               });
     }
 }
 
-const HanaGeneratorStatistics<Concept, Role, Boolean, Numerical>& GeneratorGrammarVisitor::get_statistics() const { return m_statistics; }
+const HanaGeneratorStatistics<Concept, Role, Boolean, Numerical>& GeneratorVisitor::get_statistics() const { return m_statistics; }
+
+const std::any& GeneratorVisitor::get_result() const { return m_result; }
 }

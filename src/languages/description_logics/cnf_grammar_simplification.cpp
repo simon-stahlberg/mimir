@@ -123,7 +123,7 @@ public:
                                   }
                               });
 
-        boost::hana::for_each(grammar.get_substitution_rules().get(),
+        boost::hana::for_each(grammar.get_substitution_rules_container().get(),
                               [&](auto&& pair)
                               {
                                   auto key = boost::hana::first(pair);
@@ -313,7 +313,7 @@ public:
             });
 
         boost::hana::for_each(
-            grammar.get_substitution_rules().get(),
+            grammar.get_substitution_rules_container().get(),
             [&](auto&& pair)
             {
                 auto key = boost::hana::first(pair);
@@ -339,7 +339,7 @@ static Grammar order_substitution_rules(const Grammar& grammar)
 {
     auto orderings = HanaSubstitutionNonTerminalOrderings {};
 
-    boost::hana::for_each(grammar.get_substitution_rules().get(),
+    boost::hana::for_each(grammar.get_substitution_rules_container().get(),
                           [&](auto&& pair)
                           {
                               auto key = boost::hana::first(pair);
@@ -863,7 +863,7 @@ public:
                                   }
                               });
 
-        boost::hana::for_each(grammar.get_substitution_rules().get(),
+        boost::hana::for_each(grammar.get_substitution_rules_container().get(),
                               [&](auto&& pair)
                               {
                                   auto key = boost::hana::first(pair);
@@ -969,11 +969,11 @@ Grammar simplify(const Grammar& grammar)
     size_t num_rules_after;
     do
     {
-        num_rules_before = simplified_grammar.get_derivation_rules_container().size() + grammar.get_substitution_rules().size();
+        num_rules_before = simplified_grammar.get_derivation_rules_container().size() + grammar.get_substitution_rules_container().size();
 
         simplified_grammar = eliminate_epsilon_rules(simplified_grammar);
 
-        num_rules_after = simplified_grammar.get_derivation_rules_container().size() + grammar.get_substitution_rules().size();
+        num_rules_after = simplified_grammar.get_derivation_rules_container().size() + grammar.get_substitution_rules_container().size();
     } while (num_rules_before != num_rules_after);
 
     /* Step 3 order substitution rules in order of evaluation through topological sorting */

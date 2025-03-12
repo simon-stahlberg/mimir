@@ -74,7 +74,7 @@ public:
     const ConstructorRepositories& get_repositories() const { return m_repositories; }
     const StartSymbolsContainer& get_start_symbols_container() const { return m_start_symbols; }
     const DerivationRulesContainer& get_derivation_rules_container() const { return m_derivation_rules; }
-    const SubstitutionRulesContainer& get_substitution_rules() const { return m_substitution_rules; }
+    const SubstitutionRulesContainer& get_substitution_rules_container() const { return m_substitution_rules; }
     const Domain& get_domain() const { return m_domain; }
 };
 }

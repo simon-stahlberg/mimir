@@ -22,6 +22,7 @@
 #include "mimir/languages/description_logics/cnf_grammar_visitor_interface.hpp"
 #include "mimir/languages/description_logics/constructor_repositories.hpp"
 
+#include <any>
 #include <unordered_map>
 #include <vector>
 
@@ -104,16 +105,19 @@ private:
     RefinementPruningFunction& m_pruning_function;
     GeneratedSentencesContainer& m_sentences;
     dl::ConstructorRepositories& m_repositories;
+    size_t m_max_syntactic_complexity;
+
     size_t m_complexity;
 
-    dl::ConstructorLists<Concept, Role, Boolean, Numerical> m_result;
     HanaGeneratorStatistics<Concept, Role, Boolean, Numerical> m_statistics;
+
+    std::any m_result;
 
 public:
     GeneratorVisitor(RefinementPruningFunction& pruning_function,
                      GeneratedSentencesContainer& sentences,
                      dl::ConstructorRepositories& repositories,
-                     size_t complexity);
+                     size_t max_syntactic_complexity);
 
     void visit(ConceptBot constructor) override;
     void visit(ConceptTop constructor) override;
@@ -179,6 +183,8 @@ private:
 
     template<FeatureCategory D>
     void visit_impl(SubstitutionRule<D> rule);
+
+    const std::any& get_result() const;
 };
 
 }

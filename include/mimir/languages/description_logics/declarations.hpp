@@ -168,6 +168,8 @@ template<dl::FeatureCategory D>
 class ConstructorImpl;
 template<dl::FeatureCategory D>
 using Constructor = const ConstructorImpl<D>*;
+template<dl::FeatureCategory D>
+using ConstructorList = std::vector<Constructor<D>>;
 
 /* NonTerminal */
 template<dl::FeatureCategory D>

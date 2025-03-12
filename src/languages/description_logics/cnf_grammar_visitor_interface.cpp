@@ -24,737 +24,539 @@
 namespace mimir::dl::cnf_grammar
 {
 
-///////////////////////////////////////////////////////////////////////////////
-/// Recurse
-///////////////////////////////////////////////////////////////////////////////
+////////////////////////////
+/// Recursive Visitor
+////////////////////////////
 
-RecurseConstructorVisitor<Concept>::RecurseConstructorVisitor(HanaRecurseNonTerminalVisitors<Concept, Role> nonterminal_visitors) :
-    m_nonterminal_visitors(nonterminal_visitors)
+void RecurseVisitor::visit(ConceptBot constructor) {}
+void RecurseVisitor::visit(ConceptTop constructor) {}
+void RecurseVisitor::visit(ConceptAtomicState<Static> constructor) {}
+void RecurseVisitor::visit(ConceptAtomicState<Fluent> constructor) {}
+void RecurseVisitor::visit(ConceptAtomicState<Derived> constructor) {}
+void RecurseVisitor::visit(ConceptAtomicGoal<Static> constructor) {}
+void RecurseVisitor::visit(ConceptAtomicGoal<Fluent> constructor) {}
+void RecurseVisitor::visit(ConceptAtomicGoal<Derived> constructor) {}
+void RecurseVisitor::visit(ConceptIntersection constructor)
 {
+    constructor->get_left_concept()->accept(*this);
+    constructor->get_right_concept()->accept(*this);
 }
-
-void RecurseConstructorVisitor<Concept>::visit(ConceptBot constructor) {}
-void RecurseConstructorVisitor<Concept>::visit(ConceptTop constructor) {}
-void RecurseConstructorVisitor<Concept>::visit(ConceptAtomicState<Static> constructor) {}
-void RecurseConstructorVisitor<Concept>::visit(ConceptAtomicState<Fluent> constructor) {}
-void RecurseConstructorVisitor<Concept>::visit(ConceptAtomicState<Derived> constructor) {}
-void RecurseConstructorVisitor<Concept>::visit(ConceptAtomicGoal<Static> constructor) {}
-void RecurseConstructorVisitor<Concept>::visit(ConceptAtomicGoal<Fluent> constructor) {}
-void RecurseConstructorVisitor<Concept>::visit(ConceptAtomicGoal<Derived> constructor) {}
-void RecurseConstructorVisitor<Concept>::visit(ConceptNominal constructor) {}
-void RecurseConstructorVisitor<Concept>::visit(ConceptIntersection constructor)
+void RecurseVisitor::visit(ConceptUnion constructor)
 {
-    auto& concept_visitor = get_visitor<Concept>(m_nonterminal_visitors);
-    constructor->get_left_concept()->accept(concept_visitor);
-    constructor->get_right_concept()->accept(concept_visitor);
+    constructor->get_left_concept()->accept(*this);
+    constructor->get_right_concept()->accept(*this);
 }
-void RecurseConstructorVisitor<Concept>::visit(ConceptUnion constructor)
+void RecurseVisitor::visit(ConceptNegation constructor) { constructor->get_concept()->accept(*this); }
+void RecurseVisitor::visit(ConceptValueRestriction constructor)
 {
-    auto& concept_visitor = get_visitor<Concept>(m_nonterminal_visitors);
-    constructor->get_left_concept()->accept(concept_visitor);
-    constructor->get_right_concept()->accept(concept_visitor);
+    constructor->get_role()->accept(*this);
+    constructor->get_concept()->accept(*this);
 }
-void RecurseConstructorVisitor<Concept>::visit(ConceptNegation constructor)
+void RecurseVisitor::visit(ConceptExistentialQuantification constructor)
 {
-    auto& concept_visitor = get_visitor<Concept>(m_nonterminal_visitors);
-    constructor->get_concept()->accept(concept_visitor);
+    constructor->get_role()->accept(*this);
+    constructor->get_concept()->accept(*this);
 }
-void RecurseConstructorVisitor<Concept>::visit(ConceptValueRestriction constructor)
+void RecurseVisitor::visit(ConceptRoleValueMapContainment constructor)
 {
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
-    auto& concept_visitor = get_visitor<Concept>(m_nonterminal_visitors);
-    constructor->get_role()->accept(role_visitor);
-    constructor->get_concept()->accept(concept_visitor);
+    constructor->get_left_role()->accept(*this);
+    constructor->get_right_role()->accept(*this);
 }
-void RecurseConstructorVisitor<Concept>::visit(ConceptExistentialQuantification constructor)
+void RecurseVisitor::visit(ConceptRoleValueMapEquality constructor)
 {
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
-    auto& concept_visitor = get_visitor<Concept>(m_nonterminal_visitors);
-    constructor->get_role()->accept(role_visitor);
-    constructor->get_concept()->accept(concept_visitor);
+    constructor->get_left_role()->accept(*this);
+    constructor->get_right_role()->accept(*this);
 }
-void RecurseConstructorVisitor<Concept>::visit(ConceptRoleValueMapContainment constructor)
-{
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
-    constructor->get_left_role()->accept(role_visitor);
-    constructor->get_right_role()->accept(role_visitor);
-}
-void RecurseConstructorVisitor<Concept>::visit(ConceptRoleValueMapEquality constructor)
-{
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
-    constructor->get_left_role()->accept(role_visitor);
-    constructor->get_right_role()->accept(role_visitor);
-}
+void RecurseVisitor::visit(ConceptNominal constructor) {}
 
 /**
  * Role
  */
 
-RecurseConstructorVisitor<Role>::RecurseConstructorVisitor(HanaRecurseNonTerminalVisitors<Concept, Role> nonterminal_visitors) :
-    m_nonterminal_visitors(nonterminal_visitors)
+void RecurseVisitor::visit(RoleUniversal constructor) {}
+void RecurseVisitor::visit(RoleAtomicState<Static> constructor) {}
+void RecurseVisitor::visit(RoleAtomicState<Fluent> constructor) {}
+void RecurseVisitor::visit(RoleAtomicState<Derived> constructor) {}
+void RecurseVisitor::visit(RoleAtomicGoal<Static> constructor) {}
+void RecurseVisitor::visit(RoleAtomicGoal<Fluent> constructor) {}
+void RecurseVisitor::visit(RoleAtomicGoal<Derived> constructor) {}
+void RecurseVisitor::visit(RoleIntersection constructor)
 {
+    constructor->get_left_role()->accept(*this);
+    constructor->get_right_role()->accept(*this);
 }
-
-void RecurseConstructorVisitor<Role>::visit(RoleUniversal constructor) {}
-void RecurseConstructorVisitor<Role>::visit(RoleAtomicState<Static> constructor) {}
-void RecurseConstructorVisitor<Role>::visit(RoleAtomicState<Fluent> constructor) {}
-void RecurseConstructorVisitor<Role>::visit(RoleAtomicState<Derived> constructor) {}
-void RecurseConstructorVisitor<Role>::visit(RoleAtomicGoal<Static> constructor) {}
-void RecurseConstructorVisitor<Role>::visit(RoleAtomicGoal<Fluent> constructor) {}
-void RecurseConstructorVisitor<Role>::visit(RoleAtomicGoal<Derived> constructor) {}
-void RecurseConstructorVisitor<Role>::visit(RoleIntersection constructor)
+void RecurseVisitor::visit(RoleUnion constructor)
 {
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
-    constructor->get_left_role()->accept(role_visitor);
-    constructor->get_right_role()->accept(role_visitor);
+    constructor->get_left_role()->accept(*this);
+    constructor->get_right_role()->accept(*this);
 }
-void RecurseConstructorVisitor<Role>::visit(RoleUnion constructor)
+void RecurseVisitor::visit(RoleComplement constructor) { constructor->get_role()->accept(*this); }
+void RecurseVisitor::visit(RoleInverse constructor) { constructor->get_role()->accept(*this); }
+void RecurseVisitor::visit(RoleComposition constructor)
 {
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
-    constructor->get_left_role()->accept(role_visitor);
-    constructor->get_right_role()->accept(role_visitor);
+    constructor->get_left_role()->accept(*this);
+    constructor->get_right_role()->accept(*this);
 }
-void RecurseConstructorVisitor<Role>::visit(RoleComplement constructor)
+void RecurseVisitor::visit(RoleTransitiveClosure constructor) { constructor->get_role()->accept(*this); }
+void RecurseVisitor::visit(RoleReflexiveTransitiveClosure constructor) { constructor->get_role()->accept(*this); }
+void RecurseVisitor::visit(RoleRestriction constructor)
 {
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
-    constructor->get_role()->accept(role_visitor);
+    constructor->get_role()->accept(*this);
+    constructor->get_concept()->accept(*this);
 }
-void RecurseConstructorVisitor<Role>::visit(RoleInverse constructor)
-{
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
-    constructor->get_role()->accept(role_visitor);
-}
-void RecurseConstructorVisitor<Role>::visit(RoleComposition constructor)
-{
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
-    constructor->get_left_role()->accept(role_visitor);
-    constructor->get_right_role()->accept(role_visitor);
-}
-void RecurseConstructorVisitor<Role>::visit(RoleTransitiveClosure constructor)
-{
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
-    constructor->get_role()->accept(role_visitor);
-}
-void RecurseConstructorVisitor<Role>::visit(RoleReflexiveTransitiveClosure constructor)
-{
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
-    constructor->get_role()->accept(role_visitor);
-}
-void RecurseConstructorVisitor<Role>::visit(RoleRestriction constructor)
-{
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
-    auto& concept_visitor = get_visitor<Concept>(m_nonterminal_visitors);
-    constructor->get_role()->accept(role_visitor);
-    constructor->get_concept()->accept(concept_visitor);
-}
-void RecurseConstructorVisitor<Role>::visit(RoleIdentity constructor)
-{
-    auto& concept_visitor = get_visitor<Concept>(m_nonterminal_visitors);
-    constructor->get_concept()->accept(concept_visitor);
-}
+void RecurseVisitor::visit(RoleIdentity constructor) { constructor->get_concept()->accept(*this); }
 
 /**
  * Booleans
  */
 
-RecurseConstructorVisitor<Boolean>::RecurseConstructorVisitor(HanaRecurseNonTerminalVisitors<Concept, Role> nonterminal_visitors) :
-    m_nonterminal_visitors(nonterminal_visitors)
-{
-}
-
-void RecurseConstructorVisitor<Boolean>::visit(BooleanAtomicState<Static> constructor) {}
-
-void RecurseConstructorVisitor<Boolean>::visit(BooleanAtomicState<Fluent> constructor) {}
-
-void RecurseConstructorVisitor<Boolean>::visit(BooleanAtomicState<Derived> constructor) {}
-
-void RecurseConstructorVisitor<Boolean>::visit(BooleanNonempty<Concept> constructor)
-{
-    auto& concept_visitor = get_visitor<Concept>(m_nonterminal_visitors);
-    constructor->get_nonterminal()->accept(concept_visitor);
-}
-
-void RecurseConstructorVisitor<Boolean>::visit(BooleanNonempty<Role> constructor)
-{
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
-    constructor->get_nonterminal()->accept(role_visitor);
-}
+void RecurseVisitor::visit(BooleanAtomicState<Static> constructor) {}
+void RecurseVisitor::visit(BooleanAtomicState<Fluent> constructor) {}
+void RecurseVisitor::visit(BooleanAtomicState<Derived> constructor) {}
+void RecurseVisitor::visit(BooleanNonempty<Concept> constructor) { constructor->get_nonterminal()->accept(*this); }
+void RecurseVisitor::visit(BooleanNonempty<Role> constructor) { constructor->get_nonterminal()->accept(*this); }
 
 /**
  * Numericals
  */
 
-RecurseConstructorVisitor<Numerical>::RecurseConstructorVisitor(HanaRecurseNonTerminalVisitors<Concept, Role> nonterminal_visitors) :
-    m_nonterminal_visitors(nonterminal_visitors)
+void RecurseVisitor::visit(NumericalCount<Concept> constructor) { constructor->get_nonterminal()->accept(*this); }
+void RecurseVisitor::visit(NumericalCount<Role> constructor) { constructor->get_nonterminal()->accept(*this); }
+void RecurseVisitor::visit(NumericalDistance constructor)
 {
-}
-
-void RecurseConstructorVisitor<Numerical>::visit(NumericalCount<Concept> constructor)
-{
-    auto& concept_visitor = get_visitor<Concept>(m_nonterminal_visitors);
-    constructor->get_nonterminal()->accept(concept_visitor);
-}
-
-void RecurseConstructorVisitor<Numerical>::visit(NumericalCount<Role> constructor)
-{
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
-    constructor->get_nonterminal()->accept(role_visitor);
-}
-
-void RecurseConstructorVisitor<Numerical>::visit(NumericalDistance constructor)
-{
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
-    auto& concept_visitor = get_visitor<Concept>(m_nonterminal_visitors);
-    constructor->get_left_concept()->accept(concept_visitor);
-    constructor->get_role()->accept(role_visitor);
-    constructor->get_right_concept()->accept(concept_visitor);
+    constructor->get_left_concept()->accept(*this);
+    constructor->get_role()->accept(*this);
+    constructor->get_right_concept()->accept(*this);
 }
 
 /**
  * NonTerminal
  */
 
+void RecurseVisitor::visit(NonTerminal<Concept> constructor) { visit_impl(constructor); }
+
+void RecurseVisitor::visit(NonTerminal<Role> constructor) {}
+
+void RecurseVisitor::visit(NonTerminal<Boolean> constructor) {}
+
+void RecurseVisitor::visit(NonTerminal<Numerical> constructor) {}
+
 template<FeatureCategory D>
-void RecurseNonTerminalVisitor<D>::visit(NonTerminal<D> constructor)
+void RecurseVisitor::visit_impl(NonTerminal<D> constructor)
 {
 }
 
-template class RecurseNonTerminalVisitor<Concept>;
-template class RecurseNonTerminalVisitor<Role>;
-template class RecurseNonTerminalVisitor<Boolean>;
-template class RecurseNonTerminalVisitor<Numerical>;
+template void RecurseVisitor::visit_impl(NonTerminal<Concept> constructor);
+template void RecurseVisitor::visit_impl(NonTerminal<Role> constructor);
+template void RecurseVisitor::visit_impl(NonTerminal<Boolean> constructor);
+template void RecurseVisitor::visit_impl(NonTerminal<Numerical> constructor);
 
 /**
  * DerivationRule
  */
 
-template<FeatureCategory D>
-RecurseDerivationRuleVisitor<D>::RecurseDerivationRuleVisitor(RecurseNonTerminalVisitor<D>& nonterminal_visitor,
-                                                              RecurseConstructorVisitor<D>& constructor_visitor) :
-    m_nonterminal_visitor(nonterminal_visitor),
-    m_constructor_visitor(constructor_visitor)
-{
-}
+void RecurseVisitor::visit(DerivationRule<Concept> constructor) { visit_impl(constructor); }
+
+void RecurseVisitor::visit(DerivationRule<Role> constructor) { visit_impl(constructor); }
+
+void RecurseVisitor::visit(DerivationRule<Boolean> constructor) { visit_impl(constructor); }
+
+void RecurseVisitor::visit(DerivationRule<Numerical> constructor) { visit_impl(constructor); }
 
 template<FeatureCategory D>
-void RecurseDerivationRuleVisitor<D>::visit(DerivationRule<D> rule)
+void RecurseVisitor::visit_impl(DerivationRule<D> constructor)
 {
-    rule->get_head()->accept(m_nonterminal_visitor);
-    rule->get_body()->accept(m_constructor_visitor);
+    constructor->get_head()->accept(*this);
+
+    constructor->get_body()->accept(*this);
 }
 
-template class RecurseDerivationRuleVisitor<Concept>;
-template class RecurseDerivationRuleVisitor<Role>;
-template class RecurseDerivationRuleVisitor<Boolean>;
-template class RecurseDerivationRuleVisitor<Numerical>;
+template void RecurseVisitor::visit_impl(DerivationRule<Concept> constructor);
+template void RecurseVisitor::visit_impl(DerivationRule<Role> constructor);
+template void RecurseVisitor::visit_impl(DerivationRule<Boolean> constructor);
+template void RecurseVisitor::visit_impl(DerivationRule<Numerical> constructor);
 
 /**
  * SubstitutionRule
  */
 
-template<FeatureCategory D>
-RecurseSubstitutionRuleVisitor<D>::RecurseSubstitutionRuleVisitor(RecurseNonTerminalVisitor<D>& nonterminal_visitor) :
-    m_nonterminal_visitor(nonterminal_visitor)
-{
-}
+void RecurseVisitor::visit(SubstitutionRule<Concept> constructor) { visit_impl(constructor); }
+
+void RecurseVisitor::visit(SubstitutionRule<Role> constructor) { visit_impl(constructor); }
+
+void RecurseVisitor::visit(SubstitutionRule<Boolean> constructor) { visit_impl(constructor); }
+
+void RecurseVisitor::visit(SubstitutionRule<Numerical> constructor) { visit_impl(constructor); }
 
 template<FeatureCategory D>
-void RecurseSubstitutionRuleVisitor<D>::visit(SubstitutionRule<D> rule)
+void RecurseVisitor::visit_impl(SubstitutionRule<D> constructor)
 {
-    rule->get_head()->accept(m_nonterminal_visitor);
-    rule->get_body()->accept(m_nonterminal_visitor);
+    constructor->get_head()->accept(*this);
+
+    constructor->get_body()->accept(*this);
 }
 
-template class RecurseSubstitutionRuleVisitor<Concept>;
-template class RecurseSubstitutionRuleVisitor<Role>;
-template class RecurseSubstitutionRuleVisitor<Boolean>;
-template class RecurseSubstitutionRuleVisitor<Numerical>;
+template void RecurseVisitor::visit_impl(SubstitutionRule<Concept> constructor);
+template void RecurseVisitor::visit_impl(SubstitutionRule<Role> constructor);
+template void RecurseVisitor::visit_impl(SubstitutionRule<Boolean> constructor);
+template void RecurseVisitor::visit_impl(SubstitutionRule<Numerical> constructor);
 
 /**
  * Grammar
  */
 
-RecurseGrammarVisitor::RecurseGrammarVisitor(HanaRecurseNonTerminalVisitors<Concept, Role, Boolean, Numerical> start_symbol_visitors,
-                                             HanaRecurseDerivationRuleVisitors<Concept, Role, Boolean, Numerical> derivation_rule_visitors,
-                                             HanaRecurseSubstitutionRuleVisitors<Concept, Role, Boolean, Numerical> substitution_rule_visitors) :
-    m_start_symbol_visitor(std::move(start_symbol_visitors)),
-    m_derivation_rule_visitor(std::move(derivation_rule_visitors)),
-    m_substitution_rule_visitor(std::move(substitution_rule_visitors))
-{
-}
-
-void RecurseGrammarVisitor::visit(const Grammar& grammar)
+void RecurseVisitor::visit(const Grammar& grammar)
 {
     boost::hana::for_each(grammar.get_start_symbols_container().get(),
                           [&](auto&& pair)
                           {
-                              auto key = boost::hana::first(pair);
                               const auto& second = boost::hana::second(pair);
-                              using ConstructorType = typename decltype(+key)::type;
 
                               if (second.has_value())
                               {
-                                  auto& visitor = get_visitor<ConstructorType>(m_start_symbol_visitor);
+                                  second.value()->accept(*this);
                               }
                           });
 
     boost::hana::for_each(grammar.get_derivation_rules_container().get(),
                           [&](auto&& pair)
                           {
-                              auto key = boost::hana::first(pair);
                               const auto& second = boost::hana::second(pair);
-                              using ConstructorType = typename decltype(+key)::type;
 
                               for (const auto& rule : second)
                               {
-                                  auto& visitor = get_visitor<ConstructorType>(m_derivation_rule_visitor);
-                                  rule->accept(visitor);
+                                  rule->accept(*this);
                               }
                           });
 
-    boost::hana::for_each(grammar.get_substitution_rules().get(),
+    boost::hana::for_each(grammar.get_substitution_rules_container().get(),
                           [&](auto&& pair)
                           {
-                              auto key = boost::hana::first(pair);
                               const auto& second = boost::hana::second(pair);
-                              using ConstructorType = typename decltype(+key)::type;
 
                               for (const auto& rule : second)
                               {
-                                  auto& visitor = get_visitor<ConstructorType>(m_substitution_rule_visitor);
-                                  rule->accept(visitor);
+                                  rule->accept(*this);
                               }
                           });
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/// Copy
-///////////////////////////////////////////////////////////////////////////////
+////////////////////////////
+/// Recursive Copy Visitor
+////////////////////////////
 
-CopyConstructorVisitor<Concept>::CopyConstructorVisitor(ConstructorRepositories& repositories,
-                                                        HanaCopyNonTerminalVisitors<Concept, Role> nonterminal_visitors) :
-    m_repositories(repositories),
-    m_nonterminal_visitors(nonterminal_visitors)
-{
-}
-
-void CopyConstructorVisitor<Concept>::visit(ConceptBot constructor) { m_result = m_repositories.get_or_create_concept_bot(); }
-void CopyConstructorVisitor<Concept>::visit(ConceptTop constructor) { m_result = m_repositories.get_or_create_concept_top(); }
-void CopyConstructorVisitor<Concept>::visit(ConceptAtomicState<Static> constructor)
-{
-    m_result = m_repositories.get_or_create_concept_atomic_state(constructor->get_predicate());
-}
-void CopyConstructorVisitor<Concept>::visit(ConceptAtomicState<Fluent> constructor)
-{
-    m_result = m_repositories.get_or_create_concept_atomic_state(constructor->get_predicate());
-}
-void CopyConstructorVisitor<Concept>::visit(ConceptAtomicState<Derived> constructor)
-{
-    m_result = m_repositories.get_or_create_concept_atomic_state(constructor->get_predicate());
-}
-void CopyConstructorVisitor<Concept>::visit(ConceptAtomicGoal<Static> constructor)
-{
-    m_result = m_repositories.get_or_create_concept_atomic_goal(constructor->get_predicate(), constructor->is_negated());
-}
-void CopyConstructorVisitor<Concept>::visit(ConceptAtomicGoal<Fluent> constructor)
-{
-    m_result = m_repositories.get_or_create_concept_atomic_goal(constructor->get_predicate(), constructor->is_negated());
-}
-void CopyConstructorVisitor<Concept>::visit(ConceptAtomicGoal<Derived> constructor)
-{
-    m_result = m_repositories.get_or_create_concept_atomic_goal(constructor->get_predicate(), constructor->is_negated());
-}
-void CopyConstructorVisitor<Concept>::visit(ConceptNominal constructor) { m_result = m_repositories.get_or_create_concept_nominal(constructor->get_object()); }
-void CopyConstructorVisitor<Concept>::visit(ConceptIntersection constructor)
-{
-    auto& concept_visitor = get_visitor<Concept>(m_nonterminal_visitors);
-    constructor->get_left_concept()->accept(concept_visitor);
-    const auto left_nonterminal = concept_visitor.get_result();
-    constructor->get_right_concept()->accept(concept_visitor);
-    const auto right_nonterminal = concept_visitor.get_result();
-    m_result = m_repositories.get_or_create_concept_intersection(left_nonterminal, right_nonterminal);
-}
-void CopyConstructorVisitor<Concept>::visit(ConceptUnion constructor)
-{
-    auto& concept_visitor = get_visitor<Concept>(m_nonterminal_visitors);
-    constructor->get_left_concept()->accept(concept_visitor);
-    const auto left_nonterminal = concept_visitor.get_result();
-    constructor->get_right_concept()->accept(concept_visitor);
-    const auto right_nonterminal = concept_visitor.get_result();
-    m_result = m_repositories.get_or_create_concept_union(left_nonterminal, right_nonterminal);
-}
-void CopyConstructorVisitor<Concept>::visit(ConceptNegation constructor)
-{
-    auto& concept_visitor = get_visitor<Concept>(m_nonterminal_visitors);
-    constructor->get_concept()->accept(concept_visitor);
-    const auto nonterminal = concept_visitor.get_result();
-    m_result = m_repositories.get_or_create_concept_negation(nonterminal);
-}
-void CopyConstructorVisitor<Concept>::visit(ConceptValueRestriction constructor)
-{
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
-    auto& concept_visitor = get_visitor<Concept>(m_nonterminal_visitors);
-    constructor->get_role()->accept(role_visitor);
-    const auto left_nonterminal = role_visitor.get_result();
-    constructor->get_concept()->accept(concept_visitor);
-    const auto right_nonterminal = concept_visitor.get_result();
-    m_result = m_repositories.get_or_create_concept_value_restriction(left_nonterminal, right_nonterminal);
-}
-void CopyConstructorVisitor<Concept>::visit(ConceptExistentialQuantification constructor)
-{
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
-    auto& concept_visitor = get_visitor<Concept>(m_nonterminal_visitors);
-    constructor->get_role()->accept(role_visitor);
-    const auto left_nonterminal = role_visitor.get_result();
-    constructor->get_concept()->accept(concept_visitor);
-    const auto right_nonterminal = concept_visitor.get_result();
-    m_result = m_repositories.get_or_create_concept_existential_quantification(left_nonterminal, right_nonterminal);
-}
-void CopyConstructorVisitor<Concept>::visit(ConceptRoleValueMapContainment constructor)
-{
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
-    constructor->get_left_role()->accept(role_visitor);
-    const auto left_nonterminal = role_visitor.get_result();
-    constructor->get_right_role()->accept(role_visitor);
-    const auto right_nonterminal = role_visitor.get_result();
-    m_result = m_repositories.get_or_create_concept_role_value_map_containment(left_nonterminal, right_nonterminal);
-}
-void CopyConstructorVisitor<Concept>::visit(ConceptRoleValueMapEquality constructor)
-{
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
-    constructor->get_left_role()->accept(role_visitor);
-    const auto left_nonterminal = role_visitor.get_result();
-    constructor->get_right_role()->accept(role_visitor);
-    const auto right_nonterminal = role_visitor.get_result();
-    m_result = m_repositories.get_or_create_concept_role_value_map_equality(left_nonterminal, right_nonterminal);
-}
-
-const Constructor<Concept>& CopyConstructorVisitor<Concept>::get_result() const { return m_result; }
-
-/**
- * Role
- */
-
-CopyConstructorVisitor<Role>::CopyConstructorVisitor(ConstructorRepositories& repositories, HanaCopyNonTerminalVisitors<Concept, Role> nonterminal_visitors) :
-    m_repositories(repositories),
-    m_nonterminal_visitors(nonterminal_visitors)
-{
-}
-
-void CopyConstructorVisitor<Role>::visit(RoleUniversal constructor) { m_result = m_repositories.get_or_create_role_universal(); }
-void CopyConstructorVisitor<Role>::visit(RoleAtomicState<Static> constructor)
-{
-    m_result = m_repositories.get_or_create_role_atomic_state(constructor->get_predicate());
-}
-void CopyConstructorVisitor<Role>::visit(RoleAtomicState<Fluent> constructor)
-{
-    m_result = m_repositories.get_or_create_role_atomic_state(constructor->get_predicate());
-}
-void CopyConstructorVisitor<Role>::visit(RoleAtomicState<Derived> constructor)
-{
-    m_result = m_repositories.get_or_create_role_atomic_state(constructor->get_predicate());
-}
-void CopyConstructorVisitor<Role>::visit(RoleAtomicGoal<Static> constructor)
-{
-    m_result = m_repositories.get_or_create_role_atomic_goal(constructor->get_predicate(), constructor->is_negated());
-}
-void CopyConstructorVisitor<Role>::visit(RoleAtomicGoal<Fluent> constructor)
-{
-    m_result = m_repositories.get_or_create_role_atomic_goal(constructor->get_predicate(), constructor->is_negated());
-}
-void CopyConstructorVisitor<Role>::visit(RoleAtomicGoal<Derived> constructor)
-{
-    m_result = m_repositories.get_or_create_role_atomic_goal(constructor->get_predicate(), constructor->is_negated());
-}
-void CopyConstructorVisitor<Role>::visit(RoleIntersection constructor)
-{
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
-    constructor->get_left_role()->accept(role_visitor);
-    const auto left_nonterminal = role_visitor.get_result();
-    constructor->get_right_role()->accept(role_visitor);
-    const auto right_nonterminal = role_visitor.get_result();
-    m_result = m_repositories.get_or_create_role_intersection(left_nonterminal, right_nonterminal);
-}
-void CopyConstructorVisitor<Role>::visit(RoleUnion constructor)
-{
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
-    constructor->get_left_role()->accept(role_visitor);
-    const auto left_nonterminal = role_visitor.get_result();
-    constructor->get_right_role()->accept(role_visitor);
-    const auto right_nonterminal = role_visitor.get_result();
-    m_result = m_repositories.get_or_create_role_union(left_nonterminal, right_nonterminal);
-}
-void CopyConstructorVisitor<Role>::visit(RoleComplement constructor)
-{
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
-    constructor->get_role()->accept(role_visitor);
-    const auto nonterminal = role_visitor.get_result();
-    m_result = m_repositories.get_or_create_role_complement(nonterminal);
-}
-void CopyConstructorVisitor<Role>::visit(RoleInverse constructor)
-{
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
-    constructor->get_role()->accept(role_visitor);
-    const auto nonterminal = role_visitor.get_result();
-    m_result = m_repositories.get_or_create_role_inverse(nonterminal);
-}
-void CopyConstructorVisitor<Role>::visit(RoleComposition constructor)
-{
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
-    constructor->get_left_role()->accept(role_visitor);
-    const auto left_nonterminal = role_visitor.get_result();
-    constructor->get_right_role()->accept(role_visitor);
-    const auto right_nonterminal = role_visitor.get_result();
-    m_result = m_repositories.get_or_create_role_composition(left_nonterminal, right_nonterminal);
-}
-void CopyConstructorVisitor<Role>::visit(RoleTransitiveClosure constructor)
-{
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
-    constructor->get_role()->accept(role_visitor);
-    const auto nonterminal = role_visitor.get_result();
-    m_result = m_repositories.get_or_create_role_transitive_closure(nonterminal);
-}
-void CopyConstructorVisitor<Role>::visit(RoleReflexiveTransitiveClosure constructor)
-{
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
-    constructor->get_role()->accept(role_visitor);
-    const auto nonterminal = role_visitor.get_result();
-    m_result = m_repositories.get_or_create_role_reflexive_transitive_closure(nonterminal);
-}
-void CopyConstructorVisitor<Role>::visit(RoleRestriction constructor)
-{
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
-    auto& concept_visitor = get_visitor<Concept>(m_nonterminal_visitors);
-    constructor->get_role()->accept(role_visitor);
-    const auto left_nonterminal = role_visitor.get_result();
-    constructor->get_concept()->accept(concept_visitor);
-    const auto right_nonterminal = concept_visitor.get_result();
-    m_result = m_repositories.get_or_create_role_restriction(left_nonterminal, right_nonterminal);
-}
-void CopyConstructorVisitor<Role>::visit(RoleIdentity constructor)
-{
-    auto& concept_visitor = get_visitor<Concept>(m_nonterminal_visitors);
-    constructor->get_concept()->accept(concept_visitor);
-    const auto nonterminal = concept_visitor.get_result();
-    m_result = m_repositories.get_or_create_role_identity(nonterminal);
-}
-
-const Constructor<Role>& CopyConstructorVisitor<Role>::get_result() const { return m_result; }
-
-/**
- * Booleans
- */
-
-CopyConstructorVisitor<Boolean>::CopyConstructorVisitor(ConstructorRepositories& repositories,
-                                                        HanaCopyNonTerminalVisitors<Concept, Role> nonterminal_visitors) :
-    m_repositories(repositories),
-    m_nonterminal_visitors(nonterminal_visitors)
-{
-}
-
-void CopyConstructorVisitor<Boolean>::visit(BooleanAtomicState<Static> constructor)
-{
-    m_result = m_repositories.get_or_create_boolean_atomic_state(constructor->get_predicate());
-}
-
-void CopyConstructorVisitor<Boolean>::visit(BooleanAtomicState<Fluent> constructor)
-{
-    m_result = m_repositories.get_or_create_boolean_atomic_state(constructor->get_predicate());
-}
-
-void CopyConstructorVisitor<Boolean>::visit(BooleanAtomicState<Derived> constructor)
-{
-    m_result = m_repositories.get_or_create_boolean_atomic_state(constructor->get_predicate());
-}
-
-void CopyConstructorVisitor<Boolean>::visit(BooleanNonempty<Concept> constructor)
-{
-    auto& concept_visitor = get_visitor<Concept>(m_nonterminal_visitors);
-    constructor->get_nonterminal()->accept(concept_visitor);
-    const auto concept_nonterminal = concept_visitor.get_result();
-    m_result = m_repositories.get_or_create_boolean_nonempty(concept_nonterminal);
-}
-
-void CopyConstructorVisitor<Boolean>::visit(BooleanNonempty<Role> constructor)
-{
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
-    constructor->get_nonterminal()->accept(role_visitor);
-    const auto role_nonterminal = role_visitor.get_result();
-    m_result = m_repositories.get_or_create_boolean_nonempty(role_nonterminal);
-}
-
-Constructor<Boolean> CopyConstructorVisitor<Boolean>::get_result() const { return m_result; }
-
-/**
- * Numericals
- */
-
-CopyConstructorVisitor<Numerical>::CopyConstructorVisitor(ConstructorRepositories& repositories,
-                                                          HanaCopyNonTerminalVisitors<Concept, Role> nonterminal_visitors) :
-    m_repositories(repositories),
-    m_nonterminal_visitors(nonterminal_visitors)
-{
-}
-
-void CopyConstructorVisitor<Numerical>::visit(NumericalCount<Concept> constructor)
-{
-    auto& concept_visitor = get_visitor<Concept>(m_nonterminal_visitors);
-    constructor->get_nonterminal()->accept(concept_visitor);
-    const auto concept_nonterminal = concept_visitor.get_result();
-    m_result = m_repositories.get_or_create_numerical_count(concept_nonterminal);
-}
-
-void CopyConstructorVisitor<Numerical>::visit(NumericalCount<Role> constructor)
-{
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
-    constructor->get_nonterminal()->accept(role_visitor);
-    const auto role_nonterminal = role_visitor.get_result();
-    m_result = m_repositories.get_or_create_numerical_count(role_nonterminal);
-}
-
-void CopyConstructorVisitor<Numerical>::visit(NumericalDistance constructor)
-{
-    auto& role_visitor = get_visitor<Role>(m_nonterminal_visitors);
-    auto& concept_visitor = get_visitor<Concept>(m_nonterminal_visitors);
-    constructor->get_left_concept()->accept(concept_visitor);
-    const auto left_concept_nonterminal = concept_visitor.get_result();
-    constructor->get_role()->accept(role_visitor);
-    const auto role_nonterminal = role_visitor.get_result();
-    constructor->get_right_concept()->accept(concept_visitor);
-    const auto right_concept_nonterminal = concept_visitor.get_result();
-    m_result = m_repositories.get_or_create_numerical_distance(left_concept_nonterminal, role_nonterminal, right_concept_nonterminal);
-}
-
-Constructor<Numerical> CopyConstructorVisitor<Numerical>::get_result() const { return m_result; }
-
-/**
- * NonTerminal
- */
-
-template<FeatureCategory D>
-CopyNonTerminalVisitor<D>::CopyNonTerminalVisitor(ConstructorRepositories& repositories) : m_repositories(repositories)
-{
-}
-
-template<FeatureCategory D>
-void CopyNonTerminalVisitor<D>::visit(NonTerminal<D> constructor)
-{
-    m_result = m_repositories.get_or_create_nonterminal<D>(constructor->get_name());
-}
-
-template<FeatureCategory D>
-const NonTerminal<D>& CopyNonTerminalVisitor<D>::get_result() const
-{
-    return m_result;
-}
-
-template class CopyNonTerminalVisitor<Concept>;
-template class CopyNonTerminalVisitor<Role>;
-template class CopyNonTerminalVisitor<Boolean>;
-template class CopyNonTerminalVisitor<Numerical>;
-
-/**
- * DerivationRule
- */
-
-template<FeatureCategory D>
-CopyDerivationRuleVisitor<D>::CopyDerivationRuleVisitor(ConstructorRepositories& repositories,
-                                                        CopyNonTerminalVisitor<D>& nonterminal_visitor,
-                                                        CopyConstructorVisitor<D>& constructor_visitor) :
-    m_repositories(repositories),
-    m_nonterminal_visitor(nonterminal_visitor),
-    m_constructor_visitor(constructor_visitor)
-{
-}
-
-template<FeatureCategory D>
-void CopyDerivationRuleVisitor<D>::visit(DerivationRule<D> rule)
-{
-    rule->get_head()->accept(m_nonterminal_visitor);
-    const auto head = m_nonterminal_visitor.get_result();
-    rule->get_body()->accept(m_constructor_visitor);
-    const auto body = m_constructor_visitor.get_result();
-    m_result = m_repositories.get_or_create_derivation_rule(head, body);
-}
-
-template<FeatureCategory D>
-const DerivationRule<D>& CopyDerivationRuleVisitor<D>::get_result() const
-{
-    return m_result;
-}
-
-template class CopyDerivationRuleVisitor<Concept>;
-template class CopyDerivationRuleVisitor<Role>;
-template class CopyDerivationRuleVisitor<Boolean>;
-template class CopyDerivationRuleVisitor<Numerical>;
-
-/**
- * SubstitutionRule
- */
-
-template<FeatureCategory D>
-CopySubstitutionRuleVisitor<D>::CopySubstitutionRuleVisitor(ConstructorRepositories& repositories, CopyNonTerminalVisitor<D>& nonterminal_visitor) :
-    m_repositories(repositories),
-    m_nonterminal_visitor(nonterminal_visitor)
-{
-}
-
-template<FeatureCategory D>
-void CopySubstitutionRuleVisitor<D>::visit(SubstitutionRule<D> rule)
-{
-    rule->get_head()->accept(m_nonterminal_visitor);
-    const auto head = m_nonterminal_visitor.get_result();
-    rule->get_body()->accept(m_nonterminal_visitor);
-    const auto body = m_nonterminal_visitor.get_result();
-    m_result = m_repositories.get_or_create_substitution_rule(head, body);
-}
-
-template<FeatureCategory D>
-const SubstitutionRule<D>& CopySubstitutionRuleVisitor<D>::get_result() const
-{
-    return m_result;
-}
-
-template class CopySubstitutionRuleVisitor<Concept>;
-template class CopySubstitutionRuleVisitor<Role>;
-template class CopySubstitutionRuleVisitor<Boolean>;
-template class CopySubstitutionRuleVisitor<Numerical>;
-
-/**
- * Grammar
- */
-
-CopyGrammarVisitor::CopyGrammarVisitor(ConstructorRepositories& repositories,
-                                       StartSymbolsContainer& start_symbols,
-                                       DerivationRulesContainer& derivation_rules,
-                                       SubstitutionRulesContainer& substitution_rules,
-                                       HanaCopyNonTerminalVisitors<Concept, Role, Boolean, Numerical> start_symbol_visitors,
-                                       HanaCopyDerivationRuleVisitors<Concept, Role, Boolean, Numerical> derivation_rule_visitors,
-                                       HanaCopySubstitutionRuleVisitors<Concept, Role, Boolean, Numerical> substitution_rule_visitors) :
+CopyVisitor::CopyVisitor(ConstructorRepositories& repositories,
+                         StartSymbolsContainer& start_symbols,
+                         DerivationRulesContainer& derivation_rules,
+                         SubstitutionRulesContainer& substitution_rules) :
     m_repositories(repositories),
     m_start_symbols(start_symbols),
     m_derivation_rules(derivation_rules),
-    m_substitution_rules(substitution_rules),
-    m_start_symbol_visitor(std::move(start_symbol_visitors)),
-    m_derivation_rule_visitor(std::move(derivation_rule_visitors)),
-    m_substitution_rule_visitor(std::move(substitution_rule_visitors))
+    m_substitution_rules(substitution_rules)
 {
 }
 
-void CopyGrammarVisitor::visit(const Grammar& grammar)
+void CopyVisitor::visit(ConceptBot constructor) { m_result = m_repositories.get_or_create_concept_bot(); }
+void CopyVisitor::visit(ConceptTop constructor) { m_result = m_repositories.get_or_create_concept_top(); }
+void CopyVisitor::visit(ConceptAtomicState<Static> constructor) { m_result = m_repositories.get_or_create_concept_atomic_state(constructor->get_predicate()); }
+void CopyVisitor::visit(ConceptAtomicState<Fluent> constructor) { m_result = m_repositories.get_or_create_concept_atomic_state(constructor->get_predicate()); }
+void CopyVisitor::visit(ConceptAtomicState<Derived> constructor) { m_result = m_repositories.get_or_create_concept_atomic_state(constructor->get_predicate()); }
+void CopyVisitor::visit(ConceptAtomicGoal<Static> constructor)
+{
+    m_result = m_repositories.get_or_create_concept_atomic_goal(constructor->get_predicate(), constructor->is_negated());
+}
+void CopyVisitor::visit(ConceptAtomicGoal<Fluent> constructor)
+{
+    m_result = m_repositories.get_or_create_concept_atomic_goal(constructor->get_predicate(), constructor->is_negated());
+}
+void CopyVisitor::visit(ConceptAtomicGoal<Derived> constructor)
+{
+    m_result = m_repositories.get_or_create_concept_atomic_goal(constructor->get_predicate(), constructor->is_negated());
+}
+void CopyVisitor::visit(ConceptIntersection constructor)
+{
+    constructor->get_left_concept()->accept(*this);
+    const auto left_concept = std::any_cast<NonTerminal<Concept>>(get_result());
+    constructor->get_right_concept()->accept(*this);
+    const auto right_concept = std::any_cast<NonTerminal<Concept>>(get_result());
+    m_result = m_repositories.get_or_create_concept_intersection(left_concept, right_concept);
+}
+void CopyVisitor::visit(ConceptUnion constructor)
+{
+    constructor->get_left_concept()->accept(*this);
+    const auto left_concept = std::any_cast<NonTerminal<Concept>>(get_result());
+    constructor->get_right_concept()->accept(*this);
+    const auto right_concept = std::any_cast<NonTerminal<Concept>>(get_result());
+    m_result = m_repositories.get_or_create_concept_union(left_concept, right_concept);
+}
+void CopyVisitor::visit(ConceptNegation constructor)
+{
+    constructor->get_concept()->accept(*this);
+    const auto concept_ = std::any_cast<NonTerminal<Concept>>(get_result());
+    m_result = m_repositories.get_or_create_concept_negation(concept_);
+}
+void CopyVisitor::visit(ConceptValueRestriction constructor)
+{
+    constructor->get_role()->accept(*this);
+    const auto role = std::any_cast<NonTerminal<Role>>(get_result());
+    constructor->get_concept()->accept(*this);
+    const auto concept_ = std::any_cast<NonTerminal<Concept>>(get_result());
+    m_result = m_repositories.get_or_create_concept_value_restriction(role, concept_);
+}
+void CopyVisitor::visit(ConceptExistentialQuantification constructor)
+{
+    constructor->get_role()->accept(*this);
+    const auto role = std::any_cast<NonTerminal<Role>>(get_result());
+    constructor->get_concept()->accept(*this);
+    const auto concept_ = std::any_cast<NonTerminal<Concept>>(get_result());
+    m_result = m_repositories.get_or_create_concept_existential_quantification(role, concept_);
+}
+void CopyVisitor::visit(ConceptRoleValueMapContainment constructor)
+{
+    constructor->get_left_role()->accept(*this);
+    const auto left_role = std::any_cast<NonTerminal<Role>>(get_result());
+    constructor->get_right_role()->accept(*this);
+    const auto right_role = std::any_cast<NonTerminal<Role>>(get_result());
+    m_result = m_repositories.get_or_create_concept_role_value_map_containment(left_role, right_role);
+}
+void CopyVisitor::visit(ConceptRoleValueMapEquality constructor)
+{
+    constructor->get_left_role()->accept(*this);
+    const auto left_role = std::any_cast<NonTerminal<Role>>(get_result());
+    constructor->get_right_role()->accept(*this);
+    const auto right_role = std::any_cast<NonTerminal<Role>>(get_result());
+    m_result = m_repositories.get_or_create_concept_role_value_map_equality(left_role, right_role);
+}
+void CopyVisitor::visit(ConceptNominal constructor) { m_result = m_repositories.get_or_create_concept_nominal(constructor->get_object()); }
+
+/**
+ * Role
+ */
+
+void CopyVisitor::visit(RoleUniversal constructor) { m_result = m_repositories.get_or_create_role_universal(); }
+void CopyVisitor::visit(RoleAtomicState<Static> constructor) { m_result = m_repositories.get_or_create_role_atomic_state(constructor->get_predicate()); }
+void CopyVisitor::visit(RoleAtomicState<Fluent> constructor) { m_result = m_repositories.get_or_create_role_atomic_state(constructor->get_predicate()); }
+void CopyVisitor::visit(RoleAtomicState<Derived> constructor) { m_result = m_repositories.get_or_create_role_atomic_state(constructor->get_predicate()); }
+void CopyVisitor::visit(RoleAtomicGoal<Static> constructor)
+{
+    m_result = m_repositories.get_or_create_role_atomic_goal(constructor->get_predicate(), constructor->is_negated());
+}
+void CopyVisitor::visit(RoleAtomicGoal<Fluent> constructor)
+{
+    m_result = m_repositories.get_or_create_role_atomic_goal(constructor->get_predicate(), constructor->is_negated());
+}
+void CopyVisitor::visit(RoleAtomicGoal<Derived> constructor)
+{
+    m_result = m_repositories.get_or_create_role_atomic_goal(constructor->get_predicate(), constructor->is_negated());
+}
+void CopyVisitor::visit(RoleIntersection constructor)
+{
+    constructor->get_left_role()->accept(*this);
+    const auto left_role = std::any_cast<NonTerminal<Role>>(get_result());
+    constructor->get_right_role()->accept(*this);
+    const auto right_role = std::any_cast<NonTerminal<Role>>(get_result());
+    m_result = m_repositories.get_or_create_role_intersection(left_role, right_role);
+}
+void CopyVisitor::visit(RoleUnion constructor)
+{
+    constructor->get_left_role()->accept(*this);
+    const auto left_role = std::any_cast<NonTerminal<Role>>(get_result());
+    constructor->get_right_role()->accept(*this);
+    const auto right_role = std::any_cast<NonTerminal<Role>>(get_result());
+    m_result = m_repositories.get_or_create_role_union(left_role, right_role);
+}
+void CopyVisitor::visit(RoleComplement constructor)
+{
+    constructor->get_role()->accept(*this);
+    const auto role = std::any_cast<NonTerminal<Role>>(get_result());
+    m_result = m_repositories.get_or_create_role_complement(role);
+}
+void CopyVisitor::visit(RoleInverse constructor)
+{
+    constructor->get_role()->accept(*this);
+    const auto role = std::any_cast<NonTerminal<Role>>(get_result());
+    m_result = m_repositories.get_or_create_role_inverse(role);
+}
+void CopyVisitor::visit(RoleComposition constructor)
+{
+    constructor->get_left_role()->accept(*this);
+    const auto left_role = std::any_cast<NonTerminal<Role>>(get_result());
+    constructor->get_right_role()->accept(*this);
+    const auto right_role = std::any_cast<NonTerminal<Role>>(get_result());
+    m_result = m_repositories.get_or_create_role_composition(left_role, right_role);
+}
+void CopyVisitor::visit(RoleTransitiveClosure constructor)
+{
+    constructor->get_role()->accept(*this);
+    const auto role = std::any_cast<NonTerminal<Role>>(get_result());
+    m_result = m_repositories.get_or_create_role_transitive_closure(role);
+}
+void CopyVisitor::visit(RoleReflexiveTransitiveClosure constructor)
+{
+    constructor->get_role()->accept(*this);
+    const auto role = std::any_cast<NonTerminal<Role>>(get_result());
+    m_result = m_repositories.get_or_create_role_reflexive_transitive_closure(role);
+}
+void CopyVisitor::visit(RoleRestriction constructor)
+{
+    constructor->get_role()->accept(*this);
+    const auto role = std::any_cast<NonTerminal<Role>>(get_result());
+    constructor->get_concept()->accept(*this);
+    const auto concept_ = std::any_cast<NonTerminal<Concept>>(get_result());
+    m_result = m_repositories.get_or_create_role_restriction(role, concept_);
+}
+void CopyVisitor::visit(RoleIdentity constructor)
+{
+    constructor->get_concept()->accept(*this);
+    const auto concept_ = std::any_cast<NonTerminal<Concept>>(get_result());
+    m_result = m_repositories.get_or_create_role_identity(concept_);
+}
+
+/**
+ * Booleans
+ */
+
+void CopyVisitor::visit(BooleanAtomicState<Static> constructor) { m_result = m_repositories.get_or_create_boolean_atomic_state(constructor->get_predicate()); }
+void CopyVisitor::visit(BooleanAtomicState<Fluent> constructor) { m_result = m_repositories.get_or_create_boolean_atomic_state(constructor->get_predicate()); }
+void CopyVisitor::visit(BooleanAtomicState<Derived> constructor) { m_result = m_repositories.get_or_create_boolean_atomic_state(constructor->get_predicate()); }
+void CopyVisitor::visit(BooleanNonempty<Concept> constructor)
+{
+    constructor->get_nonterminal()->accept(*this);
+    const auto concept_ = std::any_cast<NonTerminal<Concept>>(get_result());
+    m_result = m_repositories.get_or_create_boolean_nonempty(concept_);
+}
+void CopyVisitor::visit(BooleanNonempty<Role> constructor)
+{
+    constructor->get_nonterminal()->accept(*this);
+    const auto role = std::any_cast<NonTerminal<Role>>(get_result());
+    m_result = m_repositories.get_or_create_boolean_nonempty(role);
+}
+
+/**
+ * Numericals
+ */
+
+void CopyVisitor::visit(NumericalCount<Concept> constructor)
+{
+    constructor->get_nonterminal()->accept(*this);
+    const auto concept_ = std::any_cast<NonTerminal<Concept>>(get_result());
+    m_result = m_repositories.get_or_create_numerical_count(concept_);
+}
+void CopyVisitor::visit(NumericalCount<Role> constructor)
+{
+    constructor->get_nonterminal()->accept(*this);
+    const auto role = std::any_cast<NonTerminal<Role>>(get_result());
+    m_result = m_repositories.get_or_create_numerical_count(role);
+}
+void CopyVisitor::visit(NumericalDistance constructor)
+{
+    constructor->get_left_concept()->accept(*this);
+    const auto left_concept = std::any_cast<NonTerminal<Concept>>(get_result());
+    constructor->get_role()->accept(*this);
+    const auto role = std::any_cast<NonTerminal<Role>>(get_result());
+    constructor->get_right_concept()->accept(*this);
+    const auto right_concept = std::any_cast<NonTerminal<Concept>>(get_result());
+    m_result = m_repositories.get_or_create_numerical_distance(left_concept, role, right_concept);
+}
+
+/**
+ * CopyNonTerminal
+ */
+
+void CopyVisitor::visit(NonTerminal<Concept> constructor) { visit_impl(constructor); }
+
+void CopyVisitor::visit(NonTerminal<Role> constructor) { visit_impl(constructor); }
+
+void CopyVisitor::visit(NonTerminal<Boolean> constructor) { visit_impl(constructor); }
+
+void CopyVisitor::visit(NonTerminal<Numerical> constructor) { visit_impl(constructor); }
+
+template<FeatureCategory D>
+void CopyVisitor::visit_impl(NonTerminal<D> constructor)
+{
+    m_result = m_repositories.template get_or_create_nonterminal<D>(constructor->get_name());
+}
+
+template void CopyVisitor::visit_impl(NonTerminal<Concept> constructor);
+template void CopyVisitor::visit_impl(NonTerminal<Role> constructor);
+template void CopyVisitor::visit_impl(NonTerminal<Boolean> constructor);
+template void CopyVisitor::visit_impl(NonTerminal<Numerical> constructor);
+
+/**
+ * CopyDerivationRule
+ */
+
+void CopyVisitor::visit(DerivationRule<Concept> constructor) { visit_impl(constructor); }
+
+void CopyVisitor::visit(DerivationRule<Role> constructor) { visit_impl(constructor); }
+
+void CopyVisitor::visit(DerivationRule<Boolean> constructor) { visit_impl(constructor); }
+
+void CopyVisitor::visit(DerivationRule<Numerical> constructor) { visit_impl(constructor); }
+
+template<FeatureCategory D>
+void CopyVisitor::visit_impl(DerivationRule<D> constructor)
+{
+    constructor->get_head()->accept(*this);
+    const auto head = std::any_cast<NonTerminal<D>>(get_result());
+
+    constructor->get_body()->accept(*this);
+    const auto body = std::any_cast<Constructor<D>>(get_result());
+
+    m_result = m_repositories.template get_or_create_derivation_rule<D>(head, body);
+}
+
+template void CopyVisitor::visit_impl(DerivationRule<Concept> constructor);
+template void CopyVisitor::visit_impl(DerivationRule<Role> constructor);
+template void CopyVisitor::visit_impl(DerivationRule<Boolean> constructor);
+template void CopyVisitor::visit_impl(DerivationRule<Numerical> constructor);
+
+/**
+ * CopySubstitutionRule
+ */
+
+void CopyVisitor::visit(SubstitutionRule<Concept> constructor) { visit_impl(constructor); }
+
+void CopyVisitor::visit(SubstitutionRule<Role> constructor) { visit_impl(constructor); }
+
+void CopyVisitor::visit(SubstitutionRule<Boolean> constructor) { visit_impl(constructor); }
+
+void CopyVisitor::visit(SubstitutionRule<Numerical> constructor) { visit_impl(constructor); }
+
+template<FeatureCategory D>
+void CopyVisitor::visit_impl(SubstitutionRule<D> constructor)
+{
+    constructor->get_head()->accept(*this);
+    const auto head = std::any_cast<NonTerminal<D>>(get_result());
+
+    constructor->get_body()->accept(*this);
+    const auto body = std::any_cast<NonTerminal<D>>(get_result());
+
+    m_result = m_repositories.template get_or_create_substitution_rule<D>(head, body);
+}
+
+template void CopyVisitor::visit_impl(SubstitutionRule<Concept> constructor);
+template void CopyVisitor::visit_impl(SubstitutionRule<Role> constructor);
+template void CopyVisitor::visit_impl(SubstitutionRule<Boolean> constructor);
+template void CopyVisitor::visit_impl(SubstitutionRule<Numerical> constructor);
+
+/**
+ * Grammar
+ */
+
+void CopyVisitor::visit(const Grammar& grammar)
 {
     boost::hana::for_each(grammar.get_start_symbols_container().get(),
                           [&](auto&& pair)
                           {
                               auto key = boost::hana::first(pair);
                               const auto& second = boost::hana::second(pair);
-                              using ConstructorType = typename decltype(+key)::type;
+                              using FeatureType = typename decltype(+key)::type;
 
                               if (second.has_value())
                               {
-                                  auto& visitor = get_visitor<ConstructorType>(m_start_symbol_visitor);
-                                  second.value()->accept(visitor);
-                                  m_start_symbols.insert(visitor.get_result());
+                                  second.value()->accept(*this);
+                                  m_start_symbols.insert(std::any_cast<NonTerminal<FeatureType>>(get_result()));
                               }
                           });
 
@@ -763,32 +565,29 @@ void CopyGrammarVisitor::visit(const Grammar& grammar)
                           {
                               auto key = boost::hana::first(pair);
                               const auto& second = boost::hana::second(pair);
-                              using ConstructorType = typename decltype(+key)::type;
+                              using FeatureType = typename decltype(+key)::type;
 
                               for (const auto& rule : second)
                               {
-                                  auto& visitor = get_visitor<ConstructorType>(m_derivation_rule_visitor);
-                                  rule->accept(visitor);
-                                  const auto copied_rule = visitor.get_result();
-                                  m_derivation_rules.push_back(copied_rule);
+                                  rule->accept(*this);
+                                  m_derivation_rules.push_back(std::any_cast<DerivationRule<FeatureType>>(get_result()));
                               }
                           });
 
-    boost::hana::for_each(grammar.get_substitution_rules().get(),
+    boost::hana::for_each(grammar.get_substitution_rules_container().get(),
                           [&](auto&& pair)
                           {
                               auto key = boost::hana::first(pair);
                               const auto& second = boost::hana::second(pair);
-                              using ConstructorType = typename decltype(+key)::type;
+                              using FeatureType = typename decltype(+key)::type;
 
                               for (const auto& rule : second)
                               {
-                                  auto& visitor = get_visitor<ConstructorType>(m_substitution_rule_visitor);
-                                  rule->accept(visitor);
-                                  const auto copied_rule = visitor.get_result();
-                                  m_substitution_rules.push_back(copied_rule);
+                                  rule->accept(*this);
+                                  m_substitution_rules.push_back(std::any_cast<SubstitutionRule<FeatureType>>(get_result()));
                               }
                           });
 }
 
+const std::any& CopyVisitor::get_result() const { return m_result; }
 }

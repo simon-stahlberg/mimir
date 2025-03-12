@@ -38,7 +38,7 @@ template<dl::FeatureCategory D>
 bool NonTerminalImpl<D>::test_match(dl::Constructor<D> constructor, const Grammar& grammar) const
 {
     const auto& derivation_rules = grammar.get_derivation_rules_container().get(this);
-    const auto& substitution_rules = grammar.get_substitution_rules().get(this);
+    const auto& substitution_rules = grammar.get_substitution_rules_container().get(this);
 
     return std::any_of(derivation_rules.begin(), derivation_rules.end(), [&](auto&& rule) { return rule->test_match(constructor, grammar); })
            || std::any_of(substitution_rules.begin(), substitution_rules.end(), [&](auto&& rule) { return rule->test_match(constructor, grammar); });
