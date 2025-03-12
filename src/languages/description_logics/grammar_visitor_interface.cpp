@@ -211,7 +211,6 @@ void RecurseVisitor::visit(const Grammar& grammar)
     boost::hana::for_each(grammar.get_start_symbols_container().get(),
                           [&](auto&& pair)
                           {
-                              auto key = boost::hana::first(pair);
                               const auto& second = boost::hana::second(pair);
 
                               if (second.has_value())
@@ -223,7 +222,6 @@ void RecurseVisitor::visit(const Grammar& grammar)
     boost::hana::for_each(grammar.get_derivation_rules_container().get(),
                           [&](auto&& pair)
                           {
-                              auto key = boost::hana::first(pair);
                               const auto& second = boost::hana::second(pair);
 
                               for (const auto& rule : second)
@@ -466,6 +464,8 @@ void CopyVisitor::visit_impl(ConstructorOrNonTerminal<D> constructor)
         [this](auto&& arg)
         {
             using T = std::decay_t<decltype(arg)>;
+
+            arg->accept(*this);
 
             if constexpr (std::is_same_v<T, Constructor<D>>)
             {
