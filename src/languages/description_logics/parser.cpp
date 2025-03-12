@@ -353,7 +353,7 @@ static Constructor<Numerical> parse(const dl::ast::NumericalCount& node, const D
                                 node.concept_or_role_nonterminal);
 }
 
-static NumericalDistance parse(const dl::ast::NumericalDistance& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
+static Constructor<Numerical> parse(const dl::ast::NumericalDistance& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
     return ref_repositories.get_or_create_numerical_distance(parse(node.left_concept_or_nonterminal, domain, ref_repositories),
                                                              parse(node.role_or_nonterminal, domain, ref_repositories),

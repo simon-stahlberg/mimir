@@ -144,6 +144,7 @@ private:
     ToNonTerminalMap<std::string, Concept, Role, Boolean, Numerical>& m_existing_nonterminals;
 
     size_t m_next_index;
+    size_t m_level;
 
     template<FeatureCategory D>
     std::string get_free_nonterminal_name()
@@ -164,7 +165,8 @@ public:
                                        ToNonTerminalMap<std::string, Concept, Role, Boolean, Numerical>& existing_nonterminals) :
         CopyVisitor(repositories, start_symbols, derivation_rules),
         m_existing_nonterminals(existing_nonterminals),
-        m_next_index(0)
+        m_next_index(0),
+        m_level(0)
     {
     }
 
@@ -176,6 +178,8 @@ public:
     template<FeatureCategory D>
     void visit_impl(ConstructorOrNonTerminal<D> constructor)
     {
+        ++m_level;
+
         std::visit(
             [this](auto&& arg)
             {
@@ -185,17 +189,24 @@ public:
 
                 if constexpr (std::is_same_v<T, Constructor<D>>)
                 {
-                    const auto non_terminal = this->m_repositories.template get_or_create_nonterminal<D>(get_free_nonterminal_name<D>());
+                    if (m_level > 1)  // The top-level constructor should not be subtituted
+                    {
+                        const auto non_terminal = this->m_repositories.template get_or_create_nonterminal<D>(get_free_nonterminal_name<D>());
 
-                    this->m_result = this->m_repositories.template get_or_create_constructor_or_nonterminal<D>(non_terminal);
+                        const auto constructor =
+                            this->m_repositories.template get_or_create_constructor_or_nonterminal<D>(std::any_cast<Constructor<D>>(get_result()));
 
-                    const auto constructor =
-                        this->m_repositories.template get_or_create_constructor_or_nonterminal<D>(std::any_cast<Constructor<D>>(get_result()));
+                        const auto derivation_rule =
+                            this->m_repositories.template get_or_create_derivation_rule<D>(non_terminal, ConstructorOrNonTerminalList<D> { constructor });
 
-                    const auto derivation_rule =
-                        this->m_repositories.template get_or_create_derivation_rule<D>(non_terminal, ConstructorOrNonTerminalList<D> { constructor });
+                        this->m_derivation_rules.insert(derivation_rule);
 
-                    this->m_derivation_rules.insert(derivation_rule);
+                        this->m_result = this->m_repositories.template get_or_create_constructor_or_nonterminal<D>(non_terminal);
+                    }
+                    else
+                    {
+                        this->m_result = this->m_repositories.template get_or_create_constructor_or_nonterminal<D>(std::any_cast<Constructor<D>>(get_result()));
+                    }
                 }
                 else if constexpr (std::is_same_v<T, NonTerminal<D>>)
                 {
@@ -208,6 +219,8 @@ public:
                 }
             },
             constructor->get_constructor_or_non_terminal());
+
+        --m_level;
     }
 };
 
@@ -268,55 +281,55 @@ void ToCNFVisitor::visit(ConceptAtomicGoal<Derived> constructor)
 void ToCNFVisitor::visit(ConceptIntersection constructor)
 {
     constructor->get_left_concept_or_non_terminal()->accept(*this);
-    const auto left_nonterminal = std::any_cast<cnf_grammar::NonTerminal<Concept>>(get_result());
+    const auto left_nonterminal = std::get<cnf_grammar::NonTerminal<Concept>>(std::any_cast<cnf_grammar::ConstructorOrNonTerminal<Concept>>(get_result()));
     constructor->get_right_concept_or_non_terminal()->accept(*this);
-    const auto right_nonterminal = std::any_cast<cnf_grammar::NonTerminal<Concept>>(get_result());
+    const auto right_nonterminal = std::get<cnf_grammar::NonTerminal<Concept>>(std::any_cast<cnf_grammar::ConstructorOrNonTerminal<Concept>>(get_result()));
     m_result = m_repositories.get_or_create_concept_intersection(left_nonterminal, right_nonterminal);
 }
 void ToCNFVisitor::visit(ConceptUnion constructor)
 {
     constructor->get_left_concept_or_non_terminal()->accept(*this);
-    const auto left_nonterminal = std::any_cast<cnf_grammar::NonTerminal<Concept>>(get_result());
+    const auto left_nonterminal = std::get<cnf_grammar::NonTerminal<Concept>>(std::any_cast<cnf_grammar::ConstructorOrNonTerminal<Concept>>(get_result()));
     constructor->get_right_concept_or_non_terminal()->accept(*this);
-    const auto right_nonterminal = std::any_cast<cnf_grammar::NonTerminal<Concept>>(get_result());
+    const auto right_nonterminal = std::get<cnf_grammar::NonTerminal<Concept>>(std::any_cast<cnf_grammar::ConstructorOrNonTerminal<Concept>>(get_result()));
     m_result = m_repositories.get_or_create_concept_union(left_nonterminal, right_nonterminal);
 }
 void ToCNFVisitor::visit(ConceptNegation constructor)
 {
     constructor->get_concept_or_non_terminal()->accept(*this);
-    const auto nonterminal = std::any_cast<cnf_grammar::NonTerminal<Concept>>(get_result());
+    const auto nonterminal = std::get<cnf_grammar::NonTerminal<Concept>>(std::any_cast<cnf_grammar::ConstructorOrNonTerminal<Concept>>(get_result()));
     m_result = m_repositories.get_or_create_concept_negation(nonterminal);
 }
 void ToCNFVisitor::visit(ConceptValueRestriction constructor)
 {
     constructor->get_role_or_non_terminal()->accept(*this);
-    const auto left_nonterminal = std::any_cast<cnf_grammar::NonTerminal<Role>>(get_result());
+    const auto left_nonterminal = std::get<cnf_grammar::NonTerminal<Role>>(std::any_cast<cnf_grammar::ConstructorOrNonTerminal<Role>>(get_result()));
     constructor->get_concept_or_non_terminal()->accept(*this);
-    const auto right_nonterminal = std::any_cast<cnf_grammar::NonTerminal<Concept>>(get_result());
+    const auto right_nonterminal = std::get<cnf_grammar::NonTerminal<Concept>>(std::any_cast<cnf_grammar::ConstructorOrNonTerminal<Concept>>(get_result()));
     m_result = m_repositories.get_or_create_concept_value_restriction(left_nonterminal, right_nonterminal);
 }
 void ToCNFVisitor::visit(ConceptExistentialQuantification constructor)
 {
     constructor->get_role_or_non_terminal()->accept(*this);
-    const auto left_nonterminal = std::any_cast<cnf_grammar::NonTerminal<Role>>(get_result());
+    const auto left_nonterminal = std::get<cnf_grammar::NonTerminal<Role>>(std::any_cast<cnf_grammar::ConstructorOrNonTerminal<Role>>(get_result()));
     constructor->get_concept_or_non_terminal()->accept(*this);
-    const auto right_nonterminal = std::any_cast<cnf_grammar::NonTerminal<Concept>>(get_result());
+    const auto right_nonterminal = std::get<cnf_grammar::NonTerminal<Concept>>(std::any_cast<cnf_grammar::ConstructorOrNonTerminal<Concept>>(get_result()));
     m_result = m_repositories.get_or_create_concept_existential_quantification(left_nonterminal, right_nonterminal);
 }
 void ToCNFVisitor::visit(ConceptRoleValueMapContainment constructor)
 {
     constructor->get_left_role_or_non_terminal()->accept(*this);
-    const auto left_nonterminal = std::any_cast<cnf_grammar::NonTerminal<Role>>(get_result());
+    const auto left_nonterminal = std::get<cnf_grammar::NonTerminal<Role>>(std::any_cast<cnf_grammar::ConstructorOrNonTerminal<Role>>(get_result()));
     constructor->get_right_role_or_non_terminal()->accept(*this);
-    const auto right_nonterminal = std::any_cast<cnf_grammar::NonTerminal<Role>>(get_result());
+    const auto right_nonterminal = std::get<cnf_grammar::NonTerminal<Role>>(std::any_cast<cnf_grammar::ConstructorOrNonTerminal<Role>>(get_result()));
     m_result = m_repositories.get_or_create_concept_role_value_map_containment(left_nonterminal, right_nonterminal);
 }
 void ToCNFVisitor::visit(ConceptRoleValueMapEquality constructor)
 {
     constructor->get_left_role_or_non_terminal()->accept(*this);
-    const auto left_nonterminal = std::any_cast<cnf_grammar::NonTerminal<Role>>(get_result());
+    const auto left_nonterminal = std::get<cnf_grammar::NonTerminal<Role>>(std::any_cast<cnf_grammar::ConstructorOrNonTerminal<Role>>(get_result()));
     constructor->get_right_role_or_non_terminal()->accept(*this);
-    const auto right_nonterminal = std::any_cast<cnf_grammar::NonTerminal<Role>>(get_result());
+    const auto right_nonterminal = std::get<cnf_grammar::NonTerminal<Role>>(std::any_cast<cnf_grammar::ConstructorOrNonTerminal<Role>>(get_result()));
     m_result = m_repositories.get_or_create_concept_role_value_map_equality(left_nonterminal, right_nonterminal);
 }
 void ToCNFVisitor::visit(ConceptNominal constructor) { m_result = m_repositories.get_or_create_concept_nominal(constructor->get_object()); }
@@ -340,63 +353,63 @@ void ToCNFVisitor::visit(RoleAtomicGoal<Derived> constructor)
 void ToCNFVisitor::visit(RoleIntersection constructor)
 {
     constructor->get_left_role_or_non_terminal()->accept(*this);
-    const auto left_nonterminal = std::any_cast<cnf_grammar::NonTerminal<Role>>(get_result());
+    const auto left_nonterminal = std::get<cnf_grammar::NonTerminal<Role>>(std::any_cast<cnf_grammar::ConstructorOrNonTerminal<Role>>(get_result()));
     constructor->get_right_role_or_non_terminal()->accept(*this);
-    const auto right_nonterminal = std::any_cast<cnf_grammar::NonTerminal<Role>>(get_result());
+    const auto right_nonterminal = std::get<cnf_grammar::NonTerminal<Role>>(std::any_cast<cnf_grammar::ConstructorOrNonTerminal<Role>>(get_result()));
     m_result = m_repositories.get_or_create_role_intersection(left_nonterminal, right_nonterminal);
 }
 void ToCNFVisitor::visit(RoleUnion constructor)
 {
     constructor->get_left_role_or_non_terminal()->accept(*this);
-    const auto left_nonterminal = std::any_cast<cnf_grammar::NonTerminal<Role>>(get_result());
+    const auto left_nonterminal = std::get<cnf_grammar::NonTerminal<Role>>(std::any_cast<cnf_grammar::ConstructorOrNonTerminal<Role>>(get_result()));
     constructor->get_right_role_or_non_terminal()->accept(*this);
-    const auto right_nonterminal = std::any_cast<cnf_grammar::NonTerminal<Role>>(get_result());
+    const auto right_nonterminal = std::get<cnf_grammar::NonTerminal<Role>>(std::any_cast<cnf_grammar::ConstructorOrNonTerminal<Role>>(get_result()));
     m_result = m_repositories.get_or_create_role_union(left_nonterminal, right_nonterminal);
 }
 void ToCNFVisitor::visit(RoleComplement constructor)
 {
     constructor->get_role_or_non_terminal()->accept(*this);
-    const auto nonterminal = std::any_cast<cnf_grammar::NonTerminal<Role>>(get_result());
+    const auto nonterminal = std::get<cnf_grammar::NonTerminal<Role>>(std::any_cast<cnf_grammar::ConstructorOrNonTerminal<Role>>(get_result()));
     m_result = m_repositories.get_or_create_role_complement(nonterminal);
 }
 void ToCNFVisitor::visit(RoleInverse constructor)
 {
     constructor->get_role_or_non_terminal()->accept(*this);
-    const auto nonterminal = std::any_cast<cnf_grammar::NonTerminal<Role>>(get_result());
+    const auto nonterminal = std::get<cnf_grammar::NonTerminal<Role>>(std::any_cast<cnf_grammar::ConstructorOrNonTerminal<Role>>(get_result()));
     m_result = m_repositories.get_or_create_role_inverse(nonterminal);
 }
 void ToCNFVisitor::visit(RoleComposition constructor)
 {
     constructor->get_left_role_or_non_terminal()->accept(*this);
-    const auto left_nonterminal = std::any_cast<cnf_grammar::NonTerminal<Role>>(get_result());
+    const auto left_nonterminal = std::get<cnf_grammar::NonTerminal<Role>>(std::any_cast<cnf_grammar::ConstructorOrNonTerminal<Role>>(get_result()));
     constructor->get_right_role_or_non_terminal()->accept(*this);
-    const auto right_nonterminal = std::any_cast<cnf_grammar::NonTerminal<Role>>(get_result());
+    const auto right_nonterminal = std::get<cnf_grammar::NonTerminal<Role>>(std::any_cast<cnf_grammar::ConstructorOrNonTerminal<Role>>(get_result()));
     m_result = m_repositories.get_or_create_role_composition(left_nonterminal, right_nonterminal);
 }
 void ToCNFVisitor::visit(RoleTransitiveClosure constructor)
 {
     constructor->get_role_or_non_terminal()->accept(*this);
-    const auto nonterminal = std::any_cast<cnf_grammar::NonTerminal<Role>>(get_result());
+    const auto nonterminal = std::get<cnf_grammar::NonTerminal<Role>>(std::any_cast<cnf_grammar::ConstructorOrNonTerminal<Role>>(get_result()));
     m_result = m_repositories.get_or_create_role_transitive_closure(nonterminal);
 }
 void ToCNFVisitor::visit(RoleReflexiveTransitiveClosure constructor)
 {
     constructor->get_role_or_non_terminal()->accept(*this);
-    const auto nonterminal = std::any_cast<cnf_grammar::NonTerminal<Role>>(get_result());
+    const auto nonterminal = std::get<cnf_grammar::NonTerminal<Role>>(std::any_cast<cnf_grammar::ConstructorOrNonTerminal<Role>>(get_result()));
     m_result = m_repositories.get_or_create_role_reflexive_transitive_closure(nonterminal);
 }
 void ToCNFVisitor::visit(RoleRestriction constructor)
 {
     constructor->get_role_or_non_terminal()->accept(*this);
-    const auto left_nonterminal = std::any_cast<cnf_grammar::NonTerminal<Role>>(get_result());
+    const auto left_nonterminal = std::get<cnf_grammar::NonTerminal<Role>>(std::any_cast<cnf_grammar::ConstructorOrNonTerminal<Role>>(get_result()));
     constructor->get_concept_or_non_terminal()->accept(*this);
-    const auto right_nonterminal = std::any_cast<cnf_grammar::NonTerminal<Concept>>(get_result());
+    const auto right_nonterminal = std::get<cnf_grammar::NonTerminal<Concept>>(std::any_cast<cnf_grammar::ConstructorOrNonTerminal<Concept>>(get_result()));
     m_result = m_repositories.get_or_create_role_restriction(left_nonterminal, right_nonterminal);
 }
 void ToCNFVisitor::visit(RoleIdentity constructor)
 {
     constructor->get_concept_or_non_terminal()->accept(*this);
-    const auto nonterminal = std::any_cast<cnf_grammar::NonTerminal<Concept>>(get_result());
+    const auto nonterminal = std::get<cnf_grammar::NonTerminal<Concept>>(std::any_cast<cnf_grammar::ConstructorOrNonTerminal<Concept>>(get_result()));
     m_result = m_repositories.get_or_create_role_identity(nonterminal);
 }
 
@@ -409,36 +422,38 @@ void ToCNFVisitor::visit(BooleanAtomicState<Derived> constructor)
 void ToCNFVisitor::visit(BooleanNonempty<Concept> constructor)
 {
     constructor->get_constructor_or_nonterminal()->accept(*this);
-    const auto concept_nonterminal = std::any_cast<cnf_grammar::NonTerminal<Role>>(get_result());
+    const auto concept_nonterminal = std::get<cnf_grammar::NonTerminal<Concept>>(std::any_cast<cnf_grammar::ConstructorOrNonTerminal<Concept>>(get_result()));
     m_result = m_repositories.get_or_create_boolean_nonempty(concept_nonterminal);
 }
 void ToCNFVisitor::visit(BooleanNonempty<Role> constructor)
 {
     constructor->get_constructor_or_nonterminal()->accept(*this);
-    const auto role_nonterminal = std::any_cast<cnf_grammar::NonTerminal<Role>>(get_result());
+    const auto role_nonterminal = std::get<cnf_grammar::NonTerminal<Role>>(std::any_cast<cnf_grammar::ConstructorOrNonTerminal<Role>>(get_result()));
     m_result = m_repositories.get_or_create_boolean_nonempty(role_nonterminal);
 }
 
 void ToCNFVisitor::visit(NumericalCount<Concept> constructor)
 {
     constructor->get_constructor_or_nonterminal()->accept(*this);
-    const auto concept_nonterminal = std::any_cast<cnf_grammar::NonTerminal<Concept>>(get_result());
+    const auto concept_nonterminal = std::get<cnf_grammar::NonTerminal<Concept>>(std::any_cast<cnf_grammar::ConstructorOrNonTerminal<Concept>>(get_result()));
     m_result = m_repositories.get_or_create_numerical_count(concept_nonterminal);
 }
 void ToCNFVisitor::visit(NumericalCount<Role> constructor)
 {
     constructor->get_constructor_or_nonterminal()->accept(*this);
-    const auto role_nonterminal = std::any_cast<cnf_grammar::NonTerminal<Role>>(get_result());
+    const auto role_nonterminal = std::get<cnf_grammar::NonTerminal<Role>>(std::any_cast<cnf_grammar::ConstructorOrNonTerminal<Role>>(get_result()));
     m_result = m_repositories.get_or_create_numerical_count(role_nonterminal);
 }
 void ToCNFVisitor::visit(NumericalDistance constructor)
 {
     constructor->get_left_concept_or_nonterminal()->accept(*this);
-    const auto left_concept_nonterminal = std::any_cast<cnf_grammar::NonTerminal<Concept>>(get_result());
+    const auto left_concept_nonterminal =
+        std::get<cnf_grammar::NonTerminal<Concept>>(std::any_cast<cnf_grammar::ConstructorOrNonTerminal<Concept>>(get_result()));
     constructor->get_role_or_nonterminal()->accept(*this);
-    const auto role_nonterminal = std::any_cast<cnf_grammar::NonTerminal<Role>>(get_result());
+    const auto role_nonterminal = std::get<cnf_grammar::NonTerminal<Role>>(std::any_cast<cnf_grammar::ConstructorOrNonTerminal<Role>>(get_result()));
     constructor->get_right_concept_or_nonterminal()->accept(*this);
-    const auto right_concept_nonterminal = std::any_cast<cnf_grammar::NonTerminal<Concept>>(get_result());
+    const auto right_concept_nonterminal =
+        std::get<cnf_grammar::NonTerminal<Concept>>(std::any_cast<cnf_grammar::ConstructorOrNonTerminal<Concept>>(get_result()));
     m_result = m_repositories.get_or_create_numerical_distance(left_concept_nonterminal, role_nonterminal, right_concept_nonterminal);
 }
 
@@ -542,11 +557,11 @@ void ToCNFVisitor::visit_impl(DerivationRule<D> constructor)
 
             if constexpr (std::is_same_v<T, cnf_grammar::Constructor<D>>)
             {
-                m_result = this->m_repositories.get_or_create_derivation_rule(head, arg);
+                m_result = cnf_grammar::DerivationOrSubstitutionRule<D> { this->m_repositories.get_or_create_derivation_rule(head, arg) };
             }
             else if constexpr (std::is_same_v<T, cnf_grammar::NonTerminal<D>>)
             {
-                m_result = this->m_repositories.get_or_create_substitution_rule(head, arg);
+                m_result = cnf_grammar::DerivationOrSubstitutionRule<D> { this->m_repositories.get_or_create_substitution_rule(head, arg) };
             }
             else
             {

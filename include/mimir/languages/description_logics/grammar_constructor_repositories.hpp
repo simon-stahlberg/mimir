@@ -159,58 +159,59 @@ public:
     ConstructorOrNonTerminal<D> get_or_create_constructor_or_nonterminal(std::variant<Constructor<D>, NonTerminal<D>> choice);
 
     /* Concepts */
-    ConceptBot get_or_create_concept_bot();
-    ConceptTop get_or_create_concept_top();
+    Constructor<Concept> get_or_create_concept_bot();
+    Constructor<Concept> get_or_create_concept_top();
     template<StaticOrFluentOrDerived P>
-    ConceptAtomicState<P> get_or_create_concept_atomic_state(Predicate<P> predicate);
+    Constructor<Concept> get_or_create_concept_atomic_state(Predicate<P> predicate);
     template<StaticOrFluentOrDerived P>
-    ConceptAtomicGoal<P> get_or_create_concept_atomic_goal(Predicate<P> predicate, bool is_negated);
-    ConceptIntersection get_or_create_concept_intersection(ConstructorOrNonTerminal<Concept> left_concept_or_nonterminal,
-                                                           ConstructorOrNonTerminal<Concept> right_concept_or_nonterminal);
-    ConceptUnion get_or_create_concept_union(ConstructorOrNonTerminal<Concept> left_concept_or_nonterminal,
-                                             ConstructorOrNonTerminal<Concept> right_concept_or_nonterminal);
-    ConceptNegation get_or_create_concept_negation(ConstructorOrNonTerminal<Concept> concept_or_nonterminal);
-    ConceptValueRestriction get_or_create_concept_value_restriction(ConstructorOrNonTerminal<Role> role_or_nonterminal,
-                                                                    ConstructorOrNonTerminal<Concept> concept_or_nonterminal);
-    ConceptExistentialQuantification get_or_create_concept_existential_quantification(ConstructorOrNonTerminal<Role> role_or_nonterminal,
-                                                                                      ConstructorOrNonTerminal<Concept> concept_or_nonterminal);
-    ConceptRoleValueMapContainment get_or_create_concept_role_value_map_containment(ConstructorOrNonTerminal<Role> left_role_or_nonterminal,
-                                                                                    ConstructorOrNonTerminal<Role> right_role_or_nonterminal);
-    ConceptRoleValueMapEquality get_or_create_concept_role_value_map_equality(ConstructorOrNonTerminal<Role> left_role_or_nonterminal,
-                                                                              ConstructorOrNonTerminal<Role> right_role_or_nonterminal);
-    ConceptNominal get_or_create_concept_nominal(Object object);
+    Constructor<Concept> get_or_create_concept_atomic_goal(Predicate<P> predicate, bool is_negated);
+    Constructor<Concept> get_or_create_concept_intersection(ConstructorOrNonTerminal<Concept> left_concept_or_nonterminal,
+                                                            ConstructorOrNonTerminal<Concept> right_concept_or_nonterminal);
+    Constructor<Concept> get_or_create_concept_union(ConstructorOrNonTerminal<Concept> left_concept_or_nonterminal,
+                                                     ConstructorOrNonTerminal<Concept> right_concept_or_nonterminal);
+    Constructor<Concept> get_or_create_concept_negation(ConstructorOrNonTerminal<Concept> concept_or_nonterminal);
+    Constructor<Concept> get_or_create_concept_value_restriction(ConstructorOrNonTerminal<Role> role_or_nonterminal,
+                                                                 ConstructorOrNonTerminal<Concept> concept_or_nonterminal);
+    Constructor<Concept> get_or_create_concept_existential_quantification(ConstructorOrNonTerminal<Role> role_or_nonterminal,
+                                                                          ConstructorOrNonTerminal<Concept> concept_or_nonterminal);
+    Constructor<Concept> get_or_create_concept_role_value_map_containment(ConstructorOrNonTerminal<Role> left_role_or_nonterminal,
+                                                                          ConstructorOrNonTerminal<Role> right_role_or_nonterminal);
+    Constructor<Concept> get_or_create_concept_role_value_map_equality(ConstructorOrNonTerminal<Role> left_role_or_nonterminal,
+                                                                       ConstructorOrNonTerminal<Role> right_role_or_nonterminal);
+    Constructor<Concept> get_or_create_concept_nominal(Object object);
 
     /* Roles */
-    RoleUniversal get_or_create_role_universal();
+    Constructor<Role> get_or_create_role_universal();
     template<StaticOrFluentOrDerived P>
-    RoleAtomicState<P> get_or_create_role_atomic_state(Predicate<P> predicate);
+    Constructor<Role> get_or_create_role_atomic_state(Predicate<P> predicate);
     template<StaticOrFluentOrDerived P>
-    RoleAtomicGoal<P> get_or_create_role_atomic_goal(Predicate<P> predicate, bool is_negated);
-    RoleIntersection get_or_create_role_intersection(ConstructorOrNonTerminal<Role> left_role_or_nonterminal,
+    Constructor<Role> get_or_create_role_atomic_goal(Predicate<P> predicate, bool is_negated);
+    Constructor<Role> get_or_create_role_intersection(ConstructorOrNonTerminal<Role> left_role_or_nonterminal,
+                                                      ConstructorOrNonTerminal<Role> right_role_or_nonterminal);
+    Constructor<Role> get_or_create_role_union(ConstructorOrNonTerminal<Role> left_role_or_nonterminal,
+                                               ConstructorOrNonTerminal<Role> right_role_or_nonterminal);
+    Constructor<Role> get_or_create_role_complement(ConstructorOrNonTerminal<Role> role_or_nonterminal);
+    Constructor<Role> get_or_create_role_inverse(ConstructorOrNonTerminal<Role> role_or_nonterminal);
+    Constructor<Role> get_or_create_role_composition(ConstructorOrNonTerminal<Role> left_role_or_nonterminal,
                                                      ConstructorOrNonTerminal<Role> right_role_or_nonterminal);
-    RoleUnion get_or_create_role_union(ConstructorOrNonTerminal<Role> left_role_or_nonterminal, ConstructorOrNonTerminal<Role> right_role_or_nonterminal);
-    RoleComplement get_or_create_role_complement(ConstructorOrNonTerminal<Role> role_or_nonterminal);
-    RoleInverse get_or_create_role_inverse(ConstructorOrNonTerminal<Role> role_or_nonterminal);
-    RoleComposition get_or_create_role_composition(ConstructorOrNonTerminal<Role> left_role_or_nonterminal,
-                                                   ConstructorOrNonTerminal<Role> right_role_or_nonterminal);
-    RoleTransitiveClosure get_or_create_role_transitive_closure(ConstructorOrNonTerminal<Role> role_or_nonterminal);
-    RoleReflexiveTransitiveClosure get_or_create_role_reflexive_transitive_closure(ConstructorOrNonTerminal<Role> role_or_nonterminal);
-    RoleRestriction get_or_create_role_restriction(ConstructorOrNonTerminal<Role> role_or_nonterminal,
-                                                   ConstructorOrNonTerminal<Concept> concept_or_nonterminal);
-    RoleIdentity get_or_create_role_identity(ConstructorOrNonTerminal<Concept> concept_or_nonterminal);
+    Constructor<Role> get_or_create_role_transitive_closure(ConstructorOrNonTerminal<Role> role_or_nonterminal);
+    Constructor<Role> get_or_create_role_reflexive_transitive_closure(ConstructorOrNonTerminal<Role> role_or_nonterminal);
+    Constructor<Role> get_or_create_role_restriction(ConstructorOrNonTerminal<Role> role_or_nonterminal,
+                                                     ConstructorOrNonTerminal<Concept> concept_or_nonterminal);
+    Constructor<Role> get_or_create_role_identity(ConstructorOrNonTerminal<Concept> concept_or_nonterminal);
 
     /* Booleans */
     template<StaticOrFluentOrDerived P>
-    BooleanAtomicState<P> get_or_create_boolean_atomic_state(Predicate<P> predicate);
+    Constructor<Boolean> get_or_create_boolean_atomic_state(Predicate<P> predicate);
     template<DescriptionLogicCategory D>
-    BooleanNonempty<D> get_or_create_boolean_nonempty(ConstructorOrNonTerminal<D> constructor_or_nonterminal);
+    Constructor<Boolean> get_or_create_boolean_nonempty(ConstructorOrNonTerminal<D> constructor_or_nonterminal);
 
     /* Numericals */
     template<DescriptionLogicCategory D>
-    NumericalCount<D> get_or_create_numerical_count(ConstructorOrNonTerminal<D> constructor_or_nonterminal);
-    NumericalDistance get_or_create_numerical_distance(ConstructorOrNonTerminal<Concept> left_concept_or_nonterminal,
-                                                       ConstructorOrNonTerminal<Role> role_or_nonterminal,
-                                                       ConstructorOrNonTerminal<Concept> right_concept_or_nonterminal);
+    Constructor<Numerical> get_or_create_numerical_count(ConstructorOrNonTerminal<D> constructor_or_nonterminal);
+    Constructor<Numerical> get_or_create_numerical_distance(ConstructorOrNonTerminal<Concept> left_concept_or_nonterminal,
+                                                            ConstructorOrNonTerminal<Role> role_or_nonterminal,
+                                                            ConstructorOrNonTerminal<Concept> right_concept_or_nonterminal);
 };
 
 }

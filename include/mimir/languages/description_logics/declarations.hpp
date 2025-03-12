@@ -170,6 +170,8 @@ template<dl::FeatureCategory D>
 using Constructor = const ConstructorImpl<D>*;
 template<dl::FeatureCategory D>
 using ConstructorList = std::vector<Constructor<D>>;
+template<dl::FeatureCategory... D>
+using ConstructorLists = boost::hana::map<boost::hana::pair<boost::hana::type<D>, ConstructorList<D>>...>;
 
 /* NonTerminal */
 template<dl::FeatureCategory D>

@@ -357,7 +357,6 @@ void FormatterVisitor::visit(const Grammar& grammar)
         boost::hana::for_each(grammar.get_derivation_rules_container().get(),
                               [&](auto&& pair)
                               {
-                                  auto key = boost::hana::first(pair);
                                   const auto& second = boost::hana::second(pair);
 
                                   for (const auto& rule : second)

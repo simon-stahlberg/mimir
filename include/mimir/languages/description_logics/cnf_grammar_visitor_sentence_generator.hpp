@@ -109,6 +109,7 @@ private:
 
     size_t m_complexity;
 
+    dl::ConstructorLists<Concept, Role, Boolean, Numerical> m_generated;
     HanaGeneratorStatistics<Concept, Role, Boolean, Numerical> m_statistics;
 
     std::any m_result;

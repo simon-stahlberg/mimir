@@ -68,160 +68,158 @@ template ConstructorOrNonTerminal<Numerical>
 ConstructorRepositories::get_or_create_constructor_or_nonterminal(std::variant<Constructor<Numerical>, NonTerminal<Numerical>> choice);
 
 /* Concepts */
-ConceptBot ConstructorRepositories::get_or_create_concept_bot()
+Constructor<Concept> ConstructorRepositories::get_or_create_concept_bot()
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<ConceptBotImpl> {}).get_or_create();
 }
 
-ConceptTop ConstructorRepositories::get_or_create_concept_top()
+Constructor<Concept> ConstructorRepositories::get_or_create_concept_top()
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<ConceptTopImpl> {}).get_or_create();
 }
 
 template<StaticOrFluentOrDerived P>
-ConceptAtomicState<P> ConstructorRepositories::get_or_create_concept_atomic_state(Predicate<P> predicate)
+Constructor<Concept> ConstructorRepositories::get_or_create_concept_atomic_state(Predicate<P> predicate)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<ConceptAtomicStateImpl<P>> {}).get_or_create(predicate);
 }
 
-template ConceptAtomicState<Static> ConstructorRepositories::get_or_create_concept_atomic_state(Predicate<Static> predicate);
-template ConceptAtomicState<Fluent> ConstructorRepositories::get_or_create_concept_atomic_state(Predicate<Fluent> predicate);
-template ConceptAtomicState<Derived> ConstructorRepositories::get_or_create_concept_atomic_state(Predicate<Derived> predicate);
+template Constructor<Concept> ConstructorRepositories::get_or_create_concept_atomic_state(Predicate<Static> predicate);
+template Constructor<Concept> ConstructorRepositories::get_or_create_concept_atomic_state(Predicate<Fluent> predicate);
+template Constructor<Concept> ConstructorRepositories::get_or_create_concept_atomic_state(Predicate<Derived> predicate);
 
 template<StaticOrFluentOrDerived P>
-ConceptAtomicGoal<P> ConstructorRepositories::get_or_create_concept_atomic_goal(Predicate<P> predicate, bool is_negated)
+Constructor<Concept> ConstructorRepositories::get_or_create_concept_atomic_goal(Predicate<P> predicate, bool is_negated)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<ConceptAtomicGoalImpl<P>> {}).get_or_create(predicate, is_negated);
 }
 
-template ConceptAtomicGoal<Static> ConstructorRepositories::get_or_create_concept_atomic_goal(Predicate<Static> predicate, bool is_negated);
-template ConceptAtomicGoal<Fluent> ConstructorRepositories::get_or_create_concept_atomic_goal(Predicate<Fluent> predicate, bool is_negated);
-template ConceptAtomicGoal<Derived> ConstructorRepositories::get_or_create_concept_atomic_goal(Predicate<Derived> predicate, bool is_negated);
+template Constructor<Concept> ConstructorRepositories::get_or_create_concept_atomic_goal(Predicate<Static> predicate, bool is_negated);
+template Constructor<Concept> ConstructorRepositories::get_or_create_concept_atomic_goal(Predicate<Fluent> predicate, bool is_negated);
+template Constructor<Concept> ConstructorRepositories::get_or_create_concept_atomic_goal(Predicate<Derived> predicate, bool is_negated);
 
-ConceptIntersection ConstructorRepositories::get_or_create_concept_intersection(ConstructorOrNonTerminal<Concept> left_concept_or_nonterminal,
-                                                                                ConstructorOrNonTerminal<Concept> right_concept_or_nonterminal)
+Constructor<Concept> ConstructorRepositories::get_or_create_concept_intersection(ConstructorOrNonTerminal<Concept> left_concept_or_nonterminal,
+                                                                                 ConstructorOrNonTerminal<Concept> right_concept_or_nonterminal)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<ConceptIntersectionImpl> {})
         .get_or_create(left_concept_or_nonterminal, right_concept_or_nonterminal);
 }
 
-ConceptUnion ConstructorRepositories::get_or_create_concept_union(ConstructorOrNonTerminal<Concept> left_concept_or_nonterminal,
-                                                                  ConstructorOrNonTerminal<Concept> right_concept_or_nonterminal)
+Constructor<Concept> ConstructorRepositories::get_or_create_concept_union(ConstructorOrNonTerminal<Concept> left_concept_or_nonterminal,
+                                                                          ConstructorOrNonTerminal<Concept> right_concept_or_nonterminal)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<ConceptUnionImpl> {}).get_or_create(left_concept_or_nonterminal, right_concept_or_nonterminal);
 }
 
-ConceptNegation ConstructorRepositories::get_or_create_concept_negation(ConstructorOrNonTerminal<Concept> concept_or_nonterminal)
+Constructor<Concept> ConstructorRepositories::get_or_create_concept_negation(ConstructorOrNonTerminal<Concept> concept_or_nonterminal)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<ConceptNegationImpl> {}).get_or_create(concept_or_nonterminal);
 }
 
-ConceptValueRestriction ConstructorRepositories::get_or_create_concept_value_restriction(ConstructorOrNonTerminal<Role> role_or_nonterminal,
-                                                                                         ConstructorOrNonTerminal<Concept> concept_or_nonterminal)
+Constructor<Concept> ConstructorRepositories::get_or_create_concept_value_restriction(ConstructorOrNonTerminal<Role> role_or_nonterminal,
+                                                                                      ConstructorOrNonTerminal<Concept> concept_or_nonterminal)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<ConceptValueRestrictionImpl> {}).get_or_create(role_or_nonterminal, concept_or_nonterminal);
 }
 
-ConceptExistentialQuantification
-ConstructorRepositories::get_or_create_concept_existential_quantification(ConstructorOrNonTerminal<Role> role_or_nonterminal,
-                                                                          ConstructorOrNonTerminal<Concept> concept_or_nonterminal)
+Constructor<Concept> ConstructorRepositories::get_or_create_concept_existential_quantification(ConstructorOrNonTerminal<Role> role_or_nonterminal,
+                                                                                               ConstructorOrNonTerminal<Concept> concept_or_nonterminal)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<ConceptExistentialQuantificationImpl> {})
         .get_or_create(role_or_nonterminal, concept_or_nonterminal);
 }
 
-ConceptRoleValueMapContainment
-ConstructorRepositories::get_or_create_concept_role_value_map_containment(ConstructorOrNonTerminal<Role> left_role_or_nonterminal,
-                                                                          ConstructorOrNonTerminal<Role> right_role_or_nonterminal)
+Constructor<Concept> ConstructorRepositories::get_or_create_concept_role_value_map_containment(ConstructorOrNonTerminal<Role> left_role_or_nonterminal,
+                                                                                               ConstructorOrNonTerminal<Role> right_role_or_nonterminal)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<ConceptRoleValueMapContainmentImpl> {})
         .get_or_create(left_role_or_nonterminal, right_role_or_nonterminal);
 }
 
-ConceptRoleValueMapEquality ConstructorRepositories::get_or_create_concept_role_value_map_equality(ConstructorOrNonTerminal<Role> left_role_or_nonterminal,
-                                                                                                   ConstructorOrNonTerminal<Role> right_role_or_nonterminal)
+Constructor<Concept> ConstructorRepositories::get_or_create_concept_role_value_map_equality(ConstructorOrNonTerminal<Role> left_role_or_nonterminal,
+                                                                                            ConstructorOrNonTerminal<Role> right_role_or_nonterminal)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<ConceptRoleValueMapEqualityImpl> {})
         .get_or_create(left_role_or_nonterminal, right_role_or_nonterminal);
 }
 
-ConceptNominal ConstructorRepositories::get_or_create_concept_nominal(Object object)
+Constructor<Concept> ConstructorRepositories::get_or_create_concept_nominal(Object object)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<ConceptNominalImpl> {}).get_or_create(object);
 }
 
 /* Roles */
 
-RoleUniversal ConstructorRepositories::get_or_create_role_universal()
+Constructor<Role> ConstructorRepositories::get_or_create_role_universal()
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<RoleUniversalImpl> {}).get_or_create();
 }
 
 template<StaticOrFluentOrDerived P>
-RoleAtomicState<P> ConstructorRepositories::get_or_create_role_atomic_state(Predicate<P> predicate)
+Constructor<Role> ConstructorRepositories::get_or_create_role_atomic_state(Predicate<P> predicate)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<RoleAtomicStateImpl<P>> {}).get_or_create(predicate);
 }
 
-template RoleAtomicState<Static> ConstructorRepositories::get_or_create_role_atomic_state(Predicate<Static> predicate);
-template RoleAtomicState<Fluent> ConstructorRepositories::get_or_create_role_atomic_state(Predicate<Fluent> predicate);
-template RoleAtomicState<Derived> ConstructorRepositories::get_or_create_role_atomic_state(Predicate<Derived> predicate);
+template Constructor<Role> ConstructorRepositories::get_or_create_role_atomic_state(Predicate<Static> predicate);
+template Constructor<Role> ConstructorRepositories::get_or_create_role_atomic_state(Predicate<Fluent> predicate);
+template Constructor<Role> ConstructorRepositories::get_or_create_role_atomic_state(Predicate<Derived> predicate);
 
 template<StaticOrFluentOrDerived P>
-RoleAtomicGoal<P> ConstructorRepositories::get_or_create_role_atomic_goal(Predicate<P> predicate, bool is_negated)
+Constructor<Role> ConstructorRepositories::get_or_create_role_atomic_goal(Predicate<P> predicate, bool is_negated)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<RoleAtomicGoalImpl<P>> {}).get_or_create(predicate, is_negated);
 }
 
-template RoleAtomicGoal<Static> ConstructorRepositories::get_or_create_role_atomic_goal(Predicate<Static> predicate, bool is_negated);
-template RoleAtomicGoal<Fluent> ConstructorRepositories::get_or_create_role_atomic_goal(Predicate<Fluent> predicate, bool is_negated);
-template RoleAtomicGoal<Derived> ConstructorRepositories::get_or_create_role_atomic_goal(Predicate<Derived> predicate, bool is_negated);
+template Constructor<Role> ConstructorRepositories::get_or_create_role_atomic_goal(Predicate<Static> predicate, bool is_negated);
+template Constructor<Role> ConstructorRepositories::get_or_create_role_atomic_goal(Predicate<Fluent> predicate, bool is_negated);
+template Constructor<Role> ConstructorRepositories::get_or_create_role_atomic_goal(Predicate<Derived> predicate, bool is_negated);
 
-RoleIntersection ConstructorRepositories::get_or_create_role_intersection(ConstructorOrNonTerminal<Role> left_role_or_nonterminal,
-                                                                          ConstructorOrNonTerminal<Role> right_role_or_nonterminal)
+Constructor<Role> ConstructorRepositories::get_or_create_role_intersection(ConstructorOrNonTerminal<Role> left_role_or_nonterminal,
+                                                                           ConstructorOrNonTerminal<Role> right_role_or_nonterminal)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<RoleIntersectionImpl> {}).get_or_create(left_role_or_nonterminal, right_role_or_nonterminal);
 }
 
-RoleUnion ConstructorRepositories::get_or_create_role_union(ConstructorOrNonTerminal<Role> left_role_or_nonterminal,
-                                                            ConstructorOrNonTerminal<Role> right_role_or_nonterminal)
+Constructor<Role> ConstructorRepositories::get_or_create_role_union(ConstructorOrNonTerminal<Role> left_role_or_nonterminal,
+                                                                    ConstructorOrNonTerminal<Role> right_role_or_nonterminal)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<RoleUnionImpl> {}).get_or_create(left_role_or_nonterminal, right_role_or_nonterminal);
 }
 
-RoleComplement ConstructorRepositories::get_or_create_role_complement(ConstructorOrNonTerminal<Role> role_or_nonterminal)
+Constructor<Role> ConstructorRepositories::get_or_create_role_complement(ConstructorOrNonTerminal<Role> role_or_nonterminal)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<RoleComplementImpl> {}).get_or_create(role_or_nonterminal);
 }
 
-RoleInverse ConstructorRepositories::get_or_create_role_inverse(ConstructorOrNonTerminal<Role> role_or_nonterminal)
+Constructor<Role> ConstructorRepositories::get_or_create_role_inverse(ConstructorOrNonTerminal<Role> role_or_nonterminal)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<RoleInverseImpl> {}).get_or_create(role_or_nonterminal);
 }
 
-RoleComposition ConstructorRepositories::get_or_create_role_composition(ConstructorOrNonTerminal<Role> left_role_or_nonterminal,
-                                                                        ConstructorOrNonTerminal<Role> right_role_or_nonterminal)
+Constructor<Role> ConstructorRepositories::get_or_create_role_composition(ConstructorOrNonTerminal<Role> left_role_or_nonterminal,
+                                                                          ConstructorOrNonTerminal<Role> right_role_or_nonterminal)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<RoleCompositionImpl> {}).get_or_create(left_role_or_nonterminal, right_role_or_nonterminal);
 }
 
-RoleTransitiveClosure ConstructorRepositories::get_or_create_role_transitive_closure(ConstructorOrNonTerminal<Role> role_or_nonterminal)
+Constructor<Role> ConstructorRepositories::get_or_create_role_transitive_closure(ConstructorOrNonTerminal<Role> role_or_nonterminal)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<RoleTransitiveClosureImpl> {}).get_or_create(role_or_nonterminal);
 }
 
-RoleReflexiveTransitiveClosure ConstructorRepositories::get_or_create_role_reflexive_transitive_closure(ConstructorOrNonTerminal<Role> role_or_nonterminal)
+Constructor<Role> ConstructorRepositories::get_or_create_role_reflexive_transitive_closure(ConstructorOrNonTerminal<Role> role_or_nonterminal)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<RoleReflexiveTransitiveClosureImpl> {}).get_or_create(role_or_nonterminal);
 }
 
-RoleRestriction ConstructorRepositories::get_or_create_role_restriction(ConstructorOrNonTerminal<Role> role_or_nonterminal,
-                                                                        ConstructorOrNonTerminal<Concept> concept_or_nonterminal)
+Constructor<Role> ConstructorRepositories::get_or_create_role_restriction(ConstructorOrNonTerminal<Role> role_or_nonterminal,
+                                                                          ConstructorOrNonTerminal<Concept> concept_or_nonterminal)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<RoleRestrictionImpl> {}).get_or_create(role_or_nonterminal, concept_or_nonterminal);
 }
 
-RoleIdentity ConstructorRepositories::get_or_create_role_identity(ConstructorOrNonTerminal<Concept> concept_or_nonterminal)
+Constructor<Role> ConstructorRepositories::get_or_create_role_identity(ConstructorOrNonTerminal<Concept> concept_or_nonterminal)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<RoleIdentityImpl> {}).get_or_create(concept_or_nonterminal);
 }
@@ -229,38 +227,38 @@ RoleIdentity ConstructorRepositories::get_or_create_role_identity(ConstructorOrN
 /* Booleans */
 
 template<StaticOrFluentOrDerived P>
-BooleanAtomicState<P> ConstructorRepositories::get_or_create_boolean_atomic_state(Predicate<P> predicate)
+Constructor<Boolean> ConstructorRepositories::get_or_create_boolean_atomic_state(Predicate<P> predicate)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<BooleanAtomicStateImpl<P>> {}).get_or_create(predicate);
 }
 
-template BooleanAtomicState<Static> ConstructorRepositories::get_or_create_boolean_atomic_state(Predicate<Static> predicate);
-template BooleanAtomicState<Fluent> ConstructorRepositories::get_or_create_boolean_atomic_state(Predicate<Fluent> predicate);
-template BooleanAtomicState<Derived> ConstructorRepositories::get_or_create_boolean_atomic_state(Predicate<Derived> predicate);
+template Constructor<Boolean> ConstructorRepositories::get_or_create_boolean_atomic_state(Predicate<Static> predicate);
+template Constructor<Boolean> ConstructorRepositories::get_or_create_boolean_atomic_state(Predicate<Fluent> predicate);
+template Constructor<Boolean> ConstructorRepositories::get_or_create_boolean_atomic_state(Predicate<Derived> predicate);
 
 template<DescriptionLogicCategory D>
-BooleanNonempty<D> ConstructorRepositories::get_or_create_boolean_nonempty(ConstructorOrNonTerminal<D> constructor_or_nonterminal)
+Constructor<Boolean> ConstructorRepositories::get_or_create_boolean_nonempty(ConstructorOrNonTerminal<D> constructor_or_nonterminal)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<BooleanNonemptyImpl<D>> {}).get_or_create(constructor_or_nonterminal);
 }
 
-template BooleanNonempty<Concept> ConstructorRepositories::get_or_create_boolean_nonempty(ConstructorOrNonTerminal<Concept> constructor_or_nonterminal);
-template BooleanNonempty<Role> ConstructorRepositories::get_or_create_boolean_nonempty(ConstructorOrNonTerminal<Role> constructor_or_nonterminal);
+template Constructor<Boolean> ConstructorRepositories::get_or_create_boolean_nonempty(ConstructorOrNonTerminal<Concept> constructor_or_nonterminal);
+template Constructor<Boolean> ConstructorRepositories::get_or_create_boolean_nonempty(ConstructorOrNonTerminal<Role> constructor_or_nonterminal);
 
 /* Numericals */
 
 template<DescriptionLogicCategory D>
-NumericalCount<D> ConstructorRepositories::get_or_create_numerical_count(ConstructorOrNonTerminal<D> constructor_or_nonterminal)
+Constructor<Numerical> ConstructorRepositories::get_or_create_numerical_count(ConstructorOrNonTerminal<D> constructor_or_nonterminal)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<NumericalCountImpl<D>> {}).get_or_create(constructor_or_nonterminal);
 }
 
-template NumericalCount<Concept> ConstructorRepositories::get_or_create_numerical_count(ConstructorOrNonTerminal<Concept> constructor_or_nonterminal);
-template NumericalCount<Role> ConstructorRepositories::get_or_create_numerical_count(ConstructorOrNonTerminal<Role> constructor_or_nonterminal);
+template Constructor<Numerical> ConstructorRepositories::get_or_create_numerical_count(ConstructorOrNonTerminal<Concept> constructor_or_nonterminal);
+template Constructor<Numerical> ConstructorRepositories::get_or_create_numerical_count(ConstructorOrNonTerminal<Role> constructor_or_nonterminal);
 
-NumericalDistance ConstructorRepositories::get_or_create_numerical_distance(ConstructorOrNonTerminal<Concept> left_concept_or_nonterminal,
-                                                                            ConstructorOrNonTerminal<Role> role_or_nonterminal,
-                                                                            ConstructorOrNonTerminal<Concept> right_concept_or_nonterminal)
+Constructor<Numerical> ConstructorRepositories::get_or_create_numerical_distance(ConstructorOrNonTerminal<Concept> left_concept_or_nonterminal,
+                                                                                 ConstructorOrNonTerminal<Role> role_or_nonterminal,
+                                                                                 ConstructorOrNonTerminal<Concept> right_concept_or_nonterminal)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<NumericalDistanceImpl> {})
         .get_or_create(left_concept_or_nonterminal, role_or_nonterminal, right_concept_or_nonterminal);

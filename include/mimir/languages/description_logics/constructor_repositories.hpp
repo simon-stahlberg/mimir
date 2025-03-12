@@ -126,47 +126,47 @@ public:
     const HanaConstructorRepositories& get_repositories() const;
 
     /* Concepts */
-    ConceptBot get_or_create_concept_bot();
-    ConceptTop get_or_create_concept_top();
+    Constructor<Concept> get_or_create_concept_bot();
+    Constructor<Concept> get_or_create_concept_top();
     template<StaticOrFluentOrDerived P>
-    ConceptAtomicState<P> get_or_create_concept_atomic_state(Predicate<P> predicate);
+    Constructor<Concept> get_or_create_concept_atomic_state(Predicate<P> predicate);
     template<StaticOrFluentOrDerived P>
-    ConceptAtomicGoal<P> get_or_create_concept_atomic_goal(Predicate<P> predicate, bool is_negated);
-    ConceptIntersection get_or_create_concept_intersection(Constructor<Concept> left_concept, Constructor<Concept> right_concept);
-    ConceptUnion get_or_create_concept_union(Constructor<Concept> left_concept, Constructor<Concept> right_concept);
-    ConceptNegation get_or_create_concept_negation(Constructor<Concept> concept_);
-    ConceptValueRestriction get_or_create_concept_value_restriction(Constructor<Role> role, Constructor<Concept> concept_);
-    ConceptExistentialQuantification get_or_create_concept_existential_quantification(Constructor<Role> role, Constructor<Concept> concept_);
-    ConceptRoleValueMapContainment get_or_create_concept_role_value_map_containment(Constructor<Role> left_role, Constructor<Role> right_role);
-    ConceptRoleValueMapEquality get_or_create_concept_role_value_map_equality(Constructor<Role> left_role, Constructor<Role> right_role);
-    ConceptNominal get_or_create_concept_nominal(Object object);
+    Constructor<Concept> get_or_create_concept_atomic_goal(Predicate<P> predicate, bool is_negated);
+    Constructor<Concept> get_or_create_concept_intersection(Constructor<Concept> left_concept, Constructor<Concept> right_concept);
+    Constructor<Concept> get_or_create_concept_union(Constructor<Concept> left_concept, Constructor<Concept> right_concept);
+    Constructor<Concept> get_or_create_concept_negation(Constructor<Concept> concept_);
+    Constructor<Concept> get_or_create_concept_value_restriction(Constructor<Role> role, Constructor<Concept> concept_);
+    Constructor<Concept> get_or_create_concept_existential_quantification(Constructor<Role> role, Constructor<Concept> concept_);
+    Constructor<Concept> get_or_create_concept_role_value_map_containment(Constructor<Role> left_role, Constructor<Role> right_role);
+    Constructor<Concept> get_or_create_concept_role_value_map_equality(Constructor<Role> left_role, Constructor<Role> right_role);
+    Constructor<Concept> get_or_create_concept_nominal(Object object);
 
     /* Roles */
-    RoleUniversal get_or_create_role_universal();
+    Constructor<Role> get_or_create_role_universal();
     template<StaticOrFluentOrDerived P>
-    RoleAtomicState<P> get_or_create_role_atomic_state(Predicate<P> predicate);
+    Constructor<Role> get_or_create_role_atomic_state(Predicate<P> predicate);
     template<StaticOrFluentOrDerived P>
-    RoleAtomicGoal<P> get_or_create_role_atomic_goal(Predicate<P> predicate, bool is_negated);
-    RoleIntersection get_or_create_role_intersection(Constructor<Role> left_role, Constructor<Role> right_role);
-    RoleUnion get_or_create_role_union(Constructor<Role> left_role, Constructor<Role> right_role);
-    RoleComplement get_or_create_role_complement(Constructor<Role> role);
-    RoleInverse get_or_create_role_inverse(Constructor<Role> role);
-    RoleComposition get_or_create_role_composition(Constructor<Role> left_role, Constructor<Role> right_role);
-    RoleTransitiveClosure get_or_create_role_transitive_closure(Constructor<Role> role);
-    RoleReflexiveTransitiveClosure get_or_create_role_reflexive_transitive_closure(Constructor<Role> role);
-    RoleRestriction get_or_create_role_restriction(Constructor<Role> role, Constructor<Concept> concept_);
-    RoleIdentity get_or_create_role_identity(Constructor<Concept> concept_);
+    Constructor<Role> get_or_create_role_atomic_goal(Predicate<P> predicate, bool is_negated);
+    Constructor<Role> get_or_create_role_intersection(Constructor<Role> left_role, Constructor<Role> right_role);
+    Constructor<Role> get_or_create_role_union(Constructor<Role> left_role, Constructor<Role> right_role);
+    Constructor<Role> get_or_create_role_complement(Constructor<Role> role);
+    Constructor<Role> get_or_create_role_inverse(Constructor<Role> role);
+    Constructor<Role> get_or_create_role_composition(Constructor<Role> left_role, Constructor<Role> right_role);
+    Constructor<Role> get_or_create_role_transitive_closure(Constructor<Role> role);
+    Constructor<Role> get_or_create_role_reflexive_transitive_closure(Constructor<Role> role);
+    Constructor<Role> get_or_create_role_restriction(Constructor<Role> role, Constructor<Concept> concept_);
+    Constructor<Role> get_or_create_role_identity(Constructor<Concept> concept_);
 
     /* Booleans */
     template<StaticOrFluentOrDerived P>
-    BooleanAtomicState<P> get_or_create_boolean_atomic_state(Predicate<P> predicate);
+    Constructor<Boolean> get_or_create_boolean_atomic_state(Predicate<P> predicate);
     template<DescriptionLogicCategory D>
-    BooleanNonempty<D> get_or_create_boolean_nonempty(Constructor<D> constructor);
+    Constructor<Boolean> get_or_create_boolean_nonempty(Constructor<D> constructor);
 
     /* Numericals */
     template<DescriptionLogicCategory D>
-    NumericalCount<D> get_or_create_numerical_count(Constructor<D> constructor);
-    NumericalDistance get_or_create_numerical_distance(Constructor<Concept> left_concept, Constructor<Role> role, Constructor<Concept> right_concept);
+    Constructor<Numerical> get_or_create_numerical_count(Constructor<D> constructor);
+    Constructor<Numerical> get_or_create_numerical_distance(Constructor<Concept> left_concept, Constructor<Role> role, Constructor<Concept> right_concept);
 };
 
 }
