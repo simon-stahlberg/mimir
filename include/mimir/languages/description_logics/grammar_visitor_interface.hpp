@@ -22,6 +22,7 @@
 #include "mimir/languages/description_logics/declarations.hpp"
 #include "mimir/languages/description_logics/grammar.hpp"
 
+#include <any>
 #include <variant>
 
 namespace mimir::dl::grammar
@@ -190,6 +191,8 @@ private:
     StartSymbolsContainer& m_start_symbols;
     DerivationRulesContainer& m_derivation_rules;
 
+    std::any m_result;
+
 public:
     CopyVisitor(ConstructorRepositories& repositories, StartSymbolsContainer& start_symbols, DerivationRulesContainer& derivation_rules);
 
@@ -254,6 +257,8 @@ public:
     void visit(DerivationRule<Numerical> rule) override;
     /* Grammar */
     void visit(const Grammar& grammar) override;
+
+    const std::any& get_result() const;
 
 private:
     template<FeatureCategory D>
