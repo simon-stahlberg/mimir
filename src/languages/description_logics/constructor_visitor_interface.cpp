@@ -24,112 +24,96 @@ namespace mimir::dl
 
 /* Concepts */
 
-void ConstructorVisitor<Concept>::initialize(ConstructorVisitor<Role>& role_visitor) { m_role_visitor = &role_visitor; }
-
-void ConstructorVisitor<Concept>::visit(ConceptBot constructor) {}
-void ConstructorVisitor<Concept>::visit(ConceptTop constructor) {}
-void ConstructorVisitor<Concept>::visit(ConceptAtomicState<Static> constructor) {}
-void ConstructorVisitor<Concept>::visit(ConceptAtomicState<Fluent> constructor) {}
-void ConstructorVisitor<Concept>::visit(ConceptAtomicState<Derived> constructor) {}
-void ConstructorVisitor<Concept>::visit(ConceptAtomicGoal<Static> constructor) {}
-void ConstructorVisitor<Concept>::visit(ConceptAtomicGoal<Fluent> constructor) {}
-void ConstructorVisitor<Concept>::visit(ConceptAtomicGoal<Derived> constructor) {}
-void ConstructorVisitor<Concept>::visit(ConceptIntersection constructor)
+void Visitor::visit(ConceptBot constructor) {}
+void Visitor::visit(ConceptTop constructor) {}
+void Visitor::visit(ConceptAtomicState<Static> constructor) {}
+void Visitor::visit(ConceptAtomicState<Fluent> constructor) {}
+void Visitor::visit(ConceptAtomicState<Derived> constructor) {}
+void Visitor::visit(ConceptAtomicGoal<Static> constructor) {}
+void Visitor::visit(ConceptAtomicGoal<Fluent> constructor) {}
+void Visitor::visit(ConceptAtomicGoal<Derived> constructor) {}
+void Visitor::visit(ConceptIntersection constructor)
 {
     constructor->get_left_concept()->accept(*this);
     constructor->get_right_concept()->accept(*this);
 }
-void ConstructorVisitor<Concept>::visit(ConceptUnion constructor)
+void Visitor::visit(ConceptUnion constructor)
 {
     constructor->get_left_concept()->accept(*this);
     constructor->get_right_concept()->accept(*this);
 }
-void ConstructorVisitor<Concept>::visit(ConceptNegation constructor) { constructor->get_concept()->accept(*this); }
-void ConstructorVisitor<Concept>::visit(ConceptValueRestriction constructor)
-{
-    constructor->get_role()->accept(*m_role_visitor);
-    constructor->get_concept()->accept(*this);
-}
-void ConstructorVisitor<Concept>::visit(ConceptExistentialQuantification constructor)
-{
-    constructor->get_role()->accept(*m_role_visitor);
-    constructor->get_concept()->accept(*this);
-}
-void ConstructorVisitor<Concept>::visit(ConceptRoleValueMapContainment constructor)
-{
-    constructor->get_left_role()->accept(*m_role_visitor);
-    constructor->get_right_role()->accept(*m_role_visitor);
-}
-void ConstructorVisitor<Concept>::visit(ConceptRoleValueMapEquality constructor)
-{
-    constructor->get_left_role()->accept(*m_role_visitor);
-    constructor->get_right_role()->accept(*m_role_visitor);
-}
-void ConstructorVisitor<Concept>::visit(ConceptNominal constructor) {}
-
-/* Roles */
-void ConstructorVisitor<Role>::initialize(ConstructorVisitor<Concept>& concept_visitor) { m_concept_visitor = &concept_visitor; }
-
-void ConstructorVisitor<Role>::visit(RoleUniversal constructor) {}
-void ConstructorVisitor<Role>::visit(RoleAtomicState<Static> constructor) {}
-void ConstructorVisitor<Role>::visit(RoleAtomicState<Fluent> constructor) {}
-void ConstructorVisitor<Role>::visit(RoleAtomicState<Derived> constructor) {}
-void ConstructorVisitor<Role>::visit(RoleAtomicGoal<Static> constructor) {}
-void ConstructorVisitor<Role>::visit(RoleAtomicGoal<Fluent> constructor) {}
-void ConstructorVisitor<Role>::visit(RoleAtomicGoal<Derived> constructor) {}
-void ConstructorVisitor<Role>::visit(RoleIntersection constructor)
-{
-    constructor->get_left_role()->accept(*this);
-    constructor->get_right_role()->accept(*this);
-}
-void ConstructorVisitor<Role>::visit(RoleUnion constructor)
-{
-    constructor->get_left_role()->accept(*this);
-    constructor->get_right_role()->accept(*this);
-}
-void ConstructorVisitor<Role>::visit(RoleComplement constructor) { constructor->get_role()->accept(*this); }
-void ConstructorVisitor<Role>::visit(RoleInverse constructor) { constructor->get_role()->accept(*this); }
-void ConstructorVisitor<Role>::visit(RoleComposition constructor)
-{
-    constructor->get_left_role()->accept(*this);
-    constructor->get_right_role()->accept(*this);
-}
-void ConstructorVisitor<Role>::visit(RoleTransitiveClosure constructor) { constructor->get_role()->accept(*this); }
-void ConstructorVisitor<Role>::visit(RoleReflexiveTransitiveClosure constructor) { constructor->get_role()->accept(*this); }
-void ConstructorVisitor<Role>::visit(RoleRestriction constructor)
+void Visitor::visit(ConceptNegation constructor) { constructor->get_concept()->accept(*this); }
+void Visitor::visit(ConceptValueRestriction constructor)
 {
     constructor->get_role()->accept(*this);
-    constructor->get_concept()->accept(*m_concept_visitor);
+    constructor->get_concept()->accept(*this);
 }
-void ConstructorVisitor<Role>::visit(RoleIdentity constructor) { constructor->get_concept()->accept(*m_concept_visitor); }
+void Visitor::visit(ConceptExistentialQuantification constructor)
+{
+    constructor->get_role()->accept(*this);
+    constructor->get_concept()->accept(*this);
+}
+void Visitor::visit(ConceptRoleValueMapContainment constructor)
+{
+    constructor->get_left_role()->accept(*this);
+    constructor->get_right_role()->accept(*this);
+}
+void Visitor::visit(ConceptRoleValueMapEquality constructor)
+{
+    constructor->get_left_role()->accept(*this);
+    constructor->get_right_role()->accept(*this);
+}
+void Visitor::visit(ConceptNominal constructor) {}
+
+/* Roles */
+void Visitor::visit(RoleUniversal constructor) {}
+void Visitor::visit(RoleAtomicState<Static> constructor) {}
+void Visitor::visit(RoleAtomicState<Fluent> constructor) {}
+void Visitor::visit(RoleAtomicState<Derived> constructor) {}
+void Visitor::visit(RoleAtomicGoal<Static> constructor) {}
+void Visitor::visit(RoleAtomicGoal<Fluent> constructor) {}
+void Visitor::visit(RoleAtomicGoal<Derived> constructor) {}
+void Visitor::visit(RoleIntersection constructor)
+{
+    constructor->get_left_role()->accept(*this);
+    constructor->get_right_role()->accept(*this);
+}
+void Visitor::visit(RoleUnion constructor)
+{
+    constructor->get_left_role()->accept(*this);
+    constructor->get_right_role()->accept(*this);
+}
+void Visitor::visit(RoleComplement constructor) { constructor->get_role()->accept(*this); }
+void Visitor::visit(RoleInverse constructor) { constructor->get_role()->accept(*this); }
+void Visitor::visit(RoleComposition constructor)
+{
+    constructor->get_left_role()->accept(*this);
+    constructor->get_right_role()->accept(*this);
+}
+void Visitor::visit(RoleTransitiveClosure constructor) { constructor->get_role()->accept(*this); }
+void Visitor::visit(RoleReflexiveTransitiveClosure constructor) { constructor->get_role()->accept(*this); }
+void Visitor::visit(RoleRestriction constructor)
+{
+    constructor->get_role()->accept(*this);
+    constructor->get_concept()->accept(*this);
+}
+void Visitor::visit(RoleIdentity constructor) { constructor->get_concept()->accept(*this); }
 
 /* Booleans */
-void ConstructorVisitor<Boolean>::initialize(ConstructorVisitor<Concept>& concept_visitor, ConstructorVisitor<Role>& role_visitor)
-{
-    m_concept_visitor = &concept_visitor;
-    m_role_visitor = &role_visitor;
-}
-
-void ConstructorVisitor<Boolean>::visit(BooleanAtomicState<Static> constructor) {}
-void ConstructorVisitor<Boolean>::visit(BooleanAtomicState<Fluent> constructor) {}
-void ConstructorVisitor<Boolean>::visit(BooleanAtomicState<Derived> constructor) {}
-void ConstructorVisitor<Boolean>::visit(BooleanNonempty<Concept> constructor) { constructor->get_constructor()->accept(*m_concept_visitor); }
-void ConstructorVisitor<Boolean>::visit(BooleanNonempty<Role> constructor) { constructor->get_constructor()->accept(*m_role_visitor); }
+void Visitor::visit(BooleanAtomicState<Static> constructor) {}
+void Visitor::visit(BooleanAtomicState<Fluent> constructor) {}
+void Visitor::visit(BooleanAtomicState<Derived> constructor) {}
+void Visitor::visit(BooleanNonempty<Concept> constructor) { constructor->get_constructor()->accept(*this); }
+void Visitor::visit(BooleanNonempty<Role> constructor) { constructor->get_constructor()->accept(*this); }
 
 /* Numericals */
-void ConstructorVisitor<Numerical>::initialize(ConstructorVisitor<Concept>& concept_visitor, ConstructorVisitor<Role>& role_visitor)
+void Visitor::visit(NumericalCount<Concept> constructor) { constructor->get_constructor()->accept(*this); }
+void Visitor::visit(NumericalCount<Role> constructor) { constructor->get_constructor()->accept(*this); }
+void Visitor::visit(NumericalDistance constructor)
 {
-    m_concept_visitor = &concept_visitor;
-    m_role_visitor = &role_visitor;
-}
-
-void ConstructorVisitor<Numerical>::visit(NumericalCount<Concept> constructor) { constructor->get_constructor()->accept(*m_concept_visitor); }
-void ConstructorVisitor<Numerical>::visit(NumericalCount<Role> constructor) { constructor->get_constructor()->accept(*m_role_visitor); }
-void ConstructorVisitor<Numerical>::visit(NumericalDistance constructor)
-{
-    constructor->get_left_concept()->accept(*m_concept_visitor);
-    constructor->get_role()->accept(*m_role_visitor);
-    constructor->get_left_concept()->accept(*m_concept_visitor);
+    constructor->get_left_concept()->accept(*this);
+    constructor->get_role()->accept(*this);
+    constructor->get_left_concept()->accept(*this);
 }
 
 }

@@ -27,19 +27,14 @@
 namespace mimir::dl
 {
 
-template<FeatureCategory D>
-class FormatterConstructorVisitor : public ConstructorVisitor<D>
-{
-};
-
 template<>
-class FormatterConstructorVisitor<Concept> : public ConstructorVisitor<Concept>
+    class FormatterVisitor > : public Visitor
 {
 protected:
     std::ostream& m_out;
 
 public:
-    explicit FormatterConstructorVisitor(std::ostream& out);
+    explicit FormatterVisitor(std::ostream & out);
 
     /* Concepts */
     void visit(ConceptBot constructor) override;
@@ -58,17 +53,6 @@ public:
     void visit(ConceptRoleValueMapContainment constructor) override;
     void visit(ConceptRoleValueMapEquality constructor) override;
     void visit(ConceptNominal constructor) override;
-};
-
-template<>
-class FormatterConstructorVisitor<Role> : public ConstructorVisitor<Role>
-{
-protected:
-    std::ostream& m_out;
-
-public:
-    explicit FormatterConstructorVisitor(std::ostream& out);
-
     /* Roles */
     void visit(RoleUniversal constructor) override;
     void visit(RoleAtomicState<Static> constructor) override;
@@ -86,41 +70,13 @@ public:
     void visit(RoleReflexiveTransitiveClosure constructor) override;
     void visit(RoleRestriction constructor) override;
     void visit(RoleIdentity constructor) override;
-};
-
-/**
- * Booleans
- */
-
-template<>
-class FormatterConstructorVisitor<Boolean> : public ConstructorVisitor<Boolean>
-{
-private:
-    std::ostream& m_out;
-
-public:
-    FormatterConstructorVisitor(std::ostream& out);
-
+    /* Booleans */
     void visit(BooleanAtomicState<Static> constructor) override;
     void visit(BooleanAtomicState<Fluent> constructor) override;
     void visit(BooleanAtomicState<Derived> constructor) override;
     void visit(BooleanNonempty<Concept> constructor) override;
     void visit(BooleanNonempty<Role> constructor) override;
-};
-
-/**
- * Numericals
- */
-
-template<>
-class FormatterConstructorVisitor<Numerical> : public ConstructorVisitor<Numerical>
-{
-private:
-    std::ostream& m_out;
-
-public:
-    FormatterConstructorVisitor(std::ostream& out);
-
+    /* Numericals */
     void visit(NumericalCount<Concept> constructor) override;
     void visit(NumericalCount<Role> constructor) override;
     void visit(NumericalDistance constructor) override;

@@ -153,14 +153,9 @@ using NumericalDistance = const NumericalDistanceImpl*;
  * Visitors
  */
 
-template<FeatureCategory D>
-class ConstructorVisitor;
+class Visitor;
 
-template<FeatureCategory D>
-class GrammarConstructorVisitor;
-
-template<FeatureCategory D>
-class CNFGrammarConstructorVisitor;
+class GrammarVisitor;
 
 namespace grammar
 {
