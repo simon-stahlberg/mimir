@@ -59,7 +59,7 @@ public:
         return context.get_repository<D>().insert(this, context.get_state(), context.get_builder<D>());
     };
 
-    void accept(ConstructorVisitor<D>& visitor) const override { return self().accept_impl(visitor); }
+    void accept(Visitor& visitor) const override { return self().accept_impl(visitor); }
 };
 
 }

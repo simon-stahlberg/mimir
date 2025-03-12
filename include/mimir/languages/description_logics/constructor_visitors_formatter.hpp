@@ -27,14 +27,13 @@
 namespace mimir::dl
 {
 
-template<>
-    class FormatterVisitor > : public Visitor
+class FormatterVisitor : public Visitor
 {
 protected:
     std::ostream& m_out;
 
 public:
-    explicit FormatterVisitor(std::ostream & out);
+    explicit FormatterVisitor(std::ostream& out);
 
     /* Concepts */
     void visit(ConceptBot constructor) override;

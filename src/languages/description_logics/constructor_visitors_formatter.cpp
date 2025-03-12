@@ -25,7 +25,7 @@
 namespace mimir::dl
 {
 
-FormatterVisitor::FormatterConstructorVisitor(std::ostream& out) : m_out(out) {}
+FormatterVisitor::FormatterVisitor(std::ostream& out) : m_out(out) {}
 
 /* Concepts */
 void FormatterVisitor::visit(ConceptBot constructor) { m_out << keywords::concept_bot; }
@@ -90,16 +90,16 @@ void FormatterVisitor::visit(ConceptExistentialQuantification constructor)
 void FormatterVisitor::visit(ConceptRoleValueMapContainment constructor)
 {
     m_out << keywords::concept_role_value_map_containment << " ";
-    constructor->get_left_role()->accept(visitor);
+    constructor->get_left_role()->accept(*this);
     m_out << " ";
-    constructor->get_right_role()->accept(visitor);
+    constructor->get_right_role()->accept(*this);
 }
 void FormatterVisitor::visit(ConceptRoleValueMapEquality constructor)
 {
     m_out << keywords::concept_role_value_map_equality << " ";
-    constructor->get_left_role()->accept(visitor);
+    constructor->get_left_role()->accept(*this);
     m_out << " ";
-    constructor->get_right_role()->accept(visitor);
+    constructor->get_right_role()->accept(*this);
 }
 void FormatterVisitor::visit(ConceptNominal constructor) { m_out << keywords::concept_nominal << " " << constructor->get_object()->get_name(); }
 
@@ -238,7 +238,7 @@ void FormatterVisitor::visit(NumericalDistance constructor)
 template<FeatureCategory D>
 extern std::ostream& operator<<(std::ostream& out, const Constructor<D>& constructor)
 {
-    auto visitor = FormatterConstructorVisitor<D>(out);
+    auto visitor = FormatterVisitor(out);
 
     constructor->accept(visitor);
 

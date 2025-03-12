@@ -20,63 +20,17 @@
 
 #include "mimir/languages/description_logics/cnf_grammar_visitor_interface.hpp"
 
-#include <variant>
-
 namespace mimir::dl::cnf_grammar
 {
-
-////////////////////////////
-/// Recursive Visitor
-////////////////////////////
-
-template<FeatureCategory D>
-class FormatterConstructorVisitor;
-
-template<FeatureCategory D>
-class FormatterNonTerminalVisitor;
-
-template<FeatureCategory D>
-class FormatterDerivationRuleVisitor;
-
-template<FeatureCategory D>
-class FormatterSubstitutionRuleVisitor;
-
-class FormatterGrammarVisitor;
-
-/**
- * NonTerminal
- */
-
-template<FeatureCategory D>
-class FormatterNonTerminalVisitor : public NonTerminalVisitor<D>
+class FormatterVisitor : public Visitor
 {
 private:
     std::ostream& m_out;
 
 public:
-    FormatterNonTerminalVisitor(std::ostream& out);
+    FormatterVisitor(std::ostream& out);
 
-    void visit(NonTerminal<D> constructor) override;
-};
-
-/**
- * Concept
- */
-
-template<FeatureCategory D>
-class FormatterConstructorVisitor : public ConstructorVisitor<D>
-{
-};
-
-template<>
-class FormatterConstructorVisitor<Concept> : public ConstructorVisitor<Concept>
-{
-private:
-    std::ostream& m_out;
-
-public:
-    FormatterConstructorVisitor(std::ostream& out);
-
+    /* Concepts */
     void visit(ConceptBot constructor) override;
     void visit(ConceptTop constructor) override;
     void visit(ConceptAtomicState<Static> constructor) override;
@@ -85,7 +39,6 @@ public:
     void visit(ConceptAtomicGoal<Static> constructor) override;
     void visit(ConceptAtomicGoal<Fluent> constructor) override;
     void visit(ConceptAtomicGoal<Derived> constructor) override;
-    void visit(ConceptNominal constructor) override;
     void visit(ConceptIntersection constructor) override;
     void visit(ConceptUnion constructor) override;
     void visit(ConceptNegation constructor) override;
@@ -93,21 +46,8 @@ public:
     void visit(ConceptExistentialQuantification constructor) override;
     void visit(ConceptRoleValueMapContainment constructor) override;
     void visit(ConceptRoleValueMapEquality constructor) override;
-};
-
-/**
- * Role
- */
-
-template<>
-class FormatterConstructorVisitor<Role> : public ConstructorVisitor<Role>
-{
-private:
-    std::ostream& m_out;
-
-public:
-    FormatterConstructorVisitor(std::ostream& out);
-
+    void visit(ConceptNominal constructor) override;
+    /* Roles */
     void visit(RoleUniversal constructor) override;
     void visit(RoleAtomicState<Static> constructor) override;
     void visit(RoleAtomicState<Fluent> constructor) override;
@@ -124,91 +64,43 @@ public:
     void visit(RoleReflexiveTransitiveClosure constructor) override;
     void visit(RoleRestriction constructor) override;
     void visit(RoleIdentity constructor) override;
-};
-
-/**
- * Booleans
- */
-
-template<>
-class FormatterConstructorVisitor<Boolean> : public ConstructorVisitor<Boolean>
-{
-private:
-    std::ostream& m_out;
-
-public:
-    FormatterConstructorVisitor(std::ostream& out);
-
+    /* Booleans */
     void visit(BooleanAtomicState<Static> constructor) override;
     void visit(BooleanAtomicState<Fluent> constructor) override;
     void visit(BooleanAtomicState<Derived> constructor) override;
     void visit(BooleanNonempty<Concept> constructor) override;
     void visit(BooleanNonempty<Role> constructor) override;
-};
-
-/**
- * Numericals
- */
-
-template<>
-class FormatterConstructorVisitor<Numerical> : public ConstructorVisitor<Numerical>
-{
-private:
-    std::ostream& m_out;
-
-public:
-    FormatterConstructorVisitor(std::ostream& out);
-
+    /* Numericals */
     void visit(NumericalCount<Concept> constructor) override;
     void visit(NumericalCount<Role> constructor) override;
     void visit(NumericalDistance constructor) override;
-};
-
-/**
- * DerivationRule
- */
-
-template<FeatureCategory D>
-class FormatterDerivationRuleVisitor : public DerivationRuleVisitor<D>
-{
-private:
-    std::ostream& m_out;
-
-public:
-    FormatterDerivationRuleVisitor(std::ostream& out);
-
-    void visit(DerivationRule<D> constructor) override;
-};
-
-/**
- * SubstitutionRule
- */
-
-template<FeatureCategory D>
-class FormatterSubstitutionRuleVisitor : public SubstitutionRuleVisitor<D>
-{
-private:
-    std::ostream& m_out;
-
-public:
-    FormatterSubstitutionRuleVisitor(std::ostream& out);
-
-    void visit(SubstitutionRule<D> constructor) override;
-};
-
-/**
- * Grammar
- */
-
-class FormatterGrammarVisitor : public GrammarVisitor
-{
-private:
-    std::ostream& m_out;
-
-public:
-    FormatterGrammarVisitor(std::ostream& out);
-
+    /* Nonterminals */
+    void visit(NonTerminal<Concept> constructor) override;
+    void visit(NonTerminal<Role> constructor) override;
+    void visit(NonTerminal<Boolean> constructor) override;
+    void visit(NonTerminal<Numerical> constructor) override;
+    /* DerivationRules */
+    void visit(DerivationRule<Concept> constructor) override;
+    void visit(DerivationRule<Role> constructor) override;
+    void visit(DerivationRule<Boolean> constructor) override;
+    void visit(DerivationRule<Numerical> constructor) override;
+    /* SubstitutionRules */
+    void visit(SubstitutionRule<Concept> constructor) override;
+    void visit(SubstitutionRule<Role> constructor) override;
+    void visit(SubstitutionRule<Boolean> constructor) override;
+    void visit(SubstitutionRule<Numerical> constructor) override;
+    /* Grammar*/
     void visit(const Grammar& grammar) override;
+
+private:
+    template<FeatureCategory D>
+    void visit_impl(NonTerminal<D> constructor);
+
+    template<FeatureCategory D>
+    void visit_impl(DerivationRule<D> rule);
+
+    template<FeatureCategory D>
+    void visit_impl(SubstitutionRule<D> rule);
 };
 
 /**

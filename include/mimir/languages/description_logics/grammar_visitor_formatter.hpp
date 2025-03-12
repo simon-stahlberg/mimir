@@ -25,56 +25,15 @@
 namespace mimir::dl::grammar
 {
 
-////////////////////////////
-/// Recursive Visitor
-////////////////////////////
-
-template<FeatureCategory D>
-class FormatterConstructorVisitor;
-template<FeatureCategory... Ds>
-using HanaFormatterConstructorVisitors = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, FormatterConstructorVisitor<Ds>*>...>;
-
-template<FeatureCategory D>
-class FormatterConstructorOrNonTerminalVisitor;
-template<FeatureCategory... Ds>
-using HanaFormatterConstructorOrNonTerminalVisitors =
-    boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, FormatterConstructorOrNonTerminalVisitor<Ds>*>...>;
-
-template<FeatureCategory D>
-class FormatterNonTerminalVisitor;
-template<FeatureCategory... Ds>
-using HanaFormatterNonTerminalVisitors = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, FormatterNonTerminalVisitor<Ds>*>...>;
-
-template<FeatureCategory D>
-class FormatterDerivationRuleVisitor;
-template<FeatureCategory... Ds>
-using HanaFormatterDerivationRuleVisitors = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, FormatterDerivationRuleVisitor<Ds>*>...>;
-
-class FormatterGrammarVisitor;
-
-/**
- * Concept
- */
-
-template<FeatureCategory D>
-class FormatterConstructorVisitor : public ConstructorVisitor<D>
-{
-};
-
-template<>
-class FormatterConstructorVisitor<Concept> : public ConstructorVisitor<Concept>
+class FormatterVisitor : public Visitor
 {
 private:
     std::ostream& m_out;
 
-protected:
-    HanaFormatterConstructorOrNonTerminalVisitors<Concept, Role> m_visitors;
-
 public:
-    FormatterConstructorVisitor(std::ostream& out);
+    FormatterVisitor(std::ostream& out);
 
-    void initialize(HanaFormatterConstructorOrNonTerminalVisitors<Concept, Role> visitors);
-
+    /* Concepts */
     void visit(ConceptBot constructor) override;
     void visit(ConceptTop constructor) override;
     void visit(ConceptAtomicState<Static> constructor) override;
@@ -91,26 +50,7 @@ public:
     void visit(ConceptRoleValueMapContainment constructor) override;
     void visit(ConceptRoleValueMapEquality constructor) override;
     void visit(ConceptNominal constructor) override;
-};
-
-/**
- * Role
- */
-
-template<>
-class FormatterConstructorVisitor<Role> : public ConstructorVisitor<Role>
-{
-private:
-    std::ostream& m_out;
-
-protected:
-    HanaFormatterConstructorOrNonTerminalVisitors<Concept, Role> m_visitors;
-
-public:
-    FormatterConstructorVisitor(std::ostream& out);
-
-    void initialize(HanaFormatterConstructorOrNonTerminalVisitors<Concept, Role> visitors);
-
+    /* Roles */
     void visit(RoleUniversal constructor) override;
     void visit(RoleAtomicState<Static> constructor) override;
     void visit(RoleAtomicState<Fluent> constructor) override;
@@ -127,138 +67,43 @@ public:
     void visit(RoleReflexiveTransitiveClosure constructor) override;
     void visit(RoleRestriction constructor) override;
     void visit(RoleIdentity constructor) override;
-};
-
-/**
- * Booleans
- */
-
-template<>
-class FormatterConstructorVisitor<Boolean> : public ConstructorVisitor<Boolean>
-{
-private:
-    std::ostream& m_out;
-
-protected:
-    HanaFormatterConstructorOrNonTerminalVisitors<Concept, Role> m_visitors;
-
-public:
-    FormatterConstructorVisitor(std::ostream& out);
-
-    void initialize(HanaFormatterConstructorOrNonTerminalVisitors<Concept, Role> visitors);
-
+    /* Booleans */
     void visit(BooleanAtomicState<Static> constructor) override;
     void visit(BooleanAtomicState<Fluent> constructor) override;
     void visit(BooleanAtomicState<Derived> constructor) override;
     void visit(BooleanNonempty<Concept> constructor) override;
     void visit(BooleanNonempty<Role> constructor) override;
-};
-
-/**
- * Numericals
- */
-
-template<>
-class FormatterConstructorVisitor<Numerical> : public ConstructorVisitor<Numerical>
-{
-private:
-    std::ostream& m_out;
-
-protected:
-    HanaFormatterConstructorOrNonTerminalVisitors<Concept, Role> m_visitors;
-
-public:
-    FormatterConstructorVisitor(std::ostream& out);
-
-    void initialize(HanaFormatterConstructorOrNonTerminalVisitors<Concept, Role> visitors);
-
+    /* Numericals */
     void visit(NumericalCount<Concept> constructor) override;
     void visit(NumericalCount<Role> constructor) override;
     void visit(NumericalDistance constructor) override;
-};
+    /* ConstructorOrNonterminals */
+    void visit(ConstructorOrNonTerminal<Concept> constructor) override;
+    void visit(ConstructorOrNonTerminal<Role> constructor) override;
+    void visit(ConstructorOrNonTerminal<Boolean> constructor) override;
+    void visit(ConstructorOrNonTerminal<Numerical> constructor) override;
+    /* Nonterminals */
+    void visit(NonTerminal<Concept> constructor) override;
+    void visit(NonTerminal<Role> constructor) override;
+    void visit(NonTerminal<Boolean> constructor) override;
+    void visit(NonTerminal<Numerical> constructor) override;
+    /* DerivationRules */
+    void visit(DerivationRule<Concept> constructor) override;
+    void visit(DerivationRule<Role> constructor) override;
+    void visit(DerivationRule<Boolean> constructor) override;
+    void visit(DerivationRule<Numerical> constructor) override;
+    /* Grammar*/
+    void visit(const Grammar& grammar) override;
 
-/**
- * ConstructorOrRoleNonTerminal
- */
-
-template<FeatureCategory D>
-class FormatterConstructorOrNonTerminalVisitor : public ConstructorOrNonTerminalVisitor<D>
-{
 private:
-    std::ostream& m_out;
+    template<FeatureCategory D>
+    void visit_impl(ConstructorOrNonTerminal<D> rule);
 
-protected:
-    FormatterNonTerminalVisitor<D>* m_nonterminal_visitor;
-    FormatterConstructorVisitor<D>* m_constructor_visitor;
+    template<FeatureCategory D>
+    void visit_impl(NonTerminal<D> constructor);
 
-public:
-    FormatterConstructorOrNonTerminalVisitor(std::ostream& out);
-
-    virtual void initialize(FormatterNonTerminalVisitor<D>& nonterminal_visitor, FormatterConstructorVisitor<D>& constructor_visitor);
-
-    void visit(ConstructorOrNonTerminal<D> constructor) override;
-};
-
-/**
- * NonTerminal
- */
-
-template<FeatureCategory D>
-class FormatterNonTerminalVisitor : public NonTerminalVisitor<D>
-{
-private:
-    std::ostream& m_out;
-
-public:
-    FormatterNonTerminalVisitor(std::ostream& out);
-
-    void visit(NonTerminal<D> constructor) override;
-};
-
-/**
- * DerivationRule
- */
-
-template<FeatureCategory D>
-class FormatterDerivationRuleVisitor : public DerivationRuleVisitor<D>
-{
-private:
-    std::ostream& m_out;
-
-protected:
-    FormatterNonTerminalVisitor<D>* m_nonterminal_visitor;
-    FormatterConstructorOrNonTerminalVisitor<D>* m_constructor_or_nonterminal_visitor;
-
-public:
-    FormatterDerivationRuleVisitor(std::ostream& out);
-
-    virtual void initialize(FormatterNonTerminalVisitor<D>& nonterminal_visitor,
-                            FormatterConstructorOrNonTerminalVisitor<D>& constructor_or_nonterminal_visitor);
-
-    void visit(DerivationRule<D> constructor) override;
-};
-
-/**
- * Grammar
- */
-
-class FormatterGrammarVisitor : public GrammarVisitor
-{
-private:
-    std::ostream& m_out;
-
-protected:
-    HanaFormatterNonTerminalVisitors<Concept, Role, Boolean, Numerical> m_start_symbol_visitors;
-
-    HanaFormatterDerivationRuleVisitors<Concept, Role, Boolean, Numerical> m_derivation_rule_visitors;
-
-public:
-    FormatterGrammarVisitor(std::ostream& out);
-
-    virtual void visit(const Grammar& grammar) override;
-
-    virtual void initialize(HanaFormatterNonTerminalVisitors<Concept, Role, Boolean, Numerical> start_symbol_visitors,
-                            HanaFormatterDerivationRuleVisitors<Concept, Role, Boolean, Numerical> derivation_rule_visitors);
+    template<FeatureCategory D>
+    void visit_impl(DerivationRule<D> rule);
 };
 
 /**

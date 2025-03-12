@@ -79,12 +79,8 @@ public:
  * GrammarVisitor
  */
 
-class GrammarVisitor : public Visitor<D>
-{
-};
 
-template<>
-class GrammarConstructorVisitor<Concept> : public ConstructorVisitor<Concept>
+class GrammarVisitor : public Visitor
 {
 protected:
     // Default implementations always return false
@@ -131,7 +127,7 @@ public:
     void visit(BooleanAtomicState<Derived> constructor) override {}
     void visit(BooleanNonempty<Concept> constructor) override {}
     void visit(BooleanNonempty<Role> constructor) override {}
-    /* Grammar */
+    /* Numericals */
     void visit(NumericalCount<Concept> constructor) override {}
     void visit(NumericalCount<Role> constructor) override {}
     void visit(NumericalDistance constructor) override {}

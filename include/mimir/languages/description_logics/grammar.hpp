@@ -65,7 +65,7 @@ public:
      * Visitor
      */
 
-    void accept(GrammarVisitor& visitor) const;
+    void accept(Visitor& visitor) const;
 
     /**
      * Getters

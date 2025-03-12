@@ -95,30 +95,25 @@ template<FeatureCategory... Ds>
 using HanaGeneratorStatistics = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, GeneratorStatistics<Ds>>...>;
 
 /**
- * Constructors
- */
-
-template<FeatureCategory D>
-class GeneratorConstructorVisitor : public ConstructorVisitor<D>
-{
-};
-
-/**
  * Concept
  */
 
-template<>
-class GeneratorConstructorVisitor<Concept> : public ConstructorVisitor<Concept>
+class GeneratorVisitor : public Visitor
 {
 private:
-    const GeneratedSentencesContainer& m_sentences;
+    RefinementPruningFunction& m_pruning_function;
+    GeneratedSentencesContainer& m_sentences;
     dl::ConstructorRepositories& m_repositories;
     size_t m_complexity;
 
-    dl::ConstructorList<Concept> m_result;
+    dl::ConstructorLists<Concept, Role, Boolean, Numerical> m_result;
+    HanaGeneratorStatistics<Concept, Role, Boolean, Numerical> m_statistics;
 
 public:
-    GeneratorConstructorVisitor(const GeneratedSentencesContainer& sentences, dl::ConstructorRepositories& repositories, size_t complexity);
+    GeneratorVisitor(RefinementPruningFunction& pruning_function,
+                     GeneratedSentencesContainer& sentences,
+                     dl::ConstructorRepositories& repositories,
+                     size_t complexity);
 
     void visit(ConceptBot constructor) override;
     void visit(ConceptTop constructor) override;
@@ -137,26 +132,6 @@ public:
     void visit(ConceptRoleValueMapContainment constructor) override;
     void visit(ConceptRoleValueMapEquality constructor) override;
 
-    const dl::ConstructorList<Concept>& get_result() const;
-};
-
-/**
- * Role
- */
-
-template<>
-class GeneratorConstructorVisitor<Role> : public ConstructorVisitor<Role>
-{
-private:
-    const GeneratedSentencesContainer& m_sentences;
-    dl::ConstructorRepositories& m_repositories;
-    size_t m_complexity;
-
-    dl::ConstructorList<Role> m_result;
-
-public:
-    GeneratorConstructorVisitor(const GeneratedSentencesContainer& sentences, dl::ConstructorRepositories& repositories, size_t complexity);
-
     void visit(RoleUniversal constructor) override;
     void visit(RoleAtomicState<Static> constructor) override;
     void visit(RoleAtomicState<Fluent> constructor) override;
@@ -174,126 +149,36 @@ public:
     void visit(RoleRestriction constructor) override;
     void visit(RoleIdentity constructor) override;
 
-    const dl::ConstructorList<Role>& get_result() const;
-};
-
-/**
- * Booleans
- */
-
-template<>
-class GeneratorConstructorVisitor<Boolean> : public ConstructorVisitor<Boolean>
-{
-private:
-    const GeneratedSentencesContainer& m_sentences;
-    dl::ConstructorRepositories& m_repositories;
-    size_t m_complexity;
-
-    dl::ConstructorList<Boolean> m_result;
-
-public:
-    GeneratorConstructorVisitor(const GeneratedSentencesContainer& sentences, dl::ConstructorRepositories& repositories, size_t complexity);
-
     void visit(BooleanAtomicState<Static> constructor) override;
     void visit(BooleanAtomicState<Fluent> constructor) override;
     void visit(BooleanAtomicState<Derived> constructor) override;
     void visit(BooleanNonempty<Concept> constructor) override;
     void visit(BooleanNonempty<Role> constructor) override;
 
-    const dl::ConstructorList<Boolean>& get_result() const;
-};
-
-/**
- * Numericals
- */
-
-template<>
-class GeneratorConstructorVisitor<Numerical> : public ConstructorVisitor<Numerical>
-{
-private:
-    const GeneratedSentencesContainer& m_sentences;
-    dl::ConstructorRepositories& m_repositories;
-    size_t m_complexity;
-
-    dl::ConstructorList<Numerical> m_result;
-
-public:
-    GeneratorConstructorVisitor(const GeneratedSentencesContainer& sentences, dl::ConstructorRepositories& repositories, size_t complexity);
-
     void visit(NumericalCount<Concept> constructor) override;
     void visit(NumericalCount<Role> constructor) override;
     void visit(NumericalDistance constructor) override;
 
-    const dl::ConstructorList<Numerical>& get_result() const;
-};
+    void visit(DerivationRule<Concept> rule) override;
+    void visit(DerivationRule<Role> rule) override;
+    void visit(DerivationRule<Boolean> rule) override;
+    void visit(DerivationRule<Numerical> rule) override;
 
-/**
- * DerivationRule
- */
-
-template<FeatureCategory D>
-class GeneratorDerivationRuleVisitor : public DerivationRuleVisitor<D>
-{
-private:
-    RefinementPruningFunction& m_pruning_function;
-    GeneratedSentencesContainer& m_sentences;
-    dl::ConstructorRepositories& m_repositories;
-    size_t m_complexity;
-
-    GeneratorStatistics<D> m_statistics;
-
-public:
-    explicit GeneratorDerivationRuleVisitor(RefinementPruningFunction& pruning_function,
-                                            GeneratedSentencesContainer& sentences,
-                                            dl::ConstructorRepositories& repositories,
-                                            size_t complexity);
-
-    void visit(DerivationRule<D> rule) override;
-
-    const GeneratorStatistics<D>& get_statistics() const;
-};
-
-/**
- * SubstitutionRule
- */
-
-template<FeatureCategory D>
-class GeneratorSubstitutionRuleVisitor : public SubstitutionRuleVisitor<D>
-{
-private:
-    GeneratedSentencesContainer& m_sentences;
-    dl::ConstructorRepositories& m_repositories;
-    size_t m_complexity;
-
-public:
-    explicit GeneratorSubstitutionRuleVisitor(GeneratedSentencesContainer& sentences, dl::ConstructorRepositories& repositories, size_t complexity);
-
-    void visit(SubstitutionRule<D> rule) override;
-};
-
-/**
- * Grammar
- */
-
-class GeneratorGrammarVisitor : public GrammarVisitor
-{
-private:
-    RefinementPruningFunction& m_pruning_function;
-    GeneratedSentencesContainer& m_sentences;
-    dl::ConstructorRepositories& m_repositories;
-    size_t m_max_syntactic_complexity;
-
-    HanaGeneratorStatistics<Concept, Role, Boolean, Numerical> m_statistics;
-
-public:
-    explicit GeneratorGrammarVisitor(RefinementPruningFunction& pruning_function,
-                                     GeneratedSentencesContainer& sentences,
-                                     dl::ConstructorRepositories& repositories,
-                                     size_t max_syntactic_complexity);
+    void visit(SubstitutionRule<Concept> rule) override;
+    void visit(SubstitutionRule<Role> rule) override;
+    void visit(SubstitutionRule<Boolean> rule) override;
+    void visit(SubstitutionRule<Numerical> rule) override;
 
     void visit(const Grammar& grammar) override;
 
     const HanaGeneratorStatistics<Concept, Role, Boolean, Numerical>& get_statistics() const;
+
+private:
+    template<FeatureCategory D>
+    void visit_impl(DerivationRule<D> rule);
+
+    template<FeatureCategory D>
+    void visit_impl(SubstitutionRule<D> rule);
 };
 
 }

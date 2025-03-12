@@ -288,19 +288,7 @@ using NumericalDistance = const NumericalDistanceImpl*;
  * Visitors
  */
 
-template<FeatureCategory D>
-class ConstructorVisitor;
-
-template<FeatureCategory D>
-class ConstructorOrNonTerminalVisitor;
-
-template<FeatureCategory D>
-class NonTerminalVisitor;
-
-template<FeatureCategory D>
-class DerivationRuleVisitor;
-
-class GrammarVisitor;
+class Visitor;
 
 /**
  * Grammar
@@ -453,19 +441,7 @@ using NumericalDistance = const NumericalDistanceImpl*;
  * Visitors
  */
 
-template<FeatureCategory D>
-class ConstructorVisitor;
-
-template<FeatureCategory D>
-class NonTerminalVisitor;
-
-template<FeatureCategory D>
-class DerivationRuleVisitor;
-
-template<FeatureCategory D>
-class SubstitutionRuleVisitor;
-
-class GrammarVisitor;
+class Visitor;
 
 /**
  * Grammar

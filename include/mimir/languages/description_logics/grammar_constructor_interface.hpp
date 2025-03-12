@@ -49,7 +49,7 @@ public:
     virtual bool test_match(dl::Constructor<D> constructor, const Grammar& grammar) const = 0;
 
     /// @brief Accept a visitor.
-    virtual void accept(ConstructorVisitor<D>& visitor) const = 0;
+    virtual void accept(Visitor& visitor) const = 0;
 };
 }
 

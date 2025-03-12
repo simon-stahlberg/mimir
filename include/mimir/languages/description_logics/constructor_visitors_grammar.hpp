@@ -34,7 +34,7 @@ namespace mimir::dl::grammar
  * ConceptVisitors
  */
 
-class ConceptBotGrammarVisitor : public GrammarConstructorVisitor<Concept>
+class ConceptBotGrammarVisitor : public dl::GrammarVisitor
 {
 private:
     [[maybe_unused]] ConceptBot m_grammar_constructor;
@@ -46,7 +46,7 @@ public:
     void visit(dl::ConceptBot constructor) override;
 };
 
-class ConceptTopGrammarVisitor : public GrammarConstructorVisitor<Concept>
+class ConceptTopGrammarVisitor : public dl::GrammarVisitor
 {
 private:
     [[maybe_unused]] ConceptTop m_grammar_constructor;
@@ -59,7 +59,7 @@ public:
 };
 
 template<StaticOrFluentOrDerived P>
-class ConceptAtomicStateGrammarVisitor : public GrammarConstructorVisitor<Concept>
+class ConceptAtomicStateGrammarVisitor : public dl::GrammarVisitor
 {
 private:
     ConceptAtomicState<P> m_grammar_constructor;
@@ -72,7 +72,7 @@ public:
 };
 
 template<StaticOrFluentOrDerived P>
-class ConceptAtomicGoalGrammarVisitor : public GrammarConstructorVisitor<Concept>
+class ConceptAtomicGoalGrammarVisitor : public dl::GrammarVisitor
 {
 private:
     ConceptAtomicGoal<P> m_grammar_constructor;
@@ -84,7 +84,7 @@ public:
     void visit(dl::ConceptAtomicGoal<P> constructor) override;
 };
 
-class ConceptIntersectionGrammarVisitor : public GrammarConstructorVisitor<Concept>
+class ConceptIntersectionGrammarVisitor : public dl::GrammarVisitor
 {
 private:
     ConceptIntersection m_grammar_constructor;
@@ -96,7 +96,7 @@ public:
     void visit(dl::ConceptIntersection constructor) override;
 };
 
-class ConceptUnionGrammarVisitor : public GrammarConstructorVisitor<Concept>
+class ConceptUnionGrammarVisitor : public dl::GrammarVisitor
 {
 private:
     ConceptUnion m_grammar_constructor;
@@ -108,7 +108,7 @@ public:
     void visit(dl::ConceptUnion constructor) override;
 };
 
-class ConceptNegationGrammarVisitor : public GrammarConstructorVisitor<Concept>
+class ConceptNegationGrammarVisitor : public dl::GrammarVisitor
 {
 private:
     ConceptNegation m_grammar_constructor;
@@ -120,7 +120,7 @@ public:
     void visit(dl::ConceptNegation constructor) override;
 };
 
-class ConceptValueRestrictionGrammarVisitor : public GrammarConstructorVisitor<Concept>
+class ConceptValueRestrictionGrammarVisitor : public dl::GrammarVisitor
 {
 private:
     ConceptValueRestriction m_grammar_constructor;
@@ -132,7 +132,7 @@ public:
     void visit(dl::ConceptValueRestriction constructor) override;
 };
 
-class ConceptExistentialQuantificationGrammarVisitor : public GrammarConstructorVisitor<Concept>
+class ConceptExistentialQuantificationGrammarVisitor : public dl::GrammarVisitor
 {
 private:
     ConceptExistentialQuantification m_grammar_constructor;
@@ -144,7 +144,7 @@ public:
     void visit(dl::ConceptExistentialQuantification constructor) override;
 };
 
-class ConceptRoleValueMapContainmentGrammarVisitor : public GrammarConstructorVisitor<Concept>
+class ConceptRoleValueMapContainmentGrammarVisitor : public dl::GrammarVisitor
 {
 private:
     ConceptRoleValueMapContainment m_grammar_constructor;
@@ -156,7 +156,7 @@ public:
     void visit(dl::ConceptRoleValueMapContainment constructor) override;
 };
 
-class ConceptRoleValueMapEqualityGrammarVisitor : public GrammarConstructorVisitor<Concept>
+class ConceptRoleValueMapEqualityGrammarVisitor : public dl::GrammarVisitor
 {
 private:
     ConceptRoleValueMapEquality m_grammar_constructor;
@@ -168,7 +168,7 @@ public:
     void visit(dl::ConceptRoleValueMapEquality constructor) override;
 };
 
-class ConceptNominalGrammarVisitor : public GrammarConstructorVisitor<Concept>
+class ConceptNominalGrammarVisitor : public dl::GrammarVisitor
 {
 private:
     [[maybe_unused]] ConceptNominal m_grammar_constructor;
@@ -184,7 +184,7 @@ public:
  * RoleVisitors
  */
 
-class RoleUniversalGrammarVisitor : public GrammarConstructorVisitor<Role>
+class RoleUniversalGrammarVisitor : public dl::GrammarVisitor
 {
 private:
     [[maybe_unused]] RoleUniversal m_grammar_constructor;
@@ -197,7 +197,7 @@ public:
 };
 
 template<StaticOrFluentOrDerived P>
-class RoleAtomicStateGrammarVisitor : public GrammarConstructorVisitor<Role>
+class RoleAtomicStateGrammarVisitor : public dl::GrammarVisitor
 {
 private:
     RoleAtomicState<P> m_grammar_constructor;
@@ -210,7 +210,7 @@ public:
 };
 
 template<StaticOrFluentOrDerived P>
-class RoleAtomicGoalGrammarVisitor : public GrammarConstructorVisitor<Role>
+class RoleAtomicGoalGrammarVisitor : public dl::GrammarVisitor
 {
 private:
     RoleAtomicGoal<P> m_grammar_constructor;
@@ -222,7 +222,7 @@ public:
     void visit(dl::RoleAtomicGoal<P> constructor) override;
 };
 
-class RoleIntersectionGrammarVisitor : public GrammarConstructorVisitor<Role>
+class RoleIntersectionGrammarVisitor : public dl::GrammarVisitor
 {
 private:
     RoleIntersection m_grammar_constructor;
@@ -234,7 +234,7 @@ public:
     void visit(dl::RoleIntersection constructor) override;
 };
 
-class RoleUnionGrammarVisitor : public GrammarConstructorVisitor<Role>
+class RoleUnionGrammarVisitor : public dl::GrammarVisitor
 {
 private:
     RoleUnion m_grammar_constructor;
@@ -246,7 +246,7 @@ public:
     void visit(dl::RoleUnion constructor) override;
 };
 
-class RoleComplementGrammarVisitor : public GrammarConstructorVisitor<Role>
+class RoleComplementGrammarVisitor : public dl::GrammarVisitor
 {
 private:
     RoleComplement m_grammar_constructor;
@@ -258,7 +258,7 @@ public:
     void visit(dl::RoleComplement constructor) override;
 };
 
-class RoleInverseGrammarVisitor : public GrammarConstructorVisitor<Role>
+class RoleInverseGrammarVisitor : public dl::GrammarVisitor
 {
 private:
     RoleInverse m_grammar_constructor;
@@ -270,7 +270,7 @@ public:
     void visit(dl::RoleInverse constructor) override;
 };
 
-class RoleCompositionGrammarVisitor : public GrammarConstructorVisitor<Role>
+class RoleCompositionGrammarVisitor : public dl::GrammarVisitor
 {
 private:
     RoleComposition m_grammar_constructor;
@@ -282,7 +282,7 @@ public:
     void visit(dl::RoleComposition constructor) override;
 };
 
-class RoleTransitiveClosureGrammarVisitor : public GrammarConstructorVisitor<Role>
+class RoleTransitiveClosureGrammarVisitor : public dl::GrammarVisitor
 {
 private:
     RoleTransitiveClosure m_grammar_constructor;
@@ -294,7 +294,7 @@ public:
     void visit(dl::RoleTransitiveClosure constructor) override;
 };
 
-class RoleReflexiveTransitiveClosureGrammarVisitor : public GrammarConstructorVisitor<Role>
+class RoleReflexiveTransitiveClosureGrammarVisitor : public dl::GrammarVisitor
 {
 private:
     RoleReflexiveTransitiveClosure m_grammar_constructor;
@@ -306,7 +306,7 @@ public:
     void visit(dl::RoleReflexiveTransitiveClosure constructor) override;
 };
 
-class RoleRestrictionGrammarVisitor : public GrammarConstructorVisitor<Role>
+class RoleRestrictionGrammarVisitor : public dl::GrammarVisitor
 {
 private:
     RoleRestriction m_grammar_constructor;
@@ -318,7 +318,7 @@ public:
     void visit(dl::RoleRestriction constructor) override;
 };
 
-class RoleIdentityGrammarVisitor : public GrammarConstructorVisitor<Role>
+class RoleIdentityGrammarVisitor : public dl::GrammarVisitor
 {
 private:
     RoleIdentity m_grammar_constructor;
@@ -335,7 +335,7 @@ public:
  */
 
 template<StaticOrFluentOrDerived P>
-class BooleanAtomicStateGrammarVisitor : public GrammarConstructorVisitor<Boolean>
+class BooleanAtomicStateGrammarVisitor : public dl::GrammarVisitor
 {
 private:
     BooleanAtomicState<P> m_grammar_constructor;
@@ -348,7 +348,7 @@ public:
 };
 
 template<DescriptionLogicCategory D>
-class BooleanNonemptyGrammarVisitor : public GrammarConstructorVisitor<Boolean>
+class BooleanNonemptyGrammarVisitor : public dl::GrammarVisitor
 {
 private:
     BooleanNonempty<D> m_grammar_constructor;
@@ -365,7 +365,7 @@ public:
  */
 
 template<DescriptionLogicCategory D>
-class NumericalCountGrammarVisitor : public GrammarConstructorVisitor<Numerical>
+class NumericalCountGrammarVisitor : public dl::GrammarVisitor
 {
 private:
     NumericalCount<D> m_grammar_constructor;
@@ -377,7 +377,7 @@ public:
     void visit(dl::NumericalCount<D> constructor) override;
 };
 
-class NumericalDistanceGrammarVisitor : public GrammarConstructorVisitor<Numerical>
+class NumericalDistanceGrammarVisitor : public dl::GrammarVisitor
 {
 private:
     NumericalDistance m_grammar_constructor;

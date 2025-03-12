@@ -45,7 +45,7 @@ bool NonTerminalImpl<D>::test_match(dl::Constructor<D> constructor, const Gramma
 }
 
 template<dl::FeatureCategory D>
-void NonTerminalImpl<D>::accept(NonTerminalVisitor<D>& visitor) const
+void NonTerminalImpl<D>::accept(Visitor& visitor) const
 {
     visitor.visit(this);
 }
@@ -83,7 +83,7 @@ bool DerivationRuleImpl<D>::test_match(dl::Constructor<D> constructor, const Gra
 }
 
 template<dl::FeatureCategory D>
-void DerivationRuleImpl<D>::accept(DerivationRuleVisitor<D>& visitor) const
+void DerivationRuleImpl<D>::accept(Visitor& visitor) const
 {
     visitor.visit(this);
 }
@@ -127,7 +127,7 @@ bool SubstitutionRuleImpl<D>::test_match(dl::Constructor<D> constructor, const G
 }
 
 template<dl::FeatureCategory D>
-void SubstitutionRuleImpl<D>::accept(SubstitutionRuleVisitor<D>& visitor) const
+void SubstitutionRuleImpl<D>::accept(Visitor& visitor) const
 {
     visitor.visit(this);
 }
@@ -168,7 +168,7 @@ bool ConceptBotImpl::test_match(dl::Constructor<Concept> constructor, const Gram
     return visitor.get_result();
 }
 
-void ConceptBotImpl::accept(ConstructorVisitor<Concept>& visitor) const { visitor.visit(this); }
+void ConceptBotImpl::accept(Visitor& visitor) const { visitor.visit(this); }
 
 Index ConceptBotImpl::get_index() const { return m_index; }
 
@@ -185,7 +185,7 @@ bool ConceptTopImpl::test_match(dl::Constructor<Concept> constructor, const Gram
     return visitor.get_result();
 }
 
-void ConceptTopImpl::accept(ConstructorVisitor<Concept>& visitor) const { visitor.visit(this); }
+void ConceptTopImpl::accept(Visitor& visitor) const { visitor.visit(this); }
 
 Index ConceptTopImpl::get_index() const { return m_index; }
 
@@ -207,7 +207,7 @@ bool ConceptAtomicStateImpl<P>::test_match(dl::Constructor<Concept> constructor,
 }
 
 template<StaticOrFluentOrDerived P>
-void ConceptAtomicStateImpl<P>::accept(ConstructorVisitor<Concept>& visitor) const
+void ConceptAtomicStateImpl<P>::accept(Visitor& visitor) const
 {
     visitor.visit(this);
 }
@@ -250,7 +250,7 @@ bool ConceptAtomicGoalImpl<P>::test_match(dl::Constructor<Concept> constructor, 
 }
 
 template<StaticOrFluentOrDerived P>
-void ConceptAtomicGoalImpl<P>::accept(ConstructorVisitor<Concept>& visitor) const
+void ConceptAtomicGoalImpl<P>::accept(Visitor& visitor) const
 {
     visitor.visit(this);
 }
@@ -294,7 +294,7 @@ bool ConceptIntersectionImpl::test_match(dl::Constructor<Concept> constructor, c
     return visitor.get_result();
 }
 
-void ConceptIntersectionImpl::accept(ConstructorVisitor<Concept>& visitor) const { visitor.visit(this); }
+void ConceptIntersectionImpl::accept(Visitor& visitor) const { visitor.visit(this); }
 
 Index ConceptIntersectionImpl::get_index() const { return m_index; }
 
@@ -320,7 +320,7 @@ bool ConceptUnionImpl::test_match(dl::Constructor<Concept> constructor, const Gr
     return visitor.get_result();
 }
 
-void ConceptUnionImpl::accept(ConstructorVisitor<Concept>& visitor) const { visitor.visit(this); }
+void ConceptUnionImpl::accept(Visitor& visitor) const { visitor.visit(this); }
 
 Index ConceptUnionImpl::get_index() const { return m_index; }
 
@@ -341,7 +341,7 @@ bool ConceptNegationImpl::test_match(dl::Constructor<Concept> constructor, const
     return visitor.get_result();
 }
 
-void ConceptNegationImpl::accept(ConstructorVisitor<Concept>& visitor) const { visitor.visit(this); }
+void ConceptNegationImpl::accept(Visitor& visitor) const { visitor.visit(this); }
 
 Index ConceptNegationImpl::get_index() const { return m_index; }
 
@@ -365,7 +365,7 @@ bool ConceptValueRestrictionImpl::test_match(dl::Constructor<Concept> constructo
     return visitor.get_result();
 }
 
-void ConceptValueRestrictionImpl::accept(ConstructorVisitor<Concept>& visitor) const { visitor.visit(this); }
+void ConceptValueRestrictionImpl::accept(Visitor& visitor) const { visitor.visit(this); }
 
 Index ConceptValueRestrictionImpl::get_index() const { return m_index; }
 
@@ -394,7 +394,7 @@ bool ConceptExistentialQuantificationImpl::test_match(dl::Constructor<Concept> c
     return visitor.get_result();
 }
 
-void ConceptExistentialQuantificationImpl::accept(ConstructorVisitor<Concept>& visitor) const { visitor.visit(this); }
+void ConceptExistentialQuantificationImpl::accept(Visitor& visitor) const { visitor.visit(this); }
 
 Index ConceptExistentialQuantificationImpl::get_index() const { return m_index; }
 
@@ -423,7 +423,7 @@ bool ConceptRoleValueMapContainmentImpl::test_match(dl::Constructor<Concept> con
     return visitor.get_result();
 }
 
-void ConceptRoleValueMapContainmentImpl::accept(ConstructorVisitor<Concept>& visitor) const { visitor.visit(this); }
+void ConceptRoleValueMapContainmentImpl::accept(Visitor& visitor) const { visitor.visit(this); }
 
 Index ConceptRoleValueMapContainmentImpl::get_index() const { return m_index; }
 
@@ -452,7 +452,7 @@ bool ConceptRoleValueMapEqualityImpl::test_match(dl::Constructor<Concept> constr
     return visitor.get_result();
 }
 
-void ConceptRoleValueMapEqualityImpl::accept(ConstructorVisitor<Concept>& visitor) const { visitor.visit(this); }
+void ConceptRoleValueMapEqualityImpl::accept(Visitor& visitor) const { visitor.visit(this); }
 
 Index ConceptRoleValueMapEqualityImpl::get_index() const { return m_index; }
 
@@ -473,7 +473,7 @@ bool ConceptNominalImpl::test_match(dl::Constructor<Concept> constructor, const 
     return visitor.get_result();
 }
 
-void ConceptNominalImpl::accept(ConstructorVisitor<Concept>& visitor) const { visitor.visit(this); }
+void ConceptNominalImpl::accept(Visitor& visitor) const { visitor.visit(this); }
 
 Index ConceptNominalImpl::get_index() const { return m_index; }
 
@@ -492,7 +492,7 @@ bool RoleUniversalImpl::test_match(dl::Constructor<Role> constructor, const Gram
     return visitor.get_result();
 }
 
-void RoleUniversalImpl::accept(ConstructorVisitor<Role>& visitor) const { visitor.visit(this); }
+void RoleUniversalImpl::accept(Visitor& visitor) const { visitor.visit(this); }
 
 Index RoleUniversalImpl::get_index() const { return m_index; }
 
@@ -514,7 +514,7 @@ bool RoleAtomicStateImpl<P>::test_match(dl::Constructor<Role> constructor, const
 }
 
 template<StaticOrFluentOrDerived P>
-void RoleAtomicStateImpl<P>::accept(ConstructorVisitor<Role>& visitor) const
+void RoleAtomicStateImpl<P>::accept(Visitor& visitor) const
 {
     visitor.visit(this);
 }
@@ -557,7 +557,7 @@ bool RoleAtomicGoalImpl<P>::test_match(dl::Constructor<Role> constructor, const 
 }
 
 template<StaticOrFluentOrDerived P>
-void RoleAtomicGoalImpl<P>::accept(ConstructorVisitor<Role>& visitor) const
+void RoleAtomicGoalImpl<P>::accept(Visitor& visitor) const
 {
     visitor.visit(this);
 }
@@ -603,7 +603,7 @@ bool RoleIntersectionImpl::test_match(dl::Constructor<Role> constructor, const G
     return visitor.get_result();
 }
 
-void RoleIntersectionImpl::accept(ConstructorVisitor<Role>& visitor) const { visitor.visit(this); }
+void RoleIntersectionImpl::accept(Visitor& visitor) const { visitor.visit(this); }
 
 Index RoleIntersectionImpl::get_index() const { return m_index; }
 
@@ -630,7 +630,7 @@ bool RoleUnionImpl::test_match(dl::Constructor<Role> constructor, const Grammar&
     return visitor.get_result();
 }
 
-void RoleUnionImpl::accept(ConstructorVisitor<Role>& visitor) const { visitor.visit(this); }
+void RoleUnionImpl::accept(Visitor& visitor) const { visitor.visit(this); }
 
 Index RoleUnionImpl::get_index() const { return m_index; }
 
@@ -651,7 +651,7 @@ bool RoleComplementImpl::test_match(dl::Constructor<Role> constructor, const Gra
     return visitor.get_result();
 }
 
-void RoleComplementImpl::accept(ConstructorVisitor<Role>& visitor) const { visitor.visit(this); }
+void RoleComplementImpl::accept(Visitor& visitor) const { visitor.visit(this); }
 
 Index RoleComplementImpl::get_index() const { return m_index; }
 
@@ -670,7 +670,7 @@ bool RoleInverseImpl::test_match(dl::Constructor<Role> constructor, const Gramma
     return visitor.get_result();
 }
 
-void RoleInverseImpl::accept(ConstructorVisitor<Role>& visitor) const { visitor.visit(this); }
+void RoleInverseImpl::accept(Visitor& visitor) const { visitor.visit(this); }
 
 Index RoleInverseImpl::get_index() const { return m_index; }
 
@@ -695,7 +695,7 @@ bool RoleCompositionImpl::test_match(dl::Constructor<Role> constructor, const Gr
     return visitor.get_result();
 }
 
-void RoleCompositionImpl::accept(ConstructorVisitor<Role>& visitor) const { visitor.visit(this); }
+void RoleCompositionImpl::accept(Visitor& visitor) const { visitor.visit(this); }
 
 Index RoleCompositionImpl::get_index() const { return m_index; }
 
@@ -716,7 +716,7 @@ bool RoleTransitiveClosureImpl::test_match(dl::Constructor<Role> constructor, co
     return visitor.get_result();
 }
 
-void RoleTransitiveClosureImpl::accept(ConstructorVisitor<Role>& visitor) const { visitor.visit(this); }
+void RoleTransitiveClosureImpl::accept(Visitor& visitor) const { visitor.visit(this); }
 
 Index RoleTransitiveClosureImpl::get_index() const { return m_index; }
 
@@ -740,7 +740,7 @@ bool RoleReflexiveTransitiveClosureImpl::test_match(dl::Constructor<Role> constr
     return visitor.get_result();
 }
 
-void RoleReflexiveTransitiveClosureImpl::accept(ConstructorVisitor<Role>& visitor) const { visitor.visit(this); }
+void RoleReflexiveTransitiveClosureImpl::accept(Visitor& visitor) const { visitor.visit(this); }
 
 Index RoleReflexiveTransitiveClosureImpl::get_index() const { return m_index; }
 
@@ -765,7 +765,7 @@ bool RoleRestrictionImpl::test_match(dl::Constructor<Role> constructor, const Gr
     return visitor.get_result();
 }
 
-void RoleRestrictionImpl::accept(ConstructorVisitor<Role>& visitor) const { visitor.visit(this); }
+void RoleRestrictionImpl::accept(Visitor& visitor) const { visitor.visit(this); }
 
 Index RoleRestrictionImpl::get_index() const { return m_index; }
 
@@ -786,7 +786,7 @@ bool RoleIdentityImpl::test_match(dl::Constructor<Role> constructor, const Gramm
     return visitor.get_result();
 }
 
-void RoleIdentityImpl::accept(ConstructorVisitor<Role>& visitor) const { visitor.visit(this); }
+void RoleIdentityImpl::accept(Visitor& visitor) const { visitor.visit(this); }
 
 Index RoleIdentityImpl::get_index() const { return m_index; }
 
@@ -810,7 +810,7 @@ bool BooleanAtomicStateImpl<P>::test_match(dl::Constructor<Boolean> constructor,
 }
 
 template<StaticOrFluentOrDerived P>
-void BooleanAtomicStateImpl<P>::accept(ConstructorVisitor<Boolean>& visitor) const
+void BooleanAtomicStateImpl<P>::accept(Visitor& visitor) const
 {
     visitor.visit(this);
 }
@@ -845,7 +845,7 @@ bool BooleanNonemptyImpl<D>::test_match(dl::Constructor<Boolean> constructor, co
 }
 
 template<DescriptionLogicCategory D>
-void BooleanNonemptyImpl<D>::accept(ConstructorVisitor<Boolean>& visitor) const
+void BooleanNonemptyImpl<D>::accept(Visitor& visitor) const
 {
     visitor.visit(this);
 }
@@ -883,7 +883,7 @@ bool NumericalCountImpl<D>::test_match(dl::Constructor<Numerical> constructor, c
 }
 
 template<DescriptionLogicCategory D>
-void NumericalCountImpl<D>::accept(ConstructorVisitor<Numerical>& visitor) const
+void NumericalCountImpl<D>::accept(Visitor& visitor) const
 {
     visitor.visit(this);
 }
@@ -918,7 +918,7 @@ bool NumericalDistanceImpl::test_match(dl::Constructor<Numerical> constructor, c
     return visitor.get_result();
 }
 
-void NumericalDistanceImpl::accept(ConstructorVisitor<Numerical>& visitor) const { visitor.visit(this); }
+void NumericalDistanceImpl::accept(Visitor& visitor) const { visitor.visit(this); }
 
 Index NumericalDistanceImpl::get_index() const { return m_index; }
 
