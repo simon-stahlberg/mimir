@@ -27,7 +27,6 @@ namespace mimir
 {
 
 /// @brief `Edge` implements a directed edge with additional `EdgeProperties`.
-/// See examples on how to define edges below.
 /// @tparam ...EdgeProperties are additional edge properties.
 template<typename... EdgeProperties>
 class Edge

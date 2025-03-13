@@ -5,7 +5,12 @@ GENERATE_HTML         = YES
 GENERATE_LATEX        = NO
 EXTRACT_ALL           = YES
 INPUT                 = \
-    "include/mimir/graphs/static_graph.hpp" \
-    "include/mimir/graphs/graph_vertices.hpp" \
-    "include/mimir/graphs/graph_edges.hpp"
-RECURSIVE             = NO
+    "include/mimir/algorithms/" \
+    "include/mimir/buffering/" \
+    "include/mimir/graphs/" \
+    "include/mimir/formalism" \
+    "include/mimir/datasets" \
+    "include/mimir/common/" \
+    "include/mimir/languages" \
+    "include/mimir/search"  
+RECURSIVE             = YES

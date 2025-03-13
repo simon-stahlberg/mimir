@@ -28,7 +28,6 @@ namespace mimir
 {
 
 /// @brief `Vertex` implements a vertex with additional `VertexProperties`.
-/// See examples on how to define vertices below.
 /// @tparam ...VertexProperties are additional vertex properties.
 template<typename... VertexProperties>
 class Vertex

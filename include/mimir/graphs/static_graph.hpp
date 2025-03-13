@@ -41,18 +41,12 @@ namespace mimir
 
 /* StaticGraph */
 
-/// @brief `StaticGraph` G implements a static version of a directed graph with vertices of type V and edges of type E satisfying the graph concepts:
-///   1) VertexListGraph,
-///   2) EdgeListGraph,
-///   3) IncidenceGraph, and
-///   4) AdjacencyGraph.
-/// The meaning of static is that the graph allows for the addition but not for the removal of vertices and edges. Due to the restriction to addition
-/// functionality, the implementation uses more efficient vector data structures compared to `DynamicGraph`.
+/// @brief `StaticGraph` implements a directed graph with vertices of type V and edges of type E that supports the insertion but not the deletion of vertices
+/// and edges satisfying the graph concepts: `VertexListGraph`, `EdgeListGraph`, `IncidenceGraph`, and `AdjacencyGraph`.
 ///
-/// `StaticGraph` supports traversal of adjacent vertices and edges in forward and backward directions. The iterators filter adjacent vertices or edges of a
-/// vertex from all edges. This is not efficient and unavoidable because adjacent edges cannot be grouped efficiently when allowing for the addition of edges.
-/// The iteration in forward or backward directions by translating a `StaticGraph` to a `StaticForwardGraph`, optimized for forward traversal, or a
-/// `StaticBidirectionalGraph`, optimized for forward and backward traversal, both in O(|V|+|E|*Log2(|E|)) with minimal memory overhead.
+/// `StaticGraph` provides functionality for traversing adjacent vertices and edges in forward and backward directions. The iterators filter adjacent vertices
+/// or edges of a vertex from all edges. A `StaticGraph` can be translated into a `StaticForwardGraph` or `StaticBidirectionalGraph` for efficient forward, or
+/// respectively, bidirectional traversal.
 /// @tparam V is the vertex type.
 /// @tparam E is the edge type.
 template<IsVertex V, IsEdge E>
@@ -124,11 +118,6 @@ public:
     EdgeIndex add_directed_edge(VertexIndex source, VertexIndex target, const Edge<EdgeProperties...>& edge);
 
     /// @brief Add two anti-parallel directed edges to the graph with the identical edge properties, representing the undirected edge.
-    ///
-    /// Semantics depending on the value category of a `EdgeProperties` property:
-    ///   - lvalue: property is copied twice.
-    ///   - rvalue: property is copied once.
-    /// Therefore, if an `EdgeProperties` is heavy weight, we suggest externalizing the properties and storing an index to the properties instead.
     /// @tparam ...EdgeProperties the types of the edge properties. Must match the properties mentioned in the edge constructor.
     /// @param source the source vertex.
     /// @param target the target vertex.
@@ -196,7 +185,7 @@ private:
 
 /* StaticForwardGraph */
 
-/// @brief `StaticForwardGraph` is a translated `StaticGraph` for more efficient forward traversal.
+/// @brief `StaticForwardGraph` is a translated `StaticGraph` extended with efficient forward traversal.
 template<IsStaticGraph G>
 class StaticForwardGraph
 {
@@ -269,7 +258,7 @@ private:
 
 /* BidirectionalGraph */
 
-/// @brief `BidirectionalGraph` is a translated `StaticGraph` for more efficient bidirectional traversal.
+/// @brief `BidirectionalGraph` is a translated `StaticGraph` extended with efficient bidirectional traversal.
 template<IsStaticGraph G>
 class StaticBidirectionalGraph
 {
