@@ -50,7 +50,6 @@ template<IsVertex V, IsEdge E>
 class DynamicGraph
 {
 public:
-    using GraphTag = DynamicGraphTag;
     using VertexType = V;
     using VertexMap = std::unordered_map<VertexIndex, V>;
     using EdgeType = E;
@@ -59,13 +58,13 @@ public:
     using VertexIndexConstIteratorType = DynamicVertexIndexConstIterator<V>;
     using EdgeIndexConstIteratorType = DynamicEdgeIndexConstIterator<E>;
 
-    template<IsTraversalDirection Direction>
+    template<IsDirection Direction>
     using AdjacentVertexConstIteratorType = DynamicAdjacentVertexConstIterator<V, E, Direction>;
-    template<IsTraversalDirection Direction>
+    template<IsDirection Direction>
     using AdjacentVertexIndexConstIteratorType = DynamicAdjacentVertexIndexConstIterator<E, Direction>;
-    template<IsTraversalDirection Direction>
+    template<IsDirection Direction>
     using AdjacentEdgeConstIteratorType = DynamicAdjacentEdgeConstIterator<E, Direction>;
-    template<IsTraversalDirection Direction>
+    template<IsDirection Direction>
     using AdjacentEdgeIndexConstIteratorType = DynamicAdjacentEdgeIndexConstIterator<E, Direction>;
 
     /// @brief Construct an empty graph.
@@ -130,13 +129,13 @@ public:
     std::ranges::subrange<VertexIndexConstIteratorType> get_vertex_indices() const;
     std::ranges::subrange<EdgeIndexConstIteratorType> get_edge_indices() const;
 
-    template<IsTraversalDirection Direction>
+    template<IsDirection Direction>
     std::ranges::subrange<AdjacentVertexConstIteratorType<Direction>> get_adjacent_vertices(VertexIndex vertex) const;
-    template<IsTraversalDirection Direction>
+    template<IsDirection Direction>
     std::ranges::subrange<AdjacentVertexIndexConstIteratorType<Direction>> get_adjacent_vertex_indices(VertexIndex vertex) const;
-    template<IsTraversalDirection Direction>
+    template<IsDirection Direction>
     std::ranges::subrange<AdjacentEdgeConstIteratorType<Direction>> get_adjacent_edges(VertexIndex vertex) const;
-    template<IsTraversalDirection Direction>
+    template<IsDirection Direction>
     std::ranges::subrange<AdjacentEdgeIndexConstIteratorType<Direction>> get_adjacent_edge_indices(VertexIndex vertex) const;
 
     /**
@@ -150,13 +149,13 @@ public:
     size_t get_num_vertices() const;
     size_t get_num_edges() const;
 
-    template<IsTraversalDirection>
+    template<IsDirection>
     VertexIndex get_source(EdgeIndex edge) const;
-    template<IsTraversalDirection>
+    template<IsDirection>
     VertexIndex get_target(EdgeIndex edge) const;
-    template<IsTraversalDirection Direction>
+    template<IsDirection Direction>
     const DegreeMap& get_degrees() const;
-    template<IsTraversalDirection Direction>
+    template<IsDirection Direction>
     Degree get_degree(VertexIndex vertex) const;
 
 private:
@@ -167,14 +166,13 @@ private:
     EdgeIndexList m_free_edges;
     size_t m_next_edge_index;
 
-    using TraversalDirectionToAdjacentEdges =
-        boost::hana::map<boost::hana::pair<boost::hana::type<ForwardTraversal>, std::unordered_map<VertexIndex, EdgeIndexSet>>,
-                         boost::hana::pair<boost::hana::type<BackwardTraversal>, std::unordered_map<VertexIndex, EdgeIndexSet>>>;
+    using TraversalDirectionToAdjacentEdges = boost::hana::map<boost::hana::pair<boost::hana::type<Forward>, std::unordered_map<VertexIndex, EdgeIndexSet>>,
+                                                               boost::hana::pair<boost::hana::type<Backward>, std::unordered_map<VertexIndex, EdgeIndexSet>>>;
 
     TraversalDirectionToAdjacentEdges m_adjacent_edges;
 
     using TraversalDirectionToDegrees =
-        boost::hana::map<boost::hana::pair<boost::hana::type<ForwardTraversal>, DegreeMap>, boost::hana::pair<boost::hana::type<BackwardTraversal>, DegreeMap>>;
+        boost::hana::map<boost::hana::pair<boost::hana::type<Forward>, DegreeMap>, boost::hana::pair<boost::hana::type<Backward>, DegreeMap>>;
 
     TraversalDirectionToDegrees m_degrees;
 
@@ -214,10 +212,10 @@ void DynamicGraph<V, E>::clear()
     m_edges.clear();
     m_free_edges.clear();
     m_next_edge_index = 0;
-    boost::hana::at_key(m_adjacent_edges, boost::hana::type<ForwardTraversal> {}).clear();
-    boost::hana::at_key(m_adjacent_edges, boost::hana::type<BackwardTraversal> {}).clear();
-    boost::hana::at_key(m_degrees, boost::hana::type<ForwardTraversal> {}).clear();
-    boost::hana::at_key(m_degrees, boost::hana::type<BackwardTraversal> {}).clear();
+    boost::hana::at_key(m_adjacent_edges, boost::hana::type<Forward> {}).clear();
+    boost::hana::at_key(m_adjacent_edges, boost::hana::type<Backward> {}).clear();
+    boost::hana::at_key(m_degrees, boost::hana::type<Forward> {}).clear();
+    boost::hana::at_key(m_degrees, boost::hana::type<Backward> {}).clear();
 }
 
 template<IsVertex V, IsEdge E>
@@ -234,17 +232,17 @@ VertexIndex DynamicGraph<V, E>::add_vertex(VertexProperties&&... properties)
     /* Initialize the data structures. */
     if (m_free_vertices.empty())
     {
-        boost::hana::at_key(m_adjacent_edges, boost::hana::type<ForwardTraversal> {}).emplace(index, EdgeIndexSet());
-        boost::hana::at_key(m_adjacent_edges, boost::hana::type<BackwardTraversal> {}).emplace(index, EdgeIndexSet());
-        boost::hana::at_key(m_degrees, boost::hana::type<ForwardTraversal> {}).emplace(index, 0);
-        boost::hana::at_key(m_degrees, boost::hana::type<BackwardTraversal> {}).emplace(index, 0);
+        boost::hana::at_key(m_adjacent_edges, boost::hana::type<Forward> {}).emplace(index, EdgeIndexSet());
+        boost::hana::at_key(m_adjacent_edges, boost::hana::type<Backward> {}).emplace(index, EdgeIndexSet());
+        boost::hana::at_key(m_degrees, boost::hana::type<Forward> {}).emplace(index, 0);
+        boost::hana::at_key(m_degrees, boost::hana::type<Backward> {}).emplace(index, 0);
     }
     else
     {
-        boost::hana::at_key(m_adjacent_edges, boost::hana::type<ForwardTraversal> {}).at(index).clear();
-        boost::hana::at_key(m_adjacent_edges, boost::hana::type<BackwardTraversal> {}).at(index).clear();
-        boost::hana::at_key(m_degrees, boost::hana::type<ForwardTraversal> {}).at(index) = 0;
-        boost::hana::at_key(m_degrees, boost::hana::type<BackwardTraversal> {}).at(index) = 0;
+        boost::hana::at_key(m_adjacent_edges, boost::hana::type<Forward> {}).at(index).clear();
+        boost::hana::at_key(m_adjacent_edges, boost::hana::type<Backward> {}).at(index).clear();
+        boost::hana::at_key(m_degrees, boost::hana::type<Forward> {}).at(index) = 0;
+        boost::hana::at_key(m_degrees, boost::hana::type<Backward> {}).at(index) = 0;
     }
 
     if (!m_free_vertices.empty())
@@ -271,10 +269,10 @@ EdgeIndex DynamicGraph<V, E>::add_directed_edge(VertexIndex source, VertexIndex 
     m_edges.emplace(index, E(index, source, target, std::forward<EdgeProperties>(properties)...));
 
     /* Initialize the data structures. */
-    boost::hana::at_key(m_adjacent_edges, boost::hana::type<ForwardTraversal> {}).at(source).insert(index);
-    boost::hana::at_key(m_adjacent_edges, boost::hana::type<BackwardTraversal> {}).at(target).insert(index);
-    ++boost::hana::at_key(m_degrees, boost::hana::type<ForwardTraversal> {}).at(source);
-    ++boost::hana::at_key(m_degrees, boost::hana::type<BackwardTraversal> {}).at(target);
+    boost::hana::at_key(m_adjacent_edges, boost::hana::type<Forward> {}).at(source).insert(index);
+    boost::hana::at_key(m_adjacent_edges, boost::hana::type<Backward> {}).at(target).insert(index);
+    ++boost::hana::at_key(m_degrees, boost::hana::type<Forward> {}).at(source);
+    ++boost::hana::at_key(m_degrees, boost::hana::type<Backward> {}).at(target);
 
     if (!m_free_edges.empty())
     {
@@ -309,32 +307,32 @@ void DynamicGraph<V, E>::remove_vertex(VertexIndex vertex)
     vertex_index_check(vertex, "DynamicGraph<V, E>::remove_vertex(...): Vertex does not exist.");
 
     /* Remove backward adjacent edges from vertex of adjacent vertices */
-    for (const auto& edge : get_adjacent_edge_indices<ForwardTraversal>(vertex))
+    for (const auto& edge : get_adjacent_edge_indices<Forward>(vertex))
     {
-        const auto target = get_target<ForwardTraversal>(edge);
+        const auto target = get_target<Forward>(edge);
         if (target == vertex)
         {
             // Ignore loops over vertex.
             continue;
         }
 
-        boost::hana::at_key(m_adjacent_edges, boost::hana::type<BackwardTraversal> {}).at(target).erase(edge);
-        --boost::hana::at_key(m_degrees, boost::hana::type<BackwardTraversal> {}).at(target);
+        boost::hana::at_key(m_adjacent_edges, boost::hana::type<Backward> {}).at(target).erase(edge);
+        --boost::hana::at_key(m_degrees, boost::hana::type<Backward> {}).at(target);
         m_edges.erase(edge);
         m_free_edges.push_back(edge);
     }
     /* Remove forward adjacent edges to vertex of adjacent vertices */
-    for (const auto& edge : get_adjacent_edge_indices<BackwardTraversal>(vertex))
+    for (const auto& edge : get_adjacent_edge_indices<Backward>(vertex))
     {
-        const auto target = get_target<BackwardTraversal>(edge);
+        const auto target = get_target<Backward>(edge);
         if (target == vertex)
         {
             // Ignore loops over vertex.
             continue;
         }
 
-        boost::hana::at_key(m_adjacent_edges, boost::hana::type<ForwardTraversal> {}).at(target).erase(edge);
-        --boost::hana::at_key(m_degrees, boost::hana::type<ForwardTraversal> {}).at(target);
+        boost::hana::at_key(m_adjacent_edges, boost::hana::type<Forward> {}).at(target).erase(edge);
+        --boost::hana::at_key(m_degrees, boost::hana::type<Forward> {}).at(target);
         m_edges.erase(edge);
         m_free_edges.push_back(edge);
     }
@@ -348,13 +346,13 @@ void DynamicGraph<V, E>::remove_edge(EdgeIndex edge)
 {
     edge_index_check(edge, "DynamicGraph<V, E>::remove_edge(...): Edge does not exist.");
 
-    const auto source = get_source<ForwardTraversal>(edge);
-    const auto target = get_target<ForwardTraversal>(edge);
+    const auto source = get_source<Forward>(edge);
+    const auto target = get_target<Forward>(edge);
 
-    boost::hana::at_key(m_adjacent_edges, boost::hana::type<ForwardTraversal> {}).at(source).erase(edge);
-    boost::hana::at_key(m_adjacent_edges, boost::hana::type<BackwardTraversal> {}).at(target).erase(edge);
-    --boost::hana::at_key(m_degrees, boost::hana::type<ForwardTraversal> {}).at(source);
-    --boost::hana::at_key(m_degrees, boost::hana::type<BackwardTraversal> {}).at(target);
+    boost::hana::at_key(m_adjacent_edges, boost::hana::type<Forward> {}).at(source).erase(edge);
+    boost::hana::at_key(m_adjacent_edges, boost::hana::type<Backward> {}).at(target).erase(edge);
+    --boost::hana::at_key(m_degrees, boost::hana::type<Forward> {}).at(source);
+    --boost::hana::at_key(m_degrees, boost::hana::type<Backward> {}).at(target);
     m_edges.erase(edge);
     m_free_edges.push_back(edge);
 }
@@ -374,7 +372,7 @@ std::ranges::subrange<typename DynamicGraph<V, E>::EdgeIndexConstIteratorType> D
 }
 
 template<IsVertex V, IsEdge E>
-template<IsTraversalDirection Direction>
+template<IsDirection Direction>
 std::ranges::subrange<typename DynamicGraph<V, E>::template AdjacentVertexConstIteratorType<Direction>>
 DynamicGraph<V, E>::get_adjacent_vertices(VertexIndex vertex) const
 {
@@ -393,7 +391,7 @@ DynamicGraph<V, E>::get_adjacent_vertices(VertexIndex vertex) const
 }
 
 template<IsVertex V, IsEdge E>
-template<IsTraversalDirection Direction>
+template<IsDirection Direction>
 std::ranges::subrange<typename DynamicGraph<V, E>::template AdjacentVertexIndexConstIteratorType<Direction>>
 DynamicGraph<V, E>::get_adjacent_vertex_indices(VertexIndex vertex) const
 {
@@ -410,7 +408,7 @@ DynamicGraph<V, E>::get_adjacent_vertex_indices(VertexIndex vertex) const
 }
 
 template<IsVertex V, IsEdge E>
-template<IsTraversalDirection Direction>
+template<IsDirection Direction>
 std::ranges::subrange<typename DynamicGraph<V, E>::template AdjacentEdgeConstIteratorType<Direction>>
 DynamicGraph<V, E>::get_adjacent_edges(VertexIndex vertex) const
 {
@@ -426,7 +424,7 @@ DynamicGraph<V, E>::get_adjacent_edges(VertexIndex vertex) const
 }
 
 template<IsVertex V, IsEdge E>
-template<IsTraversalDirection Direction>
+template<IsDirection Direction>
 std::ranges::subrange<typename DynamicGraph<V, E>::template AdjacentEdgeIndexConstIteratorType<Direction>>
 DynamicGraph<V, E>::get_adjacent_edge_indices(VertexIndex vertex) const
 {
@@ -483,54 +481,54 @@ size_t DynamicGraph<V, E>::get_num_edges() const
 }
 
 template<IsVertex V, IsEdge E>
-template<IsTraversalDirection Direction>
+template<IsDirection Direction>
 VertexIndex DynamicGraph<V, E>::get_source(EdgeIndex edge) const
 {
     edge_index_check(edge, "DynamicGraph<V, E>::get_source(...): Edge does not exist.");
 
-    if constexpr (std::is_same_v<Direction, ForwardTraversal>)
+    if constexpr (std::is_same_v<Direction, Forward>)
     {
         return m_edges.at(edge).get_source();
     }
-    else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
+    else if constexpr (std::is_same_v<Direction, Backward>)
     {
         return m_edges.at(edge).get_target();
     }
     else
     {
-        static_assert(dependent_false<Direction>::value, "DynamicGraph<V, E>::get_source(...): Missing implementation for IsTraversalDirection.");
+        static_assert(dependent_false<Direction>::value, "DynamicGraph<V, E>::get_source(...): Missing implementation for IsDirection.");
     }
 }
 
 template<IsVertex V, IsEdge E>
-template<IsTraversalDirection Direction>
+template<IsDirection Direction>
 VertexIndex DynamicGraph<V, E>::get_target(EdgeIndex edge) const
 {
     edge_index_check(edge, "DynamicGraph<V, E>::get_target(...): Edge does not exist.");
 
-    if constexpr (std::is_same_v<Direction, ForwardTraversal>)
+    if constexpr (std::is_same_v<Direction, Forward>)
     {
         return m_edges.at(edge).get_target();
     }
-    else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
+    else if constexpr (std::is_same_v<Direction, Backward>)
     {
         return m_edges.at(edge).get_source();
     }
     else
     {
-        static_assert(dependent_false<Direction>::value, "DynamicGraph<V, E>::get_target(...): Missing implementation for IsTraversalDirection.");
+        static_assert(dependent_false<Direction>::value, "DynamicGraph<V, E>::get_target(...): Missing implementation for IsDirection.");
     }
 }
 
 template<IsVertex V, IsEdge E>
-template<IsTraversalDirection Direction>
+template<IsDirection Direction>
 const DegreeMap& DynamicGraph<V, E>::get_degrees() const
 {
     return boost::hana::at_key(m_degrees, boost::hana::type<Direction> {});
 }
 
 template<IsVertex V, IsEdge E>
-template<IsTraversalDirection Direction>
+template<IsDirection Direction>
 Degree DynamicGraph<V, E>::get_degree(VertexIndex vertex) const
 {
     vertex_index_check(vertex, "DynamicGraph<V, E>::get_degree(...): Vertex does not exist.");

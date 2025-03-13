@@ -279,7 +279,7 @@ static Grammar order_substitution_rules(const Grammar& grammar)
                                   graph.add_directed_edge(non_terminal_to_vertex.at(rule->get_head()), non_terminal_to_vertex.at(rule->get_body()));
                               }
 
-                              auto top_sort = topological_sort(TraversalDirectionTaggedType(graph, ForwardTraversal {}));
+                              auto top_sort = topological_sort(DirectionTaggedType(graph, Forward {}));
 
                               for (size_t i = 0; i < top_sort.size(); ++i)
                               {

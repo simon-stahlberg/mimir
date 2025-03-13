@@ -27,20 +27,16 @@ namespace mimir
  * Static graphs do not allow for deletion of vertices and edges, allowing vector data structures.
  */
 
-struct StaticGraphTag
-{
-};
-
 template<typename T>
-concept IsStaticGraph = requires(T a)
-{
-    typename T::GraphTag;
-    requires std::same_as<typename T::GraphTag, StaticGraphTag>;
-
+concept IsStaticGraph = requires(T a) {
     requires IsVertexListGraph<T>;
     requires IsEdgeListGraph<T>;
     requires IsIncidenceGraph<T>;
     requires IsAdjacencyGraph<T>;
+
+    // Check that DynamicGraph uses std::vector vertex and edge storage containers.
+    typename T::VertexList;
+    typename T::EdgeList;
 };
 
 }

@@ -113,7 +113,7 @@ void bind_translated_static_graph(nb::module_& m, const std::string& name, const
             "get_forward_adjacent_vertices",
             [](const TranslatedGraphType& self, mm::VertexIndex vertex)
             {
-                auto range = self.template get_adjacent_vertices<mm::ForwardTraversal>(vertex);
+                auto range = self.template get_adjacent_vertices<mm::Forward>(vertex);
                 return nb::make_iterator(nb::type<GraphType>(), "Iterator over forward adjacent vertices", range.begin(), range.end());
             },
             nb::keep_alive<0, 1>(),
@@ -122,7 +122,7 @@ void bind_translated_static_graph(nb::module_& m, const std::string& name, const
             "get_backward_adjacent_vertices",
             [](const TranslatedGraphType& self, mm::VertexIndex vertex)
             {
-                auto range = self.template get_adjacent_vertices<mm::BackwardTraversal>(vertex);
+                auto range = self.template get_adjacent_vertices<mm::Backward>(vertex);
                 return nb::make_iterator(nb::type<GraphType>(), "Iterator over backward adjacent vertices", range.begin(), range.end());
             },
             nb::keep_alive<0, 1>(),
@@ -131,7 +131,7 @@ void bind_translated_static_graph(nb::module_& m, const std::string& name, const
             "get_forward_adjacent_vertex_indices",
             [](const TranslatedGraphType& self, mm::VertexIndex vertex)
             {
-                auto range = self.template get_adjacent_vertex_indices<mm::ForwardTraversal>(vertex);
+                auto range = self.template get_adjacent_vertex_indices<mm::Forward>(vertex);
                 return nb::make_iterator(nb::type<GraphType>(), "Iterator over forward adjacent vertex indices", range.begin(), range.end());
             },
             nb::keep_alive<0, 1>(),
@@ -140,7 +140,7 @@ void bind_translated_static_graph(nb::module_& m, const std::string& name, const
             "get_backward_adjacent_vertex_indices",
             [](const TranslatedGraphType& self, mm::VertexIndex vertex)
             {
-                auto range = self.template get_adjacent_vertex_indices<mm::BackwardTraversal>(vertex);
+                auto range = self.template get_adjacent_vertex_indices<mm::Backward>(vertex);
                 return nb::make_iterator(nb::type<GraphType>(), "Iterator over forward backward vertex indices", range.begin(), range.end());
             },
             nb::keep_alive<0, 1>(),
@@ -149,7 +149,7 @@ void bind_translated_static_graph(nb::module_& m, const std::string& name, const
             "get_forward_adjacent_edges",
             [](const TranslatedGraphType& self, mm::VertexIndex vertex)
             {
-                auto range = self.template get_adjacent_edges<mm::ForwardTraversal>(vertex);
+                auto range = self.template get_adjacent_edges<mm::Forward>(vertex);
                 return nb::make_iterator(nb::type<GraphType>(), "Iterator over forward adjacent edges", range.begin(), range.end());
             },
             nb::keep_alive<0, 1>(),
@@ -158,7 +158,7 @@ void bind_translated_static_graph(nb::module_& m, const std::string& name, const
             "get_backward_adjacent_edges",
             [](const TranslatedGraphType& self, mm::VertexIndex vertex)
             {
-                auto range = self.template get_adjacent_edges<mm::BackwardTraversal>(vertex);
+                auto range = self.template get_adjacent_edges<mm::Backward>(vertex);
                 return nb::make_iterator(nb::type<GraphType>(), "Iterator over backward adjacent edges", range.begin(), range.end());
             },
             nb::keep_alive<0, 1>(),
@@ -167,7 +167,7 @@ void bind_translated_static_graph(nb::module_& m, const std::string& name, const
             "get_forward_adjacent_edge_indices",
             [](const TranslatedGraphType& self, mm::VertexIndex vertex)
             {
-                auto range = self.template get_adjacent_edge_indices<mm::ForwardTraversal>(vertex);
+                auto range = self.template get_adjacent_edge_indices<mm::Forward>(vertex);
                 return nb::make_iterator(nb::type<GraphType>(), "Iterator over forward adjacent edge indices", range.begin(), range.end());
             },
             nb::keep_alive<0, 1>(),
@@ -176,7 +176,7 @@ void bind_translated_static_graph(nb::module_& m, const std::string& name, const
             "get_backward_adjacent_edge_indices",
             [](const TranslatedGraphType& self, mm::VertexIndex vertex)
             {
-                auto range = self.template get_adjacent_edge_indices<mm::BackwardTraversal>(vertex);
+                auto range = self.template get_adjacent_edge_indices<mm::Backward>(vertex);
                 return nb::make_iterator(nb::type<GraphType>(), "Iterator over backward adjacent edge indices", range.begin(), range.end());
             },
             nb::keep_alive<0, 1>(),
@@ -187,14 +187,14 @@ void bind_translated_static_graph(nb::module_& m, const std::string& name, const
         .def("get_edge", &TranslatedGraphType::get_vertex)
         .def("get_num_vertices", &TranslatedGraphType::get_num_vertices)
         .def("get_num_edges", &TranslatedGraphType::get_num_edges)
-        .def("get_forward_source", &TranslatedGraphType::template get_source<mm::ForwardTraversal>, nb::arg("edge_index"))
-        .def("get_backward_source", &TranslatedGraphType::template get_source<mm::BackwardTraversal>, nb::arg("edge_index"))
-        .def("get_forward_target", &TranslatedGraphType::template get_target<mm::ForwardTraversal>, nb::arg("edge_index"))
-        .def("get_backward_target", &TranslatedGraphType::template get_target<mm::BackwardTraversal>, nb::arg("edge_index"))
-        .def("get_forward_degrees", &TranslatedGraphType::template get_degrees<mm::ForwardTraversal>)
-        .def("get_backward_degrees", &TranslatedGraphType::template get_degrees<mm::BackwardTraversal>)
-        .def("get_forward_degree", &TranslatedGraphType::template get_degree<mm::ForwardTraversal>, nb::arg("vertex_index"))
-        .def("get_backward_degree", &TranslatedGraphType::template get_degree<mm::BackwardTraversal>, nb::arg("vertex_index"));
+        .def("get_forward_source", &TranslatedGraphType::template get_source<mm::Forward>, nb::arg("edge_index"))
+        .def("get_backward_source", &TranslatedGraphType::template get_source<mm::Backward>, nb::arg("edge_index"))
+        .def("get_forward_target", &TranslatedGraphType::template get_target<mm::Forward>, nb::arg("edge_index"))
+        .def("get_backward_target", &TranslatedGraphType::template get_target<mm::Backward>, nb::arg("edge_index"))
+        .def("get_forward_degrees", &TranslatedGraphType::template get_degrees<mm::Forward>)
+        .def("get_backward_degrees", &TranslatedGraphType::template get_degrees<mm::Backward>)
+        .def("get_forward_degree", &TranslatedGraphType::template get_degree<mm::Forward>, nb::arg("vertex_index"))
+        .def("get_backward_degree", &TranslatedGraphType::template get_degree<mm::Backward>, nb::arg("vertex_index"));
 }
 
 template<mm::IsVertex V, mm::IsEdge E>
@@ -247,7 +247,7 @@ void bind_static_graph(nb::module_& m, const std::string& name)
             "get_forward_adjacent_vertices",
             [](const GraphType& self, mm::VertexIndex vertex)
             {
-                auto range = self.template get_adjacent_vertices<mm::ForwardTraversal>(vertex);
+                auto range = self.template get_adjacent_vertices<mm::Forward>(vertex);
                 return nb::make_iterator(nb::type<GraphType>(), "Iterator over forward adjacent vertices", range.begin(), range.end());
             },
             nb::keep_alive<0, 1>(),
@@ -256,7 +256,7 @@ void bind_static_graph(nb::module_& m, const std::string& name)
             "get_backward_adjacent_vertices",
             [](const GraphType& self, mm::VertexIndex vertex)
             {
-                auto range = self.template get_adjacent_vertices<mm::BackwardTraversal>(vertex);
+                auto range = self.template get_adjacent_vertices<mm::Backward>(vertex);
                 return nb::make_iterator(nb::type<GraphType>(), "Iterator over backward adjacent vertices", range.begin(), range.end());
             },
             nb::keep_alive<0, 1>(),
@@ -265,7 +265,7 @@ void bind_static_graph(nb::module_& m, const std::string& name)
             "get_forward_adjacent_vertex_indices",
             [](const GraphType& self, mm::VertexIndex vertex)
             {
-                auto range = self.template get_adjacent_vertex_indices<mm::ForwardTraversal>(vertex);
+                auto range = self.template get_adjacent_vertex_indices<mm::Forward>(vertex);
                 return nb::make_iterator(nb::type<GraphType>(), "Iterator over forward adjacent vertex indices", range.begin(), range.end());
             },
             nb::keep_alive<0, 1>(),
@@ -274,7 +274,7 @@ void bind_static_graph(nb::module_& m, const std::string& name)
             "get_backward_adjacent_vertex_indices",
             [](const GraphType& self, mm::VertexIndex vertex)
             {
-                auto range = self.template get_adjacent_vertex_indices<mm::BackwardTraversal>(vertex);
+                auto range = self.template get_adjacent_vertex_indices<mm::Backward>(vertex);
                 return nb::make_iterator(nb::type<GraphType>(), "Iterator over backward adjacent vertex indices", range.begin(), range.end());
             },
             nb::keep_alive<0, 1>(),
@@ -283,7 +283,7 @@ void bind_static_graph(nb::module_& m, const std::string& name)
             "get_forward_adjacent_edges",
             [](const GraphType& self, mm::VertexIndex vertex)
             {
-                auto range = self.template get_adjacent_edges<mm::ForwardTraversal>(vertex);
+                auto range = self.template get_adjacent_edges<mm::Forward>(vertex);
                 return nb::make_iterator(nb::type<GraphType>(), "Iterator over forward adjacent edges", range.begin(), range.end());
             },
             nb::keep_alive<0, 1>(),
@@ -292,7 +292,7 @@ void bind_static_graph(nb::module_& m, const std::string& name)
             "get_backward_adjacent_edges",
             [](const GraphType& self, mm::VertexIndex vertex)
             {
-                auto range = self.template get_adjacent_edges<mm::BackwardTraversal>(vertex);
+                auto range = self.template get_adjacent_edges<mm::Backward>(vertex);
                 return nb::make_iterator(nb::type<GraphType>(), "Iterator over backward adjacent edges", range.begin(), range.end());
             },
             nb::keep_alive<0, 1>(),
@@ -301,7 +301,7 @@ void bind_static_graph(nb::module_& m, const std::string& name)
             "get_forward_adjacent_edge_indices",
             [](const GraphType& self, mm::VertexIndex vertex)
             {
-                auto range = self.template get_adjacent_edge_indices<mm::ForwardTraversal>(vertex);
+                auto range = self.template get_adjacent_edge_indices<mm::Forward>(vertex);
                 return nb::make_iterator(nb::type<GraphType>(), "Iterator over forward adjacent edge indices", range.begin(), range.end());
             },
             nb::keep_alive<0, 1>(),
@@ -310,7 +310,7 @@ void bind_static_graph(nb::module_& m, const std::string& name)
             "get_backward_adjacent_edge_indices",
             [](const GraphType& self, mm::VertexIndex vertex)
             {
-                auto range = self.template get_adjacent_edge_indices<mm::BackwardTraversal>(vertex);
+                auto range = self.template get_adjacent_edge_indices<mm::Backward>(vertex);
                 return nb::make_iterator(nb::type<GraphType>(), "Iterator over forward backward edge indices", range.begin(), range.end());
             },
             nb::keep_alive<0, 1>(),
@@ -321,14 +321,14 @@ void bind_static_graph(nb::module_& m, const std::string& name)
         .def("get_edge", &GraphType::get_vertex)
         .def("get_num_vertices", &GraphType::get_num_vertices)
         .def("get_num_edges", &GraphType::get_num_edges)
-        .def("get_forward_source", &GraphType::template get_source<mm::ForwardTraversal>, nb::arg("edge_index"))
-        .def("get_backward_source", &GraphType::template get_source<mm::BackwardTraversal>, nb::arg("edge_index"))
-        .def("get_forward_target", &GraphType::template get_target<mm::ForwardTraversal>, nb::arg("edge_index"))
-        .def("get_backward_target", &GraphType::template get_target<mm::BackwardTraversal>, nb::arg("edge_index"))
-        .def("get_forward_degrees", &GraphType::template get_degrees<mm::ForwardTraversal>)
-        .def("get_backward_degrees", &GraphType::template get_degrees<mm::BackwardTraversal>)
-        .def("get_forward_degree", &GraphType::template get_degree<mm::ForwardTraversal>, nb::arg("vertex_index"))
-        .def("get_backward_degree", &GraphType::template get_degree<mm::BackwardTraversal>, nb::arg("vertex_index"));
+        .def("get_forward_source", &GraphType::template get_source<mm::Forward>, nb::arg("edge_index"))
+        .def("get_backward_source", &GraphType::template get_source<mm::Backward>, nb::arg("edge_index"))
+        .def("get_forward_target", &GraphType::template get_target<mm::Forward>, nb::arg("edge_index"))
+        .def("get_backward_target", &GraphType::template get_target<mm::Backward>, nb::arg("edge_index"))
+        .def("get_forward_degrees", &GraphType::template get_degrees<mm::Forward>)
+        .def("get_backward_degrees", &GraphType::template get_degrees<mm::Backward>)
+        .def("get_forward_degree", &GraphType::template get_degree<mm::Forward>, nb::arg("vertex_index"))
+        .def("get_backward_degree", &GraphType::template get_degree<mm::Backward>, nb::arg("vertex_index"));
 
     /**
      * Immutable version
@@ -356,7 +356,7 @@ void bind_static_graph(nb::module_& m, const std::string& name)
             "get_forward_adjacent_vertices",
             [](const PyImmutable<GraphType>& self, mm::VertexIndex vertex)
             {
-                auto range = self.obj_.template get_adjacent_vertices<mm::ForwardTraversal>(vertex);
+                auto range = self.obj_.template get_adjacent_vertices<mm::Forward>(vertex);
                 return nb::make_iterator(nb::type<GraphType>(), "Iterator over forward adjacent vertices", range.begin(), range.end());
             },
             nb::keep_alive<0, 1>(),
@@ -365,7 +365,7 @@ void bind_static_graph(nb::module_& m, const std::string& name)
             "get_backward_adjacent_vertices",
             [](const PyImmutable<GraphType>& self, mm::VertexIndex vertex)
             {
-                auto range = self.obj_.template get_adjacent_vertices<mm::BackwardTraversal>(vertex);
+                auto range = self.obj_.template get_adjacent_vertices<mm::Backward>(vertex);
                 return nb::make_iterator(nb::type<GraphType>(), "Iterator over backward adjacent vertices", range.begin(), range.end());
             },
             nb::keep_alive<0, 1>(),
@@ -374,7 +374,7 @@ void bind_static_graph(nb::module_& m, const std::string& name)
             "get_forward_adjacent_vertex_indices",
             [](const PyImmutable<GraphType>& self, mm::VertexIndex vertex)
             {
-                auto range = self.obj_.template get_adjacent_vertex_indices<mm::ForwardTraversal>(vertex);
+                auto range = self.obj_.template get_adjacent_vertex_indices<mm::Forward>(vertex);
                 return nb::make_iterator(nb::type<GraphType>(), "Iterator over forward adjacent vertex indices", range.begin(), range.end());
             },
             nb::keep_alive<0, 1>(),
@@ -383,7 +383,7 @@ void bind_static_graph(nb::module_& m, const std::string& name)
             "get_backward_adjacent_vertex_indices",
             [](const PyImmutable<GraphType>& self, mm::VertexIndex vertex)
             {
-                auto range = self.obj_.template get_adjacent_vertex_indices<mm::BackwardTraversal>(vertex);
+                auto range = self.obj_.template get_adjacent_vertex_indices<mm::Backward>(vertex);
                 return nb::make_iterator(nb::type<GraphType>(), "Iterator over backward adjacent vertex indices", range.begin(), range.end());
             },
             nb::keep_alive<0, 1>(),
@@ -392,7 +392,7 @@ void bind_static_graph(nb::module_& m, const std::string& name)
             "get_forward_adjacent_edges",
             [](const PyImmutable<GraphType>& self, mm::VertexIndex vertex)
             {
-                auto range = self.obj_.template get_adjacent_edges<mm::ForwardTraversal>(vertex);
+                auto range = self.obj_.template get_adjacent_edges<mm::Forward>(vertex);
                 return nb::make_iterator(nb::type<GraphType>(), "Iterator over forward adjacent edges", range.begin(), range.end());
             },
             nb::keep_alive<0, 1>(),
@@ -401,7 +401,7 @@ void bind_static_graph(nb::module_& m, const std::string& name)
             "get_backward_adjacent_edges",
             [](const PyImmutable<GraphType>& self, mm::VertexIndex vertex)
             {
-                auto range = self.obj_.template get_adjacent_edges<mm::BackwardTraversal>(vertex);
+                auto range = self.obj_.template get_adjacent_edges<mm::Backward>(vertex);
                 return nb::make_iterator(nb::type<GraphType>(), "Iterator over backward adjacent edges", range.begin(), range.end());
             },
             nb::keep_alive<0, 1>(),
@@ -410,7 +410,7 @@ void bind_static_graph(nb::module_& m, const std::string& name)
             "get_forward_adjacent_edge_indices",
             [](const PyImmutable<GraphType>& self, mm::VertexIndex vertex)
             {
-                auto range = self.obj_.template get_adjacent_edge_indices<mm::ForwardTraversal>(vertex);
+                auto range = self.obj_.template get_adjacent_edge_indices<mm::Forward>(vertex);
                 return nb::make_iterator(nb::type<GraphType>(), "Iterator over forward adjacent edge indices", range.begin(), range.end());
             },
             nb::keep_alive<0, 1>(),
@@ -419,7 +419,7 @@ void bind_static_graph(nb::module_& m, const std::string& name)
             "get_backward_adjacent_edge_indices",
             [](const PyImmutable<GraphType>& self, mm::VertexIndex vertex)
             {
-                auto range = self.obj_.template get_adjacent_edge_indices<mm::BackwardTraversal>(vertex);
+                auto range = self.obj_.template get_adjacent_edge_indices<mm::Backward>(vertex);
                 return nb::make_iterator(nb::type<GraphType>(), "Iterator over backward adjacent edge indices", range.begin(), range.end());
             },
             nb::keep_alive<0, 1>(),
@@ -435,29 +435,29 @@ void bind_static_graph(nb::module_& m, const std::string& name)
         .def("get_num_edges", [](const PyImmutable<GraphType>& self) { return self.obj_.get_num_edges(); })
         .def(
             "get_forward_source",
-            [](const PyImmutable<GraphType>& self, mm::EdgeIndex edge) { return self.obj_.template get_source<mm::ForwardTraversal>(edge); },
+            [](const PyImmutable<GraphType>& self, mm::EdgeIndex edge) { return self.obj_.template get_source<mm::Forward>(edge); },
             nb::arg("edge_index"))
         .def(
             "get_backward_source",
-            [](const PyImmutable<GraphType>& self, mm::EdgeIndex edge) { return self.obj_.template get_source<mm::BackwardTraversal>(edge); },
+            [](const PyImmutable<GraphType>& self, mm::EdgeIndex edge) { return self.obj_.template get_source<mm::Backward>(edge); },
             nb::arg("edge_index"))
         .def(
             "get_forward_target",
-            [](const PyImmutable<GraphType>& self, mm::EdgeIndex edge) { return self.obj_.template get_target<mm::ForwardTraversal>(edge); },
+            [](const PyImmutable<GraphType>& self, mm::EdgeIndex edge) { return self.obj_.template get_target<mm::Forward>(edge); },
             nb::arg("edge_index"))
         .def(
             "get_backward_target",
-            [](const PyImmutable<GraphType>& self, mm::EdgeIndex edge) { return self.obj_.template get_target<mm::BackwardTraversal>(edge); },
+            [](const PyImmutable<GraphType>& self, mm::EdgeIndex edge) { return self.obj_.template get_target<mm::Backward>(edge); },
             nb::arg("edge_index"))
-        .def("get_forward_degrees", [](const PyImmutable<GraphType>& self) { return self.obj_.template get_degrees<mm::ForwardTraversal>(); })
-        .def("get_backward_degrees", [](const PyImmutable<GraphType>& self) { return self.obj_.template get_degrees<mm::BackwardTraversal>(); })
+        .def("get_forward_degrees", [](const PyImmutable<GraphType>& self) { return self.obj_.template get_degrees<mm::Forward>(); })
+        .def("get_backward_degrees", [](const PyImmutable<GraphType>& self) { return self.obj_.template get_degrees<mm::Backward>(); })
         .def(
             "get_forward_degree",
-            [](const PyImmutable<GraphType>& self, mm::VertexIndex vertex) { return self.obj_.template get_degree<mm::ForwardTraversal>(vertex); },
+            [](const PyImmutable<GraphType>& self, mm::VertexIndex vertex) { return self.obj_.template get_degree<mm::Forward>(vertex); },
             nb::arg("vertex_index"))
         .def(
             "get_backward_degree",
-            [](const PyImmutable<GraphType>& self, mm::VertexIndex vertex) { return self.obj_.template get_degree<mm::BackwardTraversal>(vertex); },
+            [](const PyImmutable<GraphType>& self, mm::VertexIndex vertex) { return self.obj_.template get_degree<mm::Backward>(vertex); },
             nb::arg("vertex_index"));
 
     /**

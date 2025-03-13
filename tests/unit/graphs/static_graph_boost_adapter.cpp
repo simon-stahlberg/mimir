@@ -35,7 +35,7 @@ TEST(MimirTests, GraphsVertexListGraphTest)
 
     const auto generalized_state_space = GeneralizedStateSpace(
         GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem_file }, SearchContext::Options(SearchContext::SearchMode::GROUNDED)));
-    auto graph = TraversalDirectionTaggedType(generalized_state_space.get_graph(), ForwardTraversal());
+    auto graph = DirectionTaggedType(generalized_state_space.get_graph(), Forward());
 
     EXPECT_EQ(num_vertices(graph), 28);
 
@@ -54,7 +54,7 @@ TEST(MimirTests, GraphsIncidenceGraphTest)
     const auto generalized_state_space = GeneralizedStateSpace(
         GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem_file }, SearchContext::Options(SearchContext::SearchMode::GROUNDED)));
     const auto& class_graph = generalized_state_space.get_graph();
-    auto graph = TraversalDirectionTaggedType(generalized_state_space.get_graph(), ForwardTraversal());
+    auto graph = DirectionTaggedType(generalized_state_space.get_graph(), Forward());
 
     size_t transition_count = 0;
     for (auto [state_it, state_last] = vertices(graph); state_it != state_last; ++state_it)
@@ -87,7 +87,7 @@ TEST(MimirTests, GraphsStrongComponentsTest)
         const auto generalized_state_space = GeneralizedStateSpace(
             GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem_file }, SearchContext::Options(SearchContext::SearchMode::GROUNDED)));
         const auto& class_graph = generalized_state_space.get_graph();
-        auto graph = TraversalDirectionTaggedType(class_graph, ForwardTraversal());
+        auto graph = DirectionTaggedType(class_graph, Forward());
 
         const auto [num_components, component_map] = strong_components(graph);
         EXPECT_EQ(num_components, 1);
@@ -102,7 +102,7 @@ TEST(MimirTests, GraphsStrongComponentsTest)
         const auto generalized_state_space = GeneralizedStateSpace(
             GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem_file }, SearchContext::Options(SearchContext::SearchMode::GROUNDED)));
         const auto& class_graph = generalized_state_space.get_graph();
-        auto graph = TraversalDirectionTaggedType(class_graph, ForwardTraversal());
+        auto graph = DirectionTaggedType(class_graph, Forward());
 
         const auto [num_components, component_map] = strong_components(graph);
 
@@ -130,7 +130,7 @@ TEST(MimirTests, GraphsDijkstraShortestPathTest)
         const auto generalized_state_space = GeneralizedStateSpace(
             GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem_file }, SearchContext::Options(SearchContext::SearchMode::GROUNDED)));
         const auto& class_graph = generalized_state_space.get_graph();
-        auto graph = TraversalDirectionTaggedType(class_graph, ForwardTraversal());
+        auto graph = DirectionTaggedType(class_graph, Forward());
 
         const auto edge_costs = std::vector<double>(class_graph.get_num_edges(), 1);
         auto states = IndexList { 0 };
@@ -150,7 +150,7 @@ TEST(MimirTests, GraphsDijkstraShortestPathTest)
         const auto generalized_state_space = GeneralizedStateSpace(
             GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem_file }, SearchContext::Options(SearchContext::SearchMode::GROUNDED)));
         const auto& class_graph = generalized_state_space.get_graph();
-        auto graph = TraversalDirectionTaggedType(class_graph, BackwardTraversal());
+        auto graph = DirectionTaggedType(class_graph, Backward());
 
         const auto edge_costs = std::vector<double>(class_graph.get_num_edges(), 1);
         const auto [predecessor_map, distance_map] =
@@ -170,7 +170,7 @@ TEST(MimirTests, GraphsBreadthFirstSearchTest)
         const auto generalized_state_space = GeneralizedStateSpace(
             GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem_file }, SearchContext::Options(SearchContext::SearchMode::GROUNDED)));
         const auto& class_graph = generalized_state_space.get_graph();
-        auto graph = TraversalDirectionTaggedType(class_graph, ForwardTraversal());
+        auto graph = DirectionTaggedType(class_graph, Forward());
 
         auto states = IndexList { 0 };
         const auto [predecessor_map, distance_map] = breadth_first_search(graph, states.begin(), states.end());
@@ -189,7 +189,7 @@ TEST(MimirTests, GraphsBreadthFirstSearchTest)
         const auto generalized_state_space = GeneralizedStateSpace(
             GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem_file }, SearchContext::Options(SearchContext::SearchMode::GROUNDED)));
         const auto& class_graph = generalized_state_space.get_graph();
-        auto graph = TraversalDirectionTaggedType(class_graph, BackwardTraversal());
+        auto graph = DirectionTaggedType(class_graph, Backward());
 
         const auto [predecessor_map, distance_map] =
             breadth_first_search(graph, generalized_state_space.get_goal_vertices().begin(), generalized_state_space.get_goal_vertices().end());
@@ -208,7 +208,7 @@ TEST(MimirTests, GraphsFloydWarshallAllPairsShortestPathTest)
         const auto generalized_state_space = GeneralizedStateSpace(
             GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem_file }, SearchContext::Options(SearchContext::SearchMode::GROUNDED)));
         const auto& class_graph = generalized_state_space.get_graph();
-        auto graph = TraversalDirectionTaggedType(class_graph, ForwardTraversal());
+        auto graph = DirectionTaggedType(class_graph, Forward());
 
         const auto edge_costs = std::vector<double>(class_graph.get_num_edges(), 1);
         const auto distance_matrix = floyd_warshall_all_pairs_shortest_paths(graph, edge_costs);
@@ -237,7 +237,7 @@ TEST(MimirTests, GraphsFloydWarshallAllPairsShortestPathTest)
         const auto generalized_state_space = GeneralizedStateSpace(
             GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem_file }, SearchContext::Options(SearchContext::SearchMode::GROUNDED)));
         const auto& class_graph = generalized_state_space.get_graph();
-        auto graph = TraversalDirectionTaggedType(class_graph, BackwardTraversal());
+        auto graph = DirectionTaggedType(class_graph, Backward());
 
         const auto edge_costs = ContinuousCostList(class_graph.get_num_edges(), 1);
         const auto distance_matrix = floyd_warshall_all_pairs_shortest_paths(graph, edge_costs);

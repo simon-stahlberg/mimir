@@ -381,7 +381,7 @@ compute_problem_graph_with_symmetry_reduction(const SearchContext& context,
 
     /* Compute unit goal distances. */
     auto [unit_predecessors, unit_goal_distances] =
-        breadth_first_search(TraversalDirectionTaggedType(bidir_graph, BackwardTraversal()), goal_vertices.begin(), goal_vertices.end());
+        breadth_first_search(DirectionTaggedType(bidir_graph, Backward()), goal_vertices.begin(), goal_vertices.end());
 
     if (options.remove_if_unsolvable && unit_goal_distances.at(0) == UNDEFINED_DISCRETE_COST)  // 0 is the index of the vertex for the initial state.
     {
@@ -406,7 +406,7 @@ compute_problem_graph_with_symmetry_reduction(const SearchContext& context,
         edge_action_costs.push_back(get_action_cost(edge));
     }
     auto [action_predecessors, action_goal_distances] =
-        dijkstra_shortest_paths(TraversalDirectionTaggedType(bidir_graph, BackwardTraversal()), edge_action_costs, goal_vertices.begin(), goal_vertices.end());
+        dijkstra_shortest_paths(DirectionTaggedType(bidir_graph, Backward()), edge_action_costs, goal_vertices.begin(), goal_vertices.end());
 
     return std::make_pair(ProblemStateSpace(std::move(bidir_graph),
                                             std::move(goal_vertices),
@@ -455,7 +455,7 @@ static std::optional<ProblemStateSpace> compute_problem_graph_without_symmetry_r
 
     /* Compute unit goal distances. */
     auto [unit_predecessors, unit_goal_distances] =
-        breadth_first_search(TraversalDirectionTaggedType(bidir_graph, BackwardTraversal()), goal_vertices.begin(), goal_vertices.end());
+        breadth_first_search(DirectionTaggedType(bidir_graph, Backward()), goal_vertices.begin(), goal_vertices.end());
 
     if (options.remove_if_unsolvable && unit_goal_distances.at(0) == UNDEFINED_DISCRETE_COST)  // 0 is the index of the vertex for the initial state.
     {
@@ -480,7 +480,7 @@ static std::optional<ProblemStateSpace> compute_problem_graph_without_symmetry_r
         edge_action_costs.push_back(get_action_cost(edge));
     }
     auto [action_predecessors, action_goal_distances] =
-        dijkstra_shortest_paths(TraversalDirectionTaggedType(bidir_graph, BackwardTraversal()), edge_action_costs, goal_vertices.begin(), goal_vertices.end());
+        dijkstra_shortest_paths(DirectionTaggedType(bidir_graph, Backward()), edge_action_costs, goal_vertices.begin(), goal_vertices.end());
 
     return ProblemStateSpace(std::move(bidir_graph),
                              std::move(goal_vertices),
@@ -843,7 +843,7 @@ static ClassGraph create_induced_subspace_helper(const IndexSet& subgraph_class_
     /* 3. Instantiate edges */
     for (const auto& class_v_idx : subgraph_class_v_idxs)
     {
-        for (const auto& class_e : complete_graph.get_adjacent_edges<ForwardTraversal>(class_v_idx))
+        for (const auto& class_e : complete_graph.get_adjacent_edges<Forward>(class_v_idx))
         {
             if (subgraph_class_v_idxs.contains(class_e.get_target()))
             {

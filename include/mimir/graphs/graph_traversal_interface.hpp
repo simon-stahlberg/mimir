@@ -25,58 +25,46 @@
 namespace mimir
 {
 
-/**
- * We traverse graphs in forward and backward direction.
- * This is the most significant difference to existing graph libraries,
- * which usually support only traversal in forward direction.
- * The direction is chosen by adding a traversal direction tag to the graph before passing it to the graph algorithm.
- * Our choice of using tags come from the fact that the traversal direction is usually known at compile time.
- */
-
-/// @brief ForwardTraversal represents traversal of edges in forward direction.
-struct ForwardTraversal
+/// @brief `Forward` represents traversal of edges in forward direction.
+struct Forward
 {
 };
-/// @brief BackwardTraversal represents traversal of edges in backward direction.
-struct BackwardTraversal
+/// @brief `Backward` represents traversal of edges in backward direction.
+struct Backward
 {
 };
 
 template<typename T>
-concept IsTraversalDirection = std::same_as<T, ForwardTraversal> || std::same_as<T, BackwardTraversal>;
+concept IsDirection = std::same_as<T, Forward> || std::same_as<T, Backward>;
 
-/**
- * Type trait to obtain the opposite traversal direction.
- */
-
-/// @brief `InverseTraversalDirection` is a type trait to obtain the inverse of a `IsTraversalDirection`, where
-/// the inverse of `ForwardTraversal` is `BackwardTraversal`, and the inverse of `BackwardTraversal` is `ForwardTraversal`.
-/// @tparam Direction is the input traversal direction.
-template<IsTraversalDirection Direction>
-struct InverseTraversalDirection;
+/// @brief `InverseDirection` is a type trait to obtain the inverse of a `IsDirection`, where
+/// the inverse of `Forward` is `Backward`, and the inverse of `Backward` is `Forward`.
+/// @tparam Direction is the given direction.
+template<IsDirection Direction>
+struct InverseDirection;
 
 template<>
-struct InverseTraversalDirection<ForwardTraversal>
+struct InverseDirection<Forward>
 {
-    using type = BackwardTraversal;
+    using type = Backward;
 };
 
 template<>
-struct InverseTraversalDirection<BackwardTraversal>
+struct InverseDirection<Backward>
 {
-    using type = ForwardTraversal;
+    using type = Forward;
 };
 
-/// @brief `TraversalDirectionTaggedType` associates a type `T` with a `IsTraversalDirection`.
-/// @tparam T is the type to be associated.
-/// @tparam Direction is the associated traversal direction.
-template<typename T, IsTraversalDirection Direction>
-class TraversalDirectionTaggedType
+/// @brief `DirectionTaggedType` associates a type `T` with a `IsDirection`.
+/// @tparam T is the type.
+/// @tparam Direction is the associated direction.
+template<typename T, IsDirection Direction>
+class DirectionTaggedType
 {
 public:
     using DirectionType = Direction;
 
-    explicit TraversalDirectionTaggedType(T& data, Direction) : m_data(data) {}
+    explicit DirectionTaggedType(T& data, Direction) : m_data(data) {}
 
     const T& get() const { return m_data.get(); }
     T& get() { return m_data.get(); }

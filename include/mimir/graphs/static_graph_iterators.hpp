@@ -30,7 +30,11 @@
 namespace mimir
 {
 
-template<IsVertex Vertex, IsEdge Edge, IsTraversalDirection Direction>
+/// @brief `StaticAdjacentVertexConstIterator` implements a const iterator over adjacent vertices.
+/// @tparam Vertex is the vertex type.
+/// @tparam Edge is the edge type.
+/// @tparam Direction is the direction type that defines the edge direction.
+template<IsVertex Vertex, IsEdge Edge, IsDirection Direction>
 class StaticAdjacentVertexConstIterator
 {
 private:
@@ -62,7 +66,7 @@ public:
     bool operator!=(const StaticAdjacentVertexConstIterator& other) const;
 };
 
-template<IsEdge Edge, IsTraversalDirection Direction>
+template<IsEdge Edge, IsDirection Direction>
 class StaticAdjacentVertexIndexConstIterator
 {
 private:
@@ -89,7 +93,7 @@ public:
     bool operator!=(const StaticAdjacentVertexIndexConstIterator& other) const;
 };
 
-template<IsEdge Edge, IsTraversalDirection Direction>
+template<IsEdge Edge, IsDirection Direction>
 class StaticAdjacentEdgeConstIterator
 {
 private:
@@ -116,7 +120,7 @@ public:
     bool operator!=(const StaticAdjacentEdgeConstIterator& other) const;
 };
 
-template<IsEdge Edge, IsTraversalDirection Direction>
+template<IsEdge Edge, IsDirection Direction>
 class StaticAdjacentEdgeIndexConstIterator
 {
 private:
@@ -149,7 +153,7 @@ public:
 
 /* StaticAdjacentVertexConstIterator */
 
-template<IsVertex Vertex, IsEdge Edge, IsTraversalDirection Direction>
+template<IsVertex Vertex, IsEdge Edge, IsDirection Direction>
 void StaticAdjacentVertexConstIterator<Vertex, Edge, Direction>::StaticAdjacentVertexConstIterator::advance()
 {
     do
@@ -162,14 +166,14 @@ void StaticAdjacentVertexConstIterator<Vertex, Edge, Direction>::StaticAdjacentV
             break;
         }
 
-        if constexpr (std::is_same_v<Direction, ForwardTraversal>)
+        if constexpr (std::is_same_v<Direction, Forward>)
         {
             if (m_edges->at(m_slice[m_pos]).get_source() == m_vertex)
             {
                 break;
             }
         }
-        else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
+        else if constexpr (std::is_same_v<Direction, Backward>)
         {
             if (m_edges->at(m_slice[m_pos]).get_target() == m_vertex)
             {
@@ -180,12 +184,12 @@ void StaticAdjacentVertexConstIterator<Vertex, Edge, Direction>::StaticAdjacentV
         {
             static_assert(dependent_false<Direction>::value,
                           "StaticAdjacentVertexConstIterator<Vertex, Edge, Direction>::advance(): Missing implementation for "
-                          "IsTraversalDirection.");
+                          "IsDirection.");
         }
     } while (true);
 }
 
-template<IsVertex Vertex, IsEdge Edge, IsTraversalDirection Direction>
+template<IsVertex Vertex, IsEdge Edge, IsDirection Direction>
 StaticAdjacentVertexConstIterator<Vertex, Edge, Direction>::StaticAdjacentVertexConstIterator() :
     m_pos(-1),
     m_vertex(-1),
@@ -195,7 +199,7 @@ StaticAdjacentVertexConstIterator<Vertex, Edge, Direction>::StaticAdjacentVertex
 {
 }
 
-template<IsVertex Vertex, IsEdge Edge, IsTraversalDirection Direction>
+template<IsVertex Vertex, IsEdge Edge, IsDirection Direction>
 StaticAdjacentVertexConstIterator<Vertex, Edge, Direction>::StaticAdjacentVertexConstIterator(VertexIndex vertex,
                                                                                               const std::vector<Vertex>& vertices,
                                                                                               const std::vector<Edge>& edges,
@@ -212,14 +216,14 @@ StaticAdjacentVertexConstIterator<Vertex, Edge, Direction>::StaticAdjacentVertex
         assert(m_vertices);
         assert(m_edges);
 
-        if constexpr (std::is_same_v<Direction, ForwardTraversal>)
+        if constexpr (std::is_same_v<Direction, Forward>)
         {
             if (m_edges->at(m_slice[0]).get_source() == m_vertex)
             {
                 return;
             }
         }
-        else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
+        else if constexpr (std::is_same_v<Direction, Backward>)
         {
             if (m_edges->at(m_slice[0]).get_target() == m_vertex)
             {
@@ -230,14 +234,14 @@ StaticAdjacentVertexConstIterator<Vertex, Edge, Direction>::StaticAdjacentVertex
         {
             static_assert(dependent_false<Direction>::value,
                           "StaticAdjacentVertexConstIterator<Vertex, Edge, Direction>::StaticAdjacentVertexConstIterator(...): Missing implementation for "
-                          "IsTraversalDirection.");
+                          "IsDirection.");
         }
 
         advance();
     }
 }
 
-template<IsVertex Vertex, IsEdge Edge, IsTraversalDirection Direction>
+template<IsVertex Vertex, IsEdge Edge, IsDirection Direction>
 StaticAdjacentVertexConstIterator<Vertex, Edge, Direction>::reference StaticAdjacentVertexConstIterator<Vertex, Edge, Direction>::operator*() const
 {
     assert(m_vertices);
@@ -245,12 +249,12 @@ StaticAdjacentVertexConstIterator<Vertex, Edge, Direction>::reference StaticAdja
     assert(m_pos < m_slice.size());
     assert(m_slice[m_pos] < m_edges->size());
 
-    if constexpr (std::is_same_v<Direction, ForwardTraversal>)
+    if constexpr (std::is_same_v<Direction, Forward>)
     {
         assert(m_edges->at(m_slice[m_pos]).get_source() == m_vertex);
         return m_vertices->at(m_edges->at(m_slice[m_pos]).get_target());
     }
-    else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
+    else if constexpr (std::is_same_v<Direction, Backward>)
     {
         assert(m_edges->at(m_slice[m_pos]).get_target() == m_vertex);
         return m_vertices->at(m_edges->at(m_slice[m_pos]).get_source());
@@ -258,18 +262,18 @@ StaticAdjacentVertexConstIterator<Vertex, Edge, Direction>::reference StaticAdja
     else
     {
         static_assert(dependent_false<Direction>::value,
-                      "StaticAdjacentVertexConstIterator<Vertex, Edge, Direction>::operator*(): Missing implementation for IsTraversalDirection.");
+                      "StaticAdjacentVertexConstIterator<Vertex, Edge, Direction>::operator*(): Missing implementation for IsDirection.");
     }
 }
 
-template<IsVertex Vertex, IsEdge Edge, IsTraversalDirection Direction>
+template<IsVertex Vertex, IsEdge Edge, IsDirection Direction>
 StaticAdjacentVertexConstIterator<Vertex, Edge, Direction>& StaticAdjacentVertexConstIterator<Vertex, Edge, Direction>::operator++()
 {
     advance();
     return *this;
 }
 
-template<IsVertex Vertex, IsEdge Edge, IsTraversalDirection Direction>
+template<IsVertex Vertex, IsEdge Edge, IsDirection Direction>
 StaticAdjacentVertexConstIterator<Vertex, Edge, Direction> StaticAdjacentVertexConstIterator<Vertex, Edge, Direction>::operator++(int)
 {
     StaticAdjacentVertexConstIterator tmp = *this;
@@ -277,13 +281,13 @@ StaticAdjacentVertexConstIterator<Vertex, Edge, Direction> StaticAdjacentVertexC
     return tmp;
 }
 
-template<IsVertex Vertex, IsEdge Edge, IsTraversalDirection Direction>
+template<IsVertex Vertex, IsEdge Edge, IsDirection Direction>
 bool StaticAdjacentVertexConstIterator<Vertex, Edge, Direction>::operator==(const StaticAdjacentVertexConstIterator& other) const
 {
     return (m_pos == other.m_pos);
 }
 
-template<IsVertex Vertex, IsEdge Edge, IsTraversalDirection Direction>
+template<IsVertex Vertex, IsEdge Edge, IsDirection Direction>
 bool StaticAdjacentVertexConstIterator<Vertex, Edge, Direction>::operator!=(const StaticAdjacentVertexConstIterator& other) const
 {
     return !(*this == other);
@@ -291,7 +295,7 @@ bool StaticAdjacentVertexConstIterator<Vertex, Edge, Direction>::operator!=(cons
 
 /* StaticAdjacentVertexIndexConstIterator */
 
-template<IsEdge Edge, IsTraversalDirection Direction>
+template<IsEdge Edge, IsDirection Direction>
 void StaticAdjacentVertexIndexConstIterator<Edge, Direction>::advance()
 {
     do
@@ -304,14 +308,14 @@ void StaticAdjacentVertexIndexConstIterator<Edge, Direction>::advance()
             break;
         }
 
-        if constexpr (std::is_same_v<Direction, ForwardTraversal>)
+        if constexpr (std::is_same_v<Direction, Forward>)
         {
             if (m_edges->at(m_slice[m_pos]).get_source() == m_vertex)
             {
                 break;
             }
         }
-        else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
+        else if constexpr (std::is_same_v<Direction, Backward>)
         {
             if (m_edges->at(m_slice[m_pos]).get_target() == m_vertex)
             {
@@ -321,17 +325,17 @@ void StaticAdjacentVertexIndexConstIterator<Edge, Direction>::advance()
         else
         {
             static_assert(dependent_false<Direction>::value,
-                          "StaticAdjacentVertexIndexConstIterator<Edge, Direction>::advance(): Missing implementation for IsTraversalDirection.");
+                          "StaticAdjacentVertexIndexConstIterator<Edge, Direction>::advance(): Missing implementation for IsDirection.");
         }
     } while (true);
 }
 
-template<IsEdge Edge, IsTraversalDirection Direction>
+template<IsEdge Edge, IsDirection Direction>
 StaticAdjacentVertexIndexConstIterator<Edge, Direction>::StaticAdjacentVertexIndexConstIterator() : m_pos(-1), m_vertex(-1), m_edges(nullptr), m_slice()
 {
 }
 
-template<IsEdge Edge, IsTraversalDirection Direction>
+template<IsEdge Edge, IsDirection Direction>
 StaticAdjacentVertexIndexConstIterator<Edge, Direction>::StaticAdjacentVertexIndexConstIterator(VertexIndex vertex,
                                                                                                 const std::vector<Edge>& edges,
                                                                                                 std::span<const EdgeIndex> slice,
@@ -345,14 +349,14 @@ StaticAdjacentVertexIndexConstIterator<Edge, Direction>::StaticAdjacentVertexInd
     {
         assert(m_edges);
 
-        if constexpr (std::is_same_v<Direction, ForwardTraversal>)
+        if constexpr (std::is_same_v<Direction, Forward>)
         {
             if (m_edges->at(m_slice[0]).get_source() == m_vertex)
             {
                 return;
             }
         }
-        else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
+        else if constexpr (std::is_same_v<Direction, Backward>)
         {
             if (m_edges->at(m_slice[0]).get_target() == m_vertex)
             {
@@ -363,26 +367,26 @@ StaticAdjacentVertexIndexConstIterator<Edge, Direction>::StaticAdjacentVertexInd
         {
             static_assert(dependent_false<Direction>::value,
                           "StaticAdjacentVertexIndexConstIterator<Edge, Direction>::StaticAdjacentEdgeConstIterator(...): Missing implementation for "
-                          "IsTraversalDirection.");
+                          "IsDirection.");
         }
 
         advance();
     }
 }
 
-template<IsEdge Edge, IsTraversalDirection Direction>
+template<IsEdge Edge, IsDirection Direction>
 StaticAdjacentVertexIndexConstIterator<Edge, Direction>::value_type StaticAdjacentVertexIndexConstIterator<Edge, Direction>::operator*() const
 {
     assert(m_edges);
     assert(m_pos < m_slice.size());
     assert(m_slice[m_pos] < m_edges->size());
 
-    if constexpr (std::is_same_v<Direction, ForwardTraversal>)
+    if constexpr (std::is_same_v<Direction, Forward>)
     {
         assert(m_edges->at(m_slice[m_pos]).get_source() == m_vertex);
         return m_edges->at(m_slice[m_pos]).get_target();
     }
-    else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
+    else if constexpr (std::is_same_v<Direction, Backward>)
     {
         assert(m_edges->at(m_slice[m_pos]).get_target() == m_vertex);
         return m_edges->at(m_slice[m_pos]).get_source();
@@ -390,18 +394,18 @@ StaticAdjacentVertexIndexConstIterator<Edge, Direction>::value_type StaticAdjace
     else
     {
         static_assert(dependent_false<Direction>::value,
-                      "StaticAdjacentVertexIndexConstIterator<Edge, Direction>::operator*(): Missing implementation for IsTraversalDirection.");
+                      "StaticAdjacentVertexIndexConstIterator<Edge, Direction>::operator*(): Missing implementation for IsDirection.");
     }
 }
 
-template<IsEdge Edge, IsTraversalDirection Direction>
+template<IsEdge Edge, IsDirection Direction>
 StaticAdjacentVertexIndexConstIterator<Edge, Direction>& StaticAdjacentVertexIndexConstIterator<Edge, Direction>::operator++()
 {
     advance();
     return *this;
 }
 
-template<IsEdge Edge, IsTraversalDirection Direction>
+template<IsEdge Edge, IsDirection Direction>
 StaticAdjacentVertexIndexConstIterator<Edge, Direction> StaticAdjacentVertexIndexConstIterator<Edge, Direction>::operator++(int)
 {
     StaticAdjacentVertexIndexConstIterator tmp = *this;
@@ -409,13 +413,13 @@ StaticAdjacentVertexIndexConstIterator<Edge, Direction> StaticAdjacentVertexInde
     return tmp;
 }
 
-template<IsEdge Edge, IsTraversalDirection Direction>
+template<IsEdge Edge, IsDirection Direction>
 bool StaticAdjacentVertexIndexConstIterator<Edge, Direction>::operator==(const StaticAdjacentVertexIndexConstIterator& other) const
 {
     return (m_pos == other.m_pos);
 }
 
-template<IsEdge Edge, IsTraversalDirection Direction>
+template<IsEdge Edge, IsDirection Direction>
 bool StaticAdjacentVertexIndexConstIterator<Edge, Direction>::operator!=(const StaticAdjacentVertexIndexConstIterator& other) const
 {
     return !(*this == other);
@@ -423,7 +427,7 @@ bool StaticAdjacentVertexIndexConstIterator<Edge, Direction>::operator!=(const S
 
 /* StaticAdjacentEdgeConstIterator */
 
-template<IsEdge Edge, IsTraversalDirection Direction>
+template<IsEdge Edge, IsDirection Direction>
 void StaticAdjacentEdgeConstIterator<Edge, Direction>::advance()
 {
     do
@@ -436,14 +440,14 @@ void StaticAdjacentEdgeConstIterator<Edge, Direction>::advance()
             break;
         }
 
-        if constexpr (std::is_same_v<Direction, ForwardTraversal>)
+        if constexpr (std::is_same_v<Direction, Forward>)
         {
             if (m_edges->at(m_slice[m_pos]).get_source() == m_vertex)
             {
                 break;
             }
         }
-        else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
+        else if constexpr (std::is_same_v<Direction, Backward>)
         {
             if (m_edges->at(m_slice[m_pos]).get_target() == m_vertex)
             {
@@ -453,17 +457,17 @@ void StaticAdjacentEdgeConstIterator<Edge, Direction>::advance()
         else
         {
             static_assert(dependent_false<Direction>::value,
-                          "StaticAdjacentEdgeConstIterator<Edge, Direction>::advance(): Missing implementation for IsTraversalDirection.");
+                          "StaticAdjacentEdgeConstIterator<Edge, Direction>::advance(): Missing implementation for IsDirection.");
         }
     } while (true);
 }
 
-template<IsEdge Edge, IsTraversalDirection Direction>
+template<IsEdge Edge, IsDirection Direction>
 StaticAdjacentEdgeConstIterator<Edge, Direction>::StaticAdjacentEdgeConstIterator() : m_pos(-1), m_vertex(-1), m_edges(nullptr), m_slice()
 {
 }
 
-template<IsEdge Edge, IsTraversalDirection Direction>
+template<IsEdge Edge, IsDirection Direction>
 StaticAdjacentEdgeConstIterator<Edge, Direction>::StaticAdjacentEdgeConstIterator(VertexIndex vertex,
                                                                                   const std::vector<Edge>& edges,
                                                                                   std::span<const EdgeIndex> slice,
@@ -477,14 +481,14 @@ StaticAdjacentEdgeConstIterator<Edge, Direction>::StaticAdjacentEdgeConstIterato
     {
         assert(m_edges);
 
-        if constexpr (std::is_same_v<Direction, ForwardTraversal>)
+        if constexpr (std::is_same_v<Direction, Forward>)
         {
             if (m_edges->at(m_slice[0]).get_source() == m_vertex)
             {
                 return;
             }
         }
-        else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
+        else if constexpr (std::is_same_v<Direction, Backward>)
         {
             if (m_edges->at(m_slice[0]).get_target() == m_vertex)
             {
@@ -493,28 +497,27 @@ StaticAdjacentEdgeConstIterator<Edge, Direction>::StaticAdjacentEdgeConstIterato
         }
         else
         {
-            static_assert(
-                dependent_false<Direction>::value,
-                "StaticAdjacentEdgeConstIterator<Edge, Direction>::StaticAdjacentEdgeConstIterator(...): Missing implementation for IsTraversalDirection.");
+            static_assert(dependent_false<Direction>::value,
+                          "StaticAdjacentEdgeConstIterator<Edge, Direction>::StaticAdjacentEdgeConstIterator(...): Missing implementation for IsDirection.");
         }
 
         advance();
     }
 }
 
-template<IsEdge Edge, IsTraversalDirection Direction>
+template<IsEdge Edge, IsDirection Direction>
 StaticAdjacentEdgeConstIterator<Edge, Direction>::reference StaticAdjacentEdgeConstIterator<Edge, Direction>::operator*() const
 {
     assert(m_edges);
     assert(m_pos < m_slice.size());
     assert(m_slice[m_pos] < m_edges->size());
 
-    if constexpr (std::is_same_v<Direction, ForwardTraversal>)
+    if constexpr (std::is_same_v<Direction, Forward>)
     {
         assert(m_edges->at(m_slice[m_pos]).get_source() == m_vertex);
         return m_edges->at(m_slice[m_pos]);
     }
-    else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
+    else if constexpr (std::is_same_v<Direction, Backward>)
     {
         assert(m_edges->at(m_slice[m_pos]).get_target() == m_vertex);
         return m_edges->at(m_slice[m_pos]);
@@ -522,18 +525,18 @@ StaticAdjacentEdgeConstIterator<Edge, Direction>::reference StaticAdjacentEdgeCo
     else
     {
         static_assert(dependent_false<Direction>::value,
-                      "StaticAdjacentEdgeConstIterator<Edge, Direction>::operator*(): Missing implementation for IsTraversalDirection.");
+                      "StaticAdjacentEdgeConstIterator<Edge, Direction>::operator*(): Missing implementation for IsDirection.");
     }
 }
 
-template<IsEdge Edge, IsTraversalDirection Direction>
+template<IsEdge Edge, IsDirection Direction>
 StaticAdjacentEdgeConstIterator<Edge, Direction>& StaticAdjacentEdgeConstIterator<Edge, Direction>::operator++()
 {
     advance();
     return *this;
 }
 
-template<IsEdge Edge, IsTraversalDirection Direction>
+template<IsEdge Edge, IsDirection Direction>
 StaticAdjacentEdgeConstIterator<Edge, Direction> StaticAdjacentEdgeConstIterator<Edge, Direction>::operator++(int)
 {
     StaticAdjacentEdgeConstIterator tmp = *this;
@@ -541,13 +544,13 @@ StaticAdjacentEdgeConstIterator<Edge, Direction> StaticAdjacentEdgeConstIterator
     return tmp;
 }
 
-template<IsEdge Edge, IsTraversalDirection Direction>
+template<IsEdge Edge, IsDirection Direction>
 bool StaticAdjacentEdgeConstIterator<Edge, Direction>::operator==(const StaticAdjacentEdgeConstIterator& other) const
 {
     return (m_pos == other.m_pos);
 }
 
-template<IsEdge Edge, IsTraversalDirection Direction>
+template<IsEdge Edge, IsDirection Direction>
 bool StaticAdjacentEdgeConstIterator<Edge, Direction>::operator!=(const StaticAdjacentEdgeConstIterator& other) const
 {
     return !(*this == other);
@@ -555,7 +558,7 @@ bool StaticAdjacentEdgeConstIterator<Edge, Direction>::operator!=(const StaticAd
 
 /* StaticAdjacentEdgeIndexConstIterator */
 
-template<IsEdge Edge, IsTraversalDirection Direction>
+template<IsEdge Edge, IsDirection Direction>
 void StaticAdjacentEdgeIndexConstIterator<Edge, Direction>::advance()
 {
     do
@@ -568,14 +571,14 @@ void StaticAdjacentEdgeIndexConstIterator<Edge, Direction>::advance()
             break;
         }
 
-        if constexpr (std::is_same_v<Direction, ForwardTraversal>)
+        if constexpr (std::is_same_v<Direction, Forward>)
         {
             if (m_edges->at(m_slice[m_pos]).get_source() == m_vertex)
             {
                 break;
             }
         }
-        else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
+        else if constexpr (std::is_same_v<Direction, Backward>)
         {
             if (m_edges->at(m_slice[m_pos]).get_target() == m_vertex)
             {
@@ -585,17 +588,17 @@ void StaticAdjacentEdgeIndexConstIterator<Edge, Direction>::advance()
         else
         {
             static_assert(dependent_false<Direction>::value,
-                          "StaticAdjacentEdgeIndexConstIterator<Edge, Direction>::advance(): Missing implementation for IsTraversalDirection.");
+                          "StaticAdjacentEdgeIndexConstIterator<Edge, Direction>::advance(): Missing implementation for IsDirection.");
         }
     } while (true);
 }
 
-template<IsEdge Edge, IsTraversalDirection Direction>
+template<IsEdge Edge, IsDirection Direction>
 StaticAdjacentEdgeIndexConstIterator<Edge, Direction>::StaticAdjacentEdgeIndexConstIterator() : m_pos(-1), m_vertex(-1), m_edges(nullptr), m_slice()
 {
 }
 
-template<IsEdge Edge, IsTraversalDirection Direction>
+template<IsEdge Edge, IsDirection Direction>
 StaticAdjacentEdgeIndexConstIterator<Edge, Direction>::StaticAdjacentEdgeIndexConstIterator(VertexIndex vertex,
                                                                                             const std::vector<Edge>& edges,
                                                                                             std::span<const EdgeIndex> slice,
@@ -609,14 +612,14 @@ StaticAdjacentEdgeIndexConstIterator<Edge, Direction>::StaticAdjacentEdgeIndexCo
     {
         assert(m_edges);
 
-        if constexpr (std::is_same_v<Direction, ForwardTraversal>)
+        if constexpr (std::is_same_v<Direction, Forward>)
         {
             if (m_edges->at(m_slice[0]).get_source() == m_vertex)
             {
                 return;
             }
         }
-        else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
+        else if constexpr (std::is_same_v<Direction, Backward>)
         {
             if (m_edges->at(m_slice[0]).get_target() == m_vertex)
             {
@@ -626,26 +629,26 @@ StaticAdjacentEdgeIndexConstIterator<Edge, Direction>::StaticAdjacentEdgeIndexCo
         else
         {
             static_assert(dependent_false<Direction>::value,
-                          "StaticAdjacentEdgeIndexConstIterator<Edge, Direction>::const_iterator(...): Missing implementation for IsTraversalDirection.");
+                          "StaticAdjacentEdgeIndexConstIterator<Edge, Direction>::const_iterator(...): Missing implementation for IsDirection.");
         }
 
         advance();
     }
 }
 
-template<IsEdge Edge, IsTraversalDirection Direction>
+template<IsEdge Edge, IsDirection Direction>
 StaticAdjacentEdgeIndexConstIterator<Edge, Direction>::value_type StaticAdjacentEdgeIndexConstIterator<Edge, Direction>::operator*() const
 {
     assert(m_edges);
     assert(m_pos < m_slice.size());
     assert(m_slice[m_pos] < m_edges->size());
 
-    if constexpr (std::is_same_v<Direction, ForwardTraversal>)
+    if constexpr (std::is_same_v<Direction, Forward>)
     {
         assert(m_edges->at(m_slice[m_pos]).get_source() == m_vertex);
         return m_edges->at(m_slice[m_pos]).get_index();
     }
-    else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
+    else if constexpr (std::is_same_v<Direction, Backward>)
     {
         assert(m_edges->at(m_slice[m_pos]).get_target() == m_vertex);
         return m_edges->at(m_slice[m_pos]).get_index();
@@ -653,18 +656,18 @@ StaticAdjacentEdgeIndexConstIterator<Edge, Direction>::value_type StaticAdjacent
     else
     {
         static_assert(dependent_false<Direction>::value,
-                      "StaticAdjacentEdgeIndexConstIterator<Edge, Direction>::operator*(): Missing implementation for IsTraversalDirection.");
+                      "StaticAdjacentEdgeIndexConstIterator<Edge, Direction>::operator*(): Missing implementation for IsDirection.");
     }
 }
 
-template<IsEdge Edge, IsTraversalDirection Direction>
+template<IsEdge Edge, IsDirection Direction>
 StaticAdjacentEdgeIndexConstIterator<Edge, Direction>& StaticAdjacentEdgeIndexConstIterator<Edge, Direction>::operator++()
 {
     advance();
     return *this;
 }
 
-template<IsEdge Edge, IsTraversalDirection Direction>
+template<IsEdge Edge, IsDirection Direction>
 StaticAdjacentEdgeIndexConstIterator<Edge, Direction> StaticAdjacentEdgeIndexConstIterator<Edge, Direction>::operator++(int)
 {
     StaticAdjacentEdgeIndexConstIterator tmp = *this;
@@ -672,13 +675,13 @@ StaticAdjacentEdgeIndexConstIterator<Edge, Direction> StaticAdjacentEdgeIndexCon
     return tmp;
 }
 
-template<IsEdge Edge, IsTraversalDirection Direction>
+template<IsEdge Edge, IsDirection Direction>
 bool StaticAdjacentEdgeIndexConstIterator<Edge, Direction>::operator==(const StaticAdjacentEdgeIndexConstIterator& other) const
 {
     return (m_pos == other.m_pos);
 }
 
-template<IsEdge Edge, IsTraversalDirection Direction>
+template<IsEdge Edge, IsDirection Direction>
 bool StaticAdjacentEdgeIndexConstIterator<Edge, Direction>::operator!=(const StaticAdjacentEdgeIndexConstIterator& other) const
 {
     return !(*this == other);

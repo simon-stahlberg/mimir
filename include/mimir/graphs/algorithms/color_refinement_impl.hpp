@@ -207,7 +207,7 @@ Certificate compute_certificate(const G& graph)
             // Note: this computes the stable coloring, not the coarsest stable coloring.
             for (size_t h = 0; h < num_vertices; ++h)
             {
-                for (const auto& outgoing_vertex : graph.template get_adjacent_vertices<ForwardTraversal>(hash_to_vertex.at(h)))
+                for (const auto& outgoing_vertex : graph.template get_adjacent_vertices<Forward>(hash_to_vertex.at(h)))
                 {
                     const auto hash = vertex_to_hash.at(outgoing_vertex.get_index());
 
