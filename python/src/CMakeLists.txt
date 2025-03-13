@@ -11,6 +11,7 @@ nanobind_add_module(_pymimir
     pymimir/graphs/bindings.cpp 
     pymimir/search/bindings.cpp 
     pymimir/datasets/bindings.cpp
+    pymimir/languages/description_logics/bindings.cpp
 )
 
 target_link_libraries(_pymimir PRIVATE mimir::core)

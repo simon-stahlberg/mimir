@@ -112,4 +112,6 @@ void bind_search(nb::module_& m);
 
 void bind_datasets(nb::module_& m);
 
+void bind_languages_description_logics(nb::module_& m);
+
 #endif

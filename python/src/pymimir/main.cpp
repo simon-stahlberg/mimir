@@ -36,4 +36,6 @@ NB_MODULE(_pymimir, m)
     bind_search(m);
 
     bind_datasets(m);
+
+    bind_languages_description_logics(m);
 }

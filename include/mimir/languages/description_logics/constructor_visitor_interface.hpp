@@ -30,6 +30,55 @@ public:
     virtual ~Visitor() = default;
 
     /* Concepts */
+    virtual void visit(ConceptBot constructor) = 0;
+    virtual void visit(ConceptTop constructor) = 0;
+    virtual void visit(ConceptAtomicState<Static> constructor) = 0;
+    virtual void visit(ConceptAtomicState<Fluent> constructor) = 0;
+    virtual void visit(ConceptAtomicState<Derived> constructor) = 0;
+    virtual void visit(ConceptAtomicGoal<Static> constructor) = 0;
+    virtual void visit(ConceptAtomicGoal<Fluent> constructor) = 0;
+    virtual void visit(ConceptAtomicGoal<Derived> constructor) = 0;
+    virtual void visit(ConceptIntersection constructor) = 0;
+    virtual void visit(ConceptUnion constructor) = 0;
+    virtual void visit(ConceptNegation constructor) = 0;
+    virtual void visit(ConceptValueRestriction constructor) = 0;
+    virtual void visit(ConceptExistentialQuantification constructor) = 0;
+    virtual void visit(ConceptRoleValueMapContainment constructor) = 0;
+    virtual void visit(ConceptRoleValueMapEquality constructor) = 0;
+    virtual void visit(ConceptNominal constructor) = 0;
+    /* Roles */
+    virtual void visit(RoleUniversal constructor) = 0;
+    virtual void visit(RoleAtomicState<Static> constructor) = 0;
+    virtual void visit(RoleAtomicState<Fluent> constructor) = 0;
+    virtual void visit(RoleAtomicState<Derived> constructor) = 0;
+    virtual void visit(RoleAtomicGoal<Static> constructor) = 0;
+    virtual void visit(RoleAtomicGoal<Fluent> constructor) = 0;
+    virtual void visit(RoleAtomicGoal<Derived> constructor) = 0;
+    virtual void visit(RoleIntersection constructor) = 0;
+    virtual void visit(RoleUnion constructor) = 0;
+    virtual void visit(RoleComplement constructor) = 0;
+    virtual void visit(RoleInverse constructor) = 0;
+    virtual void visit(RoleComposition constructor) = 0;
+    virtual void visit(RoleTransitiveClosure constructor) = 0;
+    virtual void visit(RoleReflexiveTransitiveClosure constructor) = 0;
+    virtual void visit(RoleRestriction constructor) = 0;
+    virtual void visit(RoleIdentity constructor) = 0;
+    /* Booleans */
+    virtual void visit(BooleanAtomicState<Static> constructor) = 0;
+    virtual void visit(BooleanAtomicState<Fluent> constructor) = 0;
+    virtual void visit(BooleanAtomicState<Derived> constructor) = 0;
+    virtual void visit(BooleanNonempty<Concept> constructor) = 0;
+    virtual void visit(BooleanNonempty<Role> constructor) = 0;
+    /* Numericals */
+    virtual void visit(NumericalCount<Concept> constructor) = 0;
+    virtual void visit(NumericalCount<Role> constructor) = 0;
+    virtual void visit(NumericalDistance constructor) = 0;
+};
+
+class RecurseVisitor : public Visitor
+{
+public:
+    /* Concepts */
     virtual void visit(ConceptBot constructor);
     virtual void visit(ConceptTop constructor);
     virtual void visit(ConceptAtomicState<Static> constructor);
@@ -79,8 +128,7 @@ public:
  * GrammarVisitor
  */
 
-
-class GrammarVisitor : public Visitor
+class GrammarVisitor : public RecurseVisitor
 {
 protected:
     // Default implementations always return false
