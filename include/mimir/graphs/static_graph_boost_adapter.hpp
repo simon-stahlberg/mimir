@@ -315,12 +315,12 @@ dijkstra_shortest_paths(const DirectionTaggedType<Graph, Direction>& g, const Co
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 template<typename VertexDescriptor>
-struct CustomBFSVisitor : public boost::bfs_visitor<>
+struct BFSBoostVisitor : public boost::bfs_visitor<>
 {
     std::reference_wrapper<std::vector<VertexDescriptor>> predecessors;
     std::reference_wrapper<DiscreteCostList> distances;
 
-    CustomBFSVisitor(std::vector<VertexDescriptor>& p, DiscreteCostList& d) : predecessors(p), distances(d) {}
+    BFSBoostVisitor(std::vector<VertexDescriptor>& p, DiscreteCostList& d) : predecessors(p), distances(d) {}
 
     template<typename Edge, typename Graph>
     void tree_edge(Edge e, const Graph& g) const
@@ -351,7 +351,7 @@ breadth_first_search(const DirectionTaggedType<Graph, Direction>& g, SourceInput
     {
         d.at(*it) = DiscreteCost(0);
     }
-    auto visitor = CustomBFSVisitor(p, d);
+    auto visitor = BFSBoostVisitor(p, d);
     auto color_vector = std::vector<boost::default_color_type>(g.get().get_num_vertices(), boost::white_color);
     auto color_map = ColorMap(color_vector.begin(), boost::identity_property_map());
     boost::breadth_first_search(g, s_begin, s_end, buffer, visitor, color_map);
