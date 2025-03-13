@@ -6,37 +6,18 @@ on:
       - numeric_planning
 
 jobs:
-  generate-docs:
+  deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Install Doxygen
-        run: sudo apt-get install -y doxygen graphviz
-
-      - name: Generate Doxygen Documentation
-        run: |
-          doxygen Doxyfile
-
-      - name: Setup GitHub Pages
-        uses: actions/configure-pages@v4
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Deploy Doxygen Documentation
+        uses: DenverCoder1/doxygen-github-pages-action@v2.0.0
         with:
-          path: docs/html
-
-  deploy:
-    permissions:
-      pages: write
-      id-token: write
-    needs: generate-docs
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          doxyfile_path: Doxyfile  # Ensure this is in your repo
+          branch: gh-pages  # Deploy to GitHub Pages
+          
