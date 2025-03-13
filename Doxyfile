@@ -19,4 +19,3 @@ INPUT                 = \
     "include/mimir/graphs/static_graph_interface.hpp" \
     "include/mimir/graphs/static_graph_iterators.hpp" \
     "include/mimir/graphs/static_graph.hpp"
-RECURSIVE             = YES
