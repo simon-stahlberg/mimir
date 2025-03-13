@@ -1,6 +1,6 @@
 PROJECT_NAME           = "Mimir"
 OUTPUT_DIRECTORY       = "docs"
-HTML_OUTPUT            = "."
+HTML_OUTPUT            = "html"
 GENERATE_HTML         = YES
 GENERATE_LATEX        = NO
 EXTRACT_ALL           = YES
