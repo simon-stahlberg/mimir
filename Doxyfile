@@ -5,12 +5,18 @@ GENERATE_HTML         = YES
 GENERATE_LATEX        = NO
 EXTRACT_ALL           = YES
 INPUT                 = \
-    "include/mimir/algorithms/" \
-    "include/mimir/buffering/" \
-    "include/mimir/graphs/" \
-    "include/mimir/formalism" \
-    "include/mimir/datasets" \
-    "include/mimir/common/" \
-    "include/mimir/languages" \
-    "include/mimir/search"  
+    "include/mimir/graphs/dynamic_graph_interface.hpp" \
+    "include/mimir/graphs/dynamic_graph_iterators.hpp" \
+    "include/mimir/graphs/dynamic_graph.hpp" \
+    "include/mimir/graphs/graph_edge_interface.hpp" \
+    "include/mimir/graphs/graph_edges.hpp" \
+    "include/mimir/graphs/graph_interface.hpp" \
+    "include/mimir/graphs/graph_properties.hpp" \
+    "include/mimir/graphs/graph_traversal_interface.hpp" \
+    "include/mimir/graphs/graph_vertex_interface.hpp" \
+    "include/mimir/graphs/graph_vertices.hpp" \
+    "include/mimir/graphs/static_graph_boost_adapter.hpp" \
+    "include/mimir/graphs/static_graph_interface.hpp" \
+    "include/mimir/graphs/static_graph_iterators.hpp" \
+    "include/mimir/graphs/static_graph.hpp" \
 RECURSIVE             = YES
