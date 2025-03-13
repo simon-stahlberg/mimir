@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['identifying_5fmembers_0',['identifying_members',['../classmimir_1_1Vertex.html#a5881efd6017a4b4b31b040d1f5c0a0ed',1,'mimir::Vertex::identifying_members()'],['../classmimir_1_1Edge.html#a8a45bbcf0368a96615b95e7cbdc67f5e',1,'mimir::Edge::identifying_members()']]]
+  ['edge_0',['Edge',['../classmimir_1_1Edge.html#a7c871505daf988b957d4c7f0439801e8',1,'mimir::Edge']]],
+  ['edges_1',['edges',['../namespacemimir.html#abe85cc3cd2d83f06e7994e75151e4dd1',1,'mimir']]]
 ];

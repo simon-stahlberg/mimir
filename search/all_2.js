@@ -1,10 +1,15 @@
 var searchData=
 [
-  ['edge_0',['edge',['../classmimir_1_1Edge.html',1,'mimir::Edge&lt; EdgeProperties &gt;'],['../classmimir_1_1Edge.html#a7c871505daf988b957d4c7f0439801e8',1,'mimir::Edge::Edge()']]],
-  ['edgeindexconstiteratortype_1',['edgeindexconstiteratortype',['../classmimir_1_1StaticGraph.html#ae7151c5a1a47f19c699d2be816220b7b',1,'mimir::StaticGraph::EdgeIndexConstIteratorType'],['../classmimir_1_1StaticForwardGraph.html#a971b964f85032a34db8893c82fd2008b',1,'mimir::StaticForwardGraph::EdgeIndexConstIteratorType'],['../classmimir_1_1StaticBidirectionalGraph.html#a24445f89d2b02220300c3e86bebe80c0',1,'mimir::StaticBidirectionalGraph::EdgeIndexConstIteratorType']]],
-  ['edgelist_2',['edgelist',['../classmimir_1_1StaticGraph.html#a23e4518ceef6f81caadb33f8625fed7f',1,'mimir::StaticGraph::EdgeList'],['../classmimir_1_1StaticForwardGraph.html#a2103b54d0d1218a784b7ebc49b2e0fc2',1,'mimir::StaticForwardGraph::EdgeList'],['../classmimir_1_1StaticBidirectionalGraph.html#a52d1a81924c5c17067e038b0bdd4091e',1,'mimir::StaticBidirectionalGraph::EdgeList']]],
-  ['edgepropertiestypes_3',['EdgePropertiesTypes',['../classmimir_1_1Edge.html#a5f76050f07d772297e5f9d73b5c4a382',1,'mimir::Edge']]],
-  ['edgetype_4',['edgetype',['../classmimir_1_1StaticGraph.html#a89433cb047c80bc4f17065789f7b6ab1',1,'mimir::StaticGraph::EdgeType'],['../classmimir_1_1StaticForwardGraph.html#a22d3fb0c1eb6996bf943214329e88332',1,'mimir::StaticForwardGraph::EdgeType'],['../classmimir_1_1StaticBidirectionalGraph.html#acbfb31251fc17cd6807d1fb36e69789f',1,'mimir::StaticBidirectionalGraph::EdgeType']]],
-  ['emptyedge_5',['EmptyEdge',['../namespacemimir.html#ae8f199237ad0f2dbe72d6de09f0c9e9f',1,'mimir']]],
-  ['emptyvertex_6',['EmptyVertex',['../namespacemimir.html#a26247de9839b0cc71767d6a00eb184b1',1,'mimir']]]
+  ['canonicalcompressionfunction_0',['CanonicalCompressionFunction',['../classmimir_1_1color__refinement_1_1Certificate.html#a0761252a19ec31b157fcaedb224761b3',1,'mimir::color_refinement::Certificate']]],
+  ['canonicalconfigurationcompressionfunction_1',['CanonicalConfigurationCompressionFunction',['../classmimir_1_1kfwl_1_1Certificate.html#acafb56cd99272b5a9a7f5d024a0e79b2',1,'mimir::kfwl::Certificate']]],
+  ['certificate_2',['Certificate',['../classmimir_1_1color__refinement_1_1Certificate.html#a9c8d4d3687cc19d6c5f88b826992c6b5',1,'mimir::color_refinement::Certificate::Certificate()'],['../classmimir_1_1kfwl_1_1Certificate.html#a76bf758c7365b34bcbaac1f69b308721',1,'mimir::kfwl::Certificate::Certificate()'],['../classmimir_1_1color__refinement_1_1Certificate.html',1,'mimir::color_refinement::Certificate'],['../classmimir_1_1kfwl_1_1Certificate.html',1,'mimir::kfwl::Certificate&lt; K &gt;']]],
+  ['clear_3',['clear',['../classmimir_1_1DynamicGraph.html#a248499046c7874bca35c28511a2d1b07',1,'mimir::DynamicGraph::clear()'],['../classmimir_1_1StaticGraph.html#ab1d35cf27a2f0b821498b52989000490',1,'mimir::StaticGraph::clear()']]],
+  ['color_5frefinement_2ehpp_4',['color_refinement.hpp',['../color__refinement_8hpp.html',1,'']]],
+  ['color_5frefinement_5fimpl_2ehpp_5',['color_refinement_impl.hpp',['../color__refinement__impl_8hpp.html',1,'']]],
+  ['colorededge_6',['ColoredEdge',['../namespacemimir.html#a3905650689bd70f23cf74b8ece279d50',1,'mimir']]],
+  ['coloredvertex_7',['ColoredVertex',['../namespacemimir.html#a55e38cb435a817006a2e7f601dab4a78',1,'mimir']]],
+  ['compressionfunction_8',['CompressionFunction',['../classmimir_1_1color__refinement_1_1Certificate.html#a4f73c2d41de922d64ec8fb1922e0234a',1,'mimir::color_refinement::Certificate']]],
+  ['compute_5fcertificate_9',['compute_certificate',['../namespacemimir_1_1color__refinement.html#a68d41bc6bb771e13602596bbf0a18bd7',1,'mimir::color_refinement::compute_certificate()'],['../namespacemimir_1_1kfwl.html#a21f85d2331d7cfe4c4e21b3c558fc0b4',1,'mimir::kfwl::compute_certificate(const G &amp;graph, IsomorphismTypeCompressionFunction &amp;iso_type_function)']]],
+  ['compute_5fordered_5fisomorphism_5ftypes_10',['compute_ordered_isomorphism_types',['../namespacemimir_1_1kfwl.html#aa794617d48b1018ea2e0fed8d04d0615',1,'mimir::kfwl']]],
+  ['configurationcompressionfunction_11',['ConfigurationCompressionFunction',['../classmimir_1_1kfwl_1_1Certificate.html#a431114127cb5896fc5e553cdcf29e246',1,'mimir::kfwl::Certificate']]]
 ];

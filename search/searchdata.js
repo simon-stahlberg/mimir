@@ -1,12 +1,13 @@
 var indexSectionsWithContent =
 {
-  0: "acegimosv",
-  1: "esv",
-  2: "m",
-  3: "gs",
-  4: "acegiosv",
-  5: "acegv",
-  6: "m"
+  0: "abcdefghimnoprstv",
+  1: "bcdefgisv",
+  2: "bm",
+  3: "cdfgs",
+  4: "abcdefghinorstv",
+  5: "dp",
+  6: "acdeioprstv",
+  7: "m"
 };
 
 var indexSectionNames =
@@ -16,8 +17,9 @@ var indexSectionNames =
   2: "namespaces",
   3: "files",
   4: "functions",
-  5: "typedefs",
-  6: "concepts"
+  5: "variables",
+  6: "typedefs",
+  7: "concepts"
 };
 
 var indexSectionLabels =
@@ -27,7 +29,8 @@ var indexSectionLabels =
   2: "Namespaces",
   3: "Files",
   4: "Functions",
-  5: "Typedefs",
-  6: "Concepts"
+  5: "Variables",
+  6: "Typedefs",
+  7: "Concepts"
 };
 

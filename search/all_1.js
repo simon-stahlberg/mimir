@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['clear_0',['clear',['../classmimir_1_1StaticGraph.html#ab1d35cf27a2f0b821498b52989000490',1,'mimir::StaticGraph']]],
-  ['colorededge_1',['ColoredEdge',['../namespacemimir.html#a3905650689bd70f23cf74b8ece279d50',1,'mimir']]],
-  ['coloredvertex_2',['ColoredVertex',['../namespacemimir.html#a55e38cb435a817006a2e7f601dab4a78',1,'mimir']]]
+  ['backward_0',['Backward',['../structmimir_1_1Backward.html',1,'mimir']]],
+  ['bfsboostvisitor_1',['BFSBoostVisitor',['../structmimir_1_1BFSBoostVisitor.html#a7f5715aef05ad4fb359d9e4330fb88fc',1,'mimir::BFSBoostVisitor::BFSBoostVisitor()'],['../structmimir_1_1BFSBoostVisitor.html',1,'mimir::BFSBoostVisitor&lt; VertexDescriptor &gt;']]],
+  ['boost_2',['boost',['../namespaceboost.html',1,'']]],
+  ['breadth_5ffirst_5fsearch_3',['breadth_first_search',['../namespacemimir.html#a111ab0167a5d3c1f78f4cb6df6093a34',1,'mimir']]]
 ];
