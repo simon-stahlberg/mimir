@@ -1,19 +1,4 @@
 var searchData=
 [
-  ['color_5frefinement_0',['color_refinement',['../namespacemimir_1_1color__refinement.html',1,'mimir']]],
-  ['hasedgeproperties_1',['HasEdgeProperties',['../conceptmimir_1_1HasEdgeProperties.html',1,'mimir']]],
-  ['hasvertexproperties_2',['HasVertexProperties',['../conceptmimir_1_1HasVertexProperties.html',1,'mimir']]],
-  ['isadjacencygraph_3',['IsAdjacencyGraph',['../conceptmimir_1_1IsAdjacencyGraph.html',1,'mimir']]],
-  ['isdirection_4',['IsDirection',['../conceptmimir_1_1IsDirection.html',1,'mimir']]],
-  ['isdynamicgraph_5',['IsDynamicGraph',['../conceptmimir_1_1IsDynamicGraph.html',1,'mimir']]],
-  ['isedge_6',['IsEdge',['../conceptmimir_1_1IsEdge.html',1,'mimir']]],
-  ['isedgecoloredgraph_7',['IsEdgeColoredGraph',['../conceptmimir_1_1IsEdgeColoredGraph.html',1,'mimir']]],
-  ['isedgelistgraph_8',['IsEdgeListGraph',['../conceptmimir_1_1IsEdgeListGraph.html',1,'mimir']]],
-  ['isincidencegraph_9',['IsIncidenceGraph',['../conceptmimir_1_1IsIncidenceGraph.html',1,'mimir']]],
-  ['isstaticgraph_10',['IsStaticGraph',['../conceptmimir_1_1IsStaticGraph.html',1,'mimir']]],
-  ['isvertex_11',['IsVertex',['../conceptmimir_1_1IsVertex.html',1,'mimir']]],
-  ['isvertexcoloredgraph_12',['IsVertexColoredGraph',['../conceptmimir_1_1IsVertexColoredGraph.html',1,'mimir']]],
-  ['isvertexlistgraph_13',['IsVertexListGraph',['../conceptmimir_1_1IsVertexListGraph.html',1,'mimir']]],
-  ['kfwl_14',['kfwl',['../namespacemimir_1_1kfwl.html',1,'mimir']]],
-  ['mimir_15',['mimir',['../namespacemimir.html',1,'']]]
+  ['segmentedrepository_0',['SegmentedRepository',['../classmimir_1_1ActionImpl.html#a9fe84bd09146359e041c5cdba10d6757',1,'mimir::ActionImpl']]]
 ];

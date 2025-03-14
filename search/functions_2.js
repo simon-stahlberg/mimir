@@ -1,7 +1,11 @@
 var searchData=
 [
-  ['certificate_0',['Certificate',['../classmimir_1_1color__refinement_1_1Certificate.html#a9c8d4d3687cc19d6c5f88b826992c6b5',1,'mimir::color_refinement::Certificate::Certificate()'],['../classmimir_1_1kfwl_1_1Certificate.html#a76bf758c7365b34bcbaac1f69b308721',1,'mimir::kfwl::Certificate::Certificate()']]],
-  ['clear_1',['clear',['../classmimir_1_1DynamicGraph.html#a248499046c7874bca35c28511a2d1b07',1,'mimir::DynamicGraph::clear()'],['../classmimir_1_1StaticGraph.html#ab1d35cf27a2f0b821498b52989000490',1,'mimir::StaticGraph::clear()']]],
-  ['compute_5fcertificate_2',['compute_certificate',['../namespacemimir_1_1color__refinement.html#a68d41bc6bb771e13602596bbf0a18bd7',1,'mimir::color_refinement::compute_certificate()'],['../namespacemimir_1_1kfwl.html#a21f85d2331d7cfe4c4e21b3c558fc0b4',1,'mimir::kfwl::compute_certificate(const G &amp;graph, IsomorphismTypeCompressionFunction &amp;iso_type_function)']]],
-  ['compute_5fordered_5fisomorphism_5ftypes_3',['compute_ordered_isomorphism_types',['../namespacemimir_1_1kfwl.html#aa794617d48b1018ea2e0fed8d04d0615',1,'mimir::kfwl']]]
+  ['certificate_0',['Certificate',['../classmimir_1_1graphs_1_1color__refinement_1_1Certificate.html#acea0a24195bc67b98ebea189a58c0264',1,'mimir::graphs::color_refinement::Certificate::Certificate()'],['../classmimir_1_1graphs_1_1kfwl_1_1Certificate.html#a8f4bb2406ccb2853decff0c25b1f7559',1,'mimir::graphs::kfwl::Certificate::Certificate()']]],
+  ['clear_1',['clear',['../classmimir_1_1graphs_1_1DynamicGraph.html#ab78e95248900c79a724e8dabb2e7e14f',1,'mimir::graphs::DynamicGraph::clear()'],['../classmimir_1_1graphs_1_1StaticGraph.html#abe0622b8c9e48cbe484f04e1960588e9',1,'mimir::graphs::StaticGraph::clear()']]],
+  ['compute_5fcertificate_2',['compute_certificate',['../namespacemimir_1_1graphs_1_1color__refinement.html#a5365401ec40ae8011b6d9a3701718aa4',1,'mimir::graphs::color_refinement::compute_certificate()'],['../namespacemimir_1_1graphs_1_1kfwl.html#a0a27094ee7fea6714bb9334e85acbdc4',1,'mimir::graphs::kfwl::compute_certificate(const G &amp;graph, IsomorphismTypeCompressionFunction &amp;iso_type_function)']]],
+  ['compute_5fordered_5fisomorphism_5ftypes_3',['compute_ordered_isomorphism_types',['../namespacemimir_1_1graphs_1_1kfwl.html#af6dce5b84778120a30ad9e1e6db9bc84',1,'mimir::graphs::kfwl']]],
+  ['create_4',['create',['../classmimir_1_1KnowledgeBase.html#a887497102862e0e356e8db1ea4699cba',1,'mimir::KnowledgeBase']]],
+  ['create_5finduced_5fsubgraph_5ffrom_5fclass_5fvertex_5findices_5',['create_induced_subgraph_from_class_vertex_indices',['../classmimir_1_1GeneralizedStateSpace.html#a584d45ada174c8509d9cca957740f84a',1,'mimir::GeneralizedStateSpace']]],
+  ['create_5finduced_5fsubgraph_5ffrom_5fproblem_5findices_6',['create_induced_subgraph_from_problem_indices',['../classmimir_1_1GeneralizedStateSpace.html#aedff99f54de9dea32a1b476fd11de08d',1,'mimir::GeneralizedStateSpace']]],
+  ['create_5fobject_5fgraph_7',['create_object_graph',['../namespacemimir.html#ab5608495ee740c69c5b279b590fe266f',1,'mimir']]]
 ];

@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['segmentedrepository_0',['SegmentedRepository',['../classmimir_1_1ActionImpl.html#a9fe84bd09146359e041c5cdba10d6757',1,'mimir::ActionImpl']]]
+  ['knowledge_5fbase_2ehpp_0',['knowledge_base.hpp',['../knowledge__base_8hpp.html',1,'']]],
+  ['knowledgebase_1',['KnowledgeBase',['../classmimir_1_1KnowledgeBase.html#a1e5eaa1ae54b380b21d167bfb5741a54',1,'mimir::KnowledgeBase::KnowledgeBase()'],['../classmimir_1_1KnowledgeBase.html',1,'mimir::KnowledgeBase']]]
 ];

@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['target_0',['target',['../namespacemimir.html#ad6c9d45217f15fc709bbb8f4ba135964',1,'mimir']]],
-  ['topological_5fsort_1',['topological_sort',['../namespacemimir.html#ac86b32d36d1eb21a49aa58f4cdd9171b',1,'mimir']]],
-  ['tree_5fedge_2',['tree_edge',['../structmimir_1_1BFSBoostVisitor.html#a039527e21244ca51fa5e291f9b416387',1,'mimir::BFSBoostVisitor']]],
-  ['tuple_5fto_5fhash_3',['tuple_to_hash',['../namespacemimir_1_1kfwl.html#a108c1bae080bdca83c35eef4e8a374a1',1,'mimir::kfwl']]]
+  ['remove_5fedge_0',['remove_edge',['../classmimir_1_1graphs_1_1DynamicGraph.html#a506fc838894a8d36488e1854dfec053d',1,'mimir::graphs::DynamicGraph']]],
+  ['remove_5fvertex_1',['remove_vertex',['../classmimir_1_1graphs_1_1DynamicGraph.html#a5eb5100ae1d210a35b8593c40fe9d249',1,'mimir::graphs::DynamicGraph']]],
+  ['replace_5ftuples_2',['replace_tuples',['../namespacemimir_1_1graphs_1_1color__refinement.html#a19fe79c73ad583f3e4876aa06f118e5f',1,'mimir::graphs::color_refinement']]]
 ];

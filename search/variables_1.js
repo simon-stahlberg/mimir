@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['predecessors_0',['predecessors',['../structmimir_1_1BFSBoostVisitor.html#a87d4f3ad13963d90070752076d048dad',1,'mimir::BFSBoostVisitor']]]
+  ['enable_5fdominance_5fpruning_0',['enable_dominance_pruning',['../structmimir_1_1TupleGraphCollection_1_1Options.html#a954436f60b73e8239eb1510240182d50',1,'mimir::TupleGraphCollection::Options']]]
 ];

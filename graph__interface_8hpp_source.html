@@ -106,11 +106,11 @@ $(function() {
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="preprocessor">#include &lt;span&gt;</span></div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacemimir.html">mimir</a></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacemimir_1_1graphs.html">mimir::graphs</a></div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>{</div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="conceptmimir_1_1IsVertexListGraph.html">   39</a></span><span class="keyword">concept </span><a class="code hl_concept" href="conceptmimir_1_1IsVertexListGraph.html">IsVertexListGraph</a> = <span class="keyword">requires</span>(T a, VertexIndex vertex) {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="conceptmimir_1_1graphs_1_1IsVertexListGraph.html">   39</a></span><span class="keyword">concept </span><a class="code hl_concept" href="conceptmimir_1_1graphs_1_1IsVertexListGraph.html">IsVertexListGraph</a> = <span class="keyword">requires</span>(T a, VertexIndex vertex) {</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keyword">typename</span> T::VertexIndexConstIteratorType;</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    { a.get_vertex_indices() } -&gt; IsRangeOver&lt;VertexIndex&gt;;</div>
@@ -118,7 +118,7 @@ $(function() {
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>};</div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="conceptmimir_1_1IsIncidenceGraph.html">   47</a></span><span class="keyword">concept </span><a class="code hl_concept" href="conceptmimir_1_1IsIncidenceGraph.html">IsIncidenceGraph</a> = <span class="keyword">requires</span>(T a, VertexIndex vertex, EdgeIndex edge) {</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="conceptmimir_1_1graphs_1_1IsIncidenceGraph.html">   47</a></span><span class="keyword">concept </span><a class="code hl_concept" href="conceptmimir_1_1graphs_1_1IsIncidenceGraph.html">IsIncidenceGraph</a> = <span class="keyword">requires</span>(T a, VertexIndex vertex, EdgeIndex edge) {</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keyword">typename</span> T::template AdjacentEdgeIndexConstIteratorType&lt;Forward&gt;;</div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">typename</span> T::template AdjacentEdgeIndexConstIteratorType&lt;Backward&gt;;</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
@@ -133,7 +133,7 @@ $(function() {
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>};</div>
 <div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="conceptmimir_1_1IsEdgeListGraph.html">   62</a></span><span class="keyword">concept </span><a class="code hl_concept" href="conceptmimir_1_1IsEdgeListGraph.html">IsEdgeListGraph</a> = <span class="keyword">requires</span>(T a) {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="conceptmimir_1_1graphs_1_1IsEdgeListGraph.html">   62</a></span><span class="keyword">concept </span><a class="code hl_concept" href="conceptmimir_1_1graphs_1_1IsEdgeListGraph.html">IsEdgeListGraph</a> = <span class="keyword">requires</span>(T a) {</div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keyword">typename</span> T::EdgeIndexConstIteratorType;</div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    { a.get_edge_indices() } -&gt; IsRangeOver&lt;EdgeIndex&gt;;</div>
@@ -141,7 +141,7 @@ $(function() {
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>};</div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
 <div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="conceptmimir_1_1IsAdjacencyGraph.html">   70</a></span><span class="keyword">concept </span><a class="code hl_concept" href="conceptmimir_1_1IsAdjacencyGraph.html">IsAdjacencyGraph</a> = <span class="keyword">requires</span>(T a, VertexIndex vertex) {</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="conceptmimir_1_1graphs_1_1IsAdjacencyGraph.html">   70</a></span><span class="keyword">concept </span><a class="code hl_concept" href="conceptmimir_1_1graphs_1_1IsAdjacencyGraph.html">IsAdjacencyGraph</a> = <span class="keyword">requires</span>(T a, VertexIndex vertex) {</div>
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keyword">typename</span> T::template AdjacentVertexIndexConstIteratorType&lt;Forward&gt;;</div>
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keyword">typename</span> T::template AdjacentVertexIndexConstIteratorType&lt;Backward&gt;;</div>
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
@@ -152,13 +152,13 @@ $(function() {
 <div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>}</div>
 <div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
 <div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="aconceptmimir_1_1IsAdjacencyGraph_html"><div class="ttname"><a href="conceptmimir_1_1IsAdjacencyGraph.html">mimir::IsAdjacencyGraph</a></div><div class="ttdef"><b>Definition:</b> graph_interface.hpp:70</div></div>
-<div class="ttc" id="aconceptmimir_1_1IsEdgeListGraph_html"><div class="ttname"><a href="conceptmimir_1_1IsEdgeListGraph.html">mimir::IsEdgeListGraph</a></div><div class="ttdef"><b>Definition:</b> graph_interface.hpp:62</div></div>
-<div class="ttc" id="aconceptmimir_1_1IsIncidenceGraph_html"><div class="ttname"><a href="conceptmimir_1_1IsIncidenceGraph.html">mimir::IsIncidenceGraph</a></div><div class="ttdef"><b>Definition:</b> graph_interface.hpp:47</div></div>
-<div class="ttc" id="aconceptmimir_1_1IsVertexListGraph_html"><div class="ttname"><a href="conceptmimir_1_1IsVertexListGraph.html">mimir::IsVertexListGraph</a></div><div class="ttdef"><b>Definition:</b> graph_interface.hpp:39</div></div>
+<div class="ttc" id="aconceptmimir_1_1graphs_1_1IsAdjacencyGraph_html"><div class="ttname"><a href="conceptmimir_1_1graphs_1_1IsAdjacencyGraph.html">mimir::graphs::IsAdjacencyGraph</a></div><div class="ttdef"><b>Definition:</b> graph_interface.hpp:70</div></div>
+<div class="ttc" id="aconceptmimir_1_1graphs_1_1IsEdgeListGraph_html"><div class="ttname"><a href="conceptmimir_1_1graphs_1_1IsEdgeListGraph.html">mimir::graphs::IsEdgeListGraph</a></div><div class="ttdef"><b>Definition:</b> graph_interface.hpp:62</div></div>
+<div class="ttc" id="aconceptmimir_1_1graphs_1_1IsIncidenceGraph_html"><div class="ttname"><a href="conceptmimir_1_1graphs_1_1IsIncidenceGraph.html">mimir::graphs::IsIncidenceGraph</a></div><div class="ttdef"><b>Definition:</b> graph_interface.hpp:47</div></div>
+<div class="ttc" id="aconceptmimir_1_1graphs_1_1IsVertexListGraph_html"><div class="ttname"><a href="conceptmimir_1_1graphs_1_1IsVertexListGraph.html">mimir::graphs::IsVertexListGraph</a></div><div class="ttdef"><b>Definition:</b> graph_interface.hpp:39</div></div>
 <div class="ttc" id="agraph__edge__interface_8hpp_html"><div class="ttname"><a href="graph__edge__interface_8hpp.html">graph_edge_interface.hpp</a></div></div>
 <div class="ttc" id="agraph__traversal__interface_8hpp_html"><div class="ttname"><a href="graph__traversal__interface_8hpp.html">graph_traversal_interface.hpp</a></div></div>
-<div class="ttc" id="anamespacemimir_html"><div class="ttname"><a href="namespacemimir.html">mimir</a></div><div class="ttdef"><b>Definition:</b> action.hpp:24</div></div>
+<div class="ttc" id="anamespacemimir_1_1graphs_html"><div class="ttname"><a href="namespacemimir_1_1graphs.html">mimir::graphs</a></div><div class="ttdef"><b>Definition:</b> generalized_state_space.hpp:34</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

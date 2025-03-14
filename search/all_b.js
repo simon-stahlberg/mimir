@@ -1,6 +1,22 @@
 var searchData=
 [
-  ['null_5fvertex_0',['null_vertex',['../structboost_1_1graph__traits_3_01mimir_1_1DirectionTaggedType_3_01Graph_00_01Direction_01_4_01_4.html#aa39e9a6dd06ce0ceae751420b7aeb6d6',1,'boost::graph_traits&lt; mimir::DirectionTaggedType&lt; Graph, Direction &gt; &gt;']]],
-  ['num_5fedges_1',['num_edges',['../namespacemimir.html#a719db2e91088ea264aae25f8235e9900',1,'mimir']]],
-  ['num_5fvertices_2',['num_vertices',['../namespacemimir.html#a88aad7b9224e125f672101efabedc2a1',1,'mimir']]]
+  ['color_5frefinement_0',['color_refinement',['../namespacemimir_1_1graphs_1_1color__refinement.html',1,'mimir::graphs']]],
+  ['graphs_1',['graphs',['../namespacemimir_1_1graphs.html',1,'mimir']]],
+  ['hasedgeproperties_2',['HasEdgeProperties',['../conceptmimir_1_1graphs_1_1HasEdgeProperties.html',1,'mimir::graphs']]],
+  ['hasvertexproperties_3',['HasVertexProperties',['../conceptmimir_1_1graphs_1_1HasVertexProperties.html',1,'mimir::graphs']]],
+  ['isadjacencygraph_4',['IsAdjacencyGraph',['../conceptmimir_1_1graphs_1_1IsAdjacencyGraph.html',1,'mimir::graphs']]],
+  ['isdirection_5',['IsDirection',['../conceptmimir_1_1graphs_1_1IsDirection.html',1,'mimir::graphs']]],
+  ['isdynamicgraph_6',['IsDynamicGraph',['../conceptmimir_1_1graphs_1_1IsDynamicGraph.html',1,'mimir::graphs']]],
+  ['isedge_7',['IsEdge',['../conceptmimir_1_1graphs_1_1IsEdge.html',1,'mimir::graphs']]],
+  ['isedgecoloredgraph_8',['IsEdgeColoredGraph',['../conceptmimir_1_1graphs_1_1IsEdgeColoredGraph.html',1,'mimir::graphs']]],
+  ['isedgelistgraph_9',['IsEdgeListGraph',['../conceptmimir_1_1graphs_1_1IsEdgeListGraph.html',1,'mimir::graphs']]],
+  ['isincidencegraph_10',['IsIncidenceGraph',['../conceptmimir_1_1graphs_1_1IsIncidenceGraph.html',1,'mimir::graphs']]],
+  ['isstaticgraph_11',['IsStaticGraph',['../conceptmimir_1_1graphs_1_1IsStaticGraph.html',1,'mimir::graphs']]],
+  ['isvertex_12',['IsVertex',['../conceptmimir_1_1graphs_1_1IsVertex.html',1,'mimir::graphs']]],
+  ['isvertexcoloredgraph_13',['IsVertexColoredGraph',['../conceptmimir_1_1graphs_1_1IsVertexColoredGraph.html',1,'mimir::graphs']]],
+  ['isvertexlistgraph_14',['IsVertexListGraph',['../conceptmimir_1_1graphs_1_1IsVertexListGraph.html',1,'mimir::graphs']]],
+  ['kfwl_15',['kfwl',['../namespacemimir_1_1graphs_1_1kfwl.html',1,'mimir::graphs']]],
+  ['mark_5ftrue_5fgoal_5fliterals_16',['mark_true_goal_literals',['../structmimir_1_1GeneralizedStateSpace_1_1Options_1_1ProblemSpecific.html#afe85a29aa195b31b3b3117783cfedc37',1,'mimir::GeneralizedStateSpace::Options::ProblemSpecific']]],
+  ['max_5fnum_5fstates_17',['max_num_states',['../structmimir_1_1GeneralizedStateSpace_1_1Options_1_1ProblemSpecific.html#a38a213277ee54d3699027efaf7c92ed6',1,'mimir::GeneralizedStateSpace::Options::ProblemSpecific']]],
+  ['mimir_18',['mimir',['../namespacemimir.html',1,'']]]
 ];
