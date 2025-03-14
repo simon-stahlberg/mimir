@@ -8,6 +8,44 @@ EXTRACT_FUNCTIONS     = YES
 INLINE_FUNCTIONS      = YES
 INPUT                 = \
     "include/mimir/formalism/action.hpp" \
+    "include/mimir/formalism/assignment_set.hpp" \
+    "include/mimir/formalism/atom.hpp" \
+    "include/mimir/formalism/axiom_stratification.hpp" \
+    "include/mimir/formalism/axiom.hpp" \
+    "include/mimir/formalism/conjunctive_condition.hpp" \
+    "include/mimir/formalism/consistency_graph.hpp" \
+    "include/mimir/formalism/domain_builder.hpp" \
+    "include/mimir/formalism/domain.hpp" \
+    "include/mimir/formalism/effects.hpp" \
+    "include/mimir/formalism/function_expressions.hpp" \
+    "include/mimir/formalism/function_skeleton.hpp" \
+    "include/mimir/formalism/function.hpp" \
+    "include/mimir/formalism/generalized_problem.hpp" \
+    "include/mimir/formalism/ground_action.hpp" \
+    "include/mimir/formalism/ground_atom.hpp" \
+    "include/mimir/formalism/ground_axiom.hpp" \
+    "include/mimir/formalism/ground_conjunctive_condition.hpp" \
+    "include/mimir/formalism/ground_effects.hpp" \
+    "include/mimir/formalism/ground_function_expressions.hpp" \
+    "include/mimir/formalism/ground_function_value.hpp" \
+    "include/mimir/formalism/ground_function.hpp" \
+    "include/mimir/formalism/ground_literal.hpp" \
+    "include/mimir/formalism/ground_numeric_constraints.hpp" \
+    "include/mimir/formalism/literal.hpp" \
+    "include/mimir/formalism/metric.hpp" \
+    "include/mimir/formalism/numeric_constraint.hpp" \
+    "include/mimir/formalism/object.hpp" \
+    "include/mimir/formalism/parser.hpp" \
+    "include/mimir/formalism/predicate.hpp" \
+    "include/mimir/formalism/problem_builder.hpp" \
+    "include/mimir/formalism/problem.hpp" \
+    "include/mimir/formalism/repositories.hpp" \
+    "include/mimir/formalism/requirements.hpp" \
+    "include/mimir/formalism/tags.hpp" \
+    "include/mimir/formalism/term.hpp" \
+    "include/mimir/formalism/translator.hpp" \
+    "include/mimir/formalism/utils.hpp" \
+    "include/mimir/formalism/variable.hpp" \
     "include/mimir/datasets/generalized_color_function.hpp" \
     "include/mimir/datasets/generalized_state_space.hpp" \
     "include/mimir/datasets/knowledge_base.hpp" \
