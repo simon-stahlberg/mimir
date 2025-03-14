@@ -22,6 +22,8 @@
 
 #include <gtest/gtest.h>
 
+using namespace mimir::datasets;
+
 namespace mimir::tests
 {
 
@@ -38,13 +40,13 @@ TEST(MimirTests, DatasetsKnowledgeBaseConstructorTest)
 
     {
         /* Without symmetry reduction */
-        auto state_space_options = datasets::GeneralizedStateSpace::Options();
+        auto state_space_options = GeneralizedStateSpace::Options();
         state_space_options.problem_options.symmetry_pruning = false;
 
-        auto tuple_graph_options = datasets::TupleGraphCollection::Options();
+        auto tuple_graph_options = TupleGraphCollection::Options();
         tuple_graph_options.width = 2;
 
-        auto kb = datasets::KnowledgeBase::create(context, datasets::KnowledgeBase::Options(state_space_options, tuple_graph_options));
+        auto kb = KnowledgeBase::create(context, KnowledgeBase::Options(state_space_options, tuple_graph_options));
 
         // Test generalized state space.
         const auto& generalized_state_space = kb->get_generalized_state_space();
@@ -73,13 +75,13 @@ TEST(MimirTests, DatasetsKnowledgeBaseConstructorTest)
 
     {
         /* With symmetry reduction */
-        auto state_space_options = datasets::GeneralizedStateSpace::Options();
+        auto state_space_options = GeneralizedStateSpace::Options();
         state_space_options.problem_options.symmetry_pruning = true;
 
-        auto tuple_graph_options = datasets::TupleGraphCollection::Options();
+        auto tuple_graph_options = TupleGraphCollection::Options();
         tuple_graph_options.width = 2;
 
-        auto kb = datasets::KnowledgeBase::create(context, datasets::KnowledgeBase::Options(state_space_options, tuple_graph_options));
+        auto kb = KnowledgeBase::create(context, KnowledgeBase::Options(state_space_options, tuple_graph_options));
 
         // Test generalized state space.
         const auto& generalized_state_space = kb->get_generalized_state_space();

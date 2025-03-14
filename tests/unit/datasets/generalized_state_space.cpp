@@ -22,6 +22,8 @@
 
 #include <gtest/gtest.h>
 
+using namespace mimir::datasets;
+
 namespace mimir::tests
 {
 
@@ -38,9 +40,9 @@ TEST(MimirTests, DatasetsGeneralizedStateSpaceConstructorTest)
 
     {
         /* Without symmetry reduction */
-        auto options = datasets::GeneralizedStateSpace::Options();
+        auto options = GeneralizedStateSpace::Options();
         options.problem_options.symmetry_pruning = false;
-        const auto generalized_state_space = datasets::GeneralizedStateSpace(context, options);
+        const auto generalized_state_space = GeneralizedStateSpace(context, options);
         const auto& class_graph = generalized_state_space.get_graph();
 
         EXPECT_EQ(class_graph.get_num_vertices(), 15);
@@ -52,9 +54,9 @@ TEST(MimirTests, DatasetsGeneralizedStateSpaceConstructorTest)
 
     {
         /* With symmetry reduction */
-        auto options = datasets::GeneralizedStateSpace::Options();
+        auto options = GeneralizedStateSpace::Options();
         options.problem_options.symmetry_pruning = true;
-        const auto generalized_state_space = datasets::GeneralizedStateSpace(context, options);
+        const auto generalized_state_space = GeneralizedStateSpace(context, options);
         const auto& class_graph = generalized_state_space.get_graph();
 
         EXPECT_EQ(class_graph.get_num_vertices(), 12);
