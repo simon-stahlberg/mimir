@@ -23,6 +23,8 @@
 #include "mimir/search/delete_relaxed_problem_explorator.hpp"
 #include "mimir/search/state_repository.hpp"
 
+using namespace mimir::formalism;
+
 namespace mimir::search
 {
 

@@ -21,6 +21,8 @@
 #include "mimir/search/satisficing_binding_generators/action.hpp"
 #include "mimir/search/satisficing_binding_generators/base_impl.hpp"
 
+using namespace mimir::formalism;
+
 namespace mimir::search
 {
 

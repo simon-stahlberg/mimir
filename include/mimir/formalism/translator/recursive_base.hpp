@@ -29,7 +29,7 @@
 #include <loki/loki.hpp>
 #include <unordered_map>
 
-namespace mimir
+namespace mimir::formalism
 {
 
 /**
@@ -304,12 +304,7 @@ protected:
     }
     Term translate_level_2(Term term, PDDLRepositories& repositories)
     {
-        return std::visit(
-            [&](auto&& arg) -> Term
-            {
-                return repositories.get_or_create_term(this->translate_level_0(arg, repositories));
-            },
-            term->get_variant());
+        return std::visit([&](auto&& arg) -> Term { return repositories.get_or_create_term(this->translate_level_0(arg, repositories)); }, term->get_variant());
     }
     template<StaticOrFluentOrDerived P>
     Predicate<P> translate_level_2(Predicate<P> predicate, PDDLRepositories& repositories)

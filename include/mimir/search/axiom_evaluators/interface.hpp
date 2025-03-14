@@ -44,7 +44,7 @@ public:
      * Getters
      */
 
-    virtual const Problem& get_problem() const = 0;
+    virtual const formalism::Problem& get_problem() const = 0;
 };
 
 }

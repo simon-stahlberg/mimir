@@ -36,8 +36,8 @@ namespace mimir::search
 class GroundedApplicableActionGenerator : public IApplicableActionGenerator
 {
 private:
-    Problem m_problem;
-    std::unique_ptr<match_tree::MatchTree<GroundActionImpl>> m_match_tree;
+    formalism::Problem m_problem;
+    std::unique_ptr<match_tree::MatchTree<formalism::GroundActionImpl>> m_match_tree;
 
     GroundedApplicableActionGeneratorEventHandler m_event_handler;
 
@@ -46,11 +46,11 @@ private:
 
 public:
     /// @brief Simplest construction
-    GroundedApplicableActionGenerator(Problem problem, std::unique_ptr<match_tree::MatchTree<GroundActionImpl>>&& match_tree);
+    GroundedApplicableActionGenerator(formalism::Problem problem, std::unique_ptr<match_tree::MatchTree<formalism::GroundActionImpl>>&& match_tree);
 
     /// @brief Complete construction
-    GroundedApplicableActionGenerator(Problem problem,
-                                      std::unique_ptr<match_tree::MatchTree<GroundActionImpl>>&& match_tree,
+    GroundedApplicableActionGenerator(formalism::Problem problem,
+                                      std::unique_ptr<match_tree::MatchTree<formalism::GroundActionImpl>>&& match_tree,
                                       GroundedApplicableActionGeneratorEventHandler event_handler);
 
     // Uncopyable
@@ -64,8 +64,8 @@ public:
     /// @param state is the state.
     /// @param workspace is the workspace. There is no specific workspace in the grounded case and it should not be initialized.
     /// @return a generator to yield the applicable actions for the given state.
-    mimir::generator<GroundAction> create_applicable_action_generator(State state) override;
-    mimir::generator<GroundAction> create_applicable_action_generator(const DenseState& dense_state) override;
+    mimir::generator<formalism::GroundAction> create_applicable_action_generator(State state) override;
+    mimir::generator<formalism::GroundAction> create_applicable_action_generator(const DenseState& dense_state) override;
 
     void on_finish_search_layer() override;
     void on_end_search() override;
@@ -74,7 +74,7 @@ public:
      * Getters
      */
 
-    const Problem& get_problem() const override;
+    const formalism::Problem& get_problem() const override;
 };
 
 }

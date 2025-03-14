@@ -24,7 +24,7 @@
 
 #include <memory>
 
-namespace mimir
+namespace mimir::formalism
 {
 
 Parser::Parser(const fs::path& domain_filepath, const loki::Options& options) :

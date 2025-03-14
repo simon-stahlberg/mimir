@@ -28,7 +28,7 @@
 #include <sstream>
 #include <vector>
 
-namespace mimir::consistency_graph
+namespace mimir::formalism::consistency_graph
 {
 
 /**
@@ -158,7 +158,7 @@ namespace mimir
  * Print the graph nicely as dot format
  */
 template<>
-std::ostream& operator<<(std::ostream& out, const std::tuple<const consistency_graph::StaticConsistencyGraph&, const ProblemImpl&>& data);
+std::ostream& operator<<(std::ostream& out, const std::tuple<const formalism::consistency_graph::StaticConsistencyGraph&, const formalism::ProblemImpl&>& data);
 }
 
 #endif

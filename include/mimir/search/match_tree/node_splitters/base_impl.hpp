@@ -39,12 +39,12 @@
 namespace mimir::search::match_tree
 {
 
-template<FluentOrDerived P>
-using AtomDistributions = std::unordered_map<GroundAtom<P>, AtomSplitDistribution>;
-using NumericConstraintDistributions = std::unordered_map<GroundNumericConstraint, NumericConstraintSplitDistribution>;
+template<formalism::FluentOrDerived P>
+using AtomDistributions = std::unordered_map<formalism::GroundAtom<P>, AtomSplitDistribution>;
+using NumericConstraintDistributions = std::unordered_map<formalism::GroundNumericConstraint, NumericConstraintSplitDistribution>;
 
 template<typename Derived_, HasConjunctiveCondition E>
-NodeSplitterBase<Derived_, E>::NodeSplitterBase(const PDDLRepositories& pddl_repositories, const Options& options) :
+NodeSplitterBase<Derived_, E>::NodeSplitterBase(const formalism::PDDLRepositories& pddl_repositories, const Options& options) :
     m_pddl_repositories(pddl_repositories),
     m_options(options)
 {
@@ -53,8 +53,8 @@ NodeSplitterBase<Derived_, E>::NodeSplitterBase(const PDDLRepositories& pddl_rep
 template<typename Derived_, HasConjunctiveCondition E>
 SplitSet NodeSplitterBase<Derived_, E>::compute_splits(const std::span<const E*>& elements)
 {
-    auto fluent_atom_distributions = AtomDistributions<Fluent> {};
-    auto derived_atom_distributions = AtomDistributions<Derived> {};
+    auto fluent_atom_distributions = AtomDistributions<formalism::Fluent> {};
+    auto derived_atom_distributions = AtomDistributions<formalism::Derived> {};
     auto numeric_constraint_distributions = NumericConstraintDistributions {};
 
     for (const auto& element : elements)
@@ -62,22 +62,22 @@ SplitSet NodeSplitterBase<Derived_, E>::compute_splits(const std::span<const E*>
         const auto& conjunctive_condition = element->get_conjunctive_condition();
 
         /* Fluent */
-        for (const auto& index : conjunctive_condition.template get_positive_precondition<Fluent>())
+        for (const auto& index : conjunctive_condition.template get_positive_precondition<formalism::Fluent>())
         {
-            ++fluent_atom_distributions[this->m_pddl_repositories.template get_ground_atom<Fluent>(index)].num_true_elements;
+            ++fluent_atom_distributions[this->m_pddl_repositories.template get_ground_atom<formalism::Fluent>(index)].num_true_elements;
         }
-        for (const auto& index : conjunctive_condition.template get_negative_precondition<Fluent>())
+        for (const auto& index : conjunctive_condition.template get_negative_precondition<formalism::Fluent>())
         {
-            ++fluent_atom_distributions[this->m_pddl_repositories.template get_ground_atom<Fluent>(index)].num_false_elements;
+            ++fluent_atom_distributions[this->m_pddl_repositories.template get_ground_atom<formalism::Fluent>(index)].num_false_elements;
         }
         /* Derived */
-        for (const auto& index : conjunctive_condition.template get_positive_precondition<Derived>())
+        for (const auto& index : conjunctive_condition.template get_positive_precondition<formalism::Derived>())
         {
-            ++derived_atom_distributions[this->m_pddl_repositories.template get_ground_atom<Derived>(index)].num_true_elements;
+            ++derived_atom_distributions[this->m_pddl_repositories.template get_ground_atom<formalism::Derived>(index)].num_true_elements;
         }
-        for (const auto& index : conjunctive_condition.template get_negative_precondition<Derived>())
+        for (const auto& index : conjunctive_condition.template get_negative_precondition<formalism::Derived>())
         {
-            ++derived_atom_distributions[this->m_pddl_repositories.template get_ground_atom<Derived>(index)].num_false_elements;
+            ++derived_atom_distributions[this->m_pddl_repositories.template get_ground_atom<formalism::Derived>(index)].num_false_elements;
         }
         /* Numeric constraint */
         for (const auto& numeric_constraint : conjunctive_condition.get_numeric_constraints())
@@ -101,11 +101,11 @@ SplitSet NodeSplitterBase<Derived_, E>::compute_splits(const std::span<const E*>
     auto splits = SplitSet {};
     for (const auto& [atom, distribution] : fluent_atom_distributions)
     {
-        splits.insert(AtomSplit<Fluent> { atom, distribution });
+        splits.insert(AtomSplit<formalism::Fluent> { atom, distribution });
     }
     for (const auto& [atom, distribution] : derived_atom_distributions)
     {
-        splits.insert(AtomSplit<Derived> { atom, distribution });
+        splits.insert(AtomSplit<formalism::Derived> { atom, distribution });
     }
     for (const auto& [constraint, distribution] : numeric_constraint_distributions)
     {

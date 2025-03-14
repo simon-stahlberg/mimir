@@ -52,7 +52,7 @@ inline search::State get_state(const ProblemVertex& vertex) { return vertex.get_
 
 /// @typedef ProblemEdge
 /// @brief `ProblemEdge` encapsulates information about an edge in a `ProblemGraph`.
-using ProblemEdge = Edge<Index, GroundAction, ContinuousCost>;
+using ProblemEdge = Edge<Index, formalism::GroundAction, ContinuousCost>;
 using ProblemEdgeList = std::vector<ProblemEdge>;
 
 /// @brief Get the index of the corresponding `ClassEdge` in the `GeneralizedStateSpace`.
@@ -63,7 +63,7 @@ inline Index get_class_edge_index(const ProblemEdge& edge) { return edge.get_pro
 /// @brief Get the `GroundAction` of the given `ProblemEdge`.
 /// @param edge is a `ProblemEdge`.
 /// @return the `GroundAction` of the given `ProblemEdge` in the `ProblemGraph`.
-inline GroundAction get_action(const ProblemEdge& edge) { return edge.get_property<1>(); }
+inline formalism::GroundAction get_action(const ProblemEdge& edge) { return edge.get_property<1>(); }
 
 /// @brief Get the action cost associated with the `GroundAction` of the given `ProblemEdge`
 /// @param edge is a `ProblemEdge`.
@@ -251,8 +251,8 @@ public:
     const graphs::ProblemGraph& get_problem_graph(const graphs::ClassEdge& edge) const;
     const graphs::ProblemVertex& get_problem_vertex(const graphs::ClassVertex& vertex) const;
     const graphs::ProblemEdge& get_problem_edge(const graphs::ClassEdge& edge) const;
-    const Problem& get_problem(const graphs::ClassVertex& vertex) const;
-    const Problem& get_problem(const graphs::ClassEdge& edge) const;
+    const formalism::Problem& get_problem(const graphs::ClassVertex& vertex) const;
+    const formalism::Problem& get_problem(const graphs::ClassEdge& edge) const;
 
     /// @brief Lift `Problem` related structures to `Class` related structures.
     const graphs::ClassVertex& get_class_vertex(const graphs::ProblemVertex& vertex) const;

@@ -23,6 +23,8 @@
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/dense_state.hpp"
 
+using namespace mimir::formalism;
+
 namespace mimir::search::match_tree
 {
 template<HasConjunctiveCondition E>

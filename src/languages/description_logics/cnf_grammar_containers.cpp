@@ -17,6 +17,8 @@
 
 #include "mimir/languages/description_logics/cnf_grammar_containers.hpp"
 
+using namespace mimir::formalism;
+
 namespace mimir::languages::dl::cnf_grammar
 {
 const DerivationRuleLists<Concept, Role, Boolean, Numerical> DerivationRulesContainer::empty_lists =

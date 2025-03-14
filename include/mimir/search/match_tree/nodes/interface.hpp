@@ -28,18 +28,18 @@ template<HasConjunctiveCondition E>
 class INodeVisitor
 {
 public:
-    virtual void accept(const AtomSelectorNode_TFX<E, Fluent>& atom) = 0;
-    virtual void accept(const AtomSelectorNode_TF<E, Fluent>& atom) = 0;
-    virtual void accept(const AtomSelectorNode_TX<E, Fluent>& atom) = 0;
-    virtual void accept(const AtomSelectorNode_FX<E, Fluent>& atom) = 0;
-    virtual void accept(const AtomSelectorNode_T<E, Fluent>& atom) = 0;
-    virtual void accept(const AtomSelectorNode_F<E, Fluent>& atom) = 0;
-    virtual void accept(const AtomSelectorNode_TFX<E, Derived>& atom) = 0;
-    virtual void accept(const AtomSelectorNode_TF<E, Derived>& atom) = 0;
-    virtual void accept(const AtomSelectorNode_TX<E, Derived>& atom) = 0;
-    virtual void accept(const AtomSelectorNode_FX<E, Derived>& atom) = 0;
-    virtual void accept(const AtomSelectorNode_T<E, Derived>& atom) = 0;
-    virtual void accept(const AtomSelectorNode_F<E, Derived>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_TFX<E, formalism::Fluent>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_TF<E, formalism::Fluent>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_TX<E, formalism::Fluent>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_FX<E, formalism::Fluent>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_T<E, formalism::Fluent>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_F<E, formalism::Fluent>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_TFX<E, formalism::Derived>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_TF<E, formalism::Derived>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_TX<E, formalism::Derived>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_FX<E, formalism::Derived>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_T<E, formalism::Derived>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_F<E, formalism::Derived>& atom) = 0;
     virtual void accept(const NumericConstraintSelectorNode_T<E>& constraint) = 0;
     virtual void accept(const NumericConstraintSelectorNode_TX<E>& constraint) = 0;
     virtual void accept(const ElementGeneratorNode_Perfect<E>& generator) = 0;
@@ -54,7 +54,7 @@ public:
     virtual ~INode() = default;
 
     virtual void generate_applicable_actions(const DenseState& state,
-                                             const ProblemImpl& problem,
+                                             const formalism::ProblemImpl& problem,
                                              std::vector<const INode<E>*>& ref_applicable_nodes,
                                              std::vector<const E*>& ref_applicable_elements) const = 0;
 

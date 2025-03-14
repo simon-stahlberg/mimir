@@ -37,11 +37,11 @@ public:
 
     virtual void on_start_generating_applicable_axioms() = 0;
 
-    virtual void on_ground_axiom(GroundAxiom axiom) = 0;
+    virtual void on_ground_axiom(formalism::GroundAxiom axiom) = 0;
 
-    virtual void on_ground_axiom_cache_hit(GroundAxiom axiom) = 0;
+    virtual void on_ground_axiom_cache_hit(formalism::GroundAxiom axiom) = 0;
 
-    virtual void on_ground_axiom_cache_miss(GroundAxiom axiom) = 0;
+    virtual void on_ground_axiom_cache_miss(formalism::GroundAxiom axiom) = 0;
 
     virtual void on_end_generating_applicable_axioms() = 0;
 
@@ -83,7 +83,7 @@ public:
         }
     }
 
-    void on_ground_axiom(GroundAxiom axiom) override
+    void on_ground_axiom(formalism::GroundAxiom axiom) override
     {
         if (!m_quiet)
         {
@@ -91,7 +91,7 @@ public:
         }
     }
 
-    void on_ground_axiom_cache_hit(GroundAxiom axiom) override
+    void on_ground_axiom_cache_hit(formalism::GroundAxiom axiom) override
     {
         m_statistics.increment_num_ground_axiom_cache_hits();
 
@@ -101,7 +101,7 @@ public:
         }
     }
 
-    void on_ground_axiom_cache_miss(GroundAxiom axiom) override
+    void on_ground_axiom_cache_miss(formalism::GroundAxiom axiom) override
     {
         m_statistics.increment_num_ground_axiom_cache_misses();
 

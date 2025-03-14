@@ -26,9 +26,10 @@
 
 #include <boost/hana.hpp>
 
+using namespace mimir::formalism;
+
 namespace mimir::languages::dl::grammar
 {
-
 template<FeatureCategory D>
 static Constructor<D> parse(const dl::ast::Constructor<D>& node, const DomainImpl& domain, ConstructorRepositories& ref_repositories)
 {
@@ -425,5 +426,4 @@ Grammar parse(const std::string& bnf_description, Domain domain)
 
     return Grammar(std::move(repositories), std::move(start_symbols), std::move(derivation_rules), std::move(domain));
 }
-
 }

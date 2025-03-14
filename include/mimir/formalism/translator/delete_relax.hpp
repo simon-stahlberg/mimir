@@ -20,7 +20,7 @@
 
 #include "mimir/formalism/translator/recursive_cached_base.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
 
 class DeleteRelaxTranslator : public RecursiveCachedBaseTranslator<DeleteRelaxTranslator>

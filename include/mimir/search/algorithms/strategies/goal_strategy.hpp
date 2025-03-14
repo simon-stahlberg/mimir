@@ -39,10 +39,10 @@ public:
 class ProblemGoal : public IGoalStrategy
 {
 private:
-    Problem m_problem;
+    formalism::Problem m_problem;
 
 public:
-    explicit ProblemGoal(Problem problem);
+    explicit ProblemGoal(formalism::Problem problem);
 
     bool test_static_goal() override;
     bool test_dynamic_goal(State state) override;

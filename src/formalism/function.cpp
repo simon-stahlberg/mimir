@@ -21,7 +21,7 @@
 #include "mimir/formalism/function_skeleton.hpp"
 #include "mimir/formalism/term.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
 template<StaticOrFluentOrAuxiliary F>
 FunctionImpl<F>::FunctionImpl(Index index, FunctionSkeleton<F> function_skeleton, TermList terms, IndexList parent_terms_to_terms_mapping) :

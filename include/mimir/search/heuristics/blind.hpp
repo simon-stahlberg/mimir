@@ -28,7 +28,7 @@ namespace mimir::search
 class BlindHeuristic : public IHeuristic
 {
 public:
-    explicit BlindHeuristic(Problem problem);
+    explicit BlindHeuristic(formalism::Problem problem);
 
     double compute_heuristic(State state, bool is_goal_state) override { return is_goal_state ? 0. : m_min_action_cost_value; }
 

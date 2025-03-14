@@ -46,7 +46,7 @@
 #include <cassert>
 #include <sstream>
 
-namespace mimir
+namespace mimir::formalism
 {
 
 PDDLFormatter::PDDLFormatter(size_t indent, size_t add_indent, bool action_costs, bool numeric_fluents) :

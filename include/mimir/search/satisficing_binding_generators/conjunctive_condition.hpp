@@ -30,7 +30,7 @@ private:
     /* Implement SatisficingBindingGenerator interface. */
     friend class SatisficingBindingGenerator<ConjunctiveConditionSatisficingBindingGenerator>;
 
-    bool is_valid_binding_impl(const DenseState& dense_state, const ObjectList& binding) { return true; }
+    bool is_valid_binding_impl(const DenseState& dense_state, const formalism::ObjectList& binding) { return true; }
 
 public:
     using SatisficingBindingGenerator<ConjunctiveConditionSatisficingBindingGenerator>::create_binding_generator;
@@ -38,8 +38,8 @@ public:
     using SatisficingBindingGenerator<ConjunctiveConditionSatisficingBindingGenerator>::get_event_handler;
     using SatisficingBindingGenerator<ConjunctiveConditionSatisficingBindingGenerator>::get_static_consistency_graph;
 
-    ConjunctiveConditionSatisficingBindingGenerator(ConjunctiveCondition conjunctive_condition,
-                                                    Problem problem,
+    ConjunctiveConditionSatisficingBindingGenerator(formalism::ConjunctiveCondition conjunctive_condition,
+                                                    formalism::Problem problem,
                                                     std::optional<SatisficingBindingGeneratorEventHandler> event_handler = std::nullopt);
 };
 

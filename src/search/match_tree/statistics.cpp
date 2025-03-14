@@ -25,6 +25,8 @@
 #include "mimir/search/match_tree/nodes/interface.hpp"
 #include "mimir/search/match_tree/nodes/numeric_constraint.hpp"
 
+using namespace mimir::formalism;
+
 namespace mimir::search::match_tree
 {
 

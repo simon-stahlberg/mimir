@@ -24,7 +24,7 @@
 #include "mimir/formalism/translator/encode_numeric_constraint_terms_in_functions.hpp"
 #include "mimir/formalism/translator/encode_parameter_index_in_variables.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
 
 DomainTranslationResult::DomainTranslationResult(Domain original_domain, Domain translated_domain) :

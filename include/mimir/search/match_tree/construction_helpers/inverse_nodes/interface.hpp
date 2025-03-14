@@ -31,18 +31,18 @@ template<HasConjunctiveCondition E>
 class IInverseNodeVisitor
 {
 public:
-    virtual void accept(const InverseAtomSelectorNode_TFX<E, Fluent>& atom) = 0;
-    virtual void accept(const InverseAtomSelectorNode_TF<E, Fluent>& atom) = 0;
-    virtual void accept(const InverseAtomSelectorNode_TX<E, Fluent>& atom) = 0;
-    virtual void accept(const InverseAtomSelectorNode_FX<E, Fluent>& atom) = 0;
-    virtual void accept(const InverseAtomSelectorNode_T<E, Fluent>& atom) = 0;
-    virtual void accept(const InverseAtomSelectorNode_F<E, Fluent>& atom) = 0;
-    virtual void accept(const InverseAtomSelectorNode_TFX<E, Derived>& atom) = 0;
-    virtual void accept(const InverseAtomSelectorNode_TF<E, Derived>& atom) = 0;
-    virtual void accept(const InverseAtomSelectorNode_TX<E, Derived>& atom) = 0;
-    virtual void accept(const InverseAtomSelectorNode_FX<E, Derived>& atom) = 0;
-    virtual void accept(const InverseAtomSelectorNode_T<E, Derived>& atom) = 0;
-    virtual void accept(const InverseAtomSelectorNode_F<E, Derived>& atom) = 0;
+    virtual void accept(const InverseAtomSelectorNode_TFX<E, formalism::Fluent>& atom) = 0;
+    virtual void accept(const InverseAtomSelectorNode_TF<E, formalism::Fluent>& atom) = 0;
+    virtual void accept(const InverseAtomSelectorNode_TX<E, formalism::Fluent>& atom) = 0;
+    virtual void accept(const InverseAtomSelectorNode_FX<E, formalism::Fluent>& atom) = 0;
+    virtual void accept(const InverseAtomSelectorNode_T<E, formalism::Fluent>& atom) = 0;
+    virtual void accept(const InverseAtomSelectorNode_F<E, formalism::Fluent>& atom) = 0;
+    virtual void accept(const InverseAtomSelectorNode_TFX<E, formalism::Derived>& atom) = 0;
+    virtual void accept(const InverseAtomSelectorNode_TF<E, formalism::Derived>& atom) = 0;
+    virtual void accept(const InverseAtomSelectorNode_TX<E, formalism::Derived>& atom) = 0;
+    virtual void accept(const InverseAtomSelectorNode_FX<E, formalism::Derived>& atom) = 0;
+    virtual void accept(const InverseAtomSelectorNode_T<E, formalism::Derived>& atom) = 0;
+    virtual void accept(const InverseAtomSelectorNode_F<E, formalism::Derived>& atom) = 0;
     virtual void accept(const InverseNumericConstraintSelectorNode_TX<E>& constraint) = 0;
     virtual void accept(const InverseNumericConstraintSelectorNode_T<E>& constraint) = 0;
     virtual void accept(const InverseElementGeneratorNode_Perfect<E>& generator) = 0;

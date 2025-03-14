@@ -20,7 +20,7 @@
 #include "mimir/common/collections.hpp"
 #include "mimir/formalism/domain.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
 template<typename T>
 static void verify_indexing_scheme(const std::vector<const T*>& elements, const std::string& error_message)

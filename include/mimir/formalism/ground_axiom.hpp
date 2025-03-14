@@ -28,7 +28,7 @@
 #include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
 
-namespace mimir
+namespace mimir::formalism
 {
 struct GroundEffectDerivedLiteral
 {
@@ -80,16 +80,19 @@ public:
  */
 
 using GroundAxiomImplSet = mimir::buffering::UnorderedSet<GroundAxiomImpl>;
+}
 
+namespace mimir
+{
 /**
  * Pretty printing
  */
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundEffectDerivedLiteral, const ProblemImpl&>& data);
+std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundEffectDerivedLiteral, const formalism::ProblemImpl&>& data);
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAxiom, const ProblemImpl&>& data);
+std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundAxiom, const formalism::ProblemImpl&>& data);
 }
 
 #endif

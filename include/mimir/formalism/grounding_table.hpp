@@ -6,7 +6,7 @@
 #include <absl/container/flat_hash_map.h>
 #include <loki/details/utils/hash.hpp>
 
-namespace mimir
+namespace mimir::formalism
 {
 
 template<typename T>

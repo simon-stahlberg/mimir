@@ -22,6 +22,8 @@
 
 #include <iostream>
 
+using namespace mimir::formalism;
+
 namespace mimir::search
 {
 void DebugLiftedAxiomEvaluatorEventHandler::on_start_generating_applicable_axioms_impl() const

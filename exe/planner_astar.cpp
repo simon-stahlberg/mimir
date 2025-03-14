@@ -38,6 +38,7 @@
 
 using namespace mimir;
 using namespace mimir::search;
+using namespace mimir::formalism;
 
 int main(int argc, char** argv)
 {

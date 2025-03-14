@@ -20,7 +20,7 @@
 
 #include "mimir/formalism/declarations.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
 
 /// @brief Translates a ground literal list into a list of ground atoms.

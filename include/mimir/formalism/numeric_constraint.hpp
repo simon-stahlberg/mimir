@@ -23,7 +23,7 @@
 
 #include <absl/container/flat_hash_map.h>
 
-namespace mimir
+namespace mimir::formalism
 {
 
 class NumericConstraintImpl

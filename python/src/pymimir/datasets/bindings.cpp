@@ -4,6 +4,7 @@
 
 using namespace mimir;
 using namespace mimir::datasets;
+using namespace mimir::formalism;
 
 void bind_datasets(nb::module_& m)
 {

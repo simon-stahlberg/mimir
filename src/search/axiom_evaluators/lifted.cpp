@@ -25,6 +25,8 @@
 #include "mimir/search/axiom_evaluators/lifted/event_handlers.hpp"
 #include "mimir/search/dense_state.hpp"
 
+using namespace mimir::formalism;
+
 namespace mimir::search
 {
 LiftedAxiomEvaluator::LiftedAxiomEvaluator(Problem problem) :

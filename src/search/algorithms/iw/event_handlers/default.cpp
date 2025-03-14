@@ -21,6 +21,8 @@
 #include "mimir/search/plan.hpp"
 #include "mimir/search/state.hpp"
 
+using namespace mimir::formalism;
+
 namespace mimir::search
 {
 void DefaultIWAlgorithmEventHandler::on_start_search_impl(State initial_state) const {}
@@ -41,7 +43,9 @@ void DefaultIWAlgorithmEventHandler::on_solved_impl(const Plan& plan) const
               << "[IW] Plan length: " << plan.get_actions().size() << std::endl;
     for (size_t i = 0; i < plan.get_actions().size(); ++i)
     {
-        std::cout << "[IW] " << i + 1 << ". " << std::make_tuple(plan.get_actions()[i], std::cref(*m_problem), PlanActionFormatterTag {}) << std::endl;
+        std::cout << "[IW] " << i + 1 << ". ";
+        mimir::operator<<(std::cout, std::make_tuple(plan.get_actions()[i], std::cref(*m_problem), PlanActionFormatterTag {}));
+        std::cout << std::endl;
     }
 }
 

@@ -29,6 +29,8 @@
 #include "mimir/search/dense_state.hpp"
 #include "mimir/search/match_tree/match_tree.hpp"
 
+using namespace mimir::formalism;
+
 namespace mimir::search
 {
 

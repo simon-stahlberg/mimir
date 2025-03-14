@@ -21,7 +21,7 @@
 
 #include <cassert>
 
-namespace mimir
+namespace mimir::formalism
 {
 RequirementsImpl::RequirementsImpl(Index index, loki::RequirementEnumSet requirements) : m_index(index), m_requirements(std::move(requirements)) {}
 

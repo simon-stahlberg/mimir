@@ -35,7 +35,7 @@ private:
     constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 protected:
-    const PDDLRepositories& m_pddl_repositories;
+    const formalism::PDDLRepositories& m_pddl_repositories;
     const Options& m_options;
 
     /// @brief Compute all possible ways to split the data.
@@ -49,7 +49,7 @@ protected:
     std::optional<SplitScoreAndUselessSplits> compute_refinement_data(const PlaceholderNode<E>& node);
 
 public:
-    NodeSplitterBase(const PDDLRepositories& pddl_repositories, const Options& options);
+    NodeSplitterBase(const formalism::PDDLRepositories& pddl_repositories, const Options& options);
     std::pair<Node<E>, Statistics> fit(std::span<const E*> elements) override;
 };
 }

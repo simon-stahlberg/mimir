@@ -25,7 +25,7 @@
 
 #include <algorithm>
 
-namespace mimir
+namespace mimir::formalism
 {
 
 AxiomPartition::AxiomPartition(AxiomSet axioms,

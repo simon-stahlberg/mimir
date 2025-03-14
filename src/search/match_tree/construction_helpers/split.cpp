@@ -21,6 +21,8 @@
 #include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/ground_numeric_constraint.hpp"
 
+using namespace mimir::formalism;
+
 namespace mimir::search::match_tree
 {
 

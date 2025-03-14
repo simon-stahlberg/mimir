@@ -25,7 +25,7 @@
 
 #include <cassert>
 
-namespace mimir
+namespace mimir::formalism
 {
 /* FunctionExpressionNumber */
 GroundFunctionExpressionNumberImpl::GroundFunctionExpressionNumberImpl(Index index, double number) : m_index(index), m_number(number) {}

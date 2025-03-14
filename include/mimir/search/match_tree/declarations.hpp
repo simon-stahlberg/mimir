@@ -35,7 +35,7 @@ namespace mimir::search::match_tree
 /// MatchTree can handle elements that have a conjunctive condition, e.g., GroundActionImpl and GroundAxiomImpl.
 template<typename T>
 concept HasConjunctiveCondition = requires(const T a) {
-    { a.get_conjunctive_condition() } -> std::same_as<const GroundConjunctiveCondition&>;
+    { a.get_conjunctive_condition() } -> std::same_as<const formalism::GroundConjunctiveCondition&>;
 };
 
 /**
@@ -47,17 +47,17 @@ class PlaceholderNodeImpl;
 
 template<HasConjunctiveCondition E>
 class IInverseNode;
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, formalism::FluentOrDerived P>
 class InverseAtomSelectorNode_TFX;
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, formalism::FluentOrDerived P>
 class InverseAtomSelectorNode_TF;
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, formalism::FluentOrDerived P>
 class InverseAtomSelectorNode_TX;
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, formalism::FluentOrDerived P>
 class InverseAtomSelectorNode_FX;
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, formalism::FluentOrDerived P>
 class InverseAtomSelectorNode_T;
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, formalism::FluentOrDerived P>
 class InverseAtomSelectorNode_F;
 template<HasConjunctiveCondition E>
 class InverseNumericConstraintSelectorNode_TX;
@@ -70,17 +70,17 @@ class InverseElementGeneratorNode_Imperfect;
 
 template<HasConjunctiveCondition E>
 class INode;
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, formalism::FluentOrDerived P>
 class AtomSelectorNode_TFX;
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, formalism::FluentOrDerived P>
 class AtomSelectorNode_TF;
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, formalism::FluentOrDerived P>
 class AtomSelectorNode_TX;
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, formalism::FluentOrDerived P>
 class AtomSelectorNode_FX;
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, formalism::FluentOrDerived P>
 class AtomSelectorNode_T;
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, formalism::FluentOrDerived P>
 class AtomSelectorNode_F;
 template<HasConjunctiveCondition E>
 class NumericConstraintSelectorNode_TX;

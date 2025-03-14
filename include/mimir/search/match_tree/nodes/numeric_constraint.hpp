@@ -32,17 +32,17 @@ private:
     constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 protected:
-    GroundNumericConstraint m_constraint;
+    formalism::GroundNumericConstraint m_constraint;
 
 public:
-    explicit NumericConstraintSelectorNodeBase(GroundNumericConstraint constraint) : m_constraint(constraint) { assert(m_constraint); }
+    explicit NumericConstraintSelectorNodeBase(formalism::GroundNumericConstraint constraint) : m_constraint(constraint) { assert(m_constraint); }
 
     NumericConstraintSelectorNodeBase(const NumericConstraintSelectorNodeBase& other) = delete;
     NumericConstraintSelectorNodeBase& operator=(const NumericConstraintSelectorNodeBase& other) = delete;
     NumericConstraintSelectorNodeBase(NumericConstraintSelectorNodeBase&& other) = delete;
     NumericConstraintSelectorNodeBase& operator=(NumericConstraintSelectorNodeBase&& other) = delete;
 
-    GroundNumericConstraint get_constraint() const { return m_constraint; }
+    formalism::GroundNumericConstraint get_constraint() const { return m_constraint; }
 
     void visit(INodeVisitor<E>& visitor) const override { self().visit_impl(visitor); }
 };
@@ -63,10 +63,10 @@ private:
 public:
     using NumericConstraintSelectorNodeBase<NumericConstraintSelectorNode_T<E>, E>::get_constraint;
 
-    NumericConstraintSelectorNode_T(Node<E>&& true_child, GroundNumericConstraint constraint);
+    NumericConstraintSelectorNode_T(Node<E>&& true_child, formalism::GroundNumericConstraint constraint);
 
     void generate_applicable_actions(const DenseState& state,
-                                     const ProblemImpl& problem,
+                                     const formalism::ProblemImpl& problem,
                                      std::vector<const INode<E>*>& ref_applicable_nodes,
                                      std::vector<const E*>&) const override;
 
@@ -90,10 +90,10 @@ private:
 public:
     using NumericConstraintSelectorNodeBase<NumericConstraintSelectorNode_TX<E>, E>::get_constraint;
 
-    NumericConstraintSelectorNode_TX(Node<E>&& true_child, Node<E>&& dontcare_child, GroundNumericConstraint constraint);
+    NumericConstraintSelectorNode_TX(Node<E>&& true_child, Node<E>&& dontcare_child, formalism::GroundNumericConstraint constraint);
 
     void generate_applicable_actions(const DenseState& state,
-                                     const ProblemImpl& problem,
+                                     const formalism::ProblemImpl& problem,
                                      std::vector<const INode<E>*>& ref_applicable_nodes,
                                      std::vector<const E*>&) const override;
 

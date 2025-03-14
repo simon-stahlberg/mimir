@@ -29,7 +29,7 @@ namespace mimir::search
 class GeneralizedSearchContext
 {
 private:
-    GeneralizedProblem m_generalized_problem;
+    formalism::GeneralizedProblem m_generalized_problem;
 
     SearchContextList m_search_contexts;
 
@@ -48,13 +48,13 @@ public:
     /// @brief Construction from a `GeneralizedProblem`
     /// @param problem
     /// @param options
-    GeneralizedSearchContext(GeneralizedProblem generalized_problem, const SearchContext::Options& options = SearchContext::Options());
+    GeneralizedSearchContext(formalism::GeneralizedProblem generalized_problem, const SearchContext::Options& options = SearchContext::Options());
 
     /// @brief Expert interface: fully customizable construction.
     /// @param search_contexts
-    GeneralizedSearchContext(GeneralizedProblem generalized_problem, SearchContextList search_contexts);
+    GeneralizedSearchContext(formalism::GeneralizedProblem generalized_problem, SearchContextList search_contexts);
 
-    const GeneralizedProblem& get_generalized_problem() const;
+    const formalism::GeneralizedProblem& get_generalized_problem() const;
     const SearchContextList& get_search_contexts() const;
 };
 }

@@ -35,7 +35,7 @@
 #include <variant>
 #include <vector>
 
-namespace mimir
+namespace mimir::formalism
 {
 /**
  * Forward declarations

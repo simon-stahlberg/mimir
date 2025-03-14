@@ -45,7 +45,7 @@
 
 using namespace std;
 
-namespace mimir
+namespace mimir::formalism
 {
 ProblemImpl::ProblemImpl(Index index,
                          PDDLRepositories repositories,

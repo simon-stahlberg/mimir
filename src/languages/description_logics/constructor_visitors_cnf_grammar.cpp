@@ -20,6 +20,8 @@
 #include "mimir/languages/description_logics/cnf_grammar_constructors.hpp"
 #include "mimir/languages/description_logics/constructors.hpp"
 
+using namespace mimir::formalism;
+
 namespace mimir::languages::dl::cnf_grammar
 {
 

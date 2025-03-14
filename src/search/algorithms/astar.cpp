@@ -35,6 +35,8 @@
 #include "mimir/search/search_space.hpp"
 #include "mimir/search/state_repository.hpp"
 
+using namespace mimir::formalism;
+
 namespace mimir::search
 {
 

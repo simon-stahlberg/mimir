@@ -20,7 +20,7 @@
 #include "mimir/formalism/atom.hpp"
 #include "mimir/formalism/predicate.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
 
 template<StaticOrFluentOrDerived P>

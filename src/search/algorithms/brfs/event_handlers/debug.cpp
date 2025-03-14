@@ -22,22 +22,28 @@
 #include "mimir/search/plan.hpp"
 #include "mimir/search/state.hpp"
 
+using namespace mimir::formalism;
+
 namespace mimir::search
 {
 void DebugBrFSAlgorithmEventHandler::on_expand_state_impl(State state) const
 {
     std::cout << "[BrFS] ----------------------------------------\n"
-              << "[BrFS] State: " << std::make_tuple(state, std::cref(*m_problem)) << std::endl
-              << std::endl;
+              << "[BrFS] State: ";
+    mimir::operator<<(std::cout, std::make_tuple(state, std::cref(*m_problem)));
+    std::cout << std::endl << std::endl;
 }
 
 void DebugBrFSAlgorithmEventHandler::on_expand_goal_state_impl(State state) const {}
 
 void DebugBrFSAlgorithmEventHandler::on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const
 {
-    std::cout << "[BrFS] Action: " << std::make_tuple(action, std::cref(*m_problem), FullActionFormatterTag {}) << "\n"
-              << "[BrFS] Successor: " << std::make_tuple(successor_state, std::cref(*m_problem)) << "\n"
-              << std::endl;
+    std::cout << "[BrFS] Action: ";
+    mimir::operator<<(std::cout, std::make_tuple(action, std::cref(*m_problem), FullActionFormatterTag {}));
+    std::cout << "\n"
+              << "[BrFS] Successor: ";
+    mimir::operator<<(std::cout, std::make_tuple(successor_state, std::cref(*m_problem)));
+    std::cout << "\n" << std::endl;
 }
 
 void DebugBrFSAlgorithmEventHandler::on_generate_state_in_search_tree_impl(State state,
@@ -63,7 +69,9 @@ void DebugBrFSAlgorithmEventHandler::on_finish_g_layer_impl(uint32_t g_value, ui
 void DebugBrFSAlgorithmEventHandler::on_start_search_impl(State start_state) const
 {
     std::cout << "[BrFS] Search started.\n"
-              << "[BrFS] Initial: " << std::make_tuple(start_state, std::cref(*m_problem)) << std::endl;
+              << "[BrFS] Initial: ";
+    mimir::operator<<(std::cout, std::make_tuple(start_state, std::cref(*m_problem)));
+    std::cout << std::endl;
 }
 
 void DebugBrFSAlgorithmEventHandler::on_end_search_impl(uint64_t num_reached_fluent_atoms,
@@ -88,7 +96,9 @@ void DebugBrFSAlgorithmEventHandler::on_solved_impl(const Plan& plan) const
               << "[BrFS] Plan length: " << plan.get_actions().size() << std::endl;
     for (size_t i = 0; i < plan.get_actions().size(); ++i)
     {
-        std::cout << "[BrFS] " << i + 1 << ". " << std::make_tuple(plan.get_actions()[i], std::cref(*m_problem), PlanActionFormatterTag {}) << std::endl;
+        std::cout << "[BrFS] " << i + 1 << ". ";
+        mimir::operator<<(std::cout, std::make_tuple(plan.get_actions()[i], std::cref(*m_problem), PlanActionFormatterTag {}));
+        std::cout << std::endl;
     }
 }
 

@@ -20,7 +20,7 @@
 #include "mimir/common/hash_cista.hpp"
 #include "mimir/formalism/problem.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
 
 /* GroundAxiom */
@@ -45,16 +45,21 @@ GroundEffectDerivedLiteral& GroundAxiomImpl::get_derived_effect() { return m_lit
 
 const GroundEffectDerivedLiteral& GroundAxiomImpl::get_derived_effect() const { return m_literal; }
 
+}
+
+namespace mimir
+{
+
 /**
  * Pretty printing
  */
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundEffectDerivedLiteral, const ProblemImpl&>& data)
+std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundEffectDerivedLiteral, const formalism::ProblemImpl&>& data)
 {
     const auto [derived_effect, problem] = data;
 
-    const auto& ground_atom = problem.get_repositories().get_ground_atom<Derived>(derived_effect.atom_index);
+    const auto& ground_atom = problem.get_repositories().get_ground_atom<formalism::Derived>(derived_effect.atom_index);
 
     if (derived_effect.is_negated)
     {
@@ -72,11 +77,11 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundEffectDerivedL
 }
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAxiom, const ProblemImpl&>& data)
+std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundAxiom, const formalism::ProblemImpl&>& data)
 {
     const auto [axiom, problem] = data;
 
-    auto binding = ObjectList {};
+    auto binding = formalism::ObjectList {};
     for (const auto object_index : axiom->get_object_indices())
     {
         binding.push_back(problem.get_repositories().get_object(object_index));

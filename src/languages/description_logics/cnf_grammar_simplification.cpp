@@ -22,6 +22,8 @@
 #include "mimir/graphs/static_graph_boost_adapter.hpp"
 #include "mimir/languages/description_logics/cnf_grammar_visitor_formatter.hpp"
 
+using namespace mimir::formalism;
+
 namespace mimir::languages::dl::cnf_grammar
 {
 

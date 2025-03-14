@@ -25,7 +25,7 @@
 #include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
 
-namespace mimir
+namespace mimir::formalism
 {
 class GroundConjunctiveCondition
 {
@@ -66,13 +66,16 @@ public:
     }
 };
 
+}
+
+namespace mimir
+{
 /**
  * Pretty printing
  */
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConjunctiveCondition, const ProblemImpl&>& data);
-
+std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundConjunctiveCondition, const formalism::ProblemImpl&>& data);
 }
 
 #endif

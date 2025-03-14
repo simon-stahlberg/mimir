@@ -28,7 +28,7 @@
 #include <typeinfo>
 #include <unordered_map>
 
-namespace mimir
+namespace mimir::formalism
 {
 
 /**

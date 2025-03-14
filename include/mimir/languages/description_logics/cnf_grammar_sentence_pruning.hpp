@@ -62,7 +62,7 @@ public:
 class RefinementStateListPruningFunction : public RefinementPruningFunction
 {
 public:
-    RefinementStateListPruningFunction(ProblemMap<search::StateList> state_partitioning);
+    RefinementStateListPruningFunction(formalism::ProblemMap<search::StateList> state_partitioning);
 
     /// @brief Tests whether a concept should be pruned.
     /// @param concept_ The concept to evaluate.
@@ -88,7 +88,7 @@ private:
     template<FeatureCategory D>
     bool should_prune_impl(Constructor<D> constructor);
 
-    ProblemMap<search::StateList> m_state_partitioning;
+    formalism::ProblemMap<search::StateList> m_state_partitioning;
 
     DenotationRepositories<Concept, Role, Boolean, Numerical> m_repositories;
 

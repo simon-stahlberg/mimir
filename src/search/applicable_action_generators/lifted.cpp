@@ -31,6 +31,8 @@
 #include <stdexcept>
 #include <vector>
 
+using namespace mimir::formalism;
+
 using namespace std::string_literals;
 
 namespace mimir::search

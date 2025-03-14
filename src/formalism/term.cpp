@@ -21,7 +21,7 @@
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/variable.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
 
 /* TermImpl */

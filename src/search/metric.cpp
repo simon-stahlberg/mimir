@@ -22,6 +22,8 @@
 #include "mimir/formalism/metric.hpp"
 #include "mimir/formalism/problem.hpp"
 
+using namespace mimir::formalism;
+
 namespace mimir::search
 {
 ContinuousCost compute_initial_state_metric_value(const ProblemImpl& problem)

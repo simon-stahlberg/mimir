@@ -20,7 +20,7 @@
 
 #include "mimir/formalism/declarations.hpp"
 
-namespace mimir::domain
+namespace mimir::formalism::domain
 {
 
 struct ConstantDetails

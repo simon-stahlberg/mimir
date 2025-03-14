@@ -22,6 +22,8 @@
 #include "mimir/languages/description_logics/parser/parser_wrapper.hpp"
 #include "parser.hpp"
 
+using namespace mimir::formalism;
+
 namespace mimir::languages::dl::grammar
 {
 

@@ -32,11 +32,11 @@ private:
 
     void on_start_generating_applicable_actions_impl() const;
 
-    void on_ground_action_impl(GroundAction action) const;
+    void on_ground_action_impl(formalism::GroundAction action) const;
 
-    void on_ground_action_cache_hit_impl(GroundAction action) const;
+    void on_ground_action_cache_hit_impl(formalism::GroundAction action) const;
 
-    void on_ground_action_cache_miss_impl(GroundAction action) const;
+    void on_ground_action_cache_miss_impl(formalism::GroundAction action) const;
 
     void on_end_generating_applicable_actions_impl() const;
 

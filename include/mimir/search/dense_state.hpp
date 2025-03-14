@@ -40,30 +40,30 @@ struct DenseState
 
     static void translate(State state, DenseState& out_state);
 
-    template<FluentOrDerived P>
-    bool contains(GroundAtom<P> atom) const;
+    template<formalism::FluentOrDerived P>
+    bool contains(formalism::GroundAtom<P> atom) const;
 
-    template<FluentOrDerived P>
-    bool literal_holds(GroundLiteral<P> literal) const;
+    template<formalism::FluentOrDerived P>
+    bool literal_holds(formalism::GroundLiteral<P> literal) const;
 
-    template<FluentOrDerived P>
-    bool literals_hold(const GroundLiteralList<P>& literals) const;
+    template<formalism::FluentOrDerived P>
+    bool literals_hold(const formalism::GroundLiteralList<P>& literals) const;
 
-    template<FluentOrDerived P>
+    template<formalism::FluentOrDerived P>
     bool literals_hold(const FlatIndexList& positive_atoms, const FlatIndexList& negative_atoms) const;
 
     /* Immutable Getters */
 
     Index get_index() const;
 
-    template<FluentOrDerived P>
+    template<formalism::FluentOrDerived P>
     const FlatBitset& get_atoms() const;
 
     const FlatDoubleList& get_numeric_variables() const;
 
     Index& get_index();
 
-    template<FluentOrDerived P>
+    template<formalism::FluentOrDerived P>
     FlatBitset& get_atoms();
 
     FlatDoubleList& get_numeric_variables();

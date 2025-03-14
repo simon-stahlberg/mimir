@@ -23,6 +23,8 @@
 #include "mimir/search/match_tree/nodes/generator.hpp"
 #include "mimir/search/match_tree/nodes/numeric_constraint.hpp"
 
+using namespace mimir::formalism;
+
 namespace mimir::search::match_tree
 {
 

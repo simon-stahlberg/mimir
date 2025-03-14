@@ -33,10 +33,10 @@ private:
 
 protected:
     // Meta data
-    GroundNumericConstraint m_constraint;
+    formalism::GroundNumericConstraint m_constraint;
 
 public:
-    InverseNumericConstraintSelectorNodeBase(const IInverseNode<E>* parent, SplitList useless_splits, GroundNumericConstraint constraint) :
+    InverseNumericConstraintSelectorNodeBase(const IInverseNode<E>* parent, SplitList useless_splits, formalism::GroundNumericConstraint constraint) :
         IInverseNode<E>(parent, std::move(useless_splits)),
         m_constraint(constraint)
     {
@@ -49,7 +49,7 @@ public:
 
     void visit(IInverseNodeVisitor<E>& visitor) const override { self().visit_impl(visitor); }
 
-    GroundNumericConstraint get_constraint() const { return m_constraint; }
+    formalism::GroundNumericConstraint get_constraint() const { return m_constraint; }
 };
 
 template<HasConjunctiveCondition E>
@@ -72,7 +72,7 @@ public:
 
     InverseNumericConstraintSelectorNode_T(const IInverseNode<E>* parent,
                                            SplitList useless_splits,
-                                           GroundNumericConstraint constraint,
+                                           formalism::GroundNumericConstraint constraint,
                                            std::span<const E*> true_elements);
 
     std::span<const E*> get_true_elements() const;
@@ -104,7 +104,7 @@ public:
 
     InverseNumericConstraintSelectorNode_TX(const IInverseNode<E>* parent,
                                             SplitList useless_splits,
-                                            GroundNumericConstraint constraint,
+                                            formalism::GroundNumericConstraint constraint,
                                             std::span<const E*> true_elements,
                                             std::span<const E*> dontcare_elements);
 

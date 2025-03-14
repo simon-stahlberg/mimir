@@ -21,6 +21,8 @@
 #include <mimir/formalism/problem.hpp>
 #include <mimir/formalism/translator.hpp>
 
+using namespace mimir::formalism;
+
 int main(int argc, char** argv)
 {
     if (argc < 3)
@@ -36,7 +38,7 @@ int main(int argc, char** argv)
     options.strict = true;
 
     // 1. Parse the domain
-    auto parser = mimir::Parser(domain_file, options);
+    auto parser = Parser(domain_file, options);
     const auto domain = parser.get_domain();
     std::cout << *domain << std::endl << std::endl;
 
@@ -45,11 +47,11 @@ int main(int argc, char** argv)
     std::cout << *problem << std::endl;
 
     // 3. Translate the domain
-    const auto domain_translation_result = mimir::translate(domain);
+    const auto domain_translation_result = translate(domain);
     std::cout << *domain_translation_result.get_translated_domain() << std::endl;
 
     // 4. Translate the problem, throws an error if the problem is not defined over the original domain.
-    const auto translated_problem = mimir::translate(problem, domain_translation_result);
+    const auto translated_problem = translate(problem, domain_translation_result);
     std::cout << *translated_problem << std::endl;
 
     return 0;

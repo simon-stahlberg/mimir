@@ -27,7 +27,7 @@
 
 #include <cassert>
 
-namespace mimir
+namespace mimir::formalism
 {
 AxiomImpl::AxiomImpl(Index index, ConjunctiveCondition conjunctive_condition, Literal<Derived> literal) :
     m_index(index),

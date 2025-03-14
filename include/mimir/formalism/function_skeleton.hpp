@@ -20,7 +20,7 @@
 
 #include "mimir/formalism/declarations.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
 template<StaticOrFluentOrAuxiliary F>
 class FunctionSkeletonImpl

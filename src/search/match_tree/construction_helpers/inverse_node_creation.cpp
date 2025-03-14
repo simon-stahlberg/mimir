@@ -29,6 +29,8 @@
 #include <queue>
 #include <vector>
 
+using namespace mimir::formalism;
+
 namespace mimir::search::match_tree
 {
 

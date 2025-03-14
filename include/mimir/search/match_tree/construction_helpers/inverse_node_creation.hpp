@@ -28,16 +28,16 @@
 
 namespace mimir::search::match_tree
 {
-template<HasConjunctiveCondition E, FluentOrDerived P>
-bool contains_positive(GroundAtom<P> atom, const E* element)
+template<HasConjunctiveCondition E, formalism::FluentOrDerived P>
+bool contains_positive(formalism::GroundAtom<P> atom, const E* element)
 {
     const auto& conjunctive_condition = element->get_conjunctive_condition();
     const auto& positive_precondition = conjunctive_condition.template get_positive_precondition<P>();
     return (std::find(positive_precondition.begin(), positive_precondition.end(), atom->get_index()) != positive_precondition.end());
 }
 
-template<HasConjunctiveCondition E, FluentOrDerived P>
-bool contains_negative(GroundAtom<P> atom, const E* element)
+template<HasConjunctiveCondition E, formalism::FluentOrDerived P>
+bool contains_negative(formalism::GroundAtom<P> atom, const E* element)
 {
     const auto& conjunctive_condition = element->get_conjunctive_condition();
     const auto& negative_precondition = conjunctive_condition.template get_negative_precondition<P>();
@@ -45,14 +45,14 @@ bool contains_negative(GroundAtom<P> atom, const E* element)
 }
 
 template<HasConjunctiveCondition E>
-bool contains(GroundNumericConstraint constraint, const E* element)
+bool contains(formalism::GroundNumericConstraint constraint, const E* element)
 {
     const auto& conjunctive_condition = element->get_conjunctive_condition();
     const auto& numeric_constraints = conjunctive_condition.get_numeric_constraints();
     return (std::find(numeric_constraints.begin(), numeric_constraints.end(), constraint) != numeric_constraints.end());
 }
 
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, formalism::FluentOrDerived P>
 std::pair<InverseNode<E>, PlaceholderNodeList<E>> extern create_node_and_placeholder_children(const PlaceholderNode<E>& node,
                                                                                               const SplitList& useless_splits,
                                                                                               AtomSplit<P> split);

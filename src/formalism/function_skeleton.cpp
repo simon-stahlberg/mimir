@@ -20,7 +20,7 @@
 #include "formatter.hpp"
 #include "mimir/formalism/variable.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
 template<StaticOrFluentOrAuxiliary F>
 FunctionSkeletonImpl<F>::FunctionSkeletonImpl(Index index, std::string name, VariableList parameters) :

@@ -20,12 +20,15 @@
 #include "mimir/formalism/problem.hpp"
 #include "tuple_graph_factory.hpp"
 
+using namespace mimir::formalism;
+using namespace mimir::search;
+
 namespace mimir::datasets
 {
 TupleGraph::TupleGraph(const ProblemImpl& problem,
                        const graphs::ProblemGraph& problem_graph,
                        const graphs::ClassGraph& class_graph,
-                       search::TupleIndexMapper index_mapper,
+                       TupleIndexMapper index_mapper,
                        graphs::InternalTupleGraph graph,
                        IndexGroupedVector<const Index> vertices_grouped_by_distance,
                        IndexGroupedVector<const Index> problem_vertices_grouped_by_distance) :
@@ -45,7 +48,7 @@ const graphs::ClassGraph& TupleGraph::get_class_graph() const { return m_class_g
 
 const graphs::ProblemGraph& TupleGraph::get_problem_graph() const { return m_problem_graph; }
 
-const search::TupleIndexMapper& TupleGraph::get_index_mapper() const { return m_index_mapper; }
+const TupleIndexMapper& TupleGraph::get_index_mapper() const { return m_index_mapper; }
 
 const graphs::InternalTupleGraph& TupleGraph::get_graph() const { return m_graph; }
 
@@ -72,7 +75,7 @@ std::ostream& operator<<(std::ostream& out, const TupleGraph& tuple_graph)
 {
     const auto& problem = tuple_graph.get_problem();
     const auto& pddl_repositories = problem.get_repositories();
-    auto atom_indices = search::AtomIndexList {};
+    auto atom_indices = AtomIndexList {};
 
     out << "digraph {\n"
         << "rankdir=\"LR\"" << "\n";
@@ -96,7 +99,9 @@ std::ostream& operator<<(std::ostream& out, const TupleGraph& tuple_graph)
 
             tuple_graph.get_index_mapper().to_atom_indices(get_tuple_index(vertex), atom_indices);
             const auto fluent_atoms = pddl_repositories.get_ground_atoms_from_indices<Fluent>(atom_indices);
-            out << "fluent_atoms=" << fluent_atoms << "<BR/>";
+            out << "fluent_atoms=";
+            mimir::operator<<(out, fluent_atoms);
+            out << "<BR/>";
             out << "states=[";
             for (size_t i = 0; i < get_problem_vertices(vertex).size(); ++i)
             {
@@ -105,7 +110,7 @@ std::ostream& operator<<(std::ostream& out, const TupleGraph& tuple_graph)
                 {
                     out << "<BR/>";
                 }
-                out << std::make_tuple(state, std::cref(problem));
+                mimir::operator<<(out, std::make_tuple(state, std::cref(problem)));
             }
             out << "]>]\n";
         }

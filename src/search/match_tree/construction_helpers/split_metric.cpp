@@ -17,6 +17,8 @@
 
 #include "mimir/search/match_tree/construction_helpers/split_metrics.hpp"
 
+using namespace mimir::formalism;
+
 namespace mimir::search::match_tree
 {
 

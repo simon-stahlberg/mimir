@@ -48,15 +48,15 @@ public:
     virtual void on_expand_goal_state(State state) = 0;
 
     /// @brief React on generating a successor `state` by applying an action.
-    virtual void on_generate_state(State state, GroundAction action, ContinuousCost action_cost, State successor_state) = 0;
+    virtual void on_generate_state(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) = 0;
 
     /// @brief React on generating a relaxed successor `state` by applying an action where
     /// a successor state is relaxed if the f value decreases.
-    virtual void on_generate_state_relaxed(State state, GroundAction action, ContinuousCost action_cost, State successor_state) = 0;
+    virtual void on_generate_state_relaxed(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) = 0;
 
     /// @brief React on generated an unrelaxed successor state by applying an action.
     /// a successors state is unrelaxed iff it is not relaxed.
-    virtual void on_generate_state_not_relaxed(State state, GroundAction action, ContinuousCost action_cost, State successor_state) = 0;
+    virtual void on_generate_state_not_relaxed(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) = 0;
 
     virtual void on_close_state(State state) = 0;
 
@@ -104,7 +104,7 @@ class StaticAStarAlgorithmEventHandlerBase : public IAStarAlgorithmEventHandler
 {
 protected:
     AStarAlgorithmStatistics m_statistics;
-    Problem m_problem;
+    formalism::Problem m_problem;
     bool m_quiet;
 
 private:
@@ -116,7 +116,7 @@ private:
     constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 public:
-    StaticAStarAlgorithmEventHandlerBase(Problem problem, bool quiet = true) : m_statistics(), m_problem(problem), m_quiet(quiet) {}
+    StaticAStarAlgorithmEventHandlerBase(formalism::Problem problem, bool quiet = true) : m_statistics(), m_problem(problem), m_quiet(quiet) {}
 
     void on_expand_state(State state) override
     {
@@ -136,7 +136,7 @@ public:
         }
     }
 
-    void on_generate_state(State state, GroundAction action, ContinuousCost action_cost, State successor_state) override
+    void on_generate_state(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) override
     {
         m_statistics.increment_num_generated();
 
@@ -146,7 +146,7 @@ public:
         }
     }
 
-    void on_generate_state_relaxed(State state, GroundAction action, ContinuousCost action_cost, State successor_state) override
+    void on_generate_state_relaxed(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) override
     {
         if (!m_quiet)
         {
@@ -154,7 +154,7 @@ public:
         }
     }
 
-    void on_generate_state_not_relaxed(State state, GroundAction action, ContinuousCost action_cost, State successor_state) override
+    void on_generate_state_not_relaxed(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) override
     {
         if (!m_quiet)
         {

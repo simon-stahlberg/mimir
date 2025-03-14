@@ -29,7 +29,7 @@
 #include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
 
-namespace mimir
+namespace mimir::formalism
 {
 class GroundActionImpl
 {
@@ -96,12 +96,15 @@ struct FullActionFormatterTag
 struct PlanActionFormatterTag
 {
 };
+}
+
+namespace mimir
+{
+template<>
+std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundAction, const formalism::ProblemImpl&, formalism::FullActionFormatterTag>& data);
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const ProblemImpl&, FullActionFormatterTag>& data);
-
-template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const ProblemImpl&, PlanActionFormatterTag>& data);
+std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundAction, const formalism::ProblemImpl&, formalism::PlanActionFormatterTag>& data);
 
 }
 

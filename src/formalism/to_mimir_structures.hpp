@@ -25,7 +25,7 @@
 #include <unordered_map>
 #include <variant>
 
-namespace mimir
+namespace mimir::formalism
 {
 
 using StaticOrFluentOrDerivedPredicate = std::variant<Predicate<Static>, Predicate<Fluent>, Predicate<Derived>>;

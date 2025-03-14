@@ -29,6 +29,7 @@
 #include <gtest/gtest.h>
 
 using namespace mimir::languages;
+using namespace mimir::formalism;
 
 namespace mimir::tests
 {

@@ -44,20 +44,20 @@ private:
     DerivationRulesContainer m_derivation_rules;
     SubstitutionRulesContainer m_substitution_rules;
 
-    Domain m_domain;
+    formalism::Domain m_domain;
 
 public:
     Grammar(ConstructorRepositories repositories,
             StartSymbolsContainer start_symbols,
             DerivationRulesContainer derivation_rules,
             SubstitutionRulesContainer substitution_rules,
-            Domain domain);
+            formalism::Domain domain);
 
     explicit Grammar(const grammar::Grammar& grammar);
 
-    Grammar(const std::string& bnf_description, Domain domain);
+    Grammar(const std::string& bnf_description, formalism::Domain domain);
 
-    static Grammar create(GrammarSpecificationEnum type, Domain domain);
+    static Grammar create(GrammarSpecificationEnum type, formalism::Domain domain);
 
     /// @brief Tests whether a dl constructor satisfies the grammar specification.
     /// @param constructor is the dl constructor to test.
@@ -75,7 +75,7 @@ public:
     const StartSymbolsContainer& get_start_symbols_container() const { return m_start_symbols; }
     const DerivationRulesContainer& get_derivation_rules_container() const { return m_derivation_rules; }
     const SubstitutionRulesContainer& get_substitution_rules_container() const { return m_substitution_rules; }
-    const Domain& get_domain() const { return m_domain; }
+    const formalism::Domain& get_domain() const { return m_domain; }
 };
 }
 

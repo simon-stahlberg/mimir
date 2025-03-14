@@ -25,6 +25,8 @@
 #include <unordered_map>
 #include <vector>
 
+using namespace mimir::formalism;
+
 namespace mimir::languages::dl::cnf_grammar
 {
 

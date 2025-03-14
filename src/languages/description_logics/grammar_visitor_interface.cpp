@@ -20,6 +20,8 @@
 #include "mimir/languages/description_logics/grammar_constructors.hpp"
 #include "mimir/languages/description_logics/grammar_containers.hpp"
 
+using namespace mimir::formalism;
+
 namespace mimir::languages::dl::grammar
 {
 

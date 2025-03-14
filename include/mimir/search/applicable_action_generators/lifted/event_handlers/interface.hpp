@@ -37,11 +37,11 @@ public:
 
     virtual void on_start_generating_applicable_actions() = 0;
 
-    virtual void on_ground_action(GroundAction action) = 0;
+    virtual void on_ground_action(formalism::GroundAction action) = 0;
 
-    virtual void on_ground_action_cache_hit(GroundAction action) = 0;
+    virtual void on_ground_action_cache_hit(formalism::GroundAction action) = 0;
 
-    virtual void on_ground_action_cache_miss(GroundAction action) = 0;
+    virtual void on_ground_action_cache_miss(formalism::GroundAction action) = 0;
 
     virtual void on_end_generating_applicable_actions() = 0;
 
@@ -83,7 +83,7 @@ public:
         }
     }
 
-    void on_ground_action(GroundAction action) override
+    void on_ground_action(formalism::GroundAction action) override
     {
         if (!m_quiet)
         {
@@ -91,7 +91,7 @@ public:
         }
     }
 
-    void on_ground_action_cache_hit(GroundAction action) override
+    void on_ground_action_cache_hit(formalism::GroundAction action) override
     {
         m_statistics.increment_num_ground_action_cache_hits();
 
@@ -101,7 +101,7 @@ public:
         }
     }
 
-    void on_ground_action_cache_miss(GroundAction action) override
+    void on_ground_action_cache_miss(formalism::GroundAction action) override
     {
         m_statistics.increment_num_ground_action_cache_misses();
 

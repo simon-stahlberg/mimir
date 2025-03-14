@@ -57,7 +57,7 @@ namespace mimir::datasets
 class TupleGraph
 {
 private:
-    const ProblemImpl& m_problem;
+    const formalism::ProblemImpl& m_problem;
     const graphs::ProblemGraph& m_problem_graph;  ///< child-level problem graph.
     const graphs::ClassGraph& m_class_graph;      ///< top-level class graph for convenience.
     search::TupleIndexMapper m_index_mapper;
@@ -67,7 +67,7 @@ private:
     IndexGroupedVector<const Index> m_problem_v_idxs_grouped_by_distance;
 
 public:
-    TupleGraph(const ProblemImpl& problem,
+    TupleGraph(const formalism::ProblemImpl& problem,
                const graphs::ProblemGraph& problem_graph,
                const graphs::ClassGraph& class_graph,
                search::TupleIndexMapper index_mapper,
@@ -75,7 +75,7 @@ public:
                IndexGroupedVector<const Index> vertices_grouped_by_distance,
                IndexGroupedVector<const Index> problem_vertices_grouped_by_distance);
 
-    const ProblemImpl& get_problem() const;
+    const formalism::ProblemImpl& get_problem() const;
     const graphs::ProblemGraph& get_problem_graph() const;
     const graphs::ClassGraph& get_class_graph() const;
     const search::TupleIndexMapper& get_index_mapper() const;

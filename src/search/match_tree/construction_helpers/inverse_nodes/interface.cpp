@@ -25,6 +25,8 @@
 #include "mimir/search/match_tree/construction_helpers/inverse_nodes/generator.hpp"
 #include "mimir/search/match_tree/construction_helpers/inverse_nodes/numeric_constraint.hpp"
 
+using namespace mimir::formalism;
+
 namespace mimir::search::match_tree
 {
 

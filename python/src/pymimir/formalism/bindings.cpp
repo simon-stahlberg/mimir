@@ -1,6 +1,7 @@
 #include "../init_declarations.hpp"
 
 using namespace mimir;
+using namespace mimir::formalism;
 
 void bind_formalism(nb::module_& m)
 {

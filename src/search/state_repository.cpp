@@ -29,6 +29,8 @@
 #include "mimir/search/metric.hpp"
 #include "mimir/search/search_context.hpp"
 
+using namespace mimir::formalism;
+
 namespace mimir::search
 {
 

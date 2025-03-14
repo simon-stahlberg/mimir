@@ -21,6 +21,8 @@
 #include "mimir/languages/description_logics/cnf_grammar_constructor_repositories.hpp"
 #include "mimir/languages/description_logics/cnf_grammar_constructors.hpp"
 
+using namespace mimir::formalism;
+
 namespace mimir::languages::dl::cnf_grammar
 {
 

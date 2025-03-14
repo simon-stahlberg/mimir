@@ -34,6 +34,8 @@
 #include "mimir/search/dense_state.hpp"
 #include "mimir/search/state.hpp"
 
+using namespace mimir::formalism;
+
 namespace mimir::search
 {
 

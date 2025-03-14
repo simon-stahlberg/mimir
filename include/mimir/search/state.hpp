@@ -44,26 +44,26 @@ struct StateImpl
     static const FlatIndexList s_empty_derived_atoms;       ///< Returned, if m_derived_atoms is a nullptr.
     static const FlatDoubleList s_empty_numeric_variables;  ///< Returned, if m_numeric_variables is a nullptr.
 
-    bool numeric_constraint_holds(GroundNumericConstraint numeric_constraint, const FlatDoubleList& static_numeric_variables) const;
+    bool numeric_constraint_holds(formalism::GroundNumericConstraint numeric_constraint, const FlatDoubleList& static_numeric_variables) const;
 
-    bool numeric_constraints_hold(const GroundNumericConstraintList& numeric_constraints, const FlatDoubleList& static_numeric_variables) const;
+    bool numeric_constraints_hold(const formalism::GroundNumericConstraintList& numeric_constraints, const FlatDoubleList& static_numeric_variables) const;
 
     /// @brief log(N) operation, ideally, we get rid of it, perhaps useful to expose to python users
-    template<FluentOrDerived P>
-    bool literal_holds(GroundLiteral<P> literal) const;
+    template<formalism::FluentOrDerived P>
+    bool literal_holds(formalism::GroundLiteral<P> literal) const;
 
     /// @brief N*log(N) operation, ideally (currently unused), perhaps useful to expose to python users
-    template<FluentOrDerived P>
-    bool literals_hold(const GroundLiteralList<P>& literals) const;
+    template<formalism::FluentOrDerived P>
+    bool literals_hold(const formalism::GroundLiteralList<P>& literals) const;
 
-    template<FluentOrDerived P>
+    template<formalism::FluentOrDerived P>
     bool literals_hold(const FlatIndexList& positive_atoms, const FlatIndexList& negative_atoms) const;
 
     /* Immutable Getters */
 
     Index get_index() const;
 
-    template<FluentOrDerived P>
+    template<formalism::FluentOrDerived P>
     const FlatIndexList& get_atoms() const;
 
     const FlatDoubleList& get_numeric_variables() const;
@@ -110,7 +110,7 @@ namespace mimir
  */
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<search::State, const ProblemImpl&>& data);
+std::ostream& operator<<(std::ostream& os, const std::tuple<search::State, const formalism::ProblemImpl&>& data);
 }
 
 #endif

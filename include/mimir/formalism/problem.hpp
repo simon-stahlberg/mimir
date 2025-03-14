@@ -23,7 +23,7 @@
 #include "mimir/formalism/problem_details.hpp"
 #include "mimir/formalism/repositories.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
 class ProblemImpl
 {

@@ -21,6 +21,8 @@
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/state_repository.hpp"
 
+using namespace mimir::formalism;
+
 namespace mimir::search
 {
 

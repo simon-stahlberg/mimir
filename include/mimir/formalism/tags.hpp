@@ -22,7 +22,7 @@
 #include <string>
 #include <type_traits>
 
-namespace mimir
+namespace mimir::formalism
 {
 
 /**

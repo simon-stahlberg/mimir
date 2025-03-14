@@ -19,7 +19,7 @@
 
 #include "mimir/common/collections.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
 
 static void collect_terms(FunctionExpression fexpr, TermList& ref_terms)

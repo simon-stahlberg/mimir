@@ -28,7 +28,7 @@
 #include <ostream>
 #include <tuple>
 
-namespace mimir
+namespace mimir::formalism
 {
 
 /* GroundNumericEffect */
@@ -148,26 +148,37 @@ std::ostream& operator<<(std::ostream& out, GroundNumericEffect<F> element)
 template std::ostream& operator<<(std::ostream& out, GroundNumericEffect<Fluent> element);
 template std::ostream& operator<<(std::ostream& out, GroundNumericEffect<Auxiliary> element);
 
+}
+
+namespace mimir
+{
+
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConjunctiveEffect, const ProblemImpl&>& data)
+std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundConjunctiveEffect, const formalism::ProblemImpl&>& data)
 {
     const auto& [conjunctive_effect, problem] = data;
 
     const auto& positive_literal_indices = conjunctive_effect.get_positive_effects();
     const auto& negative_literal_indices = conjunctive_effect.get_negative_effects();
 
-    auto positive_literals = GroundAtomList<Fluent> {};
-    auto negative_literals = GroundAtomList<Fluent> {};
+    auto positive_literals = formalism::GroundAtomList<formalism::Fluent> {};
+    auto negative_literals = formalism::GroundAtomList<formalism::Fluent> {};
     const auto& fluent_numeric_effects = conjunctive_effect.get_fluent_numeric_effects();
     const auto& auxiliary_numeric_effect = conjunctive_effect.get_auxiliary_numeric_effect();
 
-    problem.get_repositories().get_ground_atoms_from_indices<Fluent>(positive_literal_indices, positive_literals);
-    problem.get_repositories().get_ground_atoms_from_indices<Fluent>(negative_literal_indices, negative_literals);
+    problem.get_repositories().get_ground_atoms_from_indices<formalism::Fluent>(positive_literal_indices, positive_literals);
+    problem.get_repositories().get_ground_atoms_from_indices<formalism::Fluent>(negative_literal_indices, negative_literals);
 
-    os << "delete effects=" << negative_literals << ", " << "add effects=" << positive_literals << ", fluent numeric effects=" << fluent_numeric_effects;
+    os << "delete effects=";
+    mimir::operator<<(os, negative_literals);
+    os << ", " << "add effects=";
+    mimir::operator<<(os, positive_literals);
+    os << ", fluent numeric effects=";
+    mimir::operator<<(os, fluent_numeric_effects);
     if (auxiliary_numeric_effect)
     {
-        os << ", auxiliary numeric effects=" << auxiliary_numeric_effect.value();
+        os << ", auxiliary numeric effects=";
+        mimir::operator<<(os, auxiliary_numeric_effect.value());
     }
     else
     {
@@ -178,7 +189,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConjunctiveEff
 }
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConditionalEffect, const ProblemImpl&>& data)
+std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundConditionalEffect, const formalism::ProblemImpl&>& data)
 {
     const auto& [cond_effect_proxy, problem] = data;
 
@@ -187,5 +198,4 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConditionalEff
 
     return os;
 }
-
 }

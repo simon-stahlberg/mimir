@@ -19,7 +19,7 @@
 
 #include "formatter.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
 ObjectImpl::ObjectImpl(Index index, std::string name) : m_index(index), m_name(std::move(name)) {}
 

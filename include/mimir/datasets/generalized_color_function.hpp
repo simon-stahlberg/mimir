@@ -31,25 +31,29 @@ namespace mimir::datasets
 class GeneralizedColorFunction
 {
 private:
-    GeneralizedProblem m_generalized_problem;
+    formalism::GeneralizedProblem m_generalized_problem;
 
     std::unordered_map<graphs::Color, std::string> m_color_to_name;  ///< for visualizations
 
-    PredicateMaps<graphs::Color, Static, Fluent, Derived> m_predicate_colors;
+    formalism::PredicateMaps<graphs::Color, formalism::Static, formalism::Fluent, formalism::Derived> m_predicate_colors;
 
 public:
-    explicit GeneralizedColorFunction(GeneralizedProblem generalized_problem);
+    explicit GeneralizedColorFunction(formalism::GeneralizedProblem generalized_problem);
 
     /// @brief get color of object.
-    graphs::Color get_color(Object object) const;
+    graphs::Color get_color(formalism::Object object) const;
 
     /// @brief Get unique color of state atom.
-    template<StaticOrFluentOrDerived P>
-    graphs::Color get_color(GroundAtom<P> atom, size_t pos) const;
+    template<formalism::StaticOrFluentOrDerived P>
+    graphs::Color get_color(formalism::GroundAtom<P> atom, size_t pos) const;
 
     /// @brief Get unique color of goal literal.
-    template<StaticOrFluentOrDerived P>
-    graphs::Color get_color(GroundLiteral<P> literal, size_t pos, search::State state, const ProblemImpl& problem, bool mark_true_goal_literal = false) const;
+    template<formalism::StaticOrFluentOrDerived P>
+    graphs::Color get_color(formalism::GroundLiteral<P> literal,
+                            size_t pos,
+                            search::State state,
+                            const formalism::ProblemImpl& problem,
+                            bool mark_true_goal_literal = false) const;
 
     /// @brief Get name of color.
     const std::string& get_color_name(graphs::Color color) const;

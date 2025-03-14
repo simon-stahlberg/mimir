@@ -29,7 +29,7 @@
 #include <loki/loki.hpp>
 #include <unordered_map>
 
-namespace mimir
+namespace mimir::formalism
 {
 
 /**

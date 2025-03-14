@@ -27,7 +27,7 @@ namespace mimir::search
 class SearchContext
 {
 private:
-    Problem m_problem;
+    formalism::Problem m_problem;
     ApplicableActionGenerator m_applicable_action_generator;
     StateRepository m_state_repository;
 
@@ -55,15 +55,15 @@ public:
     /// @brief Construct for a given problem
     /// @param problem
     /// @param options
-    SearchContext(Problem problem, const Options& options = Options());
+    SearchContext(formalism::Problem problem, const Options& options = Options());
 
     /// @brief Expert interface: fully customizable construction.
     /// @param problem
     /// @param applicable_action_generator
     /// @param state_repository
-    SearchContext(Problem problem, ApplicableActionGenerator applicable_action_generator, StateRepository state_repository);
+    SearchContext(formalism::Problem problem, ApplicableActionGenerator applicable_action_generator, StateRepository state_repository);
 
-    const Problem& get_problem() const;
+    const formalism::Problem& get_problem() const;
     const ApplicableActionGenerator get_applicable_action_generator() const;
     const StateRepository get_state_repository() const;
 };

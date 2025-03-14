@@ -17,6 +17,8 @@
 
 #include "mimir/search/algorithms/strategies/pruning_strategy.hpp"
 
+using namespace mimir::formalism;
+
 namespace mimir::search
 {
 

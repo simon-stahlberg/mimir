@@ -30,9 +30,9 @@ private:
     /* Implement SatisficingBindingGenerator interface. */
     friend class SatisficingBindingGenerator<AxiomSatisficingBindingGenerator>;
 
-    Axiom m_axiom;
+    formalism::Axiom m_axiom;
 
-    bool is_valid_binding_impl(const DenseState& dense_state, const ObjectList& binding) { return true; }
+    bool is_valid_binding_impl(const DenseState& dense_state, const formalism::ObjectList& binding) { return true; }
 
 public:
     using SatisficingBindingGenerator<AxiomSatisficingBindingGenerator>::create_binding_generator;
@@ -40,7 +40,9 @@ public:
     using SatisficingBindingGenerator<AxiomSatisficingBindingGenerator>::get_event_handler;
     using SatisficingBindingGenerator<AxiomSatisficingBindingGenerator>::get_static_consistency_graph;
 
-    AxiomSatisficingBindingGenerator(Axiom axiom, Problem problem, std::optional<SatisficingBindingGeneratorEventHandler> event_handler = std::nullopt);
+    AxiomSatisficingBindingGenerator(formalism::Axiom axiom,
+                                     formalism::Problem problem,
+                                     std::optional<SatisficingBindingGeneratorEventHandler> event_handler = std::nullopt);
 };
 
 using AxiomSatisficingBindingGeneratorList = std::vector<AxiomSatisficingBindingGenerator>;

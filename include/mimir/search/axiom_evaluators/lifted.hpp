@@ -30,23 +30,23 @@ namespace mimir::search
 class LiftedAxiomEvaluator : public IAxiomEvaluator
 {
 private:
-    Problem m_problem;
+    formalism::Problem m_problem;
     LiftedAxiomEvaluatorEventHandler m_event_handler;
 
     AxiomSatisficingBindingGeneratorList m_condition_grounders;
 
     /* Memory for reuse */
-    GroundAtomList<Fluent> m_fluent_atoms;
-    GroundAtomList<Derived> m_derived_atoms;
-    GroundFunctionList<Fluent> m_fluent_functions;
-    AssignmentSet<Fluent> m_fluent_assignment_set;
-    AssignmentSet<Derived> m_derived_assignment_set;
-    NumericAssignmentSet<Fluent> m_numeric_assignment_set;
+    formalism::GroundAtomList<formalism::Fluent> m_fluent_atoms;
+    formalism::GroundAtomList<formalism::Derived> m_derived_atoms;
+    formalism::GroundFunctionList<formalism::Fluent> m_fluent_functions;
+    formalism::AssignmentSet<formalism::Fluent> m_fluent_assignment_set;
+    formalism::AssignmentSet<formalism::Derived> m_derived_assignment_set;
+    formalism::NumericAssignmentSet<formalism::Fluent> m_numeric_assignment_set;
 
 public:
-    explicit LiftedAxiomEvaluator(Problem problem);
+    explicit LiftedAxiomEvaluator(formalism::Problem problem);
 
-    LiftedAxiomEvaluator(Problem problem, LiftedAxiomEvaluatorEventHandler event_handler);
+    LiftedAxiomEvaluator(formalism::Problem problem, LiftedAxiomEvaluatorEventHandler event_handler);
 
     // Uncopyable
     LiftedAxiomEvaluator(const LiftedAxiomEvaluator& other) = delete;
@@ -64,7 +64,7 @@ public:
      * Getters.
      */
 
-    const Problem& get_problem() const override;
+    const formalism::Problem& get_problem() const override;
     const LiftedAxiomEvaluatorEventHandler& get_event_handler() const;
 };
 

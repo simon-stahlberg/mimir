@@ -43,6 +43,8 @@
 
 #include <queue>
 
+using namespace mimir::formalism;
+
 namespace mimir::languages::dl
 {
 

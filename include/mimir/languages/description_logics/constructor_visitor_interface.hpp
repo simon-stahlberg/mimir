@@ -32,12 +32,12 @@ public:
     /* Concepts */
     virtual void visit(ConceptBot constructor) = 0;
     virtual void visit(ConceptTop constructor) = 0;
-    virtual void visit(ConceptAtomicState<Static> constructor) = 0;
-    virtual void visit(ConceptAtomicState<Fluent> constructor) = 0;
-    virtual void visit(ConceptAtomicState<Derived> constructor) = 0;
-    virtual void visit(ConceptAtomicGoal<Static> constructor) = 0;
-    virtual void visit(ConceptAtomicGoal<Fluent> constructor) = 0;
-    virtual void visit(ConceptAtomicGoal<Derived> constructor) = 0;
+    virtual void visit(ConceptAtomicState<formalism::Static> constructor) = 0;
+    virtual void visit(ConceptAtomicState<formalism::Fluent> constructor) = 0;
+    virtual void visit(ConceptAtomicState<formalism::Derived> constructor) = 0;
+    virtual void visit(ConceptAtomicGoal<formalism::Static> constructor) = 0;
+    virtual void visit(ConceptAtomicGoal<formalism::Fluent> constructor) = 0;
+    virtual void visit(ConceptAtomicGoal<formalism::Derived> constructor) = 0;
     virtual void visit(ConceptIntersection constructor) = 0;
     virtual void visit(ConceptUnion constructor) = 0;
     virtual void visit(ConceptNegation constructor) = 0;
@@ -48,12 +48,12 @@ public:
     virtual void visit(ConceptNominal constructor) = 0;
     /* Roles */
     virtual void visit(RoleUniversal constructor) = 0;
-    virtual void visit(RoleAtomicState<Static> constructor) = 0;
-    virtual void visit(RoleAtomicState<Fluent> constructor) = 0;
-    virtual void visit(RoleAtomicState<Derived> constructor) = 0;
-    virtual void visit(RoleAtomicGoal<Static> constructor) = 0;
-    virtual void visit(RoleAtomicGoal<Fluent> constructor) = 0;
-    virtual void visit(RoleAtomicGoal<Derived> constructor) = 0;
+    virtual void visit(RoleAtomicState<formalism::Static> constructor) = 0;
+    virtual void visit(RoleAtomicState<formalism::Fluent> constructor) = 0;
+    virtual void visit(RoleAtomicState<formalism::Derived> constructor) = 0;
+    virtual void visit(RoleAtomicGoal<formalism::Static> constructor) = 0;
+    virtual void visit(RoleAtomicGoal<formalism::Fluent> constructor) = 0;
+    virtual void visit(RoleAtomicGoal<formalism::Derived> constructor) = 0;
     virtual void visit(RoleIntersection constructor) = 0;
     virtual void visit(RoleUnion constructor) = 0;
     virtual void visit(RoleComplement constructor) = 0;
@@ -64,9 +64,9 @@ public:
     virtual void visit(RoleRestriction constructor) = 0;
     virtual void visit(RoleIdentity constructor) = 0;
     /* Booleans */
-    virtual void visit(BooleanAtomicState<Static> constructor) = 0;
-    virtual void visit(BooleanAtomicState<Fluent> constructor) = 0;
-    virtual void visit(BooleanAtomicState<Derived> constructor) = 0;
+    virtual void visit(BooleanAtomicState<formalism::Static> constructor) = 0;
+    virtual void visit(BooleanAtomicState<formalism::Fluent> constructor) = 0;
+    virtual void visit(BooleanAtomicState<formalism::Derived> constructor) = 0;
     virtual void visit(BooleanNonempty<Concept> constructor) = 0;
     virtual void visit(BooleanNonempty<Role> constructor) = 0;
     /* Numericals */
@@ -81,12 +81,12 @@ public:
     /* Concepts */
     virtual void visit(ConceptBot constructor);
     virtual void visit(ConceptTop constructor);
-    virtual void visit(ConceptAtomicState<Static> constructor);
-    virtual void visit(ConceptAtomicState<Fluent> constructor);
-    virtual void visit(ConceptAtomicState<Derived> constructor);
-    virtual void visit(ConceptAtomicGoal<Static> constructor);
-    virtual void visit(ConceptAtomicGoal<Fluent> constructor);
-    virtual void visit(ConceptAtomicGoal<Derived> constructor);
+    virtual void visit(ConceptAtomicState<formalism::Static> constructor);
+    virtual void visit(ConceptAtomicState<formalism::Fluent> constructor);
+    virtual void visit(ConceptAtomicState<formalism::Derived> constructor);
+    virtual void visit(ConceptAtomicGoal<formalism::Static> constructor);
+    virtual void visit(ConceptAtomicGoal<formalism::Fluent> constructor);
+    virtual void visit(ConceptAtomicGoal<formalism::Derived> constructor);
     virtual void visit(ConceptIntersection constructor);
     virtual void visit(ConceptUnion constructor);
     virtual void visit(ConceptNegation constructor);
@@ -97,12 +97,12 @@ public:
     virtual void visit(ConceptNominal constructor);
     /* Roles */
     virtual void visit(RoleUniversal constructor);
-    virtual void visit(RoleAtomicState<Static> constructor);
-    virtual void visit(RoleAtomicState<Fluent> constructor);
-    virtual void visit(RoleAtomicState<Derived> constructor);
-    virtual void visit(RoleAtomicGoal<Static> constructor);
-    virtual void visit(RoleAtomicGoal<Fluent> constructor);
-    virtual void visit(RoleAtomicGoal<Derived> constructor);
+    virtual void visit(RoleAtomicState<formalism::Static> constructor);
+    virtual void visit(RoleAtomicState<formalism::Fluent> constructor);
+    virtual void visit(RoleAtomicState<formalism::Derived> constructor);
+    virtual void visit(RoleAtomicGoal<formalism::Static> constructor);
+    virtual void visit(RoleAtomicGoal<formalism::Fluent> constructor);
+    virtual void visit(RoleAtomicGoal<formalism::Derived> constructor);
     virtual void visit(RoleIntersection constructor);
     virtual void visit(RoleUnion constructor);
     virtual void visit(RoleComplement constructor);
@@ -113,9 +113,9 @@ public:
     virtual void visit(RoleRestriction constructor);
     virtual void visit(RoleIdentity constructor);
     /* Booleans */
-    virtual void visit(BooleanAtomicState<Static> constructor);
-    virtual void visit(BooleanAtomicState<Fluent> constructor);
-    virtual void visit(BooleanAtomicState<Derived> constructor);
+    virtual void visit(BooleanAtomicState<formalism::Static> constructor);
+    virtual void visit(BooleanAtomicState<formalism::Fluent> constructor);
+    virtual void visit(BooleanAtomicState<formalism::Derived> constructor);
     virtual void visit(BooleanNonempty<Concept> constructor);
     virtual void visit(BooleanNonempty<Role> constructor);
     /* Numericals */
@@ -138,12 +138,12 @@ public:
     /* Concepts */
     void visit(ConceptBot constructor) override {}
     void visit(ConceptTop constructor) override {}
-    void visit(ConceptAtomicState<Static> constructor) override {}
-    void visit(ConceptAtomicState<Fluent> constructor) override {}
-    void visit(ConceptAtomicState<Derived> constructor) override {}
-    void visit(ConceptAtomicGoal<Static> constructor) override {}
-    void visit(ConceptAtomicGoal<Fluent> constructor) override {}
-    void visit(ConceptAtomicGoal<Derived> constructor) override {}
+    void visit(ConceptAtomicState<formalism::Static> constructor) override {}
+    void visit(ConceptAtomicState<formalism::Fluent> constructor) override {}
+    void visit(ConceptAtomicState<formalism::Derived> constructor) override {}
+    void visit(ConceptAtomicGoal<formalism::Static> constructor) override {}
+    void visit(ConceptAtomicGoal<formalism::Fluent> constructor) override {}
+    void visit(ConceptAtomicGoal<formalism::Derived> constructor) override {}
     void visit(ConceptIntersection constructor) override {}
     void visit(ConceptUnion constructor) override {}
     void visit(ConceptNegation constructor) override {}
@@ -154,12 +154,12 @@ public:
     void visit(ConceptNominal constructor) override {}
     /* Roles */
     void visit(RoleUniversal constructor) override {}
-    void visit(RoleAtomicState<Static> constructor) override {}
-    void visit(RoleAtomicState<Fluent> constructor) override {}
-    void visit(RoleAtomicState<Derived> constructor) override {}
-    void visit(RoleAtomicGoal<Static> constructor) override {}
-    void visit(RoleAtomicGoal<Fluent> constructor) override {}
-    void visit(RoleAtomicGoal<Derived> constructor) override {}
+    void visit(RoleAtomicState<formalism::Static> constructor) override {}
+    void visit(RoleAtomicState<formalism::Fluent> constructor) override {}
+    void visit(RoleAtomicState<formalism::Derived> constructor) override {}
+    void visit(RoleAtomicGoal<formalism::Static> constructor) override {}
+    void visit(RoleAtomicGoal<formalism::Fluent> constructor) override {}
+    void visit(RoleAtomicGoal<formalism::Derived> constructor) override {}
     void visit(RoleIntersection constructor) override {}
     void visit(RoleUnion constructor) override {}
     void visit(RoleComplement constructor) override {}
@@ -170,9 +170,9 @@ public:
     void visit(RoleRestriction constructor) override {}
     void visit(RoleIdentity constructor) override {}
     /* Booleans */
-    void visit(BooleanAtomicState<Static> constructor) override {}
-    void visit(BooleanAtomicState<Fluent> constructor) override {}
-    void visit(BooleanAtomicState<Derived> constructor) override {}
+    void visit(BooleanAtomicState<formalism::Static> constructor) override {}
+    void visit(BooleanAtomicState<formalism::Fluent> constructor) override {}
+    void visit(BooleanAtomicState<formalism::Derived> constructor) override {}
     void visit(BooleanNonempty<Concept> constructor) override {}
     void visit(BooleanNonempty<Role> constructor) override {}
     /* Numericals */

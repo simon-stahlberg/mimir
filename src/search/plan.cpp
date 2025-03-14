@@ -19,6 +19,8 @@
 
 #include "mimir/formalism/ground_action.hpp"
 
+using namespace mimir::formalism;
+
 namespace mimir::search
 {
 
@@ -38,7 +40,8 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<const Plan&, const P
 
     for (const auto& action : plan.get_actions())
     {
-        os << std::make_tuple(action, std::cref(problem), PlanActionFormatterTag {}) << "\n";
+        mimir::operator<<(os, std::make_tuple(action, std::cref(problem), PlanActionFormatterTag {}));
+        os << "\n";
     }
     os << "; cost = " << plan.get_cost();
 

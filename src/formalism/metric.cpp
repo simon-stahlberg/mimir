@@ -24,7 +24,7 @@
 
 using namespace std;
 
-namespace mimir
+namespace mimir::formalism
 {
 OptimizationMetricImpl::OptimizationMetricImpl(Index index, loki::OptimizationMetricEnum optimization_metric, GroundFunctionExpression function_expression) :
     m_index(index),

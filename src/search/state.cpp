@@ -24,6 +24,8 @@
 #include <ostream>
 #include <tuple>
 
+using namespace mimir::formalism;
+
 namespace mimir::search
 {
 

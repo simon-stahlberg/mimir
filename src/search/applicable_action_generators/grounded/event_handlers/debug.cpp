@@ -23,6 +23,8 @@
 
 #include <iostream>
 
+using namespace mimir::formalism;
+
 namespace mimir::search
 {
 void DebugGroundedApplicableActionGeneratorEventHandler::on_start_ground_action_instantiation_impl() const

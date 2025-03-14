@@ -23,7 +23,7 @@
 
 #include <limits>
 
-namespace mimir
+namespace mimir::formalism
 {
 
 /**

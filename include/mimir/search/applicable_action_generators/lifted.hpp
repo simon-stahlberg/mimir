@@ -33,26 +33,26 @@ namespace mimir::search
 class LiftedApplicableActionGenerator : public IApplicableActionGenerator
 {
 private:
-    Problem m_problem;
+    formalism::Problem m_problem;
     LiftedApplicableActionGeneratorEventHandler m_event_handler;
 
     ActionSatisficingBindingGeneratorList m_action_grounding_data;
 
     /* Memory for reuse */
     DenseState m_dense_state;
-    GroundAtomList<Fluent> m_fluent_atoms;
-    GroundAtomList<Derived> m_derived_atoms;
-    GroundFunctionList<Fluent> m_fluent_functions;
-    AssignmentSet<Fluent> m_fluent_assignment_set;
-    AssignmentSet<Derived> m_derived_assignment_set;
-    NumericAssignmentSet<Fluent> m_numeric_assignment_set;
+    formalism::GroundAtomList<formalism::Fluent> m_fluent_atoms;
+    formalism::GroundAtomList<formalism::Derived> m_derived_atoms;
+    formalism::GroundFunctionList<formalism::Fluent> m_fluent_functions;
+    formalism::AssignmentSet<formalism::Fluent> m_fluent_assignment_set;
+    formalism::AssignmentSet<formalism::Derived> m_derived_assignment_set;
+    formalism::NumericAssignmentSet<formalism::Fluent> m_numeric_assignment_set;
 
 public:
     /// @brief Simplest construction
-    explicit LiftedApplicableActionGenerator(Problem problem);
+    explicit LiftedApplicableActionGenerator(formalism::Problem problem);
 
     /// @brief Complete construction
-    LiftedApplicableActionGenerator(Problem problem, LiftedApplicableActionGeneratorEventHandler event_handler);
+    LiftedApplicableActionGenerator(formalism::Problem problem, LiftedApplicableActionGeneratorEventHandler event_handler);
 
     // Uncopyable
     LiftedApplicableActionGenerator(const LiftedApplicableActionGenerator& other) = delete;
@@ -61,8 +61,8 @@ public:
     LiftedApplicableActionGenerator(LiftedApplicableActionGenerator&& other) = delete;
     LiftedApplicableActionGenerator& operator=(LiftedApplicableActionGenerator&& other) = delete;
 
-    mimir::generator<GroundAction> create_applicable_action_generator(State state) override;
-    mimir::generator<GroundAction> create_applicable_action_generator(const DenseState& dense_state) override;
+    mimir::generator<formalism::GroundAction> create_applicable_action_generator(State state) override;
+    mimir::generator<formalism::GroundAction> create_applicable_action_generator(const DenseState& dense_state) override;
 
     void on_finish_search_layer() override;
     void on_end_search() override;
@@ -71,7 +71,7 @@ public:
      * Getters
      */
 
-    const Problem& get_problem() const override;
+    const formalism::Problem& get_problem() const override;
 };
 
 }  // namespace mimir

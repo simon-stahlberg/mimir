@@ -24,7 +24,7 @@
 #include <optional>
 #include <string>
 
-namespace mimir
+namespace mimir::formalism
 {
 
 class DomainBuilder

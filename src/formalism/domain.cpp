@@ -34,7 +34,7 @@
 
 using namespace std;
 
-namespace mimir
+namespace mimir::formalism
 {
 DomainImpl::DomainImpl(PDDLRepositories repositories,
                        std::optional<fs::path> filepath,

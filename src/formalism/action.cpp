@@ -32,7 +32,7 @@
 #include <absl/container/flat_hash_map.h>
 #include <cassert>
 
-namespace mimir
+namespace mimir::formalism
 {
 
 static void validate_non_conflicting_numeric_effects(ConjunctiveEffect conjunctive_effect,

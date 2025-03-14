@@ -21,6 +21,9 @@
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/state.hpp"
 
+using namespace mimir::formalism;
+using namespace mimir::search;
+
 namespace mimir::datasets
 {
 
@@ -76,7 +79,7 @@ template graphs::Color GeneralizedColorFunction::get_color(GroundAtom<Derived> a
 
 template<StaticOrFluentOrDerived P>
 graphs::Color
-GeneralizedColorFunction::get_color(GroundLiteral<P> literal, size_t pos, search::State state, const ProblemImpl& problem, bool mark_true_goal_literal) const
+GeneralizedColorFunction::get_color(GroundLiteral<P> literal, size_t pos, State state, const ProblemImpl& problem, bool mark_true_goal_literal) const
 {
     bool is_satisfied_in_goal = state->literal_holds(literal);
     const auto literal_color_offset = (!mark_true_goal_literal || is_satisfied_in_goal) ? 1 : 2;
@@ -84,27 +87,18 @@ GeneralizedColorFunction::get_color(GroundLiteral<P> literal, size_t pos, search
 }
 
 template<>
-graphs::Color GeneralizedColorFunction::get_color(GroundLiteral<Static> literal,
-                                                  size_t pos,
-                                                  search::State state,
-                                                  const ProblemImpl& problem,
-                                                  bool mark_true_goal_literal) const
+graphs::Color
+GeneralizedColorFunction::get_color(GroundLiteral<Static> literal, size_t pos, State state, const ProblemImpl& problem, bool mark_true_goal_literal) const
 {
     bool is_satisfied_in_goal = problem.static_literal_holds(literal);
     const auto literal_color_offset = (!mark_true_goal_literal || is_satisfied_in_goal) ? 1 : 2;
     return boost::hana::at_key(m_predicate_colors, boost::hana::type<Static> {}).at(literal->get_atom()->get_predicate()) + literal_color_offset;
 }
 
-template graphs::Color GeneralizedColorFunction::get_color(GroundLiteral<Fluent> literal,
-                                                           size_t pos,
-                                                           search::State state,
-                                                           const ProblemImpl& problem,
-                                                           bool mark_true_goal_literal) const;
-template graphs::Color GeneralizedColorFunction::get_color(GroundLiteral<Derived> literal,
-                                                           size_t pos,
-                                                           search::State state,
-                                                           const ProblemImpl& problem,
-                                                           bool mark_true_goal_literal) const;
+template graphs::Color
+GeneralizedColorFunction::get_color(GroundLiteral<Fluent> literal, size_t pos, State state, const ProblemImpl& problem, bool mark_true_goal_literal) const;
+template graphs::Color
+GeneralizedColorFunction::get_color(GroundLiteral<Derived> literal, size_t pos, State state, const ProblemImpl& problem, bool mark_true_goal_literal) const;
 
 const std::string& GeneralizedColorFunction::get_color_name(graphs::Color color) const { return m_color_to_name.at(color); }
 

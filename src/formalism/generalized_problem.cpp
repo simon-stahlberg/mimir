@@ -21,7 +21,7 @@
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/translator.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
 
 GeneralizedProblem::GeneralizedProblem(const fs::path& domain_filepath, const std::vector<fs::path>& problem_filepaths, const loki::Options& options) :

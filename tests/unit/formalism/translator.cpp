@@ -24,6 +24,7 @@
 #include <gtest/gtest.h>
 
 using namespace mimir;
+using namespace mimir::formalism;
 
 namespace mimir::tests
 {

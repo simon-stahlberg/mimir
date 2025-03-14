@@ -19,6 +19,8 @@
 
 #include "mimir/formalism/problem.hpp"
 
+using namespace mimir::formalism;
+
 namespace mimir::search
 {
 

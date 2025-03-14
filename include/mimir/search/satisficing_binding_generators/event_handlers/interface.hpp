@@ -28,7 +28,7 @@ class ISatisficingBindingGeneratorEventHandler
 public:
     virtual ~ISatisficingBindingGeneratorEventHandler() = default;
 
-    virtual void on_invalid_binding(const ObjectList& binding, const ProblemImpl& problem) = 0;
+    virtual void on_invalid_binding(const formalism::ObjectList& binding, const formalism::ProblemImpl& problem) = 0;
 };
 
 }

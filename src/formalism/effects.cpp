@@ -31,7 +31,7 @@
 
 #include <cassert>
 
-namespace mimir
+namespace mimir::formalism
 {
 
 /**

@@ -26,6 +26,8 @@
 #include "mimir/search/axiom_evaluators/grounded/event_handlers.hpp"
 #include "mimir/search/dense_state.hpp"
 
+using namespace mimir::formalism;
+
 namespace mimir::search
 {
 GroundedAxiomEvaluator::GroundedAxiomEvaluator(Problem problem,

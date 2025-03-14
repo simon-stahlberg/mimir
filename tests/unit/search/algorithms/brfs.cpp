@@ -29,6 +29,7 @@
 #include <gtest/gtest.h>
 
 using namespace mimir::search;
+using namespace mimir::formalism;
 
 namespace mimir::tests
 {

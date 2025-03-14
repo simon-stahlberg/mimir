@@ -30,23 +30,23 @@ private:
     /* Implement SatisficingBindingGenerator interface. */
     friend class SatisficingBindingGenerator<ActionSatisficingBindingGenerator>;
 
-    bool is_valid_binding_impl(const DenseState& dense_state, const ObjectList& binding);
+    bool is_valid_binding_impl(const DenseState& dense_state, const formalism::ObjectList& binding);
 
     using SatisficingBindingGenerator<ActionSatisficingBindingGenerator>::is_valid_binding;
 
 private:
     /* Declare additional private members and functions. */
-    Action m_action;
+    formalism::Action m_action;
 
-    template<FluentOrAuxiliary F>
-    bool is_valid_binding(NumericEffect<F> effect, const FlatDoubleList& fluent_numeric_variables, const ObjectList& binding);
+    template<formalism::FluentOrAuxiliary F>
+    bool is_valid_binding(formalism::NumericEffect<F> effect, const FlatDoubleList& fluent_numeric_variables, const formalism::ObjectList& binding);
 
-    template<FluentOrAuxiliary F>
-    bool is_valid_binding(const NumericEffectList<F>& effects, const FlatDoubleList& fluent_numeric_variables, const ObjectList& binding);
+    template<formalism::FluentOrAuxiliary F>
+    bool is_valid_binding(const formalism::NumericEffectList<F>& effects, const FlatDoubleList& fluent_numeric_variables, const formalism::ObjectList& binding);
 
-    bool is_valid_binding(ConjunctiveEffect effect, const DenseState& dense_state, const ObjectList& binding);
+    bool is_valid_binding(formalism::ConjunctiveEffect effect, const DenseState& dense_state, const formalism::ObjectList& binding);
 
-    bool is_valid_binding_if_fires(ConditionalEffect effect, const DenseState& dense_state, const ObjectList& binding);
+    bool is_valid_binding_if_fires(formalism::ConditionalEffect effect, const DenseState& dense_state, const formalism::ObjectList& binding);
 
 public:
     using SatisficingBindingGenerator<ActionSatisficingBindingGenerator>::create_binding_generator;
@@ -54,9 +54,11 @@ public:
     using SatisficingBindingGenerator<ActionSatisficingBindingGenerator>::get_event_handler;
     using SatisficingBindingGenerator<ActionSatisficingBindingGenerator>::get_static_consistency_graph;
 
-    ActionSatisficingBindingGenerator(Action action, Problem problem, std::optional<SatisficingBindingGeneratorEventHandler> event_handler = std::nullopt);
+    ActionSatisficingBindingGenerator(formalism::Action action,
+                                      formalism::Problem problem,
+                                      std::optional<SatisficingBindingGeneratorEventHandler> event_handler = std::nullopt);
 
-    const Action& get_action() const;
+    const formalism::Action& get_action() const;
 };
 
 using ActionSatisficingBindingGeneratorList = std::vector<ActionSatisficingBindingGenerator>;

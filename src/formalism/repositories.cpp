@@ -19,7 +19,7 @@
 
 #include "mimir/common/itertools.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
 
 template<StaticOrFluentOrDerived P>

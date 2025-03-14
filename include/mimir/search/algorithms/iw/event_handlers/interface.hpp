@@ -73,7 +73,7 @@ class IWAlgorithmEventHandlerBase : public IIWAlgorithmEventHandler
 {
 protected:
     IWAlgorithmStatistics m_statistics;
-    Problem m_problem;
+    formalism::Problem m_problem;
     bool m_quiet;
 
 private:
@@ -85,7 +85,7 @@ private:
     constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 public:
-    explicit IWAlgorithmEventHandlerBase(Problem problem, bool quiet = true) : m_statistics(), m_problem(problem), m_quiet(quiet) {}
+    explicit IWAlgorithmEventHandlerBase(formalism::Problem problem, bool quiet = true) : m_statistics(), m_problem(problem), m_quiet(quiet) {}
 
     void on_start_search(State initial_state) override
     {

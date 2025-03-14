@@ -31,11 +31,11 @@ private:
 
     void on_start_generating_applicable_axioms_impl() const;
 
-    void on_ground_axiom_impl(GroundAxiom axiom) const;
+    void on_ground_axiom_impl(formalism::GroundAxiom axiom) const;
 
-    void on_ground_axiom_cache_hit_impl(GroundAxiom axiom) const;
+    void on_ground_axiom_cache_hit_impl(formalism::GroundAxiom axiom) const;
 
-    void on_ground_axiom_cache_miss_impl(GroundAxiom axiom) const;
+    void on_ground_axiom_cache_miss_impl(formalism::GroundAxiom axiom) const;
 
     void on_end_generating_applicable_axioms_impl() const;
 

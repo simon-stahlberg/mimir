@@ -36,11 +36,11 @@ private:
 
     void on_expand_goal_state_impl(State state) const;
 
-    void on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const;
+    void on_generate_state_impl(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) const;
 
-    void on_generate_state_relaxed_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const;
+    void on_generate_state_relaxed_impl(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) const;
 
-    void on_generate_state_not_relaxed_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const;
+    void on_generate_state_not_relaxed_impl(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) const;
 
     void on_close_state_impl(State state) const;
 
@@ -69,7 +69,7 @@ private:
     void on_exhausted_impl() const;
 
 public:
-    explicit DefaultAStarAlgorithmEventHandler(Problem problem, bool quiet = true) :
+    explicit DefaultAStarAlgorithmEventHandler(formalism::Problem problem, bool quiet = true) :
         StaticAStarAlgorithmEventHandlerBase<DefaultAStarAlgorithmEventHandler>(problem, quiet)
     {
     }

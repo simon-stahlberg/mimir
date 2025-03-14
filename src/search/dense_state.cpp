@@ -22,6 +22,8 @@
 #include "mimir/formalism/ground_literal.hpp"
 #include "mimir/search/state.hpp"
 
+using namespace mimir::formalism;
+
 namespace mimir::search
 {
 

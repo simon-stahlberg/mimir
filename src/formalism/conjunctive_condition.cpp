@@ -26,7 +26,7 @@
 #include "mimir/formalism/numeric_constraint.hpp"
 #include "mimir/formalism/variable.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
 ConjunctiveConditionImpl::ConjunctiveConditionImpl(Index index,
                                                    VariableList parameters,

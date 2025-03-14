@@ -23,7 +23,7 @@
 
 namespace mimir::search::match_tree
 {
-template<typename Derived_, HasConjunctiveCondition E, FluentOrDerived P>
+template<typename Derived_, HasConjunctiveCondition E, formalism::FluentOrDerived P>
 class InverseAtomSelectorNodeBase : public IInverseNode<E>
 {
 private:
@@ -32,10 +32,10 @@ private:
     constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 protected:
-    GroundAtom<P> m_atom;
+    formalism::GroundAtom<P> m_atom;
 
 public:
-    InverseAtomSelectorNodeBase(const IInverseNode<E>* parent, SplitList useless_splits, GroundAtom<P> atom) :
+    InverseAtomSelectorNodeBase(const IInverseNode<E>* parent, SplitList useless_splits, formalism::GroundAtom<P> atom) :
         IInverseNode<E>(parent, std::move(useless_splits)),
         m_atom(atom)
     {
@@ -48,13 +48,13 @@ public:
 
     void visit(IInverseNodeVisitor<E>& visitor) const override { self().visit_impl(visitor); }
 
-    GroundAtom<P> get_atom() const { return m_atom; };
+    formalism::GroundAtom<P> get_atom() const { return m_atom; };
 };
 
 /**
  * True False Dontcare combination
  */
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, formalism::FluentOrDerived P>
 class InverseAtomSelectorNode_TFX : public InverseAtomSelectorNodeBase<InverseAtomSelectorNode_TFX<E, P>, E, P>
 {
 private:
@@ -78,7 +78,7 @@ public:
 
     explicit InverseAtomSelectorNode_TFX(const IInverseNode<E>* parent,
                                          SplitList useless_splits,
-                                         GroundAtom<P> atom,
+                                         formalism::GroundAtom<P> atom,
                                          std::span<const E*> true_elements,
                                          std::span<const E*> false_elements,
                                          std::span<const E*> dontcare_elements);
@@ -99,7 +99,7 @@ public:
 /**
  * True False combination
  */
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, formalism::FluentOrDerived P>
 class InverseAtomSelectorNode_TF : public InverseAtomSelectorNodeBase<InverseAtomSelectorNode_TF<E, P>, E, P>
 {
 private:
@@ -121,7 +121,7 @@ public:
 
     explicit InverseAtomSelectorNode_TF(const IInverseNode<E>* parent,
                                         SplitList useless_splits,
-                                        GroundAtom<P> atom,
+                                        formalism::GroundAtom<P> atom,
                                         std::span<const E*> true_elements,
                                         std::span<const E*> false_elements);
 
@@ -138,7 +138,7 @@ public:
 /**
  * True Dontcare combination
  */
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, formalism::FluentOrDerived P>
 class InverseAtomSelectorNode_TX : public InverseAtomSelectorNodeBase<InverseAtomSelectorNode_TX<E, P>, E, P>
 {
 private:
@@ -160,7 +160,7 @@ public:
 
     explicit InverseAtomSelectorNode_TX(const IInverseNode<E>* parent,
                                         SplitList useless_splits,
-                                        GroundAtom<P> atom,
+                                        formalism::GroundAtom<P> atom,
                                         std::span<const E*> true_elements,
                                         std::span<const E*> dontcare_elements);
 
@@ -174,7 +174,7 @@ public:
     const InverseNode<E>& get_dontcare_child() const;
 };
 
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, formalism::FluentOrDerived P>
 class InverseAtomSelectorNode_FX : public InverseAtomSelectorNodeBase<InverseAtomSelectorNode_FX<E, P>, E, P>
 {
 private:
@@ -196,7 +196,7 @@ public:
 
     explicit InverseAtomSelectorNode_FX(const IInverseNode<E>* parent,
                                         SplitList useless_splits,
-                                        GroundAtom<P> atom,
+                                        formalism::GroundAtom<P> atom,
                                         std::span<const E*> false_elements,
                                         std::span<const E*> dontcare_elements);
 
@@ -210,7 +210,7 @@ public:
     const InverseNode<E>& get_dontcare_child() const;
 };
 
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, formalism::FluentOrDerived P>
 class InverseAtomSelectorNode_T : public InverseAtomSelectorNodeBase<InverseAtomSelectorNode_T<E, P>, E, P>
 {
 private:
@@ -228,7 +228,10 @@ private:
 public:
     using InverseAtomSelectorNodeBase<InverseAtomSelectorNode_T<E, P>, E, P>::get_atom;
 
-    explicit InverseAtomSelectorNode_T(const IInverseNode<E>* parent, SplitList useless_splits, GroundAtom<P> atom, std::span<const E*> true_elements);
+    explicit InverseAtomSelectorNode_T(const IInverseNode<E>* parent,
+                                       SplitList useless_splits,
+                                       formalism::GroundAtom<P> atom,
+                                       std::span<const E*> true_elements);
 
     std::span<const E*> get_true_elements() const;
 
@@ -237,7 +240,7 @@ public:
     const InverseNode<E>& get_true_child() const;
 };
 
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, formalism::FluentOrDerived P>
 class InverseAtomSelectorNode_F : public InverseAtomSelectorNodeBase<InverseAtomSelectorNode_F<E, P>, E, P>
 {
 private:
@@ -255,7 +258,10 @@ private:
 public:
     using InverseAtomSelectorNodeBase<InverseAtomSelectorNode_F<E, P>, E, P>::get_atom;
 
-    explicit InverseAtomSelectorNode_F(const IInverseNode<E>* parent, SplitList useless_splits, GroundAtom<P> atom, std::span<const E*> false_elements);
+    explicit InverseAtomSelectorNode_F(const IInverseNode<E>* parent,
+                                       SplitList useless_splits,
+                                       formalism::GroundAtom<P> atom,
+                                       std::span<const E*> false_elements);
 
     std::span<const E*> get_false_elements() const;
 

@@ -40,20 +40,20 @@ template<typename Derived_>
 class SatisficingBindingGenerator
 {
 protected:
-    ConjunctiveCondition m_conjunctive_condition;
-    Problem m_problem;
+    formalism::ConjunctiveCondition m_conjunctive_condition;
+    formalism::Problem m_problem;
     SatisficingBindingGeneratorEventHandler m_event_handler;
 
-    consistency_graph::StaticConsistencyGraph m_static_consistency_graph;
+    formalism::consistency_graph::StaticConsistencyGraph m_static_consistency_graph;
 
     /* Memory for reuse */
     DenseState m_dense_state;
-    GroundAtomList<Fluent> m_fluent_atoms;
-    GroundAtomList<Derived> m_derived_atoms;
-    GroundFunctionList<Fluent> m_fluent_functions;
-    AssignmentSet<Fluent> m_fluent_assignment_set;
-    AssignmentSet<Derived> m_derived_assignment_set;
-    NumericAssignmentSet<Fluent> m_numeric_assignment_set;
+    formalism::GroundAtomList<formalism::Fluent> m_fluent_atoms;
+    formalism::GroundAtomList<formalism::Derived> m_derived_atoms;
+    formalism::GroundFunctionList<formalism::Fluent> m_fluent_functions;
+    formalism::AssignmentSet<formalism::Fluent> m_fluent_assignment_set;
+    formalism::AssignmentSet<formalism::Derived> m_derived_assignment_set;
+    formalism::NumericAssignmentSet<formalism::Fluent> m_numeric_assignment_set;
     std::vector<boost::dynamic_bitset<>> m_full_consistency_graph;
     boost::dynamic_bitset<> m_consistent_vertices;
     KPKCWorkspace m_kpkc_workspace;
@@ -62,62 +62,69 @@ protected:
     constexpr const auto& self() const { return static_cast<const Derived_&>(*this); }
     constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
-    template<FluentOrDerived P>
-    bool is_valid_dynamic_binding(const LiteralList<P>& literals, const FlatBitset& atom_indices, const ObjectList& binding);
+    template<formalism::FluentOrDerived P>
+    bool is_valid_dynamic_binding(const formalism::LiteralList<P>& literals, const FlatBitset& atom_indices, const formalism::ObjectList& binding);
 
-    bool is_valid_static_binding(const LiteralList<Static>& literals, const ObjectList& binding);
+    bool is_valid_static_binding(const formalism::LiteralList<formalism::Static>& literals, const formalism::ObjectList& binding);
 
-    bool is_valid_binding(const NumericConstraintList& constraints, const FlatDoubleList& fluent_numeric_variables, const ObjectList& binding);
+    bool
+    is_valid_binding(const formalism::NumericConstraintList& constraints, const FlatDoubleList& fluent_numeric_variables, const formalism::ObjectList& binding);
 
-    bool is_valid_binding(ConjunctiveCondition condition, const DenseState& dense_state, const ObjectList& binding);
+    bool is_valid_binding(formalism::ConjunctiveCondition condition, const DenseState& dense_state, const formalism::ObjectList& binding);
 
-    bool is_valid_binding(const DenseState& dense_state, const ObjectList& binding);
+    bool is_valid_binding(const DenseState& dense_state, const formalism::ObjectList& binding);
 
-    mimir::generator<ObjectList> nullary_case(const DenseState& dense_state);
+    mimir::generator<formalism::ObjectList> nullary_case(const DenseState& dense_state);
 
-    mimir::generator<ObjectList> unary_case(const DenseState& dense_state,
-                                            const AssignmentSet<Fluent>& fluent_assignment_sets,
-                                            const AssignmentSet<Derived>& derived_assignment_sets,
-                                            const NumericAssignmentSet<Static>& static_numeric_assignment_set,
-                                            const NumericAssignmentSet<Fluent>& fluent_numeric_assignment_set);
+    mimir::generator<formalism::ObjectList> unary_case(const DenseState& dense_state,
+                                                       const formalism::AssignmentSet<formalism::Fluent>& fluent_assignment_sets,
+                                                       const formalism::AssignmentSet<formalism::Derived>& derived_assignment_sets,
+                                                       const formalism::NumericAssignmentSet<formalism::Static>& static_numeric_assignment_set,
+                                                       const formalism::NumericAssignmentSet<formalism::Fluent>& fluent_numeric_assignment_set);
 
-    mimir::generator<ObjectList> general_case(const DenseState& dense_state,
-                                              const AssignmentSet<Fluent>& fluent_assignment_sets,
-                                              const AssignmentSet<Derived>& derived_assignment_sets,
-                                              const NumericAssignmentSet<Static>& static_numeric_assignment_set,
-                                              const NumericAssignmentSet<Fluent>& fluent_numeric_assignment_set);
+    mimir::generator<formalism::ObjectList> general_case(const DenseState& dense_state,
+                                                         const formalism::AssignmentSet<formalism::Fluent>& fluent_assignment_sets,
+                                                         const formalism::AssignmentSet<formalism::Derived>& derived_assignment_sets,
+                                                         const formalism::NumericAssignmentSet<formalism::Static>& static_numeric_assignment_set,
+                                                         const formalism::NumericAssignmentSet<formalism::Fluent>& fluent_numeric_assignment_set);
 
 public:
-    SatisficingBindingGenerator(ConjunctiveCondition conjunctive_condition,
-                                Problem problem,
+    SatisficingBindingGenerator(formalism::ConjunctiveCondition conjunctive_condition,
+                                formalism::Problem problem,
                                 std::optional<SatisficingBindingGeneratorEventHandler> event_handler = std::nullopt);
 
-    mimir::generator<ObjectList> create_binding_generator(State state,
-                                                          const AssignmentSet<Fluent>& fluent_assignment_set,
-                                                          const AssignmentSet<Derived>& derived_assignment_set,
-                                                          const NumericAssignmentSet<Static>& static_numeric_assignment_set,
-                                                          const NumericAssignmentSet<Fluent>& fluent_numeric_assignment_set);
+    mimir::generator<formalism::ObjectList> create_binding_generator(State state,
+                                                                     const formalism::AssignmentSet<formalism::Fluent>& fluent_assignment_set,
+                                                                     const formalism::AssignmentSet<formalism::Derived>& derived_assignment_set,
+                                                                     const formalism::NumericAssignmentSet<formalism::Static>& static_numeric_assignment_set,
+                                                                     const formalism::NumericAssignmentSet<formalism::Fluent>& fluent_numeric_assignment_set);
 
-    mimir::generator<ObjectList> create_binding_generator(const DenseState& dense_state,
-                                                          const AssignmentSet<Fluent>& fluent_assignment_set,
-                                                          const AssignmentSet<Derived>& derived_assignment_set,
-                                                          const NumericAssignmentSet<Static>& static_numeric_assignment_set,
-                                                          const NumericAssignmentSet<Fluent>& fluent_numeric_assignment_set);
+    mimir::generator<formalism::ObjectList> create_binding_generator(const DenseState& dense_state,
+                                                                     const formalism::AssignmentSet<formalism::Fluent>& fluent_assignment_set,
+                                                                     const formalism::AssignmentSet<formalism::Derived>& derived_assignment_set,
+                                                                     const formalism::NumericAssignmentSet<formalism::Static>& static_numeric_assignment_set,
+                                                                     const formalism::NumericAssignmentSet<formalism::Fluent>& fluent_numeric_assignment_set);
 
-    mimir::generator<std::pair<ObjectList, std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>>>>
+    mimir::generator<std::pair<formalism::ObjectList,
+                               std::tuple<formalism::GroundLiteralList<formalism::Static>,
+                                          formalism::GroundLiteralList<formalism::Fluent>,
+                                          formalism::GroundLiteralList<formalism::Derived>>>>
     create_ground_conjunction_generator(State state);
 
-    mimir::generator<std::pair<ObjectList, std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>>>>
+    mimir::generator<std::pair<formalism::ObjectList,
+                               std::tuple<formalism::GroundLiteralList<formalism::Static>,
+                                          formalism::GroundLiteralList<formalism::Fluent>,
+                                          formalism::GroundLiteralList<formalism::Derived>>>>
     create_ground_conjunction_generator(const DenseState& dense_state);
 
     /**
      * Getters
      */
 
-    const ConjunctiveCondition& get_conjunctive_condition() const;
-    const Problem& get_problem() const;
+    const formalism::ConjunctiveCondition& get_conjunctive_condition() const;
+    const formalism::Problem& get_problem() const;
     const SatisficingBindingGeneratorEventHandler& get_event_handler() const;
-    const consistency_graph::StaticConsistencyGraph& get_static_consistency_graph() const;
+    const formalism::consistency_graph::StaticConsistencyGraph& get_static_consistency_graph() const;
 };
 
 }

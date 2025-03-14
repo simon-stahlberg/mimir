@@ -32,6 +32,8 @@
 
 #include <deque>
 
+using namespace mimir::formalism;
+
 namespace mimir::search
 {
 

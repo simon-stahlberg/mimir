@@ -23,7 +23,7 @@
 
 namespace mimir::search::match_tree
 {
-template<typename Derived_, HasConjunctiveCondition E, FluentOrDerived P>
+template<typename Derived_, HasConjunctiveCondition E, formalism::FluentOrDerived P>
 class AtomSelectorNodeBase : public INode<E>
 {
 private:
@@ -32,17 +32,17 @@ private:
     constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 protected:
-    GroundAtom<P> m_atom;
+    formalism::GroundAtom<P> m_atom;
 
 public:
-    explicit AtomSelectorNodeBase(GroundAtom<P> atom) : m_atom(atom) { assert(m_atom); }
+    explicit AtomSelectorNodeBase(formalism::GroundAtom<P> atom) : m_atom(atom) { assert(m_atom); }
 
     AtomSelectorNodeBase(const AtomSelectorNodeBase& other) = delete;
     AtomSelectorNodeBase& operator=(const AtomSelectorNodeBase& other) = delete;
     AtomSelectorNodeBase(AtomSelectorNodeBase&& other) = delete;
     AtomSelectorNodeBase& operator=(AtomSelectorNodeBase&& other) = delete;
 
-    GroundAtom<P> get_atom() const { return m_atom; }
+    formalism::GroundAtom<P> get_atom() const { return m_atom; }
 
     void visit(INodeVisitor<E>& visitor) const override { self().visit_impl(visitor); }
 };
@@ -51,7 +51,7 @@ public:
  * True False Dontcare combination
  */
 
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, formalism::FluentOrDerived P>
 class AtomSelectorNode_TFX : public AtomSelectorNodeBase<AtomSelectorNode_TFX<E, P>, E, P>
 {
 private:
@@ -68,10 +68,10 @@ private:
 public:
     using AtomSelectorNodeBase<AtomSelectorNode_TFX<E, P>, E, P>::get_atom;
 
-    explicit AtomSelectorNode_TFX(Node<E>&& true_child, Node<E>&& false_child, Node<E>&& dontcare_child, GroundAtom<P> atom);
+    explicit AtomSelectorNode_TFX(Node<E>&& true_child, Node<E>&& false_child, Node<E>&& dontcare_child, formalism::GroundAtom<P> atom);
 
     void generate_applicable_actions(const DenseState& state,
-                                     const ProblemImpl& problem,
+                                     const formalism::ProblemImpl& problem,
                                      std::vector<const INode<E>*>& ref_applicable_nodes,
                                      std::vector<const E*>&) const override;
 
@@ -83,7 +83,7 @@ public:
 /**
  * True False combination.
  */
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, formalism::FluentOrDerived P>
 class AtomSelectorNode_TF : public AtomSelectorNodeBase<AtomSelectorNode_TF<E, P>, E, P>
 {
 private:
@@ -99,10 +99,10 @@ private:
 public:
     using AtomSelectorNodeBase<AtomSelectorNode_TF<E, P>, E, P>::get_atom;
 
-    explicit AtomSelectorNode_TF(Node<E>&& true_child, Node<E>&& false_child, GroundAtom<P> atom);
+    explicit AtomSelectorNode_TF(Node<E>&& true_child, Node<E>&& false_child, formalism::GroundAtom<P> atom);
 
     void generate_applicable_actions(const DenseState& state,
-                                     const ProblemImpl& problem,
+                                     const formalism::ProblemImpl& problem,
                                      std::vector<const INode<E>*>& ref_applicable_nodes,
                                      std::vector<const E*>&) const override;
 
@@ -113,7 +113,7 @@ public:
 /**
  * True Dontcare combination
  */
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, formalism::FluentOrDerived P>
 class AtomSelectorNode_TX : public AtomSelectorNodeBase<AtomSelectorNode_TX<E, P>, E, P>
 {
 private:
@@ -129,10 +129,10 @@ private:
 public:
     using AtomSelectorNodeBase<AtomSelectorNode_TX<E, P>, E, P>::get_atom;
 
-    explicit AtomSelectorNode_TX(Node<E>&& true_child, Node<E>&& dontcare_child, GroundAtom<P> atom);
+    explicit AtomSelectorNode_TX(Node<E>&& true_child, Node<E>&& dontcare_child, formalism::GroundAtom<P> atom);
 
     void generate_applicable_actions(const DenseState& state,
-                                     const ProblemImpl& problem,
+                                     const formalism::ProblemImpl& problem,
                                      std::vector<const INode<E>*>& ref_applicable_nodes,
                                      std::vector<const E*>&) const override;
 
@@ -143,7 +143,7 @@ public:
 /**
  * False Dontcare combination.
  */
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, formalism::FluentOrDerived P>
 class AtomSelectorNode_FX : public AtomSelectorNodeBase<AtomSelectorNode_FX<E, P>, E, P>
 {
 private:
@@ -159,10 +159,10 @@ private:
 public:
     using AtomSelectorNodeBase<AtomSelectorNode_FX<E, P>, E, P>::get_atom;
 
-    explicit AtomSelectorNode_FX(Node<E>&& false_child, Node<E>&& dontcare_child, GroundAtom<P> atom);
+    explicit AtomSelectorNode_FX(Node<E>&& false_child, Node<E>&& dontcare_child, formalism::GroundAtom<P> atom);
 
     void generate_applicable_actions(const DenseState& state,
-                                     const ProblemImpl& problem,
+                                     const formalism::ProblemImpl& problem,
                                      std::vector<const INode<E>*>& ref_applicable_nodes,
                                      std::vector<const E*>&) const override;
 
@@ -170,7 +170,7 @@ public:
     const Node<E>& get_dontcare_child() const;
 };
 
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, formalism::FluentOrDerived P>
 class AtomSelectorNode_T : public AtomSelectorNodeBase<AtomSelectorNode_T<E, P>, E, P>
 {
 private:
@@ -185,17 +185,17 @@ private:
 public:
     using AtomSelectorNodeBase<AtomSelectorNode_T<E, P>, E, P>::get_atom;
 
-    explicit AtomSelectorNode_T(Node<E>&& true_child, GroundAtom<P> atom);
+    explicit AtomSelectorNode_T(Node<E>&& true_child, formalism::GroundAtom<P> atom);
 
     void generate_applicable_actions(const DenseState& state,
-                                     const ProblemImpl& problem,
+                                     const formalism::ProblemImpl& problem,
                                      std::vector<const INode<E>*>& ref_applicable_nodes,
                                      std::vector<const E*>&) const override;
 
     const Node<E>& get_true_child() const;
 };
 
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, formalism::FluentOrDerived P>
 class AtomSelectorNode_F : public AtomSelectorNodeBase<AtomSelectorNode_F<E, P>, E, P>
 {
 private:
@@ -210,10 +210,10 @@ private:
 public:
     using AtomSelectorNodeBase<AtomSelectorNode_F<E, P>, E, P>::get_atom;
 
-    explicit AtomSelectorNode_F(Node<E>&& false_child, GroundAtom<P> atom);
+    explicit AtomSelectorNode_F(Node<E>&& false_child, formalism::GroundAtom<P> atom);
 
     void generate_applicable_actions(const DenseState& state,
-                                     const ProblemImpl& problem,
+                                     const formalism::ProblemImpl& problem,
                                      std::vector<const INode<E>*>& ref_applicable_nodes,
                                      std::vector<const E*>&) const override;
 

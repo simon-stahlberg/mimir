@@ -29,15 +29,16 @@ namespace mimir::search
 class GroundedAxiomEvaluator : public IAxiomEvaluator
 {
 private:
-    Problem m_problem;
-    std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>> m_match_tree_partitioning;
+    formalism::Problem m_problem;
+    std::vector<std::unique_ptr<match_tree::MatchTree<formalism::GroundAxiomImpl>>> m_match_tree_partitioning;
     GroundedAxiomEvaluatorEventHandler m_event_handler;
 
 public:
-    GroundedAxiomEvaluator(Problem problem, std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>>&& match_tree_partitioning);
+    GroundedAxiomEvaluator(formalism::Problem problem,
+                           std::vector<std::unique_ptr<match_tree::MatchTree<formalism::GroundAxiomImpl>>>&& match_tree_partitioning);
 
-    GroundedAxiomEvaluator(Problem problem,
-                           std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>>&& match_tree_partitioning,
+    GroundedAxiomEvaluator(formalism::Problem problem,
+                           std::vector<std::unique_ptr<match_tree::MatchTree<formalism::GroundAxiomImpl>>>&& match_tree_partitioning,
                            GroundedAxiomEvaluatorEventHandler event_handler);
 
     // Uncopyable
@@ -56,7 +57,7 @@ public:
      * Getters
      */
 
-    const Problem& get_problem() const override;
+    const formalism::Problem& get_problem() const override;
     const GroundedAxiomEvaluatorEventHandler& get_event_handler() const;
 };
 

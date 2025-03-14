@@ -17,6 +17,8 @@
 
 #include "mimir/languages/description_logics/denotation_repositories.hpp"
 
+using namespace mimir::formalism;
+
 namespace mimir::languages::dl
 {
 

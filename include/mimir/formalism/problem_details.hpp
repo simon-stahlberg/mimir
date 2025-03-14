@@ -27,7 +27,7 @@
 #include "mimir/formalism/ground_axiom.hpp"
 #include "mimir/formalism/grounding_table.hpp"
 
-namespace mimir::problem
+namespace mimir::formalism::problem
 {
 
 /**

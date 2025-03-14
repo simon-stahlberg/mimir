@@ -31,6 +31,8 @@
 
 #include <map>
 
+using namespace mimir::formalism;
+
 namespace mimir::search::match_tree
 {
 

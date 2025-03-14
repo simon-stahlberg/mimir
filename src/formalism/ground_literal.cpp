@@ -22,7 +22,7 @@
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/repositories.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
 template<StaticOrFluentOrDerived P>
 GroundLiteralImpl<P>::GroundLiteralImpl(Index index, bool is_negated, GroundAtom<P> atom) : m_index(index), m_is_negated(is_negated), m_atom(std::move(atom))

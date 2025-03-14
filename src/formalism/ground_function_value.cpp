@@ -20,7 +20,7 @@
 #include "formatter.hpp"
 #include "mimir/formalism/ground_function.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
 template<StaticOrFluentOrAuxiliary F>
 GroundFunctionValueImpl<F>::GroundFunctionValueImpl(Index index, GroundFunction<F> function, double number) :

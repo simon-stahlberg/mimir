@@ -43,10 +43,11 @@ private:
 
     MatchTree();
 
-    MatchTree(const PDDLRepositories& pddl_repositories, std::vector<const E*> elements, const Options& options = Options());
+    MatchTree(const formalism::PDDLRepositories& pddl_repositories, std::vector<const E*> elements, const Options& options = Options());
 
 public:
-    static std::unique_ptr<MatchTree<E>> create(const PDDLRepositories& pddl_repositories, std::vector<const E*> elements, const Options& options = Options());
+    static std::unique_ptr<MatchTree<E>>
+    create(const formalism::PDDLRepositories& pddl_repositories, std::vector<const E*> elements, const Options& options = Options());
 
     // Uncopieable and unmoveable to prohibit invalidating spans on m_elements.
     MatchTree(const MatchTree& other) = delete;
@@ -54,7 +55,8 @@ public:
     MatchTree(MatchTree&& other) = delete;
     MatchTree& operator=(MatchTree&& other) = delete;
 
-    void generate_applicable_elements_iteratively(const DenseState& state, const ProblemImpl& problem, std::vector<const E*>& out_applicable_elements);
+    void
+    generate_applicable_elements_iteratively(const DenseState& state, const formalism::ProblemImpl& problem, std::vector<const E*>& out_applicable_elements);
 
     const Statistics& get_statistics() const;
 };

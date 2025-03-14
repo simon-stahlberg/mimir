@@ -48,7 +48,7 @@
 #include <loki/loki.hpp>
 #include <ranges>
 
-namespace mimir
+namespace mimir::formalism
 {
 
 template<typename T>

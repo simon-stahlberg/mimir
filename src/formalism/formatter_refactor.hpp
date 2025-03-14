@@ -24,7 +24,7 @@
 #include <cstddef>
 #include <ostream>
 
-namespace mimir
+namespace mimir::formalism
 {
 
 struct StringFormatter

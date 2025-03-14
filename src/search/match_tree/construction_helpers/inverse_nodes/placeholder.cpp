@@ -20,6 +20,8 @@
 #include "mimir/formalism/ground_action.hpp"
 #include "mimir/formalism/ground_axiom.hpp"
 
+using namespace mimir::formalism;
+
 namespace mimir::search::match_tree
 {
 template<HasConjunctiveCondition E>

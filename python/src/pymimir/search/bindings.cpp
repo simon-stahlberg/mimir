@@ -5,6 +5,7 @@
 
 using namespace mimir;
 using namespace mimir::search;
+using namespace mimir::formalism;
 
 class IPyHeuristic : public IHeuristic
 {

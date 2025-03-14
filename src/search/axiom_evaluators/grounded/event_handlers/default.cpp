@@ -23,6 +23,8 @@
 
 #include <iostream>
 
+using namespace mimir::formalism;
+
 namespace mimir::search
 {
 

@@ -27,6 +27,8 @@
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/requirements.hpp"
 
+using namespace mimir::formalism;
+
 namespace mimir::search
 {
 

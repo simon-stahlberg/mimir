@@ -17,6 +17,8 @@
 
 #include "mimir/languages/description_logics/constructor_repositories.hpp"
 
+using namespace mimir::formalism;
+
 namespace mimir::languages::dl
 {
 

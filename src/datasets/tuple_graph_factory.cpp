@@ -21,6 +21,9 @@
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/state_repository.hpp"
 
+using namespace mimir::formalism;
+using namespace mimir::search;
+
 namespace mimir::datasets
 {
 class TupleGraphArityZeroComputation
@@ -29,10 +32,10 @@ private:
     const graphs::ProblemVertex& m_problem_vertex;
     const graphs::ProblemGraph& m_problem_graph;
     const graphs::ClassGraph& m_class_graph;
-    const search::SearchContext& m_context;
+    const SearchContext& m_context;
     const TupleGraphCollection::Options& m_options;
 
-    search::TupleIndexMapper m_index_mapper;
+    TupleIndexMapper m_index_mapper;
     graphs::StaticTupleGraph m_internal_tuple_graph;
     IndexGroupedVectorBuilder<const Index> m_v_idxs_grouped_by_distance;
     IndexGroupedVectorBuilder<const Index> m_problem_v_idxs_grouped_by_distance;
@@ -77,7 +80,7 @@ public:
     TupleGraphArityZeroComputation(const graphs::ProblemVertex& problem_vertex,
                                    const graphs::ProblemGraph& problem_graph,
                                    const graphs::ClassGraph& class_graph,
-                                   const search::SearchContext& context,
+                                   const SearchContext& context,
                                    const TupleGraphCollection::Options& options) :
         m_problem_vertex(problem_vertex),
         m_problem_graph(problem_graph),
@@ -110,7 +113,7 @@ public:
 static TupleGraph create_tuple_graph_width_zero(const graphs::ProblemVertex& problem_vertex,
                                                 const graphs::ProblemGraph& problem_graph,
                                                 const graphs::ClassGraph& class_graph,
-                                                const search::SearchContext& context,
+                                                const SearchContext& context,
                                                 const TupleGraphCollection::Options& options)
 {
     return TupleGraphArityZeroComputation(problem_vertex, problem_graph, class_graph, context, options).compute_and_get_result();
@@ -122,7 +125,7 @@ private:
     const graphs::ProblemVertex& m_problem_vertex;
     const graphs::ProblemGraph& m_problem_graph;
     const graphs::ClassGraph& m_class_graph;
-    const search::SearchContext& m_context;
+    const SearchContext& m_context;
     const TupleGraphCollection::Options& m_options;
 
     graphs::StaticTupleGraph m_internal_tuple_graph;
@@ -133,11 +136,11 @@ private:
     IndexList m_prev_problem_v_idxs;
     IndexList m_curr_problem_v_idxs;
     IndexSet m_visited_problem_v_idxs;
-    search::StateSet m_visited_states;
-    search::StateSet m_curr_states;  ///< all states in current layer, strictly not symmetry reduced to derived tuple indices
+    StateSet m_visited_states;
+    StateSet m_curr_states;  ///< all states in current layer, strictly not symmetry reduced to derived tuple indices
     IndexList m_prev_v_idxs;
     IndexList m_curr_v_idxs;
-    search::NoveltyTable<search::StaticSize> m_novelty_table;
+    NoveltyTable<StaticSize> m_novelty_table;
 
     IndexSet m_novel_t_idxs_set;
     IndexList m_novel_t_idxs_vec;
@@ -430,7 +433,7 @@ public:
     TupleGraphArityGreaterZeroComputation(const graphs::ProblemVertex& problem_vertex,
                                           const graphs::ProblemGraph& problem_graph,
                                           const graphs::ClassGraph& class_graph,
-                                          const search::SearchContext& context,
+                                          const SearchContext& context,
                                           const TupleGraphCollection::Options& options) :
         m_problem_vertex(problem_vertex),
         m_problem_graph(problem_graph),
@@ -485,7 +488,7 @@ public:
 static TupleGraph create_tuple_graph_width_greater_zero(const graphs::ProblemVertex& problem_vertex,
                                                         const graphs::ProblemGraph& problem_graph,
                                                         const graphs::ClassGraph& class_graph,
-                                                        const search::SearchContext& context,
+                                                        const SearchContext& context,
                                                         const TupleGraphCollection::Options& options)
 {
     return TupleGraphArityGreaterZeroComputation(problem_vertex, problem_graph, class_graph, context, options).compute_and_get_result();
@@ -494,7 +497,7 @@ static TupleGraph create_tuple_graph_width_greater_zero(const graphs::ProblemVer
 TupleGraph create_tuple_graph(const graphs::ProblemVertex& problem_vertex,
                               const graphs::ProblemGraph& problem_graph,
                               const graphs::ClassGraph& class_graph,
-                              const search::SearchContext& context,
+                              const SearchContext& context,
                               const TupleGraphCollection::Options& options)
 {
     return (options.width == 0) ? create_tuple_graph_width_zero(problem_vertex, problem_graph, class_graph, context, options) :

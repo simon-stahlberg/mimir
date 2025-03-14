@@ -31,6 +31,8 @@
 
 #include <map>
 
+using namespace mimir::formalism;
+
 namespace mimir::search::match_tree
 {
 
@@ -53,7 +55,9 @@ StaticNodeSplitter<E>::StaticNodeSplitter(const PDDLRepositories& pddl_repositor
     for (size_t i = 0; i < splits.size(); ++i)
     {
         const auto& split_and_score = split_and_score_list[i];
-        std::cout << "    " << i << ". " << split_and_score.split << " with score " << split_and_score.score << std::endl;
+        std::cout << "    " << i << ". ";
+        mimir::operator<<(std::cout, split_and_score.split);
+        std::cout << " with score " << split_and_score.score << std::endl;
     }
 
     // Initialize extra bookkeeping to obtain the queue priority score of a node, i.e., the root_distance.

@@ -29,7 +29,7 @@ class DefaultSatisficingBindingGeneratorEventHandler : public ISatisficingBindin
 public:
     DefaultSatisficingBindingGeneratorEventHandler() : ISatisficingBindingGeneratorEventHandler() {}
 
-    void on_invalid_binding(const ObjectList& binding, const ProblemImpl& problem) {}
+    void on_invalid_binding(const formalism::ObjectList& binding, const formalism::ProblemImpl& problem) {}
 };
 
 }

@@ -22,22 +22,28 @@
 #include "mimir/search/plan.hpp"
 #include "mimir/search/state.hpp"
 
+using namespace mimir::formalism;
+
 namespace mimir::search
 {
 void DebugAStarAlgorithmEventHandler::on_expand_state_impl(State state) const
 {
     std::cout << "[AStar] ----------------------------------------\n"
-              << "[AStar] State: " << std::make_tuple(state, std::cref(*m_problem)) << std::endl
-              << std::endl;
+              << "[AStar] State: ";
+    mimir::operator<<(std::cout, std::make_tuple(state, std::cref(*m_problem)));
+    std::cout << std::endl << std::endl;
 }
 
 void DebugAStarAlgorithmEventHandler::on_expand_goal_state_impl(State state) const {}
 
 void DebugAStarAlgorithmEventHandler::on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const
 {
-    std::cout << "[AStar] Action: " << std::make_tuple(action, std::cref(*m_problem), FullActionFormatterTag {}) << " cost:" << action_cost << "\n"
-              << "[AStar] Successor: " << std::make_tuple(successor_state, std::cref(*m_problem)) << "\n"
-              << std::endl;
+    std::cout << "[AStar] Action: ";
+    mimir::operator<<(std::cout, std::make_tuple(action, std::cref(*m_problem), FullActionFormatterTag {}));
+    std::cout << "\n"
+              << "[AStar] Successor: ";
+    mimir::operator<<(std::cout, std::make_tuple(successor_state, std::cref(*m_problem)));
+    std::cout << "\n" << std::endl;
 }
 
 void DebugAStarAlgorithmEventHandler::on_generate_state_relaxed_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const
@@ -64,7 +70,9 @@ void DebugAStarAlgorithmEventHandler::on_prune_state_impl(State state) const {}
 void DebugAStarAlgorithmEventHandler::on_start_search_impl(State start_state) const
 {
     std::cout << "[AStar] Search started.\n"
-              << "[AStar] Initial: " << std::make_tuple(start_state, std::cref(*m_problem)) << std::endl;
+              << "[AStar] Initial: ";
+    mimir::operator<<(std::cout, std::make_tuple(start_state, std::cref(*m_problem)));
+    std::cout << std::endl;
 }
 
 void DebugAStarAlgorithmEventHandler::on_end_search_impl(uint64_t num_reached_fluent_atoms,
@@ -89,7 +97,9 @@ void DebugAStarAlgorithmEventHandler::on_solved_impl(const Plan& plan) const
               << "[AStar] Plan length: " << plan.get_actions().size() << std::endl;
     for (size_t i = 0; i < plan.get_actions().size(); ++i)
     {
-        std::cout << "[AStar] " << i + 1 << ". " << std::make_tuple(plan.get_actions()[i], std::cref(*m_problem), PlanActionFormatterTag {}) << std::endl;
+        std::cout << "[AStar] " << i + 1 << ". ";
+        mimir::operator<<(std::cout, std::make_tuple(plan.get_actions()[i], std::cref(*m_problem), PlanActionFormatterTag {}));
+        std::cout << std::endl;
     }
 }
 

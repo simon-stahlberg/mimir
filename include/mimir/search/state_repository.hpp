@@ -68,7 +68,7 @@ public:
     /// @param atoms the ground atoms.
     /// @param workspace is the workspace containing preallocated memory.
     /// @return the extended state.
-    State get_or_create_state(const GroundAtomList<Fluent>& atoms, const FlatDoubleList& fluent_numeric_variables);
+    State get_or_create_state(const formalism::GroundAtomList<formalism::Fluent>& atoms, const FlatDoubleList& fluent_numeric_variables);
 
     /// @brief Get or create the extended successor state when applying the given ground `action` in the given `state`.
     /// @param state is the state.
@@ -76,7 +76,7 @@ public:
     /// @param state_metric_value is the metric value of the state.
     /// @param workspace is the workspace containing preallocated memory.
     /// @return the extended successor state and its metric value.
-    std::pair<State, ContinuousCost> get_or_create_successor_state(State state, GroundAction action, ContinuousCost state_metric_value);
+    std::pair<State, ContinuousCost> get_or_create_successor_state(State state, formalism::GroundAction action, ContinuousCost state_metric_value);
 
     /// @brief Get or create the extended successor state when applying the given ground `action` in the given state identifed by the `state_fluent_atoms` and
     /// `derived_atoms`. The input parameters `dense_state` are modified, meaning that side effects have to be taken into account.
@@ -87,14 +87,14 @@ public:
     /// @return the extended successor state and its metric value.
     std::pair<State, ContinuousCost> get_or_create_successor_state(State state,  ///< for parallel application of numeric effects
                                                                    DenseState& dense_state,
-                                                                   GroundAction action,
+                                                                   formalism::GroundAction action,
                                                                    ContinuousCost state_metric_value);
 
     /**
      * Getters
      */
 
-    const Problem& get_problem() const;
+    const formalism::Problem& get_problem() const;
 
     /// @brief Return the number of created states.
     /// @return the number of created states.

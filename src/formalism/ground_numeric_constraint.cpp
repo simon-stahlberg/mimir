@@ -23,7 +23,7 @@
 #include "mimir/formalism/ground_function.hpp"
 #include "mimir/formalism/ground_function_expressions.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
 GroundNumericConstraintImpl::GroundNumericConstraintImpl(Index index,
                                                          loki::BinaryComparatorEnum binary_comparator,

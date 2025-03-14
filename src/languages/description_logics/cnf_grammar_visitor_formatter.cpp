@@ -26,6 +26,8 @@
 #include <iostream>
 #include <variant>
 
+using namespace mimir::formalism;
+
 namespace mimir::languages::dl::cnf_grammar
 {
 

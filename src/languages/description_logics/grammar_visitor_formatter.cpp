@@ -22,6 +22,8 @@
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/languages/description_logics/constructor_keywords.hpp"
 
+using namespace mimir::formalism;
+
 namespace mimir::languages::dl::grammar
 {
 

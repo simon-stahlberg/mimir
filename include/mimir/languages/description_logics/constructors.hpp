@@ -98,14 +98,14 @@ public:
     auto identifying_members() const { return std::tuple(); }
 };
 
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 class ConceptAtomicStateImpl : public ConstructorEvaluatorBase<Concept, ConceptAtomicStateImpl<P>>
 {
 private:
     Index m_index;
-    Predicate<P> m_predicate;
+    formalism::Predicate<P> m_predicate;
 
-    ConceptAtomicStateImpl(Index index, Predicate<P> predicate);
+    ConceptAtomicStateImpl(Index index, formalism::Predicate<P> predicate);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -125,7 +125,7 @@ public:
     ConceptAtomicStateImpl& operator=(ConceptAtomicStateImpl&& other) = default;
 
     Index get_index() const override;
-    Predicate<P> get_predicate() const;
+    formalism::Predicate<P> get_predicate() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -133,15 +133,15 @@ public:
     auto identifying_members() const { return std::tuple(get_predicate()); }
 };
 
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 class ConceptAtomicGoalImpl : public ConstructorEvaluatorBase<Concept, ConceptAtomicGoalImpl<P>>
 {
 private:
     Index m_index;
-    Predicate<P> m_predicate;
+    formalism::Predicate<P> m_predicate;
     bool m_is_negated;
 
-    ConceptAtomicGoalImpl(Index index, Predicate<P> predicate, bool is_negated);
+    ConceptAtomicGoalImpl(Index index, formalism::Predicate<P> predicate, bool is_negated);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -161,7 +161,7 @@ public:
     ConceptAtomicGoalImpl& operator=(ConceptAtomicGoalImpl&& other) = default;
 
     Index get_index() const override;
-    Predicate<P> get_predicate() const;
+    formalism::Predicate<P> get_predicate() const;
     bool is_negated() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
@@ -424,9 +424,9 @@ class ConceptNominalImpl : public ConstructorEvaluatorBase<Concept, ConceptNomin
 {
 private:
     Index m_index;
-    Object m_object;
+    formalism::Object m_object;
 
-    ConceptNominalImpl(Index index, Object object);
+    ConceptNominalImpl(Index index, formalism::Object object);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -446,7 +446,7 @@ public:
     ConceptNominalImpl& operator=(ConceptNominalImpl&& other) = default;
 
     Index get_index() const override;
-    Object get_object() const;
+    formalism::Object get_object() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -490,14 +490,14 @@ public:
     auto identifying_members() const { return std::tuple(); }
 };
 
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 class RoleAtomicStateImpl : public ConstructorEvaluatorBase<Role, RoleAtomicStateImpl<P>>
 {
 private:
     Index m_index;
-    Predicate<P> m_predicate;
+    formalism::Predicate<P> m_predicate;
 
-    RoleAtomicStateImpl(Index index, Predicate<P> predicate);
+    RoleAtomicStateImpl(Index index, formalism::Predicate<P> predicate);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -517,7 +517,7 @@ public:
     RoleAtomicStateImpl& operator=(RoleAtomicStateImpl&& other) = default;
 
     Index get_index() const override;
-    Predicate<P> get_predicate() const;
+    formalism::Predicate<P> get_predicate() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -525,15 +525,15 @@ public:
     auto identifying_members() const { return std::tuple(get_predicate()); }
 };
 
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 class RoleAtomicGoalImpl : public ConstructorEvaluatorBase<Role, RoleAtomicGoalImpl<P>>
 {
 private:
     Index m_index;
-    Predicate<P> m_predicate;
+    formalism::Predicate<P> m_predicate;
     bool m_is_negated;
 
-    RoleAtomicGoalImpl(Index index, Predicate<P> predicate, bool is_negated);
+    RoleAtomicGoalImpl(Index index, formalism::Predicate<P> predicate, bool is_negated);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -553,7 +553,7 @@ public:
     RoleAtomicGoalImpl& operator=(RoleAtomicGoalImpl&& other) = default;
 
     Index get_index() const override;
-    Predicate<P> get_predicate() const;
+    formalism::Predicate<P> get_predicate() const;
     bool is_negated() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
@@ -880,14 +880,14 @@ public:
  * Booleans
  */
 
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 class BooleanAtomicStateImpl : public ConstructorEvaluatorBase<Boolean, BooleanAtomicStateImpl<P>>
 {
 private:
     Index m_index;
-    Predicate<P> m_predicate;
+    formalism::Predicate<P> m_predicate;
 
-    BooleanAtomicStateImpl(Index index, Predicate<P> predicate);
+    BooleanAtomicStateImpl(Index index, formalism::Predicate<P> predicate);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -907,7 +907,7 @@ public:
     BooleanAtomicStateImpl& operator=(BooleanAtomicStateImpl&& other) = default;
 
     Index get_index() const;
-    Predicate<P> get_predicate() const;
+    formalism::Predicate<P> get_predicate() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.

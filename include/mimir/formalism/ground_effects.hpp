@@ -28,7 +28,7 @@
 #include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
 
-namespace mimir
+namespace mimir::formalism
 {
 
 template<FluentOrAuxiliary F>
@@ -136,12 +136,15 @@ std::ostream& operator<<(std::ostream& out, const GroundNumericEffectImpl<F>& el
 template<FluentOrAuxiliary F>
 std::ostream& operator<<(std::ostream& out, GroundNumericEffect<F> element);
 
+}
+
+namespace mimir
+{
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConjunctiveEffect, const ProblemImpl&>& data);
+std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundConjunctiveEffect, const formalism::ProblemImpl&>& data);
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConditionalEffect, const ProblemImpl&>& data);
-
+std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundConditionalEffect, const formalism::ProblemImpl&>& data);
 }
 
 #endif

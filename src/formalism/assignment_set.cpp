@@ -26,7 +26,7 @@
 #include "mimir/formalism/term.hpp"
 #include "mimir/formalism/variable.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
 
 /**

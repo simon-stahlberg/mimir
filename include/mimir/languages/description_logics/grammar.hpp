@@ -43,17 +43,17 @@ private:
     StartSymbolsContainer m_start_symbols;
     DerivationRulesContainer m_derivation_rules;
 
-    Domain m_domain;
+    formalism::Domain m_domain;
 
 public:
-    Grammar(ConstructorRepositories repositories, StartSymbolsContainer start_symbols, DerivationRulesContainer derivation_rules, Domain domain);
+    Grammar(ConstructorRepositories repositories, StartSymbolsContainer start_symbols, DerivationRulesContainer derivation_rules, formalism::Domain domain);
 
     /// @brief Create a grammar from a BNF description for a given domain.
     /// The domain is used for error checking only to ensure that predicates or constants are available.
-    Grammar(std::string bnf_description, Domain domain);
+    Grammar(std::string bnf_description, formalism::Domain domain);
 
     /// @brief Create a predefined grammar for a given domain.
-    Grammar(GrammarSpecificationEnum type, Domain domain);
+    Grammar(GrammarSpecificationEnum type, formalism::Domain domain);
 
     /// @brief Tests whether a dl constructor satisfies the grammar specification.
     /// @param constructor is the dl constructor to test.
@@ -73,7 +73,7 @@ public:
 
     const StartSymbolsContainer& get_start_symbols_container() const;
     const DerivationRulesContainer& get_derivation_rules_container() const;
-    const Domain& get_domain() const;
+    const formalism::Domain& get_domain() const;
 };
 }
 

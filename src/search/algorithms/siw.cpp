@@ -32,6 +32,8 @@
 
 #include <sstream>
 
+using namespace mimir::formalism;
+
 namespace mimir::search
 {
 

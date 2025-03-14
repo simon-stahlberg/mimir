@@ -29,7 +29,7 @@
 #include <tuple>
 #include <vector>
 
-namespace mimir
+namespace mimir::formalism
 {
 
 /// @brief `AssignmentSet` is a helper class representing a set of functions

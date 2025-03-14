@@ -21,7 +21,7 @@
 #include "mimir/common/collections.hpp"
 #include "mimir/formalism/variable.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
 
 template<StaticOrFluentOrDerived P>

@@ -35,7 +35,7 @@ namespace mimir::search::match_tree
  * Promising looking splits
  */
 
-using CandidateSplit = std::variant<GroundAtom<Fluent>, GroundAtom<Derived>, GroundNumericConstraint>;
+using CandidateSplit = std::variant<formalism::GroundAtom<formalism::Fluent>, formalism::GroundAtom<formalism::Derived>, formalism::GroundNumericConstraint>;
 using CandidateSplitList = std::vector<CandidateSplit>;
 
 /**
@@ -49,10 +49,10 @@ struct AtomSplitDistribution
     size_t num_dont_care_elements = 0;
 };
 
-template<FluentOrDerived P>
+template<formalism::FluentOrDerived P>
 struct AtomSplit
 {
-    GroundAtom<P> feature;
+    formalism::GroundAtom<P> feature;
 
     AtomSplitDistribution distribution;
 
@@ -67,13 +67,13 @@ struct NumericConstraintSplitDistribution
 
 struct NumericConstraintSplit
 {
-    GroundNumericConstraint feature;
+    formalism::GroundNumericConstraint feature;
     NumericConstraintSplitDistribution distribution;
 
     auto identifying_members() const { return std::tuple(std::as_const(feature)); }
 };
 
-using Split = std::variant<AtomSplit<Fluent>, AtomSplit<Derived>, NumericConstraintSplit>;
+using Split = std::variant<AtomSplit<formalism::Fluent>, AtomSplit<formalism::Derived>, NumericConstraintSplit>;
 using SplitList = std::vector<Split>;
 using SplitSet = std::unordered_set<Split, loki::Hash<Split>, loki::EqualTo<Split>>;
 
@@ -100,7 +100,7 @@ inline bool is_useless_split(const AtomSplitDistribution& distribution) { return
 
 inline bool is_useless_split(const NumericConstraintSplitDistribution& distribution) { return distribution.num_true_elements == 0; }
 
-template<FluentOrDerived P>
+template<formalism::FluentOrDerived P>
 bool is_useless_split(const AtomSplit<P>& split)
 {
     return is_useless_split(split.distribution);
@@ -121,7 +121,7 @@ extern std::ostream& operator<<(std::ostream& out, const AtomSplitDistribution& 
 
 extern std::ostream& operator<<(std::ostream& out, const NumericConstraintSplitDistribution& distribution);
 
-template<FluentOrDerived P>
+template<formalism::FluentOrDerived P>
 std::ostream& operator<<(std::ostream& out, const AtomSplit<P>& split);
 
 extern std::ostream& operator<<(std::ostream& out, const NumericConstraintSplit& split);

@@ -25,7 +25,7 @@
 namespace mimir::search
 {
 
-extern ContinuousCost compute_initial_state_metric_value(const ProblemImpl& problem);
+extern ContinuousCost compute_initial_state_metric_value(const formalism::ProblemImpl& problem);
 
 }
 

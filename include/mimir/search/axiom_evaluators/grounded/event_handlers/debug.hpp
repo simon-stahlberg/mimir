@@ -37,7 +37,7 @@ private:
 
     void on_start_build_axiom_match_tree_impl(size_t partition_index) const;
 
-    void on_finish_build_axiom_match_tree_impl(const match_tree::MatchTree<GroundAxiomImpl>& match_tree) const;
+    void on_finish_build_axiom_match_tree_impl(const match_tree::MatchTree<formalism::GroundAxiomImpl>& match_tree) const;
 
     void on_finish_build_axiom_match_trees_impl(std::chrono::milliseconds total_time) const;
 

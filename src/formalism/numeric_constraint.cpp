@@ -19,7 +19,7 @@
 
 #include "formatter.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
 
 NumericConstraintImpl::NumericConstraintImpl(Index index,

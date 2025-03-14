@@ -24,7 +24,7 @@
 
 #include <map>
 
-namespace mimir
+namespace mimir::formalism
 {
 template<StaticOrFluentOrDerived P>
 GroundAtomImpl<P>::GroundAtomImpl(Index index, Predicate<P> predicate, ObjectList objects) :

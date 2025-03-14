@@ -44,13 +44,13 @@ public:
     virtual void on_expand_goal_state(State state) = 0;
 
     /// @brief React on generating a state by applying an action.
-    virtual void on_generate_state(State state, GroundAction action, ContinuousCost action_cost, State successor_state) = 0;
+    virtual void on_generate_state(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) = 0;
 
     /// @brief React on generating a state in the search tree by applying an action.
-    virtual void on_generate_state_in_search_tree(State state, GroundAction action, ContinuousCost action_cost, State successor_state) = 0;
+    virtual void on_generate_state_in_search_tree(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) = 0;
 
     /// @brief React on generating a state not in the search tree by applying an action.
-    virtual void on_generate_state_not_in_search_tree(State state, GroundAction action, ContinuousCost action_cost, State successor_state) = 0;
+    virtual void on_generate_state_not_in_search_tree(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) = 0;
 
     /// @brief React on finishing expanding a g-layer.
     virtual void on_finish_g_layer() = 0;
@@ -94,7 +94,7 @@ class BrFSAlgorithmEventHandlerBase : public IBrFSAlgorithmEventHandler
 {
 protected:
     BrFSAlgorithmStatistics m_statistics;
-    Problem m_problem;
+    formalism::Problem m_problem;
     bool m_quiet;
 
 private:
@@ -106,7 +106,7 @@ private:
     constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 public:
-    explicit BrFSAlgorithmEventHandlerBase(Problem problem, bool quiet = true) : m_statistics(), m_problem(problem), m_quiet(quiet) {}
+    explicit BrFSAlgorithmEventHandlerBase(formalism::Problem problem, bool quiet = true) : m_statistics(), m_problem(problem), m_quiet(quiet) {}
 
     void on_expand_state(State state) override
     {
@@ -126,7 +126,7 @@ public:
         }
     }
 
-    void on_generate_state(State state, GroundAction action, ContinuousCost action_cost, State successor_state) override
+    void on_generate_state(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) override
     {
         m_statistics.increment_num_generated();
 
@@ -136,7 +136,7 @@ public:
         }
     }
 
-    void on_generate_state_in_search_tree(State state, GroundAction action, ContinuousCost action_cost, State successor_state) override
+    void on_generate_state_in_search_tree(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) override
     {
         if (!m_quiet)
         {
@@ -144,7 +144,7 @@ public:
         }
     }
 
-    void on_generate_state_not_in_search_tree(State state, GroundAction action, ContinuousCost action_cost, State successor_state) override
+    void on_generate_state_not_in_search_tree(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) override
     {
         if (!m_quiet)
         {

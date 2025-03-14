@@ -33,15 +33,15 @@ namespace mimir::search
 class DeleteRelaxedProblemExplorator
 {
 private:
-    Problem m_problem;
+    formalism::Problem m_problem;
 
     /* Delete free info to instantiate the grounded generators. */
-    DeleteRelaxTranslator m_delete_relax_transformer;
-    Problem m_delete_free_problem;
-    ToObjectMap<Object> m_delete_free_object_to_unrelaxed_object;
+    formalism::DeleteRelaxTranslator m_delete_relax_transformer;
+    formalism::Problem m_delete_free_problem;
+    formalism::ToObjectMap<formalism::Object> m_delete_free_object_to_unrelaxed_object;
 
 public:
-    explicit DeleteRelaxedProblemExplorator(Problem problem);
+    explicit DeleteRelaxedProblemExplorator(formalism::Problem problem);
 
     // Uncopyable
     DeleteRelaxedProblemExplorator(const DeleteRelaxedProblemExplorator& other) = delete;
@@ -57,7 +57,7 @@ public:
     create_grounded_applicable_action_generator(const match_tree::Options& options = match_tree::Options(),
                                                 GroundedApplicableActionGeneratorEventHandler event_handler = nullptr) const;
 
-    const Problem& get_problem() const;
+    const formalism::Problem& get_problem() const;
 };
 
 }  // namespace mimir

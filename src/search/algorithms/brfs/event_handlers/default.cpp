@@ -24,9 +24,10 @@
 
 #include <chrono>
 
+using namespace mimir::formalism;
+
 namespace mimir::search
 {
-
 void DefaultBrFSAlgorithmEventHandler::on_expand_state_impl(State state) const {}
 
 void DefaultBrFSAlgorithmEventHandler::on_expand_goal_state_impl(State state) const {}
@@ -82,7 +83,9 @@ void DefaultBrFSAlgorithmEventHandler::on_solved_impl(const Plan& plan) const
               << "[BrFS] Plan length: " << plan.get_actions().size() << std::endl;
     for (size_t i = 0; i < plan.get_actions().size(); ++i)
     {
-        std::cout << "[BrFS] " << i + 1 << ". " << std::make_tuple(plan.get_actions()[i], std::cref(*m_problem), PlanActionFormatterTag {}) << std::endl;
+        std::cout << "[BrFS] " << i + 1 << ". ";
+        mimir::operator<<(std::cout, std::make_tuple(plan.get_actions()[i], std::cref(*m_problem), PlanActionFormatterTag {}));
+        std::cout << std::endl;
     }
 }
 

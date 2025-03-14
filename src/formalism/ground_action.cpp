@@ -26,7 +26,7 @@
 #include <ostream>
 #include <tuple>
 
-namespace mimir
+namespace mimir::formalism
 {
 
 /* GroundActionImpl */
@@ -55,16 +55,21 @@ GroundEffectConditionalList& GroundActionImpl::get_conditional_effects() { retur
 
 const GroundEffectConditionalList& GroundActionImpl::get_conditional_effects() const { return m_conditional_effects; }
 
+}
+
+namespace mimir
+{
+
 /**
  * Pretty printing
  */
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const ProblemImpl&, FullActionFormatterTag>& data)
+std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundAction, const formalism::ProblemImpl&, formalism::FullActionFormatterTag>& data)
 {
     const auto& [action, problem, tag] = data;
 
-    auto binding = ObjectList {};
+    auto binding = formalism::ObjectList {};
     for (const auto object_index : action->get_object_indices())
     {
         binding.push_back(problem.get_repositories().get_object(object_index));
@@ -91,7 +96,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const 
 }
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const ProblemImpl&, PlanActionFormatterTag>& data)
+std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundAction, const formalism::ProblemImpl&, formalism::PlanActionFormatterTag>& data)
 {
     const auto& [ground_action, problem, tag] = data;
 

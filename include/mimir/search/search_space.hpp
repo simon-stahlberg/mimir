@@ -36,7 +36,7 @@ inline ContinuousCost extract_ground_action_sequence(State start_state,
                                                      const IndexList& state_trajectory,
                                                      IApplicableActionGenerator& applicable_action_generator,
                                                      StateRepositoryImpl& state_repository,
-                                                     GroundActionList& out_ground_action_sequence)
+                                                     formalism::GroundActionList& out_ground_action_sequence)
 {
     if (start_state->get_index() != state_trajectory.front())
     {
@@ -51,7 +51,7 @@ inline ContinuousCost extract_ground_action_sequence(State start_state,
     for (size_t i = 0; i < state_trajectory.size() - 1; ++i)
     {
         // We have to take the (state,action) pair that yields lowest metric value.
-        auto lowest_action = GroundAction { nullptr };
+        auto lowest_action = formalism::GroundAction { nullptr };
         auto lowest_state = State {};
         auto lowest_metric_value = std::numeric_limits<ContinuousCost>::infinity();
 

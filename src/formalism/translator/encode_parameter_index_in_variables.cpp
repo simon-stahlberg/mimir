@@ -17,7 +17,7 @@
 
 #include "mimir/formalism/translator/encode_parameter_index_in_variables.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
 
 Variable EncodeParameterIndexInVariables::translate_level_2(Variable variable, PDDLRepositories& repositories)

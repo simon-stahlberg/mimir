@@ -31,9 +31,9 @@ using SegmentedDLRepository = loki::SegmentedRepository<T>;
 
 using ConceptBotRepository = SegmentedDLRepository<ConceptBotImpl>;
 using ConceptTopRepository = SegmentedDLRepository<ConceptTopImpl>;
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 using ConceptAtomicStateRepositoryImpl = SegmentedDLRepository<ConceptAtomicStateImpl<P>>;
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 using ConceptAtomicGoalRepository = SegmentedDLRepository<ConceptAtomicGoalImpl<P>>;
 using ConceptIntersectionRepository = SegmentedDLRepository<ConceptIntersectionImpl>;
 using ConceptUnionRepository = SegmentedDLRepository<ConceptUnionImpl>;
@@ -45,9 +45,9 @@ using ConceptRoleValueMapEqualityRepository = SegmentedDLRepository<ConceptRoleV
 using ConceptNominalRepository = SegmentedDLRepository<ConceptNominalImpl>;
 
 using RoleUniversalRepository = SegmentedDLRepository<RoleUniversalImpl>;
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 using RoleAtomicStateRepositoryImpl = SegmentedDLRepository<RoleAtomicStateImpl<P>>;
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 using RoleAtomicGoalRepository = SegmentedDLRepository<RoleAtomicGoalImpl<P>>;
 using RoleIntersectionRepository = SegmentedDLRepository<RoleIntersectionImpl>;
 using RoleUnionRepository = SegmentedDLRepository<RoleUnionImpl>;
@@ -59,7 +59,7 @@ using RoleReflexiveTransitiveClosureRepository = SegmentedDLRepository<RoleRefle
 using RoleRestrictionRepository = SegmentedDLRepository<RoleRestrictionImpl>;
 using RoleIdentityFactory = SegmentedDLRepository<RoleIdentityImpl>;
 
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 using BooleanAtomicStateRepository = SegmentedDLRepository<BooleanAtomicStateImpl<P>>;
 template<DescriptionLogicCategory D>
 using BooleanNonemptyRepository = SegmentedDLRepository<BooleanNonemptyImpl<D>>;
@@ -71,12 +71,12 @@ using NumericalDistanceRepository = SegmentedDLRepository<NumericalDistanceImpl>
 using HanaConstructorRepositories =
     boost::hana::map<boost::hana::pair<boost::hana::type<ConceptBotImpl>, ConceptBotRepository>,  //
                      boost::hana::pair<boost::hana::type<ConceptTopImpl>, ConceptTopRepository>,
-                     boost::hana::pair<boost::hana::type<ConceptAtomicStateImpl<Static>>, ConceptAtomicStateRepositoryImpl<Static>>,
-                     boost::hana::pair<boost::hana::type<ConceptAtomicStateImpl<Fluent>>, ConceptAtomicStateRepositoryImpl<Fluent>>,
-                     boost::hana::pair<boost::hana::type<ConceptAtomicStateImpl<Derived>>, ConceptAtomicStateRepositoryImpl<Derived>>,
-                     boost::hana::pair<boost::hana::type<ConceptAtomicGoalImpl<Static>>, ConceptAtomicGoalRepository<Static>>,
-                     boost::hana::pair<boost::hana::type<ConceptAtomicGoalImpl<Fluent>>, ConceptAtomicGoalRepository<Fluent>>,
-                     boost::hana::pair<boost::hana::type<ConceptAtomicGoalImpl<Derived>>, ConceptAtomicGoalRepository<Derived>>,
+                     boost::hana::pair<boost::hana::type<ConceptAtomicStateImpl<formalism::Static>>, ConceptAtomicStateRepositoryImpl<formalism::Static>>,
+                     boost::hana::pair<boost::hana::type<ConceptAtomicStateImpl<formalism::Fluent>>, ConceptAtomicStateRepositoryImpl<formalism::Fluent>>,
+                     boost::hana::pair<boost::hana::type<ConceptAtomicStateImpl<formalism::Derived>>, ConceptAtomicStateRepositoryImpl<formalism::Derived>>,
+                     boost::hana::pair<boost::hana::type<ConceptAtomicGoalImpl<formalism::Static>>, ConceptAtomicGoalRepository<formalism::Static>>,
+                     boost::hana::pair<boost::hana::type<ConceptAtomicGoalImpl<formalism::Fluent>>, ConceptAtomicGoalRepository<formalism::Fluent>>,
+                     boost::hana::pair<boost::hana::type<ConceptAtomicGoalImpl<formalism::Derived>>, ConceptAtomicGoalRepository<formalism::Derived>>,
                      boost::hana::pair<boost::hana::type<ConceptIntersectionImpl>, ConceptIntersectionRepository>,
                      boost::hana::pair<boost::hana::type<ConceptUnionImpl>, ConceptUnionRepository>,
                      boost::hana::pair<boost::hana::type<ConceptNegationImpl>, ConceptNegationRepository>,
@@ -86,12 +86,12 @@ using HanaConstructorRepositories =
                      boost::hana::pair<boost::hana::type<ConceptRoleValueMapEqualityImpl>, ConceptRoleValueMapEqualityRepository>,
                      boost::hana::pair<boost::hana::type<ConceptNominalImpl>, ConceptNominalRepository>,
                      boost::hana::pair<boost::hana::type<RoleUniversalImpl>, RoleUniversalRepository>,
-                     boost::hana::pair<boost::hana::type<RoleAtomicStateImpl<Static>>, RoleAtomicStateRepositoryImpl<Static>>,
-                     boost::hana::pair<boost::hana::type<RoleAtomicStateImpl<Fluent>>, RoleAtomicStateRepositoryImpl<Fluent>>,
-                     boost::hana::pair<boost::hana::type<RoleAtomicStateImpl<Derived>>, RoleAtomicStateRepositoryImpl<Derived>>,
-                     boost::hana::pair<boost::hana::type<RoleAtomicGoalImpl<Static>>, RoleAtomicGoalRepository<Static>>,
-                     boost::hana::pair<boost::hana::type<RoleAtomicGoalImpl<Fluent>>, RoleAtomicGoalRepository<Fluent>>,
-                     boost::hana::pair<boost::hana::type<RoleAtomicGoalImpl<Derived>>, RoleAtomicGoalRepository<Derived>>,
+                     boost::hana::pair<boost::hana::type<RoleAtomicStateImpl<formalism::Static>>, RoleAtomicStateRepositoryImpl<formalism::Static>>,
+                     boost::hana::pair<boost::hana::type<RoleAtomicStateImpl<formalism::Fluent>>, RoleAtomicStateRepositoryImpl<formalism::Fluent>>,
+                     boost::hana::pair<boost::hana::type<RoleAtomicStateImpl<formalism::Derived>>, RoleAtomicStateRepositoryImpl<formalism::Derived>>,
+                     boost::hana::pair<boost::hana::type<RoleAtomicGoalImpl<formalism::Static>>, RoleAtomicGoalRepository<formalism::Static>>,
+                     boost::hana::pair<boost::hana::type<RoleAtomicGoalImpl<formalism::Fluent>>, RoleAtomicGoalRepository<formalism::Fluent>>,
+                     boost::hana::pair<boost::hana::type<RoleAtomicGoalImpl<formalism::Derived>>, RoleAtomicGoalRepository<formalism::Derived>>,
                      boost::hana::pair<boost::hana::type<RoleIntersectionImpl>, RoleIntersectionRepository>,
                      boost::hana::pair<boost::hana::type<RoleUnionImpl>, RoleUnionRepository>,
                      boost::hana::pair<boost::hana::type<RoleComplementImpl>, RoleComplementRepository>,
@@ -101,9 +101,9 @@ using HanaConstructorRepositories =
                      boost::hana::pair<boost::hana::type<RoleReflexiveTransitiveClosureImpl>, RoleReflexiveTransitiveClosureRepository>,
                      boost::hana::pair<boost::hana::type<RoleRestrictionImpl>, RoleRestrictionRepository>,
                      boost::hana::pair<boost::hana::type<RoleIdentityImpl>, RoleIdentityFactory>,
-                     boost::hana::pair<boost::hana::type<BooleanAtomicStateImpl<Static>>, BooleanAtomicStateRepository<Static>>,
-                     boost::hana::pair<boost::hana::type<BooleanAtomicStateImpl<Fluent>>, BooleanAtomicStateRepository<Fluent>>,
-                     boost::hana::pair<boost::hana::type<BooleanAtomicStateImpl<Derived>>, BooleanAtomicStateRepository<Derived>>,
+                     boost::hana::pair<boost::hana::type<BooleanAtomicStateImpl<formalism::Static>>, BooleanAtomicStateRepository<formalism::Static>>,
+                     boost::hana::pair<boost::hana::type<BooleanAtomicStateImpl<formalism::Fluent>>, BooleanAtomicStateRepository<formalism::Fluent>>,
+                     boost::hana::pair<boost::hana::type<BooleanAtomicStateImpl<formalism::Derived>>, BooleanAtomicStateRepository<formalism::Derived>>,
                      boost::hana::pair<boost::hana::type<BooleanNonemptyImpl<Concept>>, BooleanNonemptyRepository<Concept>>,
                      boost::hana::pair<boost::hana::type<BooleanNonemptyImpl<Role>>, BooleanNonemptyRepository<Role>>,
                      boost::hana::pair<boost::hana::type<NumericalCountImpl<Concept>>, NumericalCountRepository<Concept>>,
@@ -128,10 +128,10 @@ public:
     /* Concepts */
     Constructor<Concept> get_or_create_concept_bot();
     Constructor<Concept> get_or_create_concept_top();
-    template<StaticOrFluentOrDerived P>
-    Constructor<Concept> get_or_create_concept_atomic_state(Predicate<P> predicate);
-    template<StaticOrFluentOrDerived P>
-    Constructor<Concept> get_or_create_concept_atomic_goal(Predicate<P> predicate, bool is_negated);
+    template<formalism::StaticOrFluentOrDerived P>
+    Constructor<Concept> get_or_create_concept_atomic_state(formalism::Predicate<P> predicate);
+    template<formalism::StaticOrFluentOrDerived P>
+    Constructor<Concept> get_or_create_concept_atomic_goal(formalism::Predicate<P> predicate, bool is_negated);
     Constructor<Concept> get_or_create_concept_intersection(Constructor<Concept> left_concept, Constructor<Concept> right_concept);
     Constructor<Concept> get_or_create_concept_union(Constructor<Concept> left_concept, Constructor<Concept> right_concept);
     Constructor<Concept> get_or_create_concept_negation(Constructor<Concept> concept_);
@@ -139,14 +139,14 @@ public:
     Constructor<Concept> get_or_create_concept_existential_quantification(Constructor<Role> role, Constructor<Concept> concept_);
     Constructor<Concept> get_or_create_concept_role_value_map_containment(Constructor<Role> left_role, Constructor<Role> right_role);
     Constructor<Concept> get_or_create_concept_role_value_map_equality(Constructor<Role> left_role, Constructor<Role> right_role);
-    Constructor<Concept> get_or_create_concept_nominal(Object object);
+    Constructor<Concept> get_or_create_concept_nominal(formalism::Object object);
 
     /* Roles */
     Constructor<Role> get_or_create_role_universal();
-    template<StaticOrFluentOrDerived P>
-    Constructor<Role> get_or_create_role_atomic_state(Predicate<P> predicate);
-    template<StaticOrFluentOrDerived P>
-    Constructor<Role> get_or_create_role_atomic_goal(Predicate<P> predicate, bool is_negated);
+    template<formalism::StaticOrFluentOrDerived P>
+    Constructor<Role> get_or_create_role_atomic_state(formalism::Predicate<P> predicate);
+    template<formalism::StaticOrFluentOrDerived P>
+    Constructor<Role> get_or_create_role_atomic_goal(formalism::Predicate<P> predicate, bool is_negated);
     Constructor<Role> get_or_create_role_intersection(Constructor<Role> left_role, Constructor<Role> right_role);
     Constructor<Role> get_or_create_role_union(Constructor<Role> left_role, Constructor<Role> right_role);
     Constructor<Role> get_or_create_role_complement(Constructor<Role> role);
@@ -158,8 +158,8 @@ public:
     Constructor<Role> get_or_create_role_identity(Constructor<Concept> concept_);
 
     /* Booleans */
-    template<StaticOrFluentOrDerived P>
-    Constructor<Boolean> get_or_create_boolean_atomic_state(Predicate<P> predicate);
+    template<formalism::StaticOrFluentOrDerived P>
+    Constructor<Boolean> get_or_create_boolean_atomic_state(formalism::Predicate<P> predicate);
     template<DescriptionLogicCategory D>
     Constructor<Boolean> get_or_create_boolean_nonempty(Constructor<D> constructor);
 

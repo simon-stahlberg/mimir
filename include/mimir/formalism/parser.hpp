@@ -23,7 +23,7 @@
 #include <loki/loki.hpp>
 #include <memory>
 
-namespace mimir
+namespace mimir::formalism
 {
 
 class Parser

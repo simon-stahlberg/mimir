@@ -5,6 +5,8 @@
 
 using namespace mimir;
 using namespace mimir::languages;
+using namespace mimir::formalism;
+using namespace mimir::search;
 
 class IPyDLVisitor : public dl::Visitor
 {

@@ -19,7 +19,7 @@
 
 #include "mimir/formalism/ground_literal.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
 
 template<StaticOrFluentOrDerived P>

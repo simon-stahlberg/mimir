@@ -36,13 +36,13 @@ class EvaluationContext
 private:
     /* Memory */
     search::State m_state;
-    Problem m_problem;
+    formalism::Problem m_problem;
     Denotations<Concept, Role, Boolean, Numerical>& m_builders;
     DenotationRepositories<Concept, Role, Boolean, Numerical>& m_repositories;
 
 public:
     EvaluationContext(search::State state,
-                      Problem problem,
+                      formalism::Problem problem,
                       Denotations<Concept, Role, Boolean, Numerical>& ref_builders,
                       DenotationRepositories<Concept, Role, Boolean, Numerical>& ref_repositories);
 
@@ -51,7 +51,7 @@ public:
      */
     search::State get_state() const;
 
-    Problem get_problem() const;
+    formalism::Problem get_problem() const;
 
     template<FeatureCategory D>
     DenotationImpl<D>& get_builder();

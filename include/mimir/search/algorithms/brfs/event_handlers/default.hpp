@@ -39,11 +39,11 @@ private:
 
     void on_expand_goal_state_impl(State state) const;
 
-    void on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const;
+    void on_generate_state_impl(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) const;
 
-    void on_generate_state_in_search_tree_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const;
+    void on_generate_state_in_search_tree_impl(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) const;
 
-    void on_generate_state_not_in_search_tree_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const;
+    void on_generate_state_not_in_search_tree_impl(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) const;
 
     void on_finish_g_layer_impl(uint32_t g_value, uint64_t num_expanded_states, uint64_t num_generated_states) const;
 
@@ -68,7 +68,7 @@ private:
     void on_exhausted_impl() const;
 
 public:
-    explicit DefaultBrFSAlgorithmEventHandler(Problem problem, bool quiet = true) :
+    explicit DefaultBrFSAlgorithmEventHandler(formalism::Problem problem, bool quiet = true) :
         BrFSAlgorithmEventHandlerBase<DefaultBrFSAlgorithmEventHandler>(problem, quiet)
     {
     }

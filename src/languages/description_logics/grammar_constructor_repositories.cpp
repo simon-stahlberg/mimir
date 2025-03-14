@@ -17,6 +17,8 @@
 
 #include "mimir/languages/description_logics/grammar_constructor_repositories.hpp"
 
+using namespace mimir::formalism;
+
 namespace mimir::languages::dl::grammar
 {
 

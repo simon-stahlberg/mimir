@@ -21,7 +21,7 @@
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/problem.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
 template<typename T>
 static void verify_indexing_scheme(const std::vector<const T*>& elements, const std::string& error_message)

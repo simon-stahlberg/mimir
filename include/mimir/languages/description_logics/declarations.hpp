@@ -76,13 +76,13 @@ class ConceptTopImpl;
 using ConceptTop = const ConceptTopImpl*;
 class ConceptBotImpl;
 using ConceptBot = const ConceptBotImpl*;
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 class ConceptAtomicStateImpl;
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 using ConceptAtomicState = const ConceptAtomicStateImpl<P>*;
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 class ConceptAtomicGoalImpl;
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 using ConceptAtomicGoal = const ConceptAtomicGoalImpl<P>*;
 class ConceptIntersectionImpl;
 using ConceptIntersection = const ConceptIntersectionImpl*;
@@ -104,13 +104,13 @@ using ConceptNominal = const ConceptNominalImpl*;
 /* Concrete roles */
 class RoleUniversalImpl;
 using RoleUniversal = const RoleUniversalImpl*;
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 class RoleAtomicStateImpl;
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 using RoleAtomicState = const RoleAtomicStateImpl<P>*;
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 class RoleAtomicGoalImpl;
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 using RoleAtomicGoal = const RoleAtomicGoalImpl<P>*;
 class RoleIntersectionImpl;
 using RoleIntersection = const RoleIntersectionImpl*;
@@ -132,9 +132,9 @@ class RoleIdentityImpl;
 using RoleIdentity = const RoleIdentityImpl*;
 
 /* Concrete Booleans */
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 class BooleanAtomicStateImpl;
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 using BooleanAtomicState = const BooleanAtomicStateImpl<P>*;
 template<DescriptionLogicCategory D>
 class BooleanNonemptyImpl;
@@ -215,13 +215,13 @@ class ConceptTopImpl;
 using ConceptTop = const ConceptTopImpl*;
 class ConceptBotImpl;
 using ConceptBot = const ConceptBotImpl*;
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 class ConceptAtomicStateImpl;
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 using ConceptAtomicState = const ConceptAtomicStateImpl<P>*;
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 class ConceptAtomicGoalImpl;
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 using ConceptAtomicGoal = const ConceptAtomicGoalImpl<P>*;
 class ConceptIntersectionImpl;
 using ConceptIntersection = const ConceptIntersectionImpl*;
@@ -243,13 +243,13 @@ using ConceptNominal = const ConceptNominalImpl*;
 /* Concrete roles */
 class RoleUniversalImpl;
 using RoleUniversal = const RoleUniversalImpl*;
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 class RoleAtomicStateImpl;
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 using RoleAtomicState = const RoleAtomicStateImpl<P>*;
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 class RoleAtomicGoalImpl;
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 using RoleAtomicGoal = const RoleAtomicGoalImpl<P>*;
 class RoleIntersectionImpl;
 using RoleIntersection = const RoleIntersectionImpl*;
@@ -271,9 +271,9 @@ class RoleIdentityImpl;
 using RoleIdentity = const RoleIdentityImpl*;
 
 /* Concrete Booleans */
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 class BooleanAtomicStateImpl;
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 using BooleanAtomicState = const BooleanAtomicStateImpl<P>*;
 template<DescriptionLogicCategory D>
 class BooleanNonemptyImpl;
@@ -368,13 +368,13 @@ class ConceptTopImpl;
 using ConceptTop = const ConceptTopImpl*;
 class ConceptBotImpl;
 using ConceptBot = const ConceptBotImpl*;
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 class ConceptAtomicStateImpl;
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 using ConceptAtomicState = const ConceptAtomicStateImpl<P>*;
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 class ConceptAtomicGoalImpl;
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 using ConceptAtomicGoal = const ConceptAtomicGoalImpl<P>*;
 class ConceptIntersectionImpl;
 using ConceptIntersection = const ConceptIntersectionImpl*;
@@ -396,13 +396,13 @@ using ConceptNominal = const ConceptNominalImpl*;
 /* Concrete roles */
 class RoleUniversalImpl;
 using RoleUniversal = const RoleUniversalImpl*;
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 class RoleAtomicStateImpl;
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 using RoleAtomicState = const RoleAtomicStateImpl<P>*;
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 class RoleAtomicGoalImpl;
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 using RoleAtomicGoal = const RoleAtomicGoalImpl<P>*;
 class RoleIntersectionImpl;
 using RoleIntersection = const RoleIntersectionImpl*;
@@ -424,9 +424,9 @@ class RoleIdentityImpl;
 using RoleIdentity = const RoleIdentityImpl*;
 
 /* Concrete Booleans */
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 class BooleanAtomicStateImpl;
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 using BooleanAtomicState = const BooleanAtomicStateImpl<P>*;
 template<DescriptionLogicCategory D>
 class BooleanNonemptyImpl;

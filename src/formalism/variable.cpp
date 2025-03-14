@@ -19,7 +19,7 @@
 
 #include "formatter.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
 VariableImpl::VariableImpl(Index index, std::string name, Index parameter_index) : m_index(index), m_name(std::move(name)), m_parameter_index(parameter_index)
 {

@@ -36,7 +36,7 @@ private:
 
     void on_start_build_action_match_tree_impl() const;
 
-    void on_finish_build_action_match_tree_impl(const match_tree::MatchTree<GroundActionImpl>& action_match_tree);
+    void on_finish_build_action_match_tree_impl(const match_tree::MatchTree<formalism::GroundActionImpl>& action_match_tree);
 
     void on_finish_search_layer_impl() const;
 

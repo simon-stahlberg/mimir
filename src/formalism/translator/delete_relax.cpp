@@ -19,7 +19,7 @@
 
 #include "mimir/common/collections.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
 
 template<StaticOrFluentOrDerived P>

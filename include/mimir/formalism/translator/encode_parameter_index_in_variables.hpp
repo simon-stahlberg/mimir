@@ -22,7 +22,7 @@
 
 #include <unordered_map>
 
-namespace mimir
+namespace mimir::formalism
 {
 
 /**

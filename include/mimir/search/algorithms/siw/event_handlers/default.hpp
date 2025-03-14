@@ -47,7 +47,7 @@ private:
     void on_exhausted_impl() const;
 
 public:
-    explicit DefaultSIWAlgorithmEventHandler(Problem problem, bool quiet = true);
+    explicit DefaultSIWAlgorithmEventHandler(formalism::Problem problem, bool quiet = true);
 };
 
 }

@@ -58,7 +58,7 @@ public:
     void visit(dl::ConceptTop constructor) override;
 };
 
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 class ConceptAtomicStateGrammarVisitor : public dl::GrammarVisitor
 {
 private:
@@ -71,7 +71,7 @@ public:
     void visit(dl::ConceptAtomicState<P> constructor) override;
 };
 
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 class ConceptAtomicGoalGrammarVisitor : public dl::GrammarVisitor
 {
 private:
@@ -196,7 +196,7 @@ public:
     void visit(dl::RoleUniversal constructor) override;
 };
 
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 class RoleAtomicStateGrammarVisitor : public dl::GrammarVisitor
 {
 private:
@@ -209,7 +209,7 @@ public:
     void visit(dl::RoleAtomicState<P> constructor) override;
 };
 
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 class RoleAtomicGoalGrammarVisitor : public dl::GrammarVisitor
 {
 private:
@@ -334,7 +334,7 @@ public:
  * BooleanVisitors
  */
 
-template<StaticOrFluentOrDerived P>
+template<formalism::StaticOrFluentOrDerived P>
 class BooleanAtomicStateGrammarVisitor : public dl::GrammarVisitor
 {
 private:

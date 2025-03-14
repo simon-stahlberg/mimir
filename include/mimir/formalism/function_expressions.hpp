@@ -22,7 +22,7 @@
 #include "mimir/common/types.hpp"
 #include "mimir/formalism/declarations.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
 
 /* FunctionExpressionNumber */

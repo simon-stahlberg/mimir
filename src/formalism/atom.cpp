@@ -21,7 +21,7 @@
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/term.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
 template<StaticOrFluentOrDerived P>
 AtomImpl<P>::AtomImpl(Index index, Predicate<P> predicate, TermList terms) : m_index(index), m_predicate(std::move(predicate)), m_terms(std::move(terms))

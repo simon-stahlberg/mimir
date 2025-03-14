@@ -24,6 +24,8 @@
 
 #include <chrono>
 
+using namespace mimir::formalism;
+
 namespace mimir::search
 {
 void DefaultAStarAlgorithmEventHandler::on_expand_state_impl(State state) const {}
@@ -80,7 +82,9 @@ void DefaultAStarAlgorithmEventHandler::on_solved_impl(const Plan& plan) const
               << "[AStar] Plan length: " << plan.get_actions().size() << std::endl;
     for (size_t i = 0; i < plan.get_actions().size(); ++i)
     {
-        std::cout << "[AStar] " << i + 1 << ". " << std::make_tuple(plan.get_actions()[i], std::cref(*m_problem), PlanActionFormatterTag {}) << std::endl;
+        std::cout << "[AStar] " << i + 1 << ". ";
+        mimir::operator<<(std::cout, std::make_tuple(plan.get_actions()[i], std::cref(*m_problem), PlanActionFormatterTag {}));
+        std::cout << std::endl;
     }
 }
 

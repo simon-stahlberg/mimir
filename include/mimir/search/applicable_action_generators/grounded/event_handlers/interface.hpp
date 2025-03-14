@@ -40,7 +40,7 @@ public:
 
     virtual void on_start_build_action_match_tree() = 0;
 
-    virtual void on_finish_build_action_match_tree(const match_tree::MatchTree<GroundActionImpl>& match_tree) = 0;
+    virtual void on_finish_build_action_match_tree(const match_tree::MatchTree<formalism::GroundActionImpl>& match_tree) = 0;
 
     virtual void on_finish_search_layer() = 0;
 
@@ -96,7 +96,7 @@ public:
         }
     }
 
-    void on_finish_build_action_match_tree(const match_tree::MatchTree<GroundActionImpl>& match_tree) override
+    void on_finish_build_action_match_tree(const match_tree::MatchTree<formalism::GroundActionImpl>& match_tree) override
     {
         m_statistics.statistics = match_tree.get_statistics();
 

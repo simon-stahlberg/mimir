@@ -21,7 +21,7 @@
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
 class GroundNumericConstraintImpl
 {

@@ -21,7 +21,7 @@
 #include "mimir/formalism/function_skeleton.hpp"
 #include "mimir/formalism/object.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
 template<StaticOrFluentOrAuxiliary F>
 GroundFunctionImpl<F>::GroundFunctionImpl(Index index, FunctionSkeleton<F> function_skeleton, ObjectList objects) :
