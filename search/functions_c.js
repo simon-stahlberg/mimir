@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['problemspecific_0',['ProblemSpecific',['../structmimir_1_1GeneralizedStateSpace_1_1Options_1_1ProblemSpecific.html#a5774c61ee3f7def5e64aeda57fd8434c',1,'mimir::GeneralizedStateSpace::Options::ProblemSpecific']]]
+  ['problemspecific_0',['ProblemSpecific',['../structmimir_1_1datasets_1_1GeneralizedStateSpace_1_1Options_1_1ProblemSpecific.html#a761e5b3e0673a0dca48d8b4dff69971f',1,'mimir::datasets::GeneralizedStateSpace::Options::ProblemSpecific']]]
 ];

@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['generalizedcolorfunction_0',['GeneralizedColorFunction',['../classmimir_1_1GeneralizedColorFunction.html',1,'mimir']]],
-  ['generalizedstatespace_1',['GeneralizedStateSpace',['../classmimir_1_1GeneralizedStateSpace.html',1,'mimir']]],
+  ['generalizedcolorfunction_0',['GeneralizedColorFunction',['../classmimir_1_1datasets_1_1GeneralizedColorFunction.html',1,'mimir::datasets']]],
+  ['generalizedstatespace_1',['GeneralizedStateSpace',['../classmimir_1_1datasets_1_1GeneralizedStateSpace.html',1,'mimir::datasets']]],
   ['graph_5ftraits_3c_20mimir_3a_3agraphs_3a_3adirectiontaggedtype_3c_20graph_2c_20direction_20_3e_20_3e_2',['graph_traits&lt; mimir::graphs::DirectionTaggedType&lt; Graph, Direction &gt; &gt;',['../structboost_1_1graph__traits_3_01mimir_1_1graphs_1_1DirectionTaggedType_3_01Graph_00_01Direction_01_4_01_4.html',1,'boost']]]
 ];

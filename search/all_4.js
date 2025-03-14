@@ -13,5 +13,5 @@ var searchData=
   ['edgetype_10',['EdgeType',['../classmimir_1_1graphs_1_1DynamicGraph.html#a3337081e42fcef435f96634f1ca828c7',1,'mimir::graphs::DynamicGraph::EdgeType()'],['../classmimir_1_1graphs_1_1StaticGraph.html#ac74d1210d953bfdd1bd4a27da0c4ffaa',1,'mimir::graphs::StaticGraph::EdgeType()'],['../classmimir_1_1graphs_1_1StaticForwardGraph.html#a7c876894a31a61e3ef4e38c850f05eb9',1,'mimir::graphs::StaticForwardGraph::EdgeType()'],['../classmimir_1_1graphs_1_1StaticBidirectionalGraph.html#a0dfd49a914c7703b3667fa190aca2cac',1,'mimir::graphs::StaticBidirectionalGraph::EdgeType()']]],
   ['emptyedge_11',['EmptyEdge',['../namespacemimir_1_1graphs.html#a9f1a6ea5cc813f955882325765a23481',1,'mimir::graphs']]],
   ['emptyvertex_12',['EmptyVertex',['../namespacemimir_1_1graphs.html#a67adc7ccb0d5c052d08f962f0878bda9',1,'mimir::graphs']]],
-  ['enable_5fdominance_5fpruning_13',['enable_dominance_pruning',['../structmimir_1_1TupleGraphCollection_1_1Options.html#a954436f60b73e8239eb1510240182d50',1,'mimir::TupleGraphCollection::Options']]]
+  ['enable_5fdominance_5fpruning_13',['enable_dominance_pruning',['../structmimir_1_1datasets_1_1TupleGraphCollection_1_1Options.html#af7603cdf6023c208447bfa4bd09b3fdb',1,'mimir::datasets::TupleGraphCollection::Options']]]
 ];

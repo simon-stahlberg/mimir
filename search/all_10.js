@@ -1,9 +1,9 @@
 var searchData=
 [
-  ['sort_5fascending_5fby_5fnum_5fstates_0',['sort_ascending_by_num_states',['../structmimir_1_1GeneralizedStateSpace_1_1Options.html#a14eb528996192d8149add244073a54ee',1,'mimir::GeneralizedStateSpace::Options']]],
+  ['sort_5fascending_5fby_5fnum_5fstates_0',['sort_ascending_by_num_states',['../structmimir_1_1datasets_1_1GeneralizedStateSpace_1_1Options.html#a9c2a10ee959f906b726a44122381b8fd',1,'mimir::datasets::GeneralizedStateSpace::Options']]],
   ['source_1',['source',['../namespacemimir_1_1graphs.html#af891e9004f3adc58c29b3c56ed70fcb9',1,'mimir::graphs']]],
   ['split_5fcolor_5fclasses_2',['split_color_classes',['../namespacemimir_1_1graphs_1_1color__refinement.html#abb7f2364f5291c9cbae284a3e652fc6b',1,'mimir::graphs::color_refinement']]],
-  ['state_5fspace_5foptions_3',['state_space_options',['../structmimir_1_1KnowledgeBase_1_1Options.html#a4c67da286963e1f63fec1a1bfa05b9fb',1,'mimir::KnowledgeBase::Options']]],
+  ['state_5fspace_5foptions_3',['state_space_options',['../structmimir_1_1datasets_1_1KnowledgeBase_1_1Options.html#a980c9bb444f30148de1ac939d4f358fa',1,'mimir::datasets::KnowledgeBase::Options']]],
   ['static_5fgraph_2ehpp_4',['static_graph.hpp',['../static__graph_8hpp.html',1,'']]],
   ['static_5fgraph_5fboost_5fadapter_2ehpp_5',['static_graph_boost_adapter.hpp',['../static__graph__boost__adapter_8hpp.html',1,'']]],
   ['static_5fgraph_5finterface_2ehpp_6',['static_graph_interface.hpp',['../static__graph__interface_8hpp.html',1,'']]],
@@ -29,5 +29,5 @@ var searchData=
   ['staticvertexcoloreddigraph_26',['StaticVertexColoredDigraph',['../namespacemimir_1_1graphs.html#ad1ecfbb2e8fff3f99afd88ee58116c31',1,'mimir::graphs']]],
   ['staticvertexcoloredforwarddigraph_27',['StaticVertexColoredForwardDigraph',['../namespacemimir_1_1graphs.html#afe8c165cbe26983da561021fa7733333',1,'mimir::graphs']]],
   ['strong_5fcomponents_28',['strong_components',['../namespacemimir_1_1graphs.html#a230df2c169e105fc4fccf510e8784231',1,'mimir::graphs']]],
-  ['symmetry_5fpruning_29',['symmetry_pruning',['../structmimir_1_1GeneralizedStateSpace_1_1Options_1_1ProblemSpecific.html#a12e34958045022300eececc3be0249a2',1,'mimir::GeneralizedStateSpace::Options::ProblemSpecific']]]
+  ['symmetry_5fpruning_29',['symmetry_pruning',['../structmimir_1_1datasets_1_1GeneralizedStateSpace_1_1Options_1_1ProblemSpecific.html#ac347a8672eda4dd0ad472769d517d839',1,'mimir::datasets::GeneralizedStateSpace::Options::ProblemSpecific']]]
 ];
