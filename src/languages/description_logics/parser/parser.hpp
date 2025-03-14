@@ -21,7 +21,7 @@
 #include <boost/spirit/home/x3.hpp>
 #include <mimir/languages/description_logics/parser/ast.hpp>
 
-namespace mimir::dl
+namespace mimir::languages::dl
 {
 namespace x3 = boost::spirit::x3;
 namespace ascii = boost::spirit::x3::ascii;

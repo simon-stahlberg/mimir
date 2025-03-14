@@ -22,7 +22,7 @@
 #include "mimir/languages/description_logics/grammar.hpp"
 #include "mimir/languages/description_logics/grammar_visitor_formatter.hpp"
 
-namespace mimir::dl::grammar
+namespace mimir::languages::dl::grammar
 {
 
 /**

@@ -17,7 +17,7 @@
 
 #include "mimir/languages/description_logics/denotation_repositories.hpp"
 
-namespace mimir::dl
+namespace mimir::languages::dl
 {
 
 template<FeatureCategory D>

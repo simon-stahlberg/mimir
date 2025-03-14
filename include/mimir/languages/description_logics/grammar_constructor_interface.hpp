@@ -22,7 +22,7 @@
 
 #include <concepts>
 
-namespace mimir::dl::grammar
+namespace mimir::languages::dl::grammar
 {
 
 /**

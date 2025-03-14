@@ -24,7 +24,7 @@
 
 #include <tuple>
 
-namespace mimir::dl::grammar
+namespace mimir::languages::dl::grammar
 {
 
 extern Grammar parse(const std::string& bnf_grammar_description, Domain domain);

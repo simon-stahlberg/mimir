@@ -19,7 +19,7 @@
 
 #include "mimir/formalism/problem.hpp"
 
-namespace mimir::dl
+namespace mimir::languages::dl
 {
 
 /**

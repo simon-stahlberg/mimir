@@ -26,7 +26,7 @@
 
 #include <boost/hana.hpp>
 
-namespace mimir::dl::grammar
+namespace mimir::languages::dl::grammar
 {
 
 template<FeatureCategory D>

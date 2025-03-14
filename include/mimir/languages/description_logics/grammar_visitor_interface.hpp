@@ -25,7 +25,7 @@
 #include <any>
 #include <variant>
 
-namespace mimir::dl::grammar
+namespace mimir::languages::dl::grammar
 {
 
 ////////////////////////////

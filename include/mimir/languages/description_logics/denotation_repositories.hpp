@@ -27,7 +27,7 @@
 #include <unordered_set>
 #include <vector>
 
-namespace mimir::dl
+namespace mimir::languages::dl
 {
 
 /// @brief DenotationRepository encapsulate logic for obtaining unique denotation views and caching.

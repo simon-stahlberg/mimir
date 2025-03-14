@@ -26,7 +26,7 @@
 #include <iostream>
 #include <variant>
 
-namespace mimir::dl::cnf_grammar
+namespace mimir::languages::dl::cnf_grammar
 {
 
 FormatterVisitor::FormatterVisitor(std::ostream& out) : m_out(out) {}

@@ -17,7 +17,7 @@
 
 #include "mimir/languages/description_logics/constructor_repositories.hpp"
 
-namespace mimir::dl
+namespace mimir::languages::dl
 {
 
 HanaConstructorRepositories& ConstructorRepositories::get_repositories() { return m_repositories; }

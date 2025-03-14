@@ -19,11 +19,11 @@
 
 #include <mimir/languages/description_logics/parser/config.hpp>
 
-namespace mimir::dl::parser
+namespace mimir::languages::dl::parser
 {
-using iterator_type = mimir::dl::iterator_type;
-using phrase_context_type = mimir::dl::phrase_context_type;
-using context_type = mimir::dl::context_type;
+using iterator_type = mimir::languages::dl::iterator_type;
+using phrase_context_type = mimir::languages::dl::phrase_context_type;
+using context_type = mimir::languages::dl::context_type;
 
 BOOST_SPIRIT_INSTANTIATE(concept_type, iterator_type, context_type)
 BOOST_SPIRIT_INSTANTIATE(concept_bot_type, iterator_type, context_type)

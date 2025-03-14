@@ -24,7 +24,7 @@
 
 #include <loki/loki.hpp>
 
-namespace mimir::dl::grammar
+namespace mimir::languages::dl::grammar
 {
 class StartSymbolsContainer
 {

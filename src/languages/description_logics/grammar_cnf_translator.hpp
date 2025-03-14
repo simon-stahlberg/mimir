@@ -22,7 +22,7 @@
 #include "mimir/languages/description_logics/declarations.hpp"
 #include "mimir/languages/description_logics/grammar_visitor_interface.hpp"
 
-namespace mimir::dl::cnf_grammar
+namespace mimir::languages::dl::cnf_grammar
 {
 template<FeatureCategory D>
 using ConstructorOrNonTerminal = std::variant<Constructor<D>, NonTerminal<D>>;
@@ -31,7 +31,7 @@ template<FeatureCategory D>
 using DerivationOrSubstitutionRule = std::variant<DerivationRule<D>, SubstitutionRule<D>>;
 }
 
-namespace mimir::dl::grammar
+namespace mimir::languages::dl::grammar
 {
 
 class ToCNFVisitor : public Visitor

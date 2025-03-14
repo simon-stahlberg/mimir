@@ -21,7 +21,7 @@
 #include "mimir/languages/description_logics/constructor_tag.hpp"
 #include "mimir/languages/description_logics/constructors.hpp"
 
-namespace mimir::dl
+namespace mimir::languages::dl
 {
 
 /// @brief `ConstructorProperties` is a type trait to provide additional information related to dl constructors.

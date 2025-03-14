@@ -21,7 +21,7 @@
 #include "mimir/common/concepts.hpp"
 #include "mimir/languages/description_logics/declarations.hpp"
 
-namespace mimir::dl
+namespace mimir::languages::dl
 {
 
 class Visitor

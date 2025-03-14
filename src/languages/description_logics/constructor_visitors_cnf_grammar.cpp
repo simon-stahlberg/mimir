@@ -20,7 +20,7 @@
 #include "mimir/languages/description_logics/cnf_grammar_constructors.hpp"
 #include "mimir/languages/description_logics/constructors.hpp"
 
-namespace mimir::dl::cnf_grammar
+namespace mimir::languages::dl::cnf_grammar
 {
 
 /**

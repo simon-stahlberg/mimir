@@ -20,7 +20,7 @@
 #include "mimir/languages/description_logics/grammar_constructors.hpp"
 #include "mimir/languages/description_logics/grammar_containers.hpp"
 
-namespace mimir::dl::grammar
+namespace mimir::languages::dl::grammar
 {
 
 ////////////////////////////

@@ -17,7 +17,7 @@
 
 #include "mimir/languages/description_logics/evaluation_context.hpp"
 
-namespace mimir::dl
+namespace mimir::languages::dl
 {
 EvaluationContext::EvaluationContext(search::State state,
                                      Problem problem,

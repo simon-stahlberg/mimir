@@ -28,7 +28,7 @@
 #include <variant>
 #include <vector>
 
-namespace mimir::dl
+namespace mimir::languages::dl
 {
 template<typename T>
 class ConstructorRepository;

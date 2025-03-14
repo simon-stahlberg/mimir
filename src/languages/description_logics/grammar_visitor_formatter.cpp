@@ -22,7 +22,7 @@
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/languages/description_logics/constructor_keywords.hpp"
 
-namespace mimir::dl::grammar
+namespace mimir::languages::dl::grammar
 {
 
 FormatterVisitor::FormatterVisitor(std::ostream& out) : m_out(out) {}

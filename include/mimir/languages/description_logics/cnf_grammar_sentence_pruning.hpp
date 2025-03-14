@@ -26,7 +26,7 @@
 #include <boost/hana.hpp>
 #include <loki/loki.hpp>
 
-namespace mimir::dl
+namespace mimir::languages::dl
 {
 
 /// @brief `RefinementPruningFunction` defines an interface for pruning dl constructors (= features).

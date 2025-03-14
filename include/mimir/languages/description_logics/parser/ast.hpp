@@ -27,7 +27,7 @@
 #include <sstream>
 #include <vector>
 
-namespace mimir::dl::ast
+namespace mimir::languages::dl::ast
 {
 ///////////////////////////////////////////////////////////////////////////
 //  The AST

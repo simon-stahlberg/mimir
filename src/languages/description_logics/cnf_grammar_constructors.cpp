@@ -22,7 +22,7 @@
 #include "mimir/languages/description_logics/cnf_grammar_visitor_interface.hpp"
 #include "mimir/languages/description_logics/constructor_visitors_cnf_grammar.hpp"
 
-namespace mimir::dl::cnf_grammar
+namespace mimir::languages::dl::cnf_grammar
 {
 
 /**

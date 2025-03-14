@@ -29,7 +29,7 @@
 #include <unordered_set>
 #include <vector>
 
-namespace mimir::dl
+namespace mimir::languages::dl
 {
 template<FeatureCategory D>
 struct DenotationImpl

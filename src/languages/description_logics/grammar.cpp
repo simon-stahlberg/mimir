@@ -22,7 +22,7 @@
 #include "mimir/languages/description_logics/parser/parser_wrapper.hpp"
 #include "parser.hpp"
 
-namespace mimir::dl::grammar
+namespace mimir::languages::dl::grammar
 {
 
 Grammar::Grammar(ConstructorRepositories repositories, StartSymbolsContainer start_symbols, DerivationRulesContainer derivation_rules, Domain domain) :
@@ -35,7 +35,7 @@ Grammar::Grammar(ConstructorRepositories repositories, StartSymbolsContainer sta
 
 Grammar::Grammar(std::string bnf_description, Domain domain)
 {
-    auto grammar = mimir::dl::grammar::parse(bnf_description, std::move(domain));
+    auto grammar = mimir::languages::dl::grammar::parse(bnf_description, std::move(domain));
     m_repositories = std::move(grammar.m_repositories);
     m_start_symbols = std::move(grammar.m_start_symbols);
     m_derivation_rules = std::move(grammar.m_derivation_rules);

@@ -17,7 +17,7 @@
 
 #include "mimir/languages/description_logics/grammar_constructor_repositories.hpp"
 
-namespace mimir::dl::grammar
+namespace mimir::languages::dl::grammar
 {
 
 HanaConstructorRepositories& ConstructorRepositories::get_repositories() { return m_repositories; }

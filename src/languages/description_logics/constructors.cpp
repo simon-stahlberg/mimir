@@ -43,7 +43,7 @@
 
 #include <queue>
 
-namespace mimir::dl
+namespace mimir::languages::dl
 {
 
 /**

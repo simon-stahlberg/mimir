@@ -27,7 +27,7 @@
 #include <unordered_map>
 #include <utility>
 
-namespace mimir::dl::cnf_grammar
+namespace mimir::languages::dl::cnf_grammar
 {
 class StartSymbolsContainer
 {

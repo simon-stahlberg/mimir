@@ -24,7 +24,7 @@
 #include <ostream>
 #include <string>
 
-namespace mimir::dl
+namespace mimir::languages::dl
 {
 
 class FormatterVisitor : public Visitor

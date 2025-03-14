@@ -22,7 +22,7 @@
 
 #include <variant>
 
-namespace mimir::dl::grammar
+namespace mimir::languages::dl::grammar
 {
 
 class FormatterVisitor : public Visitor

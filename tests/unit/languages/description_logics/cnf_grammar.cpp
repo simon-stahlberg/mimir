@@ -28,6 +28,8 @@
 
 #include <gtest/gtest.h>
 
+using namespace mimir::languages;
+
 namespace mimir::tests
 {
 

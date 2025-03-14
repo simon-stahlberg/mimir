@@ -29,7 +29,7 @@
 #include <optional>
 #include <vector>
 
-namespace mimir::dl::grammar
+namespace mimir::languages::dl::grammar
 {
 
 /**

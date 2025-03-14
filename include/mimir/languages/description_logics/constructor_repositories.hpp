@@ -23,7 +23,7 @@
 #include <boost/hana.hpp>
 #include <loki/loki.hpp>
 
-namespace mimir::dl
+namespace mimir::languages::dl
 {
 
 template<typename T>

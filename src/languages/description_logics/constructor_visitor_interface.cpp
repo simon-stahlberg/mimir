@@ -19,7 +19,7 @@
 
 #include "mimir/languages/description_logics/constructors.hpp"
 
-namespace mimir::dl
+namespace mimir::languages::dl
 {
 
 /* Concepts */

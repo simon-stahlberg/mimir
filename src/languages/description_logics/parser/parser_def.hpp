@@ -29,7 +29,7 @@
 #include <boost/spirit/home/x3.hpp>
 #include <boost/spirit/home/x3/support/utility/annotate_on_success.hpp>
 
-namespace mimir::dl::parser
+namespace mimir::languages::dl::parser
 {
 
 namespace x3 = boost::spirit::x3;
@@ -414,7 +414,7 @@ struct GrammarClass : x3::annotate_on_success, error_handler_base
 };
 }
 
-namespace mimir::dl
+namespace mimir::languages::dl
 {
 parser::concept_type const& concept_() { return parser::concept_; }
 parser::concept_bot_type const& concept_bot() { return parser::concept_bot; }

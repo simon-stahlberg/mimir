@@ -21,7 +21,7 @@
 #include <concepts>
 #include <string>
 
-namespace mimir::dl
+namespace mimir::languages::dl
 {
 
 /**

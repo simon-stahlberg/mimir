@@ -17,7 +17,7 @@
 
 #include "mimir/languages/description_logics/cnf_grammar_containers.hpp"
 
-namespace mimir::dl::cnf_grammar
+namespace mimir::languages::dl::cnf_grammar
 {
 const DerivationRuleLists<Concept, Role, Boolean, Numerical> DerivationRulesContainer::empty_lists =
     boost::hana::make_map(boost::hana::make_pair(boost::hana::type_c<Concept>, DerivationRuleList<Concept> {}),

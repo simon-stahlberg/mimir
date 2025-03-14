@@ -25,7 +25,7 @@
 
 #include <loki/loki.hpp>
 
-namespace mimir::dl::cnf_grammar
+namespace mimir::languages::dl::cnf_grammar
 {
 
 enum class GrammarSpecificationEnum

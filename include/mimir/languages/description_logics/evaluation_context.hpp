@@ -28,7 +28,7 @@
 #include <memory>
 #include <vector>
 
-namespace mimir::dl
+namespace mimir::languages::dl
 {
 
 class EvaluationContext

@@ -22,7 +22,7 @@
 #include "mimir/languages/description_logics/constructor_keywords.hpp"
 #include "mimir/languages/description_logics/constructors.hpp"
 
-namespace mimir::dl
+namespace mimir::languages::dl
 {
 
 FormatterVisitor::FormatterVisitor(std::ostream& out) : m_out(out) {}

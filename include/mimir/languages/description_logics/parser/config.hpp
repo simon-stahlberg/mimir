@@ -23,7 +23,7 @@
 #include <boost/spirit/home/x3/support/utility/error_reporting.hpp>
 #include <string>
 
-namespace mimir::dl
+namespace mimir::languages::dl
 {
 namespace x3 = boost::spirit::x3;
 

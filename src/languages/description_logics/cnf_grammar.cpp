@@ -29,7 +29,7 @@
 #include <fmt/core.h>
 #include <fmt/ranges.h>
 
-namespace mimir::dl::cnf_grammar
+namespace mimir::languages::dl::cnf_grammar
 {
 
 Grammar::Grammar(ConstructorRepositories repositories,

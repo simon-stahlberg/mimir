@@ -18,7 +18,7 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_KEYWORDS_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_KEYWORDS_HPP_
 
-namespace mimir::dl::keywords
+namespace mimir::languages::dl::keywords
 {
 // Concept keywords
 inline constexpr auto concept_bot = "concept_bot";

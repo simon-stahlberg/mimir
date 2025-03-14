@@ -17,7 +17,7 @@
 
 #include "mimir/languages/description_logics/cnf_grammar_constructor_repositories.hpp"
 
-namespace mimir::dl::cnf_grammar
+namespace mimir::languages::dl::cnf_grammar
 {
 
 HanaConstructorRepositories& ConstructorRepositories::get_repositories() { return m_repositories; }
