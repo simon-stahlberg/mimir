@@ -1,6 +1,26 @@
 var searchData=
 [
-  ['color_5frefinement_2ehpp_0',['color_refinement.hpp',['../color__refinement_8hpp.html',1,'']]],
-  ['color_5frefinement_5fimpl_2ehpp_1',['color_refinement_impl.hpp',['../color__refinement__impl_8hpp.html',1,'']]],
-  ['conjunctive_5fcondition_2ehpp_2',['conjunctive_condition.hpp',['../conjunctive__condition_8hpp.html',1,'']]]
+  ['cnf_5fgrammar_2ehpp_0',['cnf_grammar.hpp',['../cnf__grammar_8hpp.html',1,'']]],
+  ['cnf_5fgrammar_5fconstructor_5finterface_2ehpp_1',['cnf_grammar_constructor_interface.hpp',['../cnf__grammar__constructor__interface_8hpp.html',1,'']]],
+  ['cnf_5fgrammar_5fconstructor_5frepositories_2ehpp_2',['cnf_grammar_constructor_repositories.hpp',['../cnf__grammar__constructor__repositories_8hpp.html',1,'']]],
+  ['cnf_5fgrammar_5fconstructors_2ehpp_3',['cnf_grammar_constructors.hpp',['../cnf__grammar__constructors_8hpp.html',1,'']]],
+  ['cnf_5fgrammar_5fcontainers_2ehpp_4',['cnf_grammar_containers.hpp',['../cnf__grammar__containers_8hpp.html',1,'']]],
+  ['cnf_5fgrammar_5fsentence_5fpruning_2ehpp_5',['cnf_grammar_sentence_pruning.hpp',['../cnf__grammar__sentence__pruning_8hpp.html',1,'']]],
+  ['cnf_5fgrammar_5fvisitor_5fformatter_2ehpp_6',['cnf_grammar_visitor_formatter.hpp',['../cnf__grammar__visitor__formatter_8hpp.html',1,'']]],
+  ['cnf_5fgrammar_5fvisitor_5finterface_2ehpp_7',['cnf_grammar_visitor_interface.hpp',['../cnf__grammar__visitor__interface_8hpp.html',1,'']]],
+  ['cnf_5fgrammar_5fvisitor_5fsentence_5fgenerator_2ehpp_8',['cnf_grammar_visitor_sentence_generator.hpp',['../cnf__grammar__visitor__sentence__generator_8hpp.html',1,'']]],
+  ['color_5frefinement_2ehpp_9',['color_refinement.hpp',['../color__refinement_8hpp.html',1,'']]],
+  ['color_5frefinement_5fimpl_2ehpp_10',['color_refinement_impl.hpp',['../color__refinement__impl_8hpp.html',1,'']]],
+  ['conjunctive_5fcondition_2ehpp_11',['conjunctive_condition.hpp',['../conjunctive__condition_8hpp.html',1,'']]],
+  ['constructor_5fbase_2ehpp_12',['constructor_base.hpp',['../constructor__base_8hpp.html',1,'']]],
+  ['constructor_5finterface_2ehpp_13',['constructor_interface.hpp',['../constructor__interface_8hpp.html',1,'']]],
+  ['constructor_5fkeywords_2ehpp_14',['constructor_keywords.hpp',['../constructor__keywords_8hpp.html',1,'']]],
+  ['constructor_5fproperties_2ehpp_15',['constructor_properties.hpp',['../constructor__properties_8hpp.html',1,'']]],
+  ['constructor_5frepositories_2ehpp_16',['constructor_repositories.hpp',['../constructor__repositories_8hpp.html',1,'']]],
+  ['constructor_5ftag_2ehpp_17',['constructor_tag.hpp',['../constructor__tag_8hpp.html',1,'']]],
+  ['constructor_5fvisitor_5finterface_2ehpp_18',['constructor_visitor_interface.hpp',['../constructor__visitor__interface_8hpp.html',1,'']]],
+  ['constructor_5fvisitors_5fcnf_5fgrammar_2ehpp_19',['constructor_visitors_cnf_grammar.hpp',['../constructor__visitors__cnf__grammar_8hpp.html',1,'']]],
+  ['constructor_5fvisitors_5fformatter_2ehpp_20',['constructor_visitors_formatter.hpp',['../constructor__visitors__formatter_8hpp.html',1,'']]],
+  ['constructor_5fvisitors_5fgrammar_2ehpp_21',['constructor_visitors_grammar.hpp',['../constructor__visitors__grammar_8hpp.html',1,'']]],
+  ['constructors_2ehpp_22',['constructors.hpp',['../constructors_8hpp.html',1,'']]]
 ];

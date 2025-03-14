@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['searchmode_0',['SearchMode',['../classmimir_1_1search_1_1SearchContext.html#aead51804ef566b4e7b705f39fd6a4285',1,'mimir::search::SearchContext']]],
-  ['searchnodestatus_1',['SearchNodeStatus',['../namespacemimir_1_1search.html#a2097fb91f235e64558eedaf6b1aa165a',1,'mimir::search']]],
-  ['searchstatus_2',['SearchStatus',['../namespacemimir_1_1search.html#a79d5077b9be5c161f50658bf63e0fcf8',1,'mimir::search']]]
+  ['grammarspecificationenum_0',['GrammarSpecificationEnum',['../namespacemimir_1_1languages_1_1dl_1_1cnf__grammar.html#a54bc6efb7b7df0b59e8289156f4e7f6d',1,'mimir::languages::dl::cnf_grammar::GrammarSpecificationEnum()'],['../namespacemimir_1_1languages_1_1dl_1_1grammar.html#a23d2bce07290f816e9c20fad6d1b5685',1,'mimir::languages::dl::grammar::GrammarSpecificationEnum()']]]
 ];

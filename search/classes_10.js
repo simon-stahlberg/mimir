@@ -1,6 +1,27 @@
 var searchData=
 [
-  ['tuplegraph_0',['TupleGraph',['../classmimir_1_1datasets_1_1TupleGraph.html',1,'mimir::datasets']]],
-  ['tuplegraphcollection_1',['TupleGraphCollection',['../classmimir_1_1datasets_1_1TupleGraphCollection.html',1,'mimir::datasets']]],
-  ['tupleindexmapper_2',['TupleIndexMapper',['../classmimir_1_1search_1_1TupleIndexMapper.html',1,'mimir::search']]]
+  ['searchcontext_0',['SearchContext',['../classmimir_1_1search_1_1SearchContext.html',1,'mimir::search']]],
+  ['searchnodeimpl_1',['SearchNodeImpl',['../structmimir_1_1search_1_1SearchNodeImpl.html',1,'mimir::search']]],
+  ['searchresult_2',['SearchResult',['../structmimir_1_1search_1_1SearchResult.html',1,'mimir::search']]],
+  ['siwalgorithmeventhandlerbase_3',['SIWAlgorithmEventHandlerBase',['../classmimir_1_1search_1_1SIWAlgorithmEventHandlerBase.html',1,'mimir::search']]],
+  ['siwalgorithmeventhandlerbase_3c_20defaultsiwalgorithmeventhandler_20_3e_4',['SIWAlgorithmEventHandlerBase&lt; DefaultSIWAlgorithmEventHandler &gt;',['../classmimir_1_1search_1_1SIWAlgorithmEventHandlerBase.html',1,'mimir::search']]],
+  ['siwalgorithmstatistics_5',['SIWAlgorithmStatistics',['../classmimir_1_1search_1_1SIWAlgorithmStatistics.html',1,'mimir::search']]],
+  ['startsymbolscontainer_6',['StartSymbolsContainer',['../classmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1StartSymbolsContainer.html',1,'mimir::languages::dl::cnf_grammar::StartSymbolsContainer'],['../classmimir_1_1languages_1_1dl_1_1grammar_1_1StartSymbolsContainer.html',1,'mimir::languages::dl::grammar::StartSymbolsContainer']]],
+  ['stateimpl_7',['StateImpl',['../structmimir_1_1search_1_1StateImpl.html',1,'mimir::search']]],
+  ['statepairtupleindexgenerator_8',['StatePairTupleIndexGenerator',['../classmimir_1_1search_1_1StatePairTupleIndexGenerator.html',1,'mimir::search']]],
+  ['staterepositoryimpl_9',['StateRepositoryImpl',['../classmimir_1_1search_1_1StateRepositoryImpl.html',1,'mimir::search']]],
+  ['statetupleindexgenerator_10',['StateTupleIndexGenerator',['../classmimir_1_1search_1_1StateTupleIndexGenerator.html',1,'mimir::search']]],
+  ['staticadjacentedgeconstiterator_11',['StaticAdjacentEdgeConstIterator',['../classmimir_1_1graphs_1_1StaticAdjacentEdgeConstIterator.html',1,'mimir::graphs']]],
+  ['staticadjacentedgeindexconstiterator_12',['StaticAdjacentEdgeIndexConstIterator',['../classmimir_1_1graphs_1_1StaticAdjacentEdgeIndexConstIterator.html',1,'mimir::graphs']]],
+  ['staticadjacentvertexconstiterator_13',['StaticAdjacentVertexConstIterator',['../classmimir_1_1graphs_1_1StaticAdjacentVertexConstIterator.html',1,'mimir::graphs']]],
+  ['staticadjacentvertexindexconstiterator_14',['StaticAdjacentVertexIndexConstIterator',['../classmimir_1_1graphs_1_1StaticAdjacentVertexIndexConstIterator.html',1,'mimir::graphs']]],
+  ['staticastaralgorithmeventhandlerbase_15',['StaticAStarAlgorithmEventHandlerBase',['../classmimir_1_1search_1_1StaticAStarAlgorithmEventHandlerBase.html',1,'mimir::search']]],
+  ['staticastaralgorithmeventhandlerbase_3c_20debugastaralgorithmeventhandler_20_3e_16',['StaticAStarAlgorithmEventHandlerBase&lt; DebugAStarAlgorithmEventHandler &gt;',['../classmimir_1_1search_1_1StaticAStarAlgorithmEventHandlerBase.html',1,'mimir::search']]],
+  ['staticastaralgorithmeventhandlerbase_3c_20defaultastaralgorithmeventhandler_20_3e_17',['StaticAStarAlgorithmEventHandlerBase&lt; DefaultAStarAlgorithmEventHandler &gt;',['../classmimir_1_1search_1_1StaticAStarAlgorithmEventHandlerBase.html',1,'mimir::search']]],
+  ['staticbidirectionalgraph_18',['StaticBidirectionalGraph',['../classmimir_1_1graphs_1_1StaticBidirectionalGraph.html',1,'mimir::graphs']]],
+  ['staticforwardgraph_19',['StaticForwardGraph',['../classmimir_1_1graphs_1_1StaticForwardGraph.html',1,'mimir::graphs']]],
+  ['staticgraph_20',['StaticGraph',['../classmimir_1_1graphs_1_1StaticGraph.html',1,'mimir::graphs']]],
+  ['staticsize_21',['StaticSize',['../structmimir_1_1search_1_1StaticSize.html',1,'mimir::search']]],
+  ['substitutionruleimpl_22',['SubstitutionRuleImpl',['../classmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1SubstitutionRuleImpl.html',1,'mimir::languages::dl::cnf_grammar']]],
+  ['substitutionrulescontainer_23',['SubstitutionRulesContainer',['../classmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1SubstitutionRulesContainer.html',1,'mimir::languages::dl::cnf_grammar']]]
 ];

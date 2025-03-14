@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['object_5fgraph_2ehpp_0',['object_graph.hpp',['../object__graph_8hpp.html',1,'']]],
-  ['options_2ehpp_1',['options.hpp',['../options_8hpp.html',1,'']]]
+  ['novelty_5ftable_2ehpp_0',['novelty_table.hpp',['../novelty__table_8hpp.html',1,'']]]
 ];
