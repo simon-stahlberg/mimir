@@ -20,7 +20,7 @@
 
 #include "mimir/graphs/graph_interface.hpp"
 
-namespace mimir
+namespace mimir::graphs
 {
 
 /**

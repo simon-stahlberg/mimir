@@ -24,7 +24,7 @@ namespace mimir::tests
 
 TEST(MimirTests, GraphsDynamicDigraphTest)
 {
-    auto graph = DynamicDigraph();
+    auto graph = graphs::DynamicDigraph();
 
     /* Add edge with non existing source or target */
     EXPECT_ANY_THROW(graph.add_directed_edge(0, 0));
@@ -53,10 +53,10 @@ TEST(MimirTests, GraphsDynamicDigraphTest)
     EXPECT_EQ(e4, 4);
     EXPECT_EQ(e5, 5);
     // Non exhaustive test because it should work for others as well.
-    EXPECT_EQ(graph.get_source<Forward>(e0), v0);
-    EXPECT_EQ(graph.get_source<Backward>(e0), v1);
-    EXPECT_EQ(graph.get_target<Forward>(e0), v1);
-    EXPECT_EQ(graph.get_target<Backward>(e0), v0);
+    EXPECT_EQ(graph.get_source<graphs::Forward>(e0), v0);
+    EXPECT_EQ(graph.get_source<graphs::Backward>(e0), v1);
+    EXPECT_EQ(graph.get_target<graphs::Forward>(e0), v1);
+    EXPECT_EQ(graph.get_target<graphs::Backward>(e0), v0);
 
     /* Remove a vertex including its three adjacent edges and a single edge. */
     graph.remove_vertex(v0);
@@ -95,27 +95,27 @@ TEST(MimirTests, GraphsDynamicDigraphTest)
     EXPECT_EQ(e9, e5);
     EXPECT_EQ(e10, 6);
     // Ensure that edge from free list has correct source and target.
-    EXPECT_EQ(graph.get_source<Forward>(e6), v1);
-    EXPECT_EQ(graph.get_source<Backward>(e6), v5);
-    EXPECT_EQ(graph.get_target<Forward>(e6), v5);
-    EXPECT_EQ(graph.get_target<Backward>(e6), v1);
+    EXPECT_EQ(graph.get_source<graphs::Forward>(e6), v1);
+    EXPECT_EQ(graph.get_source<graphs::Backward>(e6), v5);
+    EXPECT_EQ(graph.get_target<graphs::Forward>(e6), v5);
+    EXPECT_EQ(graph.get_target<graphs::Backward>(e6), v1);
     // Ensure correct out- (Forward) and in- (Backward) degrees.
-    EXPECT_EQ(graph.get_degree<Forward>(v1), 1);
-    EXPECT_EQ(graph.get_degree<Forward>(v2), 3);
-    EXPECT_EQ(graph.get_degree<Forward>(v3), 1);
-    EXPECT_EQ(graph.get_degree<Forward>(v4), 0);
-    EXPECT_EQ(graph.get_degree<Forward>(v5), 2);
-    EXPECT_EQ(graph.get_degree<Backward>(v1), 2);
-    EXPECT_EQ(graph.get_degree<Backward>(v2), 1);
-    EXPECT_EQ(graph.get_degree<Backward>(v3), 1);
-    EXPECT_EQ(graph.get_degree<Backward>(v4), 0);
-    EXPECT_EQ(graph.get_degree<Backward>(v5), 3);
+    EXPECT_EQ(graph.get_degree<graphs::Forward>(v1), 1);
+    EXPECT_EQ(graph.get_degree<graphs::Forward>(v2), 3);
+    EXPECT_EQ(graph.get_degree<graphs::Forward>(v3), 1);
+    EXPECT_EQ(graph.get_degree<graphs::Forward>(v4), 0);
+    EXPECT_EQ(graph.get_degree<graphs::Forward>(v5), 2);
+    EXPECT_EQ(graph.get_degree<graphs::Backward>(v1), 2);
+    EXPECT_EQ(graph.get_degree<graphs::Backward>(v2), 1);
+    EXPECT_EQ(graph.get_degree<graphs::Backward>(v3), 1);
+    EXPECT_EQ(graph.get_degree<graphs::Backward>(v4), 0);
+    EXPECT_EQ(graph.get_degree<graphs::Backward>(v5), 3);
 
     /* Test that iterators yield correct values.
        Non exhaustive test because it should work for other vertices as well. */
 
     // VertexIndexIterator
-    auto vertex_indices = VertexIndexSet(graph.get_vertex_indices().begin(), graph.get_vertex_indices().end());
+    auto vertex_indices = graphs::VertexIndexSet(graph.get_vertex_indices().begin(), graph.get_vertex_indices().end());
     EXPECT_EQ(vertex_indices.size(), 5);
     EXPECT_TRUE(vertex_indices.contains(v1));
     EXPECT_TRUE(vertex_indices.contains(v2));
@@ -124,7 +124,7 @@ TEST(MimirTests, GraphsDynamicDigraphTest)
     EXPECT_TRUE(vertex_indices.contains(v5));
 
     // EdgeIndexIterator
-    auto edge_indices = EdgeIndexSet(graph.get_edge_indices().begin(), graph.get_edge_indices().end());
+    auto edge_indices = graphs::EdgeIndexSet(graph.get_edge_indices().begin(), graph.get_edge_indices().end());
     EXPECT_EQ(edge_indices.size(), 7);
     EXPECT_TRUE(edge_indices.contains(e2));
     EXPECT_TRUE(edge_indices.contains(e3));
@@ -136,9 +136,9 @@ TEST(MimirTests, GraphsDynamicDigraphTest)
 
     // AdjacentVertexIndexIterator
     auto v1_forward_adjacent_vertex_indices =
-        VertexIndexSet(graph.get_adjacent_vertex_indices<Forward>(v1).begin(), graph.get_adjacent_vertex_indices<Forward>(v1).end());
+        graphs::VertexIndexSet(graph.get_adjacent_vertex_indices<graphs::Forward>(v1).begin(), graph.get_adjacent_vertex_indices<graphs::Forward>(v1).end());
     auto v1_backward_adjacent_vertex_indices =
-        VertexIndexSet(graph.get_adjacent_vertex_indices<Backward>(v1).begin(), graph.get_adjacent_vertex_indices<Backward>(v1).end());
+        graphs::VertexIndexSet(graph.get_adjacent_vertex_indices<graphs::Backward>(v1).begin(), graph.get_adjacent_vertex_indices<graphs::Backward>(v1).end());
 
     EXPECT_EQ(v1_forward_adjacent_vertex_indices.size(), 1);
     EXPECT_TRUE(v1_forward_adjacent_vertex_indices.contains(v5));
@@ -148,10 +148,12 @@ TEST(MimirTests, GraphsDynamicDigraphTest)
     EXPECT_TRUE(v1_backward_adjacent_vertex_indices.contains(v5));
 
     // AdjacentVertexIterator
-    using VertexType = typename DynamicDigraph::VertexType;
+    using VertexType = typename graphs::DynamicDigraph::VertexType;
     using VertexSetType = std::unordered_set<VertexType, loki::Hash<VertexType>, loki::EqualTo<VertexType>>;
-    auto v1_foward_adjacent_vertices = VertexSetType(graph.get_adjacent_vertices<Forward>(v1).begin(), graph.get_adjacent_vertices<Forward>(v1).end());
-    auto v1_backward_adjacent_vertices = VertexSetType(graph.get_adjacent_vertices<Backward>(v1).begin(), graph.get_adjacent_vertices<Backward>(v1).end());
+    auto v1_foward_adjacent_vertices =
+        VertexSetType(graph.get_adjacent_vertices<graphs::Forward>(v1).begin(), graph.get_adjacent_vertices<graphs::Forward>(v1).end());
+    auto v1_backward_adjacent_vertices =
+        VertexSetType(graph.get_adjacent_vertices<graphs::Backward>(v1).begin(), graph.get_adjacent_vertices<graphs::Backward>(v1).end());
 
     EXPECT_EQ(v1_foward_adjacent_vertices.size(), 1);
     EXPECT_TRUE(v1_foward_adjacent_vertices.contains(graph.get_vertex(v5)));
@@ -162,9 +164,9 @@ TEST(MimirTests, GraphsDynamicDigraphTest)
 
     // AdjacentEdgeIndexIterator
     auto v1_forward_adjacent_edge_indices =
-        EdgeIndexSet(graph.get_adjacent_edge_indices<Forward>(v1).begin(), graph.get_adjacent_edge_indices<Forward>(v1).end());
+        graphs::EdgeIndexSet(graph.get_adjacent_edge_indices<graphs::Forward>(v1).begin(), graph.get_adjacent_edge_indices<graphs::Forward>(v1).end());
     auto v1_backward_adjacent_edge_indices =
-        EdgeIndexSet(graph.get_adjacent_edge_indices<Backward>(v1).begin(), graph.get_adjacent_edge_indices<Backward>(v1).end());
+        graphs::EdgeIndexSet(graph.get_adjacent_edge_indices<graphs::Backward>(v1).begin(), graph.get_adjacent_edge_indices<graphs::Backward>(v1).end());
 
     EXPECT_EQ(v1_forward_adjacent_edge_indices.size(), 1);
     EXPECT_TRUE(v1_forward_adjacent_edge_indices.contains(e6));
@@ -174,10 +176,10 @@ TEST(MimirTests, GraphsDynamicDigraphTest)
     EXPECT_TRUE(v1_backward_adjacent_edge_indices.contains(e7));
 
     // AdjacentEdgeIterator
-    using EdgeType = typename DynamicDigraph::EdgeType;
+    using EdgeType = typename graphs::DynamicDigraph::EdgeType;
     using EdgeSetType = std::unordered_set<EdgeType, loki::Hash<EdgeType>, loki::EqualTo<EdgeType>>;
-    auto v1_forward_adjacent_edge = EdgeSetType(graph.get_adjacent_edges<Forward>(v1).begin(), graph.get_adjacent_edges<Forward>(v1).end());
-    auto v1_backward_adjacent_edge = EdgeSetType(graph.get_adjacent_edges<Backward>(v1).begin(), graph.get_adjacent_edges<Backward>(v1).end());
+    auto v1_forward_adjacent_edge = EdgeSetType(graph.get_adjacent_edges<graphs::Forward>(v1).begin(), graph.get_adjacent_edges<graphs::Forward>(v1).end());
+    auto v1_backward_adjacent_edge = EdgeSetType(graph.get_adjacent_edges<graphs::Backward>(v1).begin(), graph.get_adjacent_edges<graphs::Backward>(v1).end());
 
     EXPECT_EQ(v1_forward_adjacent_edge.size(), 1);
     EXPECT_TRUE(v1_forward_adjacent_edge.contains(graph.get_edge(e6)));

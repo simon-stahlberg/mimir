@@ -24,7 +24,7 @@
 #include <loki/details/utils/hash.hpp>
 #include <tuple>
 
-namespace mimir
+namespace mimir::graphs
 {
 
 /// @brief `Vertex` implements a vertex with additional `VertexProperties`.

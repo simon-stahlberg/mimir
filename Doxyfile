@@ -4,8 +4,15 @@ HTML_OUTPUT            = "html"
 GENERATE_HTML         = YES
 GENERATE_LATEX        = NO
 EXTRACT_ALL           = YES
+EXTRACT_FUNCTIONS     = YES
+INLINE_FUNCTIONS      = YES
 INPUT                 = \
     "include/mimir/formalism/action.hpp" \
+    "include/mimir/datasets/generalized_color_function.hpp" \
+    "include/mimir/datasets/generalized_state_space.hpp" \
+    "include/mimir/datasets/knowledge_base.hpp" \
+    "include/mimir/datasets/object_graph.hpp" \
+    "include/mimir/datasets/tuple_graph.hpp" \
     "include/mimir/graphs/algorithms/color_refinement_impl.hpp" \
     "include/mimir/graphs/algorithms/color_refinement.hpp" \
     "include/mimir/graphs/algorithms/folklore_weisfeiler_leman_impl.hpp" \

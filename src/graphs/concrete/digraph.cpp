@@ -21,7 +21,7 @@
 #include <stdexcept>
 #include <string>
 
-namespace mimir
+namespace mimir::graphs
 {
 
 /**

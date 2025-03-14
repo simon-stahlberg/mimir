@@ -19,7 +19,7 @@
 
 #include <algorithm>
 
-namespace mimir
+namespace mimir::graphs
 {
 
 /**

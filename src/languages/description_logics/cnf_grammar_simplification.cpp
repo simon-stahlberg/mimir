@@ -265,8 +265,8 @@ static Grammar order_substitution_rules(const Grammar& grammar)
                                   non_terminals.insert(rule->get_body());
                               }
 
-                              using Vertex = mimir::Vertex<NonTerminal<D>>;
-                              auto graph = StaticGraph<Vertex, EmptyEdge>();
+                              using Vertex = mimir::graphs::Vertex<NonTerminal<D>>;
+                              auto graph = graphs::StaticGraph<Vertex, graphs::EmptyEdge>();
 
                               auto non_terminal_to_vertex = std::unordered_map<NonTerminal<D>, size_t> {};
                               for (const auto& non_terminal : non_terminals)
@@ -279,7 +279,7 @@ static Grammar order_substitution_rules(const Grammar& grammar)
                                   graph.add_directed_edge(non_terminal_to_vertex.at(rule->get_head()), non_terminal_to_vertex.at(rule->get_body()));
                               }
 
-                              auto top_sort = topological_sort(DirectionTaggedType(graph, Forward {}));
+                              auto top_sort = graphs::topological_sort(graphs::DirectionTaggedType(graph, graphs::Forward {}));
 
                               for (size_t i = 0; i < top_sort.size(); ++i)
                               {

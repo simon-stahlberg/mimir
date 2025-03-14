@@ -35,7 +35,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace mimir::kfwl
+namespace mimir::graphs::kfwl
 {
 
 /// @brief `Certificate` encapsulates the final tuple colorings and the decoding tables.

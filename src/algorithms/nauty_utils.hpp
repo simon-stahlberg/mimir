@@ -36,7 +36,7 @@ namespace nauty_wrapper
 /// @param ref_lab
 /// @param ref_ptn
 /// @param n
-inline void initialize_lab_and_ptr(const mimir::ColorList& vertex_coloring, std::vector<int>& ref_lab, std::vector<int>& ref_ptn)
+inline void initialize_lab_and_ptr(const mimir::graphs::ColorList& vertex_coloring, std::vector<int>& ref_lab, std::vector<int>& ref_ptn)
 {
     const auto n = vertex_coloring.size();
     assert(ref_lab.size() >= n);

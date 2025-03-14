@@ -33,7 +33,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace mimir::color_refinement
+namespace mimir::graphs::color_refinement
 {
 
 /// @brief `Certificate` encapsulates the canonical coloring and the canonical compression function (decoding table).

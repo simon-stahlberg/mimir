@@ -33,26 +33,26 @@ class GeneralizedColorFunction
 private:
     GeneralizedProblem m_generalized_problem;
 
-    std::unordered_map<Color, std::string> m_color_to_name;  ///< for visualizations
+    std::unordered_map<graphs::Color, std::string> m_color_to_name;  ///< for visualizations
 
-    PredicateMaps<Color, Static, Fluent, Derived> m_predicate_colors;
+    PredicateMaps<graphs::Color, Static, Fluent, Derived> m_predicate_colors;
 
 public:
     explicit GeneralizedColorFunction(GeneralizedProblem generalized_problem);
 
     /// @brief get color of object.
-    Color get_color(Object object) const;
+    graphs::Color get_color(Object object) const;
 
     /// @brief Get unique color of state atom.
     template<StaticOrFluentOrDerived P>
-    Color get_color(GroundAtom<P> atom, size_t pos) const;
+    graphs::Color get_color(GroundAtom<P> atom, size_t pos) const;
 
     /// @brief Get unique color of goal literal.
     template<StaticOrFluentOrDerived P>
-    Color get_color(GroundLiteral<P> literal, size_t pos, State state, const ProblemImpl& problem, bool mark_true_goal_literal = false) const;
+    graphs::Color get_color(GroundLiteral<P> literal, size_t pos, State state, const ProblemImpl& problem, bool mark_true_goal_literal = false) const;
 
     /// @brief Get name of color.
-    const std::string& get_color_name(Color color) const;
+    const std::string& get_color_name(graphs::Color color) const;
 
     /**
      * Getters

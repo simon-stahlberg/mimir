@@ -30,35 +30,52 @@
 
 namespace mimir
 {
+namespace graphs
+{
 
 /**
  * ProblemGraph
  */
 
-/// @brief `ProblemVertex` encapsulates information about a state in the context of a `GeneralizedStateSpace`.
-/// The `Index` is the index of the corresponding `ClassVertex` in the `GeneralizedStateSpace`.
-/// The `State` is the underlying planning state.
+/// @typedef ProblemVertex
+/// @brief `ProblemVertex` encapsulates information about a vertex in a `ProblemGraph`
 using ProblemVertex = Vertex<Index, State>;
 using ProblemVertexList = std::vector<ProblemVertex>;
 
+/// @brief Get the index of the corresponding `ClassVertex` in the `GeneralizedStateSpace`.
+/// @param vertex is a `ProblemVertex`.
+/// @return the index of the corresponding `ClassVertex` in the `GeneralizedStateSpace`.
 inline Index get_class_vertex_index(const ProblemVertex& vertex) { return vertex.get_property<0>(); }
 
+/// @brief Get the `State` of the given `ProblemVertex`.
+/// @param vertex is a `ProblemVertex`.
+/// @return the `State` of the given `ProblemVertex` in the `ProblemGraph`.
 inline State get_state(const ProblemVertex& vertex) { return vertex.get_property<1>(); }
 
-/// @brief `ProblemEdge` encapsulates information about a state transition in the context of a `GeneralizedStateSpace`.
-/// The `Index` is the index of the corresponding `ClassEdge` in the `GeneralizedStateSpace`.
-/// The `GroundAction` is the underlying ground action.
+/// @typedef ProblemEdge
+/// @brief `ProblemEdge` encapsulates information about an edge in a `ProblemGraph`.
 using ProblemEdge = Edge<Index, GroundAction, ContinuousCost>;
 using ProblemEdgeList = std::vector<ProblemEdge>;
 
+/// @brief Get the index of the corresponding `ClassEdge` in the `GeneralizedStateSpace`.
+/// @param edge is a `ProblemEdge`.
+/// @return the index of the corresponding `ClassEdge` in the `GeneralizedStateSpace`.
 inline Index get_class_edge_index(const ProblemEdge& edge) { return edge.get_property<0>(); }
 
+/// @brief Get the `GroundAction` of the given `ProblemEdge`.
+/// @param edge is a `ProblemEdge`.
+/// @return the `GroundAction` of the given `ProblemEdge` in the `ProblemGraph`.
 inline GroundAction get_action(const ProblemEdge& edge) { return edge.get_property<1>(); }
 
+/// @brief Get the action cost associated with the `GroundAction` of the given `ProblemEdge`
+/// @param edge is a `ProblemEdge`.
+/// @return the action cost of associated with the `GroundAction` of the given `ProblemEdge` in the `ProblemGraph`.
 inline ContinuousCost get_action_cost(const ProblemEdge& edge) { return edge.get_property<2>(); }
 
 using StaticProblemGraph = StaticGraph<ProblemVertex, ProblemEdge>;
 using StaticProblemGraphList = std::vector<StaticProblemGraph>;
+/// @typedef ProblemGraph
+/// @brief `ProblemGraph` implements a directed graph representing the state space of a single problem.
 using ProblemGraph = StaticBidirectionalGraph<StaticProblemGraph>;
 using ProblemGraphList = std::vector<ProblemGraph>;
 
@@ -66,48 +83,92 @@ using ProblemGraphList = std::vector<ProblemGraph>;
  * ClassGraph
  */
 
-/// @brief `ClassVertex` encapsulates information about a vertex where
-/// the first `Index` is the index of the `ClassVertex` in the `ClassGraph`.
-/// the second `Index` is the index to the `ProblemGraph` in the `ClassGraph`
-/// the third `Index` is the index of the `ProblemVertex` in the `ProblemGraph`
+/// @typedef ClassVertex
+/// @brief `ClassVertex` encapsulates information about a vertex in a `ClassGraph`.
 using ClassVertex = Vertex<Index, Index, Index, DiscreteCost, ContinuousCost, bool, bool, bool, bool>;
 using ClassVertexList = std::vector<ClassVertex>;
 
+/// @brief Get the index of the given `ClassVertex` in the `GeneralizedStateSpace`.
+/// @param vertex is a `ClassVertex`.
+/// @return the index of the given `ClassVertex` in the `GeneralizedStateSpace`.
 inline Index get_class_vertex_index(const ClassVertex& vertex) { return vertex.get_property<0>(); }
 
+/// @brief Get the index of the `ProblemGraph` associated with the given `ClassVertex` in the `GeneralizedStateSpace`.
+/// @param vertex is a `ClassVertex`.
+/// @return the index of the `ProblemGraph` associated with the given `ClassVertex` in the `GeneralizedStateSpace`.
 inline Index get_problem_index(const ClassVertex& vertex) { return vertex.get_property<1>(); }
 
+/// @brief Get the index of the representative `ProblemVertex` in the `ProblemGraph` associated with the given `ClassVertex` in the `GeneralizedStateSpace`.
+/// @param vertex is a `ClassVertex`.
+/// @return the index of the representative `ProblemVertex` in the `ProblemGraph` associated with the given `ClassVertex` in the `GeneralizedStateSpace`.
 inline Index get_problem_vertex_index(const ClassVertex& vertex) { return vertex.get_property<2>(); }
 
+/// @brief Get the unit goal distance of the given `ClassVertex`.
+/// @param vertex is a `ClassVertex`.
+/// @return the unit goal distance of the given `ClassVertex`.
 inline DiscreteCost get_unit_goal_distance(const ClassVertex& vertex) { return vertex.get_property<3>(); }
 
+/// @brief Get the action cost goal distance of the given `ClassVertex`.
+/// @param vertex is a `ClassVertex`
+/// @return the action cost goal distance of the given `ClassVertex`.
 inline ContinuousCost get_action_goal_distance(const ClassVertex& vertex) { return vertex.get_property<4>(); }
 
+/// @brief Get information whether the representative associated with the given `ClassVertex` is an initial vertex.
+/// @param vertex is a `ClassVertex`.
+/// @return true if the representative associated with the given `ClassVertex` is an initial vertex, and false otherwise.
 inline bool is_initial(const ClassVertex& vertex) { return vertex.get_property<5>(); }
 
+/// @brief Get information whether the representative associated with the given `ClassVertex` is a goal vertex.
+/// @param vertex is a `ClassVertex`.
+/// @return true if the representative associated with the given `ClassVertex` is a goal vertex, and false otherwise.
 inline bool is_goal(const ClassVertex& vertex) { return vertex.get_property<6>(); }
 
+/// @brief Get information whether the representative associated with the given `ClassVertex` is an unsolvable vertex.
+/// @param vertex is a `ClassVertex`.
+/// @return true if the representative associated with the given `ClassVertex` is an unsolvable vertex, and false otherwise.
 inline bool is_unsolvable(const ClassVertex& vertex) { return vertex.get_property<7>(); }
 
+/// @brief Get information whether the representative associated with the given `ClassVertex` is an alive vertex.
+/// @param vertex is a `ClassVertex`.
+/// @return true if the representative associated with the given `ClassVertex` is an alive vertex, and false otherwise.
 inline bool is_alive(const ClassVertex& vertex) { return vertex.get_property<8>(); }
 
-/// @brief `ClassEdge` encapsulates information about an edge where
-/// the first `Index` is the index of the `ClassEdge` in the `ClassGraph`.
-/// the second `Index` is the index to the `ProblemGraph` in the `ClassGraph`.
-/// the third `Index` is the index of the `ProblemEdge` in the `ProblemGraph`.
+/// @typedef ClassEdge
+/// @brief `ClassEdge` encapsulates information about an edge in a `ClassGraph`.
 using ClassEdge = Edge<Index, Index, Index, ContinuousCost>;
 using ClassEdgeList = std::vector<ClassEdge>;
 
+/// @brief Get the index of the given `ClassEdge` in the `GeneralizedStateSpace`.
+/// @param edge is a `ClassEdge`.
+/// @return the index of the given `ClassEdge` in the `GeneralizedStateSpace`.
 inline Index get_class_edge_index(const ClassEdge& edge) { return edge.get_property<0>(); }
 
+/// @brief Get the index of the `ProblemGraph` associated with the given `ClassEdge` in the `GeneralizedStateSpace`.
+/// @param edge is a `ClassEdge`.
+/// @return the index of the `ProblemGraph` associated with the given `ClassEdge` in the `GeneralizedStateSpace`.
 inline Index get_problem_index(const ClassEdge& edge) { return edge.get_property<1>(); }
 
+/// @brief Get the index of the representative `ProblemEdge` in the `ProblemGraph` associated with the given `ClassEdge` in the `GeneralizedStateSpace`.
+/// @param edge is a `ClassEdge`.
+/// @return the index of the representative `ProblemEdge` in the `ProblemGraph` associated with the given `ClassEdge` in the `GeneralizedStateSpace`.
 inline Index get_problem_edge_index(const ClassEdge& edge) { return edge.get_property<2>(); }
 
+/// @brief Get the action cost associated with the `GroundAction` of the representative `ProblemEdge`.
+/// @param edge is a `ClassEdge`.
+/// @return the action cost associated with the `GroundAction` of the representative `ProblemEdge`.
 inline Index get_action_cost(const ClassEdge& edge) { return edge.get_property<3>(); }
 
 using StaticClassGraph = StaticGraph<ClassVertex, ClassEdge>;
+/// @typedef ClassGraph
+/// @brief `ClassGraph` implements a directed graph representing the state space of a collection of problems.
 using ClassGraph = StaticBidirectionalGraph<StaticClassGraph>;
+
+extern std::ostream& operator<<(std::ostream& out, const ProblemVertex& vertex);
+extern std::ostream& operator<<(std::ostream& out, const ProblemEdge& edge);
+
+extern std::ostream& operator<<(std::ostream& out, const ClassVertex& vertex);
+extern std::ostream& operator<<(std::ostream& out, const ClassEdge& edge);
+}
 
 /**
  * GeneralizedStateSpace
@@ -119,18 +180,14 @@ using ClassGraph = StaticBidirectionalGraph<StaticClassGraph>;
 /// which is a strict one-to-many mapping, if symmetries across different problems are detected.
 /// From each `ClassVertex` (resp. `ClassEdge`) one can access the single representative `ProblemVertex` (resp. `ProblemEdge`).
 /// From each `ProblemVertex` (resp. `ProblemEdge`) one can access the corresponding `ClassVertex` (resp. `ClassEdge`).
-///
-/// Example use case 1: Learning general policies
-/// The `ClassStateSpace` contains the relevant vertices and edges and provide access to their underlying representative state or ground action.
-/// When learning from a subset of problems or subset of states, one can use `create_induced_subspace`, to obtain the subspace.
 class GeneralizedStateSpace
 {
 private:
     GeneralizedSearchContext m_context;  ///< The search contexts, possibly filtered and sorted.
 
-    ProblemGraphList m_problem_graphs;  ///< The child-level graphs.
+    graphs::ProblemGraphList m_problem_graphs;  ///< The child-level graphs.
 
-    ClassGraph m_graph;  ///< Core data.
+    graphs::ClassGraph m_graph;  ///< Core data.
 
     IndexSet m_initial_vertices;
     IndexSet m_goal_vertices;
@@ -180,9 +237,9 @@ public:
 
     const GeneralizedSearchContext& get_generalized_search_context() const;
 
-    const ProblemGraphList& get_problem_graphs() const;
+    const graphs::ProblemGraphList& get_problem_graphs() const;
 
-    const ClassGraph& get_graph() const;
+    const graphs::ClassGraph& get_graph() const;
 
     const IndexSet& get_initial_vertices() const;
     const IndexSet& get_goal_vertices() const;
@@ -190,16 +247,16 @@ public:
 
     /// @brief Ground `Class` related structures to `Problem` related structures
     /// to access detailed problem specific information about the state.
-    const ProblemGraph& get_problem_graph(const ClassVertex& vertex) const;
-    const ProblemGraph& get_problem_graph(const ClassEdge& edge) const;
-    const ProblemVertex& get_problem_vertex(const ClassVertex& vertex) const;
-    const ProblemEdge& get_problem_edge(const ClassEdge& edge) const;
-    const Problem& get_problem(const ClassVertex& vertex) const;
-    const Problem& get_problem(const ClassEdge& edge) const;
+    const graphs::ProblemGraph& get_problem_graph(const graphs::ClassVertex& vertex) const;
+    const graphs::ProblemGraph& get_problem_graph(const graphs::ClassEdge& edge) const;
+    const graphs::ProblemVertex& get_problem_vertex(const graphs::ClassVertex& vertex) const;
+    const graphs::ProblemEdge& get_problem_edge(const graphs::ClassEdge& edge) const;
+    const Problem& get_problem(const graphs::ClassVertex& vertex) const;
+    const Problem& get_problem(const graphs::ClassEdge& edge) const;
 
     /// @brief Lift `Problem` related structures to `Class` related structures.
-    const ClassVertex& get_class_vertex(const ProblemVertex& vertex) const;
-    const ClassEdge& get_class_edge(const ProblemEdge& edge) const;
+    const graphs::ClassVertex& get_class_vertex(const graphs::ProblemVertex& vertex) const;
+    const graphs::ClassEdge& get_class_edge(const graphs::ProblemEdge& edge) const;
 
     /**
      * Construct subgraphs for learning from fragments of the `ClassGraph`.
@@ -208,22 +265,12 @@ public:
     /// @brief Create the induced `ClassGraph` by the given `class_vertex_indices`.
     /// This function copies the set of `ClassVertex`
     /// and all `ClassEdge` between those vertices into a new `ClassGraph`.
-    ClassGraph create_induced_subgraph_from_class_vertex_indices(const IndexList& class_vertex_indices) const;
+    graphs::ClassGraph create_induced_subgraph_from_class_vertex_indices(const IndexList& class_vertex_indices) const;
     /// @brief Create the induced `ClassGraph` by the given `problem_indices`.
     /// This function copies the corresponding sets of `ClassVertex`
     /// and `ClassEdge` into a new `ClassGraph`.
-    ClassGraph create_induced_subgraph_from_problem_indices(const IndexList& problem_indices) const;
+    graphs::ClassGraph create_induced_subgraph_from_problem_indices(const IndexList& problem_indices) const;
 };
-
-/**
- * Default printing of vertices and edges in a static graph.
- */
-
-extern std::ostream& operator<<(std::ostream& out, const ProblemVertex& vertex);
-extern std::ostream& operator<<(std::ostream& out, const ProblemEdge& edge);
-
-extern std::ostream& operator<<(std::ostream& out, const ClassVertex& vertex);
-extern std::ostream& operator<<(std::ostream& out, const ClassEdge& edge);
 }
 
 #endif

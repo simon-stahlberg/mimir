@@ -22,7 +22,7 @@
 
 #include <concepts>
 
-namespace mimir
+namespace mimir::graphs
 {
 
 /// @brief `Forward` represents traversal of edges in forward direction.

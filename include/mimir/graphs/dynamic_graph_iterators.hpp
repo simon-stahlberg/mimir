@@ -28,7 +28,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
-namespace mimir
+namespace mimir::graphs
 {
 
 template<IsVertex Vertex>

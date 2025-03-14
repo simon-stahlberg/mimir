@@ -25,7 +25,7 @@
 #include "mimir/graphs/graph_vertices.hpp"
 #include "mimir/graphs/static_graph.hpp"
 
-namespace mimir
+namespace mimir::graphs
 {
 /**
  * Type aliases

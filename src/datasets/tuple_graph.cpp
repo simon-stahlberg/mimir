@@ -23,10 +23,10 @@
 namespace mimir
 {
 TupleGraph::TupleGraph(const ProblemImpl& problem,
-                       const ProblemGraph& problem_graph,
-                       const ClassGraph& class_graph,
+                       const graphs::ProblemGraph& problem_graph,
+                       const graphs::ClassGraph& class_graph,
                        TupleIndexMapper index_mapper,
-                       InternalTupleGraph graph,
+                       graphs::InternalTupleGraph graph,
                        IndexGroupedVector<const Index> vertices_grouped_by_distance,
                        IndexGroupedVector<const Index> problem_vertices_grouped_by_distance) :
     m_problem(problem),
@@ -41,13 +41,13 @@ TupleGraph::TupleGraph(const ProblemImpl& problem,
 
 const ProblemImpl& TupleGraph::get_problem() const { return m_problem; }
 
-const ClassGraph& TupleGraph::get_class_graph() const { return m_class_graph; }
+const graphs::ClassGraph& TupleGraph::get_class_graph() const { return m_class_graph; }
 
-const ProblemGraph& TupleGraph::get_problem_graph() const { return m_problem_graph; }
+const graphs::ProblemGraph& TupleGraph::get_problem_graph() const { return m_problem_graph; }
 
 const TupleIndexMapper& TupleGraph::get_index_mapper() const { return m_index_mapper; }
 
-const InternalTupleGraph& TupleGraph::get_graph() const { return m_graph; }
+const graphs::InternalTupleGraph& TupleGraph::get_graph() const { return m_graph; }
 
 const IndexGroupedVector<const Index>& TupleGraph::get_vertices_grouped_by_distance() const { return m_v_idxs_grouped_by_distance; }
 
@@ -123,7 +123,7 @@ std::ostream& operator<<(std::ostream& out, const TupleGraph& tuple_graph)
         out << "{\n";
         for (const auto& v_idx : group)
         {
-            for (const auto& adj_v_idx : tuple_graph.get_graph().get_adjacent_vertex_indices<Forward>(v_idx))
+            for (const auto& adj_v_idx : tuple_graph.get_graph().get_adjacent_vertex_indices<graphs::Forward>(v_idx))
             {
                 out << "t" << v_idx << "->" << "t" << adj_v_idx << "\n";
             }

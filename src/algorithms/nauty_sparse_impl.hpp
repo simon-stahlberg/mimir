@@ -44,7 +44,7 @@ private:
     sparsegraph graph_;
     bool use_default_ptn_;
 
-    mimir::ColorList canon_coloring_;
+    mimir::graphs::ColorList canon_coloring_;
     std::vector<int> lab_;
     std::vector<int> ptn_;
 
@@ -72,7 +72,7 @@ public:
 
     void add_edge(size_t source, size_t target);
 
-    void add_vertex_coloring(const mimir::ColorList& vertex_coloring);
+    void add_vertex_coloring(const mimir::graphs::ColorList& vertex_coloring);
 
     Certificate compute_certificate();
 

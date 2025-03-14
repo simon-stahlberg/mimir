@@ -41,7 +41,7 @@ struct vertex_list_and_incidence_and_edge_list_and_adjacency_and_bidirectional_g
 
 }
 
-namespace mimir
+namespace mimir::graphs
 {
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

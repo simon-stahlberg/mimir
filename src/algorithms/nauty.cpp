@@ -31,7 +31,7 @@ namespace nauty_wrapper
 using mimir::operator<<;
 
 /* Certificate */
-Certificate::Certificate(std::string nauty_certificate, mimir::ColorList canonical_initial_coloring) :
+Certificate::Certificate(std::string nauty_certificate, mimir::graphs::ColorList canonical_initial_coloring) :
     m_canonical_graph(std::move(nauty_certificate)),
     m_canonical_coloring(std::move(canonical_initial_coloring))
 {
@@ -40,7 +40,7 @@ Certificate::Certificate(std::string nauty_certificate, mimir::ColorList canonic
 
 const std::string& Certificate::get_canonical_graph() const { return m_canonical_graph; }
 
-const mimir::ColorList& Certificate::get_canonical_coloring() const { return m_canonical_coloring; }
+const mimir::graphs::ColorList& Certificate::get_canonical_coloring() const { return m_canonical_coloring; }
 
 size_t UniqueCertificateSharedPtrHash::operator()(const std::shared_ptr<const Certificate>& element) const { return loki::Hash<Certificate>()(*element); }
 
@@ -73,9 +73,8 @@ bool operator<(const Certificate& lhs, const Certificate& rhs)
 
 std::ostream& operator<<(std::ostream& os, const Certificate& element)
 {
-    os << "CertificateNauty("
-       << "canonical_graph=" << element.get_canonical_graph() << ", "
-       << "canonical_coloring=" << element.get_canonical_coloring() << ")";
+    os << "CertificateNauty(" << "canonical_graph=" << element.get_canonical_graph() << ", " << "canonical_coloring=" << element.get_canonical_coloring()
+       << ")";
     return os;
 }
 
@@ -84,7 +83,7 @@ DenseGraph::DenseGraph() : m_impl(std::make_unique<DenseGraphImpl>(0)) {}
 
 DenseGraph::DenseGraph(size_t num_vertices) : m_impl(std::make_unique<DenseGraphImpl>(num_vertices)) {}
 
-DenseGraph::DenseGraph(const mimir::StaticVertexColoredDigraph& digraph) : m_impl(std::make_unique<DenseGraphImpl>(digraph.get_num_vertices()))
+DenseGraph::DenseGraph(const mimir::graphs::StaticVertexColoredDigraph& digraph) : m_impl(std::make_unique<DenseGraphImpl>(digraph.get_num_vertices()))
 {
     /* Remap indices to 0,1,... indexing schema. */
     auto remap = mimir::IndexMap<mimir::Index>();
@@ -100,7 +99,7 @@ DenseGraph::DenseGraph(const mimir::StaticVertexColoredDigraph& digraph) : m_imp
     }
 
     /* Add vertex coloring. */
-    auto coloring = mimir::ColorList(digraph.get_num_vertices());
+    auto coloring = mimir::graphs::ColorList(digraph.get_num_vertices());
     for (const auto& vertex : digraph.get_vertices())
     {
         coloring.at(remap.at(vertex.get_index())) = get_color(vertex);
@@ -132,7 +131,7 @@ DenseGraph& DenseGraph::operator=(DenseGraph&& other) noexcept
 
 DenseGraph::~DenseGraph() = default;
 
-void DenseGraph::add_vertex_coloring(const mimir::ColorList& vertex_coloring) { m_impl->add_vertex_coloring(vertex_coloring); }
+void DenseGraph::add_vertex_coloring(const mimir::graphs::ColorList& vertex_coloring) { m_impl->add_vertex_coloring(vertex_coloring); }
 
 void DenseGraph::add_edge(size_t source, size_t target) { m_impl->add_edge(source, target); }
 
@@ -148,7 +147,7 @@ SparseGraph::SparseGraph() : m_impl(std::make_unique<SparseGraphImpl>(0)) {}
 
 SparseGraph::SparseGraph(size_t num_vertices) : m_impl(std::make_unique<SparseGraphImpl>(num_vertices)) {}
 
-SparseGraph::SparseGraph(const mimir::StaticVertexColoredDigraph& digraph) : m_impl(std::make_unique<SparseGraphImpl>(digraph.get_num_vertices()))
+SparseGraph::SparseGraph(const mimir::graphs::StaticVertexColoredDigraph& digraph) : m_impl(std::make_unique<SparseGraphImpl>(digraph.get_num_vertices()))
 {
     /* Remap indices to 0,1,... indexing schema. */
     auto remap = mimir::IndexMap<mimir::Index>();
@@ -164,7 +163,7 @@ SparseGraph::SparseGraph(const mimir::StaticVertexColoredDigraph& digraph) : m_i
     }
 
     /* Add vertex coloring. */
-    auto coloring = mimir::ColorList(digraph.get_num_vertices());
+    auto coloring = mimir::graphs::ColorList(digraph.get_num_vertices());
     for (const auto& vertex : digraph.get_vertices())
     {
         coloring.at(remap.at(vertex.get_index())) = get_color(vertex);
@@ -196,7 +195,7 @@ SparseGraph& SparseGraph::operator=(SparseGraph&& other) noexcept
 
 SparseGraph::~SparseGraph() = default;
 
-void SparseGraph::add_vertex_coloring(const mimir::ColorList& vertex_coloring) { m_impl->add_vertex_coloring(vertex_coloring); }
+void SparseGraph::add_vertex_coloring(const mimir::graphs::ColorList& vertex_coloring) { m_impl->add_vertex_coloring(vertex_coloring); }
 
 void SparseGraph::add_edge(size_t source, size_t target) { m_impl->add_edge(source, target); }
 

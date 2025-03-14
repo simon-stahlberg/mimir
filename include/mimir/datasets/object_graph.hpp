@@ -41,7 +41,7 @@ namespace mimir
 /// @param color_function is the function used to color the vertices in the object graph.
 /// @param mark_true_goal_literals represents whether literals that are true should have a special color.
 /// @return a vertex colored graph that precisely represents the given state.
-extern StaticVertexColoredDigraph
+extern graphs::StaticVertexColoredDigraph
 create_object_graph(State state, const ProblemImpl& problem, const GeneralizedColorFunction& color_function, bool mark_true_goal_literals = false);
 
 }

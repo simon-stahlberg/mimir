@@ -6,11 +6,11 @@ using namespace mimir;
 
 void bind_graphs(nb::module_& m)
 {
-    bind_vertex<EmptyVertex>(m, PyVertexProperties<EmptyVertex>::name);
-    bind_vertex<ColoredVertex>(m, PyVertexProperties<ColoredVertex>::name);
-    bind_edge<EmptyEdge>(m, PyEdgeProperties<EmptyEdge>::name);
-    bind_edge<ColoredEdge>(m, PyEdgeProperties<ColoredEdge>::name);
-    bind_static_graph<EmptyVertex, EmptyEdge>(m, "EmptyStaticGraph");
-    bind_static_graph<ColoredVertex, EmptyEdge>(m, "VertexColoredStaticGraph");
-    bind_static_graph<ColoredVertex, ColoredEdge>(m, "EdgeColoredStaticGraph");
+    bind_vertex<graphs::EmptyVertex>(m, PyVertexProperties<graphs::EmptyVertex>::name);
+    bind_vertex<graphs::ColoredVertex>(m, PyVertexProperties<graphs::ColoredVertex>::name);
+    bind_edge<graphs::EmptyEdge>(m, PyEdgeProperties<graphs::EmptyEdge>::name);
+    bind_edge<graphs::ColoredEdge>(m, PyEdgeProperties<graphs::ColoredEdge>::name);
+    bind_static_graph<graphs::EmptyVertex, graphs::EmptyEdge>(m, "EmptyStaticGraph");
+    bind_static_graph<graphs::ColoredVertex, graphs::EmptyEdge>(m, "VertexColoredStaticGraph");
+    bind_static_graph<graphs::ColoredVertex, graphs::ColoredEdge>(m, "EdgeColoredStaticGraph");
 }

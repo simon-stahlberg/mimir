@@ -6,12 +6,12 @@ using namespace mimir;
 
 void bind_datasets(nb::module_& m)
 {
-    bind_vertex<ProblemVertex>(m, PyVertexProperties<ProblemVertex>::name);
-    bind_vertex<ClassVertex>(m, PyVertexProperties<ClassVertex>::name);
-    bind_edge<ProblemEdge>(m, PyEdgeProperties<ProblemEdge>::name);
-    bind_edge<ClassEdge>(m, PyEdgeProperties<ClassEdge>::name);
-    bind_static_graph<ProblemVertex, ProblemEdge>(m, "ProblemStaticGraph");
-    bind_static_graph<ClassVertex, ClassEdge>(m, "ClassStaticGraph");
+    bind_vertex<graphs::ProblemVertex>(m, PyVertexProperties<graphs::ProblemVertex>::name);
+    bind_vertex<graphs::ClassVertex>(m, PyVertexProperties<graphs::ClassVertex>::name);
+    bind_edge<graphs::ProblemEdge>(m, PyEdgeProperties<graphs::ProblemEdge>::name);
+    bind_edge<graphs::ClassEdge>(m, PyEdgeProperties<graphs::ClassEdge>::name);
+    bind_static_graph<graphs::ProblemVertex, graphs::ProblemEdge>(m, "ProblemStaticGraph");
+    bind_static_graph<graphs::ClassVertex, graphs::ClassEdge>(m, "ClassStaticGraph");
 
     nb::class_<GeneralizedStateSpace::Options::ProblemSpecific>(m, "GeneralizedStateSpaceProblemOptions")
         .def(nb::init<>())
@@ -37,17 +37,19 @@ void bind_datasets(nb::module_& m)
         .def("get_goal_vertices", &GeneralizedStateSpace::get_goal_vertices, nb::rv_policy::copy)
         .def("get_unsolvable_vertices", &GeneralizedStateSpace::get_unsolvable_vertices, nb::rv_policy::copy)
         .def("get_problem_graph",
-             nb::overload_cast<const ClassVertex&>(&GeneralizedStateSpace::get_problem_graph, nb::const_),
+             nb::overload_cast<const graphs::ClassVertex&>(&GeneralizedStateSpace::get_problem_graph, nb::const_),
              nb::rv_policy::reference_internal)
-        .def("get_problem_graph", nb::overload_cast<const ClassEdge&>(&GeneralizedStateSpace::get_problem_graph, nb::const_), nb::rv_policy::reference_internal)
+        .def("get_problem_graph",
+             nb::overload_cast<const graphs::ClassEdge&>(&GeneralizedStateSpace::get_problem_graph, nb::const_),
+             nb::rv_policy::reference_internal)
         .def("get_problem_vertex", &GeneralizedStateSpace::get_problem_vertex, nb::rv_policy::reference_internal)
         .def("get_problem_edge", &GeneralizedStateSpace::get_problem_edge, nb::rv_policy::reference_internal)
         .def("get_problem",
-             static_cast<const Problem& (GeneralizedStateSpace::*) (const ClassVertex&) const>(&GeneralizedStateSpace::get_problem),
+             static_cast<const Problem& (GeneralizedStateSpace::*) (const graphs::ClassVertex&) const>(&GeneralizedStateSpace::get_problem),
              nb::arg("vertex"),
              nb::rv_policy::reference_internal)
         .def("get_problem",
-             static_cast<const Problem& (GeneralizedStateSpace::*) (const ClassEdge&) const>(&GeneralizedStateSpace::get_problem),
+             static_cast<const Problem& (GeneralizedStateSpace::*) (const graphs::ClassEdge&) const>(&GeneralizedStateSpace::get_problem),
              nb::arg("edge"),
              nb::rv_policy::reference_internal)
         .def("get_class_vertex", &GeneralizedStateSpace::get_class_vertex, nb::rv_policy::reference_internal)

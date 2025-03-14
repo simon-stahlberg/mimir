@@ -26,14 +26,14 @@ namespace mimir
 class TupleGraphArityZeroComputation
 {
 private:
-    const ProblemVertex& m_problem_vertex;
-    const ProblemGraph& m_problem_graph;
-    const ClassGraph& m_class_graph;
+    const graphs::ProblemVertex& m_problem_vertex;
+    const graphs::ProblemGraph& m_problem_graph;
+    const graphs::ClassGraph& m_class_graph;
     const SearchContext& m_context;
     const TupleGraphCollection::Options& m_options;
 
     TupleIndexMapper m_index_mapper;
-    StaticTupleGraph m_internal_tuple_graph;
+    graphs::StaticTupleGraph m_internal_tuple_graph;
     IndexGroupedVectorBuilder<const Index> m_v_idxs_grouped_by_distance;
     IndexGroupedVectorBuilder<const Index> m_problem_v_idxs_grouped_by_distance;
 
@@ -58,7 +58,7 @@ private:
         m_v_idxs_grouped_by_distance.start_group();
         m_problem_v_idxs_grouped_by_distance.start_group();
 
-        for (const auto& adj_problem_vertex : m_problem_graph.get_adjacent_vertices<Forward>(m_problem_vertex.get_index()))
+        for (const auto& adj_problem_vertex : m_problem_graph.get_adjacent_vertices<graphs::Forward>(m_problem_vertex.get_index()))
         {
             if (adj_problem_vertex.get_index() == m_problem_vertex.get_index())
             {
@@ -74,9 +74,9 @@ private:
     }
 
 public:
-    TupleGraphArityZeroComputation(const ProblemVertex& problem_vertex,
-                                   const ProblemGraph& problem_graph,
-                                   const ClassGraph& class_graph,
+    TupleGraphArityZeroComputation(const graphs::ProblemVertex& problem_vertex,
+                                   const graphs::ProblemGraph& problem_graph,
+                                   const graphs::ClassGraph& class_graph,
                                    const SearchContext& context,
                                    const TupleGraphCollection::Options& options) :
         m_problem_vertex(problem_vertex),
@@ -101,15 +101,15 @@ public:
                           m_problem_graph,
                           m_class_graph,
                           m_index_mapper,
-                          InternalTupleGraph(std::move(m_internal_tuple_graph)),
+                          graphs::InternalTupleGraph(std::move(m_internal_tuple_graph)),
                           m_v_idxs_grouped_by_distance.get_result(),
                           m_problem_v_idxs_grouped_by_distance.get_result());
     }
 };
 
-static TupleGraph create_tuple_graph_width_zero(const ProblemVertex& problem_vertex,
-                                                const ProblemGraph& problem_graph,
-                                                const ClassGraph& class_graph,
+static TupleGraph create_tuple_graph_width_zero(const graphs::ProblemVertex& problem_vertex,
+                                                const graphs::ProblemGraph& problem_graph,
+                                                const graphs::ClassGraph& class_graph,
                                                 const SearchContext& context,
                                                 const TupleGraphCollection::Options& options)
 {
@@ -119,13 +119,13 @@ static TupleGraph create_tuple_graph_width_zero(const ProblemVertex& problem_ver
 class TupleGraphArityGreaterZeroComputation
 {
 private:
-    const ProblemVertex& m_problem_vertex;
-    const ProblemGraph& m_problem_graph;
-    const ClassGraph& m_class_graph;
+    const graphs::ProblemVertex& m_problem_vertex;
+    const graphs::ProblemGraph& m_problem_graph;
+    const graphs::ClassGraph& m_class_graph;
     const SearchContext& m_context;
     const TupleGraphCollection::Options& m_options;
 
-    StaticTupleGraph m_internal_tuple_graph;
+    graphs::StaticTupleGraph m_internal_tuple_graph;
     IndexGroupedVectorBuilder<const Index> m_v_idxs_grouped_by_distance;
     IndexGroupedVectorBuilder<const Index> m_problem_v_idxs_grouped_by_distance;
 
@@ -189,7 +189,7 @@ private:
 
         for (const auto& prev_problem_v_idx : m_prev_problem_v_idxs)
         {
-            for (const auto& curr_problem_v_idx : m_problem_graph.get_adjacent_vertex_indices<Forward>(prev_problem_v_idx))
+            for (const auto& curr_problem_v_idx : m_problem_graph.get_adjacent_vertex_indices<graphs::Forward>(prev_problem_v_idx))
             {
                 if (!m_visited_problem_v_idxs.contains(curr_problem_v_idx))
                 {
@@ -323,7 +323,7 @@ private:
             for (const auto prev_problem_v_idx : get_problem_vertices(m_internal_tuple_graph.get_vertex(prev_v_idx)))
             {
                 // "[...] by means of a single action".
-                for (const auto& curr_problem_v_idx : m_problem_graph.get_adjacent_vertex_indices<Forward>(prev_problem_v_idx))
+                for (const auto& curr_problem_v_idx : m_problem_graph.get_adjacent_vertex_indices<graphs::Forward>(prev_problem_v_idx))
                 {
                     if (m_problem_v_idx_to_novel_t_idxs.contains(curr_problem_v_idx))
                     {
@@ -427,9 +427,9 @@ private:
     }
 
 public:
-    TupleGraphArityGreaterZeroComputation(const ProblemVertex& problem_vertex,
-                                          const ProblemGraph& problem_graph,
-                                          const ClassGraph& class_graph,
+    TupleGraphArityGreaterZeroComputation(const graphs::ProblemVertex& problem_vertex,
+                                          const graphs::ProblemGraph& problem_graph,
+                                          const graphs::ClassGraph& class_graph,
                                           const SearchContext& context,
                                           const TupleGraphCollection::Options& options) :
         m_problem_vertex(problem_vertex),
@@ -476,24 +476,24 @@ public:
                           m_problem_graph,
                           m_class_graph,
                           m_novelty_table.get_tuple_index_mapper(),
-                          InternalTupleGraph(std::move(m_internal_tuple_graph)),
+                          graphs::InternalTupleGraph(std::move(m_internal_tuple_graph)),
                           m_v_idxs_grouped_by_distance.get_result(),
                           m_problem_v_idxs_grouped_by_distance.get_result());
     }
 };
 
-static TupleGraph create_tuple_graph_width_greater_zero(const ProblemVertex& problem_vertex,
-                                                        const ProblemGraph& problem_graph,
-                                                        const ClassGraph& class_graph,
+static TupleGraph create_tuple_graph_width_greater_zero(const graphs::ProblemVertex& problem_vertex,
+                                                        const graphs::ProblemGraph& problem_graph,
+                                                        const graphs::ClassGraph& class_graph,
                                                         const SearchContext& context,
                                                         const TupleGraphCollection::Options& options)
 {
     return TupleGraphArityGreaterZeroComputation(problem_vertex, problem_graph, class_graph, context, options).compute_and_get_result();
 }
 
-TupleGraph create_tuple_graph(const ProblemVertex& problem_vertex,
-                              const ProblemGraph& problem_graph,
-                              const ClassGraph& class_graph,
+TupleGraph create_tuple_graph(const graphs::ProblemVertex& problem_vertex,
+                              const graphs::ProblemGraph& problem_graph,
+                              const graphs::ClassGraph& class_graph,
                               const SearchContext& context,
                               const TupleGraphCollection::Options& options)
 {

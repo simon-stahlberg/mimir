@@ -190,7 +190,7 @@ SparseGraphImpl::~SparseGraphImpl()
     deallocate_graph(canon_graph_);
 }
 
-void SparseGraphImpl::add_vertex_coloring(const mimir::ColorList& vertex_coloring)
+void SparseGraphImpl::add_vertex_coloring(const mimir::graphs::ColorList& vertex_coloring)
 {
     if (vertex_coloring.size() != n_)
     {
@@ -284,7 +284,7 @@ void SparseGraphImpl::clear(size_t num_vertices)
 
         n_ = num_vertices;
         c_ = num_vertices;
-        canon_coloring_ = mimir::ColorList(n_, 0);
+        canon_coloring_ = mimir::graphs::ColorList(n_, 0);
         lab_ = std::vector<int>(n_);
         ptn_ = std::vector<int>(n_);
         adj_matrix_ = std::vector<bool>(n_ * n_, false);

@@ -22,23 +22,16 @@
 
 #include <concepts>
 
-namespace mimir
+namespace mimir::graphs
 {
 
 template<typename T>
-concept IsEdge = requires(T a)
-{
+concept IsEdge = requires(T a) {
     typename T::EdgePropertiesTypes;
 
-    {
-        a.get_index()
-        } -> std::convertible_to<EdgeIndex>;
-    {
-        a.get_source()
-        } -> std::convertible_to<VertexIndex>;
-    {
-        a.get_target()
-        } -> std::convertible_to<VertexIndex>;
+    { a.get_index() } -> std::convertible_to<EdgeIndex>;
+    { a.get_source() } -> std::convertible_to<VertexIndex>;
+    { a.get_target() } -> std::convertible_to<VertexIndex>;
 };
 
 /// Check whether `T` is an Edge with the given `EdgeProperties`s.

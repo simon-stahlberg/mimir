@@ -42,17 +42,17 @@ private:
     std::string m_canonical_graph;
     // Since the canonical graph is computed using a vertex partitioning, we additionally require a canonical representation of the vertex colors to distinguish
     // graphs with different canonical vertex coloring but identical vertex partitioning.
-    mimir::ColorList m_canonical_coloring;
+    mimir::graphs::ColorList m_canonical_coloring;
 
 public:
-    Certificate(std::string canonical_graph, mimir::ColorList canonical_coloring);
+    Certificate(std::string canonical_graph, mimir::graphs::ColorList canonical_coloring);
     Certificate(const Certificate& other) = delete;
     Certificate& operator=(const Certificate& other) = delete;
     Certificate(Certificate&& other) = default;
     Certificate& operator=(Certificate&& other) = default;
 
     const std::string& get_canonical_graph() const;
-    const mimir::ColorList& get_canonical_coloring() const;
+    const mimir::graphs::ColorList& get_canonical_coloring() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -101,7 +101,7 @@ public:
 
     /// @brief Create a `DenseGraph` from a vertex colored `digraph`.
     /// @param digraph is the vertex colored digraph.
-    explicit DenseGraph(const mimir::StaticVertexColoredDigraph& digraph);
+    explicit DenseGraph(const mimir::graphs::StaticVertexColoredDigraph& digraph);
 
     DenseGraph(const DenseGraph& other);
     DenseGraph& operator=(const DenseGraph& other);
@@ -114,7 +114,7 @@ public:
     /// Throws an exception if the size of the `vertex_coloring`
     /// is not equal to the number of vertices in the graph.
     /// @param vertex_coloring are the colors of the vertices.
-    void add_vertex_coloring(const mimir::ColorList& vertex_coloring);
+    void add_vertex_coloring(const mimir::graphs::ColorList& vertex_coloring);
 
     /// @brief Add a directed edge to the graph.
     ///
@@ -150,7 +150,7 @@ public:
 
     /// @brief Create a `SparseGraph` from a vertex colored `digraph`.
     /// @param digraph is the vertex colored digraph.
-    explicit SparseGraph(const mimir::StaticVertexColoredDigraph& digraph);
+    explicit SparseGraph(const mimir::graphs::StaticVertexColoredDigraph& digraph);
 
     SparseGraph(const SparseGraph& other);
     SparseGraph& operator=(const SparseGraph& other);
@@ -163,7 +163,7 @@ public:
     /// Throws an exception if the size of the `vertex_coloring`
     /// is not equal to the number of vertices in the graph.
     /// @param vertex_coloring are the colors of the vertices.
-    void add_vertex_coloring(const mimir::ColorList& vertex_coloring);
+    void add_vertex_coloring(const mimir::graphs::ColorList& vertex_coloring);
 
     /// @brief Add a directed edge to the graph.
     ///

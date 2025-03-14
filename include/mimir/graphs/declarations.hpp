@@ -28,7 +28,7 @@
 #include <unordered_set>
 #include <vector>
 
-namespace mimir
+namespace mimir::graphs
 {
 
 /**

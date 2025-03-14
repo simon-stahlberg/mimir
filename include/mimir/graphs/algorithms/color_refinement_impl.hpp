@@ -35,7 +35,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace mimir::color_refinement
+namespace mimir::graphs::color_refinement
 {
 using mimir::operator<<;
 

@@ -32,7 +32,7 @@
 #include <span>
 #include <vector>
 
-namespace mimir
+namespace mimir::graphs
 {
 
 /**
@@ -1035,4 +1035,5 @@ std::ostream& operator<<(std::ostream& out, const StaticBidirectionalGraph<G>& g
 }
 
 }
+
 #endif

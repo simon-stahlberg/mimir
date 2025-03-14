@@ -22,9 +22,9 @@
 
 namespace mimir
 {
-extern TupleGraph create_tuple_graph(const ProblemVertex& problem_vertex,
-                                     const ProblemGraph& problem_graph,
-                                     const ClassGraph& class_graph,
+extern TupleGraph create_tuple_graph(const graphs::ProblemVertex& problem_vertex,
+                                     const graphs::ProblemGraph& problem_graph,
+                                     const graphs::ClassGraph& class_graph,
                                      const SearchContext& context,
                                      const TupleGraphCollection::Options& options);
 }

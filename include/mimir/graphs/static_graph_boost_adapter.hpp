@@ -38,12 +38,12 @@ namespace boost
 {
 
 /// Traits for a graph that are needed for the boost graph library.
-template<mimir::IsStaticGraph Graph, mimir::IsDirection Direction>
-struct graph_traits<mimir::DirectionTaggedType<Graph, Direction>>
+template<mimir::graphs::IsStaticGraph Graph, mimir::graphs::IsDirection Direction>
+struct graph_traits<mimir::graphs::DirectionTaggedType<Graph, Direction>>
 {
     // boost::GraphConcept
-    using vertex_descriptor = mimir::VertexIndex;
-    using edge_descriptor = mimir::EdgeIndex;
+    using vertex_descriptor = mimir::graphs::VertexIndex;
+    using edge_descriptor = mimir::graphs::EdgeIndex;
     using directed_category = directed_tag;
     using edge_parallel_category = allow_parallel_edge_tag;
     using traversal_category = vertex_list_and_incidence_and_edge_list_and_adjacency_and_bidirectional_graph_tag;
@@ -59,7 +59,7 @@ struct graph_traits<mimir::DirectionTaggedType<Graph, Direction>>
     // boost::AdjacencyGraph
     using adjacency_iterator = typename Graph::template AdjacentVertexIndexConstIteratorType<Direction>;
     // boost::BidirectionalGraph
-    using inverse_direction = typename mimir::InverseDirection<Direction>::type;
+    using inverse_direction = typename mimir::graphs::InverseDirection<Direction>::type;
     using in_edge_iterator = typename Graph::template AdjacentEdgeIndexConstIteratorType<inverse_direction>;
     // boost::strong_components
     constexpr static vertex_descriptor null_vertex() { return std::numeric_limits<vertex_descriptor>::max(); }
@@ -67,7 +67,7 @@ struct graph_traits<mimir::DirectionTaggedType<Graph, Direction>>
 
 }
 
-namespace mimir
+namespace mimir::graphs
 {
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -78,9 +78,9 @@ namespace mimir
 /// @param g the graph.
 /// @return an iterator-range providing access to all the vertices in the graph.
 template<IsStaticGraph Graph, IsDirection Direction>
-std::pair<typename boost::graph_traits<mimir::DirectionTaggedType<Graph, Direction>>::vertex_iterator,
-          typename boost::graph_traits<mimir::DirectionTaggedType<Graph, Direction>>::vertex_iterator>
-vertices(const mimir::DirectionTaggedType<Graph, Direction>& g)
+std::pair<typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_iterator,
+          typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_iterator>
+vertices(const DirectionTaggedType<Graph, Direction>& g)
 {
     return { g.get().get_vertex_indices().begin(), g.get().get_vertex_indices().end() };
 }
@@ -89,7 +89,7 @@ vertices(const mimir::DirectionTaggedType<Graph, Direction>& g)
 /// @param g the graph.
 /// @return the number of vertices in the graph.
 template<IsStaticGraph Graph, IsDirection Direction>
-boost::graph_traits<mimir::DirectionTaggedType<Graph, Direction>>::vertices_size_type num_vertices(const mimir::DirectionTaggedType<Graph, Direction>& g)
+boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertices_size_type num_vertices(const DirectionTaggedType<Graph, Direction>& g)
 {
     return g.get().get_num_vertices();
 }
@@ -138,8 +138,7 @@ out_edges(typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::v
 /// @return the number of out edges of the vertex.
 template<IsStaticGraph Graph, IsDirection Direction>
 boost::graph_traits<DirectionTaggedType<Graph, Direction>>::degree_size_type
-out_degree(typename boost::graph_traits<mimir::DirectionTaggedType<Graph, Direction>>::vertex_descriptor const& u,
-           const DirectionTaggedType<Graph, Direction>& g)
+out_degree(typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor const& u, const DirectionTaggedType<Graph, Direction>& g)
 {
     return g.get().template get_degree<Direction>(u);
 }
@@ -169,7 +168,7 @@ boost::graph_traits<DirectionTaggedType<Graph, Direction>>::edges_size_type num_
 template<IsStaticGraph Graph, IsDirection Direction>
 std::pair<typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::adjacency_iterator,
           typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::adjacency_iterator>
-adjacent_vertices(typename boost::graph_traits<mimir::DirectionTaggedType<Graph, Direction>>::vertex_descriptor const& u,
+adjacent_vertices(typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor const& u,
                   const DirectionTaggedType<Graph, Direction>& g)
 {
     return { g.get().template get_adjacent_vertex_indices<Direction>(u).begin(), g.get().template get_adjacent_vertex_indices<Direction>(u).end() };
@@ -199,8 +198,7 @@ in_edges(typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::ve
 /// @return the number of in edges of the vertex.
 template<IsStaticGraph Graph, IsDirection Direction>
 boost::graph_traits<DirectionTaggedType<Graph, Direction>>::degree_size_type
-in_degree(typename boost::graph_traits<mimir::DirectionTaggedType<Graph, Direction>>::vertex_descriptor const& u,
-          const DirectionTaggedType<Graph, Direction>& g)
+in_degree(typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor const& u, const DirectionTaggedType<Graph, Direction>& g)
 {
     using InverseDirection = boost::graph_traits<DirectionTaggedType<Graph, Direction>>::inverse_direction;
 
@@ -213,19 +211,14 @@ in_degree(typename boost::graph_traits<mimir::DirectionTaggedType<Graph, Directi
 /// @return the number of in and out edges of the vertex.
 template<IsStaticGraph Graph, IsDirection Direction>
 boost::graph_traits<DirectionTaggedType<Graph, Direction>>::degree_size_type
-degree(typename boost::graph_traits<mimir::DirectionTaggedType<Graph, Direction>>::vertex_descriptor const& u, const DirectionTaggedType<Graph, Direction>& g)
+degree(typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor const& u, const DirectionTaggedType<Graph, Direction>& g)
 {
     return g.get().template get_degree<Forward>(u) + g.get().template get_degree<Backward>(u);
-}
-
 }
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // boost::strong_components
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-namespace mimir
-{
 
 /// @brief Wrapper function for boost's strong_components algorithm.
 /// @param g the graph.
@@ -266,14 +259,9 @@ get_partitioning(typename boost::graph_traits<DirectionTaggedType<Graph, Directi
                                                               [](const auto& prev, const auto& cur) { return prev.first != cur.first; });
 }
 
-}
-
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // boost::dijkstra_shortest_path
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-namespace mimir
-{
 
 template<IsStaticGraph Graph, IsDirection Direction, class SourceInputIter>
 std::tuple<std::vector<typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor>, ContinuousCostList>

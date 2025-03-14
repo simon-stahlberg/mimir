@@ -27,7 +27,7 @@
 #include <span>
 #include <vector>
 
-namespace mimir
+namespace mimir::graphs
 {
 
 /// @brief `StaticAdjacentVertexConstIterator` implements a const iterator over adjacent vertices.

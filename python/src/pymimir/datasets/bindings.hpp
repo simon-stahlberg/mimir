@@ -6,25 +6,25 @@
 #include "../init_declarations.hpp"
 
 template<>
-struct PyVertexProperties<mm::ProblemVertex>
+struct PyVertexProperties<mm::graphs::ProblemVertex>
 {
     static constexpr std::string name = "ProblemVertex";
 };
 
 template<>
-struct PyVertexProperties<mm::ClassVertex>
+struct PyVertexProperties<mm::graphs::ClassVertex>
 {
     static constexpr std::string name = "ClassVertex";
 };
 
 template<>
-struct PyEdgeProperties<mm::ProblemEdge>
+struct PyEdgeProperties<mm::graphs::ProblemEdge>
 {
     static constexpr std::string name = "ProblemEdge";
 };
 
 template<>
-struct PyEdgeProperties<mm::ClassEdge>
+struct PyEdgeProperties<mm::graphs::ClassEdge>
 {
     static constexpr std::string name = "ClassEdge";
 };

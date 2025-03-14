@@ -23,7 +23,7 @@
 #include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
 
-namespace mimir
+namespace mimir::graphs
 {
 
 /// @brief `Edge` implements a directed edge with additional `EdgeProperties`.
