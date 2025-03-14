@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['backward_0',['Backward',['../structmimir_1_1Backward.html',1,'mimir']]],
-  ['bfsboostvisitor_1',['BFSBoostVisitor',['../structmimir_1_1BFSBoostVisitor.html',1,'mimir']]]
+  ['actionimpl_0',['ActionImpl',['../classmimir_1_1ActionImpl.html',1,'mimir']]]
 ];

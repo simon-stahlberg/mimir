@@ -1,6 +1,19 @@
 var searchData=
 [
-  ['null_5fvertex_0',['null_vertex',['../structboost_1_1graph__traits_3_01mimir_1_1DirectionTaggedType_3_01Graph_00_01Direction_01_4_01_4.html#aa39e9a6dd06ce0ceae751420b7aeb6d6',1,'boost::graph_traits&lt; mimir::DirectionTaggedType&lt; Graph, Direction &gt; &gt;']]],
-  ['num_5fedges_1',['num_edges',['../namespacemimir.html#a719db2e91088ea264aae25f8235e9900',1,'mimir']]],
-  ['num_5fvertices_2',['num_vertices',['../namespacemimir.html#a88aad7b9224e125f672101efabedc2a1',1,'mimir']]]
+  ['color_5frefinement_0',['color_refinement',['../namespacemimir_1_1color__refinement.html',1,'mimir']]],
+  ['hasedgeproperties_1',['HasEdgeProperties',['../conceptmimir_1_1HasEdgeProperties.html',1,'mimir']]],
+  ['hasvertexproperties_2',['HasVertexProperties',['../conceptmimir_1_1HasVertexProperties.html',1,'mimir']]],
+  ['isadjacencygraph_3',['IsAdjacencyGraph',['../conceptmimir_1_1IsAdjacencyGraph.html',1,'mimir']]],
+  ['isdirection_4',['IsDirection',['../conceptmimir_1_1IsDirection.html',1,'mimir']]],
+  ['isdynamicgraph_5',['IsDynamicGraph',['../conceptmimir_1_1IsDynamicGraph.html',1,'mimir']]],
+  ['isedge_6',['IsEdge',['../conceptmimir_1_1IsEdge.html',1,'mimir']]],
+  ['isedgecoloredgraph_7',['IsEdgeColoredGraph',['../conceptmimir_1_1IsEdgeColoredGraph.html',1,'mimir']]],
+  ['isedgelistgraph_8',['IsEdgeListGraph',['../conceptmimir_1_1IsEdgeListGraph.html',1,'mimir']]],
+  ['isincidencegraph_9',['IsIncidenceGraph',['../conceptmimir_1_1IsIncidenceGraph.html',1,'mimir']]],
+  ['isstaticgraph_10',['IsStaticGraph',['../conceptmimir_1_1IsStaticGraph.html',1,'mimir']]],
+  ['isvertex_11',['IsVertex',['../conceptmimir_1_1IsVertex.html',1,'mimir']]],
+  ['isvertexcoloredgraph_12',['IsVertexColoredGraph',['../conceptmimir_1_1IsVertexColoredGraph.html',1,'mimir']]],
+  ['isvertexlistgraph_13',['IsVertexListGraph',['../conceptmimir_1_1IsVertexListGraph.html',1,'mimir']]],
+  ['kfwl_14',['kfwl',['../namespacemimir_1_1kfwl.html',1,'mimir']]],
+  ['mimir_15',['mimir',['../namespacemimir.html',1,'']]]
 ];

@@ -1,10 +1,6 @@
 var searchData=
 [
-  ['staticadjacentedgeconstiterator_0',['StaticAdjacentEdgeConstIterator',['../classmimir_1_1StaticAdjacentEdgeConstIterator.html',1,'mimir']]],
-  ['staticadjacentedgeindexconstiterator_1',['StaticAdjacentEdgeIndexConstIterator',['../classmimir_1_1StaticAdjacentEdgeIndexConstIterator.html',1,'mimir']]],
-  ['staticadjacentvertexconstiterator_2',['StaticAdjacentVertexConstIterator',['../classmimir_1_1StaticAdjacentVertexConstIterator.html',1,'mimir']]],
-  ['staticadjacentvertexindexconstiterator_3',['StaticAdjacentVertexIndexConstIterator',['../classmimir_1_1StaticAdjacentVertexIndexConstIterator.html',1,'mimir']]],
-  ['staticbidirectionalgraph_4',['StaticBidirectionalGraph',['../classmimir_1_1StaticBidirectionalGraph.html',1,'mimir']]],
-  ['staticforwardgraph_5',['StaticForwardGraph',['../classmimir_1_1StaticForwardGraph.html',1,'mimir']]],
-  ['staticgraph_6',['StaticGraph',['../classmimir_1_1StaticGraph.html',1,'mimir']]]
+  ['inversedirection_0',['InverseDirection',['../structmimir_1_1InverseDirection.html',1,'mimir']]],
+  ['inversedirection_3c_20backward_20_3e_1',['InverseDirection&lt; Backward &gt;',['../structmimir_1_1InverseDirection_3_01Backward_01_4.html',1,'mimir']]],
+  ['inversedirection_3c_20forward_20_3e_2',['InverseDirection&lt; Forward &gt;',['../structmimir_1_1InverseDirection_3_01Forward_01_4.html',1,'mimir']]]
 ];

@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['inversedirection_0',['InverseDirection',['../structmimir_1_1InverseDirection.html',1,'mimir']]],
-  ['inversedirection_3c_20backward_20_3e_1',['InverseDirection&lt; Backward &gt;',['../structmimir_1_1InverseDirection_3_01Backward_01_4.html',1,'mimir']]],
-  ['inversedirection_3c_20forward_20_3e_2',['InverseDirection&lt; Forward &gt;',['../structmimir_1_1InverseDirection_3_01Forward_01_4.html',1,'mimir']]]
+  ['graph_5ftraits_3c_20mimir_3a_3adirectiontaggedtype_3c_20graph_2c_20direction_20_3e_20_3e_0',['graph_traits&lt; mimir::DirectionTaggedType&lt; Graph, Direction &gt; &gt;',['../structboost_1_1graph__traits_3_01mimir_1_1DirectionTaggedType_3_01Graph_00_01Direction_01_4_01_4.html',1,'boost']]]
 ];

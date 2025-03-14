@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['forward_0',['Forward',['../structmimir_1_1Forward.html',1,'mimir']]]
+  ['edge_0',['Edge',['../classmimir_1_1Edge.html',1,'mimir']]]
 ];
