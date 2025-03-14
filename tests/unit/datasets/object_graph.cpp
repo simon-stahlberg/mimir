@@ -33,11 +33,11 @@ TEST(MimirTests, DataSetsObjectGraphDenseTest)
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
 
-    auto options = GeneralizedStateSpace::Options();
+    auto options = datasets::GeneralizedStateSpace::Options();
     options.problem_options.symmetry_pruning = false;
     const auto context = GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem_file });
-    const auto problem_class_state_space = GeneralizedStateSpace(context, options);
-    const auto color_function = GeneralizedColorFunction(context.get_generalized_problem());
+    const auto problem_class_state_space = datasets::GeneralizedStateSpace(context, options);
+    const auto color_function = datasets::GeneralizedColorFunction(context.get_generalized_problem());
 
     auto certificates = std::unordered_set<nauty_wrapper::Certificate, loki::Hash<nauty_wrapper::Certificate>, loki::EqualTo<nauty_wrapper::Certificate>> {};
 
@@ -62,11 +62,11 @@ TEST(MimirTests, DataSetsObjectGraphSparseTest)
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
 
-    auto options = GeneralizedStateSpace::Options();
+    auto options = datasets::GeneralizedStateSpace::Options();
     options.problem_options.symmetry_pruning = false;
     const auto context = GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem_file });
-    const auto problem_class_state_space = GeneralizedStateSpace(context, options);
-    const auto color_function = GeneralizedColorFunction(context.get_generalized_problem());
+    const auto problem_class_state_space = datasets::GeneralizedStateSpace(context, options);
+    const auto color_function = datasets::GeneralizedColorFunction(context.get_generalized_problem());
 
     auto certificates = std::unordered_set<nauty_wrapper::Certificate, loki::Hash<nauty_wrapper::Certificate>, loki::EqualTo<nauty_wrapper::Certificate>> {};
 

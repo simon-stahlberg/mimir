@@ -29,14 +29,12 @@
 #include <ostream>
 #include <vector>
 
-namespace mimir
-{
 /**
  * Implementation of TupleGraphs (Lipovetzky and Geffner ECAI2012)
  * Source: https://www-i6.informatik.rwth-aachen.de/~hector.geffner/www.dtic.upf.edu/~hgeffner/width-ecai-2012.pdf
  */
 
-namespace graphs
+namespace mimir::graphs
 {
 /// @brief `TupleGraphVertex` encapsulates information about a vertex in a tuple graph.
 using TupleGraphVertex = Vertex<Index, IndexList>;
@@ -52,6 +50,9 @@ using TupleGraphEdgeList = std::vector<TupleGraphEdge>;
 using StaticTupleGraph = StaticGraph<TupleGraphVertex, TupleGraphEdge>;
 using InternalTupleGraph = StaticBidirectionalGraph<StaticTupleGraph>;
 }
+
+namespace mimir::datasets
+{
 
 class TupleGraph
 {

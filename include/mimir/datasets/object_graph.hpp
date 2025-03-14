@@ -26,7 +26,7 @@
 
 #include <ostream>
 
-namespace mimir
+namespace mimir::datasets
 {
 
 /**

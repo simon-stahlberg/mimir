@@ -17,7 +17,7 @@
 
 #include "mimir/datasets/knowledge_base.hpp"
 
-namespace mimir
+namespace mimir::datasets
 {
 KnowledgeBase::KnowledgeBase(GeneralizedSearchContext contexts, const Options& options) :
     m_state_space(contexts, options.state_space_options),

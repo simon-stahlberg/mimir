@@ -28,9 +28,7 @@
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/generalized_search_context.hpp"
 
-namespace mimir
-{
-namespace graphs
+namespace mimir::graphs
 {
 
 /**
@@ -170,11 +168,13 @@ extern std::ostream& operator<<(std::ostream& out, const ClassVertex& vertex);
 extern std::ostream& operator<<(std::ostream& out, const ClassEdge& edge);
 }
 
+namespace mimir::datasets
+{
 /**
  * GeneralizedStateSpace
  */
 
-/// @brief `GeneralizedStateSpace` encapsulates a `ProblemGraphList` Q with an additional `ClassStateSpace` structure on top.
+/// @brief `GeneralizedStateSpace` encapsulates a list of `ProblemGraph` on the low-level and a `ClassGraph` on the top-level.
 ///
 /// There is a one-to-many mapping from `ClassVertex` (resp. `ClassEdge`) to `ProblemVertex` (resp. `ProblemEdge`),
 /// which is a strict one-to-many mapping, if symmetries across different problems are detected.

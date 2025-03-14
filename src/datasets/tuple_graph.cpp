@@ -20,7 +20,7 @@
 #include "mimir/formalism/problem.hpp"
 #include "tuple_graph_factory.hpp"
 
-namespace mimir
+namespace mimir::datasets
 {
 TupleGraph::TupleGraph(const ProblemImpl& problem,
                        const graphs::ProblemGraph& problem_graph,

@@ -24,7 +24,7 @@
 #include <cstdint>
 #include <vector>
 
-namespace mimir
+namespace mimir::datasets
 {
 class KnowledgeBase;
 class GeneralizedStateSpace;

@@ -25,7 +25,7 @@
 
 #include <unordered_map>
 
-namespace mimir
+namespace mimir::datasets
 {
 
 class GeneralizedColorFunction

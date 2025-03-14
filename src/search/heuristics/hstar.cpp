@@ -27,10 +27,10 @@ namespace mimir
 HStarHeuristic::HStarHeuristic(const SearchContext& context) : m_estimates()
 {
     // We simply create a state space and copy the estimates
-    auto class_options = GeneralizedStateSpace::Options();
+    auto class_options = datasets::GeneralizedStateSpace::Options();
     class_options.problem_options.remove_if_unsolvable = false;
 
-    auto problem_class_state_space = GeneralizedStateSpace(
+    auto problem_class_state_space = datasets::GeneralizedStateSpace(
         GeneralizedSearchContext(GeneralizedProblem(context.get_problem()->get_domain(), ProblemList { context.get_problem() }), SearchContextList { context }),
         class_options);
 

@@ -21,7 +21,7 @@
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/state_repository.hpp"
 
-namespace mimir
+namespace mimir::datasets
 {
 class TupleGraphArityZeroComputation
 {

@@ -41,7 +41,55 @@
 #include "mimir/search/search_space.hpp"
 #include "mimir/search/state_repository.hpp"
 
-namespace mimir
+namespace mimir::graphs
+{
+
+std::ostream& operator<<(std::ostream& out, const ProblemVertex& vertex)
+{
+    out << "problem_v_idx=" << vertex.get_index() << "\n"             //
+        << " class_v_idx=" << get_class_vertex_index(vertex) << "\n"  //
+        << " state_idx=" << get_state(vertex)->get_index();
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const ProblemEdge& edge)
+{
+    out << "problem_e_idx=" << edge.get_index() << "\n"           //
+        << " problem_src_idx=" << edge.get_source() << "\n"       //
+        << " problem_dst_idx=" << edge.get_target() << "\n"       //
+        << " class_v_idx=" << get_class_edge_index(edge) << "\n"  //
+        << " action_idx=" << get_action(edge)->get_index();
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const ClassVertex& vertex)
+{
+    out << "class_v_idx=" << vertex.get_index() << "\n"                      //
+        << " class_v_idx=" << get_class_vertex_index(vertex) << "\n"         //
+        << " problem_idx=" << get_problem_index(vertex) << "\n"              //
+        << " problem_v_idx=" << get_problem_vertex_index(vertex) << "\n"     //
+        << " unit_goal_dist=" << get_unit_goal_distance(vertex) << "\n"      //
+        << " action_goal_dist=" << get_action_goal_distance(vertex) << "\n"  //
+        << " is_goal=" << is_goal(vertex) << "\n"                            //
+        << " is_unsolvable=" << is_unsolvable(vertex);
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const ClassEdge& edge)
+{
+    out << "class_e_idx=" << edge.get_index() << "\n"                 //
+        << " class_src_idx=" << edge.get_source() << "\n"             //
+        << " class_dst_idx=" << edge.get_target() << "\n"             //
+        << " class_e_idx=" << get_class_edge_index(edge) << "\n"      //
+        << " problem_idx=" << get_problem_index(edge) << "\n"         //
+        << " problem_e_idx=" << get_problem_edge_index(edge) << "\n"  //
+        << " action_cost=" << get_action_cost(edge);
+    return out;
+}
+
+}
+
+namespace mimir::datasets
 {
 /**
  * ProblemStateSpace
@@ -900,54 +948,6 @@ graphs::ClassGraph GeneralizedStateSpace::create_induced_subgraph_from_problem_i
     }
 
     return create_induced_subspace_helper(unique_class_v_idxs, get_graph());
-}
-
-}
-
-namespace mimir::graphs
-{
-
-std::ostream& operator<<(std::ostream& out, const ProblemVertex& vertex)
-{
-    out << "problem_v_idx=" << vertex.get_index() << "\n"             //
-        << " class_v_idx=" << get_class_vertex_index(vertex) << "\n"  //
-        << " state_idx=" << get_state(vertex)->get_index();
-    return out;
-}
-
-std::ostream& operator<<(std::ostream& out, const ProblemEdge& edge)
-{
-    out << "problem_e_idx=" << edge.get_index() << "\n"           //
-        << " problem_src_idx=" << edge.get_source() << "\n"       //
-        << " problem_dst_idx=" << edge.get_target() << "\n"       //
-        << " class_v_idx=" << get_class_edge_index(edge) << "\n"  //
-        << " action_idx=" << get_action(edge)->get_index();
-    return out;
-}
-
-std::ostream& operator<<(std::ostream& out, const ClassVertex& vertex)
-{
-    out << "class_v_idx=" << vertex.get_index() << "\n"                      //
-        << " class_v_idx=" << get_class_vertex_index(vertex) << "\n"         //
-        << " problem_idx=" << get_problem_index(vertex) << "\n"              //
-        << " problem_v_idx=" << get_problem_vertex_index(vertex) << "\n"     //
-        << " unit_goal_dist=" << get_unit_goal_distance(vertex) << "\n"      //
-        << " action_goal_dist=" << get_action_goal_distance(vertex) << "\n"  //
-        << " is_goal=" << is_goal(vertex) << "\n"                            //
-        << " is_unsolvable=" << is_unsolvable(vertex);
-    return out;
-}
-
-std::ostream& operator<<(std::ostream& out, const ClassEdge& edge)
-{
-    out << "class_e_idx=" << edge.get_index() << "\n"                 //
-        << " class_src_idx=" << edge.get_source() << "\n"             //
-        << " class_dst_idx=" << edge.get_target() << "\n"             //
-        << " class_e_idx=" << get_class_edge_index(edge) << "\n"      //
-        << " problem_idx=" << get_problem_index(edge) << "\n"         //
-        << " problem_e_idx=" << get_problem_edge_index(edge) << "\n"  //
-        << " action_cost=" << get_action_cost(edge);
-    return out;
 }
 
 }

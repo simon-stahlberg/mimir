@@ -21,7 +21,7 @@
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/state.hpp"
 
-namespace mimir
+namespace mimir::datasets
 {
 
 GeneralizedColorFunction::GeneralizedColorFunction(GeneralizedProblem generalized_problem) :

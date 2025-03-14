@@ -20,7 +20,7 @@
 
 #include "mimir/datasets/tuple_graph.hpp"
 
-namespace mimir
+namespace mimir::datasets
 {
 extern TupleGraph create_tuple_graph(const graphs::ProblemVertex& problem_vertex,
                                      const graphs::ProblemGraph& problem_graph,

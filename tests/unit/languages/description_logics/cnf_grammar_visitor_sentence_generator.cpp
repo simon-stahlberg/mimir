@@ -94,10 +94,10 @@ TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarVisitorSentenceGeneratorTes
 
     auto context = GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem1_file, problem2_file });
 
-    auto state_space_options = GeneralizedStateSpace::Options();
+    auto state_space_options = datasets::GeneralizedStateSpace::Options();
     state_space_options.problem_options.symmetry_pruning = false;
 
-    auto kb = KnowledgeBase::create(context, KnowledgeBase::Options(state_space_options));
+    auto kb = datasets::KnowledgeBase::create(context, datasets::KnowledgeBase::Options(state_space_options));
 
     auto problem_to_states = ProblemMap<StateList> {};
     for (const auto& vertex : kb->get_generalized_state_space().get_graph().get_vertices())
@@ -148,10 +148,10 @@ TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarVisitorSentenceGeneratorFra
 
     auto context = GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem1_file, problem2_file });
 
-    auto state_space_options = GeneralizedStateSpace::Options();
+    auto state_space_options = datasets::GeneralizedStateSpace::Options();
     state_space_options.problem_options.symmetry_pruning = false;
 
-    auto kb = KnowledgeBase::create(context, KnowledgeBase::Options(state_space_options));
+    auto kb = datasets::KnowledgeBase::create(context, datasets::KnowledgeBase::Options(state_space_options));
 
     auto problem_to_states = ProblemMap<StateList> {};
     for (const auto& vertex : kb->get_generalized_state_space().get_graph().get_vertices())

@@ -22,7 +22,7 @@
 #include "mimir/datasets/tuple_graph.hpp"
 #include "mimir/search/generalized_search_context.hpp"
 
-namespace mimir
+namespace mimir::datasets
 {
 
 /// @brief `KnowledgeBase` encapsulates information obtained from a class of planning problems.
