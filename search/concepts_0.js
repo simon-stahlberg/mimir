@@ -12,5 +12,6 @@ var searchData=
   ['isstaticgraph_9',['IsStaticGraph',['../conceptmimir_1_1graphs_1_1IsStaticGraph.html',1,'mimir::graphs']]],
   ['isvertex_10',['IsVertex',['../conceptmimir_1_1graphs_1_1IsVertex.html',1,'mimir::graphs']]],
   ['isvertexcoloredgraph_11',['IsVertexColoredGraph',['../conceptmimir_1_1graphs_1_1IsVertexColoredGraph.html',1,'mimir::graphs']]],
-  ['isvertexlistgraph_12',['IsVertexListGraph',['../conceptmimir_1_1graphs_1_1IsVertexListGraph.html',1,'mimir::graphs']]]
+  ['isvertexlistgraph_12',['IsVertexListGraph',['../conceptmimir_1_1graphs_1_1IsVertexListGraph.html',1,'mimir::graphs']]],
+  ['staticordynamicsize_13',['StaticOrDynamicSize',['../conceptmimir_1_1search_1_1StaticOrDynamicSize.html',1,'mimir::search']]]
 ];

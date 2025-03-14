@@ -1,10 +1,20 @@
 var searchData=
 [
-  ['traversal_5fcategory_0',['traversal_category',['../structboost_1_1graph__traits_3_01mimir_1_1graphs_1_1DirectionTaggedType_3_01Graph_00_01Direction_01_4_01_4.html#ac88b7a3649a7843caa314e9a18385052',1,'boost::graph_traits&lt; mimir::graphs::DirectionTaggedType&lt; Graph, Direction &gt; &gt;']]],
-  ['tuplegraphedge_1',['TupleGraphEdge',['../namespacemimir_1_1graphs.html#afc9f5b658a079f1cb248b164b7433512',1,'mimir::graphs']]],
-  ['tuplegraphedgelist_2',['TupleGraphEdgeList',['../namespacemimir_1_1graphs.html#ad7b9cb62cd0876cb19eb97771783eb74',1,'mimir::graphs']]],
-  ['tuplegraphlist_3',['TupleGraphList',['../namespacemimir_1_1datasets.html#a238c1c5752f27beb58ebbeb4912165ca',1,'mimir::datasets']]],
-  ['tuplegraphvertex_4',['TupleGraphVertex',['../namespacemimir_1_1graphs.html#a2db250211f1c44372faeec52f5d0ffd4',1,'mimir::graphs']]],
-  ['tuplegraphvertexlist_5',['TupleGraphVertexList',['../namespacemimir_1_1graphs.html#a78aaf762d44ebe5f609efd50b800dd95',1,'mimir::graphs']]],
-  ['type_6',['type',['../structmimir_1_1graphs_1_1InverseDirection_3_01Forward_01_4.html#a5a80d6d64875b7bdd12877d96bed98dc',1,'mimir::graphs::InverseDirection&lt; Forward &gt;::type()'],['../structmimir_1_1graphs_1_1InverseDirection_3_01Backward_01_4.html#a30409ba7ad1cbe4c56f7c4d35a0fb107',1,'mimir::graphs::InverseDirection&lt; Backward &gt;::type()']]]
+  ['searchcontextlist_0',['SearchContextList',['../namespacemimir_1_1search.html#acb66dccccb9760d0c7dc5adfe840f545',1,'mimir::search']]],
+  ['searchnode_1',['SearchNode',['../namespacemimir_1_1search.html#a1d1d1a8a38d9645816f01706de9dcb8a',1,'mimir::search']]],
+  ['searchnodeimplvector_2',['SearchNodeImplVector',['../namespacemimir_1_1search.html#aaf1512d40175c86460c160ab1459e75b',1,'mimir::search']]],
+  ['stateimplset_3',['StateImplSet',['../namespacemimir_1_1search.html#a9f5a2f6c3602cf20c461e7b0a2bc21c1',1,'mimir::search']]],
+  ['staticbidirectionaldigraph_4',['StaticBidirectionalDigraph',['../namespacemimir_1_1graphs.html#ac941ae6bede55e37d268a05ac80c8570',1,'mimir::graphs']]],
+  ['staticclassgraph_5',['StaticClassGraph',['../namespacemimir_1_1graphs.html#a3142bbab4fd2cd2d164fe5301c5db9b0',1,'mimir::graphs']]],
+  ['staticdigraph_6',['StaticDigraph',['../namespacemimir_1_1graphs.html#a09c04470c52cfa6c879fc371bf3f7e29',1,'mimir::graphs']]],
+  ['staticedgecoloredbidirectionaldigraph_7',['StaticEdgeColoredBidirectionalDigraph',['../namespacemimir_1_1graphs.html#a564651476715bed9af515219b4abc973',1,'mimir::graphs']]],
+  ['staticedgecoloreddigraph_8',['StaticEdgeColoredDigraph',['../namespacemimir_1_1graphs.html#a1358ebb5d41c0bd1c39f9c1ab71e00f6',1,'mimir::graphs']]],
+  ['staticedgecoloredforwarddigraph_9',['StaticEdgeColoredForwardDigraph',['../namespacemimir_1_1graphs.html#aaae47d1944bc26ac19a58d16ad1546e1',1,'mimir::graphs']]],
+  ['staticforwarddigraph_10',['StaticForwardDigraph',['../namespacemimir_1_1graphs.html#a03f11ce41bd7d1e4723c401665ce4d22',1,'mimir::graphs']]],
+  ['staticproblemgraph_11',['StaticProblemGraph',['../namespacemimir_1_1graphs.html#ad3db9abada0afd5e64ce07e086c4ddb8',1,'mimir::graphs']]],
+  ['staticproblemgraphlist_12',['StaticProblemGraphList',['../namespacemimir_1_1graphs.html#afbec461401afc102f0fefd0fc40f41e8',1,'mimir::graphs']]],
+  ['statictuplegraph_13',['StaticTupleGraph',['../namespacemimir_1_1graphs.html#a09ea49a33bf8ac82406f8d9cd7e95f1f',1,'mimir::graphs']]],
+  ['staticvertexcoloredbidirectionaldigraph_14',['StaticVertexColoredBidirectionalDigraph',['../namespacemimir_1_1graphs.html#a4f37b66fb7509d838cb2b5e3435fbfda',1,'mimir::graphs']]],
+  ['staticvertexcoloreddigraph_15',['StaticVertexColoredDigraph',['../namespacemimir_1_1graphs.html#ad1ecfbb2e8fff3f99afd88ee58116c31',1,'mimir::graphs']]],
+  ['staticvertexcoloredforwarddigraph_16',['StaticVertexColoredForwardDigraph',['../namespacemimir_1_1graphs.html#afe8c165cbe26983da561021fa7733333',1,'mimir::graphs']]]
 ];

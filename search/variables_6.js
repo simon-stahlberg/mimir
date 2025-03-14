@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['timeout_5fms_0',['timeout_ms',['../structmimir_1_1datasets_1_1GeneralizedStateSpace_1_1Options_1_1ProblemSpecific.html#ad2300a4f22c818a3f21eb0c6ef87eae5',1,'mimir::datasets::GeneralizedStateSpace::Options::ProblemSpecific']]],
-  ['tuple_5fgraph_5foptions_1',['tuple_graph_options',['../structmimir_1_1datasets_1_1KnowledgeBase_1_1Options.html#a7e7c1caf0ff9ad386b371d7f235acbd0',1,'mimir::datasets::KnowledgeBase::Options']]]
+  ['plan_0',['plan',['../structmimir_1_1search_1_1SearchResult.html#ad81d2706f5870a1fd4e27b5651953f4c',1,'mimir::search::SearchResult']]],
+  ['predecessors_1',['predecessors',['../structmimir_1_1graphs_1_1BFSBoostVisitor.html#ae818eefad7e0f198e88dcdcac2961f60',1,'mimir::graphs::BFSBoostVisitor']]],
+  ['problem_5foptions_2',['problem_options',['../structmimir_1_1datasets_1_1GeneralizedStateSpace_1_1Options.html#aa5fcfdc0e9ef0668e1ab207a6bb882d7',1,'mimir::datasets::GeneralizedStateSpace::Options']]]
 ];

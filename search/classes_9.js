@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['options_0',['Options',['../structmimir_1_1datasets_1_1GeneralizedStateSpace_1_1Options.html',1,'mimir::datasets::GeneralizedStateSpace::Options'],['../structmimir_1_1datasets_1_1KnowledgeBase_1_1Options.html',1,'mimir::datasets::KnowledgeBase::Options'],['../structmimir_1_1datasets_1_1TupleGraphCollection_1_1Options.html',1,'mimir::datasets::TupleGraphCollection::Options']]]
+  ['knowledgebase_0',['KnowledgeBase',['../classmimir_1_1datasets_1_1KnowledgeBase.html',1,'mimir::datasets']]]
 ];
