@@ -96,11 +96,11 @@ $(function() {
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#ifndef MIMIR_SEARCH_AXIOM_EVALUATOR_LIFTED_HPP_</span></div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#define MIMIR_SEARCH_AXIOM_EVALUATOR_LIFTED_HPP_</span></div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &quot;mimir/formalism/assignment_set.hpp&quot;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &quot;<a class="code" href="assignment__set_8hpp.html">mimir/formalism/assignment_set.hpp</a>&quot;</span></div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &quot;mimir/formalism/declarations.hpp&quot;</span></div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &quot;<a class="code" href="axiom__evaluators_2interface_8hpp.html">mimir/search/axiom_evaluators/interface.hpp</a>&quot;</span></div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#include &quot;mimir/search/declarations.hpp&quot;</span></div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">#include &quot;<a class="code" href="axiom_8hpp.html">mimir/search/satisficing_binding_generators/axiom.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">#include &quot;<a class="code" href="search_2satisficing__binding__generators_2axiom_8hpp.html">mimir/search/satisficing_binding_generators/axiom.hpp</a>&quot;</span></div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacemimir_1_1search.html">mimir::search</a></div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>{</div>
@@ -117,9 +117,9 @@ $(function() {
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    formalism::GroundAtomList&lt;formalism::Fluent&gt; m_fluent_atoms;</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    formalism::GroundAtomList&lt;formalism::Derived&gt; m_derived_atoms;</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    formalism::GroundFunctionList&lt;formalism::Fluent&gt; m_fluent_functions;</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    formalism::AssignmentSet&lt;formalism::Fluent&gt; m_fluent_assignment_set;</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    formalism::AssignmentSet&lt;formalism::Derived&gt; m_derived_assignment_set;</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    formalism::NumericAssignmentSet&lt;formalism::Fluent&gt; m_numeric_assignment_set;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <a class="code hl_class" href="classmimir_1_1formalism_1_1AssignmentSet.html">formalism::AssignmentSet&lt;formalism::Fluent&gt;</a> m_fluent_assignment_set;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <a class="code hl_class" href="classmimir_1_1formalism_1_1AssignmentSet.html">formalism::AssignmentSet&lt;formalism::Derived&gt;</a> m_derived_assignment_set;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <a class="code hl_class" href="classmimir_1_1formalism_1_1NumericAssignmentSet.html">formalism::NumericAssignmentSet&lt;formalism::Fluent&gt;</a> m_numeric_assignment_set;</div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="keyword">public</span>:</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="classmimir_1_1search_1_1LiftedAxiomEvaluator.html#a33754292fa606dc59442a4a5985e2ed3">   47</a></span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classmimir_1_1search_1_1LiftedAxiomEvaluator.html#a33754292fa606dc59442a4a5985e2ed3">LiftedAxiomEvaluator</a>(formalism::Problem problem);</div>
@@ -145,8 +145,10 @@ $(function() {
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>}  <span class="comment">// namespace mimir</span></div>
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="aaxiom_8hpp_html"><div class="ttname"><a href="axiom_8hpp.html">axiom.hpp</a></div></div>
+<div class="ttc" id="aassignment__set_8hpp_html"><div class="ttname"><a href="assignment__set_8hpp.html">assignment_set.hpp</a></div></div>
 <div class="ttc" id="aaxiom__evaluators_2interface_8hpp_html"><div class="ttname"><a href="axiom__evaluators_2interface_8hpp.html">interface.hpp</a></div></div>
+<div class="ttc" id="aclassmimir_1_1formalism_1_1AssignmentSet_html"><div class="ttname"><a href="classmimir_1_1formalism_1_1AssignmentSet.html">mimir::formalism::AssignmentSet</a></div><div class="ttdoc">AssignmentSet is a helper class representing a set of functions f : Predicates x Params(A) x Object x...</div><div class="ttdef"><b>Definition:</b> assignment_set.hpp:46</div></div>
+<div class="ttc" id="aclassmimir_1_1formalism_1_1NumericAssignmentSet_html"><div class="ttname"><a href="classmimir_1_1formalism_1_1NumericAssignmentSet.html">mimir::formalism::NumericAssignmentSet</a></div><div class="ttdoc">NumericAssignmentSet is a helper class representing a set of functions f : FunctionSkeleton x Params(...</div><div class="ttdef"><b>Definition:</b> assignment_set.hpp:88</div></div>
 <div class="ttc" id="aclassmimir_1_1search_1_1IAxiomEvaluator_html"><div class="ttname"><a href="classmimir_1_1search_1_1IAxiomEvaluator.html">mimir::search::IAxiomEvaluator</a></div><div class="ttdef"><b>Definition:</b> interface.hpp:32</div></div>
 <div class="ttc" id="aclassmimir_1_1search_1_1LiftedAxiomEvaluator_html"><div class="ttname"><a href="classmimir_1_1search_1_1LiftedAxiomEvaluator.html">mimir::search::LiftedAxiomEvaluator</a></div><div class="ttdef"><b>Definition:</b> lifted.hpp:31</div></div>
 <div class="ttc" id="aclassmimir_1_1search_1_1LiftedAxiomEvaluator_html_a07905bd6f3087caa866fcb0377689786"><div class="ttname"><a href="classmimir_1_1search_1_1LiftedAxiomEvaluator.html#a07905bd6f3087caa866fcb0377689786">mimir::search::LiftedAxiomEvaluator::get_problem</a></div><div class="ttdeci">const formalism::Problem &amp; get_problem() const override</div></div>
@@ -162,6 +164,7 @@ $(function() {
 <div class="ttc" id="aclassmimir_1_1search_1_1LiftedAxiomEvaluator_html_acf45fefbbb19f1f4f258fe243d2c2626"><div class="ttname"><a href="classmimir_1_1search_1_1LiftedAxiomEvaluator.html#acf45fefbbb19f1f4f258fe243d2c2626">mimir::search::LiftedAxiomEvaluator::on_end_search</a></div><div class="ttdeci">void on_end_search() override</div></div>
 <div class="ttc" id="anamespacemimir_1_1search_html"><div class="ttname"><a href="namespacemimir_1_1search.html">mimir::search</a></div><div class="ttdef"><b>Definition:</b> astar.hpp:31</div></div>
 <div class="ttc" id="anamespacemimir_1_1search_html_a13d60cfc56c4964bb02f624a1300d31a"><div class="ttname"><a href="namespacemimir_1_1search.html#a13d60cfc56c4964bb02f624a1300d31a">mimir::search::AxiomSatisficingBindingGeneratorList</a></div><div class="ttdeci">std::vector&lt; AxiomSatisficingBindingGenerator &gt; AxiomSatisficingBindingGeneratorList</div><div class="ttdef"><b>Definition:</b> axiom.hpp:48</div></div>
+<div class="ttc" id="asearch_2satisficing__binding__generators_2axiom_8hpp_html"><div class="ttname"><a href="search_2satisficing__binding__generators_2axiom_8hpp.html">axiom.hpp</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

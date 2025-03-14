@@ -9,5 +9,6 @@ var searchData=
   ['liftedaxiomevaluatoreventhandlerbase_6',['LiftedAxiomEvaluatorEventHandlerBase',['../classmimir_1_1search_1_1LiftedAxiomEvaluatorEventHandlerBase.html',1,'mimir::search']]],
   ['liftedaxiomevaluatoreventhandlerbase_3c_20debugliftedaxiomevaluatoreventhandler_20_3e_7',['LiftedAxiomEvaluatorEventHandlerBase&lt; DebugLiftedAxiomEvaluatorEventHandler &gt;',['../classmimir_1_1search_1_1LiftedAxiomEvaluatorEventHandlerBase.html',1,'mimir::search']]],
   ['liftedaxiomevaluatoreventhandlerbase_3c_20defaultliftedaxiomevaluatoreventhandler_20_3e_8',['LiftedAxiomEvaluatorEventHandlerBase&lt; DefaultLiftedAxiomEvaluatorEventHandler &gt;',['../classmimir_1_1search_1_1LiftedAxiomEvaluatorEventHandlerBase.html',1,'mimir::search']]],
-  ['liftedaxiomevaluatorstatistics_9',['LiftedAxiomEvaluatorStatistics',['../classmimir_1_1search_1_1LiftedAxiomEvaluatorStatistics.html',1,'mimir::search']]]
+  ['liftedaxiomevaluatorstatistics_9',['LiftedAxiomEvaluatorStatistics',['../classmimir_1_1search_1_1LiftedAxiomEvaluatorStatistics.html',1,'mimir::search']]],
+  ['literalimpl_10',['LiteralImpl',['../classmimir_1_1formalism_1_1LiteralImpl.html',1,'mimir::formalism']]]
 ];
