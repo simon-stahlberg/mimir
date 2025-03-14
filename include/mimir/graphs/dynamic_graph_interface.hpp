@@ -34,12 +34,12 @@ concept IsDynamicGraph = requires(T a, VertexIndex vertex, EdgeIndex edge) {
     requires IsIncidenceGraph<T>;
     requires IsAdjacencyGraph<T>;
 
-    // Check that DynamicGraph uses unordered_map vertex and edge storage containers.
-    typename T::VertexMap;
-    typename T::EdgeMap;
+    // Ensure that DynamicGraph uses std::unordered_map to store vertices and edges.
+    { a.get_vertices() } -> std::same_as<const std::unordered_map<VertexIndex, typename T::VertexType>&>;
+    { a.get_edges() } -> std::same_as<const std::unordered_map<EdgeIndex, typename T::EdgeType>&>;
 
+    // Ensure that DynamicGraph supports deletion of vertices and edges
     { a.remove_vertex(vertex) };
-
     { a.remove_edge(edge) };
 };
 

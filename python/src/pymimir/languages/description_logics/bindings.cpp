@@ -1,4 +1,4 @@
-#include "../init_declarations.hpp"
+#include "../../init_declarations.hpp"
 
 #include <nanobind/nanobind.h>
 #include <nanobind/trampoline.h>

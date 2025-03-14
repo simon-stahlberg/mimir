@@ -34,9 +34,9 @@ concept IsStaticGraph = requires(T a) {
     requires IsIncidenceGraph<T>;
     requires IsAdjacencyGraph<T>;
 
-    // Check that DynamicGraph uses std::vector vertex and edge storage containers.
-    typename T::VertexList;
-    typename T::EdgeList;
+    // Ensure that DynamicGraph uses std::vector to store vertices and edges.
+    { a.get_vertices() } -> std::same_as<const std::vector<typename T::VertexType>&>;
+    { a.get_edges() } -> std::same_as<const std::vector<typename T::EdgeType>&>;
 };
 
 }

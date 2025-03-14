@@ -5,6 +5,7 @@ GENERATE_HTML         = YES
 GENERATE_LATEX        = NO
 EXTRACT_ALL           = YES
 INPUT                 = \
+    "include/mimir/formalism/action.hpp" \
     "include/mimir/graphs/algorithms/color_refinement_impl.hpp" \
     "include/mimir/graphs/algorithms/color_refinement.hpp" \
     "include/mimir/graphs/algorithms/folklore_weisfeiler_leman_impl.hpp" \
