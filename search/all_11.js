@@ -20,7 +20,7 @@ var searchData=
   ['tuple_5findex_5fmapper_2ehpp_17',['tuple_index_mapper.hpp',['../tuple__index__mapper_8hpp.html',1,'']]],
   ['tuple_5findex_5fto_5fstring_18',['tuple_index_to_string',['../classmimir_1_1search_1_1TupleIndexMapper.html#a7e53d429b1d3d6b2b05b98e10bda7fd5',1,'mimir::search::TupleIndexMapper']]],
   ['tuple_5fto_5fhash_19',['tuple_to_hash',['../namespacemimir_1_1graphs_1_1kfwl.html#ad05841aaed12ad4b37e8446c92597773',1,'mimir::graphs::kfwl']]],
-  ['tuplegraph_20',['TupleGraph',['../classmimir_1_1datasets_1_1TupleGraph.html',1,'mimir::datasets::TupleGraph'],['../classmimir_1_1datasets_1_1TupleGraph.html#a3dbf56767a2d659a740d361366484533',1,'mimir::datasets::TupleGraph::TupleGraph()']]],
+  ['tuplegraph_20',['TupleGraph',['../classmimir_1_1datasets_1_1TupleGraph.html',1,'mimir::datasets::TupleGraph'],['../classmimir_1_1datasets_1_1TupleGraph.html#ac0ccdd1b242b13e9dfe9a43f763f50d7',1,'mimir::datasets::TupleGraph::TupleGraph()']]],
   ['tuplegraphcollection_21',['TupleGraphCollection',['../classmimir_1_1datasets_1_1TupleGraphCollection.html',1,'mimir::datasets::TupleGraphCollection'],['../classmimir_1_1datasets_1_1TupleGraphCollection.html#a2d681e75573f294a3391e619146e2925',1,'mimir::datasets::TupleGraphCollection::TupleGraphCollection()']]],
   ['tuplegraphedge_22',['TupleGraphEdge',['../namespacemimir_1_1graphs.html#afc9f5b658a079f1cb248b164b7433512',1,'mimir::graphs']]],
   ['tuplegraphedgelist_23',['TupleGraphEdgeList',['../namespacemimir_1_1graphs.html#ad7b9cb62cd0876cb19eb97771783eb74',1,'mimir::graphs']]],

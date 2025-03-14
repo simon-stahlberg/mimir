@@ -113,11 +113,11 @@ $(function() {
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordtype">void</span> on_expand_goal_state_impl(State state) <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordtype">void</span> on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordtype">void</span> on_generate_state_impl(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordtype">void</span> on_generate_state_in_search_tree_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordtype">void</span> on_generate_state_in_search_tree_impl(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordtype">void</span> on_generate_state_not_in_search_tree_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordtype">void</span> on_generate_state_not_in_search_tree_impl(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordtype">void</span> on_finish_g_layer_impl(uint32_t g_value, uint64_t num_expanded_states, uint64_t num_generated_states) <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
@@ -142,18 +142,19 @@ $(function() {
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordtype">void</span> on_exhausted_impl() <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
 <div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="classmimir_1_1search_1_1DebugBrFSAlgorithmEventHandler.html#a4ef3c4eca6052ca6a75614fa6f621818">   70</a></span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classmimir_1_1search_1_1DebugBrFSAlgorithmEventHandler.html#a4ef3c4eca6052ca6a75614fa6f621818">DebugBrFSAlgorithmEventHandler</a>(Problem problem, <span class="keywordtype">bool</span> quiet = <span class="keyword">true</span>) : <a class="code hl_class" href="classmimir_1_1search_1_1BrFSAlgorithmEventHandlerBase.html">BrFSAlgorithmEventHandlerBase</a>&lt;<a class="code hl_class" href="classmimir_1_1search_1_1DebugBrFSAlgorithmEventHandler.html">DebugBrFSAlgorithmEventHandler</a>&gt;(problem, quiet)</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    {</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    }</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>};</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>}</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="classmimir_1_1search_1_1DebugBrFSAlgorithmEventHandler.html#a1ff58798ae7c5c307db655b9697e1050">   70</a></span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classmimir_1_1search_1_1DebugBrFSAlgorithmEventHandler.html#a1ff58798ae7c5c307db655b9697e1050">DebugBrFSAlgorithmEventHandler</a>(formalism::Problem problem, <span class="keywordtype">bool</span> quiet = <span class="keyword">true</span>) :</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <a class="code hl_class" href="classmimir_1_1search_1_1BrFSAlgorithmEventHandlerBase.html">BrFSAlgorithmEventHandlerBase</a>&lt;<a class="code hl_class" href="classmimir_1_1search_1_1DebugBrFSAlgorithmEventHandler.html">DebugBrFSAlgorithmEventHandler</a>&gt;(problem, quiet)</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    {</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    }</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>};</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>}</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aalgorithms_2brfs_2event__handlers_2interface_8hpp_html"><div class="ttname"><a href="algorithms_2brfs_2event__handlers_2interface_8hpp.html">interface.hpp</a></div></div>
 <div class="ttc" id="aclassmimir_1_1search_1_1BrFSAlgorithmEventHandlerBase_html"><div class="ttname"><a href="classmimir_1_1search_1_1BrFSAlgorithmEventHandlerBase.html">mimir::search::BrFSAlgorithmEventHandlerBase</a></div><div class="ttdef"><b>Definition:</b> interface.hpp:94</div></div>
 <div class="ttc" id="aclassmimir_1_1search_1_1DebugBrFSAlgorithmEventHandler_html"><div class="ttname"><a href="classmimir_1_1search_1_1DebugBrFSAlgorithmEventHandler.html">mimir::search::DebugBrFSAlgorithmEventHandler</a></div><div class="ttdef"><b>Definition:</b> debug.hpp:32</div></div>
-<div class="ttc" id="aclassmimir_1_1search_1_1DebugBrFSAlgorithmEventHandler_html_a4ef3c4eca6052ca6a75614fa6f621818"><div class="ttname"><a href="classmimir_1_1search_1_1DebugBrFSAlgorithmEventHandler.html#a4ef3c4eca6052ca6a75614fa6f621818">mimir::search::DebugBrFSAlgorithmEventHandler::DebugBrFSAlgorithmEventHandler</a></div><div class="ttdeci">DebugBrFSAlgorithmEventHandler(Problem problem, bool quiet=true)</div><div class="ttdef"><b>Definition:</b> debug.hpp:70</div></div>
+<div class="ttc" id="aclassmimir_1_1search_1_1DebugBrFSAlgorithmEventHandler_html_a1ff58798ae7c5c307db655b9697e1050"><div class="ttname"><a href="classmimir_1_1search_1_1DebugBrFSAlgorithmEventHandler.html#a1ff58798ae7c5c307db655b9697e1050">mimir::search::DebugBrFSAlgorithmEventHandler::DebugBrFSAlgorithmEventHandler</a></div><div class="ttdeci">DebugBrFSAlgorithmEventHandler(formalism::Problem problem, bool quiet=true)</div><div class="ttdef"><b>Definition:</b> debug.hpp:70</div></div>
 <div class="ttc" id="aclassmimir_1_1search_1_1Plan_html"><div class="ttname"><a href="classmimir_1_1search_1_1Plan.html">mimir::search::Plan</a></div><div class="ttdef"><b>Definition:</b> plan.hpp:28</div></div>
 <div class="ttc" id="anamespacemimir_1_1search_html"><div class="ttname"><a href="namespacemimir_1_1search.html">mimir::search</a></div><div class="ttdef"><b>Definition:</b> astar.hpp:31</div></div>
 </div><!-- fragment --></div><!-- contents -->

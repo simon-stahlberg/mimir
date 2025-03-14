@@ -108,15 +108,15 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a19a5dc04c43ae7d0712ad4c697280f7a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IAStarAlgorithmEventHandler.html#a19a5dc04c43ae7d0712ad4c697280f7a">on_expand_goal_state</a> (State state)=0</td></tr>
 <tr class="memdesc:a19a5dc04c43ae7d0712ad4c697280f7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">React on expanding a goal <code>state</code>. This may be called after on_expand_state.  <br /></td></tr>
 <tr class="separator:a19a5dc04c43ae7d0712ad4c697280f7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab11d932f6d17171f9dc788d282f03fc6"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IAStarAlgorithmEventHandler.html#ab11d932f6d17171f9dc788d282f03fc6">on_generate_state</a> (State state, GroundAction action, ContinuousCost action_cost, State successor_state)=0</td></tr>
-<tr class="memdesc:ab11d932f6d17171f9dc788d282f03fc6"><td class="mdescLeft">&#160;</td><td class="mdescRight">React on generating a successor <code>state</code> by applying an action.  <br /></td></tr>
-<tr class="separator:ab11d932f6d17171f9dc788d282f03fc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a51fc48ad8f62e22cddc224f025fabfd1"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IAStarAlgorithmEventHandler.html#a51fc48ad8f62e22cddc224f025fabfd1">on_generate_state_relaxed</a> (State state, GroundAction action, ContinuousCost action_cost, State successor_state)=0</td></tr>
-<tr class="memdesc:a51fc48ad8f62e22cddc224f025fabfd1"><td class="mdescLeft">&#160;</td><td class="mdescRight">React on generating a relaxed successor <code>state</code> by applying an action where a successor state is relaxed if the f value decreases.  <br /></td></tr>
-<tr class="separator:a51fc48ad8f62e22cddc224f025fabfd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a29750ee6a384d08ba1c122c051d92e82"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IAStarAlgorithmEventHandler.html#a29750ee6a384d08ba1c122c051d92e82">on_generate_state_not_relaxed</a> (State state, GroundAction action, ContinuousCost action_cost, State successor_state)=0</td></tr>
-<tr class="memdesc:a29750ee6a384d08ba1c122c051d92e82"><td class="mdescLeft">&#160;</td><td class="mdescRight">React on generated an unrelaxed successor state by applying an action. a successors state is unrelaxed iff it is not relaxed.  <br /></td></tr>
-<tr class="separator:a29750ee6a384d08ba1c122c051d92e82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41e3cee546ec20791d1c8eb5f50ac6fa"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IAStarAlgorithmEventHandler.html#a41e3cee546ec20791d1c8eb5f50ac6fa">on_generate_state</a> (State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state)=0</td></tr>
+<tr class="memdesc:a41e3cee546ec20791d1c8eb5f50ac6fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">React on generating a successor <code>state</code> by applying an action.  <br /></td></tr>
+<tr class="separator:a41e3cee546ec20791d1c8eb5f50ac6fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4cee41c48ee718a420feb9f652918cf"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IAStarAlgorithmEventHandler.html#af4cee41c48ee718a420feb9f652918cf">on_generate_state_relaxed</a> (State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state)=0</td></tr>
+<tr class="memdesc:af4cee41c48ee718a420feb9f652918cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">React on generating a relaxed successor <code>state</code> by applying an action where a successor state is relaxed if the f value decreases.  <br /></td></tr>
+<tr class="separator:af4cee41c48ee718a420feb9f652918cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3cf16a9eed74d44b42388e9ffe879448"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IAStarAlgorithmEventHandler.html#a3cf16a9eed74d44b42388e9ffe879448">on_generate_state_not_relaxed</a> (State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state)=0</td></tr>
+<tr class="memdesc:a3cf16a9eed74d44b42388e9ffe879448"><td class="mdescLeft">&#160;</td><td class="mdescRight">React on generated an unrelaxed successor state by applying an action. a successors state is unrelaxed iff it is not relaxed.  <br /></td></tr>
+<tr class="separator:a3cf16a9eed74d44b42388e9ffe879448"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a90b5d6a522dd7ecb8d093989e8ff18f6"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IAStarAlgorithmEventHandler.html#a90b5d6a522dd7ecb8d093989e8ff18f6">on_close_state</a> (State state)=0</td></tr>
 <tr class="separator:a90b5d6a522dd7ecb8d093989e8ff18f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a79142009b980f42dbce97e051cae4953"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IAStarAlgorithmEventHandler.html#a79142009b980f42dbce97e051cae4953">on_finish_f_layer</a> (double f_value)=0</td></tr>
@@ -442,8 +442,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ab11d932f6d17171f9dc788d282f03fc6" name="ab11d932f6d17171f9dc788d282f03fc6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab11d932f6d17171f9dc788d282f03fc6">&#9670;&#160;</a></span>on_generate_state()</h2>
+<a id="a41e3cee546ec20791d1c8eb5f50ac6fa" name="a41e3cee546ec20791d1c8eb5f50ac6fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41e3cee546ec20791d1c8eb5f50ac6fa">&#9670;&#160;</a></span>on_generate_state()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -460,7 +460,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">GroundAction&#160;</td>
+          <td class="paramtype">formalism::GroundAction&#160;</td>
           <td class="paramname"><em>action</em>, </td>
         </tr>
         <tr>
@@ -490,12 +490,12 @@ Public Member Functions</h2></td></tr>
 
 <p>React on generating a successor <code>state</code> by applying an action. </p>
 
-<p>Implemented in <a class="el" href="classmimir_1_1search_1_1StaticAStarAlgorithmEventHandlerBase.html#a792982648fc0b24f75bb1ae85b53d129">mimir::search::StaticAStarAlgorithmEventHandlerBase&lt; Derived_ &gt;</a>, <a class="el" href="classmimir_1_1search_1_1StaticAStarAlgorithmEventHandlerBase.html#a792982648fc0b24f75bb1ae85b53d129">mimir::search::StaticAStarAlgorithmEventHandlerBase&lt; DebugAStarAlgorithmEventHandler &gt;</a>, and <a class="el" href="classmimir_1_1search_1_1StaticAStarAlgorithmEventHandlerBase.html#a792982648fc0b24f75bb1ae85b53d129">mimir::search::StaticAStarAlgorithmEventHandlerBase&lt; DefaultAStarAlgorithmEventHandler &gt;</a>.</p>
+<p>Implemented in <a class="el" href="classmimir_1_1search_1_1StaticAStarAlgorithmEventHandlerBase.html#a443fee7afa0425752f9141464e723914">mimir::search::StaticAStarAlgorithmEventHandlerBase&lt; Derived_ &gt;</a>, <a class="el" href="classmimir_1_1search_1_1StaticAStarAlgorithmEventHandlerBase.html#a443fee7afa0425752f9141464e723914">mimir::search::StaticAStarAlgorithmEventHandlerBase&lt; DebugAStarAlgorithmEventHandler &gt;</a>, and <a class="el" href="classmimir_1_1search_1_1StaticAStarAlgorithmEventHandlerBase.html#a443fee7afa0425752f9141464e723914">mimir::search::StaticAStarAlgorithmEventHandlerBase&lt; DefaultAStarAlgorithmEventHandler &gt;</a>.</p>
 
 </div>
 </div>
-<a id="a29750ee6a384d08ba1c122c051d92e82" name="a29750ee6a384d08ba1c122c051d92e82"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a29750ee6a384d08ba1c122c051d92e82">&#9670;&#160;</a></span>on_generate_state_not_relaxed()</h2>
+<a id="a3cf16a9eed74d44b42388e9ffe879448" name="a3cf16a9eed74d44b42388e9ffe879448"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3cf16a9eed74d44b42388e9ffe879448">&#9670;&#160;</a></span>on_generate_state_not_relaxed()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -512,7 +512,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">GroundAction&#160;</td>
+          <td class="paramtype">formalism::GroundAction&#160;</td>
           <td class="paramname"><em>action</em>, </td>
         </tr>
         <tr>
@@ -542,12 +542,12 @@ Public Member Functions</h2></td></tr>
 
 <p>React on generated an unrelaxed successor state by applying an action. a successors state is unrelaxed iff it is not relaxed. </p>
 
-<p>Implemented in <a class="el" href="classmimir_1_1search_1_1StaticAStarAlgorithmEventHandlerBase.html#a007ae386543621500fb37b2dd033f6dc">mimir::search::StaticAStarAlgorithmEventHandlerBase&lt; Derived_ &gt;</a>, <a class="el" href="classmimir_1_1search_1_1StaticAStarAlgorithmEventHandlerBase.html#a007ae386543621500fb37b2dd033f6dc">mimir::search::StaticAStarAlgorithmEventHandlerBase&lt; DebugAStarAlgorithmEventHandler &gt;</a>, and <a class="el" href="classmimir_1_1search_1_1StaticAStarAlgorithmEventHandlerBase.html#a007ae386543621500fb37b2dd033f6dc">mimir::search::StaticAStarAlgorithmEventHandlerBase&lt; DefaultAStarAlgorithmEventHandler &gt;</a>.</p>
+<p>Implemented in <a class="el" href="classmimir_1_1search_1_1StaticAStarAlgorithmEventHandlerBase.html#a61ca5acd328197e2cc3146cdf0dc5c4b">mimir::search::StaticAStarAlgorithmEventHandlerBase&lt; Derived_ &gt;</a>, <a class="el" href="classmimir_1_1search_1_1StaticAStarAlgorithmEventHandlerBase.html#a61ca5acd328197e2cc3146cdf0dc5c4b">mimir::search::StaticAStarAlgorithmEventHandlerBase&lt; DebugAStarAlgorithmEventHandler &gt;</a>, and <a class="el" href="classmimir_1_1search_1_1StaticAStarAlgorithmEventHandlerBase.html#a61ca5acd328197e2cc3146cdf0dc5c4b">mimir::search::StaticAStarAlgorithmEventHandlerBase&lt; DefaultAStarAlgorithmEventHandler &gt;</a>.</p>
 
 </div>
 </div>
-<a id="a51fc48ad8f62e22cddc224f025fabfd1" name="a51fc48ad8f62e22cddc224f025fabfd1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a51fc48ad8f62e22cddc224f025fabfd1">&#9670;&#160;</a></span>on_generate_state_relaxed()</h2>
+<a id="af4cee41c48ee718a420feb9f652918cf" name="af4cee41c48ee718a420feb9f652918cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4cee41c48ee718a420feb9f652918cf">&#9670;&#160;</a></span>on_generate_state_relaxed()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -564,7 +564,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">GroundAction&#160;</td>
+          <td class="paramtype">formalism::GroundAction&#160;</td>
           <td class="paramname"><em>action</em>, </td>
         </tr>
         <tr>
@@ -594,7 +594,7 @@ Public Member Functions</h2></td></tr>
 
 <p>React on generating a relaxed successor <code>state</code> by applying an action where a successor state is relaxed if the f value decreases. </p>
 
-<p>Implemented in <a class="el" href="classmimir_1_1search_1_1StaticAStarAlgorithmEventHandlerBase.html#a1c7e0f169fe1f18f385e970be0714f4a">mimir::search::StaticAStarAlgorithmEventHandlerBase&lt; Derived_ &gt;</a>, <a class="el" href="classmimir_1_1search_1_1StaticAStarAlgorithmEventHandlerBase.html#a1c7e0f169fe1f18f385e970be0714f4a">mimir::search::StaticAStarAlgorithmEventHandlerBase&lt; DebugAStarAlgorithmEventHandler &gt;</a>, and <a class="el" href="classmimir_1_1search_1_1StaticAStarAlgorithmEventHandlerBase.html#a1c7e0f169fe1f18f385e970be0714f4a">mimir::search::StaticAStarAlgorithmEventHandlerBase&lt; DefaultAStarAlgorithmEventHandler &gt;</a>.</p>
+<p>Implemented in <a class="el" href="classmimir_1_1search_1_1StaticAStarAlgorithmEventHandlerBase.html#a88b607d7a00015e326f3aa853eb55170">mimir::search::StaticAStarAlgorithmEventHandlerBase&lt; Derived_ &gt;</a>, <a class="el" href="classmimir_1_1search_1_1StaticAStarAlgorithmEventHandlerBase.html#a88b607d7a00015e326f3aa853eb55170">mimir::search::StaticAStarAlgorithmEventHandlerBase&lt; DebugAStarAlgorithmEventHandler &gt;</a>, and <a class="el" href="classmimir_1_1search_1_1StaticAStarAlgorithmEventHandlerBase.html#a88b607d7a00015e326f3aa853eb55170">mimir::search::StaticAStarAlgorithmEventHandlerBase&lt; DefaultAStarAlgorithmEventHandler &gt;</a>.</p>
 
 </div>
 </div>

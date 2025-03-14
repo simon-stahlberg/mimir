@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['refinementstatelistpruningfunction_0',['RefinementStateListPruningFunction',['../classmimir_1_1languages_1_1dl_1_1RefinementStateListPruningFunction.html#af414176dd14e34b958817b3bb0e112bd',1,'mimir::languages::dl::RefinementStateListPruningFunction']]],
+  ['refinementstatelistpruningfunction_0',['RefinementStateListPruningFunction',['../classmimir_1_1languages_1_1dl_1_1RefinementStateListPruningFunction.html#a838dcda78130cc207be93a4092ac5723',1,'mimir::languages::dl::RefinementStateListPruningFunction']]],
   ['remove_5fedge_1',['remove_edge',['../classmimir_1_1graphs_1_1DynamicGraph.html#a506fc838894a8d36488e1854dfec053d',1,'mimir::graphs::DynamicGraph']]],
   ['remove_5fvertex_2',['remove_vertex',['../classmimir_1_1graphs_1_1DynamicGraph.html#a5eb5100ae1d210a35b8593c40fe9d249',1,'mimir::graphs::DynamicGraph']]],
   ['replace_5ftuples_3',['replace_tuples',['../namespacemimir_1_1graphs_1_1color__refinement.html#a19fe79c73ad583f3e4876aa06f118e5f',1,'mimir::graphs::color_refinement']]],

@@ -188,7 +188,7 @@ Typedefs</h2></td></tr>
 <tr class="separator:a4401dfeb9aa3b9b2f3925044ee7a6e71"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6849af3a319ee009030dc943e8f30f13"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a6849af3a319ee009030dc943e8f30f13">ProblemVertexList</a> = std::vector&lt; <a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71">ProblemVertex</a> &gt;</td></tr>
 <tr class="separator:a6849af3a319ee009030dc943e8f30f13"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a27cce2a7fdacae54f936c2eb0174b4c8"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a27cce2a7fdacae54f936c2eb0174b4c8">ProblemEdge</a> = <a class="el" href="classmimir_1_1graphs_1_1Edge.html">Edge</a>&lt; Index, GroundAction, ContinuousCost &gt;</td></tr>
+<tr class="memitem:a27cce2a7fdacae54f936c2eb0174b4c8"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a27cce2a7fdacae54f936c2eb0174b4c8">ProblemEdge</a> = <a class="el" href="classmimir_1_1graphs_1_1Edge.html">Edge</a>&lt; Index, formalism::GroundAction, ContinuousCost &gt;</td></tr>
 <tr class="memdesc:a27cce2a7fdacae54f936c2eb0174b4c8"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>ProblemEdge</code> encapsulates information about an edge in a <code>ProblemGraph</code>.  <br /></td></tr>
 <tr class="separator:a27cce2a7fdacae54f936c2eb0174b4c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0eca8513881fbe716ea6fa3186b18041"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a0eca8513881fbe716ea6fa3186b18041">ProblemEdgeList</a> = std::vector&lt; <a class="el" href="namespacemimir_1_1graphs.html#a27cce2a7fdacae54f936c2eb0174b4c8">ProblemEdge</a> &gt;</td></tr>
@@ -278,9 +278,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a94263f50bae293ed7fb9bcff372aea57"><td class="memItemLeft" align="right" valign="top">Index&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a94263f50bae293ed7fb9bcff372aea57">get_class_edge_index</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a27cce2a7fdacae54f936c2eb0174b4c8">ProblemEdge</a> &amp;edge)</td></tr>
 <tr class="memdesc:a94263f50bae293ed7fb9bcff372aea57"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the index of the corresponding <code>ClassEdge</code> in the <code>GeneralizedStateSpace</code>.  <br /></td></tr>
 <tr class="separator:a94263f50bae293ed7fb9bcff372aea57"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a91661eda96042e095333f6d4d4de7201"><td class="memItemLeft" align="right" valign="top">GroundAction&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a91661eda96042e095333f6d4d4de7201">get_action</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a27cce2a7fdacae54f936c2eb0174b4c8">ProblemEdge</a> &amp;edge)</td></tr>
-<tr class="memdesc:a91661eda96042e095333f6d4d4de7201"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the <code>GroundAction</code> of the given <code>ProblemEdge</code>.  <br /></td></tr>
-<tr class="separator:a91661eda96042e095333f6d4d4de7201"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88c64d17c2e35ff629899ec795060e17"><td class="memItemLeft" align="right" valign="top">formalism::GroundAction&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a88c64d17c2e35ff629899ec795060e17">get_action</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a27cce2a7fdacae54f936c2eb0174b4c8">ProblemEdge</a> &amp;edge)</td></tr>
+<tr class="memdesc:a88c64d17c2e35ff629899ec795060e17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the <code>GroundAction</code> of the given <code>ProblemEdge</code>.  <br /></td></tr>
+<tr class="separator:a88c64d17c2e35ff629899ec795060e17"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abdc9761dce5abf6f85bcaf6964a3efac"><td class="memItemLeft" align="right" valign="top">ContinuousCost&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#abdc9761dce5abf6f85bcaf6964a3efac">get_action_cost</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a27cce2a7fdacae54f936c2eb0174b4c8">ProblemEdge</a> &amp;edge)</td></tr>
 <tr class="memdesc:abdc9761dce5abf6f85bcaf6964a3efac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the action cost associated with the <code>GroundAction</code> of the given <code>ProblemEdge</code>  <br /></td></tr>
 <tr class="separator:abdc9761dce5abf6f85bcaf6964a3efac"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1164,8 +1164,8 @@ template&lt;IsStaticGraph Graph, IsDirection Direction&gt; </div>
 
 </div>
 </div>
-<a id="a91661eda96042e095333f6d4d4de7201" name="a91661eda96042e095333f6d4d4de7201"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a91661eda96042e095333f6d4d4de7201">&#9670;&#160;</a></span>get_action()</h2>
+<a id="a88c64d17c2e35ff629899ec795060e17" name="a88c64d17c2e35ff629899ec795060e17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88c64d17c2e35ff629899ec795060e17">&#9670;&#160;</a></span>get_action()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1174,7 +1174,7 @@ template&lt;IsStaticGraph Graph, IsDirection Direction&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">GroundAction mimir::graphs::get_action </td>
+          <td class="memname">formalism::GroundAction mimir::graphs::get_action </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="namespacemimir_1_1graphs.html#a27cce2a7fdacae54f936c2eb0174b4c8">ProblemEdge</a> &amp;&#160;</td>
           <td class="paramname"><em>edge</em></td><td>)</td>

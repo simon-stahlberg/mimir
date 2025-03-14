@@ -13,7 +13,7 @@ var searchData=
   ['tree_5fedge_10',['tree_edge',['../structmimir_1_1graphs_1_1BFSBoostVisitor.html#abff6aae7570ea4baa23744b5ba713f19',1,'mimir::graphs::BFSBoostVisitor']]],
   ['tuple_5findex_5fto_5fstring_11',['tuple_index_to_string',['../classmimir_1_1search_1_1TupleIndexMapper.html#a7e53d429b1d3d6b2b05b98e10bda7fd5',1,'mimir::search::TupleIndexMapper']]],
   ['tuple_5fto_5fhash_12',['tuple_to_hash',['../namespacemimir_1_1graphs_1_1kfwl.html#ad05841aaed12ad4b37e8446c92597773',1,'mimir::graphs::kfwl']]],
-  ['tuplegraph_13',['TupleGraph',['../classmimir_1_1datasets_1_1TupleGraph.html#a3dbf56767a2d659a740d361366484533',1,'mimir::datasets::TupleGraph']]],
+  ['tuplegraph_13',['TupleGraph',['../classmimir_1_1datasets_1_1TupleGraph.html#ac0ccdd1b242b13e9dfe9a43f763f50d7',1,'mimir::datasets::TupleGraph']]],
   ['tuplegraphcollection_14',['TupleGraphCollection',['../classmimir_1_1datasets_1_1TupleGraphCollection.html#a2d681e75573f294a3391e619146e2925',1,'mimir::datasets::TupleGraphCollection']]],
   ['tupleindexmapper_15',['TupleIndexMapper',['../classmimir_1_1search_1_1TupleIndexMapper.html#a537609d01ce7ea83da29e1cd9abd0727',1,'mimir::search::TupleIndexMapper::TupleIndexMapper(size_t arity)'],['../classmimir_1_1search_1_1TupleIndexMapper.html#aca2e6b930fa55fa43817197bef12530e',1,'mimir::search::TupleIndexMapper::TupleIndexMapper(size_t arity, size_t num_atoms)']]]
 ];

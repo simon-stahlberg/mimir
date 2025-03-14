@@ -97,17 +97,17 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aaf0c6dc7e03fe989b340c35b1911d957"><td class="memItemLeft" align="right" valign="top">State&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1StateRepositoryImpl.html#aaf0c6dc7e03fe989b340c35b1911d957">get_or_create_initial_state</a> ()</td></tr>
 <tr class="memdesc:aaf0c6dc7e03fe989b340c35b1911d957"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get or create the extended initial state of the underlying problem.  <br /></td></tr>
 <tr class="separator:aaf0c6dc7e03fe989b340c35b1911d957"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad1f90055d64bdbeb8cbb8a775fa157e4"><td class="memItemLeft" align="right" valign="top">State&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1StateRepositoryImpl.html#ad1f90055d64bdbeb8cbb8a775fa157e4">get_or_create_state</a> (const GroundAtomList&lt; Fluent &gt; &amp;atoms, const FlatDoubleList &amp;fluent_numeric_variables)</td></tr>
-<tr class="memdesc:ad1f90055d64bdbeb8cbb8a775fa157e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get or create the extended state for a given set of ground <code>atoms</code>.  <br /></td></tr>
-<tr class="separator:ad1f90055d64bdbeb8cbb8a775fa157e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a20aa856d9f16cd031e134c2f94f9bdc4"><td class="memItemLeft" align="right" valign="top">std::pair&lt; State, ContinuousCost &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1StateRepositoryImpl.html#a20aa856d9f16cd031e134c2f94f9bdc4">get_or_create_successor_state</a> (State state, GroundAction action, ContinuousCost state_metric_value)</td></tr>
-<tr class="memdesc:a20aa856d9f16cd031e134c2f94f9bdc4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get or create the extended successor state when applying the given ground <code>action</code> in the given <code>state</code>.  <br /></td></tr>
-<tr class="separator:a20aa856d9f16cd031e134c2f94f9bdc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0efa320e2b9044f0d9b668a55a712e56"><td class="memItemLeft" align="right" valign="top">std::pair&lt; State, ContinuousCost &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1StateRepositoryImpl.html#a0efa320e2b9044f0d9b668a55a712e56">get_or_create_successor_state</a> (State state, DenseState &amp;dense_state, GroundAction action, ContinuousCost state_metric_value)</td></tr>
-<tr class="memdesc:a0efa320e2b9044f0d9b668a55a712e56"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get or create the extended successor state when applying the given ground <code>action</code> in the given state identifed by the <code>state_fluent_atoms</code> and <code>derived_atoms</code>. The input parameters <code>dense_state</code> are modified, meaning that side effects have to be taken into account.  <br /></td></tr>
-<tr class="separator:a0efa320e2b9044f0d9b668a55a712e56"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3dfce6088701233a38e1b65ac897996d"><td class="memItemLeft" align="right" valign="top">const Problem &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1StateRepositoryImpl.html#a3dfce6088701233a38e1b65ac897996d">get_problem</a> () const</td></tr>
-<tr class="separator:a3dfce6088701233a38e1b65ac897996d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69b1bcc51675465f74d12ca51dc717d3"><td class="memItemLeft" align="right" valign="top">State&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1StateRepositoryImpl.html#a69b1bcc51675465f74d12ca51dc717d3">get_or_create_state</a> (const formalism::GroundAtomList&lt; formalism::Fluent &gt; &amp;atoms, const FlatDoubleList &amp;fluent_numeric_variables)</td></tr>
+<tr class="memdesc:a69b1bcc51675465f74d12ca51dc717d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get or create the extended state for a given set of ground <code>atoms</code>.  <br /></td></tr>
+<tr class="separator:a69b1bcc51675465f74d12ca51dc717d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4efa9bda828d012b10e7ee9323cf746"><td class="memItemLeft" align="right" valign="top">std::pair&lt; State, ContinuousCost &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1StateRepositoryImpl.html#aa4efa9bda828d012b10e7ee9323cf746">get_or_create_successor_state</a> (State state, formalism::GroundAction action, ContinuousCost state_metric_value)</td></tr>
+<tr class="memdesc:aa4efa9bda828d012b10e7ee9323cf746"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get or create the extended successor state when applying the given ground <code>action</code> in the given <code>state</code>.  <br /></td></tr>
+<tr class="separator:aa4efa9bda828d012b10e7ee9323cf746"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ee249d0363faffb994fcd8885d8ec49"><td class="memItemLeft" align="right" valign="top">std::pair&lt; State, ContinuousCost &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1StateRepositoryImpl.html#a9ee249d0363faffb994fcd8885d8ec49">get_or_create_successor_state</a> (State state, DenseState &amp;dense_state, formalism::GroundAction action, ContinuousCost state_metric_value)</td></tr>
+<tr class="memdesc:a9ee249d0363faffb994fcd8885d8ec49"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get or create the extended successor state when applying the given ground <code>action</code> in the given state identifed by the <code>state_fluent_atoms</code> and <code>derived_atoms</code>. The input parameters <code>dense_state</code> are modified, meaning that side effects have to be taken into account.  <br /></td></tr>
+<tr class="separator:a9ee249d0363faffb994fcd8885d8ec49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7e9934a0856bfeea2ab50256b03e61d"><td class="memItemLeft" align="right" valign="top">const formalism::Problem &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1StateRepositoryImpl.html#ab7e9934a0856bfeea2ab50256b03e61d">get_problem</a> () const</td></tr>
+<tr class="separator:ab7e9934a0856bfeea2ab50256b03e61d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2f47798a4ff86a2654274d3a368895f0"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1StateRepositoryImpl.html#a2f47798a4ff86a2654274d3a368895f0">get_state_count</a> () const</td></tr>
 <tr class="memdesc:a2f47798a4ff86a2654274d3a368895f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of created states.  <br /></td></tr>
 <tr class="separator:a2f47798a4ff86a2654274d3a368895f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -287,8 +287,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ad1f90055d64bdbeb8cbb8a775fa157e4" name="ad1f90055d64bdbeb8cbb8a775fa157e4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad1f90055d64bdbeb8cbb8a775fa157e4">&#9670;&#160;</a></span>get_or_create_state()</h2>
+<a id="a69b1bcc51675465f74d12ca51dc717d3" name="a69b1bcc51675465f74d12ca51dc717d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69b1bcc51675465f74d12ca51dc717d3">&#9670;&#160;</a></span>get_or_create_state()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -296,7 +296,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">State mimir::search::StateRepositoryImpl::get_or_create_state </td>
           <td>(</td>
-          <td class="paramtype">const GroundAtomList&lt; Fluent &gt; &amp;&#160;</td>
+          <td class="paramtype">const formalism::GroundAtomList&lt; formalism::Fluent &gt; &amp;&#160;</td>
           <td class="paramname"><em>atoms</em>, </td>
         </tr>
         <tr>
@@ -325,8 +325,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a0efa320e2b9044f0d9b668a55a712e56" name="a0efa320e2b9044f0d9b668a55a712e56"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0efa320e2b9044f0d9b668a55a712e56">&#9670;&#160;</a></span>get_or_create_successor_state() <span class="overload">[1/2]</span></h2>
+<a id="a9ee249d0363faffb994fcd8885d8ec49" name="a9ee249d0363faffb994fcd8885d8ec49"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ee249d0363faffb994fcd8885d8ec49">&#9670;&#160;</a></span>get_or_create_successor_state() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -346,7 +346,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">GroundAction&#160;</td>
+          <td class="paramtype">formalism::GroundAction&#160;</td>
           <td class="paramname"><em>action</em>, </td>
         </tr>
         <tr>
@@ -383,8 +383,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a20aa856d9f16cd031e134c2f94f9bdc4" name="a20aa856d9f16cd031e134c2f94f9bdc4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a20aa856d9f16cd031e134c2f94f9bdc4">&#9670;&#160;</a></span>get_or_create_successor_state() <span class="overload">[2/2]</span></h2>
+<a id="aa4efa9bda828d012b10e7ee9323cf746" name="aa4efa9bda828d012b10e7ee9323cf746"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4efa9bda828d012b10e7ee9323cf746">&#9670;&#160;</a></span>get_or_create_successor_state() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -398,7 +398,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">GroundAction&#160;</td>
+          <td class="paramtype">formalism::GroundAction&#160;</td>
           <td class="paramname"><em>action</em>, </td>
         </tr>
         <tr>
@@ -429,14 +429,14 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a3dfce6088701233a38e1b65ac897996d" name="a3dfce6088701233a38e1b65ac897996d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3dfce6088701233a38e1b65ac897996d">&#9670;&#160;</a></span>get_problem()</h2>
+<a id="ab7e9934a0856bfeea2ab50256b03e61d" name="ab7e9934a0856bfeea2ab50256b03e61d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7e9934a0856bfeea2ab50256b03e61d">&#9670;&#160;</a></span>get_problem()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const Problem &amp; mimir::search::StateRepositoryImpl::get_problem </td>
+          <td class="memname">const formalism::Problem &amp; mimir::search::StateRepositoryImpl::get_problem </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
