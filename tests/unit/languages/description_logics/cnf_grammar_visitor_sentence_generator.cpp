@@ -92,14 +92,14 @@ TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarVisitorSentenceGeneratorTes
     // The spanner is at location 2.
     const auto problem2_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
 
-    auto context = GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem1_file, problem2_file });
+    auto context = search::GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem1_file, problem2_file });
 
     auto state_space_options = datasets::GeneralizedStateSpace::Options();
     state_space_options.problem_options.symmetry_pruning = false;
 
     auto kb = datasets::KnowledgeBase::create(context, datasets::KnowledgeBase::Options(state_space_options));
 
-    auto problem_to_states = ProblemMap<StateList> {};
+    auto problem_to_states = ProblemMap<search::StateList> {};
     for (const auto& vertex : kb->get_generalized_state_space().get_graph().get_vertices())
     {
         const auto& problem = kb->get_generalized_state_space().get_problem(vertex);
@@ -146,14 +146,14 @@ TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarVisitorSentenceGeneratorFra
     // The spanner is at location 2.
     const auto problem2_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
 
-    auto context = GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem1_file, problem2_file });
+    auto context = search::GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem1_file, problem2_file });
 
     auto state_space_options = datasets::GeneralizedStateSpace::Options();
     state_space_options.problem_options.symmetry_pruning = false;
 
     auto kb = datasets::KnowledgeBase::create(context, datasets::KnowledgeBase::Options(state_space_options));
 
-    auto problem_to_states = ProblemMap<StateList> {};
+    auto problem_to_states = ProblemMap<search::StateList> {};
     for (const auto& vertex : kb->get_generalized_state_space().get_graph().get_vertices())
     {
         const auto& problem = kb->get_generalized_state_space().get_problem(vertex);

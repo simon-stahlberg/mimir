@@ -20,7 +20,7 @@
 
 #include "mimir/search/declarations.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 
 /**

@@ -23,7 +23,7 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 
 /**

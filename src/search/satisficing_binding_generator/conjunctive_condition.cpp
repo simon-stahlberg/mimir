@@ -19,7 +19,7 @@
 
 #include "mimir/search/satisficing_binding_generators/base_impl.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 
 ConjunctiveConditionSatisficingBindingGenerator::ConjunctiveConditionSatisficingBindingGenerator(

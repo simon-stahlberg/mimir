@@ -35,7 +35,7 @@ TEST(MimirTests, DataSetsObjectGraphDenseTest)
 
     auto options = datasets::GeneralizedStateSpace::Options();
     options.problem_options.symmetry_pruning = false;
-    const auto context = GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem_file });
+    const auto context = search::GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem_file });
     const auto problem_class_state_space = datasets::GeneralizedStateSpace(context, options);
     const auto color_function = datasets::GeneralizedColorFunction(context.get_generalized_problem());
 
@@ -64,7 +64,7 @@ TEST(MimirTests, DataSetsObjectGraphSparseTest)
 
     auto options = datasets::GeneralizedStateSpace::Options();
     options.problem_options.symmetry_pruning = false;
-    const auto context = GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem_file });
+    const auto context = search::GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem_file });
     const auto problem_class_state_space = datasets::GeneralizedStateSpace(context, options);
     const auto color_function = datasets::GeneralizedColorFunction(context.get_generalized_problem());
 

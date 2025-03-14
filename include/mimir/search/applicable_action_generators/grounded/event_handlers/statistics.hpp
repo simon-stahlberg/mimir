@@ -24,7 +24,7 @@
 #include <ostream>
 #include <vector>
 
-namespace mimir
+namespace mimir::search
 {
 
 struct GroundedApplicableActionGeneratorStatistics

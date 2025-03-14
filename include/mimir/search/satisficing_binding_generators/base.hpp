@@ -29,7 +29,7 @@
 
 #include <boost/dynamic_bitset/dynamic_bitset.hpp>
 
-namespace mimir
+namespace mimir::search
 {
 
 /**

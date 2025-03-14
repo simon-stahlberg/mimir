@@ -21,7 +21,7 @@
 #include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/ground_axiom.hpp"
 
-namespace mimir::match_tree
+namespace mimir::search::match_tree
 {
 
 /**

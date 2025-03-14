@@ -25,7 +25,7 @@
 #include "mimir/search/axiom_evaluators/lifted/event_handlers.hpp"
 #include "mimir/search/dense_state.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 LiftedAxiomEvaluator::LiftedAxiomEvaluator(Problem problem) :
     LiftedAxiomEvaluator(std::move(problem), std::make_shared<DefaultLiftedAxiomEvaluatorEventHandler>())

@@ -24,7 +24,7 @@
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/satisficing_binding_generators/action.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 
 /// @brief `LiftedApplicableActionGenerator` implements lifted applicable action generation

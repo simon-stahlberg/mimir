@@ -26,7 +26,7 @@
 
 #include <variant>
 
-namespace mimir
+namespace mimir::search
 {
 
 /// @brief `GroundedApplicableActionGenerator` implements grounded applicable action generation

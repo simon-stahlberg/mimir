@@ -26,7 +26,7 @@
 #include "mimir/search/axiom_evaluators/grounded/event_handlers.hpp"
 #include "mimir/search/dense_state.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 GroundedAxiomEvaluator::GroundedAxiomEvaluator(Problem problem,
                                                std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>>&& match_tree_partitioning) :

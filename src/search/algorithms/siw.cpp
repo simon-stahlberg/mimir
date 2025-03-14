@@ -32,7 +32,7 @@
 
 #include <sstream>
 
-namespace mimir
+namespace mimir::search
 {
 
 /* ProblemGoalCounter */

@@ -35,13 +35,13 @@ class EvaluationContext
 {
 private:
     /* Memory */
-    State m_state;
+    search::State m_state;
     Problem m_problem;
     Denotations<Concept, Role, Boolean, Numerical>& m_builders;
     DenotationRepositories<Concept, Role, Boolean, Numerical>& m_repositories;
 
 public:
-    EvaluationContext(State state,
+    EvaluationContext(search::State state,
                       Problem problem,
                       Denotations<Concept, Role, Boolean, Numerical>& ref_builders,
                       DenotationRepositories<Concept, Role, Boolean, Numerical>& ref_repositories);
@@ -49,7 +49,7 @@ public:
     /**
      * Getters
      */
-    State get_state() const;
+    search::State get_state() const;
 
     Problem get_problem() const;
 

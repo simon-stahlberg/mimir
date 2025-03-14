@@ -20,7 +20,7 @@
 
 #include "mimir/search/applicable_action_generators/grounded/event_handlers/interface.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 
 class DefaultGroundedApplicableActionGeneratorEventHandler :

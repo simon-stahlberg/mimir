@@ -27,7 +27,7 @@
 #include <chrono>
 #include <concepts>
 
-namespace mimir
+namespace mimir::search
 {
 
 /**

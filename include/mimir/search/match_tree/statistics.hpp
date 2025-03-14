@@ -25,7 +25,7 @@
 #include <ostream>
 #include <vector>
 
-namespace mimir::match_tree
+namespace mimir::search::match_tree
 {
 struct Statistics
 {

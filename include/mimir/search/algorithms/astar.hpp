@@ -27,7 +27,7 @@
 #include <optional>
 #include <vector>
 
-namespace mimir
+namespace mimir::search
 {
 
 extern SearchResult find_solution_astar(const SearchContext& context,

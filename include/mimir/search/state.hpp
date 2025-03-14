@@ -28,7 +28,7 @@
 #include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
 
-namespace mimir
+namespace mimir::search
 {
 /// @brief `StateImpl` encapsulates the fluent and derived atoms of a planning state.
 /// We refer to the fluent atoms as the non-extended state
@@ -101,12 +101,16 @@ inline bool operator==(const std::span<const State>& lhs, const std::span<const 
 
 using StateImplSet = mimir::buffering::UnorderedSet<StateImpl>;
 
+}
+
+namespace mimir
+{
 /**
  * Pretty printing
  */
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<State, const ProblemImpl&>& data);
+std::ostream& operator<<(std::ostream& os, const std::tuple<search::State, const ProblemImpl&>& data);
 }
 
 #endif

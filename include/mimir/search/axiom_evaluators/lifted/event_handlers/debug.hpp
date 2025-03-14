@@ -20,7 +20,7 @@
 
 #include "mimir/search/axiom_evaluators/lifted/event_handlers/interface.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 
 class DebugLiftedAxiomEvaluatorEventHandler : public LiftedAxiomEvaluatorEventHandlerBase<DebugLiftedAxiomEvaluatorEventHandler>

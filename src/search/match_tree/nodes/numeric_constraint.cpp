@@ -23,7 +23,7 @@
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/dense_state.hpp"
 
-namespace mimir::match_tree
+namespace mimir::search::match_tree
 {
 template<HasConjunctiveCondition E>
 void NumericConstraintSelectorNode_T<E>::visit_impl(INodeVisitor<E>& visitor) const

@@ -22,7 +22,7 @@
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/heuristics/interface.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 
 /// @brief `HStarHeuristic` returns the shortest goal distance.

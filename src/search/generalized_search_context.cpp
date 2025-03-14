@@ -19,7 +19,7 @@
 
 #include "mimir/formalism/problem.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 
 GeneralizedSearchContext::GeneralizedSearchContext(const fs::path& domain_filepath,

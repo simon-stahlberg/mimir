@@ -23,7 +23,7 @@
 #include "mimir/search/match_tree/nodes/generator.hpp"
 #include "mimir/search/match_tree/nodes/numeric_constraint.hpp"
 
-namespace mimir::match_tree
+namespace mimir::search::match_tree
 {
 
 template<HasConjunctiveCondition E>

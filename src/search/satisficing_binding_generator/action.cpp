@@ -21,7 +21,7 @@
 #include "mimir/search/satisficing_binding_generators/action.hpp"
 #include "mimir/search/satisficing_binding_generators/base_impl.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 
 ActionSatisficingBindingGenerator::ActionSatisficingBindingGenerator(Action action,

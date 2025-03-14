@@ -19,14 +19,14 @@
 
 namespace mimir::datasets
 {
-KnowledgeBase::KnowledgeBase(GeneralizedSearchContext contexts, const Options& options) :
+KnowledgeBase::KnowledgeBase(search::GeneralizedSearchContext contexts, const Options& options) :
     m_state_space(contexts, options.state_space_options),
     m_tuple_graphs(options.tuple_graph_options ? std::optional<TupleGraphCollection>(TupleGraphCollection(m_state_space, options.tuple_graph_options.value())) :
                                                  std::nullopt)
 {
 }
 
-std::unique_ptr<KnowledgeBase> KnowledgeBase::create(GeneralizedSearchContext contexts, const Options& options)
+std::unique_ptr<KnowledgeBase> KnowledgeBase::create(search::GeneralizedSearchContext contexts, const Options& options)
 {
     return std::make_unique<KnowledgeBase>(contexts, options);
 }

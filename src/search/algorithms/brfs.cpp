@@ -32,7 +32,7 @@
 
 #include <deque>
 
-namespace mimir
+namespace mimir::search
 {
 
 /**

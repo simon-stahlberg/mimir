@@ -21,7 +21,7 @@ namespace mimir::dl
 {
 
 template<FeatureCategory D>
-Denotation<D> DenotationRepository<D>::insert(Constructor<D> constructor, State state, const DenotationImpl<D>& denotation)
+Denotation<D> DenotationRepository<D>::insert(Constructor<D> constructor, search::State state, const DenotationImpl<D>& denotation)
 {
     const auto [it, inserted] = m_storage.insert(denotation);
 
@@ -33,7 +33,7 @@ Denotation<D> DenotationRepository<D>::insert(Constructor<D> constructor, State 
 }
 
 template<FeatureCategory D>
-Denotation<D> DenotationRepository<D>::get_if(Constructor<D> constructor, State state) const
+Denotation<D> DenotationRepository<D>::get_if(Constructor<D> constructor, search::State state) const
 {
     auto it = m_cached_dynamic_denotations.find(Key { constructor, state });
 

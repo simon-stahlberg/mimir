@@ -25,7 +25,7 @@
 #include <ostream>
 #include <vector>
 
-namespace mimir
+namespace mimir::search
 {
 
 class IWAlgorithmStatistics
@@ -66,8 +66,7 @@ using IWAlgorithmStatisticsList = std::vector<IWAlgorithmStatistics>;
 
 inline std::ostream& operator<<(std::ostream& os, const IWAlgorithmStatistics& statistics)
 {
-    os << "[IW] Search time: " << statistics.get_search_time_ms().count() << "ms"
-       << "\n"
+    os << "[IW] Search time: " << statistics.get_search_time_ms().count() << "ms" << "\n"
        << "[IW] Effective width: " << statistics.get_effective_width() << "\n"
        << "[IW] Number of generated states: " << statistics.get_brfs_statistics_by_arity().back().get_num_generated() << "\n"
        << "[IW] Number of expanded states: " << statistics.get_brfs_statistics_by_arity().back().get_num_expanded() << "\n"

@@ -25,7 +25,7 @@
 #include <array>
 #include <string>
 
-namespace mimir
+namespace mimir::search
 {
 
 /// @brief TupleIndexMapper defines a perfect hash function mapping tuples of atom indices to a tuple index.

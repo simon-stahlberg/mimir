@@ -21,7 +21,7 @@
 #include "mimir/search/match_tree/declarations.hpp"
 #include "mimir/search/match_tree/node_splitters/base.hpp"
 
-namespace mimir::match_tree
+namespace mimir::search::match_tree
 {
 
 template<HasConjunctiveCondition E>

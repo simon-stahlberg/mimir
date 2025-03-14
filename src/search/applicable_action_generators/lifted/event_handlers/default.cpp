@@ -22,7 +22,7 @@
 
 #include <iostream>
 
-namespace mimir
+namespace mimir::search
 {
 void DefaultLiftedApplicableActionGeneratorEventHandler::on_start_generating_applicable_actions_impl() const
 {  //

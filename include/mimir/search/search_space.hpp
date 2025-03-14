@@ -22,7 +22,7 @@
 #include "mimir/search/search_node.hpp"
 #include "mimir/search/state_repository.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 
 /// @brief Compute the sequence of ground actions that generates the state_trajectory starting from the start_state.

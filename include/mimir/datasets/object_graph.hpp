@@ -42,7 +42,7 @@ namespace mimir::datasets
 /// @param mark_true_goal_literals represents whether literals that are true should have a special color.
 /// @return a vertex colored graph that precisely represents the given state.
 extern graphs::StaticVertexColoredDigraph
-create_object_graph(State state, const ProblemImpl& problem, const GeneralizedColorFunction& color_function, bool mark_true_goal_literals = false);
+create_object_graph(search::State state, const ProblemImpl& problem, const GeneralizedColorFunction& color_function, bool mark_true_goal_literals = false);
 
 }
 

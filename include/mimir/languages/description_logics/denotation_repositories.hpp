@@ -38,14 +38,14 @@ private:
     // Store denotations uniquely.
     DenotationImplSet<D> m_storage;
 
-    using Key = std::pair<Constructor<D>, State>;
+    using Key = std::pair<Constructor<D>, search::State>;
 
     std::unordered_map<Key, Denotation<D>, loki::Hash<Key>, loki::EqualTo<Key>> m_cached_dynamic_denotations;
 
 public:
-    Denotation<D> insert(Constructor<D> constructor, State state, const DenotationImpl<D>& denotation);
+    Denotation<D> insert(Constructor<D> constructor, search::State state, const DenotationImpl<D>& denotation);
 
-    Denotation<D> get_if(Constructor<D> constructor, State state) const;
+    Denotation<D> get_if(Constructor<D> constructor, search::State state) const;
 };
 
 /// @brief Repository for managing denotations.

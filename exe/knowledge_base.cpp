@@ -20,7 +20,8 @@
 #include <fstream>
 #include <iostream>
 
-using namespace mimir;
+using namespace mimir::datasets;
+using namespace mimir::search;
 
 int main(int argc, char** argv)
 {
@@ -33,14 +34,14 @@ int main(int argc, char** argv)
     const auto domain_file_path = fs::path { argv[1] };
     const auto problems_directory = fs::path { argv[2] };
 
-    auto state_space_options = datasets::GeneralizedStateSpace::Options();
+    auto state_space_options = GeneralizedStateSpace::Options();
     state_space_options.problem_options.symmetry_pruning = true;
 
-    auto tuple_graph_options = datasets::TupleGraphCollection::Options();
+    auto tuple_graph_options = TupleGraphCollection::Options();
     tuple_graph_options.width = 1;
 
-    auto kb = datasets::KnowledgeBase::create(GeneralizedSearchContext(domain_file_path, problems_directory),
-                                              datasets::KnowledgeBase::Options(state_space_options, tuple_graph_options));
+    auto kb =
+        KnowledgeBase::create(GeneralizedSearchContext(domain_file_path, problems_directory), KnowledgeBase::Options(state_space_options, tuple_graph_options));
     const auto& generalized_state_space = kb->get_generalized_state_space();
 
     for (size_t i = 0; i < generalized_state_space.get_problem_graphs().size(); ++i)

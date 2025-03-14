@@ -22,7 +22,7 @@
 #include "mimir/formalism/ground_literal.hpp"
 #include "mimir/search/state.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 
 DenseState::DenseState(State state)

@@ -27,7 +27,7 @@
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/requirements.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 
 /// @brief `BlindHeuristic` returns 0 iff a state is a goal and otherwise, a non-zero value that is as large as possible.

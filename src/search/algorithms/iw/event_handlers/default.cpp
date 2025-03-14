@@ -21,7 +21,7 @@
 #include "mimir/search/plan.hpp"
 #include "mimir/search/state.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 void DefaultIWAlgorithmEventHandler::on_start_search_impl(State initial_state) const {}
 

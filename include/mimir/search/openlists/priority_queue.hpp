@@ -22,7 +22,7 @@
 
 #include <queue>
 
-namespace mimir
+namespace mimir::search
 {
 
 /**

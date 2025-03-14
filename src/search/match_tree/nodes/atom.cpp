@@ -22,7 +22,7 @@
 #include "mimir/formalism/ground_axiom.hpp"
 #include "mimir/search/dense_state.hpp"
 
-namespace mimir::match_tree
+namespace mimir::search::match_tree
 {
 
 template<HasConjunctiveCondition E, FluentOrDerived P>

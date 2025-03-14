@@ -37,7 +37,7 @@ namespace mimir::graphs
 
 /// @typedef ProblemVertex
 /// @brief `ProblemVertex` encapsulates information about a vertex in a `ProblemGraph`
-using ProblemVertex = Vertex<Index, State>;
+using ProblemVertex = Vertex<Index, search::State>;
 using ProblemVertexList = std::vector<ProblemVertex>;
 
 /// @brief Get the index of the corresponding `ClassVertex` in the `GeneralizedStateSpace`.
@@ -48,7 +48,7 @@ inline Index get_class_vertex_index(const ProblemVertex& vertex) { return vertex
 /// @brief Get the `State` of the given `ProblemVertex`.
 /// @param vertex is a `ProblemVertex`.
 /// @return the `State` of the given `ProblemVertex` in the `ProblemGraph`.
-inline State get_state(const ProblemVertex& vertex) { return vertex.get_property<1>(); }
+inline search::State get_state(const ProblemVertex& vertex) { return vertex.get_property<1>(); }
 
 /// @typedef ProblemEdge
 /// @brief `ProblemEdge` encapsulates information about an edge in a `ProblemGraph`.
@@ -183,7 +183,7 @@ namespace mimir::datasets
 class GeneralizedStateSpace
 {
 private:
-    GeneralizedSearchContext m_context;  ///< The search contexts, possibly filtered and sorted.
+    search::GeneralizedSearchContext m_context;  ///< The search contexts, possibly filtered and sorted.
 
     graphs::ProblemGraphList m_problem_graphs;  ///< The child-level graphs.
 
@@ -229,13 +229,13 @@ public:
      * Constructors
      */
 
-    GeneralizedStateSpace(GeneralizedSearchContext context, const Options& options = Options());
+    GeneralizedStateSpace(search::GeneralizedSearchContext context, const Options& options = Options());
 
     /**
      * Getters
      */
 
-    const GeneralizedSearchContext& get_generalized_search_context() const;
+    const search::GeneralizedSearchContext& get_generalized_search_context() const;
 
     const graphs::ProblemGraphList& get_problem_graphs() const;
 

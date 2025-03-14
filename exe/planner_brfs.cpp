@@ -22,6 +22,7 @@
 #include <iostream>
 
 using namespace mimir;
+using namespace mimir::search;
 
 int main(int argc, char** argv)
 {

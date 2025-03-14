@@ -25,7 +25,7 @@
 #include "mimir/search/match_tree/construction_helpers/inverse_nodes/generator.hpp"
 #include "mimir/search/match_tree/construction_helpers/inverse_nodes/numeric_constraint.hpp"
 
-namespace mimir::match_tree
+namespace mimir::search::match_tree
 {
 
 template<HasConjunctiveCondition E>

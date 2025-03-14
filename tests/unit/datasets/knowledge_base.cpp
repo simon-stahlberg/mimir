@@ -34,7 +34,7 @@ TEST(MimirTests, DatasetsKnowledgeBaseConstructorTest)
     // The spanner is at location 2.
     const auto problem2_file = fs::path(std::string(DATA_DIR) + "spanner/p-1-1-2-1(2).pddl");
 
-    auto context = GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem1_file, problem2_file });
+    auto context = search::GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem1_file, problem2_file });
 
     {
         /* Without symmetry reduction */

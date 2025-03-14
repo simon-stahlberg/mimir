@@ -26,7 +26,7 @@ namespace mimir::dl
  * RefinementStateListPruningFunction
  */
 
-RefinementStateListPruningFunction::RefinementStateListPruningFunction(ProblemMap<StateList> state_partitioning) :
+RefinementStateListPruningFunction::RefinementStateListPruningFunction(ProblemMap<search::StateList> state_partitioning) :
     RefinementPruningFunction(),
     m_state_partitioning(state_partitioning),
     m_repositories()

@@ -27,7 +27,7 @@
 
 #include <memory>
 
-namespace mimir
+namespace mimir::search
 {
 
 class DeleteRelaxedProblemExplorator

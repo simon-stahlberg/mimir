@@ -20,7 +20,7 @@
 #include "mimir/formalism/action.hpp"
 #include "mimir/search/satisficing_binding_generators/base_impl.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 
 AxiomSatisficingBindingGenerator::AxiomSatisficingBindingGenerator(Axiom axiom,

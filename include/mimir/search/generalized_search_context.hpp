@@ -23,7 +23,7 @@
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/search_context.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 
 class GeneralizedSearchContext

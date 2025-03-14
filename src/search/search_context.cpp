@@ -23,7 +23,7 @@
 #include "mimir/search/delete_relaxed_problem_explorator.hpp"
 #include "mimir/search/state_repository.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 
 SearchContext::SearchContext(const fs::path& domain_filepath, const fs::path& problem_filepath, const Options& options) :

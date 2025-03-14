@@ -23,7 +23,7 @@
 
 #include <iostream>
 
-namespace mimir
+namespace mimir::search
 {
 void DefaultGroundedApplicableActionGeneratorEventHandler::on_start_ground_action_instantiation_impl() const
 {

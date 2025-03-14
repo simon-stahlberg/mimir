@@ -29,7 +29,7 @@
 #include "mimir/search/metric.hpp"
 #include "mimir/search/search_context.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 
 StateRepositoryImpl::StateRepositoryImpl(AxiomEvaluator axiom_evaluator) :

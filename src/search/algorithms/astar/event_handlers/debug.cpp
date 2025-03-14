@@ -22,7 +22,7 @@
 #include "mimir/search/plan.hpp"
 #include "mimir/search/state.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 void DebugAStarAlgorithmEventHandler::on_expand_state_impl(State state) const
 {

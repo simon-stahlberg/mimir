@@ -20,7 +20,7 @@
 #include "mimir/formalism/ground_action.hpp"
 #include "mimir/formalism/ground_axiom.hpp"
 
-namespace mimir::match_tree
+namespace mimir::search::match_tree
 {
 template<HasConjunctiveCondition E>
 InverseElementGeneratorNode_Perfect<E>::InverseElementGeneratorNode_Perfect(const IInverseNode<E>* parent, std::span<const E*> elements) :

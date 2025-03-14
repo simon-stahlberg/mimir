@@ -33,8 +33,10 @@ TEST(MimirTests, GraphsVertexListGraphTest)
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
 
-    const auto generalized_state_space = datasets::GeneralizedStateSpace(
-        GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem_file }, SearchContext::Options(SearchContext::SearchMode::GROUNDED)));
+    const auto generalized_state_space =
+        datasets::GeneralizedStateSpace(search::GeneralizedSearchContext(domain_file,
+                                                                         std::vector<fs::path> { problem_file },
+                                                                         search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
     auto graph = graphs::DirectionTaggedType(generalized_state_space.get_graph(), graphs::Forward());
 
     EXPECT_EQ(num_vertices(graph), 28);
@@ -51,8 +53,10 @@ TEST(MimirTests, GraphsIncidenceGraphTest)
 {
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
-    const auto generalized_state_space = datasets::GeneralizedStateSpace(
-        GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem_file }, SearchContext::Options(SearchContext::SearchMode::GROUNDED)));
+    const auto generalized_state_space =
+        datasets::GeneralizedStateSpace(search::GeneralizedSearchContext(domain_file,
+                                                                         std::vector<fs::path> { problem_file },
+                                                                         search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
     const auto& class_graph = generalized_state_space.get_graph();
     auto graph = graphs::DirectionTaggedType(generalized_state_space.get_graph(), graphs::Forward());
 
@@ -84,8 +88,10 @@ TEST(MimirTests, GraphsStrongComponentsTest)
     {
         const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
-        const auto generalized_state_space = datasets::GeneralizedStateSpace(
-            GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem_file }, SearchContext::Options(SearchContext::SearchMode::GROUNDED)));
+        const auto generalized_state_space =
+            datasets::GeneralizedStateSpace(search::GeneralizedSearchContext(domain_file,
+                                                                             std::vector<fs::path> { problem_file },
+                                                                             search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
         const auto& class_graph = generalized_state_space.get_graph();
         auto graph = graphs::DirectionTaggedType(class_graph, graphs::Forward());
 
@@ -99,8 +105,10 @@ TEST(MimirTests, GraphsStrongComponentsTest)
     {
         const auto domain_file = fs::path(std::string(DATA_DIR) + "spanner/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "spanner/test_problem.pddl");
-        const auto generalized_state_space = datasets::GeneralizedStateSpace(
-            GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem_file }, SearchContext::Options(SearchContext::SearchMode::GROUNDED)));
+        const auto generalized_state_space =
+            datasets::GeneralizedStateSpace(search::GeneralizedSearchContext(domain_file,
+                                                                             std::vector<fs::path> { problem_file },
+                                                                             search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
         const auto& class_graph = generalized_state_space.get_graph();
         auto graph = graphs::DirectionTaggedType(class_graph, graphs::Forward());
 
@@ -127,8 +135,10 @@ TEST(MimirTests, GraphsDijkstraShortestPathTest)
     {
         const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
-        const auto generalized_state_space = datasets::GeneralizedStateSpace(
-            GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem_file }, SearchContext::Options(SearchContext::SearchMode::GROUNDED)));
+        const auto generalized_state_space =
+            datasets::GeneralizedStateSpace(search::GeneralizedSearchContext(domain_file,
+                                                                             std::vector<fs::path> { problem_file },
+                                                                             search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
         const auto& class_graph = generalized_state_space.get_graph();
         auto graph = graphs::DirectionTaggedType(class_graph, graphs::Forward());
 
@@ -147,8 +157,10 @@ TEST(MimirTests, GraphsDijkstraShortestPathTest)
     {
         const auto domain_file = fs::path(std::string(DATA_DIR) + "spanner/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "spanner/test_problem.pddl");
-        const auto generalized_state_space = datasets::GeneralizedStateSpace(
-            GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem_file }, SearchContext::Options(SearchContext::SearchMode::GROUNDED)));
+        const auto generalized_state_space =
+            datasets::GeneralizedStateSpace(search::GeneralizedSearchContext(domain_file,
+                                                                             std::vector<fs::path> { problem_file },
+                                                                             search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
         const auto& class_graph = generalized_state_space.get_graph();
         auto graph = graphs::DirectionTaggedType(class_graph, graphs::Backward());
 
@@ -169,8 +181,10 @@ TEST(MimirTests, GraphsBreadthFirstSearchTest)
     {
         const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
-        const auto generalized_state_space = datasets::GeneralizedStateSpace(
-            GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem_file }, SearchContext::Options(SearchContext::SearchMode::GROUNDED)));
+        const auto generalized_state_space =
+            datasets::GeneralizedStateSpace(search::GeneralizedSearchContext(domain_file,
+                                                                             std::vector<fs::path> { problem_file },
+                                                                             search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
         const auto& class_graph = generalized_state_space.get_graph();
         auto graph = graphs::DirectionTaggedType(class_graph, graphs::Forward());
 
@@ -188,8 +202,10 @@ TEST(MimirTests, GraphsBreadthFirstSearchTest)
     {
         const auto domain_file = fs::path(std::string(DATA_DIR) + "spanner/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "spanner/test_problem.pddl");
-        const auto generalized_state_space = datasets::GeneralizedStateSpace(
-            GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem_file }, SearchContext::Options(SearchContext::SearchMode::GROUNDED)));
+        const auto generalized_state_space =
+            datasets::GeneralizedStateSpace(search::GeneralizedSearchContext(domain_file,
+                                                                             std::vector<fs::path> { problem_file },
+                                                                             search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
         const auto& class_graph = generalized_state_space.get_graph();
         auto graph = graphs::DirectionTaggedType(class_graph, graphs::Backward());
 
@@ -207,8 +223,10 @@ TEST(MimirTests, GraphsFloydWarshallAllPairsShortestPathTest)
     {
         const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
-        const auto generalized_state_space = datasets::GeneralizedStateSpace(
-            GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem_file }, SearchContext::Options(SearchContext::SearchMode::GROUNDED)));
+        const auto generalized_state_space =
+            datasets::GeneralizedStateSpace(search::GeneralizedSearchContext(domain_file,
+                                                                             std::vector<fs::path> { problem_file },
+                                                                             search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
         const auto& class_graph = generalized_state_space.get_graph();
         auto graph = graphs::DirectionTaggedType(class_graph, graphs::Forward());
 
@@ -236,8 +254,10 @@ TEST(MimirTests, GraphsFloydWarshallAllPairsShortestPathTest)
     {
         const auto domain_file = fs::path(std::string(DATA_DIR) + "spanner/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "spanner/test_problem.pddl");
-        const auto generalized_state_space = datasets::GeneralizedStateSpace(
-            GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem_file }, SearchContext::Options(SearchContext::SearchMode::GROUNDED)));
+        const auto generalized_state_space =
+            datasets::GeneralizedStateSpace(search::GeneralizedSearchContext(domain_file,
+                                                                             std::vector<fs::path> { problem_file },
+                                                                             search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
         const auto& class_graph = generalized_state_space.get_graph();
         auto graph = graphs::DirectionTaggedType(class_graph, graphs::Backward());
 

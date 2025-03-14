@@ -25,7 +25,7 @@
 #include <array>
 #include <memory>
 
-namespace mimir
+namespace mimir::search
 {
 
 /// @brief StateTupleIndexGenerator encapsulates iterator logic to generate

@@ -25,7 +25,7 @@
 #include <variant>
 #include <vector>
 
-namespace mimir::match_tree
+namespace mimir::search::match_tree
 {
 
 /**

@@ -20,7 +20,7 @@
 
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 
 class ProblemGoalCounter : public IGoalStrategy

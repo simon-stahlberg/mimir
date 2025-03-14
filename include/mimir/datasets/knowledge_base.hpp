@@ -56,9 +56,9 @@ public:
      * Constructors
      */
 
-    KnowledgeBase(GeneralizedSearchContext contexts, const Options& options = Options());
+    KnowledgeBase(search::GeneralizedSearchContext contexts, const Options& options = Options());
 
-    static std::unique_ptr<KnowledgeBase> create(GeneralizedSearchContext contexts, const Options& options = Options());
+    static std::unique_ptr<KnowledgeBase> create(search::GeneralizedSearchContext contexts, const Options& options = Options());
 
     /**
      * Getters

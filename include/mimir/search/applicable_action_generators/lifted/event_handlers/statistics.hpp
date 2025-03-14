@@ -22,7 +22,7 @@
 #include <ostream>
 #include <vector>
 
-namespace mimir
+namespace mimir::search
 {
 
 class LiftedApplicableActionGeneratorStatistics

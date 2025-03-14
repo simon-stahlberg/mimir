@@ -25,7 +25,7 @@
 #include <variant>
 #include <vector>
 
-namespace mimir::match_tree
+namespace mimir::search::match_tree
 {
 extern std::unordered_map<SplitMetricEnum, std::string> split_metric_enum_to_string;
 extern const std::string& to_string(SplitMetricEnum split_metric);

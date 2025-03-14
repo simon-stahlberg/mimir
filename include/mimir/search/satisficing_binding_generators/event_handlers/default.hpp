@@ -21,7 +21,7 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/satisficing_binding_generators/event_handlers/interface.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 
 class DefaultSatisficingBindingGeneratorEventHandler : public ISatisficingBindingGeneratorEventHandler

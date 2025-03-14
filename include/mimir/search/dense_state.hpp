@@ -24,7 +24,7 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 
 /// @brief `DenseState` is an intermediate representation of a `StateImpl`

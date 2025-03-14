@@ -17,7 +17,7 @@
 
 #include "mimir/search/match_tree/construction_helpers/split_metrics.hpp"
 
-namespace mimir::match_tree
+namespace mimir::search::match_tree
 {
 
 std::unordered_map<SplitMetricEnum, std::string> split_metric_enum_to_string = {

@@ -33,7 +33,7 @@
 
 using namespace std::string_literals;
 
-namespace mimir
+namespace mimir::search
 {
 
 LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem) :

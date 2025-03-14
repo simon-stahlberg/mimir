@@ -25,7 +25,7 @@
 
 #include <concepts>
 
-namespace mimir
+namespace mimir::search
 {
 
 struct DynamicSize

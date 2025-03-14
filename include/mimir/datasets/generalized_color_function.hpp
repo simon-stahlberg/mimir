@@ -49,7 +49,7 @@ public:
 
     /// @brief Get unique color of goal literal.
     template<StaticOrFluentOrDerived P>
-    graphs::Color get_color(GroundLiteral<P> literal, size_t pos, State state, const ProblemImpl& problem, bool mark_true_goal_literal = false) const;
+    graphs::Color get_color(GroundLiteral<P> literal, size_t pos, search::State state, const ProblemImpl& problem, bool mark_true_goal_literal = false) const;
 
     /// @brief Get name of color.
     const std::string& get_color_name(graphs::Color color) const;

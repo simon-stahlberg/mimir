@@ -22,7 +22,7 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 
 extern ContinuousCost compute_initial_state_metric_value(const ProblemImpl& problem);

@@ -20,7 +20,7 @@
 
 #include "mimir/search/match_tree/nodes/interface.hpp"
 
-namespace mimir::match_tree
+namespace mimir::search::match_tree
 {
 template<typename Derived_, HasConjunctiveCondition E>
 class ElementGeneratorNodeBase : public INode<E>

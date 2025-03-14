@@ -22,7 +22,7 @@
 
 #include <iostream>
 
-namespace mimir
+namespace mimir::search
 {
 
 /**

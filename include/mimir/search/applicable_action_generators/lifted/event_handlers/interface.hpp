@@ -22,7 +22,7 @@
 #include "mimir/search/applicable_action_generators/lifted/event_handlers/statistics.hpp"
 #include "mimir/search/declarations.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 template<typename T>
 class MatchTree;

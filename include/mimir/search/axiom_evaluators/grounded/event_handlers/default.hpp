@@ -20,7 +20,7 @@
 
 #include "mimir/search/axiom_evaluators/grounded/event_handlers/interface.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 
 class DefaultGroundedAxiomEvaluatorEventHandler : public GroundedAxiomEvaluatorEventHandlerBase<DefaultGroundedAxiomEvaluatorEventHandler>

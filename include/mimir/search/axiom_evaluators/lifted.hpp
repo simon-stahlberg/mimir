@@ -24,7 +24,7 @@
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/satisficing_binding_generators/axiom.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 
 class LiftedAxiomEvaluator : public IAxiomEvaluator

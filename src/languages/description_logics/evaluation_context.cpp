@@ -19,7 +19,7 @@
 
 namespace mimir::dl
 {
-EvaluationContext::EvaluationContext(State state,
+EvaluationContext::EvaluationContext(search::State state,
                                      Problem problem,
                                      Denotations<Concept, Role, Boolean, Numerical>& ref_builders,
                                      DenotationRepositories<Concept, Role, Boolean, Numerical>& ref_repositories) :
@@ -30,7 +30,7 @@ EvaluationContext::EvaluationContext(State state,
 {
 }
 
-State EvaluationContext::get_state() const { return m_state; }
+search::State EvaluationContext::get_state() const { return m_state; }
 
 Problem EvaluationContext::get_problem() const { return m_problem; }
 

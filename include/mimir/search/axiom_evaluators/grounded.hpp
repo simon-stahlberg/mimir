@@ -23,7 +23,7 @@
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/match_tree/match_tree.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 
 class GroundedAxiomEvaluator : public IAxiomEvaluator

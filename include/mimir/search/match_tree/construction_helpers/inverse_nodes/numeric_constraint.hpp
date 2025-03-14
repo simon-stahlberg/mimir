@@ -21,7 +21,7 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/match_tree/construction_helpers/inverse_nodes/interface.hpp"
 
-namespace mimir::match_tree
+namespace mimir::search::match_tree
 {
 template<typename Derived_, HasConjunctiveCondition E>
 class InverseNumericConstraintSelectorNodeBase : public IInverseNode<E>

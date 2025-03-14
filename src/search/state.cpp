@@ -24,7 +24,7 @@
 #include <ostream>
 #include <tuple>
 
-namespace mimir
+namespace mimir::search
 {
 
 /* State */
@@ -138,12 +138,16 @@ FlatExternalPtr<const FlatIndexList>& StateImpl::get_derived_atoms() { return m_
 
 FlatExternalPtr<const FlatDoubleList>& StateImpl::get_numeric_variables() { return m_numeric_variables; }
 
+}
+
+namespace mimir
+{
 /**
  * Pretty printing
  */
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<State, const ProblemImpl&>& data)
+std::ostream& operator<<(std::ostream& os, const std::tuple<search::State, const ProblemImpl&>& data)
 {
     const auto& [state, problem] = data;
 

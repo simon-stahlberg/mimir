@@ -60,7 +60,7 @@ private:
     const ProblemImpl& m_problem;
     const graphs::ProblemGraph& m_problem_graph;  ///< child-level problem graph.
     const graphs::ClassGraph& m_class_graph;      ///< top-level class graph for convenience.
-    TupleIndexMapper m_index_mapper;
+    search::TupleIndexMapper m_index_mapper;
     graphs::InternalTupleGraph m_graph;
 
     IndexGroupedVector<const Index> m_v_idxs_grouped_by_distance;
@@ -70,7 +70,7 @@ public:
     TupleGraph(const ProblemImpl& problem,
                const graphs::ProblemGraph& problem_graph,
                const graphs::ClassGraph& class_graph,
-               TupleIndexMapper index_mapper,
+               search::TupleIndexMapper index_mapper,
                graphs::InternalTupleGraph graph,
                IndexGroupedVector<const Index> vertices_grouped_by_distance,
                IndexGroupedVector<const Index> problem_vertices_grouped_by_distance);
@@ -78,7 +78,7 @@ public:
     const ProblemImpl& get_problem() const;
     const graphs::ProblemGraph& get_problem_graph() const;
     const graphs::ClassGraph& get_class_graph() const;
-    const TupleIndexMapper& get_index_mapper() const;
+    const search::TupleIndexMapper& get_index_mapper() const;
     const graphs::InternalTupleGraph& get_graph() const;
     const IndexGroupedVector<const Index>& get_vertices_grouped_by_distance() const;
     const IndexGroupedVector<const Index>& get_problem_vertices_grouped_by_distance() const;

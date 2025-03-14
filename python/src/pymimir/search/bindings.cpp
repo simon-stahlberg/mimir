@@ -4,6 +4,7 @@
 #include <nanobind/trampoline.h>
 
 using namespace mimir;
+using namespace mimir::search;
 
 class IPyHeuristic : public IHeuristic
 {

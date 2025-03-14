@@ -17,7 +17,7 @@
 
 #include "mimir/search/algorithms/strategies/pruning_strategy.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 
 /* NoStatePruning */

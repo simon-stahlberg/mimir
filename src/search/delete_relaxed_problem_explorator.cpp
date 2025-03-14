@@ -29,7 +29,7 @@
 #include "mimir/search/dense_state.hpp"
 #include "mimir/search/match_tree/match_tree.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 
 DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem) :

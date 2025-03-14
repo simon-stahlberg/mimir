@@ -163,8 +163,8 @@ struct SymmetriesData
     const GeneralizedColorFunction& color_function;
     CertificateSet equiv_classes;
     CertificateList per_state_equiv_class;
-    StateSet representative_states;
-    StateSet prunable_states;
+    search::StateSet representative_states;
+    search::StateSet prunable_states;
 
     explicit SymmetriesData(const GeneralizedColorFunction& color_function) :
         color_function(color_function),
@@ -177,7 +177,7 @@ struct SymmetriesData
 };
 
 /// @brief `SymmetryStatePruning` extends the brfs pruning strategy by additionally pruning symmetric states.
-class SymmetryStatePruning : public IPruningStrategy
+class SymmetryStatePruning : public search::IPruningStrategy
 {
 private:
     SymmetriesData& m_symm_data;
@@ -185,14 +185,14 @@ private:
 public:
     explicit SymmetryStatePruning(SymmetriesData& symm_data) : m_symm_data(symm_data) {}
 
-    bool test_prune_initial_state(State state) override { return false; }
-    bool test_prune_successor_state(State state, State succ_state, bool is_new_succ) override
+    bool test_prune_initial_state(search::State state) override { return false; }
+    bool test_prune_successor_state(search::State state, search::State succ_state, bool is_new_succ) override
     {
         return !is_new_succ || m_symm_data.prunable_states.contains(succ_state);
     }
 };
 
-class SymmetryReducedProblemGraphBrFSAlgorithmEventHandler : public BrFSAlgorithmEventHandlerBase<SymmetryReducedProblemGraphBrFSAlgorithmEventHandler>
+class SymmetryReducedProblemGraphBrFSAlgorithmEventHandler : public search::BrFSAlgorithmEventHandlerBase<SymmetryReducedProblemGraphBrFSAlgorithmEventHandler>
 {
 private:
     const GeneralizedStateSpace::Options::ProblemSpecific& m_options;
@@ -200,19 +200,19 @@ private:
     IndexSet& m_goal_vertices;
     SymmetriesData& m_symm_data;
 
-    StateMap<graphs::VertexIndex> m_state_to_vertex_index;
+    search::StateMap<graphs::VertexIndex> m_state_to_vertex_index;
 
     /* Implement AlgorithmEventHandlerBase interface */
     friend class BrFSAlgorithmEventHandlerBase<SymmetryReducedProblemGraphBrFSAlgorithmEventHandler>;
 
-    std::unique_ptr<const nauty_wrapper::Certificate> compute_certificate(State state)
+    std::unique_ptr<const nauty_wrapper::Certificate> compute_certificate(search::State state)
     {
         const auto object_graph = create_object_graph(state, *m_problem, m_symm_data.color_function, m_options.mark_true_goal_literals);
 
         return std::make_unique<const nauty_wrapper::Certificate>(nauty_wrapper::SparseGraph(object_graph).compute_certificate());
     }
 
-    void on_expand_state_impl(State state)
+    void on_expand_state_impl(search::State state)
     {
         if (!m_state_to_vertex_index.contains(state))
         {
@@ -220,9 +220,9 @@ private:
         }
     }
 
-    void on_expand_goal_state_impl(State state) { m_goal_vertices.insert(m_state_to_vertex_index.at(state)); }
+    void on_expand_goal_state_impl(search::State state) { m_goal_vertices.insert(m_state_to_vertex_index.at(state)); }
 
-    void on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state)
+    void on_generate_state_impl(search::State state, GroundAction action, ContinuousCost action_cost, search::State successor_state)
     {
         const auto source_v_idx = m_state_to_vertex_index.at(state);
 
@@ -261,13 +261,13 @@ private:
         }
     }
 
-    void on_generate_state_in_search_tree_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) {}
+    void on_generate_state_in_search_tree_impl(search::State state, GroundAction action, ContinuousCost action_cost, search::State successor_state) {}
 
-    void on_generate_state_not_in_search_tree_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) {}
+    void on_generate_state_not_in_search_tree_impl(search::State state, GroundAction action, ContinuousCost action_cost, search::State successor_state) {}
 
     void on_finish_g_layer_impl(uint32_t g_value, uint64_t num_expanded_states, uint64_t num_generated_states) {}
 
-    void on_start_search_impl(State start_state)
+    void on_start_search_impl(search::State start_state)
     {
         const auto v_idx = m_graph.add_vertex(graphs::VertexIndex(-1), start_state);
         m_state_to_vertex_index.emplace(start_state, v_idx);
@@ -292,7 +292,7 @@ private:
     {
     }
 
-    void on_solved_impl(const Plan& plan) {}
+    void on_solved_impl(const search::Plan& plan) {}
 
     void on_unsolvable_impl() {}
 
@@ -314,27 +314,27 @@ public:
     }
 };
 
-class ProblemGraphBrFSAlgorithmEventHandler : public BrFSAlgorithmEventHandlerBase<ProblemGraphBrFSAlgorithmEventHandler>
+class ProblemGraphBrFSAlgorithmEventHandler : public search::BrFSAlgorithmEventHandlerBase<ProblemGraphBrFSAlgorithmEventHandler>
 {
 private:
     const GeneralizedStateSpace::Options::ProblemSpecific& m_options;
     graphs::StaticProblemGraph& m_graph;
     IndexSet& m_goal_vertices;
 
-    StateMap<graphs::VertexIndex> m_state_to_vertex_index;
+    search::StateMap<graphs::VertexIndex> m_state_to_vertex_index;
 
     /* Implement AlgorithmEventHandlerBase interface */
-    friend class BrFSAlgorithmEventHandlerBase<ProblemGraphBrFSAlgorithmEventHandler>;
+    friend class search::BrFSAlgorithmEventHandlerBase<ProblemGraphBrFSAlgorithmEventHandler>;
 
-    void on_expand_state_impl(State state)
+    void on_expand_state_impl(search::State state)
     {
         if (!m_state_to_vertex_index.contains(state))
             m_state_to_vertex_index.emplace(state, m_graph.add_vertex(graphs::VertexIndex(-1), state));
     }
 
-    void on_expand_goal_state_impl(State state) { m_goal_vertices.insert(m_state_to_vertex_index.at(state)); }
+    void on_expand_goal_state_impl(search::State state) { m_goal_vertices.insert(m_state_to_vertex_index.at(state)); }
 
-    void on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state)
+    void on_generate_state_impl(search::State state, GroundAction action, ContinuousCost action_cost, search::State successor_state)
     {
         const auto source_vertex_index = m_state_to_vertex_index.at(state);
         const auto target_vertex_index = m_state_to_vertex_index.contains(successor_state) ? m_state_to_vertex_index.at(successor_state) :
@@ -343,13 +343,13 @@ private:
         m_graph.add_directed_edge(source_vertex_index, target_vertex_index, graphs::EdgeIndex(-1), action, action_cost);
     }
 
-    void on_generate_state_in_search_tree_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) {}
+    void on_generate_state_in_search_tree_impl(search::State state, GroundAction action, ContinuousCost action_cost, search::State successor_state) {}
 
-    void on_generate_state_not_in_search_tree_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) {}
+    void on_generate_state_not_in_search_tree_impl(search::State state, GroundAction action, ContinuousCost action_cost, search::State successor_state) {}
 
     void on_finish_g_layer_impl(uint32_t g_value, uint64_t num_expanded_states, uint64_t num_generated_states) {}
 
-    void on_start_search_impl(State start_state) {}
+    void on_start_search_impl(search::State start_state) {}
 
     void on_end_search_impl(uint64_t num_reached_fluent_atoms,
                             uint64_t num_reached_derived_atoms,
@@ -365,7 +365,7 @@ private:
     {
     }
 
-    void on_solved_impl(const Plan& plan) {}
+    void on_solved_impl(const search::Plan& plan) {}
 
     void on_unsolvable_impl() {}
 
@@ -386,7 +386,7 @@ public:
 };
 
 static std::optional<std::pair<ProblemStateSpace, CertificateList>>
-compute_problem_graph_with_symmetry_reduction(const SearchContext& context,
+compute_problem_graph_with_symmetry_reduction(const search::SearchContext& context,
                                               const GeneralizedColorFunction& color_function,
                                               const GeneralizedStateSpace::Options::ProblemSpecific& options)
 {
@@ -408,13 +408,13 @@ compute_problem_graph_with_symmetry_reduction(const SearchContext& context,
 
     auto symm_data = SymmetriesData(color_function);
 
-    auto goal_test = std::make_shared<ProblemGoal>(context.get_problem());
+    auto goal_test = std::make_shared<search::ProblemGoal>(context.get_problem());
     auto event_handler =
         std::make_shared<SymmetryReducedProblemGraphBrFSAlgorithmEventHandler>(context.get_problem(), options, graph, goal_vertices, symm_data, false);
     auto pruning_strategy = std::make_shared<SymmetryStatePruning>(symm_data);
     auto result = find_solution_brfs(context, state_repository->get_or_create_initial_state(), event_handler, goal_test, pruning_strategy, true);
 
-    if (result.status != EXHAUSTED)
+    if (result.status != search::EXHAUSTED)
     {
         return std::nullopt;  ///< ran out of resources.
     }
@@ -466,7 +466,7 @@ compute_problem_graph_with_symmetry_reduction(const SearchContext& context,
                           std::move(symm_data.per_state_equiv_class));
 }
 
-static std::optional<ProblemStateSpace> compute_problem_graph_without_symmetry_reduction(const SearchContext& context,
+static std::optional<ProblemStateSpace> compute_problem_graph_without_symmetry_reduction(const search::SearchContext& context,
                                                                                          const GeneralizedStateSpace::Options::ProblemSpecific& options)
 {
     const auto& problem = *context.get_problem();
@@ -485,12 +485,12 @@ static std::optional<ProblemStateSpace> compute_problem_graph_without_symmetry_r
     auto graph = graphs::StaticProblemGraph();
     auto goal_vertices = IndexSet {};
 
-    auto goal_test = std::make_shared<ProblemGoal>(context.get_problem());
+    auto goal_test = std::make_shared<search::ProblemGoal>(context.get_problem());
     auto event_handler = std::make_shared<ProblemGraphBrFSAlgorithmEventHandler>(context.get_problem(), options, graph, goal_vertices, false);
-    auto pruning_strategy = std::make_shared<DuplicateStatePruning>();
+    auto pruning_strategy = std::make_shared<search::DuplicateStatePruning>();
     auto result = find_solution_brfs(context, state_repository->get_or_create_initial_state(), event_handler, goal_test, pruning_strategy, true);
 
-    if (result.status != EXHAUSTED)
+    if (result.status != search::EXHAUSTED)
     {
         return std::nullopt;  ///< ran out of resources.
     }
@@ -541,12 +541,12 @@ static std::optional<ProblemStateSpace> compute_problem_graph_without_symmetry_r
                              std::move(action_goal_distances));
 }
 
-static std::vector<std::tuple<ProblemStateSpace, CertificateList, SearchContext>>
-compute_problem_graphs_with_symmetry_reduction(const GeneralizedSearchContext& context, const GeneralizedStateSpace::Options::ProblemSpecific& options)
+static std::vector<std::tuple<ProblemStateSpace, CertificateList, search::SearchContext>>
+compute_problem_graphs_with_symmetry_reduction(const search::GeneralizedSearchContext& context, const GeneralizedStateSpace::Options::ProblemSpecific& options)
 {
     auto color_function = GeneralizedColorFunction(context.get_generalized_problem());
 
-    auto problem_graphs = std::vector<std::tuple<ProblemStateSpace, CertificateList, SearchContext>> {};
+    auto problem_graphs = std::vector<std::tuple<ProblemStateSpace, CertificateList, search::SearchContext>> {};
     for (const auto& search_context : context.get_search_contexts())
     {
         auto result = compute_problem_graph_with_symmetry_reduction(search_context, color_function, options);
@@ -562,10 +562,11 @@ compute_problem_graphs_with_symmetry_reduction(const GeneralizedSearchContext& c
     return problem_graphs;
 }
 
-static std::vector<std::pair<ProblemStateSpace, SearchContext>>
-compute_problem_graphs_without_symmetry_reduction(const GeneralizedSearchContext& context, const GeneralizedStateSpace::Options::ProblemSpecific& options)
+static std::vector<std::pair<ProblemStateSpace, search::SearchContext>>
+compute_problem_graphs_without_symmetry_reduction(const search::GeneralizedSearchContext& context,
+                                                  const GeneralizedStateSpace::Options::ProblemSpecific& options)
 {
-    auto problem_graphs = std::vector<std::pair<ProblemStateSpace, SearchContext>> {};
+    auto problem_graphs = std::vector<std::pair<ProblemStateSpace, search::SearchContext>> {};
     for (const auto& search_context : context.get_search_contexts())
     {
         auto result = compute_problem_graph_without_symmetry_reduction(search_context, options);
@@ -581,8 +582,8 @@ compute_problem_graphs_without_symmetry_reduction(const GeneralizedSearchContext
     return problem_graphs;
 }
 
-static std::tuple<graphs::ProblemGraphList, graphs::ClassGraph, GeneralizedSearchContext>
-compute_problem_and_class_state_spaces_with_symmetry_reduction(const GeneralizedSearchContext& context, const GeneralizedStateSpace::Options& options)
+static std::tuple<graphs::ProblemGraphList, graphs::ClassGraph, search::GeneralizedSearchContext>
+compute_problem_and_class_state_spaces_with_symmetry_reduction(const search::GeneralizedSearchContext& context, const GeneralizedStateSpace::Options& options)
 {
     auto result = compute_problem_graphs_with_symmetry_reduction(context, options.problem_options);
 
@@ -598,7 +599,7 @@ compute_problem_and_class_state_spaces_with_symmetry_reduction(const Generalized
      */
 
     auto final_problems = ProblemList {};
-    auto final_search_contexts = SearchContextList {};
+    auto final_search_contexts = search::SearchContextList {};
     auto final_problem_graphs = graphs::ProblemGraphList {};
 
     auto class_graph = graphs::StaticClassGraph {};
@@ -710,11 +711,12 @@ compute_problem_and_class_state_spaces_with_symmetry_reduction(const Generalized
 
     return { std::move(final_problem_graphs),
              graphs::ClassGraph(std::move(class_graph)),
-             GeneralizedSearchContext(GeneralizedProblem(context.get_generalized_problem().get_domain(), final_problems), final_search_contexts) };
+             search::GeneralizedSearchContext(GeneralizedProblem(context.get_generalized_problem().get_domain(), final_problems), final_search_contexts) };
 }
 
-static std::tuple<graphs::ProblemGraphList, graphs::ClassGraph, GeneralizedSearchContext>
-compute_problem_and_class_state_spaces_without_symmetry_reduction(const GeneralizedSearchContext& context, const GeneralizedStateSpace::Options& options)
+static std::tuple<graphs::ProblemGraphList, graphs::ClassGraph, search::GeneralizedSearchContext>
+compute_problem_and_class_state_spaces_without_symmetry_reduction(const search::GeneralizedSearchContext& context,
+                                                                  const GeneralizedStateSpace::Options& options)
 {
     auto result = compute_problem_graphs_without_symmetry_reduction(context, options.problem_options);
 
@@ -730,7 +732,7 @@ compute_problem_and_class_state_spaces_without_symmetry_reduction(const Generali
      */
 
     auto final_problems = ProblemList {};
-    auto final_search_contexts = SearchContextList {};
+    auto final_search_contexts = search::SearchContextList {};
     auto final_problem_graphs = graphs::ProblemGraphList {};
 
     auto class_graph = graphs::StaticClassGraph {};
@@ -793,10 +795,10 @@ compute_problem_and_class_state_spaces_without_symmetry_reduction(const Generali
 
     return { std::move(final_problem_graphs),
              graphs::ClassGraph(std::move(class_graph)),
-             GeneralizedSearchContext(GeneralizedProblem(context.get_generalized_problem().get_domain(), final_problems), final_search_contexts) };
+             search::GeneralizedSearchContext(GeneralizedProblem(context.get_generalized_problem().get_domain(), final_problems), final_search_contexts) };
 }
 
-GeneralizedStateSpace::GeneralizedStateSpace(GeneralizedSearchContext context, const GeneralizedStateSpace::Options& options) :
+GeneralizedStateSpace::GeneralizedStateSpace(search::GeneralizedSearchContext context, const GeneralizedStateSpace::Options& options) :
     m_context(std::move(context)),
     m_initial_vertices(),
     m_goal_vertices(),
@@ -836,7 +838,7 @@ GeneralizedStateSpace::GeneralizedStateSpace(GeneralizedSearchContext context, c
     }
 }
 
-const GeneralizedSearchContext& GeneralizedStateSpace::get_generalized_search_context() const { return m_context; }
+const search::GeneralizedSearchContext& GeneralizedStateSpace::get_generalized_search_context() const { return m_context; }
 
 const graphs::ProblemGraphList& GeneralizedStateSpace::get_problem_graphs() const { return m_problem_graphs; }
 

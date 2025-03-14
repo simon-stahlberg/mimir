@@ -23,7 +23,7 @@
 #include "mimir/search/state.hpp"
 #include "mimir/search/state_repository.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 
 GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem problem, std::unique_ptr<match_tree::MatchTree<GroundActionImpl>>&& match_tree) :

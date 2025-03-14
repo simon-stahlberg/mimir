@@ -26,7 +26,7 @@
 #include "mimir/search/match_tree/options.hpp"
 #include "mimir/search/match_tree/statistics.hpp"
 
-namespace mimir::match_tree
+namespace mimir::search::match_tree
 {
 /* MatchTree */
 template<HasConjunctiveCondition E>

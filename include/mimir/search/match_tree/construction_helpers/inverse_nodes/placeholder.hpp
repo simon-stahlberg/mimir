@@ -20,7 +20,7 @@
 
 #include "mimir/search/match_tree/declarations.hpp"
 
-namespace mimir::match_tree
+namespace mimir::search::match_tree
 {
 template<HasConjunctiveCondition E>
 class PlaceholderNodeImpl

@@ -85,7 +85,7 @@ NB_MAKE_OPAQUE(mm::ProblemList);
 NB_MAKE_OPAQUE(mm::VariableList);
 NB_MAKE_OPAQUE(mm::TermList);
 // Search
-NB_MAKE_OPAQUE(mm::StateList);
+NB_MAKE_OPAQUE(mm::search::StateList);
 
 /**
  * Constness

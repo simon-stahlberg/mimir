@@ -21,7 +21,7 @@
 #include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/ground_numeric_constraint.hpp"
 
-namespace mimir::match_tree
+namespace mimir::search::match_tree
 {
 
 extern std::ostream& operator<<(std::ostream& out, const AtomSplitDistribution& distribution)

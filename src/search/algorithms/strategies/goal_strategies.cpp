@@ -19,7 +19,7 @@
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 #include "mimir/search/state.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 ProblemGoal::ProblemGoal(Problem problem) : m_problem(problem) {}
 

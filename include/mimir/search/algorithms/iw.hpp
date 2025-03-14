@@ -21,7 +21,7 @@
 #include "mimir/search/algorithms/brfs.hpp"
 #include "mimir/search/algorithms/iw/types.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 
 extern SearchResult find_solution_iw(const SearchContext& context,

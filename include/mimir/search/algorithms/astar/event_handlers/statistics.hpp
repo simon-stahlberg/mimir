@@ -26,7 +26,7 @@
 #include <ostream>
 #include <vector>
 
-namespace mimir
+namespace mimir::search
 {
 
 class AStarAlgorithmStatistics
@@ -170,8 +170,7 @@ using AStarAlgorithmStatisticsList = std::vector<AStarAlgorithmStatistics>;
 
 inline std::ostream& operator<<(std::ostream& os, const AStarAlgorithmStatistics& statistics)
 {
-    os << "[AStar] Search time: " << statistics.get_search_time_ms().count() << "ms"
-       << "\n"
+    os << "[AStar] Search time: " << statistics.get_search_time_ms().count() << "ms" << "\n"
        << "[AStar] Number of generated states: " << statistics.get_num_generated() << "\n"
        << "[AStar] Number of expanded states: " << statistics.get_num_expanded() << "\n"
        << "[AStar] Number of pruned states: " << statistics.get_num_pruned() << "\n"

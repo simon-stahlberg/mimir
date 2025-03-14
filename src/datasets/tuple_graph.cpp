@@ -25,7 +25,7 @@ namespace mimir::datasets
 TupleGraph::TupleGraph(const ProblemImpl& problem,
                        const graphs::ProblemGraph& problem_graph,
                        const graphs::ClassGraph& class_graph,
-                       TupleIndexMapper index_mapper,
+                       search::TupleIndexMapper index_mapper,
                        graphs::InternalTupleGraph graph,
                        IndexGroupedVector<const Index> vertices_grouped_by_distance,
                        IndexGroupedVector<const Index> problem_vertices_grouped_by_distance) :
@@ -45,7 +45,7 @@ const graphs::ClassGraph& TupleGraph::get_class_graph() const { return m_class_g
 
 const graphs::ProblemGraph& TupleGraph::get_problem_graph() const { return m_problem_graph; }
 
-const TupleIndexMapper& TupleGraph::get_index_mapper() const { return m_index_mapper; }
+const search::TupleIndexMapper& TupleGraph::get_index_mapper() const { return m_index_mapper; }
 
 const graphs::InternalTupleGraph& TupleGraph::get_graph() const { return m_graph; }
 
@@ -72,7 +72,7 @@ std::ostream& operator<<(std::ostream& out, const TupleGraph& tuple_graph)
 {
     const auto& problem = tuple_graph.get_problem();
     const auto& pddl_repositories = problem.get_repositories();
-    auto atom_indices = AtomIndexList {};
+    auto atom_indices = search::AtomIndexList {};
 
     out << "digraph {\n"
         << "rankdir=\"LR\"" << "\n";

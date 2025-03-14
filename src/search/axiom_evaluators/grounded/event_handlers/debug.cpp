@@ -23,7 +23,7 @@
 
 #include <iostream>
 
-namespace mimir
+namespace mimir::search
 {
 
 void DebugGroundedAxiomEvaluatorEventHandler::on_start_ground_axiom_instantiation_impl() const

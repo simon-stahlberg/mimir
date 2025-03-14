@@ -21,7 +21,7 @@
 #include "mimir/formalism/ground_axiom.hpp"
 #include "mimir/formalism/ground_numeric_constraint.hpp"
 
-namespace mimir::match_tree
+namespace mimir::search::match_tree
 {
 
 template<HasConjunctiveCondition E>

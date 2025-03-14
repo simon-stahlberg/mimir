@@ -23,7 +23,7 @@
 #include "mimir/search/applicability.hpp"
 #include "mimir/search/dense_state.hpp"
 
-namespace mimir::match_tree
+namespace mimir::search::match_tree
 {
 template<HasConjunctiveCondition E>
 ElementGeneratorNode_Perfect<E>::ElementGeneratorNode_Perfect(std::span<const E*> elements) :

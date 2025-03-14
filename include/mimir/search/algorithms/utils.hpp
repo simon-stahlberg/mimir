@@ -23,7 +23,7 @@
 
 #include <optional>
 
-namespace mimir
+namespace mimir::search
 {
 
 enum SearchStatus

@@ -24,7 +24,7 @@
 #include <map>
 #include <unordered_map>
 
-namespace mimir::match_tree
+namespace mimir::search::match_tree
 {
 template<HasConjunctiveCondition E>
 class StaticNodeSplitter : public NodeSplitterBase<StaticNodeSplitter<E>, E>

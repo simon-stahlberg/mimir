@@ -21,7 +21,7 @@
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/state_repository.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 
 HStarHeuristic::HStarHeuristic(const SearchContext& context) : m_estimates()

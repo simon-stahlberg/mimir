@@ -19,7 +19,7 @@
 
 #include "mimir/formalism/ground_action.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 
 /* Plan */

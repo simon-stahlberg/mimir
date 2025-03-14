@@ -24,7 +24,7 @@
 
 #include <chrono>
 
-namespace mimir
+namespace mimir::search
 {
 
 void DefaultBrFSAlgorithmEventHandler::on_expand_state_impl(State state) const {}
