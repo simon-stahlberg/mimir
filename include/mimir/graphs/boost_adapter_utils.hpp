@@ -26,21 +26,6 @@
 #include <limits>
 #include <ranges>
 
-namespace boost
-{
-
-/// A tag for a graph that is both a vertex list graph and an incidence graph.
-struct vertex_list_and_incidence_and_edge_list_and_adjacency_and_bidirectional_graph_tag :
-    public vertex_list_graph_tag,
-    // public incidence_graph_tag,  // is included in bidirectional_graph_tag
-    public edge_list_graph_tag,
-    public adjacency_graph_tag,
-    public bidirectional_graph_tag
-{
-};
-
-}
-
 namespace mimir::graphs
 {
 

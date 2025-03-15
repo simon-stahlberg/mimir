@@ -41,6 +41,15 @@ namespace boost
 template<mimir::graphs::IsStaticGraph Graph, mimir::graphs::IsDirection Direction>
 struct graph_traits<mimir::graphs::DirectionTaggedType<Graph, Direction>>
 {
+    struct vertex_list_and_incidence_and_edge_list_and_adjacency_and_bidirectional_graph_tag :
+        public vertex_list_graph_tag,
+        // public incidence_graph_tag,  // is included in bidirectional_graph_tag
+        public edge_list_graph_tag,
+        public adjacency_graph_tag,
+        public bidirectional_graph_tag
+    {
+    };
+
     // boost::GraphConcept
     using vertex_descriptor = mimir::graphs::VertexIndex;
     using edge_descriptor = mimir::graphs::EdgeIndex;

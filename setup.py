@@ -78,19 +78,27 @@ class CMakeBuild(build_ext):
         )
 
         # 3. Generate pyi stub files
-
-        # This is safer than adding a custom command in cmake because it will not silently fail.
         subprocess.run(
-            [sys.executable, '-m', 'nanobind.stubgen', '-m', '_pymimir', '-O', temp_directory], cwd=output_directory, check=True
+            [sys.executable, '-m', 'nanobind.stubgen', '-m', '_pymimir', '-O', temp_directory, '-r'], cwd=output_directory, check=True
         )
 
-        # Create package output directory
-        os.makedirs(output_directory / "pymimir", exist_ok=True)
+        # Define module list that must be copied to install location
+        module_dirs = [
+            "pymimir",
+            "pymimir/advanced",
+            "pymimir/advanced/common",
+            "pymimir/advanced/formalism",
+            "pymimir/advanced/graphs",
+            "pymimir/advanced/search",
+            "pymimir/advanced/datasets",
+            "pymimir/advanced/languages",
+            "pymimir/advanced/languages/description_logics"
+        ]
 
-        # Copy the stubs from temp to suitable output directory
-        # The name has to match the package initialization pymimir/__init__.py,
-        # i.e., pymimir/__init__.pyi to ensure full IDE support.
-        shutil.copy(temp_directory / "_pymimir.pyi", output_directory / "pymimir" / "__init__.pyi")
+        # Run stub generation for each module and copy it to target location
+        for module_dir in module_dirs:
+            os.makedirs(output_directory / module_dir, exist_ok=True)  
+            shutil.copy(temp_directory / module_dir / "__init__.pyi", output_directory / module_dir / "__init__.pyi")
 
 
 # The information here can also be placed in setup.cfg - better separation of

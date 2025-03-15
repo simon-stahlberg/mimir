@@ -22,20 +22,28 @@
 namespace nb = nanobind;
 using namespace nb::literals;
 
-int add(int a, int b) { return a + b; }
-
 NB_MODULE(_pymimir, m)
 {
-    m.def("add", &add);
+    // Create submodules before binding to avoid missing bindings
+    auto advanced = m.def_submodule("advanced");
 
-    bind_common(m);
+    auto common = advanced.def_submodule("common");
+    auto formalism = advanced.def_submodule("formalism");
+    auto graphs = advanced.def_submodule("graphs");
+    auto search = advanced.def_submodule("search");
+    auto datasets = advanced.def_submodule("datasets");
+    auto languages = advanced.def_submodule("languages");
+    auto description_logics = languages.def_submodule("description_logics");
 
-    bind_formalism(m);
-    bind_graphs(m);
+    bind_common(advanced);
 
-    bind_search(m);
+    bind_formalism(formalism);
 
-    bind_datasets(m);
+    bind_graphs(graphs);
 
-    bind_languages_description_logics(m);
+    bind_search(search);
+
+    bind_datasets(datasets);
+
+    bind_languages_description_logics(description_logics);
 }

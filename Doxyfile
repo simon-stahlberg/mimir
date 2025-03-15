@@ -7,6 +7,7 @@ EXTRACT_ALL           = YES
 EXTRACT_FUNCTIONS     = YES
 INLINE_FUNCTIONS      = YES
 INPUT                 = \
+    "include/mimir/common/types.hpp" \
     "include/mimir/formalism/action.hpp" \
     "include/mimir/formalism/assignment_set.hpp" \
     "include/mimir/formalism/atom.hpp" \
@@ -14,6 +15,7 @@ INPUT                 = \
     "include/mimir/formalism/axiom.hpp" \
     "include/mimir/formalism/conjunctive_condition.hpp" \
     "include/mimir/formalism/consistency_graph.hpp" \
+    "include/mimir/formalism/declarations.hpp" \
     "include/mimir/formalism/domain_builder.hpp" \
     "include/mimir/formalism/domain.hpp" \
     "include/mimir/formalism/effects.hpp" \
@@ -55,6 +57,7 @@ INPUT                 = \
     "include/mimir/graphs/algorithms/color_refinement.hpp" \
     "include/mimir/graphs/algorithms/folklore_weisfeiler_leman_impl.hpp" \
     "include/mimir/graphs/algorithms/folklore_weisfeiler_leman.hpp" \
+    "include/mimir/graphs/boost_adapter_utils.hpp" \
     "include/mimir/graphs/concrete/digraph_edge_colored.hpp" \
     "include/mimir/graphs/concrete/digraph_vertex_colored.hpp" \
     "include/mimir/graphs/concrete/digraph.hpp" \
@@ -160,6 +163,7 @@ INPUT                 = \
     "include/mimir/search/satisficing_binding_generators/axiom.hpp" \
     "include/mimir/search/satisficing_binding_generators/conjunctive_condition.hpp" \
     "include/mimir/search/applicability.hpp" \
+    "include/mimir/search/declarations.hpp" \
     "include/mimir/search/delete_relaxed_problem_explorator.hpp" \
     "include/mimir/search/generalized_search_context.hpp" \
     "include/mimir/search/metric.hpp" \
