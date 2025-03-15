@@ -86,6 +86,12 @@ class CMakeBuild(build_ext):
         # _pymimir.pyi
         # advanced/__init__.pyi
         # advanced/common/__init__.pyi
+        #
+        # We adapt it while copying to:
+        # _pymimir.so
+        # pymimir/__init__.pyi
+        # pymimir/advanced/__init__.pyi
+        # pymimir/advanced/common/__init__.pyi
 
         # Define submodule list that must be copied to install location
         module_dirs = [
