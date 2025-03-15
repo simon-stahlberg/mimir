@@ -91,13 +91,13 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aa8c746a2f8cf3875d357bbca473a15ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acc0e4b732782de589021c5d0224f9b00"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1NoveltyTable.html#acc0e4b732782de589021c5d0224f9b00">NoveltyTable</a> (size_t arity, size_t num_atoms)</td></tr>
 <tr class="separator:acc0e4b732782de589021c5d0224f9b00"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3c3c8e6a834fd3393965890cfb27714a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1NoveltyTable.html#a3c3c8e6a834fd3393965890cfb27714a">compute_novel_tuple_indices</a> (const State state, <a class="el" href="namespacemimir_1_1search.html#a10e7bb54ac7371f1297ed02a81e73c4a">TupleIndexList</a> &amp;out_novel_tuple_indices)</td></tr>
+<tr class="memitem:a3c3c8e6a834fd3393965890cfb27714a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1NoveltyTable.html#a3c3c8e6a834fd3393965890cfb27714a">compute_novel_tuple_indices</a> (const <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> state, <a class="el" href="namespacemimir_1_1search.html#a10e7bb54ac7371f1297ed02a81e73c4a">TupleIndexList</a> &amp;out_novel_tuple_indices)</td></tr>
 <tr class="separator:a3c3c8e6a834fd3393965890cfb27714a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a75cb268058b803ace589055bce9cd7fa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1NoveltyTable.html#a75cb268058b803ace589055bce9cd7fa">insert_tuple_indices</a> (const <a class="el" href="namespacemimir_1_1search.html#a10e7bb54ac7371f1297ed02a81e73c4a">TupleIndexList</a> &amp;tuple_indices)</td></tr>
 <tr class="separator:a75cb268058b803ace589055bce9cd7fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a62fd0505b93cb6d0cf1d7007c67be727"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1NoveltyTable.html#a62fd0505b93cb6d0cf1d7007c67be727">test_novelty_and_update_table</a> (const State state)</td></tr>
+<tr class="memitem:a62fd0505b93cb6d0cf1d7007c67be727"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1NoveltyTable.html#a62fd0505b93cb6d0cf1d7007c67be727">test_novelty_and_update_table</a> (const <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> state)</td></tr>
 <tr class="separator:a62fd0505b93cb6d0cf1d7007c67be727"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a421b60233b6430ac9c9c3a73826ab181"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1NoveltyTable.html#a421b60233b6430ac9c9c3a73826ab181">test_novelty_and_update_table</a> (const State state, const State succ_state)</td></tr>
+<tr class="memitem:a421b60233b6430ac9c9c3a73826ab181"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1NoveltyTable.html#a421b60233b6430ac9c9c3a73826ab181">test_novelty_and_update_table</a> (const <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> state, const <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> succ_state)</td></tr>
 <tr class="separator:a421b60233b6430ac9c9c3a73826ab181"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af363f835b5b94dcc9070604dd07dfb29"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1NoveltyTable.html#af363f835b5b94dcc9070604dd07dfb29">reset</a> ()</td></tr>
 <tr class="separator:af363f835b5b94dcc9070604dd07dfb29"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -178,7 +178,7 @@ template&lt;StaticOrDynamicSize Mode&gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="classmimir_1_1search_1_1NoveltyTable.html">mimir::search::NoveltyTable</a>&lt; Mode &gt;::compute_novel_tuple_indices </td>
           <td>(</td>
-          <td class="paramtype">const State&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>&#160;</td>
           <td class="paramname"><em>state</em>, </td>
         </tr>
         <tr>
@@ -266,7 +266,7 @@ template&lt;StaticOrDynamicSize Mode&gt; </div>
         <tr>
           <td class="memname">bool <a class="el" href="classmimir_1_1search_1_1NoveltyTable.html">mimir::search::NoveltyTable</a>&lt; Mode &gt;::test_novelty_and_update_table </td>
           <td>(</td>
-          <td class="paramtype">const State&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>&#160;</td>
           <td class="paramname"><em>state</em></td><td>)</td>
           <td></td>
         </tr>
@@ -286,13 +286,13 @@ template&lt;StaticOrDynamicSize Mode&gt; </div>
         <tr>
           <td class="memname">bool <a class="el" href="classmimir_1_1search_1_1NoveltyTable.html">mimir::search::NoveltyTable</a>&lt; Mode &gt;::test_novelty_and_update_table </td>
           <td>(</td>
-          <td class="paramtype">const State&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>&#160;</td>
           <td class="paramname"><em>state</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const State&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>&#160;</td>
           <td class="paramname"><em>succ_state</em>&#160;</td>
         </tr>
         <tr>

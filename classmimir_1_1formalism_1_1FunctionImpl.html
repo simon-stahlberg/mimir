@@ -99,13 +99,13 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:adca0268c6d66ae6305338a45d007ff1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae77a671dd64641ebccd873b4517ab0fe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmimir_1_1formalism_1_1FunctionImpl.html">FunctionImpl</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1FunctionImpl.html#ae77a671dd64641ebccd873b4517ab0fe">operator=</a> (<a class="el" href="classmimir_1_1formalism_1_1FunctionImpl.html">FunctionImpl</a> &amp;&amp;other)=default</td></tr>
 <tr class="separator:ae77a671dd64641ebccd873b4517ab0fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3204763da18bfafb1a1fb26bd6c83812"><td class="memItemLeft" align="right" valign="top">Index&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1FunctionImpl.html#a3204763da18bfafb1a1fb26bd6c83812">get_index</a> () const</td></tr>
+<tr class="memitem:a3204763da18bfafb1a1fb26bd6c83812"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1FunctionImpl.html#a3204763da18bfafb1a1fb26bd6c83812">get_index</a> () const</td></tr>
 <tr class="separator:a3204763da18bfafb1a1fb26bd6c83812"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3948675bafe629906d5341a5d5a77663"><td class="memItemLeft" align="right" valign="top">FunctionSkeleton&lt; F &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1FunctionImpl.html#a3948675bafe629906d5341a5d5a77663">get_function_skeleton</a> () const</td></tr>
+<tr class="memitem:a3948675bafe629906d5341a5d5a77663"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#a9a2e8ccb07750186c27fbadc2a8ad4d3">FunctionSkeleton</a>&lt; F &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1FunctionImpl.html#a3948675bafe629906d5341a5d5a77663">get_function_skeleton</a> () const</td></tr>
 <tr class="separator:a3948675bafe629906d5341a5d5a77663"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6efcf49ba68a4e6bc1e6a8c81ab746bb"><td class="memItemLeft" align="right" valign="top">const TermList &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1FunctionImpl.html#a6efcf49ba68a4e6bc1e6a8c81ab746bb">get_terms</a> () const</td></tr>
+<tr class="memitem:a6efcf49ba68a4e6bc1e6a8c81ab746bb"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir_1_1formalism.html#af020fb353c583f3a1ebabd01f82e14fd">TermList</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1FunctionImpl.html#a6efcf49ba68a4e6bc1e6a8c81ab746bb">get_terms</a> () const</td></tr>
 <tr class="separator:a6efcf49ba68a4e6bc1e6a8c81ab746bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acc782b04123e437a98e5b291ce4428d5"><td class="memItemLeft" align="right" valign="top">const IndexList &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1FunctionImpl.html#acc782b04123e437a98e5b291ce4428d5">get_parent_terms_to_terms_mapping</a> () const</td></tr>
+<tr class="memitem:acc782b04123e437a98e5b291ce4428d5"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1FunctionImpl.html#acc782b04123e437a98e5b291ce4428d5">get_parent_terms_to_terms_mapping</a> () const</td></tr>
 <tr class="separator:acc782b04123e437a98e5b291ce4428d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afd169485792756c0c1d919dbc6ad34ff"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1FunctionImpl.html#afd169485792756c0c1d919dbc6ad34ff">identifying_members</a> () const</td></tr>
 <tr class="memdesc:afd169485792756c0c1d919dbc6ad34ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a tuple of const references to the members that uniquely identify an object. This enables the automatic generation of <code>loki::Hash</code> and <code>loki::EqualTo</code> specializations.  <br /></td></tr>
@@ -201,7 +201,7 @@ template&lt;StaticOrFluentOrAuxiliary F&gt; </div>
 template&lt;StaticOrFluentOrAuxiliary F&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">FunctionSkeleton&lt; F &gt; <a class="el" href="classmimir_1_1formalism_1_1FunctionImpl.html">mimir::formalism::FunctionImpl</a>&lt; F &gt;::get_function_skeleton </td>
+          <td class="memname"><a class="el" href="namespacemimir_1_1formalism.html#a9a2e8ccb07750186c27fbadc2a8ad4d3">FunctionSkeleton</a>&lt; F &gt; <a class="el" href="classmimir_1_1formalism_1_1FunctionImpl.html">mimir::formalism::FunctionImpl</a>&lt; F &gt;::get_function_skeleton </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -220,7 +220,7 @@ template&lt;StaticOrFluentOrAuxiliary F&gt; </div>
 template&lt;StaticOrFluentOrAuxiliary F&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">Index <a class="el" href="classmimir_1_1formalism_1_1FunctionImpl.html">mimir::formalism::FunctionImpl</a>&lt; F &gt;::get_index </td>
+          <td class="memname"><a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> <a class="el" href="classmimir_1_1formalism_1_1FunctionImpl.html">mimir::formalism::FunctionImpl</a>&lt; F &gt;::get_index </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -239,7 +239,7 @@ template&lt;StaticOrFluentOrAuxiliary F&gt; </div>
 template&lt;StaticOrFluentOrAuxiliary F&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">const IndexList &amp; <a class="el" href="classmimir_1_1formalism_1_1FunctionImpl.html">mimir::formalism::FunctionImpl</a>&lt; F &gt;::get_parent_terms_to_terms_mapping </td>
+          <td class="memname">const <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a> &amp; <a class="el" href="classmimir_1_1formalism_1_1FunctionImpl.html">mimir::formalism::FunctionImpl</a>&lt; F &gt;::get_parent_terms_to_terms_mapping </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -258,7 +258,7 @@ template&lt;StaticOrFluentOrAuxiliary F&gt; </div>
 template&lt;StaticOrFluentOrAuxiliary F&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">const TermList &amp; <a class="el" href="classmimir_1_1formalism_1_1FunctionImpl.html">mimir::formalism::FunctionImpl</a>&lt; F &gt;::get_terms </td>
+          <td class="memname">const <a class="el" href="namespacemimir_1_1formalism.html#af020fb353c583f3a1ebabd01f82e14fd">TermList</a> &amp; <a class="el" href="classmimir_1_1formalism_1_1FunctionImpl.html">mimir::formalism::FunctionImpl</a>&lt; F &gt;::get_terms </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -381,7 +381,8 @@ template&lt;typename T , typename Hash , typename EqualTo &gt; </div>
 
 </div>
 </div>
-<hr/>The documentation for this class was generated from the following file:<ul>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>include/mimir/formalism/<a class="el" href="formalism_2declarations_8hpp_source.html">declarations.hpp</a></li>
 <li>include/mimir/formalism/<a class="el" href="function_8hpp_source.html">function.hpp</a></li>
 </ul>
 </div><!-- contents -->

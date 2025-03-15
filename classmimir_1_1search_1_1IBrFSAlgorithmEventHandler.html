@@ -99,25 +99,25 @@ Inheritance diagram for mimir::search::IBrFSAlgorithmEventHandler:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a339431f8abf79c3999dc878c845f35c8"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IBrFSAlgorithmEventHandler.html#a339431f8abf79c3999dc878c845f35c8">~IBrFSAlgorithmEventHandler</a> ()=default</td></tr>
 <tr class="separator:a339431f8abf79c3999dc878c845f35c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a176845a2832387b7508e67f9f0cd180f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IBrFSAlgorithmEventHandler.html#a176845a2832387b7508e67f9f0cd180f">on_expand_state</a> (State state)=0</td></tr>
+<tr class="memitem:a176845a2832387b7508e67f9f0cd180f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IBrFSAlgorithmEventHandler.html#a176845a2832387b7508e67f9f0cd180f">on_expand_state</a> (<a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> state)=0</td></tr>
 <tr class="memdesc:a176845a2832387b7508e67f9f0cd180f"><td class="mdescLeft">&#160;</td><td class="mdescRight">React on expanding a state. This is called immediately after popping from the queue.  <br /></td></tr>
 <tr class="separator:a176845a2832387b7508e67f9f0cd180f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4fe06672a6fddcbd91e7f2c69fa3b10f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IBrFSAlgorithmEventHandler.html#a4fe06672a6fddcbd91e7f2c69fa3b10f">on_expand_goal_state</a> (State state)=0</td></tr>
+<tr class="memitem:a4fe06672a6fddcbd91e7f2c69fa3b10f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IBrFSAlgorithmEventHandler.html#a4fe06672a6fddcbd91e7f2c69fa3b10f">on_expand_goal_state</a> (<a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> state)=0</td></tr>
 <tr class="memdesc:a4fe06672a6fddcbd91e7f2c69fa3b10f"><td class="mdescLeft">&#160;</td><td class="mdescRight">React on expanding a goal <code>state</code>. This may be called after on_expand_state.  <br /></td></tr>
 <tr class="separator:a4fe06672a6fddcbd91e7f2c69fa3b10f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab97fad3f21eea051e68be851d5d8b318"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IBrFSAlgorithmEventHandler.html#ab97fad3f21eea051e68be851d5d8b318">on_generate_state</a> (State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state)=0</td></tr>
+<tr class="memitem:ab97fad3f21eea051e68be851d5d8b318"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IBrFSAlgorithmEventHandler.html#ab97fad3f21eea051e68be851d5d8b318">on_generate_state</a> (<a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> state, <a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">formalism::GroundAction</a> action, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> action_cost, <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> successor_state)=0</td></tr>
 <tr class="memdesc:ab97fad3f21eea051e68be851d5d8b318"><td class="mdescLeft">&#160;</td><td class="mdescRight">React on generating a state by applying an action.  <br /></td></tr>
 <tr class="separator:ab97fad3f21eea051e68be851d5d8b318"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a052cd5eecfbf1862a1cbb53a1a68b264"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IBrFSAlgorithmEventHandler.html#a052cd5eecfbf1862a1cbb53a1a68b264">on_generate_state_in_search_tree</a> (State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state)=0</td></tr>
+<tr class="memitem:a052cd5eecfbf1862a1cbb53a1a68b264"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IBrFSAlgorithmEventHandler.html#a052cd5eecfbf1862a1cbb53a1a68b264">on_generate_state_in_search_tree</a> (<a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> state, <a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">formalism::GroundAction</a> action, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> action_cost, <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> successor_state)=0</td></tr>
 <tr class="memdesc:a052cd5eecfbf1862a1cbb53a1a68b264"><td class="mdescLeft">&#160;</td><td class="mdescRight">React on generating a state in the search tree by applying an action.  <br /></td></tr>
 <tr class="separator:a052cd5eecfbf1862a1cbb53a1a68b264"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa42e05028211bbf18bbe740ebadd6279"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IBrFSAlgorithmEventHandler.html#aa42e05028211bbf18bbe740ebadd6279">on_generate_state_not_in_search_tree</a> (State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state)=0</td></tr>
+<tr class="memitem:aa42e05028211bbf18bbe740ebadd6279"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IBrFSAlgorithmEventHandler.html#aa42e05028211bbf18bbe740ebadd6279">on_generate_state_not_in_search_tree</a> (<a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> state, <a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">formalism::GroundAction</a> action, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> action_cost, <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> successor_state)=0</td></tr>
 <tr class="memdesc:aa42e05028211bbf18bbe740ebadd6279"><td class="mdescLeft">&#160;</td><td class="mdescRight">React on generating a state not in the search tree by applying an action.  <br /></td></tr>
 <tr class="separator:aa42e05028211bbf18bbe740ebadd6279"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa60607328a031b0c0446d75f47b08531"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IBrFSAlgorithmEventHandler.html#aa60607328a031b0c0446d75f47b08531">on_finish_g_layer</a> ()=0</td></tr>
 <tr class="memdesc:aa60607328a031b0c0446d75f47b08531"><td class="mdescLeft">&#160;</td><td class="mdescRight">React on finishing expanding a g-layer.  <br /></td></tr>
 <tr class="separator:aa60607328a031b0c0446d75f47b08531"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac1536b5d8e5f7acee5fcdd66d9aaa365"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IBrFSAlgorithmEventHandler.html#ac1536b5d8e5f7acee5fcdd66d9aaa365">on_start_search</a> (State start_state)=0</td></tr>
+<tr class="memitem:ac1536b5d8e5f7acee5fcdd66d9aaa365"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IBrFSAlgorithmEventHandler.html#ac1536b5d8e5f7acee5fcdd66d9aaa365">on_start_search</a> (<a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> start_state)=0</td></tr>
 <tr class="memdesc:ac1536b5d8e5f7acee5fcdd66d9aaa365"><td class="mdescLeft">&#160;</td><td class="mdescRight">React on starting a search.  <br /></td></tr>
 <tr class="separator:ac1536b5d8e5f7acee5fcdd66d9aaa365"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a20a6278c2b8b06c039591b5b7f031358"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IBrFSAlgorithmEventHandler.html#a20a6278c2b8b06c039591b5b7f031358">on_end_search</a> (uint64_t num_reached_fluent_atoms, uint64_t num_reached_derived_atoms, uint64_t num_bytes_for_unextended_state_portion, uint64_t num_bytes_for_extended_state_portion, uint64_t num_bytes_for_nodes, uint64_t num_bytes_for_actions, uint64_t num_bytes_for_axioms, uint64_t num_states, uint64_t num_nodes, uint64_t num_actions, uint64_t num_axioms)=0</td></tr>
@@ -355,7 +355,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">virtual void mimir::search::IBrFSAlgorithmEventHandler::on_expand_goal_state </td>
           <td>(</td>
-          <td class="paramtype">State&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>&#160;</td>
           <td class="paramname"><em>state</em></td><td>)</td>
           <td></td>
         </tr>
@@ -385,7 +385,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">virtual void mimir::search::IBrFSAlgorithmEventHandler::on_expand_state </td>
           <td>(</td>
-          <td class="paramtype">State&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>&#160;</td>
           <td class="paramname"><em>state</em></td><td>)</td>
           <td></td>
         </tr>
@@ -444,25 +444,25 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">virtual void mimir::search::IBrFSAlgorithmEventHandler::on_generate_state </td>
           <td>(</td>
-          <td class="paramtype">State&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>&#160;</td>
           <td class="paramname"><em>state</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">formalism::GroundAction&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">formalism::GroundAction</a>&#160;</td>
           <td class="paramname"><em>action</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">ContinuousCost&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a>&#160;</td>
           <td class="paramname"><em>action_cost</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">State&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>&#160;</td>
           <td class="paramname"><em>successor_state</em>&#160;</td>
         </tr>
         <tr>
@@ -496,25 +496,25 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">virtual void mimir::search::IBrFSAlgorithmEventHandler::on_generate_state_in_search_tree </td>
           <td>(</td>
-          <td class="paramtype">State&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>&#160;</td>
           <td class="paramname"><em>state</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">formalism::GroundAction&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">formalism::GroundAction</a>&#160;</td>
           <td class="paramname"><em>action</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">ContinuousCost&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a>&#160;</td>
           <td class="paramname"><em>action_cost</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">State&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>&#160;</td>
           <td class="paramname"><em>successor_state</em>&#160;</td>
         </tr>
         <tr>
@@ -548,25 +548,25 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">virtual void mimir::search::IBrFSAlgorithmEventHandler::on_generate_state_not_in_search_tree </td>
           <td>(</td>
-          <td class="paramtype">State&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>&#160;</td>
           <td class="paramname"><em>state</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">formalism::GroundAction&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">formalism::GroundAction</a>&#160;</td>
           <td class="paramname"><em>action</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">ContinuousCost&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a>&#160;</td>
           <td class="paramname"><em>action_cost</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">State&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>&#160;</td>
           <td class="paramname"><em>successor_state</em>&#160;</td>
         </tr>
         <tr>
@@ -630,7 +630,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">virtual void mimir::search::IBrFSAlgorithmEventHandler::on_start_search </td>
           <td>(</td>
-          <td class="paramtype">State&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>&#160;</td>
           <td class="paramname"><em>start_state</em></td><td>)</td>
           <td></td>
         </tr>

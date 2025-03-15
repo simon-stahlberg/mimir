@@ -96,7 +96,7 @@ $(function() {
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#ifndef MIMIR_FORMALISM_PARSER_HPP_</span></div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#define MIMIR_FORMALISM_PARSER_HPP_</span></div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &quot;mimir/formalism/declarations.hpp&quot;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &quot;<a class="code" href="formalism_2declarations_8hpp.html">mimir/formalism/declarations.hpp</a>&quot;</span></div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &lt;loki/loki.hpp&gt;</span></div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
@@ -109,15 +109,15 @@ $(function() {
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keyword">public</span>:</div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="classmimir_1_1formalism_1_1Parser.html#abad20fe452b4cc4ce944432bb601c293">   32</a></span>    <a class="code hl_function" href="classmimir_1_1formalism_1_1Parser.html#abad20fe452b4cc4ce944432bb601c293">Parser</a>(<span class="keyword">const</span> fs::path&amp; domain_filepath, <span class="keyword">const</span> loki::Options&amp; options = loki::Options());</div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classmimir_1_1formalism_1_1Parser.html#aff9d3288c933da79c496054884ea3561">   34</a></span>    Problem <a class="code hl_function" href="classmimir_1_1formalism_1_1Parser.html#aff9d3288c933da79c496054884ea3561">parse_problem</a>(<span class="keyword">const</span> fs::path&amp; problem_filepath, <span class="keyword">const</span> loki::Options&amp; options = loki::Options());</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classmimir_1_1formalism_1_1Parser.html#aff9d3288c933da79c496054884ea3561">   34</a></span>    <a class="code hl_typedef" href="namespacemimir_1_1formalism.html#a18a62fffd7784a50a9304da9b0a2a7d1">Problem</a> <a class="code hl_function" href="classmimir_1_1formalism_1_1Parser.html#aff9d3288c933da79c496054884ea3561">parse_problem</a>(<span class="keyword">const</span> fs::path&amp; problem_filepath, <span class="keyword">const</span> loki::Options&amp; options = loki::Options());</div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classmimir_1_1formalism_1_1Parser.html#ad24af2686f2a4ef137ea74ec47a0085e">   36</a></span>    <span class="keyword">const</span> Domain&amp; <a class="code hl_function" href="classmimir_1_1formalism_1_1Parser.html#ad24af2686f2a4ef137ea74ec47a0085e">get_domain</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classmimir_1_1formalism_1_1Parser.html#ad24af2686f2a4ef137ea74ec47a0085e">   36</a></span>    <span class="keyword">const</span> <a class="code hl_typedef" href="namespacemimir_1_1formalism.html#a0705b57e5a6062fa24dac5fc9ce7c5f7">Domain</a>&amp; <a class="code hl_function" href="classmimir_1_1formalism_1_1Parser.html#ad24af2686f2a4ef137ea74ec47a0085e">get_domain</a>() <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="keyword">private</span>:</div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    loki::Parser m_loki_parser;</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    loki::DomainTranslationResult m_loki_domain_translation_result;</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    Domain m_domain;  </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <a class="code hl_typedef" href="namespacemimir_1_1formalism.html#a0705b57e5a6062fa24dac5fc9ce7c5f7">Domain</a> m_domain;  </div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>};</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>}</div>
@@ -127,7 +127,10 @@ $(function() {
 <div class="ttc" id="aclassmimir_1_1formalism_1_1Parser_html_abad20fe452b4cc4ce944432bb601c293"><div class="ttname"><a href="classmimir_1_1formalism_1_1Parser.html#abad20fe452b4cc4ce944432bb601c293">mimir::formalism::Parser::Parser</a></div><div class="ttdeci">Parser(const fs::path &amp;domain_filepath, const loki::Options &amp;options=loki::Options())</div></div>
 <div class="ttc" id="aclassmimir_1_1formalism_1_1Parser_html_ad24af2686f2a4ef137ea74ec47a0085e"><div class="ttname"><a href="classmimir_1_1formalism_1_1Parser.html#ad24af2686f2a4ef137ea74ec47a0085e">mimir::formalism::Parser::get_domain</a></div><div class="ttdeci">const Domain &amp; get_domain() const</div></div>
 <div class="ttc" id="aclassmimir_1_1formalism_1_1Parser_html_aff9d3288c933da79c496054884ea3561"><div class="ttname"><a href="classmimir_1_1formalism_1_1Parser.html#aff9d3288c933da79c496054884ea3561">mimir::formalism::Parser::parse_problem</a></div><div class="ttdeci">Problem parse_problem(const fs::path &amp;problem_filepath, const loki::Options &amp;options=loki::Options())</div></div>
+<div class="ttc" id="aformalism_2declarations_8hpp_html"><div class="ttname"><a href="formalism_2declarations_8hpp.html">declarations.hpp</a></div></div>
 <div class="ttc" id="anamespacemimir_1_1formalism_html"><div class="ttname"><a href="namespacemimir_1_1formalism.html">mimir::formalism</a></div><div class="ttdef"><b>Definition:</b> action.hpp:24</div></div>
+<div class="ttc" id="anamespacemimir_1_1formalism_html_a0705b57e5a6062fa24dac5fc9ce7c5f7"><div class="ttname"><a href="namespacemimir_1_1formalism.html#a0705b57e5a6062fa24dac5fc9ce7c5f7">mimir::formalism::Domain</a></div><div class="ttdeci">std::shared_ptr&lt; const DomainImpl &gt; Domain</div><div class="ttdef"><b>Definition:</b> declarations.hpp:85</div></div>
+<div class="ttc" id="anamespacemimir_1_1formalism_html_a18a62fffd7784a50a9304da9b0a2a7d1"><div class="ttname"><a href="namespacemimir_1_1formalism.html#a18a62fffd7784a50a9304da9b0a2a7d1">mimir::formalism::Problem</a></div><div class="ttdeci">std::shared_ptr&lt; ProblemImpl &gt; Problem</div><div class="ttdef"><b>Definition:</b> declarations.hpp:253</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

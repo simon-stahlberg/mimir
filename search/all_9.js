@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['knowledge_5fbase_2ehpp_0',['knowledge_base.hpp',['../knowledge__base_8hpp.html',1,'']]],
-  ['knowledgebase_1',['KnowledgeBase',['../classmimir_1_1datasets_1_1KnowledgeBase.html#a5ac87a8ed4d19159b58051766b1c6b43',1,'mimir::datasets::KnowledgeBase::KnowledgeBase()'],['../classmimir_1_1datasets_1_1KnowledgeBase.html',1,'mimir::datasets::KnowledgeBase']]]
+  ['key_5ftype_0',['key_type',['../structmimir_1_1graphs_1_1TrivialReadPropertyMap.html#a1a090c104357becaa17d3eb674897333',1,'mimir::graphs::TrivialReadPropertyMap::key_type()'],['../classmimir_1_1graphs_1_1VectorReadPropertyMap.html#a5baf94db9c981dcd48b20c1a83c75bf1',1,'mimir::graphs::VectorReadPropertyMap::key_type()'],['../classmimir_1_1graphs_1_1VectorReadWritePropertyMap.html#a68a5027cd5fb776f5d58121f7710ec16',1,'mimir::graphs::VectorReadWritePropertyMap::key_type()'],['../classmimir_1_1graphs_1_1UnorderedMapReadPropertyMap.html#a519a8e6680ef82ad8d39492fa0eea122',1,'mimir::graphs::UnorderedMapReadPropertyMap::key_type()'],['../classmimir_1_1graphs_1_1UnorderedMapReadWritePropertyMap.html#a7bd2fdf0a5d465150e9424f8f8063400',1,'mimir::graphs::UnorderedMapReadWritePropertyMap::key_type()']]],
+  ['knowledge_5fbase_2ehpp_1',['knowledge_base.hpp',['../knowledge__base_8hpp.html',1,'']]],
+  ['knowledgebase_2',['KnowledgeBase',['../classmimir_1_1datasets_1_1KnowledgeBase.html#a5ac87a8ed4d19159b58051766b1c6b43',1,'mimir::datasets::KnowledgeBase::KnowledgeBase()'],['../classmimir_1_1datasets_1_1KnowledgeBase.html',1,'mimir::datasets::KnowledgeBase']]]
 ];

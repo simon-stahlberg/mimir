@@ -89,11 +89,11 @@ Classes</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a19fe79c73ad583f3e4876aa06f118e5f"><td class="memTemplParams" colspan="2">template&lt;typename ColorType &gt; </td></tr>
-<tr class="memitem:a19fe79c73ad583f3e4876aa06f118e5f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1color__refinement.html#a19fe79c73ad583f3e4876aa06f118e5f">replace_tuples</a> (const std::vector&lt; std::pair&lt; Index, ColorType &gt; &gt; &amp;M, const ColorList &amp;hash_to_color, std::vector&lt; std::tuple&lt; Color, std::vector&lt; ColorType &gt;, Index &gt; &gt; &amp;out_M_replaced)</td></tr>
+<tr class="memitem:a19fe79c73ad583f3e4876aa06f118e5f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1color__refinement.html#a19fe79c73ad583f3e4876aa06f118e5f">replace_tuples</a> (const std::vector&lt; std::pair&lt; <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>, ColorType &gt; &gt; &amp;M, const ColorList &amp;hash_to_color, std::vector&lt; std::tuple&lt; Color, std::vector&lt; ColorType &gt;, <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> &gt; &gt; &amp;out_M_replaced)</td></tr>
 <tr class="memdesc:a19fe79c73ad583f3e4876aa06f118e5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace tuples by grouping colors with same hash.  <br /></td></tr>
 <tr class="separator:a19fe79c73ad583f3e4876aa06f118e5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abb7f2364f5291c9cbae284a3e652fc6b"><td class="memTemplParams" colspan="2">template&lt;typename ColorType &gt; </td></tr>
-<tr class="memitem:abb7f2364f5291c9cbae284a3e652fc6b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1color__refinement.html#abb7f2364f5291c9cbae284a3e652fc6b">split_color_classes</a> (const std::vector&lt; std::tuple&lt; Color, std::vector&lt; ColorType &gt;, Index &gt; &gt; &amp;M_replaced, std::unordered_map&lt; std::pair&lt; Color, std::vector&lt; ColorType &gt; &gt;, Color, loki::Hash&lt; std::pair&lt; Color, std::vector&lt; ColorType &gt; &gt; &gt; &gt; &amp;ref_f, Color &amp;ref_max_color, ColorList &amp;ref_hash_to_color, ColorMap&lt; IndexList &gt; &amp;out_color_to_hashes, ColorSet &amp;out_L)</td></tr>
+<tr class="memitem:abb7f2364f5291c9cbae284a3e652fc6b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1color__refinement.html#abb7f2364f5291c9cbae284a3e652fc6b">split_color_classes</a> (const std::vector&lt; std::tuple&lt; Color, std::vector&lt; ColorType &gt;, <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> &gt; &gt; &amp;M_replaced, std::unordered_map&lt; std::pair&lt; Color, std::vector&lt; ColorType &gt; &gt;, Color, loki::Hash&lt; std::pair&lt; Color, std::vector&lt; ColorType &gt; &gt; &gt; &gt; &amp;ref_f, Color &amp;ref_max_color, ColorList &amp;ref_hash_to_color, ColorMap&lt; <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a> &gt; &amp;out_color_to_hashes, ColorSet &amp;out_L)</td></tr>
 <tr class="memdesc:abb7f2364f5291c9cbae284a3e652fc6b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Split the color classes into new colors.  <br /></td></tr>
 <tr class="separator:abb7f2364f5291c9cbae284a3e652fc6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5365401ec40ae8011b6d9a3701718aa4"><td class="memTemplParams" colspan="2">template&lt;typename G &gt; <br />
@@ -226,7 +226,7 @@ template&lt;typename ColorType &gt; </div>
         <tr>
           <td class="memname">void mimir::graphs::color_refinement::replace_tuples </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; std::pair&lt; Index, ColorType &gt; &gt; &amp;&#160;</td>
+          <td class="paramtype">const std::vector&lt; std::pair&lt; <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>, ColorType &gt; &gt; &amp;&#160;</td>
           <td class="paramname"><em>M</em>, </td>
         </tr>
         <tr>
@@ -238,7 +238,7 @@ template&lt;typename ColorType &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; std::tuple&lt; Color, std::vector&lt; ColorType &gt;, Index &gt; &gt; &amp;&#160;</td>
+          <td class="paramtype">std::vector&lt; std::tuple&lt; Color, std::vector&lt; ColorType &gt;, <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> &gt; &gt; &amp;&#160;</td>
           <td class="paramname"><em>out_M_replaced</em>&#160;</td>
         </tr>
         <tr>
@@ -278,7 +278,7 @@ template&lt;typename ColorType &gt; </div>
         <tr>
           <td class="memname">void mimir::graphs::color_refinement::split_color_classes </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; std::tuple&lt; Color, std::vector&lt; ColorType &gt;, Index &gt; &gt; &amp;&#160;</td>
+          <td class="paramtype">const std::vector&lt; std::tuple&lt; Color, std::vector&lt; ColorType &gt;, <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> &gt; &gt; &amp;&#160;</td>
           <td class="paramname"><em>M_replaced</em>, </td>
         </tr>
         <tr>
@@ -302,7 +302,7 @@ template&lt;typename ColorType &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">ColorMap&lt; IndexList &gt; &amp;&#160;</td>
+          <td class="paramtype">ColorMap&lt; <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>out_color_to_hashes</em>, </td>
         </tr>
         <tr>

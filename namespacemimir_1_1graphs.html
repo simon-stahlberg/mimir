@@ -146,6 +146,21 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">StaticGraph</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html" title="StaticGraph implements a directed graph with vertices of type V and edges of type E that supports the...">StaticGraph</a></code> implements a directed graph with vertices of type V and edges of type E that supports the insertion but not the deletion of vertices and edges satisfying the graph concepts: <code>VertexListGraph</code>, <code>EdgeListGraph</code>, <code>IncidenceGraph</code>, and <code>AdjacencyGraph</code>.  <a href="classmimir_1_1graphs_1_1StaticGraph.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmimir_1_1graphs_1_1TrivialReadPropertyMap.html">TrivialReadPropertyMap</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A property map that returns its key as value.  <a href="structmimir_1_1graphs_1_1TrivialReadPropertyMap.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1UnorderedMapBasicMatrix.html">UnorderedMapBasicMatrix</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1UnorderedMapReadPropertyMap.html">UnorderedMapReadPropertyMap</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1UnorderedMapReadWritePropertyMap.html">UnorderedMapReadWritePropertyMap</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1VectorBasicMatrix.html">VectorBasicMatrix</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1VectorReadPropertyMap.html">VectorReadPropertyMap</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1VectorReadWritePropertyMap.html">VectorReadWritePropertyMap</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1Vertex.html">Vertex</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code><a class="el" href="classmimir_1_1graphs_1_1Vertex.html" title="Vertex implements a vertex with additional VertexProperties.">Vertex</a></code> implements a vertex with additional <code>VertexProperties</code>.  <a href="classmimir_1_1graphs_1_1Vertex.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -183,12 +198,12 @@ Concepts</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a4401dfeb9aa3b9b2f3925044ee7a6e71"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71">ProblemVertex</a> = <a class="el" href="classmimir_1_1graphs_1_1Vertex.html">Vertex</a>&lt; Index, search::State &gt;</td></tr>
+<tr class="memitem:a4401dfeb9aa3b9b2f3925044ee7a6e71"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71">ProblemVertex</a> = <a class="el" href="classmimir_1_1graphs_1_1Vertex.html">Vertex</a>&lt; <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>, <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">search::State</a> &gt;</td></tr>
 <tr class="memdesc:a4401dfeb9aa3b9b2f3925044ee7a6e71"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>ProblemVertex</code> encapsulates information about a vertex in a <code>ProblemGraph</code>  <br /></td></tr>
 <tr class="separator:a4401dfeb9aa3b9b2f3925044ee7a6e71"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6849af3a319ee009030dc943e8f30f13"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a6849af3a319ee009030dc943e8f30f13">ProblemVertexList</a> = std::vector&lt; <a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71">ProblemVertex</a> &gt;</td></tr>
 <tr class="separator:a6849af3a319ee009030dc943e8f30f13"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a27cce2a7fdacae54f936c2eb0174b4c8"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a27cce2a7fdacae54f936c2eb0174b4c8">ProblemEdge</a> = <a class="el" href="classmimir_1_1graphs_1_1Edge.html">Edge</a>&lt; Index, formalism::GroundAction, ContinuousCost &gt;</td></tr>
+<tr class="memitem:a27cce2a7fdacae54f936c2eb0174b4c8"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a27cce2a7fdacae54f936c2eb0174b4c8">ProblemEdge</a> = <a class="el" href="classmimir_1_1graphs_1_1Edge.html">Edge</a>&lt; <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>, <a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">formalism::GroundAction</a>, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> &gt;</td></tr>
 <tr class="memdesc:a27cce2a7fdacae54f936c2eb0174b4c8"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>ProblemEdge</code> encapsulates information about an edge in a <code>ProblemGraph</code>.  <br /></td></tr>
 <tr class="separator:a27cce2a7fdacae54f936c2eb0174b4c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0eca8513881fbe716ea6fa3186b18041"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a0eca8513881fbe716ea6fa3186b18041">ProblemEdgeList</a> = std::vector&lt; <a class="el" href="namespacemimir_1_1graphs.html#a27cce2a7fdacae54f936c2eb0174b4c8">ProblemEdge</a> &gt;</td></tr>
@@ -202,12 +217,12 @@ Typedefs</h2></td></tr>
 <tr class="separator:ae90d83d97c61e149eec8e753a8f19589"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a14f777b696bfc1d97cbff3d1a30732f8"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a14f777b696bfc1d97cbff3d1a30732f8">ProblemGraphList</a> = std::vector&lt; <a class="el" href="namespacemimir_1_1graphs.html#ae90d83d97c61e149eec8e753a8f19589">ProblemGraph</a> &gt;</td></tr>
 <tr class="separator:a14f777b696bfc1d97cbff3d1a30732f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:addbc8279833faca8528c5c48225e197e"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#addbc8279833faca8528c5c48225e197e">ClassVertex</a> = <a class="el" href="classmimir_1_1graphs_1_1Vertex.html">Vertex</a>&lt; Index, Index, Index, DiscreteCost, ContinuousCost, bool, bool, bool, bool &gt;</td></tr>
+<tr class="memitem:addbc8279833faca8528c5c48225e197e"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#addbc8279833faca8528c5c48225e197e">ClassVertex</a> = <a class="el" href="classmimir_1_1graphs_1_1Vertex.html">Vertex</a>&lt; <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>, <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>, <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>, <a class="el" href="namespacemimir.html#a9a5965ca488a8a8f0d8bda41ceaf3385">DiscreteCost</a>, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a>, bool, bool, bool, bool &gt;</td></tr>
 <tr class="memdesc:addbc8279833faca8528c5c48225e197e"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>ClassVertex</code> encapsulates information about a vertex in a <code>ClassGraph</code>.  <br /></td></tr>
 <tr class="separator:addbc8279833faca8528c5c48225e197e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adbbad8d6ed3a52c90ffc58f8132c7297"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#adbbad8d6ed3a52c90ffc58f8132c7297">ClassVertexList</a> = std::vector&lt; <a class="el" href="namespacemimir_1_1graphs.html#addbc8279833faca8528c5c48225e197e">ClassVertex</a> &gt;</td></tr>
 <tr class="separator:adbbad8d6ed3a52c90ffc58f8132c7297"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9861298646e808707570b3e2528af931"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a9861298646e808707570b3e2528af931">ClassEdge</a> = <a class="el" href="classmimir_1_1graphs_1_1Edge.html">Edge</a>&lt; Index, Index, Index, ContinuousCost &gt;</td></tr>
+<tr class="memitem:a9861298646e808707570b3e2528af931"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a9861298646e808707570b3e2528af931">ClassEdge</a> = <a class="el" href="classmimir_1_1graphs_1_1Edge.html">Edge</a>&lt; <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>, <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>, <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> &gt;</td></tr>
 <tr class="memdesc:a9861298646e808707570b3e2528af931"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>ClassEdge</code> encapsulates information about an edge in a <code>ClassGraph</code>.  <br /></td></tr>
 <tr class="separator:a9861298646e808707570b3e2528af931"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abf125ea511e0e7dcb08e8798f8ba278c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#abf125ea511e0e7dcb08e8798f8ba278c">ClassEdgeList</a> = std::vector&lt; <a class="el" href="namespacemimir_1_1graphs.html#a9861298646e808707570b3e2528af931">ClassEdge</a> &gt;</td></tr>
@@ -217,7 +232,7 @@ Typedefs</h2></td></tr>
 <tr class="memitem:a7f055a18f6efd9b14e9f5708d28eb7e6"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a7f055a18f6efd9b14e9f5708d28eb7e6">ClassGraph</a> = <a class="el" href="classmimir_1_1graphs_1_1StaticBidirectionalGraph.html">StaticBidirectionalGraph</a>&lt; <a class="el" href="namespacemimir_1_1graphs.html#a3142bbab4fd2cd2d164fe5301c5db9b0">StaticClassGraph</a> &gt;</td></tr>
 <tr class="memdesc:a7f055a18f6efd9b14e9f5708d28eb7e6"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>ClassGraph</code> implements a directed graph representing the state space of a collection of problems.  <br /></td></tr>
 <tr class="separator:a7f055a18f6efd9b14e9f5708d28eb7e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2db250211f1c44372faeec52f5d0ffd4"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a2db250211f1c44372faeec52f5d0ffd4">TupleGraphVertex</a> = <a class="el" href="classmimir_1_1graphs_1_1Vertex.html">Vertex</a>&lt; Index, IndexList &gt;</td></tr>
+<tr class="memitem:a2db250211f1c44372faeec52f5d0ffd4"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a2db250211f1c44372faeec52f5d0ffd4">TupleGraphVertex</a> = <a class="el" href="classmimir_1_1graphs_1_1Vertex.html">Vertex</a>&lt; <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>, <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a> &gt;</td></tr>
 <tr class="memdesc:a2db250211f1c44372faeec52f5d0ffd4"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>TupleGraphVertex</code> encapsulates information about a vertex in a tuple graph.  <br /></td></tr>
 <tr class="separator:a2db250211f1c44372faeec52f5d0ffd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a78aaf762d44ebe5f609efd50b800dd95"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a78aaf762d44ebe5f609efd50b800dd95">TupleGraphVertexList</a> = std::vector&lt; <a class="el" href="namespacemimir_1_1graphs.html#a2db250211f1c44372faeec52f5d0ffd4">TupleGraphVertex</a> &gt;</td></tr>
@@ -269,34 +284,34 @@ Typedefs</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a846aa1df13e4c1100cc1590380da2c4d"><td class="memItemLeft" align="right" valign="top">Index&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a846aa1df13e4c1100cc1590380da2c4d">get_class_vertex_index</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71">ProblemVertex</a> &amp;vertex)</td></tr>
+<tr class="memitem:a846aa1df13e4c1100cc1590380da2c4d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a846aa1df13e4c1100cc1590380da2c4d">get_class_vertex_index</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71">ProblemVertex</a> &amp;vertex)</td></tr>
 <tr class="memdesc:a846aa1df13e4c1100cc1590380da2c4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the index of the corresponding <code>ClassVertex</code> in the <code>GeneralizedStateSpace</code>.  <br /></td></tr>
 <tr class="separator:a846aa1df13e4c1100cc1590380da2c4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a851219d315d92f035d53daa1113a11a0"><td class="memItemLeft" align="right" valign="top">search::State&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a851219d315d92f035d53daa1113a11a0">get_state</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71">ProblemVertex</a> &amp;vertex)</td></tr>
+<tr class="memitem:a851219d315d92f035d53daa1113a11a0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">search::State</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a851219d315d92f035d53daa1113a11a0">get_state</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71">ProblemVertex</a> &amp;vertex)</td></tr>
 <tr class="memdesc:a851219d315d92f035d53daa1113a11a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the <code>State</code> of the given <code>ProblemVertex</code>.  <br /></td></tr>
 <tr class="separator:a851219d315d92f035d53daa1113a11a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a94263f50bae293ed7fb9bcff372aea57"><td class="memItemLeft" align="right" valign="top">Index&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a94263f50bae293ed7fb9bcff372aea57">get_class_edge_index</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a27cce2a7fdacae54f936c2eb0174b4c8">ProblemEdge</a> &amp;edge)</td></tr>
+<tr class="memitem:a94263f50bae293ed7fb9bcff372aea57"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a94263f50bae293ed7fb9bcff372aea57">get_class_edge_index</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a27cce2a7fdacae54f936c2eb0174b4c8">ProblemEdge</a> &amp;edge)</td></tr>
 <tr class="memdesc:a94263f50bae293ed7fb9bcff372aea57"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the index of the corresponding <code>ClassEdge</code> in the <code>GeneralizedStateSpace</code>.  <br /></td></tr>
 <tr class="separator:a94263f50bae293ed7fb9bcff372aea57"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a88c64d17c2e35ff629899ec795060e17"><td class="memItemLeft" align="right" valign="top">formalism::GroundAction&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a88c64d17c2e35ff629899ec795060e17">get_action</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a27cce2a7fdacae54f936c2eb0174b4c8">ProblemEdge</a> &amp;edge)</td></tr>
+<tr class="memitem:a88c64d17c2e35ff629899ec795060e17"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">formalism::GroundAction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a88c64d17c2e35ff629899ec795060e17">get_action</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a27cce2a7fdacae54f936c2eb0174b4c8">ProblemEdge</a> &amp;edge)</td></tr>
 <tr class="memdesc:a88c64d17c2e35ff629899ec795060e17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the <code>GroundAction</code> of the given <code>ProblemEdge</code>.  <br /></td></tr>
 <tr class="separator:a88c64d17c2e35ff629899ec795060e17"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abdc9761dce5abf6f85bcaf6964a3efac"><td class="memItemLeft" align="right" valign="top">ContinuousCost&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#abdc9761dce5abf6f85bcaf6964a3efac">get_action_cost</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a27cce2a7fdacae54f936c2eb0174b4c8">ProblemEdge</a> &amp;edge)</td></tr>
+<tr class="memitem:abdc9761dce5abf6f85bcaf6964a3efac"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#abdc9761dce5abf6f85bcaf6964a3efac">get_action_cost</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a27cce2a7fdacae54f936c2eb0174b4c8">ProblemEdge</a> &amp;edge)</td></tr>
 <tr class="memdesc:abdc9761dce5abf6f85bcaf6964a3efac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the action cost associated with the <code>GroundAction</code> of the given <code>ProblemEdge</code>  <br /></td></tr>
 <tr class="separator:abdc9761dce5abf6f85bcaf6964a3efac"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaa3e71af5edbb58f730a98e99254d7a1"><td class="memItemLeft" align="right" valign="top">Index&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#aaa3e71af5edbb58f730a98e99254d7a1">get_class_vertex_index</a> (const <a class="el" href="namespacemimir_1_1graphs.html#addbc8279833faca8528c5c48225e197e">ClassVertex</a> &amp;vertex)</td></tr>
+<tr class="memitem:aaa3e71af5edbb58f730a98e99254d7a1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#aaa3e71af5edbb58f730a98e99254d7a1">get_class_vertex_index</a> (const <a class="el" href="namespacemimir_1_1graphs.html#addbc8279833faca8528c5c48225e197e">ClassVertex</a> &amp;vertex)</td></tr>
 <tr class="memdesc:aaa3e71af5edbb58f730a98e99254d7a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the index of the given <code>ClassVertex</code> in the <code>GeneralizedStateSpace</code>.  <br /></td></tr>
 <tr class="separator:aaa3e71af5edbb58f730a98e99254d7a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac8a3e40b058ddb7cafbb8db6be152ada"><td class="memItemLeft" align="right" valign="top">Index&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#ac8a3e40b058ddb7cafbb8db6be152ada">get_problem_index</a> (const <a class="el" href="namespacemimir_1_1graphs.html#addbc8279833faca8528c5c48225e197e">ClassVertex</a> &amp;vertex)</td></tr>
+<tr class="memitem:ac8a3e40b058ddb7cafbb8db6be152ada"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#ac8a3e40b058ddb7cafbb8db6be152ada">get_problem_index</a> (const <a class="el" href="namespacemimir_1_1graphs.html#addbc8279833faca8528c5c48225e197e">ClassVertex</a> &amp;vertex)</td></tr>
 <tr class="memdesc:ac8a3e40b058ddb7cafbb8db6be152ada"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the index of the <code>ProblemGraph</code> associated with the given <code>ClassVertex</code> in the <code>GeneralizedStateSpace</code>.  <br /></td></tr>
 <tr class="separator:ac8a3e40b058ddb7cafbb8db6be152ada"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeb3ba492c827c91c33273ba967ed2562"><td class="memItemLeft" align="right" valign="top">Index&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#aeb3ba492c827c91c33273ba967ed2562">get_problem_vertex_index</a> (const <a class="el" href="namespacemimir_1_1graphs.html#addbc8279833faca8528c5c48225e197e">ClassVertex</a> &amp;vertex)</td></tr>
+<tr class="memitem:aeb3ba492c827c91c33273ba967ed2562"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#aeb3ba492c827c91c33273ba967ed2562">get_problem_vertex_index</a> (const <a class="el" href="namespacemimir_1_1graphs.html#addbc8279833faca8528c5c48225e197e">ClassVertex</a> &amp;vertex)</td></tr>
 <tr class="memdesc:aeb3ba492c827c91c33273ba967ed2562"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the index of the representative <code>ProblemVertex</code> in the <code>ProblemGraph</code> associated with the given <code>ClassVertex</code> in the <code>GeneralizedStateSpace</code>.  <br /></td></tr>
 <tr class="separator:aeb3ba492c827c91c33273ba967ed2562"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a49cd01761c8ad6db1f7d17c4b35a13a2"><td class="memItemLeft" align="right" valign="top">DiscreteCost&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a49cd01761c8ad6db1f7d17c4b35a13a2">get_unit_goal_distance</a> (const <a class="el" href="namespacemimir_1_1graphs.html#addbc8279833faca8528c5c48225e197e">ClassVertex</a> &amp;vertex)</td></tr>
+<tr class="memitem:a49cd01761c8ad6db1f7d17c4b35a13a2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir.html#a9a5965ca488a8a8f0d8bda41ceaf3385">DiscreteCost</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a49cd01761c8ad6db1f7d17c4b35a13a2">get_unit_goal_distance</a> (const <a class="el" href="namespacemimir_1_1graphs.html#addbc8279833faca8528c5c48225e197e">ClassVertex</a> &amp;vertex)</td></tr>
 <tr class="memdesc:a49cd01761c8ad6db1f7d17c4b35a13a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the unit goal distance of the given <code>ClassVertex</code>.  <br /></td></tr>
 <tr class="separator:a49cd01761c8ad6db1f7d17c4b35a13a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae83df6b50c1bce31a0a2755f47cd0dde"><td class="memItemLeft" align="right" valign="top">ContinuousCost&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#ae83df6b50c1bce31a0a2755f47cd0dde">get_action_goal_distance</a> (const <a class="el" href="namespacemimir_1_1graphs.html#addbc8279833faca8528c5c48225e197e">ClassVertex</a> &amp;vertex)</td></tr>
+<tr class="memitem:ae83df6b50c1bce31a0a2755f47cd0dde"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#ae83df6b50c1bce31a0a2755f47cd0dde">get_action_goal_distance</a> (const <a class="el" href="namespacemimir_1_1graphs.html#addbc8279833faca8528c5c48225e197e">ClassVertex</a> &amp;vertex)</td></tr>
 <tr class="memdesc:ae83df6b50c1bce31a0a2755f47cd0dde"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the action cost goal distance of the given <code>ClassVertex</code>.  <br /></td></tr>
 <tr class="separator:ae83df6b50c1bce31a0a2755f47cd0dde"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7c2a0922d5f24a0033c6c638102f9f00"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a7c2a0922d5f24a0033c6c638102f9f00">is_initial</a> (const <a class="el" href="namespacemimir_1_1graphs.html#addbc8279833faca8528c5c48225e197e">ClassVertex</a> &amp;vertex)</td></tr>
@@ -311,16 +326,16 @@ Functions</h2></td></tr>
 <tr class="memitem:ab9ae9f5aa8f9817b4aab1f5953a8b294"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#ab9ae9f5aa8f9817b4aab1f5953a8b294">is_alive</a> (const <a class="el" href="namespacemimir_1_1graphs.html#addbc8279833faca8528c5c48225e197e">ClassVertex</a> &amp;vertex)</td></tr>
 <tr class="memdesc:ab9ae9f5aa8f9817b4aab1f5953a8b294"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get information whether the representative associated with the given <code>ClassVertex</code> is an alive vertex.  <br /></td></tr>
 <tr class="separator:ab9ae9f5aa8f9817b4aab1f5953a8b294"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3762bd17230db79a09b111fe26779a4b"><td class="memItemLeft" align="right" valign="top">Index&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a3762bd17230db79a09b111fe26779a4b">get_class_edge_index</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a9861298646e808707570b3e2528af931">ClassEdge</a> &amp;edge)</td></tr>
+<tr class="memitem:a3762bd17230db79a09b111fe26779a4b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a3762bd17230db79a09b111fe26779a4b">get_class_edge_index</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a9861298646e808707570b3e2528af931">ClassEdge</a> &amp;edge)</td></tr>
 <tr class="memdesc:a3762bd17230db79a09b111fe26779a4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the index of the given <code>ClassEdge</code> in the <code>GeneralizedStateSpace</code>.  <br /></td></tr>
 <tr class="separator:a3762bd17230db79a09b111fe26779a4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a76abaf05d3540fae169e237958b7d0f3"><td class="memItemLeft" align="right" valign="top">Index&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a76abaf05d3540fae169e237958b7d0f3">get_problem_index</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a9861298646e808707570b3e2528af931">ClassEdge</a> &amp;edge)</td></tr>
+<tr class="memitem:a76abaf05d3540fae169e237958b7d0f3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a76abaf05d3540fae169e237958b7d0f3">get_problem_index</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a9861298646e808707570b3e2528af931">ClassEdge</a> &amp;edge)</td></tr>
 <tr class="memdesc:a76abaf05d3540fae169e237958b7d0f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the index of the <code>ProblemGraph</code> associated with the given <code>ClassEdge</code> in the <code>GeneralizedStateSpace</code>.  <br /></td></tr>
 <tr class="separator:a76abaf05d3540fae169e237958b7d0f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a44fc810925782eb385b720cb8527fa7a"><td class="memItemLeft" align="right" valign="top">Index&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a44fc810925782eb385b720cb8527fa7a">get_problem_edge_index</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a9861298646e808707570b3e2528af931">ClassEdge</a> &amp;edge)</td></tr>
+<tr class="memitem:a44fc810925782eb385b720cb8527fa7a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a44fc810925782eb385b720cb8527fa7a">get_problem_edge_index</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a9861298646e808707570b3e2528af931">ClassEdge</a> &amp;edge)</td></tr>
 <tr class="memdesc:a44fc810925782eb385b720cb8527fa7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the index of the representative <code>ProblemEdge</code> in the <code>ProblemGraph</code> associated with the given <code>ClassEdge</code> in the <code>GeneralizedStateSpace</code>.  <br /></td></tr>
 <tr class="separator:a44fc810925782eb385b720cb8527fa7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a535ace9ab3e298bb6c7ed90b1c770929"><td class="memItemLeft" align="right" valign="top">Index&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a535ace9ab3e298bb6c7ed90b1c770929">get_action_cost</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a9861298646e808707570b3e2528af931">ClassEdge</a> &amp;edge)</td></tr>
+<tr class="memitem:a535ace9ab3e298bb6c7ed90b1c770929"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a535ace9ab3e298bb6c7ed90b1c770929">get_action_cost</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a9861298646e808707570b3e2528af931">ClassEdge</a> &amp;edge)</td></tr>
 <tr class="memdesc:a535ace9ab3e298bb6c7ed90b1c770929"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the action cost associated with the <code>GroundAction</code> of the representative <code>ProblemEdge</code>.  <br /></td></tr>
 <tr class="separator:a535ace9ab3e298bb6c7ed90b1c770929"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2b24ba02d47da876e9a813489ef20051"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a2b24ba02d47da876e9a813489ef20051">operator&lt;&lt;</a> (std::ostream &amp;out, const <a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71">ProblemVertex</a> &amp;vertex)</td></tr>
@@ -331,10 +346,32 @@ Functions</h2></td></tr>
 <tr class="separator:a255cd184a5ab89a95a1cf3348f88778f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a54f7dd0bb476adb636fc0a2384a6b399"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a54f7dd0bb476adb636fc0a2384a6b399">operator&lt;&lt;</a> (std::ostream &amp;out, const <a class="el" href="namespacemimir_1_1graphs.html#a9861298646e808707570b3e2528af931">ClassEdge</a> &amp;edge)</td></tr>
 <tr class="separator:a54f7dd0bb476adb636fc0a2384a6b399"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa9994734abd230056008c214f3f80712"><td class="memItemLeft" align="right" valign="top">Index&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#aa9994734abd230056008c214f3f80712">get_tuple_index</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a2db250211f1c44372faeec52f5d0ffd4">TupleGraphVertex</a> &amp;vertex)</td></tr>
+<tr class="memitem:aa9994734abd230056008c214f3f80712"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#aa9994734abd230056008c214f3f80712">get_tuple_index</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a2db250211f1c44372faeec52f5d0ffd4">TupleGraphVertex</a> &amp;vertex)</td></tr>
 <tr class="separator:aa9994734abd230056008c214f3f80712"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab7058f319d92abbb392a2866fe96f369"><td class="memItemLeft" align="right" valign="top">const IndexList &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#ab7058f319d92abbb392a2866fe96f369">get_problem_vertices</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a2db250211f1c44372faeec52f5d0ffd4">TupleGraphVertex</a> &amp;vertex)</td></tr>
+<tr class="memitem:ab7058f319d92abbb392a2866fe96f369"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#ab7058f319d92abbb392a2866fe96f369">get_problem_vertices</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a2db250211f1c44372faeec52f5d0ffd4">TupleGraphVertex</a> &amp;vertex)</td></tr>
 <tr class="separator:ab7058f319d92abbb392a2866fe96f369"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa266ad539e28c01e5b58ad2f7647e451"><td class="memTemplParams" colspan="2">template&lt;typename Key , typename Value &gt; </td></tr>
+<tr class="memitem:aa266ad539e28c01e5b58ad2f7647e451"><td class="memTemplItemLeft" align="right" valign="top">Value&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#aa266ad539e28c01e5b58ad2f7647e451">get</a> (const <a class="el" href="structmimir_1_1graphs_1_1TrivialReadPropertyMap.html">TrivialReadPropertyMap</a>&lt; Key, Value &gt; &amp;, Key key)</td></tr>
+<tr class="memdesc:aa266ad539e28c01e5b58ad2f7647e451"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the index of a state.  <br /></td></tr>
+<tr class="separator:aa266ad539e28c01e5b58ad2f7647e451"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13e5df91e99c8ebc46c6fa0c11539553"><td class="memTemplParams" colspan="2">template&lt;typename Key , typename Value &gt; </td></tr>
+<tr class="memitem:a13e5df91e99c8ebc46c6fa0c11539553"><td class="memTemplItemLeft" align="right" valign="top">const Value &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a13e5df91e99c8ebc46c6fa0c11539553">get</a> (const <a class="el" href="classmimir_1_1graphs_1_1VectorReadPropertyMap.html">VectorReadPropertyMap</a>&lt; Key, Value &gt; &amp;m, Key key)</td></tr>
+<tr class="separator:a13e5df91e99c8ebc46c6fa0c11539553"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4766138a097ae31a24cb3a2c03fd83f5"><td class="memTemplParams" colspan="2">template&lt;typename Key , typename Value &gt; </td></tr>
+<tr class="memitem:a4766138a097ae31a24cb3a2c03fd83f5"><td class="memTemplItemLeft" align="right" valign="top">const Value &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a4766138a097ae31a24cb3a2c03fd83f5">get</a> (const <a class="el" href="classmimir_1_1graphs_1_1VectorReadWritePropertyMap.html">VectorReadWritePropertyMap</a>&lt; Key, Value &gt; &amp;m, Key key)</td></tr>
+<tr class="separator:a4766138a097ae31a24cb3a2c03fd83f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15510437666dacc988daf98ddc7d5f09"><td class="memTemplParams" colspan="2">template&lt;typename Key , typename Value &gt; </td></tr>
+<tr class="memitem:a15510437666dacc988daf98ddc7d5f09"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a15510437666dacc988daf98ddc7d5f09">put</a> (<a class="el" href="classmimir_1_1graphs_1_1VectorReadWritePropertyMap.html">VectorReadWritePropertyMap</a>&lt; Key, Value &gt; &amp;m, Key key, Value value)</td></tr>
+<tr class="separator:a15510437666dacc988daf98ddc7d5f09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14726ebe3489e09ffe562418f2d073b7"><td class="memTemplParams" colspan="2">template&lt;typename Key , typename Value &gt; </td></tr>
+<tr class="memitem:a14726ebe3489e09ffe562418f2d073b7"><td class="memTemplItemLeft" align="right" valign="top">const Value &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a14726ebe3489e09ffe562418f2d073b7">get</a> (const <a class="el" href="classmimir_1_1graphs_1_1UnorderedMapReadPropertyMap.html">UnorderedMapReadPropertyMap</a>&lt; Key, Value &gt; &amp;m, Key key)</td></tr>
+<tr class="separator:a14726ebe3489e09ffe562418f2d073b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f7e270533aad892040976a312f9c9cd"><td class="memTemplParams" colspan="2">template&lt;typename Key , typename Value &gt; </td></tr>
+<tr class="memitem:a4f7e270533aad892040976a312f9c9cd"><td class="memTemplItemLeft" align="right" valign="top">const Value &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a4f7e270533aad892040976a312f9c9cd">get</a> (const <a class="el" href="classmimir_1_1graphs_1_1UnorderedMapReadWritePropertyMap.html">UnorderedMapReadWritePropertyMap</a>&lt; Key, Value &gt; &amp;m, Key key)</td></tr>
+<tr class="separator:a4f7e270533aad892040976a312f9c9cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a528e6ed94e1574063c7407af570973e3"><td class="memTemplParams" colspan="2">template&lt;typename Key , typename Value &gt; </td></tr>
+<tr class="memitem:a528e6ed94e1574063c7407af570973e3"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a528e6ed94e1574063c7407af570973e3">put</a> (<a class="el" href="classmimir_1_1graphs_1_1UnorderedMapReadWritePropertyMap.html">UnorderedMapReadWritePropertyMap</a>&lt; Key, Value &gt; &amp;m, Key key, Value value)</td></tr>
+<tr class="separator:a528e6ed94e1574063c7407af570973e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adfefc77af6313ffc273cdff8e8462a5b"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#adfefc77af6313ffc273cdff8e8462a5b">operator&lt;&lt;</a> (std::ostream &amp;out, const <a class="el" href="namespacemimir_1_1graphs.html#ad1ecfbb2e8fff3f99afd88ee58116c31">StaticVertexColoredDigraph</a> &amp;graph)</td></tr>
 <tr class="separator:adfefc77af6313ffc273cdff8e8462a5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0646cfd184323ed0920247ec640072aa"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a0646cfd184323ed0920247ec640072aa">operator&lt;&lt;</a> (std::ostream &amp;out, const <a class="el" href="namespacemimir_1_1graphs.html#a09c04470c52cfa6c879fc371bf3f7e29">StaticDigraph</a> &amp;digraph)</td></tr>
@@ -406,13 +443,13 @@ requires IsEdgeListGraph&lt;G&gt;</td></tr>
 <tr class="memitem:ae6eed763091134b16c5c885bef89f4da"><td class="memTemplItemLeft" align="right" valign="top">IndexGroupedVector&lt; std::pair&lt; typename boost::graph_traits&lt; <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &gt;::vertices_size_type, typename boost::graph_traits&lt; <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &gt;::vertex_descriptor &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#ae6eed763091134b16c5c885bef89f4da">get_partitioning</a> (typename boost::graph_traits&lt; <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &gt;::vertices_size_type num_components, std::vector&lt; typename boost::graph_traits&lt; <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &gt;::vertices_size_type &gt; component_map)</td></tr>
 <tr class="separator:ae6eed763091134b16c5c885bef89f4da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a435a01ddd1f56b405d7e9d55b685c531"><td class="memTemplParams" colspan="2">template&lt;IsStaticGraph Graph, IsDirection Direction, class SourceInputIter &gt; </td></tr>
-<tr class="memitem:a435a01ddd1f56b405d7e9d55b685c531"><td class="memTemplItemLeft" align="right" valign="top">std::tuple&lt; std::vector&lt; typename boost::graph_traits&lt; <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &gt;::vertex_descriptor &gt;, ContinuousCostList &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a435a01ddd1f56b405d7e9d55b685c531">dijkstra_shortest_paths</a> (const <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &amp;g, const ContinuousCostList &amp;w, SourceInputIter s_begin, SourceInputIter s_end)</td></tr>
+<tr class="memitem:a435a01ddd1f56b405d7e9d55b685c531"><td class="memTemplItemLeft" align="right" valign="top">std::tuple&lt; std::vector&lt; typename boost::graph_traits&lt; <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &gt;::vertex_descriptor &gt;, <a class="el" href="namespacemimir.html#a311e7c8779449c7599fd42d976c22527">ContinuousCostList</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a435a01ddd1f56b405d7e9d55b685c531">dijkstra_shortest_paths</a> (const <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &amp;g, const <a class="el" href="namespacemimir.html#a311e7c8779449c7599fd42d976c22527">ContinuousCostList</a> &amp;w, SourceInputIter s_begin, SourceInputIter s_end)</td></tr>
 <tr class="separator:a435a01ddd1f56b405d7e9d55b685c531"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac24e4094f3aa1b94cde24b882eff1148"><td class="memTemplParams" colspan="2">template&lt;IsStaticGraph Graph, IsDirection Direction, class SourceInputIter &gt; </td></tr>
-<tr class="memitem:ac24e4094f3aa1b94cde24b882eff1148"><td class="memTemplItemLeft" align="right" valign="top">std::tuple&lt; std::vector&lt; typename boost::graph_traits&lt; <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &gt;::vertex_descriptor &gt;, DiscreteCostList &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#ac24e4094f3aa1b94cde24b882eff1148">breadth_first_search</a> (const <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &amp;g, SourceInputIter s_begin, SourceInputIter s_end)</td></tr>
+<tr class="memitem:ac24e4094f3aa1b94cde24b882eff1148"><td class="memTemplItemLeft" align="right" valign="top">std::tuple&lt; std::vector&lt; typename boost::graph_traits&lt; <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &gt;::vertex_descriptor &gt;, <a class="el" href="namespacemimir.html#aa3085f9a656656be6ed0ac38b44d3bbb">DiscreteCostList</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#ac24e4094f3aa1b94cde24b882eff1148">breadth_first_search</a> (const <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &amp;g, SourceInputIter s_begin, SourceInputIter s_end)</td></tr>
 <tr class="separator:ac24e4094f3aa1b94cde24b882eff1148"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4aa05afac2a9da020025b3d2ee773f44"><td class="memTemplParams" colspan="2">template&lt;IsStaticGraph Graph, IsDirection Direction&gt; </td></tr>
-<tr class="memitem:a4aa05afac2a9da020025b3d2ee773f44"><td class="memTemplItemLeft" align="right" valign="top">VectorBasicMatrix&lt; typename boost::graph_traits&lt; <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &gt;::vertex_descriptor, ContinuousCost &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a4aa05afac2a9da020025b3d2ee773f44">floyd_warshall_all_pairs_shortest_paths</a> (const <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &amp;g, const ContinuousCostList &amp;w)</td></tr>
+<tr class="memitem:a4aa05afac2a9da020025b3d2ee773f44"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classmimir_1_1graphs_1_1VectorBasicMatrix.html">VectorBasicMatrix</a>&lt; typename boost::graph_traits&lt; <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &gt;::vertex_descriptor, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a4aa05afac2a9da020025b3d2ee773f44">floyd_warshall_all_pairs_shortest_paths</a> (const <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &amp;g, const <a class="el" href="namespacemimir.html#a311e7c8779449c7599fd42d976c22527">ContinuousCostList</a> &amp;w)</td></tr>
 <tr class="separator:a4aa05afac2a9da020025b3d2ee773f44"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa92d9bc84a7aff44627e3442b54e4575"><td class="memTemplParams" colspan="2">template&lt;IsStaticGraph Graph, IsDirection Direction&gt; </td></tr>
 <tr class="memitem:aa92d9bc84a7aff44627e3442b54e4575"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; typename boost::graph_traits&lt; <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &gt;::vertex_descriptor &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#aa92d9bc84a7aff44627e3442b54e4575">topological_sort</a> (const <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &amp;g)</td></tr>
@@ -942,7 +979,7 @@ requires IsEdgeListGraph&lt;G&gt;</td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="namespacemimir_1_1graphs.html#a2db250211f1c44372faeec52f5d0ffd4">mimir::graphs::TupleGraphVertex</a> = typedef <a class="el" href="classmimir_1_1graphs_1_1Vertex.html">Vertex</a>&lt;Index, IndexList&gt;</td>
+          <td class="memname">using <a class="el" href="namespacemimir_1_1graphs.html#a2db250211f1c44372faeec52f5d0ffd4">mimir::graphs::TupleGraphVertex</a> = typedef <a class="el" href="classmimir_1_1graphs_1_1Vertex.html">Vertex</a>&lt;<a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>, <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a>&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1005,7 +1042,7 @@ template&lt;IsStaticGraph Graph, IsDirection Direction&gt; </div>
 template&lt;IsStaticGraph Graph, IsDirection Direction, class SourceInputIter &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">std::tuple&lt; std::vector&lt; typename boost::graph_traits&lt; <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &gt;::vertex_descriptor &gt;, DiscreteCostList &gt; mimir::graphs::breadth_first_search </td>
+          <td class="memname">std::tuple&lt; std::vector&lt; typename boost::graph_traits&lt; <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &gt;::vertex_descriptor &gt;, <a class="el" href="namespacemimir.html#aa3085f9a656656be6ed0ac38b44d3bbb">DiscreteCostList</a> &gt; mimir::graphs::breadth_first_search </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &amp;&#160;</td>
           <td class="paramname"><em>g</em>, </td>
@@ -1081,7 +1118,7 @@ template&lt;IsStaticGraph Graph, IsDirection Direction&gt; </div>
 template&lt;IsStaticGraph Graph, IsDirection Direction, class SourceInputIter &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">std::tuple&lt; std::vector&lt; typename boost::graph_traits&lt; <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &gt;::vertex_descriptor &gt;, ContinuousCostList &gt; mimir::graphs::dijkstra_shortest_paths </td>
+          <td class="memname">std::tuple&lt; std::vector&lt; typename boost::graph_traits&lt; <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &gt;::vertex_descriptor &gt;, <a class="el" href="namespacemimir.html#a311e7c8779449c7599fd42d976c22527">ContinuousCostList</a> &gt; mimir::graphs::dijkstra_shortest_paths </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &amp;&#160;</td>
           <td class="paramname"><em>g</em>, </td>
@@ -1089,7 +1126,7 @@ template&lt;IsStaticGraph Graph, IsDirection Direction, class SourceInputIter &g
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const ContinuousCostList &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacemimir.html#a311e7c8779449c7599fd42d976c22527">ContinuousCostList</a> &amp;&#160;</td>
           <td class="paramname"><em>w</em>, </td>
         </tr>
         <tr>
@@ -1143,7 +1180,7 @@ template&lt;IsStaticGraph Graph, IsDirection Direction&gt; </div>
 template&lt;IsStaticGraph Graph, IsDirection Direction&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">VectorBasicMatrix&lt; typename boost::graph_traits&lt; <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &gt;::vertex_descriptor, ContinuousCost &gt; mimir::graphs::floyd_warshall_all_pairs_shortest_paths </td>
+          <td class="memname"><a class="el" href="classmimir_1_1graphs_1_1VectorBasicMatrix.html">VectorBasicMatrix</a>&lt; typename boost::graph_traits&lt; <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &gt;::vertex_descriptor, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> &gt; mimir::graphs::floyd_warshall_all_pairs_shortest_paths </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &amp;&#160;</td>
           <td class="paramname"><em>g</em>, </td>
@@ -1151,7 +1188,7 @@ template&lt;IsStaticGraph Graph, IsDirection Direction&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const ContinuousCostList &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacemimir.html#a311e7c8779449c7599fd42d976c22527">ContinuousCostList</a> &amp;&#160;</td>
           <td class="paramname"><em>w</em>&#160;</td>
         </tr>
         <tr>
@@ -1160,6 +1197,205 @@ template&lt;IsStaticGraph Graph, IsDirection Direction&gt; </div>
           <td></td><td></td>
         </tr>
       </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa266ad539e28c01e5b58ad2f7647e451" name="aa266ad539e28c01e5b58ad2f7647e451"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa266ad539e28c01e5b58ad2f7647e451">&#9670;&#160;</a></span>get() <span class="overload">[1/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Key , typename Value &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Value mimir::graphs::get </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structmimir_1_1graphs_1_1TrivialReadPropertyMap.html">TrivialReadPropertyMap</a>&lt; Key, Value &gt; &amp;&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Key&#160;</td>
+          <td class="paramname"><em>key</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get the index of a state. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>the state. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>the index of the state, which is just the input key. </dd></dl>
+
+</div>
+</div>
+<a id="a14726ebe3489e09ffe562418f2d073b7" name="a14726ebe3489e09ffe562418f2d073b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14726ebe3489e09ffe562418f2d073b7">&#9670;&#160;</a></span>get() <span class="overload">[2/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Key , typename Value &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Value &amp; mimir::graphs::get </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classmimir_1_1graphs_1_1UnorderedMapReadPropertyMap.html">UnorderedMapReadPropertyMap</a>&lt; Key, Value &gt; &amp;&#160;</td>
+          <td class="paramname"><em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Key&#160;</td>
+          <td class="paramname"><em>key</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4f7e270533aad892040976a312f9c9cd" name="a4f7e270533aad892040976a312f9c9cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f7e270533aad892040976a312f9c9cd">&#9670;&#160;</a></span>get() <span class="overload">[3/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Key , typename Value &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Value &amp; mimir::graphs::get </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classmimir_1_1graphs_1_1UnorderedMapReadWritePropertyMap.html">UnorderedMapReadWritePropertyMap</a>&lt; Key, Value &gt; &amp;&#160;</td>
+          <td class="paramname"><em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Key&#160;</td>
+          <td class="paramname"><em>key</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a13e5df91e99c8ebc46c6fa0c11539553" name="a13e5df91e99c8ebc46c6fa0c11539553"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13e5df91e99c8ebc46c6fa0c11539553">&#9670;&#160;</a></span>get() <span class="overload">[4/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Key , typename Value &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Value &amp; mimir::graphs::get </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classmimir_1_1graphs_1_1VectorReadPropertyMap.html">VectorReadPropertyMap</a>&lt; Key, Value &gt; &amp;&#160;</td>
+          <td class="paramname"><em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Key&#160;</td>
+          <td class="paramname"><em>key</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4766138a097ae31a24cb3a2c03fd83f5" name="a4766138a097ae31a24cb3a2c03fd83f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4766138a097ae31a24cb3a2c03fd83f5">&#9670;&#160;</a></span>get() <span class="overload">[5/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Key , typename Value &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Value &amp; mimir::graphs::get </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classmimir_1_1graphs_1_1VectorReadWritePropertyMap.html">VectorReadWritePropertyMap</a>&lt; Key, Value &gt; &amp;&#160;</td>
+          <td class="paramname"><em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Key&#160;</td>
+          <td class="paramname"><em>key</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 </div>
@@ -1174,7 +1410,7 @@ template&lt;IsStaticGraph Graph, IsDirection Direction&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">formalism::GroundAction mimir::graphs::get_action </td>
+          <td class="memname"><a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">formalism::GroundAction</a> mimir::graphs::get_action </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="namespacemimir_1_1graphs.html#a27cce2a7fdacae54f936c2eb0174b4c8">ProblemEdge</a> &amp;&#160;</td>
           <td class="paramname"><em>edge</em></td><td>)</td>
@@ -1209,7 +1445,7 @@ template&lt;IsStaticGraph Graph, IsDirection Direction&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">Index mimir::graphs::get_action_cost </td>
+          <td class="memname"><a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> mimir::graphs::get_action_cost </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="namespacemimir_1_1graphs.html#a9861298646e808707570b3e2528af931">ClassEdge</a> &amp;&#160;</td>
           <td class="paramname"><em>edge</em></td><td>)</td>
@@ -1244,7 +1480,7 @@ template&lt;IsStaticGraph Graph, IsDirection Direction&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">ContinuousCost mimir::graphs::get_action_cost </td>
+          <td class="memname"><a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> mimir::graphs::get_action_cost </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="namespacemimir_1_1graphs.html#a27cce2a7fdacae54f936c2eb0174b4c8">ProblemEdge</a> &amp;&#160;</td>
           <td class="paramname"><em>edge</em></td><td>)</td>
@@ -1279,7 +1515,7 @@ template&lt;IsStaticGraph Graph, IsDirection Direction&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">ContinuousCost mimir::graphs::get_action_goal_distance </td>
+          <td class="memname"><a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> mimir::graphs::get_action_goal_distance </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="namespacemimir_1_1graphs.html#addbc8279833faca8528c5c48225e197e">ClassVertex</a> &amp;&#160;</td>
           <td class="paramname"><em>vertex</em></td><td>)</td>
@@ -1314,7 +1550,7 @@ template&lt;IsStaticGraph Graph, IsDirection Direction&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">Index mimir::graphs::get_class_edge_index </td>
+          <td class="memname"><a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> mimir::graphs::get_class_edge_index </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="namespacemimir_1_1graphs.html#a9861298646e808707570b3e2528af931">ClassEdge</a> &amp;&#160;</td>
           <td class="paramname"><em>edge</em></td><td>)</td>
@@ -1349,7 +1585,7 @@ template&lt;IsStaticGraph Graph, IsDirection Direction&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">Index mimir::graphs::get_class_edge_index </td>
+          <td class="memname"><a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> mimir::graphs::get_class_edge_index </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="namespacemimir_1_1graphs.html#a27cce2a7fdacae54f936c2eb0174b4c8">ProblemEdge</a> &amp;&#160;</td>
           <td class="paramname"><em>edge</em></td><td>)</td>
@@ -1384,7 +1620,7 @@ template&lt;IsStaticGraph Graph, IsDirection Direction&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">Index mimir::graphs::get_class_vertex_index </td>
+          <td class="memname"><a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> mimir::graphs::get_class_vertex_index </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="namespacemimir_1_1graphs.html#addbc8279833faca8528c5c48225e197e">ClassVertex</a> &amp;&#160;</td>
           <td class="paramname"><em>vertex</em></td><td>)</td>
@@ -1419,7 +1655,7 @@ template&lt;IsStaticGraph Graph, IsDirection Direction&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">Index mimir::graphs::get_class_vertex_index </td>
+          <td class="memname"><a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> mimir::graphs::get_class_vertex_index </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71">ProblemVertex</a> &amp;&#160;</td>
           <td class="paramname"><em>vertex</em></td><td>)</td>
@@ -1554,7 +1790,7 @@ template&lt;IsStaticGraph Graph, IsDirection Direction&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">Index mimir::graphs::get_problem_edge_index </td>
+          <td class="memname"><a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> mimir::graphs::get_problem_edge_index </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="namespacemimir_1_1graphs.html#a9861298646e808707570b3e2528af931">ClassEdge</a> &amp;&#160;</td>
           <td class="paramname"><em>edge</em></td><td>)</td>
@@ -1589,7 +1825,7 @@ template&lt;IsStaticGraph Graph, IsDirection Direction&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">Index mimir::graphs::get_problem_index </td>
+          <td class="memname"><a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> mimir::graphs::get_problem_index </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="namespacemimir_1_1graphs.html#a9861298646e808707570b3e2528af931">ClassEdge</a> &amp;&#160;</td>
           <td class="paramname"><em>edge</em></td><td>)</td>
@@ -1624,7 +1860,7 @@ template&lt;IsStaticGraph Graph, IsDirection Direction&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">Index mimir::graphs::get_problem_index </td>
+          <td class="memname"><a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> mimir::graphs::get_problem_index </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="namespacemimir_1_1graphs.html#addbc8279833faca8528c5c48225e197e">ClassVertex</a> &amp;&#160;</td>
           <td class="paramname"><em>vertex</em></td><td>)</td>
@@ -1659,7 +1895,7 @@ template&lt;IsStaticGraph Graph, IsDirection Direction&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">Index mimir::graphs::get_problem_vertex_index </td>
+          <td class="memname"><a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> mimir::graphs::get_problem_vertex_index </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="namespacemimir_1_1graphs.html#addbc8279833faca8528c5c48225e197e">ClassVertex</a> &amp;&#160;</td>
           <td class="paramname"><em>vertex</em></td><td>)</td>
@@ -1694,7 +1930,7 @@ template&lt;IsStaticGraph Graph, IsDirection Direction&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const IndexList &amp; mimir::graphs::get_problem_vertices </td>
+          <td class="memname">const <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a> &amp; mimir::graphs::get_problem_vertices </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="namespacemimir_1_1graphs.html#a2db250211f1c44372faeec52f5d0ffd4">TupleGraphVertex</a> &amp;&#160;</td>
           <td class="paramname"><em>vertex</em></td><td>)</td>
@@ -1720,7 +1956,7 @@ template&lt;IsStaticGraph Graph, IsDirection Direction&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">search::State mimir::graphs::get_state </td>
+          <td class="memname"><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">search::State</a> mimir::graphs::get_state </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71">ProblemVertex</a> &amp;&#160;</td>
           <td class="paramname"><em>vertex</em></td><td>)</td>
@@ -1755,7 +1991,7 @@ template&lt;IsStaticGraph Graph, IsDirection Direction&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">Index mimir::graphs::get_tuple_index </td>
+          <td class="memname"><a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> mimir::graphs::get_tuple_index </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="namespacemimir_1_1graphs.html#a2db250211f1c44372faeec52f5d0ffd4">TupleGraphVertex</a> &amp;&#160;</td>
           <td class="paramname"><em>vertex</em></td><td>)</td>
@@ -1781,7 +2017,7 @@ template&lt;IsStaticGraph Graph, IsDirection Direction&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">DiscreteCost mimir::graphs::get_unit_goal_distance </td>
+          <td class="memname"><a class="el" href="namespacemimir.html#a9a5965ca488a8a8f0d8bda41ceaf3385">DiscreteCost</a> mimir::graphs::get_unit_goal_distance </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="namespacemimir_1_1graphs.html#addbc8279833faca8528c5c48225e197e">ClassVertex</a> &amp;&#160;</td>
           <td class="paramname"><em>vertex</em></td><td>)</td>
@@ -2454,6 +2690,94 @@ template&lt;IsStaticGraph Graph, IsDirection Direction&gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>an iterator-range providing access to all the ou edges in the graph. </dd></dl>
+
+</div>
+</div>
+<a id="a528e6ed94e1574063c7407af570973e3" name="a528e6ed94e1574063c7407af570973e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a528e6ed94e1574063c7407af570973e3">&#9670;&#160;</a></span>put() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Key , typename Value &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void mimir::graphs::put </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classmimir_1_1graphs_1_1UnorderedMapReadWritePropertyMap.html">UnorderedMapReadWritePropertyMap</a>&lt; Key, Value &gt; &amp;&#160;</td>
+          <td class="paramname"><em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Key&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Value&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a15510437666dacc988daf98ddc7d5f09" name="a15510437666dacc988daf98ddc7d5f09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15510437666dacc988daf98ddc7d5f09">&#9670;&#160;</a></span>put() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Key , typename Value &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void mimir::graphs::put </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classmimir_1_1graphs_1_1VectorReadWritePropertyMap.html">VectorReadWritePropertyMap</a>&lt; Key, Value &gt; &amp;&#160;</td>
+          <td class="paramname"><em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Key&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Value&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>

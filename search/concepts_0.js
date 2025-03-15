@@ -13,12 +13,13 @@ var searchData=
   ['isedgecoloredgraph_10',['IsEdgeColoredGraph',['../conceptmimir_1_1graphs_1_1IsEdgeColoredGraph.html',1,'mimir::graphs']]],
   ['isedgelistgraph_11',['IsEdgeListGraph',['../conceptmimir_1_1graphs_1_1IsEdgeListGraph.html',1,'mimir::graphs']]],
   ['isincidencegraph_12',['IsIncidenceGraph',['../conceptmimir_1_1graphs_1_1IsIncidenceGraph.html',1,'mimir::graphs']]],
-  ['isstaticgraph_13',['IsStaticGraph',['../conceptmimir_1_1graphs_1_1IsStaticGraph.html',1,'mimir::graphs']]],
-  ['isvertex_14',['IsVertex',['../conceptmimir_1_1graphs_1_1IsVertex.html',1,'mimir::graphs']]],
-  ['isvertexcoloredgraph_15',['IsVertexColoredGraph',['../conceptmimir_1_1graphs_1_1IsVertexColoredGraph.html',1,'mimir::graphs']]],
-  ['isvertexlistgraph_16',['IsVertexListGraph',['../conceptmimir_1_1graphs_1_1IsVertexListGraph.html',1,'mimir::graphs']]],
-  ['staticordynamicsize_17',['StaticOrDynamicSize',['../conceptmimir_1_1search_1_1StaticOrDynamicSize.html',1,'mimir::search']]],
-  ['staticorfluent_18',['StaticOrFluent',['../conceptmimir_1_1formalism_1_1StaticOrFluent.html',1,'mimir::formalism']]],
-  ['staticorfluentorauxiliary_19',['StaticOrFluentOrAuxiliary',['../conceptmimir_1_1formalism_1_1StaticOrFluentOrAuxiliary.html',1,'mimir::formalism']]],
-  ['staticorfluentorderived_20',['StaticOrFluentOrDerived',['../conceptmimir_1_1formalism_1_1StaticOrFluentOrDerived.html',1,'mimir::formalism']]]
+  ['ispddlentity_13',['IsPDDLEntity',['../conceptmimir_1_1formalism_1_1IsPDDLEntity.html',1,'mimir::formalism']]],
+  ['isstaticgraph_14',['IsStaticGraph',['../conceptmimir_1_1graphs_1_1IsStaticGraph.html',1,'mimir::graphs']]],
+  ['isvertex_15',['IsVertex',['../conceptmimir_1_1graphs_1_1IsVertex.html',1,'mimir::graphs']]],
+  ['isvertexcoloredgraph_16',['IsVertexColoredGraph',['../conceptmimir_1_1graphs_1_1IsVertexColoredGraph.html',1,'mimir::graphs']]],
+  ['isvertexlistgraph_17',['IsVertexListGraph',['../conceptmimir_1_1graphs_1_1IsVertexListGraph.html',1,'mimir::graphs']]],
+  ['staticordynamicsize_18',['StaticOrDynamicSize',['../conceptmimir_1_1search_1_1StaticOrDynamicSize.html',1,'mimir::search']]],
+  ['staticorfluent_19',['StaticOrFluent',['../conceptmimir_1_1formalism_1_1StaticOrFluent.html',1,'mimir::formalism']]],
+  ['staticorfluentorauxiliary_20',['StaticOrFluentOrAuxiliary',['../conceptmimir_1_1formalism_1_1StaticOrFluentOrAuxiliary.html',1,'mimir::formalism']]],
+  ['staticorfluentorderived_21',['StaticOrFluentOrDerived',['../conceptmimir_1_1formalism_1_1StaticOrFluentOrDerived.html',1,'mimir::formalism']]]
 ];

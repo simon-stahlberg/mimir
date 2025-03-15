@@ -101,13 +101,13 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a2fdc45786b20399ba99ce0a146072e98"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a14e67a4bf0f604f210d75be00dbb96eb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmimir_1_1formalism_1_1GroundLiteralImpl.html">GroundLiteralImpl</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1GroundLiteralImpl.html#a14e67a4bf0f604f210d75be00dbb96eb">operator=</a> (<a class="el" href="classmimir_1_1formalism_1_1GroundLiteralImpl.html">GroundLiteralImpl</a> &amp;&amp;other)=default</td></tr>
 <tr class="separator:a14e67a4bf0f604f210d75be00dbb96eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abbafbcbcada8f05eb44d811191d31db1"><td class="memItemLeft" align="right" valign="top">Index&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1GroundLiteralImpl.html#abbafbcbcada8f05eb44d811191d31db1">get_index</a> () const</td></tr>
+<tr class="memitem:abbafbcbcada8f05eb44d811191d31db1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1GroundLiteralImpl.html#abbafbcbcada8f05eb44d811191d31db1">get_index</a> () const</td></tr>
 <tr class="separator:abbafbcbcada8f05eb44d811191d31db1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0baa42d0a6ac2716b4c95371cc0a649d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1GroundLiteralImpl.html#a0baa42d0a6ac2716b4c95371cc0a649d">is_negated</a> () const</td></tr>
 <tr class="separator:a0baa42d0a6ac2716b4c95371cc0a649d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a94fa4d1ba380f84e99473a8a33dd9def"><td class="memItemLeft" align="right" valign="top">GroundAtom&lt; P &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1GroundLiteralImpl.html#a94fa4d1ba380f84e99473a8a33dd9def">get_atom</a> () const</td></tr>
+<tr class="memitem:a94fa4d1ba380f84e99473a8a33dd9def"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#a6138c3dd23d47ca2ba928221d30421d9">GroundAtom</a>&lt; P &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1GroundLiteralImpl.html#a94fa4d1ba380f84e99473a8a33dd9def">get_atom</a> () const</td></tr>
 <tr class="separator:a94fa4d1ba380f84e99473a8a33dd9def"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae6503270027bb502afb3eba0578f7e74"><td class="memItemLeft" align="right" valign="top">Literal&lt; P &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1GroundLiteralImpl.html#ae6503270027bb502afb3eba0578f7e74">lift</a> (const TermList &amp;terms, <a class="el" href="classmimir_1_1formalism_1_1PDDLRepositories.html">PDDLRepositories</a> &amp;pddl_repositories) const</td></tr>
+<tr class="memitem:ae6503270027bb502afb3eba0578f7e74"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#a2676612f0dc35f8f7240770acf83eeba">Literal</a>&lt; P &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1GroundLiteralImpl.html#ae6503270027bb502afb3eba0578f7e74">lift</a> (const <a class="el" href="namespacemimir_1_1formalism.html#af020fb353c583f3a1ebabd01f82e14fd">TermList</a> &amp;terms, <a class="el" href="classmimir_1_1formalism_1_1PDDLRepositories.html">PDDLRepositories</a> &amp;pddl_repositories) const</td></tr>
 <tr class="separator:ae6503270027bb502afb3eba0578f7e74"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0662d59ba6e205027bc2cd99210a452d"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1GroundLiteralImpl.html#a0662d59ba6e205027bc2cd99210a452d">identifying_members</a> () const</td></tr>
 <tr class="memdesc:a0662d59ba6e205027bc2cd99210a452d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a tuple of const references to the members that uniquely identify an object. This enables the automatic generation of <code>loki::Hash</code> and <code>loki::EqualTo</code> specializations.  <br /></td></tr>
@@ -219,7 +219,7 @@ template&lt;StaticOrFluentOrDerived P&gt; </div>
 template&lt;StaticOrFluentOrDerived P&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">GroundAtom&lt; P &gt; <a class="el" href="classmimir_1_1formalism_1_1GroundLiteralImpl.html">mimir::formalism::GroundLiteralImpl</a>&lt; P &gt;::get_atom </td>
+          <td class="memname"><a class="el" href="namespacemimir_1_1formalism.html#a6138c3dd23d47ca2ba928221d30421d9">GroundAtom</a>&lt; P &gt; <a class="el" href="classmimir_1_1formalism_1_1GroundLiteralImpl.html">mimir::formalism::GroundLiteralImpl</a>&lt; P &gt;::get_atom </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -238,7 +238,7 @@ template&lt;StaticOrFluentOrDerived P&gt; </div>
 template&lt;StaticOrFluentOrDerived P&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">Index <a class="el" href="classmimir_1_1formalism_1_1GroundLiteralImpl.html">mimir::formalism::GroundLiteralImpl</a>&lt; P &gt;::get_index </td>
+          <td class="memname"><a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> <a class="el" href="classmimir_1_1formalism_1_1GroundLiteralImpl.html">mimir::formalism::GroundLiteralImpl</a>&lt; P &gt;::get_index </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -306,9 +306,9 @@ template&lt;StaticOrFluentOrDerived P&gt; </div>
 template&lt;StaticOrFluentOrDerived P&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">Literal&lt; P &gt; <a class="el" href="classmimir_1_1formalism_1_1GroundLiteralImpl.html">mimir::formalism::GroundLiteralImpl</a>&lt; P &gt;::lift </td>
+          <td class="memname"><a class="el" href="namespacemimir_1_1formalism.html#a2676612f0dc35f8f7240770acf83eeba">Literal</a>&lt; P &gt; <a class="el" href="classmimir_1_1formalism_1_1GroundLiteralImpl.html">mimir::formalism::GroundLiteralImpl</a>&lt; P &gt;::lift </td>
           <td>(</td>
-          <td class="paramtype">const TermList &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacemimir_1_1formalism.html#af020fb353c583f3a1ebabd01f82e14fd">TermList</a> &amp;&#160;</td>
           <td class="paramname"><em>terms</em>, </td>
         </tr>
         <tr>
@@ -410,7 +410,8 @@ template&lt;typename T , typename Hash , typename EqualTo &gt; </div>
 
 </div>
 </div>
-<hr/>The documentation for this class was generated from the following file:<ul>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>include/mimir/formalism/<a class="el" href="formalism_2declarations_8hpp_source.html">declarations.hpp</a></li>
 <li>include/mimir/formalism/<a class="el" href="ground__literal_8hpp_source.html">ground_literal.hpp</a></li>
 </ul>
 </div><!-- contents -->

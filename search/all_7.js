@@ -5,6 +5,7 @@ var searchData=
   ['hanageneratorstatistics_2',['HanaGeneratorStatistics',['../namespacemimir_1_1languages_1_1dl_1_1cnf__grammar.html#a847873a2fc751642115fd8002740f03b',1,'mimir::languages::dl::cnf_grammar']]],
   ['hanapddlrepositories_3',['HanaPDDLRepositories',['../namespacemimir_1_1formalism.html#ae32aae5e80abfcfe90d308c46946c88b',1,'mimir::formalism']]],
   ['hash_5fto_5ftuple_4',['hash_to_tuple',['../namespacemimir_1_1graphs_1_1kfwl.html#a6374e2bcf2319cea5ec9cee898b5039b',1,'mimir::graphs::kfwl']]],
-  ['hstar_2ehpp_5',['hstar.hpp',['../hstar_8hpp.html',1,'']]],
-  ['hstarheuristic_6',['HStarHeuristic',['../classmimir_1_1search_1_1HStarHeuristic.html#ac483bf09510ad9abdebd3a0846a412d5',1,'mimir::search::HStarHeuristic::HStarHeuristic()'],['../classmimir_1_1search_1_1HStarHeuristic.html',1,'mimir::search::HStarHeuristic']]]
+  ['heuristic_5',['Heuristic',['../namespacemimir_1_1search.html#acd66425d00784f4595cdb9be59ae2bbe',1,'mimir::search']]],
+  ['hstar_2ehpp_6',['hstar.hpp',['../hstar_8hpp.html',1,'']]],
+  ['hstarheuristic_7',['HStarHeuristic',['../classmimir_1_1search_1_1HStarHeuristic.html#ac483bf09510ad9abdebd3a0846a412d5',1,'mimir::search::HStarHeuristic::HStarHeuristic()'],['../classmimir_1_1search_1_1HStarHeuristic.html',1,'mimir::search::HStarHeuristic']]]
 ];
