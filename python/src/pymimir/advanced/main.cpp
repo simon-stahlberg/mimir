@@ -22,6 +22,9 @@
 namespace nb = nanobind;
 using namespace nb::literals;
 
+namespace mimir::bindings
+{
+
 NB_MODULE(_pymimir, m)
 {
     // Create submodules before binding to avoid missing bindings
@@ -35,7 +38,7 @@ NB_MODULE(_pymimir, m)
     auto languages = advanced.def_submodule("languages");
     auto description_logics = languages.def_submodule("description_logics");
 
-    bind_common(advanced);
+    bind_common(common);
 
     bind_formalism(formalism);
 
@@ -46,4 +49,6 @@ NB_MODULE(_pymimir, m)
     bind_datasets(datasets);
 
     bind_languages_description_logics(description_logics);
+}
+
 }

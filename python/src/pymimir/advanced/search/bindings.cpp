@@ -7,6 +7,9 @@ using namespace mimir;
 using namespace mimir::search;
 using namespace mimir::formalism;
 
+namespace mimir::bindings
+{
+
 class IPyHeuristic : public IHeuristic
 {
 public:
@@ -519,4 +522,6 @@ void bind_search(nb::module_& m)
           nb::arg("iw_event_handler") = nullptr,
           nb::arg("brfs_event_handler") = nullptr,
           nb::arg("goal_strategy") = nullptr);
+}
+
 }

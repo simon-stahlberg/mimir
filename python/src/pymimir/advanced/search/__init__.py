@@ -1,23 +1,23 @@
 # Import all classes for better IDE support
 
-from _pymimir import (
+from _pymimir.advanced.search import (
     SearchMode,
     SearchNodeStatus,
     SearchStatus,
 )
 
-from _pymimir import (
+from _pymimir.advanced.search import (
     SearchContext,
     SearchContextOptions,
     GeneralizedSearchContext,
 )
 
-from _pymimir import (
+from _pymimir.advanced.search import (
     ActionSatisficingBindingGenerator,
     AxiomSatisficingBindingGenerator,
     ConjunctiveConditionSatisficingBindingGenerator
 )
-from _pymimir import (
+from _pymimir.advanced.search import (
     AStarAlgorithmStatistics,
     BlindHeuristic,
     BrFSAlgorithmStatistics,
@@ -58,7 +58,7 @@ from _pymimir import (
 )
 
 # Search (free functions)
-from _pymimir import (
+from _pymimir.advanced.search import (
     find_solution_astar,
     find_solution_brfs,
     find_solution_iw,

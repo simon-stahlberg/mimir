@@ -87,6 +87,9 @@ NB_MAKE_OPAQUE(mm::formalism::TermList);
 // Search
 NB_MAKE_OPAQUE(mm::search::StateList);
 
+namespace mimir::bindings
+{
+
 /**
  * Constness
  */
@@ -103,15 +106,17 @@ struct PyImmutable
  * init - declarations:
  */
 
-void bind_common(nb::module_& m);
+extern void bind_common(nb::module_& m);
 
-void bind_formalism(nb::module_& m);
-void bind_graphs(nb::module_& m);
+extern void bind_formalism(nb::module_& m);
+extern void bind_graphs(nb::module_& m);
 
-void bind_search(nb::module_& m);
+extern void bind_search(nb::module_& m);
 
-void bind_datasets(nb::module_& m);
+extern void bind_datasets(nb::module_& m);
 
-void bind_languages_description_logics(nb::module_& m);
+extern void bind_languages_description_logics(nb::module_& m);
+
+}
 
 #endif

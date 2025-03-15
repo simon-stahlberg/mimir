@@ -1,5 +1,3 @@
-import pymimir as mm
-
 import pymimir.advanced.formalism as formalism
 
 from pathlib import Path

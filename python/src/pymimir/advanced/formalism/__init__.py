@@ -1,6 +1,6 @@
 # Import all classes for better IDE support
 
-from _pymimir import (
+from _pymimir.advanced.formalism import (
     DerivedAtom,
     DerivedAtomList,
     DerivedGroundAtom,
@@ -41,7 +41,7 @@ from _pymimir import (
     StaticAssignmentSet,
 )
 
-from _pymimir import (
+from _pymimir.advanced.formalism import (
     AuxiliaryFunction,
     AuxiliaryFunctionList,
     AuxiliaryGroundFunction,
@@ -78,7 +78,7 @@ from _pymimir import (
     StaticNumericAssignmentSet,
 )
 
-from _pymimir import (
+from _pymimir.advanced.formalism import (
     AssignOperatorEnum,
     BinaryOperatorEnum,
     RequirementEnum,
@@ -87,7 +87,7 @@ from _pymimir import (
     RequirementEnum,
 )
 
-from _pymimir import (
+from _pymimir.advanced.formalism import (
     Action,  
     ActionList,
     Axiom,
@@ -133,7 +133,7 @@ from _pymimir import (
     VariableList,
 )
 
-from _pymimir import (
+from _pymimir.advanced.formalism import (
     translate,
 )
 

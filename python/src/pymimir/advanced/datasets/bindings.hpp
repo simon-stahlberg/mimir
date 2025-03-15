@@ -5,6 +5,9 @@
 #include "../graphs/bindings.hpp"
 #include "../init_declarations.hpp"
 
+namespace mimir::bindings
+{
+
 template<>
 struct PyVertexProperties<mm::graphs::ProblemVertex>
 {
@@ -28,5 +31,7 @@ struct PyEdgeProperties<mm::graphs::ClassEdge>
 {
     static constexpr std::string name = "ClassEdge";
 };
+
+}
 
 #endif

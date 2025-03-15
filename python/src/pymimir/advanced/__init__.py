@@ -1,11 +1,8 @@
-from . import common
-
-from . import formalism
-
-from . import graphs
-
-from . import search
-
-from . import languages
-
-from . import datasets
+from . import (
+    common as common,
+    datasets as datasets,
+    formalism as formalism,
+    graphs as graphs,
+    languages as languages,
+    search as search
+)

@@ -6,6 +6,9 @@ using namespace mimir;
 using namespace mimir::datasets;
 using namespace mimir::formalism;
 
+namespace mimir::bindings
+{
+
 void bind_datasets(nb::module_& m)
 {
     bind_vertex<graphs::ProblemVertex>(m, PyVertexProperties<graphs::ProblemVertex>::name);
@@ -81,4 +84,6 @@ void bind_datasets(nb::module_& m)
         .def(nb::init<search::GeneralizedSearchContext, const KnowledgeBase::Options&>(), nb::arg("contexts"), nb::arg("options") = KnowledgeBase::Options())
         .def_static("create", &KnowledgeBase::create, nb::arg("contexts"), nb::arg("options") = KnowledgeBase::Options())
         .def("get_generalized_state_space", &KnowledgeBase::get_generalized_state_space, nb::rv_policy::reference_internal);
+}
+
 }

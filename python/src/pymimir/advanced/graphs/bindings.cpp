@@ -4,6 +4,9 @@
 
 using namespace mimir;
 
+namespace mimir::bindings
+{
+
 void bind_graphs(nb::module_& m)
 {
     bind_vertex<graphs::EmptyVertex>(m, PyVertexProperties<graphs::EmptyVertex>::name);
@@ -13,4 +16,6 @@ void bind_graphs(nb::module_& m)
     bind_static_graph<graphs::EmptyVertex, graphs::EmptyEdge>(m, "EmptyStaticGraph");
     bind_static_graph<graphs::ColoredVertex, graphs::EmptyEdge>(m, "VertexColoredStaticGraph");
     bind_static_graph<graphs::ColoredVertex, graphs::ColoredEdge>(m, "EdgeColoredStaticGraph");
+}
+
 }

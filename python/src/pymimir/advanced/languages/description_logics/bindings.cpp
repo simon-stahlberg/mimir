@@ -8,6 +8,9 @@ using namespace mimir::languages;
 using namespace mimir::formalism;
 using namespace mimir::search;
 
+namespace mimir::bindings
+{
+
 class IPyDLVisitor : public dl::Visitor
 {
 public:
@@ -18,3 +21,5 @@ public:
 };
 
 void bind_languages_description_logics(nb::module_& m) {}
+
+}

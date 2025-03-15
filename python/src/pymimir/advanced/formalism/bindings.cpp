@@ -3,6 +3,9 @@
 using namespace mimir;
 using namespace mimir::formalism;
 
+namespace mimir::bindings
+{
+
 void bind_formalism(nb::module_& m)
 {
     nb::enum_<loki::RequirementEnum>(m, "RequirementEnum")
@@ -661,4 +664,6 @@ void bind_formalism(nb::module_& m)
 
     m.def("translate", nb::overload_cast<const Domain&>(&translate), nb::arg("domain"));
     m.def("translate", nb::overload_cast<const Problem&, const DomainTranslationResult&>(&translate), nb::arg("problem"), nb::arg("domain_translation_result"));
+}
+
 }

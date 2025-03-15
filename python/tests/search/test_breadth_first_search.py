@@ -1,4 +1,4 @@
-import pymimir as mm
+import pymimir.advanced.search as search
 
 from pathlib import Path
 
@@ -10,8 +10,8 @@ def test_breadth_first_search():
     """
     domain_filepath = str(ROOT_DIR / "data" / "gripper" / "domain.pddl")
     problem_filepath = str(ROOT_DIR / "data" / "gripper" / "test_problem.pddl")
-    search_context = mm.SearchContext(domain_filepath, problem_filepath)
-    result = mm.find_solution_brfs(search_context)
+    search_context = search.SearchContext(domain_filepath, problem_filepath)
+    result = search.find_solution_brfs(search_context)
 
-    assert result.status == mm.SearchStatus.SOLVED
+    assert result.status == search.SearchStatus.SOLVED
     assert len(result.plan) == 3

@@ -4,7 +4,7 @@ find_package(nanobind CONFIG REQUIRED PATHS ${CMAKE_PREFIX_PATH} NO_DEFAULT_PATH
 # Set result variables
 find_package(nanobind)
 
-nanobind_add_module(_pymimir 
+nanobind_add_module(_pymimir NOSTRIP
     pymimir/advanced/main.cpp 
     pymimir/advanced/common/bindings.cpp 
     pymimir/advanced/formalism/bindings.cpp 

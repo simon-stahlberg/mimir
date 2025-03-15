@@ -5,6 +5,9 @@
 #include "../init_declarations.hpp"
 #include "mimir/graphs.hpp"
 
+namespace mimir::bindings
+{
+
 template<mm::graphs::IsVertex V>
 struct PyVertexProperties
 {
@@ -476,6 +479,8 @@ void bind_static_graph(nb::module_& m, const std::string& name)
     using BidirectionalGraphType = mm::graphs::StaticBidirectionalGraph<GraphType>;
 
     bind_translated_static_graph<BidirectionalGraphType, GraphType>(m, name, "Bidirectional");
+}
+
 }
 
 #endif
