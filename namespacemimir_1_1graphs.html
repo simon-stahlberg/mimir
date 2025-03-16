@@ -345,12 +345,16 @@ Functions</h2></td></tr>
 <tr class="memdesc:a535ace9ab3e298bb6c7ed90b1c770929"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the action cost associated with the <code>GroundAction</code> of the representative <code>ProblemEdge</code>.  <br /></td></tr>
 <tr class="separator:a535ace9ab3e298bb6c7ed90b1c770929"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2b24ba02d47da876e9a813489ef20051"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a2b24ba02d47da876e9a813489ef20051">operator&lt;&lt;</a> (std::ostream &amp;out, const <a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71">ProblemVertex</a> &amp;vertex)</td></tr>
+<tr class="memdesc:a2b24ba02d47da876e9a813489ef20051"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a string representation of the given <code>ProblemVertex</code> to the <code>std::ostream</code> buffer.  <br /></td></tr>
 <tr class="separator:a2b24ba02d47da876e9a813489ef20051"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4083bcd8fa366ec54a82480ff2c56868"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a4083bcd8fa366ec54a82480ff2c56868">operator&lt;&lt;</a> (std::ostream &amp;out, const <a class="el" href="namespacemimir_1_1graphs.html#a27cce2a7fdacae54f936c2eb0174b4c8">ProblemEdge</a> &amp;edge)</td></tr>
+<tr class="memdesc:a4083bcd8fa366ec54a82480ff2c56868"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a string representation of the given <code>ProblemEdge</code> to the <code>std::ostream</code> buffer.  <br /></td></tr>
 <tr class="separator:a4083bcd8fa366ec54a82480ff2c56868"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a255cd184a5ab89a95a1cf3348f88778f"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a255cd184a5ab89a95a1cf3348f88778f">operator&lt;&lt;</a> (std::ostream &amp;out, const <a class="el" href="namespacemimir_1_1graphs.html#addbc8279833faca8528c5c48225e197e">ClassVertex</a> &amp;vertex)</td></tr>
+<tr class="memdesc:a255cd184a5ab89a95a1cf3348f88778f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a string representation of the given <code>ClassVertex</code> to the <code>std::ostream</code> buffer.  <br /></td></tr>
 <tr class="separator:a255cd184a5ab89a95a1cf3348f88778f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a54f7dd0bb476adb636fc0a2384a6b399"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a54f7dd0bb476adb636fc0a2384a6b399">operator&lt;&lt;</a> (std::ostream &amp;out, const <a class="el" href="namespacemimir_1_1graphs.html#a9861298646e808707570b3e2528af931">ClassEdge</a> &amp;edge)</td></tr>
+<tr class="memdesc:a54f7dd0bb476adb636fc0a2384a6b399"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a string representation of the given <code>ClassEdge</code> to the <code>std::ostream</code> buffer.  <br /></td></tr>
 <tr class="separator:a54f7dd0bb476adb636fc0a2384a6b399"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa9994734abd230056008c214f3f80712"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#aa9994734abd230056008c214f3f80712">get_tuple_index</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a2db250211f1c44372faeec52f5d0ffd4">TupleGraphVertex</a> &amp;vertex)</td></tr>
 <tr class="separator:aa9994734abd230056008c214f3f80712"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -2385,6 +2389,16 @@ template&lt;IsStaticGraph Graph, IsDirection Direction&gt; </div>
       </table>
 </div><div class="memdoc">
 
+<p>Write a string representation of the given <code>ClassEdge</code> to the <code>std::ostream</code> buffer. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">out</td><td>is a reference to the given <code>std::ostream</code> buffer. </td></tr>
+    <tr><td class="paramname">vertex</td><td>is the given <code>ClassEdge</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>is a reference to the given <code>std::ostream</code> buffer. </dd></dl>
+
 </div>
 </div>
 <a id="a255cd184a5ab89a95a1cf3348f88778f" name="a255cd184a5ab89a95a1cf3348f88778f"></a>
@@ -2412,6 +2426,16 @@ template&lt;IsStaticGraph Graph, IsDirection Direction&gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Write a string representation of the given <code>ClassVertex</code> to the <code>std::ostream</code> buffer. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">out</td><td>is a reference to the given <code>std::ostream</code> buffer. </td></tr>
+    <tr><td class="paramname">vertex</td><td>is the given <code>ClassVertex</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>is a reference to the given <code>std::ostream</code> buffer. </dd></dl>
 
 </div>
 </div>
@@ -2441,6 +2465,16 @@ template&lt;IsStaticGraph Graph, IsDirection Direction&gt; </div>
       </table>
 </div><div class="memdoc">
 
+<p>Write a string representation of the given <code>ProblemEdge</code> to the <code>std::ostream</code> buffer. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">out</td><td>is a reference to the given <code>std::ostream</code> buffer. </td></tr>
+    <tr><td class="paramname">vertex</td><td>is the given <code>ProblemEdge</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>is a reference to the given <code>std::ostream</code> buffer. </dd></dl>
+
 </div>
 </div>
 <a id="a2b24ba02d47da876e9a813489ef20051" name="a2b24ba02d47da876e9a813489ef20051"></a>
@@ -2468,6 +2502,16 @@ template&lt;IsStaticGraph Graph, IsDirection Direction&gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Write a string representation of the given <code>ProblemVertex</code> to the <code>std::ostream</code> buffer. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">out</td><td>is a reference to the given <code>std::ostream</code> buffer. </td></tr>
+    <tr><td class="paramname">vertex</td><td>is the given <code>ProblemVertex</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>is a reference to the given <code>std::ostream</code> buffer. </dd></dl>
 
 </div>
 </div>
