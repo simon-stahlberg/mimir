@@ -1,3 +1,5 @@
+#include "bindings.hpp"
+
 #include "../../init_declarations.hpp"
 
 #include <nanobind/nanobind.h>
@@ -66,6 +68,14 @@ void bind_languages_description_logics(nb::module_& m)
 {
     nb::enum_<dl::cnf_grammar::GrammarSpecificationEnum>(m, "GrammarSpecificationEnum")  //
         .value("FRANCES_ET_AL_AAAI2021", dl::cnf_grammar::GrammarSpecificationEnum::FRANCES_ET_AL_AAAI2021);
+
+    bind_constructor<dl::Concept>(m, "ConceptConstructor");
+    bind_constructor<dl::Role>(m, "RoleConstructor");
+    bind_constructor<dl::Boolean>(m, "BooleanConstructor");
+    bind_constructor<dl::Numerical>(m, "NumericalConstructor");
+
+    nb::class_<dl::ConceptBotImpl, dl::ConstructorImpl<dl::Concept>>(m, "ConceptBotConstructor");
+    nb::class_<dl::ConceptTopImpl, dl::ConstructorImpl<dl::Concept>>(m, "ConceptTopConstructor");
 
     nb::class_<dl::ConstructorRepositories>(m, "ConstructorRepositories")
         .def(nb::init<>())
@@ -229,19 +239,6 @@ void bind_languages_description_logics(nb::module_& m)
              "right_concept"_a,
              nb::rv_policy::reference_internal);
 
-    nb::class_<dl::cnf_grammar::Grammar>(m, "Grammar")
-        .def(nb::init<const std::string&, formalism::Domain>(), "bnf_description"_a, "domain"_a)
-
-        // Static method
-        .def_static("create", &dl::cnf_grammar::Grammar::create, "type"_a, "domain"_a)
-
-        // Methods
-        .def("accept", &dl::cnf_grammar::Grammar::accept, "visitor"_a)
-
-        // Getters (returning references for efficiency)
-        .def("get_repositories", &dl::cnf_grammar::Grammar::get_repositories, nb::rv_policy::reference_internal)
-        .def("get_domain", &dl::cnf_grammar::Grammar::get_domain, nb::rv_policy::reference_internal);
-
     /* ConstructorVisitor */
     nb::class_<dl::Visitor, IPyDLVisitor>(m, "ConstructorVisitor")  //
         .def(nb::init<>())
@@ -285,6 +282,21 @@ void bind_languages_description_logics(nb::module_& m)
         .def("visit", nb::overload_cast<dl::NumericalCount<dl::Concept>>(&dl::Visitor::visit))
         .def("visit", nb::overload_cast<dl::NumericalCount<dl::Role>>(&dl::Visitor::visit))
         .def("visit", nb::overload_cast<dl::NumericalDistance>(&dl::Visitor::visit));
+
+    nb::class_<dl::cnf_grammar::Grammar>(m, "CNFGrammar")
+        .def(nb::init<const std::string&, formalism::Domain>(), "bnf_description"_a, "domain"_a)
+
+        .def_static("create", &dl::cnf_grammar::Grammar::create, "type"_a, "domain"_a)
+
+        .def("accept", &dl::cnf_grammar::Grammar::accept, "visitor"_a)
+
+        .def("test_match", [](const dl::cnf_grammar::Grammar& self, const dl::Constructor<dl::Numerical> constructor) { return self.test_match(constructor); })
+        .def("test_match", [](const dl::cnf_grammar::Grammar& self, const dl::Constructor<dl::Role> constructor) { return self.test_match(constructor); })
+        .def("test_match", [](const dl::cnf_grammar::Grammar& self, const dl::Constructor<dl::Boolean> constructor) { return self.test_match(constructor); })
+        .def("test_match", [](const dl::cnf_grammar::Grammar& self, const dl::Constructor<dl::Numerical> constructor) { return self.test_match(constructor); })
+
+        .def("get_repositories", &dl::cnf_grammar::Grammar::get_repositories, nb::rv_policy::reference_internal)
+        .def("get_domain", &dl::cnf_grammar::Grammar::get_domain, nb::rv_policy::reference_internal);
 }
 
 }

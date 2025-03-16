@@ -7,8 +7,6 @@ namespace mimir::bindings
 
 void bind_common(nb::module_& m)
 {
-    std::cout << "Binding common module...\n";  // Debug
-
     nb::class_<FlatDoubleList>(m, "FlatDoubleList").def(nb::init<>());
 
     nb::class_<FlatIndexList>(m, "FlatIndexList").def(nb::init<>());
