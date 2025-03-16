@@ -406,7 +406,7 @@ const SatisficingBindingGeneratorEventHandler& SatisficingBindingGenerator<Deriv
 }
 
 template<typename Derived_>
-const formalism::consistency_graph::StaticConsistencyGraph& SatisficingBindingGenerator<Derived_>::get_static_consistency_graph() const
+const formalism::StaticConsistencyGraph& SatisficingBindingGenerator<Derived_>::get_static_consistency_graph() const
 {
     return m_static_consistency_graph;
 }

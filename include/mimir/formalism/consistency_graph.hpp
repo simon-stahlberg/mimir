@@ -28,78 +28,8 @@
 #include <sstream>
 #include <vector>
 
-namespace mimir::formalism::consistency_graph
+namespace mimir::formalism
 {
-
-/**
- * Vertex
- */
-
-/// @brief A vertex [parameter_index/object_index] in the consistency graph.
-class Vertex
-{
-private:
-    Index m_index;
-    Index m_parameter_index;
-    Index m_object_index;
-
-public:
-    Vertex(Index index, Index parameter_index, Index object_index) : m_index(index), m_parameter_index(parameter_index), m_object_index(object_index) {}
-
-    /// @brief Return true iff the vertex is consistent with all literals in and the assignment set.
-    ///
-    /// The meaning of the result being true is that the edge remains consistent.
-    template<StaticOrFluentOrDerived P>
-    bool consistent_literals(const LiteralList<P>& literals, const AssignmentSet<P>& assignment_set) const;
-
-    bool consistent_literals(const NumericConstraintList& numeric_constraints,
-                             const NumericAssignmentSet<Static>& static_numeric_assignment_set,
-                             const NumericAssignmentSet<Fluent>& fluent_numeric_assignment_set) const;
-
-    Index get_object_if_overlap(const Term& term) const;
-
-    Index get_index() const { return m_index; }
-    Index get_parameter_index() const { return m_parameter_index; }
-    Index get_object_index() const { return m_object_index; }
-};
-
-/**
- * Edge
- */
-
-/// @brief An undirected edge {src,dst} in the consistency graph.
-class Edge
-{
-private:
-    Vertex m_src;
-    Vertex m_dst;
-
-public:
-    Edge(Vertex src, Vertex dst) : m_src(std::move(src)), m_dst(std::move(dst)) {}
-
-    /// @brief Return true iff the edge is consistent with all literals in and the assignment set.
-    ///
-    /// The meaning is that the assignment [x/o] is a legal assignment,
-    /// and therefore the vertex must be part of the consistency graph.
-    /// @param literals
-    /// @param consistent_vertex
-    /// @return
-    template<StaticOrFluentOrDerived P>
-    bool consistent_literals(const LiteralList<P>& literals, const AssignmentSet<P>& assignment_set) const;
-
-    bool consistent_literals(const NumericConstraintList& numeric_constraints,
-                             const NumericAssignmentSet<Static>& static_numeric_assignment_set,
-                             const NumericAssignmentSet<Fluent>& fluent_numeric_assignment_set) const;
-
-    Index get_object_if_overlap(const Term& term) const;
-
-    const Vertex& get_src() const { return m_src; }
-    const Vertex& get_dst() const { return m_dst; }
-};
-
-using Vertices = std::vector<Vertex>;
-using Edges = std::vector<Edge>;
-
 /**
  * StaticConsistencyGraph
  */
@@ -108,13 +38,75 @@ using Edges = std::vector<Edge>;
 /// and hence, it is an overapproximation of the actual consistency graph.
 class StaticConsistencyGraph
 {
-private:
-    /* The data member of the consistency graph. */
-    Vertices m_vertices;
-    std::vector<IndexList> m_vertices_by_parameter_index;
-    std::vector<IndexList> m_objects_by_parameter_index;
+public:
+    /**
+     * Vertex
+     */
 
-    Edges m_edges;
+    /// @brief A vertex [parameter_index/object_index] in the consistency graph.
+    class Vertex
+    {
+    private:
+        Index m_index;
+        Index m_parameter_index;
+        Index m_object_index;
+
+    public:
+        Vertex(Index index, Index parameter_index, Index object_index) : m_index(index), m_parameter_index(parameter_index), m_object_index(object_index) {}
+
+        /// @brief Return true iff the vertex is consistent with all literals in and the assignment set.
+        ///
+        /// The meaning of the result being true is that the edge remains consistent.
+        template<StaticOrFluentOrDerived P>
+        bool consistent_literals(const LiteralList<P>& literals, const AssignmentSet<P>& assignment_set) const;
+
+        bool consistent_literals(const NumericConstraintList& numeric_constraints,
+                                 const NumericAssignmentSet<Static>& static_numeric_assignment_set,
+                                 const NumericAssignmentSet<Fluent>& fluent_numeric_assignment_set) const;
+
+        Index get_object_if_overlap(const Term& term) const;
+
+        Index get_index() const { return m_index; }
+        Index get_parameter_index() const { return m_parameter_index; }
+        Index get_object_index() const { return m_object_index; }
+    };
+
+    /**
+     * Edge
+     */
+
+    /// @brief An undirected edge {src,dst} in the consistency graph.
+    class Edge
+    {
+    private:
+        Vertex m_src;
+        Vertex m_dst;
+
+    public:
+        Edge(Vertex src, Vertex dst) : m_src(std::move(src)), m_dst(std::move(dst)) {}
+
+        /// @brief Return true iff the edge is consistent with all literals in and the assignment set.
+        ///
+        /// The meaning is that the assignment [x/o] is a legal assignment,
+        /// and therefore the vertex must be part of the consistency graph.
+        /// @param literals
+        /// @param consistent_vertex
+        /// @return
+        template<StaticOrFluentOrDerived P>
+        bool consistent_literals(const LiteralList<P>& literals, const AssignmentSet<P>& assignment_set) const;
+
+        bool consistent_literals(const NumericConstraintList& numeric_constraints,
+                                 const NumericAssignmentSet<Static>& static_numeric_assignment_set,
+                                 const NumericAssignmentSet<Fluent>& fluent_numeric_assignment_set) const;
+
+        Index get_object_if_overlap(const Term& term) const;
+
+        const Vertex& get_src() const { return m_src; }
+        const Vertex& get_dst() const { return m_dst; }
+    };
+
+    using Vertices = std::vector<Vertex>;
+    using Edges = std::vector<Edge>;
 
 public:
     /// @brief Construct a static consistency graph
@@ -148,6 +140,14 @@ public:
 
     /// @brief Get the object_index indices partitioned by the parameter index.
     const std::vector<IndexList>& get_objects_by_parameter_index() const { return m_objects_by_parameter_index; }
+
+private:
+    /* The data member of the consistency graph. */
+    Vertices m_vertices;
+    std::vector<IndexList> m_vertices_by_parameter_index;
+    std::vector<IndexList> m_objects_by_parameter_index;
+
+    Edges m_edges;
 };
 
 }
@@ -158,7 +158,7 @@ namespace mimir
  * Print the graph nicely as dot format
  */
 template<>
-std::ostream& operator<<(std::ostream& out, const std::tuple<const formalism::consistency_graph::StaticConsistencyGraph&, const formalism::ProblemImpl&>& data);
+std::ostream& operator<<(std::ostream& out, const std::tuple<const formalism::StaticConsistencyGraph&, const formalism::ProblemImpl&>& data);
 }
 
 #endif

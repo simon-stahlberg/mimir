@@ -28,10 +28,12 @@
 
 #include <cstdint>
 
-namespace mimir::formalism::consistency_graph
+namespace mimir::formalism
 {
-// To print vectors as [e1,...,en]
-using mimir::operator<<;
+using Vertex = StaticConsistencyGraph::Vertex;
+using Edge = StaticConsistencyGraph::Edge;
+using Vertices = StaticConsistencyGraph::Vertices;
+using Edges = StaticConsistencyGraph::Edges;
 
 /**
  * VertexIndexIterator
@@ -686,17 +688,17 @@ StaticConsistencyGraph::StaticConsistencyGraph(const ProblemImpl& problem,
 namespace mimir
 {
 template<>
-std::ostream& operator<<(std::ostream& out, const std::tuple<const formalism::consistency_graph::StaticConsistencyGraph&, const formalism::ProblemImpl&>& data)
+std::ostream& operator<<(std::ostream& out, const std::tuple<const formalism::StaticConsistencyGraph&, const formalism::ProblemImpl&>& data)
 {
     const auto& [graph, problem] = data;
 
-    const auto create_node = [](const formalism::consistency_graph::Vertex& vertex, const formalism::ProblemImpl& problem, std::ostream& out)
+    const auto create_node = [](const formalism::Vertex& vertex, const formalism::ProblemImpl& problem, std::ostream& out)
     {
         out << "  \"" << vertex.get_index() << "\" [label=\"#" << vertex.get_parameter_index() << " <- "
             << problem.get_repositories().get_object(vertex.get_object_index()) << "\"];\n";
     };
 
-    const auto create_edge = [](const formalism::consistency_graph::Edge& edge, std::ostream& out)
+    const auto create_edge = [](const formalism::Edge& edge, std::ostream& out)
     { out << "  \"" << edge.get_src().get_index() << "\" -- \"" << edge.get_dst().get_index() << "\";\n"; };
 
     // Define the undirected graph

@@ -44,7 +44,7 @@ protected:
     formalism::Problem m_problem;
     SatisficingBindingGeneratorEventHandler m_event_handler;
 
-    formalism::consistency_graph::StaticConsistencyGraph m_static_consistency_graph;
+    formalism::StaticConsistencyGraph m_static_consistency_graph;
 
     /* Memory for reuse */
     DenseState m_dense_state;
@@ -124,7 +124,7 @@ public:
     const formalism::ConjunctiveCondition& get_conjunctive_condition() const;
     const formalism::Problem& get_problem() const;
     const SatisficingBindingGeneratorEventHandler& get_event_handler() const;
-    const formalism::consistency_graph::StaticConsistencyGraph& get_static_consistency_graph() const;
+    const formalism::StaticConsistencyGraph& get_static_consistency_graph() const;
 };
 
 }

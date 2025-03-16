@@ -164,7 +164,7 @@ using HanaPDDLRepositories = boost::hana::map<
     boost::hana::pair<boost::hana::type<AxiomImpl>, AxiomRepository>,
     boost::hana::pair<boost::hana::type<OptimizationMetricImpl>, OptimizationMetricRepository>>;
 
-/// @brief Collection of factories for the unique creation of PDDL objects.
+/// @brief `PDDLRepositories` encapsulates repositories for the unique instantiation of PDDL formalism related structures.
 class PDDLRepositories
 {
 private:
