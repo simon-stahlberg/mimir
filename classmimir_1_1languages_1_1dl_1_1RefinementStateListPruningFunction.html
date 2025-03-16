@@ -96,6 +96,10 @@ Inheritance diagram for mimir::languages::dl::RefinementStateListPruningFunction
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a58bdee5577db05bbd31e4986105d5a8d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1RefinementStateListPruningFunction.html#a58bdee5577db05bbd31e4986105d5a8d">RefinementStateListPruningFunction</a> (const <a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpace.html">datasets::GeneralizedStateSpace</a> &amp;generalized_state_space)</td></tr>
+<tr class="separator:a58bdee5577db05bbd31e4986105d5a8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f7fe1580cd2471779fd6afd92ecb586"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1RefinementStateListPruningFunction.html#a8f7fe1580cd2471779fd6afd92ecb586">RefinementStateListPruningFunction</a> (const <a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpace.html">datasets::GeneralizedStateSpace</a> &amp;generalized_state_space, const <a class="el" href="namespacemimir_1_1graphs.html#a7f055a18f6efd9b14e9f5708d28eb7e6">graphs::ClassGraph</a> &amp;class_graph)</td></tr>
+<tr class="separator:a8f7fe1580cd2471779fd6afd92ecb586"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a838dcda78130cc207be93a4092ac5723"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1RefinementStateListPruningFunction.html#a838dcda78130cc207be93a4092ac5723">RefinementStateListPruningFunction</a> (<a class="el" href="namespacemimir_1_1formalism.html#a5f8b722c1afe021d18c4e745b450fd82">formalism::ProblemMap</a>&lt; <a class="el" href="namespacemimir_1_1search.html#a260f651b403f4ec3b82fa32aeed516b6">search::StateList</a> &gt; state_partitioning)</td></tr>
 <tr class="separator:a838dcda78130cc207be93a4092ac5723"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3a682a24b786f189fe941e4314e1c1c5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1RefinementStateListPruningFunction.html#a3a682a24b786f189fe941e4314e1c1c5">should_prune</a> (<a class="el" href="namespacemimir_1_1languages_1_1dl.html#a15789f4de082e957936ab86dc78dc1f9">Constructor</a>&lt; <a class="el" href="structmimir_1_1languages_1_1dl_1_1Concept.html">Concept</a> &gt; concept_) override</td></tr>
@@ -129,8 +133,62 @@ Public Member Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><code><a class="el" href="classmimir_1_1languages_1_1dl_1_1RefinementStateListPruningFunction.html" title="RefinementStateListPruningFunction implements a pruning function based on a given state list....">RefinementStateListPruningFunction</a></code> implements a pruning function based on a given state list. A feature is pruned if it does not evaluate differently on at least one state compared to a previously tested feature. This ensures that only features with unique evaluations across all states are retained. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a58bdee5577db05bbd31e4986105d5a8d" name="a58bdee5577db05bbd31e4986105d5a8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58bdee5577db05bbd31e4986105d5a8d">&#9670;&#160;</a></span>RefinementStateListPruningFunction() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">mimir::languages::dl::RefinementStateListPruningFunction::RefinementStateListPruningFunction </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpace.html">datasets::GeneralizedStateSpace</a> &amp;&#160;</td>
+          <td class="paramname"><em>generalized_state_space</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8f7fe1580cd2471779fd6afd92ecb586" name="a8f7fe1580cd2471779fd6afd92ecb586"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f7fe1580cd2471779fd6afd92ecb586">&#9670;&#160;</a></span>RefinementStateListPruningFunction() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">mimir::languages::dl::RefinementStateListPruningFunction::RefinementStateListPruningFunction </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpace.html">datasets::GeneralizedStateSpace</a> &amp;&#160;</td>
+          <td class="paramname"><em>generalized_state_space</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacemimir_1_1graphs.html#a7f055a18f6efd9b14e9f5708d28eb7e6">graphs::ClassGraph</a> &amp;&#160;</td>
+          <td class="paramname"><em>class_graph</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a838dcda78130cc207be93a4092ac5723" name="a838dcda78130cc207be93a4092ac5723"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a838dcda78130cc207be93a4092ac5723">&#9670;&#160;</a></span>RefinementStateListPruningFunction()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a838dcda78130cc207be93a4092ac5723">&#9670;&#160;</a></span>RefinementStateListPruningFunction() <span class="overload">[3/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
