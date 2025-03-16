@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Mimir: mimir::graphs::VectorReadWritePropertyMap&lt; Key, Value &gt; Class Template Reference</title>
+<title>Mimir: mimir::graphs::VectorReadWritePropertyMap&lt; I, Value &gt; Class Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -77,91 +77,104 @@ $(function() {
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classmimir_1_1graphs_1_1VectorReadWritePropertyMap-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">mimir::graphs::VectorReadWritePropertyMap&lt; Key, Value &gt; Class Template Reference</div></div>
+  <div class="headertitle"><div class="title">mimir::graphs::VectorReadWritePropertyMap&lt; I, Value &gt; Class Template Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p><code><a class="el" href="classmimir_1_1graphs_1_1VectorReadWritePropertyMap.html" title="VectorReadWritePropertyMap provides read-write-access to the Value associated with a given Key via a ...">VectorReadWritePropertyMap</a></code> provides read-write-access to the <code>Value</code> associated with a given <code>Key</code> via a call to the <code><a class="el" href="classmimir_1_1graphs_1_1VectorReadWritePropertyMap.html#af2755cb983e3ee4521aed0392b1a7059">get()</a></code> and <code><a class="el" href="namespacemimir_1_1graphs.html#a83f034768c155b4c947ec91273bc375c">put()</a></code> function for dense graph structures whose underlying storage are vectors.  
+ <a href="classmimir_1_1graphs_1_1VectorReadWritePropertyMap.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="boost__adapter__utils_8hpp_source.html">boost_adapter_utils.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a739bd1344dc946cb8d06785fb30117f1"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1VectorReadWritePropertyMap.html#a739bd1344dc946cb8d06785fb30117f1">value_type</a> = Value</td></tr>
-<tr class="separator:a739bd1344dc946cb8d06785fb30117f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a68a5027cd5fb776f5d58121f7710ec16"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1VectorReadWritePropertyMap.html#a68a5027cd5fb776f5d58121f7710ec16">key_type</a> = Key</td></tr>
-<tr class="separator:a68a5027cd5fb776f5d58121f7710ec16"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af362253eac30cb2859c331ec665e3f9f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1VectorReadWritePropertyMap.html#af362253eac30cb2859c331ec665e3f9f">reference</a> = Value</td></tr>
-<tr class="separator:af362253eac30cb2859c331ec665e3f9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acaa76d5adb8031eeda9fee468ec8e496"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1VectorReadWritePropertyMap.html#acaa76d5adb8031eeda9fee468ec8e496">category</a> = boost::read_write_property_map_tag</td></tr>
-<tr class="separator:acaa76d5adb8031eeda9fee468ec8e496"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59c59534364c1b2d3c9bc916255d2310"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1VectorReadWritePropertyMap.html#a59c59534364c1b2d3c9bc916255d2310">value_type</a> = Value</td></tr>
+<tr class="separator:a59c59534364c1b2d3c9bc916255d2310"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af00b649532ba669fbc6d5022eaa007fe"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1VectorReadWritePropertyMap.html#af00b649532ba669fbc6d5022eaa007fe">key_type</a> = I</td></tr>
+<tr class="separator:af00b649532ba669fbc6d5022eaa007fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4bb76c8d4926784b05dbd569e3b35ddc"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1VectorReadWritePropertyMap.html#a4bb76c8d4926784b05dbd569e3b35ddc">reference</a> = Value</td></tr>
+<tr class="separator:a4bb76c8d4926784b05dbd569e3b35ddc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1421eee1440e340e5de39d71a42d328"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1VectorReadWritePropertyMap.html#ac1421eee1440e340e5de39d71a42d328">category</a> = boost::read_write_property_map_tag</td></tr>
+<tr class="separator:ac1421eee1440e340e5de39d71a42d328"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a8fed93a0d8ec3081b1ed2694da28941a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1VectorReadWritePropertyMap.html#a8fed93a0d8ec3081b1ed2694da28941a">VectorReadWritePropertyMap</a> (std::vector&lt; Value &gt; &amp;distances)</td></tr>
-<tr class="separator:a8fed93a0d8ec3081b1ed2694da28941a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5d522a3cd0ed77ec5fd0dc92a2df8089"><td class="memItemLeft" align="right" valign="top">const Value &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1VectorReadWritePropertyMap.html#a5d522a3cd0ed77ec5fd0dc92a2df8089">get</a> (Key key) const</td></tr>
-<tr class="separator:a5d522a3cd0ed77ec5fd0dc92a2df8089"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1898dcc2fa351dc30702b046281c5be3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1VectorReadWritePropertyMap.html#a1898dcc2fa351dc30702b046281c5be3">set</a> (Key key, Value value)</td></tr>
-<tr class="separator:a1898dcc2fa351dc30702b046281c5be3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae95789027b32301c9f61303844b8557c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1VectorReadWritePropertyMap.html#ae95789027b32301c9f61303844b8557c">VectorReadWritePropertyMap</a> (std::vector&lt; Value &gt; &amp;distances)</td></tr>
+<tr class="separator:ae95789027b32301c9f61303844b8557c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2755cb983e3ee4521aed0392b1a7059"><td class="memItemLeft" align="right" valign="top">const Value &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1VectorReadWritePropertyMap.html#af2755cb983e3ee4521aed0392b1a7059">get</a> (I key) const</td></tr>
+<tr class="separator:af2755cb983e3ee4521aed0392b1a7059"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed88743b4e7bca2f4d258e72a6507311"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1VectorReadWritePropertyMap.html#aed88743b4e7bca2f4d258e72a6507311">set</a> (I key, Value value)</td></tr>
+<tr class="separator:aed88743b4e7bca2f4d258e72a6507311"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Typedef Documentation</h2>
-<a id="acaa76d5adb8031eeda9fee468ec8e496" name="acaa76d5adb8031eeda9fee468ec8e496"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acaa76d5adb8031eeda9fee468ec8e496">&#9670;&#160;</a></span>category</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><div class="compoundTemplParams">template&lt;std::unsigned_integral I, typename Value&gt;<br />
+class mimir::graphs::VectorReadWritePropertyMap&lt; I, Value &gt;</div><p><code><a class="el" href="classmimir_1_1graphs_1_1VectorReadWritePropertyMap.html" title="VectorReadWritePropertyMap provides read-write-access to the Value associated with a given Key via a ...">VectorReadWritePropertyMap</a></code> provides read-write-access to the <code>Value</code> associated with a given <code>Key</code> via a call to the <code><a class="el" href="classmimir_1_1graphs_1_1VectorReadWritePropertyMap.html#af2755cb983e3ee4521aed0392b1a7059">get()</a></code> and <code><a class="el" href="namespacemimir_1_1graphs.html#a83f034768c155b4c947ec91273bc375c">put()</a></code> function for dense graph structures whose underlying storage are vectors. </p>
+<p>Link to Boost docs: <a href="https://www.boost.org/doc/libs/1_82_0/libs/property_map/doc/ReadWritePropertyMap.html">https://www.boost.org/doc/libs/1_82_0/libs/property_map/doc/ReadWritePropertyMap.html</a> </p><dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">I</td><td>is the index type. </td></tr>
+    <tr><td class="paramname">Value</td><td>is the value type. </td></tr>
+  </table>
+  </dd>
+</dl>
+</div><h2 class="groupheader">Member Typedef Documentation</h2>
+<a id="ac1421eee1440e340e5de39d71a42d328" name="ac1421eee1440e340e5de39d71a42d328"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1421eee1440e340e5de39d71a42d328">&#9670;&#160;</a></span>category</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;IsUnsignedIntegral Key, typename Value &gt; </div>
+template&lt;std::unsigned_integral I, typename Value &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="classmimir_1_1graphs_1_1VectorReadWritePropertyMap.html">mimir::graphs::VectorReadWritePropertyMap</a>&lt; Key, Value &gt;::category =  boost::read_write_property_map_tag</td>
+          <td class="memname">using <a class="el" href="classmimir_1_1graphs_1_1VectorReadWritePropertyMap.html">mimir::graphs::VectorReadWritePropertyMap</a>&lt; I, Value &gt;::category =  boost::read_write_property_map_tag</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="a68a5027cd5fb776f5d58121f7710ec16" name="a68a5027cd5fb776f5d58121f7710ec16"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a68a5027cd5fb776f5d58121f7710ec16">&#9670;&#160;</a></span>key_type</h2>
+<a id="af00b649532ba669fbc6d5022eaa007fe" name="af00b649532ba669fbc6d5022eaa007fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af00b649532ba669fbc6d5022eaa007fe">&#9670;&#160;</a></span>key_type</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;IsUnsignedIntegral Key, typename Value &gt; </div>
+template&lt;std::unsigned_integral I, typename Value &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="classmimir_1_1graphs_1_1VectorReadWritePropertyMap.html">mimir::graphs::VectorReadWritePropertyMap</a>&lt; Key, Value &gt;::key_type =  Key</td>
+          <td class="memname">using <a class="el" href="classmimir_1_1graphs_1_1VectorReadWritePropertyMap.html">mimir::graphs::VectorReadWritePropertyMap</a>&lt; I, Value &gt;::key_type =  I</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="af362253eac30cb2859c331ec665e3f9f" name="af362253eac30cb2859c331ec665e3f9f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af362253eac30cb2859c331ec665e3f9f">&#9670;&#160;</a></span>reference</h2>
+<a id="a4bb76c8d4926784b05dbd569e3b35ddc" name="a4bb76c8d4926784b05dbd569e3b35ddc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4bb76c8d4926784b05dbd569e3b35ddc">&#9670;&#160;</a></span>reference</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;IsUnsignedIntegral Key, typename Value &gt; </div>
+template&lt;std::unsigned_integral I, typename Value &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="classmimir_1_1graphs_1_1VectorReadWritePropertyMap.html">mimir::graphs::VectorReadWritePropertyMap</a>&lt; Key, Value &gt;::reference =  Value</td>
+          <td class="memname">using <a class="el" href="classmimir_1_1graphs_1_1VectorReadWritePropertyMap.html">mimir::graphs::VectorReadWritePropertyMap</a>&lt; I, Value &gt;::reference =  Value</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="a739bd1344dc946cb8d06785fb30117f1" name="a739bd1344dc946cb8d06785fb30117f1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a739bd1344dc946cb8d06785fb30117f1">&#9670;&#160;</a></span>value_type</h2>
+<a id="a59c59534364c1b2d3c9bc916255d2310" name="a59c59534364c1b2d3c9bc916255d2310"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59c59534364c1b2d3c9bc916255d2310">&#9670;&#160;</a></span>value_type</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;IsUnsignedIntegral Key, typename Value &gt; </div>
+template&lt;std::unsigned_integral I, typename Value &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="classmimir_1_1graphs_1_1VectorReadWritePropertyMap.html">mimir::graphs::VectorReadWritePropertyMap</a>&lt; Key, Value &gt;::value_type =  Value</td>
+          <td class="memname">using <a class="el" href="classmimir_1_1graphs_1_1VectorReadWritePropertyMap.html">mimir::graphs::VectorReadWritePropertyMap</a>&lt; I, Value &gt;::value_type =  Value</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -169,19 +182,19 @@ template&lt;IsUnsignedIntegral Key, typename Value &gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a8fed93a0d8ec3081b1ed2694da28941a" name="a8fed93a0d8ec3081b1ed2694da28941a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8fed93a0d8ec3081b1ed2694da28941a">&#9670;&#160;</a></span>VectorReadWritePropertyMap()</h2>
+<a id="ae95789027b32301c9f61303844b8557c" name="ae95789027b32301c9f61303844b8557c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae95789027b32301c9f61303844b8557c">&#9670;&#160;</a></span>VectorReadWritePropertyMap()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;IsUnsignedIntegral Key, typename Value &gt; </div>
+template&lt;std::unsigned_integral I, typename Value &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classmimir_1_1graphs_1_1VectorReadWritePropertyMap.html">mimir::graphs::VectorReadWritePropertyMap</a>&lt; Key, Value &gt;::VectorReadWritePropertyMap </td>
+          <td class="memname"><a class="el" href="classmimir_1_1graphs_1_1VectorReadWritePropertyMap.html">mimir::graphs::VectorReadWritePropertyMap</a>&lt; I, Value &gt;::VectorReadWritePropertyMap </td>
           <td>(</td>
           <td class="paramtype">std::vector&lt; Value &gt; &amp;&#160;</td>
           <td class="paramname"><em>distances</em></td><td>)</td>
@@ -198,21 +211,21 @@ template&lt;IsUnsignedIntegral Key, typename Value &gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a5d522a3cd0ed77ec5fd0dc92a2df8089" name="a5d522a3cd0ed77ec5fd0dc92a2df8089"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5d522a3cd0ed77ec5fd0dc92a2df8089">&#9670;&#160;</a></span>get()</h2>
+<a id="af2755cb983e3ee4521aed0392b1a7059" name="af2755cb983e3ee4521aed0392b1a7059"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2755cb983e3ee4521aed0392b1a7059">&#9670;&#160;</a></span>get()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;IsUnsignedIntegral Key, typename Value &gt; </div>
+template&lt;std::unsigned_integral I, typename Value &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const Value &amp; <a class="el" href="classmimir_1_1graphs_1_1VectorReadWritePropertyMap.html">mimir::graphs::VectorReadWritePropertyMap</a>&lt; Key, Value &gt;::get </td>
+          <td class="memname">const Value &amp; <a class="el" href="classmimir_1_1graphs_1_1VectorReadWritePropertyMap.html">mimir::graphs::VectorReadWritePropertyMap</a>&lt; I, Value &gt;::get </td>
           <td>(</td>
-          <td class="paramtype">Key&#160;</td>
+          <td class="paramtype">I&#160;</td>
           <td class="paramname"><em>key</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -226,21 +239,21 @@ template&lt;IsUnsignedIntegral Key, typename Value &gt; </div>
 
 </div>
 </div>
-<a id="a1898dcc2fa351dc30702b046281c5be3" name="a1898dcc2fa351dc30702b046281c5be3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1898dcc2fa351dc30702b046281c5be3">&#9670;&#160;</a></span>set()</h2>
+<a id="aed88743b4e7bca2f4d258e72a6507311" name="aed88743b4e7bca2f4d258e72a6507311"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed88743b4e7bca2f4d258e72a6507311">&#9670;&#160;</a></span>set()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;IsUnsignedIntegral Key, typename Value &gt; </div>
+template&lt;std::unsigned_integral I, typename Value &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classmimir_1_1graphs_1_1VectorReadWritePropertyMap.html">mimir::graphs::VectorReadWritePropertyMap</a>&lt; Key, Value &gt;::set </td>
+          <td class="memname">void <a class="el" href="classmimir_1_1graphs_1_1VectorReadWritePropertyMap.html">mimir::graphs::VectorReadWritePropertyMap</a>&lt; I, Value &gt;::set </td>
           <td>(</td>
-          <td class="paramtype">Key&#160;</td>
+          <td class="paramtype">I&#160;</td>
           <td class="paramname"><em>key</em>, </td>
         </tr>
         <tr>

@@ -81,6 +81,9 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p><code><a class="el" href="classmimir_1_1graphs_1_1UnorderedMapReadPropertyMap.html" title="UnorderedMapReadPropertyMap provides read-access to the Value associated with a given Key via a call ...">UnorderedMapReadPropertyMap</a></code> provides read-access to the <code>Value</code> associated with a given <code>Key</code> via a call to the <code><a class="el" href="classmimir_1_1graphs_1_1UnorderedMapReadPropertyMap.html#af2b546d26a69ef983e94360e3caa2617">get()</a></code> function for sparse graph structures whose underlying storage are unordered_maps.  
+ <a href="classmimir_1_1graphs_1_1UnorderedMapReadPropertyMap.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="boost__adapter__utils_8hpp_source.html">boost_adapter_utils.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
@@ -101,14 +104,24 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:af2b546d26a69ef983e94360e3caa2617"><td class="memItemLeft" align="right" valign="top">const Value &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1UnorderedMapReadPropertyMap.html#af2b546d26a69ef983e94360e3caa2617">get</a> (Key key) const</td></tr>
 <tr class="separator:af2b546d26a69ef983e94360e3caa2617"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Typedef Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><div class="compoundTemplParams">template&lt;std::unsigned_integral Key, typename Value&gt;<br />
+class mimir::graphs::UnorderedMapReadPropertyMap&lt; Key, Value &gt;</div><p><code><a class="el" href="classmimir_1_1graphs_1_1UnorderedMapReadPropertyMap.html" title="UnorderedMapReadPropertyMap provides read-access to the Value associated with a given Key via a call ...">UnorderedMapReadPropertyMap</a></code> provides read-access to the <code>Value</code> associated with a given <code>Key</code> via a call to the <code><a class="el" href="classmimir_1_1graphs_1_1UnorderedMapReadPropertyMap.html#af2b546d26a69ef983e94360e3caa2617">get()</a></code> function for sparse graph structures whose underlying storage are unordered_maps. </p>
+<p>Link to Boost docs: <a href="https://www.boost.org/doc/libs/1_82_0/libs/property_map/doc/ReadablePropertyMap.html">https://www.boost.org/doc/libs/1_82_0/libs/property_map/doc/ReadablePropertyMap.html</a> </p><dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Key</td><td>is the key type. </td></tr>
+    <tr><td class="paramname">Value</td><td>is the value type. </td></tr>
+  </table>
+  </dd>
+</dl>
+</div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="adbdd219d90a7f80cd11592be03dc9964" name="adbdd219d90a7f80cd11592be03dc9964"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#adbdd219d90a7f80cd11592be03dc9964">&#9670;&#160;</a></span>category</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;IsUnsignedIntegral Key, typename Value &gt; </div>
+template&lt;std::unsigned_integral Key, typename Value &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using <a class="el" href="classmimir_1_1graphs_1_1UnorderedMapReadPropertyMap.html">mimir::graphs::UnorderedMapReadPropertyMap</a>&lt; Key, Value &gt;::category =  boost::read_write_property_map_tag</td>
@@ -124,7 +137,7 @@ template&lt;IsUnsignedIntegral Key, typename Value &gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;IsUnsignedIntegral Key, typename Value &gt; </div>
+template&lt;std::unsigned_integral Key, typename Value &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using <a class="el" href="classmimir_1_1graphs_1_1UnorderedMapReadPropertyMap.html">mimir::graphs::UnorderedMapReadPropertyMap</a>&lt; Key, Value &gt;::key_type =  Key</td>
@@ -140,7 +153,7 @@ template&lt;IsUnsignedIntegral Key, typename Value &gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;IsUnsignedIntegral Key, typename Value &gt; </div>
+template&lt;std::unsigned_integral Key, typename Value &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using <a class="el" href="classmimir_1_1graphs_1_1UnorderedMapReadPropertyMap.html">mimir::graphs::UnorderedMapReadPropertyMap</a>&lt; Key, Value &gt;::reference =  Value</td>
@@ -156,7 +169,7 @@ template&lt;IsUnsignedIntegral Key, typename Value &gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;IsUnsignedIntegral Key, typename Value &gt; </div>
+template&lt;std::unsigned_integral Key, typename Value &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using <a class="el" href="classmimir_1_1graphs_1_1UnorderedMapReadPropertyMap.html">mimir::graphs::UnorderedMapReadPropertyMap</a>&lt; Key, Value &gt;::value_type =  Value</td>
@@ -173,7 +186,7 @@ template&lt;IsUnsignedIntegral Key, typename Value &gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;IsUnsignedIntegral Key, typename Value &gt; </div>
+template&lt;std::unsigned_integral Key, typename Value &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -202,7 +215,7 @@ template&lt;IsUnsignedIntegral Key, typename Value &gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;IsUnsignedIntegral Key, typename Value &gt; </div>
+template&lt;std::unsigned_integral Key, typename Value &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
