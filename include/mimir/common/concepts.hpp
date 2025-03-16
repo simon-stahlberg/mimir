@@ -37,12 +37,6 @@ struct dependent_false : std::false_type
 template<typename T>
 concept IsArithmetic = std::is_arithmetic_v<T>;
 
-template<typename T>
-concept IsIntegral = std::is_integral_v<T>;
-
-template<typename T>
-concept IsUnsignedIntegral = std::is_integral_v<T> && std::is_unsigned_v<T>;
-
 template<typename T, typename Value>
 concept IsRangeOver = std::ranges::range<T> && std::same_as<std::ranges::range_value_t<T>, Value>;
 
@@ -67,6 +61,7 @@ concept IsHanaMap = std::same_as<typename boost::hana::tag_of<T>::type, boost::h
 // Define a concept that checks whether T is a std::variant.
 template<typename T>
 concept IsVariant = requires { typename std::variant_size<T>::type; };
+
 }
 
 #endif

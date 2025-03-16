@@ -247,7 +247,6 @@ public:
  * Arithmetic operations
  */
 
-// TODO: generalize to IsArithmetic
 inline ContinuousCost evaluate_binary(loki::BinaryOperatorEnum op, ContinuousCost val_left, ContinuousCost val_right)
 {
     if (val_left == UNDEFINED_CONTINUOUS_COST || val_right == UNDEFINED_CONTINUOUS_COST)
@@ -283,7 +282,6 @@ inline ContinuousCost evaluate_binary(loki::BinaryOperatorEnum op, ContinuousCos
     }
 }
 
-// TODO: generalize to IsArithmetic
 inline ContinuousCost evaluate_multi(loki::MultiOperatorEnum op, ContinuousCost val_left, ContinuousCost val_right)
 {
     if (val_left == UNDEFINED_CONTINUOUS_COST || val_right == UNDEFINED_CONTINUOUS_COST)

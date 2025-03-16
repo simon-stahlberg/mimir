@@ -105,18 +105,6 @@ struct PyImmutable
     explicit PyImmutable(const T& obj) : obj_(obj) {}
 
     const T& obj_;  // Read-only reference
-
-    /**
-     * Utility
-     */
-
-    template<typename T>
-    using WrapIfConstReference =
-        std::conditional_t<std::is_lvalue_reference_v<T> && std::is_const_v<std::remove_reference_t<T>>, PyImmutable<std::decay_t<T>>, T>;
-
-    static_assert(std::is_same_v<WrapIfConstReference<const int&>, PyImmutable<int>>);  ///< Immutable reference is wrapped into PyImmutable
-    static_assert(std::is_same_v<WrapIfConstReference<int&>, int&>);                    ///< Mutable reference stays mutable reference
-    static_assert(std::is_same_v<WrapIfConstReference<int>, int>);                      ///< Value type stays value type
 };
 
 /**
