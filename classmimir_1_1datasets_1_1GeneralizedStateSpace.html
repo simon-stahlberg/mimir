@@ -81,7 +81,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p><code><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpace.html" title="GeneralizedStateSpace encapsulates a list of ProblemGraph on the low-level and a ClassGraph on the to...">GeneralizedStateSpace</a></code> encapsulates a list of <code>ProblemGraph</code> on the low-level and a <code>ClassGraph</code> on the top-level.  
+<p><code><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpace.html" title="GeneralizedStateSpace encapsulates a two-level graph structure to represent the state transition mode...">GeneralizedStateSpace</a></code> encapsulates a two-level graph structure to represent the state transition model of a class of problems.  
  <a href="classmimir_1_1datasets_1_1GeneralizedStateSpace.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="generalized__state__space_8hpp_source.html">generalized_state_space.hpp</a>&gt;</code></p>
@@ -94,36 +94,49 @@ Classes</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a02b38b6c3a50f8989d39ef3b44da6f9e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpace.html#a02b38b6c3a50f8989d39ef3b44da6f9e">GeneralizedStateSpace</a> (<a class="el" href="classmimir_1_1search_1_1GeneralizedSearchContext.html">search::GeneralizedSearchContext</a> context, const <a class="el" href="structmimir_1_1datasets_1_1GeneralizedStateSpace_1_1Options.html">Options</a> &amp;options=<a class="el" href="structmimir_1_1datasets_1_1GeneralizedStateSpace_1_1Options.html">Options</a>())</td></tr>
+<tr class="memdesc:a02b38b6c3a50f8989d39ef3b44da6f9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a <code><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpace.html" title="GeneralizedStateSpace encapsulates a two-level graph structure to represent the state transition mode...">GeneralizedStateSpace</a></code> from the given <code>GeneralizedSearchContext</code> and the <code><a class="el" href="structmimir_1_1datasets_1_1GeneralizedStateSpace_1_1Options.html">Options</a></code>. Note that the constructor may internally prune irrelevant <code>SearchContext</code> if detected by symmetry reduction. Note also that the ordering of <code>SearchContext</code> might change if ordering by number of states is enabled. The final <code>GeneralizedSearchContext</code> can be accessed through the respective getter function.  <br /></td></tr>
 <tr class="separator:a02b38b6c3a50f8989d39ef3b44da6f9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac304cdc4988184427b2d69e949883f31"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classmimir_1_1search_1_1GeneralizedSearchContext.html">search::GeneralizedSearchContext</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpace.html#ac304cdc4988184427b2d69e949883f31">get_generalized_search_context</a> () const</td></tr>
+<tr class="memdesc:ac304cdc4988184427b2d69e949883f31"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the underlying <code>GeneralizedSearchContext</code>.  <br /></td></tr>
 <tr class="separator:ac304cdc4988184427b2d69e949883f31"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a93bca6bc15afa0c1b945149a8609f9fc"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir_1_1graphs.html#a14f777b696bfc1d97cbff3d1a30732f8">graphs::ProblemGraphList</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpace.html#a93bca6bc15afa0c1b945149a8609f9fc">get_problem_graphs</a> () const</td></tr>
+<tr class="memdesc:a93bca6bc15afa0c1b945149a8609f9fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the underlying <code>ProblemGraphList</code>  <br /></td></tr>
 <tr class="separator:a93bca6bc15afa0c1b945149a8609f9fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aed7d19ac69e4728a214cd03fdc5aee9c"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir_1_1graphs.html#a7f055a18f6efd9b14e9f5708d28eb7e6">graphs::ClassGraph</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpace.html#aed7d19ac69e4728a214cd03fdc5aee9c">get_graph</a> () const</td></tr>
+<tr class="memdesc:aed7d19ac69e4728a214cd03fdc5aee9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the underlying <code>ClassGraph</code>  <br /></td></tr>
 <tr class="separator:aed7d19ac69e4728a214cd03fdc5aee9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a18e5c60896875bdc3b7551a5fdd7465e"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir.html#a56b4bf568fdc2fc9db3b9a0d1845a961">IndexSet</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpace.html#a18e5c60896875bdc3b7551a5fdd7465e">get_initial_vertices</a> () const</td></tr>
+<tr class="memdesc:a18e5c60896875bdc3b7551a5fdd7465e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the <code>IndexSet</code> of the <code>ClassVertex</code> that are marked as initial vertices.  <br /></td></tr>
 <tr class="separator:a18e5c60896875bdc3b7551a5fdd7465e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0a359dafa4adcacdc0acf525bf8dadd0"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir.html#a56b4bf568fdc2fc9db3b9a0d1845a961">IndexSet</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpace.html#a0a359dafa4adcacdc0acf525bf8dadd0">get_goal_vertices</a> () const</td></tr>
+<tr class="memdesc:a0a359dafa4adcacdc0acf525bf8dadd0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the <code>IndexSet</code> of the <code>ClassVertex</code> that are marked as goal vertices.  <br /></td></tr>
 <tr class="separator:a0a359dafa4adcacdc0acf525bf8dadd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af38e6dff04d9a9eecb0995875fb482d8"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir.html#a56b4bf568fdc2fc9db3b9a0d1845a961">IndexSet</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpace.html#af38e6dff04d9a9eecb0995875fb482d8">get_unsolvable_vertices</a> () const</td></tr>
+<tr class="memdesc:af38e6dff04d9a9eecb0995875fb482d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the <code>IndexSet</code> of the <code>ClassVertex</code> that are marked as unsolvable vertices.  <br /></td></tr>
 <tr class="separator:af38e6dff04d9a9eecb0995875fb482d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a642d192236eabc094f22da497d9cb83c"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir_1_1graphs.html#ae90d83d97c61e149eec8e753a8f19589">graphs::ProblemGraph</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpace.html#a642d192236eabc094f22da497d9cb83c">get_problem_graph</a> (const <a class="el" href="namespacemimir_1_1graphs.html#addbc8279833faca8528c5c48225e197e">graphs::ClassVertex</a> &amp;vertex) const</td></tr>
-<tr class="memdesc:a642d192236eabc094f22da497d9cb83c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ground <code>Class</code> related structures to <code>Problem</code> related structures to access detailed problem specific information about the state.  <br /></td></tr>
+<tr class="memdesc:a642d192236eabc094f22da497d9cb83c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the representative <code>ProblemGraph</code> of the given <code>ClassVertex</code>.  <br /></td></tr>
 <tr class="separator:a642d192236eabc094f22da497d9cb83c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abb8e50628728d3ddaf6bb09048d08020"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir_1_1graphs.html#ae90d83d97c61e149eec8e753a8f19589">graphs::ProblemGraph</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpace.html#abb8e50628728d3ddaf6bb09048d08020">get_problem_graph</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a9861298646e808707570b3e2528af931">graphs::ClassEdge</a> &amp;edge) const</td></tr>
+<tr class="memdesc:abb8e50628728d3ddaf6bb09048d08020"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the representative <code>ProblemGraph</code> of the given <code>ClassEdge</code>.  <br /></td></tr>
 <tr class="separator:abb8e50628728d3ddaf6bb09048d08020"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a240d7a440941cd23285e18a4292198bf"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71">graphs::ProblemVertex</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpace.html#a240d7a440941cd23285e18a4292198bf">get_problem_vertex</a> (const <a class="el" href="namespacemimir_1_1graphs.html#addbc8279833faca8528c5c48225e197e">graphs::ClassVertex</a> &amp;vertex) const</td></tr>
+<tr class="memdesc:a240d7a440941cd23285e18a4292198bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the representative <code>ProblemVertex</code> of the given <code>ClassVertex</code>.  <br /></td></tr>
 <tr class="separator:a240d7a440941cd23285e18a4292198bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a907e0ee1332ba25fc4ccea00b6c91603"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir_1_1graphs.html#a27cce2a7fdacae54f936c2eb0174b4c8">graphs::ProblemEdge</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpace.html#a907e0ee1332ba25fc4ccea00b6c91603">get_problem_edge</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a9861298646e808707570b3e2528af931">graphs::ClassEdge</a> &amp;edge) const</td></tr>
+<tr class="memdesc:a907e0ee1332ba25fc4ccea00b6c91603"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the representative <code>ProblemEdge</code> of the given <code>ClassEdge</code>.  <br /></td></tr>
 <tr class="separator:a907e0ee1332ba25fc4ccea00b6c91603"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8a251b5f62ba744e6e06239bace3bfd1"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir_1_1formalism.html#a18a62fffd7784a50a9304da9b0a2a7d1">formalism::Problem</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpace.html#a8a251b5f62ba744e6e06239bace3bfd1">get_problem</a> (const <a class="el" href="namespacemimir_1_1graphs.html#addbc8279833faca8528c5c48225e197e">graphs::ClassVertex</a> &amp;vertex) const</td></tr>
+<tr class="memdesc:a8a251b5f62ba744e6e06239bace3bfd1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the representative <code>Problem</code> of the given <code>ClassVertex</code>.  <br /></td></tr>
 <tr class="separator:a8a251b5f62ba744e6e06239bace3bfd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa212d7654154705059ed0d0495890d14"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir_1_1formalism.html#a18a62fffd7784a50a9304da9b0a2a7d1">formalism::Problem</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpace.html#aa212d7654154705059ed0d0495890d14">get_problem</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a9861298646e808707570b3e2528af931">graphs::ClassEdge</a> &amp;edge) const</td></tr>
+<tr class="memdesc:aa212d7654154705059ed0d0495890d14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the representative <code>Problem</code> of the given <code>ClassEdge</code>.  <br /></td></tr>
 <tr class="separator:aa212d7654154705059ed0d0495890d14"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8731fab5f29fe372c9a371be61e33651"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir_1_1graphs.html#addbc8279833faca8528c5c48225e197e">graphs::ClassVertex</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpace.html#a8731fab5f29fe372c9a371be61e33651">get_class_vertex</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71">graphs::ProblemVertex</a> &amp;vertex) const</td></tr>
-<tr class="memdesc:a8731fab5f29fe372c9a371be61e33651"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lift <code>Problem</code> related structures to <code>Class</code> related structures.  <br /></td></tr>
+<tr class="memdesc:a8731fab5f29fe372c9a371be61e33651"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lift <code>ProblemVertex</code> back to its corresponding <code>ClassVertex</code>. Note that other <code>ProblemVertex</code> may map to the same <code>ClassVertex</code>.  <br /></td></tr>
 <tr class="separator:a8731fab5f29fe372c9a371be61e33651"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2b4119fe7dd6c8211587257cf9527c4c"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir_1_1graphs.html#a9861298646e808707570b3e2528af931">graphs::ClassEdge</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpace.html#a2b4119fe7dd6c8211587257cf9527c4c">get_class_edge</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a27cce2a7fdacae54f936c2eb0174b4c8">graphs::ProblemEdge</a> &amp;edge) const</td></tr>
+<tr class="memdesc:a2b4119fe7dd6c8211587257cf9527c4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lift <code>ProblemEdge</code> back to its corresponding <code>ClassEdge</code>. Note that other <code>ProblemEdge</code> may map to the same <code>ClassEdge</code>.  <br /></td></tr>
 <tr class="separator:a2b4119fe7dd6c8211587257cf9527c4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a64adccd4f319722feb0af754c1563205"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1graphs.html#a7f055a18f6efd9b14e9f5708d28eb7e6">graphs::ClassGraph</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpace.html#a64adccd4f319722feb0af754c1563205">create_induced_subgraph_from_class_vertex_indices</a> (const <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a> &amp;class_vertex_indices) const</td></tr>
 <tr class="memdesc:a64adccd4f319722feb0af754c1563205"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create the induced <code>ClassGraph</code> by the given <code>class_vertex_indices</code>. This function copies the set of <code>ClassVertex</code> and all <code>ClassEdge</code> between those vertices into a new <code>ClassGraph</code>.  <br /></td></tr>
@@ -133,9 +146,12 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a2f8944d50b4206f4d195941a335841fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p><code><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpace.html" title="GeneralizedStateSpace encapsulates a list of ProblemGraph on the low-level and a ClassGraph on the to...">GeneralizedStateSpace</a></code> encapsulates a list of <code>ProblemGraph</code> on the low-level and a <code>ClassGraph</code> on the top-level. </p>
-<p><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpace.html" title="GeneralizedStateSpace encapsulates a list of ProblemGraph on the low-level and a ClassGraph on the to...">GeneralizedStateSpace</a> </p>
-<p>There is a one-to-many mapping from <code>ClassVertex</code> (resp. <code>ClassEdge</code>) to <code>ProblemVertex</code> (resp. <code>ProblemEdge</code>), which is a strict one-to-many mapping, if symmetries across different problems are detected. From each <code>ClassVertex</code> (resp. <code>ClassEdge</code>) one can access the single representative <code>ProblemVertex</code> (resp. <code>ProblemEdge</code>). From each <code>ProblemVertex</code> (resp. <code>ProblemEdge</code>) one can access the corresponding <code>ClassVertex</code> (resp. <code>ClassEdge</code>). </p>
+<div class="textblock"><p><code><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpace.html" title="GeneralizedStateSpace encapsulates a two-level graph structure to represent the state transition mode...">GeneralizedStateSpace</a></code> encapsulates a two-level graph structure to represent the state transition model of a class of problems. </p>
+<p><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpace.html" title="GeneralizedStateSpace encapsulates a two-level graph structure to represent the state transition mode...">GeneralizedStateSpace</a> </p>
+<p>The two-level graph structure consists of two types of graphs: <code>ClassGraph</code> and <code>ProblemGraph</code>. On the high level, we have a single <code>ClassGraph</code> that represents the state transition model of the class of problems and on the low level, we have several <code>ProblemGraph</code> each representing the state transition model of a specfic problem in the class.</p>
+<p>The <code>ClassGraph</code> acts as the main interface to retrieve information about the state transition model of a class of problems. Each <code>Vertex</code> in the <code>ClassGraph</code> has a single representative from a <code>ProblemGraph</code>. When symmetry reduction is disabled, there is a strict one-to-one mapping between <code>ClassVertex</code> and <code>ProblemVertex</code> and a strict one-to-one mapping between <code>ClassEdge</code> and <code>ProblemEdge</code>. When symmetry reduction is enabled, the mapping may become a strict one-to-many mapping, in which case, the <code>ClassVertex</code> or <code>ClassEdge</code> acts as an interface to pick access a unique representative.</p>
+<p>The <code>ProblemGraph</code> acts as the main interface to retrieve information about the state transition model of a specific problem. When symmetry reduction is disabled, the <code>ProblemGraph</code> is essentially the state space. When symmetry reduction is enabled, the <code>ProblemGraph</code> becomes the equivalence-based abstraction.</p>
+<p>The <code><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpace.html" title="GeneralizedStateSpace encapsulates a two-level graph structure to represent the state transition mode...">GeneralizedStateSpace</a></code> provides several convenience functions to map between <code>ClassVertex</code> (resp. <code>ClassEdge</code>) and <code>ProblemVertex</code> (resp. <code>ProblemEdge</code>). Furthermore, there is functionality to compute induced subgraphs, which is useful in learning tasks where learning from the whole <code>ClassGraph</code> is inconvenient or simply not scalable. Computing a subgraph is fairly efficient and the preferred way when working with fragments of the <code><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpace.html" title="GeneralizedStateSpace encapsulates a two-level graph structure to represent the state transition mode...">GeneralizedStateSpace</a></code>. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a02b38b6c3a50f8989d39ef3b44da6f9e" name="a02b38b6c3a50f8989d39ef3b44da6f9e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a02b38b6c3a50f8989d39ef3b44da6f9e">&#9670;&#160;</a></span>GeneralizedStateSpace()</h2>
@@ -162,7 +178,15 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Constructors </p>
+
+<p>Construct a <code><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpace.html" title="GeneralizedStateSpace encapsulates a two-level graph structure to represent the state transition mode...">GeneralizedStateSpace</a></code> from the given <code>GeneralizedSearchContext</code> and the <code><a class="el" href="structmimir_1_1datasets_1_1GeneralizedStateSpace_1_1Options.html">Options</a></code>. Note that the constructor may internally prune irrelevant <code>SearchContext</code> if detected by symmetry reduction. Note also that the ordering of <code>SearchContext</code> might change if ordering by number of states is enabled. The final <code>GeneralizedSearchContext</code> can be accessed through the respective getter function. </p>
+<p>Constructors </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">context</td><td>encapsulates the problem specific <code>SearchContext</code> used to derive the <code><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpace.html" title="GeneralizedStateSpace encapsulates a two-level graph structure to represent the state transition mode...">GeneralizedStateSpace</a></code>. </td></tr>
+    <tr><td class="paramname">options</td><td>encapsulates the options used to derive the <code><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpace.html" title="GeneralizedStateSpace encapsulates a two-level graph structure to represent the state transition mode...">GeneralizedStateSpace</a></code>. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -224,6 +248,15 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Lift <code>ProblemEdge</code> back to its corresponding <code>ClassEdge</code>. Note that other <code>ProblemEdge</code> may map to the same <code>ClassEdge</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vertex</td><td>is the <code>ProblemEdge</code> </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>the corresponding <code>ClassEdge</code>. </dd></dl>
+
 </div>
 </div>
 <a id="a8731fab5f29fe372c9a371be61e33651" name="a8731fab5f29fe372c9a371be61e33651"></a>
@@ -242,7 +275,14 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Lift <code>Problem</code> related structures to <code>Class</code> related structures. </p>
+<p>Lift <code>ProblemVertex</code> back to its corresponding <code>ClassVertex</code>. Note that other <code>ProblemVertex</code> may map to the same <code>ClassVertex</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vertex</td><td>is the <code>ProblemVertex</code> </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>the corresponding <code>ClassVertex</code>. </dd></dl>
 
 </div>
 </div>
@@ -260,7 +300,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Getters </p>
+
+<p>Get the underlying <code>GeneralizedSearchContext</code>. </p>
+<p>Getters </p><dl class="section return"><dt>Returns</dt><dd>the underlying <code>GeneralizedSearchContext</code>. </dd></dl>
 
 </div>
 </div>
@@ -279,6 +321,9 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Get the <code>IndexSet</code> of the <code>ClassVertex</code> that are marked as goal vertices. </p>
+<dl class="section return"><dt>Returns</dt><dd>an <code>IndexSet</code> that identifies the set of goal <code>ClassVertex</code>. </dd></dl>
+
 </div>
 </div>
 <a id="aed7d19ac69e4728a214cd03fdc5aee9c" name="aed7d19ac69e4728a214cd03fdc5aee9c"></a>
@@ -296,6 +341,9 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Get the underlying <code>ClassGraph</code> </p>
+<dl class="section return"><dt>Returns</dt><dd>the underlying <code>ClassGraph</code>. </dd></dl>
+
 </div>
 </div>
 <a id="a18e5c60896875bdc3b7551a5fdd7465e" name="a18e5c60896875bdc3b7551a5fdd7465e"></a>
@@ -312,6 +360,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Get the <code>IndexSet</code> of the <code>ClassVertex</code> that are marked as initial vertices. </p>
+<dl class="section return"><dt>Returns</dt><dd>an <code>IndexSet</code> that identifies the set of initial <code>ClassVertex</code>. </dd></dl>
 
 </div>
 </div>
@@ -331,6 +382,15 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Get the representative <code>Problem</code> of the given <code>ClassEdge</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vertex</td><td>is the <code>ClassEdge</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>the representative <code>Problem</code> of the given <code>ClassEdge</code>. </dd></dl>
+
 </div>
 </div>
 <a id="a8a251b5f62ba744e6e06239bace3bfd1" name="a8a251b5f62ba744e6e06239bace3bfd1"></a>
@@ -348,6 +408,15 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Get the representative <code>Problem</code> of the given <code>ClassVertex</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vertex</td><td>is the <code>ClassVertex</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>the representative <code>Problem</code> of the given <code>ClassVertex</code>. </dd></dl>
 
 </div>
 </div>
@@ -367,6 +436,15 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Get the representative <code>ProblemEdge</code> of the given <code>ClassEdge</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vertex</td><td>is the <code>ClassEdge</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>the representative <code>ProblemEdge</code> of the given <code>ClassEdge</code>. </dd></dl>
+
 </div>
 </div>
 <a id="abb8e50628728d3ddaf6bb09048d08020" name="abb8e50628728d3ddaf6bb09048d08020"></a>
@@ -384,6 +462,15 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Get the representative <code>ProblemGraph</code> of the given <code>ClassEdge</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vertex</td><td>is the <code>ClassEdge</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>the representative <code>ProblemGraph</code> of the given <code>ClassEdge</code>. </dd></dl>
 
 </div>
 </div>
@@ -403,7 +490,14 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Ground <code>Class</code> related structures to <code>Problem</code> related structures to access detailed problem specific information about the state. </p>
+<p>Get the representative <code>ProblemGraph</code> of the given <code>ClassVertex</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vertex</td><td>is the <code>ClassVertex</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>the representative <code>ProblemGraph</code> of the given <code>ClassVertex</code>. </dd></dl>
 
 </div>
 </div>
@@ -421,6 +515,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Get the underlying <code>ProblemGraphList</code> </p>
+<dl class="section return"><dt>Returns</dt><dd>the underlying <code>ProblemGraphList</code>. </dd></dl>
 
 </div>
 </div>
@@ -440,6 +537,15 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Get the representative <code>ProblemVertex</code> of the given <code>ClassVertex</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vertex</td><td>is the <code>ClassVertex</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>the representative <code>ProblemVertex</code> of the given <code>ClassVertex</code>. </dd></dl>
+
 </div>
 </div>
 <a id="af38e6dff04d9a9eecb0995875fb482d8" name="af38e6dff04d9a9eecb0995875fb482d8"></a>
@@ -456,6 +562,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Get the <code>IndexSet</code> of the <code>ClassVertex</code> that are marked as unsolvable vertices. </p>
+<dl class="section return"><dt>Returns</dt><dd>an <code>IndexSet</code> that identifies the set of unsolvable <code>ClassVertex</code>. </dd></dl>
 
 </div>
 </div>
