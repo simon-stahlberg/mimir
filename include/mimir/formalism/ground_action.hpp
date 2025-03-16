@@ -44,6 +44,15 @@ private:
 public:
     using PDDLEntity = void;
 
+    /// @brief `FullFormatterTag` is used to dispatch the operator<< overload that prints the entire action.
+    struct FullFormatterTag
+    {
+    };
+    /// @brief `PlanFormatterTag` is used to dispatch the operator<< overload that prints the action as it appears in a plan.
+    struct PlanFormatterTag
+    {
+    };
+
     Index& get_index();
     Index& get_action_index();
     FlatIndexList& get_objects();
@@ -90,21 +99,17 @@ using GroundActionImplSet = mimir::buffering::UnorderedSet<GroundActionImpl>;
  * Pretty printing
  */
 
-struct FullActionFormatterTag
-{
-};
-struct PlanActionFormatterTag
-{
-};
 }
 
 namespace mimir
 {
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundAction, const formalism::ProblemImpl&, formalism::FullActionFormatterTag>& data);
+std::ostream& operator<<(std::ostream& os,
+                         const std::tuple<formalism::GroundAction, const formalism::ProblemImpl&, formalism::GroundActionImpl::FullFormatterTag>& data);
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundAction, const formalism::ProblemImpl&, formalism::PlanActionFormatterTag>& data);
+std::ostream& operator<<(std::ostream& os,
+                         const std::tuple<formalism::GroundAction, const formalism::ProblemImpl&, formalism::GroundActionImpl::PlanFormatterTag>& data);
 
 }
 

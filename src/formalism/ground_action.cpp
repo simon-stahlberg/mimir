@@ -65,7 +65,8 @@ namespace mimir
  */
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundAction, const formalism::ProblemImpl&, formalism::FullActionFormatterTag>& data)
+std::ostream& operator<<(std::ostream& os,
+                         const std::tuple<formalism::GroundAction, const formalism::ProblemImpl&, formalism::GroundActionImpl::FullFormatterTag>& data)
 {
     const auto& [action, problem, tag] = data;
 
@@ -96,7 +97,8 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundAct
 }
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundAction, const formalism::ProblemImpl&, formalism::PlanActionFormatterTag>& data)
+std::ostream& operator<<(std::ostream& os,
+                         const std::tuple<formalism::GroundAction, const formalism::ProblemImpl&, formalism::GroundActionImpl::PlanFormatterTag>& data)
 {
     const auto& [ground_action, problem, tag] = data;
 

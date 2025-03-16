@@ -25,22 +25,23 @@
 namespace mimir::formalism
 {
 
-/**
- * StaticOrFluentOrDerived
- */
-
+/// @brief `Static` is a tag to declare that the semantic interpretation of a type remains constants across all states.
 struct Static
 {
     static constexpr std::string name = "static";
 };
+/// @brief `Fluent` is a tag to declare that the semantic interpretation of a type can change across states due to actions.
 struct Fluent
 {
     static constexpr std::string name = "fluent";
 };
+/// @brief `Derived` is a tag to declare that the semantic interpretation of a type can change across states due to axioms.
 struct Derived
 {
     static constexpr std::string name = "derived";
 };
+/// @brief `Auxiliary` is a tag indicating that the value of this type is used for metric evaluation and does not contribute to defining the state. For example,
+/// total-cost in cost-sensitive planning.
 struct Auxiliary
 {
     static constexpr std::string name = "auxiliary";

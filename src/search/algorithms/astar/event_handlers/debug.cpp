@@ -39,7 +39,7 @@ void DebugAStarAlgorithmEventHandler::on_expand_goal_state_impl(State state) con
 void DebugAStarAlgorithmEventHandler::on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const
 {
     std::cout << "[AStar] Action: ";
-    mimir::operator<<(std::cout, std::make_tuple(action, std::cref(*m_problem), FullActionFormatterTag {}));
+    mimir::operator<<(std::cout, std::make_tuple(action, std::cref(*m_problem), GroundActionImpl::FullFormatterTag {}));
     std::cout << "\n"
               << "[AStar] Successor: ";
     mimir::operator<<(std::cout, std::make_tuple(successor_state, std::cref(*m_problem)));
@@ -98,7 +98,7 @@ void DebugAStarAlgorithmEventHandler::on_solved_impl(const Plan& plan) const
     for (size_t i = 0; i < plan.get_actions().size(); ++i)
     {
         std::cout << "[AStar] " << i + 1 << ". ";
-        mimir::operator<<(std::cout, std::make_tuple(plan.get_actions()[i], std::cref(*m_problem), PlanActionFormatterTag {}));
+        mimir::operator<<(std::cout, std::make_tuple(plan.get_actions()[i], std::cref(*m_problem), GroundActionImpl::PlanFormatterTag {}));
         std::cout << std::endl;
     }
 }

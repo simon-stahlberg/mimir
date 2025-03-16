@@ -449,14 +449,14 @@ void bind_formalism(nb::module_& m)
              [](const GroundActionImpl& self, const ProblemImpl& problem)
              {
                  std::stringstream ss;
-                 ss << std::make_tuple(GroundAction(&self), std::cref(problem), FullActionFormatterTag {});
+                 ss << std::make_tuple(GroundAction(&self), std::cref(problem), GroundActionImpl::FullFormatterTag {});
                  return ss.str();
              })
         .def("to_string_for_plan",
              [](const GroundActionImpl& self, const ProblemImpl& problem)
              {
                  std::stringstream ss;
-                 ss << std::make_tuple(GroundAction(&self), std::cref(problem), PlanActionFormatterTag {});
+                 ss << std::make_tuple(GroundAction(&self), std::cref(problem), GroundActionImpl::PlanFormatterTag {});
                  return ss.str();
              })
         .def("get_index", nb::overload_cast<>(&GroundActionImpl::get_index, nb::const_), nb::rv_policy::copy)

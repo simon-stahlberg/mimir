@@ -40,7 +40,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<const Plan&, const P
 
     for (const auto& action : plan.get_actions())
     {
-        mimir::operator<<(os, std::make_tuple(action, std::cref(problem), PlanActionFormatterTag {}));
+        mimir::operator<<(os, std::make_tuple(action, std::cref(problem), GroundActionImpl::PlanFormatterTag {}));
         os << "\n";
     }
     os << "; cost = " << plan.get_cost();
