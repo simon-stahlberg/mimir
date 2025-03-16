@@ -161,10 +161,28 @@ using StaticClassGraph = StaticGraph<ClassVertex, ClassEdge>;
 /// @brief `ClassGraph` implements a directed graph representing the state space of a class of problems.
 using ClassGraph = StaticBidirectionalGraph<StaticClassGraph>;
 
+/// @brief Write a string representation of the given `ProblemVertex` to the `std::ostream` buffer.
+/// @param out is a reference to the given `std::ostream` buffer.
+/// @param vertex is the given `ProblemVertex`.
+/// @return is a reference to the given `std::ostream` buffer.
 extern std::ostream& operator<<(std::ostream& out, const ProblemVertex& vertex);
+
+/// @brief Write a string representation of the given `ProblemEdge` to the `std::ostream` buffer.
+/// @param out is a reference to the given `std::ostream` buffer.
+/// @param vertex is the given `ProblemEdge`.
+/// @return is a reference to the given `std::ostream` buffer.
 extern std::ostream& operator<<(std::ostream& out, const ProblemEdge& edge);
 
+/// @brief Write a string representation of the given `ClassVertex` to the `std::ostream` buffer.
+/// @param out is a reference to the given `std::ostream` buffer.
+/// @param vertex is the given `ClassVertex`.
+/// @return is a reference to the given `std::ostream` buffer.
 extern std::ostream& operator<<(std::ostream& out, const ClassVertex& vertex);
+
+/// @brief Write a string representation of the given `ClassEdge` to the `std::ostream` buffer.
+/// @param out is a reference to the given `std::ostream` buffer.
+/// @param vertex is the given `ClassEdge`.
+/// @return is a reference to the given `std::ostream` buffer.
 extern std::ostream& operator<<(std::ostream& out, const ClassEdge& edge);
 }
 
@@ -176,25 +194,25 @@ namespace mimir::datasets
 
 /// @brief `GeneralizedStateSpace` encapsulates a two-level graph structure to represent the state transition model of a class of problems.
 ///
-/// The two-level graph structure consists of two types of graphs: `ClassGraph` and `ProblemGraph`.
-/// On the high level, we have a single `ClassGraph` that represents the state transition model of the class of problems and
-/// on the low level, we have several `ProblemGraph` each representing the state transition model of a specfic problem in the class.
+/// The two-level graph structure consists of two types of graphs: `graphs::ClassGraph` and `graphs::ProblemGraph`.
+/// On the high level, we have a single `graphs::ClassGraph` that represents the state transition model of the class of problems and
+/// on the low level, we have several `graphs::ProblemGraph` each representing the state transition model of a specfic problem in the class.
 ///
-/// The `ClassGraph` acts as the main interface to retrieve information about the state transition model of a class of problems.
-/// Each `Vertex` in the `ClassGraph` has a single representative from a `ProblemGraph`.
-/// When symmetry reduction is disabled, there is a strict one-to-one mapping between `ClassVertex` and `ProblemVertex`
-/// and a strict one-to-one mapping between `ClassEdge` and `ProblemEdge`.
-/// When symmetry reduction is enabled, the mapping may become a strict one-to-many mapping, in which case, the `ClassVertex`
-/// or `ClassEdge` acts as an interface to pick access a unique representative.
+/// The `graphs::ClassGraph` acts as the main interface to retrieve information about the state transition model of a class of problems.
+/// Each vertex in the `graphs::ClassGraph` has a single representative from a `graphs::ProblemGraph`.
+/// When symmetry reduction is disabled, there is a strict one-to-one mapping between `graphs::ClassVertex` and `graphs::ProblemVertex`
+/// and a strict one-to-one mapping between `graphs::ClassEdge` and `graphs::ProblemEdge`.
+/// When symmetry reduction is enabled, the mapping may become a strict one-to-many mapping, in which case, the `graphs::ClassVertex`
+/// or `graphs::ClassEdge` acts as an interface to pick access a unique representative.
 ///
-/// The `ProblemGraph` acts as the main interface to retrieve information about the state transition model of a specific problem.
-/// When symmetry reduction is disabled, the `ProblemGraph` is essentially the state space.
-/// When symmetry reduction is enabled, the `ProblemGraph` becomes the equivalence-based abstraction.
+/// The `graphs::ProblemGraph` acts as the main interface to retrieve information about the state transition model of a specific problem.
+/// When symmetry reduction is disabled, the `graphs::ProblemGraph` is essentially the state space.
+/// When symmetry reduction is enabled, the `graphs::ProblemGraph` becomes the equivalence-based abstraction.
 ///
-/// The `GeneralizedStateSpace` provides several convenience functions to map between `ClassVertex` (resp. `ClassEdge`) and `ProblemVertex` (resp.
-/// `ProblemEdge`). Furthermore, there is functionality to compute induced subgraphs, which is useful in learning tasks where learning from the whole
-/// `ClassGraph` is inconvenient or simply not scalable. Computing a subgraph is fairly efficient and the preferred way when working with fragments of the
-/// `GeneralizedStateSpace`.
+/// The `GeneralizedStateSpace` provides several convenience functions to map between `graphs::ClassVertex` (resp. `graphs::ClassEdge`) and
+/// `graphs::ProblemVertex` (resp. `graphs::ProblemEdge`). Furthermore, there is functionality to compute induced subgraphs, which is useful in learning tasks
+/// where learning from the whole `graphs::ClassGraph` is inconvenient or simply not scalable. Computing a subgraph is fairly efficient and the preferred way
+/// when working with fragments of the `GeneralizedStateSpace`.
 class GeneralizedStateSpace
 {
 private:
@@ -244,11 +262,11 @@ public:
      * Constructors
      */
 
-    /// @brief Construct a `GeneralizedStateSpace` from the given `GeneralizedSearchContext` and the `Options`.
-    /// Note that the constructor may internally prune irrelevant `SearchContext` if detected by symmetry reduction.
-    /// Note also that the ordering of `SearchContext` might change if ordering by number of states is enabled.
-    /// The final `GeneralizedSearchContext` can be accessed through the respective getter function.
-    /// @param context encapsulates the problem specific `SearchContext` used to derive the `GeneralizedStateSpace`.
+    /// @brief Construct a `GeneralizedStateSpace` from the given `search::GeneralizedSearchContext` and the `Options`.
+    /// Note that the constructor may internally prune irrelevant `search::SearchContext` if detected by symmetry reduction.
+    /// Note also that the ordering of `search::SearchContext` might change if ordering by number of states is enabled.
+    /// The final `search::GeneralizedSearchContext` can be accessed through the respective getter function.
+    /// @param context encapsulates the problem specific `search::SearchContext` used to derive the `GeneralizedStateSpace`.
     /// @param options encapsulates the options used to derive the `GeneralizedStateSpace`.
     GeneralizedStateSpace(search::GeneralizedSearchContext context, const Options& options = Options());
 
@@ -256,62 +274,62 @@ public:
      * Getters
      */
 
-    /// @brief Get the underlying `GeneralizedSearchContext`.
-    /// @return the underlying `GeneralizedSearchContext`.
+    /// @brief Get the underlying `search::GeneralizedSearchContext`.
+    /// @return the underlying `search::GeneralizedSearchContext`.
     const search::GeneralizedSearchContext& get_generalized_search_context() const;
 
-    /// @brief Get the underlying `ProblemGraphList`
-    /// @return the underlying `ProblemGraphList`.
+    /// @brief Get the underlying `graphs::ProblemGraphList`
+    /// @return the underlying `graphs::ProblemGraphList`.
     const graphs::ProblemGraphList& get_problem_graphs() const;
 
-    /// @brief Get the underlying `ClassGraph`
-    /// @return the underlying `ClassGraph`.
+    /// @brief Get the underlying `graphs::ClassGraph`
+    /// @return the underlying `graphs::ClassGraph`.
     const graphs::ClassGraph& get_graph() const;
 
-    /// @brief Get the `IndexSet` of the `ClassVertex` that are marked as initial vertices.
-    /// @return an `IndexSet` that identifies the set of initial `ClassVertex`.
+    /// @brief Get the `mimir::IndexSet` of the `graphs::ClassVertex` that are marked as initial vertices.
+    /// @return an `mimir::IndexSet` that identifies the set of initial `graphs::ClassVertex`.
     const IndexSet& get_initial_vertices() const;
-    /// @brief Get the `IndexSet` of the `ClassVertex` that are marked as goal vertices.
-    /// @return an `IndexSet` that identifies the set of goal `ClassVertex`.
+    /// @brief Get the `mimir::IndexSet` of the `graphs::ClassVertex` that are marked as goal vertices.
+    /// @return an `mimir::IndexSet` that identifies the set of goal `graphs::ClassVertex`.
     const IndexSet& get_goal_vertices() const;
-    /// @brief Get the `IndexSet` of the `ClassVertex` that are marked as unsolvable vertices.
-    /// @return an `IndexSet` that identifies the set of unsolvable `ClassVertex`.
+    /// @brief Get the `mimir::IndexSet` of the `graphs::ClassVertex` that are marked as unsolvable vertices.
+    /// @return an `mimir::IndexSet` that identifies the set of unsolvable `graphs::ClassVertex`.
     const IndexSet& get_unsolvable_vertices() const;
 
-    /// @brief Get the representative `ProblemGraph` of the given `ClassVertex`.
-    /// @param vertex is the `ClassVertex`.
-    /// @return the representative `ProblemGraph` of the given `ClassVertex`.
+    /// @brief Get the representative `ProblemGraph` of the given `graphs::ClassVertex`.
+    /// @param vertex is the `graphs::ClassVertex`.
+    /// @return the representative `ProblemGraph` of the given `graphs::ClassVertex`.
     const graphs::ProblemGraph& get_problem_graph(const graphs::ClassVertex& vertex) const;
-    /// @brief Get the representative `ProblemGraph` of the given `ClassEdge`.
-    /// @param vertex is the `ClassEdge`.
-    /// @return the representative `ProblemGraph` of the given `ClassEdge`.
+    /// @brief Get the representative `ProblemGraph` of the given `graphs::ClassEdge`.
+    /// @param vertex is the `graphs::ClassEdge`.
+    /// @return the representative `ProblemGraph` of the given `graphs::ClassEdge`.
     const graphs::ProblemGraph& get_problem_graph(const graphs::ClassEdge& edge) const;
-    /// @brief Get the representative `ProblemVertex` of the given `ClassVertex`.
-    /// @param vertex is the `ClassVertex`.
-    /// @return the representative `ProblemVertex` of the given `ClassVertex`.
+    /// @brief Get the representative `graphs::ProblemVertex` of the given `graphs::ClassVertex`.
+    /// @param vertex is the `graphs::ClassVertex`.
+    /// @return the representative `graphs::ProblemVertex` of the given `graphs::ClassVertex`.
     const graphs::ProblemVertex& get_problem_vertex(const graphs::ClassVertex& vertex) const;
-    /// @brief Get the representative `ProblemEdge` of the given `ClassEdge`.
-    /// @param vertex is the `ClassEdge`.
-    /// @return the representative `ProblemEdge` of the given `ClassEdge`.
+    /// @brief Get the representative `graphs::ProblemEdge` of the given `graphs::ClassEdge`.
+    /// @param vertex is the `graphs::ClassEdge`.
+    /// @return the representative `graphs::ProblemEdge` of the given `graphs::ClassEdge`.
     const graphs::ProblemEdge& get_problem_edge(const graphs::ClassEdge& edge) const;
-    /// @brief Get the representative `Problem` of the given `ClassVertex`.
-    /// @param vertex is the `ClassVertex`.
-    /// @return the representative `Problem` of the given `ClassVertex`.
+    /// @brief Get the representative `Problem` of the given `graphs::ClassVertex`.
+    /// @param vertex is the `graphs::ClassVertex`.
+    /// @return the representative `formalism::Problem` of the given `graphs::ClassVertex`.
     const formalism::Problem& get_problem(const graphs::ClassVertex& vertex) const;
-    /// @brief Get the representative `Problem` of the given `ClassEdge`.
-    /// @param vertex is the `ClassEdge`.
-    /// @return the representative `Problem` of the given `ClassEdge`.
+    /// @brief Get the representative `Problem` of the given `graphs::ClassEdge`.
+    /// @param vertex is the `graphs::ClassEdge`.
+    /// @return the representative `formalism::Problem` of the given `graphs::ClassEdge`.
     const formalism::Problem& get_problem(const graphs::ClassEdge& edge) const;
 
-    /// @brief Lift `ProblemVertex` back to its corresponding `ClassVertex`.
-    /// Note that other `ProblemVertex` may map to the same `ClassVertex`.
-    /// @param vertex is the `ProblemVertex`
-    /// @return the corresponding `ClassVertex`.
+    /// @brief Lift `graphs::ProblemVertex` back to its corresponding `graphs::ClassVertex`.
+    /// Note that other `graphs::ProblemVertex` may map to the same `graphs::ClassVertex`.
+    /// @param vertex is the `graphs::ProblemVertex`
+    /// @return the corresponding `graphs::ClassVertex`.
     const graphs::ClassVertex& get_class_vertex(const graphs::ProblemVertex& vertex) const;
-    /// @brief Lift `ProblemEdge` back to its corresponding `ClassEdge`.
-    /// Note that other `ProblemEdge` may map to the same `ClassEdge`.
-    /// @param vertex is the `ProblemEdge`
-    /// @return the corresponding `ClassEdge`.
+    /// @brief Lift `graphs::ProblemEdge` back to its corresponding `graphs::ClassEdge`.
+    /// Note that other `graphs::ProblemEdge` may map to the same `graphs::ClassEdge`.
+    /// @param vertex is the `graphs::ProblemEdge`
+    /// @return the corresponding `graphs::ClassEdge`.
     const graphs::ClassEdge& get_class_edge(const graphs::ProblemEdge& edge) const;
 
     /**
@@ -319,12 +337,12 @@ public:
      */
 
     /// @brief Create the induced `ClassGraph` by the given `class_vertex_indices`.
-    /// This function copies the set of `ClassVertex`
-    /// and all `ClassEdge` between those vertices into a new `ClassGraph`.
+    /// This function copies the set of `graphs::ClassVertex`
+    /// and all `graphs::ClassEdge` between those vertices into a new `ClassGraph`.
     graphs::ClassGraph create_induced_subgraph_from_class_vertex_indices(const IndexList& class_vertex_indices) const;
     /// @brief Create the induced `ClassGraph` by the given `problem_indices`.
-    /// This function copies the corresponding sets of `ClassVertex`
-    /// and `ClassEdge` into a new `ClassGraph`.
+    /// This function copies the corresponding sets of `graphs::ClassVertex`
+    /// and `graphs::ClassEdge` into a new `ClassGraph`.
     graphs::ClassGraph create_induced_subgraph_from_problem_indices(const IndexList& problem_indices) const;
 };
 }
