@@ -33,7 +33,12 @@ namespace mimir::graphs
 // BasicMatrix
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-template<typename I, typename V>
+/// @brief `VectorBasicMatrix` is a 2-dimensional table of values for dense graph structures whose underlying storage are vectors.
+///
+/// Link to Boost docs: https://www.boost.org/doc/libs/1_82_0/libs/graph/doc/BasicMatrix.html
+/// @tparam I is the index type.
+/// @tparam V is the value type.
+template<std::unsigned_integral I, typename V>
 class VectorBasicMatrix
 {
 public:
@@ -51,7 +56,12 @@ private:
     std::vector<std::vector<V>> m_matrix;
 };
 
-template<typename I, typename V>
+/// @brief `UnorderedMapBasicMatrix` is a 2-dimensional table of values for sparse graph structures whose underlying storage are unordered_maps.
+///
+/// Link to Boost docs: https://www.boost.org/doc/libs/1_82_0/libs/graph/doc/BasicMatrix.html
+/// @tparam I is the index type.
+/// @tparam V is the value type.
+template<std::unsigned_integral I, typename V>
 class UnorderedMapBasicMatrix
 {
 public:
@@ -96,64 +106,82 @@ inline Value get(const TrivialReadPropertyMap<Key, Value>&, Key key)
 
 /* VectorReadPropertyMap */
 
-template<IsUnsignedIntegral Key, typename Value>
+/// @brief `VectorReadPropertyMap` provides read-access to the `Value` associated with a given `Key` via a call to the `get()` function for dense graph
+/// structures whose underlying storage are vectors.
+///
+/// Link to Boost docs: https://www.boost.org/doc/libs/1_82_0/libs/property_map/doc/ReadablePropertyMap.html
+/// @tparam I is the value type.
+/// @tparam Value is the value type.
+template<std::unsigned_integral I, typename Value>
 class VectorReadPropertyMap
 {
 public:
     using value_type = Value;
-    using key_type = Key;
+    using key_type = I;
     using reference = Value;
     using category = boost::read_write_property_map_tag;
 
     explicit VectorReadPropertyMap(const std::vector<Value>& distances) : m_distances(distances) {}
 
-    const Value& get(Key key) const { return m_distances.get().at(key); }
+    const Value& get(I key) const { return m_distances.get().at(key); }
 
 private:
     std::reference_wrapper<const std::vector<Value>> m_distances;
 };
 
-template<typename Key, typename Value>
-inline const Value& get(const VectorReadPropertyMap<Key, Value>& m, Key key)
+template<std::unsigned_integral I, typename Value>
+inline const Value& get(const VectorReadPropertyMap<I, Value>& m, I key)
 {
     return m.get(key);
 }
 
 /* VectorReadWritePropertyMap */
 
-template<IsUnsignedIntegral Key, typename Value>
+/// @brief `VectorReadWritePropertyMap` provides read-write-access to the `Value` associated with a given `Key` via a call to the `get()` and `put()` function
+/// for dense graph structures whose underlying storage are vectors.
+///
+/// Link to Boost docs: https://www.boost.org/doc/libs/1_82_0/libs/property_map/doc/ReadWritePropertyMap.html
+/// @tparam I is the index type.
+/// @tparam Value is the value type.
+template<std::unsigned_integral I, typename Value>
 class VectorReadWritePropertyMap
 {
 public:
     using value_type = Value;
-    using key_type = Key;
+    using key_type = I;
     using reference = Value;
     using category = boost::read_write_property_map_tag;
 
     explicit VectorReadWritePropertyMap(std::vector<Value>& distances) : m_distances(distances) {}
 
-    const Value& get(Key key) const { return m_distances.get().at(key); }
-    void set(Key key, Value value) { m_distances.get().at(key) = value; }
+    const Value& get(I key) const { return m_distances.get().at(key); }
+    void set(I key, Value value) { m_distances.get().at(key) = value; }
 
 private:
     std::reference_wrapper<std::vector<Value>> m_distances;
 };
 
-template<typename Key, typename Value>
-inline const Value& get(const VectorReadWritePropertyMap<Key, Value>& m, Key key)
+template<std::unsigned_integral I, typename Value>
+inline const Value& get(const VectorReadWritePropertyMap<I, Value>& m, I key)
 {
     return m.get(key);
 }
 
-template<typename Key, typename Value>
-inline void put(VectorReadWritePropertyMap<Key, Value>& m, Key key, Value value)
+template<std::unsigned_integral I, typename Value>
+inline void put(VectorReadWritePropertyMap<I, Value>& m, I key, Value value)
 {
     m.set(key, value);
 }
 
 /* UnorderedMapReadPropertyMap */
 
-template<IsUnsignedIntegral Key, typename Value>
+/// @brief `UnorderedMapReadPropertyMap` provides read-access to the `Value` associated with a given `Key` via a call to the `get()` function for sparse graph
+/// structures whose underlying storage are unordered_maps.
+///
+/// Link to Boost docs: https://www.boost.org/doc/libs/1_82_0/libs/property_map/doc/ReadablePropertyMap.html
+/// @tparam Key is the key type.
+/// @tparam Value is the value type.
+template<std::unsigned_integral Key, typename Value>
 class UnorderedMapReadPropertyMap
 {
 public:
@@ -178,7 +206,13 @@ inline const Value& get(const UnorderedMapReadPropertyMap<Key, Value>& m, Key ke
 
 /* UnorderedMapReadWritePropertyMap */
 
-template<IsUnsignedIntegral Key, typename Value>
+/// @brief `UnorderedMapReadWritePropertyMap` provides read-write-access to the `Value` associated with a given `Key` via a call to the `get()` and `put()`
+/// function for sparse graph structures whose underlying storage are unordered_maps.
+///
+/// Link to Boost docs: https://www.boost.org/doc/libs/1_82_0/libs/property_map/doc/ReadWritePropertyMap.html
+/// @tparam Key is the key type.
+/// @tparam Value is the value type.
+template<std::unsigned_integral Key, typename Value>
 class UnorderedMapReadWritePropertyMap
 {
 public:
