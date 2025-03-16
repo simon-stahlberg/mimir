@@ -36,6 +36,7 @@ GeneralizedSearchContext::GeneralizedSearchContext(const fs::path& domain_filepa
 }
 
 GeneralizedSearchContext::GeneralizedSearchContext(GeneralizedProblem generalized_problem, const SearchContext::Options& options) :
+    m_domain(generalized_problem.get_domain()),
     m_generalized_problem(std::move(generalized_problem)),
     m_search_contexts()
 {
@@ -46,6 +47,7 @@ GeneralizedSearchContext::GeneralizedSearchContext(GeneralizedProblem generalize
 }
 
 GeneralizedSearchContext::GeneralizedSearchContext(GeneralizedProblem generalized_problem, SearchContextList search_contexts) :
+    m_domain(generalized_problem.get_domain()),
     m_generalized_problem(std::move(generalized_problem)),
     m_search_contexts(std::move(search_contexts))
 {
@@ -56,6 +58,8 @@ GeneralizedSearchContext::GeneralizedSearchContext(GeneralizedProblem generalize
         throw std::runtime_error("GeneralizedSearchContext::GeneralizedSearchContext: Expected all given search contexts to be defined over the same domain.");
     }
 }
+
+const formalism::Domain& GeneralizedSearchContext::get_domain() const { return m_domain; }
 
 const GeneralizedProblem& GeneralizedSearchContext::get_generalized_problem() const { return m_generalized_problem; }
 

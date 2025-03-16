@@ -29,6 +29,8 @@ namespace mimir::datasets
 class KnowledgeBase
 {
 private:
+    formalism::Domain m_domain;  ///< The common domain.
+
     GeneralizedStateSpace m_state_space;  ///< Required core component.
 
     std::optional<TupleGraphCollection> m_tuple_graphs;  ///< First optional component. Pass TupleGraphCollection::Options to instantiate it!
@@ -64,6 +66,7 @@ public:
      * Getters
      */
 
+    const formalism::Domain& get_domain() const;
     const GeneralizedStateSpace& get_generalized_state_space() const;
     const std::optional<TupleGraphCollection>& get_tuple_graphs() const;
 };

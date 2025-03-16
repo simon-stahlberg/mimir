@@ -29,6 +29,8 @@ namespace mimir::search
 class GeneralizedSearchContext
 {
 private:
+    formalism::Domain m_domain;  ///< The common domain.
+
     formalism::GeneralizedProblem m_generalized_problem;
 
     SearchContextList m_search_contexts;
@@ -54,6 +56,7 @@ public:
     /// @param search_contexts
     GeneralizedSearchContext(formalism::GeneralizedProblem generalized_problem, SearchContextList search_contexts);
 
+    const formalism::Domain& get_domain() const;
     const formalism::GeneralizedProblem& get_generalized_problem() const;
     const SearchContextList& get_search_contexts() const;
 };

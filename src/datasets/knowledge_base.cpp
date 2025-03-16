@@ -23,6 +23,7 @@ using namespace mimir::search;
 namespace mimir::datasets
 {
 KnowledgeBase::KnowledgeBase(GeneralizedSearchContext contexts, const Options& options) :
+    m_domain(contexts.get_domain()),
     m_state_space(contexts, options.state_space_options),
     m_tuple_graphs(options.tuple_graph_options ? std::optional<TupleGraphCollection>(TupleGraphCollection(m_state_space, options.tuple_graph_options.value())) :
                                                  std::nullopt)
@@ -37,6 +38,8 @@ std::unique_ptr<KnowledgeBase> KnowledgeBase::create(GeneralizedSearchContext co
 /**
  * Getters
  */
+
+const Domain& KnowledgeBase::get_domain() const { return m_domain; }
 
 const GeneralizedStateSpace& KnowledgeBase::get_generalized_state_space() const { return m_state_space; }
 

@@ -28,6 +28,23 @@ namespace mimir::languages::dl
  * RefinementStateListPruningFunction
  */
 
+RefinementStateListPruningFunction::RefinementStateListPruningFunction(const datasets::GeneralizedStateSpace& generalized_state_space) :
+    RefinementStateListPruningFunction(generalized_state_space, generalized_state_space.get_graph())
+{
+}
+
+RefinementStateListPruningFunction::RefinementStateListPruningFunction(const datasets::GeneralizedStateSpace& generalized_state_space,
+                                                                       const graphs::ClassGraph& class_graph)
+{
+    for (const auto& vertex : class_graph.get_vertices())
+    {
+        const auto& problem = generalized_state_space.get_problem(vertex);
+        const auto& state = graphs::get_state(generalized_state_space.get_problem_vertex(vertex));
+
+        m_state_partitioning[problem].push_back(state);
+    }
+}
+
 RefinementStateListPruningFunction::RefinementStateListPruningFunction(ProblemMap<search::StateList> state_partitioning) :
     RefinementPruningFunction(),
     m_state_partitioning(state_partitioning),

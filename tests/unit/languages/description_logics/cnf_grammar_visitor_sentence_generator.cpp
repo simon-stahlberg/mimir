@@ -102,24 +102,14 @@ TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarVisitorSentenceGeneratorTes
 
     auto kb = datasets::KnowledgeBase::create(context, datasets::KnowledgeBase::Options(state_space_options));
 
-    auto problem_to_states = ProblemMap<search::StateList> {};
-    for (const auto& vertex : kb->get_generalized_state_space().get_graph().get_vertices())
-    {
-        const auto& problem = kb->get_generalized_state_space().get_problem(vertex);
-        const auto& state = get_state(kb->get_generalized_state_space().get_problem_vertex(vertex));
-
-        problem_to_states[problem].push_back(state);
-    }
-
-    auto pruning_function = dl::RefinementStateListPruningFunction(problem_to_states);
+    auto pruning_function = dl::RefinementStateListPruningFunction(kb->get_generalized_state_space());
 
     dl::cnf_grammar::GeneratedSentencesContainer sentences;
     dl::ConstructorRepositories repositories;
     size_t max_complexity = 4;
     auto visitor = dl::cnf_grammar::GeneratorVisitor(pruning_function, sentences, repositories, max_complexity);
 
-    auto grammar =
-        dl::grammar::Grammar(bnf_description, kb->get_generalized_state_space().get_generalized_search_context().get_generalized_problem().get_domain());
+    auto grammar = dl::grammar::Grammar(bnf_description, kb->get_domain());
 
     auto cnf_grammar = dl::cnf_grammar::Grammar(grammar);
 
@@ -156,25 +146,14 @@ TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarVisitorSentenceGeneratorFra
 
     auto kb = datasets::KnowledgeBase::create(context, datasets::KnowledgeBase::Options(state_space_options));
 
-    auto problem_to_states = ProblemMap<search::StateList> {};
-    for (const auto& vertex : kb->get_generalized_state_space().get_graph().get_vertices())
-    {
-        const auto& problem = kb->get_generalized_state_space().get_problem(vertex);
-        const auto& state = get_state(kb->get_generalized_state_space().get_problem_vertex(vertex));
-
-        problem_to_states[problem].push_back(state);
-    }
-
-    auto pruning_function = dl::RefinementStateListPruningFunction(problem_to_states);
+    auto pruning_function = dl::RefinementStateListPruningFunction(kb->get_generalized_state_space());
 
     dl::cnf_grammar::GeneratedSentencesContainer sentences;
     dl::ConstructorRepositories repositories;
     size_t max_complexity = 9;
     auto visitor = dl::cnf_grammar::GeneratorVisitor(pruning_function, sentences, repositories, max_complexity);
 
-    const auto domain = kb->get_generalized_state_space().get_generalized_search_context().get_generalized_problem().get_domain();
-
-    auto cnf_grammar = dl::cnf_grammar::Grammar::create(dl::cnf_grammar::GrammarSpecificationEnum::FRANCES_ET_AL_AAAI2021, domain);
+    auto cnf_grammar = dl::cnf_grammar::Grammar::create(dl::cnf_grammar::GrammarSpecificationEnum::FRANCES_ET_AL_AAAI2021, kb->get_domain());
 
     std::cout << cnf_grammar << std::endl;
 
