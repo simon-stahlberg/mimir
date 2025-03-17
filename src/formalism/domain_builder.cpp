@@ -78,7 +78,7 @@ Domain DomainBuilder::get_result()
                                                             std::move(m_axioms)));
 }
 
-PDDLRepositories& DomainBuilder::get_repositories() { return m_repositories; }
+Repositories& DomainBuilder::get_repositories() { return m_repositories; }
 std::optional<fs::path>& DomainBuilder::get_filepath() { return m_filepath; }
 std::string& DomainBuilder::get_name() { return m_name; }
 Requirements& DomainBuilder::get_requirements() { return m_requirements; }

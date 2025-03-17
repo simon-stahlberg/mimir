@@ -40,17 +40,17 @@ private:
     std::unordered_map<Variable, size_t> m_variable_to_parameter_index;
     bool m_enable_encoding;
 
-    Variable translate_level_2(Variable variable, PDDLRepositories& repositories);
+    Variable translate_level_2(Variable variable, Repositories& repositories);
 
     // Do not rename within predicates or function skeleton
     template<StaticOrFluentOrDerived P>
-    Predicate<P> translate_level_2(Predicate<P> predicate, PDDLRepositories& repositories);
+    Predicate<P> translate_level_2(Predicate<P> predicate, Repositories& repositories);
     template<StaticOrFluentOrAuxiliary F>
-    FunctionSkeleton<F> translate_level_2(FunctionSkeleton<F> function_skeleton, PDDLRepositories& repositories);
+    FunctionSkeleton<F> translate_level_2(FunctionSkeleton<F> function_skeleton, Repositories& repositories);
 
-    ConditionalEffect translate_level_2(ConditionalEffect effect, PDDLRepositories& repositories);
-    Axiom translate_level_2(Axiom axiom, PDDLRepositories& repositories);
-    Action translate_level_2(Action action, PDDLRepositories& repositories);
+    ConditionalEffect translate_level_2(ConditionalEffect effect, Repositories& repositories);
+    Axiom translate_level_2(Axiom axiom, Repositories& repositories);
+    Action translate_level_2(Action action, Repositories& repositories);
 };
 }
 

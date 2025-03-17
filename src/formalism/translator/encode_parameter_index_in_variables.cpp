@@ -20,7 +20,7 @@
 namespace mimir::formalism
 {
 
-Variable EncodeParameterIndexInVariables::translate_level_2(Variable variable, PDDLRepositories& repositories)
+Variable EncodeParameterIndexInVariables::translate_level_2(Variable variable, Repositories& repositories)
 {
     auto it = m_variable_to_parameter_index.find(variable);
     if (m_enable_encoding && it != m_variable_to_parameter_index.end())
@@ -33,7 +33,7 @@ Variable EncodeParameterIndexInVariables::translate_level_2(Variable variable, P
 }
 
 template<StaticOrFluentOrDerived P>
-Predicate<P> EncodeParameterIndexInVariables::translate_level_2(Predicate<P> predicate, PDDLRepositories& repositories)
+Predicate<P> EncodeParameterIndexInVariables::translate_level_2(Predicate<P> predicate, Repositories& repositories)
 {
     m_enable_encoding = false;
 
@@ -45,12 +45,12 @@ Predicate<P> EncodeParameterIndexInVariables::translate_level_2(Predicate<P> pre
     return translated_predicate;
 }
 
-template Predicate<Static> EncodeParameterIndexInVariables::translate_level_2(Predicate<Static> predicate, PDDLRepositories& repositories);
-template Predicate<Fluent> EncodeParameterIndexInVariables::translate_level_2(Predicate<Fluent> predicate, PDDLRepositories& repositories);
-template Predicate<Derived> EncodeParameterIndexInVariables::translate_level_2(Predicate<Derived> predicate, PDDLRepositories& repositories);
+template Predicate<Static> EncodeParameterIndexInVariables::translate_level_2(Predicate<Static> predicate, Repositories& repositories);
+template Predicate<Fluent> EncodeParameterIndexInVariables::translate_level_2(Predicate<Fluent> predicate, Repositories& repositories);
+template Predicate<Derived> EncodeParameterIndexInVariables::translate_level_2(Predicate<Derived> predicate, Repositories& repositories);
 
 template<StaticOrFluentOrAuxiliary F>
-FunctionSkeleton<F> EncodeParameterIndexInVariables::translate_level_2(FunctionSkeleton<F> function_skeleton, PDDLRepositories& repositories)
+FunctionSkeleton<F> EncodeParameterIndexInVariables::translate_level_2(FunctionSkeleton<F> function_skeleton, Repositories& repositories)
 {
     m_enable_encoding = false;
 
@@ -63,14 +63,12 @@ FunctionSkeleton<F> EncodeParameterIndexInVariables::translate_level_2(FunctionS
     return translated_function_skeleton;
 }
 
-template FunctionSkeleton<Static> EncodeParameterIndexInVariables::translate_level_2(FunctionSkeleton<Static> function_skeleton,
-                                                                                     PDDLRepositories& repositories);
-template FunctionSkeleton<Fluent> EncodeParameterIndexInVariables::translate_level_2(FunctionSkeleton<Fluent> function_skeleton,
-                                                                                     PDDLRepositories& repositories);
+template FunctionSkeleton<Static> EncodeParameterIndexInVariables::translate_level_2(FunctionSkeleton<Static> function_skeleton, Repositories& repositories);
+template FunctionSkeleton<Fluent> EncodeParameterIndexInVariables::translate_level_2(FunctionSkeleton<Fluent> function_skeleton, Repositories& repositories);
 template FunctionSkeleton<Auxiliary> EncodeParameterIndexInVariables::translate_level_2(FunctionSkeleton<Auxiliary> function_skeleton,
-                                                                                        PDDLRepositories& repositories);
+                                                                                        Repositories& repositories);
 
-ConditionalEffect EncodeParameterIndexInVariables::translate_level_2(ConditionalEffect effect, PDDLRepositories& repositories)
+ConditionalEffect EncodeParameterIndexInVariables::translate_level_2(ConditionalEffect effect, Repositories& repositories)
 {
     // Determine variable parameter indices
     const auto start_index = m_variable_to_parameter_index.size();
@@ -93,7 +91,7 @@ ConditionalEffect EncodeParameterIndexInVariables::translate_level_2(Conditional
     return translated_conditional_effect;
 }
 
-Axiom EncodeParameterIndexInVariables::translate_level_2(Axiom axiom, PDDLRepositories& repositories)
+Axiom EncodeParameterIndexInVariables::translate_level_2(Axiom axiom, Repositories& repositories)
 {
     m_variable_to_parameter_index.clear();
 
@@ -114,7 +112,7 @@ Axiom EncodeParameterIndexInVariables::translate_level_2(Axiom axiom, PDDLReposi
     return translated_axiom;
 }
 
-Action EncodeParameterIndexInVariables::translate_level_2(Action action, PDDLRepositories& repositories)
+Action EncodeParameterIndexInVariables::translate_level_2(Action action, Repositories& repositories)
 {
     m_variable_to_parameter_index.clear();
 

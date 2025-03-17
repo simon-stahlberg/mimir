@@ -42,7 +42,7 @@ MatchTree<E>::MatchTree() : m_elements(), m_options(), m_root(create_root_genera
 }
 
 template<HasConjunctiveCondition E>
-MatchTree<E>::MatchTree(const PDDLRepositories& pddl_repositories, std::vector<const E*> elements, const Options& options) :
+MatchTree<E>::MatchTree(const Repositories& pddl_repositories, std::vector<const E*> elements, const Options& options) :
     m_elements(std::move(elements)),
     m_options(options),
     m_root(create_root_generator_node(std::span<const E*>(m_elements.begin(), m_elements.end())))
@@ -103,7 +103,7 @@ const Statistics& MatchTree<E>::get_statistics() const
 }
 
 template<HasConjunctiveCondition E>
-std::unique_ptr<MatchTree<E>> MatchTree<E>::create(const PDDLRepositories& pddl_repositories, std::vector<const E*> elements, const Options& options)
+std::unique_ptr<MatchTree<E>> MatchTree<E>::create(const Repositories& pddl_repositories, std::vector<const E*> elements, const Options& options)
 {
     return std::unique_ptr<MatchTree<E>>(new MatchTree<E>(pddl_repositories, std::move(elements), options));
 }

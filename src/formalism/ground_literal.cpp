@@ -48,7 +48,7 @@ GroundAtom<P> GroundLiteralImpl<P>::get_atom() const
 }
 
 template<StaticOrFluentOrDerived P>
-Literal<P> GroundLiteralImpl<P>::lift(const TermList& terms, PDDLRepositories& pddl_repositories) const
+Literal<P> GroundLiteralImpl<P>::lift(const TermList& terms, Repositories& pddl_repositories) const
 {
     return pddl_repositories.get_or_create_literal(is_negated(), m_atom->lift(terms, pddl_repositories));
 }
@@ -58,7 +58,7 @@ template class GroundLiteralImpl<Fluent>;
 template class GroundLiteralImpl<Derived>;
 
 template<StaticOrFluentOrDerived P>
-std::pair<VariableList, LiteralList<P>> lift(const GroundLiteralList<P>& ground_literals, PDDLRepositories& pddl_repositories)
+std::pair<VariableList, LiteralList<P>> lift(const GroundLiteralList<P>& ground_literals, Repositories& pddl_repositories)
 {
     VariableList variables;
     LiteralList<P> literals;
@@ -85,9 +85,9 @@ std::pair<VariableList, LiteralList<P>> lift(const GroundLiteralList<P>& ground_
     return std::make_pair(variables, literals);
 }
 
-template std::pair<VariableList, LiteralList<Static>> lift(const GroundLiteralList<Static>&, PDDLRepositories&);
-template std::pair<VariableList, LiteralList<Fluent>> lift(const GroundLiteralList<Fluent>&, PDDLRepositories&);
-template std::pair<VariableList, LiteralList<Derived>> lift(const GroundLiteralList<Derived>&, PDDLRepositories&);
+template std::pair<VariableList, LiteralList<Static>> lift(const GroundLiteralList<Static>&, Repositories&);
+template std::pair<VariableList, LiteralList<Fluent>> lift(const GroundLiteralList<Fluent>&, Repositories&);
+template std::pair<VariableList, LiteralList<Derived>> lift(const GroundLiteralList<Derived>&, Repositories&);
 
 template<StaticOrFluentOrDerived P>
 std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<P>& element)

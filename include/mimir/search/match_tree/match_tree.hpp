@@ -43,11 +43,11 @@ private:
 
     MatchTree();
 
-    MatchTree(const formalism::PDDLRepositories& pddl_repositories, std::vector<const E*> elements, const Options& options = Options());
+    MatchTree(const formalism::Repositories& pddl_repositories, std::vector<const E*> elements, const Options& options = Options());
 
 public:
     static std::unique_ptr<MatchTree<E>>
-    create(const formalism::PDDLRepositories& pddl_repositories, std::vector<const E*> elements, const Options& options = Options());
+    create(const formalism::Repositories& pddl_repositories, std::vector<const E*> elements, const Options& options = Options());
 
     // Uncopieable and unmoveable to prohibit invalidating spans on m_elements.
     MatchTree(const MatchTree& other) = delete;

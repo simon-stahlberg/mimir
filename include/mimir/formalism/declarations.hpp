@@ -228,7 +228,7 @@ using ToObjectMap = std::unordered_map<Key, Object, loki::Hash<Key>, loki::Equal
 template<typename Value>
 using ObjectMap = std::unordered_map<Object, Value>;
 
-class PDDLRepositories;
+class Repositories;
 
 template<StaticOrFluentOrDerived P>
 class PredicateImpl;

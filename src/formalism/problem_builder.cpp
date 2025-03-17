@@ -135,7 +135,7 @@ Problem ProblemBuilder::get_result(Index problem_index)
                                                         std::move(problem_and_domain_axioms)));
 }
 
-PDDLRepositories& ProblemBuilder::get_repositories() { return m_repositories; }
+Repositories& ProblemBuilder::get_repositories() { return m_repositories; }
 std::optional<fs::path>& ProblemBuilder::get_filepath() { return m_filepath; }
 const Domain& ProblemBuilder::get_domain() const { return m_domain; }
 std::string& ProblemBuilder::get_name() { return m_name; }

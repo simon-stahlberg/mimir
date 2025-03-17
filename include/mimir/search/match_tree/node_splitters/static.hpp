@@ -39,7 +39,7 @@ private:
     friend class NodeSplitterBase<StaticNodeSplitter<E>, E>;
 
 public:
-    StaticNodeSplitter(const formalism::PDDLRepositories& pddl_repositories, const Options& options, std::span<const E*> elements);
+    StaticNodeSplitter(const formalism::Repositories& pddl_repositories, const Options& options, std::span<const E*> elements);
 };
 
 }

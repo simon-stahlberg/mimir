@@ -60,7 +60,7 @@ public:
     ///////////////////////////////////////////////////////
 
     template<typename T>
-    auto translate_level_0(const T& element, PDDLRepositories& repositories)
+    auto translate_level_0(const T& element, Repositories& repositories)
     {
         return self().translate_level_1(element, repositories);
     }

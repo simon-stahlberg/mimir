@@ -246,7 +246,7 @@ void ToMimirStructures::prepare(loki::Problem problem)
  * Common
  */
 
-StaticOrFluentOrAuxiliaryFunctionSkeleton ToMimirStructures::translate_common(loki::FunctionSkeleton function_skeleton, PDDLRepositories& repositories)
+StaticOrFluentOrAuxiliaryFunctionSkeleton ToMimirStructures::translate_common(loki::FunctionSkeleton function_skeleton, Repositories& repositories)
 {
     // Now that we cannot analyze the metric function anymore, we can only work with total cost as auxiliary...
     if (function_skeleton->get_name() == "total-cost")
@@ -266,28 +266,28 @@ StaticOrFluentOrAuxiliaryFunctionSkeleton ToMimirStructures::translate_common(lo
     }
 }
 
-Variable ToMimirStructures::translate_common(loki::Parameter parameter, PDDLRepositories& repositories)
+Variable ToMimirStructures::translate_common(loki::Parameter parameter, Repositories& repositories)
 {
     return translate_common(parameter->get_variable(), repositories);
 }
 
-Requirements ToMimirStructures::translate_common(loki::Requirements requirements, PDDLRepositories& repositories)
+Requirements ToMimirStructures::translate_common(loki::Requirements requirements, Repositories& repositories)
 {
     return repositories.get_or_create_requirements(requirements->get_requirements());
 }
 
-Variable ToMimirStructures::translate_common(loki::Variable variable, PDDLRepositories& repositories)
+Variable ToMimirStructures::translate_common(loki::Variable variable, Repositories& repositories)
 {
     return repositories.get_or_create_variable(variable->get_name(), 0);
 }
 
-Object ToMimirStructures::translate_common(loki::Object object, PDDLRepositories& repositories)
+Object ToMimirStructures::translate_common(loki::Object object, Repositories& repositories)
 {
     assert(object->get_bases().empty());
     return repositories.get_or_create_object(object->get_name());
 }
 
-StaticOrFluentOrDerivedPredicate ToMimirStructures::translate_common(loki::Predicate predicate, PDDLRepositories& repositories)
+StaticOrFluentOrDerivedPredicate ToMimirStructures::translate_common(loki::Predicate predicate, Repositories& repositories)
 {
     auto parameters = translate_common(predicate->get_parameters(), repositories);
 
@@ -309,13 +309,13 @@ StaticOrFluentOrDerivedPredicate ToMimirStructures::translate_common(loki::Predi
  * Lifted
  */
 
-Term ToMimirStructures::translate_lifted(loki::Term term, PDDLRepositories& repositories)
+Term ToMimirStructures::translate_lifted(loki::Term term, Repositories& repositories)
 {
     return std::visit([&](auto&& arg) -> Term { return repositories.get_or_create_term(this->translate_common(arg, repositories)); },
                       term->get_object_or_variable());
 }
 
-StaticOrFluentOrDerivedAtom ToMimirStructures::translate_lifted(loki::Atom atom, PDDLRepositories& repositories)
+StaticOrFluentOrDerivedAtom ToMimirStructures::translate_lifted(loki::Atom atom, Repositories& repositories)
 {
     auto static_or_fluent_or_derived_predicate = translate_common(atom->get_predicate(), repositories);
 
@@ -324,7 +324,7 @@ StaticOrFluentOrDerivedAtom ToMimirStructures::translate_lifted(loki::Atom atom,
                       static_or_fluent_or_derived_predicate);
 }
 
-StaticOrFluentOrDerivedLiteral ToMimirStructures::translate_lifted(loki::Literal literal, PDDLRepositories& repositories)
+StaticOrFluentOrDerivedLiteral ToMimirStructures::translate_lifted(loki::Literal literal, Repositories& repositories)
 {
     auto static_or_fluent_or_derived_atom = translate_lifted(literal->get_atom(), repositories);
 
@@ -332,12 +332,12 @@ StaticOrFluentOrDerivedLiteral ToMimirStructures::translate_lifted(loki::Literal
                       static_or_fluent_or_derived_atom);
 }
 
-FunctionExpression ToMimirStructures::translate_lifted(loki::FunctionExpressionNumber function_expression, PDDLRepositories& repositories)
+FunctionExpression ToMimirStructures::translate_lifted(loki::FunctionExpressionNumber function_expression, Repositories& repositories)
 {
     return repositories.get_or_create_function_expression(repositories.get_or_create_function_expression_number(function_expression->get_number()));
 }
 
-FunctionExpression ToMimirStructures::translate_lifted(loki::FunctionExpressionBinaryOperator function_expression, PDDLRepositories& repositories)
+FunctionExpression ToMimirStructures::translate_lifted(loki::FunctionExpressionBinaryOperator function_expression, Repositories& repositories)
 {
     return repositories.get_or_create_function_expression(
         repositories.get_or_create_function_expression_binary_operator(function_expression->get_binary_operator(),
@@ -345,20 +345,20 @@ FunctionExpression ToMimirStructures::translate_lifted(loki::FunctionExpressionB
                                                                        translate_lifted(function_expression->get_right_function_expression(), repositories)));
 }
 
-FunctionExpression ToMimirStructures::translate_lifted(loki::FunctionExpressionMultiOperator function_expression, PDDLRepositories& repositories)
+FunctionExpression ToMimirStructures::translate_lifted(loki::FunctionExpressionMultiOperator function_expression, Repositories& repositories)
 {
     return repositories.get_or_create_function_expression(
         repositories.get_or_create_function_expression_multi_operator(function_expression->get_multi_operator(),
                                                                       translate_lifted(function_expression->get_function_expressions(), repositories)));
 }
 
-FunctionExpression ToMimirStructures::translate_lifted(loki::FunctionExpressionMinus function_expression, PDDLRepositories& repositories)
+FunctionExpression ToMimirStructures::translate_lifted(loki::FunctionExpressionMinus function_expression, Repositories& repositories)
 {
     return repositories.get_or_create_function_expression(
         repositories.get_or_create_function_expression_minus(translate_lifted(function_expression->get_function_expression(), repositories)));
 }
 
-FunctionExpression ToMimirStructures::translate_lifted(loki::FunctionExpressionFunction function_expression, PDDLRepositories& repositories)
+FunctionExpression ToMimirStructures::translate_lifted(loki::FunctionExpressionFunction function_expression, Repositories& repositories)
 {
     return std::visit(
         [&](auto&& function) -> FunctionExpression
@@ -384,12 +384,12 @@ FunctionExpression ToMimirStructures::translate_lifted(loki::FunctionExpressionF
         translate_lifted(function_expression->get_function(), repositories));
 }
 
-FunctionExpression ToMimirStructures::translate_lifted(loki::FunctionExpression function_expression, PDDLRepositories& repositories)
+FunctionExpression ToMimirStructures::translate_lifted(loki::FunctionExpression function_expression, Repositories& repositories)
 {
     return std::visit([&](auto&& arg) { return this->translate_lifted(arg, repositories); }, function_expression->get_function_expression());
 }
 
-NumericConstraint ToMimirStructures::translate_lifted(loki::ConditionNumericConstraint condition, PDDLRepositories& repositories)
+NumericConstraint ToMimirStructures::translate_lifted(loki::ConditionNumericConstraint condition, Repositories& repositories)
 {
     return repositories.get_or_create_numeric_constraint(condition->get_binary_comparator(),
                                                          translate_lifted(condition->get_left_function_expression(), repositories),
@@ -397,14 +397,14 @@ NumericConstraint ToMimirStructures::translate_lifted(loki::ConditionNumericCons
                                                          TermList {});
 }
 
-StaticOrFluentOrAuxiliaryFunction ToMimirStructures::translate_lifted(loki::Function function, PDDLRepositories& repositories)
+StaticOrFluentOrAuxiliaryFunction ToMimirStructures::translate_lifted(loki::Function function, Repositories& repositories)
 {
     return std::visit([&](auto&& function_skeleton) -> StaticOrFluentOrAuxiliaryFunction
                       { return repositories.get_or_create_function(function_skeleton, translate_lifted(function->get_terms(), repositories), IndexList {}); },
                       translate_common(function->get_function_skeleton(), repositories));
 }
 
-ConjunctiveCondition ToMimirStructures::translate_lifted(loki::Condition condition, const VariableList& parameters, PDDLRepositories& repositories)
+ConjunctiveCondition ToMimirStructures::translate_lifted(loki::Condition condition, const VariableList& parameters, Repositories& repositories)
 {
     const auto func_insert_literal =
         [](const StaticOrFluentOrDerivedLiteral& static_or_fluent_or_derived_literal, LiteralLists<Static, Fluent, Derived>& ref_literals)
@@ -465,7 +465,7 @@ ConjunctiveCondition ToMimirStructures::translate_lifted(loki::Condition conditi
 }
 
 std::tuple<ConjunctiveEffect, ConditionalEffectList>
-ToMimirStructures::translate_lifted(loki::Effect effect, const VariableList& parameters, PDDLRepositories& repositories)
+ToMimirStructures::translate_lifted(loki::Effect effect, const VariableList& parameters, Repositories& repositories)
 {
     using ConjunctiveEffectData = std::tuple<LiteralList<Fluent>, NumericEffectList<Fluent>, std::optional<NumericEffect<Auxiliary>>>;
     using ConditionalEffectData =
@@ -598,7 +598,7 @@ ToMimirStructures::translate_lifted(loki::Effect effect, const VariableList& par
     return { conjunctive_effect, conditional_effects };
 }
 
-Action ToMimirStructures::translate_lifted(loki::Action action, PDDLRepositories& repositories)
+Action ToMimirStructures::translate_lifted(loki::Action action, Repositories& repositories)
 {
     // We sort the additional parameters to enforce some additional approximate syntactic equivalence.
     auto translated_parameters = translate_common(action->get_parameters(), repositories);
@@ -630,7 +630,7 @@ Action ToMimirStructures::translate_lifted(loki::Action action, PDDLRepositories
     return repositories.get_or_create_action(action->get_name(), action->get_original_arity(), conjunctive_condition, conjunctive_effect, conditional_effects);
 }
 
-Axiom ToMimirStructures::translate_lifted(loki::Axiom axiom, PDDLRepositories& repositories)
+Axiom ToMimirStructures::translate_lifted(loki::Axiom axiom, Repositories& repositories)
 {
     auto parameters = translate_common(axiom->get_parameters(), repositories);
 
@@ -657,7 +657,7 @@ Axiom ToMimirStructures::translate_lifted(loki::Axiom axiom, PDDLRepositories& r
  * Grounded
  */
 
-Object ToMimirStructures::translate_grounded(loki::Term term, PDDLRepositories& repositories)
+Object ToMimirStructures::translate_grounded(loki::Term term, Repositories& repositories)
 {
     if (const auto object = std::get_if<loki::Object>(&term->get_object_or_variable()))
     {
@@ -667,7 +667,7 @@ Object ToMimirStructures::translate_grounded(loki::Term term, PDDLRepositories& 
     throw std::logic_error("Expected ground term.");
 }
 
-StaticOrFluentOrDerivedGroundAtom ToMimirStructures::translate_grounded(loki::Atom atom, PDDLRepositories& repositories)
+StaticOrFluentOrDerivedGroundAtom ToMimirStructures::translate_grounded(loki::Atom atom, Repositories& repositories)
 {
     auto static_or_fluent_or_derived_predicate = translate_common(atom->get_predicate(), repositories);
 
@@ -676,7 +676,7 @@ StaticOrFluentOrDerivedGroundAtom ToMimirStructures::translate_grounded(loki::At
                       static_or_fluent_or_derived_predicate);
 }
 
-StaticOrFluentOrDerivedGroundLiteral ToMimirStructures::translate_grounded(loki::Literal literal, PDDLRepositories& repositories)
+StaticOrFluentOrDerivedGroundLiteral ToMimirStructures::translate_grounded(loki::Literal literal, Repositories& repositories)
 {
     auto static_or_fluent_or_derived_ground_atom = translate_grounded(literal->get_atom(), repositories);
 
@@ -685,7 +685,7 @@ StaticOrFluentOrDerivedGroundLiteral ToMimirStructures::translate_grounded(loki:
                       static_or_fluent_or_derived_ground_atom);
 }
 
-StaticOrFluentOrAuxiliaryGroundFunctionValue ToMimirStructures::translate_grounded(loki::FunctionValue function_value, PDDLRepositories& repositories)
+StaticOrFluentOrAuxiliaryGroundFunctionValue ToMimirStructures::translate_grounded(loki::FunctionValue function_value, Repositories& repositories)
 {
     const auto static_or_fluent_or_auxiliary_ground_function = translate_grounded(function_value->get_function(), repositories);
 
@@ -694,13 +694,13 @@ StaticOrFluentOrAuxiliaryGroundFunctionValue ToMimirStructures::translate_ground
                       static_or_fluent_or_auxiliary_ground_function);
 }
 
-GroundFunctionExpression ToMimirStructures::translate_grounded(loki::FunctionExpressionNumber function_expression, PDDLRepositories& repositories)
+GroundFunctionExpression ToMimirStructures::translate_grounded(loki::FunctionExpressionNumber function_expression, Repositories& repositories)
 {
     return repositories.get_or_create_ground_function_expression(
         repositories.get_or_create_ground_function_expression_number(function_expression->get_number()));
 }
 
-GroundFunctionExpression ToMimirStructures::translate_grounded(loki::FunctionExpressionBinaryOperator function_expression, PDDLRepositories& repositories)
+GroundFunctionExpression ToMimirStructures::translate_grounded(loki::FunctionExpressionBinaryOperator function_expression, Repositories& repositories)
 {
     return repositories.get_or_create_ground_function_expression(repositories.get_or_create_ground_function_expression_binary_operator(
         function_expression->get_binary_operator(),
@@ -708,20 +708,20 @@ GroundFunctionExpression ToMimirStructures::translate_grounded(loki::FunctionExp
         translate_grounded(function_expression->get_right_function_expression(), repositories)));
 }
 
-GroundFunctionExpression ToMimirStructures::translate_grounded(loki::FunctionExpressionMultiOperator function_expression, PDDLRepositories& repositories)
+GroundFunctionExpression ToMimirStructures::translate_grounded(loki::FunctionExpressionMultiOperator function_expression, Repositories& repositories)
 {
     return repositories.get_or_create_ground_function_expression(repositories.get_or_create_ground_function_expression_multi_operator(
         function_expression->get_multi_operator(),
         translate_grounded(function_expression->get_function_expressions(), repositories)));
 }
 
-GroundFunctionExpression ToMimirStructures::translate_grounded(loki::FunctionExpressionMinus function_expression, PDDLRepositories& repositories)
+GroundFunctionExpression ToMimirStructures::translate_grounded(loki::FunctionExpressionMinus function_expression, Repositories& repositories)
 {
     return repositories.get_or_create_ground_function_expression(
         repositories.get_or_create_ground_function_expression_minus(translate_grounded(function_expression->get_function_expression(), repositories)));
 }
 
-GroundFunctionExpression ToMimirStructures::translate_grounded(loki::FunctionExpressionFunction function_expression, PDDLRepositories& repositories)
+GroundFunctionExpression ToMimirStructures::translate_grounded(loki::FunctionExpressionFunction function_expression, Repositories& repositories)
 {
     return std::visit(
         [&](auto&& ground_function)
@@ -729,12 +729,12 @@ GroundFunctionExpression ToMimirStructures::translate_grounded(loki::FunctionExp
         translate_grounded(function_expression->get_function(), repositories));
 }
 
-GroundFunctionExpression ToMimirStructures::translate_grounded(loki::FunctionExpression function_expression, PDDLRepositories& repositories)
+GroundFunctionExpression ToMimirStructures::translate_grounded(loki::FunctionExpression function_expression, Repositories& repositories)
 {
     return std::visit([&](auto&& arg) { return this->translate_grounded(arg, repositories); }, function_expression->get_function_expression());
 }
 
-StaticOrFluentOrAuxiliaryGroundFunction ToMimirStructures::translate_grounded(loki::Function function, PDDLRepositories& repositories)
+StaticOrFluentOrAuxiliaryGroundFunction ToMimirStructures::translate_grounded(loki::Function function, Repositories& repositories)
 {
     const auto static_or_fluent_or_auxiliary_function_skeleton = translate_common(function->get_function_skeleton(), repositories);
     const auto objects = translate_grounded(function->get_terms(), repositories);
@@ -744,7 +744,7 @@ StaticOrFluentOrAuxiliaryGroundFunction ToMimirStructures::translate_grounded(lo
                       static_or_fluent_or_auxiliary_function_skeleton);
 }
 
-GroundNumericConstraint ToMimirStructures::translate_grounded(loki::ConditionNumericConstraint condition, PDDLRepositories& repositories)
+GroundNumericConstraint ToMimirStructures::translate_grounded(loki::ConditionNumericConstraint condition, Repositories& repositories)
 {
     return repositories.get_or_create_ground_numeric_constraint(condition->get_binary_comparator(),
                                                                 translate_grounded(condition->get_left_function_expression(), repositories),
@@ -752,7 +752,7 @@ GroundNumericConstraint ToMimirStructures::translate_grounded(loki::ConditionNum
 }
 
 std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>, GroundNumericConstraintList>
-ToMimirStructures::translate_grounded(loki::Condition condition, PDDLRepositories& repositories)
+ToMimirStructures::translate_grounded(loki::Condition condition, Repositories& repositories)
 {
     const auto func_insert_ground_literal = [](const StaticOrFluentOrDerivedGroundLiteral& static_or_fluent_or_derived_literal,
                                                GroundLiteralList<Static>& ref_static_ground_literals,
@@ -841,7 +841,7 @@ ToMimirStructures::translate_grounded(loki::Condition condition, PDDLRepositorie
     throw std::logic_error("Expected conjunctive condition.");
 }
 
-OptimizationMetric ToMimirStructures::translate_grounded(loki::OptimizationMetric optimization_metric, PDDLRepositories& repositories)
+OptimizationMetric ToMimirStructures::translate_grounded(loki::OptimizationMetric optimization_metric, Repositories& repositories)
 {
     return repositories.get_or_create_optimization_metric(optimization_metric->get_optimization_metric(),
                                                           translate_grounded(optimization_metric->get_function_expression(), repositories));

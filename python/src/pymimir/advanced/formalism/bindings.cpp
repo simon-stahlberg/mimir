@@ -490,35 +490,34 @@ void bind_formalism(nb::module_& m)
         .def("get_derived_effect", nb::overload_cast<>(&GroundAxiomImpl::get_derived_effect, nb::const_), nb::rv_policy::copy);
     nb::bind_vector<GroundAxiomList>(m, "GroundAxiomList");
 
-    /* PDDLRepositories*/
+    /* Repositories*/
     // ATTENTION: cannot provide modifiers since Problem and Domain returns a reference
-    nb::class_<PDDLRepositories>(m, "PDDLRepositories")  //
+    nb::class_<Repositories>(m, "Repositories")  //
         .def(
             "get_static_ground_atoms",
-            [](const PDDLRepositories& self) { return GroundAtomList<Static>(self.get_ground_atoms<Static>().begin(), self.get_ground_atoms<Static>().end()); },
+            [](const Repositories& self) { return GroundAtomList<Static>(self.get_ground_atoms<Static>().begin(), self.get_ground_atoms<Static>().end()); },
             nb::rv_policy::copy)
-        .def("get_static_ground_atom", &PDDLRepositories::get_ground_atom<Static>, nb::rv_policy::reference_internal)
+        .def("get_static_ground_atom", &Repositories::get_ground_atom<Static>, nb::rv_policy::reference_internal)
         .def(
             "get_fluent_ground_atoms",
-            [](const PDDLRepositories& self) { return GroundAtomList<Fluent>(self.get_ground_atoms<Fluent>().begin(), self.get_ground_atoms<Fluent>().end()); },
+            [](const Repositories& self) { return GroundAtomList<Fluent>(self.get_ground_atoms<Fluent>().begin(), self.get_ground_atoms<Fluent>().end()); },
             nb::rv_policy::copy)
-        .def("get_fluent_ground_atom", &PDDLRepositories::get_ground_atom<Fluent>, nb::rv_policy::reference_internal)
+        .def("get_fluent_ground_atom", &Repositories::get_ground_atom<Fluent>, nb::rv_policy::reference_internal)
         .def(
             "get_derived_ground_atoms",
-            [](const PDDLRepositories& self)
-            { return GroundAtomList<Derived>(self.get_ground_atoms<Derived>().begin(), self.get_ground_atoms<Derived>().end()); },
+            [](const Repositories& self) { return GroundAtomList<Derived>(self.get_ground_atoms<Derived>().begin(), self.get_ground_atoms<Derived>().end()); },
             nb::rv_policy::copy)
-        .def("get_derived_ground_atom", &PDDLRepositories::get_ground_atom<Derived>, nb::rv_policy::reference_internal)
+        .def("get_derived_ground_atom", &Repositories::get_ground_atom<Derived>, nb::rv_policy::reference_internal)
         .def("get_static_ground_atoms_from_indices",
-             nb::overload_cast<const std::vector<size_t>&>(&PDDLRepositories::get_ground_atoms_from_indices<Static, std::vector<size_t>>, nb::const_),
+             nb::overload_cast<const std::vector<size_t>&>(&Repositories::get_ground_atoms_from_indices<Static, std::vector<size_t>>, nb::const_),
              nb::rv_policy::copy)
         .def("get_fluent_ground_atoms_from_indices",
-             nb::overload_cast<const std::vector<size_t>&>(&PDDLRepositories::get_ground_atoms_from_indices<Fluent, std::vector<size_t>>, nb::const_),
+             nb::overload_cast<const std::vector<size_t>&>(&Repositories::get_ground_atoms_from_indices<Fluent, std::vector<size_t>>, nb::const_),
              nb::rv_policy::copy)
         .def("get_derived_ground_atoms_from_indices",
-             nb::overload_cast<const std::vector<size_t>&>(&PDDLRepositories::get_ground_atoms_from_indices<Derived, std::vector<size_t>>, nb::const_),
+             nb::overload_cast<const std::vector<size_t>&>(&Repositories::get_ground_atoms_from_indices<Derived, std::vector<size_t>>, nb::const_),
              nb::rv_policy::copy)
-        .def("get_object", &PDDLRepositories::get_object, nb::rv_policy::reference_internal);
+        .def("get_object", &Repositories::get_object, nb::rv_policy::reference_internal);
 
     /* AssignmentSets */
     auto bind_assignment_set = [&]<typename Tag>(const std::string& class_name, Tag)

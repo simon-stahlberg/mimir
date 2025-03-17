@@ -30,7 +30,7 @@ namespace mimir::formalism
 class ProblemBuilder
 {
 private:
-    PDDLRepositories m_repositories;
+    Repositories m_repositories;
 
     Domain m_domain;  ///< Immutable planning domain
     std::optional<fs::path> m_filepath;
@@ -64,7 +64,7 @@ public:
      * Get and modify components of the problem.
      */
 
-    PDDLRepositories& get_repositories();
+    Repositories& get_repositories();
     std::optional<fs::path>& get_filepath();
     const Domain& get_domain() const;  ///< Modifying domain is prohibitted!
     std::string& get_name();

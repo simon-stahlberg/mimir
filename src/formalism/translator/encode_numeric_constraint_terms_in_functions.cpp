@@ -59,7 +59,7 @@ static void collect_terms(FunctionExpression fexpr, TermList& ref_terms)
 }
 
 template<StaticOrFluentOrAuxiliary F>
-Function<F> EncodeNumericConstraintTermsInFunctions::translate_level_2(Function<F> function, PDDLRepositories& repositories)
+Function<F> EncodeNumericConstraintTermsInFunctions::translate_level_2(Function<F> function, Repositories& repositories)
 {
     auto transformed_function_skeleton = this->translate_level_0(function->get_function_skeleton(), repositories);
     auto transformed_terms = this->translate_level_0(function->get_terms(), repositories);
@@ -86,11 +86,11 @@ Function<F> EncodeNumericConstraintTermsInFunctions::translate_level_2(Function<
     return repositories.get_or_create_function(transformed_function_skeleton, transformed_terms, parent_terms_to_terms_mapping);
 }
 
-template Function<Static> EncodeNumericConstraintTermsInFunctions::translate_level_2(Function<Static> function, PDDLRepositories& repositories);
-template Function<Fluent> EncodeNumericConstraintTermsInFunctions::translate_level_2(Function<Fluent> function, PDDLRepositories& repositories);
-template Function<Auxiliary> EncodeNumericConstraintTermsInFunctions::translate_level_2(Function<Auxiliary> function, PDDLRepositories& repositories);
+template Function<Static> EncodeNumericConstraintTermsInFunctions::translate_level_2(Function<Static> function, Repositories& repositories);
+template Function<Fluent> EncodeNumericConstraintTermsInFunctions::translate_level_2(Function<Fluent> function, Repositories& repositories);
+template Function<Auxiliary> EncodeNumericConstraintTermsInFunctions::translate_level_2(Function<Auxiliary> function, Repositories& repositories);
 
-NumericConstraint EncodeNumericConstraintTermsInFunctions::translate_level_2(NumericConstraint numeric_constraint, PDDLRepositories& repositories)
+NumericConstraint EncodeNumericConstraintTermsInFunctions::translate_level_2(NumericConstraint numeric_constraint, Repositories& repositories)
 {
     assert(numeric_constraint->get_terms().empty());
     auto terms = TermList {};

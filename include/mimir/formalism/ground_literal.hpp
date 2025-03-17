@@ -52,7 +52,7 @@ public:
     Index get_index() const;
     bool is_negated() const;
     GroundAtom<P> get_atom() const;
-    Literal<P> lift(const TermList& terms, PDDLRepositories& pddl_repositories) const;
+    Literal<P> lift(const TermList& terms, Repositories& pddl_repositories) const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -61,7 +61,7 @@ public:
 };
 
 template<StaticOrFluentOrDerived P>
-extern std::pair<VariableList, LiteralList<P>> lift(const GroundLiteralList<P>& ground_literals, PDDLRepositories& pddl_repositories);
+extern std::pair<VariableList, LiteralList<P>> lift(const GroundLiteralList<P>& ground_literals, Repositories& pddl_repositories);
 
 template<StaticOrFluentOrDerived P>
 extern std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<P>& element);

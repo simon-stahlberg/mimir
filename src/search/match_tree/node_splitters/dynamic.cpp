@@ -63,7 +63,7 @@ template<HasConjunctiveCondition E>
 using SplitterQueue = std::priority_queue<SplitterQueueEntry<E>, std::vector<SplitterQueueEntry<E>>, SplitterQueueEntryComparator<E>>;
 
 template<HasConjunctiveCondition E>
-DynamicNodeSplitter<E>::DynamicNodeSplitter(const PDDLRepositories& pddl_repositories, const Options& options, std::span<const E*> elements) :
+DynamicNodeSplitter<E>::DynamicNodeSplitter(const Repositories& pddl_repositories, const Options& options, std::span<const E*> elements) :
     NodeSplitterBase<DynamicNodeSplitter<E>, E>(pddl_repositories, options)
 {
 }

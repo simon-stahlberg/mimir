@@ -102,25 +102,25 @@ private:
      * Common translations.
      */
     template<typename T>
-    auto translate_common(const std::vector<const T*>& input, PDDLRepositories& repositories)
+    auto translate_common(const std::vector<const T*>& input, Repositories& repositories)
     {
-        using ReturnType = decltype(this->translate_common(std::declval<const T*>(), std::declval<PDDLRepositories&>()));
+        using ReturnType = decltype(this->translate_common(std::declval<const T*>(), std::declval<Repositories&>()));
         auto output = std::vector<ReturnType> {};
         output.reserve(input.size());
         std::transform(std::begin(input), std::end(input), std::back_inserter(output), [&](auto&& arg) { return this->translate_common(arg, repositories); });
         return output;
     }
     template<typename T>
-    auto translate_common(const std::optional<T>& element, PDDLRepositories& repositories)
+    auto translate_common(const std::optional<T>& element, Repositories& repositories)
     {
         return element.has_value() ? this->translate_common(element.value(), repositories) : std::optional<T> { std::nullopt };
     }
-    StaticOrFluentOrAuxiliaryFunctionSkeleton translate_common(loki::FunctionSkeleton function_skeleton, PDDLRepositories& repositories);
-    Object translate_common(loki::Object object, PDDLRepositories& repositories);
-    Variable translate_common(loki::Parameter parameter, PDDLRepositories& repositories);
-    StaticOrFluentOrDerivedPredicate translate_common(loki::Predicate predicate, PDDLRepositories& repositories);
-    Requirements translate_common(loki::Requirements requirements, PDDLRepositories& repositories);
-    Variable translate_common(loki::Variable variable, PDDLRepositories& repositories);
+    StaticOrFluentOrAuxiliaryFunctionSkeleton translate_common(loki::FunctionSkeleton function_skeleton, Repositories& repositories);
+    Object translate_common(loki::Object object, Repositories& repositories);
+    Variable translate_common(loki::Parameter parameter, Repositories& repositories);
+    StaticOrFluentOrDerivedPredicate translate_common(loki::Predicate predicate, Repositories& repositories);
+    Requirements translate_common(loki::Requirements requirements, Repositories& repositories);
+    Variable translate_common(loki::Variable variable, Repositories& repositories);
 
     /**
      * Lifted translation.
@@ -128,58 +128,58 @@ private:
 
     /// @brief Translate a container of elements into a container of elements.
     template<typename T>
-    auto translate_lifted(const std::vector<const T*>& input, PDDLRepositories& repositories)
+    auto translate_lifted(const std::vector<const T*>& input, Repositories& repositories)
     {
-        using ReturnType = decltype(this->translate_lifted(std::declval<const T*>(), std::declval<PDDLRepositories&>()));
+        using ReturnType = decltype(this->translate_lifted(std::declval<const T*>(), std::declval<Repositories&>()));
         auto output = std::vector<ReturnType> {};
         output.reserve(input.size());
         std::transform(std::begin(input), std::end(input), std::back_inserter(output), [&](auto&& arg) { return this->translate_lifted(arg, repositories); });
         return output;
     }
-    Term translate_lifted(loki::Term term, PDDLRepositories& repositories);
-    StaticOrFluentOrDerivedAtom translate_lifted(loki::Atom atom, PDDLRepositories& repositories);
-    StaticOrFluentOrDerivedLiteral translate_lifted(loki::Literal literal, PDDLRepositories& repositories);
-    FunctionExpression translate_lifted(loki::FunctionExpressionNumber function_expression, PDDLRepositories& repositories);
-    FunctionExpression translate_lifted(loki::FunctionExpressionBinaryOperator function_expression, PDDLRepositories& repositories);
-    FunctionExpression translate_lifted(loki::FunctionExpressionMultiOperator function_expression, PDDLRepositories& repositories);
-    FunctionExpression translate_lifted(loki::FunctionExpressionMinus function_expression, PDDLRepositories& repositories);
-    FunctionExpression translate_lifted(loki::FunctionExpressionFunction function_expression, PDDLRepositories& repositories);
-    FunctionExpression translate_lifted(loki::FunctionExpression function_expression, PDDLRepositories& repositories);
-    StaticOrFluentOrAuxiliaryFunction translate_lifted(loki::Function function, PDDLRepositories& repositories);
-    NumericConstraint translate_lifted(loki::ConditionNumericConstraint condition, PDDLRepositories& repositories);
-    ConjunctiveCondition translate_lifted(loki::Condition condition, const VariableList& parameters, PDDLRepositories& repositories);
-    std::tuple<ConjunctiveEffect, ConditionalEffectList> translate_lifted(loki::Effect effect, const VariableList& parameters, PDDLRepositories& repositories);
-    Action translate_lifted(loki::Action action, PDDLRepositories& repositories);
-    Axiom translate_lifted(loki::Axiom axiom, PDDLRepositories& repositories);
+    Term translate_lifted(loki::Term term, Repositories& repositories);
+    StaticOrFluentOrDerivedAtom translate_lifted(loki::Atom atom, Repositories& repositories);
+    StaticOrFluentOrDerivedLiteral translate_lifted(loki::Literal literal, Repositories& repositories);
+    FunctionExpression translate_lifted(loki::FunctionExpressionNumber function_expression, Repositories& repositories);
+    FunctionExpression translate_lifted(loki::FunctionExpressionBinaryOperator function_expression, Repositories& repositories);
+    FunctionExpression translate_lifted(loki::FunctionExpressionMultiOperator function_expression, Repositories& repositories);
+    FunctionExpression translate_lifted(loki::FunctionExpressionMinus function_expression, Repositories& repositories);
+    FunctionExpression translate_lifted(loki::FunctionExpressionFunction function_expression, Repositories& repositories);
+    FunctionExpression translate_lifted(loki::FunctionExpression function_expression, Repositories& repositories);
+    StaticOrFluentOrAuxiliaryFunction translate_lifted(loki::Function function, Repositories& repositories);
+    NumericConstraint translate_lifted(loki::ConditionNumericConstraint condition, Repositories& repositories);
+    ConjunctiveCondition translate_lifted(loki::Condition condition, const VariableList& parameters, Repositories& repositories);
+    std::tuple<ConjunctiveEffect, ConditionalEffectList> translate_lifted(loki::Effect effect, const VariableList& parameters, Repositories& repositories);
+    Action translate_lifted(loki::Action action, Repositories& repositories);
+    Axiom translate_lifted(loki::Axiom axiom, Repositories& repositories);
 
     /**
      * Grounded translation
      */
 
     template<typename T>
-    auto translate_grounded(const std::vector<const T*>& input, PDDLRepositories& repositories)
+    auto translate_grounded(const std::vector<const T*>& input, Repositories& repositories)
     {
-        using ReturnType = decltype(this->translate_grounded(std::declval<const T*>(), std::declval<PDDLRepositories&>()));
+        using ReturnType = decltype(this->translate_grounded(std::declval<const T*>(), std::declval<Repositories&>()));
         auto output = std::vector<ReturnType> {};
         output.reserve(input.size());
         std::transform(std::begin(input), std::end(input), std::back_inserter(output), [&](auto&& arg) { return this->translate_grounded(arg, repositories); });
         return output;
     }
-    Object translate_grounded(loki::Term term, PDDLRepositories& repositories);
-    StaticOrFluentOrDerivedGroundAtom translate_grounded(loki::Atom atom, PDDLRepositories& repositories);
-    StaticOrFluentOrDerivedGroundLiteral translate_grounded(loki::Literal literal, PDDLRepositories& repositories);
-    GroundFunctionExpression translate_grounded(loki::FunctionExpressionNumber function_expression, PDDLRepositories& repositories);
-    GroundFunctionExpression translate_grounded(loki::FunctionExpressionBinaryOperator function_expression, PDDLRepositories& repositories);
-    GroundFunctionExpression translate_grounded(loki::FunctionExpressionMultiOperator function_expression, PDDLRepositories& repositories);
-    GroundFunctionExpression translate_grounded(loki::FunctionExpressionMinus function_expression, PDDLRepositories& repositories);
-    GroundFunctionExpression translate_grounded(loki::FunctionExpressionFunction function_expression, PDDLRepositories& repositories);
-    GroundFunctionExpression translate_grounded(loki::FunctionExpression function_expression, PDDLRepositories& repositories);
-    StaticOrFluentOrAuxiliaryGroundFunction translate_grounded(loki::Function function, PDDLRepositories& repositories);
-    StaticOrFluentOrAuxiliaryGroundFunctionValue translate_grounded(loki::FunctionValue numeric_fluent, PDDLRepositories& repositories);
-    GroundNumericConstraint translate_grounded(loki::ConditionNumericConstraint condition, PDDLRepositories& repositories);
+    Object translate_grounded(loki::Term term, Repositories& repositories);
+    StaticOrFluentOrDerivedGroundAtom translate_grounded(loki::Atom atom, Repositories& repositories);
+    StaticOrFluentOrDerivedGroundLiteral translate_grounded(loki::Literal literal, Repositories& repositories);
+    GroundFunctionExpression translate_grounded(loki::FunctionExpressionNumber function_expression, Repositories& repositories);
+    GroundFunctionExpression translate_grounded(loki::FunctionExpressionBinaryOperator function_expression, Repositories& repositories);
+    GroundFunctionExpression translate_grounded(loki::FunctionExpressionMultiOperator function_expression, Repositories& repositories);
+    GroundFunctionExpression translate_grounded(loki::FunctionExpressionMinus function_expression, Repositories& repositories);
+    GroundFunctionExpression translate_grounded(loki::FunctionExpressionFunction function_expression, Repositories& repositories);
+    GroundFunctionExpression translate_grounded(loki::FunctionExpression function_expression, Repositories& repositories);
+    StaticOrFluentOrAuxiliaryGroundFunction translate_grounded(loki::Function function, Repositories& repositories);
+    StaticOrFluentOrAuxiliaryGroundFunctionValue translate_grounded(loki::FunctionValue numeric_fluent, Repositories& repositories);
+    GroundNumericConstraint translate_grounded(loki::ConditionNumericConstraint condition, Repositories& repositories);
     std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>, GroundNumericConstraintList>
-    translate_grounded(loki::Condition condition, PDDLRepositories& repositories);
-    OptimizationMetric translate_grounded(loki::OptimizationMetric optimization_metric, PDDLRepositories& repositories);
+    translate_grounded(loki::Condition condition, Repositories& repositories);
+    OptimizationMetric translate_grounded(loki::OptimizationMetric optimization_metric, Repositories& repositories);
 
 public:
     Domain translate(const loki::Domain& domain, DomainBuilder& builder);

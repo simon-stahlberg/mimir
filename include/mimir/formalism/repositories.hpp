@@ -165,19 +165,19 @@ using HanaRepositories = boost::hana::map<
     boost::hana::pair<boost::hana::type<OptimizationMetricImpl>, OptimizationMetricRepository>>;
 
 /// @brief `PDDLRepositories` encapsulates repositories for the unique instantiation of PDDL formalism related structures.
-class PDDLRepositories
+class Repositories
 {
 private:
     HanaRepositories m_repositories;
 
 public:
-    PDDLRepositories() = default;
+    Repositories() = default;
 
     // delete copy and allow move
-    PDDLRepositories(const PDDLRepositories& other) = delete;
-    PDDLRepositories& operator=(const PDDLRepositories& other) = delete;
-    PDDLRepositories(PDDLRepositories&& other) = default;
-    PDDLRepositories& operator=(PDDLRepositories&& other) = default;
+    Repositories(const Repositories& other) = delete;
+    Repositories& operator=(const Repositories& other) = delete;
+    Repositories(Repositories&& other) = default;
+    Repositories& operator=(Repositories&& other) = default;
 
     HanaRepositories& get_hana_repositories();
     const HanaRepositories& get_hana_repositories() const;
@@ -401,8 +401,8 @@ public:
 
 // GroundNumericConstraint
 template<std::ranges::forward_range Iterable>
-void PDDLRepositories::get_ground_numeric_constraints_from_indices(const Iterable& numeric_constraint_indices,
-                                                                   GroundNumericConstraintList& out_ground_numeric_constraints) const
+void Repositories::get_ground_numeric_constraints_from_indices(const Iterable& numeric_constraint_indices,
+                                                               GroundNumericConstraintList& out_ground_numeric_constraints) const
 {
     out_ground_numeric_constraints.clear();
 
@@ -413,7 +413,7 @@ void PDDLRepositories::get_ground_numeric_constraints_from_indices(const Iterabl
 }
 
 template<std::ranges::forward_range Iterable>
-GroundNumericConstraintList PDDLRepositories::get_ground_numeric_constraints_from_indices(const Iterable& numeric_constraint_indices) const
+GroundNumericConstraintList Repositories::get_ground_numeric_constraints_from_indices(const Iterable& numeric_constraint_indices) const
 {
     auto result = GroundNumericConstraintList {};
     get_ground_numeric_constraints_from_indices(numeric_constraint_indices, result);
@@ -422,8 +422,7 @@ GroundNumericConstraintList PDDLRepositories::get_ground_numeric_constraints_fro
 
 // GroundNumericEffect
 template<FluentOrAuxiliary F, std::ranges::forward_range Iterable>
-void PDDLRepositories::get_ground_numeric_effects_from_indices(const Iterable& numeric_effect_indices,
-                                                               GroundNumericEffectList<F>& out_ground_numeric_effect) const
+void Repositories::get_ground_numeric_effects_from_indices(const Iterable& numeric_effect_indices, GroundNumericEffectList<F>& out_ground_numeric_effect) const
 {
     out_ground_numeric_effect.clear();
 
@@ -434,7 +433,7 @@ void PDDLRepositories::get_ground_numeric_effects_from_indices(const Iterable& n
 }
 
 template<FluentOrAuxiliary F, std::ranges::forward_range Iterable>
-GroundNumericEffectList<F> PDDLRepositories::get_ground_numeric_effects_from_indices(const Iterable& numeric_effect_indices) const
+GroundNumericEffectList<F> Repositories::get_ground_numeric_effects_from_indices(const Iterable& numeric_effect_indices) const
 {
     auto result = GroundNumericEffectList<F> {};
     get_ground_numeric_effects_from_indices(numeric_effect_indices, result);
@@ -443,7 +442,7 @@ GroundNumericEffectList<F> PDDLRepositories::get_ground_numeric_effects_from_ind
 
 // Atom
 template<StaticOrFluentOrDerived P, std::ranges::forward_range Iterable>
-void PDDLRepositories::get_ground_atoms_from_indices(const Iterable& atom_indices, GroundAtomList<P>& out_ground_atoms) const
+void Repositories::get_ground_atoms_from_indices(const Iterable& atom_indices, GroundAtomList<P>& out_ground_atoms) const
 {
     out_ground_atoms.clear();
 
@@ -454,7 +453,7 @@ void PDDLRepositories::get_ground_atoms_from_indices(const Iterable& atom_indice
 }
 
 template<StaticOrFluentOrDerived P, std::ranges::forward_range Iterable>
-GroundAtomList<P> PDDLRepositories::get_ground_atoms_from_indices(const Iterable& atom_indices) const
+GroundAtomList<P> Repositories::get_ground_atoms_from_indices(const Iterable& atom_indices) const
 {
     auto result = GroundAtomList<P> {};
     get_ground_atoms_from_indices(atom_indices, result);
@@ -462,7 +461,7 @@ GroundAtomList<P> PDDLRepositories::get_ground_atoms_from_indices(const Iterable
 }
 
 template<StaticOrFluentOrDerived P>
-void PDDLRepositories::get_ground_atoms(GroundAtomList<P>& out_ground_atoms) const
+void Repositories::get_ground_atoms(GroundAtomList<P>& out_ground_atoms) const
 {
     out_ground_atoms.clear();
     for (const auto& atom : boost::hana::at_key(m_repositories, boost::hana::type<GroundAtomImpl<P>> {}))
@@ -472,14 +471,14 @@ void PDDLRepositories::get_ground_atoms(GroundAtomList<P>& out_ground_atoms) con
 }
 
 template<StaticOrFluentOrDerived P>
-auto PDDLRepositories::get_ground_atoms() const
+auto Repositories::get_ground_atoms() const
 {
     const auto& factory = boost::hana::at_key(m_repositories, boost::hana::type<GroundAtomImpl<P>> {});
     return std::ranges::subrange(factory.begin(), factory.end());
 }
 
 template<std::ranges::forward_range Iterable>
-void PDDLRepositories::get_objects_from_indices(const Iterable& object_indices, ObjectList& out_objects) const
+void Repositories::get_objects_from_indices(const Iterable& object_indices, ObjectList& out_objects) const
 {
     out_objects.clear();
     for (const auto& object_index : object_indices)
@@ -489,7 +488,7 @@ void PDDLRepositories::get_objects_from_indices(const Iterable& object_indices, 
 }
 
 template<std::ranges::forward_range Iterable>
-ObjectList PDDLRepositories::get_objects_from_indices(const Iterable& object_indices) const
+ObjectList Repositories::get_objects_from_indices(const Iterable& object_indices) const
 {
     auto objects = ObjectList {};
     get_objects_from_indices(object_indices, objects);

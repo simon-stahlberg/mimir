@@ -48,7 +48,7 @@ using namespace std;
 namespace mimir::formalism
 {
 ProblemImpl::ProblemImpl(Index index,
-                         PDDLRepositories repositories,
+                         Repositories repositories,
                          std::optional<fs::path> filepath,
                          Domain domain,
                          std::string name,
@@ -173,7 +173,7 @@ Problem ProblemImpl::create(const fs::path& domain_filepath, const fs::path& pro
 
 Index ProblemImpl::get_index() const { return m_index; }
 
-const PDDLRepositories& ProblemImpl::get_repositories() const { return m_repositories; }
+const Repositories& ProblemImpl::get_repositories() const { return m_repositories; }
 
 const std::optional<fs::path>& ProblemImpl::get_filepath() const { return m_filepath; }
 

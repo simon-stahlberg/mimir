@@ -59,7 +59,7 @@ size_t GroundAtomImpl<P>::get_arity() const
 }
 
 template<StaticOrFluentOrDerived P>
-Atom<P> GroundAtomImpl<P>::lift(const TermList& terms, PDDLRepositories& pddl_repositories) const
+Atom<P> GroundAtomImpl<P>::lift(const TermList& terms, Repositories& pddl_repositories) const
 {
     return pddl_repositories.get_or_create_atom(m_predicate, terms);
 }
@@ -69,7 +69,7 @@ template class GroundAtomImpl<Fluent>;
 template class GroundAtomImpl<Derived>;
 
 template<StaticOrFluentOrDerived P>
-std::pair<VariableList, AtomList<P>> lift(const GroundAtomList<P>& ground_atoms, PDDLRepositories& pddl_repositories)
+std::pair<VariableList, AtomList<P>> lift(const GroundAtomList<P>& ground_atoms, Repositories& pddl_repositories)
 {
     VariableList variables;
     AtomList<P> atoms;
@@ -96,9 +96,9 @@ std::pair<VariableList, AtomList<P>> lift(const GroundAtomList<P>& ground_atoms,
     return std::make_pair(variables, atoms);
 }
 
-template std::pair<VariableList, AtomList<Static>> lift(const GroundAtomList<Static>&, PDDLRepositories&);
-template std::pair<VariableList, AtomList<Fluent>> lift(const GroundAtomList<Fluent>&, PDDLRepositories&);
-template std::pair<VariableList, AtomList<Derived>> lift(const GroundAtomList<Derived>&, PDDLRepositories&);
+template std::pair<VariableList, AtomList<Static>> lift(const GroundAtomList<Static>&, Repositories&);
+template std::pair<VariableList, AtomList<Fluent>> lift(const GroundAtomList<Fluent>&, Repositories&);
+template std::pair<VariableList, AtomList<Derived>> lift(const GroundAtomList<Derived>&, Repositories&);
 
 template<StaticOrFluentOrDerived P>
 std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<P>& element)

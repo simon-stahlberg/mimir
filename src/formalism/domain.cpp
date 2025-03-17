@@ -36,7 +36,7 @@ using namespace std;
 
 namespace mimir::formalism
 {
-DomainImpl::DomainImpl(PDDLRepositories repositories,
+DomainImpl::DomainImpl(Repositories repositories,
                        std::optional<fs::path> filepath,
                        std::string name,
                        Requirements requirements,
@@ -91,7 +91,7 @@ DomainImpl::DomainImpl(PDDLRepositories repositories,
     m_details = domain::Details(*this);
 }
 
-const PDDLRepositories& DomainImpl::get_repositories() const { return m_repositories; }
+const Repositories& DomainImpl::get_repositories() const { return m_repositories; }
 
 const std::optional<fs::path>& DomainImpl::get_filepath() const { return m_filepath; }
 

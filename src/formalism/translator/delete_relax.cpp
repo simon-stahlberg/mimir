@@ -37,7 +37,7 @@ static LiteralList<P> filter_positive_literals(const LiteralList<P>& literals)
 }
 
 template<StaticOrFluentOrDerived P>
-LiteralList<P> DeleteRelaxTranslator::translate_level_2(const LiteralList<P>& literals, PDDLRepositories& repositories)
+LiteralList<P> DeleteRelaxTranslator::translate_level_2(const LiteralList<P>& literals, Repositories& repositories)
 {
     auto positive_literals = LiteralList<P> {};
     for (const auto& literal : literals)
@@ -51,11 +51,11 @@ LiteralList<P> DeleteRelaxTranslator::translate_level_2(const LiteralList<P>& li
     return positive_literals;
 }
 
-template LiteralList<Static> DeleteRelaxTranslator::translate_level_2(const LiteralList<Static>& literals, PDDLRepositories& repositories);
-template LiteralList<Fluent> DeleteRelaxTranslator::translate_level_2(const LiteralList<Fluent>& literals, PDDLRepositories& repositories);
-template LiteralList<Derived> DeleteRelaxTranslator::translate_level_2(const LiteralList<Derived>& literals, PDDLRepositories& repositories);
+template LiteralList<Static> DeleteRelaxTranslator::translate_level_2(const LiteralList<Static>& literals, Repositories& repositories);
+template LiteralList<Fluent> DeleteRelaxTranslator::translate_level_2(const LiteralList<Fluent>& literals, Repositories& repositories);
+template LiteralList<Derived> DeleteRelaxTranslator::translate_level_2(const LiteralList<Derived>& literals, Repositories& repositories);
 
-ConditionalEffectList DeleteRelaxTranslator::translate_level_2(const ConditionalEffectList& effects, PDDLRepositories& repositories)
+ConditionalEffectList DeleteRelaxTranslator::translate_level_2(const ConditionalEffectList& effects, Repositories& repositories)
 {
     auto positive_conditional_effects = ConditionalEffectList {};
     for (const auto& conditional_effect : effects)
@@ -65,7 +65,7 @@ ConditionalEffectList DeleteRelaxTranslator::translate_level_2(const Conditional
     return uniquify_elements(positive_conditional_effects);
 }
 
-ActionList DeleteRelaxTranslator::translate_level_2(const ActionList& actions, PDDLRepositories& repositories)
+ActionList DeleteRelaxTranslator::translate_level_2(const ActionList& actions, Repositories& repositories)
 {
     auto relaxed_actions = ActionList {};
     for (const auto& action : actions)
@@ -75,7 +75,7 @@ ActionList DeleteRelaxTranslator::translate_level_2(const ActionList& actions, P
     return uniquify_elements(relaxed_actions);
 }
 
-AxiomList DeleteRelaxTranslator::translate_level_2(const AxiomList& axioms, PDDLRepositories& repositories)
+AxiomList DeleteRelaxTranslator::translate_level_2(const AxiomList& axioms, Repositories& repositories)
 {
     auto relaxed_axioms = AxiomList {};
     for (const auto& axiom : axioms)
@@ -86,7 +86,7 @@ AxiomList DeleteRelaxTranslator::translate_level_2(const AxiomList& axioms, PDDL
 }
 
 template<StaticOrFluentOrDerived P>
-Literal<P> DeleteRelaxTranslator::translate_level_2(Literal<P> literal, PDDLRepositories& repositories)
+Literal<P> DeleteRelaxTranslator::translate_level_2(Literal<P> literal, Repositories& repositories)
 {
     if (literal->is_negated())
     {
@@ -98,11 +98,11 @@ Literal<P> DeleteRelaxTranslator::translate_level_2(Literal<P> literal, PDDLRepo
     return repositories.get_or_create_literal(false, atom);
 }
 
-template Literal<Static> DeleteRelaxTranslator::translate_level_2(Literal<Static> literal, PDDLRepositories& repositories);
-template Literal<Fluent> DeleteRelaxTranslator::translate_level_2(Literal<Fluent> literal, PDDLRepositories& repositories);
-template Literal<Derived> DeleteRelaxTranslator::translate_level_2(Literal<Derived> literal, PDDLRepositories& repositories);
+template Literal<Static> DeleteRelaxTranslator::translate_level_2(Literal<Static> literal, Repositories& repositories);
+template Literal<Fluent> DeleteRelaxTranslator::translate_level_2(Literal<Fluent> literal, Repositories& repositories);
+template Literal<Derived> DeleteRelaxTranslator::translate_level_2(Literal<Derived> literal, Repositories& repositories);
 
-ConjunctiveCondition DeleteRelaxTranslator::translate_level_2(ConjunctiveCondition condition, PDDLRepositories& repositories)
+ConjunctiveCondition DeleteRelaxTranslator::translate_level_2(ConjunctiveCondition condition, Repositories& repositories)
 {
     auto translated_parameters = this->translate_level_0(condition->get_parameters(), repositories);
     auto translated_literals = boost::hana::unpack(condition->get_hana_literals(),
@@ -117,7 +117,7 @@ ConjunctiveCondition DeleteRelaxTranslator::translate_level_2(ConjunctiveConditi
     return repositories.get_or_create_conjunctive_condition(std::move(translated_parameters), std::move(translated_literals), std::move(numeric_constraints));
 }
 
-ConjunctiveEffect DeleteRelaxTranslator::translate_level_2(ConjunctiveEffect effect, PDDLRepositories& repositories)
+ConjunctiveEffect DeleteRelaxTranslator::translate_level_2(ConjunctiveEffect effect, Repositories& repositories)
 {
     auto translated_fluent_literals = filter_positive_literals(this->translate_level_0(effect->get_literals(), repositories));
     auto translated_fluent_numeric_effects = NumericEffectList<Fluent> {};
@@ -129,7 +129,7 @@ ConjunctiveEffect DeleteRelaxTranslator::translate_level_2(ConjunctiveEffect eff
                                                          std::move(translated_auxiliary_numeric_effect));
 }
 
-ConditionalEffect DeleteRelaxTranslator::translate_level_2(ConditionalEffect effect, PDDLRepositories& repositories)
+ConditionalEffect DeleteRelaxTranslator::translate_level_2(ConditionalEffect effect, Repositories& repositories)
 {
     auto translated__conjunctive_condition = this->translate_level_0(effect->get_conjunctive_condition(), repositories);
     auto translated__conjunctive_effect = this->translate_level_0(effect->get_conjunctive_effect(), repositories);
@@ -137,7 +137,7 @@ ConditionalEffect DeleteRelaxTranslator::translate_level_2(ConditionalEffect eff
     return repositories.get_or_create_conditional_effect(translated__conjunctive_condition, translated__conjunctive_effect);
 }
 
-Action DeleteRelaxTranslator::translate_level_2(Action action, PDDLRepositories& repositories)
+Action DeleteRelaxTranslator::translate_level_2(Action action, Repositories& repositories)
 {
     auto translated_conjunctive_effect = this->translate_level_0(action->get_conjunctive_effect(), repositories);
     auto translated_conditional_effects = this->translate_level_0(action->get_conditional_effects(), repositories);
@@ -155,7 +155,7 @@ Action DeleteRelaxTranslator::translate_level_2(Action action, PDDLRepositories&
     return delete_relaxed_action;
 }
 
-Axiom DeleteRelaxTranslator::translate_level_2(Axiom axiom, PDDLRepositories& repositories)
+Axiom DeleteRelaxTranslator::translate_level_2(Axiom axiom, Repositories& repositories)
 {
     auto translated_conjunctive_condition = this->translate_level_0(axiom->get_conjunctive_condition(), repositories);
     auto translated_literal = this->translate_level_0(axiom->get_literal(), repositories);

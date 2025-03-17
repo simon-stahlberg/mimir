@@ -37,7 +37,7 @@ namespace mimir::search::match_tree
 {
 
 template<HasConjunctiveCondition E>
-StaticNodeSplitter<E>::StaticNodeSplitter(const PDDLRepositories& pddl_repositories, const Options& options, std::span<const E*> elements) :
+StaticNodeSplitter<E>::StaticNodeSplitter(const Repositories& pddl_repositories, const Options& options, std::span<const E*> elements) :
     NodeSplitterBase<StaticNodeSplitter<E>, E>(pddl_repositories, options),
     m_split_to_root_distance()
 {

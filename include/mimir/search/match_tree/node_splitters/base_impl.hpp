@@ -44,7 +44,7 @@ using AtomDistributions = std::unordered_map<formalism::GroundAtom<P>, AtomSplit
 using NumericConstraintDistributions = std::unordered_map<formalism::GroundNumericConstraint, NumericConstraintSplitDistribution>;
 
 template<typename Derived_, HasConjunctiveCondition E>
-NodeSplitterBase<Derived_, E>::NodeSplitterBase(const formalism::PDDLRepositories& pddl_repositories, const Options& options) :
+NodeSplitterBase<Derived_, E>::NodeSplitterBase(const formalism::Repositories& pddl_repositories, const Options& options) :
     m_pddl_repositories(pddl_repositories),
     m_options(options)
 {

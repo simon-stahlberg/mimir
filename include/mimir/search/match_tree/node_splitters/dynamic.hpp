@@ -35,7 +35,7 @@ private:
     friend class NodeSplitterBase<DynamicNodeSplitter<E>, E>;
 
 public:
-    DynamicNodeSplitter(const formalism::PDDLRepositories& pddl_repositories, const Options& options, std::span<const E*> elements);
+    DynamicNodeSplitter(const formalism::Repositories& pddl_repositories, const Options& options, std::span<const E*> elements);
 };
 
 }

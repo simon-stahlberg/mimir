@@ -28,7 +28,7 @@ namespace mimir::formalism
 class DomainImpl
 {
 private:
-    PDDLRepositories m_repositories;
+    Repositories m_repositories;
     std::optional<fs::path> m_filepath;
     std::string m_name;
     Requirements m_requirements;
@@ -43,7 +43,7 @@ private:
 
     domain::Details m_details;  ///< We hide the details in a struct.
 
-    DomainImpl(PDDLRepositories repositories,
+    DomainImpl(Repositories repositories,
                std::optional<fs::path> filepath,
                std::string name,
                Requirements requirements,
@@ -66,7 +66,7 @@ public:
     DomainImpl(DomainImpl&& other) = default;
     DomainImpl& operator=(DomainImpl&& other) = default;
 
-    const PDDLRepositories& get_repositories() const;
+    const Repositories& get_repositories() const;
     const std::optional<fs::path>& get_filepath() const;
     const std::string& get_name() const;
     Requirements get_requirements() const;

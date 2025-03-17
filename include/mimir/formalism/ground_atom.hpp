@@ -53,7 +53,7 @@ public:
     Predicate<P> get_predicate() const;
     const ObjectList& get_objects() const;
     size_t get_arity() const;
-    Atom<P> lift(const TermList& terms, PDDLRepositories& pddl_repositories) const;
+    Atom<P> lift(const TermList& terms, Repositories& pddl_repositories) const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -62,7 +62,7 @@ public:
 };
 
 template<StaticOrFluentOrDerived P>
-extern std::pair<VariableList, AtomList<P>> lift(const GroundAtomList<P>& ground_atoms, PDDLRepositories& pddl_repositories);
+extern std::pair<VariableList, AtomList<P>> lift(const GroundAtomList<P>& ground_atoms, Repositories& pddl_repositories);
 
 template<StaticOrFluentOrDerived P>
 extern std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<P>& element);

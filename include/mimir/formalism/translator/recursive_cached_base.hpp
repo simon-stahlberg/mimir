@@ -333,13 +333,13 @@ protected:
     }
     /// @brief Translate a container of elements into a container of elements.
     template<IsBackInsertibleRange Range>
-    auto translate_level_1(const Range& input, PDDLRepositories& repositories)
+    auto translate_level_1(const Range& input, Repositories& repositories)
     {
         return self().translate_level_2(input, repositories);
     }
     /// @brief Translate a container of elements into a container of elements.
     template<IsBackInsertibleRange Range>
-    auto translate_level_2(const Range& input, PDDLRepositories& repositories)
+    auto translate_level_2(const Range& input, Repositories& repositories)
     {
         std::remove_cvref_t<Range> output;
 
@@ -353,12 +353,12 @@ protected:
         return output;
     }
     template<typename T>
-    auto translate_level_1(const std::optional<T>& element, PDDLRepositories& repositories)
+    auto translate_level_1(const std::optional<T>& element, Repositories& repositories)
     {
         return element.has_value() ? this->translate_level_0(element.value(), repositories) : std::optional<T> { std::nullopt };
     }
     template<IsHanaMap T>
-    auto translate_level_1(const T& map, PDDLRepositories& repositories)
+    auto translate_level_1(const T& map, Repositories& repositories)
     {
         return boost::hana::unpack(
             map,
@@ -368,92 +368,92 @@ protected:
             });
     }
     template<IsPDDLEntity T>
-    auto translate_level_1(const T& element, PDDLRepositories& repositories)
+    auto translate_level_1(const T& element, Repositories& repositories)
     {
         return cached_translate_impl(element,
                                      boost::hana::at_key(m_cache, boost::hana::type<T> {}),
                                      [&](auto&& arg) { return self().translate_level_2(arg, repositories); });
     }
 
-    Requirements translate_level_2(Requirements requirements, PDDLRepositories& repositories)
+    Requirements translate_level_2(Requirements requirements, Repositories& repositories)
     {
         return repositories.get_or_create_requirements(requirements->get_requirements());
     }
-    Object translate_level_2(Object object, PDDLRepositories& repositories) { return repositories.get_or_create_object(object->get_name()); }
-    Variable translate_level_2(Variable variable, PDDLRepositories& repositories)
+    Object translate_level_2(Object object, Repositories& repositories) { return repositories.get_or_create_object(object->get_name()); }
+    Variable translate_level_2(Variable variable, Repositories& repositories)
     {
         return repositories.get_or_create_variable(variable->get_name(), variable->get_parameter_index());
     }
-    Term translate_level_2(Term term, PDDLRepositories& repositories)
+    Term translate_level_2(Term term, Repositories& repositories)
     {
         return std::visit([&](auto&& arg) -> Term { return repositories.get_or_create_term(this->translate_level_0(arg, repositories)); }, term->get_variant());
     }
     template<StaticOrFluentOrDerived P>
-    Predicate<P> translate_level_2(Predicate<P> predicate, PDDLRepositories& repositories)
+    Predicate<P> translate_level_2(Predicate<P> predicate, Repositories& repositories)
     {
         return repositories.template get_or_create_predicate<P>(predicate->get_name(), this->translate_level_0(predicate->get_parameters(), repositories));
     }
     template<StaticOrFluentOrDerived P>
-    Atom<P> translate_level_2(Atom<P> atom, PDDLRepositories& repositories)
+    Atom<P> translate_level_2(Atom<P> atom, Repositories& repositories)
     {
         return repositories.get_or_create_atom(this->translate_level_0(atom->get_predicate(), repositories),
                                                this->translate_level_0(atom->get_terms(), repositories));
     }
     template<StaticOrFluentOrDerived P>
-    GroundAtom<P> translate_level_2(GroundAtom<P> atom, PDDLRepositories& repositories)
+    GroundAtom<P> translate_level_2(GroundAtom<P> atom, Repositories& repositories)
     {
         return repositories.get_or_create_ground_atom(this->translate_level_0(atom->get_predicate(), repositories),
                                                       this->translate_level_0(atom->get_objects(), repositories));
     }
     template<StaticOrFluentOrDerived P>
-    Literal<P> translate_level_2(Literal<P> literal, PDDLRepositories& repositories)
+    Literal<P> translate_level_2(Literal<P> literal, Repositories& repositories)
     {
         return repositories.get_or_create_literal(literal->is_negated(), this->translate_level_0(literal->get_atom(), repositories));
     }
     template<StaticOrFluentOrDerived P>
-    GroundLiteral<P> translate_level_2(GroundLiteral<P> literal, PDDLRepositories& repositories)
+    GroundLiteral<P> translate_level_2(GroundLiteral<P> literal, Repositories& repositories)
     {
         return repositories.get_or_create_ground_literal(literal->is_negated(), this->translate_level_0(literal->get_atom(), repositories));
     }
     template<StaticOrFluentOrAuxiliary F>
-    GroundFunctionValue<F> translate_level_2(GroundFunctionValue<F> function_value, PDDLRepositories& repositories)
+    GroundFunctionValue<F> translate_level_2(GroundFunctionValue<F> function_value, Repositories& repositories)
     {
         return repositories.get_or_create_ground_function_value(this->translate_level_0(function_value->get_function(), repositories),
                                                                 function_value->get_number());
     }
     template<FluentOrAuxiliary F>
-    NumericEffect<F> translate_level_2(NumericEffect<F> effect, PDDLRepositories& repositories)
+    NumericEffect<F> translate_level_2(NumericEffect<F> effect, Repositories& repositories)
     {
         return repositories.get_or_create_numeric_effect(effect->get_assign_operator(),
                                                          this->translate_level_0(effect->get_function(), repositories),
                                                          this->translate_level_0(effect->get_function_expression(), repositories));
     }
-    ConjunctiveEffect translate_level_2(ConjunctiveEffect effect, PDDLRepositories& repositories)
+    ConjunctiveEffect translate_level_2(ConjunctiveEffect effect, Repositories& repositories)
     {
         return repositories.get_or_create_conjunctive_effect(this->translate_level_0(effect->get_parameters(), repositories),
                                                              this->translate_level_0(effect->get_literals(), repositories),
                                                              this->translate_level_0(effect->get_fluent_numeric_effects(), repositories),
                                                              this->translate_level_0(effect->get_auxiliary_numeric_effect(), repositories));
     }
-    ConditionalEffect translate_level_2(ConditionalEffect effect, PDDLRepositories& repositories)
+    ConditionalEffect translate_level_2(ConditionalEffect effect, Repositories& repositories)
     {
         return repositories.get_or_create_conditional_effect(this->translate_level_0(effect->get_conjunctive_condition(), repositories),
                                                              this->translate_level_0(effect->get_conjunctive_effect(), repositories));
     }
-    NumericConstraint translate_level_2(NumericConstraint condition, PDDLRepositories& repositories)
+    NumericConstraint translate_level_2(NumericConstraint condition, Repositories& repositories)
     {
         return repositories.get_or_create_numeric_constraint(condition->get_binary_comparator(),
                                                              this->translate_level_0(condition->get_left_function_expression(), repositories),
                                                              this->translate_level_0(condition->get_right_function_expression(), repositories),
                                                              this->translate_level_0(condition->get_terms(), repositories));
     }
-    GroundNumericConstraint translate_level_2(GroundNumericConstraint condition, PDDLRepositories& repositories)
+    GroundNumericConstraint translate_level_2(GroundNumericConstraint condition, Repositories& repositories)
     {
         return repositories.get_or_create_ground_numeric_constraint(condition->get_binary_comparator(),
                                                                     this->translate_level_0(condition->get_left_function_expression(), repositories),
                                                                     this->translate_level_0(condition->get_right_function_expression(), repositories));
     }
-    ConjunctiveCondition translate_level_2(ConjunctiveCondition condition, PDDLRepositories& repositories)
+    ConjunctiveCondition translate_level_2(ConjunctiveCondition condition, Repositories& repositories)
     {
         return repositories.get_or_create_conjunctive_condition(this->translate_level_0(condition->get_parameters(), repositories),
                                                                 this->translate_level_0(condition->get_literals<Static>(), repositories),
@@ -461,90 +461,90 @@ protected:
                                                                 this->translate_level_0(condition->get_literals<Derived>(), repositories),
                                                                 this->translate_level_0(condition->get_numeric_constraints(), repositories));
     }
-    FunctionExpressionNumber translate_level_2(FunctionExpressionNumber function_expression, PDDLRepositories& repositories)
+    FunctionExpressionNumber translate_level_2(FunctionExpressionNumber function_expression, Repositories& repositories)
     {
         return repositories.get_or_create_function_expression_number(function_expression->get_number());
     }
-    FunctionExpressionBinaryOperator translate_level_2(FunctionExpressionBinaryOperator function_expression, PDDLRepositories& repositories)
+    FunctionExpressionBinaryOperator translate_level_2(FunctionExpressionBinaryOperator function_expression, Repositories& repositories)
     {
         return repositories.get_or_create_function_expression_binary_operator(
             function_expression->get_binary_operator(),
             this->translate_level_0(function_expression->get_left_function_expression(), repositories),
             this->translate_level_0(function_expression->get_right_function_expression(), repositories));
     }
-    FunctionExpressionMultiOperator translate_level_2(FunctionExpressionMultiOperator function_expression, PDDLRepositories& repositories)
+    FunctionExpressionMultiOperator translate_level_2(FunctionExpressionMultiOperator function_expression, Repositories& repositories)
     {
         return repositories.get_or_create_function_expression_multi_operator(
             function_expression->get_multi_operator(),
             this->translate_level_0(function_expression->get_function_expressions(), repositories));
     }
-    FunctionExpressionMinus translate_level_2(FunctionExpressionMinus function_expression, PDDLRepositories& repositories)
+    FunctionExpressionMinus translate_level_2(FunctionExpressionMinus function_expression, Repositories& repositories)
     {
         return repositories.get_or_create_function_expression_minus(this->translate_level_0(function_expression->get_function_expression(), repositories));
     }
     template<StaticOrFluentOrAuxiliary F>
-    FunctionExpressionFunction<F> translate_level_2(FunctionExpressionFunction<F> function_expression, PDDLRepositories& repositories)
+    FunctionExpressionFunction<F> translate_level_2(FunctionExpressionFunction<F> function_expression, Repositories& repositories)
     {
         return repositories.get_or_create_function_expression_function(this->translate_level_0(function_expression->get_function(), repositories));
     }
-    FunctionExpression translate_level_2(FunctionExpression function_expression, PDDLRepositories& repositories)
+    FunctionExpression translate_level_2(FunctionExpression function_expression, Repositories& repositories)
     {
         return std::visit([&](auto&& arg) { return repositories.get_or_create_function_expression(this->translate_level_0(arg, repositories)); },
                           function_expression->get_variant());
     }
-    GroundFunctionExpressionNumber translate_level_2(GroundFunctionExpressionNumber function_expression, PDDLRepositories& repositories)
+    GroundFunctionExpressionNumber translate_level_2(GroundFunctionExpressionNumber function_expression, Repositories& repositories)
     {
         return repositories.get_or_create_ground_function_expression_number(function_expression->get_number());
     }
-    GroundFunctionExpressionBinaryOperator translate_level_2(GroundFunctionExpressionBinaryOperator function_expression, PDDLRepositories& repositories)
+    GroundFunctionExpressionBinaryOperator translate_level_2(GroundFunctionExpressionBinaryOperator function_expression, Repositories& repositories)
     {
         return repositories.get_or_create_ground_function_expression_binary_operator(
             function_expression->get_binary_operator(),
             this->translate_level_0(function_expression->get_left_function_expression(), repositories),
             this->translate_level_0(function_expression->get_right_function_expression(), repositories));
     }
-    GroundFunctionExpressionMultiOperator translate_level_2(GroundFunctionExpressionMultiOperator function_expression, PDDLRepositories& repositories)
+    GroundFunctionExpressionMultiOperator translate_level_2(GroundFunctionExpressionMultiOperator function_expression, Repositories& repositories)
     {
         return repositories.get_or_create_ground_function_expression_multi_operator(
             function_expression->get_multi_operator(),
             this->translate_level_0(function_expression->get_function_expressions(), repositories));
     }
-    GroundFunctionExpressionMinus translate_level_2(GroundFunctionExpressionMinus function_expression, PDDLRepositories& repositories)
+    GroundFunctionExpressionMinus translate_level_2(GroundFunctionExpressionMinus function_expression, Repositories& repositories)
     {
         return repositories.get_or_create_ground_function_expression_minus(
             this->translate_level_0(function_expression->get_function_expression(), repositories));
     }
     template<StaticOrFluentOrAuxiliary F>
-    GroundFunctionExpressionFunction<F> translate_level_2(GroundFunctionExpressionFunction<F> function_expression, PDDLRepositories& repositories)
+    GroundFunctionExpressionFunction<F> translate_level_2(GroundFunctionExpressionFunction<F> function_expression, Repositories& repositories)
     {
         return repositories.get_or_create_ground_function_expression_function(this->translate_level_0(function_expression->get_function(), repositories));
     }
-    GroundFunctionExpression translate_level_2(GroundFunctionExpression function_expression, PDDLRepositories& repositories)
+    GroundFunctionExpression translate_level_2(GroundFunctionExpression function_expression, Repositories& repositories)
     {
         return std::visit([&](auto&& arg) -> GroundFunctionExpression
                           { return repositories.get_or_create_ground_function_expression(this->translate_level_0(arg, repositories)); },
                           function_expression->get_variant());
     }
     template<StaticOrFluentOrAuxiliary F>
-    FunctionSkeleton<F> translate_level_2(FunctionSkeleton<F> function_skeleton, PDDLRepositories& repositories)
+    FunctionSkeleton<F> translate_level_2(FunctionSkeleton<F> function_skeleton, Repositories& repositories)
     {
         return repositories.template get_or_create_function_skeleton<F>(function_skeleton->get_name(),
                                                                         this->translate_level_0(function_skeleton->get_parameters(), repositories));
     }
     template<StaticOrFluentOrAuxiliary F>
-    Function<F> translate_level_2(Function<F> function, PDDLRepositories& repositories)
+    Function<F> translate_level_2(Function<F> function, Repositories& repositories)
     {
         return repositories.get_or_create_function(this->translate_level_0(function->get_function_skeleton(), repositories),
                                                    this->translate_level_0(function->get_terms(), repositories),
                                                    function->get_parent_terms_to_terms_mapping());
     }
     template<StaticOrFluentOrAuxiliary F>
-    GroundFunction<F> translate_level_2(GroundFunction<F> function, PDDLRepositories& repositories)
+    GroundFunction<F> translate_level_2(GroundFunction<F> function, Repositories& repositories)
     {
         return repositories.get_or_create_ground_function(this->translate_level_0(function->get_function_skeleton(), repositories),
                                                           this->translate_level_0(function->get_objects(), repositories));
     }
-    Action translate_level_2(Action action, PDDLRepositories& repositories)
+    Action translate_level_2(Action action, Repositories& repositories)
     {
         return repositories.get_or_create_action(action->get_name(),
                                                  action->get_original_arity(),
@@ -552,12 +552,12 @@ protected:
                                                  this->translate_level_0(action->get_conjunctive_effect(), repositories),
                                                  this->translate_level_0(action->get_conditional_effects(), repositories));
     }
-    Axiom translate_level_2(Axiom axiom, PDDLRepositories& repositories)
+    Axiom translate_level_2(Axiom axiom, Repositories& repositories)
     {
         return repositories.get_or_create_axiom(this->translate_level_0(axiom->get_conjunctive_condition(), repositories),
                                                 this->translate_level_0(axiom->get_literal(), repositories));
     }
-    OptimizationMetric translate_level_2(OptimizationMetric metric, PDDLRepositories& repositories)
+    OptimizationMetric translate_level_2(OptimizationMetric metric, Repositories& repositories)
     {
         return repositories.get_or_create_optimization_metric(metric->get_optimization_metric(),
                                                               this->translate_level_0(metric->get_function_expression(), repositories));

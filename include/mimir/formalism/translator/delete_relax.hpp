@@ -37,18 +37,18 @@ private:
     using RecursiveCachedBaseTranslator<DeleteRelaxTranslator>::translate_level_2;
 
     template<StaticOrFluentOrDerived P>
-    LiteralList<P> translate_level_2(const LiteralList<P>& literals, PDDLRepositories& repositories);
-    ConditionalEffectList translate_level_2(const ConditionalEffectList& effects, PDDLRepositories& repositories);
-    ActionList translate_level_2(const ActionList& actions, PDDLRepositories& repositories);
-    AxiomList translate_level_2(const AxiomList& axioms, PDDLRepositories& repositories);
+    LiteralList<P> translate_level_2(const LiteralList<P>& literals, Repositories& repositories);
+    ConditionalEffectList translate_level_2(const ConditionalEffectList& effects, Repositories& repositories);
+    ActionList translate_level_2(const ActionList& actions, Repositories& repositories);
+    AxiomList translate_level_2(const AxiomList& axioms, Repositories& repositories);
 
     template<StaticOrFluentOrDerived P>
-    Literal<P> translate_level_2(Literal<P> literal, PDDLRepositories& repositories);
-    ConjunctiveCondition translate_level_2(ConjunctiveCondition condition, PDDLRepositories& repositories);
-    ConjunctiveEffect translate_level_2(ConjunctiveEffect effect, PDDLRepositories& repositories);
-    ConditionalEffect translate_level_2(ConditionalEffect effect, PDDLRepositories& repositories);
-    Action translate_level_2(Action action, PDDLRepositories& repositories);
-    Axiom translate_level_2(Axiom axiom, PDDLRepositories& repositories);
+    Literal<P> translate_level_2(Literal<P> literal, Repositories& repositories);
+    ConjunctiveCondition translate_level_2(ConjunctiveCondition condition, Repositories& repositories);
+    ConjunctiveEffect translate_level_2(ConjunctiveEffect effect, Repositories& repositories);
+    ConditionalEffect translate_level_2(ConditionalEffect effect, Repositories& repositories);
+    Action translate_level_2(Action action, Repositories& repositories);
+    Axiom translate_level_2(Axiom axiom, Repositories& repositories);
 
 public:
     const ActionList& get_unrelaxed_actions(Action action) const;
