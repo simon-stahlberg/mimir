@@ -15,5 +15,6 @@ var searchData=
   ['emptyedge_12',['EmptyEdge',['../namespacemimir_1_1graphs.html#a9f1a6ea5cc813f955882325765a23481',1,'mimir::graphs']]],
   ['emptyvertex_13',['EmptyVertex',['../namespacemimir_1_1graphs.html#a67adc7ccb0d5c052d08f962f0878bda9',1,'mimir::graphs']]],
   ['equalnumericalcondition_14',['EqualNumericalCondition',['../namespacemimir_1_1languages_1_1general__policies.html#a87cc9d3abfb095734f1c43fb7f271fe3',1,'mimir::languages::general_policies']]],
-  ['equalnumericalconditionrepository_15',['EqualNumericalConditionRepository',['../namespacemimir_1_1languages_1_1general__policies.html#a92663b2c7411f1d2c52ede92d1259c91',1,'mimir::languages::general_policies']]]
+  ['equalnumericalconditionrepository_15',['EqualNumericalConditionRepository',['../namespacemimir_1_1languages_1_1general__policies.html#a92663b2c7411f1d2c52ede92d1259c91',1,'mimir::languages::general_policies']]],
+  ['eventhandler_16',['EventHandler',['../namespacemimir_1_1search_1_1astar.html#adf769b6abbd7da48f0b0ab02942c4c18',1,'mimir::search::astar']]]
 ];

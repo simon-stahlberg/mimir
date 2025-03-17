@@ -7,13 +7,9 @@ var searchData=
   ['assignmentset_4',['AssignmentSet',['../classmimir_1_1formalism_1_1AssignmentSet.html',1,'mimir::formalism']]],
   ['assignmentset_3c_20mimir_3a_3aformalism_3a_3aderived_20_3e_5',['AssignmentSet&lt; mimir::formalism::Derived &gt;',['../classmimir_1_1formalism_1_1AssignmentSet.html',1,'mimir::formalism']]],
   ['assignmentset_3c_20mimir_3a_3aformalism_3a_3afluent_20_3e_6',['AssignmentSet&lt; mimir::formalism::Fluent &gt;',['../classmimir_1_1formalism_1_1AssignmentSet.html',1,'mimir::formalism']]],
-  ['astaralgorithmeventhandlerbase_7',['AStarAlgorithmEventHandlerBase',['../classmimir_1_1search_1_1AStarAlgorithmEventHandlerBase.html',1,'mimir::search']]],
-  ['astaralgorithmeventhandlerbase_3c_20debugastaralgorithmeventhandler_20_3e_8',['AStarAlgorithmEventHandlerBase&lt; DebugAStarAlgorithmEventHandler &gt;',['../classmimir_1_1search_1_1AStarAlgorithmEventHandlerBase.html',1,'mimir::search']]],
-  ['astaralgorithmeventhandlerbase_3c_20defaultastaralgorithmeventhandler_20_3e_9',['AStarAlgorithmEventHandlerBase&lt; DefaultAStarAlgorithmEventHandler &gt;',['../classmimir_1_1search_1_1AStarAlgorithmEventHandlerBase.html',1,'mimir::search']]],
-  ['astaralgorithmstatistics_10',['AStarAlgorithmStatistics',['../classmimir_1_1search_1_1AStarAlgorithmStatistics.html',1,'mimir::search']]],
-  ['atomimpl_11',['AtomImpl',['../classmimir_1_1formalism_1_1AtomImpl.html',1,'mimir::formalism']]],
-  ['auxiliary_12',['Auxiliary',['../structmimir_1_1formalism_1_1Auxiliary.html',1,'mimir::formalism']]],
-  ['axiomimpl_13',['AxiomImpl',['../classmimir_1_1formalism_1_1AxiomImpl.html',1,'mimir::formalism']]],
-  ['axiompartition_14',['AxiomPartition',['../classmimir_1_1formalism_1_1AxiomPartition.html',1,'mimir::formalism']]],
-  ['axiomsatisficingbindinggenerator_15',['AxiomSatisficingBindingGenerator',['../classmimir_1_1search_1_1AxiomSatisficingBindingGenerator.html',1,'mimir::search']]]
+  ['atomimpl_7',['AtomImpl',['../classmimir_1_1formalism_1_1AtomImpl.html',1,'mimir::formalism']]],
+  ['auxiliary_8',['Auxiliary',['../structmimir_1_1formalism_1_1Auxiliary.html',1,'mimir::formalism']]],
+  ['axiomimpl_9',['AxiomImpl',['../classmimir_1_1formalism_1_1AxiomImpl.html',1,'mimir::formalism']]],
+  ['axiompartition_10',['AxiomPartition',['../classmimir_1_1formalism_1_1AxiomPartition.html',1,'mimir::formalism']]],
+  ['axiomsatisficingbindinggenerator_11',['AxiomSatisficingBindingGenerator',['../classmimir_1_1search_1_1AxiomSatisficingBindingGenerator.html',1,'mimir::search']]]
 ];

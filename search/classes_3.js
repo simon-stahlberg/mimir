@@ -1,14 +1,14 @@
 var searchData=
 [
-  ['debugastaralgorithmeventhandler_0',['DebugAStarAlgorithmEventHandler',['../classmimir_1_1search_1_1DebugAStarAlgorithmEventHandler.html',1,'mimir::search']]],
-  ['debugbrfsalgorithmeventhandler_1',['DebugBrFSAlgorithmEventHandler',['../classmimir_1_1search_1_1DebugBrFSAlgorithmEventHandler.html',1,'mimir::search']]],
+  ['debugbrfsalgorithmeventhandler_0',['DebugBrFSAlgorithmEventHandler',['../classmimir_1_1search_1_1DebugBrFSAlgorithmEventHandler.html',1,'mimir::search']]],
+  ['debugeventhandler_1',['DebugEventHandler',['../classmimir_1_1search_1_1astar_1_1DebugEventHandler.html',1,'mimir::search::astar']]],
   ['debuggroundedapplicableactiongeneratoreventhandler_2',['DebugGroundedApplicableActionGeneratorEventHandler',['../classmimir_1_1search_1_1DebugGroundedApplicableActionGeneratorEventHandler.html',1,'mimir::search']]],
   ['debuggroundedaxiomevaluatoreventhandler_3',['DebugGroundedAxiomEvaluatorEventHandler',['../classmimir_1_1search_1_1DebugGroundedAxiomEvaluatorEventHandler.html',1,'mimir::search']]],
   ['debugliftedapplicableactiongeneratoreventhandler_4',['DebugLiftedApplicableActionGeneratorEventHandler',['../classmimir_1_1search_1_1DebugLiftedApplicableActionGeneratorEventHandler.html',1,'mimir::search']]],
   ['debugliftedaxiomevaluatoreventhandler_5',['DebugLiftedAxiomEvaluatorEventHandler',['../classmimir_1_1search_1_1DebugLiftedAxiomEvaluatorEventHandler.html',1,'mimir::search']]],
   ['decreasenumericaleffectimpl_6',['DecreaseNumericalEffectImpl',['../classmimir_1_1languages_1_1general__policies_1_1DecreaseNumericalEffectImpl.html',1,'mimir::languages::general_policies']]],
-  ['defaultastaralgorithmeventhandler_7',['DefaultAStarAlgorithmEventHandler',['../classmimir_1_1search_1_1DefaultAStarAlgorithmEventHandler.html',1,'mimir::search']]],
-  ['defaultbrfsalgorithmeventhandler_8',['DefaultBrFSAlgorithmEventHandler',['../classmimir_1_1search_1_1DefaultBrFSAlgorithmEventHandler.html',1,'mimir::search']]],
+  ['defaultbrfsalgorithmeventhandler_7',['DefaultBrFSAlgorithmEventHandler',['../classmimir_1_1search_1_1DefaultBrFSAlgorithmEventHandler.html',1,'mimir::search']]],
+  ['defaulteventhandler_8',['DefaultEventHandler',['../classmimir_1_1search_1_1astar_1_1DefaultEventHandler.html',1,'mimir::search::astar']]],
   ['defaultgroundedapplicableactiongeneratoreventhandler_9',['DefaultGroundedApplicableActionGeneratorEventHandler',['../classmimir_1_1search_1_1DefaultGroundedApplicableActionGeneratorEventHandler.html',1,'mimir::search']]],
   ['defaultgroundedaxiomevaluatoreventhandler_10',['DefaultGroundedAxiomEvaluatorEventHandler',['../classmimir_1_1search_1_1DefaultGroundedAxiomEvaluatorEventHandler.html',1,'mimir::search']]],
   ['defaultiwalgorithmeventhandler_11',['DefaultIWAlgorithmEventHandler',['../classmimir_1_1search_1_1DefaultIWAlgorithmEventHandler.html',1,'mimir::search']]],

@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['astaralgorithmeventhandlerbase_3c_20debugastaralgorithmeventhandler_20_3e_0',['AStarAlgorithmEventHandlerBase&lt; DebugAStarAlgorithmEventHandler &gt;',['../classmimir_1_1search_1_1DebugAStarAlgorithmEventHandler.html#a7f9faaed0c42d0d16ea8c41e1d3fff0c',1,'mimir::search::DebugAStarAlgorithmEventHandler']]],
-  ['astaralgorithmeventhandlerbase_3c_20defaultastaralgorithmeventhandler_20_3e_1',['AStarAlgorithmEventHandlerBase&lt; DefaultAStarAlgorithmEventHandler &gt;',['../classmimir_1_1search_1_1DefaultAStarAlgorithmEventHandler.html#a7c6a3d138a034bd7350639a99e51f059',1,'mimir::search::DefaultAStarAlgorithmEventHandler']]]
+  ['brfsalgorithmeventhandlerbase_3c_20debugbrfsalgorithmeventhandler_20_3e_0',['BrFSAlgorithmEventHandlerBase&lt; DebugBrFSAlgorithmEventHandler &gt;',['../classmimir_1_1search_1_1DebugBrFSAlgorithmEventHandler.html#ad26ac0a4618596cead72e8702812aa68',1,'mimir::search::DebugBrFSAlgorithmEventHandler']]],
+  ['brfsalgorithmeventhandlerbase_3c_20defaultbrfsalgorithmeventhandler_20_3e_1',['BrFSAlgorithmEventHandlerBase&lt; DefaultBrFSAlgorithmEventHandler &gt;',['../classmimir_1_1search_1_1DefaultBrFSAlgorithmEventHandler.html#adc3bf2d569c4025236328ca02d46a7a1',1,'mimir::search::DefaultBrFSAlgorithmEventHandler']]]
 ];

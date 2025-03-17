@@ -2,7 +2,7 @@ var searchData=
 [
   ['failed_0',['FAILED',['../namespacemimir_1_1search.html#a79d5077b9be5c161f50658bf63e0fcf8ac226dabe9c63f0e5f98ed250baaef66a',1,'mimir::search']]],
   ['filter_5fground_5fatoms_1',['filter_ground_atoms',['../namespacemimir_1_1formalism.html#a81480f518b4ebb9c4616090a576dd240',1,'mimir::formalism::filter_ground_atoms(const GroundLiteralList&lt; P &gt; &amp;literals, bool polarity, GroundAtomList&lt; P &gt; &amp;out_ground_atoms)'],['../namespacemimir_1_1formalism.html#afe007bcb2392c528a0379894a76464df',1,'mimir::formalism::filter_ground_atoms(const GroundLiteralList&lt; P &gt; &amp;literals, bool polarity)']]],
-  ['find_5fsolution_5fastar_2',['find_solution_astar',['../namespacemimir_1_1search.html#adbe37222ed72f3fcdaa4593109d43aad',1,'mimir::search']]],
+  ['find_5fsolution_2',['find_solution',['../namespacemimir_1_1search_1_1astar.html#ac3624e11f721c8ea6ac2e99a4c9b0f15',1,'mimir::search::astar']]],
   ['find_5fsolution_5fbrfs_3',['find_solution_brfs',['../namespacemimir_1_1search.html#a446c7db5ae71a6561294253fa35d544f',1,'mimir::search']]],
   ['find_5fsolution_5fiw_4',['find_solution_iw',['../namespacemimir_1_1search.html#afd82139e2ade0e39eea47aec13f1290d',1,'mimir::search']]],
   ['find_5fsolution_5fsiw_5',['find_solution_siw',['../namespacemimir_1_1search.html#ae8c5b0f42b1e3e5461e6cc1a534ec216',1,'mimir::search']]],

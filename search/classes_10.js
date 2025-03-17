@@ -21,6 +21,7 @@ var searchData=
   ['staticforwardgraph_18',['StaticForwardGraph',['../classmimir_1_1graphs_1_1StaticForwardGraph.html',1,'mimir::graphs']]],
   ['staticgraph_19',['StaticGraph',['../classmimir_1_1graphs_1_1StaticGraph.html',1,'mimir::graphs']]],
   ['staticsize_20',['StaticSize',['../structmimir_1_1search_1_1StaticSize.html',1,'mimir::search']]],
-  ['substitutionruleimpl_21',['SubstitutionRuleImpl',['../classmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1SubstitutionRuleImpl.html',1,'mimir::languages::dl::cnf_grammar']]],
-  ['substitutionrulescontainer_22',['SubstitutionRulesContainer',['../classmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1SubstitutionRulesContainer.html',1,'mimir::languages::dl::cnf_grammar']]]
+  ['statistics_21',['Statistics',['../classmimir_1_1search_1_1astar_1_1Statistics.html',1,'mimir::search::astar']]],
+  ['substitutionruleimpl_22',['SubstitutionRuleImpl',['../classmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1SubstitutionRuleImpl.html',1,'mimir::languages::dl::cnf_grammar']]],
+  ['substitutionrulescontainer_23',['SubstitutionRulesContainer',['../classmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1SubstitutionRulesContainer.html',1,'mimir::languages::dl::cnf_grammar']]]
 ];
