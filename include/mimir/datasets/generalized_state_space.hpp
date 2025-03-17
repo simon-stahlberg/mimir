@@ -208,7 +208,7 @@ namespace mimir::datasets
 /// When symmetry reduction is disabled, there is a strict one-to-one mapping between `graphs::ClassVertex` and `graphs::ProblemVertex`
 /// and a strict one-to-one mapping between `graphs::ClassEdge` and `graphs::ProblemEdge`.
 /// When symmetry reduction is enabled, the mapping may become a strict one-to-many mapping, in which case, the `graphs::ClassVertex`
-/// or `graphs::ClassEdge` acts as an interface to pick access a unique representative.
+/// or `graphs::ClassEdge` acts as an interface to access the representative.
 ///
 /// The `graphs::ProblemGraph` acts as the main interface to retrieve information about the state transition model of a specific problem.
 /// When symmetry reduction is disabled, the `graphs::ProblemGraph` is essentially the state space.
