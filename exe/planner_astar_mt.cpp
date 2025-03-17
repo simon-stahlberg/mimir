@@ -112,8 +112,7 @@ int main(int argc, char** argv)
         }
     }
 
-    auto event_handler = (debug) ? AStarAlgorithmEventHandler { std::make_shared<DebugAStarAlgorithmEventHandler>(false) } :
-                                   AStarAlgorithmEventHandler { std::make_shared<DefaultAStarAlgorithmEventHandler>(false) };
+    auto event_handler = (debug) ? EventHandler { std::make_shared<DebugEventHandler>(false) } : EventHandler { std::make_shared<DefaultEventHandler>(false) };
 
     auto heuristic = Heuristic(nullptr);
     if (heuristic_type == 0)

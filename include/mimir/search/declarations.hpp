@@ -89,8 +89,11 @@ class IGoalStrategy;
 using GoalStrategy = std::shared_ptr<IGoalStrategy>;
 
 // AStar
-class IAStarAlgorithmEventHandler;
-using AStarAlgorithmEventHandler = std::shared_ptr<IAStarAlgorithmEventHandler>;
+namespace astar
+{
+class IEventHandler;
+using EventHandler = std::shared_ptr<IEventHandler>;
+}
 
 // Breadth-first search
 class IBrFSAlgorithmEventHandler;

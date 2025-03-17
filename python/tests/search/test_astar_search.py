@@ -32,10 +32,10 @@ class CustomGoalCountHeuristic(search.IHeuristic):
 
         return self.num_goal_literals - num_satisfied_goal_literals
 
-class CustomAStarAlgorithmEventHandler2(search.DefaultAStarAlgorithmEventHandler):
+class CustomEventHandler2(search.DefaultEventHandler):
     pass
 
-class CustomAStarAlgorithmEventHandler(search.IAStarAlgorithmEventHandler):
+class CustomEventHandler(search.IEventHandler):
     def __init__(self):
         super().__init__()
 
@@ -87,9 +87,9 @@ def test_astar_search():
 
     blind_heuristic = CustomBlindHeuristic()
     goal_count_heuristic = CustomGoalCountHeuristic(search_context.get_problem())
-    event_handler = CustomAStarAlgorithmEventHandler()
+    event_handler = CustomEventHandler()
     initial_state = search_context.get_state_repository().get_or_create_initial_state()
-    default_event_handler = search.DefaultAStarAlgorithmEventHandler(search_context.get_problem(), False)
+    default_event_handler = search.DefaultEventHandler(search_context.get_problem(), False)
 
     result = search.find_solution_astar(search_context, blind_heuristic, initial_state, event_handler)
 

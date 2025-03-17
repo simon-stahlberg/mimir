@@ -24,10 +24,10 @@ public:
     }
 };
 
-class IPyAStarAlgorithmEventHandler : public IAStarAlgorithmEventHandler
+class IPyAStarEventHandler : public astar::IEventHandler
 {
 public:
-    NB_TRAMPOLINE(IAStarAlgorithmEventHandler, 13);
+    NB_TRAMPOLINE(astar::IEventHandler, 13);
 
     /* Trampoline (need one for each virtual function) */
     void on_expand_state(State state) override { NB_OVERRIDE_PURE(on_expand_state, state); }
@@ -78,7 +78,7 @@ public:
     void on_solved(const Plan& plan) override { NB_OVERRIDE_PURE(on_solved, plan); }
     void on_unsolvable() override { NB_OVERRIDE_PURE(on_unsolvable); }
     void on_exhausted() override { NB_OVERRIDE_PURE(on_exhausted); }
-    const AStarAlgorithmStatistics& get_statistics() const override { NB_OVERRIDE_PURE(get_statistics); }
+    const astar::Statistics& get_statistics() const override { NB_OVERRIDE_PURE(get_statistics); }
 };
 
 void bind_search(nb::module_& m)
@@ -397,43 +397,43 @@ void bind_search(nb::module_& m)
         .def_rw("goal_state", &SearchResult::goal_state);
 
     // AStar
-    nb::class_<AStarAlgorithmStatistics>(m, "AStarAlgorithmStatistics")  //
-        .def("get_num_generated", &AStarAlgorithmStatistics::get_num_generated)
-        .def("get_num_expanded", &AStarAlgorithmStatistics::get_num_expanded)
-        .def("get_num_deadends", &AStarAlgorithmStatistics::get_num_deadends)
-        .def("get_num_pruned", &AStarAlgorithmStatistics::get_num_pruned)
-        .def("get_num_generated_until_f_value", &AStarAlgorithmStatistics::get_num_generated_until_f_value)
-        .def("get_num_expanded_until_f_value", &AStarAlgorithmStatistics::get_num_expanded_until_f_value)
-        .def("get_num_deadends_until_f_value", &AStarAlgorithmStatistics::get_num_deadends_until_f_value)
-        .def("get_num_pruned_until_f_value", &AStarAlgorithmStatistics::get_num_pruned_until_f_value);
+    nb::class_<astar::Statistics>(m, "AStarStatistics")  //
+        .def("get_num_generated", &astar::Statistics::get_num_generated)
+        .def("get_num_expanded", &astar::Statistics::get_num_expanded)
+        .def("get_num_deadends", &astar::Statistics::get_num_deadends)
+        .def("get_num_pruned", &astar::Statistics::get_num_pruned)
+        .def("get_num_generated_until_f_value", &astar::Statistics::get_num_generated_until_f_value)
+        .def("get_num_expanded_until_f_value", &astar::Statistics::get_num_expanded_until_f_value)
+        .def("get_num_deadends_until_f_value", &astar::Statistics::get_num_deadends_until_f_value)
+        .def("get_num_pruned_until_f_value", &astar::Statistics::get_num_pruned_until_f_value);
 
-    nb::class_<IAStarAlgorithmEventHandler, IPyAStarAlgorithmEventHandler>(m,
-                                                                           "IAStarAlgorithmEventHandler")  //
+    nb::class_<astar::IEventHandler, IPyAStarEventHandler>(m,
+                                                           "IAStarEventHandler")  //
         .def(nb::init<>())
-        .def("on_expand_state", &IAStarAlgorithmEventHandler::on_expand_state)
-        .def("on_expand_goal_state", &IAStarAlgorithmEventHandler::on_expand_goal_state)
-        .def("on_generate_state", &IAStarAlgorithmEventHandler::on_generate_state)
-        .def("on_generate_state_relaxed", &IAStarAlgorithmEventHandler::on_generate_state_relaxed)
-        .def("on_generate_state_not_relaxed", &IAStarAlgorithmEventHandler::on_generate_state_not_relaxed)
-        .def("on_close_state", &IAStarAlgorithmEventHandler::on_close_state)
-        .def("on_finish_f_layer", &IAStarAlgorithmEventHandler::on_finish_f_layer)
-        .def("on_prune_state", &IAStarAlgorithmEventHandler::on_prune_state)
-        .def("on_start_search", &IAStarAlgorithmEventHandler::on_start_search)
-        .def("on_end_search", &IAStarAlgorithmEventHandler::on_end_search)
-        .def("on_solved", &IAStarAlgorithmEventHandler::on_solved)
-        .def("on_unsolvable", &IAStarAlgorithmEventHandler::on_unsolvable)
-        .def("on_exhausted", &IAStarAlgorithmEventHandler::on_exhausted)
-        .def("get_statistics", &IAStarAlgorithmEventHandler::get_statistics);
+        .def("on_expand_state", &astar::IEventHandler::on_expand_state)
+        .def("on_expand_goal_state", &astar::IEventHandler::on_expand_goal_state)
+        .def("on_generate_state", &astar::IEventHandler::on_generate_state)
+        .def("on_generate_state_relaxed", &astar::IEventHandler::on_generate_state_relaxed)
+        .def("on_generate_state_not_relaxed", &astar::IEventHandler::on_generate_state_not_relaxed)
+        .def("on_close_state", &astar::IEventHandler::on_close_state)
+        .def("on_finish_f_layer", &astar::IEventHandler::on_finish_f_layer)
+        .def("on_prune_state", &astar::IEventHandler::on_prune_state)
+        .def("on_start_search", &astar::IEventHandler::on_start_search)
+        .def("on_end_search", &astar::IEventHandler::on_end_search)
+        .def("on_solved", &astar::IEventHandler::on_solved)
+        .def("on_unsolvable", &astar::IEventHandler::on_unsolvable)
+        .def("on_exhausted", &astar::IEventHandler::on_exhausted)
+        .def("get_statistics", &astar::IEventHandler::get_statistics);
 
-    nb::class_<DefaultAStarAlgorithmEventHandler, IAStarAlgorithmEventHandler>(m,
-                                                                               "DefaultAStarAlgorithmEventHandler")  //
+    nb::class_<astar::DefaultEventHandler, astar::IEventHandler>(m,
+                                                                 "DefaultAStarEventHandler")  //
         .def(nb::init<Problem, bool>(), nb::arg("problem"), nb::arg("quiet") = true);
-    nb::class_<DebugAStarAlgorithmEventHandler, IAStarAlgorithmEventHandler>(m,
-                                                                             "DebugAStarAlgorithmEventHandler")  //
+    nb::class_<astar::DebugEventHandler, astar::IEventHandler>(m,
+                                                               "DebugAStarEventHandler")  //
         .def(nb::init<Problem, bool>(), nb::arg("problem"), nb::arg("quiet") = true);
 
     m.def("find_solution_astar",
-          &find_solution_astar,
+          &astar::find_solution,
           nb::arg("search_context"),
           nb::arg("heuristic"),
           nb::arg("start_state") = nullptr,

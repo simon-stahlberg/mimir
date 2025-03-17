@@ -20,17 +20,17 @@
 
 #include "mimir/search/algorithms/astar/event_handlers/interface.hpp"
 
-namespace mimir::search
+namespace mimir::search::astar
 {
 
 /**
  * Implementation class
  */
-class DefaultAStarAlgorithmEventHandler : public AStarAlgorithmEventHandlerBase<DefaultAStarAlgorithmEventHandler>
+class DefaultEventHandler : public EventHandlerBase<DefaultEventHandler>
 {
 private:
-    /* Implement AStarAlgorithmEventHandlerBase interface */
-    friend class AStarAlgorithmEventHandlerBase<DefaultAStarAlgorithmEventHandler>;
+    /* Implement EventHandlerBase interface */
+    friend class EventHandlerBase<DefaultEventHandler>;
 
     void on_expand_state_impl(State state) const;
 
@@ -69,10 +69,7 @@ private:
     void on_exhausted_impl() const;
 
 public:
-    explicit DefaultAStarAlgorithmEventHandler(formalism::Problem problem, bool quiet = true) :
-        AStarAlgorithmEventHandlerBase<DefaultAStarAlgorithmEventHandler>(problem, quiet)
-    {
-    }
+    explicit DefaultEventHandler(formalism::Problem problem, bool quiet = true) : EventHandlerBase<DefaultEventHandler>(problem, quiet) {}
 };
 
 }

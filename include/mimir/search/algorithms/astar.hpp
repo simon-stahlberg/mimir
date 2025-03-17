@@ -27,15 +27,15 @@
 #include <optional>
 #include <vector>
 
-namespace mimir::search
+namespace mimir::search::astar
 {
 
-extern SearchResult find_solution_astar(const SearchContext& context,
-                                        Heuristic heuristic,
-                                        State start_state = nullptr,
-                                        AStarAlgorithmEventHandler event_handler = nullptr,
-                                        GoalStrategy goal_strategy = nullptr,
-                                        PruningStrategy pruning_strategy = nullptr);
+extern SearchResult find_solution(const SearchContext& context,
+                                  Heuristic heuristic,
+                                  State start_state = nullptr,
+                                  EventHandler event_handler = nullptr,
+                                  GoalStrategy goal_strategy = nullptr,
+                                  PruningStrategy pruning_strategy = nullptr);
 
 }
 

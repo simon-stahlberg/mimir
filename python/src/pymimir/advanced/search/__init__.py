@@ -12,21 +12,28 @@ from _pymimir.advanced.search import (
     GeneralizedSearchContext,
 )
 
+# SatisficingBindingGenerator
 from _pymimir.advanced.search import (
     ActionSatisficingBindingGenerator,
     AxiomSatisficingBindingGenerator,
     ConjunctiveConditionSatisficingBindingGenerator
 )
-from _pymimir.advanced.search import (
-    AStarAlgorithmStatistics,
+
+# AStar
+from _pymimir.advance.search import (
+    AStarStatistics,
+    IAStarEventHandler,
+    DebugAStarEventHandler,
+    DefaultAStarEventHandler,
+)
+
+from _pymimir.advanced.search import (   
     BlindHeuristic,
     BrFSAlgorithmStatistics,
-    DebugAStarAlgorithmEventHandler,
     DebugBrFSAlgorithmEventHandler,
     DebugGroundedApplicableActionGeneratorEventHandler,
     DebugLiftedApplicableActionGeneratorEventHandler,
     DefaultBrFSAlgorithmEventHandler,
-    DefaultAStarAlgorithmEventHandler,
     DefaultGroundedApplicableActionGeneratorEventHandler,
     DefaultIWAlgorithmEventHandler,
     DefaultLiftedApplicableActionGeneratorEventHandler,
@@ -35,7 +42,6 @@ from _pymimir.advanced.search import (
     GroundedApplicableActionGenerator,
     GroundedAxiomEvaluator,
     IApplicableActionGenerator,
-    IAStarAlgorithmEventHandler,
     IAxiomEvaluator,
     IBrFSAlgorithmEventHandler,
     IIWAlgorithmEventHandler,

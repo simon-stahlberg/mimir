@@ -26,20 +26,20 @@
 #include <concepts>
 #include <cstdint>
 
-namespace mimir::search
+namespace mimir::search::astar
 {
 
 /**
  * Interface class
  */
 
-/// @brief `IAStarAlgorithmEventHandler` to react on event during AStar search.
+/// @brief `IEventHandler` to react on event during AStar search.
 ///
 /// Inspired by boost graph library: https://www.boost.org/doc/libs/1_75_0/libs/graph/doc/AStarVisitor.html
-class IAStarAlgorithmEventHandler
+class IEventHandler
 {
 public:
-    virtual ~IAStarAlgorithmEventHandler() = default;
+    virtual ~IEventHandler() = default;
 
     /// @brief React on expanding a state. This is called immediately after popping from the queue.
     virtual void on_expand_state(State state) = 0;
@@ -91,7 +91,7 @@ public:
     /// @brief React on exhausting a search.
     virtual void on_exhausted() = 0;
 
-    virtual const AStarAlgorithmStatistics& get_statistics() const = 0;
+    virtual const Statistics& get_statistics() const = 0;
 };
 
 /**
@@ -100,15 +100,15 @@ public:
  * Collect statistics and call implementation of derived class.
  */
 template<typename Derived_>
-class AStarAlgorithmEventHandlerBase : public IAStarAlgorithmEventHandler
+class EventHandlerBase : public IEventHandler
 {
 protected:
-    AStarAlgorithmStatistics m_statistics;
+    Statistics m_statistics;
     formalism::Problem m_problem;
     bool m_quiet;
 
 private:
-    AStarAlgorithmEventHandlerBase() = default;
+    EventHandlerBase() = default;
     friend Derived_;
 
     /// @brief Helper to cast to Derived.
@@ -116,7 +116,7 @@ private:
     constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 public:
-    AStarAlgorithmEventHandlerBase(formalism::Problem problem, bool quiet = true) : m_statistics(), m_problem(problem), m_quiet(quiet) {}
+    EventHandlerBase(formalism::Problem problem, bool quiet = true) : m_statistics(), m_problem(problem), m_quiet(quiet) {}
 
     void on_expand_state(State state) override
     {
@@ -195,7 +195,7 @@ public:
 
     void on_start_search(State start_state) override
     {
-        m_statistics = AStarAlgorithmStatistics();
+        m_statistics = Statistics();
 
         m_statistics.set_search_start_time_point(std::chrono::high_resolution_clock::now());
 
@@ -275,7 +275,7 @@ public:
      * Getters
      */
 
-    const AStarAlgorithmStatistics& get_statistics() const override { return m_statistics; }
+    const Statistics& get_statistics() const override { return m_statistics; }
     bool is_quiet() const { return m_quiet; }
 };
 

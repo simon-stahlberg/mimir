@@ -22,17 +22,17 @@
 
 #include <iostream>
 
-namespace mimir::search
+namespace mimir::search::astar
 {
 
 /**
  * Implementation class
  */
-class DebugAStarAlgorithmEventHandler : public AStarAlgorithmEventHandlerBase<DebugAStarAlgorithmEventHandler>
+class DebugEventHandler : public EventHandlerBase<DebugEventHandler>
 {
 private:
     /* Implement AlgorithmEventHandlerBase interface */
-    friend class AStarAlgorithmEventHandlerBase<DebugAStarAlgorithmEventHandler>;
+    friend class EventHandlerBase<DebugEventHandler>;
 
     void on_expand_state_impl(State state) const;
 
@@ -71,10 +71,7 @@ private:
     void on_exhausted_impl() const;
 
 public:
-    explicit DebugAStarAlgorithmEventHandler(formalism::Problem problem, bool quiet = true) :
-        AStarAlgorithmEventHandlerBase<DebugAStarAlgorithmEventHandler>(problem, quiet)
-    {
-    }
+    explicit DebugEventHandler(formalism::Problem problem, bool quiet = true) : EventHandlerBase<DebugEventHandler>(problem, quiet) {}
 };
 
 }

@@ -24,9 +24,9 @@
 
 using namespace mimir::formalism;
 
-namespace mimir::search
+namespace mimir::search::astar
 {
-void DebugAStarAlgorithmEventHandler::on_expand_state_impl(State state) const
+void DebugEventHandler::on_expand_state_impl(State state) const
 {
     std::cout << "[AStar] ----------------------------------------\n"
               << "[AStar] State: ";
@@ -34,9 +34,9 @@ void DebugAStarAlgorithmEventHandler::on_expand_state_impl(State state) const
     std::cout << std::endl << std::endl;
 }
 
-void DebugAStarAlgorithmEventHandler::on_expand_goal_state_impl(State state) const {}
+void DebugEventHandler::on_expand_goal_state_impl(State state) const {}
 
-void DebugAStarAlgorithmEventHandler::on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const
+void DebugEventHandler::on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const
 {
     std::cout << "[AStar] Action: ";
     mimir::operator<<(std::cout, std::make_tuple(action, std::cref(*m_problem), GroundActionImpl::FullFormatterTag {}));
@@ -46,28 +46,21 @@ void DebugAStarAlgorithmEventHandler::on_generate_state_impl(State state, Ground
     std::cout << "\n" << std::endl;
 }
 
-void DebugAStarAlgorithmEventHandler::on_generate_state_relaxed_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const
-{
-}
+void DebugEventHandler::on_generate_state_relaxed_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const {}
 
-void DebugAStarAlgorithmEventHandler::on_generate_state_not_relaxed_impl(State state,
-                                                                         GroundAction action,
-                                                                         ContinuousCost action_cost,
-                                                                         State successor_state) const
-{
-}
+void DebugEventHandler::on_generate_state_not_relaxed_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const {}
 
-void DebugAStarAlgorithmEventHandler::on_close_state_impl(State state) const {}
+void DebugEventHandler::on_close_state_impl(State state) const {}
 
-void DebugAStarAlgorithmEventHandler::on_finish_f_layer_impl(double f_value, uint64_t num_expanded_states, uint64_t num_generated_states) const
+void DebugEventHandler::on_finish_f_layer_impl(double f_value, uint64_t num_expanded_states, uint64_t num_generated_states) const
 {
     std::cout << "[AStar] Finished state expansion until f-layer " << f_value << " with num expanded states " << num_expanded_states
               << " and num generated states " << num_generated_states << std::endl;
 }
 
-void DebugAStarAlgorithmEventHandler::on_prune_state_impl(State state) const {}
+void DebugEventHandler::on_prune_state_impl(State state) const {}
 
-void DebugAStarAlgorithmEventHandler::on_start_search_impl(State start_state) const
+void DebugEventHandler::on_start_search_impl(State start_state) const
 {
     std::cout << "[AStar] Search started.\n"
               << "[AStar] Initial: ";
@@ -75,22 +68,22 @@ void DebugAStarAlgorithmEventHandler::on_start_search_impl(State start_state) co
     std::cout << std::endl;
 }
 
-void DebugAStarAlgorithmEventHandler::on_end_search_impl(uint64_t num_reached_fluent_atoms,
-                                                         uint64_t num_reached_derived_atoms,
-                                                         uint64_t num_bytes_for_unextended_state_portion,
-                                                         uint64_t num_bytes_for_extended_state_portion,
-                                                         uint64_t num_bytes_for_nodes,
-                                                         uint64_t num_bytes_for_actions,
-                                                         uint64_t num_bytes_for_axioms,
-                                                         uint64_t num_states,
-                                                         uint64_t num_nodes,
-                                                         uint64_t num_actions,
-                                                         uint64_t num_axioms) const
+void DebugEventHandler::on_end_search_impl(uint64_t num_reached_fluent_atoms,
+                                           uint64_t num_reached_derived_atoms,
+                                           uint64_t num_bytes_for_unextended_state_portion,
+                                           uint64_t num_bytes_for_extended_state_portion,
+                                           uint64_t num_bytes_for_nodes,
+                                           uint64_t num_bytes_for_actions,
+                                           uint64_t num_bytes_for_axioms,
+                                           uint64_t num_states,
+                                           uint64_t num_nodes,
+                                           uint64_t num_actions,
+                                           uint64_t num_axioms) const
 {
     std::cout << "[AStar] Search ended.\n" << m_statistics << std::endl;
 }
 
-void DebugAStarAlgorithmEventHandler::on_solved_impl(const Plan& plan) const
+void DebugEventHandler::on_solved_impl(const Plan& plan) const
 {
     std::cout << "[AStar] Plan found.\n"
               << "[AStar] Plan cost: " << plan.get_cost() << "\n"
@@ -103,7 +96,7 @@ void DebugAStarAlgorithmEventHandler::on_solved_impl(const Plan& plan) const
     }
 }
 
-void DebugAStarAlgorithmEventHandler::on_unsolvable_impl() const { std::cout << "[AStar] Unsolvable!" << std::endl; }
+void DebugEventHandler::on_unsolvable_impl() const { std::cout << "[AStar] Unsolvable!" << std::endl; }
 
-void DebugAStarAlgorithmEventHandler::on_exhausted_impl() const { std::cout << "[AStar] Exhausted!" << std::endl; }
+void DebugEventHandler::on_exhausted_impl() const { std::cout << "[AStar] Exhausted!" << std::endl; }
 }
