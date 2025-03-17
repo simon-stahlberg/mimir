@@ -18,7 +18,7 @@ var searchData=
   ['isvertex_15',['IsVertex',['../conceptmimir_1_1graphs_1_1IsVertex.html',1,'mimir::graphs']]],
   ['isvertexcoloredgraph_16',['IsVertexColoredGraph',['../conceptmimir_1_1graphs_1_1IsVertexColoredGraph.html',1,'mimir::graphs']]],
   ['isvertexlistgraph_17',['IsVertexListGraph',['../conceptmimir_1_1graphs_1_1IsVertexListGraph.html',1,'mimir::graphs']]],
-  ['staticordynamicsize_18',['StaticOrDynamicSize',['../conceptmimir_1_1search_1_1StaticOrDynamicSize.html',1,'mimir::search']]],
+  ['staticordynamicsize_18',['StaticOrDynamicSize',['../conceptmimir_1_1search_1_1iw_1_1StaticOrDynamicSize.html',1,'mimir::search::iw']]],
   ['staticorfluent_19',['StaticOrFluent',['../conceptmimir_1_1formalism_1_1StaticOrFluent.html',1,'mimir::formalism']]],
   ['staticorfluentorauxiliary_20',['StaticOrFluentOrAuxiliary',['../conceptmimir_1_1formalism_1_1StaticOrFluentOrAuxiliary.html',1,'mimir::formalism']]],
   ['staticorfluentorderived_21',['StaticOrFluentOrDerived',['../conceptmimir_1_1formalism_1_1StaticOrFluentOrDerived.html',1,'mimir::formalism']]]

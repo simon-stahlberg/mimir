@@ -165,12 +165,10 @@ var menudata={children:[
 {text:"v",url:"functions_type.html#index_v"}]},
 {text:"Enumerations",url:"functions_enum.html"},
 {text:"Related Functions",url:"functions_rela.html",children:[
-{text:"b",url:"functions_rela.html#index_b"},
 {text:"c",url:"functions_rela.html#index_c"},
 {text:"d",url:"functions_rela.html#index_d"},
 {text:"e",url:"functions_rela.html#index_e"},
 {text:"g",url:"functions_rela.html#index_g"},
-{text:"i",url:"functions_rela.html#index_i"},
 {text:"l",url:"functions_rela.html#index_l"},
 {text:"p",url:"functions_rela.html#index_p"},
 {text:"s",url:"functions_rela.html#index_s"}]}]}]},

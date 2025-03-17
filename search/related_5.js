@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['iwalgorithmeventhandlerbase_3c_20defaultiwalgorithmeventhandler_20_3e_0',['IWAlgorithmEventHandlerBase&lt; DefaultIWAlgorithmEventHandler &gt;',['../classmimir_1_1search_1_1DefaultIWAlgorithmEventHandler.html#a800366b0ec46267864b492dbb0db0312',1,'mimir::search::DefaultIWAlgorithmEventHandler']]]
+  ['problembuilder_0',['ProblemBuilder',['../classmimir_1_1formalism_1_1ProblemImpl.html#a5759a7fc69a6359840f669cfd6b504fb',1,'mimir::formalism::ProblemImpl']]]
 ];

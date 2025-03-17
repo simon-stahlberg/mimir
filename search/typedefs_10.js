@@ -13,10 +13,10 @@ var searchData=
   ['tuplegraphlist_10',['TupleGraphList',['../namespacemimir_1_1datasets.html#a238c1c5752f27beb58ebbeb4912165ca',1,'mimir::datasets']]],
   ['tuplegraphvertex_11',['TupleGraphVertex',['../namespacemimir_1_1graphs.html#a2db250211f1c44372faeec52f5d0ffd4',1,'mimir::graphs']]],
   ['tuplegraphvertexlist_12',['TupleGraphVertexList',['../namespacemimir_1_1graphs.html#a78aaf762d44ebe5f609efd50b800dd95',1,'mimir::graphs']]],
-  ['tupleindex_13',['TupleIndex',['../namespacemimir_1_1search.html#a660175eabf74d01e070813c42c26dca0',1,'mimir::search']]],
-  ['tupleindexlist_14',['TupleIndexList',['../namespacemimir_1_1search.html#a10e7bb54ac7371f1297ed02a81e73c4a',1,'mimir::search']]],
-  ['tupleindexmapperlist_15',['TupleIndexMapperList',['../namespacemimir_1_1search.html#aaaf19ed2bdda46289c5018e01aadda1b',1,'mimir::search']]],
-  ['tupleindexset_16',['TupleIndexSet',['../namespacemimir_1_1search.html#a53ec206b7eea88a5f83085e77bb60980',1,'mimir::search']]],
+  ['tupleindex_13',['TupleIndex',['../namespacemimir_1_1search_1_1iw.html#a172ed9e552b26251f2bfadea54f8fc8c',1,'mimir::search::iw']]],
+  ['tupleindexlist_14',['TupleIndexList',['../namespacemimir_1_1search_1_1iw.html#a8bd60ed942274143509cad0cefc1eb1f',1,'mimir::search::iw']]],
+  ['tupleindexmapperlist_15',['TupleIndexMapperList',['../namespacemimir_1_1search_1_1iw.html#a1a938ab8134a48882f47a9eee361b600',1,'mimir::search::iw']]],
+  ['tupleindexset_16',['TupleIndexSet',['../namespacemimir_1_1search_1_1iw.html#a111578df00f00f630c5c7f7e4301d374',1,'mimir::search::iw']]],
   ['type_17',['type',['../structmimir_1_1graphs_1_1InverseDirection_3_01Backward_01_4.html#a30409ba7ad1cbe4c56f7c4d35a0fb107',1,'mimir::graphs::InverseDirection&lt; Backward &gt;::type()'],['../structmimir_1_1graphs_1_1InverseDirection_3_01Forward_01_4.html#a5a80d6d64875b7bdd12877d96bed98dc',1,'mimir::graphs::InverseDirection&lt; Forward &gt;::type()']]],
   ['type_18',['Type',['../classmimir_1_1formalism_1_1PredicateImpl.html#afc5cfca38c4ea62504136d9e6ecde2d8',1,'mimir::formalism::PredicateImpl::Type()'],['../classmimir_1_1formalism_1_1LiteralImpl.html#ad1a98ff8e6798d26c1242f45b20aacdd',1,'mimir::formalism::LiteralImpl::Type()'],['../classmimir_1_1formalism_1_1GroundLiteralImpl.html#a99b3fa7a0a30e267ea0337cf00bd1ca4',1,'mimir::formalism::GroundLiteralImpl::Type()'],['../classmimir_1_1formalism_1_1GroundFunctionImpl.html#a32c9bcab07a837fc3846c2d474cbeeae',1,'mimir::formalism::GroundFunctionImpl::Type()'],['../classmimir_1_1formalism_1_1GroundFunctionValueImpl.html#aad276b04532093057c5d0749c7659c49',1,'mimir::formalism::GroundFunctionValueImpl::Type()'],['../classmimir_1_1formalism_1_1GroundAtomImpl.html#a754716e073484577183f040a299ad9eb',1,'mimir::formalism::GroundAtomImpl::Type()'],['../classmimir_1_1formalism_1_1FunctionSkeletonImpl.html#a1abdf88dc9cb217fa0ccdb4473024782',1,'mimir::formalism::FunctionSkeletonImpl::Type()']]]
 ];

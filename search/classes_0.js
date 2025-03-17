@@ -2,8 +2,8 @@ var searchData=
 [
   ['actionimpl_0',['ActionImpl',['../classmimir_1_1formalism_1_1ActionImpl.html',1,'mimir::formalism']]],
   ['actionsatisficingbindinggenerator_1',['ActionSatisficingBindingGenerator',['../classmimir_1_1search_1_1ActionSatisficingBindingGenerator.html',1,'mimir::search']]],
-  ['arityknoveltypruning_2',['ArityKNoveltyPruning',['../classmimir_1_1search_1_1ArityKNoveltyPruning.html',1,'mimir::search']]],
-  ['arityzeronoveltypruning_3',['ArityZeroNoveltyPruning',['../classmimir_1_1search_1_1ArityZeroNoveltyPruning.html',1,'mimir::search']]],
+  ['arityknoveltypruning_2',['ArityKNoveltyPruning',['../classmimir_1_1search_1_1iw_1_1ArityKNoveltyPruning.html',1,'mimir::search::iw']]],
+  ['arityzeronoveltypruning_3',['ArityZeroNoveltyPruning',['../classmimir_1_1search_1_1iw_1_1ArityZeroNoveltyPruning.html',1,'mimir::search::iw']]],
   ['assignmentset_4',['AssignmentSet',['../classmimir_1_1formalism_1_1AssignmentSet.html',1,'mimir::formalism']]],
   ['assignmentset_3c_20mimir_3a_3aformalism_3a_3aderived_20_3e_5',['AssignmentSet&lt; mimir::formalism::Derived &gt;',['../classmimir_1_1formalism_1_1AssignmentSet.html',1,'mimir::formalism']]],
   ['assignmentset_3c_20mimir_3a_3aformalism_3a_3afluent_20_3e_6',['AssignmentSet&lt; mimir::formalism::Fluent &gt;',['../classmimir_1_1formalism_1_1AssignmentSet.html',1,'mimir::formalism']]],
