@@ -18,9 +18,54 @@
 #ifndef MIMIR_LANGUAGES_GENERAL_POLICIES_DECLARATIONS_HPP_
 #define MIMIR_LANGUAGES_GENERAL_POLICIES_DECLARATIONS_HPP_
 
+#include "mimir/languages/description_logics/declarations.hpp"
+
 namespace mimir::languages::general_policies
 {
+class IVisitor;
 
+class Repositories;
+
+template<dl::FeatureCategory D>
+class NamedFeatureImpl;
+template<dl::FeatureCategory D>
+using NamedFeature = const NamedFeatureImpl<D>*;
+
+class ICondition;
+using Condition = const ICondition*;
+using ConditionList = std::vector<Condition>;
+
+class PositiveBooleanConditionImpl;
+using PositiveBooleanCondition = const PositiveBooleanConditionImpl*;
+class NegativeBooleanConditionImpl;
+using NegativeBooleanCondition = const NegativeBooleanConditionImpl*;
+class GreaterNumericalConditionImpl;
+using GreaterNumericalCondition = const GreaterNumericalConditionImpl*;
+class EqualNumericalConditionImpl;
+using EqualNumericalCondition = const EqualNumericalConditionImpl*;
+
+class IEffect;
+using Effect = const IEffect*;
+using EffectList = std::vector<Effect>;
+
+class PositiveBooleanEffectImpl;
+using PositiveBooleanEffect = const PositiveBooleanEffectImpl*;
+class NegativeBooleanEffectImpl;
+using NegativeBooleanEffect = const NegativeBooleanEffectImpl*;
+class UnchangedBooleanEffectImpl;
+using UnchangedBooleanEffect = const UnchangedBooleanEffectImpl*;
+class IncreaseNumericalEffectImpl;
+using IncreaseNumericalEffect = const IncreaseNumericalEffectImpl*;
+class DecreaseNumericalEffectImpl;
+using DecreaseNumericalEffect = const DecreaseNumericalEffectImpl*;
+class UnchangedNumericalEffectImpl;
+using UnchangedNumericalEffect = const UnchangedNumericalEffectImpl*;
+
+class RuleImpl;
+using Rule = const RuleImpl*;
+using RuleList = std::vector<Rule>;
+
+class GeneralPolicy;
 }
 
 #endif

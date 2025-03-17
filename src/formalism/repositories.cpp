@@ -39,9 +39,9 @@ static GroundLiteralList<P> ground_nullary_literals(const LiteralList<P>& litera
     return ground_literals;
 }
 
-HanaPDDLRepositories& PDDLRepositories::get_hana_repositories() { return m_repositories; }
+HanaRepositories& PDDLRepositories::get_hana_repositories() { return m_repositories; }
 
-const HanaPDDLRepositories& PDDLRepositories::get_hana_repositories() const { return m_repositories; }
+const HanaRepositories& PDDLRepositories::get_hana_repositories() const { return m_repositories; }
 
 Requirements PDDLRepositories::get_or_create_requirements(loki::RequirementEnumSet requirement_set)
 {

@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_COMMON_FACTORIES_HPP_
-#define MIMIR_COMMON_FACTORIES_HPP_
+#ifndef MIMIR_FORMALISM_REPOSITORIES_HPP_
+#define MIMIR_FORMALISM_REPOSITORIES_HPP_
 
 #include "mimir/formalism/action.hpp"
 #include "mimir/formalism/atom.hpp"
@@ -103,7 +103,7 @@ using ActionRepository = SegmentedPDDLRepository<ActionImpl>;
 using AxiomRepository = SegmentedPDDLRepository<AxiomImpl>;
 using OptimizationMetricRepository = SegmentedPDDLRepository<OptimizationMetricImpl>;
 
-using HanaPDDLRepositories = boost::hana::map<
+using HanaRepositories = boost::hana::map<
     boost::hana::pair<boost::hana::type<RequirementsImpl>, RequirementsRepository>,
     boost::hana::pair<boost::hana::type<VariableImpl>, VariableRepository>,
     boost::hana::pair<boost::hana::type<TermImpl>, TermRepository>,
@@ -168,7 +168,7 @@ using HanaPDDLRepositories = boost::hana::map<
 class PDDLRepositories
 {
 private:
-    HanaPDDLRepositories m_repositories;
+    HanaRepositories m_repositories;
 
 public:
     PDDLRepositories() = default;
@@ -179,8 +179,8 @@ public:
     PDDLRepositories(PDDLRepositories&& other) = default;
     PDDLRepositories& operator=(PDDLRepositories&& other) = default;
 
-    HanaPDDLRepositories& get_hana_repositories();
-    const HanaPDDLRepositories& get_hana_repositories() const;
+    HanaRepositories& get_hana_repositories();
+    const HanaRepositories& get_hana_repositories() const;
 
     ///////////////////////////////////////////////////////////////////////////
     /// Modifiers
