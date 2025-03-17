@@ -32,6 +32,10 @@ public:
     virtual Index get_index() const = 0;
 
     virtual bool evaluate(dl::EvaluationContext& source_context) const = 0;
+
+    /// @brief Accept a `IVisitor`.
+    /// @param visitor the `IVisitor`.
+    virtual void accept(IVisitor& visitor) const = 0;
 };
 
 }

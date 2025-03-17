@@ -39,6 +39,10 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
+    /// @brief Accept a `IVisitor`.
+    /// @param visitor the `IVisitor`.
+    void accept(IVisitor& visitor) const;
+
     /// @brief Get the index of the `NamedFeatureImpl`.
     /// @return the index of the `NamedFeatureImpl`.
     Index get_index() const;

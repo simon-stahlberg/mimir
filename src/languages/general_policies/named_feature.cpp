@@ -17,11 +17,19 @@
 
 #include "mimir/languages/general_policies/named_feature.hpp"
 
+#include "mimir/languages/general_policies/visitor_interface.hpp"
+
 namespace mimir::languages::general_policies
 {
 template<dl::FeatureCategory D>
 NamedFeatureImpl<D>::NamedFeatureImpl(Index index, std::string name, dl::Constructor<D> feature) : m_index(index), m_name(std::move(name)), m_feature(feature)
 {
+}
+
+template<dl::FeatureCategory D>
+void NamedFeatureImpl<D>::accept(IVisitor& visitor) const
+{
+    visitor.visit(this);
 }
 
 template<dl::FeatureCategory D>

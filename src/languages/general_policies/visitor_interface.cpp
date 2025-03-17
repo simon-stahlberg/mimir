@@ -15,29 +15,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_LANGUAGES_GENERAL_POLICIES_EFFECT_INTERFACE_HPP_
-#define MIMIR_LANGUAGES_GENERAL_POLICIES_EFFECT_INTERFACE_HPP_
-
-#include "mimir/languages/general_policies/declarations.hpp"
+#include "mimir/languages/general_policies/visitor_interface.hpp"
 
 namespace mimir::languages::general_policies
 {
-/// @brief `IEffect` represents a Boolean feature effect.
-class IEffect
-{
-protected:
-public:
-    virtual ~IEffect() = default;
 
-    virtual Index get_index() const = 0;
+IVisitor::IVisitor(dl::IVisitor& constructor_visitor) : m_constructor_visitor(constructor_visitor) {}
 
-    virtual bool evaluate(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const = 0;
-
-    /// @brief Accept a `IVisitor`.
-    /// @param visitor the `IVisitor`.
-    virtual void accept(IVisitor& visitor) const = 0;
-};
+dl::IVisitor& IVisitor::get_constructor_visitor() { return m_constructor_visitor; }
 
 }
-
-#endif

@@ -37,6 +37,8 @@ private:
 public:
     bool evaluate(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const;
 
+    void accept(IVisitor& visitor) const;
+
     Index get_index() const;
     const ConditionList& get_conditions() const;
     const EffectList& get_effects() const;

@@ -19,6 +19,7 @@
 
 #include "mimir/languages/description_logics/constructors.hpp"
 #include "mimir/languages/general_policies/named_feature.hpp"
+#include "mimir/languages/general_policies/visitor_interface.hpp"
 
 namespace mimir::languages::general_policies
 {
@@ -29,12 +30,16 @@ bool PositiveBooleanConditionImpl::evaluate_impl(dl::EvaluationContext& source_c
     return this->m_feature->get_feature()->evaluate(source_context)->get_data();
 }
 
+void PositiveBooleanConditionImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
+
 NegativeBooleanConditionImpl::NegativeBooleanConditionImpl(Index index, NamedFeature<dl::Boolean> feature) : ConditionBase(index, feature) {}
 
 bool NegativeBooleanConditionImpl::evaluate_impl(dl::EvaluationContext& source_context) const
 {
     return !this->m_feature->get_feature()->evaluate(source_context)->get_data();
 }
+
+void NegativeBooleanConditionImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
 GreaterNumericalConditionImpl::GreaterNumericalConditionImpl(Index index, NamedFeature<dl::Numerical> feature) : ConditionBase(index, feature) {}
 
@@ -43,11 +48,15 @@ bool GreaterNumericalConditionImpl::evaluate_impl(dl::EvaluationContext& source_
     return this->m_feature->get_feature()->evaluate(source_context)->get_data() > 0;
 }
 
+void GreaterNumericalConditionImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
+
 EqualNumericalConditionImpl::EqualNumericalConditionImpl(Index index, NamedFeature<dl::Numerical> feature) : ConditionBase(index, feature) {}
 
 bool EqualNumericalConditionImpl::evaluate_impl(dl::EvaluationContext& source_context) const
 {
     return this->m_feature->get_feature()->evaluate(source_context)->get_data() == 0;
 }
+
+void EqualNumericalConditionImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
 }

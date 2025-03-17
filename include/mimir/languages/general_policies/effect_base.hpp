@@ -50,6 +50,8 @@ public:
         return self().evaluate_impl(source_context, target_context);
     }
 
+    void accept(IVisitor& visitor) const override { self().accept_impl(visitor); };
+
     auto identifying_members() const { return std::tuple(get_feature()); }
 };
 }

@@ -19,6 +19,7 @@
 
 #include "mimir/languages/general_policies/conditions.hpp"
 #include "mimir/languages/general_policies/effects.hpp"
+#include "mimir/languages/general_policies/visitor_interface.hpp"
 
 namespace mimir::languages::general_policies
 {
@@ -35,6 +36,8 @@ bool RuleImpl::evaluate(dl::EvaluationContext& source_context, dl::EvaluationCon
     return std::all_of(get_conditions().begin(), get_conditions().end(), [&](auto&& arg) { return arg->evaluate(source_context); })
            && std::all_of(get_effects().begin(), get_effects().end(), [&](auto&& arg) { return arg->evaluate(source_context, target_context); });
 }
+
+void RuleImpl::accept(IVisitor& visitor) const { visitor.visit(this); }
 
 Index RuleImpl::get_index() const { return m_index; }
 

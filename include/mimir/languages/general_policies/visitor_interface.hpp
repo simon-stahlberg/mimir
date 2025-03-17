@@ -15,18 +15,47 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_LANGUAGES_GENERAL_POLICIES_NAMED_FEATURE_HPP_
-#define MIMIR_LANGUAGES_GENERAL_POLICIES_NAMED_FEATURE_HPP_
+#ifndef MIMIR_LANGUAGES_GENERAL_POLICIES_VISITOR_INTERFACE_HPP_
+#define MIMIR_LANGUAGES_GENERAL_POLICIES_VISITOR_INTERFACE_HPP_
 
-#include "mimir/languages/description_logics/declarations.hpp"
+#include "mimir/languages/description_logics/constructor_visitor_interface.hpp"
+#include "mimir/languages/general_policies/declarations.hpp"
 
 namespace mimir::languages::general_policies
 {
 
 class IVisitor
 {
+protected:
+    dl::IVisitor& m_constructor_visitor;
+
 public:
+    explicit IVisitor(dl::IVisitor& constructor_visitor);
+
     virtual ~IVisitor() = default;
+
+    virtual void visit(PositiveBooleanCondition effect) = 0;
+    virtual void visit(NegativeBooleanCondition effect) = 0;
+    virtual void visit(GreaterNumericalCondition effect) = 0;
+    virtual void visit(EqualNumericalCondition effect) = 0;
+
+    virtual void visit(PositiveBooleanEffect effect) = 0;
+    virtual void visit(NegativeBooleanEffect effect) = 0;
+    virtual void visit(UnchangedBooleanEffect effect) = 0;
+    virtual void visit(IncreaseNumericalEffect effect) = 0;
+    virtual void visit(DecreaseNumericalEffect effect) = 0;
+    virtual void visit(UnchangedNumericalEffect effect) = 0;
+
+    virtual void visit(NamedFeature<dl::Concept> feature) = 0;
+    virtual void visit(NamedFeature<dl::Role> feature) = 0;
+    virtual void visit(NamedFeature<dl::Boolean> feature) = 0;
+    virtual void visit(NamedFeature<dl::Numerical> feature) = 0;
+
+    virtual void visit(Rule rule) = 0;
+
+    virtual void visit(const GeneralPolicy& policy) = 0;
+
+    dl::IVisitor& get_constructor_visitor();
 };
 }
 

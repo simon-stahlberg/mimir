@@ -40,6 +40,10 @@ public:
     /// @return true if the state pair (transition) is compatible with a `Rule` in the `GeneralPolicy`.
     bool evaluate(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const;
 
+    /// @brief Accept a `IVisitor`.
+    /// @param visitor the `IVisitor`.
+    void accept(IVisitor& visitor);
+
     /// @brief Return true if and only if the `GeneralPolicy` is structurally terminating.
     /// @return true if the `GeneralPolicy` is structurally terminating, and false otherwise.
     bool is_terminating() const;

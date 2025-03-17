@@ -34,6 +34,8 @@ private:
 
     bool evaluate_impl(dl::EvaluationContext& source_context) const;
 
+    void accept_impl(IVisitor& visitor) const;
+
     friend class ConditionBase<PositiveBooleanConditionImpl, dl::Boolean>;
 };
 
@@ -46,6 +48,8 @@ private:
     friend class loki::SegmentedRepository;
 
     bool evaluate_impl(dl::EvaluationContext& source_context) const;
+
+    void accept_impl(IVisitor& visitor) const;
 
     friend class ConditionBase<NegativeBooleanConditionImpl, dl::Boolean>;
 };
@@ -60,6 +64,8 @@ private:
 
     bool evaluate_impl(dl::EvaluationContext& source_context) const;
 
+    void accept_impl(IVisitor& visitor) const;
+
     friend class ConditionBase<GreaterNumericalConditionImpl, dl::Numerical>;
 };
 
@@ -72,6 +78,8 @@ private:
     friend class loki::SegmentedRepository;
 
     bool evaluate_impl(dl::EvaluationContext& source_context) const;
+
+    void accept_impl(IVisitor& visitor) const;
 
     friend class ConditionBase<EqualNumericalConditionImpl, dl::Numerical>;
 };

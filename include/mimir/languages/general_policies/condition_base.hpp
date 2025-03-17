@@ -47,6 +47,8 @@ public:
 
     bool evaluate(dl::EvaluationContext& source_context) const override { return self().evaluate_impl(source_context); }
 
+    void accept(IVisitor& visitor) const override { self().accept_impl(visitor); };
+
     auto identifying_members() const { return std::tuple(get_feature()); }
 };
 }

@@ -18,6 +18,7 @@
 #include "mimir/languages/general_policies/general_policy.hpp"
 
 #include "mimir/languages/general_policies/rule.hpp"
+#include "mimir/languages/general_policies/visitor_interface.hpp"
 
 namespace mimir::languages::general_policies
 {
@@ -28,6 +29,8 @@ bool GeneralPolicy::evaluate(dl::EvaluationContext& source_context, dl::Evaluati
 {
     return std::any_of(get_rules().begin(), get_rules().end(), [&](auto&& arg) { return arg->evaluate(source_context, target_context); });
 }
+
+void GeneralPolicy::accept(IVisitor& visitor) { visitor.visit(*this); }
 
 bool GeneralPolicy::is_terminating() const { throw std::runtime_error("Not implemented"); }
 

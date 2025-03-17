@@ -33,6 +33,8 @@ private:
 
     bool evaluate_impl(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const;
 
+    void accept_impl(IVisitor& visitor) const;
+
     friend class EffectBase<PositiveBooleanEffectImpl, dl::Boolean>;
 };
 
@@ -45,6 +47,8 @@ private:
     friend class loki::SegmentedRepository;
 
     bool evaluate_impl(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const;
+
+    void accept_impl(IVisitor& visitor) const;
 
     friend class EffectBase<NegativeBooleanEffectImpl, dl::Boolean>;
 };
@@ -59,6 +63,8 @@ private:
 
     bool evaluate_impl(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const;
 
+    void accept_impl(IVisitor& visitor) const;
+
     friend class EffectBase<UnchangedBooleanEffectImpl, dl::Boolean>;
 };
 
@@ -71,6 +77,8 @@ private:
     friend class loki::SegmentedRepository;
 
     bool evaluate_impl(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const;
+
+    void accept_impl(IVisitor& visitor) const;
 
     friend class EffectBase<IncreaseNumericalEffectImpl, dl::Numerical>;
 };
@@ -85,6 +93,8 @@ private:
 
     bool evaluate_impl(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const;
 
+    void accept_impl(IVisitor& visitor) const;
+
     friend class EffectBase<DecreaseNumericalEffectImpl, dl::Numerical>;
 };
 
@@ -97,6 +107,8 @@ private:
     friend class loki::SegmentedRepository;
 
     bool evaluate_impl(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const;
+
+    void accept_impl(IVisitor& visitor) const;
 
     friend class EffectBase<UnchangedNumericalEffectImpl, dl::Numerical>;
 };

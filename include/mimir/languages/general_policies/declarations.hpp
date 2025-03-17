@@ -23,8 +23,6 @@
 
 namespace mimir::languages::general_policies
 {
-class IVisitor;
-
 class Repositories;
 
 template<dl::FeatureCategory D>
@@ -67,6 +65,9 @@ using Rule = const RuleImpl*;
 using RuleList = std::vector<Rule>;
 
 class GeneralPolicy;
+
+class IVisitor;
+
 }
 
 #endif
