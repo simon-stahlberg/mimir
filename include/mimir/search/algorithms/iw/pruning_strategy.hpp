@@ -26,7 +26,7 @@
 #include <memory>
 #include <unordered_set>
 
-namespace mimir::search
+namespace mimir::search::iw
 {
 class ArityZeroNoveltyPruning : public IPruningStrategy
 {

@@ -44,7 +44,7 @@ private:
     LiftedAxiomEvaluatorEventHandler m_axiom_evaluator_event_handler;
     std::shared_ptr<LiftedAxiomEvaluator> m_axiom_evaluator;
     StateRepository m_state_repository;
-    BrFSAlgorithmEventHandler m_brfs_event_handler;
+    brfs::EventHandler m_brfs_event_handler;
     SearchContext m_search_context;
 
 public:
@@ -55,14 +55,14 @@ public:
         m_axiom_evaluator_event_handler(std::make_shared<DefaultLiftedAxiomEvaluatorEventHandler>()),
         m_axiom_evaluator(std::make_shared<LiftedAxiomEvaluator>(m_problem, m_axiom_evaluator_event_handler)),
         m_state_repository(std::make_shared<StateRepositoryImpl>(m_axiom_evaluator)),
-        m_brfs_event_handler(std::make_shared<DefaultBrFSAlgorithmEventHandler>(m_problem)),
+        m_brfs_event_handler(std::make_shared<brfs::DefaultEventHandler>(m_problem)),
         m_search_context(m_problem, m_applicable_action_generator, m_state_repository)
     {
     }
 
-    SearchResult find_solution() { return find_solution_brfs(m_search_context, nullptr, m_brfs_event_handler); }
+    SearchResult find_solution() { return brfs::find_solution(m_search_context, nullptr, m_brfs_event_handler); }
 
-    const BrFSAlgorithmStatistics& get_algorithm_statistics() const { return m_brfs_event_handler->get_statistics(); }
+    const brfs::Statistics& get_algorithm_statistics() const { return m_brfs_event_handler->get_statistics(); }
 
     const LiftedApplicableActionGeneratorStatistics& get_applicable_action_generator_statistics() const
     {
@@ -83,7 +83,7 @@ private:
     GroundedAxiomEvaluatorEventHandler m_axiom_evaluator_event_handler;
     std::shared_ptr<GroundedAxiomEvaluator> m_axiom_evaluator;
     StateRepository m_state_repository;
-    BrFSAlgorithmEventHandler m_brfs_event_handler;
+    brfs::EventHandler m_brfs_event_handler;
     SearchContext m_search_context;
 
 public:
@@ -97,14 +97,14 @@ public:
         m_axiom_evaluator_event_handler(std::make_shared<DefaultGroundedAxiomEvaluatorEventHandler>()),
         m_axiom_evaluator(m_delete_relaxed_problem_explorator.create_grounded_axiom_evaluator(match_tree::Options(), m_axiom_evaluator_event_handler)),
         m_state_repository(std::make_shared<StateRepositoryImpl>(m_axiom_evaluator)),
-        m_brfs_event_handler(std::make_shared<DefaultBrFSAlgorithmEventHandler>(m_problem)),
+        m_brfs_event_handler(std::make_shared<brfs::DefaultEventHandler>(m_problem)),
         m_search_context(m_problem, m_applicable_action_generator, m_state_repository)
     {
     }
 
-    SearchResult find_solution() { return find_solution_brfs(m_search_context, nullptr, m_brfs_event_handler); }
+    SearchResult find_solution() { return brfs::find_solution(m_search_context, nullptr, m_brfs_event_handler); }
 
-    const BrFSAlgorithmStatistics& get_algorithm_statistics() const { return m_brfs_event_handler->get_statistics(); }
+    const brfs::Statistics& get_algorithm_statistics() const { return m_brfs_event_handler->get_statistics(); }
 
     const GroundedApplicableActionGeneratorStatistics& get_applicable_action_generator_statistics() const
     {

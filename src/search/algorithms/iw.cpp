@@ -40,7 +40,7 @@
 
 using namespace mimir::formalism;
 
-namespace mimir::search
+namespace mimir::search::iw
 {
 
 /**
@@ -917,12 +917,12 @@ bool ArityKNoveltyPruning::test_prune_successor_state(const State state, const S
 
 /* IterativeWidthAlgorithm */
 
-SearchResult find_solution_iw(const SearchContext& context,
-                              State start_state_,
-                              size_t max_arity_,
-                              IWAlgorithmEventHandler iw_event_handler_,
-                              BrFSAlgorithmEventHandler brfs_event_handler_,
-                              GoalStrategy goal_strategy_)
+SearchResult find_solution(const SearchContext& context,
+                           State start_state_,
+                           size_t max_arity_,
+                           EventHandler iw_event_handler_,
+                           brfs::EventHandler brfs_event_handler_,
+                           GoalStrategy goal_strategy_)
 {
     const auto& problem = *context.get_problem();
     auto& applicable_action_generator = *context.get_applicable_action_generator();
@@ -930,8 +930,8 @@ SearchResult find_solution_iw(const SearchContext& context,
 
     const auto max_arity = max_arity_;
     const auto start_state = (start_state_) ? start_state_ : state_repository.get_or_create_initial_state();
-    const auto iw_event_handler = (iw_event_handler_) ? iw_event_handler_ : std::make_shared<DefaultIWAlgorithmEventHandler>(context.get_problem());
-    const auto brfs_event_handler = (brfs_event_handler_) ? brfs_event_handler_ : std::make_shared<DefaultBrFSAlgorithmEventHandler>(context.get_problem());
+    const auto iw_event_handler = (iw_event_handler_) ? iw_event_handler_ : std::make_shared<DefaultEventHandler>(context.get_problem());
+    const auto brfs_event_handler = (brfs_event_handler_) ? brfs_event_handler_ : std::make_shared<brfs::DefaultEventHandler>(context.get_problem());
     const auto goal_strategy = (goal_strategy_) ? goal_strategy_ : std::make_shared<ProblemGoal>(context.get_problem());
 
     if (max_arity >= MAX_ARITY)
@@ -949,12 +949,8 @@ SearchResult find_solution_iw(const SearchContext& context,
 
         const auto result =
             (cur_arity > 0) ?
-                find_solution_brfs(context,
-                                   start_state,
-                                   brfs_event_handler,
-                                   goal_strategy,
-                                   std::make_shared<ArityKNoveltyPruning>(cur_arity, INITIAL_TABLE_ATOMS)) :
-                find_solution_brfs(context, start_state, brfs_event_handler, goal_strategy, std::make_shared<ArityZeroNoveltyPruning>(start_state));
+                find_solution(context, start_state, brfs_event_handler, goal_strategy, std::make_shared<ArityKNoveltyPruning>(cur_arity, INITIAL_TABLE_ATOMS)) :
+                find_solution(context, start_state, brfs_event_handler, goal_strategy, std::make_shared<ArityZeroNoveltyPruning>(start_state));
 
         iw_event_handler->on_end_arity_search(brfs_event_handler->get_statistics());
 

@@ -442,25 +442,27 @@ void bind_search(nb::module_& m)
           nb::arg("pruning_strategy") = nullptr);
 
     // BrFS
-    nb::class_<BrFSAlgorithmStatistics>(m, "BrFSAlgorithmStatistics")  //
-        .def("get_num_generated", &BrFSAlgorithmStatistics::get_num_generated)
-        .def("get_num_expanded", &BrFSAlgorithmStatistics::get_num_expanded)
-        .def("get_num_deadends", &BrFSAlgorithmStatistics::get_num_deadends)
-        .def("get_num_pruned", &BrFSAlgorithmStatistics::get_num_pruned)
-        .def("get_num_generated_until_g_value", &BrFSAlgorithmStatistics::get_num_generated_until_g_value)
-        .def("get_num_expanded_until_g_value", &BrFSAlgorithmStatistics::get_num_expanded_until_g_value)
-        .def("get_num_deadends_until_g_value", &BrFSAlgorithmStatistics::get_num_deadends_until_g_value)
-        .def("get_num_pruned_until_g_value", &BrFSAlgorithmStatistics::get_num_pruned_until_g_value);
-    nb::class_<IBrFSAlgorithmEventHandler>(m, "IBrFSAlgorithmEventHandler").def("get_statistics", &IBrFSAlgorithmEventHandler::get_statistics);
-    nb::class_<DefaultBrFSAlgorithmEventHandler, IBrFSAlgorithmEventHandler>(m,
-                                                                             "DefaultBrFSAlgorithmEventHandler")  //
+    nb::class_<brfs::Statistics>(m, "BrFSStatistics")  //
+        .def("get_num_generated", &brfs::Statistics::get_num_generated)
+        .def("get_num_expanded", &brfs::Statistics::get_num_expanded)
+        .def("get_num_deadends", &brfs::Statistics::get_num_deadends)
+        .def("get_num_pruned", &brfs::Statistics::get_num_pruned)
+        .def("get_num_generated_until_g_value", &brfs::Statistics::get_num_generated_until_g_value)
+        .def("get_num_expanded_until_g_value", &brfs::Statistics::get_num_expanded_until_g_value)
+        .def("get_num_deadends_until_g_value", &brfs::Statistics::get_num_deadends_until_g_value)
+        .def("get_num_pruned_until_g_value", &brfs::Statistics::get_num_pruned_until_g_value);
+
+    nb::class_<brfs::IEventHandler>(m, "IBrFSEventHandler")  //
+        .def("get_statistics", &brfs::IEventHandler::get_statistics);
+    nb::class_<brfs::DefaultEventHandler, brfs::IEventHandler>(m,
+                                                               "DefaultBrFSEventHandler")  //
         .def(nb::init<Problem, bool>(), nb::arg("problem"), nb::arg("quiet") = true);
-    nb::class_<DebugBrFSAlgorithmEventHandler, IBrFSAlgorithmEventHandler>(m,
-                                                                           "DebugBrFSAlgorithmEventHandler")  //
+    nb::class_<brfs::DebugEventHandler, brfs::IEventHandler>(m,
+                                                             "DebugBrFSEventHandler")  //
         .def(nb::init<Problem, bool>(), nb::arg("problem"), nb::arg("quiet") = true);
 
     m.def("find_solution_brfs",
-          &find_solution_brfs,
+          &brfs::find_solution,
           nb::arg("search_context"),
           nb::arg("start_state") = nullptr,
           nb::arg("brfs_event_handler") = nullptr,
@@ -469,33 +471,36 @@ void bind_search(nb::module_& m)
           nb::arg("exhaustive") = false);
 
     // IW
-    nb::class_<TupleIndexMapper>(m, "TupleIndexMapper")  //
-        .def("to_tuple_index", &TupleIndexMapper::to_tuple_index, nb::arg("atom_indices"))
+    nb::class_<iw::TupleIndexMapper>(m, "TupleIndexMapper")  //
+        .def("to_tuple_index", &iw::TupleIndexMapper::to_tuple_index, nb::arg("atom_indices"))
         .def(
             "to_atom_indices",
-            [](const TupleIndexMapper& self, const TupleIndex tuple_index)
+            [](const iw::TupleIndexMapper& self, const iw::TupleIndex tuple_index)
             {
-                auto atom_indices = AtomIndexList {};
+                auto atom_indices = iw::AtomIndexList {};
                 self.to_atom_indices(tuple_index, atom_indices);
                 return atom_indices;
             },
             nb::arg("tuple_index"))
-        .def("tuple_index_to_string", &TupleIndexMapper::tuple_index_to_string, nb::arg("tuple_index"))
-        .def("get_num_atoms", &TupleIndexMapper::get_num_atoms)
-        .def("get_arity", &TupleIndexMapper::get_arity)
-        .def("get_factors", &TupleIndexMapper::get_factors, nb::rv_policy::reference_internal)
-        .def("get_max_tuple_index", &TupleIndexMapper::get_max_tuple_index)
-        .def("get_empty_tuple_index", &TupleIndexMapper::get_empty_tuple_index);
+        .def("tuple_index_to_string", &iw::TupleIndexMapper::tuple_index_to_string, nb::arg("tuple_index"))
+        .def("get_num_atoms", &iw::TupleIndexMapper::get_num_atoms)
+        .def("get_arity", &iw::TupleIndexMapper::get_arity)
+        .def("get_factors", &iw::TupleIndexMapper::get_factors, nb::rv_policy::reference_internal)
+        .def("get_max_tuple_index", &iw::TupleIndexMapper::get_max_tuple_index)
+        .def("get_empty_tuple_index", &iw::TupleIndexMapper::get_empty_tuple_index);
 
-    nb::class_<IWAlgorithmStatistics>(m, "IWAlgorithmStatistics")  //
-        .def("get_effective_width", &IWAlgorithmStatistics::get_effective_width)
-        .def("get_brfs_statistics_by_arity", &IWAlgorithmStatistics::get_brfs_statistics_by_arity);
-    nb::class_<IIWAlgorithmEventHandler>(m, "IIWAlgorithmEventHandler").def("get_statistics", &IIWAlgorithmEventHandler::get_statistics);
-    nb::class_<DefaultIWAlgorithmEventHandler, IIWAlgorithmEventHandler>(m, "DefaultIWAlgorithmEventHandler")
+    nb::class_<iw::Statistics>(m, "IWStatistics")  //
+        .def("get_effective_width", &iw::Statistics::get_effective_width)
+        .def("get_brfs_statistics_by_arity", &iw::Statistics::get_brfs_statistics_by_arity);
+
+    nb::class_<iw::IEventHandler>(m, "IIWEventHandler")  //
+        .def("get_statistics", &iw::IEventHandler::get_statistics);
+
+    nb::class_<iw::DefaultEventHandler, iw::IEventHandler>(m, "DefaultIWEventHandler")
         .def(nb::init<Problem, bool>(), nb::arg("problem"), nb::arg("quiet") = true);
 
     m.def("find_solution_iw",
-          &find_solution_iw,
+          &iw::find_solution,
           nb::arg("search_context"),
           nb::arg("start_state") = nullptr,
           nb::arg("max_arity") = nullptr,
@@ -504,17 +509,17 @@ void bind_search(nb::module_& m)
           nb::arg("goal_strategy") = nullptr);
 
     // SIW
-    nb::class_<SIWAlgorithmStatistics>(m, "SIWAlgorithmStatistics")  //
-        .def("get_maximum_effective_width", &SIWAlgorithmStatistics::get_maximum_effective_width)
-        .def("get_average_effective_width", &SIWAlgorithmStatistics::get_average_effective_width)
-        .def("get_iw_statistics_by_subproblem", &SIWAlgorithmStatistics::get_iw_statistics_by_subproblem);
-    nb::class_<ISIWAlgorithmEventHandler>(m, "ISIWAlgorithmEventHandler")  //
-        .def("get_statistics", &ISIWAlgorithmEventHandler::get_statistics);
-    nb::class_<DefaultSIWAlgorithmEventHandler, ISIWAlgorithmEventHandler>(m, "DefaultSIWAlgorithmEventHandler")
+    nb::class_<siw::Statistics>(m, "SIWStatistics")  //
+        .def("get_maximum_effective_width", &siw::Statistics::get_maximum_effective_width)
+        .def("get_average_effective_width", &siw::Statistics::get_average_effective_width)
+        .def("get_iw_statistics_by_subproblem", &siw::Statistics::get_iw_statistics_by_subproblem);
+    nb::class_<siw::IEventHandler>(m, "ISIWEventHandler")  //
+        .def("get_statistics", &siw::IEventHandler::get_statistics);
+    nb::class_<siw::DefaultEventHandler, siw::IEventHandler>(m, "DefaultSIWEventHandler")
         .def(nb::init<Problem, bool>(), nb::arg("problem"), nb::arg("quiet") = true);
 
     m.def("find_solution_siw",
-          &find_solution_siw,
+          &siw::find_solution,
           nb::arg("search_context"),
           nb::arg("start_state") = nullptr,
           nb::arg("max_arity") = nullptr,

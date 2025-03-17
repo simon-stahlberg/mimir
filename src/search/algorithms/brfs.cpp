@@ -34,7 +34,7 @@
 
 using namespace mimir::formalism;
 
-namespace mimir::search
+namespace mimir::search::brfs
 {
 
 /**
@@ -67,19 +67,19 @@ get_or_create_search_node(size_t state_index, const BrFSSearchNodeImpl& default_
  * BrFS
  */
 
-SearchResult find_solution_brfs(const SearchContext& context,
-                                State start_state_,
-                                BrFSAlgorithmEventHandler event_handler_,
-                                GoalStrategy goal_strategy_,
-                                PruningStrategy pruning_strategy_,
-                                bool exhaustive)
+SearchResult find_solution(const SearchContext& context,
+                           State start_state_,
+                           EventHandler event_handler_,
+                           GoalStrategy goal_strategy_,
+                           PruningStrategy pruning_strategy_,
+                           bool exhaustive)
 {
     const auto& problem = *context.get_problem();
     auto& applicable_action_generator = *context.get_applicable_action_generator();
     auto& state_repository = *context.get_state_repository();
 
     const auto start_state = (start_state_) ? start_state_ : state_repository.get_or_create_initial_state();
-    const auto event_handler = (event_handler_) ? event_handler_ : std::make_shared<DefaultBrFSAlgorithmEventHandler>(context.get_problem());
+    const auto event_handler = (event_handler_) ? event_handler_ : std::make_shared<DefaultEventHandler>(context.get_problem());
     const auto goal_strategy = (goal_strategy_) ? goal_strategy_ : std::make_shared<ProblemGoal>(context.get_problem());
     const auto pruning_strategy = (pruning_strategy_) ? pruning_strategy_ : std::make_shared<DuplicateStatePruning>();
 

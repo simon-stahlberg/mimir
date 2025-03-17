@@ -20,20 +20,20 @@
 
 #include "mimir/search/algorithms/brfs/event_handlers/interface.hpp"
 
-namespace mimir::search
+namespace mimir::search::brfs
 {
 
 /**
  * Implementation class
  */
-class DefaultBrFSAlgorithmEventHandler : public BrFSAlgorithmEventHandlerBase<DefaultBrFSAlgorithmEventHandler>
+class DefaultEventHandler : public EventHandlerBase<DefaultEventHandler>
 {
 private:
     /* Members */
     mutable long m_start_time_ms;
 
-    /* Implement BrFSAlgorithmEventHandlerBase interface */
-    friend class BrFSAlgorithmEventHandlerBase<DefaultBrFSAlgorithmEventHandler>;
+    /* Implement EventHandlerBase interface */
+    friend class EventHandlerBase<DefaultEventHandler>;
 
     void on_expand_state_impl(State state) const;
 
@@ -68,10 +68,7 @@ private:
     void on_exhausted_impl() const;
 
 public:
-    explicit DefaultBrFSAlgorithmEventHandler(formalism::Problem problem, bool quiet = true) :
-        BrFSAlgorithmEventHandlerBase<DefaultBrFSAlgorithmEventHandler>(problem, quiet)
-    {
-    }
+    explicit DefaultEventHandler(formalism::Problem problem, bool quiet = true) : EventHandlerBase<DefaultEventHandler>(problem, quiet) {}
 };
 
 }

@@ -21,16 +21,16 @@
 #include "mimir/search/algorithms/iw.hpp"
 #include "mimir/search/algorithms/iw/types.hpp"
 
-namespace mimir::search
+namespace mimir::search::siw
 {
 
-extern SearchResult find_solution_siw(const SearchContext& context,
-                                      State start_state = nullptr,
-                                      size_t max_arity = MAX_ARITY - 1,
-                                      SIWAlgorithmEventHandler siw_event_handler = nullptr,
-                                      IWAlgorithmEventHandler iw_event_handler = nullptr,
-                                      BrFSAlgorithmEventHandler brfs_event_handler = nullptr,
-                                      GoalStrategy goal_strategy = nullptr);
+extern SearchResult find_solution(const SearchContext& context,
+                                  State start_state = nullptr,
+                                  size_t max_arity = iw::MAX_ARITY - 1,
+                                  EventHandler siw_event_handler = nullptr,
+                                  iw::EventHandler iw_event_handler = nullptr,
+                                  brfs::EventHandler brfs_event_handler = nullptr,
+                                  GoalStrategy goal_strategy = nullptr);
 }
 
 #endif

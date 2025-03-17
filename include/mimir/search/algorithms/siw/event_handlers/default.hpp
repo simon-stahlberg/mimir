@@ -20,23 +20,23 @@
 
 #include "mimir/search/algorithms/siw/event_handlers/interface.hpp"
 
-namespace mimir::search
+namespace mimir::search::siw
 {
 
 /**
  * Implementation class
  */
-class DefaultSIWAlgorithmEventHandler : public SIWAlgorithmEventHandlerBase<DefaultSIWAlgorithmEventHandler>
+class DefaultEventHandler : public EventHandlerBase<DefaultEventHandler>
 {
 private:
-    /* Implement SIWAlgorithmEventHandlerBase interface */
-    friend class SIWAlgorithmEventHandlerBase<DefaultSIWAlgorithmEventHandler>;
+    /* Implement EventHandlerBase interface */
+    friend class EventHandlerBase<DefaultEventHandler>;
 
     void on_start_search_impl(State initial_state) const;
 
     void on_start_subproblem_search_impl(State initial_state) const;
 
-    void on_end_subproblem_search_impl(const IWAlgorithmStatistics& iw_statistics) const;
+    void on_end_subproblem_search_impl(const iw::Statistics& iw_statistics) const;
 
     void on_end_search_impl() const;
 
@@ -47,7 +47,7 @@ private:
     void on_exhausted_impl() const;
 
 public:
-    explicit DefaultSIWAlgorithmEventHandler(formalism::Problem problem, bool quiet = true);
+    explicit DefaultEventHandler(formalism::Problem problem, bool quiet = true);
 };
 
 }

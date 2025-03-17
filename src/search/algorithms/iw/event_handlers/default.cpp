@@ -23,20 +23,20 @@
 
 using namespace mimir::formalism;
 
-namespace mimir::search
+namespace mimir::search::iw
 {
-void DefaultIWAlgorithmEventHandler::on_start_search_impl(State initial_state) const {}
+void DefaultEventHandler::on_start_search_impl(State initial_state) const {}
 
-void DefaultIWAlgorithmEventHandler::on_start_arity_search_impl(State initial_state, size_t arity) const
+void DefaultEventHandler::on_start_arity_search_impl(State initial_state, size_t arity) const
 {
     std::cout << "[IW] Start search with arity " << arity << std::endl;
 }
 
-void DefaultIWAlgorithmEventHandler::on_end_arity_search_impl(const BrFSAlgorithmStatistics& brfs_statistics) const {}
+void DefaultEventHandler::on_end_arity_search_impl(const brfs::Statistics& brfs_statistics) const {}
 
-void DefaultIWAlgorithmEventHandler::on_end_search_impl() const { std::cout << "[IW] Search ended.\n" << m_statistics << std::endl; }
+void DefaultEventHandler::on_end_search_impl() const { std::cout << "[IW] Search ended.\n" << m_statistics << std::endl; }
 
-void DefaultIWAlgorithmEventHandler::on_solved_impl(const Plan& plan) const
+void DefaultEventHandler::on_solved_impl(const Plan& plan) const
 {
     std::cout << "[IW] Plan found.\n"
               << "[IW] Plan cost: " << plan.get_cost() << "\n"
@@ -49,12 +49,9 @@ void DefaultIWAlgorithmEventHandler::on_solved_impl(const Plan& plan) const
     }
 }
 
-void DefaultIWAlgorithmEventHandler::on_unsolvable_impl() const { std::cout << "[IW] Unsolvable!" << std::endl; }
+void DefaultEventHandler::on_unsolvable_impl() const { std::cout << "[IW] Unsolvable!" << std::endl; }
 
-void DefaultIWAlgorithmEventHandler::on_exhausted_impl() const { std::cout << "[IW] Exhausted!" << std::endl; }
+void DefaultEventHandler::on_exhausted_impl() const { std::cout << "[IW] Exhausted!" << std::endl; }
 
-DefaultIWAlgorithmEventHandler::DefaultIWAlgorithmEventHandler(Problem problem, bool quiet) :
-    IWAlgorithmEventHandlerBase<DefaultIWAlgorithmEventHandler>(problem, quiet)
-{
-}
+DefaultEventHandler::DefaultEventHandler(Problem problem, bool quiet) : EventHandlerBase<DefaultEventHandler>(problem, quiet) {}
 }

@@ -35,7 +35,7 @@ private:
     const SearchContext& m_context;
     const TupleGraphCollection::Options& m_options;
 
-    TupleIndexMapper m_index_mapper;
+    iw::TupleIndexMapper m_index_mapper;
     graphs::StaticTupleGraph m_internal_tuple_graph;
     IndexGroupedVectorBuilder<const Index> m_v_idxs_grouped_by_distance;
     IndexGroupedVectorBuilder<const Index> m_problem_v_idxs_grouped_by_distance;
@@ -140,7 +140,7 @@ private:
     StateSet m_curr_states;  ///< all states in current layer, strictly not symmetry reduced to derived tuple indices
     IndexList m_prev_v_idxs;
     IndexList m_curr_v_idxs;
-    NoveltyTable<StaticSize> m_novelty_table;
+    iw::NoveltyTable<iw::StaticSize> m_novelty_table;
 
     IndexSet m_novel_t_idxs_set;
     IndexList m_novel_t_idxs_vec;

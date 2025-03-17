@@ -409,6 +409,8 @@ bool Grammar::test_match(dl::Constructor<D> constructor) const
 
 template bool Grammar::test_match(dl::Constructor<Concept> constructor) const;
 template bool Grammar::test_match(dl::Constructor<Role> constructor) const;
+template bool Grammar::test_match(dl::Constructor<Boolean> constructor) const;
+template bool Grammar::test_match(dl::Constructor<Numerical> constructor) const;
 
 void Grammar::accept(IVisitor& visitor) const { visitor.visit(*this); }
 

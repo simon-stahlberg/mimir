@@ -1,12 +1,24 @@
 # Import all classes for better IDE support
 
+# Enums
 from _pymimir.advanced.search import (
     SearchMode,
     SearchNodeStatus,
     SearchStatus,
 )
 
-from _pymimir.advanced.search import (
+# Common
+from _pymimir.advanced.search import (   
+    BlindHeuristic,
+    DeleteRelaxedProblemExplorator,
+    IApplicableActionGenerator,
+    IAxiomEvaluator,
+    IHeuristic,
+    Plan,
+    SearchResult,
+    State,
+    StateList,
+    StateRepository,
     SearchContext,
     SearchContextOptions,
     GeneralizedSearchContext,
@@ -20,53 +32,57 @@ from _pymimir.advanced.search import (
 )
 
 # AStar
-from _pymimir.advance.search import (
+from _pymimir.advanced.search import (
     AStarStatistics,
     IAStarEventHandler,
     DebugAStarEventHandler,
     DefaultAStarEventHandler,
+    find_solution_astar,
 )
 
-from _pymimir.advanced.search import (   
-    BlindHeuristic,
-    BrFSAlgorithmStatistics,
-    DebugBrFSAlgorithmEventHandler,
-    DebugGroundedApplicableActionGeneratorEventHandler,
-    DebugLiftedApplicableActionGeneratorEventHandler,
-    DefaultBrFSAlgorithmEventHandler,
-    DefaultGroundedApplicableActionGeneratorEventHandler,
-    DefaultIWAlgorithmEventHandler,
-    DefaultLiftedApplicableActionGeneratorEventHandler,
-    DefaultSIWAlgorithmEventHandler,
-    DeleteRelaxedProblemExplorator,
-    GroundedApplicableActionGenerator,
-    GroundedAxiomEvaluator,
-    IApplicableActionGenerator,
-    IAxiomEvaluator,
-    IBrFSAlgorithmEventHandler,
-    IIWAlgorithmEventHandler,
-    IGroundedApplicableActionGeneratorEventHandler,
-    IGroundedAxiomEvaluatorEventHandler,
-    IHeuristic,
-    ILiftedApplicableActionGeneratorEventHandler,
-    ILiftedAxiomEvaluatorEventHandler,
-    ISIWAlgorithmEventHandler,
-    IWAlgorithmStatistics,
-    LiftedApplicableActionGenerator,
-    LiftedAxiomEvaluator,
-    Plan,
-    SearchResult,
-    SIWAlgorithmStatistics,
-    State,
-    StateList,
-    StateRepository,
+# BrFs
+from _pymimir.advanced.search import (
+    BrFSStatistics,
+    IBrFSEventHandler,
+    DebugBrFSEventHandler,
+    DefaultBrFSEventHandler,
+    find_solution_brfs,
+)
+
+# IW
+from _pymimir.advanced.search import (
+    IWStatistics,
+    IIWEventHandler,
+    DefaultIWEventHandler,
+    find_solution_iw,
+
     TupleIndexMapper,
 )
 
-# Search (free functions)
+# SIW
 from _pymimir.advanced.search import (
-    find_solution_astar,
-    find_solution_brfs,
-    find_solution_iw,
-    find_solution_siw
+    SIWStatistics,
+    ISIWEventHandler,
+    DefaultSIWEventHandler,
+    find_solution_siw,
+)
+
+# Lifted
+from _pymimir.advanced.search import (
+    DebugLiftedApplicableActionGeneratorEventHandler,
+    DefaultLiftedApplicableActionGeneratorEventHandler,
+    LiftedApplicableActionGenerator,
+    LiftedAxiomEvaluator,
+    ILiftedApplicableActionGeneratorEventHandler,
+    ILiftedAxiomEvaluatorEventHandler,
+)
+
+# Grounded
+from _pymimir.advanced.search import (
+    DebugGroundedApplicableActionGeneratorEventHandler,
+    DefaultGroundedApplicableActionGeneratorEventHandler,
+    GroundedApplicableActionGenerator,
+    GroundedAxiomEvaluator,
+    IGroundedApplicableActionGeneratorEventHandler,
+    IGroundedAxiomEvaluatorEventHandler,
 )

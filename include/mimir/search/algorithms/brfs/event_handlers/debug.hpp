@@ -22,17 +22,17 @@
 
 #include <iostream>
 
-namespace mimir::search
+namespace mimir::search::brfs
 {
 
 /**
  * Implementation class
  */
-class DebugBrFSAlgorithmEventHandler : public BrFSAlgorithmEventHandlerBase<DebugBrFSAlgorithmEventHandler>
+class DebugEventHandler : public EventHandlerBase<DebugEventHandler>
 {
 private:
     /* Implement AlgorithmEventHandlerBase interface */
-    friend class BrFSAlgorithmEventHandlerBase<DebugBrFSAlgorithmEventHandler>;
+    friend class EventHandlerBase<DebugEventHandler>;
 
     void on_expand_state_impl(State state) const;
 
@@ -67,10 +67,7 @@ private:
     void on_exhausted_impl() const;
 
 public:
-    explicit DebugBrFSAlgorithmEventHandler(formalism::Problem problem, bool quiet = true) :
-        BrFSAlgorithmEventHandlerBase<DebugBrFSAlgorithmEventHandler>(problem, quiet)
-    {
-    }
+    explicit DebugEventHandler(formalism::Problem problem, bool quiet = true) : EventHandlerBase<DebugEventHandler>(problem, quiet) {}
 };
 
 }

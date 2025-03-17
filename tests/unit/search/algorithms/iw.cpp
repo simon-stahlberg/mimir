@@ -49,8 +49,8 @@ private:
     LiftedAxiomEvaluatorEventHandler m_axiom_evaluator_event_handler;
     std::shared_ptr<LiftedAxiomEvaluator> m_axiom_evaluator;
     StateRepository m_state_repository;
-    BrFSAlgorithmEventHandler m_brfs_event_handler;
-    IWAlgorithmEventHandler m_iw_event_handler;
+    brfs::EventHandler m_brfs_event_handler;
+    iw::EventHandler m_iw_event_handler;
     SearchContext m_search_context;
 
 public:
@@ -62,15 +62,15 @@ public:
         m_axiom_evaluator_event_handler(std::make_shared<DefaultLiftedAxiomEvaluatorEventHandler>()),
         m_axiom_evaluator(std::make_shared<LiftedAxiomEvaluator>(m_problem, m_axiom_evaluator_event_handler)),
         m_state_repository(std::make_shared<StateRepositoryImpl>(m_axiom_evaluator)),
-        m_brfs_event_handler(std::make_shared<DefaultBrFSAlgorithmEventHandler>(m_problem)),
-        m_iw_event_handler(std::make_shared<DefaultIWAlgorithmEventHandler>(m_problem)),
+        m_brfs_event_handler(std::make_shared<brfs::DefaultEventHandler>(m_problem)),
+        m_iw_event_handler(std::make_shared<iw::DefaultEventHandler>(m_problem)),
         m_search_context(m_problem, m_applicable_action_generator, m_state_repository)
     {
     }
 
-    SearchResult find_solution() { return find_solution_iw(m_search_context, nullptr, m_arity, m_iw_event_handler, m_brfs_event_handler); }
+    SearchResult find_solution() { return iw::find_solution(m_search_context, nullptr, m_arity, m_iw_event_handler, m_brfs_event_handler); }
 
-    const IWAlgorithmStatistics& get_iw_statistics() const { return m_iw_event_handler->get_statistics(); }
+    const iw::Statistics& get_iw_statistics() const { return m_iw_event_handler->get_statistics(); }
 
     const LiftedApplicableActionGeneratorStatistics& get_applicable_action_generator_statistics() const
     {
@@ -92,8 +92,8 @@ private:
     GroundedAxiomEvaluatorEventHandler m_axiom_evaluator_event_handler;
     std::shared_ptr<GroundedAxiomEvaluator> m_axiom_evaluator;
     StateRepository m_state_repository;
-    BrFSAlgorithmEventHandler m_brfs_event_handler;
-    IWAlgorithmEventHandler m_iw_event_handler;
+    brfs::EventHandler m_brfs_event_handler;
+    iw::EventHandler m_iw_event_handler;
     SearchContext m_search_context;
 
 public:
@@ -108,15 +108,15 @@ public:
         m_axiom_evaluator_event_handler(std::make_shared<DefaultGroundedAxiomEvaluatorEventHandler>()),
         m_axiom_evaluator(m_delete_relaxed_problem_explorator.create_grounded_axiom_evaluator(match_tree::Options(), m_axiom_evaluator_event_handler)),
         m_state_repository(std::make_shared<StateRepositoryImpl>(m_axiom_evaluator)),
-        m_brfs_event_handler(std::make_shared<DefaultBrFSAlgorithmEventHandler>(m_problem)),
-        m_iw_event_handler(std::make_shared<DefaultIWAlgorithmEventHandler>(m_problem)),
+        m_brfs_event_handler(std::make_shared<brfs::DefaultEventHandler>(m_problem)),
+        m_iw_event_handler(std::make_shared<iw::DefaultEventHandler>(m_problem)),
         m_search_context(m_problem, m_applicable_action_generator, m_state_repository)
     {
     }
 
-    SearchResult find_solution() { return find_solution_iw(m_search_context, nullptr, m_arity, m_iw_event_handler, m_brfs_event_handler); }
+    SearchResult find_solution() { return iw::find_solution(m_search_context, nullptr, m_arity, m_iw_event_handler, m_brfs_event_handler); }
 
-    const IWAlgorithmStatistics& get_iw_statistics() const { return m_iw_event_handler->get_statistics(); }
+    const iw::Statistics& get_iw_statistics() const { return m_iw_event_handler->get_statistics(); }
 
     const GroundedApplicableActionGeneratorStatistics& get_applicable_action_generator_statistics() const
     {
@@ -131,9 +131,9 @@ TEST(MimirTests, SearchAlgorithmsIWSingleStateTupleIndexGeneratorWidth0Test)
     const int arity = 0;
     const int num_atoms = 3;
 
-    const auto tuple_index_mapper = TupleIndexMapper(arity, num_atoms);
-    auto generator = StateTupleIndexGenerator(&tuple_index_mapper);
-    const auto atom_indices = AtomIndexList({
+    const auto tuple_index_mapper = iw::TupleIndexMapper(arity, num_atoms);
+    auto generator = iw::StateTupleIndexGenerator(&tuple_index_mapper);
+    const auto atom_indices = iw::AtomIndexList({
         num_atoms,  // placeholder to generate tuples of size less than arity
     });
 
@@ -149,9 +149,9 @@ TEST(MimirTests, SearchAlgorithmsIWSingleStateTupleIndexGeneratorWidth1Test)
     const int arity = 1;
     const int num_atoms = 3;
 
-    const auto tuple_index_mapper = TupleIndexMapper(arity, num_atoms);
-    auto generator = StateTupleIndexGenerator(&tuple_index_mapper);
-    const auto atom_indices = AtomIndexList({
+    const auto tuple_index_mapper = iw::TupleIndexMapper(arity, num_atoms);
+    auto generator = iw::StateTupleIndexGenerator(&tuple_index_mapper);
+    const auto atom_indices = iw::AtomIndexList({
         0,
         2,
         num_atoms,  // placeholder to generate tuples of size less than arity
@@ -171,9 +171,9 @@ TEST(MimirTests, SearchAlgorithmsIWSingleStateTupleIndexGeneratorWidth2Test)
     const int arity = 2;
     const int num_atoms = 3;
 
-    const auto tuple_index_mapper = TupleIndexMapper(arity, num_atoms);
-    auto generator = StateTupleIndexGenerator(&tuple_index_mapper);
-    const auto atom_indices = AtomIndexList({
+    const auto tuple_index_mapper = iw::TupleIndexMapper(arity, num_atoms);
+    auto generator = iw::StateTupleIndexGenerator(&tuple_index_mapper);
+    const auto atom_indices = iw::AtomIndexList({
         0,
         2,
         num_atoms,  // placeholder to generate tuples of size less than arity
@@ -194,14 +194,14 @@ TEST(MimirTests, SearchAlgorithmsIWStatePairTupleIndexGeneratorWidth1Test)
     const int arity = 1;
     const int num_atoms = 4;
 
-    const auto tuple_index_mapper = TupleIndexMapper(arity, num_atoms);
-    auto generator = StatePairTupleIndexGenerator(&tuple_index_mapper);
-    const auto atom_indices = AtomIndexList({
+    const auto tuple_index_mapper = iw::TupleIndexMapper(arity, num_atoms);
+    auto generator = iw::StatePairTupleIndexGenerator(&tuple_index_mapper);
+    const auto atom_indices = iw::AtomIndexList({
         0,
         2,
         num_atoms,  // placeholder to generate tuples of size less than arity
     });
-    const auto add_atom_indices = AtomIndexList({
+    const auto add_atom_indices = iw::AtomIndexList({
         1,
         3,
     });
@@ -218,14 +218,14 @@ TEST(MimirTests, SearchAlgorithmsIWStatePairTupleIndexGeneratorWidth2Test1)
     const int arity = 2;
     const int num_atoms = 4;
 
-    const auto tuple_index_mapper = TupleIndexMapper(arity, num_atoms);
-    auto generator = StatePairTupleIndexGenerator(&tuple_index_mapper);
-    const auto atom_indices = AtomIndexList({
+    const auto tuple_index_mapper = iw::TupleIndexMapper(arity, num_atoms);
+    auto generator = iw::StatePairTupleIndexGenerator(&tuple_index_mapper);
+    const auto atom_indices = iw::AtomIndexList({
         0,
         2,
         num_atoms,  // placeholder to generate tuples of size less than arity
     });
-    const auto add_atom_indices = AtomIndexList({
+    const auto add_atom_indices = iw::AtomIndexList({
         1,
         3,
     });
@@ -248,16 +248,16 @@ TEST(MimirTests, SearchAlgorithmsIWStatePairTupleIndexGeneratorWidth2Test2)
     const int arity = 3;
     const int num_atoms = 64;
 
-    const auto tuple_index_mapper = TupleIndexMapper(arity, num_atoms);
-    auto generator = StatePairTupleIndexGenerator(&tuple_index_mapper);
-    const auto atom_indices = AtomIndexList({
+    const auto tuple_index_mapper = iw::TupleIndexMapper(arity, num_atoms);
+    auto generator = iw::StatePairTupleIndexGenerator(&tuple_index_mapper);
+    const auto atom_indices = iw::AtomIndexList({
         0,
         2,
         3,
         4,
         num_atoms,  // placeholder to generate tuples of size less than arity
     });
-    const auto add_atom_indices = AtomIndexList({
+    const auto add_atom_indices = iw::AtomIndexList({
         6,
     });
 
@@ -283,14 +283,14 @@ TEST(MimirTests, SearchAlgorithmsIWStatePairTupleIndexGeneratorWidth2Test3)
     const int arity = 2;
     const int num_atoms = 64;
 
-    const auto tuple_index_mapper = TupleIndexMapper(arity, num_atoms);
-    auto generator = StatePairTupleIndexGenerator(&tuple_index_mapper);
-    const auto atom_indices = AtomIndexList({
+    const auto tuple_index_mapper = iw::TupleIndexMapper(arity, num_atoms);
+    auto generator = iw::StatePairTupleIndexGenerator(&tuple_index_mapper);
+    const auto atom_indices = iw::AtomIndexList({
         0,
         1,
         num_atoms,  // placeholder to generate tuples of size less than arity
     });
-    const auto add_atom_indices = AtomIndexList({
+    const auto add_atom_indices = iw::AtomIndexList({
         2,
         3,
     });

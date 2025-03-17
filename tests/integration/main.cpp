@@ -30,6 +30,9 @@
 #include <iostream>
 
 using namespace mimir;
+using namespace mimir::search;
+using namespace mimir::formalism;
+
 int main(int argc, char** argv)
 {
     if (argc != 6)
@@ -120,12 +123,12 @@ int main(int argc, char** argv)
         }
     }
 
-    auto event_handler = (debug) ? BrFSAlgorithmEventHandler { std::make_shared<DebugBrFSAlgorithmEventHandler>(false) } :
-                                   BrFSAlgorithmEventHandler { std::make_shared<DefaultBrFSAlgorithmEventHandler>(false) };
+    auto event_handler = (debug) ? brfs::EventHandler { std::make_shared<brfs::DebugEventHandler>(problem, false) } :
+                                   brfs::EventHandler { std::make_shared<brfs::DefaultEventHandler>(problem, false) };
 
     auto search_context = SearchContext(problem, applicable_action_generator, state_repository);
 
-    auto result = find_solution_brfs(search_context, std::nullopt, event_handler);
+    auto result = brfs::find_solution(search_context, nullptr, event_handler);
 
     std::cout << "[BrFS] Total time: " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time)
               << std::endl;

@@ -26,15 +26,15 @@
 #include <optional>
 #include <vector>
 
-namespace mimir::search
+namespace mimir::search::brfs
 {
 
-extern SearchResult find_solution_brfs(const SearchContext& context,
-                                       State start_state = nullptr,
-                                       BrFSAlgorithmEventHandler event_handler = nullptr,
-                                       GoalStrategy goal_strategy = nullptr,
-                                       PruningStrategy pruning_strategy = nullptr,
-                                       bool exhaustive = false);
+extern SearchResult find_solution(const SearchContext& context,
+                                  State start_state = nullptr,
+                                  EventHandler event_handler = nullptr,
+                                  GoalStrategy goal_strategy = nullptr,
+                                  PruningStrategy pruning_strategy = nullptr,
+                                  bool exhaustive = false);
 
 }
 

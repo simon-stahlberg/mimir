@@ -122,7 +122,7 @@ from _pymimir.advanced.formalism import (
     Object,
     ObjectList,
     OptimizationMetric,
-    PDDLRepositories,
+    Repositories,
     Parser,
     Problem,
     ProblemList,

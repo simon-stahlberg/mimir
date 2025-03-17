@@ -102,14 +102,14 @@ int main(int argc, char** argv)
         }
     }
 
-    auto brfs_event_handler = (debug) ? BrFSAlgorithmEventHandler { std::make_shared<DebugBrFSAlgorithmEventHandler>(problem) } :
-                                        BrFSAlgorithmEventHandler { std::make_shared<DefaultBrFSAlgorithmEventHandler>(problem) };
+    auto brfs_event_handler = (debug) ? brfs::EventHandler { std::make_shared<brfs::DebugEventHandler>(problem) } :
+                                        brfs::EventHandler { std::make_shared<brfs::DefaultEventHandler>(problem) };
 
-    auto iw_event_handler = std::make_shared<DefaultIWAlgorithmEventHandler>(problem, false);
+    auto iw_event_handler = std::make_shared<iw::DefaultEventHandler>(problem, false);
 
     auto search_context = SearchContext(problem, applicable_action_generator, state_repository);
 
-    auto result = find_solution_iw(search_context, nullptr, arity, iw_event_handler, brfs_event_handler);
+    auto result = iw::find_solution(search_context, nullptr, arity, iw_event_handler, brfs_event_handler);
 
     if (result.status == SearchStatus::SOLVED)
     {

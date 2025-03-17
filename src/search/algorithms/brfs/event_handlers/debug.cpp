@@ -24,9 +24,9 @@
 
 using namespace mimir::formalism;
 
-namespace mimir::search
+namespace mimir::search::brfs
 {
-void DebugBrFSAlgorithmEventHandler::on_expand_state_impl(State state) const
+void DebugEventHandler::on_expand_state_impl(State state) const
 {
     std::cout << "[BrFS] ----------------------------------------\n"
               << "[BrFS] State: ";
@@ -34,9 +34,9 @@ void DebugBrFSAlgorithmEventHandler::on_expand_state_impl(State state) const
     std::cout << std::endl << std::endl;
 }
 
-void DebugBrFSAlgorithmEventHandler::on_expand_goal_state_impl(State state) const {}
+void DebugEventHandler::on_expand_goal_state_impl(State state) const {}
 
-void DebugBrFSAlgorithmEventHandler::on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const
+void DebugEventHandler::on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const
 {
     std::cout << "[BrFS] Action: ";
     mimir::operator<<(std::cout, std::make_tuple(action, std::cref(*m_problem), GroundActionImpl::FullFormatterTag {}));
@@ -46,27 +46,17 @@ void DebugBrFSAlgorithmEventHandler::on_generate_state_impl(State state, GroundA
     std::cout << "\n" << std::endl;
 }
 
-void DebugBrFSAlgorithmEventHandler::on_generate_state_in_search_tree_impl(State state,
-                                                                           GroundAction action,
-                                                                           ContinuousCost action_cost,
-                                                                           State successor_state) const
-{
-}
+void DebugEventHandler::on_generate_state_in_search_tree_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const {}
 
-void DebugBrFSAlgorithmEventHandler::on_generate_state_not_in_search_tree_impl(State state,
-                                                                               GroundAction action,
-                                                                               ContinuousCost action_cost,
-                                                                               State successor_state) const
-{
-}
+void DebugEventHandler::on_generate_state_not_in_search_tree_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const {}
 
-void DebugBrFSAlgorithmEventHandler::on_finish_g_layer_impl(uint32_t g_value, uint64_t num_expanded_states, uint64_t num_generated_states) const
+void DebugEventHandler::on_finish_g_layer_impl(uint32_t g_value, uint64_t num_expanded_states, uint64_t num_generated_states) const
 {
     std::cout << "[BrFS] Finished state expansion until g-layer " << g_value << " with num expanded states " << num_expanded_states
               << " and num generated states " << num_generated_states << std::endl;
 }
 
-void DebugBrFSAlgorithmEventHandler::on_start_search_impl(State start_state) const
+void DebugEventHandler::on_start_search_impl(State start_state) const
 {
     std::cout << "[BrFS] Search started.\n"
               << "[BrFS] Initial: ";
@@ -74,22 +64,22 @@ void DebugBrFSAlgorithmEventHandler::on_start_search_impl(State start_state) con
     std::cout << std::endl;
 }
 
-void DebugBrFSAlgorithmEventHandler::on_end_search_impl(uint64_t num_reached_fluent_atoms,
-                                                        uint64_t num_reached_derived_atoms,
-                                                        uint64_t num_bytes_for_unextended_state_portion,
-                                                        uint64_t num_bytes_for_extended_state_portion,
-                                                        uint64_t num_bytes_for_nodes,
-                                                        uint64_t num_bytes_for_actions,
-                                                        uint64_t num_bytes_for_axioms,
-                                                        uint64_t num_states,
-                                                        uint64_t num_nodes,
-                                                        uint64_t num_actions,
-                                                        uint64_t num_axioms) const
+void DebugEventHandler::on_end_search_impl(uint64_t num_reached_fluent_atoms,
+                                           uint64_t num_reached_derived_atoms,
+                                           uint64_t num_bytes_for_unextended_state_portion,
+                                           uint64_t num_bytes_for_extended_state_portion,
+                                           uint64_t num_bytes_for_nodes,
+                                           uint64_t num_bytes_for_actions,
+                                           uint64_t num_bytes_for_axioms,
+                                           uint64_t num_states,
+                                           uint64_t num_nodes,
+                                           uint64_t num_actions,
+                                           uint64_t num_axioms) const
 {
     std::cout << "[BrFS] Search ended.\n" << m_statistics << std::endl;
 }
 
-void DebugBrFSAlgorithmEventHandler::on_solved_impl(const Plan& plan) const
+void DebugEventHandler::on_solved_impl(const Plan& plan) const
 {
     std::cout << "[BrFS] Plan found.\n"
               << "[BrFS] Plan cost: " << plan.get_cost() << "\n"
@@ -102,7 +92,7 @@ void DebugBrFSAlgorithmEventHandler::on_solved_impl(const Plan& plan) const
     }
 }
 
-void DebugBrFSAlgorithmEventHandler::on_unsolvable_impl() const { std::cout << "[BrFS] Unsolvable!" << std::endl; }
+void DebugEventHandler::on_unsolvable_impl() const { std::cout << "[BrFS] Unsolvable!" << std::endl; }
 
-void DebugBrFSAlgorithmEventHandler::on_exhausted_impl() const { std::cout << "[BrFS] Exhausted!" << std::endl; }
+void DebugEventHandler::on_exhausted_impl() const { std::cout << "[BrFS] Exhausted!" << std::endl; }
 }

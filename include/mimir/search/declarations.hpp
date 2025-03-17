@@ -96,16 +96,25 @@ using EventHandler = std::shared_ptr<IEventHandler>;
 }
 
 // Breadth-first search
-class IBrFSAlgorithmEventHandler;
-using BrFSAlgorithmEventHandler = std::shared_ptr<IBrFSAlgorithmEventHandler>;
+namespace brfs
+{
+class IEventHandler;
+using EventHandler = std::shared_ptr<IEventHandler>;
+}
 
 // Iterative width search
-class IIWAlgorithmEventHandler;
-using IWAlgorithmEventHandler = std::shared_ptr<IIWAlgorithmEventHandler>;
+namespace iw
+{
+class IEventHandler;
+using EventHandler = std::shared_ptr<IEventHandler>;
+}
 
 // Serialized iterative width search
-class ISIWAlgorithmEventHandler;
-using SIWAlgorithmEventHandler = std::shared_ptr<ISIWAlgorithmEventHandler>;
+namespace siw
+{
+class IEventHandler;
+using EventHandler = std::shared_ptr<IEventHandler>;
+}
 
 // Plan
 class Plan;

@@ -26,16 +26,16 @@
 #include <concepts>
 #include <cstdint>
 
-namespace mimir::search
+namespace mimir::search::brfs
 {
 
 /**
  * Interface class
  */
-class IBrFSAlgorithmEventHandler
+class IEventHandler
 {
 public:
-    virtual ~IBrFSAlgorithmEventHandler() = default;
+    virtual ~IEventHandler() = default;
 
     /// @brief React on expanding a state. This is called immediately after popping from the queue.
     virtual void on_expand_state(State state) = 0;
@@ -80,7 +80,7 @@ public:
     /// @brief React on exhausting a search.
     virtual void on_exhausted() = 0;
 
-    virtual const BrFSAlgorithmStatistics& get_statistics() const = 0;
+    virtual const Statistics& get_statistics() const = 0;
     virtual bool is_quiet() const = 0;
 };
 
@@ -90,15 +90,15 @@ public:
  * Collect statistics and call implementation of derived class.
  */
 template<typename Derived_>
-class BrFSAlgorithmEventHandlerBase : public IBrFSAlgorithmEventHandler
+class EventHandlerBase : public IEventHandler
 {
 protected:
-    BrFSAlgorithmStatistics m_statistics;
+    Statistics m_statistics;
     formalism::Problem m_problem;
     bool m_quiet;
 
 private:
-    BrFSAlgorithmEventHandlerBase() = default;
+    EventHandlerBase() = default;
     friend Derived_;
 
     /// @brief Helper to cast to Derived.
@@ -106,7 +106,7 @@ private:
     constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 public:
-    explicit BrFSAlgorithmEventHandlerBase(formalism::Problem problem, bool quiet = true) : m_statistics(), m_problem(problem), m_quiet(quiet) {}
+    explicit EventHandlerBase(formalism::Problem problem, bool quiet = true) : m_statistics(), m_problem(problem), m_quiet(quiet) {}
 
     void on_expand_state(State state) override
     {
@@ -167,7 +167,7 @@ public:
 
     void on_start_search(State start_state) override
     {
-        m_statistics = BrFSAlgorithmStatistics();
+        m_statistics = Statistics();
 
         m_statistics.set_search_start_time_point(std::chrono::high_resolution_clock::now());
 
@@ -243,7 +243,7 @@ public:
     }
 
     /// @brief Get the statistics.
-    const BrFSAlgorithmStatistics& get_statistics() const override { return m_statistics; }
+    const Statistics& get_statistics() const override { return m_statistics; }
     bool is_quiet() const override { return m_quiet; }
 };
 

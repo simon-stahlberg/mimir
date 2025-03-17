@@ -34,7 +34,7 @@
 
 using namespace mimir::formalism;
 
-namespace mimir::search
+namespace mimir::search::siw
 {
 
 /* ProblemGoalCounter */
@@ -66,13 +66,13 @@ bool ProblemGoalCounter::test_static_goal() { return m_problem->static_goal_hold
 bool ProblemGoalCounter::test_dynamic_goal(State state) { return count_unsatisfied_goals(state) < m_initial_num_unsatisfied_goals; }
 
 /* SIW */
-SearchResult find_solution_siw(const SearchContext& context,
-                               State start_state_,
-                               size_t max_arity_,
-                               SIWAlgorithmEventHandler siw_event_handler_,
-                               IWAlgorithmEventHandler iw_event_handler_,
-                               BrFSAlgorithmEventHandler brfs_event_handler_,
-                               GoalStrategy goal_strategy_)
+SearchResult find_solution(const SearchContext& context,
+                           State start_state_,
+                           size_t max_arity_,
+                           EventHandler siw_event_handler_,
+                           iw::EventHandler iw_event_handler_,
+                           brfs::EventHandler brfs_event_handler_,
+                           GoalStrategy goal_strategy_)
 {
     const auto& problem = *context.get_problem();
     auto& applicable_action_generator = *context.get_applicable_action_generator();
@@ -80,15 +80,15 @@ SearchResult find_solution_siw(const SearchContext& context,
 
     const auto max_arity = max_arity_;
     const auto start_state = (start_state_) ? start_state_ : state_repository.get_or_create_initial_state();
-    const auto siw_event_handler = (siw_event_handler_) ? siw_event_handler_ : std::make_shared<DefaultSIWAlgorithmEventHandler>(context.get_problem());
-    const auto iw_event_handler = (iw_event_handler_) ? iw_event_handler_ : std::make_shared<DefaultIWAlgorithmEventHandler>(context.get_problem());
-    const auto brfs_event_handler = (brfs_event_handler_) ? brfs_event_handler_ : std::make_shared<DefaultBrFSAlgorithmEventHandler>(context.get_problem());
+    const auto siw_event_handler = (siw_event_handler_) ? siw_event_handler_ : std::make_shared<DefaultEventHandler>(context.get_problem());
+    const auto iw_event_handler = (iw_event_handler_) ? iw_event_handler_ : std::make_shared<iw::DefaultEventHandler>(context.get_problem());
+    const auto brfs_event_handler = (brfs_event_handler_) ? brfs_event_handler_ : std::make_shared<brfs::DefaultEventHandler>(context.get_problem());
     const auto goal_strategy = (goal_strategy_) ? goal_strategy_ : std::make_shared<ProblemGoal>(context.get_problem());
 
-    if (max_arity >= MAX_ARITY)
+    if (max_arity >= iw::MAX_ARITY)
     {
         throw std::runtime_error("siw::find_solution(...): max_arity (" + std::to_string(max_arity) + ") cannot be greater than or equal to MAX_ARITY ("
-                                 + std::to_string(MAX_ARITY) + ") compile time constant.");
+                                 + std::to_string(iw::MAX_ARITY) + ") compile time constant.");
     }
 
     auto result = SearchResult();
@@ -112,12 +112,12 @@ SearchResult find_solution_siw(const SearchContext& context,
 
         auto partial_plan = std::optional<Plan> {};
 
-        const auto sub_result = find_solution_iw(context,
-                                                 cur_state,
-                                                 max_arity,
-                                                 iw_event_handler,
-                                                 brfs_event_handler,
-                                                 std::make_shared<ProblemGoalCounter>(context.get_problem(), cur_state));
+        const auto sub_result = iw::find_solution(context,
+                                                  cur_state,
+                                                  max_arity,
+                                                  iw_event_handler,
+                                                  brfs_event_handler,
+                                                  std::make_shared<ProblemGoalCounter>(context.get_problem(), cur_state));
 
         if (sub_result.status == SearchStatus::UNSOLVABLE)
         {

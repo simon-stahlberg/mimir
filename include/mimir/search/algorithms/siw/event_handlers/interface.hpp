@@ -27,16 +27,16 @@
 #include <chrono>
 #include <concepts>
 
-namespace mimir::search
+namespace mimir::search::siw
 {
 
 /**
  * Interface class
  */
-class ISIWAlgorithmEventHandler
+class IEventHandler
 {
 public:
-    virtual ~ISIWAlgorithmEventHandler() = default;
+    virtual ~IEventHandler() = default;
 
     /// @brief React on starting a search.
     virtual void on_start_search(State initial_state) = 0;
@@ -45,7 +45,7 @@ public:
     virtual void on_start_subproblem_search(State initial_state) = 0;
 
     /// @brief React on starting a search.
-    virtual void on_end_subproblem_search(const IWAlgorithmStatistics& iw_statistics) = 0;
+    virtual void on_end_subproblem_search(const iw::Statistics& iw_statistics) = 0;
 
     /// @brief React on ending a search.
     virtual void on_end_search() = 0;
@@ -59,7 +59,7 @@ public:
     /// @brief React on exhausting a search.
     virtual void on_exhausted() = 0;
 
-    virtual const SIWAlgorithmStatistics& get_statistics() const = 0;
+    virtual const Statistics& get_statistics() const = 0;
     virtual bool is_quiet() const = 0;
 };
 
@@ -69,15 +69,15 @@ public:
  * Collect statistics and call implementation of derived class.
  */
 template<typename Derived_>
-class SIWAlgorithmEventHandlerBase : public ISIWAlgorithmEventHandler
+class EventHandlerBase : public IEventHandler
 {
 protected:
-    SIWAlgorithmStatistics m_statistics;
+    Statistics m_statistics;
     formalism::Problem m_problem;
     bool m_quiet;
 
 private:
-    SIWAlgorithmEventHandlerBase() = default;
+    EventHandlerBase() = default;
     friend Derived_;
 
     /// @brief Helper to cast to Derived_.
@@ -85,11 +85,11 @@ private:
     constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 public:
-    explicit SIWAlgorithmEventHandlerBase(formalism::Problem problem, bool quiet = true) : m_statistics(), m_problem(problem), m_quiet(quiet) {}
+    explicit EventHandlerBase(formalism::Problem problem, bool quiet = true) : m_statistics(), m_problem(problem), m_quiet(quiet) {}
 
     void on_start_search(State initial_state) override
     {
-        m_statistics = SIWAlgorithmStatistics();
+        m_statistics = Statistics();
 
         m_statistics.set_search_start_time_point(std::chrono::high_resolution_clock::now());
 
@@ -107,7 +107,7 @@ public:
         }
     }
 
-    void on_end_subproblem_search(const IWAlgorithmStatistics& iw_statistics) override
+    void on_end_subproblem_search(const iw::Statistics& iw_statistics) override
     {
         m_statistics.push_back_algorithm_statistics(iw_statistics);
 
@@ -152,7 +152,7 @@ public:
     }
 
     /// @brief Get the statistics.
-    const SIWAlgorithmStatistics& get_statistics() const override { return m_statistics; }
+    const Statistics& get_statistics() const override { return m_statistics; }
     bool is_quiet() const override { return m_quiet; }
 };
 

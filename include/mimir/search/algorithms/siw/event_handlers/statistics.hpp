@@ -27,21 +27,21 @@
 #include <ostream>
 #include <vector>
 
-namespace mimir::search
+namespace mimir::search::siw
 {
 
-class SIWAlgorithmStatistics
+class Statistics
 {
 private:
-    IWAlgorithmStatisticsList m_iw_algorithm_statistics_by_subproblem;
+    iw::StatisticsList m_iw_algorithm_statistics_by_subproblem;
 
     std::chrono::time_point<std::chrono::high_resolution_clock> m_search_start_time_point;
     std::chrono::time_point<std::chrono::high_resolution_clock> m_search_end_time_point;
 
 public:
-    SIWAlgorithmStatistics() : m_iw_algorithm_statistics_by_subproblem() {}
+    Statistics() : m_iw_algorithm_statistics_by_subproblem() {}
 
-    void push_back_algorithm_statistics(IWAlgorithmStatistics iw_statistics) { m_iw_algorithm_statistics_by_subproblem.push_back(std::move(iw_statistics)); }
+    void push_back_algorithm_statistics(iw::Statistics iw_statistics) { m_iw_algorithm_statistics_by_subproblem.push_back(std::move(iw_statistics)); }
 
     void set_search_start_time_point(std::chrono::time_point<std::chrono::high_resolution_clock> time_point) { m_search_start_time_point = time_point; }
     void set_search_end_time_point(std::chrono::time_point<std::chrono::high_resolution_clock> time_point) { m_search_end_time_point = time_point; }
@@ -145,14 +145,14 @@ public:
         return std::chrono::duration_cast<std::chrono::milliseconds>(m_search_end_time_point - m_search_start_time_point);
     }
 
-    const IWAlgorithmStatisticsList& get_iw_statistics_by_subproblem() const { return m_iw_algorithm_statistics_by_subproblem; }
+    const iw::StatisticsList& get_iw_statistics_by_subproblem() const { return m_iw_algorithm_statistics_by_subproblem; }
 };
 
 /**
  * Pretty printing
  */
 
-inline std::ostream& operator<<(std::ostream& os, const SIWAlgorithmStatistics& statistics)
+inline std::ostream& operator<<(std::ostream& os, const Statistics& statistics)
 {
     os << "[SIW] Search time: " << statistics.get_search_time_ms().count() << "ms" << "\n"
        << "[SIW] Maximum effective width: " << statistics.get_maximum_effective_width() << "\n"

@@ -195,7 +195,7 @@ public:
     }
 };
 
-class SymmetryReducedProblemGraphBrFSAlgorithmEventHandler : public BrFSAlgorithmEventHandlerBase<SymmetryReducedProblemGraphBrFSAlgorithmEventHandler>
+class SymmetryReducedProblemGraphEventHandler : public brfs::EventHandlerBase<SymmetryReducedProblemGraphEventHandler>
 {
 private:
     const GeneralizedStateSpace::Options::ProblemSpecific& m_options;
@@ -206,7 +206,7 @@ private:
     StateMap<graphs::VertexIndex> m_state_to_vertex_index;
 
     /* Implement AlgorithmEventHandlerBase interface */
-    friend class BrFSAlgorithmEventHandlerBase<SymmetryReducedProblemGraphBrFSAlgorithmEventHandler>;
+    friend class brfs::EventHandlerBase<SymmetryReducedProblemGraphEventHandler>;
 
     std::unique_ptr<const nauty_wrapper::Certificate> compute_certificate(State state)
     {
@@ -302,13 +302,13 @@ private:
     void on_exhausted_impl() {}
 
 public:
-    explicit SymmetryReducedProblemGraphBrFSAlgorithmEventHandler(Problem problem,
-                                                                  const GeneralizedStateSpace::Options::ProblemSpecific& options,
-                                                                  graphs::StaticProblemGraph& graph,
-                                                                  IndexSet& goal_vertices,
-                                                                  SymmetriesData& symm_data,
-                                                                  bool quiet = true) :
-        BrFSAlgorithmEventHandlerBase<SymmetryReducedProblemGraphBrFSAlgorithmEventHandler>(problem, quiet),
+    explicit SymmetryReducedProblemGraphEventHandler(Problem problem,
+                                                     const GeneralizedStateSpace::Options::ProblemSpecific& options,
+                                                     graphs::StaticProblemGraph& graph,
+                                                     IndexSet& goal_vertices,
+                                                     SymmetriesData& symm_data,
+                                                     bool quiet = true) :
+        brfs::EventHandlerBase<SymmetryReducedProblemGraphEventHandler>(problem, quiet),
         m_options(options),
         m_graph(graph),
         m_goal_vertices(goal_vertices),
@@ -317,7 +317,7 @@ public:
     }
 };
 
-class ProblemGraphBrFSAlgorithmEventHandler : public BrFSAlgorithmEventHandlerBase<ProblemGraphBrFSAlgorithmEventHandler>
+class ProblemGraphEventHandler : public brfs::EventHandlerBase<ProblemGraphEventHandler>
 {
 private:
     const GeneralizedStateSpace::Options::ProblemSpecific& m_options;
@@ -327,7 +327,7 @@ private:
     StateMap<graphs::VertexIndex> m_state_to_vertex_index;
 
     /* Implement AlgorithmEventHandlerBase interface */
-    friend class BrFSAlgorithmEventHandlerBase<ProblemGraphBrFSAlgorithmEventHandler>;
+    friend class EventHandlerBase<ProblemGraphEventHandler>;
 
     void on_expand_state_impl(State state)
     {
@@ -375,12 +375,12 @@ private:
     void on_exhausted_impl() {}
 
 public:
-    explicit ProblemGraphBrFSAlgorithmEventHandler(Problem problem,
-                                                   const GeneralizedStateSpace::Options::ProblemSpecific& options,
-                                                   graphs::StaticProblemGraph& graph,
-                                                   IndexSet& goal_vertices,
-                                                   bool quiet = true) :
-        BrFSAlgorithmEventHandlerBase<ProblemGraphBrFSAlgorithmEventHandler>(problem, quiet),
+    explicit ProblemGraphEventHandler(Problem problem,
+                                      const GeneralizedStateSpace::Options::ProblemSpecific& options,
+                                      graphs::StaticProblemGraph& graph,
+                                      IndexSet& goal_vertices,
+                                      bool quiet = true) :
+        brfs::EventHandlerBase<ProblemGraphEventHandler>(problem, quiet),
         m_options(options),
         m_graph(graph),
         m_goal_vertices(goal_vertices)
@@ -412,10 +412,9 @@ compute_problem_graph_with_symmetry_reduction(const SearchContext& context,
     auto symm_data = SymmetriesData(color_function);
 
     auto goal_test = std::make_shared<ProblemGoal>(context.get_problem());
-    auto event_handler =
-        std::make_shared<SymmetryReducedProblemGraphBrFSAlgorithmEventHandler>(context.get_problem(), options, graph, goal_vertices, symm_data, false);
+    auto event_handler = std::make_shared<SymmetryReducedProblemGraphEventHandler>(context.get_problem(), options, graph, goal_vertices, symm_data, false);
     auto pruning_strategy = std::make_shared<SymmetryStatePruning>(symm_data);
-    auto result = find_solution_brfs(context, state_repository->get_or_create_initial_state(), event_handler, goal_test, pruning_strategy, true);
+    auto result = find_solution(context, state_repository->get_or_create_initial_state(), event_handler, goal_test, pruning_strategy, true);
 
     if (result.status != EXHAUSTED)
     {
@@ -489,9 +488,9 @@ static std::optional<ProblemStateSpace> compute_problem_graph_without_symmetry_r
     auto goal_vertices = IndexSet {};
 
     auto goal_test = std::make_shared<ProblemGoal>(context.get_problem());
-    auto event_handler = std::make_shared<ProblemGraphBrFSAlgorithmEventHandler>(context.get_problem(), options, graph, goal_vertices, false);
+    auto event_handler = std::make_shared<ProblemGraphEventHandler>(context.get_problem(), options, graph, goal_vertices, false);
     auto pruning_strategy = std::make_shared<DuplicateStatePruning>();
-    auto result = find_solution_brfs(context, state_repository->get_or_create_initial_state(), event_handler, goal_test, pruning_strategy, true);
+    auto result = find_solution(context, state_repository->get_or_create_initial_state(), event_handler, goal_test, pruning_strategy, true);
 
     if (result.status != EXHAUSTED)
     {

@@ -21,7 +21,7 @@
 #include <unordered_set>
 #include <vector>
 
-namespace mimir::search
+namespace mimir::search::iw
 {
 /**
  * Large k for IW(k) is generally infeasible.
