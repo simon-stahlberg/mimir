@@ -183,14 +183,14 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1Parser.html">Parser</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1PDDLRepositories.html">PDDLRepositories</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code><a class="el" href="classmimir_1_1formalism_1_1PDDLRepositories.html" title="PDDLRepositories encapsulates repositories for the unique instantiation of PDDL formalism related str...">PDDLRepositories</a></code> encapsulates repositories for the unique instantiation of PDDL formalism related structures.  <a href="classmimir_1_1formalism_1_1PDDLRepositories.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1PredicateImpl.html">PredicateImpl</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemBuilder.html">ProblemBuilder</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">ProblemImpl</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1Repositories.html">Repositories</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>PDDLRepositories</code> encapsulates repositories for the unique instantiation of PDDL formalism related structures.  <a href="classmimir_1_1formalism_1_1Repositories.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1RequirementsImpl.html">RequirementsImpl</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -640,9 +640,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ae0285669fd4026fbfaaaeadd4e8c06c7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#ae0285669fd4026fbfaaaeadd4e8c06c7">operator==</a> (const std::span&lt; const <a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">GroundAction</a> &gt; &amp;lhs, const std::span&lt; const <a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">GroundAction</a> &gt; &amp;rhs)</td></tr>
 <tr class="memdesc:ae0285669fd4026fbfaaaeadd4e8c06c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">STL does not define operator== for std::span.  <br /></td></tr>
 <tr class="separator:ae0285669fd4026fbfaaaeadd4e8c06c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0797a293d45df0996193eac779e38b1f"><td class="memTemplParams" colspan="2">template&lt;StaticOrFluentOrDerived P&gt; </td></tr>
-<tr class="memitem:a0797a293d45df0996193eac779e38b1f"><td class="memTemplItemLeft" align="right" valign="top">std::pair&lt; <a class="el" href="namespacemimir_1_1formalism.html#aec01442d5c638acd5d89fb576934c04b">VariableList</a>, <a class="el" href="namespacemimir_1_1formalism.html#a037374c4bb80a883d0e8953e3048f792">AtomList</a>&lt; P &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#a0797a293d45df0996193eac779e38b1f">lift</a> (const <a class="el" href="namespacemimir_1_1formalism.html#ad2cdf01cac990bae340bbeac0fcb8a45">GroundAtomList</a>&lt; P &gt; &amp;ground_atoms, <a class="el" href="classmimir_1_1formalism_1_1PDDLRepositories.html">PDDLRepositories</a> &amp;pddl_repositories)</td></tr>
-<tr class="separator:a0797a293d45df0996193eac779e38b1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1979be29c879f6cf5a3bdf507a55b7d"><td class="memTemplParams" colspan="2">template&lt;StaticOrFluentOrDerived P&gt; </td></tr>
+<tr class="memitem:ad1979be29c879f6cf5a3bdf507a55b7d"><td class="memTemplItemLeft" align="right" valign="top">std::pair&lt; <a class="el" href="namespacemimir_1_1formalism.html#aec01442d5c638acd5d89fb576934c04b">VariableList</a>, <a class="el" href="namespacemimir_1_1formalism.html#a037374c4bb80a883d0e8953e3048f792">AtomList</a>&lt; P &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#ad1979be29c879f6cf5a3bdf507a55b7d">lift</a> (const <a class="el" href="namespacemimir_1_1formalism.html#ad2cdf01cac990bae340bbeac0fcb8a45">GroundAtomList</a>&lt; P &gt; &amp;ground_atoms, <a class="el" href="classmimir_1_1formalism_1_1Repositories.html">Repositories</a> &amp;pddl_repositories)</td></tr>
+<tr class="separator:ad1979be29c879f6cf5a3bdf507a55b7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0a68aba76c383444cd18595846f995e8"><td class="memTemplParams" colspan="2">template&lt;StaticOrFluentOrDerived P&gt; </td></tr>
 <tr class="memitem:a0a68aba76c383444cd18595846f995e8"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#a0a68aba76c383444cd18595846f995e8">operator&lt;&lt;</a> (std::ostream &amp;out, const <a class="el" href="classmimir_1_1formalism_1_1GroundAtomImpl.html">GroundAtomImpl</a>&lt; P &gt; &amp;element)</td></tr>
 <tr class="separator:a0a68aba76c383444cd18595846f995e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -698,9 +698,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a53b1a6077c650e3b49645183c177addf"><td class="memTemplParams" colspan="2">template&lt;StaticOrFluentOrAuxiliary F&gt; </td></tr>
 <tr class="memitem:a53b1a6077c650e3b49645183c177addf"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#a53b1a6077c650e3b49645183c177addf">operator&lt;&lt;</a> (std::ostream &amp;out, <a class="el" href="namespacemimir_1_1formalism.html#ae46c31eed244a0f2ffed561eda03f477">GroundFunction</a>&lt; F &gt; element)</td></tr>
 <tr class="separator:a53b1a6077c650e3b49645183c177addf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad6533769c9d40339435201ea81c05d0f"><td class="memTemplParams" colspan="2">template&lt;StaticOrFluentOrDerived P&gt; </td></tr>
-<tr class="memitem:ad6533769c9d40339435201ea81c05d0f"><td class="memTemplItemLeft" align="right" valign="top">std::pair&lt; <a class="el" href="namespacemimir_1_1formalism.html#aec01442d5c638acd5d89fb576934c04b">VariableList</a>, <a class="el" href="namespacemimir_1_1formalism.html#a70f160df3b18168769be8b3cf7e7fe58">LiteralList</a>&lt; P &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#ad6533769c9d40339435201ea81c05d0f">lift</a> (const <a class="el" href="namespacemimir_1_1formalism.html#ad32949f384c2a4c2b47a718103106f98">GroundLiteralList</a>&lt; P &gt; &amp;ground_literals, <a class="el" href="classmimir_1_1formalism_1_1PDDLRepositories.html">PDDLRepositories</a> &amp;pddl_repositories)</td></tr>
-<tr class="separator:ad6533769c9d40339435201ea81c05d0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af42ae2a3797000227a2f41a9cd54128e"><td class="memTemplParams" colspan="2">template&lt;StaticOrFluentOrDerived P&gt; </td></tr>
+<tr class="memitem:af42ae2a3797000227a2f41a9cd54128e"><td class="memTemplItemLeft" align="right" valign="top">std::pair&lt; <a class="el" href="namespacemimir_1_1formalism.html#aec01442d5c638acd5d89fb576934c04b">VariableList</a>, <a class="el" href="namespacemimir_1_1formalism.html#a70f160df3b18168769be8b3cf7e7fe58">LiteralList</a>&lt; P &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#af42ae2a3797000227a2f41a9cd54128e">lift</a> (const <a class="el" href="namespacemimir_1_1formalism.html#ad32949f384c2a4c2b47a718103106f98">GroundLiteralList</a>&lt; P &gt; &amp;ground_literals, <a class="el" href="classmimir_1_1formalism_1_1Repositories.html">Repositories</a> &amp;pddl_repositories)</td></tr>
+<tr class="separator:af42ae2a3797000227a2f41a9cd54128e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0de351b3bb2a027398be8d7077bd0767"><td class="memTemplParams" colspan="2">template&lt;StaticOrFluentOrDerived P&gt; </td></tr>
 <tr class="memitem:a0de351b3bb2a027398be8d7077bd0767"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#a0de351b3bb2a027398be8d7077bd0767">operator&lt;&lt;</a> (std::ostream &amp;out, const <a class="el" href="classmimir_1_1formalism_1_1GroundLiteralImpl.html">GroundLiteralImpl</a>&lt; P &gt; &amp;element)</td></tr>
 <tr class="separator:a0de351b3bb2a027398be8d7077bd0767"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -3148,8 +3148,8 @@ template&lt;StaticOrFluentOrDerived P&gt; </div>
 
 </div>
 </div>
-<a id="a0797a293d45df0996193eac779e38b1f" name="a0797a293d45df0996193eac779e38b1f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0797a293d45df0996193eac779e38b1f">&#9670;&#160;</a></span>lift() <span class="overload">[1/2]</span></h2>
+<a id="ad1979be29c879f6cf5a3bdf507a55b7d" name="ad1979be29c879f6cf5a3bdf507a55b7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1979be29c879f6cf5a3bdf507a55b7d">&#9670;&#160;</a></span>lift() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3165,7 +3165,7 @@ template&lt;StaticOrFluentOrDerived P&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classmimir_1_1formalism_1_1PDDLRepositories.html">PDDLRepositories</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="classmimir_1_1formalism_1_1Repositories.html">Repositories</a> &amp;&#160;</td>
           <td class="paramname"><em>pddl_repositories</em>&#160;</td>
         </tr>
         <tr>
@@ -3178,8 +3178,8 @@ template&lt;StaticOrFluentOrDerived P&gt; </div>
 
 </div>
 </div>
-<a id="ad6533769c9d40339435201ea81c05d0f" name="ad6533769c9d40339435201ea81c05d0f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad6533769c9d40339435201ea81c05d0f">&#9670;&#160;</a></span>lift() <span class="overload">[2/2]</span></h2>
+<a id="af42ae2a3797000227a2f41a9cd54128e" name="af42ae2a3797000227a2f41a9cd54128e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af42ae2a3797000227a2f41a9cd54128e">&#9670;&#160;</a></span>lift() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3195,7 +3195,7 @@ template&lt;StaticOrFluentOrDerived P&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classmimir_1_1formalism_1_1PDDLRepositories.html">PDDLRepositories</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="classmimir_1_1formalism_1_1Repositories.html">Repositories</a> &amp;&#160;</td>
           <td class="paramname"><em>pddl_repositories</em>&#160;</td>
         </tr>
         <tr>
