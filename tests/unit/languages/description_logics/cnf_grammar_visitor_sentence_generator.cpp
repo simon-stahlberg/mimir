@@ -27,7 +27,7 @@
 #include "mimir/languages/description_logics/cnf_grammar.hpp"
 #include "mimir/languages/description_logics/cnf_grammar_visitor_formatter.hpp"
 #include "mimir/languages/description_logics/constructor_repositories.hpp"
-#include "mimir/languages/description_logics/constructor_visitors_formatter.hpp"
+#include "mimir/languages/description_logics/constructor_visitor_formatter.hpp"
 #include "mimir/languages/description_logics/constructors.hpp"
 #include "mimir/languages/description_logics/grammar.hpp"
 #include "mimir/search/axiom_evaluators.hpp"
@@ -105,7 +105,7 @@ TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarVisitorSentenceGeneratorTes
     auto pruning_function = dl::RefinementStateListPruningFunction(kb->get_generalized_state_space());
 
     dl::cnf_grammar::GeneratedSentencesContainer sentences;
-    dl::ConstructorRepositories repositories;
+    dl::Repositories repositories;
     size_t max_complexity = 4;
     auto visitor = dl::cnf_grammar::GeneratorVisitor(pruning_function, sentences, repositories, max_complexity);
 
@@ -149,7 +149,7 @@ TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarVisitorSentenceGeneratorFra
     auto pruning_function = dl::RefinementStateListPruningFunction(kb->get_generalized_state_space());
 
     dl::cnf_grammar::GeneratedSentencesContainer sentences;
-    dl::ConstructorRepositories repositories;
+    dl::Repositories repositories;
     size_t max_complexity = 9;
     auto visitor = dl::cnf_grammar::GeneratorVisitor(pruning_function, sentences, repositories, max_complexity);
 

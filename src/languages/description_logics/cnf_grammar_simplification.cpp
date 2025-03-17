@@ -33,7 +33,7 @@ protected:
     const NonTerminalMap<NonTerminal, Concept, Role, Boolean, Numerical>& m_substitution_map;
 
 public:
-    EliminateRulesWithIdenticalBodyNonTerminalVisitor(ConstructorRepositories& repositories,
+    EliminateRulesWithIdenticalBodyNonTerminalVisitor(Repositories& repositories,
                                                       StartSymbolsContainer& start_symbols,
                                                       DerivationRulesContainer& derivation_rules,
                                                       SubstitutionRulesContainer& substitution_rules,
@@ -161,7 +161,7 @@ static Grammar eliminate_rules_with_identical_body(const Grammar& grammar)
                               }
                           });
 
-    auto repositories = cnf_grammar::ConstructorRepositories();
+    auto repositories = cnf_grammar::Repositories();
     auto start_symbols = cnf_grammar::StartSymbolsContainer();
     auto derivation_rules = cnf_grammar::DerivationRulesContainer();
     auto substitution_rules = cnf_grammar::SubstitutionRulesContainer();
@@ -185,7 +185,7 @@ private:
     const HanaSubstitutionNonTerminalOrderings& m_orderings;
 
 public:
-    OrderSubstitutionRuleVisitor(ConstructorRepositories& repositories,
+    OrderSubstitutionRuleVisitor(Repositories& repositories,
                                  StartSymbolsContainer& start_symbols,
                                  DerivationRulesContainer& derivation_rules,
                                  SubstitutionRulesContainer& substitution_rules,
@@ -293,7 +293,7 @@ static Grammar order_substitution_rules(const Grammar& grammar)
                               boost::hana::at_key(orderings, key) = std::move(non_terminal_to_vertex);
                           });
 
-    auto repositories = cnf_grammar::ConstructorRepositories();
+    auto repositories = cnf_grammar::Repositories();
     auto start_symbols = cnf_grammar::StartSymbolsContainer();
     auto derivation_rules = cnf_grammar::DerivationRulesContainer();
     auto substitution_rules = cnf_grammar::SubstitutionRulesContainer();
@@ -551,7 +551,7 @@ private:
     const std::unordered_set<std::string>& m_epsilon_nonterminals;
 
 public:
-    EliminateEpsilonRuleVisitor(ConstructorRepositories& repositories,
+    EliminateEpsilonRuleVisitor(Repositories& repositories,
                                 StartSymbolsContainer& start_symbols,
                                 DerivationRulesContainer& derivation_rules,
                                 SubstitutionRulesContainer& substitution_rules,
@@ -626,7 +626,7 @@ Grammar eliminate_epsilon_rules(const Grammar& grammar)
         body_nonterminals.erase(head_nonterminal);
     }
 
-    auto repositories = cnf_grammar::ConstructorRepositories();
+    auto repositories = cnf_grammar::Repositories();
     auto start_symbols = cnf_grammar::StartSymbolsContainer();
     auto derivation_rules = cnf_grammar::DerivationRulesContainer();
     auto substitution_rules = cnf_grammar::SubstitutionRulesContainer();

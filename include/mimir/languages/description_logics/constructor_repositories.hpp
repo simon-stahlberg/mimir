@@ -26,49 +26,46 @@
 namespace mimir::languages::dl
 {
 
-template<typename T>
-using SegmentedDLRepository = loki::SegmentedRepository<T>;
+using ConceptBotRepository = loki::SegmentedRepository<ConceptBotImpl>;
+using ConceptTopRepository = loki::SegmentedRepository<ConceptTopImpl>;
+template<formalism::StaticOrFluentOrDerived P>
+using ConceptAtomicStateRepositoryImpl = loki::SegmentedRepository<ConceptAtomicStateImpl<P>>;
+template<formalism::StaticOrFluentOrDerived P>
+using ConceptAtomicGoalRepository = loki::SegmentedRepository<ConceptAtomicGoalImpl<P>>;
+using ConceptIntersectionRepository = loki::SegmentedRepository<ConceptIntersectionImpl>;
+using ConceptUnionRepository = loki::SegmentedRepository<ConceptUnionImpl>;
+using ConceptNegationRepository = loki::SegmentedRepository<ConceptNegationImpl>;
+using ConceptValueRestrictionRepository = loki::SegmentedRepository<ConceptValueRestrictionImpl>;
+using ConceptExistentialQuantificationRepository = loki::SegmentedRepository<ConceptExistentialQuantificationImpl>;
+using ConceptRoleValueMapContainmentRepository = loki::SegmentedRepository<ConceptRoleValueMapContainmentImpl>;
+using ConceptRoleValueMapEqualityRepository = loki::SegmentedRepository<ConceptRoleValueMapEqualityImpl>;
+using ConceptNominalRepository = loki::SegmentedRepository<ConceptNominalImpl>;
 
-using ConceptBotRepository = SegmentedDLRepository<ConceptBotImpl>;
-using ConceptTopRepository = SegmentedDLRepository<ConceptTopImpl>;
+using RoleUniversalRepository = loki::SegmentedRepository<RoleUniversalImpl>;
 template<formalism::StaticOrFluentOrDerived P>
-using ConceptAtomicStateRepositoryImpl = SegmentedDLRepository<ConceptAtomicStateImpl<P>>;
+using RoleAtomicStateRepositoryImpl = loki::SegmentedRepository<RoleAtomicStateImpl<P>>;
 template<formalism::StaticOrFluentOrDerived P>
-using ConceptAtomicGoalRepository = SegmentedDLRepository<ConceptAtomicGoalImpl<P>>;
-using ConceptIntersectionRepository = SegmentedDLRepository<ConceptIntersectionImpl>;
-using ConceptUnionRepository = SegmentedDLRepository<ConceptUnionImpl>;
-using ConceptNegationRepository = SegmentedDLRepository<ConceptNegationImpl>;
-using ConceptValueRestrictionRepository = SegmentedDLRepository<ConceptValueRestrictionImpl>;
-using ConceptExistentialQuantificationRepository = SegmentedDLRepository<ConceptExistentialQuantificationImpl>;
-using ConceptRoleValueMapContainmentRepository = SegmentedDLRepository<ConceptRoleValueMapContainmentImpl>;
-using ConceptRoleValueMapEqualityRepository = SegmentedDLRepository<ConceptRoleValueMapEqualityImpl>;
-using ConceptNominalRepository = SegmentedDLRepository<ConceptNominalImpl>;
-
-using RoleUniversalRepository = SegmentedDLRepository<RoleUniversalImpl>;
-template<formalism::StaticOrFluentOrDerived P>
-using RoleAtomicStateRepositoryImpl = SegmentedDLRepository<RoleAtomicStateImpl<P>>;
-template<formalism::StaticOrFluentOrDerived P>
-using RoleAtomicGoalRepository = SegmentedDLRepository<RoleAtomicGoalImpl<P>>;
-using RoleIntersectionRepository = SegmentedDLRepository<RoleIntersectionImpl>;
-using RoleUnionRepository = SegmentedDLRepository<RoleUnionImpl>;
-using RoleComplementRepository = SegmentedDLRepository<RoleComplementImpl>;
-using RoleInverseRepository = SegmentedDLRepository<RoleInverseImpl>;
-using RoleCompositionRepository = SegmentedDLRepository<RoleCompositionImpl>;
-using RoleTransitiveClosureRepository = SegmentedDLRepository<RoleTransitiveClosureImpl>;
-using RoleReflexiveTransitiveClosureRepository = SegmentedDLRepository<RoleReflexiveTransitiveClosureImpl>;
-using RoleRestrictionRepository = SegmentedDLRepository<RoleRestrictionImpl>;
-using RoleIdentityFactory = SegmentedDLRepository<RoleIdentityImpl>;
+using RoleAtomicGoalRepository = loki::SegmentedRepository<RoleAtomicGoalImpl<P>>;
+using RoleIntersectionRepository = loki::SegmentedRepository<RoleIntersectionImpl>;
+using RoleUnionRepository = loki::SegmentedRepository<RoleUnionImpl>;
+using RoleComplementRepository = loki::SegmentedRepository<RoleComplementImpl>;
+using RoleInverseRepository = loki::SegmentedRepository<RoleInverseImpl>;
+using RoleCompositionRepository = loki::SegmentedRepository<RoleCompositionImpl>;
+using RoleTransitiveClosureRepository = loki::SegmentedRepository<RoleTransitiveClosureImpl>;
+using RoleReflexiveTransitiveClosureRepository = loki::SegmentedRepository<RoleReflexiveTransitiveClosureImpl>;
+using RoleRestrictionRepository = loki::SegmentedRepository<RoleRestrictionImpl>;
+using RoleIdentityFactory = loki::SegmentedRepository<RoleIdentityImpl>;
 
 template<formalism::StaticOrFluentOrDerived P>
-using BooleanAtomicStateRepository = SegmentedDLRepository<BooleanAtomicStateImpl<P>>;
+using BooleanAtomicStateRepository = loki::SegmentedRepository<BooleanAtomicStateImpl<P>>;
 template<DescriptionLogicCategory D>
-using BooleanNonemptyRepository = SegmentedDLRepository<BooleanNonemptyImpl<D>>;
+using BooleanNonemptyRepository = loki::SegmentedRepository<BooleanNonemptyImpl<D>>;
 
 template<DescriptionLogicCategory D>
-using NumericalCountRepository = SegmentedDLRepository<NumericalCountImpl<D>>;
-using NumericalDistanceRepository = SegmentedDLRepository<NumericalDistanceImpl>;
+using NumericalCountRepository = loki::SegmentedRepository<NumericalCountImpl<D>>;
+using NumericalDistanceRepository = loki::SegmentedRepository<NumericalDistanceImpl>;
 
-using HanaConstructorRepositories =
+using HanaRepositories =
     boost::hana::map<boost::hana::pair<boost::hana::type<ConceptBotImpl>, ConceptBotRepository>,  //
                      boost::hana::pair<boost::hana::type<ConceptTopImpl>, ConceptTopRepository>,
                      boost::hana::pair<boost::hana::type<ConceptAtomicStateImpl<formalism::Static>>, ConceptAtomicStateRepositoryImpl<formalism::Static>>,
@@ -110,20 +107,20 @@ using HanaConstructorRepositories =
                      boost::hana::pair<boost::hana::type<NumericalCountImpl<Role>>, NumericalCountRepository<Role>>,
                      boost::hana::pair<boost::hana::type<NumericalDistanceImpl>, NumericalDistanceRepository>>;
 
-class ConstructorRepositories
+class Repositories
 {
 private:
-    HanaConstructorRepositories m_repositories;
+    HanaRepositories m_repositories;
 
 public:
-    ConstructorRepositories() = default;
-    ConstructorRepositories(const ConstructorRepositories& other) = delete;
-    ConstructorRepositories& operator=(const ConstructorRepositories& other) = delete;
-    ConstructorRepositories(ConstructorRepositories&& other) = default;
-    ConstructorRepositories& operator=(ConstructorRepositories&& other) = default;
+    Repositories() = default;
+    Repositories(const Repositories& other) = delete;
+    Repositories& operator=(const Repositories& other) = delete;
+    Repositories(Repositories&& other) = default;
+    Repositories& operator=(Repositories&& other) = default;
 
-    HanaConstructorRepositories& get_repositories();
-    const HanaConstructorRepositories& get_repositories() const;
+    HanaRepositories& get_repositories();
+    const HanaRepositories& get_repositories() const;
 
     /* Concepts */
     Constructor<Concept> get_or_create_concept_bot();

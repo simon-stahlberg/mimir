@@ -15,11 +15,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/languages/description_logics/constructor_visitors_formatter.hpp"
-
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/languages/description_logics/constructor_keywords.hpp"
+#include "mimir/languages/description_logics/constructor_visitor_formatter.hpp"
 #include "mimir/languages/description_logics/constructors.hpp"
 
 using namespace mimir::formalism;

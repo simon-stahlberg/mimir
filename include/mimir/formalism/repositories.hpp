@@ -51,57 +51,54 @@
 namespace mimir::formalism
 {
 
-template<typename T>
-using SegmentedPDDLRepository = loki::SegmentedRepository<T>;
-
-using RequirementsRepository = SegmentedPDDLRepository<RequirementsImpl>;
-using VariableRepository = SegmentedPDDLRepository<VariableImpl>;
-using TermRepository = SegmentedPDDLRepository<TermImpl>;
-using ObjectRepository = SegmentedPDDLRepository<ObjectImpl>;
+using RequirementsRepository = loki::SegmentedRepository<RequirementsImpl>;
+using VariableRepository = loki::SegmentedRepository<VariableImpl>;
+using TermRepository = loki::SegmentedRepository<TermImpl>;
+using ObjectRepository = loki::SegmentedRepository<ObjectImpl>;
 template<StaticOrFluentOrDerived P>
-using AtomRepository = SegmentedPDDLRepository<AtomImpl<P>>;
+using AtomRepository = loki::SegmentedRepository<AtomImpl<P>>;
 template<StaticOrFluentOrDerived P>
-using GroundAtomRepository = SegmentedPDDLRepository<GroundAtomImpl<P>>;
+using GroundAtomRepository = loki::SegmentedRepository<GroundAtomImpl<P>>;
 template<StaticOrFluentOrDerived P>
-using LiteralRepository = SegmentedPDDLRepository<LiteralImpl<P>>;
+using LiteralRepository = loki::SegmentedRepository<LiteralImpl<P>>;
 template<StaticOrFluentOrDerived P>
-using GroundLiteralRepository = SegmentedPDDLRepository<GroundLiteralImpl<P>>;
+using GroundLiteralRepository = loki::SegmentedRepository<GroundLiteralImpl<P>>;
 template<StaticOrFluentOrDerived P>
-using PredicateRepository = SegmentedPDDLRepository<PredicateImpl<P>>;
-using FunctionExpressionNumberRepository = SegmentedPDDLRepository<FunctionExpressionNumberImpl>;
-using FunctionExpressionBinaryOperatorRepository = SegmentedPDDLRepository<FunctionExpressionBinaryOperatorImpl>;
-using FunctionExpressionMultiOperatorRepository = SegmentedPDDLRepository<FunctionExpressionMultiOperatorImpl>;
-using FunctionExpressionMinusRepository = SegmentedPDDLRepository<FunctionExpressionMinusImpl>;
+using PredicateRepository = loki::SegmentedRepository<PredicateImpl<P>>;
+using FunctionExpressionNumberRepository = loki::SegmentedRepository<FunctionExpressionNumberImpl>;
+using FunctionExpressionBinaryOperatorRepository = loki::SegmentedRepository<FunctionExpressionBinaryOperatorImpl>;
+using FunctionExpressionMultiOperatorRepository = loki::SegmentedRepository<FunctionExpressionMultiOperatorImpl>;
+using FunctionExpressionMinusRepository = loki::SegmentedRepository<FunctionExpressionMinusImpl>;
 template<StaticOrFluentOrAuxiliary F>
-using FunctionExpressionFunctionRepository = SegmentedPDDLRepository<FunctionExpressionFunctionImpl<F>>;
-using FunctionExpressionRepository = SegmentedPDDLRepository<FunctionExpressionImpl>;
-using GroundFunctionExpressionNumberRepository = SegmentedPDDLRepository<GroundFunctionExpressionNumberImpl>;
-using GroundFunctionExpressionBinaryOperatorRepository = SegmentedPDDLRepository<GroundFunctionExpressionBinaryOperatorImpl>;
-using GroundFunctionExpressionMultiOperatorRepository = SegmentedPDDLRepository<GroundFunctionExpressionMultiOperatorImpl>;
-using GroundFunctionExpressionMinusRepository = SegmentedPDDLRepository<GroundFunctionExpressionMinusImpl>;
+using FunctionExpressionFunctionRepository = loki::SegmentedRepository<FunctionExpressionFunctionImpl<F>>;
+using FunctionExpressionRepository = loki::SegmentedRepository<FunctionExpressionImpl>;
+using GroundFunctionExpressionNumberRepository = loki::SegmentedRepository<GroundFunctionExpressionNumberImpl>;
+using GroundFunctionExpressionBinaryOperatorRepository = loki::SegmentedRepository<GroundFunctionExpressionBinaryOperatorImpl>;
+using GroundFunctionExpressionMultiOperatorRepository = loki::SegmentedRepository<GroundFunctionExpressionMultiOperatorImpl>;
+using GroundFunctionExpressionMinusRepository = loki::SegmentedRepository<GroundFunctionExpressionMinusImpl>;
 template<StaticOrFluentOrAuxiliary F>
-using GroundFunctionExpressionFunctionRepository = SegmentedPDDLRepository<GroundFunctionExpressionFunctionImpl<F>>;
-using GroundFunctionExpressionRepository = SegmentedPDDLRepository<GroundFunctionExpressionImpl>;
+using GroundFunctionExpressionFunctionRepository = loki::SegmentedRepository<GroundFunctionExpressionFunctionImpl<F>>;
+using GroundFunctionExpressionRepository = loki::SegmentedRepository<GroundFunctionExpressionImpl>;
 template<StaticOrFluentOrAuxiliary F>
-using FunctionRepository = SegmentedPDDLRepository<FunctionImpl<F>>;
+using FunctionRepository = loki::SegmentedRepository<FunctionImpl<F>>;
 template<StaticOrFluentOrAuxiliary F>
-using GroundFunctionRepository = SegmentedPDDLRepository<GroundFunctionImpl<F>>;
+using GroundFunctionRepository = loki::SegmentedRepository<GroundFunctionImpl<F>>;
 template<StaticOrFluentOrAuxiliary F>
-using GroundFunctionValueRepository = SegmentedPDDLRepository<GroundFunctionValueImpl<F>>;
+using GroundFunctionValueRepository = loki::SegmentedRepository<GroundFunctionValueImpl<F>>;
 template<StaticOrFluentOrAuxiliary F>
-using FunctionSkeletonRepository = SegmentedPDDLRepository<FunctionSkeletonImpl<F>>;
+using FunctionSkeletonRepository = loki::SegmentedRepository<FunctionSkeletonImpl<F>>;
 template<FluentOrAuxiliary F>
-using NumericEffectRepository = SegmentedPDDLRepository<NumericEffectImpl<F>>;
+using NumericEffectRepository = loki::SegmentedRepository<NumericEffectImpl<F>>;
 template<FluentOrAuxiliary F>
-using GroundNumericEffectRepository = SegmentedPDDLRepository<GroundNumericEffectImpl<F>>;
-using ConjunctiveEffectRepository = SegmentedPDDLRepository<ConjunctiveEffectImpl>;
-using ConditionalEffectRepository = SegmentedPDDLRepository<ConditionalEffectImpl>;
-using NumericConstraintRepository = SegmentedPDDLRepository<NumericConstraintImpl>;
-using GroundNumericConstraintRepository = SegmentedPDDLRepository<GroundNumericConstraintImpl>;
-using ConjunctiveConditionRepository = SegmentedPDDLRepository<ConjunctiveConditionImpl>;
-using ActionRepository = SegmentedPDDLRepository<ActionImpl>;
-using AxiomRepository = SegmentedPDDLRepository<AxiomImpl>;
-using OptimizationMetricRepository = SegmentedPDDLRepository<OptimizationMetricImpl>;
+using GroundNumericEffectRepository = loki::SegmentedRepository<GroundNumericEffectImpl<F>>;
+using ConjunctiveEffectRepository = loki::SegmentedRepository<ConjunctiveEffectImpl>;
+using ConditionalEffectRepository = loki::SegmentedRepository<ConditionalEffectImpl>;
+using NumericConstraintRepository = loki::SegmentedRepository<NumericConstraintImpl>;
+using GroundNumericConstraintRepository = loki::SegmentedRepository<GroundNumericConstraintImpl>;
+using ConjunctiveConditionRepository = loki::SegmentedRepository<ConjunctiveConditionImpl>;
+using ActionRepository = loki::SegmentedRepository<ActionImpl>;
+using AxiomRepository = loki::SegmentedRepository<AxiomImpl>;
+using OptimizationMetricRepository = loki::SegmentedRepository<OptimizationMetricImpl>;
 
 using HanaRepositories = boost::hana::map<
     boost::hana::pair<boost::hana::type<RequirementsImpl>, RequirementsRepository>,

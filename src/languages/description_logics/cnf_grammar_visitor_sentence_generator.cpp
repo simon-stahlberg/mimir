@@ -20,7 +20,7 @@
 #include "mimir/languages/description_logics/cnf_grammar.hpp"
 #include "mimir/languages/description_logics/cnf_grammar_constructors.hpp"
 #include "mimir/languages/description_logics/cnf_grammar_sentence_pruning.hpp"
-#include "mimir/languages/description_logics/constructor_visitors_formatter.hpp"
+#include "mimir/languages/description_logics/constructor_visitor_formatter.hpp"
 
 #include <unordered_map>
 #include <vector>
@@ -36,7 +36,7 @@ namespace mimir::languages::dl::cnf_grammar
 
 GeneratorVisitor::GeneratorVisitor(RefinementPruningFunction& pruning_function,
                                    GeneratedSentencesContainer& sentences,
-                                   dl::ConstructorRepositories& repositories,
+                                   dl::Repositories& repositories,
                                    size_t max_syntactic_complexity) :
     m_pruning_function(pruning_function),
     m_sentences(sentences),

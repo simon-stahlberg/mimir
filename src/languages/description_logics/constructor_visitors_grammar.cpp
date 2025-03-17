@@ -15,8 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/languages/description_logics/constructor_visitors_grammar.hpp"
-
+#include "mimir/languages/description_logics/constructor_visitor_grammar.hpp"
 #include "mimir/languages/description_logics/constructors.hpp"
 #include "mimir/languages/description_logics/grammar_constructors.hpp"
 

@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_VISITORS_GRAMMAR_HPP_
-#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_VISITORS_GRAMMAR_HPP_
+#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_VISITOR_GRAMMAR_HPP_
+#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_VISITOR_GRAMMAR_HPP_
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/languages/description_logics/constructor_visitor_interface.hpp"

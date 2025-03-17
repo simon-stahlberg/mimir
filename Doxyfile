@@ -90,9 +90,9 @@ INPUT                 = \
     "include/mimir/languages/description_logics/constructor_repositories.hpp" \
     "include/mimir/languages/description_logics/constructor_tag.hpp" \
     "include/mimir/languages/description_logics/constructor_visitor_interface.hpp" \
-    "include/mimir/languages/description_logics/constructor_visitors_cnf_grammar.hpp" \
-    "include/mimir/languages/description_logics/constructor_visitors_formatter.hpp" \
-    "include/mimir/languages/description_logics/constructor_visitors_grammar.hpp" \
+    "include/mimir/languages/description_logics/constructor_visitor_cnf_grammar.hpp" \
+    "include/mimir/languages/description_logics/constructor_visitor_formatter.hpp" \
+    "include/mimir/languages/description_logics/constructor_visitor_grammar.hpp" \
     "include/mimir/languages/description_logics/constructors.hpp" \
     "include/mimir/languages/description_logics/declarations.hpp" \
     "include/mimir/languages/description_logics/denotation_repositories.hpp" \
@@ -105,6 +105,18 @@ INPUT                 = \
     "include/mimir/languages/description_logics/grammar_containers.hpp" \
     "include/mimir/languages/description_logics/grammar_visitor_formatter.hpp" \
     "include/mimir/languages/description_logics/grammar_visitor_interface.hpp" \
+    "include/mimir/languages/general_policies/condition_interface.hpp" \
+    "include/mimir/languages/general_policies/condition_base.hpp" \
+    "include/mimir/languages/general_policies/conditions.hpp" \
+    "include/mimir/languages/general_policies/declarations.hpp" \
+    "include/mimir/languages/general_policies/effect_interface.hpp" \
+    "include/mimir/languages/general_policies/effect_base.hpp" \
+    "include/mimir/languages/general_policies/effects.hpp" \
+    "include/mimir/languages/general_policies/general_policy.hpp" \
+    "include/mimir/languages/general_policies/named_feature.hpp" \
+    "include/mimir/languages/general_policies/repositories.hpp" \
+    "include/mimir/languages/general_policies/rule.hpp" \
+    "include/mimir/languages/general_policies/visitor_interface.hpp" \
     "include/mimir/search/algorithms/astar.hpp" \
     "include/mimir/search/algorithms/astar/event_handlers/interface.hpp" \
     "include/mimir/search/algorithms/astar/event_handlers/default.hpp" \

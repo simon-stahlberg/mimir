@@ -68,7 +68,7 @@ static ToNonTerminalMap<std::string, Concept, Role, Boolean, Numerical> collect_
 
 struct EliminateChoiceVisitor : public CopyVisitor
 {
-    EliminateChoiceVisitor(ConstructorRepositories& repositories, StartSymbolsContainer& start_symbols, DerivationRulesContainer& derivation_rules) :
+    EliminateChoiceVisitor(Repositories& repositories, StartSymbolsContainer& start_symbols, DerivationRulesContainer& derivation_rules) :
         CopyVisitor(repositories, start_symbols, derivation_rules)
     {
     }
@@ -125,7 +125,7 @@ struct EliminateChoiceVisitor : public CopyVisitor
 
 static Grammar eliminate_choices_in_rules(const Grammar& grammar)
 {
-    auto repositories = ConstructorRepositories();
+    auto repositories = Repositories();
     auto start_symbols = StartSymbolsContainer();
     auto derivation_rules = DerivationRulesContainer();
 
@@ -161,7 +161,7 @@ private:
     }
 
 public:
-    EliminateNestedConstructorsVisitor(ConstructorRepositories& repositories,
+    EliminateNestedConstructorsVisitor(Repositories& repositories,
                                        StartSymbolsContainer& start_symbols,
                                        DerivationRulesContainer& derivation_rules,
                                        ToNonTerminalMap<std::string, Concept, Role, Boolean, Numerical>& existing_nonterminals) :
@@ -228,7 +228,7 @@ public:
 
 static Grammar eliminate_nested_constructors(const Grammar& grammar)
 {
-    auto repositories = ConstructorRepositories();
+    auto repositories = Repositories();
     auto start_symbols = StartSymbolsContainer();
     auto derivation_rules = DerivationRulesContainer();
 
@@ -249,7 +249,7 @@ static Grammar eliminate_nested_constructors(const Grammar& grammar)
  * Concept
  */
 
-ToCNFVisitor::ToCNFVisitor(cnf_grammar::ConstructorRepositories& repositories,
+ToCNFVisitor::ToCNFVisitor(cnf_grammar::Repositories& repositories,
                            cnf_grammar::StartSymbolsContainer& start_symbols,
                            cnf_grammar::DerivationRulesContainer& derivation_rules,
                            cnf_grammar::SubstitutionRulesContainer& substitution_rules) :
@@ -642,7 +642,7 @@ const std::any& ToCNFVisitor::get_result() const { return m_result; }
 
 static cnf_grammar::Grammar parse_cnf_grammar(const Grammar& grammar)
 {
-    auto repositories = cnf_grammar::ConstructorRepositories();
+    auto repositories = cnf_grammar::Repositories();
     auto start_symbols = cnf_grammar::StartSymbolsContainer();
     auto derivation_rules = cnf_grammar::DerivationRulesContainer();
     auto substitution_rules = cnf_grammar::SubstitutionRulesContainer();

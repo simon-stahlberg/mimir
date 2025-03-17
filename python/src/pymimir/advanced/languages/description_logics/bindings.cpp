@@ -77,163 +77,149 @@ void bind_languages_description_logics(nb::module_& m)
     nb::class_<dl::ConceptBotImpl, dl::IConstructor<dl::Concept>>(m, "ConceptBotConstructor");
     nb::class_<dl::ConceptTopImpl, dl::IConstructor<dl::Concept>>(m, "ConceptTopConstructor");
 
-    nb::class_<dl::ConstructorRepositories>(m, "ConstructorRepositories")
+    nb::class_<dl::Repositories>(m, "Repositories")
         .def(nb::init<>())
-        .def("get_or_create_concept_bot", &dl::ConstructorRepositories::get_or_create_concept_bot, nb::rv_policy::reference_internal)
-        .def("get_or_create_concept_top", &dl::ConstructorRepositories::get_or_create_concept_top, nb::rv_policy::reference_internal)
+        .def("get_or_create_concept_bot", &dl::Repositories::get_or_create_concept_bot, nb::rv_policy::reference_internal)
+        .def("get_or_create_concept_top", &dl::Repositories::get_or_create_concept_top, nb::rv_policy::reference_internal)
         .def("get_or_create_concept_intersection",
-             &dl::ConstructorRepositories::get_or_create_concept_intersection,
+             &dl::Repositories::get_or_create_concept_intersection,
              "left_concept"_a,
              "right_concept"_a,
              nb::rv_policy::reference_internal)
         .def("get_or_create_concept_union",
-             &dl::ConstructorRepositories::get_or_create_concept_union,
+             &dl::Repositories::get_or_create_concept_union,
              "left_concept"_a,
              "right_concept"_a,
              nb::rv_policy::reference_internal)
-        .def("get_or_create_concept_negation", &dl::ConstructorRepositories::get_or_create_concept_negation, "concept_"_a, nb::rv_policy::reference_internal)
+        .def("get_or_create_concept_negation", &dl::Repositories::get_or_create_concept_negation, "concept_"_a, nb::rv_policy::reference_internal)
         .def("get_or_create_concept_value_restriction",
-             &dl::ConstructorRepositories::get_or_create_concept_value_restriction,
+             &dl::Repositories::get_or_create_concept_value_restriction,
              "role"_a,
              "concept_"_a,
              nb::rv_policy::reference_internal)
         .def("get_or_create_concept_existential_quantification",
-             &dl::ConstructorRepositories::get_or_create_concept_existential_quantification,
+             &dl::Repositories::get_or_create_concept_existential_quantification,
              "role"_a,
              "concept_"_a,
              nb::rv_policy::reference_internal)
         .def("get_or_create_concept_role_value_map_containment",
-             &dl::ConstructorRepositories::get_or_create_concept_role_value_map_containment,
+             &dl::Repositories::get_or_create_concept_role_value_map_containment,
              "left_role"_a,
              "right_role"_a,
              nb::rv_policy::reference_internal)
         .def("get_or_create_concept_role_value_map_equality",
-             &dl::ConstructorRepositories::get_or_create_concept_role_value_map_equality,
+             &dl::Repositories::get_or_create_concept_role_value_map_equality,
              "left_role"_a,
              "right_role"_a,
              nb::rv_policy::reference_internal)
-        .def("get_or_create_concept_nominal", &dl::ConstructorRepositories::get_or_create_concept_nominal, "object"_a, nb::rv_policy::reference_internal)
+        .def("get_or_create_concept_nominal", &dl::Repositories::get_or_create_concept_nominal, "object"_a, nb::rv_policy::reference_internal)
 
         /* Roles */
-        .def("get_or_create_role_universal", &dl::ConstructorRepositories::get_or_create_role_universal, nb::rv_policy::reference_internal)
+        .def("get_or_create_role_universal", &dl::Repositories::get_or_create_role_universal, nb::rv_policy::reference_internal)
         .def("get_or_create_role_intersection",
-             &dl::ConstructorRepositories::get_or_create_role_intersection,
+             &dl::Repositories::get_or_create_role_intersection,
              "left_role"_a,
              "right_role"_a,
              nb::rv_policy::reference_internal)
-        .def("get_or_create_role_union",
-             &dl::ConstructorRepositories::get_or_create_role_union,
-             "left_role"_a,
-             "right_role"_a,
-             nb::rv_policy::reference_internal)
-        .def("get_or_create_role_complement", &dl::ConstructorRepositories::get_or_create_role_complement, "role"_a, nb::rv_policy::reference_internal)
-        .def("get_or_create_role_inverse", &dl::ConstructorRepositories::get_or_create_role_inverse, "role"_a, nb::rv_policy::reference_internal)
+        .def("get_or_create_role_union", &dl::Repositories::get_or_create_role_union, "left_role"_a, "right_role"_a, nb::rv_policy::reference_internal)
+        .def("get_or_create_role_complement", &dl::Repositories::get_or_create_role_complement, "role"_a, nb::rv_policy::reference_internal)
+        .def("get_or_create_role_inverse", &dl::Repositories::get_or_create_role_inverse, "role"_a, nb::rv_policy::reference_internal)
         .def("get_or_create_role_composition",
-             &dl::ConstructorRepositories::get_or_create_role_composition,
+             &dl::Repositories::get_or_create_role_composition,
              "left_role"_a,
              "right_role"_a,
              nb::rv_policy::reference_internal)
-        .def("get_or_create_role_transitive_closure",
-             &dl::ConstructorRepositories::get_or_create_role_transitive_closure,
-             "role"_a,
-             nb::rv_policy::reference_internal)
+        .def("get_or_create_role_transitive_closure", &dl::Repositories::get_or_create_role_transitive_closure, "role"_a, nb::rv_policy::reference_internal)
         .def("get_or_create_role_reflexive_transitive_closure",
-             &dl::ConstructorRepositories::get_or_create_role_reflexive_transitive_closure,
+             &dl::Repositories::get_or_create_role_reflexive_transitive_closure,
              "role"_a,
              nb::rv_policy::reference_internal)
-        .def("get_or_create_role_restriction",
-             &dl::ConstructorRepositories::get_or_create_role_restriction,
-             "role"_a,
-             "concept_"_a,
-             nb::rv_policy::reference_internal)
-        .def("get_or_create_role_identity", &dl::ConstructorRepositories::get_or_create_role_identity, "concept_"_a, nb::rv_policy::reference_internal)
+        .def("get_or_create_role_restriction", &dl::Repositories::get_or_create_role_restriction, "role"_a, "concept_"_a, nb::rv_policy::reference_internal)
+        .def("get_or_create_role_identity", &dl::Repositories::get_or_create_role_identity, "concept_"_a, nb::rv_policy::reference_internal)
 
         .def("get_or_create_concept_atomic_state_static",
-             &dl::ConstructorRepositories::get_or_create_concept_atomic_state<Static>,
+             &dl::Repositories::get_or_create_concept_atomic_state<Static>,
              "predicate"_a,
              nb::rv_policy::reference_internal)
         .def("get_or_create_concept_atomic_state_fluent",
-             &dl::ConstructorRepositories::get_or_create_concept_atomic_state<Fluent>,
+             &dl::Repositories::get_or_create_concept_atomic_state<Fluent>,
              "predicate"_a,
              nb::rv_policy::reference_internal)
         .def("get_or_create_concept_atomic_state_derived",
-             &dl::ConstructorRepositories::get_or_create_concept_atomic_state<Derived>,
+             &dl::Repositories::get_or_create_concept_atomic_state<Derived>,
              "predicate"_a,
              nb::rv_policy::reference_internal)
 
         .def("get_or_create_concept_atomic_goal_static",
-             &dl::ConstructorRepositories::get_or_create_concept_atomic_goal<Static>,
+             &dl::Repositories::get_or_create_concept_atomic_goal<Static>,
              "predicate"_a,
              "is_negated"_a,
              nb::rv_policy::reference_internal)
         .def("get_or_create_concept_atomic_goal_fluent",
-             &dl::ConstructorRepositories::get_or_create_concept_atomic_goal<Fluent>,
+             &dl::Repositories::get_or_create_concept_atomic_goal<Fluent>,
              "predicate"_a,
              "is_negated"_a,
              nb::rv_policy::reference_internal)
-        .def("get_or_create_concept_atomic_goal_derived",
-             &dl::ConstructorRepositories::get_or_create_concept_atomic_goal<Derived>,
-             "predicate"_a,
-             "is_negated"_a)
+        .def("get_or_create_concept_atomic_goal_derived", &dl::Repositories::get_or_create_concept_atomic_goal<Derived>, "predicate"_a, "is_negated"_a)
 
         .def("get_or_create_role_atomic_state_static",
-             &dl::ConstructorRepositories::get_or_create_role_atomic_state<Static>,
+             &dl::Repositories::get_or_create_role_atomic_state<Static>,
              "predicate"_a,
              nb::rv_policy::reference_internal)
         .def("get_or_create_role_atomic_state_fluent",
-             &dl::ConstructorRepositories::get_or_create_role_atomic_state<Fluent>,
+             &dl::Repositories::get_or_create_role_atomic_state<Fluent>,
              "predicate"_a,
              nb::rv_policy::reference_internal)
         .def("get_or_create_role_atomic_state_derived",
-             &dl::ConstructorRepositories::get_or_create_role_atomic_state<Derived>,
+             &dl::Repositories::get_or_create_role_atomic_state<Derived>,
              "predicate"_a,
              nb::rv_policy::reference_internal)
 
         .def("get_or_create_role_atomic_goal_static",
-             &dl::ConstructorRepositories::get_or_create_role_atomic_goal<Static>,
+             &dl::Repositories::get_or_create_role_atomic_goal<Static>,
              "predicate"_a,
              "is_negated"_a,
              nb::rv_policy::reference_internal)
         .def("get_or_create_role_atomic_goal_fluent",
-             &dl::ConstructorRepositories::get_or_create_role_atomic_goal<Fluent>,
+             &dl::Repositories::get_or_create_role_atomic_goal<Fluent>,
              "predicate"_a,
              "is_negated"_a,
              nb::rv_policy::reference_internal)
         .def("get_or_create_role_atomic_goal_derived",
-             &dl::ConstructorRepositories::get_or_create_role_atomic_goal<Derived>,
+             &dl::Repositories::get_or_create_role_atomic_goal<Derived>,
              "predicate"_a,
              "is_negated"_a,
              nb::rv_policy::reference_internal)
         .def("get_or_create_boolean_atomic_state_static",
-             &dl::ConstructorRepositories::get_or_create_boolean_atomic_state<Static>,
+             &dl::Repositories::get_or_create_boolean_atomic_state<Static>,
              "predicate"_a,
              nb::rv_policy::reference_internal)
         .def("get_or_create_boolean_atomic_state_fluent",
-             &dl::ConstructorRepositories::get_or_create_boolean_atomic_state<Fluent>,
+             &dl::Repositories::get_or_create_boolean_atomic_state<Fluent>,
              "predicate"_a,
              nb::rv_policy::reference_internal)
         .def("get_or_create_boolean_atomic_state_derived",
-             &dl::ConstructorRepositories::get_or_create_boolean_atomic_state<Derived>,
+             &dl::Repositories::get_or_create_boolean_atomic_state<Derived>,
              "predicate"_a,
              nb::rv_policy::reference_internal)
         .def("get_or_create_boolean_nonempty_concept",
-             &dl::ConstructorRepositories::get_or_create_boolean_nonempty<dl::Concept>,
+             &dl::Repositories::get_or_create_boolean_nonempty<dl::Concept>,
              "constructor"_a,
              nb::rv_policy::reference_internal)
         .def("get_or_create_boolean_nonempty_role",
-             &dl::ConstructorRepositories::get_or_create_boolean_nonempty<dl::Role>,
+             &dl::Repositories::get_or_create_boolean_nonempty<dl::Role>,
              "constructor"_a,
              nb::rv_policy::reference_internal)
         .def("get_or_create_numerical_count_concept",
-             &dl::ConstructorRepositories::get_or_create_numerical_count<dl::Concept>,
+             &dl::Repositories::get_or_create_numerical_count<dl::Concept>,
              "constructor"_a,
              nb::rv_policy::reference_internal)
         .def("get_or_create_numerical_count_role",
-             &dl::ConstructorRepositories::get_or_create_numerical_count<dl::Role>,
+             &dl::Repositories::get_or_create_numerical_count<dl::Role>,
              "constructor"_a,
              nb::rv_policy::reference_internal)
         .def("get_or_create_numerical_distance",
-             &dl::ConstructorRepositories::get_or_create_numerical_distance,
+             &dl::Repositories::get_or_create_numerical_distance,
              "left_concept"_a,
              "role"_a,
              "right_concept"_a,

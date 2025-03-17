@@ -56,7 +56,7 @@ TEST(MimirTests, LanguagesDescriptionLogicsGrammarTestMatchTest)
 
     auto grammar = dl::grammar::Grammar(bnf_description, problem->get_domain());
 
-    auto constructor_repositories = dl::ConstructorRepositories();
+    auto constructor_repositories = dl::Repositories();
 
     const auto predicate_at_robby = problem->get_domain()->get_name_to_predicate<Fluent>().at("at-robby");
     const auto concept_at_robby = constructor_repositories.get_or_create_concept_atomic_state(predicate_at_robby);

@@ -37,7 +37,7 @@ class Grammar
 {
 private:
     /* Memory */
-    ConstructorRepositories m_repositories;
+    Repositories m_repositories;
 
     /* The rules of the grammar. */
     StartSymbolsContainer m_start_symbols;
@@ -47,7 +47,7 @@ private:
     formalism::Domain m_domain;
 
 public:
-    Grammar(ConstructorRepositories repositories,
+    Grammar(Repositories repositories,
             StartSymbolsContainer start_symbols,
             DerivationRulesContainer derivation_rules,
             SubstitutionRulesContainer substitution_rules,
@@ -71,7 +71,7 @@ public:
      * Getters
      */
 
-    const ConstructorRepositories& get_repositories() const { return m_repositories; }
+    const Repositories& get_repositories() const { return m_repositories; }
     const StartSymbolsContainer& get_start_symbols_container() const { return m_start_symbols; }
     const DerivationRulesContainer& get_derivation_rules_container() const { return m_derivation_rules; }
     const SubstitutionRulesContainer& get_substitution_rules_container() const { return m_substitution_rules; }

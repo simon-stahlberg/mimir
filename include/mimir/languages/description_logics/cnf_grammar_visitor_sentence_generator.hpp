@@ -104,7 +104,7 @@ class GeneratorVisitor : public RecurseVisitor
 private:
     RefinementPruningFunction& m_pruning_function;
     GeneratedSentencesContainer& m_sentences;
-    dl::ConstructorRepositories& m_repositories;
+    dl::Repositories& m_repositories;
     size_t m_max_syntactic_complexity;
 
     size_t m_complexity;
@@ -117,7 +117,7 @@ private:
 public:
     GeneratorVisitor(RefinementPruningFunction& pruning_function,
                      GeneratedSentencesContainer& sentences,
-                     dl::ConstructorRepositories& repositories,
+                     dl::Repositories& repositories,
                      size_t max_syntactic_complexity);
 
     void visit(ConceptBot constructor) override;

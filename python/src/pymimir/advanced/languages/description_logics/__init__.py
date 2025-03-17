@@ -18,7 +18,7 @@ from _pymimir.advance.languages.dl import (
     ConceptBotConstructor,
     ConceptTopConstructor,
 
-    ConstructorRepositories,
+    Repositories,
 
     ConstructorVisitor,
 )

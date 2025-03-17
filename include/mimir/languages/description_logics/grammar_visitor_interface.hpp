@@ -187,14 +187,14 @@ private:
 class CopyVisitor : public IVisitor
 {
 protected:
-    ConstructorRepositories& m_repositories;
+    Repositories& m_repositories;
     StartSymbolsContainer& m_start_symbols;
     DerivationRulesContainer& m_derivation_rules;
 
     std::any m_result;
 
 public:
-    CopyVisitor(ConstructorRepositories& repositories, StartSymbolsContainer& start_symbols, DerivationRulesContainer& derivation_rules);
+    CopyVisitor(Repositories& repositories, StartSymbolsContainer& start_symbols, DerivationRulesContainer& derivation_rules);
 
     /* Concepts */
     void visit(ConceptBot constructor) override;

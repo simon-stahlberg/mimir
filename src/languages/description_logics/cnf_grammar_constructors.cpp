@@ -20,7 +20,7 @@
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/languages/description_logics/cnf_grammar.hpp"
 #include "mimir/languages/description_logics/cnf_grammar_visitor_interface.hpp"
-#include "mimir/languages/description_logics/constructor_visitors_cnf_grammar.hpp"
+#include "mimir/languages/description_logics/constructor_visitor_cnf_grammar.hpp"
 
 using namespace mimir::formalism;
 

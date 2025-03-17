@@ -185,7 +185,7 @@ private:
 class CopyVisitor : public IVisitor
 {
 protected:
-    ConstructorRepositories& m_repositories;
+    Repositories& m_repositories;
     StartSymbolsContainer& m_start_symbols;
     DerivationRulesContainer& m_derivation_rules;
     SubstitutionRulesContainer& m_substitution_rules;
@@ -193,7 +193,7 @@ protected:
     std::any m_result;
 
 public:
-    CopyVisitor(ConstructorRepositories& repositories,
+    CopyVisitor(Repositories& repositories,
                 StartSymbolsContainer& start_symbols,
                 DerivationRulesContainer& derivation_rules,
                 SubstitutionRulesContainer& substitution_rules);

@@ -15,9 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/languages/description_logics/constructor_visitors_cnf_grammar.hpp"
-
 #include "mimir/languages/description_logics/cnf_grammar_constructors.hpp"
+#include "mimir/languages/description_logics/constructor_visitor_cnf_grammar.hpp"
 #include "mimir/languages/description_logics/constructors.hpp"
 
 using namespace mimir::formalism;

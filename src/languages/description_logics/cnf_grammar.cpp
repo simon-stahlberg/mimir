@@ -34,7 +34,7 @@ using namespace mimir::formalism;
 namespace mimir::languages::dl::cnf_grammar
 {
 
-Grammar::Grammar(ConstructorRepositories repositories,
+Grammar::Grammar(Repositories repositories,
                  StartSymbolsContainer start_symbols,
                  DerivationRulesContainer derivation_rules,
                  SubstitutionRulesContainer substitution_rules,

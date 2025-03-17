@@ -306,7 +306,7 @@ class Grammar;
  * Repositories
  */
 
-class ConstructorRepositories;
+class Repositories;
 }
 
 namespace cnf_grammar
@@ -457,7 +457,7 @@ class Grammar;
  * Repositories
  */
 
-class ConstructorRepositories;
+class Repositories;
 }
 }
 

@@ -37,7 +37,7 @@ class Grammar
 {
 private:
     /* Memory */
-    ConstructorRepositories m_repositories;
+    Repositories m_repositories;
 
     /* The rules of the grammar. */
     StartSymbolsContainer m_start_symbols;
@@ -46,7 +46,7 @@ private:
     formalism::Domain m_domain;
 
 public:
-    Grammar(ConstructorRepositories repositories, StartSymbolsContainer start_symbols, DerivationRulesContainer derivation_rules, formalism::Domain domain);
+    Grammar(Repositories repositories, StartSymbolsContainer start_symbols, DerivationRulesContainer derivation_rules, formalism::Domain domain);
 
     /// @brief Create a grammar from a BNF description for a given domain.
     /// The domain is used for error checking only to ensure that predicates or constants are available.

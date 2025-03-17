@@ -247,7 +247,7 @@ void RecurseVisitor::visit(const Grammar& grammar)
 /// Recursive Copy Visitor
 ////////////////////////////
 
-CopyVisitor::CopyVisitor(ConstructorRepositories& repositories,
+CopyVisitor::CopyVisitor(Repositories& repositories,
                          StartSymbolsContainer& start_symbols,
                          DerivationRulesContainer& derivation_rules,
                          SubstitutionRulesContainer& substitution_rules) :

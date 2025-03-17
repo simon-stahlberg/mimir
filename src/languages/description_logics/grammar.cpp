@@ -27,7 +27,7 @@ using namespace mimir::formalism;
 namespace mimir::languages::dl::grammar
 {
 
-Grammar::Grammar(ConstructorRepositories repositories, StartSymbolsContainer start_symbols, DerivationRulesContainer derivation_rules, Domain domain) :
+Grammar::Grammar(Repositories repositories, StartSymbolsContainer start_symbols, DerivationRulesContainer derivation_rules, Domain domain) :
     m_repositories(std::move(repositories)),
     m_start_symbols(std::move(start_symbols)),
     m_derivation_rules(std::move(derivation_rules)),
