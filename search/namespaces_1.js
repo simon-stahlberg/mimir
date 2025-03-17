@@ -13,5 +13,6 @@ var searchData=
   ['languages_10',['languages',['../namespacemimir_1_1languages.html',1,'mimir']]],
   ['match_5ftree_11',['match_tree',['../namespacemimir_1_1search_1_1match__tree.html',1,'mimir::search']]],
   ['mimir_12',['mimir',['../namespacemimir.html',1,'']]],
-  ['search_13',['search',['../namespacemimir_1_1search.html',1,'mimir']]]
+  ['policy_5fsketches_13',['policy_sketches',['../namespacemimir_1_1languages_1_1policy__sketches.html',1,'mimir::languages']]],
+  ['search_14',['search',['../namespacemimir_1_1search.html',1,'mimir']]]
 ];
