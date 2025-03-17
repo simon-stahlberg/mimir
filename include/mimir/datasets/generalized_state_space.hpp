@@ -195,9 +195,9 @@ namespace mimir::datasets
 /// @brief `GeneralizedStateSpace` encapsulates a two-level graph structure to represent the state transition model of a class of problems.
 ///
 /// The central features of this implementation are:
-/// - the direct applicability of the a large collection of Boost BGL graph algorithms on these graphs, making it convenient to analyze state transition models.
+/// - the direct applicability of a large collection of Boost BGL graph algorithms on these graphs, making it convenient to analyze state transition models.
 /// - the availability of symmetry reduction techniques (using graph isomorphism) and expressivity analysis techniques (using state graphs and the k-WL
-/// algorithm).
+/// algorithm or approximate techniques).
 ///
 /// The two-level graph structure consists of two types of graphs: `graphs::ClassGraph` and `graphs::ProblemGraph`.
 /// On the high level, we have a single `graphs::ClassGraph` that represents the state transition model of the class of problems and
