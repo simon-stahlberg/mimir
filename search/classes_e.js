@@ -3,9 +3,11 @@ var searchData=
   ['parser_0',['Parser',['../classmimir_1_1formalism_1_1Parser.html',1,'mimir::formalism']]],
   ['plan_1',['Plan',['../classmimir_1_1search_1_1Plan.html',1,'mimir::search']]],
   ['planformattertag_2',['PlanFormatterTag',['../structmimir_1_1formalism_1_1GroundActionImpl_1_1PlanFormatterTag.html',1,'mimir::formalism::GroundActionImpl']]],
-  ['predicateimpl_3',['PredicateImpl',['../classmimir_1_1formalism_1_1PredicateImpl.html',1,'mimir::formalism']]],
-  ['problembuilder_4',['ProblemBuilder',['../classmimir_1_1formalism_1_1ProblemBuilder.html',1,'mimir::formalism']]],
-  ['problemgoalcounter_5',['ProblemGoalCounter',['../classmimir_1_1search_1_1ProblemGoalCounter.html',1,'mimir::search']]],
-  ['problemimpl_6',['ProblemImpl',['../classmimir_1_1formalism_1_1ProblemImpl.html',1,'mimir::formalism']]],
-  ['problemspecific_7',['ProblemSpecific',['../structmimir_1_1datasets_1_1GeneralizedStateSpace_1_1Options_1_1ProblemSpecific.html',1,'mimir::datasets::GeneralizedStateSpace::Options']]]
+  ['positivebooleanconditionimpl_3',['PositiveBooleanConditionImpl',['../classmimir_1_1languages_1_1general__policies_1_1PositiveBooleanConditionImpl.html',1,'mimir::languages::general_policies']]],
+  ['positivebooleaneffectimpl_4',['PositiveBooleanEffectImpl',['../classmimir_1_1languages_1_1general__policies_1_1PositiveBooleanEffectImpl.html',1,'mimir::languages::general_policies']]],
+  ['predicateimpl_5',['PredicateImpl',['../classmimir_1_1formalism_1_1PredicateImpl.html',1,'mimir::formalism']]],
+  ['problembuilder_6',['ProblemBuilder',['../classmimir_1_1formalism_1_1ProblemBuilder.html',1,'mimir::formalism']]],
+  ['problemgoalcounter_7',['ProblemGoalCounter',['../classmimir_1_1search_1_1ProblemGoalCounter.html',1,'mimir::search']]],
+  ['problemimpl_8',['ProblemImpl',['../classmimir_1_1formalism_1_1ProblemImpl.html',1,'mimir::formalism']]],
+  ['problemspecific_9',['ProblemSpecific',['../structmimir_1_1datasets_1_1GeneralizedStateSpace_1_1Options_1_1ProblemSpecific.html',1,'mimir::datasets::GeneralizedStateSpace::Options']]]
 ];
