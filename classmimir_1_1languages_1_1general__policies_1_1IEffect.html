@@ -114,6 +114,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a4aa05df0a103560550caf56fa2a77c51"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a37569e4c22bef113176e80ccefecb325"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IEffect.html#a37569e4c22bef113176e80ccefecb325">evaluate</a> (<a class="el" href="classmimir_1_1languages_1_1dl_1_1EvaluationContext.html">dl::EvaluationContext</a> &amp;source_context, <a class="el" href="classmimir_1_1languages_1_1dl_1_1EvaluationContext.html">dl::EvaluationContext</a> &amp;target_context) const =0</td></tr>
 <tr class="separator:a37569e4c22bef113176e80ccefecb325"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adce11d66109a5f3b09014b9c111f43b2"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IEffect.html#adce11d66109a5f3b09014b9c111f43b2">accept</a> (<a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IVisitor.html">IVisitor</a> &amp;visitor) const =0</td></tr>
+<tr class="memdesc:adce11d66109a5f3b09014b9c111f43b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accept a <code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IVisitor.html">IVisitor</a></code>.  <br /></td></tr>
+<tr class="separator:adce11d66109a5f3b09014b9c111f43b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IEffect.html" title="IEffect represents a Boolean feature effect.">IEffect</a></code> represents a Boolean feature effect. </p>
@@ -144,6 +147,42 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="adce11d66109a5f3b09014b9c111f43b2" name="adce11d66109a5f3b09014b9c111f43b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adce11d66109a5f3b09014b9c111f43b2">&#9670;&#160;</a></span>accept()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void mimir::languages::general_policies::IEffect::accept </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IVisitor.html">IVisitor</a> &amp;&#160;</td>
+          <td class="paramname"><em>visitor</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Accept a <code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IVisitor.html">IVisitor</a></code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">visitor</td><td>the <code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IVisitor.html">IVisitor</a></code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implemented in <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1EffectBase.html#af645b58dae24ec50ae93013e9f0a27db">mimir::languages::general_policies::EffectBase&lt; Derived_, D &gt;</a>, <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1EffectBase.html#af645b58dae24ec50ae93013e9f0a27db">mimir::languages::general_policies::EffectBase&lt; DecreaseNumericalEffectImpl, dl::Numerical &gt;</a>, <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1EffectBase.html#af645b58dae24ec50ae93013e9f0a27db">mimir::languages::general_policies::EffectBase&lt; IncreaseNumericalEffectImpl, dl::Numerical &gt;</a>, <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1EffectBase.html#af645b58dae24ec50ae93013e9f0a27db">mimir::languages::general_policies::EffectBase&lt; NegativeBooleanEffectImpl, dl::Boolean &gt;</a>, <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1EffectBase.html#af645b58dae24ec50ae93013e9f0a27db">mimir::languages::general_policies::EffectBase&lt; PositiveBooleanEffectImpl, dl::Boolean &gt;</a>, <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1EffectBase.html#af645b58dae24ec50ae93013e9f0a27db">mimir::languages::general_policies::EffectBase&lt; UnchangedBooleanEffectImpl, dl::Boolean &gt;</a>, and <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1EffectBase.html#af645b58dae24ec50ae93013e9f0a27db">mimir::languages::general_policies::EffectBase&lt; UnchangedNumericalEffectImpl, dl::Numerical &gt;</a>.</p>
+
+</div>
+</div>
 <a id="a37569e4c22bef113176e80ccefecb325" name="a37569e4c22bef113176e80ccefecb325"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a37569e4c22bef113176e80ccefecb325">&#9670;&#160;</a></span>evaluate()</h2>
 

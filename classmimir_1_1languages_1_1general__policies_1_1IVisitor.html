@@ -75,8 +75,9 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classmimir_1_1languages_1_1general__policies_1_1IVisitor-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">mimir::languages::general_policies::IVisitor Class Reference</div></div>
+  <div class="headertitle"><div class="title">mimir::languages::general_policies::IVisitor Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
 </div><!--header-->
 <div class="contents">
 
@@ -84,10 +85,77 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:af7e23b85f010a69160b92973111fc15e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IVisitor.html#af7e23b85f010a69160b92973111fc15e">IVisitor</a> (<a class="el" href="classmimir_1_1languages_1_1dl_1_1IVisitor.html">dl::IVisitor</a> &amp;constructor_visitor)</td></tr>
+<tr class="separator:af7e23b85f010a69160b92973111fc15e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae450c6431185453af75e5beff0ad9bb0"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IVisitor.html#ae450c6431185453af75e5beff0ad9bb0">~IVisitor</a> ()=default</td></tr>
 <tr class="separator:ae450c6431185453af75e5beff0ad9bb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a189b737925d162309dfb195a7a59dc9d"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IVisitor.html#a189b737925d162309dfb195a7a59dc9d">visit</a> (<a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#a99ff92f4621a58505bf9d6522f5f4902">PositiveBooleanCondition</a> effect)=0</td></tr>
+<tr class="separator:a189b737925d162309dfb195a7a59dc9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af28c301312890f2ef3c2e6ce3a563278"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IVisitor.html#af28c301312890f2ef3c2e6ce3a563278">visit</a> (<a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#af6c49000cdda757b6bec72e5c2f408ac">NegativeBooleanCondition</a> effect)=0</td></tr>
+<tr class="separator:af28c301312890f2ef3c2e6ce3a563278"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88cdb04ea47e1d9f44743e15e1789764"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IVisitor.html#a88cdb04ea47e1d9f44743e15e1789764">visit</a> (<a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#ad60f6604cff31880ed837c87615c7272">GreaterNumericalCondition</a> effect)=0</td></tr>
+<tr class="separator:a88cdb04ea47e1d9f44743e15e1789764"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac13bf318239d50229ec80b8adea26a58"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IVisitor.html#ac13bf318239d50229ec80b8adea26a58">visit</a> (<a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#a87cc9d3abfb095734f1c43fb7f271fe3">EqualNumericalCondition</a> effect)=0</td></tr>
+<tr class="separator:ac13bf318239d50229ec80b8adea26a58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2036c8abefd9b33f77fa12cdeba930d5"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IVisitor.html#a2036c8abefd9b33f77fa12cdeba930d5">visit</a> (<a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#ace9cfee1321119da3c4a8d74e19046db">PositiveBooleanEffect</a> effect)=0</td></tr>
+<tr class="separator:a2036c8abefd9b33f77fa12cdeba930d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2baaaafbf0d8646458b1ec1cb55fcd5"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IVisitor.html#aa2baaaafbf0d8646458b1ec1cb55fcd5">visit</a> (<a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#af70c77252ad8ada8e571abcc7cbca98e">NegativeBooleanEffect</a> effect)=0</td></tr>
+<tr class="separator:aa2baaaafbf0d8646458b1ec1cb55fcd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2f80dc8fcc99dff69273c1ce20c39d6"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IVisitor.html#ab2f80dc8fcc99dff69273c1ce20c39d6">visit</a> (<a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#a4c33c104aff36fff7ca60ece6a281827">UnchangedBooleanEffect</a> effect)=0</td></tr>
+<tr class="separator:ab2f80dc8fcc99dff69273c1ce20c39d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6880c17c86852609bc73ec7c4d4d539a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IVisitor.html#a6880c17c86852609bc73ec7c4d4d539a">visit</a> (<a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#a1e87cdb2e5ee0d0b775c2a74783ff7b9">IncreaseNumericalEffect</a> effect)=0</td></tr>
+<tr class="separator:a6880c17c86852609bc73ec7c4d4d539a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b01e3e0402393eae9d045e037341a81"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IVisitor.html#a8b01e3e0402393eae9d045e037341a81">visit</a> (<a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#a9509652d46026082794c0894cb48db7a">DecreaseNumericalEffect</a> effect)=0</td></tr>
+<tr class="separator:a8b01e3e0402393eae9d045e037341a81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a647c48caaf1a093e89cae4d855c944a6"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IVisitor.html#a647c48caaf1a093e89cae4d855c944a6">visit</a> (<a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#a40afd8eb5dc094472c5d6fdc24835821">UnchangedNumericalEffect</a> effect)=0</td></tr>
+<tr class="separator:a647c48caaf1a093e89cae4d855c944a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9bde451c3dd5c6e6ccdf3571f7aa9fb"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IVisitor.html#ab9bde451c3dd5c6e6ccdf3571f7aa9fb">visit</a> (<a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#aec5ca3f37315bf49bfb4a5aae3ff1504">NamedFeature</a>&lt; <a class="el" href="structmimir_1_1languages_1_1dl_1_1Concept.html">dl::Concept</a> &gt; feature)=0</td></tr>
+<tr class="separator:ab9bde451c3dd5c6e6ccdf3571f7aa9fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7681874b56743ecdaf33bcee0199b9e0"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IVisitor.html#a7681874b56743ecdaf33bcee0199b9e0">visit</a> (<a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#aec5ca3f37315bf49bfb4a5aae3ff1504">NamedFeature</a>&lt; <a class="el" href="structmimir_1_1languages_1_1dl_1_1Role.html">dl::Role</a> &gt; feature)=0</td></tr>
+<tr class="separator:a7681874b56743ecdaf33bcee0199b9e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29d0e6525a95296f7fbe0a2ec06dfe5a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IVisitor.html#a29d0e6525a95296f7fbe0a2ec06dfe5a">visit</a> (<a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#aec5ca3f37315bf49bfb4a5aae3ff1504">NamedFeature</a>&lt; <a class="el" href="structmimir_1_1languages_1_1dl_1_1Boolean.html">dl::Boolean</a> &gt; feature)=0</td></tr>
+<tr class="separator:a29d0e6525a95296f7fbe0a2ec06dfe5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f0061db090a8643b3a1f41a2e3d6e6c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IVisitor.html#a1f0061db090a8643b3a1f41a2e3d6e6c">visit</a> (<a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#aec5ca3f37315bf49bfb4a5aae3ff1504">NamedFeature</a>&lt; <a class="el" href="structmimir_1_1languages_1_1dl_1_1Numerical.html">dl::Numerical</a> &gt; feature)=0</td></tr>
+<tr class="separator:a1f0061db090a8643b3a1f41a2e3d6e6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54e48ac196e35b0292536749f7f2fb52"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IVisitor.html#a54e48ac196e35b0292536749f7f2fb52">visit</a> (<a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#a5b3a03584beacd4ce1c124470d7bbea2">Rule</a> rule)=0</td></tr>
+<tr class="separator:a54e48ac196e35b0292536749f7f2fb52"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad09d80b334696cd2cbaab9ce37150f74"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IVisitor.html#ad09d80b334696cd2cbaab9ce37150f74">visit</a> (const <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicy.html">GeneralPolicy</a> &amp;policy)=0</td></tr>
+<tr class="separator:ad09d80b334696cd2cbaab9ce37150f74"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68309a2051b9d83cc14ba56b49620a07"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmimir_1_1languages_1_1dl_1_1IVisitor.html">dl::IVisitor</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IVisitor.html#a68309a2051b9d83cc14ba56b49620a07">get_constructor_visitor</a> ()</td></tr>
+<tr class="separator:a68309a2051b9d83cc14ba56b49620a07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
+<tr class="memitem:adf47ddc208be6937a58dd64cc8b26143"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmimir_1_1languages_1_1dl_1_1IVisitor.html">dl::IVisitor</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IVisitor.html#adf47ddc208be6937a58dd64cc8b26143">m_constructor_visitor</a></td></tr>
+<tr class="separator:adf47ddc208be6937a58dd64cc8b26143"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="af7e23b85f010a69160b92973111fc15e" name="af7e23b85f010a69160b92973111fc15e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7e23b85f010a69160b92973111fc15e">&#9670;&#160;</a></span>IVisitor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">mimir::languages::general_policies::IVisitor::IVisitor </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classmimir_1_1languages_1_1dl_1_1IVisitor.html">dl::IVisitor</a> &amp;&#160;</td>
+          <td class="paramname"><em>constructor_visitor</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="ae450c6431185453af75e5beff0ad9bb0" name="ae450c6431185453af75e5beff0ad9bb0"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae450c6431185453af75e5beff0ad9bb0">&#9670;&#160;</a></span>~IVisitor()</h2>
 
@@ -107,6 +175,463 @@ Public Member Functions</h2></td></tr>
   </td>
   <td class="mlabels-right">
 <span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a68309a2051b9d83cc14ba56b49620a07" name="a68309a2051b9d83cc14ba56b49620a07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68309a2051b9d83cc14ba56b49620a07">&#9670;&#160;</a></span>get_constructor_visitor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classmimir_1_1languages_1_1dl_1_1IVisitor.html">dl::IVisitor</a> &amp; mimir::languages::general_policies::IVisitor::get_constructor_visitor </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad09d80b334696cd2cbaab9ce37150f74" name="ad09d80b334696cd2cbaab9ce37150f74"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad09d80b334696cd2cbaab9ce37150f74">&#9670;&#160;</a></span>visit() <span class="overload">[1/16]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void mimir::languages::general_policies::IVisitor::visit </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicy.html">GeneralPolicy</a> &amp;&#160;</td>
+          <td class="paramname"><em>policy</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8b01e3e0402393eae9d045e037341a81" name="a8b01e3e0402393eae9d045e037341a81"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b01e3e0402393eae9d045e037341a81">&#9670;&#160;</a></span>visit() <span class="overload">[2/16]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void mimir::languages::general_policies::IVisitor::visit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#a9509652d46026082794c0894cb48db7a">DecreaseNumericalEffect</a>&#160;</td>
+          <td class="paramname"><em>effect</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac13bf318239d50229ec80b8adea26a58" name="ac13bf318239d50229ec80b8adea26a58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac13bf318239d50229ec80b8adea26a58">&#9670;&#160;</a></span>visit() <span class="overload">[3/16]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void mimir::languages::general_policies::IVisitor::visit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#a87cc9d3abfb095734f1c43fb7f271fe3">EqualNumericalCondition</a>&#160;</td>
+          <td class="paramname"><em>effect</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a88cdb04ea47e1d9f44743e15e1789764" name="a88cdb04ea47e1d9f44743e15e1789764"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88cdb04ea47e1d9f44743e15e1789764">&#9670;&#160;</a></span>visit() <span class="overload">[4/16]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void mimir::languages::general_policies::IVisitor::visit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#ad60f6604cff31880ed837c87615c7272">GreaterNumericalCondition</a>&#160;</td>
+          <td class="paramname"><em>effect</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6880c17c86852609bc73ec7c4d4d539a" name="a6880c17c86852609bc73ec7c4d4d539a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6880c17c86852609bc73ec7c4d4d539a">&#9670;&#160;</a></span>visit() <span class="overload">[5/16]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void mimir::languages::general_policies::IVisitor::visit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#a1e87cdb2e5ee0d0b775c2a74783ff7b9">IncreaseNumericalEffect</a>&#160;</td>
+          <td class="paramname"><em>effect</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a29d0e6525a95296f7fbe0a2ec06dfe5a" name="a29d0e6525a95296f7fbe0a2ec06dfe5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29d0e6525a95296f7fbe0a2ec06dfe5a">&#9670;&#160;</a></span>visit() <span class="overload">[6/16]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void mimir::languages::general_policies::IVisitor::visit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#aec5ca3f37315bf49bfb4a5aae3ff1504">NamedFeature</a>&lt; <a class="el" href="structmimir_1_1languages_1_1dl_1_1Boolean.html">dl::Boolean</a> &gt;&#160;</td>
+          <td class="paramname"><em>feature</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab9bde451c3dd5c6e6ccdf3571f7aa9fb" name="ab9bde451c3dd5c6e6ccdf3571f7aa9fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9bde451c3dd5c6e6ccdf3571f7aa9fb">&#9670;&#160;</a></span>visit() <span class="overload">[7/16]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void mimir::languages::general_policies::IVisitor::visit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#aec5ca3f37315bf49bfb4a5aae3ff1504">NamedFeature</a>&lt; <a class="el" href="structmimir_1_1languages_1_1dl_1_1Concept.html">dl::Concept</a> &gt;&#160;</td>
+          <td class="paramname"><em>feature</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1f0061db090a8643b3a1f41a2e3d6e6c" name="a1f0061db090a8643b3a1f41a2e3d6e6c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f0061db090a8643b3a1f41a2e3d6e6c">&#9670;&#160;</a></span>visit() <span class="overload">[8/16]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void mimir::languages::general_policies::IVisitor::visit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#aec5ca3f37315bf49bfb4a5aae3ff1504">NamedFeature</a>&lt; <a class="el" href="structmimir_1_1languages_1_1dl_1_1Numerical.html">dl::Numerical</a> &gt;&#160;</td>
+          <td class="paramname"><em>feature</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7681874b56743ecdaf33bcee0199b9e0" name="a7681874b56743ecdaf33bcee0199b9e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7681874b56743ecdaf33bcee0199b9e0">&#9670;&#160;</a></span>visit() <span class="overload">[9/16]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void mimir::languages::general_policies::IVisitor::visit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#aec5ca3f37315bf49bfb4a5aae3ff1504">NamedFeature</a>&lt; <a class="el" href="structmimir_1_1languages_1_1dl_1_1Role.html">dl::Role</a> &gt;&#160;</td>
+          <td class="paramname"><em>feature</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af28c301312890f2ef3c2e6ce3a563278" name="af28c301312890f2ef3c2e6ce3a563278"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af28c301312890f2ef3c2e6ce3a563278">&#9670;&#160;</a></span>visit() <span class="overload">[10/16]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void mimir::languages::general_policies::IVisitor::visit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#af6c49000cdda757b6bec72e5c2f408ac">NegativeBooleanCondition</a>&#160;</td>
+          <td class="paramname"><em>effect</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa2baaaafbf0d8646458b1ec1cb55fcd5" name="aa2baaaafbf0d8646458b1ec1cb55fcd5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2baaaafbf0d8646458b1ec1cb55fcd5">&#9670;&#160;</a></span>visit() <span class="overload">[11/16]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void mimir::languages::general_policies::IVisitor::visit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#af70c77252ad8ada8e571abcc7cbca98e">NegativeBooleanEffect</a>&#160;</td>
+          <td class="paramname"><em>effect</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a189b737925d162309dfb195a7a59dc9d" name="a189b737925d162309dfb195a7a59dc9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a189b737925d162309dfb195a7a59dc9d">&#9670;&#160;</a></span>visit() <span class="overload">[12/16]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void mimir::languages::general_policies::IVisitor::visit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#a99ff92f4621a58505bf9d6522f5f4902">PositiveBooleanCondition</a>&#160;</td>
+          <td class="paramname"><em>effect</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2036c8abefd9b33f77fa12cdeba930d5" name="a2036c8abefd9b33f77fa12cdeba930d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2036c8abefd9b33f77fa12cdeba930d5">&#9670;&#160;</a></span>visit() <span class="overload">[13/16]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void mimir::languages::general_policies::IVisitor::visit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#ace9cfee1321119da3c4a8d74e19046db">PositiveBooleanEffect</a>&#160;</td>
+          <td class="paramname"><em>effect</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a54e48ac196e35b0292536749f7f2fb52" name="a54e48ac196e35b0292536749f7f2fb52"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54e48ac196e35b0292536749f7f2fb52">&#9670;&#160;</a></span>visit() <span class="overload">[14/16]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void mimir::languages::general_policies::IVisitor::visit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#a5b3a03584beacd4ce1c124470d7bbea2">Rule</a>&#160;</td>
+          <td class="paramname"><em>rule</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab2f80dc8fcc99dff69273c1ce20c39d6" name="ab2f80dc8fcc99dff69273c1ce20c39d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab2f80dc8fcc99dff69273c1ce20c39d6">&#9670;&#160;</a></span>visit() <span class="overload">[15/16]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void mimir::languages::general_policies::IVisitor::visit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#a4c33c104aff36fff7ca60ece6a281827">UnchangedBooleanEffect</a>&#160;</td>
+          <td class="paramname"><em>effect</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a647c48caaf1a093e89cae4d855c944a6" name="a647c48caaf1a093e89cae4d855c944a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a647c48caaf1a093e89cae4d855c944a6">&#9670;&#160;</a></span>visit() <span class="overload">[16/16]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void mimir::languages::general_policies::IVisitor::visit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#a40afd8eb5dc094472c5d6fdc24835821">UnchangedNumericalEffect</a>&#160;</td>
+          <td class="paramname"><em>effect</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="adf47ddc208be6937a58dd64cc8b26143" name="adf47ddc208be6937a58dd64cc8b26143"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf47ddc208be6937a58dd64cc8b26143">&#9670;&#160;</a></span>m_constructor_visitor</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classmimir_1_1languages_1_1dl_1_1IVisitor.html">dl::IVisitor</a>&amp; mimir::languages::general_policies::IVisitor::m_constructor_visitor</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
