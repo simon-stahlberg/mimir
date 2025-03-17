@@ -36,7 +36,7 @@ using DerivationOrSubstitutionRule = std::variant<DerivationRule<D>, Substitutio
 namespace mimir::languages::dl::grammar
 {
 
-class ToCNFVisitor : public Visitor
+class ToCNFVisitor : public IVisitor
 {
 protected:
     cnf_grammar::ConstructorRepositories& m_repositories;

@@ -13,10 +13,10 @@ using namespace mimir::search;
 namespace mimir::bindings
 {
 
-class IPyDLVisitor : public dl::Visitor
+class IPyDLVisitor : public dl::IVisitor
 {
 public:
-    NB_TRAMPOLINE(dl::Visitor, 40);
+    NB_TRAMPOLINE(dl::IVisitor, 40);
 
     /* Trampoline (need one for each virtual function) */
     void visit(dl::ConceptBot constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
@@ -74,8 +74,8 @@ void bind_languages_description_logics(nb::module_& m)
     bind_constructor<dl::Boolean>(m, "BooleanConstructor");
     bind_constructor<dl::Numerical>(m, "NumericalConstructor");
 
-    nb::class_<dl::ConceptBotImpl, dl::ConstructorImpl<dl::Concept>>(m, "ConceptBotConstructor");
-    nb::class_<dl::ConceptTopImpl, dl::ConstructorImpl<dl::Concept>>(m, "ConceptTopConstructor");
+    nb::class_<dl::ConceptBotImpl, dl::IConstructor<dl::Concept>>(m, "ConceptBotConstructor");
+    nb::class_<dl::ConceptTopImpl, dl::IConstructor<dl::Concept>>(m, "ConceptTopConstructor");
 
     nb::class_<dl::ConstructorRepositories>(m, "ConstructorRepositories")
         .def(nb::init<>())
@@ -240,48 +240,48 @@ void bind_languages_description_logics(nb::module_& m)
              nb::rv_policy::reference_internal);
 
     /* ConstructorVisitor */
-    nb::class_<dl::Visitor, IPyDLVisitor>(m, "ConstructorVisitor")  //
+    nb::class_<dl::IVisitor, IPyDLVisitor>(m, "ConstructorVisitor")  //
         .def(nb::init<>())
-        .def("visit", nb::overload_cast<dl::ConceptBot>(&dl::Visitor::visit))
-        .def("visit", nb::overload_cast<dl::ConceptTop>(&dl::Visitor::visit))
-        .def("visit", nb::overload_cast<dl::ConceptAtomicState<formalism::Static>>(&dl::Visitor::visit))
-        .def("visit", nb::overload_cast<dl::ConceptAtomicState<formalism::Fluent>>(&dl::Visitor::visit))
-        .def("visit", nb::overload_cast<dl::ConceptAtomicState<formalism::Derived>>(&dl::Visitor::visit))
-        .def("visit", nb::overload_cast<dl::ConceptAtomicGoal<formalism::Static>>(&dl::Visitor::visit))
-        .def("visit", nb::overload_cast<dl::ConceptAtomicGoal<formalism::Fluent>>(&dl::Visitor::visit))
-        .def("visit", nb::overload_cast<dl::ConceptAtomicGoal<formalism::Derived>>(&dl::Visitor::visit))
-        .def("visit", nb::overload_cast<dl::ConceptIntersection>(&dl::Visitor::visit))
-        .def("visit", nb::overload_cast<dl::ConceptUnion>(&dl::Visitor::visit))
-        .def("visit", nb::overload_cast<dl::ConceptNegation>(&dl::Visitor::visit))
-        .def("visit", nb::overload_cast<dl::ConceptValueRestriction>(&dl::Visitor::visit))
-        .def("visit", nb::overload_cast<dl::ConceptExistentialQuantification>(&dl::Visitor::visit))
-        .def("visit", nb::overload_cast<dl::ConceptRoleValueMapContainment>(&dl::Visitor::visit))
-        .def("visit", nb::overload_cast<dl::ConceptRoleValueMapEquality>(&dl::Visitor::visit))
-        .def("visit", nb::overload_cast<dl::ConceptNominal>(&dl::Visitor::visit))
-        .def("visit", nb::overload_cast<dl::RoleUniversal>(&dl::Visitor::visit))
-        .def("visit", nb::overload_cast<dl::RoleAtomicState<formalism::Static>>(&dl::Visitor::visit))
-        .def("visit", nb::overload_cast<dl::RoleAtomicState<formalism::Fluent>>(&dl::Visitor::visit))
-        .def("visit", nb::overload_cast<dl::RoleAtomicState<formalism::Derived>>(&dl::Visitor::visit))
-        .def("visit", nb::overload_cast<dl::RoleAtomicGoal<formalism::Static>>(&dl::Visitor::visit))
-        .def("visit", nb::overload_cast<dl::RoleAtomicGoal<formalism::Fluent>>(&dl::Visitor::visit))
-        .def("visit", nb::overload_cast<dl::RoleAtomicGoal<formalism::Derived>>(&dl::Visitor::visit))
-        .def("visit", nb::overload_cast<dl::RoleIntersection>(&dl::Visitor::visit))
-        .def("visit", nb::overload_cast<dl::RoleUnion>(&dl::Visitor::visit))
-        .def("visit", nb::overload_cast<dl::RoleComplement>(&dl::Visitor::visit))
-        .def("visit", nb::overload_cast<dl::RoleInverse>(&dl::Visitor::visit))
-        .def("visit", nb::overload_cast<dl::RoleComposition>(&dl::Visitor::visit))
-        .def("visit", nb::overload_cast<dl::RoleTransitiveClosure>(&dl::Visitor::visit))
-        .def("visit", nb::overload_cast<dl::RoleReflexiveTransitiveClosure>(&dl::Visitor::visit))
-        .def("visit", nb::overload_cast<dl::RoleRestriction>(&dl::Visitor::visit))
-        .def("visit", nb::overload_cast<dl::RoleIdentity>(&dl::Visitor::visit))
-        .def("visit", nb::overload_cast<dl::BooleanAtomicState<formalism::Static>>(&dl::Visitor::visit))
-        .def("visit", nb::overload_cast<dl::BooleanAtomicState<formalism::Fluent>>(&dl::Visitor::visit))
-        .def("visit", nb::overload_cast<dl::BooleanAtomicState<formalism::Derived>>(&dl::Visitor::visit))
-        .def("visit", nb::overload_cast<dl::BooleanNonempty<dl::Concept>>(&dl::Visitor::visit))
-        .def("visit", nb::overload_cast<dl::BooleanNonempty<dl::Role>>(&dl::Visitor::visit))
-        .def("visit", nb::overload_cast<dl::NumericalCount<dl::Concept>>(&dl::Visitor::visit))
-        .def("visit", nb::overload_cast<dl::NumericalCount<dl::Role>>(&dl::Visitor::visit))
-        .def("visit", nb::overload_cast<dl::NumericalDistance>(&dl::Visitor::visit));
+        .def("visit", nb::overload_cast<dl::ConceptBot>(&dl::IVisitor::visit))
+        .def("visit", nb::overload_cast<dl::ConceptTop>(&dl::IVisitor::visit))
+        .def("visit", nb::overload_cast<dl::ConceptAtomicState<formalism::Static>>(&dl::IVisitor::visit))
+        .def("visit", nb::overload_cast<dl::ConceptAtomicState<formalism::Fluent>>(&dl::IVisitor::visit))
+        .def("visit", nb::overload_cast<dl::ConceptAtomicState<formalism::Derived>>(&dl::IVisitor::visit))
+        .def("visit", nb::overload_cast<dl::ConceptAtomicGoal<formalism::Static>>(&dl::IVisitor::visit))
+        .def("visit", nb::overload_cast<dl::ConceptAtomicGoal<formalism::Fluent>>(&dl::IVisitor::visit))
+        .def("visit", nb::overload_cast<dl::ConceptAtomicGoal<formalism::Derived>>(&dl::IVisitor::visit))
+        .def("visit", nb::overload_cast<dl::ConceptIntersection>(&dl::IVisitor::visit))
+        .def("visit", nb::overload_cast<dl::ConceptUnion>(&dl::IVisitor::visit))
+        .def("visit", nb::overload_cast<dl::ConceptNegation>(&dl::IVisitor::visit))
+        .def("visit", nb::overload_cast<dl::ConceptValueRestriction>(&dl::IVisitor::visit))
+        .def("visit", nb::overload_cast<dl::ConceptExistentialQuantification>(&dl::IVisitor::visit))
+        .def("visit", nb::overload_cast<dl::ConceptRoleValueMapContainment>(&dl::IVisitor::visit))
+        .def("visit", nb::overload_cast<dl::ConceptRoleValueMapEquality>(&dl::IVisitor::visit))
+        .def("visit", nb::overload_cast<dl::ConceptNominal>(&dl::IVisitor::visit))
+        .def("visit", nb::overload_cast<dl::RoleUniversal>(&dl::IVisitor::visit))
+        .def("visit", nb::overload_cast<dl::RoleAtomicState<formalism::Static>>(&dl::IVisitor::visit))
+        .def("visit", nb::overload_cast<dl::RoleAtomicState<formalism::Fluent>>(&dl::IVisitor::visit))
+        .def("visit", nb::overload_cast<dl::RoleAtomicState<formalism::Derived>>(&dl::IVisitor::visit))
+        .def("visit", nb::overload_cast<dl::RoleAtomicGoal<formalism::Static>>(&dl::IVisitor::visit))
+        .def("visit", nb::overload_cast<dl::RoleAtomicGoal<formalism::Fluent>>(&dl::IVisitor::visit))
+        .def("visit", nb::overload_cast<dl::RoleAtomicGoal<formalism::Derived>>(&dl::IVisitor::visit))
+        .def("visit", nb::overload_cast<dl::RoleIntersection>(&dl::IVisitor::visit))
+        .def("visit", nb::overload_cast<dl::RoleUnion>(&dl::IVisitor::visit))
+        .def("visit", nb::overload_cast<dl::RoleComplement>(&dl::IVisitor::visit))
+        .def("visit", nb::overload_cast<dl::RoleInverse>(&dl::IVisitor::visit))
+        .def("visit", nb::overload_cast<dl::RoleComposition>(&dl::IVisitor::visit))
+        .def("visit", nb::overload_cast<dl::RoleTransitiveClosure>(&dl::IVisitor::visit))
+        .def("visit", nb::overload_cast<dl::RoleReflexiveTransitiveClosure>(&dl::IVisitor::visit))
+        .def("visit", nb::overload_cast<dl::RoleRestriction>(&dl::IVisitor::visit))
+        .def("visit", nb::overload_cast<dl::RoleIdentity>(&dl::IVisitor::visit))
+        .def("visit", nb::overload_cast<dl::BooleanAtomicState<formalism::Static>>(&dl::IVisitor::visit))
+        .def("visit", nb::overload_cast<dl::BooleanAtomicState<formalism::Fluent>>(&dl::IVisitor::visit))
+        .def("visit", nb::overload_cast<dl::BooleanAtomicState<formalism::Derived>>(&dl::IVisitor::visit))
+        .def("visit", nb::overload_cast<dl::BooleanNonempty<dl::Concept>>(&dl::IVisitor::visit))
+        .def("visit", nb::overload_cast<dl::BooleanNonempty<dl::Role>>(&dl::IVisitor::visit))
+        .def("visit", nb::overload_cast<dl::NumericalCount<dl::Concept>>(&dl::IVisitor::visit))
+        .def("visit", nb::overload_cast<dl::NumericalCount<dl::Role>>(&dl::IVisitor::visit))
+        .def("visit", nb::overload_cast<dl::NumericalDistance>(&dl::IVisitor::visit));
 
     nb::class_<dl::cnf_grammar::Grammar>(m, "CNFGrammar")
         .def(nb::init<const std::string&, formalism::Domain>(), "bnf_description"_a, "domain"_a)

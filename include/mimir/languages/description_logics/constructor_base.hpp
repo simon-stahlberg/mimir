@@ -35,7 +35,7 @@ namespace mimir::languages::dl
  */
 
 template<FeatureCategory D, typename Derived_>
-class ConstructorEvaluatorBase : public ConstructorImpl<D>
+class ConstructorEvaluatorBase : public IConstructor<D>
 {
 private:
     /// @brief Helper to cast to Derived.
@@ -59,7 +59,7 @@ public:
         return context.get_repository<D>().insert(this, context.get_state(), context.get_builder<D>());
     };
 
-    void accept(Visitor& visitor) const override { return self().accept_impl(visitor); }
+    void accept(IVisitor& visitor) const override { return self().accept_impl(visitor); }
 };
 
 }

@@ -1,4 +1,5 @@
-import pymimir as mm
+import pymimir.advanced.search as search
+import pymimir.advanced.datasets as datasets
 
 from pathlib import Path
 
@@ -8,16 +9,16 @@ domain_filepath = str(ROOT_DIR / "data" / "gripper" / "domain.pddl")
 problem_filepath_1 = str(ROOT_DIR / "data" / "gripper" / "p-1-0.pddl")
 problem_filepath_2 = str(ROOT_DIR / "data" / "gripper" / "p-2-0.pddl")
 
-search_context_options = mm.SearchContextOptions()
-search_context_options.mode = mm.SearchMode.GROUNDED
+search_context_options = search.SearchContextOptions()
+search_context_options.mode = search.SearchMode.GROUNDED
 
-generalized_search_context = mm.GeneralizedSearchContext(domain_filepath, [problem_filepath_1, problem_filepath_2], search_context_options)
+generalized_search_context = search.GeneralizedSearchContext(domain_filepath, [problem_filepath_1, problem_filepath_2], search_context_options)
 
-knowledge_base_options = mm.KnowledgeBaseOptions()
+knowledge_base_options = datasets.KnowledgeBaseOptions()
 knowledge_base_options.state_space_options.problem_options.symmetry_pruning = True
 
 # Create KnowledgeBase
-knowledge_base = mm.KnowledgeBase(generalized_search_context, knowledge_base_options)
+knowledge_base = datasets.KnowledgeBase(generalized_search_context, knowledge_base_options)
 
 # Access GeneralizedStateSpace
 generalized_state_space = knowledge_base.get_generalized_state_space()

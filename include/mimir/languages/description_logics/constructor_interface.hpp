@@ -31,26 +31,26 @@ namespace mimir::languages::dl
 {
 
 template<FeatureCategory D>
-class ConstructorImpl
+class IConstructor
 {
 protected:
-    ConstructorImpl() = default;
+    IConstructor() = default;
     // Move constructor and move assignment operator are protected
     // to restrict their usage to derived classes only.
-    ConstructorImpl(ConstructorImpl&& other) = default;
-    ConstructorImpl& operator=(ConstructorImpl&& other) = default;
+    IConstructor(IConstructor&& other) = default;
+    IConstructor& operator=(IConstructor&& other) = default;
 
 public:
     // Uncopieable
-    ConstructorImpl(const ConstructorImpl& other) = delete;
-    ConstructorImpl& operator=(const ConstructorImpl& other) = delete;
-    virtual ~ConstructorImpl() = default;
+    IConstructor(const IConstructor& other) = delete;
+    IConstructor& operator=(const IConstructor& other) = delete;
+    virtual ~IConstructor() = default;
 
     /// @brief Evaluate the dl constructor on the evaluation context.
     virtual Denotation<D> evaluate(EvaluationContext& context) const = 0;
 
     /// @brief Accept a visitor.
-    virtual void accept(Visitor& visitor) const = 0;
+    virtual void accept(IVisitor& visitor) const = 0;
 
     /// @brief Return the index of the constructor.
     virtual Index get_index() const = 0;

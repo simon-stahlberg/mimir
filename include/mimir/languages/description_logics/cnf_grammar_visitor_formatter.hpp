@@ -22,7 +22,7 @@
 
 namespace mimir::languages::dl::cnf_grammar
 {
-class FormatterVisitor : public Visitor
+class FormatterVisitor : public IVisitor
 {
 private:
     std::ostream& m_out;

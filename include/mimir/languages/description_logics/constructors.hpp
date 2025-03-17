@@ -47,7 +47,7 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
     friend class ConstructorEvaluatorBase<Concept, ConceptBotImpl>;
 
@@ -79,7 +79,7 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
     friend class ConstructorEvaluatorBase<Concept, ConceptTopImpl>;
 
@@ -113,7 +113,7 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
     friend class ConstructorEvaluatorBase<Concept, ConceptAtomicStateImpl<P>>;
 
@@ -149,7 +149,7 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
     friend class ConstructorEvaluatorBase<Concept, ConceptAtomicGoalImpl<P>>;
 
@@ -185,7 +185,7 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
     friend class ConstructorEvaluatorBase<Concept, ConceptIntersectionImpl>;
 
@@ -221,7 +221,7 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
     friend class ConstructorEvaluatorBase<Concept, ConceptUnionImpl>;
 
@@ -256,7 +256,7 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
     friend class ConstructorEvaluatorBase<Concept, ConceptNegationImpl>;
 
@@ -291,7 +291,7 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
     friend class ConstructorEvaluatorBase<Concept, ConceptValueRestrictionImpl>;
 
@@ -327,7 +327,7 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
     friend class ConstructorEvaluatorBase<Concept, ConceptExistentialQuantificationImpl>;
 
@@ -363,7 +363,7 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
     friend class ConstructorEvaluatorBase<Concept, ConceptRoleValueMapContainmentImpl>;
 
@@ -399,7 +399,7 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
     friend class ConstructorEvaluatorBase<Concept, ConceptRoleValueMapEqualityImpl>;
 
@@ -434,7 +434,7 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
     friend class ConstructorEvaluatorBase<Concept, ConceptNominalImpl>;
 
@@ -471,7 +471,7 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
     friend class ConstructorEvaluatorBase<Role, RoleUniversalImpl>;
 
@@ -505,7 +505,7 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
     friend class ConstructorEvaluatorBase<Role, RoleAtomicStateImpl<P>>;
 
@@ -541,7 +541,7 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
     friend class ConstructorEvaluatorBase<Role, RoleAtomicGoalImpl<P>>;
 
@@ -577,7 +577,7 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
     friend class ConstructorEvaluatorBase<Role, RoleIntersectionImpl>;
 
@@ -613,7 +613,7 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
     friend class ConstructorEvaluatorBase<Role, RoleUnionImpl>;
 
@@ -648,7 +648,7 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
     friend class ConstructorEvaluatorBase<Role, RoleComplementImpl>;
 
@@ -682,7 +682,7 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
     friend class ConstructorEvaluatorBase<Role, RoleInverseImpl>;
 
@@ -717,7 +717,7 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
     friend class ConstructorEvaluatorBase<Role, RoleCompositionImpl>;
 
@@ -752,7 +752,7 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
     friend class ConstructorEvaluatorBase<Role, RoleTransitiveClosureImpl>;
 
@@ -786,7 +786,7 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
     friend class ConstructorEvaluatorBase<Role, RoleReflexiveTransitiveClosureImpl>;
 
@@ -821,7 +821,7 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
     friend class ConstructorEvaluatorBase<Role, RoleRestrictionImpl>;
 
@@ -856,7 +856,7 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
     friend class ConstructorEvaluatorBase<Role, RoleIdentityImpl>;
 
@@ -895,7 +895,7 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
     friend class ConstructorEvaluatorBase<Boolean, BooleanAtomicStateImpl<P>>;
 
@@ -930,7 +930,7 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
     friend class ConstructorEvaluatorBase<Boolean, BooleanNonemptyImpl<D>>;
 
@@ -969,7 +969,7 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
     friend class ConstructorEvaluatorBase<Numerical, NumericalCountImpl<D>>;
 
@@ -1005,7 +1005,7 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
     friend class ConstructorEvaluatorBase<Numerical, NumericalDistanceImpl>;
 

@@ -25,7 +25,7 @@
 namespace mimir::languages::dl::grammar
 {
 
-class FormatterVisitor : public Visitor
+class FormatterVisitor : public IVisitor
 {
 private:
     std::ostream& m_out;

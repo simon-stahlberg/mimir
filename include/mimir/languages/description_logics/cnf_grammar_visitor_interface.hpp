@@ -30,10 +30,10 @@ namespace mimir::languages::dl::cnf_grammar
 /// Interface
 ////////////////////////////
 
-class Visitor
+class IVisitor
 {
 public:
-    virtual ~Visitor() = default;
+    virtual ~IVisitor() = default;
 
     /* Concepts */
     virtual void visit(ConceptBot constructor) = 0;
@@ -102,7 +102,7 @@ public:
 /// Recurse
 ////////////////////////////
 
-class RecurseVisitor : public Visitor
+class RecurseVisitor : public IVisitor
 {
 public:
     /* Concepts */
@@ -182,7 +182,7 @@ private:
 /// Copy
 ////////////////////////////
 
-class CopyVisitor : public Visitor
+class CopyVisitor : public IVisitor
 {
 protected:
     ConstructorRepositories& m_repositories;

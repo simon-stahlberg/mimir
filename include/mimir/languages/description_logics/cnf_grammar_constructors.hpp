@@ -59,7 +59,7 @@ public:
 
     bool test_match(dl::Constructor<D> constructor, const Grammar& grammar) const;
 
-    void accept(Visitor& visitor) const;
+    void accept(IVisitor& visitor) const;
 
     Index get_index() const;
     const std::string& get_name() const;
@@ -97,7 +97,7 @@ public:
 
     bool test_match(dl::Constructor<D> constructor, const Grammar& grammar) const;
 
-    void accept(Visitor& visitor) const;
+    void accept(IVisitor& visitor) const;
 
     Index get_index() const;
     const NonTerminal<D>& get_head() const;
@@ -136,7 +136,7 @@ public:
 
     bool test_match(dl::Constructor<D> constructor, const Grammar& grammar) const;
 
-    void accept(Visitor& visitor) const;
+    void accept(IVisitor& visitor) const;
 
     Index get_index() const;
     const NonTerminal<D>& get_head() const;
@@ -152,7 +152,7 @@ public:
  * Concepts
  */
 
-class ConceptBotImpl : public ConstructorImpl<Concept>
+class ConceptBotImpl : public IConstructor<Concept>
 {
 private:
     Index m_index;
@@ -172,7 +172,7 @@ public:
 
     bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
 
@@ -182,7 +182,7 @@ public:
     auto identifying_members() const { return std::tuple(); }
 };
 
-class ConceptTopImpl : public ConstructorImpl<Concept>
+class ConceptTopImpl : public IConstructor<Concept>
 {
 private:
     Index m_index;
@@ -202,7 +202,7 @@ public:
 
     bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
 
@@ -213,7 +213,7 @@ public:
 };
 
 template<formalism::StaticOrFluentOrDerived P>
-class ConceptAtomicStateImpl : public ConstructorImpl<Concept>
+class ConceptAtomicStateImpl : public IConstructor<Concept>
 {
 private:
     Index m_index;
@@ -234,7 +234,7 @@ public:
 
     bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
     formalism::Predicate<P> get_predicate() const;
@@ -246,7 +246,7 @@ public:
 };
 
 template<formalism::StaticOrFluentOrDerived P>
-class ConceptAtomicGoalImpl : public ConstructorImpl<Concept>
+class ConceptAtomicGoalImpl : public IConstructor<Concept>
 {
 private:
     Index m_index;
@@ -268,7 +268,7 @@ public:
 
     bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
     formalism::Predicate<P> get_predicate() const;
@@ -280,7 +280,7 @@ public:
     auto identifying_members() const { return std::tuple(get_predicate(), is_negated()); }
 };
 
-class ConceptIntersectionImpl : public ConstructorImpl<Concept>
+class ConceptIntersectionImpl : public IConstructor<Concept>
 {
 private:
     Index m_index;
@@ -302,7 +302,7 @@ public:
 
     bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
     NonTerminal<Concept> get_left_concept() const;
@@ -314,7 +314,7 @@ public:
     auto identifying_members() const { return std::tuple(get_left_concept(), get_right_concept()); }
 };
 
-class ConceptUnionImpl : public ConstructorImpl<Concept>
+class ConceptUnionImpl : public IConstructor<Concept>
 {
 private:
     Index m_index;
@@ -336,7 +336,7 @@ public:
 
     bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
     NonTerminal<Concept> get_left_concept() const;
@@ -348,7 +348,7 @@ public:
     auto identifying_members() const { return std::tuple(get_left_concept(), get_right_concept()); }
 };
 
-class ConceptNegationImpl : public ConstructorImpl<Concept>
+class ConceptNegationImpl : public IConstructor<Concept>
 {
 private:
     Index m_index;
@@ -369,7 +369,7 @@ public:
 
     bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
     NonTerminal<Concept> get_concept() const;
@@ -380,7 +380,7 @@ public:
     auto identifying_members() const { return std::tuple(get_concept()); }
 };
 
-class ConceptValueRestrictionImpl : public ConstructorImpl<Concept>
+class ConceptValueRestrictionImpl : public IConstructor<Concept>
 {
 private:
     Index m_index;
@@ -402,7 +402,7 @@ public:
 
     bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
     NonTerminal<Role> get_role() const;
@@ -414,7 +414,7 @@ public:
     auto identifying_members() const { return std::tuple(get_role(), get_concept()); }
 };
 
-class ConceptExistentialQuantificationImpl : public ConstructorImpl<Concept>
+class ConceptExistentialQuantificationImpl : public IConstructor<Concept>
 {
 private:
     Index m_index;
@@ -436,7 +436,7 @@ public:
 
     bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
     NonTerminal<Role> get_role() const;
@@ -448,7 +448,7 @@ public:
     auto identifying_members() const { return std::tuple(get_role(), get_concept()); }
 };
 
-class ConceptRoleValueMapContainmentImpl : public ConstructorImpl<Concept>
+class ConceptRoleValueMapContainmentImpl : public IConstructor<Concept>
 {
 private:
     Index m_index;
@@ -470,7 +470,7 @@ public:
 
     bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
     NonTerminal<Role> get_left_role() const;
@@ -482,7 +482,7 @@ public:
     auto identifying_members() const { return std::tuple(get_left_role(), get_right_role()); }
 };
 
-class ConceptRoleValueMapEqualityImpl : public ConstructorImpl<Concept>
+class ConceptRoleValueMapEqualityImpl : public IConstructor<Concept>
 {
 private:
     Index m_index;
@@ -504,7 +504,7 @@ public:
 
     bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
     NonTerminal<Role> get_left_role() const;
@@ -516,7 +516,7 @@ public:
     auto identifying_members() const { return std::tuple(get_left_role(), get_right_role()); }
 };
 
-class ConceptNominalImpl : public ConstructorImpl<Concept>
+class ConceptNominalImpl : public IConstructor<Concept>
 {
 private:
     Index m_index;
@@ -537,7 +537,7 @@ public:
 
     bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
     formalism::Object get_object() const;
@@ -552,7 +552,7 @@ public:
  * Roles
  */
 
-class RoleUniversalImpl : public ConstructorImpl<Role>
+class RoleUniversalImpl : public IConstructor<Role>
 {
 private:
     Index m_index;
@@ -572,7 +572,7 @@ public:
 
     bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
 
@@ -583,7 +583,7 @@ public:
 };
 
 template<formalism::StaticOrFluentOrDerived P>
-class RoleAtomicStateImpl : public ConstructorImpl<Role>
+class RoleAtomicStateImpl : public IConstructor<Role>
 {
 private:
     Index m_index;
@@ -604,7 +604,7 @@ public:
 
     bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
     formalism::Predicate<P> get_predicate() const;
@@ -616,7 +616,7 @@ public:
 };
 
 template<formalism::StaticOrFluentOrDerived P>
-class RoleAtomicGoalImpl : public ConstructorImpl<Role>
+class RoleAtomicGoalImpl : public IConstructor<Role>
 {
 private:
     Index m_index;
@@ -638,7 +638,7 @@ public:
 
     bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
     formalism::Predicate<P> get_predicate() const;
@@ -650,7 +650,7 @@ public:
     auto identifying_members() const { return std::tuple(get_predicate(), is_negated()); }
 };
 
-class RoleIntersectionImpl : public ConstructorImpl<Role>
+class RoleIntersectionImpl : public IConstructor<Role>
 {
 private:
     Index m_index;
@@ -672,7 +672,7 @@ public:
 
     bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
     NonTerminal<Role> get_left_role() const;
@@ -684,7 +684,7 @@ public:
     auto identifying_members() const { return std::tuple(get_left_role(), get_right_role()); }
 };
 
-class RoleUnionImpl : public ConstructorImpl<Role>
+class RoleUnionImpl : public IConstructor<Role>
 {
 private:
     Index m_index;
@@ -706,7 +706,7 @@ public:
 
     bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
     NonTerminal<Role> get_left_role() const;
@@ -718,7 +718,7 @@ public:
     auto identifying_members() const { return std::tuple(get_left_role(), get_right_role()); }
 };
 
-class RoleComplementImpl : public ConstructorImpl<Role>
+class RoleComplementImpl : public IConstructor<Role>
 {
 private:
     Index m_index;
@@ -739,7 +739,7 @@ public:
 
     bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
     NonTerminal<Role> get_role() const;
@@ -750,7 +750,7 @@ public:
     auto identifying_members() const { return std::tuple(get_role()); }
 };
 
-class RoleInverseImpl : public ConstructorImpl<Role>
+class RoleInverseImpl : public IConstructor<Role>
 {
 private:
     Index m_index;
@@ -771,7 +771,7 @@ public:
 
     bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
     NonTerminal<Role> get_role() const;
@@ -782,7 +782,7 @@ public:
     auto identifying_members() const { return std::tuple(get_role()); }
 };
 
-class RoleCompositionImpl : public ConstructorImpl<Role>
+class RoleCompositionImpl : public IConstructor<Role>
 {
 private:
     Index m_index;
@@ -804,7 +804,7 @@ public:
 
     bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
     NonTerminal<Role> get_left_role() const;
@@ -816,7 +816,7 @@ public:
     auto identifying_members() const { return std::tuple(get_left_role(), get_right_role()); }
 };
 
-class RoleTransitiveClosureImpl : public ConstructorImpl<Role>
+class RoleTransitiveClosureImpl : public IConstructor<Role>
 {
 private:
     Index m_index;
@@ -837,7 +837,7 @@ public:
 
     bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
     NonTerminal<Role> get_role() const;
@@ -848,7 +848,7 @@ public:
     auto identifying_members() const { return std::tuple(get_role()); }
 };
 
-class RoleReflexiveTransitiveClosureImpl : public ConstructorImpl<Role>
+class RoleReflexiveTransitiveClosureImpl : public IConstructor<Role>
 {
 private:
     Index m_index;
@@ -869,7 +869,7 @@ public:
 
     bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
     NonTerminal<Role> get_role() const;
@@ -880,7 +880,7 @@ public:
     auto identifying_members() const { return std::tuple(get_role()); }
 };
 
-class RoleRestrictionImpl : public ConstructorImpl<Role>
+class RoleRestrictionImpl : public IConstructor<Role>
 {
 private:
     Index m_index;
@@ -902,7 +902,7 @@ public:
 
     bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
     NonTerminal<Role> get_role() const;
@@ -914,7 +914,7 @@ public:
     auto identifying_members() const { return std::tuple(get_role(), get_concept()); }
 };
 
-class RoleIdentityImpl : public ConstructorImpl<Role>
+class RoleIdentityImpl : public IConstructor<Role>
 {
 private:
     Index m_index;
@@ -935,7 +935,7 @@ public:
 
     bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
     NonTerminal<Concept> get_concept() const;
@@ -951,7 +951,7 @@ public:
  */
 
 template<formalism::StaticOrFluentOrDerived P>
-class BooleanAtomicStateImpl : public ConstructorImpl<Boolean>
+class BooleanAtomicStateImpl : public IConstructor<Boolean>
 {
 private:
     Index m_index;
@@ -972,7 +972,7 @@ public:
 
     bool test_match(dl::Constructor<Boolean> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
     formalism::Predicate<P> get_predicate() const;
@@ -984,7 +984,7 @@ public:
 };
 
 template<DescriptionLogicCategory D>
-class BooleanNonemptyImpl : public ConstructorImpl<Boolean>
+class BooleanNonemptyImpl : public IConstructor<Boolean>
 {
 private:
     Index m_index;
@@ -1005,7 +1005,7 @@ public:
 
     bool test_match(dl::Constructor<Boolean> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
     NonTerminal<D> get_nonterminal() const;
@@ -1021,7 +1021,7 @@ public:
  */
 
 template<DescriptionLogicCategory D>
-class NumericalCountImpl : public ConstructorImpl<Numerical>
+class NumericalCountImpl : public IConstructor<Numerical>
 {
 private:
     Index m_index;
@@ -1042,7 +1042,7 @@ public:
 
     bool test_match(dl::Constructor<Numerical> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
     NonTerminal<D> get_nonterminal() const;
@@ -1053,7 +1053,7 @@ public:
     auto identifying_members() const { return std::tuple(get_nonterminal()); }
 };
 
-class NumericalDistanceImpl : public ConstructorImpl<Numerical>
+class NumericalDistanceImpl : public IConstructor<Numerical>
 {
 private:
     Index m_index;
@@ -1076,7 +1076,7 @@ public:
 
     bool test_match(dl::Constructor<Numerical> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
     NonTerminal<Concept> get_left_concept() const;

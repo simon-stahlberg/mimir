@@ -63,9 +63,9 @@ using DenotationListSets = boost::hana::map<boost::hana::pair<boost::hana::type<
 
 /* Constructor */
 template<FeatureCategory D>
-class ConstructorImpl;
+class IConstructor;
 template<FeatureCategory D>
-using Constructor = const ConstructorImpl<D>*;
+using Constructor = const IConstructor<D>*;
 template<FeatureCategory D>
 using ConstructorList = std::vector<Constructor<D>>;
 template<FeatureCategory... D>
@@ -153,7 +153,7 @@ using NumericalDistance = const NumericalDistanceImpl*;
  * Visitors
  */
 
-class Visitor;
+class IVisitor;
 
 class GrammarVisitor;
 
@@ -165,9 +165,9 @@ namespace grammar
 
 /* Constructor */
 template<dl::FeatureCategory D>
-class ConstructorImpl;
+class IConstructor;
 template<dl::FeatureCategory D>
-using Constructor = const ConstructorImpl<D>*;
+using Constructor = const IConstructor<D>*;
 template<dl::FeatureCategory D>
 using ConstructorList = std::vector<Constructor<D>>;
 template<dl::FeatureCategory... D>
@@ -292,7 +292,7 @@ using NumericalDistance = const NumericalDistanceImpl*;
  * Visitors
  */
 
-class Visitor;
+class IVisitor;
 
 /**
  * Grammar
@@ -353,9 +353,9 @@ using SubstitutionRuleSet = std::unordered_set<SubstitutionRule<D>>;
 
 /* Constructor */
 template<dl::FeatureCategory D>
-class ConstructorImpl;
+class IConstructor;
 template<dl::FeatureCategory D>
-using Constructor = const ConstructorImpl<D>*;
+using Constructor = const IConstructor<D>*;
 template<dl::FeatureCategory D>
 using ConstructorList = std::vector<Constructor<D>>;
 template<template<typename> typename Value, dl::FeatureCategory... D>
@@ -445,7 +445,7 @@ using NumericalDistance = const NumericalDistanceImpl*;
  * Visitors
  */
 
-class Visitor;
+class IVisitor;
 
 /**
  * Grammar

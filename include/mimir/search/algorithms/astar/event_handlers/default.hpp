@@ -26,11 +26,11 @@ namespace mimir::search
 /**
  * Implementation class
  */
-class DefaultAStarAlgorithmEventHandler : public StaticAStarAlgorithmEventHandlerBase<DefaultAStarAlgorithmEventHandler>
+class DefaultAStarAlgorithmEventHandler : public AStarAlgorithmEventHandlerBase<DefaultAStarAlgorithmEventHandler>
 {
 private:
-    /* Implement StaticAStarAlgorithmEventHandlerBase interface */
-    friend class StaticAStarAlgorithmEventHandlerBase<DefaultAStarAlgorithmEventHandler>;
+    /* Implement AStarAlgorithmEventHandlerBase interface */
+    friend class AStarAlgorithmEventHandlerBase<DefaultAStarAlgorithmEventHandler>;
 
     void on_expand_state_impl(State state) const;
 
@@ -70,7 +70,7 @@ private:
 
 public:
     explicit DefaultAStarAlgorithmEventHandler(formalism::Problem problem, bool quiet = true) :
-        StaticAStarAlgorithmEventHandlerBase<DefaultAStarAlgorithmEventHandler>(problem, quiet)
+        AStarAlgorithmEventHandlerBase<DefaultAStarAlgorithmEventHandler>(problem, quiet)
     {
     }
 };

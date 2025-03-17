@@ -100,7 +100,7 @@ public:
  * Collect statistics and call implementation of derived class.
  */
 template<typename Derived_>
-class StaticAStarAlgorithmEventHandlerBase : public IAStarAlgorithmEventHandler
+class AStarAlgorithmEventHandlerBase : public IAStarAlgorithmEventHandler
 {
 protected:
     AStarAlgorithmStatistics m_statistics;
@@ -108,7 +108,7 @@ protected:
     bool m_quiet;
 
 private:
-    StaticAStarAlgorithmEventHandlerBase() = default;
+    AStarAlgorithmEventHandlerBase() = default;
     friend Derived_;
 
     /// @brief Helper to cast to Derived.
@@ -116,7 +116,7 @@ private:
     constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 public:
-    StaticAStarAlgorithmEventHandlerBase(formalism::Problem problem, bool quiet = true) : m_statistics(), m_problem(problem), m_quiet(quiet) {}
+    AStarAlgorithmEventHandlerBase(formalism::Problem problem, bool quiet = true) : m_statistics(), m_problem(problem), m_quiet(quiet) {}
 
     void on_expand_state(State state) override
     {

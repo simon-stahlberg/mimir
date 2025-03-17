@@ -27,7 +27,7 @@
 namespace mimir::languages::dl
 {
 
-class FormatterVisitor : public Visitor
+class FormatterVisitor : public IVisitor
 {
 protected:
     std::ostream& m_out;

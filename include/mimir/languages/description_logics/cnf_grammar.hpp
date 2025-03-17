@@ -65,7 +65,7 @@ public:
     template<FeatureCategory D>
     bool test_match(dl::Constructor<D> constructor) const;
 
-    void accept(Visitor& visitor) const;
+    void accept(IVisitor& visitor) const;
 
     /**
      * Getters

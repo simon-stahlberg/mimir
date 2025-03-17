@@ -65,7 +65,7 @@ public:
      * Visitor
      */
 
-    void accept(Visitor& visitor) const;
+    void accept(IVisitor& visitor) const;
 
     /**
      * Getters

@@ -9,24 +9,24 @@ namespace mimir::bindings
 template<languages::dl::FeatureCategory D>
 void bind_constructor(nb::module_& m, const std::string& class_name)
 {
-    nb::class_<languages::dl::ConstructorImpl<D>>(m, class_name.c_str())
+    nb::class_<languages::dl::IConstructor<D>>(m, class_name.c_str())
         .def("__str__",
-             [](const languages::dl::ConstructorImpl<D>& self)
+             [](const languages::dl::IConstructor<D>& self)
              {
                  auto out = std::stringstream {};
                  out << &self;
                  return out.str();
              })
         .def("__repr__",
-             [](const languages::dl::ConstructorImpl<D>& self)
+             [](const languages::dl::IConstructor<D>& self)
              {
                  auto out = std::stringstream {};
                  out << &self;
                  return out.str();
              })
-        .def("evaluate", &languages::dl::ConstructorImpl<D>::evaluate, nb::rv_policy::reference_internal, "evaluation_context"_a)
-        .def("accept", &languages::dl::ConstructorImpl<D>::accept, "visitor"_a)
-        .def("get_index", &languages::dl::ConstructorImpl<D>::get_index);
+        .def("evaluate", &languages::dl::IConstructor<D>::evaluate, nb::rv_policy::reference_internal, "evaluation_context"_a)
+        .def("accept", &languages::dl::IConstructor<D>::accept, "visitor"_a)
+        .def("get_index", &languages::dl::IConstructor<D>::get_index);
     nb::bind_vector<languages::dl::ConstructorList<D>>(m, (class_name + "List").c_str());
 };
 }

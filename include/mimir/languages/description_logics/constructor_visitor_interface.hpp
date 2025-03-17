@@ -24,10 +24,10 @@
 namespace mimir::languages::dl
 {
 
-class Visitor
+class IVisitor
 {
 public:
-    virtual ~Visitor() = default;
+    virtual ~IVisitor() = default;
 
     /* Concepts */
     virtual void visit(ConceptBot constructor) = 0;
@@ -75,7 +75,7 @@ public:
     virtual void visit(NumericalDistance constructor) = 0;
 };
 
-class RecurseVisitor : public Visitor
+class RecurseVisitor : public IVisitor
 {
 public:
     /* Concepts */
