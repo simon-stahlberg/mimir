@@ -27,12 +27,13 @@ namespace mimir::languages::general_policies
 class GeneralPolicy
 {
 private:
+    NamedFeatureLists<dl::Boolean, dl::Numerical> m_features;
     RuleList m_rules;
 
 public:
     /// @brief Create a `GeneralPolicy` for the given `RuleList`.
     /// @param rules
-    explicit GeneralPolicy(RuleList rules);
+    GeneralPolicy(NamedFeatureLists<dl::Boolean, dl::Numerical> features, RuleList rules);
 
     /// @brief Return true if and only if there the state pair (transition) is compatible with a `Rule` in the `GeneralPolicy`.
     /// @param source_context is the source context.

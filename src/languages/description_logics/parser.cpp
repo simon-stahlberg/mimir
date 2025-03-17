@@ -20,8 +20,8 @@
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/languages/description_logics/grammar.hpp"
 #include "mimir/languages/description_logics/grammar_constructors.hpp"
+#include "mimir/languages/description_logics/grammar_parser/parser.hpp"
 #include "mimir/languages/description_logics/parser/ast.hpp"
-#include "mimir/languages/description_logics/parser/parser.hpp"
 #include "mimir/languages/description_logics/parser/parser_wrapper.hpp"
 
 #include <boost/hana.hpp>
@@ -418,7 +418,7 @@ static DerivationRulesContainer parse(const dl::ast::GrammarBody& node, const Do
 Grammar parse(const std::string& bnf_description, Domain domain)
 {
     auto ast = dl::ast::Grammar();
-    dl::parse_ast(bnf_description, dl::grammar_parser(), ast);
+    dl::parse_ast(bnf_description, dl::grammar_parser_(), ast);
 
     auto repositories = Repositories();
     auto start_symbols = parse(ast.head, *domain, repositories);

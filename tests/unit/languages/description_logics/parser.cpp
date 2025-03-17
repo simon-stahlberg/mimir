@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/languages/description_logics/parser/parser.hpp"
+#include "mimir/languages/description_logics/grammar_parser/parser.hpp"
 
 #include "mimir/languages/description_logics/parser/parser_wrapper.hpp"
 
@@ -47,7 +47,7 @@ TEST(MimirTests, LanguagesDescriptionLogicsParserTest)
             <role> ::= <role_predicate1_state> | <role_predicate1_goal> | <role_intersection>
         )");
 
-        EXPECT_NO_THROW(dl::parse_ast(text, dl::grammar_parser(), ast));
+        EXPECT_NO_THROW(dl::parse_ast(text, dl::grammar_parser_(), ast));
     }
 
     {
@@ -67,7 +67,7 @@ TEST(MimirTests, LanguagesDescriptionLogicsParserTest)
                     @concept_atomic_state "predicate2"
         )");
 
-        EXPECT_NO_THROW(dl::parse_ast(text, dl::grammar_parser(), ast));
+        EXPECT_NO_THROW(dl::parse_ast(text, dl::grammar_parser_(), ast));
     }
 }
 

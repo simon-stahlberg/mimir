@@ -29,6 +29,10 @@ template<dl::FeatureCategory D>
 class NamedFeatureImpl;
 template<dl::FeatureCategory D>
 using NamedFeature = const NamedFeatureImpl<D>*;
+template<dl::FeatureCategory D>
+using NamedFeatureList = std::vector<NamedFeature<D>>;
+template<dl::FeatureCategory... Ds>
+using NamedFeatureLists = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, NamedFeatureList<Ds>>...>;
 
 class ICondition;
 using Condition = const ICondition*;

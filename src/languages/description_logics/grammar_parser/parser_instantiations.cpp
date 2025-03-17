@@ -19,7 +19,7 @@
 
 #include <mimir/languages/description_logics/parser/config.hpp>
 
-namespace mimir::languages::dl::parser
+namespace mimir::languages::dl::grammar_parser
 {
 using iterator_type = mimir::languages::dl::iterator_type;
 using phrase_context_type = mimir::languages::dl::phrase_context_type;

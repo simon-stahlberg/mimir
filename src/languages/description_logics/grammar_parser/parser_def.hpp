@@ -18,18 +18,18 @@
 #ifndef SRC_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_PARSER_PARSER_DEF_HPP_
 #define SRC_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_PARSER_PARSER_DEF_HPP_
 
-#include "ast_adapted.hpp"
+#include "../parser/ast_adapted.hpp"
 #include "mimir/languages/description_logics/constructor_keywords.hpp"
 #include "mimir/languages/description_logics/constructors.hpp"
+#include "mimir/languages/description_logics/grammar_parser/parser.hpp"
 #include "mimir/languages/description_logics/parser/ast.hpp"
 #include "mimir/languages/description_logics/parser/error_handler.hpp"
-#include "mimir/languages/description_logics/parser/parser.hpp"
 #include "parser.hpp"
 
 #include <boost/spirit/home/x3.hpp>
 #include <boost/spirit/home/x3/support/utility/annotate_on_success.hpp>
 
-namespace mimir::languages::dl::parser
+namespace mimir::languages::dl::grammar_parser
 {
 
 namespace x3 = boost::spirit::x3;
@@ -416,60 +416,66 @@ struct GrammarClass : x3::annotate_on_success, error_handler_base
 
 namespace mimir::languages::dl
 {
-parser::concept_type const& concept_() { return parser::concept_; }
-parser::concept_bot_type const& concept_bot() { return parser::concept_bot; }
-parser::concept_top_type const& concept_top() { return parser::concept_top; }
-parser::concept_atomic_state_type const& concept_atomic_state() { return parser::concept_atomic_state; }
-parser::concept_atomic_goal_type const& concept_atomic_goal() { return parser::concept_atomic_goal; }
-parser::concept_intersection_type const& concept_intersection() { return parser::concept_intersection; }
-parser::concept_union_type const& concept_union() { return parser::concept_union; }
-parser::concept_negation_type const& concept_negation() { return parser::concept_negation; }
-parser::concept_value_restriction_type const& concept_value_restriction() { return parser::concept_value_restriction; }
-parser::concept_existential_quantification_type const& concept_existential_quantification() { return parser::concept_existential_quantification; }
-parser::concept_role_value_map_containment_type const& concept_role_value_map_containment() { return parser::concept_role_value_map_containment; }
-parser::concept_role_value_map_equality_type const& concept_role_value_map_equality() { return parser::concept_role_value_map_equality; }
-parser::concept_nominal_type const& concept_nominal() { return parser::concept_nominal; }
-parser::concept_non_terminal_type const& concept_non_terminal() { return parser::concept_non_terminal; }
-parser::concept_choice_type const& concept_choice() { return parser::concept_choice; }
-parser::concept_derivation_rule_type const& concept_derivation_rule() { return parser::concept_derivation_rule; }
+grammar_parser::concept_type const& concept_() { return grammar_parser::concept_; }
+grammar_parser::concept_bot_type const& concept_bot() { return grammar_parser::concept_bot; }
+grammar_parser::concept_top_type const& concept_top() { return grammar_parser::concept_top; }
+grammar_parser::concept_atomic_state_type const& concept_atomic_state() { return grammar_parser::concept_atomic_state; }
+grammar_parser::concept_atomic_goal_type const& concept_atomic_goal() { return grammar_parser::concept_atomic_goal; }
+grammar_parser::concept_intersection_type const& concept_intersection() { return grammar_parser::concept_intersection; }
+grammar_parser::concept_union_type const& concept_union() { return grammar_parser::concept_union; }
+grammar_parser::concept_negation_type const& concept_negation() { return grammar_parser::concept_negation; }
+grammar_parser::concept_value_restriction_type const& concept_value_restriction() { return grammar_parser::concept_value_restriction; }
+grammar_parser::concept_existential_quantification_type const& concept_existential_quantification()
+{
+    return grammar_parser::concept_existential_quantification;
+}
+grammar_parser::concept_role_value_map_containment_type const& concept_role_value_map_containment()
+{
+    return grammar_parser::concept_role_value_map_containment;
+}
+grammar_parser::concept_role_value_map_equality_type const& concept_role_value_map_equality() { return grammar_parser::concept_role_value_map_equality; }
+grammar_parser::concept_nominal_type const& concept_nominal() { return grammar_parser::concept_nominal; }
+grammar_parser::concept_non_terminal_type const& concept_non_terminal() { return grammar_parser::concept_non_terminal; }
+grammar_parser::concept_choice_type const& concept_choice() { return grammar_parser::concept_choice; }
+grammar_parser::concept_derivation_rule_type const& concept_derivation_rule() { return grammar_parser::concept_derivation_rule; }
 
-parser::role_type const& role() { return parser::role; }
-parser::role_universal_type const& role_universal() { return parser::role_universal; }
-parser::role_atomic_state_type const& role_atomic_state() { return parser::role_atomic_state; }
-parser::role_atomic_goal_type const& role_atomic_goal() { return parser::role_atomic_goal; }
-parser::role_intersection_type const& role_intersection() { return parser::role_intersection; }
-parser::role_union_type const& role_union() { return parser::role_union; }
-parser::role_complement_type const& role_complement() { return parser::role_complement; }
-parser::role_inverse_type const& role_inverse() { return parser::role_inverse; }
-parser::role_composition_type const& role_composition() { return parser::role_composition; }
-parser::role_transitive_closure_type const& role_transitive_closure() { return parser::role_transitive_closure; }
-parser::role_reflexive_transitive_closure_type const& role_reflexive_transitive_closure() { return parser::role_reflexive_transitive_closure; }
-parser::role_restriction_type const& role_restriction() { return parser::role_restriction; }
-parser::role_identity_type const& role_identity() { return parser::role_identity; }
-parser::role_non_terminal_type const& role_non_terminal() { return parser::role_non_terminal; }
-parser::role_choice_type const& role_choice() { return parser::role_choice; }
-parser::role_derivation_rule_type const& role_derivation_rule() { return parser::role_derivation_rule; }
+grammar_parser::role_type const& role() { return grammar_parser::role; }
+grammar_parser::role_universal_type const& role_universal() { return grammar_parser::role_universal; }
+grammar_parser::role_atomic_state_type const& role_atomic_state() { return grammar_parser::role_atomic_state; }
+grammar_parser::role_atomic_goal_type const& role_atomic_goal() { return grammar_parser::role_atomic_goal; }
+grammar_parser::role_intersection_type const& role_intersection() { return grammar_parser::role_intersection; }
+grammar_parser::role_union_type const& role_union() { return grammar_parser::role_union; }
+grammar_parser::role_complement_type const& role_complement() { return grammar_parser::role_complement; }
+grammar_parser::role_inverse_type const& role_inverse() { return grammar_parser::role_inverse; }
+grammar_parser::role_composition_type const& role_composition() { return grammar_parser::role_composition; }
+grammar_parser::role_transitive_closure_type const& role_transitive_closure() { return grammar_parser::role_transitive_closure; }
+grammar_parser::role_reflexive_transitive_closure_type const& role_reflexive_transitive_closure() { return grammar_parser::role_reflexive_transitive_closure; }
+grammar_parser::role_restriction_type const& role_restriction() { return grammar_parser::role_restriction; }
+grammar_parser::role_identity_type const& role_identity() { return grammar_parser::role_identity; }
+grammar_parser::role_non_terminal_type const& role_non_terminal() { return grammar_parser::role_non_terminal; }
+grammar_parser::role_choice_type const& role_choice() { return grammar_parser::role_choice; }
+grammar_parser::role_derivation_rule_type const& role_derivation_rule() { return grammar_parser::role_derivation_rule; }
 
-parser::concept_or_role_nonterminal_type const& concept_or_role_nonterminal() { return parser::concept_or_role_nonterminal; }
+grammar_parser::concept_or_role_nonterminal_type const& concept_or_role_nonterminal() { return grammar_parser::concept_or_role_nonterminal; }
 
-parser::boolean_type const& boolean() { return parser::boolean; }
-parser::boolean_atomic_state_type const& boolean_atomic_state() { return parser::boolean_atomic_state; }
-parser::boolean_nonempty_type const& boolean_nonempty() { return parser::boolean_nonempty; }
-parser::boolean_non_terminal_type const& boolean_non_terminal() { return parser::boolean_non_terminal; }
-parser::boolean_choice_type const& boolean_choice() { return parser::boolean_choice; }
-parser::boolean_derivation_rule_type const& boolean_derivation_rule() { return parser::boolean_derivation_rule; }
+grammar_parser::boolean_type const& boolean() { return grammar_parser::boolean; }
+grammar_parser::boolean_atomic_state_type const& boolean_atomic_state() { return grammar_parser::boolean_atomic_state; }
+grammar_parser::boolean_nonempty_type const& boolean_nonempty() { return grammar_parser::boolean_nonempty; }
+grammar_parser::boolean_non_terminal_type const& boolean_non_terminal() { return grammar_parser::boolean_non_terminal; }
+grammar_parser::boolean_choice_type const& boolean_choice() { return grammar_parser::boolean_choice; }
+grammar_parser::boolean_derivation_rule_type const& boolean_derivation_rule() { return grammar_parser::boolean_derivation_rule; }
 
-parser::numerical_type const& numerical() { return parser::numerical; }
-parser::numerical_count_type const& numerical_count() { return parser::numerical_count; }
-parser::numerical_distance_type const& numerical_distance() { return parser::numerical_distance; }
-parser::numerical_non_terminal_type const& numerical_non_terminal() { return parser::numerical_non_terminal; }
-parser::numerical_choice_type const& numerical_choice() { return parser::numerical_choice; }
-parser::numerical_derivation_rule_type const& numerical_derivation_rule() { return parser::numerical_derivation_rule; }
+grammar_parser::numerical_type const& numerical() { return grammar_parser::numerical; }
+grammar_parser::numerical_count_type const& numerical_count() { return grammar_parser::numerical_count; }
+grammar_parser::numerical_distance_type const& numerical_distance() { return grammar_parser::numerical_distance; }
+grammar_parser::numerical_non_terminal_type const& numerical_non_terminal() { return grammar_parser::numerical_non_terminal; }
+grammar_parser::numerical_choice_type const& numerical_choice() { return grammar_parser::numerical_choice; }
+grammar_parser::numerical_derivation_rule_type const& numerical_derivation_rule() { return grammar_parser::numerical_derivation_rule; }
 
-parser::feature_category_derivation_rule_type const& feature_category_derivation_rule() { return parser::feature_category_derivation_rule; }
-parser::grammar_head_type const& grammar_head() { return parser::grammar_head; }
-parser::grammar_body_type const& grammar_body() { return parser::grammar_body; }
-parser::grammar_type const& grammar_parser() { return parser::grammar; }
+grammar_parser::feature_category_derivation_rule_type const& feature_category_derivation_rule() { return grammar_parser::feature_category_derivation_rule; }
+grammar_parser::grammar_head_type const& grammar_head() { return grammar_parser::grammar_head; }
+grammar_parser::grammar_body_type const& grammar_body() { return grammar_parser::grammar_body; }
+grammar_parser::grammar_type const& grammar_parser_() { return grammar_parser::grammar; }
 }
 
 #endif

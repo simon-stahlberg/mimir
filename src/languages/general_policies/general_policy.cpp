@@ -23,7 +23,7 @@
 namespace mimir::languages::general_policies
 {
 
-GeneralPolicy::GeneralPolicy(RuleList rules) : m_rules(rules) {}
+GeneralPolicy::GeneralPolicy(NamedFeatureLists<dl::Boolean, dl::Numerical> features, RuleList rules) : m_features(features), m_rules(rules) {}
 
 bool GeneralPolicy::evaluate(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const
 {

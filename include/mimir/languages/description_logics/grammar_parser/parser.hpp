@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_PARSER_PARSER_HPP_
-#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_PARSER_PARSER_HPP_
+#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_GRAMMAR_PARSER_PARSER_HPP_
+#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_GRAMMAR_PARSER_PARSER_HPP_
 
 #include "mimir/languages/description_logics/parser/ast.hpp"
 
@@ -29,7 +29,7 @@ namespace x3 = boost::spirit::x3;
 ///////////////////////////////////////////////////////////////////////////
 // parser public interface
 ///////////////////////////////////////////////////////////////////////////
-namespace parser
+namespace grammar_parser
 {
 struct GrammarClass;
 
@@ -38,7 +38,7 @@ typedef x3::rule<GrammarClass, ast::Grammar> grammar_type;
 BOOST_SPIRIT_DECLARE(grammar_type)
 }
 
-parser::grammar_type const& grammar_parser();
+grammar_parser::grammar_type const& grammar_parser_();
 
 }
 
