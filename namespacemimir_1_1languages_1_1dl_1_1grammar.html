@@ -140,8 +140,6 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1ConceptValueRestrictionImpl.html">ConceptValueRestrictionImpl</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1ConstructorImpl.html">ConstructorImpl</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1ConstructorOrNonTerminalImpl.html">ConstructorOrNonTerminalImpl</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1ConstructorRepositories.html">ConstructorRepositories</a></td></tr>
@@ -156,6 +154,11 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1FormatterVisitor.html">FormatterVisitor</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1Grammar.html">Grammar</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1IConstructor.html">IConstructor</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1IVisitor.html">IVisitor</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface.  <a href="classmimir_1_1languages_1_1dl_1_1grammar_1_1IVisitor.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1NonTerminalImpl.html">NonTerminalImpl</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -220,17 +223,14 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1StartSymbolsContainer.html">StartSymbolsContainer</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1Visitor.html">Visitor</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface.  <a href="classmimir_1_1languages_1_1dl_1_1grammar_1_1Visitor.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a6c35df21e52a721e8cc19aa6d4964eb1"><td class="memTemplParams" colspan="2">template&lt;dl::FeatureCategory D&gt; </td></tr>
-<tr class="memitem:a6c35df21e52a721e8cc19aa6d4964eb1"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a6c35df21e52a721e8cc19aa6d4964eb1">Constructor</a> = const <a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1ConstructorImpl.html">ConstructorImpl</a>&lt; D &gt; *</td></tr>
-<tr class="separator:a6c35df21e52a721e8cc19aa6d4964eb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa33695a3b328211c3cfee60b148509fa"><td class="memTemplParams" colspan="2">template&lt;dl::FeatureCategory D&gt; </td></tr>
+<tr class="memitem:aa33695a3b328211c3cfee60b148509fa"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#aa33695a3b328211c3cfee60b148509fa">Constructor</a> = const <a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1IConstructor.html">IConstructor</a>&lt; D &gt; *</td></tr>
+<tr class="separator:aa33695a3b328211c3cfee60b148509fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a23ebf03914b5bb93a62bbee2df03f2c3"><td class="memTemplParams" colspan="2">template&lt;dl::FeatureCategory D&gt; </td></tr>
-<tr class="memitem:a23ebf03914b5bb93a62bbee2df03f2c3"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a23ebf03914b5bb93a62bbee2df03f2c3">ConstructorList</a> = std::vector&lt; <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a6c35df21e52a721e8cc19aa6d4964eb1">Constructor</a>&lt; D &gt; &gt;</td></tr>
+<tr class="memitem:a23ebf03914b5bb93a62bbee2df03f2c3"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a23ebf03914b5bb93a62bbee2df03f2c3">ConstructorList</a> = std::vector&lt; <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#aa33695a3b328211c3cfee60b148509fa">Constructor</a>&lt; D &gt; &gt;</td></tr>
 <tr class="separator:a23ebf03914b5bb93a62bbee2df03f2c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad46edb7e2b497d3efc716636bb483a48"><td class="memTemplParams" colspan="2">template&lt;dl::FeatureCategory... D&gt; </td></tr>
 <tr class="memitem:ad46edb7e2b497d3efc716636bb483a48"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#ad46edb7e2b497d3efc716636bb483a48">ConstructorLists</a> = boost::hana::map&lt; boost::hana::pair&lt; boost::hana::type&lt; D &gt;, <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a23ebf03914b5bb93a62bbee2df03f2c3">ConstructorList</a>&lt; D &gt; &gt;... &gt;</td></tr>
@@ -421,7 +421,7 @@ Enumerations</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:afa481a53d307511de805416bd28ec2a2"><td class="memTemplParams" colspan="2">template&lt;FeatureCategory D&gt; </td></tr>
-<tr class="memitem:afa481a53d307511de805416bd28ec2a2"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#afa481a53d307511de805416bd28ec2a2">operator&lt;&lt;</a> (std::ostream &amp;out, <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a6c35df21e52a721e8cc19aa6d4964eb1">Constructor</a>&lt; D &gt; element)</td></tr>
+<tr class="memitem:afa481a53d307511de805416bd28ec2a2"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#afa481a53d307511de805416bd28ec2a2">operator&lt;&lt;</a> (std::ostream &amp;out, <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#aa33695a3b328211c3cfee60b148509fa">Constructor</a>&lt; D &gt; element)</td></tr>
 <tr class="separator:afa481a53d307511de805416bd28ec2a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae487517ee22709fceed9d612d75b6171"><td class="memTemplParams" colspan="2">template&lt;FeatureCategory D&gt; </td></tr>
 <tr class="memitem:ae487517ee22709fceed9d612d75b6171"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#ae487517ee22709fceed9d612d75b6171">operator&lt;&lt;</a> (std::ostream &amp;out, <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a5d9458b773dd5d22a88cff850b870771">NonTerminal</a>&lt; D &gt; element)</td></tr>
@@ -857,8 +857,8 @@ template&lt;formalism::StaticOrFluentOrDerived P&gt; </div>
 
 </div>
 </div>
-<a id="a6c35df21e52a721e8cc19aa6d4964eb1" name="a6c35df21e52a721e8cc19aa6d4964eb1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6c35df21e52a721e8cc19aa6d4964eb1">&#9670;&#160;</a></span>Constructor</h2>
+<a id="aa33695a3b328211c3cfee60b148509fa" name="aa33695a3b328211c3cfee60b148509fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa33695a3b328211c3cfee60b148509fa">&#9670;&#160;</a></span>Constructor</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -866,7 +866,7 @@ template&lt;formalism::StaticOrFluentOrDerived P&gt; </div>
 template&lt;dl::FeatureCategory D&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a6c35df21e52a721e8cc19aa6d4964eb1">mimir::languages::dl::grammar::Constructor</a> = typedef const <a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1ConstructorImpl.html">ConstructorImpl</a>&lt;D&gt;*</td>
+          <td class="memname">using <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#aa33695a3b328211c3cfee60b148509fa">mimir::languages::dl::grammar::Constructor</a> = typedef const <a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1IConstructor.html">IConstructor</a>&lt;D&gt;*</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -882,7 +882,7 @@ template&lt;dl::FeatureCategory D&gt; </div>
 template&lt;dl::FeatureCategory D&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a23ebf03914b5bb93a62bbee2df03f2c3">mimir::languages::dl::grammar::ConstructorList</a> = typedef std::vector&lt;<a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a6c35df21e52a721e8cc19aa6d4964eb1">Constructor</a>&lt;D&gt; &gt;</td>
+          <td class="memname">using <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a23ebf03914b5bb93a62bbee2df03f2c3">mimir::languages::dl::grammar::ConstructorList</a> = typedef std::vector&lt;<a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#aa33695a3b328211c3cfee60b148509fa">Constructor</a>&lt;D&gt; &gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1636,7 +1636,7 @@ template&lt;FeatureCategory D&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a6c35df21e52a721e8cc19aa6d4964eb1">Constructor</a>&lt; D &gt;&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#aa33695a3b328211c3cfee60b148509fa">Constructor</a>&lt; D &gt;&#160;</td>
           <td class="paramname"><em>element</em>&#160;</td>
         </tr>
         <tr>

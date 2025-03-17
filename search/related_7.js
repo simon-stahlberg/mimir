@@ -1,10 +1,4 @@
 var searchData=
 [
-  ['satisficingbindinggenerator_3c_20actionsatisficingbindinggenerator_20_3e_0',['SatisficingBindingGenerator&lt; ActionSatisficingBindingGenerator &gt;',['../classmimir_1_1search_1_1ActionSatisficingBindingGenerator.html#a3bffc0f633001654323568bc7b54e865',1,'mimir::search::ActionSatisficingBindingGenerator']]],
-  ['satisficingbindinggenerator_3c_20axiomsatisficingbindinggenerator_20_3e_1',['SatisficingBindingGenerator&lt; AxiomSatisficingBindingGenerator &gt;',['../classmimir_1_1search_1_1AxiomSatisficingBindingGenerator.html#a9eb4fe424c802b9b2359b44fdf3af194',1,'mimir::search::AxiomSatisficingBindingGenerator']]],
-  ['satisficingbindinggenerator_3c_20conjunctiveconditionsatisficingbindinggenerator_20_3e_2',['SatisficingBindingGenerator&lt; ConjunctiveConditionSatisficingBindingGenerator &gt;',['../classmimir_1_1search_1_1ConjunctiveConditionSatisficingBindingGenerator.html#a30d19989d272ccc2a66179ba9af693fd',1,'mimir::search::ConjunctiveConditionSatisficingBindingGenerator']]],
-  ['siwalgorithmeventhandlerbase_3c_20defaultsiwalgorithmeventhandler_20_3e_3',['SIWAlgorithmEventHandlerBase&lt; DefaultSIWAlgorithmEventHandler &gt;',['../classmimir_1_1search_1_1DefaultSIWAlgorithmEventHandler.html#ac78f48068101b5a4587231e9581442fb',1,'mimir::search::DefaultSIWAlgorithmEventHandler']]],
-  ['staterepositoryimpl_4',['StateRepositoryImpl',['../structmimir_1_1search_1_1StateImpl.html#a6ef945a78c0d10cc2e8e49b7c73e6104',1,'mimir::search::StateImpl']]],
-  ['staticastaralgorithmeventhandlerbase_3c_20debugastaralgorithmeventhandler_20_3e_5',['StaticAStarAlgorithmEventHandlerBase&lt; DebugAStarAlgorithmEventHandler &gt;',['../classmimir_1_1search_1_1DebugAStarAlgorithmEventHandler.html#abee25d7813641a4cdcd06647fa4a6be1',1,'mimir::search::DebugAStarAlgorithmEventHandler']]],
-  ['staticastaralgorithmeventhandlerbase_3c_20defaultastaralgorithmeventhandler_20_3e_6',['StaticAStarAlgorithmEventHandlerBase&lt; DefaultAStarAlgorithmEventHandler &gt;',['../classmimir_1_1search_1_1DefaultAStarAlgorithmEventHandler.html#a8f6f1cdb8f20dfe8719199dec1300340',1,'mimir::search::DefaultAStarAlgorithmEventHandler']]]
+  ['problembuilder_0',['ProblemBuilder',['../classmimir_1_1formalism_1_1ProblemImpl.html#a5759a7fc69a6359840f669cfd6b504fb',1,'mimir::formalism::ProblemImpl']]]
 ];

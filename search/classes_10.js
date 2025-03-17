@@ -16,14 +16,11 @@ var searchData=
   ['staticadjacentedgeindexconstiterator_13',['StaticAdjacentEdgeIndexConstIterator',['../classmimir_1_1graphs_1_1StaticAdjacentEdgeIndexConstIterator.html',1,'mimir::graphs']]],
   ['staticadjacentvertexconstiterator_14',['StaticAdjacentVertexConstIterator',['../classmimir_1_1graphs_1_1StaticAdjacentVertexConstIterator.html',1,'mimir::graphs']]],
   ['staticadjacentvertexindexconstiterator_15',['StaticAdjacentVertexIndexConstIterator',['../classmimir_1_1graphs_1_1StaticAdjacentVertexIndexConstIterator.html',1,'mimir::graphs']]],
-  ['staticastaralgorithmeventhandlerbase_16',['StaticAStarAlgorithmEventHandlerBase',['../classmimir_1_1search_1_1StaticAStarAlgorithmEventHandlerBase.html',1,'mimir::search']]],
-  ['staticastaralgorithmeventhandlerbase_3c_20debugastaralgorithmeventhandler_20_3e_17',['StaticAStarAlgorithmEventHandlerBase&lt; DebugAStarAlgorithmEventHandler &gt;',['../classmimir_1_1search_1_1StaticAStarAlgorithmEventHandlerBase.html',1,'mimir::search']]],
-  ['staticastaralgorithmeventhandlerbase_3c_20defaultastaralgorithmeventhandler_20_3e_18',['StaticAStarAlgorithmEventHandlerBase&lt; DefaultAStarAlgorithmEventHandler &gt;',['../classmimir_1_1search_1_1StaticAStarAlgorithmEventHandlerBase.html',1,'mimir::search']]],
-  ['staticbidirectionalgraph_19',['StaticBidirectionalGraph',['../classmimir_1_1graphs_1_1StaticBidirectionalGraph.html',1,'mimir::graphs']]],
-  ['staticconsistencygraph_20',['StaticConsistencyGraph',['../classmimir_1_1formalism_1_1StaticConsistencyGraph.html',1,'mimir::formalism']]],
-  ['staticforwardgraph_21',['StaticForwardGraph',['../classmimir_1_1graphs_1_1StaticForwardGraph.html',1,'mimir::graphs']]],
-  ['staticgraph_22',['StaticGraph',['../classmimir_1_1graphs_1_1StaticGraph.html',1,'mimir::graphs']]],
-  ['staticsize_23',['StaticSize',['../structmimir_1_1search_1_1StaticSize.html',1,'mimir::search']]],
-  ['substitutionruleimpl_24',['SubstitutionRuleImpl',['../classmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1SubstitutionRuleImpl.html',1,'mimir::languages::dl::cnf_grammar']]],
-  ['substitutionrulescontainer_25',['SubstitutionRulesContainer',['../classmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1SubstitutionRulesContainer.html',1,'mimir::languages::dl::cnf_grammar']]]
+  ['staticbidirectionalgraph_16',['StaticBidirectionalGraph',['../classmimir_1_1graphs_1_1StaticBidirectionalGraph.html',1,'mimir::graphs']]],
+  ['staticconsistencygraph_17',['StaticConsistencyGraph',['../classmimir_1_1formalism_1_1StaticConsistencyGraph.html',1,'mimir::formalism']]],
+  ['staticforwardgraph_18',['StaticForwardGraph',['../classmimir_1_1graphs_1_1StaticForwardGraph.html',1,'mimir::graphs']]],
+  ['staticgraph_19',['StaticGraph',['../classmimir_1_1graphs_1_1StaticGraph.html',1,'mimir::graphs']]],
+  ['staticsize_20',['StaticSize',['../structmimir_1_1search_1_1StaticSize.html',1,'mimir::search']]],
+  ['substitutionruleimpl_21',['SubstitutionRuleImpl',['../classmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1SubstitutionRuleImpl.html',1,'mimir::languages::dl::cnf_grammar']]],
+  ['substitutionrulescontainer_22',['SubstitutionRulesContainer',['../classmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1SubstitutionRulesContainer.html',1,'mimir::languages::dl::cnf_grammar']]]
 ];
