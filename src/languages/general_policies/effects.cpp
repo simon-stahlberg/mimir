@@ -23,42 +23,42 @@
 namespace mimir::languages::general_policies
 {
 
-PositiveBooleanEffectImpl::PositiveBooleanEffectImpl(NamedFeature<dl::Boolean> feature) : EffectBase(feature) {}
+PositiveBooleanEffectImpl::PositiveBooleanEffectImpl(Index index, NamedFeature<dl::Boolean> feature) : EffectBase(index, feature) {}
 
 bool PositiveBooleanEffectImpl::evaluate_impl(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const
 {
     return this->m_feature->get_feature()->evaluate(target_context)->get_data();
 }
 
-NegativeBooleanEffectImpl::NegativeBooleanEffectImpl(NamedFeature<dl::Boolean> feature) : EffectBase(feature) {}
+NegativeBooleanEffectImpl::NegativeBooleanEffectImpl(Index index, NamedFeature<dl::Boolean> feature) : EffectBase(index, feature) {}
 
 bool NegativeBooleanEffectImpl::evaluate_impl(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const
 {
     return !this->m_feature->get_feature()->evaluate(target_context)->get_data();
 }
 
-UnchangedBooleanEffectImpl::UnchangedBooleanEffectImpl(NamedFeature<dl::Boolean> feature) : EffectBase(feature) {}
+UnchangedBooleanEffectImpl::UnchangedBooleanEffectImpl(Index index, NamedFeature<dl::Boolean> feature) : EffectBase(index, feature) {}
 
 bool UnchangedBooleanEffectImpl::evaluate_impl(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const
 {
     return this->m_feature->get_feature()->evaluate(source_context)->get_data() == this->m_feature->get_feature()->evaluate(target_context)->get_data();
 }
 
-IncreaseNumericalEffectImpl::IncreaseNumericalEffectImpl(NamedFeature<dl::Numerical> feature) : EffectBase(feature) {}
+IncreaseNumericalEffectImpl::IncreaseNumericalEffectImpl(Index index, NamedFeature<dl::Numerical> feature) : EffectBase(index, feature) {}
 
 bool IncreaseNumericalEffectImpl::evaluate_impl(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const
 {
     return this->m_feature->get_feature()->evaluate(source_context)->get_data() < this->m_feature->get_feature()->evaluate(target_context)->get_data();
 }
 
-DecreaseNumericalEffectImpl::DecreaseNumericalEffectImpl(NamedFeature<dl::Numerical> feature) : EffectBase(feature) {}
+DecreaseNumericalEffectImpl::DecreaseNumericalEffectImpl(Index index, NamedFeature<dl::Numerical> feature) : EffectBase(index, feature) {}
 
 bool DecreaseNumericalEffectImpl::evaluate_impl(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const
 {
     return this->m_feature->get_feature()->evaluate(source_context)->get_data() > this->m_feature->get_feature()->evaluate(target_context)->get_data();
 }
 
-UnchangedNumericalEffectImpl::UnchangedNumericalEffectImpl(NamedFeature<dl::Numerical> feature) : EffectBase(feature) {}
+UnchangedNumericalEffectImpl::UnchangedNumericalEffectImpl(Index index, NamedFeature<dl::Numerical> feature) : EffectBase(index, feature) {}
 
 bool UnchangedNumericalEffectImpl::evaluate_impl(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const
 {

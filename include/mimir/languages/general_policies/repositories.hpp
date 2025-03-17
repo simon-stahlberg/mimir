@@ -51,6 +51,8 @@ using IncreaseNumericalEffectRepository = SegmentedPDDLRepository<IncreaseNumeri
 using DecreaseNumericalEffectRepository = SegmentedPDDLRepository<DecreaseNumericalEffectImpl>;
 using UnchangedNumericalEffectRepository = SegmentedPDDLRepository<UnchangedNumericalEffectImpl>;
 
+using RuleRepository = SegmentedPDDLRepository<RuleImpl>;
+
 using HanaRepositories = boost::hana::map<boost::hana::pair<boost::hana::type<NamedFeatureImpl<dl::Boolean>>, NamedFeatureRepository<dl::Boolean>>,
                                           boost::hana::pair<boost::hana::type<NamedFeatureImpl<dl::Numerical>>, NamedFeatureRepository<dl::Numerical>>,
                                           boost::hana::pair<boost::hana::type<PositiveBooleanConditionImpl>, PositiveBooleanConditionRepository>,
@@ -62,7 +64,8 @@ using HanaRepositories = boost::hana::map<boost::hana::pair<boost::hana::type<Na
                                           boost::hana::pair<boost::hana::type<UnchangedBooleanEffectImpl>, UnchangedBooleanEffectRepository>,
                                           boost::hana::pair<boost::hana::type<IncreaseNumericalEffectImpl>, IncreaseNumericalEffectRepository>,
                                           boost::hana::pair<boost::hana::type<DecreaseNumericalEffectImpl>, DecreaseNumericalEffectRepository>,
-                                          boost::hana::pair<boost::hana::type<UnchangedNumericalEffectImpl>, UnchangedNumericalEffectRepository>>;
+                                          boost::hana::pair<boost::hana::type<UnchangedNumericalEffectImpl>, UnchangedNumericalEffectRepository>,
+                                          boost::hana::pair<boost::hana::type<RuleImpl>, RuleRepository>>;
 
 class Repositories
 {
@@ -78,6 +81,20 @@ public:
 
     template<dl::FeatureCategory D>
     NamedFeature<D> get_or_create_named_feature(std::string name, dl::Constructor<D> feature);
+
+    PositiveBooleanCondition get_or_create_positive_boolean_condition(NamedFeature<dl::Boolean> feature);
+    NegativeBooleanCondition get_or_create_negative_boolean_condition(NamedFeature<dl::Boolean> feature);
+    GreaterNumericalCondition get_or_create_greater_numerical_condition(NamedFeature<dl::Numerical> feature);
+    EqualNumericalCondition get_or_create_equal_numerical_condition(NamedFeature<dl::Numerical> feature);
+
+    PositiveBooleanEffect get_or_create_positive_boolean_effect(NamedFeature<dl::Boolean> feature);
+    NegativeBooleanEffect get_or_create_negative_boolean_effect(NamedFeature<dl::Boolean> feature);
+    UnchangedBooleanEffect get_or_create_unchanged_boolean_effect(NamedFeature<dl::Boolean> feature);
+    IncreaseNumericalEffect get_or_create_increase_numerical_effect(NamedFeature<dl::Numerical> feature);
+    DecreaseNumericalEffect get_or_create_decrease_numerical_effect(NamedFeature<dl::Numerical> feature);
+    UnchangedNumericalEffect get_or_create_unchanged_numerical_effect(NamedFeature<dl::Numerical> feature);
+
+    Rule get_or_create_rule(ConditionList conditions, EffectList effects);
 };
 
 }

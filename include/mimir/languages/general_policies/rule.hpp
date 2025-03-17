@@ -25,16 +25,23 @@ namespace mimir::languages::general_policies
 class RuleImpl
 {
 private:
+    Index m_index;
     ConditionList m_conditions;
     EffectList m_effects;
 
-    RuleImpl(ConditionList conditions, EffectList effects);
+    RuleImpl(Index index, ConditionList conditions, EffectList effects);
+
+    template<typename T, typename Hash, typename EqualTo>
+    friend class loki::SegmentedRepository;
 
 public:
     bool evaluate(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const;
 
+    Index get_index() const;
     const ConditionList& get_conditions() const;
     const EffectList& get_effects() const;
+
+    auto identifying_members() const { return std::tuple(std::cref(get_conditions()), std::cref(get_effects())); }
 };
 }
 

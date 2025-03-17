@@ -22,28 +22,28 @@
 
 namespace mimir::languages::general_policies
 {
-PositiveBooleanConditionImpl::PositiveBooleanConditionImpl(NamedFeature<dl::Boolean> feature) : ConditionBase(feature) {}
+PositiveBooleanConditionImpl::PositiveBooleanConditionImpl(Index index, NamedFeature<dl::Boolean> feature) : ConditionBase(index, feature) {}
 
 bool PositiveBooleanConditionImpl::evaluate_impl(dl::EvaluationContext& source_context) const
 {
     return this->m_feature->get_feature()->evaluate(source_context)->get_data();
 }
 
-NegativeBooleanConditionImpl::NegativeBooleanConditionImpl(NamedFeature<dl::Boolean> feature) : ConditionBase(feature) {}
+NegativeBooleanConditionImpl::NegativeBooleanConditionImpl(Index index, NamedFeature<dl::Boolean> feature) : ConditionBase(index, feature) {}
 
 bool NegativeBooleanConditionImpl::evaluate_impl(dl::EvaluationContext& source_context) const
 {
     return !this->m_feature->get_feature()->evaluate(source_context)->get_data();
 }
 
-GreaterNumericalConditionImpl::GreaterNumericalConditionImpl(NamedFeature<dl::Numerical> feature) : ConditionBase(feature) {}
+GreaterNumericalConditionImpl::GreaterNumericalConditionImpl(Index index, NamedFeature<dl::Numerical> feature) : ConditionBase(index, feature) {}
 
 bool GreaterNumericalConditionImpl::evaluate_impl(dl::EvaluationContext& source_context) const
 {
     return this->m_feature->get_feature()->evaluate(source_context)->get_data() > 0;
 }
 
-EqualNumericalConditionImpl::EqualNumericalConditionImpl(NamedFeature<dl::Numerical> feature) : ConditionBase(feature) {}
+EqualNumericalConditionImpl::EqualNumericalConditionImpl(Index index, NamedFeature<dl::Numerical> feature) : ConditionBase(index, feature) {}
 
 bool EqualNumericalConditionImpl::evaluate_impl(dl::EvaluationContext& source_context) const
 {

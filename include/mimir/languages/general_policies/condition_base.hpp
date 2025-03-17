@@ -35,14 +35,19 @@ private:
     constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 protected:
+    Index m_index;
     NamedFeature<D> m_feature;
 
 public:
-    explicit ConditionBase(NamedFeature<D> feature) : m_feature(feature) {}
+    ConditionBase(Index index, NamedFeature<D> feature) : m_index(index), m_feature(feature) {}
+
+    Index get_index() const override { return m_index; }
 
     NamedFeature<D> get_feature() const { return m_feature; }
 
     bool evaluate(dl::EvaluationContext& source_context) const override { return self().evaluate_impl(source_context); }
+
+    auto identifying_members() const { return std::tuple(get_feature()); }
 };
 }
 

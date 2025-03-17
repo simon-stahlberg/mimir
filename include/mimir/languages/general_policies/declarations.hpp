@@ -18,6 +18,7 @@
 #ifndef MIMIR_LANGUAGES_GENERAL_POLICIES_DECLARATIONS_HPP_
 #define MIMIR_LANGUAGES_GENERAL_POLICIES_DECLARATIONS_HPP_
 
+#include "mimir/common/types.hpp"
 #include "mimir/languages/description_logics/declarations.hpp"
 
 namespace mimir::languages::general_policies

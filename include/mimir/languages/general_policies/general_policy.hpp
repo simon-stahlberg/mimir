@@ -18,6 +18,7 @@
 #ifndef MIMIR_LANGUAGES_GENERAL_POLICIES_GENERAL_POLICY_HPP_
 #define MIMIR_LANGUAGES_GENERAL_POLICIES_GENERAL_POLICY_HPP_
 
+#include "mimir/datasets/declarations.hpp"
 #include "mimir/datasets/generalized_state_space.hpp"
 #include "mimir/languages/general_policies/declarations.hpp"
 

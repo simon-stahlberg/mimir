@@ -23,13 +23,13 @@
 namespace mimir::languages::general_policies
 {
 /// @brief `ICondition` represents a Boolean feature condition.
-/// Observe that it is non-templated, meaning that it abstracts away any concrete-type information allowing us to feature conditions over different features in
-/// a single container.
 class ICondition
 {
 protected:
 public:
     virtual ~ICondition() = default;
+
+    virtual Index get_index() const = 0;
 
     virtual bool evaluate(dl::EvaluationContext& source_context) const = 0;
 };

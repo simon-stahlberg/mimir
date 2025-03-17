@@ -15,25 +15,34 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_LANGUAGES_GENERAL_POLICIES_EFFECT_INTERFACE_HPP_
-#define MIMIR_LANGUAGES_GENERAL_POLICIES_EFFECT_INTERFACE_HPP_
-
-#include "mimir/languages/general_policies/declarations.hpp"
+#include "mimir/languages/general_policies/named_feature.hpp"
 
 namespace mimir::languages::general_policies
 {
-/// @brief `IEffect` represents a Boolean feature effect.
-class IEffect
+template<dl::FeatureCategory D>
+NamedFeatureImpl<D>::NamedFeatureImpl(Index index, std::string name, dl::Constructor<D> feature) : m_index(index), m_name(std::move(name)), m_feature(feature)
 {
-protected:
-public:
-    virtual ~IEffect() = default;
-
-    virtual Index get_index() const = 0;
-
-    virtual bool evaluate(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const = 0;
-};
-
 }
 
-#endif
+template<dl::FeatureCategory D>
+Index NamedFeatureImpl<D>::get_index() const
+{
+    return m_index;
+}
+
+template<dl::FeatureCategory D>
+const std::string& NamedFeatureImpl<D>::get_name() const
+{
+    return m_name;
+}
+
+template<dl::FeatureCategory D>
+dl::Constructor<D> NamedFeatureImpl<D>::get_feature() const
+{
+    return m_feature;
+}
+
+template class NamedFeatureImpl<dl::Boolean>;
+template class NamedFeatureImpl<dl::Numerical>;
+
+}

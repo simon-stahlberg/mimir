@@ -23,13 +23,20 @@
 namespace mimir::languages::general_policies
 {
 
-RuleImpl::RuleImpl(ConditionList conditions, EffectList effects) : m_conditions(std::move(conditions)), m_effects(std::move(effects)) {}
+RuleImpl::RuleImpl(Index index, ConditionList conditions, EffectList effects) :
+    m_index(index),
+    m_conditions(std::move(conditions)),
+    m_effects(std::move(effects))
+{
+}
 
 bool RuleImpl::evaluate(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const
 {
     return std::all_of(get_conditions().begin(), get_conditions().end(), [&](auto&& arg) { return arg->evaluate(source_context); })
            && std::all_of(get_effects().begin(), get_effects().end(), [&](auto&& arg) { return arg->evaluate(source_context, target_context); });
 }
+
+Index RuleImpl::get_index() const { return m_index; }
 
 const ConditionList& RuleImpl::get_conditions() const { return m_conditions; }
 

@@ -27,7 +27,10 @@ namespace mimir::languages::general_policies
 class PositiveBooleanConditionImpl : public ConditionBase<PositiveBooleanConditionImpl, dl::Boolean>
 {
 private:
-    explicit PositiveBooleanConditionImpl(NamedFeature<dl::Boolean> feature);
+    PositiveBooleanConditionImpl(Index index, NamedFeature<dl::Boolean> feature);
+
+    template<typename T, typename Hash, typename EqualTo>
+    friend class loki::SegmentedRepository;
 
     bool evaluate_impl(dl::EvaluationContext& source_context) const;
 
@@ -37,7 +40,10 @@ private:
 class NegativeBooleanConditionImpl : public ConditionBase<NegativeBooleanConditionImpl, dl::Boolean>
 {
 private:
-    explicit NegativeBooleanConditionImpl(NamedFeature<dl::Boolean> feature);
+    NegativeBooleanConditionImpl(Index index, NamedFeature<dl::Boolean> feature);
+
+    template<typename T, typename Hash, typename EqualTo>
+    friend class loki::SegmentedRepository;
 
     bool evaluate_impl(dl::EvaluationContext& source_context) const;
 
@@ -47,7 +53,10 @@ private:
 class GreaterNumericalConditionImpl : public ConditionBase<GreaterNumericalConditionImpl, dl::Numerical>
 {
 private:
-    explicit GreaterNumericalConditionImpl(NamedFeature<dl::Numerical> feature);
+    GreaterNumericalConditionImpl(Index index, NamedFeature<dl::Numerical> feature);
+
+    template<typename T, typename Hash, typename EqualTo>
+    friend class loki::SegmentedRepository;
 
     bool evaluate_impl(dl::EvaluationContext& source_context) const;
 
@@ -57,7 +66,10 @@ private:
 class EqualNumericalConditionImpl : public ConditionBase<EqualNumericalConditionImpl, dl::Numerical>
 {
 private:
-    explicit EqualNumericalConditionImpl(NamedFeature<dl::Numerical> feature);
+    EqualNumericalConditionImpl(Index index, NamedFeature<dl::Numerical> feature);
+
+    template<typename T, typename Hash, typename EqualTo>
+    friend class loki::SegmentedRepository;
 
     bool evaluate_impl(dl::EvaluationContext& source_context) const;
 

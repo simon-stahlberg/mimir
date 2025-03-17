@@ -26,7 +26,10 @@ namespace mimir::languages::general_policies
 class PositiveBooleanEffectImpl : public EffectBase<PositiveBooleanEffectImpl, dl::Boolean>
 {
 private:
-    explicit PositiveBooleanEffectImpl(NamedFeature<dl::Boolean> feature);
+    PositiveBooleanEffectImpl(Index index, NamedFeature<dl::Boolean> feature);
+
+    template<typename T, typename Hash, typename EqualTo>
+    friend class loki::SegmentedRepository;
 
     bool evaluate_impl(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const;
 
@@ -36,7 +39,10 @@ private:
 class NegativeBooleanEffectImpl : public EffectBase<NegativeBooleanEffectImpl, dl::Boolean>
 {
 private:
-    explicit NegativeBooleanEffectImpl(NamedFeature<dl::Boolean> feature);
+    NegativeBooleanEffectImpl(Index index, NamedFeature<dl::Boolean> feature);
+
+    template<typename T, typename Hash, typename EqualTo>
+    friend class loki::SegmentedRepository;
 
     bool evaluate_impl(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const;
 
@@ -46,7 +52,10 @@ private:
 class UnchangedBooleanEffectImpl : public EffectBase<UnchangedBooleanEffectImpl, dl::Boolean>
 {
 private:
-    explicit UnchangedBooleanEffectImpl(NamedFeature<dl::Boolean> feature);
+    UnchangedBooleanEffectImpl(Index index, NamedFeature<dl::Boolean> feature);
+
+    template<typename T, typename Hash, typename EqualTo>
+    friend class loki::SegmentedRepository;
 
     bool evaluate_impl(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const;
 
@@ -56,7 +65,10 @@ private:
 class IncreaseNumericalEffectImpl : public EffectBase<IncreaseNumericalEffectImpl, dl::Numerical>
 {
 private:
-    explicit IncreaseNumericalEffectImpl(NamedFeature<dl::Numerical> feature);
+    IncreaseNumericalEffectImpl(Index index, NamedFeature<dl::Numerical> feature);
+
+    template<typename T, typename Hash, typename EqualTo>
+    friend class loki::SegmentedRepository;
 
     bool evaluate_impl(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const;
 
@@ -66,7 +78,10 @@ private:
 class DecreaseNumericalEffectImpl : public EffectBase<DecreaseNumericalEffectImpl, dl::Numerical>
 {
 private:
-    explicit DecreaseNumericalEffectImpl(NamedFeature<dl::Numerical> feature);
+    DecreaseNumericalEffectImpl(Index index, NamedFeature<dl::Numerical> feature);
+
+    template<typename T, typename Hash, typename EqualTo>
+    friend class loki::SegmentedRepository;
 
     bool evaluate_impl(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const;
 
@@ -76,7 +91,10 @@ private:
 class UnchangedNumericalEffectImpl : public EffectBase<UnchangedNumericalEffectImpl, dl::Numerical>
 {
 private:
-    explicit UnchangedNumericalEffectImpl(NamedFeature<dl::Numerical> feature);
+    UnchangedNumericalEffectImpl(Index index, NamedFeature<dl::Numerical> feature);
+
+    template<typename T, typename Hash, typename EqualTo>
+    friend class loki::SegmentedRepository;
 
     bool evaluate_impl(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const;
 

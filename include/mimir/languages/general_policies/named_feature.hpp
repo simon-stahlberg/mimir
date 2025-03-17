@@ -18,26 +18,40 @@
 #ifndef MIMIR_LANGUAGES_GENERAL_POLICIES_NAMED_FEATURE_HPP_
 #define MIMIR_LANGUAGES_GENERAL_POLICIES_NAMED_FEATURE_HPP_
 
-#include "mimir/languages/description_logics/declarations.hpp"
+#include "mimir/languages/general_policies/declarations.hpp"
 
 namespace mimir::languages::general_policies
 {
 
-/// @brief `IFeature` encapsulates a `dl::Constructor` with an associated name.
-/// @tparam D
+/// @brief `NamedFeatureImpl` encapsulates a `dl::Constructor` with an associated name.
+/// @tparam D is the feature type.
 template<dl::FeatureCategory D>
 class NamedFeatureImpl
 {
+private:
+    Index m_index;
+    std::string m_name;
+    dl::Constructor<D> m_feature;
+
+    NamedFeatureImpl(Index index, std::string name, dl::Constructor<D> feature);
+
+    template<typename T, typename Hash, typename EqualTo>
+    friend class loki::SegmentedRepository;
+
 public:
-    virtual ~NamedFeatureImpl() = default;
+    /// @brief Get the index of the `NamedFeatureImpl`.
+    /// @return the index of the `NamedFeatureImpl`.
+    Index get_index() const;
 
-    /// @brief Get the name of the feature.
-    /// @return the name of the feature.
-    virtual const std::string& get_name() const = 0;
+    /// @brief Get the name.
+    /// @return the name.
+    const std::string& get_name() const;
 
-    /// @brief Get the underlying feature.
-    /// @return  the underlying feature.
-    virtual dl::Constructor<D> get_feature() const = 0;
+    /// @brief Get the `dl::Constructor`.
+    /// @return  the `dl::Constructor`.
+    dl::Constructor<D> get_feature() const;
+
+    auto identifying_members() const { return std::tuple(std::cref(get_name()), get_feature()); }
 };
 
 }
