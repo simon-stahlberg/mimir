@@ -131,6 +131,12 @@ Typedefs</h2></td></tr>
 <tr class="memitem:aec5ca3f37315bf49bfb4a5aae3ff1504"><td class="memTemplParams" colspan="2">template&lt;dl::FeatureCategory D&gt; </td></tr>
 <tr class="memitem:aec5ca3f37315bf49bfb4a5aae3ff1504"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#aec5ca3f37315bf49bfb4a5aae3ff1504">NamedFeature</a> = const <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1NamedFeatureImpl.html">NamedFeatureImpl</a>&lt; D &gt; *</td></tr>
 <tr class="separator:aec5ca3f37315bf49bfb4a5aae3ff1504"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4ebedeace1945a4fa48ea0db8d85fe5"><td class="memTemplParams" colspan="2">template&lt;dl::FeatureCategory D&gt; </td></tr>
+<tr class="memitem:ae4ebedeace1945a4fa48ea0db8d85fe5"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#ae4ebedeace1945a4fa48ea0db8d85fe5">NamedFeatureList</a> = std::vector&lt; <a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#aec5ca3f37315bf49bfb4a5aae3ff1504">NamedFeature</a>&lt; D &gt; &gt;</td></tr>
+<tr class="separator:ae4ebedeace1945a4fa48ea0db8d85fe5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12b8270aa4fe1fe481c3933731054c0b"><td class="memTemplParams" colspan="2">template&lt;dl::FeatureCategory... Ds&gt; </td></tr>
+<tr class="memitem:a12b8270aa4fe1fe481c3933731054c0b"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#a12b8270aa4fe1fe481c3933731054c0b">NamedFeatureLists</a> = boost::hana::map&lt; boost::hana::pair&lt; boost::hana::type&lt; Ds &gt;, <a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#ae4ebedeace1945a4fa48ea0db8d85fe5">NamedFeatureList</a>&lt; Ds &gt; &gt;... &gt;</td></tr>
+<tr class="separator:a12b8270aa4fe1fe481c3933731054c0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a803e3bca20b646eba5a02d6977b264dd"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#a803e3bca20b646eba5a02d6977b264dd">Condition</a> = const <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1ICondition.html">ICondition</a> *</td></tr>
 <tr class="separator:a803e3bca20b646eba5a02d6977b264dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a67fa04851da70f895813564919fbab6f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#a67fa04851da70f895813564919fbab6f">ConditionList</a> = std::vector&lt; <a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#a803e3bca20b646eba5a02d6977b264dd">Condition</a> &gt;</td></tr>
@@ -387,6 +393,38 @@ template&lt;dl::FeatureCategory D&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using <a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#aec5ca3f37315bf49bfb4a5aae3ff1504">mimir::languages::general_policies::NamedFeature</a> = typedef const <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1NamedFeatureImpl.html">NamedFeatureImpl</a>&lt;D&gt;*</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae4ebedeace1945a4fa48ea0db8d85fe5" name="ae4ebedeace1945a4fa48ea0db8d85fe5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4ebedeace1945a4fa48ea0db8d85fe5">&#9670;&#160;</a></span>NamedFeatureList</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;dl::FeatureCategory D&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#ae4ebedeace1945a4fa48ea0db8d85fe5">mimir::languages::general_policies::NamedFeatureList</a> = typedef std::vector&lt;<a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#aec5ca3f37315bf49bfb4a5aae3ff1504">NamedFeature</a>&lt;D&gt; &gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a12b8270aa4fe1fe481c3933731054c0b" name="a12b8270aa4fe1fe481c3933731054c0b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12b8270aa4fe1fe481c3933731054c0b">&#9670;&#160;</a></span>NamedFeatureLists</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;dl::FeatureCategory... Ds&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#a12b8270aa4fe1fe481c3933731054c0b">mimir::languages::general_policies::NamedFeatureLists</a> = typedef boost::hana::map&lt;boost::hana::pair&lt;boost::hana::type&lt;Ds&gt;, <a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#ae4ebedeace1945a4fa48ea0db8d85fe5">NamedFeatureList</a>&lt;Ds&gt; &gt;...&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
