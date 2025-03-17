@@ -41,14 +41,13 @@ GroundFunctionExpression OptimizationMetricImpl::get_function_expression() const
 
 std::ostream& operator<<(std::ostream& out, const OptimizationMetricImpl& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, OptimizationMetric element)
 {
-    out << *element;
+    write(*element, AddressFormatter(), out);
     return out;
 }
 

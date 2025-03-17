@@ -62,8 +62,7 @@ template class GroundFunctionImpl<Auxiliary>;
 template<StaticOrFluentOrAuxiliary F>
 std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl<F>& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
@@ -74,7 +73,7 @@ template std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl<Au
 template<StaticOrFluentOrAuxiliary F>
 std::ostream& operator<<(std::ostream& out, GroundFunction<F> element)
 {
-    out << *element;
+    write(*element, AddressFormatter(), out);
     return out;
 }
 

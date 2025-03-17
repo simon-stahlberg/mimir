@@ -130,8 +130,7 @@ evaluate(GroundNumericEffect<Auxiliary> effect, const FlatDoubleList& static_num
 template<FluentOrAuxiliary F>
 std::ostream& operator<<(std::ostream& out, const GroundNumericEffectImpl<F>& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
@@ -141,7 +140,7 @@ template std::ostream& operator<<(std::ostream& out, const GroundNumericEffectIm
 template<FluentOrAuxiliary F>
 std::ostream& operator<<(std::ostream& out, GroundNumericEffect<F> element)
 {
-    out << *element;
+    write(*element, AddressFormatter(), out);
     return out;
 }
 

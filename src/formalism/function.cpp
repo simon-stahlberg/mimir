@@ -63,8 +63,7 @@ template class FunctionImpl<Auxiliary>;
 template<StaticOrFluentOrAuxiliary F>
 std::ostream& operator<<(std::ostream& out, const FunctionImpl<F>& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
@@ -75,7 +74,7 @@ template std::ostream& operator<<(std::ostream& out, const FunctionImpl<Auxiliar
 template<StaticOrFluentOrAuxiliary F>
 std::ostream& operator<<(std::ostream& out, Function<F> element)
 {
-    out << *element;
+    write(*element, AddressFormatter(), out);
     return out;
 }
 

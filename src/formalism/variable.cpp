@@ -33,14 +33,13 @@ Index VariableImpl::get_parameter_index() const { return m_parameter_index; }
 
 std::ostream& operator<<(std::ostream& out, const VariableImpl& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, Variable element)
 {
-    out << *element;
+    write(*element, AddressFormatter(), out);
     return out;
 }
 }

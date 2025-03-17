@@ -33,14 +33,13 @@ const loki::RequirementEnumSet& RequirementsImpl::get_requirements() const { ret
 
 std::ostream& operator<<(std::ostream& out, const RequirementsImpl& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, Requirements element)
 {
-    out << *element;
+    write(*element, AddressFormatter(), out);
     return out;
 }
 }

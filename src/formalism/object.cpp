@@ -29,14 +29,13 @@ const std::string& ObjectImpl::get_name() const { return m_name; }
 
 std::ostream& operator<<(std::ostream& out, const ObjectImpl& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, Object element)
 {
-    out << *element;
+    write(*element, AddressFormatter(), out);
     return out;
 }
 }

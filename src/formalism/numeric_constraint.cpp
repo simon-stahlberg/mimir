@@ -47,14 +47,13 @@ const TermList& NumericConstraintImpl::get_terms() const { return m_terms; }
 
 std::ostream& operator<<(std::ostream& out, const NumericConstraintImpl& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, NumericConstraint element)
 {
-    out << *element;
+    write(*element, AddressFormatter(), out);
     return out;
 }
 }

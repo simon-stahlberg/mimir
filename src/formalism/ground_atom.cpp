@@ -103,8 +103,7 @@ template std::pair<VariableList, AtomList<Derived>> lift(const GroundAtomList<De
 template<StaticOrFluentOrDerived P>
 std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<P>& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
@@ -115,7 +114,7 @@ template std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<Derive
 template<StaticOrFluentOrDerived P>
 std::ostream& operator<<(std::ostream& out, GroundAtom<P> element)
 {
-    out << *element;
+    write(*element, AddressFormatter(), out);
     return out;
 }
 

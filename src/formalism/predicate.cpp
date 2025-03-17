@@ -64,8 +64,7 @@ template class PredicateImpl<Derived>;
 template<StaticOrFluentOrDerived P>
 std::ostream& operator<<(std::ostream& out, const PredicateImpl<P>& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
@@ -76,7 +75,7 @@ template std::ostream& operator<<(std::ostream& out, const PredicateImpl<Derived
 template<StaticOrFluentOrDerived P>
 std::ostream& operator<<(std::ostream& out, Predicate<P> element)
 {
-    out << *element;
+    write(*element, AddressFormatter(), out);
     return out;
 }
 

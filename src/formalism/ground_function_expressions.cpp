@@ -196,37 +196,32 @@ ContinuousCost evaluate(GroundFunctionExpression fexpr, const FlatDoubleList& st
 /* Printing */
 std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionNumberImpl& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionBinaryOperatorImpl& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionMultiOperatorImpl& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionMinusImpl& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
 template<StaticOrFluentOrAuxiliary F>
 std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionFunctionImpl<F>& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
@@ -236,32 +231,32 @@ template std::ostream& operator<<(std::ostream& out, const GroundFunctionExpress
 
 std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionNumber element)
 {
-    out << *element;
+    write(*element, AddressFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionBinaryOperator element)
 {
-    out << *element;
+    write(*element, AddressFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionMultiOperator element)
 {
-    out << *element;
+    write(*element, AddressFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionMinus element)
 {
-    out << *element;
+    write(*element, AddressFormatter(), out);
     return out;
 }
 
 template<StaticOrFluentOrAuxiliary F>
 std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionFunction<F> element)
 {
-    out << *element;
+    write(*element, AddressFormatter(), out);
     return out;
 }
 
@@ -271,8 +266,7 @@ template std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionFun
 
 std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionImpl& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 

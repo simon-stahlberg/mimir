@@ -130,8 +130,7 @@ size_t ConditionalEffectImpl::get_arity() const { return m_conjunctive_condition
 template<FluentOrAuxiliary F>
 std::ostream& operator<<(std::ostream& out, const NumericEffectImpl<F>& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
@@ -140,22 +139,20 @@ template std::ostream& operator<<(std::ostream& out, const NumericEffectImpl<Aux
 
 std::ostream& operator<<(std::ostream& out, const ConjunctiveEffectImpl& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, const ConditionalEffectImpl& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
 template<FluentOrAuxiliary F>
 std::ostream& operator<<(std::ostream& out, NumericEffect<F> element)
 {
-    out << *element;
+    write(*element, AddressFormatter(), out);
     return out;
 }
 
@@ -164,13 +161,13 @@ template std::ostream& operator<<(std::ostream& out, NumericEffect<Auxiliary> el
 
 std::ostream& operator<<(std::ostream& out, ConjunctiveEffect element)
 {
-    out << *element;
+    write(*element, AddressFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, ConditionalEffect element)
 {
-    out << *element;
+    write(*element, AddressFormatter(), out);
     return out;
 }
 

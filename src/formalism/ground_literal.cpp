@@ -92,8 +92,7 @@ template std::pair<VariableList, LiteralList<Derived>> lift(const GroundLiteralL
 template<StaticOrFluentOrDerived P>
 std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<P>& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
@@ -104,7 +103,7 @@ template std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<Der
 template<StaticOrFluentOrDerived P>
 std::ostream& operator<<(std::ostream& out, GroundLiteral<P> element)
 {
-    out << *element;
+    write(*element, AddressFormatter(), out);
     return out;
 }
 

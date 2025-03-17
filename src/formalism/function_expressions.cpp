@@ -130,37 +130,32 @@ const FunctionExpressionVariant& FunctionExpressionImpl::get_variant() const { r
 
 std::ostream& operator<<(std::ostream& out, const FunctionExpressionNumberImpl& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, const FunctionExpressionBinaryOperatorImpl& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, const FunctionExpressionMultiOperatorImpl& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, const FunctionExpressionMinusImpl& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
 template<StaticOrFluentOrAuxiliary F>
 std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl<F>& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
@@ -170,39 +165,38 @@ template std::ostream& operator<<(std::ostream& out, const FunctionExpressionFun
 
 std::ostream& operator<<(std::ostream& out, const FunctionExpressionImpl& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, FunctionExpressionNumber element)
 {
-    out << *element;
+    write(*element, AddressFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, FunctionExpressionBinaryOperator element)
 {
-    out << *element;
+    write(*element, AddressFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, FunctionExpressionMultiOperator element)
 {
-    out << *element;
+    write(*element, AddressFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, FunctionExpressionMinus element)
 {
-    out << *element;
+    write(*element, AddressFormatter(), out);
     return out;
 }
 
 template<StaticOrFluentOrAuxiliary F>
 std::ostream& operator<<(std::ostream& out, FunctionExpressionFunction<F> element)
 {
-    out << *element;
+    write(*element, AddressFormatter(), out);
     return out;
 }
 

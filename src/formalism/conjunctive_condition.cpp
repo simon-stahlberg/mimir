@@ -105,14 +105,13 @@ size_t ConjunctiveConditionImpl::get_arity() const { return m_parameters.size();
 
 std::ostream& operator<<(std::ostream& out, const ConjunctiveConditionImpl& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, ConjunctiveCondition element)
 {
-    out << *element;
+    write(*element, AddressFormatter(), out);
     return out;
 }
 }

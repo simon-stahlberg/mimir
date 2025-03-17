@@ -1362,14 +1362,13 @@ problem::Details::Details(const ProblemImpl& problem) : parent(&problem), initia
 /* Printing */
 std::ostream& operator<<(std::ostream& out, const ProblemImpl& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, Problem element)
 {
-    out << *element;
+    write(*element, AddressFormatter(), out);
     return out;
 }
 

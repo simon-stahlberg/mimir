@@ -92,14 +92,13 @@ bool evaluate(GroundNumericConstraint constraint, const FlatDoubleList& static_n
 
 std::ostream& operator<<(std::ostream& out, const GroundNumericConstraintImpl& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, GroundNumericConstraint element)
 {
-    out << *element;
+    write(*element, AddressFormatter(), out);
     return out;
 }
 }

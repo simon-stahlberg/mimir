@@ -53,8 +53,7 @@ template class LiteralImpl<Derived>;
 template<StaticOrFluentOrDerived P>
 std::ostream& operator<<(std::ostream& out, const LiteralImpl<P>& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
@@ -65,7 +64,7 @@ template std::ostream& operator<<(std::ostream& out, const LiteralImpl<Derived>&
 template<StaticOrFluentOrDerived P>
 std::ostream& operator<<(std::ostream& out, Literal<P> element)
 {
-    out << *element;
+    write(*element, AddressFormatter(), out);
     return out;
 }
 

@@ -184,14 +184,13 @@ domain::Details::Details(const DomainImpl& domain) : parent(&domain), constant(d
 
 std::ostream& operator<<(std::ostream& out, const DomainImpl& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, Domain element)
 {
-    out << *element;
+    write(*element, AddressFormatter(), out);
     return out;
 }
 }
