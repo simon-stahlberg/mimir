@@ -20,7 +20,7 @@
 
 namespace mimir::languages::policy_sketches
 {
-
+class PolicySketch;
 }
 
 #endif
