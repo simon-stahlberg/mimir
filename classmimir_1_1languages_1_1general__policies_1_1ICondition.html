@@ -80,7 +80,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p><code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1ICondition.html" title="ICondition represents a Boolean feature condition. Observe that it is non-templated,...">ICondition</a></code> represents a Boolean feature condition. Observe that it is non-templated, meaning that it abstracts away any concrete-type information allowing us to feature conditions over different features in a single container.  
+<p><code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1ICondition.html" title="ICondition represents a Boolean feature condition.">ICondition</a></code> represents a Boolean feature condition.  
  <a href="classmimir_1_1languages_1_1general__policies_1_1ICondition.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="condition__interface_8hpp_source.html">condition_interface.hpp</a>&gt;</code></p>
@@ -106,11 +106,13 @@ Inheritance diagram for mimir::languages::general_policies::ICondition:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a80f0d507f8a3ef87778b16c2f6849a07"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1ICondition.html#a80f0d507f8a3ef87778b16c2f6849a07">~ICondition</a> ()=default</td></tr>
 <tr class="separator:a80f0d507f8a3ef87778b16c2f6849a07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d73f8967e7b58e1c80411ae6a4c87e3"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1ICondition.html#a4d73f8967e7b58e1c80411ae6a4c87e3">get_index</a> () const =0</td></tr>
+<tr class="separator:a4d73f8967e7b58e1c80411ae6a4c87e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaa72ea7c3fbd4c9e543b9d3134c1f589"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1ICondition.html#aaa72ea7c3fbd4c9e543b9d3134c1f589">evaluate</a> (<a class="el" href="classmimir_1_1languages_1_1dl_1_1EvaluationContext.html">dl::EvaluationContext</a> &amp;source_context) const =0</td></tr>
 <tr class="separator:aaa72ea7c3fbd4c9e543b9d3134c1f589"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p><code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1ICondition.html" title="ICondition represents a Boolean feature condition. Observe that it is non-templated,...">ICondition</a></code> represents a Boolean feature condition. Observe that it is non-templated, meaning that it abstracts away any concrete-type information allowing us to feature conditions over different features in a single container. </p>
+<div class="textblock"><p><code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1ICondition.html" title="ICondition represents a Boolean feature condition.">ICondition</a></code> represents a Boolean feature condition. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a80f0d507f8a3ef87778b16c2f6849a07" name="a80f0d507f8a3ef87778b16c2f6849a07"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a80f0d507f8a3ef87778b16c2f6849a07">&#9670;&#160;</a></span>~ICondition()</h2>
@@ -163,6 +165,33 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Implemented in <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1ConditionBase.html#a3e7b37ae4045ecad9a0ac1ab175bb39c">mimir::languages::general_policies::ConditionBase&lt; Derived_, D &gt;</a>, <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1ConditionBase.html#a3e7b37ae4045ecad9a0ac1ab175bb39c">mimir::languages::general_policies::ConditionBase&lt; EqualNumericalConditionImpl, dl::Numerical &gt;</a>, <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1ConditionBase.html#a3e7b37ae4045ecad9a0ac1ab175bb39c">mimir::languages::general_policies::ConditionBase&lt; GreaterNumericalConditionImpl, dl::Numerical &gt;</a>, <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1ConditionBase.html#a3e7b37ae4045ecad9a0ac1ab175bb39c">mimir::languages::general_policies::ConditionBase&lt; NegativeBooleanConditionImpl, dl::Boolean &gt;</a>, and <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1ConditionBase.html#a3e7b37ae4045ecad9a0ac1ab175bb39c">mimir::languages::general_policies::ConditionBase&lt; PositiveBooleanConditionImpl, dl::Boolean &gt;</a>.</p>
+
+</div>
+</div>
+<a id="a4d73f8967e7b58e1c80411ae6a4c87e3" name="a4d73f8967e7b58e1c80411ae6a4c87e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d73f8967e7b58e1c80411ae6a4c87e3">&#9670;&#160;</a></span>get_index()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> mimir::languages::general_policies::ICondition::get_index </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implemented in <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1ConditionBase.html#a24409e744c803a4388a1f97c8505c29b">mimir::languages::general_policies::ConditionBase&lt; Derived_, D &gt;</a>, <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1ConditionBase.html#a24409e744c803a4388a1f97c8505c29b">mimir::languages::general_policies::ConditionBase&lt; EqualNumericalConditionImpl, dl::Numerical &gt;</a>, <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1ConditionBase.html#a24409e744c803a4388a1f97c8505c29b">mimir::languages::general_policies::ConditionBase&lt; GreaterNumericalConditionImpl, dl::Numerical &gt;</a>, <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1ConditionBase.html#a24409e744c803a4388a1f97c8505c29b">mimir::languages::general_policies::ConditionBase&lt; NegativeBooleanConditionImpl, dl::Boolean &gt;</a>, and <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1ConditionBase.html#a24409e744c803a4388a1f97c8505c29b">mimir::languages::general_policies::ConditionBase&lt; PositiveBooleanConditionImpl, dl::Boolean &gt;</a>.</p>
 
 </div>
 </div>

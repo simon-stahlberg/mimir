@@ -80,7 +80,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p><code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IEffect.html" title="IEffect represents a Boolean feature effect. Observe that it is non-templated, meaning that it abstra...">IEffect</a></code> represents a Boolean feature effect. Observe that it is non-templated, meaning that it abstracts away any concrete-type information allowing us to feature effects over different features in a single container.  
+<p><code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IEffect.html" title="IEffect represents a Boolean feature effect.">IEffect</a></code> represents a Boolean feature effect.  
  <a href="classmimir_1_1languages_1_1general__policies_1_1IEffect.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="effect__interface_8hpp_source.html">effect_interface.hpp</a>&gt;</code></p>
@@ -110,11 +110,13 @@ Inheritance diagram for mimir::languages::general_policies::IEffect:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a6c49e6f64ad257c6624ef509e5adf896"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IEffect.html#a6c49e6f64ad257c6624ef509e5adf896">~IEffect</a> ()=default</td></tr>
 <tr class="separator:a6c49e6f64ad257c6624ef509e5adf896"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4aa05df0a103560550caf56fa2a77c51"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IEffect.html#a4aa05df0a103560550caf56fa2a77c51">get_index</a> () const =0</td></tr>
+<tr class="separator:a4aa05df0a103560550caf56fa2a77c51"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a37569e4c22bef113176e80ccefecb325"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IEffect.html#a37569e4c22bef113176e80ccefecb325">evaluate</a> (<a class="el" href="classmimir_1_1languages_1_1dl_1_1EvaluationContext.html">dl::EvaluationContext</a> &amp;source_context, <a class="el" href="classmimir_1_1languages_1_1dl_1_1EvaluationContext.html">dl::EvaluationContext</a> &amp;target_context) const =0</td></tr>
 <tr class="separator:a37569e4c22bef113176e80ccefecb325"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p><code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IEffect.html" title="IEffect represents a Boolean feature effect. Observe that it is non-templated, meaning that it abstra...">IEffect</a></code> represents a Boolean feature effect. Observe that it is non-templated, meaning that it abstracts away any concrete-type information allowing us to feature effects over different features in a single container. </p>
+<div class="textblock"><p><code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IEffect.html" title="IEffect represents a Boolean feature effect.">IEffect</a></code> represents a Boolean feature effect. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a6c49e6f64ad257c6624ef509e5adf896" name="a6c49e6f64ad257c6624ef509e5adf896"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6c49e6f64ad257c6624ef509e5adf896">&#9670;&#160;</a></span>~IEffect()</h2>
@@ -177,6 +179,33 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Implemented in <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1EffectBase.html#a502502cecf65fd9e41b109b981a00959">mimir::languages::general_policies::EffectBase&lt; Derived_, D &gt;</a>, <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1EffectBase.html#a502502cecf65fd9e41b109b981a00959">mimir::languages::general_policies::EffectBase&lt; DecreaseNumericalEffectImpl, dl::Numerical &gt;</a>, <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1EffectBase.html#a502502cecf65fd9e41b109b981a00959">mimir::languages::general_policies::EffectBase&lt; IncreaseNumericalEffectImpl, dl::Numerical &gt;</a>, <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1EffectBase.html#a502502cecf65fd9e41b109b981a00959">mimir::languages::general_policies::EffectBase&lt; NegativeBooleanEffectImpl, dl::Boolean &gt;</a>, <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1EffectBase.html#a502502cecf65fd9e41b109b981a00959">mimir::languages::general_policies::EffectBase&lt; PositiveBooleanEffectImpl, dl::Boolean &gt;</a>, <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1EffectBase.html#a502502cecf65fd9e41b109b981a00959">mimir::languages::general_policies::EffectBase&lt; UnchangedBooleanEffectImpl, dl::Boolean &gt;</a>, and <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1EffectBase.html#a502502cecf65fd9e41b109b981a00959">mimir::languages::general_policies::EffectBase&lt; UnchangedNumericalEffectImpl, dl::Numerical &gt;</a>.</p>
+
+</div>
+</div>
+<a id="a4aa05df0a103560550caf56fa2a77c51" name="a4aa05df0a103560550caf56fa2a77c51"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4aa05df0a103560550caf56fa2a77c51">&#9670;&#160;</a></span>get_index()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> mimir::languages::general_policies::IEffect::get_index </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implemented in <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1EffectBase.html#a17f9b4b18e3b19ddee27c6dfdbdb4950">mimir::languages::general_policies::EffectBase&lt; Derived_, D &gt;</a>, <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1EffectBase.html#a17f9b4b18e3b19ddee27c6dfdbdb4950">mimir::languages::general_policies::EffectBase&lt; DecreaseNumericalEffectImpl, dl::Numerical &gt;</a>, <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1EffectBase.html#a17f9b4b18e3b19ddee27c6dfdbdb4950">mimir::languages::general_policies::EffectBase&lt; IncreaseNumericalEffectImpl, dl::Numerical &gt;</a>, <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1EffectBase.html#a17f9b4b18e3b19ddee27c6dfdbdb4950">mimir::languages::general_policies::EffectBase&lt; NegativeBooleanEffectImpl, dl::Boolean &gt;</a>, <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1EffectBase.html#a17f9b4b18e3b19ddee27c6dfdbdb4950">mimir::languages::general_policies::EffectBase&lt; PositiveBooleanEffectImpl, dl::Boolean &gt;</a>, <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1EffectBase.html#a17f9b4b18e3b19ddee27c6dfdbdb4950">mimir::languages::general_policies::EffectBase&lt; UnchangedBooleanEffectImpl, dl::Boolean &gt;</a>, and <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1EffectBase.html#a17f9b4b18e3b19ddee27c6dfdbdb4950">mimir::languages::general_policies::EffectBase&lt; UnchangedNumericalEffectImpl, dl::Numerical &gt;</a>.</p>
 
 </div>
 </div>
