@@ -76,7 +76,8 @@ $(function() {
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#typedef-members">Typedefs</a>  </div>
+<a href="#typedef-members">Typedefs</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">denotation_repositories.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -107,10 +108,20 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a751d3377019d104efaa666dcbe893b90"><td class="memTemplParams" colspan="2">template&lt;FeatureCategory... Ds&gt; </td></tr>
-<tr class="memitem:a751d3377019d104efaa666dcbe893b90"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#a751d3377019d104efaa666dcbe893b90">mimir::languages::dl::DenotationRepositories</a> = boost::hana::map&lt; boost::hana::pair&lt; boost::hana::type&lt; Ds &gt;, DenotationRepository&lt; Ds &gt; &gt;... &gt;</td></tr>
-<tr class="memdesc:a751d3377019d104efaa666dcbe893b90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Repository for managing denotations. This stores the computed denotation of each state.  <br /></td></tr>
-<tr class="separator:a751d3377019d104efaa666dcbe893b90"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7a2277e6264f2fe0ed18a068ee8e553"><td class="memTemplParams" colspan="2">template&lt;FeatureCategory... Ds&gt; </td></tr>
+<tr class="memitem:af7a2277e6264f2fe0ed18a068ee8e553"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#af7a2277e6264f2fe0ed18a068ee8e553">mimir::languages::dl::HanaDenotationRepositories</a> = boost::hana::map&lt; boost::hana::pair&lt; boost::hana::type&lt; Ds &gt;, DenotationRepository&lt; Ds &gt; &gt;... &gt;</td></tr>
+<tr class="separator:af7a2277e6264f2fe0ed18a068ee8e553"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adbac78628659ac17c56ba402fbbcac8b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#adbac78628659ac17c56ba402fbbcac8b">mimir::languages::dl::DenotationRepositories</a> = HanaDenotationRepositories&lt; Concept, Role, Boolean, Numerical &gt;</td></tr>
+<tr class="separator:adbac78628659ac17c56ba402fbbcac8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a542cd838959901d4e3c21a0929da6879"><td class="memTemplParams" colspan="2">template&lt;FeatureCategory D&gt; </td></tr>
+<tr class="memitem:a542cd838959901d4e3c21a0929da6879"><td class="memTemplItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#a542cd838959901d4e3c21a0929da6879">mimir::languages::dl::get</a> (DenotationRepositories &amp;repositories)</td></tr>
+<tr class="separator:a542cd838959901d4e3c21a0929da6879"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa09f72b5a96b6503e1fbb868d0b5ac47"><td class="memTemplParams" colspan="2">template&lt;FeatureCategory D&gt; </td></tr>
+<tr class="memitem:aa09f72b5a96b6503e1fbb868d0b5ac47"><td class="memTemplItemLeft" align="right" valign="top">const auto &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#aa09f72b5a96b6503e1fbb868d0b5ac47">mimir::languages::dl::get</a> (const DenotationRepositories &amp;repositories)</td></tr>
+<tr class="separator:aa09f72b5a96b6503e1fbb868d0b5ac47"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->
