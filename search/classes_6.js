@@ -4,7 +4,7 @@ var searchData=
   ['generalizedproblem_1',['GeneralizedProblem',['../classmimir_1_1formalism_1_1GeneralizedProblem.html',1,'mimir::formalism']]],
   ['generalizedsearchcontext_2',['GeneralizedSearchContext',['../classmimir_1_1search_1_1GeneralizedSearchContext.html',1,'mimir::search']]],
   ['generalizedstatespace_3',['GeneralizedStateSpace',['../classmimir_1_1datasets_1_1GeneralizedStateSpace.html',1,'mimir::datasets']]],
-  ['generalpolicy_4',['GeneralPolicy',['../classmimir_1_1languages_1_1general__policies_1_1GeneralPolicy.html',1,'mimir::languages::general_policies']]],
+  ['generalpolicyimpl_4',['GeneralPolicyImpl',['../classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html',1,'mimir::languages::general_policies']]],
   ['generatedsentencescontainer_5',['GeneratedSentencesContainer',['../classmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1GeneratedSentencesContainer.html',1,'mimir::languages::dl::cnf_grammar']]],
   ['generatorstatistics_6',['GeneratorStatistics',['../structmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1GeneratorStatistics.html',1,'mimir::languages::dl::cnf_grammar']]],
   ['generatorvisitor_7',['GeneratorVisitor',['../classmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1GeneratorVisitor.html',1,'mimir::languages::dl::cnf_grammar']]],

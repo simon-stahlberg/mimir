@@ -3,7 +3,7 @@ var searchData=
   ['parse_5fproblem_0',['parse_problem',['../classmimir_1_1formalism_1_1Parser.html#aff9d3288c933da79c496054884ea3561',1,'mimir::formalism::Parser']]],
   ['parser_1',['Parser',['../classmimir_1_1formalism_1_1Parser.html#abad20fe452b4cc4ce944432bb601c293',1,'mimir::formalism::Parser']]],
   ['plan_2',['Plan',['../classmimir_1_1search_1_1Plan.html#a2d5591870990d20bed65c35763876fbd',1,'mimir::search::Plan']]],
-  ['policysketch_3',['PolicySketch',['../classmimir_1_1languages_1_1policy__sketches_1_1PolicySketch.html#a2749b9cc5bd305f39e4a9dc381d48802',1,'mimir::languages::policy_sketches::PolicySketch']]],
+  ['policysketch_3',['PolicySketch',['../classmimir_1_1languages_1_1policy__sketches_1_1PolicySketch.html#a318b34601bbf64f8d902471009fe24d6',1,'mimir::languages::policy_sketches::PolicySketch']]],
   ['predicateimpl_4',['PredicateImpl',['../classmimir_1_1formalism_1_1PredicateImpl.html#a7784a4ec26c1e5758856283a87f72bd2',1,'mimir::formalism::PredicateImpl::PredicateImpl(const PredicateImpl &amp;other)=delete'],['../classmimir_1_1formalism_1_1PredicateImpl.html#a952a7393c178526608932e47d3162c7e',1,'mimir::formalism::PredicateImpl::PredicateImpl(PredicateImpl &amp;&amp;other)=default']]],
   ['problembuilder_5',['ProblemBuilder',['../classmimir_1_1formalism_1_1ProblemBuilder.html#a1d8eaa4f7d7f434c12413c711a298dd0',1,'mimir::formalism::ProblemBuilder']]],
   ['problemgoalcounter_6',['ProblemGoalCounter',['../classmimir_1_1search_1_1siw_1_1ProblemGoalCounter.html#aa95b3ed4839edc74ee0908d45517e09e',1,'mimir::search::siw::ProblemGoalCounter']]],
