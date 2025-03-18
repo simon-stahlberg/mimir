@@ -229,12 +229,6 @@ Typedefs</h2></td></tr>
 <tr class="memitem:aa33695a3b328211c3cfee60b148509fa"><td class="memTemplParams" colspan="2">template&lt;dl::FeatureCategory D&gt; </td></tr>
 <tr class="memitem:aa33695a3b328211c3cfee60b148509fa"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#aa33695a3b328211c3cfee60b148509fa">Constructor</a> = const <a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1IConstructor.html">IConstructor</a>&lt; D &gt; *</td></tr>
 <tr class="separator:aa33695a3b328211c3cfee60b148509fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a23ebf03914b5bb93a62bbee2df03f2c3"><td class="memTemplParams" colspan="2">template&lt;dl::FeatureCategory D&gt; </td></tr>
-<tr class="memitem:a23ebf03914b5bb93a62bbee2df03f2c3"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a23ebf03914b5bb93a62bbee2df03f2c3">ConstructorList</a> = std::vector&lt; <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#aa33695a3b328211c3cfee60b148509fa">Constructor</a>&lt; D &gt; &gt;</td></tr>
-<tr class="separator:a23ebf03914b5bb93a62bbee2df03f2c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad46edb7e2b497d3efc716636bb483a48"><td class="memTemplParams" colspan="2">template&lt;dl::FeatureCategory... D&gt; </td></tr>
-<tr class="memitem:ad46edb7e2b497d3efc716636bb483a48"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#ad46edb7e2b497d3efc716636bb483a48">ConstructorLists</a> = boost::hana::map&lt; boost::hana::pair&lt; boost::hana::type&lt; D &gt;, <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a23ebf03914b5bb93a62bbee2df03f2c3">ConstructorList</a>&lt; D &gt; &gt;... &gt;</td></tr>
-<tr class="separator:ad46edb7e2b497d3efc716636bb483a48"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5d9458b773dd5d22a88cff850b870771"><td class="memTemplParams" colspan="2">template&lt;dl::FeatureCategory D&gt; </td></tr>
 <tr class="memitem:a5d9458b773dd5d22a88cff850b870771"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a5d9458b773dd5d22a88cff850b870771">NonTerminal</a> = const <a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1NonTerminalImpl.html">NonTerminalImpl</a>&lt; D &gt; *</td></tr>
 <tr class="separator:a5d9458b773dd5d22a88cff850b870771"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -864,38 +858,6 @@ template&lt;dl::FeatureCategory D&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#aa33695a3b328211c3cfee60b148509fa">mimir::languages::dl::grammar::Constructor</a> = typedef const <a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1IConstructor.html">IConstructor</a>&lt;D&gt;*</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a23ebf03914b5bb93a62bbee2df03f2c3" name="a23ebf03914b5bb93a62bbee2df03f2c3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a23ebf03914b5bb93a62bbee2df03f2c3">&#9670;&#160;</a></span>ConstructorList</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;dl::FeatureCategory D&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a23ebf03914b5bb93a62bbee2df03f2c3">mimir::languages::dl::grammar::ConstructorList</a> = typedef std::vector&lt;<a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#aa33695a3b328211c3cfee60b148509fa">Constructor</a>&lt;D&gt; &gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ad46edb7e2b497d3efc716636bb483a48" name="ad46edb7e2b497d3efc716636bb483a48"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad46edb7e2b497d3efc716636bb483a48">&#9670;&#160;</a></span>ConstructorLists</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;dl::FeatureCategory... D&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#ad46edb7e2b497d3efc716636bb483a48">mimir::languages::dl::grammar::ConstructorLists</a> = typedef boost::hana::map&lt;boost::hana::pair&lt;boost::hana::type&lt;D&gt;, <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a23ebf03914b5bb93a62bbee2df03f2c3">ConstructorList</a>&lt;D&gt; &gt;...&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">

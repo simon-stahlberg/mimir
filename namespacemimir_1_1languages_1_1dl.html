@@ -271,6 +271,9 @@ Typedefs</h2></td></tr>
 <tr class="memitem:a1a7e4ddf7e84881035c6002d27241e13"><td class="memTemplParams" colspan="2">template&lt;typename T , FeatureCategory... Ds&gt; </td></tr>
 <tr class="memitem:a1a7e4ddf7e84881035c6002d27241e13"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#a1a7e4ddf7e84881035c6002d27241e13">HanaContainer</a> = boost::hana::map&lt; boost::hana::pair&lt; boost::hana::type&lt; Ds &gt;, T &gt;... &gt;</td></tr>
 <tr class="separator:a1a7e4ddf7e84881035c6002d27241e13"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00e437f04c4ea4824ef436c9be93caaa"><td class="memTemplParams" colspan="2">template&lt;template&lt; typename &gt; typename T, FeatureCategory... Ds&gt; </td></tr>
+<tr class="memitem:a00e437f04c4ea4824ef436c9be93caaa"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#a00e437f04c4ea4824ef436c9be93caaa">HanaMappedContainer</a> = boost::hana::map&lt; boost::hana::pair&lt; boost::hana::type&lt; Ds &gt;, T&lt; Ds &gt; &gt;... &gt;</td></tr>
+<tr class="separator:a00e437f04c4ea4824ef436c9be93caaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5fb58daa88a73a4d955b36135ac1696d"><td class="memTemplParams" colspan="2">template&lt;FeatureCategory D&gt; </td></tr>
 <tr class="memitem:a5fb58daa88a73a4d955b36135ac1696d"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#a5fb58daa88a73a4d955b36135ac1696d">Denotation</a> = const <a class="el" href="structmimir_1_1languages_1_1dl_1_1DenotationImpl.html">DenotationImpl</a>&lt; D &gt; *</td></tr>
 <tr class="separator:a5fb58daa88a73a4d955b36135ac1696d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -280,18 +283,16 @@ Typedefs</h2></td></tr>
 <tr class="memitem:af286b446324316642ad4c5c744612856"><td class="memTemplParams" colspan="2">template&lt;FeatureCategory D&gt; </td></tr>
 <tr class="memitem:af286b446324316642ad4c5c744612856"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#af286b446324316642ad4c5c744612856">DenotationListSet</a> = std::unordered_set&lt; <a class="el" href="namespacemimir_1_1languages_1_1dl.html#a8fd85338fefeb17d2b80f4751dc47feb">DenotationList</a>&lt; D &gt;, loki::Hash&lt; <a class="el" href="namespacemimir_1_1languages_1_1dl.html#a8fd85338fefeb17d2b80f4751dc47feb">DenotationList</a>&lt; D &gt; &gt;, loki::EqualTo&lt; <a class="el" href="namespacemimir_1_1languages_1_1dl.html#a8fd85338fefeb17d2b80f4751dc47feb">DenotationList</a>&lt; D &gt; &gt; &gt;</td></tr>
 <tr class="separator:af286b446324316642ad4c5c744612856"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2899f8debe705763db5416c46b319b7f"><td class="memTemplParams" colspan="2">template&lt;FeatureCategory... Ds&gt; </td></tr>
-<tr class="memitem:a2899f8debe705763db5416c46b319b7f"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#a2899f8debe705763db5416c46b319b7f">DenotationListSets</a> = boost::hana::map&lt; boost::hana::pair&lt; boost::hana::type&lt; Ds &gt;, <a class="el" href="namespacemimir_1_1languages_1_1dl.html#af286b446324316642ad4c5c744612856">DenotationListSet</a>&lt; Ds &gt; &gt;... &gt;</td></tr>
-<tr class="separator:a2899f8debe705763db5416c46b319b7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed3c7021cd1c73c4e8cae02fd82cc0bc"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#aed3c7021cd1c73c4e8cae02fd82cc0bc">DenotationListSets</a> = <a class="el" href="namespacemimir_1_1languages_1_1dl.html#a00e437f04c4ea4824ef436c9be93caaa">HanaMappedContainer</a>&lt; <a class="el" href="namespacemimir_1_1languages_1_1dl.html#af286b446324316642ad4c5c744612856">DenotationListSet</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Concept.html">Concept</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Role.html">Role</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Boolean.html">Boolean</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Numerical.html">Numerical</a> &gt;</td></tr>
+<tr class="separator:aed3c7021cd1c73c4e8cae02fd82cc0bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2f5ecd6c57868865e0cf88c96d6b7e6f"><td class="memTemplParams" colspan="2">template&lt;FeatureCategory D&gt; </td></tr>
 <tr class="memitem:a2f5ecd6c57868865e0cf88c96d6b7e6f"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#a2f5ecd6c57868865e0cf88c96d6b7e6f">Constructor</a> = const <a class="el" href="classmimir_1_1languages_1_1dl_1_1IConstructor.html">IConstructor</a>&lt; D &gt; *</td></tr>
 <tr class="separator:a2f5ecd6c57868865e0cf88c96d6b7e6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acee11c8ab9ae5baaae81c65638ff3a25"><td class="memTemplParams" colspan="2">template&lt;FeatureCategory D&gt; </td></tr>
 <tr class="memitem:acee11c8ab9ae5baaae81c65638ff3a25"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#acee11c8ab9ae5baaae81c65638ff3a25">ConstructorList</a> = std::vector&lt; <a class="el" href="namespacemimir_1_1languages_1_1dl.html#a2f5ecd6c57868865e0cf88c96d6b7e6f">Constructor</a>&lt; D &gt; &gt;</td></tr>
 <tr class="separator:acee11c8ab9ae5baaae81c65638ff3a25"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1ff33ce0245da39785401354529f98e4"><td class="memTemplParams" colspan="2">template&lt;FeatureCategory... D&gt; </td></tr>
-<tr class="memitem:a1ff33ce0245da39785401354529f98e4"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#a1ff33ce0245da39785401354529f98e4">ConstructorLists</a> = boost::hana::map&lt; boost::hana::pair&lt; boost::hana::type&lt; D &gt;, <a class="el" href="namespacemimir_1_1languages_1_1dl.html#acee11c8ab9ae5baaae81c65638ff3a25">ConstructorList</a>&lt; D &gt; &gt;... &gt;</td></tr>
-<tr class="separator:a1ff33ce0245da39785401354529f98e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8cdb5128a777a51931955fc0cd570e2"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#ab8cdb5128a777a51931955fc0cd570e2">ConstructorLists</a> = <a class="el" href="namespacemimir_1_1languages_1_1dl.html#a00e437f04c4ea4824ef436c9be93caaa">dl::HanaMappedContainer</a>&lt; <a class="el" href="namespacemimir_1_1languages_1_1dl.html#acee11c8ab9ae5baaae81c65638ff3a25">ConstructorList</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Concept.html">Concept</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Role.html">Role</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Boolean.html">Boolean</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Numerical.html">Numerical</a> &gt;</td></tr>
+<tr class="separator:ab8cdb5128a777a51931955fc0cd570e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5dfffe7f76a4342bb986231c6487bdd5"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#a5dfffe7f76a4342bb986231c6487bdd5">ConceptTop</a> = const <a class="el" href="classmimir_1_1languages_1_1dl_1_1ConceptTopImpl.html">ConceptTopImpl</a> *</td></tr>
 <tr class="separator:a5dfffe7f76a4342bb986231c6487bdd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aac6ffe5c269487e6ad0987696c06a4f3"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#aac6ffe5c269487e6ad0987696c06a4f3">ConceptBot</a> = const <a class="el" href="classmimir_1_1languages_1_1dl_1_1ConceptBotImpl.html">ConceptBotImpl</a> *</td></tr>
@@ -355,17 +356,11 @@ Typedefs</h2></td></tr>
 <tr class="separator:a3883f04e04df8d625e55a29fbc122b91"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1ee964364e4cb6f174112bf618425a48"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#a1ee964364e4cb6f174112bf618425a48">NumericalDistance</a> = const <a class="el" href="classmimir_1_1languages_1_1dl_1_1NumericalDistanceImpl.html">NumericalDistanceImpl</a> *</td></tr>
 <tr class="separator:a1ee964364e4cb6f174112bf618425a48"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af7a2277e6264f2fe0ed18a068ee8e553"><td class="memTemplParams" colspan="2">template&lt;FeatureCategory... Ds&gt; </td></tr>
-<tr class="memitem:af7a2277e6264f2fe0ed18a068ee8e553"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#af7a2277e6264f2fe0ed18a068ee8e553">HanaDenotationRepositories</a> = boost::hana::map&lt; boost::hana::pair&lt; boost::hana::type&lt; Ds &gt;, <a class="el" href="classmimir_1_1languages_1_1dl_1_1DenotationRepository.html">DenotationRepository</a>&lt; Ds &gt; &gt;... &gt;</td></tr>
-<tr class="separator:af7a2277e6264f2fe0ed18a068ee8e553"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adbac78628659ac17c56ba402fbbcac8b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#adbac78628659ac17c56ba402fbbcac8b">DenotationRepositories</a> = <a class="el" href="namespacemimir_1_1languages_1_1dl.html#af7a2277e6264f2fe0ed18a068ee8e553">HanaDenotationRepositories</a>&lt; <a class="el" href="structmimir_1_1languages_1_1dl_1_1Concept.html">Concept</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Role.html">Role</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Boolean.html">Boolean</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Numerical.html">Numerical</a> &gt;</td></tr>
-<tr class="separator:adbac78628659ac17c56ba402fbbcac8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a604a4e4fb02478c43f57e476a9e72bb6"><td class="memTemplParams" colspan="2">template&lt;FeatureCategory... Ds&gt; </td></tr>
-<tr class="memitem:a604a4e4fb02478c43f57e476a9e72bb6"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#a604a4e4fb02478c43f57e476a9e72bb6">HanaDenotations</a> = boost::hana::map&lt; boost::hana::pair&lt; boost::hana::type&lt; Ds &gt;, <a class="el" href="structmimir_1_1languages_1_1dl_1_1DenotationImpl.html">DenotationImpl</a>&lt; Ds &gt; &gt;... &gt;</td></tr>
-<tr class="memdesc:a604a4e4fb02478c43f57e476a9e72bb6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Denotation for temporary construction. This stores a computed denotation for a single state.  <br /></td></tr>
-<tr class="separator:a604a4e4fb02478c43f57e476a9e72bb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae127fe8d531b2a6d6abf53f64ac82d34"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#ae127fe8d531b2a6d6abf53f64ac82d34">Denotations</a> = <a class="el" href="namespacemimir_1_1languages_1_1dl.html#a604a4e4fb02478c43f57e476a9e72bb6">HanaDenotations</a>&lt; <a class="el" href="structmimir_1_1languages_1_1dl_1_1Concept.html">Concept</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Role.html">Role</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Boolean.html">Boolean</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Numerical.html">Numerical</a> &gt;</td></tr>
-<tr class="separator:ae127fe8d531b2a6d6abf53f64ac82d34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75ac4ed2c423195ba0b876124d33d752"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#a75ac4ed2c423195ba0b876124d33d752">DenotationRepositories</a> = <a class="el" href="namespacemimir_1_1languages_1_1dl.html#a00e437f04c4ea4824ef436c9be93caaa">HanaMappedContainer</a>&lt; <a class="el" href="classmimir_1_1languages_1_1dl_1_1DenotationRepository.html">DenotationRepository</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Concept.html">Concept</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Role.html">Role</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Boolean.html">Boolean</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Numerical.html">Numerical</a> &gt;</td></tr>
+<tr class="separator:a75ac4ed2c423195ba0b876124d33d752"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f52b344790c7fb3ffd6f0c8beb3614f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#a7f52b344790c7fb3ffd6f0c8beb3614f">Denotations</a> = <a class="el" href="namespacemimir_1_1languages_1_1dl.html#a00e437f04c4ea4824ef436c9be93caaa">HanaMappedContainer</a>&lt; <a class="el" href="structmimir_1_1languages_1_1dl_1_1DenotationImpl.html">DenotationImpl</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Concept.html">Concept</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Role.html">Role</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Boolean.html">Boolean</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Numerical.html">Numerical</a> &gt;</td></tr>
+<tr class="memdesc:a7f52b344790c7fb3ffd6f0c8beb3614f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Denotation for temporary construction. This stores a computed denotation for a single state.  <br /></td></tr>
+<tr class="separator:a7f52b344790c7fb3ffd6f0c8beb3614f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abf2ff3234181cdf0c2cb06402fa6dbe6"><td class="memTemplParams" colspan="2">template&lt;FeatureCategory D&gt; </td></tr>
 <tr class="memitem:abf2ff3234181cdf0c2cb06402fa6dbe6"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#abf2ff3234181cdf0c2cb06402fa6dbe6">DenotationImplSet</a> = mimir::buffering::UnorderedSet&lt; <a class="el" href="structmimir_1_1languages_1_1dl_1_1DenotationImpl.html">DenotationImpl</a>&lt; D &gt; &gt;</td></tr>
 <tr class="separator:abf2ff3234181cdf0c2cb06402fa6dbe6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -375,18 +370,6 @@ Functions</h2></td></tr>
 <tr class="memitem:a4b9efa8264d459bd4d6773809950da4d"><td class="memTemplParams" colspan="2">template&lt;FeatureCategory D&gt; </td></tr>
 <tr class="memitem:a4b9efa8264d459bd4d6773809950da4d"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#a4b9efa8264d459bd4d6773809950da4d">operator&lt;&lt;</a> (std::ostream &amp;out, const <a class="el" href="namespacemimir_1_1languages_1_1dl.html#a2f5ecd6c57868865e0cf88c96d6b7e6f">Constructor</a>&lt; D &gt; &amp;constructor)</td></tr>
 <tr class="separator:a4b9efa8264d459bd4d6773809950da4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a542cd838959901d4e3c21a0929da6879"><td class="memTemplParams" colspan="2">template&lt;FeatureCategory D&gt; </td></tr>
-<tr class="memitem:a542cd838959901d4e3c21a0929da6879"><td class="memTemplItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#a542cd838959901d4e3c21a0929da6879">get</a> (<a class="el" href="namespacemimir_1_1languages_1_1dl.html#adbac78628659ac17c56ba402fbbcac8b">DenotationRepositories</a> &amp;repositories)</td></tr>
-<tr class="separator:a542cd838959901d4e3c21a0929da6879"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa09f72b5a96b6503e1fbb868d0b5ac47"><td class="memTemplParams" colspan="2">template&lt;FeatureCategory D&gt; </td></tr>
-<tr class="memitem:aa09f72b5a96b6503e1fbb868d0b5ac47"><td class="memTemplItemLeft" align="right" valign="top">const auto &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#aa09f72b5a96b6503e1fbb868d0b5ac47">get</a> (const <a class="el" href="namespacemimir_1_1languages_1_1dl.html#adbac78628659ac17c56ba402fbbcac8b">DenotationRepositories</a> &amp;repositories)</td></tr>
-<tr class="separator:aa09f72b5a96b6503e1fbb868d0b5ac47"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0f327cd1010e73e78cf7512f5f0127dd"><td class="memTemplParams" colspan="2">template&lt;FeatureCategory D&gt; </td></tr>
-<tr class="memitem:a0f327cd1010e73e78cf7512f5f0127dd"><td class="memTemplItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#a0f327cd1010e73e78cf7512f5f0127dd">get</a> (<a class="el" href="namespacemimir_1_1languages_1_1dl.html#ae127fe8d531b2a6d6abf53f64ac82d34">Denotations</a> &amp;denotations)</td></tr>
-<tr class="separator:a0f327cd1010e73e78cf7512f5f0127dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2d5c2dbbc32d2e2f2fcff160f467cc9b"><td class="memTemplParams" colspan="2">template&lt;FeatureCategory D&gt; </td></tr>
-<tr class="memitem:a2d5c2dbbc32d2e2f2fcff160f467cc9b"><td class="memTemplItemLeft" align="right" valign="top">const auto &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#a2d5c2dbbc32d2e2f2fcff160f467cc9b">get</a> (const <a class="el" href="namespacemimir_1_1languages_1_1dl.html#ae127fe8d531b2a6d6abf53f64ac82d34">Denotations</a> &amp;denotations)</td></tr>
-<tr class="separator:a2d5c2dbbc32d2e2f2fcff160f467cc9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Typedef Documentation</h2>
 <a id="aa153f6b9192682a9e37a4c3bb6712705" name="aa153f6b9192682a9e37a4c3bb6712705"></a>
@@ -829,16 +812,14 @@ template&lt;FeatureCategory D&gt; </div>
 
 </div>
 </div>
-<a id="a1ff33ce0245da39785401354529f98e4" name="a1ff33ce0245da39785401354529f98e4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1ff33ce0245da39785401354529f98e4">&#9670;&#160;</a></span>ConstructorLists</h2>
+<a id="ab8cdb5128a777a51931955fc0cd570e2" name="ab8cdb5128a777a51931955fc0cd570e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab8cdb5128a777a51931955fc0cd570e2">&#9670;&#160;</a></span>ConstructorLists</h2>
 
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;FeatureCategory... D&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="namespacemimir_1_1languages_1_1dl.html#a1ff33ce0245da39785401354529f98e4">mimir::languages::dl::ConstructorLists</a> = typedef boost::hana::map&lt;boost::hana::pair&lt;boost::hana::type&lt;D&gt;, <a class="el" href="namespacemimir_1_1languages_1_1dl.html#acee11c8ab9ae5baaae81c65638ff3a25">ConstructorList</a>&lt;D&gt; &gt;...&gt;</td>
+          <td class="memname">using <a class="el" href="namespacemimir_1_1languages_1_1dl.html#ab8cdb5128a777a51931955fc0cd570e2">mimir::languages::dl::ConstructorLists</a> = typedef <a class="el" href="namespacemimir_1_1languages_1_1dl.html#a00e437f04c4ea4824ef436c9be93caaa">dl::HanaMappedContainer</a>&lt;<a class="el" href="namespacemimir_1_1languages_1_1dl.html#acee11c8ab9ae5baaae81c65638ff3a25">ConstructorList</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Concept.html">Concept</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Role.html">Role</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Boolean.html">Boolean</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Numerical.html">Numerical</a>&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -909,47 +890,47 @@ template&lt;FeatureCategory D&gt; </div>
 
 </div>
 </div>
-<a id="a2899f8debe705763db5416c46b319b7f" name="a2899f8debe705763db5416c46b319b7f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2899f8debe705763db5416c46b319b7f">&#9670;&#160;</a></span>DenotationListSets</h2>
+<a id="aed3c7021cd1c73c4e8cae02fd82cc0bc" name="aed3c7021cd1c73c4e8cae02fd82cc0bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed3c7021cd1c73c4e8cae02fd82cc0bc">&#9670;&#160;</a></span>DenotationListSets</h2>
 
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;FeatureCategory... Ds&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="namespacemimir_1_1languages_1_1dl.html#a2899f8debe705763db5416c46b319b7f">mimir::languages::dl::DenotationListSets</a> = typedef boost::hana::map&lt;boost::hana::pair&lt;boost::hana::type&lt;Ds&gt;, <a class="el" href="namespacemimir_1_1languages_1_1dl.html#af286b446324316642ad4c5c744612856">DenotationListSet</a>&lt;Ds&gt; &gt;...&gt;</td>
+          <td class="memname">using <a class="el" href="namespacemimir_1_1languages_1_1dl.html#aed3c7021cd1c73c4e8cae02fd82cc0bc">mimir::languages::dl::DenotationListSets</a> = typedef <a class="el" href="namespacemimir_1_1languages_1_1dl.html#a00e437f04c4ea4824ef436c9be93caaa">HanaMappedContainer</a>&lt;<a class="el" href="namespacemimir_1_1languages_1_1dl.html#af286b446324316642ad4c5c744612856">DenotationListSet</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Concept.html">Concept</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Role.html">Role</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Boolean.html">Boolean</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Numerical.html">Numerical</a>&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="adbac78628659ac17c56ba402fbbcac8b" name="adbac78628659ac17c56ba402fbbcac8b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adbac78628659ac17c56ba402fbbcac8b">&#9670;&#160;</a></span>DenotationRepositories</h2>
+<a id="a75ac4ed2c423195ba0b876124d33d752" name="a75ac4ed2c423195ba0b876124d33d752"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75ac4ed2c423195ba0b876124d33d752">&#9670;&#160;</a></span>DenotationRepositories</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="namespacemimir_1_1languages_1_1dl.html#adbac78628659ac17c56ba402fbbcac8b">mimir::languages::dl::DenotationRepositories</a> = typedef <a class="el" href="namespacemimir_1_1languages_1_1dl.html#af7a2277e6264f2fe0ed18a068ee8e553">HanaDenotationRepositories</a>&lt;<a class="el" href="structmimir_1_1languages_1_1dl_1_1Concept.html">Concept</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Role.html">Role</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Boolean.html">Boolean</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Numerical.html">Numerical</a>&gt;</td>
+          <td class="memname">using <a class="el" href="namespacemimir_1_1languages_1_1dl.html#a75ac4ed2c423195ba0b876124d33d752">mimir::languages::dl::DenotationRepositories</a> = typedef <a class="el" href="namespacemimir_1_1languages_1_1dl.html#a00e437f04c4ea4824ef436c9be93caaa">HanaMappedContainer</a>&lt;<a class="el" href="classmimir_1_1languages_1_1dl_1_1DenotationRepository.html">DenotationRepository</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Concept.html">Concept</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Role.html">Role</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Boolean.html">Boolean</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Numerical.html">Numerical</a>&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="ae127fe8d531b2a6d6abf53f64ac82d34" name="ae127fe8d531b2a6d6abf53f64ac82d34"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae127fe8d531b2a6d6abf53f64ac82d34">&#9670;&#160;</a></span>Denotations</h2>
+<a id="a7f52b344790c7fb3ffd6f0c8beb3614f" name="a7f52b344790c7fb3ffd6f0c8beb3614f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f52b344790c7fb3ffd6f0c8beb3614f">&#9670;&#160;</a></span>Denotations</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="namespacemimir_1_1languages_1_1dl.html#ae127fe8d531b2a6d6abf53f64ac82d34">mimir::languages::dl::Denotations</a> = typedef <a class="el" href="namespacemimir_1_1languages_1_1dl.html#a604a4e4fb02478c43f57e476a9e72bb6">HanaDenotations</a>&lt;<a class="el" href="structmimir_1_1languages_1_1dl_1_1Concept.html">Concept</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Role.html">Role</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Boolean.html">Boolean</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Numerical.html">Numerical</a>&gt;</td>
+          <td class="memname">using <a class="el" href="namespacemimir_1_1languages_1_1dl.html#a7f52b344790c7fb3ffd6f0c8beb3614f">mimir::languages::dl::Denotations</a> = typedef <a class="el" href="namespacemimir_1_1languages_1_1dl.html#a00e437f04c4ea4824ef436c9be93caaa">HanaMappedContainer</a>&lt;<a class="el" href="structmimir_1_1languages_1_1dl_1_1DenotationImpl.html">DenotationImpl</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Concept.html">Concept</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Role.html">Role</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Boolean.html">Boolean</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Numerical.html">Numerical</a>&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Denotation for temporary construction. This stores a computed denotation for a single state. </p>
 
 </div>
 </div>
@@ -970,37 +951,19 @@ template&lt;typename T , FeatureCategory... Ds&gt; </div>
 
 </div>
 </div>
-<a id="af7a2277e6264f2fe0ed18a068ee8e553" name="af7a2277e6264f2fe0ed18a068ee8e553"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af7a2277e6264f2fe0ed18a068ee8e553">&#9670;&#160;</a></span>HanaDenotationRepositories</h2>
+<a id="a00e437f04c4ea4824ef436c9be93caaa" name="a00e437f04c4ea4824ef436c9be93caaa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00e437f04c4ea4824ef436c9be93caaa">&#9670;&#160;</a></span>HanaMappedContainer</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;FeatureCategory... Ds&gt; </div>
+template&lt;template&lt; typename &gt; typename T, FeatureCategory... Ds&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="namespacemimir_1_1languages_1_1dl.html#af7a2277e6264f2fe0ed18a068ee8e553">mimir::languages::dl::HanaDenotationRepositories</a> = typedef boost::hana::map&lt;boost::hana::pair&lt;boost::hana::type&lt;Ds&gt;, <a class="el" href="classmimir_1_1languages_1_1dl_1_1DenotationRepository.html">DenotationRepository</a>&lt;Ds&gt; &gt;...&gt;</td>
+          <td class="memname">using <a class="el" href="namespacemimir_1_1languages_1_1dl.html#a00e437f04c4ea4824ef436c9be93caaa">mimir::languages::dl::HanaMappedContainer</a> = typedef boost::hana::map&lt;boost::hana::pair&lt;boost::hana::type&lt;Ds&gt;, T&lt;Ds&gt; &gt;...&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
-
-</div>
-</div>
-<a id="a604a4e4fb02478c43f57e476a9e72bb6" name="a604a4e4fb02478c43f57e476a9e72bb6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a604a4e4fb02478c43f57e476a9e72bb6">&#9670;&#160;</a></span>HanaDenotations</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;FeatureCategory... Ds&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="namespacemimir_1_1languages_1_1dl.html#a604a4e4fb02478c43f57e476a9e72bb6">mimir::languages::dl::HanaDenotations</a> = typedef boost::hana::map&lt;boost::hana::pair&lt;boost::hana::type&lt;Ds&gt;, <a class="el" href="structmimir_1_1languages_1_1dl_1_1DenotationImpl.html">DenotationImpl</a>&lt;Ds&gt; &gt;...&gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Denotation for temporary construction. This stores a computed denotation for a single state. </p>
 
 </div>
 </div>
@@ -1423,86 +1386,6 @@ template&lt;formalism::StaticOrFluentOrDerived P&gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="aa09f72b5a96b6503e1fbb868d0b5ac47" name="aa09f72b5a96b6503e1fbb868d0b5ac47"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa09f72b5a96b6503e1fbb868d0b5ac47">&#9670;&#160;</a></span>get() <span class="overload">[1/4]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;FeatureCategory D&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">const auto &amp; mimir::languages::dl::get </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespacemimir_1_1languages_1_1dl.html#adbac78628659ac17c56ba402fbbcac8b">DenotationRepositories</a> &amp;&#160;</td>
-          <td class="paramname"><em>repositories</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a2d5c2dbbc32d2e2f2fcff160f467cc9b" name="a2d5c2dbbc32d2e2f2fcff160f467cc9b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2d5c2dbbc32d2e2f2fcff160f467cc9b">&#9670;&#160;</a></span>get() <span class="overload">[2/4]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;FeatureCategory D&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">const auto &amp; mimir::languages::dl::get </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespacemimir_1_1languages_1_1dl.html#ae127fe8d531b2a6d6abf53f64ac82d34">Denotations</a> &amp;&#160;</td>
-          <td class="paramname"><em>denotations</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a542cd838959901d4e3c21a0929da6879" name="a542cd838959901d4e3c21a0929da6879"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a542cd838959901d4e3c21a0929da6879">&#9670;&#160;</a></span>get() <span class="overload">[3/4]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;FeatureCategory D&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">auto &amp; mimir::languages::dl::get </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#adbac78628659ac17c56ba402fbbcac8b">DenotationRepositories</a> &amp;&#160;</td>
-          <td class="paramname"><em>repositories</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a0f327cd1010e73e78cf7512f5f0127dd" name="a0f327cd1010e73e78cf7512f5f0127dd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0f327cd1010e73e78cf7512f5f0127dd">&#9670;&#160;</a></span>get() <span class="overload">[4/4]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;FeatureCategory D&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">auto &amp; mimir::languages::dl::get </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#ae127fe8d531b2a6d6abf53f64ac82d34">Denotations</a> &amp;&#160;</td>
-          <td class="paramname"><em>denotations</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="a4b9efa8264d459bd4d6773809950da4d" name="a4b9efa8264d459bd4d6773809950da4d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4b9efa8264d459bd4d6773809950da4d">&#9670;&#160;</a></span>operator&lt;&lt;()</h2>
 
