@@ -21,7 +21,7 @@ using namespace mimir::formalism;
 
 namespace mimir::languages::dl
 {
-EvaluationContext::EvaluationContext(search::State state, Problem problem, DenotationRepositories<Concept, Role, Boolean, Numerical>& ref_repositories) :
+EvaluationContext::EvaluationContext(search::State state, Problem problem, DenotationRepositories& ref_repositories) :
     m_state(state),
     m_problem(problem),
     m_builders(),
@@ -31,28 +31,10 @@ EvaluationContext::EvaluationContext(search::State state, Problem problem, Denot
 
 search::State EvaluationContext::get_state() const { return m_state; }
 
-Problem EvaluationContext::get_problem() const { return m_problem; }
+const Problem& EvaluationContext::get_problem() const { return m_problem; }
 
-template<FeatureCategory D>
-DenotationImpl<D>& EvaluationContext::get_builder()
-{
-    return boost::hana::at_key(m_builders, boost::hana::type<D> {});
-}
+Denotations& EvaluationContext::get_builders() { return m_builders; }
 
-template DenotationImpl<Concept>& EvaluationContext::get_builder<Concept>();
-template DenotationImpl<Role>& EvaluationContext::get_builder<Role>();
-template DenotationImpl<Boolean>& EvaluationContext::get_builder<Boolean>();
-template DenotationImpl<Numerical>& EvaluationContext::get_builder<Numerical>();
-
-template<FeatureCategory D>
-DenotationRepository<D>& EvaluationContext::get_repository()
-{
-    return boost::hana::at_key(m_repositories, boost::hana::type<D> {});
-}
-
-template DenotationRepository<Concept>& EvaluationContext::get_repository<Concept>();
-template DenotationRepository<Role>& EvaluationContext::get_repository<Role>();
-template DenotationRepository<Boolean>& EvaluationContext::get_repository<Boolean>();
-template DenotationRepository<Numerical>& EvaluationContext::get_repository<Numerical>();
+DenotationRepositories& EvaluationContext::get_repositories() { return m_repositories; }
 
 }

@@ -95,7 +95,7 @@ private:
 
     formalism::ProblemMap<search::StateList> m_state_partitioning;
 
-    DenotationRepositories<Concept, Role, Boolean, Numerical> m_repositories;
+    DenotationRepositories m_repositories;
 
     DenotationListSets<Concept, Role, Boolean, Numerical> m_denotations_repository;
 };

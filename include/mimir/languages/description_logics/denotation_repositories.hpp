@@ -48,10 +48,22 @@ public:
     Denotation<D> get_if(Constructor<D> constructor, search::State state) const;
 };
 
-/// @brief Repository for managing denotations.
-/// This stores the computed denotation of each state.
 template<FeatureCategory... Ds>
-using DenotationRepositories = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, DenotationRepository<Ds>>...>;
+using HanaDenotationRepositories = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, DenotationRepository<Ds>>...>;
+
+using DenotationRepositories = HanaDenotationRepositories<Concept, Role, Boolean, Numerical>;
+
+template<FeatureCategory D>
+auto& get(DenotationRepositories& repositories)
+{
+    return boost::hana::at_key(repositories, boost::hana::type<D> {});
+}
+
+template<FeatureCategory D>
+const auto& get(const DenotationRepositories& repositories)
+{
+    return boost::hana::at_key(repositories, boost::hana::type<D> {});
+}
 
 }
 

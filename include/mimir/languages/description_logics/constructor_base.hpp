@@ -19,6 +19,7 @@
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_BASE_HPP_
 
 #include "mimir/languages/description_logics/constructor_interface.hpp"
+#include "mimir/languages/description_logics/denotation_repositories.hpp"
 #include "mimir/languages/description_logics/evaluation_context.hpp"
 #include "mimir/search/state.hpp"
 
@@ -46,7 +47,7 @@ public:
     Denotation<D> evaluate(EvaluationContext& context) const override
     {
         // Try to access cached result
-        auto denotation = context.get_repository<D>().get_if(this, context.get_state());
+        auto denotation = get<D>(context.get_repositories()).get_if(this, context.get_state());
         if (denotation)
         {
             return denotation;
@@ -56,7 +57,7 @@ public:
         self().evaluate_impl(context);
 
         // Store and return result;
-        return context.get_repository<D>().insert(this, context.get_state(), context.get_builder<D>());
+        return get<D>(context.get_repositories()).insert(this, context.get_state(), get<D>(context.get_builders()));
     };
 
     void accept(IVisitor& visitor) const override { return self().accept_impl(visitor); }

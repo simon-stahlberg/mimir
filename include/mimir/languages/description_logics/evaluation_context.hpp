@@ -37,24 +37,22 @@ private:
     /* Memory */
     search::State m_state;
     formalism::Problem m_problem;
-    Denotations<Concept, Role, Boolean, Numerical> m_builders;
-    DenotationRepositories<Concept, Role, Boolean, Numerical>& m_repositories;
+    Denotations m_builders;
+    DenotationRepositories& m_repositories;
 
 public:
-    EvaluationContext(search::State state, formalism::Problem problem, DenotationRepositories<Concept, Role, Boolean, Numerical>& ref_repositories);
+    EvaluationContext(search::State state, formalism::Problem problem, DenotationRepositories& ref_repositories);
 
     /**
      * Getters
      */
     search::State get_state() const;
 
-    formalism::Problem get_problem() const;
+    const formalism::Problem& get_problem() const;
 
-    template<FeatureCategory D>
-    DenotationImpl<D>& get_builder();
+    Denotations& get_builders();
 
-    template<FeatureCategory D>
-    DenotationRepository<D>& get_repository();
+    DenotationRepositories& get_repositories();
 };
 }
 
