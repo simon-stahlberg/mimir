@@ -79,6 +79,10 @@ void bind_languages_description_logics(nb::module_& m)
 
     nb::class_<dl::Repositories>(m, "Repositories")
         .def(nb::init<>())
+        .def("get_or_create_concept", &dl::Repositories::get_or_create<dl::Concept>, "sentence"_a, "domain"_a, nb::rv_policy::reference_internal)
+        .def("get_or_create_role", &dl::Repositories::get_or_create<dl::Role>, "sentence"_a, "domain"_a, nb::rv_policy::reference_internal)
+        .def("get_or_create_boolean", &dl::Repositories::get_or_create<dl::Boolean>, "sentence"_a, "domain"_a, nb::rv_policy::reference_internal)
+        .def("get_or_create_numerical", &dl::Repositories::get_or_create<dl::Numerical>, "sentence"_a, "domain"_a, nb::rv_policy::reference_internal)
         .def("get_or_create_concept_bot", &dl::Repositories::get_or_create_concept_bot, nb::rv_policy::reference_internal)
         .def("get_or_create_concept_top", &dl::Repositories::get_or_create_concept_top, nb::rv_policy::reference_internal)
         .def("get_or_create_concept_intersection",

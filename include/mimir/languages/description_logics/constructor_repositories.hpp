@@ -122,6 +122,9 @@ public:
     HanaRepositories& get_repositories();
     const HanaRepositories& get_repositories() const;
 
+    template<FeatureCategory D>
+    Constructor<D> get_or_create(const std::string& sentence, const formalism::DomainImpl& domain);
+
     /* Concepts */
     Constructor<Concept> get_or_create_concept_bot();
     Constructor<Concept> get_or_create_concept_top();

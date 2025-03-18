@@ -15,39 +15,46 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "parser.hpp"
+#include "sentence_parser.hpp"
 
 #include "../../common/x3/parser_wrapper.hpp"
-#include "grammar_parser/parser.hpp"
 #include "mimir/formalism/predicate.hpp"
-#include "mimir/languages/description_logics/grammar.hpp"
-#include "mimir/languages/description_logics/grammar_constructors.hpp"
+#include "mimir/languages/description_logics/constructor_repositories.hpp"
+#include "mimir/languages/description_logics/constructors.hpp"
 #include "parser/ast.hpp"
-
-#include <boost/hana.hpp>
+#include "sentence_parser/parser.hpp"
 
 using namespace mimir::formalism;
 
-namespace mimir::languages::dl::grammar
+namespace mimir::languages::dl
 {
 template<FeatureCategory D>
 static Constructor<D> parse(const dl::ast::Constructor<D>& node, const DomainImpl& domain, Repositories& ref_repositories)
 {
     return boost::apply_visitor([&](const auto& arg) -> Constructor<D> { return parse(arg, domain, ref_repositories); }, node);
 }
-
 template<FeatureCategory D>
-static NonTerminal<D> parse(const dl::ast::NonTerminal<D>& node, const DomainImpl& domain, Repositories& ref_repositories)
+static Constructor<D> parse(const dl::ast::ConstructorOrNonTerminal<D>& node, const DomainImpl& domain, Repositories& ref_repositories)
 {
-    return ref_repositories.get_or_create_nonterminal<D>(node.name);
-}
+    return boost::apply_visitor(
+        [&](const auto& arg) -> Constructor<D>
+        {
+            using T = std::decay_t<decltype(arg)>;
 
-template<FeatureCategory D>
-static ConstructorOrNonTerminal<D> parse(const dl::ast::ConstructorOrNonTerminal<D>& node, const DomainImpl& domain, Repositories& ref_repositories)
-{
-    return boost::apply_visitor([&](const auto& arg) -> ConstructorOrNonTerminal<D>
-                                { return ref_repositories.template get_or_create_constructor_or_nonterminal<D>(parse(arg, domain, ref_repositories)); },
-                                node);
+            if constexpr (std::is_same_v<T, dl::ast::NonTerminal<D>>)
+            {
+                throw std::logic_error("Parsing error: Encountered NonTerminal during sentence parsing.");
+            }
+            else if constexpr (std::is_same_v<T, dl::ast::Constructor<D>>)
+            {
+                return parse(arg, domain, ref_repositories);
+            }
+            else
+            {
+                static_assert(dependent_false<T>::value, "parse(node, domain, ref_repositories): Undefined ConstructorOrNonTerminal type.");
+            }
+        },
+        node);
 }
 
 static Constructor<Concept> parse(const dl::ast::ConceptBot& node, const DomainImpl& domain, Repositories& ref_repositories)
@@ -361,69 +368,40 @@ static Constructor<Numerical> parse(const dl::ast::NumericalDistance& node, cons
                                                              parse(node.right_concept_or_nonterminal, domain, ref_repositories));
 }
 
-/**
- * Grammar structure specific types.
- */
-
-template<FeatureCategory D>
-static DerivationRule<D> parse(const dl::ast::DerivationRule<D>& node, const DomainImpl& domain, Repositories& ref_repositories)
+template<>
+Constructor<Concept> parse_sentence(const std::string& sentence, const formalism::DomainImpl& domain, Repositories& repositories)
 {
-    auto non_terminal = parse<D>(node.non_terminal, domain, ref_repositories);
-    auto constructor_or_non_terminals = ConstructorOrNonTerminalList<D> {};
-    std::for_each(node.constructor_or_non_terminals.begin(),
-                  node.constructor_or_non_terminals.end(),
-                  [&](const auto& choice) { constructor_or_non_terminals.push_back(parse(choice, domain, ref_repositories)); });
+    auto ast = dl::ast::Constructor<Concept>();
+    dl::parse_ast(sentence, dl::concept_(), ast);
 
-    return ref_repositories.template get_or_create_derivation_rule<D>(non_terminal, std::move(constructor_or_non_terminals));
+    return parse(ast, domain, repositories);
 }
 
-static StartSymbolsContainer parse(const dl::ast::GrammarHead& node, const DomainImpl& domain, Repositories& ref_repositories)
+template<>
+Constructor<Role> parse_sentence(const std::string& sentence, const formalism::DomainImpl& domain, Repositories& repositories)
 {
-    auto start_symbols = StartSymbolsContainer();
+    auto ast = dl::ast::Constructor<Role>();
+    dl::parse_ast(sentence, dl::role(), ast);
 
-    if (node.concept_start)
-    {
-        start_symbols.insert(parse(node.concept_start.value(), domain, ref_repositories));
-    }
-
-    if (node.role_start)
-    {
-        start_symbols.insert(parse(node.role_start.value(), domain, ref_repositories));
-    }
-    if (node.boolean_start)
-    {
-        start_symbols.insert(parse(node.boolean_start.value(), domain, ref_repositories));
-    }
-
-    if (node.numerical_start)
-    {
-        start_symbols.insert(parse(node.numerical_start.value(), domain, ref_repositories));
-    }
-
-    return start_symbols;
+    return parse(ast, domain, repositories);
 }
 
-static DerivationRulesContainer parse(const dl::ast::GrammarBody& node, const DomainImpl& domain, Repositories& ref_repositories)
+template<>
+Constructor<Boolean> parse_sentence(const std::string& sentence, const formalism::DomainImpl& domain, Repositories& repositories)
 {
-    auto derivation_rules = DerivationRulesContainer {};
+    auto ast = dl::ast::Constructor<Boolean>();
+    dl::parse_ast(sentence, dl::boolean(), ast);
 
-    for (const auto& part : node.rules)
-    {
-        boost::apply_visitor([&](const auto& arg) { derivation_rules.insert(parse(arg, domain, ref_repositories)); }, part);
-    }
-
-    return derivation_rules;
+    return parse(ast, domain, repositories);
 }
 
-Grammar parse(const std::string& bnf_description, Domain domain)
+template<>
+Constructor<Numerical> parse_sentence(const std::string& sentence, const formalism::DomainImpl& domain, Repositories& repositories)
 {
-    auto ast = dl::ast::Grammar();
-    dl::parse_ast(bnf_description, dl::grammar_parser_(), ast);
+    auto ast = dl::ast::Constructor<Numerical>();
+    dl::parse_ast(sentence, dl::numerical(), ast);
 
-    auto repositories = Repositories();
-    auto start_symbols = parse(ast.head, *domain, repositories);
-    auto derivation_rules = parse(ast.body, *domain, repositories);
-
-    return Grammar(std::move(repositories), std::move(start_symbols), std::move(derivation_rules), std::move(domain));
+    return parse(ast, domain, repositories);
 }
+
 }

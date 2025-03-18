@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SRC_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_PARSER_HPP_
-#define SRC_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_PARSER_HPP_
+#ifndef SRC_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_GRAMMAR_PARSER_HPP_
+#define SRC_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_GRAMMAR_PARSER_HPP_
 
 #include "mimir/formalism/domain.hpp"
 #include "mimir/languages/description_logics/declarations.hpp"
@@ -27,7 +27,7 @@
 namespace mimir::languages::dl::grammar
 {
 
-extern Grammar parse(const std::string& bnf_grammar_description, formalism::Domain domain);
+extern Grammar parse_grammar(const std::string& bnf_grammar_description, formalism::Domain domain);
 
 }
 

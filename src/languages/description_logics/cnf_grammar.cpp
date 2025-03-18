@@ -24,7 +24,6 @@
 #include "mimir/languages/description_logics/cnf_grammar_visitor_interface.hpp"
 #include "mimir/languages/description_logics/constructor_keywords.hpp"
 #include "mimir/languages/description_logics/grammar.hpp"
-#include "parser.hpp"
 
 #include <fmt/core.h>
 #include <fmt/ranges.h>

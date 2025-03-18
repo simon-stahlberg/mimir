@@ -30,8 +30,7 @@
 
 namespace mimir::languages::dl
 {
-template<typename T>
-class ConstructorRepository;
+class Repositories;
 
 class EvaluationContext;
 

@@ -17,8 +17,8 @@
 
 #include "mimir/languages/description_logics/grammar.hpp"
 
+#include "grammar_parser.hpp"
 #include "mimir/languages/description_logics/grammar_visitor_interface.hpp"
-#include "parser.hpp"
 
 using namespace mimir::formalism;
 
@@ -35,7 +35,7 @@ Grammar::Grammar(Repositories repositories, StartSymbolsContainer start_symbols,
 
 Grammar::Grammar(std::string bnf_description, Domain domain)
 {
-    auto grammar = mimir::languages::dl::grammar::parse(bnf_description, std::move(domain));
+    auto grammar = parse_grammar(bnf_description, std::move(domain));
     m_repositories = std::move(grammar.m_repositories);
     m_start_symbols = std::move(grammar.m_start_symbols);
     m_derivation_rules = std::move(grammar.m_derivation_rules);

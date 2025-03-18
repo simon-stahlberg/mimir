@@ -17,6 +17,8 @@
 
 #include "mimir/languages/description_logics/constructor_repositories.hpp"
 
+#include "sentence_parser.hpp"
+
 using namespace mimir::formalism;
 
 namespace mimir::languages::dl
@@ -25,6 +27,12 @@ namespace mimir::languages::dl
 HanaRepositories& Repositories::get_repositories() { return m_repositories; }
 
 const HanaRepositories& Repositories::get_repositories() const { return m_repositories; }
+
+template<FeatureCategory D>
+Constructor<D> Repositories::get_or_create(const std::string& sentence, const DomainImpl& domain)
+{
+    return parse_sentence<D>(sentence, domain, *this);
+}
 
 /* Concepts */
 Constructor<Concept> Repositories::get_or_create_concept_bot()
