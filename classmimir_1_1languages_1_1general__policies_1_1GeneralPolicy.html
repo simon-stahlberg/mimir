@@ -87,6 +87,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:af43d8aac73569d07bdc69d16d988b190"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicy.html#af43d8aac73569d07bdc69d16d988b190">GeneralPolicy</a> (<a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#a12b8270aa4fe1fe481c3933731054c0b">NamedFeatureLists</a>&lt; <a class="el" href="structmimir_1_1languages_1_1dl_1_1Boolean.html">dl::Boolean</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Numerical.html">dl::Numerical</a> &gt; features, <a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#ac68e8a34dc35306708b4070839303e65">RuleList</a> rules)</td></tr>
 <tr class="memdesc:af43d8aac73569d07bdc69d16d988b190"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a <code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicy.html">GeneralPolicy</a></code> for the given <code>RuleList</code>.  <br /></td></tr>
 <tr class="separator:af43d8aac73569d07bdc69d16d988b190"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a952e94a22bdac7134b1c28ca2e22a7e5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicy.html#a952e94a22bdac7134b1c28ca2e22a7e5">GeneralPolicy</a> (std::string description, <a class="el" href="namespacemimir_1_1formalism.html#a0705b57e5a6062fa24dac5fc9ce7c5f7">formalism::Domain</a> domain)</td></tr>
+<tr class="memdesc:a952e94a22bdac7134b1c28ca2e22a7e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a <code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicy.html">GeneralPolicy</a></code> for the given description for the <code><a class="el" href="namespacemimir_1_1formalism.html#a0705b57e5a6062fa24dac5fc9ce7c5f7">formalism::Domain</a></code>.  <br /></td></tr>
+<tr class="separator:a952e94a22bdac7134b1c28ca2e22a7e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aac7aeff4fddd697bd41a32e6f372d81c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicy.html#aac7aeff4fddd697bd41a32e6f372d81c">evaluate</a> (<a class="el" href="classmimir_1_1languages_1_1dl_1_1EvaluationContext.html">dl::EvaluationContext</a> &amp;source_context, <a class="el" href="classmimir_1_1languages_1_1dl_1_1EvaluationContext.html">dl::EvaluationContext</a> &amp;target_context) const</td></tr>
 <tr class="memdesc:aac7aeff4fddd697bd41a32e6f372d81c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if and only if there the state pair (transition) is compatible with a <code>Rule</code> in the <code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicy.html">GeneralPolicy</a></code>.  <br /></td></tr>
 <tr class="separator:aac7aeff4fddd697bd41a32e6f372d81c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -105,7 +108,7 @@ Public Member Functions</h2></td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="af43d8aac73569d07bdc69d16d988b190" name="af43d8aac73569d07bdc69d16d988b190"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af43d8aac73569d07bdc69d16d988b190">&#9670;&#160;</a></span>GeneralPolicy()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#af43d8aac73569d07bdc69d16d988b190">&#9670;&#160;</a></span>GeneralPolicy() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -134,6 +137,43 @@ Public Member Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">rules</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a952e94a22bdac7134b1c28ca2e22a7e5" name="a952e94a22bdac7134b1c28ca2e22a7e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a952e94a22bdac7134b1c28ca2e22a7e5">&#9670;&#160;</a></span>GeneralPolicy() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">mimir::languages::general_policies::GeneralPolicy::GeneralPolicy </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>description</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#a0705b57e5a6062fa24dac5fc9ce7c5f7">formalism::Domain</a>&#160;</td>
+          <td class="paramname"><em>domain</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a <code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicy.html">GeneralPolicy</a></code> for the given description for the <code><a class="el" href="namespacemimir_1_1formalism.html#a0705b57e5a6062fa24dac5fc9ce7c5f7">formalism::Domain</a></code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">description</td><td></td></tr>
+    <tr><td class="paramname">domain</td><td></td></tr>
   </table>
   </dd>
 </dl>
