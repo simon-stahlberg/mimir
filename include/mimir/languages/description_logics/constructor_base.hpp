@@ -47,7 +47,8 @@ public:
     Denotation<D> evaluate(EvaluationContext& context) const override
     {
         // Try to access cached result
-        auto denotation = get<D>(context.get_repositories()).get_if(this, context.get_state());
+        auto denotation = boost::hana::at_key(context.get_repositories(), boost::hana::type<D> {}).get_if(this, context.get_state());
+
         if (denotation)
         {
             return denotation;
@@ -57,7 +58,8 @@ public:
         self().evaluate_impl(context);
 
         // Store and return result;
-        return get<D>(context.get_repositories()).insert(this, context.get_state(), get<D>(context.get_builders()));
+        return boost::hana::at_key(context.get_repositories(), boost::hana::type<D> {})
+            .insert(this, context.get_state(), boost::hana::at_key(context.get_builders(), boost::hana::type<D> {}));
     };
 
     void accept(IVisitor& visitor) const override { return self().accept_impl(visitor); }

@@ -114,22 +114,7 @@ struct DenotationImpl<Numerical>
 
 /// @brief Denotation for temporary construction.
 /// This stores a computed denotation for a single state.
-template<FeatureCategory... Ds>
-using HanaDenotations = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, DenotationImpl<Ds>>...>;
-
-using Denotations = HanaDenotations<Concept, Role, Boolean, Numerical>;
-
-template<FeatureCategory D>
-auto& get(Denotations& denotations)
-{
-    return boost::hana::at_key(denotations, boost::hana::type<D> {});
-}
-
-template<FeatureCategory D>
-const auto& get(const Denotations& denotations)
-{
-    return boost::hana::at_key(denotations, boost::hana::type<D> {});
-}
+using Denotations = HanaMappedContainer<DenotationImpl, Concept, Role, Boolean, Numerical>;
 
 template<FeatureCategory D>
 using DenotationImplSet = mimir::buffering::UnorderedSet<DenotationImpl<D>>;

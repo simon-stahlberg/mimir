@@ -41,6 +41,9 @@ class EvaluationContext;
 template<typename T, FeatureCategory... Ds>
 using HanaContainer = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, T>...>;
 
+template<template<typename> typename T, FeatureCategory... Ds>
+using HanaMappedContainer = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, T<Ds>>...>;
+
 /**
  * Denotations
  */
@@ -53,8 +56,7 @@ template<FeatureCategory D>
 using DenotationList = std::vector<Denotation<D>>;
 template<FeatureCategory D>
 using DenotationListSet = std::unordered_set<DenotationList<D>, loki::Hash<DenotationList<D>>, loki::EqualTo<DenotationList<D>>>;
-template<FeatureCategory... Ds>
-using DenotationListSets = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, DenotationListSet<Ds>>...>;
+using DenotationListSets = HanaMappedContainer<DenotationListSet, Concept, Role, Boolean, Numerical>;
 
 /**
  * Constructors
@@ -67,8 +69,7 @@ template<FeatureCategory D>
 using Constructor = const IConstructor<D>*;
 template<FeatureCategory D>
 using ConstructorList = std::vector<Constructor<D>>;
-template<FeatureCategory... D>
-using ConstructorLists = boost::hana::map<boost::hana::pair<boost::hana::type<D>, ConstructorList<D>>...>;
+using ConstructorLists = dl::HanaMappedContainer<ConstructorList, Concept, Role, Boolean, Numerical>;
 
 /* Concrete concepts */
 class ConceptTopImpl;
@@ -167,10 +168,6 @@ template<dl::FeatureCategory D>
 class IConstructor;
 template<dl::FeatureCategory D>
 using Constructor = const IConstructor<D>*;
-template<dl::FeatureCategory D>
-using ConstructorList = std::vector<Constructor<D>>;
-template<dl::FeatureCategory... D>
-using ConstructorLists = boost::hana::map<boost::hana::pair<boost::hana::type<D>, ConstructorList<D>>...>;
 
 /* NonTerminal */
 template<dl::FeatureCategory D>

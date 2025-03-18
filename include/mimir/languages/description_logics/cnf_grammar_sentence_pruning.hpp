@@ -97,7 +97,7 @@ private:
 
     DenotationRepositories m_repositories;
 
-    DenotationListSets<Concept, Role, Boolean, Numerical> m_denotations_repository;
+    DenotationListSets m_denotations_repository;
 };
 
 }

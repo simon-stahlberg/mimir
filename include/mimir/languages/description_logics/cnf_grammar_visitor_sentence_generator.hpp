@@ -42,7 +42,7 @@ private:
     template<FeatureCategory... Ds>
     using HanaGeneratedConstructorsMaps = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, GeneratedConstructorsMap<Ds>>...>;
 
-    static const ConstructorLists<Concept, Role, Boolean, Numerical> empty_lists;
+    static const dl::ConstructorLists empty_lists;
 
     HanaGeneratedConstructorsMaps<Concept, Role, Boolean, Numerical> m_generated_constructors;
 
@@ -109,7 +109,7 @@ private:
 
     size_t m_complexity;
 
-    dl::ConstructorLists<Concept, Role, Boolean, Numerical> m_generated;
+    dl::ConstructorLists m_generated;
     HanaGeneratorStatistics<Concept, Role, Boolean, Numerical> m_statistics;
 
     std::any m_result;
