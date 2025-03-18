@@ -15,42 +15,47 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/languages/description_logics/parser/parser.hpp"
-
-#include "mimir/languages/description_logics/parser/parser_wrapper.hpp"
+#include "mimir/formalism/problem.hpp"
+#include "mimir/languages/description_logics/constructor_repositories.hpp"
+#include "mimir/languages/general_policies/repositories.hpp"
 
 #include <gtest/gtest.h>
 
+using namespace mimir::formalism;
 using namespace mimir::languages;
 
 namespace mimir::tests
 {
 
-TEST(MimirTests, LanguagesGeneralPoliciesParserTest)
+TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyTest)
 {
     {
-        /* Test parsing a grammar representing explicit features. */
-        auto ast = dl::ast::Grammar();
-        auto text = std::string(R"(
+        auto description = std::string(R"(
         [boolean_features]
-            <boolean_holding> ::= @boolean_nonempty @concept_atomic_state "carry"
+            <boolean_holding> ::= @boolean_nonempty @role_atomic_state "carry"
 
         [numerical_features]
             <numerical_undelivered> ::=
-                @boolean_nonempty 
+                @numerical_count 
                     @concept_negation
                         @concept_role_value_map_equality
-                            @concept_atomic_state "at"
-                            @concept_atomic_goal "at" true
+                            @role_atomic_state "at"
+                            @role_atomic_goal "at" true
 
         [policy_rules]
             { @negative_boolean_condition <boolean_holding>, @greater_numerical_condition <numerical_undelivered> } 
-            -> { @positive_boolean_effect <boolean_holding }
+            -> { @positive_boolean_effect <boolean_holding> }
             { @positive_boolean_condition <boolean_holding>, @greater_numerical_condition <numerical_undelivered> } 
             -> { @negative_boolean_effect <boolean_holding>, @decrease_numerical_effect <numerical_undelivered> }
         )");
 
-        EXPECT_NO_THROW(dl::parse_ast(text, dl::grammar_parser(), ast));
+        auto problem =
+            ProblemImpl::create(fs::path(std::string(DATA_DIR) + "gripper/domain.pddl"), fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl"));
+
+        auto repositories = general_policies::Repositories();
+        auto dl_repositories = dl::Repositories();
+
+        repositories.get_or_create_general_policy(description, *problem->get_domain(), dl_repositories);
     }
 }
 

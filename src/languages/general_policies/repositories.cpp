@@ -17,6 +17,8 @@
 
 #include "mimir/languages/general_policies/repositories.hpp"
 
+#include "parser.hpp"
+
 namespace mimir::languages::general_policies
 {
 
@@ -29,44 +31,44 @@ NamedFeature<D> Repositories::get_or_create_named_feature(std::string name, dl::
 template NamedFeature<dl::Boolean> Repositories::get_or_create_named_feature(std::string name, dl::Constructor<dl::Boolean> feature);
 template NamedFeature<dl::Numerical> Repositories::get_or_create_named_feature(std::string name, dl::Constructor<dl::Numerical> feature);
 
-PositiveBooleanCondition Repositories::get_or_create_positive_boolean_condition(NamedFeature<dl::Boolean> feature)
+Condition Repositories::get_or_create_positive_boolean_condition(NamedFeature<dl::Boolean> feature)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<PositiveBooleanConditionImpl> {}).get_or_create(feature);
 }
-NegativeBooleanCondition Repositories::get_or_create_negative_boolean_condition(NamedFeature<dl::Boolean> feature)
+Condition Repositories::get_or_create_negative_boolean_condition(NamedFeature<dl::Boolean> feature)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<NegativeBooleanConditionImpl> {}).get_or_create(feature);
 }
-GreaterNumericalCondition Repositories::get_or_create_greater_numerical_condition(NamedFeature<dl::Numerical> feature)
+Condition Repositories::get_or_create_greater_numerical_condition(NamedFeature<dl::Numerical> feature)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<GreaterNumericalConditionImpl> {}).get_or_create(feature);
 }
-EqualNumericalCondition Repositories::get_or_create_equal_numerical_condition(NamedFeature<dl::Numerical> feature)
+Condition Repositories::get_or_create_equal_numerical_condition(NamedFeature<dl::Numerical> feature)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<EqualNumericalConditionImpl> {}).get_or_create(feature);
 }
 
-PositiveBooleanEffect Repositories::get_or_create_positive_boolean_effect(NamedFeature<dl::Boolean> feature)
+Effect Repositories::get_or_create_positive_boolean_effect(NamedFeature<dl::Boolean> feature)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<PositiveBooleanEffectImpl> {}).get_or_create(feature);
 }
-NegativeBooleanEffect Repositories::get_or_create_negative_boolean_effect(NamedFeature<dl::Boolean> feature)
+Effect Repositories::get_or_create_negative_boolean_effect(NamedFeature<dl::Boolean> feature)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<NegativeBooleanEffectImpl> {}).get_or_create(feature);
 }
-UnchangedBooleanEffect Repositories::get_or_create_unchanged_boolean_effect(NamedFeature<dl::Boolean> feature)
+Effect Repositories::get_or_create_unchanged_boolean_effect(NamedFeature<dl::Boolean> feature)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<UnchangedBooleanEffectImpl> {}).get_or_create(feature);
 }
-IncreaseNumericalEffect Repositories::get_or_create_increase_numerical_effect(NamedFeature<dl::Numerical> feature)
+Effect Repositories::get_or_create_increase_numerical_effect(NamedFeature<dl::Numerical> feature)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<IncreaseNumericalEffectImpl> {}).get_or_create(feature);
 }
-DecreaseNumericalEffect Repositories::get_or_create_decrease_numerical_effect(NamedFeature<dl::Numerical> feature)
+Effect Repositories::get_or_create_decrease_numerical_effect(NamedFeature<dl::Numerical> feature)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<DecreaseNumericalEffectImpl> {}).get_or_create(feature);
 }
-UnchangedNumericalEffect Repositories::get_or_create_unchanged_numerical_effect(NamedFeature<dl::Numerical> feature)
+Effect Repositories::get_or_create_unchanged_numerical_effect(NamedFeature<dl::Numerical> feature)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<UnchangedNumericalEffectImpl> {}).get_or_create(feature);
 }
@@ -74,6 +76,16 @@ UnchangedNumericalEffect Repositories::get_or_create_unchanged_numerical_effect(
 Rule Repositories::get_or_create_rule(ConditionList conditions, EffectList effects)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<RuleImpl> {}).get_or_create(std::move(conditions), std::move(effects));
+}
+
+GeneralPolicy Repositories::get_or_create_general_policy(NamedFeatureLists<dl::Boolean, dl::Numerical> features, RuleList rules)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<GeneralPolicyImpl> {}).get_or_create(std::move(features), std::move(rules));
+}
+
+GeneralPolicy Repositories::get_or_create_general_policy(const std::string& description, const formalism::DomainImpl& domain, dl::Repositories& dl_repositories)
+{
+    return parse(description, domain, *this, dl_repositories);
 }
 
 }

@@ -53,7 +53,7 @@ public:
 
     virtual void visit(Rule rule) = 0;
 
-    virtual void visit(const GeneralPolicy& policy) = 0;
+    virtual void visit(GeneralPolicy policy) = 0;
 
     dl::IVisitor& get_constructor_visitor();
 };

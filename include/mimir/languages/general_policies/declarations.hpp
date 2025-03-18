@@ -33,6 +33,10 @@ template<dl::FeatureCategory D>
 using NamedFeatureList = std::vector<NamedFeature<D>>;
 template<dl::FeatureCategory... Ds>
 using NamedFeatureLists = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, NamedFeatureList<Ds>>...>;
+template<typename Key, dl::FeatureCategory D>
+using ToNamedFeatureMap = std::unordered_map<Key, NamedFeature<D>, loki::Hash<Key>, loki::EqualTo<Key>>;
+template<typename Key, dl::FeatureCategory... Ds>
+using ToNamedFeatureMaps = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, ToNamedFeatureMap<Key, Ds>>...>;
 
 class ICondition;
 using Condition = const ICondition*;
@@ -68,7 +72,8 @@ class RuleImpl;
 using Rule = const RuleImpl*;
 using RuleList = std::vector<Rule>;
 
-class GeneralPolicy;
+class GeneralPolicyImpl;
+using GeneralPolicy = const GeneralPolicyImpl*;
 
 class IVisitor;
 

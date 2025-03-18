@@ -119,13 +119,16 @@ grammar_type const grammar = "grammar";
 // Grammar
 ///////////////////////////////////////////////////////////////////////////
 
-inline auto concept_non_terminal_parser() { return raw[lexeme["<concept" >> *(alnum | char_('-') | char_('_')) > ">"]]; }
-inline auto role_non_terminal_parser() { return raw[lexeme["<role" >> *(alnum | char_('-') | char_('_')) >> ">"]]; }
-inline auto boolean_non_terminal_parser() { return raw[lexeme["<boolean" >> *(alnum | char_('-') | char_('_')) >> ">"]]; }
-inline auto numerical_non_terminal_parser() { return raw[lexeme["<numerical" >> *(alnum | char_('-') | char_('_')) >> ">"]]; }
-inline auto predicate_name_parser() { return lexeme[omit[lit('"')]] > raw[lexeme[alpha >> *(alnum | char_('-') | char_('_'))]] > lexeme[omit[lit('"')]]; }
-inline auto object_name_parser() { return lexeme[omit[lit('"')]] > raw[lexeme[alpha >> *(alnum | char_('-') | char_('_'))]] > lexeme[omit[lit('"')]]; }
-inline auto bool_parser()
+inline auto concept_non_terminal_string_parser() { return raw[lexeme["<concept" >> *(alnum | char_('-') | char_('_')) > ">"]]; }
+inline auto role_non_terminal_string_parser() { return raw[lexeme["<role" >> *(alnum | char_('-') | char_('_')) >> ">"]]; }
+inline auto boolean_non_terminal_string_parser() { return raw[lexeme["<boolean" >> *(alnum | char_('-') | char_('_')) >> ">"]]; }
+inline auto numerical_non_terminal_string_parser() { return raw[lexeme["<numerical" >> *(alnum | char_('-') | char_('_')) >> ">"]]; }
+inline auto predicate_name_string_parser()
+{
+    return lexeme[omit[lit('"')]] > raw[lexeme[alpha >> *(alnum | char_('-') | char_('_'))]] > lexeme[omit[lit('"')]];
+}
+inline auto object_name_string_parser() { return lexeme[omit[lit('"')]] > raw[lexeme[alpha >> *(alnum | char_('-') | char_('_'))]] > lexeme[omit[lit('"')]]; }
+inline auto bool_string_parser()
 {
     return x3::lexeme[(x3::lit("true") >> x3::attr(true)) | (x3::lit("false") >> x3::attr(false)) | (x3::lit("1") >> x3::attr(true))
                       | (x3::lit("0") >> x3::attr(false))];
@@ -137,8 +140,8 @@ const auto concept__def = concept_bot | concept_top | concept_atomic_state | con
 
 const auto concept_bot_def = lit(std::string("@") + keywords::concept_bot) >> x3::attr(ast::ConceptBot {});
 const auto concept_top_def = lit(std::string("@") + keywords::concept_top) >> x3::attr(ast::ConceptTop {});
-const auto concept_atomic_state_def = lit(std::string("@") + keywords::concept_atomic_state) > predicate_name_parser();
-const auto concept_atomic_goal_def = lit(std::string("@") + keywords::concept_atomic_goal) > predicate_name_parser() > bool_parser();
+const auto concept_atomic_state_def = lit(std::string("@") + keywords::concept_atomic_state) > predicate_name_string_parser();
+const auto concept_atomic_goal_def = lit(std::string("@") + keywords::concept_atomic_goal) > predicate_name_string_parser() > bool_string_parser();
 const auto concept_intersection_def = lit(std::string("@") + keywords::concept_intersection) > concept_choice > concept_choice;
 const auto concept_union_def = lit(std::string("@") + keywords::concept_union) > concept_choice > concept_choice;
 const auto concept_negation_def = lit(std::string("@") + keywords::concept_negation) > concept_choice;
@@ -146,8 +149,8 @@ const auto concept_value_restriction_def = lit(std::string("@") + keywords::conc
 const auto concept_existential_quantification_def = lit(std::string("@") + keywords::concept_existential_quantification) > role_choice > concept_choice;
 const auto concept_role_value_map_containment_def = lit(std::string("@") + keywords::concept_role_value_map_containment) > role_choice > role_choice;
 const auto concept_role_value_map_equality_def = lit(std::string("@") + keywords::concept_role_value_map_equality) > role_choice > role_choice;
-const auto concept_nominal_def = lit(std::string("@") + keywords::concept_nominal) > object_name_parser();
-const auto concept_non_terminal_def = concept_non_terminal_parser();
+const auto concept_nominal_def = lit(std::string("@") + keywords::concept_nominal) > object_name_string_parser();
+const auto concept_non_terminal_def = concept_non_terminal_string_parser();
 const auto concept_choice_def = concept_non_terminal | concept_;
 const auto concept_derivation_rule_def = concept_non_terminal > "::=" > -(concept_choice % lit("|"));
 
@@ -155,8 +158,8 @@ const auto role_def = role_universal | role_atomic_state | role_atomic_goal | ro
                       | role_transitive_closure | role_reflexive_transitive_closure | role_restriction | role_identity;
 
 const auto role_universal_def = lit(std::string("@") + keywords::role_universal) >> x3::attr(ast::RoleUniversal {});
-const auto role_atomic_state_def = lit(std::string("@") + keywords::role_atomic_state) > predicate_name_parser();
-const auto role_atomic_goal_def = lit(std::string("@") + keywords::role_atomic_goal) > predicate_name_parser() > bool_parser();
+const auto role_atomic_state_def = lit(std::string("@") + keywords::role_atomic_state) > predicate_name_string_parser();
+const auto role_atomic_goal_def = lit(std::string("@") + keywords::role_atomic_goal) > predicate_name_string_parser() > bool_string_parser();
 const auto role_intersection_def = lit(std::string("@") + keywords::role_intersection) > role_choice > role_choice;
 const auto role_union_def = lit(std::string("@") + keywords::role_union) > role_choice > role_choice;
 const auto role_complement_def = lit(std::string("@") + keywords::role_complement) > role_choice;
@@ -166,23 +169,23 @@ const auto role_transitive_closure_def = lit(std::string("@") + keywords::role_t
 const auto role_reflexive_transitive_closure_def = lit(std::string("@") + keywords::role_reflexive_transitive_closure) > role_choice;
 const auto role_restriction_def = lit(std::string("@") + keywords::role_restriction) > role_choice > concept_choice;
 const auto role_identity_def = lit(std::string("@") + keywords::role_identity) > concept_choice;
-const auto role_non_terminal_def = role_non_terminal_parser();
+const auto role_non_terminal_def = role_non_terminal_string_parser();
 const auto role_choice_def = role_non_terminal | role;
 const auto role_derivation_rule_def = role_non_terminal > "::=" > -(role_choice % lit("|"));
 
 const auto concept_or_role_nonterminal_def = concept_choice | role_choice;
 
 const auto boolean_def = boolean_atomic_state | boolean_nonempty;
-const auto boolean_atomic_state_def = lit(std::string("@") + keywords::boolean_atomic_state) > predicate_name_parser();
+const auto boolean_atomic_state_def = lit(std::string("@") + keywords::boolean_atomic_state) > predicate_name_string_parser();
 const auto boolean_nonempty_def = lit(std::string("@") + keywords::boolean_nonempty) > concept_or_role_nonterminal;
-const auto boolean_non_terminal_def = boolean_non_terminal_parser();
+const auto boolean_non_terminal_def = boolean_non_terminal_string_parser();
 const auto boolean_choice_def = boolean_non_terminal | boolean;
 const auto boolean_derivation_rule_def = boolean_non_terminal > "::=" > -(boolean_choice % lit("|"));
 
 const auto numerical_def = numerical_count | numerical_distance;
 const auto numerical_count_def = lit(std::string("@") + keywords::numerical_count) > concept_or_role_nonterminal;
 const auto numerical_distance_def = lit(std::string("@") + keywords::numerical_distance) > concept_choice > role_choice > concept_choice;
-const auto numerical_non_terminal_def = numerical_non_terminal_parser();
+const auto numerical_non_terminal_def = numerical_non_terminal_string_parser();
 const auto numerical_choice_def = numerical_non_terminal | numerical;
 const auto numerical_derivation_rule_def = numerical_non_terminal > "::=" > -(numerical_choice % lit("|"));
 
@@ -413,68 +416,62 @@ struct GrammarClass : x3::annotate_on_success, error_handler_base
 };
 }
 
-namespace mimir::languages::dl
+namespace mimir::languages::dl::grammar_parser
 {
-grammar_parser::concept_type const& concept_() { return grammar_parser::concept_; }
-grammar_parser::concept_bot_type const& concept_bot() { return grammar_parser::concept_bot; }
-grammar_parser::concept_top_type const& concept_top() { return grammar_parser::concept_top; }
-grammar_parser::concept_atomic_state_type const& concept_atomic_state() { return grammar_parser::concept_atomic_state; }
-grammar_parser::concept_atomic_goal_type const& concept_atomic_goal() { return grammar_parser::concept_atomic_goal; }
-grammar_parser::concept_intersection_type const& concept_intersection() { return grammar_parser::concept_intersection; }
-grammar_parser::concept_union_type const& concept_union() { return grammar_parser::concept_union; }
-grammar_parser::concept_negation_type const& concept_negation() { return grammar_parser::concept_negation; }
-grammar_parser::concept_value_restriction_type const& concept_value_restriction() { return grammar_parser::concept_value_restriction; }
-grammar_parser::concept_existential_quantification_type const& concept_existential_quantification()
-{
-    return grammar_parser::concept_existential_quantification;
-}
-grammar_parser::concept_role_value_map_containment_type const& concept_role_value_map_containment()
-{
-    return grammar_parser::concept_role_value_map_containment;
-}
-grammar_parser::concept_role_value_map_equality_type const& concept_role_value_map_equality() { return grammar_parser::concept_role_value_map_equality; }
-grammar_parser::concept_nominal_type const& concept_nominal() { return grammar_parser::concept_nominal; }
-grammar_parser::concept_non_terminal_type const& concept_non_terminal() { return grammar_parser::concept_non_terminal; }
-grammar_parser::concept_choice_type const& concept_choice() { return grammar_parser::concept_choice; }
-grammar_parser::concept_derivation_rule_type const& concept_derivation_rule() { return grammar_parser::concept_derivation_rule; }
+concept_type const& concept_parser() { return concept_; }
+concept_bot_type const& concept_bot_parser() { return concept_bot; }
+concept_top_type const& concept_top_parser() { return concept_top; }
+concept_atomic_state_type const& concept_atomic_state_parser() { return concept_atomic_state; }
+concept_atomic_goal_type const& concept_atomic_goal_parser() { return concept_atomic_goal; }
+concept_intersection_type const& concept_intersection_parser() { return concept_intersection; }
+concept_union_type const& concept_union_parser() { return concept_union; }
+concept_negation_type const& concept_negation_parser() { return concept_negation; }
+concept_value_restriction_type const& concept_value_restriction_parser() { return concept_value_restriction; }
+concept_existential_quantification_type const& concept_existential_quantification_parser() { return concept_existential_quantification; }
+concept_role_value_map_containment_type const& concept_role_value_map_containment_parser() { return concept_role_value_map_containment; }
+concept_role_value_map_equality_type const& concept_role_value_map_equality_parser() { return concept_role_value_map_equality; }
+concept_nominal_type const& concept_nominal_parser() { return concept_nominal; }
+concept_non_terminal_type const& concept_non_terminal_parser() { return concept_non_terminal; }
+concept_choice_type const& concept_choice_parser() { return concept_choice; }
+concept_derivation_rule_type const& concept_derivation_rule_parser() { return concept_derivation_rule; }
 
-grammar_parser::role_type const& role() { return grammar_parser::role; }
-grammar_parser::role_universal_type const& role_universal() { return grammar_parser::role_universal; }
-grammar_parser::role_atomic_state_type const& role_atomic_state() { return grammar_parser::role_atomic_state; }
-grammar_parser::role_atomic_goal_type const& role_atomic_goal() { return grammar_parser::role_atomic_goal; }
-grammar_parser::role_intersection_type const& role_intersection() { return grammar_parser::role_intersection; }
-grammar_parser::role_union_type const& role_union() { return grammar_parser::role_union; }
-grammar_parser::role_complement_type const& role_complement() { return grammar_parser::role_complement; }
-grammar_parser::role_inverse_type const& role_inverse() { return grammar_parser::role_inverse; }
-grammar_parser::role_composition_type const& role_composition() { return grammar_parser::role_composition; }
-grammar_parser::role_transitive_closure_type const& role_transitive_closure() { return grammar_parser::role_transitive_closure; }
-grammar_parser::role_reflexive_transitive_closure_type const& role_reflexive_transitive_closure() { return grammar_parser::role_reflexive_transitive_closure; }
-grammar_parser::role_restriction_type const& role_restriction() { return grammar_parser::role_restriction; }
-grammar_parser::role_identity_type const& role_identity() { return grammar_parser::role_identity; }
-grammar_parser::role_non_terminal_type const& role_non_terminal() { return grammar_parser::role_non_terminal; }
-grammar_parser::role_choice_type const& role_choice() { return grammar_parser::role_choice; }
-grammar_parser::role_derivation_rule_type const& role_derivation_rule() { return grammar_parser::role_derivation_rule; }
+role_type const& role_parser() { return role; }
+role_universal_type const& role_universal_parser() { return role_universal; }
+role_atomic_state_type const& role_atomic_state_parser() { return role_atomic_state; }
+role_atomic_goal_type const& role_atomic_goal_parser() { return role_atomic_goal; }
+role_intersection_type const& role_intersection_parser() { return role_intersection; }
+role_union_type const& role_union_parser() { return role_union; }
+role_complement_type const& role_complement_parser() { return role_complement; }
+role_inverse_type const& role_inverse_parser() { return role_inverse; }
+role_composition_type const& role_composition_parser() { return role_composition; }
+role_transitive_closure_type const& role_transitive_closure_parser() { return role_transitive_closure; }
+role_reflexive_transitive_closure_type const& role_reflexive_transitive_closure_parser() { return role_reflexive_transitive_closure; }
+role_restriction_type const& role_restriction_parser() { return role_restriction; }
+role_identity_type const& role_identity_parser() { return role_identity; }
+role_non_terminal_type const& role_non_terminal_parser() { return role_non_terminal; }
+role_choice_type const& role_choice_parser() { return role_choice; }
+role_derivation_rule_type const& role_derivation_rule_parser() { return role_derivation_rule; }
 
-grammar_parser::concept_or_role_nonterminal_type const& concept_or_role_nonterminal() { return grammar_parser::concept_or_role_nonterminal; }
+concept_or_role_nonterminal_type const& concept_or_role_nonterminal_parser() { return concept_or_role_nonterminal; }
 
-grammar_parser::boolean_type const& boolean() { return grammar_parser::boolean; }
-grammar_parser::boolean_atomic_state_type const& boolean_atomic_state() { return grammar_parser::boolean_atomic_state; }
-grammar_parser::boolean_nonempty_type const& boolean_nonempty() { return grammar_parser::boolean_nonempty; }
-grammar_parser::boolean_non_terminal_type const& boolean_non_terminal() { return grammar_parser::boolean_non_terminal; }
-grammar_parser::boolean_choice_type const& boolean_choice() { return grammar_parser::boolean_choice; }
-grammar_parser::boolean_derivation_rule_type const& boolean_derivation_rule() { return grammar_parser::boolean_derivation_rule; }
+boolean_type const& boolean_parser() { return boolean; }
+boolean_atomic_state_type const& boolean_atomic_state_parser() { return boolean_atomic_state; }
+boolean_nonempty_type const& boolean_nonempty_parser() { return boolean_nonempty; }
+boolean_non_terminal_type const& boolean_non_terminal_parser() { return boolean_non_terminal; }
+boolean_choice_type const& boolean_choice_parser() { return boolean_choice; }
+boolean_derivation_rule_type const& boolean_derivation_rule_parser() { return boolean_derivation_rule; }
 
-grammar_parser::numerical_type const& numerical() { return grammar_parser::numerical; }
-grammar_parser::numerical_count_type const& numerical_count() { return grammar_parser::numerical_count; }
-grammar_parser::numerical_distance_type const& numerical_distance() { return grammar_parser::numerical_distance; }
-grammar_parser::numerical_non_terminal_type const& numerical_non_terminal() { return grammar_parser::numerical_non_terminal; }
-grammar_parser::numerical_choice_type const& numerical_choice() { return grammar_parser::numerical_choice; }
-grammar_parser::numerical_derivation_rule_type const& numerical_derivation_rule() { return grammar_parser::numerical_derivation_rule; }
+numerical_type const& numerical_parser() { return numerical; }
+numerical_count_type const& numerical_count_parser() { return numerical_count; }
+numerical_distance_type const& numerical_distance_parser() { return numerical_distance; }
+numerical_non_terminal_type const& numerical_non_terminal_parser() { return numerical_non_terminal; }
+numerical_choice_type const& numerical_choice_parser() { return numerical_choice; }
+numerical_derivation_rule_type const& numerical_derivation_rule_parser() { return numerical_derivation_rule; }
 
-grammar_parser::feature_category_derivation_rule_type const& feature_category_derivation_rule() { return grammar_parser::feature_category_derivation_rule; }
-grammar_parser::grammar_head_type const& grammar_head() { return grammar_parser::grammar_head; }
-grammar_parser::grammar_body_type const& grammar_body() { return grammar_parser::grammar_body; }
-grammar_parser::grammar_type const& grammar_parser_() { return grammar_parser::grammar; }
+feature_category_derivation_rule_type const& feature_category_derivation_rule_parser() { return feature_category_derivation_rule; }
+grammar_head_type const& grammar_head_parser() { return grammar_head; }
+grammar_body_type const& grammar_body_parser() { return grammar_body; }
+grammar_type const& grammar_parser_() { return grammar; }
 }
 
 #endif

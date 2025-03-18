@@ -165,47 +165,50 @@ BOOST_SPIRIT_DECLARE(numerical_root_type, numerical_type, numerical_count_type, 
  * Grammar
  */
 
-sentence_parser::concept_root_type const& concept_root();
-sentence_parser::concept_type const& concept_();
-sentence_parser::concept_bot_type const& concept_bot();
-sentence_parser::concept_top_type const& concept_top();
-sentence_parser::concept_atomic_state_type const& concept_atomic_state();
-sentence_parser::concept_atomic_goal_type const& concept_atomic_goal();
-sentence_parser::concept_intersection_type const& concept_intersection();
-sentence_parser::concept_union_type const& concept_union();
-sentence_parser::concept_negation_type const& concept_negation();
-sentence_parser::concept_value_restriction_type const& concept_value_restriction();
-sentence_parser::concept_existential_quantification_type const& concept_existential_quantification();
-sentence_parser::concept_role_value_map_containment_type const& concept_role_value_map_containment();
-sentence_parser::concept_role_value_map_equality_type const& concept_role_value_map_equality();
-sentence_parser::concept_nominal_type const& concept_nominal();
+namespace sentence_parser
+{
+concept_root_type const& concept_root_parser();
+concept_type const& concept_parser();
+concept_bot_type const& concept_bot_parser();
+concept_top_type const& concept_top_parser();
+concept_atomic_state_type const& concept_atomic_state_parser();
+concept_atomic_goal_type const& concept_atomic_goal_parser();
+concept_intersection_type const& concept_intersection_parser();
+concept_union_type const& concept_union_parser();
+concept_negation_type const& concept_negation_parser();
+concept_value_restriction_type const& concept_value_restriction_parser();
+concept_existential_quantification_type const& concept_existential_quantification_parser();
+concept_role_value_map_containment_type const& concept_role_value_map_containment_parser();
+concept_role_value_map_equality_type const& concept_role_value_map_equality_parser();
+concept_nominal_type const& concept_nominal_parser();
 
-sentence_parser::role_root_type const& role_root();
-sentence_parser::role_type const& role();
-sentence_parser::role_universal_type const& role_universal();
-sentence_parser::role_atomic_state_type const& role_atomic_state();
-sentence_parser::role_atomic_goal_type const& role_atomic_goal();
-sentence_parser::role_intersection_type const& role_intersection();
-sentence_parser::role_union_type const& role_union();
-sentence_parser::role_complement_type const& role_complement();
-sentence_parser::role_inverse_type const& role_inverse();
-sentence_parser::role_composition_type const& role_composition();
-sentence_parser::role_transitive_closure_type const& role_transitive_closure();
-sentence_parser::role_reflexive_transitive_closure_type const& role_reflexive_transitive_closure();
-sentence_parser::role_restriction_type const& role_restriction();
-sentence_parser::role_identity_type const& role_identity();
+role_root_type const& role_root_parser();
+role_type const& role_parser();
+role_universal_type const& role_universal_parser();
+role_atomic_state_type const& role_atomic_state_parser();
+role_atomic_goal_type const& role_atomic_goal_parser();
+role_intersection_type const& role_intersection_parser();
+role_union_type const& role_union_parser();
+role_complement_type const& role_complement_parser();
+role_inverse_type const& role_inverse_parser();
+role_composition_type const& role_composition_parser();
+role_transitive_closure_type const& role_transitive_closure_parser();
+role_reflexive_transitive_closure_type const& role_reflexive_transitive_closure_parser();
+role_restriction_type const& role_restriction_parser();
+role_identity_type const& role_identity_parser();
 
-sentence_parser::concept_or_role_type const& concept_or_role();
+concept_or_role_type const& concept_or_role_parser();
 
-sentence_parser::boolean_root_type const& boolean_root();
-sentence_parser::boolean_type const& boolean();
-sentence_parser::boolean_atomic_state_type const& boolean_atomic_state();
-sentence_parser::boolean_nonempty_type const& boolean_nonempty();
+boolean_root_type const& boolean_root_parser();
+boolean_type const& boolean_parser();
+boolean_atomic_state_type const& boolean_atomic_state_parser();
+boolean_nonempty_type const& boolean_nonempty_parser();
 
-sentence_parser::numerical_root_type const& numerical_root();
-sentence_parser::numerical_type const& numerical();
-sentence_parser::numerical_count_type const& numerical_count();
-sentence_parser::numerical_distance_type const& numerical_distance();
+numerical_root_type const& numerical_root_parser();
+numerical_type const& numerical_parser();
+numerical_count_type const& numerical_count_parser();
+numerical_distance_type const& numerical_distance_parser();
+}
 }
 
 #endif

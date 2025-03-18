@@ -40,6 +40,7 @@ add_gtest(languages_dl_constructors_test                   "languages/descriptio
 add_gtest(languages_dl_grammar_test                        "languages/description_logics/grammar.cpp")
 add_gtest(languages_dl_cnf_grammar_test                    "languages/description_logics/cnf_grammar.cpp")
 add_gtest(languages_dl_cnf_grammar_visitor_sentence_generator_test "languages/description_logics/cnf_grammar_visitor_sentence_generator.cpp")
+add_gtest(languages_general_policies_general_policy_test   "languages/general_policies/general_policy.cpp")
 
 add_gtest(search_astar_test                                "search/algorithms/astar.cpp")
 add_gtest(search_brfs_test                                 "search/algorithms/brfs.cpp")

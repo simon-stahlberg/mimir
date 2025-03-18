@@ -24,46 +24,62 @@
 
 namespace mimir::languages::general_policies
 {
-class GeneralPolicy
+class GeneralPolicyImpl
 {
 private:
+    Index m_index;
     NamedFeatureLists<dl::Boolean, dl::Numerical> m_features;
     RuleList m_rules;
 
-public:
-    /// @brief Create a `GeneralPolicy` for the given `RuleList`.
+    /// @brief Create a `GeneralPolicyImpl` for the given `RuleList`.
     /// @param rules
-    GeneralPolicy(NamedFeatureLists<dl::Boolean, dl::Numerical> features, RuleList rules);
+    GeneralPolicyImpl(Index index, NamedFeatureLists<dl::Boolean, dl::Numerical> features, RuleList rules);
 
-    /// @brief Create a `GeneralPolicy` for the given description for the `formalism::Domain`.
-    /// @param description
-    /// @param domain
-    GeneralPolicy(std::string description, formalism::Domain domain);
+    template<typename T, typename Hash, typename EqualTo>
+    friend class loki::SegmentedRepository;
 
-    /// @brief Return true if and only if there the state pair (transition) is compatible with a `Rule` in the `GeneralPolicy`.
+public:
+    /// @brief Return true if and only if there the state pair (transition) is compatible with a `Rule` in the `GeneralPolicyImpl`.
     /// @param source_context is the source context.
     /// @param target_context is the target context.
-    /// @return true if the state pair (transition) is compatible with a `Rule` in the `GeneralPolicy`.
+    /// @return true if the state pair (transition) is compatible with a `Rule` in the `GeneralPolicyImpl`.
     bool evaluate(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const;
 
     /// @brief Accept a `IVisitor`.
     /// @param visitor the `IVisitor`.
     void accept(IVisitor& visitor);
 
-    /// @brief Return true if and only if the `GeneralPolicy` is structurally terminating.
-    /// @return true if the `GeneralPolicy` is structurally terminating, and false otherwise.
+    /// @brief Return true if and only if the `GeneralPolicyImpl` is structurally terminating.
+    /// @return true if the `GeneralPolicyImpl` is structurally terminating, and false otherwise.
     bool is_terminating() const;
 
-    /// @brief Return true if and only if the `GeneralPolicy` solves all vertices of the `graphs::ClassGraph` in the given
+    /// @brief Return true if and only if the `GeneralPolicyImpl` solves all vertices of the `graphs::ClassGraph` in the given
     /// `datasets::GeneralizedStateSpace`.
     /// @param generalized_state_space is the `GeneralizedStateSpace`.
     /// @param graph is a subgraph of or equal to the `ClassGraph` in the `GeneralizedStateSpace`.
-    /// @return true if the `GeneralPolicy` solves all vertices of the `graphs::ClassGraph` in the given `datasets::GeneralizedStateSpace`, and false otherwise.
+    /// @return true if the `GeneralPolicyImpl` solves all vertices of the `graphs::ClassGraph` in the given `datasets::GeneralizedStateSpace`, and false
+    /// otherwise.
     bool solves(const datasets::GeneralizedStateSpace& generalized_state_space, const graphs::ClassGraph& graph);
 
-    /// @brief Get the rules in the `GeneralPolicy`.
-    /// @return the rules in the `GeneralPolicy`.
+    /// @brief Get the index.
+    /// @return the index.
+    Index get_index() const;
+
+    template<dl::FeatureCategory D>
+    const NamedFeatureList<D>& get_features() const;
+
+    /// @brief Get the features in the `GeneralPolicyImpl`.
+    /// @return the features in the `GeneralPolicyImpl`.
+    const NamedFeatureLists<dl::Boolean, dl::Numerical>& get_hana_features() const;
+
+    /// @brief Get the rules in the `GeneralPolicyImpl`.
+    /// @return the rules in the `GeneralPolicyImpl`.
     const RuleList& get_rules() const;
+
+    auto identifying_members() const
+    {
+        return std::tuple(std::cref(get_features<dl::Boolean>()), std::cref(get_features<dl::Numerical>()), std::cref(get_rules()));
+    }
 };
 }
 

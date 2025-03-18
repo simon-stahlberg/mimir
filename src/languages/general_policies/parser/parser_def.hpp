@@ -86,10 +86,10 @@ general_policy_type const general_policy = "general_policy";
 
 inline auto name_parser() { return lexeme[omit[lit('<')]] > raw[lexeme[alpha >> *(alnum | char_('-') | char_('_'))]] > lexeme[omit[lit('>')]]; }
 
-const auto named_concept_def = name_parser() > lit("::=") > dl::concept_();
-const auto named_role_def = name_parser() > lit("::=") > dl::role();
-const auto named_boolean_def = name_parser() > lit("::=") > dl::boolean();
-const auto named_numerical_def = name_parser() > lit("::=") > dl::numerical();
+const auto named_concept_def = name_parser() > lit("::=") > dl::sentence_parser::concept_parser();
+const auto named_role_def = name_parser() > lit("::=") > dl::sentence_parser::role_parser();
+const auto named_boolean_def = name_parser() > lit("::=") > dl::sentence_parser::boolean_parser();
+const auto named_numerical_def = name_parser() > lit("::=") > dl::sentence_parser::numerical_parser();
 
 const auto condition_def = positive_boolean_condition | negative_boolean_condition | greater_numerical_condition | equal_numerical_condition;
 
@@ -108,7 +108,7 @@ const auto increase_numerical_effect_def = lit(std::string("@") + keywords::incr
 const auto decrease_numerical_effect_def = lit(std::string("@") + keywords::decrease_numerical_effect) > name_parser();
 const auto unchanged_numerical_effect_def = lit(std::string("@") + keywords::unchanged_numerical_effect) > name_parser();
 
-const auto rule_def = lit("{") > *condition > "->" > *effect >> lit("}");
+const auto rule_def = lit("{") > -(condition % lit(",")) > lit("}") > "->" > lit("{") > -(effect % lit(",")) > lit("}");
 
 const auto general_policy_def = lit("[boolean_features]")      //
                                 > *named_boolean               //

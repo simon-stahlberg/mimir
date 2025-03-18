@@ -15,23 +15,16 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SRC_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_SENTENCE_PARSER_HPP_
-#define SRC_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_SENTENCE_PARSER_HPP_
+#ifndef SRC_LANGUAGES_GENERAL_POLICIES_PARSER_HPP_
+#define SRC_LANGUAGES_GENERAL_POLICIES_PARSER_HPP_
 
 #include "mimir/formalism/domain.hpp"
-#include "mimir/languages/description_logics/declarations.hpp"
-#include "parser/ast.hpp"
+#include "mimir/languages/general_policies/declarations.hpp"
 
-#include <tuple>
-
-namespace mimir::languages::dl
+namespace mimir::languages::general_policies
 {
 
-template<FeatureCategory D>
-Constructor<D> parse_sentence(const std::string& sentence, const formalism::DomainImpl& domain, Repositories& repositories);
-
-template<FeatureCategory D>
-Constructor<D> parse(const ast::Constructor<D>& node, const formalism::DomainImpl& domain, Repositories& repositories);
+extern GeneralPolicy parse(const std::string& description, const formalism::DomainImpl& domain, Repositories& repositories, dl::Repositories& dl_repositories);
 
 }
 

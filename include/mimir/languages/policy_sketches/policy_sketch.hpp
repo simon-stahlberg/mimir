@@ -28,12 +28,12 @@ namespace mimir::languages::policy_sketches
 class PolicySketch
 {
 private:
-    general_policies::GeneralPolicy m_general_policy;
+    general_policies::GeneralPolicyImpl m_general_policy;
 
 public:
     /// @brief Create a `PolicySketch` with underlying `general_policies::GeneralPolicy`.
     /// @param general_policy is a syntactic `general_policies::GeneralPolicy`.
-    explicit PolicySketch(general_policies::GeneralPolicy general_policy);
+    explicit PolicySketch(general_policies::GeneralPolicyImpl general_policy);
 
     /// @brief Return true if and only if there the state pair (transition) is compatible with a `Rule` in the underlying `general_policies::GeneralPolicy`.
     /// @param source_context is the source context.
@@ -57,7 +57,7 @@ public:
 
     /// @brief Get the underlying `GeneralPolicy`.
     /// @return the underlying `GeneralPolicy`.
-    const general_policies::GeneralPolicy& get_general_policy() const;
+    const general_policies::GeneralPolicyImpl& get_general_policy() const;
 };
 }
 

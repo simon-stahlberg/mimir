@@ -207,62 +207,65 @@ BOOST_SPIRIT_DECLARE(feature_category_derivation_rule_type, grammar_head_type, g
 BOOST_SPIRIT_DECLARE(grammar_type)
 }
 
-grammar_parser::concept_type const& concept_();
-grammar_parser::concept_bot_type const& concept_bot();
-grammar_parser::concept_top_type const& concept_top();
-grammar_parser::concept_atomic_state_type const& concept_atomic_state();
-grammar_parser::concept_atomic_goal_type const& concept_atomic_goal();
-grammar_parser::concept_intersection_type const& concept_intersection();
-grammar_parser::concept_union_type const& concept_union();
-grammar_parser::concept_negation_type const& concept_negation();
-grammar_parser::concept_value_restriction_type const& concept_value_restriction();
-grammar_parser::concept_existential_quantification_type const& concept_existential_quantification();
-grammar_parser::concept_role_value_map_containment_type const& concept_role_value_map_containment();
-grammar_parser::concept_role_value_map_equality_type const& concept_role_value_map_equality();
-grammar_parser::concept_nominal_type const& concept_nominal();
-grammar_parser::concept_non_terminal_type const& concept_non_terminal();
-grammar_parser::concept_choice_type const& concept_choice();
-grammar_parser::concept_derivation_rule_type const& concept_derivation_rule();
+namespace grammar_parser
+{
+concept_type const& concept_parser();
+concept_bot_type const& concept_bot_parser();
+concept_top_type const& concept_top_parser();
+concept_atomic_state_type const& concept_atomic_state_parser();
+concept_atomic_goal_type const& concept_atomic_goal_parser();
+concept_intersection_type const& concept_intersection_parser();
+concept_union_type const& concept_union_parser();
+concept_negation_type const& concept_negation_parser();
+concept_value_restriction_type const& concept_value_restriction_parser();
+concept_existential_quantification_type const& concept_existential_quantification_parser();
+concept_role_value_map_containment_type const& concept_role_value_map_containment_parser();
+concept_role_value_map_equality_type const& concept_role_value_map_equality_parser();
+concept_nominal_type const& concept_nominal_parser();
+concept_non_terminal_type const& concept_non_terminal_parser();
+concept_choice_type const& concept_choice_parser();
+concept_derivation_rule_type const& concept_derivation_rule_parser();
 
-grammar_parser::role_type const& role();
-grammar_parser::role_universal_type const& role_universal();
-grammar_parser::role_atomic_state_type const& role_atomic_state();
-grammar_parser::role_atomic_goal_type const& role_atomic_goal();
-grammar_parser::role_intersection_type const& role_intersection();
-grammar_parser::role_union_type const& role_union();
-grammar_parser::role_complement_type const& role_complement();
-grammar_parser::role_inverse_type const& role_inverse();
-grammar_parser::role_composition_type const& role_composition();
-grammar_parser::role_transitive_closure_type const& role_transitive_closure();
-grammar_parser::role_reflexive_transitive_closure_type const& role_reflexive_transitive_closure();
-grammar_parser::role_restriction_type const& role_restriction();
-grammar_parser::role_identity_type const& role_identity();
-grammar_parser::role_non_terminal_type const& role_non_terminal();
-grammar_parser::role_choice_type const& role_choice();
-grammar_parser::role_derivation_rule_type const& role_derivation_rule();
+role_type const& role_parser();
+role_universal_type const& role_universal_parser();
+role_atomic_state_type const& role_atomic_state_parser();
+role_atomic_goal_type const& role_atomic_goal_parser();
+role_intersection_type const& role_intersection_parser();
+role_union_type const& role_union_parser();
+role_complement_type const& role_complement_parser();
+role_inverse_type const& role_inverse_parser();
+role_composition_type const& role_composition_parser();
+role_transitive_closure_type const& role_transitive_closure_parser();
+role_reflexive_transitive_closure_type const& role_reflexive_transitive_closure_parser();
+role_restriction_type const& role_restriction_parser();
+role_identity_type const& role_identity_parser();
+role_non_terminal_type const& role_non_terminal_parser();
+role_choice_type const& role_choice_parser();
+role_derivation_rule_type const& role_derivation_rule_parser();
 
-grammar_parser::concept_or_role_nonterminal_type const& concept_or_role_nonterminal();
+concept_or_role_nonterminal_type const& concept_or_role_nonterminal_parser();
 
-grammar_parser::boolean_type const& boolean();
-grammar_parser::boolean_atomic_state_type const& boolean_atomic_state();
-grammar_parser::boolean_nonempty_type const& boolean_nonempty();
-grammar_parser::boolean_non_terminal_type const& boolean_non_terminal();
-grammar_parser::boolean_choice_type const& boolean_choice();
-grammar_parser::boolean_derivation_rule_type const& boolean_derivation_rule();
+boolean_type const& boolean_parser();
+boolean_atomic_state_type const& boolean_atomic_state_parser();
+boolean_nonempty_type const& boolean_nonempty_parser();
+boolean_non_terminal_type const& boolean_non_terminal_parser();
+boolean_choice_type const& boolean_choice_parser();
+boolean_derivation_rule_type const& boolean_derivation_rule_parser();
 
-grammar_parser::numerical_type const& numerical();
-grammar_parser::numerical_count_type const& numerical_count();
-grammar_parser::numerical_distance_type const& numerical_distance();
-grammar_parser::numerical_non_terminal_type const& numerical_non_terminal();
-grammar_parser::numerical_choice_type const& numerical_choice();
-grammar_parser::numerical_derivation_rule_type const& numerical_derivation_rule();
+numerical_type const& numerical_parser();
+numerical_count_type const& numerical_count_parser();
+numerical_distance_type const& numerical_distance_parser();
+numerical_non_terminal_type const& numerical_non_terminal_parser();
+numerical_choice_type const& numerical_choice_parser();
+numerical_derivation_rule_type const& numerical_derivation_rule_parser();
 
-grammar_parser::feature_category_derivation_rule_type const& feature_category_derivation_rule();
+feature_category_derivation_rule_type const& feature_category_derivation_rule_parser();
 
-grammar_parser::grammar_head_type const& grammar_head();
-grammar_parser::grammar_body_type const& grammar_body();
+grammar_head_type const& grammar_head_parser();
+grammar_body_type const& grammar_body_parser();
 
-grammar_parser::grammar_type const& grammar_parser_();
+grammar_type const& grammar_parser_();
+}
 }
 
 #endif
