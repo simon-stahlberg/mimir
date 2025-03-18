@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_PARSER_AST_HPP_
-#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_PARSER_AST_HPP_
+#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_PARSER_AST_HPP_
+#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_PARSER_AST_HPP_
 
 #include "mimir/languages/description_logics/declarations.hpp"
 

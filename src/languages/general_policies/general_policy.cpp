@@ -25,6 +25,8 @@ namespace mimir::languages::general_policies
 
 GeneralPolicy::GeneralPolicy(NamedFeatureLists<dl::Boolean, dl::Numerical> features, RuleList rules) : m_features(features), m_rules(rules) {}
 
+GeneralPolicy::GeneralPolicy(std::string description, formalism::Domain domain) {}
+
 bool GeneralPolicy::evaluate(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const
 {
     return std::any_of(get_rules().begin(), get_rules().end(), [&](auto&& arg) { return arg->evaluate(source_context, target_context); });

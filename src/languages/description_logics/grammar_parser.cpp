@@ -418,7 +418,7 @@ static DerivationRulesContainer parse(const dl::ast::GrammarBody& node, const Do
 Grammar parse_grammar(const std::string& bnf_description, Domain domain)
 {
     auto ast = dl::ast::Grammar();
-    dl::parse_ast(bnf_description, dl::grammar_parser_(), ast);
+    mimir::x3::parse_ast(bnf_description, dl::grammar_parser_(), ast);
 
     auto repositories = Repositories();
     auto start_symbols = parse(ast.head, *domain, repositories);

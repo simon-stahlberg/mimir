@@ -22,7 +22,7 @@
 
 #include <sstream>
 
-namespace mimir::languages::dl
+namespace mimir::x3
 {
 /* Combined error handler and output stream. */
 class X3ErrorHandler

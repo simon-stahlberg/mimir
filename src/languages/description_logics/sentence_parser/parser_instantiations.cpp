@@ -20,10 +20,11 @@
 
 namespace mimir::languages::dl::sentence_parser
 {
-using iterator_type = mimir::languages::dl::iterator_type;
-using phrase_context_type = mimir::languages::dl::phrase_context_type;
-using context_type = mimir::languages::dl::context_type;
+using iterator_type = mimir::x3::iterator_type;
+using phrase_context_type = mimir::x3::phrase_context_type;
+using context_type = mimir::x3::context_type;
 
+BOOST_SPIRIT_INSTANTIATE(concept_root_type, iterator_type, context_type)
 BOOST_SPIRIT_INSTANTIATE(concept_type, iterator_type, context_type)
 BOOST_SPIRIT_INSTANTIATE(concept_bot_type, iterator_type, context_type)
 BOOST_SPIRIT_INSTANTIATE(concept_top_type, iterator_type, context_type)
@@ -38,6 +39,7 @@ BOOST_SPIRIT_INSTANTIATE(concept_role_value_map_containment_type, iterator_type,
 BOOST_SPIRIT_INSTANTIATE(concept_role_value_map_equality_type, iterator_type, context_type)
 BOOST_SPIRIT_INSTANTIATE(concept_nominal_type, iterator_type, context_type)
 
+BOOST_SPIRIT_INSTANTIATE(role_root_type, iterator_type, context_type)
 BOOST_SPIRIT_INSTANTIATE(role_type, iterator_type, context_type)
 BOOST_SPIRIT_INSTANTIATE(role_universal_type, iterator_type, context_type)
 BOOST_SPIRIT_INSTANTIATE(role_atomic_state_type, iterator_type, context_type)
@@ -54,10 +56,12 @@ BOOST_SPIRIT_INSTANTIATE(role_identity_type, iterator_type, context_type)
 
 BOOST_SPIRIT_INSTANTIATE(concept_or_role_type, iterator_type, context_type)
 
+BOOST_SPIRIT_INSTANTIATE(boolean_root_type, iterator_type, context_type)
 BOOST_SPIRIT_INSTANTIATE(boolean_type, iterator_type, context_type)
 BOOST_SPIRIT_INSTANTIATE(boolean_atomic_state_type, iterator_type, context_type)
 BOOST_SPIRIT_INSTANTIATE(boolean_nonempty_type, iterator_type, context_type)
 
+BOOST_SPIRIT_INSTANTIATE(numerical_root_type, iterator_type, context_type)
 BOOST_SPIRIT_INSTANTIATE(numerical_type, iterator_type, context_type)
 BOOST_SPIRIT_INSTANTIATE(numerical_count_type, iterator_type, context_type)
 BOOST_SPIRIT_INSTANTIATE(numerical_distance_type, iterator_type, context_type)

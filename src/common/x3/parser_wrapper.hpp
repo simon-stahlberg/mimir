@@ -22,7 +22,7 @@
 
 #include <iostream>
 
-namespace mimir::languages::dl
+namespace mimir::x3
 {
 
 template<typename Iterator, typename Parser, typename Node>

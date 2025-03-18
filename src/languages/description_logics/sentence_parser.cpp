@@ -372,7 +372,7 @@ template<>
 Constructor<Concept> parse_sentence(const std::string& sentence, const formalism::DomainImpl& domain, Repositories& repositories)
 {
     auto ast = dl::ast::Constructor<Concept>();
-    dl::parse_ast(sentence, dl::concept_(), ast);
+    mimir::x3::parse_ast(sentence, dl::concept_root(), ast);
 
     return parse(ast, domain, repositories);
 }
@@ -381,7 +381,7 @@ template<>
 Constructor<Role> parse_sentence(const std::string& sentence, const formalism::DomainImpl& domain, Repositories& repositories)
 {
     auto ast = dl::ast::Constructor<Role>();
-    dl::parse_ast(sentence, dl::role(), ast);
+    mimir::x3::parse_ast(sentence, dl::role_root(), ast);
 
     return parse(ast, domain, repositories);
 }
@@ -390,7 +390,7 @@ template<>
 Constructor<Boolean> parse_sentence(const std::string& sentence, const formalism::DomainImpl& domain, Repositories& repositories)
 {
     auto ast = dl::ast::Constructor<Boolean>();
-    dl::parse_ast(sentence, dl::boolean(), ast);
+    mimir::x3::parse_ast(sentence, dl::boolean_root(), ast);
 
     return parse(ast, domain, repositories);
 }
@@ -399,7 +399,7 @@ template<>
 Constructor<Numerical> parse_sentence(const std::string& sentence, const formalism::DomainImpl& domain, Repositories& repositories)
 {
     auto ast = dl::ast::Constructor<Numerical>();
-    dl::parse_ast(sentence, dl::numerical(), ast);
+    mimir::x3::parse_ast(sentence, dl::numerical_root(), ast);
 
     return parse(ast, domain, repositories);
 }

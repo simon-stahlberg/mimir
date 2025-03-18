@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SRC_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_SENTENCE_PARSER_PARSER_HPP_
-#define SRC_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_SENTENCE_PARSER_PARSER_HPP_
+#ifndef SRC_LANGUAGES_DESCRIPTION_LOGICS_SENTENCE_PARSER_PARSER_HPP_
+#define SRC_LANGUAGES_DESCRIPTION_LOGICS_SENTENCE_PARSER_PARSER_HPP_
 
 #include "../parser/ast.hpp"
 
@@ -44,6 +44,8 @@ namespace sentence_parser
 
 template<FeatureCategory D>
 struct ConstructorClass;
+template<FeatureCategory D>
+struct ConstructorRootClass;
 
 struct ConceptBotClass;
 struct ConceptTopClass;
@@ -79,6 +81,7 @@ struct BooleanNonemptyClass;
 struct NumericalCountClass;
 struct NumericalDistanceClass;
 
+typedef x3::rule<ConstructorRootClass<Concept>, ast::Constructor<Concept>> concept_root_type;
 typedef x3::rule<ConstructorClass<Concept>, ast::Constructor<Concept>> concept_type;
 typedef x3::rule<ConceptBotClass, ast::ConceptBot> concept_bot_type;
 typedef x3::rule<ConceptTopClass, ast::ConceptTop> concept_top_type;
@@ -93,6 +96,7 @@ typedef x3::rule<ConceptRoleValueMapContainmentClass, ast::ConceptRoleValueMapCo
 typedef x3::rule<ConceptRoleValueMapEqualityClass, ast::ConceptRoleValueMapEquality> concept_role_value_map_equality_type;
 typedef x3::rule<ConceptNominalClass, ast::ConceptNominal> concept_nominal_type;
 
+typedef x3::rule<ConstructorRootClass<Role>, ast::Constructor<Role>> role_root_type;
 typedef x3::rule<ConstructorClass<Role>, ast::Constructor<Role>> role_type;
 typedef x3::rule<RoleUniversalClass, ast::RoleUniversal> role_universal_type;
 typedef x3::rule<RoleAtomicStateClass, ast::RoleAtomicState> role_atomic_state_type;
@@ -109,15 +113,18 @@ typedef x3::rule<RoleIdentityClass, ast::RoleIdentity> role_identity_type;
 
 typedef x3::rule<ConceptOrRoleClass, ast::ConceptOrRoleNonterminal> concept_or_role_type;
 
+typedef x3::rule<ConstructorRootClass<Boolean>, ast::Constructor<Boolean>> boolean_root_type;
 typedef x3::rule<ConstructorClass<Boolean>, ast::Constructor<Boolean>> boolean_type;
 typedef x3::rule<BooleanAtomicStateClass, ast::BooleanAtomicState> boolean_atomic_state_type;
 typedef x3::rule<BooleanNonemptyClass, ast::BooleanNonempty> boolean_nonempty_type;
 
+typedef x3::rule<ConstructorRootClass<Numerical>, ast::Constructor<Numerical>> numerical_root_type;
 typedef x3::rule<ConstructorClass<Numerical>, ast::Constructor<Numerical>> numerical_type;
 typedef x3::rule<NumericalCountClass, ast::NumericalCount> numerical_count_type;
 typedef x3::rule<NumericalDistanceClass, ast::NumericalDistance> numerical_distance_type;
 
-BOOST_SPIRIT_DECLARE(concept_type,
+BOOST_SPIRIT_DECLARE(concept_root_type,
+                     concept_type,
                      concept_bot_type,
                      concept_top_type,
                      concept_atomic_state_type,
@@ -131,7 +138,8 @@ BOOST_SPIRIT_DECLARE(concept_type,
                      concept_role_value_map_equality_type,
                      concept_nominal_type)
 
-BOOST_SPIRIT_DECLARE(role_type,
+BOOST_SPIRIT_DECLARE(role_root_type,
+                     role_type,
                      role_universal_type,
                      role_atomic_state_type,
                      role_atomic_goal_type,
@@ -147,9 +155,9 @@ BOOST_SPIRIT_DECLARE(role_type,
 
 BOOST_SPIRIT_DECLARE(concept_or_role_type)
 
-BOOST_SPIRIT_DECLARE(boolean_type, boolean_atomic_state_type, boolean_nonempty_type)
+BOOST_SPIRIT_DECLARE(boolean_root_type, boolean_type, boolean_atomic_state_type, boolean_nonempty_type)
 
-BOOST_SPIRIT_DECLARE(numerical_type, numerical_count_type, numerical_distance_type)
+BOOST_SPIRIT_DECLARE(numerical_root_type, numerical_type, numerical_count_type, numerical_distance_type)
 
 }
 
@@ -157,6 +165,7 @@ BOOST_SPIRIT_DECLARE(numerical_type, numerical_count_type, numerical_distance_ty
  * Grammar
  */
 
+sentence_parser::concept_root_type const& concept_root();
 sentence_parser::concept_type const& concept_();
 sentence_parser::concept_bot_type const& concept_bot();
 sentence_parser::concept_top_type const& concept_top();
@@ -171,6 +180,7 @@ sentence_parser::concept_role_value_map_containment_type const& concept_role_val
 sentence_parser::concept_role_value_map_equality_type const& concept_role_value_map_equality();
 sentence_parser::concept_nominal_type const& concept_nominal();
 
+sentence_parser::role_root_type const& role_root();
 sentence_parser::role_type const& role();
 sentence_parser::role_universal_type const& role_universal();
 sentence_parser::role_atomic_state_type const& role_atomic_state();
@@ -187,10 +197,12 @@ sentence_parser::role_identity_type const& role_identity();
 
 sentence_parser::concept_or_role_type const& concept_or_role();
 
+sentence_parser::boolean_root_type const& boolean_root();
 sentence_parser::boolean_type const& boolean();
 sentence_parser::boolean_atomic_state_type const& boolean_atomic_state();
 sentence_parser::boolean_nonempty_type const& boolean_nonempty();
 
+sentence_parser::numerical_root_type const& numerical_root();
 sentence_parser::numerical_type const& numerical();
 sentence_parser::numerical_count_type const& numerical_count();
 sentence_parser::numerical_distance_type const& numerical_distance();

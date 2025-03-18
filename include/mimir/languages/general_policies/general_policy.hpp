@@ -35,6 +35,11 @@ public:
     /// @param rules
     GeneralPolicy(NamedFeatureLists<dl::Boolean, dl::Numerical> features, RuleList rules);
 
+    /// @brief Create a `GeneralPolicy` for the given description for the `formalism::Domain`.
+    /// @param description
+    /// @param domain
+    GeneralPolicy(std::string description, formalism::Domain domain);
+
     /// @brief Return true if and only if there the state pair (transition) is compatible with a `Rule` in the `GeneralPolicy`.
     /// @param source_context is the source context.
     /// @param target_context is the target context.
