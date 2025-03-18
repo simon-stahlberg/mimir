@@ -1,0 +1,352 @@
+/*
+ * Copyright (C) 2023 Dominik Drexler
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+#ifndef SRC_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_SENTENCE_PARSER_PARSER_DEF_HPP_
+#define SRC_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_SENTENCE_PARSER_PARSER_DEF_HPP_
+
+#include "../parser/ast.hpp"
+#include "../parser/ast_adapted.hpp"
+#include "../parser/error_handler.hpp"
+#include "mimir/languages/description_logics/constructor_keywords.hpp"
+#include "mimir/languages/description_logics/constructors.hpp"
+#include "parser.hpp"
+
+#include <boost/spirit/home/x3.hpp>
+#include <boost/spirit/home/x3/support/utility/annotate_on_success.hpp>
+
+namespace mimir::languages::dl::sentence_parser
+{
+
+namespace x3 = boost::spirit::x3;
+namespace ascii = boost::spirit::x3::ascii;
+
+using x3::double_;
+using x3::eps;
+using x3::int_;
+using x3::lexeme;
+using x3::lit;
+using x3::no_skip;
+using x3::omit;
+using x3::raw;
+using x3::string;
+
+using ascii::alnum;
+using ascii::alpha;
+using ascii::char_;
+using ascii::space;
+
+///////////////////////////////////////////////////////////////////////////
+// Rule IDs
+///////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////
+// Rules
+///////////////////////////////////////////////////////////////////////////
+
+concept_type const concept_ = "concept";
+concept_bot_type const concept_bot = "concept_bot";
+concept_top_type const concept_top = "concept_top";
+concept_atomic_state_type const concept_atomic_state = "concept_atomic_state";
+concept_atomic_goal_type const concept_atomic_goal = "concept_atomic_goal";
+concept_intersection_type const concept_intersection = "concept_intersection";
+concept_union_type const concept_union = "concept_union";
+concept_negation_type const concept_negation = "concept_negation";
+concept_value_restriction_type const concept_value_restriction = "concept_value_restriction";
+concept_existential_quantification_type const concept_existential_quantification = "concept_existential_quantification";
+concept_role_value_map_containment_type const concept_role_value_map_containment = "concept_role_value_map_containment";
+concept_role_value_map_equality_type const concept_role_value_map_equality = "concept_role_value_map_equality";
+concept_nominal_type const concept_nominal = "concept_nominal";
+
+role_type const role = "role";
+role_universal_type const role_universal = "role_universal";
+role_atomic_state_type const role_atomic_state = "role_atomic_state";
+role_atomic_goal_type const role_atomic_goal = "role_atomic_goal";
+role_intersection_type const role_intersection = "role_intersection";
+role_union_type const role_union = "role_union";
+role_complement_type const role_complement = "role_complement";
+role_inverse_type const role_inverse = "role_inverse";
+role_composition_type const role_composition = "role_composition";
+role_transitive_closure_type const role_transitive_closure = "role_transitive_closure";
+role_reflexive_transitive_closure_type const role_reflexive_transitive_closure = "role_reflexive_transitive_closure";
+role_restriction_type const role_restriction = "role_restriction";
+role_identity_type const role_identity = "role_identity";
+
+concept_or_role_type const concept_or_role = "concept_or_role";
+
+boolean_type const boolean = "boolean";
+boolean_atomic_state_type const boolean_atomic_state = "boolean_atomic_state";
+boolean_nonempty_type const boolean_nonempty = "boolean_nonempty";
+numerical_type const numerical = "numerical";
+numerical_count_type const numerical_count = "numerical_count";
+numerical_distance_type const numerical_distance = "numerical_distance";
+
+///////////////////////////////////////////////////////////////////////////
+// Grammar
+///////////////////////////////////////////////////////////////////////////
+
+inline auto predicate_name_parser() { return lexeme[omit[lit('"')]] > raw[lexeme[alpha >> *(alnum | char_('-') | char_('_'))]] > lexeme[omit[lit('"')]]; }
+inline auto object_name_parser() { return lexeme[omit[lit('"')]] > raw[lexeme[alpha >> *(alnum | char_('-') | char_('_'))]] > lexeme[omit[lit('"')]]; }
+inline auto bool_parser()
+{
+    return x3::lexeme[(x3::lit("true") >> x3::attr(true)) | (x3::lit("false") >> x3::attr(false)) | (x3::lit("1") >> x3::attr(true))
+                      | (x3::lit("0") >> x3::attr(false))];
+}
+
+const auto concept__def = concept_bot | concept_top | concept_atomic_state | concept_atomic_goal | concept_intersection | concept_union | concept_negation
+                          | concept_value_restriction | concept_existential_quantification | concept_role_value_map_containment
+                          | concept_role_value_map_equality | concept_nominal;
+
+const auto concept_bot_def = lit(std::string("@") + keywords::concept_bot) >> x3::attr(ast::ConceptBot {});
+const auto concept_top_def = lit(std::string("@") + keywords::concept_top) >> x3::attr(ast::ConceptTop {});
+const auto concept_atomic_state_def = lit(std::string("@") + keywords::concept_atomic_state) > predicate_name_parser();
+const auto concept_atomic_goal_def = lit(std::string("@") + keywords::concept_atomic_goal) > predicate_name_parser() > bool_parser();
+const auto concept_intersection_def = lit(std::string("@") + keywords::concept_intersection) > concept_ > concept_;
+const auto concept_union_def = lit(std::string("@") + keywords::concept_union) > concept_ > concept_;
+const auto concept_negation_def = lit(std::string("@") + keywords::concept_negation) > concept_;
+const auto concept_value_restriction_def = lit(std::string("@") + keywords::concept_value_restriction) > role > concept_;
+const auto concept_existential_quantification_def = lit(std::string("@") + keywords::concept_existential_quantification) > role > concept_;
+const auto concept_role_value_map_containment_def = lit(std::string("@") + keywords::concept_role_value_map_containment) > role > role;
+const auto concept_role_value_map_equality_def = lit(std::string("@") + keywords::concept_role_value_map_equality) > role > role;
+const auto concept_nominal_def = lit(std::string("@") + keywords::concept_nominal) > object_name_parser();
+
+const auto role_def = role_universal | role_atomic_state | role_atomic_goal | role_intersection | role_union | role_complement | role_inverse | role_composition
+                      | role_transitive_closure | role_reflexive_transitive_closure | role_restriction | role_identity;
+
+const auto role_universal_def = lit(std::string("@") + keywords::role_universal) >> x3::attr(ast::RoleUniversal {});
+const auto role_atomic_state_def = lit(std::string("@") + keywords::role_atomic_state) > predicate_name_parser();
+const auto role_atomic_goal_def = lit(std::string("@") + keywords::role_atomic_goal) > predicate_name_parser() > bool_parser();
+const auto role_intersection_def = lit(std::string("@") + keywords::role_intersection) > role > role;
+const auto role_union_def = lit(std::string("@") + keywords::role_union) > role > role;
+const auto role_complement_def = lit(std::string("@") + keywords::role_complement) > role;
+const auto role_inverse_def = lit(std::string("@") + keywords::role_inverse) > role;
+const auto role_composition_def = lit(std::string("@") + keywords::role_composition) > role > role;
+const auto role_transitive_closure_def = lit(std::string("@") + keywords::role_transitive_closure) > role;
+const auto role_reflexive_transitive_closure_def = lit(std::string("@") + keywords::role_reflexive_transitive_closure) > role;
+const auto role_restriction_def = lit(std::string("@") + keywords::role_restriction) > role > concept_;
+const auto role_identity_def = lit(std::string("@") + keywords::role_identity) > concept_;
+
+const auto concept_or_role_def = concept_ | role;
+
+const auto boolean_def = boolean_atomic_state | boolean_nonempty;
+const auto boolean_atomic_state_def = lit(std::string("@") + keywords::boolean_atomic_state) > predicate_name_parser();
+const auto boolean_nonempty_def = lit(std::string("@") + keywords::boolean_nonempty) > concept_or_role;
+
+const auto numerical_def = numerical_count | numerical_distance;
+const auto numerical_count_def = lit(std::string("@") + keywords::numerical_count) > concept_or_role;
+const auto numerical_distance_def = lit(std::string("@") + keywords::numerical_distance) > concept_ > role > concept_;
+
+BOOST_SPIRIT_DEFINE(concept_,
+                    concept_bot,
+                    concept_top,
+                    concept_atomic_state,
+                    concept_atomic_goal,
+                    concept_intersection,
+                    concept_union,
+                    concept_negation,
+                    concept_value_restriction,
+                    concept_existential_quantification,
+                    concept_role_value_map_containment,
+                    concept_role_value_map_equality,
+                    concept_nominal)
+
+BOOST_SPIRIT_DEFINE(role,
+                    role_universal,
+                    role_atomic_state,
+                    role_atomic_goal,
+                    role_intersection,
+                    role_union,
+                    role_complement,
+                    role_inverse,
+                    role_composition,
+                    role_transitive_closure,
+                    role_reflexive_transitive_closure,
+                    role_restriction,
+                    role_identity)
+
+BOOST_SPIRIT_DEFINE(concept_or_role)
+
+BOOST_SPIRIT_DEFINE(boolean, boolean_atomic_state, boolean_nonempty)
+
+BOOST_SPIRIT_DEFINE(numerical, numerical_count, numerical_distance)
+
+///////////////////////////////////////////////////////////////////////////
+// Annotation and Error handling
+///////////////////////////////////////////////////////////////////////////
+
+template<>
+struct ConstructorClass<Concept> : x3::annotate_on_success
+{
+};
+template<>
+struct ConstructorClass<Role> : x3::annotate_on_success
+{
+};
+template<>
+struct ConstructorClass<Boolean> : x3::annotate_on_success
+{
+};
+template<>
+struct ConstructorClass<Numerical> : x3::annotate_on_success
+{
+};
+
+struct ConceptBotClass : x3::annotate_on_success
+{
+};
+struct ConceptTopClass : x3::annotate_on_success
+{
+};
+struct ConceptAtomicStateClass : x3::annotate_on_success
+{
+};
+struct ConceptAtomicGoalClass : x3::annotate_on_success
+{
+};
+struct ConceptIntersectionClass : x3::annotate_on_success
+{
+};
+struct ConceptUnionClass : x3::annotate_on_success
+{
+};
+struct ConceptNegationClass : x3::annotate_on_success
+{
+};
+struct ConceptValueRestrictionClass : x3::annotate_on_success
+{
+};
+struct ConceptExistentialQuantificationClass : x3::annotate_on_success
+{
+};
+struct ConceptRoleValueMapContainmentClass : x3::annotate_on_success
+{
+};
+struct ConceptRoleValueMapEqualityClass : x3::annotate_on_success
+{
+};
+struct ConceptNominalClass : x3::annotate_on_success
+{
+};
+
+struct RoleUniversalClass : x3::annotate_on_success
+{
+};
+struct RoleAtomicStateClass : x3::annotate_on_success
+{
+};
+struct RoleAtomicGoalClass : x3::annotate_on_success
+{
+};
+struct RoleIntersectionClass : x3::annotate_on_success
+{
+};
+struct RoleUnionClass : x3::annotate_on_success
+{
+};
+struct RoleComplementClass : x3::annotate_on_success
+{
+};
+struct RoleInverseClass : x3::annotate_on_success
+{
+};
+struct RoleCompositionClass : x3::annotate_on_success
+{
+};
+struct RoleTransitiveClosureClass : x3::annotate_on_success
+{
+};
+struct RoleReflexiveTransitiveClosureClass : x3::annotate_on_success
+{
+};
+struct RoleRestrictionClass : x3::annotate_on_success
+{
+};
+struct RoleIdentityClass : x3::annotate_on_success
+{
+};
+
+struct ConceptOrRoleClass : x3::annotate_on_success
+{
+};
+
+struct BooleanAtomicStateClass : x3::annotate_on_success
+{
+};
+struct BooleanNonemptyClass : x3::annotate_on_success
+{
+};
+
+struct NumericalCountClass : x3::annotate_on_success
+{
+};
+struct NumericalDistanceClass : x3::annotate_on_success
+{
+};
+
+}
+
+namespace mimir::languages::dl
+{
+sentence_parser::concept_type const& concept_() { return sentence_parser::concept_; }
+sentence_parser::concept_bot_type const& concept_bot() { return sentence_parser::concept_bot; }
+sentence_parser::concept_top_type const& concept_top() { return sentence_parser::concept_top; }
+sentence_parser::concept_atomic_state_type const& concept_atomic_state() { return sentence_parser::concept_atomic_state; }
+sentence_parser::concept_atomic_goal_type const& concept_atomic_goal() { return sentence_parser::concept_atomic_goal; }
+sentence_parser::concept_intersection_type const& concept_intersection() { return sentence_parser::concept_intersection; }
+sentence_parser::concept_union_type const& concept_union() { return sentence_parser::concept_union; }
+sentence_parser::concept_negation_type const& concept_negation() { return sentence_parser::concept_negation; }
+sentence_parser::concept_value_restriction_type const& concept_value_restriction() { return sentence_parser::concept_value_restriction; }
+sentence_parser::concept_existential_quantification_type const& concept_existential_quantification()
+{
+    return sentence_parser::concept_existential_quantification;
+}
+sentence_parser::concept_role_value_map_containment_type const& concept_role_value_map_containment()
+{
+    return sentence_parser::concept_role_value_map_containment;
+}
+sentence_parser::concept_role_value_map_equality_type const& concept_role_value_map_equality() { return sentence_parser::concept_role_value_map_equality; }
+sentence_parser::concept_nominal_type const& concept_nominal() { return sentence_parser::concept_nominal; }
+
+sentence_parser::role_type const& role() { return sentence_parser::role; }
+sentence_parser::role_universal_type const& role_universal() { return sentence_parser::role_universal; }
+sentence_parser::role_atomic_state_type const& role_atomic_state() { return sentence_parser::role_atomic_state; }
+sentence_parser::role_atomic_goal_type const& role_atomic_goal() { return sentence_parser::role_atomic_goal; }
+sentence_parser::role_intersection_type const& role_intersection() { return sentence_parser::role_intersection; }
+sentence_parser::role_union_type const& role_union() { return sentence_parser::role_union; }
+sentence_parser::role_complement_type const& role_complement() { return sentence_parser::role_complement; }
+sentence_parser::role_inverse_type const& role_inverse() { return sentence_parser::role_inverse; }
+sentence_parser::role_composition_type const& role_composition() { return sentence_parser::role_composition; }
+sentence_parser::role_transitive_closure_type const& role_transitive_closure() { return sentence_parser::role_transitive_closure; }
+sentence_parser::role_reflexive_transitive_closure_type const& role_reflexive_transitive_closure()
+{
+    return sentence_parser::role_reflexive_transitive_closure;
+}
+sentence_parser::role_restriction_type const& role_restriction() { return sentence_parser::role_restriction; }
+sentence_parser::role_identity_type const& role_identity() { return sentence_parser::role_identity; }
+
+sentence_parser::concept_or_role_type const& concept_or_role() { return sentence_parser::concept_or_role; }
+
+sentence_parser::boolean_type const& boolean() { return sentence_parser::boolean; }
+sentence_parser::boolean_atomic_state_type const& boolean_atomic_state() { return sentence_parser::boolean_atomic_state; }
+sentence_parser::boolean_nonempty_type const& boolean_nonempty() { return sentence_parser::boolean_nonempty; }
+
+sentence_parser::numerical_type const& numerical() { return sentence_parser::numerical; }
+sentence_parser::numerical_count_type const& numerical_count() { return sentence_parser::numerical_count; }
+sentence_parser::numerical_distance_type const& numerical_distance() { return sentence_parser::numerical_distance; }
+
+}
+
+#endif

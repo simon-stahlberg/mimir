@@ -118,7 +118,6 @@ grammar_type const grammar = "grammar";
 // Grammar
 ///////////////////////////////////////////////////////////////////////////
 
-inline auto separator_parser() { return (ascii::space | x3::eol | x3::eoi); }
 inline auto concept_non_terminal_parser() { return raw[lexeme["<concept" >> *(alnum | char_('-') | char_('_')) > ">"]]; }
 inline auto role_non_terminal_parser() { return raw[lexeme["<role" >> *(alnum | char_('-') | char_('_')) >> ">"]]; }
 inline auto boolean_non_terminal_parser() { return raw[lexeme["<boolean" >> *(alnum | char_('-') | char_('_')) >> ">"]]; }

@@ -18,8 +18,9 @@
 #ifndef SRC_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_SENTENCE_PARSER_PARSER_HPP_
 #define SRC_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_SENTENCE_PARSER_PARSER_HPP_
 
+#include "../parser/ast.hpp"
+
 #include <boost/spirit/home/x3.hpp>
-#include <mimir/languages/description_logics/parser/ast.hpp>
 
 namespace mimir::languages::dl
 {
@@ -70,6 +71,8 @@ struct RoleReflexiveTransitiveClosureClass;
 struct RoleRestrictionClass;
 struct RoleIdentityClass;
 
+struct ConceptOrRoleClass;
+
 struct BooleanAtomicStateClass;
 struct BooleanNonemptyClass;
 
@@ -103,6 +106,8 @@ typedef x3::rule<RoleTransitiveClosureClass, ast::RoleTransitiveClosure> role_tr
 typedef x3::rule<RoleReflexiveTransitiveClosureClass, ast::RoleReflexiveTransitiveClosure> role_reflexive_transitive_closure_type;
 typedef x3::rule<RoleRestrictionClass, ast::RoleRestriction> role_restriction_type;
 typedef x3::rule<RoleIdentityClass, ast::RoleIdentity> role_identity_type;
+
+typedef x3::rule<ConceptOrRoleClass, ast::ConceptOrRoleNonterminal> concept_or_role_type;
 
 typedef x3::rule<ConstructorClass<Boolean>, ast::Constructor<Boolean>> boolean_type;
 typedef x3::rule<BooleanAtomicStateClass, ast::BooleanAtomicState> boolean_atomic_state_type;
@@ -139,6 +144,8 @@ BOOST_SPIRIT_DECLARE(role_type,
                      role_reflexive_transitive_closure_type,
                      role_restriction_type,
                      role_identity_type)
+
+BOOST_SPIRIT_DECLARE(concept_or_role_type)
 
 BOOST_SPIRIT_DECLARE(boolean_type, boolean_atomic_state_type, boolean_nonempty_type)
 
@@ -177,6 +184,8 @@ sentence_parser::role_transitive_closure_type const& role_transitive_closure();
 sentence_parser::role_reflexive_transitive_closure_type const& role_reflexive_transitive_closure();
 sentence_parser::role_restriction_type const& role_restriction();
 sentence_parser::role_identity_type const& role_identity();
+
+sentence_parser::concept_or_role_type const& concept_or_role();
 
 sentence_parser::boolean_type const& boolean();
 sentence_parser::boolean_atomic_state_type const& boolean_atomic_state();
