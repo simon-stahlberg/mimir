@@ -21,13 +21,10 @@ using namespace mimir::formalism;
 
 namespace mimir::languages::dl
 {
-EvaluationContext::EvaluationContext(search::State state,
-                                     Problem problem,
-                                     Denotations<Concept, Role, Boolean, Numerical>& ref_builders,
-                                     DenotationRepositories<Concept, Role, Boolean, Numerical>& ref_repositories) :
+EvaluationContext::EvaluationContext(search::State state, Problem problem, DenotationRepositories<Concept, Role, Boolean, Numerical>& ref_repositories) :
     m_state(state),
     m_problem(problem),
-    m_builders(ref_builders),
+    m_builders(),
     m_repositories(ref_repositories)
 {
 }

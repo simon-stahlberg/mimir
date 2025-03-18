@@ -37,14 +37,11 @@ private:
     /* Memory */
     search::State m_state;
     formalism::Problem m_problem;
-    Denotations<Concept, Role, Boolean, Numerical>& m_builders;
+    Denotations<Concept, Role, Boolean, Numerical> m_builders;
     DenotationRepositories<Concept, Role, Boolean, Numerical>& m_repositories;
 
 public:
-    EvaluationContext(search::State state,
-                      formalism::Problem problem,
-                      Denotations<Concept, Role, Boolean, Numerical>& ref_builders,
-                      DenotationRepositories<Concept, Role, Boolean, Numerical>& ref_repositories);
+    EvaluationContext(search::State state, formalism::Problem problem, DenotationRepositories<Concept, Role, Boolean, Numerical>& ref_repositories);
 
     /**
      * Getters

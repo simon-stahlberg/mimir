@@ -67,14 +67,9 @@ bool RefinementStateListPruningFunction::should_prune_impl(Constructor<D> constr
 
     for (const auto& [problem, states] : m_state_partitioning)
     {
-        auto builders = Denotations<Concept, Role, Boolean, Numerical>();
-
-        // We resize role denotation here to avoid having to do that during evaluation.
-        boost::hana::at_key(builders, boost::hana::type<Role> {}).get_data().resize(problem->get_problem_and_domain_objects().size());
-
         for (const auto& state : states)
         {
-            auto evaluation_context = EvaluationContext(state, problem, builders, m_repositories);
+            auto evaluation_context = EvaluationContext(state, problem, m_repositories);
 
             const auto denotation = constructor->evaluate(evaluation_context);
 

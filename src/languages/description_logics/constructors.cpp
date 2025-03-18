@@ -549,7 +549,7 @@ void RoleUniversalImpl::evaluate_impl(EvaluationContext& context) const
     // Fetch data
     const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitsets = context.get_builder<Role>().get_data();
-    assert(bitsets.size() == num_objects);
+    bitsets.resize(num_objects);
     for (auto& bitset : bitsets)
     {
         bitset.unset_all();
@@ -584,7 +584,7 @@ void RoleAtomicStateImpl<P>::evaluate_impl(EvaluationContext& context) const
     // Fetch data
     const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitsets = context.get_builder<Role>().get_data();
-    assert(bitsets.size() == num_objects);
+    bitsets.resize(num_objects);
     for (auto& bitset : bitsets)
     {
         bitset.unset_all();
@@ -615,7 +615,7 @@ void RoleAtomicStateImpl<Static>::evaluate_impl(EvaluationContext& context) cons
     // Fetch data
     const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitsets = context.get_builder<Role>().get_data();
-    assert(bitsets.size() == num_objects);
+    bitsets.resize(num_objects);
     for (auto& bitset : bitsets)
     {
         bitset.unset_all();
@@ -678,7 +678,7 @@ void RoleAtomicGoalImpl<P>::evaluate_impl(EvaluationContext& context) const
     // Fetch data
     const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitsets = context.get_builder<Role>().get_data();
-    assert(bitsets.size() == num_objects);
+    bitsets.resize(num_objects);
     for (auto& bitset : bitsets)
     {
         bitset.unset_all();
@@ -751,7 +751,7 @@ void RoleIntersectionImpl::evaluate_impl(EvaluationContext& context) const
 
     // Fetch data
     auto& bitsets = context.get_builder<Role>().get_data();
-    assert(bitsets.size() == num_objects);
+    bitsets.resize(num_objects);
     for (auto& bitset : bitsets)
     {
         bitset.unset_all();
@@ -794,7 +794,7 @@ void RoleUnionImpl::evaluate_impl(EvaluationContext& context) const
     // Fetch data
     const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitsets = context.get_builder<Role>().get_data();
-    assert(bitsets.size() == num_objects);
+    bitsets.resize(num_objects);
     for (auto& bitset : bitsets)
     {
         bitset.unset_all();
@@ -831,7 +831,7 @@ void RoleComplementImpl::evaluate_impl(EvaluationContext& context) const
     // Fetch data
     const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitsets = context.get_builder<Role>().get_data();
-    assert(bitsets.size() == num_objects);
+    bitsets.resize(num_objects);
     for (auto& bitset : bitsets)
     {
         bitset.unset_all();
@@ -870,7 +870,7 @@ void RoleInverseImpl::evaluate_impl(EvaluationContext& context) const
     // Fetch data
     const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitsets = context.get_builder<Role>().get_data();
-    assert(bitsets.size() == num_objects);
+    bitsets.resize(num_objects);
     for (auto& bitset : bitsets)
     {
         bitset.unset_all();
@@ -915,7 +915,7 @@ void RoleCompositionImpl::evaluate_impl(EvaluationContext& context) const
     // Fetch data
     const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitsets = context.get_builder<Role>().get_data();
-    assert(bitsets.size() == num_objects);
+    bitsets.resize(num_objects);
     for (auto& bitset : bitsets)
     {
         bitset.unset_all();
@@ -956,7 +956,7 @@ void RoleTransitiveClosureImpl::evaluate_impl(EvaluationContext& context) const
     // Fetch data
     const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitsets = context.get_builder<Role>().get_data();
-    assert(bitsets.size() == num_objects);
+    bitsets.resize(num_objects);
     for (auto& bitset : bitsets)
     {
         bitset.unset_all();
@@ -999,7 +999,7 @@ void RoleReflexiveTransitiveClosureImpl::evaluate_impl(EvaluationContext& contex
     // Fetch data
     const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitsets = context.get_builder<Role>().get_data();
-    assert(bitsets.size() == num_objects);
+    bitsets.resize(num_objects);
     for (auto& bitset : bitsets)
     {
         bitset.unset_all();
@@ -1053,7 +1053,7 @@ void RoleRestrictionImpl::evaluate_impl(EvaluationContext& context) const
     // Fetch data
     const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitsets = context.get_builder<Role>().get_data();
-    assert(bitsets.size() == num_objects);
+    bitsets.resize(num_objects);
     for (auto& bitset : bitsets)
     {
         bitset.unset_all();
@@ -1094,7 +1094,7 @@ void RoleIdentityImpl::evaluate_impl(EvaluationContext& context) const
     // Fetch data
     const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitsets = context.get_builder<Role>().get_data();
-    assert(bitsets.size() == num_objects);
+    bitsets.resize(num_objects);
     for (auto& bitset : bitsets)
     {
         bitset.unset_all();
