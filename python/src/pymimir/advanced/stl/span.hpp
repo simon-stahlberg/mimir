@@ -3,7 +3,6 @@
 #define MIMIR_PYTHON_STL_SPAN_HPP
 
 #include "../init_declarations.hpp"
-#include "mimir/graphs.hpp"
 
 using namespace mimir;
 /// @brief Binds a std::span<T> as an unmodifiable python object.

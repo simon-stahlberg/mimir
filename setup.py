@@ -87,7 +87,7 @@ class CMakeBuild(build_ext):
         # advanced/__init__.pyi
         # advanced/common/__init__.pyi
         #
-        # We adapt it while copying to:
+        # We adapt it while copying to install location:
         # _pymimir.so
         # pymimir/__init__.pyi
         # pymimir/advanced/__init__.pyi

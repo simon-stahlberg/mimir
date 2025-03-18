@@ -3,7 +3,6 @@
 #define MIMIR_PYTHON_COMMON_INDEX_GROUPED_VECTORS_HPP
 
 #include "../init_declarations.hpp"
-#include "mimir/graphs.hpp"
 
 using namespace mimir;
 

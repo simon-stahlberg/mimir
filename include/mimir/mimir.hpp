@@ -96,7 +96,29 @@
  * Graphs
  */
 
-#include "graphs.hpp"
+#include "mimir/graphs/algorithms/color_refinement.hpp"
+#include "mimir/graphs/algorithms/color_refinement_impl.hpp"
+#include "mimir/graphs/algorithms/folklore_weisfeiler_leman.hpp"
+#include "mimir/graphs/algorithms/folklore_weisfeiler_leman_impl.hpp"
+#include "mimir/graphs/boost_adapter_utils.hpp"
+#include "mimir/graphs/concrete/digraph.hpp"
+#include "mimir/graphs/concrete/digraph_edge_colored.hpp"
+#include "mimir/graphs/concrete/digraph_vertex_colored.hpp"
+#include "mimir/graphs/declarations.hpp"
+#include "mimir/graphs/dynamic_graph.hpp"
+#include "mimir/graphs/dynamic_graph_interface.hpp"
+#include "mimir/graphs/dynamic_graph_iterators.hpp"
+#include "mimir/graphs/graph_edge_interface.hpp"
+#include "mimir/graphs/graph_edges.hpp"
+#include "mimir/graphs/graph_interface.hpp"
+#include "mimir/graphs/graph_properties.hpp"
+#include "mimir/graphs/graph_traversal_interface.hpp"
+#include "mimir/graphs/graph_vertex_interface.hpp"
+#include "mimir/graphs/graph_vertices.hpp"
+#include "mimir/graphs/static_graph.hpp"
+#include "mimir/graphs/static_graph_boost_adapter.hpp"
+#include "mimir/graphs/static_graph_interface.hpp"
+#include "mimir/graphs/static_graph_iterators.hpp"
 
 /**
  * Algorithms

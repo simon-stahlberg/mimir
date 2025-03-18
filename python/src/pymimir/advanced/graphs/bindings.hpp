@@ -3,7 +3,6 @@
 #define MIMIR_PYTHON_GRAPHS_BINDINGS_HPP
 
 #include "../init_declarations.hpp"
-#include "mimir/graphs.hpp"
 
 namespace mimir::bindings
 {
