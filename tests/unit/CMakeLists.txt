@@ -37,7 +37,6 @@ add_gtest(graphs_dynamic_graph_test                        "graphs/dynamic_graph
 add_gtest(graphs_static_graph_test                         "graphs/static_graph.cpp")
 
 add_gtest(languages_dl_constructors_test                   "languages/description_logics/constructors.cpp")
-add_gtest(languages_dl_parser_test                         "languages/description_logics/parser.cpp")
 add_gtest(languages_dl_grammar_test                        "languages/description_logics/grammar.cpp")
 add_gtest(languages_dl_cnf_grammar_test                    "languages/description_logics/cnf_grammar.cpp")
 add_gtest(languages_dl_cnf_grammar_visitor_sentence_generator_test "languages/description_logics/cnf_grammar_visitor_sentence_generator.cpp")

@@ -15,9 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "../../../common/x3/config.hpp"
 #include "parser_def.hpp"
-
-#include <mimir/languages/description_logics/parser/config.hpp>
 
 namespace mimir::languages::dl::grammar_parser
 {

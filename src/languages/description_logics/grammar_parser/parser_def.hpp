@@ -15,15 +15,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SRC_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_PARSER_PARSER_DEF_HPP_
-#define SRC_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_PARSER_PARSER_DEF_HPP_
+#ifndef SRC_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_GRAMMAR_PARSER_PARSER_DEF_HPP_
+#define SRC_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_GRAMMAR_PARSER_PARSER_DEF_HPP_
 
+#include "../parser/ast.hpp"
 #include "../parser/ast_adapted.hpp"
+#include "../parser/error_handler.hpp"
 #include "mimir/languages/description_logics/constructor_keywords.hpp"
 #include "mimir/languages/description_logics/constructors.hpp"
-#include "mimir/languages/description_logics/grammar_parser/parser.hpp"
-#include "mimir/languages/description_logics/parser/ast.hpp"
-#include "mimir/languages/description_logics/parser/error_handler.hpp"
 #include "parser.hpp"
 
 #include <boost/spirit/home/x3.hpp>

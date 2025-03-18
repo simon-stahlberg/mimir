@@ -18,7 +18,6 @@
 #include "mimir/languages/description_logics/grammar.hpp"
 
 #include "mimir/languages/description_logics/grammar_visitor_interface.hpp"
-#include "mimir/languages/description_logics/parser/parser_wrapper.hpp"
 #include "parser.hpp"
 
 using namespace mimir::formalism;

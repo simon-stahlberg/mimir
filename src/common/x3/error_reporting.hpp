@@ -15,10 +15,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_PARSER_ERROR_REPORTING_HPP_
-#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_PARSER_ERROR_REPORTING_HPP_
+#ifndef SRC_COMMON_X3_ERROR_REPORTING_HPP_
+#define SRC_COMMON_X3_ERROR_REPORTING_HPP_
 
-#include "mimir/languages/description_logics/parser/config.hpp"
+#include "config.hpp"
 
 #include <sstream>
 

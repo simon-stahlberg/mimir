@@ -17,12 +17,12 @@
 
 #include "parser.hpp"
 
+#include "../../common/x3/parser_wrapper.hpp"
+#include "grammar_parser/parser.hpp"
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/languages/description_logics/grammar.hpp"
 #include "mimir/languages/description_logics/grammar_constructors.hpp"
-#include "mimir/languages/description_logics/grammar_parser/parser.hpp"
-#include "mimir/languages/description_logics/parser/ast.hpp"
-#include "mimir/languages/description_logics/parser/parser_wrapper.hpp"
+#include "parser/ast.hpp"
 
 #include <boost/hana.hpp>
 

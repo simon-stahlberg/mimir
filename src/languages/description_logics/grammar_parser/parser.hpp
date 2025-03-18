@@ -15,11 +15,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SRC_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_PARSER_PARSER_HPP_
-#define SRC_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_PARSER_PARSER_HPP_
+#ifndef SRC_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_GRAMMAR_PARSER_PARSER_HPP_
+#define SRC_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_GRAMMAR_PARSER_PARSER_HPP_
+
+#include "../parser/ast.hpp"
 
 #include <boost/spirit/home/x3.hpp>
-#include <mimir/languages/description_logics/parser/ast.hpp>
 
 namespace mimir::languages::dl
 {
@@ -92,6 +93,8 @@ struct NumericalDistanceClass;
 struct GrammarHeadClass;
 struct GrammarBodyClass;
 
+struct GrammarClass;
+
 typedef x3::rule<ConstructorClass<Concept>, ast::Constructor<Concept>> concept_type;
 typedef x3::rule<ConceptBotClass, ast::ConceptBot> concept_bot_type;
 typedef x3::rule<ConceptTopClass, ast::ConceptTop> concept_top_type;
@@ -147,6 +150,8 @@ typedef x3::rule<FeatureCategoryDerivationRuleClass, ast::FeatureCategoryDerivat
 typedef x3::rule<GrammarHeadClass, ast::GrammarHead> grammar_head_type;
 typedef x3::rule<GrammarBodyClass, ast::GrammarBody> grammar_body_type;
 
+typedef x3::rule<GrammarClass, ast::Grammar> grammar_type;
+
 BOOST_SPIRIT_DECLARE(concept_type,
                      concept_bot_type,
                      concept_top_type,
@@ -198,6 +203,8 @@ BOOST_SPIRIT_DECLARE(numerical_type,
                      numerical_derivation_rule_type)
 
 BOOST_SPIRIT_DECLARE(feature_category_derivation_rule_type, grammar_head_type, grammar_body_type)
+
+BOOST_SPIRIT_DECLARE(grammar_type)
 }
 
 grammar_parser::concept_type const& concept_();
@@ -254,6 +261,8 @@ grammar_parser::feature_category_derivation_rule_type const& feature_category_de
 
 grammar_parser::grammar_head_type const& grammar_head();
 grammar_parser::grammar_body_type const& grammar_body();
+
+grammar_parser::grammar_type const& grammar_parser_();
 }
 
 #endif

@@ -15,10 +15,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SRC_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_GRAMMAR_PARSER_AST_ADAPTED_HPP_
-#define SRC_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_GRAMMAR_PARSER_AST_ADAPTED_HPP_
+#ifndef SRC_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_PARSER_AST_ADAPTED_HPP_
+#define SRC_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_PARSER_AST_ADAPTED_HPP_
 
-#include "mimir/languages/description_logics/parser/ast.hpp"
+#include "ast.hpp"
 
 #include <boost/fusion/include/adapt_struct.hpp>
 

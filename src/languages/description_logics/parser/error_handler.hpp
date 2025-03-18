@@ -18,7 +18,7 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_PARSER_ERROR_HANDLER_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_PARSER_ERROR_HANDLER_HPP_
 
-#include "mimir/languages/description_logics/parser/config.hpp"
+#include "../../../common/x3/config.hpp"
 
 #include <string>
 #include <unordered_map>
