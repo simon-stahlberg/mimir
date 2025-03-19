@@ -68,7 +68,7 @@ static ToNonTerminalMap<std::string, Concept, Role, Boolean, Numerical> collect_
 
 struct EliminateChoiceVisitor : public CopyVisitor
 {
-    EliminateChoiceVisitor(Repositories& repositories, OptionalNonTerminals& start_symbols, DerivationRulesContainer& derivation_rules) :
+    EliminateChoiceVisitor(Repositories& repositories, OptionalNonTerminals& start_symbols, DerivationRuleSets& derivation_rules) :
         CopyVisitor(repositories, start_symbols, derivation_rules)
     {
     }
@@ -88,15 +88,16 @@ struct EliminateChoiceVisitor : public CopyVisitor
         {
             constructor_or_nonterminal->accept(*this);
 
-            this->m_derivation_rules.insert(this->m_repositories.template get_or_create_derivation_rule<D>(
-                copied_non_terminal,
-                ConstructorOrNonTerminalList<D> { std::any_cast<ConstructorOrNonTerminal<D>>(get_result()) }));
+            boost::hana::at_key(this->m_derivation_rules, boost::hana::type<D> {})
+                .insert(this->m_repositories.template get_or_create_derivation_rule<D>(
+                    copied_non_terminal,
+                    ConstructorOrNonTerminalList<D> { std::any_cast<ConstructorOrNonTerminal<D>>(get_result()) }));
         }
     }
 
     void visit(const Grammar& grammar) override
     {
-        boost::hana::for_each(grammar.get_start_symbols_container(),
+        boost::hana::for_each(grammar.get_start_symbols(),
                               [&](auto&& pair)
                               {
                                   auto key = boost::hana::first(pair);
@@ -110,7 +111,7 @@ struct EliminateChoiceVisitor : public CopyVisitor
                                   }
                               });
 
-        boost::hana::for_each(grammar.get_derivation_rules_container().get(),
+        boost::hana::for_each(grammar.get_derivation_rules(),
                               [&](auto&& pair)
                               {
                                   const auto& second = boost::hana::second(pair);
@@ -127,7 +128,7 @@ static Grammar eliminate_choices_in_rules(const Grammar& grammar)
 {
     auto repositories = Repositories();
     auto start_symbols = OptionalNonTerminals();
-    auto derivation_rules = DerivationRulesContainer();
+    auto derivation_rules = DerivationRuleSets();
 
     auto visitor = EliminateChoiceVisitor(repositories, start_symbols, derivation_rules);
 
@@ -163,7 +164,7 @@ private:
 public:
     EliminateNestedConstructorsVisitor(Repositories& repositories,
                                        OptionalNonTerminals& start_symbols,
-                                       DerivationRulesContainer& derivation_rules,
+                                       DerivationRuleSets& derivation_rules,
                                        ToNonTerminalMap<std::string, Concept, Role, Boolean, Numerical>& existing_nonterminals) :
         CopyVisitor(repositories, start_symbols, derivation_rules),
         m_existing_nonterminals(existing_nonterminals),
@@ -201,7 +202,7 @@ public:
                         const auto derivation_rule =
                             this->m_repositories.template get_or_create_derivation_rule<D>(non_terminal, ConstructorOrNonTerminalList<D> { constructor });
 
-                        this->m_derivation_rules.insert(derivation_rule);
+                        boost::hana::at_key(this->m_derivation_rules, boost::hana::type<D> {}).insert(derivation_rule);
 
                         this->m_result = this->m_repositories.template get_or_create_constructor_or_nonterminal<D>(non_terminal);
                     }
@@ -230,7 +231,7 @@ static Grammar eliminate_nested_constructors(const Grammar& grammar)
 {
     auto repositories = Repositories();
     auto start_symbols = OptionalNonTerminals();
-    auto derivation_rules = DerivationRulesContainer();
+    auto derivation_rules = DerivationRuleSets();
 
     auto nonterminal_map = collect_nonterminals_from_grammar(grammar);
 
@@ -585,7 +586,7 @@ template void ToCNFVisitor::visit_impl(DerivationRule<Numerical> constructor);
 
 void ToCNFVisitor::visit(const Grammar& grammar)
 {
-    boost::hana::for_each(grammar.get_start_symbols_container(),
+    boost::hana::for_each(grammar.get_start_symbols(),
                           [&](auto&& pair)
                           {
                               auto key = boost::hana::first(pair);
@@ -600,7 +601,7 @@ void ToCNFVisitor::visit(const Grammar& grammar)
                           });
 
     boost::hana::for_each(
-        grammar.get_derivation_rules_container().get(),
+        grammar.get_derivation_rules(),
         [&](auto&& pair)
         {
             auto key = boost::hana::first(pair);

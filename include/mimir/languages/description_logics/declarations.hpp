@@ -159,9 +159,19 @@ class GrammarVisitor;
 
 namespace grammar
 {
-/**
- * Constructors
- */
+
+/* DerivationRule */
+template<dl::FeatureCategory D>
+class DerivationRuleImpl;
+template<dl::FeatureCategory D>
+using DerivationRule = const DerivationRuleImpl<D>*;
+template<dl::FeatureCategory D>
+using DerivationRuleList = std::vector<DerivationRule<D>>;
+template<dl::FeatureCategory... D>
+using DerivationRuleLists = boost::hana::map<boost::hana::pair<boost::hana::type<D>, DerivationRuleList<D>>...>;
+template<FeatureCategory D>
+using DerivationRuleSet = std::unordered_set<DerivationRule<D>>;
+using DerivationRuleSets = HanaMappedContainer<DerivationRuleSet, Concept, Role, Boolean, Numerical>;
 
 /* Constructor */
 template<dl::FeatureCategory D>
@@ -177,12 +187,12 @@ using NonTerminal = const NonTerminalImpl<D>*;
 template<dl::FeatureCategory D>
 using OptionalNonTerminal = std::optional<NonTerminal<D>>;
 using OptionalNonTerminals = HanaMappedContainer<OptionalNonTerminal, Concept, Role, Boolean, Numerical>;
-
 template<dl::FeatureCategory D>
 using NonTerminalSet = std::unordered_set<NonTerminal<D>>;
 
 template<template<typename> typename Value, dl::FeatureCategory... Ds>
 using NonTerminalMap = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, std::unordered_map<NonTerminal<Ds>, Value<Ds>>>...>;
+using NonTerminalToDerivationRuleSets = NonTerminalMap<DerivationRuleSet, Concept, Role, Boolean, Numerical>;
 
 template<typename Key, dl::FeatureCategory... Ds>
 using ToNonTerminalMap =
@@ -195,20 +205,6 @@ template<dl::FeatureCategory D>
 using ConstructorOrNonTerminal = const ConstructorOrNonTerminalImpl<D>*;
 template<dl::FeatureCategory D>
 using ConstructorOrNonTerminalList = std::vector<ConstructorOrNonTerminal<D>>;
-
-/* DerivationRule */
-template<dl::FeatureCategory D>
-class DerivationRuleImpl;
-template<dl::FeatureCategory D>
-using DerivationRule = const DerivationRuleImpl<D>*;
-template<dl::FeatureCategory D>
-using DerivationRuleList = std::vector<DerivationRule<D>>;
-template<dl::FeatureCategory... D>
-using DerivationRuleLists = boost::hana::map<boost::hana::pair<boost::hana::type<D>, DerivationRuleList<D>>...>;
-template<FeatureCategory D>
-using DerivationRuleSet = std::unordered_set<DerivationRule<D>>;
-template<dl::FeatureCategory... D>
-using DerivationRuleSets = boost::hana::map<boost::hana::pair<boost::hana::type<D>, DerivationRuleSet<D>>...>;
 
 /* Concrete concepts */
 class ConceptTopImpl;

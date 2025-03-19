@@ -45,7 +45,6 @@
 #include "mimir/languages/description_logics/grammar_constructor_interface.hpp"
 #include "mimir/languages/description_logics/grammar_constructor_repositories.hpp"
 #include "mimir/languages/description_logics/grammar_constructors.hpp"
-#include "mimir/languages/description_logics/grammar_containers.hpp"
 #include "mimir/languages/description_logics/grammar_visitor_formatter.hpp"
 #include "mimir/languages/description_logics/grammar_visitor_interface.hpp"
 

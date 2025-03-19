@@ -23,6 +23,7 @@
 #include "mimir/formalism/problem.hpp"
 #include "mimir/languages/description_logics/constructor_repositories.hpp"
 #include "mimir/languages/description_logics/constructors.hpp"
+#include "mimir/languages/description_logics/grammar_visitor_formatter.hpp"
 
 #include <gtest/gtest.h>
 

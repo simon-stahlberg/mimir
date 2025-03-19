@@ -21,7 +21,6 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/languages/description_logics/declarations.hpp"
 #include "mimir/languages/description_logics/grammar_constructor_repositories.hpp"
-#include "mimir/languages/description_logics/grammar_containers.hpp"
 
 #include <loki/loki.hpp>
 
@@ -41,12 +40,15 @@ private:
 
     /* The rules of the grammar. */
     OptionalNonTerminals m_start_symbols;
-    DerivationRulesContainer m_derivation_rules;
+    DerivationRuleSets m_derivation_rules;
 
     formalism::Domain m_domain;
 
+    /* Initialized in the constructor for ease of lookup. */
+    NonTerminalToDerivationRuleSets m_nonterminal_to_derivation_rules;
+
 public:
-    Grammar(Repositories repositories, OptionalNonTerminals start_symbols, DerivationRulesContainer derivation_rules, formalism::Domain domain);
+    Grammar(Repositories repositories, OptionalNonTerminals start_symbols, DerivationRuleSets derivation_rules, formalism::Domain domain);
 
     /// @brief Create a grammar from a BNF description for a given domain.
     /// The domain is used for error checking only to ensure that predicates or constants are available.
@@ -71,9 +73,10 @@ public:
      * Getters
      */
 
-    const OptionalNonTerminals& get_start_symbols_container() const;
-    const DerivationRulesContainer& get_derivation_rules_container() const;
+    const OptionalNonTerminals& get_start_symbols() const;
+    const DerivationRuleSets& get_derivation_rules() const;
     const formalism::Domain& get_domain() const;
+    const NonTerminalToDerivationRuleSets& get_nonterminal_to_derivation_rules() const;
 };
 }
 

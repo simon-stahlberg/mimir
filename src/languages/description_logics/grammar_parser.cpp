@@ -403,13 +403,21 @@ static OptionalNonTerminals parse(const dl::ast::GrammarHead& node, const Domain
     return start_symbols;
 }
 
-static DerivationRulesContainer parse(const dl::ast::GrammarBody& node, const DomainImpl& domain, Repositories& ref_repositories)
+static DerivationRuleSets parse(const dl::ast::GrammarBody& node, const DomainImpl& domain, Repositories& ref_repositories)
 {
-    auto derivation_rules = DerivationRulesContainer {};
+    auto derivation_rules = DerivationRuleSets {};
 
     for (const auto& part : node.rules)
     {
-        boost::apply_visitor([&](const auto& arg) { derivation_rules.insert(parse(arg, domain, ref_repositories)); }, part);
+        boost::apply_visitor(
+            [&](const auto& arg)
+            {
+                auto derivation_rule = parse(arg, domain, ref_repositories);
+                using D = typename std::decay_t<std::remove_pointer_t<decltype(derivation_rule)>>::Category;
+
+                boost::hana::at_key(derivation_rules, boost::hana::type<D> {}).insert(derivation_rule);
+            },
+            part);
     }
 
     return derivation_rules;

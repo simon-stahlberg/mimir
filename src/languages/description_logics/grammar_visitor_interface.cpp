@@ -18,7 +18,6 @@
 #include "mimir/languages/description_logics/grammar_visitor_interface.hpp"
 
 #include "mimir/languages/description_logics/grammar_constructors.hpp"
-#include "mimir/languages/description_logics/grammar_containers.hpp"
 
 using namespace mimir::formalism;
 
@@ -209,7 +208,7 @@ template void RecurseVisitor::visit_impl(DerivationRule<Numerical> constructor);
 
 void RecurseVisitor::visit(const Grammar& grammar)
 {
-    boost::hana::for_each(grammar.get_start_symbols_container(),
+    boost::hana::for_each(grammar.get_start_symbols(),
                           [&](auto&& pair)
                           {
                               const auto& second = boost::hana::second(pair);
@@ -220,7 +219,7 @@ void RecurseVisitor::visit(const Grammar& grammar)
                               }
                           });
 
-    boost::hana::for_each(grammar.get_derivation_rules_container().get(),
+    boost::hana::for_each(grammar.get_derivation_rules(),
                           [&](auto&& pair)
                           {
                               const auto& second = boost::hana::second(pair);
@@ -236,7 +235,7 @@ void RecurseVisitor::visit(const Grammar& grammar)
 /// Recursive Copy Visitor
 ////////////////////////////
 
-CopyVisitor::CopyVisitor(Repositories& repositories, OptionalNonTerminals& start_symbols, DerivationRulesContainer& derivation_rules) :
+CopyVisitor::CopyVisitor(Repositories& repositories, OptionalNonTerminals& start_symbols, DerivationRuleSets& derivation_rules) :
     m_repositories(repositories),
     m_start_symbols(start_symbols),
     m_derivation_rules(derivation_rules)
@@ -551,7 +550,7 @@ template void CopyVisitor::visit_impl(DerivationRule<Numerical> constructor);
 
 void CopyVisitor::visit(const Grammar& grammar)
 {
-    boost::hana::for_each(grammar.get_start_symbols_container(),
+    boost::hana::for_each(grammar.get_start_symbols(),
                           [&](auto&& pair)
                           {
                               auto key = boost::hana::first(pair);
@@ -565,7 +564,7 @@ void CopyVisitor::visit(const Grammar& grammar)
                               }
                           });
 
-    boost::hana::for_each(grammar.get_derivation_rules_container().get(),
+    boost::hana::for_each(grammar.get_derivation_rules(),
                           [&](auto&& pair)
                           {
                               auto key = boost::hana::first(pair);
@@ -575,7 +574,7 @@ void CopyVisitor::visit(const Grammar& grammar)
                               for (const auto& rule : second)
                               {
                                   rule->accept(*this);
-                                  m_derivation_rules.insert(std::any_cast<DerivationRule<FeatureType>>(get_result()));
+                                  boost::hana::at_key(m_derivation_rules, key).insert(std::any_cast<DerivationRule<FeatureType>>(get_result()));
                               }
                           });
 }

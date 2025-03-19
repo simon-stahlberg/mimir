@@ -25,11 +25,33 @@ using namespace mimir::formalism;
 namespace mimir::languages::dl::grammar
 {
 
-Grammar::Grammar(Repositories repositories, OptionalNonTerminals start_symbols, DerivationRulesContainer derivation_rules, Domain domain) :
+NonTerminalToDerivationRuleSets initialize_nonterminal_to_derivation_rules(const DerivationRuleSets& derivation_rules)
+{
+    auto nonterminal_to_derivation_rules = NonTerminalToDerivationRuleSets {};
+
+    boost::hana::for_each(derivation_rules,
+                          [&](auto&& pair)
+                          {
+                              const auto& key = boost::hana::first(pair);
+                              const auto& second = boost::hana::second(pair);
+
+                              auto& map = boost::hana::at_key(nonterminal_to_derivation_rules, key);
+
+                              for (const auto& rule : second)
+                              {
+                                  map[rule->get_non_terminal()].insert(rule);
+                              }
+                          });
+
+    return nonterminal_to_derivation_rules;
+}
+
+Grammar::Grammar(Repositories repositories, OptionalNonTerminals start_symbols, DerivationRuleSets derivation_rules, Domain domain) :
     m_repositories(std::move(repositories)),
     m_start_symbols(std::move(start_symbols)),
     m_derivation_rules(std::move(derivation_rules)),
-    m_domain(std::move(domain))
+    m_domain(std::move(domain)),
+    m_nonterminal_to_derivation_rules(initialize_nonterminal_to_derivation_rules(m_derivation_rules))
 {
 }
 
@@ -40,6 +62,7 @@ Grammar::Grammar(std::string bnf_description, Domain domain)
     m_start_symbols = std::move(grammar.m_start_symbols);
     m_derivation_rules = std::move(grammar.m_derivation_rules);
     m_domain = std::move(grammar.m_domain);
+    m_nonterminal_to_derivation_rules = initialize_nonterminal_to_derivation_rules(m_derivation_rules);
 }
 
 Grammar::Grammar(GrammarSpecificationEnum type, Domain domain)
@@ -65,10 +88,12 @@ template bool Grammar::test_match(dl::Constructor<Role> constructor) const;
 
 void Grammar::accept(IVisitor& visitor) const { visitor.visit(*this); }
 
-const OptionalNonTerminals& Grammar::get_start_symbols_container() const { return m_start_symbols; }
+const OptionalNonTerminals& Grammar::get_start_symbols() const { return m_start_symbols; }
 
-const DerivationRulesContainer& Grammar::get_derivation_rules_container() const { return m_derivation_rules; }
+const DerivationRuleSets& Grammar::get_derivation_rules() const { return m_derivation_rules; }
 
 const Domain& Grammar::get_domain() const { return m_domain; }
+
+const NonTerminalToDerivationRuleSets& Grammar::get_nonterminal_to_derivation_rules() const { return m_nonterminal_to_derivation_rules; }
 
 }

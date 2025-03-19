@@ -38,7 +38,14 @@ NonTerminalImpl<D>::NonTerminalImpl(Index index, std::string name) : m_index(ind
 template<dl::FeatureCategory D>
 bool NonTerminalImpl<D>::test_match(dl::Constructor<D> constructor, const Grammar& grammar) const
 {
-    const auto& rules = grammar.get_derivation_rules_container().at(this);
+    const auto& nonterminal_to_derivation_rules = boost::hana::at_key(grammar.get_nonterminal_to_derivation_rules(), boost::hana::type<D> {});
+
+    if (!nonterminal_to_derivation_rules.contains(this))
+    {
+        return false;
+    }
+
+    const auto& rules = nonterminal_to_derivation_rules.at(this);
 
     return std::any_of(rules.begin(), rules.end(), [&, constructor](auto&& rule) { return rule->test_match(constructor, grammar); });
 }

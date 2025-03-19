@@ -126,6 +126,8 @@ protected:
     friend class loki::SegmentedRepository;
 
 public:
+    using Category = D;
+
     // moveable but not copyable
     DerivationRuleImpl(const DerivationRuleImpl& other) = delete;
     DerivationRuleImpl& operator=(const DerivationRuleImpl& other) = delete;
