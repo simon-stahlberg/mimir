@@ -27,7 +27,6 @@ var searchData=
   ['statisticslist_24',['StatisticsList',['../namespacemimir_1_1search_1_1astar.html#a0824d093a0f46b1d87a6f3601ec875c7',1,'mimir::search::astar::StatisticsList()'],['../namespacemimir_1_1search_1_1brfs.html#a755bd7c56df3bc37486be891905a9321',1,'mimir::search::brfs::StatisticsList()'],['../namespacemimir_1_1search_1_1iw.html#a754e942fc550f06db2bfda19264c6321',1,'mimir::search::iw::StatisticsList()']]],
   ['substitutionrule_25',['SubstitutionRule',['../namespacemimir_1_1languages_1_1dl_1_1cnf__grammar.html#ac8fbe3713a3ce9e62775dae63f939c54',1,'mimir::languages::dl::cnf_grammar']]],
   ['substitutionrulelist_26',['SubstitutionRuleList',['../namespacemimir_1_1languages_1_1dl_1_1cnf__grammar.html#ab798688c9e084b08b0b967539e88f7e0',1,'mimir::languages::dl::cnf_grammar']]],
-  ['substitutionrulelists_27',['SubstitutionRuleLists',['../namespacemimir_1_1languages_1_1dl_1_1cnf__grammar.html#a41b47b1d7538444d05e9585ea6e393a4',1,'mimir::languages::dl::cnf_grammar']]],
-  ['substitutionrulerepository_28',['SubstitutionRuleRepository',['../namespacemimir_1_1languages_1_1dl_1_1cnf__grammar.html#ac9a5321ef84bac1dbcb9e744d0933054',1,'mimir::languages::dl::cnf_grammar']]],
-  ['substitutionruleset_29',['SubstitutionRuleSet',['../namespacemimir_1_1languages_1_1dl_1_1cnf__grammar.html#a52dd69af54667f302f48cdbba31c63db',1,'mimir::languages::dl::cnf_grammar']]]
+  ['substitutionrulelists_27',['SubstitutionRuleLists',['../namespacemimir_1_1languages_1_1dl_1_1cnf__grammar.html#ac11dc72e1e8e2c967c587301ae7730e0',1,'mimir::languages::dl::cnf_grammar']]],
+  ['substitutionrulerepository_28',['SubstitutionRuleRepository',['../namespacemimir_1_1languages_1_1dl_1_1cnf__grammar.html#ac9a5321ef84bac1dbcb9e744d0933054',1,'mimir::languages::dl::cnf_grammar']]]
 ];
