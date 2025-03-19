@@ -40,7 +40,7 @@ class ToCNFVisitor : public IVisitor
 {
 protected:
     cnf_grammar::Repositories& m_repositories;
-    cnf_grammar::StartSymbolsContainer& m_start_symbols;
+    cnf_grammar::OptionalNonTerminals& m_start_symbols;
     cnf_grammar::DerivationRulesContainer& m_derivation_rules;
     cnf_grammar::SubstitutionRulesContainer& m_substitution_rules;
 
@@ -48,7 +48,7 @@ protected:
 
 public:
     ToCNFVisitor(cnf_grammar::Repositories& repositories,
-                 cnf_grammar::StartSymbolsContainer& start_symbols,
+                 cnf_grammar::OptionalNonTerminals& start_symbols,
                  cnf_grammar::DerivationRulesContainer& derivation_rules,
                  cnf_grammar::SubstitutionRulesContainer& substitution_rules);
 

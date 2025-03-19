@@ -34,7 +34,7 @@ protected:
 
 public:
     EliminateRulesWithIdenticalBodyNonTerminalVisitor(Repositories& repositories,
-                                                      StartSymbolsContainer& start_symbols,
+                                                      OptionalNonTerminals& start_symbols,
                                                       DerivationRulesContainer& derivation_rules,
                                                       SubstitutionRulesContainer& substitution_rules,
                                                       const NonTerminalMap<NonTerminal, Concept, Role, Boolean, Numerical>& substitution_map) :
@@ -70,7 +70,7 @@ public:
 
     void visit(const Grammar& grammar) override
     {
-        boost::hana::for_each(grammar.get_start_symbols_container().get(),
+        boost::hana::for_each(grammar.get_start_symbols_container(),
                               [&](auto&& pair)
                               {
                                   auto key = boost::hana::first(pair);
@@ -80,7 +80,7 @@ public:
                                   if (second.has_value())
                                   {
                                       second.value()->accept(*this);
-                                      m_start_symbols.insert(std::any_cast<NonTerminal<FeatureType>>(get_result()));
+                                      boost::hana::at_key(m_start_symbols, key) = std::any_cast<NonTerminal<FeatureType>>(get_result());
                                   }
                               });
 
@@ -162,7 +162,7 @@ static Grammar eliminate_rules_with_identical_body(const Grammar& grammar)
                           });
 
     auto repositories = cnf_grammar::Repositories();
-    auto start_symbols = cnf_grammar::StartSymbolsContainer();
+    auto start_symbols = cnf_grammar::OptionalNonTerminals();
     auto derivation_rules = cnf_grammar::DerivationRulesContainer();
     auto substitution_rules = cnf_grammar::SubstitutionRulesContainer();
 
@@ -186,7 +186,7 @@ private:
 
 public:
     OrderSubstitutionRuleVisitor(Repositories& repositories,
-                                 StartSymbolsContainer& start_symbols,
+                                 OptionalNonTerminals& start_symbols,
                                  DerivationRulesContainer& derivation_rules,
                                  SubstitutionRulesContainer& substitution_rules,
                                  const HanaSubstitutionNonTerminalOrderings& orderings) :
@@ -197,7 +197,7 @@ public:
 
     void visit(const Grammar& grammar) override
     {
-        boost::hana::for_each(grammar.get_start_symbols_container().get(),
+        boost::hana::for_each(grammar.get_start_symbols_container(),
                               [&](auto&& pair)
                               {
                                   auto key = boost::hana::first(pair);
@@ -207,7 +207,7 @@ public:
                                   if (second.has_value())
                                   {
                                       second.value()->accept(*this);
-                                      m_start_symbols.insert(std::any_cast<NonTerminal<FeatureType>>(get_result()));
+                                      boost::hana::at_key(m_start_symbols, key) = std::any_cast<NonTerminal<FeatureType>>(get_result());
                                   }
                               });
 
@@ -294,7 +294,7 @@ static Grammar order_substitution_rules(const Grammar& grammar)
                           });
 
     auto repositories = cnf_grammar::Repositories();
-    auto start_symbols = cnf_grammar::StartSymbolsContainer();
+    auto start_symbols = cnf_grammar::OptionalNonTerminals();
     auto derivation_rules = cnf_grammar::DerivationRulesContainer();
     auto substitution_rules = cnf_grammar::SubstitutionRulesContainer();
 
@@ -381,52 +381,6 @@ std::pair<std::unordered_set<std::string>, std::unordered_set<std::string>> coll
     grammar.accept(grammar_visitor);
 
     return { head_nonterminals, body_nonterminals };
-}
-
-void verify_grammar_is_well_defined(const Grammar& grammar)
-{
-    auto [head_nonterminals, body_nonterminals] = collect_head_and_body_nonterminals(grammar);
-
-    /* 1. Verify that all body non-terminals appear in a head. */
-    for (const auto& body_nonterminal : body_nonterminals)
-    {
-        if (!head_nonterminals.contains(body_nonterminal))
-        {
-            throw std::runtime_error("verify_grammar_is_well_defined(grammar): The body nonterminal " + body_nonterminal + " is never defined in a rule head.");
-        }
-    }
-
-    /* 2. Verify that grammar has a start symbol. */
-    if (!boost::hana::any_of(boost::hana::values(grammar.get_start_symbols_container().get()), [](auto&& value) { return value.has_value(); }))
-    {
-        throw std::runtime_error("verify_grammar_is_well_defined(grammar): The grammar does not define any start symbol.");
-    }
-
-    /* 3. Verify that all start symbols appear in a head. */
-    boost::hana::for_each(grammar.get_start_symbols_container().get(),
-                          [&](auto&& pair)
-                          {
-                              auto& start_non_terminal = boost::hana::second(pair);
-
-                              if (start_non_terminal.has_value() && !head_nonterminals.contains(start_non_terminal.value()->get_name()))
-                              {
-                                  throw std::runtime_error("verify_grammar_is_well_defined(grammar): The start nonterminal "
-                                                           + start_non_terminal.value()->get_name() + " is never defined in a rule head.");
-                              }
-                          });
-
-    /* 4. Verify that all start symbols only appear in a head. */
-    boost::hana::for_each(grammar.get_start_symbols_container().get(),
-                          [&](auto&& pair)
-                          {
-                              auto& start_non_terminal = boost::hana::second(pair);
-
-                              if (start_non_terminal.has_value() && body_nonterminals.contains(start_non_terminal.value()->get_name()))
-                              {
-                                  throw std::runtime_error("verify_grammar_is_well_defined(grammar): The start nonterminal "
-                                                           + start_non_terminal.value()->get_name() + " should not appear in a rule body.");
-                              }
-                          });
 }
 
 class IsEpsilonRuleVisitor : public RecurseVisitor
@@ -552,7 +506,7 @@ private:
 
 public:
     EliminateEpsilonRuleVisitor(Repositories& repositories,
-                                StartSymbolsContainer& start_symbols,
+                                OptionalNonTerminals& start_symbols,
                                 DerivationRulesContainer& derivation_rules,
                                 SubstitutionRulesContainer& substitution_rules,
                                 const std::unordered_set<std::string>& epsilon_nonterminals) :
@@ -563,7 +517,7 @@ public:
 
     void visit(const Grammar& grammar) override
     {
-        boost::hana::for_each(grammar.get_start_symbols_container().get(),
+        boost::hana::for_each(grammar.get_start_symbols_container(),
                               [&](auto&& pair)
                               {
                                   auto key = boost::hana::first(pair);
@@ -573,7 +527,7 @@ public:
                                   if (second.has_value())
                                   {
                                       second.value()->accept(*this);
-                                      m_start_symbols.insert(std::any_cast<NonTerminal<FeatureType>>(get_result()));
+                                      boost::hana::at_key(m_start_symbols, key) = std::any_cast<NonTerminal<FeatureType>>(get_result());
                                   }
                               });
 
@@ -627,7 +581,7 @@ Grammar eliminate_epsilon_rules(const Grammar& grammar)
     }
 
     auto repositories = cnf_grammar::Repositories();
-    auto start_symbols = cnf_grammar::StartSymbolsContainer();
+    auto start_symbols = cnf_grammar::OptionalNonTerminals();
     auto derivation_rules = cnf_grammar::DerivationRulesContainer();
     auto substitution_rules = cnf_grammar::SubstitutionRulesContainer();
     auto visitor = EliminateEpsilonRuleVisitor(repositories, start_symbols, derivation_rules, substitution_rules, body_nonterminals);

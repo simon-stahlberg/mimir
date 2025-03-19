@@ -34,7 +34,7 @@ namespace mimir::languages::dl::cnf_grammar
 {
 
 Grammar::Grammar(Repositories repositories,
-                 StartSymbolsContainer start_symbols,
+                 OptionalNonTerminals start_symbols,
                  DerivationRulesContainer derivation_rules,
                  SubstitutionRulesContainer substitution_rules,
                  Domain domain) :
@@ -396,7 +396,7 @@ Grammar Grammar::create(GrammarSpecificationEnum type, Domain domain)
 template<FeatureCategory D>
 bool Grammar::test_match(dl::Constructor<D> constructor) const
 {
-    const auto& start_symbol = m_start_symbols.get<D>();
+    const auto& start_symbol = boost::hana::at_key(m_start_symbols, boost::hana::type<D> {});
 
     if (!start_symbol)
     {

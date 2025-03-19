@@ -186,7 +186,7 @@ class CopyVisitor : public IVisitor
 {
 protected:
     Repositories& m_repositories;
-    StartSymbolsContainer& m_start_symbols;
+    OptionalNonTerminals& m_start_symbols;
     DerivationRulesContainer& m_derivation_rules;
     SubstitutionRulesContainer& m_substitution_rules;
 
@@ -194,7 +194,7 @@ protected:
 
 public:
     CopyVisitor(Repositories& repositories,
-                StartSymbolsContainer& start_symbols,
+                OptionalNonTerminals& start_symbols,
                 DerivationRulesContainer& derivation_rules,
                 SubstitutionRulesContainer& substitution_rules);
 

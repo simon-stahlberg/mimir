@@ -250,7 +250,7 @@ static Grammar eliminate_nested_constructors(const Grammar& grammar)
  */
 
 ToCNFVisitor::ToCNFVisitor(cnf_grammar::Repositories& repositories,
-                           cnf_grammar::StartSymbolsContainer& start_symbols,
+                           cnf_grammar::OptionalNonTerminals& start_symbols,
                            cnf_grammar::DerivationRulesContainer& derivation_rules,
                            cnf_grammar::SubstitutionRulesContainer& substitution_rules) :
     m_repositories(repositories),
@@ -595,7 +595,7 @@ void ToCNFVisitor::visit(const Grammar& grammar)
                               if (second.has_value())
                               {
                                   second.value()->accept(*this);
-                                  m_start_symbols.insert(std::any_cast<cnf_grammar::NonTerminal<FeatureType>>(get_result()));
+                                  boost::hana::at_key(m_start_symbols, key) = std::any_cast<cnf_grammar::NonTerminal<FeatureType>>(get_result());
                               }
                           });
 
@@ -643,7 +643,7 @@ const std::any& ToCNFVisitor::get_result() const { return m_result; }
 static cnf_grammar::Grammar parse_cnf_grammar(const Grammar& grammar)
 {
     auto repositories = cnf_grammar::Repositories();
-    auto start_symbols = cnf_grammar::StartSymbolsContainer();
+    auto start_symbols = cnf_grammar::OptionalNonTerminals();
     auto derivation_rules = cnf_grammar::DerivationRulesContainer();
     auto substitution_rules = cnf_grammar::SubstitutionRulesContainer();
 

@@ -209,7 +209,7 @@ template void RecurseVisitor::visit_impl(SubstitutionRule<Numerical> constructor
 
 void RecurseVisitor::visit(const Grammar& grammar)
 {
-    boost::hana::for_each(grammar.get_start_symbols_container().get(),
+    boost::hana::for_each(grammar.get_start_symbols_container(),
                           [&](auto&& pair)
                           {
                               const auto& second = boost::hana::second(pair);
@@ -248,7 +248,7 @@ void RecurseVisitor::visit(const Grammar& grammar)
 ////////////////////////////
 
 CopyVisitor::CopyVisitor(Repositories& repositories,
-                         StartSymbolsContainer& start_symbols,
+                         OptionalNonTerminals& start_symbols,
                          DerivationRulesContainer& derivation_rules,
                          SubstitutionRulesContainer& substitution_rules) :
     m_repositories(repositories),
@@ -548,7 +548,7 @@ template void CopyVisitor::visit_impl(SubstitutionRule<Numerical> constructor);
 
 void CopyVisitor::visit(const Grammar& grammar)
 {
-    boost::hana::for_each(grammar.get_start_symbols_container().get(),
+    boost::hana::for_each(grammar.get_start_symbols_container(),
                           [&](auto&& pair)
                           {
                               auto key = boost::hana::first(pair);
@@ -558,7 +558,7 @@ void CopyVisitor::visit(const Grammar& grammar)
                               if (second.has_value())
                               {
                                   second.value()->accept(*this);
-                                  m_start_symbols.insert(std::any_cast<NonTerminal<FeatureType>>(get_result()));
+                                  boost::hana::at_key(m_start_symbols, key) = std::any_cast<NonTerminal<FeatureType>>(get_result());
                               }
                           });
 

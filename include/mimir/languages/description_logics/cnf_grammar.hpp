@@ -40,7 +40,7 @@ private:
     Repositories m_repositories;
 
     /* The rules of the grammar. */
-    StartSymbolsContainer m_start_symbols;
+    OptionalNonTerminals m_start_symbols;
     DerivationRulesContainer m_derivation_rules;
     SubstitutionRulesContainer m_substitution_rules;
 
@@ -48,7 +48,7 @@ private:
 
 public:
     Grammar(Repositories repositories,
-            StartSymbolsContainer start_symbols,
+            OptionalNonTerminals start_symbols,
             DerivationRulesContainer derivation_rules,
             SubstitutionRulesContainer substitution_rules,
             formalism::Domain domain);
@@ -72,7 +72,7 @@ public:
      */
 
     const Repositories& get_repositories() const { return m_repositories; }
-    const StartSymbolsContainer& get_start_symbols_container() const { return m_start_symbols; }
+    const OptionalNonTerminals& get_start_symbols_container() const { return m_start_symbols; }
     const DerivationRulesContainer& get_derivation_rules_container() const { return m_derivation_rules; }
     const SubstitutionRulesContainer& get_substitution_rules_container() const { return m_substitution_rules; }
     const formalism::Domain& get_domain() const { return m_domain; }

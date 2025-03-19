@@ -29,45 +29,6 @@
 
 namespace mimir::languages::dl::cnf_grammar
 {
-class StartSymbolsContainer
-{
-private:
-    template<dl::FeatureCategory... Ds>
-    using HanaStartSymbols = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, std::optional<NonTerminal<Ds>>>...>;
-
-    HanaStartSymbols<Concept, Role, Boolean, Numerical> m_symbols;
-
-public:
-    StartSymbolsContainer() = default;
-    StartSymbolsContainer(const StartSymbolsContainer& other) = delete;
-    StartSymbolsContainer& operator=(const StartSymbolsContainer& other) = delete;
-    StartSymbolsContainer(StartSymbolsContainer&& other) = default;
-    StartSymbolsContainer& operator=(StartSymbolsContainer&& other) = default;
-
-    /**
-     * Modifiers
-     */
-
-    template<FeatureCategory D>
-    auto insert(NonTerminal<D> start_symbol)
-    {
-        assert(boost::hana::at_key(m_symbols, boost::hana::type<D> {}) == std::nullopt);
-
-        boost::hana::at_key(m_symbols, boost::hana::type<D> {}) = start_symbol;
-    }
-
-    /**
-     * Accessors
-     */
-
-    template<FeatureCategory D>
-    const std::optional<NonTerminal<D>>& get() const
-    {
-        return boost::hana::at_key(m_symbols, boost::hana::type<D> {});
-    }
-
-    const HanaStartSymbols<Concept, Role, Boolean, Numerical>& get() const { return m_symbols; }
-};
 
 class DerivationRulesContainer
 {

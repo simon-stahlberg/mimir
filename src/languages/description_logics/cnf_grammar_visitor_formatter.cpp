@@ -334,7 +334,7 @@ void FormatterVisitor::visit(const Grammar& grammar)
     {
         m_out << "[start_symbols]\n";
 
-        boost::hana::for_each(grammar.get_start_symbols_container().get(),
+        boost::hana::for_each(grammar.get_start_symbols_container(),
                               [&](auto&& pair)
                               {
                                   const auto& key = boost::hana::first(pair);
