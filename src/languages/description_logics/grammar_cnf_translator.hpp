@@ -41,16 +41,16 @@ class ToCNFVisitor : public IVisitor
 protected:
     cnf_grammar::Repositories& m_repositories;
     cnf_grammar::OptionalNonTerminals& m_start_symbols;
-    cnf_grammar::DerivationRulesContainer& m_derivation_rules;
-    cnf_grammar::SubstitutionRulesContainer& m_substitution_rules;
+    cnf_grammar::DerivationRuleLists& m_derivation_rules;
+    cnf_grammar::SubstitutionRuleLists& m_substitution_rules;
 
     std::any m_result;  ///< the result of a visitation
 
 public:
     ToCNFVisitor(cnf_grammar::Repositories& repositories,
                  cnf_grammar::OptionalNonTerminals& start_symbols,
-                 cnf_grammar::DerivationRulesContainer& derivation_rules,
-                 cnf_grammar::SubstitutionRulesContainer& substitution_rules);
+                 cnf_grammar::DerivationRuleLists& derivation_rules,
+                 cnf_grammar::SubstitutionRuleLists& substitution_rules);
 
     void visit(ConceptBot constructor) override;
     void visit(ConceptTop constructor) override;

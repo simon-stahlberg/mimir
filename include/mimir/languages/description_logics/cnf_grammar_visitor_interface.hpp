@@ -18,7 +18,6 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CNF_GRAMMAR_VISITOR_INTERFACE_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CNF_GRAMMAR_VISITOR_INTERFACE_HPP_
 
-#include "mimir/languages/description_logics/cnf_grammar_containers.hpp"
 #include "mimir/languages/description_logics/declarations.hpp"
 
 #include <any>
@@ -187,16 +186,16 @@ class CopyVisitor : public IVisitor
 protected:
     Repositories& m_repositories;
     OptionalNonTerminals& m_start_symbols;
-    DerivationRulesContainer& m_derivation_rules;
-    SubstitutionRulesContainer& m_substitution_rules;
+    DerivationRuleLists& m_derivation_rules;
+    SubstitutionRuleLists& m_substitution_rules;
 
     std::any m_result;
 
 public:
     CopyVisitor(Repositories& repositories,
                 OptionalNonTerminals& start_symbols,
-                DerivationRulesContainer& derivation_rules,
-                SubstitutionRulesContainer& substitution_rules);
+                DerivationRuleLists& derivation_rules,
+                SubstitutionRuleLists& substitution_rules);
 
     /* Concepts */
     void visit(ConceptBot constructor) override;

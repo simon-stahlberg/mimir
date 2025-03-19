@@ -35,8 +35,8 @@ protected:
 public:
     EliminateRulesWithIdenticalBodyNonTerminalVisitor(Repositories& repositories,
                                                       OptionalNonTerminals& start_symbols,
-                                                      DerivationRulesContainer& derivation_rules,
-                                                      SubstitutionRulesContainer& substitution_rules,
+                                                      DerivationRuleLists& derivation_rules,
+                                                      SubstitutionRuleLists& substitution_rules,
                                                       const NonTerminalMap<NonTerminal, Concept, Role, Boolean, Numerical>& substitution_map) :
         CopyVisitor(repositories, start_symbols, derivation_rules, substitution_rules),
         m_substitution_map(substitution_map)
@@ -84,7 +84,7 @@ public:
                                   }
                               });
 
-        boost::hana::for_each(grammar.get_derivation_rules_container().get(),
+        boost::hana::for_each(grammar.get_derivation_rules(),
                               [&](auto&& pair)
                               {
                                   auto key = boost::hana::first(pair);
@@ -99,11 +99,11 @@ public:
                                       }
 
                                       rule->accept(*this);
-                                      m_derivation_rules.push_back(std::any_cast<DerivationRule<FeatureType>>(get_result()));
+                                      boost::hana::at_key(m_derivation_rules, key).push_back(std::any_cast<DerivationRule<FeatureType>>(get_result()));
                                   }
                               });
 
-        boost::hana::for_each(grammar.get_substitution_rules_container().get(),
+        boost::hana::for_each(grammar.get_substitution_rules(),
                               [&](auto&& pair)
                               {
                                   auto key = boost::hana::first(pair);
@@ -118,7 +118,7 @@ public:
                                       }
 
                                       rule->accept(*this);
-                                      m_substitution_rules.push_back(std::any_cast<SubstitutionRule<FeatureType>>(get_result()));
+                                      boost::hana::at_key(m_substitution_rules, key).push_back(std::any_cast<SubstitutionRule<FeatureType>>(get_result()));
                                   }
                               });
     }
@@ -128,7 +128,7 @@ static Grammar eliminate_rules_with_identical_body(const Grammar& grammar)
 {
     auto inverse_derivation_rules = ConstructorMap<NonTerminalList, Concept, Role, Boolean, Numerical>();
 
-    boost::hana::for_each(grammar.get_derivation_rules_container().get(),
+    boost::hana::for_each(grammar.get_derivation_rules(),
                           [&](auto&& pair)
                           {
                               const auto& key = boost::hana::first(pair);
@@ -161,10 +161,10 @@ static Grammar eliminate_rules_with_identical_body(const Grammar& grammar)
                               }
                           });
 
-    auto repositories = cnf_grammar::Repositories();
-    auto start_symbols = cnf_grammar::OptionalNonTerminals();
-    auto derivation_rules = cnf_grammar::DerivationRulesContainer();
-    auto substitution_rules = cnf_grammar::SubstitutionRulesContainer();
+    auto repositories = Repositories();
+    auto start_symbols = OptionalNonTerminals();
+    auto derivation_rules = DerivationRuleLists();
+    auto substitution_rules = SubstitutionRuleLists();
 
     auto visitor = EliminateRulesWithIdenticalBodyNonTerminalVisitor(repositories, start_symbols, derivation_rules, substitution_rules, substitution_map);
 
@@ -187,8 +187,8 @@ private:
 public:
     OrderSubstitutionRuleVisitor(Repositories& repositories,
                                  OptionalNonTerminals& start_symbols,
-                                 DerivationRulesContainer& derivation_rules,
-                                 SubstitutionRulesContainer& substitution_rules,
+                                 DerivationRuleLists& derivation_rules,
+                                 SubstitutionRuleLists& substitution_rules,
                                  const HanaSubstitutionNonTerminalOrderings& orderings) :
         CopyVisitor(repositories, start_symbols, derivation_rules, substitution_rules),
         m_orderings(orderings)
@@ -212,7 +212,7 @@ public:
                               });
 
         boost::hana::for_each(
-            grammar.get_derivation_rules_container().get(),
+            grammar.get_derivation_rules(),
             [&](auto&& pair)
             {
                 auto key = boost::hana::first(pair);
@@ -224,12 +224,12 @@ public:
                 for (const auto& rule : second)
                 {
                     rule->accept(*this);
-                    m_derivation_rules.push_back(std::any_cast<DerivationRule<FeatureType>>(get_result()));
+                    boost::hana::at_key(m_derivation_rules, key).push_back(std::any_cast<DerivationRule<FeatureType>>(get_result()));
                 }
             });
 
         boost::hana::for_each(
-            grammar.get_substitution_rules_container().get(),
+            grammar.get_substitution_rules(),
             [&](auto&& pair)
             {
                 auto key = boost::hana::first(pair);
@@ -243,7 +243,7 @@ public:
                 for (const auto& rule : second)
                 {
                     rule->accept(*this);
-                    m_substitution_rules.push_back(std::any_cast<SubstitutionRule<FeatureType>>(get_result()));
+                    boost::hana::at_key(m_substitution_rules, key).push_back(std::any_cast<SubstitutionRule<FeatureType>>(get_result()));
                 }
             });
     }
@@ -253,7 +253,7 @@ static Grammar order_substitution_rules(const Grammar& grammar)
 {
     auto orderings = HanaSubstitutionNonTerminalOrderings {};
 
-    boost::hana::for_each(grammar.get_substitution_rules_container().get(),
+    boost::hana::for_each(grammar.get_substitution_rules(),
                           [&](auto&& pair)
                           {
                               auto key = boost::hana::first(pair);
@@ -295,8 +295,8 @@ static Grammar order_substitution_rules(const Grammar& grammar)
 
     auto repositories = cnf_grammar::Repositories();
     auto start_symbols = cnf_grammar::OptionalNonTerminals();
-    auto derivation_rules = cnf_grammar::DerivationRulesContainer();
-    auto substitution_rules = cnf_grammar::SubstitutionRulesContainer();
+    auto derivation_rules = cnf_grammar::DerivationRuleLists();
+    auto substitution_rules = cnf_grammar::SubstitutionRuleLists();
 
     auto visitor = OrderSubstitutionRuleVisitor(repositories, start_symbols, derivation_rules, substitution_rules, orderings);
 
@@ -504,14 +504,17 @@ class EliminateEpsilonRuleVisitor : public CopyVisitor
 private:
     const std::unordered_set<std::string>& m_epsilon_nonterminals;
 
+    bool eliminated;
+
 public:
     EliminateEpsilonRuleVisitor(Repositories& repositories,
                                 OptionalNonTerminals& start_symbols,
-                                DerivationRulesContainer& derivation_rules,
-                                SubstitutionRulesContainer& substitution_rules,
+                                DerivationRuleLists& derivation_rules,
+                                SubstitutionRuleLists& substitution_rules,
                                 const std::unordered_set<std::string>& epsilon_nonterminals) :
         CopyVisitor(repositories, start_symbols, derivation_rules, substitution_rules),
-        m_epsilon_nonterminals(epsilon_nonterminals)
+        m_epsilon_nonterminals(epsilon_nonterminals),
+        eliminated(false)
     {
     }
 
@@ -531,7 +534,7 @@ public:
                                   }
                               });
 
-        boost::hana::for_each(grammar.get_derivation_rules_container().get(),
+        boost::hana::for_each(grammar.get_derivation_rules(),
                               [&](auto&& pair)
                               {
                                   auto key = boost::hana::first(pair);
@@ -542,15 +545,16 @@ public:
                                   {
                                       if (is_epsilon_rule(rule, m_epsilon_nonterminals))
                                       {
+                                          eliminated = true;
                                           continue;
                                       }
 
                                       rule->accept(*this);
-                                      m_derivation_rules.push_back(std::any_cast<DerivationRule<FeatureType>>(get_result()));
+                                      boost::hana::at_key(m_derivation_rules, key).push_back(std::any_cast<DerivationRule<FeatureType>>(get_result()));
                                   }
                               });
 
-        boost::hana::for_each(grammar.get_substitution_rules_container().get(),
+        boost::hana::for_each(grammar.get_substitution_rules(),
                               [&](auto&& pair)
                               {
                                   auto key = boost::hana::first(pair);
@@ -561,17 +565,20 @@ public:
                                   {
                                       if (is_epsilon_rule(rule, m_epsilon_nonterminals))
                                       {
+                                          eliminated = true;
                                           continue;
                                       }
 
                                       rule->accept(*this);
-                                      m_substitution_rules.push_back(std::any_cast<SubstitutionRule<FeatureType>>(get_result()));
+                                      boost::hana::at_key(m_substitution_rules, key).push_back(std::any_cast<SubstitutionRule<FeatureType>>(get_result()));
                                   }
                               });
     }
+
+    bool get_eliminated() const { return eliminated; }
 };
 
-Grammar eliminate_epsilon_rules(const Grammar& grammar)
+std::pair<Grammar, bool> eliminate_epsilon_rules(const Grammar& grammar)
 {
     auto [head_nonterminals, body_nonterminals] = collect_head_and_body_nonterminals(grammar);
 
@@ -582,13 +589,14 @@ Grammar eliminate_epsilon_rules(const Grammar& grammar)
 
     auto repositories = cnf_grammar::Repositories();
     auto start_symbols = cnf_grammar::OptionalNonTerminals();
-    auto derivation_rules = cnf_grammar::DerivationRulesContainer();
-    auto substitution_rules = cnf_grammar::SubstitutionRulesContainer();
+    auto derivation_rules = cnf_grammar::DerivationRuleLists();
+    auto substitution_rules = cnf_grammar::SubstitutionRuleLists();
     auto visitor = EliminateEpsilonRuleVisitor(repositories, start_symbols, derivation_rules, substitution_rules, body_nonterminals);
 
     grammar.accept(visitor);
 
-    return Grammar(std::move(repositories), std::move(start_symbols), std::move(derivation_rules), std::move(substitution_rules), grammar.get_domain());
+    return { Grammar(std::move(repositories), std::move(start_symbols), std::move(derivation_rules), std::move(substitution_rules), grammar.get_domain()),
+             visitor.get_eliminated() };
 }
 
 Grammar simplify(const Grammar& grammar)
@@ -599,16 +607,14 @@ Grammar simplify(const Grammar& grammar)
 
     /* Step 2 eliminate epsilon rules */
 
-    size_t num_rules_before;
-    size_t num_rules_after;
+    bool eliminated;
     do
     {
-        num_rules_before = simplified_grammar.get_derivation_rules_container().size() + grammar.get_substitution_rules_container().size();
+        auto [simplified_grammar_, eliminated_] = eliminate_epsilon_rules(simplified_grammar);
+        simplified_grammar = std::move(simplified_grammar_);
+        eliminated = eliminated_;
 
-        simplified_grammar = eliminate_epsilon_rules(simplified_grammar);
-
-        num_rules_after = simplified_grammar.get_derivation_rules_container().size() + grammar.get_substitution_rules_container().size();
-    } while (num_rules_before != num_rules_after);
+    } while (eliminated);
 
     /* Step 3 order substitution rules in order of evaluation through topological sorting */
 

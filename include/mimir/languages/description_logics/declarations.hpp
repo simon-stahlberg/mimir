@@ -307,6 +307,24 @@ class Repositories;
 
 namespace cnf_grammar
 {
+/* DerivationRule */
+template<dl::FeatureCategory D>
+class DerivationRuleImpl;
+template<dl::FeatureCategory D>
+using DerivationRule = const DerivationRuleImpl<D>*;
+template<dl::FeatureCategory D>
+using DerivationRuleList = std::vector<DerivationRule<D>>;
+using DerivationRuleLists = HanaMappedContainer<DerivationRuleList, Concept, Role, Boolean, Numerical>;
+
+/* SubstitutionRule */
+template<dl::FeatureCategory D>
+class SubstitutionRuleImpl;
+template<dl::FeatureCategory D>
+using SubstitutionRule = const SubstitutionRuleImpl<D>*;
+template<dl::FeatureCategory D>
+using SubstitutionRuleList = std::vector<SubstitutionRule<D>>;
+using SubstitutionRuleLists = HanaMappedContainer<SubstitutionRuleList, Concept, Role, Boolean, Numerical>;
+
 /* NonTerminal */
 template<dl::FeatureCategory D>
 class NonTerminalImpl;
@@ -316,36 +334,15 @@ template<dl::FeatureCategory D>
 using OptionalNonTerminal = std::optional<NonTerminal<D>>;
 using OptionalNonTerminals = HanaMappedContainer<OptionalNonTerminal, Concept, Role, Boolean, Numerical>;
 
+template<template<typename> typename Value, dl::FeatureCategory... Ds>
+using NonTerminalMap = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, std::unordered_map<NonTerminal<Ds>, Value<Ds>>>...>;
+using NonTerminalToDerivationRuleLists = NonTerminalMap<DerivationRuleList, Concept, Role, Boolean, Numerical>;
+using NonTerminalToSubstitutionRuleLists = NonTerminalMap<SubstitutionRuleList, Concept, Role, Boolean, Numerical>;
+
 template<dl::FeatureCategory D>
 using NonTerminalList = std::vector<NonTerminal<D>>;
 template<dl::FeatureCategory D>
 using NonTerminalSet = std::unordered_set<NonTerminal<D>>;
-template<template<typename> typename Value, dl::FeatureCategory... D>
-using NonTerminalMap = boost::hana::map<boost::hana::pair<boost::hana::type<D>, std::unordered_map<NonTerminal<D>, Value<D>>>...>;
-
-/* DerivationRule */
-template<dl::FeatureCategory D>
-class DerivationRuleImpl;
-template<dl::FeatureCategory D>
-using DerivationRule = const DerivationRuleImpl<D>*;
-template<dl::FeatureCategory D>
-using DerivationRuleList = std::vector<DerivationRule<D>>;
-template<dl::FeatureCategory... D>
-using DerivationRuleLists = boost::hana::map<boost::hana::pair<boost::hana::type<D>, DerivationRuleList<D>>...>;
-template<dl::FeatureCategory D>
-using DerivationRuleSet = std::unordered_set<DerivationRule<D>>;
-
-/* SubstitutionRule */
-template<dl::FeatureCategory D>
-class SubstitutionRuleImpl;
-template<dl::FeatureCategory D>
-using SubstitutionRule = const SubstitutionRuleImpl<D>*;
-template<dl::FeatureCategory D>
-using SubstitutionRuleList = std::vector<SubstitutionRule<D>>;
-template<dl::FeatureCategory... D>
-using SubstitutionRuleLists = boost::hana::map<boost::hana::pair<boost::hana::type<D>, SubstitutionRuleList<D>>...>;
-template<dl::FeatureCategory D>
-using SubstitutionRuleSet = std::unordered_set<SubstitutionRule<D>>;
 
 /**
  * Constructors

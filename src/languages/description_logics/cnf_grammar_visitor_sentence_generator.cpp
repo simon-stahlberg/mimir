@@ -611,7 +611,7 @@ void GeneratorVisitor::visit(const Grammar& grammar)
     /* Generate */
     for (; m_complexity <= m_max_syntactic_complexity; ++m_complexity)
     {
-        boost::hana::for_each(grammar.get_derivation_rules_container().get(),
+        boost::hana::for_each(grammar.get_derivation_rules(),
                               [&](auto&& pair)
                               {
                                   const auto& second = boost::hana::second(pair);
@@ -622,7 +622,7 @@ void GeneratorVisitor::visit(const Grammar& grammar)
                                   }
                               });
 
-        boost::hana::for_each(grammar.get_substitution_rules_container().get(),
+        boost::hana::for_each(grammar.get_substitution_rules(),
                               [&](auto&& pair)
                               {
                                   const auto& second = boost::hana::second(pair);

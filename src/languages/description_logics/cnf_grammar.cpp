@@ -33,16 +33,60 @@ using namespace mimir::formalism;
 namespace mimir::languages::dl::cnf_grammar
 {
 
+NonTerminalToDerivationRuleLists initialize_nonterminal_to_derivation_rules(const DerivationRuleLists& derivation_rules)
+{
+    auto nonterminal_to_derivation_rules = NonTerminalToDerivationRuleLists {};
+
+    boost::hana::for_each(derivation_rules,
+                          [&](auto&& pair)
+                          {
+                              const auto& key = boost::hana::first(pair);
+                              const auto& second = boost::hana::second(pair);
+
+                              auto& map = boost::hana::at_key(nonterminal_to_derivation_rules, key);
+
+                              for (const auto& rule : second)
+                              {
+                                  map[rule->get_head()].push_back(rule);
+                              }
+                          });
+
+    return nonterminal_to_derivation_rules;
+}
+
+NonTerminalToSubstitutionRuleLists initialize_nonterminal_to_substitution_rules(const SubstitutionRuleLists& substitution_rules)
+{
+    auto nonterminal_to_substitution_rules = NonTerminalToSubstitutionRuleLists {};
+
+    boost::hana::for_each(substitution_rules,
+                          [&](auto&& pair)
+                          {
+                              const auto& key = boost::hana::first(pair);
+                              const auto& second = boost::hana::second(pair);
+
+                              auto& map = boost::hana::at_key(nonterminal_to_substitution_rules, key);
+
+                              for (const auto& rule : second)
+                              {
+                                  map[rule->get_head()].push_back(rule);
+                              }
+                          });
+
+    return nonterminal_to_substitution_rules;
+}
+
 Grammar::Grammar(Repositories repositories,
                  OptionalNonTerminals start_symbols,
-                 DerivationRulesContainer derivation_rules,
-                 SubstitutionRulesContainer substitution_rules,
+                 DerivationRuleLists derivation_rules,
+                 SubstitutionRuleLists substitution_rules,
                  Domain domain) :
     m_repositories(std::move(repositories)),
     m_start_symbols(std::move(start_symbols)),
     m_derivation_rules(std::move(derivation_rules)),
     m_substitution_rules(std::move(substitution_rules)),
-    m_domain(std::move(domain))
+    m_domain(std::move(domain)),
+    m_nonterminal_to_derivation_rules(initialize_nonterminal_to_derivation_rules(m_derivation_rules)),
+    m_nonterminal_to_substitution_rules(initialize_nonterminal_to_substitution_rules(m_substitution_rules))
 {
 }
 
@@ -55,6 +99,8 @@ Grammar::Grammar(const grammar::Grammar& grammar)
     m_derivation_rules = std::move(cnf_grammar.m_derivation_rules);
     m_substitution_rules = std::move(cnf_grammar.m_substitution_rules);
     m_domain = std::move(cnf_grammar.m_domain);
+    m_nonterminal_to_derivation_rules = initialize_nonterminal_to_derivation_rules(m_derivation_rules);
+    m_nonterminal_to_substitution_rules = initialize_nonterminal_to_substitution_rules(m_substitution_rules);
 }
 
 Grammar::Grammar(const std::string& bnf_description, Domain domain)
@@ -67,6 +113,8 @@ Grammar::Grammar(const std::string& bnf_description, Domain domain)
     m_derivation_rules = std::move(cnf_grammar.m_derivation_rules);
     m_substitution_rules = std::move(cnf_grammar.m_substitution_rules);
     m_domain = std::move(cnf_grammar.m_domain);
+    m_nonterminal_to_derivation_rules = initialize_nonterminal_to_derivation_rules(m_derivation_rules);
+    m_nonterminal_to_substitution_rules = initialize_nonterminal_to_substitution_rules(m_substitution_rules);
 }
 
 static void add_frances_et_al_aaai2021_bnf_concept_intersection(std::stringstream& out, std::vector<std::string>& head_names)
@@ -412,5 +460,9 @@ template bool Grammar::test_match(dl::Constructor<Boolean> constructor) const;
 template bool Grammar::test_match(dl::Constructor<Numerical> constructor) const;
 
 void Grammar::accept(IVisitor& visitor) const { visitor.visit(*this); }
+
+const NonTerminalToDerivationRuleLists& Grammar::get_nonterminal_to_derivation_rules() const { return m_nonterminal_to_derivation_rules; }
+
+const NonTerminalToSubstitutionRuleLists& Grammar::get_nonterminal_to_substitution_rules() const { return m_nonterminal_to_substitution_rules; }
 
 }

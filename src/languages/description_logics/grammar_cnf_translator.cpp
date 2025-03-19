@@ -252,8 +252,8 @@ static Grammar eliminate_nested_constructors(const Grammar& grammar)
 
 ToCNFVisitor::ToCNFVisitor(cnf_grammar::Repositories& repositories,
                            cnf_grammar::OptionalNonTerminals& start_symbols,
-                           cnf_grammar::DerivationRulesContainer& derivation_rules,
-                           cnf_grammar::SubstitutionRulesContainer& substitution_rules) :
+                           cnf_grammar::DerivationRuleLists& derivation_rules,
+                           cnf_grammar::SubstitutionRuleLists& substitution_rules) :
     m_repositories(repositories),
     m_start_symbols(start_symbols),
     m_derivation_rules(derivation_rules),
@@ -620,13 +620,13 @@ void ToCNFVisitor::visit(const Grammar& grammar)
                         if constexpr (std::is_same_v<T, cnf_grammar::DerivationRule<Concept>> || std::is_same_v<T, cnf_grammar::DerivationRule<Role>>
                                       || std::is_same_v<T, cnf_grammar::DerivationRule<Boolean>> || std::is_same_v<T, cnf_grammar::DerivationRule<Numerical>>)
                         {
-                            m_derivation_rules.push_back(arg);
+                            boost::hana::at_key(m_derivation_rules, key).push_back(arg);
                         }
                         else if constexpr (std::is_same_v<T, cnf_grammar::SubstitutionRule<Concept>> || std::is_same_v<T, cnf_grammar::SubstitutionRule<Role>>
                                            || std::is_same_v<T, cnf_grammar::SubstitutionRule<Boolean>>
                                            || std::is_same_v<T, cnf_grammar::SubstitutionRule<Numerical>>)
                         {
-                            m_substitution_rules.push_back(arg);
+                            boost::hana::at_key(m_substitution_rules, key).push_back(arg);
                         }
                         else
                         {
@@ -645,8 +645,8 @@ static cnf_grammar::Grammar parse_cnf_grammar(const Grammar& grammar)
 {
     auto repositories = cnf_grammar::Repositories();
     auto start_symbols = cnf_grammar::OptionalNonTerminals();
-    auto derivation_rules = cnf_grammar::DerivationRulesContainer();
-    auto substitution_rules = cnf_grammar::SubstitutionRulesContainer();
+    auto derivation_rules = cnf_grammar::DerivationRuleLists();
+    auto substitution_rules = cnf_grammar::SubstitutionRuleLists();
 
     auto visitor = ToCNFVisitor(repositories, start_symbols, derivation_rules, substitution_rules);
 

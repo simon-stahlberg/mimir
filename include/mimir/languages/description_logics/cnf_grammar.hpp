@@ -20,7 +20,6 @@
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/languages/description_logics/cnf_grammar_constructor_repositories.hpp"
-#include "mimir/languages/description_logics/cnf_grammar_containers.hpp"
 #include "mimir/languages/description_logics/declarations.hpp"
 
 #include <loki/loki.hpp>
@@ -41,16 +40,20 @@ private:
 
     /* The rules of the grammar. */
     OptionalNonTerminals m_start_symbols;
-    DerivationRulesContainer m_derivation_rules;
-    SubstitutionRulesContainer m_substitution_rules;
+    DerivationRuleLists m_derivation_rules;
+    SubstitutionRuleLists m_substitution_rules;
 
     formalism::Domain m_domain;
+
+    /* Initialized in the constructor for ease of lookup. */
+    NonTerminalToDerivationRuleLists m_nonterminal_to_derivation_rules;
+    NonTerminalToSubstitutionRuleLists m_nonterminal_to_substitution_rules;
 
 public:
     Grammar(Repositories repositories,
             OptionalNonTerminals start_symbols,
-            DerivationRulesContainer derivation_rules,
-            SubstitutionRulesContainer substitution_rules,
+            DerivationRuleLists derivation_rules,
+            SubstitutionRuleLists substitution_rules,
             formalism::Domain domain);
 
     explicit Grammar(const grammar::Grammar& grammar);
@@ -73,9 +76,11 @@ public:
 
     const Repositories& get_repositories() const { return m_repositories; }
     const OptionalNonTerminals& get_start_symbols_container() const { return m_start_symbols; }
-    const DerivationRulesContainer& get_derivation_rules_container() const { return m_derivation_rules; }
-    const SubstitutionRulesContainer& get_substitution_rules_container() const { return m_substitution_rules; }
+    const DerivationRuleLists& get_derivation_rules() const { return m_derivation_rules; }
+    const SubstitutionRuleLists& get_substitution_rules() const { return m_substitution_rules; }
     const formalism::Domain& get_domain() const { return m_domain; }
+    const NonTerminalToDerivationRuleLists& get_nonterminal_to_derivation_rules() const;
+    const NonTerminalToSubstitutionRuleLists& get_nonterminal_to_substitution_rules() const;
 };
 }
 

@@ -220,7 +220,7 @@ void RecurseVisitor::visit(const Grammar& grammar)
                               }
                           });
 
-    boost::hana::for_each(grammar.get_derivation_rules_container().get(),
+    boost::hana::for_each(grammar.get_derivation_rules(),
                           [&](auto&& pair)
                           {
                               const auto& second = boost::hana::second(pair);
@@ -231,7 +231,7 @@ void RecurseVisitor::visit(const Grammar& grammar)
                               }
                           });
 
-    boost::hana::for_each(grammar.get_substitution_rules_container().get(),
+    boost::hana::for_each(grammar.get_substitution_rules(),
                           [&](auto&& pair)
                           {
                               const auto& second = boost::hana::second(pair);
@@ -249,8 +249,8 @@ void RecurseVisitor::visit(const Grammar& grammar)
 
 CopyVisitor::CopyVisitor(Repositories& repositories,
                          OptionalNonTerminals& start_symbols,
-                         DerivationRulesContainer& derivation_rules,
-                         SubstitutionRulesContainer& substitution_rules) :
+                         DerivationRuleLists& derivation_rules,
+                         SubstitutionRuleLists& substitution_rules) :
     m_repositories(repositories),
     m_start_symbols(start_symbols),
     m_derivation_rules(derivation_rules),
@@ -562,7 +562,7 @@ void CopyVisitor::visit(const Grammar& grammar)
                               }
                           });
 
-    boost::hana::for_each(grammar.get_derivation_rules_container().get(),
+    boost::hana::for_each(grammar.get_derivation_rules(),
                           [&](auto&& pair)
                           {
                               auto key = boost::hana::first(pair);
@@ -572,11 +572,11 @@ void CopyVisitor::visit(const Grammar& grammar)
                               for (const auto& rule : second)
                               {
                                   rule->accept(*this);
-                                  m_derivation_rules.push_back(std::any_cast<DerivationRule<FeatureType>>(get_result()));
+                                  boost::hana::at_key(m_derivation_rules, key).push_back(std::any_cast<DerivationRule<FeatureType>>(get_result()));
                               }
                           });
 
-    boost::hana::for_each(grammar.get_substitution_rules_container().get(),
+    boost::hana::for_each(grammar.get_substitution_rules(),
                           [&](auto&& pair)
                           {
                               auto key = boost::hana::first(pair);
@@ -586,7 +586,7 @@ void CopyVisitor::visit(const Grammar& grammar)
                               for (const auto& rule : second)
                               {
                                   rule->accept(*this);
-                                  m_substitution_rules.push_back(std::any_cast<SubstitutionRule<FeatureType>>(get_result()));
+                                  boost::hana::at_key(m_substitution_rules, key).push_back(std::any_cast<SubstitutionRule<FeatureType>>(get_result()));
                               }
                           });
 }

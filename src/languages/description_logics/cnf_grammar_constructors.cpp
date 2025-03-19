@@ -39,11 +39,28 @@ NonTerminalImpl<D>::NonTerminalImpl(Index index, std::string name) : m_index(ind
 template<dl::FeatureCategory D>
 bool NonTerminalImpl<D>::test_match(dl::Constructor<D> constructor, const Grammar& grammar) const
 {
-    const auto& derivation_rules = grammar.get_derivation_rules_container().get(this);
-    const auto& substitution_rules = grammar.get_substitution_rules_container().get(this);
+    const auto& nonterminal_to_derivation_rules = boost::hana::at_key(grammar.get_nonterminal_to_derivation_rules(), boost::hana::type<D> {});
+    const auto& nonterminal_to_substitution_rules = boost::hana::at_key(grammar.get_nonterminal_to_substitution_rules(), boost::hana::type<D> {});
 
-    return std::any_of(derivation_rules.begin(), derivation_rules.end(), [&](auto&& rule) { return rule->test_match(constructor, grammar); })
-           || std::any_of(substitution_rules.begin(), substitution_rules.end(), [&](auto&& rule) { return rule->test_match(constructor, grammar); });
+    if (nonterminal_to_derivation_rules.contains(this))
+    {
+        const auto& derivation_rules = nonterminal_to_derivation_rules.at(this);
+        if (std::any_of(derivation_rules.begin(), derivation_rules.end(), [&](auto&& rule) { return rule->test_match(constructor, grammar); }))
+        {
+            return true;
+        }
+    }
+
+    if (nonterminal_to_substitution_rules.contains(this))
+    {
+        const auto& substitution_rules = nonterminal_to_substitution_rules.at(this);
+        if (std::any_of(substitution_rules.begin(), substitution_rules.end(), [&](auto&& rule) { return rule->test_match(constructor, grammar); }))
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 template<dl::FeatureCategory D>
