@@ -191,12 +191,12 @@ template<dl::FeatureCategory D>
 using NonTerminalSet = std::unordered_set<NonTerminal<D>>;
 
 template<template<typename> typename Value, dl::FeatureCategory... Ds>
-using NonTerminalMap = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, std::unordered_map<NonTerminal<Ds>, Value<Ds>>>...>;
-using NonTerminalToDerivationRuleSets = NonTerminalMap<DerivationRuleSet, Concept, Role, Boolean, Numerical>;
-
+using NonTerminalMaps = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, std::unordered_map<NonTerminal<Ds>, Value<Ds>>>...>;
+using NonTerminalToDerivationRuleSets = NonTerminalMaps<DerivationRuleSet, Concept, Role, Boolean, Numerical>;
 template<typename Key, dl::FeatureCategory... Ds>
-using ToNonTerminalMap =
+using ToNonTerminalMaps =
     boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, std::unordered_map<Key, NonTerminal<Ds>, loki::Hash<Key>, loki::EqualTo<Key>>>...>;
+using StringToNonTerminalMaps = ToNonTerminalMaps<std::string, Concept, Role, Boolean, Numerical>;
 
 /* ConstructorOrNonTerminal */
 template<dl::FeatureCategory D>
@@ -333,16 +333,15 @@ using NonTerminal = const NonTerminalImpl<D>*;
 template<dl::FeatureCategory D>
 using OptionalNonTerminal = std::optional<NonTerminal<D>>;
 using OptionalNonTerminals = HanaMappedContainer<OptionalNonTerminal, Concept, Role, Boolean, Numerical>;
-
-template<template<typename> typename Value, dl::FeatureCategory... Ds>
-using NonTerminalMap = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, std::unordered_map<NonTerminal<Ds>, Value<Ds>>>...>;
-using NonTerminalToDerivationRuleLists = NonTerminalMap<DerivationRuleList, Concept, Role, Boolean, Numerical>;
-using NonTerminalToSubstitutionRuleLists = NonTerminalMap<SubstitutionRuleList, Concept, Role, Boolean, Numerical>;
-
 template<dl::FeatureCategory D>
 using NonTerminalList = std::vector<NonTerminal<D>>;
 template<dl::FeatureCategory D>
 using NonTerminalSet = std::unordered_set<NonTerminal<D>>;
+template<template<typename> typename Value, dl::FeatureCategory... Ds>
+using NonTerminalMaps = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, std::unordered_map<NonTerminal<Ds>, Value<Ds>>>...>;
+using NonTerminalToNonTerminalMaps = NonTerminalMaps<NonTerminal, Concept, Role, Boolean, Numerical>;
+using NonTerminalToDerivationRuleListMaps = NonTerminalMaps<DerivationRuleList, Concept, Role, Boolean, Numerical>;
+using NonTerminalToSubstitutionRuleListMaps = NonTerminalMaps<SubstitutionRuleList, Concept, Role, Boolean, Numerical>;
 
 /**
  * Constructors
@@ -356,9 +355,10 @@ using Constructor = const IConstructor<D>*;
 template<dl::FeatureCategory D>
 using ConstructorList = std::vector<Constructor<D>>;
 template<template<typename> typename Value, dl::FeatureCategory... D>
-using ConstructorMap = boost::hana::map<boost::hana::pair<boost::hana::type<D>, std::unordered_map<Constructor<D>, Value<D>>>...>;
-template<dl::FeatureCategory D>
-using ConstructorSet = std::unordered_set<Constructor<D>>;
+using ConstructorMaps = boost::hana::map<boost::hana::pair<boost::hana::type<D>, std::unordered_map<Constructor<D>, Value<D>>>...>;
+using ConstructorToNonTerminalListMaps = ConstructorMaps<NonTerminalList, Concept, Role, Boolean, Numerical>;
+
+// ConstructorMap<NonTerminalList, Concept, Role, Boolean, Numerical>
 
 /* Concrete concepts */
 class ConceptTopImpl;

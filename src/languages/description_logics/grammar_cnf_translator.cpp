@@ -34,10 +34,10 @@ namespace mimir::languages::dl::grammar
 class CollectNonTerminalVisitor : public RecurseVisitor
 {
 private:
-    ToNonTerminalMap<std::string, Concept, Role, Boolean, Numerical>& m_nonterminal_map;
+    StringToNonTerminalMaps& m_nonterminal_map;
 
 public:
-    CollectNonTerminalVisitor(ToNonTerminalMap<std::string, Concept, Role, Boolean, Numerical>& nonterminal_map) : m_nonterminal_map(nonterminal_map) {}
+    CollectNonTerminalVisitor(StringToNonTerminalMaps& nonterminal_map) : m_nonterminal_map(nonterminal_map) {}
 
     void visit(NonTerminal<Concept> constructor) override { visit_impl(constructor); }
     void visit(NonTerminal<Role> constructor) override { visit_impl(constructor); }
@@ -51,9 +51,9 @@ public:
     }
 };
 
-static ToNonTerminalMap<std::string, Concept, Role, Boolean, Numerical> collect_nonterminals_from_grammar(const Grammar& grammar)
+static StringToNonTerminalMaps collect_nonterminals_from_grammar(const Grammar& grammar)
 {
-    auto nonterminal_map = ToNonTerminalMap<std::string, Concept, Role, Boolean, Numerical>();
+    auto nonterminal_map = StringToNonTerminalMaps();
 
     auto visitor = CollectNonTerminalVisitor(nonterminal_map);
 
@@ -144,7 +144,7 @@ static Grammar eliminate_choices_in_rules(const Grammar& grammar)
 class EliminateNestedConstructorsVisitor : public CopyVisitor
 {
 private:
-    ToNonTerminalMap<std::string, Concept, Role, Boolean, Numerical>& m_existing_nonterminals;
+    StringToNonTerminalMaps& m_existing_nonterminals;
 
     size_t m_next_index;
     size_t m_level;
@@ -165,7 +165,7 @@ public:
     EliminateNestedConstructorsVisitor(Repositories& repositories,
                                        OptionalNonTerminals& start_symbols,
                                        DerivationRuleSets& derivation_rules,
-                                       ToNonTerminalMap<std::string, Concept, Role, Boolean, Numerical>& existing_nonterminals) :
+                                       StringToNonTerminalMaps& existing_nonterminals) :
         CopyVisitor(repositories, start_symbols, derivation_rules),
         m_existing_nonterminals(existing_nonterminals),
         m_next_index(0),

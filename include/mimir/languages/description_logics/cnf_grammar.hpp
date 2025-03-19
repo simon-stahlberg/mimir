@@ -46,8 +46,8 @@ private:
     formalism::Domain m_domain;
 
     /* Initialized in the constructor for ease of lookup. */
-    NonTerminalToDerivationRuleLists m_nonterminal_to_derivation_rules;
-    NonTerminalToSubstitutionRuleLists m_nonterminal_to_substitution_rules;
+    NonTerminalToDerivationRuleListMaps m_nonterminal_to_derivation_rules;
+    NonTerminalToSubstitutionRuleListMaps m_nonterminal_to_substitution_rules;
 
 public:
     Grammar(Repositories repositories,
@@ -79,8 +79,8 @@ public:
     const DerivationRuleLists& get_derivation_rules() const { return m_derivation_rules; }
     const SubstitutionRuleLists& get_substitution_rules() const { return m_substitution_rules; }
     const formalism::Domain& get_domain() const { return m_domain; }
-    const NonTerminalToDerivationRuleLists& get_nonterminal_to_derivation_rules() const;
-    const NonTerminalToSubstitutionRuleLists& get_nonterminal_to_substitution_rules() const;
+    const NonTerminalToDerivationRuleListMaps& get_nonterminal_to_derivation_rules() const;
+    const NonTerminalToSubstitutionRuleListMaps& get_nonterminal_to_substitution_rules() const;
 };
 }
 

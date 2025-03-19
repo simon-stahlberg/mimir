@@ -119,10 +119,10 @@ grammar_type const grammar = "grammar";
 // Grammar
 ///////////////////////////////////////////////////////////////////////////
 
-inline auto concept_non_terminal_string_parser() { return raw[lexeme["<concept" >> *(alnum | char_('-') | char_('_')) > ">"]]; }
-inline auto role_non_terminal_string_parser() { return raw[lexeme["<role" >> *(alnum | char_('-') | char_('_')) >> ">"]]; }
-inline auto boolean_non_terminal_string_parser() { return raw[lexeme["<boolean" >> *(alnum | char_('-') | char_('_')) >> ">"]]; }
-inline auto numerical_non_terminal_string_parser() { return raw[lexeme["<numerical" >> *(alnum | char_('-') | char_('_')) >> ">"]]; }
+inline auto concept_non_terminal_string_parser() { return raw[lexeme["<concept" > *(alnum | char_('-') | char_('_')) > ">"]]; }
+inline auto role_non_terminal_string_parser() { return raw[lexeme["<role" > *(alnum | char_('-') | char_('_')) > ">"]]; }
+inline auto boolean_non_terminal_string_parser() { return raw[lexeme["<boolean" > *(alnum | char_('-') | char_('_')) > ">"]]; }
+inline auto numerical_non_terminal_string_parser() { return raw[lexeme["<numerical" > *(alnum | char_('-') | char_('_')) > ">"]]; }
 inline auto predicate_name_string_parser()
 {
     return lexeme[omit[lit('"')]] > raw[lexeme[alpha >> *(alnum | char_('-') | char_('_'))]] > lexeme[omit[lit('"')]];

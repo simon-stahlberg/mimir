@@ -33,9 +33,9 @@ using namespace mimir::formalism;
 namespace mimir::languages::dl::cnf_grammar
 {
 
-NonTerminalToDerivationRuleLists initialize_nonterminal_to_derivation_rules(const DerivationRuleLists& derivation_rules)
+NonTerminalToDerivationRuleListMaps initialize_nonterminal_to_derivation_rules(const DerivationRuleLists& derivation_rules)
 {
-    auto nonterminal_to_derivation_rules = NonTerminalToDerivationRuleLists {};
+    auto nonterminal_to_derivation_rules = NonTerminalToDerivationRuleListMaps {};
 
     boost::hana::for_each(derivation_rules,
                           [&](auto&& pair)
@@ -54,9 +54,9 @@ NonTerminalToDerivationRuleLists initialize_nonterminal_to_derivation_rules(cons
     return nonterminal_to_derivation_rules;
 }
 
-NonTerminalToSubstitutionRuleLists initialize_nonterminal_to_substitution_rules(const SubstitutionRuleLists& substitution_rules)
+NonTerminalToSubstitutionRuleListMaps initialize_nonterminal_to_substitution_rules(const SubstitutionRuleLists& substitution_rules)
 {
-    auto nonterminal_to_substitution_rules = NonTerminalToSubstitutionRuleLists {};
+    auto nonterminal_to_substitution_rules = NonTerminalToSubstitutionRuleListMaps {};
 
     boost::hana::for_each(substitution_rules,
                           [&](auto&& pair)
@@ -461,8 +461,8 @@ template bool Grammar::test_match(dl::Constructor<Numerical> constructor) const;
 
 void Grammar::accept(IVisitor& visitor) const { visitor.visit(*this); }
 
-const NonTerminalToDerivationRuleLists& Grammar::get_nonterminal_to_derivation_rules() const { return m_nonterminal_to_derivation_rules; }
+const NonTerminalToDerivationRuleListMaps& Grammar::get_nonterminal_to_derivation_rules() const { return m_nonterminal_to_derivation_rules; }
 
-const NonTerminalToSubstitutionRuleLists& Grammar::get_nonterminal_to_substitution_rules() const { return m_nonterminal_to_substitution_rules; }
+const NonTerminalToSubstitutionRuleListMaps& Grammar::get_nonterminal_to_substitution_rules() const { return m_nonterminal_to_substitution_rules; }
 
 }

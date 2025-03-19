@@ -30,14 +30,14 @@ namespace mimir::languages::dl::cnf_grammar
 class EliminateRulesWithIdenticalBodyNonTerminalVisitor : public CopyVisitor
 {
 protected:
-    const NonTerminalMap<NonTerminal, Concept, Role, Boolean, Numerical>& m_substitution_map;
+    const NonTerminalToNonTerminalMaps& m_substitution_map;
 
 public:
     EliminateRulesWithIdenticalBodyNonTerminalVisitor(Repositories& repositories,
                                                       OptionalNonTerminals& start_symbols,
                                                       DerivationRuleLists& derivation_rules,
                                                       SubstitutionRuleLists& substitution_rules,
-                                                      const NonTerminalMap<NonTerminal, Concept, Role, Boolean, Numerical>& substitution_map) :
+                                                      const NonTerminalToNonTerminalMaps& substitution_map) :
         CopyVisitor(repositories, start_symbols, derivation_rules, substitution_rules),
         m_substitution_map(substitution_map)
     {
@@ -126,7 +126,7 @@ public:
 
 static Grammar eliminate_rules_with_identical_body(const Grammar& grammar)
 {
-    auto inverse_derivation_rules = ConstructorMap<NonTerminalList, Concept, Role, Boolean, Numerical>();
+    auto inverse_derivation_rules = ConstructorToNonTerminalListMaps();
 
     boost::hana::for_each(grammar.get_derivation_rules(),
                           [&](auto&& pair)
@@ -140,7 +140,7 @@ static Grammar eliminate_rules_with_identical_body(const Grammar& grammar)
                               }
                           });
 
-    auto substitution_map = NonTerminalMap<NonTerminal, Concept, Role, Boolean, Numerical>();
+    auto substitution_map = NonTerminalToNonTerminalMaps();
 
     boost::hana::for_each(inverse_derivation_rules,
                           [&](auto&& pair)
