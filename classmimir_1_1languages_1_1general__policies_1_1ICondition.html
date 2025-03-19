@@ -110,6 +110,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a4d73f8967e7b58e1c80411ae6a4c87e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaa72ea7c3fbd4c9e543b9d3134c1f589"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1ICondition.html#aaa72ea7c3fbd4c9e543b9d3134c1f589">evaluate</a> (<a class="el" href="classmimir_1_1languages_1_1dl_1_1EvaluationContext.html">dl::EvaluationContext</a> &amp;source_context) const =0</td></tr>
 <tr class="separator:aaa72ea7c3fbd4c9e543b9d3134c1f589"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d75013b1601e9f4f78969ac798238e6"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1ICondition.html#a5d75013b1601e9f4f78969ac798238e6">evaluate_with_debug</a> (<a class="el" href="classmimir_1_1languages_1_1dl_1_1EvaluationContext.html">dl::EvaluationContext</a> &amp;source_context) const =0</td></tr>
+<tr class="separator:a5d75013b1601e9f4f78969ac798238e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a93e3d34414a31e7864501d2f695f5710"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1ICondition.html#a93e3d34414a31e7864501d2f695f5710">accept</a> (<a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IVisitor.html">IVisitor</a> &amp;visitor) const =0</td></tr>
 <tr class="memdesc:a93e3d34414a31e7864501d2f695f5710"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accept a <code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IVisitor.html">IVisitor</a></code>.  <br /></td></tr>
 <tr class="separator:a93e3d34414a31e7864501d2f695f5710"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -204,6 +206,34 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Implemented in <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1ConditionBase.html#a3e7b37ae4045ecad9a0ac1ab175bb39c">mimir::languages::general_policies::ConditionBase&lt; Derived_, D &gt;</a>, <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1ConditionBase.html#a3e7b37ae4045ecad9a0ac1ab175bb39c">mimir::languages::general_policies::ConditionBase&lt; EqualNumericalConditionImpl, dl::Numerical &gt;</a>, <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1ConditionBase.html#a3e7b37ae4045ecad9a0ac1ab175bb39c">mimir::languages::general_policies::ConditionBase&lt; GreaterNumericalConditionImpl, dl::Numerical &gt;</a>, <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1ConditionBase.html#a3e7b37ae4045ecad9a0ac1ab175bb39c">mimir::languages::general_policies::ConditionBase&lt; NegativeBooleanConditionImpl, dl::Boolean &gt;</a>, and <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1ConditionBase.html#a3e7b37ae4045ecad9a0ac1ab175bb39c">mimir::languages::general_policies::ConditionBase&lt; PositiveBooleanConditionImpl, dl::Boolean &gt;</a>.</p>
+
+</div>
+</div>
+<a id="a5d75013b1601e9f4f78969ac798238e6" name="a5d75013b1601e9f4f78969ac798238e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d75013b1601e9f4f78969ac798238e6">&#9670;&#160;</a></span>evaluate_with_debug()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool mimir::languages::general_policies::ICondition::evaluate_with_debug </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classmimir_1_1languages_1_1dl_1_1EvaluationContext.html">dl::EvaluationContext</a> &amp;&#160;</td>
+          <td class="paramname"><em>source_context</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implemented in <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1ConditionBase.html#ae2c4a6015a104683d681af011d7d48ac">mimir::languages::general_policies::ConditionBase&lt; Derived_, D &gt;</a>, <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1ConditionBase.html#ae2c4a6015a104683d681af011d7d48ac">mimir::languages::general_policies::ConditionBase&lt; EqualNumericalConditionImpl, dl::Numerical &gt;</a>, <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1ConditionBase.html#ae2c4a6015a104683d681af011d7d48ac">mimir::languages::general_policies::ConditionBase&lt; GreaterNumericalConditionImpl, dl::Numerical &gt;</a>, <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1ConditionBase.html#ae2c4a6015a104683d681af011d7d48ac">mimir::languages::general_policies::ConditionBase&lt; NegativeBooleanConditionImpl, dl::Boolean &gt;</a>, and <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1ConditionBase.html#ae2c4a6015a104683d681af011d7d48ac">mimir::languages::general_policies::ConditionBase&lt; PositiveBooleanConditionImpl, dl::Boolean &gt;</a>.</p>
 
 </div>
 </div>

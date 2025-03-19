@@ -74,6 +74,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#friends">Friends</a> &#124;
 <a href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl-members.html">List of all members</a>  </div>
@@ -83,20 +84,30 @@ $(function() {
 
 <p><code>#include &lt;<a class="el" href="general__policy_8hpp_source.html">general_policy.hpp</a>&gt;</code></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:ad99169b982747ff0a73cfe59a9070ff6"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#ad99169b982747ff0a73cfe59a9070ff6">UnsolvabilityReason</a> { <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#ad99169b982747ff0a73cfe59a9070ff6ab50339a10e1de285ac99d4c3990b8693">NONE</a> = 0
+, <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#ad99169b982747ff0a73cfe59a9070ff6a11729ccb73dc5f4f62d40435e8a0c078">CYCLE</a> = 1
+, <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#ad99169b982747ff0a73cfe59a9070ff6a65ecd1e4121610f8900dbf5ea484fba0">UNSOLVABLE</a> = 2
+ }</td></tr>
+<tr class="separator:ad99169b982747ff0a73cfe59a9070ff6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ad22c8b995a3f539c0ffbfd3ab473cafe"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#ad22c8b995a3f539c0ffbfd3ab473cafe">evaluate</a> (<a class="el" href="classmimir_1_1languages_1_1dl_1_1EvaluationContext.html">dl::EvaluationContext</a> &amp;source_context, <a class="el" href="classmimir_1_1languages_1_1dl_1_1EvaluationContext.html">dl::EvaluationContext</a> &amp;target_context) const</td></tr>
 <tr class="memdesc:ad22c8b995a3f539c0ffbfd3ab473cafe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if and only if there the state pair (transition) is compatible with a <code>Rule</code> in the <code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html">GeneralPolicyImpl</a></code>.  <br /></td></tr>
 <tr class="separator:ad22c8b995a3f539c0ffbfd3ab473cafe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17d5f494080a916935fdec51ccb17b7a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#a17d5f494080a916935fdec51ccb17b7a">evaluate_with_debug</a> (<a class="el" href="classmimir_1_1languages_1_1dl_1_1EvaluationContext.html">dl::EvaluationContext</a> &amp;source_context, <a class="el" href="classmimir_1_1languages_1_1dl_1_1EvaluationContext.html">dl::EvaluationContext</a> &amp;target_context) const</td></tr>
+<tr class="separator:a17d5f494080a916935fdec51ccb17b7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a082bbd3378e9dda29ca996e3aa68436a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#a082bbd3378e9dda29ca996e3aa68436a">accept</a> (<a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IVisitor.html">IVisitor</a> &amp;visitor)</td></tr>
 <tr class="memdesc:a082bbd3378e9dda29ca996e3aa68436a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accept a <code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IVisitor.html">IVisitor</a></code>.  <br /></td></tr>
 <tr class="separator:a082bbd3378e9dda29ca996e3aa68436a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8701d2488917c82f3a89fada3a9ef5a3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#a8701d2488917c82f3a89fada3a9ef5a3">is_terminating</a> () const</td></tr>
 <tr class="memdesc:a8701d2488917c82f3a89fada3a9ef5a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if and only if the <code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html">GeneralPolicyImpl</a></code> is structurally terminating.  <br /></td></tr>
 <tr class="separator:a8701d2488917c82f3a89fada3a9ef5a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3b6476a4a45ee0b25511250d97cea222"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#a3b6476a4a45ee0b25511250d97cea222">solves</a> (const <a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpace.html">datasets::GeneralizedStateSpace</a> &amp;generalized_state_space, const <a class="el" href="namespacemimir_1_1graphs.html#a7f055a18f6efd9b14e9f5708d28eb7e6">graphs::ClassGraph</a> &amp;graph)</td></tr>
-<tr class="memdesc:a3b6476a4a45ee0b25511250d97cea222"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if and only if the <code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html">GeneralPolicyImpl</a></code> solves all vertices of the <code><a class="el" href="namespacemimir_1_1graphs.html#a7f055a18f6efd9b14e9f5708d28eb7e6" title="ClassGraph implements a directed graph representing the state space of a class of problems.">graphs::ClassGraph</a></code> in the given <code><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpace.html" title="GeneralizedStateSpace encapsulates a two-level graph structure to represent the state transition mode...">datasets::GeneralizedStateSpace</a></code>.  <br /></td></tr>
-<tr class="separator:a3b6476a4a45ee0b25511250d97cea222"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6feb6f58fedc3feeb25ec8b40371347a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#ad99169b982747ff0a73cfe59a9070ff6">UnsolvabilityReason</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#a6feb6f58fedc3feeb25ec8b40371347a">solves</a> (const <a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpace.html">datasets::GeneralizedStateSpace</a> &amp;generalized_state_space, const graphs::VertexIndexList &amp;vertices, <a class="el" href="namespacemimir_1_1languages_1_1dl.html#a75ac4ed2c423195ba0b876124d33d752">dl::DenotationRepositories</a> &amp;denotation_repositories) const</td></tr>
+<tr class="memdesc:a6feb6f58fedc3feeb25ec8b40371347a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether the <code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html">GeneralPolicyImpl</a></code> solves all vertices from the given <code>graphs::VertexIndexList</code> in the given <code><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpace.html" title="GeneralizedStateSpace encapsulates a two-level graph structure to represent the state transition mode...">datasets::GeneralizedStateSpace</a></code>.  <br /></td></tr>
+<tr class="separator:a6feb6f58fedc3feeb25ec8b40371347a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8580f53d4ee81d9429c303513364d36b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#a8580f53d4ee81d9429c303513364d36b">get_index</a> () const</td></tr>
 <tr class="memdesc:a8580f53d4ee81d9429c303513364d36b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the index.  <br /></td></tr>
 <tr class="separator:a8580f53d4ee81d9429c303513364d36b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -118,6 +129,34 @@ Friends</h2></td></tr>
 <tr class="memitem:a9fe84bd09146359e041c5cdba10d6757"><td class="memTemplItemLeft" align="right" valign="top">class&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#a9fe84bd09146359e041c5cdba10d6757">loki::SegmentedRepository</a></td></tr>
 <tr class="separator:a9fe84bd09146359e041c5cdba10d6757"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Enumeration Documentation</h2>
+<a id="ad99169b982747ff0a73cfe59a9070ff6" name="ad99169b982747ff0a73cfe59a9070ff6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad99169b982747ff0a73cfe59a9070ff6">&#9670;&#160;</a></span>UnsolvabilityReason</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#ad99169b982747ff0a73cfe59a9070ff6">mimir::languages::general_policies::GeneralPolicyImpl::UnsolvabilityReason</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ad99169b982747ff0a73cfe59a9070ff6ab50339a10e1de285ac99d4c3990b8693" name="ad99169b982747ff0a73cfe59a9070ff6ab50339a10e1de285ac99d4c3990b8693"></a>NONE&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ad99169b982747ff0a73cfe59a9070ff6a11729ccb73dc5f4f62d40435e8a0c078" name="ad99169b982747ff0a73cfe59a9070ff6a11729ccb73dc5f4f62d40435e8a0c078"></a>CYCLE&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ad99169b982747ff0a73cfe59a9070ff6a65ecd1e4121610f8900dbf5ea484fba0" name="ad99169b982747ff0a73cfe59a9070ff6a65ecd1e4121610f8900dbf5ea484fba0"></a>UNSOLVABLE&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+</div>
+</div>
 <h2 class="groupheader">Member Function Documentation</h2>
 <a id="a082bbd3378e9dda29ca996e3aa68436a" name="a082bbd3378e9dda29ca996e3aa68436a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a082bbd3378e9dda29ca996e3aa68436a">&#9670;&#160;</a></span>accept()</h2>
@@ -180,6 +219,34 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if the state pair (transition) is compatible with a <code>Rule</code> in the <code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html">GeneralPolicyImpl</a></code>. </dd></dl>
+
+</div>
+</div>
+<a id="a17d5f494080a916935fdec51ccb17b7a" name="a17d5f494080a916935fdec51ccb17b7a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17d5f494080a916935fdec51ccb17b7a">&#9670;&#160;</a></span>evaluate_with_debug()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool mimir::languages::general_policies::GeneralPolicyImpl::evaluate_with_debug </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classmimir_1_1languages_1_1dl_1_1EvaluationContext.html">dl::EvaluationContext</a> &amp;&#160;</td>
+          <td class="paramname"><em>source_context</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classmimir_1_1languages_1_1dl_1_1EvaluationContext.html">dl::EvaluationContext</a> &amp;&#160;</td>
+          <td class="paramname"><em>target_context</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
 
 </div>
 </div>
@@ -307,14 +374,14 @@ template&lt;dl::FeatureCategory D&gt; </div>
 
 </div>
 </div>
-<a id="a3b6476a4a45ee0b25511250d97cea222" name="a3b6476a4a45ee0b25511250d97cea222"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3b6476a4a45ee0b25511250d97cea222">&#9670;&#160;</a></span>solves()</h2>
+<a id="a6feb6f58fedc3feeb25ec8b40371347a" name="a6feb6f58fedc3feeb25ec8b40371347a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6feb6f58fedc3feeb25ec8b40371347a">&#9670;&#160;</a></span>solves()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">bool mimir::languages::general_policies::GeneralPolicyImpl::solves </td>
+          <td class="memname"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#ad99169b982747ff0a73cfe59a9070ff6">UnsolvabilityReason</a> mimir::languages::general_policies::GeneralPolicyImpl::solves </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpace.html">datasets::GeneralizedStateSpace</a> &amp;&#160;</td>
           <td class="paramname"><em>generalized_state_space</em>, </td>
@@ -322,26 +389,33 @@ template&lt;dl::FeatureCategory D&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="namespacemimir_1_1graphs.html#a7f055a18f6efd9b14e9f5708d28eb7e6">graphs::ClassGraph</a> &amp;&#160;</td>
-          <td class="paramname"><em>graph</em>&#160;</td>
+          <td class="paramtype">const graphs::VertexIndexList &amp;&#160;</td>
+          <td class="paramname"><em>vertices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#a75ac4ed2c423195ba0b876124d33d752">dl::DenotationRepositories</a> &amp;&#160;</td>
+          <td class="paramname"><em>denotation_repositories</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td>
+          <td></td><td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Return true if and only if the <code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html">GeneralPolicyImpl</a></code> solves all vertices of the <code><a class="el" href="namespacemimir_1_1graphs.html#a7f055a18f6efd9b14e9f5708d28eb7e6" title="ClassGraph implements a directed graph representing the state space of a class of problems.">graphs::ClassGraph</a></code> in the given <code><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpace.html" title="GeneralizedStateSpace encapsulates a two-level graph structure to represent the state transition mode...">datasets::GeneralizedStateSpace</a></code>. </p>
+<p>Return whether the <code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html">GeneralPolicyImpl</a></code> solves all vertices from the given <code>graphs::VertexIndexList</code> in the given <code><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpace.html" title="GeneralizedStateSpace encapsulates a two-level graph structure to represent the state transition mode...">datasets::GeneralizedStateSpace</a></code>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">generalized_state_space</td><td>is the <code>GeneralizedStateSpace</code>. </td></tr>
-    <tr><td class="paramname">graph</td><td>is a subgraph of or equal to the <code>ClassGraph</code> in the <code>GeneralizedStateSpace</code>. </td></tr>
+    <tr><td class="paramname">vertices</td><td>are the indices of <code>ClassVertex</code> that must be solved. </td></tr>
+    <tr><td class="paramname">denotation_repositories</td><td>is the repository that stored feature denotations. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>true if the <code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html">GeneralPolicyImpl</a></code> solves all vertices of the <code><a class="el" href="namespacemimir_1_1graphs.html#a7f055a18f6efd9b14e9f5708d28eb7e6" title="ClassGraph implements a directed graph representing the state space of a class of problems.">graphs::ClassGraph</a></code> in the given <code><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpace.html" title="GeneralizedStateSpace encapsulates a two-level graph structure to represent the state transition mode...">datasets::GeneralizedStateSpace</a></code>, and false otherwise. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>a reason for unsolvability or None. </dd></dl>
 
 </div>
 </div>

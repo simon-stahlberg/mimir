@@ -105,6 +105,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ab16f647a5e2a7a61001b5c25fa040164"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3e7b37ae4045ecad9a0ac1ab175bb39c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1ConditionBase.html#a3e7b37ae4045ecad9a0ac1ab175bb39c">evaluate</a> (<a class="el" href="classmimir_1_1languages_1_1dl_1_1EvaluationContext.html">dl::EvaluationContext</a> &amp;source_context) const override</td></tr>
 <tr class="separator:a3e7b37ae4045ecad9a0ac1ab175bb39c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2c4a6015a104683d681af011d7d48ac"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1ConditionBase.html#ae2c4a6015a104683d681af011d7d48ac">evaluate_with_debug</a> (<a class="el" href="classmimir_1_1languages_1_1dl_1_1EvaluationContext.html">dl::EvaluationContext</a> &amp;source_context) const override</td></tr>
+<tr class="separator:ae2c4a6015a104683d681af011d7d48ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5ea0e3849cb0c2c4cb7d83e54e273609"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1ConditionBase.html#a5ea0e3849cb0c2c4cb7d83e54e273609">accept</a> (<a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IVisitor.html">IVisitor</a> &amp;visitor) const override</td></tr>
 <tr class="memdesc:a5ea0e3849cb0c2c4cb7d83e54e273609"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accept a <code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IVisitor.html">IVisitor</a></code>.  <br /></td></tr>
 <tr class="separator:a5ea0e3849cb0c2c4cb7d83e54e273609"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -117,6 +119,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a4d73f8967e7b58e1c80411ae6a4c87e3 inherit pub_methods_classmimir_1_1languages_1_1general__policies_1_1ICondition"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaa72ea7c3fbd4c9e543b9d3134c1f589 inherit pub_methods_classmimir_1_1languages_1_1general__policies_1_1ICondition"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1ICondition.html#aaa72ea7c3fbd4c9e543b9d3134c1f589">evaluate</a> (<a class="el" href="classmimir_1_1languages_1_1dl_1_1EvaluationContext.html">dl::EvaluationContext</a> &amp;source_context) const =0</td></tr>
 <tr class="separator:aaa72ea7c3fbd4c9e543b9d3134c1f589 inherit pub_methods_classmimir_1_1languages_1_1general__policies_1_1ICondition"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d75013b1601e9f4f78969ac798238e6 inherit pub_methods_classmimir_1_1languages_1_1general__policies_1_1ICondition"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1ICondition.html#a5d75013b1601e9f4f78969ac798238e6">evaluate_with_debug</a> (<a class="el" href="classmimir_1_1languages_1_1dl_1_1EvaluationContext.html">dl::EvaluationContext</a> &amp;source_context) const =0</td></tr>
+<tr class="separator:a5d75013b1601e9f4f78969ac798238e6 inherit pub_methods_classmimir_1_1languages_1_1general__policies_1_1ICondition"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a93e3d34414a31e7864501d2f695f5710 inherit pub_methods_classmimir_1_1languages_1_1general__policies_1_1ICondition"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1ICondition.html#a93e3d34414a31e7864501d2f695f5710">accept</a> (<a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IVisitor.html">IVisitor</a> &amp;visitor) const =0</td></tr>
 <tr class="memdesc:a93e3d34414a31e7864501d2f695f5710 inherit pub_methods_classmimir_1_1languages_1_1general__policies_1_1ICondition"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accept a <code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IVisitor.html">IVisitor</a></code>.  <br /></td></tr>
 <tr class="separator:a93e3d34414a31e7864501d2f695f5710 inherit pub_methods_classmimir_1_1languages_1_1general__policies_1_1ICondition"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -243,6 +247,36 @@ template&lt;typename Derived_ , dl::FeatureCategory D&gt; </div>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1ICondition.html#aaa72ea7c3fbd4c9e543b9d3134c1f589">mimir::languages::general_policies::ICondition</a>.</p>
+
+</div>
+</div>
+<a id="ae2c4a6015a104683d681af011d7d48ac" name="ae2c4a6015a104683d681af011d7d48ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2c4a6015a104683d681af011d7d48ac">&#9670;&#160;</a></span>evaluate_with_debug()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Derived_ , dl::FeatureCategory D&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1ConditionBase.html">mimir::languages::general_policies::ConditionBase</a>&lt; Derived_, D &gt;::evaluate_with_debug </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classmimir_1_1languages_1_1dl_1_1EvaluationContext.html">dl::EvaluationContext</a> &amp;&#160;</td>
+          <td class="paramname"><em>source_context</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1ICondition.html#a5d75013b1601e9f4f78969ac798238e6">mimir::languages::general_policies::ICondition</a>.</p>
 
 </div>
 </div>
