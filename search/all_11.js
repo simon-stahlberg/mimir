@@ -20,7 +20,7 @@ var searchData=
   ['to_5ftuple_5findex_17',['to_tuple_index',['../classmimir_1_1search_1_1iw_1_1TupleIndexMapper.html#a90ba19b75b1e96fda629506919cecea6',1,'mimir::search::iw::TupleIndexMapper']]],
   ['tonamedfeaturemap_18',['ToNamedFeatureMap',['../namespacemimir_1_1languages_1_1general__policies.html#a92109f62695385b0f61eb5c6ee7f9885',1,'mimir::languages::general_policies']]],
   ['tonamedfeaturemaps_19',['ToNamedFeatureMaps',['../namespacemimir_1_1languages_1_1general__policies.html#ab22ec52c3ddee72b244271f2b267bacb',1,'mimir::languages::general_policies']]],
-  ['tononterminalmap_20',['ToNonTerminalMap',['../namespacemimir_1_1languages_1_1dl_1_1grammar.html#ad6269cd3051976aed3e20570cbf04908',1,'mimir::languages::dl::grammar']]],
+  ['tononterminalmaps_20',['ToNonTerminalMaps',['../namespacemimir_1_1languages_1_1dl_1_1grammar.html#a12b836f9d6919ad7d2187ce5d03137da',1,'mimir::languages::dl::grammar']]],
   ['toobjectmap_21',['ToObjectMap',['../namespacemimir_1_1formalism.html#aac3bdcebeda7812ed9b54a40632c68a8',1,'mimir::formalism']]],
   ['topological_5fsort_22',['topological_sort',['../namespacemimir_1_1graphs.html#aa92d9bc84a7aff44627e3442b54e4575',1,'mimir::graphs']]],
   ['topredicatemap_23',['ToPredicateMap',['../namespacemimir_1_1formalism.html#a10082352270d076842bf7112c4d0a681',1,'mimir::formalism']]],

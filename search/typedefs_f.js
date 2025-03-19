@@ -25,8 +25,9 @@ var searchData=
   ['staticvertexcoloreddigraph_22',['StaticVertexColoredDigraph',['../namespacemimir_1_1graphs.html#ad1ecfbb2e8fff3f99afd88ee58116c31',1,'mimir::graphs']]],
   ['staticvertexcoloredforwarddigraph_23',['StaticVertexColoredForwardDigraph',['../namespacemimir_1_1graphs.html#afe8c165cbe26983da561021fa7733333',1,'mimir::graphs']]],
   ['statisticslist_24',['StatisticsList',['../namespacemimir_1_1search_1_1astar.html#a0824d093a0f46b1d87a6f3601ec875c7',1,'mimir::search::astar::StatisticsList()'],['../namespacemimir_1_1search_1_1brfs.html#a755bd7c56df3bc37486be891905a9321',1,'mimir::search::brfs::StatisticsList()'],['../namespacemimir_1_1search_1_1iw.html#a754e942fc550f06db2bfda19264c6321',1,'mimir::search::iw::StatisticsList()']]],
-  ['substitutionrule_25',['SubstitutionRule',['../namespacemimir_1_1languages_1_1dl_1_1cnf__grammar.html#ac8fbe3713a3ce9e62775dae63f939c54',1,'mimir::languages::dl::cnf_grammar']]],
-  ['substitutionrulelist_26',['SubstitutionRuleList',['../namespacemimir_1_1languages_1_1dl_1_1cnf__grammar.html#ab798688c9e084b08b0b967539e88f7e0',1,'mimir::languages::dl::cnf_grammar']]],
-  ['substitutionrulelists_27',['SubstitutionRuleLists',['../namespacemimir_1_1languages_1_1dl_1_1cnf__grammar.html#ac11dc72e1e8e2c967c587301ae7730e0',1,'mimir::languages::dl::cnf_grammar']]],
-  ['substitutionrulerepository_28',['SubstitutionRuleRepository',['../namespacemimir_1_1languages_1_1dl_1_1cnf__grammar.html#ac9a5321ef84bac1dbcb9e744d0933054',1,'mimir::languages::dl::cnf_grammar']]]
+  ['stringtononterminalmaps_25',['StringToNonTerminalMaps',['../namespacemimir_1_1languages_1_1dl_1_1grammar.html#ad5bfbcab6de196a967a2db2360728dc8',1,'mimir::languages::dl::grammar']]],
+  ['substitutionrule_26',['SubstitutionRule',['../namespacemimir_1_1languages_1_1dl_1_1cnf__grammar.html#ac8fbe3713a3ce9e62775dae63f939c54',1,'mimir::languages::dl::cnf_grammar']]],
+  ['substitutionrulelist_27',['SubstitutionRuleList',['../namespacemimir_1_1languages_1_1dl_1_1cnf__grammar.html#ab798688c9e084b08b0b967539e88f7e0',1,'mimir::languages::dl::cnf_grammar']]],
+  ['substitutionrulelists_28',['SubstitutionRuleLists',['../namespacemimir_1_1languages_1_1dl_1_1cnf__grammar.html#ac11dc72e1e8e2c967c587301ae7730e0',1,'mimir::languages::dl::cnf_grammar']]],
+  ['substitutionrulerepository_29',['SubstitutionRuleRepository',['../namespacemimir_1_1languages_1_1dl_1_1cnf__grammar.html#ac9a5321ef84bac1dbcb9e744d0933054',1,'mimir::languages::dl::cnf_grammar']]]
 ];

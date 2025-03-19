@@ -250,14 +250,16 @@ Typedefs</h2></td></tr>
 <tr class="memitem:a004b9ad000457346318eb1258ed1b158"><td class="memTemplParams" colspan="2">template&lt;dl::FeatureCategory D&gt; </td></tr>
 <tr class="memitem:a004b9ad000457346318eb1258ed1b158"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a004b9ad000457346318eb1258ed1b158">NonTerminalSet</a> = std::unordered_set&lt; <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a5d9458b773dd5d22a88cff850b870771">NonTerminal</a>&lt; D &gt; &gt;</td></tr>
 <tr class="separator:a004b9ad000457346318eb1258ed1b158"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6a50c828ca83e583aa5a8415f10833bb"><td class="memTemplParams" colspan="2">template&lt;template&lt; typename &gt; typename Value, dl::FeatureCategory... Ds&gt; </td></tr>
-<tr class="memitem:a6a50c828ca83e583aa5a8415f10833bb"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a6a50c828ca83e583aa5a8415f10833bb">NonTerminalMap</a> = boost::hana::map&lt; boost::hana::pair&lt; boost::hana::type&lt; Ds &gt;, std::unordered_map&lt; <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a5d9458b773dd5d22a88cff850b870771">NonTerminal</a>&lt; Ds &gt;, Value&lt; Ds &gt; &gt; &gt;... &gt;</td></tr>
-<tr class="separator:a6a50c828ca83e583aa5a8415f10833bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afcd0afc31f0248f831b6dd239bb62abe"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#afcd0afc31f0248f831b6dd239bb62abe">NonTerminalToDerivationRuleSets</a> = <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a6a50c828ca83e583aa5a8415f10833bb">NonTerminalMap</a>&lt; <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a0e0fe8a4a8e69f7a1bac00d7f11cb083">DerivationRuleSet</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Concept.html">Concept</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Role.html">Role</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Boolean.html">Boolean</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Numerical.html">Numerical</a> &gt;</td></tr>
-<tr class="separator:afcd0afc31f0248f831b6dd239bb62abe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad6269cd3051976aed3e20570cbf04908"><td class="memTemplParams" colspan="2">template&lt;typename Key , dl::FeatureCategory... Ds&gt; </td></tr>
-<tr class="memitem:ad6269cd3051976aed3e20570cbf04908"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#ad6269cd3051976aed3e20570cbf04908">ToNonTerminalMap</a> = boost::hana::map&lt; boost::hana::pair&lt; boost::hana::type&lt; Ds &gt;, std::unordered_map&lt; Key, <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a5d9458b773dd5d22a88cff850b870771">NonTerminal</a>&lt; Ds &gt;, loki::Hash&lt; Key &gt;, loki::EqualTo&lt; Key &gt; &gt; &gt;... &gt;</td></tr>
-<tr class="separator:ad6269cd3051976aed3e20570cbf04908"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebf813a881cc78e865cc36b8a46d1250"><td class="memTemplParams" colspan="2">template&lt;template&lt; typename &gt; typename Value, dl::FeatureCategory... Ds&gt; </td></tr>
+<tr class="memitem:aebf813a881cc78e865cc36b8a46d1250"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#aebf813a881cc78e865cc36b8a46d1250">NonTerminalMaps</a> = boost::hana::map&lt; boost::hana::pair&lt; boost::hana::type&lt; Ds &gt;, std::unordered_map&lt; <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a5d9458b773dd5d22a88cff850b870771">NonTerminal</a>&lt; Ds &gt;, Value&lt; Ds &gt; &gt; &gt;... &gt;</td></tr>
+<tr class="separator:aebf813a881cc78e865cc36b8a46d1250"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac50f398603df6cd6557699f0b80a430a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#ac50f398603df6cd6557699f0b80a430a">NonTerminalToDerivationRuleSets</a> = <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#aebf813a881cc78e865cc36b8a46d1250">NonTerminalMaps</a>&lt; <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a0e0fe8a4a8e69f7a1bac00d7f11cb083">DerivationRuleSet</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Concept.html">Concept</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Role.html">Role</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Boolean.html">Boolean</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Numerical.html">Numerical</a> &gt;</td></tr>
+<tr class="separator:ac50f398603df6cd6557699f0b80a430a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12b836f9d6919ad7d2187ce5d03137da"><td class="memTemplParams" colspan="2">template&lt;typename Key , dl::FeatureCategory... Ds&gt; </td></tr>
+<tr class="memitem:a12b836f9d6919ad7d2187ce5d03137da"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a12b836f9d6919ad7d2187ce5d03137da">ToNonTerminalMaps</a> = boost::hana::map&lt; boost::hana::pair&lt; boost::hana::type&lt; Ds &gt;, std::unordered_map&lt; Key, <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a5d9458b773dd5d22a88cff850b870771">NonTerminal</a>&lt; Ds &gt;, loki::Hash&lt; Key &gt;, loki::EqualTo&lt; Key &gt; &gt; &gt;... &gt;</td></tr>
+<tr class="separator:a12b836f9d6919ad7d2187ce5d03137da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5bfbcab6de196a967a2db2360728dc8"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#ad5bfbcab6de196a967a2db2360728dc8">StringToNonTerminalMaps</a> = <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a12b836f9d6919ad7d2187ce5d03137da">ToNonTerminalMaps</a>&lt; std::string, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Concept.html">Concept</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Role.html">Role</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Boolean.html">Boolean</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Numerical.html">Numerical</a> &gt;</td></tr>
+<tr class="separator:ad5bfbcab6de196a967a2db2360728dc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acee7e4bd3a6f41e462847a848dbeb545"><td class="memTemplParams" colspan="2">template&lt;dl::FeatureCategory D&gt; </td></tr>
 <tr class="memitem:acee7e4bd3a6f41e462847a848dbeb545"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#acee7e4bd3a6f41e462847a848dbeb545">ConstructorOrNonTerminal</a> = const <a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1ConstructorOrNonTerminalImpl.html">ConstructorOrNonTerminalImpl</a>&lt; D &gt; *</td></tr>
 <tr class="separator:acee7e4bd3a6f41e462847a848dbeb545"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1019,8 +1021,8 @@ template&lt;dl::FeatureCategory D&gt; </div>
 
 </div>
 </div>
-<a id="a6a50c828ca83e583aa5a8415f10833bb" name="a6a50c828ca83e583aa5a8415f10833bb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6a50c828ca83e583aa5a8415f10833bb">&#9670;&#160;</a></span>NonTerminalMap</h2>
+<a id="aebf813a881cc78e865cc36b8a46d1250" name="aebf813a881cc78e865cc36b8a46d1250"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aebf813a881cc78e865cc36b8a46d1250">&#9670;&#160;</a></span>NonTerminalMaps</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1028,7 +1030,7 @@ template&lt;dl::FeatureCategory D&gt; </div>
 template&lt;template&lt; typename &gt; typename Value, dl::FeatureCategory... Ds&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a6a50c828ca83e583aa5a8415f10833bb">mimir::languages::dl::grammar::NonTerminalMap</a> = typedef boost::hana::map&lt;boost::hana::pair&lt;boost::hana::type&lt;Ds&gt;, std::unordered_map&lt;<a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a5d9458b773dd5d22a88cff850b870771">NonTerminal</a>&lt;Ds&gt;, Value&lt;Ds&gt; &gt;&gt;...&gt;</td>
+          <td class="memname">using <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#aebf813a881cc78e865cc36b8a46d1250">mimir::languages::dl::grammar::NonTerminalMaps</a> = typedef boost::hana::map&lt;boost::hana::pair&lt;boost::hana::type&lt;Ds&gt;, std::unordered_map&lt;<a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a5d9458b773dd5d22a88cff850b870771">NonTerminal</a>&lt;Ds&gt;, Value&lt;Ds&gt; &gt;&gt;...&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1068,14 +1070,14 @@ template&lt;dl::FeatureCategory D&gt; </div>
 
 </div>
 </div>
-<a id="afcd0afc31f0248f831b6dd239bb62abe" name="afcd0afc31f0248f831b6dd239bb62abe"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afcd0afc31f0248f831b6dd239bb62abe">&#9670;&#160;</a></span>NonTerminalToDerivationRuleSets</h2>
+<a id="ac50f398603df6cd6557699f0b80a430a" name="ac50f398603df6cd6557699f0b80a430a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac50f398603df6cd6557699f0b80a430a">&#9670;&#160;</a></span>NonTerminalToDerivationRuleSets</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#afcd0afc31f0248f831b6dd239bb62abe">mimir::languages::dl::grammar::NonTerminalToDerivationRuleSets</a> = typedef <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a6a50c828ca83e583aa5a8415f10833bb">NonTerminalMap</a>&lt;<a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a0e0fe8a4a8e69f7a1bac00d7f11cb083">DerivationRuleSet</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Concept.html">Concept</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Role.html">Role</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Boolean.html">Boolean</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Numerical.html">Numerical</a>&gt;</td>
+          <td class="memname">using <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#ac50f398603df6cd6557699f0b80a430a">mimir::languages::dl::grammar::NonTerminalToDerivationRuleSets</a> = typedef <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#aebf813a881cc78e865cc36b8a46d1250">NonTerminalMaps</a>&lt;<a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a0e0fe8a4a8e69f7a1bac00d7f11cb083">DerivationRuleSet</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Concept.html">Concept</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Role.html">Role</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Boolean.html">Boolean</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Numerical.html">Numerical</a>&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1516,8 +1518,22 @@ template&lt;formalism::StaticOrFluentOrDerived P&gt; </div>
 
 </div>
 </div>
-<a id="ad6269cd3051976aed3e20570cbf04908" name="ad6269cd3051976aed3e20570cbf04908"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad6269cd3051976aed3e20570cbf04908">&#9670;&#160;</a></span>ToNonTerminalMap</h2>
+<a id="ad5bfbcab6de196a967a2db2360728dc8" name="ad5bfbcab6de196a967a2db2360728dc8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5bfbcab6de196a967a2db2360728dc8">&#9670;&#160;</a></span>StringToNonTerminalMaps</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#ad5bfbcab6de196a967a2db2360728dc8">mimir::languages::dl::grammar::StringToNonTerminalMaps</a> = typedef <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a12b836f9d6919ad7d2187ce5d03137da">ToNonTerminalMaps</a>&lt;std::string, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Concept.html">Concept</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Role.html">Role</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Boolean.html">Boolean</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Numerical.html">Numerical</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a12b836f9d6919ad7d2187ce5d03137da" name="a12b836f9d6919ad7d2187ce5d03137da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12b836f9d6919ad7d2187ce5d03137da">&#9670;&#160;</a></span>ToNonTerminalMaps</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1525,7 +1541,7 @@ template&lt;formalism::StaticOrFluentOrDerived P&gt; </div>
 template&lt;typename Key , dl::FeatureCategory... Ds&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#ad6269cd3051976aed3e20570cbf04908">mimir::languages::dl::grammar::ToNonTerminalMap</a> = typedef boost::hana::map&lt;boost::hana::pair&lt;boost::hana::type&lt;Ds&gt;, std::unordered_map&lt;Key, <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a5d9458b773dd5d22a88cff850b870771">NonTerminal</a>&lt;Ds&gt;, loki::Hash&lt;Key&gt;, loki::EqualTo&lt;Key&gt; &gt;&gt;...&gt;</td>
+          <td class="memname">using <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a12b836f9d6919ad7d2187ce5d03137da">mimir::languages::dl::grammar::ToNonTerminalMaps</a> = typedef boost::hana::map&lt;boost::hana::pair&lt;boost::hana::type&lt;Ds&gt;, std::unordered_map&lt;Key, <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a5d9458b773dd5d22a88cff850b870771">NonTerminal</a>&lt;Ds&gt;, loki::Hash&lt;Key&gt;, loki::EqualTo&lt;Key&gt; &gt;&gt;...&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">

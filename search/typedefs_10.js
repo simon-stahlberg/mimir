@@ -5,7 +5,7 @@ var searchData=
   ['termrepository_2',['TermRepository',['../namespacemimir_1_1formalism.html#a95dd6d52854f4099e2fa789227eb5d52',1,'mimir::formalism']]],
   ['tonamedfeaturemap_3',['ToNamedFeatureMap',['../namespacemimir_1_1languages_1_1general__policies.html#a92109f62695385b0f61eb5c6ee7f9885',1,'mimir::languages::general_policies']]],
   ['tonamedfeaturemaps_4',['ToNamedFeatureMaps',['../namespacemimir_1_1languages_1_1general__policies.html#ab22ec52c3ddee72b244271f2b267bacb',1,'mimir::languages::general_policies']]],
-  ['tononterminalmap_5',['ToNonTerminalMap',['../namespacemimir_1_1languages_1_1dl_1_1grammar.html#ad6269cd3051976aed3e20570cbf04908',1,'mimir::languages::dl::grammar']]],
+  ['tononterminalmaps_5',['ToNonTerminalMaps',['../namespacemimir_1_1languages_1_1dl_1_1grammar.html#a12b836f9d6919ad7d2187ce5d03137da',1,'mimir::languages::dl::grammar']]],
   ['toobjectmap_6',['ToObjectMap',['../namespacemimir_1_1formalism.html#aac3bdcebeda7812ed9b54a40632c68a8',1,'mimir::formalism']]],
   ['topredicatemap_7',['ToPredicateMap',['../namespacemimir_1_1formalism.html#a10082352270d076842bf7112c4d0a681',1,'mimir::formalism']]],
   ['topredicatemaps_8',['ToPredicateMaps',['../namespacemimir_1_1formalism.html#aea274de403aa2183d6415de217715439',1,'mimir::formalism']]],
