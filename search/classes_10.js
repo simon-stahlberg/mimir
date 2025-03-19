@@ -3,7 +3,7 @@ var searchData=
   ['searchcontext_0',['SearchContext',['../classmimir_1_1search_1_1SearchContext.html',1,'mimir::search']]],
   ['searchnodeimpl_1',['SearchNodeImpl',['../structmimir_1_1search_1_1SearchNodeImpl.html',1,'mimir::search']]],
   ['searchresult_2',['SearchResult',['../structmimir_1_1search_1_1SearchResult.html',1,'mimir::search']]],
-  ['startsymbolscontainer_3',['StartSymbolsContainer',['../classmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1StartSymbolsContainer.html',1,'mimir::languages::dl::cnf_grammar::StartSymbolsContainer'],['../classmimir_1_1languages_1_1dl_1_1grammar_1_1StartSymbolsContainer.html',1,'mimir::languages::dl::grammar::StartSymbolsContainer']]],
+  ['startsymbolscontainer_3',['StartSymbolsContainer',['../classmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1StartSymbolsContainer.html',1,'mimir::languages::dl::cnf_grammar']]],
   ['stateimpl_4',['StateImpl',['../structmimir_1_1search_1_1StateImpl.html',1,'mimir::search']]],
   ['statepairtupleindexgenerator_5',['StatePairTupleIndexGenerator',['../classmimir_1_1search_1_1iw_1_1StatePairTupleIndexGenerator.html',1,'mimir::search::iw']]],
   ['staterepositoryimpl_6',['StateRepositoryImpl',['../classmimir_1_1search_1_1StateRepositoryImpl.html',1,'mimir::search']]],
