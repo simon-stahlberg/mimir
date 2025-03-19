@@ -147,8 +147,6 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1DerivationRuleImpl.html">DerivationRuleImpl</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1DerivationRulesContainer.html">DerivationRulesContainer</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1FormatterVisitor.html">FormatterVisitor</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1Grammar.html">Grammar</a></td></tr>
@@ -224,6 +222,20 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
+<tr class="memitem:a450a3dc8e4dff2a705c5b047da63ba28"><td class="memTemplParams" colspan="2">template&lt;dl::FeatureCategory D&gt; </td></tr>
+<tr class="memitem:a450a3dc8e4dff2a705c5b047da63ba28"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a450a3dc8e4dff2a705c5b047da63ba28">DerivationRule</a> = const <a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1DerivationRuleImpl.html">DerivationRuleImpl</a>&lt; D &gt; *</td></tr>
+<tr class="separator:a450a3dc8e4dff2a705c5b047da63ba28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac16061578d1fed121f5746372d9b0bd0"><td class="memTemplParams" colspan="2">template&lt;dl::FeatureCategory D&gt; </td></tr>
+<tr class="memitem:ac16061578d1fed121f5746372d9b0bd0"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#ac16061578d1fed121f5746372d9b0bd0">DerivationRuleList</a> = std::vector&lt; <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a450a3dc8e4dff2a705c5b047da63ba28">DerivationRule</a>&lt; D &gt; &gt;</td></tr>
+<tr class="separator:ac16061578d1fed121f5746372d9b0bd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c22d2b8a210a323e726ac56194984f5"><td class="memTemplParams" colspan="2">template&lt;dl::FeatureCategory... D&gt; </td></tr>
+<tr class="memitem:a4c22d2b8a210a323e726ac56194984f5"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a4c22d2b8a210a323e726ac56194984f5">DerivationRuleLists</a> = boost::hana::map&lt; boost::hana::pair&lt; boost::hana::type&lt; D &gt;, <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#ac16061578d1fed121f5746372d9b0bd0">DerivationRuleList</a>&lt; D &gt; &gt;... &gt;</td></tr>
+<tr class="separator:a4c22d2b8a210a323e726ac56194984f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e0fe8a4a8e69f7a1bac00d7f11cb083"><td class="memTemplParams" colspan="2">template&lt;FeatureCategory D&gt; </td></tr>
+<tr class="memitem:a0e0fe8a4a8e69f7a1bac00d7f11cb083"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a0e0fe8a4a8e69f7a1bac00d7f11cb083">DerivationRuleSet</a> = std::unordered_set&lt; <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a450a3dc8e4dff2a705c5b047da63ba28">DerivationRule</a>&lt; D &gt; &gt;</td></tr>
+<tr class="separator:a0e0fe8a4a8e69f7a1bac00d7f11cb083"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc119e87d2fc14121ec728caec5d3580"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#abc119e87d2fc14121ec728caec5d3580">DerivationRuleSets</a> = <a class="el" href="namespacemimir_1_1languages_1_1dl.html#a00e437f04c4ea4824ef436c9be93caaa">HanaMappedContainer</a>&lt; <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a0e0fe8a4a8e69f7a1bac00d7f11cb083">DerivationRuleSet</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Concept.html">Concept</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Role.html">Role</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Boolean.html">Boolean</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Numerical.html">Numerical</a> &gt;</td></tr>
+<tr class="separator:abc119e87d2fc14121ec728caec5d3580"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa33695a3b328211c3cfee60b148509fa"><td class="memTemplParams" colspan="2">template&lt;dl::FeatureCategory D&gt; </td></tr>
 <tr class="memitem:aa33695a3b328211c3cfee60b148509fa"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#aa33695a3b328211c3cfee60b148509fa">Constructor</a> = const <a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1IConstructor.html">IConstructor</a>&lt; D &gt; *</td></tr>
 <tr class="separator:aa33695a3b328211c3cfee60b148509fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -241,6 +253,8 @@ Typedefs</h2></td></tr>
 <tr class="memitem:a6a50c828ca83e583aa5a8415f10833bb"><td class="memTemplParams" colspan="2">template&lt;template&lt; typename &gt; typename Value, dl::FeatureCategory... Ds&gt; </td></tr>
 <tr class="memitem:a6a50c828ca83e583aa5a8415f10833bb"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a6a50c828ca83e583aa5a8415f10833bb">NonTerminalMap</a> = boost::hana::map&lt; boost::hana::pair&lt; boost::hana::type&lt; Ds &gt;, std::unordered_map&lt; <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a5d9458b773dd5d22a88cff850b870771">NonTerminal</a>&lt; Ds &gt;, Value&lt; Ds &gt; &gt; &gt;... &gt;</td></tr>
 <tr class="separator:a6a50c828ca83e583aa5a8415f10833bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcd0afc31f0248f831b6dd239bb62abe"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#afcd0afc31f0248f831b6dd239bb62abe">NonTerminalToDerivationRuleSets</a> = <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a6a50c828ca83e583aa5a8415f10833bb">NonTerminalMap</a>&lt; <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a0e0fe8a4a8e69f7a1bac00d7f11cb083">DerivationRuleSet</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Concept.html">Concept</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Role.html">Role</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Boolean.html">Boolean</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Numerical.html">Numerical</a> &gt;</td></tr>
+<tr class="separator:afcd0afc31f0248f831b6dd239bb62abe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad6269cd3051976aed3e20570cbf04908"><td class="memTemplParams" colspan="2">template&lt;typename Key , dl::FeatureCategory... Ds&gt; </td></tr>
 <tr class="memitem:ad6269cd3051976aed3e20570cbf04908"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#ad6269cd3051976aed3e20570cbf04908">ToNonTerminalMap</a> = boost::hana::map&lt; boost::hana::pair&lt; boost::hana::type&lt; Ds &gt;, std::unordered_map&lt; Key, <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a5d9458b773dd5d22a88cff850b870771">NonTerminal</a>&lt; Ds &gt;, loki::Hash&lt; Key &gt;, loki::EqualTo&lt; Key &gt; &gt; &gt;... &gt;</td></tr>
 <tr class="separator:ad6269cd3051976aed3e20570cbf04908"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -250,21 +264,6 @@ Typedefs</h2></td></tr>
 <tr class="memitem:a5963e08be0523f13ce56cb08d4dad178"><td class="memTemplParams" colspan="2">template&lt;dl::FeatureCategory D&gt; </td></tr>
 <tr class="memitem:a5963e08be0523f13ce56cb08d4dad178"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a5963e08be0523f13ce56cb08d4dad178">ConstructorOrNonTerminalList</a> = std::vector&lt; <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#acee7e4bd3a6f41e462847a848dbeb545">ConstructorOrNonTerminal</a>&lt; D &gt; &gt;</td></tr>
 <tr class="separator:a5963e08be0523f13ce56cb08d4dad178"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a450a3dc8e4dff2a705c5b047da63ba28"><td class="memTemplParams" colspan="2">template&lt;dl::FeatureCategory D&gt; </td></tr>
-<tr class="memitem:a450a3dc8e4dff2a705c5b047da63ba28"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a450a3dc8e4dff2a705c5b047da63ba28">DerivationRule</a> = const <a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1DerivationRuleImpl.html">DerivationRuleImpl</a>&lt; D &gt; *</td></tr>
-<tr class="separator:a450a3dc8e4dff2a705c5b047da63ba28"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac16061578d1fed121f5746372d9b0bd0"><td class="memTemplParams" colspan="2">template&lt;dl::FeatureCategory D&gt; </td></tr>
-<tr class="memitem:ac16061578d1fed121f5746372d9b0bd0"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#ac16061578d1fed121f5746372d9b0bd0">DerivationRuleList</a> = std::vector&lt; <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a450a3dc8e4dff2a705c5b047da63ba28">DerivationRule</a>&lt; D &gt; &gt;</td></tr>
-<tr class="separator:ac16061578d1fed121f5746372d9b0bd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4c22d2b8a210a323e726ac56194984f5"><td class="memTemplParams" colspan="2">template&lt;dl::FeatureCategory... D&gt; </td></tr>
-<tr class="memitem:a4c22d2b8a210a323e726ac56194984f5"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a4c22d2b8a210a323e726ac56194984f5">DerivationRuleLists</a> = boost::hana::map&lt; boost::hana::pair&lt; boost::hana::type&lt; D &gt;, <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#ac16061578d1fed121f5746372d9b0bd0">DerivationRuleList</a>&lt; D &gt; &gt;... &gt;</td></tr>
-<tr class="separator:a4c22d2b8a210a323e726ac56194984f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0e0fe8a4a8e69f7a1bac00d7f11cb083"><td class="memTemplParams" colspan="2">template&lt;FeatureCategory D&gt; </td></tr>
-<tr class="memitem:a0e0fe8a4a8e69f7a1bac00d7f11cb083"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a0e0fe8a4a8e69f7a1bac00d7f11cb083">DerivationRuleSet</a> = std::unordered_set&lt; <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a450a3dc8e4dff2a705c5b047da63ba28">DerivationRule</a>&lt; D &gt; &gt;</td></tr>
-<tr class="separator:a0e0fe8a4a8e69f7a1bac00d7f11cb083"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abfcecbd08ca2628c95a5fd6a3db7e8cd"><td class="memTemplParams" colspan="2">template&lt;dl::FeatureCategory... D&gt; </td></tr>
-<tr class="memitem:abfcecbd08ca2628c95a5fd6a3db7e8cd"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#abfcecbd08ca2628c95a5fd6a3db7e8cd">DerivationRuleSets</a> = boost::hana::map&lt; boost::hana::pair&lt; boost::hana::type&lt; D &gt;, <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a0e0fe8a4a8e69f7a1bac00d7f11cb083">DerivationRuleSet</a>&lt; D &gt; &gt;... &gt;</td></tr>
-<tr class="separator:abfcecbd08ca2628c95a5fd6a3db7e8cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a46ae43a588c19905d4223fd516c8c763"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a46ae43a588c19905d4223fd516c8c763">ConceptTop</a> = const <a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1ConceptTopImpl.html">ConceptTopImpl</a> *</td></tr>
 <tr class="separator:a46ae43a588c19905d4223fd516c8c763"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7d5600d91ca579d8782a8d5ea1fea127"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a7d5600d91ca579d8782a8d5ea1fea127">ConceptBot</a> = const <a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1ConceptBotImpl.html">ConceptBotImpl</a> *</td></tr>
@@ -976,16 +975,14 @@ template&lt;FeatureCategory D&gt; </div>
 
 </div>
 </div>
-<a id="abfcecbd08ca2628c95a5fd6a3db7e8cd" name="abfcecbd08ca2628c95a5fd6a3db7e8cd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abfcecbd08ca2628c95a5fd6a3db7e8cd">&#9670;&#160;</a></span>DerivationRuleSets</h2>
+<a id="abc119e87d2fc14121ec728caec5d3580" name="abc119e87d2fc14121ec728caec5d3580"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc119e87d2fc14121ec728caec5d3580">&#9670;&#160;</a></span>DerivationRuleSets</h2>
 
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;dl::FeatureCategory... D&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#abfcecbd08ca2628c95a5fd6a3db7e8cd">mimir::languages::dl::grammar::DerivationRuleSets</a> = typedef boost::hana::map&lt;boost::hana::pair&lt;boost::hana::type&lt;D&gt;, <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a0e0fe8a4a8e69f7a1bac00d7f11cb083">DerivationRuleSet</a>&lt;D&gt; &gt;...&gt;</td>
+          <td class="memname">using <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#abc119e87d2fc14121ec728caec5d3580">mimir::languages::dl::grammar::DerivationRuleSets</a> = typedef <a class="el" href="namespacemimir_1_1languages_1_1dl.html#a00e437f04c4ea4824ef436c9be93caaa">HanaMappedContainer</a>&lt;<a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a0e0fe8a4a8e69f7a1bac00d7f11cb083">DerivationRuleSet</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Concept.html">Concept</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Role.html">Role</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Boolean.html">Boolean</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Numerical.html">Numerical</a>&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1065,6 +1062,20 @@ template&lt;dl::FeatureCategory D&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a004b9ad000457346318eb1258ed1b158">mimir::languages::dl::grammar::NonTerminalSet</a> = typedef std::unordered_set&lt;<a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a5d9458b773dd5d22a88cff850b870771">NonTerminal</a>&lt;D&gt; &gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afcd0afc31f0248f831b6dd239bb62abe" name="afcd0afc31f0248f831b6dd239bb62abe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afcd0afc31f0248f831b6dd239bb62abe">&#9670;&#160;</a></span>NonTerminalToDerivationRuleSets</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#afcd0afc31f0248f831b6dd239bb62abe">mimir::languages::dl::grammar::NonTerminalToDerivationRuleSets</a> = typedef <a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a6a50c828ca83e583aa5a8415f10833bb">NonTerminalMap</a>&lt;<a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#a0e0fe8a4a8e69f7a1bac00d7f11cb083">DerivationRuleSet</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Concept.html">Concept</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Role.html">Role</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Boolean.html">Boolean</a>, <a class="el" href="structmimir_1_1languages_1_1dl_1_1Numerical.html">Numerical</a>&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
