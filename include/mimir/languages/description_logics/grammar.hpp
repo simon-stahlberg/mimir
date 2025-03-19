@@ -40,13 +40,13 @@ private:
     Repositories m_repositories;
 
     /* The rules of the grammar. */
-    StartSymbolsContainer m_start_symbols;
+    OptionalNonTerminals m_start_symbols;
     DerivationRulesContainer m_derivation_rules;
 
     formalism::Domain m_domain;
 
 public:
-    Grammar(Repositories repositories, StartSymbolsContainer start_symbols, DerivationRulesContainer derivation_rules, formalism::Domain domain);
+    Grammar(Repositories repositories, OptionalNonTerminals start_symbols, DerivationRulesContainer derivation_rules, formalism::Domain domain);
 
     /// @brief Create a grammar from a BNF description for a given domain.
     /// The domain is used for error checking only to ensure that predicates or constants are available.
@@ -71,7 +71,7 @@ public:
      * Getters
      */
 
-    const StartSymbolsContainer& get_start_symbols_container() const;
+    const OptionalNonTerminals& get_start_symbols_container() const;
     const DerivationRulesContainer& get_derivation_rules_container() const;
     const formalism::Domain& get_domain() const;
 };

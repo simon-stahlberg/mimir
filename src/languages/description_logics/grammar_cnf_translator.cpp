@@ -68,7 +68,7 @@ static ToNonTerminalMap<std::string, Concept, Role, Boolean, Numerical> collect_
 
 struct EliminateChoiceVisitor : public CopyVisitor
 {
-    EliminateChoiceVisitor(Repositories& repositories, StartSymbolsContainer& start_symbols, DerivationRulesContainer& derivation_rules) :
+    EliminateChoiceVisitor(Repositories& repositories, OptionalNonTerminals& start_symbols, DerivationRulesContainer& derivation_rules) :
         CopyVisitor(repositories, start_symbols, derivation_rules)
     {
     }
@@ -96,7 +96,7 @@ struct EliminateChoiceVisitor : public CopyVisitor
 
     void visit(const Grammar& grammar) override
     {
-        boost::hana::for_each(grammar.get_start_symbols_container().get(),
+        boost::hana::for_each(grammar.get_start_symbols_container(),
                               [&](auto&& pair)
                               {
                                   auto key = boost::hana::first(pair);
@@ -106,7 +106,7 @@ struct EliminateChoiceVisitor : public CopyVisitor
                                   if (second.has_value())
                                   {
                                       second.value()->accept(*this);
-                                      m_start_symbols.insert(std::any_cast<NonTerminal<FeatureType>>(get_result()));
+                                      boost::hana::at_key(m_start_symbols, key) = std::any_cast<NonTerminal<FeatureType>>(get_result());
                                   }
                               });
 
@@ -126,7 +126,7 @@ struct EliminateChoiceVisitor : public CopyVisitor
 static Grammar eliminate_choices_in_rules(const Grammar& grammar)
 {
     auto repositories = Repositories();
-    auto start_symbols = StartSymbolsContainer();
+    auto start_symbols = OptionalNonTerminals();
     auto derivation_rules = DerivationRulesContainer();
 
     auto visitor = EliminateChoiceVisitor(repositories, start_symbols, derivation_rules);
@@ -162,7 +162,7 @@ private:
 
 public:
     EliminateNestedConstructorsVisitor(Repositories& repositories,
-                                       StartSymbolsContainer& start_symbols,
+                                       OptionalNonTerminals& start_symbols,
                                        DerivationRulesContainer& derivation_rules,
                                        ToNonTerminalMap<std::string, Concept, Role, Boolean, Numerical>& existing_nonterminals) :
         CopyVisitor(repositories, start_symbols, derivation_rules),
@@ -229,7 +229,7 @@ public:
 static Grammar eliminate_nested_constructors(const Grammar& grammar)
 {
     auto repositories = Repositories();
-    auto start_symbols = StartSymbolsContainer();
+    auto start_symbols = OptionalNonTerminals();
     auto derivation_rules = DerivationRulesContainer();
 
     auto nonterminal_map = collect_nonterminals_from_grammar(grammar);
@@ -585,7 +585,7 @@ template void ToCNFVisitor::visit_impl(DerivationRule<Numerical> constructor);
 
 void ToCNFVisitor::visit(const Grammar& grammar)
 {
-    boost::hana::for_each(grammar.get_start_symbols_container().get(),
+    boost::hana::for_each(grammar.get_start_symbols_container(),
                           [&](auto&& pair)
                           {
                               auto key = boost::hana::first(pair);

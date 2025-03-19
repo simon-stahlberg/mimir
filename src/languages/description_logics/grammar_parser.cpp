@@ -377,27 +377,27 @@ static DerivationRule<D> parse(const dl::ast::DerivationRule<D>& node, const Dom
     return ref_repositories.template get_or_create_derivation_rule<D>(non_terminal, std::move(constructor_or_non_terminals));
 }
 
-static StartSymbolsContainer parse(const dl::ast::GrammarHead& node, const DomainImpl& domain, Repositories& ref_repositories)
+static OptionalNonTerminals parse(const dl::ast::GrammarHead& node, const DomainImpl& domain, Repositories& ref_repositories)
 {
-    auto start_symbols = StartSymbolsContainer();
+    auto start_symbols = OptionalNonTerminals();
 
     if (node.concept_start)
     {
-        start_symbols.insert(parse(node.concept_start.value(), domain, ref_repositories));
+        boost::hana::at_key(start_symbols, boost::hana::type<Concept> {}) = parse(node.concept_start.value(), domain, ref_repositories);
     }
 
     if (node.role_start)
     {
-        start_symbols.insert(parse(node.role_start.value(), domain, ref_repositories));
+        boost::hana::at_key(start_symbols, boost::hana::type<Role> {}) = parse(node.role_start.value(), domain, ref_repositories);
     }
     if (node.boolean_start)
     {
-        start_symbols.insert(parse(node.boolean_start.value(), domain, ref_repositories));
+        boost::hana::at_key(start_symbols, boost::hana::type<Boolean> {}) = parse(node.boolean_start.value(), domain, ref_repositories);
     }
 
     if (node.numerical_start)
     {
-        start_symbols.insert(parse(node.numerical_start.value(), domain, ref_repositories));
+        boost::hana::at_key(start_symbols, boost::hana::type<Numerical> {}) = parse(node.numerical_start.value(), domain, ref_repositories);
     }
 
     return start_symbols;

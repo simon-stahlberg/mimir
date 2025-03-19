@@ -25,7 +25,7 @@ using namespace mimir::formalism;
 namespace mimir::languages::dl::grammar
 {
 
-Grammar::Grammar(Repositories repositories, StartSymbolsContainer start_symbols, DerivationRulesContainer derivation_rules, Domain domain) :
+Grammar::Grammar(Repositories repositories, OptionalNonTerminals start_symbols, DerivationRulesContainer derivation_rules, Domain domain) :
     m_repositories(std::move(repositories)),
     m_start_symbols(std::move(start_symbols)),
     m_derivation_rules(std::move(derivation_rules)),
@@ -50,7 +50,7 @@ Grammar::Grammar(GrammarSpecificationEnum type, Domain domain)
 template<FeatureCategory D>
 bool Grammar::test_match(dl::Constructor<D> constructor) const
 {
-    const auto& start_symbol = m_start_symbols.template get<D>();
+    const auto& start_symbol = boost::hana::at_key(m_start_symbols, boost::hana::type<D> {});
 
     if (!start_symbol)
     {
@@ -65,7 +65,7 @@ template bool Grammar::test_match(dl::Constructor<Role> constructor) const;
 
 void Grammar::accept(IVisitor& visitor) const { visitor.visit(*this); }
 
-const StartSymbolsContainer& Grammar::get_start_symbols_container() const { return m_start_symbols; }
+const OptionalNonTerminals& Grammar::get_start_symbols_container() const { return m_start_symbols; }
 
 const DerivationRulesContainer& Grammar::get_derivation_rules_container() const { return m_derivation_rules; }
 
