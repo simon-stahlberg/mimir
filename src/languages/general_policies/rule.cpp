@@ -37,6 +37,13 @@ bool RuleImpl::evaluate(dl::EvaluationContext& source_context, dl::EvaluationCon
            && std::all_of(get_effects().begin(), get_effects().end(), [&](auto&& arg) { return arg->evaluate(source_context, target_context); });
 }
 
+bool RuleImpl::evaluate_with_debug(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const
+{
+    std::cout << "[DEBUG] evaluate rule index=" << m_index << std::endl;
+    return std::all_of(get_conditions().begin(), get_conditions().end(), [&](auto&& arg) { return arg->evaluate_with_debug(source_context); })
+           && std::all_of(get_effects().begin(), get_effects().end(), [&](auto&& arg) { return arg->evaluate_with_debug(source_context, target_context); });
+}
+
 void RuleImpl::accept(IVisitor& visitor) const { visitor.visit(this); }
 
 Index RuleImpl::get_index() const { return m_index; }

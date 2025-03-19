@@ -57,9 +57,13 @@ Problem translate(const Problem& problem, const DomainTranslationResult& result)
         throw std::runtime_error("translate(problem, result): domain in problem must match original domain in DomainTranslationResult.");
     }
 
+    // std::cout << "EncodeNumericConstraintTermsInFunctions" << std::endl;
+
     auto encode_parameter_index_in_variables_translator = EncodeNumericConstraintTermsInFunctions();
     auto builder = ProblemBuilder(result.get_translated_domain());
     auto translated_problem = encode_parameter_index_in_variables_translator.translate_level_0(problem, builder);
+
+    // std::cout << "EncodeParameterIndexInVariables" << std::endl;
 
     auto encode_numeric_constraint_terms_in_function = EncodeParameterIndexInVariables();
     builder = ProblemBuilder(result.get_translated_domain());

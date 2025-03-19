@@ -23,6 +23,8 @@
 
 using namespace mimir::formalism;
 using namespace mimir::languages;
+using namespace mimir::search;
+using namespace mimir::datasets;
 
 namespace mimir::tests
 {
@@ -30,32 +32,53 @@ namespace mimir::tests
 TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyTest)
 {
     {
+        // Gripper policy from Frances-et-al-aaai2021: https://arxiv.org/pdf/2101.00692
         auto description = std::string(R"(
         [boolean_features]
-            <boolean_holding> ::= @boolean_nonempty @role_atomic_state "carry"
+            <boolean_robby_at_b> ::= @boolean_nonempty @concept_existential_quantification @role_atomic_goal "at" false @concept_atomic_state "at-robby"
 
         [numerical_features]
+            <numerical_carry> ::= @numerical_count @concept_existential_quantification @role_atomic_state "carry" @concept_top
             <numerical_undelivered> ::=
                 @numerical_count 
                     @concept_negation
                         @concept_role_value_map_equality
                             @role_atomic_state "at"
-                            @role_atomic_goal "at" true
+                            @role_atomic_goal "at" false
 
         [policy_rules]
-            { @negative_boolean_condition <boolean_holding>, @greater_numerical_condition <numerical_undelivered> } 
-            -> { @positive_boolean_effect <boolean_holding> }
-            { @positive_boolean_condition <boolean_holding>, @greater_numerical_condition <numerical_undelivered> } 
-            -> { @negative_boolean_effect <boolean_holding>, @decrease_numerical_effect <numerical_undelivered> }
+            { @negative_boolean_condition <boolean_robby_at_b>, @equal_numerical_condition <numerical_carry>, @greater_numerical_condition <numerical_undelivered> } 
+            -> { @increase_numerical_effect <numerical_carry> }
+            { @positive_boolean_condition <boolean_robby_at_b>, @equal_numerical_condition <numerical_carry>, @greater_numerical_condition <numerical_undelivered> } 
+            -> { @negative_boolean_effect <boolean_robby_at_b> }
+            { @positive_boolean_condition <boolean_robby_at_b>, @greater_numerical_condition <numerical_carry>, @greater_numerical_condition <numerical_undelivered> } 
+            -> { @decrease_numerical_effect <numerical_carry>, @decrease_numerical_effect <numerical_undelivered> }
+            { @negative_boolean_condition <boolean_robby_at_b>, @greater_numerical_condition <numerical_carry>, @greater_numerical_condition <numerical_undelivered> } 
+            -> { @positive_boolean_effect <boolean_robby_at_b> }
         )");
 
-        auto problem =
-            ProblemImpl::create(fs::path(std::string(DATA_DIR) + "gripper/domain.pddl"), fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl"));
+        const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
+        const auto problem1_file = fs::path(std::string(DATA_DIR) + "gripper/p-1-0.pddl");
+        const auto problem2_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
+
+        auto context = search::GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem1_file, problem2_file });
+
+        auto options = GeneralizedStateSpace::Options();
+        options.problem_options.symmetry_pruning = false;
+        const auto generalized_state_space = GeneralizedStateSpace(context, options);
+
+        auto vertex_indices =
+            graphs::VertexIndexList(generalized_state_space.get_initial_vertices().begin(), generalized_state_space.get_initial_vertices().end());
+
+        auto denotation_repositories = dl::DenotationRepositories();
 
         auto repositories = general_policies::Repositories();
         auto dl_repositories = dl::Repositories();
 
-        repositories.get_or_create_general_policy(description, *problem->get_domain(), dl_repositories);
+        const auto general_policy = repositories.get_or_create_general_policy(description, *context.get_domain(), dl_repositories);
+
+        EXPECT_EQ(general_policy->solves(generalized_state_space, vertex_indices, denotation_repositories),
+                  general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
     }
 }
 

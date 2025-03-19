@@ -20,6 +20,7 @@
 
 #include "mimir/datasets/declarations.hpp"
 #include "mimir/datasets/generalized_state_space.hpp"
+#include "mimir/languages/description_logics/denotation_repositories.hpp"
 #include "mimir/languages/general_policies/declarations.hpp"
 
 namespace mimir::languages::general_policies
@@ -45,6 +46,8 @@ public:
     /// @return true if the state pair (transition) is compatible with a `Rule` in the `GeneralPolicyImpl`.
     bool evaluate(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const;
 
+    bool evaluate_with_debug(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const;
+
     /// @brief Accept a `IVisitor`.
     /// @param visitor the `IVisitor`.
     void accept(IVisitor& visitor);
@@ -53,13 +56,22 @@ public:
     /// @return true if the `GeneralPolicyImpl` is structurally terminating, and false otherwise.
     bool is_terminating() const;
 
-    /// @brief Return true if and only if the `GeneralPolicyImpl` solves all vertices of the `graphs::ClassGraph` in the given
+    enum class UnsolvabilityReason
+    {
+        NONE = 0,
+        CYCLE = 1,
+        UNSOLVABLE = 2,
+    };
+
+    /// @brief Return whether the `GeneralPolicyImpl` solves all vertices from the given `graphs::VertexIndexList` in the given
     /// `datasets::GeneralizedStateSpace`.
     /// @param generalized_state_space is the `GeneralizedStateSpace`.
-    /// @param graph is a subgraph of or equal to the `ClassGraph` in the `GeneralizedStateSpace`.
-    /// @return true if the `GeneralPolicyImpl` solves all vertices of the `graphs::ClassGraph` in the given `datasets::GeneralizedStateSpace`, and false
-    /// otherwise.
-    bool solves(const datasets::GeneralizedStateSpace& generalized_state_space, const graphs::ClassGraph& graph);
+    /// @param vertices are the indices of `ClassVertex` that must be solved.
+    /// @param denotation_repositories is the repository that stored feature denotations.
+    /// @return a reason for unsolvability or None.
+    UnsolvabilityReason solves(const datasets::GeneralizedStateSpace& generalized_state_space,
+                               const graphs::VertexIndexList& vertices,
+                               dl::DenotationRepositories& denotation_repositories) const;
 
     /// @brief Get the index.
     /// @return the index.

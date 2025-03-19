@@ -36,6 +36,7 @@ private:
 
 public:
     bool evaluate(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const;
+    bool evaluate_with_debug(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const;
 
     void accept(IVisitor& visitor) const;
 

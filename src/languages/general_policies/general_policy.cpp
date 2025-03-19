@@ -17,8 +17,12 @@
 
 #include "mimir/languages/general_policies/general_policy.hpp"
 
+#include "mimir/languages/description_logics/evaluation_context.hpp"
 #include "mimir/languages/general_policies/rule.hpp"
 #include "mimir/languages/general_policies/visitor_interface.hpp"
+#include "mimir/search/state.hpp"
+
+#include <queue>
 
 namespace mimir::languages::general_policies
 {
@@ -35,13 +39,97 @@ bool GeneralPolicyImpl::evaluate(dl::EvaluationContext& source_context, dl::Eval
     return std::any_of(get_rules().begin(), get_rules().end(), [&](auto&& arg) { return arg->evaluate(source_context, target_context); });
 }
 
+bool GeneralPolicyImpl::evaluate_with_debug(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const
+{
+    return std::any_of(get_rules().begin(), get_rules().end(), [&](auto&& arg) { return arg->evaluate_with_debug(source_context, target_context); });
+}
+
 void GeneralPolicyImpl::accept(IVisitor& visitor) { visitor.visit(this); }
 
 bool GeneralPolicyImpl::is_terminating() const { throw std::runtime_error("Not implemented"); }
 
-bool GeneralPolicyImpl::solves(const datasets::GeneralizedStateSpace& generalized_state_space, const graphs::ClassGraph& graph)
+GeneralPolicyImpl::UnsolvabilityReason GeneralPolicyImpl::solves(const datasets::GeneralizedStateSpace& generalized_state_space,
+                                                                 const graphs::VertexIndexList& vertices,
+                                                                 dl::DenotationRepositories& denotation_repositories) const
 {
-    throw std::runtime_error("Not implemented");
+    auto queue = std::deque<graphs::VertexIndex> {};
+
+    auto visited_v_idxs = graphs::VertexIndexSet {};
+
+    const auto& class_graph = generalized_state_space.get_graph();
+
+    // TODO: need to switch to DFS to detect cycles!
+
+    for (const auto& v_idx : vertices)
+    {
+        if (visited_v_idxs.contains(v_idx))
+            continue;
+
+        queue.clear();
+        queue.emplace_back(v_idx);
+
+        while (!queue.empty())
+        {
+            const auto src_v_idx = queue.front();
+            queue.pop_front();
+
+            const auto& src_v = class_graph.get_vertex(src_v_idx);
+
+            if (graphs::is_goal(src_v))
+            {
+                continue;
+            }
+
+            const auto& src_problem = generalized_state_space.get_problem(src_v);
+            const auto& src_problem_v = generalized_state_space.get_problem_vertex(src_v);
+            const auto src_state = graphs::get_state(src_problem_v);
+            auto src_eval_context = dl::EvaluationContext(src_state, src_problem, denotation_repositories);
+
+            std::cout << std::endl;
+            std::cout << "Src " << std::make_tuple(src_state, std::cref(*src_problem)) << std::endl;
+
+            bool src_has_compatible_edge = false;
+
+            for (const auto& dst_v_idx : class_graph.get_adjacent_vertex_indices<graphs::Forward>(src_v_idx))
+            {
+                const auto& dst_v = class_graph.get_vertex(dst_v_idx);
+                const auto& dst_problem = generalized_state_space.get_problem(dst_v);
+                const auto& dst_problem_v = generalized_state_space.get_problem_vertex(dst_v);
+                const auto dst_state = graphs::get_state(dst_problem_v);
+                auto dst_eval_context = dl::EvaluationContext(dst_state, dst_problem, denotation_repositories);
+
+                const bool is_compatible = evaluate(src_eval_context, dst_eval_context);
+
+                if (is_compatible)
+                {
+                    if (visited_v_idxs.contains(dst_v_idx))
+                    {
+                        std::cout << "Src has cyclic compatible edge " << std::make_tuple(dst_state, std::cref(*dst_problem)) << std::endl;
+                        return UnsolvabilityReason::CYCLE;
+                    }
+
+                    src_has_compatible_edge = true;
+
+                    queue.emplace_back(dst_v_idx);
+                    visited_v_idxs.insert(dst_v_idx);
+
+                    std::cout << "Compatible edge " << std::make_tuple(dst_state, std::cref(*dst_problem)) << std::endl;
+                }
+                else
+                {
+                    // std::cout << "Incompatible edge " << std::make_tuple(dst_state, std::cref(*dst_problem)) << std::endl;
+                }
+            }
+
+            if (!src_has_compatible_edge)
+            {
+                std::cout << "Src has no compatible edge" << std::endl;
+                return UnsolvabilityReason::UNSOLVABLE;
+            }
+        }
+    }
+
+    return UnsolvabilityReason::NONE;
 }
 
 Index GeneralPolicyImpl::get_index() const { return m_index; }

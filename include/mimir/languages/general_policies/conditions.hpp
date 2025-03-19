@@ -33,6 +33,7 @@ private:
     friend class loki::SegmentedRepository;
 
     bool evaluate_impl(dl::EvaluationContext& source_context) const;
+    bool evaluate_with_debug_impl(dl::EvaluationContext& source_context) const;
 
     void accept_impl(IVisitor& visitor) const;
 
@@ -48,6 +49,7 @@ private:
     friend class loki::SegmentedRepository;
 
     bool evaluate_impl(dl::EvaluationContext& source_context) const;
+    bool evaluate_with_debug_impl(dl::EvaluationContext& source_context) const;
 
     void accept_impl(IVisitor& visitor) const;
 
@@ -63,6 +65,7 @@ private:
     friend class loki::SegmentedRepository;
 
     bool evaluate_impl(dl::EvaluationContext& source_context) const;
+    bool evaluate_with_debug_impl(dl::EvaluationContext& source_context) const;
 
     void accept_impl(IVisitor& visitor) const;
 
@@ -78,6 +81,7 @@ private:
     friend class loki::SegmentedRepository;
 
     bool evaluate_impl(dl::EvaluationContext& source_context) const;
+    bool evaluate_with_debug_impl(dl::EvaluationContext& source_context) const;
 
     void accept_impl(IVisitor& visitor) const;
 

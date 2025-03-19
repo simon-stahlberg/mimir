@@ -17,7 +17,9 @@
 
 #include "mimir/languages/general_policies/conditions.hpp"
 
+#include "mimir/languages/description_logics/constructor_visitor_formatter.hpp"
 #include "mimir/languages/description_logics/constructors.hpp"
+#include "mimir/languages/general_policies/keywords.hpp"
 #include "mimir/languages/general_policies/named_feature.hpp"
 #include "mimir/languages/general_policies/visitor_interface.hpp"
 
@@ -30,6 +32,17 @@ bool PositiveBooleanConditionImpl::evaluate_impl(dl::EvaluationContext& source_c
     return this->m_feature->get_feature()->evaluate(source_context)->get_data();
 }
 
+bool PositiveBooleanConditionImpl::evaluate_with_debug_impl(dl::EvaluationContext& source_context) const
+{
+    std::cout << "[DEBUG] " << keywords::positive_boolean_condition << ": " << std::endl;
+
+    const auto eval = this->m_feature->get_feature()->evaluate(source_context)->get_data();
+
+    std::cout << "feature=" << this->m_feature->get_feature() << " source_value=" << eval << std::endl;
+
+    return eval;
+}
+
 void PositiveBooleanConditionImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
 NegativeBooleanConditionImpl::NegativeBooleanConditionImpl(Index index, NamedFeature<dl::Boolean> feature) : ConditionBase(index, feature) {}
@@ -37,6 +50,17 @@ NegativeBooleanConditionImpl::NegativeBooleanConditionImpl(Index index, NamedFea
 bool NegativeBooleanConditionImpl::evaluate_impl(dl::EvaluationContext& source_context) const
 {
     return !this->m_feature->get_feature()->evaluate(source_context)->get_data();
+}
+
+bool NegativeBooleanConditionImpl::evaluate_with_debug_impl(dl::EvaluationContext& source_context) const
+{
+    std::cout << "[DEBUG] " << keywords::negative_boolean_condition << ": ";
+
+    const auto eval = this->m_feature->get_feature()->evaluate(source_context)->get_data();
+
+    std::cout << "feature=" << this->m_feature->get_feature() << " source_value=" << eval << std::endl;
+
+    return !eval;
 }
 
 void NegativeBooleanConditionImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
@@ -48,6 +72,17 @@ bool GreaterNumericalConditionImpl::evaluate_impl(dl::EvaluationContext& source_
     return this->m_feature->get_feature()->evaluate(source_context)->get_data() > 0;
 }
 
+bool GreaterNumericalConditionImpl::evaluate_with_debug_impl(dl::EvaluationContext& source_context) const
+{
+    std::cout << "[DEBUG] " << keywords::greater_numerical_condition << ": " << std::endl;
+
+    const auto eval = this->m_feature->get_feature()->evaluate(source_context)->get_data();
+
+    std::cout << ": feature=" << this->m_feature->get_feature() << " source_value=" << eval << std::endl;
+
+    return eval > 0;
+}
+
 void GreaterNumericalConditionImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
 EqualNumericalConditionImpl::EqualNumericalConditionImpl(Index index, NamedFeature<dl::Numerical> feature) : ConditionBase(index, feature) {}
@@ -55,6 +90,17 @@ EqualNumericalConditionImpl::EqualNumericalConditionImpl(Index index, NamedFeatu
 bool EqualNumericalConditionImpl::evaluate_impl(dl::EvaluationContext& source_context) const
 {
     return this->m_feature->get_feature()->evaluate(source_context)->get_data() == 0;
+}
+
+bool EqualNumericalConditionImpl::evaluate_with_debug_impl(dl::EvaluationContext& source_context) const
+{
+    std::cout << "[DEBUG] " << keywords::equal_numerical_condition << ": " << std::endl;
+
+    const auto eval = this->m_feature->get_feature()->evaluate(source_context)->get_data();
+
+    std::cout << ": feature=" << this->m_feature->get_feature() << " source_value=" << eval << std::endl;
+
+    return eval == 0;
 }
 
 void EqualNumericalConditionImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
