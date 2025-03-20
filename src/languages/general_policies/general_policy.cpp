@@ -23,6 +23,7 @@
 #include "mimir/search/state.hpp"
 
 #include <queue>
+#include <stack>
 
 namespace mimir::languages::general_policies
 {
@@ -52,46 +53,64 @@ GeneralPolicyImpl::UnsolvabilityReason GeneralPolicyImpl::solves(const datasets:
                                                                  const graphs::VertexIndexList& vertices,
                                                                  dl::DenotationRepositories& denotation_repositories) const
 {
-    auto queue = std::deque<graphs::VertexIndex> {};
-
-    auto visited_v_idxs = graphs::VertexIndexSet {};
-
     const auto& class_graph = generalized_state_space.get_graph();
 
-    // TODO: need to switch to DFS to detect cycles!
+    using IteratorType = graphs::ClassGraph::AdjacentVertexIndexConstIteratorType<graphs::Forward>;
+
+    struct Entry
+    {
+        graphs::VertexIndex v_idx;
+        IteratorType it;
+        IteratorType end;
+        bool has_compatible_edge;
+    };
+
+    auto visited_v_idxs = graphs::VertexIndexSet {};
+    auto stack_v_idxs = graphs::VertexIndexSet {};
+
+    std::cout << class_graph << std::endl;
 
     for (const auto& v_idx : vertices)
     {
         if (visited_v_idxs.contains(v_idx))
             continue;
 
-        queue.clear();
-        queue.emplace_back(v_idx);
+        auto stack = std::stack<Entry> {};
+        stack.push(Entry { v_idx,
+                           class_graph.get_adjacent_vertex_indices<graphs::Forward>(v_idx).begin(),
+                           class_graph.get_adjacent_vertex_indices<graphs::Forward>(v_idx).end(),
+                           false });
+        visited_v_idxs.insert(v_idx);
+        stack_v_idxs.insert(v_idx);
 
-        while (!queue.empty())
+        while (!stack.empty())
         {
-            const auto src_v_idx = queue.front();
-            queue.pop_front();
-
+            auto& src_entry = stack.top();
+            const auto src_v_idx = src_entry.v_idx;
             const auto& src_v = class_graph.get_vertex(src_v_idx);
-
-            if (graphs::is_goal(src_v))
-            {
-                continue;
-            }
-
             const auto& src_problem = generalized_state_space.get_problem(src_v);
             const auto& src_problem_v = generalized_state_space.get_problem_vertex(src_v);
             const auto src_state = graphs::get_state(src_problem_v);
-            auto src_eval_context = dl::EvaluationContext(src_state, src_problem, denotation_repositories);
 
-            std::cout << std::endl;
-            std::cout << "Src " << std::make_tuple(src_state, std::cref(*src_problem)) << std::endl;
-
-            bool src_has_compatible_edge = false;
-
-            for (const auto& dst_v_idx : class_graph.get_adjacent_vertex_indices<graphs::Forward>(src_v_idx))
+            if (src_entry.it == src_entry.end)
             {
+                /* No more dst_v_idx available. */
+
+                if (!src_entry.has_compatible_edge && !graphs::is_goal(src_v))
+                {
+                    std::cout << "\nUnsolvable vertex " << src_v_idx << ": " << std::make_tuple(src_state, std::cref(*src_problem)) << std::endl;
+
+                    return UnsolvabilityReason::UNSOLVABLE;
+                }
+
+                stack.pop();
+                stack_v_idxs.erase(src_entry.v_idx);
+            }
+            else
+            {
+                auto src_eval_context = dl::EvaluationContext(src_state, src_problem, denotation_repositories);
+
+                const auto dst_v_idx = *src_entry.it++;  ///< Fetch and additionally increment iterator for next iteration
                 const auto& dst_v = class_graph.get_vertex(dst_v_idx);
                 const auto& dst_problem = generalized_state_space.get_problem(dst_v);
                 const auto& dst_problem_v = generalized_state_space.get_problem_vertex(dst_v);
@@ -102,29 +121,37 @@ GeneralPolicyImpl::UnsolvabilityReason GeneralPolicyImpl::solves(const datasets:
 
                 if (is_compatible)
                 {
-                    if (visited_v_idxs.contains(dst_v_idx))
+                    if (stack_v_idxs.contains(dst_v_idx))
                     {
-                        std::cout << "Src has cyclic compatible edge " << std::make_tuple(dst_state, std::cref(*dst_problem)) << std::endl;
+                        std::cout << "\nCompatible cyclic edge " << src_v_idx << "->" << dst_v_idx << ":\n"
+                                  << std::make_tuple(src_state, std::cref(*src_problem)) << "\n"
+                                  << "  -> " << std::make_tuple(dst_state, std::cref(*dst_problem)) << std::endl;
+
                         return UnsolvabilityReason::CYCLE;
                     }
 
-                    src_has_compatible_edge = true;
+                    src_entry.has_compatible_edge = true;
 
-                    queue.emplace_back(dst_v_idx);
-                    visited_v_idxs.insert(dst_v_idx);
+                    if (!visited_v_idxs.contains(dst_v_idx))
+                    {
+                        std::cout << "\nCompatible edge " << src_v_idx << "->" << dst_v_idx << ":\n"
+                                  << std::make_tuple(src_state, std::cref(*src_problem)) << "\n"
+                                  << "  -> " << std::make_tuple(dst_state, std::cref(*dst_problem)) << std::endl;
 
-                    std::cout << "Compatible edge " << std::make_tuple(dst_state, std::cref(*dst_problem)) << std::endl;
+                        stack.push(Entry { dst_v_idx,
+                                           class_graph.get_adjacent_vertex_indices<graphs::Forward>(dst_v_idx).begin(),
+                                           class_graph.get_adjacent_vertex_indices<graphs::Forward>(dst_v_idx).end(),
+                                           false });
+                        visited_v_idxs.insert(dst_v_idx);
+                        stack_v_idxs.insert(dst_v_idx);
+                    }
                 }
                 else
                 {
-                    // std::cout << "Incompatible edge " << std::make_tuple(dst_state, std::cref(*dst_problem)) << std::endl;
+                    std::cout << "\nIncompatible edge " << src_v_idx << "->" << dst_v_idx << ":\n"
+                              << std::make_tuple(src_state, std::cref(*src_problem)) << "\n"
+                              << "  -> " << std::make_tuple(dst_state, std::cref(*dst_problem)) << std::endl;
                 }
-            }
-
-            if (!src_has_compatible_edge)
-            {
-                std::cout << "Src has no compatible edge" << std::endl;
-                return UnsolvabilityReason::UNSOLVABLE;
             }
         }
     }
