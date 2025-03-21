@@ -146,9 +146,9 @@ private:
     IndexSet m_goal_vertices;
     IndexSet m_unsolvable_vertices;
 
-    StateSpaceImpl(search::SearchContext context, graphs::ProblemGraph graph, Index initial_vertices, IndexSet goal_vertices, IndexSet unsolvable_vertices);
-
 public:
+    StateSpaceImpl(search::SearchContext context, graphs::ProblemGraph graph, Index initial_vertex, IndexSet goal_vertices, IndexSet unsolvable_vertices);
+
     /**
      * Options
      */

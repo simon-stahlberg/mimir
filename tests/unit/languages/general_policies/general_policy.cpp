@@ -15,6 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "mimir/datasets/knowledge_base.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/languages/description_logics/constructor_repositories.hpp"
 #include "mimir/languages/general_policies/repositories.hpp"
@@ -63,12 +64,24 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyTest)
 
         auto context = search::GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem1_file, problem2_file });
 
-        auto options = GeneralizedStateSpace::Options();
-        options.problem_options.symmetry_pruning = true;
-        const auto generalized_state_space = GeneralizedStateSpace(context, options);
+        auto kb_options = datasets::KnowledgeBaseImpl::Options();
 
-        auto vertex_indices =
-            graphs::VertexIndexList(generalized_state_space.get_initial_vertices().begin(), generalized_state_space.get_initial_vertices().end());
+        auto& state_space_options = kb_options.state_space_options;
+        state_space_options.symmetry_pruning = false;
+
+        auto& generalized_state_space_options = kb_options.generalized_state_space_options;
+        generalized_state_space_options = GeneralizedStateSpaceImpl::Options();
+        generalized_state_space_options->symmetry_pruning = false;
+
+        auto kb = datasets::KnowledgeBaseImpl::create(context, kb_options);
+
+        const auto& generalized_state_space = kb->get_generalized_state_space();
+
+        const auto& initial_vertex_indices = generalized_state_space.value()->get_initial_vertices();
+
+        EXPECT_EQ(initial_vertex_indices.size(), 2);
+
+        auto vertex_indices = graphs::VertexIndexList(initial_vertex_indices.begin(), initial_vertex_indices.end());
 
         auto denotation_repositories = dl::DenotationRepositories();
 
@@ -77,9 +90,7 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyTest)
 
         const auto general_policy = repositories.get_or_create_general_policy(description, *context.get_domain(), dl_repositories);
 
-        EXPECT_EQ(generalized_state_space.get_initial_vertices().size(), 2);
-
-        EXPECT_EQ(general_policy->solves(generalized_state_space, vertex_indices, denotation_repositories),
+        EXPECT_EQ(general_policy->solves(generalized_state_space.value(), vertex_indices, denotation_repositories),
                   general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
     }
 }

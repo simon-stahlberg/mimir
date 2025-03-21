@@ -47,6 +47,7 @@ public:
 
     TupleIndex to_tuple_index(const AtomIndexList& atom_indices) const;
 
+    AtomIndexList to_atom_indices(TupleIndex tuple_index) const;
     void to_atom_indices(TupleIndex tuple_index, AtomIndexList& out_atom_indices) const;
 
     std::string tuple_index_to_string(TupleIndex tuple_index) const;

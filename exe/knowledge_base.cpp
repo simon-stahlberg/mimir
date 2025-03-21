@@ -34,32 +34,42 @@ int main(int argc, char** argv)
     const auto domain_file_path = fs::path { argv[1] };
     const auto problems_directory = fs::path { argv[2] };
 
-    auto state_space_options = GeneralizedStateSpace::Options();
-    state_space_options.problem_options.symmetry_pruning = true;
+    auto kb_options = KnowledgeBaseImpl::Options();
 
-    auto tuple_graph_options = TupleGraphCollection::Options();
-    tuple_graph_options.width = 1;
+    auto& state_space_options = kb_options.state_space_options;
+    state_space_options.symmetry_pruning = false;
 
-    auto kb =
-        KnowledgeBase::create(GeneralizedSearchContext(domain_file_path, problems_directory), KnowledgeBase::Options(state_space_options, tuple_graph_options));
-    const auto& generalized_state_space = kb->get_generalized_state_space();
+    auto& generalized_state_space_options = kb_options.generalized_state_space_options;
+    generalized_state_space_options = GeneralizedStateSpaceImpl::Options();
+    generalized_state_space_options->symmetry_pruning = false;
 
-    for (size_t i = 0; i < generalized_state_space.get_problem_graphs().size(); ++i)
+    auto& tuple_graph_options = kb_options.tuple_graph_options;
+    tuple_graph_options = TupleGraphImpl::Options();
+    tuple_graph_options->width = 1;
+
+    auto kb = KnowledgeBaseImpl::create(GeneralizedSearchContext(domain_file_path, problems_directory), kb_options);
+
+    if (kb->get_generalized_state_space().has_value())
     {
-        const auto& pss_i = generalized_state_space.get_problem_graphs()[i];
-        std::cout << i << ". has num vertices: " << pss_i.get_graph().get_num_vertices() << " and num edges: " << pss_i.get_graph().get_num_edges()
-                  << std::endl;
-        std::cout << pss_i.get_graph() << std::endl;
-    }
+        const auto& generalized_state_space = kb->get_generalized_state_space().value();
 
-    std::cout << "Class graph has num vertices: " << generalized_state_space.get_graph().get_num_vertices()
-              << " and num edges: " << generalized_state_space.get_graph().get_num_edges() << std::endl;
-    // std::cout << generalized_state_space.get_graph() << std::endl;
+        for (size_t i = 0; i < generalized_state_space->get_state_spaces().size(); ++i)
+        {
+            const auto& pss_i = generalized_state_space->get_state_spaces()[i];
+            std::cout << i << ". has num vertices: " << pss_i->get_graph().get_num_vertices() << " and num edges: " << pss_i->get_graph().get_num_edges()
+                      << std::endl;
+            std::cout << pss_i->get_graph() << std::endl;
+        }
+
+        std::cout << "Class graph has num vertices: " << generalized_state_space->get_graph().get_num_vertices()
+                  << " and num edges: " << generalized_state_space->get_graph().get_num_edges() << std::endl;
+        // std::cout << generalized_state_space.get_graph() << std::endl;
+    }
 
     if (kb->get_tuple_graphs().has_value())
     {
         auto class_v_idx = size_t(0);
-        for (const auto& tuple_graph : kb->get_tuple_graphs().value().get_per_class_vertex_tuple_graph())
+        for (const auto& tuple_graph : kb->get_tuple_graphs().value())
         {
             // std::cout << "Class vertex index: " << class_v_idx++ << std::endl;
             // std::cout << tuple_graph << std::endl;

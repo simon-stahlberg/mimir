@@ -39,12 +39,12 @@ private:
 
     std::optional<std::vector<TupleGraphList>> m_tuple_graphs;  ///< Optional tuple graphs for each `StateSpace`.
 
+public:
     KnowledgeBaseImpl(formalism::Domain domain,
                       StateSpaceList state_spaces,
                       std::optional<GeneralizedStateSpace> generalized_state_space,
                       std::optional<std::vector<TupleGraphList>> tuple_graphs);
 
-public:
     /**
      * Options
      */

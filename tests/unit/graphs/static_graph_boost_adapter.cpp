@@ -33,11 +33,9 @@ TEST(MimirTests, GraphsVertexListGraphTest)
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
 
-    const auto generalized_state_space =
-        datasets::GeneralizedStateSpace(search::GeneralizedSearchContext(domain_file,
-                                                                         std::vector<fs::path> { problem_file },
-                                                                         search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
-    auto graph = graphs::DirectionTaggedType(generalized_state_space.get_graph(), graphs::Forward());
+    const auto state_space = datasets::StateSpaceImpl::create(
+        search::SearchContext(domain_file, problem_file, search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
+    auto graph = graphs::DirectionTaggedType(state_space.value()->get_graph(), graphs::Forward());
 
     EXPECT_EQ(num_vertices(graph), 28);
 
@@ -53,34 +51,33 @@ TEST(MimirTests, GraphsIncidenceGraphTest)
 {
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
-    const auto generalized_state_space =
-        datasets::GeneralizedStateSpace(search::GeneralizedSearchContext(domain_file,
-                                                                         std::vector<fs::path> { problem_file },
-                                                                         search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
-    const auto& class_graph = generalized_state_space.get_graph();
-    auto graph = graphs::DirectionTaggedType(generalized_state_space.get_graph(), graphs::Forward());
+
+    const auto state_space = datasets::StateSpaceImpl::create(
+        search::SearchContext(domain_file, problem_file, search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
+    const auto& graph = state_space.value()->get_graph();
+    auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::Forward());
 
     size_t transition_count = 0;
-    for (auto [state_it, state_last] = vertices(graph); state_it != state_last; ++state_it)
+    for (auto [state_it, state_last] = vertices(tagged_graph); state_it != state_last; ++state_it)
     {
         const auto& state_index = *state_it;
         size_t state_transition_count = 0;
-        for (auto [out_it, out_last] = out_edges(state_index, graph); out_it != out_last; ++out_it)
+        for (auto [out_it, out_last] = out_edges(state_index, tagged_graph); out_it != out_last; ++out_it)
         {
-            EXPECT_EQ(source(*out_it, graph), state_index);
+            EXPECT_EQ(source(*out_it, tagged_graph), state_index);
             transition_count++;
             state_transition_count++;
         }
         // Counting the number of transitions should give us the out degree.
-        EXPECT_EQ(out_degree(*state_it, graph), state_transition_count);
+        EXPECT_EQ(out_degree(*state_it, tagged_graph), state_transition_count);
     }
     // Summing over the successors of each state should give the total number of transitions.
-    EXPECT_EQ(transition_count, class_graph.get_num_edges());
+    EXPECT_EQ(transition_count, graph.get_num_edges());
 
     // possible actions:
     // pick(ball1, rooma, right), pick(ball1, rooma, left), pick(ball2, rooma, right), pick(ball2, rooma, left)
     // move(rooma, rooma), move(rooma, roomb)
-    EXPECT_EQ(out_degree(0, graph), 6);  // 0 is the initial vertex
+    EXPECT_EQ(out_degree(0, tagged_graph), 6);  // 0 is the initial vertex
 }
 
 TEST(MimirTests, GraphsStrongComponentsTest)
@@ -88,16 +85,15 @@ TEST(MimirTests, GraphsStrongComponentsTest)
     {
         const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
-        const auto generalized_state_space =
-            datasets::GeneralizedStateSpace(search::GeneralizedSearchContext(domain_file,
-                                                                             std::vector<fs::path> { problem_file },
-                                                                             search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
-        const auto& class_graph = generalized_state_space.get_graph();
-        auto graph = graphs::DirectionTaggedType(class_graph, graphs::Forward());
 
-        const auto [num_components, component_map] = graphs::strong_components(graph);
+        const auto state_space = datasets::StateSpaceImpl::create(
+            search::SearchContext(domain_file, problem_file, search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
+        const auto& graph = state_space.value()->get_graph();
+        auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::Forward());
+
+        const auto [num_components, component_map] = graphs::strong_components(tagged_graph);
         EXPECT_EQ(num_components, 1);
-        for (auto [it, last] = vertices(graph); it != last; ++it)
+        for (auto [it, last] = vertices(tagged_graph); it != last; ++it)
         {
             EXPECT_EQ(component_map.at(*it), 0);
         }
@@ -105,21 +101,20 @@ TEST(MimirTests, GraphsStrongComponentsTest)
     {
         const auto domain_file = fs::path(std::string(DATA_DIR) + "spanner/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "spanner/test_problem.pddl");
-        const auto generalized_state_space =
-            datasets::GeneralizedStateSpace(search::GeneralizedSearchContext(domain_file,
-                                                                             std::vector<fs::path> { problem_file },
-                                                                             search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
-        const auto& class_graph = generalized_state_space.get_graph();
-        auto graph = graphs::DirectionTaggedType(class_graph, graphs::Forward());
 
-        const auto [num_components, component_map] = graphs::strong_components(graph);
+        const auto state_space = datasets::StateSpaceImpl::create(
+            search::SearchContext(domain_file, problem_file, search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
+        const auto& graph = state_space.value()->get_graph();
+        auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::Forward());
+
+        const auto [num_components, component_map] = graphs::strong_components(tagged_graph);
 
         // Each state should have its own component.
-        EXPECT_EQ(num_components, num_vertices(graph));
+        EXPECT_EQ(num_components, num_vertices(tagged_graph));
 
         // Each component should only have one state.
         std::map<size_t, size_t> num_states_per_component;
-        for (auto [it, last] = vertices(graph); it != last; ++it)
+        for (auto [it, last] = vertices(tagged_graph); it != last; ++it)
         {
             num_states_per_component[component_map.at(*it)]++;
         }
@@ -135,19 +130,18 @@ TEST(MimirTests, GraphsDijkstraShortestPathTest)
     {
         const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
-        const auto generalized_state_space =
-            datasets::GeneralizedStateSpace(search::GeneralizedSearchContext(domain_file,
-                                                                             std::vector<fs::path> { problem_file },
-                                                                             search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
-        const auto& class_graph = generalized_state_space.get_graph();
-        auto graph = graphs::DirectionTaggedType(class_graph, graphs::Forward());
 
-        const auto edge_costs = std::vector<double>(class_graph.get_num_edges(), 1);
+        const auto state_space = datasets::StateSpaceImpl::create(
+            search::SearchContext(domain_file, problem_file, search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
+        const auto& graph = state_space.value()->get_graph();
+        auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::Forward());
+
+        const auto edge_costs = std::vector<double>(graph.get_num_edges(), 1);
         auto states = IndexList { 0 };
-        const auto [predecessor_map, distance_map] = graphs::dijkstra_shortest_paths(graph, edge_costs, states.begin(), states.end());
+        const auto [predecessor_map, distance_map] = graphs::dijkstra_shortest_paths(tagged_graph, edge_costs, states.begin(), states.end());
 
         EXPECT_EQ(distance_map.at(0), 0);
-        for (const auto& goal_state : generalized_state_space.get_goal_vertices())
+        for (const auto& goal_state : state_space.value()->get_goal_vertices())
         {
             EXPECT_GT(distance_map.at(goal_state), 0);
         }
@@ -157,18 +151,17 @@ TEST(MimirTests, GraphsDijkstraShortestPathTest)
     {
         const auto domain_file = fs::path(std::string(DATA_DIR) + "spanner/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "spanner/test_problem.pddl");
-        const auto generalized_state_space =
-            datasets::GeneralizedStateSpace(search::GeneralizedSearchContext(domain_file,
-                                                                             std::vector<fs::path> { problem_file },
-                                                                             search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
-        const auto& class_graph = generalized_state_space.get_graph();
-        auto graph = graphs::DirectionTaggedType(class_graph, graphs::Backward());
 
-        const auto edge_costs = std::vector<double>(class_graph.get_num_edges(), 1);
-        const auto [predecessor_map, distance_map] = graphs::dijkstra_shortest_paths(graph,
+        const auto state_space = datasets::StateSpaceImpl::create(
+            search::SearchContext(domain_file, problem_file, search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
+        const auto& graph = state_space.value()->get_graph();
+        auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::Backward());
+
+        const auto edge_costs = std::vector<double>(graph.get_num_edges(), 1);
+        const auto [predecessor_map, distance_map] = graphs::dijkstra_shortest_paths(tagged_graph,
                                                                                      edge_costs,
-                                                                                     generalized_state_space.get_goal_vertices().begin(),
-                                                                                     generalized_state_space.get_goal_vertices().end());
+                                                                                     state_space.value()->get_goal_vertices().begin(),
+                                                                                     state_space.value()->get_goal_vertices().end());
 
         EXPECT_EQ(distance_map.at(0), 4);
         // There is one deadend state.
@@ -181,18 +174,17 @@ TEST(MimirTests, GraphsBreadthFirstSearchTest)
     {
         const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
-        const auto generalized_state_space =
-            datasets::GeneralizedStateSpace(search::GeneralizedSearchContext(domain_file,
-                                                                             std::vector<fs::path> { problem_file },
-                                                                             search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
-        const auto& class_graph = generalized_state_space.get_graph();
-        auto graph = graphs::DirectionTaggedType(class_graph, graphs::Forward());
+
+        const auto state_space = datasets::StateSpaceImpl::create(
+            search::SearchContext(domain_file, problem_file, search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
+        const auto& graph = state_space.value()->get_graph();
+        auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::Forward());
 
         auto states = IndexList { 0 };
-        const auto [predecessor_map, distance_map] = graphs::breadth_first_search(graph, states.begin(), states.end());
+        const auto [predecessor_map, distance_map] = graphs::breadth_first_search(tagged_graph, states.begin(), states.end());
 
         EXPECT_EQ(distance_map.at(0), 0);
-        for (const auto& goal_state : generalized_state_space.get_goal_vertices())
+        for (const auto& goal_state : state_space.value()->get_goal_vertices())
         {
             EXPECT_GT(distance_map.at(goal_state), 0);
         }
@@ -202,15 +194,14 @@ TEST(MimirTests, GraphsBreadthFirstSearchTest)
     {
         const auto domain_file = fs::path(std::string(DATA_DIR) + "spanner/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "spanner/test_problem.pddl");
-        const auto generalized_state_space =
-            datasets::GeneralizedStateSpace(search::GeneralizedSearchContext(domain_file,
-                                                                             std::vector<fs::path> { problem_file },
-                                                                             search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
-        const auto& class_graph = generalized_state_space.get_graph();
-        auto graph = graphs::DirectionTaggedType(class_graph, graphs::Backward());
+
+        const auto state_space = datasets::StateSpaceImpl::create(
+            search::SearchContext(domain_file, problem_file, search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
+        const auto& graph = state_space.value()->get_graph();
+        auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::Backward());
 
         const auto [predecessor_map, distance_map] =
-            graphs::breadth_first_search(graph, generalized_state_space.get_goal_vertices().begin(), generalized_state_space.get_goal_vertices().end());
+            graphs::breadth_first_search(tagged_graph, state_space.value()->get_goal_vertices().begin(), state_space.value()->get_goal_vertices().end());
 
         EXPECT_EQ(distance_map.at(0), 4);
         // There is one deadend state.
@@ -223,27 +214,26 @@ TEST(MimirTests, GraphsFloydWarshallAllPairsShortestPathTest)
     {
         const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
-        const auto generalized_state_space =
-            datasets::GeneralizedStateSpace(search::GeneralizedSearchContext(domain_file,
-                                                                             std::vector<fs::path> { problem_file },
-                                                                             search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
-        const auto& class_graph = generalized_state_space.get_graph();
-        auto graph = graphs::DirectionTaggedType(class_graph, graphs::Forward());
 
-        const auto edge_costs = std::vector<double>(class_graph.get_num_edges(), 1);
-        const auto distance_matrix = graphs::floyd_warshall_all_pairs_shortest_paths(graph, edge_costs);
+        const auto state_space = datasets::StateSpaceImpl::create(
+            search::SearchContext(domain_file, problem_file, search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
+        const auto& graph = state_space.value()->get_graph();
+        auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::Forward());
+
+        const auto edge_costs = std::vector<double>(graph.get_num_edges(), 1);
+        const auto distance_matrix = graphs::floyd_warshall_all_pairs_shortest_paths(tagged_graph, edge_costs);
 
         auto min_goal_distance = std::numeric_limits<ContinuousCost>::infinity();
-        for (const auto& goal_state : generalized_state_space.get_goal_vertices())
+        for (const auto& goal_state : state_space.value()->get_goal_vertices())
         {
             min_goal_distance = std::min(min_goal_distance, distance_matrix[goal_state][0]);
         }
         EXPECT_GT(min_goal_distance, 0);
         EXPECT_NE(min_goal_distance, std::numeric_limits<ContinuousCost>::infinity());
         auto max_pairwise_distance = ContinuousCost();
-        for (auto v1 = Index(0); v1 < graph.get().get_num_vertices(); ++v1)
+        for (auto v1 = Index(0); v1 < tagged_graph.get().get_num_vertices(); ++v1)
         {
-            for (auto v2 = Index(0); v2 < graph.get().get_num_vertices(); ++v2)
+            for (auto v2 = Index(0); v2 < tagged_graph.get().get_num_vertices(); ++v2)
             {
                 max_pairwise_distance = std::max(max_pairwise_distance, distance_matrix[v1][v2]);
             }
@@ -254,27 +244,26 @@ TEST(MimirTests, GraphsFloydWarshallAllPairsShortestPathTest)
     {
         const auto domain_file = fs::path(std::string(DATA_DIR) + "spanner/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "spanner/test_problem.pddl");
-        const auto generalized_state_space =
-            datasets::GeneralizedStateSpace(search::GeneralizedSearchContext(domain_file,
-                                                                             std::vector<fs::path> { problem_file },
-                                                                             search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
-        const auto& class_graph = generalized_state_space.get_graph();
-        auto graph = graphs::DirectionTaggedType(class_graph, graphs::Backward());
 
-        const auto edge_costs = ContinuousCostList(class_graph.get_num_edges(), 1);
-        const auto distance_matrix = graphs::floyd_warshall_all_pairs_shortest_paths(graph, edge_costs);
+        const auto state_space = datasets::StateSpaceImpl::create(
+            search::SearchContext(domain_file, problem_file, search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
+        const auto& graph = state_space.value()->get_graph();
+        auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::Backward());
+
+        const auto edge_costs = ContinuousCostList(graph.get_num_edges(), 1);
+        const auto distance_matrix = graphs::floyd_warshall_all_pairs_shortest_paths(tagged_graph, edge_costs);
 
         auto min_goal_distance = std::numeric_limits<ContinuousCost>::infinity();
-        for (const auto& goal_state : generalized_state_space.get_goal_vertices())
+        for (const auto& goal_state : state_space.value()->get_goal_vertices())
         {
             min_goal_distance = std::min(min_goal_distance, distance_matrix[goal_state][0]);
         }
         EXPECT_GT(min_goal_distance, 0);
         EXPECT_NE(min_goal_distance, std::numeric_limits<ContinuousCost>::infinity());
         auto max_pairwise_distance = ContinuousCost();
-        for (auto v1 = Index(0); v1 < graph.get().get_num_vertices(); ++v1)
+        for (auto v1 = Index(0); v1 < tagged_graph.get().get_num_vertices(); ++v1)
         {
-            for (auto v2 = Index(0); v2 < graph.get().get_num_vertices(); ++v2)
+            for (auto v2 = Index(0); v2 < tagged_graph.get().get_num_vertices(); ++v2)
             {
                 max_pairwise_distance = std::max(max_pairwise_distance, distance_matrix[v1][v2]);
             }

@@ -40,6 +40,8 @@ private:
 public:
     explicit GeneralizedColorFunctionImpl(formalism::GeneralizedProblem generalized_problem);
 
+    explicit GeneralizedColorFunctionImpl(formalism::Problem problem);
+
     /// @brief get color of object.
     graphs::Color get_color(formalism::Object object) const;
 
@@ -57,10 +59,6 @@ public:
 
     /// @brief Get name of color.
     const std::string& get_color_name(graphs::Color color) const;
-
-    /**
-     * Getters
-     */
 };
 
 }

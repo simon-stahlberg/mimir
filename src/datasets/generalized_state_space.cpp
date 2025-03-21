@@ -39,6 +39,7 @@
 #include "mimir/search/openlists/priority_queue.hpp"
 #include "mimir/search/search_node.hpp"
 #include "mimir/search/search_space.hpp"
+#include "mimir/search/state.hpp"
 #include "mimir/search/state_repository.hpp"
 
 using namespace mimir::formalism;
@@ -91,7 +92,11 @@ static GeneralizedStateSpace compute_generalized_state_space_with_symmetry_reduc
 
     auto state_space_idx = Index(0);
 
-    auto certificate_to_class_v_idx = ToIndexMap<const nauty_wrapper::Certificate*> {};
+    auto certificate_to_class_v_idx = CertificateMap<graphs::VertexIndex> {};
+    using EdgePair = std::pair<graphs::VertexIndex, graphs::VertexIndex>;
+    auto class_e_idxs = std::unordered_map<EdgePair, graphs::EdgeIndex, loki::Hash<EdgePair>, loki::EqualTo<EdgePair>> {};
+
+    auto final_state_spaces = StateSpaceList {};
 
     for (const auto& state_space : state_spaces)
     {
@@ -104,7 +109,9 @@ static GeneralizedStateSpace compute_generalized_state_space_with_symmetry_reduc
 
         auto final_problem_graph = graphs::StaticProblemGraph();
         auto problem_v_idx_to_class_v_idx = std::unordered_map<Index, Index> {};
-        auto instantiated_class_v_idxs = IndexSet {};
+
+        auto& vertex_mapping = vertex_mappings[state_space->get_search_context().get_problem().get()];
+        auto& edge_mapping = edge_mappings[state_space->get_search_context().get_problem().get()];
 
         for (const auto& v : graph.get_vertices())
         {
@@ -119,6 +126,8 @@ static GeneralizedStateSpace compute_generalized_state_space_with_symmetry_reduc
                 /* Discovered new class vertex. */
 
                 const auto class_v_idx = graphs::VertexIndex(class_graph.get_num_vertices());
+
+                vertex_mapping.push_back(class_v_idx);
 
                 if (graphs::is_initial(v))
                 {
@@ -138,8 +147,6 @@ static GeneralizedStateSpace compute_generalized_state_space_with_symmetry_reduc
                 certificate_to_class_v_idx.emplace(certificate.get(), v_idx);
 
                 problem_v_idx_to_class_v_idx.emplace(v_idx, class_v_idx);
-
-                instantiated_class_v_idxs.insert(class_v_idx);
             }
             else
             {
@@ -148,6 +155,8 @@ static GeneralizedStateSpace compute_generalized_state_space_with_symmetry_reduc
                 /* We create a node in the problem graph that points to the class vertex.
                    We cannot skip it to be able to compute tuple graphs in the problem graph of a representative of a class vertex. */
                 const auto class_v_idx = it->second;
+
+                vertex_mapping.push_back(class_v_idx);
 
                 problem_v_idx_to_class_v_idx.emplace(v_idx, class_v_idx);
             }
@@ -160,17 +169,31 @@ static GeneralizedStateSpace compute_generalized_state_space_with_symmetry_reduc
             const auto class_src_v_idx = problem_v_idx_to_class_v_idx.at(e.get_source());
             const auto class_dst_v_idx = problem_v_idx_to_class_v_idx.at(e.get_target());
 
-            /* Only instantiate class edge if the edge transitions between a newly instantiated class vertex. */
-            if (instantiated_class_v_idxs.contains(class_src_v_idx) || instantiated_class_v_idxs.contains(class_dst_v_idx))
+            /* Do not instantiate parallel edges. */
+            auto it = class_e_idxs.find(std::make_pair(class_src_v_idx, class_dst_v_idx));
+
+            if (it == class_e_idxs.end())
             {
-                class_graph.add_directed_edge(class_src_v_idx, class_dst_v_idx, e_idx, state_space_idx);
+                const auto class_e_idx = class_graph.add_directed_edge(class_src_v_idx, class_dst_v_idx, e_idx, state_space_idx);
+
+                edge_mapping.push_back(class_e_idx);
+
+                class_e_idxs.emplace(std::make_pair(class_src_v_idx, class_dst_v_idx), class_e_idx);
+            }
+            else
+            {
+                const auto class_e_idx = it->second;
+
+                edge_mapping.push_back(class_e_idx);
             }
         }
+
+        final_state_spaces.push_back(state_space);
 
         ++state_space_idx;
     }
 
-    return std::make_shared<GeneralizedStateSpaceImpl>(std::move(state_spaces),
+    return std::make_shared<GeneralizedStateSpaceImpl>(std::move(final_state_spaces),
                                                        graphs::ClassGraph(std::move(class_graph)),
                                                        std::move(initial_vertices),
                                                        std::move(goal_vertices),
@@ -200,8 +223,8 @@ static GeneralizedStateSpace compute_generalized_state_space_without_symmetry_re
     {
         const auto& graph = state_space->get_graph();
 
-        const auto v_offset = graph.get_num_vertices();
-        const auto e_offset = graph.get_num_edges();
+        const auto v_offset = class_graph.get_num_vertices();
+        const auto e_offset = class_graph.get_num_edges();
 
         initial_vertices.insert(v_offset);
 

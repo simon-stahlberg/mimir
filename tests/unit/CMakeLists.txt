@@ -24,7 +24,6 @@ add_gtest(cista_optional_test                              "cista/optional.cpp")
 
 add_gtest(common_grouped_vector_test                       "common/grouped_vector.cpp")
 
-add_gtest(datasets_generalized_state_space_test            "datasets/generalized_state_space.cpp")
 add_gtest(datasets_knowledge_base_test                     "datasets/knowledge_base.cpp")
 add_gtest(datasets_object_graph_test                       "datasets/object_graph.cpp")
 

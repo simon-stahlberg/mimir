@@ -102,10 +102,16 @@ void TupleIndexMapper::to_atom_indices(TupleIndex tuple_index, AtomIndexList& ou
     std::reverse(out_atom_indices.begin(), out_atom_indices.end());
 }
 
-std::string TupleIndexMapper::tuple_index_to_string(TupleIndex tuple_index) const
+AtomIndexList TupleIndexMapper::to_atom_indices(TupleIndex tuple_index) const
 {
     auto atom_indices = AtomIndexList {};
     to_atom_indices(tuple_index, atom_indices);
+    return atom_indices;
+}
+
+std::string TupleIndexMapper::tuple_index_to_string(TupleIndex tuple_index) const
+{
+    auto atom_indices = to_atom_indices(tuple_index);
     std::stringstream ss;
     ss << "(";
     for (const auto atom_index : atom_indices)
@@ -924,7 +930,6 @@ SearchResult find_solution(const SearchContext& context,
                            brfs::EventHandler brfs_event_handler_,
                            GoalStrategy goal_strategy_)
 {
-    const auto& problem = *context.get_problem();
     auto& applicable_action_generator = *context.get_applicable_action_generator();
     auto& state_repository = *context.get_state_repository();
 

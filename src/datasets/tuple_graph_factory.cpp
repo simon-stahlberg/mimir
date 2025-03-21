@@ -30,12 +30,8 @@ class TupleGraphArityZeroComputation
 {
 private:
     const graphs::ProblemVertex& m_problem_vertex;
-    const graphs::ProblemGraph& m_problem_graph;
-    const graphs::ClassGraph& m_class_graph;
-    const SearchContext& m_context;
-    const TupleGraphCollection::Options& m_options;
+    const StateSpace& m_state_space;
 
-    iw::TupleIndexMapper m_index_mapper;
     graphs::StaticTupleGraph m_internal_tuple_graph;
     IndexGroupedVectorBuilder<const Index> m_v_idxs_grouped_by_distance;
     IndexGroupedVectorBuilder<const Index> m_problem_v_idxs_grouped_by_distance;
@@ -44,31 +40,27 @@ private:
 
     void compute_distance_zero_vertices()
     {
-        const auto empty_t_idx = m_index_mapper.get_empty_tuple_index();  ///< we use empty tuple in all vertices
-
         m_v_idxs_grouped_by_distance.start_group();
         m_problem_v_idxs_grouped_by_distance.start_group();
 
-        m_root_v_idx = m_internal_tuple_graph.add_vertex(empty_t_idx, IndexList { m_problem_vertex.get_index() });
+        m_root_v_idx = m_internal_tuple_graph.add_vertex(search::iw::AtomIndexList {}, IndexList { m_problem_vertex.get_index() });
 
         m_v_idxs_grouped_by_distance.add_group_element(m_root_v_idx);
     }
 
     void compute_distance_one_vertices()
     {
-        const auto empty_t_idx = m_index_mapper.get_empty_tuple_index();  ///< we use empty tuple in all vertices
-
         m_v_idxs_grouped_by_distance.start_group();
         m_problem_v_idxs_grouped_by_distance.start_group();
 
-        for (const auto& adj_problem_vertex : m_problem_graph.get_adjacent_vertices<graphs::Forward>(m_problem_vertex.get_index()))
+        for (const auto& adj_problem_vertex : m_state_space->get_graph().get_adjacent_vertices<graphs::Forward>(m_problem_vertex.get_index()))
         {
             if (adj_problem_vertex.get_index() == m_problem_vertex.get_index())
             {
                 continue;  ///< self-looping edge
             }
 
-            const auto adj_v_idx = m_internal_tuple_graph.add_vertex(empty_t_idx, IndexList { adj_problem_vertex.get_index() });
+            const auto adj_v_idx = m_internal_tuple_graph.add_vertex(search::iw::AtomIndexList {}, IndexList { adj_problem_vertex.get_index() });
             m_internal_tuple_graph.add_directed_edge(m_root_v_idx, adj_v_idx);
 
             m_v_idxs_grouped_by_distance.add_group_element(adj_v_idx);
@@ -77,17 +69,9 @@ private:
     }
 
 public:
-    TupleGraphArityZeroComputation(const graphs::ProblemVertex& problem_vertex,
-                                   const graphs::ProblemGraph& problem_graph,
-                                   const graphs::ClassGraph& class_graph,
-                                   const SearchContext& context,
-                                   const TupleGraphCollection::Options& options) :
+    TupleGraphArityZeroComputation(const graphs::ProblemVertex& problem_vertex, const StateSpace& state_space) :
         m_problem_vertex(problem_vertex),
-        m_problem_graph(problem_graph),
-        m_class_graph(class_graph),
-        m_context(context),
-        m_options(options),
-        m_index_mapper(context.get_state_repository()->get_reached_fluent_ground_atoms_bitset().count()),
+        m_state_space(state_space),
         m_internal_tuple_graph(),
         m_v_idxs_grouped_by_distance(),
         m_problem_v_idxs_grouped_by_distance()
@@ -100,33 +84,24 @@ public:
 
         compute_distance_one_vertices();
 
-        return TupleGraph(*m_context.get_problem(),
-                          m_problem_graph,
-                          m_class_graph,
-                          m_index_mapper,
-                          graphs::InternalTupleGraph(std::move(m_internal_tuple_graph)),
-                          m_v_idxs_grouped_by_distance.get_result(),
-                          m_problem_v_idxs_grouped_by_distance.get_result());
+        return std::make_shared<TupleGraphImpl>(m_state_space,
+                                                graphs::InternalTupleGraph(std::move(m_internal_tuple_graph)),
+                                                m_v_idxs_grouped_by_distance.get_result(),
+                                                m_problem_v_idxs_grouped_by_distance.get_result());
     }
 };
 
-static TupleGraph create_tuple_graph_width_zero(const graphs::ProblemVertex& problem_vertex,
-                                                const graphs::ProblemGraph& problem_graph,
-                                                const graphs::ClassGraph& class_graph,
-                                                const SearchContext& context,
-                                                const TupleGraphCollection::Options& options)
+static TupleGraph create_tuple_graph_width_zero(const graphs::ProblemVertex& problem_vertex, const StateSpace& state_space)
 {
-    return TupleGraphArityZeroComputation(problem_vertex, problem_graph, class_graph, context, options).compute_and_get_result();
+    return TupleGraphArityZeroComputation(problem_vertex, state_space).compute_and_get_result();
 }
 
 class TupleGraphArityGreaterZeroComputation
 {
 private:
     const graphs::ProblemVertex& m_problem_vertex;
-    const graphs::ProblemGraph& m_problem_graph;
-    const graphs::ClassGraph& m_class_graph;
-    const SearchContext& m_context;
-    const TupleGraphCollection::Options& m_options;
+    const StateSpace& m_state_space;
+    const TupleGraphImpl::Options& m_options;
 
     graphs::StaticTupleGraph m_internal_tuple_graph;
     IndexGroupedVectorBuilder<const Index> m_v_idxs_grouped_by_distance;
@@ -136,11 +111,9 @@ private:
     IndexList m_prev_problem_v_idxs;
     IndexList m_curr_problem_v_idxs;
     IndexSet m_visited_problem_v_idxs;
-    StateSet m_visited_states;
-    StateSet m_curr_states;  ///< all states in current layer, strictly not symmetry reduced to derived tuple indices
     IndexList m_prev_v_idxs;
     IndexList m_curr_v_idxs;
-    iw::NoveltyTable<iw::StaticSize> m_novelty_table;
+    iw::NoveltyTable<iw::DynamicSize> m_novelty_table;
 
     IndexSet m_novel_t_idxs_set;
     IndexList m_novel_t_idxs_vec;
@@ -166,7 +139,8 @@ private:
 
         for (const auto& novel_tuple_index : m_novel_t_idxs_vec)
         {
-            const auto v_idx = m_internal_tuple_graph.add_vertex(novel_tuple_index, IndexList { root_problem_v_idx });
+            const auto v_idx = m_internal_tuple_graph.add_vertex(m_novelty_table.get_tuple_index_mapper().to_atom_indices(novel_tuple_index),
+                                                                 IndexList { root_problem_v_idx });
 
             m_curr_v_idxs.push_back(v_idx);
             m_v_idxs_grouped_by_distance.add_group_element(v_idx);
@@ -182,7 +156,6 @@ private:
         m_problem_v_idxs_grouped_by_distance.add_group_element(root_problem_v_idx);
         m_curr_problem_v_idxs.clear();
         m_curr_problem_v_idxs.push_back(root_problem_v_idx);
-        m_curr_states.insert(get_state(m_problem_graph.get_vertex(root_problem_v_idx)));
         m_visited_problem_v_idxs.insert(root_problem_v_idx);
     }
 
@@ -192,25 +165,13 @@ private:
 
         for (const auto& prev_problem_v_idx : m_prev_problem_v_idxs)
         {
-            for (const auto& curr_problem_v_idx : m_problem_graph.get_adjacent_vertex_indices<graphs::Forward>(prev_problem_v_idx))
+            for (const auto& curr_problem_v_idx : m_state_space->get_graph().get_adjacent_vertex_indices<graphs::Forward>(prev_problem_v_idx))
             {
                 if (!m_visited_problem_v_idxs.contains(curr_problem_v_idx))
                 {
                     m_curr_problem_v_idxs.push_back(curr_problem_v_idx);
                     m_visited_problem_v_idxs.insert(curr_problem_v_idx);
                     success = true;
-                }
-            }
-
-            /* Compute all states in next layer, even those that are symmetric, to compute all tuple indices. */
-            const auto& state = get_state(m_problem_graph.get_vertex(prev_problem_v_idx));
-            for (const auto& action : m_context.get_applicable_action_generator()->create_applicable_action_generator(state))
-            {
-                const auto [successor_state, successor_state_metric_value] = m_context.get_state_repository()->get_or_create_successor_state(state, action, 0);
-                if (!m_visited_states.contains(successor_state))
-                {
-                    m_curr_states.insert(successor_state);
-                    m_visited_states.insert(successor_state);
                 }
             }
         }
@@ -223,7 +184,6 @@ private:
         // Swap prev and curr data structures.
         std::swap(m_curr_problem_v_idxs, m_prev_problem_v_idxs);
         std::swap(m_curr_v_idxs, m_prev_v_idxs);
-        m_curr_states.clear();
         m_curr_problem_v_idxs.clear();
         m_curr_v_idxs.clear();
 
@@ -288,7 +248,7 @@ private:
 
         for (const auto& problem_v_idx : m_curr_problem_v_idxs)
         {
-            m_novelty_table.compute_novel_tuple_indices(get_state(m_problem_graph.get_vertex(problem_v_idx)), m_novel_t_idxs_vec);
+            m_novelty_table.compute_novel_tuple_indices(get_state(m_state_space->get_graph().get_vertex(problem_v_idx)), m_novel_t_idxs_vec);
 
             for (const auto& novel_t_idx : m_novel_t_idxs_vec)
             {
@@ -301,12 +261,6 @@ private:
         m_novel_t_idxs_vec.clear();
         m_novel_t_idxs_vec.insert(m_novel_t_idxs_vec.end(), m_novel_t_idxs_set.begin(), m_novel_t_idxs_set.end());
         m_novelty_table.insert_tuple_indices(m_novel_t_idxs_vec);
-
-        /* Ensure that tuples of symmetric states are marked as not novel! */
-        for (const auto& state : m_curr_states)
-        {
-            m_novelty_table.test_novelty_and_update_table(state);
-        }
     }
 
     void extend_optimal_plans_from_prev_layer()
@@ -326,7 +280,7 @@ private:
             for (const auto prev_problem_v_idx : get_problem_vertices(m_internal_tuple_graph.get_vertex(prev_v_idx)))
             {
                 // "[...] by means of a single action".
-                for (const auto& curr_problem_v_idx : m_problem_graph.get_adjacent_vertex_indices<graphs::Forward>(prev_problem_v_idx))
+                for (const auto& curr_problem_v_idx : m_state_space->get_graph().get_adjacent_vertex_indices<graphs::Forward>(prev_problem_v_idx))
                 {
                     if (m_problem_v_idx_to_novel_t_idxs.contains(curr_problem_v_idx))
                     {
@@ -416,7 +370,8 @@ private:
         {
             const auto& cur_problem_v_idxs = m_novel_t_idx_to_problem_v_idxs.at(t_idx);
 
-            const auto cur_v_idx = m_internal_tuple_graph.add_vertex(t_idx, IndexList(cur_problem_v_idxs.begin(), cur_problem_v_idxs.end()));
+            const auto cur_v_idx = m_internal_tuple_graph.add_vertex(m_novelty_table.get_tuple_index_mapper().to_atom_indices(t_idx),
+                                                                     IndexList(cur_problem_v_idxs.begin(), cur_problem_v_idxs.end()));
 
             m_curr_v_idxs.push_back(cur_v_idx);
 
@@ -469,10 +424,10 @@ public:
             }
         }
 
-        return TupleGraph(m_state_space,
-                          graphs::InternalTupleGraph(std::move(m_internal_tuple_graph)),
-                          m_v_idxs_grouped_by_distance.get_result(),
-                          m_problem_v_idxs_grouped_by_distance.get_result());
+        return std::make_shared<TupleGraphImpl>(m_state_space,
+                                                graphs::InternalTupleGraph(std::move(m_internal_tuple_graph)),
+                                                m_v_idxs_grouped_by_distance.get_result(),
+                                                m_problem_v_idxs_grouped_by_distance.get_result());
     }
 };
 
@@ -484,7 +439,7 @@ create_tuple_graph_width_greater_zero(const graphs::ProblemVertex& problem_verte
 
 TupleGraph create_tuple_graph(const graphs::ProblemVertex& problem_vertex, const StateSpace& state_space, const TupleGraphImpl::Options& options)
 {
-    return (options.width == 0) ? create_tuple_graph_width_zero(problem_vertex, state_space, options) :
+    return (options.width == 0) ? create_tuple_graph_width_zero(problem_vertex, state_space) :
                                   create_tuple_graph_width_greater_zero(problem_vertex, state_space, options);
 }
 }

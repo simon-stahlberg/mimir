@@ -70,7 +70,7 @@ std::ostream& operator<<(std::ostream& out, const ProblemEdge& edge)
         << " problem_src_idx=" << edge.get_source() << "\n"   //
         << " problem_dst_idx=" << edge.get_target() << "\n";  //
     out << " action=";
-    mimir::operator<<(out, std::make_tuple(get_action(edge), std::cref(*get_problem(edge))));
+    mimir::operator<<(out, std::make_tuple(get_action(edge), std::cref(*get_problem(edge)), GroundActionImpl::PlanFormatterTag {}));
     out << "\n"
         << " action_cost=" << get_action_cost(edge);
     return out;
@@ -87,7 +87,7 @@ namespace mimir::datasets
 struct SymmetriesData
 {
     const GeneralizedColorFunction& color_function;
-    CertficateToRepresentativeState class_representative;
+    CertificateMap<search::State> class_representative;
     StateToCertificate state_to_certificate;
     StateSet prunable_states;
     ValueSet<std::pair<graphs::VertexIndex, graphs::VertexIndex>> m_edges;
@@ -397,11 +397,7 @@ perform_reachability_analysis(SearchContext context, graphs::StaticProblemGraph 
         final_graph.add_directed_edge(e.get_source(), e.get_target(), e);
     }
 
-    return std::make_shared<StateSpaceImpl>(context,
-                                            graphs::ProblemGraph(std::move(final_graph)),
-                                            graphs::VertexIndex(0),
-                                            std::move(goal_vertices),
-                                            std::move(unsolvable_vertices));
+    return std::make_shared<StateSpaceImpl>(context, graphs::ProblemGraph(std::move(final_graph)), 0, std::move(goal_vertices), std::move(unsolvable_vertices));
 }
 
 static std::optional<StateSpace> compute_problem_graph_with_symmetry_reduction(const SearchContext& context,

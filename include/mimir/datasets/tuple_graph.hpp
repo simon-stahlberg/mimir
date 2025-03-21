@@ -63,12 +63,12 @@ private:
     IndexGroupedVector<const Index> m_v_idxs_grouped_by_distance;
     IndexGroupedVector<const Index> m_problem_v_idxs_grouped_by_distance;
 
+public:
     TupleGraphImpl(StateSpace state_space,
                    graphs::InternalTupleGraph graph,
                    IndexGroupedVector<const Index> vertices_grouped_by_distance,
                    IndexGroupedVector<const Index> problem_vertices_grouped_by_distance);
 
-public:
     struct Options
     {
         size_t width;

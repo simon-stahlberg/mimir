@@ -36,6 +36,7 @@
 
 using namespace mimir::languages;
 using namespace mimir::formalism;
+using namespace mimir::datasets;
 
 namespace mimir::tests
 {
@@ -97,12 +98,18 @@ TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarVisitorSentenceGeneratorTes
 
     auto context = search::GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem1_file, problem2_file });
 
-    auto state_space_options = datasets::GeneralizedStateSpace::Options();
-    state_space_options.problem_options.symmetry_pruning = false;
+    auto kb_options = KnowledgeBaseImpl::Options();
 
-    auto kb = datasets::KnowledgeBase::create(context, datasets::KnowledgeBase::Options(state_space_options));
+    auto& state_space_options = kb_options.state_space_options;
+    state_space_options.symmetry_pruning = false;
 
-    auto pruning_function = dl::RefinementStateListPruningFunction(kb->get_generalized_state_space());
+    auto& generalized_state_space_options = kb_options.generalized_state_space_options;
+    generalized_state_space_options = GeneralizedStateSpaceImpl::Options();
+    generalized_state_space_options->symmetry_pruning = false;
+
+    auto kb = KnowledgeBaseImpl::create(context, kb_options);
+
+    auto pruning_function = dl::RefinementStateListPruningFunction(kb->get_generalized_state_space().value());
 
     dl::cnf_grammar::GeneratedSentencesContainer sentences;
     dl::Repositories repositories;
@@ -141,12 +148,18 @@ TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarVisitorSentenceGeneratorFra
 
     auto context = search::GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem1_file, problem2_file });
 
-    auto state_space_options = datasets::GeneralizedStateSpace::Options();
-    state_space_options.problem_options.symmetry_pruning = false;
+    auto kb_options = KnowledgeBaseImpl::Options();
 
-    auto kb = datasets::KnowledgeBase::create(context, datasets::KnowledgeBase::Options(state_space_options));
+    auto& state_space_options = kb_options.state_space_options;
+    state_space_options.symmetry_pruning = false;
 
-    auto pruning_function = dl::RefinementStateListPruningFunction(kb->get_generalized_state_space());
+    auto& generalized_state_space_options = kb_options.generalized_state_space_options;
+    generalized_state_space_options = GeneralizedStateSpaceImpl::Options();
+    generalized_state_space_options->symmetry_pruning = false;
+
+    auto kb = KnowledgeBaseImpl::create(context, kb_options);
+
+    auto pruning_function = dl::RefinementStateListPruningFunction(kb->get_generalized_state_space().value());
 
     dl::cnf_grammar::GeneratedSentencesContainer sentences;
     dl::Repositories repositories;

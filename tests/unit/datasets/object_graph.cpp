@@ -26,6 +26,7 @@
 #include <unordered_set>
 
 using namespace mimir::datasets;
+using namespace mimir::formalism;
 
 namespace mimir::tests
 {
@@ -35,19 +36,18 @@ TEST(MimirTests, DataSetsObjectGraphDenseTest)
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
 
-    auto options = GeneralizedStateSpace::Options();
-    options.problem_options.symmetry_pruning = false;
-    const auto context = search::GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem_file });
-    const auto problem_class_state_space = GeneralizedStateSpace(context, options);
-    const auto color_function = GeneralizedColorFunction(context.get_generalized_problem());
+    auto options = StateSpaceImpl::Options();
+    options.symmetry_pruning = false;
+    const auto context = search::SearchContext(domain_file, problem_file);
+    const auto state_space = StateSpaceImpl::create(context, options);
+    const auto color_function = GeneralizedColorFunctionImpl(context.get_problem());
 
     auto certificates = std::unordered_set<nauty_wrapper::Certificate, loki::Hash<nauty_wrapper::Certificate>, loki::EqualTo<nauty_wrapper::Certificate>> {};
 
-    for (const auto& vertex : problem_class_state_space.get_graph().get_vertices())
+    for (const auto& vertex : state_space.value()->get_graph().get_vertices())
     {
-        const auto state = get_state(problem_class_state_space.get_problem_vertex(vertex));
-        const auto problem_index = get_problem_index(vertex);
-        const auto& problem = problem_class_state_space.get_generalized_search_context().get_generalized_problem().get_problems().at(problem_index);
+        const auto state = get_state(vertex);
+        const auto& problem = get_problem(vertex);
 
         const auto object_graph = create_object_graph(state, *problem, color_function);
 
@@ -64,19 +64,18 @@ TEST(MimirTests, DataSetsObjectGraphSparseTest)
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
 
-    auto options = GeneralizedStateSpace::Options();
-    options.problem_options.symmetry_pruning = false;
-    const auto context = search::GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem_file });
-    const auto problem_class_state_space = GeneralizedStateSpace(context, options);
-    const auto color_function = GeneralizedColorFunction(context.get_generalized_problem());
+    auto options = StateSpaceImpl::Options();
+    options.symmetry_pruning = false;
+    const auto context = search::SearchContext(domain_file, problem_file);
+    const auto state_space = StateSpaceImpl::create(context, options);
+    const auto color_function = GeneralizedColorFunctionImpl(context.get_problem());
 
     auto certificates = std::unordered_set<nauty_wrapper::Certificate, loki::Hash<nauty_wrapper::Certificate>, loki::EqualTo<nauty_wrapper::Certificate>> {};
 
-    for (const auto& vertex : problem_class_state_space.get_graph().get_vertices())
+    for (const auto& vertex : state_space.value()->get_graph().get_vertices())
     {
-        const auto state = get_state(problem_class_state_space.get_problem_vertex(vertex));
-        const auto problem_index = get_problem_index(vertex);
-        const auto& problem = problem_class_state_space.get_generalized_search_context().get_generalized_problem().get_problems().at(problem_index);
+        const auto state = get_state(vertex);
+        const auto& problem = get_problem(vertex);
 
         const auto object_graph = create_object_graph(state, *problem, color_function);
 

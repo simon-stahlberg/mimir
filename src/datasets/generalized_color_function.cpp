@@ -65,6 +65,11 @@ GeneralizedColorFunctionImpl::GeneralizedColorFunctionImpl(GeneralizedProblem ge
     }
 }
 
+GeneralizedColorFunctionImpl::GeneralizedColorFunctionImpl(formalism::Problem problem) :
+    GeneralizedColorFunctionImpl(formalism::GeneralizedProblem(problem->get_domain(), formalism::ProblemList { problem }))
+{
+}
+
 graphs::Color GeneralizedColorFunctionImpl::get_color(Object object) const { return 0; }
 
 template<StaticOrFluentOrDerived P>

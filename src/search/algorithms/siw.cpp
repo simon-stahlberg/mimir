@@ -74,7 +74,6 @@ SearchResult find_solution(const SearchContext& context,
                            brfs::EventHandler brfs_event_handler_,
                            GoalStrategy goal_strategy_)
 {
-    const auto& problem = *context.get_problem();
     auto& applicable_action_generator = *context.get_applicable_action_generator();
     auto& state_repository = *context.get_state_repository();
 
