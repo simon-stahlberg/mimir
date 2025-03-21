@@ -94,6 +94,8 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a882a1a5d8b38637c424d958608bf4be7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpaceImpl.html#a882a1a5d8b38637c424d958608bf4be7">GeneralizedStateSpaceImpl</a> (StateSpaceList state_spaces, <a class="el" href="namespacemimir_1_1graphs.html#a7f055a18f6efd9b14e9f5708d28eb7e6">graphs::ClassGraph</a> graph, <a class="el" href="namespacemimir.html#a56b4bf568fdc2fc9db3b9a0d1845a961">IndexSet</a> initial_vertices, <a class="el" href="namespacemimir.html#a56b4bf568fdc2fc9db3b9a0d1845a961">IndexSet</a> goal_vertices, <a class="el" href="namespacemimir.html#a56b4bf568fdc2fc9db3b9a0d1845a961">IndexSet</a> unsolvable_vertices, std::unordered_map&lt; const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> *, graphs::VertexIndexList &gt; vertex_mappings, std::unordered_map&lt; const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> *, graphs::EdgeIndexList &gt; edge_mappings)</td></tr>
+<tr class="separator:a882a1a5d8b38637c424d958608bf4be7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a28751071ad986bcb4c0febd476b07f3d"><td class="memItemLeft" align="right" valign="top">const StateSpaceList &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpaceImpl.html#a28751071ad986bcb4c0febd476b07f3d">get_state_spaces</a> () const</td></tr>
 <tr class="memdesc:a28751071ad986bcb4c0febd476b07f3d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the underlying <code>graphs::ProblemGraphList</code>  <br /></td></tr>
 <tr class="separator:a28751071ad986bcb4c0febd476b07f3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -157,7 +159,66 @@ Static Public Member Functions</h2></td></tr>
 <p>The <code><a class="el" href="namespacemimir_1_1graphs.html#a7f055a18f6efd9b14e9f5708d28eb7e6" title="ClassGraph implements a directed graph representing the state space of a class of problems.">graphs::ClassGraph</a></code> acts as the main interface to retrieve information about the state transition model of a class of problems. Each vertex in the <code><a class="el" href="namespacemimir_1_1graphs.html#a7f055a18f6efd9b14e9f5708d28eb7e6" title="ClassGraph implements a directed graph representing the state space of a class of problems.">graphs::ClassGraph</a></code> has a single representative from a <code>graphs::ProblemGraph</code>. When symmetry reduction is disabled, there is a strict one-to-one mapping between <code><a class="el" href="namespacemimir_1_1graphs.html#addbc8279833faca8528c5c48225e197e" title="ClassVertex encapsulates information about a vertex in a ClassGraph.">graphs::ClassVertex</a></code> and <code>graphs::ProblemVertex</code> and a strict one-to-one mapping between <code><a class="el" href="namespacemimir_1_1graphs.html#a9861298646e808707570b3e2528af931" title="ClassEdge encapsulates information about an edge in a ClassGraph.">graphs::ClassEdge</a></code> and <code>graphs::ProblemEdge</code>. When symmetry reduction is enabled, the mapping may become a strict one-to-many mapping, in which case, the <code><a class="el" href="namespacemimir_1_1graphs.html#addbc8279833faca8528c5c48225e197e" title="ClassVertex encapsulates information about a vertex in a ClassGraph.">graphs::ClassVertex</a></code> or <code><a class="el" href="namespacemimir_1_1graphs.html#a9861298646e808707570b3e2528af931" title="ClassEdge encapsulates information about an edge in a ClassGraph.">graphs::ClassEdge</a></code> acts as an interface to access the representative.</p>
 <p>The <code>graphs::ProblemGraph</code> acts as the main interface to retrieve information about the state transition model of a specific problem. When symmetry reduction is disabled, the <code>graphs::ProblemGraph</code> is essentially the state space. When symmetry reduction is enabled, the <code>graphs::ProblemGraph</code> becomes the equivalence-based abstraction.</p>
 <p>The <code>GeneralizedStateSpace</code> provides several convenience functions to map between <code><a class="el" href="namespacemimir_1_1graphs.html#addbc8279833faca8528c5c48225e197e" title="ClassVertex encapsulates information about a vertex in a ClassGraph.">graphs::ClassVertex</a></code> (resp. <code><a class="el" href="namespacemimir_1_1graphs.html#a9861298646e808707570b3e2528af931" title="ClassEdge encapsulates information about an edge in a ClassGraph.">graphs::ClassEdge</a></code>) and <code>graphs::ProblemVertex</code> (resp. <code>graphs::ProblemEdge</code>). Furthermore, there is functionality to compute induced subgraphs, which is useful in learning tasks where learning from the whole <code><a class="el" href="namespacemimir_1_1graphs.html#a7f055a18f6efd9b14e9f5708d28eb7e6" title="ClassGraph implements a directed graph representing the state space of a class of problems.">graphs::ClassGraph</a></code> is inconvenient or simply not scalable. Computing a subgraph is fairly efficient and the preferred way when working with fragments of the <code>GeneralizedStateSpace</code>. </p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a882a1a5d8b38637c424d958608bf4be7" name="a882a1a5d8b38637c424d958608bf4be7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a882a1a5d8b38637c424d958608bf4be7">&#9670;&#160;</a></span>GeneralizedStateSpaceImpl()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">mimir::datasets::GeneralizedStateSpaceImpl::GeneralizedStateSpaceImpl </td>
+          <td>(</td>
+          <td class="paramtype">StateSpaceList&#160;</td>
+          <td class="paramname"><em>state_spaces</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1graphs.html#a7f055a18f6efd9b14e9f5708d28eb7e6">graphs::ClassGraph</a>&#160;</td>
+          <td class="paramname"><em>graph</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemimir.html#a56b4bf568fdc2fc9db3b9a0d1845a961">IndexSet</a>&#160;</td>
+          <td class="paramname"><em>initial_vertices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemimir.html#a56b4bf568fdc2fc9db3b9a0d1845a961">IndexSet</a>&#160;</td>
+          <td class="paramname"><em>goal_vertices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemimir.html#a56b4bf568fdc2fc9db3b9a0d1845a961">IndexSet</a>&#160;</td>
+          <td class="paramname"><em>unsolvable_vertices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::unordered_map&lt; const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> *, graphs::VertexIndexList &gt;&#160;</td>
+          <td class="paramname"><em>vertex_mappings</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::unordered_map&lt; const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> *, graphs::EdgeIndexList &gt;&#160;</td>
+          <td class="paramname"><em>edge_mappings</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
 <a id="a76875b75b081b5a0f735c46351f4f7cc" name="a76875b75b081b5a0f735c46351f4f7cc"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a76875b75b081b5a0f735c46351f4f7cc">&#9670;&#160;</a></span>create()</h2>
 
