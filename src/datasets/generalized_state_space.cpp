@@ -314,16 +314,6 @@ const graphs::ProblemEdge& GeneralizedStateSpaceImpl::get_problem_edge(const gra
     return m_state_spaces.at(get_problem_index(edge))->get_graph().get_edge(get_problem_edge_index(edge));
 }
 
-const Problem& GeneralizedStateSpaceImpl::get_problem(const graphs::ClassVertex& vertex) const
-{
-    return m_state_spaces.at(get_problem_index(vertex))->get_search_context().get_problem();
-}
-
-const Problem& GeneralizedStateSpaceImpl::get_problem(const graphs::ClassEdge& edge) const
-{
-    return m_state_spaces.at(get_problem_index(edge))->get_search_context().get_problem();
-}
-
 const graphs::ClassVertex& GeneralizedStateSpaceImpl::get_class_vertex(const graphs::ProblemVertex& vertex) const
 {
     return get_graph().get_vertex(m_vertex_mappings.at(graphs::get_problem(vertex).get()).at(vertex.get_index()));

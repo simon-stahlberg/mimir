@@ -38,7 +38,7 @@ RefinementStateListPruningFunction::RefinementStateListPruningFunction(const dat
 {
     for (const auto& vertex : class_graph.get_vertices())
     {
-        const auto& problem = generalized_state_space->get_problem(vertex);
+        const auto& problem = graphs::get_problem(generalized_state_space->get_problem_vertex(vertex));
         const auto& state = graphs::get_state(generalized_state_space->get_problem_vertex(vertex));
 
         m_state_partitioning[problem].push_back(state);

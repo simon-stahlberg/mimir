@@ -88,8 +88,8 @@ GeneralPolicyImpl::UnsolvabilityReason GeneralPolicyImpl::solves(const datasets:
             auto& src_entry = stack.top();
             const auto src_v_idx = src_entry.v_idx;
             const auto& src_v = class_graph.get_vertex(src_v_idx);
-            const auto& src_problem = generalized_state_space->get_problem(src_v);
             const auto& src_problem_v = generalized_state_space->get_problem_vertex(src_v);
+            const auto& src_problem = graphs::get_problem(src_problem_v);
             const auto src_state = graphs::get_state(src_problem_v);
 
             if (src_entry.it == src_entry.end)
@@ -112,8 +112,8 @@ GeneralPolicyImpl::UnsolvabilityReason GeneralPolicyImpl::solves(const datasets:
 
                 const auto dst_v_idx = *src_entry.it++;  ///< Fetch and additionally increment iterator for next iteration
                 const auto& dst_v = class_graph.get_vertex(dst_v_idx);
-                const auto& dst_problem = generalized_state_space->get_problem(dst_v);
                 const auto& dst_problem_v = generalized_state_space->get_problem_vertex(dst_v);
+                const auto& dst_problem = graphs::get_problem(dst_problem_v);
                 const auto dst_state = graphs::get_state(dst_problem_v);
                 auto dst_eval_context = dl::EvaluationContext(dst_state, dst_problem, denotation_repositories);
 

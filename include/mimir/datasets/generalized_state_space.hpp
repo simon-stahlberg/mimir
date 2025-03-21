@@ -152,20 +152,18 @@ public:
      * Constructors
      */
 
-    /// @brief Construct a `GeneralizedStateSpace` from the given `search::GeneralizedSearchContext` and the `Options`.
-    /// Note that the constructor may internally prune irrelevant `search::SearchContext` if detected by symmetry reduction.
-    /// Note also that the ordering of `search::SearchContext` might change if ordering by number of states is enabled.
-    /// The final `search::GeneralizedSearchContext` can be accessed through the respective getter function.
-    /// @param context encapsulates the problem specific `search::SearchContext` used to derive the `GeneralizedStateSpace`.
-    /// @param options encapsulates the options used to derive the `GeneralizedStateSpace`.
+    /// @brief Construct a `GeneralizedStateSpace` from the given `StateSpaceList` and the `Options`.
+    /// Note that the constructor may internally prune irrelevant `StateSpace` if detected by symmetry reduction.
+    /// @param state_spaces is the `StateSpaceList`.
+    /// @param options are the options used to derive the `GeneralizedStateSpace`.
     static GeneralizedStateSpace create(StateSpaceList state_spaces, const Options& options);
 
     /**
      * Getters
      */
 
-    /// @brief Get the underlying `graphs::ProblemGraphList`
-    /// @return the underlying `graphs::ProblemGraphList`.
+    /// @brief Get the underlying `StateSpaceList`
+    /// @return the underlying `StateSpaceList`.
     const StateSpaceList& get_state_spaces() const;
 
     /// @brief Get the underlying `graphs::ClassGraph`
@@ -198,14 +196,6 @@ public:
     /// @param vertex is the `graphs::ClassEdge`.
     /// @return the representative `graphs::ProblemEdge` of the given `graphs::ClassEdge`.
     const graphs::ProblemEdge& get_problem_edge(const graphs::ClassEdge& edge) const;
-    /// @brief Get the representative `Problem` of the given `graphs::ClassVertex`.
-    /// @param vertex is the `graphs::ClassVertex`.
-    /// @return the representative `formalism::Problem` of the given `graphs::ClassVertex`.
-    const formalism::Problem& get_problem(const graphs::ClassVertex& vertex) const;
-    /// @brief Get the representative `Problem` of the given `graphs::ClassEdge`.
-    /// @param vertex is the `graphs::ClassEdge`.
-    /// @return the representative `formalism::Problem` of the given `graphs::ClassEdge`.
-    const formalism::Problem& get_problem(const graphs::ClassEdge& edge) const;
 
     /// @brief Lift `graphs::ProblemVertex` back to its corresponding `graphs::ClassVertex`.
     /// Note that other `graphs::ProblemVertex` may map to the same `graphs::ClassVertex`.
