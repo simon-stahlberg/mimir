@@ -81,7 +81,8 @@ $(function() {
   <div class="headertitle"><div class="title">generalized_state_space.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="common_2types_8hpp_source.html">mimir/common/types.hpp</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;mimir/algorithms/nauty.hpp&quot;</code><br />
+<code>#include &quot;<a class="el" href="common_2types_8hpp_source.html">mimir/common/types.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="formalism_2declarations_8hpp_source.html">mimir/formalism/declarations.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="generalized__problem_8hpp_source.html">mimir/formalism/generalized_problem.hpp</a>&quot;</code><br />
 <code>#include &quot;mimir/graphs/declarations.hpp&quot;</code><br />
@@ -114,7 +115,7 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a4401dfeb9aa3b9b2f3925044ee7a6e71"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71">mimir::graphs::ProblemVertex</a> = Vertex&lt; Index, search::State &gt;</td></tr>
+<tr class="memitem:a4401dfeb9aa3b9b2f3925044ee7a6e71"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71">mimir::graphs::ProblemVertex</a> = Vertex&lt; Index, search::State, std::shared_ptr&lt; const nauty_wrapper::Certificate &gt; &gt;</td></tr>
 <tr class="memdesc:a4401dfeb9aa3b9b2f3925044ee7a6e71"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>ProblemVertex</code> encapsulates information about a vertex in a <code>ProblemGraph</code>  <br /></td></tr>
 <tr class="separator:a4401dfeb9aa3b9b2f3925044ee7a6e71"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6849af3a319ee009030dc943e8f30f13"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a6849af3a319ee009030dc943e8f30f13">mimir::graphs::ProblemVertexList</a> = std::vector&lt; ProblemVertex &gt;</td></tr>
@@ -157,6 +158,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a851219d315d92f035d53daa1113a11a0"><td class="memItemLeft" align="right" valign="top">search::State&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a851219d315d92f035d53daa1113a11a0">mimir::graphs::get_state</a> (const ProblemVertex &amp;vertex)</td></tr>
 <tr class="memdesc:a851219d315d92f035d53daa1113a11a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the <code>State</code> of the given <code>ProblemVertex</code>.  <br /></td></tr>
 <tr class="separator:a851219d315d92f035d53daa1113a11a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3f628ea9bf35ba7182edb56e0eb8988"><td class="memItemLeft" align="right" valign="top">const std::shared_ptr&lt; const nauty_wrapper::Certificate &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#ac3f628ea9bf35ba7182edb56e0eb8988">mimir::graphs::get_certificate</a> (const ProblemVertex &amp;vertex)</td></tr>
+<tr class="memdesc:ac3f628ea9bf35ba7182edb56e0eb8988"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the <code>nauty_wrapper::Certificate</code> of the given <code>ProblemVertex</code>.  <br /></td></tr>
+<tr class="separator:ac3f628ea9bf35ba7182edb56e0eb8988"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a94263f50bae293ed7fb9bcff372aea57"><td class="memItemLeft" align="right" valign="top">Index&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a94263f50bae293ed7fb9bcff372aea57">mimir::graphs::get_class_edge_index</a> (const ProblemEdge &amp;edge)</td></tr>
 <tr class="memdesc:a94263f50bae293ed7fb9bcff372aea57"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the index of the corresponding <code>ClassEdge</code> in the <code>GeneralizedStateSpace</code>.  <br /></td></tr>
 <tr class="separator:a94263f50bae293ed7fb9bcff372aea57"><td class="memSeparator" colspan="2">&#160;</td></tr>
