@@ -114,14 +114,18 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a61ebc2553320bcd907fd2e059594bf20"><td class="memItemLeft" align="right" valign="top">static std::optional&lt; StateSpace &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1datasets_1_1StateSpaceImpl.html#a61ebc2553320bcd907fd2e059594bf20">create</a> (<a class="el" href="classmimir_1_1search_1_1SearchContext.html">search::SearchContext</a> context, const <a class="el" href="structmimir_1_1datasets_1_1StateSpaceImpl_1_1Options.html">Options</a> &amp;options=<a class="el" href="structmimir_1_1datasets_1_1StateSpaceImpl_1_1Options.html">Options</a>())</td></tr>
+<tr class="memitem:a61ebc2553320bcd907fd2e059594bf20"><td class="memItemLeft" align="right" valign="top">static std::optional&lt; <a class="el" href="namespacemimir_1_1datasets.html#af50a91edae78e6166a7c7aea0f40fdd6">StateSpace</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1datasets_1_1StateSpaceImpl.html#a61ebc2553320bcd907fd2e059594bf20">create</a> (<a class="el" href="classmimir_1_1search_1_1SearchContext.html">search::SearchContext</a> context, const <a class="el" href="structmimir_1_1datasets_1_1StateSpaceImpl_1_1Options.html">Options</a> &amp;options=<a class="el" href="structmimir_1_1datasets_1_1StateSpaceImpl_1_1Options.html">Options</a>())</td></tr>
 <tr class="separator:a61ebc2553320bcd907fd2e059594bf20"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac4b2c8a239eeb9d641e284ab3cd90a23"><td class="memItemLeft" align="right" valign="top">static StateSpaceList&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1datasets_1_1StateSpaceImpl.html#ac4b2c8a239eeb9d641e284ab3cd90a23">create</a> (<a class="el" href="classmimir_1_1search_1_1GeneralizedSearchContext.html">search::GeneralizedSearchContext</a> contexts, const <a class="el" href="structmimir_1_1datasets_1_1StateSpaceImpl_1_1Options.html">Options</a> &amp;options=<a class="el" href="structmimir_1_1datasets_1_1StateSpaceImpl_1_1Options.html">Options</a>())</td></tr>
+<tr class="memitem:ac4b2c8a239eeb9d641e284ab3cd90a23"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespacemimir_1_1datasets.html#abca95a57d6171ffbfac3251b87ca307d">StateSpaceList</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1datasets_1_1StateSpaceImpl.html#ac4b2c8a239eeb9d641e284ab3cd90a23">create</a> (<a class="el" href="classmimir_1_1search_1_1GeneralizedSearchContext.html">search::GeneralizedSearchContext</a> contexts, const <a class="el" href="structmimir_1_1datasets_1_1StateSpaceImpl_1_1Options.html">Options</a> &amp;options=<a class="el" href="structmimir_1_1datasets_1_1StateSpaceImpl_1_1Options.html">Options</a>())</td></tr>
 <tr class="separator:ac4b2c8a239eeb9d641e284ab3cd90a23"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><code><a class="el" href="classmimir_1_1datasets_1_1StateSpaceImpl.html" title="StateSpaceImpl encapsulates a the state transition model of a problems.">StateSpaceImpl</a></code> encapsulates a the state transition model of a problems. </p>
 <p><a class="el" href="classmimir_1_1datasets_1_1StateSpaceImpl.html" title="StateSpaceImpl encapsulates a the state transition model of a problems.">StateSpaceImpl</a> </p>
+<p>The central features of this implementation are:</p><ul>
+<li>the direct applicability of a large collection of Boost BGL graph algorithms on these graphs, making it convenient to analyze state transition models.</li>
+<li>the options to apply symmetry reduction (using graph isomorphism). </li>
+</ul>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="aef7c75ac92a6c562fcbb57e444423bcf" name="aef7c75ac92a6c562fcbb57e444423bcf"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aef7c75ac92a6c562fcbb57e444423bcf">&#9670;&#160;</a></span>StateSpaceImpl()</h2>
@@ -180,7 +184,7 @@ Static Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static StateSpaceList mimir::datasets::StateSpaceImpl::create </td>
+          <td class="memname">static <a class="el" href="namespacemimir_1_1datasets.html#abca95a57d6171ffbfac3251b87ca307d">StateSpaceList</a> mimir::datasets::StateSpaceImpl::create </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classmimir_1_1search_1_1GeneralizedSearchContext.html">search::GeneralizedSearchContext</a>&#160;</td>
           <td class="paramname"><em>contexts</em>, </td>
@@ -216,7 +220,7 @@ Static Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static std::optional&lt; StateSpace &gt; mimir::datasets::StateSpaceImpl::create </td>
+          <td class="memname">static std::optional&lt; <a class="el" href="namespacemimir_1_1datasets.html#af50a91edae78e6166a7c7aea0f40fdd6">StateSpace</a> &gt; mimir::datasets::StateSpaceImpl::create </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classmimir_1_1search_1_1SearchContext.html">search::SearchContext</a>&#160;</td>
           <td class="paramname"><em>context</em>, </td>

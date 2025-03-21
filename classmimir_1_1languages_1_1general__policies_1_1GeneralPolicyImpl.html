@@ -105,8 +105,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a8701d2488917c82f3a89fada3a9ef5a3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#a8701d2488917c82f3a89fada3a9ef5a3">is_terminating</a> () const</td></tr>
 <tr class="memdesc:a8701d2488917c82f3a89fada3a9ef5a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if and only if the <code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html">GeneralPolicyImpl</a></code> is structurally terminating.  <br /></td></tr>
 <tr class="separator:a8701d2488917c82f3a89fada3a9ef5a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6feb6f58fedc3feeb25ec8b40371347a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#ad99169b982747ff0a73cfe59a9070ff6">UnsolvabilityReason</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#a6feb6f58fedc3feeb25ec8b40371347a">solves</a> (const datasets::GeneralizedStateSpace &amp;generalized_state_space, const graphs::VertexIndexList &amp;vertices, <a class="el" href="namespacemimir_1_1languages_1_1dl.html#a75ac4ed2c423195ba0b876124d33d752">dl::DenotationRepositories</a> &amp;denotation_repositories) const</td></tr>
-<tr class="memdesc:a6feb6f58fedc3feeb25ec8b40371347a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether the <code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html">GeneralPolicyImpl</a></code> solves all vertices from the given <code>graphs::VertexIndexList</code> in the given <code>datasets::GeneralizedStateSpace</code>.  <br /></td></tr>
+<tr class="memitem:a6feb6f58fedc3feeb25ec8b40371347a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#ad99169b982747ff0a73cfe59a9070ff6">UnsolvabilityReason</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#a6feb6f58fedc3feeb25ec8b40371347a">solves</a> (const <a class="el" href="namespacemimir_1_1datasets.html#ac68caf5b1da70d554f0dab5faf0349c6">datasets::GeneralizedStateSpace</a> &amp;generalized_state_space, const graphs::VertexIndexList &amp;vertices, <a class="el" href="namespacemimir_1_1languages_1_1dl.html#a75ac4ed2c423195ba0b876124d33d752">dl::DenotationRepositories</a> &amp;denotation_repositories) const</td></tr>
+<tr class="memdesc:a6feb6f58fedc3feeb25ec8b40371347a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether the <code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html">GeneralPolicyImpl</a></code> solves all vertices from the given <code>graphs::VertexIndexList</code> in the given <code><a class="el" href="namespacemimir_1_1datasets.html#ac68caf5b1da70d554f0dab5faf0349c6">datasets::GeneralizedStateSpace</a></code>.  <br /></td></tr>
 <tr class="separator:a6feb6f58fedc3feeb25ec8b40371347a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8580f53d4ee81d9429c303513364d36b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#a8580f53d4ee81d9429c303513364d36b">get_index</a> () const</td></tr>
 <tr class="memdesc:a8580f53d4ee81d9429c303513364d36b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the index.  <br /></td></tr>
@@ -383,7 +383,7 @@ template&lt;dl::FeatureCategory D&gt; </div>
         <tr>
           <td class="memname"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#ad99169b982747ff0a73cfe59a9070ff6">UnsolvabilityReason</a> mimir::languages::general_policies::GeneralPolicyImpl::solves </td>
           <td>(</td>
-          <td class="paramtype">const datasets::GeneralizedStateSpace &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacemimir_1_1datasets.html#ac68caf5b1da70d554f0dab5faf0349c6">datasets::GeneralizedStateSpace</a> &amp;&#160;</td>
           <td class="paramname"><em>generalized_state_space</em>, </td>
         </tr>
         <tr>
@@ -406,7 +406,7 @@ template&lt;dl::FeatureCategory D&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Return whether the <code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html">GeneralPolicyImpl</a></code> solves all vertices from the given <code>graphs::VertexIndexList</code> in the given <code>datasets::GeneralizedStateSpace</code>. </p>
+<p>Return whether the <code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html">GeneralPolicyImpl</a></code> solves all vertices from the given <code>graphs::VertexIndexList</code> in the given <code><a class="el" href="namespacemimir_1_1datasets.html#ac68caf5b1da70d554f0dab5faf0349c6">datasets::GeneralizedStateSpace</a></code>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">generalized_state_space</td><td>is the <code>GeneralizedStateSpace</code>. </td></tr>
