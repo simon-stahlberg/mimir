@@ -30,6 +30,6 @@ var searchData=
   ['dynamicadjacentvertexindexconstiterator_27',['DynamicAdjacentVertexIndexConstIterator',['../classmimir_1_1graphs_1_1DynamicAdjacentVertexIndexConstIterator.html',1,'mimir::graphs']]],
   ['dynamicedgeindexconstiterator_28',['DynamicEdgeIndexConstIterator',['../classmimir_1_1graphs_1_1DynamicEdgeIndexConstIterator.html',1,'mimir::graphs']]],
   ['dynamicgraph_29',['DynamicGraph',['../classmimir_1_1graphs_1_1DynamicGraph.html',1,'mimir::graphs']]],
-  ['dynamicsize_30',['DynamicSize',['../structmimir_1_1search_1_1iw_1_1DynamicSize.html',1,'mimir::search::iw']]],
+  ['dynamicnoveltytable_30',['DynamicNoveltyTable',['../classmimir_1_1search_1_1iw_1_1DynamicNoveltyTable.html',1,'mimir::search::iw']]],
   ['dynamicvertexindexconstiterator_31',['DynamicVertexIndexConstIterator',['../classmimir_1_1graphs_1_1DynamicVertexIndexConstIterator.html',1,'mimir::graphs']]]
 ];

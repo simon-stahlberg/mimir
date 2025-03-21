@@ -16,7 +16,6 @@ var searchData=
   ['staticconsistencygraph_13',['StaticConsistencyGraph',['../classmimir_1_1formalism_1_1StaticConsistencyGraph.html',1,'mimir::formalism']]],
   ['staticforwardgraph_14',['StaticForwardGraph',['../classmimir_1_1graphs_1_1StaticForwardGraph.html',1,'mimir::graphs']]],
   ['staticgraph_15',['StaticGraph',['../classmimir_1_1graphs_1_1StaticGraph.html',1,'mimir::graphs']]],
-  ['staticsize_16',['StaticSize',['../structmimir_1_1search_1_1iw_1_1StaticSize.html',1,'mimir::search::iw']]],
-  ['statistics_17',['Statistics',['../classmimir_1_1search_1_1astar_1_1Statistics.html',1,'mimir::search::astar::Statistics'],['../classmimir_1_1search_1_1brfs_1_1Statistics.html',1,'mimir::search::brfs::Statistics'],['../classmimir_1_1search_1_1iw_1_1Statistics.html',1,'mimir::search::iw::Statistics'],['../classmimir_1_1search_1_1siw_1_1Statistics.html',1,'mimir::search::siw::Statistics']]],
-  ['substitutionruleimpl_18',['SubstitutionRuleImpl',['../classmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1SubstitutionRuleImpl.html',1,'mimir::languages::dl::cnf_grammar']]]
+  ['statistics_16',['Statistics',['../classmimir_1_1search_1_1astar_1_1Statistics.html',1,'mimir::search::astar::Statistics'],['../classmimir_1_1search_1_1brfs_1_1Statistics.html',1,'mimir::search::brfs::Statistics'],['../classmimir_1_1search_1_1iw_1_1Statistics.html',1,'mimir::search::iw::Statistics'],['../classmimir_1_1search_1_1siw_1_1Statistics.html',1,'mimir::search::siw::Statistics']]],
+  ['substitutionruleimpl_17',['SubstitutionRuleImpl',['../classmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1SubstitutionRuleImpl.html',1,'mimir::languages::dl::cnf_grammar']]]
 ];
