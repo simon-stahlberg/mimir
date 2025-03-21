@@ -43,7 +43,7 @@ namespace mimir::datasets
 /// @return a vertex colored graph that precisely represents the given state.
 extern graphs::StaticVertexColoredDigraph create_object_graph(search::State state,
                                                               const formalism::ProblemImpl& problem,
-                                                              const GeneralizedColorFunction& color_function,
+                                                              const GeneralizedColorFunctionImpl& color_function,
                                                               bool mark_true_goal_literals = false);
 
 }

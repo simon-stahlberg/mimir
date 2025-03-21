@@ -30,6 +30,8 @@ namespace mimir::search
 
 class SearchContext;
 
+class GeneralizedSearchContext;
+
 // StateRepositoryImpl
 class StateRepositoryImpl;
 using StateRepository = std::shared_ptr<StateRepositoryImpl>;

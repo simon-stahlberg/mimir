@@ -18,6 +18,7 @@
 #ifndef MIMIR_DATASETS_KNOWLEDGE_BASE_HPP_
 #define MIMIR_DATASETS_KNOWLEDGE_BASE_HPP_
 
+#include "mimir/datasets/declarations.hpp"
 #include "mimir/datasets/generalized_state_space.hpp"
 #include "mimir/datasets/tuple_graph.hpp"
 #include "mimir/search/generalized_search_context.hpp"
@@ -25,15 +26,24 @@
 namespace mimir::datasets
 {
 
-/// @brief `KnowledgeBase` encapsulates information obtained from a class of planning problems.
-class KnowledgeBase
+/// @brief `KnowledgeBaseImpl` encapsulates information obtained from a class of planning problems.
+class KnowledgeBaseImpl
 {
 private:
     formalism::Domain m_domain;  ///< The common domain.
 
-    GeneralizedStateSpace m_state_space;  ///< Required core component.
+    StateSpaceList m_state_spaces;  ///< The state transition models of each `Problem` with optional symmetry reduction.
 
-    std::optional<TupleGraphCollection> m_tuple_graphs;  ///< First optional component. Pass TupleGraphCollection::Options to instantiate it!
+    std::optional<GeneralizedStateSpace>
+        m_generalized_state_space;  ///< Optional abstraction on top of `StateSpaceList` with optional symmetry reduction between problems.
+
+    std::optional<std::vector<TupleGraphList>> m_tuple_graphs;  ///< Optional tuple graphs for each `StateSpace`.
+
+    KnowledgeBaseImpl(formalism::Domain domain,
+                      StateSpaceList state_spaces,
+                      std::optional<GeneralizedStateSpace> generalized_state_space,
+                      std::optional<std::vector<TupleGraphList>> tuple_graphs);
+
 public:
     /**
      * Options
@@ -41,14 +51,18 @@ public:
 
     struct Options
     {
-        GeneralizedStateSpace::Options state_space_options;
+        StateSpaceImpl::Options state_space_options;
 
-        std::optional<TupleGraphCollection::Options> tuple_graph_options;
+        std::optional<GeneralizedStateSpaceImpl::Options> generalized_state_space_options;
+
+        std::optional<TupleGraphImpl::Options> tuple_graph_options;
 
         Options() : state_space_options(), tuple_graph_options(std::nullopt) {}
-        Options(const GeneralizedStateSpace::Options& state_space_options,
-                const std::optional<TupleGraphCollection::Options>& tuple_graph_options = std::nullopt) :
+        Options(const StateSpaceImpl::Options& state_space_options,
+                const std::optional<GeneralizedStateSpaceImpl::Options>& generalized_state_space_options = std::nullopt,
+                const std::optional<TupleGraphImpl::Options>& tuple_graph_options = std::nullopt) :
             state_space_options(state_space_options),
+            generalized_state_space_options(generalized_state_space_options),
             tuple_graph_options(tuple_graph_options)
         {
         }
@@ -58,17 +72,16 @@ public:
      * Constructors
      */
 
-    KnowledgeBase(search::GeneralizedSearchContext contexts, const Options& options = Options());
-
-    static std::unique_ptr<KnowledgeBase> create(search::GeneralizedSearchContext contexts, const Options& options = Options());
+    static KnowledgeBase create(search::GeneralizedSearchContext contexts, const Options& options = Options());
 
     /**
      * Getters
      */
 
     const formalism::Domain& get_domain() const;
-    const GeneralizedStateSpace& get_generalized_state_space() const;
-    const std::optional<TupleGraphCollection>& get_tuple_graphs() const;
+    const StateSpaceList& get_state_spaces() const;
+    const std::optional<GeneralizedStateSpace>& get_generalized_state_space() const;
+    const std::optional<std::vector<TupleGraphList>>& get_tuple_graphs() const;
 };
 }
 

@@ -19,18 +19,39 @@
 #define MIMIR_DATASETS_DECLARATIONS_HPP_
 
 // Do not include headers with transitive dependencies.
+#include "mimir/algorithms/nauty.hpp"
+#include "mimir/common/types.hpp"
 #include "mimir/graphs/declarations.hpp"
+#include "mimir/search/declarations.hpp"
 
 #include <cstdint>
 #include <vector>
 
 namespace mimir::datasets
 {
-class KnowledgeBase;
-class GeneralizedStateSpace;
-class TupleGraph;
-class TupleGraphCollection;
-class GeneralizedColorFunction;
+class GeneralizedColorFunctionImpl;
+using GeneralizedColorFunction = std::shared_ptr<GeneralizedColorFunctionImpl>;
+
+class KnowledgeBaseImpl;
+using KnowledgeBase = std::shared_ptr<KnowledgeBaseImpl>;
+
+class StateSpaceImpl;
+using StateSpace = std::shared_ptr<StateSpaceImpl>;
+using StateSpaceList = std::vector<StateSpace>;
+
+class GeneralizedStateSpaceImpl;
+using GeneralizedStateSpace = std::shared_ptr<GeneralizedStateSpaceImpl>;
+
+class TupleGraphImpl;
+using TupleGraph = std::shared_ptr<TupleGraphImpl>;
+using TupleGraphList = std::vector<TupleGraph>;
+
+/// @brief Uniqueness test of certificates while mapping them to a representative state.
+/// Hash and compare of `loki::ObserverPtr<T>` is specialized to use the dereferenced pointer.
+using CertficateToRepresentativeState = KeyValueMap<loki::ObserverPtr<const nauty_wrapper::Certificate>, search::State>;
+
+/// @brief Cache computed state certificates.
+using StateToCertificate = search::StateMap<std::shared_ptr<const nauty_wrapper::Certificate>>;
 }
 
 #endif

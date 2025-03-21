@@ -17,31 +17,62 @@
 
 #include "mimir/datasets/knowledge_base.hpp"
 
+#include "mimir/datasets/generalized_state_space.hpp"
+#include "mimir/datasets/state_space.hpp"
+
 using namespace mimir::formalism;
 using namespace mimir::search;
 
 namespace mimir::datasets
 {
-KnowledgeBase::KnowledgeBase(GeneralizedSearchContext contexts, const Options& options) :
-    m_domain(contexts.get_domain()),
-    m_state_space(contexts, options.state_space_options),
-    m_tuple_graphs(options.tuple_graph_options ? std::optional<TupleGraphCollection>(TupleGraphCollection(m_state_space, options.tuple_graph_options.value())) :
-                                                 std::nullopt)
+KnowledgeBaseImpl::KnowledgeBaseImpl(formalism::Domain domain,
+                                     StateSpaceList state_spaces,
+                                     std::optional<GeneralizedStateSpace> generalized_state_space,
+                                     std::optional<std::vector<TupleGraphList>> tuple_graphs) :
+    m_domain(std::move(domain)),
+    m_state_spaces(std::move(state_spaces)),
+    m_generalized_state_space(std::move(generalized_state_space)),
+    m_tuple_graphs(std::move(tuple_graphs))
 {
 }
 
-std::unique_ptr<KnowledgeBase> KnowledgeBase::create(GeneralizedSearchContext contexts, const Options& options)
+/**
+ * Constructors
+ */
+
+KnowledgeBase KnowledgeBaseImpl::create(search::GeneralizedSearchContext contexts, const Options& options)
 {
-    return std::make_unique<KnowledgeBase>(contexts, options);
+    auto state_spaces = StateSpaceImpl::create(contexts, options.state_space_options);
+
+    auto generalized_state_space = std::optional<GeneralizedStateSpace> { std::nullopt };
+    if (options.generalized_state_space_options)
+    {
+        generalized_state_space = GeneralizedStateSpaceImpl::create(state_spaces, options.generalized_state_space_options.value());
+
+        state_spaces = generalized_state_space->get_state_spaces();
+    }
+
+    auto tuple_graphs = std::optional<std::vector<TupleGraphList>> { std::nullopt };
+    if (options.tuple_graph_options)
+    {
+        auto tmp_tuple_graphs = std::vector<TupleGraphList> {};
+        for (const auto& state_space : state_spaces)
+        {
+            tmp_tuple_graphs.push_back(TupleGraphImpl::create(state_space, options.tuple_graph_options.value()));
+        }
+        tuple_graphs = std::move(tmp_tuple_graphs);
+    }
+
+    return std::make_shared<KnowledgeBaseImpl>(contexts.get_domain(), std::move(state_spaces), std::move(generalized_state_space), std::move(tuple_graphs));
 }
 
 /**
  * Getters
  */
 
-const Domain& KnowledgeBase::get_domain() const { return m_domain; }
+const formalism::Domain& KnowledgeBaseImpl::get_domain() const { return m_domain; }
+const StateSpaceList& KnowledgeBaseImpl::get_state_spaces() const { return m_state_spaces; }
+const std::optional<GeneralizedStateSpace>& KnowledgeBaseImpl::get_generalized_state_space() const { return m_generalized_state_space; }
+const std::optional<std::vector<TupleGraphList>>& KnowledgeBaseImpl::get_tuple_graphs() const { return m_tuple_graphs; }
 
-const GeneralizedStateSpace& KnowledgeBase::get_generalized_state_space() const { return m_state_space; }
-
-const std::optional<TupleGraphCollection>& KnowledgeBase::get_tuple_graphs() const { return m_tuple_graphs; }
 }

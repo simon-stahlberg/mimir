@@ -28,7 +28,7 @@
 namespace mimir::datasets
 {
 
-class GeneralizedColorFunction
+class GeneralizedColorFunctionImpl
 {
 private:
     formalism::GeneralizedProblem m_generalized_problem;
@@ -38,7 +38,7 @@ private:
     formalism::PredicateMaps<graphs::Color, formalism::Static, formalism::Fluent, formalism::Derived> m_predicate_colors;
 
 public:
-    explicit GeneralizedColorFunction(formalism::GeneralizedProblem generalized_problem);
+    explicit GeneralizedColorFunctionImpl(formalism::GeneralizedProblem generalized_problem);
 
     /// @brief get color of object.
     graphs::Color get_color(formalism::Object object) const;

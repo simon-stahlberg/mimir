@@ -54,43 +54,21 @@ using InternalTupleGraph = StaticBidirectionalGraph<StaticTupleGraph>;
 namespace mimir::datasets
 {
 
-class TupleGraph
+class TupleGraphImpl
 {
 private:
-    const formalism::ProblemImpl& m_problem;
-    const graphs::ProblemGraph& m_problem_graph;  ///< child-level problem graph.
-    const graphs::ClassGraph& m_class_graph;      ///< top-level class graph for convenience.
+    StateSpace m_state_space;
     search::iw::TupleIndexMapper m_index_mapper;
     graphs::InternalTupleGraph m_graph;
 
     IndexGroupedVector<const Index> m_v_idxs_grouped_by_distance;
     IndexGroupedVector<const Index> m_problem_v_idxs_grouped_by_distance;
 
-public:
-    TupleGraph(const formalism::ProblemImpl& problem,
-               const graphs::ProblemGraph& problem_graph,
-               const graphs::ClassGraph& class_graph,
-               search::iw::TupleIndexMapper index_mapper,
-               graphs::InternalTupleGraph graph,
-               IndexGroupedVector<const Index> vertices_grouped_by_distance,
-               IndexGroupedVector<const Index> problem_vertices_grouped_by_distance);
-
-    const formalism::ProblemImpl& get_problem() const;
-    const graphs::ProblemGraph& get_problem_graph() const;
-    const graphs::ClassGraph& get_class_graph() const;
-    const search::iw::TupleIndexMapper& get_index_mapper() const;
-    const graphs::InternalTupleGraph& get_graph() const;
-    const IndexGroupedVector<const Index>& get_vertices_grouped_by_distance() const;
-    const IndexGroupedVector<const Index>& get_problem_vertices_grouped_by_distance() const;
-};
-
-using TupleGraphList = std::vector<TupleGraph>;
-
-/// @brief `TupleGraphCollection` encapsulates tuple graphs for each class vertex in a `GeneralizedStateSpace`.
-class TupleGraphCollection
-{
-private:
-    TupleGraphList m_per_class_vertex_tuple_graph;
+    TupleGraphImpl(StateSpace state_space,
+                   search::iw::TupleIndexMapper index_mapper,
+                   graphs::InternalTupleGraph graph,
+                   IndexGroupedVector<const Index> vertices_grouped_by_distance,
+                   IndexGroupedVector<const Index> problem_vertices_grouped_by_distance);
 
 public:
     struct Options
@@ -102,10 +80,19 @@ public:
         Options(size_t width, bool enable_dominance_pruning) : width(width), enable_dominance_pruning(enable_dominance_pruning) {}
     };
 
-    TupleGraphCollection(const GeneralizedStateSpace& state_space, const Options& options = Options());
+    /// @brief Create the `TupleGraph` for each vertex in the given `StateSpace`.
+    /// @param state_space is the `StateSpace`
+    /// @return are the `TupleGraph` for each vertex in the given `StateSpace`.
+    static TupleGraphList create(StateSpace state_space, const Options& options = Options());
 
-    const TupleGraphList& get_per_class_vertex_tuple_graph() const;
+    const StateSpace& get_state_space() const;
+    const search::iw::TupleIndexMapper& get_index_mapper() const;
+    const graphs::InternalTupleGraph& get_graph() const;
+    const IndexGroupedVector<const Index>& get_vertices_grouped_by_distance() const;
+    const IndexGroupedVector<const Index>& get_problem_vertices_grouped_by_distance() const;
 };
+
+using TupleGraphList = std::vector<TupleGraph>;
 
 /**
  * Pretty printing as dot representation

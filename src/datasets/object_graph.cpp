@@ -33,7 +33,7 @@ namespace mimir::datasets
 
 static std::unordered_map<Object, graphs::VertexIndex> add_objects_graph_structures(State state,
                                                                                     const ProblemImpl& problem,
-                                                                                    const GeneralizedColorFunction& color_function,
+                                                                                    const GeneralizedColorFunctionImpl& color_function,
                                                                                     graphs::StaticVertexColoredDigraph& out_digraph)
 {
     std::unordered_map<Object, graphs::VertexIndex> object_to_vertex_index;
@@ -67,7 +67,7 @@ static std::unordered_map<Object, graphs::VertexIndex> add_objects_graph_structu
 }
 
 template<StaticOrFluentOrDerived P>
-static void add_ground_atom_graph_structures(const GeneralizedColorFunction& color_function,
+static void add_ground_atom_graph_structures(const GeneralizedColorFunctionImpl& color_function,
                                              const std::unordered_map<Object, graphs::VertexIndex>& object_to_vertex_index,
                                              GroundAtom<P> atom,
                                              graphs::StaticVertexColoredDigraph& out_digraph)
@@ -86,7 +86,7 @@ static void add_ground_atom_graph_structures(const GeneralizedColorFunction& col
 
 static void add_ground_atoms_graph_structures(State state,
                                               const ProblemImpl& problem,
-                                              const GeneralizedColorFunction& color_function,
+                                              const GeneralizedColorFunctionImpl& color_function,
                                               const std::unordered_map<Object, graphs::VertexIndex>& object_to_vertex_index,
                                               graphs::StaticVertexColoredDigraph& out_digraph)
 {
@@ -107,7 +107,7 @@ static void add_ground_atoms_graph_structures(State state,
 template<StaticOrFluentOrDerived P>
 static void add_ground_literal_graph_structures(State state,
                                                 const ProblemImpl& problem,
-                                                const GeneralizedColorFunction& color_function,
+                                                const GeneralizedColorFunctionImpl& color_function,
                                                 const std::unordered_map<Object, graphs::VertexIndex>& object_to_vertex_index,
                                                 bool mark_true_goal_literals,
                                                 GroundLiteral<P> literal,
@@ -127,7 +127,7 @@ static void add_ground_literal_graph_structures(State state,
 
 static void add_ground_goal_literals_graph_structures(State state,
                                                       const ProblemImpl& problem,
-                                                      const GeneralizedColorFunction& color_function,
+                                                      const GeneralizedColorFunctionImpl& color_function,
                                                       bool mark_true_goal_literals,
                                                       const std::unordered_map<Object, graphs::VertexIndex>& object_to_vertex_index,
                                                       graphs::StaticVertexColoredDigraph& out_digraph)
@@ -147,7 +147,7 @@ static void add_ground_goal_literals_graph_structures(State state,
 }
 
 graphs::StaticVertexColoredDigraph
-create_object_graph(State state, const ProblemImpl& problem, const GeneralizedColorFunction& color_function, bool mark_true_goal_literals)
+create_object_graph(State state, const ProblemImpl& problem, const GeneralizedColorFunctionImpl& color_function, bool mark_true_goal_literals)
 {
     // TODO: perhaps we could store a partially initialized object graph in the problem that we can simply copy? :)
 
