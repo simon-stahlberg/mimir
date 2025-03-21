@@ -87,7 +87,7 @@ $(function() {
 Public Types</h2></td></tr>
 <tr class="memitem:a6e0c3c4c9a57524579c2dbd77b765ce7"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticAdjacentEdgeIndexConstIterator.html#a6e0c3c4c9a57524579c2dbd77b765ce7">difference_type</a> = std::ptrdiff_t</td></tr>
 <tr class="separator:a6e0c3c4c9a57524579c2dbd77b765ce7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6b10318c679d1f3d79f770dd5c4bd479"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticAdjacentEdgeIndexConstIterator.html#a6b10318c679d1f3d79f770dd5c4bd479">value_type</a> = EdgeIndex</td></tr>
+<tr class="memitem:a6b10318c679d1f3d79f770dd5c4bd479"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticAdjacentEdgeIndexConstIterator.html#a6b10318c679d1f3d79f770dd5c4bd479">value_type</a> = <a class="el" href="namespacemimir_1_1graphs.html#a64d4b39dbf15556126f7575e277451f3">EdgeIndex</a></td></tr>
 <tr class="separator:a6b10318c679d1f3d79f770dd5c4bd479"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae303b89479c51f986487ad05aee56b34"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticAdjacentEdgeIndexConstIterator.html#ae303b89479c51f986487ad05aee56b34">pointer</a> = <a class="el" href="classmimir_1_1graphs_1_1StaticAdjacentEdgeIndexConstIterator.html#a6b10318c679d1f3d79f770dd5c4bd479">value_type</a> *</td></tr>
 <tr class="separator:ae303b89479c51f986487ad05aee56b34"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -100,7 +100,7 @@ Public Types</h2></td></tr>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a908c3c1165152c6ade5cf2afebae5ed1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticAdjacentEdgeIndexConstIterator.html#a908c3c1165152c6ade5cf2afebae5ed1">StaticAdjacentEdgeIndexConstIterator</a> ()</td></tr>
 <tr class="separator:a908c3c1165152c6ade5cf2afebae5ed1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4faaf33bbe29976ff53277759a443a55"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticAdjacentEdgeIndexConstIterator.html#a4faaf33bbe29976ff53277759a443a55">StaticAdjacentEdgeIndexConstIterator</a> (VertexIndex vertex, const std::vector&lt; <a class="el" href="classmimir_1_1graphs_1_1Edge.html">Edge</a> &gt; &amp;<a class="el" href="namespacemimir_1_1graphs.html#a1aaf62d527000fe5e5a7a4857dab7455">edges</a>, std::span&lt; const EdgeIndex &gt; slice, bool begin)</td></tr>
+<tr class="memitem:a4faaf33bbe29976ff53277759a443a55"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticAdjacentEdgeIndexConstIterator.html#a4faaf33bbe29976ff53277759a443a55">StaticAdjacentEdgeIndexConstIterator</a> (<a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a> vertex, const std::vector&lt; <a class="el" href="classmimir_1_1graphs_1_1Edge.html">Edge</a> &gt; &amp;<a class="el" href="namespacemimir_1_1graphs.html#a1aaf62d527000fe5e5a7a4857dab7455">edges</a>, std::span&lt; const <a class="el" href="namespacemimir_1_1graphs.html#a64d4b39dbf15556126f7575e277451f3">EdgeIndex</a> &gt; slice, bool begin)</td></tr>
 <tr class="separator:a4faaf33bbe29976ff53277759a443a55"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae00f087668666ccc7c0282d548f2b9da"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmimir_1_1graphs_1_1StaticAdjacentEdgeIndexConstIterator.html#a6b10318c679d1f3d79f770dd5c4bd479">value_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticAdjacentEdgeIndexConstIterator.html#ae00f087668666ccc7c0282d548f2b9da">operator*</a> () const</td></tr>
 <tr class="separator:ae00f087668666ccc7c0282d548f2b9da"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -187,7 +187,7 @@ template&lt;IsEdge Edge, IsDirection Direction&gt; </div>
 template&lt;IsEdge Edge, IsDirection Direction&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="classmimir_1_1graphs_1_1StaticAdjacentEdgeIndexConstIterator.html">mimir::graphs::StaticAdjacentEdgeIndexConstIterator</a>&lt; <a class="el" href="classmimir_1_1graphs_1_1Edge.html">Edge</a>, Direction &gt;::value_type =  EdgeIndex</td>
+          <td class="memname">using <a class="el" href="classmimir_1_1graphs_1_1StaticAdjacentEdgeIndexConstIterator.html">mimir::graphs::StaticAdjacentEdgeIndexConstIterator</a>&lt; <a class="el" href="classmimir_1_1graphs_1_1Edge.html">Edge</a>, Direction &gt;::value_type =  <a class="el" href="namespacemimir_1_1graphs.html#a64d4b39dbf15556126f7575e277451f3">EdgeIndex</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -222,7 +222,7 @@ template&lt;IsEdge Edge, IsDirection Direction&gt; </div>
         <tr>
           <td class="memname"><a class="el" href="classmimir_1_1graphs_1_1StaticAdjacentEdgeIndexConstIterator.html">mimir::graphs::StaticAdjacentEdgeIndexConstIterator</a>&lt; <a class="el" href="classmimir_1_1graphs_1_1Edge.html">Edge</a>, Direction &gt;::StaticAdjacentEdgeIndexConstIterator </td>
           <td>(</td>
-          <td class="paramtype">VertexIndex&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a>&#160;</td>
           <td class="paramname"><em>vertex</em>, </td>
         </tr>
         <tr>
@@ -234,7 +234,7 @@ template&lt;IsEdge Edge, IsDirection Direction&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::span&lt; const EdgeIndex &gt;&#160;</td>
+          <td class="paramtype">std::span&lt; const <a class="el" href="namespacemimir_1_1graphs.html#a64d4b39dbf15556126f7575e277451f3">EdgeIndex</a> &gt;&#160;</td>
           <td class="paramname"><em>slice</em>, </td>
         </tr>
         <tr>

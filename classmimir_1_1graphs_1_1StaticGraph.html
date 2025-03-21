@@ -96,9 +96,9 @@ Public Types</h2></td></tr>
 <tr class="separator:ac74d1210d953bfdd1bd4a27da0c4ffaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7a8b074a9c632d72538805a80af1fb7d"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a7a8b074a9c632d72538805a80af1fb7d">EdgeList</a> = std::vector&lt; E &gt;</td></tr>
 <tr class="separator:a7a8b074a9c632d72538805a80af1fb7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad5d8b457257d633b6b203cad40084cf4"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#ad5d8b457257d633b6b203cad40084cf4">VertexIndexConstIteratorType</a> = std::ranges::iterator_t&lt; std::ranges::iota_view&lt; VertexIndex, VertexIndex &gt; &gt;</td></tr>
+<tr class="memitem:ad5d8b457257d633b6b203cad40084cf4"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#ad5d8b457257d633b6b203cad40084cf4">VertexIndexConstIteratorType</a> = std::ranges::iterator_t&lt; std::ranges::iota_view&lt; <a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a>, <a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a> &gt; &gt;</td></tr>
 <tr class="separator:ad5d8b457257d633b6b203cad40084cf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a69f6ad4d930dfd5cd5bf575813f6e6a0"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a69f6ad4d930dfd5cd5bf575813f6e6a0">EdgeIndexConstIteratorType</a> = std::ranges::iterator_t&lt; std::ranges::iota_view&lt; EdgeIndex, EdgeIndex &gt; &gt;</td></tr>
+<tr class="memitem:a69f6ad4d930dfd5cd5bf575813f6e6a0"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a69f6ad4d930dfd5cd5bf575813f6e6a0">EdgeIndexConstIteratorType</a> = std::ranges::iterator_t&lt; std::ranges::iota_view&lt; <a class="el" href="namespacemimir_1_1graphs.html#a64d4b39dbf15556126f7575e277451f3">EdgeIndex</a>, <a class="el" href="namespacemimir_1_1graphs.html#a64d4b39dbf15556126f7575e277451f3">EdgeIndex</a> &gt; &gt;</td></tr>
 <tr class="separator:a69f6ad4d930dfd5cd5bf575813f6e6a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a52fa15032d1e0dc99bea0899e6ec31b5"><td class="memTemplParams" colspan="2">template&lt;IsDirection Direction&gt; </td></tr>
 <tr class="memitem:a52fa15032d1e0dc99bea0899e6ec31b5"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a52fa15032d1e0dc99bea0899e6ec31b5">AdjacentVertexConstIteratorType</a> = <a class="el" href="classmimir_1_1graphs_1_1StaticAdjacentVertexConstIterator.html">StaticAdjacentVertexConstIterator</a>&lt; V, E, Direction &gt;</td></tr>
@@ -123,27 +123,27 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:abe0622b8c9e48cbe484f04e1960588e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a416232dabee4440218e111b05bf11a50"><td class="memTemplParams" colspan="2">template&lt;typename... VertexProperties&gt; <br />
 requires HasVertexProperties&lt;V, VertexProperties...&gt;</td></tr>
-<tr class="memitem:a416232dabee4440218e111b05bf11a50"><td class="memTemplItemLeft" align="right" valign="top">VertexIndex&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a416232dabee4440218e111b05bf11a50">add_vertex</a> (VertexProperties &amp;&amp;... properties)</td></tr>
+<tr class="memitem:a416232dabee4440218e111b05bf11a50"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a416232dabee4440218e111b05bf11a50">add_vertex</a> (VertexProperties &amp;&amp;... properties)</td></tr>
 <tr class="memdesc:a416232dabee4440218e111b05bf11a50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a vertex to the graph with vertex properties args.  <br /></td></tr>
 <tr class="separator:a416232dabee4440218e111b05bf11a50"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa622c989654226a0e7c024a62b5a277e"><td class="memTemplParams" colspan="2">template&lt;typename... VertexProperties&gt; <br />
 requires HasVertexProperties&lt;V, VertexProperties...&gt;</td></tr>
-<tr class="memitem:aa622c989654226a0e7c024a62b5a277e"><td class="memTemplItemLeft" align="right" valign="top">VertexIndex&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#aa622c989654226a0e7c024a62b5a277e">add_vertex</a> (const <a class="el" href="classmimir_1_1graphs_1_1Vertex.html">Vertex</a>&lt; VertexProperties... &gt; &amp;vertex)</td></tr>
+<tr class="memitem:aa622c989654226a0e7c024a62b5a277e"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#aa622c989654226a0e7c024a62b5a277e">add_vertex</a> (const <a class="el" href="classmimir_1_1graphs_1_1Vertex.html">Vertex</a>&lt; VertexProperties... &gt; &amp;vertex)</td></tr>
 <tr class="memdesc:aa622c989654226a0e7c024a62b5a277e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a vertex to the graph that has the same properties as the given vertex.  <br /></td></tr>
 <tr class="separator:aa622c989654226a0e7c024a62b5a277e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0934215bdc49d2f06a7e29bd6a909f59"><td class="memTemplParams" colspan="2">template&lt;typename... EdgeProperties&gt; <br />
 requires HasEdgeProperties&lt;E, EdgeProperties...&gt;</td></tr>
-<tr class="memitem:a0934215bdc49d2f06a7e29bd6a909f59"><td class="memTemplItemLeft" align="right" valign="top">EdgeIndex&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a0934215bdc49d2f06a7e29bd6a909f59">add_directed_edge</a> (VertexIndex <a class="el" href="namespacemimir_1_1graphs.html#af891e9004f3adc58c29b3c56ed70fcb9">source</a>, VertexIndex <a class="el" href="namespacemimir_1_1graphs.html#a99ec4019eda342e0f9bbb6c28672bda9">target</a>, EdgeProperties &amp;&amp;... properties)</td></tr>
+<tr class="memitem:a0934215bdc49d2f06a7e29bd6a909f59"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1graphs.html#a64d4b39dbf15556126f7575e277451f3">EdgeIndex</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a0934215bdc49d2f06a7e29bd6a909f59">add_directed_edge</a> (<a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a> <a class="el" href="namespacemimir_1_1graphs.html#af891e9004f3adc58c29b3c56ed70fcb9">source</a>, <a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a> <a class="el" href="namespacemimir_1_1graphs.html#a99ec4019eda342e0f9bbb6c28672bda9">target</a>, EdgeProperties &amp;&amp;... properties)</td></tr>
 <tr class="memdesc:a0934215bdc49d2f06a7e29bd6a909f59"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a directed edge from source to target to the graph with edge properties args.  <br /></td></tr>
 <tr class="separator:a0934215bdc49d2f06a7e29bd6a909f59"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a93e2d5d86602b1f5312ab1469cb91144"><td class="memTemplParams" colspan="2">template&lt;typename... EdgeProperties&gt; <br />
 requires HasEdgeProperties&lt;E, EdgeProperties...&gt;</td></tr>
-<tr class="memitem:a93e2d5d86602b1f5312ab1469cb91144"><td class="memTemplItemLeft" align="right" valign="top">EdgeIndex&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a93e2d5d86602b1f5312ab1469cb91144">add_directed_edge</a> (VertexIndex <a class="el" href="namespacemimir_1_1graphs.html#af891e9004f3adc58c29b3c56ed70fcb9">source</a>, VertexIndex <a class="el" href="namespacemimir_1_1graphs.html#a99ec4019eda342e0f9bbb6c28672bda9">target</a>, const <a class="el" href="classmimir_1_1graphs_1_1Edge.html">Edge</a>&lt; EdgeProperties... &gt; &amp;edge)</td></tr>
+<tr class="memitem:a93e2d5d86602b1f5312ab1469cb91144"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1graphs.html#a64d4b39dbf15556126f7575e277451f3">EdgeIndex</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a93e2d5d86602b1f5312ab1469cb91144">add_directed_edge</a> (<a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a> <a class="el" href="namespacemimir_1_1graphs.html#af891e9004f3adc58c29b3c56ed70fcb9">source</a>, <a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a> <a class="el" href="namespacemimir_1_1graphs.html#a99ec4019eda342e0f9bbb6c28672bda9">target</a>, const <a class="el" href="classmimir_1_1graphs_1_1Edge.html">Edge</a>&lt; EdgeProperties... &gt; &amp;edge)</td></tr>
 <tr class="memdesc:a93e2d5d86602b1f5312ab1469cb91144"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add an edge to the graph that has the same properties as the given edge.  <br /></td></tr>
 <tr class="separator:a93e2d5d86602b1f5312ab1469cb91144"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa5b30b3de408397fe1d24a28242438dc"><td class="memTemplParams" colspan="2">template&lt;typename... EdgeProperties&gt; <br />
 requires HasEdgeProperties&lt;E, EdgeProperties...&gt;</td></tr>
-<tr class="memitem:aa5b30b3de408397fe1d24a28242438dc"><td class="memTemplItemLeft" align="right" valign="top">std::pair&lt; EdgeIndex, EdgeIndex &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#aa5b30b3de408397fe1d24a28242438dc">add_undirected_edge</a> (VertexIndex <a class="el" href="namespacemimir_1_1graphs.html#af891e9004f3adc58c29b3c56ed70fcb9">source</a>, VertexIndex <a class="el" href="namespacemimir_1_1graphs.html#a99ec4019eda342e0f9bbb6c28672bda9">target</a>, EdgeProperties &amp;&amp;... properties)</td></tr>
+<tr class="memitem:aa5b30b3de408397fe1d24a28242438dc"><td class="memTemplItemLeft" align="right" valign="top">std::pair&lt; <a class="el" href="namespacemimir_1_1graphs.html#a64d4b39dbf15556126f7575e277451f3">EdgeIndex</a>, <a class="el" href="namespacemimir_1_1graphs.html#a64d4b39dbf15556126f7575e277451f3">EdgeIndex</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#aa5b30b3de408397fe1d24a28242438dc">add_undirected_edge</a> (<a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a> <a class="el" href="namespacemimir_1_1graphs.html#af891e9004f3adc58c29b3c56ed70fcb9">source</a>, <a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a> <a class="el" href="namespacemimir_1_1graphs.html#a99ec4019eda342e0f9bbb6c28672bda9">target</a>, EdgeProperties &amp;&amp;... properties)</td></tr>
 <tr class="memdesc:aa5b30b3de408397fe1d24a28242438dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add two anti-parallel directed edges to the graph with the identical edge properties, representing the undirected edge.  <br /></td></tr>
 <tr class="separator:aa5b30b3de408397fe1d24a28242438dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a20e9621baff588768d4e1e723d197cd3"><td class="memItemLeft" align="right" valign="top">std::ranges::subrange&lt; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#ad5d8b457257d633b6b203cad40084cf4">VertexIndexConstIteratorType</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a20e9621baff588768d4e1e723d197cd3">get_vertex_indices</a> () const</td></tr>
@@ -151,52 +151,52 @@ requires HasEdgeProperties&lt;E, EdgeProperties...&gt;</td></tr>
 <tr class="memitem:a610669a3002f33cd8236f213c8b1575e"><td class="memItemLeft" align="right" valign="top">std::ranges::subrange&lt; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a69f6ad4d930dfd5cd5bf575813f6e6a0">EdgeIndexConstIteratorType</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a610669a3002f33cd8236f213c8b1575e">get_edge_indices</a> () const</td></tr>
 <tr class="separator:a610669a3002f33cd8236f213c8b1575e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abd9fa5fc78d2bc05da0991547d979218"><td class="memTemplParams" colspan="2">template&lt;IsDirection Direction&gt; </td></tr>
-<tr class="memitem:abd9fa5fc78d2bc05da0991547d979218"><td class="memTemplItemLeft" align="right" valign="top">std::ranges::subrange&lt; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a52fa15032d1e0dc99bea0899e6ec31b5">AdjacentVertexConstIteratorType</a>&lt; Direction &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#abd9fa5fc78d2bc05da0991547d979218">get_adjacent_vertices</a> (VertexIndex vertex) const</td></tr>
+<tr class="memitem:abd9fa5fc78d2bc05da0991547d979218"><td class="memTemplItemLeft" align="right" valign="top">std::ranges::subrange&lt; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a52fa15032d1e0dc99bea0899e6ec31b5">AdjacentVertexConstIteratorType</a>&lt; Direction &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#abd9fa5fc78d2bc05da0991547d979218">get_adjacent_vertices</a> (<a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a> vertex) const</td></tr>
 <tr class="separator:abd9fa5fc78d2bc05da0991547d979218"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac48ccb5975daf910268a7f8c3f568c13"><td class="memTemplParams" colspan="2">template&lt;IsDirection Direction&gt; </td></tr>
-<tr class="memitem:ac48ccb5975daf910268a7f8c3f568c13"><td class="memTemplItemLeft" align="right" valign="top">std::ranges::subrange&lt; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#afbf629c5adcf90bddd3458f08df93c7d">AdjacentVertexIndexConstIteratorType</a>&lt; Direction &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#ac48ccb5975daf910268a7f8c3f568c13">get_adjacent_vertex_indices</a> (VertexIndex vertex) const</td></tr>
+<tr class="memitem:ac48ccb5975daf910268a7f8c3f568c13"><td class="memTemplItemLeft" align="right" valign="top">std::ranges::subrange&lt; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#afbf629c5adcf90bddd3458f08df93c7d">AdjacentVertexIndexConstIteratorType</a>&lt; Direction &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#ac48ccb5975daf910268a7f8c3f568c13">get_adjacent_vertex_indices</a> (<a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a> vertex) const</td></tr>
 <tr class="separator:ac48ccb5975daf910268a7f8c3f568c13"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab50387933bec068b202a1820f126383e"><td class="memTemplParams" colspan="2">template&lt;IsDirection Direction&gt; </td></tr>
-<tr class="memitem:ab50387933bec068b202a1820f126383e"><td class="memTemplItemLeft" align="right" valign="top">std::ranges::subrange&lt; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#acd3dfbd818561e437e5857f27de3d722">AdjacentEdgeConstIteratorType</a>&lt; Direction &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#ab50387933bec068b202a1820f126383e">get_adjacent_edges</a> (VertexIndex vertex) const</td></tr>
+<tr class="memitem:ab50387933bec068b202a1820f126383e"><td class="memTemplItemLeft" align="right" valign="top">std::ranges::subrange&lt; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#acd3dfbd818561e437e5857f27de3d722">AdjacentEdgeConstIteratorType</a>&lt; Direction &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#ab50387933bec068b202a1820f126383e">get_adjacent_edges</a> (<a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a> vertex) const</td></tr>
 <tr class="separator:ab50387933bec068b202a1820f126383e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab0aaf3edb6861608fef5029f6d773bc1"><td class="memTemplParams" colspan="2">template&lt;IsDirection Direction&gt; </td></tr>
-<tr class="memitem:ab0aaf3edb6861608fef5029f6d773bc1"><td class="memTemplItemLeft" align="right" valign="top">std::ranges::subrange&lt; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a0da014a1f3da7fac4b9530530aaad357">AdjacentEdgeIndexConstIteratorType</a>&lt; Direction &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#ab0aaf3edb6861608fef5029f6d773bc1">get_adjacent_edge_indices</a> (VertexIndex vertex) const</td></tr>
+<tr class="memitem:ab0aaf3edb6861608fef5029f6d773bc1"><td class="memTemplItemLeft" align="right" valign="top">std::ranges::subrange&lt; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a0da014a1f3da7fac4b9530530aaad357">AdjacentEdgeIndexConstIteratorType</a>&lt; Direction &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#ab0aaf3edb6861608fef5029f6d773bc1">get_adjacent_edge_indices</a> (<a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a> vertex) const</td></tr>
 <tr class="separator:ab0aaf3edb6861608fef5029f6d773bc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab7367fe1bc7e3a4db5503d203215d919"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a7e0e6bbdda64e1cf2ac6879fce8ea0c8">VertexList</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#ab7367fe1bc7e3a4db5503d203215d919">get_vertices</a> () const</td></tr>
 <tr class="separator:ab7367fe1bc7e3a4db5503d203215d919"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9cba6adaf7001cbbc3266f69cf6fa5d7"><td class="memItemLeft" align="right" valign="top">const V &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a9cba6adaf7001cbbc3266f69cf6fa5d7">get_vertex</a> (VertexIndex vertex) const</td></tr>
+<tr class="memitem:a9cba6adaf7001cbbc3266f69cf6fa5d7"><td class="memItemLeft" align="right" valign="top">const V &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a9cba6adaf7001cbbc3266f69cf6fa5d7">get_vertex</a> (<a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a> vertex) const</td></tr>
 <tr class="separator:a9cba6adaf7001cbbc3266f69cf6fa5d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaefd0dab210ecf43c682d500369b3f06"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a7a8b074a9c632d72538805a80af1fb7d">EdgeList</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#aaefd0dab210ecf43c682d500369b3f06">get_edges</a> () const</td></tr>
 <tr class="separator:aaefd0dab210ecf43c682d500369b3f06"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0e05dd30f708aa192c4dabc6728cf8eb"><td class="memItemLeft" align="right" valign="top">const E &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a0e05dd30f708aa192c4dabc6728cf8eb">get_edge</a> (EdgeIndex edge) const</td></tr>
+<tr class="memitem:a0e05dd30f708aa192c4dabc6728cf8eb"><td class="memItemLeft" align="right" valign="top">const E &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a0e05dd30f708aa192c4dabc6728cf8eb">get_edge</a> (<a class="el" href="namespacemimir_1_1graphs.html#a64d4b39dbf15556126f7575e277451f3">EdgeIndex</a> edge) const</td></tr>
 <tr class="separator:a0e05dd30f708aa192c4dabc6728cf8eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a28b5d7cbf9f9178c8037da932176b582"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a28b5d7cbf9f9178c8037da932176b582">get_num_vertices</a> () const</td></tr>
 <tr class="separator:a28b5d7cbf9f9178c8037da932176b582"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af29bf95bfa28192ad26a5ce1acedd671"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#af29bf95bfa28192ad26a5ce1acedd671">get_num_edges</a> () const</td></tr>
 <tr class="separator:af29bf95bfa28192ad26a5ce1acedd671"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac5d89b652ab0c020c84553647834a64e"><td class="memTemplParams" colspan="2">template&lt;IsDirection &gt; </td></tr>
-<tr class="memitem:ac5d89b652ab0c020c84553647834a64e"><td class="memTemplItemLeft" align="right" valign="top">VertexIndex&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#ac5d89b652ab0c020c84553647834a64e">get_source</a> (EdgeIndex edge) const</td></tr>
+<tr class="memitem:ac5d89b652ab0c020c84553647834a64e"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#ac5d89b652ab0c020c84553647834a64e">get_source</a> (<a class="el" href="namespacemimir_1_1graphs.html#a64d4b39dbf15556126f7575e277451f3">EdgeIndex</a> edge) const</td></tr>
 <tr class="separator:ac5d89b652ab0c020c84553647834a64e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ade5d18995e513bbe8a6195f6d0d76d9c"><td class="memTemplParams" colspan="2">template&lt;IsDirection &gt; </td></tr>
-<tr class="memitem:ade5d18995e513bbe8a6195f6d0d76d9c"><td class="memTemplItemLeft" align="right" valign="top">VertexIndex&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#ade5d18995e513bbe8a6195f6d0d76d9c">get_target</a> (EdgeIndex edge) const</td></tr>
+<tr class="memitem:ade5d18995e513bbe8a6195f6d0d76d9c"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#ade5d18995e513bbe8a6195f6d0d76d9c">get_target</a> (<a class="el" href="namespacemimir_1_1graphs.html#a64d4b39dbf15556126f7575e277451f3">EdgeIndex</a> edge) const</td></tr>
 <tr class="separator:ade5d18995e513bbe8a6195f6d0d76d9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a68286541581b9936a795bc1effe69d8a"><td class="memTemplParams" colspan="2">template&lt;IsDirection Direction&gt; </td></tr>
-<tr class="memitem:a68286541581b9936a795bc1effe69d8a"><td class="memTemplItemLeft" align="right" valign="top">const DegreeList &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a68286541581b9936a795bc1effe69d8a">get_degrees</a> () const</td></tr>
+<tr class="memitem:a68286541581b9936a795bc1effe69d8a"><td class="memTemplItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir_1_1graphs.html#a55329316711343bc96edff764157ce63">DegreeList</a> &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a68286541581b9936a795bc1effe69d8a">get_degrees</a> () const</td></tr>
 <tr class="separator:a68286541581b9936a795bc1effe69d8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad776ce0bd9954a6023ff48f8b59771a1"><td class="memTemplParams" colspan="2">template&lt;IsDirection Direction&gt; </td></tr>
-<tr class="memitem:ad776ce0bd9954a6023ff48f8b59771a1"><td class="memTemplItemLeft" align="right" valign="top">Degree&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#ad776ce0bd9954a6023ff48f8b59771a1">get_degree</a> (VertexIndex vertex) const</td></tr>
+<tr class="memitem:ad776ce0bd9954a6023ff48f8b59771a1"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1graphs.html#a69229571673742bf6b94ab7d889e98f1">Degree</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#ad776ce0bd9954a6023ff48f8b59771a1">get_degree</a> (<a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a> vertex) const</td></tr>
 <tr class="separator:ad776ce0bd9954a6023ff48f8b59771a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0d26e6eccbde9f3ec7caa4f9252972b4"><td class="memTemplParams" colspan="2">template&lt;IsDirection Direction&gt; </td></tr>
-<tr class="memitem:a0d26e6eccbde9f3ec7caa4f9252972b4"><td class="memTemplItemLeft" align="right" valign="top">std::ranges::subrange&lt; typename <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">StaticGraph</a>&lt; V, E &gt;::template <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a52fa15032d1e0dc99bea0899e6ec31b5">AdjacentVertexConstIteratorType</a>&lt; Direction &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a0d26e6eccbde9f3ec7caa4f9252972b4">get_adjacent_vertices</a> (VertexIndex vertex) const</td></tr>
+<tr class="memitem:a0d26e6eccbde9f3ec7caa4f9252972b4"><td class="memTemplItemLeft" align="right" valign="top">std::ranges::subrange&lt; typename <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">StaticGraph</a>&lt; V, E &gt;::template <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a52fa15032d1e0dc99bea0899e6ec31b5">AdjacentVertexConstIteratorType</a>&lt; Direction &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a0d26e6eccbde9f3ec7caa4f9252972b4">get_adjacent_vertices</a> (<a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a> vertex) const</td></tr>
 <tr class="separator:a0d26e6eccbde9f3ec7caa4f9252972b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab15b34020e10ba7335f14c5d19033156"><td class="memTemplParams" colspan="2">template&lt;IsDirection Direction&gt; </td></tr>
-<tr class="memitem:ab15b34020e10ba7335f14c5d19033156"><td class="memTemplItemLeft" align="right" valign="top">std::ranges::subrange&lt; typename <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">StaticGraph</a>&lt; V, E &gt;::template <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#afbf629c5adcf90bddd3458f08df93c7d">AdjacentVertexIndexConstIteratorType</a>&lt; Direction &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#ab15b34020e10ba7335f14c5d19033156">get_adjacent_vertex_indices</a> (VertexIndex vertex) const</td></tr>
+<tr class="memitem:ab15b34020e10ba7335f14c5d19033156"><td class="memTemplItemLeft" align="right" valign="top">std::ranges::subrange&lt; typename <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">StaticGraph</a>&lt; V, E &gt;::template <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#afbf629c5adcf90bddd3458f08df93c7d">AdjacentVertexIndexConstIteratorType</a>&lt; Direction &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#ab15b34020e10ba7335f14c5d19033156">get_adjacent_vertex_indices</a> (<a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a> vertex) const</td></tr>
 <tr class="separator:ab15b34020e10ba7335f14c5d19033156"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1662183c6964c9eb790a5661982b2b83"><td class="memTemplParams" colspan="2">template&lt;IsDirection Direction&gt; </td></tr>
-<tr class="memitem:a1662183c6964c9eb790a5661982b2b83"><td class="memTemplItemLeft" align="right" valign="top">std::ranges::subrange&lt; typename <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">StaticGraph</a>&lt; V, E &gt;::template <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#acd3dfbd818561e437e5857f27de3d722">AdjacentEdgeConstIteratorType</a>&lt; Direction &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a1662183c6964c9eb790a5661982b2b83">get_adjacent_edges</a> (VertexIndex vertex) const</td></tr>
+<tr class="memitem:a1662183c6964c9eb790a5661982b2b83"><td class="memTemplItemLeft" align="right" valign="top">std::ranges::subrange&lt; typename <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">StaticGraph</a>&lt; V, E &gt;::template <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#acd3dfbd818561e437e5857f27de3d722">AdjacentEdgeConstIteratorType</a>&lt; Direction &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a1662183c6964c9eb790a5661982b2b83">get_adjacent_edges</a> (<a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a> vertex) const</td></tr>
 <tr class="separator:a1662183c6964c9eb790a5661982b2b83"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0105e9450b709b21e4bb51d7deaa9e03"><td class="memTemplParams" colspan="2">template&lt;IsDirection Direction&gt; </td></tr>
-<tr class="memitem:a0105e9450b709b21e4bb51d7deaa9e03"><td class="memTemplItemLeft" align="right" valign="top">std::ranges::subrange&lt; typename <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">StaticGraph</a>&lt; V, E &gt;::template <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a0da014a1f3da7fac4b9530530aaad357">AdjacentEdgeIndexConstIteratorType</a>&lt; Direction &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a0105e9450b709b21e4bb51d7deaa9e03">get_adjacent_edge_indices</a> (VertexIndex vertex) const</td></tr>
+<tr class="memitem:a0105e9450b709b21e4bb51d7deaa9e03"><td class="memTemplItemLeft" align="right" valign="top">std::ranges::subrange&lt; typename <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">StaticGraph</a>&lt; V, E &gt;::template <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a0da014a1f3da7fac4b9530530aaad357">AdjacentEdgeIndexConstIteratorType</a>&lt; Direction &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a0105e9450b709b21e4bb51d7deaa9e03">get_adjacent_edge_indices</a> (<a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a> vertex) const</td></tr>
 <tr class="separator:a0105e9450b709b21e4bb51d7deaa9e03"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -292,7 +292,7 @@ template&lt;IsDirection Direction&gt; </div>
 template&lt;IsVertex V, IsEdge E&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">mimir::graphs::StaticGraph</a>&lt; V, E &gt;::EdgeIndexConstIteratorType =  std::ranges::iterator_t&lt;std::ranges::iota_view&lt;EdgeIndex, EdgeIndex&gt; &gt;</td>
+          <td class="memname">using <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">mimir::graphs::StaticGraph</a>&lt; V, E &gt;::EdgeIndexConstIteratorType =  std::ranges::iterator_t&lt;std::ranges::iota_view&lt;<a class="el" href="namespacemimir_1_1graphs.html#a64d4b39dbf15556126f7575e277451f3">EdgeIndex</a>, <a class="el" href="namespacemimir_1_1graphs.html#a64d4b39dbf15556126f7575e277451f3">EdgeIndex</a>&gt; &gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -340,7 +340,7 @@ template&lt;IsVertex V, IsEdge E&gt; </div>
 template&lt;IsVertex V, IsEdge E&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">mimir::graphs::StaticGraph</a>&lt; V, E &gt;::VertexIndexConstIteratorType =  std::ranges::iterator_t&lt;std::ranges::iota_view&lt;VertexIndex, VertexIndex&gt; &gt;</td>
+          <td class="memname">using <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">mimir::graphs::StaticGraph</a>&lt; V, E &gt;::VertexIndexConstIteratorType =  std::ranges::iterator_t&lt;std::ranges::iota_view&lt;<a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a>, <a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a>&gt; &gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -413,15 +413,15 @@ template&lt;typename... EdgeProperties&gt; <br />
 requires HasEdgeProperties&lt;E, EdgeProperties...&gt;</div>
       <table class="memname">
         <tr>
-          <td class="memname">EdgeIndex <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">mimir::graphs::StaticGraph</a>&lt; V, E &gt;::add_directed_edge </td>
+          <td class="memname"><a class="el" href="namespacemimir_1_1graphs.html#a64d4b39dbf15556126f7575e277451f3">EdgeIndex</a> <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">mimir::graphs::StaticGraph</a>&lt; V, E &gt;::add_directed_edge </td>
           <td>(</td>
-          <td class="paramtype">VertexIndex&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a>&#160;</td>
           <td class="paramname"><em>source</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">VertexIndex&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a>&#160;</td>
           <td class="paramname"><em>target</em>, </td>
         </tr>
         <tr>
@@ -470,15 +470,15 @@ template&lt;typename... EdgeProperties&gt; <br />
 requires HasEdgeProperties&lt;E, EdgeProperties...&gt;</div>
       <table class="memname">
         <tr>
-          <td class="memname">EdgeIndex <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">mimir::graphs::StaticGraph</a>&lt; V, E &gt;::add_directed_edge </td>
+          <td class="memname"><a class="el" href="namespacemimir_1_1graphs.html#a64d4b39dbf15556126f7575e277451f3">EdgeIndex</a> <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">mimir::graphs::StaticGraph</a>&lt; V, E &gt;::add_directed_edge </td>
           <td>(</td>
-          <td class="paramtype">VertexIndex&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a>&#160;</td>
           <td class="paramname"><em>source</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">VertexIndex&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a>&#160;</td>
           <td class="paramname"><em>target</em>, </td>
         </tr>
         <tr>
@@ -527,15 +527,15 @@ template&lt;typename... EdgeProperties&gt; <br />
 requires HasEdgeProperties&lt;E, EdgeProperties...&gt;</div>
       <table class="memname">
         <tr>
-          <td class="memname">std::pair&lt; EdgeIndex, EdgeIndex &gt; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">mimir::graphs::StaticGraph</a>&lt; V, E &gt;::add_undirected_edge </td>
+          <td class="memname">std::pair&lt; <a class="el" href="namespacemimir_1_1graphs.html#a64d4b39dbf15556126f7575e277451f3">EdgeIndex</a>, <a class="el" href="namespacemimir_1_1graphs.html#a64d4b39dbf15556126f7575e277451f3">EdgeIndex</a> &gt; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">mimir::graphs::StaticGraph</a>&lt; V, E &gt;::add_undirected_edge </td>
           <td>(</td>
-          <td class="paramtype">VertexIndex&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a>&#160;</td>
           <td class="paramname"><em>source</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">VertexIndex&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a>&#160;</td>
           <td class="paramname"><em>target</em>, </td>
         </tr>
         <tr>
@@ -584,7 +584,7 @@ template&lt;typename... VertexProperties&gt; <br />
 requires HasVertexProperties&lt;V, VertexProperties...&gt;</div>
       <table class="memname">
         <tr>
-          <td class="memname">VertexIndex <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">mimir::graphs::StaticGraph</a>&lt; V, E &gt;::add_vertex </td>
+          <td class="memname"><a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a> <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">mimir::graphs::StaticGraph</a>&lt; V, E &gt;::add_vertex </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classmimir_1_1graphs_1_1Vertex.html">Vertex</a>&lt; VertexProperties... &gt; &amp;&#160;</td>
           <td class="paramname"><em>vertex</em></td><td>)</td>
@@ -623,7 +623,7 @@ template&lt;typename... VertexProperties&gt; <br />
 requires HasVertexProperties&lt;V, VertexProperties...&gt;</div>
       <table class="memname">
         <tr>
-          <td class="memname">VertexIndex <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">mimir::graphs::StaticGraph</a>&lt; V, E &gt;::add_vertex </td>
+          <td class="memname"><a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a> <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">mimir::graphs::StaticGraph</a>&lt; V, E &gt;::add_vertex </td>
           <td>(</td>
           <td class="paramtype">VertexProperties &amp;&amp;...&#160;</td>
           <td class="paramname"><em>properties</em></td><td>)</td>
@@ -680,7 +680,7 @@ template&lt;IsDirection Direction&gt; </div>
         <tr>
           <td class="memname">std::ranges::subrange&lt; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a0da014a1f3da7fac4b9530530aaad357">AdjacentEdgeIndexConstIteratorType</a>&lt; Direction &gt; &gt; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">mimir::graphs::StaticGraph</a>&lt; V, E &gt;::get_adjacent_edge_indices </td>
           <td>(</td>
-          <td class="paramtype">VertexIndex&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a>&#160;</td>
           <td class="paramname"><em>vertex</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -702,7 +702,7 @@ template&lt;IsDirection Direction&gt; </div>
         <tr>
           <td class="memname">std::ranges::subrange&lt; typename <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">StaticGraph</a>&lt; V, E &gt;::template <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a0da014a1f3da7fac4b9530530aaad357">AdjacentEdgeIndexConstIteratorType</a>&lt; Direction &gt; &gt; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">mimir::graphs::StaticGraph</a>&lt; V, E &gt;::get_adjacent_edge_indices </td>
           <td>(</td>
-          <td class="paramtype">VertexIndex&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a>&#160;</td>
           <td class="paramname"><em>vertex</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -724,7 +724,7 @@ template&lt;IsDirection Direction&gt; </div>
         <tr>
           <td class="memname">std::ranges::subrange&lt; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#acd3dfbd818561e437e5857f27de3d722">AdjacentEdgeConstIteratorType</a>&lt; Direction &gt; &gt; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">mimir::graphs::StaticGraph</a>&lt; V, E &gt;::get_adjacent_edges </td>
           <td>(</td>
-          <td class="paramtype">VertexIndex&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a>&#160;</td>
           <td class="paramname"><em>vertex</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -746,7 +746,7 @@ template&lt;IsDirection Direction&gt; </div>
         <tr>
           <td class="memname">std::ranges::subrange&lt; typename <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">StaticGraph</a>&lt; V, E &gt;::template <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#acd3dfbd818561e437e5857f27de3d722">AdjacentEdgeConstIteratorType</a>&lt; Direction &gt; &gt; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">mimir::graphs::StaticGraph</a>&lt; V, E &gt;::get_adjacent_edges </td>
           <td>(</td>
-          <td class="paramtype">VertexIndex&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a>&#160;</td>
           <td class="paramname"><em>vertex</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -768,7 +768,7 @@ template&lt;IsDirection Direction&gt; </div>
         <tr>
           <td class="memname">std::ranges::subrange&lt; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#afbf629c5adcf90bddd3458f08df93c7d">AdjacentVertexIndexConstIteratorType</a>&lt; Direction &gt; &gt; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">mimir::graphs::StaticGraph</a>&lt; V, E &gt;::get_adjacent_vertex_indices </td>
           <td>(</td>
-          <td class="paramtype">VertexIndex&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a>&#160;</td>
           <td class="paramname"><em>vertex</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -790,7 +790,7 @@ template&lt;IsDirection Direction&gt; </div>
         <tr>
           <td class="memname">std::ranges::subrange&lt; typename <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">StaticGraph</a>&lt; V, E &gt;::template <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#afbf629c5adcf90bddd3458f08df93c7d">AdjacentVertexIndexConstIteratorType</a>&lt; Direction &gt; &gt; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">mimir::graphs::StaticGraph</a>&lt; V, E &gt;::get_adjacent_vertex_indices </td>
           <td>(</td>
-          <td class="paramtype">VertexIndex&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a>&#160;</td>
           <td class="paramname"><em>vertex</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -812,7 +812,7 @@ template&lt;IsDirection Direction&gt; </div>
         <tr>
           <td class="memname">std::ranges::subrange&lt; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a52fa15032d1e0dc99bea0899e6ec31b5">AdjacentVertexConstIteratorType</a>&lt; Direction &gt; &gt; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">mimir::graphs::StaticGraph</a>&lt; V, E &gt;::get_adjacent_vertices </td>
           <td>(</td>
-          <td class="paramtype">VertexIndex&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a>&#160;</td>
           <td class="paramname"><em>vertex</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -834,7 +834,7 @@ template&lt;IsDirection Direction&gt; </div>
         <tr>
           <td class="memname">std::ranges::subrange&lt; typename <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">StaticGraph</a>&lt; V, E &gt;::template <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a52fa15032d1e0dc99bea0899e6ec31b5">AdjacentVertexConstIteratorType</a>&lt; Direction &gt; &gt; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">mimir::graphs::StaticGraph</a>&lt; V, E &gt;::get_adjacent_vertices </td>
           <td>(</td>
-          <td class="paramtype">VertexIndex&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a>&#160;</td>
           <td class="paramname"><em>vertex</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -854,9 +854,9 @@ template&lt;IsVertex V, IsEdge E&gt; </div>
 template&lt;IsDirection Direction&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">Degree <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">mimir::graphs::StaticGraph</a>&lt; V, E &gt;::get_degree </td>
+          <td class="memname"><a class="el" href="namespacemimir_1_1graphs.html#a69229571673742bf6b94ab7d889e98f1">Degree</a> <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">mimir::graphs::StaticGraph</a>&lt; V, E &gt;::get_degree </td>
           <td>(</td>
-          <td class="paramtype">VertexIndex&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a>&#160;</td>
           <td class="paramname"><em>vertex</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -876,7 +876,7 @@ template&lt;IsVertex V, IsEdge E&gt; </div>
 template&lt;IsDirection Direction&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">const DegreeList &amp; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">mimir::graphs::StaticGraph</a>&lt; V, E &gt;::get_degrees</td>
+          <td class="memname">const <a class="el" href="namespacemimir_1_1graphs.html#a55329316711343bc96edff764157ce63">DegreeList</a> &amp; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">mimir::graphs::StaticGraph</a>&lt; V, E &gt;::get_degrees</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -894,7 +894,7 @@ template&lt;IsVertex V, IsEdge E&gt; </div>
         <tr>
           <td class="memname">const E &amp; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">mimir::graphs::StaticGraph</a>&lt; V, E &gt;::get_edge </td>
           <td>(</td>
-          <td class="paramtype">EdgeIndex&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1graphs.html#a64d4b39dbf15556126f7575e277451f3">EdgeIndex</a>&#160;</td>
           <td class="paramname"><em>edge</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -978,9 +978,9 @@ template&lt;IsVertex V, IsEdge E&gt; </div>
 template&lt;IsDirection Direction&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">VertexIndex <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">mimir::graphs::StaticGraph</a>&lt; V, E &gt;::get_source </td>
+          <td class="memname"><a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a> <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">mimir::graphs::StaticGraph</a>&lt; V, E &gt;::get_source </td>
           <td>(</td>
-          <td class="paramtype">EdgeIndex&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1graphs.html#a64d4b39dbf15556126f7575e277451f3">EdgeIndex</a>&#160;</td>
           <td class="paramname"><em>edge</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -1000,9 +1000,9 @@ template&lt;IsVertex V, IsEdge E&gt; </div>
 template&lt;IsDirection Direction&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">VertexIndex <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">mimir::graphs::StaticGraph</a>&lt; V, E &gt;::get_target </td>
+          <td class="memname"><a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a> <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">mimir::graphs::StaticGraph</a>&lt; V, E &gt;::get_target </td>
           <td>(</td>
-          <td class="paramtype">EdgeIndex&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1graphs.html#a64d4b39dbf15556126f7575e277451f3">EdgeIndex</a>&#160;</td>
           <td class="paramname"><em>edge</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -1022,7 +1022,7 @@ template&lt;IsVertex V, IsEdge E&gt; </div>
         <tr>
           <td class="memname">const V &amp; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">mimir::graphs::StaticGraph</a>&lt; V, E &gt;::get_vertex </td>
           <td>(</td>
-          <td class="paramtype">VertexIndex&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a>&#160;</td>
           <td class="paramname"><em>vertex</em></td><td>)</td>
           <td> const</td>
         </tr>
