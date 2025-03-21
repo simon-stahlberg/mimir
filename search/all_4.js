@@ -26,7 +26,7 @@ var searchData=
   ['effects_2ehpp_23',['effects.hpp',['../languages_2general__policies_2effects_8hpp.html',1,'(Global Namespace)'],['../formalism_2effects_8hpp.html',1,'(Global Namespace)']]],
   ['emptyedge_24',['EmptyEdge',['../namespacemimir_1_1graphs.html#a9f1a6ea5cc813f955882325765a23481',1,'mimir::graphs']]],
   ['emptyvertex_25',['EmptyVertex',['../namespacemimir_1_1graphs.html#a67adc7ccb0d5c052d08f962f0878bda9',1,'mimir::graphs']]],
-  ['enable_5fdominance_5fpruning_26',['enable_dominance_pruning',['../structmimir_1_1datasets_1_1TupleGraphCollection_1_1Options.html#af7603cdf6023c208447bfa4bd09b3fdb',1,'mimir::datasets::TupleGraphCollection::Options']]],
+  ['enable_5fdominance_5fpruning_26',['enable_dominance_pruning',['../structmimir_1_1datasets_1_1TupleGraphImpl_1_1Options.html#a47fb82ab055e8eff3c97bd04b7c3aa58',1,'mimir::datasets::TupleGraphImpl::Options']]],
   ['enable_5fdump_5fdot_5ffile_27',['enable_dump_dot_file',['../structmimir_1_1search_1_1match__tree_1_1Options.html#a0ab05bce8b6f1f738911a493ea70ec40',1,'mimir::search::match_tree::Options']]],
   ['end_28',['end',['../classmimir_1_1search_1_1iw_1_1StateTupleIndexGenerator.html#ac2f71cd8e0caa86ae95ff87bc59a2541',1,'mimir::search::iw::StateTupleIndexGenerator::end()'],['../classmimir_1_1search_1_1iw_1_1StatePairTupleIndexGenerator.html#a3379a5efc08c4fe7a34154557f0fd03b',1,'mimir::search::iw::StatePairTupleIndexGenerator::end()']]],
   ['equalnumericalcondition_29',['EqualNumericalCondition',['../namespacemimir_1_1languages_1_1general__policies.html#a87cc9d3abfb095734f1c43fb7f271fe3',1,'mimir::languages::general_policies']]],

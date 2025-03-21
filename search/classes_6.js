@@ -1,9 +1,9 @@
 var searchData=
 [
-  ['generalizedcolorfunction_0',['GeneralizedColorFunction',['../classmimir_1_1datasets_1_1GeneralizedColorFunction.html',1,'mimir::datasets']]],
+  ['generalizedcolorfunctionimpl_0',['GeneralizedColorFunctionImpl',['../classmimir_1_1datasets_1_1GeneralizedColorFunctionImpl.html',1,'mimir::datasets']]],
   ['generalizedproblem_1',['GeneralizedProblem',['../classmimir_1_1formalism_1_1GeneralizedProblem.html',1,'mimir::formalism']]],
   ['generalizedsearchcontext_2',['GeneralizedSearchContext',['../classmimir_1_1search_1_1GeneralizedSearchContext.html',1,'mimir::search']]],
-  ['generalizedstatespace_3',['GeneralizedStateSpace',['../classmimir_1_1datasets_1_1GeneralizedStateSpace.html',1,'mimir::datasets']]],
+  ['generalizedstatespaceimpl_3',['GeneralizedStateSpaceImpl',['../classmimir_1_1datasets_1_1GeneralizedStateSpaceImpl.html',1,'mimir::datasets']]],
   ['generalpolicyimpl_4',['GeneralPolicyImpl',['../classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html',1,'mimir::languages::general_policies']]],
   ['generatedsentencescontainer_5',['GeneratedSentencesContainer',['../classmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1GeneratedSentencesContainer.html',1,'mimir::languages::dl::cnf_grammar']]],
   ['generatorstatistics_6',['GeneratorStatistics',['../structmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1GeneratorStatistics.html',1,'mimir::languages::dl::cnf_grammar']]],

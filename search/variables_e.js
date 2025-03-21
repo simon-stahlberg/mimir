@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['width_0',['width',['../structmimir_1_1datasets_1_1TupleGraphCollection_1_1Options.html#a43d0b2bbf7bef3d573e3f963b449f747',1,'mimir::datasets::TupleGraphCollection::Options']]]
+  ['width_0',['width',['../structmimir_1_1datasets_1_1TupleGraphImpl_1_1Options.html#a8f871b016be58b7502e6221bc43e6c9f',1,'mimir::datasets::TupleGraphImpl::Options']]]
 ];
