@@ -65,26 +65,6 @@ extern bool operator<(const Certificate& lhs, const Certificate& rhs);
 
 extern std::ostream& operator<<(std::ostream& os, const Certificate& element);
 
-struct UniqueCertificateSharedPtrHash
-{
-    size_t operator()(const std::shared_ptr<const Certificate>& element) const;
-};
-
-struct UniqueCertificateSharedPtrEqualTo
-{
-    size_t operator()(const std::shared_ptr<const Certificate>& lhs, const std::shared_ptr<const Certificate>& rhs) const;
-};
-
-struct UniqueCertificateUniquePtrHash
-{
-    size_t operator()(const std::unique_ptr<const Certificate>& element) const;
-};
-
-struct UniqueCertificateUniquePtrEqualTo
-{
-    size_t operator()(const std::unique_ptr<const Certificate>& lhs, const std::unique_ptr<const Certificate>& rhs) const;
-};
-
 /// @brief `DenseGraph` encapsulates a dense graph representation compatible with Nauty.
 class DenseGraph
 {

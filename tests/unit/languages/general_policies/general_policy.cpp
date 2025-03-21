@@ -64,7 +64,7 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyTest)
         auto context = search::GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem1_file, problem2_file });
 
         auto options = GeneralizedStateSpace::Options();
-        options.problem_options.symmetry_pruning = false;
+        options.problem_options.symmetry_pruning = true;
         const auto generalized_state_space = GeneralizedStateSpace(context, options);
 
         auto vertex_indices =
@@ -76,6 +76,8 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyTest)
         auto dl_repositories = dl::Repositories();
 
         const auto general_policy = repositories.get_or_create_general_policy(description, *context.get_domain(), dl_repositories);
+
+        EXPECT_EQ(generalized_state_space.get_initial_vertices().size(), 2);
 
         EXPECT_EQ(general_policy->solves(generalized_state_space, vertex_indices, denotation_repositories),
                   general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);

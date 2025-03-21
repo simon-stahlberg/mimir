@@ -42,20 +42,6 @@ const std::string& Certificate::get_canonical_graph() const { return m_canonical
 
 const mimir::graphs::ColorList& Certificate::get_canonical_coloring() const { return m_canonical_coloring; }
 
-size_t UniqueCertificateSharedPtrHash::operator()(const std::shared_ptr<const Certificate>& element) const { return loki::Hash<Certificate>()(*element); }
-
-size_t UniqueCertificateSharedPtrEqualTo::operator()(const std::shared_ptr<const Certificate>& lhs, const std::shared_ptr<const Certificate>& rhs) const
-{
-    return loki::EqualTo<Certificate>()(*lhs, *rhs);
-}
-
-size_t UniqueCertificateUniquePtrHash::operator()(const std::unique_ptr<const Certificate>& element) const { return loki::Hash<Certificate>()(*element); }
-
-size_t UniqueCertificateUniquePtrEqualTo::operator()(const std::unique_ptr<const Certificate>& lhs, const std::unique_ptr<const Certificate>& rhs) const
-{
-    return loki::EqualTo<Certificate>()(*lhs, *rhs);
-}
-
 bool operator==(const Certificate& lhs, const Certificate& rhs) { return loki::EqualTo<Certificate>()(lhs, rhs); }
 
 bool operator<(const Certificate& lhs, const Certificate& rhs)

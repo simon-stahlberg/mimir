@@ -151,29 +151,25 @@ const ContinuousCostList& ProblemStateSpace::get_action_goal_distances() const {
  * GeneralizedStateSpace
  */
 
-using CertificateToIndex = std::unordered_map<std::unique_ptr<const nauty_wrapper::Certificate>,
-                                              Index,
-                                              nauty_wrapper::UniqueCertificateUniquePtrHash,
-                                              nauty_wrapper::UniqueCertificateUniquePtrEqualTo>;
+/// @brief Uniqueness test of certificates while mapping them to a representative state.
+/// Hash and compare of `loki::ObserverPtr<T>` is specialized to use the dereferenced pointer.
+using CertficateToRepresentativeState = KeyValueMap<loki::ObserverPtr<const nauty_wrapper::Certificate>, State>;
 
-using CertificateSet = std::unordered_set<loki::ObserverPtr<const nauty_wrapper::Certificate>,
-                                          loki::Hash<loki::ObserverPtr<const nauty_wrapper::Certificate>>,
-                                          loki::EqualTo<loki::ObserverPtr<const nauty_wrapper::Certificate>>>;
-using CertificateList = std::vector<std::unique_ptr<const nauty_wrapper::Certificate>>;
+/// @brief Cache computed state certificates.
+using StateToCertificate = StateMap<std::shared_ptr<const nauty_wrapper::Certificate>>;
 
 struct SymmetriesData
 {
     const GeneralizedColorFunction& color_function;
-    CertificateSet equiv_classes;
-    CertificateList per_state_equiv_class;
-    StateSet representative_states;
+    CertficateToRepresentativeState class_representative;
+    StateToCertificate state_to_certificate;
     StateSet prunable_states;
+    ValueSet<std::pair<graphs::VertexIndex, graphs::VertexIndex>> m_edges;
 
     explicit SymmetriesData(const GeneralizedColorFunction& color_function) :
         color_function(color_function),
-        equiv_classes(),
-        per_state_equiv_class(),
-        representative_states(),
+        class_representative(),
+        state_to_certificate(),
         prunable_states()
     {
     }
@@ -208,20 +204,14 @@ private:
     /* Implement AlgorithmEventHandlerBase interface */
     friend class brfs::EventHandlerBase<SymmetryReducedProblemGraphEventHandler>;
 
-    std::unique_ptr<const nauty_wrapper::Certificate> compute_certificate(State state)
+    auto compute_certificate(State state)
     {
         const auto object_graph = create_object_graph(state, *m_problem, m_symm_data.color_function, m_options.mark_true_goal_literals);
 
-        return std::make_unique<const nauty_wrapper::Certificate>(nauty_wrapper::SparseGraph(object_graph).compute_certificate());
+        return std::make_shared<const nauty_wrapper::Certificate>(nauty_wrapper::SparseGraph(object_graph).compute_certificate());
     }
 
-    void on_expand_state_impl(State state)
-    {
-        if (!m_state_to_vertex_index.contains(state))
-        {
-            m_state_to_vertex_index.emplace(state, m_graph.add_vertex(graphs::VertexIndex(-1), state));
-        }
-    }
+    void on_expand_state_impl(State state) {}
 
     void on_expand_goal_state_impl(State state) { m_goal_vertices.insert(m_state_to_vertex_index.at(state)); }
 
@@ -229,18 +219,19 @@ private:
     {
         const auto source_v_idx = m_state_to_vertex_index.at(state);
 
-        auto certificate = compute_certificate(successor_state);
-        auto it = m_symm_data.equiv_classes.find(certificate.get());
-        const auto is_symmetric = (it != m_symm_data.equiv_classes.end());
+        auto tmp_certificate = compute_certificate(successor_state);
+        auto it = m_symm_data.class_representative.find(tmp_certificate.get());
+        const auto is_symmetric = (it != m_symm_data.class_representative.end());
 
         if (is_symmetric)
         {
             /* Existing class re-encountered: add edge if between existing representative states! */
 
-            if (m_symm_data.representative_states.contains(successor_state))
+            /* Always add novel edges between symmetric states. */
+
+            const auto target_v_idx = m_state_to_vertex_index.at(it->second);
+            if (m_symm_data.m_edges.emplace(source_v_idx, target_v_idx).second)  ///< avoid adding parallel edges
             {
-                /* Always add edges between symmetric states. */
-                const auto target_v_idx = m_state_to_vertex_index.at(successor_state);
                 m_graph.add_directed_edge(source_v_idx, target_v_idx, graphs::EdgeIndex(-1), action, action_cost);
             }
 
@@ -251,14 +242,14 @@ private:
         {
             /* New class determined: add vertex and edge! */
 
-            assert(m_graph.get_num_vertices() == m_symm_data.per_state_equiv_class.size());
             assert(m_graph.get_num_vertices() == m_state_to_vertex_index.size());
 
-            m_symm_data.representative_states.insert(successor_state);
-            m_symm_data.per_state_equiv_class.push_back(std::move(certificate));
-            m_symm_data.equiv_classes.insert(m_symm_data.per_state_equiv_class.back().get());
+            const auto target_v_idx = m_graph.add_vertex(graphs::VertexIndex(-1), successor_state, std::move(tmp_certificate));
+            const auto certificate = graphs::get_certificate(m_graph.get_vertex(target_v_idx));
 
-            const auto target_v_idx = m_graph.add_vertex(graphs::VertexIndex(-1), successor_state);
+            m_symm_data.state_to_certificate.emplace(successor_state, certificate);
+            m_symm_data.class_representative.emplace(certificate.get(), successor_state);
+
             m_state_to_vertex_index.emplace(successor_state, target_v_idx);
             m_graph.add_directed_edge(source_v_idx, target_v_idx, graphs::EdgeIndex(-1), action, action_cost);
         }
@@ -272,13 +263,12 @@ private:
 
     void on_start_search_impl(State start_state)
     {
-        const auto v_idx = m_graph.add_vertex(graphs::VertexIndex(-1), start_state);
+        const auto v_idx = m_graph.add_vertex(graphs::VertexIndex(-1), start_state, compute_certificate(start_state));
         m_state_to_vertex_index.emplace(start_state, v_idx);
 
-        /* Compute certificate for start state. */
-        m_symm_data.per_state_equiv_class.push_back(compute_certificate(start_state));
-        m_symm_data.equiv_classes.insert(m_symm_data.per_state_equiv_class.back().get());
-        m_symm_data.representative_states.insert(start_state);
+        const auto certificate = graphs::get_certificate(m_graph.get_vertex(v_idx));
+        m_symm_data.class_representative.emplace(certificate.get(), start_state);
+        m_symm_data.state_to_certificate.emplace(start_state, certificate);
     }
 
     void on_end_search_impl(uint64_t num_reached_fluent_atoms,
@@ -331,8 +321,8 @@ private:
 
     void on_expand_state_impl(State state)
     {
-        if (!m_state_to_vertex_index.contains(state))
-            m_state_to_vertex_index.emplace(state, m_graph.add_vertex(graphs::VertexIndex(-1), state));
+        // if (!m_state_to_vertex_index.contains(state))
+        //     m_state_to_vertex_index.emplace(state, m_graph.add_vertex(graphs::VertexIndex(-1), state, nullptr));
     }
 
     void on_expand_goal_state_impl(State state) { m_goal_vertices.insert(m_state_to_vertex_index.at(state)); }
@@ -340,8 +330,10 @@ private:
     void on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state)
     {
         const auto source_vertex_index = m_state_to_vertex_index.at(state);
-        const auto target_vertex_index = m_state_to_vertex_index.contains(successor_state) ? m_state_to_vertex_index.at(successor_state) :
-                                                                                             m_graph.add_vertex(graphs::VertexIndex(-1), successor_state);
+        const auto target_vertex_index =
+            m_state_to_vertex_index.contains(successor_state) ?
+                m_state_to_vertex_index.at(successor_state) :
+                m_graph.add_vertex(graphs::VertexIndex(-1), successor_state, std::shared_ptr<const nauty_wrapper::Certificate>(nullptr));
         m_state_to_vertex_index.emplace(successor_state, target_vertex_index);
         m_graph.add_directed_edge(source_vertex_index, target_vertex_index, graphs::EdgeIndex(-1), action, action_cost);
     }
@@ -352,7 +344,11 @@ private:
 
     void on_finish_g_layer_impl(uint32_t g_value, uint64_t num_expanded_states, uint64_t num_generated_states) {}
 
-    void on_start_search_impl(State start_state) {}
+    void on_start_search_impl(State start_state)
+    {
+        const auto v_idx = m_graph.add_vertex(graphs::VertexIndex(-1), start_state, std::shared_ptr<const nauty_wrapper::Certificate>(nullptr));
+        m_state_to_vertex_index.emplace(start_state, v_idx);
+    }
 
     void on_end_search_impl(uint64_t num_reached_fluent_atoms,
                             uint64_t num_reached_derived_atoms,
@@ -388,10 +384,9 @@ public:
     }
 };
 
-static std::optional<std::pair<ProblemStateSpace, CertificateList>>
-compute_problem_graph_with_symmetry_reduction(const SearchContext& context,
-                                              const GeneralizedColorFunction& color_function,
-                                              const GeneralizedStateSpace::Options::ProblemSpecific& options)
+static std::optional<ProblemStateSpace> compute_problem_graph_with_symmetry_reduction(const SearchContext& context,
+                                                                                      const GeneralizedColorFunction& color_function,
+                                                                                      const GeneralizedStateSpace::Options::ProblemSpecific& options)
 {
     const auto& problem = *context.get_problem();
     const auto applicable_action_generator = context.get_applicable_action_generator();
@@ -460,12 +455,11 @@ compute_problem_graph_with_symmetry_reduction(const SearchContext& context,
                                                                                         goal_vertices.begin(),
                                                                                         goal_vertices.end());
 
-    return std::make_pair(ProblemStateSpace(std::move(bidir_graph),
-                                            std::move(goal_vertices),
-                                            std::move(unsolvable_vertices),
-                                            std::move(unit_goal_distances),
-                                            std::move(action_goal_distances)),
-                          std::move(symm_data.per_state_equiv_class));
+    return ProblemStateSpace(std::move(bidir_graph),
+                             std::move(goal_vertices),
+                             std::move(unsolvable_vertices),
+                             std::move(unit_goal_distances),
+                             std::move(action_goal_distances));
 }
 
 static std::optional<ProblemStateSpace> compute_problem_graph_without_symmetry_reduction(const SearchContext& context,
@@ -543,12 +537,12 @@ static std::optional<ProblemStateSpace> compute_problem_graph_without_symmetry_r
                              std::move(action_goal_distances));
 }
 
-static std::vector<std::tuple<ProblemStateSpace, CertificateList, SearchContext>>
+static std::vector<std::pair<ProblemStateSpace, SearchContext>>
 compute_problem_graphs_with_symmetry_reduction(const GeneralizedSearchContext& context, const GeneralizedStateSpace::Options::ProblemSpecific& options)
 {
     auto color_function = GeneralizedColorFunction(context.get_generalized_problem());
 
-    auto problem_graphs = std::vector<std::tuple<ProblemStateSpace, CertificateList, SearchContext>> {};
+    auto problem_graphs = std::vector<std::pair<ProblemStateSpace, SearchContext>> {};
     for (const auto& search_context : context.get_search_contexts())
     {
         auto result = compute_problem_graph_with_symmetry_reduction(search_context, color_function, options);
@@ -558,7 +552,7 @@ compute_problem_graphs_with_symmetry_reduction(const GeneralizedSearchContext& c
             continue;
         }
 
-        problem_graphs.emplace_back(std::move(result->first), std::move(result->second), search_context);
+        problem_graphs.emplace_back(std::move(result.value()), search_context);
     }
 
     return problem_graphs;
@@ -592,7 +586,7 @@ compute_problem_and_class_state_spaces_with_symmetry_reduction(const Generalized
     {
         std::sort(result.begin(),
                   result.end(),
-                  [](auto&& lhs, auto&& rhs) { return std::get<0>(lhs).get_graph().get_num_vertices() < std::get<0>(rhs).get_graph().get_num_vertices(); });
+                  [](auto&& lhs, auto&& rhs) { return lhs.first.get_graph().get_num_vertices() < rhs.first.get_graph().get_num_vertices(); });
     }
 
     /* Step 2: Compute the `ClassGraph` by looping through the `StaticProblemGraphs`.
@@ -605,11 +599,11 @@ compute_problem_and_class_state_spaces_with_symmetry_reduction(const Generalized
 
     auto class_graph = graphs::StaticClassGraph {};
 
-    auto problem_vertex_certificate_to_class_v_idx = CertificateToIndex {};
+    auto certificate_to_class_v_idx = ToIndexMap<const nauty_wrapper::Certificate*> {};
 
     auto problem_idx = Index(0);
 
-    for (auto& [problem_state_space, vertex_certificates, search_context] : result)
+    for (auto& [problem_state_space, search_context] : result)
     {
         const auto& problem_graph = problem_state_space.get_graph();
         auto& problem_goal_vertices = problem_state_space.get_goal_vertices();
@@ -633,13 +627,15 @@ compute_problem_and_class_state_spaces_with_symmetry_reduction(const Generalized
             const auto is_unsolvable = problem_unsolvable_vertices.contains(problem_v_idx);
             const auto is_alive = (!(is_goal || is_unsolvable));
 
-            auto result = problem_vertex_certificate_to_class_v_idx.emplace(std::move(vertex_certificates.at(problem_v_idx)), class_graph.get_num_vertices());
+            const auto certificate = graphs::get_certificate(v);
 
-            if (result.second)
+            auto it = certificate_to_class_v_idx.find(certificate.get());
+
+            if (it == certificate_to_class_v_idx.end())
             {
                 /* Discovered new class vertex. */
 
-                const auto class_v_idx = result.first->second;
+                const auto class_v_idx = graphs::VertexIndex(class_graph.get_num_vertices());
 
                 class_graph.add_vertex(class_v_idx,
                                        problem_idx,
@@ -650,7 +646,8 @@ compute_problem_and_class_state_spaces_with_symmetry_reduction(const Generalized
                                        is_goal,
                                        is_unsolvable,
                                        is_alive);
-                const auto final_problem_v_idx = final_problem_graph.add_vertex(class_v_idx, get_state(v));
+                const auto final_problem_v_idx = final_problem_graph.add_vertex(class_v_idx, get_state(v), std::move(certificate));
+                certificate_to_class_v_idx.emplace(graphs::get_certificate(final_problem_graph.get_vertex(final_problem_v_idx)).get(), final_problem_v_idx);
 
                 problem_v_idx_to_final_v_idx.emplace(problem_v_idx, final_problem_v_idx);
                 problem_v_idx_to_class_v_idx.emplace(problem_v_idx, class_v_idx);
@@ -663,13 +660,13 @@ compute_problem_and_class_state_spaces_with_symmetry_reduction(const Generalized
                 if (problem_v_idx == 0)
                 {
                     has_equivalent_initial_state = true;
-                    break;
+                    break;  ///< Remove the entire problem if it is isomorphic to another one
                 }
 
                 /* We create a node in the problem graph that points to the class vertex.
                    We cannot skip it to be able to compute tuple graphs in the problem graph of a representative of a class vertex. */
-                const auto class_v_idx = result.first->second;
-                const auto final_problem_v_idx = final_problem_graph.add_vertex(class_v_idx, get_state(v));
+                const auto class_v_idx = it->second;
+                const auto final_problem_v_idx = final_problem_graph.add_vertex(class_v_idx, get_state(v), certificate);
 
                 problem_v_idx_to_class_v_idx.emplace(problem_v_idx, class_v_idx);
                 problem_v_idx_to_final_v_idx.emplace(problem_v_idx, final_problem_v_idx);
@@ -769,7 +766,7 @@ compute_problem_and_class_state_spaces_without_symmetry_reduction(const Generali
 
             class_graph
                 .add_vertex(class_v_idx, problem_idx, problem_v_idx, unit_goal_distance, action_goal_distance, is_initial, is_goal, is_unsolvable, is_alive);
-            final_problem_graph.add_vertex(class_v_idx, get_state(v));
+            final_problem_graph.add_vertex(class_v_idx, get_state(v), std::shared_ptr<const nauty_wrapper::Certificate>(nullptr));
         }
         for (const auto& e : problem_graph.get_edges())
         {

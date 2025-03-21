@@ -18,6 +18,7 @@
 #ifndef MIMIR_DATASETS_GENERALIZED_STATE_SPACE_HPP_
 #define MIMIR_DATASETS_GENERALIZED_STATE_SPACE_HPP_
 
+#include "mimir/algorithms/nauty.hpp"
 #include "mimir/common/types.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/generalized_problem.hpp"
@@ -37,7 +38,7 @@ namespace mimir::graphs
 
 /// @typedef ProblemVertex
 /// @brief `ProblemVertex` encapsulates information about a vertex in a `ProblemGraph`
-using ProblemVertex = Vertex<Index, search::State>;
+using ProblemVertex = Vertex<Index, search::State, std::shared_ptr<const nauty_wrapper::Certificate>>;
 using ProblemVertexList = std::vector<ProblemVertex>;
 
 /// @brief Get the index of the corresponding `ClassVertex` in the `GeneralizedStateSpace`.
@@ -49,6 +50,11 @@ inline Index get_class_vertex_index(const ProblemVertex& vertex) { return vertex
 /// @param vertex is a `ProblemVertex`.
 /// @return the `State` of the given `ProblemVertex` in the `ProblemGraph`.
 inline search::State get_state(const ProblemVertex& vertex) { return vertex.get_property<1>(); }
+
+/// @brief Get the `nauty_wrapper::Certificate` of the given `ProblemVertex`.
+/// @param vertex is a `ProblemVertex`.
+/// @return the `nauty_wrapper::Certificate` of the given `ProblemVertex` in the `ProblemGraph` if it was computed, and otherwise nullptr.
+inline const std::shared_ptr<const nauty_wrapper::Certificate>& get_certificate(const ProblemVertex& vertex) { return vertex.get_property<2>(); }
 
 /// @typedef ProblemEdge
 /// @brief `ProblemEdge` encapsulates information about an edge in a `ProblemGraph`.
