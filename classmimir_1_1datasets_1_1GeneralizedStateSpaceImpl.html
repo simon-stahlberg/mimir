@@ -97,7 +97,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a882a1a5d8b38637c424d958608bf4be7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpaceImpl.html#a882a1a5d8b38637c424d958608bf4be7">GeneralizedStateSpaceImpl</a> (StateSpaceList state_spaces, <a class="el" href="namespacemimir_1_1graphs.html#a7f055a18f6efd9b14e9f5708d28eb7e6">graphs::ClassGraph</a> graph, <a class="el" href="namespacemimir.html#a56b4bf568fdc2fc9db3b9a0d1845a961">IndexSet</a> initial_vertices, <a class="el" href="namespacemimir.html#a56b4bf568fdc2fc9db3b9a0d1845a961">IndexSet</a> goal_vertices, <a class="el" href="namespacemimir.html#a56b4bf568fdc2fc9db3b9a0d1845a961">IndexSet</a> unsolvable_vertices, std::unordered_map&lt; const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> *, graphs::VertexIndexList &gt; vertex_mappings, std::unordered_map&lt; const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> *, graphs::EdgeIndexList &gt; edge_mappings)</td></tr>
 <tr class="separator:a882a1a5d8b38637c424d958608bf4be7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a28751071ad986bcb4c0febd476b07f3d"><td class="memItemLeft" align="right" valign="top">const StateSpaceList &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpaceImpl.html#a28751071ad986bcb4c0febd476b07f3d">get_state_spaces</a> () const</td></tr>
-<tr class="memdesc:a28751071ad986bcb4c0febd476b07f3d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the underlying <code>graphs::ProblemGraphList</code>  <br /></td></tr>
+<tr class="memdesc:a28751071ad986bcb4c0febd476b07f3d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the underlying <code>StateSpaceList</code>  <br /></td></tr>
 <tr class="separator:a28751071ad986bcb4c0febd476b07f3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7a8373c7a8fdc3a888ece8ee5678e209"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir_1_1graphs.html#a7f055a18f6efd9b14e9f5708d28eb7e6">graphs::ClassGraph</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpaceImpl.html#a7a8373c7a8fdc3a888ece8ee5678e209">get_graph</a> () const</td></tr>
 <tr class="memdesc:a7a8373c7a8fdc3a888ece8ee5678e209"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the underlying <code><a class="el" href="namespacemimir_1_1graphs.html#a7f055a18f6efd9b14e9f5708d28eb7e6" title="ClassGraph implements a directed graph representing the state space of a class of problems.">graphs::ClassGraph</a></code>  <br /></td></tr>
@@ -123,12 +123,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ae38cdc0e2354a088ef658d8b9ec5bdf5"><td class="memItemLeft" align="right" valign="top">const graphs::ProblemEdge &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpaceImpl.html#ae38cdc0e2354a088ef658d8b9ec5bdf5">get_problem_edge</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a9861298646e808707570b3e2528af931">graphs::ClassEdge</a> &amp;edge) const</td></tr>
 <tr class="memdesc:ae38cdc0e2354a088ef658d8b9ec5bdf5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the representative <code>graphs::ProblemEdge</code> of the given <code><a class="el" href="namespacemimir_1_1graphs.html#a9861298646e808707570b3e2528af931" title="ClassEdge encapsulates information about an edge in a ClassGraph.">graphs::ClassEdge</a></code>.  <br /></td></tr>
 <tr class="separator:ae38cdc0e2354a088ef658d8b9ec5bdf5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5463ea95256fd49ac4cc7bb41532dfb6"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir_1_1formalism.html#a18a62fffd7784a50a9304da9b0a2a7d1">formalism::Problem</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpaceImpl.html#a5463ea95256fd49ac4cc7bb41532dfb6">get_problem</a> (const <a class="el" href="namespacemimir_1_1graphs.html#addbc8279833faca8528c5c48225e197e">graphs::ClassVertex</a> &amp;vertex) const</td></tr>
-<tr class="memdesc:a5463ea95256fd49ac4cc7bb41532dfb6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the representative <code>Problem</code> of the given <code><a class="el" href="namespacemimir_1_1graphs.html#addbc8279833faca8528c5c48225e197e" title="ClassVertex encapsulates information about a vertex in a ClassGraph.">graphs::ClassVertex</a></code>.  <br /></td></tr>
-<tr class="separator:a5463ea95256fd49ac4cc7bb41532dfb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a77a8e1c0c1c33348c52492abd78fb4e5"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir_1_1formalism.html#a18a62fffd7784a50a9304da9b0a2a7d1">formalism::Problem</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpaceImpl.html#a77a8e1c0c1c33348c52492abd78fb4e5">get_problem</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a9861298646e808707570b3e2528af931">graphs::ClassEdge</a> &amp;edge) const</td></tr>
-<tr class="memdesc:a77a8e1c0c1c33348c52492abd78fb4e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the representative <code>Problem</code> of the given <code><a class="el" href="namespacemimir_1_1graphs.html#a9861298646e808707570b3e2528af931" title="ClassEdge encapsulates information about an edge in a ClassGraph.">graphs::ClassEdge</a></code>.  <br /></td></tr>
-<tr class="separator:a77a8e1c0c1c33348c52492abd78fb4e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a77a6d74009e595b6c9ba12f8ad35a3b1"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir_1_1graphs.html#addbc8279833faca8528c5c48225e197e">graphs::ClassVertex</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpaceImpl.html#a77a6d74009e595b6c9ba12f8ad35a3b1">get_class_vertex</a> (const graphs::ProblemVertex &amp;vertex) const</td></tr>
 <tr class="memdesc:a77a6d74009e595b6c9ba12f8ad35a3b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lift <code>graphs::ProblemVertex</code> back to its corresponding <code><a class="el" href="namespacemimir_1_1graphs.html#addbc8279833faca8528c5c48225e197e" title="ClassVertex encapsulates information about a vertex in a ClassGraph.">graphs::ClassVertex</a></code>. Note that other <code>graphs::ProblemVertex</code> may map to the same <code><a class="el" href="namespacemimir_1_1graphs.html#addbc8279833faca8528c5c48225e197e" title="ClassVertex encapsulates information about a vertex in a ClassGraph.">graphs::ClassVertex</a></code>.  <br /></td></tr>
 <tr class="separator:a77a6d74009e595b6c9ba12f8ad35a3b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -145,7 +139,7 @@ Public Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a76875b75b081b5a0f735c46351f4f7cc"><td class="memItemLeft" align="right" valign="top">static GeneralizedStateSpace&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpaceImpl.html#a76875b75b081b5a0f735c46351f4f7cc">create</a> (StateSpaceList state_spaces, const <a class="el" href="structmimir_1_1datasets_1_1GeneralizedStateSpaceImpl_1_1Options.html">Options</a> &amp;options)</td></tr>
-<tr class="memdesc:a76875b75b081b5a0f735c46351f4f7cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a <code>GeneralizedStateSpace</code> from the given <code><a class="el" href="classmimir_1_1search_1_1GeneralizedSearchContext.html">search::GeneralizedSearchContext</a></code> and the <code><a class="el" href="structmimir_1_1datasets_1_1GeneralizedStateSpaceImpl_1_1Options.html">Options</a></code>. Note that the constructor may internally prune irrelevant <code><a class="el" href="classmimir_1_1search_1_1SearchContext.html">search::SearchContext</a></code> if detected by symmetry reduction. Note also that the ordering of <code><a class="el" href="classmimir_1_1search_1_1SearchContext.html">search::SearchContext</a></code> might change if ordering by number of states is enabled. The final <code><a class="el" href="classmimir_1_1search_1_1GeneralizedSearchContext.html">search::GeneralizedSearchContext</a></code> can be accessed through the respective getter function.  <br /></td></tr>
+<tr class="memdesc:a76875b75b081b5a0f735c46351f4f7cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a <code>GeneralizedStateSpace</code> from the given <code>StateSpaceList</code> and the <code><a class="el" href="structmimir_1_1datasets_1_1GeneralizedStateSpaceImpl_1_1Options.html">Options</a></code>. Note that the constructor may internally prune irrelevant <code>StateSpace</code> if detected by symmetry reduction.  <br /></td></tr>
 <tr class="separator:a76875b75b081b5a0f735c46351f4f7cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -253,11 +247,11 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Construct a <code>GeneralizedStateSpace</code> from the given <code><a class="el" href="classmimir_1_1search_1_1GeneralizedSearchContext.html">search::GeneralizedSearchContext</a></code> and the <code><a class="el" href="structmimir_1_1datasets_1_1GeneralizedStateSpaceImpl_1_1Options.html">Options</a></code>. Note that the constructor may internally prune irrelevant <code><a class="el" href="classmimir_1_1search_1_1SearchContext.html">search::SearchContext</a></code> if detected by symmetry reduction. Note also that the ordering of <code><a class="el" href="classmimir_1_1search_1_1SearchContext.html">search::SearchContext</a></code> might change if ordering by number of states is enabled. The final <code><a class="el" href="classmimir_1_1search_1_1GeneralizedSearchContext.html">search::GeneralizedSearchContext</a></code> can be accessed through the respective getter function. </p>
+<p>Construct a <code>GeneralizedStateSpace</code> from the given <code>StateSpaceList</code> and the <code><a class="el" href="structmimir_1_1datasets_1_1GeneralizedStateSpaceImpl_1_1Options.html">Options</a></code>. Note that the constructor may internally prune irrelevant <code>StateSpace</code> if detected by symmetry reduction. </p>
 <p>Constructors </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">context</td><td>encapsulates the problem specific <code><a class="el" href="classmimir_1_1search_1_1SearchContext.html">search::SearchContext</a></code> used to derive the <code>GeneralizedStateSpace</code>. </td></tr>
-    <tr><td class="paramname">options</td><td>encapsulates the options used to derive the <code>GeneralizedStateSpace</code>. </td></tr>
+    <tr><td class="paramname">state_spaces</td><td>is the <code>StateSpaceList</code>. </td></tr>
+    <tr><td class="paramname">options</td><td>are the options used to derive the <code>GeneralizedStateSpace</code>. </td></tr>
   </table>
   </dd>
 </dl>
@@ -419,60 +413,6 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a77a8e1c0c1c33348c52492abd78fb4e5" name="a77a8e1c0c1c33348c52492abd78fb4e5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a77a8e1c0c1c33348c52492abd78fb4e5">&#9670;&#160;</a></span>get_problem() <span class="overload">[1/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">const <a class="el" href="namespacemimir_1_1formalism.html#a18a62fffd7784a50a9304da9b0a2a7d1">formalism::Problem</a> &amp; mimir::datasets::GeneralizedStateSpaceImpl::get_problem </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespacemimir_1_1graphs.html#a9861298646e808707570b3e2528af931">graphs::ClassEdge</a> &amp;&#160;</td>
-          <td class="paramname"><em>edge</em></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Get the representative <code>Problem</code> of the given <code><a class="el" href="namespacemimir_1_1graphs.html#a9861298646e808707570b3e2528af931" title="ClassEdge encapsulates information about an edge in a ClassGraph.">graphs::ClassEdge</a></code>. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">vertex</td><td>is the <code><a class="el" href="namespacemimir_1_1graphs.html#a9861298646e808707570b3e2528af931" title="ClassEdge encapsulates information about an edge in a ClassGraph.">graphs::ClassEdge</a></code>. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>the representative <code><a class="el" href="namespacemimir_1_1formalism.html#a18a62fffd7784a50a9304da9b0a2a7d1">formalism::Problem</a></code> of the given <code><a class="el" href="namespacemimir_1_1graphs.html#a9861298646e808707570b3e2528af931" title="ClassEdge encapsulates information about an edge in a ClassGraph.">graphs::ClassEdge</a></code>. </dd></dl>
-
-</div>
-</div>
-<a id="a5463ea95256fd49ac4cc7bb41532dfb6" name="a5463ea95256fd49ac4cc7bb41532dfb6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5463ea95256fd49ac4cc7bb41532dfb6">&#9670;&#160;</a></span>get_problem() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">const <a class="el" href="namespacemimir_1_1formalism.html#a18a62fffd7784a50a9304da9b0a2a7d1">formalism::Problem</a> &amp; mimir::datasets::GeneralizedStateSpaceImpl::get_problem </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespacemimir_1_1graphs.html#addbc8279833faca8528c5c48225e197e">graphs::ClassVertex</a> &amp;&#160;</td>
-          <td class="paramname"><em>vertex</em></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Get the representative <code>Problem</code> of the given <code><a class="el" href="namespacemimir_1_1graphs.html#addbc8279833faca8528c5c48225e197e" title="ClassVertex encapsulates information about a vertex in a ClassGraph.">graphs::ClassVertex</a></code>. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">vertex</td><td>is the <code><a class="el" href="namespacemimir_1_1graphs.html#addbc8279833faca8528c5c48225e197e" title="ClassVertex encapsulates information about a vertex in a ClassGraph.">graphs::ClassVertex</a></code>. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>the representative <code><a class="el" href="namespacemimir_1_1formalism.html#a18a62fffd7784a50a9304da9b0a2a7d1">formalism::Problem</a></code> of the given <code><a class="el" href="namespacemimir_1_1graphs.html#addbc8279833faca8528c5c48225e197e" title="ClassVertex encapsulates information about a vertex in a ClassGraph.">graphs::ClassVertex</a></code>. </dd></dl>
-
-</div>
-</div>
 <a id="ae38cdc0e2354a088ef658d8b9ec5bdf5" name="ae38cdc0e2354a088ef658d8b9ec5bdf5"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae38cdc0e2354a088ef658d8b9ec5bdf5">&#9670;&#160;</a></span>get_problem_edge()</h2>
 
@@ -596,8 +536,8 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Get the underlying <code>graphs::ProblemGraphList</code> </p>
-<p>Getters </p><dl class="section return"><dt>Returns</dt><dd>the underlying <code>graphs::ProblemGraphList</code>. </dd></dl>
+<p>Get the underlying <code>StateSpaceList</code> </p>
+<p>Getters </p><dl class="section return"><dt>Returns</dt><dd>the underlying <code>StateSpaceList</code>. </dd></dl>
 
 </div>
 </div>
