@@ -48,6 +48,7 @@ INPUT                 = \
     "include/mimir/formalism/translator.hpp" \
     "include/mimir/formalism/utils.hpp" \
     "include/mimir/formalism/variable.hpp" \
+    "include/mimir/datasets/declarations.hpp" \
     "include/mimir/datasets/generalized_color_function.hpp" \
     "include/mimir/datasets/generalized_state_space.hpp" \
     "include/mimir/datasets/knowledge_base.hpp" \

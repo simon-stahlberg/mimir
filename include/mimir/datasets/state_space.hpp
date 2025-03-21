@@ -135,6 +135,10 @@ namespace mimir::datasets
  */
 
 /// @brief `StateSpaceImpl` encapsulates a the state transition model of a problems.
+///
+/// The central features of this implementation are:
+/// - the direct applicability of a large collection of Boost BGL graph algorithms on these graphs, making it convenient to analyze state transition models.
+/// - the options to apply symmetry reduction (using graph isomorphism).
 class StateSpaceImpl
 {
 private:

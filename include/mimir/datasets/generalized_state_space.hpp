@@ -92,16 +92,11 @@ namespace mimir::datasets
  * GeneralizedStateSpace
  */
 
-/// @brief `GeneralizedStateSpace` encapsulates a two-level graph structure to represent the state transition model of a class of problems.
+/// @brief `GeneralizedStateSpace` is an additional graph build on top of `StateSpaceList` to represent the state transition model of a class of problems.
 ///
 /// The central features of this implementation are:
 /// - the direct applicability of a large collection of Boost BGL graph algorithms on these graphs, making it convenient to analyze state transition models.
-/// - the availability of symmetry reduction techniques (using graph isomorphism) and expressivity analysis techniques (using state graphs and the k-WL
-/// algorithm or approximate techniques).
-///
-/// The two-level graph structure consists of two types of graphs: `graphs::ClassGraph` and `graphs::ProblemGraph`.
-/// On the high level, we have a single `graphs::ClassGraph` that represents the state transition model of the class of problems and
-/// on the low level, we have several `graphs::ProblemGraph` each representing the state transition model of a specfic problem in the class.
+/// - the option to apply symmetry reduction (using graph isomorphism).
 ///
 /// The `graphs::ClassGraph` acts as the main interface to retrieve information about the state transition model of a class of problems.
 /// Each vertex in the `graphs::ClassGraph` has a single representative from a `graphs::ProblemGraph`.
@@ -110,14 +105,8 @@ namespace mimir::datasets
 /// When symmetry reduction is enabled, the mapping may become a strict one-to-many mapping, in which case, the `graphs::ClassVertex`
 /// or `graphs::ClassEdge` acts as an interface to access the representative.
 ///
-/// The `graphs::ProblemGraph` acts as the main interface to retrieve information about the state transition model of a specific problem.
-/// When symmetry reduction is disabled, the `graphs::ProblemGraph` is essentially the state space.
-/// When symmetry reduction is enabled, the `graphs::ProblemGraph` becomes the equivalence-based abstraction.
-///
 /// The `GeneralizedStateSpace` provides several convenience functions to map between `graphs::ClassVertex` (resp. `graphs::ClassEdge`) and
-/// `graphs::ProblemVertex` (resp. `graphs::ProblemEdge`). Furthermore, there is functionality to compute induced subgraphs, which is useful in learning tasks
-/// where learning from the whole `graphs::ClassGraph` is inconvenient or simply not scalable. Computing a subgraph is fairly efficient and the preferred way
-/// when working with fragments of the `GeneralizedStateSpace`.
+/// `graphs::ProblemVertex` (resp. `graphs::ProblemEdge`).
 class GeneralizedStateSpaceImpl
 {
 private:
