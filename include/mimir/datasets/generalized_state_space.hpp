@@ -129,8 +129,16 @@ private:
     IndexSet m_goal_vertices;
     IndexSet m_unsolvable_vertices;
 
-    std::vector<std::vector<graphs::VertexIndex>> m_problem_to_class_vertex_index;
-    std::vector<std::vector<graphs::VertexIndex>> m_problem_to_class_edge_index;
+    std::unordered_map<const formalism::ProblemImpl*, graphs::VertexIndexList> m_vertex_mappings;
+    std::unordered_map<const formalism::ProblemImpl*, graphs::EdgeIndexList> m_edge_mappings;
+
+    GeneralizedStateSpaceImpl(StateSpaceList state_spaces,
+                              graphs::ClassGraph graph,
+                              IndexSet initial_vertices,
+                              IndexSet goal_vertices,
+                              IndexSet unsolvable_vertices,
+                              std::unordered_map<const formalism::ProblemImpl*, graphs::VertexIndexList> vertex_mappings,
+                              std::unordered_map<const formalism::ProblemImpl*, graphs::EdgeIndexList> edge_mappings);
 
 public:
     struct Options

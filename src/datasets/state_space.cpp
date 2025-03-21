@@ -40,6 +40,7 @@
 #include "mimir/search/openlists/priority_queue.hpp"
 #include "mimir/search/search_node.hpp"
 #include "mimir/search/search_space.hpp"
+#include "mimir/search/state.hpp"
 #include "mimir/search/state_repository.hpp"
 
 using namespace mimir::formalism;
@@ -51,7 +52,9 @@ namespace mimir::graphs
 std::ostream& operator<<(std::ostream& out, const ProblemVertex& vertex)
 {
     out << "problem_v_idx=" << vertex.get_index() << "\n"  //
-        << " state_idx=" << get_state(vertex)->get_index() << "\n"
+        << " state=";
+    mimir::operator<<(out, std::make_tuple(get_state(vertex), std::cref(*get_problem(vertex))));
+    out << "\n"
         << " unit_goal_dist=" << get_unit_goal_distance(vertex) << "\n"      //
         << " action_goal_dist=" << get_action_goal_distance(vertex) << "\n"  //
         << " is_initial=" << is_initial(vertex) << "\n"                      //
@@ -63,11 +66,13 @@ std::ostream& operator<<(std::ostream& out, const ProblemVertex& vertex)
 
 std::ostream& operator<<(std::ostream& out, const ProblemEdge& edge)
 {
-    out << "problem_e_idx=" << edge.get_index() << "\n"           //
-        << " problem_src_idx=" << edge.get_source() << "\n"       //
-        << " problem_dst_idx=" << edge.get_target() << "\n"       //
-        << " class_v_idx=" << get_class_edge_index(edge) << "\n"  //
-        << " action_idx=" << get_action(edge)->get_index();
+    out << "problem_e_idx=" << edge.get_index() << "\n"       //
+        << " problem_src_idx=" << edge.get_source() << "\n"   //
+        << " problem_dst_idx=" << edge.get_target() << "\n";  //
+    out << " action=";
+    mimir::operator<<(out, std::make_tuple(get_action(edge), std::cref(*get_problem(edge))));
+    out << "\n"
+        << " action_cost=" << get_action_cost(edge);
     return out;
 }
 
@@ -153,7 +158,7 @@ private:
             const auto target_v_idx = m_state_to_vertex_index.at(it->second);
             if (m_symm_data.m_edges.emplace(source_v_idx, target_v_idx).second)  ///< avoid adding parallel edges
             {
-                m_graph.add_directed_edge(source_v_idx, target_v_idx, graphs::EdgeIndex(-1), action, action_cost);
+                m_graph.add_directed_edge(source_v_idx, target_v_idx, action, m_problem, action_cost);
             }
 
             /* Always mark symmetric states as prunable. */
@@ -166,14 +171,14 @@ private:
             assert(m_graph.get_num_vertices() == m_state_to_vertex_index.size());
 
             const auto target_v_idx =
-                m_graph.add_vertex(successor_state, std::move(tmp_certificate), DiscreteCost(0), ContinuousCost(0), false, false, false, false);
+                m_graph.add_vertex(successor_state, m_problem, std::move(tmp_certificate), DiscreteCost(0), ContinuousCost(0), false, false, false, false);
             const auto certificate = graphs::get_certificate(m_graph.get_vertex(target_v_idx));
 
             m_symm_data.state_to_certificate.emplace(successor_state, certificate);
             m_symm_data.class_representative.emplace(certificate.get(), successor_state);
 
             m_state_to_vertex_index.emplace(successor_state, target_v_idx);
-            m_graph.add_directed_edge(source_v_idx, target_v_idx, graphs::EdgeIndex(-1), action, action_cost);
+            m_graph.add_directed_edge(source_v_idx, target_v_idx, action, m_problem, action_cost);
         }
     }
 
@@ -185,7 +190,8 @@ private:
 
     void on_start_search_impl(State start_state)
     {
-        const auto v_idx = m_graph.add_vertex(start_state, compute_certificate(start_state), DiscreteCost(0), ContinuousCost(0), false, false, false, false);
+        const auto v_idx =
+            m_graph.add_vertex(start_state, m_problem, compute_certificate(start_state), DiscreteCost(0), ContinuousCost(0), false, false, false, false);
         m_state_to_vertex_index.emplace(start_state, v_idx);
 
         const auto certificate = graphs::get_certificate(m_graph.get_vertex(v_idx));
@@ -255,6 +261,7 @@ private:
         const auto target_vertex_index = m_state_to_vertex_index.contains(successor_state) ?
                                              m_state_to_vertex_index.at(successor_state) :
                                              m_graph.add_vertex(successor_state,
+                                                                m_problem,
                                                                 std::shared_ptr<const nauty_wrapper::Certificate>(nullptr),
                                                                 DiscreteCost(0),
                                                                 ContinuousCost(0),
@@ -263,7 +270,7 @@ private:
                                                                 false,
                                                                 false);
         m_state_to_vertex_index.emplace(successor_state, target_vertex_index);
-        m_graph.add_directed_edge(source_vertex_index, target_vertex_index, graphs::EdgeIndex(-1), action, action_cost);
+        m_graph.add_directed_edge(source_vertex_index, target_vertex_index, action, m_problem, action_cost);
     }
 
     void on_generate_state_in_search_tree_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) {}
@@ -275,6 +282,7 @@ private:
     void on_start_search_impl(State start_state)
     {
         const auto v_idx = m_graph.add_vertex(start_state,
+                                              m_problem,
                                               std::shared_ptr<const nauty_wrapper::Certificate>(nullptr),
                                               DiscreteCost(0),
                                               ContinuousCost(0),
@@ -375,6 +383,7 @@ perform_reachability_analysis(SearchContext context, graphs::StaticProblemGraph 
         const auto is_alive = (!(is_goal || is_unsolvable));
 
         final_graph.add_vertex(graphs::get_state(v),
+                               graphs::get_problem(v),
                                graphs::get_certificate(v),
                                unit_goal_distance,
                                action_goal_distance,
@@ -449,6 +458,15 @@ StateSpaceImpl::StateSpaceImpl(search::SearchContext context,
     m_goal_vertices(std::move(goal_vertices)),
     m_unsolvable_vertices(std::move(unsolvable_vertices))
 {
+}
+
+std::optional<StateSpace> StateSpaceImpl::create(search::SearchContext context, const Options& options)
+{
+    auto color_function = std::make_shared<GeneralizedColorFunctionImpl>(
+        formalism::GeneralizedProblem(context.get_problem()->get_domain(), formalism::ProblemList { context.get_problem() }));
+
+    return (options.symmetry_pruning) ? compute_problem_graph_with_symmetry_reduction(context, color_function, options) :
+                                        compute_problem_graph_without_symmetry_reduction(context, options);
 }
 
 StateSpaceList StateSpaceImpl::create(search::GeneralizedSearchContext contexts, const Options& options)

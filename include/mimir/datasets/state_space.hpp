@@ -38,7 +38,8 @@ namespace mimir::graphs
 
 /// @typedef ProblemVertex
 /// @brief `ProblemVertex` encapsulates information about a vertex in a `ProblemGraph`
-using ProblemVertex = Vertex<search::State, std::shared_ptr<const nauty_wrapper::Certificate>, DiscreteCost, ContinuousCost, bool, bool, bool, bool>;
+using ProblemVertex =
+    Vertex<search::State, formalism::Problem, std::shared_ptr<const nauty_wrapper::Certificate>, DiscreteCost, ContinuousCost, bool, bool, bool, bool>;
 using ProblemVertexList = std::vector<ProblemVertex>;
 
 /// @brief Get the `State` of the given `ProblemVertex`.
@@ -46,55 +47,60 @@ using ProblemVertexList = std::vector<ProblemVertex>;
 /// @return the `State` of the given `ProblemVertex` in the `ProblemGraph`.
 inline search::State get_state(const ProblemVertex& vertex) { return vertex.get_property<0>(); }
 
+/// @brief Get the `formalism::Problem` of the given `ProblemVertex`.
+/// @param vertex is a `ProblemVertex`.
+/// @return the `formalism::Problem` of the given `ProblemVertex` in the `ProblemGraph`.
+inline const formalism::Problem& get_problem(const ProblemVertex& vertex) { return vertex.get_property<1>(); }
+
 /// @brief Get the `nauty_wrapper::Certificate` of the given `ProblemVertex`.
 /// @param vertex is a `ProblemVertex`.
 /// @return the `nauty_wrapper::Certificate` of the given `ProblemVertex` in the `ProblemGraph` if it was computed, and otherwise nullptr.
-inline const std::shared_ptr<const nauty_wrapper::Certificate>& get_certificate(const ProblemVertex& vertex) { return vertex.get_property<1>(); }
+inline const std::shared_ptr<const nauty_wrapper::Certificate>& get_certificate(const ProblemVertex& vertex) { return vertex.get_property<2>(); }
 
 /// @brief Get the unit goal distance of the given `ProblemVertex`.
 /// @param vertex is a `ProblemVertex`.
 /// @return the unit goal distance of the given `ProblemVertex`.
-inline DiscreteCost get_unit_goal_distance(const ProblemVertex& vertex) { return vertex.get_property<2>(); }
+inline DiscreteCost get_unit_goal_distance(const ProblemVertex& vertex) { return vertex.get_property<3>(); }
 
 /// @brief Get the action cost goal distance of the given `ProblemVertex`.
 /// @param vertex is a `ProblemVertex`
 /// @return the action cost goal distance of the given `ProblemVertex`.
-inline ContinuousCost get_action_goal_distance(const ProblemVertex& vertex) { return vertex.get_property<3>(); }
+inline ContinuousCost get_action_goal_distance(const ProblemVertex& vertex) { return vertex.get_property<4>(); }
 
 /// @brief Get information whether the representative associated with the given `ProblemVertex` is an initial vertex.
 /// @param vertex is a `ProblemVertex`.
 /// @return true if the representative associated with the given `ProblemVertex` is an initial vertex, and false otherwise.
-inline bool is_initial(const ProblemVertex& vertex) { return vertex.get_property<4>(); }
+inline bool is_initial(const ProblemVertex& vertex) { return vertex.get_property<5>(); }
 
 /// @brief Get information whether the representative associated with the given `ProblemVertex` is a goal vertex.
 /// @param vertex is a `ProblemVertex`.
 /// @return true if the representative associated with the given `ProblemVertex` is a goal vertex, and false otherwise.
-inline bool is_goal(const ProblemVertex& vertex) { return vertex.get_property<5>(); }
+inline bool is_goal(const ProblemVertex& vertex) { return vertex.get_property<6>(); }
 
 /// @brief Get information whether the representative associated with the given `ProblemVertex` is an unsolvable vertex.
 /// @param vertex is a `ProblemVertex`.
 /// @return true if the representative associated with the given `ProblemVertex` is an unsolvable vertex, and false otherwise.
-inline bool is_unsolvable(const ProblemVertex& vertex) { return vertex.get_property<6>(); }
+inline bool is_unsolvable(const ProblemVertex& vertex) { return vertex.get_property<7>(); }
 
 /// @brief Get information whether the representative associated with the given `ProblemVertex` is an alive vertex.
 /// @param vertex is a `ProblemVertex`.
 /// @return true if the representative associated with the given `ProblemVertex` is an alive vertex, and false otherwise.
-inline bool is_alive(const ProblemVertex& vertex) { return vertex.get_property<7>(); }
+inline bool is_alive(const ProblemVertex& vertex) { return vertex.get_property<8>(); }
 
 /// @typedef ProblemEdge
 /// @brief `ProblemEdge` encapsulates information about an edge in a `ProblemGraph`.
-using ProblemEdge = Edge<Index, formalism::GroundAction, ContinuousCost>;
+using ProblemEdge = Edge<formalism::GroundAction, formalism::Problem, ContinuousCost>;
 using ProblemEdgeList = std::vector<ProblemEdge>;
-
-/// @brief Get the index of the corresponding `ClassEdge` in the `GeneralizedStateSpace`.
-/// @param edge is a `ProblemEdge`.
-/// @return the index of the corresponding `ClassEdge` in the `GeneralizedStateSpace`.
-inline Index get_class_edge_index(const ProblemEdge& edge) { return edge.get_property<0>(); }
 
 /// @brief Get the `GroundAction` of the given `ProblemEdge`.
 /// @param edge is a `ProblemEdge`.
 /// @return the `GroundAction` of the given `ProblemEdge` in the `ProblemGraph`.
-inline formalism::GroundAction get_action(const ProblemEdge& edge) { return edge.get_property<1>(); }
+inline formalism::GroundAction get_action(const ProblemEdge& edge) { return edge.get_property<0>(); }
+
+/// @brief Get the `formalism::Problem` of the given `ProblemEdge`.
+/// @param vertex is a `ProblemEdge`.
+/// @return the `formalism::Problem` of the given `ProblemEdge` in the `ProblemGraph`.
+inline const formalism::Problem& get_problem(const ProblemEdge& edge) { return edge.get_property<1>(); }
 
 /// @brief Get the action cost associated with the `GroundAction` of the given `ProblemEdge`
 /// @param edge is a `ProblemEdge`.
@@ -170,6 +176,8 @@ public:
     /**
      * Constructors
      */
+
+    static std::optional<StateSpace> create(search::SearchContext context, const Options& options = Options());
 
     static StateSpaceList create(search::GeneralizedSearchContext contexts, const Options& options = Options());
 

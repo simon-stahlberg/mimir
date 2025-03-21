@@ -49,7 +49,7 @@ KnowledgeBase KnowledgeBaseImpl::create(search::GeneralizedSearchContext context
     {
         generalized_state_space = GeneralizedStateSpaceImpl::create(state_spaces, options.generalized_state_space_options.value());
 
-        state_spaces = generalized_state_space->get_state_spaces();
+        state_spaces = generalized_state_space.value()->get_state_spaces();  ///< update state spaces after potential symmetry pruning
     }
 
     auto tuple_graphs = std::optional<std::vector<TupleGraphList>> { std::nullopt };
