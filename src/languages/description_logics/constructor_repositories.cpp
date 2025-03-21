@@ -34,6 +34,11 @@ Constructor<D> Repositories::get_or_create(const std::string& sentence, const Do
     return parse_sentence<D>(sentence, domain, *this);
 }
 
+template Constructor<Concept> Repositories::get_or_create(const std::string& sentence, const DomainImpl& domain);
+template Constructor<Role> Repositories::get_or_create(const std::string& sentence, const DomainImpl& domain);
+template Constructor<Boolean> Repositories::get_or_create(const std::string& sentence, const DomainImpl& domain);
+template Constructor<Numerical> Repositories::get_or_create(const std::string& sentence, const DomainImpl& domain);
+
 /* Concepts */
 Constructor<Concept> Repositories::get_or_create_concept_bot()
 {

@@ -28,21 +28,10 @@
 namespace mimir::search::iw
 {
 
-struct DynamicSize
-{
-};
-
-struct StaticSize
-{
-};
-
-template<typename T>
-concept StaticOrDynamicSize = std::is_same_v<T, StaticSize> || std::is_same_v<T, DynamicSize>;
-
-/// @brief NoveltyTable encapsulates a table to test novelty of tuples of atoms of size at most arity.
+/// @brief `DynamicNoveltyTable` encapsulates a table to test novelty of tuples of atoms of size at most arity.
 /// It automatically resizes when the atoms do not fit into the table anymore.
-template<StaticOrDynamicSize Mode>
-class NoveltyTable
+/// When the table resizes, tuple indices are remapped to take into account the higher number of atoms.
+class DynamicNoveltyTable
 {
 private:
     TupleIndexMapper m_tuple_index_mapper;
@@ -57,8 +46,8 @@ private:
     StatePairTupleIndexGenerator m_state_pair_tuple_index_generator;
 
 public:
-    explicit NoveltyTable(size_t arity);
-    NoveltyTable(size_t arity, size_t num_atoms);
+    explicit DynamicNoveltyTable(size_t arity);
+    DynamicNoveltyTable(size_t arity, size_t num_atoms);
 
     void compute_novel_tuple_indices(const State state, TupleIndexList& out_novel_tuple_indices);
 

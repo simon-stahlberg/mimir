@@ -14,11 +14,18 @@ search_context_options.mode = search.SearchMode.GROUNDED
 
 generalized_search_context = search.GeneralizedSearchContext(domain_filepath, [problem_filepath_1, problem_filepath_2], search_context_options)
 
-knowledge_base_options = datasets.KnowledgeBaseOptions()
-knowledge_base_options.state_space_options.problem_options.symmetry_pruning = True
-
 # Create KnowledgeBase
-knowledge_base = datasets.KnowledgeBase(generalized_search_context, knowledge_base_options)
+state_space_options = datasets.StateSpaceOptions()
+state_space_options.symmetry_pruning = True 
+
+generalized_state_space_options = datasets.GeneralizedStateSpaceOptions()
+generalized_state_space_options.symmetry_pruning = True
+
+knowledge_base_options = datasets.KnowledgeBaseOptions()
+knowledge_base_options.state_space_options = state_space_options
+knowledge_base_options.generalized_state_space_options = generalized_state_space_options
+
+knowledge_base = datasets.KnowledgeBase.create(generalized_search_context, knowledge_base_options)
 
 # Access GeneralizedStateSpace
 generalized_state_space = knowledge_base.get_generalized_state_space()
@@ -37,13 +44,6 @@ for vertex in graph.get_vertices():
     vertex.get_index() # graph vertex index (int)
     vertex.get_property_0() # class vertex index (int)
     vertex.get_property_1() # problem index (int)
-    vertex.get_property_2() # problem vertex index (int)
-    vertex.get_property_3() # unit goal distance (int)
-    vertex.get_property_4() # action goal distance (double)
-    vertex.get_property_5() # is initial ? (bool)
-    vertex.get_property_6() # is goal ? (bool)
-    vertex.get_property_7() # is unsolvable ? (bool)
-    vertex.get_property_8() # is alive (bool)
 
 # Iterate over edges
 for edge in graph.get_edges():
@@ -53,8 +53,6 @@ for edge in graph.get_edges():
     edge.get_target() # graph target index (int)
     edge.get_property_0() # class edge index (int)
     edge.get_property_1() # problem index (int)
-    edge.get_property_2() # problem edge index (int)
-    edge.get_property_3() # action cost
 
 ### Iteration over adjacent structures, for the example of an initial state
 v_idx = initial_vertices.pop()
@@ -88,8 +86,15 @@ for e2_idx in graph.get_backward_adjacent_edge_indices(v_idx):
 for vertex in graph.get_vertices():
     problem_vertex = generalized_state_space.get_problem_vertex(vertex)
 
-    problem_vertex.get_property_0() # class vertex index (int) maps back to the top level graph 
-    state = problem_vertex.get_property_1() # state (State)
+    state = problem_vertex.get_property_0() # state (State)
+    problem = problem_vertex.get_property_1() # problem (Problem)
+    # problem_vertex.get_property_2() # certificate (optional<nauty_wrapper::Certificate>)
+    problem_vertex.get_property_3() # unit goal distance (int)
+    problem_vertex.get_property_4() # action goal distance (double)
+    problem_vertex.get_property_5() # is initial ? (bool)
+    problem_vertex.get_property_6() # is goal ? (bool)
+    problem_vertex.get_property_7() # is unsolvable ? (bool)
+    problem_vertex.get_property_8() # is alive (bool)
 
     problem = generalized_state_space.get_problem(vertex)
 
@@ -98,9 +103,9 @@ for vertex in graph.get_vertices():
 for edge in graph.get_edges():
     problem_edge = generalized_state_space.get_problem_edge(edge)
 
-    problem_edge.get_property_0() # class edge index (int) maps back to the top level graph 
-    action = problem_edge.get_property_1() # action (GroundAction)
-    problem_edge.get_property_2() # cost (double)
+    action = problem_edge.get_property_0() # action (GroundAction)
+    problem = problem_edge.get_property_1() # problem (Problem)
+    action_cost = problem_edge.get_property_2() # cost (double)
 
     problem = generalized_state_space.get_problem(edge)
 

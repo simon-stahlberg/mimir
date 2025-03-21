@@ -687,11 +687,10 @@ StatePairTupleIndexGenerator::const_iterator StatePairTupleIndexGenerator::begin
 StatePairTupleIndexGenerator::const_iterator StatePairTupleIndexGenerator::end() const { return const_iterator(nullptr, false); }
 
 /**
- * NoveltyTable
+ * DynamicNoveltyTable
  */
 
-template<StaticOrDynamicSize Mode>
-NoveltyTable<Mode>::NoveltyTable(size_t arity) :
+DynamicNoveltyTable::DynamicNoveltyTable(size_t arity) :
     m_tuple_index_mapper(arity),
     m_table(std::vector<bool>(m_tuple_index_mapper.get_max_tuple_index() + 1, false)),
     m_state_tuple_index_generator(&m_tuple_index_mapper),
@@ -699,8 +698,7 @@ NoveltyTable<Mode>::NoveltyTable(size_t arity) :
 {
 }
 
-template<StaticOrDynamicSize Mode>
-NoveltyTable<Mode>::NoveltyTable(size_t arity, size_t num_atoms) :
+DynamicNoveltyTable::DynamicNoveltyTable(size_t arity, size_t num_atoms) :
     m_tuple_index_mapper(TupleIndexMapper(arity, num_atoms)),
     m_table(std::vector<bool>(m_tuple_index_mapper.get_max_tuple_index() + 1, false)),
     m_state_tuple_index_generator(&m_tuple_index_mapper),
@@ -708,14 +706,8 @@ NoveltyTable<Mode>::NoveltyTable(size_t arity, size_t num_atoms) :
 {
 }
 
-template<StaticOrDynamicSize Mode>
-void NoveltyTable<Mode>::resize_to_fit(AtomIndex atom_index)
+void DynamicNoveltyTable::resize_to_fit(AtomIndex atom_index)
 {
-    if constexpr (std::same_as<Mode, StaticSize>)
-    {
-        throw std::logic_error("NoveltyTable<Mode>::resize_to_fit: Resize in StaticSized mode is not allowed!");
-    }
-
     if (atom_index < m_tuple_index_mapper.get_num_atoms())
     {
         return;  // atom fits.
@@ -762,8 +754,7 @@ void NoveltyTable<Mode>::resize_to_fit(AtomIndex atom_index)
     m_table = std::move(new_table);
 }
 
-template<StaticOrDynamicSize Mode>
-void NoveltyTable<Mode>::resize_to_fit(State state)
+void DynamicNoveltyTable::resize_to_fit(State state)
 {
     const auto& fluent_atoms = state->get_atoms<Fluent>();
 
@@ -777,15 +768,11 @@ void NoveltyTable<Mode>::resize_to_fit(State state)
     resize_to_fit(*it);
 }
 
-template<StaticOrDynamicSize Mode>
-void NoveltyTable<Mode>::compute_novel_tuple_indices(const State state, TupleIndexList& out_novel_tuple_indices)
+void DynamicNoveltyTable::compute_novel_tuple_indices(const State state, TupleIndexList& out_novel_tuple_indices)
 {
     out_novel_tuple_indices.clear();
 
-    if constexpr (std::same_as<Mode, DynamicSize>)
-    {
-        resize_to_fit(state);
-    }
+    resize_to_fit(state);
 
     for (auto it = m_state_tuple_index_generator.begin(state); it != m_state_tuple_index_generator.end(); ++it)
     {
@@ -800,8 +787,7 @@ void NoveltyTable<Mode>::compute_novel_tuple_indices(const State state, TupleInd
     }
 }
 
-template<StaticOrDynamicSize Mode>
-void NoveltyTable<Mode>::insert_tuple_indices(const TupleIndexList& tuple_indices)
+void DynamicNoveltyTable::insert_tuple_indices(const TupleIndexList& tuple_indices)
 {
     for (const auto& tuple_index : tuple_indices)
     {
@@ -811,13 +797,9 @@ void NoveltyTable<Mode>::insert_tuple_indices(const TupleIndexList& tuple_indice
     }
 }
 
-template<StaticOrDynamicSize Mode>
-bool NoveltyTable<Mode>::test_novelty_and_update_table(const State state)
+bool DynamicNoveltyTable::test_novelty_and_update_table(const State state)
 {
-    if constexpr (std::same_as<Mode, DynamicSize>)
-    {
-        resize_to_fit(state);
-    }
+    resize_to_fit(state);
 
     bool is_novel = false;
     for (auto it = m_state_tuple_index_generator.begin(state); it != m_state_tuple_index_generator.end(); ++it)
@@ -836,14 +818,10 @@ bool NoveltyTable<Mode>::test_novelty_and_update_table(const State state)
     return is_novel;
 }
 
-template<StaticOrDynamicSize Mode>
-bool NoveltyTable<Mode>::test_novelty_and_update_table(const State state, const State succ_state)
+bool DynamicNoveltyTable::test_novelty_and_update_table(const State state, const State succ_state)
 {
-    if constexpr (std::same_as<Mode, DynamicSize>)
-    {
-        resize_to_fit(state);
-        resize_to_fit(succ_state);
-    }
+    resize_to_fit(state);
+    resize_to_fit(succ_state);
 
     bool is_novel = false;
     for (auto it = m_state_pair_tuple_index_generator.begin(state, succ_state); it != m_state_pair_tuple_index_generator.end(); ++it)
@@ -862,20 +840,8 @@ bool NoveltyTable<Mode>::test_novelty_and_update_table(const State state, const 
     return is_novel;
 }
 
-template<StaticOrDynamicSize Mode>
-void NoveltyTable<Mode>::reset()
-{
-    std::fill(m_table.begin(), m_table.end(), false);
-}
-
-template<StaticOrDynamicSize Mode>
-const TupleIndexMapper& NoveltyTable<Mode>::get_tuple_index_mapper() const
-{
-    return m_tuple_index_mapper;
-}
-
-template class NoveltyTable<StaticSize>;
-template class NoveltyTable<DynamicSize>;
+void DynamicNoveltyTable::reset() { std::fill(m_table.begin(), m_table.end(), false); }
+const TupleIndexMapper& DynamicNoveltyTable::get_tuple_index_mapper() const { return m_tuple_index_mapper; }
 
 /**
  * NoveltyPruning

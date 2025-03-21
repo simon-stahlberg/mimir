@@ -21,15 +21,20 @@ from _pymimir.advanced.datasets import (
     ForwardClassStaticGraph,
     BidirectionalClassStaticGraph,
 
-    # StateSpaces
+    # StateSpace
+    StateSpace,
+    StateSpaceOptions,
+
+    # GeneralizedStateSpace
     GeneralizedStateSpace,
     GeneralizedStateSpaceOptions,
-    GeneralizedStateSpaceProblemOptions,
+
+    # TupleGraph
+    TupleGraphOptions,
 
     # KnowledgeBase
     KnowledgeBase,
     KnowledgeBaseOptions,
-    TupleGraphCollectionOptions,
 )
 
 __all__ = [

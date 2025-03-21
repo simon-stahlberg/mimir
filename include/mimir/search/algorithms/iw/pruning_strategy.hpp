@@ -43,7 +43,7 @@ public:
 class ArityKNoveltyPruning : public IPruningStrategy
 {
 private:
-    NoveltyTable<DynamicSize> m_novelty_table;
+    DynamicNoveltyTable m_novelty_table;
 
     std::unordered_set<Index> m_generated_states;
 

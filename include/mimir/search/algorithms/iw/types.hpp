@@ -32,7 +32,7 @@ namespace mimir::search::iw
 const size_t MAX_ARITY = 6;
 
 /**
- * Number of initial atoms in the NoveltyTable
+ * Number of initial atoms in the DynamicNoveltyTable
  */
 
 const size_t INITIAL_TABLE_ATOMS = 64;

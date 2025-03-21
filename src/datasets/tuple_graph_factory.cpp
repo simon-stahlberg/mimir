@@ -113,7 +113,7 @@ private:
     IndexSet m_visited_problem_v_idxs;
     IndexList m_prev_v_idxs;
     IndexList m_curr_v_idxs;
-    iw::NoveltyTable<iw::DynamicSize> m_novelty_table;
+    iw::DynamicNoveltyTable m_novelty_table;
 
     IndexSet m_novel_t_idxs_set;
     IndexList m_novel_t_idxs_vec;
