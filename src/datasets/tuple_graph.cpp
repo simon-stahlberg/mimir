@@ -25,55 +25,41 @@ using namespace mimir::search;
 
 namespace mimir::datasets
 {
-TupleGraph::TupleGraph(const ProblemImpl& problem,
-                       const graphs::ProblemGraph& problem_graph,
-                       const graphs::ClassGraph& class_graph,
-                       iw::TupleIndexMapper index_mapper,
-                       graphs::InternalTupleGraph graph,
-                       IndexGroupedVector<const Index> vertices_grouped_by_distance,
-                       IndexGroupedVector<const Index> problem_vertices_grouped_by_distance) :
-    m_problem(problem),
-    m_problem_graph(problem_graph),
-    m_class_graph(class_graph),
-    m_index_mapper(std::move(index_mapper)),
+TupleGraphImpl::TupleGraphImpl(StateSpace state_space,
+                               graphs::InternalTupleGraph graph,
+                               IndexGroupedVector<const Index> vertices_grouped_by_distance,
+                               IndexGroupedVector<const Index> problem_vertices_grouped_by_distance) :
+    m_state_space(state_space),
     m_graph(std::move(graph)),
     m_v_idxs_grouped_by_distance(std::move(vertices_grouped_by_distance)),
     m_problem_v_idxs_grouped_by_distance(std::move(problem_vertices_grouped_by_distance))
 {
 }
 
-const ProblemImpl& TupleGraph::get_problem() const { return m_problem; }
+const StateSpace& TupleGraphImpl::get_state_space() const { return m_state_space; }
 
-const graphs::ClassGraph& TupleGraph::get_class_graph() const { return m_class_graph; }
+const graphs::InternalTupleGraph& TupleGraphImpl::get_graph() const { return m_graph; }
 
-const graphs::ProblemGraph& TupleGraph::get_problem_graph() const { return m_problem_graph; }
+const IndexGroupedVector<const Index>& TupleGraphImpl::get_vertices_grouped_by_distance() const { return m_v_idxs_grouped_by_distance; }
 
-const iw::TupleIndexMapper& TupleGraph::get_index_mapper() const { return m_index_mapper; }
+const IndexGroupedVector<const Index>& TupleGraphImpl::get_problem_vertices_grouped_by_distance() const { return m_problem_v_idxs_grouped_by_distance; }
 
-const graphs::InternalTupleGraph& TupleGraph::get_graph() const { return m_graph; }
-
-const IndexGroupedVector<const Index>& TupleGraph::get_vertices_grouped_by_distance() const { return m_v_idxs_grouped_by_distance; }
-
-const IndexGroupedVector<const Index>& TupleGraph::get_problem_vertices_grouped_by_distance() const { return m_problem_v_idxs_grouped_by_distance; }
-
-TupleGraphCollection::TupleGraphCollection(const GeneralizedStateSpace& state_space, const Options& options) : m_per_class_vertex_tuple_graph()
+TupleGraphList TupleGraphImpl::create(StateSpace state_space, const Options& options)
 {
-    for (const auto& class_vertex : state_space.get_graph().get_vertices())
+    auto tuple_graphs = TupleGraphList {};
+
+    for (const auto& v : state_space->get_graph().get_vertices())
     {
-        m_per_class_vertex_tuple_graph.push_back(
-            create_tuple_graph(state_space.get_problem_vertex(class_vertex),
-                               state_space.get_problem_graph(class_vertex),
-                               state_space.get_graph(),
-                               state_space.get_generalized_search_context().get_search_contexts().at(get_problem_index(class_vertex)),
-                               options));
+        tuple_graphs.push_back(create_tuple_graph(v, state_space, options));
     }
+
+    return tuple_graphs;
 }
 
-const TupleGraphList& TupleGraphCollection::get_per_class_vertex_tuple_graph() const { return m_per_class_vertex_tuple_graph; }
-
-std::ostream& operator<<(std::ostream& out, const TupleGraph& tuple_graph)
+std::ostream& operator<<(std::ostream& out, const TupleGraphImpl& tuple_graph)
 {
-    const auto& problem = tuple_graph.get_problem();
+    const auto& problem_graph = tuple_graph.get_state_space()->get_graph();
+    const auto& problem = *tuple_graph.get_state_space()->get_search_context().get_problem();
     const auto& pddl_repositories = problem.get_repositories();
     auto atom_indices = iw::AtomIndexList {};
 
@@ -95,17 +81,14 @@ std::ostream& operator<<(std::ostream& out, const TupleGraph& tuple_graph)
             out << "t" << v_idx << "[";
             out << "label=<";
             out << "index=" << v_idx << "<BR/>";
-            out << "tuple index=" << get_tuple_index(vertex) << "<BR/>";
-
-            tuple_graph.get_index_mapper().to_atom_indices(get_tuple_index(vertex), atom_indices);
-            const auto fluent_atoms = pddl_repositories.get_ground_atoms_from_indices<Fluent>(atom_indices);
+            const auto fluent_atoms = pddl_repositories.get_ground_atoms_from_indices<Fluent>(get_atom_tuple(vertex));
             out << "fluent_atoms=";
             mimir::operator<<(out, fluent_atoms);
             out << "<BR/>";
             out << "states=[";
             for (size_t i = 0; i < get_problem_vertices(vertex).size(); ++i)
             {
-                const auto& state = get_state(tuple_graph.get_problem_graph().get_vertex(get_problem_vertices(vertex).at(i)));
+                const auto& state = graphs::get_state(problem_graph.get_vertex(get_problem_vertices(vertex).at(i)));
                 if (i != 0)
                 {
                     out << "<BR/>";

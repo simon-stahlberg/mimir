@@ -37,10 +37,10 @@
 namespace mimir::graphs
 {
 /// @brief `TupleGraphVertex` encapsulates information about a vertex in a tuple graph.
-using TupleGraphVertex = Vertex<Index, IndexList>;
+using TupleGraphVertex = Vertex<search::iw::AtomIndexList, IndexList>;
 using TupleGraphVertexList = std::vector<TupleGraphVertex>;
 
-inline Index get_tuple_index(const TupleGraphVertex& vertex) { return vertex.get_property<0>(); }
+inline const search::iw::AtomIndexList& get_atom_tuple(const TupleGraphVertex& vertex) { return vertex.get_property<0>(); }
 
 inline const IndexList& get_problem_vertices(const TupleGraphVertex& vertex) { return vertex.get_property<1>(); }
 
@@ -58,14 +58,12 @@ class TupleGraphImpl
 {
 private:
     StateSpace m_state_space;
-    search::iw::TupleIndexMapper m_index_mapper;
     graphs::InternalTupleGraph m_graph;
 
     IndexGroupedVector<const Index> m_v_idxs_grouped_by_distance;
     IndexGroupedVector<const Index> m_problem_v_idxs_grouped_by_distance;
 
     TupleGraphImpl(StateSpace state_space,
-                   search::iw::TupleIndexMapper index_mapper,
                    graphs::InternalTupleGraph graph,
                    IndexGroupedVector<const Index> vertices_grouped_by_distance,
                    IndexGroupedVector<const Index> problem_vertices_grouped_by_distance);
@@ -86,7 +84,6 @@ public:
     static TupleGraphList create(StateSpace state_space, const Options& options = Options());
 
     const StateSpace& get_state_space() const;
-    const search::iw::TupleIndexMapper& get_index_mapper() const;
     const graphs::InternalTupleGraph& get_graph() const;
     const IndexGroupedVector<const Index>& get_vertices_grouped_by_distance() const;
     const IndexGroupedVector<const Index>& get_problem_vertices_grouped_by_distance() const;
