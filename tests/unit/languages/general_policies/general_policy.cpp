@@ -64,34 +64,123 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyTest)
 
         auto context = search::GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem1_file, problem2_file });
 
-        auto kb_options = datasets::KnowledgeBaseImpl::Options();
+        {
+            /* Without symmetry reduction. */
 
-        auto& state_space_options = kb_options.state_space_options;
-        state_space_options.symmetry_pruning = false;
+            auto kb_options = datasets::KnowledgeBaseImpl::Options();
 
-        auto& generalized_state_space_options = kb_options.generalized_state_space_options;
-        generalized_state_space_options = GeneralizedStateSpaceImpl::Options();
-        generalized_state_space_options->symmetry_pruning = false;
+            auto& state_space_options = kb_options.state_space_options;
+            state_space_options.symmetry_pruning = false;
 
-        auto kb = datasets::KnowledgeBaseImpl::create(context, kb_options);
+            auto& generalized_state_space_options = kb_options.generalized_state_space_options;
+            generalized_state_space_options = GeneralizedStateSpaceImpl::Options();
+            generalized_state_space_options->symmetry_pruning = false;
 
-        const auto& generalized_state_space = kb->get_generalized_state_space();
+            auto kb = datasets::KnowledgeBaseImpl::create(context, kb_options);
 
-        const auto& initial_vertex_indices = generalized_state_space.value()->get_initial_vertices();
+            const auto& generalized_state_space = kb->get_generalized_state_space();
 
-        EXPECT_EQ(initial_vertex_indices.size(), 2);
+            auto denotation_repositories = dl::DenotationRepositories();
 
-        auto vertex_indices = graphs::VertexIndexList(initial_vertex_indices.begin(), initial_vertex_indices.end());
+            auto repositories = general_policies::Repositories();
+            auto dl_repositories = dl::Repositories();
 
-        auto denotation_repositories = dl::DenotationRepositories();
+            const auto general_policy = repositories.get_or_create_general_policy(description, *context.get_domain(), dl_repositories);
 
-        auto repositories = general_policies::Repositories();
-        auto dl_repositories = dl::Repositories();
+            {
+                /* Test solvability on GeneralizedStateSpace. */
 
-        const auto general_policy = repositories.get_or_create_general_policy(description, *context.get_domain(), dl_repositories);
+                const auto& initial_vertex_indices = generalized_state_space.value()->get_initial_vertices();
 
-        EXPECT_EQ(general_policy->solves(generalized_state_space.value(), vertex_indices, denotation_repositories),
-                  general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
+                EXPECT_EQ(initial_vertex_indices.size(), 2);
+
+                const auto vertex_indices = graphs::VertexIndexList(initial_vertex_indices.begin(), initial_vertex_indices.end());
+
+                EXPECT_EQ(general_policy->solves(generalized_state_space.value(), vertex_indices, denotation_repositories),
+                          general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
+            }
+
+            {
+                /* Test solvability on StateSpace 0. */
+
+                const auto state_space_0 = kb->get_state_spaces().at(0);
+
+                const auto vertex_indices = graphs::VertexIndexList { state_space_0->get_initial_vertex() };
+
+                EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), vertex_indices, denotation_repositories),
+                          general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
+            }
+
+            {
+                /* Test solvability on StateSpace 1. */
+
+                const auto state_space_1 = kb->get_state_spaces().at(1);
+
+                const auto vertex_indices = graphs::VertexIndexList { state_space_1->get_initial_vertex() };
+
+                EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), vertex_indices, denotation_repositories),
+                          general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
+            }
+        }
+
+        {
+            /* With symmetry reduction. */
+
+            auto kb_options = datasets::KnowledgeBaseImpl::Options();
+
+            auto& state_space_options = kb_options.state_space_options;
+            state_space_options.symmetry_pruning = true;
+
+            auto& generalized_state_space_options = kb_options.generalized_state_space_options;
+            generalized_state_space_options = GeneralizedStateSpaceImpl::Options();
+            generalized_state_space_options->symmetry_pruning = true;
+
+            auto kb = datasets::KnowledgeBaseImpl::create(context, kb_options);
+
+            const auto& generalized_state_space = kb->get_generalized_state_space();
+
+            auto denotation_repositories = dl::DenotationRepositories();
+
+            auto repositories = general_policies::Repositories();
+            auto dl_repositories = dl::Repositories();
+
+            const auto general_policy = repositories.get_or_create_general_policy(description, *context.get_domain(), dl_repositories);
+
+            {
+                /* Test solvability on GeneralizedStateSpace. */
+
+                const auto& initial_vertex_indices = generalized_state_space.value()->get_initial_vertices();
+
+                EXPECT_EQ(initial_vertex_indices.size(), 2);
+
+                const auto vertex_indices = graphs::VertexIndexList(initial_vertex_indices.begin(), initial_vertex_indices.end());
+
+                EXPECT_EQ(general_policy->solves(generalized_state_space.value(), vertex_indices, denotation_repositories),
+                          general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
+            }
+
+            {
+                /* Test solvability on StateSpace 0. */
+
+                const auto state_space_0 = kb->get_state_spaces().at(0);
+
+                const auto vertex_indices = graphs::VertexIndexList { state_space_0->get_initial_vertex() };
+
+                EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), vertex_indices, denotation_repositories),
+                          general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
+            }
+
+            {
+                /* Test solvability on StateSpace 1. */
+
+                const auto state_space_1 = kb->get_state_spaces().at(1);
+
+                const auto vertex_indices = graphs::VertexIndexList { state_space_1->get_initial_vertex() };
+
+                EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), vertex_indices, denotation_repositories),
+                          general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
+            }
+        }
     }
 }
 

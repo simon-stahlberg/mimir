@@ -40,7 +40,8 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem) 
     m_delete_free_problem(),
     m_delete_free_object_to_unrelaxed_object()
 {
-    std::cout << "[DeleteRelaxedProblemExplorator] Started delete relaxed exploration." << std::endl;
+    // std::cout << "[DeleteRelaxedProblemExplorator] Started delete relaxed exploration." << std::endl;
+    // const auto start_time = std::chrono::high_resolution_clock::now();
 
     auto domain_delete_free_builder = DomainBuilder();
     auto delete_free_domain = m_delete_relax_transformer.translate_level_0(m_problem->get_domain(), domain_delete_free_builder);
@@ -61,8 +62,6 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem) 
     {
         m_delete_free_object_to_unrelaxed_object.emplace(object, unrelaxed_objects_by_name.at(object->get_name()));
     }
-
-    const auto start_time = std::chrono::high_resolution_clock::now();
 
     auto initial_state = delete_free_state_repository.get_or_create_initial_state();
 
@@ -102,14 +101,13 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem) 
 
     } while (!reached_delete_free_explore_fixpoint);
 
-    const auto end_time = std::chrono::high_resolution_clock::now();
-    const auto total_time = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
-
-    std::cout << "[DeleteRelaxedProblemExplorator] Total time for delete relaxed exploration: " << total_time << "\n"
-              << "[DeleteRelaxedProblemExplorator] Number of fluent grounded atoms reachable in delete-free problem: "
-              << delete_free_state_repository.get_reached_fluent_ground_atoms_bitset().count() << "\n"
-              << "[DeleteRelaxedProblemExplorator] Number of derived grounded atoms reachable in delete-free problem: "
-              << delete_free_state_repository.get_reached_derived_ground_atoms_bitset().count() << std::endl;
+    // const auto end_time = std::chrono::high_resolution_clock::now();
+    // const auto total_time = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+    // std::cout << "[DeleteRelaxedProblemExplorator] Total time for delete relaxed exploration: " << total_time << "\n"
+    //           << "[DeleteRelaxedProblemExplorator] Number of fluent grounded atoms reachable in delete-free problem: "
+    //           << delete_free_state_repository.get_reached_fluent_ground_atoms_bitset().count() << "\n"
+    //           << "[DeleteRelaxedProblemExplorator] Number of derived grounded atoms reachable in delete-free problem: "
+    //           << delete_free_state_repository.get_reached_derived_ground_atoms_bitset().count() << std::endl;
 }
 
 static ObjectList translate_from_delete_free_to_unrelaxed_problem(const ObjectList& objects, const ToObjectMap<Object>& delete_free_object_to_unrelaxed_object)
@@ -123,8 +121,8 @@ static ObjectList translate_from_delete_free_to_unrelaxed_problem(const ObjectLi
     return result;
 }
 
-std::shared_ptr<GroundedAxiomEvaluator> DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator(const match_tree::Options& options,
-                                                                                                        GroundedAxiomEvaluatorEventHandler event_handler) const
+AxiomEvaluator DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator(const match_tree::Options& options,
+                                                                               GroundedAxiomEvaluatorEventHandler event_handler) const
 {
     if (!event_handler)
     {
@@ -200,7 +198,7 @@ std::shared_ptr<GroundedAxiomEvaluator> DeleteRelaxedProblemExplorator::create_g
     return std::make_shared<GroundedAxiomEvaluator>(m_problem, std::move(match_tree_partitioning), std::move(event_handler));
 }
 
-std::shared_ptr<GroundedApplicableActionGenerator>
+ApplicableActionGenerator
 DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator(const match_tree::Options& options,
                                                                             GroundedApplicableActionGeneratorEventHandler event_handler) const
 {

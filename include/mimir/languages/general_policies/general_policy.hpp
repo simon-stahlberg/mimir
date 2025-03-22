@@ -63,11 +63,18 @@ public:
         UNSOLVABLE = 2,
     };
 
-    /// @brief Return whether the `GeneralPolicyImpl` solves all vertices from the given `graphs::VertexIndexList` in the given
-    /// `datasets::GeneralizedStateSpace`.
-    /// @param generalized_state_space is the `GeneralizedStateSpace`.
-    /// @param vertices are the indices of `ClassVertex` that must be solved.
-    /// @param denotation_repositories is the repository that stored feature denotations.
+    /// @brief Return true if and only if the `GeneralPolicyImpl` solves all the given `vertices` in the given `datasets::StateSpace`.
+    /// @param state_space is the `datasets::StateSpace`.
+    /// @param vertices are the indices, one for each `ClassVertex` that must be solved.
+    /// @param denotation_repositories is the repository that stored feature denotations to avoid expensive recomputations.
+    /// @return a reason for unsolvability or None.
+    UnsolvabilityReason
+    solves(const datasets::StateSpace& state_space, const graphs::VertexIndexList& vertices, dl::DenotationRepositories& denotation_repositories) const;
+
+    /// @brief Return true if and only if the `GeneralPolicyImpl` solves all the given `vertices` in the given `datasets::GeneralizedStateSpace`.
+    /// @param generalized_state_space is the `datasets::GeneralizedStateSpace`.
+    /// @param vertices are the indices, one for each `ClassVertex` that must be solved.
+    /// @param denotation_repositories is the repository that stored feature denotations to avoid expensive recomputations.
     /// @return a reason for unsolvability or None.
     UnsolvabilityReason solves(const datasets::GeneralizedStateSpace& generalized_state_space,
                                const graphs::VertexIndexList& vertices,

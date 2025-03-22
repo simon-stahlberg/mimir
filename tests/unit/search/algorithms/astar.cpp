@@ -104,9 +104,9 @@ private:
     Problem m_problem;
     DeleteRelaxedProblemExplorator m_delete_relaxed_problem_explorator;
     GroundedApplicableActionGeneratorEventHandler m_applicable_action_generator_event_handler;
-    std::shared_ptr<GroundedApplicableActionGenerator> m_applicable_action_generator;
+    ApplicableActionGenerator m_applicable_action_generator;
     GroundedAxiomEvaluatorEventHandler m_axiom_evaluator_event_handler;
-    std::shared_ptr<GroundedAxiomEvaluator> m_axiom_evaluator;
+    AxiomEvaluator m_axiom_evaluator;
     StateRepository m_state_repository;
     Heuristic m_heuristic;
     astar::EventHandler m_astar_event_handler;
