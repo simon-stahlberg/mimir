@@ -113,7 +113,8 @@ INPUT                 = \
     "include/mimir/languages/general_policies/effect_interface.hpp" \
     "include/mimir/languages/general_policies/effect_base.hpp" \
     "include/mimir/languages/general_policies/effects.hpp" \
-    "include/mimir/languages/general_policies/general_policy.hpp" \
+    "include/mimir/languages/general_policies/general_policy_decl.hpp" \
+    "include/mimir/languages/general_policies/general_policy_factory.hpp" \
     "include/mimir/languages/general_policies/named_feature.hpp" \
     "include/mimir/languages/general_policies/repositories.hpp" \
     "include/mimir/languages/general_policies/rule.hpp" \

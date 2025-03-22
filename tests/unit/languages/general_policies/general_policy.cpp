@@ -18,6 +18,7 @@
 #include "mimir/datasets/knowledge_base.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/languages/description_logics/constructor_repositories.hpp"
+#include "mimir/languages/general_policies/general_policy_factory.hpp"
 #include "mimir/languages/general_policies/repositories.hpp"
 
 #include <gtest/gtest.h>
@@ -33,36 +34,19 @@ namespace mimir::tests
 TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyTest)
 {
     {
-        // Gripper policy from Frances-et-al-aaai2021: https://arxiv.org/pdf/2101.00692
-        auto description = std::string(R"(
-        [boolean_features]
-            <boolean_robby_at_b> ::= @boolean_nonempty @concept_existential_quantification @role_atomic_goal "at" false @concept_atomic_state "at-robby"
-
-        [numerical_features]
-            <numerical_carry> ::= @numerical_count @concept_existential_quantification @role_atomic_state "carry" @concept_top
-            <numerical_undelivered> ::=
-                @numerical_count 
-                    @concept_negation
-                        @concept_role_value_map_equality
-                            @role_atomic_state "at"
-                            @role_atomic_goal "at" false
-
-        [policy_rules]
-            { @negative_boolean_condition <boolean_robby_at_b>, @equal_numerical_condition <numerical_carry>, @greater_numerical_condition <numerical_undelivered> } 
-            -> { @increase_numerical_effect <numerical_carry> }
-            { @positive_boolean_condition <boolean_robby_at_b>, @equal_numerical_condition <numerical_carry>, @greater_numerical_condition <numerical_undelivered> } 
-            -> { @negative_boolean_effect <boolean_robby_at_b> }
-            { @positive_boolean_condition <boolean_robby_at_b>, @greater_numerical_condition <numerical_carry>, @greater_numerical_condition <numerical_undelivered> } 
-            -> { @decrease_numerical_effect <numerical_carry>, @decrease_numerical_effect <numerical_undelivered> }
-            { @negative_boolean_condition <boolean_robby_at_b>, @greater_numerical_condition <numerical_carry>, @greater_numerical_condition <numerical_undelivered> } 
-            -> { @positive_boolean_effect <boolean_robby_at_b> }
-        )");
-
         const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
         const auto problem1_file = fs::path(std::string(DATA_DIR) + "gripper/p-1-0.pddl");
         const auto problem2_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
 
         auto context = search::GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem1_file, problem2_file });
+
+        auto denotation_repositories = dl::DenotationRepositories();
+
+        auto repositories = general_policies::Repositories();
+        auto dl_repositories = dl::Repositories();
+
+        const auto general_policy =
+            general_policies::GeneralPolicyFactory::get_or_create_general_policy_gripper(*context.get_domain(), repositories, dl_repositories);
 
         {
             /* Without symmetry reduction. */
@@ -79,13 +63,6 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyTest)
             auto kb = datasets::KnowledgeBaseImpl::create(context, kb_options);
 
             const auto& generalized_state_space = kb->get_generalized_state_space();
-
-            auto denotation_repositories = dl::DenotationRepositories();
-
-            auto repositories = general_policies::Repositories();
-            auto dl_repositories = dl::Repositories();
-
-            const auto general_policy = repositories.get_or_create_general_policy(description, *context.get_domain(), dl_repositories);
 
             {
                 /* Test solvability on GeneralizedStateSpace. */
@@ -126,13 +103,6 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyTest)
             auto kb = datasets::KnowledgeBaseImpl::create(context, kb_options);
 
             const auto& generalized_state_space = kb->get_generalized_state_space();
-
-            auto denotation_repositories = dl::DenotationRepositories();
-
-            auto repositories = general_policies::Repositories();
-            auto dl_repositories = dl::Repositories();
-
-            const auto general_policy = repositories.get_or_create_general_policy(description, *context.get_domain(), dl_repositories);
 
             {
                 /* Test solvability on GeneralizedStateSpace. */

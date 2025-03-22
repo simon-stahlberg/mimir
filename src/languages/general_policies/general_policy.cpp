@@ -17,6 +17,7 @@
 
 #include "mimir/languages/general_policies/general_policy.hpp"
 
+#include "mimir/languages/general_policies/rule.hpp"
 #include "mimir/languages/general_policies/visitor_interface.hpp"
 #include "mimir/search/state.hpp"
 
