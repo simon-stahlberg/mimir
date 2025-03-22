@@ -19,6 +19,7 @@
 #define MIMIR_GRAPHS_DYNAMIC_GRAPH_HPP_
 
 #include "mimir/common/concepts.hpp"
+#include "mimir/graphs/boost_adapter_utils.hpp"
 #include "mimir/graphs/dynamic_graph_interface.hpp"
 #include "mimir/graphs/dynamic_graph_iterators.hpp"
 #include "mimir/graphs/graph_edge_interface.hpp"
@@ -58,6 +59,7 @@ public:
     using VertexIndexConstIteratorType = DynamicVertexIndexConstIterator<V>;
     using EdgeIndexConstIteratorType = DynamicEdgeIndexConstIterator<E>;
 
+    /* Iterator types. */
     template<IsDirection Direction>
     using AdjacentVertexConstIteratorType = DynamicAdjacentVertexConstIterator<V, E, Direction>;
     template<IsDirection Direction>
@@ -66,6 +68,16 @@ public:
     using AdjacentEdgeConstIteratorType = DynamicAdjacentEdgeConstIterator<E, Direction>;
     template<IsDirection Direction>
     using AdjacentEdgeIndexConstIteratorType = DynamicAdjacentEdgeIndexConstIterator<E, Direction>;
+
+    /* Boost PropertyMap types. */
+    template<std::unsigned_integral I, typename Value>
+    using BasicMatrixType = UnorderedMapBasicMatrix<I, Value>;
+    template<typename Key, typename Value>
+    using TrivialReadPropertyMapType = TrivialReadPropertyMap<Key, Value>;
+    template<std::unsigned_integral I, typename Value>
+    using ReadPropertyMapType = UnorderedMapReadPropertyMap<I, Value>;
+    template<std::unsigned_integral I, typename Value>
+    using ReadWritePropertyMapType = UnorderedMapReadWritePropertyMap<I, Value>;
 
     /// @brief Construct an empty graph.
     DynamicGraph();

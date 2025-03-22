@@ -20,6 +20,7 @@
 
 #include "mimir/common/concepts.hpp"
 #include "mimir/common/grouped_vector.hpp"
+#include "mimir/graphs/boost_adapter_utils.hpp"
 #include "mimir/graphs/graph_edge_interface.hpp"
 #include "mimir/graphs/graph_edges.hpp"
 #include "mimir/graphs/graph_vertex_interface.hpp"
@@ -61,6 +62,7 @@ public:
     using VertexIndexConstIteratorType = std::ranges::iterator_t<std::ranges::iota_view<VertexIndex, VertexIndex>>;
     using EdgeIndexConstIteratorType = std::ranges::iterator_t<std::ranges::iota_view<EdgeIndex, EdgeIndex>>;
 
+    /* Iterator types. */
     template<IsDirection Direction>
     using AdjacentVertexConstIteratorType = StaticAdjacentVertexConstIterator<V, E, Direction>;
     template<IsDirection Direction>
@@ -69,6 +71,16 @@ public:
     using AdjacentEdgeConstIteratorType = StaticAdjacentEdgeConstIterator<E, Direction>;
     template<IsDirection Direction>
     using AdjacentEdgeIndexConstIteratorType = StaticAdjacentEdgeIndexConstIterator<E, Direction>;
+
+    /* Boost PropertyMap types. */
+    template<std::unsigned_integral I, typename Value>
+    using BasicMatrixType = VectorBasicMatrix<I, Value>;
+    template<typename Key, typename Value>
+    using TrivialReadPropertyMapType = TrivialReadPropertyMap<Key, Value>;
+    template<std::unsigned_integral I, typename Value>
+    using ReadPropertyMapType = VectorReadPropertyMap<I, Value>;
+    template<std::unsigned_integral I, typename Value>
+    using ReadWritePropertyMapType = VectorReadWritePropertyMap<I, Value>;
 
     /// @brief Construct an empty graph.
     StaticGraph();
@@ -206,6 +218,15 @@ public:
     template<IsDirection Direction>
     using AdjacentEdgeIndexConstIteratorType = typename G::template AdjacentEdgeIndexConstIteratorType<Direction>;
 
+    template<std::unsigned_integral I, typename Value>
+    using BasicMatrixType = typename G::template BasicMatrixType<I, Value>;
+    template<typename Key, typename Value>
+    using TrivialReadPropertyMapType = typename G::template TrivialReadPropertyMapType<Key, Value>;
+    template<std::unsigned_integral I, typename Value>
+    using ReadPropertyMapType = typename G::template ReadPropertyMapType<I, Value>;
+    template<std::unsigned_integral I, typename Value>
+    using ReadWritePropertyMapType = typename G::template ReadWritePropertyMapType<I, Value>;
+
     StaticForwardGraph();
 
     explicit StaticForwardGraph(G graph);
@@ -277,6 +298,15 @@ public:
     using AdjacentEdgeConstIteratorType = typename G::template AdjacentEdgeConstIteratorType<Direction>;
     template<IsDirection Direction>
     using AdjacentEdgeIndexConstIteratorType = typename G::template AdjacentEdgeIndexConstIteratorType<Direction>;
+
+    template<std::unsigned_integral I, typename Value>
+    using BasicMatrixType = typename G::template BasicMatrixType<I, Value>;
+    template<typename Key, typename Value>
+    using TrivialReadPropertyMapType = typename G::template TrivialReadPropertyMapType<Key, Value>;
+    template<std::unsigned_integral I, typename Value>
+    using ReadPropertyMapType = typename G::template ReadPropertyMapType<I, Value>;
+    template<std::unsigned_integral I, typename Value>
+    using ReadWritePropertyMapType = typename G::template ReadWritePropertyMapType<I, Value>;
 
     StaticBidirectionalGraph();
 
