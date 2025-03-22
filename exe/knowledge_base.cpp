@@ -37,11 +37,11 @@ int main(int argc, char** argv)
     auto kb_options = KnowledgeBaseImpl::Options();
 
     auto& state_space_options = kb_options.state_space_options;
-    state_space_options.symmetry_pruning = false;
+    state_space_options.symmetry_pruning = true;
 
     auto& generalized_state_space_options = kb_options.generalized_state_space_options;
     generalized_state_space_options = GeneralizedStateSpaceImpl::Options();
-    generalized_state_space_options->symmetry_pruning = false;
+    generalized_state_space_options->symmetry_pruning = true;
 
     auto& tuple_graph_options = kb_options.tuple_graph_options;
     tuple_graph_options = TupleGraphImpl::Options();
@@ -69,10 +69,13 @@ int main(int argc, char** argv)
     if (kb->get_tuple_graphs().has_value())
     {
         auto class_v_idx = size_t(0);
-        for (const auto& tuple_graph : kb->get_tuple_graphs().value())
+        for (const auto& tuple_graphs : kb->get_tuple_graphs().value())
         {
-            // std::cout << "Class vertex index: " << class_v_idx++ << std::endl;
-            // std::cout << tuple_graph << std::endl;
+            for (const auto& tuple_graph : tuple_graphs)
+            {
+                std::cout << "Class vertex index: " << class_v_idx++ << std::endl;
+                std::cout << *tuple_graph << std::endl;
+            }
         }
     }
 

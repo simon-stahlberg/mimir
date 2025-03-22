@@ -111,6 +111,9 @@ private:
     IndexList m_prev_problem_v_idxs;
     IndexList m_curr_problem_v_idxs;
     IndexSet m_visited_problem_v_idxs;
+    StateSet m_prev_states;
+    StateSet m_curr_states;
+    StateSet m_visited_states;
     IndexList m_prev_v_idxs;
     IndexList m_curr_v_idxs;
     iw::DynamicNoveltyTable m_novelty_table;
@@ -154,6 +157,8 @@ private:
         m_novelty_table.insert_tuple_indices(m_novel_t_idxs_vec);
 
         m_problem_v_idxs_grouped_by_distance.add_group_element(root_problem_v_idx);
+        m_curr_states.insert(root_state);
+        m_visited_states.insert(root_state);
         m_curr_problem_v_idxs.clear();
         m_curr_problem_v_idxs.push_back(root_problem_v_idx);
         m_visited_problem_v_idxs.insert(root_problem_v_idx);
@@ -176,6 +181,21 @@ private:
             }
         }
 
+        /* Compute all states in next layer, even those that are symmetric, to compute all tuple indices. */
+        for (const auto& prev_state : m_prev_states)
+        {
+            for (const auto& action : m_state_space->get_search_context().get_applicable_action_generator()->create_applicable_action_generator(prev_state))
+            {
+                const auto [successor_state, successor_state_metric_value] =
+                    m_state_space->get_search_context().get_state_repository()->get_or_create_successor_state(prev_state, action, 0);
+                if (!m_visited_states.contains(successor_state))
+                {
+                    m_curr_states.insert(successor_state);
+                    m_visited_states.insert(successor_state);
+                }
+            }
+        }
+
         return success;
     }
 
@@ -183,8 +203,10 @@ private:
     {
         // Swap prev and curr data structures.
         std::swap(m_curr_problem_v_idxs, m_prev_problem_v_idxs);
+        std::swap(m_curr_states, m_prev_states);
         std::swap(m_curr_v_idxs, m_prev_v_idxs);
         m_curr_problem_v_idxs.clear();
+        m_curr_states.clear();
         m_curr_v_idxs.clear();
 
         {
@@ -256,6 +278,12 @@ private:
             }
             m_problem_v_idx_to_novel_t_idxs.emplace(problem_v_idx, m_novel_t_idxs_vec);
             m_novel_t_idxs_set.insert(m_novel_t_idxs_vec.begin(), m_novel_t_idxs_vec.end());
+        }
+
+        /* Ensure that tuples of all states in layer are marked as not novel! */
+        for (const auto& state : m_curr_states)
+        {
+            m_novelty_table.test_novelty_and_update_table(state);
         }
 
         m_novel_t_idxs_vec.clear();

@@ -95,7 +95,7 @@ using TupleGraphList = std::vector<TupleGraph>;
  * Pretty printing as dot representation
  */
 
-extern std::ostream& operator<<(std::ostream& out, const TupleGraph& tuple_graph);
+extern std::ostream& operator<<(std::ostream& out, const TupleGraphImpl& tuple_graph);
 }
 
 #endif
