@@ -35,7 +35,7 @@ TEST(MimirTests, GraphsVertexListGraphTest)
 
     const auto state_space = datasets::StateSpaceImpl::create(
         search::SearchContext(domain_file, problem_file, search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
-    auto graph = graphs::DirectionTaggedType(state_space.value()->get_graph(), graphs::Forward());
+    auto graph = graphs::DirectionTaggedType(state_space.value()->get_graph(), graphs::ForwardTag {});
 
     EXPECT_EQ(num_vertices(graph), 28);
 
@@ -55,7 +55,7 @@ TEST(MimirTests, GraphsIncidenceGraphTest)
     const auto state_space = datasets::StateSpaceImpl::create(
         search::SearchContext(domain_file, problem_file, search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
     const auto& graph = state_space.value()->get_graph();
-    auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::Forward());
+    auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::ForwardTag {});
 
     size_t transition_count = 0;
     for (auto [state_it, state_last] = vertices(tagged_graph); state_it != state_last; ++state_it)
@@ -89,7 +89,7 @@ TEST(MimirTests, GraphsStrongComponentsTest)
         const auto state_space = datasets::StateSpaceImpl::create(
             search::SearchContext(domain_file, problem_file, search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
         const auto& graph = state_space.value()->get_graph();
-        auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::Forward());
+        auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::ForwardTag {});
 
         const auto [num_components, component_map] = graphs::strong_components(tagged_graph);
         EXPECT_EQ(num_components, 1);
@@ -105,7 +105,7 @@ TEST(MimirTests, GraphsStrongComponentsTest)
         const auto state_space = datasets::StateSpaceImpl::create(
             search::SearchContext(domain_file, problem_file, search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
         const auto& graph = state_space.value()->get_graph();
-        auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::Forward());
+        auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::ForwardTag {});
 
         const auto [num_components, component_map] = graphs::strong_components(tagged_graph);
 
@@ -134,7 +134,7 @@ TEST(MimirTests, GraphsDijkstraShortestPathTest)
         const auto state_space = datasets::StateSpaceImpl::create(
             search::SearchContext(domain_file, problem_file, search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
         const auto& graph = state_space.value()->get_graph();
-        auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::Forward());
+        auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::ForwardTag {});
 
         const auto edge_costs = std::vector<double>(graph.get_num_edges(), 1);
         auto states = IndexList { 0 };
@@ -155,7 +155,7 @@ TEST(MimirTests, GraphsDijkstraShortestPathTest)
         const auto state_space = datasets::StateSpaceImpl::create(
             search::SearchContext(domain_file, problem_file, search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
         const auto& graph = state_space.value()->get_graph();
-        auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::Backward());
+        auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::BackwardTag {});
 
         const auto edge_costs = std::vector<double>(graph.get_num_edges(), 1);
         const auto [predecessor_map, distance_map] = graphs::dijkstra_shortest_paths(tagged_graph,
@@ -178,7 +178,7 @@ TEST(MimirTests, GraphsBreadthFirstSearchTest)
         const auto state_space = datasets::StateSpaceImpl::create(
             search::SearchContext(domain_file, problem_file, search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
         const auto& graph = state_space.value()->get_graph();
-        auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::Forward());
+        auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::ForwardTag {});
 
         auto states = IndexList { 0 };
         const auto [predecessor_map, distance_map] = graphs::breadth_first_search(tagged_graph, states.begin(), states.end());
@@ -198,7 +198,7 @@ TEST(MimirTests, GraphsBreadthFirstSearchTest)
         const auto state_space = datasets::StateSpaceImpl::create(
             search::SearchContext(domain_file, problem_file, search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
         const auto& graph = state_space.value()->get_graph();
-        auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::Backward());
+        auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::BackwardTag {});
 
         const auto [predecessor_map, distance_map] =
             graphs::breadth_first_search(tagged_graph, state_space.value()->get_goal_vertices().begin(), state_space.value()->get_goal_vertices().end());
@@ -218,7 +218,7 @@ TEST(MimirTests, GraphsFloydWarshallAllPairsShortestPathTest)
         const auto state_space = datasets::StateSpaceImpl::create(
             search::SearchContext(domain_file, problem_file, search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
         const auto& graph = state_space.value()->get_graph();
-        auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::Forward());
+        auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::ForwardTag {});
 
         const auto edge_costs = std::vector<double>(graph.get_num_edges(), 1);
         const auto distance_matrix = graphs::floyd_warshall_all_pairs_shortest_paths(tagged_graph, edge_costs);
@@ -248,7 +248,7 @@ TEST(MimirTests, GraphsFloydWarshallAllPairsShortestPathTest)
         const auto state_space = datasets::StateSpaceImpl::create(
             search::SearchContext(domain_file, problem_file, search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
         const auto& graph = state_space.value()->get_graph();
-        auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::Backward());
+        auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::BackwardTag {});
 
         const auto edge_costs = ContinuousCostList(graph.get_num_edges(), 1);
         const auto distance_matrix = graphs::floyd_warshall_all_pairs_shortest_paths(tagged_graph, edge_costs);

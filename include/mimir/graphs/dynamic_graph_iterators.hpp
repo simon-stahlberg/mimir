@@ -332,11 +332,11 @@ DynamicAdjacentVertexConstIterator<Vertex, Edge, Direction>::reference DynamicAd
     assert(m_vertices);
     assert(m_edges);
 
-    if constexpr (std::is_same_v<Direction, Forward>)
+    if constexpr (std::is_same_v<Direction, ForwardTag>)
     {
         return m_vertices->at(m_edges->at(*m_slice_iter).get_target());
     }
-    else if constexpr (std::is_same_v<Direction, Backward>)
+    else if constexpr (std::is_same_v<Direction, BackwardTag>)
     {
         return m_vertices->at(m_edges->at(*m_slice_iter).get_source());
     }
@@ -401,11 +401,11 @@ DynamicAdjacentVertexIndexConstIterator<Edge, Direction>::value_type DynamicAdja
 {
     assert(m_edges);
 
-    if constexpr (std::is_same_v<Direction, Forward>)
+    if constexpr (std::is_same_v<Direction, ForwardTag>)
     {
         return m_edges->at(*m_slice_iter).get_target();
     }
-    else if constexpr (std::is_same_v<Direction, Backward>)
+    else if constexpr (std::is_same_v<Direction, BackwardTag>)
     {
         return m_edges->at(*m_slice_iter).get_source();
     }

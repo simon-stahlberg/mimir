@@ -68,7 +68,7 @@ struct graph_traits<mimir::graphs::DirectionTaggedType<Graph, Direction>>
     // boost::AdjacencyGraph
     using adjacency_iterator = typename Graph::template AdjacentVertexIndexConstIteratorType<Direction>;
     // boost::BidirectionalGraph
-    using inverse_direction = typename mimir::graphs::InverseDirection<Direction>::type;
+    using inverse_direction = typename Direction::Inverse;
     using in_edge_iterator = typename Graph::template AdjacentEdgeIndexConstIteratorType<inverse_direction>;
     // boost::strong_components
     constexpr static vertex_descriptor null_vertex() { return std::numeric_limits<vertex_descriptor>::max(); }
@@ -222,7 +222,7 @@ template<IsStaticGraph Graph, IsDirection Direction>
 boost::graph_traits<DirectionTaggedType<Graph, Direction>>::degree_size_type
 degree(typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor const& u, const DirectionTaggedType<Graph, Direction>& g)
 {
-    return g.get().template get_degree<Forward>(u) + g.get().template get_degree<Backward>(u);
+    return g.get().template get_degree<ForwardTag>(u) + g.get().template get_degree<BackwardTag>(u);
 }
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

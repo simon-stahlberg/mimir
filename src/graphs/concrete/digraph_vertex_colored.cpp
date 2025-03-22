@@ -36,7 +36,7 @@ std::ostream& operator<<(std::ostream& out, const StaticVertexColoredDigraph& gr
     }
     for (const auto& vertex : graph.get_vertices())
     {
-        for (const auto& succ_vertex : graph.template get_adjacent_vertices<Forward>(vertex.get_index()))
+        for (const auto& succ_vertex : graph.template get_adjacent_vertices<ForwardTag>(vertex.get_index()))
         {
             out << "t" << vertex.get_index() << "->" << "t" << succ_vertex.get_index() << "\n";
         }

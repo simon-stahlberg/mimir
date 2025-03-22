@@ -25,35 +25,21 @@
 namespace mimir::graphs
 {
 
-/// @brief `Forward` represents traversal of edges in forward direction.
-struct Forward
+struct BackwardTag;
+
+/// @brief `ForwardTag` represents traversal of edges in forward direction.
+struct ForwardTag
 {
+    using Inverse = BackwardTag;
 };
-/// @brief `Backward` represents traversal of edges in backward direction.
-struct Backward
+/// @brief `BackwardTag` represents traversal of edges in backward direction.
+struct BackwardTag
 {
+    using Inverse = ForwardTag;
 };
 
 template<typename T>
-concept IsDirection = std::same_as<T, Forward> || std::same_as<T, Backward>;
-
-/// @brief `InverseDirection` is a type trait to obtain the inverse of a `IsDirection`, where
-/// the inverse of `Forward` is `Backward`, and the inverse of `Backward` is `Forward`.
-/// @tparam Direction is the given direction.
-template<IsDirection Direction>
-struct InverseDirection;
-
-template<>
-struct InverseDirection<Forward>
-{
-    using type = Backward;
-};
-
-template<>
-struct InverseDirection<Backward>
-{
-    using type = Forward;
-};
+concept IsDirection = std::same_as<T, ForwardTag> || std::same_as<T, BackwardTag>;
 
 /// @brief `DirectionTaggedType` associates a type `T` with a `IsDirection`.
 /// @tparam T is the type.

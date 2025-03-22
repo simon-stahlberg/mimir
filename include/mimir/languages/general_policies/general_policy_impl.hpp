@@ -38,7 +38,7 @@ GeneralPolicyImpl::solves(const datasets::StateSpace& state_space, const VertexI
 {
     const auto& graph = state_space->get_graph();
 
-    using IteratorType = graphs::ProblemGraph::AdjacentVertexIndexConstIteratorType<graphs::Forward>;
+    using IteratorType = graphs::ProblemGraph::AdjacentVertexIndexConstIteratorType<graphs::ForwardTag>;
 
     struct Entry
     {
@@ -60,8 +60,8 @@ GeneralPolicyImpl::solves(const datasets::StateSpace& state_space, const VertexI
 
         auto stack = std::stack<Entry> {};
         stack.push(Entry { v_idx,
-                           graph.get_adjacent_vertex_indices<graphs::Forward>(v_idx).begin(),
-                           graph.get_adjacent_vertex_indices<graphs::Forward>(v_idx).end(),
+                           graph.get_adjacent_vertex_indices<graphs::ForwardTag>(v_idx).begin(),
+                           graph.get_adjacent_vertex_indices<graphs::ForwardTag>(v_idx).end(),
                            false });
         visited_v_idxs.insert(v_idx);
         stack_v_idxs.insert(v_idx);
@@ -120,8 +120,8 @@ GeneralPolicyImpl::solves(const datasets::StateSpace& state_space, const VertexI
                                                        << "  -> " << std::make_tuple(dst_state, std::cref(*dst_problem)));
 
                         stack.push(Entry { dst_v_idx,
-                                           graph.get_adjacent_vertex_indices<graphs::Forward>(dst_v_idx).begin(),
-                                           graph.get_adjacent_vertex_indices<graphs::Forward>(dst_v_idx).end(),
+                                           graph.get_adjacent_vertex_indices<graphs::ForwardTag>(dst_v_idx).begin(),
+                                           graph.get_adjacent_vertex_indices<graphs::ForwardTag>(dst_v_idx).end(),
                                            false });
                         visited_v_idxs.insert(dst_v_idx);
                         stack_v_idxs.insert(dst_v_idx);
@@ -148,7 +148,7 @@ GeneralPolicyImpl::UnsolvabilityReason GeneralPolicyImpl::solves(const datasets:
 {
     const auto& class_graph = generalized_state_space->get_graph();
 
-    using IteratorType = graphs::ClassGraph::AdjacentVertexIndexConstIteratorType<graphs::Forward>;
+    using IteratorType = graphs::ClassGraph::AdjacentVertexIndexConstIteratorType<graphs::ForwardTag>;
 
     struct Entry
     {
@@ -170,8 +170,8 @@ GeneralPolicyImpl::UnsolvabilityReason GeneralPolicyImpl::solves(const datasets:
 
         auto stack = std::stack<Entry> {};
         stack.push(Entry { v_idx,
-                           class_graph.get_adjacent_vertex_indices<graphs::Forward>(v_idx).begin(),
-                           class_graph.get_adjacent_vertex_indices<graphs::Forward>(v_idx).end(),
+                           class_graph.get_adjacent_vertex_indices<graphs::ForwardTag>(v_idx).begin(),
+                           class_graph.get_adjacent_vertex_indices<graphs::ForwardTag>(v_idx).end(),
                            false });
         visited_v_idxs.insert(v_idx);
         stack_v_idxs.insert(v_idx);
@@ -232,8 +232,8 @@ GeneralPolicyImpl::UnsolvabilityReason GeneralPolicyImpl::solves(const datasets:
                                                        << "  -> " << std::make_tuple(dst_state, std::cref(*dst_problem)));
 
                         stack.push(Entry { dst_v_idx,
-                                           class_graph.get_adjacent_vertex_indices<graphs::Forward>(dst_v_idx).begin(),
-                                           class_graph.get_adjacent_vertex_indices<graphs::Forward>(dst_v_idx).end(),
+                                           class_graph.get_adjacent_vertex_indices<graphs::ForwardTag>(dst_v_idx).begin(),
+                                           class_graph.get_adjacent_vertex_indices<graphs::ForwardTag>(dst_v_idx).end(),
                                            false });
                         visited_v_idxs.insert(dst_v_idx);
                         stack_v_idxs.insert(dst_v_idx);

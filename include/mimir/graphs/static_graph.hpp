@@ -167,7 +167,7 @@ private:
     EdgeList m_edges;
 
     using TraversalDirectionToDegrees =
-        boost::hana::map<boost::hana::pair<boost::hana::type<Forward>, DegreeList>, boost::hana::pair<boost::hana::type<Backward>, DegreeList>>;
+        boost::hana::map<boost::hana::pair<boost::hana::type<ForwardTag>, DegreeList>, boost::hana::pair<boost::hana::type<BackwardTag>, DegreeList>>;
 
     TraversalDirectionToDegrees m_degrees;
 
@@ -323,8 +323,8 @@ public:
 private:
     G m_graph;
 
-    using TraversalDirectionToEdgesGroupedByVertex = boost::hana::map<boost::hana::pair<boost::hana::type<Forward>, IndexGroupedVector<const EdgeIndex>>,
-                                                                      boost::hana::pair<boost::hana::type<Backward>, IndexGroupedVector<const EdgeIndex>>>;
+    using TraversalDirectionToEdgesGroupedByVertex = boost::hana::map<boost::hana::pair<boost::hana::type<ForwardTag>, IndexGroupedVector<const EdgeIndex>>,
+                                                                      boost::hana::pair<boost::hana::type<BackwardTag>, IndexGroupedVector<const EdgeIndex>>>;
 
     TraversalDirectionToEdgesGroupedByVertex m_edge_indices_grouped_by_vertex;
 };
@@ -348,8 +348,8 @@ VertexIndex StaticGraph<V, E>::add_vertex(VertexProperties&&... properties)
     const auto index = m_vertices.size();
     m_vertices.emplace_back(index, std::forward<VertexProperties>(properties)...);
 
-    boost::hana::at_key(m_degrees, boost::hana::type<Forward> {}).resize(index + 1, 0);
-    boost::hana::at_key(m_degrees, boost::hana::type<Backward> {}).resize(index + 1, 0);
+    boost::hana::at_key(m_degrees, boost::hana::type<ForwardTag> {}).resize(index + 1, 0);
+    boost::hana::at_key(m_degrees, boost::hana::type<BackwardTag> {}).resize(index + 1, 0);
 
     return index;
 }
@@ -372,8 +372,8 @@ EdgeIndex StaticGraph<V, E>::add_directed_edge(VertexIndex source, VertexIndex t
 
     const auto index = m_edges.size();
     m_edges.emplace_back(index, source, target, std::forward<EdgeProperties>(properties)...);
-    ++boost::hana::at_key(m_degrees, boost::hana::type<Forward> {}).at(source);
-    ++boost::hana::at_key(m_degrees, boost::hana::type<Backward> {}).at(target);
+    ++boost::hana::at_key(m_degrees, boost::hana::type<ForwardTag> {}).at(source);
+    ++boost::hana::at_key(m_degrees, boost::hana::type<BackwardTag> {}).at(target);
     m_slice.push_back(index);
 
     return index;
@@ -412,8 +412,8 @@ void StaticGraph<V, E>::clear()
 {
     m_vertices.clear();
     m_edges.clear();
-    boost::hana::at_key(m_degrees, boost::hana::type<Forward> {}).clear();
-    boost::hana::at_key(m_degrees, boost::hana::type<Backward> {}).clear();
+    boost::hana::at_key(m_degrees, boost::hana::type<ForwardTag> {}).clear();
+    boost::hana::at_key(m_degrees, boost::hana::type<BackwardTag> {}).clear();
     m_slice.clear();
 }
 
@@ -523,11 +523,11 @@ VertexIndex StaticGraph<V, E>::get_source(EdgeIndex edge) const
 {
     edge_index_check(edge, "StaticGraph<V, E>::get_source(...): Edge out of range");
 
-    if constexpr (std::is_same_v<Direction, Forward>)
+    if constexpr (std::is_same_v<Direction, ForwardTag>)
     {
         return m_edges[edge].get_source();
     }
-    else if constexpr (std::is_same_v<Direction, Backward>)
+    else if constexpr (std::is_same_v<Direction, BackwardTag>)
     {
         return m_edges[edge].get_target();
     }
@@ -543,11 +543,11 @@ VertexIndex StaticGraph<V, E>::get_target(EdgeIndex edge) const
 {
     edge_index_check(edge, "StaticGraph<V, E>::get_target(...): Edge out of range");
 
-    if constexpr (std::is_same_v<Direction, Forward>)
+    if constexpr (std::is_same_v<Direction, ForwardTag>)
     {
         return m_edges[edge].get_target();
     }
-    else if constexpr (std::is_same_v<Direction, Backward>)
+    else if constexpr (std::is_same_v<Direction, BackwardTag>)
     {
         return m_edges[edge].get_source();
     }
@@ -658,22 +658,22 @@ template<IsDirection Direction>
 std::ranges::subrange<typename StaticForwardGraph<G>::template AdjacentVertexConstIteratorType<Direction>>
 StaticForwardGraph<G>::get_adjacent_vertices(VertexIndex vertex) const
 {
-    if constexpr (std::is_same_v<Direction, Forward>)
+    if constexpr (std::is_same_v<Direction, ForwardTag>)
     {
-        return std::ranges::subrange(typename StaticForwardGraph<G>::AdjacentVertexConstIteratorType<Forward>(vertex,
-                                                                                                              m_graph.get_vertices(),
-                                                                                                              m_graph.get_edges(),
-                                                                                                              m_edge_indices_grouped_by_source.at(vertex),
-                                                                                                              true),
-                                     typename StaticForwardGraph<G>::AdjacentVertexConstIteratorType<Forward>(vertex,
-                                                                                                              m_graph.get_vertices(),
-                                                                                                              m_graph.get_edges(),
-                                                                                                              m_edge_indices_grouped_by_source.at(vertex),
-                                                                                                              false));
+        return std::ranges::subrange(typename StaticForwardGraph<G>::AdjacentVertexConstIteratorType<ForwardTag>(vertex,
+                                                                                                                 m_graph.get_vertices(),
+                                                                                                                 m_graph.get_edges(),
+                                                                                                                 m_edge_indices_grouped_by_source.at(vertex),
+                                                                                                                 true),
+                                     typename StaticForwardGraph<G>::AdjacentVertexConstIteratorType<ForwardTag>(vertex,
+                                                                                                                 m_graph.get_vertices(),
+                                                                                                                 m_graph.get_edges(),
+                                                                                                                 m_edge_indices_grouped_by_source.at(vertex),
+                                                                                                                 false));
     }
-    else if constexpr (std::is_same_v<Direction, Backward>)
+    else if constexpr (std::is_same_v<Direction, BackwardTag>)
     {
-        return m_graph.template get_adjacent_vertices<Backward>(vertex);
+        return m_graph.template get_adjacent_vertices<BackwardTag>(vertex);
     }
     else
     {
@@ -686,20 +686,21 @@ template<IsDirection Direction>
 std::ranges::subrange<typename StaticForwardGraph<G>::template AdjacentVertexIndexConstIteratorType<Direction>>
 StaticForwardGraph<G>::get_adjacent_vertex_indices(VertexIndex vertex) const
 {
-    if constexpr (std::is_same_v<Direction, Forward>)
+    if constexpr (std::is_same_v<Direction, ForwardTag>)
     {
-        return std::ranges::subrange(typename StaticForwardGraph<G>::AdjacentVertexIndexConstIteratorType<Forward>(vertex,
-                                                                                                                   m_graph.get_edges(),
-                                                                                                                   m_edge_indices_grouped_by_source.at(vertex),
-                                                                                                                   true),
-                                     typename StaticForwardGraph<G>::AdjacentVertexIndexConstIteratorType<Forward>(vertex,
-                                                                                                                   m_graph.get_edges(),
-                                                                                                                   m_edge_indices_grouped_by_source.at(vertex),
-                                                                                                                   false));
+        return std::ranges::subrange(
+            typename StaticForwardGraph<G>::AdjacentVertexIndexConstIteratorType<ForwardTag>(vertex,
+                                                                                             m_graph.get_edges(),
+                                                                                             m_edge_indices_grouped_by_source.at(vertex),
+                                                                                             true),
+            typename StaticForwardGraph<G>::AdjacentVertexIndexConstIteratorType<ForwardTag>(vertex,
+                                                                                             m_graph.get_edges(),
+                                                                                             m_edge_indices_grouped_by_source.at(vertex),
+                                                                                             false));
     }
-    else if constexpr (std::is_same_v<Direction, Backward>)
+    else if constexpr (std::is_same_v<Direction, BackwardTag>)
     {
-        return m_graph.template get_adjacent_vertex_indices<Backward>(vertex);
+        return m_graph.template get_adjacent_vertex_indices<BackwardTag>(vertex);
     }
     else
     {
@@ -712,20 +713,20 @@ template<IsDirection Direction>
 std::ranges::subrange<typename StaticForwardGraph<G>::template AdjacentEdgeConstIteratorType<Direction>>
 StaticForwardGraph<G>::get_adjacent_edges(VertexIndex vertex) const
 {
-    if constexpr (std::is_same_v<Direction, Forward>)
+    if constexpr (std::is_same_v<Direction, ForwardTag>)
     {
-        return std::ranges::subrange(typename StaticForwardGraph<G>::AdjacentEdgeConstIteratorType<Forward>(vertex,
-                                                                                                            m_graph.get_edges(),
-                                                                                                            m_edge_indices_grouped_by_source.at(vertex),
-                                                                                                            true),
-                                     typename StaticForwardGraph<G>::AdjacentEdgeConstIteratorType<Forward>(vertex,
-                                                                                                            m_graph.get_edges(),
-                                                                                                            m_edge_indices_grouped_by_source.at(vertex),
-                                                                                                            false));
+        return std::ranges::subrange(typename StaticForwardGraph<G>::AdjacentEdgeConstIteratorType<ForwardTag>(vertex,
+                                                                                                               m_graph.get_edges(),
+                                                                                                               m_edge_indices_grouped_by_source.at(vertex),
+                                                                                                               true),
+                                     typename StaticForwardGraph<G>::AdjacentEdgeConstIteratorType<ForwardTag>(vertex,
+                                                                                                               m_graph.get_edges(),
+                                                                                                               m_edge_indices_grouped_by_source.at(vertex),
+                                                                                                               false));
     }
-    else if constexpr (std::is_same_v<Direction, Backward>)
+    else if constexpr (std::is_same_v<Direction, BackwardTag>)
     {
-        return m_graph.template get_adjacent_edges<Backward>(vertex);
+        return m_graph.template get_adjacent_edges<BackwardTag>(vertex);
     }
     else
     {
@@ -738,20 +739,20 @@ template<IsDirection Direction>
 std::ranges::subrange<typename StaticForwardGraph<G>::template AdjacentEdgeIndexConstIteratorType<Direction>>
 StaticForwardGraph<G>::get_adjacent_edge_indices(VertexIndex vertex) const
 {
-    if constexpr (std::is_same_v<Direction, Forward>)
+    if constexpr (std::is_same_v<Direction, ForwardTag>)
     {
-        return std::ranges::subrange(typename StaticForwardGraph<G>::AdjacentEdgeIndexConstIteratorType<Forward>(vertex,
-                                                                                                                 m_graph.get_edges(),
-                                                                                                                 m_edge_indices_grouped_by_source.at(vertex),
-                                                                                                                 true),
-                                     typename StaticForwardGraph<G>::AdjacentEdgeIndexConstIteratorType<Forward>(vertex,
-                                                                                                                 m_graph.get_edges(),
-                                                                                                                 m_edge_indices_grouped_by_source.at(vertex),
-                                                                                                                 false));
+        return std::ranges::subrange(typename StaticForwardGraph<G>::AdjacentEdgeIndexConstIteratorType<ForwardTag>(vertex,
+                                                                                                                    m_graph.get_edges(),
+                                                                                                                    m_edge_indices_grouped_by_source.at(vertex),
+                                                                                                                    true),
+                                     typename StaticForwardGraph<G>::AdjacentEdgeIndexConstIteratorType<ForwardTag>(vertex,
+                                                                                                                    m_graph.get_edges(),
+                                                                                                                    m_edge_indices_grouped_by_source.at(vertex),
+                                                                                                                    false));
     }
-    else if constexpr (std::is_same_v<Direction, Backward>)
+    else if constexpr (std::is_same_v<Direction, BackwardTag>)
     {
-        return m_graph.template get_adjacent_edge_indices<Backward>(vertex);
+        return m_graph.template get_adjacent_edge_indices<BackwardTag>(vertex);
     }
     else
     {
@@ -839,8 +840,8 @@ StaticBidirectionalGraph<G>::StaticBidirectionalGraph() : m_graph(G()), m_edge_i
 template<IsStaticGraph G>
 StaticBidirectionalGraph<G>::StaticBidirectionalGraph(G graph) : m_graph(std::move(graph)), m_edge_indices_grouped_by_vertex()
 {
-    boost::hana::at_key(m_edge_indices_grouped_by_vertex, boost::hana::type<Forward> {}) = std::move(compute_index_grouped_edge_indices(m_graph, true));
-    boost::hana::at_key(m_edge_indices_grouped_by_vertex, boost::hana::type<Backward> {}) = std::move(compute_index_grouped_edge_indices(m_graph, false));
+    boost::hana::at_key(m_edge_indices_grouped_by_vertex, boost::hana::type<ForwardTag> {}) = std::move(compute_index_grouped_edge_indices(m_graph, true));
+    boost::hana::at_key(m_edge_indices_grouped_by_vertex, boost::hana::type<BackwardTag> {}) = std::move(compute_index_grouped_edge_indices(m_graph, false));
 }
 
 template<IsStaticGraph G>

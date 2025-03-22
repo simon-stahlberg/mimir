@@ -130,7 +130,7 @@ std::pair<ColorList, ColorMap<IndexList>> compute_ordered_isomorphism_types(cons
     auto adj_matrix = std::vector<std::vector<bool>>(num_vertices, std::vector<bool>(num_vertices, false));
     for (const auto& vertex1 : graph.get_vertex_indices())
     {
-        for (const auto& vertex2 : graph.template get_adjacent_vertex_indices<Forward>(vertex1))
+        for (const auto& vertex2 : graph.template get_adjacent_vertex_indices<ForwardTag>(vertex1))
         {
             adj_matrix.at(vertex_to_v.at(vertex1)).at(vertex_to_v.at(vertex2)) = true;
         }

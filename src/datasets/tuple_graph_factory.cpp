@@ -53,7 +53,7 @@ private:
         m_v_idxs_grouped_by_distance.start_group();
         m_problem_v_idxs_grouped_by_distance.start_group();
 
-        for (const auto& adj_problem_vertex : m_state_space->get_graph().get_adjacent_vertices<graphs::Forward>(m_problem_vertex.get_index()))
+        for (const auto& adj_problem_vertex : m_state_space->get_graph().get_adjacent_vertices<graphs::ForwardTag>(m_problem_vertex.get_index()))
         {
             if (adj_problem_vertex.get_index() == m_problem_vertex.get_index())
             {
@@ -170,7 +170,7 @@ private:
 
         for (const auto& prev_problem_v_idx : m_prev_problem_v_idxs)
         {
-            for (const auto& curr_problem_v_idx : m_state_space->get_graph().get_adjacent_vertex_indices<graphs::Forward>(prev_problem_v_idx))
+            for (const auto& curr_problem_v_idx : m_state_space->get_graph().get_adjacent_vertex_indices<graphs::ForwardTag>(prev_problem_v_idx))
             {
                 if (!m_visited_problem_v_idxs.contains(curr_problem_v_idx))
                 {
@@ -308,7 +308,7 @@ private:
             for (const auto prev_problem_v_idx : get_problem_vertices(m_internal_tuple_graph.get_vertex(prev_v_idx)))
             {
                 // "[...] by means of a single action".
-                for (const auto& curr_problem_v_idx : m_state_space->get_graph().get_adjacent_vertex_indices<graphs::Forward>(prev_problem_v_idx))
+                for (const auto& curr_problem_v_idx : m_state_space->get_graph().get_adjacent_vertex_indices<graphs::ForwardTag>(prev_problem_v_idx))
                 {
                     if (m_problem_v_idx_to_novel_t_idxs.contains(curr_problem_v_idx))
                     {

@@ -166,14 +166,14 @@ void StaticAdjacentVertexConstIterator<Vertex, Edge, Direction>::StaticAdjacentV
             break;
         }
 
-        if constexpr (std::is_same_v<Direction, Forward>)
+        if constexpr (std::is_same_v<Direction, ForwardTag>)
         {
             if (m_edges->at(m_slice[m_pos]).get_source() == m_vertex)
             {
                 break;
             }
         }
-        else if constexpr (std::is_same_v<Direction, Backward>)
+        else if constexpr (std::is_same_v<Direction, BackwardTag>)
         {
             if (m_edges->at(m_slice[m_pos]).get_target() == m_vertex)
             {
@@ -216,14 +216,14 @@ StaticAdjacentVertexConstIterator<Vertex, Edge, Direction>::StaticAdjacentVertex
         assert(m_vertices);
         assert(m_edges);
 
-        if constexpr (std::is_same_v<Direction, Forward>)
+        if constexpr (std::is_same_v<Direction, ForwardTag>)
         {
             if (m_edges->at(m_slice[0]).get_source() == m_vertex)
             {
                 return;
             }
         }
-        else if constexpr (std::is_same_v<Direction, Backward>)
+        else if constexpr (std::is_same_v<Direction, BackwardTag>)
         {
             if (m_edges->at(m_slice[0]).get_target() == m_vertex)
             {
@@ -249,12 +249,12 @@ StaticAdjacentVertexConstIterator<Vertex, Edge, Direction>::reference StaticAdja
     assert(m_pos < m_slice.size());
     assert(m_slice[m_pos] < m_edges->size());
 
-    if constexpr (std::is_same_v<Direction, Forward>)
+    if constexpr (std::is_same_v<Direction, ForwardTag>)
     {
         assert(m_edges->at(m_slice[m_pos]).get_source() == m_vertex);
         return m_vertices->at(m_edges->at(m_slice[m_pos]).get_target());
     }
-    else if constexpr (std::is_same_v<Direction, Backward>)
+    else if constexpr (std::is_same_v<Direction, BackwardTag>)
     {
         assert(m_edges->at(m_slice[m_pos]).get_target() == m_vertex);
         return m_vertices->at(m_edges->at(m_slice[m_pos]).get_source());
@@ -308,14 +308,14 @@ void StaticAdjacentVertexIndexConstIterator<Edge, Direction>::advance()
             break;
         }
 
-        if constexpr (std::is_same_v<Direction, Forward>)
+        if constexpr (std::is_same_v<Direction, ForwardTag>)
         {
             if (m_edges->at(m_slice[m_pos]).get_source() == m_vertex)
             {
                 break;
             }
         }
-        else if constexpr (std::is_same_v<Direction, Backward>)
+        else if constexpr (std::is_same_v<Direction, BackwardTag>)
         {
             if (m_edges->at(m_slice[m_pos]).get_target() == m_vertex)
             {
@@ -349,14 +349,14 @@ StaticAdjacentVertexIndexConstIterator<Edge, Direction>::StaticAdjacentVertexInd
     {
         assert(m_edges);
 
-        if constexpr (std::is_same_v<Direction, Forward>)
+        if constexpr (std::is_same_v<Direction, ForwardTag>)
         {
             if (m_edges->at(m_slice[0]).get_source() == m_vertex)
             {
                 return;
             }
         }
-        else if constexpr (std::is_same_v<Direction, Backward>)
+        else if constexpr (std::is_same_v<Direction, BackwardTag>)
         {
             if (m_edges->at(m_slice[0]).get_target() == m_vertex)
             {
@@ -381,12 +381,12 @@ StaticAdjacentVertexIndexConstIterator<Edge, Direction>::value_type StaticAdjace
     assert(m_pos < m_slice.size());
     assert(m_slice[m_pos] < m_edges->size());
 
-    if constexpr (std::is_same_v<Direction, Forward>)
+    if constexpr (std::is_same_v<Direction, ForwardTag>)
     {
         assert(m_edges->at(m_slice[m_pos]).get_source() == m_vertex);
         return m_edges->at(m_slice[m_pos]).get_target();
     }
-    else if constexpr (std::is_same_v<Direction, Backward>)
+    else if constexpr (std::is_same_v<Direction, BackwardTag>)
     {
         assert(m_edges->at(m_slice[m_pos]).get_target() == m_vertex);
         return m_edges->at(m_slice[m_pos]).get_source();
@@ -440,14 +440,14 @@ void StaticAdjacentEdgeConstIterator<Edge, Direction>::advance()
             break;
         }
 
-        if constexpr (std::is_same_v<Direction, Forward>)
+        if constexpr (std::is_same_v<Direction, ForwardTag>)
         {
             if (m_edges->at(m_slice[m_pos]).get_source() == m_vertex)
             {
                 break;
             }
         }
-        else if constexpr (std::is_same_v<Direction, Backward>)
+        else if constexpr (std::is_same_v<Direction, BackwardTag>)
         {
             if (m_edges->at(m_slice[m_pos]).get_target() == m_vertex)
             {
@@ -481,14 +481,14 @@ StaticAdjacentEdgeConstIterator<Edge, Direction>::StaticAdjacentEdgeConstIterato
     {
         assert(m_edges);
 
-        if constexpr (std::is_same_v<Direction, Forward>)
+        if constexpr (std::is_same_v<Direction, ForwardTag>)
         {
             if (m_edges->at(m_slice[0]).get_source() == m_vertex)
             {
                 return;
             }
         }
-        else if constexpr (std::is_same_v<Direction, Backward>)
+        else if constexpr (std::is_same_v<Direction, BackwardTag>)
         {
             if (m_edges->at(m_slice[0]).get_target() == m_vertex)
             {
@@ -512,12 +512,12 @@ StaticAdjacentEdgeConstIterator<Edge, Direction>::reference StaticAdjacentEdgeCo
     assert(m_pos < m_slice.size());
     assert(m_slice[m_pos] < m_edges->size());
 
-    if constexpr (std::is_same_v<Direction, Forward>)
+    if constexpr (std::is_same_v<Direction, ForwardTag>)
     {
         assert(m_edges->at(m_slice[m_pos]).get_source() == m_vertex);
         return m_edges->at(m_slice[m_pos]);
     }
-    else if constexpr (std::is_same_v<Direction, Backward>)
+    else if constexpr (std::is_same_v<Direction, BackwardTag>)
     {
         assert(m_edges->at(m_slice[m_pos]).get_target() == m_vertex);
         return m_edges->at(m_slice[m_pos]);
@@ -571,14 +571,14 @@ void StaticAdjacentEdgeIndexConstIterator<Edge, Direction>::advance()
             break;
         }
 
-        if constexpr (std::is_same_v<Direction, Forward>)
+        if constexpr (std::is_same_v<Direction, ForwardTag>)
         {
             if (m_edges->at(m_slice[m_pos]).get_source() == m_vertex)
             {
                 break;
             }
         }
-        else if constexpr (std::is_same_v<Direction, Backward>)
+        else if constexpr (std::is_same_v<Direction, BackwardTag>)
         {
             if (m_edges->at(m_slice[m_pos]).get_target() == m_vertex)
             {
@@ -612,14 +612,14 @@ StaticAdjacentEdgeIndexConstIterator<Edge, Direction>::StaticAdjacentEdgeIndexCo
     {
         assert(m_edges);
 
-        if constexpr (std::is_same_v<Direction, Forward>)
+        if constexpr (std::is_same_v<Direction, ForwardTag>)
         {
             if (m_edges->at(m_slice[0]).get_source() == m_vertex)
             {
                 return;
             }
         }
-        else if constexpr (std::is_same_v<Direction, Backward>)
+        else if constexpr (std::is_same_v<Direction, BackwardTag>)
         {
             if (m_edges->at(m_slice[0]).get_target() == m_vertex)
             {
@@ -643,12 +643,12 @@ StaticAdjacentEdgeIndexConstIterator<Edge, Direction>::value_type StaticAdjacent
     assert(m_pos < m_slice.size());
     assert(m_slice[m_pos] < m_edges->size());
 
-    if constexpr (std::is_same_v<Direction, Forward>)
+    if constexpr (std::is_same_v<Direction, ForwardTag>)
     {
         assert(m_edges->at(m_slice[m_pos]).get_source() == m_vertex);
         return m_edges->at(m_slice[m_pos]).get_index();
     }
-    else if constexpr (std::is_same_v<Direction, Backward>)
+    else if constexpr (std::is_same_v<Direction, BackwardTag>)
     {
         assert(m_edges->at(m_slice[m_pos]).get_target() == m_vertex);
         return m_edges->at(m_slice[m_pos]).get_index();

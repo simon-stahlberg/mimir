@@ -111,7 +111,7 @@ std::ostream& operator<<(std::ostream& out, const TupleGraphImpl& tuple_graph)
         out << "{\n";
         for (const auto& v_idx : group)
         {
-            for (const auto& adj_v_idx : tuple_graph.get_graph().get_adjacent_vertex_indices<graphs::Forward>(v_idx))
+            for (const auto& adj_v_idx : tuple_graph.get_graph().get_adjacent_vertex_indices<graphs::ForwardTag>(v_idx))
             {
                 out << "t" << v_idx << "->" << "t" << adj_v_idx << "\n";
             }

@@ -166,13 +166,14 @@ private:
     EdgeIndexList m_free_edges;
     size_t m_next_edge_index;
 
-    using TraversalDirectionToAdjacentEdges = boost::hana::map<boost::hana::pair<boost::hana::type<Forward>, std::unordered_map<VertexIndex, EdgeIndexSet>>,
-                                                               boost::hana::pair<boost::hana::type<Backward>, std::unordered_map<VertexIndex, EdgeIndexSet>>>;
+    using TraversalDirectionToAdjacentEdges =
+        boost::hana::map<boost::hana::pair<boost::hana::type<ForwardTag>, std::unordered_map<VertexIndex, EdgeIndexSet>>,
+                         boost::hana::pair<boost::hana::type<BackwardTag>, std::unordered_map<VertexIndex, EdgeIndexSet>>>;
 
     TraversalDirectionToAdjacentEdges m_adjacent_edges;
 
     using TraversalDirectionToDegrees =
-        boost::hana::map<boost::hana::pair<boost::hana::type<Forward>, DegreeMap>, boost::hana::pair<boost::hana::type<Backward>, DegreeMap>>;
+        boost::hana::map<boost::hana::pair<boost::hana::type<ForwardTag>, DegreeMap>, boost::hana::pair<boost::hana::type<BackwardTag>, DegreeMap>>;
 
     TraversalDirectionToDegrees m_degrees;
 
@@ -212,10 +213,10 @@ void DynamicGraph<V, E>::clear()
     m_edges.clear();
     m_free_edges.clear();
     m_next_edge_index = 0;
-    boost::hana::at_key(m_adjacent_edges, boost::hana::type<Forward> {}).clear();
-    boost::hana::at_key(m_adjacent_edges, boost::hana::type<Backward> {}).clear();
-    boost::hana::at_key(m_degrees, boost::hana::type<Forward> {}).clear();
-    boost::hana::at_key(m_degrees, boost::hana::type<Backward> {}).clear();
+    boost::hana::at_key(m_adjacent_edges, boost::hana::type<ForwardTag> {}).clear();
+    boost::hana::at_key(m_adjacent_edges, boost::hana::type<BackwardTag> {}).clear();
+    boost::hana::at_key(m_degrees, boost::hana::type<ForwardTag> {}).clear();
+    boost::hana::at_key(m_degrees, boost::hana::type<BackwardTag> {}).clear();
 }
 
 template<IsVertex V, IsEdge E>
@@ -232,17 +233,17 @@ VertexIndex DynamicGraph<V, E>::add_vertex(VertexProperties&&... properties)
     /* Initialize the data structures. */
     if (m_free_vertices.empty())
     {
-        boost::hana::at_key(m_adjacent_edges, boost::hana::type<Forward> {}).emplace(index, EdgeIndexSet());
-        boost::hana::at_key(m_adjacent_edges, boost::hana::type<Backward> {}).emplace(index, EdgeIndexSet());
-        boost::hana::at_key(m_degrees, boost::hana::type<Forward> {}).emplace(index, 0);
-        boost::hana::at_key(m_degrees, boost::hana::type<Backward> {}).emplace(index, 0);
+        boost::hana::at_key(m_adjacent_edges, boost::hana::type<ForwardTag> {}).emplace(index, EdgeIndexSet());
+        boost::hana::at_key(m_adjacent_edges, boost::hana::type<BackwardTag> {}).emplace(index, EdgeIndexSet());
+        boost::hana::at_key(m_degrees, boost::hana::type<ForwardTag> {}).emplace(index, 0);
+        boost::hana::at_key(m_degrees, boost::hana::type<BackwardTag> {}).emplace(index, 0);
     }
     else
     {
-        boost::hana::at_key(m_adjacent_edges, boost::hana::type<Forward> {}).at(index).clear();
-        boost::hana::at_key(m_adjacent_edges, boost::hana::type<Backward> {}).at(index).clear();
-        boost::hana::at_key(m_degrees, boost::hana::type<Forward> {}).at(index) = 0;
-        boost::hana::at_key(m_degrees, boost::hana::type<Backward> {}).at(index) = 0;
+        boost::hana::at_key(m_adjacent_edges, boost::hana::type<ForwardTag> {}).at(index).clear();
+        boost::hana::at_key(m_adjacent_edges, boost::hana::type<BackwardTag> {}).at(index).clear();
+        boost::hana::at_key(m_degrees, boost::hana::type<ForwardTag> {}).at(index) = 0;
+        boost::hana::at_key(m_degrees, boost::hana::type<BackwardTag> {}).at(index) = 0;
     }
 
     if (!m_free_vertices.empty())
@@ -269,10 +270,10 @@ EdgeIndex DynamicGraph<V, E>::add_directed_edge(VertexIndex source, VertexIndex 
     m_edges.emplace(index, E(index, source, target, std::forward<EdgeProperties>(properties)...));
 
     /* Initialize the data structures. */
-    boost::hana::at_key(m_adjacent_edges, boost::hana::type<Forward> {}).at(source).insert(index);
-    boost::hana::at_key(m_adjacent_edges, boost::hana::type<Backward> {}).at(target).insert(index);
-    ++boost::hana::at_key(m_degrees, boost::hana::type<Forward> {}).at(source);
-    ++boost::hana::at_key(m_degrees, boost::hana::type<Backward> {}).at(target);
+    boost::hana::at_key(m_adjacent_edges, boost::hana::type<ForwardTag> {}).at(source).insert(index);
+    boost::hana::at_key(m_adjacent_edges, boost::hana::type<BackwardTag> {}).at(target).insert(index);
+    ++boost::hana::at_key(m_degrees, boost::hana::type<ForwardTag> {}).at(source);
+    ++boost::hana::at_key(m_degrees, boost::hana::type<BackwardTag> {}).at(target);
 
     if (!m_free_edges.empty())
     {
@@ -307,32 +308,32 @@ void DynamicGraph<V, E>::remove_vertex(VertexIndex vertex)
     vertex_index_check(vertex, "DynamicGraph<V, E>::remove_vertex(...): Vertex does not exist.");
 
     /* Remove backward adjacent edges from vertex of adjacent vertices */
-    for (const auto& edge : get_adjacent_edge_indices<Forward>(vertex))
+    for (const auto& edge : get_adjacent_edge_indices<ForwardTag>(vertex))
     {
-        const auto target = get_target<Forward>(edge);
+        const auto target = get_target<ForwardTag>(edge);
         if (target == vertex)
         {
             // Ignore loops over vertex.
             continue;
         }
 
-        boost::hana::at_key(m_adjacent_edges, boost::hana::type<Backward> {}).at(target).erase(edge);
-        --boost::hana::at_key(m_degrees, boost::hana::type<Backward> {}).at(target);
+        boost::hana::at_key(m_adjacent_edges, boost::hana::type<BackwardTag> {}).at(target).erase(edge);
+        --boost::hana::at_key(m_degrees, boost::hana::type<BackwardTag> {}).at(target);
         m_edges.erase(edge);
         m_free_edges.push_back(edge);
     }
     /* Remove forward adjacent edges to vertex of adjacent vertices */
-    for (const auto& edge : get_adjacent_edge_indices<Backward>(vertex))
+    for (const auto& edge : get_adjacent_edge_indices<BackwardTag>(vertex))
     {
-        const auto target = get_target<Backward>(edge);
+        const auto target = get_target<BackwardTag>(edge);
         if (target == vertex)
         {
             // Ignore loops over vertex.
             continue;
         }
 
-        boost::hana::at_key(m_adjacent_edges, boost::hana::type<Forward> {}).at(target).erase(edge);
-        --boost::hana::at_key(m_degrees, boost::hana::type<Forward> {}).at(target);
+        boost::hana::at_key(m_adjacent_edges, boost::hana::type<ForwardTag> {}).at(target).erase(edge);
+        --boost::hana::at_key(m_degrees, boost::hana::type<ForwardTag> {}).at(target);
         m_edges.erase(edge);
         m_free_edges.push_back(edge);
     }
@@ -346,13 +347,13 @@ void DynamicGraph<V, E>::remove_edge(EdgeIndex edge)
 {
     edge_index_check(edge, "DynamicGraph<V, E>::remove_edge(...): Edge does not exist.");
 
-    const auto source = get_source<Forward>(edge);
-    const auto target = get_target<Forward>(edge);
+    const auto source = get_source<ForwardTag>(edge);
+    const auto target = get_target<ForwardTag>(edge);
 
-    boost::hana::at_key(m_adjacent_edges, boost::hana::type<Forward> {}).at(source).erase(edge);
-    boost::hana::at_key(m_adjacent_edges, boost::hana::type<Backward> {}).at(target).erase(edge);
-    --boost::hana::at_key(m_degrees, boost::hana::type<Forward> {}).at(source);
-    --boost::hana::at_key(m_degrees, boost::hana::type<Backward> {}).at(target);
+    boost::hana::at_key(m_adjacent_edges, boost::hana::type<ForwardTag> {}).at(source).erase(edge);
+    boost::hana::at_key(m_adjacent_edges, boost::hana::type<BackwardTag> {}).at(target).erase(edge);
+    --boost::hana::at_key(m_degrees, boost::hana::type<ForwardTag> {}).at(source);
+    --boost::hana::at_key(m_degrees, boost::hana::type<BackwardTag> {}).at(target);
     m_edges.erase(edge);
     m_free_edges.push_back(edge);
 }
@@ -486,11 +487,11 @@ VertexIndex DynamicGraph<V, E>::get_source(EdgeIndex edge) const
 {
     edge_index_check(edge, "DynamicGraph<V, E>::get_source(...): Edge does not exist.");
 
-    if constexpr (std::is_same_v<Direction, Forward>)
+    if constexpr (std::is_same_v<Direction, ForwardTag>)
     {
         return m_edges.at(edge).get_source();
     }
-    else if constexpr (std::is_same_v<Direction, Backward>)
+    else if constexpr (std::is_same_v<Direction, BackwardTag>)
     {
         return m_edges.at(edge).get_target();
     }
@@ -506,11 +507,11 @@ VertexIndex DynamicGraph<V, E>::get_target(EdgeIndex edge) const
 {
     edge_index_check(edge, "DynamicGraph<V, E>::get_target(...): Edge does not exist.");
 
-    if constexpr (std::is_same_v<Direction, Forward>)
+    if constexpr (std::is_same_v<Direction, ForwardTag>)
     {
         return m_edges.at(edge).get_target();
     }
-    else if constexpr (std::is_same_v<Direction, Backward>)
+    else if constexpr (std::is_same_v<Direction, BackwardTag>)
     {
         return m_edges.at(edge).get_source();
     }

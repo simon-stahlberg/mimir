@@ -343,7 +343,7 @@ static graphs::ClassGraph create_induced_subspace_helper(const IndexSet& subgrap
     /* 3. Instantiate edges */
     for (const auto& class_v_idx : subgraph_class_v_idxs)
     {
-        for (const auto& class_e : complete_graph.get_adjacent_edges<graphs::Forward>(class_v_idx))
+        for (const auto& class_e : complete_graph.get_adjacent_edges<graphs::ForwardTag>(class_v_idx))
         {
             if (subgraph_class_v_idxs.contains(class_e.get_target()))
             {
