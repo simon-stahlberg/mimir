@@ -18,9 +18,9 @@ def test_pddl_parser():
 
     assert(domain == problem.get_domain())
 
-    domain_translation_result = formalism.translate(domain)
-    translated_domain = domain_translation_result.get_translated_domain()
+    translator = formalism.Translator(domain)
+    translated_domain = translator.get_translated_domain()
 
-    translated_problem = formalism.translate(problem, domain_translation_result)
+    translated_problem = translator.translate(problem)
 
     assert(translated_domain == translated_problem.get_domain())

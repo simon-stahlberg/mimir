@@ -97,7 +97,6 @@ from _pymimir.advanced.formalism import (
     ConditionalEffect,
     ConditionalEffectList,
     Domain,
-    DomainTranslationResult,
     FunctionExpression,
     FunctionExpressionList,
     FunctionExpressionBinaryOperator,
@@ -129,11 +128,7 @@ from _pymimir.advanced.formalism import (
     Requirements,
     Term,
     TermList,
+    Translator,
     Variable,
     VariableList,
 )
-
-from _pymimir.advanced.formalism import (
-    translate,
-)
-

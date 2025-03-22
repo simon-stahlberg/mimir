@@ -47,11 +47,11 @@ int main(int argc, char** argv)
     std::cout << *problem << std::endl;
 
     // 3. Translate the domain
-    const auto domain_translation_result = translate(domain);
-    std::cout << *domain_translation_result.get_translated_domain() << std::endl;
+    auto translator = Translator(domain);
+    std::cout << *translator.get_translated_domain() << std::endl;
 
     // 4. Translate the problem, throws an error if the problem is not defined over the original domain.
-    const auto translated_problem = translate(problem, domain_translation_result);
+    const auto translated_problem = translator.translate(problem);
     std::cout << *translated_problem << std::endl;
 
     return 0;

@@ -27,49 +27,41 @@
 namespace mimir::formalism
 {
 
-DomainTranslationResult::DomainTranslationResult(Domain original_domain, Domain translated_domain) :
-    original_domain(std::move(original_domain)),
-    translated_domain(std::move(translated_domain))
-{
-}
-
-DomainTranslationResult translate(const Domain& domain)
+Translator::Translator(const Domain& domain) : m_original_domain(domain)
 {
     auto encode_parameter_index_in_variables_translator = EncodeParameterIndexInVariables();
     auto builder = DomainBuilder();
-    auto translated_domain = encode_parameter_index_in_variables_translator.translate_level_0(domain, builder);
+    m_translated_domain = encode_parameter_index_in_variables_translator.translate_level_0(domain, builder);
 
     auto encode_numeric_constraint_terms_in_function = EncodeNumericConstraintTermsInFunctions();
     builder = DomainBuilder();
-    translated_domain = encode_numeric_constraint_terms_in_function.translate_level_0(translated_domain, builder);
-
-    return DomainTranslationResult(domain, translated_domain);
+    m_translated_domain = encode_numeric_constraint_terms_in_function.translate_level_0(m_translated_domain, builder);
 }
 
-const Domain& DomainTranslationResult::get_original_domain() const { return original_domain; }
-
-const Domain& DomainTranslationResult::get_translated_domain() const { return translated_domain; }
-
-Problem translate(const Problem& problem, const DomainTranslationResult& result)
+Problem Translator::translate(const Problem& problem) const
 {
-    if (result.get_original_domain() != problem->get_domain())
+    if (get_original_domain() != problem->get_domain())
     {
-        throw std::runtime_error("translate(problem, result): domain in problem must match original domain in DomainTranslationResult.");
+        throw std::runtime_error("Translator::translate: domain in problem must match original domain in DomainTranslationResult.");
     }
 
     // std::cout << "EncodeNumericConstraintTermsInFunctions" << std::endl;
 
     auto encode_parameter_index_in_variables_translator = EncodeNumericConstraintTermsInFunctions();
-    auto builder = ProblemBuilder(result.get_translated_domain());
+    auto builder = ProblemBuilder(get_translated_domain());
     auto translated_problem = encode_parameter_index_in_variables_translator.translate_level_0(problem, builder);
 
     // std::cout << "EncodeParameterIndexInVariables" << std::endl;
 
     auto encode_numeric_constraint_terms_in_function = EncodeParameterIndexInVariables();
-    builder = ProblemBuilder(result.get_translated_domain());
+    builder = ProblemBuilder(get_translated_domain());
     translated_problem = encode_numeric_constraint_terms_in_function.translate_level_0(problem, builder);
 
     return translated_problem;
 }
+
+const Domain& Translator::get_original_domain() const { return m_original_domain; }
+
+const Domain& Translator::get_translated_domain() const { return m_translated_domain; }
 
 }

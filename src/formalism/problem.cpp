@@ -167,8 +167,8 @@ Problem ProblemImpl::create(const fs::path& domain_filepath, const fs::path& pro
     auto parser = Parser(domain_filepath, options);
     auto problem = parser.parse_problem(problem_filepath, options);
     /* Translate */
-    auto domain_translation_result = translate(parser.get_domain());
-    return translate(problem, domain_translation_result);
+    auto translator = Translator(problem->get_domain());
+    return translator.translate(problem);
 }
 
 Index ProblemImpl::get_index() const { return m_index; }

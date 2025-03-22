@@ -656,13 +656,11 @@ void bind_formalism(nb::module_& m)
      * Translator
      */
 
-    nb::class_<DomainTranslationResult>(m, "DomainTranslationResult")
-        .def(nb::init<Domain, Domain>(), nb::arg("original_domain"), nb::arg("translated_domain"))
-        .def("get_original_domain", &DomainTranslationResult::get_original_domain)
-        .def("get_translated_domain", &DomainTranslationResult::get_translated_domain);
-
-    m.def("translate", nb::overload_cast<const Domain&>(&translate), nb::arg("domain"));
-    m.def("translate", nb::overload_cast<const Problem&, const DomainTranslationResult&>(&translate), nb::arg("problem"), nb::arg("domain_translation_result"));
+    nb::class_<Translator>(m, "Translator")
+        .def(nb::init<const Domain&>(), nb::arg("domain"))
+        .def("translate", &Translator::translate, nb::arg("problem"))
+        .def("get_original_domain", &Translator::get_original_domain, nb::rv_policy::reference_internal)
+        .def("get_translated_domain", &Translator::get_translated_domain, nb::rv_policy::reference_internal);
 }
 
 }

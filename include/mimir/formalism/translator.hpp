@@ -23,23 +23,29 @@
 namespace mimir::formalism
 {
 
-class DomainTranslationResult
+class Translator
 {
-private:
-    Domain original_domain;  ///< used to check that a problem can be translated with this result.
-
-    Domain translated_domain;
-
 public:
-    DomainTranslationResult(Domain original_domain, Domain translated_domain);
+    /// @brief Constructs a translator that translates a domain into an equivalent representation.
+    explicit Translator(const Domain& domain);
 
+    /// @brief Translates a problem using the already translated domain.
+    /// @param problem The problem to be translated.
+    /// @return The translated problem.
+    Problem translate(const Problem& problem) const;
+
+    /// @brief Get the original domain.
+    /// @return A reference to the original domain.
     const Domain& get_original_domain() const;
+
+    /// @brief Get the translated domain.
+    /// @return A reference to the translated domain.
     const Domain& get_translated_domain() const;
+
+private:
+    Domain m_original_domain;
+    Domain m_translated_domain;
 };
-
-extern DomainTranslationResult translate(const Domain& domain);
-
-extern Problem translate(const Problem& problem, const DomainTranslationResult& result);
 
 }
 

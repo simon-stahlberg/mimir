@@ -28,24 +28,24 @@ GeneralizedProblem::GeneralizedProblem(const fs::path& domain_filepath, const st
     m_problems()
 {
     auto parser = Parser(domain_filepath, options);
-    auto domain_translation_result = translate(parser.get_domain());
-    m_domain = domain_translation_result.get_translated_domain();
+    auto translator = Translator(parser.get_domain());
+    m_domain = translator.get_translated_domain();
     for (const auto& problem_filepath : problem_filepaths)
     {
         auto problem = parser.parse_problem(problem_filepath, options);
-        m_problems.push_back(translate(problem, domain_translation_result));
+        m_problems.push_back(translator.translate(problem));
     }
 }
 
 GeneralizedProblem::GeneralizedProblem(const fs::path& domain_filepath, const fs::path& problems_directory, const loki::Options& options)
 {
     auto parser = Parser(domain_filepath, options);
-    auto domain_translation_result = translate(parser.get_domain());
-    m_domain = domain_translation_result.get_translated_domain();
+    auto translator = Translator(parser.get_domain());
+    m_domain = translator.get_translated_domain();
     for (const auto& problem_filepath : fs::directory_iterator(problems_directory))
     {
         auto problem = parser.parse_problem(problem_filepath, options);
-        m_problems.push_back(translate(problem, domain_translation_result));
+        m_problems.push_back(translator.translate(problem));
     }
 }
 
