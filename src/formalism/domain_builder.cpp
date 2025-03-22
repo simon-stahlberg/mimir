@@ -39,24 +39,30 @@ Domain DomainBuilder::get_result()
     std::sort(get_constants().begin(), get_constants().end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
     verify_indexing_scheme(get_constants(), "DomainBuilder::get_result: constants must follow and indexing scheme.");
 
-    std::sort(get_predicates<Static>().begin(), get_predicates<Static>().end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
-    verify_indexing_scheme(get_predicates<Static>(), "DomainBuilder::get_result: static predicates must follow and indexing scheme.");
-
-    std::sort(get_predicates<Fluent>().begin(), get_predicates<Fluent>().end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
-    verify_indexing_scheme(get_predicates<Fluent>(), "DomainBuilder::get_result: fluent predicates must follow and indexing scheme.");
-
-    std::sort(get_predicates<Derived>().begin(), get_predicates<Derived>().end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
-    verify_indexing_scheme(get_predicates<Derived>(), "DomainBuilder::get_result: derived predicates must follow and indexing scheme.");
-
-    std::sort(get_function_skeletons<Static>().begin(),
-              get_function_skeletons<Static>().end(),
+    std::sort(get_predicates<StaticTag>().begin(),
+              get_predicates<StaticTag>().end(),
               [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
-    verify_indexing_scheme(get_function_skeletons<Static>(), "DomainBuilder::get_result: functions must follow and indexing scheme.");
+    verify_indexing_scheme(get_predicates<StaticTag>(), "DomainBuilder::get_result: static predicates must follow and indexing scheme.");
 
-    std::sort(get_function_skeletons<Fluent>().begin(),
-              get_function_skeletons<Fluent>().end(),
+    std::sort(get_predicates<FluentTag>().begin(),
+              get_predicates<FluentTag>().end(),
               [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
-    verify_indexing_scheme(get_function_skeletons<Fluent>(), "DomainBuilder::get_result: functions must follow and indexing scheme.");
+    verify_indexing_scheme(get_predicates<FluentTag>(), "DomainBuilder::get_result: fluent predicates must follow and indexing scheme.");
+
+    std::sort(get_predicates<DerivedTag>().begin(),
+              get_predicates<DerivedTag>().end(),
+              [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
+    verify_indexing_scheme(get_predicates<DerivedTag>(), "DomainBuilder::get_result: derived predicates must follow and indexing scheme.");
+
+    std::sort(get_function_skeletons<StaticTag>().begin(),
+              get_function_skeletons<StaticTag>().end(),
+              [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
+    verify_indexing_scheme(get_function_skeletons<StaticTag>(), "DomainBuilder::get_result: functions must follow and indexing scheme.");
+
+    std::sort(get_function_skeletons<FluentTag>().begin(),
+              get_function_skeletons<FluentTag>().end(),
+              [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
+    verify_indexing_scheme(get_function_skeletons<FluentTag>(), "DomainBuilder::get_result: functions must follow and indexing scheme.");
 
     std::sort(get_actions().begin(), get_actions().end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
     verify_indexing_scheme(get_actions(), "DomainBuilder::get_result: actions must follow and indexing scheme.");
@@ -83,30 +89,30 @@ std::optional<fs::path>& DomainBuilder::get_filepath() { return m_filepath; }
 std::string& DomainBuilder::get_name() { return m_name; }
 Requirements& DomainBuilder::get_requirements() { return m_requirements; }
 ObjectList& DomainBuilder::get_constants() { return m_constants; }
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 PredicateList<P>& DomainBuilder::get_predicates()
 {
     return boost::hana::at_key(m_predicates, boost::hana::type<P> {});
 }
 
-template PredicateList<Static>& DomainBuilder::get_predicates();
-template PredicateList<Fluent>& DomainBuilder::get_predicates();
-template PredicateList<Derived>& DomainBuilder::get_predicates();
+template PredicateList<StaticTag>& DomainBuilder::get_predicates();
+template PredicateList<FluentTag>& DomainBuilder::get_predicates();
+template PredicateList<DerivedTag>& DomainBuilder::get_predicates();
 
-PredicateLists<Static, Fluent, Derived>& DomainBuilder::get_hana_predicates() { return m_predicates; }
+PredicateLists<StaticTag, FluentTag, DerivedTag>& DomainBuilder::get_hana_predicates() { return m_predicates; }
 
-template<StaticOrFluent F>
+template<IsStaticOrFluentTag F>
 FunctionSkeletonList<F>& DomainBuilder::get_function_skeletons()
 {
     return boost::hana::at_key(m_function_skeletons, boost::hana::type<F> {});
 }
 
-template FunctionSkeletonList<Static>& DomainBuilder::get_function_skeletons();
-template FunctionSkeletonList<Fluent>& DomainBuilder::get_function_skeletons();
+template FunctionSkeletonList<StaticTag>& DomainBuilder::get_function_skeletons();
+template FunctionSkeletonList<FluentTag>& DomainBuilder::get_function_skeletons();
 
-FunctionSkeletonLists<Static, Fluent>& DomainBuilder::get_hana_function_skeletons() { return m_function_skeletons; }
+FunctionSkeletonLists<StaticTag, FluentTag>& DomainBuilder::get_hana_function_skeletons() { return m_function_skeletons; }
 
-std::optional<FunctionSkeleton<Auxiliary>>& DomainBuilder::get_auxiliary_function_skeleton() { return m_auxiliary_function_skeleton; }
+std::optional<FunctionSkeleton<AuxiliaryTag>>& DomainBuilder::get_auxiliary_function_skeleton() { return m_auxiliary_function_skeleton; }
 ActionList& DomainBuilder::get_actions() { return m_actions; }
 AxiomList& DomainBuilder::get_axioms() { return m_axioms; }
 }

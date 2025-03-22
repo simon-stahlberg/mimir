@@ -29,7 +29,7 @@
 
 namespace mimir::formalism
 {
-AxiomImpl::AxiomImpl(Index index, ConjunctiveCondition conjunctive_condition, Literal<Derived> literal) :
+AxiomImpl::AxiomImpl(Index index, ConjunctiveCondition conjunctive_condition, Literal<DerivedTag> literal) :
     m_index(index),
     m_conjunctive_condition(std::move(conjunctive_condition)),
     m_literal(std::move(literal))
@@ -42,7 +42,7 @@ Index AxiomImpl::get_index() const { return m_index; }
 
 const VariableList& AxiomImpl::get_parameters() const { return m_conjunctive_condition->get_parameters(); }
 
-Literal<Derived> AxiomImpl::get_literal() const { return m_literal; }
+Literal<DerivedTag> AxiomImpl::get_literal() const { return m_literal; }
 
 ConjunctiveCondition AxiomImpl::get_conjunctive_condition() const { return m_conjunctive_condition; }
 

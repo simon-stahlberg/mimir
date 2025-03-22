@@ -21,7 +21,7 @@
 #include "mimir/buffering/unordered_set.h"
 #include "mimir/common/hash_cista.hpp"
 #include "mimir/common/types_cista.hpp"
-#include "mimir/languages/description_logics/constructor_tag.hpp"
+#include "mimir/languages/description_logics/tags.hpp"
 
 #include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
@@ -31,13 +31,13 @@
 
 namespace mimir::languages::dl
 {
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 struct DenotationImpl
 {
 };
 
 template<>
-struct DenotationImpl<Concept>
+struct DenotationImpl<ConceptTag>
 {
     using DenotationType = FlatBitset;
 
@@ -56,7 +56,7 @@ struct DenotationImpl<Concept>
 };
 
 template<>
-struct DenotationImpl<Role>
+struct DenotationImpl<RoleTag>
 {
     using DenotationType = cista::offset::vector<FlatBitset>;
 
@@ -81,7 +81,7 @@ struct DenotationImpl<Role>
 };
 
 template<>
-struct DenotationImpl<Boolean>
+struct DenotationImpl<BooleanTag>
 {
     using DenotationType = bool;
 
@@ -97,7 +97,7 @@ struct DenotationImpl<Boolean>
 };
 
 template<>
-struct DenotationImpl<Numerical>
+struct DenotationImpl<NumericalTag>
 {
     using DenotationType = uint32_t;
 
@@ -114,9 +114,9 @@ struct DenotationImpl<Numerical>
 
 /// @brief Denotation for temporary construction.
 /// This stores a computed denotation for a single state.
-using Denotations = HanaMappedContainer<DenotationImpl, Concept, Role, Boolean, Numerical>;
+using Denotations = HanaMappedContainer<DenotationImpl, ConceptTag, RoleTag, BooleanTag, NumericalTag>;
 
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 using DenotationImplSet = mimir::buffering::UnorderedSet<DenotationImpl<D>>;
 
 }

@@ -35,7 +35,7 @@ namespace mimir::languages::general_policies::ast
 ///////////////////////////////////////////////////////////////////////////
 namespace x3 = boost::spirit::x3;
 
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 struct NamedFeature;
 
 struct Condition;
@@ -57,7 +57,7 @@ struct UnchangedNumericalEffect;
 struct Rule;
 struct GeneralPolicy;
 
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 struct NamedFeature
 {
     std::string name;
@@ -138,8 +138,8 @@ struct Rule : x3::position_tagged
 
 struct GeneralPolicy : x3::position_tagged
 {
-    std::vector<NamedFeature<dl::Boolean>> boolean_features;
-    std::vector<NamedFeature<dl::Numerical>> numerical_features;
+    std::vector<NamedFeature<dl::BooleanTag>> boolean_features;
+    std::vector<NamedFeature<dl::NumericalTag>> numerical_features;
     std::vector<Rule> rules;
 };
 

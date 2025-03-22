@@ -46,10 +46,10 @@ public:
     virtual void visit(DecreaseNumericalEffect effect) = 0;
     virtual void visit(UnchangedNumericalEffect effect) = 0;
 
-    virtual void visit(NamedFeature<dl::Concept> feature) = 0;
-    virtual void visit(NamedFeature<dl::Role> feature) = 0;
-    virtual void visit(NamedFeature<dl::Boolean> feature) = 0;
-    virtual void visit(NamedFeature<dl::Numerical> feature) = 0;
+    virtual void visit(NamedFeature<dl::ConceptTag> feature) = 0;
+    virtual void visit(NamedFeature<dl::RoleTag> feature) = 0;
+    virtual void visit(NamedFeature<dl::BooleanTag> feature) = 0;
+    virtual void visit(NamedFeature<dl::NumericalTag> feature) = 0;
 
     virtual void visit(Rule rule) = 0;
 

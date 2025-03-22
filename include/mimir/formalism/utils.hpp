@@ -24,17 +24,17 @@ namespace mimir::formalism
 {
 
 /// @brief Translates a ground literal list into a list of ground atoms.
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 extern void to_ground_atoms(const GroundLiteralList<P>& literals, GroundAtomList<P>& out_ground_atoms);
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 extern GroundAtomList<P> to_ground_atoms(const GroundLiteralList<P>& literals);
 
 /// @brief Filters ground atoms with the given polarity from the literals.
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 extern void filter_ground_atoms(const GroundLiteralList<P>& literals, bool polarity, GroundAtomList<P>& out_ground_atoms);
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 extern GroundAtomList<P> filter_ground_atoms(const GroundLiteralList<P>& literals, bool polarity);
 
 }

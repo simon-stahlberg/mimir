@@ -43,9 +43,9 @@ private:
     Variable translate_level_2(Variable variable, Repositories& repositories);
 
     // Do not rename within predicates or function skeleton
-    template<StaticOrFluentOrDerived P>
+    template<IsStaticOrFluentOrDerivedTag P>
     Predicate<P> translate_level_2(Predicate<P> predicate, Repositories& repositories);
-    template<StaticOrFluentOrAuxiliary F>
+    template<IsStaticOrFluentOrAuxiliaryTag F>
     FunctionSkeleton<F> translate_level_2(FunctionSkeleton<F> function_skeleton, Repositories& repositories);
 
     ConditionalEffect translate_level_2(ConditionalEffect effect, Repositories& repositories);

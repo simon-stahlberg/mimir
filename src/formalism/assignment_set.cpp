@@ -33,12 +33,12 @@ namespace mimir::formalism
  * AssignmentSet
  */
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 AssignmentSet<P>::AssignmentSet() : m_num_objects(0), m_per_predicate_assignment_set()
 {
 }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 AssignmentSet<P>::AssignmentSet(size_t num_objects, const PredicateList<P>& predicates) : m_num_objects(num_objects), m_per_predicate_assignment_set()
 {
     /* Allocate */
@@ -59,7 +59,7 @@ AssignmentSet<P>::AssignmentSet(size_t num_objects, const PredicateList<P>& pred
     reset();
 }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 void AssignmentSet<P>::reset()
 {
     for (auto& assignment_set : m_per_predicate_assignment_set)
@@ -68,7 +68,7 @@ void AssignmentSet<P>::reset()
     }
 }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 void AssignmentSet<P>::insert_ground_atoms(const GroundAtomList<P>& ground_atoms)
 {
     for (const auto& ground_atom : ground_atoms)
@@ -94,7 +94,7 @@ void AssignmentSet<P>::insert_ground_atoms(const GroundAtomList<P>& ground_atoms
     }
 }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 void AssignmentSet<P>::insert_ground_atom(GroundAtom<P> ground_atom)
 {
     const auto& arity = ground_atom->get_arity();
@@ -117,20 +117,20 @@ void AssignmentSet<P>::insert_ground_atom(GroundAtom<P> ground_atom)
     }
 }
 
-template class AssignmentSet<Static>;
-template class AssignmentSet<Fluent>;
-template class AssignmentSet<Derived>;
+template class AssignmentSet<StaticTag>;
+template class AssignmentSet<FluentTag>;
+template class AssignmentSet<DerivedTag>;
 
 /**
  * NumericAssignmentSet
  */
 
-template<StaticOrFluent F>
+template<IsStaticOrFluentTag F>
 NumericAssignmentSet<F>::NumericAssignmentSet() : m_num_objects(0), m_per_function_skeleton_bounds_set()
 {
 }
 
-template<StaticOrFluent F>
+template<IsStaticOrFluentTag F>
 NumericAssignmentSet<F>::NumericAssignmentSet(size_t num_objects, const FunctionSkeletonList<F>& function_skeletons) :
     m_num_objects(num_objects),
     m_per_function_skeleton_bounds_set()
@@ -153,7 +153,7 @@ NumericAssignmentSet<F>::NumericAssignmentSet(size_t num_objects, const Function
     reset();
 }
 
-template<StaticOrFluent F>
+template<IsStaticOrFluentTag F>
 void NumericAssignmentSet<F>::reset()
 {
     for (auto& assignment_set : m_per_function_skeleton_bounds_set)
@@ -162,7 +162,7 @@ void NumericAssignmentSet<F>::reset()
     }
 }
 
-template<StaticOrFluent F>
+template<IsStaticOrFluentTag F>
 void NumericAssignmentSet<F>::insert_ground_function_values(const GroundFunctionList<F>& ground_fluent_functions, const FlatDoubleList& fluent_numeric_values)
 {
     /* Validate inputs. */
@@ -221,7 +221,7 @@ void NumericAssignmentSet<F>::insert_ground_function_values(const GroundFunction
     }
 }
 
-template class NumericAssignmentSet<Static>;
-template class NumericAssignmentSet<Fluent>;
+template class NumericAssignmentSet<StaticTag>;
+template class NumericAssignmentSet<FluentTag>;
 
 }

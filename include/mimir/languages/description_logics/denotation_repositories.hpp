@@ -31,7 +31,7 @@ namespace mimir::languages::dl
 {
 
 /// @brief DenotationRepository encapsulate logic for obtaining unique denotation views and caching.
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 class DenotationRepository
 {
 private:
@@ -48,7 +48,7 @@ public:
     Denotation<D> get_if(Constructor<D> constructor, search::State state) const;
 };
 
-using DenotationRepositories = HanaMappedContainer<DenotationRepository, Concept, Role, Boolean, Numerical>;
+using DenotationRepositories = HanaMappedContainer<DenotationRepository, ConceptTag, RoleTag, BooleanTag, NumericalTag>;
 
 }
 

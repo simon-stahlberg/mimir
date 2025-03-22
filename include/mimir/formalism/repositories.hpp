@@ -55,41 +55,41 @@ using RequirementsRepository = loki::SegmentedRepository<RequirementsImpl>;
 using VariableRepository = loki::SegmentedRepository<VariableImpl>;
 using TermRepository = loki::SegmentedRepository<TermImpl>;
 using ObjectRepository = loki::SegmentedRepository<ObjectImpl>;
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 using AtomRepository = loki::SegmentedRepository<AtomImpl<P>>;
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 using GroundAtomRepository = loki::SegmentedRepository<GroundAtomImpl<P>>;
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 using LiteralRepository = loki::SegmentedRepository<LiteralImpl<P>>;
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 using GroundLiteralRepository = loki::SegmentedRepository<GroundLiteralImpl<P>>;
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 using PredicateRepository = loki::SegmentedRepository<PredicateImpl<P>>;
 using FunctionExpressionNumberRepository = loki::SegmentedRepository<FunctionExpressionNumberImpl>;
 using FunctionExpressionBinaryOperatorRepository = loki::SegmentedRepository<FunctionExpressionBinaryOperatorImpl>;
 using FunctionExpressionMultiOperatorRepository = loki::SegmentedRepository<FunctionExpressionMultiOperatorImpl>;
 using FunctionExpressionMinusRepository = loki::SegmentedRepository<FunctionExpressionMinusImpl>;
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 using FunctionExpressionFunctionRepository = loki::SegmentedRepository<FunctionExpressionFunctionImpl<F>>;
 using FunctionExpressionRepository = loki::SegmentedRepository<FunctionExpressionImpl>;
 using GroundFunctionExpressionNumberRepository = loki::SegmentedRepository<GroundFunctionExpressionNumberImpl>;
 using GroundFunctionExpressionBinaryOperatorRepository = loki::SegmentedRepository<GroundFunctionExpressionBinaryOperatorImpl>;
 using GroundFunctionExpressionMultiOperatorRepository = loki::SegmentedRepository<GroundFunctionExpressionMultiOperatorImpl>;
 using GroundFunctionExpressionMinusRepository = loki::SegmentedRepository<GroundFunctionExpressionMinusImpl>;
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 using GroundFunctionExpressionFunctionRepository = loki::SegmentedRepository<GroundFunctionExpressionFunctionImpl<F>>;
 using GroundFunctionExpressionRepository = loki::SegmentedRepository<GroundFunctionExpressionImpl>;
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 using FunctionRepository = loki::SegmentedRepository<FunctionImpl<F>>;
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 using GroundFunctionRepository = loki::SegmentedRepository<GroundFunctionImpl<F>>;
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 using GroundFunctionValueRepository = loki::SegmentedRepository<GroundFunctionValueImpl<F>>;
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 using FunctionSkeletonRepository = loki::SegmentedRepository<FunctionSkeletonImpl<F>>;
-template<FluentOrAuxiliary F>
+template<IsFluentOrAuxiliaryTag F>
 using NumericEffectRepository = loki::SegmentedRepository<NumericEffectImpl<F>>;
-template<FluentOrAuxiliary F>
+template<IsFluentOrAuxiliaryTag F>
 using GroundNumericEffectRepository = loki::SegmentedRepository<GroundNumericEffectImpl<F>>;
 using ConjunctiveEffectRepository = loki::SegmentedRepository<ConjunctiveEffectImpl>;
 using ConditionalEffectRepository = loki::SegmentedRepository<ConditionalEffectImpl>;
@@ -105,53 +105,53 @@ using HanaRepositories = boost::hana::map<
     boost::hana::pair<boost::hana::type<VariableImpl>, VariableRepository>,
     boost::hana::pair<boost::hana::type<TermImpl>, TermRepository>,
     boost::hana::pair<boost::hana::type<ObjectImpl>, ObjectRepository>,
-    boost::hana::pair<boost::hana::type<AtomImpl<Static>>, AtomRepository<Static>>,
-    boost::hana::pair<boost::hana::type<AtomImpl<Fluent>>, AtomRepository<Fluent>>,
-    boost::hana::pair<boost::hana::type<AtomImpl<Derived>>, AtomRepository<Derived>>,
-    boost::hana::pair<boost::hana::type<GroundAtomImpl<Static>>, GroundAtomRepository<Static>>,
-    boost::hana::pair<boost::hana::type<GroundAtomImpl<Fluent>>, GroundAtomRepository<Fluent>>,
-    boost::hana::pair<boost::hana::type<GroundAtomImpl<Derived>>, GroundAtomRepository<Derived>>,
-    boost::hana::pair<boost::hana::type<LiteralImpl<Static>>, LiteralRepository<Static>>,
-    boost::hana::pair<boost::hana::type<LiteralImpl<Fluent>>, LiteralRepository<Fluent>>,
-    boost::hana::pair<boost::hana::type<LiteralImpl<Derived>>, LiteralRepository<Derived>>,
-    boost::hana::pair<boost::hana::type<GroundLiteralImpl<Static>>, GroundLiteralRepository<Static>>,
-    boost::hana::pair<boost::hana::type<GroundLiteralImpl<Fluent>>, GroundLiteralRepository<Fluent>>,
-    boost::hana::pair<boost::hana::type<GroundLiteralImpl<Derived>>, GroundLiteralRepository<Derived>>,
-    boost::hana::pair<boost::hana::type<PredicateImpl<Static>>, PredicateRepository<Static>>,
-    boost::hana::pair<boost::hana::type<PredicateImpl<Fluent>>, PredicateRepository<Fluent>>,
-    boost::hana::pair<boost::hana::type<PredicateImpl<Derived>>, PredicateRepository<Derived>>,
+    boost::hana::pair<boost::hana::type<AtomImpl<StaticTag>>, AtomRepository<StaticTag>>,
+    boost::hana::pair<boost::hana::type<AtomImpl<FluentTag>>, AtomRepository<FluentTag>>,
+    boost::hana::pair<boost::hana::type<AtomImpl<DerivedTag>>, AtomRepository<DerivedTag>>,
+    boost::hana::pair<boost::hana::type<GroundAtomImpl<StaticTag>>, GroundAtomRepository<StaticTag>>,
+    boost::hana::pair<boost::hana::type<GroundAtomImpl<FluentTag>>, GroundAtomRepository<FluentTag>>,
+    boost::hana::pair<boost::hana::type<GroundAtomImpl<DerivedTag>>, GroundAtomRepository<DerivedTag>>,
+    boost::hana::pair<boost::hana::type<LiteralImpl<StaticTag>>, LiteralRepository<StaticTag>>,
+    boost::hana::pair<boost::hana::type<LiteralImpl<FluentTag>>, LiteralRepository<FluentTag>>,
+    boost::hana::pair<boost::hana::type<LiteralImpl<DerivedTag>>, LiteralRepository<DerivedTag>>,
+    boost::hana::pair<boost::hana::type<GroundLiteralImpl<StaticTag>>, GroundLiteralRepository<StaticTag>>,
+    boost::hana::pair<boost::hana::type<GroundLiteralImpl<FluentTag>>, GroundLiteralRepository<FluentTag>>,
+    boost::hana::pair<boost::hana::type<GroundLiteralImpl<DerivedTag>>, GroundLiteralRepository<DerivedTag>>,
+    boost::hana::pair<boost::hana::type<PredicateImpl<StaticTag>>, PredicateRepository<StaticTag>>,
+    boost::hana::pair<boost::hana::type<PredicateImpl<FluentTag>>, PredicateRepository<FluentTag>>,
+    boost::hana::pair<boost::hana::type<PredicateImpl<DerivedTag>>, PredicateRepository<DerivedTag>>,
     boost::hana::pair<boost::hana::type<FunctionExpressionNumberImpl>, FunctionExpressionNumberRepository>,
     boost::hana::pair<boost::hana::type<FunctionExpressionBinaryOperatorImpl>, FunctionExpressionBinaryOperatorRepository>,
     boost::hana::pair<boost::hana::type<FunctionExpressionMultiOperatorImpl>, FunctionExpressionMultiOperatorRepository>,
     boost::hana::pair<boost::hana::type<FunctionExpressionMinusImpl>, FunctionExpressionMinusRepository>,
-    boost::hana::pair<boost::hana::type<FunctionExpressionFunctionImpl<Static>>, FunctionExpressionFunctionRepository<Static>>,
-    boost::hana::pair<boost::hana::type<FunctionExpressionFunctionImpl<Fluent>>, FunctionExpressionFunctionRepository<Fluent>>,
-    boost::hana::pair<boost::hana::type<FunctionExpressionFunctionImpl<Auxiliary>>, FunctionExpressionFunctionRepository<Auxiliary>>,
+    boost::hana::pair<boost::hana::type<FunctionExpressionFunctionImpl<StaticTag>>, FunctionExpressionFunctionRepository<StaticTag>>,
+    boost::hana::pair<boost::hana::type<FunctionExpressionFunctionImpl<FluentTag>>, FunctionExpressionFunctionRepository<FluentTag>>,
+    boost::hana::pair<boost::hana::type<FunctionExpressionFunctionImpl<AuxiliaryTag>>, FunctionExpressionFunctionRepository<AuxiliaryTag>>,
     boost::hana::pair<boost::hana::type<FunctionExpressionImpl>, FunctionExpressionRepository>,
     boost::hana::pair<boost::hana::type<GroundFunctionExpressionNumberImpl>, GroundFunctionExpressionNumberRepository>,
     boost::hana::pair<boost::hana::type<GroundFunctionExpressionBinaryOperatorImpl>, GroundFunctionExpressionBinaryOperatorRepository>,
     boost::hana::pair<boost::hana::type<GroundFunctionExpressionMultiOperatorImpl>, GroundFunctionExpressionMultiOperatorRepository>,
     boost::hana::pair<boost::hana::type<GroundFunctionExpressionMinusImpl>, GroundFunctionExpressionMinusRepository>,
-    boost::hana::pair<boost::hana::type<GroundFunctionExpressionFunctionImpl<Static>>, GroundFunctionExpressionFunctionRepository<Static>>,
-    boost::hana::pair<boost::hana::type<GroundFunctionExpressionFunctionImpl<Fluent>>, GroundFunctionExpressionFunctionRepository<Fluent>>,
-    boost::hana::pair<boost::hana::type<GroundFunctionExpressionFunctionImpl<Auxiliary>>, GroundFunctionExpressionFunctionRepository<Auxiliary>>,
+    boost::hana::pair<boost::hana::type<GroundFunctionExpressionFunctionImpl<StaticTag>>, GroundFunctionExpressionFunctionRepository<StaticTag>>,
+    boost::hana::pair<boost::hana::type<GroundFunctionExpressionFunctionImpl<FluentTag>>, GroundFunctionExpressionFunctionRepository<FluentTag>>,
+    boost::hana::pair<boost::hana::type<GroundFunctionExpressionFunctionImpl<AuxiliaryTag>>, GroundFunctionExpressionFunctionRepository<AuxiliaryTag>>,
     boost::hana::pair<boost::hana::type<GroundFunctionExpressionImpl>, GroundFunctionExpressionRepository>,
-    boost::hana::pair<boost::hana::type<FunctionImpl<Static>>, FunctionRepository<Static>>,
-    boost::hana::pair<boost::hana::type<FunctionImpl<Fluent>>, FunctionRepository<Fluent>>,
-    boost::hana::pair<boost::hana::type<FunctionImpl<Auxiliary>>, FunctionRepository<Auxiliary>>,
-    boost::hana::pair<boost::hana::type<GroundFunctionImpl<Static>>, GroundFunctionRepository<Static>>,
-    boost::hana::pair<boost::hana::type<GroundFunctionImpl<Fluent>>, GroundFunctionRepository<Fluent>>,
-    boost::hana::pair<boost::hana::type<GroundFunctionImpl<Auxiliary>>, GroundFunctionRepository<Auxiliary>>,
-    boost::hana::pair<boost::hana::type<GroundFunctionValueImpl<Static>>, GroundFunctionValueRepository<Static>>,
-    boost::hana::pair<boost::hana::type<GroundFunctionValueImpl<Fluent>>, GroundFunctionValueRepository<Fluent>>,
-    boost::hana::pair<boost::hana::type<GroundFunctionValueImpl<Auxiliary>>, GroundFunctionValueRepository<Auxiliary>>,
-    boost::hana::pair<boost::hana::type<FunctionSkeletonImpl<Static>>, FunctionSkeletonRepository<Static>>,
-    boost::hana::pair<boost::hana::type<FunctionSkeletonImpl<Fluent>>, FunctionSkeletonRepository<Fluent>>,
-    boost::hana::pair<boost::hana::type<FunctionSkeletonImpl<Auxiliary>>, FunctionSkeletonRepository<Auxiliary>>,
-    boost::hana::pair<boost::hana::type<NumericEffectImpl<Fluent>>, NumericEffectRepository<Fluent>>,
-    boost::hana::pair<boost::hana::type<NumericEffectImpl<Auxiliary>>, NumericEffectRepository<Auxiliary>>,
-    boost::hana::pair<boost::hana::type<GroundNumericEffectImpl<Fluent>>, GroundNumericEffectRepository<Fluent>>,
-    boost::hana::pair<boost::hana::type<GroundNumericEffectImpl<Auxiliary>>, GroundNumericEffectRepository<Auxiliary>>,
+    boost::hana::pair<boost::hana::type<FunctionImpl<StaticTag>>, FunctionRepository<StaticTag>>,
+    boost::hana::pair<boost::hana::type<FunctionImpl<FluentTag>>, FunctionRepository<FluentTag>>,
+    boost::hana::pair<boost::hana::type<FunctionImpl<AuxiliaryTag>>, FunctionRepository<AuxiliaryTag>>,
+    boost::hana::pair<boost::hana::type<GroundFunctionImpl<StaticTag>>, GroundFunctionRepository<StaticTag>>,
+    boost::hana::pair<boost::hana::type<GroundFunctionImpl<FluentTag>>, GroundFunctionRepository<FluentTag>>,
+    boost::hana::pair<boost::hana::type<GroundFunctionImpl<AuxiliaryTag>>, GroundFunctionRepository<AuxiliaryTag>>,
+    boost::hana::pair<boost::hana::type<GroundFunctionValueImpl<StaticTag>>, GroundFunctionValueRepository<StaticTag>>,
+    boost::hana::pair<boost::hana::type<GroundFunctionValueImpl<FluentTag>>, GroundFunctionValueRepository<FluentTag>>,
+    boost::hana::pair<boost::hana::type<GroundFunctionValueImpl<AuxiliaryTag>>, GroundFunctionValueRepository<AuxiliaryTag>>,
+    boost::hana::pair<boost::hana::type<FunctionSkeletonImpl<StaticTag>>, FunctionSkeletonRepository<StaticTag>>,
+    boost::hana::pair<boost::hana::type<FunctionSkeletonImpl<FluentTag>>, FunctionSkeletonRepository<FluentTag>>,
+    boost::hana::pair<boost::hana::type<FunctionSkeletonImpl<AuxiliaryTag>>, FunctionSkeletonRepository<AuxiliaryTag>>,
+    boost::hana::pair<boost::hana::type<NumericEffectImpl<FluentTag>>, NumericEffectRepository<FluentTag>>,
+    boost::hana::pair<boost::hana::type<NumericEffectImpl<AuxiliaryTag>>, NumericEffectRepository<AuxiliaryTag>>,
+    boost::hana::pair<boost::hana::type<GroundNumericEffectImpl<FluentTag>>, GroundNumericEffectRepository<FluentTag>>,
+    boost::hana::pair<boost::hana::type<GroundNumericEffectImpl<AuxiliaryTag>>, GroundNumericEffectRepository<AuxiliaryTag>>,
     boost::hana::pair<boost::hana::type<ConjunctiveEffectImpl>, ConjunctiveEffectRepository>,
     boost::hana::pair<boost::hana::type<ConditionalEffectImpl>, ConditionalEffectRepository>,
     boost::hana::pair<boost::hana::type<NumericConstraintImpl>, NumericConstraintRepository>,
@@ -196,19 +196,19 @@ public:
     /// @brief Get or create an object for the given parameters.
     Object get_or_create_object(std::string name);
 
-    template<StaticOrFluentOrDerived P>
+    template<IsStaticOrFluentOrDerivedTag P>
     Atom<P> get_or_create_atom(Predicate<P> predicate, TermList terms);
 
-    template<StaticOrFluentOrDerived P>
+    template<IsStaticOrFluentOrDerivedTag P>
     GroundAtom<P> get_or_create_ground_atom(Predicate<P> predicate, ObjectList objects);
 
-    template<StaticOrFluentOrDerived P>
+    template<IsStaticOrFluentOrDerivedTag P>
     Literal<P> get_or_create_literal(bool is_negated, Atom<P> atom);
 
-    template<StaticOrFluentOrDerived P>
+    template<IsStaticOrFluentOrDerivedTag P>
     GroundLiteral<P> get_or_create_ground_literal(bool is_negated, GroundAtom<P> atom);
 
-    template<StaticOrFluentOrDerived P>
+    template<IsStaticOrFluentOrDerivedTag P>
     Predicate<P> get_or_create_predicate(std::string name, VariableList parameters);
 
     /// @brief Get or create a number function expression for the given parameters.
@@ -227,7 +227,7 @@ public:
     FunctionExpressionMinus get_or_create_function_expression_minus(FunctionExpression function_expression);
 
     /// @brief Get or create a function function expression for the given parameters.
-    template<StaticOrFluent F>
+    template<IsStaticOrFluentTag F>
     FunctionExpressionFunction<F> get_or_create_function_expression_function(Function<F> function);
 
     /// @brief Get or create a function expression for the given parameters.
@@ -235,7 +235,7 @@ public:
     FunctionExpression get_or_create_function_expression(FunctionExpressionBinaryOperator fexpr);
     FunctionExpression get_or_create_function_expression(FunctionExpressionMultiOperator fexpr);
     FunctionExpression get_or_create_function_expression(FunctionExpressionMinus fexpr);
-    template<StaticOrFluent F>
+    template<IsStaticOrFluentTag F>
     FunctionExpression get_or_create_function_expression(FunctionExpressionFunction<F> fexpr);
 
     /// @brief Get or create a number function expression for the given parameters.
@@ -254,7 +254,7 @@ public:
     GroundFunctionExpressionMinus get_or_create_ground_function_expression_minus(GroundFunctionExpression function_expression);
 
     /// @brief Get or create a function function expression for the given parameters.
-    template<StaticOrFluentOrAuxiliary F>
+    template<IsStaticOrFluentOrAuxiliaryTag F>
     GroundFunctionExpressionFunction<F> get_or_create_ground_function_expression_function(GroundFunction<F> function);
 
     /// @brief Get or create a function expression for the given parameters.
@@ -262,34 +262,34 @@ public:
     GroundFunctionExpression get_or_create_ground_function_expression(GroundFunctionExpressionBinaryOperator fexpr);
     GroundFunctionExpression get_or_create_ground_function_expression(GroundFunctionExpressionMultiOperator fexpr);
     GroundFunctionExpression get_or_create_ground_function_expression(GroundFunctionExpressionMinus fexpr);
-    template<StaticOrFluentOrAuxiliary F>
+    template<IsStaticOrFluentOrAuxiliaryTag F>
     GroundFunctionExpression get_or_create_ground_function_expression(GroundFunctionExpressionFunction<F> fexpr);
 
     /// @brief Get or create a function for the given parameters.
-    template<StaticOrFluentOrAuxiliary F>
+    template<IsStaticOrFluentOrAuxiliaryTag F>
     Function<F> get_or_create_function(FunctionSkeleton<F> function_skeleton, TermList terms, IndexList m_parent_terms_to_terms_mapping);
 
     /// @brief Get or create a function for the given parameters.
-    template<StaticOrFluentOrAuxiliary F>
+    template<IsStaticOrFluentOrAuxiliaryTag F>
     GroundFunction<F> get_or_create_ground_function(FunctionSkeleton<F> function_skeleton, ObjectList objects);
 
     /// @brief Get or create a function skeleton for the given parameters.
-    template<StaticOrFluentOrAuxiliary F>
+    template<IsStaticOrFluentOrAuxiliaryTag F>
     FunctionSkeleton<F> get_or_create_function_skeleton(std::string name, VariableList parameters);
 
     /// @brief Get or create a numeric effect for the given parameters.
-    template<FluentOrAuxiliary F>
+    template<IsFluentOrAuxiliaryTag F>
     NumericEffect<F> get_or_create_numeric_effect(loki::AssignOperatorEnum assign_operator, Function<F> function, FunctionExpression function_expression);
 
-    template<FluentOrAuxiliary F>
+    template<IsFluentOrAuxiliaryTag F>
     GroundNumericEffect<F>
     get_or_create_ground_numeric_effect(loki::AssignOperatorEnum assign_operator, GroundFunction<F> function, GroundFunctionExpression function_expression);
 
     /// @brief Get or create a simple effect for the given parameters.
     ConjunctiveEffect get_or_create_conjunctive_effect(VariableList parameters,
-                                                       LiteralList<Fluent> effects,
-                                                       NumericEffectList<Fluent> fluent_numeric_effects,
-                                                       std::optional<NumericEffect<Auxiliary>> auxiliary_numeric_effect);
+                                                       LiteralList<FluentTag> effects,
+                                                       NumericEffectList<FluentTag> fluent_numeric_effects,
+                                                       std::optional<NumericEffect<AuxiliaryTag>> auxiliary_numeric_effect);
 
     /// @brief Get or create a universal conditional simple effect for the given parameters.
     ConditionalEffect get_or_create_conditional_effect(ConjunctiveCondition conjunctive_condition, ConjunctiveEffect conjunctive_effect);
@@ -306,8 +306,9 @@ public:
                                                                     GroundFunctionExpression right_function_expression);
 
     /// @brief Get or create a existentially quantified conjunctive condition for the given parameters.
-    ConjunctiveCondition
-    get_or_create_conjunctive_condition(VariableList parameters, LiteralLists<Static, Fluent, Derived> literals, NumericConstraintList numeric_constraints);
+    ConjunctiveCondition get_or_create_conjunctive_condition(VariableList parameters,
+                                                             LiteralLists<StaticTag, FluentTag, DerivedTag> literals,
+                                                             NumericConstraintList numeric_constraints);
 
     /// @brief Get or create an action for the given parameters.
     Action get_or_create_action(std::string name,
@@ -317,13 +318,13 @@ public:
                                 ConditionalEffectList conditional_effects);
 
     /// @brief Get or create a derived predicate for the given parameters.
-    Axiom get_or_create_axiom(ConjunctiveCondition precondition, Literal<Derived> effect_literal);
+    Axiom get_or_create_axiom(ConjunctiveCondition precondition, Literal<DerivedTag> effect_literal);
 
     /// @brief Get or create an optimization metric for the given parameters.
     OptimizationMetric get_or_create_optimization_metric(loki::OptimizationMetricEnum metric, GroundFunctionExpression function_expression);
 
     /// @brief Get or create an optimization metric for the given parameters.
-    template<StaticOrFluentOrAuxiliary F>
+    template<IsStaticOrFluentOrAuxiliaryTag F>
     GroundFunctionValue<F> get_or_create_ground_function_value(GroundFunction<F> function, double number);
 
     ///////////////////////////////////////////////////////////////////////////
@@ -341,39 +342,39 @@ public:
     GroundNumericConstraintList get_ground_numeric_constraints_from_indices(const Iterable& numeric_constraint_indices) const;
 
     // GroundNumericEffect
-    template<FluentOrAuxiliary F>
+    template<IsFluentOrAuxiliaryTag F>
     GroundNumericEffect<F> get_ground_numeric_effect(size_t numeric_effect_index) const;
 
-    template<FluentOrAuxiliary F, std::ranges::forward_range Iterable>
+    template<IsFluentOrAuxiliaryTag F, std::ranges::forward_range Iterable>
     void get_ground_numeric_effects_from_indices(const Iterable& numeric_effect_indices, GroundNumericEffectList<F>& out_ground_numeric_effect) const;
 
-    template<FluentOrAuxiliary F, std::ranges::forward_range Iterable>
+    template<IsFluentOrAuxiliaryTag F, std::ranges::forward_range Iterable>
     GroundNumericEffectList<F> get_ground_numeric_effects_from_indices(const Iterable& numeric_effect_indices) const;
 
     // GroundAtom
-    template<StaticOrFluentOrDerived P>
+    template<IsStaticOrFluentOrDerivedTag P>
     GroundAtom<P> get_ground_atom(size_t atom_index) const;
 
-    template<StaticOrFluentOrDerived P, std::ranges::forward_range Iterable>
+    template<IsStaticOrFluentOrDerivedTag P, std::ranges::forward_range Iterable>
     void get_ground_atoms_from_indices(const Iterable& atom_indices, GroundAtomList<P>& out_ground_atoms) const;
 
-    template<StaticOrFluentOrDerived P, std::ranges::forward_range Iterable>
+    template<IsStaticOrFluentOrDerivedTag P, std::ranges::forward_range Iterable>
     GroundAtomList<P> get_ground_atoms_from_indices(const Iterable& atom_indices) const;
 
-    template<StaticOrFluentOrDerived P>
+    template<IsStaticOrFluentOrDerivedTag P>
     void get_ground_atoms(GroundAtomList<P>& out_ground_atoms) const;
 
-    template<StaticOrFluentOrDerived P>
+    template<IsStaticOrFluentOrDerivedTag P>
     auto get_ground_atoms() const;
 
     // GroundFunction
-    template<StaticOrFluentOrAuxiliary F>
+    template<IsStaticOrFluentOrAuxiliaryTag F>
     void get_ground_functions(size_t num_ground_functions, GroundFunctionList<F>& out_ground_functions) const;
 
-    template<StaticOrFluentOrAuxiliary F>
+    template<IsStaticOrFluentOrAuxiliaryTag F>
     void get_ground_function_values(const FlatDoubleList& values, std::vector<std::pair<GroundFunction<F>, ContinuousCost>>& out_ground_function_values) const;
 
-    template<StaticOrFluentOrAuxiliary F>
+    template<IsStaticOrFluentOrAuxiliaryTag F>
     std::vector<std::pair<GroundFunction<F>, ContinuousCost>> get_ground_function_values(const FlatDoubleList& values) const;
 
     // Object
@@ -418,7 +419,7 @@ GroundNumericConstraintList Repositories::get_ground_numeric_constraints_from_in
 }
 
 // GroundNumericEffect
-template<FluentOrAuxiliary F, std::ranges::forward_range Iterable>
+template<IsFluentOrAuxiliaryTag F, std::ranges::forward_range Iterable>
 void Repositories::get_ground_numeric_effects_from_indices(const Iterable& numeric_effect_indices, GroundNumericEffectList<F>& out_ground_numeric_effect) const
 {
     out_ground_numeric_effect.clear();
@@ -429,7 +430,7 @@ void Repositories::get_ground_numeric_effects_from_indices(const Iterable& numer
     }
 }
 
-template<FluentOrAuxiliary F, std::ranges::forward_range Iterable>
+template<IsFluentOrAuxiliaryTag F, std::ranges::forward_range Iterable>
 GroundNumericEffectList<F> Repositories::get_ground_numeric_effects_from_indices(const Iterable& numeric_effect_indices) const
 {
     auto result = GroundNumericEffectList<F> {};
@@ -438,7 +439,7 @@ GroundNumericEffectList<F> Repositories::get_ground_numeric_effects_from_indices
 }
 
 // Atom
-template<StaticOrFluentOrDerived P, std::ranges::forward_range Iterable>
+template<IsStaticOrFluentOrDerivedTag P, std::ranges::forward_range Iterable>
 void Repositories::get_ground_atoms_from_indices(const Iterable& atom_indices, GroundAtomList<P>& out_ground_atoms) const
 {
     out_ground_atoms.clear();
@@ -449,7 +450,7 @@ void Repositories::get_ground_atoms_from_indices(const Iterable& atom_indices, G
     }
 }
 
-template<StaticOrFluentOrDerived P, std::ranges::forward_range Iterable>
+template<IsStaticOrFluentOrDerivedTag P, std::ranges::forward_range Iterable>
 GroundAtomList<P> Repositories::get_ground_atoms_from_indices(const Iterable& atom_indices) const
 {
     auto result = GroundAtomList<P> {};
@@ -457,7 +458,7 @@ GroundAtomList<P> Repositories::get_ground_atoms_from_indices(const Iterable& at
     return result;
 }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 void Repositories::get_ground_atoms(GroundAtomList<P>& out_ground_atoms) const
 {
     out_ground_atoms.clear();
@@ -467,7 +468,7 @@ void Repositories::get_ground_atoms(GroundAtomList<P>& out_ground_atoms) const
     }
 }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 auto Repositories::get_ground_atoms() const
 {
     const auto& factory = boost::hana::at_key(m_repositories, boost::hana::type<GroundAtomImpl<P>> {});

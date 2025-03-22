@@ -38,15 +38,15 @@ struct InitialDetails
 {
     const ProblemImpl* parent;
 
-    GroundAtomList<Static> positive_static_initial_atoms;
+    GroundAtomList<StaticTag> positive_static_initial_atoms;
     FlatBitset positive_static_initial_atoms_bitset;
     FlatIndexList positive_static_initial_atoms_indices;
-    AssignmentSet<Static> positive_static_initial_assignment_set;
-    NumericAssignmentSet<Static> static_initial_numeric_assignment_set;
+    AssignmentSet<StaticTag> positive_static_initial_assignment_set;
+    NumericAssignmentSet<StaticTag> static_initial_numeric_assignment_set;
 
-    GroundAtomList<Fluent> positive_fluent_initial_atoms;
+    GroundAtomList<FluentTag> positive_fluent_initial_atoms;
 
-    FlatDoubleLists<Static, Fluent> initial_function_to_value;
+    FlatDoubleLists<StaticTag, FluentTag> initial_function_to_value;
 
     InitialDetails();
     InitialDetails(const ProblemImpl& problem);
@@ -62,13 +62,13 @@ struct GoalDetails
 
     bool m_static_goal_holds;
 
-    GroundAtomLists<Static, Fluent, Derived> positive_goal_atoms;
-    FlatBitsets<Static, Fluent, Derived> positive_goal_atoms_bitset;
-    FlatIndexLists<Static, Fluent, Derived> positive_goal_atoms_indices;
+    GroundAtomLists<StaticTag, FluentTag, DerivedTag> positive_goal_atoms;
+    FlatBitsets<StaticTag, FluentTag, DerivedTag> positive_goal_atoms_bitset;
+    FlatIndexLists<StaticTag, FluentTag, DerivedTag> positive_goal_atoms_indices;
 
-    GroundAtomLists<Static, Fluent, Derived> negative_goal_atoms;
-    FlatBitsets<Static, Fluent, Derived> negative_goal_atoms_bitset;
-    FlatIndexLists<Static, Fluent, Derived> negative_goal_atoms_indices;
+    GroundAtomLists<StaticTag, FluentTag, DerivedTag> negative_goal_atoms;
+    FlatBitsets<StaticTag, FluentTag, DerivedTag> negative_goal_atoms_bitset;
+    FlatIndexLists<StaticTag, FluentTag, DerivedTag> negative_goal_atoms_indices;
 
     GoalDetails();
     GoalDetails(const ProblemImpl& problem, const InitialDetails& initial);
@@ -122,12 +122,12 @@ struct GroundingDetails
     using LiteralGroundingTableList = std::array<std::vector<GroundingTable<T>>, 2>;
 
     using PDDLTypeToGroundingTable =
-        boost::hana::map<boost::hana::pair<boost::hana::type<GroundLiteral<Static>>, LiteralGroundingTableList<GroundLiteral<Static>>>,
-                         boost::hana::pair<boost::hana::type<GroundLiteral<Fluent>>, LiteralGroundingTableList<GroundLiteral<Fluent>>>,
-                         boost::hana::pair<boost::hana::type<GroundLiteral<Derived>>, LiteralGroundingTableList<GroundLiteral<Derived>>>,
-                         boost::hana::pair<boost::hana::type<GroundFunction<Static>>, GroundingTableList<GroundFunction<Static>>>,
-                         boost::hana::pair<boost::hana::type<GroundFunction<Fluent>>, GroundingTableList<GroundFunction<Fluent>>>,
-                         boost::hana::pair<boost::hana::type<GroundFunction<Auxiliary>>, GroundingTableList<GroundFunction<Auxiliary>>>,
+        boost::hana::map<boost::hana::pair<boost::hana::type<GroundLiteral<StaticTag>>, LiteralGroundingTableList<GroundLiteral<StaticTag>>>,
+                         boost::hana::pair<boost::hana::type<GroundLiteral<FluentTag>>, LiteralGroundingTableList<GroundLiteral<FluentTag>>>,
+                         boost::hana::pair<boost::hana::type<GroundLiteral<DerivedTag>>, LiteralGroundingTableList<GroundLiteral<DerivedTag>>>,
+                         boost::hana::pair<boost::hana::type<GroundFunction<StaticTag>>, GroundingTableList<GroundFunction<StaticTag>>>,
+                         boost::hana::pair<boost::hana::type<GroundFunction<FluentTag>>, GroundingTableList<GroundFunction<FluentTag>>>,
+                         boost::hana::pair<boost::hana::type<GroundFunction<AuxiliaryTag>>, GroundingTableList<GroundFunction<AuxiliaryTag>>>,
                          boost::hana::pair<boost::hana::type<GroundFunctionExpression>, GroundingTableList<GroundFunctionExpression>>>;
 
     PDDLTypeToGroundingTable grounding_tables;

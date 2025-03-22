@@ -52,15 +52,15 @@ RefinementStateListPruningFunction::RefinementStateListPruningFunction(ProblemMa
 {
 }
 
-bool RefinementStateListPruningFunction::should_prune(Constructor<Concept> concept_) { return should_prune_impl(concept_); }
+bool RefinementStateListPruningFunction::should_prune(Constructor<ConceptTag> concept_) { return should_prune_impl(concept_); }
 
-bool RefinementStateListPruningFunction::should_prune(Constructor<Role> role) { return should_prune_impl(role); }
+bool RefinementStateListPruningFunction::should_prune(Constructor<RoleTag> role) { return should_prune_impl(role); }
 
-bool RefinementStateListPruningFunction::should_prune(Constructor<Boolean> boolean) { return should_prune_impl(boolean); }
+bool RefinementStateListPruningFunction::should_prune(Constructor<BooleanTag> boolean) { return should_prune_impl(boolean); }
 
-bool RefinementStateListPruningFunction::should_prune(Constructor<Numerical> numerical) { return should_prune_impl(numerical); }
+bool RefinementStateListPruningFunction::should_prune(Constructor<NumericalTag> numerical) { return should_prune_impl(numerical); }
 
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 bool RefinementStateListPruningFunction::should_prune_impl(Constructor<D> constructor)
 {
     auto denotations = DenotationList<D>();
@@ -82,9 +82,9 @@ bool RefinementStateListPruningFunction::should_prune_impl(Constructor<D> constr
     return !inserted;
 }
 
-template bool RefinementStateListPruningFunction::should_prune_impl(Constructor<Concept> constructor);
-template bool RefinementStateListPruningFunction::should_prune_impl(Constructor<Role> constructor);
-template bool RefinementStateListPruningFunction::should_prune_impl(Constructor<Boolean> constructor);
-template bool RefinementStateListPruningFunction::should_prune_impl(Constructor<Numerical> constructor);
+template bool RefinementStateListPruningFunction::should_prune_impl(Constructor<ConceptTag> constructor);
+template bool RefinementStateListPruningFunction::should_prune_impl(Constructor<RoleTag> constructor);
+template bool RefinementStateListPruningFunction::should_prune_impl(Constructor<BooleanTag> constructor);
+template bool RefinementStateListPruningFunction::should_prune_impl(Constructor<NumericalTag> constructor);
 
 }

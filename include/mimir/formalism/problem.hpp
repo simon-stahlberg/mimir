@@ -36,12 +36,12 @@ private:
     Requirements m_requirements;
     ObjectList m_objects;
     ObjectList m_problem_and_domain_objects;  ///< Includes domain constants
-    PredicateList<Derived> m_derived_predicates;
-    PredicateList<Derived> m_problem_and_domain_derived_predicates;  ///< Includes domain derived predicates
-    GroundLiteralLists<Static, Fluent> m_initial_literals;
-    GroundFunctionValueLists<Static, Fluent> m_initial_function_values;
-    std::optional<GroundFunctionValue<Auxiliary>> m_auxiliary_function_value;
-    GroundLiteralLists<Static, Fluent, Derived> m_goal_condition;
+    PredicateList<DerivedTag> m_derived_predicates;
+    PredicateList<DerivedTag> m_problem_and_domain_derived_predicates;  ///< Includes domain derived predicates
+    GroundLiteralLists<StaticTag, FluentTag> m_initial_literals;
+    GroundFunctionValueLists<StaticTag, FluentTag> m_initial_function_values;
+    std::optional<GroundFunctionValue<AuxiliaryTag>> m_auxiliary_function_value;
+    GroundLiteralLists<StaticTag, FluentTag, DerivedTag> m_goal_condition;
     GroundNumericConstraintList m_numeric_goal_condition;
     std::optional<OptimizationMetric> m_optimization_metric;
     AxiomList m_axioms;
@@ -59,12 +59,12 @@ private:
                 Requirements requirements,
                 ObjectList objects,
                 ObjectList problem_and_domain_objects,
-                PredicateList<Derived> derived_predicates,
-                PredicateList<Derived> problem_and_domain_derived_predicates,
-                GroundLiteralLists<Static, Fluent> initial_literals,
-                GroundFunctionValueLists<Static, Fluent> initial_function_values,
-                std::optional<GroundFunctionValue<Auxiliary>> auxiliary_function_value,
-                GroundLiteralLists<Static, Fluent, Derived> goal_condition,
+                PredicateList<DerivedTag> derived_predicates,
+                PredicateList<DerivedTag> problem_and_domain_derived_predicates,
+                GroundLiteralLists<StaticTag, FluentTag> initial_literals,
+                GroundFunctionValueLists<StaticTag, FluentTag> initial_function_values,
+                std::optional<GroundFunctionValue<AuxiliaryTag>> auxiliary_function_value,
+                GroundLiteralLists<StaticTag, FluentTag, DerivedTag> goal_condition,
                 GroundNumericConstraintList numeric_goal_condition,
                 std::optional<OptimizationMetric> optimization_metric,
                 AxiomList axioms,
@@ -90,18 +90,18 @@ public:
     Requirements get_requirements() const;
     const ObjectList& get_objects() const;
     const ObjectList& get_problem_and_domain_objects() const;
-    const PredicateList<Derived>& get_derived_predicates() const;
-    const PredicateList<Derived>& get_problem_and_domain_derived_predicates() const;
-    template<StaticOrFluent P>
+    const PredicateList<DerivedTag>& get_derived_predicates() const;
+    const PredicateList<DerivedTag>& get_problem_and_domain_derived_predicates() const;
+    template<IsStaticOrFluentTag P>
     const GroundLiteralList<P>& get_initial_literals() const;
-    const GroundLiteralLists<Static, Fluent>& get_hana_initial_literals() const;
-    template<StaticOrFluent F>
+    const GroundLiteralLists<StaticTag, FluentTag>& get_hana_initial_literals() const;
+    template<IsStaticOrFluentTag F>
     const GroundFunctionValueList<F>& get_initial_function_values() const;
-    const GroundFunctionValueLists<Static, Fluent>& get_hana_initial_function_values() const;
-    const std::optional<GroundFunctionValue<Auxiliary>>& get_auxiliary_function_value() const;
-    template<StaticOrFluentOrDerived P>
+    const GroundFunctionValueLists<StaticTag, FluentTag>& get_hana_initial_function_values() const;
+    const std::optional<GroundFunctionValue<AuxiliaryTag>>& get_auxiliary_function_value() const;
+    template<IsStaticOrFluentOrDerivedTag P>
     const GroundLiteralList<P>& get_goal_condition() const;
-    const GroundLiteralLists<Static, Fluent, Derived>& get_hana_goal_condition() const;
+    const GroundLiteralLists<StaticTag, FluentTag, DerivedTag>& get_hana_goal_condition() const;
     const GroundNumericConstraintList& get_numeric_goal_condition() const;
     const std::optional<OptimizationMetric>& get_optimization_metric() const;
     const AxiomList& get_axioms() const;
@@ -112,45 +112,45 @@ public:
      */
 
     /* Initial state */
-    const GroundAtomList<Static>& get_static_initial_atoms() const;
+    const GroundAtomList<StaticTag>& get_static_initial_atoms() const;
     const FlatBitset& get_static_initial_positive_atoms_bitset() const;
     const FlatIndexList& get_static_initial_positive_atoms_indices() const;
-    const AssignmentSet<Static>& get_static_assignment_set() const;
-    const NumericAssignmentSet<Static>& get_static_initial_numeric_assignment_set() const;
+    const AssignmentSet<StaticTag>& get_static_assignment_set() const;
+    const NumericAssignmentSet<StaticTag>& get_static_initial_numeric_assignment_set() const;
 
-    const GroundAtomList<Fluent>& get_fluent_initial_atoms() const;
+    const GroundAtomList<FluentTag>& get_fluent_initial_atoms() const;
 
-    template<StaticOrFluent F>
+    template<IsStaticOrFluentTag F>
     const FlatDoubleList& get_initial_function_to_value() const;
-    const FlatDoubleLists<Static, Fluent>& get_hana_initial_function_to_value() const;
-    template<StaticOrFluent F>
+    const FlatDoubleLists<StaticTag, FluentTag>& get_hana_initial_function_to_value() const;
+    template<IsStaticOrFluentTag F>
     ContinuousCost get_initial_function_value(GroundFunction<F> function) const;
 
     /* Goal */
 
-    bool static_literal_holds(const GroundLiteral<Static> literal) const;  // TODO: probably can go in the future
+    bool static_literal_holds(const GroundLiteral<StaticTag> literal) const;  // TODO: probably can go in the future
 
     bool static_goal_holds() const;
 
-    template<StaticOrFluentOrDerived P>
+    template<IsStaticOrFluentOrDerivedTag P>
     const GroundAtomList<P>& get_positive_goal_atoms() const;
-    const GroundAtomLists<Static, Fluent, Derived>& get_hana_positive_goal_atoms() const;
-    template<StaticOrFluentOrDerived P>
+    const GroundAtomLists<StaticTag, FluentTag, DerivedTag>& get_hana_positive_goal_atoms() const;
+    template<IsStaticOrFluentOrDerivedTag P>
     const FlatBitset& get_positive_goal_atoms_bitset() const;
-    const FlatBitsets<Static, Fluent, Derived>& get_hana_positive_goal_atoms_bitset() const;
-    template<StaticOrFluentOrDerived P>
+    const FlatBitsets<StaticTag, FluentTag, DerivedTag>& get_hana_positive_goal_atoms_bitset() const;
+    template<IsStaticOrFluentOrDerivedTag P>
     const FlatIndexList& get_positive_goal_atoms_indices() const;
-    const FlatIndexLists<Static, Fluent, Derived>& get_hana_positive_goal_atoms_indices() const;
+    const FlatIndexLists<StaticTag, FluentTag, DerivedTag>& get_hana_positive_goal_atoms_indices() const;
 
-    template<StaticOrFluentOrDerived P>
+    template<IsStaticOrFluentOrDerivedTag P>
     const GroundAtomList<P>& get_negative_goal_atoms() const;
-    const GroundAtomLists<Static, Fluent, Derived>& get_hana_negative_goal_atoms() const;
-    template<StaticOrFluentOrDerived P>
+    const GroundAtomLists<StaticTag, FluentTag, DerivedTag>& get_hana_negative_goal_atoms() const;
+    template<IsStaticOrFluentOrDerivedTag P>
     const FlatBitset& get_negative_goal_atoms_bitset() const;
-    const FlatBitsets<Static, Fluent, Derived>& get_hana_negative_goal_atoms_bitset() const;
-    template<StaticOrFluentOrDerived P>
+    const FlatBitsets<StaticTag, FluentTag, DerivedTag>& get_hana_negative_goal_atoms_bitset() const;
+    template<IsStaticOrFluentOrDerivedTag P>
     const FlatIndexList& get_negative_goal_atoms_indices() const;
-    const FlatIndexLists<Static, Fluent, Derived>& get_hana_negative_goal_atoms_indices() const;
+    const FlatIndexLists<StaticTag, FluentTag, DerivedTag>& get_hana_negative_goal_atoms_indices() const;
 
     /* Axioms */
 
@@ -158,17 +158,17 @@ public:
 
     /* Grounding */
 
-    template<StaticOrFluentOrDerived P>
+    template<IsStaticOrFluentOrDerivedTag P>
     GroundLiteral<P> ground(Literal<P> literal, const ObjectList& binding);
 
     GroundFunctionExpression ground(FunctionExpression fexpr, const ObjectList& binding);
 
     GroundNumericConstraint ground(NumericConstraint numeric_constraint, const ObjectList& binding);
 
-    template<FluentOrAuxiliary F>
+    template<IsFluentOrAuxiliaryTag F>
     GroundNumericEffect<F> ground(NumericEffect<F> numeric_effect, const ObjectList& binding);
 
-    template<StaticOrFluentOrAuxiliary F>
+    template<IsStaticOrFluentOrAuxiliaryTag F>
     GroundFunction<F> ground(Function<F> function, const ObjectList& binding);
 
     GroundAction ground(Action action, ObjectList binding);
@@ -194,14 +194,14 @@ public:
                           get_requirements(),
                           std::cref(get_objects()),
                           std::cref(get_derived_predicates()),
-                          std::cref(get_initial_literals<Static>()),
-                          std::cref(get_initial_literals<Fluent>()),
-                          std::cref(get_initial_function_values<Static>()),
-                          std::cref(get_initial_function_values<Fluent>()),
+                          std::cref(get_initial_literals<StaticTag>()),
+                          std::cref(get_initial_literals<FluentTag>()),
+                          std::cref(get_initial_function_values<StaticTag>()),
+                          std::cref(get_initial_function_values<FluentTag>()),
                           get_auxiliary_function_value(),
-                          std::cref(get_goal_condition<Static>()),
-                          std::cref(get_goal_condition<Fluent>()),
-                          std::cref(get_goal_condition<Derived>()),
+                          std::cref(get_goal_condition<StaticTag>()),
+                          std::cref(get_goal_condition<FluentTag>()),
+                          std::cref(get_goal_condition<DerivedTag>()),
                           get_numeric_goal_condition(),
                           get_optimization_metric(),
                           std::cref(get_axioms()));

@@ -41,7 +41,7 @@ namespace mimir::formalism
 ///   2. the assignment [i/o] is consistent
 ///
 /// We say that an assignment set is static if all atoms it considers are static.
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 class AssignmentSet
 {
 private:
@@ -83,7 +83,7 @@ public:
 ///   2. the assignment [i/o] results in partial function evaluation [l,r]
 /// Using the `NumericAssignmentSet` we can efficiently evaluate numeric constraints partially.
 
-template<StaticOrFluent F>
+template<IsStaticOrFluentTag F>
 class NumericAssignmentSet
 {
 private:

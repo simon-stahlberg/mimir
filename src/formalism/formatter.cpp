@@ -62,7 +62,7 @@ void write(const ConjunctiveConditionImpl& element, T formatter, std::ostream& o
         }
         out << ") ";
     }
-    if (element.get_literals<Static>().empty() && element.get_literals<Fluent>().empty() && element.get_literals<Derived>().empty()
+    if (element.get_literals<StaticTag>().empty() && element.get_literals<FluentTag>().empty() && element.get_literals<DerivedTag>().empty()
         && element.get_numeric_constraints().empty())
     {
         out << "() ";
@@ -70,17 +70,17 @@ void write(const ConjunctiveConditionImpl& element, T formatter, std::ostream& o
     else
     {
         out << "(and";
-        for (const auto& condition : element.get_literals<Static>())
+        for (const auto& condition : element.get_literals<StaticTag>())
         {
             out << " ";
             write(*condition, formatter, out);
         }
-        for (const auto& condition : element.get_literals<Fluent>())
+        for (const auto& condition : element.get_literals<FluentTag>())
         {
             out << " ";
             write(*condition, formatter, out);
         }
-        for (const auto& condition : element.get_literals<Derived>())
+        for (const auto& condition : element.get_literals<DerivedTag>())
         {
             out << " ";
             write(*condition, formatter, out);
@@ -118,25 +118,25 @@ void write(const ActionImpl& element, T formatter, std::ostream& out)
     out << ")\n";
 
     out << std::string(formatter.indent, ' ') << ":conditions ";
-    if (element.get_conjunctive_condition()->get_literals<Static>().empty() && element.get_conjunctive_condition()->get_literals<Fluent>().empty()
-        && element.get_conjunctive_condition()->get_literals<Derived>().empty())
+    if (element.get_conjunctive_condition()->get_literals<StaticTag>().empty() && element.get_conjunctive_condition()->get_literals<FluentTag>().empty()
+        && element.get_conjunctive_condition()->get_literals<DerivedTag>().empty())
     {
         out << "()\n";
     }
     else
     {
         out << "(and";
-        for (const auto& condition : element.get_conjunctive_condition()->get_literals<Static>())
+        for (const auto& condition : element.get_conjunctive_condition()->get_literals<StaticTag>())
         {
             out << " ";
             write(*condition, formatter, out);
         }
-        for (const auto& condition : element.get_conjunctive_condition()->get_literals<Fluent>())
+        for (const auto& condition : element.get_conjunctive_condition()->get_literals<FluentTag>())
         {
             out << " ";
             write(*condition, formatter, out);
         }
-        for (const auto& condition : element.get_conjunctive_condition()->get_literals<Derived>())
+        for (const auto& condition : element.get_conjunctive_condition()->get_literals<DerivedTag>())
         {
             out << " ";
             write(*condition, formatter, out);
@@ -176,7 +176,7 @@ void write(const ActionImpl& element, T formatter, std::ostream& out)
 template void write(const ActionImpl& element, StringFormatter formatter, std::ostream& out);
 template void write(const ActionImpl& element, AddressFormatter formatter, std::ostream& out);
 
-template<Formatter T, StaticOrFluentOrDerived P>
+template<Formatter T, IsStaticOrFluentOrDerivedTag P>
 void write(const AtomImpl<P>& element, T formatter, std::ostream& out)
 {
     out << "(" << element.get_predicate()->get_name();
@@ -188,12 +188,12 @@ void write(const AtomImpl<P>& element, T formatter, std::ostream& out)
     out << ")";
 }
 
-template void write(const AtomImpl<Static>& element, StringFormatter formatter, std::ostream& out);
-template void write(const AtomImpl<Fluent>& element, StringFormatter formatter, std::ostream& out);
-template void write(const AtomImpl<Derived>& element, StringFormatter formatter, std::ostream& out);
-template void write(const AtomImpl<Static>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const AtomImpl<Fluent>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const AtomImpl<Derived>& element, AddressFormatter formatter, std::ostream& out);
+template void write(const AtomImpl<StaticTag>& element, StringFormatter formatter, std::ostream& out);
+template void write(const AtomImpl<FluentTag>& element, StringFormatter formatter, std::ostream& out);
+template void write(const AtomImpl<DerivedTag>& element, StringFormatter formatter, std::ostream& out);
+template void write(const AtomImpl<StaticTag>& element, AddressFormatter formatter, std::ostream& out);
+template void write(const AtomImpl<FluentTag>& element, AddressFormatter formatter, std::ostream& out);
+template void write(const AtomImpl<DerivedTag>& element, AddressFormatter formatter, std::ostream& out);
 
 template<Formatter T>
 void write(const AxiomImpl& element, T formatter, std::ostream& out)
@@ -205,17 +205,17 @@ void write(const AxiomImpl& element, T formatter, std::ostream& out)
     formatter.indent += formatter.add_indent;
 
     out << std::string(formatter.indent, ' ') << "(and";
-    for (const auto& condition : element.get_conjunctive_condition()->get_literals<Static>())
+    for (const auto& condition : element.get_conjunctive_condition()->get_literals<StaticTag>())
     {
         out << " ";
         write(*condition, formatter, out);
     }
-    for (const auto& condition : element.get_conjunctive_condition()->get_literals<Fluent>())
+    for (const auto& condition : element.get_conjunctive_condition()->get_literals<FluentTag>())
     {
         out << " ";
         write(*condition, formatter, out);
     }
-    for (const auto& condition : element.get_conjunctive_condition()->get_literals<Derived>())
+    for (const auto& condition : element.get_conjunctive_condition()->get_literals<DerivedTag>())
     {
         out << " ";
         write(*condition, formatter, out);
@@ -260,69 +260,69 @@ void write(const DomainImpl& element, T formatter, std::ostream& out)
         }
         out << ")\n";
     }
-    if (!(element.get_predicates<Static>().empty() && element.get_predicates<Fluent>().empty() && element.get_predicates<Derived>().empty()))
+    if (!(element.get_predicates<StaticTag>().empty() && element.get_predicates<FluentTag>().empty() && element.get_predicates<DerivedTag>().empty()))
     {
         out << std::string(formatter.indent, ' ') << "(:predicates ";
         formatter.indent += formatter.add_indent;
-        if (!element.get_predicates<Static>().empty())
+        if (!element.get_predicates<StaticTag>().empty())
         {
             out << "\n" << std::string(formatter.indent, ' ') << "; static predicates:\n" << std::string(formatter.indent, ' ');
         }
-        for (size_t i = 0; i < element.get_predicates<Static>().size(); ++i)
+        for (size_t i = 0; i < element.get_predicates<StaticTag>().size(); ++i)
         {
             if (i != 0)
                 out << " ";
-            write(*element.get_predicates<Static>()[i], formatter, out);
+            write(*element.get_predicates<StaticTag>()[i], formatter, out);
         }
-        if (!element.get_predicates<Fluent>().empty())
+        if (!element.get_predicates<FluentTag>().empty())
         {
             out << "\n" << std::string(formatter.indent, ' ') << "; fluent predicates:\n" << std::string(formatter.indent, ' ');
         }
-        for (size_t i = 0; i < element.get_predicates<Fluent>().size(); ++i)
+        for (size_t i = 0; i < element.get_predicates<FluentTag>().size(); ++i)
         {
             if (i != 0)
                 out << " ";
-            write(*element.get_predicates<Fluent>()[i], formatter, out);
+            write(*element.get_predicates<FluentTag>()[i], formatter, out);
         }
-        if (!element.get_predicates<Derived>().empty())
+        if (!element.get_predicates<DerivedTag>().empty())
         {
             out << "\n" << std::string(formatter.indent, ' ') << "; derived predicates:\n" << std::string(formatter.indent, ' ');
         }
-        for (size_t i = 0; i < element.get_predicates<Derived>().size(); ++i)
+        for (size_t i = 0; i < element.get_predicates<DerivedTag>().size(); ++i)
         {
             if (i != 0)
                 out << " ";
-            write(*element.get_predicates<Derived>()[i], formatter, out);
+            write(*element.get_predicates<DerivedTag>()[i], formatter, out);
         }
 
         formatter.indent -= formatter.add_indent;
 
         out << "\n" << std::string(formatter.indent, ' ') << ")\n";
     }
-    if (!(element.get_function_skeletons<Static>().empty() && element.get_function_skeletons<Fluent>().empty()
+    if (!(element.get_function_skeletons<StaticTag>().empty() && element.get_function_skeletons<FluentTag>().empty()
           && !element.get_auxiliary_function_skeleton().has_value()))
     {
         out << std::string(formatter.indent, ' ') << "(:functions ";
         formatter.indent += formatter.add_indent;
-        if (!element.get_function_skeletons<Static>().empty())
+        if (!element.get_function_skeletons<StaticTag>().empty())
         {
             out << "\n" << std::string(formatter.indent, ' ') << "; static functions:\n" << std::string(formatter.indent, ' ');
         }
-        for (size_t i = 0; i < element.get_function_skeletons<Static>().size(); ++i)
+        for (size_t i = 0; i < element.get_function_skeletons<StaticTag>().size(); ++i)
         {
             if (i != 0)
                 out << " ";
-            write(*element.get_function_skeletons<Static>()[i], formatter, out);
+            write(*element.get_function_skeletons<StaticTag>()[i], formatter, out);
         }
-        if (!element.get_function_skeletons<Fluent>().empty())
+        if (!element.get_function_skeletons<FluentTag>().empty())
         {
             out << "\n" << std::string(formatter.indent, ' ') << "; fluent functions:\n" << std::string(formatter.indent, ' ');
         }
-        for (size_t i = 0; i < element.get_function_skeletons<Fluent>().size(); ++i)
+        for (size_t i = 0; i < element.get_function_skeletons<FluentTag>().size(); ++i)
         {
             if (i != 0)
                 out << " ";
-            write(*element.get_function_skeletons<Fluent>()[i], formatter, out);
+            write(*element.get_function_skeletons<FluentTag>()[i], formatter, out);
         }
         if (element.get_auxiliary_function_skeleton().has_value())
         {
@@ -353,7 +353,7 @@ void write(const DomainImpl& element, T formatter, std::ostream& out)
 template void write(const DomainImpl& element, StringFormatter formatter, std::ostream& out);
 template void write(const DomainImpl& element, AddressFormatter formatter, std::ostream& out);
 
-template<Formatter T, FluentOrAuxiliary F>
+template<Formatter T, IsFluentOrAuxiliaryTag F>
 void write(const NumericEffectImpl<F>& element, T formatter, std::ostream& out)
 {
     out << "(" << to_string(element.get_assign_operator()) << " ";
@@ -363,12 +363,12 @@ void write(const NumericEffectImpl<F>& element, T formatter, std::ostream& out)
     out << ")";
 }
 
-template void write(const NumericEffectImpl<Fluent>& element, StringFormatter formatter, std::ostream& out);
-template void write(const NumericEffectImpl<Auxiliary>& element, StringFormatter formatter, std::ostream& out);
-template void write(const NumericEffectImpl<Fluent>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const NumericEffectImpl<Auxiliary>& element, AddressFormatter formatter, std::ostream& out);
+template void write(const NumericEffectImpl<FluentTag>& element, StringFormatter formatter, std::ostream& out);
+template void write(const NumericEffectImpl<AuxiliaryTag>& element, StringFormatter formatter, std::ostream& out);
+template void write(const NumericEffectImpl<FluentTag>& element, AddressFormatter formatter, std::ostream& out);
+template void write(const NumericEffectImpl<AuxiliaryTag>& element, AddressFormatter formatter, std::ostream& out);
 
-template<Formatter T, FluentOrAuxiliary F>
+template<Formatter T, IsFluentOrAuxiliaryTag F>
 void write(const GroundNumericEffectImpl<F>& element, T formatter, std::ostream& out)
 {
     out << "(" << to_string(element.get_assign_operator()) << " ";
@@ -378,10 +378,10 @@ void write(const GroundNumericEffectImpl<F>& element, T formatter, std::ostream&
     out << ")";
 }
 
-template void write(const GroundNumericEffectImpl<Fluent>& element, StringFormatter formatter, std::ostream& out);
-template void write(const GroundNumericEffectImpl<Auxiliary>& element, StringFormatter formatter, std::ostream& out);
-template void write(const GroundNumericEffectImpl<Fluent>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const GroundNumericEffectImpl<Auxiliary>& element, AddressFormatter formatter, std::ostream& out);
+template void write(const GroundNumericEffectImpl<FluentTag>& element, StringFormatter formatter, std::ostream& out);
+template void write(const GroundNumericEffectImpl<AuxiliaryTag>& element, StringFormatter formatter, std::ostream& out);
+template void write(const GroundNumericEffectImpl<FluentTag>& element, AddressFormatter formatter, std::ostream& out);
+template void write(const GroundNumericEffectImpl<AuxiliaryTag>& element, AddressFormatter formatter, std::ostream& out);
 
 template<Formatter T>
 void write(const ConjunctiveEffectImpl& element, T formatter, std::ostream& out)
@@ -477,18 +477,18 @@ void write(const FunctionExpressionMinusImpl& element, T formatter, std::ostream
 template void write(const FunctionExpressionMinusImpl& element, StringFormatter formatter, std::ostream& out);
 template void write(const FunctionExpressionMinusImpl& element, AddressFormatter formatter, std::ostream& out);
 
-template<Formatter T, StaticOrFluentOrAuxiliary F>
+template<Formatter T, IsStaticOrFluentOrAuxiliaryTag F>
 void write(const FunctionExpressionFunctionImpl<F>& element, T formatter, std::ostream& out)
 {
     write(*element.get_function(), formatter, out);
 }
 
-template void write(const FunctionExpressionFunctionImpl<Static>& element, StringFormatter formatter, std::ostream& out);
-template void write(const FunctionExpressionFunctionImpl<Fluent>& element, StringFormatter formatter, std::ostream& out);
-template void write(const FunctionExpressionFunctionImpl<Auxiliary>& element, StringFormatter formatter, std::ostream& out);
-template void write(const FunctionExpressionFunctionImpl<Static>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const FunctionExpressionFunctionImpl<Fluent>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const FunctionExpressionFunctionImpl<Auxiliary>& element, AddressFormatter formatter, std::ostream& out);
+template void write(const FunctionExpressionFunctionImpl<StaticTag>& element, StringFormatter formatter, std::ostream& out);
+template void write(const FunctionExpressionFunctionImpl<FluentTag>& element, StringFormatter formatter, std::ostream& out);
+template void write(const FunctionExpressionFunctionImpl<AuxiliaryTag>& element, StringFormatter formatter, std::ostream& out);
+template void write(const FunctionExpressionFunctionImpl<StaticTag>& element, AddressFormatter formatter, std::ostream& out);
+template void write(const FunctionExpressionFunctionImpl<FluentTag>& element, AddressFormatter formatter, std::ostream& out);
+template void write(const FunctionExpressionFunctionImpl<AuxiliaryTag>& element, AddressFormatter formatter, std::ostream& out);
 
 template<Formatter T>
 void write(const FunctionExpressionImpl& element, T formatter, std::ostream& out)
@@ -499,7 +499,7 @@ void write(const FunctionExpressionImpl& element, T formatter, std::ostream& out
 template void write(const FunctionExpressionImpl& element, StringFormatter formatter, std::ostream& out);
 template void write(const FunctionExpressionImpl& element, AddressFormatter formatter, std::ostream& out);
 
-template<Formatter T, StaticOrFluentOrAuxiliary F>
+template<Formatter T, IsStaticOrFluentOrAuxiliaryTag F>
 void write(const FunctionSkeletonImpl<F>& element, T formatter, std::ostream& out)
 {
     out << "(" << element.get_name();
@@ -511,14 +511,14 @@ void write(const FunctionSkeletonImpl<F>& element, T formatter, std::ostream& ou
     out << ")";
 }
 
-template void write(const FunctionSkeletonImpl<Static>& element, StringFormatter formatter, std::ostream& out);
-template void write(const FunctionSkeletonImpl<Fluent>& element, StringFormatter formatter, std::ostream& out);
-template void write(const FunctionSkeletonImpl<Auxiliary>& element, StringFormatter formatter, std::ostream& out);
-template void write(const FunctionSkeletonImpl<Static>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const FunctionSkeletonImpl<Fluent>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const FunctionSkeletonImpl<Auxiliary>& element, AddressFormatter formatter, std::ostream& out);
+template void write(const FunctionSkeletonImpl<StaticTag>& element, StringFormatter formatter, std::ostream& out);
+template void write(const FunctionSkeletonImpl<FluentTag>& element, StringFormatter formatter, std::ostream& out);
+template void write(const FunctionSkeletonImpl<AuxiliaryTag>& element, StringFormatter formatter, std::ostream& out);
+template void write(const FunctionSkeletonImpl<StaticTag>& element, AddressFormatter formatter, std::ostream& out);
+template void write(const FunctionSkeletonImpl<FluentTag>& element, AddressFormatter formatter, std::ostream& out);
+template void write(const FunctionSkeletonImpl<AuxiliaryTag>& element, AddressFormatter formatter, std::ostream& out);
 
-template<Formatter T, StaticOrFluentOrAuxiliary F>
+template<Formatter T, IsStaticOrFluentOrAuxiliaryTag F>
 void write(const FunctionImpl<F>& element, T formatter, std::ostream& out)
 {
     if (element.get_terms().empty())
@@ -538,14 +538,14 @@ void write(const FunctionImpl<F>& element, T formatter, std::ostream& out)
     }
 }
 
-template void write(const FunctionImpl<Static>& element, StringFormatter formatter, std::ostream& out);
-template void write(const FunctionImpl<Fluent>& element, StringFormatter formatter, std::ostream& out);
-template void write(const FunctionImpl<Auxiliary>& element, StringFormatter formatter, std::ostream& out);
-template void write(const FunctionImpl<Static>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const FunctionImpl<Fluent>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const FunctionImpl<Auxiliary>& element, AddressFormatter formatter, std::ostream& out);
+template void write(const FunctionImpl<StaticTag>& element, StringFormatter formatter, std::ostream& out);
+template void write(const FunctionImpl<FluentTag>& element, StringFormatter formatter, std::ostream& out);
+template void write(const FunctionImpl<AuxiliaryTag>& element, StringFormatter formatter, std::ostream& out);
+template void write(const FunctionImpl<StaticTag>& element, AddressFormatter formatter, std::ostream& out);
+template void write(const FunctionImpl<FluentTag>& element, AddressFormatter formatter, std::ostream& out);
+template void write(const FunctionImpl<AuxiliaryTag>& element, AddressFormatter formatter, std::ostream& out);
 
-template<Formatter T, StaticOrFluentOrDerived P>
+template<Formatter T, IsStaticOrFluentOrDerivedTag P>
 void write(const GroundAtomImpl<P>& element, T formatter, std::ostream& out)
 {
     out << "(" << element.get_predicate()->get_name();
@@ -556,12 +556,12 @@ void write(const GroundAtomImpl<P>& element, T formatter, std::ostream& out)
     out << ")";
 }
 
-template void write(const GroundAtomImpl<Static>& element, StringFormatter formatter, std::ostream& out);
-template void write(const GroundAtomImpl<Fluent>& element, StringFormatter formatter, std::ostream& out);
-template void write(const GroundAtomImpl<Derived>& element, StringFormatter formatter, std::ostream& out);
-template void write(const GroundAtomImpl<Static>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const GroundAtomImpl<Fluent>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const GroundAtomImpl<Derived>& element, AddressFormatter formatter, std::ostream& out);
+template void write(const GroundAtomImpl<StaticTag>& element, StringFormatter formatter, std::ostream& out);
+template void write(const GroundAtomImpl<FluentTag>& element, StringFormatter formatter, std::ostream& out);
+template void write(const GroundAtomImpl<DerivedTag>& element, StringFormatter formatter, std::ostream& out);
+template void write(const GroundAtomImpl<StaticTag>& element, AddressFormatter formatter, std::ostream& out);
+template void write(const GroundAtomImpl<FluentTag>& element, AddressFormatter formatter, std::ostream& out);
+template void write(const GroundAtomImpl<DerivedTag>& element, AddressFormatter formatter, std::ostream& out);
 
 template<Formatter T>
 void write(const GroundFunctionExpressionNumberImpl& element, T formatter, std::ostream& out)
@@ -612,18 +612,18 @@ void write(const GroundFunctionExpressionMinusImpl& element, T formatter, std::o
 template void write(const GroundFunctionExpressionMinusImpl& element, StringFormatter formatter, std::ostream& out);
 template void write(const GroundFunctionExpressionMinusImpl& element, AddressFormatter formatter, std::ostream& out);
 
-template<Formatter T, StaticOrFluentOrAuxiliary F>
+template<Formatter T, IsStaticOrFluentOrAuxiliaryTag F>
 void write(const GroundFunctionExpressionFunctionImpl<F>& element, T formatter, std::ostream& out)
 {
     write(*element.get_function(), formatter, out);
 }
 
-template void write(const GroundFunctionExpressionFunctionImpl<Static>& element, StringFormatter formatter, std::ostream& out);
-template void write(const GroundFunctionExpressionFunctionImpl<Fluent>& element, StringFormatter formatter, std::ostream& out);
-template void write(const GroundFunctionExpressionFunctionImpl<Auxiliary>& element, StringFormatter formatter, std::ostream& out);
-template void write(const GroundFunctionExpressionFunctionImpl<Static>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const GroundFunctionExpressionFunctionImpl<Fluent>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const GroundFunctionExpressionFunctionImpl<Auxiliary>& element, AddressFormatter formatter, std::ostream& out);
+template void write(const GroundFunctionExpressionFunctionImpl<StaticTag>& element, StringFormatter formatter, std::ostream& out);
+template void write(const GroundFunctionExpressionFunctionImpl<FluentTag>& element, StringFormatter formatter, std::ostream& out);
+template void write(const GroundFunctionExpressionFunctionImpl<AuxiliaryTag>& element, StringFormatter formatter, std::ostream& out);
+template void write(const GroundFunctionExpressionFunctionImpl<StaticTag>& element, AddressFormatter formatter, std::ostream& out);
+template void write(const GroundFunctionExpressionFunctionImpl<FluentTag>& element, AddressFormatter formatter, std::ostream& out);
+template void write(const GroundFunctionExpressionFunctionImpl<AuxiliaryTag>& element, AddressFormatter formatter, std::ostream& out);
 
 template<Formatter T>
 void write(const GroundFunctionExpressionImpl& element, T formatter, std::ostream& out)
@@ -634,7 +634,7 @@ void write(const GroundFunctionExpressionImpl& element, T formatter, std::ostrea
 template void write(const GroundFunctionExpressionImpl& element, StringFormatter formatter, std::ostream& out);
 template void write(const GroundFunctionExpressionImpl& element, AddressFormatter formatter, std::ostream& out);
 
-template<Formatter T, StaticOrFluentOrAuxiliary F>
+template<Formatter T, IsStaticOrFluentOrAuxiliaryTag F>
 void write(const GroundFunctionImpl<F>& element, T formatter, std::ostream& out)
 {
     if (element.get_objects().empty())
@@ -654,14 +654,14 @@ void write(const GroundFunctionImpl<F>& element, T formatter, std::ostream& out)
     }
 }
 
-template void write(const GroundFunctionImpl<Static>& element, StringFormatter formatter, std::ostream& out);
-template void write(const GroundFunctionImpl<Fluent>& element, StringFormatter formatter, std::ostream& out);
-template void write(const GroundFunctionImpl<Auxiliary>& element, StringFormatter formatter, std::ostream& out);
-template void write(const GroundFunctionImpl<Static>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const GroundFunctionImpl<Fluent>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const GroundFunctionImpl<Auxiliary>& element, AddressFormatter formatter, std::ostream& out);
+template void write(const GroundFunctionImpl<StaticTag>& element, StringFormatter formatter, std::ostream& out);
+template void write(const GroundFunctionImpl<FluentTag>& element, StringFormatter formatter, std::ostream& out);
+template void write(const GroundFunctionImpl<AuxiliaryTag>& element, StringFormatter formatter, std::ostream& out);
+template void write(const GroundFunctionImpl<StaticTag>& element, AddressFormatter formatter, std::ostream& out);
+template void write(const GroundFunctionImpl<FluentTag>& element, AddressFormatter formatter, std::ostream& out);
+template void write(const GroundFunctionImpl<AuxiliaryTag>& element, AddressFormatter formatter, std::ostream& out);
 
-template<Formatter T, StaticOrFluentOrDerived P>
+template<Formatter T, IsStaticOrFluentOrDerivedTag P>
 void write(const GroundLiteralImpl<P>& element, T formatter, std::ostream& out)
 {
     if (element.is_negated())
@@ -676,14 +676,14 @@ void write(const GroundLiteralImpl<P>& element, T formatter, std::ostream& out)
     }
 }
 
-template void write(const GroundLiteralImpl<Static>& element, StringFormatter formatter, std::ostream& out);
-template void write(const GroundLiteralImpl<Fluent>& element, StringFormatter formatter, std::ostream& out);
-template void write(const GroundLiteralImpl<Derived>& element, StringFormatter formatter, std::ostream& out);
-template void write(const GroundLiteralImpl<Static>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const GroundLiteralImpl<Fluent>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const GroundLiteralImpl<Derived>& element, AddressFormatter formatter, std::ostream& out);
+template void write(const GroundLiteralImpl<StaticTag>& element, StringFormatter formatter, std::ostream& out);
+template void write(const GroundLiteralImpl<FluentTag>& element, StringFormatter formatter, std::ostream& out);
+template void write(const GroundLiteralImpl<DerivedTag>& element, StringFormatter formatter, std::ostream& out);
+template void write(const GroundLiteralImpl<StaticTag>& element, AddressFormatter formatter, std::ostream& out);
+template void write(const GroundLiteralImpl<FluentTag>& element, AddressFormatter formatter, std::ostream& out);
+template void write(const GroundLiteralImpl<DerivedTag>& element, AddressFormatter formatter, std::ostream& out);
 
-template<Formatter T, StaticOrFluentOrDerived P>
+template<Formatter T, IsStaticOrFluentOrDerivedTag P>
 void write(const LiteralImpl<P>& element, T formatter, std::ostream& out)
 {
     if (element.is_negated())
@@ -698,12 +698,12 @@ void write(const LiteralImpl<P>& element, T formatter, std::ostream& out)
     }
 }
 
-template void write(const LiteralImpl<Static>& element, StringFormatter formatter, std::ostream& out);
-template void write(const LiteralImpl<Fluent>& element, StringFormatter formatter, std::ostream& out);
-template void write(const LiteralImpl<Derived>& element, StringFormatter formatter, std::ostream& out);
-template void write(const LiteralImpl<Static>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const LiteralImpl<Fluent>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const LiteralImpl<Derived>& element, AddressFormatter formatter, std::ostream& out);
+template void write(const LiteralImpl<StaticTag>& element, StringFormatter formatter, std::ostream& out);
+template void write(const LiteralImpl<FluentTag>& element, StringFormatter formatter, std::ostream& out);
+template void write(const LiteralImpl<DerivedTag>& element, StringFormatter formatter, std::ostream& out);
+template void write(const LiteralImpl<StaticTag>& element, AddressFormatter formatter, std::ostream& out);
+template void write(const LiteralImpl<FluentTag>& element, AddressFormatter formatter, std::ostream& out);
+template void write(const LiteralImpl<DerivedTag>& element, AddressFormatter formatter, std::ostream& out);
 
 template<Formatter T>
 void write(const OptimizationMetricImpl& element, T formatter, std::ostream& out)
@@ -742,7 +742,7 @@ void write(const GroundNumericConstraintImpl& element, T formatter, std::ostream
 template void write(const GroundNumericConstraintImpl& element, StringFormatter formatter, std::ostream& out);
 template void write(const GroundNumericConstraintImpl& element, AddressFormatter formatter, std::ostream& out);
 
-template<Formatter T, StaticOrFluentOrAuxiliary F>
+template<Formatter T, IsStaticOrFluentOrAuxiliaryTag F>
 void write(const GroundFunctionValueImpl<F>& element, T formatter, std::ostream& out)
 {
     out << "(= ";
@@ -750,12 +750,12 @@ void write(const GroundFunctionValueImpl<F>& element, T formatter, std::ostream&
     out << " " << element.get_number() << ")";
 }
 
-template void write(const GroundFunctionValueImpl<Static>& element, StringFormatter formatter, std::ostream& out);
-template void write(const GroundFunctionValueImpl<Fluent>& element, StringFormatter formatter, std::ostream& out);
-template void write(const GroundFunctionValueImpl<Auxiliary>& element, StringFormatter formatter, std::ostream& out);
-template void write(const GroundFunctionValueImpl<Static>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const GroundFunctionValueImpl<Fluent>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const GroundFunctionValueImpl<Auxiliary>& element, AddressFormatter formatter, std::ostream& out);
+template void write(const GroundFunctionValueImpl<StaticTag>& element, StringFormatter formatter, std::ostream& out);
+template void write(const GroundFunctionValueImpl<FluentTag>& element, StringFormatter formatter, std::ostream& out);
+template void write(const GroundFunctionValueImpl<AuxiliaryTag>& element, StringFormatter formatter, std::ostream& out);
+template void write(const GroundFunctionValueImpl<StaticTag>& element, AddressFormatter formatter, std::ostream& out);
+template void write(const GroundFunctionValueImpl<FluentTag>& element, AddressFormatter formatter, std::ostream& out);
+template void write(const GroundFunctionValueImpl<AuxiliaryTag>& element, AddressFormatter formatter, std::ostream& out);
 
 template<Formatter T>
 void write(const ObjectImpl& element, T formatter, std::ostream& out)
@@ -766,7 +766,7 @@ void write(const ObjectImpl& element, T formatter, std::ostream& out)
 template void write(const ObjectImpl& element, StringFormatter formatter, std::ostream& out);
 template void write(const ObjectImpl& element, AddressFormatter formatter, std::ostream& out);
 
-template<Formatter T, StaticOrFluentOrDerived P>
+template<Formatter T, IsStaticOrFluentOrDerivedTag P>
 void write(const PredicateImpl<P>& element, T formatter, std::ostream& out)
 {
     out << "(" << element.get_name();
@@ -778,12 +778,12 @@ void write(const PredicateImpl<P>& element, T formatter, std::ostream& out)
     out << ")";
 }
 
-template void write(const PredicateImpl<Static>& element, StringFormatter formatter, std::ostream& out);
-template void write(const PredicateImpl<Fluent>& element, StringFormatter formatter, std::ostream& out);
-template void write(const PredicateImpl<Derived>& element, StringFormatter formatter, std::ostream& out);
-template void write(const PredicateImpl<Static>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const PredicateImpl<Fluent>& element, AddressFormatter formatter, std::ostream& out);
-template void write(const PredicateImpl<Derived>& element, AddressFormatter formatter, std::ostream& out);
+template void write(const PredicateImpl<StaticTag>& element, StringFormatter formatter, std::ostream& out);
+template void write(const PredicateImpl<FluentTag>& element, StringFormatter formatter, std::ostream& out);
+template void write(const PredicateImpl<DerivedTag>& element, StringFormatter formatter, std::ostream& out);
+template void write(const PredicateImpl<StaticTag>& element, AddressFormatter formatter, std::ostream& out);
+template void write(const PredicateImpl<FluentTag>& element, AddressFormatter formatter, std::ostream& out);
+template void write(const PredicateImpl<DerivedTag>& element, AddressFormatter formatter, std::ostream& out);
 
 template<Formatter T>
 void write(const ProblemImpl& element, T formatter, std::ostream& out)
@@ -822,52 +822,52 @@ void write(const ProblemImpl& element, T formatter, std::ostream& out)
         out << ")" << std::endl;
     }
 
-    if (!(element.get_initial_literals<Static>().empty() && element.get_initial_literals<Fluent>().empty()
-          && element.get_initial_function_values<Static>().empty() && element.get_initial_function_values<Fluent>().empty()
+    if (!(element.get_initial_literals<StaticTag>().empty() && element.get_initial_literals<FluentTag>().empty()
+          && element.get_initial_function_values<StaticTag>().empty() && element.get_initial_function_values<FluentTag>().empty()
           && !element.get_auxiliary_function_value().has_value()))
     {
         out << std::string(formatter.indent, ' ') << "(:init ";
         formatter.indent += formatter.add_indent;
 
-        if (!element.get_initial_literals<Static>().empty())
+        if (!element.get_initial_literals<StaticTag>().empty())
         {
             out << "\n" << std::string(formatter.indent, ' ') << "; static literals:\n" << std::string(formatter.indent, ' ');
         }
-        for (size_t i = 0; i < element.get_initial_literals<Static>().size(); ++i)
+        for (size_t i = 0; i < element.get_initial_literals<StaticTag>().size(); ++i)
         {
             if (i != 0)
                 out << " ";
-            write(*element.get_initial_literals<Static>()[i], formatter, out);
+            write(*element.get_initial_literals<StaticTag>()[i], formatter, out);
         }
-        if (!element.get_initial_literals<Fluent>().empty())
+        if (!element.get_initial_literals<FluentTag>().empty())
         {
             out << "\n" << std::string(formatter.indent, ' ') << "; fluent literals:\n" << std::string(formatter.indent, ' ');
         }
-        for (size_t i = 0; i < element.get_initial_literals<Fluent>().size(); ++i)
+        for (size_t i = 0; i < element.get_initial_literals<FluentTag>().size(); ++i)
         {
             if (i != 0)
                 out << " ";
-            write(*element.get_initial_literals<Fluent>()[i], formatter, out);
+            write(*element.get_initial_literals<FluentTag>()[i], formatter, out);
         }
-        if (!element.get_initial_function_values<Static>().empty())
+        if (!element.get_initial_function_values<StaticTag>().empty())
         {
             out << "\n" << std::string(formatter.indent, ' ') << "; static function values:\n" << std::string(formatter.indent, ' ');
         }
-        for (size_t i = 0; i < element.get_initial_function_values<Static>().size(); ++i)
+        for (size_t i = 0; i < element.get_initial_function_values<StaticTag>().size(); ++i)
         {
             if (i != 0)
                 out << " ";
-            write(*element.get_initial_function_values<Static>()[i], formatter, out);
+            write(*element.get_initial_function_values<StaticTag>()[i], formatter, out);
         }
-        if (!element.get_initial_function_values<Fluent>().empty())
+        if (!element.get_initial_function_values<FluentTag>().empty())
         {
             out << "\n" << std::string(formatter.indent, ' ') << "; fluent function values:\n" << std::string(formatter.indent, ' ');
         }
-        for (size_t i = 0; i < element.get_initial_function_values<Fluent>().size(); ++i)
+        for (size_t i = 0; i < element.get_initial_function_values<FluentTag>().size(); ++i)
         {
             if (i != 0)
                 out << " ";
-            write(*element.get_initial_function_values<Fluent>()[i], formatter, out);
+            write(*element.get_initial_function_values<FluentTag>()[i], formatter, out);
         }
         if (element.get_auxiliary_function_value().has_value())
         {
@@ -880,22 +880,22 @@ void write(const ProblemImpl& element, T formatter, std::ostream& out)
         out << "\n" << std::string(formatter.indent, ' ') << ")\n";
     }
 
-    if (!(element.get_goal_condition<Static>().empty() && element.get_goal_condition<Fluent>().empty() && element.get_goal_condition<Derived>().empty()
+    if (!(element.get_goal_condition<StaticTag>().empty() && element.get_goal_condition<FluentTag>().empty() && element.get_goal_condition<DerivedTag>().empty()
           && element.get_numeric_goal_condition().empty()))
     {
         out << std::string(formatter.indent, ' ') << "(:goal ";
         out << "(and";
-        for (const auto& literal : element.get_goal_condition<Static>())
+        for (const auto& literal : element.get_goal_condition<StaticTag>())
         {
             out << " ";
             write(*literal, formatter, out);
         }
-        for (const auto& literal : element.get_goal_condition<Fluent>())
+        for (const auto& literal : element.get_goal_condition<FluentTag>())
         {
             out << " ";
             write(*literal, formatter, out);
         }
-        for (const auto& literal : element.get_goal_condition<Derived>())
+        for (const auto& literal : element.get_goal_condition<DerivedTag>())
         {
             out << " ";
             write(*literal, formatter, out);

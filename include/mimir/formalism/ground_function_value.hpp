@@ -22,7 +22,7 @@
 
 namespace mimir::formalism
 {
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 class GroundFunctionValueImpl
 {
 private:
@@ -39,7 +39,7 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
-    using PDDLEntity = void;
+    using FormalismEntity = void;
     using Type = F;
 
     // moveable but not copyable
@@ -58,10 +58,10 @@ public:
     auto identifying_members() const { return std::tuple(get_function(), get_number()); }
 };
 
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionValueImpl<F>& element);
 
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 extern std::ostream& operator<<(std::ostream& out, GroundFunctionValue<F> element);
 
 }

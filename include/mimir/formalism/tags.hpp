@@ -26,41 +26,41 @@ namespace mimir::formalism
 {
 
 /// @brief `Static` is a tag to declare that the semantic interpretation of a type remains constants across all states.
-struct Static
+struct StaticTag
 {
     static constexpr std::string name = "static";
 };
 /// @brief `Fluent` is a tag to declare that the semantic interpretation of a type can change across states due to actions.
-struct Fluent
+struct FluentTag
 {
     static constexpr std::string name = "fluent";
 };
 /// @brief `Derived` is a tag to declare that the semantic interpretation of a type can change across states due to axioms.
-struct Derived
+struct DerivedTag
 {
     static constexpr std::string name = "derived";
 };
 /// @brief `Auxiliary` is a tag indicating that the value of this type is used for metric evaluation and does not contribute to defining the state. For example,
 /// total-cost in cost-sensitive planning.
-struct Auxiliary
+struct AuxiliaryTag
 {
     static constexpr std::string name = "auxiliary";
 };
 
 template<typename T>
-concept StaticOrFluentOrDerived = std::is_same_v<T, Static> || std::is_same_v<T, Fluent> || std::is_same_v<T, Derived>;
+concept IsStaticOrFluentOrDerivedTag = std::is_same_v<T, StaticTag> || std::is_same_v<T, FluentTag> || std::is_same_v<T, DerivedTag>;
 
 template<typename T>
-concept FluentOrDerived = std::is_same_v<T, Fluent> || std::is_same_v<T, Derived>;
+concept IsFluentOrDerivedTag = std::is_same_v<T, FluentTag> || std::is_same_v<T, DerivedTag>;
 
 template<typename T>
-concept StaticOrFluentOrAuxiliary = std::is_same_v<T, Static> || std::is_same_v<T, Fluent> || std::is_same_v<T, Auxiliary>;
+concept IsStaticOrFluentOrAuxiliaryTag = std::is_same_v<T, StaticTag> || std::is_same_v<T, FluentTag> || std::is_same_v<T, AuxiliaryTag>;
 
 template<typename T>
-concept StaticOrFluent = std::is_same_v<T, Static> || std::is_same_v<T, Fluent>;
+concept IsStaticOrFluentTag = std::is_same_v<T, StaticTag> || std::is_same_v<T, FluentTag>;
 
 template<typename T>
-concept FluentOrAuxiliary = std::is_same_v<T, Fluent> || std::is_same_v<T, Auxiliary>;
+concept IsFluentOrAuxiliaryTag = std::is_same_v<T, FluentTag> || std::is_same_v<T, AuxiliaryTag>;
 
 }
 

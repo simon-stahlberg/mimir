@@ -28,12 +28,12 @@ namespace mimir::languages::dl
 
 void RecurseVisitor::visit(ConceptBot constructor) {}
 void RecurseVisitor::visit(ConceptTop constructor) {}
-void RecurseVisitor::visit(ConceptAtomicState<Static> constructor) {}
-void RecurseVisitor::visit(ConceptAtomicState<Fluent> constructor) {}
-void RecurseVisitor::visit(ConceptAtomicState<Derived> constructor) {}
-void RecurseVisitor::visit(ConceptAtomicGoal<Static> constructor) {}
-void RecurseVisitor::visit(ConceptAtomicGoal<Fluent> constructor) {}
-void RecurseVisitor::visit(ConceptAtomicGoal<Derived> constructor) {}
+void RecurseVisitor::visit(ConceptAtomicState<StaticTag> constructor) {}
+void RecurseVisitor::visit(ConceptAtomicState<FluentTag> constructor) {}
+void RecurseVisitor::visit(ConceptAtomicState<DerivedTag> constructor) {}
+void RecurseVisitor::visit(ConceptAtomicGoal<StaticTag> constructor) {}
+void RecurseVisitor::visit(ConceptAtomicGoal<FluentTag> constructor) {}
+void RecurseVisitor::visit(ConceptAtomicGoal<DerivedTag> constructor) {}
 void RecurseVisitor::visit(ConceptIntersection constructor)
 {
     constructor->get_left_concept()->accept(*this);
@@ -69,12 +69,12 @@ void RecurseVisitor::visit(ConceptNominal constructor) {}
 
 /* Roles */
 void RecurseVisitor::visit(RoleUniversal constructor) {}
-void RecurseVisitor::visit(RoleAtomicState<Static> constructor) {}
-void RecurseVisitor::visit(RoleAtomicState<Fluent> constructor) {}
-void RecurseVisitor::visit(RoleAtomicState<Derived> constructor) {}
-void RecurseVisitor::visit(RoleAtomicGoal<Static> constructor) {}
-void RecurseVisitor::visit(RoleAtomicGoal<Fluent> constructor) {}
-void RecurseVisitor::visit(RoleAtomicGoal<Derived> constructor) {}
+void RecurseVisitor::visit(RoleAtomicState<StaticTag> constructor) {}
+void RecurseVisitor::visit(RoleAtomicState<FluentTag> constructor) {}
+void RecurseVisitor::visit(RoleAtomicState<DerivedTag> constructor) {}
+void RecurseVisitor::visit(RoleAtomicGoal<StaticTag> constructor) {}
+void RecurseVisitor::visit(RoleAtomicGoal<FluentTag> constructor) {}
+void RecurseVisitor::visit(RoleAtomicGoal<DerivedTag> constructor) {}
 void RecurseVisitor::visit(RoleIntersection constructor)
 {
     constructor->get_left_role()->accept(*this);
@@ -102,15 +102,15 @@ void RecurseVisitor::visit(RoleRestriction constructor)
 void RecurseVisitor::visit(RoleIdentity constructor) { constructor->get_concept()->accept(*this); }
 
 /* Booleans */
-void RecurseVisitor::visit(BooleanAtomicState<Static> constructor) {}
-void RecurseVisitor::visit(BooleanAtomicState<Fluent> constructor) {}
-void RecurseVisitor::visit(BooleanAtomicState<Derived> constructor) {}
-void RecurseVisitor::visit(BooleanNonempty<Concept> constructor) { constructor->get_constructor()->accept(*this); }
-void RecurseVisitor::visit(BooleanNonempty<Role> constructor) { constructor->get_constructor()->accept(*this); }
+void RecurseVisitor::visit(BooleanAtomicState<StaticTag> constructor) {}
+void RecurseVisitor::visit(BooleanAtomicState<FluentTag> constructor) {}
+void RecurseVisitor::visit(BooleanAtomicState<DerivedTag> constructor) {}
+void RecurseVisitor::visit(BooleanNonempty<ConceptTag> constructor) { constructor->get_constructor()->accept(*this); }
+void RecurseVisitor::visit(BooleanNonempty<RoleTag> constructor) { constructor->get_constructor()->accept(*this); }
 
 /* Numericals */
-void RecurseVisitor::visit(NumericalCount<Concept> constructor) { constructor->get_constructor()->accept(*this); }
-void RecurseVisitor::visit(NumericalCount<Role> constructor) { constructor->get_constructor()->accept(*this); }
+void RecurseVisitor::visit(NumericalCount<ConceptTag> constructor) { constructor->get_constructor()->accept(*this); }
+void RecurseVisitor::visit(NumericalCount<RoleTag> constructor) { constructor->get_constructor()->accept(*this); }
 void RecurseVisitor::visit(NumericalDistance constructor)
 {
     constructor->get_left_concept()->accept(*this);

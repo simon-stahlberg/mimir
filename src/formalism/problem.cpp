@@ -55,12 +55,12 @@ ProblemImpl::ProblemImpl(Index index,
                          Requirements requirements,
                          ObjectList objects,
                          ObjectList problem_and_domain_objects,
-                         PredicateList<Derived> derived_predicates,
-                         PredicateList<Derived> problem_and_domain_derived_predicates,
-                         GroundLiteralLists<Static, Fluent> initial_literals,
-                         GroundFunctionValueLists<Static, Fluent> initial_function_values,
-                         std::optional<GroundFunctionValue<Auxiliary>> auxiliary_function_value,
-                         GroundLiteralLists<Static, Fluent, Derived> goal_condition,
+                         PredicateList<DerivedTag> derived_predicates,
+                         PredicateList<DerivedTag> problem_and_domain_derived_predicates,
+                         GroundLiteralLists<StaticTag, FluentTag> initial_literals,
+                         GroundFunctionValueLists<StaticTag, FluentTag> initial_function_values,
+                         std::optional<GroundFunctionValue<AuxiliaryTag>> auxiliary_function_value,
+                         GroundLiteralLists<StaticTag, FluentTag, DerivedTag> goal_condition,
                          GroundNumericConstraintList numeric_goal_condition,
                          std::optional<OptimizationMetric> optimization_metric,
                          AxiomList axioms,
@@ -87,39 +87,39 @@ ProblemImpl::ProblemImpl(Index index,
 {
     assert(is_all_unique(get_objects()));
     assert(is_all_unique(get_derived_predicates()));
-    assert(is_all_unique(get_initial_literals<Static>()));
-    assert(is_all_unique(get_initial_literals<Fluent>()));
-    assert(is_all_unique(get_initial_function_values<Static>()));
-    assert(is_all_unique(get_initial_function_values<Fluent>()));
-    assert(is_all_unique(get_goal_condition<Static>()));
-    assert(is_all_unique(get_goal_condition<Fluent>()));
-    assert(is_all_unique(get_goal_condition<Derived>()));
+    assert(is_all_unique(get_initial_literals<StaticTag>()));
+    assert(is_all_unique(get_initial_literals<FluentTag>()));
+    assert(is_all_unique(get_initial_function_values<StaticTag>()));
+    assert(is_all_unique(get_initial_function_values<FluentTag>()));
+    assert(is_all_unique(get_goal_condition<StaticTag>()));
+    assert(is_all_unique(get_goal_condition<FluentTag>()));
+    assert(is_all_unique(get_goal_condition<DerivedTag>()));
     assert(is_all_unique(get_numeric_goal_condition()));
     assert(is_all_unique(get_axioms()));
     assert(std::is_sorted(get_objects().begin(), get_objects().end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(std::is_sorted(get_derived_predicates().begin(),
                           get_derived_predicates().end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(get_initial_literals<Static>().begin(),
-                          get_initial_literals<Static>().end(),
+    assert(std::is_sorted(get_initial_literals<StaticTag>().begin(),
+                          get_initial_literals<StaticTag>().end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(get_initial_literals<Fluent>().begin(),
-                          get_initial_literals<Fluent>().end(),
+    assert(std::is_sorted(get_initial_literals<FluentTag>().begin(),
+                          get_initial_literals<FluentTag>().end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(get_initial_function_values<Static>().begin(),
-                          get_initial_function_values<Static>().end(),
+    assert(std::is_sorted(get_initial_function_values<StaticTag>().begin(),
+                          get_initial_function_values<StaticTag>().end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(get_initial_function_values<Fluent>().begin(),
-                          get_initial_function_values<Fluent>().end(),
+    assert(std::is_sorted(get_initial_function_values<FluentTag>().begin(),
+                          get_initial_function_values<FluentTag>().end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(get_goal_condition<Static>().begin(),
-                          get_goal_condition<Static>().end(),
+    assert(std::is_sorted(get_goal_condition<StaticTag>().begin(),
+                          get_goal_condition<StaticTag>().end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(get_goal_condition<Fluent>().begin(),
-                          get_goal_condition<Fluent>().end(),
+    assert(std::is_sorted(get_goal_condition<FluentTag>().begin(),
+                          get_goal_condition<FluentTag>().end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(get_goal_condition<Derived>().begin(),
-                          get_goal_condition<Derived>().end(),
+    assert(std::is_sorted(get_goal_condition<DerivedTag>().begin(),
+                          get_goal_condition<DerivedTag>().end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(std::is_sorted(get_numeric_goal_condition().begin(),
                           get_numeric_goal_condition().end(),
@@ -130,7 +130,7 @@ ProblemImpl::ProblemImpl(Index index,
      * Error checking
      */
 
-    for (const auto& literal : get_initial_literals<Fluent>())
+    for (const auto& literal : get_initial_literals<FluentTag>())
     {
         if (literal->is_negated())
         {
@@ -138,7 +138,7 @@ ProblemImpl::ProblemImpl(Index index,
         }
     }
 
-    for (const auto& literal : get_initial_literals<Static>())
+    for (const auto& literal : get_initial_literals<StaticTag>())
     {
         if (literal->is_negated())
         {
@@ -187,45 +187,45 @@ const ObjectList& ProblemImpl::get_objects() const { return m_objects; }
 
 const ObjectList& ProblemImpl::get_problem_and_domain_objects() const { return m_problem_and_domain_objects; }
 
-const PredicateList<Derived>& ProblemImpl::get_derived_predicates() const { return m_derived_predicates; }
+const PredicateList<DerivedTag>& ProblemImpl::get_derived_predicates() const { return m_derived_predicates; }
 
-const PredicateList<Derived>& ProblemImpl::get_problem_and_domain_derived_predicates() const { return m_problem_and_domain_derived_predicates; }
+const PredicateList<DerivedTag>& ProblemImpl::get_problem_and_domain_derived_predicates() const { return m_problem_and_domain_derived_predicates; }
 
-template<StaticOrFluent P>
+template<IsStaticOrFluentTag P>
 const GroundLiteralList<P>& ProblemImpl::get_initial_literals() const
 {
     return boost::hana::at_key(m_initial_literals, boost::hana::type<P> {});
 }
 
-template const GroundLiteralList<Static>& ProblemImpl::get_initial_literals() const;
-template const GroundLiteralList<Fluent>& ProblemImpl::get_initial_literals() const;
+template const GroundLiteralList<StaticTag>& ProblemImpl::get_initial_literals() const;
+template const GroundLiteralList<FluentTag>& ProblemImpl::get_initial_literals() const;
 
-const GroundLiteralLists<Static, Fluent>& ProblemImpl::get_hana_initial_literals() const { return m_initial_literals; }
+const GroundLiteralLists<StaticTag, FluentTag>& ProblemImpl::get_hana_initial_literals() const { return m_initial_literals; }
 
-template<StaticOrFluent F>
+template<IsStaticOrFluentTag F>
 const GroundFunctionValueList<F>& ProblemImpl::get_initial_function_values() const
 {
     return boost::hana::at_key(m_initial_function_values, boost::hana::type<F> {});
 }
 
-const GroundFunctionValueLists<Static, Fluent>& ProblemImpl::get_hana_initial_function_values() const { return m_initial_function_values; }
+const GroundFunctionValueLists<StaticTag, FluentTag>& ProblemImpl::get_hana_initial_function_values() const { return m_initial_function_values; }
 
-template const GroundFunctionValueList<Static>& ProblemImpl::get_initial_function_values() const;
-template const GroundFunctionValueList<Fluent>& ProblemImpl::get_initial_function_values() const;
+template const GroundFunctionValueList<StaticTag>& ProblemImpl::get_initial_function_values() const;
+template const GroundFunctionValueList<FluentTag>& ProblemImpl::get_initial_function_values() const;
 
-const std::optional<GroundFunctionValue<Auxiliary>>& ProblemImpl::get_auxiliary_function_value() const { return m_auxiliary_function_value; }
+const std::optional<GroundFunctionValue<AuxiliaryTag>>& ProblemImpl::get_auxiliary_function_value() const { return m_auxiliary_function_value; }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 const GroundLiteralList<P>& ProblemImpl::get_goal_condition() const
 {
     return boost::hana::at_key(m_goal_condition, boost::hana::type<P> {});
 }
 
-template const GroundLiteralList<Static>& ProblemImpl::get_goal_condition<Static>() const;
-template const GroundLiteralList<Fluent>& ProblemImpl::get_goal_condition<Fluent>() const;
-template const GroundLiteralList<Derived>& ProblemImpl::get_goal_condition<Derived>() const;
+template const GroundLiteralList<StaticTag>& ProblemImpl::get_goal_condition<StaticTag>() const;
+template const GroundLiteralList<FluentTag>& ProblemImpl::get_goal_condition<FluentTag>() const;
+template const GroundLiteralList<DerivedTag>& ProblemImpl::get_goal_condition<DerivedTag>() const;
 
-const GroundLiteralLists<Static, Fluent, Derived>& ProblemImpl::get_hana_goal_condition() const { return m_goal_condition; }
+const GroundLiteralLists<StaticTag, FluentTag, DerivedTag>& ProblemImpl::get_hana_goal_condition() const { return m_goal_condition; }
 
 const GroundNumericConstraintList& ProblemImpl::get_numeric_goal_condition() const { return m_numeric_goal_condition; }
 
@@ -241,7 +241,7 @@ const AxiomList& ProblemImpl::get_problem_and_domain_axioms() const { return m_p
 
 /* Initial state */
 
-const GroundAtomList<Static>& ProblemImpl::get_static_initial_atoms() const { return m_details.initial.positive_static_initial_atoms; }
+const GroundAtomList<StaticTag>& ProblemImpl::get_static_initial_atoms() const { return m_details.initial.positive_static_initial_atoms; }
 
 const FlatBitset& ProblemImpl::get_static_initial_positive_atoms_bitset() const { return m_details.initial.positive_static_initial_atoms_bitset; }
 
@@ -251,27 +251,27 @@ const FlatIndexList& ProblemImpl::get_static_initial_positive_atoms_indices() co
     return m_details.initial.positive_static_initial_atoms_indices;
 }
 
-const AssignmentSet<Static>& ProblemImpl::get_static_assignment_set() const { return m_details.initial.positive_static_initial_assignment_set; }
+const AssignmentSet<StaticTag>& ProblemImpl::get_static_assignment_set() const { return m_details.initial.positive_static_initial_assignment_set; }
 
-const NumericAssignmentSet<Static>& ProblemImpl::get_static_initial_numeric_assignment_set() const
+const NumericAssignmentSet<StaticTag>& ProblemImpl::get_static_initial_numeric_assignment_set() const
 {
     return m_details.initial.static_initial_numeric_assignment_set;
 }
 
-const GroundAtomList<Fluent>& ProblemImpl::get_fluent_initial_atoms() const { return m_details.initial.positive_fluent_initial_atoms; }
+const GroundAtomList<FluentTag>& ProblemImpl::get_fluent_initial_atoms() const { return m_details.initial.positive_fluent_initial_atoms; }
 
-template<StaticOrFluent F>
+template<IsStaticOrFluentTag F>
 const FlatDoubleList& ProblemImpl::get_initial_function_to_value() const
 {
     return boost::hana::at_key(m_details.initial.initial_function_to_value, boost::hana::type<F> {});
 }
 
-template const FlatDoubleList& ProblemImpl::get_initial_function_to_value<Static>() const;
-template const FlatDoubleList& ProblemImpl::get_initial_function_to_value<Fluent>() const;
+template const FlatDoubleList& ProblemImpl::get_initial_function_to_value<StaticTag>() const;
+template const FlatDoubleList& ProblemImpl::get_initial_function_to_value<FluentTag>() const;
 
-const FlatDoubleLists<Static, Fluent>& ProblemImpl::get_hana_initial_function_to_value() const { return m_details.initial.initial_function_to_value; }
+const FlatDoubleLists<StaticTag, FluentTag>& ProblemImpl::get_hana_initial_function_to_value() const { return m_details.initial.initial_function_to_value; }
 
-template<StaticOrFluent F>
+template<IsStaticOrFluentTag F>
 ContinuousCost ProblemImpl::get_initial_function_value(GroundFunction<F> function) const
 {
     const auto& function_to_value = get_initial_function_to_value<F>();
@@ -282,88 +282,100 @@ ContinuousCost ProblemImpl::get_initial_function_value(GroundFunction<F> functio
     return function_to_value[function->get_index()];
 }
 
-template ContinuousCost ProblemImpl::get_initial_function_value(GroundFunction<Static> function) const;
-template ContinuousCost ProblemImpl::get_initial_function_value(GroundFunction<Fluent> function) const;
+template ContinuousCost ProblemImpl::get_initial_function_value(GroundFunction<StaticTag> function) const;
+template ContinuousCost ProblemImpl::get_initial_function_value(GroundFunction<FluentTag> function) const;
 
 /* Goal */
 bool ProblemImpl::static_goal_holds() const { return m_details.goal.m_static_goal_holds; }
 
-bool ProblemImpl::static_literal_holds(const GroundLiteral<Static> literal) const
+bool ProblemImpl::static_literal_holds(const GroundLiteral<StaticTag> literal) const
 {
     return (literal->is_negated() != get_static_initial_positive_atoms_bitset().get(literal->get_atom()->get_index()));
 }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 const GroundAtomList<P>& ProblemImpl::get_positive_goal_atoms() const
 {
     return boost::hana::at_key(m_details.goal.positive_goal_atoms, boost::hana::type<P> {});
 }
 
-template const GroundAtomList<Static>& ProblemImpl::get_positive_goal_atoms<Static>() const;
-template const GroundAtomList<Fluent>& ProblemImpl::get_positive_goal_atoms<Fluent>() const;
-template const GroundAtomList<Derived>& ProblemImpl::get_positive_goal_atoms<Derived>() const;
+template const GroundAtomList<StaticTag>& ProblemImpl::get_positive_goal_atoms<StaticTag>() const;
+template const GroundAtomList<FluentTag>& ProblemImpl::get_positive_goal_atoms<FluentTag>() const;
+template const GroundAtomList<DerivedTag>& ProblemImpl::get_positive_goal_atoms<DerivedTag>() const;
 
-const GroundAtomLists<Static, Fluent, Derived>& ProblemImpl::get_hana_positive_goal_atoms() const { return m_details.goal.positive_goal_atoms; }
+const GroundAtomLists<StaticTag, FluentTag, DerivedTag>& ProblemImpl::get_hana_positive_goal_atoms() const { return m_details.goal.positive_goal_atoms; }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 const FlatBitset& ProblemImpl::get_positive_goal_atoms_bitset() const
 {
     return boost::hana::at_key(m_details.goal.positive_goal_atoms_bitset, boost::hana::type<P> {});
 }
 
-template const FlatBitset& ProblemImpl::get_positive_goal_atoms_bitset<Static>() const;
-template const FlatBitset& ProblemImpl::get_positive_goal_atoms_bitset<Fluent>() const;
-template const FlatBitset& ProblemImpl::get_positive_goal_atoms_bitset<Derived>() const;
+template const FlatBitset& ProblemImpl::get_positive_goal_atoms_bitset<StaticTag>() const;
+template const FlatBitset& ProblemImpl::get_positive_goal_atoms_bitset<FluentTag>() const;
+template const FlatBitset& ProblemImpl::get_positive_goal_atoms_bitset<DerivedTag>() const;
 
-const FlatBitsets<Static, Fluent, Derived>& ProblemImpl::get_hana_positive_goal_atoms_bitset() const { return m_details.goal.positive_goal_atoms_bitset; }
+const FlatBitsets<StaticTag, FluentTag, DerivedTag>& ProblemImpl::get_hana_positive_goal_atoms_bitset() const
+{
+    return m_details.goal.positive_goal_atoms_bitset;
+}
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 const FlatIndexList& ProblemImpl::get_positive_goal_atoms_indices() const
 {
     return boost::hana::at_key(m_details.goal.positive_goal_atoms_indices, boost::hana::type<P> {});
 }
 
-template const FlatIndexList& ProblemImpl::get_positive_goal_atoms_indices<Static>() const;
-template const FlatIndexList& ProblemImpl::get_positive_goal_atoms_indices<Fluent>() const;
-template const FlatIndexList& ProblemImpl::get_positive_goal_atoms_indices<Derived>() const;
+template const FlatIndexList& ProblemImpl::get_positive_goal_atoms_indices<StaticTag>() const;
+template const FlatIndexList& ProblemImpl::get_positive_goal_atoms_indices<FluentTag>() const;
+template const FlatIndexList& ProblemImpl::get_positive_goal_atoms_indices<DerivedTag>() const;
 
-const FlatIndexLists<Static, Fluent, Derived>& ProblemImpl::get_hana_positive_goal_atoms_indices() const { return m_details.goal.positive_goal_atoms_indices; }
+const FlatIndexLists<StaticTag, FluentTag, DerivedTag>& ProblemImpl::get_hana_positive_goal_atoms_indices() const
+{
+    return m_details.goal.positive_goal_atoms_indices;
+}
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 const GroundAtomList<P>& ProblemImpl::get_negative_goal_atoms() const
 {
     return boost::hana::at_key(m_details.goal.negative_goal_atoms, boost::hana::type<P> {});
 }
 
-template const GroundAtomList<Static>& ProblemImpl::get_negative_goal_atoms<Static>() const;
-template const GroundAtomList<Fluent>& ProblemImpl::get_negative_goal_atoms<Fluent>() const;
-template const GroundAtomList<Derived>& ProblemImpl::get_negative_goal_atoms<Derived>() const;
+template const GroundAtomList<StaticTag>& ProblemImpl::get_negative_goal_atoms<StaticTag>() const;
+template const GroundAtomList<FluentTag>& ProblemImpl::get_negative_goal_atoms<FluentTag>() const;
+template const GroundAtomList<DerivedTag>& ProblemImpl::get_negative_goal_atoms<DerivedTag>() const;
 
-const GroundAtomLists<Static, Fluent, Derived>& ProblemImpl::get_hana_negative_goal_atoms() const { return m_details.goal.negative_goal_atoms; }
+const GroundAtomLists<StaticTag, FluentTag, DerivedTag>& ProblemImpl::get_hana_negative_goal_atoms() const { return m_details.goal.negative_goal_atoms; }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 const FlatBitset& ProblemImpl::get_negative_goal_atoms_bitset() const
 {
     return boost::hana::at_key(m_details.goal.negative_goal_atoms_bitset, boost::hana::type<P> {});
 }
 
-template const FlatBitset& ProblemImpl::get_negative_goal_atoms_bitset<Static>() const;
-template const FlatBitset& ProblemImpl::get_negative_goal_atoms_bitset<Fluent>() const;
-template const FlatBitset& ProblemImpl::get_negative_goal_atoms_bitset<Derived>() const;
+template const FlatBitset& ProblemImpl::get_negative_goal_atoms_bitset<StaticTag>() const;
+template const FlatBitset& ProblemImpl::get_negative_goal_atoms_bitset<FluentTag>() const;
+template const FlatBitset& ProblemImpl::get_negative_goal_atoms_bitset<DerivedTag>() const;
 
-const FlatBitsets<Static, Fluent, Derived>& ProblemImpl::get_hana_negative_goal_atoms_bitset() const { return m_details.goal.negative_goal_atoms_bitset; }
+const FlatBitsets<StaticTag, FluentTag, DerivedTag>& ProblemImpl::get_hana_negative_goal_atoms_bitset() const
+{
+    return m_details.goal.negative_goal_atoms_bitset;
+}
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 const FlatIndexList& ProblemImpl::get_negative_goal_atoms_indices() const
 {
     return boost::hana::at_key(m_details.goal.negative_goal_atoms_indices, boost::hana::type<P> {});
 }
 
-template const FlatIndexList& ProblemImpl::get_negative_goal_atoms_indices<Static>() const;
-template const FlatIndexList& ProblemImpl::get_negative_goal_atoms_indices<Fluent>() const;
-template const FlatIndexList& ProblemImpl::get_negative_goal_atoms_indices<Derived>() const;
+template const FlatIndexList& ProblemImpl::get_negative_goal_atoms_indices<StaticTag>() const;
+template const FlatIndexList& ProblemImpl::get_negative_goal_atoms_indices<FluentTag>() const;
+template const FlatIndexList& ProblemImpl::get_negative_goal_atoms_indices<DerivedTag>() const;
 
-const FlatIndexLists<Static, Fluent, Derived>& ProblemImpl::get_hana_negative_goal_atoms_indices() const { return m_details.goal.negative_goal_atoms_indices; }
+const FlatIndexLists<StaticTag, FluentTag, DerivedTag>& ProblemImpl::get_hana_negative_goal_atoms_indices() const
+{
+    return m_details.goal.negative_goal_atoms_indices;
+}
 
 /* Axioms */
 
@@ -405,7 +417,7 @@ static void ground_terms(const TermList& terms, const ObjectList& binding, Objec
 
 // Literal
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 static void ground_and_fill_bitset(ProblemImpl& problem,
                                    const std::vector<Literal<P>>& literals,
                                    FlatBitset& ref_positive_bitset,
@@ -428,22 +440,22 @@ static void ground_and_fill_bitset(ProblemImpl& problem,
 }
 
 template void ground_and_fill_bitset(ProblemImpl& problem,
-                                     const std::vector<Literal<Static>>& literals,
+                                     const std::vector<Literal<StaticTag>>& literals,
                                      FlatBitset& ref_positive_bitset,
                                      FlatBitset& ref_negative_bitset,
                                      const ObjectList& binding);
 template void ground_and_fill_bitset(ProblemImpl& problem,
-                                     const std::vector<Literal<Fluent>>& literals,
+                                     const std::vector<Literal<FluentTag>>& literals,
                                      FlatBitset& ref_positive_bitset,
                                      FlatBitset& ref_negative_bitset,
                                      const ObjectList& binding);
 template void ground_and_fill_bitset(ProblemImpl& problem,
-                                     const std::vector<Literal<Derived>>& literals,
+                                     const std::vector<Literal<DerivedTag>>& literals,
                                      FlatBitset& ref_positive_bitset,
                                      FlatBitset& ref_negative_bitset,
                                      const ObjectList& binding);
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 static void ground_and_fill_vector(ProblemImpl& problem,
                                    const std::vector<Literal<P>>& literals,
                                    FlatIndexList& ref_positive_indices,
@@ -468,22 +480,22 @@ static void ground_and_fill_vector(ProblemImpl& problem,
 }
 
 template void ground_and_fill_vector(ProblemImpl& problem,
-                                     const std::vector<Literal<Static>>& literals,
+                                     const std::vector<Literal<StaticTag>>& literals,
                                      FlatIndexList& ref_positive_indices,
                                      FlatIndexList& ref_negative_indices,
                                      const ObjectList& binding);
 template void ground_and_fill_vector(ProblemImpl& problem,
-                                     const std::vector<Literal<Fluent>>& literals,
+                                     const std::vector<Literal<FluentTag>>& literals,
                                      FlatIndexList& ref_positive_indices,
                                      FlatIndexList& ref_negative_indices,
                                      const ObjectList& binding);
 template void ground_and_fill_vector(ProblemImpl& problem,
-                                     const std::vector<Literal<Derived>>& literals,
+                                     const std::vector<Literal<DerivedTag>>& literals,
                                      FlatIndexList& ref_positive_indices,
                                      FlatIndexList& ref_negative_indices,
                                      const ObjectList& binding);
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 GroundLiteral<P> ProblemImpl::ground(Literal<P> literal, const ObjectList& binding)
 {
     /* 1. Access the type specific grounding tables. */
@@ -526,13 +538,13 @@ GroundLiteral<P> ProblemImpl::ground(Literal<P> literal, const ObjectList& bindi
     return grounded_literal;
 }
 
-template GroundLiteral<Static> ProblemImpl::ground(Literal<Static> literal, const ObjectList& binding);
-template GroundLiteral<Fluent> ProblemImpl::ground(Literal<Fluent> literal, const ObjectList& binding);
-template GroundLiteral<Derived> ProblemImpl::ground(Literal<Derived> literal, const ObjectList& binding);
+template GroundLiteral<StaticTag> ProblemImpl::ground(Literal<StaticTag> literal, const ObjectList& binding);
+template GroundLiteral<FluentTag> ProblemImpl::ground(Literal<FluentTag> literal, const ObjectList& binding);
+template GroundLiteral<DerivedTag> ProblemImpl::ground(Literal<DerivedTag> literal, const ObjectList& binding);
 
 // Function
 
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 GroundFunction<F> ProblemImpl::ground(Function<F> function, const ObjectList& binding)
 {
     /* 1. Access the type specific grounding tables. */
@@ -573,9 +585,9 @@ GroundFunction<F> ProblemImpl::ground(Function<F> function, const ObjectList& bi
     return grounded_function;
 }
 
-template GroundFunction<Static> ProblemImpl::ground(Function<Static> function, const ObjectList& binding);
-template GroundFunction<Fluent> ProblemImpl::ground(Function<Fluent> function, const ObjectList& binding);
-template GroundFunction<Auxiliary> ProblemImpl::ground(Function<Auxiliary> function, const ObjectList& binding);
+template GroundFunction<StaticTag> ProblemImpl::ground(Function<StaticTag> function, const ObjectList& binding);
+template GroundFunction<FluentTag> ProblemImpl::ground(Function<FluentTag> function, const ObjectList& binding);
+template GroundFunction<AuxiliaryTag> ProblemImpl::ground(Function<AuxiliaryTag> function, const ObjectList& binding);
 
 // FunctionExpression
 
@@ -669,15 +681,15 @@ GroundFunctionExpression ProblemImpl::ground(FunctionExpression fexpr, const Obj
                                -std::get<GroundFunctionExpressionNumber>(ground_fexpr->get_variant())->get_number())) :
                            ground_fexpr;
             }
-            else if constexpr (std::is_same_v<T, FunctionExpressionFunction<Static>>)
+            else if constexpr (std::is_same_v<T, FunctionExpressionFunction<StaticTag>>)
             {
-                return m_repositories.get_or_create_ground_function_expression(
-                    m_repositories.get_or_create_ground_function_expression_number(get_initial_function_value<Static>(ground(arg->get_function(), binding))));
+                return m_repositories.get_or_create_ground_function_expression(m_repositories.get_or_create_ground_function_expression_number(
+                    get_initial_function_value<StaticTag>(ground(arg->get_function(), binding))));
             }
-            else if constexpr (std::is_same_v<T, FunctionExpressionFunction<Fluent>>)
+            else if constexpr (std::is_same_v<T, FunctionExpressionFunction<FluentTag>>)
             {
                 return m_repositories.get_or_create_ground_function_expression(
-                    m_repositories.get_or_create_ground_function_expression_function<Fluent>(ground(arg->get_function(), binding)));
+                    m_repositories.get_or_create_ground_function_expression_function<FluentTag>(ground(arg->get_function(), binding)));
             }
             else
             {
@@ -705,7 +717,7 @@ GroundNumericConstraint ProblemImpl::ground(NumericConstraint numeric_constraint
 }
 
 // NumericEffect
-template<FluentOrAuxiliary F>
+template<IsFluentOrAuxiliaryTag F>
 GroundNumericEffect<F> ProblemImpl::ground(NumericEffect<F> numeric_effect, const ObjectList& binding)
 {
     return m_repositories.get_or_create_ground_numeric_effect(numeric_effect->get_assign_operator(),
@@ -713,8 +725,8 @@ GroundNumericEffect<F> ProblemImpl::ground(NumericEffect<F> numeric_effect, cons
                                                               ground(numeric_effect->get_function_expression(), binding));
 }
 
-template GroundNumericEffect<Fluent> ProblemImpl::ground(NumericEffect<Fluent> numeric_effect, const ObjectList& binding);
-template GroundNumericEffect<Auxiliary> ProblemImpl::ground(NumericEffect<Auxiliary> numeric_effect, const ObjectList& binding);
+template GroundNumericEffect<FluentTag> ProblemImpl::ground(NumericEffect<FluentTag> numeric_effect, const ObjectList& binding);
+template GroundNumericEffect<AuxiliaryTag> ProblemImpl::ground(NumericEffect<AuxiliaryTag> numeric_effect, const ObjectList& binding);
 
 // Action
 
@@ -730,9 +742,9 @@ static void ground_and_fill_vector(ProblemImpl& problem,
 }
 
 static void ground_and_fill_vector(ProblemImpl& problem,
-                                   const NumericEffectList<Fluent>& numeric_effects,
+                                   const NumericEffectList<FluentTag>& numeric_effects,
                                    const ObjectList& binding,
-                                   GroundNumericEffectList<Fluent>& ref_numeric_effects)
+                                   GroundNumericEffectList<FluentTag>& ref_numeric_effects)
 {
     for (const auto& effect : numeric_effects)
     {
@@ -741,9 +753,9 @@ static void ground_and_fill_vector(ProblemImpl& problem,
 }
 
 static void ground_and_fill_optional(ProblemImpl& problem,
-                                     const std::optional<NumericEffect<Auxiliary>>& numeric_effect,
+                                     const std::optional<NumericEffect<AuxiliaryTag>>& numeric_effect,
                                      const ObjectList& binding,
-                                     cista::optional<FlatExternalPtr<const GroundNumericEffectImpl<Auxiliary>>>& ref_numeric_effect)
+                                     cista::optional<FlatExternalPtr<const GroundNumericEffectImpl<AuxiliaryTag>>>& ref_numeric_effect)
 {
     if (numeric_effect.has_value())
     {
@@ -781,12 +793,12 @@ GroundAction ProblemImpl::ground(Action action, ObjectList binding)
     /* Conjunctive precondition */
     {
         auto& conjunctive_condition = action_builder.get_conjunctive_condition();
-        auto& positive_fluent_precondition = conjunctive_condition.get_positive_precondition<Fluent>();
-        auto& negative_fluent_precondition = conjunctive_condition.get_negative_precondition<Fluent>();
-        auto& positive_static_precondition = conjunctive_condition.get_positive_precondition<Static>();
-        auto& negative_static_precondition = conjunctive_condition.get_negative_precondition<Static>();
-        auto& positive_derived_precondition = conjunctive_condition.get_positive_precondition<Derived>();
-        auto& negative_derived_precondition = conjunctive_condition.get_negative_precondition<Derived>();
+        auto& positive_fluent_precondition = conjunctive_condition.get_positive_precondition<FluentTag>();
+        auto& negative_fluent_precondition = conjunctive_condition.get_negative_precondition<FluentTag>();
+        auto& positive_static_precondition = conjunctive_condition.get_positive_precondition<StaticTag>();
+        auto& negative_static_precondition = conjunctive_condition.get_negative_precondition<StaticTag>();
+        auto& positive_derived_precondition = conjunctive_condition.get_positive_precondition<DerivedTag>();
+        auto& negative_derived_precondition = conjunctive_condition.get_negative_precondition<DerivedTag>();
         auto& numeric_constraints = conjunctive_condition.get_numeric_constraints();
         positive_fluent_precondition.clear();
         negative_fluent_precondition.clear();
@@ -796,17 +808,17 @@ GroundAction ProblemImpl::ground(Action action, ObjectList binding)
         negative_derived_precondition.clear();
         numeric_constraints.clear();
         ground_and_fill_vector(*this,
-                               action->get_conjunctive_condition()->get_literals<Fluent>(),
+                               action->get_conjunctive_condition()->get_literals<FluentTag>(),
                                positive_fluent_precondition,
                                negative_fluent_precondition,
                                binding);
         ground_and_fill_vector(*this,
-                               action->get_conjunctive_condition()->get_literals<Static>(),
+                               action->get_conjunctive_condition()->get_literals<StaticTag>(),
                                positive_static_precondition,
                                negative_static_precondition,
                                binding);
         ground_and_fill_vector(*this,
-                               action->get_conjunctive_condition()->get_literals<Derived>(),
+                               action->get_conjunctive_condition()->get_literals<DerivedTag>(),
                                positive_derived_precondition,
                                negative_derived_precondition,
                                binding);
@@ -879,12 +891,12 @@ GroundAction ProblemImpl::ground(Action action, ObjectList binding)
                     }
                     auto& cond_effect_j = cond_effects.at(j++);
                     auto& cond_conjunctive_condition_j = cond_effect_j.get_conjunctive_condition();
-                    auto& cond_positive_fluent_precondition_j = cond_conjunctive_condition_j.get_positive_precondition<Fluent>();
-                    auto& cond_negative_fluent_precondition_j = cond_conjunctive_condition_j.get_negative_precondition<Fluent>();
-                    auto& cond_positive_static_precondition_j = cond_conjunctive_condition_j.get_positive_precondition<Static>();
-                    auto& cond_negative_static_precondition_j = cond_conjunctive_condition_j.get_negative_precondition<Static>();
-                    auto& cond_positive_derived_precondition_j = cond_conjunctive_condition_j.get_positive_precondition<Derived>();
-                    auto& cond_negative_derived_precondition_j = cond_conjunctive_condition_j.get_negative_precondition<Derived>();
+                    auto& cond_positive_fluent_precondition_j = cond_conjunctive_condition_j.get_positive_precondition<FluentTag>();
+                    auto& cond_negative_fluent_precondition_j = cond_conjunctive_condition_j.get_negative_precondition<FluentTag>();
+                    auto& cond_positive_static_precondition_j = cond_conjunctive_condition_j.get_positive_precondition<StaticTag>();
+                    auto& cond_negative_static_precondition_j = cond_conjunctive_condition_j.get_negative_precondition<StaticTag>();
+                    auto& cond_positive_derived_precondition_j = cond_conjunctive_condition_j.get_positive_precondition<DerivedTag>();
+                    auto& cond_negative_derived_precondition_j = cond_conjunctive_condition_j.get_negative_precondition<DerivedTag>();
                     auto& cond_numeric_constraints_j = cond_conjunctive_condition_j.get_numeric_constraints();
                     auto& cond_conjunctive_effect_j = cond_effect_j.get_conjunctive_effect();
                     auto& cond_positive_effect_j = cond_conjunctive_effect_j.get_positive_effects();
@@ -901,17 +913,17 @@ GroundAction ProblemImpl::ground(Action action, ObjectList binding)
 
                     /* Propositional precondition */
                     ground_and_fill_vector(*this,
-                                           lifted_cond_effect->get_conjunctive_condition()->get_literals<Fluent>(),
+                                           lifted_cond_effect->get_conjunctive_condition()->get_literals<FluentTag>(),
                                            cond_positive_fluent_precondition_j,
                                            cond_negative_fluent_precondition_j,
                                            binding_cond_effect);
                     ground_and_fill_vector(*this,
-                                           lifted_cond_effect->get_conjunctive_condition()->get_literals<Static>(),
+                                           lifted_cond_effect->get_conjunctive_condition()->get_literals<StaticTag>(),
                                            cond_positive_static_precondition_j,
                                            cond_negative_static_precondition_j,
                                            binding_cond_effect);
                     ground_and_fill_vector(*this,
-                                           lifted_cond_effect->get_conjunctive_condition()->get_literals<Derived>(),
+                                           lifted_cond_effect->get_conjunctive_condition()->get_literals<DerivedTag>(),
                                            cond_positive_derived_precondition_j,
                                            cond_negative_derived_precondition_j,
                                            binding_cond_effect);
@@ -959,12 +971,12 @@ GroundAction ProblemImpl::ground(Action action, ObjectList binding)
                 }
                 auto& cond_effect = cond_effects.at(j++);
                 auto& cond_conjunctive_condition = cond_effect.get_conjunctive_condition();
-                auto& cond_positive_fluent_precondition = cond_conjunctive_condition.get_positive_precondition<Fluent>();
-                auto& cond_negative_fluent_precondition = cond_conjunctive_condition.get_negative_precondition<Fluent>();
-                auto& cond_positive_static_precondition = cond_conjunctive_condition.get_positive_precondition<Static>();
-                auto& cond_negative_static_precondition = cond_conjunctive_condition.get_negative_precondition<Static>();
-                auto& cond_positive_derived_precondition = cond_conjunctive_condition.get_positive_precondition<Derived>();
-                auto& cond_negative_derived_precondition = cond_conjunctive_condition.get_negative_precondition<Derived>();
+                auto& cond_positive_fluent_precondition = cond_conjunctive_condition.get_positive_precondition<FluentTag>();
+                auto& cond_negative_fluent_precondition = cond_conjunctive_condition.get_negative_precondition<FluentTag>();
+                auto& cond_positive_static_precondition = cond_conjunctive_condition.get_positive_precondition<StaticTag>();
+                auto& cond_negative_static_precondition = cond_conjunctive_condition.get_negative_precondition<StaticTag>();
+                auto& cond_positive_derived_precondition = cond_conjunctive_condition.get_positive_precondition<DerivedTag>();
+                auto& cond_negative_derived_precondition = cond_conjunctive_condition.get_negative_precondition<DerivedTag>();
                 auto& cond_numeric_constraints = cond_conjunctive_condition.get_numeric_constraints();
                 auto& cond_conjunctive_effect = cond_effect.get_conjunctive_effect();
                 auto& cond_positive_effect = cond_conjunctive_effect.get_positive_effects();
@@ -981,17 +993,17 @@ GroundAction ProblemImpl::ground(Action action, ObjectList binding)
 
                 /* Propositional precondition */
                 ground_and_fill_vector(*this,
-                                       lifted_cond_effect->get_conjunctive_condition()->get_literals<Fluent>(),
+                                       lifted_cond_effect->get_conjunctive_condition()->get_literals<FluentTag>(),
                                        cond_positive_fluent_precondition,
                                        cond_negative_fluent_precondition,
                                        binding);
                 ground_and_fill_vector(*this,
-                                       lifted_cond_effect->get_conjunctive_condition()->get_literals<Static>(),
+                                       lifted_cond_effect->get_conjunctive_condition()->get_literals<StaticTag>(),
                                        cond_positive_static_precondition,
                                        cond_negative_static_precondition,
                                        binding);
                 ground_and_fill_vector(*this,
-                                       lifted_cond_effect->get_conjunctive_condition()->get_literals<Derived>(),
+                                       lifted_cond_effect->get_conjunctive_condition()->get_literals<DerivedTag>(),
                                        cond_positive_derived_precondition,
                                        cond_negative_derived_precondition,
                                        binding);
@@ -1093,12 +1105,12 @@ GroundAxiom ProblemImpl::ground(Axiom axiom, ObjectList binding)
 
     /* Precondition */
     auto& conjunctive_condition = axiom_builder.get_conjunctive_condition();
-    auto& positive_fluent_precondition = conjunctive_condition.get_positive_precondition<Fluent>();
-    auto& negative_fluent_precondition = conjunctive_condition.get_negative_precondition<Fluent>();
-    auto& positive_static_precondition = conjunctive_condition.get_positive_precondition<Static>();
-    auto& negative_static_precondition = conjunctive_condition.get_negative_precondition<Static>();
-    auto& positive_derived_precondition = conjunctive_condition.get_positive_precondition<Derived>();
-    auto& negative_derived_precondition = conjunctive_condition.get_negative_precondition<Derived>();
+    auto& positive_fluent_precondition = conjunctive_condition.get_positive_precondition<FluentTag>();
+    auto& negative_fluent_precondition = conjunctive_condition.get_negative_precondition<FluentTag>();
+    auto& positive_static_precondition = conjunctive_condition.get_positive_precondition<StaticTag>();
+    auto& negative_static_precondition = conjunctive_condition.get_negative_precondition<StaticTag>();
+    auto& positive_derived_precondition = conjunctive_condition.get_positive_precondition<DerivedTag>();
+    auto& negative_derived_precondition = conjunctive_condition.get_negative_precondition<DerivedTag>();
     auto& numeric_constraints = conjunctive_condition.get_numeric_constraints();
     positive_fluent_precondition.clear();
     negative_fluent_precondition.clear();
@@ -1108,17 +1120,17 @@ GroundAxiom ProblemImpl::ground(Axiom axiom, ObjectList binding)
     negative_derived_precondition.clear();
     numeric_constraints.clear();
     ground_and_fill_vector(*this,
-                           axiom->get_conjunctive_condition()->get_literals<Fluent>(),
+                           axiom->get_conjunctive_condition()->get_literals<FluentTag>(),
                            positive_fluent_precondition,
                            negative_fluent_precondition,
                            binding);
     ground_and_fill_vector(*this,
-                           axiom->get_conjunctive_condition()->get_literals<Static>(),
+                           axiom->get_conjunctive_condition()->get_literals<StaticTag>(),
                            positive_static_precondition,
                            negative_static_precondition,
                            binding);
     ground_and_fill_vector(*this,
-                           axiom->get_conjunctive_condition()->get_literals<Derived>(),
+                           axiom->get_conjunctive_condition()->get_literals<DerivedTag>(),
                            positive_derived_precondition,
                            negative_derived_precondition,
                            binding);
@@ -1198,7 +1210,7 @@ const problem::ActionGroundingInfoList& problem::GroundingDetails::get_action_in
                     StaticConsistencyGraph::compute_vertices(*parent,
                                                              action->get_arity(),
                                                              action->get_arity() + conditional_effect->get_arity(),
-                                                             conditional_effect->get_conjunctive_condition()->get_literals<Static>());
+                                                             conditional_effect->get_conjunctive_condition()->get_literals<StaticTag>());
 
                 conditional_effect_infos.emplace_back(std::move(objects_by_parameter_index_));
             }
@@ -1218,17 +1230,17 @@ problem::InitialDetails::InitialDetails() : parent(nullptr) {}
 
 problem::InitialDetails::InitialDetails(const ProblemImpl& problem) :
     parent(&problem),
-    positive_static_initial_atoms(to_ground_atoms(problem.get_initial_literals<Static>())),
+    positive_static_initial_atoms(to_ground_atoms(problem.get_initial_literals<StaticTag>())),
     positive_static_initial_atoms_bitset(),
     positive_static_initial_atoms_indices(),
     positive_static_initial_assignment_set(
-        AssignmentSet<Static>(problem.get_problem_and_domain_objects().size(), problem.get_domain()->get_predicates<Static>())),
+        AssignmentSet<StaticTag>(problem.get_problem_and_domain_objects().size(), problem.get_domain()->get_predicates<StaticTag>())),
     static_initial_numeric_assignment_set(
-        NumericAssignmentSet<Static>(problem.get_problem_and_domain_objects().size(), problem.get_domain()->get_function_skeletons<Static>())),
-    positive_fluent_initial_atoms(to_ground_atoms(problem.get_initial_literals<Fluent>())),
+        NumericAssignmentSet<StaticTag>(problem.get_problem_and_domain_objects().size(), problem.get_domain()->get_function_skeletons<StaticTag>())),
+    positive_fluent_initial_atoms(to_ground_atoms(problem.get_initial_literals<FluentTag>())),
     initial_function_to_value()
 {
-    for (const auto& literal : problem.get_initial_literals<Static>())
+    for (const auto& literal : problem.get_initial_literals<StaticTag>())
     {
         if (!literal->is_negated())
         {
@@ -1267,8 +1279,8 @@ problem::InitialDetails::InitialDetails(const ProblemImpl& problem) :
                               }
                           });
 
-    auto static_functions = GroundFunctionList<Static> {};
-    for (const auto& function_value : problem.get_initial_function_values<Static>())
+    auto static_functions = GroundFunctionList<StaticTag> {};
+    for (const auto& function_value : problem.get_initial_function_values<StaticTag>())
     {
         const auto function = function_value->get_function();
         const auto index = function->get_index();
@@ -1279,7 +1291,7 @@ problem::InitialDetails::InitialDetails(const ProblemImpl& problem) :
         static_functions[index] = function;
     }
 
-    const auto& static_function_to_values = boost::hana::at_key(initial_function_to_value, boost::hana::type<Static> {});
+    const auto& static_function_to_values = boost::hana::at_key(initial_function_to_value, boost::hana::type<StaticTag> {});
 
     static_initial_numeric_assignment_set.insert_ground_function_values(static_functions, static_function_to_values);
 }
@@ -1297,7 +1309,7 @@ problem::GoalDetails::GoalDetails(const ProblemImpl& problem, const InitialDetai
     negative_goal_atoms_indices()
 {
     m_static_goal_holds = true;
-    for (const auto& literal : problem.get_goal_condition<Static>())
+    for (const auto& literal : problem.get_goal_condition<StaticTag>())
     {
         if (literal->is_negated() == initial.positive_static_initial_atoms_bitset.get(literal->get_atom()->get_index()))
         {

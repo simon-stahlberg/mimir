@@ -47,7 +47,7 @@ GroundedAxiomEvaluator::GroundedAxiomEvaluator(Problem problem,
 
 void GroundedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state)
 {
-    auto& dense_derived_atoms = dense_state.get_atoms<Derived>();
+    auto& dense_derived_atoms = dense_state.get_atoms<DerivedTag>();
 
     auto applicable_axioms = GroundAxiomList {};
 

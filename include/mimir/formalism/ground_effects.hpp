@@ -31,7 +31,7 @@
 namespace mimir::formalism
 {
 
-template<FluentOrAuxiliary F>
+template<IsFluentOrAuxiliaryTag F>
 class GroundNumericEffectImpl
 {
 private:
@@ -49,7 +49,7 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
-    using PDDLEntity = void;
+    using FormalismEntity = void;
 
     // moveable but not copyable
     GroundNumericEffectImpl(const GroundNumericEffectImpl& other) = delete;
@@ -68,7 +68,7 @@ public:
     auto identifying_members() const { return std::tuple(get_assign_operator(), get_function(), get_function_expression()); }
 };
 
-template<FluentOrAuxiliary F>
+template<IsFluentOrAuxiliaryTag F>
 using GroundNumericEffectList = cista::offset::vector<FlatExternalPtr<const GroundNumericEffectImpl<F>>>;
 
 class GroundConjunctiveEffect
@@ -76,8 +76,8 @@ class GroundConjunctiveEffect
 private:
     FlatIndexList m_positive_effects = FlatIndexList();
     FlatIndexList m_negative_effects = FlatIndexList();
-    GroundNumericEffectList<Fluent> m_fluent_numeric_effects = GroundNumericEffectList<Fluent>();
-    cista::optional<FlatExternalPtr<const GroundNumericEffectImpl<Auxiliary>>> m_auxiliary_numeric_effect = std::nullopt;
+    GroundNumericEffectList<FluentTag> m_fluent_numeric_effects = GroundNumericEffectList<FluentTag>();
+    cista::optional<FlatExternalPtr<const GroundNumericEffectImpl<AuxiliaryTag>>> m_auxiliary_numeric_effect = std::nullopt;
 
 public:
     /* Propositional effects */
@@ -88,11 +88,11 @@ public:
     const FlatIndexList& get_negative_effects() const;
 
     /* Numeric effects */
-    GroundNumericEffectList<Fluent>& get_fluent_numeric_effects();
-    const GroundNumericEffectList<Fluent>& get_fluent_numeric_effects() const;
+    GroundNumericEffectList<FluentTag>& get_fluent_numeric_effects();
+    const GroundNumericEffectList<FluentTag>& get_fluent_numeric_effects() const;
 
-    cista::optional<FlatExternalPtr<const GroundNumericEffectImpl<Auxiliary>>>& get_auxiliary_numeric_effect();
-    const cista::optional<FlatExternalPtr<const GroundNumericEffectImpl<Auxiliary>>>& get_auxiliary_numeric_effect() const;
+    cista::optional<FlatExternalPtr<const GroundNumericEffectImpl<AuxiliaryTag>>>& get_auxiliary_numeric_effect();
+    const cista::optional<FlatExternalPtr<const GroundNumericEffectImpl<AuxiliaryTag>>>& get_auxiliary_numeric_effect() const;
 
     auto cista_members() noexcept { return std::tie(m_positive_effects, m_negative_effects, m_fluent_numeric_effects, m_auxiliary_numeric_effect); }
 };
@@ -122,7 +122,7 @@ using GroundEffectConditionalList = cista::offset::vector<GroundConditionalEffec
  * Utils
  */
 
-template<FluentOrAuxiliary F>
+template<IsFluentOrAuxiliaryTag F>
 extern std::pair<loki::AssignOperatorEnum, ContinuousCost>
 evaluate(GroundNumericEffect<F> effect, const FlatDoubleList& static_numeric_variables, const FlatDoubleList& fluent_numeric_variables);
 
@@ -130,10 +130,10 @@ evaluate(GroundNumericEffect<F> effect, const FlatDoubleList& static_numeric_var
  * Pretty printing
  */
 
-template<FluentOrAuxiliary F>
+template<IsFluentOrAuxiliaryTag F>
 std::ostream& operator<<(std::ostream& out, const GroundNumericEffectImpl<F>& element);
 
-template<FluentOrAuxiliary F>
+template<IsFluentOrAuxiliaryTag F>
 std::ostream& operator<<(std::ostream& out, GroundNumericEffect<F> element);
 
 }

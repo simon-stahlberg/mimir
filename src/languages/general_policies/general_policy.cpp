@@ -29,7 +29,7 @@
 namespace mimir::languages::general_policies
 {
 
-GeneralPolicyImpl::GeneralPolicyImpl(Index index, NamedFeatureLists<dl::Boolean, dl::Numerical> features, RuleList rules) :
+GeneralPolicyImpl::GeneralPolicyImpl(Index index, NamedFeatureLists<dl::BooleanTag, dl::NumericalTag> features, RuleList rules) :
     m_index(index),
     m_features(features),
     m_rules(rules)
@@ -270,16 +270,16 @@ GeneralPolicyImpl::UnsolvabilityReason GeneralPolicyImpl::solves(const datasets:
 
 Index GeneralPolicyImpl::get_index() const { return m_index; }
 
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 const NamedFeatureList<D>& GeneralPolicyImpl::get_features() const
 {
     return boost::hana::at_key(m_features, boost::hana::type<D> {});
 }
 
-template const NamedFeatureList<dl::Boolean>& GeneralPolicyImpl::get_features() const;
-template const NamedFeatureList<dl::Numerical>& GeneralPolicyImpl::get_features() const;
+template const NamedFeatureList<dl::BooleanTag>& GeneralPolicyImpl::get_features() const;
+template const NamedFeatureList<dl::NumericalTag>& GeneralPolicyImpl::get_features() const;
 
-const NamedFeatureLists<dl::Boolean, dl::Numerical>& GeneralPolicyImpl::get_hana_features() const { return m_features; }
+const NamedFeatureLists<dl::BooleanTag, dl::NumericalTag>& GeneralPolicyImpl::get_hana_features() const { return m_features; }
 
 const RuleList& GeneralPolicyImpl::get_rules() const { return m_rules; }
 }

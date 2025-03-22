@@ -29,7 +29,7 @@ namespace mimir::languages::dl::cnf_grammar
  * Grammar constructor hierarchy parallel to dl constructors.
  */
 
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 class IConstructor
 {
 protected:

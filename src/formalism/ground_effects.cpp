@@ -32,7 +32,7 @@ namespace mimir::formalism
 {
 
 /* GroundNumericEffect */
-template<FluentOrAuxiliary F>
+template<IsFluentOrAuxiliaryTag F>
 GroundNumericEffectImpl<F>::GroundNumericEffectImpl(Index index,
                                                     loki::AssignOperatorEnum assign_operator,
                                                     GroundFunction<F> function,
@@ -44,32 +44,32 @@ GroundNumericEffectImpl<F>::GroundNumericEffectImpl(Index index,
 {
 }
 
-template<FluentOrAuxiliary F>
+template<IsFluentOrAuxiliaryTag F>
 Index GroundNumericEffectImpl<F>::get_index() const
 {
     return m_index;
 }
 
-template<FluentOrAuxiliary F>
+template<IsFluentOrAuxiliaryTag F>
 loki::AssignOperatorEnum GroundNumericEffectImpl<F>::get_assign_operator() const
 {
     return m_assign_operator;
 }
 
-template<FluentOrAuxiliary F>
+template<IsFluentOrAuxiliaryTag F>
 GroundFunction<F> GroundNumericEffectImpl<F>::get_function() const
 {
     return m_function;
 }
 
-template<FluentOrAuxiliary F>
+template<IsFluentOrAuxiliaryTag F>
 GroundFunctionExpression GroundNumericEffectImpl<F>::get_function_expression() const
 {
     return m_function_expression;
 }
 
-template class GroundNumericEffectImpl<Fluent>;
-template class GroundNumericEffectImpl<Auxiliary>;
+template class GroundNumericEffectImpl<FluentTag>;
+template class GroundNumericEffectImpl<AuxiliaryTag>;
 
 /* GroundConjunctiveEffect */
 
@@ -81,16 +81,16 @@ FlatIndexList& GroundConjunctiveEffect::get_negative_effects() { return m_negati
 
 const FlatIndexList& GroundConjunctiveEffect::get_negative_effects() const { return m_negative_effects; }
 
-GroundNumericEffectList<Fluent>& GroundConjunctiveEffect::get_fluent_numeric_effects() { return m_fluent_numeric_effects; }
+GroundNumericEffectList<FluentTag>& GroundConjunctiveEffect::get_fluent_numeric_effects() { return m_fluent_numeric_effects; }
 
-const GroundNumericEffectList<Fluent>& GroundConjunctiveEffect::get_fluent_numeric_effects() const { return m_fluent_numeric_effects; }
+const GroundNumericEffectList<FluentTag>& GroundConjunctiveEffect::get_fluent_numeric_effects() const { return m_fluent_numeric_effects; }
 
-cista::optional<FlatExternalPtr<const GroundNumericEffectImpl<Auxiliary>>>& GroundConjunctiveEffect::get_auxiliary_numeric_effect()
+cista::optional<FlatExternalPtr<const GroundNumericEffectImpl<AuxiliaryTag>>>& GroundConjunctiveEffect::get_auxiliary_numeric_effect()
 {
     return m_auxiliary_numeric_effect;
 }
 
-const cista::optional<FlatExternalPtr<const GroundNumericEffectImpl<Auxiliary>>>& GroundConjunctiveEffect::get_auxiliary_numeric_effect() const
+const cista::optional<FlatExternalPtr<const GroundNumericEffectImpl<AuxiliaryTag>>>& GroundConjunctiveEffect::get_auxiliary_numeric_effect() const
 {
     return m_auxiliary_numeric_effect;
 }
@@ -111,7 +111,7 @@ const GroundConjunctiveEffect& GroundConditionalEffect::get_conjunctive_effect()
  * Utils
  */
 
-template<FluentOrAuxiliary F>
+template<IsFluentOrAuxiliaryTag F>
 std::pair<loki::AssignOperatorEnum, ContinuousCost>
 evaluate(GroundNumericEffect<F> effect, const FlatDoubleList& static_numeric_variables, const FlatDoubleList& fluent_numeric_variables)
 {
@@ -119,33 +119,33 @@ evaluate(GroundNumericEffect<F> effect, const FlatDoubleList& static_numeric_var
 }
 
 template std::pair<loki::AssignOperatorEnum, ContinuousCost>
-evaluate(GroundNumericEffect<Fluent> effect, const FlatDoubleList& static_numeric_variables, const FlatDoubleList& fluent_numeric_variables);
+evaluate(GroundNumericEffect<FluentTag> effect, const FlatDoubleList& static_numeric_variables, const FlatDoubleList& fluent_numeric_variables);
 template std::pair<loki::AssignOperatorEnum, ContinuousCost>
-evaluate(GroundNumericEffect<Auxiliary> effect, const FlatDoubleList& static_numeric_variables, const FlatDoubleList& fluent_numeric_variables);
+evaluate(GroundNumericEffect<AuxiliaryTag> effect, const FlatDoubleList& static_numeric_variables, const FlatDoubleList& fluent_numeric_variables);
 
 /**
  * Pretty printing
  */
 
-template<FluentOrAuxiliary F>
+template<IsFluentOrAuxiliaryTag F>
 std::ostream& operator<<(std::ostream& out, const GroundNumericEffectImpl<F>& element)
 {
     write(element, StringFormatter(), out);
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, const GroundNumericEffectImpl<Fluent>& element);
-template std::ostream& operator<<(std::ostream& out, const GroundNumericEffectImpl<Auxiliary>& element);
+template std::ostream& operator<<(std::ostream& out, const GroundNumericEffectImpl<FluentTag>& element);
+template std::ostream& operator<<(std::ostream& out, const GroundNumericEffectImpl<AuxiliaryTag>& element);
 
-template<FluentOrAuxiliary F>
+template<IsFluentOrAuxiliaryTag F>
 std::ostream& operator<<(std::ostream& out, GroundNumericEffect<F> element)
 {
     write(*element, AddressFormatter(), out);
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, GroundNumericEffect<Fluent> element);
-template std::ostream& operator<<(std::ostream& out, GroundNumericEffect<Auxiliary> element);
+template std::ostream& operator<<(std::ostream& out, GroundNumericEffect<FluentTag> element);
+template std::ostream& operator<<(std::ostream& out, GroundNumericEffect<AuxiliaryTag> element);
 
 }
 
@@ -160,13 +160,13 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundCon
     const auto& positive_literal_indices = conjunctive_effect.get_positive_effects();
     const auto& negative_literal_indices = conjunctive_effect.get_negative_effects();
 
-    auto positive_literals = formalism::GroundAtomList<formalism::Fluent> {};
-    auto negative_literals = formalism::GroundAtomList<formalism::Fluent> {};
+    auto positive_literals = formalism::GroundAtomList<formalism::FluentTag> {};
+    auto negative_literals = formalism::GroundAtomList<formalism::FluentTag> {};
     const auto& fluent_numeric_effects = conjunctive_effect.get_fluent_numeric_effects();
     const auto& auxiliary_numeric_effect = conjunctive_effect.get_auxiliary_numeric_effect();
 
-    problem.get_repositories().get_ground_atoms_from_indices<formalism::Fluent>(positive_literal_indices, positive_literals);
-    problem.get_repositories().get_ground_atoms_from_indices<formalism::Fluent>(negative_literal_indices, negative_literals);
+    problem.get_repositories().get_ground_atoms_from_indices<formalism::FluentTag>(positive_literal_indices, positive_literals);
+    problem.get_repositories().get_ground_atoms_from_indices<formalism::FluentTag>(negative_literal_indices, negative_literals);
 
     os << "delete effects=";
     mimir::operator<<(os, negative_literals);

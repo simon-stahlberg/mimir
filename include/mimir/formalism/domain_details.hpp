@@ -37,7 +37,7 @@ struct PredicateDetails
 {
     const DomainImpl* parent;
 
-    ToPredicateMaps<std::string, Static, Fluent, Derived> name_to_predicate;
+    ToPredicateMaps<std::string, StaticTag, FluentTag, DerivedTag> name_to_predicate;
 
     PredicateDetails();
     PredicateDetails(const DomainImpl& domain);

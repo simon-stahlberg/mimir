@@ -35,7 +35,7 @@ private:
 
     std::unordered_map<graphs::Color, std::string> m_color_to_name;  ///< for visualizations
 
-    formalism::PredicateMaps<graphs::Color, formalism::Static, formalism::Fluent, formalism::Derived> m_predicate_colors;
+    formalism::PredicateMaps<graphs::Color, formalism::StaticTag, formalism::FluentTag, formalism::DerivedTag> m_predicate_colors;
 
 public:
     explicit GeneralizedColorFunctionImpl(formalism::GeneralizedProblem generalized_problem);
@@ -46,11 +46,11 @@ public:
     graphs::Color get_color(formalism::Object object) const;
 
     /// @brief Get unique color of state atom.
-    template<formalism::StaticOrFluentOrDerived P>
+    template<formalism::IsStaticOrFluentOrDerivedTag P>
     graphs::Color get_color(formalism::GroundAtom<P> atom, size_t pos) const;
 
     /// @brief Get unique color of goal literal.
-    template<formalism::StaticOrFluentOrDerived P>
+    template<formalism::IsStaticOrFluentOrDerivedTag P>
     graphs::Color get_color(formalism::GroundLiteral<P> literal,
                             size_t pos,
                             search::State state,

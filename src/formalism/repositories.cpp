@@ -22,7 +22,7 @@
 namespace mimir::formalism
 {
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 static GroundLiteralList<P> ground_nullary_literals(const LiteralList<P>& literals, Repositories& pddl_repositories)
 {
     auto ground_literals = GroundLiteralList<P> {};
@@ -68,55 +68,55 @@ Object Repositories::get_or_create_object(std::string name)
     return boost::hana::at_key(m_repositories, boost::hana::type<ObjectImpl> {}).get_or_create(std::move(name));
 }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 Atom<P> Repositories::get_or_create_atom(Predicate<P> predicate, TermList terms)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<AtomImpl<P>> {}).get_or_create(std::move(predicate), std::move(terms));
 }
 
-template Atom<Static> Repositories::get_or_create_atom(Predicate<Static> predicate, TermList terms);
-template Atom<Fluent> Repositories::get_or_create_atom(Predicate<Fluent> predicate, TermList terms);
-template Atom<Derived> Repositories::get_or_create_atom(Predicate<Derived> predicate, TermList terms);
+template Atom<StaticTag> Repositories::get_or_create_atom(Predicate<StaticTag> predicate, TermList terms);
+template Atom<FluentTag> Repositories::get_or_create_atom(Predicate<FluentTag> predicate, TermList terms);
+template Atom<DerivedTag> Repositories::get_or_create_atom(Predicate<DerivedTag> predicate, TermList terms);
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 GroundAtom<P> Repositories::get_or_create_ground_atom(Predicate<P> predicate, ObjectList objects)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundAtomImpl<P>> {}).get_or_create(std::move(predicate), std::move(objects));
 }
 
-template GroundAtom<Static> Repositories::get_or_create_ground_atom(Predicate<Static> predicate, ObjectList ObjectList);
-template GroundAtom<Fluent> Repositories::get_or_create_ground_atom(Predicate<Fluent> predicate, ObjectList ObjectList);
-template GroundAtom<Derived> Repositories::get_or_create_ground_atom(Predicate<Derived> predicate, ObjectList ObjectList);
+template GroundAtom<StaticTag> Repositories::get_or_create_ground_atom(Predicate<StaticTag> predicate, ObjectList ObjectList);
+template GroundAtom<FluentTag> Repositories::get_or_create_ground_atom(Predicate<FluentTag> predicate, ObjectList ObjectList);
+template GroundAtom<DerivedTag> Repositories::get_or_create_ground_atom(Predicate<DerivedTag> predicate, ObjectList ObjectList);
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 Literal<P> Repositories::get_or_create_literal(bool is_negated, Atom<P> atom)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<LiteralImpl<P>> {}).get_or_create(is_negated, std::move(atom));
 }
 
-template Literal<Static> Repositories::get_or_create_literal(bool is_negated, Atom<Static> atom);
-template Literal<Fluent> Repositories::get_or_create_literal(bool is_negated, Atom<Fluent> atom);
-template Literal<Derived> Repositories::get_or_create_literal(bool is_negated, Atom<Derived> atom);
+template Literal<StaticTag> Repositories::get_or_create_literal(bool is_negated, Atom<StaticTag> atom);
+template Literal<FluentTag> Repositories::get_or_create_literal(bool is_negated, Atom<FluentTag> atom);
+template Literal<DerivedTag> Repositories::get_or_create_literal(bool is_negated, Atom<DerivedTag> atom);
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 GroundLiteral<P> Repositories::get_or_create_ground_literal(bool is_negated, GroundAtom<P> atom)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundLiteralImpl<P>> {}).get_or_create(is_negated, std::move(atom));
 }
 
-template GroundLiteral<Static> Repositories::get_or_create_ground_literal(bool is_negated, GroundAtom<Static> atom);
-template GroundLiteral<Fluent> Repositories::get_or_create_ground_literal(bool is_negated, GroundAtom<Fluent> atom);
-template GroundLiteral<Derived> Repositories::get_or_create_ground_literal(bool is_negated, GroundAtom<Derived> atom);
+template GroundLiteral<StaticTag> Repositories::get_or_create_ground_literal(bool is_negated, GroundAtom<StaticTag> atom);
+template GroundLiteral<FluentTag> Repositories::get_or_create_ground_literal(bool is_negated, GroundAtom<FluentTag> atom);
+template GroundLiteral<DerivedTag> Repositories::get_or_create_ground_literal(bool is_negated, GroundAtom<DerivedTag> atom);
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 Predicate<P> Repositories::get_or_create_predicate(std::string name, VariableList parameters)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<PredicateImpl<P>> {}).get_or_create(name, std::move(parameters));
 }
 
-template Predicate<Static> Repositories::get_or_create_predicate(std::string name, VariableList parameters);
-template Predicate<Fluent> Repositories::get_or_create_predicate(std::string name, VariableList parameters);
-template Predicate<Derived> Repositories::get_or_create_predicate(std::string name, VariableList parameters);
+template Predicate<StaticTag> Repositories::get_or_create_predicate(std::string name, VariableList parameters);
+template Predicate<FluentTag> Repositories::get_or_create_predicate(std::string name, VariableList parameters);
+template Predicate<DerivedTag> Repositories::get_or_create_predicate(std::string name, VariableList parameters);
 
 FunctionExpressionNumber Repositories::get_or_create_function_expression_number(double number)
 {
@@ -153,14 +153,14 @@ FunctionExpressionMinus Repositories::get_or_create_function_expression_minus(Fu
     return boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionMinusImpl> {}).get_or_create(std::move(function_expression));
 }
 
-template<StaticOrFluent F>
+template<IsStaticOrFluentTag F>
 FunctionExpressionFunction<F> Repositories::get_or_create_function_expression_function(Function<F> function)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionFunctionImpl<F>> {}).get_or_create(std::move(function));
 }
 
-template FunctionExpressionFunction<Static> Repositories::get_or_create_function_expression_function(Function<Static> function);
-template FunctionExpressionFunction<Fluent> Repositories::get_or_create_function_expression_function(Function<Fluent> function);
+template FunctionExpressionFunction<StaticTag> Repositories::get_or_create_function_expression_function(Function<StaticTag> function);
+template FunctionExpressionFunction<FluentTag> Repositories::get_or_create_function_expression_function(Function<FluentTag> function);
 
 FunctionExpression Repositories::get_or_create_function_expression(FunctionExpressionNumber fexpr)
 {
@@ -182,14 +182,14 @@ FunctionExpression Repositories::get_or_create_function_expression(FunctionExpre
     return boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionImpl> {}).get_or_create(fexpr);
 }
 
-template<StaticOrFluent F>
+template<IsStaticOrFluentTag F>
 FunctionExpression Repositories::get_or_create_function_expression(FunctionExpressionFunction<F> fexpr)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionImpl> {}).get_or_create(fexpr);
 }
 
-template FunctionExpression Repositories::get_or_create_function_expression(FunctionExpressionFunction<Static> fexpr);
-template FunctionExpression Repositories::get_or_create_function_expression(FunctionExpressionFunction<Fluent> fexpr);
+template FunctionExpression Repositories::get_or_create_function_expression(FunctionExpressionFunction<StaticTag> fexpr);
+template FunctionExpression Repositories::get_or_create_function_expression(FunctionExpressionFunction<FluentTag> fexpr);
 
 GroundFunctionExpressionNumber Repositories::get_or_create_ground_function_expression_number(double number)
 {
@@ -226,15 +226,15 @@ GroundFunctionExpressionMinus Repositories::get_or_create_ground_function_expres
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionExpressionMinusImpl> {}).get_or_create(std::move(function_expression));
 }
 
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 GroundFunctionExpressionFunction<F> Repositories::get_or_create_ground_function_expression_function(GroundFunction<F> function)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionExpressionFunctionImpl<F>> {}).get_or_create(std::move(function));
 }
 
-template GroundFunctionExpressionFunction<Static> Repositories::get_or_create_ground_function_expression_function(GroundFunction<Static> function);
-template GroundFunctionExpressionFunction<Fluent> Repositories::get_or_create_ground_function_expression_function(GroundFunction<Fluent> function);
-template GroundFunctionExpressionFunction<Auxiliary> Repositories::get_or_create_ground_function_expression_function(GroundFunction<Auxiliary> function);
+template GroundFunctionExpressionFunction<StaticTag> Repositories::get_or_create_ground_function_expression_function(GroundFunction<StaticTag> function);
+template GroundFunctionExpressionFunction<FluentTag> Repositories::get_or_create_ground_function_expression_function(GroundFunction<FluentTag> function);
+template GroundFunctionExpressionFunction<AuxiliaryTag> Repositories::get_or_create_ground_function_expression_function(GroundFunction<AuxiliaryTag> function);
 
 GroundFunctionExpression Repositories::get_or_create_ground_function_expression(GroundFunctionExpressionNumber fexpr)
 {
@@ -256,50 +256,50 @@ GroundFunctionExpression Repositories::get_or_create_ground_function_expression(
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionExpressionImpl> {}).get_or_create(fexpr);
 }
 
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 GroundFunctionExpression Repositories::get_or_create_ground_function_expression(GroundFunctionExpressionFunction<F> fexpr)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionExpressionImpl> {}).get_or_create(fexpr);
 }
-template GroundFunctionExpression Repositories::get_or_create_ground_function_expression(GroundFunctionExpressionFunction<Static> fexpr);
-template GroundFunctionExpression Repositories::get_or_create_ground_function_expression(GroundFunctionExpressionFunction<Fluent> fexpr);
-template GroundFunctionExpression Repositories::get_or_create_ground_function_expression(GroundFunctionExpressionFunction<Auxiliary> fexpr);
+template GroundFunctionExpression Repositories::get_or_create_ground_function_expression(GroundFunctionExpressionFunction<StaticTag> fexpr);
+template GroundFunctionExpression Repositories::get_or_create_ground_function_expression(GroundFunctionExpressionFunction<FluentTag> fexpr);
+template GroundFunctionExpression Repositories::get_or_create_ground_function_expression(GroundFunctionExpressionFunction<AuxiliaryTag> fexpr);
 
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 Function<F> Repositories::get_or_create_function(FunctionSkeleton<F> function_skeleton, TermList terms, IndexList m_parent_terms_to_terms_mapping)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<FunctionImpl<F>> {})
         .get_or_create(std::move(function_skeleton), std::move(terms), std::move(m_parent_terms_to_terms_mapping));
 }
 
-template Function<Static>
-Repositories::get_or_create_function(FunctionSkeleton<Static> function_skeleton, TermList terms, IndexList m_parent_terms_to_terms_mapping);
-template Function<Fluent>
-Repositories::get_or_create_function(FunctionSkeleton<Fluent> function_skeleton, TermList terms, IndexList m_parent_terms_to_terms_mapping);
-template Function<Auxiliary>
-Repositories::get_or_create_function(FunctionSkeleton<Auxiliary> function_skeleton, TermList terms, IndexList m_parent_terms_to_terms_mapping);
+template Function<StaticTag>
+Repositories::get_or_create_function(FunctionSkeleton<StaticTag> function_skeleton, TermList terms, IndexList m_parent_terms_to_terms_mapping);
+template Function<FluentTag>
+Repositories::get_or_create_function(FunctionSkeleton<FluentTag> function_skeleton, TermList terms, IndexList m_parent_terms_to_terms_mapping);
+template Function<AuxiliaryTag>
+Repositories::get_or_create_function(FunctionSkeleton<AuxiliaryTag> function_skeleton, TermList terms, IndexList m_parent_terms_to_terms_mapping);
 
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 GroundFunction<F> Repositories::get_or_create_ground_function(FunctionSkeleton<F> function_skeleton, ObjectList objects)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionImpl<F>> {}).get_or_create(std::move(function_skeleton), std::move(objects));
 }
 
-template GroundFunction<Static> Repositories::get_or_create_ground_function(FunctionSkeleton<Static> function_skeleton, ObjectList objects);
-template GroundFunction<Fluent> Repositories::get_or_create_ground_function(FunctionSkeleton<Fluent> function_skeleton, ObjectList objects);
-template GroundFunction<Auxiliary> Repositories::get_or_create_ground_function(FunctionSkeleton<Auxiliary> function_skeleton, ObjectList objects);
+template GroundFunction<StaticTag> Repositories::get_or_create_ground_function(FunctionSkeleton<StaticTag> function_skeleton, ObjectList objects);
+template GroundFunction<FluentTag> Repositories::get_or_create_ground_function(FunctionSkeleton<FluentTag> function_skeleton, ObjectList objects);
+template GroundFunction<AuxiliaryTag> Repositories::get_or_create_ground_function(FunctionSkeleton<AuxiliaryTag> function_skeleton, ObjectList objects);
 
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 FunctionSkeleton<F> Repositories::get_or_create_function_skeleton(std::string name, VariableList parameters)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<FunctionSkeletonImpl<F>> {}).get_or_create(std::move(name), std::move(parameters));
 }
 
-template FunctionSkeleton<Static> Repositories::get_or_create_function_skeleton(std::string name, VariableList parameters);
-template FunctionSkeleton<Fluent> Repositories::get_or_create_function_skeleton(std::string name, VariableList parameters);
-template FunctionSkeleton<Auxiliary> Repositories::get_or_create_function_skeleton(std::string name, VariableList parameters);
+template FunctionSkeleton<StaticTag> Repositories::get_or_create_function_skeleton(std::string name, VariableList parameters);
+template FunctionSkeleton<FluentTag> Repositories::get_or_create_function_skeleton(std::string name, VariableList parameters);
+template FunctionSkeleton<AuxiliaryTag> Repositories::get_or_create_function_skeleton(std::string name, VariableList parameters);
 
-template<FluentOrAuxiliary F>
+template<IsFluentOrAuxiliaryTag F>
 NumericEffect<F>
 Repositories::get_or_create_numeric_effect(loki::AssignOperatorEnum assign_operator, Function<F> function, FunctionExpression function_expression)
 {
@@ -307,12 +307,12 @@ Repositories::get_or_create_numeric_effect(loki::AssignOperatorEnum assign_opera
         .get_or_create(std::move(assign_operator), std::move(function), std::move(function_expression));
 }
 
-template NumericEffect<Fluent>
-Repositories::get_or_create_numeric_effect(loki::AssignOperatorEnum assign_operator, Function<Fluent> function, FunctionExpression function_expression);
-template NumericEffect<Auxiliary>
-Repositories::get_or_create_numeric_effect(loki::AssignOperatorEnum assign_operator, Function<Auxiliary> function, FunctionExpression function_expression);
+template NumericEffect<FluentTag>
+Repositories::get_or_create_numeric_effect(loki::AssignOperatorEnum assign_operator, Function<FluentTag> function, FunctionExpression function_expression);
+template NumericEffect<AuxiliaryTag>
+Repositories::get_or_create_numeric_effect(loki::AssignOperatorEnum assign_operator, Function<AuxiliaryTag> function, FunctionExpression function_expression);
 
-template<FluentOrAuxiliary F>
+template<IsFluentOrAuxiliaryTag F>
 GroundNumericEffect<F> Repositories::get_or_create_ground_numeric_effect(loki::AssignOperatorEnum assign_operator,
                                                                          GroundFunction<F> function,
                                                                          GroundFunctionExpression function_expression)
@@ -321,17 +321,17 @@ GroundNumericEffect<F> Repositories::get_or_create_ground_numeric_effect(loki::A
         .get_or_create(std::move(assign_operator), std::move(function), std::move(function_expression));
 }
 
-template GroundNumericEffect<Fluent> Repositories::get_or_create_ground_numeric_effect(loki::AssignOperatorEnum assign_operator,
-                                                                                       GroundFunction<Fluent> function,
-                                                                                       GroundFunctionExpression function_expression);
-template GroundNumericEffect<Auxiliary> Repositories::get_or_create_ground_numeric_effect(loki::AssignOperatorEnum assign_operator,
-                                                                                          GroundFunction<Auxiliary> function,
+template GroundNumericEffect<FluentTag> Repositories::get_or_create_ground_numeric_effect(loki::AssignOperatorEnum assign_operator,
+                                                                                          GroundFunction<FluentTag> function,
                                                                                           GroundFunctionExpression function_expression);
+template GroundNumericEffect<AuxiliaryTag> Repositories::get_or_create_ground_numeric_effect(loki::AssignOperatorEnum assign_operator,
+                                                                                             GroundFunction<AuxiliaryTag> function,
+                                                                                             GroundFunctionExpression function_expression);
 
 ConjunctiveEffect Repositories::get_or_create_conjunctive_effect(VariableList parameters,
-                                                                 LiteralList<Fluent> effects,
-                                                                 NumericEffectList<Fluent> fluent_numeric_effects,
-                                                                 std::optional<NumericEffect<Auxiliary>> auxiliary_numeric_effect)
+                                                                 LiteralList<FluentTag> effects,
+                                                                 NumericEffectList<FluentTag> fluent_numeric_effects,
+                                                                 std::optional<NumericEffect<AuxiliaryTag>> auxiliary_numeric_effect)
 {
     /* Canonize before uniqueness test. */
     std::sort(effects.begin(), effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
@@ -365,10 +365,10 @@ GroundNumericConstraint Repositories::get_or_create_ground_numeric_constraint(lo
 }
 
 ConjunctiveCondition Repositories::get_or_create_conjunctive_condition(VariableList parameters,
-                                                                       LiteralLists<Static, Fluent, Derived> literals,
+                                                                       LiteralLists<StaticTag, FluentTag, DerivedTag> literals,
                                                                        NumericConstraintList numeric_constraints)
 {
-    auto nullary_ground_literals = GroundLiteralLists<Static, Fluent, Derived> {};
+    auto nullary_ground_literals = GroundLiteralLists<StaticTag, FluentTag, DerivedTag> {};
     boost::hana::for_each(literals,
                           [&](auto&& pair)
                           {
@@ -403,7 +403,7 @@ Action Repositories::get_or_create_action(std::string name,
         .get_or_create(std::move(name), original_arity, std::move(conjunctive_condition), std::move(conjunctive_effect), std::move(conditional_effects));
 }
 
-Axiom Repositories::get_or_create_axiom(ConjunctiveCondition conjunctive_condition, Literal<Derived> literal)
+Axiom Repositories::get_or_create_axiom(ConjunctiveCondition conjunctive_condition, Literal<DerivedTag> literal)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<AxiomImpl> {}).get_or_create(std::move(conjunctive_condition), std::move(literal));
 }
@@ -413,15 +413,15 @@ OptimizationMetric Repositories::get_or_create_optimization_metric(loki::Optimiz
     return boost::hana::at_key(m_repositories, boost::hana::type<OptimizationMetricImpl> {}).get_or_create(std::move(metric), std::move(function_expression));
 }
 
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 GroundFunctionValue<F> Repositories::get_or_create_ground_function_value(GroundFunction<F> function, double number)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionValueImpl<F>> {}).get_or_create(std::move(function), std::move(number));
 }
 
-template GroundFunctionValue<Static> Repositories::get_or_create_ground_function_value(GroundFunction<Static> function, double number);
-template GroundFunctionValue<Fluent> Repositories::get_or_create_ground_function_value(GroundFunction<Fluent> function, double number);
-template GroundFunctionValue<Auxiliary> Repositories::get_or_create_ground_function_value(GroundFunction<Auxiliary> function, double number);
+template GroundFunctionValue<StaticTag> Repositories::get_or_create_ground_function_value(GroundFunction<StaticTag> function, double number);
+template GroundFunctionValue<FluentTag> Repositories::get_or_create_ground_function_value(GroundFunction<FluentTag> function, double number);
+template GroundFunctionValue<AuxiliaryTag> Repositories::get_or_create_ground_function_value(GroundFunction<AuxiliaryTag> function, double number);
 
 /**
  * Accessors
@@ -436,29 +436,29 @@ GroundNumericConstraint Repositories::get_ground_numeric_constraint(size_t numer
 
 // GroundNumericEffect
 
-template<FluentOrAuxiliary F>
+template<IsFluentOrAuxiliaryTag F>
 GroundNumericEffect<F> Repositories::get_ground_numeric_effect(size_t numeric_effect_index) const
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundNumericEffectImpl<F>> {}).at(numeric_effect_index);
 }
 
-template GroundNumericEffect<Fluent> Repositories::get_ground_numeric_effect(size_t numeric_effect_index) const;
-template GroundNumericEffect<Auxiliary> Repositories::get_ground_numeric_effect(size_t numeric_effect_index) const;
+template GroundNumericEffect<FluentTag> Repositories::get_ground_numeric_effect(size_t numeric_effect_index) const;
+template GroundNumericEffect<AuxiliaryTag> Repositories::get_ground_numeric_effect(size_t numeric_effect_index) const;
 
 // GroundAtom
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 GroundAtom<P> Repositories::get_ground_atom(size_t atom_index) const
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundAtomImpl<P>> {}).at(atom_index);
 }
 
-template GroundAtom<Static> Repositories::get_ground_atom<Static>(size_t atom_index) const;
-template GroundAtom<Fluent> Repositories::get_ground_atom<Fluent>(size_t atom_index) const;
-template GroundAtom<Derived> Repositories::get_ground_atom<Derived>(size_t atom_index) const;
+template GroundAtom<StaticTag> Repositories::get_ground_atom<StaticTag>(size_t atom_index) const;
+template GroundAtom<FluentTag> Repositories::get_ground_atom<FluentTag>(size_t atom_index) const;
+template GroundAtom<DerivedTag> Repositories::get_ground_atom<DerivedTag>(size_t atom_index) const;
 
 // GroundFunction
 
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 void Repositories::get_ground_functions(size_t num_ground_functions, GroundFunctionList<F>& out_ground_functions) const
 {
     out_ground_functions.clear();
@@ -468,11 +468,11 @@ void Repositories::get_ground_functions(size_t num_ground_functions, GroundFunct
     out_ground_functions.insert(out_ground_functions.end(), ground_functions.begin(), ground_functions.begin() + num_ground_functions);
 }
 
-template void Repositories::get_ground_functions(size_t num_ground_functions, GroundFunctionList<Static>& out_ground_functions) const;
-template void Repositories::get_ground_functions(size_t num_ground_functions, GroundFunctionList<Fluent>& out_ground_functions) const;
-template void Repositories::get_ground_functions(size_t num_ground_functions, GroundFunctionList<Auxiliary>& out_ground_functions) const;
+template void Repositories::get_ground_functions(size_t num_ground_functions, GroundFunctionList<StaticTag>& out_ground_functions) const;
+template void Repositories::get_ground_functions(size_t num_ground_functions, GroundFunctionList<FluentTag>& out_ground_functions) const;
+template void Repositories::get_ground_functions(size_t num_ground_functions, GroundFunctionList<AuxiliaryTag>& out_ground_functions) const;
 
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 void Repositories::get_ground_function_values(const FlatDoubleList& values,
                                               std::vector<std::pair<GroundFunction<F>, ContinuousCost>>& out_ground_function_values) const
 {
@@ -487,13 +487,13 @@ void Repositories::get_ground_function_values(const FlatDoubleList& values,
 }
 
 template void Repositories::get_ground_function_values(const FlatDoubleList& values,
-                                                       std::vector<std::pair<GroundFunction<Static>, ContinuousCost>>& out_ground_function_values) const;
+                                                       std::vector<std::pair<GroundFunction<StaticTag>, ContinuousCost>>& out_ground_function_values) const;
 template void Repositories::get_ground_function_values(const FlatDoubleList& values,
-                                                       std::vector<std::pair<GroundFunction<Fluent>, ContinuousCost>>& out_ground_function_values) const;
+                                                       std::vector<std::pair<GroundFunction<FluentTag>, ContinuousCost>>& out_ground_function_values) const;
 template void Repositories::get_ground_function_values(const FlatDoubleList& values,
-                                                       std::vector<std::pair<GroundFunction<Auxiliary>, ContinuousCost>>& out_ground_function_values) const;
+                                                       std::vector<std::pair<GroundFunction<AuxiliaryTag>, ContinuousCost>>& out_ground_function_values) const;
 
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 std::vector<std::pair<GroundFunction<F>, ContinuousCost>> Repositories::get_ground_function_values(const FlatDoubleList& values) const
 {
     auto ground_function_values = std::vector<std::pair<GroundFunction<F>, ContinuousCost>> {};
@@ -503,9 +503,9 @@ std::vector<std::pair<GroundFunction<F>, ContinuousCost>> Repositories::get_grou
     return ground_function_values;
 }
 
-template std::vector<std::pair<GroundFunction<Static>, ContinuousCost>> Repositories::get_ground_function_values(const FlatDoubleList& values) const;
-template std::vector<std::pair<GroundFunction<Fluent>, ContinuousCost>> Repositories::get_ground_function_values(const FlatDoubleList& values) const;
-template std::vector<std::pair<GroundFunction<Auxiliary>, ContinuousCost>> Repositories::get_ground_function_values(const FlatDoubleList& values) const;
+template std::vector<std::pair<GroundFunction<StaticTag>, ContinuousCost>> Repositories::get_ground_function_values(const FlatDoubleList& values) const;
+template std::vector<std::pair<GroundFunction<FluentTag>, ContinuousCost>> Repositories::get_ground_function_values(const FlatDoubleList& values) const;
+template std::vector<std::pair<GroundFunction<AuxiliaryTag>, ContinuousCost>> Repositories::get_ground_function_values(const FlatDoubleList& values) const;
 
 // Object
 Object Repositories::get_object(size_t object_index) const { return boost::hana::at_key(m_repositories, boost::hana::type<ObjectImpl> {}).at(object_index); }

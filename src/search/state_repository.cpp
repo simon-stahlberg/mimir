@@ -53,7 +53,7 @@ StateRepositoryImpl::StateRepositoryImpl(AxiomEvaluator axiom_evaluator) :
 State StateRepositoryImpl::get_or_create_initial_state()
 {
     const auto problem = m_axiom_evaluator->get_problem();
-    return get_or_create_state(problem->get_fluent_initial_atoms(), problem->get_initial_function_to_value<Fluent>());
+    return get_or_create_state(problem->get_fluent_initial_atoms(), problem->get_initial_function_to_value<FluentTag>());
 }
 
 static void translate_dense_into_sorted_compressed_sparse(const FlatBitset& dense, FlatIndexList& ref_sparse)
@@ -80,20 +80,20 @@ static void update_state_numeric_variables_ptr(const FlatDoubleList& state_numer
     state_numeric_variables_ptr = &state_numeric_variables;
 }
 
-State StateRepositoryImpl::get_or_create_state(const GroundAtomList<Fluent>& atoms, const FlatDoubleList& fluent_numeric_variables)
+State StateRepositoryImpl::get_or_create_state(const GroundAtomList<FluentTag>& atoms, const FlatDoubleList& fluent_numeric_variables)
 {
     // Index
     auto& state_index = m_state_builder.get_index();
 
     // Fluent atoms
-    auto& dense_fluent_atoms = m_dense_state_builder.get_atoms<Fluent>();
+    auto& dense_fluent_atoms = m_dense_state_builder.get_atoms<FluentTag>();
     dense_fluent_atoms.unset_all();
     m_state_fluent_atoms.clear();
     auto& state_fluent_atoms_ptr = m_state_builder.get_fluent_atoms();
     state_fluent_atoms_ptr = nullptr;
 
     // Derived atoms
-    auto& dense_derived_atoms = m_dense_state_builder.get_atoms<Derived>();
+    auto& dense_derived_atoms = m_dense_state_builder.get_atoms<DerivedTag>();
     dense_derived_atoms.unset_all();
     m_state_derived_atoms.clear();
     auto& state_derived_atoms_ptr = m_state_builder.get_derived_atoms();
@@ -210,7 +210,7 @@ static void apply_numeric_effect(const std::pair<loki::AssignOperatorEnum, Conti
     }
 }
 
-static void collect_applied_fluent_numeric_effects(const GroundNumericEffectList<Fluent>& numeric_effects,
+static void collect_applied_fluent_numeric_effects(const GroundNumericEffectList<FluentTag>& numeric_effects,
                                                    const FlatDoubleList& static_numeric_variables,
                                                    const FlatDoubleList& fluent_numeric_variables,
                                                    FlatDoubleList& ref_numeric_variables)
@@ -230,7 +230,7 @@ static void collect_applied_fluent_numeric_effects(const GroundNumericEffectList
     }
 }
 
-static void collect_applied_auxiliary_numeric_effects(const GroundNumericEffect<Auxiliary>& numeric_effect,
+static void collect_applied_auxiliary_numeric_effects(const GroundNumericEffect<AuxiliaryTag>& numeric_effect,
                                                       const FlatDoubleList& static_numeric_variables,
                                                       const FlatDoubleList& fluent_numeric_variables,
                                                       ContinuousCost& ref_successor_state_metric_score)
@@ -253,7 +253,7 @@ static void apply_action_effects(GroundAction action,
 {
     const auto& conjunctive_effect = action->get_conjunctive_effect();
     const auto& const_fluent_numeric_variables = state->get_numeric_variables();
-    const auto& const_static_numeric_variables = problem.get_initial_function_to_value<Static>();
+    const auto& const_static_numeric_variables = problem.get_initial_function_to_value<StaticTag>();
 
     insert_into_bitset(conjunctive_effect.get_negative_effects(), ref_negative_applied_effects);
     insert_into_bitset(conjunctive_effect.get_positive_effects(), ref_positive_applied_effects);
@@ -316,13 +316,13 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
     auto& state_index = m_state_builder.get_index();
 
     // Fluent atoms
-    auto& dense_fluent_atoms = dense_state.get_atoms<Fluent>();
+    auto& dense_fluent_atoms = dense_state.get_atoms<FluentTag>();
     m_state_fluent_atoms.clear();
     auto& state_fluent_atoms_ptr = m_state_builder.get_fluent_atoms();
     state_fluent_atoms_ptr = nullptr;
 
     // Derived atoms
-    auto& dense_derived_atoms = dense_state.get_atoms<Derived>();
+    auto& dense_derived_atoms = dense_state.get_atoms<DerivedTag>();
     m_state_derived_atoms.clear();
     auto& state_derived_atoms_ptr = m_state_builder.get_derived_atoms();
     state_derived_atoms_ptr = nullptr;

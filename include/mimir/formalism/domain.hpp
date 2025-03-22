@@ -33,9 +33,9 @@ private:
     std::string m_name;
     Requirements m_requirements;
     ObjectList m_constants;
-    PredicateLists<Static, Fluent, Derived> m_predicates;
-    FunctionSkeletonLists<Static, Fluent> m_function_skeletons;
-    std::optional<FunctionSkeleton<Auxiliary>> m_auxiliary_function_skeleton;
+    PredicateLists<StaticTag, FluentTag, DerivedTag> m_predicates;
+    FunctionSkeletonLists<StaticTag, FluentTag> m_function_skeletons;
+    std::optional<FunctionSkeleton<AuxiliaryTag>> m_auxiliary_function_skeleton;
     ActionList m_actions;
     AxiomList m_axioms;
 
@@ -48,9 +48,9 @@ private:
                std::string name,
                Requirements requirements,
                ObjectList constants,
-               PredicateLists<Static, Fluent, Derived> predicates,
-               FunctionSkeletonLists<Static, Fluent> m_function_skeletons,
-               std::optional<FunctionSkeleton<Auxiliary>> auxiliary_function_skeleton,
+               PredicateLists<StaticTag, FluentTag, DerivedTag> predicates,
+               FunctionSkeletonLists<StaticTag, FluentTag> m_function_skeletons,
+               std::optional<FunctionSkeleton<AuxiliaryTag>> auxiliary_function_skeleton,
                ActionList actions,
                AxiomList axioms);
 
@@ -58,7 +58,7 @@ private:
     friend class DomainBuilder;
 
 public:
-    using PDDLEntity = void;
+    using FormalismEntity = void;
 
     // moveable but not copyable
     DomainImpl(const DomainImpl& other) = delete;
@@ -71,22 +71,22 @@ public:
     const std::string& get_name() const;
     Requirements get_requirements() const;
     const ObjectList& get_constants() const;
-    template<StaticOrFluentOrDerived P>
+    template<IsStaticOrFluentOrDerivedTag P>
     const PredicateList<P>& get_predicates() const;
-    const PredicateLists<Static, Fluent, Derived>& get_hana_predicates() const;
-    template<StaticOrFluent F>
+    const PredicateLists<StaticTag, FluentTag, DerivedTag>& get_hana_predicates() const;
+    template<IsStaticOrFluentTag F>
     const FunctionSkeletonList<F>& get_function_skeletons() const;
-    const FunctionSkeletonLists<Static, Fluent>& get_hana_function_skeletons() const;
-    const std::optional<FunctionSkeleton<Auxiliary>>& get_auxiliary_function_skeleton() const;
+    const FunctionSkeletonLists<StaticTag, FluentTag>& get_hana_function_skeletons() const;
+    const std::optional<FunctionSkeleton<AuxiliaryTag>>& get_auxiliary_function_skeleton() const;
     const ActionList& get_actions() const;
     const AxiomList& get_axioms() const;
 
     /* Additional members */
 
     const ToObjectMap<std::string> get_name_to_constant() const;
-    template<StaticOrFluentOrDerived P>
+    template<IsStaticOrFluentOrDerivedTag P>
     const ToPredicateMap<std::string, P>& get_name_to_predicate() const;
-    const ToPredicateMaps<std::string, Static, Fluent, Derived>& get_hana_name_to_predicate();
+    const ToPredicateMaps<std::string, StaticTag, FluentTag, DerivedTag>& get_hana_name_to_predicate();
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -96,11 +96,11 @@ public:
         return std::tuple(std::cref(get_name()),
                           get_requirements(),
                           std::cref(get_constants()),
-                          std::cref(get_predicates<Static>()),
-                          std::cref(get_predicates<Fluent>()),
-                          std::cref(get_predicates<Derived>()),
-                          std::cref(get_function_skeletons<Static>()),
-                          std::cref(get_function_skeletons<Fluent>()),
+                          std::cref(get_predicates<StaticTag>()),
+                          std::cref(get_predicates<FluentTag>()),
+                          std::cref(get_predicates<DerivedTag>()),
+                          std::cref(get_function_skeletons<StaticTag>()),
+                          std::cref(get_function_skeletons<FluentTag>()),
                           get_auxiliary_function_skeleton(),
                           std::cref(get_actions()),
                           std::cref(get_axioms()));

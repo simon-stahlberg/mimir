@@ -27,10 +27,10 @@
 namespace mimir::languages::dl
 {
 
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 Constructor<D> parse_sentence(const std::string& sentence, const formalism::DomainImpl& domain, Repositories& repositories);
 
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 Constructor<D> parse(const ast::Constructor<D>& node, const formalism::DomainImpl& domain, Repositories& repositories);
 
 }

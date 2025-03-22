@@ -57,7 +57,7 @@ GeneralizedColorFunctionImpl::GeneralizedColorFunctionImpl(GeneralizedProblem ge
     {
         for (const auto& predicate : problem->get_derived_predicates())
         {
-            boost::hana::at_key(m_predicate_colors, boost::hana::type<Derived> {}).emplace(predicate, next_color);
+            boost::hana::at_key(m_predicate_colors, boost::hana::type<DerivedTag> {}).emplace(predicate, next_color);
             m_color_to_name.emplace(next_color++, to_string(predicate));
             m_color_to_name.emplace(next_color++, to_string(predicate) + "_true");
             m_color_to_name.emplace(next_color++, to_string(predicate) + "_false");
@@ -72,17 +72,17 @@ GeneralizedColorFunctionImpl::GeneralizedColorFunctionImpl(formalism::Problem pr
 
 graphs::Color GeneralizedColorFunctionImpl::get_color(Object object) const { return 0; }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 graphs::Color GeneralizedColorFunctionImpl::get_color(GroundAtom<P> atom, size_t pos) const
 {
     return boost::hana::at_key(m_predicate_colors, boost::hana::type<P> {}).at(atom->get_predicate());
 }
 
-template graphs::Color GeneralizedColorFunctionImpl::get_color(GroundAtom<Static> atom, size_t pos) const;
-template graphs::Color GeneralizedColorFunctionImpl::get_color(GroundAtom<Fluent> atom, size_t pos) const;
-template graphs::Color GeneralizedColorFunctionImpl::get_color(GroundAtom<Derived> atom, size_t pos) const;
+template graphs::Color GeneralizedColorFunctionImpl::get_color(GroundAtom<StaticTag> atom, size_t pos) const;
+template graphs::Color GeneralizedColorFunctionImpl::get_color(GroundAtom<FluentTag> atom, size_t pos) const;
+template graphs::Color GeneralizedColorFunctionImpl::get_color(GroundAtom<DerivedTag> atom, size_t pos) const;
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 graphs::Color
 GeneralizedColorFunctionImpl::get_color(GroundLiteral<P> literal, size_t pos, State state, const ProblemImpl& problem, bool mark_true_goal_literal) const
 {
@@ -92,18 +92,27 @@ GeneralizedColorFunctionImpl::get_color(GroundLiteral<P> literal, size_t pos, St
 }
 
 template<>
-graphs::Color
-GeneralizedColorFunctionImpl::get_color(GroundLiteral<Static> literal, size_t pos, State state, const ProblemImpl& problem, bool mark_true_goal_literal) const
+graphs::Color GeneralizedColorFunctionImpl::get_color(GroundLiteral<StaticTag> literal,
+                                                      size_t pos,
+                                                      State state,
+                                                      const ProblemImpl& problem,
+                                                      bool mark_true_goal_literal) const
 {
     bool is_satisfied_in_goal = problem.static_literal_holds(literal);
     const auto literal_color_offset = (!mark_true_goal_literal || is_satisfied_in_goal) ? 1 : 2;
-    return boost::hana::at_key(m_predicate_colors, boost::hana::type<Static> {}).at(literal->get_atom()->get_predicate()) + literal_color_offset;
+    return boost::hana::at_key(m_predicate_colors, boost::hana::type<StaticTag> {}).at(literal->get_atom()->get_predicate()) + literal_color_offset;
 }
 
-template graphs::Color
-GeneralizedColorFunctionImpl::get_color(GroundLiteral<Fluent> literal, size_t pos, State state, const ProblemImpl& problem, bool mark_true_goal_literal) const;
-template graphs::Color
-GeneralizedColorFunctionImpl::get_color(GroundLiteral<Derived> literal, size_t pos, State state, const ProblemImpl& problem, bool mark_true_goal_literal) const;
+template graphs::Color GeneralizedColorFunctionImpl::get_color(GroundLiteral<FluentTag> literal,
+                                                               size_t pos,
+                                                               State state,
+                                                               const ProblemImpl& problem,
+                                                               bool mark_true_goal_literal) const;
+template graphs::Color GeneralizedColorFunctionImpl::get_color(GroundLiteral<DerivedTag> literal,
+                                                               size_t pos,
+                                                               State state,
+                                                               const ProblemImpl& problem,
+                                                               bool mark_true_goal_literal) const;
 
 const std::string& GeneralizedColorFunctionImpl::get_color_name(graphs::Color color) const { return m_color_to_name.at(color); }
 

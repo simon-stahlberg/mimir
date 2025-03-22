@@ -41,7 +41,7 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
-    using PDDLEntity = void;
+    using FormalismEntity = void;
 
     // moveable but not copyable
     FunctionExpressionNumberImpl(const FunctionExpressionNumberImpl& other) = delete;
@@ -79,7 +79,7 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
-    using PDDLEntity = void;
+    using FormalismEntity = void;
 
     // moveable but not copyable
     FunctionExpressionBinaryOperatorImpl(const FunctionExpressionBinaryOperatorImpl& other) = delete;
@@ -115,7 +115,7 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
-    using PDDLEntity = void;
+    using FormalismEntity = void;
 
     // moveable but not copyable
     FunctionExpressionMultiOperatorImpl(const FunctionExpressionMultiOperatorImpl& other) = delete;
@@ -149,7 +149,7 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
-    using PDDLEntity = void;
+    using FormalismEntity = void;
 
     // moveable but not copyable
     FunctionExpressionMinusImpl(const FunctionExpressionMinusImpl& other) = delete;
@@ -167,7 +167,7 @@ public:
 };
 
 /* FunctionExpressionFunction */
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 class FunctionExpressionFunctionImpl
 {
 private:
@@ -183,7 +183,7 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
-    using PDDLEntity = void;
+    using FormalismEntity = void;
 
     // moveable but not copyable
     FunctionExpressionFunctionImpl(const FunctionExpressionFunctionImpl& other) = delete;
@@ -201,13 +201,13 @@ public:
 };
 
 /* FunctionExpression */
-// FunctionExpressionFunction<Auxiliary> only appear in numeric effects.
+// FunctionExpressionFunction<AuxiliaryTag> only appear in numeric effects.
 using FunctionExpressionVariant = std::variant<FunctionExpressionNumber,
                                                FunctionExpressionBinaryOperator,
                                                FunctionExpressionMultiOperator,
                                                FunctionExpressionMinus,
-                                               FunctionExpressionFunction<Static>,
-                                               FunctionExpressionFunction<Fluent>>;
+                                               FunctionExpressionFunction<StaticTag>,
+                                               FunctionExpressionFunction<FluentTag>>;
 
 class FunctionExpressionImpl
 {
@@ -226,7 +226,7 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
-    using PDDLEntity = void;
+    using FormalismEntity = void;
 
     // moveable but not copyable
     FunctionExpressionImpl(const FunctionExpressionImpl& other) = delete;
@@ -332,7 +332,7 @@ extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionNumbe
 extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionBinaryOperatorImpl& element);
 extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionMultiOperatorImpl& element);
 extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionMinusImpl& element);
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl<F>& element);
 extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionImpl& element);
 
@@ -340,7 +340,7 @@ extern std::ostream& operator<<(std::ostream& out, FunctionExpressionNumber elem
 extern std::ostream& operator<<(std::ostream& out, FunctionExpressionBinaryOperator element);
 extern std::ostream& operator<<(std::ostream& out, FunctionExpressionMultiOperator element);
 extern std::ostream& operator<<(std::ostream& out, FunctionExpressionMinus element);
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 extern std::ostream& operator<<(std::ostream& out, FunctionExpressionFunction<F> element);
 extern std::ostream& operator<<(std::ostream& out, FunctionExpression element);
 }

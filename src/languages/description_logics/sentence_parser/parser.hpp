@@ -42,9 +42,9 @@ using ascii::space;
 namespace sentence_parser
 {
 
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 struct ConstructorClass;
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 struct ConstructorRootClass;
 
 struct ConceptBotClass;
@@ -81,8 +81,8 @@ struct BooleanNonemptyClass;
 struct NumericalCountClass;
 struct NumericalDistanceClass;
 
-typedef x3::rule<ConstructorRootClass<Concept>, ast::Constructor<Concept>> concept_root_type;
-typedef x3::rule<ConstructorClass<Concept>, ast::Constructor<Concept>> concept_type;
+typedef x3::rule<ConstructorRootClass<ConceptTag>, ast::Constructor<ConceptTag>> concept_root_type;
+typedef x3::rule<ConstructorClass<ConceptTag>, ast::Constructor<ConceptTag>> concept_type;
 typedef x3::rule<ConceptBotClass, ast::ConceptBot> concept_bot_type;
 typedef x3::rule<ConceptTopClass, ast::ConceptTop> concept_top_type;
 typedef x3::rule<ConceptAtomicStateClass, ast::ConceptAtomicState> concept_atomic_state_type;
@@ -96,8 +96,8 @@ typedef x3::rule<ConceptRoleValueMapContainmentClass, ast::ConceptRoleValueMapCo
 typedef x3::rule<ConceptRoleValueMapEqualityClass, ast::ConceptRoleValueMapEquality> concept_role_value_map_equality_type;
 typedef x3::rule<ConceptNominalClass, ast::ConceptNominal> concept_nominal_type;
 
-typedef x3::rule<ConstructorRootClass<Role>, ast::Constructor<Role>> role_root_type;
-typedef x3::rule<ConstructorClass<Role>, ast::Constructor<Role>> role_type;
+typedef x3::rule<ConstructorRootClass<RoleTag>, ast::Constructor<RoleTag>> role_root_type;
+typedef x3::rule<ConstructorClass<RoleTag>, ast::Constructor<RoleTag>> role_type;
 typedef x3::rule<RoleUniversalClass, ast::RoleUniversal> role_universal_type;
 typedef x3::rule<RoleAtomicStateClass, ast::RoleAtomicState> role_atomic_state_type;
 typedef x3::rule<RoleAtomicGoalClass, ast::RoleAtomicGoal> role_atomic_goal_type;
@@ -113,13 +113,13 @@ typedef x3::rule<RoleIdentityClass, ast::RoleIdentity> role_identity_type;
 
 typedef x3::rule<ConceptOrRoleClass, ast::ConceptOrRoleNonterminal> concept_or_role_type;
 
-typedef x3::rule<ConstructorRootClass<Boolean>, ast::Constructor<Boolean>> boolean_root_type;
-typedef x3::rule<ConstructorClass<Boolean>, ast::Constructor<Boolean>> boolean_type;
+typedef x3::rule<ConstructorRootClass<BooleanTag>, ast::Constructor<BooleanTag>> boolean_root_type;
+typedef x3::rule<ConstructorClass<BooleanTag>, ast::Constructor<BooleanTag>> boolean_type;
 typedef x3::rule<BooleanAtomicStateClass, ast::BooleanAtomicState> boolean_atomic_state_type;
 typedef x3::rule<BooleanNonemptyClass, ast::BooleanNonempty> boolean_nonempty_type;
 
-typedef x3::rule<ConstructorRootClass<Numerical>, ast::Constructor<Numerical>> numerical_root_type;
-typedef x3::rule<ConstructorClass<Numerical>, ast::Constructor<Numerical>> numerical_type;
+typedef x3::rule<ConstructorRootClass<NumericalTag>, ast::Constructor<NumericalTag>> numerical_root_type;
+typedef x3::rule<ConstructorClass<NumericalTag>, ast::Constructor<NumericalTag>> numerical_type;
 typedef x3::rule<NumericalCountClass, ast::NumericalCount> numerical_count_type;
 typedef x3::rule<NumericalDistanceClass, ast::NumericalDistance> numerical_distance_type;
 

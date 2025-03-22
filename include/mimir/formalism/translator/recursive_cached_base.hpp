@@ -54,53 +54,53 @@ protected:
                                               TranslatorCache<Object>,
                                               TranslatorCache<Variable>,
                                               TranslatorCache<Term>,
-                                              TranslatorCache<Predicate<Static>>,
-                                              TranslatorCache<Predicate<Fluent>>,
-                                              TranslatorCache<Predicate<Derived>>,
-                                              TranslatorCache<Atom<Static>>,
-                                              TranslatorCache<Atom<Fluent>>,
-                                              TranslatorCache<Atom<Derived>>,
-                                              TranslatorCache<GroundAtom<Static>>,
-                                              TranslatorCache<GroundAtom<Fluent>>,
-                                              TranslatorCache<GroundAtom<Derived>>,
-                                              TranslatorCache<Literal<Static>>,
-                                              TranslatorCache<Literal<Fluent>>,
-                                              TranslatorCache<Literal<Derived>>,
-                                              TranslatorCache<GroundLiteral<Static>>,
-                                              TranslatorCache<GroundLiteral<Fluent>>,
-                                              TranslatorCache<GroundLiteral<Derived>>,
-                                              TranslatorCache<GroundFunctionValue<Static>>,
-                                              TranslatorCache<GroundFunctionValue<Fluent>>,
-                                              TranslatorCache<GroundFunctionValue<Auxiliary>>,
-                                              TranslatorCache<NumericEffect<Fluent>>,
-                                              TranslatorCache<NumericEffect<Auxiliary>>,
+                                              TranslatorCache<Predicate<StaticTag>>,
+                                              TranslatorCache<Predicate<FluentTag>>,
+                                              TranslatorCache<Predicate<DerivedTag>>,
+                                              TranslatorCache<Atom<StaticTag>>,
+                                              TranslatorCache<Atom<FluentTag>>,
+                                              TranslatorCache<Atom<DerivedTag>>,
+                                              TranslatorCache<GroundAtom<StaticTag>>,
+                                              TranslatorCache<GroundAtom<FluentTag>>,
+                                              TranslatorCache<GroundAtom<DerivedTag>>,
+                                              TranslatorCache<Literal<StaticTag>>,
+                                              TranslatorCache<Literal<FluentTag>>,
+                                              TranslatorCache<Literal<DerivedTag>>,
+                                              TranslatorCache<GroundLiteral<StaticTag>>,
+                                              TranslatorCache<GroundLiteral<FluentTag>>,
+                                              TranslatorCache<GroundLiteral<DerivedTag>>,
+                                              TranslatorCache<GroundFunctionValue<StaticTag>>,
+                                              TranslatorCache<GroundFunctionValue<FluentTag>>,
+                                              TranslatorCache<GroundFunctionValue<AuxiliaryTag>>,
+                                              TranslatorCache<NumericEffect<FluentTag>>,
+                                              TranslatorCache<NumericEffect<AuxiliaryTag>>,
                                               TranslatorCache<ConjunctiveEffect>,
                                               TranslatorCache<ConditionalEffect>,
                                               TranslatorCache<FunctionExpressionNumber>,
                                               TranslatorCache<FunctionExpressionBinaryOperator>,
                                               TranslatorCache<FunctionExpressionMultiOperator>,
                                               TranslatorCache<FunctionExpressionMinus>,
-                                              TranslatorCache<FunctionExpressionFunction<Static>>,
-                                              TranslatorCache<FunctionExpressionFunction<Fluent>>,
-                                              TranslatorCache<FunctionExpressionFunction<Auxiliary>>,
+                                              TranslatorCache<FunctionExpressionFunction<StaticTag>>,
+                                              TranslatorCache<FunctionExpressionFunction<FluentTag>>,
+                                              TranslatorCache<FunctionExpressionFunction<AuxiliaryTag>>,
                                               TranslatorCache<FunctionExpression>,
                                               TranslatorCache<GroundFunctionExpressionNumber>,
                                               TranslatorCache<GroundFunctionExpressionBinaryOperator>,
                                               TranslatorCache<GroundFunctionExpressionMultiOperator>,
                                               TranslatorCache<GroundFunctionExpressionMinus>,
-                                              TranslatorCache<GroundFunctionExpressionFunction<Static>>,
-                                              TranslatorCache<GroundFunctionExpressionFunction<Fluent>>,
-                                              TranslatorCache<GroundFunctionExpressionFunction<Auxiliary>>,
+                                              TranslatorCache<GroundFunctionExpressionFunction<StaticTag>>,
+                                              TranslatorCache<GroundFunctionExpressionFunction<FluentTag>>,
+                                              TranslatorCache<GroundFunctionExpressionFunction<AuxiliaryTag>>,
                                               TranslatorCache<GroundFunctionExpression>,
-                                              TranslatorCache<FunctionSkeleton<Static>>,
-                                              TranslatorCache<FunctionSkeleton<Fluent>>,
-                                              TranslatorCache<FunctionSkeleton<Auxiliary>>,
-                                              TranslatorCache<Function<Static>>,
-                                              TranslatorCache<Function<Fluent>>,
-                                              TranslatorCache<Function<Auxiliary>>,
-                                              TranslatorCache<GroundFunction<Static>>,
-                                              TranslatorCache<GroundFunction<Fluent>>,
-                                              TranslatorCache<GroundFunction<Auxiliary>>,
+                                              TranslatorCache<FunctionSkeleton<StaticTag>>,
+                                              TranslatorCache<FunctionSkeleton<FluentTag>>,
+                                              TranslatorCache<FunctionSkeleton<AuxiliaryTag>>,
+                                              TranslatorCache<Function<StaticTag>>,
+                                              TranslatorCache<Function<FluentTag>>,
+                                              TranslatorCache<Function<AuxiliaryTag>>,
+                                              TranslatorCache<GroundFunction<StaticTag>>,
+                                              TranslatorCache<GroundFunction<FluentTag>>,
+                                              TranslatorCache<GroundFunction<AuxiliaryTag>>,
                                               TranslatorCache<NumericConstraint>,
                                               TranslatorCache<GroundNumericConstraint>,
                                               TranslatorCache<ConjunctiveCondition>,
@@ -135,7 +135,7 @@ protected:
             self().prepare_level_2(element.value());
         }
     }
-    template<IsPDDLEntity T>
+    template<IsFormalismEntity T>
     void prepare_level_1(const T& element)
     {
         self().prepare_level_2(element);
@@ -148,39 +148,39 @@ protected:
     {
         std::visit([this](auto&& arg) { return this->prepare_level_0(arg); }, term->get_variant());
     }
-    template<StaticOrFluentOrDerived P>
+    template<IsStaticOrFluentOrDerivedTag P>
     void prepare_level_2(Predicate<P> predicate)
     {
         this->prepare_level_0(predicate->get_parameters());
     }
-    template<StaticOrFluentOrDerived P>
+    template<IsStaticOrFluentOrDerivedTag P>
     void prepare_level_2(Atom<P> atom)
     {
         this->prepare_level_0(atom->get_predicate());
         this->prepare_level_0(atom->get_terms());
     }
-    template<StaticOrFluentOrDerived P>
+    template<IsStaticOrFluentOrDerivedTag P>
     void prepare_level_2(GroundAtom<P> atom)
     {
         this->prepare_level_0(atom->get_predicate());
         this->prepare_level_0(atom->get_objects());
     }
-    template<StaticOrFluentOrDerived P>
+    template<IsStaticOrFluentOrDerivedTag P>
     void prepare_level_2(Literal<P> literal)
     {
         this->prepare_level_0(literal->get_atom());
     }
-    template<StaticOrFluentOrDerived P>
+    template<IsStaticOrFluentOrDerivedTag P>
     void prepare_level_2(GroundLiteral<P> literal)
     {
         this->prepare_level_0(literal->get_atom());
     }
-    template<StaticOrFluentOrAuxiliary F>
+    template<IsStaticOrFluentOrAuxiliaryTag F>
     void prepare_level_2(GroundFunctionValue<F> function_value)
     {
         this->prepare_level_0(function_value->get_function());
     }
-    template<FluentOrAuxiliary F>
+    template<IsFluentOrAuxiliaryTag F>
     void prepare_level_2(NumericEffect<F> effect)
     {
         this->prepare_level_0(effect->get_function());
@@ -212,9 +212,9 @@ protected:
     void prepare_level_2(ConjunctiveCondition condition)
     {
         this->prepare_level_0(condition->get_parameters());
-        this->prepare_level_0(condition->get_literals<Static>());
-        this->prepare_level_0(condition->get_literals<Fluent>());
-        this->prepare_level_0(condition->get_literals<Derived>());
+        this->prepare_level_0(condition->get_literals<StaticTag>());
+        this->prepare_level_0(condition->get_literals<FluentTag>());
+        this->prepare_level_0(condition->get_literals<DerivedTag>());
         this->prepare_level_0(condition->get_numeric_constraints());
     }
     void prepare_level_2(FunctionExpressionNumber function_expression) {}
@@ -225,7 +225,7 @@ protected:
     }
     void prepare_level_2(FunctionExpressionMultiOperator function_expression) { this->prepare_level_0(function_expression->get_function_expressions()); }
     void prepare_level_2(FunctionExpressionMinus function_expression) { this->prepare_level_0(function_expression->get_function_expression()); }
-    template<StaticOrFluentOrAuxiliary F>
+    template<IsStaticOrFluentOrAuxiliaryTag F>
     void prepare_level_2(FunctionExpressionFunction<F> function_expression)
     {
         this->prepare_level_0(function_expression->get_function());
@@ -242,7 +242,7 @@ protected:
     }
     void prepare_level_2(GroundFunctionExpressionMultiOperator function_expression) { this->prepare_level_0(function_expression->get_function_expressions()); }
     void prepare_level_2(GroundFunctionExpressionMinus function_expression) { this->prepare_level_0(function_expression->get_function_expression()); }
-    template<StaticOrFluentOrAuxiliary F>
+    template<IsStaticOrFluentOrAuxiliaryTag F>
     void prepare_level_2(GroundFunctionExpressionFunction<F> function_expression)
     {
         this->prepare_level_0(function_expression->get_function());
@@ -251,18 +251,18 @@ protected:
     {
         std::visit([this](auto&& arg) { return this->prepare_level_0(arg); }, function_expression->get_variant());
     }
-    template<StaticOrFluentOrAuxiliary F>
+    template<IsStaticOrFluentOrAuxiliaryTag F>
     void prepare_level_2(FunctionSkeleton<F> function_skeleton)
     {
         this->prepare_level_0(function_skeleton->get_parameters());
     }
-    template<StaticOrFluentOrAuxiliary F>
+    template<IsStaticOrFluentOrAuxiliaryTag F>
     void prepare_level_2(Function<F> function)
     {
         this->prepare_level_0(function->get_function_skeleton());
         this->prepare_level_0(function->get_terms());
     }
-    template<StaticOrFluentOrAuxiliary F>
+    template<IsStaticOrFluentOrAuxiliaryTag F>
     void prepare_level_2(GroundFunction<F> function)
     {
         this->prepare_level_0(function->get_function_skeleton());
@@ -283,11 +283,11 @@ protected:
     {
         this->prepare_level_0(domain->get_requirements());
         this->prepare_level_0(domain->get_constants());
-        this->prepare_level_0(domain->get_predicates<Static>());
-        this->prepare_level_0(domain->get_predicates<Fluent>());
-        this->prepare_level_0(domain->get_predicates<Derived>());
-        this->prepare_level_0(domain->get_function_skeletons<Static>());
-        this->prepare_level_0(domain->get_function_skeletons<Fluent>());
+        this->prepare_level_0(domain->get_predicates<StaticTag>());
+        this->prepare_level_0(domain->get_predicates<FluentTag>());
+        this->prepare_level_0(domain->get_predicates<DerivedTag>());
+        this->prepare_level_0(domain->get_function_skeletons<StaticTag>());
+        this->prepare_level_0(domain->get_function_skeletons<FluentTag>());
         this->prepare_level_0(domain->get_auxiliary_function_skeleton());
         this->prepare_level_0(domain->get_actions());
         this->prepare_level_0(domain->get_axioms());
@@ -299,14 +299,14 @@ protected:
         this->prepare_level_0(problem->get_requirements());
         this->prepare_level_0(problem->get_objects());
         this->prepare_level_0(problem->get_derived_predicates());
-        this->prepare_level_0(problem->get_initial_literals<Static>());
-        this->prepare_level_0(problem->get_initial_literals<Fluent>());
-        this->prepare_level_0(problem->get_initial_function_values<Static>());
-        this->prepare_level_0(problem->get_initial_function_values<Fluent>());
+        this->prepare_level_0(problem->get_initial_literals<StaticTag>());
+        this->prepare_level_0(problem->get_initial_literals<FluentTag>());
+        this->prepare_level_0(problem->get_initial_function_values<StaticTag>());
+        this->prepare_level_0(problem->get_initial_function_values<FluentTag>());
         this->prepare_level_0(problem->get_auxiliary_function_value());
-        this->prepare_level_0(problem->get_goal_condition<Static>());
-        this->prepare_level_0(problem->get_goal_condition<Fluent>());
-        this->prepare_level_0(problem->get_goal_condition<Derived>());
+        this->prepare_level_0(problem->get_goal_condition<StaticTag>());
+        this->prepare_level_0(problem->get_goal_condition<FluentTag>());
+        this->prepare_level_0(problem->get_goal_condition<DerivedTag>());
         this->prepare_level_0(problem->get_numeric_goal_condition());
         this->prepare_level_0(problem->get_optimization_metric());
         this->prepare_level_0(problem->get_axioms());
@@ -367,7 +367,7 @@ protected:
                     boost::hana::make_pair(boost::hana::first(pairs), self().translate_level_0(boost::hana::second(pairs), repositories))...);
             });
     }
-    template<IsPDDLEntity T>
+    template<IsFormalismEntity T>
     auto translate_level_1(const T& element, Repositories& repositories)
     {
         return cached_translate_impl(element,
@@ -388,40 +388,40 @@ protected:
     {
         return std::visit([&](auto&& arg) -> Term { return repositories.get_or_create_term(this->translate_level_0(arg, repositories)); }, term->get_variant());
     }
-    template<StaticOrFluentOrDerived P>
+    template<IsStaticOrFluentOrDerivedTag P>
     Predicate<P> translate_level_2(Predicate<P> predicate, Repositories& repositories)
     {
         return repositories.template get_or_create_predicate<P>(predicate->get_name(), this->translate_level_0(predicate->get_parameters(), repositories));
     }
-    template<StaticOrFluentOrDerived P>
+    template<IsStaticOrFluentOrDerivedTag P>
     Atom<P> translate_level_2(Atom<P> atom, Repositories& repositories)
     {
         return repositories.get_or_create_atom(this->translate_level_0(atom->get_predicate(), repositories),
                                                this->translate_level_0(atom->get_terms(), repositories));
     }
-    template<StaticOrFluentOrDerived P>
+    template<IsStaticOrFluentOrDerivedTag P>
     GroundAtom<P> translate_level_2(GroundAtom<P> atom, Repositories& repositories)
     {
         return repositories.get_or_create_ground_atom(this->translate_level_0(atom->get_predicate(), repositories),
                                                       this->translate_level_0(atom->get_objects(), repositories));
     }
-    template<StaticOrFluentOrDerived P>
+    template<IsStaticOrFluentOrDerivedTag P>
     Literal<P> translate_level_2(Literal<P> literal, Repositories& repositories)
     {
         return repositories.get_or_create_literal(literal->is_negated(), this->translate_level_0(literal->get_atom(), repositories));
     }
-    template<StaticOrFluentOrDerived P>
+    template<IsStaticOrFluentOrDerivedTag P>
     GroundLiteral<P> translate_level_2(GroundLiteral<P> literal, Repositories& repositories)
     {
         return repositories.get_or_create_ground_literal(literal->is_negated(), this->translate_level_0(literal->get_atom(), repositories));
     }
-    template<StaticOrFluentOrAuxiliary F>
+    template<IsStaticOrFluentOrAuxiliaryTag F>
     GroundFunctionValue<F> translate_level_2(GroundFunctionValue<F> function_value, Repositories& repositories)
     {
         return repositories.get_or_create_ground_function_value(this->translate_level_0(function_value->get_function(), repositories),
                                                                 function_value->get_number());
     }
-    template<FluentOrAuxiliary F>
+    template<IsFluentOrAuxiliaryTag F>
     NumericEffect<F> translate_level_2(NumericEffect<F> effect, Repositories& repositories)
     {
         return repositories.get_or_create_numeric_effect(effect->get_assign_operator(),
@@ -456,9 +456,9 @@ protected:
     ConjunctiveCondition translate_level_2(ConjunctiveCondition condition, Repositories& repositories)
     {
         return repositories.get_or_create_conjunctive_condition(this->translate_level_0(condition->get_parameters(), repositories),
-                                                                this->translate_level_0(condition->get_literals<Static>(), repositories),
-                                                                this->translate_level_0(condition->get_literals<Fluent>(), repositories),
-                                                                this->translate_level_0(condition->get_literals<Derived>(), repositories),
+                                                                this->translate_level_0(condition->get_literals<StaticTag>(), repositories),
+                                                                this->translate_level_0(condition->get_literals<FluentTag>(), repositories),
+                                                                this->translate_level_0(condition->get_literals<DerivedTag>(), repositories),
                                                                 this->translate_level_0(condition->get_numeric_constraints(), repositories));
     }
     FunctionExpressionNumber translate_level_2(FunctionExpressionNumber function_expression, Repositories& repositories)
@@ -482,7 +482,7 @@ protected:
     {
         return repositories.get_or_create_function_expression_minus(this->translate_level_0(function_expression->get_function_expression(), repositories));
     }
-    template<StaticOrFluentOrAuxiliary F>
+    template<IsStaticOrFluentOrAuxiliaryTag F>
     FunctionExpressionFunction<F> translate_level_2(FunctionExpressionFunction<F> function_expression, Repositories& repositories)
     {
         return repositories.get_or_create_function_expression_function(this->translate_level_0(function_expression->get_function(), repositories));
@@ -514,7 +514,7 @@ protected:
         return repositories.get_or_create_ground_function_expression_minus(
             this->translate_level_0(function_expression->get_function_expression(), repositories));
     }
-    template<StaticOrFluentOrAuxiliary F>
+    template<IsStaticOrFluentOrAuxiliaryTag F>
     GroundFunctionExpressionFunction<F> translate_level_2(GroundFunctionExpressionFunction<F> function_expression, Repositories& repositories)
     {
         return repositories.get_or_create_ground_function_expression_function(this->translate_level_0(function_expression->get_function(), repositories));
@@ -525,20 +525,20 @@ protected:
                           { return repositories.get_or_create_ground_function_expression(this->translate_level_0(arg, repositories)); },
                           function_expression->get_variant());
     }
-    template<StaticOrFluentOrAuxiliary F>
+    template<IsStaticOrFluentOrAuxiliaryTag F>
     FunctionSkeleton<F> translate_level_2(FunctionSkeleton<F> function_skeleton, Repositories& repositories)
     {
         return repositories.template get_or_create_function_skeleton<F>(function_skeleton->get_name(),
                                                                         this->translate_level_0(function_skeleton->get_parameters(), repositories));
     }
-    template<StaticOrFluentOrAuxiliary F>
+    template<IsStaticOrFluentOrAuxiliaryTag F>
     Function<F> translate_level_2(Function<F> function, Repositories& repositories)
     {
         return repositories.get_or_create_function(this->translate_level_0(function->get_function_skeleton(), repositories),
                                                    this->translate_level_0(function->get_terms(), repositories),
                                                    function->get_parent_terms_to_terms_mapping());
     }
-    template<StaticOrFluentOrAuxiliary F>
+    template<IsStaticOrFluentOrAuxiliaryTag F>
     GroundFunction<F> translate_level_2(GroundFunction<F> function, Repositories& repositories)
     {
         return repositories.get_or_create_ground_function(this->translate_level_0(function->get_function_skeleton(), repositories),
@@ -573,11 +573,11 @@ protected:
         builder.get_filepath() = domain->get_filepath();
         builder.get_requirements() = this->translate_level_0(domain->get_requirements(), repositories);
         builder.get_constants() = this->translate_level_0(domain->get_constants(), repositories);
-        builder.get_predicates<Static>() = this->translate_level_0(domain->get_predicates<Static>(), repositories);
-        builder.get_predicates<Fluent>() = this->translate_level_0(domain->get_predicates<Fluent>(), repositories);
-        builder.get_predicates<Derived>() = this->translate_level_0(domain->get_predicates<Derived>(), repositories);
-        builder.get_function_skeletons<Static>() = this->translate_level_0(domain->get_function_skeletons<Static>(), repositories);
-        builder.get_function_skeletons<Fluent>() = this->translate_level_0(domain->get_function_skeletons<Fluent>(), repositories);
+        builder.get_predicates<StaticTag>() = this->translate_level_0(domain->get_predicates<StaticTag>(), repositories);
+        builder.get_predicates<FluentTag>() = this->translate_level_0(domain->get_predicates<FluentTag>(), repositories);
+        builder.get_predicates<DerivedTag>() = this->translate_level_0(domain->get_predicates<DerivedTag>(), repositories);
+        builder.get_function_skeletons<StaticTag>() = this->translate_level_0(domain->get_function_skeletons<StaticTag>(), repositories);
+        builder.get_function_skeletons<FluentTag>() = this->translate_level_0(domain->get_function_skeletons<FluentTag>(), repositories);
         builder.get_auxiliary_function_skeleton() = this->translate_level_0(domain->get_auxiliary_function_skeleton(), repositories);
         builder.get_actions() = this->translate_level_0(domain->get_actions(), repositories);
         builder.get_axioms() = this->translate_level_0(domain->get_axioms(), repositories);
@@ -596,14 +596,14 @@ protected:
         builder.get_requirements() = this->translate_level_0(problem->get_requirements(), repositories);
         builder.get_objects() = this->translate_level_0(problem->get_objects(), repositories);
         builder.get_derived_predicates() = this->translate_level_0(problem->get_derived_predicates(), repositories);
-        builder.get_initial_literals<Static>() = this->translate_level_0(problem->get_initial_literals<Static>(), repositories);
-        builder.get_initial_literals<Fluent>() = this->translate_level_0(problem->get_initial_literals<Fluent>(), repositories);
-        builder.get_initial_function_values<Static>() = this->translate_level_0(problem->get_initial_function_values<Static>(), repositories);
-        builder.get_initial_function_values<Fluent>() = this->translate_level_0(problem->get_initial_function_values<Fluent>(), repositories);
+        builder.get_initial_literals<StaticTag>() = this->translate_level_0(problem->get_initial_literals<StaticTag>(), repositories);
+        builder.get_initial_literals<FluentTag>() = this->translate_level_0(problem->get_initial_literals<FluentTag>(), repositories);
+        builder.get_initial_function_values<StaticTag>() = this->translate_level_0(problem->get_initial_function_values<StaticTag>(), repositories);
+        builder.get_initial_function_values<FluentTag>() = this->translate_level_0(problem->get_initial_function_values<FluentTag>(), repositories);
         builder.get_auxiliary_function_value() = this->translate_level_0(problem->get_auxiliary_function_value(), repositories);
-        builder.get_goal_condition<Static>() = this->translate_level_0(problem->get_goal_condition<Static>(), repositories);
-        builder.get_goal_condition<Fluent>() = this->translate_level_0(problem->get_goal_condition<Fluent>(), repositories);
-        builder.get_goal_condition<Derived>() = this->translate_level_0(problem->get_goal_condition<Derived>(), repositories);
+        builder.get_goal_condition<StaticTag>() = this->translate_level_0(problem->get_goal_condition<StaticTag>(), repositories);
+        builder.get_goal_condition<FluentTag>() = this->translate_level_0(problem->get_goal_condition<FluentTag>(), repositories);
+        builder.get_goal_condition<DerivedTag>() = this->translate_level_0(problem->get_goal_condition<DerivedTag>(), repositories);
         builder.get_numeric_goal_condition() = this->translate_level_0(problem->get_numeric_goal_condition(), repositories);
         builder.get_optimization_metric() = this->translate_level_0(problem->get_optimization_metric(), repositories);
         builder.get_axioms() = this->translate_level_0(problem->get_axioms(), repositories);

@@ -138,19 +138,19 @@ BOOST_SPIRIT_DEFINE(general_policy)
 ///////////////////////////////////////////////////////////////////////////
 
 template<>
-struct NamedFeatureClass<dl::Concept> : x3::annotate_on_success
+struct NamedFeatureClass<dl::ConceptTag> : x3::annotate_on_success
 {
 };
 template<>
-struct NamedFeatureClass<dl::Role> : x3::annotate_on_success
+struct NamedFeatureClass<dl::RoleTag> : x3::annotate_on_success
 {
 };
 template<>
-struct NamedFeatureClass<dl::Boolean> : x3::annotate_on_success
+struct NamedFeatureClass<dl::BooleanTag> : x3::annotate_on_success
 {
 };
 template<>
-struct NamedFeatureClass<dl::Numerical> : x3::annotate_on_success
+struct NamedFeatureClass<dl::NumericalTag> : x3::annotate_on_success
 {
 };
 

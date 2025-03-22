@@ -39,22 +39,22 @@ public:
     /// @brief Tests whether the given concept should be pruned.
     /// @param concept_ is the concept to be tested
     /// @return true iff the concept must be pruned, false otherwise.
-    virtual bool should_prune(Constructor<Concept> concept_) = 0;
+    virtual bool should_prune(Constructor<ConceptTag> concept_) = 0;
 
     /// @brief Tests whether the given role should be pruned.
     /// @param role_ is the role to be tested
     /// @return true iff the role must be pruned, false otherwise.
-    virtual bool should_prune(Constructor<Role> role) = 0;
+    virtual bool should_prune(Constructor<RoleTag> role) = 0;
 
     /// @brief Tests whether the given role should be pruned.
     /// @param role_ is the role to be tested
     /// @return true iff the role must be pruned, false otherwise.
-    virtual bool should_prune(Constructor<Boolean> boolean) = 0;
+    virtual bool should_prune(Constructor<BooleanTag> boolean) = 0;
 
     /// @brief Tests whether the given role should be pruned.
     /// @param role_ is the role to be tested
     /// @return true iff the role must be pruned, false otherwise.
-    virtual bool should_prune(Constructor<Numerical> numerical) = 0;
+    virtual bool should_prune(Constructor<NumericalTag> numerical) = 0;
 };
 
 /// @brief `RefinementStateListPruningFunction` implements a pruning function based on a given state list.
@@ -72,25 +72,25 @@ public:
     /// @brief Tests whether a concept should be pruned.
     /// @param concept_ The concept to evaluate.
     /// @return True if the concept is pruned (i.e., its evaluation is not unique across states), false otherwise.
-    bool should_prune(Constructor<Concept> concept_) override;
+    bool should_prune(Constructor<ConceptTag> concept_) override;
 
     /// @brief Tests whether a role should be pruned.
     /// @param role_ The role to evaluate.
     /// @return True if the role is pruned (i.e., its evaluation is not unique across states), false otherwise.
-    bool should_prune(Constructor<Role> role) override;
+    bool should_prune(Constructor<RoleTag> role) override;
 
     /// @brief Tests whether a role should be pruned.
     /// @param role_ The role to evaluate.
     /// @return True if the role is pruned (i.e., its evaluation is not unique across states), false otherwise.
-    bool should_prune(Constructor<Boolean> boolean) override;
+    bool should_prune(Constructor<BooleanTag> boolean) override;
 
     /// @brief Tests whether a role should be pruned.
     /// @param role_ The role to evaluate.
     /// @return True if the role is pruned (i.e., its evaluation is not unique across states), false otherwise.
-    bool should_prune(Constructor<Numerical> numerical) override;
+    bool should_prune(Constructor<NumericalTag> numerical) override;
 
 private:
-    template<FeatureCategory D>
+    template<IsConceptOrRoleOrBooleanOrNumericalTag D>
     bool should_prune_impl(Constructor<D> constructor);
 
     formalism::ProblemMap<search::StateList> m_state_partitioning;

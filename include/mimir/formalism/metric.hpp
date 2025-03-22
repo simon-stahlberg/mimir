@@ -38,7 +38,7 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
-    using PDDLEntity = void;
+    using FormalismEntity = void;
 
     // moveable but not copyable
     OptimizationMetricImpl(const OptimizationMetricImpl& other) = delete;

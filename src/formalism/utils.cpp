@@ -22,7 +22,7 @@
 namespace mimir::formalism
 {
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 void to_ground_atoms(const GroundLiteralList<P>& literals, GroundAtomList<P>& out_ground_atoms)
 {
     out_ground_atoms.clear();
@@ -33,11 +33,11 @@ void to_ground_atoms(const GroundLiteralList<P>& literals, GroundAtomList<P>& ou
     }
 }
 
-template void to_ground_atoms(const GroundLiteralList<Static>& literals, GroundAtomList<Static>& out_ground_atoms);
-template void to_ground_atoms(const GroundLiteralList<Fluent>& literals, GroundAtomList<Fluent>& out_ground_atoms);
-template void to_ground_atoms(const GroundLiteralList<Derived>& literals, GroundAtomList<Derived>& out_ground_atoms);
+template void to_ground_atoms(const GroundLiteralList<StaticTag>& literals, GroundAtomList<StaticTag>& out_ground_atoms);
+template void to_ground_atoms(const GroundLiteralList<FluentTag>& literals, GroundAtomList<FluentTag>& out_ground_atoms);
+template void to_ground_atoms(const GroundLiteralList<DerivedTag>& literals, GroundAtomList<DerivedTag>& out_ground_atoms);
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 GroundAtomList<P> to_ground_atoms(const GroundLiteralList<P>& literals)
 {
     GroundAtomList<P> ground_atoms;
@@ -45,11 +45,11 @@ GroundAtomList<P> to_ground_atoms(const GroundLiteralList<P>& literals)
     return ground_atoms;
 }
 
-template GroundAtomList<Static> to_ground_atoms(const GroundLiteralList<Static>& literals);
-template GroundAtomList<Fluent> to_ground_atoms(const GroundLiteralList<Fluent>& literals);
-template GroundAtomList<Derived> to_ground_atoms(const GroundLiteralList<Derived>& literals);
+template GroundAtomList<StaticTag> to_ground_atoms(const GroundLiteralList<StaticTag>& literals);
+template GroundAtomList<FluentTag> to_ground_atoms(const GroundLiteralList<FluentTag>& literals);
+template GroundAtomList<DerivedTag> to_ground_atoms(const GroundLiteralList<DerivedTag>& literals);
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 void filter_ground_atoms(const GroundLiteralList<P>& literals, bool polarity, GroundAtomList<P>& out_ground_atoms)
 {
     out_ground_atoms.clear();
@@ -63,11 +63,11 @@ void filter_ground_atoms(const GroundLiteralList<P>& literals, bool polarity, Gr
     }
 }
 
-template void filter_ground_atoms(const GroundLiteralList<Static>& literals, bool polarity, GroundAtomList<Static>& out_ground_atoms);
-template void filter_ground_atoms(const GroundLiteralList<Fluent>& literals, bool polarity, GroundAtomList<Fluent>& out_ground_atoms);
-template void filter_ground_atoms(const GroundLiteralList<Derived>& literals, bool polarity, GroundAtomList<Derived>& out_ground_atoms);
+template void filter_ground_atoms(const GroundLiteralList<StaticTag>& literals, bool polarity, GroundAtomList<StaticTag>& out_ground_atoms);
+template void filter_ground_atoms(const GroundLiteralList<FluentTag>& literals, bool polarity, GroundAtomList<FluentTag>& out_ground_atoms);
+template void filter_ground_atoms(const GroundLiteralList<DerivedTag>& literals, bool polarity, GroundAtomList<DerivedTag>& out_ground_atoms);
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 GroundAtomList<P> filter_ground_atoms(const GroundLiteralList<P>& literals, bool polarity)
 {
     GroundAtomList<P> ground_atoms;
@@ -75,7 +75,7 @@ GroundAtomList<P> filter_ground_atoms(const GroundLiteralList<P>& literals, bool
     return ground_atoms;
 }
 
-template GroundAtomList<Static> filter_ground_atoms(const GroundLiteralList<Static>& literals, bool polarity);
-template GroundAtomList<Fluent> filter_ground_atoms(const GroundLiteralList<Fluent>& literals, bool polarity);
-template GroundAtomList<Derived> filter_ground_atoms(const GroundLiteralList<Derived>& literals, bool polarity);
+template GroundAtomList<StaticTag> filter_ground_atoms(const GroundLiteralList<StaticTag>& literals, bool polarity);
+template GroundAtomList<FluentTag> filter_ground_atoms(const GroundLiteralList<FluentTag>& literals, bool polarity);
+template GroundAtomList<DerivedTag> filter_ground_atoms(const GroundLiteralList<DerivedTag>& literals, bool polarity);
 }

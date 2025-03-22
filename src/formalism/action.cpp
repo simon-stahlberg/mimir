@@ -36,7 +36,7 @@ namespace mimir::formalism
 {
 
 static void validate_non_conflicting_numeric_effects(ConjunctiveEffect conjunctive_effect,
-                                                     absl::flat_hash_map<Function<Fluent>, loki::AssignOperatorEnum>& ref_fluent_function_to_change,
+                                                     absl::flat_hash_map<Function<FluentTag>, loki::AssignOperatorEnum>& ref_fluent_function_to_change,
                                                      std::optional<loki::AssignOperatorEnum>& ref_auxiliary_function_change)
 {
     for (const auto& numeric_effect : conjunctive_effect->get_fluent_numeric_effects())
@@ -104,7 +104,7 @@ static void validate_non_conflicting_numeric_effects(ConjunctiveEffect conjuncti
 /// @return
 static void validate_non_conflicting_numeric_effects(ConjunctiveEffect conjunctive_effect, const ConditionalEffectList& conditional_effects)
 {
-    auto fluent_function_to_change = absl::flat_hash_map<Function<Fluent>, loki::AssignOperatorEnum> {};
+    auto fluent_function_to_change = absl::flat_hash_map<Function<FluentTag>, loki::AssignOperatorEnum> {};
     auto auxiliary_function_change = std::optional<loki::AssignOperatorEnum> { std::nullopt };
 
     validate_non_conflicting_numeric_effects(conjunctive_effect, fluent_function_to_change, auxiliary_function_change);

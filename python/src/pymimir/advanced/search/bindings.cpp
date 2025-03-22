@@ -169,12 +169,12 @@ void bind_search(nb::module_& m)
     nb::class_<StateImpl>(m, "State")  //
         .def("__hash__", [](const StateImpl& self) { return self.get_index(); })
         .def("__eq__", [](const StateImpl& lhs, const StateImpl& rhs) { return lhs.get_index() == rhs.get_index(); })
-        .def("get_fluent_atoms", nb::overload_cast<>(&StateImpl::get_atoms<Fluent>, nb::const_))
-        .def("get_derived_atoms", nb::overload_cast<>(&StateImpl::get_atoms<Derived>, nb::const_))
-        .def("literal_holds", nb::overload_cast<GroundLiteral<Fluent>>(&StateImpl::literal_holds<Fluent>, nb::const_), nb::arg("literal"))
-        .def("literal_holds", nb::overload_cast<GroundLiteral<Derived>>(&StateImpl::literal_holds<Derived>, nb::const_), nb::arg("literal"))
-        .def("literals_hold", nb::overload_cast<const GroundLiteralList<Fluent>&>(&StateImpl::literals_hold<Fluent>, nb::const_), nb::arg("literals"))
-        .def("literals_hold", nb::overload_cast<const GroundLiteralList<Derived>&>(&StateImpl::literals_hold<Derived>, nb::const_), nb::arg("literals"))
+        .def("get_fluent_atoms", nb::overload_cast<>(&StateImpl::get_atoms<FluentTag>, nb::const_))
+        .def("get_derived_atoms", nb::overload_cast<>(&StateImpl::get_atoms<DerivedTag>, nb::const_))
+        .def("literal_holds", nb::overload_cast<GroundLiteral<FluentTag>>(&StateImpl::literal_holds<FluentTag>, nb::const_), nb::arg("literal"))
+        .def("literal_holds", nb::overload_cast<GroundLiteral<DerivedTag>>(&StateImpl::literal_holds<DerivedTag>, nb::const_), nb::arg("literal"))
+        .def("literals_hold", nb::overload_cast<const GroundLiteralList<FluentTag>&>(&StateImpl::literals_hold<FluentTag>, nb::const_), nb::arg("literals"))
+        .def("literals_hold", nb::overload_cast<const GroundLiteralList<DerivedTag>&>(&StateImpl::literals_hold<DerivedTag>, nb::const_), nb::arg("literals"))
         .def(
             "to_string",
             [](const StateImpl& self, const ProblemImpl& problem)
@@ -200,8 +200,8 @@ void bind_search(nb::module_& m)
             "generate_ground_conjunctions",
             [](ConjunctiveConditionSatisficingBindingGenerator& self, State state, size_t max_num_groundings)
             {
-                auto result =
-                    std::vector<std::pair<ObjectList, std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>>>> {};
+                auto result = std::vector<
+                    std::pair<ObjectList, std::tuple<GroundLiteralList<StaticTag>, GroundLiteralList<FluentTag>, GroundLiteralList<DerivedTag>>>> {};
 
                 auto count = size_t(0);
                 for (const auto& ground_conjunction : self.create_ground_conjunction_generator(state))
@@ -224,8 +224,8 @@ void bind_search(nb::module_& m)
             "generate_ground_conjunctions",
             [](ConjunctiveConditionSatisficingBindingGenerator& self, State state, size_t max_num_groundings)
             {
-                auto result =
-                    std::vector<std::pair<ObjectList, std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>>>> {};
+                auto result = std::vector<
+                    std::pair<ObjectList, std::tuple<GroundLiteralList<StaticTag>, GroundLiteralList<FluentTag>, GroundLiteralList<DerivedTag>>>> {};
 
                 auto count = size_t(0);
                 for (const auto& ground_conjunction : self.create_ground_conjunction_generator(state))
@@ -248,8 +248,8 @@ void bind_search(nb::module_& m)
             "generate_ground_conjunctions",
             [](ConjunctiveConditionSatisficingBindingGenerator& self, State state, size_t max_num_groundings)
             {
-                auto result =
-                    std::vector<std::pair<ObjectList, std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>>>> {};
+                auto result = std::vector<
+                    std::pair<ObjectList, std::tuple<GroundLiteralList<StaticTag>, GroundLiteralList<FluentTag>, GroundLiteralList<DerivedTag>>>> {};
 
                 auto count = size_t(0);
                 for (const auto& ground_conjunction : self.create_ground_conjunction_generator(state))

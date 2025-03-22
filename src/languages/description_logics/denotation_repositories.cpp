@@ -22,7 +22,7 @@ using namespace mimir::formalism;
 namespace mimir::languages::dl
 {
 
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 Denotation<D> DenotationRepository<D>::insert(Constructor<D> constructor, search::State state, const DenotationImpl<D>& denotation)
 {
     const auto [it, inserted] = m_storage.insert(denotation);
@@ -34,7 +34,7 @@ Denotation<D> DenotationRepository<D>::insert(Constructor<D> constructor, search
     return Denotation<D>(it->get());
 }
 
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 Denotation<D> DenotationRepository<D>::get_if(Constructor<D> constructor, search::State state) const
 {
     auto it = m_cached_dynamic_denotations.find(Key { constructor, state });
@@ -46,9 +46,9 @@ Denotation<D> DenotationRepository<D>::get_if(Constructor<D> constructor, search
     return it->second;
 }
 
-template class DenotationRepository<Concept>;
-template class DenotationRepository<Role>;
-template class DenotationRepository<Boolean>;
-template class DenotationRepository<Numerical>;
+template class DenotationRepository<ConceptTag>;
+template class DenotationRepository<RoleTag>;
+template class DenotationRepository<BooleanTag>;
+template class DenotationRepository<NumericalTag>;
 
 }

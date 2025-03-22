@@ -24,7 +24,7 @@
 namespace mimir::formalism
 {
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 PredicateImpl<P>::PredicateImpl(Index index, std::string name, VariableList parameters) :
     m_index(index),
     m_name(std::move(name)),
@@ -33,54 +33,54 @@ PredicateImpl<P>::PredicateImpl(Index index, std::string name, VariableList para
     assert(is_all_unique(m_parameters));
 }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 Index PredicateImpl<P>::get_index() const
 {
     return m_index;
 }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 const std::string& PredicateImpl<P>::get_name() const
 {
     return m_name;
 }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 const VariableList& PredicateImpl<P>::get_parameters() const
 {
     return m_parameters;
 }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 size_t PredicateImpl<P>::get_arity() const
 {
     return m_parameters.size();
 }
 
-template class PredicateImpl<Static>;
-template class PredicateImpl<Fluent>;
-template class PredicateImpl<Derived>;
+template class PredicateImpl<StaticTag>;
+template class PredicateImpl<FluentTag>;
+template class PredicateImpl<DerivedTag>;
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 std::ostream& operator<<(std::ostream& out, const PredicateImpl<P>& element)
 {
     write(element, StringFormatter(), out);
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, const PredicateImpl<Static>& element);
-template std::ostream& operator<<(std::ostream& out, const PredicateImpl<Fluent>& element);
-template std::ostream& operator<<(std::ostream& out, const PredicateImpl<Derived>& element);
+template std::ostream& operator<<(std::ostream& out, const PredicateImpl<StaticTag>& element);
+template std::ostream& operator<<(std::ostream& out, const PredicateImpl<FluentTag>& element);
+template std::ostream& operator<<(std::ostream& out, const PredicateImpl<DerivedTag>& element);
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 std::ostream& operator<<(std::ostream& out, Predicate<P> element)
 {
     write(*element, AddressFormatter(), out);
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, Predicate<Static> element);
-template std::ostream& operator<<(std::ostream& out, Predicate<Fluent> element);
-template std::ostream& operator<<(std::ostream& out, Predicate<Derived> element);
+template std::ostream& operator<<(std::ostream& out, Predicate<StaticTag> element);
+template std::ostream& operator<<(std::ostream& out, Predicate<FluentTag> element);
+template std::ostream& operator<<(std::ostream& out, Predicate<DerivedTag> element);
 
 }

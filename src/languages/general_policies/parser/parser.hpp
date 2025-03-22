@@ -42,7 +42,7 @@ using ascii::space;
 namespace parser
 {
 
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 struct NamedFeatureClass;
 
 struct ConditionClass;
@@ -62,10 +62,10 @@ struct UnchangedNumericalEffectClass;
 struct RuleClass;
 struct GeneralPolicyClass;
 
-typedef x3::rule<NamedFeatureClass<dl::Concept>, ast::NamedFeature<dl::Concept>> named_concept_type;
-typedef x3::rule<NamedFeatureClass<dl::Role>, ast::NamedFeature<dl::Role>> named_role_type;
-typedef x3::rule<NamedFeatureClass<dl::Boolean>, ast::NamedFeature<dl::Boolean>> named_boolean_type;
-typedef x3::rule<NamedFeatureClass<dl::Numerical>, ast::NamedFeature<dl::Numerical>> named_numerical_type;
+typedef x3::rule<NamedFeatureClass<dl::ConceptTag>, ast::NamedFeature<dl::ConceptTag>> named_concept_type;
+typedef x3::rule<NamedFeatureClass<dl::RoleTag>, ast::NamedFeature<dl::RoleTag>> named_role_type;
+typedef x3::rule<NamedFeatureClass<dl::BooleanTag>, ast::NamedFeature<dl::BooleanTag>> named_boolean_type;
+typedef x3::rule<NamedFeatureClass<dl::NumericalTag>, ast::NamedFeature<dl::NumericalTag>> named_numerical_type;
 
 typedef x3::rule<ConditionClass, ast::Condition> condition_type;
 typedef x3::rule<PositiveBooleanConditionClass, ast::PositiveBooleanCondition> positive_boolean_condition_type;

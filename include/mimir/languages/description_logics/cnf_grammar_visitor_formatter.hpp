@@ -33,12 +33,12 @@ public:
     /* Concepts */
     void visit(ConceptBot constructor) override;
     void visit(ConceptTop constructor) override;
-    void visit(ConceptAtomicState<formalism::Static> constructor) override;
-    void visit(ConceptAtomicState<formalism::Fluent> constructor) override;
-    void visit(ConceptAtomicState<formalism::Derived> constructor) override;
-    void visit(ConceptAtomicGoal<formalism::Static> constructor) override;
-    void visit(ConceptAtomicGoal<formalism::Fluent> constructor) override;
-    void visit(ConceptAtomicGoal<formalism::Derived> constructor) override;
+    void visit(ConceptAtomicState<formalism::StaticTag> constructor) override;
+    void visit(ConceptAtomicState<formalism::FluentTag> constructor) override;
+    void visit(ConceptAtomicState<formalism::DerivedTag> constructor) override;
+    void visit(ConceptAtomicGoal<formalism::StaticTag> constructor) override;
+    void visit(ConceptAtomicGoal<formalism::FluentTag> constructor) override;
+    void visit(ConceptAtomicGoal<formalism::DerivedTag> constructor) override;
     void visit(ConceptIntersection constructor) override;
     void visit(ConceptUnion constructor) override;
     void visit(ConceptNegation constructor) override;
@@ -49,12 +49,12 @@ public:
     void visit(ConceptNominal constructor) override;
     /* Roles */
     void visit(RoleUniversal constructor) override;
-    void visit(RoleAtomicState<formalism::Static> constructor) override;
-    void visit(RoleAtomicState<formalism::Fluent> constructor) override;
-    void visit(RoleAtomicState<formalism::Derived> constructor) override;
-    void visit(RoleAtomicGoal<formalism::Static> constructor) override;
-    void visit(RoleAtomicGoal<formalism::Fluent> constructor) override;
-    void visit(RoleAtomicGoal<formalism::Derived> constructor) override;
+    void visit(RoleAtomicState<formalism::StaticTag> constructor) override;
+    void visit(RoleAtomicState<formalism::FluentTag> constructor) override;
+    void visit(RoleAtomicState<formalism::DerivedTag> constructor) override;
+    void visit(RoleAtomicGoal<formalism::StaticTag> constructor) override;
+    void visit(RoleAtomicGoal<formalism::FluentTag> constructor) override;
+    void visit(RoleAtomicGoal<formalism::DerivedTag> constructor) override;
     void visit(RoleIntersection constructor) override;
     void visit(RoleUnion constructor) override;
     void visit(RoleComplement constructor) override;
@@ -65,41 +65,41 @@ public:
     void visit(RoleRestriction constructor) override;
     void visit(RoleIdentity constructor) override;
     /* Booleans */
-    void visit(BooleanAtomicState<formalism::Static> constructor) override;
-    void visit(BooleanAtomicState<formalism::Fluent> constructor) override;
-    void visit(BooleanAtomicState<formalism::Derived> constructor) override;
-    void visit(BooleanNonempty<Concept> constructor) override;
-    void visit(BooleanNonempty<Role> constructor) override;
+    void visit(BooleanAtomicState<formalism::StaticTag> constructor) override;
+    void visit(BooleanAtomicState<formalism::FluentTag> constructor) override;
+    void visit(BooleanAtomicState<formalism::DerivedTag> constructor) override;
+    void visit(BooleanNonempty<ConceptTag> constructor) override;
+    void visit(BooleanNonempty<RoleTag> constructor) override;
     /* Numericals */
-    void visit(NumericalCount<Concept> constructor) override;
-    void visit(NumericalCount<Role> constructor) override;
+    void visit(NumericalCount<ConceptTag> constructor) override;
+    void visit(NumericalCount<RoleTag> constructor) override;
     void visit(NumericalDistance constructor) override;
     /* Nonterminals */
-    void visit(NonTerminal<Concept> constructor) override;
-    void visit(NonTerminal<Role> constructor) override;
-    void visit(NonTerminal<Boolean> constructor) override;
-    void visit(NonTerminal<Numerical> constructor) override;
+    void visit(NonTerminal<ConceptTag> constructor) override;
+    void visit(NonTerminal<RoleTag> constructor) override;
+    void visit(NonTerminal<BooleanTag> constructor) override;
+    void visit(NonTerminal<NumericalTag> constructor) override;
     /* DerivationRules */
-    void visit(DerivationRule<Concept> constructor) override;
-    void visit(DerivationRule<Role> constructor) override;
-    void visit(DerivationRule<Boolean> constructor) override;
-    void visit(DerivationRule<Numerical> constructor) override;
+    void visit(DerivationRule<ConceptTag> constructor) override;
+    void visit(DerivationRule<RoleTag> constructor) override;
+    void visit(DerivationRule<BooleanTag> constructor) override;
+    void visit(DerivationRule<NumericalTag> constructor) override;
     /* SubstitutionRules */
-    void visit(SubstitutionRule<Concept> constructor) override;
-    void visit(SubstitutionRule<Role> constructor) override;
-    void visit(SubstitutionRule<Boolean> constructor) override;
-    void visit(SubstitutionRule<Numerical> constructor) override;
+    void visit(SubstitutionRule<ConceptTag> constructor) override;
+    void visit(SubstitutionRule<RoleTag> constructor) override;
+    void visit(SubstitutionRule<BooleanTag> constructor) override;
+    void visit(SubstitutionRule<NumericalTag> constructor) override;
     /* Grammar*/
     void visit(const Grammar& grammar) override;
 
 private:
-    template<FeatureCategory D>
+    template<IsConceptOrRoleOrBooleanOrNumericalTag D>
     void visit_impl(NonTerminal<D> constructor);
 
-    template<FeatureCategory D>
+    template<IsConceptOrRoleOrBooleanOrNumericalTag D>
     void visit_impl(DerivationRule<D> rule);
 
-    template<FeatureCategory D>
+    template<IsConceptOrRoleOrBooleanOrNumericalTag D>
     void visit_impl(SubstitutionRule<D> rule);
 };
 
@@ -107,16 +107,16 @@ private:
  * Printing
  */
 
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 extern std::ostream& operator<<(std::ostream& out, Constructor<D> element);
 
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 extern std::ostream& operator<<(std::ostream& out, NonTerminal<D> element);
 
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 extern std::ostream& operator<<(std::ostream& out, DerivationRule<D> element);
 
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 extern std::ostream& operator<<(std::ostream& out, SubstitutionRule<D> element);
 
 extern std::ostream& operator<<(std::ostream& out, const Grammar& element);

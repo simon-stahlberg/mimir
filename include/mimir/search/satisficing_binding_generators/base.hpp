@@ -48,12 +48,12 @@ protected:
 
     /* Memory for reuse */
     DenseState m_dense_state;
-    formalism::GroundAtomList<formalism::Fluent> m_fluent_atoms;
-    formalism::GroundAtomList<formalism::Derived> m_derived_atoms;
-    formalism::GroundFunctionList<formalism::Fluent> m_fluent_functions;
-    formalism::AssignmentSet<formalism::Fluent> m_fluent_assignment_set;
-    formalism::AssignmentSet<formalism::Derived> m_derived_assignment_set;
-    formalism::NumericAssignmentSet<formalism::Fluent> m_numeric_assignment_set;
+    formalism::GroundAtomList<formalism::FluentTag> m_fluent_atoms;
+    formalism::GroundAtomList<formalism::DerivedTag> m_derived_atoms;
+    formalism::GroundFunctionList<formalism::FluentTag> m_fluent_functions;
+    formalism::AssignmentSet<formalism::FluentTag> m_fluent_assignment_set;
+    formalism::AssignmentSet<formalism::DerivedTag> m_derived_assignment_set;
+    formalism::NumericAssignmentSet<formalism::FluentTag> m_numeric_assignment_set;
     std::vector<boost::dynamic_bitset<>> m_full_consistency_graph;
     boost::dynamic_bitset<> m_consistent_vertices;
     KPKCWorkspace m_kpkc_workspace;
@@ -62,10 +62,10 @@ protected:
     constexpr const auto& self() const { return static_cast<const Derived_&>(*this); }
     constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
-    template<formalism::FluentOrDerived P>
+    template<formalism::IsFluentOrDerivedTag P>
     bool is_valid_dynamic_binding(const formalism::LiteralList<P>& literals, const FlatBitset& atom_indices, const formalism::ObjectList& binding);
 
-    bool is_valid_static_binding(const formalism::LiteralList<formalism::Static>& literals, const formalism::ObjectList& binding);
+    bool is_valid_static_binding(const formalism::LiteralList<formalism::StaticTag>& literals, const formalism::ObjectList& binding);
 
     bool
     is_valid_binding(const formalism::NumericConstraintList& constraints, const FlatDoubleList& fluent_numeric_variables, const formalism::ObjectList& binding);
@@ -77,44 +77,46 @@ protected:
     mimir::generator<formalism::ObjectList> nullary_case(const DenseState& dense_state);
 
     mimir::generator<formalism::ObjectList> unary_case(const DenseState& dense_state,
-                                                       const formalism::AssignmentSet<formalism::Fluent>& fluent_assignment_sets,
-                                                       const formalism::AssignmentSet<formalism::Derived>& derived_assignment_sets,
-                                                       const formalism::NumericAssignmentSet<formalism::Static>& static_numeric_assignment_set,
-                                                       const formalism::NumericAssignmentSet<formalism::Fluent>& fluent_numeric_assignment_set);
+                                                       const formalism::AssignmentSet<formalism::FluentTag>& fluent_assignment_sets,
+                                                       const formalism::AssignmentSet<formalism::DerivedTag>& derived_assignment_sets,
+                                                       const formalism::NumericAssignmentSet<formalism::StaticTag>& static_numeric_assignment_set,
+                                                       const formalism::NumericAssignmentSet<formalism::FluentTag>& fluent_numeric_assignment_set);
 
     mimir::generator<formalism::ObjectList> general_case(const DenseState& dense_state,
-                                                         const formalism::AssignmentSet<formalism::Fluent>& fluent_assignment_sets,
-                                                         const formalism::AssignmentSet<formalism::Derived>& derived_assignment_sets,
-                                                         const formalism::NumericAssignmentSet<formalism::Static>& static_numeric_assignment_set,
-                                                         const formalism::NumericAssignmentSet<formalism::Fluent>& fluent_numeric_assignment_set);
+                                                         const formalism::AssignmentSet<formalism::FluentTag>& fluent_assignment_sets,
+                                                         const formalism::AssignmentSet<formalism::DerivedTag>& derived_assignment_sets,
+                                                         const formalism::NumericAssignmentSet<formalism::StaticTag>& static_numeric_assignment_set,
+                                                         const formalism::NumericAssignmentSet<formalism::FluentTag>& fluent_numeric_assignment_set);
 
 public:
     SatisficingBindingGenerator(formalism::ConjunctiveCondition conjunctive_condition,
                                 formalism::Problem problem,
                                 std::optional<SatisficingBindingGeneratorEventHandler> event_handler = std::nullopt);
 
-    mimir::generator<formalism::ObjectList> create_binding_generator(State state,
-                                                                     const formalism::AssignmentSet<formalism::Fluent>& fluent_assignment_set,
-                                                                     const formalism::AssignmentSet<formalism::Derived>& derived_assignment_set,
-                                                                     const formalism::NumericAssignmentSet<formalism::Static>& static_numeric_assignment_set,
-                                                                     const formalism::NumericAssignmentSet<formalism::Fluent>& fluent_numeric_assignment_set);
+    mimir::generator<formalism::ObjectList>
+    create_binding_generator(State state,
+                             const formalism::AssignmentSet<formalism::FluentTag>& fluent_assignment_set,
+                             const formalism::AssignmentSet<formalism::DerivedTag>& derived_assignment_set,
+                             const formalism::NumericAssignmentSet<formalism::StaticTag>& static_numeric_assignment_set,
+                             const formalism::NumericAssignmentSet<formalism::FluentTag>& fluent_numeric_assignment_set);
 
-    mimir::generator<formalism::ObjectList> create_binding_generator(const DenseState& dense_state,
-                                                                     const formalism::AssignmentSet<formalism::Fluent>& fluent_assignment_set,
-                                                                     const formalism::AssignmentSet<formalism::Derived>& derived_assignment_set,
-                                                                     const formalism::NumericAssignmentSet<formalism::Static>& static_numeric_assignment_set,
-                                                                     const formalism::NumericAssignmentSet<formalism::Fluent>& fluent_numeric_assignment_set);
+    mimir::generator<formalism::ObjectList>
+    create_binding_generator(const DenseState& dense_state,
+                             const formalism::AssignmentSet<formalism::FluentTag>& fluent_assignment_set,
+                             const formalism::AssignmentSet<formalism::DerivedTag>& derived_assignment_set,
+                             const formalism::NumericAssignmentSet<formalism::StaticTag>& static_numeric_assignment_set,
+                             const formalism::NumericAssignmentSet<formalism::FluentTag>& fluent_numeric_assignment_set);
 
     mimir::generator<std::pair<formalism::ObjectList,
-                               std::tuple<formalism::GroundLiteralList<formalism::Static>,
-                                          formalism::GroundLiteralList<formalism::Fluent>,
-                                          formalism::GroundLiteralList<formalism::Derived>>>>
+                               std::tuple<formalism::GroundLiteralList<formalism::StaticTag>,
+                                          formalism::GroundLiteralList<formalism::FluentTag>,
+                                          formalism::GroundLiteralList<formalism::DerivedTag>>>>
     create_ground_conjunction_generator(State state);
 
     mimir::generator<std::pair<formalism::ObjectList,
-                               std::tuple<formalism::GroundLiteralList<formalism::Static>,
-                                          formalism::GroundLiteralList<formalism::Fluent>,
-                                          formalism::GroundLiteralList<formalism::Derived>>>>
+                               std::tuple<formalism::GroundLiteralList<formalism::StaticTag>,
+                                          formalism::GroundLiteralList<formalism::FluentTag>,
+                                          formalism::GroundLiteralList<formalism::DerivedTag>>>>
     create_ground_conjunction_generator(const DenseState& dense_state);
 
     /**

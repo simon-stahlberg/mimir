@@ -51,9 +51,9 @@ LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem
     m_fluent_atoms(),
     m_derived_atoms(),
     m_fluent_functions(),
-    m_fluent_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_domain()->get_predicates<Fluent>()),
+    m_fluent_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_domain()->get_predicates<FluentTag>()),
     m_derived_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_problem_and_domain_derived_predicates()),
-    m_numeric_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_domain()->get_function_skeletons<Fluent>())
+    m_numeric_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_domain()->get_function_skeletons<FluentTag>())
 {
     /* 2. Initialize the condition grounders for each action schema. */
     const auto& actions = problem->get_domain()->get_actions();
@@ -74,8 +74,8 @@ mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicabl
 
 mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicable_action_generator(const DenseState& dense_state)
 {
-    auto& dense_fluent_atoms = dense_state.get_atoms<Fluent>();
-    auto& dense_derived_atoms = dense_state.get_atoms<Derived>();
+    auto& dense_fluent_atoms = dense_state.get_atoms<FluentTag>();
+    auto& dense_derived_atoms = dense_state.get_atoms<DerivedTag>();
     auto& dense_numeric_variables = dense_state.get_numeric_variables();
 
     const auto& problem = *m_problem;

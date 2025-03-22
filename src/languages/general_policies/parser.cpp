@@ -28,15 +28,15 @@
 namespace mimir::languages::general_policies
 {
 
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 static NamedFeature<D>
 parse(const ast::NamedFeature<D>& node, const formalism::DomainImpl& domain, Repositories& repositories, dl::Repositories& dl_repositories)
 {
     return repositories.get_or_create_named_feature(node.name, dl::parse(node.feature, domain, dl_repositories));
 }
 
-template<dl::FeatureCategory D>
-static void verify_feature_exists(const std::string& feature_name, const ToNamedFeatureMaps<std::string, dl::Boolean, dl::Numerical>& feature_map)
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
+static void verify_feature_exists(const std::string& feature_name, const ToNamedFeatureMaps<std::string, dl::BooleanTag, dl::NumericalTag>& feature_map)
 {
     if (!boost::hana::at_key(feature_map, boost::hana::type<D> {}).contains(feature_name))
     {
@@ -44,93 +44,93 @@ static void verify_feature_exists(const std::string& feature_name, const ToNamed
     }
 }
 
-template<dl::FeatureCategory D>
-static NamedFeature<D> get(const std::string& feature_name, const ToNamedFeatureMaps<std::string, dl::Boolean, dl::Numerical>& feature_map)
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
+static NamedFeature<D> get(const std::string& feature_name, const ToNamedFeatureMaps<std::string, dl::BooleanTag, dl::NumericalTag>& feature_map)
 {
     return boost::hana::at_key(feature_map, boost::hana::type<D> {}).at(feature_name);
 }
 
 static Condition
-parse(const ast::PositiveBooleanCondition& node, Repositories& repositories, ToNamedFeatureMaps<std::string, dl::Boolean, dl::Numerical>& feature_map)
+parse(const ast::PositiveBooleanCondition& node, Repositories& repositories, ToNamedFeatureMaps<std::string, dl::BooleanTag, dl::NumericalTag>& feature_map)
 {
-    verify_feature_exists<dl::Boolean>(node.feature_name, feature_map);
-    return repositories.get_or_create_positive_boolean_condition(get<dl::Boolean>(node.feature_name, feature_map));
+    verify_feature_exists<dl::BooleanTag>(node.feature_name, feature_map);
+    return repositories.get_or_create_positive_boolean_condition(get<dl::BooleanTag>(node.feature_name, feature_map));
 }
 
 static Condition
-parse(const ast::NegativeBooleanCondition& node, Repositories& repositories, ToNamedFeatureMaps<std::string, dl::Boolean, dl::Numerical>& feature_map)
+parse(const ast::NegativeBooleanCondition& node, Repositories& repositories, ToNamedFeatureMaps<std::string, dl::BooleanTag, dl::NumericalTag>& feature_map)
 {
-    verify_feature_exists<dl::Boolean>(node.feature_name, feature_map);
-    return repositories.get_or_create_negative_boolean_condition(get<dl::Boolean>(node.feature_name, feature_map));
+    verify_feature_exists<dl::BooleanTag>(node.feature_name, feature_map);
+    return repositories.get_or_create_negative_boolean_condition(get<dl::BooleanTag>(node.feature_name, feature_map));
 }
 
 static Condition
-parse(const ast::GreaterNumericalCondition& node, Repositories& repositories, ToNamedFeatureMaps<std::string, dl::Boolean, dl::Numerical>& feature_map)
+parse(const ast::GreaterNumericalCondition& node, Repositories& repositories, ToNamedFeatureMaps<std::string, dl::BooleanTag, dl::NumericalTag>& feature_map)
 {
-    verify_feature_exists<dl::Numerical>(node.feature_name, feature_map);
-    return repositories.get_or_create_greater_numerical_condition(get<dl::Numerical>(node.feature_name, feature_map));
+    verify_feature_exists<dl::NumericalTag>(node.feature_name, feature_map);
+    return repositories.get_or_create_greater_numerical_condition(get<dl::NumericalTag>(node.feature_name, feature_map));
 }
 
 static Condition
-parse(const ast::EqualNumericalCondition& node, Repositories& repositories, ToNamedFeatureMaps<std::string, dl::Boolean, dl::Numerical>& feature_map)
+parse(const ast::EqualNumericalCondition& node, Repositories& repositories, ToNamedFeatureMaps<std::string, dl::BooleanTag, dl::NumericalTag>& feature_map)
 {
-    verify_feature_exists<dl::Numerical>(node.feature_name, feature_map);
-    return repositories.get_or_create_equal_numerical_condition(get<dl::Numerical>(node.feature_name, feature_map));
+    verify_feature_exists<dl::NumericalTag>(node.feature_name, feature_map);
+    return repositories.get_or_create_equal_numerical_condition(get<dl::NumericalTag>(node.feature_name, feature_map));
 }
 
-static Condition parse(const ast::Condition& node, Repositories& repositories, ToNamedFeatureMaps<std::string, dl::Boolean, dl::Numerical>& feature_map)
+static Condition parse(const ast::Condition& node, Repositories& repositories, ToNamedFeatureMaps<std::string, dl::BooleanTag, dl::NumericalTag>& feature_map)
 {
     return boost::apply_visitor([&](auto&& arg) { return parse(arg, repositories, feature_map); }, node);
 }
 
 static Effect
-parse(const ast::PositiveBooleanEffect& node, Repositories& repositories, ToNamedFeatureMaps<std::string, dl::Boolean, dl::Numerical>& feature_map)
+parse(const ast::PositiveBooleanEffect& node, Repositories& repositories, ToNamedFeatureMaps<std::string, dl::BooleanTag, dl::NumericalTag>& feature_map)
 {
-    verify_feature_exists<dl::Boolean>(node.feature_name, feature_map);
-    return repositories.get_or_create_positive_boolean_effect(get<dl::Boolean>(node.feature_name, feature_map));
+    verify_feature_exists<dl::BooleanTag>(node.feature_name, feature_map);
+    return repositories.get_or_create_positive_boolean_effect(get<dl::BooleanTag>(node.feature_name, feature_map));
 }
 
 static Effect
-parse(const ast::NegativeBooleanEffect& node, Repositories& repositories, ToNamedFeatureMaps<std::string, dl::Boolean, dl::Numerical>& feature_map)
+parse(const ast::NegativeBooleanEffect& node, Repositories& repositories, ToNamedFeatureMaps<std::string, dl::BooleanTag, dl::NumericalTag>& feature_map)
 {
-    verify_feature_exists<dl::Boolean>(node.feature_name, feature_map);
-    return repositories.get_or_create_negative_boolean_effect(get<dl::Boolean>(node.feature_name, feature_map));
+    verify_feature_exists<dl::BooleanTag>(node.feature_name, feature_map);
+    return repositories.get_or_create_negative_boolean_effect(get<dl::BooleanTag>(node.feature_name, feature_map));
 }
 
 static Effect
-parse(const ast::UnchangedBooleanEffect& node, Repositories& repositories, ToNamedFeatureMaps<std::string, dl::Boolean, dl::Numerical>& feature_map)
+parse(const ast::UnchangedBooleanEffect& node, Repositories& repositories, ToNamedFeatureMaps<std::string, dl::BooleanTag, dl::NumericalTag>& feature_map)
 {
-    verify_feature_exists<dl::Boolean>(node.feature_name, feature_map);
-    return repositories.get_or_create_unchanged_boolean_effect(get<dl::Boolean>(node.feature_name, feature_map));
+    verify_feature_exists<dl::BooleanTag>(node.feature_name, feature_map);
+    return repositories.get_or_create_unchanged_boolean_effect(get<dl::BooleanTag>(node.feature_name, feature_map));
 }
 
 static Effect
-parse(const ast::IncreaseNumericalEffect& node, Repositories& repositories, ToNamedFeatureMaps<std::string, dl::Boolean, dl::Numerical>& feature_map)
+parse(const ast::IncreaseNumericalEffect& node, Repositories& repositories, ToNamedFeatureMaps<std::string, dl::BooleanTag, dl::NumericalTag>& feature_map)
 {
-    verify_feature_exists<dl::Numerical>(node.feature_name, feature_map);
-    return repositories.get_or_create_increase_numerical_effect(get<dl::Numerical>(node.feature_name, feature_map));
+    verify_feature_exists<dl::NumericalTag>(node.feature_name, feature_map);
+    return repositories.get_or_create_increase_numerical_effect(get<dl::NumericalTag>(node.feature_name, feature_map));
 }
 
 static Effect
-parse(const ast::DecreaseNumericalEffect& node, Repositories& repositories, ToNamedFeatureMaps<std::string, dl::Boolean, dl::Numerical>& feature_map)
+parse(const ast::DecreaseNumericalEffect& node, Repositories& repositories, ToNamedFeatureMaps<std::string, dl::BooleanTag, dl::NumericalTag>& feature_map)
 {
-    verify_feature_exists<dl::Numerical>(node.feature_name, feature_map);
-    return repositories.get_or_create_decrease_numerical_effect(get<dl::Numerical>(node.feature_name, feature_map));
+    verify_feature_exists<dl::NumericalTag>(node.feature_name, feature_map);
+    return repositories.get_or_create_decrease_numerical_effect(get<dl::NumericalTag>(node.feature_name, feature_map));
 }
 
 static Effect
-parse(const ast::UnchangedNumericalEffect& node, Repositories& repositories, ToNamedFeatureMaps<std::string, dl::Boolean, dl::Numerical>& feature_map)
+parse(const ast::UnchangedNumericalEffect& node, Repositories& repositories, ToNamedFeatureMaps<std::string, dl::BooleanTag, dl::NumericalTag>& feature_map)
 {
-    verify_feature_exists<dl::Numerical>(node.feature_name, feature_map);
-    return repositories.get_or_create_unchanged_numerical_effect(get<dl::Numerical>(node.feature_name, feature_map));
+    verify_feature_exists<dl::NumericalTag>(node.feature_name, feature_map);
+    return repositories.get_or_create_unchanged_numerical_effect(get<dl::NumericalTag>(node.feature_name, feature_map));
 }
 
-static Effect parse(const ast::Effect& node, Repositories& repositories, ToNamedFeatureMaps<std::string, dl::Boolean, dl::Numerical>& feature_map)
+static Effect parse(const ast::Effect& node, Repositories& repositories, ToNamedFeatureMaps<std::string, dl::BooleanTag, dl::NumericalTag>& feature_map)
 {
     return boost::apply_visitor([&](auto&& arg) { return parse(arg, repositories, feature_map); }, node);
 }
 
-static Rule parse(const ast::Rule& node, Repositories& repositories, ToNamedFeatureMaps<std::string, dl::Boolean, dl::Numerical>& feature_map)
+static Rule parse(const ast::Rule& node, Repositories& repositories, ToNamedFeatureMaps<std::string, dl::BooleanTag, dl::NumericalTag>& feature_map)
 {
     auto conditions = ConditionList {};
     for (const auto& condition_node : node.conditions)
@@ -149,11 +149,11 @@ static Rule parse(const ast::Rule& node, Repositories& repositories, ToNamedFeat
 
 GeneralPolicy parse(const ast::GeneralPolicy& node, const formalism::DomainImpl& domain, Repositories& repositories, dl::Repositories& dl_repositories)
 {
-    auto features = NamedFeatureLists<dl::Boolean, dl::Numerical> {};
-    auto feature_map = ToNamedFeatureMaps<std::string, dl::Boolean, dl::Numerical> {};
+    auto features = NamedFeatureLists<dl::BooleanTag, dl::NumericalTag> {};
+    auto feature_map = ToNamedFeatureMaps<std::string, dl::BooleanTag, dl::NumericalTag> {};
 
-    auto& named_booleans_list = boost::hana::at_key(features, boost::hana::type<dl::Boolean> {});
-    auto& named_booleans_map = boost::hana::at_key(feature_map, boost::hana::type<dl::Boolean> {});
+    auto& named_booleans_list = boost::hana::at_key(features, boost::hana::type<dl::BooleanTag> {});
+    auto& named_booleans_map = boost::hana::at_key(feature_map, boost::hana::type<dl::BooleanTag> {});
     for (const auto& boolean_node : node.boolean_features)
     {
         const auto named_boolean = parse(boolean_node, domain, repositories, dl_repositories);
@@ -161,8 +161,8 @@ GeneralPolicy parse(const ast::GeneralPolicy& node, const formalism::DomainImpl&
         named_booleans_map.emplace(named_boolean->get_name(), named_boolean);
     }
 
-    auto& named_numericals_list = boost::hana::at_key(features, boost::hana::type<dl::Numerical> {});
-    auto& named_numericals_map = boost::hana::at_key(feature_map, boost::hana::type<dl::Numerical> {});
+    auto& named_numericals_list = boost::hana::at_key(features, boost::hana::type<dl::NumericalTag> {});
+    auto& named_numericals_map = boost::hana::at_key(feature_map, boost::hana::type<dl::NumericalTag> {});
     for (const auto& numerical_node : node.numerical_features)
     {
         const auto named_numerical = parse(numerical_node, domain, repositories, dl_repositories);

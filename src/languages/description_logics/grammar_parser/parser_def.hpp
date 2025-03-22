@@ -245,68 +245,68 @@ BOOST_SPIRIT_DEFINE(feature_category_derivation_rule, grammar_head, grammar_body
 ///////////////////////////////////////////////////////////////////////////
 
 template<>
-struct ConstructorClass<Concept> : x3::annotate_on_success
+struct ConstructorClass<ConceptTag> : x3::annotate_on_success
 {
 };
 template<>
-struct ConstructorClass<Role> : x3::annotate_on_success
+struct ConstructorClass<RoleTag> : x3::annotate_on_success
 {
 };
 template<>
-struct ConstructorClass<Boolean> : x3::annotate_on_success
+struct ConstructorClass<BooleanTag> : x3::annotate_on_success
 {
 };
 template<>
-struct ConstructorClass<Numerical> : x3::annotate_on_success
+struct ConstructorClass<NumericalTag> : x3::annotate_on_success
 {
 };
 
 template<>
-struct NonTerminalClass<Concept> : x3::annotate_on_success
+struct NonTerminalClass<ConceptTag> : x3::annotate_on_success
 {
 };
 template<>
-struct NonTerminalClass<Role> : x3::annotate_on_success
+struct NonTerminalClass<RoleTag> : x3::annotate_on_success
 {
 };
 template<>
-struct NonTerminalClass<Boolean> : x3::annotate_on_success
+struct NonTerminalClass<BooleanTag> : x3::annotate_on_success
 {
 };
 template<>
-struct NonTerminalClass<Numerical> : x3::annotate_on_success
+struct NonTerminalClass<NumericalTag> : x3::annotate_on_success
 {
 };
 template<>
-struct ConstructorOrNonTerminalClass<Concept> : x3::annotate_on_success
+struct ConstructorOrNonTerminalClass<ConceptTag> : x3::annotate_on_success
 {
 };
 template<>
-struct ConstructorOrNonTerminalClass<Role> : x3::annotate_on_success
+struct ConstructorOrNonTerminalClass<RoleTag> : x3::annotate_on_success
 {
 };
 template<>
-struct ConstructorOrNonTerminalClass<Boolean> : x3::annotate_on_success
+struct ConstructorOrNonTerminalClass<BooleanTag> : x3::annotate_on_success
 {
 };
 template<>
-struct ConstructorOrNonTerminalClass<Numerical> : x3::annotate_on_success
+struct ConstructorOrNonTerminalClass<NumericalTag> : x3::annotate_on_success
 {
 };
 template<>
-struct DerivationRuleClass<Concept> : x3::annotate_on_success
+struct DerivationRuleClass<ConceptTag> : x3::annotate_on_success
 {
 };
 template<>
-struct DerivationRuleClass<Role> : x3::annotate_on_success
+struct DerivationRuleClass<RoleTag> : x3::annotate_on_success
 {
 };
 template<>
-struct DerivationRuleClass<Boolean> : x3::annotate_on_success
+struct DerivationRuleClass<BooleanTag> : x3::annotate_on_success
 {
 };
 template<>
-struct DerivationRuleClass<Numerical> : x3::annotate_on_success
+struct DerivationRuleClass<NumericalTag> : x3::annotate_on_success
 {
 };
 

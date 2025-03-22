@@ -43,7 +43,7 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
-    using PDDLEntity = void;
+    using FormalismEntity = void;
 
     // moveable but not copyable
     GroundNumericConstraintImpl(const GroundNumericConstraintImpl& other) = delete;

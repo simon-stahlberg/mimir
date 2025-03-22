@@ -124,13 +124,13 @@ TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarVisitorSentenceGeneratorTes
 
     visitor.visit(cnf_grammar);
 
-    const auto& concept_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::Concept> {});
+    const auto& concept_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::ConceptTag> {});
 
     EXPECT_EQ(concept_statistics.num_generated, 232);
     EXPECT_EQ(concept_statistics.num_kept, 22);
     EXPECT_EQ(concept_statistics.num_pruned, 210);
 
-    const auto& role_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::Role> {});
+    const auto& role_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::RoleTag> {});
 
     EXPECT_EQ(role_statistics.num_generated, 22);
     EXPECT_EQ(role_statistics.num_kept, 5);
@@ -172,25 +172,25 @@ TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarVisitorSentenceGeneratorFra
 
     visitor.visit(cnf_grammar);
 
-    const auto& concept_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::Concept> {});
+    const auto& concept_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::ConceptTag> {});
 
     EXPECT_EQ(concept_statistics.num_generated, 4063);
     EXPECT_EQ(concept_statistics.num_kept, 204);
     EXPECT_EQ(concept_statistics.num_pruned, 3859);
 
-    const auto& role_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::Role> {});
+    const auto& role_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::RoleTag> {});
 
     EXPECT_EQ(role_statistics.num_generated, 38);
     EXPECT_EQ(role_statistics.num_kept, 9);
     EXPECT_EQ(role_statistics.num_pruned, 29);
 
-    const auto& boolean_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::Boolean> {});
+    const auto& boolean_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::BooleanTag> {});
 
     EXPECT_EQ(boolean_statistics.num_generated, 173);
     EXPECT_EQ(boolean_statistics.num_kept, 38);
     EXPECT_EQ(boolean_statistics.num_pruned, 135);
 
-    const auto& numerical_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::Numerical> {});
+    const auto& numerical_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::NumericalTag> {});
 
     EXPECT_EQ(numerical_statistics.num_generated, 2799);
     EXPECT_EQ(numerical_statistics.num_kept, 203);

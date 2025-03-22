@@ -40,12 +40,12 @@ private:
 
     /* Memory for reuse */
     DenseState m_dense_state;
-    formalism::GroundAtomList<formalism::Fluent> m_fluent_atoms;
-    formalism::GroundAtomList<formalism::Derived> m_derived_atoms;
-    formalism::GroundFunctionList<formalism::Fluent> m_fluent_functions;
-    formalism::AssignmentSet<formalism::Fluent> m_fluent_assignment_set;
-    formalism::AssignmentSet<formalism::Derived> m_derived_assignment_set;
-    formalism::NumericAssignmentSet<formalism::Fluent> m_numeric_assignment_set;
+    formalism::GroundAtomList<formalism::FluentTag> m_fluent_atoms;
+    formalism::GroundAtomList<formalism::DerivedTag> m_derived_atoms;
+    formalism::GroundFunctionList<formalism::FluentTag> m_fluent_functions;
+    formalism::AssignmentSet<formalism::FluentTag> m_fluent_assignment_set;
+    formalism::AssignmentSet<formalism::DerivedTag> m_derived_assignment_set;
+    formalism::NumericAssignmentSet<formalism::FluentTag> m_numeric_assignment_set;
 
 public:
     /// @brief Simplest construction

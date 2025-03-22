@@ -52,43 +52,43 @@ void ConceptTopGrammarVisitor::visit(dl::ConceptTop constructor) { m_result = tr
  * ConceptAtomicStateGrammarVisitor
  */
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 ConceptAtomicStateGrammarVisitor<P>::ConceptAtomicStateGrammarVisitor(ConceptAtomicState<P> grammar_constructor, const Grammar& grammar) :
     m_grammar_constructor(grammar_constructor),
     m_grammar(grammar)
 {
 }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 void ConceptAtomicStateGrammarVisitor<P>::visit(dl::ConceptAtomicState<P> constructor)
 {
     m_result = constructor->get_predicate() == m_grammar_constructor->get_predicate();
 }
 
-template class ConceptAtomicStateGrammarVisitor<Static>;
-template class ConceptAtomicStateGrammarVisitor<Fluent>;
-template class ConceptAtomicStateGrammarVisitor<Derived>;
+template class ConceptAtomicStateGrammarVisitor<StaticTag>;
+template class ConceptAtomicStateGrammarVisitor<FluentTag>;
+template class ConceptAtomicStateGrammarVisitor<DerivedTag>;
 
 /**
  * ConceptAtomicGoalGrammarVisitor
  */
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 ConceptAtomicGoalGrammarVisitor<P>::ConceptAtomicGoalGrammarVisitor(ConceptAtomicGoal<P> grammar_constructor, const Grammar& grammar) :
     m_grammar_constructor(grammar_constructor),
     m_grammar(grammar)
 {
 }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 void ConceptAtomicGoalGrammarVisitor<P>::visit(dl::ConceptAtomicGoal<P> constructor)
 {
     m_result = constructor->get_predicate() == m_grammar_constructor->get_predicate();
 }
 
-template class ConceptAtomicGoalGrammarVisitor<Static>;
-template class ConceptAtomicGoalGrammarVisitor<Fluent>;
-template class ConceptAtomicGoalGrammarVisitor<Derived>;
+template class ConceptAtomicGoalGrammarVisitor<StaticTag>;
+template class ConceptAtomicGoalGrammarVisitor<FluentTag>;
+template class ConceptAtomicGoalGrammarVisitor<DerivedTag>;
 
 /**
  * ConceptIntersectionGrammarVisitor
@@ -231,43 +231,43 @@ void RoleUniversalGrammarVisitor::visit(dl::RoleUniversal constructor) { m_resul
  * RoleAtomicStateGrammarVisitor
  */
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 RoleAtomicStateGrammarVisitor<P>::RoleAtomicStateGrammarVisitor(RoleAtomicState<P> grammar_constructor, const Grammar& grammar) :
     m_grammar_constructor(grammar_constructor),
     m_grammar(grammar)
 {
 }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 void RoleAtomicStateGrammarVisitor<P>::visit(dl::RoleAtomicState<P> constructor)
 {
     m_result = constructor->get_predicate() == m_grammar_constructor->get_predicate();
 }
 
-template class RoleAtomicStateGrammarVisitor<Static>;
-template class RoleAtomicStateGrammarVisitor<Fluent>;
-template class RoleAtomicStateGrammarVisitor<Derived>;
+template class RoleAtomicStateGrammarVisitor<StaticTag>;
+template class RoleAtomicStateGrammarVisitor<FluentTag>;
+template class RoleAtomicStateGrammarVisitor<DerivedTag>;
 
 /**
  * RoleAtomicGoalGrammarVisitor
  */
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 RoleAtomicGoalGrammarVisitor<P>::RoleAtomicGoalGrammarVisitor(RoleAtomicGoal<P> grammar_constructor, const Grammar& grammar) :
     m_grammar_constructor(grammar_constructor),
     m_grammar(grammar)
 {
 }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 void RoleAtomicGoalGrammarVisitor<P>::visit(dl::RoleAtomicGoal<P> constructor)
 {
     m_result = (constructor->get_predicate() == m_grammar_constructor->get_predicate());
 }
 
-template class RoleAtomicGoalGrammarVisitor<Static>;
-template class RoleAtomicGoalGrammarVisitor<Fluent>;
-template class RoleAtomicGoalGrammarVisitor<Derived>;
+template class RoleAtomicGoalGrammarVisitor<StaticTag>;
+template class RoleAtomicGoalGrammarVisitor<FluentTag>;
+template class RoleAtomicGoalGrammarVisitor<DerivedTag>;
 
 /**
  * RoleIntersectionGrammarVisitor
@@ -413,57 +413,57 @@ void RoleIdentityGrammarVisitor::visit(dl::RoleIdentity constructor)
  * BooleanVisitors
  */
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 BooleanAtomicStateGrammarVisitor<P>::BooleanAtomicStateGrammarVisitor(BooleanAtomicState<P> grammar_constructor, const Grammar& grammar) :
     m_grammar_constructor(grammar_constructor),
     m_grammar(grammar)
 {
 }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 void BooleanAtomicStateGrammarVisitor<P>::visit(dl::BooleanAtomicState<P> constructor)
 {
     m_result = (m_grammar_constructor->get_predicate() == constructor->get_predicate());
 }
 
-template class BooleanAtomicStateGrammarVisitor<Static>;
-template class BooleanAtomicStateGrammarVisitor<Fluent>;
-template class BooleanAtomicStateGrammarVisitor<Derived>;
+template class BooleanAtomicStateGrammarVisitor<StaticTag>;
+template class BooleanAtomicStateGrammarVisitor<FluentTag>;
+template class BooleanAtomicStateGrammarVisitor<DerivedTag>;
 
-template<DescriptionLogicCategory D>
+template<IsConceptOrRoleTag D>
 BooleanNonemptyGrammarVisitor<D>::BooleanNonemptyGrammarVisitor(BooleanNonempty<D> grammar_constructor, const Grammar& grammar) :
     m_grammar_constructor(grammar_constructor),
     m_grammar(grammar)
 {
 }
 
-template<DescriptionLogicCategory D>
+template<IsConceptOrRoleTag D>
 void BooleanNonemptyGrammarVisitor<D>::visit(dl::BooleanNonempty<D> constructor)
 {
     m_result = m_grammar_constructor->get_nonterminal()->test_match(constructor->get_constructor(), m_grammar);
 }
 
-template class BooleanNonemptyGrammarVisitor<Concept>;
-template class BooleanNonemptyGrammarVisitor<Role>;
+template class BooleanNonemptyGrammarVisitor<ConceptTag>;
+template class BooleanNonemptyGrammarVisitor<RoleTag>;
 
 /**
  * NumericalVisitors
  */
 
-template<DescriptionLogicCategory D>
+template<IsConceptOrRoleTag D>
 NumericalCountGrammarVisitor<D>::NumericalCountGrammarVisitor(NumericalCount<D> grammar_constructor, const Grammar& grammar) :
     m_grammar_constructor(grammar_constructor),
     m_grammar(grammar)
 {
 }
 
-template<DescriptionLogicCategory D>
+template<IsConceptOrRoleTag D>
 void NumericalCountGrammarVisitor<D>::visit(dl::NumericalCount<D> constructor)
 {
 }
 
-template class NumericalCountGrammarVisitor<Concept>;
-template class NumericalCountGrammarVisitor<Role>;
+template class NumericalCountGrammarVisitor<ConceptTag>;
+template class NumericalCountGrammarVisitor<RoleTag>;
 
 NumericalDistanceGrammarVisitor::NumericalDistanceGrammarVisitor(NumericalDistance grammar_constructor, const Grammar& grammar) :
     m_grammar_constructor(grammar_constructor),

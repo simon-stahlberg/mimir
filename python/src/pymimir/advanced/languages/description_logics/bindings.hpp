@@ -6,7 +6,7 @@
 
 namespace mimir::bindings
 {
-template<languages::dl::FeatureCategory D>
+template<languages::dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 void bind_constructor(nb::module_& m, const std::string& class_name)
 {
     nb::class_<languages::dl::IConstructor<D>>(m, class_name.c_str())

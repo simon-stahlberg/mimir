@@ -21,36 +21,36 @@
 
 namespace mimir::languages::general_policies
 {
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 NamedFeatureImpl<D>::NamedFeatureImpl(Index index, std::string name, dl::Constructor<D> feature) : m_index(index), m_name(std::move(name)), m_feature(feature)
 {
 }
 
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 void NamedFeatureImpl<D>::accept(IVisitor& visitor) const
 {
     visitor.visit(this);
 }
 
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 Index NamedFeatureImpl<D>::get_index() const
 {
     return m_index;
 }
 
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 const std::string& NamedFeatureImpl<D>::get_name() const
 {
     return m_name;
 }
 
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 dl::Constructor<D> NamedFeatureImpl<D>::get_feature() const
 {
     return m_feature;
 }
 
-template class NamedFeatureImpl<dl::Boolean>;
-template class NamedFeatureImpl<dl::Numerical>;
+template class NamedFeatureImpl<dl::BooleanTag>;
+template class NamedFeatureImpl<dl::NumericalTag>;
 
 }

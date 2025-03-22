@@ -49,53 +49,53 @@ GeneratorVisitor::GeneratorVisitor(RefinementPruningFunction& pruning_function,
 void GeneratorVisitor::visit(ConceptBot constructor)
 {
     if (m_complexity == 1)
-        boost::hana::at_key(m_generated, boost::hana::type<Concept> {}).push_back(m_repositories.get_or_create_concept_bot());
+        boost::hana::at_key(m_generated, boost::hana::type<ConceptTag> {}).push_back(m_repositories.get_or_create_concept_bot());
 }
 void GeneratorVisitor::visit(ConceptTop constructor)
 {
     if (m_complexity == 1)
-        boost::hana::at_key(m_generated, boost::hana::type<Concept> {}).push_back(m_repositories.get_or_create_concept_top());
+        boost::hana::at_key(m_generated, boost::hana::type<ConceptTag> {}).push_back(m_repositories.get_or_create_concept_top());
 }
-void GeneratorVisitor::visit(ConceptAtomicState<Static> constructor)
+void GeneratorVisitor::visit(ConceptAtomicState<StaticTag> constructor)
 {
     if (m_complexity == 1)
-        boost::hana::at_key(m_generated, boost::hana::type<Concept> {})
+        boost::hana::at_key(m_generated, boost::hana::type<ConceptTag> {})
             .push_back(m_repositories.get_or_create_concept_atomic_state(constructor->get_predicate()));
 }
-void GeneratorVisitor::visit(ConceptAtomicState<Fluent> constructor)
+void GeneratorVisitor::visit(ConceptAtomicState<FluentTag> constructor)
 {
     if (m_complexity == 1)
-        boost::hana::at_key(m_generated, boost::hana::type<Concept> {})
+        boost::hana::at_key(m_generated, boost::hana::type<ConceptTag> {})
             .push_back(m_repositories.get_or_create_concept_atomic_state(constructor->get_predicate()));
 }
-void GeneratorVisitor::visit(ConceptAtomicState<Derived> constructor)
+void GeneratorVisitor::visit(ConceptAtomicState<DerivedTag> constructor)
 {
     if (m_complexity == 1)
-        boost::hana::at_key(m_generated, boost::hana::type<Concept> {})
+        boost::hana::at_key(m_generated, boost::hana::type<ConceptTag> {})
             .push_back(m_repositories.get_or_create_concept_atomic_state(constructor->get_predicate()));
 }
-void GeneratorVisitor::visit(ConceptAtomicGoal<Static> constructor)
+void GeneratorVisitor::visit(ConceptAtomicGoal<StaticTag> constructor)
 {
     if (m_complexity == 1)
-        boost::hana::at_key(m_generated, boost::hana::type<Concept> {})
+        boost::hana::at_key(m_generated, boost::hana::type<ConceptTag> {})
             .push_back(m_repositories.get_or_create_concept_atomic_goal(constructor->get_predicate(), constructor->is_negated()));
 }
-void GeneratorVisitor::visit(ConceptAtomicGoal<Fluent> constructor)
+void GeneratorVisitor::visit(ConceptAtomicGoal<FluentTag> constructor)
 {
     if (m_complexity == 1)
-        boost::hana::at_key(m_generated, boost::hana::type<Concept> {})
+        boost::hana::at_key(m_generated, boost::hana::type<ConceptTag> {})
             .push_back(m_repositories.get_or_create_concept_atomic_goal(constructor->get_predicate(), constructor->is_negated()));
 }
-void GeneratorVisitor::visit(ConceptAtomicGoal<Derived> constructor)
+void GeneratorVisitor::visit(ConceptAtomicGoal<DerivedTag> constructor)
 {
     if (m_complexity == 1)
-        boost::hana::at_key(m_generated, boost::hana::type<Concept> {})
+        boost::hana::at_key(m_generated, boost::hana::type<ConceptTag> {})
             .push_back(m_repositories.get_or_create_concept_atomic_goal(constructor->get_predicate(), constructor->is_negated()));
 }
 void GeneratorVisitor::visit(ConceptNominal constructor)
 {
     if (m_complexity == 1)
-        boost::hana::at_key(m_generated, boost::hana::type<Concept> {}).push_back(m_repositories.get_or_create_concept_nominal(constructor->get_object()));
+        boost::hana::at_key(m_generated, boost::hana::type<ConceptTag> {}).push_back(m_repositories.get_or_create_concept_nominal(constructor->get_object()));
 }
 void GeneratorVisitor::visit(ConceptIntersection constructor)
 {
@@ -108,7 +108,7 @@ void GeneratorVisitor::visit(ConceptIntersection constructor)
             if (i > j)
                 continue;  ///< partially break symmetries
 
-            auto& generated = boost::hana::at_key(m_generated, boost::hana::type<Concept> {});
+            auto& generated = boost::hana::at_key(m_generated, boost::hana::type<ConceptTag> {});
 
             for (const auto& left_concept : m_sentences.get(constructor->get_left_concept(), i))
             {
@@ -131,7 +131,7 @@ void GeneratorVisitor::visit(ConceptUnion constructor)
             if (i > j)
                 continue;  ///< partially break symmetries
 
-            auto& generated = boost::hana::at_key(m_generated, boost::hana::type<Concept> {});
+            auto& generated = boost::hana::at_key(m_generated, boost::hana::type<ConceptTag> {});
 
             for (const auto& left_concept : m_sentences.get(constructor->get_left_concept(), i))
             {
@@ -147,7 +147,7 @@ void GeneratorVisitor::visit(ConceptNegation constructor)
 {
     if (m_complexity >= 2)
     {
-        auto& generated = boost::hana::at_key(m_generated, boost::hana::type<Concept> {});
+        auto& generated = boost::hana::at_key(m_generated, boost::hana::type<ConceptTag> {});
 
         for (const auto& concept_ : m_sentences.get(constructor->get_concept(), m_complexity - 1))
         {
@@ -163,7 +163,7 @@ void GeneratorVisitor::visit(ConceptValueRestriction constructor)
         {
             size_t j = m_complexity - i - 1;
 
-            auto& generated = boost::hana::at_key(m_generated, boost::hana::type<Concept> {});
+            auto& generated = boost::hana::at_key(m_generated, boost::hana::type<ConceptTag> {});
 
             for (const auto& role : m_sentences.get(constructor->get_role(), i))
             {
@@ -183,7 +183,7 @@ void GeneratorVisitor::visit(ConceptExistentialQuantification constructor)
         {
             size_t j = m_complexity - i - 1;
 
-            auto& generated = boost::hana::at_key(m_generated, boost::hana::type<Concept> {});
+            auto& generated = boost::hana::at_key(m_generated, boost::hana::type<ConceptTag> {});
 
             for (const auto& role : m_sentences.get(constructor->get_role(), i))
             {
@@ -203,7 +203,7 @@ void GeneratorVisitor::visit(ConceptRoleValueMapContainment constructor)
         {
             size_t j = m_complexity - i - 1;
 
-            auto& generated = boost::hana::at_key(m_generated, boost::hana::type<Concept> {});
+            auto& generated = boost::hana::at_key(m_generated, boost::hana::type<ConceptTag> {});
 
             for (const auto& left_role : m_sentences.get(constructor->get_left_role(), i))
             {
@@ -226,7 +226,7 @@ void GeneratorVisitor::visit(ConceptRoleValueMapEquality constructor)
             if (i > j)
                 continue;  ///< partially break symmetries
 
-            auto& generated = boost::hana::at_key(m_generated, boost::hana::type<Concept> {});
+            auto& generated = boost::hana::at_key(m_generated, boost::hana::type<ConceptTag> {});
 
             for (const auto& left_role : m_sentences.get(constructor->get_left_role(), i))
             {
@@ -246,39 +246,39 @@ void GeneratorVisitor::visit(ConceptRoleValueMapEquality constructor)
 void GeneratorVisitor::visit(RoleUniversal constructor)
 {
     if (m_complexity == 1)
-        boost::hana::at_key(m_generated, boost::hana::type<Role> {}).push_back(m_repositories.get_or_create_role_universal());
+        boost::hana::at_key(m_generated, boost::hana::type<RoleTag> {}).push_back(m_repositories.get_or_create_role_universal());
 }
-void GeneratorVisitor::visit(RoleAtomicState<Static> constructor)
+void GeneratorVisitor::visit(RoleAtomicState<StaticTag> constructor)
 {
     if (m_complexity == 1)
-        boost::hana::at_key(m_generated, boost::hana::type<Role> {}).push_back(m_repositories.get_or_create_role_atomic_state(constructor->get_predicate()));
+        boost::hana::at_key(m_generated, boost::hana::type<RoleTag> {}).push_back(m_repositories.get_or_create_role_atomic_state(constructor->get_predicate()));
 }
-void GeneratorVisitor::visit(RoleAtomicState<Fluent> constructor)
+void GeneratorVisitor::visit(RoleAtomicState<FluentTag> constructor)
 {
     if (m_complexity == 1)
-        boost::hana::at_key(m_generated, boost::hana::type<Role> {}).push_back(m_repositories.get_or_create_role_atomic_state(constructor->get_predicate()));
+        boost::hana::at_key(m_generated, boost::hana::type<RoleTag> {}).push_back(m_repositories.get_or_create_role_atomic_state(constructor->get_predicate()));
 }
-void GeneratorVisitor::visit(RoleAtomicState<Derived> constructor)
+void GeneratorVisitor::visit(RoleAtomicState<DerivedTag> constructor)
 {
     if (m_complexity == 1)
-        boost::hana::at_key(m_generated, boost::hana::type<Role> {}).push_back(m_repositories.get_or_create_role_atomic_state(constructor->get_predicate()));
+        boost::hana::at_key(m_generated, boost::hana::type<RoleTag> {}).push_back(m_repositories.get_or_create_role_atomic_state(constructor->get_predicate()));
 }
-void GeneratorVisitor::visit(RoleAtomicGoal<Static> constructor)
+void GeneratorVisitor::visit(RoleAtomicGoal<StaticTag> constructor)
 {
     if (m_complexity == 1)
-        boost::hana::at_key(m_generated, boost::hana::type<Role> {})
+        boost::hana::at_key(m_generated, boost::hana::type<RoleTag> {})
             .push_back(m_repositories.get_or_create_role_atomic_goal(constructor->get_predicate(), constructor->is_negated()));
 }
-void GeneratorVisitor::visit(RoleAtomicGoal<Fluent> constructor)
+void GeneratorVisitor::visit(RoleAtomicGoal<FluentTag> constructor)
 {
     if (m_complexity == 1)
-        boost::hana::at_key(m_generated, boost::hana::type<Role> {})
+        boost::hana::at_key(m_generated, boost::hana::type<RoleTag> {})
             .push_back(m_repositories.get_or_create_role_atomic_goal(constructor->get_predicate(), constructor->is_negated()));
 }
-void GeneratorVisitor::visit(RoleAtomicGoal<Derived> constructor)
+void GeneratorVisitor::visit(RoleAtomicGoal<DerivedTag> constructor)
 {
     if (m_complexity == 1)
-        boost::hana::at_key(m_generated, boost::hana::type<Role> {})
+        boost::hana::at_key(m_generated, boost::hana::type<RoleTag> {})
             .push_back(m_repositories.get_or_create_role_atomic_goal(constructor->get_predicate(), constructor->is_negated()));
 }
 void GeneratorVisitor::visit(RoleIntersection constructor)
@@ -292,7 +292,7 @@ void GeneratorVisitor::visit(RoleIntersection constructor)
             if (i > j)
                 continue;  ///< partially break symmetries
 
-            auto& generated = boost::hana::at_key(m_generated, boost::hana::type<Role> {});
+            auto& generated = boost::hana::at_key(m_generated, boost::hana::type<RoleTag> {});
 
             for (const auto& left_role : m_sentences.get(constructor->get_left_role(), i))
             {
@@ -315,7 +315,7 @@ void GeneratorVisitor::visit(RoleUnion constructor)
             if (i > j)
                 continue;  ///< partially break symmetries
 
-            auto& generated = boost::hana::at_key(m_generated, boost::hana::type<Role> {});
+            auto& generated = boost::hana::at_key(m_generated, boost::hana::type<RoleTag> {});
 
             for (const auto& left_role : m_sentences.get(constructor->get_left_role(), i))
             {
@@ -331,7 +331,7 @@ void GeneratorVisitor::visit(RoleComplement constructor)
 {
     if (m_complexity >= 2)
     {
-        auto& generated = boost::hana::at_key(m_generated, boost::hana::type<Role> {});
+        auto& generated = boost::hana::at_key(m_generated, boost::hana::type<RoleTag> {});
 
         for (const auto& role : m_sentences.get(constructor->get_role(), m_complexity - 1))
         {
@@ -343,7 +343,7 @@ void GeneratorVisitor::visit(RoleInverse constructor)
 {
     if (m_complexity >= 2)
     {
-        auto& generated = boost::hana::at_key(m_generated, boost::hana::type<Role> {});
+        auto& generated = boost::hana::at_key(m_generated, boost::hana::type<RoleTag> {});
 
         for (const auto& role : m_sentences.get(constructor->get_role(), m_complexity - 1))
         {
@@ -359,7 +359,7 @@ void GeneratorVisitor::visit(RoleComposition constructor)
         {
             size_t j = m_complexity - i - 1;
 
-            auto& generated = boost::hana::at_key(m_generated, boost::hana::type<Role> {});
+            auto& generated = boost::hana::at_key(m_generated, boost::hana::type<RoleTag> {});
 
             for (const auto& left_role : m_sentences.get(constructor->get_left_role(), i))
             {
@@ -375,7 +375,7 @@ void GeneratorVisitor::visit(RoleTransitiveClosure constructor)
 {
     if (m_complexity >= 2)
     {
-        auto& generated = boost::hana::at_key(m_generated, boost::hana::type<Role> {});
+        auto& generated = boost::hana::at_key(m_generated, boost::hana::type<RoleTag> {});
 
         for (const auto& role : m_sentences.get(constructor->get_role(), m_complexity - 1))
         {
@@ -387,7 +387,7 @@ void GeneratorVisitor::visit(RoleReflexiveTransitiveClosure constructor)
 {
     if (m_complexity >= 2)
     {
-        auto& generated = boost::hana::at_key(m_generated, boost::hana::type<Role> {});
+        auto& generated = boost::hana::at_key(m_generated, boost::hana::type<RoleTag> {});
 
         for (const auto& role : m_sentences.get(constructor->get_role(), m_complexity - 1))
         {
@@ -403,7 +403,7 @@ void GeneratorVisitor::visit(RoleRestriction constructor)
         {
             size_t j = m_complexity - i - 1;
 
-            auto& generated = boost::hana::at_key(m_generated, boost::hana::type<Role> {});
+            auto& generated = boost::hana::at_key(m_generated, boost::hana::type<RoleTag> {});
 
             for (const auto& role : m_sentences.get(constructor->get_role(), i))
             {
@@ -419,7 +419,7 @@ void GeneratorVisitor::visit(RoleIdentity constructor)
 {
     if (m_complexity >= 2)
     {
-        auto& generated = boost::hana::at_key(m_generated, boost::hana::type<Role> {});
+        auto& generated = boost::hana::at_key(m_generated, boost::hana::type<RoleTag> {});
 
         for (const auto& concept_ : m_sentences.get(constructor->get_concept(), m_complexity - 1))
         {
@@ -432,29 +432,29 @@ void GeneratorVisitor::visit(RoleIdentity constructor)
  * Booleans
  */
 
-void GeneratorVisitor::visit(BooleanAtomicState<Static> constructor)
+void GeneratorVisitor::visit(BooleanAtomicState<StaticTag> constructor)
 {
     if (m_complexity == 1)
-        boost::hana::at_key(m_generated, boost::hana::type<Boolean> {})
+        boost::hana::at_key(m_generated, boost::hana::type<BooleanTag> {})
             .push_back(m_repositories.get_or_create_boolean_atomic_state(constructor->get_predicate()));
 }
-void GeneratorVisitor::visit(BooleanAtomicState<Fluent> constructor)
+void GeneratorVisitor::visit(BooleanAtomicState<FluentTag> constructor)
 {
     if (m_complexity == 1)
-        boost::hana::at_key(m_generated, boost::hana::type<Boolean> {})
+        boost::hana::at_key(m_generated, boost::hana::type<BooleanTag> {})
             .push_back(m_repositories.get_or_create_boolean_atomic_state(constructor->get_predicate()));
 }
-void GeneratorVisitor::visit(BooleanAtomicState<Derived> constructor)
+void GeneratorVisitor::visit(BooleanAtomicState<DerivedTag> constructor)
 {
     if (m_complexity == 1)
-        boost::hana::at_key(m_generated, boost::hana::type<Boolean> {})
+        boost::hana::at_key(m_generated, boost::hana::type<BooleanTag> {})
             .push_back(m_repositories.get_or_create_boolean_atomic_state(constructor->get_predicate()));
 }
-void GeneratorVisitor::visit(BooleanNonempty<Concept> constructor)
+void GeneratorVisitor::visit(BooleanNonempty<ConceptTag> constructor)
 {
     if (m_complexity >= 2)
     {
-        auto& generated = boost::hana::at_key(m_generated, boost::hana::type<Boolean> {});
+        auto& generated = boost::hana::at_key(m_generated, boost::hana::type<BooleanTag> {});
 
         for (const auto& concept_ : m_sentences.get(constructor->get_nonterminal(), m_complexity - 1))
         {
@@ -462,11 +462,11 @@ void GeneratorVisitor::visit(BooleanNonempty<Concept> constructor)
         }
     }
 }
-void GeneratorVisitor::visit(BooleanNonempty<Role> constructor)
+void GeneratorVisitor::visit(BooleanNonempty<RoleTag> constructor)
 {
     if (m_complexity >= 2)
     {
-        auto& generated = boost::hana::at_key(m_generated, boost::hana::type<Boolean> {});
+        auto& generated = boost::hana::at_key(m_generated, boost::hana::type<BooleanTag> {});
 
         for (const auto& role : m_sentences.get(constructor->get_nonterminal(), m_complexity - 1))
         {
@@ -479,11 +479,11 @@ void GeneratorVisitor::visit(BooleanNonempty<Role> constructor)
  * Numericals
  */
 
-void GeneratorVisitor::visit(NumericalCount<Concept> constructor)
+void GeneratorVisitor::visit(NumericalCount<ConceptTag> constructor)
 {
     if (m_complexity >= 2)
     {
-        auto& generated = boost::hana::at_key(m_generated, boost::hana::type<Numerical> {});
+        auto& generated = boost::hana::at_key(m_generated, boost::hana::type<NumericalTag> {});
 
         for (const auto& concept_ : m_sentences.get(constructor->get_nonterminal(), m_complexity - 1))
         {
@@ -492,11 +492,11 @@ void GeneratorVisitor::visit(NumericalCount<Concept> constructor)
     }
 }
 
-void GeneratorVisitor::visit(NumericalCount<Role> constructor)
+void GeneratorVisitor::visit(NumericalCount<RoleTag> constructor)
 {
     if (m_complexity >= 2)
     {
-        auto& generated = boost::hana::at_key(m_generated, boost::hana::type<Numerical> {});
+        auto& generated = boost::hana::at_key(m_generated, boost::hana::type<NumericalTag> {});
 
         for (const auto& role : m_sentences.get(constructor->get_nonterminal(), m_complexity - 1))
         {
@@ -509,7 +509,7 @@ void GeneratorVisitor::visit(NumericalDistance constructor)
 {
     if (m_complexity >= 3)
     {
-        auto& generated = boost::hana::at_key(m_generated, boost::hana::type<Numerical> {});
+        auto& generated = boost::hana::at_key(m_generated, boost::hana::type<NumericalTag> {});
 
         for (size_t i = 1; i < m_complexity - 2; ++i)
         {
@@ -536,15 +536,15 @@ void GeneratorVisitor::visit(NumericalDistance constructor)
  * DerivationRule
  */
 
-void GeneratorVisitor::visit(DerivationRule<Concept> rule) { visit_impl(rule); }
+void GeneratorVisitor::visit(DerivationRule<ConceptTag> rule) { visit_impl(rule); }
 
-void GeneratorVisitor::visit(DerivationRule<Role> rule) { visit_impl(rule); }
+void GeneratorVisitor::visit(DerivationRule<RoleTag> rule) { visit_impl(rule); }
 
-void GeneratorVisitor::visit(DerivationRule<Boolean> rule) { visit_impl(rule); }
+void GeneratorVisitor::visit(DerivationRule<BooleanTag> rule) { visit_impl(rule); }
 
-void GeneratorVisitor::visit(DerivationRule<Numerical> rule) { visit_impl(rule); }
+void GeneratorVisitor::visit(DerivationRule<NumericalTag> rule) { visit_impl(rule); }
 
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 void GeneratorVisitor::visit_impl(DerivationRule<D> rule)
 {
     auto& generated = boost::hana::at_key(m_generated, boost::hana::type<D> {});
@@ -572,24 +572,24 @@ void GeneratorVisitor::visit_impl(DerivationRule<D> rule)
     }
 }
 
-template void GeneratorVisitor::visit_impl(DerivationRule<Concept> rule);
-template void GeneratorVisitor::visit_impl(DerivationRule<Role> rule);
-template void GeneratorVisitor::visit_impl(DerivationRule<Boolean> rule);
-template void GeneratorVisitor::visit_impl(DerivationRule<Numerical> rule);
+template void GeneratorVisitor::visit_impl(DerivationRule<ConceptTag> rule);
+template void GeneratorVisitor::visit_impl(DerivationRule<RoleTag> rule);
+template void GeneratorVisitor::visit_impl(DerivationRule<BooleanTag> rule);
+template void GeneratorVisitor::visit_impl(DerivationRule<NumericalTag> rule);
 
 /**
  * SubstitutionRule
  */
 
-void GeneratorVisitor::visit(SubstitutionRule<Concept> rule) { visit_impl(rule); }
+void GeneratorVisitor::visit(SubstitutionRule<ConceptTag> rule) { visit_impl(rule); }
 
-void GeneratorVisitor::visit(SubstitutionRule<Role> rule) { visit_impl(rule); }
+void GeneratorVisitor::visit(SubstitutionRule<RoleTag> rule) { visit_impl(rule); }
 
-void GeneratorVisitor::visit(SubstitutionRule<Boolean> rule) { visit_impl(rule); }
+void GeneratorVisitor::visit(SubstitutionRule<BooleanTag> rule) { visit_impl(rule); }
 
-void GeneratorVisitor::visit(SubstitutionRule<Numerical> rule) { visit_impl(rule); }
+void GeneratorVisitor::visit(SubstitutionRule<NumericalTag> rule) { visit_impl(rule); }
 
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 void GeneratorVisitor::visit_impl(SubstitutionRule<D> rule)
 {
     auto& source_location = m_sentences.get(rule->get_body(), m_complexity);
@@ -597,10 +597,10 @@ void GeneratorVisitor::visit_impl(SubstitutionRule<D> rule)
     target_location.insert(target_location.end(), source_location.begin(), source_location.end());
 }
 
-template void GeneratorVisitor::visit_impl(SubstitutionRule<Concept> rule);
-template void GeneratorVisitor::visit_impl(SubstitutionRule<Role> rule);
-template void GeneratorVisitor::visit_impl(SubstitutionRule<Boolean> rule);
-template void GeneratorVisitor::visit_impl(SubstitutionRule<Numerical> rule);
+template void GeneratorVisitor::visit_impl(SubstitutionRule<ConceptTag> rule);
+template void GeneratorVisitor::visit_impl(SubstitutionRule<RoleTag> rule);
+template void GeneratorVisitor::visit_impl(SubstitutionRule<BooleanTag> rule);
+template void GeneratorVisitor::visit_impl(SubstitutionRule<NumericalTag> rule);
 
 /**
  * Grammar
@@ -635,7 +635,7 @@ void GeneratorVisitor::visit(const Grammar& grammar)
     }
 }
 
-const HanaGeneratorStatistics<Concept, Role, Boolean, Numerical>& GeneratorVisitor::get_statistics() const { return m_statistics; }
+const HanaGeneratorStatistics<ConceptTag, RoleTag, BooleanTag, NumericalTag>& GeneratorVisitor::get_statistics() const { return m_statistics; }
 
 const std::any& GeneratorVisitor::get_result() const { return m_result; }
 }

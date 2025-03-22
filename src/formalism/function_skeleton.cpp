@@ -22,7 +22,7 @@
 
 namespace mimir::formalism
 {
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 FunctionSkeletonImpl<F>::FunctionSkeletonImpl(Index index, std::string name, VariableList parameters) :
     m_index(index),
     m_name(std::move(name)),
@@ -30,54 +30,54 @@ FunctionSkeletonImpl<F>::FunctionSkeletonImpl(Index index, std::string name, Var
 {
 }
 
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 Index FunctionSkeletonImpl<F>::get_index() const
 {
     return m_index;
 }
 
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 const std::string& FunctionSkeletonImpl<F>::get_name() const
 {
     return m_name;
 }
 
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 const VariableList& FunctionSkeletonImpl<F>::get_parameters() const
 {
     return m_parameters;
 }
 
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 size_t FunctionSkeletonImpl<F>::get_arity() const
 {
     return m_parameters.size();
 }
 
-template class FunctionSkeletonImpl<Static>;
-template class FunctionSkeletonImpl<Fluent>;
-template class FunctionSkeletonImpl<Auxiliary>;
+template class FunctionSkeletonImpl<StaticTag>;
+template class FunctionSkeletonImpl<FluentTag>;
+template class FunctionSkeletonImpl<AuxiliaryTag>;
 
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 std::ostream& operator<<(std::ostream& out, const FunctionSkeletonImpl<F>& element)
 {
     write(element, StringFormatter(), out);
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, const FunctionSkeletonImpl<Static>& element);
-template std::ostream& operator<<(std::ostream& out, const FunctionSkeletonImpl<Fluent>& element);
-template std::ostream& operator<<(std::ostream& out, const FunctionSkeletonImpl<Auxiliary>& element);
+template std::ostream& operator<<(std::ostream& out, const FunctionSkeletonImpl<StaticTag>& element);
+template std::ostream& operator<<(std::ostream& out, const FunctionSkeletonImpl<FluentTag>& element);
+template std::ostream& operator<<(std::ostream& out, const FunctionSkeletonImpl<AuxiliaryTag>& element);
 
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 std::ostream& operator<<(std::ostream& out, FunctionSkeleton<F> element)
 {
     write(*element, AddressFormatter(), out);
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, FunctionSkeleton<Static> element);
-template std::ostream& operator<<(std::ostream& out, FunctionSkeleton<Fluent> element);
-template std::ostream& operator<<(std::ostream& out, FunctionSkeleton<Auxiliary> element);
+template std::ostream& operator<<(std::ostream& out, FunctionSkeleton<StaticTag> element);
+template std::ostream& operator<<(std::ostream& out, FunctionSkeleton<FluentTag> element);
+template std::ostream& operator<<(std::ostream& out, FunctionSkeleton<AuxiliaryTag> element);
 
 }

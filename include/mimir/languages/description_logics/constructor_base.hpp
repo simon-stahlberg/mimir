@@ -35,7 +35,7 @@ namespace mimir::languages::dl
  * Concept
  */
 
-template<FeatureCategory D, typename Derived_>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D, typename Derived_>
 class ConstructorEvaluatorBase : public IConstructor<D>
 {
 private:

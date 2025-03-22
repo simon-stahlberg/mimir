@@ -34,7 +34,7 @@ using namespace mimir::formalism;
 namespace mimir::search::match_tree
 {
 
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 std::pair<InverseNode<E>, PlaceholderNodeList<E>>
 create_node_and_placeholder_children(const PlaceholderNode<E>& node, const SplitList& useless_splits, AtomSplit<P> split)
 {
@@ -226,13 +226,13 @@ create_node_and_placeholder_children(const PlaceholderNode<E>& node, const Split
 }
 
 template std::pair<InverseNode<GroundActionImpl>, PlaceholderNodeList<GroundActionImpl>>
-create_node_and_placeholder_children(const PlaceholderNode<GroundActionImpl>& node, const SplitList& useless_splits, AtomSplit<Fluent> split);
+create_node_and_placeholder_children(const PlaceholderNode<GroundActionImpl>& node, const SplitList& useless_splits, AtomSplit<FluentTag> split);
 template std::pair<InverseNode<GroundActionImpl>, PlaceholderNodeList<GroundActionImpl>>
-create_node_and_placeholder_children(const PlaceholderNode<GroundActionImpl>& node, const SplitList& useless_splits, AtomSplit<Derived> split);
+create_node_and_placeholder_children(const PlaceholderNode<GroundActionImpl>& node, const SplitList& useless_splits, AtomSplit<DerivedTag> split);
 template std::pair<InverseNode<GroundAxiomImpl>, PlaceholderNodeList<GroundAxiomImpl>>
-create_node_and_placeholder_children(const PlaceholderNode<GroundAxiomImpl>& node, const SplitList& useless_splits, AtomSplit<Fluent> split);
+create_node_and_placeholder_children(const PlaceholderNode<GroundAxiomImpl>& node, const SplitList& useless_splits, AtomSplit<FluentTag> split);
 template std::pair<InverseNode<GroundAxiomImpl>, PlaceholderNodeList<GroundAxiomImpl>>
-create_node_and_placeholder_children(const PlaceholderNode<GroundAxiomImpl>& node, const SplitList& useless_splits, AtomSplit<Derived> split);
+create_node_and_placeholder_children(const PlaceholderNode<GroundAxiomImpl>& node, const SplitList& useless_splits, AtomSplit<DerivedTag> split);
 
 template<HasConjunctiveCondition E>
 std::pair<InverseNode<E>, PlaceholderNodeList<E>>

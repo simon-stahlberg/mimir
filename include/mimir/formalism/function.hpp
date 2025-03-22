@@ -22,7 +22,7 @@
 
 namespace mimir::formalism
 {
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 class FunctionImpl
 {
 private:
@@ -40,7 +40,7 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
-    using PDDLEntity = void;
+    using FormalismEntity = void;
 
     // moveable but not copyable
     FunctionImpl(const FunctionImpl& other) = delete;
@@ -59,12 +59,12 @@ public:
     auto identifying_members() const { return std::tuple(get_function_skeleton(), std::cref(get_terms()), std::cref(get_parent_terms_to_terms_mapping())); }
 };
 
-static_assert(loki::HasIdentifyingMembers<FunctionImpl<Fluent>>);
+static_assert(loki::HasIdentifyingMembers<FunctionImpl<FluentTag>>);
 
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 extern std::ostream& operator<<(std::ostream& out, const FunctionImpl<F>& element);
 
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 extern std::ostream& operator<<(std::ostream& out, Function<F> element);
 
 }

@@ -42,7 +42,7 @@ private:
     GroundEffectConditionalList m_conditional_effects = GroundEffectConditionalList();
 
 public:
-    using PDDLEntity = void;
+    using FormalismEntity = void;
 
     /// @brief `FullFormatterTag` is used to dispatch the operator<< overload that prints the entire action.
     struct FullFormatterTag

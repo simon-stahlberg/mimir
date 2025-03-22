@@ -52,25 +52,25 @@ struct ResultInverseTreeVisitor : public IInverseNodeVisitor<E>
     {
     }
 
-    void accept(const InverseAtomSelectorNode_TFX<E, Fluent>& atom) override;
-    void accept(const InverseAtomSelectorNode_TF<E, Fluent>& atom) override;
-    void accept(const InverseAtomSelectorNode_TX<E, Fluent>& atom) override;
-    void accept(const InverseAtomSelectorNode_FX<E, Fluent>& atom) override;
-    void accept(const InverseAtomSelectorNode_T<E, Fluent>& atom) override;
-    void accept(const InverseAtomSelectorNode_F<E, Fluent>& atom) override;
-    void accept(const InverseAtomSelectorNode_TFX<E, Derived>& atom) override;
-    void accept(const InverseAtomSelectorNode_TF<E, Derived>& atom) override;
-    void accept(const InverseAtomSelectorNode_TX<E, Derived>& atom) override;
-    void accept(const InverseAtomSelectorNode_FX<E, Derived>& atom) override;
-    void accept(const InverseAtomSelectorNode_T<E, Derived>& atom) override;
-    void accept(const InverseAtomSelectorNode_F<E, Derived>& atom) override;
+    void accept(const InverseAtomSelectorNode_TFX<E, FluentTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_TF<E, FluentTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_TX<E, FluentTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_FX<E, FluentTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_T<E, FluentTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_F<E, FluentTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_TFX<E, DerivedTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_TF<E, DerivedTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_TX<E, DerivedTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_FX<E, DerivedTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_T<E, DerivedTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_F<E, DerivedTag>& atom) override;
     void accept(const InverseNumericConstraintSelectorNode_T<E>& constraint) override;
     void accept(const InverseNumericConstraintSelectorNode_TX<E>& constraint) override;
     void accept(const InverseElementGeneratorNode_Perfect<E>& generator) override;
     void accept(const InverseElementGeneratorNode_Imperfect<E>& generator) override;
 };
 
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 void accept_impl(ResultInverseTreeVisitor<E>& visitor, const InverseAtomSelectorNode_TFX<E, P>& atom)
 {
     auto true_child = std::move(visitor.m_result_stack.back());
@@ -85,7 +85,7 @@ void accept_impl(ResultInverseTreeVisitor<E>& visitor, const InverseAtomSelector
         std::make_unique<AtomSelectorNode_TFX<E, P>>(std::move(true_child), std::move(false_child), std::move(dont_care_child), atom.get_atom()));
 }
 
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 void accept_impl(ResultInverseTreeVisitor<E>& visitor, const InverseAtomSelectorNode_TF<E, P>& atom)
 {
     auto true_child = std::move(visitor.m_result_stack.back());
@@ -96,7 +96,7 @@ void accept_impl(ResultInverseTreeVisitor<E>& visitor, const InverseAtomSelector
     visitor.m_result_stack.push_back(std::make_unique<AtomSelectorNode_TF<E, P>>(std::move(true_child), std::move(false_child), atom.get_atom()));
 }
 
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 void accept_impl(ResultInverseTreeVisitor<E>& visitor, const InverseAtomSelectorNode_TX<E, P>& atom)
 {
     auto true_child = std::move(visitor.m_result_stack.back());
@@ -107,7 +107,7 @@ void accept_impl(ResultInverseTreeVisitor<E>& visitor, const InverseAtomSelector
     visitor.m_result_stack.push_back(std::make_unique<AtomSelectorNode_TX<E, P>>(std::move(true_child), std::move(dont_care_child), atom.get_atom()));
 }
 
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 void accept_impl(ResultInverseTreeVisitor<E>& visitor, const InverseAtomSelectorNode_FX<E, P>& atom)
 {
     auto false_child = std::move(visitor.m_result_stack.back());
@@ -118,7 +118,7 @@ void accept_impl(ResultInverseTreeVisitor<E>& visitor, const InverseAtomSelector
     visitor.m_result_stack.push_back(std::make_unique<AtomSelectorNode_FX<E, P>>(std::move(false_child), std::move(dont_care_child), atom.get_atom()));
 }
 
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 void accept_impl(ResultInverseTreeVisitor<E>& visitor, const InverseAtomSelectorNode_T<E, P>& atom)
 {
     auto true_child = std::move(visitor.m_result_stack.back());
@@ -127,7 +127,7 @@ void accept_impl(ResultInverseTreeVisitor<E>& visitor, const InverseAtomSelector
     visitor.m_result_stack.push_back(std::make_unique<AtomSelectorNode_T<E, P>>(std::move(true_child), atom.get_atom()));
 }
 
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 void accept_impl(ResultInverseTreeVisitor<E>& visitor, const InverseAtomSelectorNode_F<E, P>& atom)
 {
     auto false_child = std::move(visitor.m_result_stack.back());
@@ -137,73 +137,73 @@ void accept_impl(ResultInverseTreeVisitor<E>& visitor, const InverseAtomSelector
 }
 
 template<HasConjunctiveCondition E>
-void ResultInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_TFX<E, Fluent>& atom)
+void ResultInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_TFX<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
 template<HasConjunctiveCondition E>
-void ResultInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_TF<E, Fluent>& atom)
+void ResultInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_TF<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
 template<HasConjunctiveCondition E>
-void ResultInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_TX<E, Fluent>& atom)
+void ResultInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_TX<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
 template<HasConjunctiveCondition E>
-void ResultInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_FX<E, Fluent>& atom)
+void ResultInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_FX<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
 template<HasConjunctiveCondition E>
-void ResultInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_T<E, Fluent>& atom)
+void ResultInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_T<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
 template<HasConjunctiveCondition E>
-void ResultInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_F<E, Fluent>& atom)
+void ResultInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_F<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
 template<HasConjunctiveCondition E>
-void ResultInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_TFX<E, Derived>& atom)
+void ResultInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_TFX<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
 template<HasConjunctiveCondition E>
-void ResultInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_TF<E, Derived>& atom)
+void ResultInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_TF<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
 template<HasConjunctiveCondition E>
-void ResultInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_TX<E, Derived>& atom)
+void ResultInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_TX<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
 template<HasConjunctiveCondition E>
-void ResultInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_FX<E, Derived>& atom)
+void ResultInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_FX<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
 template<HasConjunctiveCondition E>
-void ResultInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_T<E, Derived>& atom)
+void ResultInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_T<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
 template<HasConjunctiveCondition E>
-void ResultInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_F<E, Derived>& atom)
+void ResultInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_F<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }
@@ -250,25 +250,25 @@ struct ExpandInverseTreeVisitor : public IInverseNodeVisitor<E>
 
     ExpandInverseTreeVisitor(std::vector<NodeCreationStackEntry<E>>& stack) : m_stack(stack) {}
 
-    void accept(const InverseAtomSelectorNode_TFX<E, Fluent>& atom) override;
-    void accept(const InverseAtomSelectorNode_TF<E, Fluent>& atom) override;
-    void accept(const InverseAtomSelectorNode_TX<E, Fluent>& atom) override;
-    void accept(const InverseAtomSelectorNode_FX<E, Fluent>& atom) override;
-    void accept(const InverseAtomSelectorNode_T<E, Fluent>& atom) override;
-    void accept(const InverseAtomSelectorNode_F<E, Fluent>& atom) override;
-    void accept(const InverseAtomSelectorNode_TFX<E, Derived>& atom) override;
-    void accept(const InverseAtomSelectorNode_TF<E, Derived>& atom) override;
-    void accept(const InverseAtomSelectorNode_TX<E, Derived>& atom) override;
-    void accept(const InverseAtomSelectorNode_FX<E, Derived>& atom) override;
-    void accept(const InverseAtomSelectorNode_T<E, Derived>& atom) override;
-    void accept(const InverseAtomSelectorNode_F<E, Derived>& atom) override;
+    void accept(const InverseAtomSelectorNode_TFX<E, FluentTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_TF<E, FluentTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_TX<E, FluentTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_FX<E, FluentTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_T<E, FluentTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_F<E, FluentTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_TFX<E, DerivedTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_TF<E, DerivedTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_TX<E, DerivedTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_FX<E, DerivedTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_T<E, DerivedTag>& atom) override;
+    void accept(const InverseAtomSelectorNode_F<E, DerivedTag>& atom) override;
     void accept(const InverseNumericConstraintSelectorNode_T<E>& constraint) override;
     void accept(const InverseNumericConstraintSelectorNode_TX<E>& constraint) override;
     void accept(const InverseElementGeneratorNode_Perfect<E>& generator) override;
     void accept(const InverseElementGeneratorNode_Imperfect<E>& generator) override;
 };
 
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 void accept_impl(ExpandInverseTreeVisitor<E>& visitor, const InverseAtomSelectorNode_TFX<E, P>& atom)
 {
     visitor.m_stack.push_back(NodeCreationStackEntry<E> { false, atom.get_true_child().get() });
@@ -276,107 +276,107 @@ void accept_impl(ExpandInverseTreeVisitor<E>& visitor, const InverseAtomSelector
     visitor.m_stack.push_back(NodeCreationStackEntry<E> { false, atom.get_dontcare_child().get() });
 }
 
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 void accept_impl(ExpandInverseTreeVisitor<E>& visitor, const InverseAtomSelectorNode_TF<E, P>& atom)
 {
     visitor.m_stack.push_back(NodeCreationStackEntry<E> { false, atom.get_true_child().get() });
     visitor.m_stack.push_back(NodeCreationStackEntry<E> { false, atom.get_false_child().get() });
 }
 
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 void accept_impl(ExpandInverseTreeVisitor<E>& visitor, const InverseAtomSelectorNode_TX<E, P>& atom)
 {
     visitor.m_stack.push_back(NodeCreationStackEntry<E> { false, atom.get_true_child().get() });
     visitor.m_stack.push_back(NodeCreationStackEntry<E> { false, atom.get_dontcare_child().get() });
 }
 
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 void accept_impl(ExpandInverseTreeVisitor<E>& visitor, const InverseAtomSelectorNode_FX<E, P>& atom)
 {
     visitor.m_stack.push_back(NodeCreationStackEntry<E> { false, atom.get_false_child().get() });
     visitor.m_stack.push_back(NodeCreationStackEntry<E> { false, atom.get_dontcare_child().get() });
 }
 
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 void accept_impl(ExpandInverseTreeVisitor<E>& visitor, const InverseAtomSelectorNode_T<E, P>& atom)
 {
     visitor.m_stack.push_back(NodeCreationStackEntry<E> { false, atom.get_true_child().get() });
 }
 
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 void accept_impl(ExpandInverseTreeVisitor<E>& visitor, const InverseAtomSelectorNode_F<E, P>& atom)
 {
     visitor.m_stack.push_back(NodeCreationStackEntry<E> { false, atom.get_false_child().get() });
 }
 
 template<HasConjunctiveCondition E>
-void ExpandInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_TFX<E, Fluent>& atom)
+void ExpandInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_TFX<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
 template<HasConjunctiveCondition E>
-void ExpandInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_TF<E, Fluent>& atom)
+void ExpandInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_TF<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
 template<HasConjunctiveCondition E>
-void ExpandInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_TX<E, Fluent>& atom)
+void ExpandInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_TX<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
 template<HasConjunctiveCondition E>
-void ExpandInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_FX<E, Fluent>& atom)
+void ExpandInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_FX<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
 template<HasConjunctiveCondition E>
-void ExpandInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_T<E, Fluent>& atom)
+void ExpandInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_T<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
 template<HasConjunctiveCondition E>
-void ExpandInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_F<E, Fluent>& atom)
+void ExpandInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_F<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
 template<HasConjunctiveCondition E>
-void ExpandInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_TFX<E, Derived>& atom)
+void ExpandInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_TFX<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
 template<HasConjunctiveCondition E>
-void ExpandInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_TF<E, Derived>& atom)
+void ExpandInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_TF<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
 template<HasConjunctiveCondition E>
-void ExpandInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_TX<E, Derived>& atom)
+void ExpandInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_TX<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
 template<HasConjunctiveCondition E>
-void ExpandInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_FX<E, Derived>& atom)
+void ExpandInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_FX<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
 template<HasConjunctiveCondition E>
-void ExpandInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_T<E, Derived>& atom)
+void ExpandInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_T<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
 template<HasConjunctiveCondition E>
-void ExpandInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_F<E, Derived>& atom)
+void ExpandInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_F<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }

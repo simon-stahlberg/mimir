@@ -49,7 +49,7 @@ void write(const ConjunctiveConditionImpl& element, T formatter, std::ostream& o
 template<Formatter T>
 void write(const ActionImpl& element, T formatter, std::ostream& out);
 
-template<Formatter T, StaticOrFluentOrDerived P>
+template<Formatter T, IsStaticOrFluentOrDerivedTag P>
 void write(const AtomImpl<P>& element, T formatter, std::ostream& out);
 
 template<Formatter T>
@@ -58,10 +58,10 @@ void write(const AxiomImpl& element, T formatter, std::ostream& out);
 template<Formatter T>
 void write(const DomainImpl& element, T formatter, std::ostream& out);
 
-template<Formatter T, FluentOrAuxiliary F>
+template<Formatter T, IsFluentOrAuxiliaryTag F>
 void write(const NumericEffectImpl<F>& element, T formatter, std::ostream& out);
 
-template<Formatter T, FluentOrAuxiliary F>
+template<Formatter T, IsFluentOrAuxiliaryTag F>
 void write(const GroundNumericEffectImpl<F>& element, T formatter, std::ostream& out);
 
 template<Formatter T>
@@ -82,19 +82,19 @@ void write(const FunctionExpressionMultiOperatorImpl& element, T formatter, std:
 template<Formatter T>
 void write(const FunctionExpressionMinusImpl& element, T formatter, std::ostream& out);
 
-template<Formatter T, StaticOrFluentOrAuxiliary F>
+template<Formatter T, IsStaticOrFluentOrAuxiliaryTag F>
 void write(const FunctionExpressionFunctionImpl<F>& element, T formatter, std::ostream& out);
 
 template<Formatter T>
 void write(const FunctionExpressionImpl& element, T formatter, std::ostream& out);
 
-template<Formatter T, StaticOrFluentOrAuxiliary F>
+template<Formatter T, IsStaticOrFluentOrAuxiliaryTag F>
 void write(const FunctionSkeletonImpl<F>& element, T formatter, std::ostream& out);
 
-template<Formatter T, StaticOrFluentOrAuxiliary F>
+template<Formatter T, IsStaticOrFluentOrAuxiliaryTag F>
 void write(const FunctionImpl<F>& element, T formatter, std::ostream& out);
 
-template<Formatter T, StaticOrFluentOrDerived P>
+template<Formatter T, IsStaticOrFluentOrDerivedTag P>
 void write(const GroundAtomImpl<P>& element, T formatter, std::ostream& out);
 
 template<Formatter T>
@@ -109,19 +109,19 @@ void write(const GroundFunctionExpressionMultiOperatorImpl& element, T formatter
 template<Formatter T>
 void write(const GroundFunctionExpressionMinusImpl& element, T formatter, std::ostream& out);
 
-template<Formatter T, StaticOrFluentOrAuxiliary F>
+template<Formatter T, IsStaticOrFluentOrAuxiliaryTag F>
 void write(const GroundFunctionExpressionFunctionImpl<F>& element, T formatter, std::ostream& out);
 
 template<Formatter T>
 void write(const GroundFunctionExpressionImpl& element, T formatter, std::ostream& out);
 
-template<Formatter T, StaticOrFluentOrAuxiliary F>
+template<Formatter T, IsStaticOrFluentOrAuxiliaryTag F>
 void write(const GroundFunctionImpl<F>& element, T formatter, std::ostream& out);
 
-template<Formatter T, StaticOrFluentOrDerived P>
+template<Formatter T, IsStaticOrFluentOrDerivedTag P>
 void write(const GroundLiteralImpl<P>& element, T formatter, std::ostream& out);
 
-template<Formatter T, StaticOrFluentOrDerived P>
+template<Formatter T, IsStaticOrFluentOrDerivedTag P>
 void write(const LiteralImpl<P>& element, T formatter, std::ostream& out);
 
 template<Formatter T>
@@ -133,13 +133,13 @@ void write(const NumericConstraintImpl& element, T formatter, std::ostream& out)
 template<Formatter T>
 void write(const GroundNumericConstraintImpl& element, T formatter, std::ostream& out);
 
-template<Formatter T, StaticOrFluentOrAuxiliary F>
+template<Formatter T, IsStaticOrFluentOrAuxiliaryTag F>
 void write(const GroundFunctionValueImpl<F>& element, T formatter, std::ostream& out);
 
 template<Formatter T>
 void write(const ObjectImpl& element, T formatter, std::ostream& out);
 
-template<Formatter T, StaticOrFluentOrDerived P>
+template<Formatter T, IsStaticOrFluentOrDerivedTag P>
 void write(const PredicateImpl<P>& element, T formatter, std::ostream& out);
 
 template<Formatter T>

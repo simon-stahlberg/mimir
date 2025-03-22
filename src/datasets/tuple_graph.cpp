@@ -81,7 +81,7 @@ std::ostream& operator<<(std::ostream& out, const TupleGraphImpl& tuple_graph)
             out << "t" << v_idx << "[";
             out << "label=<";
             out << "index=" << v_idx << "<BR/>";
-            const auto fluent_atoms = pddl_repositories.get_ground_atoms_from_indices<Fluent>(get_atom_tuple(vertex));
+            const auto fluent_atoms = pddl_repositories.get_ground_atoms_from_indices<FluentTag>(get_atom_tuple(vertex));
             out << "fluent_atoms=";
             mimir::operator<<(out, fluent_atoms);
             out << "<BR/>";

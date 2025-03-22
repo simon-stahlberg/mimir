@@ -22,7 +22,7 @@
 
 namespace mimir::formalism
 {
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 class AtomImpl
 {
 private:
@@ -39,7 +39,7 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
-    using PDDLEntity = void;
+    using FormalismEntity = void;
     using Category = P;
 
     // moveable but not copyable
@@ -61,10 +61,10 @@ public:
     auto identifying_members() const { return std::tuple(get_predicate(), std::cref(get_terms())); }
 };
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 extern std::ostream& operator<<(std::ostream& out, const AtomImpl<P>& element);
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 extern std::ostream& operator<<(std::ostream& out, Atom<P> element);
 
 }

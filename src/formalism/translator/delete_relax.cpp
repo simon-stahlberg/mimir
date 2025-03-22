@@ -22,7 +22,7 @@
 namespace mimir::formalism
 {
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 static LiteralList<P> filter_positive_literals(const LiteralList<P>& literals)
 {
     auto positive_literals = LiteralList<P> {};
@@ -36,7 +36,7 @@ static LiteralList<P> filter_positive_literals(const LiteralList<P>& literals)
     return positive_literals;
 }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 LiteralList<P> DeleteRelaxTranslator::translate_level_2(const LiteralList<P>& literals, Repositories& repositories)
 {
     auto positive_literals = LiteralList<P> {};
@@ -51,9 +51,9 @@ LiteralList<P> DeleteRelaxTranslator::translate_level_2(const LiteralList<P>& li
     return positive_literals;
 }
 
-template LiteralList<Static> DeleteRelaxTranslator::translate_level_2(const LiteralList<Static>& literals, Repositories& repositories);
-template LiteralList<Fluent> DeleteRelaxTranslator::translate_level_2(const LiteralList<Fluent>& literals, Repositories& repositories);
-template LiteralList<Derived> DeleteRelaxTranslator::translate_level_2(const LiteralList<Derived>& literals, Repositories& repositories);
+template LiteralList<StaticTag> DeleteRelaxTranslator::translate_level_2(const LiteralList<StaticTag>& literals, Repositories& repositories);
+template LiteralList<FluentTag> DeleteRelaxTranslator::translate_level_2(const LiteralList<FluentTag>& literals, Repositories& repositories);
+template LiteralList<DerivedTag> DeleteRelaxTranslator::translate_level_2(const LiteralList<DerivedTag>& literals, Repositories& repositories);
 
 ConditionalEffectList DeleteRelaxTranslator::translate_level_2(const ConditionalEffectList& effects, Repositories& repositories)
 {
@@ -85,7 +85,7 @@ AxiomList DeleteRelaxTranslator::translate_level_2(const AxiomList& axioms, Repo
     return uniquify_elements(relaxed_axioms);
 }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 Literal<P> DeleteRelaxTranslator::translate_level_2(Literal<P> literal, Repositories& repositories)
 {
     if (literal->is_negated())
@@ -98,9 +98,9 @@ Literal<P> DeleteRelaxTranslator::translate_level_2(Literal<P> literal, Reposito
     return repositories.get_or_create_literal(false, atom);
 }
 
-template Literal<Static> DeleteRelaxTranslator::translate_level_2(Literal<Static> literal, Repositories& repositories);
-template Literal<Fluent> DeleteRelaxTranslator::translate_level_2(Literal<Fluent> literal, Repositories& repositories);
-template Literal<Derived> DeleteRelaxTranslator::translate_level_2(Literal<Derived> literal, Repositories& repositories);
+template Literal<StaticTag> DeleteRelaxTranslator::translate_level_2(Literal<StaticTag> literal, Repositories& repositories);
+template Literal<FluentTag> DeleteRelaxTranslator::translate_level_2(Literal<FluentTag> literal, Repositories& repositories);
+template Literal<DerivedTag> DeleteRelaxTranslator::translate_level_2(Literal<DerivedTag> literal, Repositories& repositories);
 
 ConjunctiveCondition DeleteRelaxTranslator::translate_level_2(ConjunctiveCondition condition, Repositories& repositories)
 {
@@ -120,8 +120,8 @@ ConjunctiveCondition DeleteRelaxTranslator::translate_level_2(ConjunctiveConditi
 ConjunctiveEffect DeleteRelaxTranslator::translate_level_2(ConjunctiveEffect effect, Repositories& repositories)
 {
     auto translated_fluent_literals = filter_positive_literals(this->translate_level_0(effect->get_literals(), repositories));
-    auto translated_fluent_numeric_effects = NumericEffectList<Fluent> {};
-    auto translated_auxiliary_numeric_effect = std::optional<NumericEffect<Auxiliary>> { std::nullopt };
+    auto translated_fluent_numeric_effects = NumericEffectList<FluentTag> {};
+    auto translated_auxiliary_numeric_effect = std::optional<NumericEffect<AuxiliaryTag>> { std::nullopt };
 
     return repositories.get_or_create_conjunctive_effect(effect->get_parameters(),
                                                          std::move(translated_fluent_literals),

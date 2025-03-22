@@ -31,12 +31,12 @@ namespace mimir::languages::dl::cnf_grammar
  * NonTerminal
  */
 
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 NonTerminalImpl<D>::NonTerminalImpl(Index index, std::string name) : m_index(index), m_name(std::move(name))
 {
 }
 
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 bool NonTerminalImpl<D>::test_match(dl::Constructor<D> constructor, const Grammar& grammar) const
 {
     const auto& nonterminal_to_derivation_rules = boost::hana::at_key(grammar.get_nonterminal_to_derivation_rules(), boost::hana::type<D> {});
@@ -63,116 +63,116 @@ bool NonTerminalImpl<D>::test_match(dl::Constructor<D> constructor, const Gramma
     return false;
 }
 
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 void NonTerminalImpl<D>::accept(IVisitor& visitor) const
 {
     visitor.visit(this);
 }
 
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 Index NonTerminalImpl<D>::get_index() const
 {
     return m_index;
 }
 
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 const std::string& NonTerminalImpl<D>::get_name() const
 {
     return m_name;
 }
 
-template class NonTerminalImpl<Concept>;
-template class NonTerminalImpl<Role>;
-template class NonTerminalImpl<Boolean>;
-template class NonTerminalImpl<Numerical>;
+template class NonTerminalImpl<ConceptTag>;
+template class NonTerminalImpl<RoleTag>;
+template class NonTerminalImpl<BooleanTag>;
+template class NonTerminalImpl<NumericalTag>;
 
 /**
  * DerivationRule
  */
 
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 DerivationRuleImpl<D>::DerivationRuleImpl(Index index, NonTerminal<D> head, Constructor<D> body) : m_index(index), m_head(head), m_body(body)
 {
 }
 
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 bool DerivationRuleImpl<D>::test_match(dl::Constructor<D> constructor, const Grammar& grammar) const
 {
     return m_body->test_match(constructor, grammar);
 }
 
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 void DerivationRuleImpl<D>::accept(IVisitor& visitor) const
 {
     visitor.visit(this);
 }
 
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 Index DerivationRuleImpl<D>::get_index() const
 {
     return m_index;
 }
 
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 const NonTerminal<D>& DerivationRuleImpl<D>::get_head() const
 {
     return m_head;
 }
 
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 const Constructor<D>& DerivationRuleImpl<D>::get_body() const
 {
     return m_body;
 }
 
-template class DerivationRuleImpl<Concept>;
-template class DerivationRuleImpl<Role>;
-template class DerivationRuleImpl<Boolean>;
-template class DerivationRuleImpl<Numerical>;
+template class DerivationRuleImpl<ConceptTag>;
+template class DerivationRuleImpl<RoleTag>;
+template class DerivationRuleImpl<BooleanTag>;
+template class DerivationRuleImpl<NumericalTag>;
 
 /**
  * SubstitutionRule
  */
 
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 SubstitutionRuleImpl<D>::SubstitutionRuleImpl(Index index, NonTerminal<D> head, NonTerminal<D> body) : m_index(index), m_head(head), m_body(body)
 {
 }
 
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 bool SubstitutionRuleImpl<D>::test_match(dl::Constructor<D> constructor, const Grammar& grammar) const
 {
     return m_body->test_match(constructor, grammar);
 }
 
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 void SubstitutionRuleImpl<D>::accept(IVisitor& visitor) const
 {
     visitor.visit(this);
 }
 
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 Index SubstitutionRuleImpl<D>::get_index() const
 {
     return m_index;
 }
 
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 const NonTerminal<D>& SubstitutionRuleImpl<D>::get_head() const
 {
     return m_head;
 }
 
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 const NonTerminal<D>& SubstitutionRuleImpl<D>::get_body() const
 {
     return m_body;
 }
 
-template class SubstitutionRuleImpl<Concept>;
-template class SubstitutionRuleImpl<Role>;
-template class SubstitutionRuleImpl<Boolean>;
-template class SubstitutionRuleImpl<Numerical>;
+template class SubstitutionRuleImpl<ConceptTag>;
+template class SubstitutionRuleImpl<RoleTag>;
+template class SubstitutionRuleImpl<BooleanTag>;
+template class SubstitutionRuleImpl<NumericalTag>;
 
 /**
  * ConceptBot
@@ -180,7 +180,7 @@ template class SubstitutionRuleImpl<Numerical>;
 
 ConceptBotImpl::ConceptBotImpl(Index index) : m_index(index) {}
 
-bool ConceptBotImpl::test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const
+bool ConceptBotImpl::test_match(dl::Constructor<ConceptTag> constructor, const Grammar& grammar) const
 {
     auto visitor = ConceptBotGrammarVisitor(this, grammar);
     constructor->accept(visitor);
@@ -197,7 +197,7 @@ Index ConceptBotImpl::get_index() const { return m_index; }
 
 ConceptTopImpl::ConceptTopImpl(Index index) : m_index(index) {}
 
-bool ConceptTopImpl::test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const
+bool ConceptTopImpl::test_match(dl::Constructor<ConceptTag> constructor, const Grammar& grammar) const
 {
     auto visitor = ConceptTopGrammarVisitor(this, grammar);
     constructor->accept(visitor);
@@ -212,46 +212,46 @@ Index ConceptTopImpl::get_index() const { return m_index; }
  * ConceptAtomicStateImpl
  */
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 ConceptAtomicStateImpl<P>::ConceptAtomicStateImpl(Index index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
 {
 }
 
-template<StaticOrFluentOrDerived P>
-bool ConceptAtomicStateImpl<P>::test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const
+template<IsStaticOrFluentOrDerivedTag P>
+bool ConceptAtomicStateImpl<P>::test_match(dl::Constructor<ConceptTag> constructor, const Grammar& grammar) const
 {
     auto visitor = ConceptAtomicStateGrammarVisitor<P>(this, grammar);
     constructor->accept(visitor);
     return visitor.get_result();
 }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 void ConceptAtomicStateImpl<P>::accept(IVisitor& visitor) const
 {
     visitor.visit(this);
 }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 Index ConceptAtomicStateImpl<P>::get_index() const
 {
     return m_index;
 }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 Predicate<P> ConceptAtomicStateImpl<P>::get_predicate() const
 {
     return m_predicate;
 }
 
-template class ConceptAtomicStateImpl<Static>;
-template class ConceptAtomicStateImpl<Fluent>;
-template class ConceptAtomicStateImpl<Derived>;
+template class ConceptAtomicStateImpl<StaticTag>;
+template class ConceptAtomicStateImpl<FluentTag>;
+template class ConceptAtomicStateImpl<DerivedTag>;
 
 /**
  * ConceptAtomicGoal
  */
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 ConceptAtomicGoalImpl<P>::ConceptAtomicGoalImpl(Index index, Predicate<P> predicate, bool is_negated) :
     m_index(index),
 
@@ -260,53 +260,53 @@ ConceptAtomicGoalImpl<P>::ConceptAtomicGoalImpl(Index index, Predicate<P> predic
 {
 }
 
-template<StaticOrFluentOrDerived P>
-bool ConceptAtomicGoalImpl<P>::test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const
+template<IsStaticOrFluentOrDerivedTag P>
+bool ConceptAtomicGoalImpl<P>::test_match(dl::Constructor<ConceptTag> constructor, const Grammar& grammar) const
 {
     auto visitor = ConceptAtomicGoalGrammarVisitor<P>(this, grammar);
     constructor->accept(visitor);
     return visitor.get_result();
 }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 void ConceptAtomicGoalImpl<P>::accept(IVisitor& visitor) const
 {
     visitor.visit(this);
 }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 Index ConceptAtomicGoalImpl<P>::get_index() const
 {
     return m_index;
 }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 Predicate<P> ConceptAtomicGoalImpl<P>::get_predicate() const
 {
     return m_predicate;
 }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 bool ConceptAtomicGoalImpl<P>::is_negated() const
 {
     return m_is_negated;
 }
 
-template class ConceptAtomicGoalImpl<Static>;
-template class ConceptAtomicGoalImpl<Fluent>;
-template class ConceptAtomicGoalImpl<Derived>;
+template class ConceptAtomicGoalImpl<StaticTag>;
+template class ConceptAtomicGoalImpl<FluentTag>;
+template class ConceptAtomicGoalImpl<DerivedTag>;
 
 /**
  * ConceptIntersection
  */
-ConceptIntersectionImpl::ConceptIntersectionImpl(Index index, NonTerminal<Concept> left_concept, NonTerminal<Concept> right_concept) :
+ConceptIntersectionImpl::ConceptIntersectionImpl(Index index, NonTerminal<ConceptTag> left_concept, NonTerminal<ConceptTag> right_concept) :
     m_index(index),
     m_left_concept(left_concept),
     m_right_concept(right_concept)
 {
 }
 
-bool ConceptIntersectionImpl::test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const
+bool ConceptIntersectionImpl::test_match(dl::Constructor<ConceptTag> constructor, const Grammar& grammar) const
 {
     auto visitor = ConceptIntersectionGrammarVisitor(this, grammar);
     constructor->accept(visitor);
@@ -317,22 +317,22 @@ void ConceptIntersectionImpl::accept(IVisitor& visitor) const { visitor.visit(th
 
 Index ConceptIntersectionImpl::get_index() const { return m_index; }
 
-NonTerminal<Concept> ConceptIntersectionImpl::get_left_concept() const { return m_left_concept; }
+NonTerminal<ConceptTag> ConceptIntersectionImpl::get_left_concept() const { return m_left_concept; }
 
-NonTerminal<Concept> ConceptIntersectionImpl::get_right_concept() const { return m_right_concept; }
+NonTerminal<ConceptTag> ConceptIntersectionImpl::get_right_concept() const { return m_right_concept; }
 
 /**
  * ConceptUnion
  */
 
-ConceptUnionImpl::ConceptUnionImpl(Index index, NonTerminal<Concept> left_concept, NonTerminal<Concept> right_concept) :
+ConceptUnionImpl::ConceptUnionImpl(Index index, NonTerminal<ConceptTag> left_concept, NonTerminal<ConceptTag> right_concept) :
     m_index(index),
     m_left_concept(left_concept),
     m_right_concept(right_concept)
 {
 }
 
-bool ConceptUnionImpl::test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const
+bool ConceptUnionImpl::test_match(dl::Constructor<ConceptTag> constructor, const Grammar& grammar) const
 {
     auto visitor = ConceptUnionGrammarVisitor(this, grammar);
     constructor->accept(visitor);
@@ -343,17 +343,17 @@ void ConceptUnionImpl::accept(IVisitor& visitor) const { visitor.visit(this); }
 
 Index ConceptUnionImpl::get_index() const { return m_index; }
 
-NonTerminal<Concept> ConceptUnionImpl::get_left_concept() const { return m_left_concept; }
+NonTerminal<ConceptTag> ConceptUnionImpl::get_left_concept() const { return m_left_concept; }
 
-NonTerminal<Concept> ConceptUnionImpl::get_right_concept() const { return m_right_concept; }
+NonTerminal<ConceptTag> ConceptUnionImpl::get_right_concept() const { return m_right_concept; }
 
 /**
  * ConceptNegation
  */
 
-ConceptNegationImpl::ConceptNegationImpl(Index index, NonTerminal<Concept> concept_) : m_index(index), m_concept(concept_) {}
+ConceptNegationImpl::ConceptNegationImpl(Index index, NonTerminal<ConceptTag> concept_) : m_index(index), m_concept(concept_) {}
 
-bool ConceptNegationImpl::test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const
+bool ConceptNegationImpl::test_match(dl::Constructor<ConceptTag> constructor, const Grammar& grammar) const
 {
     auto visitor = ConceptNegationGrammarVisitor(this, grammar);
     constructor->accept(visitor);
@@ -364,20 +364,20 @@ void ConceptNegationImpl::accept(IVisitor& visitor) const { visitor.visit(this);
 
 Index ConceptNegationImpl::get_index() const { return m_index; }
 
-NonTerminal<Concept> ConceptNegationImpl::get_concept() const { return m_concept; }
+NonTerminal<ConceptTag> ConceptNegationImpl::get_concept() const { return m_concept; }
 
 /**
  * ConceptValueRestriction
  */
 
-ConceptValueRestrictionImpl::ConceptValueRestrictionImpl(Index index, NonTerminal<Role> role, NonTerminal<Concept> concept_) :
+ConceptValueRestrictionImpl::ConceptValueRestrictionImpl(Index index, NonTerminal<RoleTag> role, NonTerminal<ConceptTag> concept_) :
     m_index(index),
     m_role(role),
     m_concept(concept_)
 {
 }
 
-bool ConceptValueRestrictionImpl::test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const
+bool ConceptValueRestrictionImpl::test_match(dl::Constructor<ConceptTag> constructor, const Grammar& grammar) const
 {
     auto visitor = ConceptValueRestrictionGrammarVisitor(this, grammar);
     constructor->accept(visitor);
@@ -388,9 +388,9 @@ void ConceptValueRestrictionImpl::accept(IVisitor& visitor) const { visitor.visi
 
 Index ConceptValueRestrictionImpl::get_index() const { return m_index; }
 
-NonTerminal<Role> ConceptValueRestrictionImpl::get_role() const { return m_role; }
+NonTerminal<RoleTag> ConceptValueRestrictionImpl::get_role() const { return m_role; }
 
-NonTerminal<Concept> ConceptValueRestrictionImpl::get_concept() const { return m_concept; }
+NonTerminal<ConceptTag> ConceptValueRestrictionImpl::get_concept() const { return m_concept; }
 
 /**
  * ConceptExistentialQuantification
@@ -398,15 +398,15 @@ NonTerminal<Concept> ConceptValueRestrictionImpl::get_concept() const { return m
 
 ConceptExistentialQuantificationImpl::ConceptExistentialQuantificationImpl(Index index,
 
-                                                                           NonTerminal<Role> role,
-                                                                           NonTerminal<Concept> concept_) :
+                                                                           NonTerminal<RoleTag> role,
+                                                                           NonTerminal<ConceptTag> concept_) :
     m_index(index),
     m_role(role),
     m_concept(concept_)
 {
 }
 
-bool ConceptExistentialQuantificationImpl::test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const
+bool ConceptExistentialQuantificationImpl::test_match(dl::Constructor<ConceptTag> constructor, const Grammar& grammar) const
 {
     auto visitor = ConceptExistentialQuantificationGrammarVisitor(this, grammar);
     constructor->accept(visitor);
@@ -417,9 +417,9 @@ void ConceptExistentialQuantificationImpl::accept(IVisitor& visitor) const { vis
 
 Index ConceptExistentialQuantificationImpl::get_index() const { return m_index; }
 
-NonTerminal<Role> ConceptExistentialQuantificationImpl::get_role() const { return m_role; }
+NonTerminal<RoleTag> ConceptExistentialQuantificationImpl::get_role() const { return m_role; }
 
-NonTerminal<Concept> ConceptExistentialQuantificationImpl::get_concept() const { return m_concept; }
+NonTerminal<ConceptTag> ConceptExistentialQuantificationImpl::get_concept() const { return m_concept; }
 
 /**
  * ConceptRoleValueMapContainment
@@ -427,15 +427,15 @@ NonTerminal<Concept> ConceptExistentialQuantificationImpl::get_concept() const {
 
 ConceptRoleValueMapContainmentImpl::ConceptRoleValueMapContainmentImpl(Index index,
 
-                                                                       NonTerminal<Role> left_role,
-                                                                       NonTerminal<Role> right_role) :
+                                                                       NonTerminal<RoleTag> left_role,
+                                                                       NonTerminal<RoleTag> right_role) :
     m_index(index),
     m_left_role(left_role),
     m_right_role(right_role)
 {
 }
 
-bool ConceptRoleValueMapContainmentImpl::test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const
+bool ConceptRoleValueMapContainmentImpl::test_match(dl::Constructor<ConceptTag> constructor, const Grammar& grammar) const
 {
     auto visitor = ConceptRoleValueMapContainmentGrammarVisitor(this, grammar);
     constructor->accept(visitor);
@@ -446,9 +446,9 @@ void ConceptRoleValueMapContainmentImpl::accept(IVisitor& visitor) const { visit
 
 Index ConceptRoleValueMapContainmentImpl::get_index() const { return m_index; }
 
-NonTerminal<Role> ConceptRoleValueMapContainmentImpl::get_left_role() const { return m_left_role; }
+NonTerminal<RoleTag> ConceptRoleValueMapContainmentImpl::get_left_role() const { return m_left_role; }
 
-NonTerminal<Role> ConceptRoleValueMapContainmentImpl::get_right_role() const { return m_right_role; }
+NonTerminal<RoleTag> ConceptRoleValueMapContainmentImpl::get_right_role() const { return m_right_role; }
 
 /**
  * ConceptRoleValueMapEquality
@@ -456,15 +456,15 @@ NonTerminal<Role> ConceptRoleValueMapContainmentImpl::get_right_role() const { r
 
 ConceptRoleValueMapEqualityImpl::ConceptRoleValueMapEqualityImpl(Index index,
 
-                                                                 NonTerminal<Role> left_role,
-                                                                 NonTerminal<Role> right_role) :
+                                                                 NonTerminal<RoleTag> left_role,
+                                                                 NonTerminal<RoleTag> right_role) :
     m_index(index),
     m_left_role(left_role),
     m_right_role(right_role)
 {
 }
 
-bool ConceptRoleValueMapEqualityImpl::test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const
+bool ConceptRoleValueMapEqualityImpl::test_match(dl::Constructor<ConceptTag> constructor, const Grammar& grammar) const
 {
     auto visitor = ConceptRoleValueMapEqualityGrammarVisitor(this, grammar);
     constructor->accept(visitor);
@@ -475,9 +475,9 @@ void ConceptRoleValueMapEqualityImpl::accept(IVisitor& visitor) const { visitor.
 
 Index ConceptRoleValueMapEqualityImpl::get_index() const { return m_index; }
 
-NonTerminal<Role> ConceptRoleValueMapEqualityImpl::get_left_role() const { return m_left_role; }
+NonTerminal<RoleTag> ConceptRoleValueMapEqualityImpl::get_left_role() const { return m_left_role; }
 
-NonTerminal<Role> ConceptRoleValueMapEqualityImpl::get_right_role() const { return m_right_role; }
+NonTerminal<RoleTag> ConceptRoleValueMapEqualityImpl::get_right_role() const { return m_right_role; }
 
 /**
  * ConceptNominal
@@ -485,7 +485,7 @@ NonTerminal<Role> ConceptRoleValueMapEqualityImpl::get_right_role() const { retu
 
 ConceptNominalImpl::ConceptNominalImpl(Index index, Object object) : m_index(index), m_object(object) {}
 
-bool ConceptNominalImpl::test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const
+bool ConceptNominalImpl::test_match(dl::Constructor<ConceptTag> constructor, const Grammar& grammar) const
 {
     auto visitor = ConceptNominalGrammarVisitor(this, grammar);
     constructor->accept(visitor);
@@ -504,7 +504,7 @@ Object ConceptNominalImpl::get_object() const { return m_object; }
 
 RoleUniversalImpl::RoleUniversalImpl(Index index) : m_index(index) {}
 
-bool RoleUniversalImpl::test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const
+bool RoleUniversalImpl::test_match(dl::Constructor<RoleTag> constructor, const Grammar& grammar) const
 {
     auto visitor = RoleUniversalGrammarVisitor(this, grammar);
     constructor->accept(visitor);
@@ -519,46 +519,46 @@ Index RoleUniversalImpl::get_index() const { return m_index; }
  * RoleAtomicState
  */
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 RoleAtomicStateImpl<P>::RoleAtomicStateImpl(Index index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
 {
 }
 
-template<StaticOrFluentOrDerived P>
-bool RoleAtomicStateImpl<P>::test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const
+template<IsStaticOrFluentOrDerivedTag P>
+bool RoleAtomicStateImpl<P>::test_match(dl::Constructor<RoleTag> constructor, const Grammar& grammar) const
 {
     auto visitor = RoleAtomicStateGrammarVisitor<P>(this, grammar);
     constructor->accept(visitor);
     return visitor.get_result();
 }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 void RoleAtomicStateImpl<P>::accept(IVisitor& visitor) const
 {
     visitor.visit(this);
 }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 Index RoleAtomicStateImpl<P>::get_index() const
 {
     return m_index;
 }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 Predicate<P> RoleAtomicStateImpl<P>::get_predicate() const
 {
     return m_predicate;
 }
 
-template class RoleAtomicStateImpl<Static>;
-template class RoleAtomicStateImpl<Fluent>;
-template class RoleAtomicStateImpl<Derived>;
+template class RoleAtomicStateImpl<StaticTag>;
+template class RoleAtomicStateImpl<FluentTag>;
+template class RoleAtomicStateImpl<DerivedTag>;
 
 /**
  * RoleAtomicGoal
  */
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 RoleAtomicGoalImpl<P>::RoleAtomicGoalImpl(Index index, Predicate<P> predicate, bool is_negated) :
     m_index(index),
 
@@ -567,47 +567,47 @@ RoleAtomicGoalImpl<P>::RoleAtomicGoalImpl(Index index, Predicate<P> predicate, b
 {
 }
 
-template<StaticOrFluentOrDerived P>
-bool RoleAtomicGoalImpl<P>::test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const
+template<IsStaticOrFluentOrDerivedTag P>
+bool RoleAtomicGoalImpl<P>::test_match(dl::Constructor<RoleTag> constructor, const Grammar& grammar) const
 {
     auto visitor = RoleAtomicGoalGrammarVisitor<P>(this, grammar);
     constructor->accept(visitor);
     return visitor.get_result();
 }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 void RoleAtomicGoalImpl<P>::accept(IVisitor& visitor) const
 {
     visitor.visit(this);
 }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 Index RoleAtomicGoalImpl<P>::get_index() const
 {
     return m_index;
 }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 Predicate<P> RoleAtomicGoalImpl<P>::get_predicate() const
 {
     return m_predicate;
 }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 bool RoleAtomicGoalImpl<P>::is_negated() const
 {
     return m_is_negated;
 }
 
-template class RoleAtomicGoalImpl<Static>;
-template class RoleAtomicGoalImpl<Fluent>;
-template class RoleAtomicGoalImpl<Derived>;
+template class RoleAtomicGoalImpl<StaticTag>;
+template class RoleAtomicGoalImpl<FluentTag>;
+template class RoleAtomicGoalImpl<DerivedTag>;
 
 /**
  * RoleIntersection
  */
 
-RoleIntersectionImpl::RoleIntersectionImpl(Index index, NonTerminal<Role> left_role, NonTerminal<Role> right_role) :
+RoleIntersectionImpl::RoleIntersectionImpl(Index index, NonTerminal<RoleTag> left_role, NonTerminal<RoleTag> right_role) :
     m_index(index),
 
     m_left_role(left_role),
@@ -615,7 +615,7 @@ RoleIntersectionImpl::RoleIntersectionImpl(Index index, NonTerminal<Role> left_r
 {
 }
 
-bool RoleIntersectionImpl::test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const
+bool RoleIntersectionImpl::test_match(dl::Constructor<RoleTag> constructor, const Grammar& grammar) const
 {
     auto visitor = RoleIntersectionGrammarVisitor(this, grammar);
     constructor->accept(visitor);
@@ -626,15 +626,15 @@ void RoleIntersectionImpl::accept(IVisitor& visitor) const { visitor.visit(this)
 
 Index RoleIntersectionImpl::get_index() const { return m_index; }
 
-NonTerminal<Role> RoleIntersectionImpl::get_left_role() const { return m_left_role; }
+NonTerminal<RoleTag> RoleIntersectionImpl::get_left_role() const { return m_left_role; }
 
-NonTerminal<Role> RoleIntersectionImpl::get_right_role() const { return m_right_role; }
+NonTerminal<RoleTag> RoleIntersectionImpl::get_right_role() const { return m_right_role; }
 
 /**
  * RoleUnion
  */
 
-RoleUnionImpl::RoleUnionImpl(Index index, NonTerminal<Role> left_role, NonTerminal<Role> right_role) :
+RoleUnionImpl::RoleUnionImpl(Index index, NonTerminal<RoleTag> left_role, NonTerminal<RoleTag> right_role) :
     m_index(index),
 
     m_left_role(left_role),
@@ -642,7 +642,7 @@ RoleUnionImpl::RoleUnionImpl(Index index, NonTerminal<Role> left_role, NonTermin
 {
 }
 
-bool RoleUnionImpl::test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const
+bool RoleUnionImpl::test_match(dl::Constructor<RoleTag> constructor, const Grammar& grammar) const
 {
     auto visitor = RoleUnionGrammarVisitor(this, grammar);
     constructor->accept(visitor);
@@ -653,17 +653,17 @@ void RoleUnionImpl::accept(IVisitor& visitor) const { visitor.visit(this); }
 
 Index RoleUnionImpl::get_index() const { return m_index; }
 
-NonTerminal<Role> RoleUnionImpl::get_left_role() const { return m_left_role; }
+NonTerminal<RoleTag> RoleUnionImpl::get_left_role() const { return m_left_role; }
 
-NonTerminal<Role> RoleUnionImpl::get_right_role() const { return m_right_role; }
+NonTerminal<RoleTag> RoleUnionImpl::get_right_role() const { return m_right_role; }
 
 /**
  * RoleComplement
  */
 
-RoleComplementImpl::RoleComplementImpl(Index index, NonTerminal<Role> role) : m_index(index), m_role(role) {}
+RoleComplementImpl::RoleComplementImpl(Index index, NonTerminal<RoleTag> role) : m_index(index), m_role(role) {}
 
-bool RoleComplementImpl::test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const
+bool RoleComplementImpl::test_match(dl::Constructor<RoleTag> constructor, const Grammar& grammar) const
 {
     auto visitor = RoleComplementGrammarVisitor(this, grammar);
     constructor->accept(visitor);
@@ -674,15 +674,15 @@ void RoleComplementImpl::accept(IVisitor& visitor) const { visitor.visit(this); 
 
 Index RoleComplementImpl::get_index() const { return m_index; }
 
-NonTerminal<Role> RoleComplementImpl::get_role() const { return m_role; }
+NonTerminal<RoleTag> RoleComplementImpl::get_role() const { return m_role; }
 
 /**
  * RoleInverse
  */
 
-RoleInverseImpl::RoleInverseImpl(Index index, NonTerminal<Role> role) : m_index(index), m_role(role) {}
+RoleInverseImpl::RoleInverseImpl(Index index, NonTerminal<RoleTag> role) : m_index(index), m_role(role) {}
 
-bool RoleInverseImpl::test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const
+bool RoleInverseImpl::test_match(dl::Constructor<RoleTag> constructor, const Grammar& grammar) const
 {
     auto visitor = RoleInverseGrammarVisitor(this, grammar);
     constructor->accept(visitor);
@@ -693,13 +693,13 @@ void RoleInverseImpl::accept(IVisitor& visitor) const { visitor.visit(this); }
 
 Index RoleInverseImpl::get_index() const { return m_index; }
 
-NonTerminal<Role> RoleInverseImpl::get_role() const { return m_role; }
+NonTerminal<RoleTag> RoleInverseImpl::get_role() const { return m_role; }
 
 /**
  * RoleComposition
  */
 
-RoleCompositionImpl::RoleCompositionImpl(Index index, NonTerminal<Role> left_role, NonTerminal<Role> right_role) :
+RoleCompositionImpl::RoleCompositionImpl(Index index, NonTerminal<RoleTag> left_role, NonTerminal<RoleTag> right_role) :
     m_index(index),
 
     m_left_role(left_role),
@@ -707,7 +707,7 @@ RoleCompositionImpl::RoleCompositionImpl(Index index, NonTerminal<Role> left_rol
 {
 }
 
-bool RoleCompositionImpl::test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const
+bool RoleCompositionImpl::test_match(dl::Constructor<RoleTag> constructor, const Grammar& grammar) const
 {
     auto visitor = RoleCompositionGrammarVisitor(this, grammar);
     constructor->accept(visitor);
@@ -718,17 +718,17 @@ void RoleCompositionImpl::accept(IVisitor& visitor) const { visitor.visit(this);
 
 Index RoleCompositionImpl::get_index() const { return m_index; }
 
-NonTerminal<Role> RoleCompositionImpl::get_left_role() const { return m_left_role; }
+NonTerminal<RoleTag> RoleCompositionImpl::get_left_role() const { return m_left_role; }
 
-NonTerminal<Role> RoleCompositionImpl::get_right_role() const { return m_right_role; }
+NonTerminal<RoleTag> RoleCompositionImpl::get_right_role() const { return m_right_role; }
 
 /**
  * RoleTransitiveClosure
  */
 
-RoleTransitiveClosureImpl::RoleTransitiveClosureImpl(Index index, NonTerminal<Role> role) : m_index(index), m_role(role) {}
+RoleTransitiveClosureImpl::RoleTransitiveClosureImpl(Index index, NonTerminal<RoleTag> role) : m_index(index), m_role(role) {}
 
-bool RoleTransitiveClosureImpl::test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const
+bool RoleTransitiveClosureImpl::test_match(dl::Constructor<RoleTag> constructor, const Grammar& grammar) const
 {
     auto visitor = RoleTransitiveClosureGrammarVisitor(this, grammar);
     constructor->accept(visitor);
@@ -739,20 +739,20 @@ void RoleTransitiveClosureImpl::accept(IVisitor& visitor) const { visitor.visit(
 
 Index RoleTransitiveClosureImpl::get_index() const { return m_index; }
 
-NonTerminal<Role> RoleTransitiveClosureImpl::get_role() const { return m_role; }
+NonTerminal<RoleTag> RoleTransitiveClosureImpl::get_role() const { return m_role; }
 
 /**
  * RoleReflexiveTransitiveClosure
  */
 
-RoleReflexiveTransitiveClosureImpl::RoleReflexiveTransitiveClosureImpl(Index index, NonTerminal<Role> role) :
+RoleReflexiveTransitiveClosureImpl::RoleReflexiveTransitiveClosureImpl(Index index, NonTerminal<RoleTag> role) :
     m_index(index),
 
     m_role(role)
 {
 }
 
-bool RoleReflexiveTransitiveClosureImpl::test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const
+bool RoleReflexiveTransitiveClosureImpl::test_match(dl::Constructor<RoleTag> constructor, const Grammar& grammar) const
 {
     auto visitor = RoleReflexiveTransitiveClosureGrammarVisitor(this, grammar);
     constructor->accept(visitor);
@@ -763,13 +763,13 @@ void RoleReflexiveTransitiveClosureImpl::accept(IVisitor& visitor) const { visit
 
 Index RoleReflexiveTransitiveClosureImpl::get_index() const { return m_index; }
 
-NonTerminal<Role> RoleReflexiveTransitiveClosureImpl::get_role() const { return m_role; }
+NonTerminal<RoleTag> RoleReflexiveTransitiveClosureImpl::get_role() const { return m_role; }
 
 /**
  * RoleRestriction
  */
 
-RoleRestrictionImpl::RoleRestrictionImpl(Index index, NonTerminal<Role> role, NonTerminal<Concept> concept_) :
+RoleRestrictionImpl::RoleRestrictionImpl(Index index, NonTerminal<RoleTag> role, NonTerminal<ConceptTag> concept_) :
     m_index(index),
 
     m_role(role),
@@ -777,7 +777,7 @@ RoleRestrictionImpl::RoleRestrictionImpl(Index index, NonTerminal<Role> role, No
 {
 }
 
-bool RoleRestrictionImpl::test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const
+bool RoleRestrictionImpl::test_match(dl::Constructor<RoleTag> constructor, const Grammar& grammar) const
 {
     auto visitor = RoleRestrictionGrammarVisitor(this, grammar);
     constructor->accept(visitor);
@@ -788,17 +788,17 @@ void RoleRestrictionImpl::accept(IVisitor& visitor) const { visitor.visit(this);
 
 Index RoleRestrictionImpl::get_index() const { return m_index; }
 
-NonTerminal<Role> RoleRestrictionImpl::get_role() const { return m_role; }
+NonTerminal<RoleTag> RoleRestrictionImpl::get_role() const { return m_role; }
 
-NonTerminal<Concept> RoleRestrictionImpl::get_concept() const { return m_concept; }
+NonTerminal<ConceptTag> RoleRestrictionImpl::get_concept() const { return m_concept; }
 
 /**
  * RoleIdentity
  */
 
-RoleIdentityImpl::RoleIdentityImpl(Index index, NonTerminal<Concept> concept_) : m_index(index), m_concept(concept_) {}
+RoleIdentityImpl::RoleIdentityImpl(Index index, NonTerminal<ConceptTag> concept_) : m_index(index), m_concept(concept_) {}
 
-bool RoleIdentityImpl::test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const
+bool RoleIdentityImpl::test_match(dl::Constructor<RoleTag> constructor, const Grammar& grammar) const
 {
     auto visitor = RoleIdentityGrammarVisitor(this, grammar);
     constructor->accept(visitor);
@@ -809,120 +809,123 @@ void RoleIdentityImpl::accept(IVisitor& visitor) const { visitor.visit(this); }
 
 Index RoleIdentityImpl::get_index() const { return m_index; }
 
-NonTerminal<Concept> RoleIdentityImpl::get_concept() const { return m_concept; }
+NonTerminal<ConceptTag> RoleIdentityImpl::get_concept() const { return m_concept; }
 
 /**
  * Booleans
  */
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 BooleanAtomicStateImpl<P>::BooleanAtomicStateImpl(Index index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
 {
 }
 
-template<StaticOrFluentOrDerived P>
-bool BooleanAtomicStateImpl<P>::test_match(dl::Constructor<Boolean> constructor, const Grammar& grammar) const
+template<IsStaticOrFluentOrDerivedTag P>
+bool BooleanAtomicStateImpl<P>::test_match(dl::Constructor<BooleanTag> constructor, const Grammar& grammar) const
 {
     auto visitor = BooleanAtomicStateGrammarVisitor<P>(this, grammar);
     constructor->accept(visitor);
     return visitor.get_result();
 }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 void BooleanAtomicStateImpl<P>::accept(IVisitor& visitor) const
 {
     visitor.visit(this);
 }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 Index BooleanAtomicStateImpl<P>::get_index() const
 {
     return m_index;
 }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 Predicate<P> BooleanAtomicStateImpl<P>::get_predicate() const
 {
     return m_predicate;
 }
 
-template class BooleanAtomicStateImpl<Static>;
-template class BooleanAtomicStateImpl<Fluent>;
-template class BooleanAtomicStateImpl<Derived>;
+template class BooleanAtomicStateImpl<StaticTag>;
+template class BooleanAtomicStateImpl<FluentTag>;
+template class BooleanAtomicStateImpl<DerivedTag>;
 
-template<DescriptionLogicCategory D>
+template<IsConceptOrRoleTag D>
 BooleanNonemptyImpl<D>::BooleanNonemptyImpl(Index index, NonTerminal<D> nonterminal) : m_index(index), m_nonterminal(nonterminal)
 {
 }
 
-template<DescriptionLogicCategory D>
-bool BooleanNonemptyImpl<D>::test_match(dl::Constructor<Boolean> constructor, const Grammar& grammar) const
+template<IsConceptOrRoleTag D>
+bool BooleanNonemptyImpl<D>::test_match(dl::Constructor<BooleanTag> constructor, const Grammar& grammar) const
 {
     auto visitor = BooleanNonemptyGrammarVisitor<D>(this, grammar);
     constructor->accept(visitor);
     return visitor.get_result();
 }
 
-template<DescriptionLogicCategory D>
+template<IsConceptOrRoleTag D>
 void BooleanNonemptyImpl<D>::accept(IVisitor& visitor) const
 {
     visitor.visit(this);
 }
 
-template<DescriptionLogicCategory D>
+template<IsConceptOrRoleTag D>
 Index BooleanNonemptyImpl<D>::get_index() const
 {
     return m_index;
 }
 
-template<DescriptionLogicCategory D>
+template<IsConceptOrRoleTag D>
 NonTerminal<D> BooleanNonemptyImpl<D>::get_nonterminal() const
 {
     return m_nonterminal;
 }
 
-template class BooleanNonemptyImpl<Concept>;
-template class BooleanNonemptyImpl<Role>;
+template class BooleanNonemptyImpl<ConceptTag>;
+template class BooleanNonemptyImpl<RoleTag>;
 
 /**
  * Numericals
  */
 
-template<DescriptionLogicCategory D>
+template<IsConceptOrRoleTag D>
 NumericalCountImpl<D>::NumericalCountImpl(Index index, NonTerminal<D> nonterminal) : m_index(index), m_nonterminal(nonterminal)
 {
 }
 
-template<DescriptionLogicCategory D>
-bool NumericalCountImpl<D>::test_match(dl::Constructor<Numerical> constructor, const Grammar& grammar) const
+template<IsConceptOrRoleTag D>
+bool NumericalCountImpl<D>::test_match(dl::Constructor<NumericalTag> constructor, const Grammar& grammar) const
 {
     auto visitor = NumericalCountGrammarVisitor<D>(this, grammar);
     constructor->accept(visitor);
     return visitor.get_result();
 }
 
-template<DescriptionLogicCategory D>
+template<IsConceptOrRoleTag D>
 void NumericalCountImpl<D>::accept(IVisitor& visitor) const
 {
     visitor.visit(this);
 }
 
-template<DescriptionLogicCategory D>
+template<IsConceptOrRoleTag D>
 Index NumericalCountImpl<D>::get_index() const
 {
     return m_index;
 }
 
-template<DescriptionLogicCategory D>
+template<IsConceptOrRoleTag D>
 NonTerminal<D> NumericalCountImpl<D>::get_nonterminal() const
 {
     return m_nonterminal;
 }
 
-template class NumericalCountImpl<Concept>;
-template class NumericalCountImpl<Role>;
+template class NumericalCountImpl<ConceptTag>;
+template class NumericalCountImpl<RoleTag>;
 
-NumericalDistanceImpl::NumericalDistanceImpl(Index index, NonTerminal<Concept> left_concept, NonTerminal<Role> role, NonTerminal<Concept> right_concept) :
+NumericalDistanceImpl::NumericalDistanceImpl(Index index,
+                                             NonTerminal<ConceptTag> left_concept,
+                                             NonTerminal<RoleTag> role,
+                                             NonTerminal<ConceptTag> right_concept) :
     m_index(index),
     m_left_concept(left_concept),
     m_role(role),
@@ -930,7 +933,7 @@ NumericalDistanceImpl::NumericalDistanceImpl(Index index, NonTerminal<Concept> l
 {
 }
 
-bool NumericalDistanceImpl::test_match(dl::Constructor<Numerical> constructor, const Grammar& grammar) const
+bool NumericalDistanceImpl::test_match(dl::Constructor<NumericalTag> constructor, const Grammar& grammar) const
 {
     auto visitor = NumericalDistanceGrammarVisitor(this, grammar);
     constructor->accept(visitor);
@@ -941,9 +944,9 @@ void NumericalDistanceImpl::accept(IVisitor& visitor) const { visitor.visit(this
 
 Index NumericalDistanceImpl::get_index() const { return m_index; }
 
-NonTerminal<Concept> NumericalDistanceImpl::get_left_concept() const { return m_left_concept; }
+NonTerminal<ConceptTag> NumericalDistanceImpl::get_left_concept() const { return m_left_concept; }
 
-NonTerminal<Role> NumericalDistanceImpl::get_role() const { return m_role; }
+NonTerminal<RoleTag> NumericalDistanceImpl::get_role() const { return m_role; }
 
-NonTerminal<Concept> NumericalDistanceImpl::get_right_concept() const { return m_right_concept; }
+NonTerminal<ConceptTag> NumericalDistanceImpl::get_right_concept() const { return m_right_concept; }
 }

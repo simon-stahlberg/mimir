@@ -36,13 +36,13 @@ private:
     // Provide default implementations
     using RecursiveCachedBaseTranslator<DeleteRelaxTranslator>::translate_level_2;
 
-    template<StaticOrFluentOrDerived P>
+    template<IsStaticOrFluentOrDerivedTag P>
     LiteralList<P> translate_level_2(const LiteralList<P>& literals, Repositories& repositories);
     ConditionalEffectList translate_level_2(const ConditionalEffectList& effects, Repositories& repositories);
     ActionList translate_level_2(const ActionList& actions, Repositories& repositories);
     AxiomList translate_level_2(const AxiomList& axioms, Repositories& repositories);
 
-    template<StaticOrFluentOrDerived P>
+    template<IsStaticOrFluentOrDerivedTag P>
     Literal<P> translate_level_2(Literal<P> literal, Repositories& repositories);
     ConjunctiveCondition translate_level_2(ConjunctiveCondition condition, Repositories& repositories);
     ConjunctiveEffect translate_level_2(ConjunctiveEffect effect, Repositories& repositories);

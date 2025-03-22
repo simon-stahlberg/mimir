@@ -90,28 +90,28 @@ Index GroundFunctionExpressionMinusImpl::get_index() const { return m_index; }
 GroundFunctionExpression GroundFunctionExpressionMinusImpl::get_function_expression() const { return m_function_expression; }
 
 /* FunctionExpressionFunction */
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 GroundFunctionExpressionFunctionImpl<F>::GroundFunctionExpressionFunctionImpl(Index index, GroundFunction<F> function) :
     m_index(index),
     m_function(std::move(function))
 {
 }
 
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 Index GroundFunctionExpressionFunctionImpl<F>::get_index() const
 {
     return m_index;
 }
 
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 GroundFunction<F> GroundFunctionExpressionFunctionImpl<F>::get_function() const
 {
     return m_function;
 }
 
-template class GroundFunctionExpressionFunctionImpl<Static>;
-template class GroundFunctionExpressionFunctionImpl<Fluent>;
-template class GroundFunctionExpressionFunctionImpl<Auxiliary>;
+template class GroundFunctionExpressionFunctionImpl<StaticTag>;
+template class GroundFunctionExpressionFunctionImpl<FluentTag>;
+template class GroundFunctionExpressionFunctionImpl<AuxiliaryTag>;
 
 /* GroundFunctionExpression */
 GroundFunctionExpressionImpl::GroundFunctionExpressionImpl(Index index, GroundFunctionExpressionVariant ground_function_expression) :
@@ -161,7 +161,7 @@ ContinuousCost evaluate(GroundFunctionExpression fexpr, const FlatDoubleList& st
 
                 return -val;
             }
-            else if constexpr (std::is_same_v<T, GroundFunctionExpressionFunction<Static>>)
+            else if constexpr (std::is_same_v<T, GroundFunctionExpressionFunction<StaticTag>>)
             {
                 if (arg->get_function()->get_index() >= static_numeric_variables.size())
                 {
@@ -170,7 +170,7 @@ ContinuousCost evaluate(GroundFunctionExpression fexpr, const FlatDoubleList& st
 
                 return static_numeric_variables[arg->get_function()->get_index()];
             }
-            else if constexpr (std::is_same_v<T, GroundFunctionExpressionFunction<Fluent>>)
+            else if constexpr (std::is_same_v<T, GroundFunctionExpressionFunction<FluentTag>>)
             {
                 if (arg->get_function()->get_index() >= fluent_numeric_variables.size())
                 {
@@ -179,9 +179,9 @@ ContinuousCost evaluate(GroundFunctionExpression fexpr, const FlatDoubleList& st
 
                 return fluent_numeric_variables[arg->get_function()->get_index()];
             }
-            else if constexpr (std::is_same_v<T, GroundFunctionExpressionFunction<Auxiliary>>)
+            else if constexpr (std::is_same_v<T, GroundFunctionExpressionFunction<AuxiliaryTag>>)
             {
-                throw std::logic_error("evaluate(fexpr, fluent_numeric_variables): Unexpected GroundFunctionExpressionFunction<Auxiliary>. Did you define a "
+                throw std::logic_error("evaluate(fexpr, fluent_numeric_variables): Unexpected GroundFunctionExpressionFunction<AuxiliaryTag>. Did you define a "
                                        "(composite) metric consisting of a single nullary function without defining its value in the initial state?");
             }
             else
@@ -218,16 +218,16 @@ std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionMinusI
     return out;
 }
 
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionFunctionImpl<F>& element)
 {
     write(element, StringFormatter(), out);
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionFunctionImpl<Static>& element);
-template std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionFunctionImpl<Fluent>& element);
-template std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionFunctionImpl<Auxiliary>& element);
+template std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionFunctionImpl<StaticTag>& element);
+template std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionFunctionImpl<FluentTag>& element);
+template std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionFunctionImpl<AuxiliaryTag>& element);
 
 std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionNumber element)
 {
@@ -253,16 +253,16 @@ std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionMinus elemen
     return out;
 }
 
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionFunction<F> element)
 {
     write(*element, AddressFormatter(), out);
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionFunction<Static> element);
-template std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionFunction<Fluent> element);
-template std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionFunction<Auxiliary> element);
+template std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionFunction<StaticTag> element);
+template std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionFunction<FluentTag> element);
+template std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionFunction<AuxiliaryTag> element);
 
 std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionImpl& element)
 {

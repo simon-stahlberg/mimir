@@ -35,27 +35,27 @@ FormatterVisitor::FormatterVisitor(std::ostream& out) : m_out(out) {}
 
 void FormatterVisitor::visit(ConceptBot constructor) { m_out << keywords::concept_bot; }
 void FormatterVisitor::visit(ConceptTop constructor) { m_out << keywords::concept_top; }
-void FormatterVisitor::visit(ConceptAtomicState<Static> constructor)
+void FormatterVisitor::visit(ConceptAtomicState<StaticTag> constructor)
 {
     m_out << keywords::concept_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
-void FormatterVisitor::visit(ConceptAtomicState<Fluent> constructor)
+void FormatterVisitor::visit(ConceptAtomicState<FluentTag> constructor)
 {
     m_out << keywords::concept_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
-void FormatterVisitor::visit(ConceptAtomicState<Derived> constructor)
+void FormatterVisitor::visit(ConceptAtomicState<DerivedTag> constructor)
 {
     m_out << keywords::concept_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
-void FormatterVisitor::visit(ConceptAtomicGoal<Static> constructor)
+void FormatterVisitor::visit(ConceptAtomicGoal<StaticTag> constructor)
 {
     m_out << keywords::concept_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->is_negated() ? "false" : "true");
 }
-void FormatterVisitor::visit(ConceptAtomicGoal<Fluent> constructor)
+void FormatterVisitor::visit(ConceptAtomicGoal<FluentTag> constructor)
 {
     m_out << keywords::concept_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->is_negated() ? "false" : "true");
 }
-void FormatterVisitor::visit(ConceptAtomicGoal<Derived> constructor)
+void FormatterVisitor::visit(ConceptAtomicGoal<DerivedTag> constructor)
 {
     m_out << keywords::concept_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->is_negated() ? "false" : "true");
 }
@@ -113,27 +113,27 @@ void FormatterVisitor::visit(ConceptNominal constructor) { m_out << keywords::co
  */
 
 void FormatterVisitor::visit(RoleUniversal constructor) { m_out << keywords::role_universal; }
-void FormatterVisitor::visit(RoleAtomicState<Static> constructor)
+void FormatterVisitor::visit(RoleAtomicState<StaticTag> constructor)
 {
     m_out << keywords::role_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
-void FormatterVisitor::visit(RoleAtomicState<Fluent> constructor)
+void FormatterVisitor::visit(RoleAtomicState<FluentTag> constructor)
 {
     m_out << keywords::role_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
-void FormatterVisitor::visit(RoleAtomicState<Derived> constructor)
+void FormatterVisitor::visit(RoleAtomicState<DerivedTag> constructor)
 {
     m_out << keywords::role_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
-void FormatterVisitor::visit(RoleAtomicGoal<Static> constructor)
+void FormatterVisitor::visit(RoleAtomicGoal<StaticTag> constructor)
 {
     m_out << keywords::role_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->is_negated() ? "false" : "true");
 }
-void FormatterVisitor::visit(RoleAtomicGoal<Fluent> constructor)
+void FormatterVisitor::visit(RoleAtomicGoal<FluentTag> constructor)
 {
     m_out << keywords::role_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->is_negated() ? "false" : "true");
 }
-void FormatterVisitor::visit(RoleAtomicGoal<Derived> constructor)
+void FormatterVisitor::visit(RoleAtomicGoal<DerivedTag> constructor)
 {
     m_out << keywords::role_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->is_negated() ? "false" : "true");
 }
@@ -195,28 +195,28 @@ void FormatterVisitor::visit(RoleIdentity constructor)
  * Booleans
  */
 
-void FormatterVisitor::visit(BooleanAtomicState<Static> constructor)
+void FormatterVisitor::visit(BooleanAtomicState<StaticTag> constructor)
 {
     m_out << keywords::boolean_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
 
-void FormatterVisitor::visit(BooleanAtomicState<Fluent> constructor)
+void FormatterVisitor::visit(BooleanAtomicState<FluentTag> constructor)
 {
     m_out << keywords::boolean_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
 
-void FormatterVisitor::visit(BooleanAtomicState<Derived> constructor)
+void FormatterVisitor::visit(BooleanAtomicState<DerivedTag> constructor)
 {
     m_out << keywords::boolean_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
 
-void FormatterVisitor::visit(BooleanNonempty<Concept> constructor)
+void FormatterVisitor::visit(BooleanNonempty<ConceptTag> constructor)
 {
     m_out << keywords::numerical_distance << " ";
     constructor->get_nonterminal()->accept(*this);
 }
 
-void FormatterVisitor::visit(BooleanNonempty<Role> constructor)
+void FormatterVisitor::visit(BooleanNonempty<RoleTag> constructor)
 {
     m_out << keywords::numerical_distance << " ";
     constructor->get_nonterminal()->accept(*this);
@@ -226,13 +226,13 @@ void FormatterVisitor::visit(BooleanNonempty<Role> constructor)
  * Numericals
  */
 
-void FormatterVisitor::visit(NumericalCount<Concept> constructor)
+void FormatterVisitor::visit(NumericalCount<ConceptTag> constructor)
 {
     m_out << keywords::numerical_distance << " ";
     constructor->get_nonterminal()->accept(*this);
 }
 
-void FormatterVisitor::visit(NumericalCount<Role> constructor)
+void FormatterVisitor::visit(NumericalCount<RoleTag> constructor)
 {
     m_out << keywords::numerical_distance << " ";
     constructor->get_nonterminal()->accept(*this);
@@ -252,38 +252,38 @@ void FormatterVisitor::visit(NumericalDistance constructor)
  * NonTerminal
  */
 
-void FormatterVisitor::visit(NonTerminal<Concept> constructor) { visit_impl(constructor); }
+void FormatterVisitor::visit(NonTerminal<ConceptTag> constructor) { visit_impl(constructor); }
 
-void FormatterVisitor::visit(NonTerminal<Role> constructor) { visit_impl(constructor); }
+void FormatterVisitor::visit(NonTerminal<RoleTag> constructor) { visit_impl(constructor); }
 
-void FormatterVisitor::visit(NonTerminal<Boolean> constructor) { visit_impl(constructor); }
+void FormatterVisitor::visit(NonTerminal<BooleanTag> constructor) { visit_impl(constructor); }
 
-void FormatterVisitor::visit(NonTerminal<Numerical> constructor) { visit_impl(constructor); }
+void FormatterVisitor::visit(NonTerminal<NumericalTag> constructor) { visit_impl(constructor); }
 
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 void FormatterVisitor::visit_impl(NonTerminal<D> constructor)
 {
     m_out << constructor->get_name();
 }
 
-template void FormatterVisitor::visit_impl(NonTerminal<Concept> constructor);
-template void FormatterVisitor::visit_impl(NonTerminal<Role> constructor);
-template void FormatterVisitor::visit_impl(NonTerminal<Boolean> constructor);
-template void FormatterVisitor::visit_impl(NonTerminal<Numerical> constructor);
+template void FormatterVisitor::visit_impl(NonTerminal<ConceptTag> constructor);
+template void FormatterVisitor::visit_impl(NonTerminal<RoleTag> constructor);
+template void FormatterVisitor::visit_impl(NonTerminal<BooleanTag> constructor);
+template void FormatterVisitor::visit_impl(NonTerminal<NumericalTag> constructor);
 
 /**
  * DerivationRule
  */
 
-void FormatterVisitor::visit(DerivationRule<Concept> constructor) { visit_impl(constructor); }
+void FormatterVisitor::visit(DerivationRule<ConceptTag> constructor) { visit_impl(constructor); }
 
-void FormatterVisitor::visit(DerivationRule<Role> constructor) { visit_impl(constructor); }
+void FormatterVisitor::visit(DerivationRule<RoleTag> constructor) { visit_impl(constructor); }
 
-void FormatterVisitor::visit(DerivationRule<Boolean> constructor) { visit_impl(constructor); }
+void FormatterVisitor::visit(DerivationRule<BooleanTag> constructor) { visit_impl(constructor); }
 
-void FormatterVisitor::visit(DerivationRule<Numerical> constructor) { visit_impl(constructor); }
+void FormatterVisitor::visit(DerivationRule<NumericalTag> constructor) { visit_impl(constructor); }
 
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 void FormatterVisitor::visit_impl(DerivationRule<D> constructor)
 {
     constructor->get_head()->accept(*this);
@@ -293,24 +293,24 @@ void FormatterVisitor::visit_impl(DerivationRule<D> constructor)
     constructor->get_body()->accept(*this);
 }
 
-template void FormatterVisitor::visit_impl(DerivationRule<Concept> constructor);
-template void FormatterVisitor::visit_impl(DerivationRule<Role> constructor);
-template void FormatterVisitor::visit_impl(DerivationRule<Boolean> constructor);
-template void FormatterVisitor::visit_impl(DerivationRule<Numerical> constructor);
+template void FormatterVisitor::visit_impl(DerivationRule<ConceptTag> constructor);
+template void FormatterVisitor::visit_impl(DerivationRule<RoleTag> constructor);
+template void FormatterVisitor::visit_impl(DerivationRule<BooleanTag> constructor);
+template void FormatterVisitor::visit_impl(DerivationRule<NumericalTag> constructor);
 
 /**
  * SubstitutionRule
  */
 
-void FormatterVisitor::visit(SubstitutionRule<Concept> constructor) { visit_impl(constructor); }
+void FormatterVisitor::visit(SubstitutionRule<ConceptTag> constructor) { visit_impl(constructor); }
 
-void FormatterVisitor::visit(SubstitutionRule<Role> constructor) { visit_impl(constructor); }
+void FormatterVisitor::visit(SubstitutionRule<RoleTag> constructor) { visit_impl(constructor); }
 
-void FormatterVisitor::visit(SubstitutionRule<Boolean> constructor) { visit_impl(constructor); }
+void FormatterVisitor::visit(SubstitutionRule<BooleanTag> constructor) { visit_impl(constructor); }
 
-void FormatterVisitor::visit(SubstitutionRule<Numerical> constructor) { visit_impl(constructor); }
+void FormatterVisitor::visit(SubstitutionRule<NumericalTag> constructor) { visit_impl(constructor); }
 
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 void FormatterVisitor::visit_impl(SubstitutionRule<D> constructor)
 {
     constructor->get_head()->accept(*this);
@@ -320,10 +320,10 @@ void FormatterVisitor::visit_impl(SubstitutionRule<D> constructor)
     constructor->get_body()->accept(*this);
 }
 
-template void FormatterVisitor::visit_impl(SubstitutionRule<Concept> constructor);
-template void FormatterVisitor::visit_impl(SubstitutionRule<Role> constructor);
-template void FormatterVisitor::visit_impl(SubstitutionRule<Boolean> constructor);
-template void FormatterVisitor::visit_impl(SubstitutionRule<Numerical> constructor);
+template void FormatterVisitor::visit_impl(SubstitutionRule<ConceptTag> constructor);
+template void FormatterVisitor::visit_impl(SubstitutionRule<RoleTag> constructor);
+template void FormatterVisitor::visit_impl(SubstitutionRule<BooleanTag> constructor);
+template void FormatterVisitor::visit_impl(SubstitutionRule<NumericalTag> constructor);
 
 /**
  * Grammar
@@ -392,7 +392,7 @@ void FormatterVisitor::visit(const Grammar& grammar)
  * Printing
  */
 
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 std::ostream& operator<<(std::ostream& out, Constructor<D> element)
 {
     auto visitor = FormatterVisitor(out);
@@ -402,12 +402,12 @@ std::ostream& operator<<(std::ostream& out, Constructor<D> element)
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, Constructor<Concept> element);
-template std::ostream& operator<<(std::ostream& out, Constructor<Role> element);
-template std::ostream& operator<<(std::ostream& out, Constructor<Boolean> element);
-template std::ostream& operator<<(std::ostream& out, Constructor<Numerical> element);
+template std::ostream& operator<<(std::ostream& out, Constructor<ConceptTag> element);
+template std::ostream& operator<<(std::ostream& out, Constructor<RoleTag> element);
+template std::ostream& operator<<(std::ostream& out, Constructor<BooleanTag> element);
+template std::ostream& operator<<(std::ostream& out, Constructor<NumericalTag> element);
 
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 std::ostream& operator<<(std::ostream& out, NonTerminal<D> element)
 {
     auto visitor = FormatterVisitor(out);
@@ -417,12 +417,12 @@ std::ostream& operator<<(std::ostream& out, NonTerminal<D> element)
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, NonTerminal<Concept> element);
-template std::ostream& operator<<(std::ostream& out, NonTerminal<Role> element);
-template std::ostream& operator<<(std::ostream& out, NonTerminal<Boolean> element);
-template std::ostream& operator<<(std::ostream& out, NonTerminal<Numerical> element);
+template std::ostream& operator<<(std::ostream& out, NonTerminal<ConceptTag> element);
+template std::ostream& operator<<(std::ostream& out, NonTerminal<RoleTag> element);
+template std::ostream& operator<<(std::ostream& out, NonTerminal<BooleanTag> element);
+template std::ostream& operator<<(std::ostream& out, NonTerminal<NumericalTag> element);
 
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 std::ostream& operator<<(std::ostream& out, DerivationRule<D> element)
 {
     auto visitor = FormatterVisitor(out);
@@ -432,12 +432,12 @@ std::ostream& operator<<(std::ostream& out, DerivationRule<D> element)
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, DerivationRule<Concept> element);
-template std::ostream& operator<<(std::ostream& out, DerivationRule<Role> element);
-template std::ostream& operator<<(std::ostream& out, DerivationRule<Boolean> element);
-template std::ostream& operator<<(std::ostream& out, DerivationRule<Numerical> element);
+template std::ostream& operator<<(std::ostream& out, DerivationRule<ConceptTag> element);
+template std::ostream& operator<<(std::ostream& out, DerivationRule<RoleTag> element);
+template std::ostream& operator<<(std::ostream& out, DerivationRule<BooleanTag> element);
+template std::ostream& operator<<(std::ostream& out, DerivationRule<NumericalTag> element);
 
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 std::ostream& operator<<(std::ostream& out, SubstitutionRule<D> element)
 {
     auto visitor = FormatterVisitor(out);
@@ -447,10 +447,10 @@ std::ostream& operator<<(std::ostream& out, SubstitutionRule<D> element)
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, SubstitutionRule<Concept> element);
-template std::ostream& operator<<(std::ostream& out, SubstitutionRule<Role> element);
-template std::ostream& operator<<(std::ostream& out, SubstitutionRule<Boolean> element);
-template std::ostream& operator<<(std::ostream& out, SubstitutionRule<Numerical> element);
+template std::ostream& operator<<(std::ostream& out, SubstitutionRule<ConceptTag> element);
+template std::ostream& operator<<(std::ostream& out, SubstitutionRule<RoleTag> element);
+template std::ostream& operator<<(std::ostream& out, SubstitutionRule<BooleanTag> element);
+template std::ostream& operator<<(std::ostream& out, SubstitutionRule<NumericalTag> element);
 
 std::ostream& operator<<(std::ostream& out, const Grammar& element)
 {

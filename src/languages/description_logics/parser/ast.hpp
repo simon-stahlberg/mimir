@@ -72,13 +72,13 @@ struct GrammarHead;
 struct GrammarBody;
 struct Grammar;
 
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 struct Constructor
 {
 };
 
 template<>
-struct Constructor<Concept> :
+struct Constructor<ConceptTag> :
     x3::position_tagged,
     x3::variant<x3::forward_ast<ConceptBot>,
                 x3::forward_ast<ConceptTop>,
@@ -98,7 +98,7 @@ struct Constructor<Concept> :
 };
 
 template<>
-struct Constructor<Role> :
+struct Constructor<RoleTag> :
     x3::position_tagged,
     x3::variant<x3::forward_ast<RoleUniversal>,
                 x3::forward_ast<RoleAtomicState>,
@@ -118,26 +118,26 @@ struct Constructor<Role> :
 };
 
 template<>
-struct Constructor<Boolean> : x3::position_tagged, x3::variant<x3::forward_ast<BooleanAtomicState>, x3::forward_ast<BooleanNonempty>>
+struct Constructor<BooleanTag> : x3::position_tagged, x3::variant<x3::forward_ast<BooleanAtomicState>, x3::forward_ast<BooleanNonempty>>
 {
     using base_type::base_type;
     using base_type::operator=;
 };
 
 template<>
-struct Constructor<Numerical> : x3::position_tagged, x3::variant<x3::forward_ast<NumericalCount>, x3::forward_ast<NumericalDistance>>
+struct Constructor<NumericalTag> : x3::position_tagged, x3::variant<x3::forward_ast<NumericalCount>, x3::forward_ast<NumericalDistance>>
 {
     using base_type::base_type;
     using base_type::operator=;
 };
 
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 struct NonTerminal : x3::position_tagged
 {
     std::string name;
 };
 
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 struct ConstructorOrNonTerminal : x3::position_tagged, x3::variant<NonTerminal<D>, Constructor<D>>
 {
     using typename x3::variant<NonTerminal<D>, Constructor<D>>::base_type;
@@ -145,7 +145,7 @@ struct ConstructorOrNonTerminal : x3::position_tagged, x3::variant<NonTerminal<D
     using base_type::operator=;
 };
 
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 struct DerivationRule : x3::position_tagged
 {
     NonTerminal<D> non_terminal;
@@ -177,43 +177,43 @@ struct ConceptAtomicGoal : x3::position_tagged
 
 struct ConceptIntersection : x3::position_tagged
 {
-    ConstructorOrNonTerminal<Concept> left_concept_or_non_terminal;
-    ConstructorOrNonTerminal<Concept> right_concept_or_non_terminal;
+    ConstructorOrNonTerminal<ConceptTag> left_concept_or_non_terminal;
+    ConstructorOrNonTerminal<ConceptTag> right_concept_or_non_terminal;
 };
 
 struct ConceptUnion : x3::position_tagged
 {
-    ConstructorOrNonTerminal<Concept> left_concept_or_non_terminal;
-    ConstructorOrNonTerminal<Concept> right_concept_or_non_terminal;
+    ConstructorOrNonTerminal<ConceptTag> left_concept_or_non_terminal;
+    ConstructorOrNonTerminal<ConceptTag> right_concept_or_non_terminal;
 };
 
 struct ConceptNegation : x3::position_tagged
 {
-    ConstructorOrNonTerminal<Concept> concept_or_non_terminal;
+    ConstructorOrNonTerminal<ConceptTag> concept_or_non_terminal;
 };
 
 struct ConceptValueRestriction : x3::position_tagged
 {
-    ConstructorOrNonTerminal<Role> role_or_non_terminal;
-    ConstructorOrNonTerminal<Concept> concept_or_non_terminal;
+    ConstructorOrNonTerminal<RoleTag> role_or_non_terminal;
+    ConstructorOrNonTerminal<ConceptTag> concept_or_non_terminal;
 };
 
 struct ConceptExistentialQuantification : x3::position_tagged
 {
-    ConstructorOrNonTerminal<Role> role_or_non_terminal;
-    ConstructorOrNonTerminal<Concept> concept_or_non_terminal;
+    ConstructorOrNonTerminal<RoleTag> role_or_non_terminal;
+    ConstructorOrNonTerminal<ConceptTag> concept_or_non_terminal;
 };
 
 struct ConceptRoleValueMapContainment : x3::position_tagged
 {
-    ConstructorOrNonTerminal<Role> left_role_or_non_terminal;
-    ConstructorOrNonTerminal<Role> right_role_or_non_terminal;
+    ConstructorOrNonTerminal<RoleTag> left_role_or_non_terminal;
+    ConstructorOrNonTerminal<RoleTag> right_role_or_non_terminal;
 };
 
 struct ConceptRoleValueMapEquality : x3::position_tagged
 {
-    ConstructorOrNonTerminal<Role> left_role_or_non_terminal;
-    ConstructorOrNonTerminal<Role> right_role_or_non_terminal;
+    ConstructorOrNonTerminal<RoleTag> left_role_or_non_terminal;
+    ConstructorOrNonTerminal<RoleTag> right_role_or_non_terminal;
 };
 
 struct ConceptNominal : x3::position_tagged
@@ -242,58 +242,58 @@ struct RoleAtomicGoal : x3::position_tagged
 
 struct RoleIntersection : x3::position_tagged
 {
-    ConstructorOrNonTerminal<Role> left_role_or_non_terminal;
-    ConstructorOrNonTerminal<Role> right_role_or_non_terminal;
+    ConstructorOrNonTerminal<RoleTag> left_role_or_non_terminal;
+    ConstructorOrNonTerminal<RoleTag> right_role_or_non_terminal;
 };
 
 struct RoleUnion : x3::position_tagged
 {
-    ConstructorOrNonTerminal<Role> left_role_or_non_terminal;
-    ConstructorOrNonTerminal<Role> right_role_or_non_terminal;
+    ConstructorOrNonTerminal<RoleTag> left_role_or_non_terminal;
+    ConstructorOrNonTerminal<RoleTag> right_role_or_non_terminal;
 };
 
 struct RoleComplement : x3::position_tagged
 {
-    ConstructorOrNonTerminal<Role> role_or_non_terminal;
+    ConstructorOrNonTerminal<RoleTag> role_or_non_terminal;
 };
 
 struct RoleInverse : x3::position_tagged
 {
-    ConstructorOrNonTerminal<Role> role_or_non_terminal;
+    ConstructorOrNonTerminal<RoleTag> role_or_non_terminal;
 };
 
 struct RoleComposition : x3::position_tagged
 {
-    ConstructorOrNonTerminal<Role> left_role_or_non_terminal;
-    ConstructorOrNonTerminal<Role> right_role_or_non_terminal;
+    ConstructorOrNonTerminal<RoleTag> left_role_or_non_terminal;
+    ConstructorOrNonTerminal<RoleTag> right_role_or_non_terminal;
 };
 
 struct RoleTransitiveClosure : x3::position_tagged
 {
-    ConstructorOrNonTerminal<Role> role_or_non_terminal;
+    ConstructorOrNonTerminal<RoleTag> role_or_non_terminal;
 };
 
 struct RoleReflexiveTransitiveClosure : x3::position_tagged
 {
-    ConstructorOrNonTerminal<Role> role_or_non_terminal;
+    ConstructorOrNonTerminal<RoleTag> role_or_non_terminal;
 };
 
 struct RoleRestriction : x3::position_tagged
 {
-    ConstructorOrNonTerminal<Role> role_or_non_terminal;
-    ConstructorOrNonTerminal<Concept> concept_or_non_terminal;
+    ConstructorOrNonTerminal<RoleTag> role_or_non_terminal;
+    ConstructorOrNonTerminal<ConceptTag> concept_or_non_terminal;
 };
 
 struct RoleIdentity : x3::position_tagged
 {
-    ConstructorOrNonTerminal<Concept> concept_or_non_terminal;
+    ConstructorOrNonTerminal<ConceptTag> concept_or_non_terminal;
 };
 
 /**
  * ConceptOrRole
  */
 
-struct ConceptOrRoleNonterminal : x3::variant<ConstructorOrNonTerminal<Concept>, ConstructorOrNonTerminal<Role>>
+struct ConceptOrRoleNonterminal : x3::variant<ConstructorOrNonTerminal<ConceptTag>, ConstructorOrNonTerminal<RoleTag>>
 {
     using base_type::base_type;
     using base_type::operator=;
@@ -322,9 +322,9 @@ struct NumericalCount : x3::position_tagged
 };
 struct NumericalDistance : x3::position_tagged
 {
-    ConstructorOrNonTerminal<Concept> left_concept_or_nonterminal;
-    ConstructorOrNonTerminal<Role> role_or_nonterminal;
-    ConstructorOrNonTerminal<Concept> right_concept_or_nonterminal;
+    ConstructorOrNonTerminal<ConceptTag> left_concept_or_nonterminal;
+    ConstructorOrNonTerminal<RoleTag> role_or_nonterminal;
+    ConstructorOrNonTerminal<ConceptTag> right_concept_or_nonterminal;
 };
 
 /**
@@ -333,7 +333,7 @@ struct NumericalDistance : x3::position_tagged
 
 struct FeatureCategoryDerivationRule :
     x3::position_tagged,
-    x3::variant<DerivationRule<Concept>, DerivationRule<Role>, DerivationRule<Boolean>, DerivationRule<Numerical>>
+    x3::variant<DerivationRule<ConceptTag>, DerivationRule<RoleTag>, DerivationRule<BooleanTag>, DerivationRule<NumericalTag>>
 {
     using base_type::base_type;
     using base_type::operator=;
@@ -341,10 +341,10 @@ struct FeatureCategoryDerivationRule :
 
 struct GrammarHead : x3::position_tagged
 {
-    boost::optional<NonTerminal<Concept>> concept_start;
-    boost::optional<NonTerminal<Role>> role_start;
-    boost::optional<NonTerminal<Boolean>> boolean_start;
-    boost::optional<NonTerminal<Numerical>> numerical_start;
+    boost::optional<NonTerminal<ConceptTag>> concept_start;
+    boost::optional<NonTerminal<RoleTag>> role_start;
+    boost::optional<NonTerminal<BooleanTag>> boolean_start;
+    boost::optional<NonTerminal<NumericalTag>> numerical_start;
 };
 
 struct GrammarBody : x3::position_tagged

@@ -45,8 +45,8 @@ static void collect_terms(FunctionExpression fexpr, TermList& ref_terms)
             {
                 collect_terms(arg->get_function_expression(), ref_terms);
             }
-            else if constexpr (std::is_same_v<T, FunctionExpressionFunction<Static>> || std::is_same_v<T, FunctionExpressionFunction<Fluent>>
-                               || std::is_same_v<T, FunctionExpressionFunction<Auxiliary>>)
+            else if constexpr (std::is_same_v<T, FunctionExpressionFunction<StaticTag>> || std::is_same_v<T, FunctionExpressionFunction<FluentTag>>
+                               || std::is_same_v<T, FunctionExpressionFunction<AuxiliaryTag>>)
             {
                 ref_terms.insert(ref_terms.end(), arg->get_function()->get_terms().begin(), arg->get_function()->get_terms().end());
             }
@@ -58,7 +58,7 @@ static void collect_terms(FunctionExpression fexpr, TermList& ref_terms)
         fexpr->get_variant());
 }
 
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 Function<F> EncodeNumericConstraintTermsInFunctions::translate_level_2(Function<F> function, Repositories& repositories)
 {
     auto transformed_function_skeleton = this->translate_level_0(function->get_function_skeleton(), repositories);
@@ -86,9 +86,9 @@ Function<F> EncodeNumericConstraintTermsInFunctions::translate_level_2(Function<
     return repositories.get_or_create_function(transformed_function_skeleton, transformed_terms, parent_terms_to_terms_mapping);
 }
 
-template Function<Static> EncodeNumericConstraintTermsInFunctions::translate_level_2(Function<Static> function, Repositories& repositories);
-template Function<Fluent> EncodeNumericConstraintTermsInFunctions::translate_level_2(Function<Fluent> function, Repositories& repositories);
-template Function<Auxiliary> EncodeNumericConstraintTermsInFunctions::translate_level_2(Function<Auxiliary> function, Repositories& repositories);
+template Function<StaticTag> EncodeNumericConstraintTermsInFunctions::translate_level_2(Function<StaticTag> function, Repositories& repositories);
+template Function<FluentTag> EncodeNumericConstraintTermsInFunctions::translate_level_2(Function<FluentTag> function, Repositories& repositories);
+template Function<AuxiliaryTag> EncodeNumericConstraintTermsInFunctions::translate_level_2(Function<AuxiliaryTag> function, Repositories& repositories);
 
 NumericConstraint EncodeNumericConstraintTermsInFunctions::translate_level_2(NumericConstraint numeric_constraint, Repositories& repositories)
 {

@@ -49,21 +49,21 @@ struct StateImpl
     bool numeric_constraints_hold(const formalism::GroundNumericConstraintList& numeric_constraints, const FlatDoubleList& static_numeric_variables) const;
 
     /// @brief log(N) operation, ideally, we get rid of it, perhaps useful to expose to python users
-    template<formalism::FluentOrDerived P>
+    template<formalism::IsFluentOrDerivedTag P>
     bool literal_holds(formalism::GroundLiteral<P> literal) const;
 
     /// @brief N*log(N) operation, ideally (currently unused), perhaps useful to expose to python users
-    template<formalism::FluentOrDerived P>
+    template<formalism::IsFluentOrDerivedTag P>
     bool literals_hold(const formalism::GroundLiteralList<P>& literals) const;
 
-    template<formalism::FluentOrDerived P>
+    template<formalism::IsFluentOrDerivedTag P>
     bool literals_hold(const FlatIndexList& positive_atoms, const FlatIndexList& negative_atoms) const;
 
     /* Immutable Getters */
 
     Index get_index() const;
 
-    template<formalism::FluentOrDerived P>
+    template<formalism::IsFluentOrDerivedTag P>
     const FlatIndexList& get_atoms() const;
 
     const FlatDoubleList& get_numeric_variables() const;

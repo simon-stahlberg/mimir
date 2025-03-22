@@ -26,7 +26,7 @@ namespace mimir::languages::general_policies
 /// @brief `ConditionBase` encapsulates common data and functionality for concrete `ICondition`.
 /// @tparam Derived_ is the derived type.
 /// @tparam D is the feature type.
-template<typename Derived_, dl::FeatureCategory D>
+template<typename Derived_, dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 class ConditionBase : public ICondition
 {
 private:

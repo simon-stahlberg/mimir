@@ -41,15 +41,15 @@ extern std::ostream& operator<<(std::ostream& out, const NumericConstraintSplitD
     return out;
 }
 
-template<FluentOrDerived P>
+template<IsFluentOrDerivedTag P>
 std::ostream& operator<<(std::ostream& out, const AtomSplit<P>& split)
 {
     out << "[" << split.feature << " -> " << split.distribution << "]";
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, const AtomSplit<Fluent>& split);
-template std::ostream& operator<<(std::ostream& out, const AtomSplit<Derived>& split);
+template std::ostream& operator<<(std::ostream& out, const AtomSplit<FluentTag>& split);
+template std::ostream& operator<<(std::ostream& out, const AtomSplit<DerivedTag>& split);
 
 extern std::ostream& operator<<(std::ostream& out, const NumericConstraintSplit& split)
 {

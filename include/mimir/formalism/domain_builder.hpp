@@ -36,9 +36,9 @@ private:
     std::string m_name;
     Requirements m_requirements;
     ObjectList m_constants;
-    PredicateLists<Static, Fluent, Derived> m_predicates;
-    FunctionSkeletonLists<Static, Fluent> m_function_skeletons;
-    std::optional<FunctionSkeleton<Auxiliary>> m_auxiliary_function_skeleton;
+    PredicateLists<StaticTag, FluentTag, DerivedTag> m_predicates;
+    FunctionSkeletonLists<StaticTag, FluentTag> m_function_skeletons;
+    std::optional<FunctionSkeleton<AuxiliaryTag>> m_auxiliary_function_skeleton;
     ActionList m_actions;
     AxiomList m_axioms;
 
@@ -61,13 +61,13 @@ public:
     std::string& get_name();
     Requirements& get_requirements();
     ObjectList& get_constants();
-    template<StaticOrFluentOrDerived P>
+    template<IsStaticOrFluentOrDerivedTag P>
     PredicateList<P>& get_predicates();
-    PredicateLists<Static, Fluent, Derived>& get_hana_predicates();
-    template<StaticOrFluent F>
+    PredicateLists<StaticTag, FluentTag, DerivedTag>& get_hana_predicates();
+    template<IsStaticOrFluentTag F>
     FunctionSkeletonList<F>& get_function_skeletons();
-    FunctionSkeletonLists<Static, Fluent>& get_hana_function_skeletons();
-    std::optional<FunctionSkeleton<Auxiliary>>& get_auxiliary_function_skeleton();
+    FunctionSkeletonLists<StaticTag, FluentTag>& get_hana_function_skeletons();
+    std::optional<FunctionSkeleton<AuxiliaryTag>>& get_auxiliary_function_skeleton();
     ActionList& get_actions();
     AxiomList& get_axioms();
 };

@@ -38,7 +38,7 @@ namespace mimir::formalism
  * EffectNumeric
  */
 
-template<FluentOrAuxiliary F>
+template<IsFluentOrAuxiliaryTag F>
 NumericEffectImpl<F>::NumericEffectImpl(Index index, loki::AssignOperatorEnum assign_operator, Function<F> function, FunctionExpression function_expression) :
     m_index(index),
     m_assign_operator(assign_operator),
@@ -47,32 +47,32 @@ NumericEffectImpl<F>::NumericEffectImpl(Index index, loki::AssignOperatorEnum as
 {
 }
 
-template<FluentOrAuxiliary F>
+template<IsFluentOrAuxiliaryTag F>
 Index NumericEffectImpl<F>::get_index() const
 {
     return m_index;
 }
 
-template<FluentOrAuxiliary F>
+template<IsFluentOrAuxiliaryTag F>
 loki::AssignOperatorEnum NumericEffectImpl<F>::get_assign_operator() const
 {
     return m_assign_operator;
 }
 
-template<FluentOrAuxiliary F>
+template<IsFluentOrAuxiliaryTag F>
 Function<F> NumericEffectImpl<F>::get_function() const
 {
     return m_function;
 }
 
-template<FluentOrAuxiliary F>
+template<IsFluentOrAuxiliaryTag F>
 FunctionExpression NumericEffectImpl<F>::get_function_expression() const
 {
     return m_function_expression;
 }
 
-template class NumericEffectImpl<Fluent>;
-template class NumericEffectImpl<Auxiliary>;
+template class NumericEffectImpl<FluentTag>;
+template class NumericEffectImpl<AuxiliaryTag>;
 
 /**
  * Type 1 effect
@@ -80,9 +80,9 @@ template class NumericEffectImpl<Auxiliary>;
 
 ConjunctiveEffectImpl::ConjunctiveEffectImpl(Index index,
                                              VariableList parameters,
-                                             LiteralList<Fluent> effects,
-                                             NumericEffectList<Fluent> fluent_numeric_effects,
-                                             std::optional<NumericEffect<Auxiliary>> auxiliary_numeric_effect) :
+                                             LiteralList<FluentTag> effects,
+                                             NumericEffectList<FluentTag> fluent_numeric_effects,
+                                             std::optional<NumericEffect<AuxiliaryTag>> auxiliary_numeric_effect) :
     m_index(index),
     m_parameters(std::move(parameters)),
     m_literals(std::move(effects)),
@@ -100,11 +100,11 @@ Index ConjunctiveEffectImpl::get_index() const { return m_index; }
 
 const VariableList& ConjunctiveEffectImpl::get_parameters() const { return m_parameters; }
 
-const LiteralList<Fluent>& ConjunctiveEffectImpl::get_literals() const { return m_literals; }
+const LiteralList<FluentTag>& ConjunctiveEffectImpl::get_literals() const { return m_literals; }
 
-const NumericEffectList<Fluent>& ConjunctiveEffectImpl::get_fluent_numeric_effects() const { return m_fluent_numeric_effects; }
+const NumericEffectList<FluentTag>& ConjunctiveEffectImpl::get_fluent_numeric_effects() const { return m_fluent_numeric_effects; }
 
-std::optional<NumericEffect<Auxiliary>> ConjunctiveEffectImpl::get_auxiliary_numeric_effect() const { return m_auxiliary_numeric_effect; }
+const std::optional<NumericEffect<AuxiliaryTag>>& ConjunctiveEffectImpl::get_auxiliary_numeric_effect() const { return m_auxiliary_numeric_effect; }
 
 /**
  * Type 3 effect
@@ -127,15 +127,15 @@ ConjunctiveEffect ConditionalEffectImpl::get_conjunctive_effect() const { return
 
 size_t ConditionalEffectImpl::get_arity() const { return m_conjunctive_condition->get_arity(); }
 
-template<FluentOrAuxiliary F>
+template<IsFluentOrAuxiliaryTag F>
 std::ostream& operator<<(std::ostream& out, const NumericEffectImpl<F>& element)
 {
     write(element, StringFormatter(), out);
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, const NumericEffectImpl<Fluent>& element);
-template std::ostream& operator<<(std::ostream& out, const NumericEffectImpl<Auxiliary>& element);
+template std::ostream& operator<<(std::ostream& out, const NumericEffectImpl<FluentTag>& element);
+template std::ostream& operator<<(std::ostream& out, const NumericEffectImpl<AuxiliaryTag>& element);
 
 std::ostream& operator<<(std::ostream& out, const ConjunctiveEffectImpl& element)
 {
@@ -149,15 +149,15 @@ std::ostream& operator<<(std::ostream& out, const ConditionalEffectImpl& element
     return out;
 }
 
-template<FluentOrAuxiliary F>
+template<IsFluentOrAuxiliaryTag F>
 std::ostream& operator<<(std::ostream& out, NumericEffect<F> element)
 {
     write(*element, AddressFormatter(), out);
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, NumericEffect<Fluent> element);
-template std::ostream& operator<<(std::ostream& out, NumericEffect<Auxiliary> element);
+template std::ostream& operator<<(std::ostream& out, NumericEffect<FluentTag> element);
+template std::ostream& operator<<(std::ostream& out, NumericEffect<AuxiliaryTag> element);
 
 std::ostream& operator<<(std::ostream& out, ConjunctiveEffect element)
 {

@@ -40,7 +40,7 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
-    using PDDLEntity = void;
+    using FormalismEntity = void;
 
     // moveable but not copyable
     GroundFunctionExpressionNumberImpl(const GroundFunctionExpressionNumberImpl& other) = delete;
@@ -78,7 +78,7 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
-    using PDDLEntity = void;
+    using FormalismEntity = void;
 
     // moveable but not copyable
     GroundFunctionExpressionBinaryOperatorImpl(const GroundFunctionExpressionBinaryOperatorImpl& other) = delete;
@@ -114,7 +114,7 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
-    using PDDLEntity = void;
+    using FormalismEntity = void;
 
     // moveable but not copyable
     GroundFunctionExpressionMultiOperatorImpl(const GroundFunctionExpressionMultiOperatorImpl& other) = delete;
@@ -148,7 +148,7 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
-    using PDDLEntity = void;
+    using FormalismEntity = void;
 
     // moveable but not copyable
     GroundFunctionExpressionMinusImpl(const GroundFunctionExpressionMinusImpl& other) = delete;
@@ -166,7 +166,7 @@ public:
 };
 
 /* FunctionExpressionFunction */
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 class GroundFunctionExpressionFunctionImpl
 {
 private:
@@ -182,7 +182,7 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
-    using PDDLEntity = void;
+    using FormalismEntity = void;
 
     // moveable but not copyable
     GroundFunctionExpressionFunctionImpl(const GroundFunctionExpressionFunctionImpl& other) = delete;
@@ -204,9 +204,9 @@ using GroundFunctionExpressionVariant = std::variant<GroundFunctionExpressionNum
                                                      GroundFunctionExpressionBinaryOperator,
                                                      GroundFunctionExpressionMultiOperator,
                                                      GroundFunctionExpressionMinus,
-                                                     GroundFunctionExpressionFunction<Static>,
-                                                     GroundFunctionExpressionFunction<Fluent>,
-                                                     GroundFunctionExpressionFunction<Auxiliary>>;
+                                                     GroundFunctionExpressionFunction<StaticTag>,
+                                                     GroundFunctionExpressionFunction<FluentTag>,
+                                                     GroundFunctionExpressionFunction<AuxiliaryTag>>;
 
 class GroundFunctionExpressionImpl
 {
@@ -221,7 +221,7 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
-    using PDDLEntity = void;
+    using FormalismEntity = void;
 
     // moveable but not copyable
     GroundFunctionExpressionImpl(const GroundFunctionExpressionImpl& other) = delete;
@@ -248,7 +248,7 @@ extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressio
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionBinaryOperatorImpl& element);
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionMultiOperatorImpl& element);
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionMinusImpl& element);
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionFunctionImpl<F>& element);
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionImpl& element);
 
@@ -256,7 +256,7 @@ extern std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionNumbe
 extern std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionBinaryOperator element);
 extern std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionMultiOperator element);
 extern std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionMinus element);
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 extern std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionFunction<F> element);
 extern std::ostream& operator<<(std::ostream& out, GroundFunctionExpression element);
 

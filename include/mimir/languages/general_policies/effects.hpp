@@ -23,10 +23,10 @@
 
 namespace mimir::languages::general_policies
 {
-class PositiveBooleanEffectImpl : public EffectBase<PositiveBooleanEffectImpl, dl::Boolean>
+class PositiveBooleanEffectImpl : public EffectBase<PositiveBooleanEffectImpl, dl::BooleanTag>
 {
 private:
-    PositiveBooleanEffectImpl(Index index, NamedFeature<dl::Boolean> feature);
+    PositiveBooleanEffectImpl(Index index, NamedFeature<dl::BooleanTag> feature);
 
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
@@ -36,13 +36,13 @@ private:
 
     void accept_impl(IVisitor& visitor) const;
 
-    friend class EffectBase<PositiveBooleanEffectImpl, dl::Boolean>;
+    friend class EffectBase<PositiveBooleanEffectImpl, dl::BooleanTag>;
 };
 
-class NegativeBooleanEffectImpl : public EffectBase<NegativeBooleanEffectImpl, dl::Boolean>
+class NegativeBooleanEffectImpl : public EffectBase<NegativeBooleanEffectImpl, dl::BooleanTag>
 {
 private:
-    NegativeBooleanEffectImpl(Index index, NamedFeature<dl::Boolean> feature);
+    NegativeBooleanEffectImpl(Index index, NamedFeature<dl::BooleanTag> feature);
 
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
@@ -52,13 +52,13 @@ private:
 
     void accept_impl(IVisitor& visitor) const;
 
-    friend class EffectBase<NegativeBooleanEffectImpl, dl::Boolean>;
+    friend class EffectBase<NegativeBooleanEffectImpl, dl::BooleanTag>;
 };
 
-class UnchangedBooleanEffectImpl : public EffectBase<UnchangedBooleanEffectImpl, dl::Boolean>
+class UnchangedBooleanEffectImpl : public EffectBase<UnchangedBooleanEffectImpl, dl::BooleanTag>
 {
 private:
-    UnchangedBooleanEffectImpl(Index index, NamedFeature<dl::Boolean> feature);
+    UnchangedBooleanEffectImpl(Index index, NamedFeature<dl::BooleanTag> feature);
 
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
@@ -68,13 +68,13 @@ private:
 
     void accept_impl(IVisitor& visitor) const;
 
-    friend class EffectBase<UnchangedBooleanEffectImpl, dl::Boolean>;
+    friend class EffectBase<UnchangedBooleanEffectImpl, dl::BooleanTag>;
 };
 
-class IncreaseNumericalEffectImpl : public EffectBase<IncreaseNumericalEffectImpl, dl::Numerical>
+class IncreaseNumericalEffectImpl : public EffectBase<IncreaseNumericalEffectImpl, dl::NumericalTag>
 {
 private:
-    IncreaseNumericalEffectImpl(Index index, NamedFeature<dl::Numerical> feature);
+    IncreaseNumericalEffectImpl(Index index, NamedFeature<dl::NumericalTag> feature);
 
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
@@ -84,13 +84,13 @@ private:
 
     void accept_impl(IVisitor& visitor) const;
 
-    friend class EffectBase<IncreaseNumericalEffectImpl, dl::Numerical>;
+    friend class EffectBase<IncreaseNumericalEffectImpl, dl::NumericalTag>;
 };
 
-class DecreaseNumericalEffectImpl : public EffectBase<DecreaseNumericalEffectImpl, dl::Numerical>
+class DecreaseNumericalEffectImpl : public EffectBase<DecreaseNumericalEffectImpl, dl::NumericalTag>
 {
 private:
-    DecreaseNumericalEffectImpl(Index index, NamedFeature<dl::Numerical> feature);
+    DecreaseNumericalEffectImpl(Index index, NamedFeature<dl::NumericalTag> feature);
 
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
@@ -100,13 +100,13 @@ private:
 
     void accept_impl(IVisitor& visitor) const;
 
-    friend class EffectBase<DecreaseNumericalEffectImpl, dl::Numerical>;
+    friend class EffectBase<DecreaseNumericalEffectImpl, dl::NumericalTag>;
 };
 
-class UnchangedNumericalEffectImpl : public EffectBase<UnchangedNumericalEffectImpl, dl::Numerical>
+class UnchangedNumericalEffectImpl : public EffectBase<UnchangedNumericalEffectImpl, dl::NumericalTag>
 {
 private:
-    UnchangedNumericalEffectImpl(Index index, NamedFeature<dl::Numerical> feature);
+    UnchangedNumericalEffectImpl(Index index, NamedFeature<dl::NumericalTag> feature);
 
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
@@ -116,7 +116,7 @@ private:
 
     void accept_impl(IVisitor& visitor) const;
 
-    friend class EffectBase<UnchangedNumericalEffectImpl, dl::Numerical>;
+    friend class EffectBase<UnchangedNumericalEffectImpl, dl::NumericalTag>;
 };
 }
 

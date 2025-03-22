@@ -23,53 +23,53 @@
 namespace mimir::formalism
 {
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 LiteralImpl<P>::LiteralImpl(Index index, bool is_negated, Atom<P> atom) : m_index(index), m_is_negated(is_negated), m_atom(std::move(atom))
 {
 }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 Index LiteralImpl<P>::get_index() const
 {
     return m_index;
 }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 bool LiteralImpl<P>::is_negated() const
 {
     return m_is_negated;
 }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 Atom<P> LiteralImpl<P>::get_atom() const
 {
     return m_atom;
 }
 
-template class LiteralImpl<Static>;
-template class LiteralImpl<Fluent>;
-template class LiteralImpl<Derived>;
+template class LiteralImpl<StaticTag>;
+template class LiteralImpl<FluentTag>;
+template class LiteralImpl<DerivedTag>;
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 std::ostream& operator<<(std::ostream& out, const LiteralImpl<P>& element)
 {
     write(element, StringFormatter(), out);
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, const LiteralImpl<Static>& element);
-template std::ostream& operator<<(std::ostream& out, const LiteralImpl<Fluent>& element);
-template std::ostream& operator<<(std::ostream& out, const LiteralImpl<Derived>& element);
+template std::ostream& operator<<(std::ostream& out, const LiteralImpl<StaticTag>& element);
+template std::ostream& operator<<(std::ostream& out, const LiteralImpl<FluentTag>& element);
+template std::ostream& operator<<(std::ostream& out, const LiteralImpl<DerivedTag>& element);
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 std::ostream& operator<<(std::ostream& out, Literal<P> element)
 {
     write(*element, AddressFormatter(), out);
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, Literal<Static> element);
-template std::ostream& operator<<(std::ostream& out, Literal<Fluent> element);
-template std::ostream& operator<<(std::ostream& out, Literal<Derived> element);
+template std::ostream& operator<<(std::ostream& out, Literal<StaticTag> element);
+template std::ostream& operator<<(std::ostream& out, Literal<FluentTag> element);
+template std::ostream& operator<<(std::ostream& out, Literal<DerivedTag> element);
 
 }

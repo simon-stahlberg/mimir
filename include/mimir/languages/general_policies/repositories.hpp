@@ -35,10 +35,10 @@ namespace mimir::languages::general_policies
 template<typename T>
 using SegmentedPDDLRepository = loki::SegmentedRepository<T>;
 
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 using NamedFeatureRepository = SegmentedPDDLRepository<NamedFeatureImpl<D>>;
 
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 using NamedFeatureRepository = SegmentedPDDLRepository<NamedFeatureImpl<D>>;
 
 using PositiveBooleanConditionRepository = SegmentedPDDLRepository<PositiveBooleanConditionImpl>;
@@ -57,8 +57,8 @@ using RuleRepository = SegmentedPDDLRepository<RuleImpl>;
 
 using GeneralPolicyRepository = SegmentedPDDLRepository<GeneralPolicyImpl>;
 
-using HanaRepositories = boost::hana::map<boost::hana::pair<boost::hana::type<NamedFeatureImpl<dl::Boolean>>, NamedFeatureRepository<dl::Boolean>>,
-                                          boost::hana::pair<boost::hana::type<NamedFeatureImpl<dl::Numerical>>, NamedFeatureRepository<dl::Numerical>>,
+using HanaRepositories = boost::hana::map<boost::hana::pair<boost::hana::type<NamedFeatureImpl<dl::BooleanTag>>, NamedFeatureRepository<dl::BooleanTag>>,
+                                          boost::hana::pair<boost::hana::type<NamedFeatureImpl<dl::NumericalTag>>, NamedFeatureRepository<dl::NumericalTag>>,
                                           boost::hana::pair<boost::hana::type<PositiveBooleanConditionImpl>, PositiveBooleanConditionRepository>,
                                           boost::hana::pair<boost::hana::type<NegativeBooleanConditionImpl>, NegativeBooleanConditionRepository>,
                                           boost::hana::pair<boost::hana::type<GreaterNumericalConditionImpl>, GreaterNumericalConditionRepository>,
@@ -86,24 +86,24 @@ public:
     Repositories(Repositories&& other) = default;
     Repositories& operator=(Repositories&& other) = default;
 
-    template<dl::FeatureCategory D>
+    template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
     NamedFeature<D> get_or_create_named_feature(std::string name, dl::Constructor<D> feature);
 
-    Condition get_or_create_positive_boolean_condition(NamedFeature<dl::Boolean> feature);
-    Condition get_or_create_negative_boolean_condition(NamedFeature<dl::Boolean> feature);
-    Condition get_or_create_greater_numerical_condition(NamedFeature<dl::Numerical> feature);
-    Condition get_or_create_equal_numerical_condition(NamedFeature<dl::Numerical> feature);
+    Condition get_or_create_positive_boolean_condition(NamedFeature<dl::BooleanTag> feature);
+    Condition get_or_create_negative_boolean_condition(NamedFeature<dl::BooleanTag> feature);
+    Condition get_or_create_greater_numerical_condition(NamedFeature<dl::NumericalTag> feature);
+    Condition get_or_create_equal_numerical_condition(NamedFeature<dl::NumericalTag> feature);
 
-    Effect get_or_create_positive_boolean_effect(NamedFeature<dl::Boolean> feature);
-    Effect get_or_create_negative_boolean_effect(NamedFeature<dl::Boolean> feature);
-    Effect get_or_create_unchanged_boolean_effect(NamedFeature<dl::Boolean> feature);
-    Effect get_or_create_increase_numerical_effect(NamedFeature<dl::Numerical> feature);
-    Effect get_or_create_decrease_numerical_effect(NamedFeature<dl::Numerical> feature);
-    Effect get_or_create_unchanged_numerical_effect(NamedFeature<dl::Numerical> feature);
+    Effect get_or_create_positive_boolean_effect(NamedFeature<dl::BooleanTag> feature);
+    Effect get_or_create_negative_boolean_effect(NamedFeature<dl::BooleanTag> feature);
+    Effect get_or_create_unchanged_boolean_effect(NamedFeature<dl::BooleanTag> feature);
+    Effect get_or_create_increase_numerical_effect(NamedFeature<dl::NumericalTag> feature);
+    Effect get_or_create_decrease_numerical_effect(NamedFeature<dl::NumericalTag> feature);
+    Effect get_or_create_unchanged_numerical_effect(NamedFeature<dl::NumericalTag> feature);
 
     Rule get_or_create_rule(ConditionList conditions, EffectList effects);
 
-    GeneralPolicy get_or_create_general_policy(NamedFeatureLists<dl::Boolean, dl::Numerical> features, RuleList rules);
+    GeneralPolicy get_or_create_general_policy(NamedFeatureLists<dl::BooleanTag, dl::NumericalTag> features, RuleList rules);
 
     GeneralPolicy get_or_create_general_policy(const std::string& description, const formalism::DomainImpl& domain, dl::Repositories& dl_repositories);
 };

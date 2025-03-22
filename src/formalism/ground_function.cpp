@@ -23,7 +23,7 @@
 
 namespace mimir::formalism
 {
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 GroundFunctionImpl<F>::GroundFunctionImpl(Index index, FunctionSkeleton<F> function_skeleton, ObjectList objects) :
     m_index(index),
     m_function_skeleton(std::move(function_skeleton)),
@@ -31,54 +31,54 @@ GroundFunctionImpl<F>::GroundFunctionImpl(Index index, FunctionSkeleton<F> funct
 {
 }
 
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 Index GroundFunctionImpl<F>::get_index() const
 {
     return m_index;
 }
 
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 FunctionSkeleton<F> GroundFunctionImpl<F>::get_function_skeleton() const
 {
     return m_function_skeleton;
 }
 
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 const ObjectList& GroundFunctionImpl<F>::get_objects() const
 {
     return m_objects;
 }
 
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 size_t GroundFunctionImpl<F>::get_arity() const
 {
     return m_objects.size();
 }
 
-template class GroundFunctionImpl<Static>;
-template class GroundFunctionImpl<Fluent>;
-template class GroundFunctionImpl<Auxiliary>;
+template class GroundFunctionImpl<StaticTag>;
+template class GroundFunctionImpl<FluentTag>;
+template class GroundFunctionImpl<AuxiliaryTag>;
 
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl<F>& element)
 {
     write(element, StringFormatter(), out);
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl<Static>& element);
-template std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl<Fluent>& element);
-template std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl<Auxiliary>& element);
+template std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl<StaticTag>& element);
+template std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl<FluentTag>& element);
+template std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl<AuxiliaryTag>& element);
 
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 std::ostream& operator<<(std::ostream& out, GroundFunction<F> element)
 {
     write(*element, AddressFormatter(), out);
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, GroundFunction<Static> element);
-template std::ostream& operator<<(std::ostream& out, GroundFunction<Fluent> element);
-template std::ostream& operator<<(std::ostream& out, GroundFunction<Auxiliary> element);
+template std::ostream& operator<<(std::ostream& out, GroundFunction<StaticTag> element);
+template std::ostream& operator<<(std::ostream& out, GroundFunction<FluentTag> element);
+template std::ostream& operator<<(std::ostream& out, GroundFunction<AuxiliaryTag> element);
 
 }

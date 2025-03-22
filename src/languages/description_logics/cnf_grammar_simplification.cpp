@@ -43,15 +43,15 @@ public:
     {
     }
 
-    void visit(NonTerminal<Concept> constructor) override { visit_impl(constructor); }
+    void visit(NonTerminal<ConceptTag> constructor) override { visit_impl(constructor); }
 
-    void visit(NonTerminal<Role> constructor) override { visit_impl(constructor); }
+    void visit(NonTerminal<RoleTag> constructor) override { visit_impl(constructor); }
 
-    void visit(NonTerminal<Boolean> constructor) override { visit_impl(constructor); }
+    void visit(NonTerminal<BooleanTag> constructor) override { visit_impl(constructor); }
 
-    void visit(NonTerminal<Numerical> constructor) override { visit_impl(constructor); }
+    void visit(NonTerminal<NumericalTag> constructor) override { visit_impl(constructor); }
 
-    template<FeatureCategory D>
+    template<IsConceptOrRoleOrBooleanOrNumericalTag D>
     void visit_impl(NonTerminal<D> constructor)
     {
         const auto& substitution_map = boost::hana::at_key(m_substitution_map, boost::hana::type<D> {});
@@ -174,10 +174,10 @@ static Grammar eliminate_rules_with_identical_body(const Grammar& grammar)
 }
 
 using HanaSubstitutionNonTerminalOrderings =
-    boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::unordered_map<NonTerminal<Concept>, size_t>>,
-                     boost::hana::pair<boost::hana::type<Role>, std::unordered_map<NonTerminal<Role>, size_t>>,
-                     boost::hana::pair<boost::hana::type<Boolean>, std::unordered_map<NonTerminal<Boolean>, size_t>>,
-                     boost::hana::pair<boost::hana::type<Numerical>, std::unordered_map<NonTerminal<Numerical>, size_t>>>;
+    boost::hana::map<boost::hana::pair<boost::hana::type<ConceptTag>, std::unordered_map<NonTerminal<ConceptTag>, size_t>>,
+                     boost::hana::pair<boost::hana::type<RoleTag>, std::unordered_map<NonTerminal<RoleTag>, size_t>>,
+                     boost::hana::pair<boost::hana::type<BooleanTag>, std::unordered_map<NonTerminal<BooleanTag>, size_t>>,
+                     boost::hana::pair<boost::hana::type<NumericalTag>, std::unordered_map<NonTerminal<NumericalTag>, size_t>>>;
 
 class OrderSubstitutionRuleVisitor : public CopyVisitor
 {
@@ -322,15 +322,15 @@ public:
     {
     }
 
-    void visit(DerivationRule<Concept> constructor) override { visit_impl(constructor); }
+    void visit(DerivationRule<ConceptTag> constructor) override { visit_impl(constructor); }
 
-    void visit(DerivationRule<Role> constructor) override { visit_impl(constructor); }
+    void visit(DerivationRule<RoleTag> constructor) override { visit_impl(constructor); }
 
-    void visit(DerivationRule<Boolean> constructor) override { visit_impl(constructor); }
+    void visit(DerivationRule<BooleanTag> constructor) override { visit_impl(constructor); }
 
-    void visit(DerivationRule<Numerical> constructor) override { visit_impl(constructor); }
+    void visit(DerivationRule<NumericalTag> constructor) override { visit_impl(constructor); }
 
-    template<FeatureCategory D>
+    template<IsConceptOrRoleOrBooleanOrNumericalTag D>
     void visit_impl(DerivationRule<D> constructor)
     {
         // Store the head nonterminal but do not visit the head non terminal.
@@ -339,15 +339,15 @@ public:
         constructor->get_body()->accept(*this);
     }
 
-    void visit(SubstitutionRule<Concept> constructor) override { visit_impl(constructor); }
+    void visit(SubstitutionRule<ConceptTag> constructor) override { visit_impl(constructor); }
 
-    void visit(SubstitutionRule<Role> constructor) override { visit_impl(constructor); }
+    void visit(SubstitutionRule<RoleTag> constructor) override { visit_impl(constructor); }
 
-    void visit(SubstitutionRule<Boolean> constructor) override { visit_impl(constructor); }
+    void visit(SubstitutionRule<BooleanTag> constructor) override { visit_impl(constructor); }
 
-    void visit(SubstitutionRule<Numerical> constructor) override { visit_impl(constructor); }
+    void visit(SubstitutionRule<NumericalTag> constructor) override { visit_impl(constructor); }
 
-    template<FeatureCategory D>
+    template<IsConceptOrRoleOrBooleanOrNumericalTag D>
     void visit_impl(SubstitutionRule<D> constructor)
     {
         // Store the head nonterminal but do not visit the head non terminal.
@@ -356,15 +356,15 @@ public:
         m_body_non_terminals.insert(constructor->get_body()->get_name());
     }
 
-    void visit(NonTerminal<Concept> constructor) override { visit_impl(constructor); }
+    void visit(NonTerminal<ConceptTag> constructor) override { visit_impl(constructor); }
 
-    void visit(NonTerminal<Role> constructor) override { visit_impl(constructor); }
+    void visit(NonTerminal<RoleTag> constructor) override { visit_impl(constructor); }
 
-    void visit(NonTerminal<Boolean> constructor) override { visit_impl(constructor); }
+    void visit(NonTerminal<BooleanTag> constructor) override { visit_impl(constructor); }
 
-    void visit(NonTerminal<Numerical> constructor) override { visit_impl(constructor); }
+    void visit(NonTerminal<NumericalTag> constructor) override { visit_impl(constructor); }
 
-    template<FeatureCategory D>
+    template<IsConceptOrRoleOrBooleanOrNumericalTag D>
     void visit_impl(NonTerminal<D> constructor)
     {
         m_body_non_terminals.insert(constructor->get_name());
@@ -395,12 +395,12 @@ public:
 
     void visit(ConceptBot constructor) override { m_result = false; }
     void visit(ConceptTop constructor) override { m_result = false; }
-    void visit(ConceptAtomicState<Static> constructor) override { m_result = false; }
-    void visit(ConceptAtomicState<Fluent> constructor) override { m_result = false; }
-    void visit(ConceptAtomicState<Derived> constructor) override { m_result = false; }
-    void visit(ConceptAtomicGoal<Static> constructor) override { m_result = false; }
-    void visit(ConceptAtomicGoal<Fluent> constructor) override { m_result = false; }
-    void visit(ConceptAtomicGoal<Derived> constructor) override { m_result = false; }
+    void visit(ConceptAtomicState<StaticTag> constructor) override { m_result = false; }
+    void visit(ConceptAtomicState<FluentTag> constructor) override { m_result = false; }
+    void visit(ConceptAtomicState<DerivedTag> constructor) override { m_result = false; }
+    void visit(ConceptAtomicGoal<StaticTag> constructor) override { m_result = false; }
+    void visit(ConceptAtomicGoal<FluentTag> constructor) override { m_result = false; }
+    void visit(ConceptAtomicGoal<DerivedTag> constructor) override { m_result = false; }
     void visit(ConceptNominal constructor) override { m_result = false; }
     void visit(ConceptIntersection constructor) override
     {
@@ -435,12 +435,12 @@ public:
     }
 
     void visit(RoleUniversal constructor) override { m_result = false; }
-    void visit(RoleAtomicState<Static> constructor) override { m_result = false; }
-    void visit(RoleAtomicState<Fluent> constructor) override { m_result = false; }
-    void visit(RoleAtomicState<Derived> constructor) override { m_result = false; }
-    void visit(RoleAtomicGoal<Static> constructor) override { m_result = false; }
-    void visit(RoleAtomicGoal<Fluent> constructor) override { m_result = false; }
-    void visit(RoleAtomicGoal<Derived> constructor) override { m_result = false; }
+    void visit(RoleAtomicState<StaticTag> constructor) override { m_result = false; }
+    void visit(RoleAtomicState<FluentTag> constructor) override { m_result = false; }
+    void visit(RoleAtomicState<DerivedTag> constructor) override { m_result = false; }
+    void visit(RoleAtomicGoal<StaticTag> constructor) override { m_result = false; }
+    void visit(RoleAtomicGoal<FluentTag> constructor) override { m_result = false; }
+    void visit(RoleAtomicGoal<DerivedTag> constructor) override { m_result = false; }
     void visit(RoleIntersection constructor) override
     {
         m_result = m_epsilon_nonterminals.contains(constructor->get_left_role()->get_name())
@@ -467,14 +467,14 @@ public:
     }
     void visit(RoleIdentity constructor) override { m_result = m_epsilon_nonterminals.contains(constructor->get_concept()->get_name()); }
 
-    void visit(BooleanAtomicState<Static> constructor) override { m_result = false; }
-    void visit(BooleanAtomicState<Fluent> constructor) override { m_result = false; }
-    void visit(BooleanAtomicState<Derived> constructor) override { m_result = false; }
-    void visit(BooleanNonempty<Concept> constructor) override { m_result = m_epsilon_nonterminals.contains(constructor->get_nonterminal()->get_name()); }
-    void visit(BooleanNonempty<Role> constructor) override { m_result = m_epsilon_nonterminals.contains(constructor->get_nonterminal()->get_name()); }
+    void visit(BooleanAtomicState<StaticTag> constructor) override { m_result = false; }
+    void visit(BooleanAtomicState<FluentTag> constructor) override { m_result = false; }
+    void visit(BooleanAtomicState<DerivedTag> constructor) override { m_result = false; }
+    void visit(BooleanNonempty<ConceptTag> constructor) override { m_result = m_epsilon_nonterminals.contains(constructor->get_nonterminal()->get_name()); }
+    void visit(BooleanNonempty<RoleTag> constructor) override { m_result = m_epsilon_nonterminals.contains(constructor->get_nonterminal()->get_name()); }
 
-    void visit(NumericalCount<Concept> constructor) override { m_result = m_epsilon_nonterminals.contains(constructor->get_nonterminal()->get_name()); }
-    void visit(NumericalCount<Role> constructor) override { m_result = m_epsilon_nonterminals.contains(constructor->get_nonterminal()->get_name()); }
+    void visit(NumericalCount<ConceptTag> constructor) override { m_result = m_epsilon_nonterminals.contains(constructor->get_nonterminal()->get_name()); }
+    void visit(NumericalCount<RoleTag> constructor) override { m_result = m_epsilon_nonterminals.contains(constructor->get_nonterminal()->get_name()); }
     void visit(NumericalDistance constructor) override
     {
         m_result = m_epsilon_nonterminals.contains(constructor->get_left_concept()->get_name())
@@ -485,7 +485,7 @@ public:
     bool get_result() const { return m_result; }
 };
 
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 bool is_epsilon_rule(DerivationRule<D> rule, const std::unordered_set<std::string>& epsilon_nonterminals)
 {
     auto visitor = IsEpsilonRuleVisitor(epsilon_nonterminals);
@@ -493,7 +493,7 @@ bool is_epsilon_rule(DerivationRule<D> rule, const std::unordered_set<std::strin
     return visitor.get_result();
 }
 
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 bool is_epsilon_rule(SubstitutionRule<D> rule, const std::unordered_set<std::string>& epsilon_nonterminals)
 {
     return epsilon_nonterminals.contains(rule->get_body()->get_name());

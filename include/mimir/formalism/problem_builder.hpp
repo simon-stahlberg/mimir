@@ -37,11 +37,11 @@ private:
     std::string m_name;
     Requirements m_requirements;
     ObjectList m_objects;
-    PredicateList<Derived> m_derived_predicates;
-    GroundLiteralLists<Static, Fluent> m_initial_literals;
-    GroundFunctionValueLists<Static, Fluent> m_initial_function_values;
-    std::optional<GroundFunctionValue<Auxiliary>> m_auxiliary_function_value;
-    GroundLiteralLists<Static, Fluent, Derived> m_goal_condition;
+    PredicateList<DerivedTag> m_derived_predicates;
+    GroundLiteralLists<StaticTag, FluentTag> m_initial_literals;
+    GroundFunctionValueLists<StaticTag, FluentTag> m_initial_function_values;
+    std::optional<GroundFunctionValue<AuxiliaryTag>> m_auxiliary_function_value;
+    GroundLiteralLists<StaticTag, FluentTag, DerivedTag> m_goal_condition;
     GroundNumericConstraintList m_numeric_goal_condition;
     std::optional<OptimizationMetric> m_optimization_metric;
     AxiomList m_axioms;
@@ -70,17 +70,17 @@ public:
     std::string& get_name();
     Requirements& get_requirements();
     ObjectList& get_objects();
-    PredicateList<Derived>& get_derived_predicates();
-    template<StaticOrFluent P>
+    PredicateList<DerivedTag>& get_derived_predicates();
+    template<IsStaticOrFluentTag P>
     GroundLiteralList<P>& get_initial_literals();
-    GroundLiteralLists<Static, Fluent>& get_hana_initial_literals();
-    template<StaticOrFluent F>
+    GroundLiteralLists<StaticTag, FluentTag>& get_hana_initial_literals();
+    template<IsStaticOrFluentTag F>
     GroundFunctionValueList<F>& get_initial_function_values();
-    GroundFunctionValueLists<Static, Fluent>& get_hana_initial_function_values();
-    std::optional<GroundFunctionValue<Auxiliary>>& get_auxiliary_function_value();
-    template<StaticOrFluentOrDerived P>
+    GroundFunctionValueLists<StaticTag, FluentTag>& get_hana_initial_function_values();
+    std::optional<GroundFunctionValue<AuxiliaryTag>>& get_auxiliary_function_value();
+    template<IsStaticOrFluentOrDerivedTag P>
     GroundLiteralList<P>& get_goal_condition();
-    GroundLiteralLists<Static, Fluent, Derived>& get_hana_goal_condition();
+    GroundLiteralLists<StaticTag, FluentTag, DerivedTag>& get_hana_goal_condition();
     GroundNumericConstraintList& get_numeric_goal_condition();
     std::optional<OptimizationMetric>& get_optimization_metric();
     AxiomList& get_axioms();

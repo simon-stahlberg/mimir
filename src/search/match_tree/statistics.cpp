@@ -41,25 +41,25 @@ struct ParseStatisticsNodeVisitor : public INodeVisitor<E>
 
     explicit ParseStatisticsNodeVisitor(Statistics& statistics) : statistics(statistics) {}
 
-    void accept(const AtomSelectorNode_TFX<E, Fluent>& atom) override;
-    void accept(const AtomSelectorNode_TF<E, Fluent>& atom) override;
-    void accept(const AtomSelectorNode_TX<E, Fluent>& atom) override;
-    void accept(const AtomSelectorNode_FX<E, Fluent>& atom) override;
-    void accept(const AtomSelectorNode_T<E, Fluent>& atom) override;
-    void accept(const AtomSelectorNode_F<E, Fluent>& atom) override;
-    void accept(const AtomSelectorNode_TFX<E, Derived>& atom) override;
-    void accept(const AtomSelectorNode_TF<E, Derived>& atom) override;
-    void accept(const AtomSelectorNode_TX<E, Derived>& atom) override;
-    void accept(const AtomSelectorNode_FX<E, Derived>& atom) override;
-    void accept(const AtomSelectorNode_T<E, Derived>& atom) override;
-    void accept(const AtomSelectorNode_F<E, Derived>& atom) override;
+    void accept(const AtomSelectorNode_TFX<E, FluentTag>& atom) override;
+    void accept(const AtomSelectorNode_TF<E, FluentTag>& atom) override;
+    void accept(const AtomSelectorNode_TX<E, FluentTag>& atom) override;
+    void accept(const AtomSelectorNode_FX<E, FluentTag>& atom) override;
+    void accept(const AtomSelectorNode_T<E, FluentTag>& atom) override;
+    void accept(const AtomSelectorNode_F<E, FluentTag>& atom) override;
+    void accept(const AtomSelectorNode_TFX<E, DerivedTag>& atom) override;
+    void accept(const AtomSelectorNode_TF<E, DerivedTag>& atom) override;
+    void accept(const AtomSelectorNode_TX<E, DerivedTag>& atom) override;
+    void accept(const AtomSelectorNode_FX<E, DerivedTag>& atom) override;
+    void accept(const AtomSelectorNode_T<E, DerivedTag>& atom) override;
+    void accept(const AtomSelectorNode_F<E, DerivedTag>& atom) override;
     void accept(const NumericConstraintSelectorNode_T<E>& constraint) override;
     void accept(const NumericConstraintSelectorNode_TX<E>& constraint) override;
     void accept(const ElementGeneratorNode_Perfect<E>& generator) override;
     void accept(const ElementGeneratorNode_Imperfect<E>& generator) override;
 };
 
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 static void accept_impl(ParseStatisticsNodeVisitor<E>& visitor, const AtomSelectorNode_TFX<E, P>& atom)
 {
     atom.get_true_child()->visit(visitor);
@@ -67,107 +67,107 @@ static void accept_impl(ParseStatisticsNodeVisitor<E>& visitor, const AtomSelect
     atom.get_dontcare_child()->visit(visitor);
 }
 
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 static void accept_impl(ParseStatisticsNodeVisitor<E>& visitor, const AtomSelectorNode_TF<E, P>& atom)
 {
     atom.get_true_child()->visit(visitor);
     atom.get_false_child()->visit(visitor);
 }
 
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 static void accept_impl(ParseStatisticsNodeVisitor<E>& visitor, const AtomSelectorNode_TX<E, P>& atom)
 {
     atom.get_true_child()->visit(visitor);
     atom.get_dontcare_child()->visit(visitor);
 }
 
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 static void accept_impl(ParseStatisticsNodeVisitor<E>& visitor, const AtomSelectorNode_FX<E, P>& atom)
 {
     atom.get_false_child()->visit(visitor);
     atom.get_dontcare_child()->visit(visitor);
 }
 
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 static void accept_impl(ParseStatisticsNodeVisitor<E>& visitor, const AtomSelectorNode_T<E, P>& atom)
 {
     atom.get_true_child()->visit(visitor);
 }
 
-template<HasConjunctiveCondition E, FluentOrDerived P>
+template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 static void accept_impl(ParseStatisticsNodeVisitor<E>& visitor, const AtomSelectorNode_F<E, P>& atom)
 {
     atom.get_false_child()->visit(visitor);
 }
 
 template<HasConjunctiveCondition E>
-void ParseStatisticsNodeVisitor<E>::accept(const AtomSelectorNode_TFX<E, Fluent>& atom)
+void ParseStatisticsNodeVisitor<E>::accept(const AtomSelectorNode_TFX<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
 template<HasConjunctiveCondition E>
-void ParseStatisticsNodeVisitor<E>::accept(const AtomSelectorNode_TF<E, Fluent>& atom)
+void ParseStatisticsNodeVisitor<E>::accept(const AtomSelectorNode_TF<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
 template<HasConjunctiveCondition E>
-void ParseStatisticsNodeVisitor<E>::accept(const AtomSelectorNode_TX<E, Fluent>& atom)
+void ParseStatisticsNodeVisitor<E>::accept(const AtomSelectorNode_TX<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
 template<HasConjunctiveCondition E>
-void ParseStatisticsNodeVisitor<E>::accept(const AtomSelectorNode_FX<E, Fluent>& atom)
+void ParseStatisticsNodeVisitor<E>::accept(const AtomSelectorNode_FX<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
 template<HasConjunctiveCondition E>
-void ParseStatisticsNodeVisitor<E>::accept(const AtomSelectorNode_T<E, Fluent>& atom)
+void ParseStatisticsNodeVisitor<E>::accept(const AtomSelectorNode_T<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
 template<HasConjunctiveCondition E>
-void ParseStatisticsNodeVisitor<E>::accept(const AtomSelectorNode_F<E, Fluent>& atom)
+void ParseStatisticsNodeVisitor<E>::accept(const AtomSelectorNode_F<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
 template<HasConjunctiveCondition E>
-void ParseStatisticsNodeVisitor<E>::accept(const AtomSelectorNode_TFX<E, Derived>& atom)
+void ParseStatisticsNodeVisitor<E>::accept(const AtomSelectorNode_TFX<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
 template<HasConjunctiveCondition E>
-void ParseStatisticsNodeVisitor<E>::accept(const AtomSelectorNode_TF<E, Derived>& atom)
+void ParseStatisticsNodeVisitor<E>::accept(const AtomSelectorNode_TF<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
 template<HasConjunctiveCondition E>
-void ParseStatisticsNodeVisitor<E>::accept(const AtomSelectorNode_TX<E, Derived>& atom)
+void ParseStatisticsNodeVisitor<E>::accept(const AtomSelectorNode_TX<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
 template<HasConjunctiveCondition E>
-void ParseStatisticsNodeVisitor<E>::accept(const AtomSelectorNode_FX<E, Derived>& atom)
+void ParseStatisticsNodeVisitor<E>::accept(const AtomSelectorNode_FX<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
 template<HasConjunctiveCondition E>
-void ParseStatisticsNodeVisitor<E>::accept(const AtomSelectorNode_T<E, Derived>& atom)
+void ParseStatisticsNodeVisitor<E>::accept(const AtomSelectorNode_T<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
 template<HasConjunctiveCondition E>
-void ParseStatisticsNodeVisitor<E>::accept(const AtomSelectorNode_F<E, Derived>& atom)
+void ParseStatisticsNodeVisitor<E>::accept(const AtomSelectorNode_F<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }

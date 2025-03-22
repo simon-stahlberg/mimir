@@ -27,16 +27,16 @@ class ConjunctiveConditionImpl
 private:
     Index m_index;
     VariableList m_parameters;
-    LiteralLists<Static, Fluent, Derived> m_literals;
-    GroundLiteralLists<Static, Fluent, Derived> m_nullary_ground_literals;
+    LiteralLists<StaticTag, FluentTag, DerivedTag> m_literals;
+    GroundLiteralLists<StaticTag, FluentTag, DerivedTag> m_nullary_ground_literals;
     NumericConstraintList m_numeric_constraints;
 
     // Below: add additional members if needed and initialize them in the constructor
 
     ConjunctiveConditionImpl(Index index,
                              VariableList parameters,
-                             LiteralLists<Static, Fluent, Derived> literals,
-                             GroundLiteralLists<Static, Fluent, Derived> nullary_ground_literals,
+                             LiteralLists<StaticTag, FluentTag, DerivedTag> literals,
+                             GroundLiteralLists<StaticTag, FluentTag, DerivedTag> nullary_ground_literals,
                              NumericConstraintList numeric_constraints);
 
     // Give access to the constructor.
@@ -44,7 +44,7 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
-    using PDDLEntity = void;
+    using FormalismEntity = void;
 
     // moveable but not copyable
     ConjunctiveConditionImpl(const ConjunctiveConditionImpl& other) = delete;
@@ -54,12 +54,12 @@ public:
 
     Index get_index() const;
     const VariableList& get_parameters() const;
-    template<StaticOrFluentOrDerived P>
+    template<IsStaticOrFluentOrDerivedTag P>
     const LiteralList<P>& get_literals() const;
-    const LiteralLists<Static, Fluent, Derived>& get_hana_literals() const;
-    template<StaticOrFluentOrDerived P>
+    const LiteralLists<StaticTag, FluentTag, DerivedTag>& get_hana_literals() const;
+    template<IsStaticOrFluentOrDerivedTag P>
     const GroundLiteralList<P>& get_nullary_ground_literals() const;
-    const GroundLiteralLists<Static, Fluent, Derived>& get_hana_nullary_ground_literals() const;
+    const GroundLiteralLists<StaticTag, FluentTag, DerivedTag>& get_hana_nullary_ground_literals() const;
     const NumericConstraintList& get_numeric_constraints() const;
 
     size_t get_arity() const;
@@ -70,9 +70,9 @@ public:
     auto identifying_members() const
     {
         return std::tuple(std::cref(get_parameters()),
-                          std::cref(get_literals<Static>()),
-                          std::cref(get_literals<Fluent>()),
-                          std::cref(get_literals<Derived>()),
+                          std::cref(get_literals<StaticTag>()),
+                          std::cref(get_literals<FluentTag>()),
+                          std::cref(get_literals<DerivedTag>()),
                           std::cref(get_numeric_constraints()));
     }
 };

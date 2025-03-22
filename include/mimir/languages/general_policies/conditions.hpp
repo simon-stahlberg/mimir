@@ -24,10 +24,10 @@
 namespace mimir::languages::general_policies
 {
 
-class PositiveBooleanConditionImpl : public ConditionBase<PositiveBooleanConditionImpl, dl::Boolean>
+class PositiveBooleanConditionImpl : public ConditionBase<PositiveBooleanConditionImpl, dl::BooleanTag>
 {
 private:
-    PositiveBooleanConditionImpl(Index index, NamedFeature<dl::Boolean> feature);
+    PositiveBooleanConditionImpl(Index index, NamedFeature<dl::BooleanTag> feature);
 
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
@@ -37,13 +37,13 @@ private:
 
     void accept_impl(IVisitor& visitor) const;
 
-    friend class ConditionBase<PositiveBooleanConditionImpl, dl::Boolean>;
+    friend class ConditionBase<PositiveBooleanConditionImpl, dl::BooleanTag>;
 };
 
-class NegativeBooleanConditionImpl : public ConditionBase<NegativeBooleanConditionImpl, dl::Boolean>
+class NegativeBooleanConditionImpl : public ConditionBase<NegativeBooleanConditionImpl, dl::BooleanTag>
 {
 private:
-    NegativeBooleanConditionImpl(Index index, NamedFeature<dl::Boolean> feature);
+    NegativeBooleanConditionImpl(Index index, NamedFeature<dl::BooleanTag> feature);
 
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
@@ -53,13 +53,13 @@ private:
 
     void accept_impl(IVisitor& visitor) const;
 
-    friend class ConditionBase<NegativeBooleanConditionImpl, dl::Boolean>;
+    friend class ConditionBase<NegativeBooleanConditionImpl, dl::BooleanTag>;
 };
 
-class GreaterNumericalConditionImpl : public ConditionBase<GreaterNumericalConditionImpl, dl::Numerical>
+class GreaterNumericalConditionImpl : public ConditionBase<GreaterNumericalConditionImpl, dl::NumericalTag>
 {
 private:
-    GreaterNumericalConditionImpl(Index index, NamedFeature<dl::Numerical> feature);
+    GreaterNumericalConditionImpl(Index index, NamedFeature<dl::NumericalTag> feature);
 
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
@@ -69,13 +69,13 @@ private:
 
     void accept_impl(IVisitor& visitor) const;
 
-    friend class ConditionBase<GreaterNumericalConditionImpl, dl::Numerical>;
+    friend class ConditionBase<GreaterNumericalConditionImpl, dl::NumericalTag>;
 };
 
-class EqualNumericalConditionImpl : public ConditionBase<EqualNumericalConditionImpl, dl::Numerical>
+class EqualNumericalConditionImpl : public ConditionBase<EqualNumericalConditionImpl, dl::NumericalTag>
 {
 private:
-    EqualNumericalConditionImpl(Index index, NamedFeature<dl::Numerical> feature);
+    EqualNumericalConditionImpl(Index index, NamedFeature<dl::NumericalTag> feature);
 
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
@@ -85,7 +85,7 @@ private:
 
     void accept_impl(IVisitor& visitor) const;
 
-    friend class ConditionBase<EqualNumericalConditionImpl, dl::Numerical>;
+    friend class ConditionBase<EqualNumericalConditionImpl, dl::NumericalTag>;
 };
 }
 

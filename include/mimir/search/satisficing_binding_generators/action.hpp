@@ -38,10 +38,10 @@ private:
     /* Declare additional private members and functions. */
     formalism::Action m_action;
 
-    template<formalism::FluentOrAuxiliary F>
+    template<formalism::IsFluentOrAuxiliaryTag F>
     bool is_valid_binding(formalism::NumericEffect<F> effect, const FlatDoubleList& fluent_numeric_variables, const formalism::ObjectList& binding);
 
-    template<formalism::FluentOrAuxiliary F>
+    template<formalism::IsFluentOrAuxiliaryTag F>
     bool is_valid_binding(const formalism::NumericEffectList<F>& effects, const FlatDoubleList& fluent_numeric_variables, const formalism::ObjectList& binding);
 
     bool is_valid_binding(formalism::ConjunctiveEffect effect, const DenseState& dense_state, const formalism::ObjectList& binding);

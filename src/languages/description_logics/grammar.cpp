@@ -70,7 +70,7 @@ Grammar::Grammar(GrammarSpecificationEnum type, Domain domain)
     // TODO
 }
 
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 bool Grammar::test_match(dl::Constructor<D> constructor) const
 {
     const auto& start_symbol = boost::hana::at_key(m_start_symbols, boost::hana::type<D> {});
@@ -83,8 +83,8 @@ bool Grammar::test_match(dl::Constructor<D> constructor) const
     return start_symbol.value()->test_match(constructor, *this);
 }
 
-template bool Grammar::test_match(dl::Constructor<Concept> constructor) const;
-template bool Grammar::test_match(dl::Constructor<Role> constructor) const;
+template bool Grammar::test_match(dl::Constructor<ConceptTag> constructor) const;
+template bool Grammar::test_match(dl::Constructor<RoleTag> constructor) const;
 
 void Grammar::accept(IVisitor& visitor) const { visitor.visit(*this); }
 

@@ -19,7 +19,7 @@
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_DECLARATIONS_HPP_
 
 #include "mimir/formalism/tags.hpp"
-#include "mimir/languages/description_logics/constructor_tag.hpp"
+#include "mimir/languages/description_logics/tags.hpp"
 
 #include <boost/hana.hpp>
 #include <loki/loki.hpp>
@@ -38,51 +38,51 @@ class EvaluationContext;
  * Common
  */
 
-template<typename T, FeatureCategory... Ds>
+template<typename T, IsConceptOrRoleOrBooleanOrNumericalTag... Ds>
 using HanaContainer = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, T>...>;
 
-template<template<typename> typename T, FeatureCategory... Ds>
+template<template<typename> typename T, IsConceptOrRoleOrBooleanOrNumericalTag... Ds>
 using HanaMappedContainer = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, T<Ds>>...>;
 
 /**
  * Denotations
  */
 
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 struct DenotationImpl;
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 using Denotation = const DenotationImpl<D>*;
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 using DenotationList = std::vector<Denotation<D>>;
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 using DenotationListSet = std::unordered_set<DenotationList<D>, loki::Hash<DenotationList<D>>, loki::EqualTo<DenotationList<D>>>;
-using DenotationListSets = HanaMappedContainer<DenotationListSet, Concept, Role, Boolean, Numerical>;
+using DenotationListSets = HanaMappedContainer<DenotationListSet, ConceptTag, RoleTag, BooleanTag, NumericalTag>;
 
 /**
  * Constructors
  */
 
 /* Constructor */
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 class IConstructor;
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 using Constructor = const IConstructor<D>*;
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 using ConstructorList = std::vector<Constructor<D>>;
-using ConstructorLists = dl::HanaMappedContainer<ConstructorList, Concept, Role, Boolean, Numerical>;
+using ConstructorLists = dl::HanaMappedContainer<ConstructorList, ConceptTag, RoleTag, BooleanTag, NumericalTag>;
 
 /* Concrete concepts */
 class ConceptTopImpl;
 using ConceptTop = const ConceptTopImpl*;
 class ConceptBotImpl;
 using ConceptBot = const ConceptBotImpl*;
-template<formalism::StaticOrFluentOrDerived P>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
 class ConceptAtomicStateImpl;
-template<formalism::StaticOrFluentOrDerived P>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
 using ConceptAtomicState = const ConceptAtomicStateImpl<P>*;
-template<formalism::StaticOrFluentOrDerived P>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
 class ConceptAtomicGoalImpl;
-template<formalism::StaticOrFluentOrDerived P>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
 using ConceptAtomicGoal = const ConceptAtomicGoalImpl<P>*;
 class ConceptIntersectionImpl;
 using ConceptIntersection = const ConceptIntersectionImpl*;
@@ -104,13 +104,13 @@ using ConceptNominal = const ConceptNominalImpl*;
 /* Concrete roles */
 class RoleUniversalImpl;
 using RoleUniversal = const RoleUniversalImpl*;
-template<formalism::StaticOrFluentOrDerived P>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
 class RoleAtomicStateImpl;
-template<formalism::StaticOrFluentOrDerived P>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
 using RoleAtomicState = const RoleAtomicStateImpl<P>*;
-template<formalism::StaticOrFluentOrDerived P>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
 class RoleAtomicGoalImpl;
-template<formalism::StaticOrFluentOrDerived P>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
 using RoleAtomicGoal = const RoleAtomicGoalImpl<P>*;
 class RoleIntersectionImpl;
 using RoleIntersection = const RoleIntersectionImpl*;
@@ -132,19 +132,19 @@ class RoleIdentityImpl;
 using RoleIdentity = const RoleIdentityImpl*;
 
 /* Concrete Booleans */
-template<formalism::StaticOrFluentOrDerived P>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
 class BooleanAtomicStateImpl;
-template<formalism::StaticOrFluentOrDerived P>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
 using BooleanAtomicState = const BooleanAtomicStateImpl<P>*;
-template<DescriptionLogicCategory D>
+template<IsConceptOrRoleTag D>
 class BooleanNonemptyImpl;
-template<DescriptionLogicCategory D>
+template<IsConceptOrRoleTag D>
 using BooleanNonempty = const BooleanNonemptyImpl<D>*;
 
 /* Concrete Numerical */
-template<DescriptionLogicCategory D>
+template<IsConceptOrRoleTag D>
 class NumericalCountImpl;
-template<DescriptionLogicCategory D>
+template<IsConceptOrRoleTag D>
 using NumericalCount = const NumericalCountImpl<D>*;
 class NumericalDistanceImpl;
 using NumericalDistance = const NumericalDistanceImpl*;
@@ -161,49 +161,49 @@ namespace grammar
 {
 
 /* DerivationRule */
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 class DerivationRuleImpl;
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 using DerivationRule = const DerivationRuleImpl<D>*;
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 using DerivationRuleList = std::vector<DerivationRule<D>>;
-template<dl::FeatureCategory... D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag... D>
 using DerivationRuleLists = boost::hana::map<boost::hana::pair<boost::hana::type<D>, DerivationRuleList<D>>...>;
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 using DerivationRuleSet = std::unordered_set<DerivationRule<D>>;
-using DerivationRuleSets = HanaMappedContainer<DerivationRuleSet, Concept, Role, Boolean, Numerical>;
+using DerivationRuleSets = HanaMappedContainer<DerivationRuleSet, ConceptTag, RoleTag, BooleanTag, NumericalTag>;
 
 /* Constructor */
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 class IConstructor;
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 using Constructor = const IConstructor<D>*;
 
 /* NonTerminal */
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 class NonTerminalImpl;
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 using NonTerminal = const NonTerminalImpl<D>*;
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 using OptionalNonTerminal = std::optional<NonTerminal<D>>;
-using OptionalNonTerminals = HanaMappedContainer<OptionalNonTerminal, Concept, Role, Boolean, Numerical>;
-template<dl::FeatureCategory D>
+using OptionalNonTerminals = HanaMappedContainer<OptionalNonTerminal, ConceptTag, RoleTag, BooleanTag, NumericalTag>;
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 using NonTerminalSet = std::unordered_set<NonTerminal<D>>;
 
-template<template<typename> typename Value, dl::FeatureCategory... Ds>
+template<template<typename> typename Value, dl::IsConceptOrRoleOrBooleanOrNumericalTag... Ds>
 using NonTerminalMaps = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, std::unordered_map<NonTerminal<Ds>, Value<Ds>>>...>;
-using NonTerminalToDerivationRuleSets = NonTerminalMaps<DerivationRuleSet, Concept, Role, Boolean, Numerical>;
-template<typename Key, dl::FeatureCategory... Ds>
+using NonTerminalToDerivationRuleSets = NonTerminalMaps<DerivationRuleSet, ConceptTag, RoleTag, BooleanTag, NumericalTag>;
+template<typename Key, dl::IsConceptOrRoleOrBooleanOrNumericalTag... Ds>
 using ToNonTerminalMaps =
     boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, std::unordered_map<Key, NonTerminal<Ds>, loki::Hash<Key>, loki::EqualTo<Key>>>...>;
-using StringToNonTerminalMaps = ToNonTerminalMaps<std::string, Concept, Role, Boolean, Numerical>;
+using StringToNonTerminalMaps = ToNonTerminalMaps<std::string, ConceptTag, RoleTag, BooleanTag, NumericalTag>;
 
 /* ConstructorOrNonTerminal */
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 class ConstructorOrNonTerminalImpl;
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 using ConstructorOrNonTerminal = const ConstructorOrNonTerminalImpl<D>*;
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 using ConstructorOrNonTerminalList = std::vector<ConstructorOrNonTerminal<D>>;
 
 /* Concrete concepts */
@@ -211,13 +211,13 @@ class ConceptTopImpl;
 using ConceptTop = const ConceptTopImpl*;
 class ConceptBotImpl;
 using ConceptBot = const ConceptBotImpl*;
-template<formalism::StaticOrFluentOrDerived P>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
 class ConceptAtomicStateImpl;
-template<formalism::StaticOrFluentOrDerived P>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
 using ConceptAtomicState = const ConceptAtomicStateImpl<P>*;
-template<formalism::StaticOrFluentOrDerived P>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
 class ConceptAtomicGoalImpl;
-template<formalism::StaticOrFluentOrDerived P>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
 using ConceptAtomicGoal = const ConceptAtomicGoalImpl<P>*;
 class ConceptIntersectionImpl;
 using ConceptIntersection = const ConceptIntersectionImpl*;
@@ -239,13 +239,13 @@ using ConceptNominal = const ConceptNominalImpl*;
 /* Concrete roles */
 class RoleUniversalImpl;
 using RoleUniversal = const RoleUniversalImpl*;
-template<formalism::StaticOrFluentOrDerived P>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
 class RoleAtomicStateImpl;
-template<formalism::StaticOrFluentOrDerived P>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
 using RoleAtomicState = const RoleAtomicStateImpl<P>*;
-template<formalism::StaticOrFluentOrDerived P>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
 class RoleAtomicGoalImpl;
-template<formalism::StaticOrFluentOrDerived P>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
 using RoleAtomicGoal = const RoleAtomicGoalImpl<P>*;
 class RoleIntersectionImpl;
 using RoleIntersection = const RoleIntersectionImpl*;
@@ -267,19 +267,19 @@ class RoleIdentityImpl;
 using RoleIdentity = const RoleIdentityImpl*;
 
 /* Concrete Booleans */
-template<formalism::StaticOrFluentOrDerived P>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
 class BooleanAtomicStateImpl;
-template<formalism::StaticOrFluentOrDerived P>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
 using BooleanAtomicState = const BooleanAtomicStateImpl<P>*;
-template<DescriptionLogicCategory D>
+template<IsConceptOrRoleTag D>
 class BooleanNonemptyImpl;
-template<DescriptionLogicCategory D>
+template<IsConceptOrRoleTag D>
 using BooleanNonempty = const BooleanNonemptyImpl<D>*;
 
 /* Concrete Numerical */
-template<DescriptionLogicCategory D>
+template<IsConceptOrRoleTag D>
 class NumericalCountImpl;
-template<DescriptionLogicCategory D>
+template<IsConceptOrRoleTag D>
 using NumericalCount = const NumericalCountImpl<D>*;
 class NumericalDistanceImpl;
 using NumericalDistance = const NumericalDistanceImpl*;
@@ -308,55 +308,55 @@ class Repositories;
 namespace cnf_grammar
 {
 /* DerivationRule */
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 class DerivationRuleImpl;
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 using DerivationRule = const DerivationRuleImpl<D>*;
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 using DerivationRuleList = std::vector<DerivationRule<D>>;
-using DerivationRuleLists = HanaMappedContainer<DerivationRuleList, Concept, Role, Boolean, Numerical>;
+using DerivationRuleLists = HanaMappedContainer<DerivationRuleList, ConceptTag, RoleTag, BooleanTag, NumericalTag>;
 
 /* SubstitutionRule */
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 class SubstitutionRuleImpl;
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 using SubstitutionRule = const SubstitutionRuleImpl<D>*;
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 using SubstitutionRuleList = std::vector<SubstitutionRule<D>>;
-using SubstitutionRuleLists = HanaMappedContainer<SubstitutionRuleList, Concept, Role, Boolean, Numerical>;
+using SubstitutionRuleLists = HanaMappedContainer<SubstitutionRuleList, ConceptTag, RoleTag, BooleanTag, NumericalTag>;
 
 /* NonTerminal */
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 class NonTerminalImpl;
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 using NonTerminal = const NonTerminalImpl<D>*;
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 using OptionalNonTerminal = std::optional<NonTerminal<D>>;
-using OptionalNonTerminals = HanaMappedContainer<OptionalNonTerminal, Concept, Role, Boolean, Numerical>;
-template<dl::FeatureCategory D>
+using OptionalNonTerminals = HanaMappedContainer<OptionalNonTerminal, ConceptTag, RoleTag, BooleanTag, NumericalTag>;
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 using NonTerminalList = std::vector<NonTerminal<D>>;
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 using NonTerminalSet = std::unordered_set<NonTerminal<D>>;
-template<template<typename> typename Value, dl::FeatureCategory... Ds>
+template<template<typename> typename Value, dl::IsConceptOrRoleOrBooleanOrNumericalTag... Ds>
 using NonTerminalMaps = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, std::unordered_map<NonTerminal<Ds>, Value<Ds>>>...>;
-using NonTerminalToNonTerminalMaps = NonTerminalMaps<NonTerminal, Concept, Role, Boolean, Numerical>;
-using NonTerminalToDerivationRuleListMaps = NonTerminalMaps<DerivationRuleList, Concept, Role, Boolean, Numerical>;
-using NonTerminalToSubstitutionRuleListMaps = NonTerminalMaps<SubstitutionRuleList, Concept, Role, Boolean, Numerical>;
+using NonTerminalToNonTerminalMaps = NonTerminalMaps<NonTerminal, ConceptTag, RoleTag, BooleanTag, NumericalTag>;
+using NonTerminalToDerivationRuleListMaps = NonTerminalMaps<DerivationRuleList, ConceptTag, RoleTag, BooleanTag, NumericalTag>;
+using NonTerminalToSubstitutionRuleListMaps = NonTerminalMaps<SubstitutionRuleList, ConceptTag, RoleTag, BooleanTag, NumericalTag>;
 
 /**
  * Constructors
  */
 
 /* Constructor */
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 class IConstructor;
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 using Constructor = const IConstructor<D>*;
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 using ConstructorList = std::vector<Constructor<D>>;
-template<template<typename> typename Value, dl::FeatureCategory... D>
+template<template<typename> typename Value, dl::IsConceptOrRoleOrBooleanOrNumericalTag... D>
 using ConstructorMaps = boost::hana::map<boost::hana::pair<boost::hana::type<D>, std::unordered_map<Constructor<D>, Value<D>>>...>;
-using ConstructorToNonTerminalListMaps = ConstructorMaps<NonTerminalList, Concept, Role, Boolean, Numerical>;
+using ConstructorToNonTerminalListMaps = ConstructorMaps<NonTerminalList, ConceptTag, RoleTag, BooleanTag, NumericalTag>;
 
 // ConstructorMap<NonTerminalList, Concept, Role, Boolean, Numerical>
 
@@ -365,13 +365,13 @@ class ConceptTopImpl;
 using ConceptTop = const ConceptTopImpl*;
 class ConceptBotImpl;
 using ConceptBot = const ConceptBotImpl*;
-template<formalism::StaticOrFluentOrDerived P>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
 class ConceptAtomicStateImpl;
-template<formalism::StaticOrFluentOrDerived P>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
 using ConceptAtomicState = const ConceptAtomicStateImpl<P>*;
-template<formalism::StaticOrFluentOrDerived P>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
 class ConceptAtomicGoalImpl;
-template<formalism::StaticOrFluentOrDerived P>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
 using ConceptAtomicGoal = const ConceptAtomicGoalImpl<P>*;
 class ConceptIntersectionImpl;
 using ConceptIntersection = const ConceptIntersectionImpl*;
@@ -393,13 +393,13 @@ using ConceptNominal = const ConceptNominalImpl*;
 /* Concrete roles */
 class RoleUniversalImpl;
 using RoleUniversal = const RoleUniversalImpl*;
-template<formalism::StaticOrFluentOrDerived P>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
 class RoleAtomicStateImpl;
-template<formalism::StaticOrFluentOrDerived P>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
 using RoleAtomicState = const RoleAtomicStateImpl<P>*;
-template<formalism::StaticOrFluentOrDerived P>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
 class RoleAtomicGoalImpl;
-template<formalism::StaticOrFluentOrDerived P>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
 using RoleAtomicGoal = const RoleAtomicGoalImpl<P>*;
 class RoleIntersectionImpl;
 using RoleIntersection = const RoleIntersectionImpl*;
@@ -421,19 +421,19 @@ class RoleIdentityImpl;
 using RoleIdentity = const RoleIdentityImpl*;
 
 /* Concrete Booleans */
-template<formalism::StaticOrFluentOrDerived P>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
 class BooleanAtomicStateImpl;
-template<formalism::StaticOrFluentOrDerived P>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
 using BooleanAtomicState = const BooleanAtomicStateImpl<P>*;
-template<DescriptionLogicCategory D>
+template<IsConceptOrRoleTag D>
 class BooleanNonemptyImpl;
-template<DescriptionLogicCategory D>
+template<IsConceptOrRoleTag D>
 using BooleanNonempty = const BooleanNonemptyImpl<D>*;
 
 /* Concrete Numerical */
-template<DescriptionLogicCategory D>
+template<IsConceptOrRoleTag D>
 class NumericalCountImpl;
-template<DescriptionLogicCategory D>
+template<IsConceptOrRoleTag D>
 using NumericalCount = const NumericalCountImpl<D>*;
 class NumericalDistanceImpl;
 using NumericalDistance = const NumericalDistanceImpl*;

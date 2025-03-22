@@ -236,7 +236,7 @@ public:
  * consistent_literals_helper
  */
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 static bool consistent_literals_helper(const LiteralList<P>& literals, const AssignmentSet<P>& assignment_set, const Vertex& element)
 {
     const auto num_objects = assignment_set.get_num_objects();
@@ -286,7 +286,7 @@ static bool consistent_literals_helper(const LiteralList<P>& literals, const Ass
     return true;
 }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 static bool consistent_literals_helper(const LiteralList<P>& literals, const AssignmentSet<P>& assignment_set, const Edge& element)
 {
     const auto num_objects = assignment_set.get_num_objects();
@@ -338,7 +338,7 @@ static bool consistent_literals_helper(const LiteralList<P>& literals, const Ass
     return true;
 }
 
-template<StaticOrFluent F, typename AssignmentType>
+template<IsStaticOrFluentTag F, typename AssignmentType>
 static Bounds<ContinuousCost> remap_assignment_and_retrieve_bounds_from_assignment_set(FunctionExpressionFunction<F> fexpr,
                                                                                        const AssignmentType& assignment,
                                                                                        const NumericAssignmentSet<F>& numeric_assignment_set)
@@ -361,8 +361,8 @@ static Bounds<ContinuousCost> remap_assignment_and_retrieve_bounds_from_assignme
 template<typename AssignmentType>
 static Bounds<ContinuousCost> evaluate_function_expression_partially(FunctionExpression fexpr,
                                                                      const AssignmentType& assignment,
-                                                                     const NumericAssignmentSet<Static>& static_numeric_assignment_set,
-                                                                     const NumericAssignmentSet<Fluent>& fluent_numeric_assignment_set)
+                                                                     const NumericAssignmentSet<StaticTag>& static_numeric_assignment_set,
+                                                                     const NumericAssignmentSet<FluentTag>& fluent_numeric_assignment_set)
 {
     return std::visit(
         [&](auto&& arg) -> Bounds<ContinuousCost>
@@ -416,15 +416,15 @@ static Bounds<ContinuousCost> evaluate_function_expression_partially(FunctionExp
                 assert(-bounds.upper < -bounds.lower);
                 return Bounds<ContinuousCost>(-bounds.upper, -bounds.lower);
             }
-            else if constexpr (std::is_same_v<T, FunctionExpressionFunction<Static>>)
+            else if constexpr (std::is_same_v<T, FunctionExpressionFunction<StaticTag>>)
             {
                 return remap_assignment_and_retrieve_bounds_from_assignment_set(arg, assignment, static_numeric_assignment_set);
             }
-            else if constexpr (std::is_same_v<T, FunctionExpressionFunction<Fluent>>)
+            else if constexpr (std::is_same_v<T, FunctionExpressionFunction<FluentTag>>)
             {
                 return remap_assignment_and_retrieve_bounds_from_assignment_set(arg, assignment, fluent_numeric_assignment_set);
             }
-            else if constexpr (std::is_same_v<T, FunctionExpressionFunction<Auxiliary>>)
+            else if constexpr (std::is_same_v<T, FunctionExpressionFunction<AuxiliaryTag>>)
             {
                 throw std::runtime_error("computing_remapping(fexpr, term_to_position, remapping): Unexpected FunctionExpression type.");
             }
@@ -439,8 +439,8 @@ static Bounds<ContinuousCost> evaluate_function_expression_partially(FunctionExp
 template<typename AssignmentType>
 static bool is_partially_evaluated_constraint_satisfied(NumericConstraint numeric_constraint,
                                                         const AssignmentType& assignment,
-                                                        const NumericAssignmentSet<Static>& static_numeric_assignment_set,
-                                                        const NumericAssignmentSet<Fluent>& fluent_numeric_assignment_set)
+                                                        const NumericAssignmentSet<StaticTag>& static_numeric_assignment_set,
+                                                        const NumericAssignmentSet<FluentTag>& fluent_numeric_assignment_set)
 {
     return evaluate(numeric_constraint->get_binary_comparator(),
                     evaluate_function_expression_partially(numeric_constraint->get_left_function_expression(),
@@ -454,8 +454,8 @@ static bool is_partially_evaluated_constraint_satisfied(NumericConstraint numeri
 }
 
 static bool consistent_numeric_constraints_helper(const NumericConstraintList& numeric_constraints,
-                                                  const NumericAssignmentSet<Static>& static_numeric_assignment_set,
-                                                  const NumericAssignmentSet<Fluent>& fluent_numeric_assignment_set,
+                                                  const NumericAssignmentSet<StaticTag>& static_numeric_assignment_set,
+                                                  const NumericAssignmentSet<FluentTag>& fluent_numeric_assignment_set,
                                                   const Vertex& element)
 {
     for (const auto& numeric_constraint : numeric_constraints)
@@ -483,8 +483,8 @@ static bool consistent_numeric_constraints_helper(const NumericConstraintList& n
 }
 
 static bool consistent_numeric_constraints_helper(const NumericConstraintList& numeric_constraints,
-                                                  const NumericAssignmentSet<Static>& static_numeric_assignment_set,
-                                                  const NumericAssignmentSet<Fluent>& fluent_numeric_assignment_set,
+                                                  const NumericAssignmentSet<StaticTag>& static_numeric_assignment_set,
+                                                  const NumericAssignmentSet<FluentTag>& fluent_numeric_assignment_set,
                                                   const Edge& element)
 {
     for (const auto& numeric_constraint : numeric_constraints)
@@ -515,19 +515,19 @@ static bool consistent_numeric_constraints_helper(const NumericConstraintList& n
  * Vertex
  */
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 bool Vertex::consistent_literals(const LiteralList<P>& literals, const AssignmentSet<P>& assignment_set) const
 {
     return consistent_literals_helper<P>(literals, assignment_set, *this);
 }
 
-template bool Vertex::consistent_literals(const LiteralList<Static>& literals, const AssignmentSet<Static>& assignment_set) const;
-template bool Vertex::consistent_literals(const LiteralList<Fluent>& literals, const AssignmentSet<Fluent>& assignment_set) const;
-template bool Vertex::consistent_literals(const LiteralList<Derived>& literals, const AssignmentSet<Derived>& assignment_set) const;
+template bool Vertex::consistent_literals(const LiteralList<StaticTag>& literals, const AssignmentSet<StaticTag>& assignment_set) const;
+template bool Vertex::consistent_literals(const LiteralList<FluentTag>& literals, const AssignmentSet<FluentTag>& assignment_set) const;
+template bool Vertex::consistent_literals(const LiteralList<DerivedTag>& literals, const AssignmentSet<DerivedTag>& assignment_set) const;
 
 bool Vertex::consistent_literals(const NumericConstraintList& numeric_constraints,
-                                 const NumericAssignmentSet<Static>& static_assignment_set,
-                                 const NumericAssignmentSet<Fluent>& fluent_assignment_set) const
+                                 const NumericAssignmentSet<StaticTag>& static_assignment_set,
+                                 const NumericAssignmentSet<FluentTag>& fluent_assignment_set) const
 {
     return consistent_numeric_constraints_helper(numeric_constraints, static_assignment_set, fluent_assignment_set, *this);
 }
@@ -554,19 +554,19 @@ Index Vertex::get_object_if_overlap(const Term& term) const
  * Edge
  */
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 bool Edge::consistent_literals(const LiteralList<P>& literals, const AssignmentSet<P>& assignment_set) const
 {
     return consistent_literals_helper<P>(literals, assignment_set, *this);
 }
 
-template bool Edge::consistent_literals(const LiteralList<Static>& literals, const AssignmentSet<Static>& assignment_set) const;
-template bool Edge::consistent_literals(const LiteralList<Fluent>& literals, const AssignmentSet<Fluent>& assignment_set) const;
-template bool Edge::consistent_literals(const LiteralList<Derived>& literals, const AssignmentSet<Derived>& assignment_set) const;
+template bool Edge::consistent_literals(const LiteralList<StaticTag>& literals, const AssignmentSet<StaticTag>& assignment_set) const;
+template bool Edge::consistent_literals(const LiteralList<FluentTag>& literals, const AssignmentSet<FluentTag>& assignment_set) const;
+template bool Edge::consistent_literals(const LiteralList<DerivedTag>& literals, const AssignmentSet<DerivedTag>& assignment_set) const;
 
 bool Edge::consistent_literals(const NumericConstraintList& numeric_constraints,
-                               const NumericAssignmentSet<Static>& static_assignment_set,
-                               const NumericAssignmentSet<Fluent>& fluent_assignment_set) const
+                               const NumericAssignmentSet<StaticTag>& static_assignment_set,
+                               const NumericAssignmentSet<FluentTag>& fluent_assignment_set) const
 {
     return consistent_numeric_constraints_helper(numeric_constraints, static_assignment_set, fluent_assignment_set, *this);
 }
@@ -604,7 +604,7 @@ Index Edge::get_object_if_overlap(const Term& term) const
 std::tuple<Vertices, std::vector<IndexList>, std::vector<IndexList>> StaticConsistencyGraph::compute_vertices(const ProblemImpl& problem,
                                                                                                               Index begin_parameter_index,
                                                                                                               Index end_parameter_index,
-                                                                                                              const LiteralList<Static>& static_conditions)
+                                                                                                              const LiteralList<StaticTag>& static_conditions)
 {
     const auto& static_assignment_set = problem.get_static_assignment_set();
 
@@ -638,7 +638,7 @@ std::tuple<Vertices, std::vector<IndexList>, std::vector<IndexList>> StaticConsi
     return std::make_tuple(std::move(vertices), std::move(vertices_by_parameter_index), std::move(objects_by_parameter_index));
 }
 
-Edges StaticConsistencyGraph::compute_edges(const ProblemImpl& problem, const LiteralList<Static>& static_conditions, const Vertices& vertices)
+Edges StaticConsistencyGraph::compute_edges(const ProblemImpl& problem, const LiteralList<StaticTag>& static_conditions, const Vertices& vertices)
 {
     const auto& static_assignment_set = problem.get_static_assignment_set();
 
@@ -671,7 +671,7 @@ Edges StaticConsistencyGraph::compute_edges(const ProblemImpl& problem, const Li
 StaticConsistencyGraph::StaticConsistencyGraph(const ProblemImpl& problem,
                                                Index begin_parameter_index,
                                                Index end_parameter_index,
-                                               const LiteralList<Static>& static_conditions)
+                                               const LiteralList<StaticTag>& static_conditions)
 {
     auto [vertices_, vertices_by_parameter_index_, objects_by_parameter_index_] =
         compute_vertices(problem, begin_parameter_index, end_parameter_index, static_conditions);

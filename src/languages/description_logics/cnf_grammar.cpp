@@ -247,7 +247,7 @@ static void add_frances_et_al_2021_bnf_atomic_goal(const std::string& keyword,
     }
 }
 
-template<DescriptionLogicCategory D>
+template<IsConceptOrRoleTag D>
 static void add_frances_et_al_aaai2021_bnf_boolean_nonempy(std::stringstream& out, std::vector<std::string>& head_names)
 {
     auto head_name = fmt::format("<{}>", dl::keywords::boolean_nonempty);
@@ -258,7 +258,7 @@ static void add_frances_et_al_aaai2021_bnf_boolean_nonempy(std::stringstream& ou
     out << fmt::format("    {} ::= {}\n", head_name, body_name);
 }
 
-template<DescriptionLogicCategory D>
+template<IsConceptOrRoleTag D>
 static void add_frances_et_al_aaai2021_bnf_numeric_count(std::stringstream& out, std::vector<std::string>& head_names)
 {
     auto head_name = fmt::format("<{}>", dl::keywords::numerical_count);
@@ -282,8 +282,8 @@ static void add_frances_et_al_aaai2021_bnf_numeric_distance(std::stringstream& o
 static std::string create_frances_et_al_aaai2021_bnf(Domain domain)
 {
     // Collect head names to build choice rules.
-    auto primitive_head_names = HanaContainer<std::vector<std::string>, Concept, Role, Boolean, Numerical> {};
-    auto head_names = HanaContainer<std::vector<std::string>, Concept, Role, Boolean, Numerical> {};
+    auto primitive_head_names = HanaContainer<std::vector<std::string>, ConceptTag, RoleTag, BooleanTag, NumericalTag> {};
+    auto head_names = HanaContainer<std::vector<std::string>, ConceptTag, RoleTag, BooleanTag, NumericalTag> {};
 
     // Builder rules in a stringstream separate from start symbols.
     auto rule_ss = std::stringstream {};
@@ -293,7 +293,7 @@ static std::string create_frances_et_al_aaai2021_bnf(Domain domain)
      * Primitives concepts and roles.
      */
 
-    auto& primitive_concept_head_names = boost::hana::at_key(head_names, boost::hana::type<Concept> {});
+    auto& primitive_concept_head_names = boost::hana::at_key(head_names, boost::hana::type<ConceptTag> {});
 
     add_frances_et_al_aaai2021_bnf_concept_bot(rule_ss, primitive_concept_head_names);
 
@@ -312,13 +312,13 @@ static std::string create_frances_et_al_aaai2021_bnf(Domain domain)
             {
                 if (predicate->get_arity() == 0)
                 {
-                    auto& boolean_head_names = boost::hana::at_key(primitive_head_names, boost::hana::type<Boolean> {});
+                    auto& boolean_head_names = boost::hana::at_key(primitive_head_names, boost::hana::type<BooleanTag> {});
 
                     add_frances_et_al_2021_bnf_atomic_state(dl::keywords::boolean_atomic_state, predicate->get_name(), rule_ss, boolean_head_names);
                 }
                 else if (predicate->get_arity() == 1)
                 {
-                    auto& concept_head_names = boost::hana::at_key(primitive_head_names, boost::hana::type<Concept> {});
+                    auto& concept_head_names = boost::hana::at_key(primitive_head_names, boost::hana::type<ConceptTag> {});
 
                     add_frances_et_al_2021_bnf_atomic_state(dl::keywords::concept_atomic_state, predicate->get_name(), rule_ss, concept_head_names);
 
@@ -326,7 +326,7 @@ static std::string create_frances_et_al_aaai2021_bnf(Domain domain)
                 }
                 else if (predicate->get_arity() == 2)
                 {
-                    auto& role_head_names = boost::hana::at_key(primitive_head_names, boost::hana::type<Role> {});
+                    auto& role_head_names = boost::hana::at_key(primitive_head_names, boost::hana::type<RoleTag> {});
 
                     add_frances_et_al_2021_bnf_atomic_state(dl::keywords::role_atomic_state, predicate->get_name(), rule_ss, role_head_names);
 
@@ -357,8 +357,8 @@ static std::string create_frances_et_al_aaai2021_bnf(Domain domain)
      * Composites
      */
 
-    auto& concept_head_names = boost::hana::at_key(head_names, boost::hana::type<Concept> {});
-    auto& role_head_names = boost::hana::at_key(head_names, boost::hana::type<Role> {});
+    auto& concept_head_names = boost::hana::at_key(head_names, boost::hana::type<ConceptTag> {});
+    auto& role_head_names = boost::hana::at_key(head_names, boost::hana::type<RoleTag> {});
 
     /* Concepts */
 
@@ -379,18 +379,18 @@ static std::string create_frances_et_al_aaai2021_bnf(Domain domain)
     add_frances_et_al_aaai2021_bnf_role_inverse(rule_ss, role_head_names);
 
     /* Booleans */
-    auto& boolean_head_names = boost::hana::at_key(head_names, boost::hana::type<Boolean> {});
+    auto& boolean_head_names = boost::hana::at_key(head_names, boost::hana::type<BooleanTag> {});
 
-    add_frances_et_al_aaai2021_bnf_boolean_nonempy<Concept>(rule_ss, boolean_head_names);
+    add_frances_et_al_aaai2021_bnf_boolean_nonempy<ConceptTag>(rule_ss, boolean_head_names);
 
-    add_frances_et_al_aaai2021_bnf_boolean_nonempy<Role>(rule_ss, boolean_head_names);
+    add_frances_et_al_aaai2021_bnf_boolean_nonempy<RoleTag>(rule_ss, boolean_head_names);
 
     /* Numerical */
-    auto& numerical_head_names = boost::hana::at_key(head_names, boost::hana::type<Numerical> {});
+    auto& numerical_head_names = boost::hana::at_key(head_names, boost::hana::type<NumericalTag> {});
 
-    add_frances_et_al_aaai2021_bnf_numeric_count<Concept>(rule_ss, numerical_head_names);
+    add_frances_et_al_aaai2021_bnf_numeric_count<ConceptTag>(rule_ss, numerical_head_names);
 
-    add_frances_et_al_aaai2021_bnf_numeric_count<Role>(rule_ss, numerical_head_names);
+    add_frances_et_al_aaai2021_bnf_numeric_count<RoleTag>(rule_ss, numerical_head_names);
 
     add_frances_et_al_aaai2021_bnf_numeric_distance(rule_ss, numerical_head_names);
 
@@ -441,7 +441,7 @@ Grammar Grammar::create(GrammarSpecificationEnum type, Domain domain)
     }
 }
 
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 bool Grammar::test_match(dl::Constructor<D> constructor) const
 {
     const auto& start_symbol = boost::hana::at_key(m_start_symbols, boost::hana::type<D> {});
@@ -454,10 +454,10 @@ bool Grammar::test_match(dl::Constructor<D> constructor) const
     return start_symbol.value()->test_match(constructor, *this);
 }
 
-template bool Grammar::test_match(dl::Constructor<Concept> constructor) const;
-template bool Grammar::test_match(dl::Constructor<Role> constructor) const;
-template bool Grammar::test_match(dl::Constructor<Boolean> constructor) const;
-template bool Grammar::test_match(dl::Constructor<Numerical> constructor) const;
+template bool Grammar::test_match(dl::Constructor<ConceptTag> constructor) const;
+template bool Grammar::test_match(dl::Constructor<RoleTag> constructor) const;
+template bool Grammar::test_match(dl::Constructor<BooleanTag> constructor) const;
+template bool Grammar::test_match(dl::Constructor<NumericalTag> constructor) const;
 
 void Grammar::accept(IVisitor& visitor) const { visitor.visit(*this); }
 

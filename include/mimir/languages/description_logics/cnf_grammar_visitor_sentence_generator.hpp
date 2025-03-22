@@ -36,18 +36,18 @@ namespace mimir::languages::dl::cnf_grammar
 class GeneratedSentencesContainer
 {
 private:
-    template<FeatureCategory D>
+    template<IsConceptOrRoleOrBooleanOrNumericalTag D>
     using GeneratedConstructorsMap = std::unordered_map<NonTerminal<D>, std::vector<dl::ConstructorList<D>>>;
 
-    template<FeatureCategory... Ds>
+    template<IsConceptOrRoleOrBooleanOrNumericalTag... Ds>
     using HanaGeneratedConstructorsMaps = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, GeneratedConstructorsMap<Ds>>...>;
 
     static const dl::ConstructorLists empty_lists;
 
-    HanaGeneratedConstructorsMaps<Concept, Role, Boolean, Numerical> m_generated_constructors;
+    HanaGeneratedConstructorsMaps<ConceptTag, RoleTag, BooleanTag, NumericalTag> m_generated_constructors;
 
 public:
-    template<FeatureCategory D>
+    template<IsConceptOrRoleOrBooleanOrNumericalTag D>
     dl::ConstructorList<D>& get(NonTerminal<D> nonterminal, size_t complexity)
     {
         auto& constructors_by_complexity = boost::hana::at_key(m_generated_constructors, boost::hana::type<D> {})[nonterminal];
@@ -58,7 +58,7 @@ public:
         return constructors_by_complexity[complexity];
     }
 
-    template<FeatureCategory D>
+    template<IsConceptOrRoleOrBooleanOrNumericalTag D>
     const dl::ConstructorList<D>& get(NonTerminal<D> nonterminal, size_t complexity) const
     {
         const auto& container = boost::hana::at_key(m_generated_constructors, boost::hana::type<D> {});
@@ -72,10 +72,10 @@ public:
         return it->second.at(complexity);
     }
 
-    HanaGeneratedConstructorsMaps<Concept, Role, Boolean, Numerical>& get_hana_generated_constructors() { return m_generated_constructors; }
+    HanaGeneratedConstructorsMaps<ConceptTag, RoleTag, BooleanTag, NumericalTag>& get_hana_generated_constructors() { return m_generated_constructors; }
 };
 
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 struct GeneratorStatistics
 {
     size_t num_generated = 0;
@@ -92,7 +92,7 @@ struct GeneratorStatistics
     }
 };
 
-template<FeatureCategory... Ds>
+template<IsConceptOrRoleOrBooleanOrNumericalTag... Ds>
 using HanaGeneratorStatistics = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, GeneratorStatistics<Ds>>...>;
 
 /**
@@ -110,7 +110,7 @@ private:
     size_t m_complexity;
 
     dl::ConstructorLists m_generated;
-    HanaGeneratorStatistics<Concept, Role, Boolean, Numerical> m_statistics;
+    HanaGeneratorStatistics<ConceptTag, RoleTag, BooleanTag, NumericalTag> m_statistics;
 
     std::any m_result;
 
@@ -122,12 +122,12 @@ public:
 
     void visit(ConceptBot constructor) override;
     void visit(ConceptTop constructor) override;
-    void visit(ConceptAtomicState<formalism::Static> constructor) override;
-    void visit(ConceptAtomicState<formalism::Fluent> constructor) override;
-    void visit(ConceptAtomicState<formalism::Derived> constructor) override;
-    void visit(ConceptAtomicGoal<formalism::Static> constructor) override;
-    void visit(ConceptAtomicGoal<formalism::Fluent> constructor) override;
-    void visit(ConceptAtomicGoal<formalism::Derived> constructor) override;
+    void visit(ConceptAtomicState<formalism::StaticTag> constructor) override;
+    void visit(ConceptAtomicState<formalism::FluentTag> constructor) override;
+    void visit(ConceptAtomicState<formalism::DerivedTag> constructor) override;
+    void visit(ConceptAtomicGoal<formalism::StaticTag> constructor) override;
+    void visit(ConceptAtomicGoal<formalism::FluentTag> constructor) override;
+    void visit(ConceptAtomicGoal<formalism::DerivedTag> constructor) override;
     void visit(ConceptNominal constructor) override;
     void visit(ConceptIntersection constructor) override;
     void visit(ConceptUnion constructor) override;
@@ -138,12 +138,12 @@ public:
     void visit(ConceptRoleValueMapEquality constructor) override;
 
     void visit(RoleUniversal constructor) override;
-    void visit(RoleAtomicState<formalism::Static> constructor) override;
-    void visit(RoleAtomicState<formalism::Fluent> constructor) override;
-    void visit(RoleAtomicState<formalism::Derived> constructor) override;
-    void visit(RoleAtomicGoal<formalism::Static> constructor) override;
-    void visit(RoleAtomicGoal<formalism::Fluent> constructor) override;
-    void visit(RoleAtomicGoal<formalism::Derived> constructor) override;
+    void visit(RoleAtomicState<formalism::StaticTag> constructor) override;
+    void visit(RoleAtomicState<formalism::FluentTag> constructor) override;
+    void visit(RoleAtomicState<formalism::DerivedTag> constructor) override;
+    void visit(RoleAtomicGoal<formalism::StaticTag> constructor) override;
+    void visit(RoleAtomicGoal<formalism::FluentTag> constructor) override;
+    void visit(RoleAtomicGoal<formalism::DerivedTag> constructor) override;
     void visit(RoleIntersection constructor) override;
     void visit(RoleUnion constructor) override;
     void visit(RoleComplement constructor) override;
@@ -154,35 +154,35 @@ public:
     void visit(RoleRestriction constructor) override;
     void visit(RoleIdentity constructor) override;
 
-    void visit(BooleanAtomicState<formalism::Static> constructor) override;
-    void visit(BooleanAtomicState<formalism::Fluent> constructor) override;
-    void visit(BooleanAtomicState<formalism::Derived> constructor) override;
-    void visit(BooleanNonempty<Concept> constructor) override;
-    void visit(BooleanNonempty<Role> constructor) override;
+    void visit(BooleanAtomicState<formalism::StaticTag> constructor) override;
+    void visit(BooleanAtomicState<formalism::FluentTag> constructor) override;
+    void visit(BooleanAtomicState<formalism::DerivedTag> constructor) override;
+    void visit(BooleanNonempty<ConceptTag> constructor) override;
+    void visit(BooleanNonempty<RoleTag> constructor) override;
 
-    void visit(NumericalCount<Concept> constructor) override;
-    void visit(NumericalCount<Role> constructor) override;
+    void visit(NumericalCount<ConceptTag> constructor) override;
+    void visit(NumericalCount<RoleTag> constructor) override;
     void visit(NumericalDistance constructor) override;
 
-    void visit(DerivationRule<Concept> rule) override;
-    void visit(DerivationRule<Role> rule) override;
-    void visit(DerivationRule<Boolean> rule) override;
-    void visit(DerivationRule<Numerical> rule) override;
+    void visit(DerivationRule<ConceptTag> rule) override;
+    void visit(DerivationRule<RoleTag> rule) override;
+    void visit(DerivationRule<BooleanTag> rule) override;
+    void visit(DerivationRule<NumericalTag> rule) override;
 
-    void visit(SubstitutionRule<Concept> rule) override;
-    void visit(SubstitutionRule<Role> rule) override;
-    void visit(SubstitutionRule<Boolean> rule) override;
-    void visit(SubstitutionRule<Numerical> rule) override;
+    void visit(SubstitutionRule<ConceptTag> rule) override;
+    void visit(SubstitutionRule<RoleTag> rule) override;
+    void visit(SubstitutionRule<BooleanTag> rule) override;
+    void visit(SubstitutionRule<NumericalTag> rule) override;
 
     void visit(const Grammar& grammar) override;
 
-    const HanaGeneratorStatistics<Concept, Role, Boolean, Numerical>& get_statistics() const;
+    const HanaGeneratorStatistics<ConceptTag, RoleTag, BooleanTag, NumericalTag>& get_statistics() const;
 
 private:
-    template<FeatureCategory D>
+    template<IsConceptOrRoleOrBooleanOrNumericalTag D>
     void visit_impl(DerivationRule<D> rule);
 
-    template<FeatureCategory D>
+    template<IsConceptOrRoleOrBooleanOrNumericalTag D>
     void visit_impl(SubstitutionRule<D> rule);
 
     const std::any& get_result() const;

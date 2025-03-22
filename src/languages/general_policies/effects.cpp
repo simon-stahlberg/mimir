@@ -26,7 +26,7 @@
 namespace mimir::languages::general_policies
 {
 
-PositiveBooleanEffectImpl::PositiveBooleanEffectImpl(Index index, NamedFeature<dl::Boolean> feature) : EffectBase(index, feature) {}
+PositiveBooleanEffectImpl::PositiveBooleanEffectImpl(Index index, NamedFeature<dl::BooleanTag> feature) : EffectBase(index, feature) {}
 
 bool PositiveBooleanEffectImpl::evaluate_impl(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const
 {
@@ -46,7 +46,7 @@ bool PositiveBooleanEffectImpl::evaluate_with_debug_impl(dl::EvaluationContext& 
 
 void PositiveBooleanEffectImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
-NegativeBooleanEffectImpl::NegativeBooleanEffectImpl(Index index, NamedFeature<dl::Boolean> feature) : EffectBase(index, feature) {}
+NegativeBooleanEffectImpl::NegativeBooleanEffectImpl(Index index, NamedFeature<dl::BooleanTag> feature) : EffectBase(index, feature) {}
 
 bool NegativeBooleanEffectImpl::evaluate_impl(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const
 {
@@ -66,7 +66,7 @@ bool NegativeBooleanEffectImpl::evaluate_with_debug_impl(dl::EvaluationContext& 
 
 void NegativeBooleanEffectImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
-UnchangedBooleanEffectImpl::UnchangedBooleanEffectImpl(Index index, NamedFeature<dl::Boolean> feature) : EffectBase(index, feature) {}
+UnchangedBooleanEffectImpl::UnchangedBooleanEffectImpl(Index index, NamedFeature<dl::BooleanTag> feature) : EffectBase(index, feature) {}
 
 bool UnchangedBooleanEffectImpl::evaluate_impl(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const
 {
@@ -87,7 +87,7 @@ bool UnchangedBooleanEffectImpl::evaluate_with_debug_impl(dl::EvaluationContext&
 
 void UnchangedBooleanEffectImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
-IncreaseNumericalEffectImpl::IncreaseNumericalEffectImpl(Index index, NamedFeature<dl::Numerical> feature) : EffectBase(index, feature) {}
+IncreaseNumericalEffectImpl::IncreaseNumericalEffectImpl(Index index, NamedFeature<dl::NumericalTag> feature) : EffectBase(index, feature) {}
 
 bool IncreaseNumericalEffectImpl::evaluate_impl(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const
 {
@@ -108,7 +108,7 @@ bool IncreaseNumericalEffectImpl::evaluate_with_debug_impl(dl::EvaluationContext
 
 void IncreaseNumericalEffectImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
-DecreaseNumericalEffectImpl::DecreaseNumericalEffectImpl(Index index, NamedFeature<dl::Numerical> feature) : EffectBase(index, feature) {}
+DecreaseNumericalEffectImpl::DecreaseNumericalEffectImpl(Index index, NamedFeature<dl::NumericalTag> feature) : EffectBase(index, feature) {}
 
 bool DecreaseNumericalEffectImpl::evaluate_impl(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const
 {
@@ -129,7 +129,7 @@ bool DecreaseNumericalEffectImpl::evaluate_with_debug_impl(dl::EvaluationContext
 
 void DecreaseNumericalEffectImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
-UnchangedNumericalEffectImpl::UnchangedNumericalEffectImpl(Index index, NamedFeature<dl::Numerical> feature) : EffectBase(index, feature) {}
+UnchangedNumericalEffectImpl::UnchangedNumericalEffectImpl(Index index, NamedFeature<dl::NumericalTag> feature) : EffectBase(index, feature) {}
 
 bool UnchangedNumericalEffectImpl::evaluate_impl(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const
 {

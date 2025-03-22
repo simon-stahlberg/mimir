@@ -39,16 +39,16 @@ private:
     FlatExternalPtrList<const GroundNumericConstraintImpl> m_numeric_constraints = FlatExternalPtrList<const GroundNumericConstraintImpl>();
 
 public:
-    using PDDLEntity = void;
+    using FormalismEntity = void;
 
-    template<StaticOrFluentOrDerived P>
+    template<IsStaticOrFluentOrDerivedTag P>
     FlatIndexList& get_positive_precondition();
-    template<StaticOrFluentOrDerived P>
+    template<IsStaticOrFluentOrDerivedTag P>
     const FlatIndexList& get_positive_precondition() const;
 
-    template<StaticOrFluentOrDerived P>
+    template<IsStaticOrFluentOrDerivedTag P>
     FlatIndexList& get_negative_precondition();
-    template<StaticOrFluentOrDerived P>
+    template<IsStaticOrFluentOrDerivedTag P>
     const FlatIndexList& get_negative_precondition() const;
 
     FlatExternalPtrList<const GroundNumericConstraintImpl>& get_numeric_constraints();

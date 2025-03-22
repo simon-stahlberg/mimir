@@ -25,7 +25,7 @@
 
 namespace mimir::languages::general_policies
 {
-PositiveBooleanConditionImpl::PositiveBooleanConditionImpl(Index index, NamedFeature<dl::Boolean> feature) : ConditionBase(index, feature) {}
+PositiveBooleanConditionImpl::PositiveBooleanConditionImpl(Index index, NamedFeature<dl::BooleanTag> feature) : ConditionBase(index, feature) {}
 
 bool PositiveBooleanConditionImpl::evaluate_impl(dl::EvaluationContext& source_context) const
 {
@@ -45,7 +45,7 @@ bool PositiveBooleanConditionImpl::evaluate_with_debug_impl(dl::EvaluationContex
 
 void PositiveBooleanConditionImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
-NegativeBooleanConditionImpl::NegativeBooleanConditionImpl(Index index, NamedFeature<dl::Boolean> feature) : ConditionBase(index, feature) {}
+NegativeBooleanConditionImpl::NegativeBooleanConditionImpl(Index index, NamedFeature<dl::BooleanTag> feature) : ConditionBase(index, feature) {}
 
 bool NegativeBooleanConditionImpl::evaluate_impl(dl::EvaluationContext& source_context) const
 {
@@ -65,7 +65,7 @@ bool NegativeBooleanConditionImpl::evaluate_with_debug_impl(dl::EvaluationContex
 
 void NegativeBooleanConditionImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
-GreaterNumericalConditionImpl::GreaterNumericalConditionImpl(Index index, NamedFeature<dl::Numerical> feature) : ConditionBase(index, feature) {}
+GreaterNumericalConditionImpl::GreaterNumericalConditionImpl(Index index, NamedFeature<dl::NumericalTag> feature) : ConditionBase(index, feature) {}
 
 bool GreaterNumericalConditionImpl::evaluate_impl(dl::EvaluationContext& source_context) const
 {
@@ -85,7 +85,7 @@ bool GreaterNumericalConditionImpl::evaluate_with_debug_impl(dl::EvaluationConte
 
 void GreaterNumericalConditionImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
-EqualNumericalConditionImpl::EqualNumericalConditionImpl(Index index, NamedFeature<dl::Numerical> feature) : ConditionBase(index, feature) {}
+EqualNumericalConditionImpl::EqualNumericalConditionImpl(Index index, NamedFeature<dl::NumericalTag> feature) : ConditionBase(index, feature) {}
 
 bool EqualNumericalConditionImpl::evaluate_impl(dl::EvaluationContext& source_context) const
 {

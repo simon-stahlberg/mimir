@@ -276,7 +276,7 @@ StateTupleIndexGenerator::const_iterator StateTupleIndexGenerator::begin(const S
 {
     atom_indices.clear();
 
-    const auto& fluent_atoms = state->get_atoms<Fluent>();
+    const auto& fluent_atoms = state->get_atoms<FluentTag>();
     atom_indices.insert(atom_indices.end(), fluent_atoms.begin(), fluent_atoms.end());
     // Add place holder to generate tuples of size < arity
     atom_indices.push_back(tuple_index_mapper->get_num_atoms());
@@ -631,8 +631,8 @@ StatePairTupleIndexGenerator::const_iterator StatePairTupleIndexGenerator::begin
 {
     a_atom_indices[0].clear();
     a_atom_indices[1].clear();
-    const auto& state_fluent_atoms = state->get_atoms<Fluent>();
-    const auto& succ_state_fluent_atoms = succ_state->get_atoms<Fluent>();
+    const auto& state_fluent_atoms = state->get_atoms<FluentTag>();
+    const auto& succ_state_fluent_atoms = succ_state->get_atoms<FluentTag>();
 
     auto it1 = succ_state_fluent_atoms.begin();
     auto it2 = state_fluent_atoms.begin();
@@ -756,7 +756,7 @@ void DynamicNoveltyTable::resize_to_fit(AtomIndex atom_index)
 
 void DynamicNoveltyTable::resize_to_fit(State state)
 {
-    const auto& fluent_atoms = state->get_atoms<Fluent>();
+    const auto& fluent_atoms = state->get_atoms<FluentTag>();
 
     const auto it = std::max_element(fluent_atoms.begin(), fluent_atoms.end());
 

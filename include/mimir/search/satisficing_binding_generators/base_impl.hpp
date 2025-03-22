@@ -60,7 +60,7 @@ inline void clear_full_consistency_graph(std::vector<boost::dynamic_bitset<>>& f
  */
 
 template<typename Derived_>
-template<formalism::FluentOrDerived P>
+template<formalism::IsFluentOrDerivedTag P>
 bool SatisficingBindingGenerator<Derived_>::is_valid_dynamic_binding(const formalism::LiteralList<P>& literals,
                                                                      const FlatBitset& atom_indices,
                                                                      const formalism::ObjectList& binding)
@@ -85,7 +85,7 @@ bool SatisficingBindingGenerator<Derived_>::is_valid_binding(const formalism::Nu
 {
     for (const auto& constraint : constraints)
     {
-        if (!evaluate(m_problem->ground(constraint, binding), m_problem->get_initial_function_to_value<formalism::Static>(), fluent_numeric_variables))
+        if (!evaluate(m_problem->ground(constraint, binding), m_problem->get_initial_function_to_value<formalism::StaticTag>(), fluent_numeric_variables))
         {
             return false;
         }
@@ -94,7 +94,7 @@ bool SatisficingBindingGenerator<Derived_>::is_valid_binding(const formalism::Nu
 }
 
 template<typename Derived_>
-bool SatisficingBindingGenerator<Derived_>::is_valid_static_binding(const formalism::LiteralList<formalism::Static>& literals,
+bool SatisficingBindingGenerator<Derived_>::is_valid_static_binding(const formalism::LiteralList<formalism::StaticTag>& literals,
                                                                     const formalism::ObjectList& binding)
 {
     for (const auto& literal : literals)
@@ -115,9 +115,9 @@ bool SatisficingBindingGenerator<Derived_>::is_valid_binding(formalism::Conjunct
                                                              const DenseState& dense_state,
                                                              const formalism::ObjectList& binding)
 {
-    return is_valid_static_binding(condition->get_literals<formalism::Static>(), binding)
-           && is_valid_dynamic_binding(condition->get_literals<formalism::Fluent>(), dense_state.get_atoms<formalism::Fluent>(), binding)
-           && is_valid_dynamic_binding(condition->get_literals<formalism::Derived>(), dense_state.get_atoms<formalism::Derived>(), binding)
+    return is_valid_static_binding(condition->get_literals<formalism::StaticTag>(), binding)
+           && is_valid_dynamic_binding(condition->get_literals<formalism::FluentTag>(), dense_state.get_atoms<formalism::FluentTag>(), binding)
+           && is_valid_dynamic_binding(condition->get_literals<formalism::DerivedTag>(), dense_state.get_atoms<formalism::DerivedTag>(), binding)
            && is_valid_binding(condition->get_numeric_constraints(), dense_state.get_numeric_variables(), binding);
 }
 
@@ -147,18 +147,18 @@ mimir::generator<formalism::ObjectList> SatisficingBindingGenerator<Derived_>::n
 template<typename Derived_>
 mimir::generator<formalism::ObjectList>
 SatisficingBindingGenerator<Derived_>::unary_case(const DenseState& dense_state,
-                                                  const formalism::AssignmentSet<formalism::Fluent>& fluent_assignment_sets,
-                                                  const formalism::AssignmentSet<formalism::Derived>& derived_assignment_sets,
-                                                  const formalism::NumericAssignmentSet<formalism::Static>& static_numeric_assignment_set,
-                                                  const formalism::NumericAssignmentSet<formalism::Fluent>& fluent_numeric_assignment_set)
+                                                  const formalism::AssignmentSet<formalism::FluentTag>& fluent_assignment_sets,
+                                                  const formalism::AssignmentSet<formalism::DerivedTag>& derived_assignment_sets,
+                                                  const formalism::NumericAssignmentSet<formalism::StaticTag>& static_numeric_assignment_set,
+                                                  const formalism::NumericAssignmentSet<formalism::FluentTag>& fluent_numeric_assignment_set)
 {
     const auto& problem = *m_problem;
     const auto& pddl_repositories = problem.get_repositories();
 
     for (const auto& vertex : m_static_consistency_graph.get_vertices())
     {
-        if (vertex.consistent_literals(m_conjunctive_condition->get_literals<formalism::Fluent>(), fluent_assignment_sets)
-            && vertex.consistent_literals(m_conjunctive_condition->get_literals<formalism::Derived>(), derived_assignment_sets)
+        if (vertex.consistent_literals(m_conjunctive_condition->get_literals<formalism::FluentTag>(), fluent_assignment_sets)
+            && vertex.consistent_literals(m_conjunctive_condition->get_literals<formalism::DerivedTag>(), derived_assignment_sets)
             && vertex.consistent_literals(m_conjunctive_condition->get_numeric_constraints(), static_numeric_assignment_set, fluent_numeric_assignment_set))
         {
             auto binding = formalism::ObjectList { pddl_repositories.get_object(vertex.get_object_index()) };
@@ -178,10 +178,10 @@ SatisficingBindingGenerator<Derived_>::unary_case(const DenseState& dense_state,
 template<typename Derived_>
 mimir::generator<formalism::ObjectList>
 SatisficingBindingGenerator<Derived_>::general_case(const DenseState& dense_state,
-                                                    const formalism::AssignmentSet<formalism::Fluent>& fluent_assignment_sets,
-                                                    const formalism::AssignmentSet<formalism::Derived>& derived_assignment_sets,
-                                                    const formalism::NumericAssignmentSet<formalism::Static>& static_numeric_assignment_set,
-                                                    const formalism::NumericAssignmentSet<formalism::Fluent>& fluent_numeric_assignment_set)
+                                                    const formalism::AssignmentSet<formalism::FluentTag>& fluent_assignment_sets,
+                                                    const formalism::AssignmentSet<formalism::DerivedTag>& derived_assignment_sets,
+                                                    const formalism::NumericAssignmentSet<formalism::StaticTag>& static_numeric_assignment_set,
+                                                    const formalism::NumericAssignmentSet<formalism::FluentTag>& fluent_numeric_assignment_set)
 {
     if (m_static_consistency_graph.get_edges().size() == 0)
     {
@@ -200,8 +200,8 @@ SatisficingBindingGenerator<Derived_>::general_case(const DenseState& dense_stat
     m_consistent_vertices.reset();
     for (const auto& vertex : m_static_consistency_graph.get_vertices())
     {
-        if (vertex.consistent_literals(m_conjunctive_condition->get_literals<formalism::Fluent>(), fluent_assignment_sets)
-            && vertex.consistent_literals(m_conjunctive_condition->get_literals<formalism::Derived>(), derived_assignment_sets)
+        if (vertex.consistent_literals(m_conjunctive_condition->get_literals<formalism::FluentTag>(), fluent_assignment_sets)
+            && vertex.consistent_literals(m_conjunctive_condition->get_literals<formalism::DerivedTag>(), derived_assignment_sets)
             && vertex.consistent_literals(m_conjunctive_condition->get_numeric_constraints(), static_numeric_assignment_set, fluent_numeric_assignment_set))
         {
             m_consistent_vertices.set(vertex.get_index());
@@ -211,8 +211,8 @@ SatisficingBindingGenerator<Derived_>::general_case(const DenseState& dense_stat
     for (const auto& edge : m_static_consistency_graph.get_edges())
     {
         if (m_consistent_vertices.test(edge.get_src().get_index()) && m_consistent_vertices.test(edge.get_dst().get_index())
-            && edge.consistent_literals(m_conjunctive_condition->get_literals<formalism::Fluent>(), fluent_assignment_sets)
-            && edge.consistent_literals(m_conjunctive_condition->get_literals<formalism::Derived>(), derived_assignment_sets)
+            && edge.consistent_literals(m_conjunctive_condition->get_literals<formalism::FluentTag>(), fluent_assignment_sets)
+            && edge.consistent_literals(m_conjunctive_condition->get_literals<formalism::DerivedTag>(), derived_assignment_sets)
             && edge.consistent_literals(m_conjunctive_condition->get_numeric_constraints(), static_numeric_assignment_set, fluent_numeric_assignment_set))
         {
             const auto first_index = edge.get_src().get_index();
@@ -262,14 +262,14 @@ SatisficingBindingGenerator<Derived_>::SatisficingBindingGenerator(formalism::Co
     m_conjunctive_condition(conjunctive_condition),
     m_problem(std::move(problem)),
     m_event_handler(event_handler.value_or(std::make_shared<DefaultSatisficingBindingGeneratorEventHandler>())),
-    m_static_consistency_graph(*m_problem, 0, m_conjunctive_condition->get_parameters().size(), m_conjunctive_condition->get_literals<formalism::Static>()),
+    m_static_consistency_graph(*m_problem, 0, m_conjunctive_condition->get_parameters().size(), m_conjunctive_condition->get_literals<formalism::StaticTag>()),
     m_dense_state(),
     m_fluent_atoms(),
     m_derived_atoms(),
     m_fluent_functions(),
-    m_fluent_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_domain()->get_predicates<formalism::Fluent>()),
+    m_fluent_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_domain()->get_predicates<formalism::FluentTag>()),
     m_derived_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_problem_and_domain_derived_predicates()),
-    m_numeric_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_domain()->get_function_skeletons<formalism::Fluent>()),
+    m_numeric_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_domain()->get_function_skeletons<formalism::FluentTag>()),
     m_full_consistency_graph(m_static_consistency_graph.get_vertices().size(), boost::dynamic_bitset<>(m_static_consistency_graph.get_vertices().size())),
     m_consistent_vertices(m_static_consistency_graph.get_vertices().size()),
     m_kpkc_workspace(KPKCWorkspace(m_static_consistency_graph.get_vertices_by_parameter_index()))
@@ -279,10 +279,10 @@ SatisficingBindingGenerator<Derived_>::SatisficingBindingGenerator(formalism::Co
 template<typename Derived_>
 mimir::generator<formalism::ObjectList>
 SatisficingBindingGenerator<Derived_>::create_binding_generator(State state,
-                                                                const formalism::AssignmentSet<formalism::Fluent>& fluent_assignment_set,
-                                                                const formalism::AssignmentSet<formalism::Derived>& derived_assignment_set,
-                                                                const formalism::NumericAssignmentSet<formalism::Static>& static_numeric_assignment_set,
-                                                                const formalism::NumericAssignmentSet<formalism::Fluent>& fluent_numeric_assignment_set)
+                                                                const formalism::AssignmentSet<formalism::FluentTag>& fluent_assignment_set,
+                                                                const formalism::AssignmentSet<formalism::DerivedTag>& derived_assignment_set,
+                                                                const formalism::NumericAssignmentSet<formalism::StaticTag>& static_numeric_assignment_set,
+                                                                const formalism::NumericAssignmentSet<formalism::FluentTag>& fluent_numeric_assignment_set)
 {
     DenseState::translate(state, m_dense_state);
 
@@ -292,10 +292,10 @@ SatisficingBindingGenerator<Derived_>::create_binding_generator(State state,
 template<typename Derived_>
 mimir::generator<formalism::ObjectList>
 SatisficingBindingGenerator<Derived_>::create_binding_generator(const DenseState& dense_state,
-                                                                const formalism::AssignmentSet<formalism::Fluent>& fluent_assignment_set,
-                                                                const formalism::AssignmentSet<formalism::Derived>& derived_assignment_set,
-                                                                const formalism::NumericAssignmentSet<formalism::Static>& static_numeric_assignment_set,
-                                                                const formalism::NumericAssignmentSet<formalism::Fluent>& fluent_numeric_assignment_set)
+                                                                const formalism::AssignmentSet<formalism::FluentTag>& fluent_assignment_set,
+                                                                const formalism::AssignmentSet<formalism::DerivedTag>& derived_assignment_set,
+                                                                const formalism::NumericAssignmentSet<formalism::StaticTag>& static_numeric_assignment_set,
+                                                                const formalism::NumericAssignmentSet<formalism::FluentTag>& fluent_numeric_assignment_set)
 {
     /* Important optimization:
        Moving the nullary_conditions_check out of this function had a large impact on memory allocations/deallocations.
@@ -318,9 +318,9 @@ SatisficingBindingGenerator<Derived_>::create_binding_generator(const DenseState
 
 template<typename Derived_>
 mimir::generator<std::pair<formalism::ObjectList,
-                           std::tuple<formalism::GroundLiteralList<formalism::Static>,
-                                      formalism::GroundLiteralList<formalism::Fluent>,
-                                      formalism::GroundLiteralList<formalism::Derived>>>>
+                           std::tuple<formalism::GroundLiteralList<formalism::StaticTag>,
+                                      formalism::GroundLiteralList<formalism::FluentTag>,
+                                      formalism::GroundLiteralList<formalism::DerivedTag>>>>
 SatisficingBindingGenerator<Derived_>::create_ground_conjunction_generator(State state)
 {
     DenseState::translate(state, m_dense_state);
@@ -330,13 +330,13 @@ SatisficingBindingGenerator<Derived_>::create_ground_conjunction_generator(State
 
 template<typename Derived_>
 mimir::generator<std::pair<formalism::ObjectList,
-                           std::tuple<formalism::GroundLiteralList<formalism::Static>,
-                                      formalism::GroundLiteralList<formalism::Fluent>,
-                                      formalism::GroundLiteralList<formalism::Derived>>>>
+                           std::tuple<formalism::GroundLiteralList<formalism::StaticTag>,
+                                      formalism::GroundLiteralList<formalism::FluentTag>,
+                                      formalism::GroundLiteralList<formalism::DerivedTag>>>>
 SatisficingBindingGenerator<Derived_>::create_ground_conjunction_generator(const DenseState& dense_state)
 {
-    auto& dense_fluent_atoms = dense_state.get_atoms<formalism::Fluent>();
-    auto& dense_derived_atoms = dense_state.get_atoms<formalism::Derived>();
+    auto& dense_fluent_atoms = dense_state.get_atoms<formalism::FluentTag>();
+    auto& dense_derived_atoms = dense_state.get_atoms<formalism::DerivedTag>();
     auto& dense_numeric_variables = dense_state.get_numeric_variables();
 
     auto& problem = *m_problem;
@@ -365,20 +365,20 @@ SatisficingBindingGenerator<Derived_>::create_ground_conjunction_generator(const
     for (const auto& binding :
          create_binding_generator(dense_state, m_fluent_assignment_set, m_derived_assignment_set, static_numeric_assignment_set, m_numeric_assignment_set))
     {
-        formalism::GroundLiteralList<formalism::Static> static_grounded_literals;
-        for (const auto& static_literal : m_conjunctive_condition->get_literals<formalism::Static>())
+        formalism::GroundLiteralList<formalism::StaticTag> static_grounded_literals;
+        for (const auto& static_literal : m_conjunctive_condition->get_literals<formalism::StaticTag>())
         {
             static_grounded_literals.emplace_back(problem.ground(static_literal, binding));
         }
 
-        formalism::GroundLiteralList<formalism::Fluent> fluent_grounded_literals;
-        for (const auto& fluent_literal : m_conjunctive_condition->get_literals<formalism::Fluent>())
+        formalism::GroundLiteralList<formalism::FluentTag> fluent_grounded_literals;
+        for (const auto& fluent_literal : m_conjunctive_condition->get_literals<formalism::FluentTag>())
         {
             fluent_grounded_literals.emplace_back(problem.ground(fluent_literal, binding));
         }
 
-        formalism::GroundLiteralList<formalism::Derived> derived_grounded_literals;
-        for (const auto& derived_literal : m_conjunctive_condition->get_literals<formalism::Derived>())
+        formalism::GroundLiteralList<formalism::DerivedTag> derived_grounded_literals;
+        for (const auto& derived_literal : m_conjunctive_condition->get_literals<formalism::DerivedTag>())
         {
             derived_grounded_literals.emplace_back(problem.ground(derived_literal, binding));
         }

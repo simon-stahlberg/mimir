@@ -28,23 +28,24 @@
 namespace mimir::formalism
 {
 
-using StaticOrFluentOrDerivedPredicate = std::variant<Predicate<Static>, Predicate<Fluent>, Predicate<Derived>>;
-using StaticOrFluentOrDerivedAtom = std::variant<Atom<Static>, Atom<Fluent>, Atom<Derived>>;
-using StaticOrFluentOrDerivedLiteral = std::variant<Literal<Static>, Literal<Fluent>, Literal<Derived>>;
+using StaticOrFluentOrDerivedPredicate = std::variant<Predicate<StaticTag>, Predicate<FluentTag>, Predicate<DerivedTag>>;
+using StaticOrFluentOrDerivedAtom = std::variant<Atom<StaticTag>, Atom<FluentTag>, Atom<DerivedTag>>;
+using StaticOrFluentOrDerivedLiteral = std::variant<Literal<StaticTag>, Literal<FluentTag>, Literal<DerivedTag>>;
 
-using StaticOrFluentOrDerivedGroundAtom = std::variant<GroundAtom<Static>, GroundAtom<Fluent>, GroundAtom<Derived>>;
-using StaticOrFluentOrDerivedGroundLiteral = std::variant<GroundLiteral<Static>, GroundLiteral<Fluent>, GroundLiteral<Derived>>;
+using StaticOrFluentOrDerivedGroundAtom = std::variant<GroundAtom<StaticTag>, GroundAtom<FluentTag>, GroundAtom<DerivedTag>>;
+using StaticOrFluentOrDerivedGroundLiteral = std::variant<GroundLiteral<StaticTag>, GroundLiteral<FluentTag>, GroundLiteral<DerivedTag>>;
 
-using StaticOrFluentOrAuxiliaryFunctionSkeleton = std::variant<FunctionSkeleton<Static>, FunctionSkeleton<Fluent>, FunctionSkeleton<Auxiliary>>;
-using StaticOrFluentOrAuxiliaryFunction = std::variant<Function<Static>, Function<Fluent>, Function<Auxiliary>>;
+using StaticOrFluentOrAuxiliaryFunctionSkeleton = std::variant<FunctionSkeleton<StaticTag>, FunctionSkeleton<FluentTag>, FunctionSkeleton<AuxiliaryTag>>;
+using StaticOrFluentOrAuxiliaryFunction = std::variant<Function<StaticTag>, Function<FluentTag>, Function<AuxiliaryTag>>;
 
-using StaticOrFluentOrAuxiliaryGroundFunction = std::variant<GroundFunction<Static>, GroundFunction<Fluent>, GroundFunction<Auxiliary>>;
-using StaticOrFluentOrAuxiliaryGroundFunctionValue = std::variant<GroundFunctionValue<Static>, GroundFunctionValue<Fluent>, GroundFunctionValue<Auxiliary>>;
+using StaticOrFluentOrAuxiliaryGroundFunction = std::variant<GroundFunction<StaticTag>, GroundFunction<FluentTag>, GroundFunction<AuxiliaryTag>>;
+using StaticOrFluentOrAuxiliaryGroundFunctionValue =
+    std::variant<GroundFunctionValue<StaticTag>, GroundFunctionValue<FluentTag>, GroundFunctionValue<AuxiliaryTag>>;
 
-using StaticOrFluentFunctionExpressionFunction = std::variant<FunctionExpressionFunction<Static>, FunctionExpressionFunction<Fluent>>;
+using StaticOrFluentFunctionExpressionFunction = std::variant<FunctionExpressionFunction<StaticTag>, FunctionExpressionFunction<FluentTag>>;
 
 using StaticOrFluentOrAuxiliaryGroundFunctionExpressionFunction =
-    std::variant<GroundFunctionExpressionFunction<Static>, GroundFunctionExpressionFunction<Fluent>, GroundFunctionExpressionFunction<Auxiliary>>;
+    std::variant<GroundFunctionExpressionFunction<StaticTag>, GroundFunctionExpressionFunction<FluentTag>, GroundFunctionExpressionFunction<AuxiliaryTag>>;
 
 class ToMimirStructures
 {
@@ -177,7 +178,7 @@ private:
     StaticOrFluentOrAuxiliaryGroundFunction translate_grounded(loki::Function function, Repositories& repositories);
     StaticOrFluentOrAuxiliaryGroundFunctionValue translate_grounded(loki::FunctionValue numeric_fluent, Repositories& repositories);
     GroundNumericConstraint translate_grounded(loki::ConditionNumericConstraint condition, Repositories& repositories);
-    std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>, GroundNumericConstraintList>
+    std::tuple<GroundLiteralList<StaticTag>, GroundLiteralList<FluentTag>, GroundLiteralList<DerivedTag>, GroundNumericConstraintList>
     translate_grounded(loki::Condition condition, Repositories& repositories);
     OptimizationMetric translate_grounded(loki::OptimizationMetric optimization_metric, Repositories& repositories);
 

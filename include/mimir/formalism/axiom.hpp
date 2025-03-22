@@ -27,18 +27,18 @@ class AxiomImpl
 private:
     Index m_index;
     ConjunctiveCondition m_conjunctive_condition;
-    Literal<Derived> m_literal;
+    Literal<DerivedTag> m_literal;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    AxiomImpl(Index index, ConjunctiveCondition conjunctive_condition, Literal<Derived> literal);
+    AxiomImpl(Index index, ConjunctiveCondition conjunctive_condition, Literal<DerivedTag> literal);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
-    using PDDLEntity = void;
+    using FormalismEntity = void;
 
     // moveable but not copyable
     AxiomImpl(const AxiomImpl& other) = delete;
@@ -49,7 +49,7 @@ public:
     Index get_index() const;
     const VariableList& get_parameters() const;
     ConjunctiveCondition get_conjunctive_condition() const;
-    Literal<Derived> get_literal() const;
+    Literal<DerivedTag> get_literal() const;
 
     size_t get_arity() const;
 

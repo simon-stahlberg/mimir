@@ -29,12 +29,12 @@ class GeneralPolicyImpl
 {
 private:
     Index m_index;
-    NamedFeatureLists<dl::Boolean, dl::Numerical> m_features;
+    NamedFeatureLists<dl::BooleanTag, dl::NumericalTag> m_features;
     RuleList m_rules;
 
     /// @brief Create a `GeneralPolicyImpl` for the given `RuleList`.
     /// @param rules
-    GeneralPolicyImpl(Index index, NamedFeatureLists<dl::Boolean, dl::Numerical> features, RuleList rules);
+    GeneralPolicyImpl(Index index, NamedFeatureLists<dl::BooleanTag, dl::NumericalTag> features, RuleList rules);
 
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
@@ -84,12 +84,12 @@ public:
     /// @return the index.
     Index get_index() const;
 
-    template<dl::FeatureCategory D>
+    template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
     const NamedFeatureList<D>& get_features() const;
 
     /// @brief Get the features in the `GeneralPolicyImpl`.
     /// @return the features in the `GeneralPolicyImpl`.
-    const NamedFeatureLists<dl::Boolean, dl::Numerical>& get_hana_features() const;
+    const NamedFeatureLists<dl::BooleanTag, dl::NumericalTag>& get_hana_features() const;
 
     /// @brief Get the rules in the `GeneralPolicyImpl`.
     /// @return the rules in the `GeneralPolicyImpl`.
@@ -97,7 +97,7 @@ public:
 
     auto identifying_members() const
     {
-        return std::tuple(std::cref(get_features<dl::Boolean>()), std::cref(get_features<dl::Numerical>()), std::cref(get_rules()));
+        return std::tuple(std::cref(get_features<dl::BooleanTag>()), std::cref(get_features<dl::NumericalTag>()), std::cref(get_rules()));
     }
 };
 }

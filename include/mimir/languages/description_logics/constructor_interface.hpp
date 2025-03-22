@@ -18,9 +18,9 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_INTERFACE_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_INTERFACE_HPP_
 
-#include "mimir/languages/description_logics/constructor_tag.hpp"
 #include "mimir/languages/description_logics/declarations.hpp"
 #include "mimir/languages/description_logics/denotations.hpp"
+#include "mimir/languages/description_logics/tags.hpp"
 
 #include <concepts>
 #include <cstddef>
@@ -30,7 +30,7 @@
 namespace mimir::languages::dl
 {
 
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 class IConstructor
 {
 protected:

@@ -58,7 +58,7 @@ public:
     void visit(dl::ConceptTop constructor) override;
 };
 
-template<formalism::StaticOrFluentOrDerived P>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
 class ConceptAtomicStateGrammarVisitor : public dl::GrammarVisitor
 {
 private:
@@ -71,7 +71,7 @@ public:
     void visit(dl::ConceptAtomicState<P> constructor) override;
 };
 
-template<formalism::StaticOrFluentOrDerived P>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
 class ConceptAtomicGoalGrammarVisitor : public dl::GrammarVisitor
 {
 private:
@@ -196,7 +196,7 @@ public:
     void visit(dl::RoleUniversal constructor) override;
 };
 
-template<formalism::StaticOrFluentOrDerived P>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
 class RoleAtomicStateGrammarVisitor : public dl::GrammarVisitor
 {
 private:
@@ -209,7 +209,7 @@ public:
     void visit(dl::RoleAtomicState<P> constructor) override;
 };
 
-template<formalism::StaticOrFluentOrDerived P>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
 class RoleAtomicGoalGrammarVisitor : public dl::GrammarVisitor
 {
 private:
@@ -334,7 +334,7 @@ public:
  * BooleanVisitors
  */
 
-template<formalism::StaticOrFluentOrDerived P>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
 class BooleanAtomicStateGrammarVisitor : public dl::GrammarVisitor
 {
 private:
@@ -347,7 +347,7 @@ public:
     void visit(dl::BooleanAtomicState<P> constructor) override;
 };
 
-template<DescriptionLogicCategory D>
+template<IsConceptOrRoleTag D>
 class BooleanNonemptyGrammarVisitor : public dl::GrammarVisitor
 {
 private:
@@ -364,7 +364,7 @@ public:
  * NumericalVisitors
  */
 
-template<DescriptionLogicCategory D>
+template<IsConceptOrRoleTag D>
 class NumericalCountGrammarVisitor : public dl::GrammarVisitor
 {
 private:

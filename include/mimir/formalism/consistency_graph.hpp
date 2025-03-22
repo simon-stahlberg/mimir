@@ -57,12 +57,12 @@ public:
         /// @brief Return true iff the vertex is consistent with all literals in and the assignment set.
         ///
         /// The meaning of the result being true is that the edge remains consistent.
-        template<StaticOrFluentOrDerived P>
+        template<IsStaticOrFluentOrDerivedTag P>
         bool consistent_literals(const LiteralList<P>& literals, const AssignmentSet<P>& assignment_set) const;
 
         bool consistent_literals(const NumericConstraintList& numeric_constraints,
-                                 const NumericAssignmentSet<Static>& static_numeric_assignment_set,
-                                 const NumericAssignmentSet<Fluent>& fluent_numeric_assignment_set) const;
+                                 const NumericAssignmentSet<StaticTag>& static_numeric_assignment_set,
+                                 const NumericAssignmentSet<FluentTag>& fluent_numeric_assignment_set) const;
 
         Index get_object_if_overlap(const Term& term) const;
 
@@ -92,12 +92,12 @@ public:
         /// @param literals
         /// @param consistent_vertex
         /// @return
-        template<StaticOrFluentOrDerived P>
+        template<IsStaticOrFluentOrDerivedTag P>
         bool consistent_literals(const LiteralList<P>& literals, const AssignmentSet<P>& assignment_set) const;
 
         bool consistent_literals(const NumericConstraintList& numeric_constraints,
-                                 const NumericAssignmentSet<Static>& static_numeric_assignment_set,
-                                 const NumericAssignmentSet<Fluent>& fluent_numeric_assignment_set) const;
+                                 const NumericAssignmentSet<StaticTag>& static_numeric_assignment_set,
+                                 const NumericAssignmentSet<FluentTag>& fluent_numeric_assignment_set) const;
 
         Index get_object_if_overlap(const Term& term) const;
 
@@ -121,13 +121,13 @@ public:
     /// More specifically:
     ///  1. for action parameters, we set first to 0 and last to 0 + arity(action)
     ///  2. for universal effects, we set first to arity(action) and last to arity(action) + arity(effect)
-    StaticConsistencyGraph(const ProblemImpl& problem, Index begin_parameter_index, Index end_parameter_index, const LiteralList<Static>& static_conditions);
+    StaticConsistencyGraph(const ProblemImpl& problem, Index begin_parameter_index, Index end_parameter_index, const LiteralList<StaticTag>& static_conditions);
 
     /// @brief Useful to compute possible substitutions for conditional effects
     static std::tuple<Vertices, std::vector<IndexList>, std::vector<IndexList>>
-    compute_vertices(const ProblemImpl& problem, Index begin_parameter_index, Index end_parameter_index, const LiteralList<Static>& static_conditions);
+    compute_vertices(const ProblemImpl& problem, Index begin_parameter_index, Index end_parameter_index, const LiteralList<StaticTag>& static_conditions);
 
-    static Edges compute_edges(const ProblemImpl& problem, const LiteralList<Static>& static_conditions, const Vertices& vertices);
+    static Edges compute_edges(const ProblemImpl& problem, const LiteralList<StaticTag>& static_conditions, const Vertices& vertices);
 
     /// @brief Get the vertices.
     const Vertices& get_vertices() const { return m_vertices; }

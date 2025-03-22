@@ -88,26 +88,26 @@ Index FunctionExpressionMinusImpl::get_index() const { return m_index; }
 FunctionExpression FunctionExpressionMinusImpl::get_function_expression() const { return m_function_expression; }
 
 /* FunctionExpressionFunction */
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 FunctionExpressionFunctionImpl<F>::FunctionExpressionFunctionImpl(Index index, Function<F> function) : m_index(index), m_function(std::move(function))
 {
 }
 
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 Index FunctionExpressionFunctionImpl<F>::get_index() const
 {
     return m_index;
 }
 
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 Function<F> FunctionExpressionFunctionImpl<F>::get_function() const
 {
     return m_function;
 }
 
-template class FunctionExpressionFunctionImpl<Static>;
-template class FunctionExpressionFunctionImpl<Fluent>;
-template class FunctionExpressionFunctionImpl<Auxiliary>;
+template class FunctionExpressionFunctionImpl<StaticTag>;
+template class FunctionExpressionFunctionImpl<FluentTag>;
+template class FunctionExpressionFunctionImpl<AuxiliaryTag>;
 
 /* FunctionExpression */
 FunctionExpressionImpl::FunctionExpressionImpl(Index index, FunctionExpressionVariant function_expression) :
@@ -152,16 +152,16 @@ std::ostream& operator<<(std::ostream& out, const FunctionExpressionMinusImpl& e
     return out;
 }
 
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl<F>& element)
 {
     write(element, StringFormatter(), out);
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl<Static>& element);
-template std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl<Fluent>& element);
-template std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl<Auxiliary>& element);
+template std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl<StaticTag>& element);
+template std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl<FluentTag>& element);
+template std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl<AuxiliaryTag>& element);
 
 std::ostream& operator<<(std::ostream& out, const FunctionExpressionImpl& element)
 {
@@ -193,16 +193,16 @@ std::ostream& operator<<(std::ostream& out, FunctionExpressionMinus element)
     return out;
 }
 
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 std::ostream& operator<<(std::ostream& out, FunctionExpressionFunction<F> element)
 {
     write(*element, AddressFormatter(), out);
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, FunctionExpressionFunction<Static> element);
-template std::ostream& operator<<(std::ostream& out, FunctionExpressionFunction<Fluent> element);
-template std::ostream& operator<<(std::ostream& out, FunctionExpressionFunction<Auxiliary> element);
+template std::ostream& operator<<(std::ostream& out, FunctionExpressionFunction<StaticTag> element);
+template std::ostream& operator<<(std::ostream& out, FunctionExpressionFunction<FluentTag> element);
+template std::ostream& operator<<(std::ostream& out, FunctionExpressionFunction<AuxiliaryTag> element);
 
 std::ostream& operator<<(std::ostream& out, FunctionExpression element)
 {

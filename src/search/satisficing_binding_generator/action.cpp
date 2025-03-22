@@ -44,14 +44,14 @@ bool ActionSatisficingBindingGenerator::is_valid_binding_impl(const DenseState& 
                           [&](auto&& arg) { return is_valid_binding_if_fires(arg, dense_state, binding); });
 }
 
-template<FluentOrAuxiliary F>
+template<IsFluentOrAuxiliaryTag F>
 bool ActionSatisficingBindingGenerator::is_valid_binding(NumericEffect<F> effect, const FlatDoubleList& fluent_numeric_variables, const ObjectList& binding)
 {
     throw std::logic_error("Should not be called.");
 }
 
 template<>
-bool ActionSatisficingBindingGenerator::is_valid_binding(NumericEffect<Fluent> effect,
+bool ActionSatisficingBindingGenerator::is_valid_binding(NumericEffect<FluentTag> effect,
                                                          const FlatDoubleList& fluent_numeric_variables,
                                                          const ObjectList& binding)
 {
@@ -62,23 +62,23 @@ bool ActionSatisficingBindingGenerator::is_valid_binding(NumericEffect<Fluent> e
     const auto result =
         (ground_target_function->get_index() < fluent_numeric_variables.size())
         && (fluent_numeric_variables[ground_target_function->get_index()] != UNDEFINED_CONTINUOUS_COST)
-        && (evaluate(ground_function_expression, m_problem->get_initial_function_to_value<Static>(), fluent_numeric_variables) != UNDEFINED_CONTINUOUS_COST);
+        && (evaluate(ground_function_expression, m_problem->get_initial_function_to_value<StaticTag>(), fluent_numeric_variables) != UNDEFINED_CONTINUOUS_COST);
 
     return result;
 }
 
 template<>
-bool ActionSatisficingBindingGenerator::is_valid_binding(NumericEffect<Auxiliary> effect,
+bool ActionSatisficingBindingGenerator::is_valid_binding(NumericEffect<AuxiliaryTag> effect,
                                                          const FlatDoubleList& fluent_numeric_variables,
                                                          const ObjectList& binding)
 {
     // For auxiliary total-cost, we assume it is well-defined in the initial state.
     const auto ground_function_expression = m_problem->ground(effect->get_function_expression(), binding);
 
-    return (evaluate(ground_function_expression, m_problem->get_initial_function_to_value<Static>(), fluent_numeric_variables) != UNDEFINED_CONTINUOUS_COST);
+    return (evaluate(ground_function_expression, m_problem->get_initial_function_to_value<StaticTag>(), fluent_numeric_variables) != UNDEFINED_CONTINUOUS_COST);
 }
 
-template<FluentOrAuxiliary F>
+template<IsFluentOrAuxiliaryTag F>
 bool ActionSatisficingBindingGenerator::is_valid_binding(const NumericEffectList<F>& effects,
                                                          const FlatDoubleList& fluent_numeric_variables,
                                                          const ObjectList& binding)
@@ -93,10 +93,10 @@ bool ActionSatisficingBindingGenerator::is_valid_binding(const NumericEffectList
     return true;
 }
 
-template bool ActionSatisficingBindingGenerator::is_valid_binding(const NumericEffectList<Fluent>& effects,
+template bool ActionSatisficingBindingGenerator::is_valid_binding(const NumericEffectList<FluentTag>& effects,
                                                                   const FlatDoubleList& fluent_numeric_variables,
                                                                   const ObjectList& binding);
-template bool ActionSatisficingBindingGenerator::is_valid_binding(const NumericEffectList<Auxiliary>& effects,
+template bool ActionSatisficingBindingGenerator::is_valid_binding(const NumericEffectList<AuxiliaryTag>& effects,
                                                                   const FlatDoubleList& fluent_numeric_variables,
                                                                   const ObjectList& binding);
 

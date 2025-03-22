@@ -43,7 +43,7 @@ namespace mimir::search
  * ConjunctiveCondition
  */
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 static bool nullary_literals_hold(const GroundLiteralList<P>& literals, const FlatBitset& atom_indices)
 {
     for (const auto& literal : literals)
@@ -62,35 +62,35 @@ static bool nullary_literals_hold(const GroundLiteralList<P>& literals, const Fl
 bool nullary_conditions_hold(ConjunctiveCondition conjunctive_condition, const ProblemImpl& problem, const DenseState& dense_state)
 {
     // Note: checking nullary constraints doesnt work because its value is problem-dependent!
-    return nullary_literals_hold(conjunctive_condition->get_nullary_ground_literals<Fluent>(), dense_state.get_atoms<Fluent>())
-           && nullary_literals_hold(conjunctive_condition->get_nullary_ground_literals<Derived>(), dense_state.get_atoms<Derived>());
+    return nullary_literals_hold(conjunctive_condition->get_nullary_ground_literals<FluentTag>(), dense_state.get_atoms<FluentTag>())
+           && nullary_literals_hold(conjunctive_condition->get_nullary_ground_literals<DerivedTag>(), dense_state.get_atoms<DerivedTag>());
 }
 
 /**
  * GroundConjunctiveCondition
  */
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 bool is_applicable(const GroundConjunctiveCondition& conjunctive_condition, const FlatBitset& atoms)
 {
     return is_supseteq(atoms, conjunctive_condition.template get_positive_precondition<P>())  //
            && are_disjoint(atoms, conjunctive_condition.template get_negative_precondition<P>());
 }
 
-template bool is_applicable<Static>(const GroundConjunctiveCondition& conjunctive_condition, const FlatBitset& atoms);
-template bool is_applicable<Fluent>(const GroundConjunctiveCondition& conjunctive_condition, const FlatBitset& atoms);
-template bool is_applicable<Derived>(const GroundConjunctiveCondition& conjunctive_condition, const FlatBitset& atoms);
+template bool is_applicable<StaticTag>(const GroundConjunctiveCondition& conjunctive_condition, const FlatBitset& atoms);
+template bool is_applicable<FluentTag>(const GroundConjunctiveCondition& conjunctive_condition, const FlatBitset& atoms);
+template bool is_applicable<DerivedTag>(const GroundConjunctiveCondition& conjunctive_condition, const FlatBitset& atoms);
 
 /// @brief Tests whether the fluents are statically applicable, i.e., contain no conflicting literals.
 /// Without this test we can observe conflicting preconditions in the test_problem of the Ferry domain.
-template<FluentOrDerived P>
+template<IsFluentOrDerivedTag P>
 bool is_statically_applicable(const GroundConjunctiveCondition& conjunctive_condition)
 {
     return are_disjoint(conjunctive_condition.template get_positive_precondition<P>(), conjunctive_condition.template get_negative_precondition<P>());
 }
 
-template bool is_statically_applicable<Fluent>(const GroundConjunctiveCondition& conjunctive_condition);
-template bool is_statically_applicable<Derived>(const GroundConjunctiveCondition& conjunctive_condition);
+template bool is_statically_applicable<FluentTag>(const GroundConjunctiveCondition& conjunctive_condition);
+template bool is_statically_applicable<DerivedTag>(const GroundConjunctiveCondition& conjunctive_condition);
 
 static bool is_applicable(const GroundConjunctiveCondition& conjunctive_condition,
                           const FlatDoubleList& static_numeric_variables,
@@ -108,16 +108,16 @@ static bool is_applicable(const GroundConjunctiveCondition& conjunctive_conditio
 
 bool is_dynamically_applicable(const GroundConjunctiveCondition& conjunctive_condition, const ProblemImpl& problem, const DenseState& dense_state)
 {
-    return is_applicable<Fluent>(conjunctive_condition, dense_state.get_atoms<Fluent>())
-           && is_applicable<Derived>(conjunctive_condition, dense_state.get_atoms<Derived>())
-           && is_applicable(conjunctive_condition, problem.get_initial_function_to_value<Static>(), dense_state.get_numeric_variables());
+    return is_applicable<FluentTag>(conjunctive_condition, dense_state.get_atoms<FluentTag>())
+           && is_applicable<DerivedTag>(conjunctive_condition, dense_state.get_atoms<DerivedTag>())
+           && is_applicable(conjunctive_condition, problem.get_initial_function_to_value<StaticTag>(), dense_state.get_numeric_variables());
 }
 
 bool is_statically_applicable(const GroundConjunctiveCondition& conjunctive_condition, const FlatBitset& static_positive_atoms)
 {
-    return is_applicable<Static>(conjunctive_condition, static_positive_atoms)  //
-           && is_statically_applicable<Fluent>(conjunctive_condition)           //
-           && is_statically_applicable<Derived>(conjunctive_condition);
+    return is_applicable<StaticTag>(conjunctive_condition, static_positive_atoms)  //
+           && is_statically_applicable<FluentTag>(conjunctive_condition)           //
+           && is_statically_applicable<DerivedTag>(conjunctive_condition);
 }
 
 bool is_applicable(const GroundConjunctiveCondition& conjunctive_condition, const ProblemImpl& problem, const DenseState& dense_state)
@@ -130,14 +130,14 @@ bool is_applicable(const GroundConjunctiveCondition& conjunctive_condition, cons
  * GroundConjunctiveEffect
  */
 
-template<FluentOrAuxiliary F>
+template<IsFluentOrAuxiliaryTag F>
 static bool is_applicable(GroundNumericEffect<F> effect, const FlatDoubleList& static_numeric_variables, const FlatDoubleList& fluent_numeric_variables)
 {
     throw std::logic_error("Should not be called.");
 }
 
 template<>
-bool is_applicable(GroundNumericEffect<Fluent> effect, const FlatDoubleList& static_numeric_variables, const FlatDoubleList& fluent_numeric_variables)
+bool is_applicable(GroundNumericEffect<FluentTag> effect, const FlatDoubleList& static_numeric_variables, const FlatDoubleList& fluent_numeric_variables)
 {
     return ((effect->get_function()->get_index() < fluent_numeric_variables.size())
             && (fluent_numeric_variables[effect->get_function()->get_index()] != UNDEFINED_CONTINUOUS_COST))
@@ -145,7 +145,7 @@ bool is_applicable(GroundNumericEffect<Fluent> effect, const FlatDoubleList& sta
 }
 
 template<>
-bool is_applicable(GroundNumericEffect<Auxiliary> effect, const FlatDoubleList& static_numeric_variables, const FlatDoubleList& fluent_numeric_variables)
+bool is_applicable(GroundNumericEffect<AuxiliaryTag> effect, const FlatDoubleList& static_numeric_variables, const FlatDoubleList& fluent_numeric_variables)
 {
     return (evaluate(effect->get_function_expression(), static_numeric_variables, fluent_numeric_variables) != UNDEFINED_CONTINUOUS_COST);
 }
@@ -155,7 +155,7 @@ bool is_applicable(GroundNumericEffect<Auxiliary> effect, const FlatDoubleList& 
 /// @param effects
 /// @param fluent_numeric_variables
 /// @return
-template<FluentOrAuxiliary F>
+template<IsFluentOrAuxiliaryTag F>
 static bool
 is_applicable(const GroundNumericEffectList<F>& effects, const FlatDoubleList& static_numeric_variables, const FlatDoubleList& fluent_numeric_variables)
 {
@@ -171,10 +171,12 @@ is_applicable(const GroundNumericEffectList<F>& effects, const FlatDoubleList& s
 
 bool is_applicable(const GroundConjunctiveEffect& conjunctive_effect, const ProblemImpl& problem, const DenseState& dense_state)
 {
-    return is_applicable(conjunctive_effect.get_fluent_numeric_effects(), problem.get_initial_function_to_value<Static>(), dense_state.get_numeric_variables())
+    return is_applicable(conjunctive_effect.get_fluent_numeric_effects(),
+                         problem.get_initial_function_to_value<StaticTag>(),
+                         dense_state.get_numeric_variables())
            && (!conjunctive_effect.get_auxiliary_numeric_effect().has_value()
                || is_applicable(conjunctive_effect.get_auxiliary_numeric_effect().value().get(),
-                                problem.get_initial_function_to_value<Static>(),
+                                problem.get_initial_function_to_value<StaticTag>(),
                                 dense_state.get_numeric_variables()));
 }
 

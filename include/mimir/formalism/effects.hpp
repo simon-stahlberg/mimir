@@ -23,7 +23,7 @@
 namespace mimir::formalism
 {
 
-template<FluentOrAuxiliary F>
+template<IsFluentOrAuxiliaryTag F>
 class NumericEffectImpl
 {
 private:
@@ -41,7 +41,7 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
-    using PDDLEntity = void;
+    using FormalismEntity = void;
 
     // moveable but not copyable
     NumericEffectImpl(const NumericEffectImpl& other) = delete;
@@ -68,24 +68,24 @@ class ConjunctiveEffectImpl
 private:
     Index m_index;
     VariableList m_parameters;
-    LiteralList<Fluent> m_literals;
-    NumericEffectList<Fluent> m_fluent_numeric_effects;
-    std::optional<NumericEffect<Auxiliary>> m_auxiliary_numeric_effect;
+    LiteralList<FluentTag> m_literals;
+    NumericEffectList<FluentTag> m_fluent_numeric_effects;
+    std::optional<NumericEffect<AuxiliaryTag>> m_auxiliary_numeric_effect;
 
     // Below: add additional members if needed and initialize them in the constructor
 
     ConjunctiveEffectImpl(Index index,
                           VariableList parameters,
-                          LiteralList<Fluent> literals,
-                          NumericEffectList<Fluent> fluent_numeric_effects,
-                          std::optional<NumericEffect<Auxiliary>> auxiliary_numeric_effect);
+                          LiteralList<FluentTag> literals,
+                          NumericEffectList<FluentTag> fluent_numeric_effects,
+                          std::optional<NumericEffect<AuxiliaryTag>> auxiliary_numeric_effect);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
-    using PDDLEntity = void;
+    using FormalismEntity = void;
 
     // moveable but not copyable
     ConjunctiveEffectImpl(const ConjunctiveEffectImpl& other) = delete;
@@ -95,9 +95,9 @@ public:
 
     Index get_index() const;
     const VariableList& get_parameters() const;
-    const LiteralList<Fluent>& get_literals() const;
-    const NumericEffectList<Fluent>& get_fluent_numeric_effects() const;
-    std::optional<NumericEffect<Auxiliary>> get_auxiliary_numeric_effect() const;
+    const LiteralList<FluentTag>& get_literals() const;
+    const NumericEffectList<FluentTag>& get_fluent_numeric_effects() const;
+    const std::optional<NumericEffect<AuxiliaryTag>>& get_auxiliary_numeric_effect() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -127,7 +127,7 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
-    using PDDLEntity = void;
+    using FormalismEntity = void;
 
     // moveable but not copyable
     ConditionalEffectImpl(const ConditionalEffectImpl& other) = delete;
@@ -147,12 +147,12 @@ public:
     auto identifying_members() const { return std::tuple(get_conjunctive_condition(), get_conjunctive_effect()); }
 };
 
-template<FluentOrAuxiliary F>
+template<IsFluentOrAuxiliaryTag F>
 extern std::ostream& operator<<(std::ostream& out, const NumericEffectImpl<F>& element);
 extern std::ostream& operator<<(std::ostream& out, const ConjunctiveEffectImpl& element);
 extern std::ostream& operator<<(std::ostream& out, const ConditionalEffectImpl& element);
 
-template<FluentOrAuxiliary F>
+template<IsFluentOrAuxiliaryTag F>
 extern std::ostream& operator<<(std::ostream& out, NumericEffect<F> element);
 extern std::ostream& operator<<(std::ostream& out, ConjunctiveEffect element);
 extern std::ostream& operator<<(std::ostream& out, ConditionalEffect element);

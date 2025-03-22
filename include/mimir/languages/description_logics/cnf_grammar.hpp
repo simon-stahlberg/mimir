@@ -65,7 +65,7 @@ public:
     /// @brief Tests whether a dl constructor satisfies the grammar specification.
     /// @param constructor is the dl constructor to test.
     /// @return true iff the dl constructor satisfies the grammar specification, and false otherwise.
-    template<FeatureCategory D>
+    template<IsConceptOrRoleOrBooleanOrNumericalTag D>
     bool test_match(dl::Constructor<D> constructor) const;
 
     void accept(IVisitor& visitor) const;

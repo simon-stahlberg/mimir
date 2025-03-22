@@ -251,18 +251,18 @@ StaticOrFluentOrAuxiliaryFunctionSkeleton ToMimirStructures::translate_common(lo
     // Now that we cannot analyze the metric function anymore, we can only work with total cost as auxiliary...
     if (function_skeleton->get_name() == "total-cost")
     {
-        return repositories.template get_or_create_function_skeleton<Auxiliary>(function_skeleton->get_name(),
-                                                                                translate_common(function_skeleton->get_parameters(), repositories));
+        return repositories.template get_or_create_function_skeleton<AuxiliaryTag>(function_skeleton->get_name(),
+                                                                                   translate_common(function_skeleton->get_parameters(), repositories));
     }
     else if (m_effect_function_skeletons.contains(function_skeleton->get_name()))
     {
-        return repositories.template get_or_create_function_skeleton<Fluent>(function_skeleton->get_name(),
-                                                                             translate_common(function_skeleton->get_parameters(), repositories));
+        return repositories.template get_or_create_function_skeleton<FluentTag>(function_skeleton->get_name(),
+                                                                                translate_common(function_skeleton->get_parameters(), repositories));
     }
     else
     {
-        return repositories.template get_or_create_function_skeleton<Static>(function_skeleton->get_name(),
-                                                                             translate_common(function_skeleton->get_parameters(), repositories));
+        return repositories.template get_or_create_function_skeleton<StaticTag>(function_skeleton->get_name(),
+                                                                                translate_common(function_skeleton->get_parameters(), repositories));
     }
 }
 
@@ -293,15 +293,15 @@ StaticOrFluentOrDerivedPredicate ToMimirStructures::translate_common(loki::Predi
 
     if (m_fluent_predicates.count(predicate->get_name()) && !m_derived_predicates.count(predicate->get_name()))
     {
-        return repositories.get_or_create_predicate<Fluent>(predicate->get_name(), parameters);
+        return repositories.get_or_create_predicate<FluentTag>(predicate->get_name(), parameters);
     }
     else if (m_derived_predicates.count(predicate->get_name()))
     {
-        return repositories.get_or_create_predicate<Derived>(predicate->get_name(), parameters);
+        return repositories.get_or_create_predicate<DerivedTag>(predicate->get_name(), parameters);
     }
     else
     {
-        return repositories.get_or_create_predicate<Static>(predicate->get_name(), parameters);
+        return repositories.get_or_create_predicate<StaticTag>(predicate->get_name(), parameters);
     }
 }
 
@@ -364,17 +364,17 @@ FunctionExpression ToMimirStructures::translate_lifted(loki::FunctionExpressionF
         [&](auto&& function) -> FunctionExpression
         {
             using T = std::decay_t<decltype(function)>;
-            if constexpr (std::is_same_v<T, Function<Static>>)
+            if constexpr (std::is_same_v<T, Function<StaticTag>>)
             {
                 return repositories.get_or_create_function_expression(repositories.get_or_create_function_expression_function(function));
             }
-            else if constexpr (std::is_same_v<T, Function<Fluent>>)
+            else if constexpr (std::is_same_v<T, Function<FluentTag>>)
             {
                 return repositories.get_or_create_function_expression(repositories.get_or_create_function_expression_function(function));
             }
-            else if constexpr (std::is_same_v<T, Function<Auxiliary>>)
+            else if constexpr (std::is_same_v<T, Function<AuxiliaryTag>>)
             {
-                throw std::logic_error("ToMimirStructures::translate_lifted: FunctionExpressionFunction<Auxiliary> must not exist.");
+                throw std::logic_error("ToMimirStructures::translate_lifted: FunctionExpressionFunction<AuxiliaryTag> must not exist.");
             }
             else
             {
@@ -407,7 +407,7 @@ StaticOrFluentOrAuxiliaryFunction ToMimirStructures::translate_lifted(loki::Func
 ConjunctiveCondition ToMimirStructures::translate_lifted(loki::Condition condition, const VariableList& parameters, Repositories& repositories)
 {
     const auto func_insert_literal =
-        [](const StaticOrFluentOrDerivedLiteral& static_or_fluent_or_derived_literal, LiteralLists<Static, Fluent, Derived>& ref_literals)
+        [](const StaticOrFluentOrDerivedLiteral& static_or_fluent_or_derived_literal, LiteralLists<StaticTag, FluentTag, DerivedTag>& ref_literals)
     {
         std::visit(
             [&ref_literals](auto&& arg)
@@ -421,7 +421,7 @@ ConjunctiveCondition ToMimirStructures::translate_lifted(loki::Condition conditi
 
     if (const auto condition_and = std::get_if<loki::ConditionAnd>(&condition->get_condition()))
     {
-        auto literals = LiteralLists<Static, Fluent, Derived> {};
+        auto literals = LiteralLists<StaticTag, FluentTag, DerivedTag> {};
         auto numeric_constraints = NumericConstraintList {};
 
         for (const auto& part : (*condition_and)->get_conditions())
@@ -449,7 +449,7 @@ ConjunctiveCondition ToMimirStructures::translate_lifted(loki::Condition conditi
     }
     else if (const auto condition_literal = std::get_if<loki::ConditionLiteral>(&condition->get_condition()))
     {
-        auto literals = LiteralLists<Static, Fluent, Derived> {};
+        auto literals = LiteralLists<StaticTag, FluentTag, DerivedTag> {};
         auto numeric_constraints = NumericConstraintList {};
 
         const auto static_or_fluent_or_derived_literal = translate_lifted((*condition_literal)->get_literal(), repositories);
@@ -467,9 +467,9 @@ ConjunctiveCondition ToMimirStructures::translate_lifted(loki::Condition conditi
 std::tuple<ConjunctiveEffect, ConditionalEffectList>
 ToMimirStructures::translate_lifted(loki::Effect effect, const VariableList& parameters, Repositories& repositories)
 {
-    using ConjunctiveEffectData = std::tuple<LiteralList<Fluent>, NumericEffectList<Fluent>, std::optional<NumericEffect<Auxiliary>>>;
+    using ConjunctiveEffectData = std::tuple<LiteralList<FluentTag>, NumericEffectList<FluentTag>, std::optional<NumericEffect<AuxiliaryTag>>>;
     using ConditionalEffectData =
-        std::unordered_map<ConjunctiveCondition, std::tuple<LiteralList<Fluent>, NumericEffectList<Fluent>, std::optional<NumericEffect<Auxiliary>>>>;
+        std::unordered_map<ConjunctiveCondition, std::tuple<LiteralList<FluentTag>, NumericEffectList<FluentTag>, std::optional<NumericEffect<AuxiliaryTag>>>>;
 
     const auto translate_effect_func =
         [&](loki::Effect effect, ConjunctiveEffectData& ref_conjunctive_effect_data, ConditionalEffectData& ref_conditional_effect_data)
@@ -503,16 +503,16 @@ ToMimirStructures::translate_lifted(loki::Effect effect, const VariableList& par
         {
             const auto static_or_fluent_or_derived_effect = translate_lifted((*effect_literal)->get_literal(), repositories);
 
-            if (std::get_if<Literal<Derived>>(&static_or_fluent_or_derived_effect))
+            if (std::get_if<Literal<DerivedTag>>(&static_or_fluent_or_derived_effect))
             {
                 throw std::runtime_error("Only fluent literals are allowed in effects!");
             }
-            else if (std::get_if<Literal<Static>>(&static_or_fluent_or_derived_effect))
+            else if (std::get_if<Literal<StaticTag>>(&static_or_fluent_or_derived_effect))
             {
                 throw std::logic_error("Expected fluent effect literal but it was static!");
             }
 
-            const auto fluent_effect = std::get<Literal<Fluent>>(static_or_fluent_or_derived_effect);
+            const auto fluent_effect = std::get<Literal<FluentTag>>(static_or_fluent_or_derived_effect);
 
             data_fluent_literals.push_back(fluent_effect);
         }
@@ -525,20 +525,20 @@ ToMimirStructures::translate_lifted(loki::Effect effect, const VariableList& par
                 [&](auto&& function)
                 {
                     using T = std::decay_t<decltype(function)>;
-                    if constexpr (std::is_same_v<T, Function<Fluent>>)
+                    if constexpr (std::is_same_v<T, Function<FluentTag>>)
                     {
                         data_fluent_numeric_effects.push_back(
-                            repositories.get_or_create_numeric_effect<Fluent>((*effect_numeric)->get_assign_operator(), function, function_expression));
+                            repositories.get_or_create_numeric_effect<FluentTag>((*effect_numeric)->get_assign_operator(), function, function_expression));
                     }
-                    else if constexpr (std::is_same_v<T, Function<Auxiliary>>)
+                    else if constexpr (std::is_same_v<T, Function<AuxiliaryTag>>)
                     {
                         assert(!data_auxiliary_numeric_effect.has_value());
                         data_auxiliary_numeric_effect =
-                            repositories.get_or_create_numeric_effect<Auxiliary>((*effect_numeric)->get_assign_operator(), function, function_expression);
+                            repositories.get_or_create_numeric_effect<AuxiliaryTag>((*effect_numeric)->get_assign_operator(), function, function_expression);
                     }
-                    else if constexpr (std::is_same_v<T, Function<Static>>)
+                    else if constexpr (std::is_same_v<T, Function<StaticTag>>)
                     {
-                        throw std::logic_error("ToMimirStructures::translate_lifted: Function<Static> must not exist.");
+                        throw std::logic_error("ToMimirStructures::translate_lifted: Function<StaticTag> must not exist.");
                     }
                     else
                     {
@@ -624,7 +624,7 @@ Action ToMimirStructures::translate_lifted(loki::Action action, Repositories& re
     {
         // TODO: actions without effects are useless....
         conjunctive_effect =
-            repositories.get_or_create_conjunctive_effect(translated_parameters, LiteralList<Fluent> {}, NumericEffectList<Fluent> {}, std::nullopt);
+            repositories.get_or_create_conjunctive_effect(translated_parameters, LiteralList<FluentTag> {}, NumericEffectList<FluentTag> {}, std::nullopt);
     }
 
     return repositories.get_or_create_action(action->get_name(), action->get_original_arity(), conjunctive_condition, conjunctive_effect, conditional_effects);
@@ -641,13 +641,13 @@ Axiom ToMimirStructures::translate_lifted(loki::Axiom axiom, Repositories& repos
         [&](auto&& arg) -> Axiom
         {
             using T = std::decay_t<decltype(arg)>;
-            if constexpr (std::is_same_v<T, Literal<Derived>>)
+            if constexpr (std::is_same_v<T, Literal<DerivedTag>>)
             {
                 return repositories.get_or_create_axiom(conjunctive_condition, arg);
             }
             else
             {
-                throw std::runtime_error("ToMimirStructures::translate_lifted: Expected Literal<Derived> in axiom head.");
+                throw std::runtime_error("ToMimirStructures::translate_lifted: Expected Literal<DerivedTag> in axiom head.");
             }
         },
         literal);
@@ -751,27 +751,27 @@ GroundNumericConstraint ToMimirStructures::translate_grounded(loki::ConditionNum
                                                                 translate_grounded(condition->get_right_function_expression(), repositories));
 }
 
-std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>, GroundNumericConstraintList>
+std::tuple<GroundLiteralList<StaticTag>, GroundLiteralList<FluentTag>, GroundLiteralList<DerivedTag>, GroundNumericConstraintList>
 ToMimirStructures::translate_grounded(loki::Condition condition, Repositories& repositories)
 {
     const auto func_insert_ground_literal = [](const StaticOrFluentOrDerivedGroundLiteral& static_or_fluent_or_derived_literal,
-                                               GroundLiteralList<Static>& ref_static_ground_literals,
-                                               GroundLiteralList<Fluent>& ref_fluent_ground_literals,
-                                               GroundLiteralList<Derived>& ref_derived_ground_literals)
+                                               GroundLiteralList<StaticTag>& ref_static_ground_literals,
+                                               GroundLiteralList<FluentTag>& ref_fluent_ground_literals,
+                                               GroundLiteralList<DerivedTag>& ref_derived_ground_literals)
     {
         std::visit(
             [&ref_static_ground_literals, &ref_fluent_ground_literals, &ref_derived_ground_literals](auto&& arg)
             {
                 using T = std::decay_t<decltype(arg)>;
-                if constexpr (std::is_same_v<T, GroundLiteral<Static>>)
+                if constexpr (std::is_same_v<T, GroundLiteral<StaticTag>>)
                 {
                     ref_static_ground_literals.push_back(arg);
                 }
-                else if constexpr (std::is_same_v<T, GroundLiteral<Fluent>>)
+                else if constexpr (std::is_same_v<T, GroundLiteral<FluentTag>>)
                 {
                     ref_fluent_ground_literals.push_back(arg);
                 }
-                else if constexpr (std::is_same_v<T, GroundLiteral<Derived>>)
+                else if constexpr (std::is_same_v<T, GroundLiteral<DerivedTag>>)
                 {
                     ref_derived_ground_literals.push_back(arg);
                 }
@@ -785,9 +785,9 @@ ToMimirStructures::translate_grounded(loki::Condition condition, Repositories& r
 
     if (const auto condition_and = std::get_if<loki::ConditionAnd>(&condition->get_condition()))
     {
-        auto static_ground_literals = GroundLiteralList<Static> {};
-        auto fluent_ground_literals = GroundLiteralList<Fluent> {};
-        auto derived_ground_literals = GroundLiteralList<Derived> {};
+        auto static_ground_literals = GroundLiteralList<StaticTag> {};
+        auto fluent_ground_literals = GroundLiteralList<FluentTag> {};
+        auto derived_ground_literals = GroundLiteralList<DerivedTag> {};
         auto numeric_constraints = GroundNumericConstraintList {};
 
         for (const auto& part : (*condition_and)->get_conditions())
@@ -813,9 +813,9 @@ ToMimirStructures::translate_grounded(loki::Condition condition, Repositories& r
     }
     else if (const auto condition_literal = std::get_if<loki::ConditionLiteral>(&condition->get_condition()))
     {
-        auto static_ground_literals = GroundLiteralList<Static> {};
-        auto fluent_ground_literals = GroundLiteralList<Fluent> {};
-        auto derived_ground_literals = GroundLiteralList<Derived> {};
+        auto static_ground_literals = GroundLiteralList<StaticTag> {};
+        auto fluent_ground_literals = GroundLiteralList<FluentTag> {};
+        auto derived_ground_literals = GroundLiteralList<DerivedTag> {};
         auto numeric_constraints = GroundNumericConstraintList {};
 
         const auto static_or_fluent_or_derived_ground_literal = translate_grounded((*condition_literal)->get_literal(), repositories);
@@ -826,9 +826,9 @@ ToMimirStructures::translate_grounded(loki::Condition condition, Repositories& r
     }
     else if (const auto& condition_numeric = std::get_if<loki::ConditionNumericConstraint>(&condition->get_condition()))
     {
-        auto static_ground_literals = GroundLiteralList<Static> {};
-        auto fluent_ground_literals = GroundLiteralList<Fluent> {};
-        auto derived_ground_literals = GroundLiteralList<Derived> {};
+        auto static_ground_literals = GroundLiteralList<StaticTag> {};
+        auto fluent_ground_literals = GroundLiteralList<FluentTag> {};
+        auto derived_ground_literals = GroundLiteralList<DerivedTag> {};
         auto numeric_constraints = GroundNumericConstraintList {};
 
         numeric_constraints.push_back(translate_grounded(*condition_numeric, repositories));
@@ -861,7 +861,7 @@ Domain ToMimirStructures::translate(const loki::Domain& domain, DomainBuilder& b
     const auto constants = translate_common(domain->get_constants(), repositories);
 
     /* Predicates section */
-    auto predicates = PredicateLists<Static, Fluent, Derived> {};
+    auto predicates = PredicateLists<StaticTag, FluentTag, DerivedTag> {};
     for (const auto& static_or_fluent_or_derived_predicate : translate_common(domain->get_predicates(), repositories))
     {
         std::visit(
@@ -875,21 +875,21 @@ Domain ToMimirStructures::translate(const loki::Domain& domain, DomainBuilder& b
     }
 
     /* Functions section */
-    auto function_skeletons = FunctionSkeletonLists<Static, Fluent> {};
-    auto auxiliary_function = std::optional<FunctionSkeleton<Auxiliary>> { std::nullopt };
+    auto function_skeletons = FunctionSkeletonLists<StaticTag, FluentTag> {};
+    auto auxiliary_function = std::optional<FunctionSkeleton<AuxiliaryTag>> { std::nullopt };
     for (const auto& static_or_fluent_or_auxiliary_function : translate_common(domain->get_function_skeletons(), repositories))
     {
         std::visit(
             [&function_skeletons, &auxiliary_function](auto&& arg)
             {
                 using T = std::decay_t<decltype(arg)>;
-                if constexpr (std::is_same_v<T, FunctionSkeleton<Static>> || std::is_same_v<T, FunctionSkeleton<Fluent>>)
+                if constexpr (std::is_same_v<T, FunctionSkeleton<StaticTag>> || std::is_same_v<T, FunctionSkeleton<FluentTag>>)
                 {
                     using Type = typename std::decay_t<decltype(*arg)>::Type;
 
                     boost::hana::at_key(function_skeletons, boost::hana::type<Type> {}).push_back(arg);
                 }
-                else if constexpr (std::is_same_v<T, FunctionSkeleton<Auxiliary>>)
+                else if constexpr (std::is_same_v<T, FunctionSkeleton<AuxiliaryTag>>)
                 {
                     assert(!auxiliary_function.has_value());
                     auxiliary_function = arg;
@@ -933,7 +933,7 @@ Problem ToMimirStructures::translate(const loki::Problem& problem, ProblemBuilde
     auto objects = translate_common(problem->get_objects(), repositories);
 
     /* Predicates section */
-    auto predicates = PredicateLists<Static, Fluent, Derived> {};
+    auto predicates = PredicateLists<StaticTag, FluentTag, DerivedTag> {};
     for (const auto& static_or_fluent_or_derived_predicate : translate_common(problem->get_predicates(), repositories))
     {
         std::visit(
@@ -945,12 +945,12 @@ Problem ToMimirStructures::translate(const loki::Problem& problem, ProblemBuilde
             },
             static_or_fluent_or_derived_predicate);
     }
-    assert(boost::hana::at_key(predicates, boost::hana::type<Static> {}).empty());
-    assert(boost::hana::at_key(predicates, boost::hana::type<Fluent> {}).empty());
-    auto derived_predicates = boost::hana::at_key(predicates, boost::hana::type<Derived> {});
+    assert(boost::hana::at_key(predicates, boost::hana::type<StaticTag> {}).empty());
+    assert(boost::hana::at_key(predicates, boost::hana::type<FluentTag> {}).empty());
+    auto derived_predicates = boost::hana::at_key(predicates, boost::hana::type<DerivedTag> {});
 
     /* Initial section */
-    auto tmp_initial_literals = GroundLiteralLists<Static, Fluent, Derived> {};
+    auto tmp_initial_literals = GroundLiteralLists<StaticTag, FluentTag, DerivedTag> {};
     for (const auto& static_or_fluent_or_derived_ground_literal : translate_grounded(problem->get_initial_literals(), repositories))
     {
         std::visit(
@@ -962,28 +962,28 @@ Problem ToMimirStructures::translate(const loki::Problem& problem, ProblemBuilde
             },
             static_or_fluent_or_derived_ground_literal);
     }
-    auto initial_literals = GroundLiteralLists<Static, Fluent> {};
-    boost::hana::at_key(initial_literals, boost::hana::type<Static> {}) =
-        uniquify_elements(boost::hana::at_key(tmp_initial_literals, boost::hana::type<Static> {}));  ///< filter duplicates
-    boost::hana::at_key(initial_literals, boost::hana::type<Fluent> {}) =
-        uniquify_elements(boost::hana::at_key(tmp_initial_literals, boost::hana::type<Fluent> {}));  ///< filter duplicates
-    assert(boost::hana::at_key(tmp_initial_literals, boost::hana::type<Derived> {}).empty());        ///< ensure that no derived ground atom appears in initial
+    auto initial_literals = GroundLiteralLists<StaticTag, FluentTag> {};
+    boost::hana::at_key(initial_literals, boost::hana::type<StaticTag> {}) =
+        uniquify_elements(boost::hana::at_key(tmp_initial_literals, boost::hana::type<StaticTag> {}));  ///< filter duplicates
+    boost::hana::at_key(initial_literals, boost::hana::type<FluentTag> {}) =
+        uniquify_elements(boost::hana::at_key(tmp_initial_literals, boost::hana::type<FluentTag> {}));  ///< filter duplicates
+    assert(boost::hana::at_key(tmp_initial_literals, boost::hana::type<DerivedTag> {}).empty());  ///< ensure that no derived ground atom appears in initial
 
-    auto initial_function_values = GroundFunctionValueLists<Static, Fluent> {};
-    auto initial_auxiliary_function_value = std::optional<GroundFunctionValue<Auxiliary>> {};
+    auto initial_function_values = GroundFunctionValueLists<StaticTag, FluentTag> {};
+    auto initial_auxiliary_function_value = std::optional<GroundFunctionValue<AuxiliaryTag>> {};
     for (const auto static_or_fluent_or_auxiliary_function_value : translate_grounded(problem->get_initial_function_values(), repositories))
     {
         std::visit(
             [&initial_function_values, &initial_auxiliary_function_value](auto&& arg)
             {
                 using T = std::decay_t<decltype(arg)>;
-                if constexpr (std::is_same_v<T, GroundFunctionValue<Static>> || std::is_same_v<T, GroundFunctionValue<Fluent>>)
+                if constexpr (std::is_same_v<T, GroundFunctionValue<StaticTag>> || std::is_same_v<T, GroundFunctionValue<FluentTag>>)
                 {
                     using Type = typename std::decay_t<decltype(*arg)>::Type;
 
                     boost::hana::at_key(initial_function_values, boost::hana::type<Type> {}).push_back(arg);
                 }
-                else if constexpr (std::is_same_v<T, GroundFunctionValue<Auxiliary>>)
+                else if constexpr (std::is_same_v<T, GroundFunctionValue<AuxiliaryTag>>)
                 {
                     assert(!initial_auxiliary_function_value.has_value());
                     initial_auxiliary_function_value = arg;
@@ -997,16 +997,16 @@ Problem ToMimirStructures::translate(const loki::Problem& problem, ProblemBuilde
     }
 
     /* Goal section */
-    auto goal_literals = GroundLiteralLists<Static, Fluent, Derived> {};
+    auto goal_literals = GroundLiteralLists<StaticTag, FluentTag, DerivedTag> {};
     auto numeric_goal_constraints = GroundNumericConstraintList {};
     if (problem->get_goal_condition().has_value())
     {
         const auto [static_goal_literals_, fluent_goal_literals_, derived_goal_literals_, numeric_goal_constraints_] =
             translate_grounded(problem->get_goal_condition().value(), repositories);
 
-        boost::hana::at_key(goal_literals, boost::hana::type<Static> {}) = static_goal_literals_;
-        boost::hana::at_key(goal_literals, boost::hana::type<Fluent> {}) = fluent_goal_literals_;
-        boost::hana::at_key(goal_literals, boost::hana::type<Derived> {}) = derived_goal_literals_;
+        boost::hana::at_key(goal_literals, boost::hana::type<StaticTag> {}) = static_goal_literals_;
+        boost::hana::at_key(goal_literals, boost::hana::type<FluentTag> {}) = fluent_goal_literals_;
+        boost::hana::at_key(goal_literals, boost::hana::type<DerivedTag> {}) = derived_goal_literals_;
         numeric_goal_constraints = numeric_goal_constraints_;
     }
 

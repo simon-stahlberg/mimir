@@ -68,7 +68,7 @@ public:
     /// @param atoms the ground atoms.
     /// @param workspace is the workspace containing preallocated memory.
     /// @return the extended state.
-    State get_or_create_state(const formalism::GroundAtomList<formalism::Fluent>& atoms, const FlatDoubleList& fluent_numeric_variables);
+    State get_or_create_state(const formalism::GroundAtomList<formalism::FluentTag>& atoms, const FlatDoubleList& fluent_numeric_variables);
 
     /// @brief Get or create the extended successor state when applying the given ground `action` in the given `state`.
     /// @param state is the state.

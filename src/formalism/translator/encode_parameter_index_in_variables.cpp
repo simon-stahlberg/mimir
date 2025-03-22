@@ -32,7 +32,7 @@ Variable EncodeParameterIndexInVariables::translate_level_2(Variable variable, R
     return repositories.get_or_create_variable(variable->get_name(), 0);
 }
 
-template<StaticOrFluentOrDerived P>
+template<IsStaticOrFluentOrDerivedTag P>
 Predicate<P> EncodeParameterIndexInVariables::translate_level_2(Predicate<P> predicate, Repositories& repositories)
 {
     m_enable_encoding = false;
@@ -45,11 +45,11 @@ Predicate<P> EncodeParameterIndexInVariables::translate_level_2(Predicate<P> pre
     return translated_predicate;
 }
 
-template Predicate<Static> EncodeParameterIndexInVariables::translate_level_2(Predicate<Static> predicate, Repositories& repositories);
-template Predicate<Fluent> EncodeParameterIndexInVariables::translate_level_2(Predicate<Fluent> predicate, Repositories& repositories);
-template Predicate<Derived> EncodeParameterIndexInVariables::translate_level_2(Predicate<Derived> predicate, Repositories& repositories);
+template Predicate<StaticTag> EncodeParameterIndexInVariables::translate_level_2(Predicate<StaticTag> predicate, Repositories& repositories);
+template Predicate<FluentTag> EncodeParameterIndexInVariables::translate_level_2(Predicate<FluentTag> predicate, Repositories& repositories);
+template Predicate<DerivedTag> EncodeParameterIndexInVariables::translate_level_2(Predicate<DerivedTag> predicate, Repositories& repositories);
 
-template<StaticOrFluentOrAuxiliary F>
+template<IsStaticOrFluentOrAuxiliaryTag F>
 FunctionSkeleton<F> EncodeParameterIndexInVariables::translate_level_2(FunctionSkeleton<F> function_skeleton, Repositories& repositories)
 {
     m_enable_encoding = false;
@@ -63,10 +63,12 @@ FunctionSkeleton<F> EncodeParameterIndexInVariables::translate_level_2(FunctionS
     return translated_function_skeleton;
 }
 
-template FunctionSkeleton<Static> EncodeParameterIndexInVariables::translate_level_2(FunctionSkeleton<Static> function_skeleton, Repositories& repositories);
-template FunctionSkeleton<Fluent> EncodeParameterIndexInVariables::translate_level_2(FunctionSkeleton<Fluent> function_skeleton, Repositories& repositories);
-template FunctionSkeleton<Auxiliary> EncodeParameterIndexInVariables::translate_level_2(FunctionSkeleton<Auxiliary> function_skeleton,
+template FunctionSkeleton<StaticTag> EncodeParameterIndexInVariables::translate_level_2(FunctionSkeleton<StaticTag> function_skeleton,
                                                                                         Repositories& repositories);
+template FunctionSkeleton<FluentTag> EncodeParameterIndexInVariables::translate_level_2(FunctionSkeleton<FluentTag> function_skeleton,
+                                                                                        Repositories& repositories);
+template FunctionSkeleton<AuxiliaryTag> EncodeParameterIndexInVariables::translate_level_2(FunctionSkeleton<AuxiliaryTag> function_skeleton,
+                                                                                           Repositories& repositories);
 
 ConditionalEffect EncodeParameterIndexInVariables::translate_level_2(ConditionalEffect effect, Repositories& repositories)
 {

@@ -59,11 +59,11 @@ TEST(MimirTests, LanguagesDescriptionLogicsGrammarTestMatchTest)
 
     auto constructor_repositories = dl::Repositories();
 
-    const auto predicate_at_robby = problem->get_domain()->get_name_to_predicate<Fluent>().at("at-robby");
+    const auto predicate_at_robby = problem->get_domain()->get_name_to_predicate<FluentTag>().at("at-robby");
     const auto concept_at_robby = constructor_repositories.get_or_create_concept_atomic_state(predicate_at_robby);
     EXPECT_TRUE(grammar.test_match(concept_at_robby));
 
-    const auto predicate_ball = problem->get_domain()->get_name_to_predicate<Static>().at("ball");
+    const auto predicate_ball = problem->get_domain()->get_name_to_predicate<StaticTag>().at("ball");
     const auto concept_ball = constructor_repositories.get_or_create_concept_atomic_state(predicate_ball);
     EXPECT_FALSE(grammar.test_match(concept_ball));
 

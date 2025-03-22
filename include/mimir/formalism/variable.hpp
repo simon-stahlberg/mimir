@@ -39,7 +39,7 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
-    using PDDLEntity = void;
+    using FormalismEntity = void;
 
     // moveable but not copyable
     VariableImpl(const VariableImpl& other) = delete;
@@ -57,8 +57,8 @@ public:
     auto identifying_members() const { return std::tuple(std::cref(get_name()), get_parameter_index()); }
 };
 
-static_assert(IsPDDLEntity<VariableImpl>);
-static_assert(IsPDDLEntity<Variable>);
+static_assert(IsFormalismEntity<VariableImpl>);
+static_assert(IsFormalismEntity<Variable>);
 
 extern std::ostream& operator<<(std::ostream& out, const VariableImpl& element);
 

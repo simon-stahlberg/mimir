@@ -202,36 +202,36 @@ BOOST_SPIRIT_DEFINE(numerical_root, numerical, numerical_count, numerical_distan
 ///////////////////////////////////////////////////////////////////////////
 
 template<>
-struct ConstructorRootClass<Concept> : x3::annotate_on_success, error_handler_base
+struct ConstructorRootClass<ConceptTag> : x3::annotate_on_success, error_handler_base
 {
 };
 template<>
-struct ConstructorRootClass<Role> : x3::annotate_on_success, error_handler_base
+struct ConstructorRootClass<RoleTag> : x3::annotate_on_success, error_handler_base
 {
 };
 template<>
-struct ConstructorRootClass<Boolean> : x3::annotate_on_success, error_handler_base
+struct ConstructorRootClass<BooleanTag> : x3::annotate_on_success, error_handler_base
 {
 };
 template<>
-struct ConstructorRootClass<Numerical> : x3::annotate_on_success, error_handler_base
+struct ConstructorRootClass<NumericalTag> : x3::annotate_on_success, error_handler_base
 {
 };
 
 template<>
-struct ConstructorClass<Concept> : x3::annotate_on_success
+struct ConstructorClass<ConceptTag> : x3::annotate_on_success
 {
 };
 template<>
-struct ConstructorClass<Role> : x3::annotate_on_success
+struct ConstructorClass<RoleTag> : x3::annotate_on_success
 {
 };
 template<>
-struct ConstructorClass<Boolean> : x3::annotate_on_success
+struct ConstructorClass<BooleanTag> : x3::annotate_on_success
 {
 };
 template<>
-struct ConstructorClass<Numerical> : x3::annotate_on_success
+struct ConstructorClass<NumericalTag> : x3::annotate_on_success
 {
 };
 

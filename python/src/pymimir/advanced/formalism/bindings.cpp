@@ -99,9 +99,9 @@ void bind_formalism(nb::module_& m)
         nb::bind_vector<PredicateList<Tag>>(m, (class_name + "List").c_str());
         nb::bind_map<ToPredicateMap<std::string, Tag>>(m, (class_name + "Map").c_str());
     };
-    bind_predicate("StaticPredicate", Static {});
-    bind_predicate("FluentPredicate", Fluent {});
-    bind_predicate("DerivedPredicate", Derived {});
+    bind_predicate("StaticPredicate", StaticTag {});
+    bind_predicate("FluentPredicate", FluentTag {});
+    bind_predicate("DerivedPredicate", DerivedTag {});
 
     auto bind_atom = [&]<typename Tag>(const std::string& class_name, Tag)
     {
@@ -114,9 +114,9 @@ void bind_formalism(nb::module_& m)
             .def("get_variables", &AtomImpl<Tag>::get_variables, nb::rv_policy::reference_internal);
         nb::bind_vector<AtomList<Tag>>(m, (class_name + "List").c_str());
     };
-    bind_atom("StaticAtom", Static {});
-    bind_atom("FluentAtom", Fluent {});
-    bind_atom("DerivedAtom", Derived {});
+    bind_atom("StaticAtom", StaticTag {});
+    bind_atom("FluentAtom", FluentTag {});
+    bind_atom("DerivedAtom", DerivedTag {});
 
     auto bind_function_skeleton = [&]<typename Tag>(const std::string& class_name, Tag)
     {
@@ -128,9 +128,9 @@ void bind_formalism(nb::module_& m)
             .def("get_parameters", &FunctionSkeletonImpl<Tag>::get_parameters, nb::rv_policy::copy);
         nb::bind_vector<FunctionSkeletonList<Tag>>(m, (class_name + "List").c_str());
     };
-    bind_function_skeleton("StaticFunctionSkeleton", Static {});
-    bind_function_skeleton("FluentFunctionSkeleton", Fluent {});
-    bind_function_skeleton("AuxiliaryFunctionSkeleton", Auxiliary {});
+    bind_function_skeleton("StaticFunctionSkeleton", StaticTag {});
+    bind_function_skeleton("FluentFunctionSkeleton", FluentTag {});
+    bind_function_skeleton("AuxiliaryFunctionSkeleton", AuxiliaryTag {});
 
     auto bind_function = [&]<typename Tag>(const std::string& class_name, Tag)
     {
@@ -142,9 +142,9 @@ void bind_formalism(nb::module_& m)
             .def("get_terms", &FunctionImpl<Tag>::get_terms, nb::rv_policy::copy);
         nb::bind_vector<FunctionList<Tag>>(m, (class_name + "List").c_str());
     };
-    bind_function("StaticFunction", Static {});
-    bind_function("FluentFunction", Fluent {});
-    bind_function("AuxiliaryFunction", Auxiliary {});
+    bind_function("StaticFunction", StaticTag {});
+    bind_function("FluentFunction", FluentTag {});
+    bind_function("AuxiliaryFunction", AuxiliaryTag {});
 
     auto bind_ground_function = [&]<typename Tag>(const std::string& class_name, Tag)
     {
@@ -156,9 +156,9 @@ void bind_formalism(nb::module_& m)
             .def("get_objects", &GroundFunctionImpl<Tag>::get_objects, nb::rv_policy::copy);
         nb::bind_vector<GroundFunctionList<Tag>>(m, (class_name + "List").c_str());
     };
-    bind_ground_function("StaticGroundFunction", Static {});
-    bind_ground_function("FluentGroundFunction", Fluent {});
-    bind_ground_function("AuxiliaryGroundFunction", Auxiliary {});
+    bind_ground_function("StaticGroundFunction", StaticTag {});
+    bind_ground_function("FluentGroundFunction", FluentTag {});
+    bind_ground_function("AuxiliaryGroundFunction", AuxiliaryTag {});
 
     auto bind_ground_atom = [&]<typename Tag>(const std::string& class_name, Tag)
     {
@@ -171,9 +171,9 @@ void bind_formalism(nb::module_& m)
             .def("get_objects", &GroundAtomImpl<Tag>::get_objects, nb::rv_policy::copy);
         nb::bind_vector<GroundAtomList<Tag>>(m, (class_name + "List").c_str());
     };
-    bind_ground_atom("StaticGroundAtom", Static {});
-    bind_ground_atom("FluentGroundAtom", Fluent {});
-    bind_ground_atom("DerivedGroundAtom", Derived {});
+    bind_ground_atom("StaticGroundAtom", StaticTag {});
+    bind_ground_atom("FluentGroundAtom", FluentTag {});
+    bind_ground_atom("DerivedGroundAtom", DerivedTag {});
 
     auto bind_ground_literal = [&]<typename Tag>(const std::string& class_name, Tag)
     {
@@ -185,9 +185,9 @@ void bind_formalism(nb::module_& m)
             .def("is_negated", &GroundLiteralImpl<Tag>::is_negated, nb::rv_policy::copy);
         nb::bind_vector<GroundLiteralList<Tag>>(m, (class_name + "List").c_str());
     };
-    bind_ground_literal("StaticGroundLiteral", Static {});
-    bind_ground_literal("FluentGroundLiteral", Fluent {});
-    bind_ground_literal("DerivedGroundLiteral", Derived {});
+    bind_ground_literal("StaticGroundLiteral", StaticTag {});
+    bind_ground_literal("FluentGroundLiteral", FluentTag {});
+    bind_ground_literal("DerivedGroundLiteral", DerivedTag {});
 
     auto bind_literal = [&]<typename Tag>(const std::string& class_name, Tag)
     {
@@ -199,9 +199,9 @@ void bind_formalism(nb::module_& m)
             .def("is_negated", &LiteralImpl<Tag>::is_negated, nb::rv_policy::copy);
         nb::bind_vector<LiteralList<Tag>>(m, (class_name + "List").c_str());
     };
-    bind_literal("StaticLiteral", Static {});
-    bind_literal("FluentLiteral", Fluent {});
-    bind_literal("DerivedLiteral", Derived {});
+    bind_literal("StaticLiteral", StaticTag {});
+    bind_literal("FluentLiteral", FluentTag {});
+    bind_literal("DerivedLiteral", DerivedTag {});
 
     auto bind_ground_function_value = [&]<typename Tag>(const std::string& class_name, Tag)
     {
@@ -213,9 +213,9 @@ void bind_formalism(nb::module_& m)
             .def("get_number", &GroundFunctionValueImpl<Tag>::get_number, nb::rv_policy::copy);
         nb::bind_vector<GroundFunctionValueList<Tag>>(m, (class_name + "List").c_str());
     };
-    bind_ground_function_value("StaticGroundFunctionValue", Static {});
-    bind_ground_function_value("FluentGroundFunctionValue", Fluent {});
-    bind_ground_function_value("AuxiliaryGroundFunctionValue", Auxiliary {});
+    bind_ground_function_value("StaticGroundFunctionValue", StaticTag {});
+    bind_ground_function_value("FluentGroundFunctionValue", FluentTag {});
+    bind_ground_function_value("AuxiliaryGroundFunctionValue", AuxiliaryTag {});
 
     nb::class_<FunctionExpressionImpl>(m, "FunctionExpression")  //
         .def("get",
@@ -257,9 +257,9 @@ void bind_formalism(nb::module_& m)
             .def("get_index", &FunctionExpressionFunctionImpl<Tag>::get_index, nb::rv_policy::copy)
             .def("get_function", &FunctionExpressionFunctionImpl<Tag>::get_function, nb::rv_policy::reference_internal);
     };
-    bind_function_expression_function("StaticFunctionExpressionFunction", Static {});
-    bind_function_expression_function("FluentFunctionExpressionFunction", Fluent {});
-    bind_function_expression_function("AuxiliaryFunctionExpressionFunction", Auxiliary {});
+    bind_function_expression_function("StaticFunctionExpressionFunction", StaticTag {});
+    bind_function_expression_function("FluentFunctionExpressionFunction", FluentTag {});
+    bind_function_expression_function("AuxiliaryFunctionExpressionFunction", AuxiliaryTag {});
 
     /* NumericEffect */
     auto bind_numeric_effect = [&]<typename Tag>(const std::string& class_name, Tag)
@@ -273,8 +273,8 @@ void bind_formalism(nb::module_& m)
             .def("get_function_expression", &NumericEffectImpl<Tag>::get_function_expression, nb::rv_policy::reference_internal);
     };
 
-    bind_numeric_effect("FluentNumericEffect", Fluent {});
-    bind_numeric_effect("AuxiliaryNumericEffect", Auxiliary {});
+    bind_numeric_effect("FluentNumericEffect", FluentTag {});
+    bind_numeric_effect("AuxiliaryNumericEffect", AuxiliaryTag {});
 
     /* NumericConstraint */
     nb::class_<NumericConstraintImpl>(m, "NumericConstraint")  //
@@ -289,12 +289,12 @@ void bind_formalism(nb::module_& m)
     /* ConjunctiveCondition */
     nb::class_<ConjunctiveConditionImpl>(m, "ConjunctiveCondition")  //
         .def("get_parameters", &ConjunctiveConditionImpl::get_parameters, nb::rv_policy::copy)
-        .def("get_static_literals", &ConjunctiveConditionImpl::get_literals<Static>, nb::rv_policy::copy)
-        .def("get_fluent_literals", &ConjunctiveConditionImpl::get_literals<Fluent>, nb::rv_policy::copy)
-        .def("get_derived_literals", &ConjunctiveConditionImpl::get_literals<Derived>, nb::rv_policy::copy)
-        .def("get_nullary_ground_static_literals", &ConjunctiveConditionImpl::get_nullary_ground_literals<Static>, nb::rv_policy::copy)
-        .def("get_nullary_ground_fluent_literals", &ConjunctiveConditionImpl::get_nullary_ground_literals<Fluent>, nb::rv_policy::copy)
-        .def("get_nullary_ground_derived_literals", &ConjunctiveConditionImpl::get_nullary_ground_literals<Derived>, nb::rv_policy::copy)
+        .def("get_static_literals", &ConjunctiveConditionImpl::get_literals<StaticTag>, nb::rv_policy::copy)
+        .def("get_fluent_literals", &ConjunctiveConditionImpl::get_literals<FluentTag>, nb::rv_policy::copy)
+        .def("get_derived_literals", &ConjunctiveConditionImpl::get_literals<DerivedTag>, nb::rv_policy::copy)
+        .def("get_nullary_ground_static_literals", &ConjunctiveConditionImpl::get_nullary_ground_literals<StaticTag>, nb::rv_policy::copy)
+        .def("get_nullary_ground_fluent_literals", &ConjunctiveConditionImpl::get_nullary_ground_literals<FluentTag>, nb::rv_policy::copy)
+        .def("get_nullary_ground_derived_literals", &ConjunctiveConditionImpl::get_nullary_ground_literals<DerivedTag>, nb::rv_policy::copy)
         .def("get_numeric_constraints", &ConjunctiveConditionImpl::get_numeric_constraints, nb::rv_policy::copy);
 
     /* ConjunctiveEffectImpl */
@@ -380,9 +380,9 @@ void bind_formalism(nb::module_& m)
             .def("get_index", &GroundFunctionExpressionFunctionImpl<Tag>::get_index, nb::rv_policy::copy)
             .def("get_function", &GroundFunctionExpressionFunctionImpl<Tag>::get_function, nb::rv_policy::reference_internal);
     };
-    bind_ground_function_expression_function("StaticGroundFunctionExpressionFunction", Static {});
-    bind_ground_function_expression_function("FluentGroundFunctionExpressionFunction", Fluent {});
-    bind_ground_function_expression_function("AuxiliaryGroundFunctionExpressionFunction", Auxiliary {});
+    bind_ground_function_expression_function("StaticGroundFunctionExpressionFunction", StaticTag {});
+    bind_ground_function_expression_function("FluentGroundFunctionExpressionFunction", FluentTag {});
+    bind_ground_function_expression_function("AuxiliaryGroundFunctionExpressionFunction", AuxiliaryTag {});
 
     /* OptimizationMetric */
     nb::class_<OptimizationMetricImpl>(m, "OptimizationMetric")  //
@@ -402,28 +402,28 @@ void bind_formalism(nb::module_& m)
             .def("get_function", &GroundNumericEffectImpl<Tag>::get_function, nb::rv_policy::reference_internal)
             .def("get_function_expression", &GroundNumericEffectImpl<Tag>::get_function_expression, nb::rv_policy::reference_internal);
     };
-    bind_ground_numeric_effect("FluentGroundNumericEffect", Fluent {});
-    bind_ground_numeric_effect("AuxiliaryGroundNumericEffect", Auxiliary {});
+    bind_ground_numeric_effect("FluentGroundNumericEffect", FluentTag {});
+    bind_ground_numeric_effect("AuxiliaryGroundNumericEffect", AuxiliaryTag {});
 
     /* GroundConjunctiveCondition */
     nb::class_<GroundConjunctiveCondition>(m, "GroundConjunctiveCondition")
         .def("get_fluent_positive_condition",
-             nb::overload_cast<>(&GroundConjunctiveCondition::get_positive_precondition<Fluent>, nb::const_),
+             nb::overload_cast<>(&GroundConjunctiveCondition::get_positive_precondition<FluentTag>, nb::const_),
              nb::rv_policy::copy)
         .def("get_static_positive_condition",
-             nb::overload_cast<>(&GroundConjunctiveCondition::get_positive_precondition<Static>, nb::const_),
+             nb::overload_cast<>(&GroundConjunctiveCondition::get_positive_precondition<StaticTag>, nb::const_),
              nb::rv_policy::copy)
         .def("get_derived_positive_condition",
-             nb::overload_cast<>(&GroundConjunctiveCondition::get_positive_precondition<Derived>, nb::const_),
+             nb::overload_cast<>(&GroundConjunctiveCondition::get_positive_precondition<DerivedTag>, nb::const_),
              nb::rv_policy::copy)
         .def("get_fluent_negative_condition",
-             nb::overload_cast<>(&GroundConjunctiveCondition::get_negative_precondition<Fluent>, nb::const_),
+             nb::overload_cast<>(&GroundConjunctiveCondition::get_negative_precondition<FluentTag>, nb::const_),
              nb::rv_policy::copy)
         .def("get_static_negative_condition",
-             nb::overload_cast<>(&GroundConjunctiveCondition::get_negative_precondition<Static>, nb::const_),
+             nb::overload_cast<>(&GroundConjunctiveCondition::get_negative_precondition<StaticTag>, nb::const_),
              nb::rv_policy::copy)
         .def("get_derived_negative_condition",
-             nb::overload_cast<>(&GroundConjunctiveCondition::get_negative_precondition<Derived>, nb::const_),
+             nb::overload_cast<>(&GroundConjunctiveCondition::get_negative_precondition<DerivedTag>, nb::const_),
              nb::rv_policy::copy);
 
     /* GroundConjunctiveEffect */
@@ -495,27 +495,30 @@ void bind_formalism(nb::module_& m)
     nb::class_<Repositories>(m, "Repositories")  //
         .def(
             "get_static_ground_atoms",
-            [](const Repositories& self) { return GroundAtomList<Static>(self.get_ground_atoms<Static>().begin(), self.get_ground_atoms<Static>().end()); },
+            [](const Repositories& self)
+            { return GroundAtomList<StaticTag>(self.get_ground_atoms<StaticTag>().begin(), self.get_ground_atoms<StaticTag>().end()); },
             nb::rv_policy::copy)
-        .def("get_static_ground_atom", &Repositories::get_ground_atom<Static>, nb::rv_policy::reference_internal)
+        .def("get_static_ground_atom", &Repositories::get_ground_atom<StaticTag>, nb::rv_policy::reference_internal)
         .def(
             "get_fluent_ground_atoms",
-            [](const Repositories& self) { return GroundAtomList<Fluent>(self.get_ground_atoms<Fluent>().begin(), self.get_ground_atoms<Fluent>().end()); },
+            [](const Repositories& self)
+            { return GroundAtomList<FluentTag>(self.get_ground_atoms<FluentTag>().begin(), self.get_ground_atoms<FluentTag>().end()); },
             nb::rv_policy::copy)
-        .def("get_fluent_ground_atom", &Repositories::get_ground_atom<Fluent>, nb::rv_policy::reference_internal)
+        .def("get_fluent_ground_atom", &Repositories::get_ground_atom<FluentTag>, nb::rv_policy::reference_internal)
         .def(
             "get_derived_ground_atoms",
-            [](const Repositories& self) { return GroundAtomList<Derived>(self.get_ground_atoms<Derived>().begin(), self.get_ground_atoms<Derived>().end()); },
+            [](const Repositories& self)
+            { return GroundAtomList<DerivedTag>(self.get_ground_atoms<DerivedTag>().begin(), self.get_ground_atoms<DerivedTag>().end()); },
             nb::rv_policy::copy)
-        .def("get_derived_ground_atom", &Repositories::get_ground_atom<Derived>, nb::rv_policy::reference_internal)
+        .def("get_derived_ground_atom", &Repositories::get_ground_atom<DerivedTag>, nb::rv_policy::reference_internal)
         .def("get_static_ground_atoms_from_indices",
-             nb::overload_cast<const std::vector<size_t>&>(&Repositories::get_ground_atoms_from_indices<Static, std::vector<size_t>>, nb::const_),
+             nb::overload_cast<const std::vector<size_t>&>(&Repositories::get_ground_atoms_from_indices<StaticTag, std::vector<size_t>>, nb::const_),
              nb::rv_policy::copy)
         .def("get_fluent_ground_atoms_from_indices",
-             nb::overload_cast<const std::vector<size_t>&>(&Repositories::get_ground_atoms_from_indices<Fluent, std::vector<size_t>>, nb::const_),
+             nb::overload_cast<const std::vector<size_t>&>(&Repositories::get_ground_atoms_from_indices<FluentTag, std::vector<size_t>>, nb::const_),
              nb::rv_policy::copy)
         .def("get_derived_ground_atoms_from_indices",
-             nb::overload_cast<const std::vector<size_t>&>(&Repositories::get_ground_atoms_from_indices<Derived, std::vector<size_t>>, nb::const_),
+             nb::overload_cast<const std::vector<size_t>&>(&Repositories::get_ground_atoms_from_indices<DerivedTag, std::vector<size_t>>, nb::const_),
              nb::rv_policy::copy)
         .def("get_object", &Repositories::get_object, nb::rv_policy::reference_internal);
 
@@ -528,9 +531,9 @@ void bind_formalism(nb::module_& m)
             .def("insert_ground_atoms", &AssignmentSet<Tag>::insert_ground_atoms, nb::arg("ground_atoms"))
             .def("insert_ground_atom", &AssignmentSet<Tag>::insert_ground_atoms, nb::arg("ground_atom"));
     };
-    bind_assignment_set("StaticAssignmentSet", Static {});
-    bind_assignment_set("FluentAssignmentSet", Fluent {});
-    bind_assignment_set("DerivedAssignmentSet", Derived {});
+    bind_assignment_set("StaticAssignmentSet", StaticTag {});
+    bind_assignment_set("FluentAssignmentSet", FluentTag {});
+    bind_assignment_set("DerivedAssignmentSet", DerivedTag {});
 
     /* NumericAssignmentSets */
     auto bind_numeric_assignment_set = [&]<typename Tag>(const std::string& class_name, Tag)
@@ -545,8 +548,8 @@ void bind_formalism(nb::module_& m)
                  nb::arg("numeric_values"));
     };
 
-    bind_numeric_assignment_set("StaticNumericAssignmentSet", Static {});
-    bind_numeric_assignment_set("FluentNumericAssignmentSet", Fluent {});
+    bind_numeric_assignment_set("StaticNumericAssignmentSet", StaticTag {});
+    bind_numeric_assignment_set("FluentNumericAssignmentSet", FluentTag {});
 
     /* Domain */
     nb::class_<DomainImpl>(m, "Domain")  //
@@ -558,17 +561,17 @@ void bind_formalism(nb::module_& m)
              { return (self.get_filepath().has_value()) ? std::optional<std::string>(self.get_filepath()->string()) : std::nullopt; })
         .def("get_name", &DomainImpl::get_name, nb::rv_policy::copy)
         .def("get_constants", &DomainImpl::get_constants, nb::rv_policy::copy)
-        .def("get_static_predicates", &DomainImpl::get_predicates<Static>, nb::rv_policy::copy)
-        .def("get_fluent_predicates", &DomainImpl::get_predicates<Fluent>, nb::rv_policy::copy)
-        .def("get_derived_predicates", &DomainImpl::get_predicates<Derived>, nb::rv_policy::copy)
-        .def("get_static_functions", &DomainImpl::get_function_skeletons<Static>, nb::rv_policy::copy)
-        .def("get_fluent_functions", &DomainImpl::get_function_skeletons<Fluent>, nb::rv_policy::copy)
+        .def("get_static_predicates", &DomainImpl::get_predicates<StaticTag>, nb::rv_policy::copy)
+        .def("get_fluent_predicates", &DomainImpl::get_predicates<FluentTag>, nb::rv_policy::copy)
+        .def("get_derived_predicates", &DomainImpl::get_predicates<DerivedTag>, nb::rv_policy::copy)
+        .def("get_static_functions", &DomainImpl::get_function_skeletons<StaticTag>, nb::rv_policy::copy)
+        .def("get_fluent_functions", &DomainImpl::get_function_skeletons<FluentTag>, nb::rv_policy::copy)
         .def("get_auxiliary_function", &DomainImpl::get_auxiliary_function_skeleton, nb::rv_policy::copy)
         .def("get_actions", &DomainImpl::get_actions, nb::rv_policy::copy)
         .def("get_requirements", &DomainImpl::get_requirements, nb::rv_policy::copy)
-        .def("get_name_to_static_predicate", &DomainImpl::get_name_to_predicate<Static>, nb::rv_policy::copy)
-        .def("get_name_to_fluent_predicate", &DomainImpl::get_name_to_predicate<Fluent>, nb::rv_policy::copy)
-        .def("get_name_to_derived_predicate", &DomainImpl::get_name_to_predicate<Derived>, nb::rv_policy::copy);
+        .def("get_name_to_static_predicate", &DomainImpl::get_name_to_predicate<StaticTag>, nb::rv_policy::copy)
+        .def("get_name_to_fluent_predicate", &DomainImpl::get_name_to_predicate<FluentTag>, nb::rv_policy::copy)
+        .def("get_name_to_derived_predicate", &DomainImpl::get_name_to_predicate<DerivedTag>, nb::rv_policy::copy);
 
     /* Problem */
     nb::class_<ProblemImpl>(m, "Problem")  //
@@ -590,15 +593,15 @@ void bind_formalism(nb::module_& m)
         .def("get_domain", &ProblemImpl::get_domain, nb::rv_policy::copy)
         .def("get_requirements", &ProblemImpl::get_requirements, nb::rv_policy::copy)
         .def("get_objects", &ProblemImpl::get_objects, nb::rv_policy::copy)
-        .def("get_static_initial_literals", &ProblemImpl::get_initial_literals<Static>, nb::rv_policy::copy)
-        .def("get_fluent_initial_literals", &ProblemImpl::get_initial_literals<Fluent>, nb::rv_policy::copy)
-        .def("get_static_function_values", &ProblemImpl::get_initial_function_values<Static>, nb::rv_policy::copy)
-        .def("get_fluent_function_values", &ProblemImpl::get_initial_function_values<Fluent>, nb::rv_policy::copy)
+        .def("get_static_initial_literals", &ProblemImpl::get_initial_literals<StaticTag>, nb::rv_policy::copy)
+        .def("get_fluent_initial_literals", &ProblemImpl::get_initial_literals<FluentTag>, nb::rv_policy::copy)
+        .def("get_static_function_values", &ProblemImpl::get_initial_function_values<StaticTag>, nb::rv_policy::copy)
+        .def("get_fluent_function_values", &ProblemImpl::get_initial_function_values<FluentTag>, nb::rv_policy::copy)
         .def("get_auxiliary_function_value", &ProblemImpl::get_auxiliary_function_value, nb::rv_policy::copy)
         .def("get_optimization_metric", &ProblemImpl::get_optimization_metric, nb::rv_policy::copy)
-        .def("get_static_goal_condition", &ProblemImpl::get_goal_condition<Static>, nb::rv_policy::copy)
-        .def("get_fluent_goal_condition", &ProblemImpl::get_goal_condition<Fluent>, nb::rv_policy::copy)
-        .def("get_derived_goal_condition", &ProblemImpl::get_goal_condition<Derived>, nb::rv_policy::copy)
+        .def("get_static_goal_condition", &ProblemImpl::get_goal_condition<StaticTag>, nb::rv_policy::copy)
+        .def("get_fluent_goal_condition", &ProblemImpl::get_goal_condition<FluentTag>, nb::rv_policy::copy)
+        .def("get_derived_goal_condition", &ProblemImpl::get_goal_condition<DerivedTag>, nb::rv_policy::copy)
         .def("get_static_initial_atoms", &ProblemImpl::get_static_initial_atoms, nb::rv_policy::copy)
         .def("get_fluent_initial_atoms", &ProblemImpl::get_fluent_initial_atoms, nb::rv_policy::copy)
         .def("get_static_assignment_set", &ProblemImpl::get_static_assignment_set, nb::rv_policy::copy);

@@ -25,17 +25,17 @@ namespace mimir::languages::general_policies
 {
 class Repositories;
 
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 class NamedFeatureImpl;
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 using NamedFeature = const NamedFeatureImpl<D>*;
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 using NamedFeatureList = std::vector<NamedFeature<D>>;
-template<dl::FeatureCategory... Ds>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag... Ds>
 using NamedFeatureLists = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, NamedFeatureList<Ds>>...>;
-template<typename Key, dl::FeatureCategory D>
+template<typename Key, dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 using ToNamedFeatureMap = std::unordered_map<Key, NamedFeature<D>, loki::Hash<Key>, loki::EqualTo<Key>>;
-template<typename Key, dl::FeatureCategory... Ds>
+template<typename Key, dl::IsConceptOrRoleOrBooleanOrNumericalTag... Ds>
 using ToNamedFeatureMaps = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, ToNamedFeatureMap<Key, Ds>>...>;
 
 class ICondition;

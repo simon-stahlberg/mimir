@@ -41,9 +41,9 @@ LiftedAxiomEvaluator::LiftedAxiomEvaluator(Problem problem, LiftedAxiomEvaluator
     m_fluent_atoms(),
     m_derived_atoms(),
     m_fluent_functions(),
-    m_fluent_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_domain()->get_predicates<Fluent>()),
+    m_fluent_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_domain()->get_predicates<FluentTag>()),
     m_derived_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_problem_and_domain_derived_predicates()),
-    m_numeric_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_domain()->get_function_skeletons<Fluent>())
+    m_numeric_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_domain()->get_function_skeletons<FluentTag>())
 {
     /* 3. Initialize condition grounders */
     const auto& axioms = m_problem->get_problem_and_domain_axioms();
@@ -57,8 +57,8 @@ LiftedAxiomEvaluator::LiftedAxiomEvaluator(Problem problem, LiftedAxiomEvaluator
 
 void LiftedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state)
 {
-    const auto& dense_fluent_atoms = dense_state.get_atoms<Fluent>();
-    auto& dense_derived_atoms = dense_state.get_atoms<Derived>();
+    const auto& dense_fluent_atoms = dense_state.get_atoms<FluentTag>();
+    auto& dense_derived_atoms = dense_state.get_atoms<DerivedTag>();
     auto& dense_numeric_variables = dense_state.get_numeric_variables();
 
     /* 1. Initialize assignment set */
@@ -147,7 +147,7 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state)
                 if (!dense_derived_atoms.get(grounded_atom_index))
                 {
                     // GENERATED NEW DERIVED ATOM!
-                    const auto new_ground_atom = pddl_repositories.get_ground_atom<Derived>(grounded_atom_index);
+                    const auto new_ground_atom = pddl_repositories.get_ground_atom<DerivedTag>(grounded_atom_index);
                     reached_partition_fixed_point = false;
 
                     // Update the assignment set

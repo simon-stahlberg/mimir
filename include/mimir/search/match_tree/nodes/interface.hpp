@@ -28,18 +28,18 @@ template<HasConjunctiveCondition E>
 class INodeVisitor
 {
 public:
-    virtual void accept(const AtomSelectorNode_TFX<E, formalism::Fluent>& atom) = 0;
-    virtual void accept(const AtomSelectorNode_TF<E, formalism::Fluent>& atom) = 0;
-    virtual void accept(const AtomSelectorNode_TX<E, formalism::Fluent>& atom) = 0;
-    virtual void accept(const AtomSelectorNode_FX<E, formalism::Fluent>& atom) = 0;
-    virtual void accept(const AtomSelectorNode_T<E, formalism::Fluent>& atom) = 0;
-    virtual void accept(const AtomSelectorNode_F<E, formalism::Fluent>& atom) = 0;
-    virtual void accept(const AtomSelectorNode_TFX<E, formalism::Derived>& atom) = 0;
-    virtual void accept(const AtomSelectorNode_TF<E, formalism::Derived>& atom) = 0;
-    virtual void accept(const AtomSelectorNode_TX<E, formalism::Derived>& atom) = 0;
-    virtual void accept(const AtomSelectorNode_FX<E, formalism::Derived>& atom) = 0;
-    virtual void accept(const AtomSelectorNode_T<E, formalism::Derived>& atom) = 0;
-    virtual void accept(const AtomSelectorNode_F<E, formalism::Derived>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_TFX<E, formalism::FluentTag>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_TF<E, formalism::FluentTag>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_TX<E, formalism::FluentTag>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_FX<E, formalism::FluentTag>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_T<E, formalism::FluentTag>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_F<E, formalism::FluentTag>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_TFX<E, formalism::DerivedTag>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_TF<E, formalism::DerivedTag>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_TX<E, formalism::DerivedTag>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_FX<E, formalism::DerivedTag>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_T<E, formalism::DerivedTag>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_F<E, formalism::DerivedTag>& atom) = 0;
     virtual void accept(const NumericConstraintSelectorNode_T<E>& constraint) = 0;
     virtual void accept(const NumericConstraintSelectorNode_TX<E>& constraint) = 0;
     virtual void accept(const ElementGeneratorNode_Perfect<E>& generator) = 0;

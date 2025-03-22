@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_CATEGORY_HPP_
-#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_CATEGORY_HPP_
+#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_TAGS_HPP_
+#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_TAGS_HPP_
 
 #include <concepts>
 #include <string>
@@ -30,22 +30,22 @@ namespace mimir::languages::dl
  * We need those to write generic code independent of concept or role.
  */
 
-struct Concept
+struct ConceptTag
 {
     static constexpr std::string name = "concept";
 };
 
-struct Role
+struct RoleTag
 {
     static constexpr std::string name = "role";
 };
 
-struct Boolean
+struct BooleanTag
 {
     static constexpr std::string name = "boolean";
 };
 
-struct Numerical
+struct NumericalTag
 {
     static constexpr std::string name = "numerical";
 };
@@ -55,11 +55,11 @@ struct Numerical
  */
 
 template<typename T>
-concept DescriptionLogicCategory = std::is_same<T, Concept>::value || std::is_same<T, Role>::value;
+concept IsConceptOrRoleTag = std::is_same<T, ConceptTag>::value || std::is_same<T, RoleTag>::value;
 
 template<typename T>
-concept FeatureCategory =
-    std::is_same<T, Concept>::value || std::is_same<T, Role>::value || std::is_same<T, Boolean>::value || std::is_same<T, Numerical>::value;
+concept IsConceptOrRoleOrBooleanOrNumericalTag =
+    std::is_same<T, ConceptTag>::value || std::is_same<T, RoleTag>::value || std::is_same<T, BooleanTag>::value || std::is_same<T, NumericalTag>::value;
 
 }
 

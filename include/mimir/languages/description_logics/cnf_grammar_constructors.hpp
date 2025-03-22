@@ -20,8 +20,8 @@
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/languages/description_logics/cnf_grammar_constructor_interface.hpp"
-#include "mimir/languages/description_logics/constructor_tag.hpp"
 #include "mimir/languages/description_logics/declarations.hpp"
+#include "mimir/languages/description_logics/tags.hpp"
 
 #include <concepts>
 #include <cstddef>
@@ -36,7 +36,7 @@ namespace mimir::languages::dl::cnf_grammar
  * NonTerminal
  */
 
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 class NonTerminalImpl
 {
 private:
@@ -74,7 +74,7 @@ public:
  * DerivationRule
  */
 
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 class DerivationRuleImpl
 {
 private:
@@ -113,7 +113,7 @@ public:
  * SubstitutionRule
  */
 
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 class SubstitutionRuleImpl
 {
 private:
@@ -152,7 +152,7 @@ public:
  * Concepts
  */
 
-class ConceptBotImpl : public IConstructor<Concept>
+class ConceptBotImpl : public IConstructor<ConceptTag>
 {
 private:
     Index m_index;
@@ -170,7 +170,7 @@ public:
     ConceptBotImpl(ConceptBotImpl&& other) = default;
     ConceptBotImpl& operator=(ConceptBotImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
+    bool test_match(dl::Constructor<ConceptTag> constructor, const Grammar& grammar) const override;
 
     void accept(IVisitor& visitor) const override;
 
@@ -182,7 +182,7 @@ public:
     auto identifying_members() const { return std::tuple(); }
 };
 
-class ConceptTopImpl : public IConstructor<Concept>
+class ConceptTopImpl : public IConstructor<ConceptTag>
 {
 private:
     Index m_index;
@@ -200,7 +200,7 @@ public:
     ConceptTopImpl(ConceptTopImpl&& other) = default;
     ConceptTopImpl& operator=(ConceptTopImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
+    bool test_match(dl::Constructor<ConceptTag> constructor, const Grammar& grammar) const override;
 
     void accept(IVisitor& visitor) const override;
 
@@ -212,8 +212,8 @@ public:
     auto identifying_members() const { return std::tuple(); }
 };
 
-template<formalism::StaticOrFluentOrDerived P>
-class ConceptAtomicStateImpl : public IConstructor<Concept>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
+class ConceptAtomicStateImpl : public IConstructor<ConceptTag>
 {
 private:
     Index m_index;
@@ -232,7 +232,7 @@ public:
     ConceptAtomicStateImpl(ConceptAtomicStateImpl&& other) = default;
     ConceptAtomicStateImpl& operator=(ConceptAtomicStateImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
+    bool test_match(dl::Constructor<ConceptTag> constructor, const Grammar& grammar) const override;
 
     void accept(IVisitor& visitor) const override;
 
@@ -245,8 +245,8 @@ public:
     auto identifying_members() const { return std::tuple(get_predicate()); }
 };
 
-template<formalism::StaticOrFluentOrDerived P>
-class ConceptAtomicGoalImpl : public IConstructor<Concept>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
+class ConceptAtomicGoalImpl : public IConstructor<ConceptTag>
 {
 private:
     Index m_index;
@@ -266,7 +266,7 @@ public:
     ConceptAtomicGoalImpl(ConceptAtomicGoalImpl&& other) = default;
     ConceptAtomicGoalImpl& operator=(ConceptAtomicGoalImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
+    bool test_match(dl::Constructor<ConceptTag> constructor, const Grammar& grammar) const override;
 
     void accept(IVisitor& visitor) const override;
 
@@ -280,14 +280,14 @@ public:
     auto identifying_members() const { return std::tuple(get_predicate(), is_negated()); }
 };
 
-class ConceptIntersectionImpl : public IConstructor<Concept>
+class ConceptIntersectionImpl : public IConstructor<ConceptTag>
 {
 private:
     Index m_index;
-    NonTerminal<Concept> m_left_concept;
-    NonTerminal<Concept> m_right_concept;
+    NonTerminal<ConceptTag> m_left_concept;
+    NonTerminal<ConceptTag> m_right_concept;
 
-    ConceptIntersectionImpl(Index index, NonTerminal<Concept> left_concept, NonTerminal<Concept> right_concept);
+    ConceptIntersectionImpl(Index index, NonTerminal<ConceptTag> left_concept, NonTerminal<ConceptTag> right_concept);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -300,13 +300,13 @@ public:
     ConceptIntersectionImpl(ConceptIntersectionImpl&& other) = default;
     ConceptIntersectionImpl& operator=(ConceptIntersectionImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
+    bool test_match(dl::Constructor<ConceptTag> constructor, const Grammar& grammar) const override;
 
     void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
-    NonTerminal<Concept> get_left_concept() const;
-    NonTerminal<Concept> get_right_concept() const;
+    NonTerminal<ConceptTag> get_left_concept() const;
+    NonTerminal<ConceptTag> get_right_concept() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -314,14 +314,14 @@ public:
     auto identifying_members() const { return std::tuple(get_left_concept(), get_right_concept()); }
 };
 
-class ConceptUnionImpl : public IConstructor<Concept>
+class ConceptUnionImpl : public IConstructor<ConceptTag>
 {
 private:
     Index m_index;
-    NonTerminal<Concept> m_left_concept;
-    NonTerminal<Concept> m_right_concept;
+    NonTerminal<ConceptTag> m_left_concept;
+    NonTerminal<ConceptTag> m_right_concept;
 
-    ConceptUnionImpl(Index index, NonTerminal<Concept> left_concept, NonTerminal<Concept> right_concept);
+    ConceptUnionImpl(Index index, NonTerminal<ConceptTag> left_concept, NonTerminal<ConceptTag> right_concept);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -334,13 +334,13 @@ public:
     ConceptUnionImpl(ConceptUnionImpl&& other) = default;
     ConceptUnionImpl& operator=(ConceptUnionImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
+    bool test_match(dl::Constructor<ConceptTag> constructor, const Grammar& grammar) const override;
 
     void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
-    NonTerminal<Concept> get_left_concept() const;
-    NonTerminal<Concept> get_right_concept() const;
+    NonTerminal<ConceptTag> get_left_concept() const;
+    NonTerminal<ConceptTag> get_right_concept() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -348,13 +348,13 @@ public:
     auto identifying_members() const { return std::tuple(get_left_concept(), get_right_concept()); }
 };
 
-class ConceptNegationImpl : public IConstructor<Concept>
+class ConceptNegationImpl : public IConstructor<ConceptTag>
 {
 private:
     Index m_index;
-    NonTerminal<Concept> m_concept;
+    NonTerminal<ConceptTag> m_concept;
 
-    ConceptNegationImpl(Index index, NonTerminal<Concept> concept_);
+    ConceptNegationImpl(Index index, NonTerminal<ConceptTag> concept_);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -367,12 +367,12 @@ public:
     ConceptNegationImpl(ConceptNegationImpl&& other) = default;
     ConceptNegationImpl& operator=(ConceptNegationImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
+    bool test_match(dl::Constructor<ConceptTag> constructor, const Grammar& grammar) const override;
 
     void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
-    NonTerminal<Concept> get_concept() const;
+    NonTerminal<ConceptTag> get_concept() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -380,14 +380,14 @@ public:
     auto identifying_members() const { return std::tuple(get_concept()); }
 };
 
-class ConceptValueRestrictionImpl : public IConstructor<Concept>
+class ConceptValueRestrictionImpl : public IConstructor<ConceptTag>
 {
 private:
     Index m_index;
-    NonTerminal<Role> m_role;
-    NonTerminal<Concept> m_concept;
+    NonTerminal<RoleTag> m_role;
+    NonTerminal<ConceptTag> m_concept;
 
-    ConceptValueRestrictionImpl(Index index, NonTerminal<Role> role, NonTerminal<Concept> concept_);
+    ConceptValueRestrictionImpl(Index index, NonTerminal<RoleTag> role, NonTerminal<ConceptTag> concept_);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -400,13 +400,13 @@ public:
     ConceptValueRestrictionImpl(ConceptValueRestrictionImpl&& other) = default;
     ConceptValueRestrictionImpl& operator=(ConceptValueRestrictionImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
+    bool test_match(dl::Constructor<ConceptTag> constructor, const Grammar& grammar) const override;
 
     void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
-    NonTerminal<Role> get_role() const;
-    NonTerminal<Concept> get_concept() const;
+    NonTerminal<RoleTag> get_role() const;
+    NonTerminal<ConceptTag> get_concept() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -414,14 +414,14 @@ public:
     auto identifying_members() const { return std::tuple(get_role(), get_concept()); }
 };
 
-class ConceptExistentialQuantificationImpl : public IConstructor<Concept>
+class ConceptExistentialQuantificationImpl : public IConstructor<ConceptTag>
 {
 private:
     Index m_index;
-    NonTerminal<Role> m_role;
-    NonTerminal<Concept> m_concept;
+    NonTerminal<RoleTag> m_role;
+    NonTerminal<ConceptTag> m_concept;
 
-    ConceptExistentialQuantificationImpl(Index index, NonTerminal<Role> role, NonTerminal<Concept> concept_);
+    ConceptExistentialQuantificationImpl(Index index, NonTerminal<RoleTag> role, NonTerminal<ConceptTag> concept_);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -434,13 +434,13 @@ public:
     ConceptExistentialQuantificationImpl(ConceptExistentialQuantificationImpl&& other) = default;
     ConceptExistentialQuantificationImpl& operator=(ConceptExistentialQuantificationImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
+    bool test_match(dl::Constructor<ConceptTag> constructor, const Grammar& grammar) const override;
 
     void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
-    NonTerminal<Role> get_role() const;
-    NonTerminal<Concept> get_concept() const;
+    NonTerminal<RoleTag> get_role() const;
+    NonTerminal<ConceptTag> get_concept() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -448,14 +448,14 @@ public:
     auto identifying_members() const { return std::tuple(get_role(), get_concept()); }
 };
 
-class ConceptRoleValueMapContainmentImpl : public IConstructor<Concept>
+class ConceptRoleValueMapContainmentImpl : public IConstructor<ConceptTag>
 {
 private:
     Index m_index;
-    NonTerminal<Role> m_left_role;
-    NonTerminal<Role> m_right_role;
+    NonTerminal<RoleTag> m_left_role;
+    NonTerminal<RoleTag> m_right_role;
 
-    ConceptRoleValueMapContainmentImpl(Index index, NonTerminal<Role> left_role, NonTerminal<Role> right_role);
+    ConceptRoleValueMapContainmentImpl(Index index, NonTerminal<RoleTag> left_role, NonTerminal<RoleTag> right_role);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -468,13 +468,13 @@ public:
     ConceptRoleValueMapContainmentImpl(ConceptRoleValueMapContainmentImpl&& other) = default;
     ConceptRoleValueMapContainmentImpl& operator=(ConceptRoleValueMapContainmentImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
+    bool test_match(dl::Constructor<ConceptTag> constructor, const Grammar& grammar) const override;
 
     void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
-    NonTerminal<Role> get_left_role() const;
-    NonTerminal<Role> get_right_role() const;
+    NonTerminal<RoleTag> get_left_role() const;
+    NonTerminal<RoleTag> get_right_role() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -482,14 +482,14 @@ public:
     auto identifying_members() const { return std::tuple(get_left_role(), get_right_role()); }
 };
 
-class ConceptRoleValueMapEqualityImpl : public IConstructor<Concept>
+class ConceptRoleValueMapEqualityImpl : public IConstructor<ConceptTag>
 {
 private:
     Index m_index;
-    NonTerminal<Role> m_left_role;
-    NonTerminal<Role> m_right_role;
+    NonTerminal<RoleTag> m_left_role;
+    NonTerminal<RoleTag> m_right_role;
 
-    ConceptRoleValueMapEqualityImpl(Index index, NonTerminal<Role> left_role, NonTerminal<Role> right_role);
+    ConceptRoleValueMapEqualityImpl(Index index, NonTerminal<RoleTag> left_role, NonTerminal<RoleTag> right_role);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -502,13 +502,13 @@ public:
     ConceptRoleValueMapEqualityImpl(ConceptRoleValueMapEqualityImpl&& other) = default;
     ConceptRoleValueMapEqualityImpl& operator=(ConceptRoleValueMapEqualityImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
+    bool test_match(dl::Constructor<ConceptTag> constructor, const Grammar& grammar) const override;
 
     void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
-    NonTerminal<Role> get_left_role() const;
-    NonTerminal<Role> get_right_role() const;
+    NonTerminal<RoleTag> get_left_role() const;
+    NonTerminal<RoleTag> get_right_role() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -516,7 +516,7 @@ public:
     auto identifying_members() const { return std::tuple(get_left_role(), get_right_role()); }
 };
 
-class ConceptNominalImpl : public IConstructor<Concept>
+class ConceptNominalImpl : public IConstructor<ConceptTag>
 {
 private:
     Index m_index;
@@ -535,7 +535,7 @@ public:
     ConceptNominalImpl(ConceptNominalImpl&& other) = default;
     ConceptNominalImpl& operator=(ConceptNominalImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
+    bool test_match(dl::Constructor<ConceptTag> constructor, const Grammar& grammar) const override;
 
     void accept(IVisitor& visitor) const override;
 
@@ -552,7 +552,7 @@ public:
  * Roles
  */
 
-class RoleUniversalImpl : public IConstructor<Role>
+class RoleUniversalImpl : public IConstructor<RoleTag>
 {
 private:
     Index m_index;
@@ -570,7 +570,7 @@ public:
     RoleUniversalImpl(RoleUniversalImpl&& other) = default;
     RoleUniversalImpl& operator=(RoleUniversalImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
+    bool test_match(dl::Constructor<RoleTag> constructor, const Grammar& grammar) const override;
 
     void accept(IVisitor& visitor) const override;
 
@@ -582,8 +582,8 @@ public:
     auto identifying_members() const { return std::tuple(); }
 };
 
-template<formalism::StaticOrFluentOrDerived P>
-class RoleAtomicStateImpl : public IConstructor<Role>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
+class RoleAtomicStateImpl : public IConstructor<RoleTag>
 {
 private:
     Index m_index;
@@ -602,7 +602,7 @@ public:
     RoleAtomicStateImpl(RoleAtomicStateImpl&& other) = default;
     RoleAtomicStateImpl& operator=(RoleAtomicStateImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
+    bool test_match(dl::Constructor<RoleTag> constructor, const Grammar& grammar) const override;
 
     void accept(IVisitor& visitor) const override;
 
@@ -615,8 +615,8 @@ public:
     auto identifying_members() const { return std::tuple(get_predicate()); }
 };
 
-template<formalism::StaticOrFluentOrDerived P>
-class RoleAtomicGoalImpl : public IConstructor<Role>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
+class RoleAtomicGoalImpl : public IConstructor<RoleTag>
 {
 private:
     Index m_index;
@@ -636,7 +636,7 @@ public:
     RoleAtomicGoalImpl(RoleAtomicGoalImpl&& other) = default;
     RoleAtomicGoalImpl& operator=(RoleAtomicGoalImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
+    bool test_match(dl::Constructor<RoleTag> constructor, const Grammar& grammar) const override;
 
     void accept(IVisitor& visitor) const override;
 
@@ -650,14 +650,14 @@ public:
     auto identifying_members() const { return std::tuple(get_predicate(), is_negated()); }
 };
 
-class RoleIntersectionImpl : public IConstructor<Role>
+class RoleIntersectionImpl : public IConstructor<RoleTag>
 {
 private:
     Index m_index;
-    NonTerminal<Role> m_left_role;
-    NonTerminal<Role> m_right_role;
+    NonTerminal<RoleTag> m_left_role;
+    NonTerminal<RoleTag> m_right_role;
 
-    RoleIntersectionImpl(Index index, NonTerminal<Role> left_role, NonTerminal<Role> right_role);
+    RoleIntersectionImpl(Index index, NonTerminal<RoleTag> left_role, NonTerminal<RoleTag> right_role);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -670,13 +670,13 @@ public:
     RoleIntersectionImpl(RoleIntersectionImpl&& other) = default;
     RoleIntersectionImpl& operator=(RoleIntersectionImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
+    bool test_match(dl::Constructor<RoleTag> constructor, const Grammar& grammar) const override;
 
     void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
-    NonTerminal<Role> get_left_role() const;
-    NonTerminal<Role> get_right_role() const;
+    NonTerminal<RoleTag> get_left_role() const;
+    NonTerminal<RoleTag> get_right_role() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -684,14 +684,14 @@ public:
     auto identifying_members() const { return std::tuple(get_left_role(), get_right_role()); }
 };
 
-class RoleUnionImpl : public IConstructor<Role>
+class RoleUnionImpl : public IConstructor<RoleTag>
 {
 private:
     Index m_index;
-    NonTerminal<Role> m_left_role;
-    NonTerminal<Role> m_right_role;
+    NonTerminal<RoleTag> m_left_role;
+    NonTerminal<RoleTag> m_right_role;
 
-    RoleUnionImpl(Index index, NonTerminal<Role> left_role, NonTerminal<Role> right_role);
+    RoleUnionImpl(Index index, NonTerminal<RoleTag> left_role, NonTerminal<RoleTag> right_role);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -704,13 +704,13 @@ public:
     RoleUnionImpl(RoleUnionImpl&& other) = default;
     RoleUnionImpl& operator=(RoleUnionImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
+    bool test_match(dl::Constructor<RoleTag> constructor, const Grammar& grammar) const override;
 
     void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
-    NonTerminal<Role> get_left_role() const;
-    NonTerminal<Role> get_right_role() const;
+    NonTerminal<RoleTag> get_left_role() const;
+    NonTerminal<RoleTag> get_right_role() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -718,13 +718,13 @@ public:
     auto identifying_members() const { return std::tuple(get_left_role(), get_right_role()); }
 };
 
-class RoleComplementImpl : public IConstructor<Role>
+class RoleComplementImpl : public IConstructor<RoleTag>
 {
 private:
     Index m_index;
-    NonTerminal<Role> m_role;
+    NonTerminal<RoleTag> m_role;
 
-    RoleComplementImpl(Index index, NonTerminal<Role> role);
+    RoleComplementImpl(Index index, NonTerminal<RoleTag> role);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -737,12 +737,12 @@ public:
     RoleComplementImpl(RoleComplementImpl&& other) = default;
     RoleComplementImpl& operator=(RoleComplementImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
+    bool test_match(dl::Constructor<RoleTag> constructor, const Grammar& grammar) const override;
 
     void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
-    NonTerminal<Role> get_role() const;
+    NonTerminal<RoleTag> get_role() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -750,13 +750,13 @@ public:
     auto identifying_members() const { return std::tuple(get_role()); }
 };
 
-class RoleInverseImpl : public IConstructor<Role>
+class RoleInverseImpl : public IConstructor<RoleTag>
 {
 private:
     Index m_index;
-    NonTerminal<Role> m_role;
+    NonTerminal<RoleTag> m_role;
 
-    RoleInverseImpl(Index index, NonTerminal<Role> role);
+    RoleInverseImpl(Index index, NonTerminal<RoleTag> role);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -769,12 +769,12 @@ public:
     RoleInverseImpl(RoleInverseImpl&& other) = default;
     RoleInverseImpl& operator=(RoleInverseImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
+    bool test_match(dl::Constructor<RoleTag> constructor, const Grammar& grammar) const override;
 
     void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
-    NonTerminal<Role> get_role() const;
+    NonTerminal<RoleTag> get_role() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -782,14 +782,14 @@ public:
     auto identifying_members() const { return std::tuple(get_role()); }
 };
 
-class RoleCompositionImpl : public IConstructor<Role>
+class RoleCompositionImpl : public IConstructor<RoleTag>
 {
 private:
     Index m_index;
-    NonTerminal<Role> m_left_role;
-    NonTerminal<Role> m_right_role;
+    NonTerminal<RoleTag> m_left_role;
+    NonTerminal<RoleTag> m_right_role;
 
-    RoleCompositionImpl(Index index, NonTerminal<Role> left_role, NonTerminal<Role> right_role);
+    RoleCompositionImpl(Index index, NonTerminal<RoleTag> left_role, NonTerminal<RoleTag> right_role);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -802,13 +802,13 @@ public:
     RoleCompositionImpl(RoleCompositionImpl&& other) = default;
     RoleCompositionImpl& operator=(RoleCompositionImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
+    bool test_match(dl::Constructor<RoleTag> constructor, const Grammar& grammar) const override;
 
     void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
-    NonTerminal<Role> get_left_role() const;
-    NonTerminal<Role> get_right_role() const;
+    NonTerminal<RoleTag> get_left_role() const;
+    NonTerminal<RoleTag> get_right_role() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -816,13 +816,13 @@ public:
     auto identifying_members() const { return std::tuple(get_left_role(), get_right_role()); }
 };
 
-class RoleTransitiveClosureImpl : public IConstructor<Role>
+class RoleTransitiveClosureImpl : public IConstructor<RoleTag>
 {
 private:
     Index m_index;
-    NonTerminal<Role> m_role;
+    NonTerminal<RoleTag> m_role;
 
-    RoleTransitiveClosureImpl(Index index, NonTerminal<Role> role);
+    RoleTransitiveClosureImpl(Index index, NonTerminal<RoleTag> role);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -835,12 +835,12 @@ public:
     RoleTransitiveClosureImpl(RoleTransitiveClosureImpl&& other) = default;
     RoleTransitiveClosureImpl& operator=(RoleTransitiveClosureImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
+    bool test_match(dl::Constructor<RoleTag> constructor, const Grammar& grammar) const override;
 
     void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
-    NonTerminal<Role> get_role() const;
+    NonTerminal<RoleTag> get_role() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -848,13 +848,13 @@ public:
     auto identifying_members() const { return std::tuple(get_role()); }
 };
 
-class RoleReflexiveTransitiveClosureImpl : public IConstructor<Role>
+class RoleReflexiveTransitiveClosureImpl : public IConstructor<RoleTag>
 {
 private:
     Index m_index;
-    NonTerminal<Role> m_role;
+    NonTerminal<RoleTag> m_role;
 
-    RoleReflexiveTransitiveClosureImpl(Index index, NonTerminal<Role> role);
+    RoleReflexiveTransitiveClosureImpl(Index index, NonTerminal<RoleTag> role);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -867,12 +867,12 @@ public:
     RoleReflexiveTransitiveClosureImpl(RoleReflexiveTransitiveClosureImpl&& other) = default;
     RoleReflexiveTransitiveClosureImpl& operator=(RoleReflexiveTransitiveClosureImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
+    bool test_match(dl::Constructor<RoleTag> constructor, const Grammar& grammar) const override;
 
     void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
-    NonTerminal<Role> get_role() const;
+    NonTerminal<RoleTag> get_role() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -880,14 +880,14 @@ public:
     auto identifying_members() const { return std::tuple(get_role()); }
 };
 
-class RoleRestrictionImpl : public IConstructor<Role>
+class RoleRestrictionImpl : public IConstructor<RoleTag>
 {
 private:
     Index m_index;
-    NonTerminal<Role> m_role;
-    NonTerminal<Concept> m_concept;
+    NonTerminal<RoleTag> m_role;
+    NonTerminal<ConceptTag> m_concept;
 
-    RoleRestrictionImpl(Index index, NonTerminal<Role> role, NonTerminal<Concept> concept_);
+    RoleRestrictionImpl(Index index, NonTerminal<RoleTag> role, NonTerminal<ConceptTag> concept_);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -900,13 +900,13 @@ public:
     RoleRestrictionImpl(RoleRestrictionImpl&& other) = default;
     RoleRestrictionImpl& operator=(RoleRestrictionImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
+    bool test_match(dl::Constructor<RoleTag> constructor, const Grammar& grammar) const override;
 
     void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
-    NonTerminal<Role> get_role() const;
-    NonTerminal<Concept> get_concept() const;
+    NonTerminal<RoleTag> get_role() const;
+    NonTerminal<ConceptTag> get_concept() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -914,13 +914,13 @@ public:
     auto identifying_members() const { return std::tuple(get_role(), get_concept()); }
 };
 
-class RoleIdentityImpl : public IConstructor<Role>
+class RoleIdentityImpl : public IConstructor<RoleTag>
 {
 private:
     Index m_index;
-    NonTerminal<Concept> m_concept;
+    NonTerminal<ConceptTag> m_concept;
 
-    RoleIdentityImpl(Index index, NonTerminal<Concept> concept_);
+    RoleIdentityImpl(Index index, NonTerminal<ConceptTag> concept_);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -933,12 +933,12 @@ public:
     RoleIdentityImpl(RoleIdentityImpl&& other) = default;
     RoleIdentityImpl& operator=(RoleIdentityImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
+    bool test_match(dl::Constructor<RoleTag> constructor, const Grammar& grammar) const override;
 
     void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
-    NonTerminal<Concept> get_concept() const;
+    NonTerminal<ConceptTag> get_concept() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -950,8 +950,8 @@ public:
  * Booleans
  */
 
-template<formalism::StaticOrFluentOrDerived P>
-class BooleanAtomicStateImpl : public IConstructor<Boolean>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
+class BooleanAtomicStateImpl : public IConstructor<BooleanTag>
 {
 private:
     Index m_index;
@@ -970,7 +970,7 @@ public:
     BooleanAtomicStateImpl(BooleanAtomicStateImpl&& other) = default;
     BooleanAtomicStateImpl& operator=(BooleanAtomicStateImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Boolean> constructor, const Grammar& grammar) const override;
+    bool test_match(dl::Constructor<BooleanTag> constructor, const Grammar& grammar) const override;
 
     void accept(IVisitor& visitor) const override;
 
@@ -983,8 +983,8 @@ public:
     auto identifying_members() const { return std::tuple(get_predicate()); }
 };
 
-template<DescriptionLogicCategory D>
-class BooleanNonemptyImpl : public IConstructor<Boolean>
+template<IsConceptOrRoleTag D>
+class BooleanNonemptyImpl : public IConstructor<BooleanTag>
 {
 private:
     Index m_index;
@@ -1003,7 +1003,7 @@ public:
     BooleanNonemptyImpl(BooleanNonemptyImpl&& other) = default;
     BooleanNonemptyImpl& operator=(BooleanNonemptyImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Boolean> constructor, const Grammar& grammar) const override;
+    bool test_match(dl::Constructor<BooleanTag> constructor, const Grammar& grammar) const override;
 
     void accept(IVisitor& visitor) const override;
 
@@ -1020,8 +1020,8 @@ public:
  * Numericals
  */
 
-template<DescriptionLogicCategory D>
-class NumericalCountImpl : public IConstructor<Numerical>
+template<IsConceptOrRoleTag D>
+class NumericalCountImpl : public IConstructor<NumericalTag>
 {
 private:
     Index m_index;
@@ -1040,7 +1040,7 @@ public:
     NumericalCountImpl(NumericalCountImpl&& other) = default;
     NumericalCountImpl& operator=(NumericalCountImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Numerical> constructor, const Grammar& grammar) const override;
+    bool test_match(dl::Constructor<NumericalTag> constructor, const Grammar& grammar) const override;
 
     void accept(IVisitor& visitor) const override;
 
@@ -1053,15 +1053,15 @@ public:
     auto identifying_members() const { return std::tuple(get_nonterminal()); }
 };
 
-class NumericalDistanceImpl : public IConstructor<Numerical>
+class NumericalDistanceImpl : public IConstructor<NumericalTag>
 {
 private:
     Index m_index;
-    NonTerminal<Concept> m_left_concept;
-    NonTerminal<Role> m_role;
-    NonTerminal<Concept> m_right_concept;
+    NonTerminal<ConceptTag> m_left_concept;
+    NonTerminal<RoleTag> m_role;
+    NonTerminal<ConceptTag> m_right_concept;
 
-    NumericalDistanceImpl(Index index, NonTerminal<Concept> left_concept, NonTerminal<Role> role, NonTerminal<Concept> right_concept);
+    NumericalDistanceImpl(Index index, NonTerminal<ConceptTag> left_concept, NonTerminal<RoleTag> role, NonTerminal<ConceptTag> right_concept);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -1074,14 +1074,14 @@ public:
     NumericalDistanceImpl(NumericalDistanceImpl&& other) = default;
     NumericalDistanceImpl& operator=(NumericalDistanceImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Numerical> constructor, const Grammar& grammar) const override;
+    bool test_match(dl::Constructor<NumericalTag> constructor, const Grammar& grammar) const override;
 
     void accept(IVisitor& visitor) const override;
 
     Index get_index() const;
-    NonTerminal<Concept> get_left_concept() const;
-    NonTerminal<Role> get_role() const;
-    NonTerminal<Concept> get_right_concept() const;
+    NonTerminal<ConceptTag> get_left_concept() const;
+    NonTerminal<RoleTag> get_role() const;
+    NonTerminal<ConceptTag> get_right_concept() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.

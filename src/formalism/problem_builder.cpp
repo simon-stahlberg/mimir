@@ -71,8 +71,8 @@ Problem ProblemBuilder::get_result(Index problem_index)
 
     auto problem_and_domain_derived_predicates = get_derived_predicates();
     problem_and_domain_derived_predicates.insert(problem_and_domain_derived_predicates.end(),
-                                                 m_domain->get_predicates<Derived>().begin(),
-                                                 m_domain->get_predicates<Derived>().end());
+                                                 m_domain->get_predicates<DerivedTag>().begin(),
+                                                 m_domain->get_predicates<DerivedTag>().end());
     std::sort(problem_and_domain_derived_predicates.begin(),
               problem_and_domain_derived_predicates.end(),
               [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
@@ -80,28 +80,28 @@ Problem ProblemBuilder::get_result(Index problem_index)
                            "ProblemBuilder::get_result: problem_and_domain_derived_predicates must follow and indexing scheme");
     std::sort(get_derived_predicates().begin(), get_derived_predicates().end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
 
-    std::sort(get_initial_literals<Static>().begin(),
-              get_initial_literals<Static>().end(),
+    std::sort(get_initial_literals<StaticTag>().begin(),
+              get_initial_literals<StaticTag>().end(),
               [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
-    std::sort(get_initial_literals<Fluent>().begin(),
-              get_initial_literals<Fluent>().end(),
-              [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
-
-    std::sort(get_initial_function_values<Static>().begin(),
-              get_initial_function_values<Static>().end(),
-              [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
-    std::sort(get_initial_function_values<Fluent>().begin(),
-              get_initial_function_values<Fluent>().end(),
+    std::sort(get_initial_literals<FluentTag>().begin(),
+              get_initial_literals<FluentTag>().end(),
               [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
 
-    std::sort(get_goal_condition<Static>().begin(),
-              get_goal_condition<Static>().end(),
+    std::sort(get_initial_function_values<StaticTag>().begin(),
+              get_initial_function_values<StaticTag>().end(),
               [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
-    std::sort(get_goal_condition<Fluent>().begin(),
-              get_goal_condition<Fluent>().end(),
+    std::sort(get_initial_function_values<FluentTag>().begin(),
+              get_initial_function_values<FluentTag>().end(),
               [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
-    std::sort(get_goal_condition<Derived>().begin(),
-              get_goal_condition<Derived>().end(),
+
+    std::sort(get_goal_condition<StaticTag>().begin(),
+              get_goal_condition<StaticTag>().end(),
+              [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
+    std::sort(get_goal_condition<FluentTag>().begin(),
+              get_goal_condition<FluentTag>().end(),
+              [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
+    std::sort(get_goal_condition<DerivedTag>().begin(),
+              get_goal_condition<DerivedTag>().end(),
               [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
     std::sort(get_numeric_goal_condition().begin(),
               get_numeric_goal_condition().end(),
@@ -141,41 +141,41 @@ const Domain& ProblemBuilder::get_domain() const { return m_domain; }
 std::string& ProblemBuilder::get_name() { return m_name; }
 Requirements& ProblemBuilder::get_requirements() { return m_requirements; }
 ObjectList& ProblemBuilder::get_objects() { return m_objects; }
-PredicateList<Derived>& ProblemBuilder::get_derived_predicates() { return m_derived_predicates; }
-template<StaticOrFluent P>
+PredicateList<DerivedTag>& ProblemBuilder::get_derived_predicates() { return m_derived_predicates; }
+template<IsStaticOrFluentTag P>
 GroundLiteralList<P>& ProblemBuilder::get_initial_literals()
 {
     return boost::hana::at_key(m_initial_literals, boost::hana::type<P> {});
 }
 
-template GroundLiteralList<Static>& ProblemBuilder::get_initial_literals();
-template GroundLiteralList<Fluent>& ProblemBuilder::get_initial_literals();
+template GroundLiteralList<StaticTag>& ProblemBuilder::get_initial_literals();
+template GroundLiteralList<FluentTag>& ProblemBuilder::get_initial_literals();
 
-GroundLiteralLists<Static, Fluent>& ProblemBuilder::get_hana_initial_literals() { return m_initial_literals; }
+GroundLiteralLists<StaticTag, FluentTag>& ProblemBuilder::get_hana_initial_literals() { return m_initial_literals; }
 
-template<StaticOrFluent F>
+template<IsStaticOrFluentTag F>
 GroundFunctionValueList<F>& ProblemBuilder::get_initial_function_values()
 {
     return boost::hana::at_key(m_initial_function_values, boost::hana::type<F> {});
 }
 
-template GroundFunctionValueList<Static>& ProblemBuilder::get_initial_function_values();
-template GroundFunctionValueList<Fluent>& ProblemBuilder::get_initial_function_values();
+template GroundFunctionValueList<StaticTag>& ProblemBuilder::get_initial_function_values();
+template GroundFunctionValueList<FluentTag>& ProblemBuilder::get_initial_function_values();
 
-GroundFunctionValueLists<Static, Fluent>& ProblemBuilder::get_hana_initial_function_values() { return m_initial_function_values; }
+GroundFunctionValueLists<StaticTag, FluentTag>& ProblemBuilder::get_hana_initial_function_values() { return m_initial_function_values; }
 
-std::optional<GroundFunctionValue<Auxiliary>>& ProblemBuilder::get_auxiliary_function_value() { return m_auxiliary_function_value; }
-template<StaticOrFluentOrDerived P>
+std::optional<GroundFunctionValue<AuxiliaryTag>>& ProblemBuilder::get_auxiliary_function_value() { return m_auxiliary_function_value; }
+template<IsStaticOrFluentOrDerivedTag P>
 GroundLiteralList<P>& ProblemBuilder::get_goal_condition()
 {
     return boost::hana::at_key(m_goal_condition, boost::hana::type<P> {});
 }
 
-template GroundLiteralList<Static>& ProblemBuilder::get_goal_condition();
-template GroundLiteralList<Fluent>& ProblemBuilder::get_goal_condition();
-template GroundLiteralList<Derived>& ProblemBuilder::get_goal_condition();
+template GroundLiteralList<StaticTag>& ProblemBuilder::get_goal_condition();
+template GroundLiteralList<FluentTag>& ProblemBuilder::get_goal_condition();
+template GroundLiteralList<DerivedTag>& ProblemBuilder::get_goal_condition();
 
-GroundLiteralLists<Static, Fluent, Derived>& ProblemBuilder::get_hana_goal_condition() { return m_goal_condition; }
+GroundLiteralLists<StaticTag, FluentTag, DerivedTag>& ProblemBuilder::get_hana_goal_condition() { return m_goal_condition; }
 
 GroundNumericConstraintList& ProblemBuilder::get_numeric_goal_condition() { return m_numeric_goal_condition; }
 std::optional<OptimizationMetric>& ProblemBuilder::get_optimization_metric() { return m_optimization_metric; }

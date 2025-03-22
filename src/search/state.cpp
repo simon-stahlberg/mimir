@@ -54,16 +54,16 @@ bool StateImpl::numeric_constraints_hold(const GroundNumericConstraintList& nume
     return true;
 }
 
-template<FluentOrDerived P>
+template<IsFluentOrDerivedTag P>
 bool StateImpl::literal_holds(GroundLiteral<P> literal) const
 {
     return literal->is_negated() != contains(get_atoms<P>(), literal->get_atom()->get_index());
 }
 
-template bool StateImpl::literal_holds(GroundLiteral<Fluent> literal) const;
-template bool StateImpl::literal_holds(GroundLiteral<Derived> literal) const;
+template bool StateImpl::literal_holds(GroundLiteral<FluentTag> literal) const;
+template bool StateImpl::literal_holds(GroundLiteral<DerivedTag> literal) const;
 
-template<FluentOrDerived P>
+template<IsFluentOrDerivedTag P>
 bool StateImpl::literals_hold(const GroundLiteralList<P>& literals) const
 {
     for (const auto& literal : literals)
@@ -77,24 +77,24 @@ bool StateImpl::literals_hold(const GroundLiteralList<P>& literals) const
     return true;
 }
 
-template bool StateImpl::literals_hold(const GroundLiteralList<Fluent>& literals) const;
-template bool StateImpl::literals_hold(const GroundLiteralList<Derived>& literals) const;
+template bool StateImpl::literals_hold(const GroundLiteralList<FluentTag>& literals) const;
+template bool StateImpl::literals_hold(const GroundLiteralList<DerivedTag>& literals) const;
 
-template<FluentOrDerived P>
+template<IsFluentOrDerivedTag P>
 bool StateImpl::literals_hold(const FlatIndexList& positive_atoms, const FlatIndexList& negative_atoms) const
 {
     return is_supseteq(get_atoms<P>(), positive_atoms) && are_disjoint(get_atoms<P>(), negative_atoms);
 }
 
-template bool StateImpl::literals_hold<Fluent>(const FlatIndexList& positive_atoms, const FlatIndexList& negative_atoms) const;
-template bool StateImpl::literals_hold<Derived>(const FlatIndexList& positive_atoms, const FlatIndexList& negative_atoms) const;
+template bool StateImpl::literals_hold<FluentTag>(const FlatIndexList& positive_atoms, const FlatIndexList& negative_atoms) const;
+template bool StateImpl::literals_hold<DerivedTag>(const FlatIndexList& positive_atoms, const FlatIndexList& negative_atoms) const;
 
 Index StateImpl::get_index() const { return m_index; }
 
-template<FluentOrDerived P>
+template<IsFluentOrDerivedTag P>
 const FlatIndexList& StateImpl::get_atoms() const
 {
-    if constexpr (std::is_same_v<P, Fluent>)
+    if constexpr (std::is_same_v<P, FluentTag>)
     {
         if (!m_fluent_atoms)
         {
@@ -103,7 +103,7 @@ const FlatIndexList& StateImpl::get_atoms() const
         assert(std::is_sorted(m_fluent_atoms->begin(), m_fluent_atoms->end()));
         return *m_fluent_atoms;
     }
-    else if constexpr (std::is_same_v<P, Derived>)
+    else if constexpr (std::is_same_v<P, DerivedTag>)
     {
         if (!m_derived_atoms)
         {
@@ -115,12 +115,12 @@ const FlatIndexList& StateImpl::get_atoms() const
     }
     else
     {
-        static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
+        static_assert(dependent_false<P>::value, "Missing implementation for IsStaticOrFluentOrDerivedTag.");
     }
 }
 
-template const FlatIndexList& StateImpl::get_atoms<Fluent>() const;
-template const FlatIndexList& StateImpl::get_atoms<Derived>() const;
+template const FlatIndexList& StateImpl::get_atoms<FluentTag>() const;
+template const FlatIndexList& StateImpl::get_atoms<DerivedTag>() const;
 
 const FlatDoubleList& StateImpl::get_numeric_variables() const
 {
@@ -153,14 +153,14 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<search::State, const
 {
     const auto& [state, problem] = data;
 
-    auto fluent_ground_atoms = GroundAtomList<Fluent> {};
-    auto static_ground_atoms = GroundAtomList<Static> {};
-    auto derived_ground_atoms = GroundAtomList<Derived> {};
-    auto fluent_function_values = std::vector<std::pair<GroundFunction<Fluent>, ContinuousCost>> {};
+    auto fluent_ground_atoms = GroundAtomList<FluentTag> {};
+    auto static_ground_atoms = GroundAtomList<StaticTag> {};
+    auto derived_ground_atoms = GroundAtomList<DerivedTag> {};
+    auto fluent_function_values = std::vector<std::pair<GroundFunction<FluentTag>, ContinuousCost>> {};
 
-    problem.get_repositories().get_ground_atoms_from_indices(state->get_atoms<Fluent>(), fluent_ground_atoms);
+    problem.get_repositories().get_ground_atoms_from_indices(state->get_atoms<FluentTag>(), fluent_ground_atoms);
     problem.get_repositories().get_ground_atoms_from_indices(problem.get_static_initial_positive_atoms_bitset(), static_ground_atoms);
-    problem.get_repositories().get_ground_atoms_from_indices(state->get_atoms<Derived>(), derived_ground_atoms);
+    problem.get_repositories().get_ground_atoms_from_indices(state->get_atoms<DerivedTag>(), derived_ground_atoms);
     problem.get_repositories().get_ground_function_values(state->get_numeric_variables(), fluent_function_values);
 
     // Sort by name for easier comparison

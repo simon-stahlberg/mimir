@@ -25,7 +25,7 @@ namespace mimir::languages::general_policies
 
 /// @brief `NamedFeatureImpl` encapsulates a `dl::Constructor` with an associated name.
 /// @tparam D is the feature type.
-template<dl::FeatureCategory D>
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 class NamedFeatureImpl
 {
 private:

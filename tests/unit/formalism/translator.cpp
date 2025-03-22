@@ -78,9 +78,9 @@ TEST(MimirTests, MimirFormalismTranslatorTest)
 
         // TODO: the iterator is empty because all static predicates are in the domain's repository. Perhaps add iteration over parent repository as well.
         for (const auto& static_predicate :
-             boost::hana::at_key(translated_problem->get_repositories().get_hana_repositories(), boost::hana::type<PredicateImpl<Static>> {}))
+             boost::hana::at_key(translated_problem->get_repositories().get_hana_repositories(), boost::hana::type<PredicateImpl<StaticTag>> {}))
         {
-            EXPECT_EQ(static_predicate, translated_domain->get_name_to_predicate<Static>().at(static_predicate->get_name()));
+            EXPECT_EQ(static_predicate, translated_domain->get_name_to_predicate<StaticTag>().at(static_predicate->get_name()));
         }
     }
     /*

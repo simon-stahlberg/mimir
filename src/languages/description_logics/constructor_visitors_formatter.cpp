@@ -31,27 +31,27 @@ FormatterVisitor::FormatterVisitor(std::ostream& out) : m_out(out) {}
 /* Concepts */
 void FormatterVisitor::visit(ConceptBot constructor) { m_out << keywords::concept_bot; }
 void FormatterVisitor::visit(ConceptTop constructor) { m_out << keywords::concept_top; }
-void FormatterVisitor::visit(ConceptAtomicState<Static> constructor)
+void FormatterVisitor::visit(ConceptAtomicState<StaticTag> constructor)
 {
     m_out << keywords::concept_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
-void FormatterVisitor::visit(ConceptAtomicState<Fluent> constructor)
+void FormatterVisitor::visit(ConceptAtomicState<FluentTag> constructor)
 {
     m_out << keywords::concept_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
-void FormatterVisitor::visit(ConceptAtomicState<Derived> constructor)
+void FormatterVisitor::visit(ConceptAtomicState<DerivedTag> constructor)
 {
     m_out << keywords::concept_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
-void FormatterVisitor::visit(ConceptAtomicGoal<Static> constructor)
+void FormatterVisitor::visit(ConceptAtomicGoal<StaticTag> constructor)
 {
     m_out << keywords::concept_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->is_negated() ? "true" : "false");
 }
-void FormatterVisitor::visit(ConceptAtomicGoal<Fluent> constructor)
+void FormatterVisitor::visit(ConceptAtomicGoal<FluentTag> constructor)
 {
     m_out << keywords::concept_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->is_negated() ? "true" : "false");
 }
-void FormatterVisitor::visit(ConceptAtomicGoal<Derived> constructor)
+void FormatterVisitor::visit(ConceptAtomicGoal<DerivedTag> constructor)
 {
     m_out << keywords::concept_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->is_negated() ? "true" : "false");
 }
@@ -107,27 +107,27 @@ void FormatterVisitor::visit(ConceptNominal constructor) { m_out << keywords::co
 /* Roles */
 
 void FormatterVisitor::visit(RoleUniversal constructor) { m_out << keywords::role_universal; }
-void FormatterVisitor::visit(RoleAtomicState<Static> constructor)
+void FormatterVisitor::visit(RoleAtomicState<StaticTag> constructor)
 {
     m_out << keywords::role_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
-void FormatterVisitor::visit(RoleAtomicState<Fluent> constructor)
+void FormatterVisitor::visit(RoleAtomicState<FluentTag> constructor)
 {
     m_out << keywords::role_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
-void FormatterVisitor::visit(RoleAtomicState<Derived> constructor)
+void FormatterVisitor::visit(RoleAtomicState<DerivedTag> constructor)
 {
     m_out << keywords::role_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
-void FormatterVisitor::visit(RoleAtomicGoal<Static> constructor)
+void FormatterVisitor::visit(RoleAtomicGoal<StaticTag> constructor)
 {
     m_out << keywords::role_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->is_negated() ? "true" : "false");
 }
-void FormatterVisitor::visit(RoleAtomicGoal<Fluent> constructor)
+void FormatterVisitor::visit(RoleAtomicGoal<FluentTag> constructor)
 {
     m_out << keywords::role_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->is_negated() ? "true" : "false");
 }
-void FormatterVisitor::visit(RoleAtomicGoal<Derived> constructor)
+void FormatterVisitor::visit(RoleAtomicGoal<DerivedTag> constructor)
 {
     m_out << keywords::role_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->is_negated() ? "true" : "false");
 }
@@ -189,24 +189,24 @@ void FormatterVisitor::visit(RoleIdentity constructor)
  * Booleans
  */
 
-void FormatterVisitor::visit(BooleanAtomicState<Static> constructor)
+void FormatterVisitor::visit(BooleanAtomicState<StaticTag> constructor)
 {
     m_out << keywords::boolean_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
-void FormatterVisitor::visit(BooleanAtomicState<Fluent> constructor)
+void FormatterVisitor::visit(BooleanAtomicState<FluentTag> constructor)
 {
     m_out << keywords::boolean_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
-void FormatterVisitor::visit(BooleanAtomicState<Derived> constructor)
+void FormatterVisitor::visit(BooleanAtomicState<DerivedTag> constructor)
 {
     m_out << keywords::boolean_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
-void FormatterVisitor::visit(BooleanNonempty<Concept> constructor)
+void FormatterVisitor::visit(BooleanNonempty<ConceptTag> constructor)
 {
     m_out << keywords::boolean_nonempty << " ";
     constructor->get_constructor()->accept(*this);
 }
-void FormatterVisitor::visit(BooleanNonempty<Role> constructor)
+void FormatterVisitor::visit(BooleanNonempty<RoleTag> constructor)
 {
     m_out << keywords::boolean_nonempty << " ";
     constructor->get_constructor()->accept(*this);
@@ -216,12 +216,12 @@ void FormatterVisitor::visit(BooleanNonempty<Role> constructor)
  * Numericals
  */
 
-void FormatterVisitor::visit(NumericalCount<Concept> constructor)
+void FormatterVisitor::visit(NumericalCount<ConceptTag> constructor)
 {
     m_out << keywords::numerical_count << " ";
     constructor->get_constructor()->accept(*this);
 }
-void FormatterVisitor::visit(NumericalCount<Role> constructor)
+void FormatterVisitor::visit(NumericalCount<RoleTag> constructor)
 {
     m_out << keywords::numerical_count << " ";
     constructor->get_constructor()->accept(*this);
@@ -236,7 +236,7 @@ void FormatterVisitor::visit(NumericalDistance constructor)
     constructor->get_right_concept()->accept(*this);
 }
 
-template<FeatureCategory D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 extern std::ostream& operator<<(std::ostream& out, const Constructor<D>& constructor)
 {
     auto visitor = FormatterVisitor(out);
@@ -246,9 +246,9 @@ extern std::ostream& operator<<(std::ostream& out, const Constructor<D>& constru
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, const Constructor<Concept>& data);
-template std::ostream& operator<<(std::ostream& out, const Constructor<Role>& data);
-template std::ostream& operator<<(std::ostream& out, const Constructor<Boolean>& data);
-template std::ostream& operator<<(std::ostream& out, const Constructor<Numerical>& data);
+template std::ostream& operator<<(std::ostream& out, const Constructor<ConceptTag>& data);
+template std::ostream& operator<<(std::ostream& out, const Constructor<RoleTag>& data);
+template std::ostream& operator<<(std::ostream& out, const Constructor<BooleanTag>& data);
+template std::ostream& operator<<(std::ostream& out, const Constructor<NumericalTag>& data);
 
 }
