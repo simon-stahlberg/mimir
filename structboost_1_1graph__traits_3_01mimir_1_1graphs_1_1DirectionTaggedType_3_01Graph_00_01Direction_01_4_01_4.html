@@ -82,7 +82,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Traits for a graph that are needed for the boost graph library.  
+<p>Traits for a graph that are needed for the boost graph library. TODO: need to add bidirection concept.  
  <a href="structboost_1_1graph__traits_3_01mimir_1_1graphs_1_1DirectionTaggedType_3_01Graph_00_01Direction_01_4_01_4.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="static__graph__boost__adapter_8hpp_source.html">static_graph_boost_adapter.hpp</a>&gt;</code></p>
@@ -129,8 +129,9 @@ Static Public Member Functions</h2></td></tr>
 <tr class="separator:a2d18c1888769b9ed4fe2fe81ba9bda54"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><div class="compoundTemplParams">template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsStaticGraph.html">mimir::graphs::IsStaticGraph</a> Graph, <a class="el" href="conceptmimir_1_1graphs_1_1IsDirection.html">mimir::graphs::IsDirection</a> Direction&gt;<br />
-struct boost::graph_traits&lt; mimir::graphs::DirectionTaggedType&lt; Graph, Direction &gt; &gt;</div><p>Traits for a graph that are needed for the boost graph library. </p>
+<div class="textblock"><div class="compoundTemplParams">template&lt;typename Graph, <a class="el" href="conceptmimir_1_1graphs_1_1IsDirection.html">mimir::graphs::IsDirection</a> Direction&gt;<br />
+requires <a class="el" href="conceptmimir_1_1graphs_1_1IsVertexListGraph.html">mimir::graphs::IsVertexListGraph</a>&lt;Graph&gt; &amp;&amp; <a class="el" href="conceptmimir_1_1graphs_1_1IsIncidenceGraph.html">mimir::graphs::IsIncidenceGraph</a>&lt;Graph&gt; &amp;&amp; <a class="el" href="conceptmimir_1_1graphs_1_1IsEdgeListGraph.html">mimir::graphs::IsEdgeListGraph</a>&lt;Graph&gt; &amp;&amp; <a class="el" href="conceptmimir_1_1graphs_1_1IsAdjacencyGraph.html">mimir::graphs::IsAdjacencyGraph</a>&lt;Graph&gt;<br />
+struct boost::graph_traits&lt; mimir::graphs::DirectionTaggedType&lt; Graph, Direction &gt; &gt;</div><p>Traits for a graph that are needed for the boost graph library. TODO: need to add bidirection concept. </p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="a6b15dfa10b1c092e95b816ccb0e09c89" name="a6b15dfa10b1c092e95b816ccb0e09c89"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6b15dfa10b1c092e95b816ccb0e09c89">&#9670;&#160;</a></span>adjacency_iterator</h2>
@@ -138,7 +139,7 @@ struct boost::graph_traits&lt; mimir::graphs::DirectionTaggedType&lt; Graph, Dir
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsStaticGraph.html">mimir::graphs::IsStaticGraph</a> Graph, <a class="el" href="conceptmimir_1_1graphs_1_1IsDirection.html">mimir::graphs::IsDirection</a> Direction&gt; </div>
+template&lt;typename Graph , <a class="el" href="conceptmimir_1_1graphs_1_1IsDirection.html">mimir::graphs::IsDirection</a> Direction&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using boost::graph_traits&lt; <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">mimir::graphs::DirectionTaggedType</a>&lt; Graph, Direction &gt; &gt;::adjacency_iterator =  typename Graph::template AdjacentVertexIndexConstIteratorType&lt;Direction&gt;</td>
@@ -154,7 +155,7 @@ template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsStaticGraph.html">mi
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsStaticGraph.html">mimir::graphs::IsStaticGraph</a> Graph, <a class="el" href="conceptmimir_1_1graphs_1_1IsDirection.html">mimir::graphs::IsDirection</a> Direction&gt; </div>
+template&lt;typename Graph , <a class="el" href="conceptmimir_1_1graphs_1_1IsDirection.html">mimir::graphs::IsDirection</a> Direction&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using boost::graph_traits&lt; <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">mimir::graphs::DirectionTaggedType</a>&lt; Graph, Direction &gt; &gt;::degree_size_type =  size_t</td>
@@ -170,7 +171,7 @@ template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsStaticGraph.html">mi
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsStaticGraph.html">mimir::graphs::IsStaticGraph</a> Graph, <a class="el" href="conceptmimir_1_1graphs_1_1IsDirection.html">mimir::graphs::IsDirection</a> Direction&gt; </div>
+template&lt;typename Graph , <a class="el" href="conceptmimir_1_1graphs_1_1IsDirection.html">mimir::graphs::IsDirection</a> Direction&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using boost::graph_traits&lt; <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">mimir::graphs::DirectionTaggedType</a>&lt; Graph, Direction &gt; &gt;::directed_category =  directed_tag</td>
@@ -186,7 +187,7 @@ template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsStaticGraph.html">mi
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsStaticGraph.html">mimir::graphs::IsStaticGraph</a> Graph, <a class="el" href="conceptmimir_1_1graphs_1_1IsDirection.html">mimir::graphs::IsDirection</a> Direction&gt; </div>
+template&lt;typename Graph , <a class="el" href="conceptmimir_1_1graphs_1_1IsDirection.html">mimir::graphs::IsDirection</a> Direction&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using boost::graph_traits&lt; <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">mimir::graphs::DirectionTaggedType</a>&lt; Graph, Direction &gt; &gt;::edge_descriptor =  <a class="el" href="namespacemimir_1_1graphs.html#a64d4b39dbf15556126f7575e277451f3">mimir::graphs::EdgeIndex</a></td>
@@ -202,7 +203,7 @@ template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsStaticGraph.html">mi
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsStaticGraph.html">mimir::graphs::IsStaticGraph</a> Graph, <a class="el" href="conceptmimir_1_1graphs_1_1IsDirection.html">mimir::graphs::IsDirection</a> Direction&gt; </div>
+template&lt;typename Graph , <a class="el" href="conceptmimir_1_1graphs_1_1IsDirection.html">mimir::graphs::IsDirection</a> Direction&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using boost::graph_traits&lt; <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">mimir::graphs::DirectionTaggedType</a>&lt; Graph, Direction &gt; &gt;::edge_iterator =  typename Graph::EdgeIndexConstIteratorType</td>
@@ -218,7 +219,7 @@ template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsStaticGraph.html">mi
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsStaticGraph.html">mimir::graphs::IsStaticGraph</a> Graph, <a class="el" href="conceptmimir_1_1graphs_1_1IsDirection.html">mimir::graphs::IsDirection</a> Direction&gt; </div>
+template&lt;typename Graph , <a class="el" href="conceptmimir_1_1graphs_1_1IsDirection.html">mimir::graphs::IsDirection</a> Direction&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using boost::graph_traits&lt; <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">mimir::graphs::DirectionTaggedType</a>&lt; Graph, Direction &gt; &gt;::edge_parallel_category =  allow_parallel_edge_tag</td>
@@ -234,7 +235,7 @@ template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsStaticGraph.html">mi
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsStaticGraph.html">mimir::graphs::IsStaticGraph</a> Graph, <a class="el" href="conceptmimir_1_1graphs_1_1IsDirection.html">mimir::graphs::IsDirection</a> Direction&gt; </div>
+template&lt;typename Graph , <a class="el" href="conceptmimir_1_1graphs_1_1IsDirection.html">mimir::graphs::IsDirection</a> Direction&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using boost::graph_traits&lt; <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">mimir::graphs::DirectionTaggedType</a>&lt; Graph, Direction &gt; &gt;::edges_size_type =  size_t</td>
@@ -250,7 +251,7 @@ template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsStaticGraph.html">mi
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsStaticGraph.html">mimir::graphs::IsStaticGraph</a> Graph, <a class="el" href="conceptmimir_1_1graphs_1_1IsDirection.html">mimir::graphs::IsDirection</a> Direction&gt; </div>
+template&lt;typename Graph , <a class="el" href="conceptmimir_1_1graphs_1_1IsDirection.html">mimir::graphs::IsDirection</a> Direction&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using boost::graph_traits&lt; <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">mimir::graphs::DirectionTaggedType</a>&lt; Graph, Direction &gt; &gt;::in_edge_iterator =  typename Graph::template AdjacentEdgeIndexConstIteratorType&lt;<a class="el" href="structboost_1_1graph__traits_3_01mimir_1_1graphs_1_1DirectionTaggedType_3_01Graph_00_01Direction_01_4_01_4.html#ae2e9cc96b9c20685ca1b948826fc22ec">inverse_direction</a>&gt;</td>
@@ -266,7 +267,7 @@ template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsStaticGraph.html">mi
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsStaticGraph.html">mimir::graphs::IsStaticGraph</a> Graph, <a class="el" href="conceptmimir_1_1graphs_1_1IsDirection.html">mimir::graphs::IsDirection</a> Direction&gt; </div>
+template&lt;typename Graph , <a class="el" href="conceptmimir_1_1graphs_1_1IsDirection.html">mimir::graphs::IsDirection</a> Direction&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using boost::graph_traits&lt; <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">mimir::graphs::DirectionTaggedType</a>&lt; Graph, Direction &gt; &gt;::inverse_direction =  typename Direction::Inverse</td>
@@ -282,7 +283,7 @@ template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsStaticGraph.html">mi
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsStaticGraph.html">mimir::graphs::IsStaticGraph</a> Graph, <a class="el" href="conceptmimir_1_1graphs_1_1IsDirection.html">mimir::graphs::IsDirection</a> Direction&gt; </div>
+template&lt;typename Graph , <a class="el" href="conceptmimir_1_1graphs_1_1IsDirection.html">mimir::graphs::IsDirection</a> Direction&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using boost::graph_traits&lt; <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">mimir::graphs::DirectionTaggedType</a>&lt; Graph, Direction &gt; &gt;::out_edge_iterator =  typename Graph::template AdjacentEdgeIndexConstIteratorType&lt;Direction&gt;</td>
@@ -298,7 +299,7 @@ template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsStaticGraph.html">mi
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsStaticGraph.html">mimir::graphs::IsStaticGraph</a> Graph, <a class="el" href="conceptmimir_1_1graphs_1_1IsDirection.html">mimir::graphs::IsDirection</a> Direction&gt; </div>
+template&lt;typename Graph , <a class="el" href="conceptmimir_1_1graphs_1_1IsDirection.html">mimir::graphs::IsDirection</a> Direction&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using boost::graph_traits&lt; <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">mimir::graphs::DirectionTaggedType</a>&lt; Graph, Direction &gt; &gt;::traversal_category =  vertex_list_and_incidence_and_edge_list_and_adjacency_and_bidirectional_graph_tag</td>
@@ -314,7 +315,7 @@ template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsStaticGraph.html">mi
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsStaticGraph.html">mimir::graphs::IsStaticGraph</a> Graph, <a class="el" href="conceptmimir_1_1graphs_1_1IsDirection.html">mimir::graphs::IsDirection</a> Direction&gt; </div>
+template&lt;typename Graph , <a class="el" href="conceptmimir_1_1graphs_1_1IsDirection.html">mimir::graphs::IsDirection</a> Direction&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using boost::graph_traits&lt; <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">mimir::graphs::DirectionTaggedType</a>&lt; Graph, Direction &gt; &gt;::vertex_descriptor =  <a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">mimir::graphs::VertexIndex</a></td>
@@ -330,7 +331,7 @@ template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsStaticGraph.html">mi
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsStaticGraph.html">mimir::graphs::IsStaticGraph</a> Graph, <a class="el" href="conceptmimir_1_1graphs_1_1IsDirection.html">mimir::graphs::IsDirection</a> Direction&gt; </div>
+template&lt;typename Graph , <a class="el" href="conceptmimir_1_1graphs_1_1IsDirection.html">mimir::graphs::IsDirection</a> Direction&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using boost::graph_traits&lt; <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">mimir::graphs::DirectionTaggedType</a>&lt; Graph, Direction &gt; &gt;::vertex_iterator =  typename Graph::VertexIndexConstIteratorType</td>
@@ -346,7 +347,7 @@ template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsStaticGraph.html">mi
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsStaticGraph.html">mimir::graphs::IsStaticGraph</a> Graph, <a class="el" href="conceptmimir_1_1graphs_1_1IsDirection.html">mimir::graphs::IsDirection</a> Direction&gt; </div>
+template&lt;typename Graph , <a class="el" href="conceptmimir_1_1graphs_1_1IsDirection.html">mimir::graphs::IsDirection</a> Direction&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using boost::graph_traits&lt; <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">mimir::graphs::DirectionTaggedType</a>&lt; Graph, Direction &gt; &gt;::vertices_size_type =  size_t</td>
@@ -363,7 +364,7 @@ template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsStaticGraph.html">mi
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsStaticGraph.html">mimir::graphs::IsStaticGraph</a> Graph, <a class="el" href="conceptmimir_1_1graphs_1_1IsDirection.html">mimir::graphs::IsDirection</a> Direction&gt; </div>
+template&lt;typename Graph , <a class="el" href="conceptmimir_1_1graphs_1_1IsDirection.html">mimir::graphs::IsDirection</a> Direction&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
