@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['backward_0',['Backward',['../structmimir_1_1graphs_1_1Backward.html',1,'mimir::graphs']]],
+  ['backwardtag_0',['BackwardTag',['../structmimir_1_1graphs_1_1BackwardTag.html',1,'mimir::graphs']]],
   ['bfsboostvisitor_1',['BFSBoostVisitor',['../structmimir_1_1graphs_1_1BFSBoostVisitor.html',1,'mimir::graphs']]],
   ['blindheuristic_2',['BlindHeuristic',['../classmimir_1_1search_1_1BlindHeuristic.html',1,'mimir::search']]],
   ['booleanatomicstategrammarvisitor_3',['BooleanAtomicStateGrammarVisitor',['../classmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1BooleanAtomicStateGrammarVisitor.html',1,'mimir::languages::dl::cnf_grammar::BooleanAtomicStateGrammarVisitor&lt; P &gt;'],['../classmimir_1_1languages_1_1dl_1_1grammar_1_1BooleanAtomicStateGrammarVisitor.html',1,'mimir::languages::dl::grammar::BooleanAtomicStateGrammarVisitor&lt; P &gt;']]],

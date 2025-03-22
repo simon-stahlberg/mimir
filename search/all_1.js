@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['backward_0',['Backward',['../structmimir_1_1graphs_1_1Backward.html',1,'mimir::graphs']]],
+  ['backwardtag_0',['BackwardTag',['../structmimir_1_1graphs_1_1BackwardTag.html',1,'mimir::graphs']]],
   ['begin_1',['begin',['../classmimir_1_1search_1_1iw_1_1StatePairTupleIndexGenerator.html#aaa9e08e891290b9e07436e5e8e85e6ec',1,'mimir::search::iw::StatePairTupleIndexGenerator::begin(const AtomIndexList &amp;atom_indices, const AtomIndexList &amp;add_atom_indices)'],['../classmimir_1_1search_1_1iw_1_1StatePairTupleIndexGenerator.html#a1418db12e5f19e3ff921031886835341',1,'mimir::search::iw::StatePairTupleIndexGenerator::begin(const State state, const State succ_state)'],['../classmimir_1_1search_1_1iw_1_1StateTupleIndexGenerator.html#a46f5545938428dcb0cf6dc789ba91898',1,'mimir::search::iw::StateTupleIndexGenerator::begin(const AtomIndexList &amp;atom_indices)'],['../classmimir_1_1search_1_1iw_1_1StateTupleIndexGenerator.html#a6ca357c7e0c7657fc2a4704a75cf8b6b',1,'mimir::search::iw::StateTupleIndexGenerator::begin(const State state)']]],
   ['bfsboostvisitor_2',['BFSBoostVisitor',['../structmimir_1_1graphs_1_1BFSBoostVisitor.html#ad515d09d853a41c68837d94776d3d609',1,'mimir::graphs::BFSBoostVisitor::BFSBoostVisitor()'],['../structmimir_1_1graphs_1_1BFSBoostVisitor.html',1,'mimir::graphs::BFSBoostVisitor&lt; VertexDescriptor &gt;']]],
   ['blind_2ehpp_3',['blind.hpp',['../blind_8hpp.html',1,'']]],

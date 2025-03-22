@@ -406,11 +406,11 @@ $(function() {
 <div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>    assert(m_vertices);</div>
 <div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>    assert(m_edges);</div>
 <div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span> </div>
-<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>    <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same_v&lt;Direction, Forward&gt;)</div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>    <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same_v&lt;Direction, ForwardTag&gt;)</div>
 <div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>    {</div>
 <div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>        <span class="keywordflow">return</span> m_vertices-&gt;at(m_edges-&gt;at(*m_slice_iter).get_target());</div>
 <div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>    }</div>
-<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same_v&lt;Direction, Backward&gt;)</div>
+<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same_v&lt;Direction, BackwardTag&gt;)</div>
 <div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>    {</div>
 <div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>        <span class="keywordflow">return</span> m_vertices-&gt;at(m_edges-&gt;at(*m_slice_iter).get_source());</div>
 <div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span>    }</div>
@@ -475,11 +475,11 @@ $(function() {
 <div class="line"><a id="l00401" name="l00401"></a><span class="lineno">  401</span><span class="keyword"></span>{</div>
 <div class="line"><a id="l00402" name="l00402"></a><span class="lineno">  402</span>    assert(m_edges);</div>
 <div class="line"><a id="l00403" name="l00403"></a><span class="lineno">  403</span> </div>
-<div class="line"><a id="l00404" name="l00404"></a><span class="lineno">  404</span>    <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same_v&lt;Direction, Forward&gt;)</div>
+<div class="line"><a id="l00404" name="l00404"></a><span class="lineno">  404</span>    <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same_v&lt;Direction, ForwardTag&gt;)</div>
 <div class="line"><a id="l00405" name="l00405"></a><span class="lineno">  405</span>    {</div>
 <div class="line"><a id="l00406" name="l00406"></a><span class="lineno">  406</span>        <span class="keywordflow">return</span> m_edges-&gt;at(*m_slice_iter).get_target();</div>
 <div class="line"><a id="l00407" name="l00407"></a><span class="lineno">  407</span>    }</div>
-<div class="line"><a id="l00408" name="l00408"></a><span class="lineno">  408</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same_v&lt;Direction, Backward&gt;)</div>
+<div class="line"><a id="l00408" name="l00408"></a><span class="lineno">  408</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same_v&lt;Direction, BackwardTag&gt;)</div>
 <div class="line"><a id="l00409" name="l00409"></a><span class="lineno">  409</span>    {</div>
 <div class="line"><a id="l00410" name="l00410"></a><span class="lineno">  410</span>        <span class="keywordflow">return</span> m_edges-&gt;at(*m_slice_iter).get_source();</div>
 <div class="line"><a id="l00411" name="l00411"></a><span class="lineno">  411</span>    }</div>

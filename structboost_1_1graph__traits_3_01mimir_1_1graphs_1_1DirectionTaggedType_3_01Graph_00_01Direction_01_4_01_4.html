@@ -118,9 +118,9 @@ Public Types</h2></td></tr>
 <tr class="separator:a812118b9faa54ee2d29b8c90b9e054c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6b15dfa10b1c092e95b816ccb0e09c89"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structboost_1_1graph__traits_3_01mimir_1_1graphs_1_1DirectionTaggedType_3_01Graph_00_01Direction_01_4_01_4.html#a6b15dfa10b1c092e95b816ccb0e09c89">adjacency_iterator</a> = typename Graph::template AdjacentVertexIndexConstIteratorType&lt; Direction &gt;</td></tr>
 <tr class="separator:a6b15dfa10b1c092e95b816ccb0e09c89"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a405add8570aaa28ff0cc10f34374604c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structboost_1_1graph__traits_3_01mimir_1_1graphs_1_1DirectionTaggedType_3_01Graph_00_01Direction_01_4_01_4.html#a405add8570aaa28ff0cc10f34374604c">inverse_direction</a> = typename <a class="el" href="structmimir_1_1graphs_1_1InverseDirection.html">mimir::graphs::InverseDirection</a>&lt; Direction &gt;::type</td></tr>
-<tr class="separator:a405add8570aaa28ff0cc10f34374604c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae5974b274a74c826ba1581c83d87287f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structboost_1_1graph__traits_3_01mimir_1_1graphs_1_1DirectionTaggedType_3_01Graph_00_01Direction_01_4_01_4.html#ae5974b274a74c826ba1581c83d87287f">in_edge_iterator</a> = typename Graph::template AdjacentEdgeIndexConstIteratorType&lt; <a class="el" href="structboost_1_1graph__traits_3_01mimir_1_1graphs_1_1DirectionTaggedType_3_01Graph_00_01Direction_01_4_01_4.html#a405add8570aaa28ff0cc10f34374604c">inverse_direction</a> &gt;</td></tr>
+<tr class="memitem:ae2e9cc96b9c20685ca1b948826fc22ec"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structboost_1_1graph__traits_3_01mimir_1_1graphs_1_1DirectionTaggedType_3_01Graph_00_01Direction_01_4_01_4.html#ae2e9cc96b9c20685ca1b948826fc22ec">inverse_direction</a> = typename Direction::Inverse</td></tr>
+<tr class="separator:ae2e9cc96b9c20685ca1b948826fc22ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5974b274a74c826ba1581c83d87287f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structboost_1_1graph__traits_3_01mimir_1_1graphs_1_1DirectionTaggedType_3_01Graph_00_01Direction_01_4_01_4.html#ae5974b274a74c826ba1581c83d87287f">in_edge_iterator</a> = typename Graph::template AdjacentEdgeIndexConstIteratorType&lt; <a class="el" href="structboost_1_1graph__traits_3_01mimir_1_1graphs_1_1DirectionTaggedType_3_01Graph_00_01Direction_01_4_01_4.html#ae2e9cc96b9c20685ca1b948826fc22ec">inverse_direction</a> &gt;</td></tr>
 <tr class="separator:ae5974b274a74c826ba1581c83d87287f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
@@ -253,15 +253,15 @@ template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsStaticGraph.html">mi
 template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsStaticGraph.html">mimir::graphs::IsStaticGraph</a> Graph, <a class="el" href="conceptmimir_1_1graphs_1_1IsDirection.html">mimir::graphs::IsDirection</a> Direction&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using boost::graph_traits&lt; <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">mimir::graphs::DirectionTaggedType</a>&lt; Graph, Direction &gt; &gt;::in_edge_iterator =  typename Graph::template AdjacentEdgeIndexConstIteratorType&lt;<a class="el" href="structboost_1_1graph__traits_3_01mimir_1_1graphs_1_1DirectionTaggedType_3_01Graph_00_01Direction_01_4_01_4.html#a405add8570aaa28ff0cc10f34374604c">inverse_direction</a>&gt;</td>
+          <td class="memname">using boost::graph_traits&lt; <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">mimir::graphs::DirectionTaggedType</a>&lt; Graph, Direction &gt; &gt;::in_edge_iterator =  typename Graph::template AdjacentEdgeIndexConstIteratorType&lt;<a class="el" href="structboost_1_1graph__traits_3_01mimir_1_1graphs_1_1DirectionTaggedType_3_01Graph_00_01Direction_01_4_01_4.html#ae2e9cc96b9c20685ca1b948826fc22ec">inverse_direction</a>&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="a405add8570aaa28ff0cc10f34374604c" name="a405add8570aaa28ff0cc10f34374604c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a405add8570aaa28ff0cc10f34374604c">&#9670;&#160;</a></span>inverse_direction</h2>
+<a id="ae2e9cc96b9c20685ca1b948826fc22ec" name="ae2e9cc96b9c20685ca1b948826fc22ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2e9cc96b9c20685ca1b948826fc22ec">&#9670;&#160;</a></span>inverse_direction</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -269,7 +269,7 @@ template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsStaticGraph.html">mi
 template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsStaticGraph.html">mimir::graphs::IsStaticGraph</a> Graph, <a class="el" href="conceptmimir_1_1graphs_1_1IsDirection.html">mimir::graphs::IsDirection</a> Direction&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using boost::graph_traits&lt; <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">mimir::graphs::DirectionTaggedType</a>&lt; Graph, Direction &gt; &gt;::inverse_direction =  typename <a class="el" href="structmimir_1_1graphs_1_1InverseDirection.html">mimir::graphs::InverseDirection</a>&lt;Direction&gt;::type</td>
+          <td class="memname">using boost::graph_traits&lt; <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">mimir::graphs::DirectionTaggedType</a>&lt; Graph, Direction &gt; &gt;::inverse_direction =  typename Direction::Inverse</td>
         </tr>
       </table>
 </div><div class="memdoc">

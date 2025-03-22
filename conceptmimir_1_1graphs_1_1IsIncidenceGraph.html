@@ -81,17 +81,17 @@ $(function() {
 <h2 class="groupheader">Concept definition</h2>
 <div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
 <div class="line"><span class="keyword">concept </span><a class="code hl_concept" href="conceptmimir_1_1graphs_1_1IsIncidenceGraph.html">mimir::graphs::IsIncidenceGraph</a> =  <span class="keyword">requires</span>(T a, <a class="code hl_typedef" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a> vertex, <a class="code hl_typedef" href="namespacemimir_1_1graphs.html#a64d4b39dbf15556126f7575e277451f3">EdgeIndex</a> edge) {</div>
-<div class="line">    <span class="keyword">typename</span> T::template AdjacentEdgeIndexConstIteratorType&lt;Forward&gt;;</div>
-<div class="line">    <span class="keyword">typename</span> T::template AdjacentEdgeIndexConstIteratorType&lt;Backward&gt;;</div>
+<div class="line">    <span class="keyword">typename</span> T::template AdjacentEdgeIndexConstIteratorType&lt;ForwardTag&gt;;</div>
+<div class="line">    <span class="keyword">typename</span> T::template AdjacentEdgeIndexConstIteratorType&lt;BackwardTag&gt;;</div>
 <div class="line"> </div>
-<div class="line">    { a.template get_source&lt;Forward&gt;(edge) } -&gt; std::same_as&lt;VertexIndex&gt;;</div>
-<div class="line">    { a.template get_source&lt;Backward&gt;(edge) } -&gt; std::same_as&lt;VertexIndex&gt;;</div>
-<div class="line">    { a.template get_target&lt;Forward&gt;(edge) } -&gt; std::same_as&lt;VertexIndex&gt;;</div>
-<div class="line">    { a.template get_target&lt;Backward&gt;(edge) } -&gt; std::same_as&lt;VertexIndex&gt;;</div>
-<div class="line">    { a.template get_adjacent_edge_indices&lt;Forward&gt;(vertex) } -&gt; IsRangeOver&lt;EdgeIndex&gt;;</div>
-<div class="line">    { a.template get_adjacent_edge_indices&lt;Backward&gt;(vertex) } -&gt; IsRangeOver&lt;EdgeIndex&gt;;</div>
-<div class="line">    { a.template get_degree&lt;Forward&gt;(vertex) } -&gt; std::same_as&lt;Degree&gt;;</div>
-<div class="line">    { a.template get_degree&lt;Backward&gt;(vertex) } -&gt; std::same_as&lt;Degree&gt;;</div>
+<div class="line">    { a.template get_source&lt;ForwardTag&gt;(edge) } -&gt; std::same_as&lt;VertexIndex&gt;;</div>
+<div class="line">    { a.template get_source&lt;BackwardTag&gt;(edge) } -&gt; std::same_as&lt;VertexIndex&gt;;</div>
+<div class="line">    { a.template get_target&lt;ForwardTag&gt;(edge) } -&gt; std::same_as&lt;VertexIndex&gt;;</div>
+<div class="line">    { a.template get_target&lt;BackwardTag&gt;(edge) } -&gt; std::same_as&lt;VertexIndex&gt;;</div>
+<div class="line">    { a.template get_adjacent_edge_indices&lt;ForwardTag&gt;(vertex) } -&gt; IsRangeOver&lt;EdgeIndex&gt;;</div>
+<div class="line">    { a.template get_adjacent_edge_indices&lt;BackwardTag&gt;(vertex) } -&gt; IsRangeOver&lt;EdgeIndex&gt;;</div>
+<div class="line">    { a.template get_degree&lt;ForwardTag&gt;(vertex) } -&gt; std::same_as&lt;Degree&gt;;</div>
+<div class="line">    { a.template get_degree&lt;BackwardTag&gt;(vertex) } -&gt; std::same_as&lt;Degree&gt;;</div>
 <div class="line">}</div>
 <div class="ttc" id="aconceptmimir_1_1graphs_1_1IsIncidenceGraph_html"><div class="ttname"><a href="conceptmimir_1_1graphs_1_1IsIncidenceGraph.html">mimir::graphs::IsIncidenceGraph</a></div><div class="ttdef"><b>Definition:</b> graph_interface.hpp:47</div></div>
 <div class="ttc" id="anamespacemimir_1_1graphs_html_a64d4b39dbf15556126f7575e277451f3"><div class="ttname"><a href="namespacemimir_1_1graphs.html#a64d4b39dbf15556126f7575e277451f3">mimir::graphs::EdgeIndex</a></div><div class="ttdeci">Index EdgeIndex</div><div class="ttdef"><b>Definition:</b> declarations.hpp:42</div></div>
