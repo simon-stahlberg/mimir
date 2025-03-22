@@ -111,8 +111,6 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1DomainImpl.html">DomainImpl</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1DomainTranslationResult.html">DomainTranslationResult</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmimir_1_1formalism_1_1Fluent.html">Fluent</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code><a class="el" href="structmimir_1_1formalism_1_1Fluent.html" title="Fluent is a tag to declare that the semantic interpretation of a type can change across states due to...">Fluent</a></code> is a tag to declare that the semantic interpretation of a type can change across states due to actions.  <a href="structmimir_1_1formalism_1_1Fluent.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -201,6 +199,8 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <a class="el" href="classmimir_1_1formalism_1_1StaticConsistencyGraph.html" title="The StaticConsistencyGraph encodes the assignments to static conditions, and hence,...">StaticConsistencyGraph</a> encodes the assignments to static conditions, and hence, it is an overapproximation of the actual consistency graph.  <a href="classmimir_1_1formalism_1_1StaticConsistencyGraph.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1TermImpl.html">TermImpl</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1Translator.html">Translator</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1VariableImpl.html">VariableImpl</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -743,10 +743,6 @@ Functions</h2></td></tr>
 <tr class="separator:a559cc26c416915caa24b55a84deec8f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1346f5b1dcc7c253cfe788e4d1505cf5"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#a1346f5b1dcc7c253cfe788e4d1505cf5">operator&lt;&lt;</a> (std::ostream &amp;out, <a class="el" href="namespacemimir_1_1formalism.html#a464fd2852275efe9690c3a507132cf65">Term</a> element)</td></tr>
 <tr class="separator:a1346f5b1dcc7c253cfe788e4d1505cf5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a80f1735ca5d69fce1bbe4408e692168d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmimir_1_1formalism_1_1DomainTranslationResult.html">DomainTranslationResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#a80f1735ca5d69fce1bbe4408e692168d">translate</a> (const <a class="el" href="namespacemimir_1_1formalism.html#a0705b57e5a6062fa24dac5fc9ce7c5f7">Domain</a> &amp;domain)</td></tr>
-<tr class="separator:a80f1735ca5d69fce1bbe4408e692168d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3caf625098e0e1c4a3d688839ed24f35"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#a18a62fffd7784a50a9304da9b0a2a7d1">Problem</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#a3caf625098e0e1c4a3d688839ed24f35">translate</a> (const <a class="el" href="namespacemimir_1_1formalism.html#a18a62fffd7784a50a9304da9b0a2a7d1">Problem</a> &amp;problem, const <a class="el" href="classmimir_1_1formalism_1_1DomainTranslationResult.html">DomainTranslationResult</a> &amp;result)</td></tr>
-<tr class="separator:a3caf625098e0e1c4a3d688839ed24f35"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad9a6ccd7069e0be20ba3430aeeea2000"><td class="memTemplParams" colspan="2">template&lt;StaticOrFluentOrDerived P&gt; </td></tr>
 <tr class="memitem:ad9a6ccd7069e0be20ba3430aeeea2000"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#ad9a6ccd7069e0be20ba3430aeeea2000">to_ground_atoms</a> (const <a class="el" href="namespacemimir_1_1formalism.html#ad32949f384c2a4c2b47a718103106f98">GroundLiteralList</a>&lt; P &gt; &amp;literals, <a class="el" href="namespacemimir_1_1formalism.html#ad2cdf01cac990bae340bbeac0fcb8a45">GroundAtomList</a>&lt; P &gt; &amp;out_ground_atoms)</td></tr>
 <tr class="memdesc:ad9a6ccd7069e0be20ba3430aeeea2000"><td class="mdescLeft">&#160;</td><td class="mdescRight">Translates a ground literal list into a list of ground atoms.  <br /></td></tr>
@@ -5347,52 +5343,6 @@ template&lt;StaticOrFluentOrDerived P&gt; </div>
 </div><div class="memdoc">
 
 <p>Translates a ground literal list into a list of ground atoms. </p>
-
-</div>
-</div>
-<a id="a80f1735ca5d69fce1bbe4408e692168d" name="a80f1735ca5d69fce1bbe4408e692168d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a80f1735ca5d69fce1bbe4408e692168d">&#9670;&#160;</a></span>translate() <span class="overload">[1/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classmimir_1_1formalism_1_1DomainTranslationResult.html">DomainTranslationResult</a> mimir::formalism::translate </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespacemimir_1_1formalism.html#a0705b57e5a6062fa24dac5fc9ce7c5f7">Domain</a> &amp;&#160;</td>
-          <td class="paramname"><em>domain</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a3caf625098e0e1c4a3d688839ed24f35" name="a3caf625098e0e1c4a3d688839ed24f35"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3caf625098e0e1c4a3d688839ed24f35">&#9670;&#160;</a></span>translate() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="namespacemimir_1_1formalism.html#a18a62fffd7784a50a9304da9b0a2a7d1">Problem</a> mimir::formalism::translate </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespacemimir_1_1formalism.html#a18a62fffd7784a50a9304da9b0a2a7d1">Problem</a> &amp;&#160;</td>
-          <td class="paramname"><em>problem</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classmimir_1_1formalism_1_1DomainTranslationResult.html">DomainTranslationResult</a> &amp;&#160;</td>
-          <td class="paramname"><em>result</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
 
 </div>
 </div>

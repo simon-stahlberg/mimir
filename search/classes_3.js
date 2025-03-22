@@ -23,13 +23,12 @@ var searchData=
   ['directiontaggedtype_20',['DirectionTaggedType',['../classmimir_1_1graphs_1_1DirectionTaggedType.html',1,'mimir::graphs']]],
   ['domainbuilder_21',['DomainBuilder',['../classmimir_1_1formalism_1_1DomainBuilder.html',1,'mimir::formalism']]],
   ['domainimpl_22',['DomainImpl',['../classmimir_1_1formalism_1_1DomainImpl.html',1,'mimir::formalism']]],
-  ['domaintranslationresult_23',['DomainTranslationResult',['../classmimir_1_1formalism_1_1DomainTranslationResult.html',1,'mimir::formalism']]],
-  ['dynamicadjacentedgeconstiterator_24',['DynamicAdjacentEdgeConstIterator',['../classmimir_1_1graphs_1_1DynamicAdjacentEdgeConstIterator.html',1,'mimir::graphs']]],
-  ['dynamicadjacentedgeindexconstiterator_25',['DynamicAdjacentEdgeIndexConstIterator',['../classmimir_1_1graphs_1_1DynamicAdjacentEdgeIndexConstIterator.html',1,'mimir::graphs']]],
-  ['dynamicadjacentvertexconstiterator_26',['DynamicAdjacentVertexConstIterator',['../classmimir_1_1graphs_1_1DynamicAdjacentVertexConstIterator.html',1,'mimir::graphs']]],
-  ['dynamicadjacentvertexindexconstiterator_27',['DynamicAdjacentVertexIndexConstIterator',['../classmimir_1_1graphs_1_1DynamicAdjacentVertexIndexConstIterator.html',1,'mimir::graphs']]],
-  ['dynamicedgeindexconstiterator_28',['DynamicEdgeIndexConstIterator',['../classmimir_1_1graphs_1_1DynamicEdgeIndexConstIterator.html',1,'mimir::graphs']]],
-  ['dynamicgraph_29',['DynamicGraph',['../classmimir_1_1graphs_1_1DynamicGraph.html',1,'mimir::graphs']]],
-  ['dynamicnoveltytable_30',['DynamicNoveltyTable',['../classmimir_1_1search_1_1iw_1_1DynamicNoveltyTable.html',1,'mimir::search::iw']]],
-  ['dynamicvertexindexconstiterator_31',['DynamicVertexIndexConstIterator',['../classmimir_1_1graphs_1_1DynamicVertexIndexConstIterator.html',1,'mimir::graphs']]]
+  ['dynamicadjacentedgeconstiterator_23',['DynamicAdjacentEdgeConstIterator',['../classmimir_1_1graphs_1_1DynamicAdjacentEdgeConstIterator.html',1,'mimir::graphs']]],
+  ['dynamicadjacentedgeindexconstiterator_24',['DynamicAdjacentEdgeIndexConstIterator',['../classmimir_1_1graphs_1_1DynamicAdjacentEdgeIndexConstIterator.html',1,'mimir::graphs']]],
+  ['dynamicadjacentvertexconstiterator_25',['DynamicAdjacentVertexConstIterator',['../classmimir_1_1graphs_1_1DynamicAdjacentVertexConstIterator.html',1,'mimir::graphs']]],
+  ['dynamicadjacentvertexindexconstiterator_26',['DynamicAdjacentVertexIndexConstIterator',['../classmimir_1_1graphs_1_1DynamicAdjacentVertexIndexConstIterator.html',1,'mimir::graphs']]],
+  ['dynamicedgeindexconstiterator_27',['DynamicEdgeIndexConstIterator',['../classmimir_1_1graphs_1_1DynamicEdgeIndexConstIterator.html',1,'mimir::graphs']]],
+  ['dynamicgraph_28',['DynamicGraph',['../classmimir_1_1graphs_1_1DynamicGraph.html',1,'mimir::graphs']]],
+  ['dynamicnoveltytable_29',['DynamicNoveltyTable',['../classmimir_1_1search_1_1iw_1_1DynamicNoveltyTable.html',1,'mimir::search::iw']]],
+  ['dynamicvertexindexconstiterator_30',['DynamicVertexIndexConstIterator',['../classmimir_1_1graphs_1_1DynamicVertexIndexConstIterator.html',1,'mimir::graphs']]]
 ];
