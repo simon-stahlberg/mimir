@@ -105,12 +105,24 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a8701d2488917c82f3a89fada3a9ef5a3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#a8701d2488917c82f3a89fada3a9ef5a3">is_terminating</a> () const</td></tr>
 <tr class="memdesc:a8701d2488917c82f3a89fada3a9ef5a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if and only if the <code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html">GeneralPolicyImpl</a></code> is structurally terminating.  <br /></td></tr>
 <tr class="separator:a8701d2488917c82f3a89fada3a9ef5a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32e02f92bad180bcee739aae40c046e9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#ad99169b982747ff0a73cfe59a9070ff6">UnsolvabilityReason</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#a32e02f92bad180bcee739aae40c046e9">solves</a> (const <a class="el" href="namespacemimir_1_1datasets.html#af50a91edae78e6166a7c7aea0f40fdd6">datasets::StateSpace</a> &amp;state_space, <a class="el" href="namespacemimir_1_1languages_1_1dl.html#ae030ae9ad477c663d14810bc63cdc251">dl::DenotationRepositories</a> &amp;denotation_repositories) const</td></tr>
+<tr class="separator:a32e02f92bad180bcee739aae40c046e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a33029c3a95d4fd124d575aeda54b7b69"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#ad99169b982747ff0a73cfe59a9070ff6">UnsolvabilityReason</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#a33029c3a95d4fd124d575aeda54b7b69">solves</a> (const <a class="el" href="namespacemimir_1_1datasets.html#af50a91edae78e6166a7c7aea0f40fdd6">datasets::StateSpace</a> &amp;state_space, const <a class="el" href="namespacemimir_1_1graphs.html#a4e517d2375e68a364388ba5a1184d8bc">graphs::VertexIndexList</a> &amp;vertices, <a class="el" href="namespacemimir_1_1languages_1_1dl.html#ae030ae9ad477c663d14810bc63cdc251">dl::DenotationRepositories</a> &amp;denotation_repositories) const</td></tr>
 <tr class="memdesc:a33029c3a95d4fd124d575aeda54b7b69"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if and only if the <code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html">GeneralPolicyImpl</a></code> solves all the given <code>vertices</code> in the given <code><a class="el" href="namespacemimir_1_1datasets.html#af50a91edae78e6166a7c7aea0f40fdd6">datasets::StateSpace</a></code>.  <br /></td></tr>
 <tr class="separator:a33029c3a95d4fd124d575aeda54b7b69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af49424ef8cc54025b75bad833543826a"><td class="memTemplParams" colspan="2">template&lt;std::ranges::forward_range VertexIndices&gt; <br />
+requires std::same_as&lt;std::ranges::range_value_t&lt;VertexIndices&gt;, <a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">graphs::VertexIndex</a>&gt;</td></tr>
+<tr class="memitem:af49424ef8cc54025b75bad833543826a"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#ad99169b982747ff0a73cfe59a9070ff6">UnsolvabilityReason</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#af49424ef8cc54025b75bad833543826a">solves</a> (const <a class="el" href="namespacemimir_1_1datasets.html#af50a91edae78e6166a7c7aea0f40fdd6">datasets::StateSpace</a> &amp;state_space, const VertexIndices &amp;vertices, <a class="el" href="namespacemimir_1_1languages_1_1dl.html#ae030ae9ad477c663d14810bc63cdc251">dl::DenotationRepositories</a> &amp;denotation_repositories) const</td></tr>
+<tr class="separator:af49424ef8cc54025b75bad833543826a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6cd1e9dc6f703e039d1981db8ca8f054"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#ad99169b982747ff0a73cfe59a9070ff6">UnsolvabilityReason</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#a6cd1e9dc6f703e039d1981db8ca8f054">solves</a> (const <a class="el" href="namespacemimir_1_1datasets.html#ac68caf5b1da70d554f0dab5faf0349c6">datasets::GeneralizedStateSpace</a> &amp;generalized_state_space, <a class="el" href="namespacemimir_1_1languages_1_1dl.html#ae030ae9ad477c663d14810bc63cdc251">dl::DenotationRepositories</a> &amp;denotation_repositories) const</td></tr>
+<tr class="separator:a6cd1e9dc6f703e039d1981db8ca8f054"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6feb6f58fedc3feeb25ec8b40371347a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#ad99169b982747ff0a73cfe59a9070ff6">UnsolvabilityReason</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#a6feb6f58fedc3feeb25ec8b40371347a">solves</a> (const <a class="el" href="namespacemimir_1_1datasets.html#ac68caf5b1da70d554f0dab5faf0349c6">datasets::GeneralizedStateSpace</a> &amp;generalized_state_space, const <a class="el" href="namespacemimir_1_1graphs.html#a4e517d2375e68a364388ba5a1184d8bc">graphs::VertexIndexList</a> &amp;vertices, <a class="el" href="namespacemimir_1_1languages_1_1dl.html#ae030ae9ad477c663d14810bc63cdc251">dl::DenotationRepositories</a> &amp;denotation_repositories) const</td></tr>
 <tr class="memdesc:a6feb6f58fedc3feeb25ec8b40371347a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if and only if the <code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html">GeneralPolicyImpl</a></code> solves all the given <code>vertices</code> in the given <code><a class="el" href="namespacemimir_1_1datasets.html#ac68caf5b1da70d554f0dab5faf0349c6">datasets::GeneralizedStateSpace</a></code>.  <br /></td></tr>
 <tr class="separator:a6feb6f58fedc3feeb25ec8b40371347a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e85084c280a20f6d9b05bea3be4b10f"><td class="memTemplParams" colspan="2">template&lt;std::ranges::forward_range VertexIndices&gt; <br />
+requires std::same_as&lt;std::ranges::range_value_t&lt;VertexIndices&gt;, <a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">graphs::VertexIndex</a>&gt;</td></tr>
+<tr class="memitem:a9e85084c280a20f6d9b05bea3be4b10f"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#ad99169b982747ff0a73cfe59a9070ff6">UnsolvabilityReason</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#a9e85084c280a20f6d9b05bea3be4b10f">solves</a> (const <a class="el" href="namespacemimir_1_1datasets.html#ac68caf5b1da70d554f0dab5faf0349c6">datasets::GeneralizedStateSpace</a> &amp;generalized_state_space, const VertexIndices &amp;vertices, <a class="el" href="namespacemimir_1_1languages_1_1dl.html#ae030ae9ad477c663d14810bc63cdc251">dl::DenotationRepositories</a> &amp;denotation_repositories) const</td></tr>
+<tr class="separator:a9e85084c280a20f6d9b05bea3be4b10f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8580f53d4ee81d9429c303513364d36b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#a8580f53d4ee81d9429c303513364d36b">get_index</a> () const</td></tr>
 <tr class="memdesc:a8580f53d4ee81d9429c303513364d36b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the index.  <br /></td></tr>
 <tr class="separator:a8580f53d4ee81d9429c303513364d36b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -378,7 +390,7 @@ template&lt;dl::IsConceptOrRoleOrBooleanOrNumericalTag D&gt; </div>
 </div>
 </div>
 <a id="a6feb6f58fedc3feeb25ec8b40371347a" name="a6feb6f58fedc3feeb25ec8b40371347a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6feb6f58fedc3feeb25ec8b40371347a">&#9670;&#160;</a></span>solves() <span class="overload">[1/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a6feb6f58fedc3feeb25ec8b40371347a">&#9670;&#160;</a></span>solves() <span class="overload">[1/6]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -422,8 +434,75 @@ template&lt;dl::IsConceptOrRoleOrBooleanOrNumericalTag D&gt; </div>
 
 </div>
 </div>
+<a id="a9e85084c280a20f6d9b05bea3be4b10f" name="a9e85084c280a20f6d9b05bea3be4b10f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e85084c280a20f6d9b05bea3be4b10f">&#9670;&#160;</a></span>solves() <span class="overload">[2/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;std::ranges::forward_range VertexIndices&gt; <br />
+requires std::same_as&lt;std::ranges::range_value_t&lt;VertexIndices&gt;, <a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">graphs::VertexIndex</a>&gt;</div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#ad99169b982747ff0a73cfe59a9070ff6">GeneralPolicyImpl::UnsolvabilityReason</a> mimir::languages::general_policies::GeneralPolicyImpl::solves </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacemimir_1_1datasets.html#ac68caf5b1da70d554f0dab5faf0349c6">datasets::GeneralizedStateSpace</a> &amp;&#160;</td>
+          <td class="paramname"><em>generalized_state_space</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const VertexIndices &amp;&#160;</td>
+          <td class="paramname"><em>vertices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#ae030ae9ad477c663d14810bc63cdc251">dl::DenotationRepositories</a> &amp;&#160;</td>
+          <td class="paramname"><em>denotation_repositories</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>&lt; Fetch and additionally increment iterator for next iteration</p>
+
+</div>
+</div>
+<a id="a6cd1e9dc6f703e039d1981db8ca8f054" name="a6cd1e9dc6f703e039d1981db8ca8f054"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6cd1e9dc6f703e039d1981db8ca8f054">&#9670;&#160;</a></span>solves() <span class="overload">[3/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#ad99169b982747ff0a73cfe59a9070ff6">UnsolvabilityReason</a> mimir::languages::general_policies::GeneralPolicyImpl::solves </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacemimir_1_1datasets.html#ac68caf5b1da70d554f0dab5faf0349c6">datasets::GeneralizedStateSpace</a> &amp;&#160;</td>
+          <td class="paramname"><em>generalized_state_space</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#ae030ae9ad477c663d14810bc63cdc251">dl::DenotationRepositories</a> &amp;&#160;</td>
+          <td class="paramname"><em>denotation_repositories</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Solvability of GeneralizedStateSpace. </p>
+
+</div>
+</div>
 <a id="a33029c3a95d4fd124d575aeda54b7b69" name="a33029c3a95d4fd124d575aeda54b7b69"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a33029c3a95d4fd124d575aeda54b7b69">&#9670;&#160;</a></span>solves() <span class="overload">[2/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a33029c3a95d4fd124d575aeda54b7b69">&#9670;&#160;</a></span>solves() <span class="overload">[4/6]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -464,6 +543,74 @@ template&lt;dl::IsConceptOrRoleOrBooleanOrNumericalTag D&gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>a reason for unsolvability or None. </dd></dl>
+
+</div>
+</div>
+<a id="af49424ef8cc54025b75bad833543826a" name="af49424ef8cc54025b75bad833543826a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af49424ef8cc54025b75bad833543826a">&#9670;&#160;</a></span>solves() <span class="overload">[5/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;std::ranges::forward_range VertexIndices&gt; <br />
+requires std::same_as&lt;std::ranges::range_value_t&lt;VertexIndices&gt;, <a class="el" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">graphs::VertexIndex</a>&gt;</div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#ad99169b982747ff0a73cfe59a9070ff6">GeneralPolicyImpl::UnsolvabilityReason</a> mimir::languages::general_policies::GeneralPolicyImpl::solves </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacemimir_1_1datasets.html#af50a91edae78e6166a7c7aea0f40fdd6">datasets::StateSpace</a> &amp;&#160;</td>
+          <td class="paramname"><em>state_space</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const VertexIndices &amp;&#160;</td>
+          <td class="paramname"><em>vertices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#ae030ae9ad477c663d14810bc63cdc251">dl::DenotationRepositories</a> &amp;&#160;</td>
+          <td class="paramname"><em>denotation_repositories</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Implementations </p>
+<p>&lt; Fetch and additionally increment iterator for next iteration</p>
+
+</div>
+</div>
+<a id="a32e02f92bad180bcee739aae40c046e9" name="a32e02f92bad180bcee739aae40c046e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32e02f92bad180bcee739aae40c046e9">&#9670;&#160;</a></span>solves() <span class="overload">[6/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#ad99169b982747ff0a73cfe59a9070ff6">UnsolvabilityReason</a> mimir::languages::general_policies::GeneralPolicyImpl::solves </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacemimir_1_1datasets.html#af50a91edae78e6166a7c7aea0f40fdd6">datasets::StateSpace</a> &amp;&#160;</td>
+          <td class="paramname"><em>state_space</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#ae030ae9ad477c663d14810bc63cdc251">dl::DenotationRepositories</a> &amp;&#160;</td>
+          <td class="paramname"><em>denotation_repositories</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Solvability of StateSpace. </p>
 
 </div>
 </div>
