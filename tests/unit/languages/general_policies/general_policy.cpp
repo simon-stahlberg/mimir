@@ -90,24 +90,14 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyTest)
             {
                 /* Test solvability on GeneralizedStateSpace. */
 
-                const auto& initial_vertex_indices = generalized_state_space.value()->get_initial_vertices();
-
-                EXPECT_EQ(initial_vertex_indices.size(), 2);
-
-                const auto vertex_indices = graphs::VertexIndexList(initial_vertex_indices.begin(), initial_vertex_indices.end());
-
-                EXPECT_EQ(general_policy->solves(generalized_state_space.value(), vertex_indices, denotation_repositories),
+                EXPECT_EQ(general_policy->solves(generalized_state_space.value(), denotation_repositories),
                           general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
             }
 
             {
                 /* Test solvability on StateSpace 0. */
 
-                const auto state_space_0 = kb->get_state_spaces().at(0);
-
-                const auto vertex_indices = graphs::VertexIndexList { state_space_0->get_initial_vertex() };
-
-                EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), vertex_indices, denotation_repositories),
+                EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), denotation_repositories),
                           general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
             }
 
@@ -116,9 +106,7 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyTest)
 
                 const auto state_space_1 = kb->get_state_spaces().at(1);
 
-                const auto vertex_indices = graphs::VertexIndexList { state_space_1->get_initial_vertex() };
-
-                EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), vertex_indices, denotation_repositories),
+                EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), denotation_repositories),
                           general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
             }
         }
@@ -149,13 +137,7 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyTest)
             {
                 /* Test solvability on GeneralizedStateSpace. */
 
-                const auto& initial_vertex_indices = generalized_state_space.value()->get_initial_vertices();
-
-                EXPECT_EQ(initial_vertex_indices.size(), 2);
-
-                const auto vertex_indices = graphs::VertexIndexList(initial_vertex_indices.begin(), initial_vertex_indices.end());
-
-                EXPECT_EQ(general_policy->solves(generalized_state_space.value(), vertex_indices, denotation_repositories),
+                EXPECT_EQ(general_policy->solves(generalized_state_space.value(), denotation_repositories),
                           general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
             }
 
@@ -164,9 +146,7 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyTest)
 
                 const auto state_space_0 = kb->get_state_spaces().at(0);
 
-                const auto vertex_indices = graphs::VertexIndexList { state_space_0->get_initial_vertex() };
-
-                EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), vertex_indices, denotation_repositories),
+                EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), denotation_repositories),
                           general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
             }
 
@@ -175,9 +155,7 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyTest)
 
                 const auto state_space_1 = kb->get_state_spaces().at(1);
 
-                const auto vertex_indices = graphs::VertexIndexList { state_space_1->get_initial_vertex() };
-
-                EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), vertex_indices, denotation_repositories),
+                EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), denotation_repositories),
                           general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
             }
         }
