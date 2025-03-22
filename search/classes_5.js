@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['fluent_0',['Fluent',['../structmimir_1_1formalism_1_1Fluent.html',1,'mimir::formalism']]],
+  ['fluenttag_0',['FluentTag',['../structmimir_1_1formalism_1_1FluentTag.html',1,'mimir::formalism']]],
   ['formattervisitor_1',['FormatterVisitor',['../classmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1FormatterVisitor.html',1,'mimir::languages::dl::cnf_grammar::FormatterVisitor'],['../classmimir_1_1languages_1_1dl_1_1FormatterVisitor.html',1,'mimir::languages::dl::FormatterVisitor'],['../classmimir_1_1languages_1_1dl_1_1grammar_1_1FormatterVisitor.html',1,'mimir::languages::dl::grammar::FormatterVisitor']]],
   ['forward_2',['Forward',['../structmimir_1_1graphs_1_1Forward.html',1,'mimir::graphs']]],
   ['fullformattertag_3',['FullFormatterTag',['../structmimir_1_1formalism_1_1GroundActionImpl_1_1FullFormatterTag.html',1,'mimir::formalism::GroundActionImpl']]],

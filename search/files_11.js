@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['tags_2ehpp_0',['tags.hpp',['../tags_8hpp.html',1,'']]],
+  ['tags_2ehpp_0',['tags.hpp',['../formalism_2tags_8hpp.html',1,'(Global Namespace)'],['../languages_2description__logics_2tags_8hpp.html',1,'(Global Namespace)']]],
   ['term_2ehpp_1',['term.hpp',['../term_8hpp.html',1,'']]],
   ['translator_2ehpp_2',['translator.hpp',['../translator_8hpp.html',1,'']]],
   ['tuple_5fgraph_2ehpp_3',['tuple_graph.hpp',['../tuple__graph_8hpp.html',1,'']]],

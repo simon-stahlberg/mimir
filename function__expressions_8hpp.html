@@ -111,8 +111,8 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:af136bb4a0b0b9f322d342e51acf33ce8"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#af136bb4a0b0b9f322d342e51acf33ce8">mimir::formalism::FunctionExpressionVariant</a> = std::variant&lt; FunctionExpressionNumber, FunctionExpressionBinaryOperator, FunctionExpressionMultiOperator, FunctionExpressionMinus, FunctionExpressionFunction&lt; Static &gt;, FunctionExpressionFunction&lt; Fluent &gt; &gt;</td></tr>
-<tr class="separator:af136bb4a0b0b9f322d342e51acf33ce8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26153258a8ca3aaab06d16fbb526229c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#a26153258a8ca3aaab06d16fbb526229c">mimir::formalism::FunctionExpressionVariant</a> = std::variant&lt; FunctionExpressionNumber, FunctionExpressionBinaryOperator, FunctionExpressionMultiOperator, FunctionExpressionMinus, FunctionExpressionFunction&lt; StaticTag &gt;, FunctionExpressionFunction&lt; FluentTag &gt; &gt;</td></tr>
+<tr class="separator:a26153258a8ca3aaab06d16fbb526229c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
@@ -134,7 +134,7 @@ Functions</h2></td></tr>
 <tr class="separator:aa67a2110b69c99b09ad7f67b54e452c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a977cd54e172d5890d87af71fa111657f"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#a977cd54e172d5890d87af71fa111657f">mimir::formalism::operator&lt;&lt;</a> (std::ostream &amp;out, const FunctionExpressionMinusImpl &amp;element)</td></tr>
 <tr class="separator:a977cd54e172d5890d87af71fa111657f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae0ac07698d4640b836f9ef99a464dbdc"><td class="memTemplParams" colspan="2">template&lt;StaticOrFluentOrAuxiliary F&gt; </td></tr>
+<tr class="memitem:ae0ac07698d4640b836f9ef99a464dbdc"><td class="memTemplParams" colspan="2">template&lt;IsStaticOrFluentOrAuxiliaryTag F&gt; </td></tr>
 <tr class="memitem:ae0ac07698d4640b836f9ef99a464dbdc"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#ae0ac07698d4640b836f9ef99a464dbdc">mimir::formalism::operator&lt;&lt;</a> (std::ostream &amp;out, const FunctionExpressionFunctionImpl&lt; F &gt; &amp;element)</td></tr>
 <tr class="separator:ae0ac07698d4640b836f9ef99a464dbdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afb73c6a1f577e42fd2591d8344bf1152"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#afb73c6a1f577e42fd2591d8344bf1152">mimir::formalism::operator&lt;&lt;</a> (std::ostream &amp;out, const FunctionExpressionImpl &amp;element)</td></tr>
@@ -147,7 +147,7 @@ Functions</h2></td></tr>
 <tr class="separator:a329813a29d9a5e7120a770c8ab87652e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac107a75c39bf976493bac01ca870fabe"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#ac107a75c39bf976493bac01ca870fabe">mimir::formalism::operator&lt;&lt;</a> (std::ostream &amp;out, FunctionExpressionMinus element)</td></tr>
 <tr class="separator:ac107a75c39bf976493bac01ca870fabe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab0830781ec8620e27c0dcc01f5d817f8"><td class="memTemplParams" colspan="2">template&lt;StaticOrFluentOrAuxiliary F&gt; </td></tr>
+<tr class="memitem:ab0830781ec8620e27c0dcc01f5d817f8"><td class="memTemplParams" colspan="2">template&lt;IsStaticOrFluentOrAuxiliaryTag F&gt; </td></tr>
 <tr class="memitem:ab0830781ec8620e27c0dcc01f5d817f8"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#ab0830781ec8620e27c0dcc01f5d817f8">mimir::formalism::operator&lt;&lt;</a> (std::ostream &amp;out, FunctionExpressionFunction&lt; F &gt; element)</td></tr>
 <tr class="separator:ab0830781ec8620e27c0dcc01f5d817f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a47265d57a8349ea885b6bc177d6eebf7"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#a47265d57a8349ea885b6bc177d6eebf7">mimir::formalism::operator&lt;&lt;</a> (std::ostream &amp;out, FunctionExpression element)</td></tr>

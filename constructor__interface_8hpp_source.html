@@ -96,9 +96,9 @@ $(function() {
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_INTERFACE_HPP_</span></div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_INTERFACE_HPP_</span></div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &quot;<a class="code" href="constructor__tag_8hpp.html">mimir/languages/description_logics/constructor_tag.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &quot;<a class="code" href="languages_2description__logics_2declarations_8hpp.html">mimir/languages/description_logics/declarations.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &quot;<a class="code" href="denotations_8hpp.html">mimir/languages/description_logics/denotations.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &quot;<a class="code" href="languages_2description__logics_2declarations_8hpp.html">mimir/languages/description_logics/declarations.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &quot;<a class="code" href="denotations_8hpp.html">mimir/languages/description_logics/denotations.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &quot;<a class="code" href="languages_2description__logics_2tags_8hpp.html">mimir/languages/description_logics/tags.hpp</a>&quot;</span></div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">#include &lt;concepts&gt;</span></div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
@@ -108,7 +108,7 @@ $(function() {
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacemimir_1_1languages_1_1dl.html">mimir::languages::dl</a></div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>{</div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="keyword">template</span>&lt;FeatureCategory D&gt;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="keyword">template</span>&lt;IsConceptOrRoleOrBooleanOrNumericalTag D&gt;</div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classmimir_1_1languages_1_1dl_1_1IConstructor.html">   34</a></span><span class="keyword">class </span><a class="code hl_class" href="classmimir_1_1languages_1_1dl_1_1IConstructor.html">IConstructor</a></div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>{</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="keyword">protected</span>:</div>
@@ -146,9 +146,9 @@ $(function() {
 <div class="ttc" id="aclassmimir_1_1languages_1_1dl_1_1IConstructor_html_acc674c386ee1ebbd16b36f92c3183c8f"><div class="ttname"><a href="classmimir_1_1languages_1_1dl_1_1IConstructor.html#acc674c386ee1ebbd16b36f92c3183c8f">mimir::languages::dl::IConstructor::IConstructor</a></div><div class="ttdeci">IConstructor()=default</div></div>
 <div class="ttc" id="aclassmimir_1_1languages_1_1dl_1_1IConstructor_html_ad46958be806110369faf1e64fbca2cab"><div class="ttname"><a href="classmimir_1_1languages_1_1dl_1_1IConstructor.html#ad46958be806110369faf1e64fbca2cab">mimir::languages::dl::IConstructor::evaluate</a></div><div class="ttdeci">virtual Denotation&lt; D &gt; evaluate(EvaluationContext &amp;context) const =0</div><div class="ttdoc">Evaluate the dl constructor on the evaluation context.</div></div>
 <div class="ttc" id="aclassmimir_1_1languages_1_1dl_1_1IVisitor_html"><div class="ttname"><a href="classmimir_1_1languages_1_1dl_1_1IVisitor.html">mimir::languages::dl::IVisitor</a></div><div class="ttdef"><b>Definition:</b> constructor_visitor_interface.hpp:28</div></div>
-<div class="ttc" id="aconstructor__tag_8hpp_html"><div class="ttname"><a href="constructor__tag_8hpp.html">constructor_tag.hpp</a></div></div>
 <div class="ttc" id="adenotations_8hpp_html"><div class="ttname"><a href="denotations_8hpp.html">denotations.hpp</a></div></div>
 <div class="ttc" id="alanguages_2description__logics_2declarations_8hpp_html"><div class="ttname"><a href="languages_2description__logics_2declarations_8hpp.html">declarations.hpp</a></div></div>
+<div class="ttc" id="alanguages_2description__logics_2tags_8hpp_html"><div class="ttname"><a href="languages_2description__logics_2tags_8hpp.html">tags.hpp</a></div></div>
 <div class="ttc" id="anamespacemimir_1_1languages_1_1dl_html"><div class="ttname"><a href="namespacemimir_1_1languages_1_1dl.html">mimir::languages::dl</a></div><div class="ttdef"><b>Definition:</b> cnf_grammar.hpp:28</div></div>
 <div class="ttc" id="anamespacemimir_html_ab800c69cfcabbde81050b3d05b9c2fa4"><div class="ttname"><a href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">mimir::Index</a></div><div class="ttdeci">uint32_t Index</div><div class="ttdef"><b>Definition:</b> types.hpp:35</div></div>
 <div class="ttc" id="astructmimir_1_1languages_1_1dl_1_1DenotationImpl_html"><div class="ttname"><a href="structmimir_1_1languages_1_1dl_1_1DenotationImpl.html">mimir::languages::dl::DenotationImpl</a></div><div class="ttdef"><b>Definition:</b> denotations.hpp:36</div></div>

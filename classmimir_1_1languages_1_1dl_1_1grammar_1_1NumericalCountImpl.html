@@ -88,7 +88,7 @@ Inheritance diagram for mimir::languages::dl::grammar::NumericalCountImpl&lt; D 
  <div class="center">
   <img src="classmimir_1_1languages_1_1dl_1_1grammar_1_1NumericalCountImpl.png" usemap="#mimir::languages::dl::grammar::NumericalCountImpl_3C_20D_20_3E_map" alt=""/>
   <map id="mimir::languages::dl::grammar::NumericalCountImpl_3C_20D_20_3E_map" name="mimir::languages::dl::grammar::NumericalCountImpl_3C_20D_20_3E_map">
-<area href="classmimir_1_1languages_1_1dl_1_1grammar_1_1IConstructor.html" alt="mimir::languages::dl::grammar::IConstructor&lt; D &gt;" shape="rect" coords="0,0,332,24"/>
+<area href="classmimir_1_1languages_1_1dl_1_1grammar_1_1IConstructor.html" alt="mimir::languages::dl::grammar::IConstructor&lt; D &gt;" shape="rect" coords="0,0,353,24"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -102,8 +102,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a554e1964aec2ba673689555748bc5577"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7caadb38212d986c46aad9ba33f595d5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1NumericalCountImpl.html">NumericalCountImpl</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1NumericalCountImpl.html#a7caadb38212d986c46aad9ba33f595d5">operator=</a> (<a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1NumericalCountImpl.html">NumericalCountImpl</a> &amp;&amp;other)=default</td></tr>
 <tr class="separator:a7caadb38212d986c46aad9ba33f595d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2a2a7a549d33b0df850fb1b4717916ae"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1NumericalCountImpl.html#a2a2a7a549d33b0df850fb1b4717916ae">test_match</a> (<a class="el" href="namespacemimir_1_1languages_1_1dl.html#a2f5ecd6c57868865e0cf88c96d6b7e6f">dl::Constructor</a>&lt; <a class="el" href="structmimir_1_1languages_1_1dl_1_1Numerical.html">Numerical</a> &gt; constructor, const <a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1Grammar.html">Grammar</a> &amp;grammar) const override</td></tr>
-<tr class="separator:a2a2a7a549d33b0df850fb1b4717916ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4310485abe57248e221f94b8e16abe9a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1NumericalCountImpl.html#a4310485abe57248e221f94b8e16abe9a">test_match</a> (<a class="el" href="namespacemimir_1_1languages_1_1dl.html#a2f5ecd6c57868865e0cf88c96d6b7e6f">dl::Constructor</a>&lt; <a class="el" href="structmimir_1_1languages_1_1dl_1_1NumericalTag.html">NumericalTag</a> &gt; constructor, const <a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1Grammar.html">Grammar</a> &amp;grammar) const override</td></tr>
+<tr class="separator:a4310485abe57248e221f94b8e16abe9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a77f27f573662e1fb24b7a4fc383e9bc7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1NumericalCountImpl.html#a77f27f573662e1fb24b7a4fc383e9bc7">accept</a> (<a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1IVisitor.html">IVisitor</a> &amp;visitor) const override</td></tr>
 <tr class="memdesc:a77f27f573662e1fb24b7a4fc383e9bc7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accept a visitor.  <br /></td></tr>
 <tr class="separator:a77f27f573662e1fb24b7a4fc383e9bc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -144,7 +144,7 @@ Additional Inherited Members</h2></td></tr>
 <tr class="separator:a5f5bbcef2cb66afcb0177c3585b5ae76 inherit pro_methods_classmimir_1_1languages_1_1dl_1_1grammar_1_1IConstructor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><div class="compoundTemplParams">template&lt;DescriptionLogicCategory D&gt;<br />
+<div class="textblock"><div class="compoundTemplParams">template&lt;IsConceptOrRoleTag D&gt;<br />
 class mimir::languages::dl::grammar::NumericalCountImpl&lt; D &gt;</div><p>Numericals </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a026d0c3e117b5dbe6c651b36a7425bbd" name="a026d0c3e117b5dbe6c651b36a7425bbd"></a>
@@ -153,7 +153,7 @@ class mimir::languages::dl::grammar::NumericalCountImpl&lt; D &gt;</div><p>Numer
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;DescriptionLogicCategory D&gt; </div>
+template&lt;IsConceptOrRoleTag D&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -181,7 +181,7 @@ template&lt;DescriptionLogicCategory D&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;DescriptionLogicCategory D&gt; </div>
+template&lt;IsConceptOrRoleTag D&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -210,7 +210,7 @@ template&lt;DescriptionLogicCategory D&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;DescriptionLogicCategory D&gt; </div>
+template&lt;IsConceptOrRoleTag D&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -242,7 +242,7 @@ template&lt;DescriptionLogicCategory D&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;DescriptionLogicCategory D&gt; </div>
+template&lt;IsConceptOrRoleTag D&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1grammar.html#acee7e4bd3a6f41e462847a848dbeb545">ConstructorOrNonTerminal</a>&lt; D &gt; <a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1NumericalCountImpl.html">mimir::languages::dl::grammar::NumericalCountImpl</a>&lt; D &gt;::get_constructor_or_nonterminal </td>
@@ -261,7 +261,7 @@ template&lt;DescriptionLogicCategory D&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;DescriptionLogicCategory D&gt; </div>
+template&lt;IsConceptOrRoleTag D&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname"><a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> <a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1NumericalCountImpl.html">mimir::languages::dl::grammar::NumericalCountImpl</a>&lt; D &gt;::get_index </td>
@@ -280,7 +280,7 @@ template&lt;DescriptionLogicCategory D&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;DescriptionLogicCategory D&gt; </div>
+template&lt;IsConceptOrRoleTag D&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -310,7 +310,7 @@ template&lt;DescriptionLogicCategory D&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;DescriptionLogicCategory D&gt; </div>
+template&lt;IsConceptOrRoleTag D&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -338,7 +338,7 @@ template&lt;DescriptionLogicCategory D&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;DescriptionLogicCategory D&gt; </div>
+template&lt;IsConceptOrRoleTag D&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -360,13 +360,13 @@ template&lt;DescriptionLogicCategory D&gt; </div>
 
 </div>
 </div>
-<a id="a2a2a7a549d33b0df850fb1b4717916ae" name="a2a2a7a549d33b0df850fb1b4717916ae"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2a2a7a549d33b0df850fb1b4717916ae">&#9670;&#160;</a></span>test_match()</h2>
+<a id="a4310485abe57248e221f94b8e16abe9a" name="a4310485abe57248e221f94b8e16abe9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4310485abe57248e221f94b8e16abe9a">&#9670;&#160;</a></span>test_match()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;DescriptionLogicCategory D&gt; </div>
+template&lt;IsConceptOrRoleTag D&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -374,7 +374,7 @@ template&lt;DescriptionLogicCategory D&gt; </div>
         <tr>
           <td class="memname">bool <a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1NumericalCountImpl.html">mimir::languages::dl::grammar::NumericalCountImpl</a>&lt; D &gt;::test_match </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#a2f5ecd6c57868865e0cf88c96d6b7e6f">dl::Constructor</a>&lt; <a class="el" href="structmimir_1_1languages_1_1dl_1_1Numerical.html">Numerical</a> &gt;&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#a2f5ecd6c57868865e0cf88c96d6b7e6f">dl::Constructor</a>&lt; <a class="el" href="structmimir_1_1languages_1_1dl_1_1NumericalTag.html">NumericalTag</a> &gt;&#160;</td>
           <td class="paramname"><em>constructor</em>, </td>
         </tr>
         <tr>
@@ -405,7 +405,7 @@ template&lt;DescriptionLogicCategory D&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;DescriptionLogicCategory D&gt; </div>
+template&lt;IsConceptOrRoleTag D&gt; </div>
 <div class="memtemplate">
 template&lt;typename T , typename Hash , typename EqualTo &gt; </div>
 <table class="mlabels">

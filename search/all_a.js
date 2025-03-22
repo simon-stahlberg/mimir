@@ -19,7 +19,7 @@ var searchData=
   ['literal_2ehpp_16',['literal.hpp',['../literal_8hpp.html',1,'']]],
   ['literal_5fholds_17',['literal_holds',['../structmimir_1_1search_1_1StateImpl.html#a47203505b88c23da8601fa8741b5a613',1,'mimir::search::StateImpl']]],
   ['literalimpl_18',['LiteralImpl',['../classmimir_1_1formalism_1_1LiteralImpl.html#a53a081022d4527ee07d12a2beeeb169c',1,'mimir::formalism::LiteralImpl::LiteralImpl(LiteralImpl &amp;&amp;other)=default'],['../classmimir_1_1formalism_1_1LiteralImpl.html#a9e09f51013bf0e6ab07ff729e9ac04e5',1,'mimir::formalism::LiteralImpl::LiteralImpl(const LiteralImpl &amp;other)=delete'],['../classmimir_1_1formalism_1_1LiteralImpl.html',1,'mimir::formalism::LiteralImpl&lt; P &gt;']]],
-  ['literalimpl_3c_20mimir_3a_3aformalism_3a_3aderived_20_3e_19',['LiteralImpl&lt; mimir::formalism::Derived &gt;',['../classmimir_1_1formalism_1_1LiteralImpl.html',1,'mimir::formalism']]],
+  ['literalimpl_3c_20mimir_3a_3aformalism_3a_3aderivedtag_20_3e_19',['LiteralImpl&lt; mimir::formalism::DerivedTag &gt;',['../classmimir_1_1formalism_1_1LiteralImpl.html',1,'mimir::formalism']]],
   ['literallist_20',['LiteralList',['../namespacemimir_1_1formalism.html#a70f160df3b18168769be8b3cf7e7fe58',1,'mimir::formalism']]],
   ['literallists_21',['LiteralLists',['../namespacemimir_1_1formalism.html#a8820d4cc130b828726a6eb0c03f8e58f',1,'mimir::formalism']]],
   ['literalrepository_22',['LiteralRepository',['../namespacemimir_1_1formalism.html#a2f122d58963121345c7aae1e1413d340',1,'mimir::formalism']]],
