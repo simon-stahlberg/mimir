@@ -6,7 +6,7 @@ var searchData=
   ['generalized_5fproblem_2ehpp_3',['generalized_problem.hpp',['../generalized__problem_8hpp.html',1,'']]],
   ['generalized_5fsearch_5fcontext_2ehpp_4',['generalized_search_context.hpp',['../generalized__search__context_8hpp.html',1,'']]],
   ['generalized_5fstate_5fspace_2ehpp_5',['generalized_state_space.hpp',['../generalized__state__space_8hpp.html',1,'']]],
-  ['goal_5fstrategy_2ehpp_6',['goal_strategy.hpp',['../goal__strategy_8hpp.html',1,'']]],
+  ['goal_5fstrategy_2ehpp_6',['goal_strategy.hpp',['../strategies_2goal__strategy_8hpp.html',1,'(Global Namespace)'],['../siw_2goal__strategy_8hpp.html',1,'(Global Namespace)']]],
   ['grammar_2ehpp_7',['grammar.hpp',['../grammar_8hpp.html',1,'']]],
   ['grammar_5fconstructor_5finterface_2ehpp_8',['grammar_constructor_interface.hpp',['../grammar__constructor__interface_8hpp.html',1,'']]],
   ['grammar_5fconstructor_5frepositories_2ehpp_9',['grammar_constructor_repositories.hpp',['../grammar__constructor__repositories_8hpp.html',1,'']]],

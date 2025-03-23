@@ -12,11 +12,13 @@ var searchData=
   ['iconstructor_3c_20roletag_20_3e_9',['IConstructor&lt; RoleTag &gt;',['../classmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1IConstructor.html',1,'mimir::languages::dl::cnf_grammar']]],
   ['ieffect_10',['IEffect',['../classmimir_1_1languages_1_1general__policies_1_1IEffect.html',1,'mimir::languages::general_policies']]],
   ['ieventhandler_11',['IEventHandler',['../classmimir_1_1search_1_1astar_1_1IEventHandler.html',1,'mimir::search::astar::IEventHandler'],['../classmimir_1_1search_1_1brfs_1_1IEventHandler.html',1,'mimir::search::brfs::IEventHandler'],['../classmimir_1_1search_1_1iw_1_1IEventHandler.html',1,'mimir::search::iw::IEventHandler'],['../classmimir_1_1search_1_1siw_1_1IEventHandler.html',1,'mimir::search::siw::IEventHandler']]],
-  ['igroundedapplicableactiongeneratoreventhandler_12',['IGroundedApplicableActionGeneratorEventHandler',['../classmimir_1_1search_1_1IGroundedApplicableActionGeneratorEventHandler.html',1,'mimir::search']]],
-  ['igroundedaxiomevaluatoreventhandler_13',['IGroundedAxiomEvaluatorEventHandler',['../classmimir_1_1search_1_1IGroundedAxiomEvaluatorEventHandler.html',1,'mimir::search']]],
-  ['iheuristic_14',['IHeuristic',['../classmimir_1_1search_1_1IHeuristic.html',1,'mimir::search']]],
-  ['iliftedapplicableactiongeneratoreventhandler_15',['ILiftedApplicableActionGeneratorEventHandler',['../classmimir_1_1search_1_1ILiftedApplicableActionGeneratorEventHandler.html',1,'mimir::search']]],
-  ['iliftedaxiomevaluatoreventhandler_16',['ILiftedAxiomEvaluatorEventHandler',['../classmimir_1_1search_1_1ILiftedAxiomEvaluatorEventHandler.html',1,'mimir::search']]],
-  ['increasenumericaleffectimpl_17',['IncreaseNumericalEffectImpl',['../classmimir_1_1languages_1_1general__policies_1_1IncreaseNumericalEffectImpl.html',1,'mimir::languages::general_policies']]],
-  ['ivisitor_18',['IVisitor',['../classmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1IVisitor.html',1,'mimir::languages::dl::cnf_grammar::IVisitor'],['../classmimir_1_1languages_1_1dl_1_1grammar_1_1IVisitor.html',1,'mimir::languages::dl::grammar::IVisitor'],['../classmimir_1_1languages_1_1dl_1_1IVisitor.html',1,'mimir::languages::dl::IVisitor'],['../classmimir_1_1languages_1_1general__policies_1_1IVisitor.html',1,'mimir::languages::general_policies::IVisitor']]]
+  ['igoalstrategy_12',['IGoalStrategy',['../classmimir_1_1search_1_1IGoalStrategy.html',1,'mimir::search']]],
+  ['igroundedapplicableactiongeneratoreventhandler_13',['IGroundedApplicableActionGeneratorEventHandler',['../classmimir_1_1search_1_1IGroundedApplicableActionGeneratorEventHandler.html',1,'mimir::search']]],
+  ['igroundedaxiomevaluatoreventhandler_14',['IGroundedAxiomEvaluatorEventHandler',['../classmimir_1_1search_1_1IGroundedAxiomEvaluatorEventHandler.html',1,'mimir::search']]],
+  ['iheuristic_15',['IHeuristic',['../classmimir_1_1search_1_1IHeuristic.html',1,'mimir::search']]],
+  ['iliftedapplicableactiongeneratoreventhandler_16',['ILiftedApplicableActionGeneratorEventHandler',['../classmimir_1_1search_1_1ILiftedApplicableActionGeneratorEventHandler.html',1,'mimir::search']]],
+  ['iliftedaxiomevaluatoreventhandler_17',['ILiftedAxiomEvaluatorEventHandler',['../classmimir_1_1search_1_1ILiftedAxiomEvaluatorEventHandler.html',1,'mimir::search']]],
+  ['increasenumericaleffectimpl_18',['IncreaseNumericalEffectImpl',['../classmimir_1_1languages_1_1general__policies_1_1IncreaseNumericalEffectImpl.html',1,'mimir::languages::general_policies']]],
+  ['ipruningstrategy_19',['IPruningStrategy',['../classmimir_1_1search_1_1IPruningStrategy.html',1,'mimir::search']]],
+  ['ivisitor_20',['IVisitor',['../classmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1IVisitor.html',1,'mimir::languages::dl::cnf_grammar::IVisitor'],['../classmimir_1_1languages_1_1dl_1_1grammar_1_1IVisitor.html',1,'mimir::languages::dl::grammar::IVisitor'],['../classmimir_1_1languages_1_1dl_1_1IVisitor.html',1,'mimir::languages::dl::IVisitor'],['../classmimir_1_1languages_1_1general__policies_1_1IVisitor.html',1,'mimir::languages::general_policies::IVisitor']]]
 ];
