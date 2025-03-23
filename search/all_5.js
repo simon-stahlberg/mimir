@@ -6,7 +6,7 @@ var searchData=
   ['flatbitsets_3',['FlatBitsets',['../namespacemimir_1_1formalism.html#a16ba33fd0aa156fcdee20109759ef107',1,'mimir::formalism']]],
   ['flatdoublelists_4',['FlatDoubleLists',['../namespacemimir_1_1formalism.html#a5f7994fa158eacb27696e935e55c6a23',1,'mimir::formalism']]],
   ['flatindexlists_5',['FlatIndexLists',['../namespacemimir_1_1formalism.html#a81dd3e274c08f5fe2fd63c5e785940bb',1,'mimir::formalism']]],
-  ['floyd_5fwarshall_5fall_5fpairs_5fshortest_5fpaths_6',['floyd_warshall_all_pairs_shortest_paths',['../namespacemimir_1_1graphs.html#a4aa05afac2a9da020025b3d2ee773f44',1,'mimir::graphs']]],
+  ['floyd_5fwarshall_5fall_5fpairs_5fshortest_5fpaths_6',['floyd_warshall_all_pairs_shortest_paths',['../namespacemimir_1_1graphs_1_1bgl.html#a5df6e834a16b1fc363c385e603e420c9',1,'mimir::graphs::bgl']]],
   ['fluenttag_7',['FluentTag',['../structmimir_1_1formalism_1_1FluentTag.html',1,'mimir::formalism']]],
   ['folklore_5fweisfeiler_5fleman_2ehpp_8',['folklore_weisfeiler_leman.hpp',['../folklore__weisfeiler__leman_8hpp.html',1,'']]],
   ['folklore_5fweisfeiler_5fleman_5fimpl_2ehpp_9',['folklore_weisfeiler_leman_impl.hpp',['../folklore__weisfeiler__leman__impl_8hpp.html',1,'']]],

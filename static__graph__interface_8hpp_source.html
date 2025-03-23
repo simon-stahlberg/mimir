@@ -107,17 +107,19 @@ $(function() {
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keyword">requires</span> <a class="code hl_concept" href="conceptmimir_1_1graphs_1_1IsEdgeListGraph.html">IsEdgeListGraph&lt;T&gt;</a>;</div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keyword">requires</span> <a class="code hl_concept" href="conceptmimir_1_1graphs_1_1IsIncidenceGraph.html">IsIncidenceGraph&lt;T&gt;</a>;</div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keyword">requires</span> <a class="code hl_concept" href="conceptmimir_1_1graphs_1_1IsAdjacencyGraph.html">IsAdjacencyGraph&lt;T&gt;</a>;</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="comment">// Ensure that DynamicGraph uses std::vector to store vertices and edges.</span></div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    { a.get_vertices() } -&gt; std::same_as&lt;const std::vector&lt;typename T::VertexType&gt;&amp;&gt;;</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    { a.get_edges() } -&gt; std::same_as&lt;const std::vector&lt;typename T::EdgeType&gt;&amp;&gt;;</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>};</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>}</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="aconceptmimir_1_1graphs_1_1IsAdjacencyGraph_html"><div class="ttname"><a href="conceptmimir_1_1graphs_1_1IsAdjacencyGraph.html">mimir::graphs::IsAdjacencyGraph</a></div><div class="ttdef"><b>Definition:</b> graph_interface.hpp:70</div></div>
-<div class="ttc" id="aconceptmimir_1_1graphs_1_1IsEdgeListGraph_html"><div class="ttname"><a href="conceptmimir_1_1graphs_1_1IsEdgeListGraph.html">mimir::graphs::IsEdgeListGraph</a></div><div class="ttdef"><b>Definition:</b> graph_interface.hpp:62</div></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keyword">requires</span> <a class="code hl_concept" href="conceptmimir_1_1graphs_1_1IsBidirectionalGraph.html">IsBidirectionalGraph&lt;T&gt;</a>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="comment">// Ensure that DynamicGraph uses std::vector to store vertices and edges.</span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    { a.get_vertices() } -&gt; std::same_as&lt;const std::vector&lt;typename T::VertexType&gt;&amp;&gt;;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    { a.get_edges() } -&gt; std::same_as&lt;const std::vector&lt;typename T::EdgeType&gt;&amp;&gt;;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>};</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>}</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="aconceptmimir_1_1graphs_1_1IsAdjacencyGraph_html"><div class="ttname"><a href="conceptmimir_1_1graphs_1_1IsAdjacencyGraph.html">mimir::graphs::IsAdjacencyGraph</a></div><div class="ttdef"><b>Definition:</b> graph_interface.hpp:66</div></div>
+<div class="ttc" id="aconceptmimir_1_1graphs_1_1IsBidirectionalGraph_html"><div class="ttname"><a href="conceptmimir_1_1graphs_1_1IsBidirectionalGraph.html">mimir::graphs::IsBidirectionalGraph</a></div><div class="ttdef"><b>Definition:</b> graph_interface.hpp:75</div></div>
+<div class="ttc" id="aconceptmimir_1_1graphs_1_1IsEdgeListGraph_html"><div class="ttname"><a href="conceptmimir_1_1graphs_1_1IsEdgeListGraph.html">mimir::graphs::IsEdgeListGraph</a></div><div class="ttdef"><b>Definition:</b> graph_interface.hpp:58</div></div>
 <div class="ttc" id="aconceptmimir_1_1graphs_1_1IsIncidenceGraph_html"><div class="ttname"><a href="conceptmimir_1_1graphs_1_1IsIncidenceGraph.html">mimir::graphs::IsIncidenceGraph</a></div><div class="ttdef"><b>Definition:</b> graph_interface.hpp:47</div></div>
 <div class="ttc" id="aconceptmimir_1_1graphs_1_1IsStaticGraph_html"><div class="ttname"><a href="conceptmimir_1_1graphs_1_1IsStaticGraph.html">mimir::graphs::IsStaticGraph</a></div><div class="ttdef"><b>Definition:</b> static_graph_interface.hpp:31</div></div>
 <div class="ttc" id="aconceptmimir_1_1graphs_1_1IsVertexListGraph_html"><div class="ttname"><a href="conceptmimir_1_1graphs_1_1IsVertexListGraph.html">mimir::graphs::IsVertexListGraph</a></div><div class="ttdef"><b>Definition:</b> graph_interface.hpp:39</div></div>

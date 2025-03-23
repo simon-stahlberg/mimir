@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['unorderedmapreadpropertymap_0',['UnorderedMapReadPropertyMap',['../classmimir_1_1graphs_1_1UnorderedMapReadPropertyMap.html#ad6fb0e7d50dcdb8e6370cc679417c07b',1,'mimir::graphs::UnorderedMapReadPropertyMap']]],
-  ['unorderedmapreadwritepropertymap_1',['UnorderedMapReadWritePropertyMap',['../classmimir_1_1graphs_1_1UnorderedMapReadWritePropertyMap.html#a29c31ab03fc1653ddca6d30f5f89b0cd',1,'mimir::graphs::UnorderedMapReadWritePropertyMap']]]
+  ['unorderedmapreadpropertymap_0',['UnorderedMapReadPropertyMap',['../classmimir_1_1graphs_1_1bgl_1_1UnorderedMapReadPropertyMap.html#a4087beb49511c13b51d7362d6e8788fd',1,'mimir::graphs::bgl::UnorderedMapReadPropertyMap']]],
+  ['unorderedmapreadwritepropertymap_1',['UnorderedMapReadWritePropertyMap',['../classmimir_1_1graphs_1_1bgl_1_1UnorderedMapReadWritePropertyMap.html#aa9c2cb148950737cadc9623d58444c6f',1,'mimir::graphs::bgl::UnorderedMapReadWritePropertyMap']]]
 ];
