@@ -49,13 +49,9 @@ concept IsIncidenceGraph = requires(T a, VertexIndex vertex, EdgeIndex edge) {
     typename T::template AdjacentEdgeIndexConstIteratorType<BackwardTag>;
 
     { a.template get_source<ForwardTag>(edge) } -> std::same_as<VertexIndex>;
-    { a.template get_source<BackwardTag>(edge) } -> std::same_as<VertexIndex>;
     { a.template get_target<ForwardTag>(edge) } -> std::same_as<VertexIndex>;
-    { a.template get_target<BackwardTag>(edge) } -> std::same_as<VertexIndex>;
     { a.template get_adjacent_edge_indices<ForwardTag>(vertex) } -> IsRangeOver<EdgeIndex>;
-    { a.template get_adjacent_edge_indices<BackwardTag>(vertex) } -> IsRangeOver<EdgeIndex>;
     { a.template get_degree<ForwardTag>(vertex) } -> std::same_as<Degree>;
-    { a.template get_degree<BackwardTag>(vertex) } -> std::same_as<Degree>;
 };
 
 template<typename T>
@@ -73,6 +69,21 @@ concept IsAdjacencyGraph = requires(T a, VertexIndex vertex) {
 
     { a.template get_adjacent_vertex_indices<ForwardTag>(vertex) } -> IsRangeOver<VertexIndex>;
     { a.template get_adjacent_vertex_indices<BackwardTag>(vertex) } -> IsRangeOver<VertexIndex>;
+};
+
+template<typename T>
+concept IsBidirectionalGraph = requires(T a, VertexIndex vertex, EdgeIndex edge) {
+    typename T::template AdjacentEdgeIndexConstIteratorType<ForwardTag>;
+    typename T::template AdjacentEdgeIndexConstIteratorType<BackwardTag>;
+
+    { a.template get_source<ForwardTag>(edge) } -> std::same_as<VertexIndex>;
+    { a.template get_source<BackwardTag>(edge) } -> std::same_as<VertexIndex>;
+    { a.template get_target<ForwardTag>(edge) } -> std::same_as<VertexIndex>;
+    { a.template get_target<BackwardTag>(edge) } -> std::same_as<VertexIndex>;
+    { a.template get_adjacent_edge_indices<ForwardTag>(vertex) } -> IsRangeOver<EdgeIndex>;
+    { a.template get_adjacent_edge_indices<BackwardTag>(vertex) } -> IsRangeOver<EdgeIndex>;
+    { a.template get_degree<ForwardTag>(vertex) } -> std::same_as<Degree>;
+    { a.template get_degree<BackwardTag>(vertex) } -> std::same_as<Degree>;
 };
 
 }

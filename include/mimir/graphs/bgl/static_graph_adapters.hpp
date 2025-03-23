@@ -15,12 +15,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_GRAPHS_STATIC_GRAPH_BOOST_ADAPTER_HPP_
-#define MIMIR_GRAPHS_STATIC_GRAPH_BOOST_ADAPTER_HPP_
+#ifndef MIMIR_GRAPHS_BGL_STATIC_GRAPH_ADAPTERS_HPP_
+#define MIMIR_GRAPHS_BGL_STATIC_GRAPH_ADAPTERS_HPP_
 
 #include "mimir/common/concepts.hpp"
-#include "mimir/graphs/boost_adapter_utils.hpp"
-#include "mimir/graphs/static_graph.hpp"
+#include "mimir/graphs/bgl/graph_adapters.hpp"
+#include "mimir/graphs/bgl/graph_traits.hpp"
+#include "mimir/graphs/bgl/property_maps.hpp"
+#include "mimir/graphs/static_graph_interface.hpp"
 
 #include <boost/graph/breadth_first_search.hpp>
 #include <boost/graph/dijkstra_shortest_paths.hpp>
@@ -34,200 +36,8 @@
 #include <limits>
 #include <ranges>
 
-namespace boost
+namespace mimir::graphs::bgl
 {
-
-/// Traits for a graph that are needed for the boost graph library. TODO: need to add bidirection concept
-template<typename Graph, mimir::graphs::IsDirection Direction>
-    requires mimir::graphs::IsVertexListGraph<Graph>    //
-             && mimir::graphs::IsIncidenceGraph<Graph>  //
-             && mimir::graphs::IsEdgeListGraph<Graph>   //
-             && mimir::graphs::IsAdjacencyGraph<Graph>
-struct graph_traits<mimir::graphs::DirectionTaggedType<Graph, Direction>>
-{
-    struct vertex_list_and_incidence_and_edge_list_and_adjacency_and_bidirectional_graph_tag :
-        public vertex_list_graph_tag,
-        // public incidence_graph_tag,  // is included in bidirectional_graph_tag
-        public edge_list_graph_tag,
-        public adjacency_graph_tag,
-        public bidirectional_graph_tag
-    {
-    };
-
-    // boost::GraphConcept
-    using vertex_descriptor = mimir::graphs::VertexIndex;
-    using edge_descriptor = mimir::graphs::EdgeIndex;
-    using directed_category = directed_tag;
-    using edge_parallel_category = allow_parallel_edge_tag;
-    using traversal_category = vertex_list_and_incidence_and_edge_list_and_adjacency_and_bidirectional_graph_tag;
-    // boost::VertexListGraph
-    using vertex_iterator = typename Graph::VertexIndexConstIteratorType;
-    using vertices_size_type = size_t;
-    // boost::IncidenceGraph
-    using out_edge_iterator = typename Graph::template AdjacentEdgeIndexConstIteratorType<Direction>;
-    using degree_size_type = size_t;
-    // boost::EdgeListGraph
-    using edge_iterator = typename Graph::EdgeIndexConstIteratorType;
-    using edges_size_type = size_t;
-    // boost::AdjacencyGraph
-    using adjacency_iterator = typename Graph::template AdjacentVertexIndexConstIteratorType<Direction>;
-    // boost::BidirectionalGraph
-    using inverse_direction = typename Direction::Inverse;
-    using in_edge_iterator = typename Graph::template AdjacentEdgeIndexConstIteratorType<inverse_direction>;
-    // boost::strong_components
-    constexpr static vertex_descriptor null_vertex() { return std::numeric_limits<vertex_descriptor>::max(); }
-};
-
-}
-
-namespace mimir::graphs
-{
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// boost::VertexListGraph
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-/// @brief Get the vertices of the graph.
-/// @param g the graph.
-/// @return an iterator-range providing access to all the vertices in the graph.
-template<IsVertexListGraph Graph, IsDirection Direction>
-std::pair<typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_iterator,
-          typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_iterator>
-vertices(const DirectionTaggedType<Graph, Direction>& g)
-{
-    return { g.get().get_vertex_indices().begin(), g.get().get_vertex_indices().end() };
-}
-
-/// @brief Get the number of vertices in the graph.
-/// @param g the graph.
-/// @return the number of vertices in the graph.
-template<IsVertexListGraph Graph, IsDirection Direction>
-boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertices_size_type num_vertices(const DirectionTaggedType<Graph, Direction>& g)
-{
-    return g.get().get_num_vertices();
-}
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// boost::IncidenceGraph
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-/// @brief Get the source vertex of an edge.
-/// @param e the edge.
-/// @param g the graph.
-/// @return the source vertex of the edge.
-template<IsIncidenceGraph Graph, IsDirection Direction>
-typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor
-source(const typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::edge_descriptor& e, const DirectionTaggedType<Graph, Direction>& g)
-{
-    return g.get().template get_source<Direction>(e);
-}
-
-/// @brief Get the target vertex of an edge.
-/// @param e the edge.
-/// @param g the graph.
-/// @return the target vertex of the edge.
-template<IsIncidenceGraph Graph, IsDirection Direction>
-typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor
-target(const typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::edge_descriptor& e, const DirectionTaggedType<Graph, Direction>& g)
-{
-    return g.get().template get_target<Direction>(e);
-}
-
-/// @brief Get the out edges of a vertex in the graph.
-/// @param u the vertex.
-/// @param g the graph.
-/// @return an iterator-range providing access to all the ou edges in the graph.
-template<IsIncidenceGraph Graph, IsDirection Direction>
-std::pair<typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::out_edge_iterator,
-          typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::out_edge_iterator>
-out_edges(typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor const& u, const DirectionTaggedType<Graph, Direction>& g)
-{
-    return { g.get().template get_adjacent_edge_indices<Direction>(u).begin(), g.get().template get_adjacent_edge_indices<Direction>(u).end() };
-}
-
-/// @brief Get the out degree of a vertex in the graph.
-/// @param u the vertex.
-/// @param g the graph.
-/// @return the number of out edges of the vertex.
-template<IsIncidenceGraph Graph, IsDirection Direction>
-boost::graph_traits<DirectionTaggedType<Graph, Direction>>::degree_size_type
-out_degree(typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor const& u, const DirectionTaggedType<Graph, Direction>& g)
-{
-    return g.get().template get_degree<Direction>(u);
-}
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// boost::EdgeListGraph
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-template<IsEdgeListGraph Graph, IsDirection Direction>
-std::pair<typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::edge_iterator,
-          typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::edge_iterator>
-edges(const DirectionTaggedType<Graph, Direction>& g)
-{
-    return { g.get().get_edge_indices().begin(), g.get().get_edge_indices().end() };
-}
-
-template<IsEdgeListGraph Graph, IsDirection Direction>
-boost::graph_traits<DirectionTaggedType<Graph, Direction>>::edges_size_type num_edges(const DirectionTaggedType<Graph, Direction>& g)
-{
-    return g.get().get_num_edges();
-}
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// boost::AdjacencyGraph
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-template<IsAdjacencyGraph Graph, IsDirection Direction>
-std::pair<typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::adjacency_iterator,
-          typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::adjacency_iterator>
-adjacent_vertices(typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor const& u,
-                  const DirectionTaggedType<Graph, Direction>& g)
-{
-    return { g.get().template get_adjacent_vertex_indices<Direction>(u).begin(), g.get().template get_adjacent_vertex_indices<Direction>(u).end() };
-}
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// boost::BidirectionalGraph
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-/// @brief Get the in edges of a vertex in the graph.
-/// @param u the vertex.
-/// @param g the graph.
-/// @return an iterator-range providing access to all the in edges in the graph.
-template<IsStaticGraph Graph, IsDirection Direction>
-std::pair<typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::in_edge_iterator,
-          typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::in_edge_iterator>
-in_edges(typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor const& u, const DirectionTaggedType<Graph, Direction>& g)
-{
-    using InverseDirection = boost::graph_traits<DirectionTaggedType<Graph, Direction>>::inverse_direction;
-
-    return { g.get().template get_adjacent_edge_indices<InverseDirection>(u).begin(), g.get().template get_adjacent_edge_indices<InverseDirection>(u).end() };
-}
-
-/// @brief Get the in degree of a vertex in the graph.
-/// @param u the vertex.
-/// @param g the graph.
-/// @return the number of in edges of the vertex.
-template<IsStaticGraph Graph, IsDirection Direction>
-boost::graph_traits<DirectionTaggedType<Graph, Direction>>::degree_size_type
-in_degree(typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor const& u, const DirectionTaggedType<Graph, Direction>& g)
-{
-    using InverseDirection = boost::graph_traits<DirectionTaggedType<Graph, Direction>>::inverse_direction;
-
-    return g.get().template get_degree<InverseDirection>(u);
-}
-
-/// @brief Get the toal degree (in + out) of a vertex in the graph.
-/// @param u the vertex.
-/// @param g the graph.
-/// @return the number of in and out edges of the vertex.
-template<IsStaticGraph Graph, IsDirection Direction>
-boost::graph_traits<DirectionTaggedType<Graph, Direction>>::degree_size_type
-degree(typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor const& u, const DirectionTaggedType<Graph, Direction>& g)
-{
-    return g.get().template get_degree<ForwardTag>(u) + g.get().template get_degree<BackwardTag>(u);
-}
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // boost::strong_components
@@ -237,6 +47,7 @@ degree(typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vert
 /// @param g the graph.
 /// @return a pair of the number of strong components and a map from state to component.
 template<IsStaticGraph Graph, IsDirection Direction>
+    requires IsVertexListGraph<Graph> && IsIncidenceGraph<Graph>
 std::pair<typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertices_size_type,
           std::vector<typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertices_size_type>>
 strong_components(const DirectionTaggedType<Graph, Direction>& g)
@@ -244,7 +55,7 @@ strong_components(const DirectionTaggedType<Graph, Direction>& g)
     using vertex_descriptor_type = typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor;
     using vertices_size_type = typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertices_size_type;
 
-    auto vertex_index_map = typename Graph::template TrivialReadPropertyMapType<vertex_descriptor_type, vertex_descriptor_type>();
+    auto vertex_index_map = TrivialReadPropertyMap<vertex_descriptor_type, vertex_descriptor_type>();
     auto c = std::vector<vertices_size_type>(g.get().get_num_vertices());
     auto component_map = VectorReadWritePropertyMap<vertex_descriptor_type, vertices_size_type>(c);
 
@@ -279,6 +90,7 @@ get_partitioning(typename boost::graph_traits<DirectionTaggedType<Graph, Directi
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 template<IsStaticGraph Graph, IsDirection Direction, class SourceInputIter>
+    requires IsVertexListGraph<Graph> && IsIncidenceGraph<Graph>
 std::tuple<std::vector<typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor>, ContinuousCostList>
 dijkstra_shortest_paths(const DirectionTaggedType<Graph, Direction>& g, const ContinuousCostList& w, SourceInputIter s_begin, SourceInputIter s_end)
 {

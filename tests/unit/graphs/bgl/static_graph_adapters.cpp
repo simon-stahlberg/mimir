@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/graphs/static_graph_boost_adapter.hpp"
+#include "mimir/graphs/bgl/static_graph_adapters.hpp"
 
 #include "mimir/datasets/generalized_state_space.hpp"
 #include "mimir/formalism/problem.hpp"
@@ -91,7 +91,7 @@ TEST(MimirTests, GraphsStrongComponentsTest)
         const auto& graph = state_space.value()->get_graph();
         auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::ForwardTag {});
 
-        const auto [num_components, component_map] = graphs::strong_components(tagged_graph);
+        const auto [num_components, component_map] = graphs::bgl::strong_components(tagged_graph);
         EXPECT_EQ(num_components, 1);
         for (auto [it, last] = vertices(tagged_graph); it != last; ++it)
         {
@@ -107,7 +107,7 @@ TEST(MimirTests, GraphsStrongComponentsTest)
         const auto& graph = state_space.value()->get_graph();
         auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::ForwardTag {});
 
-        const auto [num_components, component_map] = graphs::strong_components(tagged_graph);
+        const auto [num_components, component_map] = graphs::bgl::strong_components(tagged_graph);
 
         // Each state should have its own component.
         EXPECT_EQ(num_components, num_vertices(tagged_graph));
@@ -138,7 +138,7 @@ TEST(MimirTests, GraphsDijkstraShortestPathTest)
 
         const auto edge_costs = std::vector<double>(graph.get_num_edges(), 1);
         auto states = IndexList { 0 };
-        const auto [predecessor_map, distance_map] = graphs::dijkstra_shortest_paths(tagged_graph, edge_costs, states.begin(), states.end());
+        const auto [predecessor_map, distance_map] = graphs::bgl::dijkstra_shortest_paths(tagged_graph, edge_costs, states.begin(), states.end());
 
         EXPECT_EQ(distance_map.at(0), 0);
         for (const auto& goal_state : state_space.value()->get_goal_vertices())
@@ -158,10 +158,10 @@ TEST(MimirTests, GraphsDijkstraShortestPathTest)
         auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::BackwardTag {});
 
         const auto edge_costs = std::vector<double>(graph.get_num_edges(), 1);
-        const auto [predecessor_map, distance_map] = graphs::dijkstra_shortest_paths(tagged_graph,
-                                                                                     edge_costs,
-                                                                                     state_space.value()->get_goal_vertices().begin(),
-                                                                                     state_space.value()->get_goal_vertices().end());
+        const auto [predecessor_map, distance_map] = graphs::bgl::dijkstra_shortest_paths(tagged_graph,
+                                                                                          edge_costs,
+                                                                                          state_space.value()->get_goal_vertices().begin(),
+                                                                                          state_space.value()->get_goal_vertices().end());
 
         EXPECT_EQ(distance_map.at(0), 4);
         // There is one deadend state.
@@ -181,7 +181,7 @@ TEST(MimirTests, GraphsBreadthFirstSearchTest)
         auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::ForwardTag {});
 
         auto states = IndexList { 0 };
-        const auto [predecessor_map, distance_map] = graphs::breadth_first_search(tagged_graph, states.begin(), states.end());
+        const auto [predecessor_map, distance_map] = graphs::bgl::breadth_first_search(tagged_graph, states.begin(), states.end());
 
         EXPECT_EQ(distance_map.at(0), 0);
         for (const auto& goal_state : state_space.value()->get_goal_vertices())
@@ -201,7 +201,7 @@ TEST(MimirTests, GraphsBreadthFirstSearchTest)
         auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::BackwardTag {});
 
         const auto [predecessor_map, distance_map] =
-            graphs::breadth_first_search(tagged_graph, state_space.value()->get_goal_vertices().begin(), state_space.value()->get_goal_vertices().end());
+            graphs::bgl::breadth_first_search(tagged_graph, state_space.value()->get_goal_vertices().begin(), state_space.value()->get_goal_vertices().end());
 
         EXPECT_EQ(distance_map.at(0), 4);
         // There is one deadend state.
@@ -221,7 +221,7 @@ TEST(MimirTests, GraphsFloydWarshallAllPairsShortestPathTest)
         auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::ForwardTag {});
 
         const auto edge_costs = std::vector<double>(graph.get_num_edges(), 1);
-        const auto distance_matrix = graphs::floyd_warshall_all_pairs_shortest_paths(tagged_graph, edge_costs);
+        const auto distance_matrix = graphs::bgl::floyd_warshall_all_pairs_shortest_paths(tagged_graph, edge_costs);
 
         auto min_goal_distance = std::numeric_limits<ContinuousCost>::infinity();
         for (const auto& goal_state : state_space.value()->get_goal_vertices())
@@ -251,7 +251,7 @@ TEST(MimirTests, GraphsFloydWarshallAllPairsShortestPathTest)
         auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::BackwardTag {});
 
         const auto edge_costs = ContinuousCostList(graph.get_num_edges(), 1);
-        const auto distance_matrix = graphs::floyd_warshall_all_pairs_shortest_paths(tagged_graph, edge_costs);
+        const auto distance_matrix = graphs::bgl::floyd_warshall_all_pairs_shortest_paths(tagged_graph, edge_costs);
 
         auto min_goal_distance = std::numeric_limits<ContinuousCost>::infinity();
         for (const auto& goal_state : state_space.value()->get_goal_vertices())

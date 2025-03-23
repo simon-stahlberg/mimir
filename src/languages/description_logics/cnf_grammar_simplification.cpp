@@ -18,8 +18,8 @@
 #include "cnf_grammar_simplification.hpp"
 
 #include "mimir/common/printers.hpp"
+#include "mimir/graphs/bgl/static_graph_adapters.hpp"
 #include "mimir/graphs/static_graph.hpp"
-#include "mimir/graphs/static_graph_boost_adapter.hpp"
 #include "mimir/languages/description_logics/cnf_grammar_visitor_formatter.hpp"
 
 using namespace mimir::formalism;
@@ -281,7 +281,7 @@ static Grammar order_substitution_rules(const Grammar& grammar)
                                   graph.add_directed_edge(non_terminal_to_vertex.at(rule->get_head()), non_terminal_to_vertex.at(rule->get_body()));
                               }
 
-                              auto top_sort = graphs::topological_sort(graphs::DirectionTaggedType(graph, graphs::ForwardTag {}));
+                              auto top_sort = graphs::bgl::topological_sort(graphs::DirectionTaggedType(graph, graphs::ForwardTag {}));
 
                               for (size_t i = 0; i < top_sort.size(); ++i)
                               {

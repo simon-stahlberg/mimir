@@ -24,8 +24,8 @@
 #include "mimir/formalism/ground_action.hpp"
 #include "mimir/formalism/parser.hpp"
 #include "mimir/formalism/problem.hpp"
+#include "mimir/graphs/bgl/static_graph_adapters.hpp"
 #include "mimir/graphs/static_graph.hpp"
-#include "mimir/graphs/static_graph_boost_adapter.hpp"
 #include "mimir/search/algorithms/brfs.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers/interface.hpp"
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
@@ -340,7 +340,7 @@ perform_reachability_analysis(SearchContext context, graphs::StaticProblemGraph 
 
     /* Compute unit goal distances. */
     auto [unit_predecessors, unit_goal_distances] =
-        graphs::breadth_first_search(graphs::DirectionTaggedType(bidir_graph, graphs::BackwardTag {}), goal_vertices.begin(), goal_vertices.end());
+        graphs::bgl::breadth_first_search(graphs::DirectionTaggedType(bidir_graph, graphs::BackwardTag {}), goal_vertices.begin(), goal_vertices.end());
 
     if (options.remove_if_unsolvable && unit_goal_distances.at(0) == UNDEFINED_DISCRETE_COST)  // 0 is the index of the vertex for the initial state.
     {
@@ -364,10 +364,10 @@ perform_reachability_analysis(SearchContext context, graphs::StaticProblemGraph 
     {
         edge_action_costs.push_back(get_action_cost(edge));
     }
-    auto [action_predecessors, action_goal_distances] = graphs::dijkstra_shortest_paths(graphs::DirectionTaggedType(bidir_graph, graphs::BackwardTag {}),
-                                                                                        edge_action_costs,
-                                                                                        goal_vertices.begin(),
-                                                                                        goal_vertices.end());
+    auto [action_predecessors, action_goal_distances] = graphs::bgl::dijkstra_shortest_paths(graphs::DirectionTaggedType(bidir_graph, graphs::BackwardTag {}),
+                                                                                             edge_action_costs,
+                                                                                             goal_vertices.begin(),
+                                                                                             goal_vertices.end());
 
     /* Construct final graph */
     auto final_graph = graphs::StaticProblemGraph {};

@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_GRAPHS_BOOST_ADAPTER_HPP_
-#define MIMIR_GRAPHS_BOOST_ADAPTER_HPP_
+#ifndef MIMIR_GRAPHS_BGL_PROPERTY_MAPS_HPP_
+#define MIMIR_GRAPHS_BGL_PROPERTY_MAPS_HPP_
 
 #include "mimir/common/concepts.hpp"
 
@@ -26,7 +26,7 @@
 #include <limits>
 #include <ranges>
 
-namespace mimir::graphs
+namespace mimir::graphs::bgl
 {
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -147,6 +147,7 @@ template<std::unsigned_integral I, typename Value>
 class VectorReadWritePropertyMap
 {
 public:
+    using container_type = std::vector<Value>;
     using value_type = Value;
     using key_type = I;
     using reference = Value;
