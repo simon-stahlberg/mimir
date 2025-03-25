@@ -41,6 +41,7 @@ using ToNamedFeatureMaps = boost::hana::map<boost::hana::pair<boost::hana::type<
 class ICondition;
 using Condition = const ICondition*;
 using ConditionList = std::vector<Condition>;
+using ConditionSet = std::unordered_set<Condition>;
 
 class PositiveBooleanConditionImpl;
 using PositiveBooleanCondition = const PositiveBooleanConditionImpl*;
@@ -54,6 +55,7 @@ using EqualNumericalCondition = const EqualNumericalConditionImpl*;
 class IEffect;
 using Effect = const IEffect*;
 using EffectList = std::vector<Effect>;
+using EffectSet = std::unordered_set<Effect>;
 
 class PositiveBooleanEffectImpl;
 using PositiveBooleanEffect = const PositiveBooleanEffectImpl*;
