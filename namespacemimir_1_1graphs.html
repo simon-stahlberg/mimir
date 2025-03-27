@@ -91,6 +91,9 @@ Namespaces</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacemimir_1_1graphs_1_1kfwl"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1kfwl.html">kfwl</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacemimir_1_1graphs_1_1nauty"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1nauty.html">nauty</a></td></tr>
+<tr class="memdesc:namespacemimir_1_1graphs_1_1nauty"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wrap a namespace around nauty's interface. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
@@ -193,7 +196,7 @@ Typedefs</h2></td></tr>
 <tr class="memitem:a7f055a18f6efd9b14e9f5708d28eb7e6"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a7f055a18f6efd9b14e9f5708d28eb7e6">ClassGraph</a> = <a class="el" href="classmimir_1_1graphs_1_1StaticBidirectionalGraph.html">StaticBidirectionalGraph</a>&lt; <a class="el" href="namespacemimir_1_1graphs.html#a3142bbab4fd2cd2d164fe5301c5db9b0">StaticClassGraph</a> &gt;</td></tr>
 <tr class="memdesc:a7f055a18f6efd9b14e9f5708d28eb7e6"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>ClassGraph</code> implements a directed graph representing the state space of a class of problems.  <br /></td></tr>
 <tr class="separator:a7f055a18f6efd9b14e9f5708d28eb7e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4401dfeb9aa3b9b2f3925044ee7a6e71"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71">ProblemVertex</a> = <a class="el" href="classmimir_1_1graphs_1_1Vertex.html">Vertex</a>&lt; <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">search::State</a>, <a class="el" href="namespacemimir_1_1formalism.html#a18a62fffd7784a50a9304da9b0a2a7d1">formalism::Problem</a>, std::shared_ptr&lt; const <a class="el" href="classnauty__wrapper_1_1Certificate.html">nauty_wrapper::Certificate</a> &gt;, <a class="el" href="namespacemimir.html#a9a5965ca488a8a8f0d8bda41ceaf3385">DiscreteCost</a>, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a>, bool, bool, bool, bool &gt;</td></tr>
+<tr class="memitem:a4401dfeb9aa3b9b2f3925044ee7a6e71"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71">ProblemVertex</a> = <a class="el" href="classmimir_1_1graphs_1_1Vertex.html">Vertex</a>&lt; <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">search::State</a>, <a class="el" href="namespacemimir_1_1formalism.html#a18a62fffd7784a50a9304da9b0a2a7d1">formalism::Problem</a>, std::shared_ptr&lt; const <a class="el" href="classmimir_1_1graphs_1_1nauty_1_1Certificate.html">nauty::Certificate</a> &gt;, <a class="el" href="namespacemimir.html#a9a5965ca488a8a8f0d8bda41ceaf3385">DiscreteCost</a>, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a>, bool, bool, bool, bool &gt;</td></tr>
 <tr class="memdesc:a4401dfeb9aa3b9b2f3925044ee7a6e71"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>ProblemVertex</code> encapsulates information about a vertex in a <code>ProblemGraph</code>  <br /></td></tr>
 <tr class="separator:a4401dfeb9aa3b9b2f3925044ee7a6e71"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6849af3a319ee009030dc943e8f30f13"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a6849af3a319ee009030dc943e8f30f13">ProblemVertexList</a> = std::vector&lt; <a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71">ProblemVertex</a> &gt;</td></tr>
@@ -318,9 +321,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a1545cc0e6f705073e363e66a8173fd4a"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir_1_1formalism.html#a18a62fffd7784a50a9304da9b0a2a7d1">formalism::Problem</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a1545cc0e6f705073e363e66a8173fd4a">get_problem</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71">ProblemVertex</a> &amp;vertex)</td></tr>
 <tr class="memdesc:a1545cc0e6f705073e363e66a8173fd4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the <code><a class="el" href="namespacemimir_1_1formalism.html#a18a62fffd7784a50a9304da9b0a2a7d1">formalism::Problem</a></code> of the given <code>ProblemVertex</code>.  <br /></td></tr>
 <tr class="separator:a1545cc0e6f705073e363e66a8173fd4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac3f628ea9bf35ba7182edb56e0eb8988"><td class="memItemLeft" align="right" valign="top">const std::shared_ptr&lt; const <a class="el" href="classnauty__wrapper_1_1Certificate.html">nauty_wrapper::Certificate</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#ac3f628ea9bf35ba7182edb56e0eb8988">get_certificate</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71">ProblemVertex</a> &amp;vertex)</td></tr>
-<tr class="memdesc:ac3f628ea9bf35ba7182edb56e0eb8988"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the <code><a class="el" href="classnauty__wrapper_1_1Certificate.html" title="Certificate encapsulates a canonical graph representation of a vertex-colored graph.">nauty_wrapper::Certificate</a></code> of the given <code>ProblemVertex</code>.  <br /></td></tr>
-<tr class="separator:ac3f628ea9bf35ba7182edb56e0eb8988"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2ba49f7925fa5d6e098c5bdedfb694e"><td class="memItemLeft" align="right" valign="top">const std::shared_ptr&lt; const <a class="el" href="classmimir_1_1graphs_1_1nauty_1_1Certificate.html">nauty::Certificate</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#ac2ba49f7925fa5d6e098c5bdedfb694e">get_certificate</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71">ProblemVertex</a> &amp;vertex)</td></tr>
+<tr class="memdesc:ac2ba49f7925fa5d6e098c5bdedfb694e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the <code><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1Certificate.html" title="Certificate encapsulates a canonical graph representation of a vertex-colored graph.">nauty::Certificate</a></code> of the given <code>ProblemVertex</code>.  <br /></td></tr>
+<tr class="separator:ac2ba49f7925fa5d6e098c5bdedfb694e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4f2ec001f1cff7ed0bc86fa1849add30"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir.html#a9a5965ca488a8a8f0d8bda41ceaf3385">DiscreteCost</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a4f2ec001f1cff7ed0bc86fa1849add30">get_unit_goal_distance</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71">ProblemVertex</a> &amp;vertex)</td></tr>
 <tr class="memdesc:a4f2ec001f1cff7ed0bc86fa1849add30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the unit goal distance of the given <code>ProblemVertex</code>.  <br /></td></tr>
 <tr class="separator:a4f2ec001f1cff7ed0bc86fa1849add30"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1392,8 +1395,8 @@ template&lt;IsEdgeListGraph Graph, IsDirection Direction&gt; </div>
 
 </div>
 </div>
-<a id="ac3f628ea9bf35ba7182edb56e0eb8988" name="ac3f628ea9bf35ba7182edb56e0eb8988"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac3f628ea9bf35ba7182edb56e0eb8988">&#9670;&#160;</a></span>get_certificate()</h2>
+<a id="ac2ba49f7925fa5d6e098c5bdedfb694e" name="ac2ba49f7925fa5d6e098c5bdedfb694e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2ba49f7925fa5d6e098c5bdedfb694e">&#9670;&#160;</a></span>get_certificate()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1402,7 +1405,7 @@ template&lt;IsEdgeListGraph Graph, IsDirection Direction&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const std::shared_ptr&lt; const <a class="el" href="classnauty__wrapper_1_1Certificate.html">nauty_wrapper::Certificate</a> &gt; &amp; mimir::graphs::get_certificate </td>
+          <td class="memname">const std::shared_ptr&lt; const <a class="el" href="classmimir_1_1graphs_1_1nauty_1_1Certificate.html">nauty::Certificate</a> &gt; &amp; mimir::graphs::get_certificate </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71">ProblemVertex</a> &amp;&#160;</td>
           <td class="paramname"><em>vertex</em></td><td>)</td>
@@ -1416,14 +1419,14 @@ template&lt;IsEdgeListGraph Graph, IsDirection Direction&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Get the <code><a class="el" href="classnauty__wrapper_1_1Certificate.html" title="Certificate encapsulates a canonical graph representation of a vertex-colored graph.">nauty_wrapper::Certificate</a></code> of the given <code>ProblemVertex</code>. </p>
+<p>Get the <code><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1Certificate.html" title="Certificate encapsulates a canonical graph representation of a vertex-colored graph.">nauty::Certificate</a></code> of the given <code>ProblemVertex</code>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">vertex</td><td>is a <code>ProblemVertex</code>. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>the <code><a class="el" href="classnauty__wrapper_1_1Certificate.html" title="Certificate encapsulates a canonical graph representation of a vertex-colored graph.">nauty_wrapper::Certificate</a></code> of the given <code>ProblemVertex</code> in the <code>ProblemGraph</code> if it was computed, and otherwise nullptr. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>the <code><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1Certificate.html" title="Certificate encapsulates a canonical graph representation of a vertex-colored graph.">nauty::Certificate</a></code> of the given <code>ProblemVertex</code> in the <code>ProblemGraph</code> if it was computed, and otherwise nullptr. </dd></dl>
 
 </div>
 </div>

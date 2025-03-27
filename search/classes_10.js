@@ -3,7 +3,7 @@ var searchData=
   ['searchcontext_0',['SearchContext',['../classmimir_1_1search_1_1SearchContext.html',1,'mimir::search']]],
   ['searchnodeimpl_1',['SearchNodeImpl',['../structmimir_1_1search_1_1SearchNodeImpl.html',1,'mimir::search']]],
   ['searchresult_2',['SearchResult',['../structmimir_1_1search_1_1SearchResult.html',1,'mimir::search']]],
-  ['sparsegraph_3',['SparseGraph',['../classnauty__wrapper_1_1SparseGraph.html',1,'nauty_wrapper']]],
+  ['sparsegraph_3',['SparseGraph',['../classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html',1,'mimir::graphs::nauty']]],
   ['stateimpl_4',['StateImpl',['../structmimir_1_1search_1_1StateImpl.html',1,'mimir::search']]],
   ['statepairtupleindexgenerator_5',['StatePairTupleIndexGenerator',['../classmimir_1_1search_1_1iw_1_1StatePairTupleIndexGenerator.html',1,'mimir::search::iw']]],
   ['staterepositoryimpl_6',['StateRepositoryImpl',['../classmimir_1_1search_1_1StateRepositoryImpl.html',1,'mimir::search']]],

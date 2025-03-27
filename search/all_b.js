@@ -38,7 +38,7 @@ var searchData=
   ['kfwl_35',['kfwl',['../namespacemimir_1_1graphs_1_1kfwl.html',1,'mimir::graphs']]],
   ['languages_36',['languages',['../namespacemimir_1_1languages.html',1,'mimir']]],
   ['m_5fconstructor_5for_5fnon_5fterminals_37',['m_constructor_or_non_terminals',['../classmimir_1_1languages_1_1dl_1_1grammar_1_1DerivationRuleImpl.html#ad46d6b4f3dc0056b5aaefa39c3d65002',1,'mimir::languages::dl::grammar::DerivationRuleImpl']]],
-  ['m_5fdata_38',['m_data',['../structmimir_1_1languages_1_1dl_1_1DenotationImpl_3_01NumericalTag_01_4.html#a4f7953aadd4a4868b50765b2c5d3a9e5',1,'mimir::languages::dl::DenotationImpl&lt; NumericalTag &gt;::m_data()'],['../structmimir_1_1languages_1_1dl_1_1DenotationImpl_3_01ConceptTag_01_4.html#a60defbd62526e660e1133ea1822dd798',1,'mimir::languages::dl::DenotationImpl&lt; ConceptTag &gt;::m_data()'],['../structmimir_1_1languages_1_1dl_1_1DenotationImpl_3_01RoleTag_01_4.html#ac2c1e2fea4c4a2ac4a5ced80cf934353',1,'mimir::languages::dl::DenotationImpl&lt; RoleTag &gt;::m_data()'],['../structmimir_1_1languages_1_1dl_1_1DenotationImpl_3_01BooleanTag_01_4.html#a72c9f489f50b28d969f62f160e5dffc1',1,'mimir::languages::dl::DenotationImpl&lt; BooleanTag &gt;::m_data()']]],
+  ['m_5fdata_38',['m_data',['../structmimir_1_1languages_1_1dl_1_1DenotationImpl_3_01BooleanTag_01_4.html#a72c9f489f50b28d969f62f160e5dffc1',1,'mimir::languages::dl::DenotationImpl&lt; BooleanTag &gt;::m_data()'],['../structmimir_1_1languages_1_1dl_1_1DenotationImpl_3_01NumericalTag_01_4.html#a4f7953aadd4a4868b50765b2c5d3a9e5',1,'mimir::languages::dl::DenotationImpl&lt; NumericalTag &gt;::m_data()'],['../structmimir_1_1languages_1_1dl_1_1DenotationImpl_3_01RoleTag_01_4.html#ac2c1e2fea4c4a2ac4a5ced80cf934353',1,'mimir::languages::dl::DenotationImpl&lt; RoleTag &gt;::m_data()'],['../structmimir_1_1languages_1_1dl_1_1DenotationImpl_3_01ConceptTag_01_4.html#a60defbd62526e660e1133ea1822dd798',1,'mimir::languages::dl::DenotationImpl&lt; ConceptTag &gt;::m_data()']]],
   ['m_5fderivation_5frules_39',['m_derivation_rules',['../classmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1CopyVisitor.html#a5dc40c90ab773fe7a0daf314dda0ea44',1,'mimir::languages::dl::cnf_grammar::CopyVisitor::m_derivation_rules()'],['../classmimir_1_1languages_1_1dl_1_1grammar_1_1CopyVisitor.html#a618b793f3892eeb9c2c1357b6bc88bd9',1,'mimir::languages::dl::grammar::CopyVisitor::m_derivation_rules()']]],
   ['m_5fderived_5fatoms_40',['m_derived_atoms',['../structmimir_1_1search_1_1StateImpl.html#a84564479da9a300d1d5f492fa1037200',1,'mimir::search::StateImpl']]],
   ['m_5ffeature_41',['m_feature',['../classmimir_1_1languages_1_1general__policies_1_1ConditionBase.html#a845ec5f627b0f0f3daf251a91df5a262',1,'mimir::languages::general_policies::ConditionBase::m_feature()'],['../classmimir_1_1languages_1_1general__policies_1_1EffectBase.html#ac6ab672ca16b4d484ec66fa720e73c6c',1,'mimir::languages::general_policies::EffectBase::m_feature()']]],
@@ -67,7 +67,8 @@ var searchData=
   ['metric_2ehpp_64',['metric.hpp',['../search_2metric_8hpp.html',1,'(Global Namespace)'],['../formalism_2metric_8hpp.html',1,'(Global Namespace)']]],
   ['mimir_65',['mimir',['../namespacemimir.html',1,'']]],
   ['mode_66',['mode',['../structmimir_1_1search_1_1SearchContext_1_1Options.html#a33ca31c7e6f774ff546c3bc38c202149',1,'mimir::search::SearchContext::Options']]],
-  ['policy_5fsketches_67',['policy_sketches',['../namespacemimir_1_1languages_1_1policy__sketches.html',1,'mimir::languages']]],
-  ['search_68',['search',['../namespacemimir_1_1search.html',1,'mimir']]],
-  ['siw_69',['siw',['../namespacemimir_1_1search_1_1siw.html',1,'mimir::search']]]
+  ['nauty_67',['nauty',['../namespacemimir_1_1graphs_1_1nauty.html',1,'mimir::graphs']]],
+  ['policy_5fsketches_68',['policy_sketches',['../namespacemimir_1_1languages_1_1policy__sketches.html',1,'mimir::languages']]],
+  ['search_69',['search',['../namespacemimir_1_1search.html',1,'mimir']]],
+  ['siw_70',['siw',['../namespacemimir_1_1search_1_1siw.html',1,'mimir::search']]]
 ];

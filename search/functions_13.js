@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['_7edensegraph_0',['~DenseGraph',['../classnauty__wrapper_1_1DenseGraph.html#a712c071a62db6af096f56c61705d01fd',1,'nauty_wrapper::DenseGraph']]],
+  ['_7edensegraph_0',['~DenseGraph',['../classmimir_1_1graphs_1_1nauty_1_1DenseGraph.html#a56d23701ac621e51bf481df35b8df60c',1,'mimir::graphs::nauty::DenseGraph']]],
   ['_7eiapplicableactiongenerator_1',['~IApplicableActionGenerator',['../classmimir_1_1search_1_1IApplicableActionGenerator.html#a1b28be2fb9f38be58c88e94e149d1514',1,'mimir::search::IApplicableActionGenerator']]],
   ['_7eiaxiomevaluator_2',['~IAxiomEvaluator',['../classmimir_1_1search_1_1IAxiomEvaluator.html#a51cb2da9a7b2df472863527bd615f458',1,'mimir::search::IAxiomEvaluator']]],
   ['_7eicondition_3',['~ICondition',['../classmimir_1_1languages_1_1general__policies_1_1ICondition.html#a80f0d507f8a3ef87778b16c2f6849a07',1,'mimir::languages::general_policies::ICondition']]],
@@ -16,5 +16,5 @@ var searchData=
   ['_7eipruningstrategy_13',['~IPruningStrategy',['../classmimir_1_1search_1_1IPruningStrategy.html#ac018745d056bd3a83c27be9bb3f4f040',1,'mimir::search::IPruningStrategy']]],
   ['_7eivisitor_14',['~IVisitor',['../classmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1IVisitor.html#a821911f4c3fc7d917e12d57ac9d0dc9f',1,'mimir::languages::dl::cnf_grammar::IVisitor::~IVisitor()'],['../classmimir_1_1languages_1_1dl_1_1IVisitor.html#a5cd2492aeac59cd4efd10ff891ded5be',1,'mimir::languages::dl::IVisitor::~IVisitor()'],['../classmimir_1_1languages_1_1dl_1_1grammar_1_1IVisitor.html#a65539e775c53ac58b2e62c1bed525722',1,'mimir::languages::dl::grammar::IVisitor::~IVisitor()'],['../classmimir_1_1languages_1_1general__policies_1_1IVisitor.html#ae450c6431185453af75e5beff0ad9bb0',1,'mimir::languages::general_policies::IVisitor::~IVisitor()']]],
   ['_7erefinementpruningfunction_15',['~RefinementPruningFunction',['../classmimir_1_1languages_1_1dl_1_1RefinementPruningFunction.html#a8abb60e9680e8ffbcc9bb6e8e91a03ad',1,'mimir::languages::dl::RefinementPruningFunction']]],
-  ['_7esparsegraph_16',['~SparseGraph',['../classnauty__wrapper_1_1SparseGraph.html#a6a50ed84f729789e1b2a1cf8e9aa8c99',1,'nauty_wrapper::SparseGraph']]]
+  ['_7esparsegraph_16',['~SparseGraph',['../classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html#aa5b7b51065b1b593388eac078a8ab594',1,'mimir::graphs::nauty::SparseGraph']]]
 ];

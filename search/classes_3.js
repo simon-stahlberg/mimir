@@ -18,7 +18,7 @@ var searchData=
   ['denotationimpl_3c_20numericaltag_20_3e_15',['DenotationImpl&lt; NumericalTag &gt;',['../structmimir_1_1languages_1_1dl_1_1DenotationImpl_3_01NumericalTag_01_4.html',1,'mimir::languages::dl']]],
   ['denotationimpl_3c_20roletag_20_3e_16',['DenotationImpl&lt; RoleTag &gt;',['../structmimir_1_1languages_1_1dl_1_1DenotationImpl_3_01RoleTag_01_4.html',1,'mimir::languages::dl']]],
   ['denotationrepository_17',['DenotationRepository',['../classmimir_1_1languages_1_1dl_1_1DenotationRepository.html',1,'mimir::languages::dl']]],
-  ['densegraph_18',['DenseGraph',['../classnauty__wrapper_1_1DenseGraph.html',1,'nauty_wrapper']]],
+  ['densegraph_18',['DenseGraph',['../classmimir_1_1graphs_1_1nauty_1_1DenseGraph.html',1,'mimir::graphs::nauty']]],
   ['derivationruleimpl_19',['DerivationRuleImpl',['../classmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1DerivationRuleImpl.html',1,'mimir::languages::dl::cnf_grammar::DerivationRuleImpl&lt; D &gt;'],['../classmimir_1_1languages_1_1dl_1_1grammar_1_1DerivationRuleImpl.html',1,'mimir::languages::dl::grammar::DerivationRuleImpl&lt; D &gt;']]],
   ['derivedtag_20',['DerivedTag',['../structmimir_1_1formalism_1_1DerivedTag.html',1,'mimir::formalism']]],
   ['directiontaggedtype_21',['DirectionTaggedType',['../classmimir_1_1graphs_1_1DirectionTaggedType.html',1,'mimir::graphs']]],

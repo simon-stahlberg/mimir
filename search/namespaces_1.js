@@ -17,7 +17,8 @@ var searchData=
   ['languages_14',['languages',['../namespacemimir_1_1languages.html',1,'mimir']]],
   ['match_5ftree_15',['match_tree',['../namespacemimir_1_1search_1_1match__tree.html',1,'mimir::search']]],
   ['mimir_16',['mimir',['../namespacemimir.html',1,'']]],
-  ['policy_5fsketches_17',['policy_sketches',['../namespacemimir_1_1languages_1_1policy__sketches.html',1,'mimir::languages']]],
-  ['search_18',['search',['../namespacemimir_1_1search.html',1,'mimir']]],
-  ['siw_19',['siw',['../namespacemimir_1_1search_1_1siw.html',1,'mimir::search']]]
+  ['nauty_17',['nauty',['../namespacemimir_1_1graphs_1_1nauty.html',1,'mimir::graphs']]],
+  ['policy_5fsketches_18',['policy_sketches',['../namespacemimir_1_1languages_1_1policy__sketches.html',1,'mimir::languages']]],
+  ['search_19',['search',['../namespacemimir_1_1search.html',1,'mimir']]],
+  ['siw_20',['siw',['../namespacemimir_1_1search_1_1siw.html',1,'mimir::search']]]
 ];
