@@ -111,8 +111,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a2746e8195af091f5808d69402b84fbd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7a2742ef8a175875c077060a818c242b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#a62a850b37be0730b5f889f780d541f5f">formalism::Predicate</a>&lt; P &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1ConceptAtomicGoalImpl.html#a7a2742ef8a175875c077060a818c242b">get_predicate</a> () const</td></tr>
 <tr class="separator:a7a2742ef8a175875c077060a818c242b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3e68f7acc4980c9a13b0d0304f577c56"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1ConceptAtomicGoalImpl.html#a3e68f7acc4980c9a13b0d0304f577c56">is_negated</a> () const</td></tr>
-<tr class="separator:a3e68f7acc4980c9a13b0d0304f577c56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1180417f382b997dbbd9ad5469226038"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1ConceptAtomicGoalImpl.html#a1180417f382b997dbbd9ad5469226038">get_polarity</a> () const</td></tr>
+<tr class="separator:a1180417f382b997dbbd9ad5469226038"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9b1eb60014644f2d87a9b922041e2170"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1ConceptAtomicGoalImpl.html#a9b1eb60014644f2d87a9b922041e2170">identifying_members</a> () const</td></tr>
 <tr class="memdesc:a9b1eb60014644f2d87a9b922041e2170"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a tuple of const references to the members that uniquely identify an object. This enables the automatic generation of <code>loki::Hash</code> and <code>loki::EqualTo</code> specializations.  <br /></td></tr>
 <tr class="separator:a9b1eb60014644f2d87a9b922041e2170"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -254,6 +254,25 @@ template&lt;formalism::IsStaticOrFluentOrDerivedTag P&gt; </div>
 
 </div>
 </div>
+<a id="a1180417f382b997dbbd9ad5469226038" name="a1180417f382b997dbbd9ad5469226038"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1180417f382b997dbbd9ad5469226038">&#9670;&#160;</a></span>get_polarity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;formalism::IsStaticOrFluentOrDerivedTag P&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1ConceptAtomicGoalImpl.html">mimir::languages::dl::grammar::ConceptAtomicGoalImpl</a>&lt; P &gt;::get_polarity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a7a2742ef8a175875c077060a818c242b" name="a7a2742ef8a175875c077060a818c242b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7a2742ef8a175875c077060a818c242b">&#9670;&#160;</a></span>get_predicate()</h2>
 
@@ -300,25 +319,6 @@ template&lt;formalism::IsStaticOrFluentOrDerivedTag P&gt; </div>
 
 <p>Return a tuple of const references to the members that uniquely identify an object. This enables the automatic generation of <code>loki::Hash</code> and <code>loki::EqualTo</code> specializations. </p>
 <dl class="section return"><dt>Returns</dt><dd>a tuple containing const references to the members defining the object's identity. </dd></dl>
-
-</div>
-</div>
-<a id="a3e68f7acc4980c9a13b0d0304f577c56" name="a3e68f7acc4980c9a13b0d0304f577c56"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3e68f7acc4980c9a13b0d0304f577c56">&#9670;&#160;</a></span>is_negated()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;formalism::IsStaticOrFluentOrDerivedTag P&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">bool <a class="el" href="classmimir_1_1languages_1_1dl_1_1grammar_1_1ConceptAtomicGoalImpl.html">mimir::languages::dl::grammar::ConceptAtomicGoalImpl</a>&lt; P &gt;::is_negated </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
 
 </div>
 </div>

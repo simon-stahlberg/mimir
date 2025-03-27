@@ -103,8 +103,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a14e67a4bf0f604f210d75be00dbb96eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abbafbcbcada8f05eb44d811191d31db1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1GroundLiteralImpl.html#abbafbcbcada8f05eb44d811191d31db1">get_index</a> () const</td></tr>
 <tr class="separator:abbafbcbcada8f05eb44d811191d31db1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0baa42d0a6ac2716b4c95371cc0a649d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1GroundLiteralImpl.html#a0baa42d0a6ac2716b4c95371cc0a649d">is_negated</a> () const</td></tr>
-<tr class="separator:a0baa42d0a6ac2716b4c95371cc0a649d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a069a964e1ddb9ee4422f85143541003e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1GroundLiteralImpl.html#a069a964e1ddb9ee4422f85143541003e">get_polarity</a> () const</td></tr>
+<tr class="separator:a069a964e1ddb9ee4422f85143541003e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a94fa4d1ba380f84e99473a8a33dd9def"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#a6138c3dd23d47ca2ba928221d30421d9">GroundAtom</a>&lt; P &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1GroundLiteralImpl.html#a94fa4d1ba380f84e99473a8a33dd9def">get_atom</a> () const</td></tr>
 <tr class="separator:a94fa4d1ba380f84e99473a8a33dd9def"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a75e7e9b0d16c4f85360301c643feacca"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#a2676612f0dc35f8f7240770acf83eeba">Literal</a>&lt; P &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1GroundLiteralImpl.html#a75e7e9b0d16c4f85360301c643feacca">lift</a> (const <a class="el" href="namespacemimir_1_1formalism.html#af020fb353c583f3a1ebabd01f82e14fd">TermList</a> &amp;terms, <a class="el" href="classmimir_1_1formalism_1_1Repositories.html">Repositories</a> &amp;pddl_repositories) const</td></tr>
@@ -248,6 +248,25 @@ template&lt;IsStaticOrFluentOrDerivedTag P&gt; </div>
 
 </div>
 </div>
+<a id="a069a964e1ddb9ee4422f85143541003e" name="a069a964e1ddb9ee4422f85143541003e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a069a964e1ddb9ee4422f85143541003e">&#9670;&#160;</a></span>get_polarity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;IsStaticOrFluentOrDerivedTag P&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classmimir_1_1formalism_1_1GroundLiteralImpl.html">mimir::formalism::GroundLiteralImpl</a>&lt; P &gt;::get_polarity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a0662d59ba6e205027bc2cd99210a452d" name="a0662d59ba6e205027bc2cd99210a452d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0662d59ba6e205027bc2cd99210a452d">&#9670;&#160;</a></span>identifying_members()</h2>
 
@@ -275,25 +294,6 @@ template&lt;IsStaticOrFluentOrDerivedTag P&gt; </div>
 
 <p>Return a tuple of const references to the members that uniquely identify an object. This enables the automatic generation of <code>loki::Hash</code> and <code>loki::EqualTo</code> specializations. </p>
 <dl class="section return"><dt>Returns</dt><dd>a tuple containing const references to the members defining the object's identity. </dd></dl>
-
-</div>
-</div>
-<a id="a0baa42d0a6ac2716b4c95371cc0a649d" name="a0baa42d0a6ac2716b4c95371cc0a649d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0baa42d0a6ac2716b4c95371cc0a649d">&#9670;&#160;</a></span>is_negated()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;IsStaticOrFluentOrDerivedTag P&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">bool <a class="el" href="classmimir_1_1formalism_1_1GroundLiteralImpl.html">mimir::formalism::GroundLiteralImpl</a>&lt; P &gt;::is_negated </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
 
 </div>
 </div>
