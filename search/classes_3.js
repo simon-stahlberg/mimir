@@ -25,12 +25,5 @@ var searchData=
   ['domainbuilder_22',['DomainBuilder',['../classmimir_1_1formalism_1_1DomainBuilder.html',1,'mimir::formalism']]],
   ['domainimpl_23',['DomainImpl',['../classmimir_1_1formalism_1_1DomainImpl.html',1,'mimir::formalism']]],
   ['duplicatestatepruning_24',['DuplicateStatePruning',['../classmimir_1_1search_1_1DuplicateStatePruning.html',1,'mimir::search']]],
-  ['dynamicadjacentedgeconstiterator_25',['DynamicAdjacentEdgeConstIterator',['../classmimir_1_1graphs_1_1DynamicAdjacentEdgeConstIterator.html',1,'mimir::graphs']]],
-  ['dynamicadjacentedgeindexconstiterator_26',['DynamicAdjacentEdgeIndexConstIterator',['../classmimir_1_1graphs_1_1DynamicAdjacentEdgeIndexConstIterator.html',1,'mimir::graphs']]],
-  ['dynamicadjacentvertexconstiterator_27',['DynamicAdjacentVertexConstIterator',['../classmimir_1_1graphs_1_1DynamicAdjacentVertexConstIterator.html',1,'mimir::graphs']]],
-  ['dynamicadjacentvertexindexconstiterator_28',['DynamicAdjacentVertexIndexConstIterator',['../classmimir_1_1graphs_1_1DynamicAdjacentVertexIndexConstIterator.html',1,'mimir::graphs']]],
-  ['dynamicedgeindexconstiterator_29',['DynamicEdgeIndexConstIterator',['../classmimir_1_1graphs_1_1DynamicEdgeIndexConstIterator.html',1,'mimir::graphs']]],
-  ['dynamicgraph_30',['DynamicGraph',['../classmimir_1_1graphs_1_1DynamicGraph.html',1,'mimir::graphs']]],
-  ['dynamicnoveltytable_31',['DynamicNoveltyTable',['../classmimir_1_1search_1_1iw_1_1DynamicNoveltyTable.html',1,'mimir::search::iw']]],
-  ['dynamicvertexindexconstiterator_32',['DynamicVertexIndexConstIterator',['../classmimir_1_1graphs_1_1DynamicVertexIndexConstIterator.html',1,'mimir::graphs']]]
+  ['dynamicnoveltytable_25',['DynamicNoveltyTable',['../classmimir_1_1search_1_1iw_1_1DynamicNoveltyTable.html',1,'mimir::search::iw']]]
 ];

@@ -73,59 +73,13 @@ $(function() {
 </div>
 </div><!-- top -->
 <div class="header">
-  <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
-<a href="#namespaces">Namespaces</a> &#124;
-<a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">static_graph.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;mimir/common/concepts.hpp&quot;</code><br />
-<code>#include &quot;mimir/common/grouped_vector.hpp&quot;</code><br />
-<code>#include &quot;<a class="el" href="graph__edge__interface_8hpp_source.html">mimir/graphs/graph_edge_interface.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="graph__edges_8hpp_source.html">mimir/graphs/graph_edges.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="graph__vertex__interface_8hpp_source.html">mimir/graphs/graph_vertex_interface.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="graph__vertices_8hpp_source.html">mimir/graphs/graph_vertices.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="static__graph__interface_8hpp_source.html">mimir/graphs/static_graph_interface.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="static__graph__iterators_8hpp_source.html">mimir/graphs/static_graph_iterators.hpp</a>&quot;</code><br />
-<code>#include &lt;boost/hana.hpp&gt;</code><br />
-<code>#include &lt;ranges&gt;</code><br />
-<code>#include &lt;span&gt;</code><br />
-<code>#include &lt;vector&gt;</code><br />
+<div class="textblock"><code>#include &quot;mimir/graphs/static_graph_decl.hpp&quot;</code><br />
+<code>#include &quot;mimir/graphs/static_graph_impl.hpp&quot;</code><br />
 </div>
 <p><a href="static__graph_8hpp_source.html">Go to the source code of this file.</a></p>
-<table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">mimir::graphs::StaticGraph&lt; V, E &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html" title="StaticGraph implements a directed graph with vertices of type V and edges of type E that supports the...">StaticGraph</a></code> implements a directed graph with vertices of type V and edges of type E that supports the insertion but not the deletion of vertices and edges satisfying the graph concepts: <code>VertexListGraph</code>, <code>EdgeListGraph</code>, <code>IncidenceGraph</code>, and <code>AdjacencyGraph</code>.  <a href="classmimir_1_1graphs_1_1StaticGraph.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticForwardGraph.html">mimir::graphs::StaticForwardGraph&lt; G &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code><a class="el" href="classmimir_1_1graphs_1_1StaticForwardGraph.html" title="StaticForwardGraph is a translated StaticGraph extended with efficient forward traversal.">StaticForwardGraph</a></code> is a translated <code><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html" title="StaticGraph implements a directed graph with vertices of type V and edges of type E that supports the...">StaticGraph</a></code> extended with efficient forward traversal.  <a href="classmimir_1_1graphs_1_1StaticForwardGraph.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticBidirectionalGraph.html">mimir::graphs::StaticBidirectionalGraph&lt; G &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code><a class="el" href="classmimir_1_1graphs_1_1StaticBidirectionalGraph.html" title="StaticBidirectionalGraph is a translated StaticGraph extended with efficient bidirectional traversal.">StaticBidirectionalGraph</a></code> is a translated <code><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html" title="StaticGraph implements a directed graph with vertices of type V and edges of type E that supports the...">StaticGraph</a></code> extended with efficient bidirectional traversal.  <a href="classmimir_1_1graphs_1_1StaticBidirectionalGraph.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
-Namespaces</h2></td></tr>
-<tr class="memitem:namespacemimir"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir.html">mimir</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacemimir_1_1graphs"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html">mimir::graphs</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
-Functions</h2></td></tr>
-<tr class="memitem:af1ac5721268fde0c309dc7ec8231ad4c"><td class="memTemplParams" colspan="2">template&lt;IsVertex V, IsEdge E&gt; </td></tr>
-<tr class="memitem:af1ac5721268fde0c309dc7ec8231ad4c"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#af1ac5721268fde0c309dc7ec8231ad4c">mimir::graphs::operator&lt;&lt;</a> (std::ostream &amp;out, const StaticGraph&lt; V, E &gt; &amp;graph)</td></tr>
-<tr class="separator:af1ac5721268fde0c309dc7ec8231ad4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7e7e286be44379f60e6149854a041252"><td class="memTemplParams" colspan="2">template&lt;IsStaticGraph G&gt; </td></tr>
-<tr class="memitem:a7e7e286be44379f60e6149854a041252"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a7e7e286be44379f60e6149854a041252">mimir::graphs::operator&lt;&lt;</a> (std::ostream &amp;out, const StaticForwardGraph&lt; G &gt; &amp;graph)</td></tr>
-<tr class="separator:a7e7e286be44379f60e6149854a041252"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa54a871c7fe1db57ea928ea507ede90c"><td class="memTemplParams" colspan="2">template&lt;IsStaticGraph G&gt; </td></tr>
-<tr class="memitem:aa54a871c7fe1db57ea928ea507ede90c"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#aa54a871c7fe1db57ea928ea507ede90c">mimir::graphs::operator&lt;&lt;</a> (std::ostream &amp;out, const StaticBidirectionalGraph&lt; G &gt; &amp;graph)</td></tr>
-<tr class="separator:aa54a871c7fe1db57ea928ea507ede90c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

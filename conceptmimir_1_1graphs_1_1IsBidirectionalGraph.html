@@ -81,8 +81,8 @@ $(function() {
 <h2 class="groupheader">Concept definition</h2>
 <div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
 <div class="line"><span class="keyword">concept </span><a class="code hl_concept" href="conceptmimir_1_1graphs_1_1IsBidirectionalGraph.html">mimir::graphs::IsBidirectionalGraph</a> =  <span class="keyword">requires</span>(T a, <a class="code hl_typedef" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a> vertex, <a class="code hl_typedef" href="namespacemimir_1_1graphs.html#a64d4b39dbf15556126f7575e277451f3">EdgeIndex</a> edge) {</div>
-<div class="line">    <span class="keyword">typename</span> T::template AdjacentEdgeIndexConstIteratorType&lt;ForwardTag&gt;;</div>
-<div class="line">    <span class="keyword">typename</span> T::template AdjacentEdgeIndexConstIteratorType&lt;BackwardTag&gt;;</div>
+<div class="line">    <span class="keyword">typename</span> T::template AdjacentEdgeIndexConstIterator&lt;ForwardTag&gt;;</div>
+<div class="line">    <span class="keyword">typename</span> T::template AdjacentEdgeIndexConstIterator&lt;BackwardTag&gt;;</div>
 <div class="line"> </div>
 <div class="line">    { a.template get_source&lt;ForwardTag&gt;(edge) } -&gt; std::same_as&lt;VertexIndex&gt;;</div>
 <div class="line">    { a.template get_source&lt;BackwardTag&gt;(edge) } -&gt; std::same_as&lt;VertexIndex&gt;;</div>

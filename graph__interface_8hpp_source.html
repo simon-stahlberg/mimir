@@ -111,7 +111,7 @@ $(function() {
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="conceptmimir_1_1graphs_1_1IsVertexListGraph.html">   39</a></span><span class="keyword">concept </span><a class="code hl_concept" href="conceptmimir_1_1graphs_1_1IsVertexListGraph.html">IsVertexListGraph</a> = <span class="keyword">requires</span>(T a, <a class="code hl_typedef" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a> vertex) {</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keyword">typename</span> T::VertexIndexConstIteratorType;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keyword">typename</span> T::VertexIndexConstIterator;</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    { a.get_vertex_indices() } -&gt; IsRangeOver&lt;VertexIndex&gt;;</div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    { a.get_num_vertices() } -&gt; std::same_as&lt;size_t&gt;;</div>
@@ -119,8 +119,8 @@ $(function() {
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="conceptmimir_1_1graphs_1_1IsIncidenceGraph.html">   47</a></span><span class="keyword">concept </span><a class="code hl_concept" href="conceptmimir_1_1graphs_1_1IsIncidenceGraph.html">IsIncidenceGraph</a> = <span class="keyword">requires</span>(T a, <a class="code hl_typedef" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a> vertex, <a class="code hl_typedef" href="namespacemimir_1_1graphs.html#a64d4b39dbf15556126f7575e277451f3">EdgeIndex</a> edge) {</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keyword">typename</span> T::template AdjacentEdgeIndexConstIteratorType&lt;ForwardTag&gt;;</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">typename</span> T::template AdjacentEdgeIndexConstIteratorType&lt;BackwardTag&gt;;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keyword">typename</span> T::template AdjacentEdgeIndexConstIterator&lt;ForwardTag&gt;;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">typename</span> T::template AdjacentEdgeIndexConstIterator&lt;BackwardTag&gt;;</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    { a.template get_source&lt;ForwardTag&gt;(edge) } -&gt; std::same_as&lt;VertexIndex&gt;;</div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    { a.template get_target&lt;ForwardTag&gt;(edge) } -&gt; std::same_as&lt;VertexIndex&gt;;</div>
@@ -130,7 +130,7 @@ $(function() {
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="conceptmimir_1_1graphs_1_1IsEdgeListGraph.html">   58</a></span><span class="keyword">concept </span><a class="code hl_concept" href="conceptmimir_1_1graphs_1_1IsEdgeListGraph.html">IsEdgeListGraph</a> = <span class="keyword">requires</span>(T a) {</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keyword">typename</span> T::EdgeIndexConstIteratorType;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keyword">typename</span> T::EdgeIndexConstIterator;</div>
 <div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    { a.get_edge_indices() } -&gt; IsRangeOver&lt;EdgeIndex&gt;;</div>
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    { a.get_num_edges() } -&gt; std::same_as&lt;size_t&gt;;</div>
@@ -138,8 +138,8 @@ $(function() {
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="conceptmimir_1_1graphs_1_1IsAdjacencyGraph.html">   66</a></span><span class="keyword">concept </span><a class="code hl_concept" href="conceptmimir_1_1graphs_1_1IsAdjacencyGraph.html">IsAdjacencyGraph</a> = <span class="keyword">requires</span>(T a, <a class="code hl_typedef" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a> vertex) {</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keyword">typename</span> T::template AdjacentVertexIndexConstIteratorType&lt;ForwardTag&gt;;</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keyword">typename</span> T::template AdjacentVertexIndexConstIteratorType&lt;BackwardTag&gt;;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keyword">typename</span> T::template AdjacentVertexIndexConstIterator&lt;ForwardTag&gt;;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keyword">typename</span> T::template AdjacentVertexIndexConstIterator&lt;BackwardTag&gt;;</div>
 <div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
 <div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    { a.template get_adjacent_vertex_indices&lt;ForwardTag&gt;(vertex) } -&gt; IsRangeOver&lt;VertexIndex&gt;;</div>
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    { a.template get_adjacent_vertex_indices&lt;BackwardTag&gt;(vertex) } -&gt; IsRangeOver&lt;VertexIndex&gt;;</div>
@@ -147,8 +147,8 @@ $(function() {
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
 <div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="conceptmimir_1_1graphs_1_1IsBidirectionalGraph.html">   75</a></span><span class="keyword">concept </span><a class="code hl_concept" href="conceptmimir_1_1graphs_1_1IsBidirectionalGraph.html">IsBidirectionalGraph</a> = <span class="keyword">requires</span>(T a, <a class="code hl_typedef" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a> vertex, <a class="code hl_typedef" href="namespacemimir_1_1graphs.html#a64d4b39dbf15556126f7575e277451f3">EdgeIndex</a> edge) {</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keyword">typename</span> T::template AdjacentEdgeIndexConstIteratorType&lt;ForwardTag&gt;;</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keyword">typename</span> T::template AdjacentEdgeIndexConstIteratorType&lt;BackwardTag&gt;;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keyword">typename</span> T::template AdjacentEdgeIndexConstIterator&lt;ForwardTag&gt;;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keyword">typename</span> T::template AdjacentEdgeIndexConstIterator&lt;BackwardTag&gt;;</div>
 <div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
 <div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    { a.template get_source&lt;ForwardTag&gt;(edge) } -&gt; std::same_as&lt;VertexIndex&gt;;</div>
 <div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    { a.template get_source&lt;BackwardTag&gt;(edge) } -&gt; std::same_as&lt;VertexIndex&gt;;</div>
