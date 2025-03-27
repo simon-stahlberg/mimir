@@ -26,7 +26,7 @@
 #include <loki/details/utils/hash.hpp>
 #include <stdexcept>
 
-namespace nauty_wrapper
+namespace mimir::graphs::nauty
 {
 using mimir::operator<<;
 

@@ -139,7 +139,7 @@ std::pair<ColorList, ColorMap<IndexList>> compute_ordered_isomorphism_types(cons
     auto hash_to_color = ColorList(num_hashes);
     auto color_to_hashes = ColorMap<IndexList>();
 
-    auto subgraph = nauty_wrapper::SparseGraph(K);
+    auto subgraph = nauty::SparseGraph(K);
     auto subgraph_coloring = ColorList();
 
     // Subroutine to compute (ordered) isomorphic types of all k-tuples of vertices.

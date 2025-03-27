@@ -49,10 +49,10 @@ using TupleGraphList = std::vector<TupleGraph>;
 /// @brief Uniqueness test of certificates while mapping them to a representative state.
 /// Hash and compare of `loki::ObserverPtr<T>` is specialized to use the dereferenced pointer.
 template<typename Value>
-using CertificateMap = KeyValueMap<loki::ObserverPtr<const nauty_wrapper::Certificate>, Value>;
+using CertificateMap = KeyValueMap<loki::ObserverPtr<const graphs::nauty::Certificate>, Value>;
 
 /// @brief Cache computed state certificates.
-using StateToCertificate = search::StateMap<std::shared_ptr<const nauty_wrapper::Certificate>>;
+using StateToCertificate = search::StateMap<std::shared_ptr<const graphs::nauty::Certificate>>;
 }
 
 #endif

@@ -67,8 +67,7 @@ private:
 };
 
 /// @brief `IsomorphismTypeCompressionFunction` encapsulates mappings from canonical subgraphs to colors.
-using IsomorphismTypeCompressionFunction =
-    std::unordered_map<nauty_wrapper::Certificate, Color, loki::Hash<nauty_wrapper::Certificate>, loki::EqualTo<nauty_wrapper::Certificate>>;
+using IsomorphismTypeCompressionFunction = std::unordered_map<nauty::Certificate, Color, loki::Hash<nauty::Certificate>, loki::EqualTo<nauty::Certificate>>;
 
 /// @brief Compare two certificates for equality.
 /// @param lhs is the first certificate.

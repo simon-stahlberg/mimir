@@ -28,7 +28,7 @@
 #include <iostream>
 #include <vector>
 
-namespace nauty_wrapper
+namespace mimir::graphs::nauty
 {
 
 /// @brief Compute lab and ptn from vertex coloring.

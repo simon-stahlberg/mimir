@@ -27,7 +27,7 @@
 #include <string>
 #include <vector>
 
-namespace nauty_wrapper
+namespace mimir::graphs::nauty
 {
 class DenseGraphImpl
 {

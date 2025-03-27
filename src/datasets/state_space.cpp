@@ -45,6 +45,7 @@
 
 using namespace mimir::formalism;
 using namespace mimir::search;
+using namespace mimir::graphs;
 
 namespace mimir::graphs
 {
@@ -134,7 +135,7 @@ private:
     {
         const auto object_graph = create_object_graph(state, *m_problem, *m_symm_data.color_function, m_options.mark_true_goal_literals);
 
-        return std::make_shared<const nauty_wrapper::Certificate>(nauty_wrapper::compute_certificate(object_graph));
+        return std::make_shared<const nauty::Certificate>(nauty::compute_certificate(object_graph));
     }
 
     void on_expand_state_impl(State state) {}
@@ -262,7 +263,7 @@ private:
                                              m_state_to_vertex_index.at(successor_state) :
                                              m_graph.add_vertex(successor_state,
                                                                 m_problem,
-                                                                std::shared_ptr<const nauty_wrapper::Certificate>(nullptr),
+                                                                std::shared_ptr<const nauty::Certificate>(nullptr),
                                                                 DiscreteCost(0),
                                                                 ContinuousCost(0),
                                                                 false,
@@ -283,7 +284,7 @@ private:
     {
         const auto v_idx = m_graph.add_vertex(start_state,
                                               m_problem,
-                                              std::shared_ptr<const nauty_wrapper::Certificate>(nullptr),
+                                              std::shared_ptr<const nauty::Certificate>(nullptr),
                                               DiscreteCost(0),
                                               ContinuousCost(0),
                                               false,

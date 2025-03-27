@@ -27,7 +27,7 @@
 #include <sstream>
 #include <stdexcept>
 
-namespace nauty_wrapper
+namespace mimir::graphs::nauty
 {
 
 void DenseGraphImpl::allocate_graph(graph** out_graph)

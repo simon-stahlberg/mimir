@@ -30,7 +30,7 @@
 #include <vector>
 
 /// @brief Wrap a namespace around nauty's interface
-namespace nauty_wrapper
+namespace mimir::graphs::nauty
 {
 class DenseGraphImpl;
 class SparseGraphImpl;
@@ -204,6 +204,12 @@ public:
     friend Certificate compute_certificate(const SparseGraph& graph);
 };
 
+/// @brief Compute the nauty graph `Certificate` for a given graph that satisfies the `mimir::graphs::IsVertexColoredGraph` graph concept.
+/// This function internally uses the `SparseGraph` representation for simplicity.
+/// To use `DenseGraph`, one has to construct it and call `compute_certificate`.
+/// @tparam is the type of the graph.
+/// @param graph is the graph that satisfies the `mimir::graphs::IsVertexColoredGraph` graph concept.
+/// @return is the compressed nauty graph `Certificate`.
 template<mimir::graphs::IsVertexColoredGraph Graph>
 Certificate compute_certificate(const Graph& graph)
 {

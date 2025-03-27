@@ -88,7 +88,7 @@ for vertex in graph.get_vertices():
 
     state = problem_vertex.get_property_0() # state (State)
     problem = problem_vertex.get_property_1() # problem (Problem)
-    # problem_vertex.get_property_2() # certificate (optional<nauty_wrapper::Certificate>)
+    # problem_vertex.get_property_2() # certificate (optional<nauty::Certificate>)
     problem_vertex.get_property_3() # unit goal distance (int)
     problem_vertex.get_property_4() # action goal distance (double)
     problem_vertex.get_property_5() # is initial ? (bool)

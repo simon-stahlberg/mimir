@@ -27,7 +27,7 @@
 #include <sstream>
 #include <stdexcept>
 
-namespace nauty_wrapper
+namespace mimir::graphs::nauty
 {
 
 void SparseGraphImpl::copy_graph_data(const sparsegraph& in_graph, sparsegraph& out_graph) const

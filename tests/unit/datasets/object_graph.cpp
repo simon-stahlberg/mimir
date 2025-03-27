@@ -27,6 +27,7 @@
 
 using namespace mimir::datasets;
 using namespace mimir::formalism;
+using namespace mimir::graphs;
 
 namespace mimir::tests
 {
@@ -42,7 +43,7 @@ TEST(MimirTests, DataSetsObjectGraphDenseTest)
     const auto state_space = StateSpaceImpl::create(context, options);
     const auto color_function = GeneralizedColorFunctionImpl(context.get_problem());
 
-    auto certificates = std::unordered_set<nauty_wrapper::Certificate, loki::Hash<nauty_wrapper::Certificate>, loki::EqualTo<nauty_wrapper::Certificate>> {};
+    auto certificates = std::unordered_set<nauty::Certificate, loki::Hash<nauty::Certificate>, loki::EqualTo<nauty::Certificate>> {};
 
     for (const auto& vertex : state_space.value()->get_graph().get_vertices())
     {
@@ -51,7 +52,7 @@ TEST(MimirTests, DataSetsObjectGraphDenseTest)
 
         const auto object_graph = create_object_graph(state, *problem, color_function);
 
-        auto certificate = compute_certificate(nauty_wrapper::DenseGraph(object_graph));
+        auto certificate = compute_certificate(nauty::DenseGraph(object_graph));
 
         certificates.insert(std::move(certificate));
     }
@@ -70,7 +71,7 @@ TEST(MimirTests, DataSetsObjectGraphSparseTest)
     const auto state_space = StateSpaceImpl::create(context, options);
     const auto color_function = GeneralizedColorFunctionImpl(context.get_problem());
 
-    auto certificates = std::unordered_set<nauty_wrapper::Certificate, loki::Hash<nauty_wrapper::Certificate>, loki::EqualTo<nauty_wrapper::Certificate>> {};
+    auto certificates = std::unordered_set<nauty::Certificate, loki::Hash<nauty::Certificate>, loki::EqualTo<nauty::Certificate>> {};
 
     for (const auto& vertex : state_space.value()->get_graph().get_vertices())
     {
@@ -79,7 +80,7 @@ TEST(MimirTests, DataSetsObjectGraphSparseTest)
 
         const auto object_graph = create_object_graph(state, *problem, color_function);
 
-        auto certificate = compute_certificate(nauty_wrapper::SparseGraph(object_graph));
+        auto certificate = compute_certificate(nauty::SparseGraph(object_graph));
 
         certificates.insert(std::move(certificate));
     }
