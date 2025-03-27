@@ -9,8 +9,11 @@ var searchData=
   ['staterepositoryimpl_6',['StateRepositoryImpl',['../classmimir_1_1search_1_1StateRepositoryImpl.html',1,'mimir::search']]],
   ['statespaceimpl_7',['StateSpaceImpl',['../classmimir_1_1datasets_1_1StateSpaceImpl.html',1,'mimir::datasets']]],
   ['statetupleindexgenerator_8',['StateTupleIndexGenerator',['../classmimir_1_1search_1_1iw_1_1StateTupleIndexGenerator.html',1,'mimir::search::iw']]],
-  ['staticconsistencygraph_9',['StaticConsistencyGraph',['../classmimir_1_1formalism_1_1StaticConsistencyGraph.html',1,'mimir::formalism']]],
-  ['statictag_10',['StaticTag',['../structmimir_1_1formalism_1_1StaticTag.html',1,'mimir::formalism']]],
-  ['statistics_11',['Statistics',['../classmimir_1_1search_1_1astar_1_1Statistics.html',1,'mimir::search::astar::Statistics'],['../classmimir_1_1search_1_1brfs_1_1Statistics.html',1,'mimir::search::brfs::Statistics'],['../classmimir_1_1search_1_1iw_1_1Statistics.html',1,'mimir::search::iw::Statistics'],['../classmimir_1_1search_1_1siw_1_1Statistics.html',1,'mimir::search::siw::Statistics']]],
-  ['substitutionruleimpl_12',['SubstitutionRuleImpl',['../classmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1SubstitutionRuleImpl.html',1,'mimir::languages::dl::cnf_grammar']]]
+  ['staticbidirectionalgraph_9',['StaticBidirectionalGraph',['../classmimir_1_1graphs_1_1StaticBidirectionalGraph.html',1,'mimir::graphs']]],
+  ['staticconsistencygraph_10',['StaticConsistencyGraph',['../classmimir_1_1formalism_1_1StaticConsistencyGraph.html',1,'mimir::formalism']]],
+  ['staticforwardgraph_11',['StaticForwardGraph',['../classmimir_1_1graphs_1_1StaticForwardGraph.html',1,'mimir::graphs']]],
+  ['staticgraph_12',['StaticGraph',['../classmimir_1_1graphs_1_1StaticGraph.html',1,'mimir::graphs']]],
+  ['statictag_13',['StaticTag',['../structmimir_1_1formalism_1_1StaticTag.html',1,'mimir::formalism']]],
+  ['statistics_14',['Statistics',['../classmimir_1_1search_1_1astar_1_1Statistics.html',1,'mimir::search::astar::Statistics'],['../classmimir_1_1search_1_1brfs_1_1Statistics.html',1,'mimir::search::brfs::Statistics'],['../classmimir_1_1search_1_1iw_1_1Statistics.html',1,'mimir::search::iw::Statistics'],['../classmimir_1_1search_1_1siw_1_1Statistics.html',1,'mimir::search::siw::Statistics']]],
+  ['substitutionruleimpl_15',['SubstitutionRuleImpl',['../classmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1SubstitutionRuleImpl.html',1,'mimir::languages::dl::cnf_grammar']]]
 ];

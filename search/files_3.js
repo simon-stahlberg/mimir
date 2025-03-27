@@ -11,6 +11,6 @@ var searchData=
   ['digraph_5fvertex_5fcolored_2ehpp_8',['digraph_vertex_colored.hpp',['../digraph__vertex__colored_8hpp.html',1,'']]],
   ['domain_2ehpp_9',['domain.hpp',['../domain_8hpp.html',1,'']]],
   ['domain_5fbuilder_2ehpp_10',['domain_builder.hpp',['../domain__builder_8hpp.html',1,'']]],
-  ['dynamic_5fgraph_2ehpp_11',['dynamic_graph.hpp',['../dynamic__graph_8hpp.html',1,'']]],
+  ['dynamic_5fgraph_5fdecl_2ehpp_11',['dynamic_graph_decl.hpp',['../dynamic__graph__decl_8hpp.html',1,'']]],
   ['dynamic_5fgraph_5finterface_2ehpp_12',['dynamic_graph_interface.hpp',['../dynamic__graph__interface_8hpp.html',1,'']]]
 ];
