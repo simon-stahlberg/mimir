@@ -38,7 +38,7 @@ GeneralPolicyImpl::solves(const datasets::StateSpace& state_space, const VertexI
 {
     const auto& graph = state_space->get_graph();
 
-    using IteratorType = graphs::ProblemGraph::AdjacentVertexIndexConstIteratorType<graphs::ForwardTag>;
+    using IteratorType = graphs::ProblemGraph::AdjacentVertexIndexConstIterator<graphs::ForwardTag>;
 
     struct Entry
     {
@@ -148,7 +148,7 @@ GeneralPolicyImpl::UnsolvabilityReason GeneralPolicyImpl::solves(const datasets:
 {
     const auto& class_graph = generalized_state_space->get_graph();
 
-    using IteratorType = graphs::ClassGraph::AdjacentVertexIndexConstIteratorType<graphs::ForwardTag>;
+    using IteratorType = graphs::ClassGraph::AdjacentVertexIndexConstIterator<graphs::ForwardTag>;
 
     struct Entry
     {

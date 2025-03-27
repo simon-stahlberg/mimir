@@ -37,7 +37,7 @@ namespace mimir::graphs
 
 template<typename T>
 concept IsVertexListGraph = requires(T a, VertexIndex vertex) {
-    typename T::VertexIndexConstIteratorType;
+    typename T::VertexIndexConstIterator;
 
     { a.get_vertex_indices() } -> IsRangeOver<VertexIndex>;
     { a.get_num_vertices() } -> std::same_as<size_t>;
@@ -45,8 +45,8 @@ concept IsVertexListGraph = requires(T a, VertexIndex vertex) {
 
 template<typename T>
 concept IsIncidenceGraph = requires(T a, VertexIndex vertex, EdgeIndex edge) {
-    typename T::template AdjacentEdgeIndexConstIteratorType<ForwardTag>;
-    typename T::template AdjacentEdgeIndexConstIteratorType<BackwardTag>;
+    typename T::template AdjacentEdgeIndexConstIterator<ForwardTag>;
+    typename T::template AdjacentEdgeIndexConstIterator<BackwardTag>;
 
     { a.template get_source<ForwardTag>(edge) } -> std::same_as<VertexIndex>;
     { a.template get_target<ForwardTag>(edge) } -> std::same_as<VertexIndex>;
@@ -56,7 +56,7 @@ concept IsIncidenceGraph = requires(T a, VertexIndex vertex, EdgeIndex edge) {
 
 template<typename T>
 concept IsEdgeListGraph = requires(T a) {
-    typename T::EdgeIndexConstIteratorType;
+    typename T::EdgeIndexConstIterator;
 
     { a.get_edge_indices() } -> IsRangeOver<EdgeIndex>;
     { a.get_num_edges() } -> std::same_as<size_t>;
@@ -64,8 +64,8 @@ concept IsEdgeListGraph = requires(T a) {
 
 template<typename T>
 concept IsAdjacencyGraph = requires(T a, VertexIndex vertex) {
-    typename T::template AdjacentVertexIndexConstIteratorType<ForwardTag>;
-    typename T::template AdjacentVertexIndexConstIteratorType<BackwardTag>;
+    typename T::template AdjacentVertexIndexConstIterator<ForwardTag>;
+    typename T::template AdjacentVertexIndexConstIterator<BackwardTag>;
 
     { a.template get_adjacent_vertex_indices<ForwardTag>(vertex) } -> IsRangeOver<VertexIndex>;
     { a.template get_adjacent_vertex_indices<BackwardTag>(vertex) } -> IsRangeOver<VertexIndex>;
@@ -73,8 +73,8 @@ concept IsAdjacencyGraph = requires(T a, VertexIndex vertex) {
 
 template<typename T>
 concept IsBidirectionalGraph = requires(T a, VertexIndex vertex, EdgeIndex edge) {
-    typename T::template AdjacentEdgeIndexConstIteratorType<ForwardTag>;
-    typename T::template AdjacentEdgeIndexConstIteratorType<BackwardTag>;
+    typename T::template AdjacentEdgeIndexConstIterator<ForwardTag>;
+    typename T::template AdjacentEdgeIndexConstIterator<BackwardTag>;
 
     { a.template get_source<ForwardTag>(edge) } -> std::same_as<VertexIndex>;
     { a.template get_source<BackwardTag>(edge) } -> std::same_as<VertexIndex>;

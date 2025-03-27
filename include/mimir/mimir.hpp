@@ -111,7 +111,6 @@
 #include "mimir/graphs/declarations.hpp"
 #include "mimir/graphs/dynamic_graph.hpp"
 #include "mimir/graphs/dynamic_graph_interface.hpp"
-#include "mimir/graphs/dynamic_graph_iterators.hpp"
 #include "mimir/graphs/graph_edge_interface.hpp"
 #include "mimir/graphs/graph_edges.hpp"
 #include "mimir/graphs/graph_interface.hpp"
@@ -121,7 +120,6 @@
 #include "mimir/graphs/graph_vertices.hpp"
 #include "mimir/graphs/static_graph.hpp"
 #include "mimir/graphs/static_graph_interface.hpp"
-#include "mimir/graphs/static_graph_iterators.hpp"
 
 /**
  * Algorithms

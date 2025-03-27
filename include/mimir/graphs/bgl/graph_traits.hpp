@@ -62,19 +62,19 @@ struct graph_traits<mimir::graphs::DirectionTaggedType<Graph, Direction>>
     using edge_parallel_category = allow_parallel_edge_tag;
     using traversal_category = vertex_list_and_incidence_and_edge_list_and_adjacency_and_bidirectional_graph_tag;
     // boost::VertexListGraph
-    using vertex_iterator = typename Graph::VertexIndexConstIteratorType;
+    using vertex_iterator = typename Graph::VertexIndexConstIterator;
     using vertices_size_type = size_t;
     // boost::IncidenceGraph
-    using out_edge_iterator = typename Graph::template AdjacentEdgeIndexConstIteratorType<Direction>;
+    using out_edge_iterator = typename Graph::template AdjacentEdgeIndexConstIterator<Direction>;
     using degree_size_type = size_t;
     // boost::EdgeListGraph
-    using edge_iterator = typename Graph::EdgeIndexConstIteratorType;
+    using edge_iterator = typename Graph::EdgeIndexConstIterator;
     using edges_size_type = size_t;
     // boost::AdjacencyGraph
-    using adjacency_iterator = typename Graph::template AdjacentVertexIndexConstIteratorType<Direction>;
+    using adjacency_iterator = typename Graph::template AdjacentVertexIndexConstIterator<Direction>;
     // boost::BidirectionalGraph
     using inverse_direction = typename Direction::Inverse;
-    using in_edge_iterator = typename Graph::template AdjacentEdgeIndexConstIteratorType<inverse_direction>;
+    using in_edge_iterator = typename Graph::template AdjacentEdgeIndexConstIterator<inverse_direction>;
     // boost::strong_components
     constexpr static vertex_descriptor null_vertex() { return std::numeric_limits<vertex_descriptor>::max(); }
 };
