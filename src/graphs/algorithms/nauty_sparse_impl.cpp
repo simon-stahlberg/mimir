@@ -237,7 +237,7 @@ Certificate SparseGraphImpl::compute_certificate()
     options.digraph = is_directed_;
     options.writeautoms = FALSE;
 
-    int orbits[n_];
+    auto orbits = std::vector<int>(this->n_);
 
     statsblk stats;
 
@@ -245,7 +245,7 @@ Certificate SparseGraphImpl::compute_certificate()
     std::fill(canon_graph_.v, canon_graph_.v + n_, 0);
     std::fill(canon_graph_.e, canon_graph_.e + n_ * n_, 0);
 
-    sparsenauty(&graph_, lab_.data(), ptn_.data(), orbits, &options, &stats, &canon_graph_);
+    sparsenauty(&graph_, lab_.data(), ptn_.data(), orbits.data(), &options, &stats, &canon_graph_);
 
     // According to documentation:
     //   canon_graph has contiguous adjacency lists that are not necessarily sorted

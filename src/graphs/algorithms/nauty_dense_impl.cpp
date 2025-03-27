@@ -198,11 +198,11 @@ Certificate DenseGraphImpl::compute_certificate()
     options.digraph = is_directed_;
     options.writeautoms = FALSE;
 
-    int orbits[n_];
+    auto orbits = std::vector<int>(this->n_);
 
     statsblk stats;
 
-    densenauty(graph_, lab_.data(), ptn_.data(), orbits, &options, &stats, m_, n_, canon_graph_);
+    densenauty(graph_, lab_.data(), ptn_.data(), orbits.data(), &options, &stats, m_, n_, canon_graph_);
 
     // Clear streams
     canon_graph_repr_.str(std::string());

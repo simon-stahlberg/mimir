@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SRC_ALGORITHMS_NAUTY_UTILS_HPP_
-#define SRC_ALGORITHMS_NAUTY_UTILS_HPP_
+#ifndef SRC_GRAPHS_ALGORITHMS_NAUTY_UTILS_HPP_
+#define SRC_GRAPHS_ALGORITHMS_NAUTY_UTILS_HPP_
 
 #include "mimir/common/printers.hpp"
 #include "mimir/graphs/declarations.hpp"

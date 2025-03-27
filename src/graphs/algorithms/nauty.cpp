@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/algorithms/nauty.hpp"
+#include "mimir/graphs/algorithms/nauty.hpp"
 
 #include "mimir/common/types.hpp"
 #include "nauty_dense_impl.hpp"
@@ -69,30 +69,6 @@ DenseGraph::DenseGraph() : m_impl(std::make_unique<DenseGraphImpl>(0)) {}
 
 DenseGraph::DenseGraph(size_t num_vertices) : m_impl(std::make_unique<DenseGraphImpl>(num_vertices)) {}
 
-DenseGraph::DenseGraph(const mimir::graphs::StaticVertexColoredDigraph& digraph) : m_impl(std::make_unique<DenseGraphImpl>(digraph.get_num_vertices()))
-{
-    /* Remap indices to 0,1,... indexing schema. */
-    auto remap = mimir::IndexMap<mimir::Index>();
-    for (const auto& vertex : digraph.get_vertices())
-    {
-        remap.emplace(vertex.get_index(), remap.size());
-    }
-
-    /* Add edges. */
-    for (const auto& edge : digraph.get_edges())
-    {
-        add_edge(remap.at(edge.get_source()), remap.at(edge.get_target()));
-    }
-
-    /* Add vertex coloring. */
-    auto coloring = mimir::graphs::ColorList(digraph.get_num_vertices());
-    for (const auto& vertex : digraph.get_vertices())
-    {
-        coloring.at(remap.at(vertex.get_index())) = get_color(vertex);
-    }
-    add_vertex_coloring(coloring);
-}
-
 DenseGraph::DenseGraph(const DenseGraph& other) : m_impl(std::make_unique<DenseGraphImpl>(*other.m_impl)) {}
 
 DenseGraph& DenseGraph::operator=(const DenseGraph& other)
@@ -121,41 +97,17 @@ void DenseGraph::add_vertex_coloring(const mimir::graphs::ColorList& vertex_colo
 
 void DenseGraph::add_edge(size_t source, size_t target) { m_impl->add_edge(source, target); }
 
-Certificate DenseGraph::compute_certificate() const { return m_impl->compute_certificate(); }
-
 void DenseGraph::clear(size_t num_vertices) { m_impl->clear(num_vertices); }
 
 bool DenseGraph::is_directed() const { return m_impl->is_directed(); }
+
+Certificate compute_certificate(const DenseGraph& graph) { return graph.m_impl->compute_certificate(); }
 
 /* SparseGraph*/
 
 SparseGraph::SparseGraph() : m_impl(std::make_unique<SparseGraphImpl>(0)) {}
 
 SparseGraph::SparseGraph(size_t num_vertices) : m_impl(std::make_unique<SparseGraphImpl>(num_vertices)) {}
-
-SparseGraph::SparseGraph(const mimir::graphs::StaticVertexColoredDigraph& digraph) : m_impl(std::make_unique<SparseGraphImpl>(digraph.get_num_vertices()))
-{
-    /* Remap indices to 0,1,... indexing schema. */
-    auto remap = mimir::IndexMap<mimir::Index>();
-    for (const auto& vertex : digraph.get_vertices())
-    {
-        remap.emplace(vertex.get_index(), remap.size());
-    }
-
-    /* Add edges. */
-    for (const auto& edge : digraph.get_edges())
-    {
-        add_edge(remap.at(edge.get_source()), remap.at(edge.get_target()));
-    }
-
-    /* Add vertex coloring. */
-    auto coloring = mimir::graphs::ColorList(digraph.get_num_vertices());
-    for (const auto& vertex : digraph.get_vertices())
-    {
-        coloring.at(remap.at(vertex.get_index())) = get_color(vertex);
-    }
-    add_vertex_coloring(coloring);
-}
 
 SparseGraph::SparseGraph(const SparseGraph& other) : m_impl(std::make_unique<SparseGraphImpl>(*other.m_impl)) {}
 
@@ -185,9 +137,9 @@ void SparseGraph::add_vertex_coloring(const mimir::graphs::ColorList& vertex_col
 
 void SparseGraph::add_edge(size_t source, size_t target) { m_impl->add_edge(source, target); }
 
-Certificate SparseGraph::compute_certificate() { return m_impl->compute_certificate(); }
-
 void SparseGraph::clear(size_t num_vertices) { m_impl->clear(num_vertices); }
 
 bool SparseGraph::is_directed() const { return m_impl->is_directed(); }
+
+Certificate compute_certificate(const SparseGraph& graph) { return graph.m_impl->compute_certificate(); }
 }

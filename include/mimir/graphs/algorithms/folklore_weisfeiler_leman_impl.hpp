@@ -18,10 +18,10 @@
 #ifndef MIMIR_GRAPHS_ALGORITHMS_FOLKLORE_WEISFEILER_LEMAN_IMPL_HPP_
 #define MIMIR_GRAPHS_ALGORITHMS_FOLKLORE_WEISFEILER_LEMAN_IMPL_HPP_
 
-#include "mimir/algorithms/nauty.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types.hpp"
 #include "mimir/graphs/algorithms/color_refinement.hpp"
+#include "mimir/graphs/algorithms/nauty.hpp"
 #include "mimir/graphs/graph_interface.hpp"
 #include "mimir/graphs/graph_properties.hpp"
 #include "mimir/graphs/graph_traversal_interface.hpp"
@@ -174,7 +174,7 @@ std::pair<ColorList, ColorMap<IndexList>> compute_ordered_isomorphism_types(cons
         subgraph.add_vertex_coloring(subgraph_coloring);
 
         // Isomorphism function is shared among several runs to ensure canonical form for different runs.
-        auto result = iso_type_function.emplace(subgraph.compute_certificate(), iso_type_function.size());
+        auto result = iso_type_function.emplace(compute_certificate(subgraph), iso_type_function.size());
 
         const auto color = result.first->second;
         hash_to_color.at(hash) = color;

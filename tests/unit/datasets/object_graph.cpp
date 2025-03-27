@@ -17,10 +17,10 @@
 
 #include "mimir/datasets/object_graph.hpp"
 
-#include "mimir/algorithms/nauty.hpp"
 #include "mimir/datasets/generalized_color_function.hpp"
 #include "mimir/datasets/generalized_state_space.hpp"
 #include "mimir/formalism/problem.hpp"
+#include "mimir/graphs/algorithms/nauty.hpp"
 
 #include <gtest/gtest.h>
 #include <unordered_set>
@@ -51,7 +51,7 @@ TEST(MimirTests, DataSetsObjectGraphDenseTest)
 
         const auto object_graph = create_object_graph(state, *problem, color_function);
 
-        auto certificate = nauty_wrapper::DenseGraph(object_graph).compute_certificate();
+        auto certificate = compute_certificate(nauty_wrapper::DenseGraph(object_graph));
 
         certificates.insert(std::move(certificate));
     }
@@ -79,7 +79,7 @@ TEST(MimirTests, DataSetsObjectGraphSparseTest)
 
         const auto object_graph = create_object_graph(state, *problem, color_function);
 
-        auto certificate = nauty_wrapper::SparseGraph(object_graph).compute_certificate();
+        auto certificate = compute_certificate(nauty_wrapper::SparseGraph(object_graph));
 
         certificates.insert(std::move(certificate));
     }

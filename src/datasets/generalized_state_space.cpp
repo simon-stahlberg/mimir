@@ -17,13 +17,13 @@
 
 #include "mimir/datasets/generalized_state_space.hpp"
 
-#include "mimir/algorithms/nauty.hpp"
 #include "mimir/common/timers.hpp"
 #include "mimir/datasets/generalized_color_function.hpp"
 #include "mimir/datasets/object_graph.hpp"
 #include "mimir/formalism/ground_action.hpp"
 #include "mimir/formalism/parser.hpp"
 #include "mimir/formalism/problem.hpp"
+#include "mimir/graphs/algorithms/nauty.hpp"
 #include "mimir/graphs/bgl/static_graph_adapters.hpp"
 #include "mimir/graphs/static_graph.hpp"
 #include "mimir/search/algorithms/brfs.hpp"

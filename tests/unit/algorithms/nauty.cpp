@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/algorithms/nauty.hpp"
+#include "mimir/graphs/algorithms/nauty.hpp"
 
 #include <gtest/gtest.h>
 

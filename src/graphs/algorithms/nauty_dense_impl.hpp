@@ -15,14 +15,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SRC_ALGORITHMS_NAUTY_SPARSE_IMPL_HPP_
-#define SRC_ALGORITHMS_NAUTY_SPARSE_IMPL_HPP_
+#ifndef SRC_GRAPHS_ALGORITHMS_NAUTY_DENSE_IMPL_HPP_
+#define SRC_GRAPHS_ALGORITHMS_NAUTY_DENSE_IMPL_HPP_
 
-// Only include nauty_sparse_impl.hpp in a source file to avoid transitive includes of nauty.h.
-#include "mimir/algorithms/nauty.hpp"
+// Only include nauty_impl.hpp in a source file to avoid transitive includes of nauty.h.
+#include "mimir/graphs/algorithms/nauty.hpp"
 #include "mimir/graphs/declarations.hpp"
 
-#include <nausparse.h>
 #include <nauty.h>
 #include <sstream>
 #include <string>
@@ -30,18 +29,17 @@
 
 namespace nauty_wrapper
 {
-class SparseGraphImpl
+class DenseGraphImpl
 {
 private:
     // num_vertices
     size_t n_;
     // vertex capacity
     size_t c_;
-    // Track existing edges to avoid duplicates
-    std::vector<bool> adj_matrix_;
-
+    // blocks_per_vertex
+    size_t m_;
     // The input graph
-    sparsegraph graph_;
+    graph* graph_;
     bool use_default_ptn_;
 
     mimir::graphs::ColorList canon_coloring_;
@@ -49,26 +47,22 @@ private:
     std::vector<int> ptn_;
 
     // The canonical graph
-    sparsegraph canon_graph_;
+    graph* canon_graph_;
 
     // Output streams
     std::stringstream canon_graph_repr_;
     std::stringstream canon_graph_compressed_repr_;
 
-    void copy_graph_data(const sparsegraph& in_graph, sparsegraph& out_graph) const;
-
-    void initialize_graph_data(sparsegraph& out_graph) const;
-
-    void allocate_graph(sparsegraph& out_graph) const;
-    void deallocate_graph(sparsegraph& the_graph) const;
+    void allocate_graph(graph** out_graph);
+    void deallocate_graph(graph* out_graph);
 
 public:
-    explicit SparseGraphImpl(size_t num_vertices);
-    SparseGraphImpl(const SparseGraphImpl& other);
-    SparseGraphImpl& operator=(const SparseGraphImpl& other);
-    SparseGraphImpl(SparseGraphImpl&& other) noexcept;
-    SparseGraphImpl& operator=(SparseGraphImpl&& other) noexcept;
-    ~SparseGraphImpl();
+    explicit DenseGraphImpl(size_t num_vertices);
+    DenseGraphImpl(const DenseGraphImpl& other);
+    DenseGraphImpl& operator=(const DenseGraphImpl& other);
+    DenseGraphImpl(DenseGraphImpl&& other) noexcept;
+    DenseGraphImpl& operator=(DenseGraphImpl&& other) noexcept;
+    ~DenseGraphImpl();
 
     void add_edge(size_t source, size_t target);
 
@@ -79,10 +73,9 @@ public:
     void clear(size_t num_vertices);
 
     bool is_directed() const;
+
     bool has_loop() const;
 };
-
-extern std::ostream& operator<<(std::ostream& out, const sparsegraph& graph);
 
 }
 

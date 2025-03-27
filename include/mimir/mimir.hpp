@@ -127,6 +127,6 @@
  * Algorithms
  */
 
-#include "mimir/algorithms/nauty.hpp"
+#include "mimir/graphs/algorithms/nauty.hpp"
 
 #endif  // MIMIR_MIMIR_HPP_

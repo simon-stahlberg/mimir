@@ -15,12 +15,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_ALGORITHMS_NAUTY_HPP_
-#define MIMIR_ALGORITHMS_NAUTY_HPP_
+#ifndef MIMIR_GRAPHS_ALGORITHMS_NAUTY_HPP_
+#define MIMIR_GRAPHS_ALGORITHMS_NAUTY_HPP_
 
 #include "mimir/common/printers.hpp"
 #include "mimir/graphs/concrete/digraph_vertex_colored.hpp"
 #include "mimir/graphs/declarations.hpp"
+#include "mimir/graphs/graph_interface.hpp"
 
 #include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
@@ -79,9 +80,30 @@ public:
     /// @param num_vertices is the number of vertices in the graph.
     explicit DenseGraph(size_t num_vertices);
 
-    /// @brief Create a `DenseGraph` from a vertex colored `digraph`.
-    /// @param digraph is the vertex colored digraph.
-    explicit DenseGraph(const mimir::graphs::StaticVertexColoredDigraph& digraph);
+    template<mimir::graphs::IsVertexColoredGraph Graph>
+    explicit DenseGraph(const Graph& graph) : DenseGraph(graph.get_num_vertices())
+    {
+        /* Remap indices to 0,1,... indexing schema. */
+        auto remap = mimir::IndexMap<mimir::Index>();
+        for (const auto& vertex : graph.get_vertices())
+        {
+            remap.emplace(vertex.get_index(), remap.size());
+        }
+
+        /* Add edges. */
+        for (const auto& edge : graph.get_edges())
+        {
+            add_edge(remap.at(edge.get_source()), remap.at(edge.get_target()));
+        }
+
+        /* Add vertex coloring. */
+        auto coloring = mimir::graphs::ColorList(graph.get_num_vertices());
+        for (const auto& vertex : graph.get_vertices())
+        {
+            coloring.at(remap.at(vertex.get_index())) = get_color(vertex);
+        }
+        add_vertex_coloring(coloring);
+    }
 
     DenseGraph(const DenseGraph& other);
     DenseGraph& operator=(const DenseGraph& other);
@@ -103,15 +125,14 @@ public:
     /// @param target is the index of the target vertex.
     void add_edge(size_t source, size_t target);
 
-    /// @brief Compute a graph certificate.
-    Certificate compute_certificate() const;
-
     /// @brief Clear the graph data structures by changing the number of vertices and removing all edges.
     /// @param num_vertices is the new number of vertices.
     void clear(size_t num_vertices);
 
     /// @brief Return true iff the graph is directed.
     bool is_directed() const;
+
+    friend Certificate compute_certificate(const DenseGraph& graph);
 };
 
 /// @brief `SparseGraph` encapsulates a sparse graph representation compatible with Nauty.
@@ -128,9 +149,30 @@ public:
     /// @param num_vertices is the number of vertices in the graph.
     explicit SparseGraph(size_t num_vertices);
 
-    /// @brief Create a `SparseGraph` from a vertex colored `digraph`.
-    /// @param digraph is the vertex colored digraph.
-    explicit SparseGraph(const mimir::graphs::StaticVertexColoredDigraph& digraph);
+    template<mimir::graphs::IsVertexColoredGraph Graph>
+    explicit SparseGraph(const Graph& graph) : SparseGraph(graph.get_num_vertices())
+    {
+        /* Remap indices to 0,1,... indexing schema. */
+        auto remap = mimir::IndexMap<mimir::Index>();
+        for (const auto& vertex : graph.get_vertices())
+        {
+            remap.emplace(vertex.get_index(), remap.size());
+        }
+
+        /* Add edges. */
+        for (const auto& edge : graph.get_edges())
+        {
+            add_edge(remap.at(edge.get_source()), remap.at(edge.get_target()));
+        }
+
+        /* Add vertex coloring. */
+        auto coloring = mimir::graphs::ColorList(graph.get_num_vertices());
+        for (const auto& vertex : graph.get_vertices())
+        {
+            coloring.at(remap.at(vertex.get_index())) = get_color(vertex);
+        }
+        add_vertex_coloring(coloring);
+    }
 
     SparseGraph(const SparseGraph& other);
     SparseGraph& operator=(const SparseGraph& other);
@@ -152,16 +194,21 @@ public:
     /// @param target is the index of the target vertex.
     void add_edge(size_t source, size_t target);
 
-    /// @brief Compute a graph certificate.
-    Certificate compute_certificate();
-
     /// @brief Clear the graph data structures by changing the number of vertices and removing all edges.
     /// @param num_vertices is the new number of vertices.
     void clear(size_t num_vertices);
 
     /// @brief Return true iff the graph is directed.
     bool is_directed() const;
+
+    friend Certificate compute_certificate(const SparseGraph& graph);
 };
+
+template<mimir::graphs::IsVertexColoredGraph Graph>
+Certificate compute_certificate(const Graph& graph)
+{
+    return compute_certificate(SparseGraph(graph));
+}
 
 }
 

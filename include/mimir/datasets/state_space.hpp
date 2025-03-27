@@ -18,10 +18,10 @@
 #ifndef MIMIR_DATASETS_STATE_SPACE_HPP_
 #define MIMIR_DATASETS_STATE_SPACE_HPP_
 
-#include "mimir/algorithms/nauty.hpp"
 #include "mimir/common/types.hpp"
 #include "mimir/datasets/declarations.hpp"
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/graphs/algorithms/nauty.hpp"
 #include "mimir/graphs/declarations.hpp"
 #include "mimir/graphs/graph_edges.hpp"
 #include "mimir/graphs/graph_vertices.hpp"
