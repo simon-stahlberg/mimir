@@ -251,7 +251,7 @@ static bool consistent_literals_helper(const LiteralList<P>& literals, const Ass
             continue;  ///< We test nullary literals separately
         }
 
-        const auto negated = literal->is_negated();
+        const auto negated = !literal->get_polarity();
 
         if (negated && arity != 1)
         {
@@ -301,7 +301,7 @@ static bool consistent_literals_helper(const LiteralList<P>& literals, const Ass
             continue;  ///< We test nullary and unary literals separately.
         }
 
-        const auto negated = literal->is_negated();
+        const auto negated = !literal->get_polarity();
 
         if (negated && arity != 2)
         {

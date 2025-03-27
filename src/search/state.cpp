@@ -57,7 +57,7 @@ bool StateImpl::numeric_constraints_hold(const GroundNumericConstraintList& nume
 template<IsFluentOrDerivedTag P>
 bool StateImpl::literal_holds(GroundLiteral<P> literal) const
 {
-    return literal->is_negated() != contains(get_atoms<P>(), literal->get_atom()->get_index());
+    return literal->get_polarity() == contains(get_atoms<P>(), literal->get_atom()->get_index());
 }
 
 template bool StateImpl::literal_holds(GroundLiteral<FluentTag> literal) const;

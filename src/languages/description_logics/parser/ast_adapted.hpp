@@ -34,7 +34,7 @@ BOOST_FUSION_ADAPT_TPL_STRUCT((D),
 BOOST_FUSION_ADAPT_STRUCT(mimir::languages::dl::ast::ConceptBot)
 BOOST_FUSION_ADAPT_STRUCT(mimir::languages::dl::ast::ConceptTop)
 BOOST_FUSION_ADAPT_STRUCT(mimir::languages::dl::ast::ConceptAtomicState, predicate_name)
-BOOST_FUSION_ADAPT_STRUCT(mimir::languages::dl::ast::ConceptAtomicGoal, predicate_name, is_negated)
+BOOST_FUSION_ADAPT_STRUCT(mimir::languages::dl::ast::ConceptAtomicGoal, predicate_name, polarity)
 BOOST_FUSION_ADAPT_STRUCT(mimir::languages::dl::ast::ConceptIntersection, left_concept_or_non_terminal, right_concept_or_non_terminal)
 BOOST_FUSION_ADAPT_STRUCT(mimir::languages::dl::ast::ConceptUnion, left_concept_or_non_terminal, right_concept_or_non_terminal)
 BOOST_FUSION_ADAPT_STRUCT(mimir::languages::dl::ast::ConceptNegation, concept_or_non_terminal)
@@ -46,7 +46,7 @@ BOOST_FUSION_ADAPT_STRUCT(mimir::languages::dl::ast::ConceptNominal, object_name
 
 BOOST_FUSION_ADAPT_STRUCT(mimir::languages::dl::ast::RoleUniversal)
 BOOST_FUSION_ADAPT_STRUCT(mimir::languages::dl::ast::RoleAtomicState, predicate_name)
-BOOST_FUSION_ADAPT_STRUCT(mimir::languages::dl::ast::RoleAtomicGoal, predicate_name, is_negated)
+BOOST_FUSION_ADAPT_STRUCT(mimir::languages::dl::ast::RoleAtomicGoal, predicate_name, polarity)
 BOOST_FUSION_ADAPT_STRUCT(mimir::languages::dl::ast::RoleIntersection, left_role_or_non_terminal, right_role_or_non_terminal)
 BOOST_FUSION_ADAPT_STRUCT(mimir::languages::dl::ast::RoleUnion, left_role_or_non_terminal, right_role_or_non_terminal)
 BOOST_FUSION_ADAPT_STRUCT(mimir::languages::dl::ast::RoleComplement, role_or_non_terminal)

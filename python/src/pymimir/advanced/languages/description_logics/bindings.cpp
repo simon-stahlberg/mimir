@@ -157,14 +157,14 @@ void bind_languages_description_logics(nb::module_& m)
         .def("get_or_create_concept_atomic_goal_static",
              &dl::Repositories::get_or_create_concept_atomic_goal<StaticTag>,
              "predicate"_a,
-             "is_negated"_a,
+             "polarity"_a,
              nb::rv_policy::reference_internal)
         .def("get_or_create_concept_atomic_goal_fluent",
              &dl::Repositories::get_or_create_concept_atomic_goal<FluentTag>,
              "predicate"_a,
-             "is_negated"_a,
+             "polarity"_a,
              nb::rv_policy::reference_internal)
-        .def("get_or_create_concept_atomic_goal_derived", &dl::Repositories::get_or_create_concept_atomic_goal<DerivedTag>, "predicate"_a, "is_negated"_a)
+        .def("get_or_create_concept_atomic_goal_derived", &dl::Repositories::get_or_create_concept_atomic_goal<DerivedTag>, "predicate"_a, "polarity"_a)
 
         .def("get_or_create_role_atomic_state_static",
              &dl::Repositories::get_or_create_role_atomic_state<StaticTag>,
@@ -182,17 +182,17 @@ void bind_languages_description_logics(nb::module_& m)
         .def("get_or_create_role_atomic_goal_static",
              &dl::Repositories::get_or_create_role_atomic_goal<StaticTag>,
              "predicate"_a,
-             "is_negated"_a,
+             "polarity"_a,
              nb::rv_policy::reference_internal)
         .def("get_or_create_role_atomic_goal_fluent",
              &dl::Repositories::get_or_create_role_atomic_goal<FluentTag>,
              "predicate"_a,
-             "is_negated"_a,
+             "polarity"_a,
              nb::rv_policy::reference_internal)
         .def("get_or_create_role_atomic_goal_derived",
              &dl::Repositories::get_or_create_role_atomic_goal<DerivedTag>,
              "predicate"_a,
-             "is_negated"_a,
+             "polarity"_a,
              nb::rv_policy::reference_internal)
         .def("get_or_create_boolean_atomic_state_static",
              &dl::Repositories::get_or_create_boolean_atomic_state<StaticTag>,

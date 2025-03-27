@@ -48,7 +48,14 @@ bool GeneralPolicyImpl::is_terminating() const { throw std::runtime_error("Not i
 GeneralPolicyImpl::UnsolvabilityReason GeneralPolicyImpl::solves(const datasets::StateSpace& state_space,
                                                                  dl::DenotationRepositories& denotation_repositories) const
 {
-    return solves(state_space, state_space->get_graph().get_vertex_indices(), denotation_repositories);
+    auto alive_vertex_indices = graphs::VertexIndexList {};
+    for (const auto& vertex : state_space->get_graph().get_vertices())
+    {
+        if (is_alive(vertex))
+            alive_vertex_indices.push_back(vertex.get_index());
+    }
+
+    return solves(state_space, alive_vertex_indices, denotation_repositories);
 }
 
 GeneralPolicyImpl::UnsolvabilityReason GeneralPolicyImpl::solves(const datasets::StateSpace& state_space,
@@ -61,7 +68,14 @@ GeneralPolicyImpl::UnsolvabilityReason GeneralPolicyImpl::solves(const datasets:
 GeneralPolicyImpl::UnsolvabilityReason GeneralPolicyImpl::solves(const datasets::GeneralizedStateSpace& generalized_state_space,
                                                                  dl::DenotationRepositories& denotation_repositories) const
 {
-    return solves(generalized_state_space, generalized_state_space->get_graph().get_vertex_indices(), denotation_repositories);
+    auto alive_vertex_indices = graphs::VertexIndexList {};
+    for (const auto& vertex : generalized_state_space->get_graph().get_vertices())
+    {
+        if (is_alive(generalized_state_space->get_problem_vertex(vertex)))
+            alive_vertex_indices.push_back(vertex.get_index());
+    }
+
+    return solves(generalized_state_space, alive_vertex_indices, denotation_repositories);
 }
 
 GeneralPolicyImpl::UnsolvabilityReason GeneralPolicyImpl::solves(const datasets::GeneralizedStateSpace& generalized_state_space,

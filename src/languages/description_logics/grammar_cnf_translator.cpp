@@ -277,15 +277,15 @@ void ToCNFVisitor::visit(ConceptAtomicState<DerivedTag> constructor)
 }
 void ToCNFVisitor::visit(ConceptAtomicGoal<StaticTag> constructor)
 {
-    m_result = m_repositories.get_or_create_concept_atomic_goal(constructor->get_predicate(), constructor->is_negated());
+    m_result = m_repositories.get_or_create_concept_atomic_goal(constructor->get_predicate(), constructor->get_polarity());
 }
 void ToCNFVisitor::visit(ConceptAtomicGoal<FluentTag> constructor)
 {
-    m_result = m_repositories.get_or_create_concept_atomic_goal(constructor->get_predicate(), constructor->is_negated());
+    m_result = m_repositories.get_or_create_concept_atomic_goal(constructor->get_predicate(), constructor->get_polarity());
 }
 void ToCNFVisitor::visit(ConceptAtomicGoal<DerivedTag> constructor)
 {
-    m_result = m_repositories.get_or_create_concept_atomic_goal(constructor->get_predicate(), constructor->is_negated());
+    m_result = m_repositories.get_or_create_concept_atomic_goal(constructor->get_predicate(), constructor->get_polarity());
 }
 void ToCNFVisitor::visit(ConceptIntersection constructor)
 {
@@ -355,15 +355,15 @@ void ToCNFVisitor::visit(RoleAtomicState<FluentTag> constructor) { m_result = m_
 void ToCNFVisitor::visit(RoleAtomicState<DerivedTag> constructor) { m_result = m_repositories.get_or_create_role_atomic_state(constructor->get_predicate()); }
 void ToCNFVisitor::visit(RoleAtomicGoal<StaticTag> constructor)
 {
-    m_result = m_repositories.get_or_create_role_atomic_goal(constructor->get_predicate(), constructor->is_negated());
+    m_result = m_repositories.get_or_create_role_atomic_goal(constructor->get_predicate(), constructor->get_polarity());
 }
 void ToCNFVisitor::visit(RoleAtomicGoal<FluentTag> constructor)
 {
-    m_result = m_repositories.get_or_create_role_atomic_goal(constructor->get_predicate(), constructor->is_negated());
+    m_result = m_repositories.get_or_create_role_atomic_goal(constructor->get_predicate(), constructor->get_polarity());
 }
 void ToCNFVisitor::visit(RoleAtomicGoal<DerivedTag> constructor)
 {
-    m_result = m_repositories.get_or_create_role_atomic_goal(constructor->get_predicate(), constructor->is_negated());
+    m_result = m_repositories.get_or_create_role_atomic_goal(constructor->get_predicate(), constructor->get_polarity());
 }
 void ToCNFVisitor::visit(RoleIntersection constructor)
 {

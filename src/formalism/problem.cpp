@@ -132,7 +132,7 @@ ProblemImpl::ProblemImpl(Index index,
 
     for (const auto& literal : get_initial_literals<FluentTag>())
     {
-        if (literal->is_negated())
+        if (!literal->get_polarity())
         {
             throw std::runtime_error("Negative literals in the initial state is not supported.");
         }
@@ -140,7 +140,7 @@ ProblemImpl::ProblemImpl(Index index,
 
     for (const auto& literal : get_initial_literals<StaticTag>())
     {
-        if (literal->is_negated())
+        if (!literal->get_polarity())
         {
             throw std::runtime_error("Negative literals in the initial state is not supported.");
         }
@@ -148,7 +148,7 @@ ProblemImpl::ProblemImpl(Index index,
 
     for (const auto& axiom : get_problem_and_domain_axioms())
     {
-        if (axiom->get_literal()->is_negated())
+        if (!axiom->get_literal()->get_polarity())
         {
             throw std::runtime_error("Negative literals in axiom heads is not supported.");
         }
@@ -290,7 +290,7 @@ bool ProblemImpl::static_goal_holds() const { return m_details.goal.m_static_goa
 
 bool ProblemImpl::static_literal_holds(const GroundLiteral<StaticTag> literal) const
 {
-    return (literal->is_negated() != get_static_initial_positive_atoms_bitset().get(literal->get_atom()->get_index()));
+    return (literal->get_polarity() != get_static_initial_positive_atoms_bitset().get(literal->get_atom()->get_index()));
 }
 
 template<IsStaticOrFluentOrDerivedTag P>
@@ -428,13 +428,13 @@ static void ground_and_fill_bitset(ProblemImpl& problem,
     {
         const auto grounded_literal = problem.ground(literal, binding);
 
-        if (grounded_literal->is_negated())
+        if (grounded_literal->get_polarity())
         {
-            ref_negative_bitset.set(grounded_literal->get_atom()->get_index());
+            ref_positive_bitset.set(grounded_literal->get_atom()->get_index());
         }
         else
         {
-            ref_positive_bitset.set(grounded_literal->get_atom()->get_index());
+            ref_negative_bitset.set(grounded_literal->get_atom()->get_index());
         }
     }
 }
@@ -466,13 +466,13 @@ static void ground_and_fill_vector(ProblemImpl& problem,
     {
         const auto grounded_literal = problem.ground(literal, binding);
 
-        if (grounded_literal->is_negated())
+        if (grounded_literal->get_polarity())
         {
-            ref_negative_indices.push_back(grounded_literal->get_atom()->get_index());
+            ref_positive_indices.push_back(grounded_literal->get_atom()->get_index());
         }
         else
         {
-            ref_positive_indices.push_back(grounded_literal->get_atom()->get_index());
+            ref_negative_indices.push_back(grounded_literal->get_atom()->get_index());
         }
     }
     std::sort(ref_positive_indices.begin(), ref_positive_indices.end());
@@ -502,9 +502,9 @@ GroundLiteral<P> ProblemImpl::ground(Literal<P> literal, const ObjectList& bindi
     auto& grounding_tables = boost::hana::at_key(m_details.grounding.grounding_tables, boost::hana::type<GroundLiteral<P>> {});
 
     /* 2. Access the context-independent literal grounding table */
-    const auto is_negated = literal->is_negated();
+    const auto polarity = literal->get_polarity();
     const auto predicate_index = literal->get_atom()->get_predicate()->get_index();
-    auto& polarity_grounding_tables = grounding_tables[is_negated];
+    auto& polarity_grounding_tables = grounding_tables[polarity];
     if (predicate_index >= polarity_grounding_tables.size())
     {
         polarity_grounding_tables.resize(predicate_index + 1);
@@ -527,7 +527,7 @@ GroundLiteral<P> ProblemImpl::ground(Literal<P> literal, const ObjectList& bindi
     /* 4. Ground the literal */
 
     auto grounded_atom = m_repositories.get_or_create_ground_atom(literal->get_atom()->get_predicate(), grounded_terms);
-    auto grounded_literal = m_repositories.get_or_create_ground_literal(literal->is_negated(), grounded_atom);
+    auto grounded_literal = m_repositories.get_or_create_ground_literal(literal->get_polarity(), grounded_atom);
 
     /* 5. Insert to grounding_table table */
 
@@ -1152,8 +1152,8 @@ GroundAxiom ProblemImpl::ground(Axiom axiom, ObjectList binding)
     const auto grounded_literal = is_complete_binding_relevant_for_head ?
                                       ground(axiom->get_literal(), binding) :
                                       ground(axiom->get_literal(), ObjectList(binding.begin(), binding.begin() + effect_literal_arity));
-    assert(!grounded_literal->is_negated());
-    axiom_builder.get_derived_effect().is_negated = false;
+    assert(grounded_literal->get_polarity());
+    axiom_builder.get_derived_effect().polarity = true;
     axiom_builder.get_derived_effect().atom_index = grounded_literal->get_atom()->get_index();
 
     const auto [iter, inserted] = m_details.grounding.ground_axioms.insert(axiom_builder);
@@ -1242,7 +1242,7 @@ problem::InitialDetails::InitialDetails(const ProblemImpl& problem) :
 {
     for (const auto& literal : problem.get_initial_literals<StaticTag>())
     {
-        if (!literal->is_negated())
+        if (literal->get_polarity())
         {
             positive_static_initial_atoms_bitset.set(literal->get_atom()->get_index());
         }
@@ -1311,7 +1311,7 @@ problem::GoalDetails::GoalDetails(const ProblemImpl& problem, const InitialDetai
     m_static_goal_holds = true;
     for (const auto& literal : problem.get_goal_condition<StaticTag>())
     {
-        if (literal->is_negated() == initial.positive_static_initial_atoms_bitset.get(literal->get_atom()->get_index()))
+        if (literal->get_polarity() != initial.positive_static_initial_atoms_bitset.get(literal->get_atom()->get_index()))
         {
             m_static_goal_holds = false;
         }
@@ -1328,13 +1328,13 @@ problem::GoalDetails::GoalDetails(const ProblemImpl& problem, const InitialDetai
 
                               for (const auto& literal : value)
                               {
-                                  if (literal->is_negated())
+                                  if (literal->get_polarity())
                                   {
-                                      boost::hana::at_key(negative_goal_atoms_bitset, key).set(literal->get_atom()->get_index());
+                                      boost::hana::at_key(positive_goal_atoms_bitset, key).set(literal->get_atom()->get_index());
                                   }
                                   else
                                   {
-                                      boost::hana::at_key(positive_goal_atoms_bitset, key).set(literal->get_atom()->get_index());
+                                      boost::hana::at_key(negative_goal_atoms_bitset, key).set(literal->get_atom()->get_index());
                                   }
                               }
 

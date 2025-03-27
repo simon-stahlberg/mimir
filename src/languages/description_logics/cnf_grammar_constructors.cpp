@@ -252,11 +252,11 @@ template class ConceptAtomicStateImpl<DerivedTag>;
  */
 
 template<IsStaticOrFluentOrDerivedTag P>
-ConceptAtomicGoalImpl<P>::ConceptAtomicGoalImpl(Index index, Predicate<P> predicate, bool is_negated) :
+ConceptAtomicGoalImpl<P>::ConceptAtomicGoalImpl(Index index, Predicate<P> predicate, bool polarity) :
     m_index(index),
 
     m_predicate(predicate),
-    m_is_negated(is_negated)
+    m_polarity(polarity)
 {
 }
 
@@ -287,9 +287,9 @@ Predicate<P> ConceptAtomicGoalImpl<P>::get_predicate() const
 }
 
 template<IsStaticOrFluentOrDerivedTag P>
-bool ConceptAtomicGoalImpl<P>::is_negated() const
+bool ConceptAtomicGoalImpl<P>::get_polarity() const
 {
-    return m_is_negated;
+    return m_polarity;
 }
 
 template class ConceptAtomicGoalImpl<StaticTag>;
@@ -559,11 +559,11 @@ template class RoleAtomicStateImpl<DerivedTag>;
  */
 
 template<IsStaticOrFluentOrDerivedTag P>
-RoleAtomicGoalImpl<P>::RoleAtomicGoalImpl(Index index, Predicate<P> predicate, bool is_negated) :
+RoleAtomicGoalImpl<P>::RoleAtomicGoalImpl(Index index, Predicate<P> predicate, bool polarity) :
     m_index(index),
 
     m_predicate(predicate),
-    m_is_negated(is_negated)
+    m_polarity(polarity)
 {
 }
 
@@ -594,9 +594,9 @@ Predicate<P> RoleAtomicGoalImpl<P>::get_predicate() const
 }
 
 template<IsStaticOrFluentOrDerivedTag P>
-bool RoleAtomicGoalImpl<P>::is_negated() const
+bool RoleAtomicGoalImpl<P>::get_polarity() const
 {
-    return m_is_negated;
+    return m_polarity;
 }
 
 template class RoleAtomicGoalImpl<StaticTag>;

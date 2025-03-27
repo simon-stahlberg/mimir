@@ -32,7 +32,7 @@ namespace mimir::formalism
 {
 struct GroundEffectDerivedLiteral
 {
-    bool is_negated = false;
+    bool polarity = false;
     Index atom_index = Index(0);
 };
 

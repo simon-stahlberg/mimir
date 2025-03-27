@@ -26,12 +26,7 @@ namespace mimir::languages::general_policies
 
 class IVisitor
 {
-protected:
-    dl::IVisitor& m_constructor_visitor;
-
 public:
-    explicit IVisitor(dl::IVisitor& constructor_visitor);
-
     virtual ~IVisitor() = default;
 
     virtual void visit(PositiveBooleanCondition effect) = 0;
@@ -54,8 +49,6 @@ public:
     virtual void visit(Rule rule) = 0;
 
     virtual void visit(GeneralPolicy policy) = 0;
-
-    dl::IVisitor& get_constructor_visitor();
 };
 }
 

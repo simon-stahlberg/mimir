@@ -28,7 +28,7 @@ static LiteralList<P> filter_positive_literals(const LiteralList<P>& literals)
     auto positive_literals = LiteralList<P> {};
     for (const auto& literal : literals)
     {
-        if (!literal->is_negated())
+        if (literal->get_polarity())
         {
             positive_literals.push_back(literal);
         }
@@ -88,14 +88,12 @@ AxiomList DeleteRelaxTranslator::translate_level_2(const AxiomList& axioms, Repo
 template<IsStaticOrFluentOrDerivedTag P>
 Literal<P> DeleteRelaxTranslator::translate_level_2(Literal<P> literal, Repositories& repositories)
 {
-    if (literal->is_negated())
+    if (!literal->get_polarity())
     {
         return nullptr;
     }
 
-    const auto atom = this->translate_level_0(literal->get_atom(), repositories);
-
-    return repositories.get_or_create_literal(false, atom);
+    return repositories.get_or_create_literal(true, this->translate_level_0(literal->get_atom(), repositories));
 }
 
 template Literal<StaticTag> DeleteRelaxTranslator::translate_level_2(Literal<StaticTag> literal, Repositories& repositories);

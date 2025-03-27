@@ -274,15 +274,15 @@ void CopyVisitor::visit(ConceptAtomicState<DerivedTag> constructor)
 }
 void CopyVisitor::visit(ConceptAtomicGoal<StaticTag> constructor)
 {
-    m_result = m_repositories.get_or_create_concept_atomic_goal(constructor->get_predicate(), constructor->is_negated());
+    m_result = m_repositories.get_or_create_concept_atomic_goal(constructor->get_predicate(), constructor->get_polarity());
 }
 void CopyVisitor::visit(ConceptAtomicGoal<FluentTag> constructor)
 {
-    m_result = m_repositories.get_or_create_concept_atomic_goal(constructor->get_predicate(), constructor->is_negated());
+    m_result = m_repositories.get_or_create_concept_atomic_goal(constructor->get_predicate(), constructor->get_polarity());
 }
 void CopyVisitor::visit(ConceptAtomicGoal<DerivedTag> constructor)
 {
-    m_result = m_repositories.get_or_create_concept_atomic_goal(constructor->get_predicate(), constructor->is_negated());
+    m_result = m_repositories.get_or_create_concept_atomic_goal(constructor->get_predicate(), constructor->get_polarity());
 }
 void CopyVisitor::visit(ConceptIntersection constructor)
 {
@@ -350,15 +350,15 @@ void CopyVisitor::visit(RoleAtomicState<FluentTag> constructor) { m_result = m_r
 void CopyVisitor::visit(RoleAtomicState<DerivedTag> constructor) { m_result = m_repositories.get_or_create_role_atomic_state(constructor->get_predicate()); }
 void CopyVisitor::visit(RoleAtomicGoal<StaticTag> constructor)
 {
-    m_result = m_repositories.get_or_create_role_atomic_goal(constructor->get_predicate(), constructor->is_negated());
+    m_result = m_repositories.get_or_create_role_atomic_goal(constructor->get_predicate(), constructor->get_polarity());
 }
 void CopyVisitor::visit(RoleAtomicGoal<FluentTag> constructor)
 {
-    m_result = m_repositories.get_or_create_role_atomic_goal(constructor->get_predicate(), constructor->is_negated());
+    m_result = m_repositories.get_or_create_role_atomic_goal(constructor->get_predicate(), constructor->get_polarity());
 }
 void CopyVisitor::visit(RoleAtomicGoal<DerivedTag> constructor)
 {
-    m_result = m_repositories.get_or_create_role_atomic_goal(constructor->get_predicate(), constructor->is_negated());
+    m_result = m_repositories.get_or_create_role_atomic_goal(constructor->get_predicate(), constructor->get_polarity());
 }
 void CopyVisitor::visit(RoleIntersection constructor)
 {

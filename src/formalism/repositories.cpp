@@ -32,7 +32,7 @@ static GroundLiteralList<P> ground_nullary_literals(const LiteralList<P>& litera
             continue;
 
         ground_literals.push_back(
-            pddl_repositories.get_or_create_ground_literal(literal->is_negated(),
+            pddl_repositories.get_or_create_ground_literal(literal->get_polarity(),
                                                            pddl_repositories.get_or_create_ground_atom(literal->get_atom()->get_predicate(), {})));
     }
 
@@ -89,24 +89,24 @@ template GroundAtom<FluentTag> Repositories::get_or_create_ground_atom(Predicate
 template GroundAtom<DerivedTag> Repositories::get_or_create_ground_atom(Predicate<DerivedTag> predicate, ObjectList ObjectList);
 
 template<IsStaticOrFluentOrDerivedTag P>
-Literal<P> Repositories::get_or_create_literal(bool is_negated, Atom<P> atom)
+Literal<P> Repositories::get_or_create_literal(bool polarity, Atom<P> atom)
 {
-    return boost::hana::at_key(m_repositories, boost::hana::type<LiteralImpl<P>> {}).get_or_create(is_negated, std::move(atom));
+    return boost::hana::at_key(m_repositories, boost::hana::type<LiteralImpl<P>> {}).get_or_create(polarity, std::move(atom));
 }
 
-template Literal<StaticTag> Repositories::get_or_create_literal(bool is_negated, Atom<StaticTag> atom);
-template Literal<FluentTag> Repositories::get_or_create_literal(bool is_negated, Atom<FluentTag> atom);
-template Literal<DerivedTag> Repositories::get_or_create_literal(bool is_negated, Atom<DerivedTag> atom);
+template Literal<StaticTag> Repositories::get_or_create_literal(bool polarity, Atom<StaticTag> atom);
+template Literal<FluentTag> Repositories::get_or_create_literal(bool polarity, Atom<FluentTag> atom);
+template Literal<DerivedTag> Repositories::get_or_create_literal(bool polarity, Atom<DerivedTag> atom);
 
 template<IsStaticOrFluentOrDerivedTag P>
-GroundLiteral<P> Repositories::get_or_create_ground_literal(bool is_negated, GroundAtom<P> atom)
+GroundLiteral<P> Repositories::get_or_create_ground_literal(bool polarity, GroundAtom<P> atom)
 {
-    return boost::hana::at_key(m_repositories, boost::hana::type<GroundLiteralImpl<P>> {}).get_or_create(is_negated, std::move(atom));
+    return boost::hana::at_key(m_repositories, boost::hana::type<GroundLiteralImpl<P>> {}).get_or_create(polarity, std::move(atom));
 }
 
-template GroundLiteral<StaticTag> Repositories::get_or_create_ground_literal(bool is_negated, GroundAtom<StaticTag> atom);
-template GroundLiteral<FluentTag> Repositories::get_or_create_ground_literal(bool is_negated, GroundAtom<FluentTag> atom);
-template GroundLiteral<DerivedTag> Repositories::get_or_create_ground_literal(bool is_negated, GroundAtom<DerivedTag> atom);
+template GroundLiteral<StaticTag> Repositories::get_or_create_ground_literal(bool polarity, GroundAtom<StaticTag> atom);
+template GroundLiteral<FluentTag> Repositories::get_or_create_ground_literal(bool polarity, GroundAtom<FluentTag> atom);
+template GroundLiteral<DerivedTag> Repositories::get_or_create_ground_literal(bool polarity, GroundAtom<DerivedTag> atom);
 
 template<IsStaticOrFluentOrDerivedTag P>
 Predicate<P> Repositories::get_or_create_predicate(std::string name, VariableList parameters)

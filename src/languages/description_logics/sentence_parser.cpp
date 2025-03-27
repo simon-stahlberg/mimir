@@ -117,7 +117,7 @@ static Constructor<ConceptTag> parse(const dl::ast::ConceptAtomicGoal& node, con
         {
             throw std::runtime_error("Cannot construct ConceptAtomicGoal from predicates with arity != 1.");
         }
-        return ref_repositories.template get_or_create_concept_atomic_goal<StaticTag>(predicate, node.is_negated);
+        return ref_repositories.template get_or_create_concept_atomic_goal<StaticTag>(predicate, node.polarity);
     }
     else if (domain.get_name_to_predicate<FluentTag>().count(node.predicate_name))
     {
@@ -126,7 +126,7 @@ static Constructor<ConceptTag> parse(const dl::ast::ConceptAtomicGoal& node, con
         {
             throw std::runtime_error("Cannot construct ConceptAtomicGoal from predicates with arity != 1.");
         }
-        return ref_repositories.template get_or_create_concept_atomic_goal<FluentTag>(predicate, node.is_negated);
+        return ref_repositories.template get_or_create_concept_atomic_goal<FluentTag>(predicate, node.polarity);
     }
     else if (domain.get_name_to_predicate<DerivedTag>().count(node.predicate_name))
     {
@@ -135,7 +135,7 @@ static Constructor<ConceptTag> parse(const dl::ast::ConceptAtomicGoal& node, con
         {
             throw std::runtime_error("Cannot construct ConceptAtomicGoal from predicates with arity != 1.");
         }
-        return ref_repositories.template get_or_create_concept_atomic_goal<DerivedTag>(predicate, node.is_negated);
+        return ref_repositories.template get_or_create_concept_atomic_goal<DerivedTag>(predicate, node.polarity);
     }
     else
     {
@@ -243,7 +243,7 @@ static Constructor<RoleTag> parse(const dl::ast::RoleAtomicGoal& node, const Dom
         {
             throw std::runtime_error("Cannot construct RoleAtomicGoal from predicates with arity != 2.");
         }
-        return ref_repositories.template get_or_create_role_atomic_goal<StaticTag>(predicate, node.is_negated);
+        return ref_repositories.template get_or_create_role_atomic_goal<StaticTag>(predicate, node.polarity);
     }
     else if (domain.get_name_to_predicate<FluentTag>().count(node.predicate_name))
     {
@@ -252,7 +252,7 @@ static Constructor<RoleTag> parse(const dl::ast::RoleAtomicGoal& node, const Dom
         {
             throw std::runtime_error("Cannot construct RoleAtomicGoal from predicates with arity != 2.");
         }
-        return ref_repositories.template get_or_create_role_atomic_goal<FluentTag>(predicate, node.is_negated);
+        return ref_repositories.template get_or_create_role_atomic_goal<FluentTag>(predicate, node.polarity);
     }
     else if (domain.get_name_to_predicate<DerivedTag>().count(node.predicate_name))
     {
@@ -261,7 +261,7 @@ static Constructor<RoleTag> parse(const dl::ast::RoleAtomicGoal& node, const Dom
         {
             throw std::runtime_error("Cannot construct RoleAtomicGoal from predicates with arity != 2.");
         }
-        return ref_repositories.template get_or_create_role_atomic_goal<DerivedTag>(predicate, node.is_negated);
+        return ref_repositories.template get_or_create_role_atomic_goal<DerivedTag>(predicate, node.polarity);
     }
     else
     {

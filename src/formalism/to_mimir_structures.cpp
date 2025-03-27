@@ -328,7 +328,7 @@ StaticOrFluentOrDerivedLiteral ToMimirStructures::translate_lifted(loki::Literal
 {
     auto static_or_fluent_or_derived_atom = translate_lifted(literal->get_atom(), repositories);
 
-    return std::visit([&](auto&& arg) -> StaticOrFluentOrDerivedLiteral { return repositories.get_or_create_literal(literal->is_negated(), arg); },
+    return std::visit([&](auto&& arg) -> StaticOrFluentOrDerivedLiteral { return repositories.get_or_create_literal(literal->get_polarity(), arg); },
                       static_or_fluent_or_derived_atom);
 }
 
@@ -681,7 +681,7 @@ StaticOrFluentOrDerivedGroundLiteral ToMimirStructures::translate_grounded(loki:
     auto static_or_fluent_or_derived_ground_atom = translate_grounded(literal->get_atom(), repositories);
 
     return std::visit([&literal, &repositories](auto&& arg) -> StaticOrFluentOrDerivedGroundLiteral
-                      { return repositories.get_or_create_ground_literal(literal->is_negated(), arg); },
+                      { return repositories.get_or_create_ground_literal(literal->get_polarity(), arg); },
                       static_or_fluent_or_derived_ground_atom);
 }
 

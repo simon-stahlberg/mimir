@@ -28,12 +28,12 @@ class GroundLiteralImpl
 {
 private:
     Index m_index;
-    bool m_is_negated;
+    bool m_polarity;
     GroundAtom<P> m_atom;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    GroundLiteralImpl(Index index, bool is_negated, GroundAtom<P> atom);
+    GroundLiteralImpl(Index index, bool polarity, GroundAtom<P> atom);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -50,14 +50,14 @@ public:
     GroundLiteralImpl& operator=(GroundLiteralImpl&& other) = default;
 
     Index get_index() const;
-    bool is_negated() const;
+    bool get_polarity() const;
     GroundAtom<P> get_atom() const;
     Literal<P> lift(const TermList& terms, Repositories& pddl_repositories) const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(is_negated(), get_atom()); }
+    auto identifying_members() const { return std::tuple(get_polarity(), get_atom()); }
 };
 
 template<IsStaticOrFluentOrDerivedTag P>

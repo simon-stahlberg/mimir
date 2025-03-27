@@ -78,19 +78,19 @@ void GeneratorVisitor::visit(ConceptAtomicGoal<StaticTag> constructor)
 {
     if (m_complexity == 1)
         boost::hana::at_key(m_generated, boost::hana::type<ConceptTag> {})
-            .push_back(m_repositories.get_or_create_concept_atomic_goal(constructor->get_predicate(), constructor->is_negated()));
+            .push_back(m_repositories.get_or_create_concept_atomic_goal(constructor->get_predicate(), constructor->get_polarity()));
 }
 void GeneratorVisitor::visit(ConceptAtomicGoal<FluentTag> constructor)
 {
     if (m_complexity == 1)
         boost::hana::at_key(m_generated, boost::hana::type<ConceptTag> {})
-            .push_back(m_repositories.get_or_create_concept_atomic_goal(constructor->get_predicate(), constructor->is_negated()));
+            .push_back(m_repositories.get_or_create_concept_atomic_goal(constructor->get_predicate(), constructor->get_polarity()));
 }
 void GeneratorVisitor::visit(ConceptAtomicGoal<DerivedTag> constructor)
 {
     if (m_complexity == 1)
         boost::hana::at_key(m_generated, boost::hana::type<ConceptTag> {})
-            .push_back(m_repositories.get_or_create_concept_atomic_goal(constructor->get_predicate(), constructor->is_negated()));
+            .push_back(m_repositories.get_or_create_concept_atomic_goal(constructor->get_predicate(), constructor->get_polarity()));
 }
 void GeneratorVisitor::visit(ConceptNominal constructor)
 {
@@ -267,19 +267,19 @@ void GeneratorVisitor::visit(RoleAtomicGoal<StaticTag> constructor)
 {
     if (m_complexity == 1)
         boost::hana::at_key(m_generated, boost::hana::type<RoleTag> {})
-            .push_back(m_repositories.get_or_create_role_atomic_goal(constructor->get_predicate(), constructor->is_negated()));
+            .push_back(m_repositories.get_or_create_role_atomic_goal(constructor->get_predicate(), constructor->get_polarity()));
 }
 void GeneratorVisitor::visit(RoleAtomicGoal<FluentTag> constructor)
 {
     if (m_complexity == 1)
         boost::hana::at_key(m_generated, boost::hana::type<RoleTag> {})
-            .push_back(m_repositories.get_or_create_role_atomic_goal(constructor->get_predicate(), constructor->is_negated()));
+            .push_back(m_repositories.get_or_create_role_atomic_goal(constructor->get_predicate(), constructor->get_polarity()));
 }
 void GeneratorVisitor::visit(RoleAtomicGoal<DerivedTag> constructor)
 {
     if (m_complexity == 1)
         boost::hana::at_key(m_generated, boost::hana::type<RoleTag> {})
-            .push_back(m_repositories.get_or_create_role_atomic_goal(constructor->get_predicate(), constructor->is_negated()));
+            .push_back(m_repositories.get_or_create_role_atomic_goal(constructor->get_predicate(), constructor->get_polarity()));
 }
 void GeneratorVisitor::visit(RoleIntersection constructor)
 {

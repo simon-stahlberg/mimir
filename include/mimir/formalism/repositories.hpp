@@ -203,10 +203,10 @@ public:
     GroundAtom<P> get_or_create_ground_atom(Predicate<P> predicate, ObjectList objects);
 
     template<IsStaticOrFluentOrDerivedTag P>
-    Literal<P> get_or_create_literal(bool is_negated, Atom<P> atom);
+    Literal<P> get_or_create_literal(bool polarity, Atom<P> atom);
 
     template<IsStaticOrFluentOrDerivedTag P>
-    GroundLiteral<P> get_or_create_ground_literal(bool is_negated, GroundAtom<P> atom);
+    GroundLiteral<P> get_or_create_ground_literal(bool polarity, GroundAtom<P> atom);
 
     template<IsStaticOrFluentOrDerivedTag P>
     Predicate<P> get_or_create_predicate(std::string name, VariableList parameters);

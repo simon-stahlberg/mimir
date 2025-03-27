@@ -48,13 +48,13 @@ TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarParseTest)
         <role_start> ::= <role>
         <concept_gripper_state> ::= @concept_atomic_state "gripper"
         <concept_at-robby_state> ::= @concept_atomic_state "at-robby"
-        <concept_at-robby_goal> ::= @concept_atomic_goal "at-robby" false
+        <concept_at-robby_goal> ::= @concept_atomic_goal "at-robby" true
         <concept_intersection> ::= @concept_intersection <concept_at-robby_state> <concept_at-robby_goal>
         <concept_union> ::= @concept_union <concept> <concept>
         <concept_composite> ::= @concept_intersection @concept_intersection @concept_atomic_state "at-robby" @concept_atomic_goal "at-robby" false  @concept_atomic_state "at-robby"
         <concept> ::= <concept_at-robby_state> | <concept_at-robby_goal> | <concept_intersection> | <concept_composite> | <concept_gripper_state> | <concept_union>
         <role_at_state> ::= @role_atomic_state "at"
-        <role_at_goal> ::= @role_atomic_goal "at" false
+        <role_at_goal> ::= @role_atomic_goal "at" true
         <role_intersection> ::= @role_intersection <role> <role_at_goal>
         <role> ::= <role_at_state> | <role_at_goal> | <role_intersection>
 )");

@@ -25,7 +25,7 @@
 namespace mimir::formalism
 {
 template<IsStaticOrFluentOrDerivedTag P>
-GroundLiteralImpl<P>::GroundLiteralImpl(Index index, bool is_negated, GroundAtom<P> atom) : m_index(index), m_is_negated(is_negated), m_atom(std::move(atom))
+GroundLiteralImpl<P>::GroundLiteralImpl(Index index, bool polarity, GroundAtom<P> atom) : m_index(index), m_polarity(polarity), m_atom(std::move(atom))
 {
 }
 
@@ -36,9 +36,9 @@ Index GroundLiteralImpl<P>::get_index() const
 }
 
 template<IsStaticOrFluentOrDerivedTag P>
-bool GroundLiteralImpl<P>::is_negated() const
+bool GroundLiteralImpl<P>::get_polarity() const
 {
-    return m_is_negated;
+    return m_polarity;
 }
 
 template<IsStaticOrFluentOrDerivedTag P>
@@ -50,7 +50,7 @@ GroundAtom<P> GroundLiteralImpl<P>::get_atom() const
 template<IsStaticOrFluentOrDerivedTag P>
 Literal<P> GroundLiteralImpl<P>::lift(const TermList& terms, Repositories& pddl_repositories) const
 {
-    return pddl_repositories.get_or_create_literal(is_negated(), m_atom->lift(terms, pddl_repositories));
+    return pddl_repositories.get_or_create_literal(get_polarity(), m_atom->lift(terms, pddl_repositories));
 }
 
 template class GroundLiteralImpl<StaticTag>;

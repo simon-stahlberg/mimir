@@ -664,7 +664,7 @@ template void write(const GroundFunctionImpl<AuxiliaryTag>& element, AddressForm
 template<Formatter T, IsStaticOrFluentOrDerivedTag P>
 void write(const GroundLiteralImpl<P>& element, T formatter, std::ostream& out)
 {
-    if (element.is_negated())
+    if (!element.get_polarity())
     {
         out << "(not ";
         write(*element.get_atom(), formatter, out);
@@ -686,7 +686,7 @@ template void write(const GroundLiteralImpl<DerivedTag>& element, AddressFormatt
 template<Formatter T, IsStaticOrFluentOrDerivedTag P>
 void write(const LiteralImpl<P>& element, T formatter, std::ostream& out)
 {
-    if (element.is_negated())
+    if (!element.get_polarity())
     {
         out << "(not ";
         write(*element.get_atom(), formatter, out);

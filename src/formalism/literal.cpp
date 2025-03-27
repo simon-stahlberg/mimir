@@ -24,7 +24,7 @@ namespace mimir::formalism
 {
 
 template<IsStaticOrFluentOrDerivedTag P>
-LiteralImpl<P>::LiteralImpl(Index index, bool is_negated, Atom<P> atom) : m_index(index), m_is_negated(is_negated), m_atom(std::move(atom))
+LiteralImpl<P>::LiteralImpl(Index index, bool polarity, Atom<P> atom) : m_index(index), m_polarity(polarity), m_atom(std::move(atom))
 {
 }
 
@@ -35,9 +35,9 @@ Index LiteralImpl<P>::get_index() const
 }
 
 template<IsStaticOrFluentOrDerivedTag P>
-bool LiteralImpl<P>::is_negated() const
+bool LiteralImpl<P>::get_polarity() const
 {
-    return m_is_negated;
+    return m_polarity;
 }
 
 template<IsStaticOrFluentOrDerivedTag P>

@@ -408,12 +408,12 @@ protected:
     template<IsStaticOrFluentOrDerivedTag P>
     Literal<P> translate_level_2(Literal<P> literal, Repositories& repositories)
     {
-        return repositories.get_or_create_literal(literal->is_negated(), this->translate_level_0(literal->get_atom(), repositories));
+        return repositories.get_or_create_literal(literal->get_polarity(), this->translate_level_0(literal->get_atom(), repositories));
     }
     template<IsStaticOrFluentOrDerivedTag P>
     GroundLiteral<P> translate_level_2(GroundLiteral<P> literal, Repositories& repositories)
     {
-        return repositories.get_or_create_ground_literal(literal->is_negated(), this->translate_level_0(literal->get_atom(), repositories));
+        return repositories.get_or_create_ground_literal(literal->get_polarity(), this->translate_level_0(literal->get_atom(), repositories));
     }
     template<IsStaticOrFluentOrAuxiliaryTag F>
     GroundFunctionValue<F> translate_level_2(GroundFunctionValue<F> function_value, Repositories& repositories)

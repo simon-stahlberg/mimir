@@ -56,7 +56,7 @@ void filter_ground_atoms(const GroundLiteralList<P>& literals, bool polarity, Gr
 
     for (const auto& literal : literals)
     {
-        if (literal->is_negated() != polarity)
+        if (literal->get_polarity() != polarity)
         {
             out_ground_atoms.push_back(literal->get_atom());
         }

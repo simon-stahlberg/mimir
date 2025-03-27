@@ -131,7 +131,7 @@ public:
     template<formalism::IsStaticOrFluentOrDerivedTag P>
     Constructor<ConceptTag> get_or_create_concept_atomic_state(formalism::Predicate<P> predicate);
     template<formalism::IsStaticOrFluentOrDerivedTag P>
-    Constructor<ConceptTag> get_or_create_concept_atomic_goal(formalism::Predicate<P> predicate, bool is_negated);
+    Constructor<ConceptTag> get_or_create_concept_atomic_goal(formalism::Predicate<P> predicate, bool polarity);
     Constructor<ConceptTag> get_or_create_concept_intersection(Constructor<ConceptTag> left_concept, Constructor<ConceptTag> right_concept);
     Constructor<ConceptTag> get_or_create_concept_union(Constructor<ConceptTag> left_concept, Constructor<ConceptTag> right_concept);
     Constructor<ConceptTag> get_or_create_concept_negation(Constructor<ConceptTag> concept_);
@@ -146,7 +146,7 @@ public:
     template<formalism::IsStaticOrFluentOrDerivedTag P>
     Constructor<RoleTag> get_or_create_role_atomic_state(formalism::Predicate<P> predicate);
     template<formalism::IsStaticOrFluentOrDerivedTag P>
-    Constructor<RoleTag> get_or_create_role_atomic_goal(formalism::Predicate<P> predicate, bool is_negated);
+    Constructor<RoleTag> get_or_create_role_atomic_goal(formalism::Predicate<P> predicate, bool polarity);
     Constructor<RoleTag> get_or_create_role_intersection(Constructor<RoleTag> left_role, Constructor<RoleTag> right_role);
     Constructor<RoleTag> get_or_create_role_union(Constructor<RoleTag> left_role, Constructor<RoleTag> right_role);
     Constructor<RoleTag> get_or_create_role_complement(Constructor<RoleTag> role);

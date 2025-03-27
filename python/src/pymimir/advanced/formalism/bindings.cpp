@@ -182,7 +182,7 @@ void bind_formalism(nb::module_& m)
             .def("__repr__", [](const GroundLiteralImpl<Tag>& self) { return to_string(self); })
             .def("get_index", &GroundLiteralImpl<Tag>::get_index, nb::rv_policy::copy)
             .def("get_atom", &GroundLiteralImpl<Tag>::get_atom, nb::rv_policy::reference_internal)
-            .def("is_negated", &GroundLiteralImpl<Tag>::is_negated, nb::rv_policy::copy);
+            .def("get_polarity", &GroundLiteralImpl<Tag>::get_polarity, nb::rv_policy::copy);
         nb::bind_vector<GroundLiteralList<Tag>>(m, (class_name + "List").c_str());
     };
     bind_ground_literal("StaticGroundLiteral", StaticTag {});
@@ -196,7 +196,7 @@ void bind_formalism(nb::module_& m)
             .def("__repr__", [](const LiteralImpl<Tag>& self) { return to_string(self); })
             .def("get_index", &LiteralImpl<Tag>::get_index, nb::rv_policy::copy)
             .def("get_atom", &LiteralImpl<Tag>::get_atom, nb::rv_policy::reference_internal)
-            .def("is_negated", &LiteralImpl<Tag>::is_negated, nb::rv_policy::copy);
+            .def("get_polarity", &LiteralImpl<Tag>::get_polarity, nb::rv_policy::copy);
         nb::bind_vector<LiteralList<Tag>>(m, (class_name + "List").c_str());
     };
     bind_literal("StaticLiteral", StaticTag {});
@@ -469,7 +469,7 @@ void bind_formalism(nb::module_& m)
 
     /* GroundEffectDerivedLiteral */
     nb::class_<GroundEffectDerivedLiteral>(m, "GroundEffectDerivedLiteral")
-        .def_ro("is_negated", &GroundEffectDerivedLiteral::is_negated, nb::rv_policy::copy)
+        .def_ro("polarity", &GroundEffectDerivedLiteral::polarity, nb::rv_policy::copy)
         .def_ro("atom_index", &GroundEffectDerivedLiteral::atom_index, nb::rv_policy::copy);
 
     /* GroundAxiom */

@@ -116,7 +116,7 @@ struct GroundingDetails
     mutable std::optional<ActionGroundingInfoList> action_infos;  ///< lazyly initialized
     const ActionGroundingInfoList& get_action_infos() const;      ///< lazily initializes problem-specific action infos.
 
-    // A table for each pair (is_negated,predicate_index) since those are context independent.
+    // A table for each pair (polarity,predicate_index) since those are context independent.
 
     template<typename T>
     using LiteralGroundingTableList = std::array<std::vector<GroundingTable<T>>, 2>;

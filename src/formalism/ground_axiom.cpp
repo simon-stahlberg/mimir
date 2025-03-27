@@ -61,14 +61,14 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundEff
 
     const auto& ground_atom = problem.get_repositories().get_ground_atom<formalism::DerivedTag>(derived_effect.atom_index);
 
-    if (derived_effect.is_negated)
+    if (derived_effect.polarity)
     {
         os << "(not ";
     }
 
     os << *ground_atom;
 
-    if (derived_effect.is_negated)
+    if (derived_effect.polarity)
     {
         os << ")";
     }

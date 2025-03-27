@@ -50,7 +50,7 @@ static bool nullary_literals_hold(const GroundLiteralList<P>& literals, const Fl
     {
         assert(literal->get_atom()->get_arity() == 0);
 
-        if (literal->is_negated() == atom_indices.get(literal->get_atom()->get_index()))
+        if (literal->get_polarity() != atom_indices.get(literal->get_atom()->get_index()))
         {
             return false;
         }

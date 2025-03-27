@@ -25,7 +25,6 @@ option(BUILD_TESTS "Build" OFF)
 option(BUILD_EXECUTABLES "Build" OFF)
 option(BUILD_PROFILING "Build" OFF)
 
-
 ##############################################################
 # Common Settings
 ##############################################################
@@ -65,6 +64,10 @@ message(STATUS "Build configuration: ${CMAKE_BUILD_TYPE}")
 set(DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/data/")
 add_definitions(-DDATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/data/")
 message("DATA_DIR: ${DATA_DIR}")
+
+if(VERBOSE)
+    add_compile_definitions(VERBOSE)
+endif()
 
 ##############################################################
 # CMake modules and macro files

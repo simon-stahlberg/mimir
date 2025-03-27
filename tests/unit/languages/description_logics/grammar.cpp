@@ -44,11 +44,11 @@ TEST(MimirTests, LanguagesDescriptionLogicsGrammarTestMatchTest)
         <concept_start> ::= <concept>
         <role_start> ::= <role>
         <concept_at-robby_state> ::= @concept_atomic_state "at-robby"
-        <concept_at-robby_goal> ::= @concept_atomic_goal "at-robby" false
+        <concept_at-robby_goal> ::= @concept_atomic_goal "at-robby" true
         <concept_intersection> ::= @concept_intersection <concept_at-robby_state> <concept_at-robby_goal>
         <concept> ::= <concept_at-robby_state> | <concept_at-robby_goal> | <concept_intersection>
         <role_at_state> ::= @role_atomic_state "at"
-        <role_at_goal> ::= @role_atomic_goal "at" false
+        <role_at_goal> ::= @role_atomic_goal "at" true
         <role_intersection> ::= @role_intersection <role> <role_at_goal>
         <role> ::= <role_at_state> | <role_at_goal> | <role_intersection>
 )");
@@ -67,7 +67,7 @@ TEST(MimirTests, LanguagesDescriptionLogicsGrammarTestMatchTest)
     const auto concept_ball = constructor_repositories.get_or_create_concept_atomic_state(predicate_ball);
     EXPECT_FALSE(grammar.test_match(concept_ball));
 
-    const auto concept_goal_at_robby = constructor_repositories.get_or_create_concept_atomic_goal(predicate_at_robby, false);
+    const auto concept_goal_at_robby = constructor_repositories.get_or_create_concept_atomic_goal(predicate_at_robby, true);
     const auto concept_at_robby_intersect_goal_at_robby = constructor_repositories.get_or_create_concept_intersection(concept_at_robby, concept_goal_at_robby);
     EXPECT_TRUE(grammar.test_match(concept_at_robby_intersect_goal_at_robby));
 

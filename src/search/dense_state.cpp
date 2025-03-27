@@ -58,7 +58,7 @@ template bool DenseState::contains(GroundAtom<DerivedTag> atom) const;
 template<IsFluentOrDerivedTag P>
 bool DenseState::literal_holds(GroundLiteral<P> literal) const
 {
-    return literal->is_negated() != contains(literal->get_atom());
+    return literal->get_polarity() == contains(literal->get_atom());
 }
 
 template bool DenseState::literal_holds(GroundLiteral<FluentTag> literal) const;

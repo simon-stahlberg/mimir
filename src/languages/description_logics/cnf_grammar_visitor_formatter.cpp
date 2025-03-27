@@ -49,15 +49,15 @@ void FormatterVisitor::visit(ConceptAtomicState<DerivedTag> constructor)
 }
 void FormatterVisitor::visit(ConceptAtomicGoal<StaticTag> constructor)
 {
-    m_out << keywords::concept_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->is_negated() ? "false" : "true");
+    m_out << keywords::concept_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->get_polarity() ? "true" : "false");
 }
 void FormatterVisitor::visit(ConceptAtomicGoal<FluentTag> constructor)
 {
-    m_out << keywords::concept_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->is_negated() ? "false" : "true");
+    m_out << keywords::concept_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->get_polarity() ? "true" : "false");
 }
 void FormatterVisitor::visit(ConceptAtomicGoal<DerivedTag> constructor)
 {
-    m_out << keywords::concept_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->is_negated() ? "false" : "true");
+    m_out << keywords::concept_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->get_polarity() ? "true" : "false");
 }
 void FormatterVisitor::visit(ConceptIntersection constructor)
 {
@@ -127,15 +127,15 @@ void FormatterVisitor::visit(RoleAtomicState<DerivedTag> constructor)
 }
 void FormatterVisitor::visit(RoleAtomicGoal<StaticTag> constructor)
 {
-    m_out << keywords::role_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->is_negated() ? "false" : "true");
+    m_out << keywords::role_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->get_polarity() ? "true" : "false");
 }
 void FormatterVisitor::visit(RoleAtomicGoal<FluentTag> constructor)
 {
-    m_out << keywords::role_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->is_negated() ? "false" : "true");
+    m_out << keywords::role_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->get_polarity() ? "true" : "false");
 }
 void FormatterVisitor::visit(RoleAtomicGoal<DerivedTag> constructor)
 {
-    m_out << keywords::role_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->is_negated() ? "false" : "true");
+    m_out << keywords::role_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->get_polarity() ? "true" : "false");
 }
 void FormatterVisitor::visit(RoleIntersection constructor)
 {

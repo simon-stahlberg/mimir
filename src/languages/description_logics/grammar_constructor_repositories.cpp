@@ -90,14 +90,14 @@ template Constructor<ConceptTag> Repositories::get_or_create_concept_atomic_stat
 template Constructor<ConceptTag> Repositories::get_or_create_concept_atomic_state(Predicate<DerivedTag> predicate);
 
 template<IsStaticOrFluentOrDerivedTag P>
-Constructor<ConceptTag> Repositories::get_or_create_concept_atomic_goal(Predicate<P> predicate, bool is_negated)
+Constructor<ConceptTag> Repositories::get_or_create_concept_atomic_goal(Predicate<P> predicate, bool polarity)
 {
-    return boost::hana::at_key(m_repositories, boost::hana::type<ConceptAtomicGoalImpl<P>> {}).get_or_create(predicate, is_negated);
+    return boost::hana::at_key(m_repositories, boost::hana::type<ConceptAtomicGoalImpl<P>> {}).get_or_create(predicate, polarity);
 }
 
-template Constructor<ConceptTag> Repositories::get_or_create_concept_atomic_goal(Predicate<StaticTag> predicate, bool is_negated);
-template Constructor<ConceptTag> Repositories::get_or_create_concept_atomic_goal(Predicate<FluentTag> predicate, bool is_negated);
-template Constructor<ConceptTag> Repositories::get_or_create_concept_atomic_goal(Predicate<DerivedTag> predicate, bool is_negated);
+template Constructor<ConceptTag> Repositories::get_or_create_concept_atomic_goal(Predicate<StaticTag> predicate, bool polarity);
+template Constructor<ConceptTag> Repositories::get_or_create_concept_atomic_goal(Predicate<FluentTag> predicate, bool polarity);
+template Constructor<ConceptTag> Repositories::get_or_create_concept_atomic_goal(Predicate<DerivedTag> predicate, bool polarity);
 
 Constructor<ConceptTag> Repositories::get_or_create_concept_intersection(ConstructorOrNonTerminal<ConceptTag> left_concept_or_nonterminal,
                                                                          ConstructorOrNonTerminal<ConceptTag> right_concept_or_nonterminal)
@@ -167,14 +167,14 @@ template Constructor<RoleTag> Repositories::get_or_create_role_atomic_state(Pred
 template Constructor<RoleTag> Repositories::get_or_create_role_atomic_state(Predicate<DerivedTag> predicate);
 
 template<IsStaticOrFluentOrDerivedTag P>
-Constructor<RoleTag> Repositories::get_or_create_role_atomic_goal(Predicate<P> predicate, bool is_negated)
+Constructor<RoleTag> Repositories::get_or_create_role_atomic_goal(Predicate<P> predicate, bool polarity)
 {
-    return boost::hana::at_key(m_repositories, boost::hana::type<RoleAtomicGoalImpl<P>> {}).get_or_create(predicate, is_negated);
+    return boost::hana::at_key(m_repositories, boost::hana::type<RoleAtomicGoalImpl<P>> {}).get_or_create(predicate, polarity);
 }
 
-template Constructor<RoleTag> Repositories::get_or_create_role_atomic_goal(Predicate<StaticTag> predicate, bool is_negated);
-template Constructor<RoleTag> Repositories::get_or_create_role_atomic_goal(Predicate<FluentTag> predicate, bool is_negated);
-template Constructor<RoleTag> Repositories::get_or_create_role_atomic_goal(Predicate<DerivedTag> predicate, bool is_negated);
+template Constructor<RoleTag> Repositories::get_or_create_role_atomic_goal(Predicate<StaticTag> predicate, bool polarity);
+template Constructor<RoleTag> Repositories::get_or_create_role_atomic_goal(Predicate<FluentTag> predicate, bool polarity);
+template Constructor<RoleTag> Repositories::get_or_create_role_atomic_goal(Predicate<DerivedTag> predicate, bool polarity);
 
 Constructor<RoleTag> Repositories::get_or_create_role_intersection(ConstructorOrNonTerminal<RoleTag> left_role_or_nonterminal,
                                                                    ConstructorOrNonTerminal<RoleTag> right_role_or_nonterminal)

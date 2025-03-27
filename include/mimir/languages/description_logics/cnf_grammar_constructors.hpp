@@ -251,9 +251,9 @@ class ConceptAtomicGoalImpl : public IConstructor<ConceptTag>
 private:
     Index m_index;
     formalism::Predicate<P> m_predicate;
-    bool m_is_negated;
+    bool m_polarity;
 
-    ConceptAtomicGoalImpl(Index index, formalism::Predicate<P> predicate, bool is_negated);
+    ConceptAtomicGoalImpl(Index index, formalism::Predicate<P> predicate, bool polarity);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -272,12 +272,12 @@ public:
 
     Index get_index() const;
     formalism::Predicate<P> get_predicate() const;
-    bool is_negated() const;
+    bool get_polarity() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_predicate(), is_negated()); }
+    auto identifying_members() const { return std::tuple(get_predicate(), get_polarity()); }
 };
 
 class ConceptIntersectionImpl : public IConstructor<ConceptTag>
@@ -621,9 +621,9 @@ class RoleAtomicGoalImpl : public IConstructor<RoleTag>
 private:
     Index m_index;
     formalism::Predicate<P> m_predicate;
-    bool m_is_negated;
+    bool m_polarity;
 
-    RoleAtomicGoalImpl(Index index, formalism::Predicate<P> predicate, bool is_negated);
+    RoleAtomicGoalImpl(Index index, formalism::Predicate<P> predicate, bool polarity);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -642,12 +642,12 @@ public:
 
     Index get_index() const;
     formalism::Predicate<P> get_predicate() const;
-    bool is_negated() const;
+    bool get_polarity() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_predicate(), is_negated()); }
+    auto identifying_members() const { return std::tuple(get_predicate(), get_polarity()); }
 };
 
 class RoleIntersectionImpl : public IConstructor<RoleTag>

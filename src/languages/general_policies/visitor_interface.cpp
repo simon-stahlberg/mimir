@@ -20,8 +20,4 @@
 namespace mimir::languages::general_policies
 {
 
-IVisitor::IVisitor(dl::IVisitor& constructor_visitor) : m_constructor_visitor(constructor_visitor) {}
-
-dl::IVisitor& IVisitor::get_constructor_visitor() { return m_constructor_visitor; }
-
 }

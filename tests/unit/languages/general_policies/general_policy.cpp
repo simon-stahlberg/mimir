@@ -31,7 +31,7 @@ using namespace mimir::datasets;
 namespace mimir::tests
 {
 
-TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyTest)
+TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyGripperTest)
 {
     {
         const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
@@ -132,4 +132,205 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyTest)
     }
 }
 
+TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyBlocks3opsTest)
+{
+    {
+        const auto domain_file = fs::path(std::string(DATA_DIR) + "blocks_3/domain.pddl");
+        const auto problem1_file = fs::path(std::string(DATA_DIR) + "blocks_3/test_problem.pddl");
+        const auto problem2_file = fs::path(std::string(DATA_DIR) + "blocks_3/test_problem2.pddl");
+
+        auto context = search::GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem1_file, problem2_file });
+
+        auto denotation_repositories = dl::DenotationRepositories();
+
+        auto repositories = general_policies::Repositories();
+        auto dl_repositories = dl::Repositories();
+
+        const auto general_policy =
+            general_policies::GeneralPolicyFactory::get_or_create_general_policy_blocks3ops(*context.get_domain(), repositories, dl_repositories);
+
+        {
+            /* Without symmetry reduction. */
+
+            auto kb_options = datasets::KnowledgeBaseImpl::Options();
+
+            auto& state_space_options = kb_options.state_space_options;
+            state_space_options.symmetry_pruning = false;
+
+            auto& generalized_state_space_options = kb_options.generalized_state_space_options;
+            generalized_state_space_options = GeneralizedStateSpaceImpl::Options();
+            generalized_state_space_options->symmetry_pruning = false;
+
+            auto kb = datasets::KnowledgeBaseImpl::create(context, kb_options);
+
+            const auto& generalized_state_space = kb->get_generalized_state_space();
+
+            {
+                /* Test solvability on GeneralizedStateSpace. */
+
+                EXPECT_EQ(general_policy->solves(generalized_state_space.value(), denotation_repositories),
+                          general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
+            }
+
+            {
+                /* Test solvability on StateSpace 0. */
+
+                EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), denotation_repositories),
+                          general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
+            }
+
+            {
+                /* Test solvability on StateSpace 1. */
+
+                const auto state_space_1 = kb->get_state_spaces().at(1);
+
+                EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), denotation_repositories),
+                          general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
+            }
+        }
+
+        {
+            /* With symmetry reduction. */
+
+            auto kb_options = datasets::KnowledgeBaseImpl::Options();
+
+            auto& state_space_options = kb_options.state_space_options;
+            state_space_options.symmetry_pruning = true;
+
+            auto& generalized_state_space_options = kb_options.generalized_state_space_options;
+            generalized_state_space_options = GeneralizedStateSpaceImpl::Options();
+            generalized_state_space_options->symmetry_pruning = true;
+
+            auto kb = datasets::KnowledgeBaseImpl::create(context, kb_options);
+
+            const auto& generalized_state_space = kb->get_generalized_state_space();
+
+            {
+                /* Test solvability on GeneralizedStateSpace. */
+
+                EXPECT_EQ(general_policy->solves(generalized_state_space.value(), denotation_repositories),
+                          general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
+            }
+
+            {
+                /* Test solvability on StateSpace 0. */
+
+                const auto state_space_0 = kb->get_state_spaces().at(0);
+
+                EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), denotation_repositories),
+                          general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
+            }
+
+            {
+                /* Test solvability on StateSpace 1. */
+
+                const auto state_space_1 = kb->get_state_spaces().at(1);
+
+                EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), denotation_repositories),
+                          general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
+            }
+        }
+    }
+}
+
+TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicySpannerTest)
+{
+    {
+        const auto domain_file = fs::path(std::string(DATA_DIR) + "spanner/domain.pddl");
+        const auto problem1_file = fs::path(std::string(DATA_DIR) + "spanner/p-1-1-2-1.pddl");
+        const auto problem2_file = fs::path(std::string(DATA_DIR) + "spanner/p-1-1-2-1(2).pddl");
+
+        auto context = search::GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem1_file, problem2_file });
+
+        auto denotation_repositories = dl::DenotationRepositories();
+
+        auto repositories = general_policies::Repositories();
+        auto dl_repositories = dl::Repositories();
+
+        const auto general_policy =
+            general_policies::GeneralPolicyFactory::get_or_create_general_policy_spanner(*context.get_domain(), repositories, dl_repositories);
+
+        {
+            /* Without symmetry reduction. */
+
+            auto kb_options = datasets::KnowledgeBaseImpl::Options();
+
+            auto& state_space_options = kb_options.state_space_options;
+            state_space_options.symmetry_pruning = false;
+
+            auto& generalized_state_space_options = kb_options.generalized_state_space_options;
+            generalized_state_space_options = GeneralizedStateSpaceImpl::Options();
+            generalized_state_space_options->symmetry_pruning = false;
+
+            auto kb = datasets::KnowledgeBaseImpl::create(context, kb_options);
+
+            const auto& generalized_state_space = kb->get_generalized_state_space();
+
+            {
+                /* Test solvability on GeneralizedStateSpace. */
+
+                EXPECT_EQ(general_policy->solves(generalized_state_space.value(), denotation_repositories),
+                          general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
+            }
+
+            {
+                /* Test solvability on StateSpace 0. */
+
+                EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), denotation_repositories),
+                          general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
+            }
+
+            {
+                /* Test solvability on StateSpace 1. */
+
+                const auto state_space_1 = kb->get_state_spaces().at(1);
+
+                EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), denotation_repositories),
+                          general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
+            }
+        }
+
+        {
+            /* With symmetry reduction. */
+
+            auto kb_options = datasets::KnowledgeBaseImpl::Options();
+
+            auto& state_space_options = kb_options.state_space_options;
+            state_space_options.symmetry_pruning = true;
+
+            auto& generalized_state_space_options = kb_options.generalized_state_space_options;
+            generalized_state_space_options = GeneralizedStateSpaceImpl::Options();
+            generalized_state_space_options->symmetry_pruning = true;
+
+            auto kb = datasets::KnowledgeBaseImpl::create(context, kb_options);
+
+            const auto& generalized_state_space = kb->get_generalized_state_space();
+
+            {
+                /* Test solvability on GeneralizedStateSpace. */
+
+                EXPECT_EQ(general_policy->solves(generalized_state_space.value(), denotation_repositories),
+                          general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
+            }
+
+            {
+                /* Test solvability on StateSpace 0. */
+
+                const auto state_space_0 = kb->get_state_spaces().at(0);
+
+                EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), denotation_repositories),
+                          general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
+            }
+
+            {
+                /* Test solvability on StateSpace 1. */
+
+                const auto state_space_1 = kb->get_state_spaces().at(1);
+
+                EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), denotation_repositories),
+                          general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
+            }
+        }
+    }
+}
 }

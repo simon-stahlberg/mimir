@@ -118,7 +118,7 @@ static std::vector<PredicateSet<DerivedTag>> compute_stratification(const AxiomL
         for (const auto& condition : axiom->get_conjunctive_condition()->get_literals<DerivedTag>())
         {
             const auto condition_predicate = condition->get_atom()->get_predicate();
-            if (condition->is_negated())
+            if (!condition->get_polarity())
             {
                 R[condition_predicate][head_predicate] = StratumStatus::STRICTLY_LOWER;
             }

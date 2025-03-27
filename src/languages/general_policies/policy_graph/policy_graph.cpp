@@ -15,14 +15,24 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/languages/general_policies/policy_graph.hpp"
+#include "policy_graph.hpp"
 
 #include "mimir/languages/general_policies/general_policy.hpp"
 #include "mimir/languages/general_policies/named_feature.hpp"
 #include "mimir/languages/general_policies/repositories.hpp"
+#include "mimir/languages/general_policies/rule.hpp"
+#include "mimir/languages/general_policies/visitor_null.hpp"
 
 namespace mimir::languages::general_policies
 {
+
+static bool evaluate_conditions(const graphs::PolicyVertex& vertex, Rule rule)
+{
+    return std::all_of(rule->get_conditions().begin(), rule->get_conditions().end(), [&](auto&& arg) { return get_conditions(vertex).contains(arg); });
+}
+
+static bool evaluate_effects(const graphs::PolicyVertex& vertex, Rule rule) {}
+
 graphs::PolicyGraph create(GeneralPolicy policy, Repositories& repositories)
 {
     using FeatureVariant = std::variant<NamedFeature<dl::BooleanTag>, NamedFeature<dl::NumericalTag>>;
@@ -77,6 +87,17 @@ graphs::PolicyGraph create(GeneralPolicy policy, Repositories& repositories)
         }
 
         graph.add_vertex(conditions);
+    }
+
+    for (const auto& [v1_idx, v1] : graph.get_vertices())
+    {
+        for (const auto& rule : policy->get_rules())
+        {
+            if (std::all_of(rule->get_conditions().begin(), rule->get_conditions().end(), [&](auto&& arg) { return get_conditions(v1).contains(arg); }))
+            {
+                for (const auto& [v2_idx, v2] : graph.get_vertices()) {}
+            }
+        }
     }
 }
 }

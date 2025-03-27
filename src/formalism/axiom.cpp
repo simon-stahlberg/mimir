@@ -35,7 +35,7 @@ AxiomImpl::AxiomImpl(Index index, ConjunctiveCondition conjunctive_condition, Li
     m_literal(std::move(literal))
 {
     assert(conjunctive_condition);
-    assert(!literal->is_negated());
+    assert(literal->get_polarity());
 }
 
 Index AxiomImpl::get_index() const { return m_index; }

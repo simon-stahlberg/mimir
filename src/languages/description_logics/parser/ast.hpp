@@ -172,7 +172,7 @@ struct ConceptAtomicState : x3::position_tagged
 struct ConceptAtomicGoal : x3::position_tagged
 {
     std::string predicate_name;
-    bool is_negated;
+    bool polarity;
 };
 
 struct ConceptIntersection : x3::position_tagged
@@ -237,7 +237,7 @@ struct RoleAtomicState : x3::position_tagged
 struct RoleAtomicGoal : x3::position_tagged
 {
     std::string predicate_name;
-    bool is_negated;
+    bool polarity;
 };
 
 struct RoleIntersection : x3::position_tagged
