@@ -81,10 +81,10 @@ $(function() {
   <div class="headertitle"><div class="title">state_space.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;mimir/algorithms/nauty.hpp&quot;</code><br />
-<code>#include &quot;<a class="el" href="common_2types_8hpp_source.html">mimir/common/types.hpp</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="common_2types_8hpp_source.html">mimir/common/types.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="datasets_2declarations_8hpp_source.html">mimir/datasets/declarations.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="formalism_2declarations_8hpp_source.html">mimir/formalism/declarations.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="nauty_8hpp_source.html">mimir/graphs/algorithms/nauty.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="graphs_2declarations_8hpp_source.html">mimir/graphs/declarations.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="graph__edges_8hpp_source.html">mimir/graphs/graph_edges.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="graph__vertices_8hpp_source.html">mimir/graphs/graph_vertices.hpp</a>&quot;</code><br />
@@ -113,7 +113,7 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a4401dfeb9aa3b9b2f3925044ee7a6e71"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71">mimir::graphs::ProblemVertex</a> = Vertex&lt; search::State, formalism::Problem, std::shared_ptr&lt; const nauty_wrapper::Certificate &gt;, DiscreteCost, ContinuousCost, bool, bool, bool, bool &gt;</td></tr>
+<tr class="memitem:a4401dfeb9aa3b9b2f3925044ee7a6e71"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71">mimir::graphs::ProblemVertex</a> = Vertex&lt; search::State, formalism::Problem, std::shared_ptr&lt; const <a class="el" href="classnauty__wrapper_1_1Certificate.html">nauty_wrapper::Certificate</a> &gt;, DiscreteCost, ContinuousCost, bool, bool, bool, bool &gt;</td></tr>
 <tr class="memdesc:a4401dfeb9aa3b9b2f3925044ee7a6e71"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>ProblemVertex</code> encapsulates information about a vertex in a <code>ProblemGraph</code>  <br /></td></tr>
 <tr class="separator:a4401dfeb9aa3b9b2f3925044ee7a6e71"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6849af3a319ee009030dc943e8f30f13"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a6849af3a319ee009030dc943e8f30f13">mimir::graphs::ProblemVertexList</a> = std::vector&lt; ProblemVertex &gt;</td></tr>
@@ -141,8 +141,8 @@ Functions</h2></td></tr>
 <tr class="memitem:a1545cc0e6f705073e363e66a8173fd4a"><td class="memItemLeft" align="right" valign="top">const formalism::Problem &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a1545cc0e6f705073e363e66a8173fd4a">mimir::graphs::get_problem</a> (const ProblemVertex &amp;vertex)</td></tr>
 <tr class="memdesc:a1545cc0e6f705073e363e66a8173fd4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the <code><a class="el" href="namespacemimir_1_1formalism.html#a18a62fffd7784a50a9304da9b0a2a7d1">formalism::Problem</a></code> of the given <code>ProblemVertex</code>.  <br /></td></tr>
 <tr class="separator:a1545cc0e6f705073e363e66a8173fd4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac3f628ea9bf35ba7182edb56e0eb8988"><td class="memItemLeft" align="right" valign="top">const std::shared_ptr&lt; const nauty_wrapper::Certificate &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#ac3f628ea9bf35ba7182edb56e0eb8988">mimir::graphs::get_certificate</a> (const ProblemVertex &amp;vertex)</td></tr>
-<tr class="memdesc:ac3f628ea9bf35ba7182edb56e0eb8988"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the <code>nauty_wrapper::Certificate</code> of the given <code>ProblemVertex</code>.  <br /></td></tr>
+<tr class="memitem:ac3f628ea9bf35ba7182edb56e0eb8988"><td class="memItemLeft" align="right" valign="top">const std::shared_ptr&lt; const <a class="el" href="classnauty__wrapper_1_1Certificate.html">nauty_wrapper::Certificate</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#ac3f628ea9bf35ba7182edb56e0eb8988">mimir::graphs::get_certificate</a> (const ProblemVertex &amp;vertex)</td></tr>
+<tr class="memdesc:ac3f628ea9bf35ba7182edb56e0eb8988"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the <code><a class="el" href="classnauty__wrapper_1_1Certificate.html" title="Certificate encapsulates a canonical graph representation of a vertex-colored graph.">nauty_wrapper::Certificate</a></code> of the given <code>ProblemVertex</code>.  <br /></td></tr>
 <tr class="separator:ac3f628ea9bf35ba7182edb56e0eb8988"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4f2ec001f1cff7ed0bc86fa1849add30"><td class="memItemLeft" align="right" valign="top">DiscreteCost&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a4f2ec001f1cff7ed0bc86fa1849add30">mimir::graphs::get_unit_goal_distance</a> (const ProblemVertex &amp;vertex)</td></tr>
 <tr class="memdesc:a4f2ec001f1cff7ed0bc86fa1849add30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the unit goal distance of the given <code>ProblemVertex</code>.  <br /></td></tr>

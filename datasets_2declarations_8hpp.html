@@ -79,8 +79,8 @@ $(function() {
   <div class="headertitle"><div class="title">declarations.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;mimir/algorithms/nauty.hpp&quot;</code><br />
-<code>#include &quot;<a class="el" href="common_2types_8hpp_source.html">mimir/common/types.hpp</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="common_2types_8hpp_source.html">mimir/common/types.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="nauty_8hpp_source.html">mimir/graphs/algorithms/nauty.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="graphs_2declarations_8hpp_source.html">mimir/graphs/declarations.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="search_2declarations_8hpp_source.html">mimir/search/declarations.hpp</a>&quot;</code><br />
 <code>#include &lt;cstdint&gt;</code><br />
@@ -112,10 +112,10 @@ Typedefs</h2></td></tr>
 <tr class="memitem:a5e3f6853ebb2f76d2e5e1fcac8fa6531"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1datasets.html#a5e3f6853ebb2f76d2e5e1fcac8fa6531">mimir::datasets::TupleGraphList</a> = std::vector&lt; TupleGraph &gt;</td></tr>
 <tr class="separator:a5e3f6853ebb2f76d2e5e1fcac8fa6531"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a636ee5d8635664659b3ab62bebb86f3b"><td class="memTemplParams" colspan="2">template&lt;typename Value &gt; </td></tr>
-<tr class="memitem:a636ee5d8635664659b3ab62bebb86f3b"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1datasets.html#a636ee5d8635664659b3ab62bebb86f3b">mimir::datasets::CertificateMap</a> = KeyValueMap&lt; loki::ObserverPtr&lt; const nauty_wrapper::Certificate &gt;, Value &gt;</td></tr>
+<tr class="memitem:a636ee5d8635664659b3ab62bebb86f3b"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1datasets.html#a636ee5d8635664659b3ab62bebb86f3b">mimir::datasets::CertificateMap</a> = KeyValueMap&lt; loki::ObserverPtr&lt; const <a class="el" href="classnauty__wrapper_1_1Certificate.html">nauty_wrapper::Certificate</a> &gt;, Value &gt;</td></tr>
 <tr class="memdesc:a636ee5d8635664659b3ab62bebb86f3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Uniqueness test of certificates while mapping them to a representative state. Hash and compare of <code>loki::ObserverPtr&lt;T&gt;</code> is specialized to use the dereferenced pointer.  <br /></td></tr>
 <tr class="separator:a636ee5d8635664659b3ab62bebb86f3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a86d432ffb361ad3765bf7c63abe64bce"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1datasets.html#a86d432ffb361ad3765bf7c63abe64bce">mimir::datasets::StateToCertificate</a> = search::StateMap&lt; std::shared_ptr&lt; const nauty_wrapper::Certificate &gt; &gt;</td></tr>
+<tr class="memitem:a86d432ffb361ad3765bf7c63abe64bce"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1datasets.html#a86d432ffb361ad3765bf7c63abe64bce">mimir::datasets::StateToCertificate</a> = search::StateMap&lt; std::shared_ptr&lt; const <a class="el" href="classnauty__wrapper_1_1Certificate.html">nauty_wrapper::Certificate</a> &gt; &gt;</td></tr>
 <tr class="memdesc:a86d432ffb361ad3765bf7c63abe64bce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cache computed state certificates.  <br /></td></tr>
 <tr class="separator:a86d432ffb361ad3765bf7c63abe64bce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
