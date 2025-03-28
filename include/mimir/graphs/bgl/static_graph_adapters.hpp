@@ -25,6 +25,7 @@
 #include "mimir/graphs/static_graph_interface.hpp"
 
 #include <boost/graph/breadth_first_search.hpp>
+#include <boost/graph/depth_first_search.hpp>
 #include <boost/graph/dijkstra_shortest_paths.hpp>
 #include <boost/graph/floyd_warshall_shortest.hpp>
 #include <boost/graph/graph_concepts.hpp>
@@ -170,6 +171,61 @@ breadth_first_search(const DirectionTaggedType<Graph, Direction>& g, SourceInput
     auto color_vector = std::vector<boost::default_color_type>(g.get().get_num_vertices(), boost::white_color);
     auto color_map = ColorMap(color_vector.begin(), boost::identity_property_map());
     boost::breadth_first_search(g, s_begin, s_end, buffer, visitor, color_map);
+
+    return std::make_tuple(p, d);
+}
+
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// boost::depth_first_search
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+template<typename VertexDescriptor>
+struct DFSBoostVisitor : public boost::dfs_visitor<>
+{
+    std::reference_wrapper<std::vector<VertexDescriptor>> predecessors;
+    std::reference_wrapper<DiscreteCostList> distances;
+
+    DFSBoostVisitor(std::vector<VertexDescriptor>& p, DiscreteCostList& d) : predecessors(p), distances(d) {}
+
+    template<typename Edge, typename Graph>
+    void tree_edge(Edge e, const Graph& g) const
+    {
+        auto u = source(e, g);
+        auto v = target(e, g);
+        predecessors.get().at(v) = u;
+        distances.get().at(v) = distances.get().at(u) + 1;
+    }
+};
+
+template<IsStaticGraph Graph, IsDirection Direction, class SourceInputIter>
+std::tuple<std::vector<typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor>, DiscreteCostList>
+depth_first_search(const DirectionTaggedType<Graph, Direction>& g, SourceInputIter s_begin, SourceInputIter s_end)
+{
+    using vertex_descriptor_type = typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor;
+    using ColorMap = boost::iterator_property_map<std::vector<boost::default_color_type>::iterator, boost::identity_property_map>;
+
+    auto p = std::vector<vertex_descriptor_type>(g.get().get_num_vertices());
+    for (vertex_descriptor_type v = 0; v < g.get().get_num_vertices(); ++v)
+    {
+        p.at(v) = v;
+    }
+    auto inf = std::numeric_limits<DiscreteCost>::max();
+    auto d = DiscreteCostList(g.get().get_num_vertices(), inf);
+    for (auto it = s_begin; it != s_end; ++it)
+    {
+        d.at(*it) = DiscreteCost(0);
+    }
+    auto visitor = DFSBoostVisitor(p, d);
+    auto color_vector = std::vector<boost::default_color_type>(g.get().get_num_vertices(), boost::white_color);
+    auto color_map = ColorMap(color_vector.begin(), boost::identity_property_map());
+
+    for (; s_begin != s_end; ++s_begin)
+    {
+        if (color_vector[*s_begin] == boost::white_color)
+        {
+            boost::depth_first_search(g, visitor, color_map, *s_begin);
+        }
+    }
 
     return std::make_tuple(p, d);
 }

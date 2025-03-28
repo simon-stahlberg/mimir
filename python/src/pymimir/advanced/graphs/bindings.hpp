@@ -196,7 +196,66 @@ void bind_translated_static_graph(nb::module_& m, const std::string& name, const
         .def("get_forward_degrees", &TranslatedGraphType::template get_degrees<mm::graphs::ForwardTag>)
         .def("get_backward_degrees", &TranslatedGraphType::template get_degrees<mm::graphs::BackwardTag>)
         .def("get_forward_degree", &TranslatedGraphType::template get_degree<mm::graphs::ForwardTag>, nb::arg("vertex_index"))
-        .def("get_backward_degree", &TranslatedGraphType::template get_degree<mm::graphs::BackwardTag>, nb::arg("vertex_index"));
+        .def("get_backward_degree", &TranslatedGraphType::template get_degree<mm::graphs::BackwardTag>, nb::arg("vertex_index"))
+        .def("compute_forward_topological_sort",
+             [](const TranslatedGraphType& self)
+             { return mm::graphs::bgl::topological_sort(mimir::graphs::DirectionTaggedType(self, mm::graphs::ForwardTag {})); })
+        .def("compute_backward_topological_sort",
+             [](const TranslatedGraphType& self)
+             { return mm::graphs::bgl::topological_sort(mimir::graphs::DirectionTaggedType(self, mm::graphs::BackwardTag {})); })
+        .def("compute_forward_floyd_warshall_all_pairs_shortest_paths",
+             [](const TranslatedGraphType& self, const ContinuousCostList& w)
+             { return mm::graphs::bgl::floyd_warshall_all_pairs_shortest_paths(mimir::graphs::DirectionTaggedType(self, mm::graphs::ForwardTag {}), w); })
+        .def("compute_backward_floyd_warshall_all_pairs_shortest_paths",
+             [](const TranslatedGraphType& self, const ContinuousCostList& w)
+             { return mm::graphs::bgl::floyd_warshall_all_pairs_shortest_paths(mimir::graphs::DirectionTaggedType(self, mm::graphs::BackwardTag {}), w); })
+        .def("compute_forward_breadth_first_search",
+             [](const TranslatedGraphType& self, const mm::graphs::VertexIndexList& source_vertex_indices)
+             {
+                 return mm::graphs::bgl::breadth_first_search(mimir::graphs::DirectionTaggedType(self, mm::graphs::ForwardTag {}),
+                                                              source_vertex_indices.begin(),
+                                                              source_vertex_indices.end());
+             })
+        .def("compute_backward_breadth_first_search",
+             [](const TranslatedGraphType& self, const mm::graphs::VertexIndexList& source_vertex_indices)
+             {
+                 return mm::graphs::bgl::breadth_first_search(mimir::graphs::DirectionTaggedType(self, mm::graphs::BackwardTag {}),
+                                                              source_vertex_indices.begin(),
+                                                              source_vertex_indices.end());
+             })
+        .def("compute_forward_depth_first_search",
+             [](const TranslatedGraphType& self, const mm::graphs::VertexIndexList& source_vertex_indices)
+             {
+                 return mm::graphs::bgl::depth_first_search(mimir::graphs::DirectionTaggedType(self, mm::graphs::ForwardTag {}),
+                                                            source_vertex_indices.begin(),
+                                                            source_vertex_indices.end());
+             })
+        .def("compute_backward_depth_first_search",
+             [](const TranslatedGraphType& self, const mm::graphs::VertexIndexList& source_vertex_indices)
+             {
+                 return mm::graphs::bgl::depth_first_search(mimir::graphs::DirectionTaggedType(self, mm::graphs::BackwardTag {}),
+                                                            source_vertex_indices.begin(),
+                                                            source_vertex_indices.end());
+             })
+        .def("compute_forward_dijkstra_shortest_paths",
+             [](const TranslatedGraphType& self, const ContinuousCostList& w, const mm::graphs::VertexIndexList& source_vertex_indices)
+             {
+                 return mm::graphs::bgl::dijkstra_shortest_paths(mimir::graphs::DirectionTaggedType(self, mm::graphs::ForwardTag {}),
+                                                                 w,
+                                                                 source_vertex_indices.begin(),
+                                                                 source_vertex_indices.end());
+             })
+        .def("compute_backward_dijkstra_shortest_paths",
+             [](const TranslatedGraphType& self, const ContinuousCostList& w, const mm::graphs::VertexIndexList& source_vertex_indices)
+             {
+                 return mm::graphs::bgl::dijkstra_shortest_paths(mimir::graphs::DirectionTaggedType(self, mm::graphs::BackwardTag {}),
+                                                                 w,
+                                                                 source_vertex_indices.begin(),
+                                                                 source_vertex_indices.end());
+             })
+        .def("compute_strong_components",
+             [](const TranslatedGraphType& self, const ContinuousCostList& w, const mm::graphs::VertexIndexList& source_vertex_indices)
+             { return mm::graphs::bgl::strong_components(mimir::graphs::DirectionTaggedType(self, mm::graphs::ForwardTag {})); });
 }
 
 template<mm::graphs::IsVertex V, mm::graphs::IsEdge E>
@@ -356,6 +415,20 @@ void bind_static_graph(nb::module_& m, const std::string& name)
                                                               source_vertex_indices.begin(),
                                                               source_vertex_indices.end());
              })
+        .def("compute_forward_depth_first_search",
+             [](const GraphType& self, const mm::graphs::VertexIndexList& source_vertex_indices)
+             {
+                 return mm::graphs::bgl::depth_first_search(mimir::graphs::DirectionTaggedType(self, mm::graphs::ForwardTag {}),
+                                                            source_vertex_indices.begin(),
+                                                            source_vertex_indices.end());
+             })
+        .def("compute_backward_depth_first_search",
+             [](const GraphType& self, const mm::graphs::VertexIndexList& source_vertex_indices)
+             {
+                 return mm::graphs::bgl::depth_first_search(mimir::graphs::DirectionTaggedType(self, mm::graphs::BackwardTag {}),
+                                                            source_vertex_indices.begin(),
+                                                            source_vertex_indices.end());
+             })
         .def("compute_forward_dijkstra_shortest_paths",
              [](const GraphType& self, const ContinuousCostList& w, const mm::graphs::VertexIndexList& source_vertex_indices)
              {
@@ -372,17 +445,9 @@ void bind_static_graph(nb::module_& m, const std::string& name)
                                                                  source_vertex_indices.begin(),
                                                                  source_vertex_indices.end());
              })
-        .def("compute_backward_dijkstra_shortest_paths",
-             [](const GraphType& self, const ContinuousCostList& w, const mm::graphs::VertexIndexList& source_vertex_indices)
-             {
-                 return mm::graphs::bgl::dijkstra_shortest_paths(mimir::graphs::DirectionTaggedType(self, mm::graphs::BackwardTag {}),
-                                                                 w,
-                                                                 source_vertex_indices.begin(),
-                                                                 source_vertex_indices.end());
-             })
         .def("compute_strong_components",
              [](const GraphType& self, const ContinuousCostList& w, const mm::graphs::VertexIndexList& source_vertex_indices)
-             { return mm::graphs::bgl::strong_components(mimir::graphs::DirectionTaggedType(self, mm::graphs::BackwardTag {})); });
+             { return mm::graphs::bgl::strong_components(mimir::graphs::DirectionTaggedType(self, mm::graphs::ForwardTag {})); });
 
     /**
      * Immutable version
@@ -512,7 +577,66 @@ void bind_static_graph(nb::module_& m, const std::string& name)
         .def(
             "get_backward_degree",
             [](const PyImmutable<GraphType>& self, mm::graphs::VertexIndex vertex) { return self.obj_.template get_degree<mm::graphs::BackwardTag>(vertex); },
-            nb::arg("vertex_index"));
+            nb::arg("vertex_index"))
+        .def("compute_forward_topological_sort",
+             [](const PyImmutable<GraphType>& self)
+             { return mm::graphs::bgl::topological_sort(mimir::graphs::DirectionTaggedType(self.obj_, mm::graphs::ForwardTag {})); })
+        .def("compute_backward_topological_sort",
+             [](const PyImmutable<GraphType>& self)
+             { return mm::graphs::bgl::topological_sort(mimir::graphs::DirectionTaggedType(self.obj_, mm::graphs::BackwardTag {})); })
+        .def("compute_forward_floyd_warshall_all_pairs_shortest_paths",
+             [](const PyImmutable<GraphType>& self, const ContinuousCostList& w)
+             { return mm::graphs::bgl::floyd_warshall_all_pairs_shortest_paths(mimir::graphs::DirectionTaggedType(self.obj_, mm::graphs::ForwardTag {}), w); })
+        .def("compute_backward_floyd_warshall_all_pairs_shortest_paths",
+             [](const PyImmutable<GraphType>& self, const ContinuousCostList& w)
+             { return mm::graphs::bgl::floyd_warshall_all_pairs_shortest_paths(mimir::graphs::DirectionTaggedType(self.obj_, mm::graphs::BackwardTag {}), w); })
+        .def("compute_forward_breadth_first_search",
+             [](const PyImmutable<GraphType>& self, const mm::graphs::VertexIndexList& source_vertex_indices)
+             {
+                 return mm::graphs::bgl::breadth_first_search(mimir::graphs::DirectionTaggedType(self.obj_, mm::graphs::ForwardTag {}),
+                                                              source_vertex_indices.begin(),
+                                                              source_vertex_indices.end());
+             })
+        .def("compute_backward_breadth_first_search",
+             [](const PyImmutable<GraphType>& self, const mm::graphs::VertexIndexList& source_vertex_indices)
+             {
+                 return mm::graphs::bgl::breadth_first_search(mimir::graphs::DirectionTaggedType(self.obj_, mm::graphs::BackwardTag {}),
+                                                              source_vertex_indices.begin(),
+                                                              source_vertex_indices.end());
+             })
+        .def("compute_forward_depth_first_search",
+             [](const PyImmutable<GraphType>& self, const mm::graphs::VertexIndexList& source_vertex_indices)
+             {
+                 return mm::graphs::bgl::depth_first_search(mimir::graphs::DirectionTaggedType(self.obj_, mm::graphs::ForwardTag {}),
+                                                            source_vertex_indices.begin(),
+                                                            source_vertex_indices.end());
+             })
+        .def("compute_backward_depth_first_search",
+             [](const PyImmutable<GraphType>& self, const mm::graphs::VertexIndexList& source_vertex_indices)
+             {
+                 return mm::graphs::bgl::depth_first_search(mimir::graphs::DirectionTaggedType(self.obj_, mm::graphs::BackwardTag {}),
+                                                            source_vertex_indices.begin(),
+                                                            source_vertex_indices.end());
+             })
+        .def("compute_forward_dijkstra_shortest_paths",
+             [](const PyImmutable<GraphType>& self, const ContinuousCostList& w, const mm::graphs::VertexIndexList& source_vertex_indices)
+             {
+                 return mm::graphs::bgl::dijkstra_shortest_paths(mimir::graphs::DirectionTaggedType(self.obj_, mm::graphs::ForwardTag {}),
+                                                                 w,
+                                                                 source_vertex_indices.begin(),
+                                                                 source_vertex_indices.end());
+             })
+        .def("compute_backward_dijkstra_shortest_paths",
+             [](const PyImmutable<GraphType>& self, const ContinuousCostList& w, const mm::graphs::VertexIndexList& source_vertex_indices)
+             {
+                 return mm::graphs::bgl::dijkstra_shortest_paths(mimir::graphs::DirectionTaggedType(self.obj_, mm::graphs::BackwardTag {}),
+                                                                 w,
+                                                                 source_vertex_indices.begin(),
+                                                                 source_vertex_indices.end());
+             })
+        .def("compute_strong_components",
+             [](const PyImmutable<GraphType>& self, const ContinuousCostList& w, const mm::graphs::VertexIndexList& source_vertex_indices)
+             { return mm::graphs::bgl::strong_components(mimir::graphs::DirectionTaggedType(self.obj_, mm::graphs::ForwardTag {})); });
 
     /**
      * Immutable forward version
