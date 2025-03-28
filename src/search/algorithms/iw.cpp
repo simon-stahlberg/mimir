@@ -847,18 +847,18 @@ const TupleIndexMapper& DynamicNoveltyTable::get_tuple_index_mapper() const { re
  * NoveltyPruning
  */
 
-ArityZeroNoveltyPruning::ArityZeroNoveltyPruning(State initial_state) : m_initial_state(initial_state) {}
+ArityZeroNoveltyPruningStrategy::ArityZeroNoveltyPruningStrategy(State initial_state) : m_initial_state(initial_state) {}
 
-bool ArityZeroNoveltyPruning::test_prune_initial_state(const State state) { return false; }
+bool ArityZeroNoveltyPruningStrategy::test_prune_initial_state(const State state) { return false; }
 
-bool ArityZeroNoveltyPruning::test_prune_successor_state(const State state, const State succ_state, bool is_new_succ)
+bool ArityZeroNoveltyPruningStrategy::test_prune_successor_state(const State state, const State succ_state, bool is_new_succ)
 {
     return state != m_initial_state || state == succ_state;
 }
 
-ArityKNoveltyPruning::ArityKNoveltyPruning(size_t arity, size_t num_atoms) : m_novelty_table(arity) {}
+ArityKNoveltyPruningStrategy::ArityKNoveltyPruningStrategy(size_t arity, size_t num_atoms) : m_novelty_table(arity) {}
 
-bool ArityKNoveltyPruning::test_prune_initial_state(const State state)
+bool ArityKNoveltyPruningStrategy::test_prune_initial_state(const State state)
 {
     if (m_generated_states.count(state->get_index()))
     {
@@ -870,7 +870,7 @@ bool ArityKNoveltyPruning::test_prune_initial_state(const State state)
     return !m_novelty_table.test_novelty_and_update_table(state);
 }
 
-bool ArityKNoveltyPruning::test_prune_successor_state(const State state, const State succ_state, bool is_new_succ)
+bool ArityKNoveltyPruningStrategy::test_prune_successor_state(const State state, const State succ_state, bool is_new_succ)
 {
     if (state == succ_state)
     {
@@ -920,8 +920,12 @@ SearchResult find_solution(const SearchContext& context,
 
         const auto result =
             (cur_arity > 0) ?
-                find_solution(context, start_state, brfs_event_handler, goal_strategy, std::make_shared<ArityKNoveltyPruning>(cur_arity, INITIAL_TABLE_ATOMS)) :
-                find_solution(context, start_state, brfs_event_handler, goal_strategy, std::make_shared<ArityZeroNoveltyPruning>(start_state));
+                find_solution(context,
+                              start_state,
+                              brfs_event_handler,
+                              goal_strategy,
+                              std::make_shared<ArityKNoveltyPruningStrategy>(cur_arity, INITIAL_TABLE_ATOMS)) :
+                find_solution(context, start_state, brfs_event_handler, goal_strategy, std::make_shared<ArityZeroNoveltyPruningStrategy>(start_state));
 
         iw_event_handler->on_end_arity_search(brfs_event_handler->get_statistics());
 

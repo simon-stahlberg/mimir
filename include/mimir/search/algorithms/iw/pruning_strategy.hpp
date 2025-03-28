@@ -28,19 +28,19 @@
 
 namespace mimir::search::iw
 {
-class ArityZeroNoveltyPruning : public IPruningStrategy
+class ArityZeroNoveltyPruningStrategy : public IPruningStrategy
 {
 private:
     State m_initial_state;
 
 public:
-    explicit ArityZeroNoveltyPruning(State initial_state);
+    explicit ArityZeroNoveltyPruningStrategy(State initial_state);
 
     bool test_prune_initial_state(const State state) override;
     bool test_prune_successor_state(const State state, const State succ_state, bool is_new_succ) override;
 };
 
-class ArityKNoveltyPruning : public IPruningStrategy
+class ArityKNoveltyPruningStrategy : public IPruningStrategy
 {
 private:
     DynamicNoveltyTable m_novelty_table;
@@ -48,7 +48,7 @@ private:
     std::unordered_set<Index> m_generated_states;
 
 public:
-    ArityKNoveltyPruning(size_t arity, size_t num_atoms);
+    ArityKNoveltyPruningStrategy(size_t arity, size_t num_atoms);
 
     bool test_prune_initial_state(const State state) override;
     bool test_prune_successor_state(const State state, const State succ_state, bool is_new_succ) override;

@@ -22,6 +22,9 @@ Mimir is a C++20-based generalized planning library with Python bindings, design
   Mimir supports the PDDL requirements for both grounded and lifted planning.
   In particular, lifted planning is critical for learning-based approaches because they often do not require access to grounded actions, resulting in significant speedups.
 
+- **Collections of Problems:**
+  Mimir supports in-memory manipulation of collections of problems simplifying the development of robust learning pipelines. This includes the independent parsing and translation of PDDL input files while sharing a domain across problems.
+
 - **Portability:**
   Setting up and running learning pipelines can be a challenging and time-consuming task.
   With this library, we aim to streamline this process by offering pre-compiled Python binaries, significantly reducing setup complexity.
@@ -37,15 +40,14 @@ Mimir is a C++20-based generalized planning library with Python bindings, design
 
 - **PDDL Parser & Normalizer:**
   Mimir uses the [Loki](https://github.com/drexlerd/Loki) parser for handling PDDL files.
-  Loki defines the grammar using the [Boost](https://www.boost.org/) library, enabling it to generate highly informative error messages for syntactically incorrect input. It also implements the normalization step of the input PDDL, mostly based on the method presented in section four of the paper [*"Concise finite-domain representations for PDDL planning tasks by Malte Helmert (AIJ 2009)"*](https://ai.dmi.unibas.ch/papers/helmert-aij2009.pdf)
+  Loki defines the grammar using the [Boost](https://www.boost.org/) library, enabling it to generate highly informative error messages for syntactically incorrect input. It also implements the normalization step of the input PDDL, mostly based on the method presented in section four of the paper [*"Concise finite-domain representations for PDDL planning tasks by Malte Helmert (AIJ 2009)"*](https://ai.dmi.unibas.ch/papers/helmert-aij2009.pdf).
 
 - **Lifted Successor Generator:**
-  The library implements a lifted applicable action generator based on the method presented in the paper [*"Lifted Successor Generation by Maximum Clique Enumeration"* by Simon Ståhlberg (ECAI 2023)](https://ebooks.iospress.nl/doi/10.3233/FAIA230516). This generator natively supports `:strips` and `:negative-preconditions`, while other precondition features are compiled away in the normalization step.
+  The library implements a lifted applicable action generator based on the method presented in the paper [*"Lifted Successor Generation by Maximum Clique Enumeration"* by Simon Ståhlberg (ECAI 2023)](https://ebooks.iospress.nl/doi/10.3233/FAIA230516). This generator natively supports `:strips` and `:negative-preconditions`, while other precondition features are compiled away in the normalization step. We also extended the generator to natively support `:numeric-fluents` using partial function evaluation and standard interval arithmetics.
 
 - **Grounded Successor Generator:**
   Delete relaxation is used to identify a set of grounded actions that may be applicable in potential successor states.
-  This set is then used to initialize the data structure outlined in the article [*"The Fast Downward Planning System"* by Malte Helmert (JAIR 2006)](https://jair.org/index.php/jair/article/view/10457) to efficiently identify all applicable actions in given states.
-  While this grounding process often results in significant performance improvements, it may not always be feasible in practice.
+  This set is then used to initialize the data structure outlined in the article [*"The Fast Downward Planning System"* by Malte Helmert (JAIR 2006)](https://jair.org/index.php/jair/article/view/10457) to efficiently identify all applicable actions in given states. While this grounding process often results in significant performance improvements, it may not always be feasible in practice.
 
 - **State Representation:**
   States are represented using a compressed sparse vector representation that contains all ground atoms that are true in the state. The compression step identifies the largest bit-width required to store all ground atoms. Internally, we unpack states into dense bitset representations for constant time randomized access.
