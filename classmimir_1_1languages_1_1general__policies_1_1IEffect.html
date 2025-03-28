@@ -114,8 +114,6 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a4aa05df0a103560550caf56fa2a77c51"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a37569e4c22bef113176e80ccefecb325"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IEffect.html#a37569e4c22bef113176e80ccefecb325">evaluate</a> (<a class="el" href="classmimir_1_1languages_1_1dl_1_1EvaluationContext.html">dl::EvaluationContext</a> &amp;source_context, <a class="el" href="classmimir_1_1languages_1_1dl_1_1EvaluationContext.html">dl::EvaluationContext</a> &amp;target_context) const =0</td></tr>
 <tr class="separator:a37569e4c22bef113176e80ccefecb325"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a734ea278d8b9dd0d9525a711b99e1a5b"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IEffect.html#a734ea278d8b9dd0d9525a711b99e1a5b">evaluate_with_debug</a> (<a class="el" href="classmimir_1_1languages_1_1dl_1_1EvaluationContext.html">dl::EvaluationContext</a> &amp;source_context, <a class="el" href="classmimir_1_1languages_1_1dl_1_1EvaluationContext.html">dl::EvaluationContext</a> &amp;target_context) const =0</td></tr>
-<tr class="separator:a734ea278d8b9dd0d9525a711b99e1a5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adce11d66109a5f3b09014b9c111f43b2"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IEffect.html#adce11d66109a5f3b09014b9c111f43b2">accept</a> (<a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IVisitor.html">IVisitor</a> &amp;visitor) const =0</td></tr>
 <tr class="memdesc:adce11d66109a5f3b09014b9c111f43b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accept a <code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1IVisitor.html">IVisitor</a></code>.  <br /></td></tr>
 <tr class="separator:adce11d66109a5f3b09014b9c111f43b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -220,44 +218,6 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Implemented in <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1EffectBase.html#a502502cecf65fd9e41b109b981a00959">mimir::languages::general_policies::EffectBase&lt; Derived_, D &gt;</a>, <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1EffectBase.html#a502502cecf65fd9e41b109b981a00959">mimir::languages::general_policies::EffectBase&lt; DecreaseNumericalEffectImpl, dl::NumericalTag &gt;</a>, <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1EffectBase.html#a502502cecf65fd9e41b109b981a00959">mimir::languages::general_policies::EffectBase&lt; IncreaseNumericalEffectImpl, dl::NumericalTag &gt;</a>, <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1EffectBase.html#a502502cecf65fd9e41b109b981a00959">mimir::languages::general_policies::EffectBase&lt; NegativeBooleanEffectImpl, dl::BooleanTag &gt;</a>, <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1EffectBase.html#a502502cecf65fd9e41b109b981a00959">mimir::languages::general_policies::EffectBase&lt; PositiveBooleanEffectImpl, dl::BooleanTag &gt;</a>, <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1EffectBase.html#a502502cecf65fd9e41b109b981a00959">mimir::languages::general_policies::EffectBase&lt; UnchangedBooleanEffectImpl, dl::BooleanTag &gt;</a>, and <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1EffectBase.html#a502502cecf65fd9e41b109b981a00959">mimir::languages::general_policies::EffectBase&lt; UnchangedNumericalEffectImpl, dl::NumericalTag &gt;</a>.</p>
-
-</div>
-</div>
-<a id="a734ea278d8b9dd0d9525a711b99e1a5b" name="a734ea278d8b9dd0d9525a711b99e1a5b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a734ea278d8b9dd0d9525a711b99e1a5b">&#9670;&#160;</a></span>evaluate_with_debug()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual bool mimir::languages::general_policies::IEffect::evaluate_with_debug </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classmimir_1_1languages_1_1dl_1_1EvaluationContext.html">dl::EvaluationContext</a> &amp;&#160;</td>
-          <td class="paramname"><em>source_context</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classmimir_1_1languages_1_1dl_1_1EvaluationContext.html">dl::EvaluationContext</a> &amp;&#160;</td>
-          <td class="paramname"><em>target_context</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implemented in <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1EffectBase.html#a357a2936cc74e8fbfb1515021e04a8ef">mimir::languages::general_policies::EffectBase&lt; Derived_, D &gt;</a>, <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1EffectBase.html#a357a2936cc74e8fbfb1515021e04a8ef">mimir::languages::general_policies::EffectBase&lt; DecreaseNumericalEffectImpl, dl::NumericalTag &gt;</a>, <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1EffectBase.html#a357a2936cc74e8fbfb1515021e04a8ef">mimir::languages::general_policies::EffectBase&lt; IncreaseNumericalEffectImpl, dl::NumericalTag &gt;</a>, <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1EffectBase.html#a357a2936cc74e8fbfb1515021e04a8ef">mimir::languages::general_policies::EffectBase&lt; NegativeBooleanEffectImpl, dl::BooleanTag &gt;</a>, <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1EffectBase.html#a357a2936cc74e8fbfb1515021e04a8ef">mimir::languages::general_policies::EffectBase&lt; PositiveBooleanEffectImpl, dl::BooleanTag &gt;</a>, <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1EffectBase.html#a357a2936cc74e8fbfb1515021e04a8ef">mimir::languages::general_policies::EffectBase&lt; UnchangedBooleanEffectImpl, dl::BooleanTag &gt;</a>, and <a class="el" href="classmimir_1_1languages_1_1general__policies_1_1EffectBase.html#a357a2936cc74e8fbfb1515021e04a8ef">mimir::languages::general_policies::EffectBase&lt; UnchangedNumericalEffectImpl, dl::NumericalTag &gt;</a>.</p>
 
 </div>
 </div>
