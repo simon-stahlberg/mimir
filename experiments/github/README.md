@@ -1,7 +1,7 @@
 
 # Experiments
 
-We compare [Mimir](https://github.com/simon-stahlberg/mimir) against two state-of-the-art planning systems, [Fast Downward](https://github.com/aibasel/downward) and [Powerlifted](https://github.com/abcorrea/powerlifted), on three benchmark sets. The outline is as follows: First, we describe the objectives of our experimental evaluation. Second, we describe some common setup, including resource limits and performance metrics. Third, we describe some important technical details of each planner and configurations that were used. Fourth, we discuss the benchmark sets that were used. Last, we present the gathered data.
+We compare [Mimir](https://github.com/simon-stahlberg/mimir) against two state-of-the-art planning systems, [Fast Downward](https://github.com/aibasel/downward) and [Powerlifted](https://github.com/abcorrea/powerlifted), on four benchmark sets. The outline is as follows: First, we describe the objectives of our experimental evaluation. Second, we describe some common setup, including resource limits and performance metrics. Third, we describe some important technical details of each planner and configurations that were used. Fourth, we discuss the benchmark sets that were used. Last, we present the gathered data.
 
 ## 1. Evaluation Objectives
 
@@ -54,7 +54,7 @@ The numeric benchmarks from the IPC use `numeric-fluents` and `:adl`. Similarly,
 
 ## 6. Experimental Results
 
-It follows the performance metric scores `Coverage`, `Total time`, and `Search time` for all grounded configurations `Fast-Downward`, `Mimir-grounded` and lifted configurations `Powerlifted` and `Mimir-lifted` on the three benchmark sets `Hard-to-Ground`, `Optimal-STRIPS`, and `Optimal-ADL`.
+It follows the performance metric scores `Coverage`, `Total time`, and `Search time` for all grounded configurations `Fast-Downward`, `Mimir-grounded` and lifted configurations `Powerlifted` and `Mimir-lifted` on the four benchmark sets `Hard-to-Ground`, `Optimal-STRIPS`, `Optimal-ADL`, and `Numeric`.
 
 ### Time limit 30 Minutes:
 
