@@ -54,9 +54,7 @@ public:
     using SatisficingBindingGenerator<ActionSatisficingBindingGenerator>::get_event_handler;
     using SatisficingBindingGenerator<ActionSatisficingBindingGenerator>::get_static_consistency_graph;
 
-    ActionSatisficingBindingGenerator(formalism::Action action,
-                                      formalism::Problem problem,
-                                      std::optional<SatisficingBindingGeneratorEventHandler> event_handler = std::nullopt);
+    ActionSatisficingBindingGenerator(formalism::Action action, formalism::Problem problem, std::shared_ptr<IEventHandler> event_handler = nullptr);
 
     const formalism::Action& get_action() const;
 };

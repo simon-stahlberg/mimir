@@ -61,10 +61,6 @@ using AxiomEvaluator = std::shared_ptr<IAxiomEvaluator>;
 class GroundedAxiomEvaluator;
 class LiftedAxiomEvaluator;
 
-/* SatisficingBindingGenerator */
-class ISatisficingBindingGeneratorEventHandler;
-using SatisficingBindingGeneratorEventHandler = std::shared_ptr<ISatisficingBindingGeneratorEventHandler>;
-
 /* MatchTree */
 template<typename T>
 class MatchTree;

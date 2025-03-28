@@ -26,9 +26,7 @@ using namespace mimir::formalism;
 namespace mimir::search
 {
 
-ActionSatisficingBindingGenerator::ActionSatisficingBindingGenerator(Action action,
-                                                                     Problem problem,
-                                                                     std::optional<SatisficingBindingGeneratorEventHandler> event_handler) :
+ActionSatisficingBindingGenerator::ActionSatisficingBindingGenerator(Action action, Problem problem, std::shared_ptr<IEventHandler> event_handler) :
     SatisficingBindingGenerator<ActionSatisficingBindingGenerator>(action->get_conjunctive_condition(), problem, event_handler),
     m_action(action)
 {

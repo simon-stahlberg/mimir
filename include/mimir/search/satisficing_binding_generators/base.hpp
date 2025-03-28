@@ -25,7 +25,6 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/dense_state.hpp"
-#include "mimir/search/satisficing_binding_generators/event_handlers/interface.hpp"
 
 #include <boost/dynamic_bitset/dynamic_bitset.hpp>
 
@@ -39,10 +38,27 @@ namespace mimir::search
 template<typename Derived_>
 class SatisficingBindingGenerator
 {
+public:
+    class IEventHandler
+    {
+    public:
+        virtual ~IEventHandler() = default;
+
+        virtual void on_invalid_binding(const formalism::ObjectList& binding, const formalism::ProblemImpl& problem) = 0;
+    };
+
+    class DefaultEventHandler : public IEventHandler
+    {
+    public:
+        DefaultEventHandler() : IEventHandler() {}
+
+        void on_invalid_binding(const formalism::ObjectList& binding, const formalism::ProblemImpl& problem) {}
+    };
+
 protected:
     formalism::ConjunctiveCondition m_conjunctive_condition;
     formalism::Problem m_problem;
-    SatisficingBindingGeneratorEventHandler m_event_handler;
+    std::shared_ptr<IEventHandler> m_event_handler;
 
     formalism::StaticConsistencyGraph m_static_consistency_graph;
 
@@ -91,7 +107,7 @@ protected:
 public:
     SatisficingBindingGenerator(formalism::ConjunctiveCondition conjunctive_condition,
                                 formalism::Problem problem,
-                                std::optional<SatisficingBindingGeneratorEventHandler> event_handler = std::nullopt);
+                                std::shared_ptr<IEventHandler> event_handler = nullptr);
 
     mimir::generator<formalism::ObjectList>
     create_binding_generator(State state,
@@ -125,7 +141,7 @@ public:
 
     const formalism::ConjunctiveCondition& get_conjunctive_condition() const;
     const formalism::Problem& get_problem() const;
-    const SatisficingBindingGeneratorEventHandler& get_event_handler() const;
+    const std::shared_ptr<IEventHandler>& get_event_handler() const;
     const formalism::StaticConsistencyGraph& get_static_consistency_graph() const;
 };
 

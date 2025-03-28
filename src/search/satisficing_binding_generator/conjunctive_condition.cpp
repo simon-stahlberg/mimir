@@ -24,10 +24,9 @@ using namespace mimir::formalism;
 namespace mimir::search
 {
 
-ConjunctiveConditionSatisficingBindingGenerator::ConjunctiveConditionSatisficingBindingGenerator(
-    ConjunctiveCondition conjunctive_condition,
-    Problem problem,
-    std::optional<SatisficingBindingGeneratorEventHandler> event_handler) :
+ConjunctiveConditionSatisficingBindingGenerator::ConjunctiveConditionSatisficingBindingGenerator(ConjunctiveCondition conjunctive_condition,
+                                                                                                 Problem problem,
+                                                                                                 std::shared_ptr<IEventHandler> event_handler) :
     SatisficingBindingGenerator<ConjunctiveConditionSatisficingBindingGenerator>(conjunctive_condition, std::move(problem), event_handler)
 {
 }
