@@ -635,7 +635,7 @@ void GeneratorVisitor::visit(const Grammar& grammar)
     }
 }
 
-const HanaGeneratorStatistics<ConceptTag, RoleTag, BooleanTag, NumericalTag>& GeneratorVisitor::get_statistics() const { return m_statistics; }
+const HanaGeneratorStatistics& GeneratorVisitor::get_statistics() const { return m_statistics; }
 
 const std::any& GeneratorVisitor::get_result() const { return m_result; }
 }

@@ -39,12 +39,11 @@ private:
     template<IsConceptOrRoleOrBooleanOrNumericalTag D>
     using GeneratedConstructorsMap = std::unordered_map<NonTerminal<D>, std::vector<dl::ConstructorList<D>>>;
 
-    template<IsConceptOrRoleOrBooleanOrNumericalTag... Ds>
-    using HanaGeneratedConstructorsMaps = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, GeneratedConstructorsMap<Ds>>...>;
+    using HanaGeneratedConstructorsMaps = HanaMappedContainer<GeneratedConstructorsMap, ConceptTag, RoleTag, BooleanTag, NumericalTag>;
 
     static const dl::ConstructorLists empty_lists;
 
-    HanaGeneratedConstructorsMaps<ConceptTag, RoleTag, BooleanTag, NumericalTag> m_generated_constructors;
+    HanaGeneratedConstructorsMaps m_generated_constructors;
 
 public:
     template<IsConceptOrRoleOrBooleanOrNumericalTag D>
@@ -72,7 +71,7 @@ public:
         return it->second.at(complexity);
     }
 
-    HanaGeneratedConstructorsMaps<ConceptTag, RoleTag, BooleanTag, NumericalTag>& get_hana_generated_constructors() { return m_generated_constructors; }
+    HanaGeneratedConstructorsMaps& get_hana_generated_constructors() { return m_generated_constructors; }
 };
 
 template<IsConceptOrRoleOrBooleanOrNumericalTag D>
@@ -92,8 +91,7 @@ struct GeneratorStatistics
     }
 };
 
-template<IsConceptOrRoleOrBooleanOrNumericalTag... Ds>
-using HanaGeneratorStatistics = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, GeneratorStatistics<Ds>>...>;
+using HanaGeneratorStatistics = HanaMappedContainer<GeneratorStatistics, ConceptTag, RoleTag, BooleanTag, NumericalTag>;
 
 /**
  * Concept
@@ -110,7 +108,7 @@ private:
     size_t m_complexity;
 
     dl::ConstructorLists m_generated;
-    HanaGeneratorStatistics<ConceptTag, RoleTag, BooleanTag, NumericalTag> m_statistics;
+    HanaGeneratorStatistics m_statistics;
 
     std::any m_result;
 
@@ -176,7 +174,7 @@ public:
 
     void visit(const Grammar& grammar) override;
 
-    const HanaGeneratorStatistics<ConceptTag, RoleTag, BooleanTag, NumericalTag>& get_statistics() const;
+    const HanaGeneratorStatistics& get_statistics() const;
 
 private:
     template<IsConceptOrRoleOrBooleanOrNumericalTag D>
