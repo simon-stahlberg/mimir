@@ -101,24 +101,33 @@ It follows the performance metric scores `Coverage`, `Total time`, and `Search t
 | Item              |     Coverage | Total time [ms] | Search time [ms] |
 | :---------------- | -----------: | --------------: | ---------------: |
 | Fast-Downward     |      **617** |             607 |           **88** |
-| Mimir-grounded    |          592 |         **303** |              99 |
+| Mimir-grounded    |          597 |         **312** |              110 |
 | Powerlifted       |          454 |            2113 |             1868 |
-| Mimir-lifted      |          525 |             853 |              527 |
+| Mimir-lifted      |          530 |             841 |              502 |
 
 2. Hard-to-Ground
 
 | Item              |     Coverage | Total time [ms] | Search time [ms] |
 | :---------------- | -----------: | --------------: | ---------------: |
-| Fast-Downward     |          97 |            2552 |               67 |
-| Mimir-grounded    |          87 |            2458 |           **37** |
-| Powerlifted       |     **129** |         **197** |              120 |
-| Mimir-lifted      |         123 |             311 |              165 |
+| Fast-Downward     |           97 |            2552 |               71 |
+| Mimir-grounded    |           91 |            2458 |           **53** |
+| Powerlifted       |          129 |         **197** |              182 |
+| Mimir-lifted      |      **132** |             311 |              145 |
 
 3. Optimal-ADL
 
 | Item              |     Coverage | Total time [ms] | Search time [ms] |
 | :---------------- | -----------: | --------------: | ---------------: |
-| Fast-Downward     |      **318** |            1234 |          **137** |
-| Mimir-grounded    |          312 |         **607** |              208 |
+| Fast-Downward     |      **318** |            1401 |          **165** |
+| Mimir-grounded    |          308 |         **637** |              257 |
 | Powerlifted       |            x |               x |                x |
-| Mimir-lifted      |          255 |            2340 |             1619 |
+| Mimir-lifted      |          261 |            2436 |             1664 |
+
+4. Numeric
+
+| Item              |     Coverage | Total time [ms] | Search time [ms] |
+| :---------------- | -----------: | --------------: | ---------------: |
+| Fast-Downward     |            x |               x |                x |
+| Mimir-grounded    |           41 |         **535** |          **291** |
+| Powerlifted       |            x |               x |                x |
+| Mimir-lifted      |           41 |             806 |              509 |
