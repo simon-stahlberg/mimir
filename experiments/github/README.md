@@ -92,7 +92,7 @@ It follows the performance metric scores `Coverage`, `Total time`, and `Search t
 | Fast-Downward     |            x |               x |                x |
 | Mimir-grounded    |           44 |        **1222** |          **686** |
 | Powerlifted       |            x |               x |                x |
-| Mimir-lifted      |           46 |            1806 |             1144 |
+| Mimir-lifted      |       **46** |            1806 |             1144 |
 
 ### Time limit 5 Minutes:
 
@@ -128,6 +128,6 @@ It follows the performance metric scores `Coverage`, `Total time`, and `Search t
 | Item              |     Coverage | Total time [ms] | Search time [ms] |
 | :---------------- | -----------: | --------------: | ---------------: |
 | Fast-Downward     |            x |               x |                x |
-| Mimir-grounded    |           41 |         **535** |          **291** |
+| Mimir-grounded    |       **41** |         **535** |          **291** |
 | Powerlifted       |            x |               x |                x |
-| Mimir-lifted      |           41 |             806 |              509 |
+| Mimir-lifted      |       **41** |             806 |              509 |
