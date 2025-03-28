@@ -170,7 +170,6 @@ var menudata={children:[
 {text:"c",url:"functions_rela.html#index_c"},
 {text:"d",url:"functions_rela.html#index_d"},
 {text:"e",url:"functions_rela.html#index_e"},
-{text:"g",url:"functions_rela.html#index_g"},
 {text:"l",url:"functions_rela.html#index_l"},
 {text:"p",url:"functions_rela.html#index_p"},
 {text:"s",url:"functions_rela.html#index_s"}]}]}]},

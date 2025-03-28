@@ -7,7 +7,7 @@ var searchData=
   ['split_5fmetric_4',['split_metric',['../structmimir_1_1search_1_1match__tree_1_1Options.html#a94407c6c68ff9c3266f87fa5efb50436',1,'mimir::search::match_tree::Options']]],
   ['split_5fstrategy_5',['split_strategy',['../structmimir_1_1search_1_1match__tree_1_1Options.html#af8700de90847de28a2b2fe8be0001aef',1,'mimir::search::match_tree::Options']]],
   ['state_5fspace_5foptions_6',['state_space_options',['../structmimir_1_1datasets_1_1KnowledgeBaseImpl_1_1Options.html#a86604ad68a3d681802cadf8dacabe5b5',1,'mimir::datasets::KnowledgeBaseImpl::Options']]],
-  ['statistics_7',['statistics',['../structmimir_1_1search_1_1GroundedApplicableActionGeneratorStatistics.html#aea5b219de9091c7ec5bfb609e13ac4a8',1,'mimir::search::GroundedApplicableActionGeneratorStatistics']]],
+  ['statistics_7',['statistics',['../structmimir_1_1search_1_1GroundedApplicableActionGenerator_1_1Statistics.html#ac7aceb970b6d1e51c76a1434f3cab7a4',1,'mimir::search::GroundedApplicableActionGenerator::Statistics']]],
   ['status_8',['status',['../structmimir_1_1search_1_1SearchResult.html#af34a3ff103ec0bf69d6aca72efa1a7d3',1,'mimir::search::SearchResult']]],
   ['symmetry_5fpruning_9',['symmetry_pruning',['../structmimir_1_1datasets_1_1GeneralizedStateSpaceImpl_1_1Options.html#aab4a05468185960f82a8e21c44ab0367',1,'mimir::datasets::GeneralizedStateSpaceImpl::Options::symmetry_pruning()'],['../structmimir_1_1datasets_1_1StateSpaceImpl_1_1Options.html#afa6e00088778e58de43dbec7f8f6c85d',1,'mimir::datasets::StateSpaceImpl::Options::symmetry_pruning()']]]
 ];
