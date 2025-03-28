@@ -46,9 +46,9 @@ class LiftedAStarPlanner
 {
 private:
     Problem m_problem;
-    LiftedApplicableActionGeneratorEventHandler m_applicable_action_generator_event_handler;
+    std::shared_ptr<LiftedApplicableActionGenerator::IEventHandler> m_applicable_action_generator_event_handler;
     std::shared_ptr<LiftedApplicableActionGenerator> m_applicable_action_generator;
-    LiftedAxiomEvaluatorEventHandler m_axiom_evaluator_event_handler;
+    std::shared_ptr<LiftedAxiomEvaluator::IEventHandler> m_axiom_evaluator_event_handler;
     std::shared_ptr<LiftedAxiomEvaluator> m_axiom_evaluator;
     StateRepository m_state_repository;
     Heuristic m_heuristic;
@@ -58,9 +58,9 @@ private:
 public:
     LiftedAStarPlanner(const fs::path& domain_file, const fs::path& problem_file, HeuristicType type) :
         m_problem(ProblemImpl::create(domain_file, problem_file)),
-        m_applicable_action_generator_event_handler(std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>()),
+        m_applicable_action_generator_event_handler(std::make_shared<LiftedApplicableActionGenerator::DefaultEventHandler>()),
         m_applicable_action_generator(std::make_shared<LiftedApplicableActionGenerator>(m_problem, m_applicable_action_generator_event_handler)),
-        m_axiom_evaluator_event_handler(std::make_shared<DefaultLiftedAxiomEvaluatorEventHandler>()),
+        m_axiom_evaluator_event_handler(std::make_shared<LiftedAxiomEvaluator::DefaultEventHandler>()),
         m_axiom_evaluator(std::make_shared<LiftedAxiomEvaluator>(m_problem, m_axiom_evaluator_event_handler)),
         m_state_repository(std::make_shared<StateRepositoryImpl>(m_axiom_evaluator)),
         m_astar_event_handler(std::make_shared<astar::DefaultEventHandler>(m_problem)),
@@ -89,12 +89,12 @@ public:
 
     const astar::Statistics& get_algorithm_statistics() const { return m_astar_event_handler->get_statistics(); }
 
-    const LiftedApplicableActionGeneratorStatistics& get_applicable_action_generator_statistics() const
+    const LiftedApplicableActionGenerator::Statistics& get_applicable_action_generator_statistics() const
     {
         return m_applicable_action_generator_event_handler->get_statistics();
     }
 
-    const LiftedAxiomEvaluatorStatistics& get_axiom_evaluator_statistics() const { return m_axiom_evaluator_event_handler->get_statistics(); }
+    const LiftedAxiomEvaluator::Statistics& get_axiom_evaluator_statistics() const { return m_axiom_evaluator_event_handler->get_statistics(); }
 };
 
 /// @brief Instantiate a grounded AStar
@@ -103,9 +103,9 @@ class GroundedAStarPlanner
 private:
     Problem m_problem;
     DeleteRelaxedProblemExplorator m_delete_relaxed_problem_explorator;
-    GroundedApplicableActionGeneratorEventHandler m_applicable_action_generator_event_handler;
+    std::shared_ptr<GroundedApplicableActionGenerator::IEventHandler> m_applicable_action_generator_event_handler;
     ApplicableActionGenerator m_applicable_action_generator;
-    GroundedAxiomEvaluatorEventHandler m_axiom_evaluator_event_handler;
+    std::shared_ptr<GroundedAxiomEvaluator::IEventHandler> m_axiom_evaluator_event_handler;
     AxiomEvaluator m_axiom_evaluator;
     StateRepository m_state_repository;
     Heuristic m_heuristic;
@@ -116,11 +116,11 @@ public:
     GroundedAStarPlanner(const fs::path& domain_file, const fs::path& problem_file, HeuristicType type) :
         m_problem(ProblemImpl::create(domain_file, problem_file)),
         m_delete_relaxed_problem_explorator(m_problem),
-        m_applicable_action_generator_event_handler(std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>()),
+        m_applicable_action_generator_event_handler(std::make_shared<GroundedApplicableActionGenerator::DefaultEventHandler>()),
         m_applicable_action_generator(
             m_delete_relaxed_problem_explorator.create_grounded_applicable_action_generator(match_tree::Options(),
                                                                                             m_applicable_action_generator_event_handler)),
-        m_axiom_evaluator_event_handler(std::make_shared<DefaultGroundedAxiomEvaluatorEventHandler>()),
+        m_axiom_evaluator_event_handler(std::make_shared<GroundedAxiomEvaluator::DefaultEventHandler>()),
         m_axiom_evaluator(m_delete_relaxed_problem_explorator.create_grounded_axiom_evaluator(match_tree::Options(), m_axiom_evaluator_event_handler)),
         m_state_repository(std::make_shared<StateRepositoryImpl>(m_axiom_evaluator)),
         m_astar_event_handler(std::make_shared<astar::DefaultEventHandler>(m_problem)),
@@ -149,12 +149,12 @@ public:
 
     const astar::Statistics& get_algorithm_statistics() const { return m_astar_event_handler->get_statistics(); }
 
-    const GroundedApplicableActionGeneratorStatistics& get_applicable_action_generator_statistics() const
+    const GroundedApplicableActionGenerator::Statistics& get_applicable_action_generator_statistics() const
     {
         return m_applicable_action_generator_event_handler->get_statistics();
     }
 
-    const GroundedAxiomEvaluatorStatistics& get_axiom_evaluator_statistics() const { return m_axiom_evaluator_event_handler->get_statistics(); }
+    const GroundedAxiomEvaluator::Statistics& get_axiom_evaluator_statistics() const { return m_axiom_evaluator_event_handler->get_statistics(); }
 };
 
 /**

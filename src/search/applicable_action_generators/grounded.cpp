@@ -18,7 +18,6 @@
 #include "mimir/search/applicable_action_generators/grounded.hpp"
 
 #include "mimir/search/applicability.hpp"
-#include "mimir/search/applicable_action_generators/grounded/event_handlers.hpp"
 #include "mimir/search/applicable_action_generators/lifted.hpp"
 #include "mimir/search/state.hpp"
 #include "mimir/search/state_repository.hpp"
@@ -28,14 +27,80 @@ using namespace mimir::formalism;
 namespace mimir::search
 {
 
+/**
+ * DebugEventHandler
+ */
+
+void GroundedApplicableActionGenerator::DebugEventHandler::on_start_ground_action_instantiation_impl() const
+{
+    std::cout << "[GroundedApplicableActionGenerator] Started instantiating ground actions." << std::endl;
+}
+
+void GroundedApplicableActionGenerator::DebugEventHandler::on_finish_ground_action_instantiation_impl(std::chrono::milliseconds total_time) const
+{
+    std::cout << "[GroundedApplicableActionGenerator] Total time for ground action instantiation: " << total_time << std::endl;
+}
+
+void GroundedApplicableActionGenerator::DebugEventHandler::on_start_build_action_match_tree_impl() const
+{
+    std::cout << "[GroundedApplicableActionGenerator] Started building action match tree." << std::endl;
+}
+
+void GroundedApplicableActionGenerator::DebugEventHandler::on_finish_build_action_match_tree_impl(const match_tree::MatchTree<GroundActionImpl>& match_tree)
+{
+    std::cout << match_tree.get_statistics() << "\n"
+              << "[GroundedApplicableActionGenerator] Finished building action match tree" << std::endl;
+}
+
+void GroundedApplicableActionGenerator::DebugEventHandler::on_finish_search_layer_impl() const
+{  //
+}
+
+void GroundedApplicableActionGenerator::DebugEventHandler::on_end_search_impl() const {}
+
+/**
+ * DefaultEventHandler
+ */
+
+void GroundedApplicableActionGenerator::DefaultEventHandler::on_start_ground_action_instantiation_impl() const
+{
+    std::cout << "[GroundedApplicableActionGenerator] Started instantiating ground actions." << std::endl;
+}
+
+void GroundedApplicableActionGenerator::DefaultEventHandler::on_finish_ground_action_instantiation_impl(std::chrono::milliseconds total_time) const
+{
+    std::cout << "[GroundedApplicableActionGenerator] Total time for ground action instantiation: " << total_time << std::endl;
+}
+
+void GroundedApplicableActionGenerator::DefaultEventHandler::on_start_build_action_match_tree_impl() const
+{
+    std::cout << "[GroundedApplicableActionGenerator] Started building action match tree." << std::endl;
+}
+
+void GroundedApplicableActionGenerator::DefaultEventHandler::on_finish_build_action_match_tree_impl(const match_tree::MatchTree<GroundActionImpl>& match_tree)
+{
+    std::cout << match_tree.get_statistics() << "\n"
+              << "[GroundedApplicableActionGenerator] Finished building action match tree" << std::endl;
+}
+
+void GroundedApplicableActionGenerator::DefaultEventHandler::on_finish_search_layer_impl() const
+{  //
+}
+
+void GroundedApplicableActionGenerator::DefaultEventHandler::on_end_search_impl() const {}
+
+/**
+ * GroundedApplicableActionGenerator
+ */
+
 GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem problem, std::unique_ptr<match_tree::MatchTree<GroundActionImpl>>&& match_tree) :
-    GroundedApplicableActionGenerator(std::move(problem), std::move(match_tree), std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>())
+    GroundedApplicableActionGenerator(std::move(problem), std::move(match_tree), std::make_shared<DefaultEventHandler>())
 {
 }
 
 GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem problem,
                                                                      std::unique_ptr<match_tree::MatchTree<GroundActionImpl>>&& match_tree,
-                                                                     GroundedApplicableActionGeneratorEventHandler event_handler) :
+                                                                     std::shared_ptr<IEventHandler> event_handler) :
     m_problem(std::move(problem)),
     m_match_tree(std::move(match_tree)),
     m_event_handler(std::move(event_handler)),

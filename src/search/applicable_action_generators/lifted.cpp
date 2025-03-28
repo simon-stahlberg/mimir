@@ -24,7 +24,6 @@
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/applicability.hpp"
-#include "mimir/search/applicable_action_generators/lifted/event_handlers.hpp"
 #include "mimir/search/state.hpp"
 
 #include <boost/dynamic_bitset.hpp>
@@ -38,12 +37,52 @@ using namespace std::string_literals;
 namespace mimir::search
 {
 
+/**
+ * DebugEventHandler
+ */
+
+void LiftedApplicableActionGenerator::DebugEventHandler::on_start_generating_applicable_actions_impl() const {}
+
+void LiftedApplicableActionGenerator::DebugEventHandler::on_ground_action_impl(GroundAction action) const {}
+
+void LiftedApplicableActionGenerator::DebugEventHandler::on_ground_action_cache_hit_impl(GroundAction action) const {}
+
+void LiftedApplicableActionGenerator::DebugEventHandler::on_ground_action_cache_miss_impl(GroundAction action) const {}
+
+void LiftedApplicableActionGenerator::DebugEventHandler::on_end_generating_applicable_actions_impl() const {}
+
+void LiftedApplicableActionGenerator::DebugEventHandler::on_finish_search_layer_impl() const {}
+
+void LiftedApplicableActionGenerator::DebugEventHandler::on_end_search_impl() const { std::cout << get_statistics() << std::endl; }
+
+/**
+ * DefaultEventHandler
+ */
+
+void LiftedApplicableActionGenerator::DefaultEventHandler::on_start_generating_applicable_actions_impl() const {}
+
+void LiftedApplicableActionGenerator::DefaultEventHandler::on_ground_action_impl(GroundAction action) const {}
+
+void LiftedApplicableActionGenerator::DefaultEventHandler::on_ground_action_cache_hit_impl(GroundAction action) const {}
+
+void LiftedApplicableActionGenerator::DefaultEventHandler::on_ground_action_cache_miss_impl(GroundAction action) const {}
+
+void LiftedApplicableActionGenerator::DefaultEventHandler::on_end_generating_applicable_actions_impl() const {}
+
+void LiftedApplicableActionGenerator::DefaultEventHandler::on_finish_search_layer_impl() const {}
+
+void LiftedApplicableActionGenerator::DefaultEventHandler::on_end_search_impl() const { std::cout << get_statistics() << std::endl; }
+
+/**
+ * LiftedApplicableActionGenerator
+ */
+
 LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem) :
-    LiftedApplicableActionGenerator(std::move(problem), std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>())
+    LiftedApplicableActionGenerator(std::move(problem), std::make_shared<DefaultEventHandler>())
 {
 }
 
-LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem, LiftedApplicableActionGeneratorEventHandler event_handler) :
+LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem, std::shared_ptr<IEventHandler> event_handler) :
     m_problem(problem),
     m_event_handler(event_handler),
     m_action_grounding_data(),

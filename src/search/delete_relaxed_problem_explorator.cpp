@@ -21,10 +21,8 @@
 #include "mimir/formalism/translator/delete_relax.hpp"
 #include "mimir/search/applicability.hpp"
 #include "mimir/search/applicable_action_generators/grounded.hpp"
-#include "mimir/search/applicable_action_generators/grounded/event_handlers.hpp"
 #include "mimir/search/applicable_action_generators/lifted.hpp"
 #include "mimir/search/axiom_evaluators/grounded.hpp"
-#include "mimir/search/axiom_evaluators/grounded/event_handlers.hpp"
 #include "mimir/search/axiom_evaluators/lifted.hpp"
 #include "mimir/search/dense_state.hpp"
 #include "mimir/search/match_tree/match_tree.hpp"
@@ -122,11 +120,11 @@ static ObjectList translate_from_delete_free_to_unrelaxed_problem(const ObjectLi
 }
 
 AxiomEvaluator DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator(const match_tree::Options& options,
-                                                                               GroundedAxiomEvaluatorEventHandler event_handler) const
+                                                                               std::shared_ptr<GroundedAxiomEvaluator::IEventHandler> event_handler) const
 {
     if (!event_handler)
     {
-        event_handler = std::make_shared<DefaultGroundedAxiomEvaluatorEventHandler>();
+        event_handler = std::make_shared<GroundedAxiomEvaluator::DefaultEventHandler>();
     }
 
     event_handler->on_start_ground_axiom_instantiation();
@@ -198,13 +196,13 @@ AxiomEvaluator DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator(c
     return std::make_shared<GroundedAxiomEvaluator>(m_problem, std::move(match_tree_partitioning), std::move(event_handler));
 }
 
-ApplicableActionGenerator
-DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator(const match_tree::Options& options,
-                                                                            GroundedApplicableActionGeneratorEventHandler event_handler) const
+ApplicableActionGenerator DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator(
+    const match_tree::Options& options,
+    std::shared_ptr<GroundedApplicableActionGenerator::IEventHandler> event_handler) const
 {
     if (!event_handler)
     {
-        event_handler = std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>();
+        event_handler = std::make_shared<GroundedApplicableActionGenerator::DefaultEventHandler>();
     }
 
     event_handler->on_start_ground_action_instantiation();

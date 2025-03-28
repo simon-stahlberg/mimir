@@ -40,10 +40,10 @@ TEST(MimirTests, SearchApplicableActionGeneratorsGroundedTest)
     const auto problem = ProblemImpl::create(domain_file, problem_file);
 
     auto delete_free_problem_explorator = DeleteRelaxedProblemExplorator(problem);
-    const auto applicable_action_generator_event_handler = std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>();
+    const auto applicable_action_generator_event_handler = std::make_shared<GroundedApplicableActionGenerator::DefaultEventHandler>();
     const auto applicable_action_generator =
         delete_free_problem_explorator.create_grounded_applicable_action_generator(match_tree::Options(), applicable_action_generator_event_handler);
-    const auto axiom_evaluator_event_handler = std::make_shared<DefaultGroundedAxiomEvaluatorEventHandler>();
+    const auto axiom_evaluator_event_handler = std::make_shared<GroundedAxiomEvaluator::DefaultEventHandler>();
     const auto axiom_evaluator = std::dynamic_pointer_cast<IAxiomEvaluator>(
         delete_free_problem_explorator.create_grounded_axiom_evaluator(match_tree::Options(), axiom_evaluator_event_handler));
     const auto state_repository = std::make_shared<StateRepositoryImpl>(axiom_evaluator);

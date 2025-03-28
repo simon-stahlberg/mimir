@@ -38,10 +38,9 @@ TEST(MimirTests, SearchApplicableActionGeneratorsLiftedTest)
     const auto problem_file = fs::path(std::string(DATA_DIR) + "miconic-fulladl/test_problem.pddl");
     const auto problem = ProblemImpl::create(domain_file, problem_file);
 
-    const auto applicable_action_generator_event_handler = std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>();
+    const auto applicable_action_generator_event_handler = std::make_shared<LiftedApplicableActionGenerator::DefaultEventHandler>();
     const auto applicable_action_generator = std::make_shared<LiftedApplicableActionGenerator>(problem, applicable_action_generator_event_handler);
-    const auto axiom_evaluator_event_handler =
-        std::dynamic_pointer_cast<ILiftedAxiomEvaluatorEventHandler>(std::make_shared<DefaultLiftedAxiomEvaluatorEventHandler>());
+    const auto axiom_evaluator_event_handler = std::make_shared<LiftedAxiomEvaluator::DefaultEventHandler>();
     const auto axiom_evaluator = std::dynamic_pointer_cast<IAxiomEvaluator>(std::make_shared<LiftedAxiomEvaluator>(problem, axiom_evaluator_event_handler));
     const auto state_repository = std::make_shared<StateRepositoryImpl>(axiom_evaluator);
     const auto brfs_event_handler = std::make_shared<brfs::DefaultEventHandler>(problem);

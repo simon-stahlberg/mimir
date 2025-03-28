@@ -35,23 +35,147 @@ namespace mimir::search
 /// as described by Helmert
 class GroundedApplicableActionGenerator : public IApplicableActionGenerator
 {
-private:
-    formalism::Problem m_problem;
-    std::unique_ptr<match_tree::MatchTree<formalism::GroundActionImpl>> m_match_tree;
-
-    GroundedApplicableActionGeneratorEventHandler m_event_handler;
-
-    /* Memory for reuse */
-    DenseState m_dense_state;
-
 public:
+    struct Statistics
+    {
+        match_tree::Statistics statistics;
+    };
+
+    class IEventHandler
+    {
+    public:
+        virtual ~IEventHandler() = default;
+
+        virtual void on_start_ground_action_instantiation() = 0;
+
+        virtual void on_finish_ground_action_instantiation(std::chrono::milliseconds total_time) = 0;
+
+        virtual void on_start_build_action_match_tree() = 0;
+
+        virtual void on_finish_build_action_match_tree(const match_tree::MatchTree<formalism::GroundActionImpl>& match_tree) = 0;
+
+        virtual void on_finish_search_layer() = 0;
+
+        virtual void on_end_search() = 0;
+
+        virtual const Statistics& get_statistics() const = 0;
+    };
+
+    /**
+     * Base class
+     *
+     * Collect statistics and call implementation of derived class.
+     */
+    template<typename Derived_>
+    class EventHandlerBase : public IEventHandler
+    {
+    protected:
+        Statistics m_statistics;
+        bool m_quiet;
+
+    private:
+        EventHandlerBase() = default;
+        friend Derived_;
+
+        /// @brief Helper to cast to Derived.
+        constexpr const auto& self() const { return static_cast<const Derived_&>(*this); }
+        constexpr auto& self() { return static_cast<Derived_&>(*this); }
+
+    public:
+        explicit EventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
+
+        void on_start_ground_action_instantiation() override
+        {
+            if (!m_quiet)
+                self().on_start_ground_action_instantiation_impl();
+        }
+
+        void on_finish_ground_action_instantiation(std::chrono::milliseconds total_time) override
+        {
+            if (!m_quiet)
+                self().on_finish_ground_action_instantiation_impl(total_time);
+        }
+
+        void on_start_build_action_match_tree() override
+        {
+            if (!m_quiet)
+                self().on_start_build_action_match_tree_impl();
+        }
+
+        void on_finish_build_action_match_tree(const match_tree::MatchTree<formalism::GroundActionImpl>& match_tree) override
+        {
+            m_statistics.statistics = match_tree.get_statistics();
+
+            if (!m_quiet)
+                self().on_finish_build_action_match_tree_impl(match_tree);
+        }
+
+        void on_finish_search_layer() override
+        {
+            if (!m_quiet)
+                self().on_finish_search_layer_impl();
+        }
+
+        void on_end_search() override
+        {
+            if (!m_quiet)
+                self().on_end_search_impl();
+        }
+
+        const Statistics& get_statistics() const override { return m_statistics; }
+    };
+
+    class DebugEventHandler : public EventHandlerBase<DebugEventHandler>
+    {
+    private:
+        /* Implement EventHandlerBase interface */
+        friend class EventHandlerBase<DebugEventHandler>;
+
+        void on_start_ground_action_instantiation_impl() const;
+
+        void on_finish_ground_action_instantiation_impl(std::chrono::milliseconds total_time) const;
+
+        void on_start_build_action_match_tree_impl() const;
+
+        void on_finish_build_action_match_tree_impl(const match_tree::MatchTree<formalism::GroundActionImpl>& action_match_tree);
+
+        void on_finish_search_layer_impl() const;
+
+        void on_end_search_impl() const;
+
+    public:
+        explicit DebugEventHandler(bool quiet = true) : EventHandlerBase<DebugEventHandler>(quiet) {}
+    };
+
+    class DefaultEventHandler : public EventHandlerBase<DefaultEventHandler>
+    {
+    private:
+        /* Implement EventHandlerBase interface */
+        friend class EventHandlerBase<DefaultEventHandler>;
+
+        void on_start_ground_action_instantiation_impl() const;
+
+        void on_finish_ground_action_instantiation_impl(std::chrono::milliseconds total_time) const;
+
+        void on_start_build_action_match_tree_impl() const;
+
+        void on_finish_build_action_match_tree_impl(const match_tree::MatchTree<formalism::GroundActionImpl>& action_match_tree);
+
+        void on_finish_search_layer_impl() const;
+
+        void on_end_search_impl() const;
+
+    public:
+        explicit DefaultEventHandler(bool quiet = true) : EventHandlerBase<DefaultEventHandler>(quiet) {}
+    };
+
     /// @brief Simplest construction
     GroundedApplicableActionGenerator(formalism::Problem problem, std::unique_ptr<match_tree::MatchTree<formalism::GroundActionImpl>>&& match_tree);
 
     /// @brief Complete construction
     GroundedApplicableActionGenerator(formalism::Problem problem,
                                       std::unique_ptr<match_tree::MatchTree<formalism::GroundActionImpl>>&& match_tree,
-                                      GroundedApplicableActionGeneratorEventHandler event_handler);
+                                      std::shared_ptr<IEventHandler> event_handler);
 
     // Uncopyable
     GroundedApplicableActionGenerator(const GroundedApplicableActionGenerator& other) = delete;
@@ -75,6 +199,15 @@ public:
      */
 
     const formalism::Problem& get_problem() const override;
+
+private:
+    formalism::Problem m_problem;
+    std::unique_ptr<match_tree::MatchTree<formalism::GroundActionImpl>> m_match_tree;
+
+    std::shared_ptr<IEventHandler> m_event_handler;
+
+    /* Memory for reuse */
+    DenseState m_dense_state;
 };
 
 }

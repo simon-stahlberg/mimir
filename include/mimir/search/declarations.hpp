@@ -55,21 +55,11 @@ using ApplicableActionGenerator = std::shared_ptr<IApplicableActionGenerator>;
 class GroundedApplicableActionGenerator;
 class LiftedApplicableActionGenerator;
 
-class IGroundedApplicableActionGeneratorEventHandler;
-using GroundedApplicableActionGeneratorEventHandler = std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler>;
-class ILiftedApplicableActionGeneratorEventHandler;
-using LiftedApplicableActionGeneratorEventHandler = std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler>;
-
 /* AxiomEvaluators */
 class IAxiomEvaluator;
 using AxiomEvaluator = std::shared_ptr<IAxiomEvaluator>;
 class GroundedAxiomEvaluator;
 class LiftedAxiomEvaluator;
-
-class IGroundedAxiomEvaluatorEventHandler;
-using GroundedAxiomEvaluatorEventHandler = std::shared_ptr<IGroundedAxiomEvaluatorEventHandler>;
-class ILiftedAxiomEvaluatorEventHandler;
-using LiftedAxiomEvaluatorEventHandler = std::shared_ptr<ILiftedAxiomEvaluatorEventHandler>;
 
 /* SatisficingBindingGenerator */
 class ISatisficingBindingGeneratorEventHandler;

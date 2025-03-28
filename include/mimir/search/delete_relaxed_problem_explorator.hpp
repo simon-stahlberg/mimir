@@ -20,6 +20,8 @@
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/translator/delete_relax.hpp"
+#include "mimir/search/applicable_action_generators/grounded.hpp"
+#include "mimir/search/axiom_evaluators/grounded.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/match_tree/declarations.hpp"
 #include "mimir/search/match_tree/options.hpp"
@@ -51,10 +53,11 @@ public:
     DeleteRelaxedProblemExplorator& operator=(DeleteRelaxedProblemExplorator&& other) = delete;
 
     AxiomEvaluator create_grounded_axiom_evaluator(const match_tree::Options& options = match_tree::Options(),
-                                                   GroundedAxiomEvaluatorEventHandler event_handler = nullptr) const;
+                                                   std::shared_ptr<GroundedAxiomEvaluator::IEventHandler> event_handler = nullptr) const;
 
-    ApplicableActionGenerator create_grounded_applicable_action_generator(const match_tree::Options& options = match_tree::Options(),
-                                                                          GroundedApplicableActionGeneratorEventHandler event_handler = nullptr) const;
+    ApplicableActionGenerator
+    create_grounded_applicable_action_generator(const match_tree::Options& options = match_tree::Options(),
+                                                std::shared_ptr<GroundedApplicableActionGenerator::IEventHandler> event_handler = nullptr) const;
 
     const formalism::Problem& get_problem() const;
 };

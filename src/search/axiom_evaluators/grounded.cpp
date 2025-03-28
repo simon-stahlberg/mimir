@@ -23,22 +23,102 @@
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/applicability.hpp"
-#include "mimir/search/axiom_evaluators/grounded/event_handlers.hpp"
 #include "mimir/search/dense_state.hpp"
 
 using namespace mimir::formalism;
 
 namespace mimir::search
 {
+
+/**
+ * DebugEventHandler
+ */
+
+void GroundedAxiomEvaluator::DebugEventHandler::on_start_ground_axiom_instantiation_impl() const
+{
+    std::cout << "[GroundedAxiomEvaluator] Started instantiating ground axioms." << std::endl;
+}
+
+void GroundedAxiomEvaluator::DebugEventHandler::on_finish_ground_axiom_instantiation_impl(std::chrono::milliseconds total_time) const
+{
+    std::cout << "[GroundedAxiomEvaluator] Total time for ground axiom instantiation: " << total_time << std::endl;
+}
+
+void GroundedAxiomEvaluator::DebugEventHandler::on_start_build_axiom_match_trees_impl() const
+{
+    std::cout << "[GroundedAxiomEvaluator] Started building axiom match trees." << std::endl;
+}
+
+void GroundedAxiomEvaluator::DebugEventHandler::on_start_build_axiom_match_tree_impl(size_t partition_index) const
+{
+    std::cout << "[GroundedAxiomEvaluator] Axiom partition: " << partition_index << std::endl;
+}
+
+void GroundedAxiomEvaluator::DebugEventHandler::on_finish_build_axiom_match_tree_impl(const match_tree::MatchTree<GroundAxiomImpl>& match_tree) const
+{
+    std::cout << match_tree.get_statistics() << std::endl;
+}
+
+void GroundedAxiomEvaluator::DebugEventHandler::on_finish_build_axiom_match_trees_impl(std::chrono::milliseconds total_time) const
+{
+    std::cout << "[GroundedAxiomEvaluator] Total time for building axiom match trees: " << total_time << std::endl;
+}
+
+void GroundedAxiomEvaluator::DebugEventHandler::on_finish_search_layer_impl() const {}
+
+void GroundedAxiomEvaluator::DebugEventHandler::on_end_search_impl() const {}
+
+/**
+ * DefaultEventHandler
+ */
+
+void GroundedAxiomEvaluator::DefaultEventHandler::on_start_ground_axiom_instantiation_impl() const
+{
+    std::cout << "[GroundedAxiomEvaluator] Started instantiating ground axioms." << std::endl;
+}
+
+void GroundedAxiomEvaluator::DefaultEventHandler::on_finish_ground_axiom_instantiation_impl(std::chrono::milliseconds total_time) const
+{
+    std::cout << "[GroundedAxiomEvaluator] Total time for ground axiom instantiation: " << total_time << std::endl;
+}
+
+void GroundedAxiomEvaluator::DefaultEventHandler::on_start_build_axiom_match_trees_impl() const
+{
+    std::cout << "[GroundedAxiomEvaluator] Started building axiom match trees." << std::endl;
+}
+
+void GroundedAxiomEvaluator::DefaultEventHandler::on_start_build_axiom_match_tree_impl(size_t partition_index) const
+{
+    std::cout << "[GroundedAxiomEvaluator] Axiom partition: " << partition_index << std::endl;
+}
+
+void GroundedAxiomEvaluator::DefaultEventHandler::on_finish_build_axiom_match_tree_impl(const match_tree::MatchTree<GroundAxiomImpl>& match_tree) const
+{
+    std::cout << match_tree.get_statistics() << std::endl;
+}
+
+void GroundedAxiomEvaluator::DefaultEventHandler::on_finish_build_axiom_match_trees_impl(std::chrono::milliseconds total_time) const
+{
+    std::cout << "[GroundedAxiomEvaluator] Total time for building axiom match trees: " << total_time << std::endl;
+}
+
+void GroundedAxiomEvaluator::DefaultEventHandler::on_finish_search_layer_impl() const {}
+
+void GroundedAxiomEvaluator::DefaultEventHandler::on_end_search_impl() const {}
+
+/**
+ * GroundedAxiomEvaluator
+ */
+
 GroundedAxiomEvaluator::GroundedAxiomEvaluator(Problem problem,
                                                std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>>&& match_tree_partitioning) :
-    GroundedAxiomEvaluator(std::move(problem), std::move(match_tree_partitioning), std::make_shared<DefaultGroundedAxiomEvaluatorEventHandler>())
+    GroundedAxiomEvaluator(std::move(problem), std::move(match_tree_partitioning), std::make_shared<DefaultEventHandler>())
 {
 }
 
 GroundedAxiomEvaluator::GroundedAxiomEvaluator(Problem problem,
                                                std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>>&& match_tree_partitioning,
-                                               GroundedAxiomEvaluatorEventHandler event_handler) :
+                                               std::shared_ptr<IEventHandler> event_handler) :
     m_problem(std::move(problem)),
     m_match_tree_partitioning(std::move(match_tree_partitioning)),
     m_event_handler(std::move(event_handler))
@@ -94,5 +174,5 @@ void GroundedAxiomEvaluator::on_end_search() { m_event_handler->on_end_search();
 
 const Problem& GroundedAxiomEvaluator::get_problem() const { return m_problem; }
 
-const GroundedAxiomEvaluatorEventHandler& GroundedAxiomEvaluator::get_event_handler() const { return m_event_handler; }
+const std::shared_ptr<GroundedAxiomEvaluator::IEventHandler>& GroundedAxiomEvaluator::get_event_handler() const { return m_event_handler; }
 }

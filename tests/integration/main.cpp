@@ -86,18 +86,18 @@ int main(int argc, char** argv)
         applicable_action_generator =
             std::dynamic_pointer_cast<IApplicableActionGenerator>(delete_relaxed_problem_explorator.create_grounded_applicable_action_generator(
                 match_tree::Options(),
-                std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>(false)));
+                std::make_shared<GroundedApplicableActionGenerator::DefaultEventHandler>(false)));
         axiom_evaluator = std::dynamic_pointer_cast<IAxiomEvaluator>(
             delete_relaxed_problem_explorator.create_grounded_axiom_evaluator(match_tree::Options(),
-                                                                              std::make_shared<DefaultGroundedAxiomEvaluatorEventHandler>(false)));
+                                                                              std::make_shared<GroundedAxiomEvaluator::DefaultEventHandler>(false)));
         state_repository = std::make_shared<StateRepositoryImpl>(axiom_evaluator);
     }
     else
     {
         applicable_action_generator = std::dynamic_pointer_cast<IApplicableActionGenerator>(
-            std::make_shared<LiftedApplicableActionGenerator>(problem, std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>(false)));
+            std::make_shared<LiftedApplicableActionGenerator>(problem, std::make_shared<LiftedApplicableActionGenerator::DefaultEventHandler>(false)));
         axiom_evaluator = std::dynamic_pointer_cast<IAxiomEvaluator>(
-            std::make_shared<LiftedAxiomEvaluator>(problem, std::make_shared<DefaultLiftedAxiomEvaluatorEventHandler>(false)));
+            std::make_shared<LiftedAxiomEvaluator>(problem, std::make_shared<LiftedAxiomEvaluator::DefaultEventHandler>(false)));
         state_repository = std::make_shared<StateRepositoryImpl>(axiom_evaluator);
     }
 

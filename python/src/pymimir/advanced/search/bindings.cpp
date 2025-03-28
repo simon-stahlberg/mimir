@@ -284,29 +284,29 @@ void bind_search(nb::module_& m)
             nb::arg("state"));
 
     // Lifted
-    nb::class_<ILiftedApplicableActionGeneratorEventHandler>(m,
-                                                             "ILiftedApplicableActionGeneratorEventHandler");  //
-    nb::class_<DefaultLiftedApplicableActionGeneratorEventHandler, ILiftedApplicableActionGeneratorEventHandler>(
+    nb::class_<LiftedApplicableActionGenerator::IEventHandler>(m,
+                                                               "ILiftedApplicableActionGeneratorEventHandler");  //
+    nb::class_<LiftedApplicableActionGenerator::DefaultEventHandler, LiftedApplicableActionGenerator::IEventHandler>(
         m,
         "DefaultLiftedApplicableActionGeneratorEventHandler")  //
         .def(nb::init<>());
-    nb::class_<DebugLiftedApplicableActionGeneratorEventHandler, ILiftedApplicableActionGeneratorEventHandler>(
+    nb::class_<LiftedApplicableActionGenerator::DebugEventHandler, LiftedApplicableActionGenerator::IEventHandler>(
         m,
         "DebugLiftedApplicableActionGeneratorEventHandler")  //
         .def(nb::init<>());
     nb::class_<LiftedApplicableActionGenerator, IApplicableActionGenerator>(m,
                                                                             "LiftedApplicableActionGenerator")  //
         .def(nb::init<Problem>(), nb::arg("problem"))
-        .def(nb::init<Problem, LiftedApplicableActionGeneratorEventHandler>(), nb::arg("problem"), nb::arg("event_handler"));
+        .def(nb::init<Problem, std::shared_ptr<LiftedApplicableActionGenerator::IEventHandler>>(), nb::arg("problem"), nb::arg("event_handler"));
 
     // Grounded
-    nb::class_<IGroundedApplicableActionGeneratorEventHandler>(m,
-                                                               "IGroundedApplicableActionGeneratorEventHandler");  //
-    nb::class_<DefaultGroundedApplicableActionGeneratorEventHandler, IGroundedApplicableActionGeneratorEventHandler>(
+    nb::class_<GroundedApplicableActionGenerator::IEventHandler>(m,
+                                                                 "IGroundedApplicableActionGeneratorEventHandler");  //
+    nb::class_<GroundedApplicableActionGenerator::DefaultEventHandler, GroundedApplicableActionGenerator::IEventHandler>(
         m,
         "DefaultGroundedApplicableActionGeneratorEventHandler")  //
         .def(nb::init<>());
-    nb::class_<DebugGroundedApplicableActionGeneratorEventHandler, IGroundedApplicableActionGeneratorEventHandler>(
+    nb::class_<GroundedApplicableActionGenerator::DebugEventHandler, GroundedApplicableActionGenerator::IEventHandler>(
         m,
         "DebugGroundedApplicableActionGeneratorEventHandler")  //
         .def(nb::init<>());
@@ -317,24 +317,24 @@ void bind_search(nb::module_& m)
         .def("get_problem", &IAxiomEvaluator::get_problem);
 
     // Lifted
-    nb::class_<ILiftedAxiomEvaluatorEventHandler>(m, "ILiftedAxiomEvaluatorEventHandler");  //
-    nb::class_<DefaultLiftedAxiomEvaluatorEventHandler, ILiftedAxiomEvaluatorEventHandler>(m,
-                                                                                           "DefaultLiftedAxiomEvaluatorEventHandler")  //
+    nb::class_<LiftedAxiomEvaluator::IEventHandler>(m, "ILiftedAxiomEvaluatorEventHandler");  //
+    nb::class_<LiftedAxiomEvaluator::DefaultEventHandler, LiftedAxiomEvaluator::IEventHandler>(m,
+                                                                                               "DefaultLiftedAxiomEvaluatorEventHandler")  //
         .def(nb::init<>());
-    nb::class_<DebugLiftedAxiomEvaluatorEventHandler, ILiftedAxiomEvaluatorEventHandler>(m,
-                                                                                         "DebugLiftedAxiomEvaluatorEventHandler")  //
+    nb::class_<LiftedAxiomEvaluator::DebugEventHandler, LiftedAxiomEvaluator::IEventHandler>(m,
+                                                                                             "DebugLiftedAxiomEvaluatorEventHandler")  //
         .def(nb::init<>());
     nb::class_<LiftedAxiomEvaluator, IAxiomEvaluator>(m, "LiftedAxiomEvaluator")  //
         .def(nb::init<Problem>(), nb::arg("problem"))
-        .def(nb::init<Problem, LiftedAxiomEvaluatorEventHandler>(), nb::arg("problem"), nb::arg("event_handler"));
+        .def(nb::init<Problem, std::shared_ptr<LiftedAxiomEvaluator::IEventHandler>>(), nb::arg("problem"), nb::arg("event_handler"));
 
     // Grounded
-    nb::class_<IGroundedAxiomEvaluatorEventHandler>(m, "IGroundedAxiomEvaluatorEventHandler");  //
-    nb::class_<DefaultGroundedAxiomEvaluatorEventHandler, IGroundedAxiomEvaluatorEventHandler>(m,
-                                                                                               "DefaultGroundedAxiomEvaluatorEventHandler")  //
+    nb::class_<GroundedAxiomEvaluator::IEventHandler>(m, "IGroundedAxiomEvaluatorEventHandler");  //
+    nb::class_<GroundedAxiomEvaluator::DefaultEventHandler, GroundedAxiomEvaluator::IEventHandler>(m,
+                                                                                                   "DefaultGroundedAxiomEvaluatorEventHandler")  //
         .def(nb::init<>());
-    nb::class_<DebugGroundedAxiomEvaluatorEventHandler, IGroundedAxiomEvaluatorEventHandler>(m,
-                                                                                             "DebugGroundedAxiomEvaluatorEventHandler")  //
+    nb::class_<GroundedAxiomEvaluator::DebugEventHandler, GroundedAxiomEvaluator::IEventHandler>(m,
+                                                                                                 "DebugGroundedAxiomEvaluatorEventHandler")  //
         .def(nb::init<>());
     nb::class_<GroundedAxiomEvaluator, IAxiomEvaluator>(m, "GroundedAxiomEvaluator")  //
         ;
