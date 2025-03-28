@@ -29,22 +29,22 @@ class BaseReport(AbsoluteReport):
 
 DIR = Path(__file__).resolve().parent
 REPO = DIR.parent
-BENCHMARKS_DIR = os.environ["BENCHMARKS_PDDL_DOWNWARD"]
+BENCHMARKS_DIR = os.environ["BENCHMARKS_PDDL_NUMERIC"]
 
 NODE = platform.node()
 REMOTE = re.match(r"tetralith\d+.nsc.liu.se|n\d+", NODE)
 if REMOTE:
     ENV = TetralithEnvironment(
         setup=TetralithEnvironment.DEFAULT_SETUP,
-        memory_per_cpu="8G",
-        extra_options="#SBATCH --account=naiss2024-5-421")
-    SUITE = utils.SUITE_OPTIMAL_STRIPS
-    TIME_LIMIT = 30 * 60  # 30 minutes
+        memory_per_cpu="3G",
+        extra_options="#SBATCH --account=naiss2024-22-1086")
+    SUITE = utils.SUITE_IPC2023_NUMERIC
+    TIME_LIMIT = 30 * 60  # 5 minutes
 else:
     ENV = LocalEnvironment(processes=12)
     SUITE = [
-        "gripper:prob01.pddl",
-        "gripper:prob10.pddl",
+        "delivery:pfile1.pddl",        # easy
+        "block-grouping:pfile1.pddl",  # hard
     ]
     TIME_LIMIT = 3
 ATTRIBUTES = [
@@ -95,42 +95,63 @@ exp = Experiment(environment=ENV)
 exp.add_parser(ErrorParser())
 exp.add_parser(AStarParser())
 
-PLANNER_DIR = REPO / "build" / "exe" / "planner_astar_mt"
+PLANNER_DIR = REPO / "build" / "exe" / "planner_astar"
 
 exp.add_resource("planner_exe", PLANNER_DIR)
-exp.add_resource("run_planner", DIR / "astar_mt_run_planner.sh")
-
-split_metrics = [(0, "gini"), (1, "frequency")]
-opt_dirs = [(0, "min"), (1, "max")]
+exp.add_resource("run_planner", DIR / "astar_run_planner.sh")
 
 for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
     ################ Grounded ################
-    for split_metric_index, split_metric_str in split_metrics:
-        for opt_dir_index, opt_dir_str in opt_dirs:
-            run = exp.add_run()
-            run.add_resource("domain", task.domain_file, symlink=True)
-            run.add_resource("problem", task.problem_file, symlink=True)
-            # 'ff' binary has to be on the PATH.
-            # We could also use exp.add_resource().
-            run.add_command(
-                f"astar_planner_{opt_dir_str}_{split_metric_str}",
-                ["{run_planner}", "{planner_exe}", "{domain}", "{problem}", "plan.out", "0", "1", "0", "0", "100000000", "0", str(split_metric_index), str(opt_dir_index)],
-                time_limit=TIME_LIMIT,
-                memory_limit=MEMORY_LIMIT,
-            )
-            # AbsoluteReport needs the following properties:
-            # 'domain', 'problem', 'algorithm', 'coverage'.
-            run.set_property("domain", task.domain)
-            run.set_property("problem", task.problem)
-            run.set_property("algorithm", f"mimir-grounded-astar-blind-{opt_dir_str}-{split_metric_str}")
-            # BaseReport needs the following properties:
-            # 'time_limit', 'memory_limit'.
-            run.set_property("time_limit", TIME_LIMIT)
-            run.set_property("memory_limit", MEMORY_LIMIT)
-            # Every run has to have a unique id in the form of a list.
-            # The algorithm name is only really needed when there are
-            # multiple algorithms.
-            run.set_property("id", [f"mimir-grounded-astar-blind-{opt_dir_str}-{split_metric_str}", task.domain, task.problem])
+    run = exp.add_run()
+    run.add_resource("domain", task.domain_file, symlink=True)
+    run.add_resource("problem", task.problem_file, symlink=True)
+    # 'ff' binary has to be on the PATH.
+    # We could also use exp.add_resource().
+    run.add_command(
+        "astar_planner",
+        ["{run_planner}", "{planner_exe}", "{domain}", "{problem}", "plan.out", "0", "1", "0"],
+        time_limit=TIME_LIMIT,
+        memory_limit=MEMORY_LIMIT,
+    )
+    # AbsoluteReport needs the following properties:
+    # 'domain', 'problem', 'algorithm', 'coverage'.
+    run.set_property("domain", task.domain)
+    run.set_property("problem", task.problem)
+    run.set_property("algorithm", "mimir-grounded-astar-blind")
+    # BaseReport needs the following properties:
+    # 'time_limit', 'memory_limit'.
+    run.set_property("time_limit", TIME_LIMIT)
+    run.set_property("memory_limit", MEMORY_LIMIT)
+    # Every run has to have a unique id in the form of a list.
+    # The algorithm name is only really needed when there are
+    # multiple algorithms.
+    run.set_property("id", ["mimir-grounded-astar-blind", task.domain, task.problem])
+
+    ################ Lifted ################
+    run = exp.add_run()
+    run.add_resource("domain", task.domain_file, symlink=True)
+    run.add_resource("problem", task.problem_file, symlink=True)
+    # 'ff' binary has to be on the PATH.
+    # We could also use exp.add_resource().
+    run.add_command(
+        "astar_planner",
+        ["{run_planner}", "{planner_exe}", "{domain}", "{problem}", "plan.out", "0", "0", "0"],
+        time_limit=TIME_LIMIT,
+        memory_limit=MEMORY_LIMIT,
+    )
+    # AbsoluteReport needs the following properties:
+    # 'domain', 'problem', 'algorithm', 'coverage'.
+    run.set_property("domain", task.domain)
+    run.set_property("problem", task.problem)
+    run.set_property("algorithm", "mimir-lifted-astar-blind")
+    # BaseReport needs the following properties:
+    # 'time_limit', 'memory_limit'.
+    run.set_property("time_limit", TIME_LIMIT)
+    run.set_property("memory_limit", MEMORY_LIMIT)
+    # Every run has to have a unique id in the form of a list.
+    # The algorithm name is only really needed when there are
+    # multiple algorithms.
+    run.set_property("id", ["mimir-lifted-astar-blind", task.domain, task.problem])
 
 # Add step that writes experiment files to disk.
 exp.add_step("build", exp.build)

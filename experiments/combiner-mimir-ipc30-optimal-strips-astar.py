@@ -57,21 +57,21 @@ ATTRIBUTES = [
 ]
 
 
-exp = Experiment("combined_mimir-sparse-ipc30-optimal-strips-astar-blind")
+exp = Experiment("combined_mimir-ipc30-optimal-strips-astar-blind")
 
 def rename_algorithm(properties):
     """Rename algorithm dynamically during fetching."""
-    if properties["algorithm"] == "mimir-grounded-sparse-astar-blind":
-        properties["algorithm"] = "old-mimir-grounded-sparse-astar-blind"
-        properties["id"][0] = "old-mimir-grounded-sparse-astar-blind"
-    if properties["algorithm"] == "mimir-lifted-sparse-astar-blind":
-        properties["algorithm"] = "old-mimir-lifted-sparse-astar-blind"
-        properties["id"][0] = "old-mimir-lifted-sparse-astar-blind"
+    if properties["algorithm"] == "mimir-grounded-astar-blind":
+        properties["algorithm"] = "old-mimir-grounded-astar-blind"
+        properties["id"][0] = "old-mimir-grounded-astar-blind"
+    if properties["algorithm"] == "mimir-lifted-astar-blind":
+        properties["algorithm"] = "old-mimir-lifted-astar-blind"
+        properties["id"][0] = "old-mimir-lifted-astar-blind"
     return properties
 
-exp.add_fetcher("old-mimir-sparse-ipc30-optimal-strips-astar-blind-eval", filter=rename_algorithm)
-exp.add_fetcher("new-mimir-sparse-ipc30-optimal-strips-astar-blind-eval")
+exp.add_fetcher("old-mimir-ipc30-optimal-strips-astar-blind-eval", filter=rename_algorithm)
+exp.add_fetcher("new-mimir-ipc30-optimal-strips-astar-blind-eval")
 
-exp.add_report(BaseReport(attributes=ATTRIBUTES, filter_algorithm=["old-mimir-grounded-sparse-astar-blind", "mimir-grounded-sparse-astar-blind","old-mimir-lifted-sparse-astar-blind", "mimir-lifted-sparse-astar-blind"]))
+exp.add_report(BaseReport(attributes=ATTRIBUTES, filter_algorithm=["old-mimir-grounded-astar-blind", "mimir-grounded-astar-blind", "old-mimir-lifted-astar-blind", "mimir-lifted-astar-blind"]))
 
 exp.run_steps()
