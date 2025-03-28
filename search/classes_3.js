@@ -13,10 +13,11 @@ var searchData=
   ['densegraph_10',['DenseGraph',['../classmimir_1_1graphs_1_1nauty_1_1DenseGraph.html',1,'mimir::graphs::nauty']]],
   ['derivationruleimpl_11',['DerivationRuleImpl',['../classmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1DerivationRuleImpl.html',1,'mimir::languages::dl::cnf_grammar::DerivationRuleImpl&lt; D &gt;'],['../classmimir_1_1languages_1_1dl_1_1grammar_1_1DerivationRuleImpl.html',1,'mimir::languages::dl::grammar::DerivationRuleImpl&lt; D &gt;']]],
   ['derivedtag_12',['DerivedTag',['../structmimir_1_1formalism_1_1DerivedTag.html',1,'mimir::formalism']]],
-  ['directiontaggedtype_13',['DirectionTaggedType',['../classmimir_1_1graphs_1_1DirectionTaggedType.html',1,'mimir::graphs']]],
-  ['domainbuilder_14',['DomainBuilder',['../classmimir_1_1formalism_1_1DomainBuilder.html',1,'mimir::formalism']]],
-  ['domainimpl_15',['DomainImpl',['../classmimir_1_1formalism_1_1DomainImpl.html',1,'mimir::formalism']]],
-  ['duplicatepruningstrategy_16',['DuplicatePruningStrategy',['../classmimir_1_1search_1_1DuplicatePruningStrategy.html',1,'mimir::search']]],
-  ['dynamicgraph_17',['DynamicGraph',['../classmimir_1_1graphs_1_1DynamicGraph.html',1,'mimir::graphs']]],
-  ['dynamicnoveltytable_18',['DynamicNoveltyTable',['../classmimir_1_1search_1_1iw_1_1DynamicNoveltyTable.html',1,'mimir::search::iw']]]
+  ['dfsboostvisitor_13',['DFSBoostVisitor',['../structmimir_1_1graphs_1_1bgl_1_1DFSBoostVisitor.html',1,'mimir::graphs::bgl']]],
+  ['directiontaggedtype_14',['DirectionTaggedType',['../classmimir_1_1graphs_1_1DirectionTaggedType.html',1,'mimir::graphs']]],
+  ['domainbuilder_15',['DomainBuilder',['../classmimir_1_1formalism_1_1DomainBuilder.html',1,'mimir::formalism']]],
+  ['domainimpl_16',['DomainImpl',['../classmimir_1_1formalism_1_1DomainImpl.html',1,'mimir::formalism']]],
+  ['duplicatepruningstrategy_17',['DuplicatePruningStrategy',['../classmimir_1_1search_1_1DuplicatePruningStrategy.html',1,'mimir::search']]],
+  ['dynamicgraph_18',['DynamicGraph',['../classmimir_1_1graphs_1_1DynamicGraph.html',1,'mimir::graphs']]],
+  ['dynamicnoveltytable_19',['DynamicNoveltyTable',['../classmimir_1_1search_1_1iw_1_1DynamicNoveltyTable.html',1,'mimir::search::iw']]]
 ];
