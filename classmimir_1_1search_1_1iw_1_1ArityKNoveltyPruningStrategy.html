@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Mimir: mimir::search::iw::ArityKNoveltyPruning Class Reference</title>
+<title>Mimir: mimir::search::iw::ArityKNoveltyPruningStrategy Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -69,36 +69,36 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespacemimir.html">mimir</a></li><li class="navelem"><a class="el" href="namespacemimir_1_1search.html">search</a></li><li class="navelem"><a class="el" href="namespacemimir_1_1search_1_1iw.html">iw</a></li><li class="navelem"><a class="el" href="classmimir_1_1search_1_1iw_1_1ArityKNoveltyPruning.html">ArityKNoveltyPruning</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespacemimir.html">mimir</a></li><li class="navelem"><a class="el" href="namespacemimir_1_1search.html">search</a></li><li class="navelem"><a class="el" href="namespacemimir_1_1search_1_1iw.html">iw</a></li><li class="navelem"><a class="el" href="classmimir_1_1search_1_1iw_1_1ArityKNoveltyPruningStrategy.html">ArityKNoveltyPruningStrategy</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="classmimir_1_1search_1_1iw_1_1ArityKNoveltyPruning-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">mimir::search::iw::ArityKNoveltyPruning Class Reference</div></div>
+<a href="classmimir_1_1search_1_1iw_1_1ArityKNoveltyPruningStrategy-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">mimir::search::iw::ArityKNoveltyPruningStrategy Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
 <p><code>#include &lt;<a class="el" href="iw_2pruning__strategy_8hpp_source.html">pruning_strategy.hpp</a>&gt;</code></p>
 <div class="dynheader">
-Inheritance diagram for mimir::search::iw::ArityKNoveltyPruning:</div>
+Inheritance diagram for mimir::search::iw::ArityKNoveltyPruningStrategy:</div>
 <div class="dyncontent">
  <div class="center">
-  <img src="classmimir_1_1search_1_1iw_1_1ArityKNoveltyPruning.png" usemap="#mimir::search::iw::ArityKNoveltyPruning_map" alt=""/>
-  <map id="mimir::search::iw::ArityKNoveltyPruning_map" name="mimir::search::iw::ArityKNoveltyPruning_map">
-<area href="classmimir_1_1search_1_1IPruningStrategy.html" title="IPruningStrategy encapsulates logic to test whether a newly generated state must be pruned or not." alt="mimir::search::IPruningStrategy" shape="rect" coords="0,0,232,24"/>
+  <img src="classmimir_1_1search_1_1iw_1_1ArityKNoveltyPruningStrategy.png" usemap="#mimir::search::iw::ArityKNoveltyPruningStrategy_map" alt=""/>
+  <map id="mimir::search::iw::ArityKNoveltyPruningStrategy_map" name="mimir::search::iw::ArityKNoveltyPruningStrategy_map">
+<area href="classmimir_1_1search_1_1IPruningStrategy.html" title="IPruningStrategy encapsulates logic to test whether a newly generated state must be pruned or not." alt="mimir::search::IPruningStrategy" shape="rect" coords="0,0,279,24"/>
   </map>
 </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a0eac229c338ee63381af83fb3dcbef0f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1iw_1_1ArityKNoveltyPruning.html#a0eac229c338ee63381af83fb3dcbef0f">ArityKNoveltyPruning</a> (size_t arity, size_t num_atoms)</td></tr>
-<tr class="separator:a0eac229c338ee63381af83fb3dcbef0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae68a83e5ed3a5a4bab947bdc19fabc92"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1iw_1_1ArityKNoveltyPruning.html#ae68a83e5ed3a5a4bab947bdc19fabc92">test_prune_initial_state</a> (const <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> state) override</td></tr>
-<tr class="separator:ae68a83e5ed3a5a4bab947bdc19fabc92"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aab499681984e5b18ab559c025468483b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1iw_1_1ArityKNoveltyPruning.html#aab499681984e5b18ab559c025468483b">test_prune_successor_state</a> (const <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> state, const <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> succ_state, bool is_new_succ) override</td></tr>
-<tr class="separator:aab499681984e5b18ab559c025468483b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac76c79f81172c6c7600eea330c4bfbdd"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1iw_1_1ArityKNoveltyPruningStrategy.html#ac76c79f81172c6c7600eea330c4bfbdd">ArityKNoveltyPruningStrategy</a> (size_t arity, size_t num_atoms)</td></tr>
+<tr class="separator:ac76c79f81172c6c7600eea330c4bfbdd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5428a884d9e8253cf2f8983d6ab3d01"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1iw_1_1ArityKNoveltyPruningStrategy.html#ab5428a884d9e8253cf2f8983d6ab3d01">test_prune_initial_state</a> (const <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> state) override</td></tr>
+<tr class="separator:ab5428a884d9e8253cf2f8983d6ab3d01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ee5607d614964c97870390f362013e0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1iw_1_1ArityKNoveltyPruningStrategy.html#a3ee5607d614964c97870390f362013e0">test_prune_successor_state</a> (const <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> state, const <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> succ_state, bool is_new_succ) override</td></tr>
+<tr class="separator:a3ee5607d614964c97870390f362013e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classmimir_1_1search_1_1IPruningStrategy"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classmimir_1_1search_1_1IPruningStrategy')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classmimir_1_1search_1_1IPruningStrategy.html">mimir::search::IPruningStrategy</a></td></tr>
 <tr class="memitem:ac018745d056bd3a83c27be9bb3f4f040 inherit pub_methods_classmimir_1_1search_1_1IPruningStrategy"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IPruningStrategy.html#ac018745d056bd3a83c27be9bb3f4f040">~IPruningStrategy</a> ()=default</td></tr>
 <tr class="separator:ac018745d056bd3a83c27be9bb3f4f040 inherit pub_methods_classmimir_1_1search_1_1IPruningStrategy"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -108,14 +108,14 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a8151a9cdd20b32b394592d558fee2961 inherit pub_methods_classmimir_1_1search_1_1IPruningStrategy"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a0eac229c338ee63381af83fb3dcbef0f" name="a0eac229c338ee63381af83fb3dcbef0f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0eac229c338ee63381af83fb3dcbef0f">&#9670;&#160;</a></span>ArityKNoveltyPruning()</h2>
+<a id="ac76c79f81172c6c7600eea330c4bfbdd" name="ac76c79f81172c6c7600eea330c4bfbdd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac76c79f81172c6c7600eea330c4bfbdd">&#9670;&#160;</a></span>ArityKNoveltyPruningStrategy()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">mimir::search::iw::ArityKNoveltyPruning::ArityKNoveltyPruning </td>
+          <td class="memname">mimir::search::iw::ArityKNoveltyPruningStrategy::ArityKNoveltyPruningStrategy </td>
           <td>(</td>
           <td class="paramtype">size_t&#160;</td>
           <td class="paramname"><em>arity</em>, </td>
@@ -137,8 +137,8 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="ae68a83e5ed3a5a4bab947bdc19fabc92" name="ae68a83e5ed3a5a4bab947bdc19fabc92"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae68a83e5ed3a5a4bab947bdc19fabc92">&#9670;&#160;</a></span>test_prune_initial_state()</h2>
+<a id="ab5428a884d9e8253cf2f8983d6ab3d01" name="ab5428a884d9e8253cf2f8983d6ab3d01"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5428a884d9e8253cf2f8983d6ab3d01">&#9670;&#160;</a></span>test_prune_initial_state()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -147,7 +147,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool mimir::search::iw::ArityKNoveltyPruning::test_prune_initial_state </td>
+          <td class="memname">bool mimir::search::iw::ArityKNoveltyPruningStrategy::test_prune_initial_state </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>&#160;</td>
           <td class="paramname"><em>state</em></td><td>)</td>
@@ -165,8 +165,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="aab499681984e5b18ab559c025468483b" name="aab499681984e5b18ab559c025468483b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aab499681984e5b18ab559c025468483b">&#9670;&#160;</a></span>test_prune_successor_state()</h2>
+<a id="a3ee5607d614964c97870390f362013e0" name="a3ee5607d614964c97870390f362013e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ee5607d614964c97870390f362013e0">&#9670;&#160;</a></span>test_prune_successor_state()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -175,7 +175,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool mimir::search::iw::ArityKNoveltyPruning::test_prune_successor_state </td>
+          <td class="memname">bool mimir::search::iw::ArityKNoveltyPruningStrategy::test_prune_successor_state </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>&#160;</td>
           <td class="paramname"><em>state</em>, </td>
