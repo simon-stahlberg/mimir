@@ -16,7 +16,7 @@ var searchData=
   ['directiontaggedtype_13',['DirectionTaggedType',['../classmimir_1_1graphs_1_1DirectionTaggedType.html',1,'mimir::graphs']]],
   ['domainbuilder_14',['DomainBuilder',['../classmimir_1_1formalism_1_1DomainBuilder.html',1,'mimir::formalism']]],
   ['domainimpl_15',['DomainImpl',['../classmimir_1_1formalism_1_1DomainImpl.html',1,'mimir::formalism']]],
-  ['duplicatestatepruning_16',['DuplicateStatePruning',['../classmimir_1_1search_1_1DuplicateStatePruning.html',1,'mimir::search']]],
+  ['duplicatepruningstrategy_16',['DuplicatePruningStrategy',['../classmimir_1_1search_1_1DuplicatePruningStrategy.html',1,'mimir::search']]],
   ['dynamicgraph_17',['DynamicGraph',['../classmimir_1_1graphs_1_1DynamicGraph.html',1,'mimir::graphs']]],
   ['dynamicnoveltytable_18',['DynamicNoveltyTable',['../classmimir_1_1search_1_1iw_1_1DynamicNoveltyTable.html',1,'mimir::search::iw']]]
 ];

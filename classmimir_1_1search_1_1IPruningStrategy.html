@@ -80,6 +80,9 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p><code><a class="el" href="classmimir_1_1search_1_1IPruningStrategy.html" title="IPruningStrategy encapsulates logic to test whether a newly generated state must be pruned or not.">IPruningStrategy</a></code> encapsulates logic to test whether a newly generated state must be pruned or not.  
+ <a href="classmimir_1_1search_1_1IPruningStrategy.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="strategies_2pruning__strategy_8hpp_source.html">pruning_strategy.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for mimir::search::IPruningStrategy:</div>
@@ -87,8 +90,8 @@ Inheritance diagram for mimir::search::IPruningStrategy:</div>
  <div class="center">
   <img src="classmimir_1_1search_1_1IPruningStrategy.png" usemap="#mimir::search::IPruningStrategy_map" alt=""/>
   <map id="mimir::search::IPruningStrategy_map" name="mimir::search::IPruningStrategy_map">
-<area href="classmimir_1_1search_1_1DuplicateStatePruning.html" alt="mimir::search::DuplicateStatePruning" shape="rect" coords="0,56,252,80"/>
-<area href="classmimir_1_1search_1_1NoStatePruning.html" alt="mimir::search::NoStatePruning" shape="rect" coords="262,56,514,80"/>
+<area href="classmimir_1_1search_1_1DuplicatePruningStrategy.html" title="DuplicatePruningStrategy prunes a newly generated state if it was already generated before." alt="mimir::search::DuplicatePruningStrategy" shape="rect" coords="0,56,252,80"/>
+<area href="classmimir_1_1search_1_1NoPruningStrategy.html" title="NoPruningStrategy never prunes a newly generated state." alt="mimir::search::NoPruningStrategy" shape="rect" coords="262,56,514,80"/>
 <area href="classmimir_1_1search_1_1iw_1_1ArityKNoveltyPruning.html" alt="mimir::search::iw::ArityKNoveltyPruning" shape="rect" coords="524,56,776,80"/>
 <area href="classmimir_1_1search_1_1iw_1_1ArityZeroNoveltyPruning.html" alt="mimir::search::iw::ArityZeroNoveltyPruning" shape="rect" coords="786,56,1038,80"/>
   </map>
@@ -104,7 +107,7 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a8151a9cdd20b32b394592d558fee2961"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p><a class="el" href="classmimir_1_1search_1_1IPruningStrategy.html">IPruningStrategy</a> encapsulates logic to test whether a generated state must be pruned. </p>
+<div class="textblock"><p><code><a class="el" href="classmimir_1_1search_1_1IPruningStrategy.html" title="IPruningStrategy encapsulates logic to test whether a newly generated state must be pruned or not.">IPruningStrategy</a></code> encapsulates logic to test whether a newly generated state must be pruned or not. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ac018745d056bd3a83c27be9bb3f4f040" name="ac018745d056bd3a83c27be9bb3f4f040"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac018745d056bd3a83c27be9bb3f4f040">&#9670;&#160;</a></span>~IPruningStrategy()</h2>
@@ -156,7 +159,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="classmimir_1_1search_1_1iw_1_1ArityZeroNoveltyPruning.html#a2a22cd33e322d44bbf5a8d7b2e9e3817">mimir::search::iw::ArityZeroNoveltyPruning</a>, <a class="el" href="classmimir_1_1search_1_1iw_1_1ArityKNoveltyPruning.html#ae68a83e5ed3a5a4bab947bdc19fabc92">mimir::search::iw::ArityKNoveltyPruning</a>, <a class="el" href="classmimir_1_1search_1_1NoStatePruning.html#aa6ec46d4b43e02296b2c686e0d2ee8f8">mimir::search::NoStatePruning</a>, and <a class="el" href="classmimir_1_1search_1_1DuplicateStatePruning.html#ae5037796e9c39dd75245b224cad6b7c9">mimir::search::DuplicateStatePruning</a>.</p>
+<p>Implemented in <a class="el" href="classmimir_1_1search_1_1iw_1_1ArityZeroNoveltyPruning.html#a2a22cd33e322d44bbf5a8d7b2e9e3817">mimir::search::iw::ArityZeroNoveltyPruning</a>, <a class="el" href="classmimir_1_1search_1_1iw_1_1ArityKNoveltyPruning.html#ae68a83e5ed3a5a4bab947bdc19fabc92">mimir::search::iw::ArityKNoveltyPruning</a>, <a class="el" href="classmimir_1_1search_1_1NoPruningStrategy.html#accbbd1cdbc3a5017af81f8e70aca0b8a">mimir::search::NoPruningStrategy</a>, and <a class="el" href="classmimir_1_1search_1_1DuplicatePruningStrategy.html#a7215a9dcb876f631aa9879e4180b6963">mimir::search::DuplicatePruningStrategy</a>.</p>
 
 </div>
 </div>
@@ -200,7 +203,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="classmimir_1_1search_1_1iw_1_1ArityZeroNoveltyPruning.html#a30226776ea6ac12ccddb4fc879db461d">mimir::search::iw::ArityZeroNoveltyPruning</a>, <a class="el" href="classmimir_1_1search_1_1iw_1_1ArityKNoveltyPruning.html#aab499681984e5b18ab559c025468483b">mimir::search::iw::ArityKNoveltyPruning</a>, <a class="el" href="classmimir_1_1search_1_1NoStatePruning.html#a62cac601ef4111ca905f4353c416307f">mimir::search::NoStatePruning</a>, and <a class="el" href="classmimir_1_1search_1_1DuplicateStatePruning.html#a3d6302d6364d16a40e0fc2504b926d6b">mimir::search::DuplicateStatePruning</a>.</p>
+<p>Implemented in <a class="el" href="classmimir_1_1search_1_1iw_1_1ArityZeroNoveltyPruning.html#a30226776ea6ac12ccddb4fc879db461d">mimir::search::iw::ArityZeroNoveltyPruning</a>, <a class="el" href="classmimir_1_1search_1_1iw_1_1ArityKNoveltyPruning.html#aab499681984e5b18ab559c025468483b">mimir::search::iw::ArityKNoveltyPruning</a>, <a class="el" href="classmimir_1_1search_1_1NoPruningStrategy.html#a71ebfa95c34c93997d2b3a41d839acbe">mimir::search::NoPruningStrategy</a>, and <a class="el" href="classmimir_1_1search_1_1DuplicatePruningStrategy.html#ae5e9252da7cb1ce7007e16cfa45ac818">mimir::search::DuplicatePruningStrategy</a>.</p>
 
 </div>
 </div>

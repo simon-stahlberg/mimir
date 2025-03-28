@@ -28,7 +28,7 @@ var searchData=
   ['nonterminaltoderivationrulesets_25',['NonTerminalToDerivationRuleSets',['../namespacemimir_1_1languages_1_1dl_1_1grammar.html#a7df9bfdf789c71bb9b3af4e1ee9a02a8',1,'mimir::languages::dl::grammar']]],
   ['nonterminaltononterminalmaps_26',['NonTerminalToNonTerminalMaps',['../namespacemimir_1_1languages_1_1dl_1_1cnf__grammar.html#a9f54b8b6a75a39aa4b7428e0ae6fcf6f',1,'mimir::languages::dl::cnf_grammar']]],
   ['nonterminaltosubstitutionrulelistmaps_27',['NonTerminalToSubstitutionRuleListMaps',['../namespacemimir_1_1languages_1_1dl_1_1cnf__grammar.html#a74e447dd794caf8b6be2ac6448dd8c2f',1,'mimir::languages::dl::cnf_grammar']]],
-  ['nostatepruning_28',['NoStatePruning',['../classmimir_1_1search_1_1NoStatePruning.html',1,'mimir::search']]],
+  ['nopruningstrategy_28',['NoPruningStrategy',['../classmimir_1_1search_1_1NoPruningStrategy.html',1,'mimir::search']]],
   ['novelty_5ftable_2ehpp_29',['novelty_table.hpp',['../novelty__table_8hpp.html',1,'']]],
   ['null_5fvertex_30',['null_vertex',['../structboost_1_1graph__traits_3_01mimir_1_1graphs_1_1DirectionTaggedType_3_01Graph_00_01Direction_01_4_01_4.html#a2d18c1888769b9ed4fe2fe81ba9bda54',1,'boost::graph_traits&lt; mimir::graphs::DirectionTaggedType&lt; Graph, Direction &gt; &gt;']]],
   ['nullary_5fconditions_5fhold_31',['nullary_conditions_hold',['../namespacemimir_1_1search.html#a015be262f3539bba08787ff8fcbadf4c',1,'mimir::search']]],

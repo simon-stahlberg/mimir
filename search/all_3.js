@@ -59,7 +59,7 @@ var searchData=
   ['domainbuilder_56',['DomainBuilder',['../classmimir_1_1formalism_1_1DomainBuilder.html#a018cf40a3370ecfa2e160b6a471d9b7d',1,'mimir::formalism::DomainBuilder::DomainBuilder()'],['../classmimir_1_1formalism_1_1DomainImpl.html#ad8497827339ef1ebfaa3d3a8b357e162',1,'mimir::formalism::DomainImpl::DomainBuilder()'],['../classmimir_1_1formalism_1_1DomainBuilder.html',1,'mimir::formalism::DomainBuilder']]],
   ['domainimpl_57',['DomainImpl',['../classmimir_1_1formalism_1_1DomainImpl.html#a885b509e68b549b0d39ad6c5e99faa6a',1,'mimir::formalism::DomainImpl::DomainImpl(DomainImpl &amp;&amp;other)=default'],['../classmimir_1_1formalism_1_1DomainImpl.html#a057f7a43f7e4fb4d469b83e277cbee33',1,'mimir::formalism::DomainImpl::DomainImpl(const DomainImpl &amp;other)=delete'],['../classmimir_1_1formalism_1_1DomainImpl.html',1,'mimir::formalism::DomainImpl']]],
   ['domainlist_58',['DomainList',['../namespacemimir_1_1formalism.html#aecae3748a6a12079c0b129a8de1fffcd',1,'mimir::formalism']]],
-  ['duplicatestatepruning_59',['DuplicateStatePruning',['../classmimir_1_1search_1_1DuplicateStatePruning.html',1,'mimir::search']]],
+  ['duplicatepruningstrategy_59',['DuplicatePruningStrategy',['../classmimir_1_1search_1_1DuplicatePruningStrategy.html',1,'mimir::search']]],
   ['dynamic_5fgraph_5fdecl_2ehpp_60',['dynamic_graph_decl.hpp',['../dynamic__graph__decl_8hpp.html',1,'']]],
   ['dynamic_5fgraph_5finterface_2ehpp_61',['dynamic_graph_interface.hpp',['../dynamic__graph__interface_8hpp.html',1,'']]],
   ['dynamicdigraph_62',['DynamicDigraph',['../namespacemimir_1_1graphs.html#ad9f1a2449686d29b0f079ce118ed78b3',1,'mimir::graphs']]],

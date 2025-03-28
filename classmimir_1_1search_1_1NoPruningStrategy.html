@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Mimir: mimir::search::DuplicateStatePruning Class Reference</title>
+<title>Mimir: mimir::search::NoPruningStrategy Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -69,34 +69,37 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespacemimir.html">mimir</a></li><li class="navelem"><a class="el" href="namespacemimir_1_1search.html">search</a></li><li class="navelem"><a class="el" href="classmimir_1_1search_1_1DuplicateStatePruning.html">DuplicateStatePruning</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespacemimir.html">mimir</a></li><li class="navelem"><a class="el" href="namespacemimir_1_1search.html">search</a></li><li class="navelem"><a class="el" href="classmimir_1_1search_1_1NoPruningStrategy.html">NoPruningStrategy</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="classmimir_1_1search_1_1DuplicateStatePruning-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">mimir::search::DuplicateStatePruning Class Reference</div></div>
+<a href="classmimir_1_1search_1_1NoPruningStrategy-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">mimir::search::NoPruningStrategy Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
+<p><code><a class="el" href="classmimir_1_1search_1_1NoPruningStrategy.html" title="NoPruningStrategy never prunes a newly generated state.">NoPruningStrategy</a></code> never prunes a newly generated state.  
+ <a href="classmimir_1_1search_1_1NoPruningStrategy.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="strategies_2pruning__strategy_8hpp_source.html">pruning_strategy.hpp</a>&gt;</code></p>
 <div class="dynheader">
-Inheritance diagram for mimir::search::DuplicateStatePruning:</div>
+Inheritance diagram for mimir::search::NoPruningStrategy:</div>
 <div class="dyncontent">
  <div class="center">
-  <img src="classmimir_1_1search_1_1DuplicateStatePruning.png" usemap="#mimir::search::DuplicateStatePruning_map" alt=""/>
-  <map id="mimir::search::DuplicateStatePruning_map" name="mimir::search::DuplicateStatePruning_map">
-<area href="classmimir_1_1search_1_1IPruningStrategy.html" alt="mimir::search::IPruningStrategy" shape="rect" coords="0,0,217,24"/>
+  <img src="classmimir_1_1search_1_1NoPruningStrategy.png" usemap="#mimir::search::NoPruningStrategy_map" alt=""/>
+  <map id="mimir::search::NoPruningStrategy_map" name="mimir::search::NoPruningStrategy_map">
+<area href="classmimir_1_1search_1_1IPruningStrategy.html" title="IPruningStrategy encapsulates logic to test whether a newly generated state must be pruned or not." alt="mimir::search::IPruningStrategy" shape="rect" coords="0,0,199,24"/>
   </map>
 </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ae5037796e9c39dd75245b224cad6b7c9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1DuplicateStatePruning.html#ae5037796e9c39dd75245b224cad6b7c9">test_prune_initial_state</a> (<a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> state) override</td></tr>
-<tr class="separator:ae5037796e9c39dd75245b224cad6b7c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3d6302d6364d16a40e0fc2504b926d6b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1DuplicateStatePruning.html#a3d6302d6364d16a40e0fc2504b926d6b">test_prune_successor_state</a> (<a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> state, <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> succ_state, bool is_new_succ) override</td></tr>
-<tr class="separator:a3d6302d6364d16a40e0fc2504b926d6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:accbbd1cdbc3a5017af81f8e70aca0b8a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1NoPruningStrategy.html#accbbd1cdbc3a5017af81f8e70aca0b8a">test_prune_initial_state</a> (<a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> state) override</td></tr>
+<tr class="separator:accbbd1cdbc3a5017af81f8e70aca0b8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71ebfa95c34c93997d2b3a41d839acbe"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1NoPruningStrategy.html#a71ebfa95c34c93997d2b3a41d839acbe">test_prune_successor_state</a> (<a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> state, <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> succ_state, bool is_new_succ) override</td></tr>
+<tr class="separator:a71ebfa95c34c93997d2b3a41d839acbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classmimir_1_1search_1_1IPruningStrategy"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classmimir_1_1search_1_1IPruningStrategy')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classmimir_1_1search_1_1IPruningStrategy.html">mimir::search::IPruningStrategy</a></td></tr>
 <tr class="memitem:ac018745d056bd3a83c27be9bb3f4f040 inherit pub_methods_classmimir_1_1search_1_1IPruningStrategy"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IPruningStrategy.html#ac018745d056bd3a83c27be9bb3f4f040">~IPruningStrategy</a> ()=default</td></tr>
 <tr class="separator:ac018745d056bd3a83c27be9bb3f4f040 inherit pub_methods_classmimir_1_1search_1_1IPruningStrategy"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -105,9 +108,11 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a8151a9cdd20b32b394592d558fee2961 inherit pub_methods_classmimir_1_1search_1_1IPruningStrategy"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IPruningStrategy.html#a8151a9cdd20b32b394592d558fee2961">test_prune_successor_state</a> (<a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> state, <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> succ_state, bool is_new_succ)=0</td></tr>
 <tr class="separator:a8151a9cdd20b32b394592d558fee2961 inherit pub_methods_classmimir_1_1search_1_1IPruningStrategy"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Function Documentation</h2>
-<a id="ae5037796e9c39dd75245b224cad6b7c9" name="ae5037796e9c39dd75245b224cad6b7c9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae5037796e9c39dd75245b224cad6b7c9">&#9670;&#160;</a></span>test_prune_initial_state()</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p><code><a class="el" href="classmimir_1_1search_1_1NoPruningStrategy.html" title="NoPruningStrategy never prunes a newly generated state.">NoPruningStrategy</a></code> never prunes a newly generated state. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="accbbd1cdbc3a5017af81f8e70aca0b8a" name="accbbd1cdbc3a5017af81f8e70aca0b8a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#accbbd1cdbc3a5017af81f8e70aca0b8a">&#9670;&#160;</a></span>test_prune_initial_state()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -116,7 +121,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool mimir::search::DuplicateStatePruning::test_prune_initial_state </td>
+          <td class="memname">bool mimir::search::NoPruningStrategy::test_prune_initial_state </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>&#160;</td>
           <td class="paramname"><em>state</em></td><td>)</td>
@@ -134,8 +139,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a3d6302d6364d16a40e0fc2504b926d6b" name="a3d6302d6364d16a40e0fc2504b926d6b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3d6302d6364d16a40e0fc2504b926d6b">&#9670;&#160;</a></span>test_prune_successor_state()</h2>
+<a id="a71ebfa95c34c93997d2b3a41d839acbe" name="a71ebfa95c34c93997d2b3a41d839acbe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71ebfa95c34c93997d2b3a41d839acbe">&#9670;&#160;</a></span>test_prune_successor_state()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -144,7 +149,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool mimir::search::DuplicateStatePruning::test_prune_successor_state </td>
+          <td class="memname">bool mimir::search::NoPruningStrategy::test_prune_successor_state </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>&#160;</td>
           <td class="paramname"><em>state</em>, </td>
