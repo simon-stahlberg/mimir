@@ -23,7 +23,7 @@ Mimir is a C++20-based generalized planning library with Python bindings, design
   In particular, lifted planning is critical for learning-based approaches because they often do not require access to grounded actions, resulting in significant speedups.
 
 - **Collections of Problems:**
-  Mimir supports in-memory manipulation of collections of problems simplifying the development of robust learning pipelines. This includes the independent parsing and translation of PDDL input files while sharing a domain across problems.
+  Mimir supports parsing, translation, and in-memory manipulation for collections of problems. This includes the independent parsing and translation of PDDL input files while sharing a domain across problems.
 
 - **Portability:**
   Setting up and running learning pipelines can be a challenging and time-consuming task.

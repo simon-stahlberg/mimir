@@ -50,11 +50,6 @@ public:
         return self().evaluate_impl(source_context, target_context);
     }
 
-    bool evaluate_with_debug(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const override
-    {
-        return self().evaluate_with_debug_impl(source_context, target_context);
-    };
-
     void accept(IVisitor& visitor) const override { self().accept_impl(visitor); };
 
     auto identifying_members() const { return std::tuple(get_feature()); }

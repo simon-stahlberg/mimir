@@ -45,8 +45,6 @@ public:
     /// @return true if the state pair (transition) is compatible with a `Rule` in the `GeneralPolicyImpl`.
     bool evaluate(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const;
 
-    bool evaluate_with_debug(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const;
-
     /// @brief Accept a `IVisitor`.
     /// @param visitor the `IVisitor`.
     void accept(IVisitor& visitor);

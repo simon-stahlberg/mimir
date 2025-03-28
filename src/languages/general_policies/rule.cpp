@@ -17,6 +17,7 @@
 
 #include "mimir/languages/general_policies/rule.hpp"
 
+#include "mimir/common/debug.hpp"
 #include "mimir/languages/general_policies/conditions.hpp"
 #include "mimir/languages/general_policies/effects.hpp"
 #include "mimir/languages/general_policies/visitor_interface.hpp"
@@ -33,15 +34,10 @@ RuleImpl::RuleImpl(Index index, ConditionList conditions, EffectList effects) :
 
 bool RuleImpl::evaluate(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const
 {
+    DEBUG_LOG("[DEBUG] evaluate rule index=" << m_index);
+
     return std::all_of(get_conditions().begin(), get_conditions().end(), [&](auto&& arg) { return arg->evaluate(source_context); })
            && std::all_of(get_effects().begin(), get_effects().end(), [&](auto&& arg) { return arg->evaluate(source_context, target_context); });
-}
-
-bool RuleImpl::evaluate_with_debug(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const
-{
-    std::cout << "[DEBUG] evaluate rule index=" << m_index << std::endl;
-    return std::all_of(get_conditions().begin(), get_conditions().end(), [&](auto&& arg) { return arg->evaluate_with_debug(source_context); })
-           && std::all_of(get_effects().begin(), get_effects().end(), [&](auto&& arg) { return arg->evaluate_with_debug(source_context, target_context); });
 }
 
 void RuleImpl::accept(IVisitor& visitor) const { visitor.visit(this); }

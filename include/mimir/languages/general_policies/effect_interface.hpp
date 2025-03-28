@@ -33,8 +33,6 @@ public:
 
     virtual bool evaluate(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const = 0;
 
-    virtual bool evaluate_with_debug(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const = 0;
-
     /// @brief Accept a `IVisitor`.
     /// @param visitor the `IVisitor`.
     virtual void accept(IVisitor& visitor) const = 0;

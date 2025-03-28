@@ -36,11 +36,6 @@ bool GeneralPolicyImpl::evaluate(dl::EvaluationContext& source_context, dl::Eval
     return std::any_of(get_rules().begin(), get_rules().end(), [&](auto&& arg) { return arg->evaluate(source_context, target_context); });
 }
 
-bool GeneralPolicyImpl::evaluate_with_debug(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const
-{
-    return std::any_of(get_rules().begin(), get_rules().end(), [&](auto&& arg) { return arg->evaluate_with_debug(source_context, target_context); });
-}
-
 void GeneralPolicyImpl::accept(IVisitor& visitor) { visitor.visit(this); }
 
 bool GeneralPolicyImpl::is_terminating() const { throw std::runtime_error("Not implemented"); }
