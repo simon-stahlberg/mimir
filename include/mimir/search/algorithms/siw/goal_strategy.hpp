@@ -23,7 +23,7 @@
 namespace mimir::search::siw
 {
 
-class ProblemGoalCounter : public IGoalStrategy
+class ProblemGoalStrategyCounter : public IGoalStrategy
 {
 private:
     formalism::Problem m_problem;
@@ -33,7 +33,7 @@ private:
     int count_unsatisfied_goals(State state) const;
 
 public:
-    explicit ProblemGoalCounter(formalism::Problem problem, State state);
+    explicit ProblemGoalStrategyCounter(formalism::Problem problem, State state);
 
     bool test_static_goal() override;
     bool test_dynamic_goal(State state) override;

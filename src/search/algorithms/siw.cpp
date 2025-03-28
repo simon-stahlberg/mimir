@@ -37,11 +37,15 @@ using namespace mimir::formalism;
 namespace mimir::search::siw
 {
 
-/* ProblemGoalCounter */
+/* ProblemGoalStrategyCounter */
 
-ProblemGoalCounter::ProblemGoalCounter(Problem problem, State state) : m_problem(problem), m_initial_num_unsatisfied_goals(count_unsatisfied_goals(state)) {}
+ProblemGoalStrategyCounter::ProblemGoalStrategyCounter(Problem problem, State state) :
+    m_problem(problem),
+    m_initial_num_unsatisfied_goals(count_unsatisfied_goals(state))
+{
+}
 
-int ProblemGoalCounter::count_unsatisfied_goals(State state) const
+int ProblemGoalStrategyCounter::count_unsatisfied_goals(State state) const
 {
     int num_unsatisfied_goals = 0;
     for (const auto& literal : m_problem->get_goal_condition<FluentTag>())
@@ -61,9 +65,9 @@ int ProblemGoalCounter::count_unsatisfied_goals(State state) const
     return num_unsatisfied_goals;
 }
 
-bool ProblemGoalCounter::test_static_goal() { return m_problem->static_goal_holds(); }
+bool ProblemGoalStrategyCounter::test_static_goal() { return m_problem->static_goal_holds(); }
 
-bool ProblemGoalCounter::test_dynamic_goal(State state) { return count_unsatisfied_goals(state) < m_initial_num_unsatisfied_goals; }
+bool ProblemGoalStrategyCounter::test_dynamic_goal(State state) { return count_unsatisfied_goals(state) < m_initial_num_unsatisfied_goals; }
 
 /* SIW */
 SearchResult find_solution(const SearchContext& context,
@@ -82,7 +86,7 @@ SearchResult find_solution(const SearchContext& context,
     const auto siw_event_handler = (siw_event_handler_) ? siw_event_handler_ : std::make_shared<DefaultEventHandler>(context.get_problem());
     const auto iw_event_handler = (iw_event_handler_) ? iw_event_handler_ : std::make_shared<iw::DefaultEventHandler>(context.get_problem());
     const auto brfs_event_handler = (brfs_event_handler_) ? brfs_event_handler_ : std::make_shared<brfs::DefaultEventHandler>(context.get_problem());
-    const auto goal_strategy = (goal_strategy_) ? goal_strategy_ : std::make_shared<ProblemGoal>(context.get_problem());
+    const auto goal_strategy = (goal_strategy_) ? goal_strategy_ : std::make_shared<ProblemGoalStrategy>(context.get_problem());
 
     if (max_arity >= iw::MAX_ARITY)
     {
@@ -116,7 +120,7 @@ SearchResult find_solution(const SearchContext& context,
                                                   max_arity,
                                                   iw_event_handler,
                                                   brfs_event_handler,
-                                                  std::make_shared<ProblemGoalCounter>(context.get_problem(), cur_state));
+                                                  std::make_shared<ProblemGoalStrategyCounter>(context.get_problem(), cur_state));
 
         if (sub_result.status == SearchStatus::UNSOLVABLE)
         {

@@ -24,9 +24,7 @@
 namespace mimir::search
 {
 
-/**
- * IPruningStrategy encapsulates logic to test whether a generated state must be pruned.
- */
+/// @brief `IPruningStrategy` encapsulates logic to test whether a newly generated state must be pruned or not.
 class IPruningStrategy
 {
 public:
@@ -36,14 +34,16 @@ public:
     virtual bool test_prune_successor_state(State state, State succ_state, bool is_new_succ) = 0;
 };
 
-class NoStatePruning : public IPruningStrategy
+/// @brief `NoPruningStrategy` never prunes a newly generated state.
+class NoPruningStrategy : public IPruningStrategy
 {
 public:
     bool test_prune_initial_state(State state) override;
     bool test_prune_successor_state(State state, State succ_state, bool is_new_succ) override;
 };
 
-class DuplicateStatePruning : public IPruningStrategy
+/// @brief `DuplicatePruningStrategy` prunes a newly generated state if it was already generated before.
+class DuplicatePruningStrategy : public IPruningStrategy
 {
 public:
     bool test_prune_initial_state(State state) override;

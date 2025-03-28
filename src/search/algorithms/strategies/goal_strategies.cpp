@@ -23,11 +23,11 @@ using namespace mimir::formalism;
 
 namespace mimir::search
 {
-ProblemGoal::ProblemGoal(Problem problem) : m_problem(problem) {}
+ProblemGoalStrategy::ProblemGoalStrategy(Problem problem) : m_problem(problem) {}
 
-bool ProblemGoal::test_static_goal() { return m_problem->static_goal_holds(); }
+bool ProblemGoalStrategy::test_static_goal() { return m_problem->static_goal_holds(); }
 
-bool ProblemGoal::test_dynamic_goal(State state)
+bool ProblemGoalStrategy::test_dynamic_goal(State state)
 {
     // This uses the efficient check.
     return state->literals_hold<FluentTag>(m_problem->get_positive_goal_atoms_indices<FluentTag>(), m_problem->get_negative_goal_atoms_indices<FluentTag>())

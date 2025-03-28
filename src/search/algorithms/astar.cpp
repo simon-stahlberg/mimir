@@ -83,8 +83,8 @@ SearchResult find_solution(const SearchContext& context,
 
     const auto start_state = (start_state_) ? start_state_ : state_repository.get_or_create_initial_state();
     const auto event_handler = (event_handler_) ? event_handler_ : std::make_shared<DefaultEventHandler>(context.get_problem());
-    const auto goal_strategy = (goal_strategy_) ? goal_strategy_ : std::make_shared<ProblemGoal>(context.get_problem());
-    const auto pruning_strategy = (pruning_strategy_) ? pruning_strategy_ : std::make_shared<NoStatePruning>();
+    const auto goal_strategy = (goal_strategy_) ? goal_strategy_ : std::make_shared<ProblemGoalStrategy>(context.get_problem());
+    const auto pruning_strategy = (pruning_strategy_) ? pruning_strategy_ : std::make_shared<NoPruningStrategy>();
 
     auto result = SearchResult();
 

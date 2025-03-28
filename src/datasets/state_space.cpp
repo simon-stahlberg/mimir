@@ -411,7 +411,7 @@ static std::optional<StateSpace> compute_problem_graph_with_symmetry_reduction(c
     auto symm_data = SymmetriesData(color_function);
 
     const auto state_repository = context.get_state_repository();
-    const auto goal_test = std::make_shared<ProblemGoal>(context.get_problem());
+    const auto goal_test = std::make_shared<ProblemGoalStrategy>(context.get_problem());
     const auto event_handler =
         std::make_shared<SymmetryReducedProblemGraphEventHandler>(context.get_problem(), options, graph, goal_vertices, symm_data, false);
     const auto pruning_strategy = std::make_shared<SymmetryStatePruning>(symm_data);
@@ -431,9 +431,9 @@ static std::optional<StateSpace> compute_problem_graph_without_symmetry_reductio
     auto goal_vertices = IndexSet {};
 
     const auto state_repository = context.get_state_repository();
-    const auto goal_test = std::make_shared<ProblemGoal>(context.get_problem());
+    const auto goal_test = std::make_shared<ProblemGoalStrategy>(context.get_problem());
     const auto event_handler = std::make_shared<ProblemGraphEventHandler>(context.get_problem(), options, graph, goal_vertices, false);
-    const auto pruning_strategy = std::make_shared<DuplicateStatePruning>();
+    const auto pruning_strategy = std::make_shared<DuplicatePruningStrategy>();
     const auto result = find_solution(context, state_repository->get_or_create_initial_state(), event_handler, goal_test, pruning_strategy, true);
 
     if (result.status != EXHAUSTED)
