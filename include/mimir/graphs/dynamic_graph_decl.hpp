@@ -36,7 +36,7 @@ namespace mimir::graphs
 /* DynamicGraph */
 
 /// @brief `DynamicGraph` implements a directed graph with vertices of type V and edges of type E that supports the insertion and deletion of vertices
-/// and edges satisfying the graph concepts: `VertexListGraph`, `EdgeListGraph`, `IncidenceGraph`, and `AdjacencyGraph`.
+/// and edges satisfying the graph concepts: `IsVertexListGraph`, `IsEdgeListGraph`, `IsIncidenceGraph`, `IsAdjacencyGraph`, and `IsBidirectionalGraph`.
 ///
 /// `DynamicGraph` supports efficient traversal of adjacent vertices and edges in forward and backward directions.
 /// @tparam V is the vertex type.

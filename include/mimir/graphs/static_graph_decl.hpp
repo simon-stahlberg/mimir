@@ -41,7 +41,7 @@ namespace mimir::graphs
 /* StaticGraph */
 
 /// @brief `StaticGraph` implements a directed graph with vertices of type V and edges of type E that supports the insertion but not the deletion of vertices
-/// and edges satisfying the graph concepts: `VertexListGraph`, `EdgeListGraph`, `IncidenceGraph`, and `AdjacencyGraph`.
+/// and edges satisfying the graph concepts: `IsVertexListGraph`, `IsEdgeListGraph`, `IsIncidenceGraph`, `IsAdjacencyGraph`, and `IsBidirectionalGraph`.
 ///
 /// `StaticGraph` provides functionality for traversing adjacent vertices and edges in forward and backward directions. The iterators filter adjacent vertices
 /// or edges of a vertex from all edges. A `StaticGraph` can be translated into a `StaticForwardGraph` or `StaticBidirectionalGraph` for efficient forward, or
@@ -62,10 +62,6 @@ public:
 
     /* Iterator types. */
 
-    /// @brief `AdjacentVertexConstIterator` implements a const iterator over adjacent vertices.
-    /// @tparam Vertex is the vertex type.
-    /// @tparam Edge is the edge type.
-    /// @tparam Direction is the direction type that defines the edge direction.
     template<IsDirection Direction>
     class AdjacentVertexConstIterator
     {
