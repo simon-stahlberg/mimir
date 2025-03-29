@@ -46,7 +46,7 @@ class VectorBasicMatrix
 public:
     VectorBasicMatrix(std::vector<std::vector<V>>& matrix) : m_matrix(matrix) {}
 
-    static std::vector<std::vector<V>> initialize_data(std::size_t num_vertices, V init_value = std::numeric_limits<V>::max())
+    static std::vector<std::vector<V>> initialize_data(std::size_t num_vertices)
     {
         return std::vector<std::vector<V>>(num_vertices, std::vector<V>(num_vertices));
     }
@@ -70,7 +70,7 @@ template<std::unsigned_integral I, typename V>
 class UnorderedMapBasicMatrix
 {
 public:
-    static std::unordered_map<I, std::unordered_map<I, V>> initialize_data(std::size_t num_vertices, V init_value = std::numeric_limits<V>::max())
+    static std::unordered_map<I, std::unordered_map<I, V>> initialize_data(std::size_t num_vertices)
     {
         return std::unordered_map<I, std::unordered_map<I, V>> {};
     }
@@ -133,6 +133,8 @@ public:
 
     explicit VectorReadPropertyMap(const std::vector<Value>& distances) : m_distances(distances) {}
 
+    static std::vector<Value> initialize_data(std::size_t num_vertices, Value init_value) { return std::vector<Value>(num_vertices, init_value); }
+
     const Value& get(I key) const { return m_distances.get().at(key); }
 
 private:
@@ -164,6 +166,8 @@ public:
     using category = boost::read_write_property_map_tag;
 
     explicit VectorReadWritePropertyMap(std::vector<Value>& distances) : m_distances(distances) {}
+
+    static std::vector<Value> initialize_data(std::size_t num_vertices, Value init_value) { return std::vector<Value>(num_vertices, init_value); }
 
     const Value& get(I key) const { return m_distances.get().at(key); }
     void set(I key, Value value) { m_distances.get().at(key) = value; }
@@ -203,6 +207,8 @@ public:
 
     explicit UnorderedMapReadPropertyMap(const std::unordered_map<Key, Value>& distances) : m_distances(distances) {}
 
+    static std::unordered_map<Key, Value> initialize_data(std::size_t num_vertices, Value init_value) { return std::unordered_map<Key, Value> {}; }
+
     const Value& get(Key key) const { return m_distances.get().at(key); }
 
 private:
@@ -233,6 +239,8 @@ public:
     using category = boost::read_write_property_map_tag;
 
     explicit UnorderedMapReadWritePropertyMap(std::unordered_map<Key, Value>& distances) : m_distances(distances) {}
+
+    static std::unordered_map<Key, Value> initialize_data(std::size_t num_vertices, Value init_value) { return std::unordered_map<Key, Value> {}; }
 
     const Value& get(Key key) const { return m_distances.get()[key]; }
     void set(Key key, Value value) { m_distances.get()[key] = value; }
