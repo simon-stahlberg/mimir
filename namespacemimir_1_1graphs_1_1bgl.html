@@ -86,6 +86,10 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmimir_1_1graphs_1_1bgl_1_1DFSBoostVisitor.html">DFSBoostVisitor</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmimir_1_1graphs_1_1bgl_1_1PropertyMapTraits.html">PropertyMapTraits</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmimir_1_1graphs_1_1bgl_1_1PropertyMapTraits_3_01G_01_4.html">PropertyMapTraits&lt; G &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmimir_1_1graphs_1_1bgl_1_1TrivialReadPropertyMap.html">TrivialReadPropertyMap</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A property map that returns its key as value.  <a href="structmimir_1_1graphs_1_1bgl_1_1TrivialReadPropertyMap.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -147,9 +151,10 @@ requires IsVertexListGraph&lt;Graph&gt; &amp;&amp; IsIncidenceGraph&lt;Graph&gt;
 <tr class="memitem:a2855ef92b9fc22428959c15bad8407bc"><td class="memTemplParams" colspan="2">template&lt;IsStaticGraph Graph, IsDirection Direction, class SourceInputIter &gt; </td></tr>
 <tr class="memitem:a2855ef92b9fc22428959c15bad8407bc"><td class="memTemplItemLeft" align="right" valign="top">std::tuple&lt; std::vector&lt; typename boost::graph_traits&lt; <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &gt;::vertex_descriptor &gt;, <a class="el" href="namespacemimir.html#aa3085f9a656656be6ed0ac38b44d3bbb">DiscreteCostList</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1bgl.html#a2855ef92b9fc22428959c15bad8407bc">depth_first_search</a> (const <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &amp;g, SourceInputIter s_begin, SourceInputIter s_end)</td></tr>
 <tr class="separator:a2855ef92b9fc22428959c15bad8407bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5df6e834a16b1fc363c385e603e420c9"><td class="memTemplParams" colspan="2">template&lt;IsStaticGraph Graph, IsDirection Direction&gt; </td></tr>
-<tr class="memitem:a5df6e834a16b1fc363c385e603e420c9"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classmimir_1_1graphs_1_1bgl_1_1VectorBasicMatrix.html">VectorBasicMatrix</a>&lt; typename boost::graph_traits&lt; <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &gt;::vertex_descriptor, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1bgl.html#a5df6e834a16b1fc363c385e603e420c9">floyd_warshall_all_pairs_shortest_paths</a> (const <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &amp;g, const <a class="el" href="namespacemimir.html#a311e7c8779449c7599fd42d976c22527">ContinuousCostList</a> &amp;w)</td></tr>
-<tr class="separator:a5df6e834a16b1fc363c385e603e420c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63e769df55920b6bcbca9ecabf76ec39"><td class="memTemplParams" colspan="2">template&lt;typename Graph , IsDirection Direction&gt; <br />
+requires IsVertexListGraph&lt;Graph&gt; &amp;&amp; IsEdgeListGraph&lt;Graph&gt;</td></tr>
+<tr class="memitem:a63e769df55920b6bcbca9ecabf76ec39"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1bgl.html#a63e769df55920b6bcbca9ecabf76ec39">floyd_warshall_all_pairs_shortest_paths</a> (const <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &amp;g, const <a class="el" href="namespacemimir.html#a311e7c8779449c7599fd42d976c22527">ContinuousCostList</a> &amp;w)</td></tr>
+<tr class="separator:a63e769df55920b6bcbca9ecabf76ec39"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a237acede42ab98bbe0399a9ac4fdac0c"><td class="memTemplParams" colspan="2">template&lt;IsStaticGraph Graph, IsDirection Direction&gt; </td></tr>
 <tr class="memitem:a237acede42ab98bbe0399a9ac4fdac0c"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; typename boost::graph_traits&lt; <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &gt;::vertex_descriptor &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1bgl.html#a237acede42ab98bbe0399a9ac4fdac0c">topological_sort</a> (const <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &amp;g)</td></tr>
 <tr class="separator:a237acede42ab98bbe0399a9ac4fdac0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -270,16 +275,17 @@ requires IsVertexListGraph&lt;Graph&gt; &amp;&amp; IsIncidenceGraph&lt;Graph&gt;
 
 </div>
 </div>
-<a id="a5df6e834a16b1fc363c385e603e420c9" name="a5df6e834a16b1fc363c385e603e420c9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5df6e834a16b1fc363c385e603e420c9">&#9670;&#160;</a></span>floyd_warshall_all_pairs_shortest_paths()</h2>
+<a id="a63e769df55920b6bcbca9ecabf76ec39" name="a63e769df55920b6bcbca9ecabf76ec39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63e769df55920b6bcbca9ecabf76ec39">&#9670;&#160;</a></span>floyd_warshall_all_pairs_shortest_paths()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;IsStaticGraph Graph, IsDirection Direction&gt; </div>
+template&lt;typename Graph , IsDirection Direction&gt; <br />
+requires IsVertexListGraph&lt;Graph&gt; &amp;&amp; IsEdgeListGraph&lt;Graph&gt;</div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classmimir_1_1graphs_1_1bgl_1_1VectorBasicMatrix.html">VectorBasicMatrix</a>&lt; typename boost::graph_traits&lt; <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &gt;::vertex_descriptor, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> &gt; mimir::graphs::bgl::floyd_warshall_all_pairs_shortest_paths </td>
+          <td class="memname">auto mimir::graphs::bgl::floyd_warshall_all_pairs_shortest_paths </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classmimir_1_1graphs_1_1DirectionTaggedType.html">DirectionTaggedType</a>&lt; Graph, Direction &gt; &amp;&#160;</td>
           <td class="paramname"><em>g</em>, </td>

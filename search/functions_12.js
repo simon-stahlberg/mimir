@@ -1,7 +1,7 @@
 var searchData=
 [
   ['variableimpl_0',['VariableImpl',['../classmimir_1_1formalism_1_1VariableImpl.html#af13ffc08d949a7ca81def8bf3f21cc7d',1,'mimir::formalism::VariableImpl::VariableImpl(VariableImpl &amp;&amp;other)=default'],['../classmimir_1_1formalism_1_1VariableImpl.html#ac4b4449309cc5a6a5e7a988212875cce',1,'mimir::formalism::VariableImpl::VariableImpl(const VariableImpl &amp;other)=delete']]],
-  ['vectorbasicmatrix_1',['VectorBasicMatrix',['../classmimir_1_1graphs_1_1bgl_1_1VectorBasicMatrix.html#a3e0f936ab697b2e55da474464c9ebb64',1,'mimir::graphs::bgl::VectorBasicMatrix']]],
+  ['vectorbasicmatrix_1',['VectorBasicMatrix',['../classmimir_1_1graphs_1_1bgl_1_1VectorBasicMatrix.html#a753ce42b252bd4d5cf31bc5d9fd6c25d',1,'mimir::graphs::bgl::VectorBasicMatrix']]],
   ['vectorreadpropertymap_2',['VectorReadPropertyMap',['../classmimir_1_1graphs_1_1bgl_1_1VectorReadPropertyMap.html#a44e15853fd76242d112b2e7f2f1274b4',1,'mimir::graphs::bgl::VectorReadPropertyMap']]],
   ['vectorreadwritepropertymap_3',['VectorReadWritePropertyMap',['../classmimir_1_1graphs_1_1bgl_1_1VectorReadWritePropertyMap.html#a8c303c65da784f6168690dcd7ac86a24',1,'mimir::graphs::bgl::VectorReadWritePropertyMap']]],
   ['vertex_4',['Vertex',['../classmimir_1_1formalism_1_1StaticConsistencyGraph_1_1Vertex.html#aa4e2d3563564acd219fef43ad88e33be',1,'mimir::formalism::StaticConsistencyGraph::Vertex::Vertex()'],['../classmimir_1_1graphs_1_1Vertex.html#ae073dbab7987d0794be8f3fe59a12212',1,'mimir::graphs::Vertex::Vertex()']]],
