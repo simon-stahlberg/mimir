@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Mimir: mimir::graphs::bgl::DefaultDFSBoostVisitor&lt; VertexDescriptor &gt; Struct Template Reference</title>
+<title>Mimir: mimir::graphs::bgl::DefaultDFSBoostVisitor&lt; PredecessorMap &gt; Struct Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -77,13 +77,13 @@ $(function() {
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="structmimir_1_1graphs_1_1bgl_1_1DefaultDFSBoostVisitor-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">mimir::graphs::bgl::DefaultDFSBoostVisitor&lt; VertexDescriptor &gt; Struct Template Reference</div></div>
+  <div class="headertitle"><div class="title">mimir::graphs::bgl::DefaultDFSBoostVisitor&lt; PredecessorMap &gt; Struct Template Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
 <p><code>#include &lt;<a class="el" href="static__graph__adapters_8hpp_source.html">static_graph_adapters.hpp</a>&gt;</code></p>
 <div class="dynheader">
-Inheritance diagram for mimir::graphs::bgl::DefaultDFSBoostVisitor&lt; VertexDescriptor &gt;:</div>
+Inheritance diagram for mimir::graphs::bgl::DefaultDFSBoostVisitor&lt; PredecessorMap &gt;:</div>
 <div class="dyncontent">
  <div class="center">
   <img src="structmimir_1_1graphs_1_1bgl_1_1DefaultDFSBoostVisitor.png" alt=""/>
@@ -91,42 +91,71 @@ Inheritance diagram for mimir::graphs::bgl::DefaultDFSBoostVisitor&lt; VertexDes
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ab979f0829979740b2b25c90435624dc7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmimir_1_1graphs_1_1bgl_1_1DefaultDFSBoostVisitor.html#ab979f0829979740b2b25c90435624dc7">DefaultDFSBoostVisitor</a> (std::vector&lt; VertexDescriptor &gt; &amp;p, <a class="el" href="namespacemimir.html#aa3085f9a656656be6ed0ac38b44d3bbb">DiscreteCostList</a> &amp;d)</td></tr>
-<tr class="separator:ab979f0829979740b2b25c90435624dc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af2da30f3c73e50ffa7d6e477491a103a"><td class="memTemplParams" colspan="2">template&lt;typename <a class="el" href="classmimir_1_1graphs_1_1Edge.html">Edge</a> , typename Graph &gt; </td></tr>
-<tr class="memitem:af2da30f3c73e50ffa7d6e477491a103a"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structmimir_1_1graphs_1_1bgl_1_1DefaultDFSBoostVisitor.html#af2da30f3c73e50ffa7d6e477491a103a">tree_edge</a> (<a class="el" href="classmimir_1_1graphs_1_1Edge.html">Edge</a> e, const Graph &amp;g) const</td></tr>
-<tr class="separator:af2da30f3c73e50ffa7d6e477491a103a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28df317e5dd1a4b8f1dc80f04947b084"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmimir_1_1graphs_1_1bgl_1_1DefaultDFSBoostVisitor.html#a28df317e5dd1a4b8f1dc80f04947b084">DefaultDFSBoostVisitor</a> (PredecessorMap p)</td></tr>
+<tr class="separator:a28df317e5dd1a4b8f1dc80f04947b084"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a826e9a800a8b8b0e417d6fa17c625777"><td class="memTemplParams" colspan="2">template&lt;typename <a class="el" href="classmimir_1_1graphs_1_1Edge.html">Edge</a> , typename Graph &gt; </td></tr>
+<tr class="memitem:a826e9a800a8b8b0e417d6fa17c625777"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structmimir_1_1graphs_1_1bgl_1_1DefaultDFSBoostVisitor.html#a826e9a800a8b8b0e417d6fa17c625777">tree_edge</a> (<a class="el" href="classmimir_1_1graphs_1_1Edge.html">Edge</a> e, const Graph &amp;g)</td></tr>
+<tr class="separator:a826e9a800a8b8b0e417d6fa17c625777"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:ab772733bdff141698becb972c4192268"><td class="memItemLeft" align="right" valign="top">std::reference_wrapper&lt; std::vector&lt; VertexDescriptor &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmimir_1_1graphs_1_1bgl_1_1DefaultDFSBoostVisitor.html#ab772733bdff141698becb972c4192268">predecessors</a></td></tr>
-<tr class="separator:ab772733bdff141698becb972c4192268"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab6303d966fc53d33999de3f574d627d1"><td class="memItemLeft" align="right" valign="top">std::reference_wrapper&lt; <a class="el" href="namespacemimir.html#aa3085f9a656656be6ed0ac38b44d3bbb">DiscreteCostList</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmimir_1_1graphs_1_1bgl_1_1DefaultDFSBoostVisitor.html#ab6303d966fc53d33999de3f574d627d1">distances</a></td></tr>
-<tr class="separator:ab6303d966fc53d33999de3f574d627d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11032e6f34adebbf85b49f238ad76bca"><td class="memItemLeft" align="right" valign="top">PredecessorMap&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmimir_1_1graphs_1_1bgl_1_1DefaultDFSBoostVisitor.html#a11032e6f34adebbf85b49f238ad76bca">predecessors</a></td></tr>
+<tr class="separator:a11032e6f34adebbf85b49f238ad76bca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="ab979f0829979740b2b25c90435624dc7" name="ab979f0829979740b2b25c90435624dc7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab979f0829979740b2b25c90435624dc7">&#9670;&#160;</a></span>DefaultDFSBoostVisitor()</h2>
+<a id="a28df317e5dd1a4b8f1dc80f04947b084" name="a28df317e5dd1a4b8f1dc80f04947b084"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28df317e5dd1a4b8f1dc80f04947b084">&#9670;&#160;</a></span>DefaultDFSBoostVisitor()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename VertexDescriptor &gt; </div>
+template&lt;typename PredecessorMap &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structmimir_1_1graphs_1_1bgl_1_1DefaultDFSBoostVisitor.html">mimir::graphs::bgl::DefaultDFSBoostVisitor</a>&lt; VertexDescriptor &gt;::DefaultDFSBoostVisitor </td>
+          <td class="memname"><a class="el" href="structmimir_1_1graphs_1_1bgl_1_1DefaultDFSBoostVisitor.html">mimir::graphs::bgl::DefaultDFSBoostVisitor</a>&lt; PredecessorMap &gt;::DefaultDFSBoostVisitor </td>
           <td>(</td>
-          <td class="paramtype">std::vector&lt; VertexDescriptor &gt; &amp;&#160;</td>
-          <td class="paramname"><em>p</em>, </td>
+          <td class="paramtype">PredecessorMap&#160;</td>
+          <td class="paramname"><em>p</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a826e9a800a8b8b0e417d6fa17c625777" name="a826e9a800a8b8b0e417d6fa17c625777"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a826e9a800a8b8b0e417d6fa17c625777">&#9670;&#160;</a></span>tree_edge()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename PredecessorMap &gt; </div>
+<div class="memtemplate">
+template&lt;typename <a class="el" href="classmimir_1_1graphs_1_1Edge.html">Edge</a> , typename Graph &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="structmimir_1_1graphs_1_1bgl_1_1DefaultDFSBoostVisitor.html">mimir::graphs::bgl::DefaultDFSBoostVisitor</a>&lt; PredecessorMap &gt;::tree_edge </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classmimir_1_1graphs_1_1Edge.html">Edge</a>&#160;</td>
+          <td class="paramname"><em>e</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacemimir.html#aa3085f9a656656be6ed0ac38b44d3bbb">DiscreteCostList</a> &amp;&#160;</td>
-          <td class="paramname"><em>d</em>&#160;</td>
+          <td class="paramtype">const Graph &amp;&#160;</td>
+          <td class="paramname"><em>g</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -143,74 +172,17 @@ template&lt;typename VertexDescriptor &gt; </div>
 
 </div>
 </div>
-<h2 class="groupheader">Member Function Documentation</h2>
-<a id="af2da30f3c73e50ffa7d6e477491a103a" name="af2da30f3c73e50ffa7d6e477491a103a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af2da30f3c73e50ffa7d6e477491a103a">&#9670;&#160;</a></span>tree_edge()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename VertexDescriptor &gt; </div>
-<div class="memtemplate">
-template&lt;typename <a class="el" href="classmimir_1_1graphs_1_1Edge.html">Edge</a> , typename Graph &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void <a class="el" href="structmimir_1_1graphs_1_1bgl_1_1DefaultDFSBoostVisitor.html">mimir::graphs::bgl::DefaultDFSBoostVisitor</a>&lt; VertexDescriptor &gt;::tree_edge </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classmimir_1_1graphs_1_1Edge.html">Edge</a>&#160;</td>
-          <td class="paramname"><em>e</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Graph &amp;&#160;</td>
-          <td class="paramname"><em>g</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="ab6303d966fc53d33999de3f574d627d1" name="ab6303d966fc53d33999de3f574d627d1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab6303d966fc53d33999de3f574d627d1">&#9670;&#160;</a></span>distances</h2>
+<a id="a11032e6f34adebbf85b49f238ad76bca" name="a11032e6f34adebbf85b49f238ad76bca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11032e6f34adebbf85b49f238ad76bca">&#9670;&#160;</a></span>predecessors</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename VertexDescriptor &gt; </div>
+template&lt;typename PredecessorMap &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">std::reference_wrapper&lt;<a class="el" href="namespacemimir.html#aa3085f9a656656be6ed0ac38b44d3bbb">DiscreteCostList</a>&gt; <a class="el" href="structmimir_1_1graphs_1_1bgl_1_1DefaultDFSBoostVisitor.html">mimir::graphs::bgl::DefaultDFSBoostVisitor</a>&lt; VertexDescriptor &gt;::distances</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ab772733bdff141698becb972c4192268" name="ab772733bdff141698becb972c4192268"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab772733bdff141698becb972c4192268">&#9670;&#160;</a></span>predecessors</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename VertexDescriptor &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">std::reference_wrapper&lt;std::vector&lt;VertexDescriptor&gt; &gt; <a class="el" href="structmimir_1_1graphs_1_1bgl_1_1DefaultDFSBoostVisitor.html">mimir::graphs::bgl::DefaultDFSBoostVisitor</a>&lt; VertexDescriptor &gt;::predecessors</td>
+          <td class="memname">PredecessorMap <a class="el" href="structmimir_1_1graphs_1_1bgl_1_1DefaultDFSBoostVisitor.html">mimir::graphs::bgl::DefaultDFSBoostVisitor</a>&lt; PredecessorMap &gt;::predecessors</td>
         </tr>
       </table>
 </div><div class="memdoc">

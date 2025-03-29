@@ -104,7 +104,7 @@ $(function() {
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmimir_1_1graphs_1_1bgl_1_1BFSBoostVisitor.html">mimir::graphs::bgl::BFSBoostVisitor&lt; VertexDescriptor &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmimir_1_1graphs_1_1bgl_1_1DefaultDFSBoostVisitor.html">mimir::graphs::bgl::DefaultDFSBoostVisitor&lt; VertexDescriptor &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmimir_1_1graphs_1_1bgl_1_1DefaultDFSBoostVisitor.html">mimir::graphs::bgl::DefaultDFSBoostVisitor&lt; PredecessorMap &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
@@ -130,9 +130,10 @@ requires IsVertexListGraph&lt;Graph&gt; &amp;&amp; IsIncidenceGraph&lt;Graph&gt;
 <tr class="memitem:a9c49c4a99910ba9322d2094b9c0e8c7d"><td class="memTemplParams" colspan="2">template&lt;IsStaticGraph Graph, IsDirection Direction, class SourceInputIter &gt; </td></tr>
 <tr class="memitem:a9c49c4a99910ba9322d2094b9c0e8c7d"><td class="memTemplItemLeft" align="right" valign="top">std::tuple&lt; std::vector&lt; typename boost::graph_traits&lt; DirectionTaggedType&lt; Graph, Direction &gt; &gt;::vertex_descriptor &gt;, DiscreteCostList &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1bgl.html#a9c49c4a99910ba9322d2094b9c0e8c7d">mimir::graphs::bgl::breadth_first_search</a> (const DirectionTaggedType&lt; Graph, Direction &gt; &amp;g, SourceInputIter s_begin, SourceInputIter s_end)</td></tr>
 <tr class="separator:a9c49c4a99910ba9322d2094b9c0e8c7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8d5645d6ddf1c8c1b302e54f24b293b0"><td class="memTemplParams" colspan="2">template&lt;IsStaticGraph Graph, IsDirection Direction, class SourceInputIter &gt; </td></tr>
-<tr class="memitem:a8d5645d6ddf1c8c1b302e54f24b293b0"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1bgl.html#a8d5645d6ddf1c8c1b302e54f24b293b0">mimir::graphs::bgl::depth_first_search</a> (const DirectionTaggedType&lt; Graph, Direction &gt; &amp;g, SourceInputIter s_begin, SourceInputIter s_end)</td></tr>
-<tr class="separator:a8d5645d6ddf1c8c1b302e54f24b293b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a8b9861c3376c24bb4ff8ca5fd98f61"><td class="memTemplParams" colspan="2">template&lt;typename Graph , IsDirection Direction, class SourceInputIter &gt; <br />
+requires IsVertexListGraph&lt;Graph&gt; &amp;&amp; IsIncidenceGraph&lt;Graph&gt;</td></tr>
+<tr class="memitem:a5a8b9861c3376c24bb4ff8ca5fd98f61"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1bgl.html#a5a8b9861c3376c24bb4ff8ca5fd98f61">mimir::graphs::bgl::depth_first_search</a> (const DirectionTaggedType&lt; Graph, Direction &gt; &amp;g, SourceInputIter s_begin, SourceInputIter s_end)</td></tr>
+<tr class="separator:a5a8b9861c3376c24bb4ff8ca5fd98f61"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a63e769df55920b6bcbca9ecabf76ec39"><td class="memTemplParams" colspan="2">template&lt;typename Graph , IsDirection Direction&gt; <br />
 requires IsVertexListGraph&lt;Graph&gt; &amp;&amp; IsEdgeListGraph&lt;Graph&gt;</td></tr>
 <tr class="memitem:a63e769df55920b6bcbca9ecabf76ec39"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1bgl.html#a63e769df55920b6bcbca9ecabf76ec39">mimir::graphs::bgl::floyd_warshall_all_pairs_shortest_paths</a> (const DirectionTaggedType&lt; Graph, Direction &gt; &amp;g, const ContinuousCostList &amp;w)</td></tr>
