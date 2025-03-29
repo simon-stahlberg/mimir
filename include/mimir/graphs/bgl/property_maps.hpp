@@ -46,16 +46,13 @@ class VectorBasicMatrix
 public:
     VectorBasicMatrix(std::vector<std::vector<V>>& matrix) : m_matrix(matrix) {}
 
-    static std::vector<std::vector<V>> initialize_data(std::size_t num_vertices)
-    {
-        return std::vector<std::vector<V>>(num_vertices, std::vector<V>(num_vertices));
-    }
+    static auto initialize_data(std::size_t num_vertices) { return std::vector<std::vector<V>>(num_vertices, std::vector<V>(num_vertices)); }
 
-    std::vector<V>& operator[](I i) { return m_matrix.get()[i]; }
+    auto& operator[](I i) { return m_matrix.get()[i]; }
 
-    const std::vector<V>& operator[](I i) const { return m_matrix.get()[i]; }
+    const auto& operator[](I i) const { return m_matrix.get()[i]; }
 
-    const std::vector<std::vector<V>>& get_matrix() const { return m_matrix.get(); }
+    const auto& get_matrix() const { return m_matrix.get(); }
 
 private:
     std::reference_wrapper<std::vector<std::vector<V>>> m_matrix;
@@ -70,16 +67,13 @@ template<std::unsigned_integral I, typename V>
 class UnorderedMapBasicMatrix
 {
 public:
-    static std::unordered_map<I, std::unordered_map<I, V>> initialize_data(std::size_t num_vertices)
-    {
-        return std::unordered_map<I, std::unordered_map<I, V>> {};
-    }
+    static auto initialize_data(std::size_t num_vertices) { return std::unordered_map<I, std::unordered_map<I, V>> {}; }
 
-    std::unordered_map<I, V>& operator[](I i) { return m_matrix.get()[i]; }
+    auto& operator[](I i) { return m_matrix.get()[i]; }
 
-    const std::unordered_map<I, V>& operator[](I i) const { return m_matrix.get()[i]; }
+    const auto& operator[](I i) const { return m_matrix.get()[i]; }
 
-    const std::unordered_map<I, std::unordered_map<I, V>>& get_matrix() const { return m_matrix.get(); }
+    const auto& get() const { return m_matrix.get(); }
 
 private:
     std::reference_wrapper<std::unordered_map<I, std::unordered_map<I, V>>> m_matrix;
@@ -109,7 +103,7 @@ struct TrivialReadPropertyMap
 /// @param key the state.
 /// @return the index of the state, which is just the input key.
 template<typename Key, typename Value>
-inline Value get(const TrivialReadPropertyMap<Key, Value>&, Key key)
+inline auto get(const TrivialReadPropertyMap<Key, Value>&, Key key)
 {
     return key;
 }
@@ -131,18 +125,20 @@ public:
     using reference = Value;
     using category = boost::read_write_property_map_tag;
 
-    explicit VectorReadPropertyMap(const std::vector<Value>& distances) : m_distances(distances) {}
+    explicit VectorReadPropertyMap(const std::vector<Value>& data) : m_data(data) {}
 
-    static std::vector<Value> initialize_data(std::size_t num_vertices, Value init_value) { return std::vector<Value>(num_vertices, init_value); }
+    static auto initialize_data(std::size_t num_vertices) { return std::vector<Value>(num_vertices); }
 
-    const Value& get(I key) const { return m_distances.get().at(key); }
+    const auto& get(I key) const { return m_data.get().at(key); }
+
+    const auto& get() const { return m_data.get(); }
 
 private:
-    std::reference_wrapper<const std::vector<Value>> m_distances;
+    std::reference_wrapper<const std::vector<Value>> m_data;
 };
 
 template<std::unsigned_integral I, typename Value>
-inline const Value& get(const VectorReadPropertyMap<I, Value>& m, I key)
+inline const auto& get(const VectorReadPropertyMap<I, Value>& m, I key)
 {
     return m.get(key);
 }
@@ -165,19 +161,22 @@ public:
     using reference = Value;
     using category = boost::read_write_property_map_tag;
 
-    explicit VectorReadWritePropertyMap(std::vector<Value>& distances) : m_distances(distances) {}
+    explicit VectorReadWritePropertyMap(std::vector<Value>& data) : m_data(data) {}
 
-    static std::vector<Value> initialize_data(std::size_t num_vertices, Value init_value) { return std::vector<Value>(num_vertices, init_value); }
+    static auto initialize_data(std::size_t num_vertices) { return std::vector<Value>(num_vertices); }
 
-    const Value& get(I key) const { return m_distances.get().at(key); }
-    void set(I key, Value value) { m_distances.get().at(key) = value; }
+    const auto& get(I key) const { return m_data.get().at(key); }
+    void set(I key, Value value) { m_data.get().at(key) = value; }
+
+    auto& get() { return m_data.get(); }
+    const auto& get() const { return m_data.get(); }
 
 private:
-    std::reference_wrapper<std::vector<Value>> m_distances;
+    std::reference_wrapper<std::vector<Value>> m_data;
 };
 
 template<std::unsigned_integral I, typename Value>
-inline const Value& get(const VectorReadWritePropertyMap<I, Value>& m, I key)
+inline const auto& get(const VectorReadWritePropertyMap<I, Value>& m, I key)
 {
     return m.get(key);
 }
@@ -207,16 +206,18 @@ public:
 
     explicit UnorderedMapReadPropertyMap(const std::unordered_map<Key, Value>& distances) : m_distances(distances) {}
 
-    static std::unordered_map<Key, Value> initialize_data(std::size_t num_vertices, Value init_value) { return std::unordered_map<Key, Value> {}; }
+    static auto initialize_data(std::size_t num_vertices) { return std::unordered_map<Key, Value> {}; }
 
-    const Value& get(Key key) const { return m_distances.get().at(key); }
+    const auto& get(Key key) const { return m_distances.get().at(key); }
+
+    const auto& get() const { return m_distances.get(); }
 
 private:
     std::reference_wrapper<const std::unordered_map<Key, Value>> m_distances;
 };
 
 template<typename Key, typename Value>
-inline const Value& get(const UnorderedMapReadPropertyMap<Key, Value>& m, Key key)
+inline const auto& get(const UnorderedMapReadPropertyMap<Key, Value>& m, Key key)
 {
     return m.get(key);
 }
@@ -240,9 +241,9 @@ public:
 
     explicit UnorderedMapReadWritePropertyMap(std::unordered_map<Key, Value>& distances) : m_distances(distances) {}
 
-    static std::unordered_map<Key, Value> initialize_data(std::size_t num_vertices, Value init_value) { return std::unordered_map<Key, Value> {}; }
+    static auto initialize_data(std::size_t num_vertices) { return std::unordered_map<Key, Value> {}; }
 
-    const Value& get(Key key) const { return m_distances.get()[key]; }
+    const auto& get(Key key) const { return m_distances.get()[key]; }
     void set(Key key, Value value) { m_distances.get()[key] = value; }
 
 private:
@@ -250,7 +251,7 @@ private:
 };
 
 template<typename Key, typename Value>
-inline const Value& get(const UnorderedMapReadWritePropertyMap<Key, Value>& m, Key key)
+inline const auto& get(const UnorderedMapReadWritePropertyMap<Key, Value>& m, Key key)
 {
     return m.get(key);
 }

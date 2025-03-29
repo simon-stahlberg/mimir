@@ -179,43 +179,38 @@ breadth_first_search(const DirectionTaggedType<Graph, Direction>& g, SourceInput
 // boost::depth_first_search
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-template<typename VertexDescriptor>
+template<typename PredecessorMap>
 struct DefaultDFSBoostVisitor : public boost::dfs_visitor<>
 {
-    std::reference_wrapper<std::vector<VertexDescriptor>> predecessors;
-    std::reference_wrapper<DiscreteCostList> distances;
+    PredecessorMap predecessors;
 
-    DefaultDFSBoostVisitor(std::vector<VertexDescriptor>& p, DiscreteCostList& d) : predecessors(p), distances(d) {}
+    DefaultDFSBoostVisitor(PredecessorMap p) : predecessors(p) {}
 
     template<typename Edge, typename Graph>
-    void tree_edge(Edge e, const Graph& g) const
+    void tree_edge(Edge e, const Graph& g)
     {
         auto u = source(e, g);
         auto v = target(e, g);
-        predecessors.get().at(v) = u;
-        distances.get().at(v) = distances.get().at(u) + 1;
+        predecessors.set(v, u);
     }
 };
 
-template<IsStaticGraph Graph, IsDirection Direction, class SourceInputIter>
+template<typename Graph, IsDirection Direction, class SourceInputIter>
+    requires IsVertexListGraph<Graph> && IsIncidenceGraph<Graph>
 auto depth_first_search(const DirectionTaggedType<Graph, Direction>& g, SourceInputIter s_begin, SourceInputIter s_end)
 {
     using vertex_descriptor_type = typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor;
     using ColorMap = typename PropertyMapTraits<Graph>::template ReadWritePropertyMap<vertex_descriptor_type, boost::default_color_type>;
+    using PredecessorMap = typename PropertyMapTraits<Graph>::template ReadWritePropertyMap<vertex_descriptor_type, vertex_descriptor_type>;
 
-    auto p = std::vector<vertex_descriptor_type>(g.get().get_num_vertices());
+    auto p = PredecessorMap::initialize_data(g.get().get_num_vertices());
     for (vertex_descriptor_type v = 0; v < g.get().get_num_vertices(); ++v)
     {
         p.at(v) = v;
     }
-    auto inf = std::numeric_limits<DiscreteCost>::max();
-    auto d = DiscreteCostList(g.get().get_num_vertices(), inf);
-    for (auto it = s_begin; it != s_end; ++it)
-    {
-        d.at(*it) = DiscreteCost(0);
-    }
-    auto visitor = DefaultDFSBoostVisitor(p, d);
-    auto color_vector = std::vector<boost::default_color_type>(g.get().get_num_vertices(), boost::white_color);
+    auto visitor = DefaultDFSBoostVisitor(PredecessorMap(p));
+
+    auto color_vector = ColorMap::initialize_data(g.get().get_num_vertices());
     auto color_map = ColorMap(color_vector);
 
     for (; s_begin != s_end; ++s_begin)
@@ -226,7 +221,7 @@ auto depth_first_search(const DirectionTaggedType<Graph, Direction>& g, SourceIn
         }
     }
 
-    return std::make_tuple(p, d);
+    return p;
 }
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -266,7 +261,7 @@ auto topological_sort(const DirectionTaggedType<Graph, Direction>& g)
     using ColorMap = typename PropertyMapTraits<Graph>::template ReadWritePropertyMap<vertex_descriptor_type, boost::default_color_type>;
 
     auto d = std::vector<vertex_descriptor_type> {};
-    auto color_vector = ColorMap::initialize_data(g.get().get_num_vertices(), boost::white_color);
+    auto color_vector = ColorMap::initialize_data(g.get().get_num_vertices());
 
     auto color_map = ColorMap(color_vector);
 
