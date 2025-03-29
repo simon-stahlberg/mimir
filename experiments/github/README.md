@@ -60,7 +60,7 @@ It follows the performance metric scores `Coverage`, `Total time`, and `Search t
 
 1. Optimal-STRIPS
 
-| Item              |     Coverage | Total time [ms] | Search time [ms] |
+| Configuration     |     Coverage | Total time [ms] | Search time [ms] |
 | :---------------- | -----------: | --------------: | ---------------: |
 | Fast-Downward     |      **659** |            1287 |          **265** |
 | Mimir-grounded    |          606 |         **821** |              353 |
@@ -69,7 +69,7 @@ It follows the performance metric scores `Coverage`, `Total time`, and `Search t
 
 2. Hard-to-Ground
 
-| Item              |     Coverage | Total time [ms] | Search time [ms] |
+| Configuration     |     Coverage | Total time [ms] | Search time [ms] |
 | :---------------- | -----------: | --------------: | ---------------: |
 | Fast-Downward     |          108 |            4895 |              152 |
 | Mimir-grounded    |          102 |            4770 |          **111** |
@@ -78,7 +78,7 @@ It follows the performance metric scores `Coverage`, `Total time`, and `Search t
 
 3. Optimal-ADL
 
-| Item              |     Coverage | Total time [ms] | Search time [ms] |
+| Configuration     |     Coverage | Total time [ms] | Search time [ms] |
 | :---------------- | -----------: | --------------: | ---------------: |
 | Fast-Downward     |      **365** |            2321 |          **384** |
 | Mimir-grounded    |          332 |        **1314** |              578 |
@@ -87,7 +87,7 @@ It follows the performance metric scores `Coverage`, `Total time`, and `Search t
 
 4. Numeric
 
-| Item              |     Coverage | Total time [ms] | Search time [ms] |
+| Configuration     |     Coverage | Total time [ms] | Search time [ms] |
 | :---------------- | -----------: | --------------: | ---------------: |
 | Fast-Downward     |            x |               x |                x |
 | Mimir-grounded    |           44 |        **1222** |          **686** |
@@ -98,7 +98,7 @@ It follows the performance metric scores `Coverage`, `Total time`, and `Search t
 
 1. Optimal-STRIPS
 
-| Item              |     Coverage | Total time [ms] | Search time [ms] |
+| Configuration     |     Coverage | Total time [ms] | Search time [ms] |
 | :---------------- | -----------: | --------------: | ---------------: |
 | Fast-Downward     |      **617** |             607 |           **88** |
 | Mimir-grounded    |          597 |         **312** |              110 |
@@ -107,7 +107,7 @@ It follows the performance metric scores `Coverage`, `Total time`, and `Search t
 
 2. Hard-to-Ground
 
-| Item              |     Coverage | Total time [ms] | Search time [ms] |
+| Configuration     |     Coverage | Total time [ms] | Search time [ms] |
 | :---------------- | -----------: | --------------: | ---------------: |
 | Fast-Downward     |           97 |            3142 |               71 |
 | Mimir-grounded    |           91 |            2567 |           **53** |
@@ -116,7 +116,7 @@ It follows the performance metric scores `Coverage`, `Total time`, and `Search t
 
 3. Optimal-ADL
 
-| Item              |     Coverage | Total time [ms] | Search time [ms] |
+| Configuration     |     Coverage | Total time [ms] | Search time [ms] |
 | :---------------- | -----------: | --------------: | ---------------: |
 | Fast-Downward     |      **318** |            1401 |          **165** |
 | Mimir-grounded    |          308 |         **637** |              257 |
@@ -125,7 +125,7 @@ It follows the performance metric scores `Coverage`, `Total time`, and `Search t
 
 4. Numeric
 
-| Item              |     Coverage | Total time [ms] | Search time [ms] |
+| Configuration     |     Coverage | Total time [ms] | Search time [ms] |
 | :---------------- | -----------: | --------------: | ---------------: |
 | Fast-Downward     |            x |               x |                x |
 | Mimir-grounded    |       **41** |         **535** |          **291** |

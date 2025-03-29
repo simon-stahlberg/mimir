@@ -68,14 +68,14 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyGripperTest)
                 /* Test solvability on GeneralizedStateSpace. */
 
                 EXPECT_EQ(general_policy->solves(generalized_state_space.value(), denotation_repositories),
-                          general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
+                          general_policies::GeneralPolicyImpl::SolvabilityStatus::SOLVED);
             }
 
             {
                 /* Test solvability on StateSpace 0. */
 
                 EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), denotation_repositories),
-                          general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
+                          general_policies::GeneralPolicyImpl::SolvabilityStatus::SOLVED);
             }
 
             {
@@ -84,7 +84,7 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyGripperTest)
                 const auto state_space_1 = kb->get_state_spaces().at(1);
 
                 EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), denotation_repositories),
-                          general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
+                          general_policies::GeneralPolicyImpl::SolvabilityStatus::SOLVED);
             }
         }
 
@@ -108,7 +108,7 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyGripperTest)
                 /* Test solvability on GeneralizedStateSpace. */
 
                 EXPECT_EQ(general_policy->solves(generalized_state_space.value(), denotation_repositories),
-                          general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
+                          general_policies::GeneralPolicyImpl::SolvabilityStatus::SOLVED);
             }
 
             {
@@ -117,7 +117,7 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyGripperTest)
                 const auto state_space_0 = kb->get_state_spaces().at(0);
 
                 EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), denotation_repositories),
-                          general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
+                          general_policies::GeneralPolicyImpl::SolvabilityStatus::SOLVED);
             }
 
             {
@@ -126,7 +126,7 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyGripperTest)
                 const auto state_space_1 = kb->get_state_spaces().at(1);
 
                 EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), denotation_repositories),
-                          general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
+                          general_policies::GeneralPolicyImpl::SolvabilityStatus::SOLVED);
             }
         }
     }
@@ -169,14 +169,14 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyBlocks3opsTest)
                 /* Test solvability on GeneralizedStateSpace. */
 
                 EXPECT_EQ(general_policy->solves(generalized_state_space.value(), denotation_repositories),
-                          general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
+                          general_policies::GeneralPolicyImpl::SolvabilityStatus::SOLVED);
             }
 
             {
                 /* Test solvability on StateSpace 0. */
 
                 EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), denotation_repositories),
-                          general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
+                          general_policies::GeneralPolicyImpl::SolvabilityStatus::SOLVED);
             }
 
             {
@@ -185,7 +185,7 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyBlocks3opsTest)
                 const auto state_space_1 = kb->get_state_spaces().at(1);
 
                 EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), denotation_repositories),
-                          general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
+                          general_policies::GeneralPolicyImpl::SolvabilityStatus::SOLVED);
             }
         }
 
@@ -209,7 +209,7 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyBlocks3opsTest)
                 /* Test solvability on GeneralizedStateSpace. */
 
                 EXPECT_EQ(general_policy->solves(generalized_state_space.value(), denotation_repositories),
-                          general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
+                          general_policies::GeneralPolicyImpl::SolvabilityStatus::SOLVED);
             }
 
             {
@@ -218,7 +218,7 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyBlocks3opsTest)
                 const auto state_space_0 = kb->get_state_spaces().at(0);
 
                 EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), denotation_repositories),
-                          general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
+                          general_policies::GeneralPolicyImpl::SolvabilityStatus::SOLVED);
             }
 
             {
@@ -227,7 +227,7 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyBlocks3opsTest)
                 const auto state_space_1 = kb->get_state_spaces().at(1);
 
                 EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), denotation_repositories),
-                          general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
+                          general_policies::GeneralPolicyImpl::SolvabilityStatus::SOLVED);
             }
         }
     }
@@ -270,14 +270,14 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicySpannerTest)
                 /* Test solvability on GeneralizedStateSpace. */
 
                 EXPECT_EQ(general_policy->solves(generalized_state_space.value(), denotation_repositories),
-                          general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
+                          general_policies::GeneralPolicyImpl::SolvabilityStatus::SOLVED);
             }
 
             {
                 /* Test solvability on StateSpace 0. */
 
                 EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), denotation_repositories),
-                          general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
+                          general_policies::GeneralPolicyImpl::SolvabilityStatus::SOLVED);
             }
 
             {
@@ -286,7 +286,7 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicySpannerTest)
                 const auto state_space_1 = kb->get_state_spaces().at(1);
 
                 EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), denotation_repositories),
-                          general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
+                          general_policies::GeneralPolicyImpl::SolvabilityStatus::SOLVED);
             }
         }
 
@@ -310,7 +310,7 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicySpannerTest)
                 /* Test solvability on GeneralizedStateSpace. */
 
                 EXPECT_EQ(general_policy->solves(generalized_state_space.value(), denotation_repositories),
-                          general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
+                          general_policies::GeneralPolicyImpl::SolvabilityStatus::SOLVED);
             }
 
             {
@@ -319,7 +319,7 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicySpannerTest)
                 const auto state_space_0 = kb->get_state_spaces().at(0);
 
                 EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), denotation_repositories),
-                          general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
+                          general_policies::GeneralPolicyImpl::SolvabilityStatus::SOLVED);
             }
 
             {
@@ -328,7 +328,7 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicySpannerTest)
                 const auto state_space_1 = kb->get_state_spaces().at(1);
 
                 EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), denotation_repositories),
-                          general_policies::GeneralPolicyImpl::UnsolvabilityReason::NONE);
+                          general_policies::GeneralPolicyImpl::SolvabilityStatus::SOLVED);
             }
         }
     }

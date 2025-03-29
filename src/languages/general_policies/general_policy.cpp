@@ -40,8 +40,8 @@ void GeneralPolicyImpl::accept(IVisitor& visitor) { visitor.visit(this); }
 
 bool GeneralPolicyImpl::is_terminating() const { throw std::runtime_error("Not implemented"); }
 
-GeneralPolicyImpl::UnsolvabilityReason GeneralPolicyImpl::solves(const datasets::StateSpace& state_space,
-                                                                 dl::DenotationRepositories& denotation_repositories) const
+GeneralPolicyImpl::SolvabilityStatus GeneralPolicyImpl::solves(const datasets::StateSpace& state_space,
+                                                               dl::DenotationRepositories& denotation_repositories) const
 {
     auto alive_vertex_indices = graphs::VertexIndexList {};
     for (const auto& vertex : state_space->get_graph().get_vertices())
@@ -53,13 +53,13 @@ GeneralPolicyImpl::UnsolvabilityReason GeneralPolicyImpl::solves(const datasets:
     return solves(state_space, alive_vertex_indices, denotation_repositories);
 }
 
-GeneralPolicyImpl::UnsolvabilityReason GeneralPolicyImpl::solves(const datasets::StateSpace& state_space,
-                                                                 graphs::VertexIndex v_idx,
-                                                                 dl::DenotationRepositories& denotation_repositories,
-                                                                 graphs::VertexIndexSet& ref_visited_vertices) const
+GeneralPolicyImpl::SolvabilityStatus GeneralPolicyImpl::solves(const datasets::StateSpace& state_space,
+                                                               graphs::VertexIndex v_idx,
+                                                               dl::DenotationRepositories& denotation_repositories,
+                                                               graphs::VertexIndexSet& ref_visited_vertices) const
 {
     if (ref_visited_vertices.contains(v_idx))
-        UnsolvabilityReason::NONE;
+        SolvabilityStatus::SOLVED;
 
     const auto& graph = state_space->get_graph();
 
@@ -101,7 +101,7 @@ GeneralPolicyImpl::UnsolvabilityReason GeneralPolicyImpl::solves(const datasets:
             {
                 DEBUG_LOG("\nUnsolvable vertex " << src_v_idx << ": " << std::make_tuple(src_state, std::cref(*src_problem)));
 
-                return UnsolvabilityReason::UNSOLVABLE;
+                return SolvabilityStatus::UNSOLVABLE;
             }
 
             stack.pop();
@@ -127,7 +127,7 @@ GeneralPolicyImpl::UnsolvabilityReason GeneralPolicyImpl::solves(const datasets:
                                                           << std::make_tuple(src_state, std::cref(*src_problem)) << "\n"
                                                           << "  -> " << std::make_tuple(dst_state, std::cref(*dst_problem)));
 
-                    return UnsolvabilityReason::CYCLE;
+                    return SolvabilityStatus::CYCLIC;
                 }
 
                 src_entry.has_compatible_edge = true;
@@ -155,23 +155,23 @@ GeneralPolicyImpl::UnsolvabilityReason GeneralPolicyImpl::solves(const datasets:
         }
     }
 
-    return UnsolvabilityReason::NONE;
+    return SolvabilityStatus::SOLVED;
 }
 
-GeneralPolicyImpl::UnsolvabilityReason GeneralPolicyImpl::solves(const datasets::StateSpace& state_space,
-                                                                 const graphs::VertexIndexList& vertices,
-                                                                 dl::DenotationRepositories& denotation_repositories) const
+GeneralPolicyImpl::SolvabilityStatus GeneralPolicyImpl::solves(const datasets::StateSpace& state_space,
+                                                               const graphs::VertexIndexList& vertices,
+                                                               dl::DenotationRepositories& denotation_repositories) const
 {
     return solves<graphs::VertexIndexList>(state_space, vertices, denotation_repositories);
 }
 
-GeneralPolicyImpl::UnsolvabilityReason GeneralPolicyImpl::solves(const datasets::GeneralizedStateSpace& generalized_state_space,
-                                                                 graphs::VertexIndex v_idx,
-                                                                 dl::DenotationRepositories& denotation_repositories,
-                                                                 graphs::VertexIndexSet& ref_visited_vertices) const
+GeneralPolicyImpl::SolvabilityStatus GeneralPolicyImpl::solves(const datasets::GeneralizedStateSpace& generalized_state_space,
+                                                               graphs::VertexIndex v_idx,
+                                                               dl::DenotationRepositories& denotation_repositories,
+                                                               graphs::VertexIndexSet& ref_visited_vertices) const
 {
     if (ref_visited_vertices.contains(v_idx))
-        return UnsolvabilityReason::NONE;
+        return SolvabilityStatus::SOLVED;
 
     const auto& class_graph = generalized_state_space->get_graph();
 
@@ -214,7 +214,7 @@ GeneralPolicyImpl::UnsolvabilityReason GeneralPolicyImpl::solves(const datasets:
             {
                 DEBUG_LOG("\nUnsolvable vertex " << src_v_idx << ": " << std::make_tuple(src_state, std::cref(*src_problem)));
 
-                return UnsolvabilityReason::UNSOLVABLE;
+                return SolvabilityStatus::UNSOLVABLE;
             }
 
             stack.pop();
@@ -241,7 +241,7 @@ GeneralPolicyImpl::UnsolvabilityReason GeneralPolicyImpl::solves(const datasets:
                                                           << std::make_tuple(src_state, std::cref(*src_problem)) << "\n"
                                                           << "  -> " << std::make_tuple(dst_state, std::cref(*dst_problem)));
 
-                    return UnsolvabilityReason::CYCLE;
+                    return SolvabilityStatus::CYCLIC;
                 }
 
                 src_entry.has_compatible_edge = true;
@@ -269,11 +269,11 @@ GeneralPolicyImpl::UnsolvabilityReason GeneralPolicyImpl::solves(const datasets:
         }
     }
 
-    return UnsolvabilityReason::NONE;
+    return SolvabilityStatus::SOLVED;
 }
 
-GeneralPolicyImpl::UnsolvabilityReason GeneralPolicyImpl::solves(const datasets::GeneralizedStateSpace& generalized_state_space,
-                                                                 dl::DenotationRepositories& denotation_repositories) const
+GeneralPolicyImpl::SolvabilityStatus GeneralPolicyImpl::solves(const datasets::GeneralizedStateSpace& generalized_state_space,
+                                                               dl::DenotationRepositories& denotation_repositories) const
 {
     auto alive_vertex_indices = graphs::VertexIndexList {};
     for (const auto& vertex : generalized_state_space->get_graph().get_vertices())
@@ -285,9 +285,9 @@ GeneralPolicyImpl::UnsolvabilityReason GeneralPolicyImpl::solves(const datasets:
     return solves(generalized_state_space, alive_vertex_indices, denotation_repositories);
 }
 
-GeneralPolicyImpl::UnsolvabilityReason GeneralPolicyImpl::solves(const datasets::GeneralizedStateSpace& generalized_state_space,
-                                                                 const graphs::VertexIndexList& vertices,
-                                                                 dl::DenotationRepositories& denotation_repositories) const
+GeneralPolicyImpl::SolvabilityStatus GeneralPolicyImpl::solves(const datasets::GeneralizedStateSpace& generalized_state_space,
+                                                               const graphs::VertexIndexList& vertices,
+                                                               dl::DenotationRepositories& denotation_repositories) const
 {
     return solves<graphs::VertexIndexList>(generalized_state_space, vertices, denotation_repositories);
 }

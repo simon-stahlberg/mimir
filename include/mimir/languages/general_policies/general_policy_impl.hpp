@@ -33,7 +33,7 @@ namespace mimir::languages::general_policies
 {
 template<std::ranges::forward_range VertexIndices>
     requires std::same_as<std::ranges::range_value_t<VertexIndices>, graphs::VertexIndex>
-GeneralPolicyImpl::UnsolvabilityReason
+GeneralPolicyImpl::SolvabilityStatus
 GeneralPolicyImpl::solves(const datasets::StateSpace& state_space, const VertexIndices& vertices, dl::DenotationRepositories& denotation_repositories) const
 {
     auto visited_v_idxs = graphs::VertexIndexSet {};
@@ -42,20 +42,20 @@ GeneralPolicyImpl::solves(const datasets::StateSpace& state_space, const VertexI
     {
         const auto reason = solves(state_space, v_idx, denotation_repositories, visited_v_idxs);
 
-        if (reason == UnsolvabilityReason::CYCLE || reason == UnsolvabilityReason::UNSOLVABLE)
+        if (reason == SolvabilityStatus::CYCLIC || reason == SolvabilityStatus::UNSOLVABLE)
         {
             return reason;
         }
     }
 
-    return UnsolvabilityReason::NONE;
+    return SolvabilityStatus::SOLVED;
 }
 
 template<std::ranges::forward_range VertexIndices>
     requires std::same_as<std::ranges::range_value_t<VertexIndices>, graphs::VertexIndex>
-GeneralPolicyImpl::UnsolvabilityReason GeneralPolicyImpl::solves(const datasets::GeneralizedStateSpace& generalized_state_space,
-                                                                 const VertexIndices& vertices,
-                                                                 dl::DenotationRepositories& denotation_repositories) const
+GeneralPolicyImpl::SolvabilityStatus GeneralPolicyImpl::solves(const datasets::GeneralizedStateSpace& generalized_state_space,
+                                                               const VertexIndices& vertices,
+                                                               dl::DenotationRepositories& denotation_repositories) const
 {
     auto visited_v_idxs = graphs::VertexIndexSet {};
 
@@ -63,13 +63,13 @@ GeneralPolicyImpl::UnsolvabilityReason GeneralPolicyImpl::solves(const datasets:
     {
         const auto reason = solves(generalized_state_space, v_idx, denotation_repositories, visited_v_idxs);
 
-        if (reason == UnsolvabilityReason::CYCLE || reason == UnsolvabilityReason::UNSOLVABLE)
+        if (reason == SolvabilityStatus::CYCLIC || reason == SolvabilityStatus::UNSOLVABLE)
         {
             return reason;
         }
     }
 
-    return UnsolvabilityReason::NONE;
+    return SolvabilityStatus::SOLVED;
 }
 
 }
