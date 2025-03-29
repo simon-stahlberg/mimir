@@ -47,18 +47,17 @@ namespace mimir::graphs::bgl
 /// @brief Wrapper function for boost's strong_components algorithm.
 /// @param g the graph.
 /// @return a pair of the number of strong components and a map from state to component.
-template<IsStaticGraph Graph, IsDirection Direction>
+template<typename Graph, IsDirection Direction>
     requires IsVertexListGraph<Graph> && IsIncidenceGraph<Graph>
-std::pair<typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertices_size_type,
-          std::vector<typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertices_size_type>>
-strong_components(const DirectionTaggedType<Graph, Direction>& g)
+auto strong_components(const DirectionTaggedType<Graph, Direction>& g)
 {
     using vertex_descriptor_type = typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor;
     using vertices_size_type = typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertices_size_type;
+    using ComponentMap = typename PropertyMapTraits<Graph>::template ReadWritePropertyMap<vertex_descriptor_type, vertices_size_type>;
 
     auto vertex_index_map = TrivialReadPropertyMap<vertex_descriptor_type, vertex_descriptor_type>();
-    auto c = std::vector<vertices_size_type>(g.get().get_num_vertices());
-    auto component_map = VectorReadWritePropertyMap<vertex_descriptor_type, vertices_size_type>(c);
+    auto c = ComponentMap::initialize_data(g.get().get_num_vertices());
+    auto component_map = ComponentMap(c);
 
     const auto num_components = boost::strong_components(g, component_map, boost::vertex_index_map(vertex_index_map));
     return std::make_pair(num_components, c);
