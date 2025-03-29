@@ -19,6 +19,8 @@
 #define MIMIR_GRAPHS_BGL_PROPERTY_MAPS_HPP_
 
 #include "mimir/common/concepts.hpp"
+#include "mimir/graphs/dynamic_graph_interface.hpp"
+#include "mimir/graphs/static_graph_interface.hpp"
 
 #include <boost/graph/graph_concepts.hpp>
 #include <boost/property_map/property_map.hpp>
@@ -42,18 +44,21 @@ template<std::unsigned_integral I, typename V>
 class VectorBasicMatrix
 {
 public:
-    VectorBasicMatrix(std::size_t num_vertices, V init_value = std::numeric_limits<V>::max()) : m_matrix(num_vertices, std::vector<V>(num_vertices, init_value))
+    VectorBasicMatrix(std::vector<std::vector<V>>& matrix) : m_matrix(matrix) {}
+
+    static std::vector<std::vector<V>> initialize_data(std::size_t num_vertices, V init_value = std::numeric_limits<V>::max())
     {
+        return std::vector<std::vector<V>>(num_vertices, std::vector<V>(num_vertices));
     }
 
-    std::vector<V>& operator[](I i) { return m_matrix[i]; }
+    std::vector<V>& operator[](I i) { return m_matrix.get()[i]; }
 
-    const std::vector<V>& operator[](I i) const { return m_matrix[i]; }
+    const std::vector<V>& operator[](I i) const { return m_matrix.get()[i]; }
 
-    const std::vector<std::vector<V>>& get_matrix() const { return m_matrix; }
+    const std::vector<std::vector<V>>& get_matrix() const { return m_matrix.get(); }
 
 private:
-    std::vector<std::vector<V>> m_matrix;
+    std::reference_wrapper<std::vector<std::vector<V>>> m_matrix;
 };
 
 /// @brief `UnorderedMapBasicMatrix` is a 2-dimensional table of values for sparse graph structures whose underlying storage are unordered_maps.
@@ -65,14 +70,19 @@ template<std::unsigned_integral I, typename V>
 class UnorderedMapBasicMatrix
 {
 public:
-    std::unordered_map<I, V>& operator[](I i) { return m_matrix[i]; }
+    static std::unordered_map<I, std::unordered_map<I, V>> initialize_data(std::size_t num_vertices, V init_value = std::numeric_limits<V>::max())
+    {
+        return std::unordered_map<I, std::unordered_map<I, V>> {};
+    }
 
-    const std::unordered_map<I, V>& operator[](I i) const { return m_matrix[i]; }
+    std::unordered_map<I, V>& operator[](I i) { return m_matrix.get()[i]; }
 
-    const std::unordered_map<I, std::unordered_map<I, V>>& get_matrix() const { return m_matrix; }
+    const std::unordered_map<I, V>& operator[](I i) const { return m_matrix.get()[i]; }
+
+    const std::unordered_map<I, std::unordered_map<I, V>>& get_matrix() const { return m_matrix.get(); }
 
 private:
-    std::unordered_map<I, std::unordered_map<I, V>> m_matrix;
+    std::reference_wrapper<std::unordered_map<I, std::unordered_map<I, V>>> m_matrix;
 };
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -242,6 +252,45 @@ inline void put(UnorderedMapReadWritePropertyMap<Key, Value>& m, Key key, Value 
 {
     m.set(key, value);
 }
+
+/**
+ * PropertyMapTrait
+ */
+
+template<typename G>
+struct PropertyMapTraits;
+
+template<IsStaticGraph G>
+struct PropertyMapTraits<G>
+{
+    template<std::unsigned_integral I, typename V>
+    using BasicMatrix = VectorBasicMatrix<I, V>;
+
+    template<typename Key, typename Value>
+    using TrivialReadPropertyMap = TrivialReadPropertyMap<Key, Value>;
+
+    template<std::unsigned_integral I, typename Value>
+    using ReadPropertyMap = VectorReadPropertyMap<I, Value>;
+
+    template<std::unsigned_integral I, typename Value>
+    using ReadWritePropertyMap = VectorReadWritePropertyMap<I, Value>;
+};
+
+template<IsDynamicGraph G>
+struct PropertyMapTraits<G>
+{
+    template<std::unsigned_integral I, typename V>
+    using BasicMatrix = UnorderedMapBasicMatrix<I, V>;
+
+    template<typename Key, typename Value>
+    using TrivialReadPropertyMap = TrivialReadPropertyMap<Key, Value>;
+
+    template<std::unsigned_integral I, typename Value>
+    using ReadPropertyMap = UnorderedMapReadPropertyMap<I, Value>;
+
+    template<std::unsigned_integral I, typename Value>
+    using ReadWritePropertyMap = UnorderedMapReadWritePropertyMap<I, Value>;
+};
 
 }
 

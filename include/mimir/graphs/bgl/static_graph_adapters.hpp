@@ -234,19 +234,24 @@ depth_first_search(const DirectionTaggedType<Graph, Direction>& g, SourceInputIt
 // boost::floyd_warshall_all_pairs_shortest_paths
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-template<IsStaticGraph Graph, IsDirection Direction>
-VectorBasicMatrix<typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor, ContinuousCost>
-floyd_warshall_all_pairs_shortest_paths(const DirectionTaggedType<Graph, Direction>& g, const ContinuousCostList& w)
+template<typename Graph, IsDirection Direction>
+    requires IsVertexListGraph<Graph> && IsEdgeListGraph<Graph>
+auto floyd_warshall_all_pairs_shortest_paths(const DirectionTaggedType<Graph, Direction>& g, const ContinuousCostList& w)
 {
     using vertex_descriptor_type = typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor;
     using edge_descriptor_type = typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::edge_descriptor;
 
-    auto d = VectorBasicMatrix<vertex_descriptor_type, ContinuousCost>(g.get().get_num_vertices());
-    auto weight_map = VectorReadPropertyMap<edge_descriptor_type, ContinuousCost>(w);
+    using BasicMatrix = typename PropertyMapTraits<Graph>::template BasicMatrix<vertex_descriptor_type, ContinuousCost>;
+    using WeightPropertyMap = typename PropertyMapTraits<Graph>::template ReadPropertyMap<edge_descriptor_type, ContinuousCost>;
+
+    auto matrix = BasicMatrix::initialize_data(g.get().get_num_vertices());
+
+    auto d = BasicMatrix(matrix);
+    auto weight_map = WeightPropertyMap(w);
 
     boost::floyd_warshall_all_pairs_shortest_paths(g, d, boost::weight_map(weight_map));
 
-    return d;
+    return matrix;
 }
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
