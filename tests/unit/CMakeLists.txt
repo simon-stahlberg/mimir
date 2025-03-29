@@ -31,7 +31,9 @@ add_gtest(formalism_translator_test                        "formalism/translator
 
 add_gtest(graphs_algorithms_color_refinement_test          "graphs/algorithms/color_refinement.cpp")
 add_gtest(graphs_algorithms_folklore_weisfeiler_leman_test "graphs/algorithms/folklore_weisfeiler_leman.cpp")
-add_gtest(graphs_bgl_static_graph_adapters_test            "graphs/bgl/static_graph_adapters.cpp")
+add_gtest(graphs_bgl_graph_adapters_test                   "graphs/bgl/graph_adapters.cpp")
+add_gtest(graphs_bgl_graph_algorithms_test                 "graphs/bgl/graph_algorithms.cpp")
+add_gtest(graphs_bgl_static_graph_algorithms_test          "graphs/bgl/static_graph_algorithms.cpp")
 add_gtest(graphs_dynamic_graph_test                        "graphs/dynamic_graph.cpp")
 add_gtest(graphs_static_graph_test                         "graphs/static_graph.cpp")
 

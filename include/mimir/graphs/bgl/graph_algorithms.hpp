@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_GRAPHS_BGL_STATIC_GRAPH_ADAPTERS_HPP_
-#define MIMIR_GRAPHS_BGL_STATIC_GRAPH_ADAPTERS_HPP_
+#ifndef MIMIR_GRAPHS_BGL_GRAPH_ALGORITHMS_HPP_
+#define MIMIR_GRAPHS_BGL_GRAPH_ALGORITHMS_HPP_
 
 #include "mimir/common/concepts.hpp"
 #include "mimir/graphs/bgl/graph_adapters.hpp"
@@ -26,8 +26,6 @@
 
 #include <boost/graph/breadth_first_search.hpp>
 #include <boost/graph/depth_first_search.hpp>
-#include <boost/graph/dijkstra_shortest_paths.hpp>
-#include <boost/graph/floyd_warshall_shortest.hpp>
 #include <boost/graph/graph_concepts.hpp>
 #include <boost/graph/graph_traits.hpp>
 #include <boost/graph/strong_components.hpp>
@@ -86,89 +84,53 @@ get_partitioning(typename boost::graph_traits<DirectionTaggedType<Graph, Directi
 */
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// boost::dijkstra_shortest_path
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-template<IsStaticGraph Graph, IsDirection Direction, class SourceInputIter>
-    requires IsVertexListGraph<Graph> && IsIncidenceGraph<Graph>
-std::tuple<std::vector<typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor>, ContinuousCostList>
-dijkstra_shortest_paths(const DirectionTaggedType<Graph, Direction>& g, const ContinuousCostList& w, SourceInputIter s_begin, SourceInputIter s_end)
-{
-    using vertex_descriptor_type = typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor;
-    using edge_descriptor_type = typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::edge_descriptor;
-
-    auto p = std::vector<vertex_descriptor_type>(g.get().get_num_vertices());
-    auto predecessor_map = VectorReadWritePropertyMap<vertex_descriptor_type, vertex_descriptor_type>(p);
-    auto d = ContinuousCostList(g.get().get_num_vertices());
-    auto distance_map = VectorReadWritePropertyMap<vertex_descriptor_type, ContinuousCost>(d);
-    auto weight_map = VectorReadPropertyMap<edge_descriptor_type, ContinuousCost>(w);
-    auto vertex_index_map = TrivialReadPropertyMap<vertex_descriptor_type, vertex_descriptor_type>();
-    auto compare = std::less<ContinuousCost>();
-    auto combine = std::plus<ContinuousCost>();
-    auto inf = std::numeric_limits<ContinuousCost>::infinity();
-    auto zero = ContinuousCost();
-
-    // multiple source shortest path version.
-    boost::dijkstra_shortest_paths(g,  //
-                                   s_begin,
-                                   s_end,
-                                   predecessor_map,
-                                   distance_map,
-                                   weight_map,
-                                   vertex_index_map,
-                                   compare,
-                                   combine,
-                                   inf,
-                                   zero,
-                                   boost::default_dijkstra_visitor());
-
-    return std::make_tuple(p, d);
-};
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // boost::breadth_first_search
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-template<typename VertexDescriptor>
+template<typename PredecessorMap, typename DistanceMap>
 struct BFSBoostVisitor : public boost::bfs_visitor<>
 {
-    std::reference_wrapper<std::vector<VertexDescriptor>> predecessors;
-    std::reference_wrapper<DiscreteCostList> distances;
+    PredecessorMap predecessors;
+    DistanceMap distances;
 
-    BFSBoostVisitor(std::vector<VertexDescriptor>& p, DiscreteCostList& d) : predecessors(p), distances(d) {}
+    BFSBoostVisitor(PredecessorMap p, DistanceMap d) : predecessors(p), distances(d) {}
 
     template<typename Edge, typename Graph>
-    void tree_edge(Edge e, const Graph& g) const
+    void tree_edge(Edge e, const Graph& g)
     {
         auto u = source(e, g);
         auto v = target(e, g);
-        predecessors.get().at(v) = u;
-        distances.get().at(v) = distances.get().at(u) + 1;
+        predecessors.set(v, u);
+        distances.set(v, distances.get().at(u) + 1);
     }
 };
 
-template<IsStaticGraph Graph, IsDirection Direction, class SourceInputIter>
-std::tuple<std::vector<typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor>, DiscreteCostList>
-breadth_first_search(const DirectionTaggedType<Graph, Direction>& g, SourceInputIter s_begin, SourceInputIter s_end)
+template<typename Graph, IsDirection Direction, class SourceInputIter>
+    requires IsVertexListGraph<Graph> && IsIncidenceGraph<Graph>
+auto breadth_first_search(const DirectionTaggedType<Graph, Direction>& g, SourceInputIter s_begin, SourceInputIter s_end)
 {
     using vertex_descriptor_type = typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor;
-    using ColorMap = boost::iterator_property_map<std::vector<boost::default_color_type>::iterator, boost::identity_property_map>;
+    using PredecessorMap = typename PropertyMapTraits<Graph>::template ReadWritePropertyMap<vertex_descriptor_type, vertex_descriptor_type>;
+    using DistanceMap = typename PropertyMapTraits<Graph>::template ReadWritePropertyMap<vertex_descriptor_type, DiscreteCost>;
+    using ColorMap = typename PropertyMapTraits<Graph>::template ReadWritePropertyMap<vertex_descriptor_type, boost::default_color_type>;
 
     auto buffer = boost::queue<vertex_descriptor_type>();
-    auto p = std::vector<vertex_descriptor_type>(g.get().get_num_vertices());
+    auto p = PredecessorMap::initialize_data(g.get().get_num_vertices());
     for (vertex_descriptor_type v = 0; v < g.get().get_num_vertices(); ++v)
     {
         p.at(v) = v;
     }
     auto inf = std::numeric_limits<DiscreteCost>::max();
-    auto d = DiscreteCostList(g.get().get_num_vertices(), inf);
+    auto d = DistanceMap::initialize_data(g.get().get_num_vertices());
+    std::fill(d.begin(), d.end(), inf);
     for (auto it = s_begin; it != s_end; ++it)
     {
         d.at(*it) = DiscreteCost(0);
     }
-    auto visitor = BFSBoostVisitor(p, d);
-    auto color_vector = std::vector<boost::default_color_type>(g.get().get_num_vertices(), boost::white_color);
-    auto color_map = ColorMap(color_vector.begin(), boost::identity_property_map());
+    auto visitor = BFSBoostVisitor(PredecessorMap(p), DistanceMap(d));
+
+    auto color_vector = ColorMap::initialize_data(g.get().get_num_vertices());
+    auto color_map = ColorMap(color_vector);
     boost::breadth_first_search(g, s_begin, s_end, buffer, visitor, color_map);
 
     return std::make_tuple(p, d);
@@ -221,30 +183,6 @@ auto depth_first_search(const DirectionTaggedType<Graph, Direction>& g, SourceIn
     }
 
     return p;
-}
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// boost::floyd_warshall_all_pairs_shortest_paths
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-template<typename Graph, IsDirection Direction>
-    requires IsVertexListGraph<Graph> && IsEdgeListGraph<Graph>
-auto floyd_warshall_all_pairs_shortest_paths(const DirectionTaggedType<Graph, Direction>& g, const ContinuousCostList& w)
-{
-    using vertex_descriptor_type = typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor;
-    using edge_descriptor_type = typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::edge_descriptor;
-
-    using BasicMatrix = typename PropertyMapTraits<Graph>::template BasicMatrix<vertex_descriptor_type, ContinuousCost>;
-    using WeightPropertyMap = typename PropertyMapTraits<Graph>::template ReadPropertyMap<edge_descriptor_type, ContinuousCost>;
-
-    auto matrix = BasicMatrix::initialize_data(g.get().get_num_vertices());
-
-    auto d = BasicMatrix(matrix);
-    auto weight_map = WeightPropertyMap(w);
-
-    boost::floyd_warshall_all_pairs_shortest_paths(g, d, boost::weight_map(weight_map));
-
-    return matrix;
 }
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
