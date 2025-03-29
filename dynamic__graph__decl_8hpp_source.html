@@ -350,9 +350,12 @@ $(function() {
 <div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>    <span class="keywordtype">void</span> edge_index_check(<a class="code hl_typedef" href="namespacemimir_1_1graphs.html#a64d4b39dbf15556126f7575e277451f3">EdgeIndex</a> edge, <span class="keyword">const</span> std::string&amp; error_message) <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>};</div>
 <div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span> </div>
-<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>}</div>
-<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span> </div>
-<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span><span class="keyword">template</span>&lt;IsVertex V, IsEdge E&gt;</div>
+<div class="line"><a id="l00329" name="l00329"></a><span class="lineno"><a class="line" href="namespacemimir_1_1graphs.html#a7aa96b9290a92c08fef5bf6d6bbb7860">  329</a></span>std::ostream&amp; operator&lt;&lt;(std::ostream&amp; out, <span class="keyword">const</span> <a class="code hl_class" href="classmimir_1_1graphs_1_1DynamicGraph.html">DynamicGraph&lt;V, E&gt;</a>&amp; graph);</div>
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span> </div>
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>}</div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span> </div>
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aclassmimir_1_1graphs_1_1DynamicGraph_1_1AdjacentEdgeConstIterator_html"><div class="ttname"><a href="classmimir_1_1graphs_1_1DynamicGraph_1_1AdjacentEdgeConstIterator.html">mimir::graphs::DynamicGraph::AdjacentEdgeConstIterator</a></div><div class="ttdef"><b>Definition:</b> dynamic_graph_decl.hpp:160</div></div>
 <div class="ttc" id="aclassmimir_1_1graphs_1_1DynamicGraph_1_1AdjacentEdgeConstIterator_html_a01f86bb8a62d60a065e322ba3020ddbe"><div class="ttname"><a href="classmimir_1_1graphs_1_1DynamicGraph_1_1AdjacentEdgeConstIterator.html#a01f86bb8a62d60a065e322ba3020ddbe">mimir::graphs::DynamicGraph::AdjacentEdgeConstIterator::operator!=</a></div><div class="ttdeci">bool operator!=(const AdjacentEdgeConstIterator &amp;other) const</div></div>
 <div class="ttc" id="aclassmimir_1_1graphs_1_1DynamicGraph_1_1AdjacentEdgeConstIterator_html_a073a29dc2523c516df4e2034923cb7a9"><div class="ttname"><a href="classmimir_1_1graphs_1_1DynamicGraph_1_1AdjacentEdgeConstIterator.html#a073a29dc2523c516df4e2034923cb7a9">mimir::graphs::DynamicGraph::AdjacentEdgeConstIterator::operator++</a></div><div class="ttdeci">AdjacentEdgeConstIterator operator++(int)</div></div>

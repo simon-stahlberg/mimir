@@ -389,6 +389,9 @@ Functions</h2></td></tr>
 <tr class="separator:adfefc77af6313ffc273cdff8e8462a5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0646cfd184323ed0920247ec640072aa"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a0646cfd184323ed0920247ec640072aa">operator&lt;&lt;</a> (std::ostream &amp;out, const <a class="el" href="namespacemimir_1_1graphs.html#a09c04470c52cfa6c879fc371bf3f7e29">StaticDigraph</a> &amp;digraph)</td></tr>
 <tr class="separator:a0646cfd184323ed0920247ec640072aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7aa96b9290a92c08fef5bf6d6bbb7860"><td class="memTemplParams" colspan="2">template&lt;IsVertex V, IsEdge E&gt; </td></tr>
+<tr class="memitem:a7aa96b9290a92c08fef5bf6d6bbb7860"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a7aa96b9290a92c08fef5bf6d6bbb7860">operator&lt;&lt;</a> (std::ostream &amp;out, const <a class="el" href="classmimir_1_1graphs_1_1DynamicGraph.html">DynamicGraph</a>&lt; V, E &gt; &amp;graph)</td></tr>
+<tr class="separator:a7aa96b9290a92c08fef5bf6d6bbb7860"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aee6bd747a02992dc5bcd8eb9e24b83e8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1graphs.html#a49a593bc779d87d0f30c85978758b971">Color</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#aee6bd747a02992dc5bcd8eb9e24b83e8">get_color</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a3448a32cbbc684ee132505b97d44ccff">ColoredEdge</a> &amp;edge)</td></tr>
 <tr class="memdesc:aee6bd747a02992dc5bcd8eb9e24b83e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the color of a colored edge.  <br /></td></tr>
 <tr class="separator:aee6bd747a02992dc5bcd8eb9e24b83e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -2094,7 +2097,7 @@ template&lt;IsVertexListGraph Graph, IsDirection Direction&gt; </div>
 </div>
 </div>
 <a id="a54f7dd0bb476adb636fc0a2384a6b399" name="a54f7dd0bb476adb636fc0a2384a6b399"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a54f7dd0bb476adb636fc0a2384a6b399">&#9670;&#160;</a></span>operator&lt;&lt;() <span class="overload">[1/8]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a54f7dd0bb476adb636fc0a2384a6b399">&#9670;&#160;</a></span>operator&lt;&lt;() <span class="overload">[1/9]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -2132,7 +2135,7 @@ template&lt;IsVertexListGraph Graph, IsDirection Direction&gt; </div>
 </div>
 </div>
 <a id="a255cd184a5ab89a95a1cf3348f88778f" name="a255cd184a5ab89a95a1cf3348f88778f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a255cd184a5ab89a95a1cf3348f88778f">&#9670;&#160;</a></span>operator&lt;&lt;() <span class="overload">[2/8]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a255cd184a5ab89a95a1cf3348f88778f">&#9670;&#160;</a></span>operator&lt;&lt;() <span class="overload">[2/9]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -2169,8 +2172,38 @@ template&lt;IsVertexListGraph Graph, IsDirection Direction&gt; </div>
 
 </div>
 </div>
+<a id="a7aa96b9290a92c08fef5bf6d6bbb7860" name="a7aa96b9290a92c08fef5bf6d6bbb7860"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7aa96b9290a92c08fef5bf6d6bbb7860">&#9670;&#160;</a></span>operator&lt;&lt;() <span class="overload">[3/9]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;IsVertex V, IsEdge E&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::ostream &amp; mimir::graphs::operator&lt;&lt; </td>
+          <td>(</td>
+          <td class="paramtype">std::ostream &amp;&#160;</td>
+          <td class="paramname"><em>out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classmimir_1_1graphs_1_1DynamicGraph.html">DynamicGraph</a>&lt; V, E &gt; &amp;&#160;</td>
+          <td class="paramname"><em>graph</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a4083bcd8fa366ec54a82480ff2c56868" name="a4083bcd8fa366ec54a82480ff2c56868"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4083bcd8fa366ec54a82480ff2c56868">&#9670;&#160;</a></span>operator&lt;&lt;() <span class="overload">[3/8]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a4083bcd8fa366ec54a82480ff2c56868">&#9670;&#160;</a></span>operator&lt;&lt;() <span class="overload">[4/9]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -2208,7 +2241,7 @@ template&lt;IsVertexListGraph Graph, IsDirection Direction&gt; </div>
 </div>
 </div>
 <a id="a2b24ba02d47da876e9a813489ef20051" name="a2b24ba02d47da876e9a813489ef20051"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2b24ba02d47da876e9a813489ef20051">&#9670;&#160;</a></span>operator&lt;&lt;() <span class="overload">[4/8]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b24ba02d47da876e9a813489ef20051">&#9670;&#160;</a></span>operator&lt;&lt;() <span class="overload">[5/9]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -2246,7 +2279,7 @@ template&lt;IsVertexListGraph Graph, IsDirection Direction&gt; </div>
 </div>
 </div>
 <a id="aa54a871c7fe1db57ea928ea507ede90c" name="aa54a871c7fe1db57ea928ea507ede90c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa54a871c7fe1db57ea928ea507ede90c">&#9670;&#160;</a></span>operator&lt;&lt;() <span class="overload">[5/8]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aa54a871c7fe1db57ea928ea507ede90c">&#9670;&#160;</a></span>operator&lt;&lt;() <span class="overload">[6/9]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -2276,7 +2309,7 @@ template&lt;IsStaticGraph G&gt; </div>
 </div>
 </div>
 <a id="a0646cfd184323ed0920247ec640072aa" name="a0646cfd184323ed0920247ec640072aa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0646cfd184323ed0920247ec640072aa">&#9670;&#160;</a></span>operator&lt;&lt;() <span class="overload">[6/8]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a0646cfd184323ed0920247ec640072aa">&#9670;&#160;</a></span>operator&lt;&lt;() <span class="overload">[7/9]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -2305,7 +2338,7 @@ template&lt;IsStaticGraph G&gt; </div>
 </div>
 </div>
 <a id="a7e7e286be44379f60e6149854a041252" name="a7e7e286be44379f60e6149854a041252"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7e7e286be44379f60e6149854a041252">&#9670;&#160;</a></span>operator&lt;&lt;() <span class="overload">[7/8]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e7e286be44379f60e6149854a041252">&#9670;&#160;</a></span>operator&lt;&lt;() <span class="overload">[8/9]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -2335,7 +2368,7 @@ template&lt;IsStaticGraph G&gt; </div>
 </div>
 </div>
 <a id="adfefc77af6313ffc273cdff8e8462a5b" name="adfefc77af6313ffc273cdff8e8462a5b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adfefc77af6313ffc273cdff8e8462a5b">&#9670;&#160;</a></span>operator&lt;&lt;() <span class="overload">[8/8]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#adfefc77af6313ffc273cdff8e8462a5b">&#9670;&#160;</a></span>operator&lt;&lt;() <span class="overload">[9/9]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
