@@ -28,6 +28,8 @@ namespace mimir::graphs
 {
 std::ostream& operator<<(std::ostream& out, const PolicyVertex& vertex)
 {
+    out << "v_idx: " << vertex.get_index() << "\n"
+        << "conditions: ";
     mimir::operator<<(out, get_conditions(vertex));
 
     return out;
@@ -35,6 +37,8 @@ std::ostream& operator<<(std::ostream& out, const PolicyVertex& vertex)
 
 std::ostream& operator<<(std::ostream& out, const PolicyEdge& edge)
 {
+    out << "e_idx: " << edge.get_index() << "\n"
+        << "effects: ";
     mimir::operator<<(out, get_effects(edge));
 
     return out;
@@ -44,11 +48,6 @@ std::ostream& operator<<(std::ostream& out, const PolicyEdge& edge)
 namespace mimir::languages::general_policies
 {
 
-/// @brief Checks whether the effects satisfy the Boolean feature conditions of a source and destionation vertex in the policy graph.
-///
-/// p       => p has to hold in the destination
-/// not p   => not p has to hold in the destination.
-/// bot p   =>
 class EffectVisitor : public NullVisitor
 {
 protected:

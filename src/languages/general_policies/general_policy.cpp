@@ -17,6 +17,8 @@
 
 #include "mimir/languages/general_policies/general_policy.hpp"
 
+#include "mimir/common/printers.hpp"
+#include "mimir/graphs/bgl/graph_algorithms.hpp"
 #include "mimir/languages/general_policies/policy_graph.hpp"
 #include "mimir/languages/general_policies/rule.hpp"
 #include "mimir/languages/general_policies/visitor_formatter.hpp"
@@ -45,6 +47,13 @@ bool GeneralPolicyImpl::is_terminating(Repositories& repositories) const
     auto policy_graph = create_policy_graph(this, repositories);
 
     std::cout << policy_graph << std::endl;
+
+    auto tagged_graph = graphs::DirectionTaggedType(policy_graph, graphs::ForwardTag {});
+    auto [num_components, component_map] = graphs::bgl::strong_components(tagged_graph);
+
+    std::cout << num_components << " ";
+    mimir::operator<<(std::cout, component_map);
+    std::cout << std::endl;
 
     throw std::runtime_error("Not implemented");
 }

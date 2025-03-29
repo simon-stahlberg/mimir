@@ -23,9 +23,7 @@
 
 namespace mimir::languages::general_policies
 {
-
 extern GeneralPolicy parse(const std::string& description, const formalism::DomainImpl& domain, Repositories& repositories, dl::Repositories& dl_repositories);
-
 }
 
 #endif
