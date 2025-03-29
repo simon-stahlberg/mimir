@@ -26,19 +26,14 @@ namespace mimir::languages::general_policies
 {
 class GeneralPolicyImpl
 {
-private:
-    Index m_index;
-    NamedFeatureLists<dl::BooleanTag, dl::NumericalTag> m_features;
-    RuleList m_rules;
-
-    /// @brief Create a `GeneralPolicyImpl` for the given `RuleList`.
-    /// @param rules
-    GeneralPolicyImpl(Index index, NamedFeatureLists<dl::BooleanTag, dl::NumericalTag> features, RuleList rules);
-
-    template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
-
 public:
+    enum class UnsolvabilityReason
+    {
+        NONE = 0,
+        CYCLE = 1,
+        UNSOLVABLE = 2,
+    };
+
     /// @brief Return true if and only if there the state pair (transition) is compatible with a `Rule` in the `GeneralPolicyImpl`.
     /// @param source_context is the source context.
     /// @param target_context is the target context.
@@ -53,27 +48,33 @@ public:
     /// @return true if the `GeneralPolicyImpl` is structurally terminating, and false otherwise.
     bool is_terminating() const;
 
-    enum class UnsolvabilityReason
-    {
-        NONE = 0,
-        CYCLE = 1,
-        UNSOLVABLE = 2,
-    };
-
     /**
      * Solvability of StateSpace.
      */
 
+    /// @brief Return true if and only if the `GeneralPolicyImpl` solves all `graphs::ProblemVertex` in the `graphs::ProblemGraph` of the given
+    /// `datasets::StateSpace`.
+    /// @param state_space is the `datasets::StateSpace`.
+    /// @param denotation_repositories is the repository that stores feature denotations to avoid expensive recomputations.
+    /// @return
     UnsolvabilityReason solves(const datasets::StateSpace& state_space, dl::DenotationRepositories& denotation_repositories) const;
 
-    /// @brief Return true if and only if the `GeneralPolicyImpl` solves all the given `vertices` in the given `datasets::StateSpace`.
+    /// @brief Return true if and only if the `GeneralPolicyImpl` solves all `graphs::ProblemVertex` identified by the given `graphs::VertexIndexList` in the
+    /// `graphs::ProblemGraph` of the given `datasets::StateSpace`.
     /// @param state_space is the `datasets::StateSpace`.
     /// @param vertices are the indices, one for each `ClassVertex` that must be solved.
-    /// @param denotation_repositories is the repository that stored feature denotations to avoid expensive recomputations.
+    /// @param denotation_repositories is the repository that stores feature denotations to avoid expensive recomputations.
     /// @return a reason for unsolvability or None.
     UnsolvabilityReason
     solves(const datasets::StateSpace& state_space, const graphs::VertexIndexList& vertices, dl::DenotationRepositories& denotation_repositories) const;
 
+    /// @brief Return true if and only if the `GeneralPolicyImpl` solves all `graphs::ProblemVertex` identified by the given `VertexIndices` in the
+    /// `graphs::ProblemGraph` of the given `datasets::StateSpace`.
+    /// @tparam VertexIndices
+    /// @param state_space
+    /// @param vertices
+    /// @param denotation_repositories
+    /// @return
     template<std::ranges::forward_range VertexIndices>
         requires std::same_as<std::ranges::range_value_t<VertexIndices>, graphs::VertexIndex>
     UnsolvabilityReason
@@ -83,17 +84,25 @@ public:
      * Solvability of GeneralizedStateSpace.
      */
 
+    /// @brief Return true if and only if the `GeneralPolicyImpl` solves all `graphs::ClassVertex` in the `graphs::ClassGraph` of the given
+    /// `datasets::GeneralizedStateSpace`.
+    /// @param generalized_state_space
+    /// @param denotation_repositories
+    /// @return
     UnsolvabilityReason solves(const datasets::GeneralizedStateSpace& generalized_state_space, dl::DenotationRepositories& denotation_repositories) const;
 
-    /// @brief Return true if and only if the `GeneralPolicyImpl` solves all the given `vertices` in the given `datasets::GeneralizedStateSpace`.
+    /// @brief Return true if and only if the `GeneralPolicyImpl` solves all `graphs::ClassVertex` identified by the given `graphs::VertexIndexList` in the
+    /// `graphs::ClassGraph` of the given `datasets::GeneralizedStateSpace`.
     /// @param generalized_state_space is the `datasets::GeneralizedStateSpace`.
     /// @param vertices are the indices, one for each `ClassVertex` that must be solved.
-    /// @param denotation_repositories is the repository that stored feature denotations to avoid expensive recomputations.
+    /// @param denotation_repositories is the repository that stores feature denotations to avoid expensive recomputations.
     /// @return a reason for unsolvability or None.
     UnsolvabilityReason solves(const datasets::GeneralizedStateSpace& generalized_state_space,
                                const graphs::VertexIndexList& vertices,
                                dl::DenotationRepositories& denotation_repositories) const;
 
+    /// @brief Return true if and only if the `GeneralPolicyImpl` solves all `graphs::ClassVertex` identified by the given `VertexIndices` in the
+    /// `graphs::ClassGraph` of the given `datasets::GeneralizedStateSpace`.
     template<std::ranges::forward_range VertexIndices>
         requires std::same_as<std::ranges::range_value_t<VertexIndices>, graphs::VertexIndex>
     UnsolvabilityReason solves(const datasets::GeneralizedStateSpace& generalized_state_space,
@@ -119,6 +128,42 @@ public:
     {
         return std::tuple(std::cref(get_features<dl::BooleanTag>()), std::cref(get_features<dl::NumericalTag>()), std::cref(get_rules()));
     }
+
+private:
+    Index m_index;
+    NamedFeatureLists<dl::BooleanTag, dl::NumericalTag> m_features;
+    RuleList m_rules;
+
+    /// @brief Create a `GeneralPolicyImpl` for the given `RuleList`.
+    /// @param rules
+    GeneralPolicyImpl(Index index, NamedFeatureLists<dl::BooleanTag, dl::NumericalTag> features, RuleList rules);
+
+    template<typename T, typename Hash, typename EqualTo>
+    friend class loki::SegmentedRepository;
+
+    /// @brief Return true if and only if the `GeneralPolicyImpl` solves the `graphs::ProblemVertex` identified by the given `graphs::VertexIndex` in the
+    /// `graphs::ProblemGraph` of the given `datasets::StateSpace`.
+    /// @param state_space is the `datasets::StateSpace`.
+    /// @param vertex the vertex.
+    /// @param denotation_repositories is the repository that stores feature denotations to avoid expensive recomputations.
+    /// @param ref_visited_vertices are the indices of the vertices that were visited.
+    /// @return
+    UnsolvabilityReason solves(const datasets::StateSpace& state_space,
+                               graphs::VertexIndex vertex,
+                               dl::DenotationRepositories& denotation_repositories,
+                               graphs::VertexIndexSet& ref_visited_vertices) const;
+
+    /// @brief Return true if and only if the `GeneralPolicyImpl` solves the `graphs::ClassVertex` identified by the given `graphs::VertexIndex` in the
+    /// `graphs::ClassGraph` of the given `datasets::GeneralizedStateSpace`.
+    /// @param generalized_state_space is the `datasets::GeneralizedStateSpace`.
+    /// @param vertex the vertex.
+    /// @param denotation_repositories is the repository that stores feature denotations to avoid expensive recomputations.
+    /// @param ref_visited_vertices are the indices of the vertices that were visited.
+    /// @return
+    UnsolvabilityReason solves(const datasets::GeneralizedStateSpace& generalized_state_space,
+                               graphs::VertexIndex vertex,
+                               dl::DenotationRepositories& denotation_repositories,
+                               graphs::VertexIndexSet& ref_visited_vertices) const;
 };
 
 }

@@ -109,10 +109,10 @@ It follows the performance metric scores `Coverage`, `Total time`, and `Search t
 
 | Item              |     Coverage | Total time [ms] | Search time [ms] |
 | :---------------- | -----------: | --------------: | ---------------: |
-| Fast-Downward     |           97 |            2552 |               71 |
-| Mimir-grounded    |           91 |            2458 |           **53** |
-| Powerlifted       |          129 |         **197** |              182 |
-| Mimir-lifted      |      **132** |             311 |              145 |
+| Fast-Downward     |           97 |            3142 |               71 |
+| Mimir-grounded    |           91 |            2567 |           **53** |
+| Powerlifted       |          129 |         **289** |              182 |
+| Mimir-lifted      |      **132** |             381 |              145 |
 
 3. Optimal-ADL
 
