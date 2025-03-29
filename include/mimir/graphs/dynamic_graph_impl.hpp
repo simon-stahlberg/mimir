@@ -797,6 +797,31 @@ void DynamicGraph<V, E>::edge_index_check(EdgeIndex edge, const std::string& err
     }
 }
 
+template<IsVertex V, IsEdge E>
+std::ostream& operator<<(std::ostream& out, const DynamicGraph<V, E>& graph)
+{
+    out << "digraph Tree {\n"
+           "rankdir=TB;\n\n";
+
+    /* Node definitions */
+    for (const auto& [v_idx, v] : graph.get_vertices())
+    {
+        out << "n" << v.get_index() << " [label=\"" << v << "\"];\n";
+    }
+    out << "\n";
+
+    /* Edge definitions */
+    for (const auto& [e_idx, e] : graph.get_edges())
+    {
+        out << "n" << e.get_source() << " -> " << "n" << e.get_target() << " [label=\"" << e << "\"];\n";
+    }
+    out << "\n";
+
+    out << "}\n";  // end graph
+
+    return out;
+}
+
 }
 
 #endif

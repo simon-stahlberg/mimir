@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SRC_LANGUAGES_GENERAL_POLICIES_POLICY_GRAPH_HPP_
-#define MIMIR_SRC_LANGUAGES_GENERAL_POLICIES_POLICY_GRAPH_HPP_
+#ifndef MIMIR_LANGUAGES_GENERAL_POLICIES_POLICY_GRAPH_HPP_
+#define MIMIR_LANGUAGES_GENERAL_POLICIES_POLICY_GRAPH_HPP_
 
 #include "mimir/graphs/dynamic_graph.hpp"
 #include "mimir/graphs/graph_edges.hpp"
@@ -29,9 +29,18 @@ using PolicyVertex = Vertex<languages::general_policies::ConditionSet>;
 using PolicyEdge = Edge<languages::general_policies::EffectSet>;
 using PolicyGraph = DynamicGraph<PolicyVertex, PolicyEdge>;
 
-const auto& get_conditions(const PolicyVertex& vertex) { return vertex.get_property<0>(); }
+inline const auto& get_conditions(const PolicyVertex& vertex) { return vertex.get_property<0>(); }
 
-extern PolicyGraph create(languages::general_policies::GeneralPolicy policy, languages::general_policies::Repositories& repositories);
+inline const auto& get_effects(const PolicyEdge& edge) { return edge.get_property<0>(); }
+
+extern std::ostream& operator<<(std::ostream& out, const PolicyVertex& vertex);
+
+extern std::ostream& operator<<(std::ostream& out, const PolicyEdge& edge);
+}
+
+namespace mimir::languages::general_policies
+{
+extern graphs::PolicyGraph create_policy_graph(GeneralPolicy policy, Repositories& repositories);
 }
 
 #endif

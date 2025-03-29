@@ -42,11 +42,11 @@ public:
 
     /// @brief Accept a `IVisitor`.
     /// @param visitor the `IVisitor`.
-    void accept(IVisitor& visitor);
+    void accept(IVisitor& visitor) const;
 
     /// @brief Return true if and only if the `GeneralPolicyImpl` is structurally terminating.
     /// @return true if the `GeneralPolicyImpl` is structurally terminating, and false otherwise.
-    bool is_terminating() const;
+    bool is_terminating(Repositories& repositories) const;
 
     /**
      * Solvability of StateSpace.

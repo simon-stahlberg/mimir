@@ -325,6 +325,9 @@ private:
     void edge_index_check(EdgeIndex edge, const std::string& error_message) const;
 };
 
+template<IsVertex V, IsEdge E>
+std::ostream& operator<<(std::ostream& out, const DynamicGraph<V, E>& graph);
+
 }
 
 #endif

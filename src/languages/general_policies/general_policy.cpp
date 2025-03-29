@@ -17,7 +17,9 @@
 
 #include "mimir/languages/general_policies/general_policy.hpp"
 
+#include "mimir/languages/general_policies/policy_graph.hpp"
 #include "mimir/languages/general_policies/rule.hpp"
+#include "mimir/languages/general_policies/visitor_formatter.hpp"
 #include "mimir/languages/general_policies/visitor_interface.hpp"
 #include "mimir/search/state.hpp"
 
@@ -36,9 +38,16 @@ bool GeneralPolicyImpl::evaluate(dl::EvaluationContext& source_context, dl::Eval
     return std::any_of(get_rules().begin(), get_rules().end(), [&](auto&& arg) { return arg->evaluate(source_context, target_context); });
 }
 
-void GeneralPolicyImpl::accept(IVisitor& visitor) { visitor.visit(this); }
+void GeneralPolicyImpl::accept(IVisitor& visitor) const { visitor.visit(this); }
 
-bool GeneralPolicyImpl::is_terminating() const { throw std::runtime_error("Not implemented"); }
+bool GeneralPolicyImpl::is_terminating(Repositories& repositories) const
+{
+    auto policy_graph = create_policy_graph(this, repositories);
+
+    std::cout << policy_graph << std::endl;
+
+    throw std::runtime_error("Not implemented");
+}
 
 GeneralPolicyImpl::SolvabilityStatus GeneralPolicyImpl::solves(const datasets::StateSpace& state_space,
                                                                dl::DenotationRepositories& denotation_repositories) const
@@ -59,7 +68,7 @@ GeneralPolicyImpl::SolvabilityStatus GeneralPolicyImpl::solves(const datasets::S
                                                                graphs::VertexIndexSet& ref_visited_vertices) const
 {
     if (ref_visited_vertices.contains(v_idx))
-        SolvabilityStatus::SOLVED;
+        return SolvabilityStatus::SOLVED;
 
     const auto& graph = state_space->get_graph();
 

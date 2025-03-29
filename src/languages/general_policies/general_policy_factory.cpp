@@ -39,13 +39,13 @@ GeneralPolicyFactory::get_or_create_general_policy_gripper(const formalism::Doma
 
         [policy_rules]
             { @negative_boolean_condition <boolean_r_b>, @equal_numerical_condition <numerical_c>, @greater_numerical_condition <numerical_b> } 
-            -> { @increase_numerical_effect <numerical_c> }
+            -> { @unchanged_boolean_effect <boolean_r_b>, @unchanged_numerical_effect <numerical_b>, @increase_numerical_effect <numerical_c> }
             { @positive_boolean_condition <boolean_r_b>, @equal_numerical_condition <numerical_c>, @greater_numerical_condition <numerical_b> } 
-            -> { @negative_boolean_effect <boolean_r_b> }
+            -> { @negative_boolean_effect <boolean_r_b>, @unchanged_numerical_effect <numerical_b>, @unchanged_numerical_effect <numerical_c> }
             { @positive_boolean_condition <boolean_r_b>, @greater_numerical_condition <numerical_c>, @greater_numerical_condition <numerical_b> } 
-            -> { @decrease_numerical_effect <numerical_c>, @decrease_numerical_effect <numerical_b> }
+            -> { @unchanged_boolean_effect <boolean_r_b>, @decrease_numerical_effect <numerical_c>, @decrease_numerical_effect <numerical_b> }
             { @negative_boolean_condition <boolean_r_b>, @greater_numerical_condition <numerical_c>, @greater_numerical_condition <numerical_b> } 
-            -> { @positive_boolean_effect <boolean_r_b> }
+            -> { @positive_boolean_effect <boolean_r_b>, @unchanged_numerical_effect <numerical_b>, @unchanged_numerical_effect <numerical_c> }
         )");
 
     return repositories.get_or_create_general_policy(description, domain, dl_repositories);

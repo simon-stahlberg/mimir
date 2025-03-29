@@ -50,6 +50,8 @@ dl::Constructor<D> NamedFeatureImpl<D>::get_feature() const
     return m_feature;
 }
 
+template class NamedFeatureImpl<dl::ConceptTag>;
+template class NamedFeatureImpl<dl::RoleTag>;
 template class NamedFeatureImpl<dl::BooleanTag>;
 template class NamedFeatureImpl<dl::NumericalTag>;
 
