@@ -1,4 +1,5 @@
-import pymimir as mm
+import pymimir.advanced.formalism as formalism
+import pymimir.advanced.search as search
 
 from pathlib import Path
 
@@ -10,13 +11,11 @@ def test_state_repository_ownership():
     """
     domain_filepath = str(ROOT_DIR / "data" / "gripper" / "domain.pddl")
     problem_filepath = str(ROOT_DIR / "data" / "gripper" / "test_problem.pddl")
-    parser = mm.PDDLParser(domain_filepath, problem_filepath)
-
-    grounder = mm.Grounder(parser.get_problem(), parser.get_pddl_repositories())
-    axiom_evaluator = mm.LiftedAxiomEvaluator(grounder.get_axiom_grounder())
-    state_repository = mm.StateRepository(axiom_evaluator)
+    problem = formalism.Problem.create(domain_filepath, problem_filepath)
+    axiom_evaluator = search.LiftedAxiomEvaluator(problem)
+    state_repository = search.StateRepository(axiom_evaluator)
     initial_state = state_repository.get_or_create_initial_state()
 
     del state_repository
 
-    assert initial_state.to_string(parser.get_problem(), parser.get_pddl_repositories())
+    assert initial_state.to_string(problem)

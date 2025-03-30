@@ -18,7 +18,7 @@
 #include "mimir/search/algorithms/iw.hpp"
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/parser.hpp"
+#include "mimir/formalism/repositories.hpp"
 #include "mimir/search/algorithms.hpp"
 #include "mimir/search/algorithms/iw/event_handlers.hpp"
 #include "mimir/search/algorithms/iw/tuple_index_generators.hpp"
@@ -26,11 +26,14 @@
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/axiom_evaluators.hpp"
 #include "mimir/search/delete_relaxed_problem_explorator.hpp"
-#include "mimir/search/grounders/grounder.hpp"
 #include "mimir/search/plan.hpp"
+#include "mimir/search/search_context.hpp"
 #include "mimir/search/state_repository.hpp"
 
 #include <gtest/gtest.h>
+
+using namespace mimir::search;
+using namespace mimir::formalism;
 
 namespace mimir::tests
 {
@@ -39,96 +42,88 @@ namespace mimir::tests
 class LiftedIWPlanner
 {
 private:
-    PDDLParser m_parser;
+    Problem m_problem;
     size_t m_arity;
-
-    std::shared_ptr<Grounder> m_grounder;
-    std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> m_applicable_action_generator_event_handler;
+    std::shared_ptr<LiftedApplicableActionGenerator::IEventHandler> m_applicable_action_generator_event_handler;
     std::shared_ptr<LiftedApplicableActionGenerator> m_applicable_action_generator;
-    std::shared_ptr<ILiftedAxiomEvaluatorEventHandler> m_axiom_evaluator_event_handler;
+    std::shared_ptr<LiftedAxiomEvaluator::IEventHandler> m_axiom_evaluator_event_handler;
     std::shared_ptr<LiftedAxiomEvaluator> m_axiom_evaluator;
-    std::shared_ptr<StateRepository> m_state_repository;
-    std::shared_ptr<IBrFSAlgorithmEventHandler> m_brfs_event_handler;
-    std::shared_ptr<IIWAlgorithmEventHandler> m_iw_event_handler;
+    StateRepository m_state_repository;
+    brfs::EventHandler m_brfs_event_handler;
+    iw::EventHandler m_iw_event_handler;
+    SearchContext m_search_context;
 
 public:
     LiftedIWPlanner(const fs::path& domain_file, const fs::path& problem_file, size_t arity) :
-        m_parser(PDDLParser(domain_file, problem_file)),
+        m_problem(ProblemImpl::create(domain_file, problem_file)),
         m_arity(arity),
-        m_grounder(std::make_shared<Grounder>(m_parser.get_problem(), m_parser.get_pddl_repositories())),
-        m_applicable_action_generator_event_handler(std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>()),
-        m_applicable_action_generator(
-            std::make_shared<LiftedApplicableActionGenerator>(m_grounder->get_action_grounder(), m_applicable_action_generator_event_handler)),
-        m_axiom_evaluator_event_handler(std::make_shared<DefaultLiftedAxiomEvaluatorEventHandler>()),
-        m_axiom_evaluator(std::make_shared<LiftedAxiomEvaluator>(m_grounder->get_axiom_grounder(), m_axiom_evaluator_event_handler)),
-        m_state_repository(std::make_shared<StateRepository>(m_axiom_evaluator)),
-        m_brfs_event_handler(std::make_shared<DefaultBrFSAlgorithmEventHandler>()),
-        m_iw_event_handler(std::make_shared<DefaultIWAlgorithmEventHandler>())
+        m_applicable_action_generator_event_handler(std::make_shared<LiftedApplicableActionGenerator::DefaultEventHandler>()),
+        m_applicable_action_generator(std::make_shared<LiftedApplicableActionGenerator>(m_problem, m_applicable_action_generator_event_handler)),
+        m_axiom_evaluator_event_handler(std::make_shared<LiftedAxiomEvaluator::DefaultEventHandler>()),
+        m_axiom_evaluator(std::make_shared<LiftedAxiomEvaluator>(m_problem, m_axiom_evaluator_event_handler)),
+        m_state_repository(std::make_shared<StateRepositoryImpl>(m_axiom_evaluator)),
+        m_brfs_event_handler(std::make_shared<brfs::DefaultEventHandler>(m_problem)),
+        m_iw_event_handler(std::make_shared<iw::DefaultEventHandler>(m_problem)),
+        m_search_context(m_problem, m_applicable_action_generator, m_state_repository)
     {
     }
 
-    SearchResult find_solution()
-    {
-        return find_solution_iw(m_applicable_action_generator, m_state_repository, std::nullopt, m_arity, m_iw_event_handler, m_brfs_event_handler);
-    }
+    SearchResult find_solution() { return iw::find_solution(m_search_context, nullptr, m_arity, m_iw_event_handler, m_brfs_event_handler); }
 
-    const IWAlgorithmStatistics& get_iw_statistics() const { return m_iw_event_handler->get_statistics(); }
+    const iw::Statistics& get_iw_statistics() const { return m_iw_event_handler->get_statistics(); }
 
-    const LiftedApplicableActionGeneratorStatistics& get_applicable_action_generator_statistics() const
+    const LiftedApplicableActionGenerator::Statistics& get_applicable_action_generator_statistics() const
     {
         return m_applicable_action_generator_event_handler->get_statistics();
     }
 
-    const LiftedAxiomEvaluatorStatistics& get_axiom_evaluator_statistics() const { return m_axiom_evaluator_event_handler->get_statistics(); }
+    const LiftedAxiomEvaluator::Statistics& get_axiom_evaluator_statistics() const { return m_axiom_evaluator_event_handler->get_statistics(); }
 };
 
 /// @brief Instantiate a grounded IW search
 class GroundedIWPlanner
 {
 private:
-    PDDLParser m_parser;
+    Problem m_problem;
     size_t m_arity;
-
-    std::shared_ptr<Grounder> m_grounder;
     DeleteRelaxedProblemExplorator m_delete_relaxed_problem_explorator;
-    std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> m_applicable_action_generator_event_handler;
-    std::shared_ptr<GroundedApplicableActionGenerator> m_applicable_action_generator;
-    std::shared_ptr<IGroundedAxiomEvaluatorEventHandler> m_axiom_evaluator_event_handler;
-    std::shared_ptr<GroundedAxiomEvaluator> m_axiom_evaluator;
-    std::shared_ptr<StateRepository> m_state_repository;
-    std::shared_ptr<IBrFSAlgorithmEventHandler> m_brfs_event_handler;
-    std::shared_ptr<IIWAlgorithmEventHandler> m_iw_event_handler;
+    std::shared_ptr<GroundedApplicableActionGenerator::IEventHandler> m_applicable_action_generator_event_handler;
+    ApplicableActionGenerator m_applicable_action_generator;
+    std::shared_ptr<GroundedAxiomEvaluator::IEventHandler> m_axiom_evaluator_event_handler;
+    AxiomEvaluator m_axiom_evaluator;
+    StateRepository m_state_repository;
+    brfs::EventHandler m_brfs_event_handler;
+    iw::EventHandler m_iw_event_handler;
+    SearchContext m_search_context;
 
 public:
     GroundedIWPlanner(const fs::path& domain_file, const fs::path& problem_file, size_t arity) :
-        m_parser(PDDLParser(domain_file, problem_file)),
+        m_problem(ProblemImpl::create(domain_file, problem_file)),
         m_arity(arity),
-        m_grounder(std::make_shared<Grounder>(m_parser.get_problem(), m_parser.get_pddl_repositories())),
-        m_delete_relaxed_problem_explorator(m_grounder),
-        m_applicable_action_generator_event_handler(std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>()),
+        m_delete_relaxed_problem_explorator(m_problem),
+        m_applicable_action_generator_event_handler(std::make_shared<GroundedApplicableActionGenerator::DefaultEventHandler>()),
         m_applicable_action_generator(
-            m_delete_relaxed_problem_explorator.create_grounded_applicable_action_generator(m_applicable_action_generator_event_handler)),
-        m_axiom_evaluator_event_handler(std::make_shared<DefaultGroundedAxiomEvaluatorEventHandler>()),
-        m_axiom_evaluator(m_delete_relaxed_problem_explorator.create_grounded_axiom_evaluator(m_axiom_evaluator_event_handler)),
-        m_state_repository(std::make_shared<StateRepository>(m_axiom_evaluator)),
-        m_brfs_event_handler(std::make_shared<DefaultBrFSAlgorithmEventHandler>()),
-        m_iw_event_handler(std::make_shared<DefaultIWAlgorithmEventHandler>())
+            m_delete_relaxed_problem_explorator.create_grounded_applicable_action_generator(match_tree::Options(),
+                                                                                            m_applicable_action_generator_event_handler)),
+        m_axiom_evaluator_event_handler(std::make_shared<GroundedAxiomEvaluator::DefaultEventHandler>()),
+        m_axiom_evaluator(m_delete_relaxed_problem_explorator.create_grounded_axiom_evaluator(match_tree::Options(), m_axiom_evaluator_event_handler)),
+        m_state_repository(std::make_shared<StateRepositoryImpl>(m_axiom_evaluator)),
+        m_brfs_event_handler(std::make_shared<brfs::DefaultEventHandler>(m_problem)),
+        m_iw_event_handler(std::make_shared<iw::DefaultEventHandler>(m_problem)),
+        m_search_context(m_problem, m_applicable_action_generator, m_state_repository)
     {
     }
 
-    SearchResult find_solution()
-    {
-        return find_solution_iw(m_applicable_action_generator, m_state_repository, std::nullopt, m_arity, m_iw_event_handler, m_brfs_event_handler);
-    }
+    SearchResult find_solution() { return iw::find_solution(m_search_context, nullptr, m_arity, m_iw_event_handler, m_brfs_event_handler); }
 
-    const IWAlgorithmStatistics& get_iw_statistics() const { return m_iw_event_handler->get_statistics(); }
+    const iw::Statistics& get_iw_statistics() const { return m_iw_event_handler->get_statistics(); }
 
-    const GroundedApplicableActionGeneratorStatistics& get_applicable_action_generator_statistics() const
+    const GroundedApplicableActionGenerator::Statistics& get_applicable_action_generator_statistics() const
     {
         return m_applicable_action_generator_event_handler->get_statistics();
     }
 
-    const GroundedAxiomEvaluatorStatistics& get_axiom_evaluator_statistics() const { return m_axiom_evaluator_event_handler->get_statistics(); }
+    const GroundedAxiomEvaluator::Statistics& get_axiom_evaluator_statistics() const { return m_axiom_evaluator_event_handler->get_statistics(); }
 };
 
 TEST(MimirTests, SearchAlgorithmsIWSingleStateTupleIndexGeneratorWidth0Test)
@@ -136,15 +131,15 @@ TEST(MimirTests, SearchAlgorithmsIWSingleStateTupleIndexGeneratorWidth0Test)
     const int arity = 0;
     const int num_atoms = 3;
 
-    const auto tuple_index_mapper = std::make_shared<TupleIndexMapper>(arity, num_atoms);
-    auto generator = StateTupleIndexGenerator(tuple_index_mapper);
-    const auto atom_indices = AtomIndexList({
+    const auto tuple_index_mapper = iw::TupleIndexMapper(arity, num_atoms);
+    auto generator = iw::StateTupleIndexGenerator(&tuple_index_mapper);
+    const auto atom_indices = iw::AtomIndexList({
         num_atoms,  // placeholder to generate tuples of size less than arity
     });
 
     auto iter = generator.begin(atom_indices);
 
-    EXPECT_EQ("()", tuple_index_mapper->tuple_index_to_string(*(++iter)));
+    EXPECT_EQ("()", tuple_index_mapper.tuple_index_to_string(*(++iter)));
 
     EXPECT_EQ(++iter, generator.end());
 }
@@ -154,9 +149,9 @@ TEST(MimirTests, SearchAlgorithmsIWSingleStateTupleIndexGeneratorWidth1Test)
     const int arity = 1;
     const int num_atoms = 3;
 
-    const auto tuple_index_mapper = std::make_shared<TupleIndexMapper>(arity, num_atoms);
-    auto generator = StateTupleIndexGenerator(tuple_index_mapper);
-    const auto atom_indices = AtomIndexList({
+    const auto tuple_index_mapper = iw::TupleIndexMapper(arity, num_atoms);
+    auto generator = iw::StateTupleIndexGenerator(&tuple_index_mapper);
+    const auto atom_indices = iw::AtomIndexList({
         0,
         2,
         num_atoms,  // placeholder to generate tuples of size less than arity
@@ -164,9 +159,9 @@ TEST(MimirTests, SearchAlgorithmsIWSingleStateTupleIndexGeneratorWidth1Test)
 
     auto iter = generator.begin(atom_indices);
 
-    EXPECT_EQ("(0,)", tuple_index_mapper->tuple_index_to_string(*iter));
-    EXPECT_EQ("(2,)", tuple_index_mapper->tuple_index_to_string(*(++iter)));
-    EXPECT_EQ("()", tuple_index_mapper->tuple_index_to_string(*(++iter)));
+    EXPECT_EQ("(0,)", tuple_index_mapper.tuple_index_to_string(*iter));
+    EXPECT_EQ("(2,)", tuple_index_mapper.tuple_index_to_string(*(++iter)));
+    EXPECT_EQ("()", tuple_index_mapper.tuple_index_to_string(*(++iter)));
 
     EXPECT_EQ(++iter, generator.end());
 }
@@ -176,9 +171,9 @@ TEST(MimirTests, SearchAlgorithmsIWSingleStateTupleIndexGeneratorWidth2Test)
     const int arity = 2;
     const int num_atoms = 3;
 
-    const auto tuple_index_mapper = std::make_shared<TupleIndexMapper>(arity, num_atoms);
-    auto generator = StateTupleIndexGenerator(tuple_index_mapper);
-    const auto atom_indices = AtomIndexList({
+    const auto tuple_index_mapper = iw::TupleIndexMapper(arity, num_atoms);
+    auto generator = iw::StateTupleIndexGenerator(&tuple_index_mapper);
+    const auto atom_indices = iw::AtomIndexList({
         0,
         2,
         num_atoms,  // placeholder to generate tuples of size less than arity
@@ -186,10 +181,10 @@ TEST(MimirTests, SearchAlgorithmsIWSingleStateTupleIndexGeneratorWidth2Test)
 
     auto iter = generator.begin(atom_indices);
 
-    EXPECT_EQ("(0,2,)", tuple_index_mapper->tuple_index_to_string(*iter));
-    EXPECT_EQ("(0,)", tuple_index_mapper->tuple_index_to_string(*(++iter)));
-    EXPECT_EQ("(2,)", tuple_index_mapper->tuple_index_to_string(*(++iter)));
-    EXPECT_EQ("()", tuple_index_mapper->tuple_index_to_string(*(++iter)));
+    EXPECT_EQ("(0,2,)", tuple_index_mapper.tuple_index_to_string(*iter));
+    EXPECT_EQ("(0,)", tuple_index_mapper.tuple_index_to_string(*(++iter)));
+    EXPECT_EQ("(2,)", tuple_index_mapper.tuple_index_to_string(*(++iter)));
+    EXPECT_EQ("()", tuple_index_mapper.tuple_index_to_string(*(++iter)));
 
     EXPECT_EQ(++iter, generator.end());
 }
@@ -199,22 +194,22 @@ TEST(MimirTests, SearchAlgorithmsIWStatePairTupleIndexGeneratorWidth1Test)
     const int arity = 1;
     const int num_atoms = 4;
 
-    const auto tuple_index_mapper = std::make_shared<TupleIndexMapper>(arity, num_atoms);
-    auto generator = StatePairTupleIndexGenerator(tuple_index_mapper);
-    const auto atom_indices = AtomIndexList({
+    const auto tuple_index_mapper = iw::TupleIndexMapper(arity, num_atoms);
+    auto generator = iw::StatePairTupleIndexGenerator(&tuple_index_mapper);
+    const auto atom_indices = iw::AtomIndexList({
         0,
         2,
         num_atoms,  // placeholder to generate tuples of size less than arity
     });
-    const auto add_atom_indices = AtomIndexList({
+    const auto add_atom_indices = iw::AtomIndexList({
         1,
         3,
     });
 
     auto iter = generator.begin(atom_indices, add_atom_indices);
 
-    EXPECT_EQ("(1,)", tuple_index_mapper->tuple_index_to_string(*iter));
-    EXPECT_EQ("(3,)", tuple_index_mapper->tuple_index_to_string(*(++iter)));
+    EXPECT_EQ("(1,)", tuple_index_mapper.tuple_index_to_string(*iter));
+    EXPECT_EQ("(3,)", tuple_index_mapper.tuple_index_to_string(*(++iter)));
     EXPECT_EQ(++iter, generator.end());
 }
 
@@ -223,27 +218,27 @@ TEST(MimirTests, SearchAlgorithmsIWStatePairTupleIndexGeneratorWidth2Test1)
     const int arity = 2;
     const int num_atoms = 4;
 
-    const auto tuple_index_mapper = std::make_shared<TupleIndexMapper>(arity, num_atoms);
-    auto generator = StatePairTupleIndexGenerator(tuple_index_mapper);
-    const auto atom_indices = AtomIndexList({
+    const auto tuple_index_mapper = iw::TupleIndexMapper(arity, num_atoms);
+    auto generator = iw::StatePairTupleIndexGenerator(&tuple_index_mapper);
+    const auto atom_indices = iw::AtomIndexList({
         0,
         2,
         num_atoms,  // placeholder to generate tuples of size less than arity
     });
-    const auto add_atom_indices = AtomIndexList({
+    const auto add_atom_indices = iw::AtomIndexList({
         1,
         3,
     });
 
     auto iter = generator.begin(atom_indices, add_atom_indices);
 
-    EXPECT_EQ("(1,2,)", tuple_index_mapper->tuple_index_to_string(*iter));
-    EXPECT_EQ("(1,)", tuple_index_mapper->tuple_index_to_string(*(++iter)));
-    EXPECT_EQ("(3,)", tuple_index_mapper->tuple_index_to_string(*(++iter)));
-    EXPECT_EQ("(0,1,)", tuple_index_mapper->tuple_index_to_string(*(++iter)));
-    EXPECT_EQ("(0,3,)", tuple_index_mapper->tuple_index_to_string(*(++iter)));
-    EXPECT_EQ("(2,3,)", tuple_index_mapper->tuple_index_to_string(*(++iter)));
-    EXPECT_EQ("(1,3,)", tuple_index_mapper->tuple_index_to_string(*(++iter)));
+    EXPECT_EQ("(1,2,)", tuple_index_mapper.tuple_index_to_string(*iter));
+    EXPECT_EQ("(1,)", tuple_index_mapper.tuple_index_to_string(*(++iter)));
+    EXPECT_EQ("(3,)", tuple_index_mapper.tuple_index_to_string(*(++iter)));
+    EXPECT_EQ("(0,1,)", tuple_index_mapper.tuple_index_to_string(*(++iter)));
+    EXPECT_EQ("(0,3,)", tuple_index_mapper.tuple_index_to_string(*(++iter)));
+    EXPECT_EQ("(2,3,)", tuple_index_mapper.tuple_index_to_string(*(++iter)));
+    EXPECT_EQ("(1,3,)", tuple_index_mapper.tuple_index_to_string(*(++iter)));
 
     EXPECT_EQ(++iter, generator.end());
 }
@@ -253,32 +248,32 @@ TEST(MimirTests, SearchAlgorithmsIWStatePairTupleIndexGeneratorWidth2Test2)
     const int arity = 3;
     const int num_atoms = 64;
 
-    const auto tuple_index_mapper = std::make_shared<TupleIndexMapper>(arity, num_atoms);
-    auto generator = StatePairTupleIndexGenerator(tuple_index_mapper);
-    const auto atom_indices = AtomIndexList({
+    const auto tuple_index_mapper = iw::TupleIndexMapper(arity, num_atoms);
+    auto generator = iw::StatePairTupleIndexGenerator(&tuple_index_mapper);
+    const auto atom_indices = iw::AtomIndexList({
         0,
         2,
         3,
         4,
         num_atoms,  // placeholder to generate tuples of size less than arity
     });
-    const auto add_atom_indices = AtomIndexList({
+    const auto add_atom_indices = iw::AtomIndexList({
         6,
     });
 
     auto iter = generator.begin(atom_indices, add_atom_indices);
 
-    EXPECT_EQ("(6,)", tuple_index_mapper->tuple_index_to_string(*iter));
-    EXPECT_EQ("(0,6,)", tuple_index_mapper->tuple_index_to_string(*(++iter)));
-    EXPECT_EQ("(2,6,)", tuple_index_mapper->tuple_index_to_string(*(++iter)));
-    EXPECT_EQ("(3,6,)", tuple_index_mapper->tuple_index_to_string(*(++iter)));
-    EXPECT_EQ("(4,6,)", tuple_index_mapper->tuple_index_to_string(*(++iter)));
-    EXPECT_EQ("(0,2,6,)", tuple_index_mapper->tuple_index_to_string(*(++iter)));
-    EXPECT_EQ("(0,3,6,)", tuple_index_mapper->tuple_index_to_string(*(++iter)));
-    EXPECT_EQ("(0,4,6,)", tuple_index_mapper->tuple_index_to_string(*(++iter)));
-    EXPECT_EQ("(2,3,6,)", tuple_index_mapper->tuple_index_to_string(*(++iter)));
-    EXPECT_EQ("(2,4,6,)", tuple_index_mapper->tuple_index_to_string(*(++iter)));
-    EXPECT_EQ("(3,4,6,)", tuple_index_mapper->tuple_index_to_string(*(++iter)));
+    EXPECT_EQ("(6,)", tuple_index_mapper.tuple_index_to_string(*iter));
+    EXPECT_EQ("(0,6,)", tuple_index_mapper.tuple_index_to_string(*(++iter)));
+    EXPECT_EQ("(2,6,)", tuple_index_mapper.tuple_index_to_string(*(++iter)));
+    EXPECT_EQ("(3,6,)", tuple_index_mapper.tuple_index_to_string(*(++iter)));
+    EXPECT_EQ("(4,6,)", tuple_index_mapper.tuple_index_to_string(*(++iter)));
+    EXPECT_EQ("(0,2,6,)", tuple_index_mapper.tuple_index_to_string(*(++iter)));
+    EXPECT_EQ("(0,3,6,)", tuple_index_mapper.tuple_index_to_string(*(++iter)));
+    EXPECT_EQ("(0,4,6,)", tuple_index_mapper.tuple_index_to_string(*(++iter)));
+    EXPECT_EQ("(2,3,6,)", tuple_index_mapper.tuple_index_to_string(*(++iter)));
+    EXPECT_EQ("(2,4,6,)", tuple_index_mapper.tuple_index_to_string(*(++iter)));
+    EXPECT_EQ("(3,4,6,)", tuple_index_mapper.tuple_index_to_string(*(++iter)));
 
     EXPECT_EQ(++iter, generator.end());
 }
@@ -288,27 +283,27 @@ TEST(MimirTests, SearchAlgorithmsIWStatePairTupleIndexGeneratorWidth2Test3)
     const int arity = 2;
     const int num_atoms = 64;
 
-    const auto tuple_index_mapper = std::make_shared<TupleIndexMapper>(arity, num_atoms);
-    auto generator = StatePairTupleIndexGenerator(tuple_index_mapper);
-    const auto atom_indices = AtomIndexList({
+    const auto tuple_index_mapper = iw::TupleIndexMapper(arity, num_atoms);
+    auto generator = iw::StatePairTupleIndexGenerator(&tuple_index_mapper);
+    const auto atom_indices = iw::AtomIndexList({
         0,
         1,
         num_atoms,  // placeholder to generate tuples of size less than arity
     });
-    const auto add_atom_indices = AtomIndexList({
+    const auto add_atom_indices = iw::AtomIndexList({
         2,
         3,
     });
 
     auto iter = generator.begin(atom_indices, add_atom_indices);
 
-    EXPECT_EQ("(2,)", tuple_index_mapper->tuple_index_to_string(*iter));
-    EXPECT_EQ("(3,)", tuple_index_mapper->tuple_index_to_string(*(++iter)));
-    EXPECT_EQ("(0,2,)", tuple_index_mapper->tuple_index_to_string(*(++iter)));
-    EXPECT_EQ("(0,3,)", tuple_index_mapper->tuple_index_to_string(*(++iter)));
-    EXPECT_EQ("(1,2,)", tuple_index_mapper->tuple_index_to_string(*(++iter)));
-    EXPECT_EQ("(1,3,)", tuple_index_mapper->tuple_index_to_string(*(++iter)));
-    EXPECT_EQ("(2,3,)", tuple_index_mapper->tuple_index_to_string(*(++iter)));
+    EXPECT_EQ("(2,)", tuple_index_mapper.tuple_index_to_string(*iter));
+    EXPECT_EQ("(3,)", tuple_index_mapper.tuple_index_to_string(*(++iter)));
+    EXPECT_EQ("(0,2,)", tuple_index_mapper.tuple_index_to_string(*(++iter)));
+    EXPECT_EQ("(0,3,)", tuple_index_mapper.tuple_index_to_string(*(++iter)));
+    EXPECT_EQ("(1,2,)", tuple_index_mapper.tuple_index_to_string(*(++iter)));
+    EXPECT_EQ("(1,3,)", tuple_index_mapper.tuple_index_to_string(*(++iter)));
+    EXPECT_EQ("(2,3,)", tuple_index_mapper.tuple_index_to_string(*(++iter)));
 
     EXPECT_EQ(++iter, generator.end());
 }
@@ -323,20 +318,6 @@ TEST(MimirTests, SearchAlgorithmsIWGroundedDeliveryTest)
     const auto result = iw.find_solution();
     EXPECT_EQ(result.status, SearchStatus::SOLVED);
     EXPECT_EQ(result.plan.value().get_actions().size(), 4);
-
-    const auto& applicable_action_generator_statistics = iw.get_applicable_action_generator_statistics();
-    const auto& axiom_evaluator_statistics = iw.get_axiom_evaluator_statistics();
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_fluent_ground_atoms(), 10);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_derived_ground_atoms(), 0);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_actions(), 16);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 0);
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 16);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 32);
-
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 0);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 1);
 
     const auto& iw_statistics = iw.get_iw_statistics();
 
@@ -380,20 +361,6 @@ TEST(MimirTests, SearchAlgorithmsIWGroundedMiconicFullAdlTest)
     const auto result = iw.find_solution();
     EXPECT_EQ(result.status, SearchStatus::SOLVED);
     EXPECT_EQ(result.plan.value().get_actions().size(), 7);
-
-    const auto& applicable_action_generator_statistics = iw.get_applicable_action_generator_statistics();
-    const auto& axiom_evaluator_statistics = iw.get_axiom_evaluator_statistics();
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_fluent_ground_atoms(), 9);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_derived_ground_atoms(), 8);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_actions(), 7);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 20);
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 10);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 45);
-
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 16);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 12);
 
     const auto& iw_statistics = iw.get_iw_statistics();
 

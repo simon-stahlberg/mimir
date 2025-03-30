@@ -19,44 +19,44 @@
 #define MIMIR_SEARCH_ALGORITHMS_BRFS_EVENT_HANDLERS_INTERFACE_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/action.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers/statistics.hpp"
-#include "mimir/search/state.hpp"
+#include "mimir/search/declarations.hpp"
 
 #include <chrono>
 #include <concepts>
+#include <cstdint>
 
-namespace mimir
+namespace mimir::search::brfs
 {
 
 /**
  * Interface class
  */
-class IBrFSAlgorithmEventHandler
+class IEventHandler
 {
 public:
-    virtual ~IBrFSAlgorithmEventHandler() = default;
+    virtual ~IEventHandler() = default;
 
-    /// @brief React on expanding a state.
-    virtual void on_expand_state(State state, Problem problem, const PDDLRepositories& pddl_repositories) = 0;
+    /// @brief React on expanding a state. This is called immediately after popping from the queue.
+    virtual void on_expand_state(State state) = 0;
+
+    /// @brief React on expanding a goal `state`. This may be called after on_expand_state.
+    virtual void on_expand_goal_state(State state) = 0;
 
     /// @brief React on generating a state by applying an action.
-    virtual void on_generate_state(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_repositories) = 0;
+    virtual void on_generate_state(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) = 0;
 
     /// @brief React on generating a state in the search tree by applying an action.
-    virtual void on_generate_state_in_search_tree(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_repositories) = 0;
+    virtual void on_generate_state_in_search_tree(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) = 0;
 
     /// @brief React on generating a state not in the search tree by applying an action.
-    virtual void on_generate_state_not_in_search_tree(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_repositories) = 0;
+    virtual void on_generate_state_not_in_search_tree(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) = 0;
 
     /// @brief React on finishing expanding a g-layer.
     virtual void on_finish_g_layer() = 0;
 
-    /// @brief React on pruning a state.
-    virtual void on_prune_state(State state, Problem problem, const PDDLRepositories& pddl_repositories) = 0;
-
     /// @brief React on starting a search.
-    virtual void on_start_search(State start_state, Problem problem, const PDDLRepositories& pddl_repositories) = 0;
+    virtual void on_start_search(State start_state) = 0;
 
     /// @brief React on ending a search.
     virtual void on_end_search(uint64_t num_reached_fluent_atoms,
@@ -72,7 +72,7 @@ public:
                                uint64_t num_axioms) = 0;
 
     /// @brief React on solving a search.
-    virtual void on_solved(const Plan& plan, const PDDLRepositories& pddl_repositories) = 0;
+    virtual void on_solved(const Plan& plan) = 0;
 
     /// @brief React on proving unsolvability during a search.
     virtual void on_unsolvable() = 0;
@@ -80,7 +80,7 @@ public:
     /// @brief React on exhausting a search.
     virtual void on_exhausted() = 0;
 
-    virtual const BrFSAlgorithmStatistics& get_statistics() const = 0;
+    virtual const Statistics& get_statistics() const = 0;
     virtual bool is_quiet() const = 0;
 };
 
@@ -90,14 +90,15 @@ public:
  * Collect statistics and call implementation of derived class.
  */
 template<typename Derived_>
-class BrFSAlgorithmEventHandlerBase : public IBrFSAlgorithmEventHandler
+class EventHandlerBase : public IEventHandler
 {
 protected:
-    BrFSAlgorithmStatistics m_statistics;
+    Statistics m_statistics;
+    formalism::Problem m_problem;
     bool m_quiet;
 
 private:
-    BrFSAlgorithmEventHandlerBase() = default;
+    EventHandlerBase() = default;
     friend Derived_;
 
     /// @brief Helper to cast to Derived.
@@ -105,41 +106,49 @@ private:
     constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 public:
-    explicit BrFSAlgorithmEventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
+    explicit EventHandlerBase(formalism::Problem problem, bool quiet = true) : m_statistics(), m_problem(problem), m_quiet(quiet) {}
 
-    void on_expand_state(State state, Problem problem, const PDDLRepositories& pddl_repositories) override
+    void on_expand_state(State state) override
     {
         m_statistics.increment_num_expanded();
 
         if (!m_quiet)
         {
-            self().on_expand_state_impl(state, problem, pddl_repositories);
+            self().on_expand_state_impl(state);
         }
     }
 
-    void on_generate_state(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_repositories) override
+    void on_expand_goal_state(State state) override
+    {
+        if (!m_quiet)
+        {
+            self().on_expand_goal_state_impl(state);
+        }
+    }
+
+    void on_generate_state(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) override
     {
         m_statistics.increment_num_generated();
 
         if (!m_quiet)
         {
-            self().on_generate_state_impl(state, action, problem, pddl_repositories);
+            self().on_generate_state_impl(state, action, action_cost, successor_state);
         }
     }
 
-    void on_generate_state_in_search_tree(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_repositories) override
+    void on_generate_state_in_search_tree(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) override
     {
         if (!m_quiet)
         {
-            self().on_generate_state_in_search_tree_impl(state, action, problem, pddl_repositories);
+            self().on_generate_state_in_search_tree_impl(state, action, action_cost, successor_state);
         }
     }
 
-    void on_generate_state_not_in_search_tree(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_repositories) override
+    void on_generate_state_not_in_search_tree(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) override
     {
         if (!m_quiet)
         {
-            self().on_generate_state_not_in_search_tree_impl(state, action, problem, pddl_repositories);
+            self().on_generate_state_not_in_search_tree_impl(state, action, action_cost, successor_state);
         }
     }
 
@@ -156,25 +165,15 @@ public:
         }
     }
 
-    void on_prune_state(State state, Problem problem, const PDDLRepositories& pddl_repositories) override
+    void on_start_search(State start_state) override
     {
-        m_statistics.increment_num_pruned();
-
-        if (!m_quiet)
-        {
-            self().on_prune_state_impl(state, problem, pddl_repositories);
-        }
-    }
-
-    void on_start_search(State start_state, Problem problem, const PDDLRepositories& pddl_repositories) override
-    {
-        m_statistics = BrFSAlgorithmStatistics();
+        m_statistics = Statistics();
 
         m_statistics.set_search_start_time_point(std::chrono::high_resolution_clock::now());
 
         if (!m_quiet)
         {
-            self().on_start_search_impl(start_state, problem, pddl_repositories);
+            self().on_start_search_impl(start_state);
         }
     }
 
@@ -219,11 +218,11 @@ public:
         }
     }
 
-    void on_solved(const Plan& plan, const PDDLRepositories& pddl_repositories) override
+    void on_solved(const Plan& plan) override
     {
         if (!m_quiet)
         {
-            self().on_solved_impl(plan, pddl_repositories);
+            self().on_solved_impl(plan);
         }
     }
 
@@ -244,7 +243,7 @@ public:
     }
 
     /// @brief Get the statistics.
-    const BrFSAlgorithmStatistics& get_statistics() const override { return m_statistics; }
+    const Statistics& get_statistics() const override { return m_statistics; }
     bool is_quiet() const override { return m_quiet; }
 };
 

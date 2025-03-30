@@ -18,8 +18,12 @@
 #ifndef MIMIR_COMMON_TYPES_HPP_
 #define MIMIR_COMMON_TYPES_HPP_
 
+#include "mimir/common/concepts.hpp"
+
 #include <array>
 #include <cstdint>
+#include <limits>
+#include <loki/loki.hpp>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -30,11 +34,21 @@ using Count = uint32_t;
 
 using Index = uint32_t;
 using IndexList = std::vector<Index>;
+using IndexSet = std::unordered_set<Index>;
 template<size_t K>
 using IndexArray = std::array<Index, K>;
 template<typename T>
 using IndexMap = std::unordered_map<Index, T>;
-using IndexSet = std::unordered_set<Index>;
+template<typename Key>
+using ToIndexMap = std::unordered_map<Key, Index, loki::Hash<Key>, loki::EqualTo<Key>>;
+
+template<typename Key, typename Value>
+using KeyValueMap = std::unordered_map<Key, Value, loki::Hash<Key>, loki::EqualTo<Key>>;
+
+template<typename Value>
+using ValueSet = std::unordered_set<Value, loki::Hash<Value>, loki::EqualTo<Value>>;
+
+static const Index MAX_INDEX = std::numeric_limits<Index>::max();
 
 using ContinuousCost = double;
 using ContinuousCostList = std::vector<ContinuousCost>;
@@ -42,6 +56,10 @@ using ContinuousCostMatrix = std::vector<ContinuousCostList>;
 using DiscreteCost = int32_t;
 using DiscreteCostList = std::vector<DiscreteCost>;
 using DiscreteCostMatrix = std::vector<ContinuousCostList>;
+
+static const DiscreteCost UNDEFINED_DISCRETE_COST = std::numeric_limits<DiscreteCost>::max();
+static const ContinuousCost UNDEFINED_CONTINUOUS_COST = std::numeric_limits<ContinuousCost>::max();
+
 }
 
 #endif

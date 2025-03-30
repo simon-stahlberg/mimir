@@ -20,34 +20,34 @@
 
 #include "mimir/search/algorithms/iw/event_handlers/interface.hpp"
 
-namespace mimir
+namespace mimir::search::iw
 {
 
 /**
  * Implementation class
  */
-class DefaultIWAlgorithmEventHandler : public IWAlgorithmEventHandlerBase<DefaultIWAlgorithmEventHandler>
+class DefaultEventHandler : public EventHandlerBase<DefaultEventHandler>
 {
 private:
-    /* Implement IWAlgorithmEventHandlerBase interface */
-    friend class IWAlgorithmEventHandlerBase<DefaultIWAlgorithmEventHandler>;
+    /* Implement EventHandlerBase interface */
+    friend class EventHandlerBase<DefaultEventHandler>;
 
-    void on_start_search_impl(const Problem problem, const State initial_state, const PDDLRepositories& pddl_repositories) const;
+    void on_start_search_impl(State initial_state) const;
 
-    void on_start_arity_search_impl(const Problem problem, const State initial_state, const PDDLRepositories& pddl_repositories, int arity) const;
+    void on_start_arity_search_impl(State initial_state, size_t arity) const;
 
-    void on_end_arity_search_impl(const BrFSAlgorithmStatistics& brfs_statistics) const;
+    void on_end_arity_search_impl(const brfs::Statistics& brfs_statistics) const;
 
     void on_end_search_impl() const;
 
-    void on_solved_impl(const Plan& plan, const PDDLRepositories& pddl_repositories) const;
+    void on_solved_impl(const Plan& plan) const;
 
     void on_unsolvable_impl() const;
 
     void on_exhausted_impl() const;
 
 public:
-    explicit DefaultIWAlgorithmEventHandler(bool quiet = true);
+    explicit DefaultEventHandler(formalism::Problem problem, bool quiet = true);
 };
 
 }

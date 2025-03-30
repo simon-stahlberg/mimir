@@ -20,10 +20,10 @@
 
 #include "mimir/formalism/declarations.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 class GroundAtomImpl
 {
 private:
@@ -40,7 +40,8 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
-    using Category = P;
+    using FormalismEntity = void;
+    using Type = P;
 
     // moveable but not copyable
     GroundAtomImpl(const GroundAtomImpl& other) = delete;
@@ -52,21 +53,21 @@ public:
     Predicate<P> get_predicate() const;
     const ObjectList& get_objects() const;
     size_t get_arity() const;
-    Atom<P> lift(const TermList& terms, PDDLRepositories& pddl_repositories) const;
+    Atom<P> lift(const TermList& terms, Repositories& pddl_repositories) const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_predicate), std::as_const(m_objects)); }
+    auto identifying_members() const { return std::tuple(get_predicate(), std::cref(get_objects())); }
 };
 
-template<PredicateTag P>
-extern std::pair<VariableList, AtomList<P>> lift(const GroundAtomList<P>& ground_atoms, PDDLRepositories& pddl_repositories);
+template<IsStaticOrFluentOrDerivedTag P>
+extern std::pair<VariableList, AtomList<P>> lift(const GroundAtomList<P>& ground_atoms, Repositories& pddl_repositories);
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 extern std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<P>& element);
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 extern std::ostream& operator<<(std::ostream& out, GroundAtom<P> element);
 
 }

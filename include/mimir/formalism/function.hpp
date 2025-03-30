@@ -20,24 +20,28 @@
 
 #include "mimir/formalism/declarations.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
+template<IsStaticOrFluentOrAuxiliaryTag F>
 class FunctionImpl
 {
 private:
     Index m_index;
-    FunctionSkeleton m_function_skeleton;
+    FunctionSkeleton<F> m_function_skeleton;
     TermList m_terms;
+    IndexList m_parent_terms_to_terms_mapping;  ///< remaps parent terms, e.g., from NumericConstraint, to this terms. It may be empty if not needed in context.
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    FunctionImpl(Index index, FunctionSkeleton function_skeleton, TermList terms);
+    FunctionImpl(Index index, FunctionSkeleton<F> function_skeleton, TermList terms, IndexList parent_terms_to_terms_mapping = IndexList {});
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
+    using FormalismEntity = void;
+
     // moveable but not copyable
     FunctionImpl(const FunctionImpl& other) = delete;
     FunctionImpl& operator=(const FunctionImpl& other) = delete;
@@ -45,18 +49,23 @@ public:
     FunctionImpl& operator=(FunctionImpl&& other) = default;
 
     Index get_index() const;
-    const FunctionSkeleton& get_function_skeleton() const;
+    FunctionSkeleton<F> get_function_skeleton() const;
     const TermList& get_terms() const;
+    const IndexList& get_parent_terms_to_terms_mapping() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_function_skeleton), std::as_const(m_terms)); }
+    auto identifying_members() const { return std::tuple(get_function_skeleton(), std::cref(get_terms()), std::cref(get_parent_terms_to_terms_mapping())); }
 };
 
-extern std::ostream& operator<<(std::ostream& out, const FunctionImpl& element);
+static_assert(loki::HasIdentifyingMembers<FunctionImpl<FluentTag>>);
 
-extern std::ostream& operator<<(std::ostream& out, Function element);
+template<IsStaticOrFluentOrAuxiliaryTag F>
+extern std::ostream& operator<<(std::ostream& out, const FunctionImpl<F>& element);
+
+template<IsStaticOrFluentOrAuxiliaryTag F>
+extern std::ostream& operator<<(std::ostream& out, Function<F> element);
 
 }
 

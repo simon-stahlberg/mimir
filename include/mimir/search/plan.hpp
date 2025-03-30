@@ -19,28 +19,27 @@
 #define MIMIR_SEARCH_PLAN_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/action.hpp"
 #include "mimir/search/declarations.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 
 class Plan
 {
 private:
-    GroundActionList m_actions;
+    formalism::GroundActionList m_actions;
     ContinuousCost m_cost;
 
 public:
-    Plan(GroundActionList actions, ContinuousCost cost);
+    Plan(formalism::GroundActionList actions, ContinuousCost cost);
 
-    const GroundActionList& get_actions() const;
+    const formalism::GroundActionList& get_actions() const;
 
     ContinuousCost get_cost() const;
 };
 
 /// @brief Write the plan to an ostream.
-extern std::ostream& operator<<(std::ostream& os, const std::tuple<const Plan&, const PDDLRepositories&>& data);
+extern std::ostream& operator<<(std::ostream& os, const std::tuple<const Plan&, const formalism::ProblemImpl&>& data);
 
 }
 

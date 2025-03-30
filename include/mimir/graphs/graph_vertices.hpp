@@ -24,11 +24,10 @@
 #include <loki/details/utils/hash.hpp>
 #include <tuple>
 
-namespace mimir
+namespace mimir::graphs
 {
 
 /// @brief `Vertex` implements a vertex with additional `VertexProperties`.
-/// See examples on how to define vertices below.
 /// @tparam ...VertexProperties are additional vertex properties.
 template<typename... VertexProperties>
 class Vertex
@@ -47,10 +46,12 @@ public:
         return std::get<I>(m_properties);
     }
 
+    const std::tuple<VertexProperties...>& get_properties() const { return m_properties; }
+
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_index), std::as_const(m_properties)); }
+    auto identifying_members() const { return std::tuple(get_index(), std::cref(get_properties())); }
 
 private:
     VertexIndex m_index;
@@ -79,9 +80,7 @@ inline Color get_color(const ColoredVertex& vertex) { return vertex.get_property
 
 template<typename T>
 concept IsVertexColoredGraph = requires(T::VertexType vertex) {
-    {
-        get_color(vertex)
-    } -> std::same_as<Color>;
+    { get_color(vertex) } -> std::same_as<Color>;
 };
 
 }

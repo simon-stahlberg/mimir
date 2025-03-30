@@ -4,22 +4,17 @@ The following examples show some common use cases for Mimir.
 
 ## Parse and Solve Instance
 
-The following code snippet parses domain `domain.pddl` and problem `problem.pddl`, creates a _lifted applicable action generator_, a _lifted axiom evaluator_, a _state repository_, and solves the problem using breadth-first search.
-The result of the search is stored in `status` and `plan`.
-If the instance is solvable, `result.status` will say so, and `result.plan.get_actions()` will return a list of ground actions.
+The following code snippet parses and translates a domain `domain.pddl` and problem `problem.pddl`, creates a _search_context that contains a _lifted applicable action generator_, a _lifted axiom evaluator_, a _state repository_, and solves the problem using breadth-first search. The result of the search is stored in `status` and `plan`. If the instance is solvable, `status` will say so, and `plan` will contain a list of ground actions.
 
 ```python
-import pymimir as mm
+import pymimir.advanced.search as search
 
-parser = mm.PDDLParser("domain.pddl", "problem.pddl")
-grounder = mm.Grounder(parser.get_problem(), parser.get_pddl_repositories())
-successor_generator = mm.LiftedApplicableActionGenerator(grounder.get_action_grounder())
-axiom_evaluator = mm.LiftedAxiomEvaluator(grounder.get_axiom_grounder())
-state_repository = mm.StateRepository(axiom_evaluator)
-initial_state = state_repository.get_or_create_initial_state()
-result = mm.find_solution_brfs(successor_generator, state_repository, initial_state)
-print(result.status)
-print(str.join(', ', [action.to_string_for_plan(parser.get_pddl_repositories()) for action in result.plan.get_actions()]))
+search_context_options = search.SearchContextOptions()
+search_context_options.mode = search.SearchMode.LIFTED
+search_context = search.SearchContext("domain.pddl", "problem.pddl")
+result = search.find_solution_brfs(search_context)
+status = result.status
+plan = result.plan
 ```
 
 ## Learning General Policies

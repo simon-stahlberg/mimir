@@ -22,8 +22,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 option(BUILD_PYMIMIR "Build" OFF)
 option(BUILD_TESTS "Build" OFF)
+option(BUILD_EXECUTABLES "Build" OFF)
 option(BUILD_PROFILING "Build" OFF)
-
 
 ##############################################################
 # Common Settings
@@ -50,7 +50,7 @@ else()
     if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flto=auto -fcoroutines")
     elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flto")  #  -fcoroutines-ts seems outdated
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flto -ftime-trace")  #  -fcoroutines-ts seems outdated
     endif()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -DNDEBUG")
@@ -64,6 +64,10 @@ message(STATUS "Build configuration: ${CMAKE_BUILD_TYPE}")
 set(DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/data/")
 add_definitions(-DDATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/data/")
 message("DATA_DIR: ${DATA_DIR}")
+
+if(VERBOSE)
+    add_compile_definitions(VERBOSE)
+endif()
 
 ##############################################################
 # CMake modules and macro files
@@ -126,6 +130,12 @@ if(absl_FOUND)
 endif()
 
 
+find_package(Clingo CONFIG REQUIRED PATHS ${CMAKE_PREFIX_PATH} NO_DEFAULT_PATH)
+if(Clingo_FOUND)
+  include_directories(${Clingo_INCLUDE_DIRS})
+  message(STATUS "Found Clingo: ${Clingo_DIR} (found version ${Clingo_VERSION})")
+endif()
+
 ##############################################################
 # Add library and executable targets
 ##############################################################
@@ -145,7 +155,9 @@ endif()
 # ----------
 # Target Exe
 # ----------
-add_subdirectory(exe)
+if (BUILD_EXECUTABLES)
+    add_subdirectory(exe)
+endif()
 
 # ----------------
 # Target Profiling

@@ -17,59 +17,113 @@
 
 #include "mimir/search/axiom_evaluators/lifted.hpp"
 
-#include "mimir/formalism/existentially_quantified_conjunctive_condition.hpp"
+#include "mimir/formalism/conjunctive_condition.hpp"
+#include "mimir/formalism/domain.hpp"
+#include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
-#include "mimir/search/axiom_evaluators/lifted/event_handlers.hpp"
+#include "mimir/search/applicability.hpp"
 #include "mimir/search/dense_state.hpp"
-#include "mimir/search/grounders/axiom_grounder.hpp"
 
-namespace mimir
-{
-LiftedAxiomEvaluator::LiftedAxiomEvaluator(std::shared_ptr<AxiomGrounder> axiom_grounder) :
-    LiftedAxiomEvaluator(std::move(axiom_grounder), std::make_shared<DefaultLiftedAxiomEvaluatorEventHandler>())
-{
-}
+using namespace mimir::formalism;
 
-LiftedAxiomEvaluator::LiftedAxiomEvaluator(std::shared_ptr<AxiomGrounder> axiom_grounder, std::shared_ptr<ILiftedAxiomEvaluatorEventHandler> event_handler) :
-    m_grounder(axiom_grounder),
+namespace mimir::search
+{
+
+/**
+ * DebugEventHandler
+ */
+
+void LiftedAxiomEvaluator::DebugEventHandler::on_start_generating_applicable_axioms_impl() const {}
+
+void LiftedAxiomEvaluator::DebugEventHandler::on_ground_axiom_impl(GroundAxiom axiom) const {}
+
+void LiftedAxiomEvaluator::DebugEventHandler::on_ground_axiom_cache_hit_impl(GroundAxiom axiom) const {}
+
+void LiftedAxiomEvaluator::DebugEventHandler::on_ground_axiom_cache_miss_impl(GroundAxiom axiom) const {}
+
+void LiftedAxiomEvaluator::DebugEventHandler::on_end_generating_applicable_axioms_impl() const {}
+
+void LiftedAxiomEvaluator::DebugEventHandler::on_finish_search_layer_impl() const {}
+
+void LiftedAxiomEvaluator::DebugEventHandler::on_end_search_impl() const { std::cout << get_statistics() << std::endl; }
+
+/**
+ * DefaultEventHandler
+ */
+
+void LiftedAxiomEvaluator::DefaultEventHandler::on_start_generating_applicable_axioms_impl() const {}
+
+void LiftedAxiomEvaluator::DefaultEventHandler::on_ground_axiom_impl(GroundAxiom axiom) const {}
+
+void LiftedAxiomEvaluator::DefaultEventHandler::on_ground_axiom_cache_hit_impl(GroundAxiom axiom) const {}
+
+void LiftedAxiomEvaluator::DefaultEventHandler::on_ground_axiom_cache_miss_impl(GroundAxiom axiom) const {}
+
+void LiftedAxiomEvaluator::DefaultEventHandler::on_end_generating_applicable_axioms_impl() const {}
+
+void LiftedAxiomEvaluator::DefaultEventHandler::on_finish_search_layer_impl() const {}
+
+void LiftedAxiomEvaluator::DefaultEventHandler::on_end_search_impl() const { std::cout << get_statistics() << std::endl; }
+
+/**
+ * LiftedAxiomEvaluator
+ */
+
+LiftedAxiomEvaluator::LiftedAxiomEvaluator(Problem problem) : LiftedAxiomEvaluator(std::move(problem), std::make_shared<DefaultEventHandler>()) {}
+
+LiftedAxiomEvaluator::LiftedAxiomEvaluator(Problem problem, std::shared_ptr<IEventHandler> event_handler) :
+    m_problem(problem),
     m_event_handler(event_handler),
     m_condition_grounders(),
-    m_partitioning(compute_axiom_partitioning(m_grounder->get_problem()->get_problem_and_domain_axioms(),
-                                              m_grounder->get_problem()->get_problem_and_domain_derived_predicates())),
     m_fluent_atoms(),
     m_derived_atoms(),
-    m_fluent_assignment_set(m_grounder->get_problem()->get_objects().size(), m_grounder->get_problem()->get_domain()->get_predicates<Fluent>()),
-    m_derived_assignment_set(m_grounder->get_problem()->get_objects().size(), m_grounder->get_problem()->get_problem_and_domain_derived_predicates())
+    m_fluent_functions(),
+    m_fluent_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_domain()->get_predicates<FluentTag>()),
+    m_derived_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_problem_and_domain_derived_predicates()),
+    m_numeric_assignment_set(m_problem->get_problem_and_domain_objects().size(), m_problem->get_domain()->get_function_skeletons<FluentTag>())
 {
     /* 3. Initialize condition grounders */
-    for (const auto& axiom : m_grounder->get_problem()->get_problem_and_domain_axioms())
+    const auto& axioms = m_problem->get_problem_and_domain_axioms();
+    for (size_t i = 0; i < axioms.size(); ++i)
     {
-        m_condition_grounders.emplace(axiom, SatisficingBindingGenerator(m_grounder->get_literal_grounder(), axiom->get_precondition()));
+        const auto& axiom = axioms[i];
+        assert(axiom->get_index() == i);
+        m_condition_grounders.emplace_back(AxiomSatisficingBindingGenerator(axiom, m_problem));
     }
 }
 
 void LiftedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state)
 {
-    const auto& dense_fluent_atoms = dense_state.get_atoms<Fluent>();
-    auto& dense_derived_atoms = dense_state.get_atoms<Derived>();
+    const auto& dense_fluent_atoms = dense_state.get_atoms<FluentTag>();
+    auto& dense_derived_atoms = dense_state.get_atoms<DerivedTag>();
+    auto& dense_numeric_variables = dense_state.get_numeric_variables();
 
     /* 1. Initialize assignment set */
 
     m_event_handler->on_start_generating_applicable_axioms();
 
-    m_grounder->get_pddl_repositories()->get_ground_atoms_from_indices(dense_fluent_atoms, m_fluent_atoms);
-    m_fluent_assignment_set.clear();
+    const auto& problem = *m_problem;
+    const auto& pddl_repositories = problem.get_repositories();
+
+    pddl_repositories.get_ground_atoms_from_indices(dense_fluent_atoms, m_fluent_atoms);
+    m_fluent_assignment_set.reset();
     m_fluent_assignment_set.insert_ground_atoms(m_fluent_atoms);
 
-    m_grounder->get_pddl_repositories()->get_ground_atoms_from_indices(dense_derived_atoms, m_derived_atoms);
-    m_derived_assignment_set.clear();
+    pddl_repositories.get_ground_atoms_from_indices(dense_derived_atoms, m_derived_atoms);
+    m_derived_assignment_set.reset();
     m_derived_assignment_set.insert_ground_atoms(m_derived_atoms);
+
+    m_numeric_assignment_set.reset();
+    pddl_repositories.get_ground_functions(dense_numeric_variables.size(), m_fluent_functions);
+    m_numeric_assignment_set.insert_ground_function_values(m_fluent_functions, dense_numeric_variables);
+
+    const auto& static_numeric_assignment_set = problem.get_static_initial_numeric_assignment_set();
 
     /* 2. Fixed point computation */
 
     auto applicable_axioms = GroundAxiomList {};
 
-    for (const auto& partition : m_partitioning)
+    for (const auto& partition : problem.get_problem_and_domain_axiom_partitioning())
     {
         bool reached_partition_fixed_point;
 
@@ -89,25 +143,29 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state)
             for (const auto& axiom : relevant_axioms)
             {
                 // We move this check here to avoid unnecessary creations of mimir::generator.
-                if (!nullary_conditions_hold(axiom->get_precondition(), dense_state))
+                if (!nullary_conditions_hold(axiom->get_conjunctive_condition(), problem, dense_state))
                 {
                     continue;
                 }
 
-                auto& condition_grounder = m_condition_grounders.at(axiom);
+                auto& condition_grounder = m_condition_grounders.at(axiom->get_index());
 
-                for (auto&& binding : condition_grounder.create_binding_generator(dense_state, m_fluent_assignment_set, m_derived_assignment_set))
+                for (auto&& binding : condition_grounder.create_binding_generator(dense_state,
+                                                                                  m_fluent_assignment_set,
+                                                                                  m_derived_assignment_set,
+                                                                                  static_numeric_assignment_set,
+                                                                                  m_numeric_assignment_set))
                 {
-                    const auto num_ground_axioms = m_grounder->get_num_ground_axioms();
+                    const auto num_ground_axioms = problem.get_num_ground_axioms();
 
-                    const auto ground_axiom = m_grounder->ground_axiom(axiom, std::move(binding));
+                    const auto ground_axiom = m_problem->ground(axiom, std::move(binding));
 
-                    assert(ground_axiom->is_applicable(m_grounder->get_problem(), dense_state));
+                    assert(is_applicable(ground_axiom, problem, dense_state));
 
                     m_event_handler->on_ground_axiom(ground_axiom);
 
-                    (m_grounder->get_num_ground_axioms() > num_ground_axioms) ? m_event_handler->on_ground_axiom_cache_miss(ground_axiom) :
-                                                                                m_event_handler->on_ground_axiom_cache_hit(ground_axiom);
+                    (problem.get_num_ground_axioms() > num_ground_axioms) ? m_event_handler->on_ground_axiom_cache_miss(ground_axiom) :
+                                                                            m_event_handler->on_ground_axiom_cache_hit(ground_axiom);
 
                     applicable_axioms.emplace_back(ground_axiom);
                 }
@@ -119,14 +177,14 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state)
 
             for (const auto& grounded_axiom : applicable_axioms)
             {
-                assert(!grounded_axiom->get_derived_effect().is_negated);
+                assert(grounded_axiom->get_derived_effect().polarity);
 
                 const auto grounded_atom_index = grounded_axiom->get_derived_effect().atom_index;
 
                 if (!dense_derived_atoms.get(grounded_atom_index))
                 {
                     // GENERATED NEW DERIVED ATOM!
-                    const auto new_ground_atom = m_grounder->get_pddl_repositories()->get_ground_atom<Derived>(grounded_atom_index);
+                    const auto new_ground_atom = pddl_repositories.get_ground_atom<DerivedTag>(grounded_atom_index);
                     reached_partition_fixed_point = false;
 
                     // Update the assignment set
@@ -147,13 +205,7 @@ void LiftedAxiomEvaluator::on_finish_search_layer() { m_event_handler->on_finish
 
 void LiftedAxiomEvaluator::on_end_search() { m_event_handler->on_end_search(); }
 
-Problem LiftedAxiomEvaluator::get_problem() const { return m_grounder->get_problem(); }
+const Problem& LiftedAxiomEvaluator::get_problem() const { return m_problem; }
 
-const std::shared_ptr<PDDLRepositories>& LiftedAxiomEvaluator::get_pddl_repositories() const { return m_grounder->get_pddl_repositories(); }
-
-const std::shared_ptr<AxiomGrounder>& LiftedAxiomEvaluator::get_axiom_grounder() const { return m_grounder; }
-
-const std::shared_ptr<ILiftedAxiomEvaluatorEventHandler>& LiftedAxiomEvaluator::get_event_handler() const { return m_event_handler; }
-
-const std::vector<AxiomPartition>& LiftedAxiomEvaluator::get_axiom_partitioning() const { return m_partitioning; }
+const std::shared_ptr<LiftedAxiomEvaluator::IEventHandler>& LiftedAxiomEvaluator::get_event_handler() const { return m_event_handler; }
 }

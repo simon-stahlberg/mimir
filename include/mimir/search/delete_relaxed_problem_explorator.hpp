@@ -19,32 +19,31 @@
 #define MIMIR_SEARCH_DELETE_RELAXED_PROBLEM_EXPLORATOR_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/transformers/delete_relax.hpp"
-#include "mimir/search/applicable_action_generators/grounded/event_handlers.hpp"
-#include "mimir/search/axiom_evaluators/grounded/event_handlers.hpp"
+#include "mimir/formalism/translator/delete_relax.hpp"
+#include "mimir/search/applicable_action_generators/grounded.hpp"
+#include "mimir/search/axiom_evaluators/grounded.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/grounders/grounder.hpp"
+#include "mimir/search/match_tree/declarations.hpp"
+#include "mimir/search/match_tree/options.hpp"
 #include "mimir/search/state_repository.hpp"
 
-#include <vector>
+#include <memory>
 
-namespace mimir
+namespace mimir::search
 {
 
 class DeleteRelaxedProblemExplorator
 {
 private:
-    std::shared_ptr<Grounder> m_grounder;
+    formalism::Problem m_problem;
 
-    DeleteRelaxTransformer m_delete_relax_transformer;
-    Problem m_delete_free_problem;
-    std::shared_ptr<Grounder> m_delete_free_grounder;
-    std::shared_ptr<LiftedApplicableActionGenerator> m_delete_free_applicable_action_generator;
-    std::shared_ptr<LiftedAxiomEvaluator> m_delete_free_axiom_evalator;
-    StateRepository m_delete_free_state_repository;
+    /* Delete free info to instantiate the grounded generators. */
+    formalism::DeleteRelaxTranslator m_delete_relax_transformer;
+    formalism::Problem m_delete_free_problem;
+    formalism::ToObjectMap<formalism::Object> m_delete_free_object_to_unrelaxed_object;
 
 public:
-    explicit DeleteRelaxedProblemExplorator(std::shared_ptr<Grounder> grounder);
+    explicit DeleteRelaxedProblemExplorator(formalism::Problem problem);
 
     // Uncopyable
     DeleteRelaxedProblemExplorator(const DeleteRelaxedProblemExplorator& other) = delete;
@@ -53,14 +52,14 @@ public:
     DeleteRelaxedProblemExplorator(DeleteRelaxedProblemExplorator&& other) = delete;
     DeleteRelaxedProblemExplorator& operator=(DeleteRelaxedProblemExplorator&& other) = delete;
 
-    std::shared_ptr<GroundedAxiomEvaluator> create_grounded_axiom_evaluator(
-        std::shared_ptr<IGroundedAxiomEvaluatorEventHandler> event_handler = std::make_shared<DefaultGroundedAxiomEvaluatorEventHandler>()) const;
+    AxiomEvaluator create_grounded_axiom_evaluator(const match_tree::Options& options = match_tree::Options(),
+                                                   std::shared_ptr<GroundedAxiomEvaluator::IEventHandler> event_handler = nullptr) const;
 
-    std::shared_ptr<GroundedApplicableActionGenerator>
-    create_grounded_applicable_action_generator(std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> event_handler =
-                                                    std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>()) const;
+    ApplicableActionGenerator
+    create_grounded_applicable_action_generator(const match_tree::Options& options = match_tree::Options(),
+                                                std::shared_ptr<GroundedApplicableActionGenerator::IEventHandler> event_handler = nullptr) const;
 
-    const std::shared_ptr<Grounder>& get_grounder() const;
+    const formalism::Problem& get_problem() const;
 };
 
 }  // namespace mimir

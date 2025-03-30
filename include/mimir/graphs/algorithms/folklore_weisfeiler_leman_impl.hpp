@@ -18,24 +18,24 @@
 #ifndef MIMIR_GRAPHS_ALGORITHMS_FOLKLORE_WEISFEILER_LEMAN_IMPL_HPP_
 #define MIMIR_GRAPHS_ALGORITHMS_FOLKLORE_WEISFEILER_LEMAN_IMPL_HPP_
 
-#include "mimir/algorithms/nauty.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types.hpp"
 #include "mimir/graphs/algorithms/color_refinement.hpp"
-#include "mimir/graphs/digraph_vertex_colored.hpp"
+#include "mimir/graphs/algorithms/nauty.hpp"
 #include "mimir/graphs/graph_interface.hpp"
 #include "mimir/graphs/graph_properties.hpp"
 #include "mimir/graphs/graph_traversal_interface.hpp"
 #include "mimir/graphs/graph_vertices.hpp"
 
 #include <cassert>
+#include <cmath>
 #include <loki/details/utils/hash.hpp>
 #include <map>
 #include <set>
 #include <unordered_map>
 #include <vector>
 
-namespace mimir::kfwl
+namespace mimir::graphs::kfwl
 {
 using mimir::operator<<;
 
@@ -71,8 +71,7 @@ bool operator==(const Certificate<K>& lhs, const Certificate<K>& rhs)
 template<size_t K>
 std::ostream& operator<<(std::ostream& out, const Certificate<K>& element)
 {
-    out << "Certificate" << K << "FWL("
-        << "canonical_coloring=" << element.get_canonical_coloring() << ", "
+    out << "Certificate" << K << "FWL(" << "canonical_coloring=" << element.get_canonical_coloring() << ", "
         << "canonical_configuration_compression_function=" << element.get_canonical_configuration_compression_function() << ")";
     return out;
 }
@@ -131,7 +130,7 @@ std::pair<ColorList, ColorMap<IndexList>> compute_ordered_isomorphism_types(cons
     auto adj_matrix = std::vector<std::vector<bool>>(num_vertices, std::vector<bool>(num_vertices, false));
     for (const auto& vertex1 : graph.get_vertex_indices())
     {
-        for (const auto& vertex2 : graph.template get_adjacent_vertex_indices<ForwardTraversal>(vertex1))
+        for (const auto& vertex2 : graph.template get_adjacent_vertex_indices<ForwardTag>(vertex1))
         {
             adj_matrix.at(vertex_to_v.at(vertex1)).at(vertex_to_v.at(vertex2)) = true;
         }
@@ -140,7 +139,7 @@ std::pair<ColorList, ColorMap<IndexList>> compute_ordered_isomorphism_types(cons
     auto hash_to_color = ColorList(num_hashes);
     auto color_to_hashes = ColorMap<IndexList>();
 
-    auto subgraph = nauty_wrapper::SparseGraph(K);
+    auto subgraph = nauty::SparseGraph(K);
     auto subgraph_coloring = ColorList();
 
     // Subroutine to compute (ordered) isomorphic types of all k-tuples of vertices.
@@ -175,7 +174,7 @@ std::pair<ColorList, ColorMap<IndexList>> compute_ordered_isomorphism_types(cons
         subgraph.add_vertex_coloring(subgraph_coloring);
 
         // Isomorphism function is shared among several runs to ensure canonical form for different runs.
-        auto result = iso_type_function.emplace(subgraph.compute_certificate(), iso_type_function.size());
+        auto result = iso_type_function.emplace(compute_certificate(subgraph), iso_type_function.size());
 
         const auto color = result.first->second;
         hash_to_color.at(hash) = color;

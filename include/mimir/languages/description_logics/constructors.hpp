@@ -27,14 +27,14 @@
 #include <memory>
 #include <vector>
 
-namespace mimir::dl
+namespace mimir::languages::dl
 {
 
 /**
  * Concepts
  */
 
-class ConceptBotImpl : public ConstructorEvaluatorBase<Concept, ConceptBotImpl>
+class ConceptBotImpl : public ConstructorEvaluatorBase<ConceptTag, ConceptBotImpl>
 {
 private:
     Index m_index;
@@ -47,9 +47,9 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
-    friend class ConstructorEvaluatorBase<Concept, ConceptBotImpl>;
+    friend class ConstructorEvaluatorBase<ConceptTag, ConceptBotImpl>;
 
 public:
     // moveable but not copyable
@@ -58,15 +58,15 @@ public:
     ConceptBotImpl(ConceptBotImpl&& other) = default;
     ConceptBotImpl& operator=(ConceptBotImpl&& other) = default;
 
-    Index get_index() const;
+    Index get_index() const override;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(); }
+    auto identifying_members() const { return std::tuple(); }
 };
 
-class ConceptTopImpl : public ConstructorEvaluatorBase<Concept, ConceptTopImpl>
+class ConceptTopImpl : public ConstructorEvaluatorBase<ConceptTag, ConceptTopImpl>
 {
 private:
     Index m_index;
@@ -79,9 +79,9 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
-    friend class ConstructorEvaluatorBase<Concept, ConceptTopImpl>;
+    friend class ConstructorEvaluatorBase<ConceptTag, ConceptTopImpl>;
 
 public:
     // moveable but not copyable
@@ -90,22 +90,22 @@ public:
     ConceptTopImpl(ConceptTopImpl&& other) = default;
     ConceptTopImpl& operator=(ConceptTopImpl&& other) = default;
 
-    Index get_index() const;
+    Index get_index() const override;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(); }
+    auto identifying_members() const { return std::tuple(); }
 };
 
-template<PredicateTag P>
-class ConceptAtomicStateImpl : public ConstructorEvaluatorBase<Concept, ConceptAtomicStateImpl<P>>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
+class ConceptAtomicStateImpl : public ConstructorEvaluatorBase<ConceptTag, ConceptAtomicStateImpl<P>>
 {
 private:
     Index m_index;
-    Predicate<P> m_predicate;
+    formalism::Predicate<P> m_predicate;
 
-    ConceptAtomicStateImpl(Index index, Predicate<P> predicate);
+    ConceptAtomicStateImpl(Index index, formalism::Predicate<P> predicate);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -113,9 +113,9 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
-    friend class ConstructorEvaluatorBase<Concept, ConceptAtomicStateImpl<P>>;
+    friend class ConstructorEvaluatorBase<ConceptTag, ConceptAtomicStateImpl<P>>;
 
 public:
     // moveable but not copyable
@@ -124,24 +124,24 @@ public:
     ConceptAtomicStateImpl(ConceptAtomicStateImpl&& other) = default;
     ConceptAtomicStateImpl& operator=(ConceptAtomicStateImpl&& other) = default;
 
-    Index get_index() const;
-    Predicate<P> get_predicate() const;
+    Index get_index() const override;
+    formalism::Predicate<P> get_predicate() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_predicate)); }
+    auto identifying_members() const { return std::tuple(get_predicate()); }
 };
 
-template<PredicateTag P>
-class ConceptAtomicGoalImpl : public ConstructorEvaluatorBase<Concept, ConceptAtomicGoalImpl<P>>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
+class ConceptAtomicGoalImpl : public ConstructorEvaluatorBase<ConceptTag, ConceptAtomicGoalImpl<P>>
 {
 private:
     Index m_index;
-    Predicate<P> m_predicate;
-    bool m_is_negated;
+    formalism::Predicate<P> m_predicate;
+    bool m_polarity;
 
-    ConceptAtomicGoalImpl(Index index, Predicate<P> predicate, bool is_negated);
+    ConceptAtomicGoalImpl(Index index, formalism::Predicate<P> predicate, bool polarity);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -149,9 +149,9 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
-    friend class ConstructorEvaluatorBase<Concept, ConceptAtomicGoalImpl<P>>;
+    friend class ConstructorEvaluatorBase<ConceptTag, ConceptAtomicGoalImpl<P>>;
 
 public:
     // moveable but not copyable
@@ -160,24 +160,24 @@ public:
     ConceptAtomicGoalImpl(ConceptAtomicGoalImpl&& other) = default;
     ConceptAtomicGoalImpl& operator=(ConceptAtomicGoalImpl&& other) = default;
 
-    Index get_index() const;
-    Predicate<P> get_predicate() const;
-    bool is_negated() const;
+    Index get_index() const override;
+    formalism::Predicate<P> get_predicate() const;
+    bool get_polarity() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_predicate), std::as_const(m_is_negated)); }
+    auto identifying_members() const { return std::tuple(get_predicate(), get_polarity()); }
 };
 
-class ConceptIntersectionImpl : public ConstructorEvaluatorBase<Concept, ConceptIntersectionImpl>
+class ConceptIntersectionImpl : public ConstructorEvaluatorBase<ConceptTag, ConceptIntersectionImpl>
 {
 private:
     Index m_index;
-    Constructor<Concept> m_concept_left;
-    Constructor<Concept> m_concept_right;
+    Constructor<ConceptTag> m_left_concept;
+    Constructor<ConceptTag> m_right_concept;
 
-    ConceptIntersectionImpl(Index index, Constructor<Concept> concept_left, Constructor<Concept> concept_right);
+    ConceptIntersectionImpl(Index index, Constructor<ConceptTag> left_concept, Constructor<ConceptTag> right_concept);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -185,9 +185,9 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
-    friend class ConstructorEvaluatorBase<Concept, ConceptIntersectionImpl>;
+    friend class ConstructorEvaluatorBase<ConceptTag, ConceptIntersectionImpl>;
 
 public:
     // moveable but not copyable
@@ -196,24 +196,24 @@ public:
     ConceptIntersectionImpl(ConceptIntersectionImpl&& other) = default;
     ConceptIntersectionImpl& operator=(ConceptIntersectionImpl&& other) = default;
 
-    Index get_index() const;
-    Constructor<Concept> get_concept_left() const;
-    Constructor<Concept> get_concept_right() const;
+    Index get_index() const override;
+    Constructor<ConceptTag> get_left_concept() const;
+    Constructor<ConceptTag> get_right_concept() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_concept_left), std::as_const(m_concept_right)); }
+    auto identifying_members() const { return std::tuple(get_left_concept(), get_right_concept()); }
 };
 
-class ConceptUnionImpl : public ConstructorEvaluatorBase<Concept, ConceptUnionImpl>
+class ConceptUnionImpl : public ConstructorEvaluatorBase<ConceptTag, ConceptUnionImpl>
 {
 private:
     Index m_index;
-    Constructor<Concept> m_concept_left;
-    Constructor<Concept> m_concept_right;
+    Constructor<ConceptTag> m_left_concept;
+    Constructor<ConceptTag> m_right_concept;
 
-    ConceptUnionImpl(Index index, Constructor<Concept> concept_left, Constructor<Concept> concept_right);
+    ConceptUnionImpl(Index index, Constructor<ConceptTag> left_concept, Constructor<ConceptTag> right_concept);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -221,9 +221,9 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
-    friend class ConstructorEvaluatorBase<Concept, ConceptUnionImpl>;
+    friend class ConstructorEvaluatorBase<ConceptTag, ConceptUnionImpl>;
 
 public:
     // moveable but not copyable
@@ -232,23 +232,23 @@ public:
     ConceptUnionImpl(ConceptUnionImpl&& other) = default;
     ConceptUnionImpl& operator=(ConceptUnionImpl&& other) = default;
 
-    Index get_index() const;
-    Constructor<Concept> get_concept_left() const;
-    Constructor<Concept> get_concept_right() const;
+    Index get_index() const override;
+    Constructor<ConceptTag> get_left_concept() const;
+    Constructor<ConceptTag> get_right_concept() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_concept_left), std::as_const(m_concept_right)); }
+    auto identifying_members() const { return std::tuple(get_left_concept(), get_right_concept()); }
 };
 
-class ConceptNegationImpl : public ConstructorEvaluatorBase<Concept, ConceptNegationImpl>
+class ConceptNegationImpl : public ConstructorEvaluatorBase<ConceptTag, ConceptNegationImpl>
 {
 private:
     Index m_index;
-    Constructor<Concept> m_concept;
+    Constructor<ConceptTag> m_concept;
 
-    ConceptNegationImpl(Index index, Constructor<Concept> concept_);
+    ConceptNegationImpl(Index index, Constructor<ConceptTag> concept_);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -256,9 +256,9 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
-    friend class ConstructorEvaluatorBase<Concept, ConceptNegationImpl>;
+    friend class ConstructorEvaluatorBase<ConceptTag, ConceptNegationImpl>;
 
 public:
     // moveable but not copyable
@@ -267,23 +267,23 @@ public:
     ConceptNegationImpl(ConceptNegationImpl&& other) = default;
     ConceptNegationImpl& operator=(ConceptNegationImpl&& other) = default;
 
-    Index get_index() const;
-    Constructor<Concept> get_concept() const;
+    Index get_index() const override;
+    Constructor<ConceptTag> get_concept() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_concept)); }
+    auto identifying_members() const { return std::tuple(get_concept()); }
 };
 
-class ConceptValueRestrictionImpl : public ConstructorEvaluatorBase<Concept, ConceptValueRestrictionImpl>
+class ConceptValueRestrictionImpl : public ConstructorEvaluatorBase<ConceptTag, ConceptValueRestrictionImpl>
 {
 private:
     Index m_index;
-    Constructor<Role> m_role;
-    Constructor<Concept> m_concept;
+    Constructor<RoleTag> m_role;
+    Constructor<ConceptTag> m_concept;
 
-    ConceptValueRestrictionImpl(Index index, Constructor<Role> role_, Constructor<Concept> concept_);
+    ConceptValueRestrictionImpl(Index index, Constructor<RoleTag> role_, Constructor<ConceptTag> concept_);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -291,9 +291,9 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
-    friend class ConstructorEvaluatorBase<Concept, ConceptValueRestrictionImpl>;
+    friend class ConstructorEvaluatorBase<ConceptTag, ConceptValueRestrictionImpl>;
 
 public:
     // moveable but not copyable
@@ -302,24 +302,24 @@ public:
     ConceptValueRestrictionImpl(ConceptValueRestrictionImpl&& other) = default;
     ConceptValueRestrictionImpl& operator=(ConceptValueRestrictionImpl&& other) = default;
 
-    Index get_index() const;
-    Constructor<Role> get_role() const;
-    Constructor<Concept> get_concept() const;
+    Index get_index() const override;
+    Constructor<RoleTag> get_role() const;
+    Constructor<ConceptTag> get_concept() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role), std::as_const(m_concept)); }
+    auto identifying_members() const { return std::tuple(get_role(), get_concept()); }
 };
 
-class ConceptExistentialQuantificationImpl : public ConstructorEvaluatorBase<Concept, ConceptExistentialQuantificationImpl>
+class ConceptExistentialQuantificationImpl : public ConstructorEvaluatorBase<ConceptTag, ConceptExistentialQuantificationImpl>
 {
 private:
     Index m_index;
-    Constructor<Role> m_role;
-    Constructor<Concept> m_concept;
+    Constructor<RoleTag> m_role;
+    Constructor<ConceptTag> m_concept;
 
-    ConceptExistentialQuantificationImpl(Index index, Constructor<Role> role_, Constructor<Concept> concept_);
+    ConceptExistentialQuantificationImpl(Index index, Constructor<RoleTag> role_, Constructor<ConceptTag> concept_);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -327,9 +327,9 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
-    friend class ConstructorEvaluatorBase<Concept, ConceptExistentialQuantificationImpl>;
+    friend class ConstructorEvaluatorBase<ConceptTag, ConceptExistentialQuantificationImpl>;
 
 public:
     // moveable but not copyable
@@ -338,24 +338,24 @@ public:
     ConceptExistentialQuantificationImpl(ConceptExistentialQuantificationImpl&& other) = default;
     ConceptExistentialQuantificationImpl& operator=(ConceptExistentialQuantificationImpl&& other) = default;
 
-    Index get_index() const;
-    Constructor<Role> get_role() const;
-    Constructor<Concept> get_concept() const;
+    Index get_index() const override;
+    Constructor<RoleTag> get_role() const;
+    Constructor<ConceptTag> get_concept() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role), std::as_const(m_concept)); }
+    auto identifying_members() const { return std::tuple(get_role(), get_concept()); }
 };
 
-class ConceptRoleValueMapContainmentImpl : public ConstructorEvaluatorBase<Concept, ConceptRoleValueMapContainmentImpl>
+class ConceptRoleValueMapContainmentImpl : public ConstructorEvaluatorBase<ConceptTag, ConceptRoleValueMapContainmentImpl>
 {
 private:
     Index m_index;
-    Constructor<Role> m_role_left;
-    Constructor<Role> m_role_right;
+    Constructor<RoleTag> m_left_role;
+    Constructor<RoleTag> m_right_role;
 
-    ConceptRoleValueMapContainmentImpl(Index index, Constructor<Role> role_left, Constructor<Role> role_right);
+    ConceptRoleValueMapContainmentImpl(Index index, Constructor<RoleTag> left_role, Constructor<RoleTag> right_role);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -363,9 +363,9 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
-    friend class ConstructorEvaluatorBase<Concept, ConceptRoleValueMapContainmentImpl>;
+    friend class ConstructorEvaluatorBase<ConceptTag, ConceptRoleValueMapContainmentImpl>;
 
 public:
     // moveable but not copyable
@@ -374,24 +374,24 @@ public:
     ConceptRoleValueMapContainmentImpl(ConceptRoleValueMapContainmentImpl&& other) = default;
     ConceptRoleValueMapContainmentImpl& operator=(ConceptRoleValueMapContainmentImpl&& other) = default;
 
-    Index get_index() const;
-    Constructor<Role> get_role_left() const;
-    Constructor<Role> get_role_right() const;
+    Index get_index() const override;
+    Constructor<RoleTag> get_left_role() const;
+    Constructor<RoleTag> get_right_role() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role_left), std::as_const(m_role_right)); }
+    auto identifying_members() const { return std::tuple(get_left_role(), get_right_role()); }
 };
 
-class ConceptRoleValueMapEqualityImpl : public ConstructorEvaluatorBase<Concept, ConceptRoleValueMapEqualityImpl>
+class ConceptRoleValueMapEqualityImpl : public ConstructorEvaluatorBase<ConceptTag, ConceptRoleValueMapEqualityImpl>
 {
 private:
     Index m_index;
-    Constructor<Role> m_role_left;
-    Constructor<Role> m_role_right;
+    Constructor<RoleTag> m_left_role;
+    Constructor<RoleTag> m_right_role;
 
-    ConceptRoleValueMapEqualityImpl(Index index, Constructor<Role> role_left, Constructor<Role> role_right);
+    ConceptRoleValueMapEqualityImpl(Index index, Constructor<RoleTag> left_role, Constructor<RoleTag> right_role);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -399,9 +399,9 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
-    friend class ConstructorEvaluatorBase<Concept, ConceptRoleValueMapEqualityImpl>;
+    friend class ConstructorEvaluatorBase<ConceptTag, ConceptRoleValueMapEqualityImpl>;
 
 public:
     // moveable but not copyable
@@ -410,23 +410,23 @@ public:
     ConceptRoleValueMapEqualityImpl(ConceptRoleValueMapEqualityImpl&& other) = default;
     ConceptRoleValueMapEqualityImpl& operator=(ConceptRoleValueMapEqualityImpl&& other) = default;
 
-    Index get_index() const;
-    Constructor<Role> get_role_left() const;
-    Constructor<Role> get_role_right() const;
+    Index get_index() const override;
+    Constructor<RoleTag> get_left_role() const;
+    Constructor<RoleTag> get_right_role() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role_left), std::as_const(m_role_right)); }
+    auto identifying_members() const { return std::tuple(get_left_role(), get_right_role()); }
 };
 
-class ConceptNominalImpl : public ConstructorEvaluatorBase<Concept, ConceptNominalImpl>
+class ConceptNominalImpl : public ConstructorEvaluatorBase<ConceptTag, ConceptNominalImpl>
 {
 private:
     Index m_index;
-    Object m_object;
+    formalism::Object m_object;
 
-    ConceptNominalImpl(Index index, Object object);
+    ConceptNominalImpl(Index index, formalism::Object object);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -434,9 +434,9 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
-    friend class ConstructorEvaluatorBase<Concept, ConceptNominalImpl>;
+    friend class ConstructorEvaluatorBase<ConceptTag, ConceptNominalImpl>;
 
 public:
     // moveable but not copyable
@@ -445,20 +445,20 @@ public:
     ConceptNominalImpl(ConceptNominalImpl&& other) = default;
     ConceptNominalImpl& operator=(ConceptNominalImpl&& other) = default;
 
-    Index get_index() const;
-    Object get_object() const;
+    Index get_index() const override;
+    formalism::Object get_object() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_object)); }
+    auto identifying_members() const { return std::tuple(get_object()); }
 };
 
 /**
  * Roles
  */
 
-class RoleUniversalImpl : public ConstructorEvaluatorBase<Role, RoleUniversalImpl>
+class RoleUniversalImpl : public ConstructorEvaluatorBase<RoleTag, RoleUniversalImpl>
 {
 private:
     Index m_index;
@@ -471,9 +471,9 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
-    friend class ConstructorEvaluatorBase<Role, RoleUniversalImpl>;
+    friend class ConstructorEvaluatorBase<RoleTag, RoleUniversalImpl>;
 
 public:
     // moveable but not copyable
@@ -482,22 +482,22 @@ public:
     RoleUniversalImpl(RoleUniversalImpl&& other) = default;
     RoleUniversalImpl& operator=(RoleUniversalImpl&& other) = default;
 
-    Index get_index() const;
+    Index get_index() const override;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(); }
+    auto identifying_members() const { return std::tuple(); }
 };
 
-template<PredicateTag P>
-class RoleAtomicStateImpl : public ConstructorEvaluatorBase<Role, RoleAtomicStateImpl<P>>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
+class RoleAtomicStateImpl : public ConstructorEvaluatorBase<RoleTag, RoleAtomicStateImpl<P>>
 {
 private:
     Index m_index;
-    Predicate<P> m_predicate;
+    formalism::Predicate<P> m_predicate;
 
-    RoleAtomicStateImpl(Index index, Predicate<P> predicate);
+    RoleAtomicStateImpl(Index index, formalism::Predicate<P> predicate);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -505,9 +505,9 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
-    friend class ConstructorEvaluatorBase<Role, RoleAtomicStateImpl<P>>;
+    friend class ConstructorEvaluatorBase<RoleTag, RoleAtomicStateImpl<P>>;
 
 public:
     // moveable but not copyable
@@ -516,24 +516,24 @@ public:
     RoleAtomicStateImpl(RoleAtomicStateImpl&& other) = default;
     RoleAtomicStateImpl& operator=(RoleAtomicStateImpl&& other) = default;
 
-    Index get_index() const;
-    Predicate<P> get_predicate() const;
+    Index get_index() const override;
+    formalism::Predicate<P> get_predicate() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_predicate)); }
+    auto identifying_members() const { return std::tuple(get_predicate()); }
 };
 
-template<PredicateTag P>
-class RoleAtomicGoalImpl : public ConstructorEvaluatorBase<Role, RoleAtomicGoalImpl<P>>
+template<formalism::IsStaticOrFluentOrDerivedTag P>
+class RoleAtomicGoalImpl : public ConstructorEvaluatorBase<RoleTag, RoleAtomicGoalImpl<P>>
 {
 private:
     Index m_index;
-    Predicate<P> m_predicate;
-    bool m_is_negated;
+    formalism::Predicate<P> m_predicate;
+    bool m_polarity;
 
-    RoleAtomicGoalImpl(Index index, Predicate<P> predicate, bool is_negated);
+    RoleAtomicGoalImpl(Index index, formalism::Predicate<P> predicate, bool polarity);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -541,9 +541,9 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
-    friend class ConstructorEvaluatorBase<Role, RoleAtomicGoalImpl<P>>;
+    friend class ConstructorEvaluatorBase<RoleTag, RoleAtomicGoalImpl<P>>;
 
 public:
     // moveable but not copyable
@@ -552,24 +552,24 @@ public:
     RoleAtomicGoalImpl(RoleAtomicGoalImpl&& other) = default;
     RoleAtomicGoalImpl& operator=(RoleAtomicGoalImpl&& other) = default;
 
-    Index get_index() const;
-    Predicate<P> get_predicate() const;
-    bool is_negated() const;
+    Index get_index() const override;
+    formalism::Predicate<P> get_predicate() const;
+    bool get_polarity() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_predicate), std::as_const(m_is_negated)); }
+    auto identifying_members() const { return std::tuple(get_predicate(), get_polarity()); }
 };
 
-class RoleIntersectionImpl : public ConstructorEvaluatorBase<Role, RoleIntersectionImpl>
+class RoleIntersectionImpl : public ConstructorEvaluatorBase<RoleTag, RoleIntersectionImpl>
 {
 private:
     Index m_index;
-    Constructor<Role> m_role_left;
-    Constructor<Role> m_role_right;
+    Constructor<RoleTag> m_left_role;
+    Constructor<RoleTag> m_right_role;
 
-    RoleIntersectionImpl(Index index, Constructor<Role> role_left, Constructor<Role> role_right);
+    RoleIntersectionImpl(Index index, Constructor<RoleTag> left_role, Constructor<RoleTag> right_role);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -577,9 +577,9 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
-    friend class ConstructorEvaluatorBase<Role, RoleIntersectionImpl>;
+    friend class ConstructorEvaluatorBase<RoleTag, RoleIntersectionImpl>;
 
 public:
     // moveable but not copyable
@@ -588,24 +588,24 @@ public:
     RoleIntersectionImpl(RoleIntersectionImpl&& other) = default;
     RoleIntersectionImpl& operator=(RoleIntersectionImpl&& other) = default;
 
-    Index get_index() const;
-    Constructor<Role> get_role_left() const;
-    Constructor<Role> get_role_right() const;
+    Index get_index() const override;
+    Constructor<RoleTag> get_left_role() const;
+    Constructor<RoleTag> get_right_role() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role_left), std::as_const(m_role_right)); }
+    auto identifying_members() const { return std::tuple(get_left_role(), get_right_role()); }
 };
 
-class RoleUnionImpl : public ConstructorEvaluatorBase<Role, RoleUnionImpl>
+class RoleUnionImpl : public ConstructorEvaluatorBase<RoleTag, RoleUnionImpl>
 {
 private:
     Index m_index;
-    Constructor<Role> m_role_left;
-    Constructor<Role> m_role_right;
+    Constructor<RoleTag> m_left_role;
+    Constructor<RoleTag> m_right_role;
 
-    RoleUnionImpl(Index index, Constructor<Role> role_left, Constructor<Role> role_right);
+    RoleUnionImpl(Index index, Constructor<RoleTag> left_role, Constructor<RoleTag> right_role);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -613,9 +613,9 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
-    friend class ConstructorEvaluatorBase<Role, RoleUnionImpl>;
+    friend class ConstructorEvaluatorBase<RoleTag, RoleUnionImpl>;
 
 public:
     // moveable but not copyable
@@ -624,23 +624,23 @@ public:
     RoleUnionImpl(RoleUnionImpl&& other) = default;
     RoleUnionImpl& operator=(RoleUnionImpl&& other) = default;
 
-    Index get_index() const;
-    Constructor<Role> get_role_left() const;
-    Constructor<Role> get_role_right() const;
+    Index get_index() const override;
+    Constructor<RoleTag> get_left_role() const;
+    Constructor<RoleTag> get_right_role() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role_left), std::as_const(m_role_right)); }
+    auto identifying_members() const { return std::tuple(get_left_role(), get_right_role()); }
 };
 
-class RoleComplementImpl : public ConstructorEvaluatorBase<Role, RoleComplementImpl>
+class RoleComplementImpl : public ConstructorEvaluatorBase<RoleTag, RoleComplementImpl>
 {
 private:
     Index m_index;
-    Constructor<Role> m_role;
+    Constructor<RoleTag> m_role;
 
-    RoleComplementImpl(Index index, Constructor<Role> role_);
+    RoleComplementImpl(Index index, Constructor<RoleTag> role_);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -648,9 +648,9 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
-    friend class ConstructorEvaluatorBase<Role, RoleComplementImpl>;
+    friend class ConstructorEvaluatorBase<RoleTag, RoleComplementImpl>;
 
 public:
     // moveable but not copyable
@@ -659,22 +659,22 @@ public:
     RoleComplementImpl(RoleComplementImpl&& other) = default;
     RoleComplementImpl& operator=(RoleComplementImpl&& other) = default;
 
-    Index get_index() const;
-    Constructor<Role> get_role() const;
+    Index get_index() const override;
+    Constructor<RoleTag> get_role() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role)); }
+    auto identifying_members() const { return std::tuple(get_role()); }
 };
 
-class RoleInverseImpl : public ConstructorEvaluatorBase<Role, RoleInverseImpl>
+class RoleInverseImpl : public ConstructorEvaluatorBase<RoleTag, RoleInverseImpl>
 {
 private:
     Index m_index;
-    Constructor<Role> m_role;
+    Constructor<RoleTag> m_role;
 
-    RoleInverseImpl(Index index, Constructor<Role> role_);
+    RoleInverseImpl(Index index, Constructor<RoleTag> role_);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -682,9 +682,9 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
-    friend class ConstructorEvaluatorBase<Role, RoleInverseImpl>;
+    friend class ConstructorEvaluatorBase<RoleTag, RoleInverseImpl>;
 
 public:
     // moveable but not copyable
@@ -693,23 +693,23 @@ public:
     RoleInverseImpl(RoleInverseImpl&& other) = default;
     RoleInverseImpl& operator=(RoleInverseImpl&& other) = default;
 
-    Index get_index() const;
-    Constructor<Role> get_role() const;
+    Index get_index() const override;
+    Constructor<RoleTag> get_role() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role)); }
+    auto identifying_members() const { return std::tuple(get_role()); }
 };
 
-class RoleCompositionImpl : public ConstructorEvaluatorBase<Role, RoleCompositionImpl>
+class RoleCompositionImpl : public ConstructorEvaluatorBase<RoleTag, RoleCompositionImpl>
 {
 private:
     Index m_index;
-    Constructor<Role> m_role_left;
-    Constructor<Role> m_role_right;
+    Constructor<RoleTag> m_left_role;
+    Constructor<RoleTag> m_right_role;
 
-    RoleCompositionImpl(Index index, Constructor<Role> role_left, Constructor<Role> role_right);
+    RoleCompositionImpl(Index index, Constructor<RoleTag> left_role, Constructor<RoleTag> right_role);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -717,9 +717,9 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
-    friend class ConstructorEvaluatorBase<Role, RoleCompositionImpl>;
+    friend class ConstructorEvaluatorBase<RoleTag, RoleCompositionImpl>;
 
 public:
     // moveable but not copyable
@@ -728,23 +728,23 @@ public:
     RoleCompositionImpl(RoleCompositionImpl&& other) = default;
     RoleCompositionImpl& operator=(RoleCompositionImpl&& other) = default;
 
-    Index get_index() const;
-    Constructor<Role> get_role_left() const;
-    Constructor<Role> get_role_right() const;
+    Index get_index() const override;
+    Constructor<RoleTag> get_left_role() const;
+    Constructor<RoleTag> get_right_role() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role_left), std::as_const(m_role_right)); }
+    auto identifying_members() const { return std::tuple(get_left_role(), get_right_role()); }
 };
 
-class RoleTransitiveClosureImpl : public ConstructorEvaluatorBase<Role, RoleTransitiveClosureImpl>
+class RoleTransitiveClosureImpl : public ConstructorEvaluatorBase<RoleTag, RoleTransitiveClosureImpl>
 {
 private:
     Index m_index;
-    Constructor<Role> m_role;
+    Constructor<RoleTag> m_role;
 
-    RoleTransitiveClosureImpl(Index index, Constructor<Role> role_);
+    RoleTransitiveClosureImpl(Index index, Constructor<RoleTag> role_);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -752,9 +752,9 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
-    friend class ConstructorEvaluatorBase<Role, RoleTransitiveClosureImpl>;
+    friend class ConstructorEvaluatorBase<RoleTag, RoleTransitiveClosureImpl>;
 
 public:
     // moveable but not copyable
@@ -763,22 +763,22 @@ public:
     RoleTransitiveClosureImpl(RoleTransitiveClosureImpl&& other) = default;
     RoleTransitiveClosureImpl& operator=(RoleTransitiveClosureImpl&& other) = default;
 
-    Index get_index() const;
-    Constructor<Role> get_role() const;
+    Index get_index() const override;
+    Constructor<RoleTag> get_role() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role)); }
+    auto identifying_members() const { return std::tuple(get_role()); }
 };
 
-class RoleReflexiveTransitiveClosureImpl : public ConstructorEvaluatorBase<Role, RoleReflexiveTransitiveClosureImpl>
+class RoleReflexiveTransitiveClosureImpl : public ConstructorEvaluatorBase<RoleTag, RoleReflexiveTransitiveClosureImpl>
 {
 private:
     Index m_index;
-    Constructor<Role> m_role;
+    Constructor<RoleTag> m_role;
 
-    RoleReflexiveTransitiveClosureImpl(Index index, Constructor<Role> role_);
+    RoleReflexiveTransitiveClosureImpl(Index index, Constructor<RoleTag> role_);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -786,9 +786,9 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
-    friend class ConstructorEvaluatorBase<Role, RoleReflexiveTransitiveClosureImpl>;
+    friend class ConstructorEvaluatorBase<RoleTag, RoleReflexiveTransitiveClosureImpl>;
 
 public:
     // moveable but not copyable
@@ -797,23 +797,23 @@ public:
     RoleReflexiveTransitiveClosureImpl(RoleReflexiveTransitiveClosureImpl&& other) = default;
     RoleReflexiveTransitiveClosureImpl& operator=(RoleReflexiveTransitiveClosureImpl&& other) = default;
 
-    Index get_index() const;
-    Constructor<Role> get_role() const;
+    Index get_index() const override;
+    Constructor<RoleTag> get_role() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role)); }
+    auto identifying_members() const { return std::tuple(get_role()); }
 };
 
-class RoleRestrictionImpl : public ConstructorEvaluatorBase<Role, RoleRestrictionImpl>
+class RoleRestrictionImpl : public ConstructorEvaluatorBase<RoleTag, RoleRestrictionImpl>
 {
 private:
     Index m_index;
-    Constructor<Role> m_role;
-    Constructor<Concept> m_concept;
+    Constructor<RoleTag> m_role;
+    Constructor<ConceptTag> m_concept;
 
-    RoleRestrictionImpl(Index index, Constructor<Role> role_, Constructor<Concept> concept_);
+    RoleRestrictionImpl(Index index, Constructor<RoleTag> role_, Constructor<ConceptTag> concept_);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -821,9 +821,9 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
-    friend class ConstructorEvaluatorBase<Role, RoleRestrictionImpl>;
+    friend class ConstructorEvaluatorBase<RoleTag, RoleRestrictionImpl>;
 
 public:
     // moveable but not copyable
@@ -832,23 +832,23 @@ public:
     RoleRestrictionImpl(RoleRestrictionImpl&& other) = default;
     RoleRestrictionImpl& operator=(RoleRestrictionImpl&& other) = default;
 
-    Index get_index() const;
-    Constructor<Role> get_role() const;
-    Constructor<Concept> get_concept() const;
+    Index get_index() const override;
+    Constructor<RoleTag> get_role() const;
+    Constructor<ConceptTag> get_concept() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role), std::as_const(m_concept)); }
+    auto identifying_members() const { return std::tuple(get_role(), get_concept()); }
 };
 
-class RoleIdentityImpl : public ConstructorEvaluatorBase<Role, RoleIdentityImpl>
+class RoleIdentityImpl : public ConstructorEvaluatorBase<RoleTag, RoleIdentityImpl>
 {
 private:
     Index m_index;
-    Constructor<Concept> m_concept;
+    Constructor<ConceptTag> m_concept;
 
-    RoleIdentityImpl(Index index, Constructor<Concept> concept_);
+    RoleIdentityImpl(Index index, Constructor<ConceptTag> concept_);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -856,9 +856,9 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    void accept_impl(Visitor& visitor) const;
+    void accept_impl(IVisitor& visitor) const;
 
-    friend class ConstructorEvaluatorBase<Role, RoleIdentityImpl>;
+    friend class ConstructorEvaluatorBase<RoleTag, RoleIdentityImpl>;
 
 public:
     // moveable but not copyable
@@ -867,13 +867,164 @@ public:
     RoleIdentityImpl(RoleIdentityImpl&& other) = default;
     RoleIdentityImpl& operator=(RoleIdentityImpl&& other) = default;
 
-    Index get_index() const;
-    Constructor<Concept> get_concept() const;
+    Index get_index() const override;
+    Constructor<ConceptTag> get_concept() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_concept)); }
+    auto identifying_members() const { return std::tuple(get_concept()); }
+};
+
+/**
+ * Booleans
+ */
+
+template<formalism::IsStaticOrFluentOrDerivedTag P>
+class BooleanAtomicStateImpl : public ConstructorEvaluatorBase<BooleanTag, BooleanAtomicStateImpl<P>>
+{
+private:
+    Index m_index;
+    formalism::Predicate<P> m_predicate;
+
+    BooleanAtomicStateImpl(Index index, formalism::Predicate<P> predicate);
+
+    // Give access to the constructor.
+    template<typename T, typename Hash, typename EqualTo>
+    friend class loki::SegmentedRepository;
+
+    void evaluate_impl(EvaluationContext& context) const;
+
+    void accept_impl(IVisitor& visitor) const;
+
+    friend class ConstructorEvaluatorBase<BooleanTag, BooleanAtomicStateImpl<P>>;
+
+public:
+    // moveable but not copyable
+    BooleanAtomicStateImpl(const BooleanAtomicStateImpl& other) = delete;
+    BooleanAtomicStateImpl& operator=(const BooleanAtomicStateImpl& other) = delete;
+    BooleanAtomicStateImpl(BooleanAtomicStateImpl&& other) = default;
+    BooleanAtomicStateImpl& operator=(BooleanAtomicStateImpl&& other) = default;
+
+    Index get_index() const;
+    formalism::Predicate<P> get_predicate() const;
+
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
+    auto identifying_members() const { return std::tuple(get_predicate()); }
+};
+
+template<IsConceptOrRoleTag D>
+class BooleanNonemptyImpl : public ConstructorEvaluatorBase<BooleanTag, BooleanNonemptyImpl<D>>
+{
+private:
+    Index m_index;
+    Constructor<D> m_constructor;
+
+    BooleanNonemptyImpl(Index index, Constructor<D> constructor);
+
+    // Give access to the constructor.
+    template<typename T, typename Hash, typename EqualTo>
+    friend class loki::SegmentedRepository;
+
+    void evaluate_impl(EvaluationContext& context) const;
+
+    void accept_impl(IVisitor& visitor) const;
+
+    friend class ConstructorEvaluatorBase<BooleanTag, BooleanNonemptyImpl<D>>;
+
+public:
+    // moveable but not copyable
+    BooleanNonemptyImpl(const BooleanNonemptyImpl& other) = delete;
+    BooleanNonemptyImpl& operator=(const BooleanNonemptyImpl& other) = delete;
+    BooleanNonemptyImpl(BooleanNonemptyImpl&& other) = default;
+    BooleanNonemptyImpl& operator=(BooleanNonemptyImpl&& other) = default;
+
+    Index get_index() const;
+    Constructor<D> get_constructor() const;
+
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
+    auto identifying_members() const { return std::tuple(get_constructor()); }
+};
+
+/**
+ * Numericals
+ */
+
+template<IsConceptOrRoleTag D>
+class NumericalCountImpl : public ConstructorEvaluatorBase<NumericalTag, NumericalCountImpl<D>>
+{
+private:
+    Index m_index;
+    Constructor<D> m_constructor;
+
+    NumericalCountImpl(Index index, Constructor<D> constructor);
+
+    // Give access to the constructor.
+    template<typename T, typename Hash, typename EqualTo>
+    friend class loki::SegmentedRepository;
+
+    void evaluate_impl(EvaluationContext& context) const;
+
+    void accept_impl(IVisitor& visitor) const;
+
+    friend class ConstructorEvaluatorBase<NumericalTag, NumericalCountImpl<D>>;
+
+public:
+    // moveable but not copyable
+    NumericalCountImpl(const NumericalCountImpl& other) = delete;
+    NumericalCountImpl& operator=(const NumericalCountImpl& other) = delete;
+    NumericalCountImpl(NumericalCountImpl&& other) = default;
+    NumericalCountImpl& operator=(NumericalCountImpl&& other) = default;
+
+    Index get_index() const;
+    Constructor<D> get_constructor() const;
+
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
+    auto identifying_members() const { return std::tuple(get_constructor()); }
+};
+
+class NumericalDistanceImpl : public ConstructorEvaluatorBase<NumericalTag, NumericalDistanceImpl>
+{
+private:
+    Index m_index;
+    Constructor<ConceptTag> m_left_concept;
+    Constructor<RoleTag> m_role;
+    Constructor<ConceptTag> m_right_concept;
+
+    NumericalDistanceImpl(Index index, Constructor<ConceptTag> left_concept, Constructor<RoleTag> role, Constructor<ConceptTag> right_concept);
+
+    // Give access to the constructor.
+    template<typename T, typename Hash, typename EqualTo>
+    friend class loki::SegmentedRepository;
+
+    void evaluate_impl(EvaluationContext& context) const;
+
+    void accept_impl(IVisitor& visitor) const;
+
+    friend class ConstructorEvaluatorBase<NumericalTag, NumericalDistanceImpl>;
+
+public:
+    // moveable but not copyable
+    NumericalDistanceImpl(const NumericalDistanceImpl& other) = delete;
+    NumericalDistanceImpl& operator=(const NumericalDistanceImpl& other) = delete;
+    NumericalDistanceImpl(NumericalDistanceImpl&& other) = default;
+    NumericalDistanceImpl& operator=(NumericalDistanceImpl&& other) = default;
+
+    Index get_index() const;
+    Constructor<ConceptTag> get_left_concept() const;
+    Constructor<RoleTag> get_role() const;
+    Constructor<ConceptTag> get_right_concept() const;
+
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
+    auto identifying_members() const { return std::tuple(get_left_concept(), get_role(), get_right_concept()); }
 };
 
 }

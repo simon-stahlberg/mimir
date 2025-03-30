@@ -20,41 +20,35 @@
 
 #include "mimir/search/algorithms/astar/event_handlers/interface.hpp"
 
-namespace mimir
+namespace mimir::search::astar
 {
 
 /**
  * Implementation class
  */
-class DefaultAStarAlgorithmEventHandler : public StaticAStarAlgorithmEventHandlerBase<DefaultAStarAlgorithmEventHandler>
+class DefaultEventHandler : public EventHandlerBase<DefaultEventHandler>
 {
 private:
-    /* Implement StaticAStarAlgorithmEventHandlerBase interface */
-    friend class StaticAStarAlgorithmEventHandlerBase<DefaultAStarAlgorithmEventHandler>;
+    /* Implement EventHandlerBase interface */
+    friend class EventHandlerBase<DefaultEventHandler>;
 
-    void on_expand_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories) const;
+    void on_expand_state_impl(State state) const;
 
-    void on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, Problem problem, const PDDLRepositories& pddl_repositories) const;
+    void on_expand_goal_state_impl(State state) const;
 
-    void on_generate_state_relaxed_impl(State state,
-                                        GroundAction action,
-                                        ContinuousCost action_cost,
-                                        Problem problem,
-                                        const PDDLRepositories& pddl_repositories) const;
+    void on_generate_state_impl(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) const;
 
-    void on_generate_state_not_relaxed_impl(State state,
-                                            GroundAction action,
-                                            ContinuousCost action_cost,
-                                            Problem problem,
-                                            const PDDLRepositories& pddl_repositories) const;
+    void on_generate_state_relaxed_impl(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) const;
 
-    void on_close_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories) const;
+    void on_generate_state_not_relaxed_impl(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) const;
+
+    void on_close_state_impl(State state) const;
 
     void on_finish_f_layer_impl(double f_value, uint64_t num_expanded_states, uint64_t num_generated_states) const;
 
-    void on_prune_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories) const;
+    void on_prune_state_impl(State state) const;
 
-    void on_start_search_impl(State start_state, Problem problem, const PDDLRepositories& pddl_repositories) const;
+    void on_start_search_impl(State start_state) const;
 
     void on_end_search_impl(uint64_t num_reached_fluent_atoms,
                             uint64_t num_reached_derived_atoms,
@@ -68,14 +62,14 @@ private:
                             uint64_t num_actions,
                             uint64_t num_axioms) const;
 
-    void on_solved_impl(const Plan& plan, const PDDLRepositories& pddl_repositories) const;
+    void on_solved_impl(const Plan& plan) const;
 
     void on_unsolvable_impl() const;
 
     void on_exhausted_impl() const;
 
 public:
-    explicit DefaultAStarAlgorithmEventHandler(bool quiet = true) : StaticAStarAlgorithmEventHandlerBase<DefaultAStarAlgorithmEventHandler>(quiet) {}
+    explicit DefaultEventHandler(formalism::Problem problem, bool quiet = true) : EventHandlerBase<DefaultEventHandler>(problem, quiet) {}
 };
 
 }

@@ -50,8 +50,8 @@ def remove_nonstrips_domains(properties):
 
 exp.add_fetcher("github/5/ipc-optimal-strips-astar-blind/downward-ipc-optimal-strips-astar-blind-eval", filter=remove_nonstrips_domains)
 exp.add_fetcher("github/5/ipc-optimal-strips-astar-blind/powerlifted-ipc-optimal-strips-astar-blind-eval", filter=remove_nonstrips_domains)
-exp.add_fetcher("github/5/ipc-optimal-strips-astar-blind/mimir-sparse-ipc-optimal-strips-astar-blind-eval", filter=remove_nonstrips_domains)
+exp.add_fetcher("github/5/ipc-optimal-strips-astar-blind/mimir-ipc-optimal-strips-astar-blind-eval", filter=remove_nonstrips_domains)
 
-exp.add_report(BaseReport(attributes=ATTRIBUTES, filter_algorithm=["downward-astar-blind", "mimir-grounded-sparse-astar-blind", "powerlifted-astar-blind", "mimir-lifted-sparse-astar-blind"]))
+exp.add_report(BaseReport(attributes=ATTRIBUTES, filter_algorithm=["downward-astar-blind", "mimir-grounded-astar-blind", "powerlifted-astar-blind", "mimir-lifted-astar-blind"]))
 
 exp.run_steps()

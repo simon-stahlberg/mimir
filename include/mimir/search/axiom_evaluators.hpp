@@ -19,8 +19,6 @@
 #define MIMIR_SEARCH_AXIOM_EVALUATORS_HPP_
 
 #include "mimir/search/axiom_evaluators/grounded.hpp"
-#include "mimir/search/axiom_evaluators/grounded/event_handlers.hpp"
 #include "mimir/search/axiom_evaluators/lifted.hpp"
-#include "mimir/search/axiom_evaluators/lifted/event_handlers.hpp"
 
 #endif

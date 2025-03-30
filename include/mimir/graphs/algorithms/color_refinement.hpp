@@ -20,7 +20,6 @@
 
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types.hpp"
-#include "mimir/graphs/digraph_vertex_colored.hpp"
 #include "mimir/graphs/graph_interface.hpp"
 #include "mimir/graphs/graph_properties.hpp"
 #include "mimir/graphs/graph_traversal_interface.hpp"
@@ -34,7 +33,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace mimir::color_refinement
+namespace mimir::graphs::color_refinement
 {
 
 /// @brief `Certificate` encapsulates the canonical coloring and the canonical compression function (decoding table).
@@ -55,7 +54,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_f), std::as_const(m_canonical_coloring)); }
+    auto identifying_members() const { return std::tuple(std::cref(get_canonical_compression_function()), std::cref(get_canonical_coloring())); }
 
 private:
     ColorList m_hash_to_color;

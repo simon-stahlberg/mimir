@@ -18,39 +18,40 @@
 #ifndef MIMIR_SEARCH_ALGORITHMS_IW_EVENT_HANDLERS_INTERFACE_HPP_
 #define MIMIR_SEARCH_ALGORITHMS_IW_EVENT_HANDLERS_INTERFACE_HPP_
 
-#include "mimir/formalism/repositories.hpp"
-#include "mimir/search/action.hpp"
+#include "mimir/formalism/declarations.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers/statistics.hpp"
 #include "mimir/search/algorithms/iw/event_handlers/statistics.hpp"
+#include "mimir/search/declarations.hpp"
 
 #include <chrono>
 #include <concepts>
+#include <cstdint>
 
-namespace mimir
+namespace mimir::search::iw
 {
 
 /**
  * Interface class
  */
-class IIWAlgorithmEventHandler
+class IEventHandler
 {
 public:
-    virtual ~IIWAlgorithmEventHandler() = default;
+    virtual ~IEventHandler() = default;
 
     /// @brief React on starting a search.
-    virtual void on_start_search(const Problem problem, const State initial_state, const PDDLRepositories& pddl_repositories) = 0;
+    virtual void on_start_search(State initial_state) = 0;
 
     /// @brief React on starting a search.
-    virtual void on_start_arity_search(const Problem problem, const State initial_state, const PDDLRepositories& pddl_repositories, int arity) = 0;
+    virtual void on_start_arity_search(State initial_state, size_t arity) = 0;
 
     /// @brief React on starting a search.
-    virtual void on_end_arity_search(const BrFSAlgorithmStatistics& brfs_statistics) = 0;
+    virtual void on_end_arity_search(const brfs::Statistics& brfs_statistics) = 0;
 
     /// @brief React on ending a search.
     virtual void on_end_search() = 0;
 
     /// @brief React on solving a search.
-    virtual void on_solved(const Plan& plan, const PDDLRepositories& pddl_repositories) = 0;
+    virtual void on_solved(const Plan& plan) = 0;
 
     /// @brief React on proving unsolvability during a search.
     virtual void on_unsolvable() = 0;
@@ -58,7 +59,7 @@ public:
     /// @brief React on exhausting a search.
     virtual void on_exhausted() = 0;
 
-    virtual const IWAlgorithmStatistics& get_statistics() const = 0;
+    virtual const Statistics& get_statistics() const = 0;
     virtual bool is_quiet() const = 0;
 };
 
@@ -68,14 +69,15 @@ public:
  * Collect statistics and call implementation of derived class.
  */
 template<typename Derived_>
-class IWAlgorithmEventHandlerBase : public IIWAlgorithmEventHandler
+class EventHandlerBase : public IEventHandler
 {
 protected:
-    IWAlgorithmStatistics m_statistics;
+    Statistics m_statistics;
+    formalism::Problem m_problem;
     bool m_quiet;
 
 private:
-    IWAlgorithmEventHandlerBase() = default;
+    EventHandlerBase() = default;
     friend Derived_;
 
     /// @brief Helper to cast to Derived_.
@@ -83,29 +85,29 @@ private:
     constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 public:
-    explicit IWAlgorithmEventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
+    explicit EventHandlerBase(formalism::Problem problem, bool quiet = true) : m_statistics(), m_problem(problem), m_quiet(quiet) {}
 
-    void on_start_search(const Problem problem, const State initial_state, const PDDLRepositories& pddl_repositories) override
+    void on_start_search(State initial_state) override
     {
-        m_statistics = IWAlgorithmStatistics();
+        m_statistics = Statistics();
 
         m_statistics.set_search_start_time_point(std::chrono::high_resolution_clock::now());
 
         if (!m_quiet)
         {
-            self().on_start_search_impl(problem, initial_state, pddl_repositories);
+            self().on_start_search_impl(initial_state);
         }
     }
 
-    void on_start_arity_search(const Problem problem, const State initial_state, const PDDLRepositories& pddl_repositories, int arity) override
+    void on_start_arity_search(State initial_state, size_t arity) override
     {
         if (!m_quiet)
         {
-            self().on_start_arity_search_impl(problem, initial_state, pddl_repositories, arity);
+            self().on_start_arity_search_impl(initial_state, arity);
         }
     }
 
-    void on_end_arity_search(const BrFSAlgorithmStatistics& brfs_statistics) override
+    void on_end_arity_search(const brfs::Statistics& brfs_statistics) override
     {
         m_statistics.push_back_algorithm_statistics(brfs_statistics);
 
@@ -125,11 +127,11 @@ public:
         }
     }
 
-    void on_solved(const Plan& plan, const PDDLRepositories& pddl_repositories) override
+    void on_solved(const Plan& plan) override
     {
         if (!m_quiet)
         {
-            self().on_solved_impl(plan, pddl_repositories);
+            self().on_solved_impl(plan);
         }
     }
 
@@ -150,7 +152,7 @@ public:
     }
 
     /// @brief Get the statistics.
-    const IWAlgorithmStatistics& get_statistics() const override { return m_statistics; }
+    const Statistics& get_statistics() const override { return m_statistics; }
     bool is_quiet() const override { return m_quiet; }
 };
 

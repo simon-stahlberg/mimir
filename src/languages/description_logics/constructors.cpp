@@ -28,7 +28,6 @@
 #include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/ground_function.hpp"
 #include "mimir/formalism/ground_function_expressions.hpp"
-#include "mimir/formalism/ground_function_value.hpp"
 #include "mimir/formalism/ground_literal.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/metric.hpp"
@@ -42,7 +41,11 @@
 #include "mimir/languages/description_logics/constructor_visitor_interface.hpp"
 #include "mimir/languages/description_logics/evaluation_context.hpp"
 
-namespace mimir::dl
+#include <queue>
+
+using namespace mimir::formalism;
+
+namespace mimir::languages::dl
 {
 
 /**
@@ -54,13 +57,14 @@ ConceptBotImpl::ConceptBotImpl(Index index) : m_index(index) {}
 void ConceptBotImpl::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
-    auto& bitset = context.get_denotation_builder<Concept>().get_data();
+    auto& bitset = boost::hana::at_key(context.get_builders(), boost::hana::type<ConceptTag> {}).get_data();
+
     bitset.unset_all();
 
     // Result is computed.
 }
 
-void ConceptBotImpl::accept_impl(Visitor& visitor) const { visitor.visit(this); }
+void ConceptBotImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
 Index ConceptBotImpl::get_index() const { return m_index; }
 
@@ -73,18 +77,18 @@ ConceptTopImpl::ConceptTopImpl(Index index) : m_index(index) {}
 void ConceptTopImpl::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
-    auto& bitset = context.get_denotation_builder<Concept>().get_data();
+    auto& bitset = boost::hana::at_key(context.get_builders(), boost::hana::type<ConceptTag> {}).get_data();
     bitset.unset_all();
 
     // Compute result
-    const auto num_objects = context.get_problem()->get_objects().size();
+    const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     for (size_t i = 0; i < num_objects; ++i)
     {
         bitset.set(i);
     }
 }
 
-void ConceptTopImpl::accept_impl(Visitor& visitor) const { visitor.visit(this); }
+void ConceptTopImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
 Index ConceptTopImpl::get_index() const { return m_index; }
 
@@ -92,27 +96,27 @@ Index ConceptTopImpl::get_index() const { return m_index; }
  * ConceptAtomicState
  */
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 ConceptAtomicStateImpl<P>::ConceptAtomicStateImpl(Index index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
 {
 }
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 void ConceptAtomicStateImpl<P>::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
-    auto& bitset = context.get_denotation_builder<Concept>().get_data();
+    auto& bitset = boost::hana::at_key(context.get_builders(), boost::hana::type<ConceptTag> {}).get_data();
     bitset.unset_all();
 
     // Compute result
     for (const auto& atom_index : context.get_state()->get_atoms<P>())
     {
-        const auto atom = context.get_pddl_repositories().get_ground_atom<P>(atom_index);
+        const auto atom = context.get_problem()->get_repositories().template get_ground_atom<P>(atom_index);
 
         if (atom->get_predicate() == m_predicate)
         {
             // Ensure that object index is within bounds.
-            assert(atom->get_objects().at(0)->get_index() < context.get_problem()->get_objects().size());
+            assert(atom->get_objects().at(0)->get_index() < context.get_problem()->get_problem_and_domain_objects().size());
 
             bitset.set(atom->get_objects().at(0)->get_index());
         }
@@ -120,66 +124,64 @@ void ConceptAtomicStateImpl<P>::evaluate_impl(EvaluationContext& context) const
 }
 
 template<>
-void ConceptAtomicStateImpl<Static>::evaluate_impl(EvaluationContext& context) const
+void ConceptAtomicStateImpl<StaticTag>::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
-    auto& bitset = context.get_denotation_builder<Concept>().get_data();
+    auto& bitset = boost::hana::at_key(context.get_builders(), boost::hana::type<ConceptTag> {}).get_data();
     bitset.unset_all();
 
     // Compute result
-    for (const auto& atom_index : context.get_problem()->get_static_initial_positive_atoms_bitset())
+    for (const auto& atom : context.get_problem()->get_static_initial_atoms())
     {
-        const auto atom = context.get_pddl_repositories().get_ground_atom<Static>(atom_index);
-
         if (atom->get_predicate() == m_predicate)
         {
             // Ensure that object index is within bounds.
-            assert(atom->get_objects().at(0)->get_index() < context.get_problem()->get_objects().size());
+            assert(atom->get_objects().at(0)->get_index() < context.get_problem()->get_problem_and_domain_objects().size());
 
             bitset.set(atom->get_objects().at(0)->get_index());
         }
     }
 }
 
-template<PredicateTag P>
-void ConceptAtomicStateImpl<P>::accept_impl(Visitor& visitor) const
+template<IsStaticOrFluentOrDerivedTag P>
+void ConceptAtomicStateImpl<P>::accept_impl(IVisitor& visitor) const
 {
     return visitor.visit(this);
 }
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 Index ConceptAtomicStateImpl<P>::get_index() const
 {
     return m_index;
 }
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 Predicate<P> ConceptAtomicStateImpl<P>::get_predicate() const
 {
     return m_predicate;
 }
 
-template class ConceptAtomicStateImpl<Static>;
-template class ConceptAtomicStateImpl<Fluent>;
-template class ConceptAtomicStateImpl<Derived>;
+template class ConceptAtomicStateImpl<StaticTag>;
+template class ConceptAtomicStateImpl<FluentTag>;
+template class ConceptAtomicStateImpl<DerivedTag>;
 
 /**
  * ConceptAtomicGoal
  */
 
-template<PredicateTag P>
-ConceptAtomicGoalImpl<P>::ConceptAtomicGoalImpl(Index index, Predicate<P> predicate, bool is_negated) :
+template<IsStaticOrFluentOrDerivedTag P>
+ConceptAtomicGoalImpl<P>::ConceptAtomicGoalImpl(Index index, Predicate<P> predicate, bool polarity) :
     m_index(index),
     m_predicate(predicate),
-    m_is_negated(is_negated)
+    m_polarity(polarity)
 {
 }
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 void ConceptAtomicGoalImpl<P>::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
-    auto& bitset = context.get_denotation_builder<Concept>().get_data();
+    auto& bitset = boost::hana::at_key(context.get_builders(), boost::hana::type<ConceptTag> {}).get_data();
     bitset.unset_all();
 
     // Compute result
@@ -187,63 +189,63 @@ void ConceptAtomicGoalImpl<P>::evaluate_impl(EvaluationContext& context) const
     {
         const auto atom = literal->get_atom();
 
-        if (literal->is_negated() == m_is_negated && atom->get_predicate() == m_predicate)
+        if (literal->get_polarity() == get_polarity() && atom->get_predicate() == m_predicate)
         {
             // Ensure that object index is within bounds.
-            assert(atom->get_objects().at(0)->get_index() < context.get_problem()->get_objects().size());
+            assert(atom->get_objects().at(0)->get_index() < context.get_problem()->get_problem_and_domain_objects().size());
 
             bitset.set(atom->get_objects().at(0)->get_index());
         }
     }
 }
 
-template<PredicateTag P>
-void ConceptAtomicGoalImpl<P>::accept_impl(Visitor& visitor) const
+template<IsStaticOrFluentOrDerivedTag P>
+void ConceptAtomicGoalImpl<P>::accept_impl(IVisitor& visitor) const
 {
     return visitor.visit(this);
 }
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 Index ConceptAtomicGoalImpl<P>::get_index() const
 {
     return m_index;
 }
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 Predicate<P> ConceptAtomicGoalImpl<P>::get_predicate() const
 {
     return m_predicate;
 }
 
-template<PredicateTag P>
-bool ConceptAtomicGoalImpl<P>::is_negated() const
+template<IsStaticOrFluentOrDerivedTag P>
+bool ConceptAtomicGoalImpl<P>::get_polarity() const
 {
-    return m_is_negated;
+    return m_polarity;
 }
 
-template class ConceptAtomicGoalImpl<Static>;
-template class ConceptAtomicGoalImpl<Fluent>;
-template class ConceptAtomicGoalImpl<Derived>;
+template class ConceptAtomicGoalImpl<StaticTag>;
+template class ConceptAtomicGoalImpl<FluentTag>;
+template class ConceptAtomicGoalImpl<DerivedTag>;
 
 /**
  * ConceptIntersection
  */
 
-ConceptIntersectionImpl::ConceptIntersectionImpl(Index index, Constructor<Concept> concept_left, Constructor<Concept> concept_right) :
+ConceptIntersectionImpl::ConceptIntersectionImpl(Index index, Constructor<ConceptTag> left_concept, Constructor<ConceptTag> right_concept) :
     m_index(index),
-    m_concept_left(concept_left),
-    m_concept_right(concept_right)
+    m_left_concept(left_concept),
+    m_right_concept(right_concept)
 {
 }
 
 void ConceptIntersectionImpl::evaluate_impl(EvaluationContext& context) const
 {
     // Evaluate children
-    const auto eval_left = m_concept_left->evaluate(context);
-    const auto eval_right = m_concept_left->evaluate(context);
+    const auto eval_left = m_left_concept->evaluate(context);
+    const auto eval_right = m_left_concept->evaluate(context);
 
     // Fetch data
-    auto& bitset = context.get_denotation_builder<Concept>().get_data();
+    auto& bitset = boost::hana::at_key(context.get_builders(), boost::hana::type<ConceptTag> {}).get_data();
     bitset.unset_all();
 
     // Compute result
@@ -251,33 +253,33 @@ void ConceptIntersectionImpl::evaluate_impl(EvaluationContext& context) const
     bitset &= eval_right->get_data();
 }
 
-void ConceptIntersectionImpl::accept_impl(Visitor& visitor) const { visitor.visit(this); }
+void ConceptIntersectionImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
 Index ConceptIntersectionImpl::get_index() const { return m_index; }
 
-Constructor<Concept> ConceptIntersectionImpl::get_concept_left() const { return m_concept_left; }
+Constructor<ConceptTag> ConceptIntersectionImpl::get_left_concept() const { return m_left_concept; }
 
-Constructor<Concept> ConceptIntersectionImpl::get_concept_right() const { return m_concept_right; }
+Constructor<ConceptTag> ConceptIntersectionImpl::get_right_concept() const { return m_right_concept; }
 
 /**
  * ConceptUnion
  */
 
-ConceptUnionImpl::ConceptUnionImpl(Index index, Constructor<Concept> concept_left, Constructor<Concept> concept_right) :
+ConceptUnionImpl::ConceptUnionImpl(Index index, Constructor<ConceptTag> left_concept, Constructor<ConceptTag> right_concept) :
     m_index(index),
-    m_concept_left(concept_left),
-    m_concept_right(concept_right)
+    m_left_concept(left_concept),
+    m_right_concept(right_concept)
 {
 }
 
 void ConceptUnionImpl::evaluate_impl(EvaluationContext& context) const
 {
     // Evaluate children
-    const auto eval_left = m_concept_left->evaluate(context);
-    const auto eval_right = m_concept_left->evaluate(context);
+    const auto eval_left = m_left_concept->evaluate(context);
+    const auto eval_right = m_left_concept->evaluate(context);
 
     // Fetch data
-    auto& bitset = context.get_denotation_builder<Concept>().get_data();
+    auto& bitset = boost::hana::at_key(context.get_builders(), boost::hana::type<ConceptTag> {}).get_data();
     bitset.unset_all();
 
     // Compute result
@@ -285,19 +287,19 @@ void ConceptUnionImpl::evaluate_impl(EvaluationContext& context) const
     bitset |= eval_right->get_data();
 }
 
-void ConceptUnionImpl::accept_impl(Visitor& visitor) const { visitor.visit(this); }
+void ConceptUnionImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
 Index ConceptUnionImpl::get_index() const { return m_index; }
 
-Constructor<Concept> ConceptUnionImpl::get_concept_left() const { return m_concept_left; }
+Constructor<ConceptTag> ConceptUnionImpl::get_left_concept() const { return m_left_concept; }
 
-Constructor<Concept> ConceptUnionImpl::get_concept_right() const { return m_concept_right; }
+Constructor<ConceptTag> ConceptUnionImpl::get_right_concept() const { return m_right_concept; }
 
 /**
  * ConceptNegation
  */
 
-ConceptNegationImpl::ConceptNegationImpl(Index index, Constructor<Concept> concept_) : m_index(index), m_concept(concept_) {}
+ConceptNegationImpl::ConceptNegationImpl(Index index, Constructor<ConceptTag> concept_) : m_index(index), m_concept(concept_) {}
 
 void ConceptNegationImpl::evaluate_impl(EvaluationContext& context) const
 {
@@ -305,8 +307,8 @@ void ConceptNegationImpl::evaluate_impl(EvaluationContext& context) const
     const auto eval = m_concept->evaluate(context);
 
     // Fetch data
-    const auto num_objects = context.get_problem()->get_objects().size();
-    auto& bitset = context.get_denotation_builder<Concept>().get_data();
+    const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
+    auto& bitset = boost::hana::at_key(context.get_builders(), boost::hana::type<ConceptTag> {}).get_data();
     bitset.unset_all();
 
     // Compute result
@@ -319,17 +321,17 @@ void ConceptNegationImpl::evaluate_impl(EvaluationContext& context) const
     }
 }
 
-void ConceptNegationImpl::accept_impl(Visitor& visitor) const { visitor.visit(this); }
+void ConceptNegationImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
 Index ConceptNegationImpl::get_index() const { return m_index; }
 
-Constructor<Concept> ConceptNegationImpl::get_concept() const { return m_concept; }
+Constructor<ConceptTag> ConceptNegationImpl::get_concept() const { return m_concept; }
 
 /**
  * ConceptValueRestriction
  */
 
-ConceptValueRestrictionImpl::ConceptValueRestrictionImpl(Index index, Constructor<Role> role_, Constructor<Concept> concept_) :
+ConceptValueRestrictionImpl::ConceptValueRestrictionImpl(Index index, Constructor<RoleTag> role_, Constructor<ConceptTag> concept_) :
     m_index(index),
     m_role(role_),
     m_concept(concept_)
@@ -342,8 +344,8 @@ void ConceptValueRestrictionImpl::evaluate_impl(EvaluationContext& context) cons
     const auto eval_concept = m_concept->evaluate(context);
 
     // Fetch data
-    const auto num_objects = context.get_problem()->get_objects().size();
-    auto& bitset = context.get_denotation_builder<Concept>().get_data();
+    const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
+    auto& bitset = boost::hana::at_key(context.get_builders(), boost::hana::type<ConceptTag> {}).get_data();
     bitset.unset_all();
 
     // Compute result
@@ -364,19 +366,19 @@ void ConceptValueRestrictionImpl::evaluate_impl(EvaluationContext& context) cons
     }
 }
 
-void ConceptValueRestrictionImpl::accept_impl(Visitor& visitor) const { visitor.visit(this); }
+void ConceptValueRestrictionImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
 Index ConceptValueRestrictionImpl::get_index() const { return m_index; }
 
-Constructor<Role> ConceptValueRestrictionImpl::get_role() const { return m_role; }
+Constructor<RoleTag> ConceptValueRestrictionImpl::get_role() const { return m_role; }
 
-Constructor<Concept> ConceptValueRestrictionImpl::get_concept() const { return m_concept; }
+Constructor<ConceptTag> ConceptValueRestrictionImpl::get_concept() const { return m_concept; }
 
 /**
  * ConceptExistentialQuantification
  */
 
-ConceptExistentialQuantificationImpl::ConceptExistentialQuantificationImpl(Index index, Constructor<Role> role_, Constructor<Concept> concept_) :
+ConceptExistentialQuantificationImpl::ConceptExistentialQuantificationImpl(Index index, Constructor<RoleTag> role_, Constructor<ConceptTag> concept_) :
     m_index(index),
     m_role(role_),
     m_concept(concept_)
@@ -390,8 +392,8 @@ void ConceptExistentialQuantificationImpl::evaluate_impl(EvaluationContext& cont
     const auto eval_concept = m_concept->evaluate(context);
 
     // Fetch data
-    const auto num_objects = context.get_problem()->get_objects().size();
-    auto& bitset = context.get_denotation_builder<Concept>().get_data();
+    const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
+    auto& bitset = boost::hana::at_key(context.get_builders(), boost::hana::type<ConceptTag> {}).get_data();
     bitset.unset_all();
 
     // Compute result
@@ -408,34 +410,34 @@ void ConceptExistentialQuantificationImpl::evaluate_impl(EvaluationContext& cont
     }
 }
 
-void ConceptExistentialQuantificationImpl::accept_impl(Visitor& visitor) const { visitor.visit(this); }
+void ConceptExistentialQuantificationImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
 Index ConceptExistentialQuantificationImpl::get_index() const { return m_index; }
 
-Constructor<Role> ConceptExistentialQuantificationImpl::get_role() const { return m_role; }
+Constructor<RoleTag> ConceptExistentialQuantificationImpl::get_role() const { return m_role; }
 
-Constructor<Concept> ConceptExistentialQuantificationImpl::get_concept() const { return m_concept; }
+Constructor<ConceptTag> ConceptExistentialQuantificationImpl::get_concept() const { return m_concept; }
 
 /**
  * ConceptRoleValueMapContainment
  */
 
-ConceptRoleValueMapContainmentImpl::ConceptRoleValueMapContainmentImpl(Index index, Constructor<Role> role_left, Constructor<Role> role_right) :
+ConceptRoleValueMapContainmentImpl::ConceptRoleValueMapContainmentImpl(Index index, Constructor<RoleTag> left_role, Constructor<RoleTag> right_role) :
     m_index(index),
-    m_role_left(role_left),
-    m_role_right(role_right)
+    m_left_role(left_role),
+    m_right_role(right_role)
 {
 }
 
 void ConceptRoleValueMapContainmentImpl::evaluate_impl(EvaluationContext& context) const
 {
     // Evaluate children
-    const auto eval_role_left = m_role_left->evaluate(context);
-    const auto eval_role_right = m_role_right->evaluate(context);
+    const auto eval_left_role = m_left_role->evaluate(context);
+    const auto eval_right_role = m_right_role->evaluate(context);
 
     // Fetch data
-    const auto num_objects = context.get_problem()->get_objects().size();
-    auto& bitset = context.get_denotation_builder<Concept>().get_data();
+    const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
+    auto& bitset = boost::hana::at_key(context.get_builders(), boost::hana::type<ConceptTag> {}).get_data();
     bitset.unset_all();
 
     // Compute result
@@ -447,7 +449,7 @@ void ConceptRoleValueMapContainmentImpl::evaluate_impl(EvaluationContext& contex
     {
         for (size_t j = 0; j < num_objects; ++j)
         {
-            if (eval_role_left->get_data().at(i).get(j) && !eval_role_right->get_data().at(i).get(j))
+            if (eval_left_role->get_data().at(i).get(j) && !eval_right_role->get_data().at(i).get(j))
             {
                 bitset.unset(i);
                 break;
@@ -456,34 +458,34 @@ void ConceptRoleValueMapContainmentImpl::evaluate_impl(EvaluationContext& contex
     }
 }
 
-void ConceptRoleValueMapContainmentImpl::accept_impl(Visitor& visitor) const { visitor.visit(this); }
+void ConceptRoleValueMapContainmentImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
 Index ConceptRoleValueMapContainmentImpl::get_index() const { return m_index; }
 
-Constructor<Role> ConceptRoleValueMapContainmentImpl::get_role_left() const { return m_role_left; }
+Constructor<RoleTag> ConceptRoleValueMapContainmentImpl::get_left_role() const { return m_left_role; }
 
-Constructor<Role> ConceptRoleValueMapContainmentImpl::get_role_right() const { return m_role_right; }
+Constructor<RoleTag> ConceptRoleValueMapContainmentImpl::get_right_role() const { return m_right_role; }
 
 /**
  * ConceptRoleValueMapEquality
  */
 
-ConceptRoleValueMapEqualityImpl::ConceptRoleValueMapEqualityImpl(Index index, Constructor<Role> role_left, Constructor<Role> role_right) :
+ConceptRoleValueMapEqualityImpl::ConceptRoleValueMapEqualityImpl(Index index, Constructor<RoleTag> left_role, Constructor<RoleTag> right_role) :
     m_index(index),
-    m_role_left(role_left),
-    m_role_right(role_right)
+    m_left_role(left_role),
+    m_right_role(right_role)
 {
 }
 
 void ConceptRoleValueMapEqualityImpl::evaluate_impl(EvaluationContext& context) const
 {
     // Evaluate children
-    const auto eval_role_left = m_role_left->evaluate(context);
-    const auto eval_role_right = m_role_right->evaluate(context);
+    const auto eval_left_role = m_left_role->evaluate(context);
+    const auto eval_right_role = m_right_role->evaluate(context);
 
     // Fetch data
-    const auto num_objects = context.get_problem()->get_objects().size();
-    auto& bitset = context.get_denotation_builder<Concept>().get_data();
+    const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
+    auto& bitset = boost::hana::at_key(context.get_builders(), boost::hana::type<ConceptTag> {}).get_data();
     bitset.unset_all();
 
     // Compute result
@@ -495,7 +497,7 @@ void ConceptRoleValueMapEqualityImpl::evaluate_impl(EvaluationContext& context) 
     {
         for (size_t j = 0; j < num_objects; ++j)
         {
-            if (eval_role_left->get_data().at(i).get(j) != eval_role_right->get_data().at(i).get(j))
+            if (eval_left_role->get_data().at(i).get(j) != eval_right_role->get_data().at(i).get(j))
             {
                 bitset.unset(i);
                 break;
@@ -504,13 +506,13 @@ void ConceptRoleValueMapEqualityImpl::evaluate_impl(EvaluationContext& context) 
     }
 }
 
-void ConceptRoleValueMapEqualityImpl::accept_impl(Visitor& visitor) const { visitor.visit(this); }
+void ConceptRoleValueMapEqualityImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
 Index ConceptRoleValueMapEqualityImpl::get_index() const { return m_index; }
 
-Constructor<Role> ConceptRoleValueMapEqualityImpl::get_role_left() const { return m_role_left; }
+Constructor<RoleTag> ConceptRoleValueMapEqualityImpl::get_left_role() const { return m_left_role; }
 
-Constructor<Role> ConceptRoleValueMapEqualityImpl::get_role_right() const { return m_role_right; }
+Constructor<RoleTag> ConceptRoleValueMapEqualityImpl::get_right_role() const { return m_right_role; }
 
 /**
  * ConceptNominalImpl
@@ -521,17 +523,17 @@ ConceptNominalImpl::ConceptNominalImpl(Index index, Object object) : m_index(ind
 void ConceptNominalImpl::evaluate_impl(EvaluationContext& context) const
 {
     // Ensure that object index is within bounds.
-    assert(m_object->get_index() < context.get_problem()->get_objects().size());
+    assert(m_object->get_index() < context.get_problem()->get_problem_and_domain_objects().size());
 
     // Fetch data
-    auto& bitset = context.get_denotation_builder<Concept>().get_data();
+    auto& bitset = boost::hana::at_key(context.get_builders(), boost::hana::type<ConceptTag> {}).get_data();
     bitset.unset_all();
 
     // Compute result
     bitset.set(m_object->get_index());
 }
 
-void ConceptNominalImpl::accept_impl(Visitor& visitor) const { visitor.visit(this); }
+void ConceptNominalImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
 Index ConceptNominalImpl::get_index() const { return m_index; }
 
@@ -546,9 +548,9 @@ RoleUniversalImpl::RoleUniversalImpl(Index index) : m_index(index) {}
 void RoleUniversalImpl::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
-    const auto num_objects = context.get_problem()->get_objects().size();
-    auto& bitsets = context.get_denotation_builder<Role>().get_data();
-    assert(bitsets.size() == num_objects);
+    const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
+    auto& bitsets = boost::hana::at_key(context.get_builders(), boost::hana::type<RoleTag> {}).get_data();
+    bitsets.resize(num_objects);
     for (auto& bitset : bitsets)
     {
         bitset.unset_all();
@@ -564,7 +566,7 @@ void RoleUniversalImpl::evaluate_impl(EvaluationContext& context) const
     }
 }
 
-void RoleUniversalImpl::accept_impl(Visitor& visitor) const { visitor.visit(this); }
+void RoleUniversalImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
 Index RoleUniversalImpl::get_index() const { return m_index; }
 
@@ -572,18 +574,18 @@ Index RoleUniversalImpl::get_index() const { return m_index; }
  * RoleAtomicState
  */
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 RoleAtomicStateImpl<P>::RoleAtomicStateImpl(Index index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
 {
 }
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 void RoleAtomicStateImpl<P>::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
-    const auto num_objects = context.get_problem()->get_objects().size();
-    auto& bitsets = context.get_denotation_builder<Role>().get_data();
-    assert(bitsets.size() == num_objects);
+    const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
+    auto& bitsets = boost::hana::at_key(context.get_builders(), boost::hana::type<RoleTag> {}).get_data();
+    bitsets.resize(num_objects);
     for (auto& bitset : bitsets)
     {
         bitset.unset_all();
@@ -592,7 +594,7 @@ void RoleAtomicStateImpl<P>::evaluate_impl(EvaluationContext& context) const
     // Compute result
     for (const auto& atom_index : context.get_state()->get_atoms<P>())
     {
-        const auto atom = context.get_pddl_repositories().get_ground_atom<P>(atom_index);
+        const auto atom = context.get_problem()->get_repositories().template get_ground_atom<P>(atom_index);
 
         if (atom->get_predicate() == m_predicate)
         {
@@ -609,22 +611,20 @@ void RoleAtomicStateImpl<P>::evaluate_impl(EvaluationContext& context) const
 }
 
 template<>
-void RoleAtomicStateImpl<Static>::evaluate_impl(EvaluationContext& context) const
+void RoleAtomicStateImpl<StaticTag>::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
-    const auto num_objects = context.get_problem()->get_objects().size();
-    auto& bitsets = context.get_denotation_builder<Role>().get_data();
-    assert(bitsets.size() == num_objects);
+    const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
+    auto& bitsets = boost::hana::at_key(context.get_builders(), boost::hana::type<RoleTag> {}).get_data();
+    bitsets.resize(num_objects);
     for (auto& bitset : bitsets)
     {
         bitset.unset_all();
     }
 
     // Compute result
-    for (const auto& atom_index : context.get_problem()->get_static_initial_positive_atoms_bitset())
+    for (const auto& atom : context.get_problem()->get_static_initial_atoms())
     {
-        const auto atom = context.get_pddl_repositories().get_ground_atom<Static>(atom_index);
-
         if (atom->get_predicate() == m_predicate)
         {
             const auto object_left_index = atom->get_objects().at(0)->get_index();
@@ -639,47 +639,44 @@ void RoleAtomicStateImpl<Static>::evaluate_impl(EvaluationContext& context) cons
     }
 }
 
-template<PredicateTag P>
-void RoleAtomicStateImpl<P>::accept_impl(Visitor& visitor) const
+template<IsStaticOrFluentOrDerivedTag P>
+void RoleAtomicStateImpl<P>::accept_impl(IVisitor& visitor) const
 {
     return visitor.visit(this);
 }
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 Index RoleAtomicStateImpl<P>::get_index() const
 {
     return m_index;
 }
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 Predicate<P> RoleAtomicStateImpl<P>::get_predicate() const
 {
     return m_predicate;
 }
 
-template class RoleAtomicStateImpl<Static>;
-template class RoleAtomicStateImpl<Fluent>;
-template class RoleAtomicStateImpl<Derived>;
+template class RoleAtomicStateImpl<StaticTag>;
+template class RoleAtomicStateImpl<FluentTag>;
+template class RoleAtomicStateImpl<DerivedTag>;
 
 /**
  * RoleAtomicGoal
  */
 
-template<PredicateTag P>
-RoleAtomicGoalImpl<P>::RoleAtomicGoalImpl(Index index, Predicate<P> predicate, bool is_negated) :
-    m_index(index),
-    m_predicate(predicate),
-    m_is_negated(is_negated)
+template<IsStaticOrFluentOrDerivedTag P>
+RoleAtomicGoalImpl<P>::RoleAtomicGoalImpl(Index index, Predicate<P> predicate, bool polarity) : m_index(index), m_predicate(predicate), m_polarity(polarity)
 {
 }
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 void RoleAtomicGoalImpl<P>::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
-    const auto num_objects = context.get_problem()->get_objects().size();
-    auto& bitsets = context.get_denotation_builder<Role>().get_data();
-    assert(bitsets.size() == num_objects);
+    const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
+    auto& bitsets = boost::hana::at_key(context.get_builders(), boost::hana::type<RoleTag> {}).get_data();
+    bitsets.resize(num_objects);
     for (auto& bitset : bitsets)
     {
         bitset.unset_all();
@@ -690,7 +687,7 @@ void RoleAtomicGoalImpl<P>::evaluate_impl(EvaluationContext& context) const
     {
         const auto atom = literal->get_atom();
 
-        if (literal->is_negated() == m_is_negated && atom->get_predicate() == m_predicate)
+        if (literal->get_polarity() == get_polarity() && atom->get_predicate() == m_predicate)
         {
             const auto object_left_index = atom->get_objects().at(0)->get_index();
             const auto object_right_index = atom->get_objects().at(1)->get_index();
@@ -704,55 +701,55 @@ void RoleAtomicGoalImpl<P>::evaluate_impl(EvaluationContext& context) const
     }
 }
 
-template<PredicateTag P>
-void RoleAtomicGoalImpl<P>::accept_impl(Visitor& visitor) const
+template<IsStaticOrFluentOrDerivedTag P>
+void RoleAtomicGoalImpl<P>::accept_impl(IVisitor& visitor) const
 {
     return visitor.visit(this);
 }
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 Index RoleAtomicGoalImpl<P>::get_index() const
 {
     return m_index;
 }
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 Predicate<P> RoleAtomicGoalImpl<P>::get_predicate() const
 {
     return m_predicate;
 }
 
-template<PredicateTag P>
-bool RoleAtomicGoalImpl<P>::is_negated() const
+template<IsStaticOrFluentOrDerivedTag P>
+bool RoleAtomicGoalImpl<P>::get_polarity() const
 {
-    return m_is_negated;
+    return m_polarity;
 }
 
-template class RoleAtomicGoalImpl<Static>;
-template class RoleAtomicGoalImpl<Fluent>;
-template class RoleAtomicGoalImpl<Derived>;
+template class RoleAtomicGoalImpl<StaticTag>;
+template class RoleAtomicGoalImpl<FluentTag>;
+template class RoleAtomicGoalImpl<DerivedTag>;
 
 /**
  * RoleIntersection
  */
 
-RoleIntersectionImpl::RoleIntersectionImpl(Index index, Constructor<Role> role_left, Constructor<Role> role_right) :
+RoleIntersectionImpl::RoleIntersectionImpl(Index index, Constructor<RoleTag> left_role, Constructor<RoleTag> right_role) :
     m_index(index),
-    m_role_left(role_left),
-    m_role_right(role_right)
+    m_left_role(left_role),
+    m_right_role(right_role)
 {
 }
 
 void RoleIntersectionImpl::evaluate_impl(EvaluationContext& context) const
 {
     // Evaluate children
-    const auto num_objects = context.get_problem()->get_objects().size();
-    const auto eval_left = m_role_left->evaluate(context);
-    const auto eval_right = m_role_right->evaluate(context);
+    const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
+    const auto eval_left = m_left_role->evaluate(context);
+    const auto eval_right = m_right_role->evaluate(context);
 
     // Fetch data
-    auto& bitsets = context.get_denotation_builder<Role>().get_data();
-    assert(bitsets.size() == num_objects);
+    auto& bitsets = boost::hana::at_key(context.get_builders(), boost::hana::type<RoleTag> {}).get_data();
+    bitsets.resize(num_objects);
     for (auto& bitset : bitsets)
     {
         bitset.unset_all();
@@ -767,35 +764,35 @@ void RoleIntersectionImpl::evaluate_impl(EvaluationContext& context) const
     }
 }
 
-void RoleIntersectionImpl::accept_impl(Visitor& visitor) const { visitor.visit(this); }
+void RoleIntersectionImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
 Index RoleIntersectionImpl::get_index() const { return m_index; }
 
-Constructor<Role> RoleIntersectionImpl::get_role_left() const { return m_role_left; }
+Constructor<RoleTag> RoleIntersectionImpl::get_left_role() const { return m_left_role; }
 
-Constructor<Role> RoleIntersectionImpl::get_role_right() const { return m_role_right; }
+Constructor<RoleTag> RoleIntersectionImpl::get_right_role() const { return m_right_role; }
 
 /**
  * RoleUnion
  */
 
-RoleUnionImpl::RoleUnionImpl(Index index, Constructor<Role> role_left, Constructor<Role> role_right) :
+RoleUnionImpl::RoleUnionImpl(Index index, Constructor<RoleTag> left_role, Constructor<RoleTag> right_role) :
     m_index(index),
-    m_role_left(role_left),
-    m_role_right(role_right)
+    m_left_role(left_role),
+    m_right_role(right_role)
 {
 }
 
 void RoleUnionImpl::evaluate_impl(EvaluationContext& context) const
 {
     // Evaluate children
-    const auto eval_left = m_role_left->evaluate(context);
-    const auto eval_right = m_role_left->evaluate(context);
+    const auto eval_left = m_left_role->evaluate(context);
+    const auto eval_right = m_left_role->evaluate(context);
 
     // Fetch data
-    const auto num_objects = context.get_problem()->get_objects().size();
-    auto& bitsets = context.get_denotation_builder<Role>().get_data();
-    assert(bitsets.size() == num_objects);
+    const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
+    auto& bitsets = boost::hana::at_key(context.get_builders(), boost::hana::type<RoleTag> {}).get_data();
+    bitsets.resize(num_objects);
     for (auto& bitset : bitsets)
     {
         bitset.unset_all();
@@ -810,19 +807,19 @@ void RoleUnionImpl::evaluate_impl(EvaluationContext& context) const
     }
 }
 
-void RoleUnionImpl::accept_impl(Visitor& visitor) const { visitor.visit(this); }
+void RoleUnionImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
 Index RoleUnionImpl::get_index() const { return m_index; }
 
-Constructor<Role> RoleUnionImpl::get_role_left() const { return m_role_left; }
+Constructor<RoleTag> RoleUnionImpl::get_left_role() const { return m_left_role; }
 
-Constructor<Role> RoleUnionImpl::get_role_right() const { return m_role_right; }
+Constructor<RoleTag> RoleUnionImpl::get_right_role() const { return m_right_role; }
 
 /**
  * RoleComplement
  */
 
-RoleComplementImpl::RoleComplementImpl(Index index, Constructor<Role> role_) : m_index(index), m_role(role_) {}
+RoleComplementImpl::RoleComplementImpl(Index index, Constructor<RoleTag> role_) : m_index(index), m_role(role_) {}
 
 void RoleComplementImpl::evaluate_impl(EvaluationContext& context) const
 {
@@ -830,9 +827,9 @@ void RoleComplementImpl::evaluate_impl(EvaluationContext& context) const
     const auto eval_role = m_role->evaluate(context);
 
     // Fetch data
-    const auto num_objects = context.get_problem()->get_objects().size();
-    auto& bitsets = context.get_denotation_builder<Role>().get_data();
-    assert(bitsets.size() == num_objects);
+    const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
+    auto& bitsets = boost::hana::at_key(context.get_builders(), boost::hana::type<RoleTag> {}).get_data();
+    bitsets.resize(num_objects);
     for (auto& bitset : bitsets)
     {
         bitset.unset_all();
@@ -851,17 +848,17 @@ void RoleComplementImpl::evaluate_impl(EvaluationContext& context) const
     }
 }
 
-void RoleComplementImpl::accept_impl(Visitor& visitor) const { visitor.visit(this); }
+void RoleComplementImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
 Index RoleComplementImpl::get_index() const { return m_index; }
 
-Constructor<Role> RoleComplementImpl::get_role() const { return m_role; }
+Constructor<RoleTag> RoleComplementImpl::get_role() const { return m_role; }
 
 /**
  * RoleInverse
  */
 
-RoleInverseImpl::RoleInverseImpl(Index index, Constructor<Role> role_) : m_index(index), m_role(role_) {}
+RoleInverseImpl::RoleInverseImpl(Index index, Constructor<RoleTag> role_) : m_index(index), m_role(role_) {}
 
 void RoleInverseImpl::evaluate_impl(EvaluationContext& context) const
 {
@@ -869,9 +866,9 @@ void RoleInverseImpl::evaluate_impl(EvaluationContext& context) const
     const auto eval_role = m_role->evaluate(context);
 
     // Fetch data
-    const auto num_objects = context.get_problem()->get_objects().size();
-    auto& bitsets = context.get_denotation_builder<Role>().get_data();
-    assert(bitsets.size() == num_objects);
+    const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
+    auto& bitsets = boost::hana::at_key(context.get_builders(), boost::hana::type<RoleTag> {}).get_data();
+    bitsets.resize(num_objects);
     for (auto& bitset : bitsets)
     {
         bitset.unset_all();
@@ -890,33 +887,33 @@ void RoleInverseImpl::evaluate_impl(EvaluationContext& context) const
     }
 }
 
-void RoleInverseImpl::accept_impl(Visitor& visitor) const { visitor.visit(this); }
+void RoleInverseImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
 Index RoleInverseImpl::get_index() const { return m_index; }
 
-Constructor<Role> RoleInverseImpl::get_role() const { return m_role; }
+Constructor<RoleTag> RoleInverseImpl::get_role() const { return m_role; }
 
 /**
  * RoleComposition
  */
 
-RoleCompositionImpl::RoleCompositionImpl(Index index, Constructor<Role> role_left, Constructor<Role> role_right) :
+RoleCompositionImpl::RoleCompositionImpl(Index index, Constructor<RoleTag> left_role, Constructor<RoleTag> right_role) :
     m_index(index),
-    m_role_left(role_left),
-    m_role_right(role_right)
+    m_left_role(left_role),
+    m_right_role(right_role)
 {
 }
 
 void RoleCompositionImpl::evaluate_impl(EvaluationContext& context) const
 {
     // Evaluate the children
-    const auto eval_role_left = m_role_left->evaluate(context);
-    const auto eval_role_right = m_role_right->evaluate(context);
+    const auto eval_left_role = m_left_role->evaluate(context);
+    const auto eval_right_role = m_right_role->evaluate(context);
 
     // Fetch data
-    const auto num_objects = context.get_problem()->get_objects().size();
-    auto& bitsets = context.get_denotation_builder<Role>().get_data();
-    assert(bitsets.size() == num_objects);
+    const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
+    auto& bitsets = boost::hana::at_key(context.get_builders(), boost::hana::type<RoleTag> {}).get_data();
+    bitsets.resize(num_objects);
     for (auto& bitset : bitsets)
     {
         bitset.unset_all();
@@ -927,27 +924,27 @@ void RoleCompositionImpl::evaluate_impl(EvaluationContext& context) const
     {
         for (size_t j = 0; j < num_objects; ++j)
         {
-            if (eval_role_left->get_data().at(i).get(j))
+            if (eval_left_role->get_data().at(i).get(j))
             {
-                bitsets.at(i) |= eval_role_right->get_data().at(j);
+                bitsets.at(i) |= eval_right_role->get_data().at(j);
             }
         }
     }
 }
 
-void RoleCompositionImpl::accept_impl(Visitor& visitor) const { visitor.visit(this); }
+void RoleCompositionImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
 Index RoleCompositionImpl::get_index() const { return m_index; }
 
-Constructor<Role> RoleCompositionImpl::get_role_left() const { return m_role_left; }
+Constructor<RoleTag> RoleCompositionImpl::get_left_role() const { return m_left_role; }
 
-Constructor<Role> RoleCompositionImpl::get_role_right() const { return m_role_right; }
+Constructor<RoleTag> RoleCompositionImpl::get_right_role() const { return m_right_role; }
 
 /**
  * RoleTransitiveClosure
  */
 
-RoleTransitiveClosureImpl::RoleTransitiveClosureImpl(Index index, Constructor<Role> role_) : m_index(index), m_role(role_) {}
+RoleTransitiveClosureImpl::RoleTransitiveClosureImpl(Index index, Constructor<RoleTag> role_) : m_index(index), m_role(role_) {}
 
 void RoleTransitiveClosureImpl::evaluate_impl(EvaluationContext& context) const
 {
@@ -955,9 +952,9 @@ void RoleTransitiveClosureImpl::evaluate_impl(EvaluationContext& context) const
     const auto eval_role = m_role->evaluate(context);
 
     // Fetch data
-    const auto num_objects = context.get_problem()->get_objects().size();
-    auto& bitsets = context.get_denotation_builder<Role>().get_data();
-    assert(bitsets.size() == num_objects);
+    const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
+    auto& bitsets = boost::hana::at_key(context.get_builders(), boost::hana::type<RoleTag> {}).get_data();
+    bitsets.resize(num_objects);
     for (auto& bitset : bitsets)
     {
         bitset.unset_all();
@@ -980,17 +977,17 @@ void RoleTransitiveClosureImpl::evaluate_impl(EvaluationContext& context) const
     }
 }
 
-void RoleTransitiveClosureImpl::accept_impl(Visitor& visitor) const { visitor.visit(this); }
+void RoleTransitiveClosureImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
 Index RoleTransitiveClosureImpl::get_index() const { return m_index; }
 
-Constructor<Role> RoleTransitiveClosureImpl::get_role() const { return m_role; }
+Constructor<RoleTag> RoleTransitiveClosureImpl::get_role() const { return m_role; }
 
 /**
  * RoleReflexiveTransitiveClosure
  */
 
-RoleReflexiveTransitiveClosureImpl::RoleReflexiveTransitiveClosureImpl(Index index, Constructor<Role> role_) : m_index(index), m_role(role_) {}
+RoleReflexiveTransitiveClosureImpl::RoleReflexiveTransitiveClosureImpl(Index index, Constructor<RoleTag> role_) : m_index(index), m_role(role_) {}
 
 void RoleReflexiveTransitiveClosureImpl::evaluate_impl(EvaluationContext& context) const
 {
@@ -998,9 +995,9 @@ void RoleReflexiveTransitiveClosureImpl::evaluate_impl(EvaluationContext& contex
     const auto eval_role = m_role->evaluate(context);
 
     // Fetch data
-    const auto num_objects = context.get_problem()->get_objects().size();
-    auto& bitsets = context.get_denotation_builder<Role>().get_data();
-    assert(bitsets.size() == num_objects);
+    const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
+    auto& bitsets = boost::hana::at_key(context.get_builders(), boost::hana::type<RoleTag> {}).get_data();
+    bitsets.resize(num_objects);
     for (auto& bitset : bitsets)
     {
         bitset.unset_all();
@@ -1028,17 +1025,17 @@ void RoleReflexiveTransitiveClosureImpl::evaluate_impl(EvaluationContext& contex
     }
 }
 
-void RoleReflexiveTransitiveClosureImpl::accept_impl(Visitor& visitor) const { visitor.visit(this); }
+void RoleReflexiveTransitiveClosureImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
 Index RoleReflexiveTransitiveClosureImpl::get_index() const { return m_index; }
 
-Constructor<Role> RoleReflexiveTransitiveClosureImpl::get_role() const { return m_role; }
+Constructor<RoleTag> RoleReflexiveTransitiveClosureImpl::get_role() const { return m_role; }
 
 /**
  * RoleRestriction
  */
 
-RoleRestrictionImpl::RoleRestrictionImpl(Index index, Constructor<Role> role_, Constructor<Concept> concept_) :
+RoleRestrictionImpl::RoleRestrictionImpl(Index index, Constructor<RoleTag> role_, Constructor<ConceptTag> concept_) :
     m_index(index),
     m_role(role_),
     m_concept(concept_)
@@ -1052,9 +1049,9 @@ void RoleRestrictionImpl::evaluate_impl(EvaluationContext& context) const
     const auto eval_concept = m_concept->evaluate(context);
 
     // Fetch data
-    const auto num_objects = context.get_problem()->get_objects().size();
-    auto& bitsets = context.get_denotation_builder<Role>().get_data();
-    assert(bitsets.size() == num_objects);
+    const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
+    auto& bitsets = boost::hana::at_key(context.get_builders(), boost::hana::type<RoleTag> {}).get_data();
+    bitsets.resize(num_objects);
     for (auto& bitset : bitsets)
     {
         bitset.unset_all();
@@ -1073,19 +1070,19 @@ void RoleRestrictionImpl::evaluate_impl(EvaluationContext& context) const
     }
 }
 
-void RoleRestrictionImpl::accept_impl(Visitor& visitor) const { visitor.visit(this); }
+void RoleRestrictionImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
 Index RoleRestrictionImpl::get_index() const { return m_index; }
 
-Constructor<Role> RoleRestrictionImpl::get_role() const { return m_role; }
+Constructor<RoleTag> RoleRestrictionImpl::get_role() const { return m_role; }
 
-Constructor<Concept> RoleRestrictionImpl::get_concept() const { return m_concept; }
+Constructor<ConceptTag> RoleRestrictionImpl::get_concept() const { return m_concept; }
 
 /**
  * RoleIdentity
  */
 
-RoleIdentityImpl::RoleIdentityImpl(Index index, Constructor<Concept> concept_) : m_index(index), m_concept(concept_) {}
+RoleIdentityImpl::RoleIdentityImpl(Index index, Constructor<ConceptTag> concept_) : m_index(index), m_concept(concept_) {}
 
 void RoleIdentityImpl::evaluate_impl(EvaluationContext& context) const
 {
@@ -1093,9 +1090,9 @@ void RoleIdentityImpl::evaluate_impl(EvaluationContext& context) const
     const auto eval_concept = m_concept->evaluate(context);
 
     // Fetch data
-    const auto num_objects = context.get_problem()->get_objects().size();
-    auto& bitsets = context.get_denotation_builder<Role>().get_data();
-    assert(bitsets.size() == num_objects);
+    const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
+    auto& bitsets = boost::hana::at_key(context.get_builders(), boost::hana::type<RoleTag> {}).get_data();
+    bitsets.resize(num_objects);
     for (auto& bitset : bitsets)
     {
         bitset.unset_all();
@@ -1111,10 +1108,244 @@ void RoleIdentityImpl::evaluate_impl(EvaluationContext& context) const
     }
 }
 
-void RoleIdentityImpl::accept_impl(Visitor& visitor) const { visitor.visit(this); }
+void RoleIdentityImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
 Index RoleIdentityImpl::get_index() const { return m_index; }
 
-Constructor<Concept> RoleIdentityImpl::get_concept() const { return m_concept; }
+Constructor<ConceptTag> RoleIdentityImpl::get_concept() const { return m_concept; }
+
+/**
+ * BooleanAtomicStateImpl
+ */
+
+template<IsStaticOrFluentOrDerivedTag P>
+BooleanAtomicStateImpl<P>::BooleanAtomicStateImpl(Index index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
+{
+}
+
+template<IsStaticOrFluentOrDerivedTag P>
+void BooleanAtomicStateImpl<P>::evaluate_impl(EvaluationContext& context) const
+{
+    // Fetch data
+    auto& boolean = boost::hana::at_key(context.get_builders(), boost::hana::type<BooleanTag> {}).get_data();
+    boolean = false;
+
+    // Compute result
+    for (const auto& atom_index : context.get_state()->get_atoms<P>())
+    {
+        const auto atom = context.get_problem()->get_repositories().template get_ground_atom<P>(atom_index);
+
+        if (atom->get_predicate() == m_predicate)
+        {
+            boolean = true;
+            break;
+        }
+    }
+}
+
+template<>
+void BooleanAtomicStateImpl<StaticTag>::evaluate_impl(EvaluationContext& context) const
+{
+    // Fetch data
+    auto& boolean = boost::hana::at_key(context.get_builders(), boost::hana::type<BooleanTag> {}).get_data();
+    boolean = false;
+
+    // Compute result
+    for (const auto& atom : context.get_problem()->get_static_initial_atoms())
+    {
+        if (atom->get_predicate() == m_predicate)
+        {
+            boolean = true;
+            break;
+        }
+    }
+}
+
+template<IsStaticOrFluentOrDerivedTag P>
+void BooleanAtomicStateImpl<P>::accept_impl(IVisitor& visitor) const
+{
+    visitor.visit(this);
+}
+
+template<IsStaticOrFluentOrDerivedTag P>
+Index BooleanAtomicStateImpl<P>::get_index() const
+{
+    return m_index;
+}
+
+template<IsStaticOrFluentOrDerivedTag P>
+Predicate<P> BooleanAtomicStateImpl<P>::get_predicate() const
+{
+    return m_predicate;
+}
+
+template class BooleanAtomicStateImpl<StaticTag>;
+template class BooleanAtomicStateImpl<FluentTag>;
+template class BooleanAtomicStateImpl<DerivedTag>;
+
+template<IsConceptOrRoleTag D>
+BooleanNonemptyImpl<D>::BooleanNonemptyImpl(Index index, Constructor<D> constructor) : m_index(index), m_constructor(constructor)
+{
+}
+
+template<IsConceptOrRoleTag D>
+void BooleanNonemptyImpl<D>::evaluate_impl(EvaluationContext& context) const
+{
+    // Evaluate the children
+    const auto eval_constructor = m_constructor->evaluate(context);
+
+    // Fetch data
+    auto& boolean = boost::hana::at_key(context.get_builders(), boost::hana::type<BooleanTag> {}).get_data();
+
+    // Compute result
+    boolean = eval_constructor->any();
+}
+
+template<IsConceptOrRoleTag D>
+void BooleanNonemptyImpl<D>::accept_impl(IVisitor& visitor) const
+{
+    visitor.visit(this);
+}
+
+template<IsConceptOrRoleTag D>
+Index BooleanNonemptyImpl<D>::get_index() const
+{
+    return m_index;
+}
+
+template<IsConceptOrRoleTag D>
+Constructor<D> BooleanNonemptyImpl<D>::get_constructor() const
+{
+    return m_constructor;
+}
+
+template class BooleanNonemptyImpl<ConceptTag>;
+template class BooleanNonemptyImpl<RoleTag>;
+
+/**
+ * Numericals
+ */
+
+template<IsConceptOrRoleTag D>
+NumericalCountImpl<D>::NumericalCountImpl(Index index, Constructor<D> constructor) : m_index(index), m_constructor(constructor)
+{
+}
+
+template<IsConceptOrRoleTag D>
+void NumericalCountImpl<D>::evaluate_impl(EvaluationContext& context) const
+{
+    // Evaluate the children
+    const auto eval_constructor = m_constructor->evaluate(context);
+
+    // Fetch data
+    auto& numerical = boost::hana::at_key(context.get_builders(), boost::hana::type<NumericalTag> {}).get_data();
+
+    // Compute result
+    numerical = eval_constructor->count();
+}
+
+template<IsConceptOrRoleTag D>
+void NumericalCountImpl<D>::accept_impl(IVisitor& visitor) const
+{
+    visitor.visit(this);
+}
+
+template<IsConceptOrRoleTag D>
+Index NumericalCountImpl<D>::get_index() const
+{
+    return m_index;
+}
+
+template<IsConceptOrRoleTag D>
+Constructor<D> NumericalCountImpl<D>::get_constructor() const
+{
+    return m_constructor;
+}
+
+template class NumericalCountImpl<ConceptTag>;
+template class NumericalCountImpl<RoleTag>;
+
+NumericalDistanceImpl::NumericalDistanceImpl(Index index,
+                                             Constructor<ConceptTag> left_concept,
+                                             Constructor<RoleTag> role,
+                                             Constructor<ConceptTag> right_concept) :
+    m_index(index),
+    m_left_concept(left_concept),
+    m_role(role),
+    m_right_concept(right_concept)
+{
+}
+
+void NumericalDistanceImpl::evaluate_impl(EvaluationContext& context) const
+{
+    // Evaluate the children
+    const auto eval_left_concept = m_left_concept->evaluate(context);
+    const auto eval_role = m_role->evaluate(context);
+    const auto eval_right_concept = m_right_concept->evaluate(context);
+
+    // Fetch data
+    auto& numerical = boost::hana::at_key(context.get_builders(), boost::hana::type<NumericalTag> {}).get_data();
+    using DistanceType = typename DenotationImpl<NumericalTag>::DenotationType;
+    const auto MAX_DISTANCE = std::numeric_limits<DistanceType>::max();
+    numerical = MAX_DISTANCE;
+
+    // Compute result
+    if (!eval_left_concept->any() || !eval_right_concept->any())
+    {
+        return;  ///< there exists no path and the distance is trivially infinity.
+    }
+
+    if (!eval_left_concept->get_data().are_disjoint(eval_right_concept->get_data()))
+    {
+        numerical = 0;
+        return;  ///< sources intersects with targets and the distance is trivially zero.
+    }
+
+    auto deque = std::deque<Index> {};
+    auto distances = std::vector<DistanceType>(context.get_problem()->get_problem_and_domain_objects().size(), MAX_DISTANCE);
+    for (const auto& object_index : eval_left_concept->get_data())
+    {
+        deque.push_back(object_index);
+        distances[object_index] = 0;
+    }
+
+    while (!deque.empty())
+    {
+        const auto source = deque.front();
+        deque.pop_front();
+
+        const auto source_dist = distances[source];
+        assert(source_dist != MAX_DISTANCE);
+
+        for (const auto& target : eval_role->get_data().at(source))
+        {
+            const auto new_dist = source_dist + 1;
+
+            auto& target_dist = distances[target];
+
+            if (new_dist < target_dist)
+            {
+                target_dist = new_dist;
+                deque.push_back(target);
+            }
+
+            if (eval_right_concept->get_data().get(target))
+            {
+                numerical = target_dist;
+                return;
+            }
+        }
+    }
+}
+
+void NumericalDistanceImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
+
+Index NumericalDistanceImpl::get_index() const { return m_index; }
+
+Constructor<ConceptTag> NumericalDistanceImpl::get_left_concept() const { return m_left_concept; }
+
+Constructor<RoleTag> NumericalDistanceImpl::get_role() const { return m_role; }
+
+Constructor<ConceptTag> NumericalDistanceImpl::get_right_concept() const { return m_right_concept; }
 
 }

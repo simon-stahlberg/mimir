@@ -17,60 +17,58 @@
 
 #include "mimir/formalism/assignment_set.hpp"
 
+#include "mimir/common/printers.hpp"
+#include "mimir/formalism/function_skeleton.hpp"
 #include "mimir/formalism/ground_atom.hpp"
+#include "mimir/formalism/ground_function.hpp"
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/term.hpp"
 #include "mimir/formalism/variable.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
-
-/*
- * Assignment
- */
-
-Assignment::Assignment(Index index, Index object) : first_index(index), first_object(object), second_index(MAX_VALUE), second_object(MAX_VALUE) {}
-
-Assignment::Assignment(Index first_index, Index first_object, Index second_index, Index second_object) :
-    first_index(first_index),
-    first_object(first_object),
-    second_index(second_index),
-    second_object(second_object)
-{
-}
 
 /**
  * AssignmentSet
  */
 
-template<PredicateTag P>
-AssignmentSet<P>::AssignmentSet(size_t num_objects, const PredicateList<P>& predicates) : m_num_objects(num_objects)
+template<IsStaticOrFluentOrDerivedTag P>
+AssignmentSet<P>::AssignmentSet() : m_num_objects(0), m_per_predicate_assignment_set()
 {
+}
+
+template<IsStaticOrFluentOrDerivedTag P>
+AssignmentSet<P>::AssignmentSet(size_t num_objects, const PredicateList<P>& predicates) : m_num_objects(num_objects), m_per_predicate_assignment_set()
+{
+    /* Allocate */
     auto max_predicate_index = Index(0);
     for (const auto& predicate : predicates)
     {
         max_predicate_index = std::max(max_predicate_index, predicate->get_index());
     }
-    per_predicate_assignment_set.resize(max_predicate_index + 1);
+    m_per_predicate_assignment_set.resize(max_predicate_index + 1);
 
     for (const auto& predicate : predicates)
     {
-        auto& assignment_set = per_predicate_assignment_set.at(predicate->get_index());
+        auto& assignment_set = m_per_predicate_assignment_set.at(predicate->get_index());
         assignment_set.resize(num_assignments(predicate->get_arity(), m_num_objects));
     }
+
+    /* Initialize */
+    reset();
 }
 
-template<PredicateTag P>
-void AssignmentSet<P>::clear()
+template<IsStaticOrFluentOrDerivedTag P>
+void AssignmentSet<P>::reset()
 {
-    for (auto& assignment_set : per_predicate_assignment_set)
+    for (auto& assignment_set : m_per_predicate_assignment_set)
     {
         std::fill(assignment_set.begin(), assignment_set.end(), false);
     }
 }
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 void AssignmentSet<P>::insert_ground_atoms(const GroundAtomList<P>& ground_atoms)
 {
     for (const auto& ground_atom : ground_atoms)
@@ -78,17 +76,17 @@ void AssignmentSet<P>::insert_ground_atoms(const GroundAtomList<P>& ground_atoms
         const auto& arity = ground_atom->get_arity();
         const auto& predicate = ground_atom->get_predicate();
         const auto& arguments = ground_atom->get_objects();
-        auto& assignment_set = per_predicate_assignment_set.at(predicate->get_index());
+        auto& assignment_set = m_per_predicate_assignment_set.at(predicate->get_index());
 
         for (size_t first_index = 0; first_index < arity; ++first_index)
         {
             const auto& first_object = arguments[first_index];
-            assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_index()), arity, m_num_objects)] = true;
+            assignment_set[get_assignment_rank(VertexAssignment(first_index, first_object->get_index()), arity, m_num_objects)] = true;
 
             for (size_t second_index = first_index + 1; second_index < arity; ++second_index)
             {
                 const auto& second_object = arguments[second_index];
-                assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_index(), second_index, second_object->get_index()),
+                assignment_set[get_assignment_rank(EdgeAssignment(first_index, first_object->get_index(), second_index, second_object->get_index()),
                                                    arity,
                                                    m_num_objects)] = true;
             }
@@ -96,31 +94,134 @@ void AssignmentSet<P>::insert_ground_atoms(const GroundAtomList<P>& ground_atoms
     }
 }
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 void AssignmentSet<P>::insert_ground_atom(GroundAtom<P> ground_atom)
 {
     const auto& arity = ground_atom->get_arity();
     const auto& predicate = ground_atom->get_predicate();
     const auto& arguments = ground_atom->get_objects();
-    auto& assignment_set = per_predicate_assignment_set.at(predicate->get_index());
+    auto& assignment_set = m_per_predicate_assignment_set.at(predicate->get_index());
 
     for (size_t first_index = 0; first_index < arity; ++first_index)
     {
         const auto& first_object = arguments[first_index];
-        assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_index()), arity, m_num_objects)] = true;
+        assignment_set[get_assignment_rank(VertexAssignment(first_index, first_object->get_index()), arity, m_num_objects)] = true;
 
         for (size_t second_index = first_index + 1; second_index < arity; ++second_index)
         {
             const auto& second_object = arguments[second_index];
-            assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_index(), second_index, second_object->get_index()),
+            assignment_set[get_assignment_rank(EdgeAssignment(first_index, first_object->get_index(), second_index, second_object->get_index()),
                                                arity,
                                                m_num_objects)] = true;
         }
     }
 }
 
-template class AssignmentSet<Static>;
-template class AssignmentSet<Fluent>;
-template class AssignmentSet<Derived>;
+template class AssignmentSet<StaticTag>;
+template class AssignmentSet<FluentTag>;
+template class AssignmentSet<DerivedTag>;
+
+/**
+ * NumericAssignmentSet
+ */
+
+template<IsStaticOrFluentTag F>
+NumericAssignmentSet<F>::NumericAssignmentSet() : m_num_objects(0), m_per_function_skeleton_bounds_set()
+{
+}
+
+template<IsStaticOrFluentTag F>
+NumericAssignmentSet<F>::NumericAssignmentSet(size_t num_objects, const FunctionSkeletonList<F>& function_skeletons) :
+    m_num_objects(num_objects),
+    m_per_function_skeleton_bounds_set()
+{
+    /* Allocate */
+    auto max_function_skeleton_index = Index(0);
+    for (const auto& function_skeleton : function_skeletons)
+    {
+        max_function_skeleton_index = std::max(max_function_skeleton_index, function_skeleton->get_index());
+    }
+    m_per_function_skeleton_bounds_set.resize(max_function_skeleton_index + 1);
+
+    for (const auto& function_skeleton : function_skeletons)
+    {
+        auto& assignment_set = m_per_function_skeleton_bounds_set.at(function_skeleton->get_index());
+        assignment_set.resize(num_assignments(function_skeleton->get_arity(), m_num_objects));
+    }
+
+    /* Initialize */
+    reset();
+}
+
+template<IsStaticOrFluentTag F>
+void NumericAssignmentSet<F>::reset()
+{
+    for (auto& assignment_set : m_per_function_skeleton_bounds_set)
+    {
+        std::fill(assignment_set.begin(), assignment_set.end(), Bounds<ContinuousCost>::unbounded);
+    }
+}
+
+template<IsStaticOrFluentTag F>
+void NumericAssignmentSet<F>::insert_ground_function_values(const GroundFunctionList<F>& ground_fluent_functions, const FlatDoubleList& fluent_numeric_values)
+{
+    /* Validate inputs. */
+    assert(ground_fluent_functions.size() == fluent_numeric_values.size());
+    for (size_t i = 0; i < ground_fluent_functions.size(); ++i)
+    {
+        assert(ground_fluent_functions[i]);
+        assert(ground_fluent_functions[i]->get_index() == i);
+    }
+
+    /* Initialize bookkeeping. */
+    m_ground_function_to_value.clear();
+    for (size_t i = 0; i < ground_fluent_functions.size(); ++i)
+    {
+        m_ground_function_to_value.emplace_back(ground_fluent_functions[i], fluent_numeric_values[i]);
+    }
+    std::sort(m_ground_function_to_value.begin(), m_ground_function_to_value.end(), [](auto&& lhs, auto&& rhs) { return lhs.second < rhs.second; });
+
+    /* Compute lower and upper bounds. */
+    for (const auto& [function, value] : m_ground_function_to_value)
+    {
+        const auto& arity = function->get_arity();
+        const auto& function_skeleton = function->get_function_skeleton();
+        const auto& arguments = function->get_objects();
+        auto& assignment_set = m_per_function_skeleton_bounds_set.at(function_skeleton->get_index());
+
+        auto& empty_assignment_bound = assignment_set[get_empty_assignment_rank()];
+        empty_assignment_bound.lower =
+            (empty_assignment_bound.lower == -std::numeric_limits<ContinuousCost>::infinity()) ? value : std::min(empty_assignment_bound.lower, value);
+        empty_assignment_bound.upper =
+            (empty_assignment_bound.upper == std::numeric_limits<ContinuousCost>::infinity()) ? value : std::max(empty_assignment_bound.upper, value);
+
+        for (size_t first_index = 0; first_index < arity; ++first_index)
+        {
+            const auto& first_object = arguments[first_index];
+            auto& single_assignment_bound = assignment_set[get_assignment_rank(VertexAssignment(first_index, first_object->get_index()), arity, m_num_objects)];
+            single_assignment_bound.lower =
+                (single_assignment_bound.lower == -std::numeric_limits<ContinuousCost>::infinity()) ? value : std::min(single_assignment_bound.lower, value);
+            single_assignment_bound.upper =
+                (single_assignment_bound.upper == std::numeric_limits<ContinuousCost>::infinity()) ? value : std::max(single_assignment_bound.upper, value);
+
+            for (size_t second_index = first_index + 1; second_index < arity; ++second_index)
+            {
+                const auto& second_object = arguments[second_index];
+                auto& double_assignment_bound =
+                    assignment_set[get_assignment_rank(EdgeAssignment(first_index, first_object->get_index(), second_index, second_object->get_index()),
+                                                       arity,
+                                                       m_num_objects)];
+                double_assignment_bound.lower = (single_assignment_bound.lower == -std::numeric_limits<ContinuousCost>::infinity()) ?
+                                                    value :
+                                                    std::min(double_assignment_bound.lower, value);
+                double_assignment_bound.upper =
+                    (single_assignment_bound.upper == std::numeric_limits<ContinuousCost>::infinity()) ? value : std::max(double_assignment_bound.upper, value);
+            }
+        }
+    }
+}
+
+template class NumericAssignmentSet<StaticTag>;
+template class NumericAssignmentSet<FluentTag>;
 
 }

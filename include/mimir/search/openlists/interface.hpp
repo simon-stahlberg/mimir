@@ -21,7 +21,7 @@
 #include <concepts>
 #include <cstdint>
 
-namespace mimir
+namespace mimir::search
 {
 
 /**

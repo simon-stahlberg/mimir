@@ -25,24 +25,16 @@
 #include <unordered_set>
 #include <vector>
 
-namespace mimir
+namespace mimir::search
 {
 
-// StateRepository
-class StateRepository;
-class StateRepositoryWorkspace;
+class SearchContext;
 
-// GroundAction
-struct GroundActionImpl;
-using GroundAction = const GroundActionImpl*;
-using GroundActionList = std::vector<GroundAction>;
-using GroundActionSet = std::unordered_set<GroundAction>;
+class GeneralizedSearchContext;
 
-// Axiom
-struct GroundAxiomImpl;
-using GroundAxiom = const GroundAxiomImpl*;
-using GroundAxiomList = std::vector<GroundAxiom>;
-using GroundAxiomSet = std::unordered_set<GroundAxiom>;
+// StateRepositoryImpl
+class StateRepositoryImpl;
+using StateRepository = std::shared_ptr<StateRepositoryImpl>;
 
 // State
 struct StateImpl;
@@ -54,50 +46,20 @@ using StateMap = std::unordered_map<State, T>;
 
 struct DenseState;
 
-/* Grounders */
-class LiteralGrounder;
-class FunctionGrounder;
-class ActionGrounder;
-class AxiomGrounder;
-class Grounder;
-
 /* DeleteRelaxedProblemExplorator */
 class DeleteRelaxedProblemExplorator;
 
-/* AssignmentSet */
-class AssignmentSetWorkspace;
-
 /* ApplicableActionGenerators */
 class IApplicableActionGenerator;
+using ApplicableActionGenerator = std::shared_ptr<IApplicableActionGenerator>;
 class GroundedApplicableActionGenerator;
 class LiftedApplicableActionGenerator;
 
-class ApplicableActionGeneratorWorkspace;
-class LiftedApplicableActionGeneratorWorkspace;
-
-class ActionGrounder;
-
-class IGroundedApplicableActionGeneratorEventHandler;
-class ILiftedApplicableActionGeneratorEventHandler;
-
 /* AxiomEvaluators */
 class IAxiomEvaluator;
+using AxiomEvaluator = std::shared_ptr<IAxiomEvaluator>;
 class GroundedAxiomEvaluator;
 class LiftedAxiomEvaluator;
-
-class AxiomEvaluatorWorkspace;
-class LiftedAxiomEvaluatorWorkspace;
-
-class AxiomGrounder;
-
-class IGroundedAxiomEvaluatorEventHandler;
-class ILiftedAxiomEvaluatorEventHandler;
-
-/* SatisficingBindingGenerator */
-class SatisficingBindingGenerator;
-class ISatisficingBindingGeneratorEventHandler;
-
-class SatisficingBindingGeneratorWorkspace;
 
 /* MatchTree */
 template<typename T>
@@ -105,23 +67,42 @@ class MatchTree;
 
 /* Heuristics */
 class IHeuristic;
+using Heuristic = std::shared_ptr<IHeuristic>;
 
 /* Algorithms */
 
 class IPruningStrategy;
+using PruningStrategy = std::shared_ptr<IPruningStrategy>;
 class IGoalStrategy;
+using GoalStrategy = std::shared_ptr<IGoalStrategy>;
 
 // AStar
-class IAStarAlgorithmEventHandler;
+namespace astar
+{
+class IEventHandler;
+using EventHandler = std::shared_ptr<IEventHandler>;
+}
 
 // Breadth-first search
-class IBrFSAlgorithmEventHandler;
+namespace brfs
+{
+class IEventHandler;
+using EventHandler = std::shared_ptr<IEventHandler>;
+}
 
 // Iterative width search
-class IIWAlgorithmEventHandler;
+namespace iw
+{
+class IEventHandler;
+using EventHandler = std::shared_ptr<IEventHandler>;
+}
 
 // Serialized iterative width search
-class ISIWAlgorithmEventHandler;
+namespace siw
+{
+class IEventHandler;
+using EventHandler = std::shared_ptr<IEventHandler>;
+}
 
 // Plan
 class Plan;

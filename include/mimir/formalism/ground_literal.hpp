@@ -20,27 +20,28 @@
 
 #include "mimir/formalism/declarations.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 class GroundLiteralImpl
 {
 private:
     Index m_index;
-    bool m_is_negated;
+    bool m_polarity;
     GroundAtom<P> m_atom;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    GroundLiteralImpl(Index index, bool is_negated, GroundAtom<P> atom);
+    GroundLiteralImpl(Index index, bool polarity, GroundAtom<P> atom);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
-    using Category = P;
+    using FormalismEntity = void;
+    using Type = P;
 
     // moveable but not copyable
     GroundLiteralImpl(const GroundLiteralImpl& other) = delete;
@@ -49,23 +50,23 @@ public:
     GroundLiteralImpl& operator=(GroundLiteralImpl&& other) = default;
 
     Index get_index() const;
-    bool is_negated() const;
-    const GroundAtom<P>& get_atom() const;
-    Literal<P> lift(const TermList& terms, PDDLRepositories& pddl_repositories) const;
+    bool get_polarity() const;
+    GroundAtom<P> get_atom() const;
+    Literal<P> lift(const TermList& terms, Repositories& pddl_repositories) const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_is_negated), std::as_const(m_atom)); }
+    auto identifying_members() const { return std::tuple(get_polarity(), get_atom()); }
 };
 
-template<PredicateTag P>
-extern std::tuple<VariableList, LiteralList<P>, LiteralList<Static>> lift(const GroundLiteralList<P>& ground_literals, const Domain& domain, PDDLRepositories& pddl_repositories);
+template<IsStaticOrFluentOrDerivedTag P>
+extern std::pair<VariableList, LiteralList<P>> lift(const GroundLiteralList<P>& ground_literals, Repositories& pddl_repositories);
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 extern std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<P>& element);
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 extern std::ostream& operator<<(std::ostream& out, GroundLiteral<P> element);
 }
 

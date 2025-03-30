@@ -22,19 +22,47 @@
 #include "cista/containers/external_ptr.h"
 #include "cista/containers/flexible_index_vector.h"
 #include "cista/containers/vector.h"
+#include "mimir/buffering/unordered_set.h"
 #include "mimir/common/concepts.hpp"
+#include "mimir/common/hash_cista.hpp"
 #include "mimir/common/types.hpp"
-#include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/predicate_tag.hpp"
 
 #include <algorithm>
 #include <ostream>
 
 namespace mimir
 {
+
 /* Bitset */
 
 using FlatBitset = cista::offset::dynamic_bitset<uint64_t>;
+/* IndexList */
+using FlatIndexList = cista::offset::flexible_index_vector<Index>;
+using FlatIndexListSet = mimir::buffering::UnorderedSet<FlatIndexList>;
+/* ExternalPtr */
+template<typename T>
+using FlatExternalPtr = cista::offset::external_ptr<T>;
+template<typename T>
+using FlatExternalPtrList = cista::offset::vector<cista::offset::external_ptr<T>>;
+/* DoubleList */
+using FlatDoubleList = cista::offset::vector<double>;
+using FlatDoubleListSet = mimir::buffering::UnorderedSet<cista::offset::vector<double>>;
+
+/**
+ * Forward Declarations
+ */
+
+inline std::ostream& operator<<(std::ostream& os, const FlatBitset& set);
+inline std::ostream& operator<<(std::ostream& os, const FlatIndexList& list);
+template<typename T,
+         template<typename>
+         typename Ptr,
+         bool IndexPointers = false,
+         typename TemplateSizeType = std::uint32_t,
+         class Allocator = cista::allocator<T, Ptr>>
+inline std::ostream& operator<<(std::ostream& os, const cista::basic_vector<T, Ptr, IndexPointers, TemplateSizeType, Allocator>& list);
+template<typename T>
+std::ostream& operator<<(std::ostream& os, const FlatExternalPtr<T>& ptr);
 
 inline std::ostream& operator<<(std::ostream& os, const FlatBitset& set)
 {
@@ -51,15 +79,11 @@ inline std::ostream& operator<<(std::ostream& os, const FlatBitset& set)
     return os;
 }
 
-/* IndexList */
-
-using FlatIndexList = cista::offset::flexible_index_vector<Index>;
-
-inline std::ostream& operator<<(std::ostream& os, const FlatIndexList& set)
+inline std::ostream& operator<<(std::ostream& os, const FlatIndexList& list)
 {
     os << "[";
     size_t i = 0;
-    for (const auto& element : set)
+    for (const auto& element : list)
     {
         if (i != 0)
             os << ", ";
@@ -70,9 +94,30 @@ inline std::ostream& operator<<(std::ostream& os, const FlatIndexList& set)
     return os;
 }
 
-/* ExternalPtr */
+/* BasicVector */
+
+template<typename T, template<typename> typename Ptr, bool IndexPointers, typename TemplateSizeType, class Allocator>
+inline std::ostream& operator<<(std::ostream& os, const cista::basic_vector<T, Ptr, IndexPointers, TemplateSizeType, Allocator>& list)
+{
+    os << "[";
+    size_t i = 0;
+    for (const auto& element : list)
+    {
+        if (i != 0)
+            os << ", ";
+        os << element;
+        ++i;
+    }
+    os << "]";
+    return os;
+}
+
 template<typename T>
-using FlatExternalPtr = cista::offset::external_ptr<T>;
+std::ostream& operator<<(std::ostream& os, const FlatExternalPtr<T>& ptr)
+{
+    os << *ptr;
+    return os;
+}
 
 /// @brief Check whether `value` exists in the given `vec`.
 /// Runs binary search to find a value in a vec.

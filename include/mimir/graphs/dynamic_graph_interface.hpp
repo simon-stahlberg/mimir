@@ -20,27 +20,28 @@
 
 #include "mimir/graphs/graph_interface.hpp"
 
-namespace mimir
+namespace mimir::graphs
 {
 
 /**
  * Dynamic graphs allow for deletion of vertices and edges, requiring hash map data structures.
  */
 
-struct DynamicGraphTag
-{
-};
-
 template<typename T>
-concept IsDynamicGraph = requires(T a)
-{
-    typename T::GraphTag;
-    requires std::same_as<typename T::GraphTag, DynamicGraphTag>;
-
+concept IsDynamicGraph = requires(T a, VertexIndex vertex, EdgeIndex edge) {
     requires IsVertexListGraph<T>;
     requires IsEdgeListGraph<T>;
     requires IsIncidenceGraph<T>;
     requires IsAdjacencyGraph<T>;
+    requires IsBidirectionalGraph<T>;
+
+    // Ensure that DynamicGraph uses std::unordered_map to store vertices and edges.
+    { a.get_vertices() } -> std::same_as<const std::unordered_map<VertexIndex, typename T::VertexType>&>;
+    { a.get_edges() } -> std::same_as<const std::unordered_map<EdgeIndex, typename T::EdgeType>&>;
+
+    // Ensure that DynamicGraph supports deletion of vertices and edges
+    { a.remove_vertex(vertex) };
+    { a.remove_edge(edge) };
 };
 
 }

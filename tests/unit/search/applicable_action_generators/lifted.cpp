@@ -15,15 +15,19 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/formalism/parser.hpp"
+#include "mimir/formalism/problem.hpp"
+#include "mimir/formalism/repositories.hpp"
 #include "mimir/search/algorithms.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/axiom_evaluators.hpp"
-#include "mimir/search/grounders/grounder.hpp"
 #include "mimir/search/plan.hpp"
+#include "mimir/search/search_context.hpp"
 #include "mimir/search/state_repository.hpp"
 
 #include <gtest/gtest.h>
+
+using namespace mimir::search;
+using namespace mimir::formalism;
 
 namespace mimir::tests
 {
@@ -32,18 +36,17 @@ TEST(MimirTests, SearchApplicableActionGeneratorsLiftedTest)
 {
     const auto domain_file = fs::path(std::string(DATA_DIR) + "miconic-fulladl/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "miconic-fulladl/test_problem.pddl");
-    const auto parser = PDDLParser(domain_file, problem_file);
-    const auto grounder = std::make_shared<Grounder>(parser.get_problem(), parser.get_pddl_repositories());
-    const auto applicable_action_generator_event_handler = std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>();
-    const auto applicable_action_generator =
-        std::make_shared<LiftedApplicableActionGenerator>(grounder->get_action_grounder(), applicable_action_generator_event_handler);
-    const auto axiom_evaluator_event_handler =
-        std::dynamic_pointer_cast<ILiftedAxiomEvaluatorEventHandler>(std::make_shared<DefaultLiftedAxiomEvaluatorEventHandler>());
-    const auto axiom_evaluator =
-        std::dynamic_pointer_cast<IAxiomEvaluator>(std::make_shared<LiftedAxiomEvaluator>(grounder->get_axiom_grounder(), axiom_evaluator_event_handler));
-    const auto state_repository = std::make_shared<StateRepository>(axiom_evaluator);
-    const auto brfs_event_handler = std::make_shared<DefaultBrFSAlgorithmEventHandler>();
-    const auto result = find_solution_brfs(applicable_action_generator, state_repository, std::nullopt, brfs_event_handler);
+    const auto problem = ProblemImpl::create(domain_file, problem_file);
+
+    const auto applicable_action_generator_event_handler = std::make_shared<LiftedApplicableActionGenerator::DefaultEventHandler>();
+    const auto applicable_action_generator = std::make_shared<LiftedApplicableActionGenerator>(problem, applicable_action_generator_event_handler);
+    const auto axiom_evaluator_event_handler = std::make_shared<LiftedAxiomEvaluator::DefaultEventHandler>();
+    const auto axiom_evaluator = std::dynamic_pointer_cast<IAxiomEvaluator>(std::make_shared<LiftedAxiomEvaluator>(problem, axiom_evaluator_event_handler));
+    const auto state_repository = std::make_shared<StateRepositoryImpl>(axiom_evaluator);
+    const auto brfs_event_handler = std::make_shared<brfs::DefaultEventHandler>(problem);
+    const auto search_context = SearchContext(problem, applicable_action_generator, state_repository);
+
+    const auto result = brfs::find_solution(search_context, nullptr, brfs_event_handler);
     EXPECT_EQ(result.status, SearchStatus::SOLVED);
 
     const auto& applicable_action_generator_statistics = applicable_action_generator_event_handler->get_statistics();

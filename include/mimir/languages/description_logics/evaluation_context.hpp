@@ -28,41 +28,31 @@
 #include <memory>
 #include <vector>
 
-namespace mimir::dl
+namespace mimir::languages::dl
 {
 
 class EvaluationContext
 {
 private:
     /* Memory */
-    const PDDLRepositories& m_pddl_repositories;
-    Problem m_problem;
-    State m_state;
-    ConstructorTagToDenotationType& m_denotation_builder;
-    ConstructorTagToDenotationRepository& m_denotation_repository;
+    search::State m_state;
+    formalism::Problem m_problem;
+    Denotations m_builders;
+    DenotationRepositories& m_repositories;
 
 public:
-    EvaluationContext(const PDDLRepositories& pddl_repositories,
-                      Problem problem,
-                      State state,
-                      ConstructorTagToDenotationType& ref_denotation_builder,
-                      ConstructorTagToDenotationRepository& ref_denotation_repository);
+    EvaluationContext(search::State state, formalism::Problem problem, DenotationRepositories& ref_repositories);
 
     /**
      * Getters
      */
+    search::State get_state() const;
 
-    const PDDLRepositories& get_pddl_repositories() const;
+    const formalism::Problem& get_problem() const;
 
-    Problem get_problem() const;
+    Denotations& get_builders();
 
-    State get_state() const;
-
-    template<ConstructorTag D>
-    DenotationImpl<D>& get_denotation_builder();
-
-    template<ConstructorTag D>
-    DenotationRepository<D>& get_denotation_repository();
+    DenotationRepositories& get_repositories();
 };
 }
 

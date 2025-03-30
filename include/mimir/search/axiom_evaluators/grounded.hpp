@@ -19,29 +19,180 @@
 #define MIMIR_SEARCH_AXIOM_EVALUATOR_GROUNDED_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/axiom_evaluators/axiom_stratification.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/match_tree.hpp"
+#include "mimir/search/match_tree/match_tree.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 
 class GroundedAxiomEvaluator : public IAxiomEvaluator
 {
-private:
-    std::shared_ptr<AxiomGrounder> m_grounder;
-    MatchTree<GroundAxiom> m_match_tree;
-    std::shared_ptr<IGroundedAxiomEvaluatorEventHandler> m_event_handler;
+public:
+    struct Statistics
+    {
+        std::vector<match_tree::Statistics> m_match_tree_partition_statistics = std::vector<match_tree::Statistics>();
+    };
 
-    std::vector<AxiomPartition> m_partitioning;
+    class IEventHandler
+    {
+    public:
+        virtual ~IEventHandler() = default;
+
+        virtual void on_start_ground_axiom_instantiation() = 0;
+
+        virtual void on_finish_ground_axiom_instantiation(std::chrono::milliseconds total_time) = 0;
+
+        virtual void on_start_build_axiom_match_trees() = 0;
+
+        virtual void on_start_build_axiom_match_tree(size_t partition_index) = 0;
+
+        virtual void on_finish_build_axiom_match_tree(const match_tree::MatchTree<formalism::GroundAxiomImpl>& match_tree) = 0;
+
+        virtual void on_finish_build_axiom_match_trees(std::chrono::milliseconds total_time) = 0;
+
+        virtual void on_finish_search_layer() = 0;
+
+        virtual void on_end_search() = 0;
+
+        virtual const Statistics& get_statistics() const = 0;
+    };
+
+    /**
+     * Base class
+     *
+     * Collect statistics and call implementation of derived class.
+     */
+    template<typename Derived_>
+    class EventHandlerBase : public IEventHandler
+    {
+    protected:
+        Statistics m_statistics;
+        bool m_quiet;
+
+    private:
+        EventHandlerBase() = default;
+        friend Derived_;
+
+        /// @brief Helper to cast to Derived.
+        constexpr const auto& self() const { return static_cast<const Derived_&>(*this); }
+        constexpr auto& self() { return static_cast<Derived_&>(*this); }
+
+    public:
+        explicit EventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
+
+        void on_start_ground_axiom_instantiation() override
+        {
+            if (!m_quiet)
+                self().on_start_ground_axiom_instantiation_impl();
+        }
+
+        void on_finish_ground_axiom_instantiation(std::chrono::milliseconds total_time) override
+        {
+            if (!m_quiet)
+                self().on_finish_ground_axiom_instantiation_impl(total_time);
+        }
+
+        void on_start_build_axiom_match_trees() override
+        {
+            if (!m_quiet)
+                self().on_start_build_axiom_match_trees_impl();
+        }
+
+        void on_start_build_axiom_match_tree(size_t partition_index) override
+        {
+            if (!m_quiet)
+                self().on_start_build_axiom_match_tree_impl(partition_index);
+        }
+
+        void on_finish_build_axiom_match_tree(const match_tree::MatchTree<formalism::GroundAxiomImpl>& match_tree) override
+        {
+            m_statistics.m_match_tree_partition_statistics.push_back(match_tree.get_statistics());
+
+            if (!m_quiet)
+                self().on_finish_build_axiom_match_tree_impl(match_tree);
+        }
+
+        void on_finish_build_axiom_match_trees(std::chrono::milliseconds total_time) override
+        {
+            if (!m_quiet)
+                self().on_finish_build_axiom_match_trees_impl(total_time);
+        }
+
+        void on_finish_search_layer() override
+        {
+            if (!m_quiet)
+                self().on_finish_search_layer_impl();
+        }
+
+        void on_end_search() override
+        {
+            if (!m_quiet)
+                self().on_end_search_impl();
+        }
+
+        const Statistics& get_statistics() const override { return m_statistics; }
+    };
+
+    class DebugEventHandler : public EventHandlerBase<DebugEventHandler>
+    {
+    private:
+        /* Implement EventHandlerBase interface */
+        friend class EventHandlerBase<DebugEventHandler>;
+
+        void on_start_ground_axiom_instantiation_impl() const;
+
+        void on_finish_ground_axiom_instantiation_impl(std::chrono::milliseconds total_time) const;
+
+        void on_start_build_axiom_match_trees_impl() const;
+
+        void on_start_build_axiom_match_tree_impl(size_t partition_index) const;
+
+        void on_finish_build_axiom_match_tree_impl(const match_tree::MatchTree<formalism::GroundAxiomImpl>& match_tree) const;
+
+        void on_finish_build_axiom_match_trees_impl(std::chrono::milliseconds total_time) const;
+
+        void on_finish_search_layer_impl() const;
+
+        void on_end_search_impl() const;
+
+    public:
+        explicit DebugEventHandler(bool quiet = true) : EventHandlerBase<DebugEventHandler>(quiet) {}
+    };
+
+    class DefaultEventHandler : public EventHandlerBase<DefaultEventHandler>
+    {
+    private:
+        /* Implement EventHandlerBase interface */
+        friend class EventHandlerBase<DefaultEventHandler>;
+
+        void on_start_ground_axiom_instantiation_impl() const;
+
+        void on_finish_ground_axiom_instantiation_impl(std::chrono::milliseconds total_time) const;
+
+        void on_start_build_axiom_match_trees_impl() const;
+
+        void on_start_build_axiom_match_tree_impl(size_t partition_index) const;
+
+        void on_finish_build_axiom_match_tree_impl(const match_tree::MatchTree<formalism::GroundAxiomImpl>& match_tree) const;
+
+        void on_finish_build_axiom_match_trees_impl(std::chrono::milliseconds total_time) const;
+
+        void on_finish_search_layer_impl() const;
+
+        void on_end_search_impl() const;
+
+    public:
+        explicit DefaultEventHandler(bool quiet = true) : EventHandlerBase<DefaultEventHandler>(quiet) {}
+    };
 
 public:
-    GroundedAxiomEvaluator(std::shared_ptr<AxiomGrounder> grounder, MatchTree<GroundAxiom> match_tree);
+    GroundedAxiomEvaluator(formalism::Problem problem,
+                           std::vector<std::unique_ptr<match_tree::MatchTree<formalism::GroundAxiomImpl>>>&& match_tree_partitioning);
 
-    GroundedAxiomEvaluator(std::shared_ptr<AxiomGrounder> grounder,
-                           MatchTree<GroundAxiom> match_tree,
-                           std::shared_ptr<IGroundedAxiomEvaluatorEventHandler> event_handler);
+    GroundedAxiomEvaluator(formalism::Problem problem,
+                           std::vector<std::unique_ptr<match_tree::MatchTree<formalism::GroundAxiomImpl>>>&& match_tree_partitioning,
+                           std::shared_ptr<IEventHandler> event_handler);
 
     // Uncopyable
     GroundedAxiomEvaluator(const GroundedAxiomEvaluator& other) = delete;
@@ -59,11 +210,13 @@ public:
      * Getters
      */
 
-    Problem get_problem() const override;
-    const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const override;
-    const std::shared_ptr<AxiomGrounder>& get_axiom_grounder() const override;
-    const std::shared_ptr<IGroundedAxiomEvaluatorEventHandler>& get_event_handler() const;
-    const std::vector<AxiomPartition>& get_axiom_partitioning() const;
+    const formalism::Problem& get_problem() const override;
+    const std::shared_ptr<IEventHandler>& get_event_handler() const;
+
+private:
+    formalism::Problem m_problem;
+    std::vector<std::unique_ptr<match_tree::MatchTree<formalism::GroundAxiomImpl>>> m_match_tree_partitioning;
+    std::shared_ptr<IEventHandler> m_event_handler;
 };
 
 }

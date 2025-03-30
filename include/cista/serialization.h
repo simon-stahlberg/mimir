@@ -18,6 +18,8 @@
 #include "cista/verify.h"
 
 #include <chrono>
+#include <concepts>
+#include <cstdint>
 #include <limits>
 #include <map>
 #include <numeric>
@@ -384,10 +386,17 @@ void serialize(Ctx& c, bitset<Size> const* origin, offset_t const pos)
 }
 
 template<typename Ctx, typename Block, template<typename> typename Ptr>
+void serialize(Ctx& c, basic_dual_dynamic_bitset<Block, Ptr> const* origin, offset_t const pos)
+{
+    using Type = basic_dual_dynamic_bitset<Block, Ptr>;
+    serialize(c, &origin->default_bit_value_, pos + cista_member_offset(Type, default_bit_value_));
+    serialize(c, &origin->blocks_, pos + cista_member_offset(Type, blocks_));
+}
+
+template<typename Ctx, typename Block, template<typename> typename Ptr>
 void serialize(Ctx& c, basic_dynamic_bitset<Block, Ptr> const* origin, offset_t const pos)
 {
     using Type = basic_dynamic_bitset<Block, Ptr>;
-    serialize(c, &origin->default_bit_value_, pos + cista_member_offset(Type, default_bit_value_));
     serialize(c, &origin->blocks_, pos + cista_member_offset(Type, blocks_));
 }
 
@@ -403,6 +412,9 @@ void serialize(Ctx& c, basic_flexible_index_vector<IndexType, Ptr> const* origin
 {
     using Type = basic_flexible_index_vector<IndexType, Ptr>;
     serialize(c, &origin->bit_width_, pos + cista_member_offset(Type, bit_width_));
+    serialize(c, &origin->bit_width_log2_, pos + cista_member_offset(Type, bit_width_log2_));
+    serialize(c, &origin->elements_per_block_, pos + cista_member_offset(Type, elements_per_block_));
+    serialize(c, &origin->elements_per_block_log2_, pos + cista_member_offset(Type, elements_per_block_log2_));
     serialize(c, &origin->size_, pos + cista_member_offset(Type, size_));
     serialize(c, &origin->blocks_, pos + cista_member_offset(Type, blocks_));
 }
@@ -472,7 +484,7 @@ constexpr offset_t integrity_start(mode const m) noexcept
     offset_t start = 0;
     if (is_mode_enabled(m, mode::WITH_VERSION) || is_mode_enabled(m, mode::WITH_STATIC_VERSION) || is_mode_enabled(m, mode::SKIP_VERSION))
     {
-        start += sizeof(std::uint64_t);
+        start += sizeof(uint64_t);
     }
     return start;
 }
@@ -482,7 +494,7 @@ constexpr offset_t data_start(mode const m) noexcept
     auto start = integrity_start(m);
     if (is_mode_enabled(m, mode::WITH_INTEGRITY) || is_mode_enabled(m, mode::SKIP_INTEGRITY))
     {
-        start += sizeof(std::uint64_t);
+        start += sizeof(uint64_t);
     }
     return start;
 }
@@ -1034,11 +1046,18 @@ void recurse(Ctx&, bitset<Size>* el, Fn&& fn)
     fn(&el->blocks_);
 }
 
+// --- DUAL_DYNAMIC_BITSET<BLOCK> ---
+template<typename Ctx, typename Block, template<typename> typename Ptr, typename Fn>
+void recurse(Ctx&, basic_dual_dynamic_bitset<Block, Ptr>* el, Fn&& fn)
+{
+    fn(&el->default_bit_value_);
+    fn(&el->blocks_);
+}
+
 // --- DYNAMIC_BITSET<BLOCK> ---
 template<typename Ctx, typename Block, template<typename> typename Ptr, typename Fn>
 void recurse(Ctx&, basic_dynamic_bitset<Block, Ptr>* el, Fn&& fn)
 {
-    fn(&el->default_bit_value_);
     fn(&el->blocks_);
 }
 
@@ -1054,6 +1073,9 @@ template<typename Ctx, std::unsigned_integral IndexType, template<typename> type
 void recurse(Ctx&, basic_flexible_index_vector<IndexType, Ptr>* el, Fn&& fn)
 {
     fn(&el->bit_width_);
+    fn(&el->bit_width_log2_);
+    fn(&el->elements_per_block_);
+    fn(&el->elements_per_block_log2_);
     fn(&el->size_);
     fn(&el->blocks_);
 }

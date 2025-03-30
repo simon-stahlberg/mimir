@@ -22,7 +22,7 @@
 #include "mimir/search/search_node.hpp"
 #include "mimir/search/state_repository.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 
 /// @brief Compute the sequence of ground actions that generates the state_trajectory starting from the start_state.
@@ -31,11 +31,12 @@ namespace mimir
 /// @param applicable_action_generator is the applicable action generator.
 /// @param state_repository is the state repository.
 /// @param out_ground_action_sequence is the resulting state trajectory.
-inline void extract_ground_action_sequence(State start_state,
-                                           const IndexList& state_trajectory,
-                                           IApplicableActionGenerator& applicable_action_generator,
-                                           StateRepository& state_repository,
-                                           GroundActionList& out_ground_action_sequence)
+inline ContinuousCost extract_ground_action_sequence(State start_state,
+                                                     ContinuousCost start_state_metric_value,
+                                                     const IndexList& state_trajectory,
+                                                     IApplicableActionGenerator& applicable_action_generator,
+                                                     StateRepositoryImpl& state_repository,
+                                                     formalism::GroundActionList& out_ground_action_sequence)
 {
     if (start_state->get_index() != state_trajectory.front())
     {
@@ -45,21 +46,41 @@ inline void extract_ground_action_sequence(State start_state,
     out_ground_action_sequence.clear();
 
     auto state = start_state;
+    auto state_metric_value = start_state_metric_value;
 
     for (size_t i = 0; i < state_trajectory.size() - 1; ++i)
     {
+        // We have to take the (state,action) pair that yields lowest metric value.
+        auto lowest_action = formalism::GroundAction { nullptr };
+        auto lowest_state = State {};
+        auto lowest_metric_value = std::numeric_limits<ContinuousCost>::infinity();
+
         for (const auto& action : applicable_action_generator.create_applicable_action_generator(state))
         {
-            const auto [successor_state, cost] = state_repository.get_or_create_successor_state(state, action);
-
+            const auto [successor_state, successor_state_metric_value] = state_repository.get_or_create_successor_state(state, action, state_metric_value);
             if (successor_state->get_index() == state_trajectory.at(i + 1))
             {
-                out_ground_action_sequence.push_back(action);
-                state = successor_state;
-                break;
+                if (successor_state_metric_value < lowest_metric_value)
+                {
+                    lowest_action = action;
+                    lowest_state = successor_state;
+                    lowest_metric_value = successor_state_metric_value;
+                }
             }
         }
+        // std::cout << std::make_tuple(lowest_action, std::cref(*state_repository.get_problem_context().get_repositories()), FullActionFormatterTag {})
+        //           << std::endl;
+        // std::cout << std::make_tuple(state_repository.get_problem_context().get_problem(),
+        //                              lowest_state,
+        //                              std::cref(*state_repository.get_problem_context().get_repositories()))
+        //           << std::endl;
+        // std::cout << lowest_metric_value << " " << lowest_metric_value - state_metric_value << std::endl << std::endl << std::endl;
+        out_ground_action_sequence.push_back(lowest_action);
+        state = lowest_state;
+        state_metric_value = lowest_metric_value;
     }
+
+    return state_metric_value;
 }
 
 /// @brief Compute the state trajectory that ends in the the `final_state_index` associated with the `final_search_node`.

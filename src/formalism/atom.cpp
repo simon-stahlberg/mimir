@@ -21,32 +21,32 @@
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/term.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 AtomImpl<P>::AtomImpl(Index index, Predicate<P> predicate, TermList terms) : m_index(index), m_predicate(std::move(predicate)), m_terms(std::move(terms))
 {
 }
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 Index AtomImpl<P>::get_index() const
 {
     return m_index;
 }
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 Predicate<P> AtomImpl<P>::get_predicate() const
 {
     return m_predicate;
 }
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 const TermList& AtomImpl<P>::get_terms() const
 {
     return m_terms;
 }
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 VariableList AtomImpl<P>::get_variables() const
 {
     VariableList variables;
@@ -63,37 +63,36 @@ VariableList AtomImpl<P>::get_variables() const
     return variables;
 }
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 size_t AtomImpl<P>::get_arity() const
 {
     return m_terms.size();
 }
 
-template class AtomImpl<Static>;
-template class AtomImpl<Fluent>;
-template class AtomImpl<Derived>;
+template class AtomImpl<StaticTag>;
+template class AtomImpl<FluentTag>;
+template class AtomImpl<DerivedTag>;
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 std::ostream& operator<<(std::ostream& out, const AtomImpl<P>& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, const AtomImpl<Static>& element);
-template std::ostream& operator<<(std::ostream& out, const AtomImpl<Fluent>& element);
-template std::ostream& operator<<(std::ostream& out, const AtomImpl<Derived>& element);
+template std::ostream& operator<<(std::ostream& out, const AtomImpl<StaticTag>& element);
+template std::ostream& operator<<(std::ostream& out, const AtomImpl<FluentTag>& element);
+template std::ostream& operator<<(std::ostream& out, const AtomImpl<DerivedTag>& element);
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 std::ostream& operator<<(std::ostream& out, Atom<P> element)
 {
-    out << *element;
+    write(*element, AddressFormatter(), out);
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, Atom<Static> element);
-template std::ostream& operator<<(std::ostream& out, Atom<Fluent> element);
-template std::ostream& operator<<(std::ostream& out, Atom<Derived> element);
+template std::ostream& operator<<(std::ostream& out, Atom<StaticTag> element);
+template std::ostream& operator<<(std::ostream& out, Atom<FluentTag> element);
+template std::ostream& operator<<(std::ostream& out, Atom<DerivedTag> element);
 
 }

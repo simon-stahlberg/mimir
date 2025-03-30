@@ -21,7 +21,7 @@
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/variable.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
 
 /* TermImpl */
@@ -33,14 +33,13 @@ const std::variant<Object, Variable>& TermImpl::get_variant() const { return m_o
 
 std::ostream& operator<<(std::ostream& out, const TermImpl& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, Term element)
 {
-    out << *element;
+    write(*element, AddressFormatter(), out);
     return out;
 }
 }

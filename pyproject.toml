@@ -2,6 +2,7 @@
 requires = [
     "setuptools>=42",
     "pybind11_stubgen",
+    "nanobind",
     "wheel",
     "cmake>=3.21",
     "ninja",

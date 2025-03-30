@@ -17,462 +17,497 @@
 
 #include "mimir/datasets/state_space.hpp"
 
-#include "mimir/algorithms/BS_thread_pool.hpp"
 #include "mimir/common/timers.hpp"
-#include "mimir/graphs/static_graph_boost_adapter.hpp"
+#include "mimir/datasets/generalized_color_function.hpp"
+#include "mimir/datasets/object_graph.hpp"
+#include "mimir/formalism/ground_action.hpp"
+#include "mimir/formalism/parser.hpp"
+#include "mimir/formalism/problem.hpp"
+#include "mimir/graphs/algorithms/nauty.hpp"
+#include "mimir/graphs/bgl/graph_algorithms.hpp"
+#include "mimir/graphs/bgl/static_graph_algorithms.hpp"
+#include "mimir/graphs/static_graph.hpp"
+#include "mimir/search/algorithms/brfs.hpp"
+#include "mimir/search/algorithms/brfs/event_handlers/interface.hpp"
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
-#include "mimir/search/axiom_evaluators/grounded.hpp"
+#include "mimir/search/algorithms/strategies/pruning_strategy.hpp"
+#include "mimir/search/applicable_action_generators.hpp"
+#include "mimir/search/applicable_action_generators/interface.hpp"
+#include "mimir/search/axiom_evaluators.hpp"
 #include "mimir/search/delete_relaxed_problem_explorator.hpp"
+#include "mimir/search/generalized_search_context.hpp"
+#include "mimir/search/heuristics/blind.hpp"
+#include "mimir/search/metric.hpp"
+#include "mimir/search/openlists/priority_queue.hpp"
+#include "mimir/search/search_node.hpp"
+#include "mimir/search/search_space.hpp"
+#include "mimir/search/state.hpp"
+#include "mimir/search/state_repository.hpp"
 
-#include <algorithm>
-#include <cstdlib>
-#include <deque>
+using namespace mimir::formalism;
+using namespace mimir::search;
+using namespace mimir::graphs;
 
-namespace mimir
+namespace mimir::graphs
+{
+
+std::ostream& operator<<(std::ostream& out, const ProblemVertex& vertex)
+{
+    out << "problem_v_idx=" << vertex.get_index() << "\n"  //
+        << " state=";
+    mimir::operator<<(out, std::make_tuple(get_state(vertex), std::cref(*get_problem(vertex))));
+    out << "\n"
+        << " unit_goal_dist=" << get_unit_goal_distance(vertex) << "\n"      //
+        << " action_goal_dist=" << get_action_goal_distance(vertex) << "\n"  //
+        << " is_initial=" << is_initial(vertex) << "\n"                      //
+        << " is_goal=" << is_goal(vertex) << "\n"                            //
+        << " is_unsolvable=" << is_unsolvable(vertex) << "\n"                //
+        << " is_alive=" << is_alive(vertex);
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const ProblemEdge& edge)
+{
+    out << "problem_e_idx=" << edge.get_index() << "\n"       //
+        << " problem_src_idx=" << edge.get_source() << "\n"   //
+        << " problem_dst_idx=" << edge.get_target() << "\n";  //
+    out << " action=";
+    mimir::operator<<(out, std::make_tuple(get_action(edge), std::cref(*get_problem(edge)), GroundActionImpl::PlanFormatterTag {}));
+    out << "\n"
+        << " action_cost=" << get_action_cost(edge);
+    return out;
+}
+
+}
+
+namespace mimir::datasets
 {
 /**
- * StateSpace
+ * StateSpaceImpl
  */
-StateSpace::StateSpace(bool use_unit_cost_one,
-                       std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                       std::shared_ptr<StateRepository> state_repository,
-                       typename StateSpace::GraphType graph,
-                       StateMap<Index> state_to_vertex_index,
-                       Index initial_vertex_index,
-                       IndexSet goal_vertex_indices,
-                       IndexSet deadend_vertex_indices,
-                       ContinuousCostList goal_distances) :
-    m_use_unit_cost_one(use_unit_cost_one),
-    m_applicable_action_generator(std::move(applicable_action_generator)),
-    m_state_repository(std::move(state_repository)),
+
+struct SymmetriesData
+{
+    const GeneralizedColorFunction& color_function;
+    CertificateMap<search::State> class_representative;
+    StateToCertificate state_to_certificate;
+    StateSet prunable_states;
+    ValueSet<std::pair<graphs::VertexIndex, graphs::VertexIndex>> m_edges;
+
+    explicit SymmetriesData(const GeneralizedColorFunction& color_function) :
+        color_function(color_function),
+        class_representative(),
+        state_to_certificate(),
+        prunable_states()
+    {
+    }
+};
+
+/// @brief `SymmetryStatePruning` extends the brfs pruning strategy by additionally pruning symmetric states.
+class SymmetryStatePruning : public IPruningStrategy
+{
+private:
+    SymmetriesData& m_symm_data;
+
+public:
+    explicit SymmetryStatePruning(SymmetriesData& symm_data) : m_symm_data(symm_data) {}
+
+    bool test_prune_initial_state(State state) override { return false; }
+    bool test_prune_successor_state(State state, State succ_state, bool is_new_succ) override
+    {
+        return !is_new_succ || m_symm_data.prunable_states.contains(succ_state);
+    }
+};
+
+class SymmetryReducedProblemGraphEventHandler : public brfs::EventHandlerBase<SymmetryReducedProblemGraphEventHandler>
+{
+private:
+    const StateSpaceImpl::Options& m_options;
+    graphs::StaticProblemGraph& m_graph;
+    IndexSet& m_goal_vertices;
+    SymmetriesData& m_symm_data;
+
+    StateMap<graphs::VertexIndex> m_state_to_vertex_index;
+
+    /* Implement AlgorithmEventHandlerBase interface */
+    friend class brfs::EventHandlerBase<SymmetryReducedProblemGraphEventHandler>;
+
+    auto compute_certificate(State state)
+    {
+        const auto object_graph = create_object_graph(state, *m_problem, *m_symm_data.color_function, m_options.mark_true_goal_literals);
+
+        return std::make_shared<const nauty::Certificate>(nauty::compute_certificate(object_graph));
+    }
+
+    void on_expand_state_impl(State state) {}
+
+    void on_expand_goal_state_impl(State state) { m_goal_vertices.insert(m_state_to_vertex_index.at(state)); }
+
+    void on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state)
+    {
+        const auto source_v_idx = m_state_to_vertex_index.at(state);
+
+        auto tmp_certificate = compute_certificate(successor_state);
+        auto it = m_symm_data.class_representative.find(tmp_certificate.get());
+        const auto is_symmetric = (it != m_symm_data.class_representative.end());
+
+        if (is_symmetric)
+        {
+            /* Existing class re-encountered: add edge if between existing representative states! */
+
+            /* Always add novel edges between symmetric states. */
+
+            const auto target_v_idx = m_state_to_vertex_index.at(it->second);
+            if (m_symm_data.m_edges.emplace(source_v_idx, target_v_idx).second)  ///< avoid adding parallel edges
+            {
+                m_graph.add_directed_edge(source_v_idx, target_v_idx, action, m_problem, action_cost);
+            }
+
+            /* Always mark symmetric states as prunable. */
+            m_symm_data.prunable_states.insert(successor_state);
+        }
+        else
+        {
+            /* New class determined: add vertex and edge! */
+
+            assert(m_graph.get_num_vertices() == m_state_to_vertex_index.size());
+
+            const auto target_v_idx =
+                m_graph.add_vertex(successor_state, m_problem, std::move(tmp_certificate), DiscreteCost(0), ContinuousCost(0), false, false, false, false);
+            const auto certificate = graphs::get_certificate(m_graph.get_vertex(target_v_idx));
+
+            m_symm_data.state_to_certificate.emplace(successor_state, certificate);
+            m_symm_data.class_representative.emplace(certificate.get(), successor_state);
+
+            m_state_to_vertex_index.emplace(successor_state, target_v_idx);
+            m_graph.add_directed_edge(source_v_idx, target_v_idx, action, m_problem, action_cost);
+        }
+    }
+
+    void on_generate_state_in_search_tree_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) {}
+
+    void on_generate_state_not_in_search_tree_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) {}
+
+    void on_finish_g_layer_impl(uint32_t g_value, uint64_t num_expanded_states, uint64_t num_generated_states) {}
+
+    void on_start_search_impl(State start_state)
+    {
+        const auto v_idx =
+            m_graph.add_vertex(start_state, m_problem, compute_certificate(start_state), DiscreteCost(0), ContinuousCost(0), false, false, false, false);
+        m_state_to_vertex_index.emplace(start_state, v_idx);
+
+        const auto certificate = graphs::get_certificate(m_graph.get_vertex(v_idx));
+        m_symm_data.class_representative.emplace(certificate.get(), start_state);
+        m_symm_data.state_to_certificate.emplace(start_state, certificate);
+    }
+
+    void on_end_search_impl(uint64_t num_reached_fluent_atoms,
+                            uint64_t num_reached_derived_atoms,
+                            uint64_t num_bytes_for_unextended_state_portion,
+                            uint64_t num_bytes_for_extended_state_portion,
+                            uint64_t num_bytes_for_nodes,
+                            uint64_t num_bytes_for_actions,
+                            uint64_t num_bytes_for_axioms,
+                            uint64_t num_states,
+                            uint64_t num_nodes,
+                            uint64_t num_actions,
+                            uint64_t num_axioms) const
+    {
+    }
+
+    void on_solved_impl(const Plan& plan) {}
+
+    void on_unsolvable_impl() {}
+
+    void on_exhausted_impl() {}
+
+public:
+    explicit SymmetryReducedProblemGraphEventHandler(Problem problem,
+                                                     const StateSpaceImpl::Options& options,
+                                                     graphs::StaticProblemGraph& graph,
+                                                     IndexSet& goal_vertices,
+                                                     SymmetriesData& symm_data,
+                                                     bool quiet = true) :
+        brfs::EventHandlerBase<SymmetryReducedProblemGraphEventHandler>(problem, quiet),
+        m_options(options),
+        m_graph(graph),
+        m_goal_vertices(goal_vertices),
+        m_symm_data(symm_data)
+    {
+    }
+};
+
+class ProblemGraphEventHandler : public brfs::EventHandlerBase<ProblemGraphEventHandler>
+{
+private:
+    const StateSpaceImpl::Options& m_options;
+    graphs::StaticProblemGraph& m_graph;
+    IndexSet& m_goal_vertices;
+
+    StateMap<graphs::VertexIndex> m_state_to_vertex_index;
+
+    /* Implement AlgorithmEventHandlerBase interface */
+    friend class EventHandlerBase<ProblemGraphEventHandler>;
+
+    void on_expand_state_impl(State state)
+    {
+        // if (!m_state_to_vertex_index.contains(state))
+        //     m_state_to_vertex_index.emplace(state, m_graph.add_vertex(graphs::VertexIndex(-1), state, nullptr));
+    }
+
+    void on_expand_goal_state_impl(State state) { m_goal_vertices.insert(m_state_to_vertex_index.at(state)); }
+
+    void on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state)
+    {
+        const auto source_vertex_index = m_state_to_vertex_index.at(state);
+        const auto target_vertex_index = m_state_to_vertex_index.contains(successor_state) ?
+                                             m_state_to_vertex_index.at(successor_state) :
+                                             m_graph.add_vertex(successor_state,
+                                                                m_problem,
+                                                                std::shared_ptr<const nauty::Certificate>(nullptr),
+                                                                DiscreteCost(0),
+                                                                ContinuousCost(0),
+                                                                false,
+                                                                false,
+                                                                false,
+                                                                false);
+        m_state_to_vertex_index.emplace(successor_state, target_vertex_index);
+        m_graph.add_directed_edge(source_vertex_index, target_vertex_index, action, m_problem, action_cost);
+    }
+
+    void on_generate_state_in_search_tree_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) {}
+
+    void on_generate_state_not_in_search_tree_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) {}
+
+    void on_finish_g_layer_impl(uint32_t g_value, uint64_t num_expanded_states, uint64_t num_generated_states) {}
+
+    void on_start_search_impl(State start_state)
+    {
+        const auto v_idx = m_graph.add_vertex(start_state,
+                                              m_problem,
+                                              std::shared_ptr<const nauty::Certificate>(nullptr),
+                                              DiscreteCost(0),
+                                              ContinuousCost(0),
+                                              false,
+                                              false,
+                                              false,
+                                              false);
+        m_state_to_vertex_index.emplace(start_state, v_idx);
+    }
+
+    void on_end_search_impl(uint64_t num_reached_fluent_atoms,
+                            uint64_t num_reached_derived_atoms,
+                            uint64_t num_bytes_for_unextended_state_portion,
+                            uint64_t num_bytes_for_extended_state_portion,
+                            uint64_t num_bytes_for_nodes,
+                            uint64_t num_bytes_for_actions,
+                            uint64_t num_bytes_for_axioms,
+                            uint64_t num_states,
+                            uint64_t num_nodes,
+                            uint64_t num_actions,
+                            uint64_t num_axioms) const
+    {
+    }
+
+    void on_solved_impl(const Plan& plan) {}
+
+    void on_unsolvable_impl() {}
+
+    void on_exhausted_impl() {}
+
+public:
+    explicit ProblemGraphEventHandler(Problem problem,
+                                      const StateSpaceImpl::Options& options,
+                                      graphs::StaticProblemGraph& graph,
+                                      IndexSet& goal_vertices,
+                                      bool quiet = true) :
+        brfs::EventHandlerBase<ProblemGraphEventHandler>(problem, quiet),
+        m_options(options),
+        m_graph(graph),
+        m_goal_vertices(goal_vertices)
+    {
+    }
+};
+
+static std::optional<StateSpace>
+perform_reachability_analysis(SearchContext context, graphs::StaticProblemGraph graph, IndexSet goal_vertices, const StateSpaceImpl::Options& options)
+{
+    if (options.remove_if_unsolvable && goal_vertices.empty())
+    {
+        return std::nullopt;  ///< initial vertex is unsolvable.
+    }
+
+    /* Translate into bidirection graph for making subsequent operations more efficient */
+    auto bidir_graph = graphs::ProblemGraph(std::move(graph));
+
+    /* Compute unit goal distances. */
+    auto [unit_predecessors, unit_goal_distances] =
+        graphs::bgl::breadth_first_search(graphs::DirectionTaggedType(bidir_graph, graphs::BackwardTag {}), goal_vertices.begin(), goal_vertices.end());
+
+    if (options.remove_if_unsolvable && unit_goal_distances.at(0) == UNDEFINED_DISCRETE_COST)  // 0 is the index of the vertex for the initial state.
+    {
+        return std::nullopt;  ///< initial vertex is unsolvable.
+    }
+
+    /* Compute unsolvable vertices. */
+    auto unsolvable_vertices = IndexSet {};
+    for (graphs::VertexIndex v_idx = 0; v_idx < bidir_graph.get_num_vertices(); ++v_idx)
+    {
+        if (unit_goal_distances[v_idx] == UNDEFINED_DISCRETE_COST)
+        {
+            unsolvable_vertices.insert(v_idx);
+        }
+    }
+
+    /* Compute action goal distances. */
+    auto edge_action_costs = ContinuousCostList();
+    edge_action_costs.reserve(bidir_graph.get_num_edges());
+    for (const auto& edge : bidir_graph.get_edges())
+    {
+        edge_action_costs.push_back(get_action_cost(edge));
+    }
+    auto [action_predecessors, action_goal_distances] = graphs::bgl::dijkstra_shortest_paths(graphs::DirectionTaggedType(bidir_graph, graphs::BackwardTag {}),
+                                                                                             edge_action_costs,
+                                                                                             goal_vertices.begin(),
+                                                                                             goal_vertices.end());
+
+    /* Construct final graph */
+    auto final_graph = graphs::StaticProblemGraph {};
+
+    for (const auto& v : bidir_graph.get_vertices())
+    {
+        const auto problem_v_idx = v.get_index();
+        const auto unit_goal_distance = unit_goal_distances.at(problem_v_idx);
+        const auto action_goal_distance = action_goal_distances.at(problem_v_idx);
+        const auto is_initial = (problem_v_idx == 0);
+        const auto is_goal = goal_vertices.contains(problem_v_idx);
+        const auto is_unsolvable = unsolvable_vertices.contains(problem_v_idx);
+        const auto is_alive = (!(is_goal || is_unsolvable));
+
+        final_graph.add_vertex(graphs::get_state(v),
+                               graphs::get_problem(v),
+                               graphs::get_certificate(v),
+                               unit_goal_distance,
+                               action_goal_distance,
+                               is_initial,
+                               is_goal,
+                               is_unsolvable,
+                               is_alive);
+    }
+    for (const auto& e : bidir_graph.get_edges())
+    {
+        final_graph.add_directed_edge(e.get_source(), e.get_target(), e);
+    }
+
+    return std::make_shared<StateSpaceImpl>(context, graphs::ProblemGraph(std::move(final_graph)), 0, std::move(goal_vertices), std::move(unsolvable_vertices));
+}
+
+static std::optional<StateSpace> compute_problem_graph_with_symmetry_reduction(const SearchContext& context,
+                                                                               const GeneralizedColorFunction& color_function,
+                                                                               const StateSpaceImpl::Options& options)
+{
+    auto graph = graphs::StaticProblemGraph();
+    auto goal_vertices = IndexSet {};
+
+    auto symm_data = SymmetriesData(color_function);
+
+    const auto state_repository = context.get_state_repository();
+    const auto goal_test = std::make_shared<ProblemGoalStrategy>(context.get_problem());
+    const auto event_handler =
+        std::make_shared<SymmetryReducedProblemGraphEventHandler>(context.get_problem(), options, graph, goal_vertices, symm_data, false);
+    const auto pruning_strategy = std::make_shared<SymmetryStatePruning>(symm_data);
+    const auto result = find_solution(context, state_repository->get_or_create_initial_state(), event_handler, goal_test, pruning_strategy, true);
+
+    if (result.status != EXHAUSTED)
+    {
+        return std::nullopt;  ///< ran out of resources.
+    }
+
+    return perform_reachability_analysis(context, std::move(graph), std::move(goal_vertices), options);
+}
+
+static std::optional<StateSpace> compute_problem_graph_without_symmetry_reduction(const SearchContext& context, const StateSpaceImpl::Options& options)
+{
+    auto graph = graphs::StaticProblemGraph();
+    auto goal_vertices = IndexSet {};
+
+    const auto state_repository = context.get_state_repository();
+    const auto goal_test = std::make_shared<ProblemGoalStrategy>(context.get_problem());
+    const auto event_handler = std::make_shared<ProblemGraphEventHandler>(context.get_problem(), options, graph, goal_vertices, false);
+    const auto pruning_strategy = std::make_shared<DuplicatePruningStrategy>();
+    const auto result = find_solution(context, state_repository->get_or_create_initial_state(), event_handler, goal_test, pruning_strategy, true);
+
+    if (result.status != EXHAUSTED)
+    {
+        return std::nullopt;  ///< ran out of resources.
+    }
+
+    return perform_reachability_analysis(context, std::move(graph), std::move(goal_vertices), options);
+}
+
+StateSpaceImpl::StateSpaceImpl(search::SearchContext context,
+                               graphs::ProblemGraph graph,
+                               Index initial_vertex,
+                               IndexSet goal_vertices,
+                               IndexSet unsolvable_vertices) :
+    m_context(std::move(context)),
     m_graph(std::move(graph)),
-    m_state_to_vertex_index(std::move(state_to_vertex_index)),
-    m_initial_vertex_index(std::move(initial_vertex_index)),
-    m_goal_vertex_indices(std::move(goal_vertex_indices)),
-    m_deadend_vertex_indices(std::move(deadend_vertex_indices)),
-    m_goal_distances(std::move(goal_distances)),
-    m_vertex_indices_by_goal_distance()
+    m_initial_vertex(initial_vertex),
+    m_goal_vertices(std::move(goal_vertices)),
+    m_unsolvable_vertices(std::move(unsolvable_vertices))
 {
-    for (Index vertex = 0; vertex < m_graph.get_num_vertices(); ++vertex)
-    {
-        m_vertex_indices_by_goal_distance[m_goal_distances.at(vertex)].push_back(vertex);
-    }
 }
 
-std::optional<StateSpace> StateSpace::create(const fs::path& domain_filepath, const fs::path& problem_filepath, const StateSpaceOptions& options)
+std::optional<StateSpace> StateSpaceImpl::create(search::SearchContext context, const Options& options)
 {
-    auto parser = PDDLParser(domain_filepath, problem_filepath);
-    auto grounder = std::make_shared<Grounder>(parser.get_problem(), parser.get_pddl_repositories());
-    auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(grounder);
-    auto applicable_action_generator = delete_relaxed_problem_explorator.create_grounded_applicable_action_generator();
-    auto axiom_evaluator = delete_relaxed_problem_explorator.create_grounded_axiom_evaluator();
-    auto state_repository = std::make_shared<StateRepository>(std::dynamic_pointer_cast<IAxiomEvaluator>(axiom_evaluator));
-    return StateSpace::create(applicable_action_generator, state_repository, options);
+    auto color_function = std::make_shared<GeneralizedColorFunctionImpl>(
+        formalism::GeneralizedProblem(context.get_problem()->get_domain(), formalism::ProblemList { context.get_problem() }));
+
+    return (options.symmetry_pruning) ? compute_problem_graph_with_symmetry_reduction(context, color_function, options) :
+                                        compute_problem_graph_without_symmetry_reduction(context, options);
 }
 
-std::optional<StateSpace> StateSpace::create(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                                             std::shared_ptr<StateRepository> state_repository,
-                                             const StateSpaceOptions& options)
+StateSpaceList StateSpaceImpl::create(search::GeneralizedSearchContext contexts, const Options& options)
 {
-    const auto problem = applicable_action_generator->get_action_grounder()->get_problem();
+    auto color_function = std::make_shared<GeneralizedColorFunctionImpl>(contexts.get_generalized_problem());
 
-    auto stop_watch = StopWatch(options.timeout_ms);
-
-    auto initial_state = state_repository->get_or_create_initial_state();
-
-    if (options.remove_if_unsolvable && !problem->static_goal_holds())
-    {
-        // Unsolvable
-        return std::nullopt;
-    }
-
-    auto graph = StaticGraph<StateVertex, GroundActionEdge>();
-    const auto initial_vertex_index = graph.add_vertex(State(initial_state));
-    auto goal_vertex_indices = IndexSet {};
-    auto state_to_vertex_index = StateMap<Index> {};
-    state_to_vertex_index.emplace(initial_state, initial_vertex_index);
-
-    auto lifo_queue = std::deque<StateVertex>();
-    lifo_queue.push_back(graph.get_vertices().at(initial_vertex_index));
-
-    auto goal_test = ProblemGoal(problem);
-
-    stop_watch.start();
-    while (!lifo_queue.empty() && !stop_watch.has_finished())
-    {
-        const auto vertex = lifo_queue.back();
-        const auto vertex_index = vertex.get_index();
-        lifo_queue.pop_back();
-        if (goal_test.test_dynamic_goal(mimir::get_state(vertex)))
-        {
-            goal_vertex_indices.insert(vertex_index);
-        }
-
-        for (const auto& action : applicable_action_generator->create_applicable_action_generator(mimir::get_state(vertex)))
-        {
-            const auto [successor_state, action_cost] = state_repository->get_or_create_successor_state(mimir::get_state(vertex), action);
-            const auto it = state_to_vertex_index.find(successor_state);
-            const bool exists = (it != state_to_vertex_index.end());
-            if (exists)
-            {
-                const auto successor_vertex_index = it->second;
-                graph.add_directed_edge(vertex_index, successor_vertex_index, action, action_cost);
-                continue;
-            }
-
-            const auto successor_vertex_index = graph.add_vertex(successor_state);
-            if (successor_vertex_index >= options.max_num_states)
-            {
-                // Ran out of state resources
-                return std::nullopt;
-            }
-
-            graph.add_directed_edge(vertex_index, successor_vertex_index, action, action_cost);
-            state_to_vertex_index.emplace(successor_state, successor_vertex_index);
-            lifo_queue.push_back(graph.get_vertices().at(successor_vertex_index));
-        }
-    }
-
-    if (stop_watch.has_finished())
-    {
-        // Ran out of time
-        return std::nullopt;
-    }
-
-    if (options.remove_if_unsolvable && goal_vertex_indices.empty())
-    {
-        // Skip: unsolvable
-        return std::nullopt;
-    }
-
-    auto bidirectional_graph = typename StateSpace::GraphType(std::move(graph));
-
-    auto goal_distances = ContinuousCostList {};
-    if (options.use_unit_cost_one
-        || std::all_of(bidirectional_graph.get_edges().begin(),
-                       bidirectional_graph.get_edges().end(),
-                       [](const auto& transition) { return get_cost(transition) == 1; }))
-    {
-        auto [predecessors_, goal_distances_] = breadth_first_search(TraversalDirectionTaggedType(bidirectional_graph, BackwardTraversal()),
-                                                                     goal_vertex_indices.begin(),
-                                                                     goal_vertex_indices.end());
-        goal_distances = std::move(goal_distances_);
-    }
-    else
-    {
-        auto transition_costs = ContinuousCostList {};
-        transition_costs.reserve(bidirectional_graph.get_num_edges());
-        for (const auto& transition : bidirectional_graph.get_edges())
-        {
-            transition_costs.push_back(get_cost(transition));
-        }
-        auto [predecessors_, goal_distances_] = dijkstra_shortest_paths(TraversalDirectionTaggedType(bidirectional_graph, BackwardTraversal()),
-                                                                        transition_costs,
-                                                                        goal_vertex_indices.begin(),
-                                                                        goal_vertex_indices.end());
-        goal_distances = std::move(goal_distances_);
-    }
-
-    auto deadend_vertex_indices = IndexSet {};
-    for (Index vertex = 0; vertex < bidirectional_graph.get_num_vertices(); ++vertex)
-    {
-        if (goal_distances.at(vertex) == std::numeric_limits<ContinuousCost>::infinity())
-        {
-            deadend_vertex_indices.insert(vertex);
-        }
-    }
-
-    return StateSpace(options.use_unit_cost_one,
-                      std::move(applicable_action_generator),
-                      std::move(state_repository),
-                      std::move(bidirectional_graph),
-                      std::move(state_to_vertex_index),
-                      initial_vertex_index,
-                      std::move(goal_vertex_indices),
-                      std::move(deadend_vertex_indices),
-                      std::move(goal_distances));
-}
-
-StateSpaceList StateSpace::create(const fs::path& domain_filepath, const std::vector<fs::path>& problem_filepaths, const StateSpacesOptions& options)
-{
-    auto memories = std::vector<std::tuple<std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>> {};
-    for (const auto& problem_filepath : problem_filepaths)
-    {
-        auto parser = PDDLParser(domain_filepath, problem_filepath);
-        auto grounder = std::make_shared<Grounder>(parser.get_problem(), parser.get_pddl_repositories());
-        auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(grounder);
-        auto applicable_action_generator = delete_relaxed_problem_explorator.create_grounded_applicable_action_generator();
-        auto axiom_evaluator = delete_relaxed_problem_explorator.create_grounded_axiom_evaluator();
-        auto state_repository = std::make_shared<StateRepository>(std::dynamic_pointer_cast<IAxiomEvaluator>(axiom_evaluator));
-        memories.emplace_back(applicable_action_generator, state_repository);
-    }
-
-    return StateSpace::create(memories, options);
-}
-
-std::vector<StateSpace>
-StateSpace::create(const std::vector<std::tuple<std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>& memories,
-                   const StateSpacesOptions& options)
-{
     auto state_spaces = StateSpaceList {};
-    auto pool = BS::thread_pool(options.num_threads);
-    auto futures = std::vector<std::future<std::optional<StateSpace>>> {};
-
-    for (const auto& [applicable_action_generator, state_repository] : memories)
+    for (const auto& context : contexts.get_search_contexts())
     {
-        futures.push_back(pool.submit_task([applicable_action_generator, state_repository, state_space_options = options.state_space_options]
-                                           { return StateSpace::create(applicable_action_generator, state_repository, state_space_options); }));
-    }
-
-    for (auto& future : futures)
-    {
-        auto state_space = future.get();
-        if (state_space.has_value())
+        if (options.remove_if_unsolvable && !context.get_problem()->static_goal_holds())
         {
-            state_spaces.push_back(std::move(state_space.value()));
+            continue;
         }
+
+        auto result = (options.symmetry_pruning) ? compute_problem_graph_with_symmetry_reduction(context, color_function, options) :
+                                                   compute_problem_graph_without_symmetry_reduction(context, options);
+
+        if (!result)
+        {
+            continue;
+        }
+
+        state_spaces.emplace_back(std::move(result.value()));
     }
 
     if (options.sort_ascending_by_num_states)
     {
-        std::sort(state_spaces.begin(), state_spaces.end(), [](const auto& l, const auto& r) { return l.get_num_vertices() < r.get_num_vertices(); });
+        std::sort(state_spaces.begin(),
+                  state_spaces.end(),
+                  [](auto&& lhs, auto&& rhs) { return lhs->get_graph().get_num_vertices() < rhs->get_graph().get_num_vertices(); });
     }
 
     return state_spaces;
 }
 
-/**
- * Extended functionality
- */
+const search::SearchContext& StateSpaceImpl::get_search_context() const { return m_context; }
 
-template<IsTraversalDirection Direction>
-ContinuousCostList StateSpace::compute_shortest_distances_from_vertices(const IndexList& states) const
-{
-    auto distances = ContinuousCostList {};
-    if (m_use_unit_cost_one
-        || std::all_of(m_graph.get_edges().begin(), m_graph.get_edges().end(), [](const auto& transition) { return get_cost(transition) == 1; }))
-    {
-        auto [predecessors_, distances_] = breadth_first_search(TraversalDirectionTaggedType(m_graph, Direction()), states.begin(), states.end());
-        distances = std::move(distances_);
-    }
-    else
-    {
-        auto transition_costs = ContinuousCostList {};
-        transition_costs.reserve(m_graph.get_num_edges());
-        for (const auto& transition : m_graph.get_edges())
-        {
-            transition_costs.push_back(get_cost(transition));
-        }
-        auto [predecessors_, distances_] =
-            dijkstra_shortest_paths(TraversalDirectionTaggedType(m_graph, Direction()), transition_costs, states.begin(), states.end());
-        distances = std::move(distances_);
-    }
+const graphs::ProblemGraph& StateSpaceImpl::get_graph() const { return m_graph; }
 
-    return distances;
-}
+Index StateSpaceImpl::get_initial_vertex() const { return m_initial_vertex; }
 
-template ContinuousCostList StateSpace::compute_shortest_distances_from_vertices<ForwardTraversal>(const IndexList& states) const;
-template ContinuousCostList StateSpace::compute_shortest_distances_from_vertices<BackwardTraversal>(const IndexList& states) const;
+const IndexSet& StateSpaceImpl::get_goal_vertices() const { return m_goal_vertices; }
 
-template<IsTraversalDirection Direction>
-ContinuousCostMatrix StateSpace::compute_pairwise_shortest_vertex_distances() const
-{
-    auto transition_costs = ContinuousCostList {};
-    if (m_use_unit_cost_one)
-    {
-        transition_costs = ContinuousCostList(m_graph.get_num_edges(), 1);
-    }
-    else
-    {
-        transition_costs.reserve(m_graph.get_num_edges());
-        for (const auto& transition : m_graph.get_edges())
-        {
-            transition_costs.push_back(get_cost(transition));
-        }
-    }
+const IndexSet& StateSpaceImpl::get_unsolvable_vertices() const { return m_unsolvable_vertices; }
 
-    return floyd_warshall_all_pairs_shortest_paths(TraversalDirectionTaggedType(m_graph, Direction()), transition_costs).get_matrix();
-}
-
-template ContinuousCostMatrix StateSpace::compute_pairwise_shortest_vertex_distances<ForwardTraversal>() const;
-template ContinuousCostMatrix StateSpace::compute_pairwise_shortest_vertex_distances<BackwardTraversal>() const;
-
-/**
- *  Getters
- */
-
-/* Meta data */
-Problem StateSpace::get_problem() const { return m_applicable_action_generator->get_problem(); }
-bool StateSpace::get_use_unit_cost_one() const { return m_use_unit_cost_one; }
-
-/* Memory */
-const std::shared_ptr<PDDLRepositories>& StateSpace::get_pddl_repositories() const { return m_applicable_action_generator->get_pddl_repositories(); }
-
-const std::shared_ptr<IApplicableActionGenerator>& StateSpace::get_applicable_action_generator() const { return m_applicable_action_generator; }
-
-const std::shared_ptr<StateRepository>& StateSpace::get_state_repository() const { return m_state_repository; }
-
-/* Graph */
-const typename StateSpace::GraphType& StateSpace::get_graph() const { return m_graph; }
-
-/* States */
-const StateVertexList& StateSpace::get_vertices() const { return m_graph.get_vertices(); }
-
-const StateVertex& StateSpace::get_vertex(Index vertex) const { return m_graph.get_vertices().at(vertex); }
-
-template<IsTraversalDirection Direction>
-std::ranges::subrange<StateSpace::AdjacentVertexConstIteratorType<Direction>> StateSpace::get_adjacent_vertices(Index vertex) const
-{
-    return m_graph.get_adjacent_vertices<Direction>(vertex);
-}
-
-template std::ranges::subrange<StateSpace::AdjacentVertexConstIteratorType<ForwardTraversal>>
-StateSpace::get_adjacent_vertices<ForwardTraversal>(Index vertex) const;
-template std::ranges::subrange<StateSpace::AdjacentVertexConstIteratorType<BackwardTraversal>>
-StateSpace::get_adjacent_vertices<BackwardTraversal>(Index vertex) const;
-
-template<IsTraversalDirection Direction>
-std::ranges::subrange<StateSpace::AdjacentVertexIndexConstIteratorType<Direction>> StateSpace::get_adjacent_vertex_indices(Index vertex) const
-{
-    return m_graph.get_adjacent_vertex_indices<Direction>(vertex);
-}
-
-template std::ranges::subrange<StateSpace::AdjacentVertexIndexConstIteratorType<ForwardTraversal>>
-StateSpace::get_adjacent_vertex_indices<ForwardTraversal>(Index vertex) const;
-template std::ranges::subrange<StateSpace::AdjacentVertexIndexConstIteratorType<BackwardTraversal>>
-StateSpace::get_adjacent_vertex_indices<BackwardTraversal>(Index vertex) const;
-
-Index StateSpace::get_vertex_index(State state) const { return m_state_to_vertex_index.at(state); }
-
-Index StateSpace::get_initial_vertex_index() const { return m_initial_vertex_index; }
-
-const IndexSet& StateSpace::get_goal_vertex_indices() const { return m_goal_vertex_indices; }
-
-const IndexSet& StateSpace::get_deadend_vertex_indices() const { return m_deadend_vertex_indices; }
-
-size_t StateSpace::get_num_vertices() const { return m_graph.get_num_vertices(); }
-
-size_t StateSpace::get_num_goal_vertices() const { return get_goal_vertex_indices().size(); }
-
-size_t StateSpace::get_num_deadend_vertices() const { return get_deadend_vertex_indices().size(); }
-
-bool StateSpace::is_goal_vertex(Index vertex) const { return get_goal_vertex_indices().count(vertex); }
-
-bool StateSpace::is_deadend_vertex(Index vertex) const { return get_deadend_vertex_indices().count(vertex); }
-
-bool StateSpace::is_alive_vertex(Index vertex) const { return !(get_goal_vertex_indices().count(vertex) || get_deadend_vertex_indices().count(vertex)); }
-
-/* Transitions */
-const GroundActionEdgeList& StateSpace::get_edges() const { return m_graph.get_edges(); }
-
-const GroundActionEdge& StateSpace::get_edge(Index edge) const { return get_edges().at(edge); }
-
-template<IsTraversalDirection Direction>
-std::ranges::subrange<StateSpace::AdjacentEdgeConstIteratorType<Direction>> StateSpace::get_adjacent_edges(Index vertex) const
-{
-    return m_graph.get_adjacent_edges<Direction>(vertex);
-}
-
-template std::ranges::subrange<StateSpace::AdjacentEdgeConstIteratorType<ForwardTraversal>>
-StateSpace::get_adjacent_edges<ForwardTraversal>(Index vertex) const;
-template std::ranges::subrange<StateSpace::AdjacentEdgeConstIteratorType<BackwardTraversal>>
-StateSpace::get_adjacent_edges<BackwardTraversal>(Index vertex) const;
-
-template<IsTraversalDirection Direction>
-std::ranges::subrange<StateSpace::AdjacentEdgeIndexConstIteratorType<Direction>> StateSpace::get_adjacent_edge_indices(Index vertex) const
-{
-    return m_graph.get_adjacent_edge_indices<Direction>(vertex);
-}
-
-template std::ranges::subrange<StateSpace::AdjacentEdgeIndexConstIteratorType<ForwardTraversal>>
-StateSpace::get_adjacent_edge_indices<ForwardTraversal>(Index vertex) const;
-template std::ranges::subrange<StateSpace::AdjacentEdgeIndexConstIteratorType<BackwardTraversal>>
-StateSpace::get_adjacent_edge_indices<BackwardTraversal>(Index vertex) const;
-
-ContinuousCost StateSpace::get_edge_cost(Index edge) const { return (m_use_unit_cost_one) ? 1 : get_cost(m_graph.get_edges().at(edge)); }
-
-size_t StateSpace::get_num_edges() const { return m_graph.get_num_edges(); }
-
-/* Distances */
-const ContinuousCostList& StateSpace::get_goal_distances() const { return m_goal_distances; }
-
-ContinuousCost StateSpace::get_goal_distance(Index vertex) const { return m_goal_distances.at(vertex); }
-
-ContinuousCost StateSpace::get_max_goal_distance() const { return *std::max_element(m_goal_distances.begin(), m_goal_distances.end()); }
-
-/* Additional */
-const std::map<ContinuousCost, IndexList>& StateSpace::get_vertex_indices_by_goal_distance() const { return m_vertex_indices_by_goal_distance; }
-
-Index StateSpace::sample_vertex_index_with_goal_distance(ContinuousCost goal_distance) const
-{
-    const auto& vertex_indices = m_vertex_indices_by_goal_distance.at(goal_distance);
-    const auto vertex_index = std::rand() % static_cast<int>(vertex_indices.size());
-    return vertex_indices.at(vertex_index);
-}
-
-/**
- * Pretty printing
- */
-
-std::ostream& operator<<(std::ostream& out, const StateSpace& state_space)
-{
-    // 2. Header
-    out << "digraph {" << "\n"
-        << "rankdir=\"LR\"" << "\n";
-
-    // 3. Draw states
-    for (Index vertex = 0; vertex < state_space.get_num_vertices(); ++vertex)
-    {
-        out << "s" << vertex << "[";
-        if (state_space.is_goal_vertex(vertex))
-        {
-            out << "peripheries=2,";
-        }
-
-        // label
-        out << "label=\""
-            << std::make_tuple(state_space.get_problem(),
-                               mimir::get_state(state_space.get_graph().get_vertices().at(vertex)),
-                               std::cref(*state_space.get_pddl_repositories()))
-            << "\"";
-
-        out << "]\n";
-    }
-
-    // 4. Draw initial state and dangling edge
-    out << "Dangling [ label = \"\", style = invis ]\n"
-        << "{ rank = same; Dangling }\n"
-        << "Dangling -> s" << state_space.get_initial_vertex_index() << "\n";
-
-    // 5. Group states with same distance together
-    for (auto it = state_space.get_vertex_indices_by_goal_distance().rbegin(); it != state_space.get_vertex_indices_by_goal_distance().rend(); ++it)
-    {
-        const auto& [goal_distance, state_indices] = *it;
-        out << "{ rank = same; ";
-        for (auto state_index : state_indices)
-        {
-            out << "s" << state_index;
-            if (state_index != state_indices.back())
-            {
-                out << ",";
-            }
-        }
-        out << "}\n";
-    }
-    // 6. Draw transitions
-    for (const auto& transition : state_space.get_graph().get_edges())
-    {
-        // direction
-        out << "s" << transition.get_source() << "->" << "s" << transition.get_target() << " [";
-
-        // label
-        out << "label=\"" << std::make_tuple(get_creating_action(transition), std::cref(*state_space.get_pddl_repositories()), PlanActionFormatterTag {})
-            << "\"";
-
-        out << "]\n";
-    }
-    out << "}\n";
-
-    return out;
-}
 }

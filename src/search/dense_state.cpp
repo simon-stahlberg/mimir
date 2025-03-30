@@ -22,44 +22,49 @@
 #include "mimir/formalism/ground_literal.hpp"
 #include "mimir/search/state.hpp"
 
-namespace mimir
+using namespace mimir::formalism;
+
+namespace mimir::search
 {
 
 DenseState::DenseState(State state)
 {
-    insert_into_bitset(state->get_atoms<Fluent>(), m_fluent_atoms);
-    insert_into_bitset(state->get_atoms<Derived>(), m_derived_atoms);
+    insert_into_bitset(state->get_atoms<FluentTag>(), m_fluent_atoms);
+    insert_into_bitset(state->get_atoms<DerivedTag>(), m_derived_atoms);
+    m_numeric_variables = state->get_numeric_variables();
 }
 
 void DenseState::translate(State state, DenseState& out_state)
 {
-    auto& fluent_atoms = out_state.get_atoms<Fluent>();
-    auto& derived_atoms = out_state.get_atoms<Derived>();
+    auto& fluent_atoms = out_state.get_atoms<FluentTag>();
+    auto& derived_atoms = out_state.get_atoms<DerivedTag>();
+    auto& numeric_variables = out_state.get_numeric_variables();
     fluent_atoms.unset_all();
     derived_atoms.unset_all();
-    insert_into_bitset(state->get_atoms<Fluent>(), fluent_atoms);
-    insert_into_bitset(state->get_atoms<Derived>(), derived_atoms);
+    insert_into_bitset(state->get_atoms<FluentTag>(), fluent_atoms);
+    insert_into_bitset(state->get_atoms<DerivedTag>(), derived_atoms);
+    numeric_variables = state->get_numeric_variables();
 }
 
-template<DynamicPredicateTag P>
+template<IsFluentOrDerivedTag P>
 bool DenseState::contains(GroundAtom<P> atom) const
 {
     return get_atoms<P>().get(atom->get_index());
 }
 
-template bool DenseState::contains(GroundAtom<Fluent> atom) const;
-template bool DenseState::contains(GroundAtom<Derived> atom) const;
+template bool DenseState::contains(GroundAtom<FluentTag> atom) const;
+template bool DenseState::contains(GroundAtom<DerivedTag> atom) const;
 
-template<DynamicPredicateTag P>
+template<IsFluentOrDerivedTag P>
 bool DenseState::literal_holds(GroundLiteral<P> literal) const
 {
-    return literal->is_negated() != contains(literal->get_atom());
+    return literal->get_polarity() == contains(literal->get_atom());
 }
 
-template bool DenseState::literal_holds(GroundLiteral<Fluent> literal) const;
-template bool DenseState::literal_holds(GroundLiteral<Derived> literal) const;
+template bool DenseState::literal_holds(GroundLiteral<FluentTag> literal) const;
+template bool DenseState::literal_holds(GroundLiteral<DerivedTag> literal) const;
 
-template<DynamicPredicateTag P>
+template<IsFluentOrDerivedTag P>
 bool DenseState::literals_hold(const GroundLiteralList<P>& literals) const
 {
     for (const auto& literal : literals)
@@ -73,56 +78,60 @@ bool DenseState::literals_hold(const GroundLiteralList<P>& literals) const
     return true;
 }
 
-template<DynamicPredicateTag P>
+template<IsFluentOrDerivedTag P>
 bool DenseState::literals_hold(const FlatIndexList& positive_atoms, const FlatIndexList& negative_atoms) const
 {
     return is_supseteq(get_atoms<P>(), positive_atoms) && are_disjoint(get_atoms<P>(), negative_atoms);
 }
 
-template bool DenseState::literals_hold<Fluent>(const FlatIndexList& positive_atoms, const FlatIndexList& negative_atoms) const;
-template bool DenseState::literals_hold<Derived>(const FlatIndexList& positive_atoms, const FlatIndexList& negative_atoms) const;
+template bool DenseState::literals_hold<FluentTag>(const FlatIndexList& positive_atoms, const FlatIndexList& negative_atoms) const;
+template bool DenseState::literals_hold<DerivedTag>(const FlatIndexList& positive_atoms, const FlatIndexList& negative_atoms) const;
 
 Index DenseState::get_index() const { return m_index; }
 
-template<DynamicPredicateTag P>
+template<IsFluentOrDerivedTag P>
 const FlatBitset& DenseState::get_atoms() const
 {
-    if constexpr (std::is_same_v<P, Fluent>)
+    if constexpr (std::is_same_v<P, FluentTag>)
     {
         return m_fluent_atoms;
     }
-    else if constexpr (std::is_same_v<P, Derived>)
+    else if constexpr (std::is_same_v<P, DerivedTag>)
     {
         return m_derived_atoms;
     }
     else
     {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
+        static_assert(dependent_false<P>::value, "Missing implementation for IsStaticOrFluentOrDerivedTag.");
     }
 }
 
-template const FlatBitset& DenseState::get_atoms<Fluent>() const;
-template const FlatBitset& DenseState::get_atoms<Derived>() const;
+template const FlatBitset& DenseState::get_atoms<FluentTag>() const;
+template const FlatBitset& DenseState::get_atoms<DerivedTag>() const;
+
+const FlatDoubleList& DenseState::get_numeric_variables() const { return m_numeric_variables; }
 
 Index& DenseState::get_index() { return m_index; }
 
-template<DynamicPredicateTag P>
+template<IsFluentOrDerivedTag P>
 FlatBitset& DenseState::get_atoms()
 {
-    if constexpr (std::is_same_v<P, Fluent>)
+    if constexpr (std::is_same_v<P, FluentTag>)
     {
         return m_fluent_atoms;
     }
-    else if constexpr (std::is_same_v<P, Derived>)
+    else if constexpr (std::is_same_v<P, DerivedTag>)
     {
         return m_derived_atoms;
     }
     else
     {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
+        static_assert(dependent_false<P>::value, "Missing implementation for IsStaticOrFluentOrDerivedTag.");
     }
 }
 
-template FlatBitset& DenseState::get_atoms<Fluent>();
-template FlatBitset& DenseState::get_atoms<Derived>();
+template FlatBitset& DenseState::get_atoms<FluentTag>();
+template FlatBitset& DenseState::get_atoms<DerivedTag>();
+
+FlatDoubleList& DenseState::get_numeric_variables() { return m_numeric_variables; }
 }

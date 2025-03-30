@@ -17,50 +17,38 @@
 
 #include "mimir/languages/description_logics/denotation_repositories.hpp"
 
-#include <loki/details/utils/hash.hpp>
+using namespace mimir::formalism;
 
-namespace mimir::dl
+namespace mimir::languages::dl
 {
 
-template<ConstructorTag D>
-size_t DenotationRepository<D>::KeyHash::operator()(const Key& key) const
-{
-    return loki::hash_combine(key.constructor, key.state_index);
-}
-
-template<ConstructorTag D>
-bool DenotationRepository<D>::KeyEqual::operator()(const Key& left, const Key& right) const
-{
-    if (&left != &right)
-    {
-        return (left.constructor == right.constructor) && (left.state_index == right.state_index);
-    }
-    return true;
-}
-
-template<ConstructorTag D>
-Denotation<D> DenotationRepository<D>::insert(Constructor<D> constructor, size_t state_index, const DenotationImpl<D>& denotation)
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
+Denotation<D> DenotationRepository<D>::insert(Constructor<D> constructor, search::State state, const DenotationImpl<D>& denotation)
 {
     const auto [it, inserted] = m_storage.insert(denotation);
+
     if (inserted)
     {
-        m_cached_dynamic_denotations.emplace(Key { constructor, state_index }, Denotation<D>(it->get()));
+        m_cached_dynamic_denotations.emplace(Key { constructor, state }, Denotation<D>(it->get()));
     }
     return Denotation<D>(it->get());
 }
 
-template<ConstructorTag D>
-std::optional<Denotation<D>> DenotationRepository<D>::get_if(Constructor<D> constructor, size_t state_index) const
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
+Denotation<D> DenotationRepository<D>::get_if(Constructor<D> constructor, search::State state) const
 {
-    auto it = m_cached_dynamic_denotations.find(Key { constructor, state_index });
+    auto it = m_cached_dynamic_denotations.find(Key { constructor, state });
+
     if (it == m_cached_dynamic_denotations.end())
     {
-        return std::nullopt;
+        return nullptr;
     }
     return it->second;
 }
 
-template class DenotationRepository<Concept>;
-template class DenotationRepository<Role>;
+template class DenotationRepository<ConceptTag>;
+template class DenotationRepository<RoleTag>;
+template class DenotationRepository<BooleanTag>;
+template class DenotationRepository<NumericalTag>;
 
 }

@@ -20,107 +20,142 @@
 
 #include "mimir/formalism/declarations.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
 
-/**
- * Type 1 effects
- */
-class EffectStripsImpl
+template<IsFluentOrAuxiliaryTag F>
+class NumericEffectImpl
 {
 private:
     Index m_index;
-    LiteralList<Fluent> m_effects;
+    loki::AssignOperatorEnum m_assign_operator;
+    Function<F> m_function;
     FunctionExpression m_function_expression;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    EffectStripsImpl(Index index, LiteralList<Fluent> effects, FunctionExpression function_expression);
+    NumericEffectImpl(Index index, loki::AssignOperatorEnum assign_operator, Function<F> function, FunctionExpression function_expression);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
+    using FormalismEntity = void;
+
     // moveable but not copyable
-    EffectStripsImpl(const EffectStripsImpl& other) = delete;
-    EffectStripsImpl& operator=(const EffectStripsImpl& other) = delete;
-    EffectStripsImpl(EffectStripsImpl&& other) = default;
-    EffectStripsImpl& operator=(EffectStripsImpl&& other) = default;
+    NumericEffectImpl(const NumericEffectImpl& other) = delete;
+    NumericEffectImpl& operator=(const NumericEffectImpl& other) = delete;
+    NumericEffectImpl(NumericEffectImpl&& other) = default;
+    NumericEffectImpl& operator=(NumericEffectImpl&& other) = default;
 
     Index get_index() const;
-    const LiteralList<Fluent>& get_effects() const;
-    const FunctionExpression& get_function_expression() const;
+    loki::AssignOperatorEnum get_assign_operator() const;
+    Function<F> get_function() const;
+    FunctionExpression get_function_expression() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_effects), std::as_const(m_function_expression)); }
+    auto identifying_members() const { return std::tuple(get_assign_operator(), get_function(), get_function_expression()); }
+};
+
+/**
+ * Type 1 effects
+ */
+class ConjunctiveEffectImpl
+{
+private:
+    Index m_index;
+    VariableList m_parameters;
+    LiteralList<FluentTag> m_literals;
+    NumericEffectList<FluentTag> m_fluent_numeric_effects;
+    std::optional<NumericEffect<AuxiliaryTag>> m_auxiliary_numeric_effect;
+
+    // Below: add additional members if needed and initialize them in the constructor
+
+    ConjunctiveEffectImpl(Index index,
+                          VariableList parameters,
+                          LiteralList<FluentTag> literals,
+                          NumericEffectList<FluentTag> fluent_numeric_effects,
+                          std::optional<NumericEffect<AuxiliaryTag>> auxiliary_numeric_effect);
+
+    // Give access to the constructor.
+    template<typename T, typename Hash, typename EqualTo>
+    friend class loki::SegmentedRepository;
+
+public:
+    using FormalismEntity = void;
+
+    // moveable but not copyable
+    ConjunctiveEffectImpl(const ConjunctiveEffectImpl& other) = delete;
+    ConjunctiveEffectImpl& operator=(const ConjunctiveEffectImpl& other) = delete;
+    ConjunctiveEffectImpl(ConjunctiveEffectImpl&& other) = default;
+    ConjunctiveEffectImpl& operator=(ConjunctiveEffectImpl&& other) = default;
+
+    Index get_index() const;
+    const VariableList& get_parameters() const;
+    const LiteralList<FluentTag>& get_literals() const;
+    const NumericEffectList<FluentTag>& get_fluent_numeric_effects() const;
+    const std::optional<NumericEffect<AuxiliaryTag>>& get_auxiliary_numeric_effect() const;
+
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
+    auto identifying_members() const
+    {
+        return std::tuple(std::cref(get_parameters()), std::cref(get_literals()), std::cref(get_fluent_numeric_effects()), get_auxiliary_numeric_effect());
+    }
 };
 
 /**
  * Type 2 effects
  */
-class EffectConditionalImpl
+class ConditionalEffectImpl
 {
 private:
     Index m_index;
-    VariableList m_quantified_variables;
-    LiteralList<Static> m_static_conditions;
-    LiteralList<Fluent> m_fluent_conditions;
-    LiteralList<Derived> m_derived_conditions;
-    LiteralList<Fluent> m_effects;
-    FunctionExpression m_function_expression;
+    ConjunctiveCondition m_conjunctive_condition;
+    ConjunctiveEffect m_conjunctive_effect;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    EffectConditionalImpl(Index index,
-                          VariableList quantified_variables,
-                          LiteralList<Static> static_conditions,
-                          LiteralList<Fluent> fluent_conditions,
-                          LiteralList<Derived> derived_conditions,
-                          LiteralList<Fluent> effects,
-                          FunctionExpression function_expression);
+    ConditionalEffectImpl(Index index, ConjunctiveCondition conjunctive_condition, ConjunctiveEffect conjunctive_effect);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
+    using FormalismEntity = void;
+
     // moveable but not copyable
-    EffectConditionalImpl(const EffectConditionalImpl& other) = delete;
-    EffectConditionalImpl& operator=(const EffectConditionalImpl& other) = delete;
-    EffectConditionalImpl(EffectConditionalImpl&& other) = default;
-    EffectConditionalImpl& operator=(EffectConditionalImpl&& other) = default;
+    ConditionalEffectImpl(const ConditionalEffectImpl& other) = delete;
+    ConditionalEffectImpl& operator=(const ConditionalEffectImpl& other) = delete;
+    ConditionalEffectImpl(ConditionalEffectImpl&& other) = default;
+    ConditionalEffectImpl& operator=(ConditionalEffectImpl&& other) = default;
 
     Index get_index() const;
-    const VariableList& get_parameters() const;
-    template<PredicateTag P>
-    const LiteralList<P>& get_conditions() const;
-    const LiteralList<Fluent>& get_effects() const;
-    const FunctionExpression& get_function_expression() const;
+    ConjunctiveCondition get_conjunctive_condition() const;
+    ConjunctiveEffect get_conjunctive_effect() const;
 
     size_t get_arity() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const
-    {
-        return std::forward_as_tuple(std::as_const(m_quantified_variables),
-                                     std::as_const(m_static_conditions),
-                                     std::as_const(m_fluent_conditions),
-                                     std::as_const(m_derived_conditions),
-                                     std::as_const(m_effects),
-                                     std::as_const(m_function_expression));
-    }
+    auto identifying_members() const { return std::tuple(get_conjunctive_condition(), get_conjunctive_effect()); }
 };
 
-extern std::ostream& operator<<(std::ostream& out, const EffectStripsImpl& element);
-extern std::ostream& operator<<(std::ostream& out, const EffectConditionalImpl& element);
+template<IsFluentOrAuxiliaryTag F>
+extern std::ostream& operator<<(std::ostream& out, const NumericEffectImpl<F>& element);
+extern std::ostream& operator<<(std::ostream& out, const ConjunctiveEffectImpl& element);
+extern std::ostream& operator<<(std::ostream& out, const ConditionalEffectImpl& element);
 
-extern std::ostream& operator<<(std::ostream& out, EffectStrips element);
-extern std::ostream& operator<<(std::ostream& out, EffectConditional element);
+template<IsFluentOrAuxiliaryTag F>
+extern std::ostream& operator<<(std::ostream& out, NumericEffect<F> element);
+extern std::ostream& operator<<(std::ostream& out, ConjunctiveEffect element);
+extern std::ostream& operator<<(std::ostream& out, ConditionalEffect element);
 
 }
 

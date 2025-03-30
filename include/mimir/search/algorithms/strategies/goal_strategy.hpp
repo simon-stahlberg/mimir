@@ -19,14 +19,12 @@
 #define MIMIR_SEARCH_ALGORITHMS_STRATEGIES_GOAL_STRATEGY_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/state.hpp"
+#include "mimir/search/declarations.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 
-/**
- * IGoalStrategy encapsulates logic to test whether a state is a goal.
- */
+/// @brief `IGoalStrategy` encapsulates logic to test whether a state is a goal.
 class IGoalStrategy
 {
 public:
@@ -36,13 +34,14 @@ public:
     virtual bool test_dynamic_goal(State state) = 0;
 };
 
-class ProblemGoal : public IGoalStrategy
+/// @brief `ProblemGoalStrategy` identifies a state as a goal if and only if it satisfies the goal in the given problem.
+class ProblemGoalStrategy : public IGoalStrategy
 {
 private:
-    Problem m_problem;
+    formalism::Problem m_problem;
 
 public:
-    explicit ProblemGoal(Problem problem);
+    explicit ProblemGoalStrategy(formalism::Problem problem);
 
     bool test_static_goal() override;
     bool test_dynamic_goal(State state) override;

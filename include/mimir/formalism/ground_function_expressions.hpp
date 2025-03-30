@@ -18,9 +18,10 @@
 #ifndef MIMIR_FORMALISM_GROUND_FUNCTION_EXPRESSIONS_HPP_
 #define MIMIR_FORMALISM_GROUND_FUNCTION_EXPRESSIONS_HPP_
 
+#include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
 
 /* FunctionExpressionNumber */
@@ -39,6 +40,8 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
+    using FormalismEntity = void;
+
     // moveable but not copyable
     GroundFunctionExpressionNumberImpl(const GroundFunctionExpressionNumberImpl& other) = delete;
     GroundFunctionExpressionNumberImpl& operator=(const GroundFunctionExpressionNumberImpl& other) = delete;
@@ -51,7 +54,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_number)); }
+    auto identifying_members() const { return std::tuple(get_number()); }
 };
 
 /* FunctionExpressionBinaryOperator */
@@ -75,6 +78,8 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
+    using FormalismEntity = void;
+
     // moveable but not copyable
     GroundFunctionExpressionBinaryOperatorImpl(const GroundFunctionExpressionBinaryOperatorImpl& other) = delete;
     GroundFunctionExpressionBinaryOperatorImpl& operator=(const GroundFunctionExpressionBinaryOperatorImpl& other) = delete;
@@ -83,16 +88,13 @@ public:
 
     Index get_index() const;
     loki::BinaryOperatorEnum get_binary_operator() const;
-    const GroundFunctionExpression& get_left_function_expression() const;
-    const GroundFunctionExpression& get_right_function_expression() const;
+    GroundFunctionExpression get_left_function_expression() const;
+    GroundFunctionExpression get_right_function_expression() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const
-    {
-        return std::forward_as_tuple(std::as_const(m_binary_operator), std::as_const(m_left_function_expression), std::as_const(m_right_function_expression));
-    }
+    auto identifying_members() const { return std::tuple(get_binary_operator(), get_left_function_expression(), get_right_function_expression()); }
 };
 
 /* FunctionExpressionMultiOperator */
@@ -112,6 +114,8 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
+    using FormalismEntity = void;
+
     // moveable but not copyable
     GroundFunctionExpressionMultiOperatorImpl(const GroundFunctionExpressionMultiOperatorImpl& other) = delete;
     GroundFunctionExpressionMultiOperatorImpl& operator=(const GroundFunctionExpressionMultiOperatorImpl& other) = delete;
@@ -125,7 +129,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_multi_operator), std::as_const(m_function_expressions)); }
+    auto identifying_members() const { return std::tuple(get_multi_operator(), std::cref(get_function_expressions())); }
 };
 
 /* FunctionExpressionMinus */
@@ -144,6 +148,8 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
+    using FormalismEntity = void;
+
     // moveable but not copyable
     GroundFunctionExpressionMinusImpl(const GroundFunctionExpressionMinusImpl& other) = delete;
     GroundFunctionExpressionMinusImpl& operator=(const GroundFunctionExpressionMinusImpl& other) = delete;
@@ -151,30 +157,33 @@ public:
     GroundFunctionExpressionMinusImpl& operator=(GroundFunctionExpressionMinusImpl&& other) = default;
 
     Index get_index() const;
-    const GroundFunctionExpression& get_function_expression() const;
+    GroundFunctionExpression get_function_expression() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_function_expression)); }
+    auto identifying_members() const { return std::tuple(get_function_expression()); }
 };
 
 /* FunctionExpressionFunction */
+template<IsStaticOrFluentOrAuxiliaryTag F>
 class GroundFunctionExpressionFunctionImpl
 {
 private:
     Index m_index;
-    GroundFunction m_function;
+    GroundFunction<F> m_function;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    GroundFunctionExpressionFunctionImpl(Index index, GroundFunction function);
+    GroundFunctionExpressionFunctionImpl(Index index, GroundFunction<F> function);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
+    using FormalismEntity = void;
+
     // moveable but not copyable
     GroundFunctionExpressionFunctionImpl(const GroundFunctionExpressionFunctionImpl& other) = delete;
     GroundFunctionExpressionFunctionImpl& operator=(const GroundFunctionExpressionFunctionImpl& other) = delete;
@@ -182,65 +191,73 @@ public:
     GroundFunctionExpressionFunctionImpl& operator=(GroundFunctionExpressionFunctionImpl&& other) = default;
 
     Index get_index() const;
-    const GroundFunction& get_function() const;
+    GroundFunction<F> get_function() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_function)); }
+    auto identifying_members() const { return std::tuple(get_function()); }
 };
 
 /* GroundFunctionExpression */
+using GroundFunctionExpressionVariant = std::variant<GroundFunctionExpressionNumber,
+                                                     GroundFunctionExpressionBinaryOperator,
+                                                     GroundFunctionExpressionMultiOperator,
+                                                     GroundFunctionExpressionMinus,
+                                                     GroundFunctionExpressionFunction<StaticTag>,
+                                                     GroundFunctionExpressionFunction<FluentTag>,
+                                                     GroundFunctionExpressionFunction<AuxiliaryTag>>;
+
 class GroundFunctionExpressionImpl
 {
 private:
-    size_t m_index;
-    std::variant<GroundFunctionExpressionNumber,
-                 GroundFunctionExpressionBinaryOperator,
-                 GroundFunctionExpressionMultiOperator,
-                 GroundFunctionExpressionMinus,
-                 GroundFunctionExpressionFunction>
-        m_ground_function_expression;
+    Index m_index;
+    GroundFunctionExpressionVariant m_ground_function_expression;
 
-    GroundFunctionExpressionImpl(size_t index,
-                                 std::variant<GroundFunctionExpressionNumber,
-                                              GroundFunctionExpressionBinaryOperator,
-                                              GroundFunctionExpressionMultiOperator,
-                                              GroundFunctionExpressionMinus,
-                                              GroundFunctionExpressionFunction> ground_function_expression);
+    GroundFunctionExpressionImpl(Index index, GroundFunctionExpressionVariant ground_function_expression);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
+    using FormalismEntity = void;
+
     // moveable but not copyable
     GroundFunctionExpressionImpl(const GroundFunctionExpressionImpl& other) = delete;
     GroundFunctionExpressionImpl& operator=(const GroundFunctionExpressionImpl& other) = delete;
     GroundFunctionExpressionImpl(GroundFunctionExpressionImpl&& other) = default;
     GroundFunctionExpressionImpl& operator=(GroundFunctionExpressionImpl&& other) = default;
 
-    size_t get_index() const;
-    const std::variant<GroundFunctionExpressionNumber,
-                       GroundFunctionExpressionBinaryOperator,
-                       GroundFunctionExpressionMultiOperator,
-                       GroundFunctionExpressionMinus,
-                       GroundFunctionExpressionFunction>&
-    get_variant() const;
+    Index get_index() const;
+    const GroundFunctionExpressionVariant& get_variant() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_ground_function_expression)); }
+    auto identifying_members() const { return std::tuple(get_variant()); }
 };
+
+/* Utils */
+
+extern ContinuousCost evaluate(GroundFunctionExpression fexpr, const FlatDoubleList& static_numeric_variables, const FlatDoubleList& fluent_numeric_variables);
+
+/* Printing */
 
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionNumberImpl& element);
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionBinaryOperatorImpl& element);
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionMultiOperatorImpl& element);
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionMinusImpl& element);
-extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionFunctionImpl& element);
+template<IsStaticOrFluentOrAuxiliaryTag F>
+extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionFunctionImpl<F>& element);
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionImpl& element);
 
+extern std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionNumber element);
+extern std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionBinaryOperator element);
+extern std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionMultiOperator element);
+extern std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionMinus element);
+template<IsStaticOrFluentOrAuxiliaryTag F>
+extern std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionFunction<F> element);
 extern std::ostream& operator<<(std::ostream& out, GroundFunctionExpression element);
 
 }

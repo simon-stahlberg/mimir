@@ -21,43 +21,48 @@
 #include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/repositories.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
-template<PredicateTag P>
-GroundLiteralImpl<P>::GroundLiteralImpl(Index index, bool is_negated, GroundAtom<P> atom) : m_index(index), m_is_negated(is_negated), m_atom(std::move(atom))
+template<IsStaticOrFluentOrDerivedTag P>
+GroundLiteralImpl<P>::GroundLiteralImpl(Index index, bool polarity, GroundAtom<P> atom) : m_index(index), m_polarity(polarity), m_atom(std::move(atom))
 {
 }
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 Index GroundLiteralImpl<P>::get_index() const
 {
     return m_index;
 }
 
-template<PredicateTag P>
-bool GroundLiteralImpl<P>::is_negated() const
+template<IsStaticOrFluentOrDerivedTag P>
+bool GroundLiteralImpl<P>::get_polarity() const
 {
-    return m_is_negated;
+    return m_polarity;
 }
 
-template<PredicateTag P>
-const GroundAtom<P>& GroundLiteralImpl<P>::get_atom() const
+template<IsStaticOrFluentOrDerivedTag P>
+GroundAtom<P> GroundLiteralImpl<P>::get_atom() const
 {
     return m_atom;
 }
 
-template<PredicateTag P>
-Literal<P> GroundLiteralImpl<P>::lift(const TermList& terms, PDDLRepositories& pddl_repositories) const
+template<IsStaticOrFluentOrDerivedTag P>
+Literal<P> GroundLiteralImpl<P>::lift(const TermList& terms, Repositories& pddl_repositories) const
 {
-    return pddl_repositories.get_or_create_literal(is_negated(), m_atom->lift(terms, pddl_repositories));
+    return pddl_repositories.get_or_create_literal(get_polarity(), m_atom->lift(terms, pddl_repositories));
 }
 
-template class GroundLiteralImpl<Static>;
-template class GroundLiteralImpl<Fluent>;
-template class GroundLiteralImpl<Derived>;
+template class GroundLiteralImpl<StaticTag>;
+template class GroundLiteralImpl<FluentTag>;
+template class GroundLiteralImpl<DerivedTag>;
 
+<<<<<<< HEAD
 template<PredicateTag P>
 std::tuple<VariableList, LiteralList<P>, LiteralList<Static>> lift(const GroundLiteralList<P>& ground_literals, const Domain& domain, PDDLRepositories& pddl_repositories)
+=======
+template<IsStaticOrFluentOrDerivedTag P>
+std::pair<VariableList, LiteralList<P>> lift(const GroundLiteralList<P>& ground_literals, Repositories& pddl_repositories)
+>>>>>>> numeric_planning
 {
     VariableList variables;
     LiteralList<P> literals;
@@ -104,30 +109,35 @@ std::tuple<VariableList, LiteralList<P>, LiteralList<Static>> lift(const GroundL
     return std::make_tuple(variables, literals, static_literals);
 }
 
+<<<<<<< HEAD
 template std::tuple<VariableList, LiteralList<Static>, LiteralList<Static>> lift(const GroundLiteralList<Static>&, const Domain&, PDDLRepositories&);
 template std::tuple<VariableList, LiteralList<Fluent>, LiteralList<Static>> lift(const GroundLiteralList<Fluent>&, const Domain&, PDDLRepositories&);
 template std::tuple<VariableList, LiteralList<Derived>, LiteralList<Static>> lift(const GroundLiteralList<Derived>&, const Domain&, PDDLRepositories&);
+=======
+template std::pair<VariableList, LiteralList<StaticTag>> lift(const GroundLiteralList<StaticTag>&, Repositories&);
+template std::pair<VariableList, LiteralList<FluentTag>> lift(const GroundLiteralList<FluentTag>&, Repositories&);
+template std::pair<VariableList, LiteralList<DerivedTag>> lift(const GroundLiteralList<DerivedTag>&, Repositories&);
+>>>>>>> numeric_planning
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<P>& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<Static>& element);
-template std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<Fluent>& element);
-template std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<Derived>& element);
+template std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<StaticTag>& element);
+template std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<FluentTag>& element);
+template std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<DerivedTag>& element);
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 std::ostream& operator<<(std::ostream& out, GroundLiteral<P> element)
 {
-    out << *element;
+    write(*element, AddressFormatter(), out);
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, GroundLiteral<Static> element);
-template std::ostream& operator<<(std::ostream& out, GroundLiteral<Fluent> element);
-template std::ostream& operator<<(std::ostream& out, GroundLiteral<Derived> element);
+template std::ostream& operator<<(std::ostream& out, GroundLiteral<StaticTag> element);
+template std::ostream& operator<<(std::ostream& out, GroundLiteral<FluentTag> element);
+template std::ostream& operator<<(std::ostream& out, GroundLiteral<DerivedTag> element);
 }

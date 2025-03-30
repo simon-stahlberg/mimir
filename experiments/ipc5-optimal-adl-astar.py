@@ -117,7 +117,7 @@ for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
     # 'domain', 'problem', 'algorithm', 'coverage'.
     run.set_property("domain", task.domain)
     run.set_property("problem", task.problem)
-    run.set_property("algorithm", "mimir-grounded-sparse-astar-blind")
+    run.set_property("algorithm", "mimir-grounded-astar-blind")
     # BaseReport needs the following properties:
     # 'time_limit', 'memory_limit'.
     run.set_property("time_limit", TIME_LIMIT)
@@ -125,7 +125,7 @@ for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
     # Every run has to have a unique id in the form of a list.
     # The algorithm name is only really needed when there are
     # multiple algorithms.
-    run.set_property("id", ["mimir-grounded-sparse-astar-blind", task.domain, task.problem])
+    run.set_property("id", ["mimir-grounded-astar-blind", task.domain, task.problem])
 
     ################ Lifted ################
     run = exp.add_run()
@@ -143,7 +143,7 @@ for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
     # 'domain', 'problem', 'algorithm', 'coverage'.
     run.set_property("domain", task.domain)
     run.set_property("problem", task.problem)
-    run.set_property("algorithm", "mimir-lifted-sparse-astar-blind")
+    run.set_property("algorithm", "mimir-lifted-astar-blind")
     # BaseReport needs the following properties:
     # 'time_limit', 'memory_limit'.
     run.set_property("time_limit", TIME_LIMIT)
@@ -151,7 +151,7 @@ for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
     # Every run has to have a unique id in the form of a list.
     # The algorithm name is only really needed when there are
     # multiple algorithms.
-    run.set_property("id", ["mimir-lifted-sparse-astar-blind", task.domain, task.problem])
+    run.set_property("id", ["mimir-lifted-astar-blind", task.domain, task.problem])
 
 # Add step that writes experiment files to disk.
 exp.add_step("build", exp.build)

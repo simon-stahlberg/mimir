@@ -19,6 +19,7 @@
 #define MIMIR_COMMON_COLLECTIONS_HPP_
 
 #include <boost/container/small_vector.hpp>
+#include <loki/loki.hpp>
 #include <unordered_set>
 #include <vector>
 
@@ -29,18 +30,18 @@ namespace mimir
 /// @tparam T the vector value type.
 /// @param vec the vector.
 /// @return true iff all element in the vector are unique, i.e., do not occur more than once, and false otherwise.
-template<typename T>
+template<typename T, typename Hash = loki::Hash<T>>
 bool is_all_unique(const std::vector<T>& vec)
 {
-    auto set = std::unordered_set<T>(vec.begin(), vec.end());
+    auto set = std::unordered_set<T, Hash>(vec.begin(), vec.end());
     return vec.size() == set.size();
 }
 
 /// @brief Uniquify elements in a vector of elements.
-template<typename T>
+template<typename T, typename Hash = loki::Hash<T>>
 extern std::vector<T> uniquify_elements(const std::vector<T>& vec)
 {
-    std::unordered_set<T> set(vec.begin(), vec.end());
+    std::unordered_set<T, Hash> set(vec.begin(), vec.end());
     return std::vector<T>(set.begin(), set.end());
 }
 

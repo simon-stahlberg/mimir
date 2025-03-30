@@ -20,24 +20,28 @@
 
 #include "mimir/formalism/declarations.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
+template<IsStaticOrFluentOrAuxiliaryTag F>
 class GroundFunctionValueImpl
 {
 private:
     Index m_index;
-    GroundFunction m_function;
+    GroundFunction<F> m_function;
     double m_number;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    GroundFunctionValueImpl(Index index, GroundFunction function, double number);
+    GroundFunctionValueImpl(Index index, GroundFunction<F> function, double number);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
+    using FormalismEntity = void;
+    using Type = F;
+
     // moveable but not copyable
     GroundFunctionValueImpl(const GroundFunctionValueImpl& other) = delete;
     GroundFunctionValueImpl& operator=(const GroundFunctionValueImpl& other) = delete;
@@ -45,18 +49,20 @@ public:
     GroundFunctionValueImpl& operator=(GroundFunctionValueImpl&& other) = default;
 
     Index get_index() const;
-    const GroundFunction& get_function() const;
+    GroundFunction<F> get_function() const;
     double get_number() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_function), std::as_const(m_number)); }
+    auto identifying_members() const { return std::tuple(get_function(), get_number()); }
 };
 
-extern std::ostream& operator<<(std::ostream& out, const GroundFunctionValueImpl& element);
+template<IsStaticOrFluentOrAuxiliaryTag F>
+extern std::ostream& operator<<(std::ostream& out, const GroundFunctionValueImpl<F>& element);
 
-extern std::ostream& operator<<(std::ostream& out, GroundFunctionValue element);
+template<IsStaticOrFluentOrAuxiliaryTag F>
+extern std::ostream& operator<<(std::ostream& out, GroundFunctionValue<F> element);
 
 }
 

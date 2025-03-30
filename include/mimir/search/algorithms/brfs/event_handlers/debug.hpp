@@ -22,31 +22,31 @@
 
 #include <iostream>
 
-namespace mimir
+namespace mimir::search::brfs
 {
 
 /**
  * Implementation class
  */
-class DebugBrFSAlgorithmEventHandler : public BrFSAlgorithmEventHandlerBase<DebugBrFSAlgorithmEventHandler>
+class DebugEventHandler : public EventHandlerBase<DebugEventHandler>
 {
 private:
     /* Implement AlgorithmEventHandlerBase interface */
-    friend class BrFSAlgorithmEventHandlerBase<DebugBrFSAlgorithmEventHandler>;
+    friend class EventHandlerBase<DebugEventHandler>;
 
-    void on_expand_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories) const;
+    void on_expand_state_impl(State state) const;
 
-    void on_generate_state_impl(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_repositories) const;
+    void on_expand_goal_state_impl(State state) const;
 
-    void on_generate_state_in_search_tree_impl(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_repositories) const;
+    void on_generate_state_impl(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) const;
 
-    void on_generate_state_not_in_search_tree_impl(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_repositories) const;
+    void on_generate_state_in_search_tree_impl(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) const;
+
+    void on_generate_state_not_in_search_tree_impl(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) const;
 
     void on_finish_g_layer_impl(uint32_t g_value, uint64_t num_expanded_states, uint64_t num_generated_states) const;
 
-    void on_prune_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories) const;
-
-    void on_start_search_impl(State start_state, Problem problem, const PDDLRepositories& pddl_repositories) const;
+    void on_start_search_impl(State start_state) const;
 
     void on_end_search_impl(uint64_t num_reached_fluent_atoms,
                             uint64_t num_reached_derived_atoms,
@@ -60,14 +60,14 @@ private:
                             uint64_t num_actions,
                             uint64_t num_axioms) const;
 
-    void on_solved_impl(const Plan& plan, const PDDLRepositories& pddl_repositories) const;
+    void on_solved_impl(const Plan& plan) const;
 
     void on_unsolvable_impl() const;
 
     void on_exhausted_impl() const;
 
 public:
-    explicit DebugBrFSAlgorithmEventHandler(bool quiet = true) : BrFSAlgorithmEventHandlerBase<DebugBrFSAlgorithmEventHandler>(quiet) {}
+    explicit DebugEventHandler(formalism::Problem problem, bool quiet = true) : EventHandlerBase<DebugEventHandler>(problem, quiet) {}
 };
 
 }

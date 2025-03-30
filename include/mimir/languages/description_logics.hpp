@@ -18,14 +18,22 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_HPP_
 
+#include "mimir/languages/description_logics/cnf_grammar.hpp"
+#include "mimir/languages/description_logics/cnf_grammar_constructor_interface.hpp"
+#include "mimir/languages/description_logics/cnf_grammar_constructor_repositories.hpp"
+#include "mimir/languages/description_logics/cnf_grammar_constructors.hpp"
+#include "mimir/languages/description_logics/cnf_grammar_sentence_pruning.hpp"
+#include "mimir/languages/description_logics/cnf_grammar_visitor_formatter.hpp"
+#include "mimir/languages/description_logics/cnf_grammar_visitor_interface.hpp"
+#include "mimir/languages/description_logics/cnf_grammar_visitor_sentence_generator.hpp"
+#include "mimir/languages/description_logics/constructor_base.hpp"
 #include "mimir/languages/description_logics/constructor_interface.hpp"
 #include "mimir/languages/description_logics/constructor_keywords.hpp"
-#include "mimir/languages/description_logics/constructor_properties.hpp"
 #include "mimir/languages/description_logics/constructor_repositories.hpp"
-#include "mimir/languages/description_logics/constructor_tag.hpp"
+#include "mimir/languages/description_logics/constructor_visitor_cnf_grammar.hpp"
+#include "mimir/languages/description_logics/constructor_visitor_formatter.hpp"
+#include "mimir/languages/description_logics/constructor_visitor_grammar.hpp"
 #include "mimir/languages/description_logics/constructor_visitor_interface.hpp"
-#include "mimir/languages/description_logics/constructor_visitors_formatter.hpp"
-#include "mimir/languages/description_logics/constructor_visitors_grammar.hpp"
 #include "mimir/languages/description_logics/constructors.hpp"
 #include "mimir/languages/description_logics/declarations.hpp"
 #include "mimir/languages/description_logics/denotation_repositories.hpp"
@@ -35,6 +43,8 @@
 #include "mimir/languages/description_logics/grammar_constructor_interface.hpp"
 #include "mimir/languages/description_logics/grammar_constructor_repositories.hpp"
 #include "mimir/languages/description_logics/grammar_constructors.hpp"
-#include "mimir/languages/description_logics/refinement.hpp"
+#include "mimir/languages/description_logics/grammar_visitor_formatter.hpp"
+#include "mimir/languages/description_logics/grammar_visitor_interface.hpp"
+#include "mimir/languages/description_logics/tags.hpp"
 
 #endif

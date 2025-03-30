@@ -21,50 +21,34 @@
 #include "mimir/buffering/unordered_set.h"
 #include "mimir/languages/description_logics/declarations.hpp"
 #include "mimir/languages/description_logics/denotations.hpp"
+#include "mimir/search/declarations.hpp"
 
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
-namespace mimir::dl
+namespace mimir::languages::dl
 {
 
 /// @brief DenotationRepository encapsulate logic for obtaining unique denotation views and caching.
-template<ConstructorTag D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 class DenotationRepository
 {
 private:
     // Store denotations uniquely.
     DenotationImplSet<D> m_storage;
 
-    struct Key
-    {
-        Constructor<D> constructor;
-        size_t state_index;
-    };
+    using Key = std::pair<Constructor<D>, search::State>;
 
-    struct KeyHash
-    {
-        size_t operator()(const Key& key) const;
-    };
-
-    struct KeyEqual
-    {
-        bool operator()(const Key& left, const Key& right) const;
-    };
-
-    std::unordered_map<Key, Denotation<D>, KeyHash, KeyEqual> m_cached_dynamic_denotations;
+    std::unordered_map<Key, Denotation<D>, loki::Hash<Key>, loki::EqualTo<Key>> m_cached_dynamic_denotations;
 
 public:
-    Denotation<D> insert(Constructor<D> constructor, size_t state_index, const DenotationImpl<D>& denotation);
+    Denotation<D> insert(Constructor<D> constructor, search::State state, const DenotationImpl<D>& denotation);
 
-    std::optional<Denotation<D>> get_if(Constructor<D> constructor, size_t state_index) const;
+    Denotation<D> get_if(Constructor<D> constructor, search::State state) const;
 };
 
-/// @brief Repository for managing denotations.
-/// This stores the computed denotation of each state.
-using ConstructorTagToDenotationRepository = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, DenotationRepository<Concept>>,
-                                                              boost::hana::pair<boost::hana::type<Role>, DenotationRepository<Role>>>;
+using DenotationRepositories = HanaMappedContainer<DenotationRepository, ConceptTag, RoleTag, BooleanTag, NumericalTag>;
 
 }
 

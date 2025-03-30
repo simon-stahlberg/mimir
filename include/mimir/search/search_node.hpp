@@ -21,7 +21,7 @@
 #include "mimir/buffering/vector.h"
 #include "mimir/common/types.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 
 enum SearchNodeStatus

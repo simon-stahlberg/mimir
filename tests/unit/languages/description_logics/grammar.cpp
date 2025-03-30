@@ -20,59 +20,59 @@
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/parser.hpp"
 #include "mimir/formalism/predicate.hpp"
+#include "mimir/formalism/problem.hpp"
 #include "mimir/languages/description_logics/constructor_repositories.hpp"
 #include "mimir/languages/description_logics/constructors.hpp"
+#include "mimir/languages/description_logics/grammar_visitor_formatter.hpp"
 
 #include <gtest/gtest.h>
+
+using namespace mimir::languages;
+using namespace mimir::formalism;
 
 namespace mimir::tests
 {
 
-TEST(MimirTests, LanguagesDescriptionLogicsGrammarTest)
+TEST(MimirTests, LanguagesDescriptionLogicsGrammarTestMatchTest)
 {
     auto bnf_description = std::string(R"(
-<concept_at-robby_state> ::= @concept_atomic_state "at-robby"
-<concept_at-robby_goal> ::= @concept_atomic_goal "at-robby" false
-<concept_intersection> ::= @concept_intersection <concept_at-robby_state> <concept_at-robby_goal>
-<concept> ::= <concept_at-robby_state> | <concept_at-robby_goal> | <concept_intersection>
-<role_at_state> ::= @role_atomic_state "at"
-<role_at_goal> ::= @role_atomic_goal "at" false
-<role_intersection> ::= @role_intersection <role> <role_at_goal>
-<role> ::= <role_at_state> | <role_at_goal> | <role_intersection>
+    [start_symbols]
+        concept = <concept_start>
+        role = <role_start>
+
+    [grammar_rules]
+        <concept_start> ::= <concept>
+        <role_start> ::= <role>
+        <concept_at-robby_state> ::= @concept_atomic_state "at-robby"
+        <concept_at-robby_goal> ::= @concept_atomic_goal "at-robby" true
+        <concept_intersection> ::= @concept_intersection <concept_at-robby_state> <concept_at-robby_goal>
+        <concept> ::= <concept_at-robby_state> | <concept_at-robby_goal> | <concept_intersection>
+        <role_at_state> ::= @role_atomic_state "at"
+        <role_at_goal> ::= @role_atomic_goal "at" true
+        <role_intersection> ::= @role_intersection <role> <role_at_goal>
+        <role> ::= <role_at_state> | <role_at_goal> | <role_intersection>
 )");
 
-    auto parser = PDDLParser(fs::path(std::string(DATA_DIR) + "gripper/domain.pddl"), fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl"));
+    auto problem = ProblemImpl::create(fs::path(std::string(DATA_DIR) + "gripper/domain.pddl"), fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl"));
 
-    auto grammar = dl::grammar::Grammar(bnf_description, parser.get_domain());
+    auto grammar = dl::grammar::Grammar(bnf_description, problem->get_domain());
 
-    // EXPECT_EQ(grammar.get_primitive_production_rules<dl::Concept>().size(), 4);
-    // EXPECT_EQ(grammar.get_primitive_production_rules<dl::Role>().size(), 4);
-    // EXPECT_EQ(grammar.get_composite_production_rules<dl::Concept>().size(), 4);
-    // EXPECT_EQ(grammar.get_composite_production_rules<dl::Role>().size(), 4);
-    // EXPECT_EQ(grammar.get_alternative_rules<dl::Concept>().size(), 4);
-    // EXPECT_EQ(grammar.get_alternative_rules<dl::Role>().size(), 4);
+    auto constructor_repositories = dl::Repositories();
 
-    auto constructor_repositories = dl::create_default_constructor_type_to_repository();
+    const auto predicate_at_robby = problem->get_domain()->get_name_to_predicate<FluentTag>().at("at-robby");
+    const auto concept_at_robby = constructor_repositories.get_or_create_concept_atomic_state(predicate_at_robby);
+    EXPECT_TRUE(grammar.test_match(concept_at_robby));
 
-    const auto predicate_at_robby = parser.get_domain()->get_name_to_predicate<Fluent>().at("at-robby");
-    const auto concept_at_robby =
-        boost::hana::at_key(constructor_repositories, boost::hana::type<dl::ConceptAtomicStateImpl<Fluent>> {}).get_or_create(predicate_at_robby);
-    // EXPECT_TRUE(grammar.test_match(concept_at_robby));
+    const auto predicate_ball = problem->get_domain()->get_name_to_predicate<StaticTag>().at("ball");
+    const auto concept_ball = constructor_repositories.get_or_create_concept_atomic_state(predicate_ball);
+    EXPECT_FALSE(grammar.test_match(concept_ball));
 
-    const auto predicate_ball = parser.get_domain()->get_name_to_predicate<Static>().at("ball");
-    [[maybe_unused]] const auto concept_ball =
-        boost::hana::at_key(constructor_repositories, boost::hana::type<dl::ConceptAtomicStateImpl<Static>> {}).get_or_create(predicate_ball);
-    // EXPECT_FALSE(grammar.test_match(concept_ball));
+    const auto concept_goal_at_robby = constructor_repositories.get_or_create_concept_atomic_goal(predicate_at_robby, true);
+    const auto concept_at_robby_intersect_goal_at_robby = constructor_repositories.get_or_create_concept_intersection(concept_at_robby, concept_goal_at_robby);
+    EXPECT_TRUE(grammar.test_match(concept_at_robby_intersect_goal_at_robby));
 
-    const auto concept_goal_at_robby =
-        boost::hana::at_key(constructor_repositories, boost::hana::type<dl::ConceptAtomicGoalImpl<Fluent>> {}).get_or_create(predicate_at_robby, false);
-    [[maybe_unused]] const auto concept_at_robby_intersect_goal_at_robby =
-        boost::hana::at_key(constructor_repositories, boost::hana::type<dl::ConceptIntersectionImpl> {}).get_or_create(concept_at_robby, concept_goal_at_robby);
-    // EXPECT_TRUE(grammar.test_match(concept_at_robby_intersect_goal_at_robby));
-
-    [[maybe_unused]] const auto concept_goal_at_robby_intersect_at_robby =
-        boost::hana::at_key(constructor_repositories, boost::hana::type<dl::ConceptIntersectionImpl> {}).get_or_create(concept_goal_at_robby, concept_at_robby);
-    // EXPECT_FALSE(grammar.test_match(concept_goal_at_robby_intersect_at_robby));
+    const auto concept_goal_at_robby_intersect_at_robby = constructor_repositories.get_or_create_concept_intersection(concept_goal_at_robby, concept_at_robby);
+    EXPECT_FALSE(grammar.test_match(concept_goal_at_robby_intersect_at_robby));
 }
 
 }

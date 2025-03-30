@@ -24,9 +24,9 @@
 
 #include <map>
 
-namespace mimir
+namespace mimir::formalism
 {
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 GroundAtomImpl<P>::GroundAtomImpl(Index index, Predicate<P> predicate, ObjectList objects) :
     m_index(index),
     m_predicate(std::move(predicate)),
@@ -34,42 +34,42 @@ GroundAtomImpl<P>::GroundAtomImpl(Index index, Predicate<P> predicate, ObjectLis
 {
 }
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 Index GroundAtomImpl<P>::get_index() const
 {
     return m_index;
 }
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 Predicate<P> GroundAtomImpl<P>::get_predicate() const
 {
     return m_predicate;
 }
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 const ObjectList& GroundAtomImpl<P>::get_objects() const
 {
     return m_objects;
 }
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 size_t GroundAtomImpl<P>::get_arity() const
 {
     return m_objects.size();
 }
 
-template<PredicateTag P>
-Atom<P> GroundAtomImpl<P>::lift(const TermList& terms, PDDLRepositories& pddl_repositories) const
+template<IsStaticOrFluentOrDerivedTag P>
+Atom<P> GroundAtomImpl<P>::lift(const TermList& terms, Repositories& pddl_repositories) const
 {
     return pddl_repositories.get_or_create_atom(m_predicate, terms);
 }
 
-template class GroundAtomImpl<Static>;
-template class GroundAtomImpl<Fluent>;
-template class GroundAtomImpl<Derived>;
+template class GroundAtomImpl<StaticTag>;
+template class GroundAtomImpl<FluentTag>;
+template class GroundAtomImpl<DerivedTag>;
 
-template<PredicateTag P>
-std::pair<VariableList, AtomList<P>> lift(const GroundAtomList<P>& ground_atoms, PDDLRepositories& pddl_repositories)
+template<IsStaticOrFluentOrDerivedTag P>
+std::pair<VariableList, AtomList<P>> lift(const GroundAtomList<P>& ground_atoms, Repositories& pddl_repositories)
 {
     VariableList variables;
     AtomList<P> atoms;
@@ -96,30 +96,29 @@ std::pair<VariableList, AtomList<P>> lift(const GroundAtomList<P>& ground_atoms,
     return std::make_pair(variables, atoms);
 }
 
-template std::pair<VariableList, AtomList<Static>> lift(const GroundAtomList<Static>&, PDDLRepositories&);
-template std::pair<VariableList, AtomList<Fluent>> lift(const GroundAtomList<Fluent>&, PDDLRepositories&);
-template std::pair<VariableList, AtomList<Derived>> lift(const GroundAtomList<Derived>&, PDDLRepositories&);
+template std::pair<VariableList, AtomList<StaticTag>> lift(const GroundAtomList<StaticTag>&, Repositories&);
+template std::pair<VariableList, AtomList<FluentTag>> lift(const GroundAtomList<FluentTag>&, Repositories&);
+template std::pair<VariableList, AtomList<DerivedTag>> lift(const GroundAtomList<DerivedTag>&, Repositories&);
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<P>& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<Static>& element);
-template std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<Fluent>& element);
-template std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<Derived>& element);
+template std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<StaticTag>& element);
+template std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<FluentTag>& element);
+template std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<DerivedTag>& element);
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 std::ostream& operator<<(std::ostream& out, GroundAtom<P> element)
 {
-    out << *element;
+    write(*element, AddressFormatter(), out);
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, GroundAtom<Static> element);
-template std::ostream& operator<<(std::ostream& out, GroundAtom<Fluent> element);
-template std::ostream& operator<<(std::ostream& out, GroundAtom<Derived> element);
+template std::ostream& operator<<(std::ostream& out, GroundAtom<StaticTag> element);
+template std::ostream& operator<<(std::ostream& out, GroundAtom<FluentTag> element);
+template std::ostream& operator<<(std::ostream& out, GroundAtom<DerivedTag> element);
 }

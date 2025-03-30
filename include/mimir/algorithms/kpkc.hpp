@@ -33,18 +33,18 @@ namespace mimir
 /// KPKC will verify the memory layout and throw an exception if incorrect.
 struct KPKCWorkspace
 {
-    explicit KPKCWorkspace(const std::vector<std::vector<size_t>>& partitions);
+    explicit KPKCWorkspace(const std::vector<std::vector<uint32_t>>& partitions);
 
     /// @brief Verifies the memory layout to catch accidental modifications.
     /// @param partitions
-    void verify_memory_layout(const std::vector<std::vector<size_t>>& partitions);
+    void verify_memory_layout(const std::vector<std::vector<uint32_t>>& partitions);
 
     /// @brief Initializes the memory.
     /// @param partitions
-    void initialize_memory(const std::vector<std::vector<size_t>>& partitions);
+    void initialize_memory(const std::vector<std::vector<uint32_t>>& partitions);
 
     boost::dynamic_bitset<> partition_bits;
-    std::vector<size_t> partial_solution;
+    std::vector<uint32_t> partial_solution;
     std::vector<std::vector<boost::dynamic_bitset<>>> k_compatible_vertices;
 };
 
@@ -53,9 +53,9 @@ struct KPKCWorkspace
 /// @param partitions is the partitioning.
 /// @param memory preallocated memory, if not given, the algorithm will perform O(k^2) many allocations.
 /// @return a generator to enumerate all k-cliques.
-mimir::generator<const std::vector<size_t>&> create_k_clique_in_k_partite_graph_generator(const std::vector<boost::dynamic_bitset<>>& adjacency_matrix,
-                                                                                          const std::vector<std::vector<size_t>>& partitions,
-                                                                                          KPKCWorkspace* memory = nullptr);
+mimir::generator<const std::vector<uint32_t>&> create_k_clique_in_k_partite_graph_generator(const std::vector<boost::dynamic_bitset<>>& adjacency_matrix,
+                                                                                            const std::vector<std::vector<uint32_t>>& partitions,
+                                                                                            KPKCWorkspace* memory = nullptr);
 
 }
 

@@ -22,34 +22,34 @@
 
 #include <concepts>
 
-namespace mimir::dl::grammar
+namespace mimir::languages::dl::grammar
 {
 
 /**
  * Grammar constructor hierarchy parallel to dl constructors.
  */
 
-template<dl::ConstructorTag D>
-class ConstructorImpl
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
+class IConstructor
 {
 protected:
-    ConstructorImpl() = default;
+    IConstructor() = default;
     // Move constructor and move assignment operator are protected
     // to restrict their usage to derived classes only.
-    ConstructorImpl(ConstructorImpl&& other) = default;
-    ConstructorImpl& operator=(ConstructorImpl&& other) = default;
+    IConstructor(IConstructor&& other) = default;
+    IConstructor& operator=(IConstructor&& other) = default;
 
 public:
     // Uncopieable
-    ConstructorImpl(const ConstructorImpl& other) = delete;
-    ConstructorImpl& operator=(const ConstructorImpl& other) = delete;
+    IConstructor(const IConstructor& other) = delete;
+    IConstructor& operator=(const IConstructor& other) = delete;
 
-    virtual ~ConstructorImpl() = default;
+    virtual ~IConstructor() = default;
 
-    virtual bool test_match(dl::Constructor<D> constructor) const = 0;
+    virtual bool test_match(dl::Constructor<D> constructor, const Grammar& grammar) const = 0;
 
     /// @brief Accept a visitor.
-    virtual void accept(Visitor& visitor) const = 0;
+    virtual void accept(IVisitor& visitor) const = 0;
 };
 }
 

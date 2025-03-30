@@ -17,64 +17,83 @@
 
 #include "mimir/languages/description_logics/grammar.hpp"
 
-#include "parser.hpp"
+#include "grammar_parser.hpp"
+#include "mimir/languages/description_logics/grammar_visitor_interface.hpp"
 
-namespace mimir::dl::grammar
+using namespace mimir::formalism;
+
+namespace mimir::languages::dl::grammar
 {
 
-Grammar::Grammar(std::string bnf_description, Domain domain) :
-    m_grammar_constructor_repos(create_default_constructor_type_to_repository()),
-    m_primitive_production_rules(),
-    m_composite_production_rules(),
-    m_alternative_rules()
+NonTerminalToDerivationRuleSets initialize_nonterminal_to_derivation_rules(const DerivationRuleSets& derivation_rules)
 {
-    const auto rules = parse(bnf_description, domain, m_grammar_constructor_repos);
-    // m_concept_rules = std::move(concept_rules);
-    // m_role_rules = std::move(role_rules);
+    auto nonterminal_to_derivation_rules = NonTerminalToDerivationRuleSets {};
+
+    boost::hana::for_each(derivation_rules,
+                          [&](auto&& pair)
+                          {
+                              const auto& key = boost::hana::first(pair);
+                              const auto& second = boost::hana::second(pair);
+
+                              auto& map = boost::hana::at_key(nonterminal_to_derivation_rules, key);
+
+                              for (const auto& rule : second)
+                              {
+                                  map[rule->get_non_terminal()].insert(rule);
+                              }
+                          });
+
+    return nonterminal_to_derivation_rules;
 }
 
-template<ConstructorTag D>
+Grammar::Grammar(Repositories repositories, OptionalNonTerminals start_symbols, DerivationRuleSets derivation_rules, Domain domain) :
+    m_repositories(std::move(repositories)),
+    m_start_symbols(std::move(start_symbols)),
+    m_derivation_rules(std::move(derivation_rules)),
+    m_domain(std::move(domain)),
+    m_nonterminal_to_derivation_rules(initialize_nonterminal_to_derivation_rules(m_derivation_rules))
+{
+}
+
+Grammar::Grammar(std::string bnf_description, Domain domain)
+{
+    auto grammar = parse_grammar(bnf_description, std::move(domain));
+    m_repositories = std::move(grammar.m_repositories);
+    m_start_symbols = std::move(grammar.m_start_symbols);
+    m_derivation_rules = std::move(grammar.m_derivation_rules);
+    m_domain = std::move(grammar.m_domain);
+    m_nonterminal_to_derivation_rules = initialize_nonterminal_to_derivation_rules(m_derivation_rules);
+}
+
+Grammar::Grammar(GrammarSpecificationEnum type, Domain domain)
+{
+    // TODO
+}
+
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 bool Grammar::test_match(dl::Constructor<D> constructor) const
 {
-    return std::any_of(get_primitive_production_rules<D>().begin(),
-                       get_primitive_production_rules<D>().end(),
-                       [&constructor](const auto& rule) { return rule->test_match(constructor); })
-           || std::any_of(get_composite_production_rules<D>().begin(),
-                          get_composite_production_rules<D>().end(),
-                          [&constructor](const auto& rule) { return rule->test_match(constructor); })
-           || std::any_of(get_alternative_rules<D>().begin(),
-                          get_alternative_rules<D>().end(),
-                          [&constructor](const auto& rule) { return rule->test_match(constructor); });
+    const auto& start_symbol = boost::hana::at_key(m_start_symbols, boost::hana::type<D> {});
+
+    if (!start_symbol)
+    {
+        return false;  ///< sentence is not part of language.
+    }
+
+    return start_symbol.value()->test_match(constructor, *this);
 }
 
-template bool Grammar::test_match(dl::Constructor<Concept> constructor) const;
-template bool Grammar::test_match(dl::Constructor<Role> constructor) const;
+template bool Grammar::test_match(dl::Constructor<ConceptTag> constructor) const;
+template bool Grammar::test_match(dl::Constructor<RoleTag> constructor) const;
 
-template<ConstructorTag D>
-const DerivationRuleList<D>& Grammar::get_primitive_production_rules() const
-{
-    return boost::hana::at_key(m_primitive_production_rules, boost::hana::type<D> {});
-}
+void Grammar::accept(IVisitor& visitor) const { visitor.visit(*this); }
 
-template const DerivationRuleList<Concept>& Grammar::get_primitive_production_rules() const;
-template const DerivationRuleList<Role>& Grammar::get_primitive_production_rules() const;
+const OptionalNonTerminals& Grammar::get_start_symbols() const { return m_start_symbols; }
 
-template<ConstructorTag D>
-const DerivationRuleList<D>& Grammar::get_composite_production_rules() const
-{
-    return boost::hana::at_key(m_composite_production_rules, boost::hana::type<D> {});
-}
+const DerivationRuleSets& Grammar::get_derivation_rules() const { return m_derivation_rules; }
 
-template const DerivationRuleList<Concept>& Grammar::get_composite_production_rules() const;
-template const DerivationRuleList<Role>& Grammar::get_composite_production_rules() const;
+const Domain& Grammar::get_domain() const { return m_domain; }
 
-template<ConstructorTag D>
-const DerivationRuleList<D>& Grammar::get_alternative_rules() const
-{
-    return boost::hana::at_key(m_alternative_rules, boost::hana::type<D> {});
-}
-
-template const DerivationRuleList<Concept>& Grammar::get_alternative_rules() const;
-template const DerivationRuleList<Role>& Grammar::get_alternative_rules() const;
+const NonTerminalToDerivationRuleSets& Grammar::get_nonterminal_to_derivation_rules() const { return m_nonterminal_to_derivation_rules; }
 
 }

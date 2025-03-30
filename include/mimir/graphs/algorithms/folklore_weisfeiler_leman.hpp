@@ -18,11 +18,10 @@
 #ifndef MIMIR_GRAPHS_ALGORITHMS_FOLKLORE_WEISFEILER_LEMAN_HPP_
 #define MIMIR_GRAPHS_ALGORITHMS_FOLKLORE_WEISFEILER_LEMAN_HPP_
 
-#include "mimir/algorithms/nauty.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types.hpp"
 #include "mimir/graphs/algorithms/color_refinement.hpp"
-#include "mimir/graphs/digraph_vertex_colored.hpp"
+#include "mimir/graphs/algorithms/nauty.hpp"
 #include "mimir/graphs/graph_interface.hpp"
 #include "mimir/graphs/graph_properties.hpp"
 #include "mimir/graphs/graph_traversal_interface.hpp"
@@ -36,7 +35,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace mimir::kfwl
+namespace mimir::graphs::kfwl
 {
 
 /// @brief `Certificate` encapsulates the final tuple colorings and the decoding tables.
@@ -58,7 +57,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_f), std::as_const(m_canonical_coloring)); }
+    auto identifying_members() const { return std::tuple(std::cref(get_canonical_configuration_compression_function()), std::cref(get_canonical_coloring())); }
 
 private:
     ColorList m_hash_to_color;
@@ -68,8 +67,7 @@ private:
 };
 
 /// @brief `IsomorphismTypeCompressionFunction` encapsulates mappings from canonical subgraphs to colors.
-using IsomorphismTypeCompressionFunction =
-    std::unordered_map<nauty_wrapper::Certificate, Color, loki::Hash<nauty_wrapper::Certificate>, loki::EqualTo<nauty_wrapper::Certificate>>;
+using IsomorphismTypeCompressionFunction = std::unordered_map<nauty::Certificate, Color, loki::Hash<nauty::Certificate>, loki::EqualTo<nauty::Certificate>>;
 
 /// @brief Compare two certificates for equality.
 /// @param lhs is the first certificate.

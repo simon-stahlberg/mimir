@@ -20,127 +20,154 @@
 #include "formatter.hpp"
 #include "mimir/common/collections.hpp"
 #include "mimir/common/concepts.hpp"
+#include "mimir/common/printers.hpp"
+#include "mimir/formalism/conjunctive_condition.hpp"
 #include "mimir/formalism/function.hpp"
 #include "mimir/formalism/function_expressions.hpp"
 #include "mimir/formalism/literal.hpp"
+#include "mimir/formalism/numeric_constraint.hpp"
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/variable.hpp"
 
 #include <cassert>
 
-namespace mimir
+namespace mimir::formalism
 {
+
+/**
+ * EffectNumeric
+ */
+
+template<IsFluentOrAuxiliaryTag F>
+NumericEffectImpl<F>::NumericEffectImpl(Index index, loki::AssignOperatorEnum assign_operator, Function<F> function, FunctionExpression function_expression) :
+    m_index(index),
+    m_assign_operator(assign_operator),
+    m_function(function),
+    m_function_expression(function_expression)
+{
+}
+
+template<IsFluentOrAuxiliaryTag F>
+Index NumericEffectImpl<F>::get_index() const
+{
+    return m_index;
+}
+
+template<IsFluentOrAuxiliaryTag F>
+loki::AssignOperatorEnum NumericEffectImpl<F>::get_assign_operator() const
+{
+    return m_assign_operator;
+}
+
+template<IsFluentOrAuxiliaryTag F>
+Function<F> NumericEffectImpl<F>::get_function() const
+{
+    return m_function;
+}
+
+template<IsFluentOrAuxiliaryTag F>
+FunctionExpression NumericEffectImpl<F>::get_function_expression() const
+{
+    return m_function_expression;
+}
+
+template class NumericEffectImpl<FluentTag>;
+template class NumericEffectImpl<AuxiliaryTag>;
 
 /**
  * Type 1 effect
  */
 
-EffectStripsImpl::EffectStripsImpl(Index index, LiteralList<Fluent> effects, FunctionExpression function_expression) :
+ConjunctiveEffectImpl::ConjunctiveEffectImpl(Index index,
+                                             VariableList parameters,
+                                             LiteralList<FluentTag> effects,
+                                             NumericEffectList<FluentTag> fluent_numeric_effects,
+                                             std::optional<NumericEffect<AuxiliaryTag>> auxiliary_numeric_effect) :
     m_index(index),
-    m_effects(std::move(effects)),
-    m_function_expression(std::move(function_expression))
+    m_parameters(std::move(parameters)),
+    m_literals(std::move(effects)),
+    m_fluent_numeric_effects(std::move(fluent_numeric_effects)),
+    m_auxiliary_numeric_effect(std::move(auxiliary_numeric_effect))
 {
-    assert(is_all_unique(m_effects));
-    assert(std::is_sorted(m_effects.begin(), m_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(is_all_unique(m_literals));
+    assert(std::is_sorted(m_literals.begin(), m_literals.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(m_fluent_numeric_effects.begin(),
+                          m_fluent_numeric_effects.end(),
+                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
 }
 
-Index EffectStripsImpl::get_index() const { return m_index; }
+Index ConjunctiveEffectImpl::get_index() const { return m_index; }
 
-const LiteralList<Fluent>& EffectStripsImpl::get_effects() const { return m_effects; }
+const VariableList& ConjunctiveEffectImpl::get_parameters() const { return m_parameters; }
 
-const FunctionExpression& EffectStripsImpl::get_function_expression() const { return m_function_expression; }
+const LiteralList<FluentTag>& ConjunctiveEffectImpl::get_literals() const { return m_literals; }
+
+const NumericEffectList<FluentTag>& ConjunctiveEffectImpl::get_fluent_numeric_effects() const { return m_fluent_numeric_effects; }
+
+const std::optional<NumericEffect<AuxiliaryTag>>& ConjunctiveEffectImpl::get_auxiliary_numeric_effect() const { return m_auxiliary_numeric_effect; }
 
 /**
  * Type 3 effect
  */
 
-EffectConditionalImpl::EffectConditionalImpl(Index index,
-                                             VariableList quantified_variables,
-                                             LiteralList<Static> static_conditions,
-                                             LiteralList<Fluent> fluent_conditions,
-                                             LiteralList<Derived> derived_conditions,
-                                             LiteralList<Fluent> effects,
-                                             FunctionExpression function_expression) :
+ConditionalEffectImpl::ConditionalEffectImpl(Index index, ConjunctiveCondition conjunctive_condition, ConjunctiveEffect conjunctive_effect) :
     m_index(index),
-    m_quantified_variables(std::move(quantified_variables)),
-    m_static_conditions(std::move(static_conditions)),
-    m_fluent_conditions(std::move(fluent_conditions)),
-    m_derived_conditions(std::move(derived_conditions)),
-    m_effects(std::move(effects)),
-    m_function_expression(std::move(function_expression))
+    m_conjunctive_condition(std::move(conjunctive_condition)),
+    m_conjunctive_effect(std::move(conjunctive_effect))
 {
-    assert(is_all_unique(m_quantified_variables));
-    assert(is_all_unique(m_static_conditions));
-    assert(is_all_unique(m_fluent_conditions));
-    assert(is_all_unique(m_derived_conditions));
-    assert(is_all_unique(m_effects));
-    assert(
-        std::is_sorted(m_static_conditions.begin(), m_static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(
-        std::is_sorted(m_fluent_conditions.begin(), m_fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(
-        std::is_sorted(m_derived_conditions.begin(), m_derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(m_effects.begin(), m_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(conjunctive_condition);
+    assert(conjunctive_effect);
 }
 
-Index EffectConditionalImpl::get_index() const { return m_index; }
+Index ConditionalEffectImpl::get_index() const { return m_index; }
 
-const VariableList& EffectConditionalImpl::get_parameters() const { return m_quantified_variables; }
+ConjunctiveCondition ConditionalEffectImpl::get_conjunctive_condition() const { return m_conjunctive_condition; }
 
-template<PredicateTag P>
-const LiteralList<P>& EffectConditionalImpl::get_conditions() const
+ConjunctiveEffect ConditionalEffectImpl::get_conjunctive_effect() const { return m_conjunctive_effect; }
+
+size_t ConditionalEffectImpl::get_arity() const { return m_conjunctive_condition->get_arity(); }
+
+template<IsFluentOrAuxiliaryTag F>
+std::ostream& operator<<(std::ostream& out, const NumericEffectImpl<F>& element)
 {
-    if constexpr (std::is_same_v<P, Static>)
-    {
-        return m_static_conditions;
-    }
-    else if constexpr (std::is_same_v<P, Fluent>)
-    {
-        return m_fluent_conditions;
-    }
-    else if constexpr (std::is_same_v<P, Derived>)
-    {
-        return m_derived_conditions;
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
-    }
-}
-
-template const LiteralList<Static>& EffectConditionalImpl::get_conditions<Static>() const;
-template const LiteralList<Fluent>& EffectConditionalImpl::get_conditions<Fluent>() const;
-template const LiteralList<Derived>& EffectConditionalImpl::get_conditions<Derived>() const;
-
-const LiteralList<Fluent>& EffectConditionalImpl::get_effects() const { return m_effects; }
-
-const FunctionExpression& EffectConditionalImpl::get_function_expression() const { return m_function_expression; }
-
-size_t EffectConditionalImpl::get_arity() const { return m_quantified_variables.size(); }
-
-std::ostream& operator<<(std::ostream& out, const EffectStripsImpl& element)
-{
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
-std::ostream& operator<<(std::ostream& out, const EffectConditionalImpl& element)
+template std::ostream& operator<<(std::ostream& out, const NumericEffectImpl<FluentTag>& element);
+template std::ostream& operator<<(std::ostream& out, const NumericEffectImpl<AuxiliaryTag>& element);
+
+std::ostream& operator<<(std::ostream& out, const ConjunctiveEffectImpl& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
-std::ostream& operator<<(std::ostream& out, EffectStrips element)
+std::ostream& operator<<(std::ostream& out, const ConditionalEffectImpl& element)
 {
-    out << *element;
+    write(element, StringFormatter(), out);
     return out;
 }
 
-std::ostream& operator<<(std::ostream& out, EffectConditional element)
+template<IsFluentOrAuxiliaryTag F>
+std::ostream& operator<<(std::ostream& out, NumericEffect<F> element)
 {
-    out << *element;
+    write(*element, AddressFormatter(), out);
+    return out;
+}
+
+template std::ostream& operator<<(std::ostream& out, NumericEffect<FluentTag> element);
+template std::ostream& operator<<(std::ostream& out, NumericEffect<AuxiliaryTag> element);
+
+std::ostream& operator<<(std::ostream& out, ConjunctiveEffect element)
+{
+    write(*element, AddressFormatter(), out);
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, ConditionalEffect element)
+{
+    write(*element, AddressFormatter(), out);
     return out;
 }
 

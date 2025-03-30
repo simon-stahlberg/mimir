@@ -18,11 +18,12 @@
 #include "mimir/search/algorithms/iw.hpp"
 
 #include "mimir/common/printers.hpp"
+#include "mimir/formalism/problem.hpp"
 #include "mimir/search/algorithms/brfs.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers.hpp"
-#include "mimir/search/algorithms/iw/dynamic_novelty_table.hpp"
 #include "mimir/search/algorithms/iw/event_handlers.hpp"
 #include "mimir/search/algorithms/iw/event_handlers/interface.hpp"
+#include "mimir/search/algorithms/iw/novelty_table.hpp"
 #include "mimir/search/algorithms/iw/pruning_strategy.hpp"
 #include "mimir/search/algorithms/iw/tuple_index_generators.hpp"
 #include "mimir/search/algorithms/iw/tuple_index_mapper.hpp"
@@ -31,34 +32,42 @@
 #include "mimir/search/algorithms/utils.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
-#include "mimir/search/grounders/action_grounder.hpp"
 #include "mimir/search/plan.hpp"
+#include "mimir/search/search_context.hpp"
 #include "mimir/search/state_repository.hpp"
 
 #include <sstream>
 
-namespace mimir
+using namespace mimir::formalism;
+
+namespace mimir::search::iw
 {
 
 /**
  * TupleIndexMapper
  */
 
+TupleIndexMapper::TupleIndexMapper(size_t arity) : TupleIndexMapper(arity, 0) {}
+
 TupleIndexMapper::TupleIndexMapper(size_t arity, size_t num_atoms) : m_arity(arity), m_num_atoms(num_atoms), m_empty_tuple_index(0)
 {
+    initialize(arity, num_atoms);
+}
+
+void TupleIndexMapper::initialize(size_t arity, size_t num_atoms)
+{
+    m_arity = arity;
+    m_num_atoms = num_atoms;
+    m_empty_tuple_index = 0;
+
     if (!(arity >= 0 && arity < MAX_ARITY))
     {
         throw std::runtime_error("TupleIndexMapper only works with 0 <= arity < " + std::to_string(MAX_ARITY) + ".");
     }
-    //  Initialize factors
+
     for (size_t i = 0; i < m_arity; ++i)
     {
-        m_factors[i] = std::pow(m_num_atoms, i);
-    }
-    // Initialize empty tuple index
-    for (size_t i = 0; i < m_arity; ++i)
-    {
-        m_empty_tuple_index += m_num_atoms * m_factors[i];
+        m_factors[i] = std::pow((m_num_atoms + 1), i);  ///< +1 to account for placeholder.
     }
 }
 
@@ -81,21 +90,28 @@ void TupleIndexMapper::to_atom_indices(TupleIndex tuple_index, AtomIndexList& ou
 
     for (int i = m_arity - 1; i >= 0; --i)
     {
-        // We need to use min to decode (m_num_atoms,...,m_num_atoms) correctly
-        const auto atom_index = std::min(m_num_atoms, tuple_index / m_factors[i]);
-        if (atom_index != m_num_atoms)
+        const auto atom_index = tuple_index / m_factors[i];
+
+        if (atom_index != m_num_atoms)  // filter placeholder
         {
             out_atom_indices.push_back(atom_index);
         }
+
         tuple_index -= atom_index * m_factors[i];
     }
     std::reverse(out_atom_indices.begin(), out_atom_indices.end());
 }
 
-std::string TupleIndexMapper::tuple_index_to_string(TupleIndex tuple_index) const
+AtomIndexList TupleIndexMapper::to_atom_indices(TupleIndex tuple_index) const
 {
     auto atom_indices = AtomIndexList {};
     to_atom_indices(tuple_index, atom_indices);
+    return atom_indices;
+}
+
+std::string TupleIndexMapper::tuple_index_to_string(TupleIndex tuple_index) const
+{
+    auto atom_indices = to_atom_indices(tuple_index);
     std::stringstream ss;
     ss << "(";
     for (const auto atom_index : atom_indices)
@@ -112,29 +128,20 @@ size_t TupleIndexMapper::get_arity() const { return m_arity; }
 
 const std::array<size_t, MAX_ARITY>& TupleIndexMapper::get_factors() const { return m_factors; }
 
-TupleIndex TupleIndexMapper::get_max_tuple_index() const
-{
-    // x^0 + ... + x^n = (x^{n+1} - 1) / 2
-    return ((std::pow(get_num_atoms(), get_arity() + 1) - 1) / 2) - 1;
-}
+TupleIndex TupleIndexMapper::get_max_tuple_index() const { return get_empty_tuple_index(); }
 
-TupleIndex TupleIndexMapper::get_empty_tuple_index() const { return m_empty_tuple_index; }
+TupleIndex TupleIndexMapper::get_empty_tuple_index() const { return (std::pow(get_num_atoms() + 1, get_arity()) - 1); }
 
 /**
  * StateTupleIndexGenerator
  */
 
-StateTupleIndexGenerator::StateTupleIndexGenerator(std::shared_ptr<TupleIndexMapper> tuple_index_mapper_) :
-    tuple_index_mapper(std::move(tuple_index_mapper_)),
-    atom_indices()
-{
-    assert(tuple_index_mapper);
-}
+StateTupleIndexGenerator::StateTupleIndexGenerator(const TupleIndexMapper* tuple_index_mapper_) : tuple_index_mapper(tuple_index_mapper_), atom_indices() {}
 
 StateTupleIndexGenerator::const_iterator::const_iterator() : m_tuple_index_mapper(nullptr), m_atoms(nullptr) {}
 
 StateTupleIndexGenerator::const_iterator::const_iterator(StateTupleIndexGenerator* stig, bool begin) :
-    m_tuple_index_mapper(begin ? stig->tuple_index_mapper.get() : nullptr),
+    m_tuple_index_mapper(begin ? stig->tuple_index_mapper : nullptr),
     m_atoms(begin ? &stig->atom_indices : nullptr),
     m_end(!begin),
     m_cur(begin ? 0 : -1)
@@ -269,7 +276,7 @@ StateTupleIndexGenerator::const_iterator StateTupleIndexGenerator::begin(const S
 {
     atom_indices.clear();
 
-    const auto& fluent_atoms = state->get_atoms<Fluent>();
+    const auto& fluent_atoms = state->get_atoms<FluentTag>();
     atom_indices.insert(atom_indices.end(), fluent_atoms.begin(), fluent_atoms.end());
     // Add place holder to generate tuples of size < arity
     atom_indices.push_back(tuple_index_mapper->get_num_atoms());
@@ -284,10 +291,7 @@ StateTupleIndexGenerator::const_iterator StateTupleIndexGenerator::end() const {
  * StatePairTupleIndexGenerator
  */
 
-StatePairTupleIndexGenerator::StatePairTupleIndexGenerator(std::shared_ptr<TupleIndexMapper> tuple_index_mapper_) :
-    tuple_index_mapper(std::move(tuple_index_mapper_))
-{
-}
+StatePairTupleIndexGenerator::StatePairTupleIndexGenerator(const TupleIndexMapper* tuple_index_mapper_) : tuple_index_mapper(tuple_index_mapper_) {}
 
 StatePairTupleIndexGenerator::const_iterator::const_iterator() :
     m_tuple_index_mapper(nullptr),
@@ -303,7 +307,7 @@ StatePairTupleIndexGenerator::const_iterator::const_iterator() :
 }
 
 StatePairTupleIndexGenerator::const_iterator::const_iterator(StatePairTupleIndexGenerator* sptig, bool begin) :
-    m_tuple_index_mapper(begin ? sptig->tuple_index_mapper.get() : nullptr),
+    m_tuple_index_mapper(begin ? sptig->tuple_index_mapper : nullptr),
     m_a_atoms(begin ? &sptig->a_atom_indices : nullptr),
     m_a_jumpers(begin ? &sptig->a_index_jumper : nullptr),
     m_indices(),
@@ -627,8 +631,8 @@ StatePairTupleIndexGenerator::const_iterator StatePairTupleIndexGenerator::begin
 {
     a_atom_indices[0].clear();
     a_atom_indices[1].clear();
-    const auto& state_fluent_atoms = state->get_atoms<Fluent>();
-    const auto& succ_state_fluent_atoms = succ_state->get_atoms<Fluent>();
+    const auto& state_fluent_atoms = state->get_atoms<FluentTag>();
+    const auto& succ_state_fluent_atoms = succ_state->get_atoms<FluentTag>();
 
     auto it1 = succ_state_fluent_atoms.begin();
     auto it2 = state_fluent_atoms.begin();
@@ -686,58 +690,89 @@ StatePairTupleIndexGenerator::const_iterator StatePairTupleIndexGenerator::end()
  * DynamicNoveltyTable
  */
 
-DynamicNoveltyTable::DynamicNoveltyTable(std::shared_ptr<TupleIndexMapper> tuple_index_mapper) :
-    m_tuple_index_mapper(std::move(tuple_index_mapper)),
-    m_table(std::vector<bool>(m_tuple_index_mapper->get_max_tuple_index() + 1, false)),
-    m_state_tuple_index_generator(m_tuple_index_mapper),
-    m_state_pair_tuple_index_generator(m_tuple_index_mapper)
+DynamicNoveltyTable::DynamicNoveltyTable(size_t arity) :
+    m_tuple_index_mapper(arity),
+    m_table(std::vector<bool>(m_tuple_index_mapper.get_max_tuple_index() + 1, false)),
+    m_state_tuple_index_generator(&m_tuple_index_mapper),
+    m_state_pair_tuple_index_generator(&m_tuple_index_mapper)
+{
+}
+
+DynamicNoveltyTable::DynamicNoveltyTable(size_t arity, size_t num_atoms) :
+    m_tuple_index_mapper(TupleIndexMapper(arity, num_atoms)),
+    m_table(std::vector<bool>(m_tuple_index_mapper.get_max_tuple_index() + 1, false)),
+    m_state_tuple_index_generator(&m_tuple_index_mapper),
+    m_state_pair_tuple_index_generator(&m_tuple_index_mapper)
 {
 }
 
 void DynamicNoveltyTable::resize_to_fit(AtomIndex atom_index)
 {
+    if (atom_index < m_tuple_index_mapper.get_num_atoms())
+    {
+        return;  // atom fits.
+    }
+
     // Fetch data.
-    const auto arity = m_tuple_index_mapper->get_arity();
-    const auto old_placeholder = m_tuple_index_mapper->get_num_atoms();
+    const auto arity = m_tuple_index_mapper.get_arity();
 
     // Compute size of new table
-    auto new_size = m_tuple_index_mapper->get_num_atoms();
+    auto new_size = std::max(size_t(1), m_tuple_index_mapper.get_num_atoms());
     while (new_size < atom_index + 1 + 1)  // additional +1 for placeholder
     {
-        // Use doubling strategy to get amortized cost O(arity) for resize.
-        new_size *= 2;
+        new_size *= 2;  ///< Use doubling strategy
     }
     const auto new_placeholder = new_size;
-    auto new_tuple_index_mapper = std::make_shared<TupleIndexMapper>(arity, new_size);
-    auto new_table = std::vector<bool>(new_tuple_index_mapper->get_max_tuple_index() + 1, false);
+
+    const auto old_tuple_index_mapper = m_tuple_index_mapper;  ///< backup old tuple index mapper for remapping
+
+    m_tuple_index_mapper.initialize(arity, new_size);  ///< resize to fit all tuples
+
+    auto new_table = std::vector<bool>(m_tuple_index_mapper.get_max_tuple_index() + 1, false);
 
     // Convert tuple indices that are not novel from old to new table.
     auto atom_indices = AtomIndexList(arity);
+
     for (TupleIndex tuple_index = 0; tuple_index < m_table.size(); ++tuple_index)
     {
         if (m_table[tuple_index])
         {
-            m_tuple_index_mapper->to_atom_indices(tuple_index, atom_indices);
-            for (size_t i = 0; i < arity; ++i)
+            old_tuple_index_mapper.to_atom_indices(tuple_index, atom_indices);
+
+            for (size_t i = atom_indices.size(); i < arity; ++i)
             {
-                if (atom_indices[i] == old_placeholder)
-                {
-                    atom_indices[i] = new_placeholder;
-                }
+                atom_indices.push_back(new_placeholder);
             }
-            const auto new_tuple_index = new_tuple_index_mapper->to_tuple_index(atom_indices);
+
+            const auto new_tuple_index = m_tuple_index_mapper.to_tuple_index(atom_indices);
+
             new_table[new_tuple_index] = true;
         }
     }
 
     // Swap old and new data.
-    m_tuple_index_mapper = std::move(new_tuple_index_mapper);
     m_table = std::move(new_table);
+}
+
+void DynamicNoveltyTable::resize_to_fit(State state)
+{
+    const auto& fluent_atoms = state->get_atoms<FluentTag>();
+
+    const auto it = std::max_element(fluent_atoms.begin(), fluent_atoms.end());
+
+    if (it == fluent_atoms.end())
+    {
+        return;  ///< The state is empty. No atom must fit.
+    }
+
+    resize_to_fit(*it);
 }
 
 void DynamicNoveltyTable::compute_novel_tuple_indices(const State state, TupleIndexList& out_novel_tuple_indices)
 {
     out_novel_tuple_indices.clear();
+
+    resize_to_fit(state);
 
     for (auto it = m_state_tuple_index_generator.begin(state); it != m_state_tuple_index_generator.end(); ++it)
     {
@@ -764,11 +799,13 @@ void DynamicNoveltyTable::insert_tuple_indices(const TupleIndexList& tuple_indic
 
 bool DynamicNoveltyTable::test_novelty_and_update_table(const State state)
 {
+    resize_to_fit(state);
+
     bool is_novel = false;
     for (auto it = m_state_tuple_index_generator.begin(state); it != m_state_tuple_index_generator.end(); ++it)
     {
         const auto tuple_index = *it;
-        // std::cout << tuple_index << " " << m_tuple_index_mapper->tuple_index_to_string(tuple_index) << std::endl;
+        // std::cout << tuple_index << " " << m_tuple_index_mapper.tuple_index_to_string(tuple_index) << std::endl;
 
         assert(tuple_index < m_table.size());
 
@@ -783,11 +820,14 @@ bool DynamicNoveltyTable::test_novelty_and_update_table(const State state)
 
 bool DynamicNoveltyTable::test_novelty_and_update_table(const State state, const State succ_state)
 {
+    resize_to_fit(state);
+    resize_to_fit(succ_state);
+
     bool is_novel = false;
     for (auto it = m_state_pair_tuple_index_generator.begin(state, succ_state); it != m_state_pair_tuple_index_generator.end(); ++it)
     {
         const auto tuple_index = *it;
-        // std::cout << tuple_index << " " << m_tuple_index_mapper->tuple_index_to_string(tuple_index) << std::endl;
+        // std::cout << tuple_index << " " << m_tuple_index_mapper.tuple_index_to_string(tuple_index) << std::endl;
 
         assert(tuple_index < m_table.size());
 
@@ -801,23 +841,24 @@ bool DynamicNoveltyTable::test_novelty_and_update_table(const State state, const
 }
 
 void DynamicNoveltyTable::reset() { std::fill(m_table.begin(), m_table.end(), false); }
+const TupleIndexMapper& DynamicNoveltyTable::get_tuple_index_mapper() const { return m_tuple_index_mapper; }
 
 /**
  * NoveltyPruning
  */
 
-ArityZeroNoveltyPruning::ArityZeroNoveltyPruning(State initial_state) : m_initial_state(initial_state) {}
+ArityZeroNoveltyPruningStrategy::ArityZeroNoveltyPruningStrategy(State initial_state) : m_initial_state(initial_state) {}
 
-bool ArityZeroNoveltyPruning::test_prune_initial_state(const State state) { return false; }
+bool ArityZeroNoveltyPruningStrategy::test_prune_initial_state(const State state) { return false; }
 
-bool ArityZeroNoveltyPruning::test_prune_successor_state(const State state, const State succ_state, bool is_new_succ)
+bool ArityZeroNoveltyPruningStrategy::test_prune_successor_state(const State state, const State succ_state, bool is_new_succ)
 {
     return state != m_initial_state || state == succ_state;
 }
 
-ArityKNoveltyPruning::ArityKNoveltyPruning(size_t arity, size_t num_atoms) : m_novelty_table(std::make_shared<TupleIndexMapper>(arity, num_atoms)) {}
+ArityKNoveltyPruningStrategy::ArityKNoveltyPruningStrategy(size_t arity, size_t num_atoms) : m_novelty_table(arity) {}
 
-bool ArityKNoveltyPruning::test_prune_initial_state(const State state)
+bool ArityKNoveltyPruningStrategy::test_prune_initial_state(const State state)
 {
     if (m_generated_states.count(state->get_index()))
     {
@@ -829,7 +870,7 @@ bool ArityKNoveltyPruning::test_prune_initial_state(const State state)
     return !m_novelty_table.test_novelty_and_update_table(state);
 }
 
-bool ArityKNoveltyPruning::test_prune_successor_state(const State state, const State succ_state, bool is_new_succ)
+bool ArityKNoveltyPruningStrategy::test_prune_successor_state(const State state, const State succ_state, bool is_new_succ)
 {
     if (state == succ_state)
     {
@@ -848,22 +889,21 @@ bool ArityKNoveltyPruning::test_prune_successor_state(const State state, const S
 
 /* IterativeWidthAlgorithm */
 
-SearchResult find_solution_iw(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                              std::shared_ptr<StateRepository> state_repository,
-                              std::optional<State> start_state_,
-                              std::optional<size_t> max_arity_,
-                              std::optional<std::shared_ptr<IIWAlgorithmEventHandler>> iw_event_handler_,
-                              std::optional<std::shared_ptr<IBrFSAlgorithmEventHandler>> brfs_event_handler_,
-                              std::optional<std::shared_ptr<IGoalStrategy>> goal_strategy_)
+SearchResult find_solution(const SearchContext& context,
+                           State start_state_,
+                           size_t max_arity_,
+                           EventHandler iw_event_handler_,
+                           brfs::EventHandler brfs_event_handler_,
+                           GoalStrategy goal_strategy_)
 {
-    assert(applicable_action_generator && state_repository);
+    auto& applicable_action_generator = *context.get_applicable_action_generator();
+    auto& state_repository = *context.get_state_repository();
 
-    const auto max_arity = (max_arity_.has_value()) ? max_arity_.value() : MAX_ARITY - 1;
-    const auto start_state = (start_state_.has_value()) ? start_state_.value() : state_repository->get_or_create_initial_state();
-    const auto iw_event_handler = (iw_event_handler_.has_value()) ? iw_event_handler_.value() : std::make_shared<DefaultIWAlgorithmEventHandler>();
-    const auto brfs_event_handler = (brfs_event_handler_.has_value()) ? brfs_event_handler_.value() : std::make_shared<DefaultBrFSAlgorithmEventHandler>();
-    const auto goal_strategy =
-        (goal_strategy_.has_value()) ? goal_strategy_.value() : std::make_shared<ProblemGoal>(applicable_action_generator->get_problem());
+    const auto max_arity = max_arity_;
+    const auto start_state = (start_state_) ? start_state_ : state_repository.get_or_create_initial_state();
+    const auto iw_event_handler = (iw_event_handler_) ? iw_event_handler_ : std::make_shared<DefaultEventHandler>(context.get_problem());
+    const auto brfs_event_handler = (brfs_event_handler_) ? brfs_event_handler_ : std::make_shared<brfs::DefaultEventHandler>(context.get_problem());
+    const auto goal_strategy = (goal_strategy_) ? goal_strategy_ : std::make_shared<ProblemGoalStrategy>(context.get_problem());
 
     if (max_arity >= MAX_ARITY)
     {
@@ -871,27 +911,21 @@ SearchResult find_solution_iw(std::shared_ptr<IApplicableActionGenerator> applic
                                  + std::to_string(MAX_ARITY) + ") compile time constant.");
     }
 
-    const auto problem = applicable_action_generator->get_problem();
-    const auto& pddl_repositories = *applicable_action_generator->get_pddl_repositories();
-    iw_event_handler->on_start_search(problem, start_state, pddl_repositories);
+    iw_event_handler->on_start_search(start_state);
 
     size_t cur_arity = 0;
     while (cur_arity <= max_arity)
     {
-        iw_event_handler->on_start_arity_search(problem, start_state, pddl_repositories, cur_arity);
+        iw_event_handler->on_start_arity_search(start_state, cur_arity);
 
-        const auto result = (cur_arity > 0) ? find_solution_brfs(applicable_action_generator,
-                                                                 state_repository,
-                                                                 start_state,
-                                                                 brfs_event_handler,
-                                                                 goal_strategy,
-                                                                 std::make_shared<ArityKNoveltyPruning>(cur_arity, INITIAL_TABLE_ATOMS)) :
-                                              find_solution_brfs(applicable_action_generator,
-                                                                 state_repository,
-                                                                 start_state,
-                                                                 brfs_event_handler,
-                                                                 goal_strategy,
-                                                                 std::make_shared<ArityZeroNoveltyPruning>(start_state));
+        const auto result =
+            (cur_arity > 0) ?
+                find_solution(context,
+                              start_state,
+                              brfs_event_handler,
+                              goal_strategy,
+                              std::make_shared<ArityKNoveltyPruningStrategy>(cur_arity, INITIAL_TABLE_ATOMS)) :
+                find_solution(context, start_state, brfs_event_handler, goal_strategy, std::make_shared<ArityZeroNoveltyPruningStrategy>(start_state));
 
         iw_event_handler->on_end_arity_search(brfs_event_handler->get_statistics());
 
@@ -900,10 +934,10 @@ SearchResult find_solution_iw(std::shared_ptr<IApplicableActionGenerator> applic
             iw_event_handler->on_end_search();
             if (!iw_event_handler->is_quiet())
             {
-                applicable_action_generator->on_end_search();
-                state_repository->get_axiom_evaluator()->on_end_search();
+                applicable_action_generator.on_end_search();
+                state_repository.get_axiom_evaluator()->on_end_search();
             }
-            iw_event_handler->on_solved(result.plan.value(), *applicable_action_generator->get_pddl_repositories());
+            iw_event_handler->on_solved(result.plan.value());
 
             return result;
         }

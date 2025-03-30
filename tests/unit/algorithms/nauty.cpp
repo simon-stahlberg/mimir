@@ -15,16 +15,18 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/algorithms/nauty.hpp"
+#include "mimir/graphs/algorithms/nauty.hpp"
 
 #include <gtest/gtest.h>
+
+using namespace mimir::graphs;
 
 namespace mimir::tests
 {
 
 TEST(MimirTests, AlgorithmsNautyDenseGraphConstructorEmptyTest)
 {
-    auto graph = nauty_wrapper::DenseGraph();
+    auto graph = nauty::DenseGraph();
 
     EXPECT_ANY_THROW(graph.add_edge(0, 1));
     EXPECT_ANY_THROW(graph.add_vertex_coloring({ 0, 0 }));
@@ -37,7 +39,7 @@ TEST(MimirTests, AlgorithmsNautyDenseGraphConstructorEmptyTest)
 
 TEST(MimirTests, AlgorithmsNautySparseGraphConstructorEmptyTest)
 {
-    auto graph = nauty_wrapper::SparseGraph();
+    auto graph = nauty::SparseGraph();
 
     EXPECT_ANY_THROW(graph.add_edge(0, 1));
     EXPECT_ANY_THROW(graph.add_vertex_coloring({ 0, 0 }));

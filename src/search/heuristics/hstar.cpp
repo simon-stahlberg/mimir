@@ -18,25 +18,28 @@
 #include "mimir/search/heuristics/hstar.hpp"
 
 #include "mimir/datasets/state_space.hpp"
+#include "mimir/formalism/problem.hpp"
+#include "mimir/search/state_repository.hpp"
 
-namespace mimir
+using namespace mimir::formalism;
+
+namespace mimir::search
 {
 
-HStarHeuristic::HStarHeuristic(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator, std::shared_ptr<StateRepository> state_repository) :
-    m_estimates()
+HStarHeuristic::HStarHeuristic(const SearchContext& context) : m_estimates()
 {
     // We simply create a state space and copy the estimates
-    auto state_space_options = StateSpaceOptions();
-    state_space_options.use_unit_cost_one = false;
+    auto state_space_options = datasets::StateSpaceImpl::Options();
     state_space_options.remove_if_unsolvable = false;
 
-    auto state_space = StateSpace::create(applicable_action_generator, state_repository, state_space_options).value();
-    for (size_t state_index = 0; state_index < state_space.get_num_vertices(); ++state_index)
+    auto state_space = datasets::StateSpaceImpl::create(context, state_space_options);
+    assert(state_space);
+
+    for (const auto& v : state_space.value()->get_graph().get_vertices())
     {
-        m_estimates.emplace(get_state(state_space.get_vertex(state_index)), state_space.get_goal_distance(state_index));
+        m_estimates.emplace(graphs::get_state(v), graphs::get_action_goal_distance(v));
     }
 }
 
 double HStarHeuristic::compute_heuristic(State state, bool is_goal_state) { return m_estimates.at(state); }
-
 }

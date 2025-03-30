@@ -19,6 +19,8 @@
 
 #include <gtest/gtest.h>
 
+using namespace mimir::search;
+
 namespace mimir::tests
 {
 

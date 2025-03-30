@@ -20,64 +20,139 @@
 
 #include "mimir/formalism/declarations.hpp"
 
+#include <concepts>
 #include <cstddef>
 #include <ostream>
 
-namespace mimir
+namespace mimir::formalism
 {
 
-class PDDLFormatter
+/// @brief `StringFormatter` is supposed to print parsable string-representation.
+struct StringFormatter
 {
-private:
-    // The indentation in the current level.
-    size_t m_indent;
-    // The amount of indentation added per nesting
-    size_t m_add_indent;
-    // Whether action costs are enabled.
-    bool m_action_costs;
-
-public:
-    PDDLFormatter(size_t indent = 0, size_t add_indent = 4, bool action_costs = false);
-
-    void write(const ExistentiallyQuantifiedConjunctiveConditionImpl& element, std::ostream& out);
-    void write(const ActionImpl& element, std::ostream& out);
-    template<PredicateTag P>
-    void write(const AtomImpl<P>& element, std::ostream& out);
-    void write(const AxiomImpl& element, std::ostream& out);
-    void write(const DomainImpl& element, std::ostream& out);
-    void write(const EffectStripsImpl& element, std::ostream& out);
-    void write(const EffectConditionalImpl& element, std::ostream& out);
-    void write(const FunctionExpressionNumberImpl& element, std::ostream& out);
-    void write(const FunctionExpressionBinaryOperatorImpl& element, std::ostream& out);
-    void write(const FunctionExpressionMultiOperatorImpl& element, std::ostream& out);
-    void write(const FunctionExpressionMinusImpl& element, std::ostream& out);
-    void write(const FunctionExpressionFunctionImpl& element, std::ostream& out);
-    void write(const FunctionExpressionImpl& element, std::ostream& out);
-    void write(const FunctionSkeletonImpl& element, std::ostream& out);
-    void write(const FunctionImpl& element, std::ostream& out);
-    template<PredicateTag P>
-    void write(const GroundAtomImpl<P>& element, std::ostream& out);
-    void write(const GroundFunctionExpressionNumberImpl& element, std::ostream& out);
-    void write(const GroundFunctionExpressionBinaryOperatorImpl& element, std::ostream& out);
-    void write(const GroundFunctionExpressionMultiOperatorImpl& element, std::ostream& out);
-    void write(const GroundFunctionExpressionMinusImpl& element, std::ostream& out);
-    void write(const GroundFunctionExpressionFunctionImpl& element, std::ostream& out);
-    void write(const GroundFunctionExpressionImpl& element, std::ostream& out);
-    void write(const GroundFunctionImpl& element, std::ostream& out);
-    template<PredicateTag P>
-    void write(const GroundLiteralImpl<P>& element, std::ostream& out);
-    template<PredicateTag P>
-    void write(const LiteralImpl<P>& element, std::ostream& out);
-    void write(const OptimizationMetricImpl& element, std::ostream& out);
-    void write(const GroundFunctionValueImpl& element, std::ostream& out);
-    void write(const ObjectImpl& element, std::ostream& out);
-    template<PredicateTag P>
-    void write(const PredicateImpl<P>& element, std::ostream& out);
-    void write(const ProblemImpl& element, std::ostream& out);
-    void write(const RequirementsImpl& element, std::ostream& out);
-    void write(const TermImpl& element, std::ostream& out);
-    void write(const VariableImpl& element, std::ostream& out);
+    size_t indent = 0;
+    size_t add_indent = 4;
 };
+/// @brief `AddressFormatter` is supposed to print addresses of structures for debugging purposes.
+struct AddressFormatter
+{
+    size_t indent = 0;
+    size_t add_indent = 4;
+};
+
+template<typename T>
+concept Formatter = std::same_as<T, StringFormatter> || std::same_as<T, AddressFormatter>;
+
+template<Formatter T>
+void write(const ConjunctiveConditionImpl& element, T formatter, std::ostream& out);
+
+template<Formatter T>
+void write(const ActionImpl& element, T formatter, std::ostream& out);
+
+template<Formatter T, IsStaticOrFluentOrDerivedTag P>
+void write(const AtomImpl<P>& element, T formatter, std::ostream& out);
+
+template<Formatter T>
+void write(const AxiomImpl& element, T formatter, std::ostream& out);
+
+template<Formatter T>
+void write(const DomainImpl& element, T formatter, std::ostream& out);
+
+template<Formatter T, IsFluentOrAuxiliaryTag F>
+void write(const NumericEffectImpl<F>& element, T formatter, std::ostream& out);
+
+template<Formatter T, IsFluentOrAuxiliaryTag F>
+void write(const GroundNumericEffectImpl<F>& element, T formatter, std::ostream& out);
+
+template<Formatter T>
+void write(const ConjunctiveEffectImpl& element, T formatter, std::ostream& out);
+
+template<Formatter T>
+void write(const ConditionalEffectImpl& element, T formatter, std::ostream& out);
+
+template<Formatter T>
+void write(const FunctionExpressionNumberImpl& element, T formatter, std::ostream& out);
+
+template<Formatter T>
+void write(const FunctionExpressionBinaryOperatorImpl& element, T formatter, std::ostream& out);
+
+template<Formatter T>
+void write(const FunctionExpressionMultiOperatorImpl& element, T formatter, std::ostream& out);
+
+template<Formatter T>
+void write(const FunctionExpressionMinusImpl& element, T formatter, std::ostream& out);
+
+template<Formatter T, IsStaticOrFluentOrAuxiliaryTag F>
+void write(const FunctionExpressionFunctionImpl<F>& element, T formatter, std::ostream& out);
+
+template<Formatter T>
+void write(const FunctionExpressionImpl& element, T formatter, std::ostream& out);
+
+template<Formatter T, IsStaticOrFluentOrAuxiliaryTag F>
+void write(const FunctionSkeletonImpl<F>& element, T formatter, std::ostream& out);
+
+template<Formatter T, IsStaticOrFluentOrAuxiliaryTag F>
+void write(const FunctionImpl<F>& element, T formatter, std::ostream& out);
+
+template<Formatter T, IsStaticOrFluentOrDerivedTag P>
+void write(const GroundAtomImpl<P>& element, T formatter, std::ostream& out);
+
+template<Formatter T>
+void write(const GroundFunctionExpressionNumberImpl& element, T formatter, std::ostream& out);
+
+template<Formatter T>
+void write(const GroundFunctionExpressionBinaryOperatorImpl& element, T formatter, std::ostream& out);
+
+template<Formatter T>
+void write(const GroundFunctionExpressionMultiOperatorImpl& element, T formatter, std::ostream& out);
+
+template<Formatter T>
+void write(const GroundFunctionExpressionMinusImpl& element, T formatter, std::ostream& out);
+
+template<Formatter T, IsStaticOrFluentOrAuxiliaryTag F>
+void write(const GroundFunctionExpressionFunctionImpl<F>& element, T formatter, std::ostream& out);
+
+template<Formatter T>
+void write(const GroundFunctionExpressionImpl& element, T formatter, std::ostream& out);
+
+template<Formatter T, IsStaticOrFluentOrAuxiliaryTag F>
+void write(const GroundFunctionImpl<F>& element, T formatter, std::ostream& out);
+
+template<Formatter T, IsStaticOrFluentOrDerivedTag P>
+void write(const GroundLiteralImpl<P>& element, T formatter, std::ostream& out);
+
+template<Formatter T, IsStaticOrFluentOrDerivedTag P>
+void write(const LiteralImpl<P>& element, T formatter, std::ostream& out);
+
+template<Formatter T>
+void write(const OptimizationMetricImpl& element, T formatter, std::ostream& out);
+
+template<Formatter T>
+void write(const NumericConstraintImpl& element, T formatter, std::ostream& out);
+
+template<Formatter T>
+void write(const GroundNumericConstraintImpl& element, T formatter, std::ostream& out);
+
+template<Formatter T, IsStaticOrFluentOrAuxiliaryTag F>
+void write(const GroundFunctionValueImpl<F>& element, T formatter, std::ostream& out);
+
+template<Formatter T>
+void write(const ObjectImpl& element, T formatter, std::ostream& out);
+
+template<Formatter T, IsStaticOrFluentOrDerivedTag P>
+void write(const PredicateImpl<P>& element, T formatter, std::ostream& out);
+
+template<Formatter T>
+void write(const ProblemImpl& element, T formatter, std::ostream& out);
+
+template<Formatter T>
+void write(const RequirementsImpl& element, T formatter, std::ostream& out);
+
+template<Formatter T>
+void write(const TermImpl& element, T formatter, std::ostream& out);
+
+template<Formatter T>
+void write(const VariableImpl& element, T formatter, std::ostream& out);
 
 }
 

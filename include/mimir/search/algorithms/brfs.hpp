@@ -26,15 +26,15 @@
 #include <optional>
 #include <vector>
 
-namespace mimir
+namespace mimir::search::brfs
 {
 
-extern SearchResult find_solution_brfs(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                                       std::shared_ptr<StateRepository> state_repository,
-                                       std::optional<State> start_state = std::nullopt,
-                                       std::optional<std::shared_ptr<IBrFSAlgorithmEventHandler>> event_handler = std::nullopt,
-                                       std::optional<std::shared_ptr<IGoalStrategy>> goal_strategy = std::nullopt,
-                                       std::optional<std::shared_ptr<IPruningStrategy>> pruning_strategy = std::nullopt);
+extern SearchResult find_solution(const SearchContext& context,
+                                  State start_state = nullptr,
+                                  EventHandler event_handler = nullptr,
+                                  GoalStrategy goal_strategy = nullptr,
+                                  PruningStrategy pruning_strategy = nullptr,
+                                  bool exhaustive = false);
 
 }
 

@@ -25,10 +25,10 @@
 #include <ostream>
 #include <vector>
 
-namespace mimir
+namespace mimir::search::brfs
 {
 
-class BrFSAlgorithmStatistics
+class Statistics
 {
 private:
     uint64_t m_num_generated;
@@ -58,7 +58,7 @@ private:
     uint64_t m_num_axioms;
 
 public:
-    BrFSAlgorithmStatistics() :
+    Statistics() :
         m_num_generated(0),
         m_num_expanded(0),
         m_num_deadends(0),
@@ -157,13 +157,13 @@ public:
  * Types
  */
 
-using BrFSAlgorithmStatisticsList = std::vector<BrFSAlgorithmStatistics>;
+using StatisticsList = std::vector<Statistics>;
 
 /**
  * Pretty printing
  */
 
-inline std::ostream& operator<<(std::ostream& os, const BrFSAlgorithmStatistics& statistics)
+inline std::ostream& operator<<(std::ostream& os, const Statistics& statistics)
 {
     os << "[BrFS] Search time: " << statistics.get_search_time_ms().count() << "ms" << "\n"
        << "[BrFS] Number of generated states: " << statistics.get_num_generated() << "\n"

@@ -23,11 +23,10 @@
 #include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
 
-namespace mimir
+namespace mimir::graphs
 {
 
 /// @brief `Edge` implements a directed edge with additional `EdgeProperties`.
-/// See examples on how to define edges below.
 /// @tparam ...EdgeProperties are additional edge properties.
 template<typename... EdgeProperties>
 class Edge
@@ -58,13 +57,12 @@ public:
         return std::get<I>(m_properties);
     }
 
+    const std::tuple<EdgeProperties...>& get_properties() const { return m_properties; }
+
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const
-    {
-        return std::forward_as_tuple(std::as_const(m_index), std::as_const(m_source), std::as_const(m_target), std::as_const(m_properties));
-    }
+    auto identifying_members() const { return std::tuple(get_index(), get_source(), get_target(), std::cref(get_properties())); }
 
 private:
     EdgeIndex m_index;
@@ -95,9 +93,7 @@ inline Color get_color(const ColoredEdge& edge) { return edge.get_property<0>();
 
 template<typename T>
 concept IsEdgeColoredGraph = requires(T::EdgeType edge) {
-    {
-        get_color(edge)
-    } -> std::same_as<Color>;
+    { get_color(edge) } -> std::same_as<Color>;
 };
 
 }

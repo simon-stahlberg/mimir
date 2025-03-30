@@ -34,150 +34,163 @@
 
 using namespace std;
 
-namespace mimir
+namespace mimir::formalism
 {
-DomainImpl::DomainImpl(Index index,
+DomainImpl::DomainImpl(Repositories repositories,
                        std::optional<fs::path> filepath,
                        std::string name,
                        Requirements requirements,
                        ObjectList constants,
-                       PredicateList<Static> static_predicates,
-                       PredicateList<Fluent> fluent_predicates,
-                       PredicateList<Derived> derived_predicates,
-                       FunctionSkeletonList functions,
+                       PredicateLists<StaticTag, FluentTag, DerivedTag> predicates,
+                       FunctionSkeletonLists<StaticTag, FluentTag> function_skeletons,
+                       std::optional<FunctionSkeleton<AuxiliaryTag>> auxiliary_function_skeleton,
                        ActionList actions,
                        AxiomList axioms) :
-    m_index(index),
+    m_repositories(std::move(repositories)),
     m_filepath(std::move(filepath)),
     m_name(std::move(name)),
     m_requirements(std::move(requirements)),
     m_constants(std::move(constants)),
-    m_static_predicates(std::move(static_predicates)),
-    m_fluent_predicates(std::move(fluent_predicates)),
-    m_derived_predicates(std::move(derived_predicates)),
-    m_functions(std::move(functions)),
+    m_predicates(std::move(predicates)),
+    m_function_skeletons(std::move(function_skeletons)),
+    m_auxiliary_function_skeleton(std::move(auxiliary_function_skeleton)),
     m_actions(std::move(actions)),
-    m_axioms(std::move(axioms)),
-    m_name_to_static_predicate(),
-    m_name_to_fluent_predicate(),
-    m_name_to_derived_predicate()
+    m_axioms(std::move(axioms))
 {
-    assert(is_all_unique(m_constants));
-    assert(is_all_unique(m_static_predicates));
-    assert(is_all_unique(m_fluent_predicates));
-    assert(is_all_unique(m_derived_predicates));
-    assert(is_all_unique(m_functions));
-    assert(is_all_unique(m_actions));
-    assert(is_all_unique(m_axioms));
-    assert(std::is_sorted(m_constants.begin(), m_constants.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(
-        std::is_sorted(m_static_predicates.begin(), m_static_predicates.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(
-        std::is_sorted(m_fluent_predicates.begin(), m_fluent_predicates.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(
-        std::is_sorted(m_derived_predicates.begin(), m_derived_predicates.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(m_functions.begin(), m_functions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(m_actions.begin(), m_actions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(m_axioms.begin(), m_axioms.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(is_all_unique(get_constants()));
+    assert(is_all_unique(get_predicates<StaticTag>()));
+    assert(is_all_unique(get_predicates<FluentTag>()));
+    assert(is_all_unique(get_predicates<DerivedTag>()));
+    assert(is_all_unique(get_function_skeletons<StaticTag>()));
+    assert(is_all_unique(get_function_skeletons<FluentTag>()));
+    assert(is_all_unique(get_actions()));
+    assert(is_all_unique(get_axioms()));
+    assert(std::is_sorted(get_constants().begin(), get_constants().end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(get_predicates<StaticTag>().begin(),
+                          get_predicates<StaticTag>().end(),
+                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(get_predicates<FluentTag>().begin(),
+                          get_predicates<FluentTag>().end(),
+                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(get_predicates<DerivedTag>().begin(),
+                          get_predicates<DerivedTag>().end(),
+                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(get_function_skeletons<StaticTag>().begin(),
+                          get_function_skeletons<StaticTag>().end(),
+                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(get_function_skeletons<FluentTag>().begin(),
+                          get_function_skeletons<FluentTag>().end(),
+                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(get_actions().begin(), get_actions().end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(get_axioms().begin(), get_axioms().end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
 
-    /* Additional */
-    for (const auto& object : m_constants)
-    {
-        m_name_to_constants.emplace(object->get_name(), object);
-    }
-    for (const auto& predicate : m_static_predicates)
-    {
-        m_name_to_static_predicate.emplace(predicate->get_name(), predicate);
-    }
-    for (const auto& predicate : m_fluent_predicates)
-    {
-        m_name_to_fluent_predicate.emplace(predicate->get_name(), predicate);
-    }
-    for (const auto& predicate : m_derived_predicates)
-    {
-        m_name_to_derived_predicate.emplace(predicate->get_name(), predicate);
-    }
+    /**
+     * Details
+     */
+
+    m_details = domain::Details(*this);
 }
 
-Index DomainImpl::get_index() const { return m_index; }
+const Repositories& DomainImpl::get_repositories() const { return m_repositories; }
 
 const std::optional<fs::path>& DomainImpl::get_filepath() const { return m_filepath; }
 
 const std::string& DomainImpl::get_name() const { return m_name; }
 
-const Requirements& DomainImpl::get_requirements() const { return m_requirements; }
+Requirements DomainImpl::get_requirements() const { return m_requirements; }
 
 const ObjectList& DomainImpl::get_constants() const { return m_constants; }
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 const PredicateList<P>& DomainImpl::get_predicates() const
 {
-    if constexpr (std::is_same_v<P, Static>)
-    {
-        return m_static_predicates;
-    }
-    else if constexpr (std::is_same_v<P, Fluent>)
-    {
-        return m_fluent_predicates;
-    }
-    else if constexpr (std::is_same_v<P, Derived>)
-    {
-        return m_derived_predicates;
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
-    }
+    return boost::hana::at_key(m_predicates, boost::hana::type<P> {});
 }
 
-template const PredicateList<Static>& DomainImpl::get_predicates<Static>() const;
-template const PredicateList<Fluent>& DomainImpl::get_predicates<Fluent>() const;
-template const PredicateList<Derived>& DomainImpl::get_predicates<Derived>() const;
+template const PredicateList<StaticTag>& DomainImpl::get_predicates<StaticTag>() const;
+template const PredicateList<FluentTag>& DomainImpl::get_predicates<FluentTag>() const;
+template const PredicateList<DerivedTag>& DomainImpl::get_predicates<DerivedTag>() const;
 
-const FunctionSkeletonList& DomainImpl::get_functions() const { return m_functions; }
+const PredicateLists<StaticTag, FluentTag, DerivedTag>& DomainImpl::get_hana_predicates() const { return m_predicates; }
+
+template<IsStaticOrFluentTag F>
+const FunctionSkeletonList<F>& DomainImpl::get_function_skeletons() const
+{
+    return boost::hana::at_key(m_function_skeletons, boost::hana::type<F> {});
+}
+
+template const FunctionSkeletonList<StaticTag>& DomainImpl::get_function_skeletons<StaticTag>() const;
+template const FunctionSkeletonList<FluentTag>& DomainImpl::get_function_skeletons<FluentTag>() const;
+
+const FunctionSkeletonLists<StaticTag, FluentTag>& DomainImpl::get_hana_function_skeletons() const { return m_function_skeletons; }
+
+const std::optional<FunctionSkeleton<AuxiliaryTag>>& DomainImpl::get_auxiliary_function_skeleton() const { return m_auxiliary_function_skeleton; }
 
 const ActionList& DomainImpl::get_actions() const { return m_actions; }
 
 const AxiomList& DomainImpl::get_axioms() const { return m_axioms; }
 
-const ToObjectMap<std::string> DomainImpl::get_name_to_constants() const { return m_name_to_constants; }
+const ToObjectMap<std::string> DomainImpl::get_name_to_constant() const { return m_details.constant.name_to_constant; }
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 const ToPredicateMap<std::string, P>& DomainImpl::get_name_to_predicate() const
 {
-    if constexpr (std::is_same_v<P, Static>)
+    return boost::hana::at_key(m_details.predicate.name_to_predicate, boost::hana::type<P> {});
+}
+
+template const ToPredicateMap<std::string, StaticTag>& DomainImpl::get_name_to_predicate<StaticTag>() const;
+template const ToPredicateMap<std::string, FluentTag>& DomainImpl::get_name_to_predicate<FluentTag>() const;
+template const ToPredicateMap<std::string, DerivedTag>& DomainImpl::get_name_to_predicate<DerivedTag>() const;
+
+const ToPredicateMaps<std::string, StaticTag, FluentTag, DerivedTag>& DomainImpl::get_hana_name_to_predicate() { return m_details.predicate.name_to_predicate; }
+
+/**
+ * Details
+ */
+
+domain::ConstantDetails::ConstantDetails() : parent(nullptr), name_to_constant() {}
+
+domain::ConstantDetails::ConstantDetails(const DomainImpl& domain) : parent(&domain), name_to_constant()
+{
+    for (const auto& object : domain.get_constants())
     {
-        return m_name_to_static_predicate;
-    }
-    else if constexpr (std::is_same_v<P, Fluent>)
-    {
-        return m_name_to_fluent_predicate;
-    }
-    else if constexpr (std::is_same_v<P, Derived>)
-    {
-        return m_name_to_derived_predicate;
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
+        name_to_constant.emplace(object->get_name(), object);
     }
 }
 
-template const ToPredicateMap<std::string, Static>& DomainImpl::get_name_to_predicate<Static>() const;
-template const ToPredicateMap<std::string, Fluent>& DomainImpl::get_name_to_predicate<Fluent>() const;
-template const ToPredicateMap<std::string, Derived>& DomainImpl::get_name_to_predicate<Derived>() const;
+domain::PredicateDetails::PredicateDetails() : parent(nullptr), name_to_predicate() {}
+
+domain::PredicateDetails::PredicateDetails(const DomainImpl& domain) : parent(&domain), name_to_predicate()
+{
+    boost::hana::for_each(domain.get_hana_predicates(),
+                          [&](auto&& pair)
+                          {
+                              const auto& key = boost::hana::first(pair);
+                              const auto& value = boost::hana::second(pair);
+                              for (const auto& predicate : value)
+                              {
+                                  boost::hana::at_key(name_to_predicate, key).emplace(predicate->get_name(), predicate);
+                              }
+                          });
+}
+
+domain::Details::Details() : parent(nullptr), constant(), predicate() {}
+
+domain::Details::Details(const DomainImpl& domain) : parent(&domain), constant(domain), predicate(domain) {}
+
+/**
+ * Printing
+ */
 
 std::ostream& operator<<(std::ostream& out, const DomainImpl& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, Domain element)
 {
-    out << *element;
+    write(*element, AddressFormatter(), out);
     return out;
 }
-
 }

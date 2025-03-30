@@ -20,20 +20,20 @@
 
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 
-namespace mimir
+namespace mimir::search::siw
 {
 
-class ProblemGoalCounter : public IGoalStrategy
+class ProblemGoalStrategyCounter : public IGoalStrategy
 {
 private:
-    Problem m_problem;
+    formalism::Problem m_problem;
 
     int m_initial_num_unsatisfied_goals;
 
     int count_unsatisfied_goals(State state) const;
 
 public:
-    explicit ProblemGoalCounter(Problem problem, State state);
+    explicit ProblemGoalStrategyCounter(formalism::Problem problem, State state);
 
     bool test_static_goal() override;
     bool test_dynamic_goal(State state) override;

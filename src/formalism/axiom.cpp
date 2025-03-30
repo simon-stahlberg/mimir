@@ -21,42 +21,42 @@
 #include "mimir/common/collections.hpp"
 #include "mimir/common/concepts.hpp"
 #include "mimir/common/printers.hpp"
-#include "mimir/formalism/existentially_quantified_conjunctive_condition.hpp"
+#include "mimir/formalism/conjunctive_condition.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/variable.hpp"
 
 #include <cassert>
 
-namespace mimir
+namespace mimir::formalism
 {
-AxiomImpl::AxiomImpl(Index index, ExistentiallyQuantifiedConjunctiveCondition precondition, Literal<Derived> literal) :
+AxiomImpl::AxiomImpl(Index index, ConjunctiveCondition conjunctive_condition, Literal<DerivedTag> literal) :
     m_index(index),
-    m_precondition(std::move(precondition)),
+    m_conjunctive_condition(std::move(conjunctive_condition)),
     m_literal(std::move(literal))
 {
-    assert(!literal->is_negated());
+    assert(conjunctive_condition);
+    assert(literal->get_polarity());
 }
 
 Index AxiomImpl::get_index() const { return m_index; }
 
-const VariableList& AxiomImpl::get_parameters() const { return m_precondition->get_parameters(); }
+const VariableList& AxiomImpl::get_parameters() const { return m_conjunctive_condition->get_parameters(); }
 
-const Literal<Derived>& AxiomImpl::get_literal() const { return m_literal; }
+Literal<DerivedTag> AxiomImpl::get_literal() const { return m_literal; }
 
-const ExistentiallyQuantifiedConjunctiveCondition& AxiomImpl::get_precondition() const { return m_precondition; }
+ConjunctiveCondition AxiomImpl::get_conjunctive_condition() const { return m_conjunctive_condition; }
 
 size_t AxiomImpl::get_arity() const { return get_parameters().size(); }
 
 std::ostream& operator<<(std::ostream& out, const AxiomImpl& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, Axiom element)
 {
-    out << *element;
+    write(*element, AddressFormatter(), out);
     return out;
 }
 

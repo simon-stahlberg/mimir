@@ -18,6 +18,7 @@
 #ifndef MIMIR_SEARCH_ALGORITHMS_ASTAR_HPP_
 #define MIMIR_SEARCH_ALGORITHMS_ASTAR_HPP_
 
+#include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/algorithms/utils.hpp"
 #include "mimir/search/declarations.hpp"
@@ -26,16 +27,15 @@
 #include <optional>
 #include <vector>
 
-namespace mimir
+namespace mimir::search::astar
 {
 
-extern SearchResult find_solution_astar(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                                        std::shared_ptr<StateRepository> state_repository,
-                                        std::shared_ptr<IHeuristic> heuristic,
-                                        std::optional<State> start_state = std::nullopt,
-                                        std::optional<std::shared_ptr<IAStarAlgorithmEventHandler>> event_handler = std::nullopt,
-                                        std::optional<std::shared_ptr<IGoalStrategy>> goal_strategy = std::nullopt,
-                                        std::optional<std::shared_ptr<IPruningStrategy>> pruning_strategy = std::nullopt);
+extern SearchResult find_solution(const SearchContext& context,
+                                  Heuristic heuristic,
+                                  State start_state = nullptr,
+                                  EventHandler event_handler = nullptr,
+                                  GoalStrategy goal_strategy = nullptr,
+                                  PruningStrategy pruning_strategy = nullptr);
 
 }
 

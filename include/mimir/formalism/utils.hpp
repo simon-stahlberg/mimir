@@ -20,21 +20,21 @@
 
 #include "mimir/formalism/declarations.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
 
 /// @brief Translates a ground literal list into a list of ground atoms.
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 extern void to_ground_atoms(const GroundLiteralList<P>& literals, GroundAtomList<P>& out_ground_atoms);
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 extern GroundAtomList<P> to_ground_atoms(const GroundLiteralList<P>& literals);
 
 /// @brief Filters ground atoms with the given polarity from the literals.
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 extern void filter_ground_atoms(const GroundLiteralList<P>& literals, bool polarity, GroundAtomList<P>& out_ground_atoms);
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 extern GroundAtomList<P> filter_ground_atoms(const GroundLiteralList<P>& literals, bool polarity);
 
 }

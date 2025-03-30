@@ -24,7 +24,7 @@
 #include <loki/details/utils/hash.hpp>
 #include <unordered_set>
 
-namespace mimir
+namespace mimir::graphs
 {
 
 template<typename G>

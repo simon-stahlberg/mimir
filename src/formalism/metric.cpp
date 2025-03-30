@@ -24,7 +24,7 @@
 
 using namespace std;
 
-namespace mimir
+namespace mimir::formalism
 {
 OptimizationMetricImpl::OptimizationMetricImpl(Index index, loki::OptimizationMetricEnum optimization_metric, GroundFunctionExpression function_expression) :
     m_index(index),
@@ -37,18 +37,17 @@ Index OptimizationMetricImpl::get_index() const { return m_index; }
 
 loki::OptimizationMetricEnum OptimizationMetricImpl::get_optimization_metric() const { return m_optimization_metric; }
 
-const GroundFunctionExpression& OptimizationMetricImpl::get_function_expression() const { return m_function_expression; }
+GroundFunctionExpression OptimizationMetricImpl::get_function_expression() const { return m_function_expression; }
 
 std::ostream& operator<<(std::ostream& out, const OptimizationMetricImpl& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, OptimizationMetric element)
 {
-    out << *element;
+    write(*element, AddressFormatter(), out);
     return out;
 }
 

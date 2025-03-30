@@ -24,17 +24,20 @@
 #include "mimir/search/dense_state.hpp"
 #include "mimir/search/state.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 
-class StateRepository
+class StateRepositoryImpl
 {
 private:
-    std::shared_ptr<IAxiomEvaluator> m_axiom_evaluator;  ///< The axiom evaluator.
-    bool m_problem_or_domain_has_axioms;                 ///< flag that indicates whether axiom evaluation must trigger.
+    AxiomEvaluator m_axiom_evaluator;     ///< The axiom evaluator.
+    bool m_problem_or_domain_has_axioms;  ///< flag that indicates whether axiom evaluation must trigger.
 
-    StateImplSet m_states;                   ///< Stores all created extended states.
-    AxiomEvaluationSet m_axiom_evaluations;  ///< Stores all axiom evaluations.
+    StateImplSet m_states;  ///< Stores all created extended states.
+    // TODO: merge both members below?
+    FlatIndexListSet m_fluent_atoms_set;               ///< Stores all created fluent atom lists.
+    FlatIndexListSet m_derived_atoms_set;              ///< Stores all created derived atom lists.
+    FlatDoubleListSet m_fluent_numeric_variables_set;  ///< Stores all created fluent numeric variable lists.
 
     FlatBitset m_reached_fluent_atoms;   ///< Stores all encountered fluent atoms.
     FlatBitset m_reached_derived_atoms;  ///< Stores all encountered derived atoms.
@@ -46,15 +49,16 @@ private:
     FlatBitset m_applied_positive_effect_atoms;
     FlatBitset m_applied_negative_effect_atoms;
 
+    FlatIndexList m_state_fluent_atoms;
     FlatIndexList m_state_derived_atoms;
 
 public:
-    explicit StateRepository(std::shared_ptr<IAxiomEvaluator> axiom_evaluator);
+    explicit StateRepositoryImpl(AxiomEvaluator axiom_evaluator);
 
-    StateRepository(const StateRepository& other) = delete;
-    StateRepository& operator=(const StateRepository& other) = delete;
-    StateRepository(StateRepository&& other) = delete;
-    StateRepository& operator=(StateRepository&& other) = delete;
+    StateRepositoryImpl(const StateRepositoryImpl& other) = delete;
+    StateRepositoryImpl& operator=(const StateRepositoryImpl& other) = delete;
+    StateRepositoryImpl(StateRepositoryImpl&& other) = delete;
+    StateRepositoryImpl& operator=(StateRepositoryImpl&& other) = delete;
 
     /// @brief Get or create the extended initial state of the underlying problem.
     /// @return the extended initial state.
@@ -64,30 +68,33 @@ public:
     /// @param atoms the ground atoms.
     /// @param workspace is the workspace containing preallocated memory.
     /// @return the extended state.
-    State get_or_create_state(const GroundAtomList<Fluent>& atoms);
+    State get_or_create_state(const formalism::GroundAtomList<formalism::FluentTag>& atoms, const FlatDoubleList& fluent_numeric_variables);
 
     /// @brief Get or create the extended successor state when applying the given ground `action` in the given `state`.
     /// @param state is the state.
     /// @param action is the ground action.
+    /// @param state_metric_value is the metric value of the state.
     /// @param workspace is the workspace containing preallocated memory.
-    /// @return the extended successor state and the action cost.
-    std::pair<State, ContinuousCost> get_or_create_successor_state(State state, GroundAction action);
+    /// @return the extended successor state and its metric value.
+    std::pair<State, ContinuousCost> get_or_create_successor_state(State state, formalism::GroundAction action, ContinuousCost state_metric_value);
 
     /// @brief Get or create the extended successor state when applying the given ground `action` in the given state identifed by the `state_fluent_atoms` and
     /// `derived_atoms`. The input parameters `dense_state` are modified, meaning that side effects have to be taken into account.
-    /// @param state_fluent_atoms are the fluent atoms of the state
-    /// @param state_derived_atoms are the derived atoms of the state
+    /// @param dense_state is the dense state.
     /// @param action is the ground action.
+    /// @param state_metric_value is the metric value of the dense state.
     /// @param workspace is the workspace containing preallocated memory.
-    /// @return the extended successor state and the action cost.
-    std::pair<State, ContinuousCost> get_or_create_successor_state(DenseState& dense_state, GroundAction action);
+    /// @return the extended successor state and its metric value.
+    std::pair<State, ContinuousCost> get_or_create_successor_state(State state,  ///< for parallel application of numeric effects
+                                                                   DenseState& dense_state,
+                                                                   formalism::GroundAction action,
+                                                                   ContinuousCost state_metric_value);
 
     /**
      * Getters
      */
 
-    Problem get_problem() const;
-    const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const;
+    const formalism::Problem& get_problem() const;
 
     /// @brief Return the number of created states.
     /// @return the number of created states.
@@ -103,7 +110,7 @@ public:
 
     /// @brief Get the underlying axiom evaluator.
     /// @return the axiom evaluator.
-    const std::shared_ptr<IAxiomEvaluator>& get_axiom_evaluator() const;
+    const AxiomEvaluator& get_axiom_evaluator() const;
 
     /// @brief Get the total number of bytes used for storing the unextended state portions.
     /// @return the number of bytes for storing storing the unextended state portions.

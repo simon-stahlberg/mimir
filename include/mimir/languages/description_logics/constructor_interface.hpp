@@ -18,39 +18,42 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_INTERFACE_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_INTERFACE_HPP_
 
-#include "mimir/languages/description_logics/constructor_tag.hpp"
 #include "mimir/languages/description_logics/declarations.hpp"
 #include "mimir/languages/description_logics/denotations.hpp"
+#include "mimir/languages/description_logics/tags.hpp"
 
 #include <concepts>
 #include <cstddef>
 #include <memory>
 #include <vector>
 
-namespace mimir::dl
+namespace mimir::languages::dl
 {
 
-template<ConstructorTag D>
-class ConstructorImpl
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
+class IConstructor
 {
 protected:
-    ConstructorImpl() = default;
+    IConstructor() = default;
     // Move constructor and move assignment operator are protected
     // to restrict their usage to derived classes only.
-    ConstructorImpl(ConstructorImpl&& other) = default;
-    ConstructorImpl& operator=(ConstructorImpl&& other) = default;
+    IConstructor(IConstructor&& other) = default;
+    IConstructor& operator=(IConstructor&& other) = default;
 
 public:
     // Uncopieable
-    ConstructorImpl(const ConstructorImpl& other) = delete;
-    ConstructorImpl& operator=(const ConstructorImpl& other) = delete;
-    virtual ~ConstructorImpl() = default;
+    IConstructor(const IConstructor& other) = delete;
+    IConstructor& operator=(const IConstructor& other) = delete;
+    virtual ~IConstructor() = default;
 
     /// @brief Evaluate the dl constructor on the evaluation context.
     virtual Denotation<D> evaluate(EvaluationContext& context) const = 0;
 
     /// @brief Accept a visitor.
-    virtual void accept(Visitor& visitor) const = 0;
+    virtual void accept(IVisitor& visitor) const = 0;
+
+    /// @brief Return the index of the constructor.
+    virtual Index get_index() const = 0;
 };
 
 }

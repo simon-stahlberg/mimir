@@ -18,9 +18,11 @@
 #ifndef MIMIR_FORMALISM_FUNCTION_EXPRESSIONS_HPP_
 #define MIMIR_FORMALISM_FUNCTION_EXPRESSIONS_HPP_
 
+#include "mimir/common/bounds.hpp"
+#include "mimir/common/types.hpp"
 #include "mimir/formalism/declarations.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
 
 /* FunctionExpressionNumber */
@@ -39,6 +41,8 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
+    using FormalismEntity = void;
+
     // moveable but not copyable
     FunctionExpressionNumberImpl(const FunctionExpressionNumberImpl& other) = delete;
     FunctionExpressionNumberImpl& operator=(const FunctionExpressionNumberImpl& other) = delete;
@@ -51,7 +55,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_number)); }
+    auto identifying_members() const { return std::tuple(get_number()); }
 };
 
 /* FunctionExpressionBinaryOperator */
@@ -75,6 +79,8 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
+    using FormalismEntity = void;
+
     // moveable but not copyable
     FunctionExpressionBinaryOperatorImpl(const FunctionExpressionBinaryOperatorImpl& other) = delete;
     FunctionExpressionBinaryOperatorImpl& operator=(const FunctionExpressionBinaryOperatorImpl& other) = delete;
@@ -83,16 +89,13 @@ public:
 
     Index get_index() const;
     loki::BinaryOperatorEnum get_binary_operator() const;
-    const FunctionExpression& get_left_function_expression() const;
-    const FunctionExpression& get_right_function_expression() const;
+    FunctionExpression get_left_function_expression() const;
+    FunctionExpression get_right_function_expression() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const
-    {
-        return std::forward_as_tuple(std::as_const(m_binary_operator), std::as_const(m_left_function_expression), std::as_const(m_right_function_expression));
-    }
+    auto identifying_members() const { return std::tuple(get_binary_operator(), get_left_function_expression(), get_right_function_expression()); }
 };
 
 /* FunctionExpressionMultiOperator */
@@ -112,6 +115,8 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
+    using FormalismEntity = void;
+
     // moveable but not copyable
     FunctionExpressionMultiOperatorImpl(const FunctionExpressionMultiOperatorImpl& other) = delete;
     FunctionExpressionMultiOperatorImpl& operator=(const FunctionExpressionMultiOperatorImpl& other) = delete;
@@ -125,7 +130,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_multi_operator), std::as_const(m_function_expressions)); }
+    auto identifying_members() const { return std::tuple(get_multi_operator(), std::cref(get_function_expressions())); }
 };
 
 /* FunctionExpressionMinus */
@@ -144,6 +149,8 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
+    using FormalismEntity = void;
+
     // moveable but not copyable
     FunctionExpressionMinusImpl(const FunctionExpressionMinusImpl& other) = delete;
     FunctionExpressionMinusImpl& operator=(const FunctionExpressionMinusImpl& other) = delete;
@@ -151,30 +158,33 @@ public:
     FunctionExpressionMinusImpl& operator=(FunctionExpressionMinusImpl&& other) = default;
 
     Index get_index() const;
-    const FunctionExpression& get_function_expression() const;
+    FunctionExpression get_function_expression() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_function_expression)); }
+    auto identifying_members() const { return std::tuple(get_function_expression()); }
 };
 
 /* FunctionExpressionFunction */
+template<IsStaticOrFluentOrAuxiliaryTag F>
 class FunctionExpressionFunctionImpl
 {
 private:
     Index m_index;
-    Function m_function;
+    Function<F> m_function;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    FunctionExpressionFunctionImpl(Index index, Function function);
+    FunctionExpressionFunctionImpl(Index index, Function<F> function);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
+    using FormalismEntity = void;
+
     // moveable but not copyable
     FunctionExpressionFunctionImpl(const FunctionExpressionFunctionImpl& other) = delete;
     FunctionExpressionFunctionImpl& operator=(const FunctionExpressionFunctionImpl& other) = delete;
@@ -182,70 +192,75 @@ public:
     FunctionExpressionFunctionImpl& operator=(FunctionExpressionFunctionImpl&& other) = default;
 
     Index get_index() const;
-    const Function& get_function() const;
+    Function<F> get_function() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_function)); }
+    auto identifying_members() const { return std::tuple(get_function()); }
 };
 
 /* FunctionExpression */
+// FunctionExpressionFunction<AuxiliaryTag> only appear in numeric effects.
+using FunctionExpressionVariant = std::variant<FunctionExpressionNumber,
+                                               FunctionExpressionBinaryOperator,
+                                               FunctionExpressionMultiOperator,
+                                               FunctionExpressionMinus,
+                                               FunctionExpressionFunction<StaticTag>,
+                                               FunctionExpressionFunction<FluentTag>>;
+
 class FunctionExpressionImpl
 {
 private:
-    size_t m_index;
-    std::variant<FunctionExpressionNumber,
-                 FunctionExpressionBinaryOperator,
-                 FunctionExpressionMultiOperator,
-                 FunctionExpressionMinus,
-                 FunctionExpressionFunction>
-        m_function_expression;
+    Index m_index;
+    FunctionExpressionVariant m_function_expression;
 
-    FunctionExpressionImpl(size_t index,
-                           std::variant<FunctionExpressionNumber,
-                                        FunctionExpressionBinaryOperator,
-                                        FunctionExpressionMultiOperator,
-                                        FunctionExpressionMinus,
-                                        FunctionExpressionFunction> function_expression);
+    FunctionExpressionImpl(Index index, FunctionExpressionVariant function_expression);
+
+    // Below: add additional members if needed and initialize them in the constructor
+
+    // TODO: we might want to store a vector indicating the argument positions relevant to the function expression to compress the keys in the grounding tables.
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
+    using FormalismEntity = void;
+
     // moveable but not copyable
     FunctionExpressionImpl(const FunctionExpressionImpl& other) = delete;
     FunctionExpressionImpl& operator=(const FunctionExpressionImpl& other) = delete;
     FunctionExpressionImpl(FunctionExpressionImpl&& other) = default;
     FunctionExpressionImpl& operator=(FunctionExpressionImpl&& other) = default;
 
-    size_t get_index() const;
-    const std::variant<FunctionExpressionNumber,
-                       FunctionExpressionBinaryOperator,
-                       FunctionExpressionMultiOperator,
-                       FunctionExpressionMinus,
-                       FunctionExpressionFunction>&
-    get_variant() const;
+    Index get_index() const;
+    const FunctionExpressionVariant& get_variant() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_function_expression)); }
+    auto identifying_members() const { return std::tuple(get_variant()); }
 };
 
 /**
  * Arithmetic operations
  */
 
-inline double evaluate_binary(loki::BinaryOperatorEnum op, double val_left, double val_right)
+inline ContinuousCost evaluate_binary(loki::BinaryOperatorEnum op, ContinuousCost val_left, ContinuousCost val_right)
 {
+    if (val_left == UNDEFINED_CONTINUOUS_COST || val_right == UNDEFINED_CONTINUOUS_COST)
+    {
+        return UNDEFINED_CONTINUOUS_COST;
+    }
+
     switch (op)
     {
         case loki::BinaryOperatorEnum::DIV:
         {
             if (val_right == 0.)
-                throw std::logic_error("Division by zero is undefined.");
+                return UNDEFINED_CONTINUOUS_COST;
+
             return val_left / val_right;
         }
         case loki::BinaryOperatorEnum::MINUS:
@@ -267,8 +282,13 @@ inline double evaluate_binary(loki::BinaryOperatorEnum op, double val_left, doub
     }
 }
 
-inline double evaluate_multi(loki::MultiOperatorEnum op, double val_left, double val_right)
+inline ContinuousCost evaluate_multi(loki::MultiOperatorEnum op, ContinuousCost val_left, ContinuousCost val_right)
 {
+    if (val_left == UNDEFINED_CONTINUOUS_COST || val_right == UNDEFINED_CONTINUOUS_COST)
+    {
+        return UNDEFINED_CONTINUOUS_COST;
+    }
+
     switch (op)
     {
         case loki::MultiOperatorEnum::MUL:
@@ -286,37 +306,42 @@ inline double evaluate_multi(loki::MultiOperatorEnum op, double val_left, double
     }
 }
 
-inline std::pair<double, double>
-evaluate_binary_bounds(loki::BinaryOperatorEnum op, std::pair<double, double> lower_upper_lhs, std::pair<double, double> lower_upper_rhs)
+template<IsArithmetic A>
+inline Bounds<A> evaluate_binary_bounds(loki::BinaryOperatorEnum op, const Bounds<A>& lhs, const Bounds<A>& rhs)
 {
-    const auto [lower_lhs, upper_lhs] = lower_upper_lhs;
-    const auto [lower_rhs, upper_rhs] = lower_upper_rhs;
-    const auto alternative1 = evaluate_binary(op, lower_lhs, lower_rhs);
-    const auto alternative2 = evaluate_binary(op, upper_lhs, lower_rhs);
-    const auto alternative3 = evaluate_binary(op, lower_lhs, upper_rhs);
-    const auto alternative4 = evaluate_binary(op, upper_lhs, upper_rhs);
-    return std::minmax({ alternative1, alternative2, alternative3, alternative4 });
+    const auto alternative1 = evaluate_binary(op, lhs.lower, rhs.lower);
+    const auto alternative2 = evaluate_binary(op, lhs.upper, rhs.lower);
+    const auto alternative3 = evaluate_binary(op, lhs.lower, rhs.upper);
+    const auto alternative4 = evaluate_binary(op, lhs.upper, rhs.upper);
+    auto result = std::minmax({ alternative1, alternative2, alternative3, alternative4 });
+    return Bounds<A>(result.first, result.second);
 }
 
-inline std::pair<double, double>
-evaluate_multi_bounds(loki::MultiOperatorEnum op, std::pair<double, double> lower_upper_lhs, std::pair<double, double> lower_upper_rhs)
+template<IsArithmetic A>
+inline Bounds<A> evaluate_multi_bounds(loki::MultiOperatorEnum op, const Bounds<A>& lhs, const Bounds<A>& rhs)
 {
-    const auto [lower_lhs, upper_lhs] = lower_upper_lhs;
-    const auto [lower_rhs, upper_rhs] = lower_upper_rhs;
-    const auto alternative1 = evaluate_multi(op, lower_lhs, lower_rhs);
-    const auto alternative2 = evaluate_multi(op, upper_lhs, lower_rhs);
-    const auto alternative3 = evaluate_multi(op, lower_lhs, upper_rhs);
-    const auto alternative4 = evaluate_multi(op, upper_lhs, upper_rhs);
-    return std::minmax({ alternative1, alternative2, alternative3, alternative4 });
+    const auto alternative1 = evaluate_multi(op, lhs.lower, rhs.lower);
+    const auto alternative2 = evaluate_multi(op, lhs.upper, rhs.lower);
+    const auto alternative3 = evaluate_multi(op, lhs.lower, rhs.upper);
+    const auto alternative4 = evaluate_multi(op, lhs.upper, rhs.upper);
+    auto result = std::minmax({ alternative1, alternative2, alternative3, alternative4 });
+    return Bounds<A>(result.first, result.second);
 }
 
 extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionNumberImpl& element);
 extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionBinaryOperatorImpl& element);
 extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionMultiOperatorImpl& element);
 extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionMinusImpl& element);
-extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl& element);
+template<IsStaticOrFluentOrAuxiliaryTag F>
+extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl<F>& element);
 extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionImpl& element);
 
+extern std::ostream& operator<<(std::ostream& out, FunctionExpressionNumber element);
+extern std::ostream& operator<<(std::ostream& out, FunctionExpressionBinaryOperator element);
+extern std::ostream& operator<<(std::ostream& out, FunctionExpressionMultiOperator element);
+extern std::ostream& operator<<(std::ostream& out, FunctionExpressionMinus element);
+template<IsStaticOrFluentOrAuxiliaryTag F>
+extern std::ostream& operator<<(std::ostream& out, FunctionExpressionFunction<F> element);
 extern std::ostream& operator<<(std::ostream& out, FunctionExpression element);
 }
 

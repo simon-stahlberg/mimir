@@ -19,11 +19,13 @@
 
 #include "formatter.hpp"
 #include "mimir/common/collections.hpp"
+#include "mimir/common/printers.hpp"
+#include "mimir/formalism/function_expressions.hpp"
 #include "mimir/formalism/ground_function.hpp"
 
 #include <cassert>
 
-namespace mimir
+namespace mimir::formalism
 {
 /* FunctionExpressionNumber */
 GroundFunctionExpressionNumberImpl::GroundFunctionExpressionNumberImpl(Index index, double number) : m_index(index), m_number(number) {}
@@ -48,9 +50,9 @@ Index GroundFunctionExpressionBinaryOperatorImpl::get_index() const { return m_i
 
 loki::BinaryOperatorEnum GroundFunctionExpressionBinaryOperatorImpl::get_binary_operator() const { return m_binary_operator; }
 
-const GroundFunctionExpression& GroundFunctionExpressionBinaryOperatorImpl::get_left_function_expression() const { return m_left_function_expression; }
+GroundFunctionExpression GroundFunctionExpressionBinaryOperatorImpl::get_left_function_expression() const { return m_left_function_expression; }
 
-const GroundFunctionExpression& GroundFunctionExpressionBinaryOperatorImpl::get_right_function_expression() const { return m_right_function_expression; }
+GroundFunctionExpression GroundFunctionExpressionBinaryOperatorImpl::get_right_function_expression() const { return m_right_function_expression; }
 
 /* FunctionExpressionMultiOperator */
 GroundFunctionExpressionMultiOperatorImpl::GroundFunctionExpressionMultiOperatorImpl(Index index,
@@ -85,82 +87,186 @@ GroundFunctionExpressionMinusImpl::GroundFunctionExpressionMinusImpl(Index index
 
 Index GroundFunctionExpressionMinusImpl::get_index() const { return m_index; }
 
-const GroundFunctionExpression& GroundFunctionExpressionMinusImpl::get_function_expression() const { return m_function_expression; }
+GroundFunctionExpression GroundFunctionExpressionMinusImpl::get_function_expression() const { return m_function_expression; }
 
 /* FunctionExpressionFunction */
-GroundFunctionExpressionFunctionImpl::GroundFunctionExpressionFunctionImpl(Index index, GroundFunction function) :
+template<IsStaticOrFluentOrAuxiliaryTag F>
+GroundFunctionExpressionFunctionImpl<F>::GroundFunctionExpressionFunctionImpl(Index index, GroundFunction<F> function) :
     m_index(index),
     m_function(std::move(function))
 {
 }
 
-Index GroundFunctionExpressionFunctionImpl::get_index() const { return m_index; }
+template<IsStaticOrFluentOrAuxiliaryTag F>
+Index GroundFunctionExpressionFunctionImpl<F>::get_index() const
+{
+    return m_index;
+}
 
-const GroundFunction& GroundFunctionExpressionFunctionImpl::get_function() const { return m_function; }
+template<IsStaticOrFluentOrAuxiliaryTag F>
+GroundFunction<F> GroundFunctionExpressionFunctionImpl<F>::get_function() const
+{
+    return m_function;
+}
+
+template class GroundFunctionExpressionFunctionImpl<StaticTag>;
+template class GroundFunctionExpressionFunctionImpl<FluentTag>;
+template class GroundFunctionExpressionFunctionImpl<AuxiliaryTag>;
 
 /* GroundFunctionExpression */
-GroundFunctionExpressionImpl::GroundFunctionExpressionImpl(size_t index,
-                                                           std::variant<GroundFunctionExpressionNumber,
-                                                                        GroundFunctionExpressionBinaryOperator,
-                                                                        GroundFunctionExpressionMultiOperator,
-                                                                        GroundFunctionExpressionMinus,
-                                                                        GroundFunctionExpressionFunction> ground_function_expression) :
+GroundFunctionExpressionImpl::GroundFunctionExpressionImpl(Index index, GroundFunctionExpressionVariant ground_function_expression) :
     m_index(index),
     m_ground_function_expression(ground_function_expression)
 {
 }
 
-size_t GroundFunctionExpressionImpl::get_index() const { return m_index; }
+Index GroundFunctionExpressionImpl::get_index() const { return m_index; }
 
-const std::variant<GroundFunctionExpressionNumber,
-                   GroundFunctionExpressionBinaryOperator,
-                   GroundFunctionExpressionMultiOperator,
-                   GroundFunctionExpressionMinus,
-                   GroundFunctionExpressionFunction>&
-GroundFunctionExpressionImpl::get_variant() const
+const GroundFunctionExpressionVariant& GroundFunctionExpressionImpl::get_variant() const { return m_ground_function_expression; }
+
+/* Utils */
+
+ContinuousCost evaluate(GroundFunctionExpression fexpr, const FlatDoubleList& static_numeric_variables, const FlatDoubleList& fluent_numeric_variables)
 {
-    return m_ground_function_expression;
+    return std::visit(
+        [&](auto&& arg) -> ContinuousCost
+        {
+            using T = std::decay_t<decltype(arg)>;
+            if constexpr (std::is_same_v<T, GroundFunctionExpressionNumber>)
+            {
+                return arg->get_number();
+            }
+            else if constexpr (std::is_same_v<T, GroundFunctionExpressionBinaryOperator>)
+            {
+                return evaluate_binary(arg->get_binary_operator(),
+                                       evaluate(arg->get_left_function_expression(), static_numeric_variables, fluent_numeric_variables),
+                                       evaluate(arg->get_right_function_expression(), static_numeric_variables, fluent_numeric_variables));
+            }
+            else if constexpr (std::is_same_v<T, GroundFunctionExpressionMultiOperator>)
+            {
+                return std::accumulate(
+                    std::next(arg->get_function_expressions().begin()),  // Start from the second expression
+                    arg->get_function_expressions().end(),
+                    evaluate(arg->get_function_expressions().front(), static_numeric_variables, fluent_numeric_variables),  // Initial bounds
+                    [&](const auto& value, const auto& child_expr)
+                    { return evaluate_multi(arg->get_multi_operator(), value, evaluate(child_expr, static_numeric_variables, fluent_numeric_variables)); });
+            }
+            else if constexpr (std::is_same_v<T, GroundFunctionExpressionMinus>)
+            {
+                const auto val = evaluate(arg->get_function_expression(), static_numeric_variables, fluent_numeric_variables);
+                if (val == UNDEFINED_CONTINUOUS_COST)
+                {
+                    return UNDEFINED_CONTINUOUS_COST;
+                }
+
+                return -val;
+            }
+            else if constexpr (std::is_same_v<T, GroundFunctionExpressionFunction<StaticTag>>)
+            {
+                if (arg->get_function()->get_index() >= static_numeric_variables.size())
+                {
+                    return UNDEFINED_CONTINUOUS_COST;
+                }
+
+                return static_numeric_variables[arg->get_function()->get_index()];
+            }
+            else if constexpr (std::is_same_v<T, GroundFunctionExpressionFunction<FluentTag>>)
+            {
+                if (arg->get_function()->get_index() >= fluent_numeric_variables.size())
+                {
+                    return UNDEFINED_CONTINUOUS_COST;
+                }
+
+                return fluent_numeric_variables[arg->get_function()->get_index()];
+            }
+            else if constexpr (std::is_same_v<T, GroundFunctionExpressionFunction<AuxiliaryTag>>)
+            {
+                throw std::logic_error("evaluate(fexpr, fluent_numeric_variables): Unexpected GroundFunctionExpressionFunction<AuxiliaryTag>. Did you define a "
+                                       "(composite) metric consisting of a single nullary function without defining its value in the initial state?");
+            }
+            else
+            {
+                static_assert(dependent_false<T>::value,
+                              "evaluate(fexpr, fluent_numeric_variables): Missing implementation for GroundFunctionExpressionFunction type.");
+            }
+        },
+        fexpr->get_variant());
 }
 
+/* Printing */
 std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionNumberImpl& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionBinaryOperatorImpl& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionMultiOperatorImpl& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionMinusImpl& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
-std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionFunctionImpl& element)
+template<IsStaticOrFluentOrAuxiliaryTag F>
+std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionFunctionImpl<F>& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
+
+template std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionFunctionImpl<StaticTag>& element);
+template std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionFunctionImpl<FluentTag>& element);
+template std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionFunctionImpl<AuxiliaryTag>& element);
+
+std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionNumber element)
+{
+    write(*element, AddressFormatter(), out);
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionBinaryOperator element)
+{
+    write(*element, AddressFormatter(), out);
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionMultiOperator element)
+{
+    write(*element, AddressFormatter(), out);
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionMinus element)
+{
+    write(*element, AddressFormatter(), out);
+    return out;
+}
+
+template<IsStaticOrFluentOrAuxiliaryTag F>
+std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionFunction<F> element)
+{
+    write(*element, AddressFormatter(), out);
+    return out;
+}
+
+template std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionFunction<StaticTag> element);
+template std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionFunction<FluentTag> element);
+template std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionFunction<AuxiliaryTag> element);
 
 std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionImpl& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 

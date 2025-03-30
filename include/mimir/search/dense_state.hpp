@@ -24,7 +24,7 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 
 /// @brief `DenseState` is an intermediate representation of a `StateImpl`
@@ -33,35 +33,40 @@ struct DenseState
     Index m_index = Index(0);
     FlatBitset m_fluent_atoms = FlatBitset();
     FlatBitset m_derived_atoms = FlatBitset();
+    FlatDoubleList m_numeric_variables = FlatDoubleList();
 
     DenseState() = default;
     DenseState(State state);
 
     static void translate(State state, DenseState& out_state);
 
-    template<DynamicPredicateTag P>
-    bool contains(GroundAtom<P> atom) const;
+    template<formalism::IsFluentOrDerivedTag P>
+    bool contains(formalism::GroundAtom<P> atom) const;
 
-    template<DynamicPredicateTag P>
-    bool literal_holds(GroundLiteral<P> literal) const;
+    template<formalism::IsFluentOrDerivedTag P>
+    bool literal_holds(formalism::GroundLiteral<P> literal) const;
 
-    template<DynamicPredicateTag P>
-    bool literals_hold(const GroundLiteralList<P>& literals) const;
+    template<formalism::IsFluentOrDerivedTag P>
+    bool literals_hold(const formalism::GroundLiteralList<P>& literals) const;
 
-    template<DynamicPredicateTag P>
+    template<formalism::IsFluentOrDerivedTag P>
     bool literals_hold(const FlatIndexList& positive_atoms, const FlatIndexList& negative_atoms) const;
 
     /* Immutable Getters */
 
     Index get_index() const;
 
-    template<DynamicPredicateTag P>
+    template<formalism::IsFluentOrDerivedTag P>
     const FlatBitset& get_atoms() const;
+
+    const FlatDoubleList& get_numeric_variables() const;
 
     Index& get_index();
 
-    template<DynamicPredicateTag P>
+    template<formalism::IsFluentOrDerivedTag P>
     FlatBitset& get_atoms();
+
+    FlatDoubleList& get_numeric_variables();
 };
 
 }

@@ -20,7 +20,7 @@
 
 #include "mimir/formalism/declarations.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
 
 class ObjectImpl
@@ -38,6 +38,8 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
+    using FormalismEntity = void;
+
     // moveable but not copyable
     ObjectImpl(const ObjectImpl& other) = delete;
     ObjectImpl& operator=(const ObjectImpl& other) = delete;
@@ -50,7 +52,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_name)); }
+    auto identifying_members() const { return std::tuple(std::cref(get_name())); }
 };
 
 extern std::ostream& operator<<(std::ostream& out, const ObjectImpl& element);

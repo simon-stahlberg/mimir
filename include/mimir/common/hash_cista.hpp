@@ -18,6 +18,7 @@
 #ifndef MIMIR_COMMON_HASH_CISTA_HPP_
 #define MIMIR_COMMON_HASH_CISTA_HPP_
 
+#include "cista/containers/dual_dynamic_bitset.h"
 #include "cista/containers/dynamic_bitset.h"
 #include "cista/containers/external_ptr.h"
 #include "cista/containers/flexible_index_vector.h"
@@ -40,12 +41,12 @@ struct loki::Hash<cista::basic_external_ptr<T>>
     size_t operator()(const Type& ptr) const { return loki::hash_combine(ptr.el_); }
 };
 
-/* DynamicBitset */
+/* DualDynamicBitset */
 
 template<typename Block, template<typename> typename Ptr>
-struct loki::Hash<cista::basic_dynamic_bitset<Block, Ptr>>
+struct loki::Hash<cista::basic_dual_dynamic_bitset<Block, Ptr>>
 {
-    using Type = cista::basic_dynamic_bitset<Block, Ptr>;
+    using Type = cista::basic_dual_dynamic_bitset<Block, Ptr>;
 
     size_t operator()(const Type& bitset) const
     {
@@ -69,6 +70,34 @@ struct loki::Hash<cista::basic_dynamic_bitset<Block, Ptr>>
     }
 };
 
+/* DynamicBitset */
+
+template<typename Block, template<typename> typename Ptr>
+struct loki::Hash<cista::basic_dynamic_bitset<Block, Ptr>>
+{
+    using Type = cista::basic_dynamic_bitset<Block, Ptr>;
+
+    size_t operator()(const Type& bitset) const
+    {
+        // Find the last block that differs from the default block
+        auto last_relevant_index = static_cast<int64_t>(bitset.blocks_.size()) - 1;
+        for (; (last_relevant_index >= 0) && (bitset.blocks_[last_relevant_index] == Type::block_zeroes); --last_relevant_index) {}
+        size_t hashable_size = last_relevant_index + 1;
+
+        // Compute a hash value up to and including this block
+        size_t seed = Type::block_zeroes;
+        loki::hash_combine(seed, hashable_size);
+        size_t hash[2] = { 0, 0 };
+
+        loki::MurmurHash3_x64_128(bitset.blocks_.data(), hashable_size * sizeof(Block), seed, hash);
+
+        loki::hash_combine(seed, hash[0]);
+        loki::hash_combine(seed, hash[1]);
+
+        return seed;
+    }
+};
+
 /* Tuple */
 
 template<typename... Ts>
@@ -78,12 +107,12 @@ struct loki::Hash<cista::tuple<Ts...>>
 
     size_t operator()(const Type& tuple) const
     {
-        constexpr std::size_t seed = sizeof...(Ts);
+        constexpr std::size_t aggregated_hash = sizeof...(Ts);
 
         [&]<std::size_t... Is>(std::index_sequence<Is...>)
-        { (loki::hash_combine(seed, cista::get<Is>(tuple)), ...); }(std::make_index_sequence<sizeof...(Ts)> {});
+        { (loki::hash_combine(aggregated_hash, cista::get<Is>(tuple)), ...); }(std::make_index_sequence<sizeof...(Ts)> {});
 
-        return seed;
+        return aggregated_hash;
     }
 };
 
@@ -96,15 +125,14 @@ struct loki::Hash<cista::basic_vector<T, Ptr, IndexPointers, TemplateSizeType, A
 
     size_t operator()(const Type& vector) const
     {
-        size_t seed = vector.size();
-        size_t hash[2] = { 0, 0 };
+        size_t aggregated_hash = vector.size();
 
-        loki::MurmurHash3_x64_128(vector.data(), vector.size() * sizeof(T), seed, hash);
+        for (const auto& element : vector)
+        {
+            loki::hash_combine(aggregated_hash, loki::Hash<T> {}(element));
+        }
 
-        loki::hash_combine(seed, hash[0]);
-        loki::hash_combine(seed, hash[1]);
-
-        return seed;
+        return aggregated_hash;
     }
 };
 

@@ -20,32 +20,64 @@
 #include "formatter.hpp"
 #include "mimir/formalism/variable.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
-FunctionSkeletonImpl::FunctionSkeletonImpl(Index index, std::string name, VariableList parameters) :
+template<IsStaticOrFluentOrAuxiliaryTag F>
+FunctionSkeletonImpl<F>::FunctionSkeletonImpl(Index index, std::string name, VariableList parameters) :
     m_index(index),
     m_name(std::move(name)),
     m_parameters(std::move(parameters))
 {
 }
 
-Index FunctionSkeletonImpl::get_index() const { return m_index; }
-
-const std::string& FunctionSkeletonImpl::get_name() const { return m_name; }
-
-const VariableList& FunctionSkeletonImpl::get_parameters() const { return m_parameters; }
-
-std::ostream& operator<<(std::ostream& out, const FunctionSkeletonImpl& element)
+template<IsStaticOrFluentOrAuxiliaryTag F>
+Index FunctionSkeletonImpl<F>::get_index() const
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    return m_index;
+}
+
+template<IsStaticOrFluentOrAuxiliaryTag F>
+const std::string& FunctionSkeletonImpl<F>::get_name() const
+{
+    return m_name;
+}
+
+template<IsStaticOrFluentOrAuxiliaryTag F>
+const VariableList& FunctionSkeletonImpl<F>::get_parameters() const
+{
+    return m_parameters;
+}
+
+template<IsStaticOrFluentOrAuxiliaryTag F>
+size_t FunctionSkeletonImpl<F>::get_arity() const
+{
+    return m_parameters.size();
+}
+
+template class FunctionSkeletonImpl<StaticTag>;
+template class FunctionSkeletonImpl<FluentTag>;
+template class FunctionSkeletonImpl<AuxiliaryTag>;
+
+template<IsStaticOrFluentOrAuxiliaryTag F>
+std::ostream& operator<<(std::ostream& out, const FunctionSkeletonImpl<F>& element)
+{
+    write(element, StringFormatter(), out);
     return out;
 }
 
-std::ostream& operator<<(std::ostream& out, FunctionSkeleton element)
+template std::ostream& operator<<(std::ostream& out, const FunctionSkeletonImpl<StaticTag>& element);
+template std::ostream& operator<<(std::ostream& out, const FunctionSkeletonImpl<FluentTag>& element);
+template std::ostream& operator<<(std::ostream& out, const FunctionSkeletonImpl<AuxiliaryTag>& element);
+
+template<IsStaticOrFluentOrAuxiliaryTag F>
+std::ostream& operator<<(std::ostream& out, FunctionSkeleton<F> element)
 {
-    out << *element;
+    write(*element, AddressFormatter(), out);
     return out;
 }
+
+template std::ostream& operator<<(std::ostream& out, FunctionSkeleton<StaticTag> element);
+template std::ostream& operator<<(std::ostream& out, FunctionSkeleton<FluentTag> element);
+template std::ostream& operator<<(std::ostream& out, FunctionSkeleton<AuxiliaryTag> element);
 
 }

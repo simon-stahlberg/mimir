@@ -38,11 +38,11 @@ int main(int argc, char** argv)
     auto applicable_action_generator =
         std::dynamic_pointer_cast<IApplicableActionGenerator>(std::make_shared<LiftedApplicableActionGenerator>(grounder->get_action_grounder()));
     auto axiom_evaluator = std::dynamic_pointer_cast<IAxiomEvaluator>(std::make_shared<LiftedAxiomEvaluator>(grounder->get_axiom_grounder()));
-    auto state_repository = std::make_shared<StateRepository>(axiom_evaluator);
+    auto state_repository = std::make_shared<StateRepositoryImpl>(axiom_evaluator);
 
     const auto state_space = std::make_shared<StateSpace>(std::move(StateSpace::create(applicable_action_generator, state_repository).value()));
 
-    auto fluent_goal_atoms = to_ground_atoms(parser.get_problem()->get_goal_condition<Fluent>());
+    auto fluent_goal_atoms = to_ground_atoms(parser.get_problem()->get_goal_condition<FluentTag>());
 
     for (size_t arity = 0; arity < MAX_ARITY; ++arity)
     {

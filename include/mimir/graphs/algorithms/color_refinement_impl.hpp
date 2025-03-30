@@ -20,20 +20,22 @@
 
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types.hpp"
-#include "mimir/graphs/digraph_vertex_colored.hpp"
 #include "mimir/graphs/graph_interface.hpp"
 #include "mimir/graphs/graph_properties.hpp"
 #include "mimir/graphs/graph_traversal_interface.hpp"
 #include "mimir/graphs/graph_vertices.hpp"
 
+#include <algorithm>
 #include <cassert>
+#include <cmath>
+#include <iostream>
 #include <loki/details/utils/hash.hpp>
 #include <map>
 #include <set>
 #include <unordered_map>
 #include <vector>
 
-namespace mimir::color_refinement
+namespace mimir::graphs::color_refinement
 {
 using mimir::operator<<;
 
@@ -205,7 +207,7 @@ Certificate compute_certificate(const G& graph)
             // Note: this computes the stable coloring, not the coarsest stable coloring.
             for (size_t h = 0; h < num_vertices; ++h)
             {
-                for (const auto& outgoing_vertex : graph.template get_adjacent_vertices<ForwardTraversal>(hash_to_vertex.at(h)))
+                for (const auto& outgoing_vertex : graph.template get_adjacent_vertices<ForwardTag>(hash_to_vertex.at(h)))
                 {
                     const auto hash = vertex_to_hash.at(outgoing_vertex.get_index());
 

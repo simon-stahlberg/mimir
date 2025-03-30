@@ -18,88 +18,85 @@
 #include "mimir/search/algorithms/astar/event_handlers/debug.hpp"
 
 #include "mimir/common/printers.hpp"
+#include "mimir/formalism/ground_action.hpp"
 #include "mimir/search/plan.hpp"
+#include "mimir/search/state.hpp"
 
-namespace mimir
+using namespace mimir::formalism;
+
+namespace mimir::search::astar
 {
-void DebugAStarAlgorithmEventHandler::on_expand_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories) const
+void DebugEventHandler::on_expand_state_impl(State state) const
 {
     std::cout << "[AStar] ----------------------------------------\n"
-              << "[AStar] State: " << std::make_tuple(problem, state, std::cref(pddl_repositories)) << std::endl
-              << std::endl;
+              << "[AStar] State: ";
+    mimir::operator<<(std::cout, std::make_tuple(state, std::cref(*m_problem)));
+    std::cout << std::endl << std::endl;
 }
 
-void DebugAStarAlgorithmEventHandler::on_generate_state_impl(State state,
-                                                             GroundAction action,
-                                                             ContinuousCost action_cost,
-                                                             Problem problem,
-                                                             const PDDLRepositories& pddl_repositories) const
+void DebugEventHandler::on_expand_goal_state_impl(State state) const {}
+
+void DebugEventHandler::on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const
 {
-    std::cout << "[AStar] Action: " << std::make_tuple(action, std::cref(pddl_repositories), FullActionFormatterTag {}) << " cost:" << action_cost << "\n"
-              << "[AStar] Successor: " << std::make_tuple(problem, state, std::cref(pddl_repositories)) << "\n"
-              << std::endl;
+    std::cout << "[AStar] Action: ";
+    mimir::operator<<(std::cout, std::make_tuple(action, std::cref(*m_problem), GroundActionImpl::FullFormatterTag {}));
+    std::cout << "\n"
+              << "[AStar] Successor: ";
+    mimir::operator<<(std::cout, std::make_tuple(successor_state, std::cref(*m_problem)));
+    std::cout << "\n" << std::endl;
 }
 
-void DebugAStarAlgorithmEventHandler::on_generate_state_relaxed_impl(State state,
-                                                                     GroundAction action,
-                                                                     ContinuousCost action_cost,
-                                                                     Problem problem,
-                                                                     const PDDLRepositories& pddl_repositories) const
-{
-}
+void DebugEventHandler::on_generate_state_relaxed_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const {}
 
-void DebugAStarAlgorithmEventHandler::on_generate_state_not_relaxed_impl(State state,
-                                                                         GroundAction action,
-                                                                         ContinuousCost action_cost,
-                                                                         Problem problem,
-                                                                         const PDDLRepositories& pddl_repositories) const
-{
-}
+void DebugEventHandler::on_generate_state_not_relaxed_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const {}
 
-void DebugAStarAlgorithmEventHandler::on_close_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories) const {}
+void DebugEventHandler::on_close_state_impl(State state) const {}
 
-void DebugAStarAlgorithmEventHandler::on_finish_f_layer_impl(double f_value, uint64_t num_expanded_states, uint64_t num_generated_states) const
+void DebugEventHandler::on_finish_f_layer_impl(double f_value, uint64_t num_expanded_states, uint64_t num_generated_states) const
 {
     std::cout << "[AStar] Finished state expansion until f-layer " << f_value << " with num expanded states " << num_expanded_states
               << " and num generated states " << num_generated_states << std::endl;
 }
 
-void DebugAStarAlgorithmEventHandler::on_prune_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories) const {}
+void DebugEventHandler::on_prune_state_impl(State state) const {}
 
-void DebugAStarAlgorithmEventHandler::on_start_search_impl(State start_state, Problem problem, const PDDLRepositories& pddl_repositories) const
+void DebugEventHandler::on_start_search_impl(State start_state) const
 {
     std::cout << "[AStar] Search started.\n"
-              << "[AStar] Initial: " << std::make_tuple(problem, start_state, std::cref(pddl_repositories)) << std::endl;
+              << "[AStar] Initial: ";
+    mimir::operator<<(std::cout, std::make_tuple(start_state, std::cref(*m_problem)));
+    std::cout << std::endl;
 }
 
-void DebugAStarAlgorithmEventHandler::on_end_search_impl(uint64_t num_reached_fluent_atoms,
-                                                         uint64_t num_reached_derived_atoms,
-                                                         uint64_t num_bytes_for_unextended_state_portion,
-                                                         uint64_t num_bytes_for_extended_state_portion,
-                                                         uint64_t num_bytes_for_nodes,
-                                                         uint64_t num_bytes_for_actions,
-                                                         uint64_t num_bytes_for_axioms,
-                                                         uint64_t num_states,
-                                                         uint64_t num_nodes,
-                                                         uint64_t num_actions,
-                                                         uint64_t num_axioms) const
+void DebugEventHandler::on_end_search_impl(uint64_t num_reached_fluent_atoms,
+                                           uint64_t num_reached_derived_atoms,
+                                           uint64_t num_bytes_for_unextended_state_portion,
+                                           uint64_t num_bytes_for_extended_state_portion,
+                                           uint64_t num_bytes_for_nodes,
+                                           uint64_t num_bytes_for_actions,
+                                           uint64_t num_bytes_for_axioms,
+                                           uint64_t num_states,
+                                           uint64_t num_nodes,
+                                           uint64_t num_actions,
+                                           uint64_t num_axioms) const
 {
     std::cout << "[AStar] Search ended.\n" << m_statistics << std::endl;
 }
 
-void DebugAStarAlgorithmEventHandler::on_solved_impl(const Plan& plan, const PDDLRepositories& pddl_repositories) const
+void DebugEventHandler::on_solved_impl(const Plan& plan) const
 {
     std::cout << "[AStar] Plan found.\n"
               << "[AStar] Plan cost: " << plan.get_cost() << "\n"
               << "[AStar] Plan length: " << plan.get_actions().size() << std::endl;
     for (size_t i = 0; i < plan.get_actions().size(); ++i)
     {
-        std::cout << "[AStar] " << i + 1 << ". " << std::make_tuple(plan.get_actions()[i], std::cref(pddl_repositories), PlanActionFormatterTag {})
-                  << std::endl;
+        std::cout << "[AStar] " << i + 1 << ". ";
+        mimir::operator<<(std::cout, std::make_tuple(plan.get_actions()[i], std::cref(*m_problem), GroundActionImpl::PlanFormatterTag {}));
+        std::cout << std::endl;
     }
 }
 
-void DebugAStarAlgorithmEventHandler::on_unsolvable_impl() const { std::cout << "[AStar] Unsolvable!" << std::endl; }
+void DebugEventHandler::on_unsolvable_impl() const { std::cout << "[AStar] Unsolvable!" << std::endl; }
 
-void DebugAStarAlgorithmEventHandler::on_exhausted_impl() const { std::cout << "[AStar] Exhausted!" << std::endl; }
+void DebugEventHandler::on_exhausted_impl() const { std::cout << "[AStar] Exhausted!" << std::endl; }
 }

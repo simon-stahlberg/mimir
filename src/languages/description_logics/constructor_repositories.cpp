@@ -17,44 +17,207 @@
 
 #include "mimir/languages/description_logics/constructor_repositories.hpp"
 
-namespace mimir::dl
+#include "sentence_parser.hpp"
+
+using namespace mimir::formalism;
+
+namespace mimir::languages::dl
 {
 
-ConstructorTagToRepository create_default_constructor_type_to_repository()
+HanaRepositories& Repositories::get_repositories() { return m_repositories; }
+
+const HanaRepositories& Repositories::get_repositories() const { return m_repositories; }
+
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
+Constructor<D> Repositories::get_or_create(const std::string& sentence, const DomainImpl& domain)
 {
-    return boost::hana::make_map(
-        boost::hana::make_pair(boost::hana::type_c<ConceptBotImpl>, ConceptBotRepository {}),
-        boost::hana::make_pair(boost::hana::type_c<ConceptTopImpl>, ConceptTopRepository {}),
-        boost::hana::make_pair(boost::hana::type_c<ConceptAtomicStateImpl<Static>>, ConceptAtomicStateRepository<Static> {}),
-        boost::hana::make_pair(boost::hana::type_c<ConceptAtomicStateImpl<Fluent>>, ConceptAtomicStateRepository<Fluent> {}),
-        boost::hana::make_pair(boost::hana::type_c<ConceptAtomicStateImpl<Derived>>, ConceptAtomicStateRepository<Derived> {}),
-        boost::hana::make_pair(boost::hana::type_c<ConceptAtomicGoalImpl<Static>>, ConceptAtomicGoalRepository<Static> {}),
-        boost::hana::make_pair(boost::hana::type_c<ConceptAtomicGoalImpl<Fluent>>, ConceptAtomicGoalRepository<Fluent> {}),
-        boost::hana::make_pair(boost::hana::type_c<ConceptAtomicGoalImpl<Derived>>, ConceptAtomicGoalRepository<Derived> {}),
-        boost::hana::make_pair(boost::hana::type_c<ConceptIntersectionImpl>, ConceptIntersectionRepository {}),
-        boost::hana::make_pair(boost::hana::type_c<ConceptUnionImpl>, ConceptUnionRepository {}),
-        boost::hana::make_pair(boost::hana::type_c<ConceptNegationImpl>, ConceptNegationRepository {}),
-        boost::hana::make_pair(boost::hana::type_c<ConceptValueRestrictionImpl>, ConceptValueRestrictionRepository {}),
-        boost::hana::make_pair(boost::hana::type_c<ConceptExistentialQuantificationImpl>, ConceptExistentialQuantificationRepository {}),
-        boost::hana::make_pair(boost::hana::type_c<ConceptRoleValueMapContainmentImpl>, ConceptRoleValueMapContainmentRepository {}),
-        boost::hana::make_pair(boost::hana::type_c<ConceptRoleValueMapEqualityImpl>, ConceptRoleValueMapEqualityRepository {}),
-        boost::hana::make_pair(boost::hana::type_c<ConceptNominalImpl>, ConceptNominalRepository {}),
-        boost::hana::make_pair(boost::hana::type_c<RoleUniversalImpl>, RoleUniversalRepository {}),
-        boost::hana::make_pair(boost::hana::type_c<RoleAtomicStateImpl<Static>>, RoleAtomicStateRepository<Static> {}),
-        boost::hana::make_pair(boost::hana::type_c<RoleAtomicStateImpl<Fluent>>, RoleAtomicStateRepository<Fluent> {}),
-        boost::hana::make_pair(boost::hana::type_c<RoleAtomicStateImpl<Derived>>, RoleAtomicStateRepository<Derived> {}),
-        boost::hana::make_pair(boost::hana::type_c<RoleAtomicGoalImpl<Static>>, RoleAtomicGoalRepository<Static> {}),
-        boost::hana::make_pair(boost::hana::type_c<RoleAtomicGoalImpl<Fluent>>, RoleAtomicGoalRepository<Fluent> {}),
-        boost::hana::make_pair(boost::hana::type_c<RoleAtomicGoalImpl<Derived>>, RoleAtomicGoalRepository<Derived> {}),
-        boost::hana::make_pair(boost::hana::type_c<RoleIntersectionImpl>, RoleIntersectionRepository {}),
-        boost::hana::make_pair(boost::hana::type_c<RoleUnionImpl>, RoleUnionRepository {}),
-        boost::hana::make_pair(boost::hana::type_c<RoleComplementImpl>, RoleComplementRepository {}),
-        boost::hana::make_pair(boost::hana::type_c<RoleInverseImpl>, RoleInverseRepository {}),
-        boost::hana::make_pair(boost::hana::type_c<RoleCompositionImpl>, RoleCompositionRepository {}),
-        boost::hana::make_pair(boost::hana::type_c<RoleTransitiveClosureImpl>, RoleTransitiveClosureRepository {}),
-        boost::hana::make_pair(boost::hana::type_c<RoleReflexiveTransitiveClosureImpl>, RoleReflexiveTransitiveClosureRepository {}),
-        boost::hana::make_pair(boost::hana::type_c<RoleRestrictionImpl>, RoleRestrictionRepository {}),
-        boost::hana::make_pair(boost::hana::type_c<RoleIdentityImpl>, RoleIdentityFactory {}));
+    return parse_sentence<D>(sentence, domain, *this);
+}
+
+template Constructor<ConceptTag> Repositories::get_or_create(const std::string& sentence, const DomainImpl& domain);
+template Constructor<RoleTag> Repositories::get_or_create(const std::string& sentence, const DomainImpl& domain);
+template Constructor<BooleanTag> Repositories::get_or_create(const std::string& sentence, const DomainImpl& domain);
+template Constructor<NumericalTag> Repositories::get_or_create(const std::string& sentence, const DomainImpl& domain);
+
+/* Concepts */
+Constructor<ConceptTag> Repositories::get_or_create_concept_bot()
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<ConceptBotImpl> {}).get_or_create();
+}
+
+Constructor<ConceptTag> Repositories::get_or_create_concept_top()
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<ConceptTopImpl> {}).get_or_create();
+}
+
+template<IsStaticOrFluentOrDerivedTag P>
+Constructor<ConceptTag> Repositories::get_or_create_concept_atomic_state(Predicate<P> predicate)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<ConceptAtomicStateImpl<P>> {}).get_or_create(predicate);
+}
+
+template Constructor<ConceptTag> Repositories::get_or_create_concept_atomic_state(Predicate<StaticTag> predicate);
+template Constructor<ConceptTag> Repositories::get_or_create_concept_atomic_state(Predicate<FluentTag> predicate);
+template Constructor<ConceptTag> Repositories::get_or_create_concept_atomic_state(Predicate<DerivedTag> predicate);
+
+template<IsStaticOrFluentOrDerivedTag P>
+Constructor<ConceptTag> Repositories::get_or_create_concept_atomic_goal(Predicate<P> predicate, bool polarity)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<ConceptAtomicGoalImpl<P>> {}).get_or_create(predicate, polarity);
+}
+
+template Constructor<ConceptTag> Repositories::get_or_create_concept_atomic_goal(Predicate<StaticTag> predicate, bool polarity);
+template Constructor<ConceptTag> Repositories::get_or_create_concept_atomic_goal(Predicate<FluentTag> predicate, bool polarity);
+template Constructor<ConceptTag> Repositories::get_or_create_concept_atomic_goal(Predicate<DerivedTag> predicate, bool polarity);
+
+Constructor<ConceptTag> Repositories::get_or_create_concept_intersection(Constructor<ConceptTag> left_concept, Constructor<ConceptTag> right_concept)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<ConceptIntersectionImpl> {}).get_or_create(left_concept, right_concept);
+}
+
+Constructor<ConceptTag> Repositories::get_or_create_concept_union(Constructor<ConceptTag> left_concept, Constructor<ConceptTag> right_concept)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<ConceptUnionImpl> {}).get_or_create(left_concept, right_concept);
+}
+
+Constructor<ConceptTag> Repositories::get_or_create_concept_negation(Constructor<ConceptTag> concept_)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<ConceptNegationImpl> {}).get_or_create(concept_);
+}
+
+Constructor<ConceptTag> Repositories::get_or_create_concept_value_restriction(Constructor<RoleTag> role, Constructor<ConceptTag> concept_)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<ConceptValueRestrictionImpl> {}).get_or_create(role, concept_);
+}
+
+Constructor<ConceptTag> Repositories::get_or_create_concept_existential_quantification(Constructor<RoleTag> role, Constructor<ConceptTag> concept_)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<ConceptExistentialQuantificationImpl> {}).get_or_create(role, concept_);
+}
+
+Constructor<ConceptTag> Repositories::get_or_create_concept_role_value_map_containment(Constructor<RoleTag> left_role, Constructor<RoleTag> right_role)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<ConceptRoleValueMapContainmentImpl> {}).get_or_create(left_role, right_role);
+}
+
+Constructor<ConceptTag> Repositories::get_or_create_concept_role_value_map_equality(Constructor<RoleTag> left_role, Constructor<RoleTag> right_role)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<ConceptRoleValueMapEqualityImpl> {}).get_or_create(left_role, right_role);
+}
+
+Constructor<ConceptTag> Repositories::get_or_create_concept_nominal(Object object)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<ConceptNominalImpl> {}).get_or_create(object);
+}
+
+/* Roles */
+
+Constructor<RoleTag> Repositories::get_or_create_role_universal()
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<RoleUniversalImpl> {}).get_or_create();
+}
+
+template<IsStaticOrFluentOrDerivedTag P>
+Constructor<RoleTag> Repositories::get_or_create_role_atomic_state(Predicate<P> predicate)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<RoleAtomicStateImpl<P>> {}).get_or_create(predicate);
+}
+
+template Constructor<RoleTag> Repositories::get_or_create_role_atomic_state(Predicate<StaticTag> predicate);
+template Constructor<RoleTag> Repositories::get_or_create_role_atomic_state(Predicate<FluentTag> predicate);
+template Constructor<RoleTag> Repositories::get_or_create_role_atomic_state(Predicate<DerivedTag> predicate);
+
+template<IsStaticOrFluentOrDerivedTag P>
+Constructor<RoleTag> Repositories::get_or_create_role_atomic_goal(Predicate<P> predicate, bool polarity)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<RoleAtomicGoalImpl<P>> {}).get_or_create(predicate, polarity);
+}
+
+template Constructor<RoleTag> Repositories::get_or_create_role_atomic_goal(Predicate<StaticTag> predicate, bool polarity);
+template Constructor<RoleTag> Repositories::get_or_create_role_atomic_goal(Predicate<FluentTag> predicate, bool polarity);
+template Constructor<RoleTag> Repositories::get_or_create_role_atomic_goal(Predicate<DerivedTag> predicate, bool polarity);
+
+Constructor<RoleTag> Repositories::get_or_create_role_intersection(Constructor<RoleTag> left_role, Constructor<RoleTag> right_role)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<RoleIntersectionImpl> {}).get_or_create(left_role, right_role);
+}
+
+Constructor<RoleTag> Repositories::get_or_create_role_union(Constructor<RoleTag> left_role, Constructor<RoleTag> right_role)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<RoleUnionImpl> {}).get_or_create(left_role, right_role);
+}
+
+Constructor<RoleTag> Repositories::get_or_create_role_complement(Constructor<RoleTag> role)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<RoleComplementImpl> {}).get_or_create(role);
+}
+
+Constructor<RoleTag> Repositories::get_or_create_role_inverse(Constructor<RoleTag> role)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<RoleInverseImpl> {}).get_or_create(role);
+}
+
+Constructor<RoleTag> Repositories::get_or_create_role_composition(Constructor<RoleTag> left_role, Constructor<RoleTag> right_role)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<RoleCompositionImpl> {}).get_or_create(left_role, right_role);
+}
+
+Constructor<RoleTag> Repositories::get_or_create_role_transitive_closure(Constructor<RoleTag> role)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<RoleTransitiveClosureImpl> {}).get_or_create(role);
+}
+
+Constructor<RoleTag> Repositories::get_or_create_role_reflexive_transitive_closure(Constructor<RoleTag> role)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<RoleReflexiveTransitiveClosureImpl> {}).get_or_create(role);
+}
+
+Constructor<RoleTag> Repositories::get_or_create_role_restriction(Constructor<RoleTag> role, Constructor<ConceptTag> concept_)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<RoleRestrictionImpl> {}).get_or_create(role, concept_);
+}
+
+Constructor<RoleTag> Repositories::get_or_create_role_identity(Constructor<ConceptTag> concept_)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<RoleIdentityImpl> {}).get_or_create(concept_);
+}
+
+/* Booleans */
+
+template<IsStaticOrFluentOrDerivedTag P>
+Constructor<BooleanTag> Repositories::get_or_create_boolean_atomic_state(Predicate<P> predicate)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<BooleanAtomicStateImpl<P>> {}).get_or_create(predicate);
+}
+
+template Constructor<BooleanTag> Repositories::get_or_create_boolean_atomic_state(Predicate<StaticTag> predicate);
+template Constructor<BooleanTag> Repositories::get_or_create_boolean_atomic_state(Predicate<FluentTag> predicate);
+template Constructor<BooleanTag> Repositories::get_or_create_boolean_atomic_state(Predicate<DerivedTag> predicate);
+
+template<IsConceptOrRoleTag D>
+Constructor<BooleanTag> Repositories::get_or_create_boolean_nonempty(Constructor<D> constructor)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<BooleanNonemptyImpl<D>> {}).get_or_create(constructor);
+}
+
+template Constructor<BooleanTag> Repositories::get_or_create_boolean_nonempty(Constructor<ConceptTag> constructor);
+template Constructor<BooleanTag> Repositories::get_or_create_boolean_nonempty(Constructor<RoleTag> constructor);
+
+/* Numericals */
+
+template<IsConceptOrRoleTag D>
+Constructor<NumericalTag> Repositories::get_or_create_numerical_count(Constructor<D> constructor)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<NumericalCountImpl<D>> {}).get_or_create(constructor);
+}
+
+template Constructor<NumericalTag> Repositories::get_or_create_numerical_count(Constructor<ConceptTag> constructor);
+template Constructor<NumericalTag> Repositories::get_or_create_numerical_count(Constructor<RoleTag> constructor);
+
+Constructor<NumericalTag>
+Repositories::get_or_create_numerical_distance(Constructor<ConceptTag> left_concept, Constructor<RoleTag> role, Constructor<ConceptTag> right_concept)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<NumericalDistanceImpl> {}).get_or_create(left_concept, role, right_concept);
 }
 
 }

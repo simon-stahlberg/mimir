@@ -28,7 +28,7 @@
 #include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
 
-namespace mimir
+namespace mimir::search
 {
 /// @brief `StateImpl` encapsulates the fluent and derived atoms of a planning state.
 /// We refer to the fluent atoms as the non-extended state
@@ -36,46 +36,62 @@ namespace mimir
 struct StateImpl
 {
     Index m_index = Index(0);
-    FlatIndexList m_fluent_atoms = FlatIndexList();
+    FlatExternalPtr<const FlatIndexList> m_fluent_atoms = nullptr;
     FlatExternalPtr<const FlatIndexList> m_derived_atoms = nullptr;
+    FlatExternalPtr<const FlatDoubleList> m_numeric_variables = nullptr;
 
-    static const FlatIndexList s_empty_derived_atoms;  ///< Returned, if m_derived_atoms is a nullptr.
+    static const FlatIndexList s_empty_fluent_atoms;        ///< Returned, if m_fluent_atoms is a nullptr.
+    static const FlatIndexList s_empty_derived_atoms;       ///< Returned, if m_derived_atoms is a nullptr.
+    static const FlatDoubleList s_empty_numeric_variables;  ///< Returned, if m_numeric_variables is a nullptr.
+
+    bool numeric_constraint_holds(formalism::GroundNumericConstraint numeric_constraint, const FlatDoubleList& static_numeric_variables) const;
+
+    bool numeric_constraints_hold(const formalism::GroundNumericConstraintList& numeric_constraints, const FlatDoubleList& static_numeric_variables) const;
 
     /// @brief log(N) operation, ideally, we get rid of it, perhaps useful to expose to python users
-    template<DynamicPredicateTag P>
-    bool literal_holds(GroundLiteral<P> literal) const;
+    template<formalism::IsFluentOrDerivedTag P>
+    bool literal_holds(formalism::GroundLiteral<P> literal) const;
 
     /// @brief N*log(N) operation, ideally (currently unused), perhaps useful to expose to python users
-    template<DynamicPredicateTag P>
-    bool literals_hold(const GroundLiteralList<P>& literals) const;
+    template<formalism::IsFluentOrDerivedTag P>
+    bool literals_hold(const formalism::GroundLiteralList<P>& literals) const;
 
-    template<DynamicPredicateTag P>
+    template<formalism::IsFluentOrDerivedTag P>
     bool literals_hold(const FlatIndexList& positive_atoms, const FlatIndexList& negative_atoms) const;
 
     /* Immutable Getters */
 
     Index get_index() const;
 
-    template<DynamicPredicateTag P>
+    template<formalism::IsFluentOrDerivedTag P>
     const FlatIndexList& get_atoms() const;
+
+    const FlatDoubleList& get_numeric_variables() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     ///
     /// Only return the non-extended portion of a state because it implies the extended portion.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(get_atoms<Fluent>())); }
+    auto identifying_members() const
+    {
+        // The pointers uniquely identify the state, derived atoms not needed.
+        return std::make_tuple(m_fluent_atoms.get(), m_numeric_variables.get());
+    }
 
 private:
     /* Mutable Getters */
 
-    friend class StateRepository;  ///< Given exclusive write access to a state.
+    friend class StateRepositoryImpl;  ///< Given exclusive write access to a state.
 
     Index& get_index();
 
-    FlatIndexList& get_fluent_atoms();
+    FlatExternalPtr<const FlatIndexList>& get_fluent_atoms();
     FlatExternalPtr<const FlatIndexList>& get_derived_atoms();
+    FlatExternalPtr<const FlatDoubleList>& get_numeric_variables();
 };
+
+static_assert(loki::HasIdentifyingMembers<StateImpl>);  // This is my concept...
 
 /// @brief STL does not define operator== for std::span.
 inline bool operator==(const std::span<const State>& lhs, const std::span<const State>& rhs)
@@ -84,14 +100,17 @@ inline bool operator==(const std::span<const State>& lhs, const std::span<const 
 }
 
 using StateImplSet = mimir::buffering::UnorderedSet<StateImpl>;
-using AxiomEvaluationSet = mimir::buffering::UnorderedSet<FlatIndexList>;
 
+}
+
+namespace mimir
+{
 /**
  * Pretty printing
  */
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<Problem, State, const PDDLRepositories&>& data);
+std::ostream& operator<<(std::ostream& os, const std::tuple<search::State, const formalism::ProblemImpl&>& data);
 }
 
 #endif

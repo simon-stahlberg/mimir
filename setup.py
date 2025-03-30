@@ -78,19 +78,40 @@ class CMakeBuild(build_ext):
         )
 
         # 3. Generate pyi stub files
-
-        # This is safer than adding a custom command in cmake because it will not silently fail.
         subprocess.run(
-            [sys.executable, '-m', 'pybind11_stubgen', '--output-dir', temp_directory, '_pymimir'], cwd=output_directory, check=True
+            [sys.executable, '-m', 'nanobind.stubgen', '-m', '_pymimir', '-O', temp_directory, '-r'], cwd=output_directory, check=True
         )
+        # The resulting structure is a bit weird:
+        # _pymimir.so
+        # _pymimir.pyi
+        # advanced/__init__.pyi
+        # advanced/common/__init__.pyi
+        #
+        # We adapt it while copying to install location:
+        # _pymimir.so
+        # pymimir/__init__.pyi
+        # pymimir/advanced/__init__.pyi
+        # pymimir/advanced/common/__init__.pyi
 
-        # Create package output directory
-        os.makedirs(output_directory / "pymimir", exist_ok=True)
+        # Define submodule list that must be copied to install location
+        module_dirs = [
+            "advanced",
+            "advanced/common",
+            "advanced/formalism",
+            "advanced/graphs",
+            "advanced/search",
+            "advanced/datasets",
+            "advanced/languages",
+            "advanced/languages/description_logics"
+        ]
 
-        # Copy the stubs from temp to suitable output directory
-        # The name has to match the package initialization pymimir/__init__.py,
-        # i.e., pymimir/__init__.pyi to ensure full IDE support.
+        # Copy the _pyimir.pyi into pyimir/__init__.pyi
         shutil.copy(temp_directory / "_pymimir.pyi", output_directory / "pymimir" / "__init__.pyi")
+
+        # Copy the submodule/__init__.pyi into pymimir/submodule/__init__.pyi
+        for module_dir in module_dirs:
+            os.makedirs(output_directory / module_dir, exist_ok=True)  
+            shutil.copy(temp_directory / module_dir / "__init__.pyi", output_directory / "pymimir" / module_dir / "__init__.pyi")
 
 
 # The information here can also be placed in setup.cfg - better separation of

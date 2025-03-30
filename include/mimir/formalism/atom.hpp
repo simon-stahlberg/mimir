@@ -20,9 +20,9 @@
 
 #include "mimir/formalism/declarations.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 class AtomImpl
 {
 private:
@@ -39,6 +39,7 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
+    using FormalismEntity = void;
     using Category = P;
 
     // moveable but not copyable
@@ -50,19 +51,20 @@ public:
     Index get_index() const;
     Predicate<P> get_predicate() const;
     const TermList& get_terms() const;
-    VariableList get_variables() const;
     size_t get_arity() const;
+
+    VariableList get_variables() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_predicate), std::as_const(m_terms)); }
+    auto identifying_members() const { return std::tuple(get_predicate(), std::cref(get_terms())); }
 };
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 extern std::ostream& operator<<(std::ostream& out, const AtomImpl<P>& element);
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 extern std::ostream& operator<<(std::ostream& out, Atom<P> element);
 
 }

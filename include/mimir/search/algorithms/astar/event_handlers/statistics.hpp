@@ -26,10 +26,10 @@
 #include <ostream>
 #include <vector>
 
-namespace mimir
+namespace mimir::search::astar
 {
 
-class AStarAlgorithmStatistics
+class Statistics
 {
 private:
     uint64_t m_num_generated;
@@ -59,7 +59,7 @@ private:
     uint64_t m_num_axioms;
 
 public:
-    AStarAlgorithmStatistics() :
+    Statistics() :
         m_num_generated(0),
         m_num_expanded(0),
         m_num_deadends(0),
@@ -162,16 +162,15 @@ public:
  * Types
  */
 
-using AStarAlgorithmStatisticsList = std::vector<AStarAlgorithmStatistics>;
+using StatisticsList = std::vector<Statistics>;
 
 /**
  * Pretty printing
  */
 
-inline std::ostream& operator<<(std::ostream& os, const AStarAlgorithmStatistics& statistics)
+inline std::ostream& operator<<(std::ostream& os, const Statistics& statistics)
 {
-    os << "[AStar] Search time: " << statistics.get_search_time_ms().count() << "ms"
-       << "\n"
+    os << "[AStar] Search time: " << statistics.get_search_time_ms().count() << "ms" << "\n"
        << "[AStar] Number of generated states: " << statistics.get_num_generated() << "\n"
        << "[AStar] Number of expanded states: " << statistics.get_num_expanded() << "\n"
        << "[AStar] Number of pruned states: " << statistics.get_num_pruned() << "\n"

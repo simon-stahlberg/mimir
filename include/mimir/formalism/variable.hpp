@@ -20,7 +20,7 @@
 
 #include "mimir/formalism/declarations.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
 
 class VariableImpl
@@ -28,17 +28,19 @@ class VariableImpl
 private:
     Index m_index;
     std::string m_name;
-    size_t m_parameter_index;
+    Index m_parameter_index;  ///< the index of the parameter in the parameter list.
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    VariableImpl(Index index, std::string name, size_t parameter_index);
+    VariableImpl(Index index, std::string name, Index parameter_index);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
+    using FormalismEntity = void;
+
     // moveable but not copyable
     VariableImpl(const VariableImpl& other) = delete;
     VariableImpl& operator=(const VariableImpl& other) = delete;
@@ -47,13 +49,16 @@ public:
 
     Index get_index() const;
     const std::string& get_name() const;
-    const size_t get_parameter_index() const;
+    Index get_parameter_index() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_name), std::as_const(m_parameter_index)); }
+    auto identifying_members() const { return std::tuple(std::cref(get_name()), get_parameter_index()); }
 };
+
+static_assert(IsFormalismEntity<VariableImpl>);
+static_assert(IsFormalismEntity<Variable>);
 
 extern std::ostream& operator<<(std::ostream& out, const VariableImpl& element);
 

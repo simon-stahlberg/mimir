@@ -18,16 +18,19 @@
 #include "mimir/search/algorithms/siw.hpp"
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/parser.hpp"
+#include "mimir/formalism/repositories.hpp"
 #include "mimir/search/algorithms.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/axiom_evaluators.hpp"
 #include "mimir/search/delete_relaxed_problem_explorator.hpp"
-#include "mimir/search/grounders/grounder.hpp"
 #include "mimir/search/plan.hpp"
+#include "mimir/search/search_context.hpp"
 #include "mimir/search/state_repository.hpp"
 
 #include <gtest/gtest.h>
+
+using namespace mimir::search;
+using namespace mimir::formalism;
 
 namespace mimir::tests
 {
@@ -36,112 +39,98 @@ namespace mimir::tests
 class LiftedSIWPlanner
 {
 private:
-    PDDLParser m_parser;
+    Problem m_problem;
     size_t m_arity;
-
-    std::shared_ptr<Grounder> m_grounder;
-    std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> m_applicable_action_generator_event_handler;
+    std::shared_ptr<LiftedApplicableActionGenerator::IEventHandler> m_applicable_action_generator_event_handler;
     std::shared_ptr<LiftedApplicableActionGenerator> m_applicable_action_generator;
-    std::shared_ptr<ILiftedAxiomEvaluatorEventHandler> m_axiom_evaluator_event_handler;
+    std::shared_ptr<LiftedAxiomEvaluator::IEventHandler> m_axiom_evaluator_event_handler;
     std::shared_ptr<LiftedAxiomEvaluator> m_axiom_evaluator;
-    std::shared_ptr<StateRepository> m_state_repository;
-    std::shared_ptr<IBrFSAlgorithmEventHandler> m_brfs_event_handler;
-    std::shared_ptr<IIWAlgorithmEventHandler> m_iw_event_handler;
-    std::shared_ptr<ISIWAlgorithmEventHandler> m_siw_event_handler;
+    StateRepository m_state_repository;
+    brfs::EventHandler m_brfs_event_handler;
+    iw::EventHandler m_iw_event_handler;
+    siw::EventHandler m_siw_event_handler;
+    SearchContext m_search_context;
 
 public:
     LiftedSIWPlanner(const fs::path& domain_file, const fs::path& problem_file, size_t arity) :
-        m_parser(PDDLParser(domain_file, problem_file)),
+        m_problem(ProblemImpl::create(domain_file, problem_file)),
         m_arity(arity),
-        m_grounder(std::make_shared<Grounder>(m_parser.get_problem(), m_parser.get_pddl_repositories())),
-        m_applicable_action_generator_event_handler(std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>()),
-        m_applicable_action_generator(
-            std::make_shared<LiftedApplicableActionGenerator>(m_grounder->get_action_grounder(), m_applicable_action_generator_event_handler)),
-        m_axiom_evaluator_event_handler(std::make_shared<DefaultLiftedAxiomEvaluatorEventHandler>()),
-        m_axiom_evaluator(std::make_shared<LiftedAxiomEvaluator>(m_grounder->get_axiom_grounder(), m_axiom_evaluator_event_handler)),
-        m_state_repository(std::make_shared<StateRepository>(m_axiom_evaluator)),
-        m_brfs_event_handler(std::make_shared<DefaultBrFSAlgorithmEventHandler>()),
-        m_iw_event_handler(std::make_shared<DefaultIWAlgorithmEventHandler>()),
-        m_siw_event_handler(std::make_shared<DefaultSIWAlgorithmEventHandler>())
+        m_applicable_action_generator_event_handler(std::make_shared<LiftedApplicableActionGenerator::DefaultEventHandler>()),
+        m_applicable_action_generator(std::make_shared<LiftedApplicableActionGenerator>(m_problem, m_applicable_action_generator_event_handler)),
+        m_axiom_evaluator_event_handler(std::make_shared<LiftedAxiomEvaluator::DefaultEventHandler>()),
+        m_axiom_evaluator(std::make_shared<LiftedAxiomEvaluator>(m_problem, m_axiom_evaluator_event_handler)),
+        m_state_repository(std::make_shared<StateRepositoryImpl>(m_axiom_evaluator)),
+        m_brfs_event_handler(std::make_shared<brfs::DefaultEventHandler>(m_problem)),
+        m_iw_event_handler(std::make_shared<iw::DefaultEventHandler>(m_problem)),
+        m_siw_event_handler(std::make_shared<siw::DefaultEventHandler>(m_problem)),
+        m_search_context(m_problem, m_applicable_action_generator, m_state_repository)
     {
     }
 
     SearchResult find_solution()
     {
-        return find_solution_siw(m_applicable_action_generator,
-                                 m_state_repository,
-                                 std::nullopt,
-                                 m_arity,
-                                 m_siw_event_handler,
-                                 m_iw_event_handler,
-                                 m_brfs_event_handler);
+        return siw::find_solution(m_search_context, nullptr, m_arity, m_siw_event_handler, m_iw_event_handler, m_brfs_event_handler);
     }
 
-    const SIWAlgorithmStatistics& get_iw_statistics() const { return m_siw_event_handler->get_statistics(); }
+    const siw::Statistics& get_iw_statistics() const { return m_siw_event_handler->get_statistics(); }
 
-    const LiftedApplicableActionGeneratorStatistics& get_applicable_action_generator_statistics() const
+    const LiftedApplicableActionGenerator::Statistics& get_applicable_action_generator_statistics() const
     {
         return m_applicable_action_generator_event_handler->get_statistics();
     }
 
-    const LiftedAxiomEvaluatorStatistics& get_axiom_evaluator_statistics() const { return m_axiom_evaluator_event_handler->get_statistics(); }
+    const LiftedAxiomEvaluator::Statistics& get_axiom_evaluator_statistics() const { return m_axiom_evaluator_event_handler->get_statistics(); }
 };
 
 /// @brief Instantiate a grounded SIW search
 class GroundedSIWPlanner
 {
 private:
-    PDDLParser m_parser;
+    Problem m_problem;
     size_t m_arity;
-
-    std::shared_ptr<Grounder> m_grounder;
     DeleteRelaxedProblemExplorator m_delete_relaxed_problem_explorator;
-    std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> m_applicable_action_generator_event_handler;
-    std::shared_ptr<GroundedApplicableActionGenerator> m_applicable_action_generator;
-    std::shared_ptr<IGroundedAxiomEvaluatorEventHandler> m_axiom_evaluator_event_handler;
-    std::shared_ptr<GroundedAxiomEvaluator> m_axiom_evaluator;
-    std::shared_ptr<StateRepository> m_state_repository;
-    std::shared_ptr<IBrFSAlgorithmEventHandler> m_brfs_event_handler;
-    std::shared_ptr<IIWAlgorithmEventHandler> m_iw_event_handler;
-    std::shared_ptr<ISIWAlgorithmEventHandler> m_siw_event_handler;
+    std::shared_ptr<GroundedApplicableActionGenerator::IEventHandler> m_applicable_action_generator_event_handler;
+    ApplicableActionGenerator m_applicable_action_generator;
+    std::shared_ptr<GroundedAxiomEvaluator::IEventHandler> m_axiom_evaluator_event_handler;
+    AxiomEvaluator m_axiom_evaluator;
+    StateRepository m_state_repository;
+    brfs::EventHandler m_brfs_event_handler;
+    iw::EventHandler m_iw_event_handler;
+    siw::EventHandler m_siw_event_handler;
+    SearchContext m_search_context;
 
 public:
     GroundedSIWPlanner(const fs::path& domain_file, const fs::path& problem_file, size_t arity) :
-        m_parser(PDDLParser(domain_file, problem_file)),
+        m_problem(ProblemImpl::create(domain_file, problem_file)),
         m_arity(arity),
-        m_grounder(std::make_shared<Grounder>(m_parser.get_problem(), m_parser.get_pddl_repositories())),
-        m_delete_relaxed_problem_explorator(m_grounder),
-        m_applicable_action_generator_event_handler(std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>()),
+        m_delete_relaxed_problem_explorator(m_problem),
+        m_applicable_action_generator_event_handler(std::make_shared<GroundedApplicableActionGenerator::DefaultEventHandler>()),
         m_applicable_action_generator(
-            m_delete_relaxed_problem_explorator.create_grounded_applicable_action_generator(m_applicable_action_generator_event_handler)),
-        m_axiom_evaluator_event_handler(std::make_shared<DefaultGroundedAxiomEvaluatorEventHandler>()),
-        m_axiom_evaluator(m_delete_relaxed_problem_explorator.create_grounded_axiom_evaluator(m_axiom_evaluator_event_handler)),
-        m_state_repository(std::make_shared<StateRepository>(m_axiom_evaluator)),
-        m_brfs_event_handler(std::make_shared<DefaultBrFSAlgorithmEventHandler>()),
-        m_iw_event_handler(std::make_shared<DefaultIWAlgorithmEventHandler>()),
-        m_siw_event_handler(std::make_shared<DefaultSIWAlgorithmEventHandler>())
+            m_delete_relaxed_problem_explorator.create_grounded_applicable_action_generator(match_tree::Options(),
+                                                                                            m_applicable_action_generator_event_handler)),
+        m_axiom_evaluator_event_handler(std::make_shared<GroundedAxiomEvaluator::DefaultEventHandler>()),
+        m_axiom_evaluator(m_delete_relaxed_problem_explorator.create_grounded_axiom_evaluator(match_tree::Options(), m_axiom_evaluator_event_handler)),
+        m_state_repository(std::make_shared<StateRepositoryImpl>(m_axiom_evaluator)),
+        m_brfs_event_handler(std::make_shared<brfs::DefaultEventHandler>(m_problem)),
+        m_iw_event_handler(std::make_shared<iw::DefaultEventHandler>(m_problem)),
+        m_siw_event_handler(std::make_shared<siw::DefaultEventHandler>(m_problem)),
+        m_search_context(m_problem, m_applicable_action_generator, m_state_repository)
     {
     }
 
     SearchResult find_solution()
     {
-        return find_solution_siw(m_applicable_action_generator,
-                                 m_state_repository,
-                                 std::nullopt,
-                                 m_arity,
-                                 m_siw_event_handler,
-                                 m_iw_event_handler,
-                                 m_brfs_event_handler);
+        return siw::find_solution(m_search_context, nullptr, m_arity, m_siw_event_handler, m_iw_event_handler, m_brfs_event_handler);
     }
 
-    const SIWAlgorithmStatistics& get_iw_statistics() const { return m_siw_event_handler->get_statistics(); }
+    const siw::Statistics& get_iw_statistics() const { return m_siw_event_handler->get_statistics(); }
 
-    const GroundedApplicableActionGeneratorStatistics& get_applicable_action_generator_statistics() const
+    const GroundedApplicableActionGenerator::Statistics& get_applicable_action_generator_statistics() const
     {
         return m_applicable_action_generator_event_handler->get_statistics();
     }
 
-    const GroundedAxiomEvaluatorStatistics& get_axiom_evaluator_statistics() const { return m_axiom_evaluator_event_handler->get_statistics(); }
+    const GroundedAxiomEvaluator::Statistics& get_axiom_evaluator_statistics() const { return m_axiom_evaluator_event_handler->get_statistics(); }
 };
 
 /**
@@ -154,20 +143,6 @@ TEST(MimirTests, SearchAlgorithmsSIWGroundedGripperTest)
     const auto result = siw.find_solution();
     EXPECT_EQ(result.status, SearchStatus::SOLVED);
     EXPECT_EQ(result.plan.value().get_actions().size(), 7);
-
-    const auto& applicable_action_generator_statistics = siw.get_applicable_action_generator_statistics();
-    const auto& axiom_evaluator_statistics = siw.get_axiom_evaluator_statistics();
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_fluent_ground_atoms(), 12);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_derived_ground_atoms(), 0);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_actions(), 20);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 0);
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 20);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 48);
-
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 0);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 1);
 
     const auto& siw_statistics = siw.get_iw_statistics();
 
@@ -184,9 +159,6 @@ TEST(MimirTests, SearchAlgorithmsSIWLiftedGripperTest)
     const auto result = siw.find_solution();
     EXPECT_EQ(result.status, SearchStatus::SOLVED);
     EXPECT_EQ(result.plan.value().get_actions().size(), 7);
-
-    const auto& applicable_action_generator_statistics = siw.get_applicable_action_generator_statistics();
-    const auto& axiom_evaluator_statistics = siw.get_axiom_evaluator_statistics();
 
     const auto& siw_statistics = siw.get_iw_statistics();
 

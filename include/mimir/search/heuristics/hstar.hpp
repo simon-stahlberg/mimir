@@ -22,14 +22,14 @@
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/heuristics/interface.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 
 /// @brief `HStarHeuristic` returns the shortest goal distance.
 class HStarHeuristic : public IHeuristic
 {
 public:
-    HStarHeuristic(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator, std::shared_ptr<StateRepository> state_repository);
+    explicit HStarHeuristic(const SearchContext& context);
 
     double compute_heuristic(State state, bool is_goal_state) override;
 

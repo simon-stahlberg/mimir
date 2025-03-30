@@ -19,82 +19,91 @@
 #define MIMIR_FORMALISM_DOMAIN_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/domain_details.hpp"
+#include "mimir/formalism/repositories.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
+
 class DomainImpl
 {
 private:
-    Index m_index;
+    Repositories m_repositories;
     std::optional<fs::path> m_filepath;
     std::string m_name;
     Requirements m_requirements;
     ObjectList m_constants;
-    PredicateList<Static> m_static_predicates;
-    PredicateList<Fluent> m_fluent_predicates;
-    PredicateList<Derived> m_derived_predicates;
-    FunctionSkeletonList m_functions;
+    PredicateLists<StaticTag, FluentTag, DerivedTag> m_predicates;
+    FunctionSkeletonLists<StaticTag, FluentTag> m_function_skeletons;
+    std::optional<FunctionSkeleton<AuxiliaryTag>> m_auxiliary_function_skeleton;
     ActionList m_actions;
     AxiomList m_axioms;
 
     // Below: add additional members if needed and initialize them in the constructor
-    ToObjectMap<std::string> m_name_to_constants;
-    ToPredicateMap<std::string, Static> m_name_to_static_predicate;
-    ToPredicateMap<std::string, Fluent> m_name_to_fluent_predicate;
-    ToPredicateMap<std::string, Derived> m_name_to_derived_predicate;
 
-    DomainImpl(Index index,
+    domain::Details m_details;  ///< We hide the details in a struct.
+
+    DomainImpl(Repositories repositories,
                std::optional<fs::path> filepath,
                std::string name,
                Requirements requirements,
                ObjectList constants,
-               PredicateList<Static> static_predicates,
-               PredicateList<Fluent> fluent_predicates,
-               PredicateList<Derived> derived_predicates,
-               FunctionSkeletonList functions,
+               PredicateLists<StaticTag, FluentTag, DerivedTag> predicates,
+               FunctionSkeletonLists<StaticTag, FluentTag> m_function_skeletons,
+               std::optional<FunctionSkeleton<AuxiliaryTag>> auxiliary_function_skeleton,
                ActionList actions,
                AxiomList axioms);
 
     // Give access to the constructor.
-    template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class DomainBuilder;
 
 public:
+    using FormalismEntity = void;
+
     // moveable but not copyable
     DomainImpl(const DomainImpl& other) = delete;
     DomainImpl& operator=(const DomainImpl& other) = delete;
     DomainImpl(DomainImpl&& other) = default;
     DomainImpl& operator=(DomainImpl&& other) = default;
 
-    Index get_index() const;
+    const Repositories& get_repositories() const;
     const std::optional<fs::path>& get_filepath() const;
     const std::string& get_name() const;
-    const Requirements& get_requirements() const;
+    Requirements get_requirements() const;
     const ObjectList& get_constants() const;
-    template<PredicateTag P>
+    template<IsStaticOrFluentOrDerivedTag P>
     const PredicateList<P>& get_predicates() const;
-    const FunctionSkeletonList& get_functions() const;
+    const PredicateLists<StaticTag, FluentTag, DerivedTag>& get_hana_predicates() const;
+    template<IsStaticOrFluentTag F>
+    const FunctionSkeletonList<F>& get_function_skeletons() const;
+    const FunctionSkeletonLists<StaticTag, FluentTag>& get_hana_function_skeletons() const;
+    const std::optional<FunctionSkeleton<AuxiliaryTag>>& get_auxiliary_function_skeleton() const;
     const ActionList& get_actions() const;
     const AxiomList& get_axioms() const;
 
-    const ToObjectMap<std::string> get_name_to_constants() const;
-    template<PredicateTag P>
+    /* Additional members */
+
+    const ToObjectMap<std::string> get_name_to_constant() const;
+    template<IsStaticOrFluentOrDerivedTag P>
     const ToPredicateMap<std::string, P>& get_name_to_predicate() const;
+    const ToPredicateMaps<std::string, StaticTag, FluentTag, DerivedTag>& get_hana_name_to_predicate();
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const
+    auto identifying_members() const
     {
-        return std::forward_as_tuple(std::as_const(m_name),
-                                     std::as_const(m_requirements),
-                                     std::as_const(m_constants),
-                                     std::as_const(m_static_predicates),
-                                     std::as_const(m_fluent_predicates),
-                                     std::as_const(m_derived_predicates),
-                                     std::as_const(m_functions),
-                                     std::as_const(m_actions),
-                                     std::as_const(m_axioms));
+        return std::tuple(std::cref(get_name()),
+                          get_requirements(),
+                          std::cref(get_constants()),
+                          std::cref(get_predicates<StaticTag>()),
+                          std::cref(get_predicates<FluentTag>()),
+                          std::cref(get_predicates<DerivedTag>()),
+                          std::cref(get_function_skeletons<StaticTag>()),
+                          std::cref(get_function_skeletons<FluentTag>()),
+                          get_auxiliary_function_skeleton(),
+                          std::cref(get_actions()),
+                          std::cref(get_axioms()));
     }
 };
 

@@ -20,57 +20,56 @@
 #include "mimir/formalism/atom.hpp"
 #include "mimir/formalism/predicate.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
 
-template<PredicateTag P>
-LiteralImpl<P>::LiteralImpl(Index index, bool is_negated, Atom<P> atom) : m_index(index), m_is_negated(is_negated), m_atom(std::move(atom))
+template<IsStaticOrFluentOrDerivedTag P>
+LiteralImpl<P>::LiteralImpl(Index index, bool polarity, Atom<P> atom) : m_index(index), m_polarity(polarity), m_atom(std::move(atom))
 {
 }
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 Index LiteralImpl<P>::get_index() const
 {
     return m_index;
 }
 
-template<PredicateTag P>
-bool LiteralImpl<P>::is_negated() const
+template<IsStaticOrFluentOrDerivedTag P>
+bool LiteralImpl<P>::get_polarity() const
 {
-    return m_is_negated;
+    return m_polarity;
 }
 
-template<PredicateTag P>
-const Atom<P>& LiteralImpl<P>::get_atom() const
+template<IsStaticOrFluentOrDerivedTag P>
+Atom<P> LiteralImpl<P>::get_atom() const
 {
     return m_atom;
 }
 
-template class LiteralImpl<Static>;
-template class LiteralImpl<Fluent>;
-template class LiteralImpl<Derived>;
+template class LiteralImpl<StaticTag>;
+template class LiteralImpl<FluentTag>;
+template class LiteralImpl<DerivedTag>;
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 std::ostream& operator<<(std::ostream& out, const LiteralImpl<P>& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, const LiteralImpl<Static>& element);
-template std::ostream& operator<<(std::ostream& out, const LiteralImpl<Fluent>& element);
-template std::ostream& operator<<(std::ostream& out, const LiteralImpl<Derived>& element);
+template std::ostream& operator<<(std::ostream& out, const LiteralImpl<StaticTag>& element);
+template std::ostream& operator<<(std::ostream& out, const LiteralImpl<FluentTag>& element);
+template std::ostream& operator<<(std::ostream& out, const LiteralImpl<DerivedTag>& element);
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 std::ostream& operator<<(std::ostream& out, Literal<P> element)
 {
-    out << *element;
+    write(*element, AddressFormatter(), out);
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, Literal<Static> element);
-template std::ostream& operator<<(std::ostream& out, Literal<Fluent> element);
-template std::ostream& operator<<(std::ostream& out, Literal<Derived> element);
+template std::ostream& operator<<(std::ostream& out, Literal<StaticTag> element);
+template std::ostream& operator<<(std::ostream& out, Literal<FluentTag> element);
+template std::ostream& operator<<(std::ostream& out, Literal<DerivedTag> element);
 
 }

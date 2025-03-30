@@ -17,38 +17,41 @@
 
 #include "mimir/search/algorithms/iw/event_handlers/default.hpp"
 
+#include "mimir/formalism/ground_action.hpp"
 #include "mimir/search/plan.hpp"
+#include "mimir/search/state.hpp"
 
-namespace mimir
+using namespace mimir::formalism;
+
+namespace mimir::search::iw
 {
-void DefaultIWAlgorithmEventHandler::on_start_search_impl(const Problem problem, const State initial_state, const PDDLRepositories& pddl_repositories) const {}
+void DefaultEventHandler::on_start_search_impl(State initial_state) const {}
 
-void DefaultIWAlgorithmEventHandler::on_start_arity_search_impl(const Problem problem,
-                                                                const State initial_state,
-                                                                const PDDLRepositories& pddl_repositories,
-                                                                int arity) const
+void DefaultEventHandler::on_start_arity_search_impl(State initial_state, size_t arity) const
 {
     std::cout << "[IW] Start search with arity " << arity << std::endl;
 }
 
-void DefaultIWAlgorithmEventHandler::on_end_arity_search_impl(const BrFSAlgorithmStatistics& brfs_statistics) const {}
+void DefaultEventHandler::on_end_arity_search_impl(const brfs::Statistics& brfs_statistics) const {}
 
-void DefaultIWAlgorithmEventHandler::on_end_search_impl() const { std::cout << "[IW] Search ended.\n" << m_statistics << std::endl; }
+void DefaultEventHandler::on_end_search_impl() const { std::cout << "[IW] Search ended.\n" << m_statistics << std::endl; }
 
-void DefaultIWAlgorithmEventHandler::on_solved_impl(const Plan& plan, const PDDLRepositories& pddl_repositories) const
+void DefaultEventHandler::on_solved_impl(const Plan& plan) const
 {
     std::cout << "[IW] Plan found.\n"
               << "[IW] Plan cost: " << plan.get_cost() << "\n"
               << "[IW] Plan length: " << plan.get_actions().size() << std::endl;
     for (size_t i = 0; i < plan.get_actions().size(); ++i)
     {
-        std::cout << "[IW] " << i + 1 << ". " << std::make_tuple(plan.get_actions()[i], std::cref(pddl_repositories), PlanActionFormatterTag {}) << std::endl;
+        std::cout << "[IW] " << i + 1 << ". ";
+        mimir::operator<<(std::cout, std::make_tuple(plan.get_actions()[i], std::cref(*m_problem), GroundActionImpl::PlanFormatterTag {}));
+        std::cout << std::endl;
     }
 }
 
-void DefaultIWAlgorithmEventHandler::on_unsolvable_impl() const { std::cout << "[IW] Unsolvable!" << std::endl; }
+void DefaultEventHandler::on_unsolvable_impl() const { std::cout << "[IW] Unsolvable!" << std::endl; }
 
-void DefaultIWAlgorithmEventHandler::on_exhausted_impl() const { std::cout << "[IW] Exhausted!" << std::endl; }
+void DefaultEventHandler::on_exhausted_impl() const { std::cout << "[IW] Exhausted!" << std::endl; }
 
-DefaultIWAlgorithmEventHandler::DefaultIWAlgorithmEventHandler(bool quiet) : IWAlgorithmEventHandlerBase<DefaultIWAlgorithmEventHandler>(quiet) {}
+DefaultEventHandler::DefaultEventHandler(Problem problem, bool quiet) : EventHandlerBase<DefaultEventHandler>(problem, quiet) {}
 }

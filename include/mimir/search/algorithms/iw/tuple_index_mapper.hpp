@@ -20,12 +20,12 @@
 
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/algorithms/iw/types.hpp"
-#include "mimir/search/state.hpp"
+#include "mimir/search/declarations.hpp"
 
 #include <array>
 #include <string>
 
-namespace mimir
+namespace mimir::search::iw
 {
 
 /// @brief TupleIndexMapper defines a perfect hash function mapping tuples of atom indices to a tuple index.
@@ -40,10 +40,14 @@ private:
     TupleIndex m_empty_tuple_index;
 
 public:
+    TupleIndexMapper(size_t arity);
     TupleIndexMapper(size_t arity, size_t num_atoms);
+
+    void initialize(size_t arity, size_t num_atoms);
 
     TupleIndex to_tuple_index(const AtomIndexList& atom_indices) const;
 
+    AtomIndexList to_atom_indices(TupleIndex tuple_index) const;
     void to_atom_indices(TupleIndex tuple_index, AtomIndexList& out_atom_indices) const;
 
     std::string tuple_index_to_string(TupleIndex tuple_index) const;
@@ -57,6 +61,8 @@ public:
     TupleIndex get_max_tuple_index() const;
     TupleIndex get_empty_tuple_index() const;
 };
+
+using TupleIndexMapperList = std::vector<TupleIndexMapper>;
 
 }
 

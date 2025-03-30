@@ -23,7 +23,7 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
 
-namespace mimir
+namespace mimir::search
 {
 
 /**
@@ -35,10 +35,10 @@ public:
     virtual ~IApplicableActionGenerator() = default;
 
     /// @brief Generate all applicable actions for a given state.
-    virtual mimir::generator<GroundAction> create_applicable_action_generator(State state) = 0;
+    virtual mimir::generator<formalism::GroundAction> create_applicable_action_generator(State state) = 0;
 
     /// @brief Generate all applicable actions for a bitset representation of a state.
-    virtual mimir::generator<GroundAction> create_applicable_action_generator(const DenseState& dense_state) = 0;
+    virtual mimir::generator<formalism::GroundAction> create_applicable_action_generator(const DenseState& dense_state) = 0;
 
     /// @brief Accumulate event handler statistics during search.
     virtual void on_finish_search_layer() = 0;
@@ -48,9 +48,7 @@ public:
      * Getters
      */
 
-    virtual Problem get_problem() const = 0;
-    virtual const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const = 0;
-    virtual const std::shared_ptr<ActionGrounder>& get_action_grounder() const = 0;
+    virtual const formalism::Problem& get_problem() const = 0;
 };
 
 }

@@ -1,90 +1,54 @@
+/*
+ * Copyright (C) 2023 Dominik Drexler
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #include "mimir/formalism/parser.hpp"
 
-#include "mimir/formalism/repositories.hpp"
-#include "mimir/formalism/transformers.hpp"
-#include "mimir/formalism/transformers/encode_parameter_index_in_variables.hpp"
-#include "mimir/formalism/translators.hpp"
+#include "mimir/formalism/domain_builder.hpp"
+#include "mimir/formalism/problem_builder.hpp"
+#include "mimir/formalism/translator.hpp"
+#include "to_mimir_structures.hpp"
 
-#include <loki/loki.hpp>
+#include <memory>
 
-namespace mimir
+namespace mimir::formalism
 {
-PDDLParser::PDDLParser(const fs::path& domain_filepath, const fs::path& problem_filepath) :
-    m_loki_domain_parser(loki::DomainParser(domain_filepath)),
-    m_loki_problem_parser(loki::ProblemParser(problem_filepath, m_loki_domain_parser)),
-    m_factories(std::make_shared<PDDLRepositories>())
+
+Parser::Parser(const fs::path& domain_filepath, const loki::Options& options) :
+    m_loki_parser(domain_filepath, options),
+    m_loki_domain_translation_result(loki::translate(m_loki_parser.get_domain()))
 {
-    // Parse the loki domain and problem structures using a separate parser to free intermediate results after translation
-    auto domain_parser = loki::DomainParser(domain_filepath);
-    auto problem_parser = loki::ProblemParser(problem_filepath, domain_parser);
-    auto problem = problem_parser.get_problem();
+    auto loki_translated_domain = m_loki_domain_translation_result.get_translated_domain();
 
-    // Negation normal form translator
-    auto to_nnf_translator = ToNNFTranslator(domain_parser.get_repositories());
-    problem = to_nnf_translator.run(*problem);
-
-    // Rename quantified variables
-    auto rename_quantifed_variables_translator = RenameQuantifiedVariablesTranslator(domain_parser.get_repositories());
-    problem = rename_quantifed_variables_translator.run(*problem);
-
-    // Simplify goal
-    auto simplify_goal_translator = SimplifyGoalTranslator(domain_parser.get_repositories());
-    problem = simplify_goal_translator.run(*problem);
-
-    // Remove universal quantifiers
-    auto remove_universal_quantifiers_translator = RemoveUniversalQuantifiersTranslator(domain_parser.get_repositories(), to_nnf_translator);
-    problem = remove_universal_quantifiers_translator.run(*problem);
-
-    // To disjunctive normal form
-    auto to_dnf_translator = ToDNFTranslator(domain_parser.get_repositories(), to_nnf_translator);
-    problem = to_dnf_translator.run(*problem);
-
-    // Split disjunctive conditions
-    auto split_disjunctive_conditions = SplitDisjunctiveConditionsTranslator(domain_parser.get_repositories());
-    problem = split_disjunctive_conditions.run(*problem);
-
-    // Remove types
-    auto remove_types_translator = RemoveTypesTranslator(domain_parser.get_repositories());
-    problem = remove_types_translator.run(*problem);
-
-    // Move existential quantifers
-    auto move_existential_quantifiers_translator = MoveExistentialQuantifiersTranslator(domain_parser.get_repositories());
-    problem = move_existential_quantifiers_translator.run(*problem);
-
-    // To effect normal form
-    auto to_enf_translator = ToENFTranslator(domain_parser.get_repositories());
-    problem = to_enf_translator.run(*problem);
-
-    // std::cout << *problem->get_domain() << std::endl;
-    // std::cout << *problem << std::endl;
-
-    // To mimir structures
-    auto tmp_mimir_pddl_repositories = PDDLRepositories();
-    auto to_mimir_structures_translator = ToMimirStructures(tmp_mimir_pddl_repositories);
-    m_problem = to_mimir_structures_translator.run(*problem);
-    m_domain = m_problem->get_domain();
-
-    // std::cout << *m_domain << std::endl;
-    // std::cout << *m_problem << std::endl;
-
-    // std::cout << "Num actions: " << m_domain->get_actions().size() << std::endl;
-
-    // Encode parameter index in variables
-    auto encode_parameter_index_in_variables = EncodeParameterIndexInVariables(*m_factories);
-    m_problem = encode_parameter_index_in_variables.run(*m_problem);
-    m_domain = m_problem->get_domain();
-
-    // std::cout << *m_domain << std::endl;
+    auto to_mimir_structures_translator = ToMimirStructures();
+    auto builder = DomainBuilder();
+    m_domain = to_mimir_structures_translator.translate(loki_translated_domain, builder);
 }
 
-const std::shared_ptr<PDDLRepositories>& PDDLParser::get_pddl_repositories() const { return m_factories; }
+Problem Parser::parse_problem(const fs::path& problem_filepath, const loki::Options& options)
+{
+    auto loki_problem = m_loki_parser.parse_problem(problem_filepath, options);
+    auto loki_translated_problem = loki::translate(loki_problem, m_loki_domain_translation_result);
 
-const loki::Domain PDDLParser::get_original_domain() const { return m_loki_domain_parser.get_domain(); }
+    auto to_mimir_structures_translator = ToMimirStructures();
+    auto builder = ProblemBuilder(m_domain);
 
-const loki::Problem PDDLParser::get_original_problem() const { return m_loki_problem_parser.get_problem(); }
+    return to_mimir_structures_translator.translate(loki_translated_problem, builder);
+}
 
-const Domain& PDDLParser::get_domain() const { return m_domain; }
-
-const Problem& PDDLParser::get_problem() const { return m_problem; }
+const Domain& Parser::get_domain() const { return m_domain; }
 
 }

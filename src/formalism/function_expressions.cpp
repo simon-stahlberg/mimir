@@ -23,7 +23,7 @@
 
 #include <cassert>
 
-namespace mimir
+namespace mimir::formalism
 {
 /* FunctionExpressionNumber */
 FunctionExpressionNumberImpl::FunctionExpressionNumberImpl(Index index, double number) : m_index(index), m_number(number) {}
@@ -52,9 +52,9 @@ Index FunctionExpressionBinaryOperatorImpl::get_index() const { return m_index; 
 
 loki::BinaryOperatorEnum FunctionExpressionBinaryOperatorImpl::get_binary_operator() const { return m_binary_operator; }
 
-const FunctionExpression& FunctionExpressionBinaryOperatorImpl::get_left_function_expression() const { return m_left_function_expression; }
+FunctionExpression FunctionExpressionBinaryOperatorImpl::get_left_function_expression() const { return m_left_function_expression; }
 
-const FunctionExpression& FunctionExpressionBinaryOperatorImpl::get_right_function_expression() const { return m_right_function_expression; }
+FunctionExpression FunctionExpressionBinaryOperatorImpl::get_right_function_expression() const { return m_right_function_expression; }
 
 /* FunctionExpressionMultiOperator */
 FunctionExpressionMultiOperatorImpl::FunctionExpressionMultiOperatorImpl(Index index,
@@ -85,77 +85,124 @@ FunctionExpressionMinusImpl::FunctionExpressionMinusImpl(Index index, FunctionEx
 
 Index FunctionExpressionMinusImpl::get_index() const { return m_index; }
 
-const FunctionExpression& FunctionExpressionMinusImpl::get_function_expression() const { return m_function_expression; }
+FunctionExpression FunctionExpressionMinusImpl::get_function_expression() const { return m_function_expression; }
 
 /* FunctionExpressionFunction */
-FunctionExpressionFunctionImpl::FunctionExpressionFunctionImpl(Index index, Function function) : m_index(index), m_function(std::move(function)) {}
+template<IsStaticOrFluentOrAuxiliaryTag F>
+FunctionExpressionFunctionImpl<F>::FunctionExpressionFunctionImpl(Index index, Function<F> function) : m_index(index), m_function(std::move(function))
+{
+}
 
-Index FunctionExpressionFunctionImpl::get_index() const { return m_index; }
+template<IsStaticOrFluentOrAuxiliaryTag F>
+Index FunctionExpressionFunctionImpl<F>::get_index() const
+{
+    return m_index;
+}
 
-const Function& FunctionExpressionFunctionImpl::get_function() const { return m_function; }
+template<IsStaticOrFluentOrAuxiliaryTag F>
+Function<F> FunctionExpressionFunctionImpl<F>::get_function() const
+{
+    return m_function;
+}
+
+template class FunctionExpressionFunctionImpl<StaticTag>;
+template class FunctionExpressionFunctionImpl<FluentTag>;
+template class FunctionExpressionFunctionImpl<AuxiliaryTag>;
 
 /* FunctionExpression */
-FunctionExpressionImpl::FunctionExpressionImpl(size_t index,
-                                               std::variant<FunctionExpressionNumber,
-                                                            FunctionExpressionBinaryOperator,
-                                                            FunctionExpressionMultiOperator,
-                                                            FunctionExpressionMinus,
-                                                            FunctionExpressionFunction> function_expression) :
+FunctionExpressionImpl::FunctionExpressionImpl(Index index, FunctionExpressionVariant function_expression) :
     m_index(index),
     m_function_expression(function_expression)
 {
 }
 
-size_t FunctionExpressionImpl::get_index() const { return m_index; }
+Index FunctionExpressionImpl::get_index() const { return m_index; }
 
-const std::
-    variant<FunctionExpressionNumber, FunctionExpressionBinaryOperator, FunctionExpressionMultiOperator, FunctionExpressionMinus, FunctionExpressionFunction>&
-    FunctionExpressionImpl::get_variant() const
-{
-    return m_function_expression;
-}
+const FunctionExpressionVariant& FunctionExpressionImpl::get_variant() const { return m_function_expression; }
+
+/**
+ * Utils
+ */
+
+/**
+ * Printing
+ */
 
 std::ostream& operator<<(std::ostream& out, const FunctionExpressionNumberImpl& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, const FunctionExpressionBinaryOperatorImpl& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, const FunctionExpressionMultiOperatorImpl& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, const FunctionExpressionMinusImpl& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
-std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl& element)
+template<IsStaticOrFluentOrAuxiliaryTag F>
+std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl<F>& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
+
+template std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl<StaticTag>& element);
+template std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl<FluentTag>& element);
+template std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl<AuxiliaryTag>& element);
 
 std::ostream& operator<<(std::ostream& out, const FunctionExpressionImpl& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
+
+std::ostream& operator<<(std::ostream& out, FunctionExpressionNumber element)
+{
+    write(*element, AddressFormatter(), out);
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, FunctionExpressionBinaryOperator element)
+{
+    write(*element, AddressFormatter(), out);
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, FunctionExpressionMultiOperator element)
+{
+    write(*element, AddressFormatter(), out);
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, FunctionExpressionMinus element)
+{
+    write(*element, AddressFormatter(), out);
+    return out;
+}
+
+template<IsStaticOrFluentOrAuxiliaryTag F>
+std::ostream& operator<<(std::ostream& out, FunctionExpressionFunction<F> element)
+{
+    write(*element, AddressFormatter(), out);
+    return out;
+}
+
+template std::ostream& operator<<(std::ostream& out, FunctionExpressionFunction<StaticTag> element);
+template std::ostream& operator<<(std::ostream& out, FunctionExpressionFunction<FluentTag> element);
+template std::ostream& operator<<(std::ostream& out, FunctionExpressionFunction<AuxiliaryTag> element);
 
 std::ostream& operator<<(std::ostream& out, FunctionExpression element)
 {

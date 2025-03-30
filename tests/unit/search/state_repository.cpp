@@ -17,33 +17,40 @@
 
 #include "mimir/search/state_repository.hpp"
 
-#include "mimir/formalism/parser.hpp"
+#include "mimir/formalism/problem.hpp"
+#include "mimir/formalism/repositories.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/axiom_evaluators.hpp"
-#include "mimir/search/grounders/grounder.hpp"
+#include "mimir/search/metric.hpp"
+#include "mimir/search/search_context.hpp"
 
 #include <gtest/gtest.h>
+
+using namespace mimir::search;
+using namespace mimir::formalism;
 
 namespace mimir::tests
 {
 
-TEST(MimirTests, SearchStateRepositoryTest)
+TEST(MimirTests, SearchStateRepositoryImplTest)
 {
     // Instantiate lifted version
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl");
-    PDDLParser parser(domain_file, problem_file);
-    const auto grounder = std::make_shared<Grounder>(parser.get_problem(), parser.get_pddl_repositories());
-    auto applicable_action_generator = LiftedApplicableActionGenerator(grounder->get_action_grounder());
-    const auto axiom_evaluator = std::dynamic_pointer_cast<IAxiomEvaluator>(std::make_shared<LiftedAxiomEvaluator>(grounder->get_axiom_grounder()));
-    auto state_repository = StateRepository(axiom_evaluator);
+
+    auto search_context = SearchContext(ProblemImpl::create(domain_file, problem_file), SearchContext::Options(SearchContext::SearchMode::LIFTED));
+
+    auto& applicable_action_generator = *search_context.get_applicable_action_generator();
+    auto& state_repository = *search_context.get_state_repository();
     auto initial_state = state_repository.get_or_create_initial_state();
+    auto initial_state_metric_value = compute_initial_state_metric_value(*search_context.get_problem());
 
     for (const auto& action : applicable_action_generator.create_applicable_action_generator(initial_state))
     {
-        [[maybe_unused]] const auto [successor_state, action_cost] = state_repository.get_or_create_successor_state(initial_state, action);
+        [[maybe_unused]] const auto [successor_state, successor_state_metric_value] =
+            state_repository.get_or_create_successor_state(initial_state, action, initial_state_metric_value);
 
-        // cannot nest more because create_applicable_action_generator is in use.
+        // Attention: cannot nest more calls to create_applicable_action_generator because it is already in use.
     }
 }
 

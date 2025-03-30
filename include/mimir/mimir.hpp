@@ -27,6 +27,7 @@
  */
 
 #include "mimir/common/printers.hpp"
+#include "mimir/common/types_cista.hpp"
 
 /**
  * Formalism
@@ -35,13 +36,15 @@
 #include "mimir/formalism/action.hpp"
 #include "mimir/formalism/assignment_set.hpp"
 #include "mimir/formalism/atom.hpp"
+#include "mimir/formalism/consistency_graph.hpp"
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/effects.hpp"
 #include "mimir/formalism/function.hpp"
 #include "mimir/formalism/function_expressions.hpp"
 #include "mimir/formalism/function_skeleton.hpp"
+#include "mimir/formalism/ground_action.hpp"
 #include "mimir/formalism/ground_atom.hpp"
-#include "mimir/formalism/ground_function_value.hpp"
+#include "mimir/formalism/ground_axiom.hpp"
 #include "mimir/formalism/ground_literal.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/metric.hpp"
@@ -51,12 +54,9 @@
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/requirements.hpp"
 #include "mimir/formalism/term.hpp"
+#include "mimir/formalism/translator.hpp"
 #include "mimir/formalism/utils.hpp"
 #include "mimir/formalism/variable.hpp"
-
-/**
- * Graphs
- */
 
 /**
  * Languages
@@ -68,19 +68,16 @@
  * Search
  */
 
-#include "mimir/search/action.hpp"
 #include "mimir/search/algorithms.hpp"
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 #include "mimir/search/algorithms/strategies/pruning_strategy.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
-#include "mimir/search/axiom.hpp"
 #include "mimir/search/axiom_evaluators.hpp"
 #include "mimir/search/delete_relaxed_problem_explorator.hpp"
-#include "mimir/search/grounders.hpp"
 #include "mimir/search/heuristics.hpp"
 #include "mimir/search/openlists.hpp"
-#include "mimir/search/satisficing_binding_generator/consistency_graph.hpp"
-#include "mimir/search/satisficing_binding_generator/satisficing_binding_generator.hpp"
+#include "mimir/search/satisficing_binding_generators.hpp"
+#include "mimir/search/search_context.hpp"
 #include "mimir/search/search_node.hpp"
 #include "mimir/search/state.hpp"
 #include "mimir/search/state_repository.hpp"
@@ -89,27 +86,46 @@
  * DataSet
  */
 
-#include "mimir/datasets/abstraction.hpp"
-#include "mimir/datasets/faithful_abstraction.hpp"
-#include "mimir/datasets/global_faithful_abstraction.hpp"
+#include "mimir/datasets/generalized_color_function.hpp"
+#include "mimir/datasets/generalized_state_space.hpp"
+#include "mimir/datasets/knowledge_base.hpp"
+#include "mimir/datasets/object_graph.hpp"
 #include "mimir/datasets/state_space.hpp"
+#include "mimir/datasets/tuple_graph.hpp"
 
 /**
  * Graphs
  */
 
 #include "mimir/graphs/algorithms/color_refinement.hpp"
+#include "mimir/graphs/algorithms/color_refinement_impl.hpp"
 #include "mimir/graphs/algorithms/folklore_weisfeiler_leman.hpp"
-#include "mimir/graphs/color_function.hpp"
-#include "mimir/graphs/digraph.hpp"
-#include "mimir/graphs/digraph_vertex_colored.hpp"
-#include "mimir/graphs/object_graph.hpp"
-#include "mimir/graphs/tuple_graph.hpp"
+#include "mimir/graphs/algorithms/folklore_weisfeiler_leman_impl.hpp"
+#include "mimir/graphs/bgl/graph_adapters.hpp"
+#include "mimir/graphs/bgl/graph_algorithms.hpp"
+#include "mimir/graphs/bgl/graph_traits.hpp"
+#include "mimir/graphs/bgl/property_maps.hpp"
+#include "mimir/graphs/bgl/static_graph_algorithms.hpp"
+#include "mimir/graphs/concrete/digraph.hpp"
+#include "mimir/graphs/concrete/digraph_edge_colored.hpp"
+#include "mimir/graphs/concrete/digraph_vertex_colored.hpp"
+#include "mimir/graphs/declarations.hpp"
+#include "mimir/graphs/dynamic_graph.hpp"
+#include "mimir/graphs/dynamic_graph_interface.hpp"
+#include "mimir/graphs/graph_edge_interface.hpp"
+#include "mimir/graphs/graph_edges.hpp"
+#include "mimir/graphs/graph_interface.hpp"
+#include "mimir/graphs/graph_properties.hpp"
+#include "mimir/graphs/graph_traversal_interface.hpp"
+#include "mimir/graphs/graph_vertex_interface.hpp"
+#include "mimir/graphs/graph_vertices.hpp"
+#include "mimir/graphs/static_graph.hpp"
+#include "mimir/graphs/static_graph_interface.hpp"
 
 /**
  * Algorithms
  */
 
-#include "mimir/algorithms/nauty.hpp"
+#include "mimir/graphs/algorithms/nauty.hpp"
 
 #endif  // MIMIR_MIMIR_HPP_

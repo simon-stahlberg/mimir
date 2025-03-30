@@ -20,7 +20,8 @@
 
 // Do not include headers with transitive dependencies.
 #include "mimir/common/types.hpp"
-#include "mimir/formalism/predicate_tag.hpp"
+#include "mimir/common/types_cista.hpp"
+#include "mimir/formalism/tags.hpp"
 
 #include <cassert>
 #include <cstdint>
@@ -34,21 +35,40 @@
 #include <variant>
 #include <vector>
 
-namespace mimir
+namespace mimir::formalism
 {
 /**
  * Forward declarations
  */
 
+template<typename... Ts>
+using FlatBitsets = boost::hana::map<boost::hana::pair<boost::hana::type<Ts>, FlatBitset>...>;
+template<typename... Ts>
+using FlatIndexLists = boost::hana::map<boost::hana::pair<boost::hana::type<Ts>, FlatIndexList>...>;
+template<typename... Ts>
+using FlatDoubleLists = boost::hana::map<boost::hana::pair<boost::hana::type<Ts>, FlatDoubleList>...>;
+
+template<IsStaticOrFluentOrDerivedTag P>
+class AssignmentSet;
+template<IsStaticOrFluentTag F>
+class NumericAssignmentSet;
+
 class ActionImpl;
 using Action = const ActionImpl*;
 using ActionList = std::vector<Action>;
 
-template<PredicateTag P>
+class GroundActionImpl;
+using GroundAction = const GroundActionImpl*;
+using GroundActionList = std::vector<GroundAction>;
+using GroundActionSet = std::unordered_set<GroundAction>;
+
+class GeneralizedProblem;
+
+template<IsStaticOrFluentOrDerivedTag P>
 class AtomImpl;
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 using Atom = const AtomImpl<P>*;
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 using AtomList = std::vector<Atom<P>>;
 
 class AxiomImpl;
@@ -56,16 +76,38 @@ using Axiom = const AxiomImpl*;
 using AxiomList = std::vector<Axiom>;
 using AxiomSet = std::unordered_set<Axiom>;
 
+class GroundAxiomImpl;
+using GroundAxiom = const GroundAxiomImpl*;
+using GroundAxiomList = std::vector<GroundAxiom>;
+using GroundAxiomSet = std::unordered_set<GroundAxiom>;
+
 class DomainImpl;
-using Domain = const DomainImpl*;
+using Domain = std::shared_ptr<const DomainImpl>;
 using DomainList = std::vector<Domain>;
+class DomainBuilder;
 
-class EffectStripsImpl;
-using EffectStrips = const EffectStripsImpl*;
+template<IsFluentOrAuxiliaryTag F>
+class NumericEffectImpl;
+template<IsFluentOrAuxiliaryTag F>
+using NumericEffect = const NumericEffectImpl<F>*;
+template<IsFluentOrAuxiliaryTag F>
+using NumericEffectList = std::vector<NumericEffect<F>>;
 
-class EffectConditionalImpl;
-using EffectConditional = const EffectConditionalImpl*;
-using EffectConditionalList = std::vector<EffectConditional>;
+template<IsFluentOrAuxiliaryTag F>
+class GroundNumericEffectImpl;
+template<IsFluentOrAuxiliaryTag F>
+using GroundNumericEffect = const GroundNumericEffectImpl<F>*;
+
+class ConjunctiveEffectImpl;
+using ConjunctiveEffect = const ConjunctiveEffectImpl*;
+
+class GroundConjunctiveEffect;
+
+class ConditionalEffectImpl;
+using ConditionalEffect = const ConditionalEffectImpl*;
+using ConditionalEffectList = std::vector<ConditionalEffect>;
+
+class GroundConditionalEffect;
 
 class FunctionExpressionNumberImpl;
 using FunctionExpressionNumber = const FunctionExpressionNumberImpl*;
@@ -75,27 +117,39 @@ class FunctionExpressionMultiOperatorImpl;
 using FunctionExpressionMultiOperator = const FunctionExpressionMultiOperatorImpl*;
 class FunctionExpressionMinusImpl;
 using FunctionExpressionMinus = const FunctionExpressionMinusImpl*;
+template<IsStaticOrFluentOrAuxiliaryTag F>
 class FunctionExpressionFunctionImpl;
-using FunctionExpressionFunction = const FunctionExpressionFunctionImpl*;
+template<IsStaticOrFluentOrAuxiliaryTag F>
+using FunctionExpressionFunction = const FunctionExpressionFunctionImpl<F>*;
 class FunctionExpressionImpl;
 using FunctionExpression = const FunctionExpressionImpl*;
 using FunctionExpressionList = std::vector<FunctionExpression>;
 
+template<IsStaticOrFluentOrAuxiliaryTag F>
 class FunctionSkeletonImpl;
-using FunctionSkeleton = const FunctionSkeletonImpl*;
-using FunctionSkeletonList = std::vector<FunctionSkeleton>;
+template<IsStaticOrFluentOrAuxiliaryTag F>
+using FunctionSkeleton = const FunctionSkeletonImpl<F>*;
+template<IsStaticOrFluentOrAuxiliaryTag F>
+using FunctionSkeletonList = std::vector<FunctionSkeleton<F>>;
+template<IsStaticOrFluentOrAuxiliaryTag... Fs>
+using FunctionSkeletonLists = boost::hana::map<boost::hana::pair<boost::hana::type<Fs>, FunctionSkeletonList<Fs>>...>;
 
+template<IsStaticOrFluentOrAuxiliaryTag F>
 class FunctionImpl;
-using Function = const FunctionImpl*;
-using FunctionList = std::vector<Function>;
+template<IsStaticOrFluentOrAuxiliaryTag F>
+using Function = const FunctionImpl<F>*;
+template<IsStaticOrFluentOrAuxiliaryTag F>
+using FunctionList = std::vector<Function<F>>;
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 class GroundAtomImpl;
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 using GroundAtom = const GroundAtomImpl<P>*;
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 using GroundAtomList = std::vector<GroundAtom<P>>;
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag... Ps>
+using GroundAtomLists = boost::hana::map<boost::hana::pair<boost::hana::type<Ps>, GroundAtomList<Ps>>...>;
+template<IsStaticOrFluentOrDerivedTag P>
 using GroundAtomSet = std::unordered_set<GroundAtom<P>>;
 
 class GroundFunctionExpressionNumberImpl;
@@ -106,65 +160,101 @@ class GroundFunctionExpressionMultiOperatorImpl;
 using GroundFunctionExpressionMultiOperator = const GroundFunctionExpressionMultiOperatorImpl*;
 class GroundFunctionExpressionMinusImpl;
 using GroundFunctionExpressionMinus = const GroundFunctionExpressionMinusImpl*;
+template<IsStaticOrFluentOrAuxiliaryTag F>
 class GroundFunctionExpressionFunctionImpl;
-using GroundFunctionExpressionFunction = const GroundFunctionExpressionFunctionImpl*;
+template<IsStaticOrFluentOrAuxiliaryTag F>
+using GroundFunctionExpressionFunction = const GroundFunctionExpressionFunctionImpl<F>*;
 class GroundFunctionExpressionImpl;
 using GroundFunctionExpression = const GroundFunctionExpressionImpl*;
 using GroundFunctionExpressionList = std::vector<GroundFunctionExpression>;
 
+template<IsStaticOrFluentOrAuxiliaryTag F>
 class GroundFunctionImpl;
-using GroundFunction = const GroundFunctionImpl*;
-using GroundFunctionList = std::vector<GroundFunction>;
-template<typename T>
-using GroundFunctionMap = std::unordered_map<GroundFunction, T>;
+template<IsStaticOrFluentOrAuxiliaryTag F>
+using GroundFunction = const GroundFunctionImpl<F>*;
+template<IsStaticOrFluentOrAuxiliaryTag F>
+using GroundFunctionList = std::vector<GroundFunction<F>>;
+template<IsStaticOrFluentOrAuxiliaryTag F, typename T>
+using GroundFunctionMap = std::unordered_map<GroundFunction<F>, T>;
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 class GroundLiteralImpl;
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 using GroundLiteral = const GroundLiteralImpl<P>*;
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 using GroundLiteralList = std::vector<GroundLiteral<P>>;
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag... Ps>
+using GroundLiteralLists = boost::hana::map<boost::hana::pair<boost::hana::type<Ps>, GroundLiteralList<Ps>>...>;
+template<IsStaticOrFluentOrDerivedTag P>
 using GroundLiteralSet = std::unordered_set<GroundLiteral<P>>;
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 class LiteralImpl;
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 using Literal = const LiteralImpl<P>*;
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 using LiteralList = std::vector<Literal<P>>;
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag... Ps>
+using LiteralLists = boost::hana::map<boost::hana::pair<boost::hana::type<Ps>, LiteralList<Ps>>...>;
+template<IsStaticOrFluentOrDerivedTag P>
 using LiteralSet = std::unordered_set<Literal<P>>;
 
 class OptimizationMetricImpl;
 using OptimizationMetric = const OptimizationMetricImpl*;
 
+template<IsStaticOrFluentOrAuxiliaryTag F>
 class GroundFunctionValueImpl;
-using GroundFunctionValue = const GroundFunctionValueImpl*;
-using GroundFunctionValueList = std::vector<GroundFunctionValue>;
+template<IsStaticOrFluentOrAuxiliaryTag F>
+using GroundFunctionValue = const GroundFunctionValueImpl<F>*;
+template<IsStaticOrFluentOrAuxiliaryTag F>
+using GroundFunctionValueList = std::vector<GroundFunctionValue<F>>;
+template<IsStaticOrFluentTag... Fs>
+using GroundFunctionValueLists = boost::hana::map<boost::hana::pair<boost::hana::type<Fs>, GroundFunctionValueList<Fs>>...>;
+
+class NumericConstraintImpl;
+using NumericConstraint = const NumericConstraintImpl*;
+using NumericConstraintList = std::vector<NumericConstraint>;
+
+class GroundNumericConstraintImpl;
+using GroundNumericConstraint = const GroundNumericConstraintImpl*;
+using GroundNumericConstraintList = std::vector<GroundNumericConstraint>;
 
 class ObjectImpl;
 using Object = const ObjectImpl*;
 using ObjectList = std::vector<Object>;
-template<typename Key, typename Hash = loki::Hash<Key>, typename KeyEqual = loki::EqualTo<Key>>
-using ToObjectMap = std::unordered_map<Key, Object, Hash, KeyEqual>;
+using ObjectSet = std::unordered_set<Object>;
+template<typename Key>
+using ToObjectMap = std::unordered_map<Key, Object, loki::Hash<Key>, loki::EqualTo<Key>>;
+template<typename Value>
+using ObjectMap = std::unordered_map<Object, Value>;
 
-class PDDLRepositories;
+class Repositories;
 
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 class PredicateImpl;
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 using Predicate = const PredicateImpl<P>*;
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag P>
 using PredicateList = std::vector<Predicate<P>>;
-template<PredicateTag P>
+template<IsStaticOrFluentOrDerivedTag... Ps>
+using PredicateLists = boost::hana::map<boost::hana::pair<boost::hana::type<Ps>, PredicateList<Ps>>...>;
+template<IsStaticOrFluentOrDerivedTag P>
 using PredicateSet = std::unordered_set<Predicate<P>>;
-template<typename Key, PredicateTag P, typename Hash = loki::Hash<Key>, typename KeyEqual = loki::EqualTo<Key>>
-using ToPredicateMap = std::unordered_map<Key, Predicate<P>, Hash, KeyEqual>;
+template<typename Key, IsStaticOrFluentOrDerivedTag P>
+using ToPredicateMap = std::unordered_map<Key, Predicate<P>, loki::Hash<Key>, loki::EqualTo<Key>>;
+template<typename Key, IsStaticOrFluentOrDerivedTag... Ps>
+using ToPredicateMaps = boost::hana::map<boost::hana::pair<boost::hana::type<Ps>, ToPredicateMap<Key, Ps>>...>;
+template<typename Value, IsStaticOrFluentOrDerivedTag P>
+using PredicateMap = std::unordered_map<Predicate<P>, Value>;
+template<typename Value, IsStaticOrFluentOrDerivedTag... Ps>
+using PredicateMaps = boost::hana::map<boost::hana::pair<boost::hana::type<Ps>, PredicateMap<Value, Ps>>...>;
 
 class ProblemImpl;
-using Problem = const ProblemImpl*;
+using Problem = std::shared_ptr<ProblemImpl>;
 using ProblemList = std::vector<Problem>;
+class ProblemBuilder;
+template<typename Value>
+using ProblemMap = std::unordered_map<Problem, Value>;
 
 class RequirementsImpl;
 using Requirements = const RequirementsImpl*;
@@ -174,12 +264,19 @@ using Variable = const VariableImpl*;
 using VariableList = std::vector<Variable>;
 using VariableSet = std::unordered_set<Variable>;
 
-class ExistentiallyQuantifiedConjunctiveConditionImpl;
-using ExistentiallyQuantifiedConjunctiveCondition = const ExistentiallyQuantifiedConjunctiveConditionImpl*;
+class ConjunctiveConditionImpl;
+using ConjunctiveCondition = const ConjunctiveConditionImpl*;
+
+class GroundConjunctiveCondition;
 
 class TermImpl;
 using Term = const TermImpl*;
 using TermList = std::vector<Term>;
+
+template<typename T>
+concept IsFormalismEntity = requires { typename std::decay_t<std::remove_pointer_t<T>>::FormalismEntity; };
+
+static_assert(IsHanaMap<PredicateLists<StaticTag>>);
 
 }
 

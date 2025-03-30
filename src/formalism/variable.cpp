@@ -19,9 +19,9 @@
 
 #include "formatter.hpp"
 
-namespace mimir
+namespace mimir::formalism
 {
-VariableImpl::VariableImpl(Index index, std::string name, size_t parameter_index) : m_index(index), m_name(std::move(name)), m_parameter_index(parameter_index)
+VariableImpl::VariableImpl(Index index, std::string name, Index parameter_index) : m_index(index), m_name(std::move(name)), m_parameter_index(parameter_index)
 {
 }
 
@@ -29,18 +29,17 @@ Index VariableImpl::get_index() const { return m_index; }
 
 const std::string& VariableImpl::get_name() const { return m_name; }
 
-const size_t VariableImpl::get_parameter_index() const { return m_parameter_index; }
+Index VariableImpl::get_parameter_index() const { return m_parameter_index; }
 
 std::ostream& operator<<(std::ostream& out, const VariableImpl& element)
 {
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
+    write(element, StringFormatter(), out);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, Variable element)
 {
-    out << *element;
+    write(*element, AddressFormatter(), out);
     return out;
 }
 }

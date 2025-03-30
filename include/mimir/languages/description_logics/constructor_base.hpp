@@ -19,6 +19,7 @@
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_BASE_HPP_
 
 #include "mimir/languages/description_logics/constructor_interface.hpp"
+#include "mimir/languages/description_logics/denotation_repositories.hpp"
 #include "mimir/languages/description_logics/evaluation_context.hpp"
 #include "mimir/search/state.hpp"
 
@@ -27,15 +28,15 @@
 #include <memory>
 #include <vector>
 
-namespace mimir::dl
+namespace mimir::languages::dl
 {
 
 /**
  * Concept
  */
 
-template<ConstructorTag D, typename Derived_>
-class ConstructorEvaluatorBase : public ConstructorImpl<D>
+template<IsConceptOrRoleOrBooleanOrNumericalTag D, typename Derived_>
+class ConstructorEvaluatorBase : public IConstructor<D>
 {
 private:
     /// @brief Helper to cast to Derived.
@@ -46,20 +47,22 @@ public:
     Denotation<D> evaluate(EvaluationContext& context) const override
     {
         // Try to access cached result
-        auto denotation = context.get_denotation_repository<D>().get_if(this, context.get_state()->get_index());
-        if (denotation.has_value())
+        auto denotation = boost::hana::at_key(context.get_repositories(), boost::hana::type<D> {}).get_if(this, context.get_state());
+
+        if (denotation)
         {
-            return denotation.value();
+            return denotation;
         }
 
         // Compute the result in the derived class
         self().evaluate_impl(context);
 
         // Store and return result;
-        return context.get_denotation_repository<D>().insert(this, context.get_state()->get_index(), context.get_denotation_builder<D>());
+        return boost::hana::at_key(context.get_repositories(), boost::hana::type<D> {})
+            .insert(this, context.get_state(), boost::hana::at_key(context.get_builders(), boost::hana::type<D> {}));
     };
 
-    void accept(Visitor& visitor) const override { return self().accept_impl(visitor); }
+    void accept(IVisitor& visitor) const override { return self().accept_impl(visitor); }
 };
 
 }

@@ -1,6 +1,6 @@
-# Mimir: A Planning Library
+# Mimir: A Generalized Planning Library
 
-Mimir is a C++20-based planning library with Python bindings, designed for both grounded and lifted planning. Its primary focus lies at the intersection of planning and machine learning, making it a powerful tool for  research in learning-based planning. Unlike many planners, Mimir is designed to be used as a library rather than as a standalone application, offering seamless integration into both C++ and Python projects. Pre-compiled Python binaries are available via PyPI for easy installation and use.
+Mimir is a C++20-based generalized planning library with Python bindings, designed for both grounded and lifted planning. Its primary focus lies at the intersection of planning and machine learning, making it a powerful tool for research in learning-based planning. Unlike many planners, Mimir is designed to be used as a library rather than as a standalone application, offering seamless integration into both C++ and Python projects. Pre-compiled Python binaries are available via PyPI for easy installation and use.
 
 ## Key Features
 
@@ -13,6 +13,7 @@ Mimir is a C++20-based planning library with Python bindings, designed for both 
   - `:equality`
   - `:existential-preconditions`
   - `:negative-preconditions`
+  - `:numeric-fluents`
   - `:strips`
   - `:typing`
   - `:universal-preconditions`
@@ -20,6 +21,9 @@ Mimir is a C++20-based planning library with Python bindings, designed for both 
 - **Grounded and Lifted Planning:**
   Mimir supports the PDDL requirements for both grounded and lifted planning.
   In particular, lifted planning is critical for learning-based approaches because they often do not require access to grounded actions, resulting in significant speedups.
+
+- **Collections of Problems:**
+  Mimir supports parsing, translation, and in-memory manipulation for collections of problems.
 
 - **Portability:**
   Setting up and running learning pipelines can be a challenging and time-consuming task.
@@ -34,29 +38,22 @@ Mimir is a C++20-based planning library with Python bindings, designed for both 
 
 ## Technical Overview
 
-- **PDDL Parser:**
+- **PDDL Parser & Normalizer:**
   Mimir uses the [Loki](https://github.com/drexlerd/Loki) parser for handling PDDL files.
-  Loki defines the grammar using the [Boost](https://www.boost.org/) library, enabling it to generate highly informative error messages for syntactically incorrect input.
-
-- **PDDL Normalization:**
-  The library implements a normalization step of the input PDDL, mostly based on the method presented in section four of the paper [*"Concise finite-domain representations for PDDL planning tasks by Malte Helmert (AIJ 2009)"*](https://ai.dmi.unibas.ch/papers/helmert-aij2009.pdf).
+  Loki defines the grammar using the [Boost](https://www.boost.org/) library, enabling it to generate highly informative error messages for syntactically incorrect input. It also implements the normalization step of the input PDDL, mostly based on the method presented in section four of the paper [*"Concise finite-domain representations for PDDL planning tasks by Malte Helmert (AIJ 2009)"*](https://ai.dmi.unibas.ch/papers/helmert-aij2009.pdf).
 
 - **Lifted Successor Generator:**
-  The library implements a lifted applicable action generator based on the method presented in the paper [*"Lifted Successor Generation by Maximum Clique Enumeration"* by Simon Ståhlberg (ECAI 2023)](https://ebooks.iospress.nl/doi/10.3233/FAIA230516). This generator natively supports `:strips` and `:negative-preconditions`, while other precondition features are compiled away in the normalization step.
+  The library implements a lifted applicable action generator based on the method presented in the paper [*"Lifted Successor Generation by Maximum Clique Enumeration"* by Simon Ståhlberg (ECAI 2023)](https://ebooks.iospress.nl/doi/10.3233/FAIA230516). This generator natively supports `:strips` and `:negative-preconditions`, while other precondition features are compiled away in the normalization step. We also extended the generator to natively support `:numeric-fluents` using partial function evaluation and standard interval arithmetics.
 
 - **Grounded Successor Generator:**
   Delete relaxation is used to identify a set of grounded actions that may be applicable in potential successor states.
-  This set is then used to initialize the data structure outlined in the article [*"The Fast Downward Planning System"* by Malte Helmert (JAIR 2006)](https://jair.org/index.php/jair/article/view/10457) to efficiently identify all applicable actions in given states.
-  While this grounding process often results in significant performance improvements, it may not always be feasible in practice.
+  This set is then used to initialize the data structure outlined in the article [*"The Fast Downward Planning System"* by Malte Helmert (JAIR 2006)](https://jair.org/index.php/jair/article/view/10457) to efficiently identify all applicable actions in given states. While this grounding process often results in significant performance improvements, it may not always be feasible in practice.
 
 - **State Representation:**
   States are represented using a compressed sparse vector representation that contains all ground atoms that are true in the state. The compression step identifies the largest bit-width required to store all ground atoms. Internally, we unpack states into dense bitset representations for constant time randomized access.
 
 - **Ground Action and Axiom Representations:**
-  Ground action and axioms are complex composite structures. Similar to states, we represent them using a single compressed sparse vector. However, we do never unpack them, as having unpacked states suffices for efficient applicability check.
-
-- **State-Dependent Action Costs (SDAC):**
-  State-dependent action costs play a crucial role in accurately modeling real-world problems. For example, in a logistics domain, the cost of moving between locations may depend on factors such as the available vehicles, the terrain, or the load carried by a vehicle. Mimir supports all `:action-costs` features, allowing modelers to write complex cost expressions directly into conditional effects.
+  Ground action and axioms are complex composite structures. Similar to states, we represent them using a single compressed sparse vector. However, we do never unpack them, as having unpacked states suffices for efficient applicability checks.
 
 ## Getting Started (Python)
 

@@ -17,7 +17,7 @@
 
 #include "mimir/graphs/algorithms/color_refinement.hpp"
 
-namespace mimir::color_refinement
+namespace mimir::graphs::color_refinement
 {
 
 /* Certificate */
@@ -39,8 +39,7 @@ bool operator==(const Certificate& lhs, const Certificate& rhs) { return loki::E
 
 std::ostream& operator<<(std::ostream& out, const Certificate& element)
 {
-    out << "CertificateColorRefinement("
-        << "canonical_coloring=" << element.get_canonical_coloring() << ", "
+    out << "CertificateColorRefinement(" << "canonical_coloring=" << element.get_canonical_coloring() << ", "
         << "canonical_compression_function=" << element.get_canonical_compression_function() << ")";
     return out;
 }
