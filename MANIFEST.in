@@ -7,6 +7,7 @@ include setup.py
 include Config.cmake.in
 include dependencies/abseil/CMakeLists.txt
 include dependencies/benchmark/CMakeLists.txt
+include dependencies/clingo/CMakeLists.txt
 include dependencies/boost/CMakeLists.txt
 include dependencies/flatmemory/CMakeLists.txt
 include dependencies/fmt/CMakeLists.txt
