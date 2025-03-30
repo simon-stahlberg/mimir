@@ -1056,6 +1056,128 @@ GroundAction ProblemImpl::ground(Action action, ObjectList binding)
     return grounded_action;
 }
 
+/* Lifting */
+
+Variable ProblemImpl::get_or_create_variable(std::string name, size_t parameter_index)
+{
+    return m_repositories.get_or_create_variable(std::move(name), std::move(parameter_index));
+}
+
+Term ProblemImpl::get_or_create_term(Variable variable) { return m_repositories.get_or_create_term(variable); }
+
+Term ProblemImpl::get_or_create_term(Object object) { return m_repositories.get_or_create_term(object); }
+
+template<IsStaticOrFluentOrDerivedTag P>
+Atom<P> ProblemImpl::get_or_create_atom(Predicate<P> predicate, TermList terms)
+{
+    return m_repositories.get_or_create_atom(std::move(predicate), std::move(terms));
+}
+
+template Atom<StaticTag> ProblemImpl::get_or_create_atom(Predicate<StaticTag> predicate, TermList terms);
+template Atom<FluentTag> ProblemImpl::get_or_create_atom(Predicate<FluentTag> predicate, TermList terms);
+template Atom<DerivedTag> ProblemImpl::get_or_create_atom(Predicate<DerivedTag> predicate, TermList terms);
+
+template<IsStaticOrFluentOrDerivedTag P>
+Literal<P> ProblemImpl::get_or_create_literal(bool polarity, Atom<P> atom)
+{
+    return m_repositories.get_or_create_literal(polarity, atom);
+}
+
+template Literal<StaticTag> ProblemImpl::get_or_create_literal(bool polarity, Atom<StaticTag> atom);
+template Literal<FluentTag> ProblemImpl::get_or_create_literal(bool polarity, Atom<FluentTag> atom);
+template Literal<DerivedTag> ProblemImpl::get_or_create_literal(bool polarity, Atom<DerivedTag> atom);
+
+template<IsStaticOrFluentOrAuxiliaryTag F>
+Function<F> ProblemImpl::get_or_create_function(FunctionSkeleton<F> function_skeleton, TermList terms, IndexList parent_terms_to_terms_mapping)
+{
+    return m_repositories.get_or_create_function(function_skeleton, std::move(terms), std::move(parent_terms_to_terms_mapping));
+}
+
+template Function<StaticTag>
+ProblemImpl::get_or_create_function(FunctionSkeleton<StaticTag> function_skeleton, TermList terms, IndexList parent_terms_to_terms_mapping);
+template Function<FluentTag>
+ProblemImpl::get_or_create_function(FunctionSkeleton<FluentTag> function_skeleton, TermList terms, IndexList parent_terms_to_terms_mapping);
+template Function<AuxiliaryTag>
+ProblemImpl::get_or_create_function(FunctionSkeleton<AuxiliaryTag> function_skeleton, TermList terms, IndexList parent_terms_to_terms_mapping);
+
+FunctionExpressionNumber ProblemImpl::get_or_create_function_expression_number(double number)
+{
+    return m_repositories.get_or_create_function_expression_number(number);
+}
+
+FunctionExpressionBinaryOperator ProblemImpl::get_or_create_function_expression_binary_operator(loki::BinaryOperatorEnum binary_operator,
+                                                                                                FunctionExpression left_function_expression,
+                                                                                                FunctionExpression right_function_expression)
+{
+    return m_repositories.get_or_create_function_expression_binary_operator(binary_operator, left_function_expression, right_function_expression);
+}
+
+FunctionExpressionMultiOperator ProblemImpl::get_or_create_function_expression_multi_operator(loki::MultiOperatorEnum multi_operator,
+                                                                                              FunctionExpressionList function_expressions)
+{
+    return m_repositories.get_or_create_function_expression_multi_operator(multi_operator, std::move(function_expressions));
+}
+
+FunctionExpressionMinus ProblemImpl::get_or_create_function_expression_minus(FunctionExpression function_expression)
+{
+    return m_repositories.get_or_create_function_expression_minus(function_expression);
+}
+
+template<IsStaticOrFluentTag F>
+FunctionExpressionFunction<F> ProblemImpl::get_or_create_function_expression_function(Function<F> function)
+{
+    return m_repositories.get_or_create_function_expression_function(function);
+}
+
+template FunctionExpressionFunction<StaticTag> ProblemImpl::get_or_create_function_expression_function(Function<StaticTag> function);
+template FunctionExpressionFunction<FluentTag> ProblemImpl::get_or_create_function_expression_function(Function<FluentTag> function);
+
+FunctionExpression ProblemImpl::get_or_create_function_expression(FunctionExpressionNumber fexpr)
+{
+    return m_repositories.get_or_create_function_expression(fexpr);
+}
+
+FunctionExpression ProblemImpl::get_or_create_function_expression(FunctionExpressionBinaryOperator fexpr)
+{
+    return m_repositories.get_or_create_function_expression(fexpr);
+}
+
+FunctionExpression ProblemImpl::get_or_create_function_expression(FunctionExpressionMultiOperator fexpr)
+{
+    return m_repositories.get_or_create_function_expression(fexpr);
+}
+
+FunctionExpression ProblemImpl::get_or_create_function_expression(FunctionExpressionMinus fexpr)
+{
+    return m_repositories.get_or_create_function_expression(fexpr);
+}
+
+template<IsStaticOrFluentTag F>
+FunctionExpression ProblemImpl::get_or_create_function_expression(FunctionExpressionFunction<F> fexpr)
+{
+    return m_repositories.get_or_create_function_expression(fexpr);
+}
+
+template FunctionExpression ProblemImpl::get_or_create_function_expression(FunctionExpressionFunction<StaticTag> fexpr);
+template FunctionExpression ProblemImpl::get_or_create_function_expression(FunctionExpressionFunction<FluentTag> fexpr);
+
+NumericConstraint ProblemImpl::get_or_create_numeric_constraint(loki::BinaryComparatorEnum binary_comparator,
+                                                                FunctionExpression left_function_expression,
+                                                                FunctionExpression right_function_expression,
+                                                                TermList terms)
+{
+    return m_repositories.get_or_create_numeric_constraint(binary_comparator, left_function_expression, right_function_expression, std::move(terms));
+}
+
+ConjunctiveCondition ProblemImpl::get_or_create_conjunctive_condition(VariableList parameters,
+                                                                      LiteralLists<StaticTag, FluentTag, DerivedTag> literals,
+                                                                      NumericConstraintList numeric_constraints)
+{
+    return m_repositories.get_or_create_conjunctive_condition(std::move(parameters), std::move(literals), std::move(numeric_constraints));
+}
+
+/* Accessors */
+
 const GroundActionList& ProblemImpl::get_ground_actions() const { return m_details.grounding.ground_actions_by_index; }
 
 GroundAction ProblemImpl::get_ground_action(Index action_index) const { return m_details.grounding.ground_actions_by_index.at(action_index); }

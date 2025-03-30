@@ -604,7 +604,65 @@ void bind_formalism(nb::module_& m)
         .def("get_derived_goal_condition", &ProblemImpl::get_goal_condition<DerivedTag>, nb::rv_policy::copy)
         .def("get_static_initial_atoms", &ProblemImpl::get_static_initial_atoms, nb::rv_policy::copy)
         .def("get_fluent_initial_atoms", &ProblemImpl::get_fluent_initial_atoms, nb::rv_policy::copy)
-        .def("get_static_assignment_set", &ProblemImpl::get_static_assignment_set, nb::rv_policy::copy);
+        .def("get_static_assignment_set", &ProblemImpl::get_static_assignment_set, nb::rv_policy::copy)
+        .def("get_or_create_variable", &ProblemImpl::get_or_create_variable, nb::arg("name"), nb::arg("parameter_index"))
+        .def("get_or_create_term", nb::overload_cast<Variable>(&ProblemImpl::get_or_create_term), nb::arg("variable"))
+        .def("get_or_create_term", nb::overload_cast<Object>(&ProblemImpl::get_or_create_term), nb::arg("object"))
+        .def("get_or_create_atom", &ProblemImpl::get_or_create_atom<StaticTag>, nb::arg("predicate"), nb::arg("terms"))
+        .def("get_or_create_atom", &ProblemImpl::get_or_create_atom<FluentTag>, nb::arg("predicate"), nb::arg("terms"))
+        .def("get_or_create_atom", &ProblemImpl::get_or_create_atom<DerivedTag>, nb::arg("predicate"), nb::arg("terms"))
+        .def("get_or_create_literal", &ProblemImpl::get_or_create_literal<StaticTag>, nb::arg("polarity"), nb::arg("atom"))
+        .def("get_or_create_literal", &ProblemImpl::get_or_create_literal<FluentTag>, nb::arg("polarity"), nb::arg("atom"))
+        .def("get_or_create_literal", &ProblemImpl::get_or_create_literal<DerivedTag>, nb::arg("polarity"), nb::arg("atom"))
+        .def("get_or_create_function", &ProblemImpl::get_or_create_function<StaticTag>, nb::arg("function_skeleton"), nb::arg("terms"), nb::arg("mapping"))
+        .def("get_or_create_function", &ProblemImpl::get_or_create_function<FluentTag>, nb::arg("function_skeleton"), nb::arg("terms"), nb::arg("mapping"))
+        .def("get_or_create_function", &ProblemImpl::get_or_create_function<AuxiliaryTag>, nb::arg("function_skeleton"), nb::arg("terms"), nb::arg("mapping"))
+        .def("get_or_create_function_expression_number", &ProblemImpl::get_or_create_function_expression_number, nb::arg("number"))
+        .def("get_or_create_function_expression_binary_operator",
+             &ProblemImpl::get_or_create_function_expression_binary_operator,
+             nb::arg("binary_operator"),
+             nb::arg("left"),
+             nb::arg("right"))
+        .def("get_or_create_function_expression_multi_operator",
+             &ProblemImpl::get_or_create_function_expression_multi_operator,
+             nb::arg("multi_operator"),
+             nb::arg("function_expressions"))
+        .def("get_or_create_function_expression_minus", &ProblemImpl::get_or_create_function_expression_minus, nb::arg("function_expression"))
+        .def("get_or_create_function_expression_function", &ProblemImpl::get_or_create_function_expression_function<StaticTag>, nb::arg("static_function"))
+        .def("get_or_create_function_expression_function", &ProblemImpl::get_or_create_function_expression_function<FluentTag>, nb::arg("fluent_function"))
+        .def(
+            "get_or_create_function_expression",
+            [](ProblemImpl& self, FunctionExpressionNumber fexpr) { return self.get_or_create_function_expression(fexpr); },
+            nb::arg("function_expression"))
+        .def(
+            "get_or_create_function_expression",
+            [](ProblemImpl& self, FunctionExpressionBinaryOperator fexpr) { return self.get_or_create_function_expression(fexpr); },
+            nb::arg("function_expression"))
+        .def(
+            "get_or_create_function_expression",
+            [](ProblemImpl& self, FunctionExpressionMultiOperator fexpr) { return self.get_or_create_function_expression(fexpr); },
+            nb::arg("function_expression"))
+        .def(
+            "get_or_create_function_expression",
+            [](ProblemImpl& self, FunctionExpressionMinus fexpr) { return self.get_or_create_function_expression(fexpr); },
+            nb::arg("function_expression"))
+        .def("get_or_create_function_expression",
+             nb::overload_cast<FunctionExpressionFunction<StaticTag>>(&ProblemImpl::get_or_create_function_expression<StaticTag>),
+             nb::arg("function_expression"))
+        .def("get_or_create_function_expression",
+             nb::overload_cast<FunctionExpressionFunction<FluentTag>>(&ProblemImpl::get_or_create_function_expression<FluentTag>),
+             nb::arg("function_expression"))
+        .def("get_or_create_numeric_constraint",
+             &ProblemImpl::get_or_create_numeric_constraint,
+             nb::arg("comparator"),
+             nb::arg("left_expression"),
+             nb::arg("right_expression"),
+             nb::arg("terms"))
+        .def("get_or_create_conjunctive_condition",
+             &ProblemImpl::get_or_create_conjunctive_condition,
+             nb::arg("parameters"),
+             nb::arg("literals"),
+             nb::arg("numeric_constraints"));
     nb::bind_vector<ProblemList>(m, "ProblemList");
 
     /* GeneralizedProblem */

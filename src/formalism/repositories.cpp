@@ -71,7 +71,7 @@ Object Repositories::get_or_create_object(std::string name)
 template<IsStaticOrFluentOrDerivedTag P>
 Atom<P> Repositories::get_or_create_atom(Predicate<P> predicate, TermList terms)
 {
-    return boost::hana::at_key(m_repositories, boost::hana::type<AtomImpl<P>> {}).get_or_create(std::move(predicate), std::move(terms));
+    return boost::hana::at_key(m_repositories, boost::hana::type<AtomImpl<P>> {}).get_or_create(predicate, std::move(terms));
 }
 
 template Atom<StaticTag> Repositories::get_or_create_atom(Predicate<StaticTag> predicate, TermList terms);
@@ -81,7 +81,7 @@ template Atom<DerivedTag> Repositories::get_or_create_atom(Predicate<DerivedTag>
 template<IsStaticOrFluentOrDerivedTag P>
 GroundAtom<P> Repositories::get_or_create_ground_atom(Predicate<P> predicate, ObjectList objects)
 {
-    return boost::hana::at_key(m_repositories, boost::hana::type<GroundAtomImpl<P>> {}).get_or_create(std::move(predicate), std::move(objects));
+    return boost::hana::at_key(m_repositories, boost::hana::type<GroundAtomImpl<P>> {}).get_or_create(predicate, std::move(objects));
 }
 
 template GroundAtom<StaticTag> Repositories::get_or_create_ground_atom(Predicate<StaticTag> predicate, ObjectList ObjectList);
@@ -91,7 +91,7 @@ template GroundAtom<DerivedTag> Repositories::get_or_create_ground_atom(Predicat
 template<IsStaticOrFluentOrDerivedTag P>
 Literal<P> Repositories::get_or_create_literal(bool polarity, Atom<P> atom)
 {
-    return boost::hana::at_key(m_repositories, boost::hana::type<LiteralImpl<P>> {}).get_or_create(polarity, std::move(atom));
+    return boost::hana::at_key(m_repositories, boost::hana::type<LiteralImpl<P>> {}).get_or_create(polarity, atom);
 }
 
 template Literal<StaticTag> Repositories::get_or_create_literal(bool polarity, Atom<StaticTag> atom);
@@ -101,7 +101,7 @@ template Literal<DerivedTag> Repositories::get_or_create_literal(bool polarity, 
 template<IsStaticOrFluentOrDerivedTag P>
 GroundLiteral<P> Repositories::get_or_create_ground_literal(bool polarity, GroundAtom<P> atom)
 {
-    return boost::hana::at_key(m_repositories, boost::hana::type<GroundLiteralImpl<P>> {}).get_or_create(polarity, std::move(atom));
+    return boost::hana::at_key(m_repositories, boost::hana::type<GroundLiteralImpl<P>> {}).get_or_create(polarity, atom);
 }
 
 template GroundLiteral<StaticTag> Repositories::get_or_create_ground_literal(bool polarity, GroundAtom<StaticTag> atom);
@@ -135,7 +135,7 @@ FunctionExpressionBinaryOperator Repositories::get_or_create_function_expression
     }
 
     return boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionBinaryOperatorImpl> {})
-        .get_or_create(binary_operator, std::move(left_function_expression), std::move(right_function_expression));
+        .get_or_create(binary_operator, left_function_expression, right_function_expression);
 }
 
 FunctionExpressionMultiOperator Repositories::get_or_create_function_expression_multi_operator(loki::MultiOperatorEnum multi_operator,
@@ -150,7 +150,7 @@ FunctionExpressionMultiOperator Repositories::get_or_create_function_expression_
 
 FunctionExpressionMinus Repositories::get_or_create_function_expression_minus(FunctionExpression function_expression)
 {
-    return boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionMinusImpl> {}).get_or_create(std::move(function_expression));
+    return boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionMinusImpl> {}).get_or_create(function_expression);
 }
 
 template<IsStaticOrFluentTag F>
@@ -343,8 +343,7 @@ ConjunctiveEffect Repositories::get_or_create_conjunctive_effect(VariableList pa
 
 ConditionalEffect Repositories::get_or_create_conditional_effect(ConjunctiveCondition conjunctive_condition, ConjunctiveEffect conjunctive_effect)
 {
-    return boost::hana::at_key(m_repositories, boost::hana::type<ConditionalEffectImpl> {})
-        .get_or_create(std::move(conjunctive_condition), std::move(conjunctive_effect));
+    return boost::hana::at_key(m_repositories, boost::hana::type<ConditionalEffectImpl> {}).get_or_create(conjunctive_condition, conjunctive_effect);
 }
 
 NumericConstraint Repositories::get_or_create_numeric_constraint(loki::BinaryComparatorEnum binary_comparator,
@@ -353,7 +352,7 @@ NumericConstraint Repositories::get_or_create_numeric_constraint(loki::BinaryCom
                                                                  TermList terms)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<NumericConstraintImpl> {})
-        .get_or_create(std::move(binary_comparator), std::move(left_function_expression), std::move(right_function_expression), std::move(terms));
+        .get_or_create(binary_comparator, left_function_expression, right_function_expression, std::move(terms));
 }
 
 GroundNumericConstraint Repositories::get_or_create_ground_numeric_constraint(loki::BinaryComparatorEnum binary_comparator,
@@ -361,7 +360,7 @@ GroundNumericConstraint Repositories::get_or_create_ground_numeric_constraint(lo
                                                                               GroundFunctionExpression right_function_expression)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundNumericConstraintImpl> {})
-        .get_or_create(std::move(binary_comparator), std::move(left_function_expression), std::move(right_function_expression));
+        .get_or_create(binary_comparator, left_function_expression, right_function_expression);
 }
 
 ConjunctiveCondition Repositories::get_or_create_conjunctive_condition(VariableList parameters,

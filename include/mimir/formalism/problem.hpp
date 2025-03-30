@@ -173,6 +173,54 @@ public:
 
     GroundAction ground(Action action, ObjectList binding);
 
+    /* Lifting */
+
+    Variable get_or_create_variable(std::string name, size_t parameter_index);
+
+    Term get_or_create_term(Variable variable);
+    Term get_or_create_term(Object object);
+
+    template<IsStaticOrFluentOrDerivedTag P>
+    Atom<P> get_or_create_atom(Predicate<P> predicate, TermList terms);
+
+    template<IsStaticOrFluentOrDerivedTag P>
+    Literal<P> get_or_create_literal(bool polarity, Atom<P> atom);
+
+    template<IsStaticOrFluentOrAuxiliaryTag F>
+    Function<F> get_or_create_function(FunctionSkeleton<F> function_skeleton, TermList terms, IndexList parent_terms_to_terms_mapping);
+
+    FunctionExpressionNumber get_or_create_function_expression_number(double number);
+
+    FunctionExpressionBinaryOperator get_or_create_function_expression_binary_operator(loki::BinaryOperatorEnum binary_operator,
+                                                                                       FunctionExpression left_function_expression,
+                                                                                       FunctionExpression right_function_expression);
+
+    FunctionExpressionMultiOperator get_or_create_function_expression_multi_operator(loki::MultiOperatorEnum multi_operator,
+                                                                                     FunctionExpressionList function_expressions_);
+
+    FunctionExpressionMinus get_or_create_function_expression_minus(FunctionExpression function_expression);
+
+    template<IsStaticOrFluentTag F>
+    FunctionExpressionFunction<F> get_or_create_function_expression_function(Function<F> function);
+
+    FunctionExpression get_or_create_function_expression(FunctionExpressionNumber fexpr);
+    FunctionExpression get_or_create_function_expression(FunctionExpressionBinaryOperator fexpr);
+    FunctionExpression get_or_create_function_expression(FunctionExpressionMultiOperator fexpr);
+    FunctionExpression get_or_create_function_expression(FunctionExpressionMinus fexpr);
+    template<IsStaticOrFluentTag F>
+    FunctionExpression get_or_create_function_expression(FunctionExpressionFunction<F> fexpr);
+
+    NumericConstraint get_or_create_numeric_constraint(loki::BinaryComparatorEnum binary_comparator,
+                                                       FunctionExpression left_function_expression,
+                                                       FunctionExpression right_function_expression,
+                                                       TermList terms);
+
+    ConjunctiveCondition get_or_create_conjunctive_condition(VariableList parameters,
+                                                             LiteralLists<StaticTag, FluentTag, DerivedTag> literals,
+                                                             NumericConstraintList numeric_constraints);
+
+    /* Accessors */
+
     const GroundActionList& get_ground_actions() const;
     GroundAction get_ground_action(Index action_index) const;
     size_t get_num_ground_actions() const;
