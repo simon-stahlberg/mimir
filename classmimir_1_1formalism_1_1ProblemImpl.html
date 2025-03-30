@@ -210,6 +210,47 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a94dd69736df69569c1686222cc416abd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6e5f9e1dd3295c1f59078c65210cdeb5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">GroundAction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#a6e5f9e1dd3295c1f59078c65210cdeb5">ground</a> (<a class="el" href="namespacemimir_1_1formalism.html#ab18fc18ecb8e6e594a5c655c9821b2c7">Action</a> action, <a class="el" href="namespacemimir_1_1formalism.html#aa2fd2f5631e2c7f1d86769c4fb71b49f">ObjectList</a> binding)</td></tr>
 <tr class="separator:a6e5f9e1dd3295c1f59078c65210cdeb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafa689d63422a1815caff5f249ccd5c9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#ae091943bce648feb4d2f64c72afbfbf7">Variable</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#aafa689d63422a1815caff5f249ccd5c9">get_or_create_variable</a> (std::string name, size_t parameter_index)</td></tr>
+<tr class="separator:aafa689d63422a1815caff5f249ccd5c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a666269382a512ab5e812bddad56af06c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#a464fd2852275efe9690c3a507132cf65">Term</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#a666269382a512ab5e812bddad56af06c">get_or_create_term</a> (<a class="el" href="namespacemimir_1_1formalism.html#ae091943bce648feb4d2f64c72afbfbf7">Variable</a> variable)</td></tr>
+<tr class="separator:a666269382a512ab5e812bddad56af06c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35133c0923120bbb15f758001af26ea2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#a464fd2852275efe9690c3a507132cf65">Term</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#a35133c0923120bbb15f758001af26ea2">get_or_create_term</a> (<a class="el" href="namespacemimir_1_1formalism.html#acaf64f488a8195b48868e925aebd3b75">Object</a> object)</td></tr>
+<tr class="separator:a35133c0923120bbb15f758001af26ea2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24e15703e54320d1f1948c348eeb5836"><td class="memTemplParams" colspan="2">template&lt;IsStaticOrFluentOrDerivedTag P&gt; </td></tr>
+<tr class="memitem:a24e15703e54320d1f1948c348eeb5836"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#a0bbeb941c9f2bcc5db5dda9e77d9ad3c">Atom</a>&lt; P &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#a24e15703e54320d1f1948c348eeb5836">get_or_create_atom</a> (<a class="el" href="namespacemimir_1_1formalism.html#a62a850b37be0730b5f889f780d541f5f">Predicate</a>&lt; P &gt; predicate, <a class="el" href="namespacemimir_1_1formalism.html#af020fb353c583f3a1ebabd01f82e14fd">TermList</a> terms)</td></tr>
+<tr class="separator:a24e15703e54320d1f1948c348eeb5836"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81a5df155ee80edc52678be935160326"><td class="memTemplParams" colspan="2">template&lt;IsStaticOrFluentOrDerivedTag P&gt; </td></tr>
+<tr class="memitem:a81a5df155ee80edc52678be935160326"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#a2676612f0dc35f8f7240770acf83eeba">Literal</a>&lt; P &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#a81a5df155ee80edc52678be935160326">get_or_create_literal</a> (bool polarity, <a class="el" href="namespacemimir_1_1formalism.html#a0bbeb941c9f2bcc5db5dda9e77d9ad3c">Atom</a>&lt; P &gt; atom)</td></tr>
+<tr class="separator:a81a5df155ee80edc52678be935160326"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3118ffd25127c88ba755d51a0df9828"><td class="memTemplParams" colspan="2">template&lt;IsStaticOrFluentOrAuxiliaryTag F&gt; </td></tr>
+<tr class="memitem:ab3118ffd25127c88ba755d51a0df9828"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#a381e8ec7176b32c35162ba02492c23ad">Function</a>&lt; F &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#ab3118ffd25127c88ba755d51a0df9828">get_or_create_function</a> (<a class="el" href="namespacemimir_1_1formalism.html#a9a2e8ccb07750186c27fbadc2a8ad4d3">FunctionSkeleton</a>&lt; F &gt; function_skeleton, <a class="el" href="namespacemimir_1_1formalism.html#af020fb353c583f3a1ebabd01f82e14fd">TermList</a> terms, <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a> parent_terms_to_terms_mapping)</td></tr>
+<tr class="separator:ab3118ffd25127c88ba755d51a0df9828"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7954c2b5fb30fc7ef5dd030c64b52f58"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#abcc61f8a78f4c347d23f79f2e146c1e6">FunctionExpressionNumber</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#a7954c2b5fb30fc7ef5dd030c64b52f58">get_or_create_function_expression_number</a> (double number)</td></tr>
+<tr class="separator:a7954c2b5fb30fc7ef5dd030c64b52f58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2919b59a1468507445e4dce0358b1b01"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#a740a8c5fb1d4dd084c2f8c54c31f606e">FunctionExpressionBinaryOperator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#a2919b59a1468507445e4dce0358b1b01">get_or_create_function_expression_binary_operator</a> (loki::BinaryOperatorEnum binary_operator, <a class="el" href="namespacemimir_1_1formalism.html#a177339af2994f400dea64bd0e59a7b52">FunctionExpression</a> left_function_expression, <a class="el" href="namespacemimir_1_1formalism.html#a177339af2994f400dea64bd0e59a7b52">FunctionExpression</a> right_function_expression)</td></tr>
+<tr class="separator:a2919b59a1468507445e4dce0358b1b01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab17103dda09a36f84f4f9d6bbf0c39e0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#aa9fecc435fa00ad65dd6a4747a422b50">FunctionExpressionMultiOperator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#ab17103dda09a36f84f4f9d6bbf0c39e0">get_or_create_function_expression_multi_operator</a> (loki::MultiOperatorEnum multi_operator, <a class="el" href="namespacemimir_1_1formalism.html#a3b833036559f9b76274141e5459fc9ef">FunctionExpressionList</a> function_expressions_)</td></tr>
+<tr class="separator:ab17103dda09a36f84f4f9d6bbf0c39e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40d73e6a9011730138cc5b5b0073047a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#a7c2a5bdfbd7ea800acf6767926766d1d">FunctionExpressionMinus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#a40d73e6a9011730138cc5b5b0073047a">get_or_create_function_expression_minus</a> (<a class="el" href="namespacemimir_1_1formalism.html#a177339af2994f400dea64bd0e59a7b52">FunctionExpression</a> function_expression)</td></tr>
+<tr class="separator:a40d73e6a9011730138cc5b5b0073047a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f70532c3e83540ca693fb4191c3f1f5"><td class="memTemplParams" colspan="2">template&lt;IsStaticOrFluentTag F&gt; </td></tr>
+<tr class="memitem:a9f70532c3e83540ca693fb4191c3f1f5"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#af64d75cf1d9aec2d6fe61c8f87bebc4d">FunctionExpressionFunction</a>&lt; F &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#a9f70532c3e83540ca693fb4191c3f1f5">get_or_create_function_expression_function</a> (<a class="el" href="namespacemimir_1_1formalism.html#a381e8ec7176b32c35162ba02492c23ad">Function</a>&lt; F &gt; function)</td></tr>
+<tr class="separator:a9f70532c3e83540ca693fb4191c3f1f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6796094f0627a05403f0fc951061edad"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#a177339af2994f400dea64bd0e59a7b52">FunctionExpression</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#a6796094f0627a05403f0fc951061edad">get_or_create_function_expression</a> (<a class="el" href="namespacemimir_1_1formalism.html#abcc61f8a78f4c347d23f79f2e146c1e6">FunctionExpressionNumber</a> fexpr)</td></tr>
+<tr class="separator:a6796094f0627a05403f0fc951061edad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb335db0c8597f17709dbdd556e4b720"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#a177339af2994f400dea64bd0e59a7b52">FunctionExpression</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#abb335db0c8597f17709dbdd556e4b720">get_or_create_function_expression</a> (<a class="el" href="namespacemimir_1_1formalism.html#a740a8c5fb1d4dd084c2f8c54c31f606e">FunctionExpressionBinaryOperator</a> fexpr)</td></tr>
+<tr class="separator:abb335db0c8597f17709dbdd556e4b720"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64a74583ef3225961195e6a8cdc07fd0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#a177339af2994f400dea64bd0e59a7b52">FunctionExpression</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#a64a74583ef3225961195e6a8cdc07fd0">get_or_create_function_expression</a> (<a class="el" href="namespacemimir_1_1formalism.html#aa9fecc435fa00ad65dd6a4747a422b50">FunctionExpressionMultiOperator</a> fexpr)</td></tr>
+<tr class="separator:a64a74583ef3225961195e6a8cdc07fd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d747ecefc35f65a4e695da5b07f31bd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#a177339af2994f400dea64bd0e59a7b52">FunctionExpression</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#a9d747ecefc35f65a4e695da5b07f31bd">get_or_create_function_expression</a> (<a class="el" href="namespacemimir_1_1formalism.html#a7c2a5bdfbd7ea800acf6767926766d1d">FunctionExpressionMinus</a> fexpr)</td></tr>
+<tr class="separator:a9d747ecefc35f65a4e695da5b07f31bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5087554cf1a9c0df68f6e12ea5df007"><td class="memTemplParams" colspan="2">template&lt;IsStaticOrFluentTag F&gt; </td></tr>
+<tr class="memitem:ae5087554cf1a9c0df68f6e12ea5df007"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#a177339af2994f400dea64bd0e59a7b52">FunctionExpression</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#ae5087554cf1a9c0df68f6e12ea5df007">get_or_create_function_expression</a> (<a class="el" href="namespacemimir_1_1formalism.html#af64d75cf1d9aec2d6fe61c8f87bebc4d">FunctionExpressionFunction</a>&lt; F &gt; fexpr)</td></tr>
+<tr class="separator:ae5087554cf1a9c0df68f6e12ea5df007"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09ceb15fcd2b2cbea78a25a83f0e97f3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#a0d41e5e7db6270840526b7b5d398d055">NumericConstraint</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#a09ceb15fcd2b2cbea78a25a83f0e97f3">get_or_create_numeric_constraint</a> (loki::BinaryComparatorEnum binary_comparator, <a class="el" href="namespacemimir_1_1formalism.html#a177339af2994f400dea64bd0e59a7b52">FunctionExpression</a> left_function_expression, <a class="el" href="namespacemimir_1_1formalism.html#a177339af2994f400dea64bd0e59a7b52">FunctionExpression</a> right_function_expression, <a class="el" href="namespacemimir_1_1formalism.html#af020fb353c583f3a1ebabd01f82e14fd">TermList</a> terms)</td></tr>
+<tr class="separator:a09ceb15fcd2b2cbea78a25a83f0e97f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b03d0af5fb896324cbf3bb04c42a188"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#aebe252b6157987560ca677cf1cab2fd2">ConjunctiveCondition</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#a3b03d0af5fb896324cbf3bb04c42a188">get_or_create_conjunctive_condition</a> (<a class="el" href="namespacemimir_1_1formalism.html#aec01442d5c638acd5d89fb576934c04b">VariableList</a> parameters, <a class="el" href="namespacemimir_1_1formalism.html#a8820d4cc130b828726a6eb0c03f8e58f">LiteralLists</a>&lt; <a class="el" href="structmimir_1_1formalism_1_1StaticTag.html">StaticTag</a>, <a class="el" href="structmimir_1_1formalism_1_1FluentTag.html">FluentTag</a>, <a class="el" href="structmimir_1_1formalism_1_1DerivedTag.html">DerivedTag</a> &gt; literals, <a class="el" href="namespacemimir_1_1formalism.html#a0889d2be2ff494dbf81378be0f4f9b50">NumericConstraintList</a> numeric_constraints)</td></tr>
+<tr class="separator:a3b03d0af5fb896324cbf3bb04c42a188"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab407b4151396c6dde2bad3c8db89c1e7"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir_1_1formalism.html#a34df8c35896b9c6bc7826fff84d2692f">GroundActionList</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#ab407b4151396c6dde2bad3c8db89c1e7">get_ground_actions</a> () const</td></tr>
 <tr class="separator:ab407b4151396c6dde2bad3c8db89c1e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a73c2622f01a909a78501446f094ac7f2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">GroundAction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#a73c2622f01a909a78501446f094ac7f2">get_ground_action</a> (<a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> action_index) const</td></tr>
@@ -980,6 +1021,450 @@ template&lt;IsStaticOrFluentOrDerivedTag P&gt; </div>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a24e15703e54320d1f1948c348eeb5836" name="a24e15703e54320d1f1948c348eeb5836"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24e15703e54320d1f1948c348eeb5836">&#9670;&#160;</a></span>get_or_create_atom()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;IsStaticOrFluentOrDerivedTag P&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacemimir_1_1formalism.html#a0bbeb941c9f2bcc5db5dda9e77d9ad3c">Atom</a>&lt; P &gt; mimir::formalism::ProblemImpl::get_or_create_atom </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#a62a850b37be0730b5f889f780d541f5f">Predicate</a>&lt; P &gt;&#160;</td>
+          <td class="paramname"><em>predicate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#af020fb353c583f3a1ebabd01f82e14fd">TermList</a>&#160;</td>
+          <td class="paramname"><em>terms</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3b03d0af5fb896324cbf3bb04c42a188" name="a3b03d0af5fb896324cbf3bb04c42a188"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b03d0af5fb896324cbf3bb04c42a188">&#9670;&#160;</a></span>get_or_create_conjunctive_condition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacemimir_1_1formalism.html#aebe252b6157987560ca677cf1cab2fd2">ConjunctiveCondition</a> mimir::formalism::ProblemImpl::get_or_create_conjunctive_condition </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#aec01442d5c638acd5d89fb576934c04b">VariableList</a>&#160;</td>
+          <td class="paramname"><em>parameters</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#a8820d4cc130b828726a6eb0c03f8e58f">LiteralLists</a>&lt; <a class="el" href="structmimir_1_1formalism_1_1StaticTag.html">StaticTag</a>, <a class="el" href="structmimir_1_1formalism_1_1FluentTag.html">FluentTag</a>, <a class="el" href="structmimir_1_1formalism_1_1DerivedTag.html">DerivedTag</a> &gt;&#160;</td>
+          <td class="paramname"><em>literals</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#a0889d2be2ff494dbf81378be0f4f9b50">NumericConstraintList</a>&#160;</td>
+          <td class="paramname"><em>numeric_constraints</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab3118ffd25127c88ba755d51a0df9828" name="ab3118ffd25127c88ba755d51a0df9828"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3118ffd25127c88ba755d51a0df9828">&#9670;&#160;</a></span>get_or_create_function()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;IsStaticOrFluentOrAuxiliaryTag F&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacemimir_1_1formalism.html#a381e8ec7176b32c35162ba02492c23ad">Function</a>&lt; F &gt; mimir::formalism::ProblemImpl::get_or_create_function </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#a9a2e8ccb07750186c27fbadc2a8ad4d3">FunctionSkeleton</a>&lt; F &gt;&#160;</td>
+          <td class="paramname"><em>function_skeleton</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#af020fb353c583f3a1ebabd01f82e14fd">TermList</a>&#160;</td>
+          <td class="paramname"><em>terms</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a>&#160;</td>
+          <td class="paramname"><em>parent_terms_to_terms_mapping</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abb335db0c8597f17709dbdd556e4b720" name="abb335db0c8597f17709dbdd556e4b720"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb335db0c8597f17709dbdd556e4b720">&#9670;&#160;</a></span>get_or_create_function_expression() <span class="overload">[1/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacemimir_1_1formalism.html#a177339af2994f400dea64bd0e59a7b52">FunctionExpression</a> mimir::formalism::ProblemImpl::get_or_create_function_expression </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#a740a8c5fb1d4dd084c2f8c54c31f606e">FunctionExpressionBinaryOperator</a>&#160;</td>
+          <td class="paramname"><em>fexpr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae5087554cf1a9c0df68f6e12ea5df007" name="ae5087554cf1a9c0df68f6e12ea5df007"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5087554cf1a9c0df68f6e12ea5df007">&#9670;&#160;</a></span>get_or_create_function_expression() <span class="overload">[2/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;IsStaticOrFluentTag F&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacemimir_1_1formalism.html#a177339af2994f400dea64bd0e59a7b52">FunctionExpression</a> mimir::formalism::ProblemImpl::get_or_create_function_expression </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#af64d75cf1d9aec2d6fe61c8f87bebc4d">FunctionExpressionFunction</a>&lt; F &gt;&#160;</td>
+          <td class="paramname"><em>fexpr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9d747ecefc35f65a4e695da5b07f31bd" name="a9d747ecefc35f65a4e695da5b07f31bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d747ecefc35f65a4e695da5b07f31bd">&#9670;&#160;</a></span>get_or_create_function_expression() <span class="overload">[3/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacemimir_1_1formalism.html#a177339af2994f400dea64bd0e59a7b52">FunctionExpression</a> mimir::formalism::ProblemImpl::get_or_create_function_expression </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#a7c2a5bdfbd7ea800acf6767926766d1d">FunctionExpressionMinus</a>&#160;</td>
+          <td class="paramname"><em>fexpr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a64a74583ef3225961195e6a8cdc07fd0" name="a64a74583ef3225961195e6a8cdc07fd0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64a74583ef3225961195e6a8cdc07fd0">&#9670;&#160;</a></span>get_or_create_function_expression() <span class="overload">[4/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacemimir_1_1formalism.html#a177339af2994f400dea64bd0e59a7b52">FunctionExpression</a> mimir::formalism::ProblemImpl::get_or_create_function_expression </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#aa9fecc435fa00ad65dd6a4747a422b50">FunctionExpressionMultiOperator</a>&#160;</td>
+          <td class="paramname"><em>fexpr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6796094f0627a05403f0fc951061edad" name="a6796094f0627a05403f0fc951061edad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6796094f0627a05403f0fc951061edad">&#9670;&#160;</a></span>get_or_create_function_expression() <span class="overload">[5/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacemimir_1_1formalism.html#a177339af2994f400dea64bd0e59a7b52">FunctionExpression</a> mimir::formalism::ProblemImpl::get_or_create_function_expression </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#abcc61f8a78f4c347d23f79f2e146c1e6">FunctionExpressionNumber</a>&#160;</td>
+          <td class="paramname"><em>fexpr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2919b59a1468507445e4dce0358b1b01" name="a2919b59a1468507445e4dce0358b1b01"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2919b59a1468507445e4dce0358b1b01">&#9670;&#160;</a></span>get_or_create_function_expression_binary_operator()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacemimir_1_1formalism.html#a740a8c5fb1d4dd084c2f8c54c31f606e">FunctionExpressionBinaryOperator</a> mimir::formalism::ProblemImpl::get_or_create_function_expression_binary_operator </td>
+          <td>(</td>
+          <td class="paramtype">loki::BinaryOperatorEnum&#160;</td>
+          <td class="paramname"><em>binary_operator</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#a177339af2994f400dea64bd0e59a7b52">FunctionExpression</a>&#160;</td>
+          <td class="paramname"><em>left_function_expression</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#a177339af2994f400dea64bd0e59a7b52">FunctionExpression</a>&#160;</td>
+          <td class="paramname"><em>right_function_expression</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9f70532c3e83540ca693fb4191c3f1f5" name="a9f70532c3e83540ca693fb4191c3f1f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f70532c3e83540ca693fb4191c3f1f5">&#9670;&#160;</a></span>get_or_create_function_expression_function()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;IsStaticOrFluentTag F&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacemimir_1_1formalism.html#af64d75cf1d9aec2d6fe61c8f87bebc4d">FunctionExpressionFunction</a>&lt; F &gt; mimir::formalism::ProblemImpl::get_or_create_function_expression_function </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#a381e8ec7176b32c35162ba02492c23ad">Function</a>&lt; F &gt;&#160;</td>
+          <td class="paramname"><em>function</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a40d73e6a9011730138cc5b5b0073047a" name="a40d73e6a9011730138cc5b5b0073047a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40d73e6a9011730138cc5b5b0073047a">&#9670;&#160;</a></span>get_or_create_function_expression_minus()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacemimir_1_1formalism.html#a7c2a5bdfbd7ea800acf6767926766d1d">FunctionExpressionMinus</a> mimir::formalism::ProblemImpl::get_or_create_function_expression_minus </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#a177339af2994f400dea64bd0e59a7b52">FunctionExpression</a>&#160;</td>
+          <td class="paramname"><em>function_expression</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab17103dda09a36f84f4f9d6bbf0c39e0" name="ab17103dda09a36f84f4f9d6bbf0c39e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab17103dda09a36f84f4f9d6bbf0c39e0">&#9670;&#160;</a></span>get_or_create_function_expression_multi_operator()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacemimir_1_1formalism.html#aa9fecc435fa00ad65dd6a4747a422b50">FunctionExpressionMultiOperator</a> mimir::formalism::ProblemImpl::get_or_create_function_expression_multi_operator </td>
+          <td>(</td>
+          <td class="paramtype">loki::MultiOperatorEnum&#160;</td>
+          <td class="paramname"><em>multi_operator</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#a3b833036559f9b76274141e5459fc9ef">FunctionExpressionList</a>&#160;</td>
+          <td class="paramname"><em>function_expressions_</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7954c2b5fb30fc7ef5dd030c64b52f58" name="a7954c2b5fb30fc7ef5dd030c64b52f58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7954c2b5fb30fc7ef5dd030c64b52f58">&#9670;&#160;</a></span>get_or_create_function_expression_number()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacemimir_1_1formalism.html#abcc61f8a78f4c347d23f79f2e146c1e6">FunctionExpressionNumber</a> mimir::formalism::ProblemImpl::get_or_create_function_expression_number </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>number</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a81a5df155ee80edc52678be935160326" name="a81a5df155ee80edc52678be935160326"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81a5df155ee80edc52678be935160326">&#9670;&#160;</a></span>get_or_create_literal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;IsStaticOrFluentOrDerivedTag P&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacemimir_1_1formalism.html#a2676612f0dc35f8f7240770acf83eeba">Literal</a>&lt; P &gt; mimir::formalism::ProblemImpl::get_or_create_literal </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>polarity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#a0bbeb941c9f2bcc5db5dda9e77d9ad3c">Atom</a>&lt; P &gt;&#160;</td>
+          <td class="paramname"><em>atom</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a09ceb15fcd2b2cbea78a25a83f0e97f3" name="a09ceb15fcd2b2cbea78a25a83f0e97f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09ceb15fcd2b2cbea78a25a83f0e97f3">&#9670;&#160;</a></span>get_or_create_numeric_constraint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacemimir_1_1formalism.html#a0d41e5e7db6270840526b7b5d398d055">NumericConstraint</a> mimir::formalism::ProblemImpl::get_or_create_numeric_constraint </td>
+          <td>(</td>
+          <td class="paramtype">loki::BinaryComparatorEnum&#160;</td>
+          <td class="paramname"><em>binary_comparator</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#a177339af2994f400dea64bd0e59a7b52">FunctionExpression</a>&#160;</td>
+          <td class="paramname"><em>left_function_expression</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#a177339af2994f400dea64bd0e59a7b52">FunctionExpression</a>&#160;</td>
+          <td class="paramname"><em>right_function_expression</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#af020fb353c583f3a1ebabd01f82e14fd">TermList</a>&#160;</td>
+          <td class="paramname"><em>terms</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a35133c0923120bbb15f758001af26ea2" name="a35133c0923120bbb15f758001af26ea2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35133c0923120bbb15f758001af26ea2">&#9670;&#160;</a></span>get_or_create_term() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacemimir_1_1formalism.html#a464fd2852275efe9690c3a507132cf65">Term</a> mimir::formalism::ProblemImpl::get_or_create_term </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#acaf64f488a8195b48868e925aebd3b75">Object</a>&#160;</td>
+          <td class="paramname"><em>object</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a666269382a512ab5e812bddad56af06c" name="a666269382a512ab5e812bddad56af06c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a666269382a512ab5e812bddad56af06c">&#9670;&#160;</a></span>get_or_create_term() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacemimir_1_1formalism.html#a464fd2852275efe9690c3a507132cf65">Term</a> mimir::formalism::ProblemImpl::get_or_create_term </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#ae091943bce648feb4d2f64c72afbfbf7">Variable</a>&#160;</td>
+          <td class="paramname"><em>variable</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aafa689d63422a1815caff5f249ccd5c9" name="aafa689d63422a1815caff5f249ccd5c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafa689d63422a1815caff5f249ccd5c9">&#9670;&#160;</a></span>get_or_create_variable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacemimir_1_1formalism.html#ae091943bce648feb4d2f64c72afbfbf7">Variable</a> mimir::formalism::ProblemImpl::get_or_create_variable </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>parameter_index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
