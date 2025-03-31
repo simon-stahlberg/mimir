@@ -48,7 +48,6 @@ jobs:
       env:
         CIBW_BUILD_VERBOSITY: "1"
         CIBW_ARCHS_MACOS: "arm64"
-        CIBW_BEFORE_ALL_LINUX: "yum install -y python3.9-devel"
 
     - name: Upload to PyPI
       env:
