@@ -232,7 +232,8 @@ std::ostream& operator<<(std::ostream& os, const Statistics& statistics)
         (num_imperfect_generators > 0) ? static_cast<double>(num_imperfect_elements) / num_imperfect_generators : std::numeric_limits<double>::quiet_NaN();
 
     os << "[MatchTreeStatistics] Total time for construction: "
-       << std::chrono::duration_cast<std::chrono::milliseconds>(statistics.construction_end_time_point - statistics.construction_start_time_point) << "\n"
+       << std::chrono::duration_cast<std::chrono::milliseconds>(statistics.construction_end_time_point - statistics.construction_start_time_point).count()
+       << " ms" << "\n"
        << "[MatchTreeStatistics] Total number of nodes: " << statistics.num_nodes << "\n"
        << "[MatchTreeStatistics] Total number of elements: " << num_elements << "\n"
        << "[MatchTreeStatistics] Generators - total number: " << num_generators << "\n"

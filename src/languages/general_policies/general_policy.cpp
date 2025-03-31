@@ -63,7 +63,7 @@ bool GeneralPolicyImpl::is_terminating(graphs::PolicyGraph& policy_graph, Reposi
     {
         // Line 11
         auto sccs = std::unordered_map<size_t, graphs::VertexIndexList> {};
-        for (const auto& [component, v_idx] : component_map)
+        for (const auto& [v_idx, component] : component_map)
         {
             sccs[component].push_back(v_idx);
         }
@@ -103,6 +103,19 @@ bool GeneralPolicyImpl::is_terminating(graphs::PolicyGraph& policy_graph, Reposi
     }
 
     // Lines 6-7
+    auto is_acyclic = bool(true);
+    try
+    {
+        graphs::bgl::topological_sort(tagged_graph);
+    }
+    catch (const boost::not_a_dag&)
+    {
+        is_acyclic = false;
+    }
+    if (is_acyclic)
+    {
+        return true;
+    }
 
     bool edges_removed = false;
 
