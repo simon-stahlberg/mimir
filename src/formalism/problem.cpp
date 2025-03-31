@@ -1334,10 +1334,10 @@ const problem::ActionGroundingInfoList& problem::GroundingDetails::get_action_in
                                                              action->get_arity() + conditional_effect->get_arity(),
                                                              conditional_effect->get_conjunctive_condition()->get_literals<StaticTag>());
 
-                conditional_effect_infos.push_back(std::move(objects_by_parameter_index_));
+                conditional_effect_infos.emplace_back(std::move(objects_by_parameter_index_));
             }
 
-            action_infos->push_back(std::move(conditional_effect_infos));
+            action_infos->emplace_back(std::move(conditional_effect_infos));
         }
     }
 

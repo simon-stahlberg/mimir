@@ -97,6 +97,8 @@ using CandidateParameterObjectBindingList = std::vector<CandidateParameterObject
 
 struct ConditionalEffectGroundingInfo
 {
+    explicit ConditionalEffectGroundingInfo(CandidateParameterObjectBindingList candidate_variable_bindings) : candidate_variable_bindings(std::move(candidate_variable_bindings)){}
+
     CandidateParameterObjectBindingList candidate_variable_bindings;
 };
 
@@ -104,6 +106,8 @@ using ConditionalEffectGroundingInfoList = std::vector<ConditionalEffectGroundin
 
 struct ActionGroundingInfo
 {
+    explicit ActionGroundingInfo(ConditionalEffectGroundingInfoList conditional_effect_infos) : conditional_effect_infos(std::move(conditional_effect_infos)){}
+
     ConditionalEffectGroundingInfoList conditional_effect_infos;
 };
 
