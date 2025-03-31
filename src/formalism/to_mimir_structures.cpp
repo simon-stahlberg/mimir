@@ -495,8 +495,10 @@ ToMimirStructures::translate_lifted(loki::Effect effect, const VariableList& par
         }
 
         // Fetch container to store the effects
-        auto& [data_fluent_literals, data_fluent_numeric_effects, data_auxiliary_numeric_effect] =
-            (conjunctive_condition) ? ref_conditional_effect_data[conjunctive_condition] : ref_conjunctive_effect_data;
+        auto& effect_data = (conjunctive_condition) ? ref_conditional_effect_data[conjunctive_condition] : ref_conjunctive_effect_data;
+        auto& data_fluent_literals = std::get<0>(effect_data);
+        auto& data_fluent_numeric_effects = std::get<1>(effect_data);
+        auto& data_auxiliary_numeric_effect = std::get<2>(effect_data);
 
         /* 3. Parse effect part */
         if (const auto& effect_literal = std::get_if<loki::EffectLiteral>(&tmp_effect->get_effect()))
