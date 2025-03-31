@@ -55,6 +55,7 @@ bool GeneralPolicyImpl::is_terminating(Repositories& repositories) const
     mimir::operator<<(std::cout, component_map);
     std::cout << std::endl;
 
+    /* Find edges in SCC. */
     auto component_to_edges = std::unordered_map<size_t, graphs::EdgeIndexList> {};
     for (const auto& [e_idx, e] : policy_graph.get_edges())
     {
@@ -66,6 +67,9 @@ bool GeneralPolicyImpl::is_terminating(Repositories& repositories) const
             component_to_edges[src_component].push_back(e_idx);
         }
     }
+
+    mimir::operator<<(std::cout, component_to_edges);
+    std::cout << std::endl;
 
     throw std::runtime_error("Not implemented");
 }
