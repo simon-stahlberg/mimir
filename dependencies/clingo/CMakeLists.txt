@@ -13,6 +13,7 @@ if (NOT Clingo_FOUND)
         -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
         -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
         -DCMAKE_PREFIX_PATH=${CMAKE_INSTALL_PREFIX}
+        -DCMAKE_POLICY_VERSION_MINIMUM=3.21  # override require cmake version
     )
 
     message(STATUS "Preparing external project \"clingo\" with args:")

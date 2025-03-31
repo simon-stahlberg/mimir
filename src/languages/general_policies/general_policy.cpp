@@ -55,6 +55,18 @@ bool GeneralPolicyImpl::is_terminating(Repositories& repositories) const
     mimir::operator<<(std::cout, component_map);
     std::cout << std::endl;
 
+    auto component_to_edges = std::unordered_map<size_t, graphs::EdgeIndexList> {};
+    for (const auto& [e_idx, e] : policy_graph.get_edges())
+    {
+        const auto src_component = component_map.at(e.get_source());
+        const auto dst_component = component_map.at(e.get_target());
+        const auto in_scc = src_component == dst_component;
+        if (in_scc)
+        {
+            component_to_edges[src_component].push_back(e_idx);
+        }
+    }
+
     throw std::runtime_error("Not implemented");
 }
 
