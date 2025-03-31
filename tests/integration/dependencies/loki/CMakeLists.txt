@@ -18,7 +18,7 @@ endforeach()
 ExternalProject_Add(
     loki
     GIT_REPOSITORY https://github.com/drexlerd/Loki.git
-    GIT_TAG v0.0.15
+    GIT_TAG 2996df2314f7d01d87d9d66d345e00a9f844a728
     PREFIX ${CMAKE_BINARY_DIR}/loki
     DEPENDS boost abseil
     CMAKE_ARGS ${CMAKE_ARGS}
