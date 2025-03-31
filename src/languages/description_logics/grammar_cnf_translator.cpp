@@ -22,6 +22,8 @@
 #include "mimir/languages/description_logics/grammar.hpp"
 #include "mimir/languages/description_logics/grammar_visitor_formatter.hpp"
 
+#include <fmt/core.h>
+
 using namespace mimir::formalism;
 
 namespace mimir::languages::dl::grammar
@@ -155,7 +157,7 @@ private:
         std::string candidate_name;
         do
         {
-            candidate_name = "<" + D::name + "_" + std::to_string(m_next_index++) + ">";
+            candidate_name = fmt::format("<{}_{}>", D::name, m_next_index++);
         } while (boost::hana::at_key(m_existing_nonterminals, boost::hana::type<D> {}).contains(candidate_name));
 
         return candidate_name;
