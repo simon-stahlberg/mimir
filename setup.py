@@ -1,7 +1,6 @@
 import glob
 import os
 import sys
-import sysconfig
 import subprocess
 import multiprocessing
 import shutil
@@ -48,20 +47,11 @@ class CMakeBuild(build_ext):
                 print(f"Removing CMakeCache.txt: ", file)
                 os.remove(file)
 
-        python_exe = sys.executable
-        python_include = sysconfig.get_path("include")
-        python_library = sysconfig.get_config_var("LIBDIR") + "/libpython" + sysconfig.get_config_var("LDVERSION") + ".so"
-
         cmake_args = [
             f"-DCMAKE_BUILD_TYPE={build_type}",
             f"-DCMAKE_INSTALL_PREFIX={str(temp_directory)}/dependencies/installs",
-            f"-DCMAKE_PREFIX_PATH={str(temp_directory)}/dependencies/installs",
-            #f"-DPython_EXECUTABLE={python_exe}",
-            #f"-DPython_INCLUDE_DIR={python_include}",
-            #f"-DPython_LIBRARY={python_library}",
+            f"-DCMAKE_PREFIX_PATH={str(temp_directory)}/dependencies/installs"
         ]
-
-        print(cmake_args, flush=True)
 
         subprocess.run(
             ["cmake", "-S", f"{ext.sourcedir}/dependencies", "-B", f"{str(temp_directory)}/dependencies/build"] + cmake_args, cwd=str(temp_directory), check=True
@@ -80,10 +70,7 @@ class CMakeBuild(build_ext):
             f"-DMIMIR_VERSION_INFO={__version__}",
             f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={output_directory}",
             f"-DCMAKE_BUILD_TYPE={build_type}",  # not used on MSVC, but no harm
-            f"-DCMAKE_PREFIX_PATH={str(temp_directory)}/dependencies/installs",
-            #f"-DPython_EXECUTABLE={python_exe}",
-            #f"-DPython_INCLUDE_DIR={python_include}",
-            #f"-DPython_LIBRARY={python_library}",
+            f"-DCMAKE_PREFIX_PATH={str(temp_directory)}/dependencies/installs"
         ]
         build_args = []
         build_args += ["--target", ext.name]
