@@ -56,9 +56,9 @@ class CMakeBuild(build_ext):
             f"-DCMAKE_BUILD_TYPE={build_type}",
             f"-DCMAKE_INSTALL_PREFIX={str(temp_directory)}/dependencies/installs",
             f"-DCMAKE_PREFIX_PATH={str(temp_directory)}/dependencies/installs",
-            f"-DPython_EXECUTABLE={python_exe}",
-            f"-DPython_INCLUDE_DIR={python_include}",
-            f"-DPython_LIBRARY={python_library}",
+            #f"-DPython_EXECUTABLE={python_exe}",
+            #f"-DPython_INCLUDE_DIR={python_include}",
+            #f"-DPython_LIBRARY={python_library}",
         ]
 
         print(cmake_args, flush=True)
@@ -81,9 +81,9 @@ class CMakeBuild(build_ext):
             f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={output_directory}",
             f"-DCMAKE_BUILD_TYPE={build_type}",  # not used on MSVC, but no harm
             f"-DCMAKE_PREFIX_PATH={str(temp_directory)}/dependencies/installs",
-            f"-DPython_EXECUTABLE={python_exe}",
-            f"-DPython_INCLUDE_DIR={python_include}",
-            f"-DPython_LIBRARY={python_library}",
+            #f"-DPython_EXECUTABLE={python_exe}",
+            #f"-DPython_INCLUDE_DIR={python_include}",
+            #f"-DPython_LIBRARY={python_library}",
         ]
         build_args = []
         build_args += ["--target", ext.name]
