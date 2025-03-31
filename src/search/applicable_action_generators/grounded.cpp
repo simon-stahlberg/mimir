@@ -69,7 +69,7 @@ void GroundedApplicableActionGenerator::DefaultEventHandler::on_start_ground_act
 
 void GroundedApplicableActionGenerator::DefaultEventHandler::on_finish_ground_action_instantiation_impl(std::chrono::milliseconds total_time) const
 {
-    std::cout << "[GroundedApplicableActionGenerator] Total time for ground action instantiation: " << total_time << " ms" << std::endl;
+    std::cout << "[GroundedApplicableActionGenerator] Total time for ground action instantiation: " << total_time.count() << " ms" << std::endl;
 }
 
 void GroundedApplicableActionGenerator::DefaultEventHandler::on_start_build_action_match_tree_impl() const

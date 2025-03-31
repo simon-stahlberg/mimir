@@ -86,8 +86,8 @@ auto floyd_warshall_all_pairs_shortest_paths(const DirectionTaggedType<Graph, Di
     using vertex_descriptor_type = typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor;
     using edge_descriptor_type = typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::edge_descriptor;
 
-    using BasicMatrix = typename PropertyMapTraits<Graph>::template BasicMatrix<vertex_descriptor_type, ContinuousCost>;
-    using WeightPropertyMap = typename PropertyMapTraits<Graph>::template ReadPropertyMap<edge_descriptor_type, ContinuousCost>;
+    using BasicMatrix = typename PropertyMapTraits<std::decay_t<Graph>>::template BasicMatrix<vertex_descriptor_type, ContinuousCost>;
+    using WeightPropertyMap = typename PropertyMapTraits<std::decay_t<Graph>>::template ReadPropertyMap<edge_descriptor_type, ContinuousCost>;
 
     auto matrix = BasicMatrix::initialize_data(g.get().get_num_vertices());
 

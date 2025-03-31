@@ -46,6 +46,7 @@ public:
     void accept(IVisitor& visitor) const;
 
     /// @brief Return true if and only if the `GeneralPolicyImpl` is structurally terminating.
+    /// Source: https://aair-lab.github.io/Publications/szig_aaai11.pdf
     /// @return true if the `GeneralPolicyImpl` is structurally terminating, and false otherwise.
     bool is_terminating(Repositories& repositories) const;
 
@@ -148,7 +149,7 @@ private:
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
-    bool is_terminating(const graphs::PolicyGraph& policy_graph, Repositories& repositories) const;
+    bool is_terminating(graphs::PolicyGraph& policy_graph, Repositories& repositories) const;
 
     /// @brief Return true if and only if the `GeneralPolicyImpl` solves the `graphs::ProblemVertex` identified by the given `graphs::VertexIndex` in the
     /// `graphs::ProblemGraph` of the given `datasets::StateSpace`.

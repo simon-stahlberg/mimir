@@ -41,9 +41,13 @@ bool GeneralPolicyImpl::evaluate(dl::EvaluationContext& source_context, dl::Eval
 
 void GeneralPolicyImpl::accept(IVisitor& visitor) const { visitor.visit(this); }
 
-bool GeneralPolicyImpl::is_terminating(Repositories& repositories) const { return is_terminating(create_policy_graph(this, repositories), repositories); }
+bool GeneralPolicyImpl::is_terminating(Repositories& repositories) const
+{
+    auto policy_graph = create_policy_graph(this, repositories);
+    return is_terminating(policy_graph, repositories);
+}
 
-bool GeneralPolicyImpl::is_terminating(const graphs::PolicyGraph& policy_graph, Repositories& repositories) const
+bool GeneralPolicyImpl::is_terminating(graphs::PolicyGraph& policy_graph, Repositories& repositories) const
 {
     std::cout << policy_graph << std::endl;
 
@@ -54,8 +58,10 @@ bool GeneralPolicyImpl::is_terminating(const graphs::PolicyGraph& policy_graph, 
     mimir::operator<<(std::cout, component_map);
     std::cout << std::endl;
 
+    // Line 1
     if (num_components > 1)
     {
+        // Line 11
         auto sccs = std::unordered_map<size_t, graphs::VertexIndexList> {};
         for (const auto& [component, v_idx] : component_map)
         {
@@ -74,31 +80,40 @@ bool GeneralPolicyImpl::is_terminating(const graphs::PolicyGraph& policy_graph, 
 
         return true;
     }
-    else
+
+    // Lines 4-5
+    auto component_to_edges = std::unordered_map<size_t, graphs::EdgeIndexList> {};
+    for (const auto& [e_idx, e] : policy_graph.get_edges())
     {
-        /* Find edges in SCC. */
-        auto component_to_edges = std::unordered_map<size_t, graphs::EdgeIndexList> {};
-        for (const auto& [e_idx, e] : policy_graph.get_edges())
+        const auto src_component = component_map.at(e.get_source());
+        const auto dst_component = component_map.at(e.get_target());
+        const auto in_scc = src_component == dst_component;
+        if (in_scc)
         {
-            const auto src_component = component_map.at(e.get_source());
-            const auto dst_component = component_map.at(e.get_target());
-            const auto in_scc = src_component == dst_component;
-            if (in_scc)
-            {
-                component_to_edges[src_component].push_back(e_idx);
-            }
-        }
-
-        mimir::operator<<(std::cout, component_to_edges);
-        std::cout << std::endl;
-
-        for (size_t i = 0; i < num_components; ++i)
-        {
-            auto decrements = std::unordered_set<Effect> {};
+            component_to_edges[src_component].push_back(e_idx);
         }
     }
 
-    return true;
+    mimir::operator<<(std::cout, component_to_edges);
+    std::cout << std::endl;
+
+    for (size_t i = 0; i < num_components; ++i)
+    {
+        auto decrements = std::unordered_set<Effect> {};
+    }
+
+    // Lines 6-7
+
+    bool edges_removed = false;
+
+    // Line 10
+    if (edges_removed)
+    {
+        return is_terminating(policy_graph, repositories);
+    }
+
+    // Lines 8-9
+    return false;
 }
 
 GeneralPolicyImpl::SolvabilityStatus GeneralPolicyImpl::solves(const datasets::StateSpace& state_space,
