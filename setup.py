@@ -47,8 +47,16 @@ class CMakeBuild(build_ext):
                 print(f"Removing CMakeCache.txt: ", file)
                 os.remove(file)
 
+        cmake_args = [
+            f"{str(temp_directory)}/dependencies/build",
+            f"-DCMAKE_BUILD_TYPE={build_type}",
+            f"-DCMAKE_INSTALL_PREFIX={str(temp_directory)}/dependencies/installs",
+            f"-DCMAKE_PREFIX_PATH={str(temp_directory)}/dependencies/installs",
+            f"-DPython_EXECUTABLE=$(which python)",
+        ]
+
         subprocess.run(
-            ["cmake", "-S", f"{ext.sourcedir}/dependencies", "-B", f"{str(temp_directory)}/dependencies/build", f"-DCMAKE_BUILD_TYPE={build_type}", f"-DCMAKE_INSTALL_PREFIX={str(temp_directory)}/dependencies/installs", f"-DCMAKE_PREFIX_PATH={str(temp_directory)}/dependencies/installs"], cwd=str(temp_directory), check=True
+            ["cmake", "-S", f"{ext.sourcedir}/dependencies", "-B"] + cmake_args, cwd=str(temp_directory), check=True
         )
 
         subprocess.run(
@@ -64,8 +72,8 @@ class CMakeBuild(build_ext):
             f"-DMIMIR_VERSION_INFO={__version__}",
             f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={output_directory}",
             f"-DCMAKE_BUILD_TYPE={build_type}",  # not used on MSVC, but no harm
+            f"-DCMAKE_PREFIX_PATH={str(temp_directory)}/dependencies/installs",
             f"-DPython_EXECUTABLE=$(which python)",
-            f"-DCMAKE_PREFIX_PATH={str(temp_directory)}/dependencies/installs"
         ]
         build_args = []
         build_args += ["--target", ext.name]
