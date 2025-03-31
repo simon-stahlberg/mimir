@@ -27,6 +27,8 @@ manylinux-s390x-image = "manylinux2014"
 # musllinux-ppc64le-image = "musllinux_1_1"
 # musllinux-s390x-image = "musllinux_1_1"
 
+environment = { CMAKE_ARGS = "-DPython_EXECUTABLE={python}" }
+
 [tool.cibuildwheel.linux]
 repair-wheel-command = "auditwheel repair -w {dest_dir} {wheel}"
 
