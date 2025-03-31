@@ -21,13 +21,12 @@ manylinux-aarch64-image = "manylinux2014"
 manylinux-ppc64le-image = "manylinux2014"
 manylinux-s390x-image = "manylinux2014"
 # C++20 concepts are not supported
+
 # musllinux-x86_64-image = "musllinux_1_1"
 # musllinux-i686-image = "musllinux_1_1"
 # musllinux-aarch64-image = "musllinux_1_1"
 # musllinux-ppc64le-image = "musllinux_1_1"
 # musllinux-s390x-image = "musllinux_1_1"
-
-environment = { CMAKE_ARGS = "-DPython_EXECUTABLE={python}" }
 
 [tool.cibuildwheel.linux]
 repair-wheel-command = "auditwheel repair -w {dest_dir} {wheel}"
