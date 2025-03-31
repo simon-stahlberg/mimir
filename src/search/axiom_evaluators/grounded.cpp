@@ -41,7 +41,7 @@ void GroundedAxiomEvaluator::DebugEventHandler::on_start_ground_axiom_instantiat
 
 void GroundedAxiomEvaluator::DebugEventHandler::on_finish_ground_axiom_instantiation_impl(std::chrono::milliseconds total_time) const
 {
-    std::cout << "[GroundedAxiomEvaluator] Total time for ground axiom instantiation: " << total_time << std::endl;
+    std::cout << "[GroundedAxiomEvaluator] Total time for ground axiom instantiation: " << total_time.count() << " ms" << std::endl;
 }
 
 void GroundedAxiomEvaluator::DebugEventHandler::on_start_build_axiom_match_trees_impl() const
@@ -61,7 +61,7 @@ void GroundedAxiomEvaluator::DebugEventHandler::on_finish_build_axiom_match_tree
 
 void GroundedAxiomEvaluator::DebugEventHandler::on_finish_build_axiom_match_trees_impl(std::chrono::milliseconds total_time) const
 {
-    std::cout << "[GroundedAxiomEvaluator] Total time for building axiom match trees: " << total_time << std::endl;
+    std::cout << "[GroundedAxiomEvaluator] Total time for building axiom match trees: " << total_time.count() << " ms" << std::endl;
 }
 
 void GroundedAxiomEvaluator::DebugEventHandler::on_finish_search_layer_impl() const {}
@@ -79,7 +79,7 @@ void GroundedAxiomEvaluator::DefaultEventHandler::on_start_ground_axiom_instanti
 
 void GroundedAxiomEvaluator::DefaultEventHandler::on_finish_ground_axiom_instantiation_impl(std::chrono::milliseconds total_time) const
 {
-    std::cout << "[GroundedAxiomEvaluator] Total time for ground axiom instantiation: " << total_time << std::endl;
+    std::cout << "[GroundedAxiomEvaluator] Total time for ground axiom instantiation: " << total_time.count() << " ms" << std::endl;
 }
 
 void GroundedAxiomEvaluator::DefaultEventHandler::on_start_build_axiom_match_trees_impl() const
@@ -99,7 +99,7 @@ void GroundedAxiomEvaluator::DefaultEventHandler::on_finish_build_axiom_match_tr
 
 void GroundedAxiomEvaluator::DefaultEventHandler::on_finish_build_axiom_match_trees_impl(std::chrono::milliseconds total_time) const
 {
-    std::cout << "[GroundedAxiomEvaluator] Total time for building axiom match trees: " << total_time << std::endl;
+    std::cout << "[GroundedAxiomEvaluator] Total time for building axiom match trees: " << total_time.count() << " ms" << std::endl;
 }
 
 void GroundedAxiomEvaluator::DefaultEventHandler::on_finish_search_layer_impl() const {}
