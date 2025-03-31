@@ -19,7 +19,6 @@
 
 #include "mimir/common/printers.hpp"
 #include "mimir/graphs/bgl/graph_algorithms.hpp"
-#include "mimir/languages/general_policies/policy_graph.hpp"
 #include "mimir/languages/general_policies/rule.hpp"
 #include "mimir/languages/general_policies/visitor_formatter.hpp"
 #include "mimir/languages/general_policies/visitor_interface.hpp"
@@ -42,10 +41,10 @@ bool GeneralPolicyImpl::evaluate(dl::EvaluationContext& source_context, dl::Eval
 
 void GeneralPolicyImpl::accept(IVisitor& visitor) const { visitor.visit(this); }
 
-bool GeneralPolicyImpl::is_terminating(Repositories& repositories) const
-{
-    auto policy_graph = create_policy_graph(this, repositories);
+bool GeneralPolicyImpl::is_terminating(Repositories& repositories) const { return is_terminating(create_policy_graph(this, repositories), repositories); }
 
+bool GeneralPolicyImpl::is_terminating(const graphs::PolicyGraph& policy_graph, Repositories& repositories) const
+{
     std::cout << policy_graph << std::endl;
 
     auto tagged_graph = graphs::DirectionTaggedType(policy_graph, graphs::ForwardTag {});
@@ -55,24 +54,48 @@ bool GeneralPolicyImpl::is_terminating(Repositories& repositories) const
     mimir::operator<<(std::cout, component_map);
     std::cout << std::endl;
 
-    /* Find edges in SCC. */
-    auto component_to_edges = std::unordered_map<size_t, graphs::EdgeIndexList> {};
-    for (const auto& [e_idx, e] : policy_graph.get_edges())
+    if (num_components > 1)
     {
-        const auto src_component = component_map.at(e.get_source());
-        const auto dst_component = component_map.at(e.get_target());
-        const auto in_scc = src_component == dst_component;
-        if (in_scc)
+        auto sccs = std::unordered_map<size_t, graphs::VertexIndexList> {};
+        for (const auto& [component, v_idx] : component_map)
         {
-            component_to_edges[src_component].push_back(e_idx);
+            sccs[component].push_back(v_idx);
         }
+
+        for (const auto& [component, v_idxs] : sccs)
+        {
+            auto policy_subgraph = policy_graph.compute_induced_subgraph(v_idxs);
+
+            if (!is_terminating(policy_subgraph, repositories))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
+    else
+    {
+        /* Find edges in SCC. */
+        auto component_to_edges = std::unordered_map<size_t, graphs::EdgeIndexList> {};
+        for (const auto& [e_idx, e] : policy_graph.get_edges())
+        {
+            const auto src_component = component_map.at(e.get_source());
+            const auto dst_component = component_map.at(e.get_target());
+            const auto in_scc = src_component == dst_component;
+            if (in_scc)
+            {
+                component_to_edges[src_component].push_back(e_idx);
+            }
+        }
 
-    mimir::operator<<(std::cout, component_to_edges);
-    std::cout << std::endl;
+        mimir::operator<<(std::cout, component_to_edges);
+        std::cout << std::endl;
 
-    for (size_t i = 0; i < num_components; ++i) {
-        auto decrements = std::unordered_set<Effect>{};
+        for (size_t i = 0; i < num_components; ++i)
+        {
+            auto decrements = std::unordered_set<Effect> {};
+        }
     }
 
     return true;

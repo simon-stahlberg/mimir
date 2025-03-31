@@ -602,6 +602,35 @@ void DynamicGraph<V, E>::remove_edge(EdgeIndex edge)
 }
 
 template<IsVertex V, IsEdge E>
+DynamicGraph<V, E> DynamicGraph<V, E>::compute_induced_subgraph(const VertexIndexList& vertices) const
+{
+    auto subgraph = DynamicGraph<V, E>();
+
+    auto remapping = std::unordered_map<VertexIndex, VertexIndex> {};
+
+    for (const auto& v_idx : vertices)
+    {
+        remapping.emplace(v_idx, subgraph.add_vertex(get_vertex(v_idx)));
+    }
+
+    for (const auto& v_idx : vertices)
+    {
+        for (const auto& e : get_adjacent_edges(v_idx))
+        {
+            const auto src_v_idx = e.get_source();
+            const auto dst_v_idx = e.get_target();
+
+            if (remapping.contains(src_v_idx) && remapping.contains(dst_v_idx))
+            {
+                subgraph.add_edge(remapping.at(src_v_idx), remapping.at(dst_v_idx), e);
+            }
+        }
+    }
+
+    return subgraph;
+}
+
+template<IsVertex V, IsEdge E>
 std::ranges::subrange<typename DynamicGraph<V, E>::VertexIndexConstIterator> DynamicGraph<V, E>::get_vertex_indices() const
 {
     return std::ranges::subrange(typename DynamicGraph<V, E>::VertexIndexConstIterator(m_vertices, true),

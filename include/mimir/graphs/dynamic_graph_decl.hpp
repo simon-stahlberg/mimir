@@ -266,7 +266,7 @@ public:
      * Subgraph
      */
 
-    DynamicGraph compute_induced_subgraph(const VertexIndexList& vertices);
+    DynamicGraph compute_induced_subgraph(const VertexIndexList& vertices) const;
 
     /**
      * Iterators

@@ -21,6 +21,7 @@
 #include "mimir/datasets/declarations.hpp"
 #include "mimir/languages/description_logics/denotation_repositories.hpp"
 #include "mimir/languages/general_policies/declarations.hpp"
+#include "mimir/languages/general_policies/policy_graph.hpp"
 
 namespace mimir::languages::general_policies
 {
@@ -146,6 +147,8 @@ private:
 
     template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
+
+    bool is_terminating(const graphs::PolicyGraph& policy_graph, Repositories& repositories) const;
 
     /// @brief Return true if and only if the `GeneralPolicyImpl` solves the `graphs::ProblemVertex` identified by the given `graphs::VertexIndex` in the
     /// `graphs::ProblemGraph` of the given `datasets::StateSpace`.
