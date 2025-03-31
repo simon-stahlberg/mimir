@@ -82,7 +82,7 @@ InverseNode<E> DynamicNodeSplitter<E>::fit_impl(std::span<const E*> elements, St
         return create_imperfect_generator_node(root_placeholder);
     }
 
-    queue.emplace(std::move(root_placeholder), root_refinement_data.value());
+    queue.push(SplitterQueueEntry{std::move(root_placeholder), root_refinement_data.value()});
 
     auto inverse_root = InverseNode<E> { nullptr };
 
@@ -113,7 +113,7 @@ InverseNode<E> DynamicNodeSplitter<E>::fit_impl(std::span<const E*> elements, St
             }
             else
             {
-                queue.emplace(std::move(child), child_refinement_data.value());
+                queue.emplace(SplitterQueueEntry{std::move(child), child_refinement_data.value()});
             }
         }
 
