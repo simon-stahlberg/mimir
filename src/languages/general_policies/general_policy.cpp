@@ -75,7 +75,7 @@ bool GeneralPolicyImpl::is_terminating(Repositories& repositories) const
         auto decrements = std::unordered_set<Effect>{};
     }
 
-    throw std::runtime_error("Not implemented");
+    return true;
 }
 
 GeneralPolicyImpl::SolvabilityStatus GeneralPolicyImpl::solves(const datasets::StateSpace& state_space,

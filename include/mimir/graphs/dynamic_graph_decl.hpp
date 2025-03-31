@@ -263,6 +263,12 @@ public:
     void remove_edge(EdgeIndex edge);
 
     /**
+     * Subgraph
+     */
+
+    DynamicGraph compute_induced_subgraph(const VertexIndexList& vertices);
+
+    /**
      * Iterators
      */
 

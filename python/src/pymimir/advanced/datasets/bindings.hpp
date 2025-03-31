@@ -11,25 +11,25 @@ namespace mimir::bindings
 template<>
 struct PyVertexProperties<mm::graphs::ProblemVertex>
 {
-    static constexpr std::string name = "ProblemVertex";
+    static constexpr const char* name = "ProblemVertex";
 };
 
 template<>
 struct PyVertexProperties<mm::graphs::ClassVertex>
 {
-    static constexpr std::string name = "ClassVertex";
+    static constexpr const char* name = "ClassVertex";
 };
 
 template<>
 struct PyEdgeProperties<mm::graphs::ProblemEdge>
 {
-    static constexpr std::string name = "ProblemEdge";
+    static constexpr const char* name = "ProblemEdge";
 };
 
 template<>
 struct PyEdgeProperties<mm::graphs::ClassEdge>
 {
-    static constexpr std::string name = "ClassEdge";
+    static constexpr const char* name = "ClassEdge";
 };
 
 }

@@ -15,13 +15,13 @@ struct PyVertexProperties
 template<>
 struct PyVertexProperties<mm::graphs::EmptyVertex>
 {
-    static constexpr std::string name = "EmptyVertex";
+    static constexpr const char* name = "EmptyVertex";
 };
 
 template<>
 struct PyVertexProperties<mm::graphs::ColoredVertex>
 {
-    static constexpr std::string name = "ColoredVertex";
+    static constexpr const char* name = "ColoredVertex";
 };
 
 template<mm::graphs::IsEdge E>
@@ -32,13 +32,13 @@ struct PyEdgeProperties
 template<>
 struct PyEdgeProperties<mm::graphs::EmptyEdge>
 {
-    static constexpr std::string name = "EmptyEdge";
+    static constexpr const char* name = "EmptyEdge";
 };
 
 template<>
 struct PyEdgeProperties<mm::graphs::ColoredEdge>
 {
-    static constexpr std::string name = "ColoredEdge";
+    static constexpr const char* name = "ColoredEdge";
 };
 
 ///////////////////////////////////////////////////////////////////////////////
