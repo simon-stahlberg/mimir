@@ -19,7 +19,6 @@
 #define MIMIR_FORMALISM_TAGS_HPP_
 
 #include <concepts>
-#include <string>
 #include <type_traits>
 
 namespace mimir::formalism
@@ -28,23 +27,23 @@ namespace mimir::formalism
 /// @brief `StaticTag` is a tag to declare that the semantic interpretation of a type remains constants across all states.
 struct StaticTag
 {
-    static constexpr std::string name = "static";
+    static constexpr const char* name = "static";
 };
 /// @brief `FluentTag` is a tag to declare that the semantic interpretation of a type can change across states due to actions.
 struct FluentTag
 {
-    static constexpr std::string name = "fluent";
+    static constexpr const char* name = "fluent";
 };
 /// @brief `DerivedTag` is a tag to declare that the semantic interpretation of a type can change across states due to axioms.
 struct DerivedTag
 {
-    static constexpr std::string name = "derived";
+    static constexpr const char* name = "derived";
 };
 /// @brief `AuxiliaryTag` is a tag indicating that the value of this type is used for metric evaluation and does not contribute to defining the state. For
 /// example, total-cost in cost-sensitive planning.
 struct AuxiliaryTag
 {
-    static constexpr std::string name = "auxiliary";
+    static constexpr const char* name = "auxiliary";
 };
 
 template<typename T>

@@ -19,7 +19,6 @@
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_TAGS_HPP_
 
 #include <concepts>
-#include <string>
 
 namespace mimir::languages::dl
 {
@@ -32,22 +31,22 @@ namespace mimir::languages::dl
 
 struct ConceptTag
 {
-    static constexpr std::string name = "concept";
+    static constexpr const char* name = "concept";
 };
 
 struct RoleTag
 {
-    static constexpr std::string name = "role";
+    static constexpr const char* name = "role";
 };
 
 struct BooleanTag
 {
-    static constexpr std::string name = "boolean";
+    static constexpr const char* name = "boolean";
 };
 
 struct NumericalTag
 {
-    static constexpr std::string name = "numerical";
+    static constexpr const char* name = "numerical";
 };
 
 /**

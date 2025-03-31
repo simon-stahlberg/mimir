@@ -84,7 +84,7 @@ std::pair<VariableList, LiteralList<P>> lift(const GroundLiteralList<P>& ground_
         literals.emplace_back(ground_literal->lift(terms, pddl_repositories));
     }
 
-    return std::make_tuple(variables, literals);
+    return std::make_pair(variables, literals);
 
     // const auto& static_predicates = domain->get_name_to_predicate<StaticTag>();
     // if (static_predicates.contains("="))
