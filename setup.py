@@ -53,7 +53,6 @@ class CMakeBuild(build_ext):
         python_library = sysconfig.get_config_var("LIBDIR") + "/libpython" + sysconfig.get_config_var("LDVERSION") + ".so"
 
         cmake_args = [
-            f"{str(temp_directory)}/dependencies/build",
             f"-DCMAKE_BUILD_TYPE={build_type}",
             f"-DCMAKE_INSTALL_PREFIX={str(temp_directory)}/dependencies/installs",
             f"-DCMAKE_PREFIX_PATH={str(temp_directory)}/dependencies/installs",
@@ -65,7 +64,7 @@ class CMakeBuild(build_ext):
         print(cmake_args)
 
         subprocess.run(
-            ["cmake", "-S", f"{ext.sourcedir}/dependencies", "-B"] + cmake_args, cwd=str(temp_directory), check=True
+            ["cmake", "-S", f"{ext.sourcedir}/dependencies", "-B", f"{str(temp_directory)}/dependencies/build"] + cmake_args, cwd=str(temp_directory), check=True
         )
 
         subprocess.run(
