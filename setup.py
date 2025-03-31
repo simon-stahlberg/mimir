@@ -61,7 +61,7 @@ class CMakeBuild(build_ext):
             f"-DPython_LIBRARY={python_library}",
         ]
 
-        print(cmake_args)
+        print(cmake_args, flush=True)
 
         subprocess.run(
             ["cmake", "-S", f"{ext.sourcedir}/dependencies", "-B", f"{str(temp_directory)}/dependencies/build"] + cmake_args, cwd=str(temp_directory), check=True
@@ -128,7 +128,7 @@ class CMakeBuild(build_ext):
 
         # Copy the submodule/__init__.pyi into pymimir/submodule/__init__.pyi
         for module_dir in module_dirs:
-            os.makedirs(output_directory / module_dir, exist_ok=True)  
+            os.makedirs(output_directory / module_dir, exist_ok=True)
             shutil.copy(temp_directory / module_dir / "__init__.pyi", output_directory / "pymimir" / module_dir / "__init__.pyi")
 
 
