@@ -71,6 +71,10 @@ bool GeneralPolicyImpl::is_terminating(Repositories& repositories) const
     mimir::operator<<(std::cout, component_to_edges);
     std::cout << std::endl;
 
+    for (size_t i = 0; i < num_components; ++i) {
+        auto decrements = std::unordered_set<Effect>{};
+    }
+
     throw std::runtime_error("Not implemented");
 }
 

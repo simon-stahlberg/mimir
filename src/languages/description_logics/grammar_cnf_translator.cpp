@@ -219,7 +219,7 @@ public:
                 }
                 else
                 {
-                    static_assert(dependent_false<D>::value,
+                    static_assert(dependent_false<T>::value,
                                   "ConstructorOrNonTerminalVisitor<D>::visit(constructor): Missing implementation for ConstructorOrNonTerminal type.");
                 }
             },
@@ -538,7 +538,7 @@ void ToCNFVisitor::visit_impl(ConstructorOrNonTerminal<D> constructor)
             }
             else
             {
-                static_assert(dependent_false<D>::value,
+                static_assert(dependent_false<T>::value,
                               "ConstructorOrNonTerminalVisitor<D>::visit(constructor): Missing implementation for ConstructorOrNonTerminal type.");
             }
         },
