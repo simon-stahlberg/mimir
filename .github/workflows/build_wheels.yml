@@ -30,6 +30,14 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools wheel twine cibuildwheel delocate
 
+    - name: Install Python development headers (Linux)
+      if: runner.os == 'Linux'
+      run: sudo apt-get update && sudo apt-get install -y python3-dev
+
+    - name: Pull Docker image
+      if: runner.os == 'Linux'
+      run: docker pull quay.io/pypa/manylinux2014_x86_64:2025.03.23-1
+
     - name: Build wheels
       run: |
         if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
