@@ -82,6 +82,8 @@ class CMakeBuild(build_ext):
             ["cmake", "--build", f"{str(temp_directory)}/build", f"-j{multiprocessing.cpu_count()}"] + build_args, cwd=str(temp_directory), check=True
         )
 
+        print("Generate subgen dir:", output_directory)
+
         # 3. Generate pyi stub files
         subprocess.run(
             [sys.executable, '-m', 'nanobind.stubgen', '-m', '_pymimir', '-O', temp_directory, '-r'], cwd=output_directory, check=True

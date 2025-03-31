@@ -499,6 +499,14 @@ VertexIndex DynamicGraph<V, E>::add_vertex(VertexProperties&&... properties)
 }
 
 template<IsVertex V, IsEdge E>
+template<typename... VertexProperties>
+    requires HasVertexProperties<V, VertexProperties...>
+VertexIndex DynamicGraph<V, E>::add_vertex(const Vertex<VertexProperties...>& vertex)
+{
+    return std::apply([this](auto&&... properties) { return this->add_vertex(std::forward<decltype(properties)>(properties)...); }, vertex.get_properties());
+}
+
+template<IsVertex V, IsEdge E>
 template<typename... EdgeProperties>
     requires HasEdgeProperties<E, EdgeProperties...>
 EdgeIndex DynamicGraph<V, E>::add_directed_edge(VertexIndex source, VertexIndex target, EdgeProperties&&... properties)
@@ -525,6 +533,16 @@ EdgeIndex DynamicGraph<V, E>::add_directed_edge(VertexIndex source, VertexIndex 
     }
 
     return index;
+}
+
+template<IsVertex V, IsEdge E>
+template<typename... EdgeProperties>
+    requires HasEdgeProperties<E, EdgeProperties...>
+EdgeIndex DynamicGraph<V, E>::add_directed_edge(VertexIndex source, VertexIndex target, const Edge<EdgeProperties...>& edge)
+{
+    return std::apply([this, source, target](auto&&... properties)
+                      { return this->add_directed_edge(source, target, std::forward<decltype(properties)>(properties)...); },
+                      edge.get_properties());
 }
 
 template<IsVertex V, IsEdge E>
@@ -615,14 +633,14 @@ DynamicGraph<V, E> DynamicGraph<V, E>::compute_induced_subgraph(const VertexInde
 
     for (const auto& v_idx : vertices)
     {
-        for (const auto& e : get_adjacent_edges(v_idx))
+        for (const auto& e : get_adjacent_edges<ForwardTag>(v_idx))
         {
             const auto src_v_idx = e.get_source();
             const auto dst_v_idx = e.get_target();
 
             if (remapping.contains(src_v_idx) && remapping.contains(dst_v_idx))
             {
-                subgraph.add_edge(remapping.at(src_v_idx), remapping.at(dst_v_idx), e);
+                subgraph.add_directed_edge(remapping.at(src_v_idx), remapping.at(dst_v_idx), e);
             }
         }
     }

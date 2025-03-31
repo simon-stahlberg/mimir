@@ -51,7 +51,7 @@ auto strong_components(const DirectionTaggedType<Graph, Direction>& g)
 {
     using vertex_descriptor_type = typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor;
     using vertices_size_type = typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertices_size_type;
-    using ComponentMap = typename PropertyMapTraits<Graph>::template ReadWritePropertyMap<vertex_descriptor_type, vertices_size_type>;
+    using ComponentMap = typename PropertyMapTraits<std::decay_t<Graph>>::template ReadWritePropertyMap<vertex_descriptor_type, vertices_size_type>;
 
     auto vertex_index_map = TrivialReadPropertyMap<vertex_descriptor_type, vertex_descriptor_type>();
     auto c = ComponentMap::initialize_data(g.get().get_num_vertices());
@@ -110,9 +110,9 @@ template<typename Graph, IsDirection Direction, class SourceInputIter>
 auto breadth_first_search(const DirectionTaggedType<Graph, Direction>& g, SourceInputIter s_begin, SourceInputIter s_end)
 {
     using vertex_descriptor_type = typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor;
-    using PredecessorMap = typename PropertyMapTraits<Graph>::template ReadWritePropertyMap<vertex_descriptor_type, vertex_descriptor_type>;
-    using DistanceMap = typename PropertyMapTraits<Graph>::template ReadWritePropertyMap<vertex_descriptor_type, DiscreteCost>;
-    using ColorMap = typename PropertyMapTraits<Graph>::template ReadWritePropertyMap<vertex_descriptor_type, boost::default_color_type>;
+    using PredecessorMap = typename PropertyMapTraits<std::decay_t<Graph>>::template ReadWritePropertyMap<vertex_descriptor_type, vertex_descriptor_type>;
+    using DistanceMap = typename PropertyMapTraits<std::decay_t<Graph>>::template ReadWritePropertyMap<vertex_descriptor_type, DiscreteCost>;
+    using ColorMap = typename PropertyMapTraits<std::decay_t<Graph>>::template ReadWritePropertyMap<vertex_descriptor_type, boost::default_color_type>;
 
     auto buffer = boost::queue<vertex_descriptor_type>();
     auto p = PredecessorMap::initialize_data(g.get().get_num_vertices());
@@ -161,8 +161,8 @@ template<typename Graph, IsDirection Direction, class SourceInputIter>
 auto depth_first_search(const DirectionTaggedType<Graph, Direction>& g, SourceInputIter s_begin, SourceInputIter s_end)
 {
     using vertex_descriptor_type = typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor;
-    using ColorMap = typename PropertyMapTraits<Graph>::template ReadWritePropertyMap<vertex_descriptor_type, boost::default_color_type>;
-    using PredecessorMap = typename PropertyMapTraits<Graph>::template ReadWritePropertyMap<vertex_descriptor_type, vertex_descriptor_type>;
+    using ColorMap = typename PropertyMapTraits<std::decay_t<Graph>>::template ReadWritePropertyMap<vertex_descriptor_type, boost::default_color_type>;
+    using PredecessorMap = typename PropertyMapTraits<std::decay_t<Graph>>::template ReadWritePropertyMap<vertex_descriptor_type, vertex_descriptor_type>;
 
     auto p = PredecessorMap::initialize_data(g.get().get_num_vertices());
     for (vertex_descriptor_type v = 0; v < g.get().get_num_vertices(); ++v)
@@ -195,7 +195,7 @@ auto topological_sort(const DirectionTaggedType<Graph, Direction>& g)
 {
     using vertex_descriptor_type = typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor;
 
-    using ColorMap = typename PropertyMapTraits<Graph>::template ReadWritePropertyMap<vertex_descriptor_type, boost::default_color_type>;
+    using ColorMap = typename PropertyMapTraits<std::decay_t<Graph>>::template ReadWritePropertyMap<vertex_descriptor_type, boost::default_color_type>;
 
     auto d = std::vector<vertex_descriptor_type> {};
     auto color_vector = ColorMap::initialize_data(g.get().get_num_vertices());
