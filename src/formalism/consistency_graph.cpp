@@ -413,8 +413,8 @@ static Bounds<ContinuousCost> evaluate_function_expression_partially(FunctionExp
                                                                            assignment,
                                                                            static_numeric_assignment_set,
                                                                            fluent_numeric_assignment_set);
-                assert(-bounds.upper < -bounds.lower);
-                return Bounds<ContinuousCost>(-bounds.upper, -bounds.lower);
+                assert(-bounds.get_upper() < -bounds.get_lower());
+                return Bounds<ContinuousCost>(-bounds.get_upper(), -bounds.get_lower());
             }
             else if constexpr (std::is_same_v<T, FunctionExpressionFunction<StaticTag>>)
             {

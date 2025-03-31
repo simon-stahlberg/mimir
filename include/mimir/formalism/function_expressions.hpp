@@ -309,10 +309,10 @@ inline ContinuousCost evaluate_multi(loki::MultiOperatorEnum op, ContinuousCost 
 template<IsArithmetic A>
 inline Bounds<A> evaluate_binary_bounds(loki::BinaryOperatorEnum op, const Bounds<A>& lhs, const Bounds<A>& rhs)
 {
-    const auto alternative1 = evaluate_binary(op, lhs.lower, rhs.lower);
-    const auto alternative2 = evaluate_binary(op, lhs.upper, rhs.lower);
-    const auto alternative3 = evaluate_binary(op, lhs.lower, rhs.upper);
-    const auto alternative4 = evaluate_binary(op, lhs.upper, rhs.upper);
+    const auto alternative1 = evaluate_binary(op, lhs.get_lower(), rhs.get_lower());
+    const auto alternative2 = evaluate_binary(op, lhs.get_upper(), rhs.get_lower());
+    const auto alternative3 = evaluate_binary(op, lhs.get_lower(), rhs.get_upper());
+    const auto alternative4 = evaluate_binary(op, lhs.get_upper(), rhs.get_upper());
     auto result = std::minmax({ alternative1, alternative2, alternative3, alternative4 });
     return Bounds<A>(result.first, result.second);
 }
@@ -320,10 +320,10 @@ inline Bounds<A> evaluate_binary_bounds(loki::BinaryOperatorEnum op, const Bound
 template<IsArithmetic A>
 inline Bounds<A> evaluate_multi_bounds(loki::MultiOperatorEnum op, const Bounds<A>& lhs, const Bounds<A>& rhs)
 {
-    const auto alternative1 = evaluate_multi(op, lhs.lower, rhs.lower);
-    const auto alternative2 = evaluate_multi(op, lhs.upper, rhs.lower);
-    const auto alternative3 = evaluate_multi(op, lhs.lower, rhs.upper);
-    const auto alternative4 = evaluate_multi(op, lhs.upper, rhs.upper);
+    const auto alternative1 = evaluate_multi(op, lhs.get_lower(), rhs.get_lower());
+    const auto alternative2 = evaluate_multi(op, lhs.get_upper(), rhs.get_lower());
+    const auto alternative3 = evaluate_multi(op, lhs.get_lower(), rhs.get_upper());
+    const auto alternative4 = evaluate_multi(op, lhs.get_upper(), rhs.get_upper());
     auto result = std::minmax({ alternative1, alternative2, alternative3, alternative4 });
     return Bounds<A>(result.first, result.second);
 }

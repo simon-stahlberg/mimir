@@ -26,55 +26,64 @@ namespace mimir
 {
 
 template<IsArithmetic A>
-struct Bounds
+class Bounds
 {
-    A lower;
-    A upper;
+public:
+    Bounds() : Bounds(unbounded) {}
+    
+    Bounds(A lower, A upper) : m_lower(lower), m_upper(upper) {}
 
     /// @brief Return true iff there exist x in lhs and exists y in rhs : x = y.
-    friend bool operator==(const Bounds& lhs, const Bounds& rhs) { return lhs.lower <= rhs.upper && lhs.upper >= rhs.lower; }
+    friend bool operator==(const Bounds& lhs, const Bounds& rhs) { return lhs.m_lower <= rhs.m_upper && lhs.m_upper >= rhs.m_lower; }
     /// @brief Return true iff there forall x in lhs and forall y in rhs : x != y.
     friend bool operator!=(const Bounds& lhs, const Bounds& rhs) { return !(lhs == rhs); }
     /// @brief Return true iff there exist x in lhs and exists y in rhs : x > y.
-    friend bool operator>(const Bounds& lhs, const Bounds& rhs) { return lhs.upper > rhs.lower; }
+    friend bool operator>(const Bounds& lhs, const Bounds& rhs) { return lhs.m_upper > rhs.m_lower; }
     /// @brief Return true iff there exist x in lhs and exists y in rhs : x >= y.
-    friend bool operator>=(const Bounds& lhs, const Bounds& rhs) { return lhs.upper >= rhs.lower; }
+    friend bool operator>=(const Bounds& lhs, const Bounds& rhs) { return lhs.m_upper >= rhs.m_lower; }
     /// @brief Return true iff there exist x in lhs and exists y in rhs : x < y.
-    friend bool operator<(const Bounds& lhs, const Bounds& rhs) { return lhs.lower < rhs.upper; }
+    friend bool operator<(const Bounds& lhs, const Bounds& rhs) { return lhs.m_lower < rhs.m_upper; }
     /// @brief Return true iff there exist x in lhs and exists y in rhs : x <= y.
-    friend bool operator<=(const Bounds& lhs, const Bounds& rhs) { return lhs.lower <= rhs.upper; }
+    friend bool operator<=(const Bounds& lhs, const Bounds& rhs) { return lhs.m_lower <= rhs.m_upper; }
 
     // Static unbounded instance
     inline static const Bounds unbounded = []
     {
         if constexpr (std::is_floating_point_v<A>)
         {
-            return Bounds { -std::numeric_limits<A>::infinity(), std::numeric_limits<A>::infinity() };
+            return Bounds(-std::numeric_limits<A>::infinity(), std::numeric_limits<A>::infinity());
         }
         else
         {
-            return Bounds { std::numeric_limits<A>::lowest(), std::numeric_limits<A>::max() };
+            return Bounds(std::numeric_limits<A>::lowest(), std::numeric_limits<A>::max());
         }
     }();
 
-    bool is_bounded() const { return lower <= upper; }
+    bool is_bounded() const { return m_lower <= m_upper; }
     bool is_unbounded() const
     {
         if constexpr (std::is_floating_point_v<A>)
         {
-            return lower == -std::numeric_limits<A>::infinity() && upper == std::numeric_limits<A>::infinity();
+            return m_lower == -std::numeric_limits<A>::infinity() && m_upper == std::numeric_limits<A>::infinity();
         }
         else
         {
-            return lower == std::numeric_limits<A>::lowest() && upper == std::numeric_limits<A>::max();
+            return m_lower == std::numeric_limits<A>::lowest() && m_upper == std::numeric_limits<A>::max();
         }
     }
+
+    A get_lower() const {return m_lower; }
+    A get_upper() const {return m_upper; }
+
+private:
+    A m_lower;
+    A m_upper;
 };
 
 template<IsArithmetic A>
 inline std::ostream& operator<<(std::ostream& out, const Bounds<A>& element)
 {
-    out << "[" << element.lower << "," << element.upper << "]";
+    out << "[" << element.get_lower() << "," << element.get_upper() << "]";
     return out;
 }
 

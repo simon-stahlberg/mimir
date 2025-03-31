@@ -190,19 +190,17 @@ void NumericAssignmentSet<F>::insert_ground_function_values(const GroundFunction
         auto& assignment_set = m_per_function_skeleton_bounds_set.at(function_skeleton->get_index());
 
         auto& empty_assignment_bound = assignment_set[get_empty_assignment_rank()];
-        empty_assignment_bound.lower =
-            (empty_assignment_bound.lower == -std::numeric_limits<ContinuousCost>::infinity()) ? value : std::min(empty_assignment_bound.lower, value);
-        empty_assignment_bound.upper =
-            (empty_assignment_bound.upper == std::numeric_limits<ContinuousCost>::infinity()) ? value : std::max(empty_assignment_bound.upper, value);
+        empty_assignment_bound = Bounds(
+            (empty_assignment_bound.get_lower() == -std::numeric_limits<ContinuousCost>::infinity()) ? value : std::min(empty_assignment_bound.get_lower(), value), 
+            (empty_assignment_bound.get_upper() == std::numeric_limits<ContinuousCost>::infinity()) ? value : std::max(empty_assignment_bound.get_upper(), value));
 
         for (size_t first_index = 0; first_index < arity; ++first_index)
         {
             const auto& first_object = arguments[first_index];
             auto& single_assignment_bound = assignment_set[get_assignment_rank(VertexAssignment(first_index, first_object->get_index()), arity, m_num_objects)];
-            single_assignment_bound.lower =
-                (single_assignment_bound.lower == -std::numeric_limits<ContinuousCost>::infinity()) ? value : std::min(single_assignment_bound.lower, value);
-            single_assignment_bound.upper =
-                (single_assignment_bound.upper == std::numeric_limits<ContinuousCost>::infinity()) ? value : std::max(single_assignment_bound.upper, value);
+            single_assignment_bound = Bounds(
+                (single_assignment_bound.get_lower() == -std::numeric_limits<ContinuousCost>::infinity()) ? value : std::min(single_assignment_bound.get_lower(), value),
+                (single_assignment_bound.get_upper() == std::numeric_limits<ContinuousCost>::infinity()) ? value : std::max(single_assignment_bound.get_upper(), value));
 
             for (size_t second_index = first_index + 1; second_index < arity; ++second_index)
             {
@@ -211,11 +209,9 @@ void NumericAssignmentSet<F>::insert_ground_function_values(const GroundFunction
                     assignment_set[get_assignment_rank(EdgeAssignment(first_index, first_object->get_index(), second_index, second_object->get_index()),
                                                        arity,
                                                        m_num_objects)];
-                double_assignment_bound.lower = (single_assignment_bound.lower == -std::numeric_limits<ContinuousCost>::infinity()) ?
-                                                    value :
-                                                    std::min(double_assignment_bound.lower, value);
-                double_assignment_bound.upper =
-                    (single_assignment_bound.upper == std::numeric_limits<ContinuousCost>::infinity()) ? value : std::max(double_assignment_bound.upper, value);
+                double_assignment_bound = Bounds(
+                    (single_assignment_bound.get_lower() == -std::numeric_limits<ContinuousCost>::infinity()) ? value : std::min(double_assignment_bound.get_lower(), value),
+                    (single_assignment_bound.get_upper() == std::numeric_limits<ContinuousCost>::infinity()) ? value : std::max(double_assignment_bound.get_upper(), value));
             }
         }
     }
