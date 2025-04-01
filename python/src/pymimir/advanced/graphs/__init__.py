@@ -1,7 +1,7 @@
 # Import all classes for better IDE support
 
 
-from _pymimir.advanced.graphs import (
+from pymimir._pymimir.advanced.graphs import (
     # Vertices
     EmptyVertex,
     ColoredVertex,

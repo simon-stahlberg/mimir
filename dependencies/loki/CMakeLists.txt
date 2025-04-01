@@ -15,6 +15,7 @@ if (NOT loki_FOUND)
             -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
             -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
             -DCMAKE_PREFIX_PATH=${CMAKE_INSTALL_PREFIX}
+            -DCMAKE_POSITION_INDEPENDENT_CODE=ON
     )
 
     message(STATUS "Preparing external project \"loki\" with args:")

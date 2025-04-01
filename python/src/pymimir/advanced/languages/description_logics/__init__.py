@@ -1,11 +1,11 @@
 
 # Enums
-from _pymimir.advanced.languages.description_logics import (
+from pymimir._pymimir.advanced.languages.description_logics import (
     GrammarSpecificationEnum,
 )
 
 # DL constructors
-from _pymimir.advanced.languages.description_logics import (
+from pymimir._pymimir.advanced.languages.description_logics import (
     ConceptConstructor,
     ConceptConstructorList,
     RoleConstructor,
@@ -25,6 +25,6 @@ from _pymimir.advanced.languages.description_logics import (
 
 # CNF grammar
 
-from _pymimir.advanced.languages.description_logics import (
+from pymimir._pymimir.advanced.languages.description_logics import (
     CNFGrammar,
 )

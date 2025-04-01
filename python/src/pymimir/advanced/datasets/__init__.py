@@ -1,6 +1,6 @@
 # Import all classes for better IDE support
 
-from _pymimir.advanced.datasets import (
+from pymimir._pymimir.advanced.datasets import (
     # Vertices
     ProblemVertex,
     ProblemEdge,

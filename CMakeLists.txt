@@ -58,7 +58,6 @@ else()
     set(CMAKE_CXX_FLAGS_DEBUG "-O0 -Wall -g3 -ggdb")
 endif()
 
-# set(CMAKE_BUILD_TYPE "Release")
 message(STATUS "Build configuration: ${CMAKE_BUILD_TYPE}")
 
 set(DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/data/")
@@ -68,6 +67,16 @@ message("DATA_DIR: ${DATA_DIR}")
 if(VERBOSE)
     add_compile_definitions(VERBOSE)
 endif()
+
+# Set rpath to origin to allow moving dependencies freely around.
+if(APPLE)
+    set(RPATH "@loader_path")
+elseif(UNIX AND NOT APPLE)
+    set(RPATH "$ORIGIN")
+endif()
+
+set(CMAKE_INSTALL_RPATH ${RPATH})
+set(CMAKE_BUILD_RPATH ${RPATH})
 
 ##############################################################
 # CMake modules and macro files

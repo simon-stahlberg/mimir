@@ -1,14 +1,14 @@
 # Import all classes for better IDE support
 
 # Enums
-from _pymimir.advanced.search import (
+from pymimir._pymimir.advanced.search import (
     SearchMode,
     SearchNodeStatus,
     SearchStatus,
 )
 
 # Common
-from _pymimir.advanced.search import (   
+from pymimir._pymimir.advanced.search import (   
     BlindHeuristic,
     DeleteRelaxedProblemExplorator,
     IApplicableActionGenerator,
@@ -25,14 +25,14 @@ from _pymimir.advanced.search import (
 )
 
 # SatisficingBindingGenerator
-from _pymimir.advanced.search import (
+from pymimir._pymimir.advanced.search import (
     ActionSatisficingBindingGenerator,
     AxiomSatisficingBindingGenerator,
     ConjunctiveConditionSatisficingBindingGenerator
 )
 
 # AStar
-from _pymimir.advanced.search import (
+from pymimir._pymimir.advanced.search import (
     AStarStatistics,
     IAStarEventHandler,
     DebugAStarEventHandler,
@@ -41,7 +41,7 @@ from _pymimir.advanced.search import (
 )
 
 # BrFs
-from _pymimir.advanced.search import (
+from pymimir._pymimir.advanced.search import (
     BrFSStatistics,
     IBrFSEventHandler,
     DebugBrFSEventHandler,
@@ -50,7 +50,7 @@ from _pymimir.advanced.search import (
 )
 
 # IW
-from _pymimir.advanced.search import (
+from pymimir._pymimir.advanced.search import (
     IWStatistics,
     IIWEventHandler,
     DefaultIWEventHandler,
@@ -60,7 +60,7 @@ from _pymimir.advanced.search import (
 )
 
 # SIW
-from _pymimir.advanced.search import (
+from pymimir._pymimir.advanced.search import (
     SIWStatistics,
     ISIWEventHandler,
     DefaultSIWEventHandler,
@@ -68,7 +68,7 @@ from _pymimir.advanced.search import (
 )
 
 # Lifted
-from _pymimir.advanced.search import (
+from pymimir._pymimir.advanced.search import (
     DebugLiftedApplicableActionGeneratorEventHandler,
     DefaultLiftedApplicableActionGeneratorEventHandler,
     LiftedApplicableActionGenerator,
@@ -78,7 +78,7 @@ from _pymimir.advanced.search import (
 )
 
 # Grounded
-from _pymimir.advanced.search import (
+from pymimir._pymimir.advanced.search import (
     DebugGroundedApplicableActionGeneratorEventHandler,
     DefaultGroundedApplicableActionGeneratorEventHandler,
     GroundedApplicableActionGenerator,

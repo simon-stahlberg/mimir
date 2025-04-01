@@ -17,7 +17,7 @@ if (NOT Nauty_FOUND)
             GIT_REPOSITORY https://github.com/drexlerd/nauty.git
             GIT_TAG cb44c50bd4fa543b977df6a4b70ec88e67020646
             PREFIX ${CMAKE_BINARY_DIR}/nauty
-            CONFIGURE_COMMAND ${CMAKE_COMMAND} -E chdir <SOURCE_DIR> ./configure --prefix=<INSTALL_DIR> CFLAGS=-fPIC --enable-tls
+            CONFIGURE_COMMAND ${CMAKE_COMMAND} -E chdir <SOURCE_DIR> ./configure --prefix=<INSTALL_DIR> CFLAGS=-fPIC --enable-tls --disable-shared
             BUILD_COMMAND ${CMAKE_COMMAND} -E chdir <SOURCE_DIR> make
             INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir <SOURCE_DIR> make install
             INSTALL_DIR ${CMAKE_INSTALL_PREFIX}

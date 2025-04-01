@@ -7,7 +7,7 @@ find_package(nanobind CONFIG REQUIRED PATHS ${CMAKE_PREFIX_PATH} NO_DEFAULT_PATH
 # Set result variables
 find_package(nanobind)
 
-nanobind_add_module(_pymimir NB_STATIC
+nanobind_add_module(_pymimir
     pymimir/advanced/main.cpp 
     pymimir/advanced/common/bindings.cpp 
     pymimir/advanced/formalism/bindings.cpp 
@@ -18,3 +18,14 @@ nanobind_add_module(_pymimir NB_STATIC
 )
 
 target_link_libraries(_pymimir PRIVATE mimir::core)
+
+set_target_properties(_pymimir PROPERTIES
+    INSTALL_RPATH "${RPATH}"
+)
+
+set_target_properties(_pymimir PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/pymimir
+)
+
+install(TARGETS _pymimir
+    LIBRARY DESTINATION pymimir)

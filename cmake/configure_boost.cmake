@@ -1,5 +1,6 @@
 set(Boost_NO_SYSTEM_PATHS ON)
 set(Boost_USE_STATIC_LIBS ON)
+set(Boost_USE_STATIC_RUNTIME ON)
 macro(configure_boost)
     set(BOOST_MIN_VERSION "1.74.0")
 endmacro()

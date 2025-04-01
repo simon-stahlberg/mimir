@@ -64,7 +64,9 @@ class CMakeBuild(build_ext):
 
         shutil.rmtree(f"{str(temp_directory)}/dependencies/build")
 
-        # 2. Build mimir
+        #######################################################################
+        # Build mimir
+        #######################################################################
 
         cmake_args = [
             "-DBUILD_PYMIMIR=ON",
@@ -86,7 +88,10 @@ class CMakeBuild(build_ext):
 
         print("Generate subgen dir:", output_directory)
 
-        # 3. Generate pyi stub files
+        #######################################################################
+        # Generate and copy pyi stub files
+        #######################################################################
+
         subprocess.run(
             [sys.executable, '-m', 'nanobind.stubgen', '-m', '_pymimir', '-O', temp_directory, '-r'], cwd=output_directory, check=True
         )
@@ -122,6 +127,14 @@ class CMakeBuild(build_ext):
             os.makedirs(output_directory / module_dir, exist_ok=True)
             shutil.copy(temp_directory / module_dir / "__init__.pyi", output_directory / "pymimir" / module_dir / "__init__.pyi")
 
+        #######################################################################
+        # Copy shared object files
+        #######################################################################
+        
+        install_lib_dir = temp_directory / "dependencies/installs/lib"
+
+        shutil.copy(install_lib_dir / "libclingo.so.4.0", output_directory / "pymimir" / "libclingo.so")
+
 
 # The information here can also be placed in setup.cfg - better separation of
 # logic and declaration, and simpler if you include description/version in a file.
@@ -136,9 +149,7 @@ setup(
     install_requires=["cmake>=3.21"],
     packages=find_packages(where="python/src"),
     package_dir={"": "python/src"},
-    package_data={
-        "": [],
-    },
+    package_data={"pymimir": ["_pymimir*.so"]},
     ext_modules=[CMakeExtension("_pymimir")],
     cmdclass={"build_ext": CMakeBuild},
     zip_safe=False,

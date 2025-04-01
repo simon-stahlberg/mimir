@@ -1,6 +1,6 @@
 # Import all classes for better IDE support
 
-from _pymimir.advanced.formalism import (
+from pymimir._pymimir.advanced.formalism import (
     DerivedAtom,
     DerivedAtomList,
     DerivedGroundAtom,
