@@ -18,3 +18,11 @@ Alternatively, you can create the file `.vscode/settings.json` with the content:
 "cmake.configureArgs": [ "-DCMAKE_PREFIX_PATH=${workspaceFolder}/dependencies/installs" ]
 }
 ```
+
+Furthermore, we suggest to add the cmake configure arg `-DCMAKE_EXPORT_COMPILE_COMMANDS=ON`, which generates a `compile_commands.json` into your build directory, when running `cmake`. To further enhance IDE intellisense, you can add this file to the file `.vscode/settings.json` with the content:
+
+```json
+{
+"C_Cpp.default.compileCommands": "${workspaceFolder}/build/compile_commands.json"
+}
+```
