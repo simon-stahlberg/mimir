@@ -50,7 +50,8 @@ class CMakeBuild(build_ext):
         cmake_args = [
             f"-DCMAKE_BUILD_TYPE={build_type}",
             f"-DCMAKE_INSTALL_PREFIX={str(temp_directory)}/dependencies/installs",
-            f"-DCMAKE_PREFIX_PATH={str(temp_directory)}/dependencies/installs"
+            f"-DCMAKE_PREFIX_PATH={str(temp_directory)}/dependencies/installs",
+            f"-DPython_EXECUTABLE={sys.executable}"
         ]
 
         subprocess.run(
@@ -70,7 +71,8 @@ class CMakeBuild(build_ext):
             f"-DMIMIR_VERSION_INFO={__version__}",
             f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={output_directory}",
             f"-DCMAKE_BUILD_TYPE={build_type}",  # not used on MSVC, but no harm
-            f"-DCMAKE_PREFIX_PATH={str(temp_directory)}/dependencies/installs"
+            f"-DCMAKE_PREFIX_PATH={str(temp_directory)}/dependencies/installs",
+            f"-DPython_EXECUTABLE={sys.executable}"
         ]
         build_args = []
         build_args += ["--target", ext.name]
