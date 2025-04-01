@@ -53,8 +53,13 @@ TEST(MimirTests, SearchApplicableActionGeneratorsGroundedTest)
     const auto result = brfs::find_solution(search_context, nullptr, brfs_event_handler);
     EXPECT_EQ(result.status, SearchStatus::SOLVED);
 
-    const auto& brfs_statistics = brfs_event_handler->get_statistics();
+    const auto& applicable_action_generator_statistics = applicable_action_generator_event_handler->get_statistics();
+    EXPECT_EQ(applicable_action_generator_statistics.statistics.num_nodes, 34);
 
+    const auto& axiom_evaluator_statistics = axiom_evaluator_event_handler->get_statistics();
+    EXPECT_EQ(axiom_evaluator_statistics.m_match_tree_partition_statistics.front().num_nodes, 11);
+
+    const auto& brfs_statistics = brfs_event_handler->get_statistics();
     EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 105);
     EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 41);
 }

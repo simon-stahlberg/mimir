@@ -50,16 +50,14 @@ TEST(MimirTests, SearchApplicableActionGeneratorsLiftedTest)
     EXPECT_EQ(result.status, SearchStatus::SOLVED);
 
     const auto& applicable_action_generator_statistics = applicable_action_generator_event_handler->get_statistics();
-    const auto& axiom_evaluator_statistics = axiom_evaluator_event_handler->get_statistics();
-
     EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_action_cache_hits_per_search_layer().back(), 95);
     EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_action_cache_misses_per_search_layer().back(), 10);
 
+    const auto& axiom_evaluator_statistics = axiom_evaluator_event_handler->get_statistics();
     EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 472);
     EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axiom_cache_misses_per_search_layer().back(), 16);
 
     const auto& brfs_statistics = brfs_event_handler->get_statistics();
-
     EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 105);
     EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 41);
 }
