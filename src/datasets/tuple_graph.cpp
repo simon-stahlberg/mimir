@@ -17,6 +17,7 @@
 
 #include "mimir/datasets/tuple_graph.hpp"
 
+#include "mimir/datasets/state_space.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "tuple_graph_factory.hpp"
 

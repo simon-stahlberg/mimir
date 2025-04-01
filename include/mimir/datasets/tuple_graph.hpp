@@ -19,7 +19,7 @@
 #define MIMIR_DATASETS_TUPLE_GRAPH_HPP_
 
 #include "mimir/common/grouped_vector.hpp"
-#include "mimir/datasets/generalized_state_space.hpp"
+#include "mimir/datasets/declarations.hpp"
 #include "mimir/graphs/static_graph.hpp"
 #include "mimir/search/algorithms/iw/novelty_table.hpp"
 #include "mimir/search/algorithms/iw/tuple_index_generators.hpp"

@@ -15,10 +15,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/languages/general_policies/general_policy.hpp"
-
 #include "mimir/common/printers.hpp"
+#include "mimir/datasets/generalized_state_space.hpp"
+#include "mimir/datasets/state_space.hpp"
 #include "mimir/graphs/bgl/graph_algorithms.hpp"
+#include "mimir/languages/general_policies/general_policy_decl.hpp"
+#include "mimir/languages/general_policies/general_policy_impl.hpp"
 #include "mimir/languages/general_policies/rule.hpp"
 #include "mimir/languages/general_policies/visitor_formatter.hpp"
 #include "mimir/languages/general_policies/visitor_interface.hpp"
@@ -82,24 +84,21 @@ bool GeneralPolicyImpl::is_terminating(graphs::PolicyGraph& policy_graph, Reposi
     }
 
     // Lines 4-5
-    auto component_to_edges = std::unordered_map<size_t, graphs::EdgeIndexList> {};
+    // f_inc: f -> e_idxs
+    // f_dec: f -> e_idxs
+
+    // Then select an f such that f_dec(f) > 0 and f_inc(f) = 0 and delete all edges f_dec(f).
+
+    using FeatureVariant = std::variant<NamedFeature<dl::BooleanTag>, NamedFeature<dl::NumericalTag>>;
+    auto all_f = std::vector<FeatureVariant> {};
+    auto f_dec = std::unordered_map<FeatureVariant, size_t> {};
+    auto f_inc = std::unordered_map<FeatureVariant, size_t> {};
+
     for (const auto& [e_idx, e] : policy_graph.get_edges())
     {
         const auto src_component = component_map.at(e.get_source());
         const auto dst_component = component_map.at(e.get_target());
         const auto in_scc = src_component == dst_component;
-        if (in_scc)
-        {
-            component_to_edges[src_component].push_back(e_idx);
-        }
-    }
-
-    mimir::operator<<(std::cout, component_to_edges);
-    std::cout << std::endl;
-
-    for (size_t i = 0; i < num_components; ++i)
-    {
-        auto decrements = std::unordered_set<Effect> {};
     }
 
     // Lines 6-7

@@ -19,7 +19,6 @@
 #define MIMIR_DATASETS_DECLARATIONS_HPP_
 
 // Do not include headers with transitive dependencies.
-#include "mimir/common/types.hpp"
 #include "mimir/graphs/algorithms/nauty.hpp"
 #include "mimir/graphs/declarations.hpp"
 #include "mimir/search/declarations.hpp"

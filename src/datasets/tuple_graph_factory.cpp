@@ -288,7 +288,7 @@ private:
 
         m_novel_t_idxs_vec.clear();
         m_novel_t_idxs_vec.insert(m_novel_t_idxs_vec.end(), m_novel_t_idxs_set.begin(), m_novel_t_idxs_set.end());
-        m_novelty_table.insert_tuple_indices(m_novel_t_idxs_vec);
+        // m_novelty_table.insert_tuple_indices(m_novel_t_idxs_vec);
     }
 
     void extend_optimal_plans_from_prev_layer()

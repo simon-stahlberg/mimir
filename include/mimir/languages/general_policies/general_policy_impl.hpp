@@ -20,7 +20,6 @@
 
 #include "mimir/common/debug.hpp"
 #include "mimir/datasets/declarations.hpp"
-#include "mimir/datasets/generalized_state_space.hpp"
 #include "mimir/languages/description_logics/denotation_repositories.hpp"
 #include "mimir/languages/description_logics/evaluation_context.hpp"
 #include "mimir/languages/general_policies/declarations.hpp"

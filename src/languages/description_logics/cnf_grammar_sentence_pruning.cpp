@@ -17,6 +17,7 @@
 
 #include "mimir/languages/description_logics/cnf_grammar_sentence_pruning.hpp"
 
+#include "mimir/datasets/generalized_state_space.hpp"
 #include "mimir/formalism/problem.hpp"
 
 using namespace mimir::formalism;

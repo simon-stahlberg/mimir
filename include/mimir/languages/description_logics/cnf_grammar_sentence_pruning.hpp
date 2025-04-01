@@ -18,7 +18,8 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CNF_GRAMMAR_SENTENCE_PRUNING_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CNF_GRAMMAR_SENTENCE_PRUNING_HPP_
 
-#include "mimir/datasets/generalized_state_space.hpp"
+#include "mimir/datasets/class_graph.hpp"
+#include "mimir/datasets/declarations.hpp"
 #include "mimir/languages/description_logics/constructor_repositories.hpp"
 #include "mimir/languages/description_logics/constructors.hpp"
 #include "mimir/languages/description_logics/evaluation_context.hpp"

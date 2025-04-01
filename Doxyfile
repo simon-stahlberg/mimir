@@ -48,11 +48,13 @@ INPUT                 = \
     "include/mimir/formalism/translator.hpp" \
     "include/mimir/formalism/utils.hpp" \
     "include/mimir/formalism/variable.hpp" \
+    "include/mimir/datasets/class_graph.hpp" \
     "include/mimir/datasets/declarations.hpp" \
     "include/mimir/datasets/generalized_color_function.hpp" \
     "include/mimir/datasets/generalized_state_space.hpp" \
     "include/mimir/datasets/knowledge_base.hpp" \
     "include/mimir/datasets/object_graph.hpp" \
+    "include/mimir/datasets/problem_graph.hpp" \
     "include/mimir/datasets/state_space.hpp" \
     "include/mimir/datasets/tuple_graph.hpp" \
     "include/mimir/graphs/algorithms/color_refinement_impl.hpp" \

@@ -18,7 +18,6 @@
 #ifndef MIMIR_LANGUAGES_GENERAL_POLICIES_VISITOR_INTERFACE_HPP_
 #define MIMIR_LANGUAGES_GENERAL_POLICIES_VISITOR_INTERFACE_HPP_
 
-#include "mimir/languages/description_logics/constructor_visitor_interface.hpp"
 #include "mimir/languages/general_policies/declarations.hpp"
 
 namespace mimir::languages::general_policies

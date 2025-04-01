@@ -86,10 +86,12 @@
  * DataSet
  */
 
+#include "mimir/datasets/class_graph.hpp"
 #include "mimir/datasets/generalized_color_function.hpp"
 #include "mimir/datasets/generalized_state_space.hpp"
 #include "mimir/datasets/knowledge_base.hpp"
 #include "mimir/datasets/object_graph.hpp"
+#include "mimir/datasets/problem_graph.hpp"
 #include "mimir/datasets/state_space.hpp"
 #include "mimir/datasets/tuple_graph.hpp"
 

@@ -19,6 +19,7 @@
 
 #include "mimir/datasets/generalized_state_space.hpp"
 #include "mimir/datasets/state_space.hpp"
+#include "mimir/datasets/tuple_graph.hpp"
 
 using namespace mimir::formalism;
 using namespace mimir::search;

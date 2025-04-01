@@ -18,6 +18,7 @@
 #ifndef MIMIR_SRC_DATASETS_TUPLE_GRAPH_FACTORY_
 #define MIMIR_SRC_DATASETS_TUPLE_GRAPH_FACTORY_
 
+#include "mimir/datasets/state_space.hpp"
 #include "mimir/datasets/tuple_graph.hpp"
 
 namespace mimir::datasets
