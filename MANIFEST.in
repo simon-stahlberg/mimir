@@ -13,6 +13,7 @@ include dependencies/flatmemory/CMakeLists.txt
 include dependencies/fmt/CMakeLists.txt
 include dependencies/googletest/CMakeLists.txt
 include dependencies/loki/CMakeLists.txt
+include dependencies/nanobind/CMakeLists.txt
 include dependencies/nauty/CMakeLists.txt
 include dependencies/pybind11/CMakeLists.txt
 include dependencies/CMakeLists.txt
