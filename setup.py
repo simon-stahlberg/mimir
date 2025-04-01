@@ -11,7 +11,7 @@ from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext
 from distutils.sysconfig import get_python_lib
 
-__version__ = "0.12.2"
+__version__ = "0.12.3"
 HERE = Path(__file__).resolve().parent
 
 
@@ -79,7 +79,7 @@ class CMakeBuild(build_ext):
         )
 
         subprocess.run(
-            ["cmake", "--install", f"{str(temp_directory)}/build", "--prefix", f"{str(output_directory)}/pymimir"], check=True
+            ["cmake", "--install", f"{str(temp_directory)}/build", "--prefix", f"{str(output_directory)}"], check=True
         )
 
 # The information here can also be placed in setup.cfg - better separation of

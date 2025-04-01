@@ -41,7 +41,7 @@ from pymimir._pymimir.advanced.formalism import (
     StaticAssignmentSet,
 )
 
-from _pymimir.advanced.formalism import (
+from pymimir._pymimir.advanced.formalism import (
     AuxiliaryFunction,
     AuxiliaryFunctionList,
     AuxiliaryGroundFunction,
@@ -78,7 +78,7 @@ from _pymimir.advanced.formalism import (
     StaticNumericAssignmentSet,
 )
 
-from _pymimir.advanced.formalism import (
+from pymimir._pymimir.advanced.formalism import (
     AssignOperatorEnum,
     BinaryOperatorEnum,
     RequirementEnum,
@@ -87,7 +87,7 @@ from _pymimir.advanced.formalism import (
     RequirementEnum,
 )
 
-from _pymimir.advanced.formalism import (
+from pymimir._pymimir.advanced.formalism import (
     Action,  
     ActionList,
     Axiom,
