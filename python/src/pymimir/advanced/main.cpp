@@ -29,14 +29,22 @@ NB_MODULE(_pymimir, m)
 {
     // Create submodules before binding to avoid missing bindings
     auto advanced = m.def_submodule("advanced");
+    m.attr("advanced") = advanced;
 
     auto common = advanced.def_submodule("common");
+    advanced.attr("common") = common;
     auto formalism = advanced.def_submodule("formalism");
+    advanced.attr("formalism") = formalism;
     auto graphs = advanced.def_submodule("graphs");
+    advanced.attr("graphs") = graphs;
     auto search = advanced.def_submodule("search");
+    advanced.attr("search") = search;
     auto datasets = advanced.def_submodule("datasets");
+    advanced.attr("datasets") = datasets;
     auto languages = advanced.def_submodule("languages");
+    advanced.attr("languages") = languages;
     auto description_logics = languages.def_submodule("description_logics");
+    languages.attr("description_logics") = description_logics;
 
     bind_common(common);
 

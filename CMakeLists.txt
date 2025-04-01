@@ -68,16 +68,6 @@ if(VERBOSE)
     add_compile_definitions(VERBOSE)
 endif()
 
-# Set rpath to origin to allow moving dependencies freely around.
-if(APPLE)
-    set(RPATH "@loader_path")
-elseif(UNIX AND NOT APPLE)
-    set(RPATH "$ORIGIN")
-endif()
-
-set(CMAKE_INSTALL_RPATH ${RPATH})
-set(CMAKE_BUILD_RPATH ${RPATH})
-
 ##############################################################
 # CMake modules and macro files
 ##############################################################
@@ -158,7 +148,7 @@ add_subdirectory(src)
 # Target Python Mimir
 # -------------------
 if(BUILD_PYMIMIR)
-    add_subdirectory(python/src)
+    add_subdirectory(python/src/pymimir)
 endif()
 
 # ----------
