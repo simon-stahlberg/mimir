@@ -14,7 +14,8 @@ if (NOT Nauty_FOUND)
     # We need to build nauty for cmake support
     ExternalProject_Add(
             nauty
-            URL https://users.cecs.anu.edu.au/~bdm/nauty/nauty2_8_8.tar.gz
+            GIT_REPOSITORY https://github.com/drexlerd/nauty.git
+            GIT_TAG cb44c50bd4fa543b977df6a4b70ec88e67020646
             PREFIX ${CMAKE_BINARY_DIR}/nauty
             CONFIGURE_COMMAND ${CMAKE_COMMAND} -E chdir <SOURCE_DIR> ./configure --prefix=<INSTALL_DIR> CFLAGS=-fPIC --enable-tls
             BUILD_COMMAND ${CMAKE_COMMAND} -E chdir <SOURCE_DIR> make
