@@ -22,9 +22,9 @@ target_link_libraries(_pymimir PRIVATE mimir::core)
 install(TARGETS _pymimir DESTINATION "pymimir")
 
 # Extend rpath to allow moving dependencies around.
-if(APPLE)
+if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     set(ORIGIN_RPATH "@loader_path")
-elseif(UNIX AND NOT APPLE)
+elseif(UNIX)
     set(ORIGIN_RPATH "$ORIGIN")
 endif()
 
