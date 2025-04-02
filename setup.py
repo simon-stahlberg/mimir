@@ -11,7 +11,7 @@ from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext
 
 
-__version__ = "0.12.4"
+__version__ = "0.12.5"
 HERE = Path(__file__).resolve().parent
 
 
@@ -34,8 +34,6 @@ class CMakeBuild(build_ext):
         print("ext_fullpath", ext_fullpath)
         print("output_directory", output_directory)
         print("temp_directory", temp_directory)
-
-        exit(1)
 
         build_type = "Debug" if os.environ.get('PYMIMIR_DEBUG_BUILD') else "Release"
         print("Pymimir build type:", build_type)
