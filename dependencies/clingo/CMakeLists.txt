@@ -6,12 +6,11 @@ include(ExternalProject)
 message(STATUS "Dependency \"clingo\"...")
 
 # Platform-specific RPATH
-if(APPLE)
+if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     set(CLINGO_RPATH "@loader_path")
-elseif(UNIX AND NOT APPLE)
+elseif(UNIX)
     set(CLINGO_RPATH "$ORIGIN")
-elseif(WIN32)
-# Windows doesn't support RPATH, dynamic libs must be co-located
+endif()
     set(CLINGO_RPATH "")
 endif()
 
