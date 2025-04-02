@@ -10,7 +10,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     set(CLINGO_RPATH "@loader_path")
 elseif(UNIX)
     set(CLINGO_RPATH "$ORIGIN")
-endif()
+else()
     set(CLINGO_RPATH "")
 endif()
 
