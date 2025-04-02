@@ -44,7 +44,6 @@ if (ORIGIN_RPATH)
 
   set_target_properties(_pymimir PROPERTIES
     INSTALL_RPATH "${new_rpath}"
-    BUILD_RPATH "${new_rpath}"  # Optional but good for dev
   )
 endif()
 
