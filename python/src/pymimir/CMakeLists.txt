@@ -21,32 +21,7 @@ target_link_libraries(_pymimir PRIVATE mimir::core)
 
 install(TARGETS _pymimir DESTINATION "pymimir")
 
-# Extend rpath to allow moving dependencies around.
-if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    set(ORIGIN_RPATH "@loader_path")
-elseif(UNIX)
-    set(ORIGIN_RPATH "$ORIGIN")
-endif()
-
-if (ORIGIN_RPATH)
-  get_target_property(existing_rpath _pymimir INSTALL_RPATH)
-  # This still requires that all .so files live in ${ORIGIN_RPATH} or ${ORIGIN_RPATH}/dependencies/installs/lib
-  # We use this explicitly when moving the python installation around.
-  set(extra_rpath "${ORIGIN_RPATH}" "${ORIGIN_RPATH}/dependencies/installs/lib")
-
-  if(NOT existing_rpath)
-    set(new_rpath "${extra_rpath}")
-  else()
-      list(APPEND existing_rpath ${extra_rpath})
-      list(REMOVE_DUPLICATES existing_rpath)  # Optional but safe
-      set(new_rpath "${existing_rpath}")
-  endif()
-
-  set_target_properties(_pymimir PROPERTIES
-    INSTALL_RPATH "${new_rpath}"
-  )
-endif()
-
+## Create and install stub for root module.
 nanobind_add_stub(
     _pymimir_stub
     MODULE _pymimir
@@ -57,6 +32,7 @@ nanobind_add_stub(
 
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/__init__.pyi" DESTINATION "pymimir")
 
+## Create and install stub for submodules.
 set(MODULES
     _pymimir.advanced
     _pymimir.advanced.common 
@@ -81,7 +57,7 @@ foreach(mod IN LISTS MODULES)
 
     set(stub_output "${mod_path}/__init__.pyi")
 
-    message(STATUS "${stub_target} -> ${stub_output}")
+    # message(STATUS "${stub_target} -> ${stub_output}")
 
     nanobind_add_stub(
         ${stub_target}
@@ -92,6 +68,6 @@ foreach(mod IN LISTS MODULES)
     )
 
     install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${stub_output}"
-            DESTINATION pymimir/${mod_path})
+            DESTINATION "pymimir/${mod_path}")
 endforeach()
 

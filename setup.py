@@ -9,9 +9,9 @@ from pathlib import Path
 
 from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext
-from distutils.sysconfig import get_python_lib
 
-__version__ = "0.12.3"
+
+__version__ = "0.12.4"
 HERE = Path(__file__).resolve().parent
 
 
@@ -34,6 +34,8 @@ class CMakeBuild(build_ext):
         print("ext_fullpath", ext_fullpath)
         print("output_directory", output_directory)
         print("temp_directory", temp_directory)
+
+        exit(1)
 
         build_type = "Debug" if os.environ.get('PYMIMIR_DEBUG_BUILD') else "Release"
         print("Pymimir build type:", build_type)
@@ -78,9 +80,10 @@ class CMakeBuild(build_ext):
             ["cmake", "--build", f"{str(temp_directory)}/build", f"-j{multiprocessing.cpu_count()}"], cwd=str(temp_directory), check=True
         )
 
-        subprocess.run(
-            ["cmake", "--install", f"{str(temp_directory)}/build", "--prefix", f"{str(output_directory)}"], check=True
-        )
+        # Deprecated: we dont want to copy dependencies and link them statically instead.
+        # subprocess.run(
+        #     ["cmake", "--install", f"{str(temp_directory)}/build", "--prefix", f"{str(output_directory)}"], check=True
+        # )
 
 # The information here can also be placed in setup.cfg - better separation of
 # logic and declaration, and simpler if you include description/version in a file.

@@ -7,7 +7,6 @@ project(mimir-integration)
 
 add_subdirectory(abseil)
 add_subdirectory(boost)
-add_subdirectory(clingo)
 add_subdirectory(fmt)
 add_subdirectory(loki)
 add_subdirectory(nauty)

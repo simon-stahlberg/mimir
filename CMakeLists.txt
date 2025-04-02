@@ -129,12 +129,6 @@ if(absl_FOUND)
 endif()
 
 
-find_package(Clingo CONFIG REQUIRED PATHS ${CMAKE_PREFIX_PATH} NO_DEFAULT_PATH)
-if(Clingo_FOUND)
-  include_directories(${Clingo_INCLUDE_DIRS})
-  message(STATUS "Found Clingo: ${Clingo_DIR} (found version ${Clingo_VERSION})")
-endif()
-
 ##############################################################
 # Add library and executable targets
 ##############################################################

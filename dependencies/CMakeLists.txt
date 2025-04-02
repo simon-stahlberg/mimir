@@ -25,7 +25,6 @@ endif ()
 ##############################################################
 
 # add_subdirectory(open-mpi)  # takes a long time to install. perhaps we want users to install it separately
-add_subdirectory(clingo)
 add_subdirectory(abseil)
 add_subdirectory(benchmark)
 add_subdirectory(boost)

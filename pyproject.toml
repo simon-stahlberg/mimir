@@ -1,12 +1,12 @@
 [build-system]
 requires = [
     "setuptools>=42",
-    "pybind11_stubgen",
     "nanobind",
     "wheel",
     "cmake>=3.21",
     "ninja",
     "typing_extensions",
+    "clingo"
 ]
 build-backend = "setuptools.build_meta"
 
