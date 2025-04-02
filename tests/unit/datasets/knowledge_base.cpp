@@ -265,8 +265,8 @@ TEST(MimirTests, DatasetsKnowledgeBaseConstructor2Test)
             }
         }
 
-        EXPECT_EQ(num_tuple_graph_vertices, 66);
-        EXPECT_EQ(num_tuple_graph_edges, 48);
+        EXPECT_EQ(num_tuple_graph_vertices, 74);
+        EXPECT_EQ(num_tuple_graph_edges, 56);
     }
 }
 

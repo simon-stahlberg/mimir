@@ -49,9 +49,9 @@ public:
     explicit DynamicNoveltyTable(size_t arity);
     DynamicNoveltyTable(size_t arity, size_t num_atoms);
 
-    void compute_novel_tuple_indices(const State state, TupleIndexList& out_novel_tuple_indices);
+    void compute_novel_tuples(const State state, std::vector<AtomIndexList>& out_novel_tuples);
 
-    void insert_tuple_indices(const TupleIndexList& tuple_indices);
+    void insert_tuples(const std::vector<AtomIndexList>& tuples);
 
     bool test_novelty_and_update_table(const State state);
 

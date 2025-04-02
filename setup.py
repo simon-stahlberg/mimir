@@ -11,7 +11,7 @@ from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext
 
 
-__version__ = "0.12.5"
+__version__ = "0.12.6"
 HERE = Path(__file__).resolve().parent
 
 
@@ -43,8 +43,8 @@ class CMakeBuild(build_ext):
 
         cmake_args = [
             f"-DCMAKE_BUILD_TYPE={build_type}",
-            f"-DCMAKE_INSTALL_PREFIX={str(output_directory)}/pymimir/dependencies/installs",
-            f"-DCMAKE_PREFIX_PATH={str(output_directory)}/pymimir/dependencies/installs",
+            f"-DCMAKE_INSTALL_PREFIX={str(temp_directory)}/dependencies/installs",
+            f"-DCMAKE_PREFIX_PATH={str(temp_directory)}/dependencies/installs",
             f"-DPython_EXECUTABLE={sys.executable}"
         ]
 
@@ -66,7 +66,7 @@ class CMakeBuild(build_ext):
             "-DBUILD_PYMIMIR=ON",
             f"-DMIMIR_VERSION_INFO={__version__}",
             f"-DCMAKE_BUILD_TYPE={build_type}",  # not used on MSVC, but no harm
-            f"-DCMAKE_PREFIX_PATH={str(output_directory)}/pymimir/dependencies/installs",
+            f"-DCMAKE_PREFIX_PATH={str(temp_directory)}/dependencies/installs",
             f"-DPython_EXECUTABLE={sys.executable}"
         ]
 
@@ -78,10 +78,9 @@ class CMakeBuild(build_ext):
             ["cmake", "--build", f"{str(temp_directory)}/build", f"-j{multiprocessing.cpu_count()}"], cwd=str(temp_directory), check=True
         )
 
-        # Deprecated: we dont want to copy dependencies and link them statically instead.
-        # subprocess.run(
-        #     ["cmake", "--install", f"{str(temp_directory)}/build", "--prefix", f"{str(output_directory)}"], check=True
-        # )
+        subprocess.run(
+            ["cmake", "--install", f"{str(temp_directory)}/build", "--prefix", f"{str(output_directory)}"], check=True
+        )
 
 # The information here can also be placed in setup.cfg - better separation of
 # logic and declaration, and simpler if you include description/version in a file.

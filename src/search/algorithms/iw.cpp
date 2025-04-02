@@ -74,12 +74,18 @@ void TupleIndexMapper::initialize(size_t arity, size_t num_atoms)
 TupleIndex TupleIndexMapper::to_tuple_index(const AtomIndexList& atom_indices) const
 {
     assert(std::is_sorted(atom_indices.begin(), atom_indices.end()));
-    assert(atom_indices.size() == m_arity);
+    assert(atom_indices.size() <= m_arity);
 
     TupleIndex result = 0;
-    for (size_t i = 0; i < m_arity; ++i)
+    // aggregate atom indices.
+    for (size_t i = 0; i < atom_indices.size(); ++i)
     {
         result += m_factors[i] * atom_indices[i];
+    }
+    // aggregate placeholders
+    for (size_t i = atom_indices.size(); i < m_arity; ++i)
+    {
+        result += m_factors[i] * m_num_atoms;
     }
     return result;
 }
@@ -768,9 +774,9 @@ void DynamicNoveltyTable::resize_to_fit(State state)
     resize_to_fit(*it);
 }
 
-void DynamicNoveltyTable::compute_novel_tuple_indices(const State state, TupleIndexList& out_novel_tuple_indices)
+void DynamicNoveltyTable::compute_novel_tuples(const State state, std::vector<AtomIndexList>& out_novel_tuples)
 {
-    out_novel_tuple_indices.clear();
+    out_novel_tuples.clear();
 
     resize_to_fit(state);
 
@@ -782,15 +788,17 @@ void DynamicNoveltyTable::compute_novel_tuple_indices(const State state, TupleIn
 
         if (!m_table[tuple_index])
         {
-            out_novel_tuple_indices.push_back(tuple_index);
+            out_novel_tuples.push_back(m_tuple_index_mapper.to_atom_indices(tuple_index));
         }
     }
 }
 
-void DynamicNoveltyTable::insert_tuple_indices(const TupleIndexList& tuple_indices)
+void DynamicNoveltyTable::insert_tuples(const std::vector<AtomIndexList>& tuples)
 {
-    for (const auto& tuple_index : tuple_indices)
+    for (const auto& tuple : tuples)
     {
+        const auto tuple_index = m_tuple_index_mapper.to_tuple_index(tuple);
+
         assert(tuple_index < m_table.size());
 
         m_table[tuple_index] = true;

@@ -19,6 +19,7 @@
 
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
+#include "mimir/search/state.hpp"
 #include "mimir/search/state_repository.hpp"
 
 using namespace mimir::formalism;
@@ -118,8 +119,11 @@ private:
     IndexList m_curr_v_idxs;
     iw::DynamicNoveltyTable m_novelty_table;
 
+    // Map tuples to an index that avoids invalidation of tuple indices upon resizing of the DynamicNoveltyTable.
+    std::unordered_map<IndexList, Index, loki::Hash<IndexList>, loki::EqualTo<IndexList>> m_tuple_to_index;
+    IndexMap<IndexList> m_index_to_tuple;
+    std::vector<IndexList> m_novel_tuples_vec;
     IndexSet m_novel_t_idxs_set;
-    IndexList m_novel_t_idxs_vec;
     IndexMap<IndexSet> m_novel_t_idx_to_problem_v_idxs;   ///< one-to-one mapping
     IndexMap<IndexList> m_problem_v_idx_to_novel_t_idxs;  ///< one-to-many mapping
 
@@ -138,12 +142,27 @@ private:
         const auto root_state = get_state(m_problem_vertex);
         const auto root_problem_v_idx = m_problem_vertex.get_index();
 
-        m_novelty_table.compute_novel_tuple_indices(root_state, m_novel_t_idxs_vec);
+        std::cout << "ROOT_INDEX=";
+        mimir::operator<<(std::cout, std::make_tuple(root_state, std::cref(*m_state_space->get_search_context().get_problem())));
+        std::cout << std::endl;
 
-        for (const auto& novel_tuple_index : m_novel_t_idxs_vec)
+        m_novelty_table.compute_novel_tuples(root_state, m_novel_tuples_vec);
+        for (const auto& novel_tuple : m_novel_tuples_vec)
         {
-            const auto v_idx = m_internal_tuple_graph.add_vertex(m_novelty_table.get_tuple_index_mapper().to_atom_indices(novel_tuple_index),
-                                                                 IndexList { root_problem_v_idx });
+            const auto it = m_tuple_to_index.find(novel_tuple);
+            auto tuple_index = Index();
+            if (it != m_tuple_to_index.end())
+            {
+                tuple_index = it->second;
+            }
+            else
+            {
+                tuple_index = m_tuple_to_index.size();
+                m_tuple_to_index.emplace(novel_tuple, tuple_index);
+                m_index_to_tuple.emplace(tuple_index, novel_tuple);
+            }
+
+            const auto v_idx = m_internal_tuple_graph.add_vertex(novel_tuple, IndexList { root_problem_v_idx });
 
             m_curr_v_idxs.push_back(v_idx);
             m_v_idxs_grouped_by_distance.add_group_element(v_idx);
@@ -154,7 +173,7 @@ private:
                 break;
             }
         }
-        m_novelty_table.insert_tuple_indices(m_novel_t_idxs_vec);
+        m_novelty_table.test_novelty_and_update_table(root_state);
 
         m_problem_v_idxs_grouped_by_distance.add_group_element(root_problem_v_idx);
         m_curr_states.insert(root_state);
@@ -221,7 +240,7 @@ private:
         {
             compute_next_novel_tuple_indices();
 
-            if (m_novel_t_idxs_vec.empty())
+            if (m_novel_t_idxs_set.empty())
             {
                 return false;
             }
@@ -264,20 +283,40 @@ private:
     {
         // Clear data structures
         m_novel_t_idxs_set.clear();
-        m_novel_t_idxs_vec.clear();
         m_novel_t_idx_to_problem_v_idxs.clear();
         m_problem_v_idx_to_novel_t_idxs.clear();
 
+        std::cout << "compute_next_novel_tuple_indices" << std::endl;
+
         for (const auto& problem_v_idx : m_curr_problem_v_idxs)
         {
-            m_novelty_table.compute_novel_tuple_indices(get_state(m_state_space->get_graph().get_vertex(problem_v_idx)), m_novel_t_idxs_vec);
+            m_novelty_table.compute_novel_tuples(get_state(m_state_space->get_graph().get_vertex(problem_v_idx)), m_novel_tuples_vec);
 
-            for (const auto& novel_t_idx : m_novel_t_idxs_vec)
+            std::cout << "STATE=";
+            mimir::operator<<(std::cout,
+                              std::make_tuple(get_state(m_state_space->get_graph().get_vertex(problem_v_idx)),
+                                              std::cref(*m_state_space->get_search_context().get_problem())));
+            std::cout << std::endl;
+
+            for (const auto& novel_tuple : m_novel_tuples_vec)
             {
+                const auto it = m_tuple_to_index.find(novel_tuple);
+                auto novel_t_idx = Index();
+                if (it != m_tuple_to_index.end())
+                {
+                    novel_t_idx = it->second;
+                }
+                else
+                {
+                    novel_t_idx = m_tuple_to_index.size();
+                    m_tuple_to_index.emplace(novel_tuple, novel_t_idx);
+                    m_index_to_tuple.emplace(novel_t_idx, novel_tuple);
+                }
+
                 m_novel_t_idx_to_problem_v_idxs[novel_t_idx].insert(problem_v_idx);
+                m_problem_v_idx_to_novel_t_idxs[problem_v_idx].push_back(novel_t_idx);
+                m_novel_t_idxs_set.insert(novel_t_idx);
             }
-            m_problem_v_idx_to_novel_t_idxs.emplace(problem_v_idx, m_novel_t_idxs_vec);
-            m_novel_t_idxs_set.insert(m_novel_t_idxs_vec.begin(), m_novel_t_idxs_vec.end());
         }
 
         /* Ensure that tuples of all states in layer are marked as not novel! */
@@ -285,10 +324,6 @@ private:
         {
             m_novelty_table.test_novelty_and_update_table(state);
         }
-
-        m_novel_t_idxs_vec.clear();
-        m_novel_t_idxs_vec.insert(m_novel_t_idxs_vec.end(), m_novel_t_idxs_set.begin(), m_novel_t_idxs_set.end());
-        // m_novelty_table.insert_tuple_indices(m_novel_t_idxs_vec);
     }
 
     void extend_optimal_plans_from_prev_layer()
@@ -398,8 +433,8 @@ private:
         {
             const auto& cur_problem_v_idxs = m_novel_t_idx_to_problem_v_idxs.at(t_idx);
 
-            const auto cur_v_idx = m_internal_tuple_graph.add_vertex(m_novelty_table.get_tuple_index_mapper().to_atom_indices(t_idx),
-                                                                     IndexList(cur_problem_v_idxs.begin(), cur_problem_v_idxs.end()));
+            const auto cur_v_idx =
+                m_internal_tuple_graph.add_vertex(m_index_to_tuple.at(t_idx), IndexList(cur_problem_v_idxs.begin(), cur_problem_v_idxs.end()));
 
             m_curr_v_idxs.push_back(cur_v_idx);
 
@@ -427,7 +462,6 @@ public:
         m_curr_v_idxs(),
         m_novelty_table(options.width),
         m_novel_t_idxs_set(),
-        m_novel_t_idxs_vec(),
         m_novel_t_idx_to_problem_v_idxs(),
         m_problem_v_idx_to_novel_t_idxs(),
         m_cur_novel_t_idx_to_extended_problem_v_idx(),

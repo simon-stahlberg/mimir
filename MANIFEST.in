@@ -7,7 +7,6 @@ include setup.py
 include Config.cmake.in
 include dependencies/abseil/CMakeLists.txt
 include dependencies/benchmark/CMakeLists.txt
-include dependencies/clingo/CMakeLists.txt
 include dependencies/boost/CMakeLists.txt
 include dependencies/flatmemory/CMakeLists.txt
 include dependencies/fmt/CMakeLists.txt
@@ -15,7 +14,6 @@ include dependencies/googletest/CMakeLists.txt
 include dependencies/loki/CMakeLists.txt
 include dependencies/nanobind/CMakeLists.txt
 include dependencies/nauty/CMakeLists.txt
-include dependencies/pybind11/CMakeLists.txt
 include dependencies/CMakeLists.txt
 recursive-include cmake/ *
 recursive-include exe/ *
