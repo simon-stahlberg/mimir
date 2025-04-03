@@ -22,7 +22,6 @@ void bind_datasets(nb::module_& m)
         .def(nb::init<>())
         .def_rw("sort_ascending_by_num_states", &StateSpaceImpl::Options::sort_ascending_by_num_states)
         .def_rw("symmetry_pruning", &StateSpaceImpl::Options::symmetry_pruning)
-        .def_rw("mark_true_goal_literals", &StateSpaceImpl::Options::mark_true_goal_literals)
         .def_rw("remove_if_unsolvable", &StateSpaceImpl::Options::remove_if_unsolvable)
         .def_rw("max_num_states", &StateSpaceImpl::Options::max_num_states)
         .def_rw("timeout_ms", &StateSpaceImpl::Options::timeout_ms);

@@ -58,7 +58,6 @@ public:
     {
         bool sort_ascending_by_num_states;
         bool symmetry_pruning;
-        bool mark_true_goal_literals;
         bool remove_if_unsolvable;
         uint32_t max_num_states;
         uint32_t timeout_ms;
@@ -66,7 +65,6 @@ public:
         Options() :
             sort_ascending_by_num_states(true),
             symmetry_pruning(false),
-            mark_true_goal_literals(false),
             remove_if_unsolvable(true),
             max_num_states(std::numeric_limits<uint32_t>::max()),
             timeout_ms(std::numeric_limits<uint32_t>::max())

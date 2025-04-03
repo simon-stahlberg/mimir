@@ -134,7 +134,7 @@ private:
 
     auto compute_certificate(State state)
     {
-        const auto object_graph = create_object_graph(state, *m_problem, *m_symm_data.color_function, m_options.mark_true_goal_literals);
+        const auto object_graph = create_object_graph(state, *m_problem, *m_symm_data.color_function);
 
         return std::make_shared<const nauty::Certificate>(nauty::compute_certificate(object_graph));
     }

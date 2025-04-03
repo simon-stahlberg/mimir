@@ -21,7 +21,6 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/generalized_problem.hpp"
 #include "mimir/graphs/declarations.hpp"
-#include "mimir/search/declarations.hpp"
 
 #include <unordered_map>
 
@@ -51,11 +50,7 @@ public:
 
     /// @brief Get unique color of goal literal.
     template<formalism::IsStaticOrFluentOrDerivedTag P>
-    graphs::Color get_color(formalism::GroundLiteral<P> literal,
-                            size_t pos,
-                            search::State state,
-                            const formalism::ProblemImpl& problem,
-                            bool mark_true_goal_literal = false) const;
+    graphs::Color get_color(formalism::GroundLiteral<P> literal, size_t pos) const;
 
     /// @brief Get name of color.
     const std::string& get_color_name(graphs::Color color) const;
