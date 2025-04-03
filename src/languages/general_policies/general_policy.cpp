@@ -15,10 +15,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "mimir/common/debug.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/datasets/generalized_state_space.hpp"
 #include "mimir/datasets/state_space.hpp"
 #include "mimir/graphs/bgl/graph_algorithms.hpp"
+#include "mimir/graphs/graph_properties.hpp"
 #include "mimir/languages/general_policies/general_policy_decl.hpp"
 #include "mimir/languages/general_policies/general_policy_impl.hpp"
 #include "mimir/languages/general_policies/repositories.hpp"
@@ -30,6 +32,8 @@
 
 namespace mimir::languages::general_policies
 {
+
+using mimir::operator<<;
 
 GeneralPolicyImpl::GeneralPolicyImpl(Index index, NamedFeatureLists<dl::BooleanTag, dl::NumericalTag> features, RuleList rules) :
     m_index(index),
@@ -63,14 +67,13 @@ bool GeneralPolicyImpl::is_terminating(Repositories& repositories) const
 
 bool GeneralPolicyImpl::is_terminating(graphs::PolicyGraph& policy_graph, Repositories& repositories) const
 {
-    std::cout << policy_graph << std::endl;
+    DEBUG_LOG("policy_graph=" << std::endl << policy_graph << std::endl)
 
     auto tagged_graph = graphs::DirectionTaggedType(policy_graph, graphs::ForwardTag {});
     auto [num_components, component_map] = graphs::bgl::strong_components(tagged_graph);
 
-    std::cout << num_components << " ";
-    mimir::operator<<(std::cout, component_map);
-    std::cout << std::endl;
+    DEBUG_LOG("num_components=" << num_components << std::endl)
+    DEBUG_LOG("component_map=" << component_map << std::endl)
 
     // Line 1
     if (num_components > 1)
@@ -161,10 +164,8 @@ bool GeneralPolicyImpl::is_terminating(graphs::PolicyGraph& policy_graph, Reposi
         }
     }
 
-    mimir::operator<<(std::cout, f_inc);
-    std::cout << std::endl;
-    mimir::operator<<(std::cout, f_dec);
-    std::cout << std::endl;
+    DEBUG_LOG("f_inc=" << f_inc)
+    DEBUG_LOG("f_dec=" << f_dec)
 
     const auto initial_num_edges = policy_graph.get_num_edges();
     auto cur_num_edges = initial_num_edges;
@@ -214,6 +215,8 @@ bool GeneralPolicyImpl::is_terminating(graphs::PolicyGraph& policy_graph, Reposi
                             }
 
                             policy_graph.remove_edge(e_idx);
+
+                            DEBUG_LOG("Removed edge=" << e_idx)
                         }
                     }
                 },
@@ -222,17 +225,10 @@ bool GeneralPolicyImpl::is_terminating(graphs::PolicyGraph& policy_graph, Reposi
     } while (cur_num_edges < policy_graph.get_num_edges());
 
     // Lines 6-7
-    auto is_acyclic = bool(true);
-    try
+    if (graphs::is_acyclic(policy_graph))
     {
-        graphs::bgl::topological_sort(tagged_graph);
-    }
-    catch (const boost::not_a_dag&)
-    {
-        is_acyclic = false;
-    }
-    if (is_acyclic)
-    {
+        DEBUG_LOG("Is terminating due to acyclicity.")
+
         return true;
     }
 
@@ -245,6 +241,8 @@ bool GeneralPolicyImpl::is_terminating(graphs::PolicyGraph& policy_graph, Reposi
     }
 
     // Lines 8-9
+    DEBUG_LOG("Is nonterminating.")
+
     return false;
 }
 

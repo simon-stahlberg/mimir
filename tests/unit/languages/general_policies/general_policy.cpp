@@ -48,7 +48,7 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyGripperTest)
         const auto general_policy =
             general_policies::GeneralPolicyFactory::get_or_create_general_policy_gripper(*context.get_domain(), repositories, dl_repositories);
 
-        general_policy->is_terminating(repositories);
+        EXPECT_TRUE(general_policy->is_terminating(repositories));
 
         {
             /* Without symmetry reduction. */
@@ -150,6 +150,8 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyBlocks3opsTest)
 
         const auto general_policy =
             general_policies::GeneralPolicyFactory::get_or_create_general_policy_blocks3ops(*context.get_domain(), repositories, dl_repositories);
+
+        EXPECT_TRUE(!general_policy->is_terminating(repositories));
 
         {
             /* Without symmetry reduction. */

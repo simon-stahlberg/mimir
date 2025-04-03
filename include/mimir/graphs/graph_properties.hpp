@@ -18,6 +18,7 @@
 #ifndef MIMIR_GRAPHS_GRAPH_PROPERTIES_HPP_
 #define MIMIR_GRAPHS_GRAPH_PROPERTIES_HPP_
 
+#include "mimir/graphs/bgl/graph_algorithms.hpp"
 #include "mimir/graphs/graph_edges.hpp"
 #include "mimir/graphs/graph_interface.hpp"
 
@@ -62,6 +63,23 @@ bool is_multi_graph(const G& graph)
         }
     }
     return false;  // found no parallel edges => not multi-graph
+}
+
+template<typename G>
+    requires IsVertexListGraph<G> && IsIncidenceGraph<G>
+bool is_acyclic(const G& graph)
+{
+    const auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::ForwardTag {});
+    try
+    {
+        graphs::bgl::topological_sort(tagged_graph);
+    }
+    catch (const boost::not_a_dag&)
+    {
+        return false;
+    }
+
+    return true;
 }
 
 }
