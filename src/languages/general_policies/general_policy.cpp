@@ -117,7 +117,7 @@ bool GeneralPolicyImpl::is_terminating(graphs::PolicyGraph& policy_graph, Reposi
         for (const auto& feature : get_all_features())
         {
             std::visit(
-                [&](auto&& arg)
+                [&, e_idx = e_idx, e = e](auto&& arg)
                 {
                     using T = std::decay_t<decltype(arg)>;
 

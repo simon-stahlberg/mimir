@@ -116,23 +116,20 @@ void bind_search(nb::module_& m)
     nb::class_<SearchContextImpl>(m, "SearchContext")
         .def_static(
             "create",
-            [](const std::string& domain_filepath, const std::string& problem_filepath, const SearchContextImpl::Options& options)
+            [](const std::string& domain_filepath, const std::string& problem_filepath, const SearchContextImpl::Options& options) -> SearchContext
             { return SearchContextImpl::create(fs::path(domain_filepath), fs::path(problem_filepath), options); },
             nb::arg("domain_filepath"),
             nb::arg("problem_filepath"),
             nb::arg("options") = SearchContextImpl::Options())
-        .def_static(
-            "create",
-            [](Problem problem, const SearchContextImpl::Options& options) { return SearchContextImpl::create(problem, options); },
-            nb::arg("problem"),
-            nb::arg("options") = SearchContextImpl::Options())
-        .def_static(
-            "create",
-            [](Problem problem, ApplicableActionGenerator applicable_action_generator, StateRepository state_repositoriy)
-            { return SearchContextImpl::create(problem, applicable_action_generator, state_repositoriy); },
-            nb::arg("problem"),
-            nb::arg("applicable_action_generator"),
-            nb::arg("state_repository"))
+        .def_static("create",
+                    nb::overload_cast<formalism::Problem, const SearchContextImpl::Options&>(&SearchContextImpl::create),
+                    nb::arg("problem"),
+                    nb::arg("options") = SearchContextImpl::Options())
+        .def_static("create",
+                    nb::overload_cast<formalism::Problem, ApplicableActionGenerator, StateRepository>(&SearchContextImpl::create),
+                    nb::arg("problem"),
+                    nb::arg("applicable_action_generator"),
+                    nb::arg("state_repository"))
         .def("get_problem", &SearchContextImpl::get_problem)
         .def("get_applicable_action_generator", &SearchContextImpl::get_applicable_action_generator)
         .def("get_state_repository", &SearchContextImpl::get_state_repository);
@@ -141,7 +138,7 @@ void bind_search(nb::module_& m)
     nb::class_<GeneralizedSearchContextImpl>(m, "GeneralizedSearchContext")
         .def_static(
             "create",
-            [](std::string domain_filepath, std::vector<std::string> problem_filepaths, SearchContextImpl::Options options)
+            [](std::string domain_filepath, std::vector<std::string> problem_filepaths, SearchContextImpl::Options options) -> GeneralizedSearchContext
             {
                 std::vector<fs::path> paths;
                 paths.reserve(problem_filepaths.size());
@@ -156,21 +153,19 @@ void bind_search(nb::module_& m)
             nb::arg("options") = SearchContextImpl::Options())
         .def_static(
             "create",
-            [](std::string domain_filepath, std::string problems_directory, const SearchContextImpl::Options& options)
+            [](std::string domain_filepath, std::string problems_directory, const SearchContextImpl::Options& options) -> GeneralizedSearchContext
             { return GeneralizedSearchContextImpl::create(fs::path(std::move(domain_filepath)), fs::path(std::move(problems_directory)), std::move(options)); },
             nb::arg("domain_filepath"),
             nb::arg("problems_directory"),
             nb::arg("options") = SearchContextImpl::Options())
-        .def_static(
-            "create",
-            [](GeneralizedProblem problem, const SearchContextImpl::Options& options) { return GeneralizedSearchContextImpl::create(problem, options); },
-            nb::arg("generalized_problem"),
-            nb::arg("options") = SearchContextImpl::Options())
-        .def_static(
-            "create",
-            [](GeneralizedProblem problem, SearchContextList contexts) { return GeneralizedSearchContextImpl::create(problem, contexts); },
-            nb::arg("generalized_problem"),
-            nb::arg("search_contexts"))
+        .def_static("create",
+                    nb::overload_cast<formalism::GeneralizedProblem, const SearchContextImpl::Options&>(&GeneralizedSearchContextImpl::create),
+                    nb::arg("generalized_problem"),
+                    nb::arg("options") = SearchContextImpl::Options())
+        .def_static("create",
+                    nb::overload_cast<formalism::GeneralizedProblem, SearchContextList>(&GeneralizedSearchContextImpl::create),
+                    nb::arg("generalized_problem"),
+                    nb::arg("search_contexts"))
         .def("get_generalized_problem", &GeneralizedSearchContextImpl::get_generalized_problem)
         .def("get_search_contexts", &GeneralizedSearchContextImpl::get_search_contexts);
 
