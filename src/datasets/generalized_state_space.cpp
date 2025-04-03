@@ -20,6 +20,7 @@
 #include "mimir/common/timers.hpp"
 #include "mimir/datasets/generalized_color_function.hpp"
 #include "mimir/datasets/object_graph.hpp"
+#include "mimir/formalism/generalized_problem.hpp"
 #include "mimir/formalism/ground_action.hpp"
 #include "mimir/formalism/parser.hpp"
 #include "mimir/formalism/problem.hpp"

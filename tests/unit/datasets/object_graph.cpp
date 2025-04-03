@@ -41,7 +41,7 @@ TEST(MimirTests, DataSetsObjectGraphDenseTest)
     options.symmetry_pruning = false;
     const auto context = search::SearchContext(domain_file, problem_file);
     const auto state_space = StateSpaceImpl::create(context, options);
-    const auto color_function = GeneralizedColorFunctionImpl(context.get_problem());
+    const auto color_function = GeneralizedColorFunctionImpl::create(context.get_problem());
 
     auto certificates = std::unordered_set<nauty::Certificate, loki::Hash<nauty::Certificate>, loki::EqualTo<nauty::Certificate>> {};
 
@@ -50,7 +50,7 @@ TEST(MimirTests, DataSetsObjectGraphDenseTest)
         const auto state = get_state(vertex);
         const auto& problem = get_problem(vertex);
 
-        const auto object_graph = create_object_graph(state, *problem, color_function);
+        const auto object_graph = create_object_graph(state, *problem, *color_function);
 
         auto certificate = compute_certificate(nauty::DenseGraph(object_graph));
 
@@ -69,7 +69,7 @@ TEST(MimirTests, DataSetsObjectGraphSparseTest)
     options.symmetry_pruning = false;
     const auto context = search::SearchContext(domain_file, problem_file);
     const auto state_space = StateSpaceImpl::create(context, options);
-    const auto color_function = GeneralizedColorFunctionImpl(context.get_problem());
+    const auto color_function = GeneralizedColorFunctionImpl::create(context.get_problem());
 
     auto certificates = std::unordered_set<nauty::Certificate, loki::Hash<nauty::Certificate>, loki::EqualTo<nauty::Certificate>> {};
 
@@ -78,7 +78,7 @@ TEST(MimirTests, DataSetsObjectGraphSparseTest)
         const auto state = get_state(vertex);
         const auto& problem = get_problem(vertex);
 
-        const auto object_graph = create_object_graph(state, *problem, color_function);
+        const auto object_graph = create_object_graph(state, *problem, *color_function);
 
         auto certificate = compute_certificate(nauty::SparseGraph(object_graph));
 

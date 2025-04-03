@@ -20,6 +20,7 @@
 #include "mimir/common/timers.hpp"
 #include "mimir/datasets/generalized_color_function.hpp"
 #include "mimir/datasets/object_graph.hpp"
+#include "mimir/formalism/generalized_problem.hpp"
 #include "mimir/formalism/ground_action.hpp"
 #include "mimir/formalism/parser.hpp"
 #include "mimir/formalism/problem.hpp"
@@ -460,8 +461,8 @@ StateSpaceImpl::StateSpaceImpl(search::SearchContext context,
 
 std::optional<StateSpace> StateSpaceImpl::create(search::SearchContext context, const Options& options)
 {
-    auto color_function = std::make_shared<GeneralizedColorFunctionImpl>(
-        formalism::GeneralizedProblem(context.get_problem()->get_domain(), formalism::ProblemList { context.get_problem() }));
+    auto color_function = GeneralizedColorFunctionImpl::create(
+        formalism::GeneralizedProblemImpl::create(context.get_problem()->get_domain(), formalism::ProblemList { context.get_problem() }));
 
     return (options.symmetry_pruning) ? compute_problem_graph_with_symmetry_reduction(context, color_function, options) :
                                         compute_problem_graph_without_symmetry_reduction(context, options);
@@ -469,7 +470,7 @@ std::optional<StateSpace> StateSpaceImpl::create(search::SearchContext context, 
 
 StateSpaceList StateSpaceImpl::create(search::GeneralizedSearchContext contexts, const Options& options)
 {
-    auto color_function = std::make_shared<GeneralizedColorFunctionImpl>(contexts.get_generalized_problem());
+    auto color_function = GeneralizedColorFunctionImpl::create(contexts.get_generalized_problem());
 
     auto state_spaces = StateSpaceList {};
     for (const auto& context : contexts.get_search_contexts())

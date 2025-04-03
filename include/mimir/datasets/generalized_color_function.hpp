@@ -18,8 +18,8 @@
 #ifndef MIMIR_DATASETS_GENERALIZED_COLOR_FUNCTION_HPP_
 #define MIMIR_DATASETS_GENERALIZED_COLOR_FUNCTION_HPP_
 
+#include "mimir/datasets/declarations.hpp"
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/generalized_problem.hpp"
 #include "mimir/graphs/declarations.hpp"
 
 #include <unordered_map>
@@ -34,12 +34,16 @@ private:
 
     std::unordered_map<graphs::Color, std::string> m_color_to_name;  ///< for visualizations
 
-    formalism::PredicateMaps<graphs::Color, formalism::StaticTag, formalism::FluentTag, formalism::DerivedTag> m_predicate_colors;
+    formalism::PredicateMaps<graphs::Color, formalism::StaticTag, formalism::FluentTag, formalism::DerivedTag> m_predicate_to_color_offsets;
+
+    GeneralizedColorFunctionImpl(
+        formalism::GeneralizedProblem generalized_problem,
+        std::unordered_map<graphs::Color, std::string> color_to_name,
+        formalism::PredicateMaps<graphs::Color, formalism::StaticTag, formalism::FluentTag, formalism::DerivedTag> predicate_to_color_offsets);
 
 public:
-    explicit GeneralizedColorFunctionImpl(formalism::GeneralizedProblem generalized_problem);
-
-    explicit GeneralizedColorFunctionImpl(formalism::Problem problem);
+    static GeneralizedColorFunction create(formalism::GeneralizedProblem generalized_problem);
+    static GeneralizedColorFunction create(formalism::Problem problem);
 
     /// @brief get color of object.
     graphs::Color get_color(formalism::Object object) const;

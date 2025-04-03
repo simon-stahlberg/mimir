@@ -22,17 +22,19 @@
 
 namespace mimir::formalism
 {
-class GeneralizedProblem
+class GeneralizedProblemImpl
 {
 private:
     Domain m_domain;
     ProblemList m_problems;
 
-public:
-    GeneralizedProblem(const fs::path& domain_filepath, const std::vector<fs::path>& problem_filepaths, const loki::Options& options = loki::Options());
-    GeneralizedProblem(const fs::path& domain_filepath, const fs::path& problems_directory, const loki::Options& options = loki::Options());
+    GeneralizedProblemImpl(Domain domain, ProblemList problems);
 
-    GeneralizedProblem(Domain domain, ProblemList problems);
+public:
+    static GeneralizedProblem
+    create(const fs::path& domain_filepath, const std::vector<fs::path>& problem_filepaths, const loki::Options& options = loki::Options());
+    static GeneralizedProblem create(const fs::path& domain_filepath, const fs::path& problems_directory, const loki::Options& options = loki::Options());
+    static GeneralizedProblem create(Domain domain, ProblemList problems);
 
     const Domain& get_domain() const;
     const ProblemList& get_problems() const;

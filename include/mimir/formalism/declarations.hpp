@@ -62,7 +62,8 @@ using GroundAction = const GroundActionImpl*;
 using GroundActionList = std::vector<GroundAction>;
 using GroundActionSet = std::unordered_set<GroundAction>;
 
-class GeneralizedProblem;
+class GeneralizedProblemImpl;
+using GeneralizedProblem = std::shared_ptr<GeneralizedProblemImpl>;
 
 template<IsStaticOrFluentOrDerivedTag P>
 class AtomImpl;

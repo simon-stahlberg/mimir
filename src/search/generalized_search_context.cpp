@@ -17,6 +17,7 @@
 
 #include "mimir/search/generalized_search_context.hpp"
 
+#include "mimir/formalism/generalized_problem.hpp"
 #include "mimir/formalism/problem.hpp"
 
 using namespace mimir::formalism;
@@ -27,33 +28,33 @@ namespace mimir::search
 GeneralizedSearchContext::GeneralizedSearchContext(const fs::path& domain_filepath,
                                                    const std::vector<fs::path>& problem_filepaths,
                                                    const SearchContext::Options& options) :
-    GeneralizedSearchContext(GeneralizedProblem(domain_filepath, problem_filepaths), options)
+    GeneralizedSearchContext(GeneralizedProblemImpl::create(domain_filepath, problem_filepaths), options)
 {
 }
 GeneralizedSearchContext::GeneralizedSearchContext(const fs::path& domain_filepath, const fs::path& problems_directory, const SearchContext::Options& options) :
-    GeneralizedSearchContext(GeneralizedProblem(domain_filepath, problems_directory), options)
+    GeneralizedSearchContext(GeneralizedProblemImpl::create(domain_filepath, problems_directory), options)
 {
 }
 
 GeneralizedSearchContext::GeneralizedSearchContext(GeneralizedProblem generalized_problem, const SearchContext::Options& options) :
-    m_domain(generalized_problem.get_domain()),
+    m_domain(generalized_problem->get_domain()),
     m_generalized_problem(std::move(generalized_problem)),
     m_search_contexts()
 {
-    for (const auto& problem : get_generalized_problem().get_problems())
+    for (const auto& problem : get_generalized_problem()->get_problems())
     {
         m_search_contexts.emplace_back(problem, options);
     }
 }
 
 GeneralizedSearchContext::GeneralizedSearchContext(GeneralizedProblem generalized_problem, SearchContextList search_contexts) :
-    m_domain(generalized_problem.get_domain()),
+    m_domain(generalized_problem->get_domain()),
     m_generalized_problem(std::move(generalized_problem)),
     m_search_contexts(std::move(search_contexts))
 {
     if (!all_of(m_search_contexts.begin(),
                 m_search_contexts.end(),
-                [this](auto&& arg) { return arg.get_problem()->get_domain() == get_generalized_problem().get_domain(); }))
+                [this](auto&& arg) { return arg.get_problem()->get_domain() == get_generalized_problem()->get_domain(); }))
     {
         throw std::runtime_error("GeneralizedSearchContext::GeneralizedSearchContext: Expected all given search contexts to be defined over the same domain.");
     }

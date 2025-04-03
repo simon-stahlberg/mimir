@@ -24,40 +24,46 @@
 namespace mimir::formalism
 {
 
-GeneralizedProblem::GeneralizedProblem(const fs::path& domain_filepath, const std::vector<fs::path>& problem_filepaths, const loki::Options& options) :
-    m_problems()
-{
-    auto parser = Parser(domain_filepath, options);
-    auto translator = Translator(parser.get_domain());
-    m_domain = translator.get_translated_domain();
-    for (const auto& problem_filepath : problem_filepaths)
-    {
-        auto problem = parser.parse_problem(problem_filepath, options);
-        m_problems.push_back(translator.translate(problem));
-    }
-}
-
-GeneralizedProblem::GeneralizedProblem(const fs::path& domain_filepath, const fs::path& problems_directory, const loki::Options& options)
-{
-    auto parser = Parser(domain_filepath, options);
-    auto translator = Translator(parser.get_domain());
-    m_domain = translator.get_translated_domain();
-    for (const auto& problem_filepath : fs::directory_iterator(problems_directory))
-    {
-        auto problem = parser.parse_problem(problem_filepath, options);
-        m_problems.push_back(translator.translate(problem));
-    }
-}
-
-GeneralizedProblem::GeneralizedProblem(Domain domain, ProblemList problems) : m_domain(std::move(domain)), m_problems(std::move(problems))
+GeneralizedProblemImpl::GeneralizedProblemImpl(Domain domain, ProblemList problems) : m_domain(std::move(domain)), m_problems(std::move(problems))
 {
     if (!all_of(m_problems.begin(), m_problems.end(), [this](auto&& arg) { return arg->get_domain() == m_domain; }))
     {
-        throw std::runtime_error("GeneralizedProblem::GeneralizedProblem: Expected all given problems to be defined over the given domain.");
+        throw std::runtime_error("GeneralizedProblemImpl::GeneralizedProblemImpl: Expected all given problems to be defined over the given domain.");
     }
 }
 
-const Domain& GeneralizedProblem::get_domain() const { return m_domain; }
-const ProblemList& GeneralizedProblem::get_problems() const { return m_problems; }
+GeneralizedProblem GeneralizedProblemImpl::create(const fs::path& domain_filepath, const std::vector<fs::path>& problem_filepaths, const loki::Options& options)
+{
+    auto parser = Parser(domain_filepath, options);
+    auto translator = Translator(parser.get_domain());
+    auto domain = translator.get_translated_domain();
+    auto problems = ProblemList {};
+    for (const auto& problem_filepath : problem_filepaths)
+    {
+        auto problem = parser.parse_problem(problem_filepath, options);
+        problems.push_back(translator.translate(problem));
+    }
+
+    return create(std::move(domain), std::move(problems));
+}
+
+GeneralizedProblem GeneralizedProblemImpl::create(const fs::path& domain_filepath, const fs::path& problems_directory, const loki::Options& options)
+{
+    auto problem_filepaths = std::vector<fs::path> {};
+    for (const auto& problem_filepath : fs::directory_iterator(problems_directory))
+    {
+        problem_filepaths.push_back(problem_filepath);
+    }
+
+    return create(domain_filepath, problem_filepaths);
+}
+
+GeneralizedProblem GeneralizedProblemImpl::create(Domain domain, ProblemList problems)
+{
+    return std::shared_ptr<GeneralizedProblemImpl>(new GeneralizedProblemImpl(std::move(domain), std::move(problems)));
+}
+
+const Domain& GeneralizedProblemImpl::get_domain() const { return m_domain; }
+const ProblemList& GeneralizedProblemImpl::get_problems() const { return m_problems; }
 
 }

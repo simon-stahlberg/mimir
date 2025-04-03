@@ -23,7 +23,6 @@
 #include "mimir/datasets/declarations.hpp"
 #include "mimir/datasets/state_space.hpp"
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/generalized_problem.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/generalized_search_context.hpp"
 
