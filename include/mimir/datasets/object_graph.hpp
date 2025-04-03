@@ -41,7 +41,7 @@ namespace mimir::datasets
 /// @param color_function is the function used to color the vertices in the object graph.
 /// @return a vertex colored graph that precisely represents the given state.
 extern graphs::StaticVertexColoredDigraph
-create_object_graph(search::State state, const formalism::ProblemImpl& problem, const GeneralizedColorFunctionImpl& color_function);
+create_object_graph(search::State state, const formalism::ProblemImpl& problem, const formalism::ColorFunctionImpl& color_function);
 
 }
 

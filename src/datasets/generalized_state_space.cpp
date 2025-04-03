@@ -18,8 +18,8 @@
 #include "mimir/datasets/generalized_state_space.hpp"
 
 #include "mimir/common/timers.hpp"
-#include "mimir/datasets/generalized_color_function.hpp"
 #include "mimir/datasets/object_graph.hpp"
+#include "mimir/formalism/color_function.hpp"
 #include "mimir/formalism/generalized_problem.hpp"
 #include "mimir/formalism/ground_action.hpp"
 #include "mimir/formalism/parser.hpp"
@@ -112,8 +112,8 @@ static GeneralizedStateSpace compute_generalized_state_space_with_symmetry_reduc
         auto final_problem_graph = graphs::StaticProblemGraph();
         auto problem_v_idx_to_class_v_idx = std::unordered_map<Index, Index> {};
 
-        auto& vertex_mapping = vertex_mappings[state_space->get_search_context().get_problem().get()];
-        auto& edge_mapping = edge_mappings[state_space->get_search_context().get_problem().get()];
+        auto& vertex_mapping = vertex_mappings[state_space->get_search_context()->get_problem().get()];
+        auto& edge_mapping = edge_mappings[state_space->get_search_context()->get_problem().get()];
 
         for (const auto& v : graph.get_vertices())
         {
@@ -239,8 +239,8 @@ static GeneralizedStateSpace compute_generalized_state_space_without_symmetry_re
             unsolvable_vertices.insert(v_offset + unsolvable_v_idx);
         }
 
-        auto& vertex_mapping = vertex_mappings[state_space->get_search_context().get_problem().get()];
-        auto& edge_mapping = edge_mappings[state_space->get_search_context().get_problem().get()];
+        auto& vertex_mapping = vertex_mappings[state_space->get_search_context()->get_problem().get()];
+        auto& edge_mapping = edge_mappings[state_space->get_search_context()->get_problem().get()];
 
         for (const auto& v : graph.get_vertices())
         {

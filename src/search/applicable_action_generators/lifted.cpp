@@ -77,7 +77,7 @@ void LiftedApplicableActionGenerator::DefaultEventHandler::on_end_search_impl() 
  * LiftedApplicableActionGenerator
  */
 
-LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem) :
+LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(formalism::Problem problem) :
     LiftedApplicableActionGenerator(std::move(problem), std::make_shared<DefaultEventHandler>())
 {
 }
@@ -102,6 +102,13 @@ LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem
         assert(action->get_index() == i);
         m_action_grounding_data.push_back(ActionSatisficingBindingGenerator(action, m_problem));
     }
+}
+
+ApplicableActionGenerator LiftedApplicableActionGenerator::create(Problem problem) { return create(problem, std::make_shared<DefaultEventHandler>()); }
+
+ApplicableActionGenerator LiftedApplicableActionGenerator::create(Problem problem, std::shared_ptr<IEventHandler> event_handler)
+{
+    return std::shared_ptr<LiftedApplicableActionGenerator>(new LiftedApplicableActionGenerator(std::move(problem), std::move(event_handler)));
 }
 
 mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicable_action_generator(State state)

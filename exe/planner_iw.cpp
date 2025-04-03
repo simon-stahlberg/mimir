@@ -91,23 +91,12 @@ int main(int argc, char** argv)
         state_repository = std::make_shared<StateRepositoryImpl>(axiom_evaluator);
     }
 
-    if (debug)
-    {
-        std::shared_ptr<LiftedApplicableActionGenerator> lifted_applicable_action_generator =
-            std::dynamic_pointer_cast<LiftedApplicableActionGenerator>(applicable_action_generator);
-
-        if (lifted_applicable_action_generator)
-        {
-            // std::cout << *lifted_applicable_action_generator << std::endl;
-        }
-    }
-
     auto brfs_event_handler = (debug) ? brfs::EventHandler { std::make_shared<brfs::DebugEventHandler>(problem) } :
                                         brfs::EventHandler { std::make_shared<brfs::DefaultEventHandler>(problem) };
 
     auto iw_event_handler = std::make_shared<iw::DefaultEventHandler>(problem, false);
 
-    auto search_context = SearchContext(problem, applicable_action_generator, state_repository);
+    auto search_context = SearchContextImpl::create(problem, applicable_action_generator, state_repository);
 
     auto result = iw::find_solution(search_context, nullptr, arity, iw_event_handler, brfs_event_handler);
 

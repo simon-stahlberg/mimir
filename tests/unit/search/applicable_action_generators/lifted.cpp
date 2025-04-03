@@ -44,7 +44,7 @@ TEST(MimirTests, SearchApplicableActionGeneratorsLiftedTest)
     const auto axiom_evaluator = std::dynamic_pointer_cast<IAxiomEvaluator>(std::make_shared<LiftedAxiomEvaluator>(problem, axiom_evaluator_event_handler));
     const auto state_repository = std::make_shared<StateRepositoryImpl>(axiom_evaluator);
     const auto brfs_event_handler = std::make_shared<brfs::DefaultEventHandler>(problem);
-    const auto search_context = SearchContext(problem, applicable_action_generator, state_repository);
+    const auto search_context = SearchContextImpl::create(problem, applicable_action_generator, state_repository);
 
     const auto result = brfs::find_solution(search_context, nullptr, brfs_event_handler);
     EXPECT_EQ(result.status, SearchStatus::SOLVED);

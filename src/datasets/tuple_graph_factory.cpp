@@ -143,7 +143,7 @@ private:
         const auto root_problem_v_idx = m_problem_vertex.get_index();
 
         std::cout << "ROOT_INDEX=";
-        mimir::operator<<(std::cout, std::make_tuple(root_state, std::cref(*m_state_space->get_search_context().get_problem())));
+        mimir::operator<<(std::cout, std::make_tuple(root_state, std::cref(*m_state_space->get_search_context()->get_problem())));
         std::cout << std::endl;
 
         m_novelty_table.compute_novel_tuples(root_state, m_novel_tuples_vec);
@@ -203,10 +203,10 @@ private:
         /* Compute all states in next layer, even those that are symmetric, to compute all tuple indices. */
         for (const auto& prev_state : m_prev_states)
         {
-            for (const auto& action : m_state_space->get_search_context().get_applicable_action_generator()->create_applicable_action_generator(prev_state))
+            for (const auto& action : m_state_space->get_search_context()->get_applicable_action_generator()->create_applicable_action_generator(prev_state))
             {
                 const auto [successor_state, successor_state_metric_value] =
-                    m_state_space->get_search_context().get_state_repository()->get_or_create_successor_state(prev_state, action, 0);
+                    m_state_space->get_search_context()->get_state_repository()->get_or_create_successor_state(prev_state, action, 0);
                 if (!m_visited_states.contains(successor_state))
                 {
                     m_curr_states.insert(successor_state);
@@ -295,7 +295,7 @@ private:
             std::cout << "STATE=";
             mimir::operator<<(std::cout,
                               std::make_tuple(get_state(m_state_space->get_graph().get_vertex(problem_v_idx)),
-                                              std::cref(*m_state_space->get_search_context().get_problem())));
+                                              std::cref(*m_state_space->get_search_context()->get_problem())));
             std::cout << std::endl;
 
             for (const auto& novel_tuple : m_novel_tuples_vec)

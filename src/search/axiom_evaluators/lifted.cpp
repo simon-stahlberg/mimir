@@ -92,6 +92,13 @@ LiftedAxiomEvaluator::LiftedAxiomEvaluator(Problem problem, std::shared_ptr<IEve
     }
 }
 
+AxiomEvaluator LiftedAxiomEvaluator::create(Problem problem) { return create(std::move(problem), std::make_shared<DefaultEventHandler>()); }
+
+AxiomEvaluator LiftedAxiomEvaluator::create(Problem problem, std::shared_ptr<IEventHandler> event_handler)
+{
+    return std::shared_ptr<LiftedAxiomEvaluator>(new LiftedAxiomEvaluator(std::move(problem), std::move(event_handler)));
+}
+
 void LiftedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state)
 {
     const auto& dense_fluent_atoms = dense_state.get_atoms<FluentTag>();

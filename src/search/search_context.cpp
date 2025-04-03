@@ -28,31 +28,35 @@ using namespace mimir::formalism;
 namespace mimir::search
 {
 
-SearchContext::SearchContext(const fs::path& domain_filepath, const fs::path& problem_filepath, const Options& options) :
-    m_problem(ProblemImpl::create(domain_filepath, problem_filepath))
+SearchContextImpl::SearchContextImpl(formalism::Problem problem, ApplicableActionGenerator applicable_action_generator, StateRepository state_repository) :
+    m_problem(std::move(problem)),
+    m_applicable_action_generator(std::move(applicable_action_generator)),
+    m_state_repository(std::move(state_repository))
 {
-    auto search_context = SearchContext(m_problem, options);
-    m_applicable_action_generator = std::move(search_context.m_applicable_action_generator);
-    m_state_repository = std::move(search_context.m_state_repository);
 }
 
-SearchContext::SearchContext(Problem problem, const Options& options) : m_problem(problem)
+SearchContext SearchContextImpl::create(const fs::path& domain_filepath, const fs::path& problem_filepath, const Options& options)
+{
+    return create(ProblemImpl::create(domain_filepath, problem_filepath), options);
+}
+
+SearchContext SearchContextImpl::create(Problem problem, const Options& options)
 {
     switch (options.mode)
     {
         case SearchMode::GROUNDED:
         {
-            auto delete_relaxed_explorator = DeleteRelaxedProblemExplorator(m_problem);
-            m_state_repository = std::make_shared<StateRepositoryImpl>(delete_relaxed_explorator.create_grounded_axiom_evaluator());
-            m_applicable_action_generator =
-                std::dynamic_pointer_cast<IApplicableActionGenerator>(delete_relaxed_explorator.create_grounded_applicable_action_generator());
-            break;
+            auto delete_relaxed_explorator = DeleteRelaxedProblemExplorator(problem);
+
+            return create(problem,
+                          delete_relaxed_explorator.create_grounded_applicable_action_generator(),
+                          std::make_shared<StateRepositoryImpl>(delete_relaxed_explorator.create_grounded_axiom_evaluator()));
         }
         case SearchMode::LIFTED:
         {
-            m_state_repository = std::make_shared<StateRepositoryImpl>(std::make_shared<LiftedAxiomEvaluator>(m_problem));
-            m_applicable_action_generator = std::dynamic_pointer_cast<IApplicableActionGenerator>(std::make_shared<LiftedApplicableActionGenerator>(m_problem));
-            break;
+            return create(problem,
+                          std::make_shared<LiftedApplicableActionGenerator>(problem),
+                          std::make_shared<StateRepositoryImpl>(std::make_shared<LiftedAxiomEvaluator>(problem)));
         }
         default:
         {
@@ -61,25 +65,24 @@ SearchContext::SearchContext(Problem problem, const Options& options) : m_proble
     }
 }
 
-SearchContext::SearchContext(Problem problem, ApplicableActionGenerator applicable_action_generator, StateRepository state_repository) :
-    m_problem(std::move(problem)),
-    m_applicable_action_generator(std::move(applicable_action_generator)),
-    m_state_repository(std::move(state_repository))
+SearchContext SearchContextImpl::create(Problem problem, ApplicableActionGenerator applicable_action_generator, StateRepository state_repository)
 {
-    if (m_applicable_action_generator->get_problem() != m_problem)
+    if (applicable_action_generator->get_problem() != problem)
     {
         throw std::runtime_error("SearchContext::SearchContext: Expected the given applicable action generator to be defined over the given problem.");
     }
-    if (m_state_repository->get_problem() != m_problem)
+    if (state_repository->get_problem() != problem)
     {
         throw std::runtime_error("SearchContext::SearchContext: Expected the given state repository to be defined over the given problem.");
     }
+
+    return std::shared_ptr<SearchContextImpl>(new SearchContextImpl(std::move(problem), std::move(applicable_action_generator), std::move(state_repository)));
 }
 
-const Problem& SearchContext::get_problem() const { return m_problem; }
+const Problem& SearchContextImpl::get_problem() const { return m_problem; }
 
-const ApplicableActionGenerator SearchContext::get_applicable_action_generator() const { return m_applicable_action_generator; }
+const ApplicableActionGenerator SearchContextImpl::get_applicable_action_generator() const { return m_applicable_action_generator; }
 
-const StateRepository SearchContext::get_state_repository() const { return m_state_repository; }
+const StateRepository SearchContextImpl::get_state_repository() const { return m_state_repository; }
 
 }

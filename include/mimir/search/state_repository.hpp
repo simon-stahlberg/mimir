@@ -55,6 +55,8 @@ private:
 public:
     explicit StateRepositoryImpl(AxiomEvaluator axiom_evaluator);
 
+    static StateRepository create(AxiomEvaluator axiom_evaluator);
+
     StateRepositoryImpl(const StateRepositoryImpl& other) = delete;
     StateRepositoryImpl& operator=(const StateRepositoryImpl& other) = delete;
     StateRepositoryImpl(StateRepositoryImpl&& other) = delete;

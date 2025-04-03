@@ -17,8 +17,8 @@
 
 #include "mimir/datasets/object_graph.hpp"
 
-#include "mimir/datasets/generalized_color_function.hpp"
 #include "mimir/datasets/generalized_state_space.hpp"
+#include "mimir/formalism/color_function.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/graphs/algorithms/nauty.hpp"
 
@@ -39,9 +39,9 @@ TEST(MimirTests, DataSetsObjectGraphDenseTest)
 
     auto options = StateSpaceImpl::Options();
     options.symmetry_pruning = false;
-    const auto context = search::SearchContext(domain_file, problem_file);
+    const auto context = search::SearchContextImpl::create(domain_file, problem_file);
     const auto state_space = StateSpaceImpl::create(context, options);
-    const auto color_function = GeneralizedColorFunctionImpl::create(context.get_problem());
+    const auto color_function = ColorFunctionImpl::create(context->get_problem());
 
     auto certificates = std::unordered_set<nauty::Certificate, loki::Hash<nauty::Certificate>, loki::EqualTo<nauty::Certificate>> {};
 
@@ -67,9 +67,9 @@ TEST(MimirTests, DataSetsObjectGraphSparseTest)
 
     auto options = StateSpaceImpl::Options();
     options.symmetry_pruning = false;
-    const auto context = search::SearchContext(domain_file, problem_file);
+    const auto context = search::SearchContextImpl::create(domain_file, problem_file);
     const auto state_space = StateSpaceImpl::create(context, options);
-    const auto color_function = GeneralizedColorFunctionImpl::create(context.get_problem());
+    const auto color_function = ColorFunctionImpl::create(context->get_problem());
 
     auto certificates = std::unordered_set<nauty::Certificate, loki::Hash<nauty::Certificate>, loki::EqualTo<nauty::Certificate>> {};
 

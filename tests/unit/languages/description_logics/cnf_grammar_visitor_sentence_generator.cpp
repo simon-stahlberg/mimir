@@ -96,7 +96,7 @@ TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarVisitorSentenceGeneratorTes
     // The spanner is at location 2.
     const auto problem2_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
 
-    auto context = search::GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem1_file, problem2_file });
+    auto context = search::GeneralizedSearchContextImpl::create(domain_file, std::vector<fs::path> { problem1_file, problem2_file });
 
     auto kb_options = KnowledgeBaseImpl::Options();
 
@@ -146,7 +146,7 @@ TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarVisitorSentenceGeneratorFra
     // The spanner is at location 2.
     const auto problem2_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
 
-    auto context = search::GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem1_file, problem2_file });
+    auto context = search::GeneralizedSearchContextImpl::create(domain_file, std::vector<fs::path> { problem1_file, problem2_file });
 
     auto kb_options = KnowledgeBaseImpl::Options();
 

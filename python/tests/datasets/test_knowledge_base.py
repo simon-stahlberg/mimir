@@ -23,7 +23,7 @@ def test_knowledge_base_without_symmetry_reduction():
     knowledge_base_options.state_space_options = state_space_options
     knowledge_base_options.generalized_state_space_options = generalized_state_space_options
 
-    generalized_search_context = search.GeneralizedSearchContext(domain_filepath, [problem_filepath_1, problem_filepath_2])
+    generalized_search_context = search.GeneralizedSearchContext.create(domain_filepath, [problem_filepath_1, problem_filepath_2])
 
     knowledge_base = datasets.KnowledgeBase.create(generalized_search_context, knowledge_base_options)
 
@@ -52,7 +52,7 @@ def test_knowledge_base_with_symmetry_reduction():
     knowledge_base_options.state_space_options = state_space_options
     knowledge_base_options.generalized_state_space_options = generalized_state_space_options
 
-    generalized_search_context = search.GeneralizedSearchContext(domain_filepath, [problem_filepath_1, problem_filepath_2])
+    generalized_search_context = search.GeneralizedSearchContext.create(domain_filepath, [problem_filepath_1, problem_filepath_2])
 
     knowledge_base = datasets.KnowledgeBase.create(generalized_search_context, knowledge_base_options)
 

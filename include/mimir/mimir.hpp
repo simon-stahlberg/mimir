@@ -36,12 +36,14 @@
 #include "mimir/formalism/action.hpp"
 #include "mimir/formalism/assignment_set.hpp"
 #include "mimir/formalism/atom.hpp"
+#include "mimir/formalism/color_function.hpp"
 #include "mimir/formalism/consistency_graph.hpp"
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/effects.hpp"
 #include "mimir/formalism/function.hpp"
 #include "mimir/formalism/function_expressions.hpp"
 #include "mimir/formalism/function_skeleton.hpp"
+#include "mimir/formalism/generalized_problem.hpp"
 #include "mimir/formalism/ground_action.hpp"
 #include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/ground_axiom.hpp"
@@ -87,7 +89,6 @@
  */
 
 #include "mimir/datasets/class_graph.hpp"
-#include "mimir/datasets/generalized_color_function.hpp"
 #include "mimir/datasets/generalized_state_space.hpp"
 #include "mimir/datasets/knowledge_base.hpp"
 #include "mimir/datasets/object_graph.hpp"

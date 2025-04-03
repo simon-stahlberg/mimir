@@ -38,7 +38,7 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyGripperTest)
         const auto problem1_file = fs::path(std::string(DATA_DIR) + "gripper/p-1-0.pddl");
         const auto problem2_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
 
-        auto context = search::GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem1_file, problem2_file });
+        auto context = search::GeneralizedSearchContextImpl::create(domain_file, std::vector<fs::path> { problem1_file, problem2_file });
 
         auto denotation_repositories = dl::DenotationRepositories();
 
@@ -46,7 +46,7 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyGripperTest)
         auto dl_repositories = dl::Repositories();
 
         const auto general_policy =
-            general_policies::GeneralPolicyFactory::get_or_create_general_policy_gripper(*context.get_domain(), repositories, dl_repositories);
+            general_policies::GeneralPolicyFactory::get_or_create_general_policy_gripper(*context->get_domain(), repositories, dl_repositories);
 
         EXPECT_TRUE(general_policy->is_terminating(repositories));
 
@@ -141,7 +141,7 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyBlocks3opsTest)
         const auto problem1_file = fs::path(std::string(DATA_DIR) + "blocks_3/test_problem.pddl");
         const auto problem2_file = fs::path(std::string(DATA_DIR) + "blocks_3/test_problem2.pddl");
 
-        auto context = search::GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem1_file, problem2_file });
+        auto context = search::GeneralizedSearchContextImpl::create(domain_file, std::vector<fs::path> { problem1_file, problem2_file });
 
         auto denotation_repositories = dl::DenotationRepositories();
 
@@ -149,7 +149,7 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyBlocks3opsTest)
         auto dl_repositories = dl::Repositories();
 
         const auto general_policy =
-            general_policies::GeneralPolicyFactory::get_or_create_general_policy_blocks3ops(*context.get_domain(), repositories, dl_repositories);
+            general_policies::GeneralPolicyFactory::get_or_create_general_policy_blocks3ops(*context->get_domain(), repositories, dl_repositories);
 
         EXPECT_TRUE(!general_policy->is_terminating(repositories));
 
@@ -244,7 +244,7 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicySpannerTest)
         const auto problem1_file = fs::path(std::string(DATA_DIR) + "spanner/p-1-1-2-1.pddl");
         const auto problem2_file = fs::path(std::string(DATA_DIR) + "spanner/p-1-1-2-1(2).pddl");
 
-        auto context = search::GeneralizedSearchContext(domain_file, std::vector<fs::path> { problem1_file, problem2_file });
+        auto context = search::GeneralizedSearchContextImpl::create(domain_file, std::vector<fs::path> { problem1_file, problem2_file });
 
         auto denotation_repositories = dl::DenotationRepositories();
 
@@ -252,7 +252,7 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicySpannerTest)
         auto dl_repositories = dl::Repositories();
 
         const auto general_policy =
-            general_policies::GeneralPolicyFactory::get_or_create_general_policy_spanner(*context.get_domain(), repositories, dl_repositories);
+            general_policies::GeneralPolicyFactory::get_or_create_general_policy_spanner(*context->get_domain(), repositories, dl_repositories);
 
         {
             /* Without symmetry reduction. */

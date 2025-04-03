@@ -64,7 +64,7 @@ KnowledgeBase KnowledgeBaseImpl::create(search::GeneralizedSearchContext context
         tuple_graphs = std::move(tmp_tuple_graphs);
     }
 
-    return std::make_shared<KnowledgeBaseImpl>(contexts.get_domain(), std::move(state_spaces), std::move(generalized_state_space), std::move(tuple_graphs));
+    return std::make_shared<KnowledgeBaseImpl>(contexts->get_domain(), std::move(state_spaces), std::move(generalized_state_space), std::move(tuple_graphs));
 }
 
 /**

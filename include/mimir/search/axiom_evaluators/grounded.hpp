@@ -186,13 +186,16 @@ public:
         explicit DefaultEventHandler(bool quiet = true) : EventHandlerBase<DefaultEventHandler>(quiet) {}
     };
 
-public:
-    GroundedAxiomEvaluator(formalism::Problem problem,
-                           std::vector<std::unique_ptr<match_tree::MatchTree<formalism::GroundAxiomImpl>>>&& match_tree_partitioning);
-
     GroundedAxiomEvaluator(formalism::Problem problem,
                            std::vector<std::unique_ptr<match_tree::MatchTree<formalism::GroundAxiomImpl>>>&& match_tree_partitioning,
                            std::shared_ptr<IEventHandler> event_handler);
+
+    static AxiomEvaluator create(formalism::Problem problem,
+                                 std::vector<std::unique_ptr<match_tree::MatchTree<formalism::GroundAxiomImpl>>>&& match_tree_partitioning);
+
+    static AxiomEvaluator create(formalism::Problem problem,
+                                 std::vector<std::unique_ptr<match_tree::MatchTree<formalism::GroundAxiomImpl>>>&& match_tree_partitioning,
+                                 std::shared_ptr<IEventHandler> event_handler);
 
     // Uncopyable
     GroundedAxiomEvaluator(const GroundedAxiomEvaluator& other) = delete;

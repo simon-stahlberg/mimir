@@ -63,7 +63,7 @@ public:
         m_brfs_event_handler(std::make_shared<brfs::DefaultEventHandler>(m_problem)),
         m_iw_event_handler(std::make_shared<iw::DefaultEventHandler>(m_problem)),
         m_siw_event_handler(std::make_shared<siw::DefaultEventHandler>(m_problem)),
-        m_search_context(m_problem, m_applicable_action_generator, m_state_repository)
+        m_search_context(SearchContextImpl::create(m_problem, m_applicable_action_generator, m_state_repository))
     {
     }
 
@@ -114,7 +114,7 @@ public:
         m_brfs_event_handler(std::make_shared<brfs::DefaultEventHandler>(m_problem)),
         m_iw_event_handler(std::make_shared<iw::DefaultEventHandler>(m_problem)),
         m_siw_event_handler(std::make_shared<siw::DefaultEventHandler>(m_problem)),
-        m_search_context(m_problem, m_applicable_action_generator, m_state_repository)
+        m_search_context(SearchContextImpl::create(m_problem, m_applicable_action_generator, m_state_repository))
     {
     }
 

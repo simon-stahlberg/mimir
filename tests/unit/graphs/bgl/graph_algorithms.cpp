@@ -35,7 +35,7 @@ TEST(MimirTests, GraphsStrongComponentsTest)
         const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
 
         const auto state_space = datasets::StateSpaceImpl::create(
-            search::SearchContext(domain_file, problem_file, search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
+            search::SearchContextImpl::create(domain_file, problem_file, search::SearchContextImpl::Options(search::SearchContextImpl::SearchMode::GROUNDED)));
         const auto& graph = state_space.value()->get_graph();
         auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::ForwardTag {});
 
@@ -51,7 +51,7 @@ TEST(MimirTests, GraphsStrongComponentsTest)
         const auto problem_file = fs::path(std::string(DATA_DIR) + "spanner/test_problem.pddl");
 
         const auto state_space = datasets::StateSpaceImpl::create(
-            search::SearchContext(domain_file, problem_file, search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
+            search::SearchContextImpl::create(domain_file, problem_file, search::SearchContextImpl::Options(search::SearchContextImpl::SearchMode::GROUNDED)));
         const auto& graph = state_space.value()->get_graph();
         auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::ForwardTag {});
 
@@ -80,7 +80,7 @@ TEST(MimirTests, GraphsBreadthFirstSearchTest)
         const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
 
         const auto state_space = datasets::StateSpaceImpl::create(
-            search::SearchContext(domain_file, problem_file, search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
+            search::SearchContextImpl::create(domain_file, problem_file, search::SearchContextImpl::Options(search::SearchContextImpl::SearchMode::GROUNDED)));
         const auto& graph = state_space.value()->get_graph();
         auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::ForwardTag {});
 
@@ -100,7 +100,7 @@ TEST(MimirTests, GraphsBreadthFirstSearchTest)
         const auto problem_file = fs::path(std::string(DATA_DIR) + "spanner/test_problem.pddl");
 
         const auto state_space = datasets::StateSpaceImpl::create(
-            search::SearchContext(domain_file, problem_file, search::SearchContext::Options(search::SearchContext::SearchMode::GROUNDED)));
+            search::SearchContextImpl::create(domain_file, problem_file, search::SearchContextImpl::Options(search::SearchContextImpl::SearchMode::GROUNDED)));
         const auto& graph = state_space.value()->get_graph();
         auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::BackwardTag {});
 

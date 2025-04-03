@@ -111,18 +111,25 @@ void GroundedAxiomEvaluator::DefaultEventHandler::on_end_search_impl() const {}
  */
 
 GroundedAxiomEvaluator::GroundedAxiomEvaluator(Problem problem,
-                                               std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>>&& match_tree_partitioning) :
-    GroundedAxiomEvaluator(std::move(problem), std::move(match_tree_partitioning), std::make_shared<DefaultEventHandler>())
-{
-}
-
-GroundedAxiomEvaluator::GroundedAxiomEvaluator(Problem problem,
                                                std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>>&& match_tree_partitioning,
                                                std::shared_ptr<IEventHandler> event_handler) :
     m_problem(std::move(problem)),
     m_match_tree_partitioning(std::move(match_tree_partitioning)),
     m_event_handler(std::move(event_handler))
 {
+}
+
+AxiomEvaluator GroundedAxiomEvaluator::create(Problem problem, std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>>&& match_tree_partitioning)
+{
+    return create(std::move(problem), std::move(match_tree_partitioning), std::make_shared<DefaultEventHandler>());
+}
+
+AxiomEvaluator GroundedAxiomEvaluator::create(Problem problem,
+                                              std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>>&& match_tree_partitioning,
+                                              std::shared_ptr<IEventHandler> event_handler)
+{
+    return std::shared_ptr<GroundedAxiomEvaluator>(
+        new GroundedAxiomEvaluator(std::move(problem), std::move(match_tree_partitioning), std::move(event_handler)));
 }
 
 void GroundedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state)

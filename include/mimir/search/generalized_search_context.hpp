@@ -25,35 +25,37 @@
 namespace mimir::search
 {
 
-class GeneralizedSearchContext
+class GeneralizedSearchContextImpl
 {
 private:
-    formalism::Domain m_domain;  ///< The common domain.
+    formalism::Domain m_domain;
 
     formalism::GeneralizedProblem m_generalized_problem;
 
     SearchContextList m_search_contexts;
+
+    GeneralizedSearchContextImpl(formalism::Domain domain, formalism::GeneralizedProblem generalized_problem, SearchContextList search_contexts);
 
 public:
     /// @brief Construction from `GeneralizedProblem` construction API.
     /// @param domain_filepath
     /// @param problem_filepaths
     /// @param options
-    GeneralizedSearchContext(const fs::path& domain_filepath,
-                             const std::vector<fs::path>& problem_filepaths,
-                             const SearchContext::Options& options = SearchContext::Options());
-    GeneralizedSearchContext(const fs::path& domain_filepath,
-                             const fs::path& problems_directory,
-                             const SearchContext::Options& options = SearchContext::Options());
+    static GeneralizedSearchContext create(const fs::path& domain_filepath,
+                                           const std::vector<fs::path>& problem_filepaths,
+                                           const SearchContextImpl::Options& options = SearchContextImpl::Options());
+    static GeneralizedSearchContext
+    create(const fs::path& domain_filepath, const fs::path& problems_directory, const SearchContextImpl::Options& options = SearchContextImpl::Options());
 
     /// @brief Construction from a `GeneralizedProblem`
     /// @param problem
     /// @param options
-    GeneralizedSearchContext(formalism::GeneralizedProblem generalized_problem, const SearchContext::Options& options = SearchContext::Options());
+    static GeneralizedSearchContext create(formalism::GeneralizedProblem generalized_problem,
+                                           const SearchContextImpl::Options& options = SearchContextImpl::Options());
 
     /// @brief Expert interface: fully customizable construction.
     /// @param search_contexts
-    GeneralizedSearchContext(formalism::GeneralizedProblem generalized_problem, SearchContextList search_contexts);
+    static GeneralizedSearchContext create(formalism::GeneralizedProblem generalized_problem, SearchContextList search_contexts);
 
     const formalism::Domain& get_domain() const;
     const formalism::GeneralizedProblem& get_generalized_problem() const;

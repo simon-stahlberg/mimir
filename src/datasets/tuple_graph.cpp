@@ -60,7 +60,7 @@ TupleGraphList TupleGraphImpl::create(StateSpace state_space, const Options& opt
 std::ostream& operator<<(std::ostream& out, const TupleGraphImpl& tuple_graph)
 {
     const auto& problem_graph = tuple_graph.get_state_space()->get_graph();
-    const auto& problem = *tuple_graph.get_state_space()->get_search_context().get_problem();
+    const auto& problem = *tuple_graph.get_state_space()->get_search_context()->get_problem();
     const auto& pddl_repositories = problem.get_repositories();
     auto atom_indices = iw::AtomIndexList {};
 

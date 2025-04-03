@@ -169,13 +169,18 @@ public:
         explicit DefaultEventHandler(bool quiet = true) : EventHandlerBase<DefaultEventHandler>(quiet) {}
     };
 
-    /// @brief Simplest construction
-    GroundedApplicableActionGenerator(formalism::Problem problem, std::unique_ptr<match_tree::MatchTree<formalism::GroundActionImpl>>&& match_tree);
-
     /// @brief Complete construction
     GroundedApplicableActionGenerator(formalism::Problem problem,
                                       std::unique_ptr<match_tree::MatchTree<formalism::GroundActionImpl>>&& match_tree,
                                       std::shared_ptr<IEventHandler> event_handler);
+
+    /// @brief Simplest construction
+    static ApplicableActionGenerator create(formalism::Problem problem, std::unique_ptr<match_tree::MatchTree<formalism::GroundActionImpl>>&& match_tree);
+
+    /// @brief Complete construction
+    static ApplicableActionGenerator create(formalism::Problem problem,
+                                            std::unique_ptr<match_tree::MatchTree<formalism::GroundActionImpl>>&& match_tree,
+                                            std::shared_ptr<IEventHandler> event_handler);
 
     // Uncopyable
     GroundedApplicableActionGenerator(const GroundedApplicableActionGenerator& other) = delete;

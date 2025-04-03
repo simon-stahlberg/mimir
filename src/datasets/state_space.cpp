@@ -18,8 +18,8 @@
 #include "mimir/datasets/state_space.hpp"
 
 #include "mimir/common/timers.hpp"
-#include "mimir/datasets/generalized_color_function.hpp"
 #include "mimir/datasets/object_graph.hpp"
+#include "mimir/formalism/color_function.hpp"
 #include "mimir/formalism/generalized_problem.hpp"
 #include "mimir/formalism/ground_action.hpp"
 #include "mimir/formalism/parser.hpp"
@@ -89,13 +89,13 @@ namespace mimir::datasets
 
 struct SymmetriesData
 {
-    const GeneralizedColorFunction& color_function;
+    const ColorFunction& color_function;
     CertificateMap<search::State> class_representative;
     StateToCertificate state_to_certificate;
     StateSet prunable_states;
     ValueSet<std::pair<graphs::VertexIndex, graphs::VertexIndex>> m_edges;
 
-    explicit SymmetriesData(const GeneralizedColorFunction& color_function) :
+    explicit SymmetriesData(const ColorFunction& color_function) :
         color_function(color_function),
         class_representative(),
         state_to_certificate(),
@@ -403,19 +403,18 @@ perform_reachability_analysis(SearchContext context, graphs::StaticProblemGraph 
     return std::make_shared<StateSpaceImpl>(context, graphs::ProblemGraph(std::move(final_graph)), 0, std::move(goal_vertices), std::move(unsolvable_vertices));
 }
 
-static std::optional<StateSpace> compute_problem_graph_with_symmetry_reduction(const SearchContext& context,
-                                                                               const GeneralizedColorFunction& color_function,
-                                                                               const StateSpaceImpl::Options& options)
+static std::optional<StateSpace>
+compute_problem_graph_with_symmetry_reduction(const SearchContext& context, const ColorFunction& color_function, const StateSpaceImpl::Options& options)
 {
     auto graph = graphs::StaticProblemGraph();
     auto goal_vertices = IndexSet {};
 
     auto symm_data = SymmetriesData(color_function);
 
-    const auto state_repository = context.get_state_repository();
-    const auto goal_test = std::make_shared<ProblemGoalStrategy>(context.get_problem());
+    const auto state_repository = context->get_state_repository();
+    const auto goal_test = std::make_shared<ProblemGoalStrategy>(context->get_problem());
     const auto event_handler =
-        std::make_shared<SymmetryReducedProblemGraphEventHandler>(context.get_problem(), options, graph, goal_vertices, symm_data, false);
+        std::make_shared<SymmetryReducedProblemGraphEventHandler>(context->get_problem(), options, graph, goal_vertices, symm_data, false);
     const auto pruning_strategy = std::make_shared<SymmetryStatePruning>(symm_data);
     const auto result = find_solution(context, state_repository->get_or_create_initial_state(), event_handler, goal_test, pruning_strategy, true);
 
@@ -432,9 +431,9 @@ static std::optional<StateSpace> compute_problem_graph_without_symmetry_reductio
     auto graph = graphs::StaticProblemGraph();
     auto goal_vertices = IndexSet {};
 
-    const auto state_repository = context.get_state_repository();
-    const auto goal_test = std::make_shared<ProblemGoalStrategy>(context.get_problem());
-    const auto event_handler = std::make_shared<ProblemGraphEventHandler>(context.get_problem(), options, graph, goal_vertices, false);
+    const auto state_repository = context->get_state_repository();
+    const auto goal_test = std::make_shared<ProblemGoalStrategy>(context->get_problem());
+    const auto event_handler = std::make_shared<ProblemGraphEventHandler>(context->get_problem(), options, graph, goal_vertices, false);
     const auto pruning_strategy = std::make_shared<DuplicatePruningStrategy>();
     const auto result = find_solution(context, state_repository->get_or_create_initial_state(), event_handler, goal_test, pruning_strategy, true);
 
@@ -461,8 +460,8 @@ StateSpaceImpl::StateSpaceImpl(search::SearchContext context,
 
 std::optional<StateSpace> StateSpaceImpl::create(search::SearchContext context, const Options& options)
 {
-    auto color_function = GeneralizedColorFunctionImpl::create(
-        formalism::GeneralizedProblemImpl::create(context.get_problem()->get_domain(), formalism::ProblemList { context.get_problem() }));
+    auto color_function = ColorFunctionImpl::create(
+        formalism::GeneralizedProblemImpl::create(context->get_problem()->get_domain(), formalism::ProblemList { context->get_problem() }));
 
     return (options.symmetry_pruning) ? compute_problem_graph_with_symmetry_reduction(context, color_function, options) :
                                         compute_problem_graph_without_symmetry_reduction(context, options);
@@ -470,12 +469,12 @@ std::optional<StateSpace> StateSpaceImpl::create(search::SearchContext context, 
 
 StateSpaceList StateSpaceImpl::create(search::GeneralizedSearchContext contexts, const Options& options)
 {
-    auto color_function = GeneralizedColorFunctionImpl::create(contexts.get_generalized_problem());
+    auto color_function = ColorFunctionImpl::create(contexts->get_generalized_problem());
 
     auto state_spaces = StateSpaceList {};
-    for (const auto& context : contexts.get_search_contexts())
+    for (const auto& context : contexts->get_search_contexts())
     {
-        if (options.remove_if_unsolvable && !context.get_problem()->static_goal_holds())
+        if (options.remove_if_unsolvable && !context->get_problem()->static_goal_holds())
         {
             continue;
         }

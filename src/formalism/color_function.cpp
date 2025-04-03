@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/datasets/generalized_color_function.hpp"
+#include "mimir/formalism/color_function.hpp"
 
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/generalized_problem.hpp"
@@ -23,25 +23,22 @@
 
 #include <fmt/core.h>
 
-using namespace mimir::formalism;
-
-namespace mimir::datasets
+namespace mimir::formalism
 {
 
-GeneralizedColorFunctionImpl::GeneralizedColorFunctionImpl(
-    formalism::GeneralizedProblem generalized_problem,
-    std::unordered_map<graphs::Color, std::string> color_to_name,
-    formalism::PredicateMaps<graphs::Color, formalism::StaticTag, formalism::FluentTag, formalism::DerivedTag> predicate_to_color_offsets) :
+ColorFunctionImpl::ColorFunctionImpl(GeneralizedProblem generalized_problem,
+                                     std::unordered_map<graphs::Color, std::string> color_to_name,
+                                     PredicateMaps<graphs::Color, StaticTag, FluentTag, DerivedTag> predicate_to_color_offsets) :
     m_generalized_problem(std::move(generalized_problem)),
     m_color_to_name(std::move(color_to_name)),
     m_predicate_to_color_offsets(std::move(predicate_to_color_offsets))
 {
 }
 
-GeneralizedColorFunction GeneralizedColorFunctionImpl::create(GeneralizedProblem generalized_problem)
+ColorFunction ColorFunctionImpl::create(GeneralizedProblem generalized_problem)
 {
     auto color_to_name = std::unordered_map<graphs::Color, std::string> {};
-    auto predicate_to_color_offsets = formalism::PredicateMaps<graphs::Color, formalism::StaticTag, formalism::FluentTag, formalism::DerivedTag> {};
+    auto predicate_to_color_offsets = PredicateMaps<graphs::Color, StaticTag, FluentTag, DerivedTag> {};
 
     auto next_color = 1;  // 0 is reserved for objects
 
@@ -81,31 +78,28 @@ GeneralizedColorFunction GeneralizedColorFunctionImpl::create(GeneralizedProblem
         }
     }
 
-    return std::shared_ptr<GeneralizedColorFunctionImpl>(
-        new GeneralizedColorFunctionImpl(std::move(generalized_problem), std::move(color_to_name), std::move(predicate_to_color_offsets)));
+    return std::shared_ptr<ColorFunctionImpl>(
+        new ColorFunctionImpl(std::move(generalized_problem), std::move(color_to_name), std::move(predicate_to_color_offsets)));
 }
 
-GeneralizedColorFunction GeneralizedColorFunctionImpl::create(formalism::Problem problem)
-{
-    return create(formalism::GeneralizedProblemImpl::create(problem->get_domain(), formalism::ProblemList { problem }));
-}
+ColorFunction ColorFunctionImpl::create(Problem problem) { return create(GeneralizedProblemImpl::create(problem->get_domain(), ProblemList { problem })); }
 
-graphs::Color GeneralizedColorFunctionImpl::get_color(Object object) const { return 0; }
+graphs::Color ColorFunctionImpl::get_color(Object object) const { return 0; }
 
 template<IsStaticOrFluentOrDerivedTag P>
-graphs::Color GeneralizedColorFunctionImpl::get_color(GroundAtom<P> atom, size_t pos) const
+graphs::Color ColorFunctionImpl::get_color(GroundAtom<P> atom, size_t pos) const
 {
     assert(pos < atom->get_predicate()->get_arity());
 
     return boost::hana::at_key(m_predicate_to_color_offsets, boost::hana::type<P> {}).at(atom->get_predicate()) + 2 * pos;
 }
 
-template graphs::Color GeneralizedColorFunctionImpl::get_color(GroundAtom<StaticTag> atom, size_t pos) const;
-template graphs::Color GeneralizedColorFunctionImpl::get_color(GroundAtom<FluentTag> atom, size_t pos) const;
-template graphs::Color GeneralizedColorFunctionImpl::get_color(GroundAtom<DerivedTag> atom, size_t pos) const;
+template graphs::Color ColorFunctionImpl::get_color(GroundAtom<StaticTag> atom, size_t pos) const;
+template graphs::Color ColorFunctionImpl::get_color(GroundAtom<FluentTag> atom, size_t pos) const;
+template graphs::Color ColorFunctionImpl::get_color(GroundAtom<DerivedTag> atom, size_t pos) const;
 
 template<IsStaticOrFluentOrDerivedTag P>
-graphs::Color GeneralizedColorFunctionImpl::get_color(GroundLiteral<P> literal, size_t pos) const
+graphs::Color ColorFunctionImpl::get_color(GroundLiteral<P> literal, size_t pos) const
 {
     assert(pos < literal->get_atom()->get_predicate()->get_arity());
 
@@ -113,10 +107,10 @@ graphs::Color GeneralizedColorFunctionImpl::get_color(GroundLiteral<P> literal, 
            + literal->get_polarity();
 }
 
-template graphs::Color GeneralizedColorFunctionImpl::get_color(GroundLiteral<StaticTag> literal, size_t pos) const;
-template graphs::Color GeneralizedColorFunctionImpl::get_color(GroundLiteral<FluentTag> literal, size_t pos) const;
-template graphs::Color GeneralizedColorFunctionImpl::get_color(GroundLiteral<DerivedTag> literal, size_t pos) const;
+template graphs::Color ColorFunctionImpl::get_color(GroundLiteral<StaticTag> literal, size_t pos) const;
+template graphs::Color ColorFunctionImpl::get_color(GroundLiteral<FluentTag> literal, size_t pos) const;
+template graphs::Color ColorFunctionImpl::get_color(GroundLiteral<DerivedTag> literal, size_t pos) const;
 
-const std::string& GeneralizedColorFunctionImpl::get_color_name(graphs::Color color) const { return m_color_to_name.at(color); }
+const std::string& ColorFunctionImpl::get_color_name(graphs::Color color) const { return m_color_to_name.at(color); }
 
 }

@@ -24,12 +24,14 @@
 namespace mimir::search
 {
 
-class SearchContext
+class SearchContextImpl
 {
 private:
     formalism::Problem m_problem;
     ApplicableActionGenerator m_applicable_action_generator;
     StateRepository m_state_repository;
+
+    SearchContextImpl(formalism::Problem problem, ApplicableActionGenerator applicable_action_generator, StateRepository state_repository);
 
 public:
     enum class SearchMode
@@ -50,25 +52,23 @@ public:
     /// @param domain_filepath
     /// @param problem_filepath
     /// @param options
-    SearchContext(const fs::path& domain_filepath, const fs::path& problem_filepath, const Options& options = Options());
+    static SearchContext create(const fs::path& domain_filepath, const fs::path& problem_filepath, const Options& options = Options());
 
     /// @brief Construct for a given problem
     /// @param problem
     /// @param options
-    SearchContext(formalism::Problem problem, const Options& options = Options());
+    static SearchContext create(formalism::Problem problem, const Options& options = Options());
 
     /// @brief Expert interface: fully customizable construction.
     /// @param problem
     /// @param applicable_action_generator
     /// @param state_repository
-    SearchContext(formalism::Problem problem, ApplicableActionGenerator applicable_action_generator, StateRepository state_repository);
+    static SearchContext create(formalism::Problem problem, ApplicableActionGenerator applicable_action_generator, StateRepository state_repository);
 
     const formalism::Problem& get_problem() const;
     const ApplicableActionGenerator get_applicable_action_generator() const;
     const StateRepository get_state_repository() const;
 };
-
-using SearchContextList = std::vector<SearchContext>;
 }
 
 #endif

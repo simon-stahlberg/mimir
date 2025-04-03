@@ -28,9 +28,12 @@
 namespace mimir::search
 {
 
-class SearchContext;
+class SearchContextImpl;
+using SearchContext = std::shared_ptr<SearchContextImpl>;
+using SearchContextList = std::vector<SearchContext>;
 
-class GeneralizedSearchContext;
+class GeneralizedSearchContextImpl;
+using GeneralizedSearchContext = std::shared_ptr<GeneralizedSearchContextImpl>;
 
 // StateRepositoryImpl
 class StateRepositoryImpl;

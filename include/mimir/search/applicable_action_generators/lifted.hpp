@@ -218,12 +218,17 @@ public:
         explicit DefaultEventHandler(bool quiet = true) : EventHandlerBase<DefaultEventHandler>(quiet) {}
     };
 
-public:
     /// @brief Simplest construction
-    explicit LiftedApplicableActionGenerator(formalism::Problem problem);
+    LiftedApplicableActionGenerator(formalism::Problem problem);
 
     /// @brief Complete construction
     LiftedApplicableActionGenerator(formalism::Problem problem, std::shared_ptr<IEventHandler> event_handler);
+
+    /// @brief Simplest construction
+    static ApplicableActionGenerator create(formalism::Problem problem);
+
+    /// @brief Complete construction
+    static ApplicableActionGenerator create(formalism::Problem problem, std::shared_ptr<IEventHandler> event_handler);
 
     // Uncopyable
     LiftedApplicableActionGenerator(const LiftedApplicableActionGenerator& other) = delete;

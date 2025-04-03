@@ -50,6 +50,8 @@ StateRepositoryImpl::StateRepositoryImpl(AxiomEvaluator axiom_evaluator) :
 {
 }
 
+StateRepository StateRepositoryImpl::create(AxiomEvaluator axiom_evaluator) { return std::make_shared<StateRepositoryImpl>(axiom_evaluator); }
+
 State StateRepositoryImpl::get_or_create_initial_state()
 {
     const auto problem = m_axiom_evaluator->get_problem();

@@ -84,9 +84,9 @@ public:
 void bind_search(nb::module_& m)
 {
     /* Enums */
-    nb::enum_<SearchContext::SearchMode>(m, "SearchMode")
-        .value("GROUNDED", SearchContext::SearchMode::GROUNDED)
-        .value("LIFTED", SearchContext::SearchMode::LIFTED)
+    nb::enum_<SearchContextImpl::SearchMode>(m, "SearchMode")
+        .value("GROUNDED", SearchContextImpl::SearchMode::GROUNDED)
+        .value("LIFTED", SearchContextImpl::SearchMode::LIFTED)
         .export_values();
 
     nb::enum_<SearchNodeStatus>(m, "SearchNodeStatus")
@@ -108,36 +108,40 @@ void bind_search(nb::module_& m)
 
     /* SearchContext */
 
-    nb::class_<SearchContext::Options>(m, "SearchContextOptions")
+    nb::class_<SearchContextImpl::Options>(m, "SearchContextOptions")
         .def(nb::init<>())
-        .def(nb::init<SearchContext::SearchMode>(), nb::arg("mode"))
-        .def_rw("mode", &SearchContext::Options::mode);
+        .def(nb::init<SearchContextImpl::SearchMode>(), nb::arg("mode"))
+        .def_rw("mode", &SearchContextImpl::Options::mode);
 
-    nb::class_<SearchContext>(m, "SearchContext")
-        .def(
-            "__init__",
-            [](SearchContext* self, const std::string& domain_filepath, const std::string& problem_filepath, const SearchContext::Options& options)
-            { new (self) SearchContext(fs::path(domain_filepath), fs::path(problem_filepath), options); },
+    nb::class_<SearchContextImpl>(m, "SearchContext")
+        .def_static(
+            "create",
+            [](const std::string& domain_filepath, const std::string& problem_filepath, const SearchContextImpl::Options& options)
+            { return SearchContextImpl::create(fs::path(domain_filepath), fs::path(problem_filepath), options); },
             nb::arg("domain_filepath"),
             nb::arg("problem_filepath"),
-            nb::arg("options") = SearchContext::Options())
-
-        .def(nb::init<Problem, SearchContext::Options>(), nb::arg("problem"), nb::arg("options") = SearchContext::Options())
-
-        .def(nb::init<Problem, ApplicableActionGenerator, StateRepository>(),
-             nb::arg("problem"),
-             nb::arg("applicable_action_generator"),
-             nb::arg("state_repository"))
-
-        .def("get_problem", &SearchContext::get_problem)
-        .def("get_applicable_action_generator", &SearchContext::get_applicable_action_generator)
-        .def("get_state_repository", &SearchContext::get_state_repository);
+            nb::arg("options") = SearchContextImpl::Options())
+        .def_static(
+            "create",
+            [](Problem problem, const SearchContextImpl::Options& options) { return SearchContextImpl::create(problem, options); },
+            nb::arg("problem"),
+            nb::arg("options") = SearchContextImpl::Options())
+        .def_static(
+            "create",
+            [](Problem problem, ApplicableActionGenerator applicable_action_generator, StateRepository state_repositoriy)
+            { return SearchContextImpl::create(problem, applicable_action_generator, state_repositoriy); },
+            nb::arg("problem"),
+            nb::arg("applicable_action_generator"),
+            nb::arg("state_repository"))
+        .def("get_problem", &SearchContextImpl::get_problem)
+        .def("get_applicable_action_generator", &SearchContextImpl::get_applicable_action_generator)
+        .def("get_state_repository", &SearchContextImpl::get_state_repository);
 
     /* GeneralizedSearchContext */
-    nb::class_<GeneralizedSearchContext>(m, "GeneralizedSearchContext")
-        .def(
-            "__init__",
-            [](GeneralizedSearchContext* self, std::string domain_filepath, std::vector<std::string> problem_filepaths, SearchContext::Options options)
+    nb::class_<GeneralizedSearchContextImpl>(m, "GeneralizedSearchContext")
+        .def_static(
+            "create",
+            [](std::string domain_filepath, std::vector<std::string> problem_filepaths, SearchContextImpl::Options options)
             {
                 std::vector<fs::path> paths;
                 paths.reserve(problem_filepaths.size());
@@ -145,25 +149,30 @@ void bind_search(nb::module_& m)
                 {
                     paths.emplace_back(filepath);
                 }
-                new (self) GeneralizedSearchContext(fs::path(std::move(domain_filepath)), std::move(paths), std::move(options));
+                return GeneralizedSearchContextImpl::create(fs::path(std::move(domain_filepath)), std::move(paths), std::move(options));
             },
             nb::arg("domain_filepath"),
             nb::arg("problem_filepaths"),
-            nb::arg("options") = SearchContext::Options())
-
-        .def(
-            "__init__",
-            [](GeneralizedSearchContext* self, std::string domain_filepath, std::string problems_directory, SearchContext::Options options)
-            { new (self) GeneralizedSearchContext(fs::path(std::move(domain_filepath)), fs::path(std::move(problems_directory)), std::move(options)); },
+            nb::arg("options") = SearchContextImpl::Options())
+        .def_static(
+            "create",
+            [](std::string domain_filepath, std::string problems_directory, const SearchContextImpl::Options& options)
+            { return GeneralizedSearchContextImpl::create(fs::path(std::move(domain_filepath)), fs::path(std::move(problems_directory)), std::move(options)); },
             nb::arg("domain_filepath"),
             nb::arg("problems_directory"),
-            nb::arg("options") = SearchContext::Options())
-        .def(nb::init<GeneralizedProblem, const SearchContext::Options&>(), nb::arg("generalized_problem"), nb::arg("options") = SearchContext::Options())
-
-        .def(nb::init<GeneralizedProblem, SearchContextList>(), nb::arg("generalized_problem"), nb::arg("search_contexts"))
-
-        .def("get_generalized_problem", &GeneralizedSearchContext::get_generalized_problem)
-        .def("get_search_contexts", &GeneralizedSearchContext::get_search_contexts);
+            nb::arg("options") = SearchContextImpl::Options())
+        .def_static(
+            "create",
+            [](GeneralizedProblem problem, const SearchContextImpl::Options& options) { return GeneralizedSearchContextImpl::create(problem, options); },
+            nb::arg("generalized_problem"),
+            nb::arg("options") = SearchContextImpl::Options())
+        .def_static(
+            "create",
+            [](GeneralizedProblem problem, SearchContextList contexts) { return GeneralizedSearchContextImpl::create(problem, contexts); },
+            nb::arg("generalized_problem"),
+            nb::arg("search_contexts"))
+        .def("get_generalized_problem", &GeneralizedSearchContextImpl::get_generalized_problem)
+        .def("get_search_contexts", &GeneralizedSearchContextImpl::get_search_contexts);
 
     /* State */
     nb::class_<StateImpl>(m, "State")  //

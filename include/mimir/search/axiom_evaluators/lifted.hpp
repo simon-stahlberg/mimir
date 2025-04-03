@@ -204,10 +204,13 @@ public:
         explicit DefaultEventHandler(bool quiet = true) : EventHandlerBase<DefaultEventHandler>(quiet) {}
     };
 
-public:
-    explicit LiftedAxiomEvaluator(formalism::Problem problem);
+    LiftedAxiomEvaluator(formalism::Problem problem);
 
     LiftedAxiomEvaluator(formalism::Problem problem, std::shared_ptr<IEventHandler> event_handler);
+
+    static AxiomEvaluator create(formalism::Problem problem);
+
+    static AxiomEvaluator create(formalism::Problem problem, std::shared_ptr<IEventHandler> event_handler);
 
     // Uncopyable
     LiftedAxiomEvaluator(const LiftedAxiomEvaluator& other) = delete;

@@ -17,7 +17,7 @@
 
 #include "mimir/datasets/object_graph.hpp"
 
-#include "mimir/datasets/generalized_color_function.hpp"
+#include "mimir/formalism/color_function.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/state.hpp"
 
@@ -31,10 +31,8 @@ namespace mimir::datasets
  * ObjectGraph
  */
 
-static std::unordered_map<Object, graphs::VertexIndex> add_objects_graph_structures(State state,
-                                                                                    const ProblemImpl& problem,
-                                                                                    const GeneralizedColorFunctionImpl& color_function,
-                                                                                    graphs::StaticVertexColoredDigraph& out_digraph)
+static std::unordered_map<Object, graphs::VertexIndex>
+add_objects_graph_structures(State state, const ProblemImpl& problem, const ColorFunctionImpl& color_function, graphs::StaticVertexColoredDigraph& out_digraph)
 {
     std::unordered_map<Object, graphs::VertexIndex> object_to_vertex_index;
 
@@ -67,7 +65,7 @@ static std::unordered_map<Object, graphs::VertexIndex> add_objects_graph_structu
 }
 
 template<IsStaticOrFluentOrDerivedTag P>
-static void add_ground_atom_graph_structures(const GeneralizedColorFunctionImpl& color_function,
+static void add_ground_atom_graph_structures(const ColorFunctionImpl& color_function,
                                              const std::unordered_map<Object, graphs::VertexIndex>& object_to_vertex_index,
                                              GroundAtom<P> atom,
                                              graphs::StaticVertexColoredDigraph& out_digraph)
@@ -86,7 +84,7 @@ static void add_ground_atom_graph_structures(const GeneralizedColorFunctionImpl&
 
 static void add_ground_atoms_graph_structures(State state,
                                               const ProblemImpl& problem,
-                                              const GeneralizedColorFunctionImpl& color_function,
+                                              const ColorFunctionImpl& color_function,
                                               const std::unordered_map<Object, graphs::VertexIndex>& object_to_vertex_index,
                                               graphs::StaticVertexColoredDigraph& out_digraph)
 {
@@ -107,7 +105,7 @@ static void add_ground_atoms_graph_structures(State state,
 template<IsStaticOrFluentOrDerivedTag P>
 static void add_ground_literal_graph_structures(State state,
                                                 const ProblemImpl& problem,
-                                                const GeneralizedColorFunctionImpl& color_function,
+                                                const ColorFunctionImpl& color_function,
                                                 const std::unordered_map<Object, graphs::VertexIndex>& object_to_vertex_index,
                                                 GroundLiteral<P> literal,
                                                 graphs::StaticVertexColoredDigraph& out_digraph)
@@ -126,7 +124,7 @@ static void add_ground_literal_graph_structures(State state,
 
 static void add_ground_goal_literals_graph_structures(State state,
                                                       const ProblemImpl& problem,
-                                                      const GeneralizedColorFunctionImpl& color_function,
+                                                      const ColorFunctionImpl& color_function,
                                                       const std::unordered_map<Object, graphs::VertexIndex>& object_to_vertex_index,
                                                       graphs::StaticVertexColoredDigraph& out_digraph)
 {
@@ -144,7 +142,7 @@ static void add_ground_goal_literals_graph_structures(State state,
     }
 }
 
-graphs::StaticVertexColoredDigraph create_object_graph(State state, const ProblemImpl& problem, const GeneralizedColorFunctionImpl& color_function)
+graphs::StaticVertexColoredDigraph create_object_graph(State state, const ProblemImpl& problem, const ColorFunctionImpl& color_function)
 {
     // TODO: perhaps we could store a partially initialized object graph in the problem that we can simply copy? :)
 

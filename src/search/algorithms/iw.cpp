@@ -904,14 +904,14 @@ SearchResult find_solution(const SearchContext& context,
                            brfs::EventHandler brfs_event_handler_,
                            GoalStrategy goal_strategy_)
 {
-    auto& applicable_action_generator = *context.get_applicable_action_generator();
-    auto& state_repository = *context.get_state_repository();
+    auto& applicable_action_generator = *context->get_applicable_action_generator();
+    auto& state_repository = *context->get_state_repository();
 
     const auto max_arity = max_arity_;
     const auto start_state = (start_state_) ? start_state_ : state_repository.get_or_create_initial_state();
-    const auto iw_event_handler = (iw_event_handler_) ? iw_event_handler_ : std::make_shared<DefaultEventHandler>(context.get_problem());
-    const auto brfs_event_handler = (brfs_event_handler_) ? brfs_event_handler_ : std::make_shared<brfs::DefaultEventHandler>(context.get_problem());
-    const auto goal_strategy = (goal_strategy_) ? goal_strategy_ : std::make_shared<ProblemGoalStrategy>(context.get_problem());
+    const auto iw_event_handler = (iw_event_handler_) ? iw_event_handler_ : std::make_shared<DefaultEventHandler>(context->get_problem());
+    const auto brfs_event_handler = (brfs_event_handler_) ? brfs_event_handler_ : std::make_shared<brfs::DefaultEventHandler>(context->get_problem());
+    const auto goal_strategy = (goal_strategy_) ? goal_strategy_ : std::make_shared<ProblemGoalStrategy>(context->get_problem());
 
     if (max_arity >= MAX_ARITY)
     {

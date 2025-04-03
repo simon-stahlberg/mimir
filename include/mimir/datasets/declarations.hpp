@@ -28,9 +28,6 @@
 
 namespace mimir::datasets
 {
-class GeneralizedColorFunctionImpl;
-using GeneralizedColorFunction = std::shared_ptr<GeneralizedColorFunctionImpl>;
-
 class KnowledgeBaseImpl;
 using KnowledgeBase = std::shared_ptr<KnowledgeBaseImpl>;
 

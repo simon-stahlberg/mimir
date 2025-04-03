@@ -47,7 +47,7 @@ int main(int argc, char** argv)
     tuple_graph_options = TupleGraphImpl::Options();
     tuple_graph_options->width = 1;
 
-    auto kb = KnowledgeBaseImpl::create(GeneralizedSearchContext(domain_file_path, problems_directory), kb_options);
+    auto kb = KnowledgeBaseImpl::create(GeneralizedSearchContextImpl::create(domain_file_path, problems_directory), kb_options);
 
     if (kb->get_generalized_state_space().has_value())
     {

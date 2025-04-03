@@ -666,10 +666,10 @@ void bind_formalism(nb::module_& m)
     nb::bind_vector<ProblemList>(m, "ProblemList");
 
     /* GeneralizedProblem */
-    nb::class_<GeneralizedProblem>(m, "GeneralizedProblem")
-        .def(
-            "__init__",
-            [](GeneralizedProblem* self, std::string domain_filepath, std::vector<std::string> problem_filepaths, loki::Options options)
+    nb::class_<GeneralizedProblemImpl>(m, "GeneralizedProblem")
+        .def_static(
+            "create",
+            [](std::string domain_filepath, std::vector<std::string> problem_filepaths, loki::Options options)
             {
                 std::vector<fs::path> paths;
                 paths.reserve(problem_filepaths.size());
@@ -677,23 +677,26 @@ void bind_formalism(nb::module_& m)
                 {
                     paths.emplace_back(filepath);
                 }
-                new (self) GeneralizedProblem(fs::path(std::move(domain_filepath)), std::move(paths), std::move(options));
+                return GeneralizedProblemImpl::create(fs::path(std::move(domain_filepath)), std::move(paths), std::move(options));
             },
             nb::arg("domain_filepath"),
             nb::arg("problem_filepaths"),
             nb::arg("options") = loki::Options())
-        .def(
-            "__init__",
-            [](GeneralizedProblem* self, std::string domain_filepath, std::string problems_directory, loki::Options options)
-            { new (self) GeneralizedProblem(fs::path(std::move(domain_filepath)), fs::path(std::move(problems_directory)), std::move(options)); },
+        .def_static(
+            "create",
+            [](std::string domain_filepath, std::string problems_directory, loki::Options options)
+            { return GeneralizedProblemImpl::create(fs::path(std::move(domain_filepath)), fs::path(std::move(problems_directory)), std::move(options)); },
             nb::arg("domain_filepath"),
             nb::arg("problems_directory"),
             nb::arg("options") = loki::Options())
 
-        .def(nb::init<Domain, ProblemList>(), nb::arg("domain"), nb::arg("problems"))
-
-        .def("get_domain", &GeneralizedProblem::get_domain)
-        .def("get_problems", &GeneralizedProblem::get_problems);
+        .def_static(
+            "create",
+            [](Domain domain, ProblemList problems) { return GeneralizedProblemImpl::create(std::move(domain), std::move(problems)); },
+            nb::arg("domain"),
+            nb::arg("problems"))
+        .def("get_domain", &GeneralizedProblemImpl::get_domain)
+        .def("get_problems", &GeneralizedProblemImpl::get_problems);
 
     /**
      * Parser
