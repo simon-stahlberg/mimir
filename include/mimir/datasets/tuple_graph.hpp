@@ -24,7 +24,6 @@
 #include "mimir/search/algorithms/iw/novelty_table.hpp"
 #include "mimir/search/algorithms/iw/tuple_index_generators.hpp"
 #include "mimir/search/algorithms/iw/tuple_index_mapper.hpp"
-#include "mimir/search/state.hpp"
 
 #include <ostream>
 #include <vector>

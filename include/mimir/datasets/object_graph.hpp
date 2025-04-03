@@ -18,7 +18,6 @@
 #ifndef MIMIR_DATASETS_OBJECT_GRAPH_HPP_
 #define MIMIR_DATASETS_OBJECT_GRAPH_HPP_
 
-#include "mimir/common/types_cista.hpp"
 #include "mimir/datasets/declarations.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/graphs/concrete/digraph_vertex_colored.hpp"

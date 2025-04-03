@@ -89,17 +89,6 @@ int main(int argc, char** argv)
         state_repository = StateRepositoryImpl::create(axiom_evaluator);
     }
 
-    if (debug)
-    {
-        std::shared_ptr<LiftedApplicableActionGenerator> lifted_applicable_action_generator =
-            std::dynamic_pointer_cast<LiftedApplicableActionGenerator>(applicable_action_generator);
-
-        if (lifted_applicable_action_generator)
-        {
-            // std::cout << *lifted_applicable_action_generator << std::endl;
-        }
-    }
-
     auto event_handler = (debug) ? brfs::EventHandler { brfs::DebugEventHandler::create(problem, false) } :
                                    brfs::EventHandler { brfs::DefaultEventHandler::create(problem, false) };
 
