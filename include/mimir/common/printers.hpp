@@ -82,6 +82,15 @@ std::ostream& operator<<(std::ostream& os, const std::unordered_set<Key, Hash, K
 template<typename T, typename Allocator>
 std::ostream& operator<<(std::ostream& os, const std::vector<T, Allocator>& vec);
 
+template<typename T1>
+std::ostream& operator<<(std::ostream& os, const std::variant<T1>& variant);
+
+template<typename T1, typename T2>
+std::ostream& operator<<(std::ostream& os, const std::variant<T1, T2>& variant);
+
+template<typename T1, typename T2, typename T3>
+std::ostream& operator<<(std::ostream& os, const std::variant<T1, T2, T3>& variant);
+
 template<IsHanaMap Map>
 std::ostream& operator<<(std::ostream& os, const Map& map);
 

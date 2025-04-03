@@ -126,6 +126,8 @@ public:
     /// @return the features in the `GeneralPolicyImpl`.
     const NamedFeatureLists<dl::BooleanTag, dl::NumericalTag>& get_hana_features() const;
 
+    const NamedFeatureVariantList& get_all_features() const;
+
     /// @brief Get the rules in the `GeneralPolicyImpl`.
     /// @return the rules in the `GeneralPolicyImpl`.
     const RuleList& get_rules() const;
@@ -139,6 +141,10 @@ private:
     Index m_index;
     NamedFeatureLists<dl::BooleanTag, dl::NumericalTag> m_features;
     RuleList m_rules;
+
+    // Below: add additional members if needed and initialize them in the constructor
+
+    NamedFeatureVariantList m_all_features;
 
     /// @brief Create a `GeneralPolicyImpl` for the given `RuleList`.
     /// @param index is an index that identifies the `GeneralPolicyImpl` in its `Repositories`.

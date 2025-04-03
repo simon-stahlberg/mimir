@@ -21,9 +21,11 @@
 #include "mimir/graphs/bgl/graph_algorithms.hpp"
 #include "mimir/languages/general_policies/general_policy_decl.hpp"
 #include "mimir/languages/general_policies/general_policy_impl.hpp"
+#include "mimir/languages/general_policies/repositories.hpp"
 #include "mimir/languages/general_policies/rule.hpp"
 #include "mimir/languages/general_policies/visitor_formatter.hpp"
 #include "mimir/languages/general_policies/visitor_interface.hpp"
+#include "mimir/languages/general_policies/visitor_null.hpp"
 #include "mimir/search/state.hpp"
 
 namespace mimir::languages::general_policies
@@ -32,8 +34,18 @@ namespace mimir::languages::general_policies
 GeneralPolicyImpl::GeneralPolicyImpl(Index index, NamedFeatureLists<dl::BooleanTag, dl::NumericalTag> features, RuleList rules) :
     m_index(index),
     m_features(features),
-    m_rules(rules)
+    m_rules(rules),
+    m_all_features()
 {
+    boost::hana::for_each(m_features,
+                          [&](const auto& pair)
+                          {
+                              const auto& second = boost::hana::second(pair);
+                              for (const auto& feature : second)
+                              {
+                                  m_all_features.push_back(feature);
+                              }
+                          });
 }
 
 bool GeneralPolicyImpl::evaluate(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const
@@ -86,20 +98,128 @@ bool GeneralPolicyImpl::is_terminating(graphs::PolicyGraph& policy_graph, Reposi
     // Lines 4-5
     // f_inc: f -> e_idxs
     // f_dec: f -> e_idxs
-
     // Then select an f such that f_dec(f) > 0 and f_inc(f) = 0 and delete all edges f_dec(f).
 
-    using FeatureVariant = std::variant<NamedFeature<dl::BooleanTag>, NamedFeature<dl::NumericalTag>>;
-    auto all_f = std::vector<FeatureVariant> {};
-    auto f_dec = std::unordered_map<FeatureVariant, size_t> {};
-    auto f_inc = std::unordered_map<FeatureVariant, size_t> {};
+    auto f_dec = std::unordered_map<NamedFeatureVariant, graphs::EdgeIndexSet> {};
+    auto f_inc = std::unordered_map<NamedFeatureVariant, graphs::EdgeIndexSet> {};
 
     for (const auto& [e_idx, e] : policy_graph.get_edges())
     {
         const auto src_component = component_map.at(e.get_source());
         const auto dst_component = component_map.at(e.get_target());
-        const auto in_scc = src_component == dst_component;
+
+        if (src_component != dst_component)
+            continue;  ///< not in scc
+
+        for (const auto& feature : get_all_features())
+        {
+            std::visit(
+                [&](auto&& arg)
+                {
+                    using T = std::decay_t<decltype(arg)>;
+
+                    if constexpr (std::is_same_v<T, NamedFeature<dl::BooleanTag>>)
+                    {
+                        if (get_effects(e).contains(repositories.get_or_create_positive_boolean_effect(arg)))
+                        {
+                            f_inc[arg].insert(e_idx);
+                        }
+                        else if (get_effects(e).contains(repositories.get_or_create_negative_boolean_effect(arg)))
+                        {
+                            f_dec[arg].insert(e_idx);
+                        }
+                        else if (get_effects(e).contains(repositories.get_or_create_unchanged_boolean_effect(arg))) {}
+                        else
+                        {
+                            f_inc[arg].insert(e_idx);
+                            f_dec[arg].insert(e_idx);
+                        }
+                    }
+                    else if constexpr (std::is_same_v<T, NamedFeature<dl::NumericalTag>>)
+                    {
+                        if (get_effects(e).contains(repositories.get_or_create_increase_numerical_effect(arg)))
+                        {
+                            f_inc[arg].insert(e_idx);
+                        }
+                        else if (get_effects(e).contains(repositories.get_or_create_decrease_numerical_effect(arg)))
+                        {
+                            f_dec[arg].insert(e_idx);
+                        }
+                        else if (get_effects(e).contains(repositories.get_or_create_unchanged_numerical_effect(arg))) {}
+                        else
+                        {
+                            f_inc[arg].insert(e_idx);
+                            f_dec[arg].insert(e_idx);
+                        }
+                    }
+                    else
+                    {
+                        static_assert(dependent_false<T>::value, "Unhandled feature type");
+                    }
+                },
+                feature);
+        }
     }
+
+    mimir::operator<<(std::cout, f_inc);
+    std::cout << std::endl;
+    mimir::operator<<(std::cout, f_dec);
+    std::cout << std::endl;
+
+    const auto initial_num_edges = policy_graph.get_num_edges();
+    auto cur_num_edges = initial_num_edges;
+
+    class RemoveFeatureVisitor : public NullVisitor
+    {
+    private:
+        graphs::EdgeIndex m_e_idx;
+        std::unordered_map<NamedFeatureVariant, graphs::EdgeIndexSet>& m_f_dec;
+        std::unordered_map<NamedFeatureVariant, graphs::EdgeIndexSet>& m_f_inc;
+
+    public:
+        RemoveFeatureVisitor(graphs::EdgeIndex e_idx,
+                             std::unordered_map<NamedFeatureVariant, graphs::EdgeIndexSet>& f_dec,
+                             std::unordered_map<NamedFeatureVariant, graphs::EdgeIndexSet>& f_inc) :
+            m_e_idx(e_idx),
+            m_f_dec(f_dec),
+            m_f_inc(f_inc)
+        {
+        }
+
+        void visit(PositiveBooleanEffect effect) override { m_f_inc.at(effect->get_feature()).erase(m_e_idx); }
+        void visit(NegativeBooleanEffect effect) override { m_f_dec.at(effect->get_feature()).erase(m_e_idx); }
+        void visit(UnchangedBooleanEffect effect) override {}
+        void visit(IncreaseNumericalEffect effect) override { m_f_inc.at(effect->get_feature()).erase(m_e_idx); }
+        void visit(DecreaseNumericalEffect effect) override { m_f_dec.at(effect->get_feature()).erase(m_e_idx); }
+        void visit(UnchangedNumericalEffect effect) override {}
+    };
+
+    do
+    {
+        cur_num_edges = policy_graph.get_num_edges();
+
+        for (const auto& feature : get_all_features())
+        {
+            std::visit(
+                [&](auto&& arg)
+                {
+                    if (f_dec.contains(arg) && f_dec.at(arg).size() > 0 && (!f_inc.contains(arg) || f_inc.at(arg).size() == 0))
+                    {
+                        for (const auto& e_idx : graphs::EdgeIndexSet(f_dec.at(arg)))
+                        {
+                            auto visitor = RemoveFeatureVisitor(e_idx, f_dec, f_inc);
+                            for (const auto& effect : get_effects(policy_graph.get_edge(e_idx)))
+                            {
+                                effect->accept(visitor);
+                            }
+
+                            policy_graph.remove_edge(e_idx);
+                        }
+                    }
+                },
+                feature);
+        }
+    } while (cur_num_edges < policy_graph.get_num_edges());
 
     // Lines 6-7
     auto is_acyclic = bool(true);
@@ -116,7 +236,7 @@ bool GeneralPolicyImpl::is_terminating(graphs::PolicyGraph& policy_graph, Reposi
         return true;
     }
 
-    bool edges_removed = false;
+    bool edges_removed = (cur_num_edges < initial_num_edges);
 
     // Line 10
     if (edges_removed)
@@ -392,6 +512,8 @@ template const NamedFeatureList<dl::BooleanTag>& GeneralPolicyImpl::get_features
 template const NamedFeatureList<dl::NumericalTag>& GeneralPolicyImpl::get_features() const;
 
 const NamedFeatureLists<dl::BooleanTag, dl::NumericalTag>& GeneralPolicyImpl::get_hana_features() const { return m_features; }
+
+const NamedFeatureVariantList& GeneralPolicyImpl::get_all_features() const { return m_all_features; }
 
 const RuleList& GeneralPolicyImpl::get_rules() const { return m_rules; }
 }

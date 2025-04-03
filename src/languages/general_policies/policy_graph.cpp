@@ -86,8 +86,9 @@ public:
     }
     void visit(DecreaseNumericalEffect effect) override
     {
-        m_result = m_dst_conditions.contains(m_repositories.get_or_create_equal_numerical_condition(effect->get_feature()))
-                   || m_dst_conditions.contains(m_repositories.get_or_create_greater_numerical_condition(effect->get_feature()));
+        m_result = (m_src_conditions.contains(m_repositories.get_or_create_greater_numerical_condition(effect->get_feature()))
+                    && (m_dst_conditions.contains(m_repositories.get_or_create_equal_numerical_condition(effect->get_feature()))
+                        || m_dst_conditions.contains(m_repositories.get_or_create_greater_numerical_condition(effect->get_feature()))));
     }
     void visit(UnchangedNumericalEffect effect) override
     {
@@ -116,31 +117,11 @@ static bool evaluate_effects(const graphs::PolicyVertex& src_vertex, const graph
                            return visitor.get_result();
                        });
 }
-}
 
-namespace mimir::languages::general_policies
+static void add_vertices(GeneralPolicy policy, Repositories& repositories, graphs::PolicyGraph& graph)
 {
-graphs::PolicyGraph create_policy_graph(GeneralPolicy policy, Repositories& repositories)
-{
-    using FeatureVariant = std::variant<NamedFeature<dl::BooleanTag>, NamedFeature<dl::NumericalTag>>;
-
-    auto all_features = std::vector<FeatureVariant> {};
-
-    boost::hana::for_each(policy->get_hana_features(),
-                          [&](auto pair)
-                          {
-                              const auto& second = boost::hana::second(pair);
-
-                              for (const auto& feature : second)
-                              {
-                                  all_features.emplace_back(feature);
-                              }
-                          });
-
-    std::size_t num_features = all_features.size();
+    std::size_t num_features = policy->get_all_features().size();
     std::size_t num_combinations = 1ULL << num_features;
-
-    auto graph = graphs::PolicyGraph {};
 
     for (std::size_t mask = 0; mask < num_combinations; ++mask)
     {
@@ -170,12 +151,15 @@ graphs::PolicyGraph create_policy_graph(GeneralPolicy policy, Repositories& repo
                         static_assert(dependent_false<T>::value, "Unhandled feature type");
                     }
                 },
-                all_features[i]);
+                policy->get_all_features()[i]);
         }
 
         graph.add_vertex(conditions);
     }
+}
 
+static void add_edges(GeneralPolicy policy, Repositories& repositories, graphs::PolicyGraph& graph)
+{
     for (const auto& [v1_idx, v1] : graph.get_vertices())
     {
         for (const auto& rule : policy->get_rules())
@@ -192,6 +176,14 @@ graphs::PolicyGraph create_policy_graph(GeneralPolicy policy, Repositories& repo
             }
         }
     }
+}
+
+graphs::PolicyGraph create_policy_graph(GeneralPolicy policy, Repositories& repositories)
+{
+    auto graph = graphs::PolicyGraph {};
+
+    add_vertices(policy, repositories, graph);
+    add_edges(policy, repositories, graph);
 
     return graph;
 }

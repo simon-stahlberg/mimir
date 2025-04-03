@@ -38,6 +38,9 @@ using ToNamedFeatureMap = std::unordered_map<Key, NamedFeature<D>, loki::Hash<Ke
 template<typename Key, dl::IsConceptOrRoleOrBooleanOrNumericalTag... Ds>
 using ToNamedFeatureMaps = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, ToNamedFeatureMap<Key, Ds>>...>;
 
+using NamedFeatureVariant = std::variant<NamedFeature<dl::BooleanTag>, NamedFeature<dl::NumericalTag>>;
+using NamedFeatureVariantList = std::vector<NamedFeatureVariant>;
+
 class ICondition;
 using Condition = const ICondition*;
 using ConditionList = std::vector<Condition>;
