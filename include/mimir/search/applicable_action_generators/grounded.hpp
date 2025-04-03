@@ -61,6 +61,8 @@ public:
         virtual const Statistics& get_statistics() const = 0;
     };
 
+    using EventHandler = std::shared_ptr<IEventHandler>;
+
     /**
      * Base class
      *
@@ -144,7 +146,9 @@ public:
         void on_end_search_impl() const;
 
     public:
-        explicit DebugEventHandler(bool quiet = true) : EventHandlerBase<DebugEventHandler>(quiet) {}
+        explicit DebugEventHandler(bool quiet = true);
+
+        static std::shared_ptr<DebugEventHandler> create(bool quiet = true);
     };
 
     class DefaultEventHandler : public EventHandlerBase<DefaultEventHandler>
@@ -166,21 +170,23 @@ public:
         void on_end_search_impl() const;
 
     public:
-        explicit DefaultEventHandler(bool quiet = true) : EventHandlerBase<DefaultEventHandler>(quiet) {}
+        explicit DefaultEventHandler(bool quiet = true);
+
+        static std::shared_ptr<DefaultEventHandler> create(bool quiet = true);
     };
 
     /// @brief Complete construction
     GroundedApplicableActionGenerator(formalism::Problem problem,
                                       std::unique_ptr<match_tree::MatchTree<formalism::GroundActionImpl>>&& match_tree,
-                                      std::shared_ptr<IEventHandler> event_handler);
+                                      EventHandler event_handler);
 
     /// @brief Simplest construction
-    static ApplicableActionGenerator create(formalism::Problem problem, std::unique_ptr<match_tree::MatchTree<formalism::GroundActionImpl>>&& match_tree);
+    static std::shared_ptr<GroundedApplicableActionGenerator> create(formalism::Problem problem,
+                                                                     std::unique_ptr<match_tree::MatchTree<formalism::GroundActionImpl>>&& match_tree);
 
     /// @brief Complete construction
-    static ApplicableActionGenerator create(formalism::Problem problem,
-                                            std::unique_ptr<match_tree::MatchTree<formalism::GroundActionImpl>>&& match_tree,
-                                            std::shared_ptr<IEventHandler> event_handler);
+    static std::shared_ptr<GroundedApplicableActionGenerator>
+    create(formalism::Problem problem, std::unique_ptr<match_tree::MatchTree<formalism::GroundActionImpl>>&& match_tree, EventHandler event_handler);
 
     // Uncopyable
     GroundedApplicableActionGenerator(const GroundedApplicableActionGenerator& other) = delete;
@@ -209,7 +215,7 @@ private:
     formalism::Problem m_problem;
     std::unique_ptr<match_tree::MatchTree<formalism::GroundActionImpl>> m_match_tree;
 
-    std::shared_ptr<IEventHandler> m_event_handler;
+    EventHandler m_event_handler;
 
     /* Memory for reuse */
     DenseState m_dense_state;

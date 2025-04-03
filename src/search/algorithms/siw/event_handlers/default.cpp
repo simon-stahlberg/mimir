@@ -51,4 +51,9 @@ void DefaultEventHandler::on_unsolvable_impl() const { std::cout << "[SIW] Unsol
 void DefaultEventHandler::on_exhausted_impl() const { std::cout << "[SIW] Exhausted!" << std::endl; }
 
 DefaultEventHandler::DefaultEventHandler(Problem problem, bool quiet) : EventHandlerBase<DefaultEventHandler>(problem, quiet) {}
+
+std::shared_ptr<DefaultEventHandler> DefaultEventHandler::create(formalism::Problem problem, bool quiet)
+{
+    return std::make_shared<DefaultEventHandler>(problem, quiet);
+}
 }

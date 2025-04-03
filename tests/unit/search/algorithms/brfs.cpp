@@ -50,12 +50,12 @@ private:
 public:
     LiftedBrFSPlanner(const fs::path& domain_file, const fs::path& problem_file) :
         m_problem(ProblemImpl::create(domain_file, problem_file)),
-        m_applicable_action_generator_event_handler(std::make_shared<LiftedApplicableActionGenerator::DefaultEventHandler>()),
-        m_applicable_action_generator(std::make_shared<LiftedApplicableActionGenerator>(m_problem, m_applicable_action_generator_event_handler)),
-        m_axiom_evaluator_event_handler(std::make_shared<LiftedAxiomEvaluator::DefaultEventHandler>()),
-        m_axiom_evaluator(std::make_shared<LiftedAxiomEvaluator>(m_problem, m_axiom_evaluator_event_handler)),
-        m_state_repository(std::make_shared<StateRepositoryImpl>(m_axiom_evaluator)),
-        m_brfs_event_handler(std::make_shared<brfs::DefaultEventHandler>(m_problem)),
+        m_applicable_action_generator_event_handler(LiftedApplicableActionGenerator::DefaultEventHandler::create()),
+        m_applicable_action_generator(LiftedApplicableActionGenerator::create(m_problem, m_applicable_action_generator_event_handler)),
+        m_axiom_evaluator_event_handler(LiftedAxiomEvaluator::DefaultEventHandler::create()),
+        m_axiom_evaluator(LiftedAxiomEvaluator::create(m_problem, m_axiom_evaluator_event_handler)),
+        m_state_repository(StateRepositoryImpl::create(m_axiom_evaluator)),
+        m_brfs_event_handler(brfs::DefaultEventHandler::create(m_problem)),
         m_search_context(SearchContextImpl::create(m_problem, m_applicable_action_generator, m_state_repository))
     {
     }
@@ -79,9 +79,9 @@ private:
     Problem m_problem;
     DeleteRelaxedProblemExplorator m_delete_relaxed_problem_explorator;
     std::shared_ptr<GroundedApplicableActionGenerator::IEventHandler> m_applicable_action_generator_event_handler;
-    ApplicableActionGenerator m_applicable_action_generator;
+    std::shared_ptr<GroundedApplicableActionGenerator> m_applicable_action_generator;
     std::shared_ptr<GroundedAxiomEvaluator::IEventHandler> m_axiom_evaluator_event_handler;
-    AxiomEvaluator m_axiom_evaluator;
+    std::shared_ptr<GroundedAxiomEvaluator> m_axiom_evaluator;
     StateRepository m_state_repository;
     brfs::EventHandler m_brfs_event_handler;
     SearchContext m_search_context;
@@ -90,14 +90,14 @@ public:
     GroundedBrFSPlanner(const fs::path& domain_file, const fs::path& problem_file) :
         m_problem(ProblemImpl::create(domain_file, problem_file)),
         m_delete_relaxed_problem_explorator(m_problem),
-        m_applicable_action_generator_event_handler(std::make_shared<GroundedApplicableActionGenerator::DefaultEventHandler>()),
+        m_applicable_action_generator_event_handler(GroundedApplicableActionGenerator::DefaultEventHandler::create()),
         m_applicable_action_generator(
             m_delete_relaxed_problem_explorator.create_grounded_applicable_action_generator(match_tree::Options(),
                                                                                             m_applicable_action_generator_event_handler)),
-        m_axiom_evaluator_event_handler(std::make_shared<GroundedAxiomEvaluator::DefaultEventHandler>()),
+        m_axiom_evaluator_event_handler(GroundedAxiomEvaluator::DefaultEventHandler::create()),
         m_axiom_evaluator(m_delete_relaxed_problem_explorator.create_grounded_axiom_evaluator(match_tree::Options(), m_axiom_evaluator_event_handler)),
-        m_state_repository(std::make_shared<StateRepositoryImpl>(m_axiom_evaluator)),
-        m_brfs_event_handler(std::make_shared<brfs::DefaultEventHandler>(m_problem)),
+        m_state_repository(StateRepositoryImpl::create(m_axiom_evaluator)),
+        m_brfs_event_handler(brfs::DefaultEventHandler::create(m_problem)),
         m_search_context(SearchContextImpl::create(m_problem, m_applicable_action_generator, m_state_repository))
     {
     }

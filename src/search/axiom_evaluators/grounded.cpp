@@ -68,6 +68,13 @@ void GroundedAxiomEvaluator::DebugEventHandler::on_finish_search_layer_impl() co
 
 void GroundedAxiomEvaluator::DebugEventHandler::on_end_search_impl() const {}
 
+GroundedAxiomEvaluator::DebugEventHandler::DebugEventHandler(bool quiet) : EventHandlerBase<DebugEventHandler>(quiet) {}
+
+std::shared_ptr<GroundedAxiomEvaluator::DebugEventHandler> GroundedAxiomEvaluator::DebugEventHandler::create(bool quiet)
+{
+    return std::make_shared<DebugEventHandler>(quiet);
+}
+
 /**
  * DefaultEventHandler
  */
@@ -106,6 +113,13 @@ void GroundedAxiomEvaluator::DefaultEventHandler::on_finish_search_layer_impl() 
 
 void GroundedAxiomEvaluator::DefaultEventHandler::on_end_search_impl() const {}
 
+GroundedAxiomEvaluator::DefaultEventHandler::DefaultEventHandler(bool quiet) : EventHandlerBase<DefaultEventHandler>(quiet) {}
+
+std::shared_ptr<GroundedAxiomEvaluator::DefaultEventHandler> GroundedAxiomEvaluator::DefaultEventHandler::create(bool quiet)
+{
+    return std::make_shared<DefaultEventHandler>(quiet);
+}
+
 /**
  * GroundedAxiomEvaluator
  */
@@ -119,14 +133,16 @@ GroundedAxiomEvaluator::GroundedAxiomEvaluator(Problem problem,
 {
 }
 
-AxiomEvaluator GroundedAxiomEvaluator::create(Problem problem, std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>>&& match_tree_partitioning)
+std::shared_ptr<GroundedAxiomEvaluator>
+GroundedAxiomEvaluator::create(Problem problem, std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>>&& match_tree_partitioning)
 {
     return create(std::move(problem), std::move(match_tree_partitioning), std::make_shared<DefaultEventHandler>());
 }
 
-AxiomEvaluator GroundedAxiomEvaluator::create(Problem problem,
-                                              std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>>&& match_tree_partitioning,
-                                              std::shared_ptr<IEventHandler> event_handler)
+std::shared_ptr<GroundedAxiomEvaluator>
+GroundedAxiomEvaluator::create(Problem problem,
+                               std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>>&& match_tree_partitioning,
+                               std::shared_ptr<IEventHandler> event_handler)
 {
     return std::shared_ptr<GroundedAxiomEvaluator>(
         new GroundedAxiomEvaluator(std::move(problem), std::move(match_tree_partitioning), std::move(event_handler)));

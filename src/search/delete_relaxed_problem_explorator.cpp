@@ -119,12 +119,12 @@ static ObjectList translate_from_delete_free_to_unrelaxed_problem(const ObjectLi
     return result;
 }
 
-AxiomEvaluator DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator(const match_tree::Options& options,
-                                                                               std::shared_ptr<GroundedAxiomEvaluator::IEventHandler> event_handler) const
+std::shared_ptr<GroundedAxiomEvaluator>
+DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator(const match_tree::Options& options, GroundedAxiomEvaluator::EventHandler event_handler) const
 {
     if (!event_handler)
     {
-        event_handler = std::make_shared<GroundedAxiomEvaluator::DefaultEventHandler>();
+        event_handler = GroundedAxiomEvaluator::DefaultEventHandler::create();
     }
 
     event_handler->on_start_ground_axiom_instantiation();
@@ -193,16 +193,16 @@ AxiomEvaluator DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator(c
     total_time = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
     event_handler->on_finish_build_axiom_match_trees(total_time);
 
-    return std::make_shared<GroundedAxiomEvaluator>(m_problem, std::move(match_tree_partitioning), std::move(event_handler));
+    return GroundedAxiomEvaluator::create(m_problem, std::move(match_tree_partitioning), std::move(event_handler));
 }
 
-ApplicableActionGenerator DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator(
-    const match_tree::Options& options,
-    std::shared_ptr<GroundedApplicableActionGenerator::IEventHandler> event_handler) const
+std::shared_ptr<GroundedApplicableActionGenerator>
+DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator(const match_tree::Options& options,
+                                                                            GroundedApplicableActionGenerator::EventHandler event_handler) const
 {
     if (!event_handler)
     {
-        event_handler = std::make_shared<GroundedApplicableActionGenerator::DefaultEventHandler>();
+        event_handler = GroundedApplicableActionGenerator::DefaultEventHandler::create();
     }
 
     event_handler->on_start_ground_action_instantiation();
@@ -241,7 +241,7 @@ ApplicableActionGenerator DeleteRelaxedProblemExplorator::create_grounded_applic
 
     event_handler->on_finish_build_action_match_tree(*match_tree);
 
-    return std::make_shared<GroundedApplicableActionGenerator>(m_problem, std::move(match_tree), std::move(event_handler));
+    return GroundedApplicableActionGenerator::create(m_problem, std::move(match_tree), std::move(event_handler));
 }
 
 const Problem& DeleteRelaxedProblemExplorator::get_problem() const { return m_problem; }

@@ -58,6 +58,8 @@ public:
         virtual const Statistics& get_statistics() const = 0;
     };
 
+    using EventHandler = std::shared_ptr<IEventHandler>;
+
     /**
      * Base class
      *
@@ -157,7 +159,9 @@ public:
         void on_end_search_impl() const;
 
     public:
-        explicit DebugEventHandler(bool quiet = true) : EventHandlerBase<DebugEventHandler>(quiet) {}
+        explicit DebugEventHandler(bool quiet = true);
+
+        static std::shared_ptr<DebugEventHandler> create(bool quiet = true);
     };
 
     class DefaultEventHandler : public EventHandlerBase<DefaultEventHandler>
@@ -183,19 +187,22 @@ public:
         void on_end_search_impl() const;
 
     public:
-        explicit DefaultEventHandler(bool quiet = true) : EventHandlerBase<DefaultEventHandler>(quiet) {}
+        explicit DefaultEventHandler(bool quiet = true);
+
+        static std::shared_ptr<DefaultEventHandler> create(bool quiet = true);
     };
 
     GroundedAxiomEvaluator(formalism::Problem problem,
                            std::vector<std::unique_ptr<match_tree::MatchTree<formalism::GroundAxiomImpl>>>&& match_tree_partitioning,
-                           std::shared_ptr<IEventHandler> event_handler);
+                           EventHandler event_handler);
 
-    static AxiomEvaluator create(formalism::Problem problem,
-                                 std::vector<std::unique_ptr<match_tree::MatchTree<formalism::GroundAxiomImpl>>>&& match_tree_partitioning);
+    static std::shared_ptr<GroundedAxiomEvaluator>
+    create(formalism::Problem problem, std::vector<std::unique_ptr<match_tree::MatchTree<formalism::GroundAxiomImpl>>>&& match_tree_partitioning);
 
-    static AxiomEvaluator create(formalism::Problem problem,
-                                 std::vector<std::unique_ptr<match_tree::MatchTree<formalism::GroundAxiomImpl>>>&& match_tree_partitioning,
-                                 std::shared_ptr<IEventHandler> event_handler);
+    static std::shared_ptr<GroundedAxiomEvaluator>
+    create(formalism::Problem problem,
+           std::vector<std::unique_ptr<match_tree::MatchTree<formalism::GroundAxiomImpl>>>&& match_tree_partitioning,
+           EventHandler event_handler);
 
     // Uncopyable
     GroundedAxiomEvaluator(const GroundedAxiomEvaluator& other) = delete;
@@ -214,12 +221,12 @@ public:
      */
 
     const formalism::Problem& get_problem() const override;
-    const std::shared_ptr<IEventHandler>& get_event_handler() const;
+    const EventHandler& get_event_handler() const;
 
 private:
     formalism::Problem m_problem;
     std::vector<std::unique_ptr<match_tree::MatchTree<formalism::GroundAxiomImpl>>> m_match_tree_partitioning;
-    std::shared_ptr<IEventHandler> m_event_handler;
+    EventHandler m_event_handler;
 };
 
 }

@@ -95,4 +95,11 @@ void DebugEventHandler::on_solved_impl(const Plan& plan) const
 void DebugEventHandler::on_unsolvable_impl() const { std::cout << "[BrFS] Unsolvable!" << std::endl; }
 
 void DebugEventHandler::on_exhausted_impl() const { std::cout << "[BrFS] Exhausted!" << std::endl; }
+
+DebugEventHandler::DebugEventHandler(formalism::Problem problem, bool quiet) : EventHandlerBase<DebugEventHandler>(problem, quiet) {}
+
+std::shared_ptr<DebugEventHandler> DebugEventHandler::create(formalism::Problem problem, bool quiet)
+{
+    return std::make_shared<DebugEventHandler>(problem, quiet);
+}
 }

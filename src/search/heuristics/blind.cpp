@@ -42,4 +42,6 @@ BlindHeuristic::BlindHeuristic(Problem problem) :
                                 1.)
 {
 }
+
+std::shared_ptr<BlindHeuristic> BlindHeuristic::create(formalism::Problem problem) { return std::make_shared<BlindHeuristic>(problem); }
 }

@@ -41,5 +41,7 @@ HStarHeuristic::HStarHeuristic(const SearchContext& context) : m_estimates()
     }
 }
 
+std::shared_ptr<HStarHeuristic> HStarHeuristic::create(const SearchContext& context) { return std::make_shared<HStarHeuristic>(context); }
+
 double HStarHeuristic::compute_heuristic(State state, bool is_goal_state) { return m_estimates.at(state); }
 }

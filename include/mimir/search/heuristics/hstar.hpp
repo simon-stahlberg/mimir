@@ -31,6 +31,8 @@ class HStarHeuristic : public IHeuristic
 public:
     explicit HStarHeuristic(const SearchContext& context);
 
+    static std::shared_ptr<HStarHeuristic> create(const SearchContext& context);
+
     double compute_heuristic(State state, bool is_goal_state) override;
 
 private:

@@ -96,6 +96,8 @@ public:
         virtual const Statistics& get_statistics() const = 0;
     };
 
+    using EventHandler = std::shared_ptr<IEventHandler>;
+
     /**
      * Base class
      *
@@ -191,7 +193,9 @@ public:
         void on_end_search_impl() const;
 
     public:
-        explicit DebugEventHandler(bool quiet = true) : EventHandlerBase<DebugEventHandler>(quiet) {}
+        explicit DebugEventHandler(bool quiet = true);
+
+        static std::shared_ptr<DebugEventHandler> create(bool quiet = true);
     };
 
     class DefaultEventHandler : public EventHandlerBase<DefaultEventHandler>
@@ -215,20 +219,22 @@ public:
         void on_end_search_impl() const;
 
     public:
-        explicit DefaultEventHandler(bool quiet = true) : EventHandlerBase<DefaultEventHandler>(quiet) {}
+        explicit DefaultEventHandler(bool quiet = true);
+
+        static std::shared_ptr<DefaultEventHandler> create(bool quiet = true);
     };
 
     /// @brief Simplest construction
     LiftedApplicableActionGenerator(formalism::Problem problem);
 
     /// @brief Complete construction
-    LiftedApplicableActionGenerator(formalism::Problem problem, std::shared_ptr<IEventHandler> event_handler);
+    LiftedApplicableActionGenerator(formalism::Problem problem, EventHandler event_handler);
 
     /// @brief Simplest construction
-    static ApplicableActionGenerator create(formalism::Problem problem);
+    static std::shared_ptr<LiftedApplicableActionGenerator> create(formalism::Problem problem);
 
     /// @brief Complete construction
-    static ApplicableActionGenerator create(formalism::Problem problem, std::shared_ptr<IEventHandler> event_handler);
+    static std::shared_ptr<LiftedApplicableActionGenerator> create(formalism::Problem problem, EventHandler event_handler);
 
     // Uncopyable
     LiftedApplicableActionGenerator(const LiftedApplicableActionGenerator& other) = delete;
@@ -251,7 +257,7 @@ public:
 
 private:
     formalism::Problem m_problem;
-    std::shared_ptr<IEventHandler> m_event_handler;
+    EventHandler m_event_handler;
 
     ActionSatisficingBindingGeneratorList m_action_grounding_data;
 

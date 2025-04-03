@@ -71,7 +71,9 @@ private:
     void on_exhausted_impl() const;
 
 public:
-    explicit DebugEventHandler(formalism::Problem problem, bool quiet = true) : EventHandlerBase<DebugEventHandler>(problem, quiet) {}
+    DebugEventHandler(formalism::Problem problem, bool quiet = true);
+
+    static std::shared_ptr<DebugEventHandler> create(formalism::Problem problem, bool quiet = true);
 };
 
 }

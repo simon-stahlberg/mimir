@@ -48,6 +48,8 @@ private:
 
 public:
     explicit DefaultEventHandler(formalism::Problem problem, bool quiet = true);
+
+    static std::shared_ptr<DefaultEventHandler> create(formalism::Problem problem, bool quiet = true);
 };
 
 }

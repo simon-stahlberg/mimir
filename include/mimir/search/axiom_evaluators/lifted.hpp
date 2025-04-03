@@ -87,6 +87,8 @@ public:
         virtual const Statistics& get_statistics() const = 0;
     };
 
+    using EventHandler = std::shared_ptr<IEventHandler>;
+
     template<typename Derived_>
     class EventHandlerBase : public IEventHandler
     {
@@ -177,7 +179,9 @@ public:
         void on_end_search_impl() const;
 
     public:
-        explicit DebugEventHandler(bool quiet = true) : EventHandlerBase<DebugEventHandler>(quiet) {}
+        explicit DebugEventHandler(bool quiet = true);
+
+        static std::shared_ptr<DebugEventHandler> create(bool quiet = true);
     };
 
     class DefaultEventHandler : public EventHandlerBase<DefaultEventHandler>
@@ -201,16 +205,18 @@ public:
         void on_end_search_impl() const;
 
     public:
-        explicit DefaultEventHandler(bool quiet = true) : EventHandlerBase<DefaultEventHandler>(quiet) {}
+        explicit DefaultEventHandler(bool quiet = true);
+
+        static std::shared_ptr<DefaultEventHandler> create(bool quiet = true);
     };
 
     LiftedAxiomEvaluator(formalism::Problem problem);
 
-    LiftedAxiomEvaluator(formalism::Problem problem, std::shared_ptr<IEventHandler> event_handler);
+    LiftedAxiomEvaluator(formalism::Problem problem, EventHandler event_handler);
 
-    static AxiomEvaluator create(formalism::Problem problem);
+    static std::shared_ptr<LiftedAxiomEvaluator> create(formalism::Problem problem);
 
-    static AxiomEvaluator create(formalism::Problem problem, std::shared_ptr<IEventHandler> event_handler);
+    static std::shared_ptr<LiftedAxiomEvaluator> create(formalism::Problem problem, EventHandler event_handler);
 
     // Uncopyable
     LiftedAxiomEvaluator(const LiftedAxiomEvaluator& other) = delete;
@@ -229,11 +235,11 @@ public:
      */
 
     const formalism::Problem& get_problem() const override;
-    const std::shared_ptr<IEventHandler>& get_event_handler() const;
+    const EventHandler& get_event_handler() const;
 
 private:
     formalism::Problem m_problem;
-    std::shared_ptr<IEventHandler> m_event_handler;
+    EventHandler m_event_handler;
 
     AxiomSatisficingBindingGeneratorList m_condition_grounders;
 

@@ -84,4 +84,11 @@ void DefaultEventHandler::on_solved_impl(const Plan& plan) const
 void DefaultEventHandler::on_unsolvable_impl() const { std::cout << "[BrFS] Unsolvable!" << std::endl; }
 
 void DefaultEventHandler::on_exhausted_impl() const { std::cout << "[BrFS] Exhausted!" << std::endl; }
+
+DefaultEventHandler::DefaultEventHandler(formalism::Problem problem, bool quiet) : EventHandlerBase<DefaultEventHandler>(problem, quiet) {}
+
+std::shared_ptr<DefaultEventHandler> DefaultEventHandler::create(formalism::Problem problem, bool quiet)
+{
+    return std::make_shared<DefaultEventHandler>(problem, quiet);
+}
 }

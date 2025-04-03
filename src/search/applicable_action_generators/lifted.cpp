@@ -55,6 +55,13 @@ void LiftedApplicableActionGenerator::DebugEventHandler::on_finish_search_layer_
 
 void LiftedApplicableActionGenerator::DebugEventHandler::on_end_search_impl() const { std::cout << get_statistics() << std::endl; }
 
+LiftedApplicableActionGenerator::DebugEventHandler::DebugEventHandler(bool quiet) : EventHandlerBase<DebugEventHandler>(quiet) {}
+
+std::shared_ptr<LiftedApplicableActionGenerator::DebugEventHandler> LiftedApplicableActionGenerator::DebugEventHandler::create(bool quiet)
+{
+    return std::make_shared<DebugEventHandler>(quiet);
+}
+
 /**
  * DefaultEventHandler
  */
@@ -72,6 +79,13 @@ void LiftedApplicableActionGenerator::DefaultEventHandler::on_end_generating_app
 void LiftedApplicableActionGenerator::DefaultEventHandler::on_finish_search_layer_impl() const {}
 
 void LiftedApplicableActionGenerator::DefaultEventHandler::on_end_search_impl() const { std::cout << get_statistics() << std::endl; }
+
+LiftedApplicableActionGenerator::DefaultEventHandler::DefaultEventHandler(bool quiet) : EventHandlerBase<DefaultEventHandler>(quiet) {}
+
+std::shared_ptr<LiftedApplicableActionGenerator::DefaultEventHandler> LiftedApplicableActionGenerator::DefaultEventHandler::create(bool quiet)
+{
+    return std::make_shared<DefaultEventHandler>(quiet);
+}
 
 /**
  * LiftedApplicableActionGenerator
@@ -104,9 +118,12 @@ LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem
     }
 }
 
-ApplicableActionGenerator LiftedApplicableActionGenerator::create(Problem problem) { return create(problem, std::make_shared<DefaultEventHandler>()); }
+std::shared_ptr<LiftedApplicableActionGenerator> LiftedApplicableActionGenerator::create(Problem problem)
+{
+    return create(problem, std::make_shared<DefaultEventHandler>());
+}
 
-ApplicableActionGenerator LiftedApplicableActionGenerator::create(Problem problem, std::shared_ptr<IEventHandler> event_handler)
+std::shared_ptr<LiftedApplicableActionGenerator> LiftedApplicableActionGenerator::create(Problem problem, std::shared_ptr<IEventHandler> event_handler)
 {
     return std::shared_ptr<LiftedApplicableActionGenerator>(new LiftedApplicableActionGenerator(std::move(problem), std::move(event_handler)));
 }

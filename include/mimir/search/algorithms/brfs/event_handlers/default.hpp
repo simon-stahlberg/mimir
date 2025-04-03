@@ -68,7 +68,9 @@ private:
     void on_exhausted_impl() const;
 
 public:
-    explicit DefaultEventHandler(formalism::Problem problem, bool quiet = true) : EventHandlerBase<DefaultEventHandler>(problem, quiet) {}
+    DefaultEventHandler(formalism::Problem problem, bool quiet = true);
+
+    static std::shared_ptr<DefaultEventHandler> create(formalism::Problem problem, bool quiet = true);
 };
 
 }

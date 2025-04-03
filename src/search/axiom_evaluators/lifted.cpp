@@ -47,6 +47,13 @@ void LiftedAxiomEvaluator::DebugEventHandler::on_finish_search_layer_impl() cons
 
 void LiftedAxiomEvaluator::DebugEventHandler::on_end_search_impl() const { std::cout << get_statistics() << std::endl; }
 
+LiftedAxiomEvaluator::DebugEventHandler::DebugEventHandler(bool quiet) : EventHandlerBase<DebugEventHandler>(quiet) {}
+
+std::shared_ptr<LiftedAxiomEvaluator::DebugEventHandler> LiftedAxiomEvaluator::DebugEventHandler::create(bool quiet)
+{
+    return std::make_shared<DebugEventHandler>(quiet);
+}
+
 /**
  * DefaultEventHandler
  */
@@ -64,6 +71,13 @@ void LiftedAxiomEvaluator::DefaultEventHandler::on_end_generating_applicable_axi
 void LiftedAxiomEvaluator::DefaultEventHandler::on_finish_search_layer_impl() const {}
 
 void LiftedAxiomEvaluator::DefaultEventHandler::on_end_search_impl() const { std::cout << get_statistics() << std::endl; }
+
+LiftedAxiomEvaluator::DefaultEventHandler::DefaultEventHandler(bool quiet) : EventHandlerBase<DefaultEventHandler>(quiet) {}
+
+std::shared_ptr<LiftedAxiomEvaluator::DefaultEventHandler> LiftedAxiomEvaluator::DefaultEventHandler::create(bool quiet)
+{
+    return std::make_shared<DefaultEventHandler>(quiet);
+}
 
 /**
  * LiftedAxiomEvaluator
@@ -92,9 +106,12 @@ LiftedAxiomEvaluator::LiftedAxiomEvaluator(Problem problem, std::shared_ptr<IEve
     }
 }
 
-AxiomEvaluator LiftedAxiomEvaluator::create(Problem problem) { return create(std::move(problem), std::make_shared<DefaultEventHandler>()); }
+std::shared_ptr<LiftedAxiomEvaluator> LiftedAxiomEvaluator::create(Problem problem)
+{
+    return create(std::move(problem), std::make_shared<DefaultEventHandler>());
+}
 
-AxiomEvaluator LiftedAxiomEvaluator::create(Problem problem, std::shared_ptr<IEventHandler> event_handler)
+std::shared_ptr<LiftedAxiomEvaluator> LiftedAxiomEvaluator::create(Problem problem, std::shared_ptr<IEventHandler> event_handler)
 {
     return std::shared_ptr<LiftedAxiomEvaluator>(new LiftedAxiomEvaluator(std::move(problem), std::move(event_handler)));
 }

@@ -58,6 +58,13 @@ void GroundedApplicableActionGenerator::DebugEventHandler::on_finish_search_laye
 
 void GroundedApplicableActionGenerator::DebugEventHandler::on_end_search_impl() const {}
 
+GroundedApplicableActionGenerator::DebugEventHandler::DebugEventHandler(bool quiet) : EventHandlerBase<DebugEventHandler>(quiet) {}
+
+std::shared_ptr<GroundedApplicableActionGenerator::DebugEventHandler> GroundedApplicableActionGenerator::DebugEventHandler::create(bool quiet)
+{
+    return std::make_shared<DebugEventHandler>(quiet);
+}
+
 /**
  * DefaultEventHandler
  */
@@ -89,13 +96,20 @@ void GroundedApplicableActionGenerator::DefaultEventHandler::on_finish_search_la
 
 void GroundedApplicableActionGenerator::DefaultEventHandler::on_end_search_impl() const {}
 
+GroundedApplicableActionGenerator::DefaultEventHandler::DefaultEventHandler(bool quiet) : EventHandlerBase<DefaultEventHandler>(quiet) {}
+
+std::shared_ptr<GroundedApplicableActionGenerator::DefaultEventHandler> GroundedApplicableActionGenerator::DefaultEventHandler::create(bool quiet)
+{
+    return std::make_shared<DefaultEventHandler>(quiet);
+}
+
 /**
  * GroundedApplicableActionGenerator
  */
 
 GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem problem,
                                                                      std::unique_ptr<match_tree::MatchTree<GroundActionImpl>>&& match_tree,
-                                                                     std::shared_ptr<IEventHandler> event_handler) :
+                                                                     EventHandler event_handler) :
     m_problem(std::move(problem)),
     m_match_tree(std::move(match_tree)),
     m_event_handler(std::move(event_handler)),
@@ -103,14 +117,14 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem pro
 {
 }
 
-ApplicableActionGenerator GroundedApplicableActionGenerator::create(Problem problem, std::unique_ptr<match_tree::MatchTree<GroundActionImpl>>&& match_tree)
+std::shared_ptr<GroundedApplicableActionGenerator>
+GroundedApplicableActionGenerator::create(Problem problem, std::unique_ptr<match_tree::MatchTree<GroundActionImpl>>&& match_tree)
 {
     return create(problem, std::move(match_tree), std::make_shared<DefaultEventHandler>());
 }
 
-ApplicableActionGenerator GroundedApplicableActionGenerator::create(Problem problem,
-                                                                    std::unique_ptr<match_tree::MatchTree<GroundActionImpl>>&& match_tree,
-                                                                    std::shared_ptr<IEventHandler> event_handler)
+std::shared_ptr<GroundedApplicableActionGenerator>
+GroundedApplicableActionGenerator::create(Problem problem, std::unique_ptr<match_tree::MatchTree<GroundActionImpl>>&& match_tree, EventHandler event_handler)
 {
     return std::shared_ptr<GroundedApplicableActionGenerator>(
         new GroundedApplicableActionGenerator(std::move(problem), std::move(match_tree), std::move(event_handler)));
