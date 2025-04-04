@@ -24,13 +24,13 @@ using namespace mimir::formalism;
 
 namespace mimir::search::match_tree
 {
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 InverseElementGeneratorNode_Perfect<E>::InverseElementGeneratorNode_Perfect(const IInverseNode<E>* parent, std::span<const E*> elements) :
     InverseElementGeneratorNodeBase<InverseElementGeneratorNode_Perfect<E>, E>(parent, elements)
 {
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void InverseElementGeneratorNode_Perfect<E>::visit_impl(IInverseNodeVisitor<E>& visitor) const
 {
     visitor.accept(*this);
@@ -39,13 +39,13 @@ void InverseElementGeneratorNode_Perfect<E>::visit_impl(IInverseNodeVisitor<E>& 
 template class InverseElementGeneratorNode_Perfect<GroundActionImpl>;
 template class InverseElementGeneratorNode_Perfect<GroundAxiomImpl>;
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 InverseElementGeneratorNode_Imperfect<E>::InverseElementGeneratorNode_Imperfect(const IInverseNode<E>* parent, std::span<const E*> elements) :
     InverseElementGeneratorNodeBase<InverseElementGeneratorNode_Imperfect<E>, E>(parent, elements)
 {
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void InverseElementGeneratorNode_Imperfect<E>::visit_impl(IInverseNodeVisitor<E>& visitor) const
 {
     visitor.accept(*this);

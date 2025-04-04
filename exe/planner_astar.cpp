@@ -15,22 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/formalism/domain.hpp"
-#include "mimir/formalism/problem.hpp"
-#include "mimir/search/algorithms.hpp"
-#include "mimir/search/algorithms/astar.hpp"
-#include "mimir/search/algorithms/strategies/goal_strategy.hpp"
-#include "mimir/search/algorithms/strategies/pruning_strategy.hpp"
-#include "mimir/search/applicable_action_generators.hpp"
-#include "mimir/search/axiom_evaluators.hpp"
-#include "mimir/search/delete_relaxed_problem_explorator.hpp"
-#include "mimir/search/heuristics.hpp"
-#include "mimir/search/openlists.hpp"
-#include "mimir/search/satisficing_binding_generators.hpp"
-#include "mimir/search/search_context.hpp"
-#include "mimir/search/search_node.hpp"
-#include "mimir/search/state.hpp"
-#include "mimir/search/state_repository.hpp"
+#include "mimir/mimir.hpp"
 
 #include <chrono>
 #include <fstream>
@@ -93,25 +78,26 @@ int main(int argc, char** argv)
         auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(problem);
         applicable_action_generator = delete_relaxed_problem_explorator.create_grounded_applicable_action_generator(
             match_tree::Options(),
-            GroundedApplicableActionGenerator::DefaultEventHandler::create(false));
+            GroundedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create(false));
         axiom_evaluator = delete_relaxed_problem_explorator.create_grounded_axiom_evaluator(match_tree::Options(),
-                                                                                            GroundedAxiomEvaluator::DefaultEventHandler::create(false));
+                                                                                            GroundedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create(false));
         state_repository = StateRepositoryImpl::create(axiom_evaluator);
     }
     else
     {
-        applicable_action_generator = LiftedApplicableActionGenerator::create(problem, LiftedApplicableActionGenerator::DefaultEventHandler::create(false));
-        axiom_evaluator = LiftedAxiomEvaluator::create(problem, LiftedAxiomEvaluator::DefaultEventHandler::create(false));
+        applicable_action_generator =
+            LiftedApplicableActionGeneratorImpl::create(problem, LiftedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create(false));
+        axiom_evaluator = LiftedAxiomEvaluatorImpl::create(problem, LiftedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create(false));
         state_repository = StateRepositoryImpl::create(axiom_evaluator);
     }
 
-    auto event_handler = (debug) ? astar::EventHandler { astar::DebugEventHandler::create(problem, false) } :
-                                   astar::EventHandler { astar::DefaultEventHandler::create(problem, false) };
+    auto event_handler = (debug) ? astar::EventHandler { astar::DebugEventHandlerImpl::create(problem, false) } :
+                                   astar::EventHandler { astar::DefaultEventHandlerImpl::create(problem, false) };
 
     auto heuristic = Heuristic(nullptr);
     if (heuristic_type == 0)
     {
-        heuristic = BlindHeuristic::create(problem);
+        heuristic = BlindHeuristicImpl::create(problem);
     }
     assert(heuristic);
 

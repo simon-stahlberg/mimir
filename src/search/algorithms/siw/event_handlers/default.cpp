@@ -25,15 +25,15 @@ using namespace mimir::formalism;
 
 namespace mimir::search::siw
 {
-void DefaultEventHandler::on_start_search_impl(State initial_state) const {}
+void DefaultEventHandlerImpl::on_start_search_impl(State initial_state) const {}
 
-void DefaultEventHandler::on_start_subproblem_search_impl(State initial_state) const { std::cout << "[SIW] Started search." << std::endl; }
+void DefaultEventHandlerImpl::on_start_subproblem_search_impl(State initial_state) const { std::cout << "[SIW] Started search." << std::endl; }
 
-void DefaultEventHandler::on_end_subproblem_search_impl(const iw::Statistics& iw_statistics) const {}
+void DefaultEventHandlerImpl::on_end_subproblem_search_impl(const iw::Statistics& iw_statistics) const {}
 
-void DefaultEventHandler::on_end_search_impl() const { std::cout << "[IW] Search ended.\n" << m_statistics << std::endl; }
+void DefaultEventHandlerImpl::on_end_search_impl() const { std::cout << "[IW] Search ended.\n" << m_statistics << std::endl; }
 
-void DefaultEventHandler::on_solved_impl(const Plan& plan) const
+void DefaultEventHandlerImpl::on_solved_impl(const Plan& plan) const
 {
     std::cout << "[SIW] Plan found.\n"
               << "[SIW] Plan cost: " << plan.get_cost() << "\n"
@@ -46,14 +46,14 @@ void DefaultEventHandler::on_solved_impl(const Plan& plan) const
     }
 }
 
-void DefaultEventHandler::on_unsolvable_impl() const { std::cout << "[SIW] Unsolvable!" << std::endl; }
+void DefaultEventHandlerImpl::on_unsolvable_impl() const { std::cout << "[SIW] Unsolvable!" << std::endl; }
 
-void DefaultEventHandler::on_exhausted_impl() const { std::cout << "[SIW] Exhausted!" << std::endl; }
+void DefaultEventHandlerImpl::on_exhausted_impl() const { std::cout << "[SIW] Exhausted!" << std::endl; }
 
-DefaultEventHandler::DefaultEventHandler(Problem problem, bool quiet) : EventHandlerBase<DefaultEventHandler>(problem, quiet) {}
+DefaultEventHandlerImpl::DefaultEventHandlerImpl(Problem problem, bool quiet) : EventHandlerBase<DefaultEventHandlerImpl>(problem, quiet) {}
 
-std::shared_ptr<DefaultEventHandler> DefaultEventHandler::create(formalism::Problem problem, bool quiet)
+DefaultEventHandler DefaultEventHandlerImpl::create(formalism::Problem problem, bool quiet)
 {
-    return std::make_shared<DefaultEventHandler>(problem, quiet);
+    return std::make_shared<DefaultEventHandlerImpl>(problem, quiet);
 }
 }

@@ -30,14 +30,14 @@ using namespace mimir::formalism;
 namespace mimir::search::match_tree
 {
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 using Nodes = std::unordered_map<const IInverseNode<E>*, std::pair<size_t, std::string>>;
 
 using Partition = std::map<size_t, std::vector<size_t>>;
 
 using Edges = std::unordered_map<size_t, std::vector<std::pair<size_t, std::string>>>;
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 struct InitializeInverseNodesVisitor : public IInverseNodeVisitor<E>
 {
     Nodes<E>& m_nodes;
@@ -62,7 +62,7 @@ struct InitializeInverseNodesVisitor : public IInverseNodeVisitor<E>
     void accept(const InverseElementGeneratorNode_Imperfect<E>& generator) override;
 };
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 struct InitializeInverseEdgesVisitor : public IInverseNodeVisitor<E>
 {
     Nodes<E>& m_nodes;
@@ -92,7 +92,7 @@ struct InitializeInverseEdgesVisitor : public IInverseNodeVisitor<E>
  * InitializeInverseNodesVisitor
  */
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 static void accept_impl(InitializeInverseNodesVisitor<E>& visitor, const InverseAtomSelectorNode_TFX<E, P>& atom)
 {
     visitor.m_nodes.emplace(&atom, std::make_pair(visitor.m_nodes.size(), to_string(atom.get_atom())));
@@ -101,7 +101,7 @@ static void accept_impl(InitializeInverseNodesVisitor<E>& visitor, const Inverse
     atom.get_dontcare_child()->visit(visitor);
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 static void accept_impl(InitializeInverseNodesVisitor<E>& visitor, const InverseAtomSelectorNode_TF<E, P>& atom)
 {
     visitor.m_nodes.emplace(&atom, std::make_pair(visitor.m_nodes.size(), to_string(atom.get_atom())));
@@ -109,7 +109,7 @@ static void accept_impl(InitializeInverseNodesVisitor<E>& visitor, const Inverse
     atom.get_false_child()->visit(visitor);
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 static void accept_impl(InitializeInverseNodesVisitor<E>& visitor, const InverseAtomSelectorNode_TX<E, P>& atom)
 {
     visitor.m_nodes.emplace(&atom, std::make_pair(visitor.m_nodes.size(), to_string(atom.get_atom())));
@@ -117,7 +117,7 @@ static void accept_impl(InitializeInverseNodesVisitor<E>& visitor, const Inverse
     atom.get_dontcare_child()->visit(visitor);
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 static void accept_impl(InitializeInverseNodesVisitor<E>& visitor, const InverseAtomSelectorNode_FX<E, P>& atom)
 {
     visitor.m_nodes.emplace(&atom, std::make_pair(visitor.m_nodes.size(), to_string(atom.get_atom())));
@@ -125,93 +125,93 @@ static void accept_impl(InitializeInverseNodesVisitor<E>& visitor, const Inverse
     atom.get_dontcare_child()->visit(visitor);
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 static void accept_impl(InitializeInverseNodesVisitor<E>& visitor, const InverseAtomSelectorNode_T<E, P>& atom)
 {
     visitor.m_nodes.emplace(&atom, std::make_pair(visitor.m_nodes.size(), to_string(atom.get_atom())));
     atom.get_true_child()->visit(visitor);
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 static void accept_impl(InitializeInverseNodesVisitor<E>& visitor, const InverseAtomSelectorNode_F<E, P>& atom)
 {
     visitor.m_nodes.emplace(&atom, std::make_pair(visitor.m_nodes.size(), to_string(atom.get_atom())));
     atom.get_false_child()->visit(visitor);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void InitializeInverseNodesVisitor<E>::accept(const InverseAtomSelectorNode_TFX<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void InitializeInverseNodesVisitor<E>::accept(const InverseAtomSelectorNode_TF<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void InitializeInverseNodesVisitor<E>::accept(const InverseAtomSelectorNode_TX<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void InitializeInverseNodesVisitor<E>::accept(const InverseAtomSelectorNode_FX<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void InitializeInverseNodesVisitor<E>::accept(const InverseAtomSelectorNode_T<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void InitializeInverseNodesVisitor<E>::accept(const InverseAtomSelectorNode_F<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void InitializeInverseNodesVisitor<E>::accept(const InverseAtomSelectorNode_TFX<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void InitializeInverseNodesVisitor<E>::accept(const InverseAtomSelectorNode_TF<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void InitializeInverseNodesVisitor<E>::accept(const InverseAtomSelectorNode_TX<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void InitializeInverseNodesVisitor<E>::accept(const InverseAtomSelectorNode_FX<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void InitializeInverseNodesVisitor<E>::accept(const InverseAtomSelectorNode_T<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void InitializeInverseNodesVisitor<E>::accept(const InverseAtomSelectorNode_F<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void InitializeInverseNodesVisitor<E>::accept(const InverseNumericConstraintSelectorNode_TX<E>& constraint)
 {
     m_nodes.emplace(&constraint, std::make_pair(m_nodes.size(), to_string(constraint.get_constraint())));
@@ -219,20 +219,20 @@ void InitializeInverseNodesVisitor<E>::accept(const InverseNumericConstraintSele
     constraint.get_dontcare_child()->visit(*this);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void InitializeInverseNodesVisitor<E>::accept(const InverseNumericConstraintSelectorNode_T<E>& constraint)
 {
     m_nodes.emplace(&constraint, std::make_pair(m_nodes.size(), to_string(constraint.get_constraint())));
     constraint.get_true_child()->visit(*this);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void InitializeInverseNodesVisitor<E>::accept(const InverseElementGeneratorNode_Perfect<E>& generator)
 {
     m_nodes.emplace(&generator, std::make_pair(m_nodes.size(), std::to_string(generator.get_elements().size())));
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void InitializeInverseNodesVisitor<E>::accept(const InverseElementGeneratorNode_Imperfect<E>& generator)
 {
     m_nodes.emplace(&generator, std::make_pair(m_nodes.size(), std::to_string(generator.get_elements().size())));
@@ -242,7 +242,7 @@ void InitializeInverseNodesVisitor<E>::accept(const InverseElementGeneratorNode_
  * InitializeEdges
  */
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 static void accept_impl(InitializeInverseEdgesVisitor<E>& visitor, const InverseAtomSelectorNode_TFX<E, P>& atom)
 {
     visitor.m_edges[visitor.m_nodes.at(&atom).first].emplace_back(visitor.m_nodes.at(atom.get_true_child().get()).first, "T");
@@ -253,7 +253,7 @@ static void accept_impl(InitializeInverseEdgesVisitor<E>& visitor, const Inverse
     atom.get_dontcare_child()->visit(visitor);
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 static void accept_impl(InitializeInverseEdgesVisitor<E>& visitor, const InverseAtomSelectorNode_TF<E, P>& atom)
 {
     visitor.m_edges[visitor.m_nodes.at(&atom).first].emplace_back(visitor.m_nodes.at(atom.get_true_child().get()).first, "T");
@@ -262,7 +262,7 @@ static void accept_impl(InitializeInverseEdgesVisitor<E>& visitor, const Inverse
     atom.get_false_child()->visit(visitor);
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 static void accept_impl(InitializeInverseEdgesVisitor<E>& visitor, const InverseAtomSelectorNode_TX<E, P>& atom)
 {
     visitor.m_edges[visitor.m_nodes.at(&atom).first].emplace_back(visitor.m_nodes.at(atom.get_true_child().get()).first, "T");
@@ -271,7 +271,7 @@ static void accept_impl(InitializeInverseEdgesVisitor<E>& visitor, const Inverse
     atom.get_dontcare_child()->visit(visitor);
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 static void accept_impl(InitializeInverseEdgesVisitor<E>& visitor, const InverseAtomSelectorNode_FX<E, P>& atom)
 {
     visitor.m_edges[visitor.m_nodes.at(&atom).first].emplace_back(visitor.m_nodes.at(atom.get_false_child().get()).first, "F");
@@ -280,93 +280,93 @@ static void accept_impl(InitializeInverseEdgesVisitor<E>& visitor, const Inverse
     atom.get_dontcare_child()->visit(visitor);
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 static void accept_impl(InitializeInverseEdgesVisitor<E>& visitor, const InverseAtomSelectorNode_T<E, P>& atom)
 {
     visitor.m_edges[visitor.m_nodes.at(&atom).first].emplace_back(visitor.m_nodes.at(atom.get_true_child().get()).first, "T");
     atom.get_true_child()->visit(visitor);
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 static void accept_impl(InitializeInverseEdgesVisitor<E>& visitor, const InverseAtomSelectorNode_F<E, P>& atom)
 {
     visitor.m_edges[visitor.m_nodes.at(&atom).first].emplace_back(visitor.m_nodes.at(atom.get_false_child().get()).first, "F");
     atom.get_false_child()->visit(visitor);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void InitializeInverseEdgesVisitor<E>::accept(const InverseAtomSelectorNode_TFX<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void InitializeInverseEdgesVisitor<E>::accept(const InverseAtomSelectorNode_TF<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void InitializeInverseEdgesVisitor<E>::accept(const InverseAtomSelectorNode_TX<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void InitializeInverseEdgesVisitor<E>::accept(const InverseAtomSelectorNode_FX<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void InitializeInverseEdgesVisitor<E>::accept(const InverseAtomSelectorNode_T<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void InitializeInverseEdgesVisitor<E>::accept(const InverseAtomSelectorNode_F<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void InitializeInverseEdgesVisitor<E>::accept(const InverseAtomSelectorNode_TFX<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void InitializeInverseEdgesVisitor<E>::accept(const InverseAtomSelectorNode_TF<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void InitializeInverseEdgesVisitor<E>::accept(const InverseAtomSelectorNode_TX<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void InitializeInverseEdgesVisitor<E>::accept(const InverseAtomSelectorNode_FX<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void InitializeInverseEdgesVisitor<E>::accept(const InverseAtomSelectorNode_T<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void InitializeInverseEdgesVisitor<E>::accept(const InverseAtomSelectorNode_F<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void InitializeInverseEdgesVisitor<E>::accept(const InverseNumericConstraintSelectorNode_TX<E>& constraint)
 {
     m_edges[m_nodes.at(&constraint).first].emplace_back(m_nodes.at(constraint.get_true_child().get()).first, "T");
@@ -375,20 +375,20 @@ void InitializeInverseEdgesVisitor<E>::accept(const InverseNumericConstraintSele
     constraint.get_dontcare_child()->visit(*this);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void InitializeInverseEdgesVisitor<E>::accept(const InverseNumericConstraintSelectorNode_T<E>& constraint)
 {
     m_edges[m_nodes.at(&constraint).first].emplace_back(m_nodes.at(constraint.get_true_child().get()).first, "T");
     constraint.get_true_child()->visit(*this);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void InitializeInverseEdgesVisitor<E>::accept(const InverseElementGeneratorNode_Perfect<E>& generator)
 {
     // Nothing to be done.
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void InitializeInverseEdgesVisitor<E>::accept(const InverseElementGeneratorNode_Imperfect<E>& generator)
 {
     // Nothing to be done.
@@ -398,7 +398,7 @@ void InitializeInverseEdgesVisitor<E>::accept(const InverseElementGeneratorNode_
  * Printer
  */
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 std::ostream& operator<<(std::ostream& out, const std::tuple<const InverseNode<E>&, DotPrinterTag>& tree)
 {
     auto nodes = Nodes<E> {};

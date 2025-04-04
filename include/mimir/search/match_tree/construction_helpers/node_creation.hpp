@@ -25,10 +25,10 @@
 
 namespace mimir::search::match_tree
 {
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 extern Node<E> parse_inverse_tree_iteratively(const InverseNode<E>& root);
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 extern Node<E> create_root_generator_node(std::span<const E*> elements);
 }
 

@@ -28,7 +28,7 @@
 
 namespace mimir::search::match_tree
 {
-template<HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
 bool contains_positive(formalism::GroundAtom<P> atom, const E* element)
 {
     const auto& conjunctive_condition = element->get_conjunctive_condition();
@@ -36,7 +36,7 @@ bool contains_positive(formalism::GroundAtom<P> atom, const E* element)
     return (std::find(positive_precondition.begin(), positive_precondition.end(), atom->get_index()) != positive_precondition.end());
 }
 
-template<HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
 bool contains_negative(formalism::GroundAtom<P> atom, const E* element)
 {
     const auto& conjunctive_condition = element->get_conjunctive_condition();
@@ -44,7 +44,7 @@ bool contains_negative(formalism::GroundAtom<P> atom, const E* element)
     return (std::find(negative_precondition.begin(), negative_precondition.end(), atom->get_index()) != negative_precondition.end());
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 bool contains(formalism::GroundNumericConstraint constraint, const E* element)
 {
     const auto& conjunctive_condition = element->get_conjunctive_condition();
@@ -52,28 +52,28 @@ bool contains(formalism::GroundNumericConstraint constraint, const E* element)
     return (std::find(numeric_constraints.begin(), numeric_constraints.end(), constraint) != numeric_constraints.end());
 }
 
-template<HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
 std::pair<InverseNode<E>, PlaceholderNodeList<E>> extern create_node_and_placeholder_children(const PlaceholderNode<E>& node,
                                                                                               const SplitList& useless_splits,
                                                                                               AtomSplit<P> split);
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 std::pair<InverseNode<E>, PlaceholderNodeList<E>> extern create_node_and_placeholder_children(const PlaceholderNode<E>& node,
                                                                                               const SplitList& useless_splits,
                                                                                               NumericConstraintSplit split);
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 std::pair<InverseNode<E>, PlaceholderNodeList<E>> extern create_node_and_placeholder_children(const PlaceholderNode<E>& node,
                                                                                               const SplitList& useless_splits,
                                                                                               const Split& split);
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 extern std::pair<InverseNode<E>, PlaceholderNodeList<E>> create_perfect_generator_node(const PlaceholderNode<E>& node);
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 extern InverseNode<E> create_imperfect_generator_node(const PlaceholderNode<E>& node);
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 extern PlaceholderNode<E> create_root_placeholder_node(std::span<const E*> elements);
 
 }

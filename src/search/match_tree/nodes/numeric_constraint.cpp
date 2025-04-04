@@ -27,13 +27,13 @@ using namespace mimir::formalism;
 
 namespace mimir::search::match_tree
 {
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void NumericConstraintSelectorNode_T<E>::visit_impl(INodeVisitor<E>& visitor) const
 {
     visitor.accept(*this);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 NumericConstraintSelectorNode_T<E>::NumericConstraintSelectorNode_T(Node<E>&& true_child, GroundNumericConstraint constraint) :
     NumericConstraintSelectorNodeBase<NumericConstraintSelectorNode_T<E>, E>(constraint),
     m_true_child(std::move(true_child))
@@ -41,7 +41,7 @@ NumericConstraintSelectorNode_T<E>::NumericConstraintSelectorNode_T(Node<E>&& tr
     assert(m_true_child);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void NumericConstraintSelectorNode_T<E>::generate_applicable_actions(const DenseState& state,
                                                                      const ProblemImpl& problem,
                                                                      std::vector<const INode<E>*>& ref_applicable_nodes,
@@ -53,7 +53,7 @@ void NumericConstraintSelectorNode_T<E>::generate_applicable_actions(const Dense
     }
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 const Node<E>& NumericConstraintSelectorNode_T<E>::get_true_child() const
 {
     return m_true_child;
@@ -62,13 +62,13 @@ const Node<E>& NumericConstraintSelectorNode_T<E>::get_true_child() const
 template class NumericConstraintSelectorNode_T<GroundActionImpl>;
 template class NumericConstraintSelectorNode_T<GroundAxiomImpl>;
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void NumericConstraintSelectorNode_TX<E>::visit_impl(INodeVisitor<E>& visitor) const
 {
     visitor.accept(*this);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 NumericConstraintSelectorNode_TX<E>::NumericConstraintSelectorNode_TX(Node<E>&& true_child, Node<E>&& dontcare_child, GroundNumericConstraint constraint) :
     NumericConstraintSelectorNodeBase<NumericConstraintSelectorNode_TX<E>, E>(constraint),
     m_true_child(std::move(true_child)),
@@ -78,7 +78,7 @@ NumericConstraintSelectorNode_TX<E>::NumericConstraintSelectorNode_TX(Node<E>&& 
     assert(m_dontcare_child);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void NumericConstraintSelectorNode_TX<E>::generate_applicable_actions(const DenseState& state,
                                                                       const ProblemImpl& problem,
                                                                       std::vector<const INode<E>*>& ref_applicable_nodes,
@@ -92,13 +92,13 @@ void NumericConstraintSelectorNode_TX<E>::generate_applicable_actions(const Dens
     }
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 const Node<E>& NumericConstraintSelectorNode_TX<E>::get_true_child() const
 {
     return m_true_child;
 };
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 const Node<E>& NumericConstraintSelectorNode_TX<E>::get_dontcare_child() const
 {
     return m_dontcare_child;

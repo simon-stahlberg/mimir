@@ -25,13 +25,13 @@
 namespace mimir::search
 {
 
-/// @brief `HStarHeuristic` returns the shortest goal distance.
-class HStarHeuristic : public IHeuristic
+/// @brief `HStarHeuristicImpl` returns the shortest goal distance.
+class HStarHeuristicImpl : public IHeuristic
 {
 public:
-    explicit HStarHeuristic(const SearchContext& context);
+    explicit HStarHeuristicImpl(const SearchContext& context);
 
-    static std::shared_ptr<HStarHeuristic> create(const SearchContext& context);
+    static HStarHeuristic create(const SearchContext& context);
 
     double compute_heuristic(State state, bool is_goal_state) override;
 

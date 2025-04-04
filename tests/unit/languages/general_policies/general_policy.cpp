@@ -15,11 +15,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "mimir/datasets/generalized_state_space.hpp"
 #include "mimir/datasets/knowledge_base.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/languages/description_logics/constructor_repositories.hpp"
 #include "mimir/languages/general_policies/general_policy_factory.hpp"
 #include "mimir/languages/general_policies/repositories.hpp"
+#include "mimir/search/generalized_search_context.hpp"
 
 #include <gtest/gtest.h>
 
@@ -53,7 +55,7 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyGripperTest)
         {
             /* Without symmetry reduction. */
 
-            auto kb_options = datasets::KnowledgeBaseImpl::Options();
+            auto kb_options = KnowledgeBaseImpl::Options();
 
             auto& state_space_options = kb_options.state_space_options;
             state_space_options.symmetry_pruning = false;
@@ -62,7 +64,7 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyGripperTest)
             generalized_state_space_options = GeneralizedStateSpaceImpl::Options();
             generalized_state_space_options->symmetry_pruning = false;
 
-            auto kb = datasets::KnowledgeBaseImpl::create(context, kb_options);
+            auto kb = KnowledgeBaseImpl::create(context, kb_options);
 
             const auto& generalized_state_space = kb->get_generalized_state_space();
 
@@ -93,7 +95,7 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyGripperTest)
         {
             /* With symmetry reduction. */
 
-            auto kb_options = datasets::KnowledgeBaseImpl::Options();
+            auto kb_options = KnowledgeBaseImpl::Options();
 
             auto& state_space_options = kb_options.state_space_options;
             state_space_options.symmetry_pruning = true;
@@ -102,7 +104,7 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyGripperTest)
             generalized_state_space_options = GeneralizedStateSpaceImpl::Options();
             generalized_state_space_options->symmetry_pruning = true;
 
-            auto kb = datasets::KnowledgeBaseImpl::create(context, kb_options);
+            auto kb = KnowledgeBaseImpl::create(context, kb_options);
 
             const auto& generalized_state_space = kb->get_generalized_state_space();
 
@@ -156,7 +158,7 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyBlocks3opsTest)
         {
             /* Without symmetry reduction. */
 
-            auto kb_options = datasets::KnowledgeBaseImpl::Options();
+            auto kb_options = KnowledgeBaseImpl::Options();
 
             auto& state_space_options = kb_options.state_space_options;
             state_space_options.symmetry_pruning = false;
@@ -165,7 +167,7 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyBlocks3opsTest)
             generalized_state_space_options = GeneralizedStateSpaceImpl::Options();
             generalized_state_space_options->symmetry_pruning = false;
 
-            auto kb = datasets::KnowledgeBaseImpl::create(context, kb_options);
+            auto kb = KnowledgeBaseImpl::create(context, kb_options);
 
             const auto& generalized_state_space = kb->get_generalized_state_space();
 
@@ -196,7 +198,7 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyBlocks3opsTest)
         {
             /* With symmetry reduction. */
 
-            auto kb_options = datasets::KnowledgeBaseImpl::Options();
+            auto kb_options = KnowledgeBaseImpl::Options();
 
             auto& state_space_options = kb_options.state_space_options;
             state_space_options.symmetry_pruning = true;
@@ -205,7 +207,7 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyBlocks3opsTest)
             generalized_state_space_options = GeneralizedStateSpaceImpl::Options();
             generalized_state_space_options->symmetry_pruning = true;
 
-            auto kb = datasets::KnowledgeBaseImpl::create(context, kb_options);
+            auto kb = KnowledgeBaseImpl::create(context, kb_options);
 
             const auto& generalized_state_space = kb->get_generalized_state_space();
 
@@ -257,7 +259,7 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicySpannerTest)
         {
             /* Without symmetry reduction. */
 
-            auto kb_options = datasets::KnowledgeBaseImpl::Options();
+            auto kb_options = KnowledgeBaseImpl::Options();
 
             auto& state_space_options = kb_options.state_space_options;
             state_space_options.symmetry_pruning = false;
@@ -266,7 +268,7 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicySpannerTest)
             generalized_state_space_options = GeneralizedStateSpaceImpl::Options();
             generalized_state_space_options->symmetry_pruning = false;
 
-            auto kb = datasets::KnowledgeBaseImpl::create(context, kb_options);
+            auto kb = KnowledgeBaseImpl::create(context, kb_options);
 
             const auto& generalized_state_space = kb->get_generalized_state_space();
 
@@ -297,7 +299,7 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicySpannerTest)
         {
             /* With symmetry reduction. */
 
-            auto kb_options = datasets::KnowledgeBaseImpl::Options();
+            auto kb_options = KnowledgeBaseImpl::Options();
 
             auto& state_space_options = kb_options.state_space_options;
             state_space_options.symmetry_pruning = true;
@@ -306,7 +308,7 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicySpannerTest)
             generalized_state_space_options = GeneralizedStateSpaceImpl::Options();
             generalized_state_space_options->symmetry_pruning = true;
 
-            auto kb = datasets::KnowledgeBaseImpl::create(context, kb_options);
+            auto kb = KnowledgeBaseImpl::create(context, kb_options);
 
             const auto& generalized_state_space = kb->get_generalized_state_space();
 

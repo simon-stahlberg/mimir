@@ -24,6 +24,12 @@
 namespace mimir::graphs
 {
 
+template class StaticGraph<EmptyVertex, EmptyEdge>;
+template class StaticForwardGraph<StaticGraph<EmptyVertex, EmptyEdge>>;
+template class StaticBidirectionalGraph<StaticGraph<EmptyVertex, EmptyEdge>>;
+
+template class DynamicGraph<EmptyVertex, EmptyEdge>;
+
 /**
  * Pretty printing
  */

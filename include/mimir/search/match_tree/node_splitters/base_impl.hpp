@@ -43,14 +43,14 @@ template<formalism::IsFluentOrDerivedTag P>
 using AtomDistributions = std::unordered_map<formalism::GroundAtom<P>, AtomSplitDistribution>;
 using NumericConstraintDistributions = std::unordered_map<formalism::GroundNumericConstraint, NumericConstraintSplitDistribution>;
 
-template<typename Derived_, HasConjunctiveCondition E>
+template<typename Derived_, formalism::HasConjunctiveCondition E>
 NodeSplitterBase<Derived_, E>::NodeSplitterBase(const formalism::Repositories& pddl_repositories, const Options& options) :
     m_pddl_repositories(pddl_repositories),
     m_options(options)
 {
 }
 
-template<typename Derived_, HasConjunctiveCondition E>
+template<typename Derived_, formalism::HasConjunctiveCondition E>
 SplitSet NodeSplitterBase<Derived_, E>::compute_splits(const std::span<const E*>& elements)
 {
     auto fluent_atom_distributions = AtomDistributions<formalism::FluentTag> {};
@@ -115,7 +115,7 @@ SplitSet NodeSplitterBase<Derived_, E>::compute_splits(const std::span<const E*>
     return splits;
 }
 
-template<typename Derived_, HasConjunctiveCondition E>
+template<typename Derived_, formalism::HasConjunctiveCondition E>
 std::optional<SplitScoreAndUselessSplits> NodeSplitterBase<Derived_, E>::compute_refinement_data(const PlaceholderNode<E>& node)
 {
     auto splits = compute_splits(node->get_elements());
@@ -171,7 +171,7 @@ std::optional<SplitScoreAndUselessSplits> NodeSplitterBase<Derived_, E>::compute
     return SplitScoreAndUselessSplits { best_split.value(), best_score, std::move(useless_splits) };
 }
 
-template<typename Derived_, HasConjunctiveCondition E>
+template<typename Derived_, formalism::HasConjunctiveCondition E>
 std::pair<Node<E>, Statistics> NodeSplitterBase<Derived_, E>::fit(std::span<const E*> elements)
 {
     auto statistics = Statistics();

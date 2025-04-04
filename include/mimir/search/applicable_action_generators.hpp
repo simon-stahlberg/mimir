@@ -19,6 +19,10 @@
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_HPP_
 
 #include "mimir/search/applicable_action_generators/grounded.hpp"
+#include "mimir/search/applicable_action_generators/grounded/event_handlers/debug.hpp"
+#include "mimir/search/applicable_action_generators/grounded/event_handlers/default.hpp"
 #include "mimir/search/applicable_action_generators/lifted.hpp"
+#include "mimir/search/applicable_action_generators/lifted/event_handlers/debug.hpp"
+#include "mimir/search/applicable_action_generators/lifted/event_handlers/default.hpp"
 
 #endif

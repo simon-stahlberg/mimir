@@ -26,7 +26,7 @@ using namespace mimir::formalism;
 namespace mimir::search
 {
 
-HStarHeuristic::HStarHeuristic(const SearchContext& context) : m_estimates()
+HStarHeuristicImpl::HStarHeuristicImpl(const SearchContext& context) : m_estimates()
 {
     // We simply create a state space and copy the estimates
     auto state_space_options = datasets::StateSpaceImpl::Options();
@@ -41,7 +41,7 @@ HStarHeuristic::HStarHeuristic(const SearchContext& context) : m_estimates()
     }
 }
 
-std::shared_ptr<HStarHeuristic> HStarHeuristic::create(const SearchContext& context) { return std::make_shared<HStarHeuristic>(context); }
+HStarHeuristic HStarHeuristicImpl::create(const SearchContext& context) { return std::make_shared<HStarHeuristicImpl>(context); }
 
-double HStarHeuristic::compute_heuristic(State state, bool is_goal_state) { return m_estimates.at(state); }
+double HStarHeuristicImpl::compute_heuristic(State state, bool is_goal_state) { return m_estimates.at(state); }
 }

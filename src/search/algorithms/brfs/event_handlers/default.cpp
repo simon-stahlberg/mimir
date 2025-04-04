@@ -28,47 +28,52 @@ using namespace mimir::formalism;
 
 namespace mimir::search::brfs
 {
-void DefaultEventHandler::on_expand_state_impl(State state) const {}
+void DefaultEventHandlerImpl::on_expand_state_impl(State state) const {}
 
-void DefaultEventHandler::on_expand_goal_state_impl(State state) const {}
+void DefaultEventHandlerImpl::on_expand_goal_state_impl(State state) const {}
 
-void DefaultEventHandler::on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const {}
+void DefaultEventHandlerImpl::on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const {}
 
-void DefaultEventHandler::on_generate_state_in_search_tree_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const {}
-
-void DefaultEventHandler::on_generate_state_not_in_search_tree_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const
+void DefaultEventHandlerImpl::on_generate_state_in_search_tree_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const
 {
 }
 
-void DefaultEventHandler::on_finish_g_layer_impl(uint32_t g_value, uint64_t num_expanded_states, uint64_t num_generated_states) const
+void DefaultEventHandlerImpl::on_generate_state_not_in_search_tree_impl(State state,
+                                                                        GroundAction action,
+                                                                        ContinuousCost action_cost,
+                                                                        State successor_state) const
+{
+}
+
+void DefaultEventHandlerImpl::on_finish_g_layer_impl(uint32_t g_value, uint64_t num_expanded_states, uint64_t num_generated_states) const
 {
     auto now_time_ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     std::cout << "[BrFS] Finished state expansion until g-layer " << g_value << " with num expanded states " << num_expanded_states
               << " and num generated states " << num_generated_states << " (" << now_time_ms - m_start_time_ms << " ms)" << std::endl;
 }
 
-void DefaultEventHandler::on_start_search_impl(State start_state) const
+void DefaultEventHandlerImpl::on_start_search_impl(State start_state) const
 {
     std::cout << "[BrFS] Search started." << std::endl;
     m_start_time_ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 }
 
-void DefaultEventHandler::on_end_search_impl(uint64_t num_reached_fluent_atoms,
-                                             uint64_t num_reached_derived_atoms,
-                                             uint64_t num_bytes_for_unextended_state_portion,
-                                             uint64_t num_bytes_for_extended_state_portion,
-                                             uint64_t num_bytes_for_nodes,
-                                             uint64_t num_bytes_for_actions,
-                                             uint64_t num_bytes_for_axioms,
-                                             uint64_t num_states,
-                                             uint64_t num_nodes,
-                                             uint64_t num_actions,
-                                             uint64_t num_axioms) const
+void DefaultEventHandlerImpl::on_end_search_impl(uint64_t num_reached_fluent_atoms,
+                                                 uint64_t num_reached_derived_atoms,
+                                                 uint64_t num_bytes_for_unextended_state_portion,
+                                                 uint64_t num_bytes_for_extended_state_portion,
+                                                 uint64_t num_bytes_for_nodes,
+                                                 uint64_t num_bytes_for_actions,
+                                                 uint64_t num_bytes_for_axioms,
+                                                 uint64_t num_states,
+                                                 uint64_t num_nodes,
+                                                 uint64_t num_actions,
+                                                 uint64_t num_axioms) const
 {
     std::cout << "[BrFS] Search ended.\n" << m_statistics << std::endl;
 }
 
-void DefaultEventHandler::on_solved_impl(const Plan& plan) const
+void DefaultEventHandlerImpl::on_solved_impl(const Plan& plan) const
 {
     std::cout << "[BrFS] Plan found.\n"
               << "[BrFS] Plan cost: " << plan.get_cost() << "\n"
@@ -81,14 +86,14 @@ void DefaultEventHandler::on_solved_impl(const Plan& plan) const
     }
 }
 
-void DefaultEventHandler::on_unsolvable_impl() const { std::cout << "[BrFS] Unsolvable!" << std::endl; }
+void DefaultEventHandlerImpl::on_unsolvable_impl() const { std::cout << "[BrFS] Unsolvable!" << std::endl; }
 
-void DefaultEventHandler::on_exhausted_impl() const { std::cout << "[BrFS] Exhausted!" << std::endl; }
+void DefaultEventHandlerImpl::on_exhausted_impl() const { std::cout << "[BrFS] Exhausted!" << std::endl; }
 
-DefaultEventHandler::DefaultEventHandler(formalism::Problem problem, bool quiet) : EventHandlerBase<DefaultEventHandler>(problem, quiet) {}
+DefaultEventHandlerImpl::DefaultEventHandlerImpl(formalism::Problem problem, bool quiet) : EventHandlerBase<DefaultEventHandlerImpl>(problem, quiet) {}
 
-std::shared_ptr<DefaultEventHandler> DefaultEventHandler::create(formalism::Problem problem, bool quiet)
+DefaultEventHandler DefaultEventHandlerImpl::create(formalism::Problem problem, bool quiet)
 {
-    return std::make_shared<DefaultEventHandler>(problem, quiet);
+    return std::make_shared<DefaultEventHandlerImpl>(problem, quiet);
 }
 }

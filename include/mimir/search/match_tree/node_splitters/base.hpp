@@ -26,7 +26,7 @@
 namespace mimir::search::match_tree
 {
 
-template<typename Derived_, HasConjunctiveCondition E>
+template<typename Derived_, formalism::HasConjunctiveCondition E>
 class NodeSplitterBase : public INodeSplitter<E>
 {
 private:

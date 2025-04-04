@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_DATASETS_CLASS_GRAPH_HPP_
-#define MIMIR_DATASETS_CLASS_GRAPH_HPP_
+#ifndef MIMIR_DATASETS_GENERALIZED_STATE_SPACE_CLASS_GRAPH_HPP_
+#define MIMIR_DATASETS_GENERALIZED_STATE_SPACE_CLASS_GRAPH_HPP_
 
 #include "mimir/common/types.hpp"
 #include "mimir/formalism/declarations.hpp"

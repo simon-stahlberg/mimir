@@ -18,8 +18,8 @@
 #ifndef MIMIR_LANGUAGES_POLICY_SKETCHES_POLICY_SKETCH_HPP_
 #define MIMIR_LANGUAGES_POLICY_SKETCHES_POLICY_SKETCH_HPP_
 
-#include "mimir/datasets/class_graph.hpp"
 #include "mimir/datasets/declarations.hpp"
+#include "mimir/datasets/generalized_state_space/class_graph.hpp"
 #include "mimir/languages/general_policies/declarations.hpp"
 #include "mimir/languages/general_policies/general_policy.hpp"
 

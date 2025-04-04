@@ -288,59 +288,59 @@ void bind_search(nb::module_& m)
             nb::arg("state"));
 
     // Lifted
-    nb::class_<LiftedApplicableActionGenerator::IEventHandler>(m,
-                                                               "ILiftedApplicableActionGeneratorEventHandler");  //
-    nb::class_<LiftedApplicableActionGenerator::DefaultEventHandler, LiftedApplicableActionGenerator::IEventHandler>(
+    nb::class_<LiftedApplicableActionGeneratorImpl::IEventHandler>(m,
+                                                                   "ILiftedApplicableActionGeneratorEventHandler");  //
+    nb::class_<LiftedApplicableActionGeneratorImpl::DefaultEventHandlerImpl, LiftedApplicableActionGeneratorImpl::IEventHandler>(
         m,
         "DefaultLiftedApplicableActionGeneratorEventHandler")  //
         .def(nb::init<>());
-    nb::class_<LiftedApplicableActionGenerator::DebugEventHandler, LiftedApplicableActionGenerator::IEventHandler>(
+    nb::class_<LiftedApplicableActionGeneratorImpl::DebugEventHandlerImpl, LiftedApplicableActionGeneratorImpl::IEventHandler>(
         m,
         "DebugLiftedApplicableActionGeneratorEventHandler")  //
         .def(nb::init<>());
-    nb::class_<LiftedApplicableActionGenerator, IApplicableActionGenerator>(m,
-                                                                            "LiftedApplicableActionGenerator")  //
+    nb::class_<LiftedApplicableActionGeneratorImpl, IApplicableActionGenerator>(m,
+                                                                                "LiftedApplicableActionGenerator")  //
         .def(nb::init<Problem>(), nb::arg("problem"))
-        .def(nb::init<Problem, std::shared_ptr<LiftedApplicableActionGenerator::IEventHandler>>(), nb::arg("problem"), nb::arg("event_handler"));
+        .def(nb::init<Problem, LiftedApplicableActionGeneratorImpl::EventHandler>(), nb::arg("problem"), nb::arg("event_handler"));
 
     // Grounded
-    nb::class_<GroundedApplicableActionGenerator::IEventHandler>(m,
-                                                                 "IGroundedApplicableActionGeneratorEventHandler");  //
-    nb::class_<GroundedApplicableActionGenerator::DefaultEventHandler, GroundedApplicableActionGenerator::IEventHandler>(
+    nb::class_<GroundedApplicableActionGeneratorImpl::IEventHandler>(m,
+                                                                     "IGroundedApplicableActionGeneratorEventHandler");  //
+    nb::class_<GroundedApplicableActionGeneratorImpl::DefaultEventHandlerImpl, GroundedApplicableActionGeneratorImpl::IEventHandler>(
         m,
         "DefaultGroundedApplicableActionGeneratorEventHandler")  //
         .def(nb::init<>());
-    nb::class_<GroundedApplicableActionGenerator::DebugEventHandler, GroundedApplicableActionGenerator::IEventHandler>(
+    nb::class_<GroundedApplicableActionGeneratorImpl::DebugEventHandlerImpl, GroundedApplicableActionGeneratorImpl::IEventHandler>(
         m,
         "DebugGroundedApplicableActionGeneratorEventHandler")  //
         .def(nb::init<>());
-    nb::class_<GroundedApplicableActionGenerator, IApplicableActionGenerator>(m, "GroundedApplicableActionGenerator");
+    nb::class_<GroundedApplicableActionGeneratorImpl, IApplicableActionGenerator>(m, "GroundedApplicableActionGenerator");
 
     /* IAxiomEvaluator */
     nb::class_<IAxiomEvaluator>(m, "IAxiomEvaluator")  //
         .def("get_problem", &IAxiomEvaluator::get_problem);
 
     // Lifted
-    nb::class_<LiftedAxiomEvaluator::IEventHandler>(m, "ILiftedAxiomEvaluatorEventHandler");  //
-    nb::class_<LiftedAxiomEvaluator::DefaultEventHandler, LiftedAxiomEvaluator::IEventHandler>(m,
-                                                                                               "DefaultLiftedAxiomEvaluatorEventHandler")  //
+    nb::class_<LiftedAxiomEvaluatorImpl::IEventHandler>(m, "ILiftedAxiomEvaluatorEventHandler");  //
+    nb::class_<LiftedAxiomEvaluatorImpl::DefaultEventHandlerImpl, LiftedAxiomEvaluatorImpl::IEventHandler>(m,
+                                                                                                           "DefaultLiftedAxiomEvaluatorEventHandler")  //
         .def(nb::init<>());
-    nb::class_<LiftedAxiomEvaluator::DebugEventHandler, LiftedAxiomEvaluator::IEventHandler>(m,
-                                                                                             "DebugLiftedAxiomEvaluatorEventHandler")  //
+    nb::class_<LiftedAxiomEvaluatorImpl::DebugEventHandlerImpl, LiftedAxiomEvaluatorImpl::IEventHandler>(m,
+                                                                                                         "DebugLiftedAxiomEvaluatorEventHandler")  //
         .def(nb::init<>());
-    nb::class_<LiftedAxiomEvaluator, IAxiomEvaluator>(m, "LiftedAxiomEvaluator")  //
+    nb::class_<LiftedAxiomEvaluatorImpl, IAxiomEvaluator>(m, "LiftedAxiomEvaluator")  //
         .def(nb::init<Problem>(), nb::arg("problem"))
-        .def(nb::init<Problem, std::shared_ptr<LiftedAxiomEvaluator::IEventHandler>>(), nb::arg("problem"), nb::arg("event_handler"));
+        .def(nb::init<Problem, LiftedAxiomEvaluatorImpl::EventHandler>(), nb::arg("problem"), nb::arg("event_handler"));
 
     // Grounded
-    nb::class_<GroundedAxiomEvaluator::IEventHandler>(m, "IGroundedAxiomEvaluatorEventHandler");  //
-    nb::class_<GroundedAxiomEvaluator::DefaultEventHandler, GroundedAxiomEvaluator::IEventHandler>(m,
-                                                                                                   "DefaultGroundedAxiomEvaluatorEventHandler")  //
+    nb::class_<GroundedAxiomEvaluatorImpl::IEventHandler>(m, "IGroundedAxiomEvaluatorEventHandler");  //
+    nb::class_<GroundedAxiomEvaluatorImpl::DefaultEventHandlerImpl, GroundedAxiomEvaluatorImpl::IEventHandler>(m,
+                                                                                                               "DefaultGroundedAxiomEvaluatorEventHandler")  //
         .def(nb::init<>());
-    nb::class_<GroundedAxiomEvaluator::DebugEventHandler, GroundedAxiomEvaluator::IEventHandler>(m,
-                                                                                                 "DebugGroundedAxiomEvaluatorEventHandler")  //
+    nb::class_<GroundedAxiomEvaluatorImpl::DebugEventHandlerImpl, GroundedAxiomEvaluatorImpl::IEventHandler>(m,
+                                                                                                             "DebugGroundedAxiomEvaluatorEventHandler")  //
         .def(nb::init<>());
-    nb::class_<GroundedAxiomEvaluator, IAxiomEvaluator>(m, "GroundedAxiomEvaluator")  //
+    nb::class_<GroundedAxiomEvaluatorImpl, IAxiomEvaluator>(m, "GroundedAxiomEvaluator")  //
         ;
 
     /* StateRepositoryImpl */
@@ -389,7 +389,7 @@ void bind_search(nb::module_& m)
         .def(nb::init<>())
         .def("compute_heuristic", &IHeuristic::compute_heuristic);
 
-    nb::class_<BlindHeuristic, IHeuristic>(m, "BlindHeuristic").def(nb::init<Problem>());
+    nb::class_<BlindHeuristicImpl, IHeuristic>(m, "BlindHeuristic").def(nb::init<Problem>());
 
     /* Algorithms */
 
@@ -429,11 +429,11 @@ void bind_search(nb::module_& m)
         .def("on_exhausted", &astar::IEventHandler::on_exhausted)
         .def("get_statistics", &astar::IEventHandler::get_statistics);
 
-    nb::class_<astar::DefaultEventHandler, astar::IEventHandler>(m,
-                                                                 "DefaultAStarEventHandler")  //
+    nb::class_<astar::DefaultEventHandlerImpl, astar::IEventHandler>(m,
+                                                                     "DefaultAStarEventHandler")  //
         .def(nb::init<Problem, bool>(), nb::arg("problem"), nb::arg("quiet") = true);
-    nb::class_<astar::DebugEventHandler, astar::IEventHandler>(m,
-                                                               "DebugAStarEventHandler")  //
+    nb::class_<astar::DebugEventHandlerImpl, astar::IEventHandler>(m,
+                                                                   "DebugAStarEventHandler")  //
         .def(nb::init<Problem, bool>(), nb::arg("problem"), nb::arg("quiet") = true);
 
     m.def("find_solution_astar",
@@ -458,11 +458,11 @@ void bind_search(nb::module_& m)
 
     nb::class_<brfs::IEventHandler>(m, "IBrFSEventHandler")  //
         .def("get_statistics", &brfs::IEventHandler::get_statistics);
-    nb::class_<brfs::DefaultEventHandler, brfs::IEventHandler>(m,
-                                                               "DefaultBrFSEventHandler")  //
+    nb::class_<brfs::DefaultEventHandlerImpl, brfs::IEventHandler>(m,
+                                                                   "DefaultBrFSEventHandler")  //
         .def(nb::init<Problem, bool>(), nb::arg("problem"), nb::arg("quiet") = true);
-    nb::class_<brfs::DebugEventHandler, brfs::IEventHandler>(m,
-                                                             "DebugBrFSEventHandler")  //
+    nb::class_<brfs::DebugEventHandlerImpl, brfs::IEventHandler>(m,
+                                                                 "DebugBrFSEventHandler")  //
         .def(nb::init<Problem, bool>(), nb::arg("problem"), nb::arg("quiet") = true);
 
     m.def("find_solution_brfs",
@@ -500,7 +500,7 @@ void bind_search(nb::module_& m)
     nb::class_<iw::IEventHandler>(m, "IIWEventHandler")  //
         .def("get_statistics", &iw::IEventHandler::get_statistics);
 
-    nb::class_<iw::DefaultEventHandler, iw::IEventHandler>(m, "DefaultIWEventHandler")
+    nb::class_<iw::DefaultEventHandlerImpl, iw::IEventHandler>(m, "DefaultIWEventHandler")
         .def(nb::init<Problem, bool>(), nb::arg("problem"), nb::arg("quiet") = true);
 
     m.def("find_solution_iw",
@@ -519,7 +519,7 @@ void bind_search(nb::module_& m)
         .def("get_iw_statistics_by_subproblem", &siw::Statistics::get_iw_statistics_by_subproblem);
     nb::class_<siw::IEventHandler>(m, "ISIWEventHandler")  //
         .def("get_statistics", &siw::IEventHandler::get_statistics);
-    nb::class_<siw::DefaultEventHandler, siw::IEventHandler>(m, "DefaultSIWEventHandler")
+    nb::class_<siw::DefaultEventHandlerImpl, siw::IEventHandler>(m, "DefaultSIWEventHandler")
         .def(nb::init<Problem, bool>(), nb::arg("problem"), nb::arg("quiet") = true);
 
     m.def("find_solution_siw",

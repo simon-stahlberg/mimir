@@ -34,7 +34,7 @@ namespace mimir::search::match_tree
  * Parsing
  */
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 struct ParseStatisticsNodeVisitor : public INodeVisitor<E>
 {
     Statistics& statistics;
@@ -59,7 +59,7 @@ struct ParseStatisticsNodeVisitor : public INodeVisitor<E>
     void accept(const ElementGeneratorNode_Imperfect<E>& generator) override;
 };
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 static void accept_impl(ParseStatisticsNodeVisitor<E>& visitor, const AtomSelectorNode_TFX<E, P>& atom)
 {
     atom.get_true_child()->visit(visitor);
@@ -67,139 +67,139 @@ static void accept_impl(ParseStatisticsNodeVisitor<E>& visitor, const AtomSelect
     atom.get_dontcare_child()->visit(visitor);
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 static void accept_impl(ParseStatisticsNodeVisitor<E>& visitor, const AtomSelectorNode_TF<E, P>& atom)
 {
     atom.get_true_child()->visit(visitor);
     atom.get_false_child()->visit(visitor);
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 static void accept_impl(ParseStatisticsNodeVisitor<E>& visitor, const AtomSelectorNode_TX<E, P>& atom)
 {
     atom.get_true_child()->visit(visitor);
     atom.get_dontcare_child()->visit(visitor);
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 static void accept_impl(ParseStatisticsNodeVisitor<E>& visitor, const AtomSelectorNode_FX<E, P>& atom)
 {
     atom.get_false_child()->visit(visitor);
     atom.get_dontcare_child()->visit(visitor);
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 static void accept_impl(ParseStatisticsNodeVisitor<E>& visitor, const AtomSelectorNode_T<E, P>& atom)
 {
     atom.get_true_child()->visit(visitor);
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 static void accept_impl(ParseStatisticsNodeVisitor<E>& visitor, const AtomSelectorNode_F<E, P>& atom)
 {
     atom.get_false_child()->visit(visitor);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void ParseStatisticsNodeVisitor<E>::accept(const AtomSelectorNode_TFX<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void ParseStatisticsNodeVisitor<E>::accept(const AtomSelectorNode_TF<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void ParseStatisticsNodeVisitor<E>::accept(const AtomSelectorNode_TX<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void ParseStatisticsNodeVisitor<E>::accept(const AtomSelectorNode_FX<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void ParseStatisticsNodeVisitor<E>::accept(const AtomSelectorNode_T<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void ParseStatisticsNodeVisitor<E>::accept(const AtomSelectorNode_F<E, FluentTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void ParseStatisticsNodeVisitor<E>::accept(const AtomSelectorNode_TFX<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void ParseStatisticsNodeVisitor<E>::accept(const AtomSelectorNode_TF<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void ParseStatisticsNodeVisitor<E>::accept(const AtomSelectorNode_TX<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void ParseStatisticsNodeVisitor<E>::accept(const AtomSelectorNode_FX<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void ParseStatisticsNodeVisitor<E>::accept(const AtomSelectorNode_T<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void ParseStatisticsNodeVisitor<E>::accept(const AtomSelectorNode_F<E, DerivedTag>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void ParseStatisticsNodeVisitor<E>::accept(const NumericConstraintSelectorNode_T<E>& constraint)
 {
     constraint.get_true_child()->visit(*this);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void ParseStatisticsNodeVisitor<E>::accept(const NumericConstraintSelectorNode_TX<E>& constraint)
 {
     constraint.get_true_child()->visit(*this);
     constraint.get_dontcare_child()->visit(*this);
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void ParseStatisticsNodeVisitor<E>::accept(const ElementGeneratorNode_Perfect<E>& generator)
 {
     statistics.generator_distribution.push_back(generator.get_elements().size());
     statistics.perfect_generator_distribution.push_back(generator.get_elements().size());
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void ParseStatisticsNodeVisitor<E>::accept(const ElementGeneratorNode_Imperfect<E>& generator)
 {
     statistics.generator_distribution.push_back(generator.get_elements().size());
     statistics.imperfect_generator_distribution.push_back(generator.get_elements().size());
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void parse_generator_distribution_iteratively(const Node<E>& root, Statistics& ref_statistics)
 {
     auto visitor = ParseStatisticsNodeVisitor<E>(ref_statistics);

@@ -17,10 +17,11 @@
 
 #include "mimir/datasets/object_graph.hpp"
 
-#include "mimir/datasets/generalized_state_space.hpp"
+#include "mimir/datasets/state_space.hpp"
 #include "mimir/formalism/color_function.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/graphs/algorithms/nauty.hpp"
+#include "mimir/search/search_context.hpp"
 
 #include <gtest/gtest.h>
 #include <unordered_set>
@@ -37,7 +38,7 @@ TEST(MimirTests, DataSetsObjectGraphDenseTest)
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
 
-    auto options = StateSpaceImpl::Options();
+    auto options = state_space::Options();
     options.symmetry_pruning = false;
     const auto context = search::SearchContextImpl::create(domain_file, problem_file);
     const auto state_space = StateSpaceImpl::create(context, options);
@@ -65,7 +66,7 @@ TEST(MimirTests, DataSetsObjectGraphSparseTest)
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
 
-    auto options = StateSpaceImpl::Options();
+    auto options = state_space::Options();
     options.symmetry_pruning = false;
     const auto context = search::SearchContextImpl::create(domain_file, problem_file);
     const auto state_space = StateSpaceImpl::create(context, options);

@@ -40,7 +40,7 @@ public:
 
     ConjunctiveConditionSatisficingBindingGenerator(formalism::ConjunctiveCondition conjunctive_condition,
                                                     formalism::Problem problem,
-                                                    std::shared_ptr<IEventHandler> event_handler = nullptr);
+                                                    EventHandler event_handler = nullptr);
 };
 
 }

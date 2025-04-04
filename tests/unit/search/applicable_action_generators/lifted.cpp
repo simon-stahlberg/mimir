@@ -38,12 +38,12 @@ TEST(MimirTests, SearchApplicableActionGeneratorsLiftedTest)
     const auto problem_file = fs::path(std::string(DATA_DIR) + "miconic-fulladl/test_problem.pddl");
     const auto problem = ProblemImpl::create(domain_file, problem_file);
 
-    const auto applicable_action_generator_event_handler = LiftedApplicableActionGenerator::DefaultEventHandler::create();
-    const auto applicable_action_generator = LiftedApplicableActionGenerator::create(problem, applicable_action_generator_event_handler);
-    const auto axiom_evaluator_event_handler = LiftedAxiomEvaluator::DefaultEventHandler::create();
-    const auto axiom_evaluator = LiftedAxiomEvaluator::create(problem, axiom_evaluator_event_handler);
+    const auto applicable_action_generator_event_handler = LiftedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create();
+    const auto applicable_action_generator = LiftedApplicableActionGeneratorImpl::create(problem, applicable_action_generator_event_handler);
+    const auto axiom_evaluator_event_handler = LiftedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create();
+    const auto axiom_evaluator = LiftedAxiomEvaluatorImpl::create(problem, axiom_evaluator_event_handler);
     const auto state_repository = StateRepositoryImpl::create(axiom_evaluator);
-    const auto brfs_event_handler = brfs::DefaultEventHandler::create(problem);
+    const auto brfs_event_handler = brfs::DefaultEventHandlerImpl::create(problem);
     const auto search_context = SearchContextImpl::create(problem, applicable_action_generator, state_repository);
 
     const auto result = brfs::find_solution(search_context, nullptr, brfs_event_handler);

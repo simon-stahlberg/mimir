@@ -38,7 +38,7 @@ struct Statistics
     std::chrono::time_point<std::chrono::high_resolution_clock> construction_end_time_point = std::chrono::high_resolution_clock::now();
 };
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 extern void parse_generator_distribution_iteratively(const Node<E>& root, Statistics& ref_statistics);
 
 extern std::ostream& operator<<(std::ostream& os, const Statistics& statistics);

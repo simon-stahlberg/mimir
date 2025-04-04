@@ -40,13 +40,13 @@ TEST(MimirTests, SearchApplicableActionGeneratorsGroundedTest)
     const auto problem = ProblemImpl::create(domain_file, problem_file);
 
     auto delete_free_problem_explorator = DeleteRelaxedProblemExplorator(problem);
-    const auto applicable_action_generator_event_handler = GroundedApplicableActionGenerator::DefaultEventHandler::create();
+    const auto applicable_action_generator_event_handler = GroundedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create();
     const auto applicable_action_generator =
         delete_free_problem_explorator.create_grounded_applicable_action_generator(match_tree::Options(), applicable_action_generator_event_handler);
-    const auto axiom_evaluator_event_handler = GroundedAxiomEvaluator::DefaultEventHandler::create();
+    const auto axiom_evaluator_event_handler = GroundedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create();
     const auto axiom_evaluator = delete_free_problem_explorator.create_grounded_axiom_evaluator(match_tree::Options(), axiom_evaluator_event_handler);
     const auto state_repository = StateRepositoryImpl::create(axiom_evaluator);
-    const auto brfs_event_handler = brfs::DefaultEventHandler::create(problem);
+    const auto brfs_event_handler = brfs::DefaultEventHandlerImpl::create(problem);
     const auto search_context = SearchContextImpl::create(problem, applicable_action_generator, state_repository);
 
     const auto result = brfs::find_solution(search_context, nullptr, brfs_event_handler);

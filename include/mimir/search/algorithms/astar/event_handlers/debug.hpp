@@ -28,11 +28,11 @@ namespace mimir::search::astar
 /**
  * Implementation class
  */
-class DebugEventHandler : public EventHandlerBase<DebugEventHandler>
+class DebugEventHandlerImpl : public EventHandlerBase<DebugEventHandlerImpl>
 {
 private:
     /* Implement AlgorithmEventHandlerBase interface */
-    friend class EventHandlerBase<DebugEventHandler>;
+    friend class EventHandlerBase<DebugEventHandlerImpl>;
 
     void on_expand_state_impl(State state) const;
 
@@ -71,9 +71,9 @@ private:
     void on_exhausted_impl() const;
 
 public:
-    DebugEventHandler(formalism::Problem problem, bool quiet = true);
+    DebugEventHandlerImpl(formalism::Problem problem, bool quiet = true);
 
-    static std::shared_ptr<DebugEventHandler> create(formalism::Problem problem, bool quiet = true);
+    static DebugEventHandler create(formalism::Problem problem, bool quiet = true);
 };
 
 }

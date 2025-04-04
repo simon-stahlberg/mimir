@@ -24,7 +24,7 @@
 
 namespace mimir::search::match_tree
 {
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 class INodeVisitor
 {
 public:
@@ -47,7 +47,7 @@ public:
 };
 
 /// @brief `Node` implements the interface of nodes.
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 class INode
 {
 public:
@@ -61,7 +61,7 @@ public:
     virtual void visit(INodeVisitor<E>& visitor) const = 0;
 };
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 extern std::ostream& operator<<(std::ostream& out, const std::tuple<const Node<E>&, DotPrinterTag>& tree);
 }
 

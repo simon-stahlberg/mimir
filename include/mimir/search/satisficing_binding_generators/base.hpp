@@ -39,26 +39,53 @@ template<typename Derived_>
 class SatisficingBindingGenerator
 {
 public:
-    class IEventHandler
-    {
-    public:
-        virtual ~IEventHandler() = default;
+    using IEventHandler = satisficing_binding_generator::IEventHandler;
+    using EventHandler = satisficing_binding_generator::EventHandler;
 
-        virtual void on_invalid_binding(const formalism::ObjectList& binding, const formalism::ProblemImpl& problem) = 0;
-    };
+    using DefaultEventHandlerImpl = satisficing_binding_generator::DefaultEventHandlerImpl;
+    using DefaultEventHandler = satisficing_binding_generator::DefaultEventHandler;
 
-    class DefaultEventHandler : public IEventHandler
-    {
-    public:
-        DefaultEventHandler() : IEventHandler() {}
+    SatisficingBindingGenerator(formalism::ConjunctiveCondition conjunctive_condition, formalism::Problem problem, EventHandler event_handler = nullptr);
 
-        void on_invalid_binding(const formalism::ObjectList& binding, const formalism::ProblemImpl& problem) {}
-    };
+    mimir::generator<formalism::ObjectList>
+    create_binding_generator(State state,
+                             const formalism::AssignmentSet<formalism::FluentTag>& fluent_assignment_set,
+                             const formalism::AssignmentSet<formalism::DerivedTag>& derived_assignment_set,
+                             const formalism::NumericAssignmentSet<formalism::StaticTag>& static_numeric_assignment_set,
+                             const formalism::NumericAssignmentSet<formalism::FluentTag>& fluent_numeric_assignment_set);
+
+    mimir::generator<formalism::ObjectList>
+    create_binding_generator(const DenseState& dense_state,
+                             const formalism::AssignmentSet<formalism::FluentTag>& fluent_assignment_set,
+                             const formalism::AssignmentSet<formalism::DerivedTag>& derived_assignment_set,
+                             const formalism::NumericAssignmentSet<formalism::StaticTag>& static_numeric_assignment_set,
+                             const formalism::NumericAssignmentSet<formalism::FluentTag>& fluent_numeric_assignment_set);
+
+    mimir::generator<std::pair<formalism::ObjectList,
+                               std::tuple<formalism::GroundLiteralList<formalism::StaticTag>,
+                                          formalism::GroundLiteralList<formalism::FluentTag>,
+                                          formalism::GroundLiteralList<formalism::DerivedTag>>>>
+    create_ground_conjunction_generator(State state);
+
+    mimir::generator<std::pair<formalism::ObjectList,
+                               std::tuple<formalism::GroundLiteralList<formalism::StaticTag>,
+                                          formalism::GroundLiteralList<formalism::FluentTag>,
+                                          formalism::GroundLiteralList<formalism::DerivedTag>>>>
+    create_ground_conjunction_generator(const DenseState& dense_state);
+
+    /**
+     * Getters
+     */
+
+    const formalism::ConjunctiveCondition& get_conjunctive_condition() const;
+    const formalism::Problem& get_problem() const;
+    const EventHandler& get_event_handler() const;
+    const formalism::StaticConsistencyGraph& get_static_consistency_graph() const;
 
 protected:
     formalism::ConjunctiveCondition m_conjunctive_condition;
     formalism::Problem m_problem;
-    std::shared_ptr<IEventHandler> m_event_handler;
+    EventHandler m_event_handler;
 
     formalism::StaticConsistencyGraph m_static_consistency_graph;
 
@@ -103,46 +130,6 @@ protected:
                                                          const formalism::AssignmentSet<formalism::DerivedTag>& derived_assignment_sets,
                                                          const formalism::NumericAssignmentSet<formalism::StaticTag>& static_numeric_assignment_set,
                                                          const formalism::NumericAssignmentSet<formalism::FluentTag>& fluent_numeric_assignment_set);
-
-public:
-    SatisficingBindingGenerator(formalism::ConjunctiveCondition conjunctive_condition,
-                                formalism::Problem problem,
-                                std::shared_ptr<IEventHandler> event_handler = nullptr);
-
-    mimir::generator<formalism::ObjectList>
-    create_binding_generator(State state,
-                             const formalism::AssignmentSet<formalism::FluentTag>& fluent_assignment_set,
-                             const formalism::AssignmentSet<formalism::DerivedTag>& derived_assignment_set,
-                             const formalism::NumericAssignmentSet<formalism::StaticTag>& static_numeric_assignment_set,
-                             const formalism::NumericAssignmentSet<formalism::FluentTag>& fluent_numeric_assignment_set);
-
-    mimir::generator<formalism::ObjectList>
-    create_binding_generator(const DenseState& dense_state,
-                             const formalism::AssignmentSet<formalism::FluentTag>& fluent_assignment_set,
-                             const formalism::AssignmentSet<formalism::DerivedTag>& derived_assignment_set,
-                             const formalism::NumericAssignmentSet<formalism::StaticTag>& static_numeric_assignment_set,
-                             const formalism::NumericAssignmentSet<formalism::FluentTag>& fluent_numeric_assignment_set);
-
-    mimir::generator<std::pair<formalism::ObjectList,
-                               std::tuple<formalism::GroundLiteralList<formalism::StaticTag>,
-                                          formalism::GroundLiteralList<formalism::FluentTag>,
-                                          formalism::GroundLiteralList<formalism::DerivedTag>>>>
-    create_ground_conjunction_generator(State state);
-
-    mimir::generator<std::pair<formalism::ObjectList,
-                               std::tuple<formalism::GroundLiteralList<formalism::StaticTag>,
-                                          formalism::GroundLiteralList<formalism::FluentTag>,
-                                          formalism::GroundLiteralList<formalism::DerivedTag>>>>
-    create_ground_conjunction_generator(const DenseState& dense_state);
-
-    /**
-     * Getters
-     */
-
-    const formalism::ConjunctiveCondition& get_conjunctive_condition() const;
-    const formalism::Problem& get_problem() const;
-    const std::shared_ptr<IEventHandler>& get_event_handler() const;
-    const formalism::StaticConsistencyGraph& get_static_consistency_graph() const;
 };
 
 }

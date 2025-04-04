@@ -40,6 +40,7 @@
 #include "mimir/search/heuristics/blind.hpp"
 #include "mimir/search/metric.hpp"
 #include "mimir/search/openlists/priority_queue.hpp"
+#include "mimir/search/search_context.hpp"
 #include "mimir/search/search_node.hpp"
 #include "mimir/search/search_space.hpp"
 #include "mimir/search/state.hpp"
@@ -412,7 +413,7 @@ compute_problem_graph_with_symmetry_reduction(const SearchContext& context, cons
     auto symm_data = SymmetriesData(color_function);
 
     const auto state_repository = context->get_state_repository();
-    const auto goal_test = std::make_shared<ProblemGoalStrategy>(context->get_problem());
+    const auto goal_test = ProblemGoalStrategyImpl::create(context->get_problem());
     const auto event_handler =
         std::make_shared<SymmetryReducedProblemGraphEventHandler>(context->get_problem(), options, graph, goal_vertices, symm_data, false);
     const auto pruning_strategy = std::make_shared<SymmetryStatePruning>(symm_data);
@@ -432,9 +433,9 @@ static std::optional<StateSpace> compute_problem_graph_without_symmetry_reductio
     auto goal_vertices = IndexSet {};
 
     const auto state_repository = context->get_state_repository();
-    const auto goal_test = std::make_shared<ProblemGoalStrategy>(context->get_problem());
+    const auto goal_test = ProblemGoalStrategyImpl::create(context->get_problem());
     const auto event_handler = std::make_shared<ProblemGraphEventHandler>(context->get_problem(), options, graph, goal_vertices, false);
-    const auto pruning_strategy = std::make_shared<DuplicatePruningStrategy>();
+    const auto pruning_strategy = DuplicatePruningStrategyImpl::create();
     const auto result = find_solution(context, state_repository->get_or_create_initial_state(), event_handler, goal_test, pruning_strategy, true);
 
     if (result.status != EXHAUSTED)

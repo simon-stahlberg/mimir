@@ -24,6 +24,8 @@
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/applicability.hpp"
+#include "mimir/search/applicable_action_generators/lifted/event_handlers/default.hpp"
+#include "mimir/search/applicable_action_generators/lifted/event_handlers/interface.hpp"
 #include "mimir/search/state.hpp"
 
 #include <boost/dynamic_bitset.hpp>
@@ -38,65 +40,15 @@ namespace mimir::search
 {
 
 /**
- * DebugEventHandler
- */
-
-void LiftedApplicableActionGenerator::DebugEventHandler::on_start_generating_applicable_actions_impl() const {}
-
-void LiftedApplicableActionGenerator::DebugEventHandler::on_ground_action_impl(GroundAction action) const {}
-
-void LiftedApplicableActionGenerator::DebugEventHandler::on_ground_action_cache_hit_impl(GroundAction action) const {}
-
-void LiftedApplicableActionGenerator::DebugEventHandler::on_ground_action_cache_miss_impl(GroundAction action) const {}
-
-void LiftedApplicableActionGenerator::DebugEventHandler::on_end_generating_applicable_actions_impl() const {}
-
-void LiftedApplicableActionGenerator::DebugEventHandler::on_finish_search_layer_impl() const {}
-
-void LiftedApplicableActionGenerator::DebugEventHandler::on_end_search_impl() const { std::cout << get_statistics() << std::endl; }
-
-LiftedApplicableActionGenerator::DebugEventHandler::DebugEventHandler(bool quiet) : EventHandlerBase<DebugEventHandler>(quiet) {}
-
-std::shared_ptr<LiftedApplicableActionGenerator::DebugEventHandler> LiftedApplicableActionGenerator::DebugEventHandler::create(bool quiet)
-{
-    return std::make_shared<DebugEventHandler>(quiet);
-}
-
-/**
- * DefaultEventHandler
- */
-
-void LiftedApplicableActionGenerator::DefaultEventHandler::on_start_generating_applicable_actions_impl() const {}
-
-void LiftedApplicableActionGenerator::DefaultEventHandler::on_ground_action_impl(GroundAction action) const {}
-
-void LiftedApplicableActionGenerator::DefaultEventHandler::on_ground_action_cache_hit_impl(GroundAction action) const {}
-
-void LiftedApplicableActionGenerator::DefaultEventHandler::on_ground_action_cache_miss_impl(GroundAction action) const {}
-
-void LiftedApplicableActionGenerator::DefaultEventHandler::on_end_generating_applicable_actions_impl() const {}
-
-void LiftedApplicableActionGenerator::DefaultEventHandler::on_finish_search_layer_impl() const {}
-
-void LiftedApplicableActionGenerator::DefaultEventHandler::on_end_search_impl() const { std::cout << get_statistics() << std::endl; }
-
-LiftedApplicableActionGenerator::DefaultEventHandler::DefaultEventHandler(bool quiet) : EventHandlerBase<DefaultEventHandler>(quiet) {}
-
-std::shared_ptr<LiftedApplicableActionGenerator::DefaultEventHandler> LiftedApplicableActionGenerator::DefaultEventHandler::create(bool quiet)
-{
-    return std::make_shared<DefaultEventHandler>(quiet);
-}
-
-/**
  * LiftedApplicableActionGenerator
  */
 
-LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(formalism::Problem problem) :
-    LiftedApplicableActionGenerator(std::move(problem), std::make_shared<DefaultEventHandler>())
+LiftedApplicableActionGeneratorImpl::LiftedApplicableActionGeneratorImpl(formalism::Problem problem) :
+    LiftedApplicableActionGeneratorImpl(std::move(problem), DefaultEventHandlerImpl::create())
 {
 }
 
-LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem, std::shared_ptr<IEventHandler> event_handler) :
+LiftedApplicableActionGeneratorImpl::LiftedApplicableActionGeneratorImpl(Problem problem, std::shared_ptr<IEventHandler> event_handler) :
     m_problem(problem),
     m_event_handler(event_handler),
     m_action_grounding_data(),
@@ -118,24 +70,21 @@ LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem
     }
 }
 
-std::shared_ptr<LiftedApplicableActionGenerator> LiftedApplicableActionGenerator::create(Problem problem)
+LiftedApplicableActionGenerator LiftedApplicableActionGeneratorImpl::create(Problem problem) { return create(problem, DefaultEventHandlerImpl::create()); }
+
+LiftedApplicableActionGenerator LiftedApplicableActionGeneratorImpl::create(Problem problem, std::shared_ptr<IEventHandler> event_handler)
 {
-    return create(problem, std::make_shared<DefaultEventHandler>());
+    return std::shared_ptr<LiftedApplicableActionGeneratorImpl>(new LiftedApplicableActionGeneratorImpl(std::move(problem), std::move(event_handler)));
 }
 
-std::shared_ptr<LiftedApplicableActionGenerator> LiftedApplicableActionGenerator::create(Problem problem, std::shared_ptr<IEventHandler> event_handler)
-{
-    return std::shared_ptr<LiftedApplicableActionGenerator>(new LiftedApplicableActionGenerator(std::move(problem), std::move(event_handler)));
-}
-
-mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicable_action_generator(State state)
+mimir::generator<GroundAction> LiftedApplicableActionGeneratorImpl::create_applicable_action_generator(State state)
 {
     DenseState::translate(state, m_dense_state);
 
     return create_applicable_action_generator(m_dense_state);
 }
 
-mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicable_action_generator(const DenseState& dense_state)
+mimir::generator<GroundAction> LiftedApplicableActionGeneratorImpl::create_applicable_action_generator(const DenseState& dense_state)
 {
     auto& dense_fluent_atoms = dense_state.get_atoms<FluentTag>();
     auto& dense_derived_atoms = dense_state.get_atoms<DerivedTag>();
@@ -194,9 +143,9 @@ mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicabl
     m_event_handler->on_end_generating_applicable_actions();
 }
 
-const Problem& LiftedApplicableActionGenerator::get_problem() const { return m_problem; }
+const Problem& LiftedApplicableActionGeneratorImpl::get_problem() const { return m_problem; }
 
-void LiftedApplicableActionGenerator::on_finish_search_layer() { m_event_handler->on_finish_search_layer(); }
+void LiftedApplicableActionGeneratorImpl::on_finish_search_layer() { m_event_handler->on_finish_search_layer(); }
 
-void LiftedApplicableActionGenerator::on_end_search() { m_event_handler->on_end_search(); }
+void LiftedApplicableActionGeneratorImpl::on_end_search() { m_event_handler->on_end_search(); }
 }

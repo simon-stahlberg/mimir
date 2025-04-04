@@ -23,7 +23,7 @@
 
 namespace mimir::search::match_tree
 {
-template<typename Derived_, HasConjunctiveCondition E>
+template<typename Derived_, formalism::HasConjunctiveCondition E>
 class NumericConstraintSelectorNodeBase : public INode<E>
 {
 private:
@@ -47,7 +47,7 @@ public:
     void visit(INodeVisitor<E>& visitor) const override { self().visit_impl(visitor); }
 };
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 class NumericConstraintSelectorNode_T : public NumericConstraintSelectorNodeBase<NumericConstraintSelectorNode_T<E>, E>
 {
 private:
@@ -73,7 +73,7 @@ public:
     const Node<E>& get_true_child() const;
 };
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 class NumericConstraintSelectorNode_TX : public NumericConstraintSelectorNodeBase<NumericConstraintSelectorNode_TX<E>, E>
 {
 private:

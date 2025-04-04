@@ -22,7 +22,7 @@
 
 namespace mimir::search::match_tree
 {
-template<typename Derived_, HasConjunctiveCondition E>
+template<typename Derived_, formalism::HasConjunctiveCondition E>
 class InverseElementGeneratorNodeBase : public IInverseNode<E>
 {
 private:
@@ -49,7 +49,7 @@ public:
     std::span<const E*> get_elements() const { return m_elements; }
 };
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 class InverseElementGeneratorNode_Perfect : public InverseElementGeneratorNodeBase<InverseElementGeneratorNode_Perfect<E>, E>
 {
 private:
@@ -65,7 +65,7 @@ public:
     InverseElementGeneratorNode_Perfect(const IInverseNode<E>* parent, std::span<const E*> elements);
 };
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 class InverseElementGeneratorNode_Imperfect : public InverseElementGeneratorNodeBase<InverseElementGeneratorNode_Imperfect<E>, E>
 {
 private:

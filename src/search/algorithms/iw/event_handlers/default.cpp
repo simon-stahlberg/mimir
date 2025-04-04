@@ -25,18 +25,18 @@ using namespace mimir::formalism;
 
 namespace mimir::search::iw
 {
-void DefaultEventHandler::on_start_search_impl(State initial_state) const {}
+void DefaultEventHandlerImpl::on_start_search_impl(State initial_state) const {}
 
-void DefaultEventHandler::on_start_arity_search_impl(State initial_state, size_t arity) const
+void DefaultEventHandlerImpl::on_start_arity_search_impl(State initial_state, size_t arity) const
 {
     std::cout << "[IW] Start search with arity " << arity << std::endl;
 }
 
-void DefaultEventHandler::on_end_arity_search_impl(const brfs::Statistics& brfs_statistics) const {}
+void DefaultEventHandlerImpl::on_end_arity_search_impl(const brfs::Statistics& brfs_statistics) const {}
 
-void DefaultEventHandler::on_end_search_impl() const { std::cout << "[IW] Search ended.\n" << m_statistics << std::endl; }
+void DefaultEventHandlerImpl::on_end_search_impl() const { std::cout << "[IW] Search ended.\n" << m_statistics << std::endl; }
 
-void DefaultEventHandler::on_solved_impl(const Plan& plan) const
+void DefaultEventHandlerImpl::on_solved_impl(const Plan& plan) const
 {
     std::cout << "[IW] Plan found.\n"
               << "[IW] Plan cost: " << plan.get_cost() << "\n"
@@ -49,14 +49,14 @@ void DefaultEventHandler::on_solved_impl(const Plan& plan) const
     }
 }
 
-void DefaultEventHandler::on_unsolvable_impl() const { std::cout << "[IW] Unsolvable!" << std::endl; }
+void DefaultEventHandlerImpl::on_unsolvable_impl() const { std::cout << "[IW] Unsolvable!" << std::endl; }
 
-void DefaultEventHandler::on_exhausted_impl() const { std::cout << "[IW] Exhausted!" << std::endl; }
+void DefaultEventHandlerImpl::on_exhausted_impl() const { std::cout << "[IW] Exhausted!" << std::endl; }
 
-DefaultEventHandler::DefaultEventHandler(Problem problem, bool quiet) : EventHandlerBase<DefaultEventHandler>(problem, quiet) {}
+DefaultEventHandlerImpl::DefaultEventHandlerImpl(Problem problem, bool quiet) : EventHandlerBase<DefaultEventHandlerImpl>(problem, quiet) {}
 
-std::shared_ptr<DefaultEventHandler> DefaultEventHandler::create(formalism::Problem problem, bool quiet)
+DefaultEventHandler DefaultEventHandlerImpl::create(formalism::Problem problem, bool quiet)
 {
-    return std::make_shared<DefaultEventHandler>(problem, quiet);
+    return std::make_shared<DefaultEventHandlerImpl>(problem, quiet);
 }
 }

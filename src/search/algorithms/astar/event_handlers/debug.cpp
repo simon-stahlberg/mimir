@@ -26,7 +26,7 @@ using namespace mimir::formalism;
 
 namespace mimir::search::astar
 {
-void DebugEventHandler::on_expand_state_impl(State state) const
+void DebugEventHandlerImpl::on_expand_state_impl(State state) const
 {
     std::cout << "[AStar] ----------------------------------------\n"
               << "[AStar] State: ";
@@ -34,9 +34,9 @@ void DebugEventHandler::on_expand_state_impl(State state) const
     std::cout << std::endl << std::endl;
 }
 
-void DebugEventHandler::on_expand_goal_state_impl(State state) const {}
+void DebugEventHandlerImpl::on_expand_goal_state_impl(State state) const {}
 
-void DebugEventHandler::on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const
+void DebugEventHandlerImpl::on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const
 {
     std::cout << "[AStar] Action: ";
     mimir::operator<<(std::cout, std::make_tuple(action, std::cref(*m_problem), GroundActionImpl::FullFormatterTag {}));
@@ -46,21 +46,21 @@ void DebugEventHandler::on_generate_state_impl(State state, GroundAction action,
     std::cout << "\n" << std::endl;
 }
 
-void DebugEventHandler::on_generate_state_relaxed_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const {}
+void DebugEventHandlerImpl::on_generate_state_relaxed_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const {}
 
-void DebugEventHandler::on_generate_state_not_relaxed_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const {}
+void DebugEventHandlerImpl::on_generate_state_not_relaxed_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const {}
 
-void DebugEventHandler::on_close_state_impl(State state) const {}
+void DebugEventHandlerImpl::on_close_state_impl(State state) const {}
 
-void DebugEventHandler::on_finish_f_layer_impl(double f_value, uint64_t num_expanded_states, uint64_t num_generated_states) const
+void DebugEventHandlerImpl::on_finish_f_layer_impl(double f_value, uint64_t num_expanded_states, uint64_t num_generated_states) const
 {
     std::cout << "[AStar] Finished state expansion until f-layer " << f_value << " with num expanded states " << num_expanded_states
               << " and num generated states " << num_generated_states << std::endl;
 }
 
-void DebugEventHandler::on_prune_state_impl(State state) const {}
+void DebugEventHandlerImpl::on_prune_state_impl(State state) const {}
 
-void DebugEventHandler::on_start_search_impl(State start_state) const
+void DebugEventHandlerImpl::on_start_search_impl(State start_state) const
 {
     std::cout << "[AStar] Search started.\n"
               << "[AStar] Initial: ";
@@ -68,22 +68,22 @@ void DebugEventHandler::on_start_search_impl(State start_state) const
     std::cout << std::endl;
 }
 
-void DebugEventHandler::on_end_search_impl(uint64_t num_reached_fluent_atoms,
-                                           uint64_t num_reached_derived_atoms,
-                                           uint64_t num_bytes_for_unextended_state_portion,
-                                           uint64_t num_bytes_for_extended_state_portion,
-                                           uint64_t num_bytes_for_nodes,
-                                           uint64_t num_bytes_for_actions,
-                                           uint64_t num_bytes_for_axioms,
-                                           uint64_t num_states,
-                                           uint64_t num_nodes,
-                                           uint64_t num_actions,
-                                           uint64_t num_axioms) const
+void DebugEventHandlerImpl::on_end_search_impl(uint64_t num_reached_fluent_atoms,
+                                               uint64_t num_reached_derived_atoms,
+                                               uint64_t num_bytes_for_unextended_state_portion,
+                                               uint64_t num_bytes_for_extended_state_portion,
+                                               uint64_t num_bytes_for_nodes,
+                                               uint64_t num_bytes_for_actions,
+                                               uint64_t num_bytes_for_axioms,
+                                               uint64_t num_states,
+                                               uint64_t num_nodes,
+                                               uint64_t num_actions,
+                                               uint64_t num_axioms) const
 {
     std::cout << "[AStar] Search ended.\n" << m_statistics << std::endl;
 }
 
-void DebugEventHandler::on_solved_impl(const Plan& plan) const
+void DebugEventHandlerImpl::on_solved_impl(const Plan& plan) const
 {
     std::cout << "[AStar] Plan found.\n"
               << "[AStar] Plan cost: " << plan.get_cost() << "\n"
@@ -96,14 +96,11 @@ void DebugEventHandler::on_solved_impl(const Plan& plan) const
     }
 }
 
-void DebugEventHandler::on_unsolvable_impl() const { std::cout << "[AStar] Unsolvable!" << std::endl; }
+void DebugEventHandlerImpl::on_unsolvable_impl() const { std::cout << "[AStar] Unsolvable!" << std::endl; }
 
-void DebugEventHandler::on_exhausted_impl() const { std::cout << "[AStar] Exhausted!" << std::endl; }
+void DebugEventHandlerImpl::on_exhausted_impl() const { std::cout << "[AStar] Exhausted!" << std::endl; }
 
-DebugEventHandler::DebugEventHandler(formalism::Problem problem, bool quiet) : EventHandlerBase<DebugEventHandler>(problem, quiet) {}
+DebugEventHandlerImpl::DebugEventHandlerImpl(formalism::Problem problem, bool quiet) : EventHandlerBase<DebugEventHandlerImpl>(problem, quiet) {}
 
-std::shared_ptr<DebugEventHandler> DebugEventHandler::create(formalism::Problem problem, bool quiet)
-{
-    return std::make_shared<DebugEventHandler>(problem, quiet);
-}
+DebugEventHandler DebugEventHandlerImpl::create(formalism::Problem problem, bool quiet) { return std::make_shared<DebugEventHandlerImpl>(problem, quiet); }
 }

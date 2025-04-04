@@ -17,8 +17,10 @@
 
 #include "mimir/datasets/knowledge_base.hpp"
 
+#include "mimir/datasets/generalized_state_space.hpp"
+#include "mimir/datasets/tuple_graph.hpp"
 #include "mimir/formalism/problem.hpp"
-#include "mimir/search/search_context.hpp"
+#include "mimir/search/generalized_search_context.hpp"
 
 #include <gtest/gtest.h>
 
@@ -43,17 +45,17 @@ TEST(MimirTests, DatasetsKnowledgeBaseConstructorTest)
     {
         /* Without symmetry reduction two weakly connected components. */
 
-        auto kb_options = KnowledgeBaseImpl::Options();
+        auto kb_options = knowledge_base::Options();
 
         auto& state_space_options = kb_options.state_space_options;
         state_space_options.symmetry_pruning = false;
 
         auto& generalized_state_space_options = kb_options.generalized_state_space_options;
-        generalized_state_space_options = GeneralizedStateSpaceImpl::Options();
+        generalized_state_space_options = generalized_state_space::Options();
         generalized_state_space_options->symmetry_pruning = false;
 
         auto& tuple_graph_options = kb_options.tuple_graph_options;
-        tuple_graph_options = TupleGraphImpl::Options();
+        tuple_graph_options = tuple_graph::Options();
         tuple_graph_options->width = 2;
 
         auto kb = KnowledgeBaseImpl::create(context, kb_options);
@@ -89,17 +91,17 @@ TEST(MimirTests, DatasetsKnowledgeBaseConstructorTest)
 
     {
         /* With symmetry reduction one weakly connected component. */
-        auto kb_options = KnowledgeBaseImpl::Options();
+        auto kb_options = knowledge_base::Options();
 
         auto& state_space_options = kb_options.state_space_options;
         state_space_options.symmetry_pruning = true;
 
         auto& generalized_state_space_options = kb_options.generalized_state_space_options;
-        generalized_state_space_options = GeneralizedStateSpaceImpl::Options();
+        generalized_state_space_options = generalized_state_space::Options();
         generalized_state_space_options->symmetry_pruning = true;
 
         auto& tuple_graph_options = kb_options.tuple_graph_options;
-        tuple_graph_options = TupleGraphImpl::Options();
+        tuple_graph_options = tuple_graph::Options();
         tuple_graph_options->width = 2;
 
         auto kb = KnowledgeBaseImpl::create(context, kb_options);
@@ -225,17 +227,17 @@ TEST(MimirTests, DatasetsKnowledgeBaseConstructor2Test)
 
     {
         /* With symmetry reduction one weakly connected component. */
-        auto kb_options = KnowledgeBaseImpl::Options();
+        auto kb_options = knowledge_base::Options();
 
         auto& state_space_options = kb_options.state_space_options;
         state_space_options.symmetry_pruning = true;
 
         auto& generalized_state_space_options = kb_options.generalized_state_space_options;
-        generalized_state_space_options = GeneralizedStateSpaceImpl::Options();
+        generalized_state_space_options = generalized_state_space::Options();
         generalized_state_space_options->symmetry_pruning = true;
 
         auto& tuple_graph_options = kb_options.tuple_graph_options;
-        tuple_graph_options = TupleGraphImpl::Options();
+        tuple_graph_options = tuple_graph::Options();
         tuple_graph_options->width = 1;
 
         auto kb = KnowledgeBaseImpl::create(context, kb_options);

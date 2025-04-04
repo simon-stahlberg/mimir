@@ -19,9 +19,9 @@
 #define MIMIR_DATASETS_KNOWLEDGE_BASE_HPP_
 
 #include "mimir/datasets/declarations.hpp"
-#include "mimir/datasets/generalized_state_space.hpp"
-#include "mimir/datasets/tuple_graph.hpp"
-#include "mimir/search/generalized_search_context.hpp"
+#include "mimir/datasets/knowledge_base/options.hpp"
+#include "mimir/formalism/declarations.hpp"
+#include "mimir/search/declarations.hpp"
 
 namespace mimir::datasets
 {
@@ -40,33 +40,12 @@ private:
     std::optional<std::vector<TupleGraphList>> m_tuple_graphs;  ///< Optional tuple graphs for each `StateSpace`.
 
 public:
+    using Options = knowledge_base::Options;
+
     KnowledgeBaseImpl(formalism::Domain domain,
                       StateSpaceList state_spaces,
                       std::optional<GeneralizedStateSpace> generalized_state_space,
                       std::optional<std::vector<TupleGraphList>> tuple_graphs);
-
-    /**
-     * Options
-     */
-
-    struct Options
-    {
-        StateSpaceImpl::Options state_space_options;
-
-        std::optional<GeneralizedStateSpaceImpl::Options> generalized_state_space_options;
-
-        std::optional<TupleGraphImpl::Options> tuple_graph_options;
-
-        Options() : state_space_options(), tuple_graph_options(std::nullopt) {}
-        Options(const StateSpaceImpl::Options& state_space_options,
-                const std::optional<GeneralizedStateSpaceImpl::Options>& generalized_state_space_options = std::nullopt,
-                const std::optional<TupleGraphImpl::Options>& tuple_graph_options = std::nullopt) :
-            state_space_options(state_space_options),
-            generalized_state_space_options(generalized_state_space_options),
-            tuple_graph_options(tuple_graph_options)
-        {
-        }
-    };
 
     /**
      * Constructors

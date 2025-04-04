@@ -38,7 +38,7 @@ void bind_datasets(nb::module_& m)
 
     nb::class_<KnowledgeBaseImpl::Options>(m, "KnowledgeBaseOptions")
         .def(nb::init<>())
-        .def(nb::init<const StateSpaceImpl::Options&, const GeneralizedStateSpaceImpl::Options&, const std::optional<TupleGraphImpl::Options>&>(),
+        .def(nb::init<const state_space::Options&, const GeneralizedStateSpaceImpl::Options&, const std::optional<TupleGraphImpl::Options>&>(),
              nb::arg("state_space_options"),
              nb::arg("generalized_state_space_options"),
              nb::arg("tuple_graph_options") = std::nullopt)

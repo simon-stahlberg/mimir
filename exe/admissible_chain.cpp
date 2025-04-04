@@ -36,7 +36,7 @@ int main(int argc, char** argv)
     auto parser = PDDLParser(domain_file_path, problem_file_path);
     auto grounder = std::make_shared<Grounder>(parser.get_problem(), parser.get_pddl_repositories());
     auto applicable_action_generator =
-        std::dynamic_pointer_cast<IApplicableActionGenerator>(std::make_shared<LiftedApplicableActionGenerator>(grounder->get_action_grounder()));
+        std::dynamic_pointer_cast<IApplicableActionGenerator>(std::make_shared<LiftedApplicableActionGeneratorImpl>(grounder->get_action_grounder()));
     auto axiom_evaluator = std::dynamic_pointer_cast<IAxiomEvaluator>(std::make_shared<LiftedAxiomEvaluator>(grounder->get_axiom_grounder()));
     auto state_repository = std::make_shared<StateRepositoryImpl>(axiom_evaluator);
 

@@ -23,7 +23,7 @@
 
 namespace mimir::search::match_tree
 {
-template<typename Derived_, HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
+template<typename Derived_, formalism::HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
 class AtomSelectorNodeBase : public INode<E>
 {
 private:
@@ -51,7 +51,7 @@ public:
  * True False Dontcare combination
  */
 
-template<HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
 class AtomSelectorNode_TFX : public AtomSelectorNodeBase<AtomSelectorNode_TFX<E, P>, E, P>
 {
 private:
@@ -83,7 +83,7 @@ public:
 /**
  * True False combination.
  */
-template<HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
 class AtomSelectorNode_TF : public AtomSelectorNodeBase<AtomSelectorNode_TF<E, P>, E, P>
 {
 private:
@@ -113,7 +113,7 @@ public:
 /**
  * True Dontcare combination
  */
-template<HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
 class AtomSelectorNode_TX : public AtomSelectorNodeBase<AtomSelectorNode_TX<E, P>, E, P>
 {
 private:
@@ -143,7 +143,7 @@ public:
 /**
  * False Dontcare combination.
  */
-template<HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
 class AtomSelectorNode_FX : public AtomSelectorNodeBase<AtomSelectorNode_FX<E, P>, E, P>
 {
 private:
@@ -170,7 +170,7 @@ public:
     const Node<E>& get_dontcare_child() const;
 };
 
-template<HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
 class AtomSelectorNode_T : public AtomSelectorNodeBase<AtomSelectorNode_T<E, P>, E, P>
 {
 private:
@@ -195,7 +195,7 @@ public:
     const Node<E>& get_true_child() const;
 };
 
-template<HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
 class AtomSelectorNode_F : public AtomSelectorNodeBase<AtomSelectorNode_F<E, P>, E, P>
 {
 private:

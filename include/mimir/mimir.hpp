@@ -76,6 +76,7 @@
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/axiom_evaluators.hpp"
 #include "mimir/search/delete_relaxed_problem_explorator.hpp"
+#include "mimir/search/generalized_search_context.hpp"
 #include "mimir/search/heuristics.hpp"
 #include "mimir/search/openlists.hpp"
 #include "mimir/search/satisficing_binding_generators.hpp"
@@ -88,13 +89,18 @@
  * DataSet
  */
 
-#include "mimir/datasets/class_graph.hpp"
 #include "mimir/datasets/generalized_state_space.hpp"
+#include "mimir/datasets/generalized_state_space/class_graph.hpp"
+#include "mimir/datasets/generalized_state_space/options.hpp"
 #include "mimir/datasets/knowledge_base.hpp"
+#include "mimir/datasets/knowledge_base/options.hpp"
 #include "mimir/datasets/object_graph.hpp"
-#include "mimir/datasets/problem_graph.hpp"
 #include "mimir/datasets/state_space.hpp"
+#include "mimir/datasets/state_space/options.hpp"
+#include "mimir/datasets/state_space/problem_graph.hpp"
 #include "mimir/datasets/tuple_graph.hpp"
+#include "mimir/datasets/tuple_graph/internal_tuple_graph.hpp"
+#include "mimir/datasets/tuple_graph/options.hpp"
 
 /**
  * Graphs

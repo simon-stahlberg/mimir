@@ -34,7 +34,7 @@ using namespace mimir::formalism;
 namespace mimir::search::match_tree
 {
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 std::pair<InverseNode<E>, PlaceholderNodeList<E>>
 create_node_and_placeholder_children(const PlaceholderNode<E>& node, const SplitList& useless_splits, AtomSplit<P> split)
 {
@@ -234,7 +234,7 @@ create_node_and_placeholder_children(const PlaceholderNode<GroundAxiomImpl>& nod
 template std::pair<InverseNode<GroundAxiomImpl>, PlaceholderNodeList<GroundAxiomImpl>>
 create_node_and_placeholder_children(const PlaceholderNode<GroundAxiomImpl>& node, const SplitList& useless_splits, AtomSplit<DerivedTag> split);
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 std::pair<InverseNode<E>, PlaceholderNodeList<E>>
 create_node_and_placeholder_children(const PlaceholderNode<E>& node, const SplitList& useless_splits, NumericConstraintSplit split)
 {
@@ -332,7 +332,7 @@ create_node_and_placeholder_children(const PlaceholderNode<GroundActionImpl>& no
 template std::pair<InverseNode<GroundAxiomImpl>, PlaceholderNodeList<GroundAxiomImpl>>
 create_node_and_placeholder_children(const PlaceholderNode<GroundAxiomImpl>& node, const SplitList& useless_splits, NumericConstraintSplit split);
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 std::pair<InverseNode<E>, PlaceholderNodeList<E>>
 create_node_and_placeholder_children(const PlaceholderNode<E>& node, const SplitList& useless_splits, const Split& split)
 {
@@ -346,7 +346,7 @@ create_node_and_placeholder_children(const PlaceholderNode<GroundActionImpl>& no
 template std::pair<InverseNode<GroundAxiomImpl>, PlaceholderNodeList<GroundAxiomImpl>>
 create_node_and_placeholder_children(const PlaceholderNode<GroundAxiomImpl>& node, const SplitList& useless_splits, const Split& split);
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 std::pair<InverseNode<E>, PlaceholderNodeList<E>> create_perfect_generator_node(const PlaceholderNode<E>& node)
 {
     assert(node);
@@ -372,7 +372,7 @@ create_perfect_generator_node(const PlaceholderNode<GroundActionImpl>& node);
 template std::pair<InverseNode<GroundAxiomImpl>, PlaceholderNodeList<GroundAxiomImpl>>
 create_perfect_generator_node(const PlaceholderNode<GroundAxiomImpl>& node);
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 InverseNode<E> create_imperfect_generator_node(const PlaceholderNode<E>& node)
 {
     assert(node);
@@ -396,7 +396,7 @@ InverseNode<E> create_imperfect_generator_node(const PlaceholderNode<E>& node)
 template InverseNode<GroundActionImpl> create_imperfect_generator_node(const PlaceholderNode<GroundActionImpl>& node);
 template InverseNode<GroundAxiomImpl> create_imperfect_generator_node(const PlaceholderNode<GroundAxiomImpl>& node);
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 PlaceholderNode<E> create_root_placeholder_node(std::span<const E*> elements)
 {
     return std::make_unique<PlaceholderNodeImpl<E>>(nullptr, nullptr, elements);

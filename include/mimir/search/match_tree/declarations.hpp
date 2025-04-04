@@ -18,10 +18,9 @@
 #ifndef MIMIR_SEARCH_MATCH_TREE_DECLARATIONS_HPP_
 #define MIMIR_SEARCH_MATCH_TREE_DECLARATIONS_HPP_
 
-#include "mimir/formalism/declarations.hpp"
-#include "mimir/search/declarations.hpp"
+#include "mimir/formalism/concepts.hpp"
+#include "mimir/formalism/tags.hpp"
 
-#include <concepts>
 #include <variant>
 #include <vector>
 
@@ -29,98 +28,91 @@ namespace mimir::search::match_tree
 {
 
 /**
- * Concepts
- */
-
-/// MatchTree can handle elements that have a conjunctive condition, e.g., GroundActionImpl and GroundAxiomImpl.
-template<typename T>
-concept HasConjunctiveCondition = requires(const T a) {
-    { a.get_conjunctive_condition() } -> std::same_as<const formalism::GroundConjunctiveCondition&>;
-};
-
-/**
  * Forward declarations
  */
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 class PlaceholderNodeImpl;
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 class IInverseNode;
-template<HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
 class InverseAtomSelectorNode_TFX;
-template<HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
 class InverseAtomSelectorNode_TF;
-template<HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
 class InverseAtomSelectorNode_TX;
-template<HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
 class InverseAtomSelectorNode_FX;
-template<HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
 class InverseAtomSelectorNode_T;
-template<HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
 class InverseAtomSelectorNode_F;
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 class InverseNumericConstraintSelectorNode_TX;
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 class InverseNumericConstraintSelectorNode_T;
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 class InverseElementGeneratorNode_Perfect;
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 class InverseElementGeneratorNode_Imperfect;
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 class INode;
-template<HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
 class AtomSelectorNode_TFX;
-template<HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
 class AtomSelectorNode_TF;
-template<HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
 class AtomSelectorNode_TX;
-template<HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
 class AtomSelectorNode_FX;
-template<HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
 class AtomSelectorNode_T;
-template<HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P>
 class AtomSelectorNode_F;
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 class NumericConstraintSelectorNode_TX;
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 class NumericConstraintSelectorNode_T;
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 class ElementGeneratorNode_Perfect;
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 class ElementGeneratorNode_Imperfect;
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 class INodeScoreFunction;
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 class INodeSplitter;
 
 struct Options;
 struct Statistics;
 
+template<formalism::HasConjunctiveCondition E>
+class MatchTree;
+
 /**
  * Aliases
  */
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 using PlaceholderNode = std::unique_ptr<PlaceholderNodeImpl<E>>;
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 using PlaceholderNodeList = std::vector<PlaceholderNode<E>>;
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 using InverseNode = std::unique_ptr<IInverseNode<E>>;
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 using InverseNodeList = std::vector<InverseNode<E>>;
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 using Node = std::unique_ptr<INode<E>>;
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 using NodeScoreFunction = std::unique_ptr<INodeScoreFunction<E>>;
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 using NodeSplitter = std::unique_ptr<INodeSplitter<E>>;
 }
 

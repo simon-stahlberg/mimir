@@ -22,7 +22,7 @@
 
 namespace mimir::search::match_tree
 {
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 class PlaceholderNodeImpl
 {
 private:

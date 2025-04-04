@@ -18,7 +18,9 @@
 #include "mimir/datasets/generalized_state_space.hpp"
 
 #include "mimir/common/timers.hpp"
+#include "mimir/datasets/generalized_state_space/options.hpp"
 #include "mimir/datasets/object_graph.hpp"
+#include "mimir/datasets/state_space.hpp"
 #include "mimir/formalism/color_function.hpp"
 #include "mimir/formalism/generalized_problem.hpp"
 #include "mimir/formalism/ground_action.hpp"
@@ -36,6 +38,7 @@
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/axiom_evaluators.hpp"
 #include "mimir/search/delete_relaxed_problem_explorator.hpp"
+#include "mimir/search/generalized_search_context.hpp"
 #include "mimir/search/heuristics/blind.hpp"
 #include "mimir/search/metric.hpp"
 #include "mimir/search/openlists/priority_queue.hpp"

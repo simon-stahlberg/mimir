@@ -29,7 +29,7 @@
 namespace mimir::search::match_tree
 {
 /* MatchTree */
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 class MatchTree
 {
 private:

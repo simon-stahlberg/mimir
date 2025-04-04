@@ -48,7 +48,7 @@ enum class OptimizationDirectionEnum
 
 /// @brief `INodeSplitter` computes the best split for a given set of elements.
 /// @tparam Element
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 class INodeSplitter
 {
 public:

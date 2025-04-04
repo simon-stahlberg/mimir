@@ -34,17 +34,19 @@ public:
     virtual bool test_dynamic_goal(State state) = 0;
 };
 
-/// @brief `ProblemGoalStrategy` identifies a state as a goal if and only if it satisfies the goal in the given problem.
-class ProblemGoalStrategy : public IGoalStrategy
+/// @brief `ProblemGoalStrategyImpl` identifies a state as a goal if and only if it satisfies the goal in the given problem.
+class ProblemGoalStrategyImpl : public IGoalStrategy
 {
 private:
     formalism::Problem m_problem;
 
 public:
-    explicit ProblemGoalStrategy(formalism::Problem problem);
+    explicit ProblemGoalStrategyImpl(formalism::Problem problem);
 
     bool test_static_goal() override;
     bool test_dynamic_goal(State state) override;
+
+    static ProblemGoalStrategy create(formalism::Problem problem);
 };
 }
 

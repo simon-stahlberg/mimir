@@ -30,13 +30,13 @@ namespace mimir::search::match_tree
  * True False Dontcare combination
  */
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 void InverseAtomSelectorNode_TFX<E, P>::visit_impl(IInverseNodeVisitor<E>& visitor) const
 {
     visitor.accept(*this);
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 InverseAtomSelectorNode_TFX<E, P>::InverseAtomSelectorNode_TFX(const IInverseNode<E>* parent,
                                                                SplitList useless_splits,
                                                                GroundAtom<P> atom,
@@ -56,55 +56,55 @@ InverseAtomSelectorNode_TFX<E, P>::InverseAtomSelectorNode_TFX(const IInverseNod
     assert(!m_dontcare_elements.empty());
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 std::span<const E*> InverseAtomSelectorNode_TFX<E, P>::get_true_elements() const
 {
     return m_true_elements;
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 std::span<const E*> InverseAtomSelectorNode_TFX<E, P>::get_false_elements() const
 {
     return m_false_elements;
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 std::span<const E*> InverseAtomSelectorNode_TFX<E, P>::get_dontcare_elements() const
 {
     return m_dontcare_elements;
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 InverseNode<E>& InverseAtomSelectorNode_TFX<E, P>::get_true_child()
 {
     return m_true_child;
 };
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 InverseNode<E>& InverseAtomSelectorNode_TFX<E, P>::get_false_child()
 {
     return m_false_child;
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 InverseNode<E>& InverseAtomSelectorNode_TFX<E, P>::get_dontcare_child()
 {
     return m_dontcare_child;
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 const InverseNode<E>& InverseAtomSelectorNode_TFX<E, P>::get_true_child() const
 {
     return m_true_child;
 };
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 const InverseNode<E>& InverseAtomSelectorNode_TFX<E, P>::get_false_child() const
 {
     return m_false_child;
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 const InverseNode<E>& InverseAtomSelectorNode_TFX<E, P>::get_dontcare_child() const
 {
     return m_dontcare_child;
@@ -118,13 +118,13 @@ template class InverseAtomSelectorNode_TFX<GroundAxiomImpl, DerivedTag>;
 /**
  * True False combination
  */
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 void InverseAtomSelectorNode_TF<E, P>::visit_impl(IInverseNodeVisitor<E>& visitor) const
 {
     visitor.accept(*this);
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 InverseAtomSelectorNode_TF<E, P>::InverseAtomSelectorNode_TF(const IInverseNode<E>* parent,
                                                              SplitList useless_splits,
                                                              GroundAtom<P> atom,
@@ -140,37 +140,37 @@ InverseAtomSelectorNode_TF<E, P>::InverseAtomSelectorNode_TF(const IInverseNode<
     assert(!m_false_elements.empty());
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 std::span<const E*> InverseAtomSelectorNode_TF<E, P>::get_true_elements() const
 {
     return m_true_elements;
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 std::span<const E*> InverseAtomSelectorNode_TF<E, P>::get_false_elements() const
 {
     return m_false_elements;
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 InverseNode<E>& InverseAtomSelectorNode_TF<E, P>::get_true_child()
 {
     return m_true_child;
 };
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 InverseNode<E>& InverseAtomSelectorNode_TF<E, P>::get_false_child()
 {
     return m_false_child;
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 const InverseNode<E>& InverseAtomSelectorNode_TF<E, P>::get_true_child() const
 {
     return m_true_child;
 };
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 const InverseNode<E>& InverseAtomSelectorNode_TF<E, P>::get_false_child() const
 {
     return m_false_child;
@@ -184,13 +184,13 @@ template class InverseAtomSelectorNode_TF<GroundAxiomImpl, DerivedTag>;
 /**
  * True Dontcare combination
  */
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 void InverseAtomSelectorNode_TX<E, P>::visit_impl(IInverseNodeVisitor<E>& visitor) const
 {
     visitor.accept(*this);
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 InverseAtomSelectorNode_TX<E, P>::InverseAtomSelectorNode_TX(const IInverseNode<E>* parent,
                                                              SplitList useless_splits,
                                                              GroundAtom<P> atom,
@@ -206,37 +206,37 @@ InverseAtomSelectorNode_TX<E, P>::InverseAtomSelectorNode_TX(const IInverseNode<
     assert(!m_dontcare_elements.empty());
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 std::span<const E*> InverseAtomSelectorNode_TX<E, P>::get_true_elements() const
 {
     return m_true_elements;
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 std::span<const E*> InverseAtomSelectorNode_TX<E, P>::get_dontcare_elements() const
 {
     return m_dontcare_elements;
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 InverseNode<E>& InverseAtomSelectorNode_TX<E, P>::get_true_child()
 {
     return m_true_child;
 };
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 InverseNode<E>& InverseAtomSelectorNode_TX<E, P>::get_dontcare_child()
 {
     return m_dontcare_child;
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 const InverseNode<E>& InverseAtomSelectorNode_TX<E, P>::get_true_child() const
 {
     return m_true_child;
 };
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 const InverseNode<E>& InverseAtomSelectorNode_TX<E, P>::get_dontcare_child() const
 {
     return m_dontcare_child;
@@ -250,13 +250,13 @@ template class InverseAtomSelectorNode_TX<GroundAxiomImpl, DerivedTag>;
 /**
  * False Dontcare combination
  */
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 void InverseAtomSelectorNode_FX<E, P>::visit_impl(IInverseNodeVisitor<E>& visitor) const
 {
     visitor.accept(*this);
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 InverseAtomSelectorNode_FX<E, P>::InverseAtomSelectorNode_FX(const IInverseNode<E>* parent,
                                                              SplitList useless_splits,
                                                              GroundAtom<P> atom,
@@ -272,37 +272,37 @@ InverseAtomSelectorNode_FX<E, P>::InverseAtomSelectorNode_FX(const IInverseNode<
     assert(!m_dontcare_elements.empty());
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 std::span<const E*> InverseAtomSelectorNode_FX<E, P>::get_false_elements() const
 {
     return m_false_elements;
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 std::span<const E*> InverseAtomSelectorNode_FX<E, P>::get_dontcare_elements() const
 {
     return m_dontcare_elements;
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 InverseNode<E>& InverseAtomSelectorNode_FX<E, P>::get_false_child()
 {
     return m_false_child;
 };
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 InverseNode<E>& InverseAtomSelectorNode_FX<E, P>::get_dontcare_child()
 {
     return m_dontcare_child;
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 const InverseNode<E>& InverseAtomSelectorNode_FX<E, P>::get_false_child() const
 {
     return m_false_child;
 };
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 const InverseNode<E>& InverseAtomSelectorNode_FX<E, P>::get_dontcare_child() const
 {
     return m_dontcare_child;
@@ -316,13 +316,13 @@ template class InverseAtomSelectorNode_FX<GroundAxiomImpl, DerivedTag>;
 /**
  * True combination
  */
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 void InverseAtomSelectorNode_T<E, P>::visit_impl(IInverseNodeVisitor<E>& visitor) const
 {
     visitor.accept(*this);
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 InverseAtomSelectorNode_T<E, P>::InverseAtomSelectorNode_T(const IInverseNode<E>* parent,
                                                            SplitList useless_splits,
                                                            GroundAtom<P> atom,
@@ -334,19 +334,19 @@ InverseAtomSelectorNode_T<E, P>::InverseAtomSelectorNode_T(const IInverseNode<E>
     assert(!m_true_elements.empty());
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 std::span<const E*> InverseAtomSelectorNode_T<E, P>::get_true_elements() const
 {
     return m_true_elements;
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 InverseNode<E>& InverseAtomSelectorNode_T<E, P>::get_true_child()
 {
     return m_true_child;
 };
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 const InverseNode<E>& InverseAtomSelectorNode_T<E, P>::get_true_child() const
 {
     return m_true_child;
@@ -360,13 +360,13 @@ template class InverseAtomSelectorNode_T<GroundAxiomImpl, DerivedTag>;
 /**
  * False combination
  */
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 void InverseAtomSelectorNode_F<E, P>::visit_impl(IInverseNodeVisitor<E>& visitor) const
 {
     visitor.accept(*this);
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 InverseAtomSelectorNode_F<E, P>::InverseAtomSelectorNode_F(const IInverseNode<E>* parent,
                                                            SplitList useless_splits,
                                                            GroundAtom<P> atom,
@@ -378,19 +378,19 @@ InverseAtomSelectorNode_F<E, P>::InverseAtomSelectorNode_F(const IInverseNode<E>
     assert(!m_false_elements.empty());
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 std::span<const E*> InverseAtomSelectorNode_F<E, P>::get_false_elements() const
 {
     return m_false_elements;
 }
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 InverseNode<E>& InverseAtomSelectorNode_F<E, P>::get_false_child()
 {
     return m_false_child;
 };
 
-template<HasConjunctiveCondition E, IsFluentOrDerivedTag P>
+template<formalism::HasConjunctiveCondition E, IsFluentOrDerivedTag P>
 const InverseNode<E>& InverseAtomSelectorNode_F<E, P>::get_false_child() const
 {
     return m_false_child;

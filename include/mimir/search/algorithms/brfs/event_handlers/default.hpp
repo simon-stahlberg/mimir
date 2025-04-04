@@ -26,14 +26,14 @@ namespace mimir::search::brfs
 /**
  * Implementation class
  */
-class DefaultEventHandler : public EventHandlerBase<DefaultEventHandler>
+class DefaultEventHandlerImpl : public EventHandlerBase<DefaultEventHandlerImpl>
 {
 private:
     /* Members */
     mutable long m_start_time_ms;
 
     /* Implement EventHandlerBase interface */
-    friend class EventHandlerBase<DefaultEventHandler>;
+    friend class EventHandlerBase<DefaultEventHandlerImpl>;
 
     void on_expand_state_impl(State state) const;
 
@@ -68,9 +68,9 @@ private:
     void on_exhausted_impl() const;
 
 public:
-    DefaultEventHandler(formalism::Problem problem, bool quiet = true);
+    DefaultEventHandlerImpl(formalism::Problem problem, bool quiet = true);
 
-    static std::shared_ptr<DefaultEventHandler> create(formalism::Problem problem, bool quiet = true);
+    static DefaultEventHandler create(formalism::Problem problem, bool quiet = true);
 };
 
 }

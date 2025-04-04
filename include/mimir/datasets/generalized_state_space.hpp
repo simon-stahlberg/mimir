@@ -19,12 +19,12 @@
 #define MIMIR_DATASETS_GENERALIZED_STATE_SPACE_HPP_
 
 #include "mimir/common/types.hpp"
-#include "mimir/datasets/class_graph.hpp"
 #include "mimir/datasets/declarations.hpp"
-#include "mimir/datasets/state_space.hpp"
+#include "mimir/datasets/generalized_state_space/class_graph.hpp"
+#include "mimir/datasets/generalized_state_space/options.hpp"
+#include "mimir/datasets/state_space/problem_graph.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/generalized_search_context.hpp"
 
 namespace mimir::datasets
 {
@@ -62,6 +62,8 @@ private:
     std::unordered_map<const formalism::ProblemImpl*, graphs::EdgeIndexList> m_edge_mappings;
 
 public:
+    using Options = generalized_state_space::Options;
+
     GeneralizedStateSpaceImpl(StateSpaceList state_spaces,
                               graphs::ClassGraph graph,
                               IndexSet initial_vertices,
@@ -69,13 +71,6 @@ public:
                               IndexSet unsolvable_vertices,
                               std::unordered_map<const formalism::ProblemImpl*, graphs::VertexIndexList> vertex_mappings,
                               std::unordered_map<const formalism::ProblemImpl*, graphs::EdgeIndexList> edge_mappings);
-
-    struct Options
-    {
-        bool symmetry_pruning;
-
-        Options() : symmetry_pruning(false) {}
-    };
 
     /**
      * Constructors

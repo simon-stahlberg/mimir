@@ -24,7 +24,7 @@ using namespace mimir::formalism;
 
 namespace mimir::search::match_tree
 {
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 PlaceholderNodeImpl<E>::PlaceholderNodeImpl(const IInverseNode<E>* parent, InverseNode<E>* parents_child, std::span<const E*> elements) :
     m_parent(parent),
     m_parents_child(parents_child),
@@ -32,20 +32,20 @@ PlaceholderNodeImpl<E>::PlaceholderNodeImpl(const IInverseNode<E>* parent, Inver
 {
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 const IInverseNode<E>* PlaceholderNodeImpl<E>::get_parent() const
 {
     return m_parent;
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 InverseNode<E>& PlaceholderNodeImpl<E>::get_parents_child() const
 {
     assert(m_parents_child);
     return *m_parents_child;
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 std::span<const E*> PlaceholderNodeImpl<E>::get_elements() const
 {
     return m_elements;

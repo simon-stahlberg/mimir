@@ -20,6 +20,7 @@
 
 // Do not include headers with transitive dependencies.
 #include "mimir/common/types.hpp"
+#include "mimir/formalism/concepts.hpp"
 
 #include <memory>
 #include <unordered_set>
@@ -52,38 +53,116 @@ struct DenseState;
 /* DeleteRelaxedProblemExplorator */
 class DeleteRelaxedProblemExplorator;
 
+class ActionSatisficingBindingGenerator;
+class AxiomSatisficingBindingGenerator;
+class ConjunctiveConditionSatisficingBindingGenerator;
+
+namespace satisficing_binding_generator
+{
+class IEventHandler;
+using EventHandler = std::shared_ptr<IEventHandler>;
+class DefaultEventHandlerImpl;
+using DefaultEventHandler = std::shared_ptr<DefaultEventHandlerImpl>;
+}
+
 /* ApplicableActionGenerators */
 class IApplicableActionGenerator;
 using ApplicableActionGenerator = std::shared_ptr<IApplicableActionGenerator>;
-class GroundedApplicableActionGenerator;
-class LiftedApplicableActionGenerator;
+class GroundedApplicableActionGeneratorImpl;
+using GroundedApplicableActionGenerator = std::shared_ptr<GroundedApplicableActionGeneratorImpl>;
+class LiftedApplicableActionGeneratorImpl;
+using LiftedApplicableActionGenerator = std::shared_ptr<LiftedApplicableActionGeneratorImpl>;
+
+namespace applicable_action_generator::grounded
+{
+struct Statistics;
+class IEventHandler;
+using EventHandler = std::shared_ptr<IEventHandler>;
+class DebugEventHandlerImpl;
+using DebugEventHandler = std::shared_ptr<DebugEventHandlerImpl>;
+class DefaultEventHandlerImpl;
+using DefaultEventHandler = std::shared_ptr<DefaultEventHandlerImpl>;
+}
+
+namespace applicable_action_generator::lifted
+{
+struct Statistics;
+class IEventHandler;
+using EventHandler = std::shared_ptr<IEventHandler>;
+class DebugEventHandlerImpl;
+using DebugEventHandler = std::shared_ptr<DebugEventHandlerImpl>;
+class DefaultEventHandlerImpl;
+using DefaultEventHandler = std::shared_ptr<DefaultEventHandlerImpl>;
+}
 
 /* AxiomEvaluators */
 class IAxiomEvaluator;
 using AxiomEvaluator = std::shared_ptr<IAxiomEvaluator>;
-class GroundedAxiomEvaluator;
-class LiftedAxiomEvaluator;
+class GroundedAxiomEvaluatorImpl;
+using GroundedAxiomEvaluator = std::shared_ptr<GroundedAxiomEvaluatorImpl>;
+class LiftedAxiomEvaluatorImpl;
+using LiftedAxiomEvaluator = std::shared_ptr<LiftedAxiomEvaluatorImpl>;
+
+namespace axiom_evaluator::grounded
+{
+struct Statistics;
+class IEventHandler;
+using EventHandler = std::shared_ptr<IEventHandler>;
+class DebugEventHandlerImpl;
+using DebugEventHandler = std::shared_ptr<DebugEventHandlerImpl>;
+class DefaultEventHandlerImpl;
+using DefaultEventHandler = std::shared_ptr<DefaultEventHandlerImpl>;
+}
+
+namespace axiom_evaluator::lifted
+{
+struct Statistics;
+class IEventHandler;
+using EventHandler = std::shared_ptr<IEventHandler>;
+class DebugEventHandlerImpl;
+using DebugEventHandler = std::shared_ptr<DebugEventHandlerImpl>;
+class DefaultEventHandlerImpl;
+using DefaultEventHandler = std::shared_ptr<DefaultEventHandlerImpl>;
+}
 
 /* MatchTree */
-template<typename T>
+namespace match_tree
+{
+template<formalism::HasConjunctiveCondition E>
 class MatchTree;
+}
 
 /* Heuristics */
 class IHeuristic;
 using Heuristic = std::shared_ptr<IHeuristic>;
+class HStarHeuristicImpl;
+using HStarHeuristic = std::shared_ptr<HStarHeuristicImpl>;
+class BlindHeuristicImpl;
+using BlindHeuristic = std::shared_ptr<BlindHeuristicImpl>;
 
 /* Algorithms */
 
 class IPruningStrategy;
 using PruningStrategy = std::shared_ptr<IPruningStrategy>;
+class NoPruningStrategyImpl;
+using NoPruningStrategy = std::shared_ptr<NoPruningStrategyImpl>;
+class DuplicatePruningStrategyImpl;
+using DuplicatePruningStrategy = std::shared_ptr<DuplicatePruningStrategyImpl>;
+
 class IGoalStrategy;
 using GoalStrategy = std::shared_ptr<IGoalStrategy>;
+class ProblemGoalStrategyImpl;
+using ProblemGoalStrategy = std::shared_ptr<ProblemGoalStrategyImpl>;
 
 // AStar
 namespace astar
 {
 class IEventHandler;
 using EventHandler = std::shared_ptr<IEventHandler>;
+class DebugEventHandlerImpl;
+using DebugEventHandler = std::shared_ptr<DebugEventHandlerImpl>;
+class DefaultEventHandlerImpl;
+using DefaultEventHandler = std::shared_ptr<DefaultEventHandlerImpl>;
 }
 
 // Breadth-first search
@@ -91,6 +170,10 @@ namespace brfs
 {
 class IEventHandler;
 using EventHandler = std::shared_ptr<IEventHandler>;
+class DebugEventHandlerImpl;
+using DebugEventHandler = std::shared_ptr<DebugEventHandlerImpl>;
+class DefaultEventHandlerImpl;
+using DefaultEventHandler = std::shared_ptr<DefaultEventHandlerImpl>;
 }
 
 // Iterative width search
@@ -98,6 +181,8 @@ namespace iw
 {
 class IEventHandler;
 using EventHandler = std::shared_ptr<IEventHandler>;
+class DefaultEventHandlerImpl;
+using DefaultEventHandler = std::shared_ptr<DefaultEventHandlerImpl>;
 }
 
 // Serialized iterative width search
@@ -105,6 +190,8 @@ namespace siw
 {
 class IEventHandler;
 using EventHandler = std::shared_ptr<IEventHandler>;
+class DefaultEventHandlerImpl;
+using DefaultEventHandler = std::shared_ptr<DefaultEventHandlerImpl>;
 }
 
 // Plan

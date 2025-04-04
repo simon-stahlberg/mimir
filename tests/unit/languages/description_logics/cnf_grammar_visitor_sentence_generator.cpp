@@ -31,6 +31,7 @@
 #include "mimir/languages/description_logics/constructors.hpp"
 #include "mimir/languages/description_logics/grammar.hpp"
 #include "mimir/search/axiom_evaluators.hpp"
+#include "mimir/search/generalized_search_context.hpp"
 
 #include <gtest/gtest.h>
 

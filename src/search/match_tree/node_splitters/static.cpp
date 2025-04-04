@@ -36,7 +36,7 @@ using namespace mimir::formalism;
 namespace mimir::search::match_tree
 {
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 StaticNodeSplitter<E>::StaticNodeSplitter(const Repositories& pddl_repositories, const Options& options, std::span<const E*> elements) :
     NodeSplitterBase<StaticNodeSplitter<E>, E>(pddl_repositories, options),
     m_split_to_root_distance()
@@ -68,7 +68,7 @@ StaticNodeSplitter<E>::StaticNodeSplitter(const Repositories& pddl_repositories,
     }
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 InverseNode<E> StaticNodeSplitter<E>::fit_impl(std::span<const E*> elements, Statistics& ref_statistics)
 {
     throw std::runtime_error("Not implemented.");

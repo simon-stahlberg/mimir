@@ -26,11 +26,11 @@ namespace mimir::search::siw
 /**
  * Implementation class
  */
-class DefaultEventHandler : public EventHandlerBase<DefaultEventHandler>
+class DefaultEventHandlerImpl : public EventHandlerBase<DefaultEventHandlerImpl>
 {
 private:
     /* Implement EventHandlerBase interface */
-    friend class EventHandlerBase<DefaultEventHandler>;
+    friend class EventHandlerBase<DefaultEventHandlerImpl>;
 
     void on_start_search_impl(State initial_state) const;
 
@@ -47,9 +47,9 @@ private:
     void on_exhausted_impl() const;
 
 public:
-    explicit DefaultEventHandler(formalism::Problem problem, bool quiet = true);
+    explicit DefaultEventHandlerImpl(formalism::Problem problem, bool quiet = true);
 
-    static std::shared_ptr<DefaultEventHandler> create(formalism::Problem problem, bool quiet = true);
+    static DefaultEventHandler create(formalism::Problem problem, bool quiet = true);
 };
 
 }

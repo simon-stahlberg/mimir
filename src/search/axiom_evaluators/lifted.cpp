@@ -22,70 +22,21 @@
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/applicability.hpp"
+#include "mimir/search/axiom_evaluators/lifted/event_handlers/default.hpp"
+#include "mimir/search/axiom_evaluators/lifted/event_handlers/interface.hpp"
 #include "mimir/search/dense_state.hpp"
 
 using namespace mimir::formalism;
 
 namespace mimir::search
 {
-
-/**
- * DebugEventHandler
- */
-
-void LiftedAxiomEvaluator::DebugEventHandler::on_start_generating_applicable_axioms_impl() const {}
-
-void LiftedAxiomEvaluator::DebugEventHandler::on_ground_axiom_impl(GroundAxiom axiom) const {}
-
-void LiftedAxiomEvaluator::DebugEventHandler::on_ground_axiom_cache_hit_impl(GroundAxiom axiom) const {}
-
-void LiftedAxiomEvaluator::DebugEventHandler::on_ground_axiom_cache_miss_impl(GroundAxiom axiom) const {}
-
-void LiftedAxiomEvaluator::DebugEventHandler::on_end_generating_applicable_axioms_impl() const {}
-
-void LiftedAxiomEvaluator::DebugEventHandler::on_finish_search_layer_impl() const {}
-
-void LiftedAxiomEvaluator::DebugEventHandler::on_end_search_impl() const { std::cout << get_statistics() << std::endl; }
-
-LiftedAxiomEvaluator::DebugEventHandler::DebugEventHandler(bool quiet) : EventHandlerBase<DebugEventHandler>(quiet) {}
-
-std::shared_ptr<LiftedAxiomEvaluator::DebugEventHandler> LiftedAxiomEvaluator::DebugEventHandler::create(bool quiet)
-{
-    return std::make_shared<DebugEventHandler>(quiet);
-}
-
-/**
- * DefaultEventHandler
- */
-
-void LiftedAxiomEvaluator::DefaultEventHandler::on_start_generating_applicable_axioms_impl() const {}
-
-void LiftedAxiomEvaluator::DefaultEventHandler::on_ground_axiom_impl(GroundAxiom axiom) const {}
-
-void LiftedAxiomEvaluator::DefaultEventHandler::on_ground_axiom_cache_hit_impl(GroundAxiom axiom) const {}
-
-void LiftedAxiomEvaluator::DefaultEventHandler::on_ground_axiom_cache_miss_impl(GroundAxiom axiom) const {}
-
-void LiftedAxiomEvaluator::DefaultEventHandler::on_end_generating_applicable_axioms_impl() const {}
-
-void LiftedAxiomEvaluator::DefaultEventHandler::on_finish_search_layer_impl() const {}
-
-void LiftedAxiomEvaluator::DefaultEventHandler::on_end_search_impl() const { std::cout << get_statistics() << std::endl; }
-
-LiftedAxiomEvaluator::DefaultEventHandler::DefaultEventHandler(bool quiet) : EventHandlerBase<DefaultEventHandler>(quiet) {}
-
-std::shared_ptr<LiftedAxiomEvaluator::DefaultEventHandler> LiftedAxiomEvaluator::DefaultEventHandler::create(bool quiet)
-{
-    return std::make_shared<DefaultEventHandler>(quiet);
-}
-
 /**
  * LiftedAxiomEvaluator
  */
 
-LiftedAxiomEvaluator::LiftedAxiomEvaluator(Problem problem) : LiftedAxiomEvaluator(std::move(problem), std::make_shared<DefaultEventHandler>()) {}
+LiftedAxiomEvaluatorImpl::LiftedAxiomEvaluatorImpl(Problem problem) : LiftedAxiomEvaluatorImpl(std::move(problem), DefaultEventHandlerImpl::create()) {}
 
-LiftedAxiomEvaluator::LiftedAxiomEvaluator(Problem problem, std::shared_ptr<IEventHandler> event_handler) :
+LiftedAxiomEvaluatorImpl::LiftedAxiomEvaluatorImpl(Problem problem, std::shared_ptr<IEventHandler> event_handler) :
     m_problem(problem),
     m_event_handler(event_handler),
     m_condition_grounders(),
@@ -106,17 +57,14 @@ LiftedAxiomEvaluator::LiftedAxiomEvaluator(Problem problem, std::shared_ptr<IEve
     }
 }
 
-std::shared_ptr<LiftedAxiomEvaluator> LiftedAxiomEvaluator::create(Problem problem)
+LiftedAxiomEvaluator LiftedAxiomEvaluatorImpl::create(Problem problem) { return create(std::move(problem), DefaultEventHandlerImpl::create()); }
+
+LiftedAxiomEvaluator LiftedAxiomEvaluatorImpl::create(Problem problem, std::shared_ptr<IEventHandler> event_handler)
 {
-    return create(std::move(problem), std::make_shared<DefaultEventHandler>());
+    return std::shared_ptr<LiftedAxiomEvaluatorImpl>(new LiftedAxiomEvaluatorImpl(std::move(problem), std::move(event_handler)));
 }
 
-std::shared_ptr<LiftedAxiomEvaluator> LiftedAxiomEvaluator::create(Problem problem, std::shared_ptr<IEventHandler> event_handler)
-{
-    return std::shared_ptr<LiftedAxiomEvaluator>(new LiftedAxiomEvaluator(std::move(problem), std::move(event_handler)));
-}
-
-void LiftedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state)
+void LiftedAxiomEvaluatorImpl::generate_and_apply_axioms(DenseState& dense_state)
 {
     const auto& dense_fluent_atoms = dense_state.get_atoms<FluentTag>();
     auto& dense_derived_atoms = dense_state.get_atoms<DerivedTag>();
@@ -225,11 +173,11 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state)
     m_event_handler->on_end_generating_applicable_axioms();
 }
 
-void LiftedAxiomEvaluator::on_finish_search_layer() { m_event_handler->on_finish_search_layer(); }
+void LiftedAxiomEvaluatorImpl::on_finish_search_layer() { m_event_handler->on_finish_search_layer(); }
 
-void LiftedAxiomEvaluator::on_end_search() { m_event_handler->on_end_search(); }
+void LiftedAxiomEvaluatorImpl::on_end_search() { m_event_handler->on_end_search(); }
 
-const Problem& LiftedAxiomEvaluator::get_problem() const { return m_problem; }
+const Problem& LiftedAxiomEvaluatorImpl::get_problem() const { return m_problem; }
 
-const std::shared_ptr<LiftedAxiomEvaluator::IEventHandler>& LiftedAxiomEvaluator::get_event_handler() const { return m_event_handler; }
+const std::shared_ptr<LiftedAxiomEvaluatorImpl::IEventHandler>& LiftedAxiomEvaluatorImpl::get_event_handler() const { return m_event_handler; }
 }

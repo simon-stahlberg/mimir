@@ -23,11 +23,11 @@ using namespace mimir::formalism;
 
 namespace mimir::search
 {
-ProblemGoalStrategy::ProblemGoalStrategy(Problem problem) : m_problem(problem) {}
+ProblemGoalStrategyImpl::ProblemGoalStrategyImpl(Problem problem) : m_problem(problem) {}
 
-bool ProblemGoalStrategy::test_static_goal() { return m_problem->static_goal_holds(); }
+bool ProblemGoalStrategyImpl::test_static_goal() { return m_problem->static_goal_holds(); }
 
-bool ProblemGoalStrategy::test_dynamic_goal(State state)
+bool ProblemGoalStrategyImpl::test_dynamic_goal(State state)
 {
     // This uses the efficient check.
     return state->literals_hold<FluentTag>(m_problem->get_positive_goal_atoms_indices<FluentTag>(), m_problem->get_negative_goal_atoms_indices<FluentTag>())
@@ -35,4 +35,6 @@ bool ProblemGoalStrategy::test_dynamic_goal(State state)
                                                m_problem->get_negative_goal_atoms_indices<DerivedTag>())
            && state->numeric_constraints_hold(m_problem->get_numeric_goal_condition(), m_problem->get_initial_function_to_value<StaticTag>());
 }
+
+ProblemGoalStrategy ProblemGoalStrategyImpl::create(formalism::Problem problem) { return std::make_shared<ProblemGoalStrategyImpl>(problem); }
 }

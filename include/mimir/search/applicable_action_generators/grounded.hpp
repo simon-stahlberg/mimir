@@ -19,6 +19,7 @@
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_GROUNDED_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/ground_action.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/dense_state.hpp"
@@ -33,167 +34,39 @@ namespace mimir::search
 /// using the `LiftedApplicableActionGenerator` and `AxiomEvaluator` to create an overapproximation
 /// of applicable ground actions and ground actions and storing them in a match tree
 /// as described by Helmert
-class GroundedApplicableActionGenerator : public IApplicableActionGenerator
+class GroundedApplicableActionGeneratorImpl : public IApplicableActionGenerator
 {
 public:
-    struct Statistics
-    {
-        match_tree::Statistics statistics;
-    };
+    using Statistics = applicable_action_generator::grounded::Statistics;
 
-    class IEventHandler
-    {
-    public:
-        virtual ~IEventHandler() = default;
+    using IEventHandler = applicable_action_generator::grounded::IEventHandler;
+    using EventHandler = applicable_action_generator::grounded::EventHandler;
 
-        virtual void on_start_ground_action_instantiation() = 0;
+    using DebugEventHandlerImpl = applicable_action_generator::grounded::DebugEventHandlerImpl;
+    using DebugEventHandler = applicable_action_generator::grounded::DebugEventHandler;
 
-        virtual void on_finish_ground_action_instantiation(std::chrono::milliseconds total_time) = 0;
-
-        virtual void on_start_build_action_match_tree() = 0;
-
-        virtual void on_finish_build_action_match_tree(const match_tree::MatchTree<formalism::GroundActionImpl>& match_tree) = 0;
-
-        virtual void on_finish_search_layer() = 0;
-
-        virtual void on_end_search() = 0;
-
-        virtual const Statistics& get_statistics() const = 0;
-    };
-
-    using EventHandler = std::shared_ptr<IEventHandler>;
-
-    /**
-     * Base class
-     *
-     * Collect statistics and call implementation of derived class.
-     */
-    template<typename Derived_>
-    class EventHandlerBase : public IEventHandler
-    {
-    protected:
-        Statistics m_statistics;
-        bool m_quiet;
-
-    private:
-        EventHandlerBase() = default;
-        friend Derived_;
-
-        /// @brief Helper to cast to Derived.
-        constexpr const auto& self() const { return static_cast<const Derived_&>(*this); }
-        constexpr auto& self() { return static_cast<Derived_&>(*this); }
-
-    public:
-        explicit EventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
-
-        void on_start_ground_action_instantiation() override
-        {
-            if (!m_quiet)
-                self().on_start_ground_action_instantiation_impl();
-        }
-
-        void on_finish_ground_action_instantiation(std::chrono::milliseconds total_time) override
-        {
-            if (!m_quiet)
-                self().on_finish_ground_action_instantiation_impl(total_time);
-        }
-
-        void on_start_build_action_match_tree() override
-        {
-            if (!m_quiet)
-                self().on_start_build_action_match_tree_impl();
-        }
-
-        void on_finish_build_action_match_tree(const match_tree::MatchTree<formalism::GroundActionImpl>& match_tree) override
-        {
-            m_statistics.statistics = match_tree.get_statistics();
-
-            if (!m_quiet)
-                self().on_finish_build_action_match_tree_impl(match_tree);
-        }
-
-        void on_finish_search_layer() override
-        {
-            if (!m_quiet)
-                self().on_finish_search_layer_impl();
-        }
-
-        void on_end_search() override
-        {
-            if (!m_quiet)
-                self().on_end_search_impl();
-        }
-
-        const Statistics& get_statistics() const override { return m_statistics; }
-    };
-
-    class DebugEventHandler : public EventHandlerBase<DebugEventHandler>
-    {
-    private:
-        /* Implement EventHandlerBase interface */
-        friend class EventHandlerBase<DebugEventHandler>;
-
-        void on_start_ground_action_instantiation_impl() const;
-
-        void on_finish_ground_action_instantiation_impl(std::chrono::milliseconds total_time) const;
-
-        void on_start_build_action_match_tree_impl() const;
-
-        void on_finish_build_action_match_tree_impl(const match_tree::MatchTree<formalism::GroundActionImpl>& action_match_tree);
-
-        void on_finish_search_layer_impl() const;
-
-        void on_end_search_impl() const;
-
-    public:
-        explicit DebugEventHandler(bool quiet = true);
-
-        static std::shared_ptr<DebugEventHandler> create(bool quiet = true);
-    };
-
-    class DefaultEventHandler : public EventHandlerBase<DefaultEventHandler>
-    {
-    private:
-        /* Implement EventHandlerBase interface */
-        friend class EventHandlerBase<DefaultEventHandler>;
-
-        void on_start_ground_action_instantiation_impl() const;
-
-        void on_finish_ground_action_instantiation_impl(std::chrono::milliseconds total_time) const;
-
-        void on_start_build_action_match_tree_impl() const;
-
-        void on_finish_build_action_match_tree_impl(const match_tree::MatchTree<formalism::GroundActionImpl>& action_match_tree);
-
-        void on_finish_search_layer_impl() const;
-
-        void on_end_search_impl() const;
-
-    public:
-        explicit DefaultEventHandler(bool quiet = true);
-
-        static std::shared_ptr<DefaultEventHandler> create(bool quiet = true);
-    };
+    using DefaultEventHandlerImpl = applicable_action_generator::grounded::DefaultEventHandlerImpl;
+    using DefaultEventHandler = applicable_action_generator::grounded::DefaultEventHandler;
 
     /// @brief Complete construction
-    GroundedApplicableActionGenerator(formalism::Problem problem,
-                                      std::unique_ptr<match_tree::MatchTree<formalism::GroundActionImpl>>&& match_tree,
-                                      EventHandler event_handler);
+    GroundedApplicableActionGeneratorImpl(formalism::Problem problem,
+                                          std::unique_ptr<match_tree::MatchTree<formalism::GroundActionImpl>>&& match_tree,
+                                          EventHandler event_handler);
 
     /// @brief Simplest construction
-    static std::shared_ptr<GroundedApplicableActionGenerator> create(formalism::Problem problem,
-                                                                     std::unique_ptr<match_tree::MatchTree<formalism::GroundActionImpl>>&& match_tree);
+    static GroundedApplicableActionGenerator create(formalism::Problem problem,
+                                                    std::unique_ptr<match_tree::MatchTree<formalism::GroundActionImpl>>&& match_tree);
 
     /// @brief Complete construction
-    static std::shared_ptr<GroundedApplicableActionGenerator>
+    static GroundedApplicableActionGenerator
     create(formalism::Problem problem, std::unique_ptr<match_tree::MatchTree<formalism::GroundActionImpl>>&& match_tree, EventHandler event_handler);
 
     // Uncopyable
-    GroundedApplicableActionGenerator(const GroundedApplicableActionGenerator& other) = delete;
-    GroundedApplicableActionGenerator& operator=(const GroundedApplicableActionGenerator& other) = delete;
+    GroundedApplicableActionGeneratorImpl(const GroundedApplicableActionGeneratorImpl& other) = delete;
+    GroundedApplicableActionGeneratorImpl& operator=(const GroundedApplicableActionGeneratorImpl& other) = delete;
     // Unmovable
-    GroundedApplicableActionGenerator(GroundedApplicableActionGenerator&& other) = delete;
-    GroundedApplicableActionGenerator& operator=(GroundedApplicableActionGenerator&& other) = delete;
+    GroundedApplicableActionGeneratorImpl(GroundedApplicableActionGeneratorImpl&& other) = delete;
+    GroundedApplicableActionGeneratorImpl& operator=(GroundedApplicableActionGeneratorImpl&& other) = delete;
 
     /// @brief Create a grounded applicable action generator for the given state.
     /// @param state is the state.

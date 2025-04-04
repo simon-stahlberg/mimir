@@ -20,6 +20,8 @@
 
 #include "mimir/common/grouped_vector.hpp"
 #include "mimir/datasets/declarations.hpp"
+#include "mimir/datasets/tuple_graph/internal_tuple_graph.hpp"
+#include "mimir/datasets/tuple_graph/options.hpp"
 #include "mimir/graphs/static_graph.hpp"
 #include "mimir/search/algorithms/iw/novelty_table.hpp"
 #include "mimir/search/algorithms/iw/tuple_index_generators.hpp"
@@ -32,23 +34,6 @@
  * Implementation of TupleGraphs (Lipovetzky and Geffner ECAI2012)
  * Source: https://www-i6.informatik.rwth-aachen.de/~hector.geffner/www.dtic.upf.edu/~hgeffner/width-ecai-2012.pdf
  */
-
-namespace mimir::graphs
-{
-/// @brief `TupleGraphVertex` encapsulates information about a vertex in a tuple graph.
-using TupleGraphVertex = Vertex<search::iw::AtomIndexList, IndexList>;
-using TupleGraphVertexList = std::vector<TupleGraphVertex>;
-
-inline const search::iw::AtomIndexList& get_atom_tuple(const TupleGraphVertex& vertex) { return vertex.get_property<0>(); }
-
-inline const IndexList& get_problem_vertices(const TupleGraphVertex& vertex) { return vertex.get_property<1>(); }
-
-using TupleGraphEdge = Edge<>;
-using TupleGraphEdgeList = std::vector<TupleGraphEdge>;
-
-using StaticTupleGraph = StaticGraph<TupleGraphVertex, TupleGraphEdge>;
-using InternalTupleGraph = StaticBidirectionalGraph<StaticTupleGraph>;
-}
 
 namespace mimir::datasets
 {
@@ -63,19 +48,12 @@ private:
     IndexGroupedVector<const Index> m_problem_v_idxs_grouped_by_distance;
 
 public:
+    using Options = tuple_graph::Options;
+
     TupleGraphImpl(StateSpace state_space,
                    graphs::InternalTupleGraph graph,
                    IndexGroupedVector<const Index> vertices_grouped_by_distance,
                    IndexGroupedVector<const Index> problem_vertices_grouped_by_distance);
-
-    struct Options
-    {
-        size_t width;
-        bool enable_dominance_pruning;
-
-        Options() : width(0), enable_dominance_pruning(true) {}
-        Options(size_t width, bool enable_dominance_pruning) : width(width), enable_dominance_pruning(enable_dominance_pruning) {}
-    };
 
     /// @brief Create the `TupleGraph` for each vertex in the given `StateSpace`.
     /// @param state_space is the `StateSpace`

@@ -36,7 +36,7 @@ using namespace mimir::formalism;
 namespace mimir::search::match_tree
 {
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 struct SplitterQueueEntry
 {
     PlaceholderNode<E> node;
@@ -45,7 +45,7 @@ struct SplitterQueueEntry
     SplitterQueueEntry(PlaceholderNode<E>&& n, SplitScoreAndUselessSplits r) : node(std::move(n)), refinement_data(std::move(r)) {}
 };
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 struct SplitterQueueEntryComparator
 {
 private:
@@ -60,16 +60,16 @@ public:
     }
 };
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 using SplitterQueue = std::priority_queue<SplitterQueueEntry<E>, std::vector<SplitterQueueEntry<E>>, SplitterQueueEntryComparator<E>>;
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 DynamicNodeSplitter<E>::DynamicNodeSplitter(const Repositories& pddl_repositories, const Options& options, std::span<const E*> elements) :
     NodeSplitterBase<DynamicNodeSplitter<E>, E>(pddl_repositories, options)
 {
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 InverseNode<E> DynamicNodeSplitter<E>::fit_impl(std::span<const E*> elements, Statistics& ref_statistics)
 {
     auto queue = SplitterQueue<E>(SplitterQueueEntryComparator<E>(this->m_options.optimization_direction));

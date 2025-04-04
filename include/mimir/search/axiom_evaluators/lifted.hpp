@@ -27,203 +27,34 @@
 namespace mimir::search
 {
 
-class LiftedAxiomEvaluator : public IAxiomEvaluator
+class LiftedAxiomEvaluatorImpl : public IAxiomEvaluator
 {
 public:
-    class Statistics
-    {
-    private:
-        uint64_t m_num_ground_axiom_cache_hits;
-        uint64_t m_num_ground_axiom_cache_misses;
+    using Statistics = axiom_evaluator::lifted::Statistics;
 
-        std::vector<uint64_t> m_num_ground_axiom_cache_hits_per_search_layer;
-        std::vector<uint64_t> m_num_ground_axiom_cache_misses_per_search_layer;
+    using IEventHandler = axiom_evaluator::lifted::IEventHandler;
+    using EventHandler = axiom_evaluator::lifted::EventHandler;
 
-    public:
-        Statistics() :
-            m_num_ground_axiom_cache_hits(0),
-            m_num_ground_axiom_cache_misses(0),
-            m_num_ground_axiom_cache_hits_per_search_layer(),
-            m_num_ground_axiom_cache_misses_per_search_layer()
-        {
-        }
+    using DebugEventHandlerImpl = axiom_evaluator::lifted::DebugEventHandlerImpl;
+    using DebugEventHandler = axiom_evaluator::lifted::DebugEventHandler;
 
-        /// @brief Store information for the layer
-        void on_finish_search_layer()
-        {
-            m_num_ground_axiom_cache_hits_per_search_layer.push_back(m_num_ground_axiom_cache_hits);
-            m_num_ground_axiom_cache_misses_per_search_layer.push_back(m_num_ground_axiom_cache_misses);
-        }
+    using DefaultEventHandlerImpl = axiom_evaluator::lifted::DefaultEventHandlerImpl;
+    using DefaultEventHandler = axiom_evaluator::lifted::DefaultEventHandler;
 
-        void increment_num_ground_axiom_cache_hits() { ++m_num_ground_axiom_cache_hits; }
-        void increment_num_ground_axiom_cache_misses() { ++m_num_ground_axiom_cache_misses; }
+    LiftedAxiomEvaluatorImpl(formalism::Problem problem);
 
-        uint64_t get_num_ground_axiom_cache_hits() const { return m_num_ground_axiom_cache_hits; }
-        uint64_t get_num_ground_axiom_cache_misses() const { return m_num_ground_axiom_cache_misses; }
+    LiftedAxiomEvaluatorImpl(formalism::Problem problem, EventHandler event_handler);
 
-        const std::vector<uint64_t>& get_num_ground_axiom_cache_hits_per_search_layer() const { return m_num_ground_axiom_cache_hits_per_search_layer; }
-        const std::vector<uint64_t>& get_num_ground_axiom_cache_misses_per_search_layer() const { return m_num_ground_axiom_cache_misses_per_search_layer; }
-    };
+    static LiftedAxiomEvaluator create(formalism::Problem problem);
 
-    class IEventHandler
-    {
-    public:
-        virtual ~IEventHandler() = default;
-
-        virtual void on_start_generating_applicable_axioms() = 0;
-
-        virtual void on_ground_axiom(formalism::GroundAxiom axiom) = 0;
-
-        virtual void on_ground_axiom_cache_hit(formalism::GroundAxiom axiom) = 0;
-
-        virtual void on_ground_axiom_cache_miss(formalism::GroundAxiom axiom) = 0;
-
-        virtual void on_end_generating_applicable_axioms() = 0;
-
-        virtual void on_end_search() = 0;
-
-        virtual void on_finish_search_layer() = 0;
-
-        virtual const Statistics& get_statistics() const = 0;
-    };
-
-    using EventHandler = std::shared_ptr<IEventHandler>;
-
-    template<typename Derived_>
-    class EventHandlerBase : public IEventHandler
-    {
-    protected:
-        Statistics m_statistics;
-        bool m_quiet;
-
-    private:
-        EventHandlerBase() = default;
-        friend Derived_;
-
-        /// @brief Helper to cast to Derived_.
-        constexpr const auto& self() const { return static_cast<const Derived_&>(*this); }
-        constexpr auto& self() { return static_cast<Derived_&>(*this); }
-
-    public:
-        explicit EventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
-
-        void on_start_generating_applicable_axioms() override
-        {
-            if (!m_quiet)
-                self().on_start_generating_applicable_axioms_impl();
-        }
-
-        void on_ground_axiom(formalism::GroundAxiom axiom) override
-        {
-            if (!m_quiet)
-                self().on_ground_axiom_impl(axiom);
-        }
-
-        void on_ground_axiom_cache_hit(formalism::GroundAxiom axiom) override
-        {
-            m_statistics.increment_num_ground_axiom_cache_hits();
-
-            if (!m_quiet)
-                self().on_ground_axiom_cache_hit_impl(axiom);
-        }
-
-        void on_ground_axiom_cache_miss(formalism::GroundAxiom axiom) override
-        {
-            m_statistics.increment_num_ground_axiom_cache_misses();
-
-            if (!m_quiet)
-                self().on_ground_axiom_cache_miss_impl(axiom);
-        }
-
-        void on_end_generating_applicable_axioms() override
-        {
-            if (!m_quiet)
-                self().on_end_generating_applicable_axioms_impl();
-        }
-
-        void on_finish_search_layer() override
-        {
-            m_statistics.on_finish_search_layer();
-
-            if (!m_quiet)
-                self().on_finish_search_layer_impl();
-        }
-
-        void on_end_search() override
-        {
-            if (!m_quiet)
-                self().on_end_search_impl();
-        }
-
-        const Statistics& get_statistics() const override { return m_statistics; }
-    };
-
-    class DebugEventHandler : public EventHandlerBase<DebugEventHandler>
-    {
-    private:
-        /* Implement EventHandlerBase interface */
-        friend class EventHandlerBase<DebugEventHandler>;
-
-        void on_start_generating_applicable_axioms_impl() const;
-
-        void on_ground_axiom_impl(formalism::GroundAxiom axiom) const;
-
-        void on_ground_axiom_cache_hit_impl(formalism::GroundAxiom axiom) const;
-
-        void on_ground_axiom_cache_miss_impl(formalism::GroundAxiom axiom) const;
-
-        void on_end_generating_applicable_axioms_impl() const;
-
-        void on_finish_search_layer_impl() const;
-
-        void on_end_search_impl() const;
-
-    public:
-        explicit DebugEventHandler(bool quiet = true);
-
-        static std::shared_ptr<DebugEventHandler> create(bool quiet = true);
-    };
-
-    class DefaultEventHandler : public EventHandlerBase<DefaultEventHandler>
-    {
-    private:
-        /* Implement EventHandlerBase interface */
-        friend class EventHandlerBase<DefaultEventHandler>;
-
-        void on_start_generating_applicable_axioms_impl() const;
-
-        void on_ground_axiom_impl(formalism::GroundAxiom axiom) const;
-
-        void on_ground_axiom_cache_hit_impl(formalism::GroundAxiom axiom) const;
-
-        void on_ground_axiom_cache_miss_impl(formalism::GroundAxiom axiom) const;
-
-        void on_end_generating_applicable_axioms_impl() const;
-
-        void on_finish_search_layer_impl() const;
-
-        void on_end_search_impl() const;
-
-    public:
-        explicit DefaultEventHandler(bool quiet = true);
-
-        static std::shared_ptr<DefaultEventHandler> create(bool quiet = true);
-    };
-
-    LiftedAxiomEvaluator(formalism::Problem problem);
-
-    LiftedAxiomEvaluator(formalism::Problem problem, EventHandler event_handler);
-
-    static std::shared_ptr<LiftedAxiomEvaluator> create(formalism::Problem problem);
-
-    static std::shared_ptr<LiftedAxiomEvaluator> create(formalism::Problem problem, EventHandler event_handler);
+    static LiftedAxiomEvaluator create(formalism::Problem problem, EventHandler event_handler);
 
     // Uncopyable
-    LiftedAxiomEvaluator(const LiftedAxiomEvaluator& other) = delete;
-    LiftedAxiomEvaluator& operator=(const LiftedAxiomEvaluator& other) = delete;
+    LiftedAxiomEvaluatorImpl(const LiftedAxiomEvaluatorImpl& other) = delete;
+    LiftedAxiomEvaluatorImpl& operator=(const LiftedAxiomEvaluatorImpl& other) = delete;
     // Unmovable
-    LiftedAxiomEvaluator(LiftedAxiomEvaluator&& other) = delete;
-    LiftedAxiomEvaluator& operator=(LiftedAxiomEvaluator&& other) = delete;
+    LiftedAxiomEvaluatorImpl(LiftedAxiomEvaluatorImpl&& other) = delete;
+    LiftedAxiomEvaluatorImpl& operator=(LiftedAxiomEvaluatorImpl&& other) = delete;
 
     void generate_and_apply_axioms(DenseState& dense_state) override;
 
@@ -251,20 +82,6 @@ private:
     formalism::AssignmentSet<formalism::DerivedTag> m_derived_assignment_set;
     formalism::NumericAssignmentSet<formalism::FluentTag> m_numeric_assignment_set;
 };
-
-inline std::ostream& operator<<(std::ostream& os, const LiftedAxiomEvaluator::Statistics& statistics)
-{
-    os << "[LiftedAxiomEvaluator] Number of grounded axiom cache hits: " << statistics.get_num_ground_axiom_cache_hits() << std::endl
-       << "[LiftedAxiomEvaluator] Number of grounded axiom cache hits until last f-layer: "
-       << (statistics.get_num_ground_axiom_cache_hits_per_search_layer().empty() ? 0 : statistics.get_num_ground_axiom_cache_hits_per_search_layer().back())
-       << std::endl
-       << "[LiftedAxiomEvaluator] Number of grounded axiom cache misses: " << statistics.get_num_ground_axiom_cache_misses() << std::endl
-       << "[LiftedAxiomEvaluator] Number of grounded axiom cache misses until last f-layer: "
-       << (statistics.get_num_ground_axiom_cache_misses_per_search_layer().empty() ? 0 :
-                                                                                     statistics.get_num_ground_axiom_cache_misses_per_search_layer().back());
-
-    return os;
-}
 
 }  // namespace mimir
 

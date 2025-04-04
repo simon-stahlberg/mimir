@@ -21,8 +21,10 @@
 #include "mimir/formalism/translator/delete_relax.hpp"
 #include "mimir/search/applicability.hpp"
 #include "mimir/search/applicable_action_generators/grounded.hpp"
+#include "mimir/search/applicable_action_generators/grounded/event_handlers/default.hpp"
 #include "mimir/search/applicable_action_generators/lifted.hpp"
 #include "mimir/search/axiom_evaluators/grounded.hpp"
+#include "mimir/search/axiom_evaluators/grounded/event_handlers/default.hpp"
 #include "mimir/search/axiom_evaluators/lifted.hpp"
 #include "mimir/search/dense_state.hpp"
 #include "mimir/search/match_tree/match_tree.hpp"
@@ -47,8 +49,8 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem) 
     auto delete_relax_builder = ProblemBuilder(delete_free_domain);
     m_delete_free_problem = m_delete_relax_transformer.translate_level_0(m_problem, delete_relax_builder);
 
-    auto delete_free_applicable_action_generator = LiftedApplicableActionGenerator(m_delete_free_problem);
-    auto delete_free_axiom_evalator = std::make_shared<LiftedAxiomEvaluator>(m_delete_free_problem);
+    auto delete_free_applicable_action_generator = LiftedApplicableActionGeneratorImpl(m_delete_free_problem);
+    auto delete_free_axiom_evalator = std::make_shared<LiftedAxiomEvaluatorImpl>(m_delete_free_problem);
     auto delete_free_state_repository = StateRepositoryImpl(std::static_pointer_cast<IAxiomEvaluator>(delete_free_axiom_evalator));
 
     auto unrelaxed_objects_by_name = std::unordered_map<std::string, Object> {};
@@ -119,12 +121,12 @@ static ObjectList translate_from_delete_free_to_unrelaxed_problem(const ObjectLi
     return result;
 }
 
-std::shared_ptr<GroundedAxiomEvaluator>
-DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator(const match_tree::Options& options, GroundedAxiomEvaluator::EventHandler event_handler) const
+GroundedAxiomEvaluator DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator(const match_tree::Options& options,
+                                                                                       GroundedAxiomEvaluatorImpl::EventHandler event_handler) const
 {
     if (!event_handler)
     {
-        event_handler = GroundedAxiomEvaluator::DefaultEventHandler::create();
+        event_handler = GroundedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create();
     }
 
     event_handler->on_start_ground_axiom_instantiation();
@@ -193,16 +195,16 @@ DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator(const match_tree
     total_time = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
     event_handler->on_finish_build_axiom_match_trees(total_time);
 
-    return GroundedAxiomEvaluator::create(m_problem, std::move(match_tree_partitioning), std::move(event_handler));
+    return GroundedAxiomEvaluatorImpl::create(m_problem, std::move(match_tree_partitioning), std::move(event_handler));
 }
 
-std::shared_ptr<GroundedApplicableActionGenerator>
+GroundedApplicableActionGenerator
 DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator(const match_tree::Options& options,
-                                                                            GroundedApplicableActionGenerator::EventHandler event_handler) const
+                                                                            GroundedApplicableActionGeneratorImpl::EventHandler event_handler) const
 {
     if (!event_handler)
     {
-        event_handler = GroundedApplicableActionGenerator::DefaultEventHandler::create();
+        event_handler = GroundedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create();
     }
 
     event_handler->on_start_ground_action_instantiation();
@@ -241,7 +243,7 @@ DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator(cons
 
     event_handler->on_finish_build_action_match_tree(*match_tree);
 
-    return GroundedApplicableActionGenerator::create(m_problem, std::move(match_tree), std::move(event_handler));
+    return GroundedApplicableActionGeneratorImpl::create(m_problem, std::move(match_tree), std::move(event_handler));
 }
 
 const Problem& DeleteRelaxedProblemExplorator::get_problem() const { return m_problem; }

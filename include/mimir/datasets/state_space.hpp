@@ -20,10 +20,10 @@
 
 #include "mimir/common/types.hpp"
 #include "mimir/datasets/declarations.hpp"
-#include "mimir/datasets/problem_graph.hpp"
+#include "mimir/datasets/state_space/options.hpp"
+#include "mimir/datasets/state_space/problem_graph.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/search_context.hpp"
 
 namespace mimir::datasets
 {
@@ -48,29 +48,9 @@ private:
     IndexSet m_unsolvable_vertices;
 
 public:
+    using Options = state_space::Options;
+
     StateSpaceImpl(search::SearchContext context, graphs::ProblemGraph graph, Index initial_vertex, IndexSet goal_vertices, IndexSet unsolvable_vertices);
-
-    /**
-     * Options
-     */
-
-    struct Options
-    {
-        bool sort_ascending_by_num_states;
-        bool symmetry_pruning;
-        bool remove_if_unsolvable;
-        uint32_t max_num_states;
-        uint32_t timeout_ms;
-
-        Options() :
-            sort_ascending_by_num_states(true),
-            symmetry_pruning(false),
-            remove_if_unsolvable(true),
-            max_num_states(std::numeric_limits<uint32_t>::max()),
-            timeout_ms(std::numeric_limits<uint32_t>::max())
-        {
-        }
-    };
 
     /**
      * Constructors

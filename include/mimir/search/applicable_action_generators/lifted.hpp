@@ -21,227 +21,48 @@
 #include "mimir/formalism/assignment_set.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
+#include "mimir/search/applicable_action_generators/lifted/event_handlers/statistics.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/satisficing_binding_generators/action.hpp"
 
 namespace mimir::search
 {
 
-/// @brief `LiftedApplicableActionGenerator` implements lifted applicable action generation
+/// @brief `LiftedApplicableActionGeneratorImpl` implements lifted applicable action generation
 /// using maximum clique enumeration by Stahlberg (ECAI2023).
 /// Source: https://mrlab.ai/papers/stahlberg-ecai2023.pdf
-class LiftedApplicableActionGenerator : public IApplicableActionGenerator
+class LiftedApplicableActionGeneratorImpl : public IApplicableActionGenerator
 {
 public:
-    class Statistics
-    {
-    private:
-        uint64_t m_num_ground_action_cache_hits;
-        uint64_t m_num_ground_action_cache_misses;
+    using Statistics = applicable_action_generator::lifted::Statistics;
 
-        std::vector<uint64_t> m_num_ground_action_cache_hits_per_search_layer;
-        std::vector<uint64_t> m_num_ground_action_cache_misses_per_search_layer;
-        std::vector<uint64_t> m_num_inapplicable_grounded_actions_per_search_layer;
+    using IEventHandler = applicable_action_generator::lifted::IEventHandler;
+    using EventHandler = applicable_action_generator::lifted::EventHandler;
 
-    public:
-        Statistics() :
-            m_num_ground_action_cache_hits(0),
-            m_num_ground_action_cache_misses(0),
-            m_num_ground_action_cache_hits_per_search_layer(),
-            m_num_ground_action_cache_misses_per_search_layer(),
-            m_num_inapplicable_grounded_actions_per_search_layer()
-        {
-        }
+    using DebugEventHandlerImpl = applicable_action_generator::lifted::DebugEventHandlerImpl;
+    using DebugEventHandler = applicable_action_generator::lifted::DebugEventHandler;
 
-        /// @brief Store information for the layer
-        void on_finish_search_layer()
-        {
-            m_num_ground_action_cache_hits_per_search_layer.push_back(m_num_ground_action_cache_hits);
-            m_num_ground_action_cache_misses_per_search_layer.push_back(m_num_ground_action_cache_misses);
-        }
-
-        void increment_num_ground_action_cache_hits() { ++m_num_ground_action_cache_hits; }
-        void increment_num_ground_action_cache_misses() { ++m_num_ground_action_cache_misses; }
-
-        uint64_t get_num_ground_action_cache_hits() const { return m_num_ground_action_cache_hits; }
-        uint64_t get_num_ground_action_cache_misses() const { return m_num_ground_action_cache_misses; }
-
-        const std::vector<uint64_t>& get_num_ground_action_cache_hits_per_search_layer() const { return m_num_ground_action_cache_hits_per_search_layer; }
-        const std::vector<uint64_t>& get_num_ground_action_cache_misses_per_search_layer() const { return m_num_ground_action_cache_misses_per_search_layer; }
-        const std::vector<uint64_t>& get_num_inapplicable_grounded_actions_per_search_layer() const
-        {
-            return m_num_inapplicable_grounded_actions_per_search_layer;
-        }
-    };
-
-    class IEventHandler
-    {
-    public:
-        virtual ~IEventHandler() = default;
-
-        virtual void on_start_generating_applicable_actions() = 0;
-
-        virtual void on_ground_action(formalism::GroundAction action) = 0;
-
-        virtual void on_ground_action_cache_hit(formalism::GroundAction action) = 0;
-
-        virtual void on_ground_action_cache_miss(formalism::GroundAction action) = 0;
-
-        virtual void on_end_generating_applicable_actions() = 0;
-
-        virtual void on_end_search() = 0;
-
-        virtual void on_finish_search_layer() = 0;
-
-        virtual const Statistics& get_statistics() const = 0;
-    };
-
-    using EventHandler = std::shared_ptr<IEventHandler>;
-
-    /**
-     * Base class
-     *
-     * Collect statistics and call implementation of derived class.
-     */
-    template<typename Derived_>
-    class EventHandlerBase : public IEventHandler
-    {
-    protected:
-        Statistics m_statistics;
-        bool m_quiet;
-
-    private:
-        EventHandlerBase() = default;
-        friend Derived_;
-
-        /// @brief Helper to cast to Derived_.
-        constexpr const auto& self() const { return static_cast<const Derived_&>(*this); }
-        constexpr auto& self() { return static_cast<Derived_&>(*this); }
-
-    public:
-        explicit EventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
-
-        void on_start_generating_applicable_actions() override
-        {
-            if (!m_quiet)
-                self().on_start_generating_applicable_actions_impl();
-        }
-
-        void on_ground_action(formalism::GroundAction action) override
-        {
-            if (!m_quiet)
-                self().on_ground_action_impl(action);
-        }
-
-        void on_ground_action_cache_hit(formalism::GroundAction action) override
-        {
-            m_statistics.increment_num_ground_action_cache_hits();
-
-            if (!m_quiet)
-                self().on_ground_action_cache_hit_impl(action);
-        }
-
-        void on_ground_action_cache_miss(formalism::GroundAction action) override
-        {
-            m_statistics.increment_num_ground_action_cache_misses();
-
-            if (!m_quiet)
-                self().on_ground_action_cache_miss_impl(action);
-        }
-
-        void on_end_generating_applicable_actions() override
-        {
-            if (!m_quiet)
-                self().on_end_generating_applicable_actions_impl();
-        }
-
-        void on_finish_search_layer() override
-        {
-            m_statistics.on_finish_search_layer();
-
-            if (!m_quiet)
-                self().on_finish_search_layer_impl();
-        }
-
-        void on_end_search() override
-        {
-            if (!m_quiet)
-                self().on_end_search_impl();
-        }
-
-        const Statistics& get_statistics() const override { return m_statistics; }
-    };
-
-    class DebugEventHandler : public EventHandlerBase<DebugEventHandler>
-    {
-    private:
-        /* Implement EventHandlerBase interface */
-        friend class EventHandlerBase<DebugEventHandler>;
-
-        void on_start_generating_applicable_actions_impl() const;
-
-        void on_ground_action_impl(formalism::GroundAction action) const;
-
-        void on_ground_action_cache_hit_impl(formalism::GroundAction action) const;
-
-        void on_ground_action_cache_miss_impl(formalism::GroundAction action) const;
-
-        void on_end_generating_applicable_actions_impl() const;
-
-        void on_finish_search_layer_impl() const;
-
-        void on_end_search_impl() const;
-
-    public:
-        explicit DebugEventHandler(bool quiet = true);
-
-        static std::shared_ptr<DebugEventHandler> create(bool quiet = true);
-    };
-
-    class DefaultEventHandler : public EventHandlerBase<DefaultEventHandler>
-    {
-    private:
-        /* Implement EventHandlerBase interface */
-        friend class EventHandlerBase<DefaultEventHandler>;
-
-        void on_start_generating_applicable_actions_impl() const;
-
-        void on_ground_action_impl(formalism::GroundAction action) const;
-
-        void on_ground_action_cache_hit_impl(formalism::GroundAction action) const;
-
-        void on_ground_action_cache_miss_impl(formalism::GroundAction action) const;
-
-        void on_end_generating_applicable_actions_impl() const;
-
-        void on_finish_search_layer_impl() const;
-
-        void on_end_search_impl() const;
-
-    public:
-        explicit DefaultEventHandler(bool quiet = true);
-
-        static std::shared_ptr<DefaultEventHandler> create(bool quiet = true);
-    };
+    using DefaultEventHandlerImpl = applicable_action_generator::lifted::DefaultEventHandlerImpl;
+    using DefaultEventHandler = applicable_action_generator::lifted::DefaultEventHandler;
 
     /// @brief Simplest construction
-    LiftedApplicableActionGenerator(formalism::Problem problem);
+    LiftedApplicableActionGeneratorImpl(formalism::Problem problem);
 
     /// @brief Complete construction
-    LiftedApplicableActionGenerator(formalism::Problem problem, EventHandler event_handler);
+    LiftedApplicableActionGeneratorImpl(formalism::Problem problem, EventHandler event_handler);
 
     /// @brief Simplest construction
-    static std::shared_ptr<LiftedApplicableActionGenerator> create(formalism::Problem problem);
+    static std::shared_ptr<LiftedApplicableActionGeneratorImpl> create(formalism::Problem problem);
 
     /// @brief Complete construction
-    static std::shared_ptr<LiftedApplicableActionGenerator> create(formalism::Problem problem, EventHandler event_handler);
+    static std::shared_ptr<LiftedApplicableActionGeneratorImpl> create(formalism::Problem problem, EventHandler event_handler);
 
     // Uncopyable
-    LiftedApplicableActionGenerator(const LiftedApplicableActionGenerator& other) = delete;
-    LiftedApplicableActionGenerator& operator=(const LiftedApplicableActionGenerator& other) = delete;
+    LiftedApplicableActionGeneratorImpl(const LiftedApplicableActionGeneratorImpl& other) = delete;
+    LiftedApplicableActionGeneratorImpl& operator=(const LiftedApplicableActionGeneratorImpl& other) = delete;
     // Unmovable
-    LiftedApplicableActionGenerator(LiftedApplicableActionGenerator&& other) = delete;
-    LiftedApplicableActionGenerator& operator=(LiftedApplicableActionGenerator&& other) = delete;
+    LiftedApplicableActionGeneratorImpl(LiftedApplicableActionGeneratorImpl&& other) = delete;
+    LiftedApplicableActionGeneratorImpl& operator=(LiftedApplicableActionGeneratorImpl&& other) = delete;
 
     mimir::generator<formalism::GroundAction> create_applicable_action_generator(State state) override;
     mimir::generator<formalism::GroundAction> create_applicable_action_generator(const DenseState& dense_state) override;
@@ -270,29 +91,6 @@ private:
     formalism::AssignmentSet<formalism::DerivedTag> m_derived_assignment_set;
     formalism::NumericAssignmentSet<formalism::FluentTag> m_numeric_assignment_set;
 };
-
-/**
- * Pretty printing
- */
-
-inline std::ostream& operator<<(std::ostream& os, const LiftedApplicableActionGenerator::Statistics& statistics)
-{
-    os << "[LiftedApplicableActionGenerator] Number of grounded action cache hits: " << statistics.get_num_ground_action_cache_hits() << std::endl
-       << "[LiftedApplicableActionGenerator] Number of grounded action cache hits until last f-layer: "
-       << (statistics.get_num_ground_action_cache_hits_per_search_layer().empty() ? 0 : statistics.get_num_ground_action_cache_hits_per_search_layer().back())
-       << std::endl
-       << "[LiftedApplicableActionGenerator] Number of grounded action cache misses: " << statistics.get_num_ground_action_cache_misses() << std::endl
-       << "[LiftedApplicableActionGenerator] Number of grounded action cache misses until last f-layer: "
-       << (statistics.get_num_ground_action_cache_misses_per_search_layer().empty() ? 0 :
-                                                                                      statistics.get_num_ground_action_cache_misses_per_search_layer().back())
-       << std::endl
-       << "[LiftedApplicableActionGenerator] Number of generated inapplicable grounded actions until last f-layer: "
-       << (statistics.get_num_inapplicable_grounded_actions_per_search_layer().empty() ?
-               0 :
-               statistics.get_num_inapplicable_grounded_actions_per_search_layer().back());
-
-    return os;
-}
 
 }  // namespace mimir
 

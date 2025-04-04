@@ -34,20 +34,24 @@ public:
     virtual bool test_prune_successor_state(State state, State succ_state, bool is_new_succ) = 0;
 };
 
-/// @brief `NoPruningStrategy` never prunes a newly generated state.
-class NoPruningStrategy : public IPruningStrategy
+/// @brief `NoPruningStrategyImpl` never prunes a newly generated state.
+class NoPruningStrategyImpl : public IPruningStrategy
 {
 public:
     bool test_prune_initial_state(State state) override;
     bool test_prune_successor_state(State state, State succ_state, bool is_new_succ) override;
+
+    static NoPruningStrategy create();
 };
 
-/// @brief `DuplicatePruningStrategy` prunes a newly generated state if it was already generated before.
-class DuplicatePruningStrategy : public IPruningStrategy
+/// @brief `DuplicatePruningStrategyImpl` prunes a newly generated state if it was already generated before.
+class DuplicatePruningStrategyImpl : public IPruningStrategy
 {
 public:
     bool test_prune_initial_state(State state) override;
     bool test_prune_successor_state(State state, State succ_state, bool is_new_succ) override;
+
+    static DuplicatePruningStrategy create();
 };
 }
 

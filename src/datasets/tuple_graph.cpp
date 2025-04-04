@@ -19,6 +19,7 @@
 
 #include "mimir/datasets/state_space.hpp"
 #include "mimir/formalism/problem.hpp"
+#include "mimir/search/search_context.hpp"
 #include "mimir/search/state.hpp"
 #include "tuple_graph_factory.hpp"
 

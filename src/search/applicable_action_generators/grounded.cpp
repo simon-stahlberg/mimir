@@ -18,7 +18,10 @@
 #include "mimir/search/applicable_action_generators/grounded.hpp"
 
 #include "mimir/search/applicability.hpp"
+#include "mimir/search/applicable_action_generators/grounded/event_handlers/default.hpp"
+#include "mimir/search/applicable_action_generators/grounded/event_handlers/interface.hpp"
 #include "mimir/search/applicable_action_generators/lifted.hpp"
+#include "mimir/search/match_tree/match_tree.hpp"
 #include "mimir/search/state.hpp"
 #include "mimir/search/state_repository.hpp"
 
@@ -28,88 +31,12 @@ namespace mimir::search
 {
 
 /**
- * DebugEventHandler
- */
-
-void GroundedApplicableActionGenerator::DebugEventHandler::on_start_ground_action_instantiation_impl() const
-{
-    std::cout << "[GroundedApplicableActionGenerator] Started instantiating ground actions." << std::endl;
-}
-
-void GroundedApplicableActionGenerator::DebugEventHandler::on_finish_ground_action_instantiation_impl(std::chrono::milliseconds total_time) const
-{
-    std::cout << "[GroundedApplicableActionGenerator] Total time for ground action instantiation: " << total_time.count() << " ms" << std::endl;
-}
-
-void GroundedApplicableActionGenerator::DebugEventHandler::on_start_build_action_match_tree_impl() const
-{
-    std::cout << "[GroundedApplicableActionGenerator] Started building action match tree." << std::endl;
-}
-
-void GroundedApplicableActionGenerator::DebugEventHandler::on_finish_build_action_match_tree_impl(const match_tree::MatchTree<GroundActionImpl>& match_tree)
-{
-    std::cout << match_tree.get_statistics() << "\n"
-              << "[GroundedApplicableActionGenerator] Finished building action match tree" << std::endl;
-}
-
-void GroundedApplicableActionGenerator::DebugEventHandler::on_finish_search_layer_impl() const
-{  //
-}
-
-void GroundedApplicableActionGenerator::DebugEventHandler::on_end_search_impl() const {}
-
-GroundedApplicableActionGenerator::DebugEventHandler::DebugEventHandler(bool quiet) : EventHandlerBase<DebugEventHandler>(quiet) {}
-
-std::shared_ptr<GroundedApplicableActionGenerator::DebugEventHandler> GroundedApplicableActionGenerator::DebugEventHandler::create(bool quiet)
-{
-    return std::make_shared<DebugEventHandler>(quiet);
-}
-
-/**
- * DefaultEventHandler
- */
-
-void GroundedApplicableActionGenerator::DefaultEventHandler::on_start_ground_action_instantiation_impl() const
-{
-    std::cout << "[GroundedApplicableActionGenerator] Started instantiating ground actions." << std::endl;
-}
-
-void GroundedApplicableActionGenerator::DefaultEventHandler::on_finish_ground_action_instantiation_impl(std::chrono::milliseconds total_time) const
-{
-    std::cout << "[GroundedApplicableActionGenerator] Total time for ground action instantiation: " << total_time.count() << " ms" << std::endl;
-}
-
-void GroundedApplicableActionGenerator::DefaultEventHandler::on_start_build_action_match_tree_impl() const
-{
-    std::cout << "[GroundedApplicableActionGenerator] Started building action match tree." << std::endl;
-}
-
-void GroundedApplicableActionGenerator::DefaultEventHandler::on_finish_build_action_match_tree_impl(const match_tree::MatchTree<GroundActionImpl>& match_tree)
-{
-    std::cout << match_tree.get_statistics() << "\n"
-              << "[GroundedApplicableActionGenerator] Finished building action match tree" << std::endl;
-}
-
-void GroundedApplicableActionGenerator::DefaultEventHandler::on_finish_search_layer_impl() const
-{  //
-}
-
-void GroundedApplicableActionGenerator::DefaultEventHandler::on_end_search_impl() const {}
-
-GroundedApplicableActionGenerator::DefaultEventHandler::DefaultEventHandler(bool quiet) : EventHandlerBase<DefaultEventHandler>(quiet) {}
-
-std::shared_ptr<GroundedApplicableActionGenerator::DefaultEventHandler> GroundedApplicableActionGenerator::DefaultEventHandler::create(bool quiet)
-{
-    return std::make_shared<DefaultEventHandler>(quiet);
-}
-
-/**
  * GroundedApplicableActionGenerator
  */
 
-GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem problem,
-                                                                     std::unique_ptr<match_tree::MatchTree<GroundActionImpl>>&& match_tree,
-                                                                     EventHandler event_handler) :
+GroundedApplicableActionGeneratorImpl::GroundedApplicableActionGeneratorImpl(Problem problem,
+                                                                             std::unique_ptr<match_tree::MatchTree<GroundActionImpl>>&& match_tree,
+                                                                             EventHandler event_handler) :
     m_problem(std::move(problem)),
     m_match_tree(std::move(match_tree)),
     m_event_handler(std::move(event_handler)),
@@ -117,27 +44,29 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem pro
 {
 }
 
-std::shared_ptr<GroundedApplicableActionGenerator>
-GroundedApplicableActionGenerator::create(Problem problem, std::unique_ptr<match_tree::MatchTree<GroundActionImpl>>&& match_tree)
+std::shared_ptr<GroundedApplicableActionGeneratorImpl>
+GroundedApplicableActionGeneratorImpl::create(Problem problem, std::unique_ptr<match_tree::MatchTree<GroundActionImpl>>&& match_tree)
 {
-    return create(problem, std::move(match_tree), std::make_shared<DefaultEventHandler>());
+    return create(problem, std::move(match_tree), DefaultEventHandlerImpl::create());
 }
 
-std::shared_ptr<GroundedApplicableActionGenerator>
-GroundedApplicableActionGenerator::create(Problem problem, std::unique_ptr<match_tree::MatchTree<GroundActionImpl>>&& match_tree, EventHandler event_handler)
+std::shared_ptr<GroundedApplicableActionGeneratorImpl>
+GroundedApplicableActionGeneratorImpl::create(Problem problem,
+                                              std::unique_ptr<match_tree::MatchTree<GroundActionImpl>>&& match_tree,
+                                              EventHandler event_handler)
 {
-    return std::shared_ptr<GroundedApplicableActionGenerator>(
-        new GroundedApplicableActionGenerator(std::move(problem), std::move(match_tree), std::move(event_handler)));
+    return std::shared_ptr<GroundedApplicableActionGeneratorImpl>(
+        new GroundedApplicableActionGeneratorImpl(std::move(problem), std::move(match_tree), std::move(event_handler)));
 }
 
-mimir::generator<GroundAction> GroundedApplicableActionGenerator::create_applicable_action_generator(State state)
+mimir::generator<GroundAction> GroundedApplicableActionGeneratorImpl::create_applicable_action_generator(State state)
 {
     DenseState::translate(state, m_dense_state);
 
     return create_applicable_action_generator(m_dense_state);
 }
 
-mimir::generator<GroundAction> GroundedApplicableActionGenerator::create_applicable_action_generator(const DenseState& dense_state)
+mimir::generator<GroundAction> GroundedApplicableActionGeneratorImpl::create_applicable_action_generator(const DenseState& dense_state)
 {
     auto ground_actions = GroundActionList {};
     m_match_tree->generate_applicable_elements_iteratively(dense_state, *m_problem, ground_actions);
@@ -149,10 +78,10 @@ mimir::generator<GroundAction> GroundedApplicableActionGenerator::create_applica
     }
 }
 
-const Problem& GroundedApplicableActionGenerator::get_problem() const { return m_problem; }
+const Problem& GroundedApplicableActionGeneratorImpl::get_problem() const { return m_problem; }
 
-void GroundedApplicableActionGenerator::on_finish_search_layer() { m_event_handler->on_finish_search_layer(); }
+void GroundedApplicableActionGeneratorImpl::on_finish_search_layer() { m_event_handler->on_finish_search_layer(); }
 
-void GroundedApplicableActionGenerator::on_end_search() { m_event_handler->on_end_search(); }
+void GroundedApplicableActionGeneratorImpl::on_end_search() { m_event_handler->on_end_search(); }
 
 }

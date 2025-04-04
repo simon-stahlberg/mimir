@@ -27,14 +27,14 @@ using namespace mimir::formalism;
 
 namespace mimir::search::match_tree
 {
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 ElementGeneratorNode_Perfect<E>::ElementGeneratorNode_Perfect(std::span<const E*> elements) :
     ElementGeneratorNodeBase<ElementGeneratorNode_Perfect<E>, E>(elements)
 {
     // m_elements may be empty, e.g., if there are no ground axioms.
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void ElementGeneratorNode_Perfect<E>::generate_applicable_actions_impl(const DenseState& state,
                                                                        const ProblemImpl& problem,
                                                                        std::vector<const E*>& ref_applicable_elements) const
@@ -68,7 +68,7 @@ void ElementGeneratorNode_Perfect<E>::generate_applicable_actions_impl(const Den
     }
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void ElementGeneratorNode_Perfect<E>::visit_impl(INodeVisitor<E>& visitor) const
 {
     visitor.accept(*this);
@@ -77,14 +77,14 @@ void ElementGeneratorNode_Perfect<E>::visit_impl(INodeVisitor<E>& visitor) const
 template class ElementGeneratorNode_Perfect<GroundActionImpl>;
 template class ElementGeneratorNode_Perfect<GroundAxiomImpl>;
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 ElementGeneratorNode_Imperfect<E>::ElementGeneratorNode_Imperfect(std::span<const E*> elements) :
     ElementGeneratorNodeBase<ElementGeneratorNode_Imperfect<E>, E>(elements)
 {
     // m_elements may be empty, e.g., if there are no ground axioms.
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void ElementGeneratorNode_Imperfect<E>::generate_applicable_actions_impl(const DenseState& state,
                                                                          const ProblemImpl& problem,
                                                                          std::vector<const E*>& ref_applicable_elements) const
@@ -98,7 +98,7 @@ void ElementGeneratorNode_Imperfect<E>::generate_applicable_actions_impl(const D
     }
 }
 
-template<HasConjunctiveCondition E>
+template<formalism::HasConjunctiveCondition E>
 void ElementGeneratorNode_Imperfect<E>::visit_impl(INodeVisitor<E>& visitor) const
 {
     visitor.accept(*this);

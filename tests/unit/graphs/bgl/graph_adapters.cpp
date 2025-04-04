@@ -17,7 +17,7 @@
 
 #include "mimir/graphs/bgl/graph_adapters.hpp"
 
-#include "mimir/datasets/generalized_state_space.hpp"
+#include "mimir/datasets/state_space.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/search_context.hpp"
 

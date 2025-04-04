@@ -26,190 +26,37 @@
 namespace mimir::search
 {
 
-class GroundedAxiomEvaluator : public IAxiomEvaluator
+class GroundedAxiomEvaluatorImpl : public IAxiomEvaluator
 {
 public:
-    struct Statistics
-    {
-        std::vector<match_tree::Statistics> m_match_tree_partition_statistics = std::vector<match_tree::Statistics>();
-    };
+    using Statistics = axiom_evaluator::grounded::Statistics;
 
-    class IEventHandler
-    {
-    public:
-        virtual ~IEventHandler() = default;
+    using IEventHandler = axiom_evaluator::grounded::IEventHandler;
+    using EventHandler = axiom_evaluator::grounded::EventHandler;
 
-        virtual void on_start_ground_axiom_instantiation() = 0;
+    using DebugEventHandlerImpl = axiom_evaluator::grounded::DebugEventHandlerImpl;
+    using DebugEventHandler = axiom_evaluator::grounded::DebugEventHandler;
 
-        virtual void on_finish_ground_axiom_instantiation(std::chrono::milliseconds total_time) = 0;
+    using DefaultEventHandlerImpl = axiom_evaluator::grounded::DefaultEventHandlerImpl;
+    using DefaultEventHandler = axiom_evaluator::grounded::DefaultEventHandler;
 
-        virtual void on_start_build_axiom_match_trees() = 0;
+    GroundedAxiomEvaluatorImpl(formalism::Problem problem,
+                               std::vector<std::unique_ptr<match_tree::MatchTree<formalism::GroundAxiomImpl>>>&& match_tree_partitioning,
+                               EventHandler event_handler);
 
-        virtual void on_start_build_axiom_match_tree(size_t partition_index) = 0;
+    static GroundedAxiomEvaluator create(formalism::Problem problem,
+                                         std::vector<std::unique_ptr<match_tree::MatchTree<formalism::GroundAxiomImpl>>>&& match_tree_partitioning);
 
-        virtual void on_finish_build_axiom_match_tree(const match_tree::MatchTree<formalism::GroundAxiomImpl>& match_tree) = 0;
-
-        virtual void on_finish_build_axiom_match_trees(std::chrono::milliseconds total_time) = 0;
-
-        virtual void on_finish_search_layer() = 0;
-
-        virtual void on_end_search() = 0;
-
-        virtual const Statistics& get_statistics() const = 0;
-    };
-
-    using EventHandler = std::shared_ptr<IEventHandler>;
-
-    /**
-     * Base class
-     *
-     * Collect statistics and call implementation of derived class.
-     */
-    template<typename Derived_>
-    class EventHandlerBase : public IEventHandler
-    {
-    protected:
-        Statistics m_statistics;
-        bool m_quiet;
-
-    private:
-        EventHandlerBase() = default;
-        friend Derived_;
-
-        /// @brief Helper to cast to Derived.
-        constexpr const auto& self() const { return static_cast<const Derived_&>(*this); }
-        constexpr auto& self() { return static_cast<Derived_&>(*this); }
-
-    public:
-        explicit EventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
-
-        void on_start_ground_axiom_instantiation() override
-        {
-            if (!m_quiet)
-                self().on_start_ground_axiom_instantiation_impl();
-        }
-
-        void on_finish_ground_axiom_instantiation(std::chrono::milliseconds total_time) override
-        {
-            if (!m_quiet)
-                self().on_finish_ground_axiom_instantiation_impl(total_time);
-        }
-
-        void on_start_build_axiom_match_trees() override
-        {
-            if (!m_quiet)
-                self().on_start_build_axiom_match_trees_impl();
-        }
-
-        void on_start_build_axiom_match_tree(size_t partition_index) override
-        {
-            if (!m_quiet)
-                self().on_start_build_axiom_match_tree_impl(partition_index);
-        }
-
-        void on_finish_build_axiom_match_tree(const match_tree::MatchTree<formalism::GroundAxiomImpl>& match_tree) override
-        {
-            m_statistics.m_match_tree_partition_statistics.push_back(match_tree.get_statistics());
-
-            if (!m_quiet)
-                self().on_finish_build_axiom_match_tree_impl(match_tree);
-        }
-
-        void on_finish_build_axiom_match_trees(std::chrono::milliseconds total_time) override
-        {
-            if (!m_quiet)
-                self().on_finish_build_axiom_match_trees_impl(total_time);
-        }
-
-        void on_finish_search_layer() override
-        {
-            if (!m_quiet)
-                self().on_finish_search_layer_impl();
-        }
-
-        void on_end_search() override
-        {
-            if (!m_quiet)
-                self().on_end_search_impl();
-        }
-
-        const Statistics& get_statistics() const override { return m_statistics; }
-    };
-
-    class DebugEventHandler : public EventHandlerBase<DebugEventHandler>
-    {
-    private:
-        /* Implement EventHandlerBase interface */
-        friend class EventHandlerBase<DebugEventHandler>;
-
-        void on_start_ground_axiom_instantiation_impl() const;
-
-        void on_finish_ground_axiom_instantiation_impl(std::chrono::milliseconds total_time) const;
-
-        void on_start_build_axiom_match_trees_impl() const;
-
-        void on_start_build_axiom_match_tree_impl(size_t partition_index) const;
-
-        void on_finish_build_axiom_match_tree_impl(const match_tree::MatchTree<formalism::GroundAxiomImpl>& match_tree) const;
-
-        void on_finish_build_axiom_match_trees_impl(std::chrono::milliseconds total_time) const;
-
-        void on_finish_search_layer_impl() const;
-
-        void on_end_search_impl() const;
-
-    public:
-        explicit DebugEventHandler(bool quiet = true);
-
-        static std::shared_ptr<DebugEventHandler> create(bool quiet = true);
-    };
-
-    class DefaultEventHandler : public EventHandlerBase<DefaultEventHandler>
-    {
-    private:
-        /* Implement EventHandlerBase interface */
-        friend class EventHandlerBase<DefaultEventHandler>;
-
-        void on_start_ground_axiom_instantiation_impl() const;
-
-        void on_finish_ground_axiom_instantiation_impl(std::chrono::milliseconds total_time) const;
-
-        void on_start_build_axiom_match_trees_impl() const;
-
-        void on_start_build_axiom_match_tree_impl(size_t partition_index) const;
-
-        void on_finish_build_axiom_match_tree_impl(const match_tree::MatchTree<formalism::GroundAxiomImpl>& match_tree) const;
-
-        void on_finish_build_axiom_match_trees_impl(std::chrono::milliseconds total_time) const;
-
-        void on_finish_search_layer_impl() const;
-
-        void on_end_search_impl() const;
-
-    public:
-        explicit DefaultEventHandler(bool quiet = true);
-
-        static std::shared_ptr<DefaultEventHandler> create(bool quiet = true);
-    };
-
-    GroundedAxiomEvaluator(formalism::Problem problem,
-                           std::vector<std::unique_ptr<match_tree::MatchTree<formalism::GroundAxiomImpl>>>&& match_tree_partitioning,
-                           EventHandler event_handler);
-
-    static std::shared_ptr<GroundedAxiomEvaluator>
-    create(formalism::Problem problem, std::vector<std::unique_ptr<match_tree::MatchTree<formalism::GroundAxiomImpl>>>&& match_tree_partitioning);
-
-    static std::shared_ptr<GroundedAxiomEvaluator>
-    create(formalism::Problem problem,
-           std::vector<std::unique_ptr<match_tree::MatchTree<formalism::GroundAxiomImpl>>>&& match_tree_partitioning,
-           EventHandler event_handler);
+    static GroundedAxiomEvaluator create(formalism::Problem problem,
+                                         std::vector<std::unique_ptr<match_tree::MatchTree<formalism::GroundAxiomImpl>>>&& match_tree_partitioning,
+                                         EventHandler event_handler);
 
     // Uncopyable
-    GroundedAxiomEvaluator(const GroundedAxiomEvaluator& other) = delete;
-    GroundedAxiomEvaluator& operator=(const GroundedAxiomEvaluator& other) = delete;
+    GroundedAxiomEvaluatorImpl(const GroundedAxiomEvaluatorImpl& other) = delete;
+    GroundedAxiomEvaluatorImpl& operator=(const GroundedAxiomEvaluatorImpl& other) = delete;
     // Unmovable
-    GroundedAxiomEvaluator(GroundedAxiomEvaluator&& other) = delete;
-    GroundedAxiomEvaluator& operator=(GroundedAxiomEvaluator&& other) = delete;
+    GroundedAxiomEvaluatorImpl(GroundedAxiomEvaluatorImpl&& other) = delete;
+    GroundedAxiomEvaluatorImpl& operator=(GroundedAxiomEvaluatorImpl&& other) = delete;
 
     void generate_and_apply_axioms(DenseState& dense_state) override;
 

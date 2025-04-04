@@ -31,6 +31,8 @@
 #include "mimir/search/applicability.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/satisficing_binding_generators/base.hpp"
+#include "mimir/search/satisficing_binding_generators/event_handlers/default.hpp"
+#include "mimir/search/satisficing_binding_generators/event_handlers/interface.hpp"
 #include "mimir/search/state.hpp"
 
 #include <boost/dynamic_bitset/dynamic_bitset.hpp>
@@ -257,10 +259,10 @@ SatisficingBindingGenerator<Derived_>::general_case(const DenseState& dense_stat
 template<typename Derived_>
 SatisficingBindingGenerator<Derived_>::SatisficingBindingGenerator(formalism::ConjunctiveCondition conjunctive_condition,
                                                                    formalism::Problem problem,
-                                                                   std::shared_ptr<IEventHandler> event_handler) :
+                                                                   EventHandler event_handler) :
     m_conjunctive_condition(conjunctive_condition),
     m_problem(std::move(problem)),
-    m_event_handler(event_handler ? event_handler : std::make_shared<DefaultEventHandler>()),
+    m_event_handler(event_handler ? event_handler : std::make_shared<DefaultEventHandlerImpl>()),
     m_static_consistency_graph(*m_problem, 0, m_conjunctive_condition->get_parameters().size(), m_conjunctive_condition->get_literals<formalism::StaticTag>()),
     m_dense_state(),
     m_fluent_atoms(),
@@ -399,7 +401,7 @@ const formalism::Problem& SatisficingBindingGenerator<Derived_>::get_problem() c
 }
 
 template<typename Derived_>
-const std::shared_ptr<typename SatisficingBindingGenerator<Derived_>::IEventHandler>& SatisficingBindingGenerator<Derived_>::get_event_handler() const
+const typename SatisficingBindingGenerator<Derived_>::EventHandler& SatisficingBindingGenerator<Derived_>::get_event_handler() const
 {
     return m_event_handler;
 }
