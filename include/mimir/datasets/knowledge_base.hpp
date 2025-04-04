@@ -30,6 +30,8 @@ namespace mimir::datasets
 class KnowledgeBaseImpl
 {
 private:
+    formalism::ColorFunction m_color_function;  ///< The color function used consistently during construction.
+
     formalism::Domain m_domain;  ///< The common domain.
 
     StateSpaceList m_state_spaces;  ///< The state transition models of each `Problem` with optional symmetry reduction.

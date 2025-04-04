@@ -20,10 +20,14 @@
 
 #include "mimir/datasets/state_space.hpp"
 #include "mimir/datasets/tuple_graph.hpp"
+#include "mimir/formalism/declarations.hpp"
 
 namespace mimir::datasets
 {
-extern TupleGraph create_tuple_graph(const graphs::ProblemVertex& problem_vertex, const StateSpace& state_space, const TupleGraphImpl::Options& options);
+extern TupleGraph create_tuple_graph(const graphs::ProblemVertex& problem_vertex,
+                                     const StateSpace& state_space,
+                                     const formalism::ColorFunctionImpl& color_function,
+                                     const TupleGraphImpl::Options& options);
 }
 
 #endif

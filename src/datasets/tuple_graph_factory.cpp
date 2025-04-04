@@ -17,8 +17,10 @@
 
 #include "tuple_graph_factory.hpp"
 
+#include "mimir/datasets/object_graph.hpp"
 #include "mimir/datasets/state_space.hpp"
 #include "mimir/formalism/problem.hpp"
+#include "mimir/graphs/algorithms/nauty.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/search_context.hpp"
 #include "mimir/search/state.hpp"
@@ -104,7 +106,11 @@ class TupleGraphArityGreaterZeroComputation
 private:
     const graphs::ProblemVertex& m_problem_vertex;
     const StateSpace& m_state_space;
+    const formalism::ColorFunctionImpl& m_color_function;
     const TupleGraphImpl::Options& m_options;
+
+    StateToCertificate m_state_to_certificate;
+    CertificateMap<graphs::VertexIndex> m_certificate_to_v_idx;
 
     graphs::StaticTupleGraph m_internal_tuple_graph;
     IndexGroupedVectorBuilder<const Index> m_v_idxs_grouped_by_distance;
@@ -143,10 +149,6 @@ private:
 
         const auto root_state = get_state(m_problem_vertex);
         const auto root_problem_v_idx = m_problem_vertex.get_index();
-
-        std::cout << "ROOT_INDEX=";
-        mimir::operator<<(std::cout, std::make_tuple(root_state, std::cref(*m_state_space->get_search_context()->get_problem())));
-        std::cout << std::endl;
 
         m_novelty_table.compute_novel_tuples(root_state, m_novel_tuples_vec);
         for (const auto& novel_tuple : m_novel_tuples_vec)
@@ -240,7 +242,8 @@ private:
         }
 
         {
-            compute_next_novel_tuple_indices();
+            (m_state_space->is_symmetry_reduced()) ? compute_next_novel_tuple_indices_with_symmetry_reduction() :
+                                                     compute_next_novel_tuple_indices_without_symmetry_reduction();
 
             if (m_novel_t_idxs_set.empty())
             {
@@ -281,7 +284,46 @@ private:
         return true;
     }
 
-    void compute_next_novel_tuple_indices()
+    void compute_next_novel_tuple_indices_without_symmetry_reduction()
+    {
+        // Clear data structures
+        m_novel_t_idxs_set.clear();
+        m_novel_t_idx_to_problem_v_idxs.clear();
+        m_problem_v_idx_to_novel_t_idxs.clear();
+
+        for (const auto& problem_v_idx : m_curr_problem_v_idxs)
+        {
+            m_novelty_table.compute_novel_tuples(get_state(m_state_space->get_graph().get_vertex(problem_v_idx)), m_novel_tuples_vec);
+
+            for (const auto& novel_tuple : m_novel_tuples_vec)
+            {
+                const auto it = m_tuple_to_index.find(novel_tuple);
+                auto novel_t_idx = Index();
+                if (it != m_tuple_to_index.end())
+                {
+                    novel_t_idx = it->second;
+                }
+                else
+                {
+                    novel_t_idx = m_tuple_to_index.size();
+                    m_tuple_to_index.emplace(novel_tuple, novel_t_idx);
+                    m_index_to_tuple.emplace(novel_t_idx, novel_tuple);
+                }
+
+                m_novel_t_idx_to_problem_v_idxs[novel_t_idx].insert(problem_v_idx);
+                m_problem_v_idx_to_novel_t_idxs[problem_v_idx].push_back(novel_t_idx);
+                m_novel_t_idxs_set.insert(novel_t_idx);
+            }
+        }
+
+        /* Ensure that tuples of all states in layer are marked as not novel! */
+        for (const auto& state : m_curr_states)
+        {
+            m_novelty_table.test_novelty_and_update_table(state);
+        }
+    }
+
+    void compute_next_novel_tuple_indices_with_symmetry_reduction()
     {
         // Clear data structures
         m_novel_t_idxs_set.clear();
@@ -289,6 +331,17 @@ private:
         m_problem_v_idx_to_novel_t_idxs.clear();
 
         std::cout << "compute_next_novel_tuple_indices" << std::endl;
+
+        const auto& problem = *m_state_space->get_search_context()->get_problem();
+
+        for (const auto& state : m_curr_states)
+        {
+            const auto it = m_state_to_certificate.find(state);
+            if (it == m_state_to_certificate.end())
+            {
+                const auto certificate = graphs::nauty_wrapper::compute_certificate(create_object_graph(state, problem, m_color_function));
+            }
+        }
 
         for (const auto& problem_v_idx : m_curr_problem_v_idxs)
         {
@@ -450,9 +503,13 @@ private:
     }
 
 public:
-    TupleGraphArityGreaterZeroComputation(const graphs::ProblemVertex& problem_vertex, const StateSpace& state_space, const TupleGraphImpl::Options& options) :
+    TupleGraphArityGreaterZeroComputation(const graphs::ProblemVertex& problem_vertex,
+                                          const StateSpace& state_space,
+                                          const formalism::ColorFunctionImpl& color_function,
+                                          const TupleGraphImpl::Options& options) :
         m_problem_vertex(problem_vertex),
         m_state_space(state_space),
+        m_color_function(color_function),
         m_options(options),
         m_internal_tuple_graph(),
         m_v_idxs_grouped_by_distance(),
@@ -495,15 +552,20 @@ public:
     }
 };
 
-static TupleGraph
-create_tuple_graph_width_greater_zero(const graphs::ProblemVertex& problem_vertex, const StateSpace& state_space, const TupleGraphImpl::Options& options)
+static TupleGraph create_tuple_graph_width_greater_zero(const graphs::ProblemVertex& problem_vertex,
+                                                        const StateSpace& state_space,
+                                                        const formalism::ColorFunctionImpl& color_function,
+                                                        const TupleGraphImpl::Options& options)
 {
-    return TupleGraphArityGreaterZeroComputation(problem_vertex, state_space, options).compute_and_get_result();
+    return TupleGraphArityGreaterZeroComputation(problem_vertex, state_space, color_function, options).compute_and_get_result();
 }
 
-TupleGraph create_tuple_graph(const graphs::ProblemVertex& problem_vertex, const StateSpace& state_space, const TupleGraphImpl::Options& options)
+TupleGraph create_tuple_graph(const graphs::ProblemVertex& problem_vertex,
+                              const StateSpace& state_space,
+                              const ColorFunctionImpl& color_function,
+                              const TupleGraphImpl::Options& options)
 {
     return (options.width == 0) ? create_tuple_graph_width_zero(problem_vertex, state_space) :
-                                  create_tuple_graph_width_greater_zero(problem_vertex, state_space, options);
+                                  create_tuple_graph_width_greater_zero(problem_vertex, state_space, color_function, options);
 }
 }

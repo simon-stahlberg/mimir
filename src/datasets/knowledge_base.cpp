@@ -20,6 +20,7 @@
 #include "mimir/datasets/generalized_state_space.hpp"
 #include "mimir/datasets/state_space.hpp"
 #include "mimir/datasets/tuple_graph.hpp"
+#include "mimir/formalism/color_function.hpp"
 #include "mimir/search/generalized_search_context.hpp"
 
 using namespace mimir::formalism;
@@ -44,7 +45,9 @@ KnowledgeBaseImpl::KnowledgeBaseImpl(formalism::Domain domain,
 
 KnowledgeBase KnowledgeBaseImpl::create(search::GeneralizedSearchContext contexts, const Options& options)
 {
-    auto state_spaces = StateSpaceImpl::create(contexts, options.state_space_options);
+    auto color_function = ColorFunctionImpl::create(contexts->get_generalized_problem());
+
+    auto state_spaces = StateSpaceImpl::create(contexts, *color_function, options.state_space_options);
 
     auto generalized_state_space = std::optional<GeneralizedStateSpace> { std::nullopt };
     if (options.generalized_state_space_options)

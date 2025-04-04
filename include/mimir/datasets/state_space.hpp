@@ -39,6 +39,8 @@ namespace mimir::datasets
 class StateSpaceImpl
 {
 private:
+    bool m_is_symmetry_reduced;
+
     search::SearchContext m_context;
 
     graphs::ProblemGraph m_graph;
@@ -50,19 +52,40 @@ private:
 public:
     using Options = state_space::Options;
 
-    StateSpaceImpl(search::SearchContext context, graphs::ProblemGraph graph, Index initial_vertex, IndexSet goal_vertices, IndexSet unsolvable_vertices);
+    StateSpaceImpl(bool is_symmetry_reduced,
+                   search::SearchContext context,
+                   graphs::ProblemGraph graph,
+                   Index initial_vertex,
+                   IndexSet goal_vertices,
+                   IndexSet unsolvable_vertices);
 
     /**
      * Constructors
      */
 
+    /// @brief Create a `StateSpace` from the given `search::SearchContext` and the given `Options`.
+    /// Internally, it create a `ColorFunctionImpl` specific to the `formalism::Problem` in the `search::SearchContext`.
+    /// Use the generalized function below if the `formalism::ColorFunctionImpl` must consider multiple `formalism::Problem` over a common `formalism::Domain`.
+    /// @param context is the `search::SearchContext`.
+    /// @param options are the `Options`
+    /// @return the `StateSpace` if successfully created from the given `Options` and otherwise `std::nullopt`.
     static std::optional<StateSpace> create(search::SearchContext context, const Options& options = Options());
 
+    static std::optional<StateSpace>
+    create(search::SearchContext context, const formalism::ColorFunctionImpl& color_function, const Options& options = Options());
+
     static StateSpaceList create(search::GeneralizedSearchContext contexts, const Options& options = Options());
+
+    static StateSpaceList
+    create(search::GeneralizedSearchContext contexts, const formalism::ColorFunctionImpl& color_function, const Options& options = Options());
 
     /**
      * Getters
      */
+
+    /// @brief Return true if and only if the symmetry reduction was applied.
+    /// @return true if and only if symmetry reduction was applied, and false otherwise.
+    bool is_symmetry_reduced() const;
 
     /// @brief Get the underlying `search::SearchContext`.
     /// @return the underlying `search::SearchContext`.

@@ -22,6 +22,7 @@
 #include "mimir/datasets/declarations.hpp"
 #include "mimir/datasets/tuple_graph/internal_tuple_graph.hpp"
 #include "mimir/datasets/tuple_graph/options.hpp"
+#include "mimir/formalism/declarations.hpp"
 #include "mimir/graphs/static_graph.hpp"
 #include "mimir/search/algorithms/iw/novelty_table.hpp"
 #include "mimir/search/algorithms/iw/tuple_index_generators.hpp"
@@ -59,6 +60,8 @@ public:
     /// @param state_space is the `StateSpace`
     /// @return are the `TupleGraph` for each vertex in the given `StateSpace`.
     static TupleGraphList create(StateSpace state_space, const Options& options = Options());
+
+    static TupleGraphList create(StateSpace state_space, const formalism::ColorFunctionImpl& color_function, const Options& options = Options());
 
     const StateSpace& get_state_space() const;
     const graphs::InternalTupleGraph& get_graph() const;
