@@ -18,7 +18,7 @@
 #include "cista/containers/flexible_index_vector.h"
 
 #include "cista/serialization.h"
-#include "mimir/common/hash_cista.hpp"
+#include "mimir/common/hash.hpp"
 #include "mimir/formalism/ground_action.hpp"
 
 #include <bitset>

@@ -20,6 +20,7 @@
 
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types.hpp"
+#include "mimir/graphs/algorithms/color_refinement.hpp"
 #include "mimir/graphs/graph_interface.hpp"
 #include "mimir/graphs/graph_properties.hpp"
 #include "mimir/graphs/graph_traversal_interface.hpp"
@@ -189,7 +190,7 @@ Certificate compute_certificate(const G& graph)
     }
 
     // (line 1-2): Initialize multi set.
-    auto f = Certificate::CompressionFunction();
+    auto f = CertificateImpl::CompressionFunction();
     auto M = std::vector<std::pair<Index, Color>>();
     auto M_replaced = std::vector<std::tuple<Color, ColorList, Index>>();
     // (line 3): Process work list until all vertex colors have stabilized.
@@ -242,7 +243,7 @@ Certificate compute_certificate(const G& graph)
     }
 
     /* Return the certificate */
-    return Certificate(std::move(f), std::move(hash_to_color));
+    return std::make_shared<CertificateImpl>(std::move(f), std::move(hash_to_color));
 }
 }
 

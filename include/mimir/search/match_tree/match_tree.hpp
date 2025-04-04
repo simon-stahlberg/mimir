@@ -30,7 +30,7 @@ namespace mimir::search::match_tree
 {
 /* MatchTree */
 template<formalism::HasConjunctiveCondition E>
-class MatchTree
+class MatchTreeImpl
 {
 private:
     std::vector<const E*> m_elements;  ///< ATTENTION: must remain persistent. Swapping elements is allowed.
@@ -41,19 +41,19 @@ private:
 
     std::vector<const INode<E>*> m_evaluate_stack;  ///< temporary during evaluation.
 
-    MatchTree();
+    MatchTreeImpl();
 
-    MatchTree(const formalism::Repositories& pddl_repositories, std::vector<const E*> elements, const Options& options = Options());
+    MatchTreeImpl(const formalism::Repositories& pddl_repositories, std::vector<const E*> elements, const Options& options = Options());
 
 public:
-    static std::unique_ptr<MatchTree<E>>
+    static std::unique_ptr<MatchTreeImpl<E>>
     create(const formalism::Repositories& pddl_repositories, std::vector<const E*> elements, const Options& options = Options());
 
     // Uncopieable and unmoveable to prohibit invalidating spans on m_elements.
-    MatchTree(const MatchTree& other) = delete;
-    MatchTree& operator=(const MatchTree& other) = delete;
-    MatchTree(MatchTree&& other) = delete;
-    MatchTree& operator=(MatchTree&& other) = delete;
+    MatchTreeImpl(const MatchTreeImpl& other) = delete;
+    MatchTreeImpl& operator=(const MatchTreeImpl& other) = delete;
+    MatchTreeImpl(MatchTreeImpl&& other) = delete;
+    MatchTreeImpl& operator=(MatchTreeImpl&& other) = delete;
 
     void
     generate_applicable_elements_iteratively(const DenseState& state, const formalism::ProblemImpl& problem, std::vector<const E*>& out_applicable_elements);

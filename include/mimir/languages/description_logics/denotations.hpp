@@ -19,7 +19,7 @@
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_DENOTATIONS_HPP_
 
 #include "mimir/buffering/unordered_set.h"
-#include "mimir/common/hash_cista.hpp"
+#include "mimir/common/hash.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/languages/description_logics/tags.hpp"
 

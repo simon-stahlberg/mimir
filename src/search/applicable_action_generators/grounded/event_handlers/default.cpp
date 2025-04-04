@@ -36,7 +36,7 @@ void DefaultEventHandlerImpl::on_start_build_action_match_tree_impl() const
     std::cout << "[GroundedApplicableActionGenerator] Started building action match tree." << std::endl;
 }
 
-void DefaultEventHandlerImpl::on_finish_build_action_match_tree_impl(const match_tree::MatchTree<GroundActionImpl>& match_tree)
+void DefaultEventHandlerImpl::on_finish_build_action_match_tree_impl(const match_tree::MatchTreeImpl<GroundActionImpl>& match_tree)
 {
     std::cout << match_tree.get_statistics() << "\n"
               << "[GroundedApplicableActionGenerator] Finished building action match tree" << std::endl;

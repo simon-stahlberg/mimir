@@ -134,12 +134,7 @@ private:
     /* Implement AlgorithmEventHandlerBase interface */
     friend class brfs::EventHandlerBase<SymmetryReducedProblemGraphEventHandler>;
 
-    auto compute_certificate(State state)
-    {
-        const auto object_graph = create_object_graph(state, *m_problem, m_symm_data.color_function);
-
-        return std::make_shared<const nauty::Certificate>(nauty::compute_certificate(object_graph));
-    }
+    auto compute_certificate(State state) { return nauty::compute_certificate(create_object_graph(state, *m_problem, m_symm_data.color_function)); }
 
     void on_expand_state_impl(State state) {}
 
@@ -266,7 +261,7 @@ private:
                                              m_state_to_vertex_index.at(successor_state) :
                                              m_graph.add_vertex(successor_state,
                                                                 m_problem,
-                                                                std::shared_ptr<const nauty::Certificate>(nullptr),
+                                                                std::shared_ptr<nauty::CertificateImpl>(nullptr),
                                                                 DiscreteCost(0),
                                                                 ContinuousCost(0),
                                                                 false,
@@ -287,7 +282,7 @@ private:
     {
         const auto v_idx = m_graph.add_vertex(start_state,
                                               m_problem,
-                                              std::shared_ptr<const nauty::Certificate>(nullptr),
+                                              std::shared_ptr<nauty::CertificateImpl>(nullptr),
                                               DiscreteCost(0),
                                               ContinuousCost(0),
                                               false,

@@ -41,7 +41,7 @@ void DebugEventHandlerImpl::on_start_build_axiom_match_tree_impl(size_t partitio
     std::cout << "[GroundedAxiomEvaluator] Axiom partition: " << partition_index << std::endl;
 }
 
-void DebugEventHandlerImpl::on_finish_build_axiom_match_tree_impl(const match_tree::MatchTree<GroundAxiomImpl>& match_tree) const
+void DebugEventHandlerImpl::on_finish_build_axiom_match_tree_impl(const match_tree::MatchTreeImpl<GroundAxiomImpl>& match_tree) const
 {
     std::cout << match_tree.get_statistics() << std::endl;
 }

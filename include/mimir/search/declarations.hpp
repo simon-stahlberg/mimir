@@ -125,13 +125,6 @@ class DefaultEventHandlerImpl;
 using DefaultEventHandler = std::shared_ptr<DefaultEventHandlerImpl>;
 }
 
-/* MatchTree */
-namespace match_tree
-{
-template<formalism::HasConjunctiveCondition E>
-class MatchTree;
-}
-
 /* Heuristics */
 class IHeuristic;
 using Heuristic = std::shared_ptr<IHeuristic>;

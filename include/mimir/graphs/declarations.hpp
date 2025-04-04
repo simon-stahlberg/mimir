@@ -20,6 +20,7 @@
 
 // Do not include headers with transitive dependencies.
 #include "mimir/common/types.hpp"
+#include "mimir/graphs/algorithms/declarations.hpp"
 
 #include <array>
 #include <cstdint>
@@ -54,10 +55,6 @@ using ColorArray = std::array<Color, K>;
 using ColorSet = std::unordered_set<Color>;
 template<typename T>
 using ColorMap = std::unordered_map<Color, T>;
-
-/**
- * Forward declarations
- */
 
 }
 

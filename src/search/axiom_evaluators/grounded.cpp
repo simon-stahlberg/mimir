@@ -37,23 +37,21 @@ namespace mimir::search
  */
 
 GroundedAxiomEvaluatorImpl::GroundedAxiomEvaluatorImpl(Problem problem,
-                                                       std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>>&& match_tree_partitioning,
-                                                       std::shared_ptr<IEventHandler> event_handler) :
+                                                       match_tree::MatchTreeList<GroundAxiomImpl>&& match_tree_partitioning,
+                                                       EventHandler event_handler) :
     m_problem(std::move(problem)),
     m_match_tree_partitioning(std::move(match_tree_partitioning)),
     m_event_handler(std::move(event_handler))
 {
 }
 
-GroundedAxiomEvaluator GroundedAxiomEvaluatorImpl::create(Problem problem,
-                                                          std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>>&& match_tree_partitioning)
+GroundedAxiomEvaluator GroundedAxiomEvaluatorImpl::create(Problem problem, match_tree::MatchTreeList<GroundAxiomImpl>&& match_tree_partitioning)
 {
     return create(std::move(problem), std::move(match_tree_partitioning), DefaultEventHandlerImpl::create());
 }
 
-GroundedAxiomEvaluator GroundedAxiomEvaluatorImpl::create(Problem problem,
-                                                          std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>>&& match_tree_partitioning,
-                                                          std::shared_ptr<IEventHandler> event_handler)
+GroundedAxiomEvaluator
+GroundedAxiomEvaluatorImpl::create(Problem problem, match_tree::MatchTreeList<GroundAxiomImpl>&& match_tree_partitioning, EventHandler event_handler)
 {
     return std::shared_ptr<GroundedAxiomEvaluatorImpl>(
         new GroundedAxiomEvaluatorImpl(std::move(problem), std::move(match_tree_partitioning), std::move(event_handler)));
@@ -108,5 +106,5 @@ void GroundedAxiomEvaluatorImpl::on_end_search() { m_event_handler->on_end_searc
 
 const Problem& GroundedAxiomEvaluatorImpl::get_problem() const { return m_problem; }
 
-const std::shared_ptr<GroundedAxiomEvaluatorImpl::IEventHandler>& GroundedAxiomEvaluatorImpl::get_event_handler() const { return m_event_handler; }
+const GroundedAxiomEvaluatorImpl::EventHandler& GroundedAxiomEvaluatorImpl::get_event_handler() const { return m_event_handler; }
 }

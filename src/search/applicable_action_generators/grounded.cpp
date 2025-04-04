@@ -35,7 +35,7 @@ namespace mimir::search
  */
 
 GroundedApplicableActionGeneratorImpl::GroundedApplicableActionGeneratorImpl(Problem problem,
-                                                                             std::unique_ptr<match_tree::MatchTree<GroundActionImpl>>&& match_tree,
+                                                                             match_tree::MatchTree<GroundActionImpl>&& match_tree,
                                                                              EventHandler event_handler) :
     m_problem(std::move(problem)),
     m_match_tree(std::move(match_tree)),
@@ -44,16 +44,14 @@ GroundedApplicableActionGeneratorImpl::GroundedApplicableActionGeneratorImpl(Pro
 {
 }
 
-std::shared_ptr<GroundedApplicableActionGeneratorImpl>
-GroundedApplicableActionGeneratorImpl::create(Problem problem, std::unique_ptr<match_tree::MatchTree<GroundActionImpl>>&& match_tree)
+std::shared_ptr<GroundedApplicableActionGeneratorImpl> GroundedApplicableActionGeneratorImpl::create(Problem problem,
+                                                                                                     match_tree::MatchTree<GroundActionImpl>&& match_tree)
 {
     return create(problem, std::move(match_tree), DefaultEventHandlerImpl::create());
 }
 
 std::shared_ptr<GroundedApplicableActionGeneratorImpl>
-GroundedApplicableActionGeneratorImpl::create(Problem problem,
-                                              std::unique_ptr<match_tree::MatchTree<GroundActionImpl>>&& match_tree,
-                                              EventHandler event_handler)
+GroundedApplicableActionGeneratorImpl::create(Problem problem, match_tree::MatchTree<GroundActionImpl>&& match_tree, EventHandler event_handler)
 {
     return std::shared_ptr<GroundedApplicableActionGeneratorImpl>(
         new GroundedApplicableActionGeneratorImpl(std::move(problem), std::move(match_tree), std::move(event_handler)));

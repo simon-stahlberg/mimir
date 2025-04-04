@@ -23,6 +23,7 @@
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/dense_state.hpp"
+#include "mimir/search/match_tree/declarations.hpp"
 #include "mimir/search/match_tree/match_tree.hpp"
 
 #include <variant>
@@ -50,16 +51,15 @@ public:
 
     /// @brief Complete construction
     GroundedApplicableActionGeneratorImpl(formalism::Problem problem,
-                                          std::unique_ptr<match_tree::MatchTree<formalism::GroundActionImpl>>&& match_tree,
+                                          match_tree::MatchTree<formalism::GroundActionImpl>&& match_tree,
                                           EventHandler event_handler);
 
     /// @brief Simplest construction
-    static GroundedApplicableActionGenerator create(formalism::Problem problem,
-                                                    std::unique_ptr<match_tree::MatchTree<formalism::GroundActionImpl>>&& match_tree);
+    static GroundedApplicableActionGenerator create(formalism::Problem problem, match_tree::MatchTree<formalism::GroundActionImpl>&& match_tree);
 
     /// @brief Complete construction
     static GroundedApplicableActionGenerator
-    create(formalism::Problem problem, std::unique_ptr<match_tree::MatchTree<formalism::GroundActionImpl>>&& match_tree, EventHandler event_handler);
+    create(formalism::Problem problem, match_tree::MatchTree<formalism::GroundActionImpl>&& match_tree, EventHandler event_handler);
 
     // Uncopyable
     GroundedApplicableActionGeneratorImpl(const GroundedApplicableActionGeneratorImpl& other) = delete;
@@ -86,7 +86,7 @@ public:
 
 private:
     formalism::Problem m_problem;
-    std::unique_ptr<match_tree::MatchTree<formalism::GroundActionImpl>> m_match_tree;
+    match_tree::MatchTree<formalism::GroundActionImpl> m_match_tree;
 
     EventHandler m_event_handler;
 

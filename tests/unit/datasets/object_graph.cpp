@@ -17,6 +17,8 @@
 
 #include "mimir/datasets/object_graph.hpp"
 
+#include "mimir/common/equal_to.hpp"
+#include "mimir/common/hash.hpp"
 #include "mimir/datasets/state_space.hpp"
 #include "mimir/formalism/color_function.hpp"
 #include "mimir/formalism/problem.hpp"
@@ -44,7 +46,7 @@ TEST(MimirTests, DataSetsObjectGraphDenseTest)
     const auto state_space = StateSpaceImpl::create(context, options);
     const auto color_function = ColorFunctionImpl::create(context->get_problem());
 
-    auto certificates = std::unordered_set<nauty::Certificate, loki::Hash<nauty::Certificate>, loki::EqualTo<nauty::Certificate>> {};
+    auto certificates = std::unordered_set<nauty::Certificate, SharedPtrDerefHash<nauty::CertificateImpl>, SharedPtrDerefEqualTo<nauty::CertificateImpl>> {};
 
     for (const auto& vertex : state_space.value()->get_graph().get_vertices())
     {
@@ -72,7 +74,7 @@ TEST(MimirTests, DataSetsObjectGraphSparseTest)
     const auto state_space = StateSpaceImpl::create(context, options);
     const auto color_function = ColorFunctionImpl::create(context->get_problem());
 
-    auto certificates = std::unordered_set<nauty::Certificate, loki::Hash<nauty::Certificate>, loki::EqualTo<nauty::Certificate>> {};
+    auto certificates = std::unordered_set<nauty::Certificate, SharedPtrDerefHash<nauty::CertificateImpl>, SharedPtrDerefEqualTo<nauty::CertificateImpl>> {};
 
     for (const auto& vertex : state_space.value()->get_graph().get_vertices())
     {

@@ -18,7 +18,7 @@
 #ifndef MIMIR_FORMALISM_GROUND_AXIOM_HPP_
 #define MIMIR_FORMALISM_GROUND_AXIOM_HPP_
 
-#include "mimir/common/hash_cista.hpp"
+#include "mimir/common/hash.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types.hpp"
 #include "mimir/common/types_cista.hpp"

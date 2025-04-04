@@ -336,10 +336,9 @@ private:
 
         for (const auto& state : m_curr_states)
         {
-            const auto it = m_state_to_certificate.find(state);
-            if (it == m_state_to_certificate.end())
+            if (!m_state_to_certificate.contains(state))
             {
-                const auto certificate = graphs::nauty_wrapper::compute_certificate(create_object_graph(state, problem, m_color_function));
+                m_state_to_certificate.emplace(state, graphs::nauty::compute_certificate(create_object_graph(state, problem, m_color_function)));
             }
         }
 

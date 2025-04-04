@@ -36,13 +36,13 @@ namespace mimir::search::match_tree
 /* MatchTree */
 
 template<formalism::HasConjunctiveCondition E>
-MatchTree<E>::MatchTree() : m_elements(), m_options(), m_root(create_root_generator_node(std::span<const E*>(m_elements.begin(), m_elements.end())))
+MatchTreeImpl<E>::MatchTreeImpl() : m_elements(), m_options(), m_root(create_root_generator_node(std::span<const E*>(m_elements.begin(), m_elements.end())))
 {
     m_statistics.generator_distribution.push_back(0);
 }
 
 template<formalism::HasConjunctiveCondition E>
-MatchTree<E>::MatchTree(const Repositories& pddl_repositories, std::vector<const E*> elements, const Options& options) :
+MatchTreeImpl<E>::MatchTreeImpl(const Repositories& pddl_repositories, std::vector<const E*> elements, const Options& options) :
     m_elements(std::move(elements)),
     m_options(options),
     m_root(create_root_generator_node(std::span<const E*>(m_elements.begin(), m_elements.end())))
@@ -79,7 +79,9 @@ MatchTree<E>::MatchTree(const Repositories& pddl_repositories, std::vector<const
 }
 
 template<formalism::HasConjunctiveCondition E>
-void MatchTree<E>::generate_applicable_elements_iteratively(const DenseState& state, const ProblemImpl& problem, std::vector<const E*>& out_applicable_elements)
+void MatchTreeImpl<E>::generate_applicable_elements_iteratively(const DenseState& state,
+                                                                const ProblemImpl& problem,
+                                                                std::vector<const E*>& out_applicable_elements)
 {
     m_evaluate_stack.clear();
     out_applicable_elements.clear();
@@ -97,17 +99,17 @@ void MatchTree<E>::generate_applicable_elements_iteratively(const DenseState& st
 }
 
 template<formalism::HasConjunctiveCondition E>
-const Statistics& MatchTree<E>::get_statistics() const
+const Statistics& MatchTreeImpl<E>::get_statistics() const
 {
     return m_statistics;
 }
 
 template<formalism::HasConjunctiveCondition E>
-std::unique_ptr<MatchTree<E>> MatchTree<E>::create(const Repositories& pddl_repositories, std::vector<const E*> elements, const Options& options)
+std::unique_ptr<MatchTreeImpl<E>> MatchTreeImpl<E>::create(const Repositories& pddl_repositories, std::vector<const E*> elements, const Options& options)
 {
-    return std::unique_ptr<MatchTree<E>>(new MatchTree<E>(pddl_repositories, std::move(elements), options));
+    return std::unique_ptr<MatchTreeImpl<E>>(new MatchTreeImpl<E>(pddl_repositories, std::move(elements), options));
 }
 
-template class MatchTree<GroundActionImpl>;
-template class MatchTree<GroundAxiomImpl>;
+template class MatchTreeImpl<GroundActionImpl>;
+template class MatchTreeImpl<GroundAxiomImpl>;
 }

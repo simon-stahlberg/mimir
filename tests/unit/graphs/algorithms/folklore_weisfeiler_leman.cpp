@@ -44,7 +44,7 @@ TEST(MimirTests, GraphsAlgorithmsFolkloreWeisfeilerLemanTest)
             two_triangle.add_undirected_edge(v5, v6);
             two_triangle.add_undirected_edge(v6, v4);
         }
-        auto two_triangle_certificate = graphs::kfwl::compute_certificate<2>(two_triangle, iso_type_function);
+        auto two_triangle_certificate = *graphs::kfwl::compute_certificate<2>(two_triangle, iso_type_function);
 
         auto sixgon = graphs::StaticVertexColoredDigraph();
         {
@@ -61,7 +61,7 @@ TEST(MimirTests, GraphsAlgorithmsFolkloreWeisfeilerLemanTest)
             sixgon.add_undirected_edge(v5, v6);
             sixgon.add_undirected_edge(v6, v1);
         }
-        auto sixgon_certificate = graphs::kfwl::compute_certificate<2>(sixgon, iso_type_function);
+        auto sixgon_certificate = *graphs::kfwl::compute_certificate<2>(sixgon, iso_type_function);
 
         EXPECT_NE(two_triangle_certificate, sixgon_certificate);
     }
@@ -75,7 +75,7 @@ TEST(MimirTests, GraphsAlgorithmsFolkloreWeisfeilerLemanTest)
             auto v2 = line_graph_1.add_vertex(graphs::Color(0));
             line_graph_1.add_undirected_edge(v1, v2);
         }
-        auto line_graph_1_certificate = graphs::kfwl::compute_certificate<2>(line_graph_1, iso_type_function);
+        auto line_graph_1_certificate = *graphs::kfwl::compute_certificate<2>(line_graph_1, iso_type_function);
 
         auto line_graph_2 = graphs::StaticVertexColoredDigraph();
         {
@@ -83,7 +83,7 @@ TEST(MimirTests, GraphsAlgorithmsFolkloreWeisfeilerLemanTest)
             auto v2 = line_graph_2.add_vertex(graphs::Color(1));
             line_graph_2.add_undirected_edge(v1, v2);
         }
-        auto line_graph_2_certificate = graphs::kfwl::compute_certificate<2>(line_graph_2, iso_type_function);
+        auto line_graph_2_certificate = *graphs::kfwl::compute_certificate<2>(line_graph_2, iso_type_function);
 
         EXPECT_EQ(line_graph_1_certificate, line_graph_2_certificate);
     }

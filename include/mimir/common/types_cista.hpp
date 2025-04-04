@@ -24,7 +24,7 @@
 #include "cista/containers/vector.h"
 #include "mimir/buffering/unordered_set.h"
 #include "mimir/common/concepts.hpp"
-#include "mimir/common/hash_cista.hpp"
+#include "mimir/common/hash.hpp"
 #include "mimir/common/types.hpp"
 
 #include <algorithm>

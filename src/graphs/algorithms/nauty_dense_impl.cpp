@@ -225,7 +225,7 @@ Certificate DenseGraphImpl::compute_certificate()
     // We usually see compression ratio ~ 2
     // std::cout << "Compression ratio: " << (double) canon_graph_repr_.str().size() / canon_graph_compressed_repr_.str().size() << std::endl;
 
-    return Certificate(canon_graph_compressed_repr_.str(), canon_coloring_);
+    return std::make_shared<CertificateImpl>(canon_graph_compressed_repr_.str(), canon_coloring_);
 }
 
 void DenseGraphImpl::clear(size_t num_vertices)

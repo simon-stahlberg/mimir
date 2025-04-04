@@ -36,7 +36,7 @@ namespace mimir::search
 
 LiftedAxiomEvaluatorImpl::LiftedAxiomEvaluatorImpl(Problem problem) : LiftedAxiomEvaluatorImpl(std::move(problem), DefaultEventHandlerImpl::create()) {}
 
-LiftedAxiomEvaluatorImpl::LiftedAxiomEvaluatorImpl(Problem problem, std::shared_ptr<IEventHandler> event_handler) :
+LiftedAxiomEvaluatorImpl::LiftedAxiomEvaluatorImpl(Problem problem, EventHandler event_handler) :
     m_problem(problem),
     m_event_handler(event_handler),
     m_condition_grounders(),
@@ -59,7 +59,7 @@ LiftedAxiomEvaluatorImpl::LiftedAxiomEvaluatorImpl(Problem problem, std::shared_
 
 LiftedAxiomEvaluator LiftedAxiomEvaluatorImpl::create(Problem problem) { return create(std::move(problem), DefaultEventHandlerImpl::create()); }
 
-LiftedAxiomEvaluator LiftedAxiomEvaluatorImpl::create(Problem problem, std::shared_ptr<IEventHandler> event_handler)
+LiftedAxiomEvaluator LiftedAxiomEvaluatorImpl::create(Problem problem, EventHandler event_handler)
 {
     return std::shared_ptr<LiftedAxiomEvaluatorImpl>(new LiftedAxiomEvaluatorImpl(std::move(problem), std::move(event_handler)));
 }
@@ -179,5 +179,5 @@ void LiftedAxiomEvaluatorImpl::on_end_search() { m_event_handler->on_end_search(
 
 const Problem& LiftedAxiomEvaluatorImpl::get_problem() const { return m_problem; }
 
-const std::shared_ptr<LiftedAxiomEvaluatorImpl::IEventHandler>& LiftedAxiomEvaluatorImpl::get_event_handler() const { return m_event_handler; }
+const LiftedAxiomEvaluatorImpl::EventHandler& LiftedAxiomEvaluatorImpl::get_event_handler() const { return m_event_handler; }
 }

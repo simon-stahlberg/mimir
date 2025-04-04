@@ -19,7 +19,7 @@
 #define MIMIR_SEARCH_STATE_HPP_
 
 #include "mimir/buffering/unordered_set.h"
-#include "mimir/common/hash_cista.hpp"
+#include "mimir/common/hash.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"

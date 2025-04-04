@@ -70,7 +70,7 @@ public:
             self().on_start_build_axiom_match_tree_impl(partition_index);
     }
 
-    void on_finish_build_axiom_match_tree(const match_tree::MatchTree<formalism::GroundAxiomImpl>& match_tree) override
+    void on_finish_build_axiom_match_tree(const match_tree::MatchTreeImpl<formalism::GroundAxiomImpl>& match_tree) override
     {
         m_statistics.m_match_tree_partition_statistics.push_back(match_tree.get_statistics());
 

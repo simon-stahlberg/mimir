@@ -20,6 +20,7 @@
 
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types.hpp"
+#include "mimir/graphs/algorithms/declarations.hpp"
 #include "mimir/graphs/graph_interface.hpp"
 #include "mimir/graphs/graph_properties.hpp"
 #include "mimir/graphs/graph_traversal_interface.hpp"
@@ -36,15 +37,15 @@
 namespace mimir::graphs::color_refinement
 {
 
-/// @brief `Certificate` encapsulates the canonical coloring and the canonical compression function (decoding table).
-class Certificate
+/// @brief `CertificateImpl` encapsulates the canonical coloring and the canonical compression function (decoding table).
+class CertificateImpl
 {
 public:
     using CompressionFunction = std::unordered_map<std::pair<Color, ColorList>, Color, loki::Hash<std::pair<Color, ColorList>>>;
 
     using CanonicalCompressionFunction = std::map<std::pair<Color, ColorList>, Color>;
 
-    Certificate(CompressionFunction f, ColorList hash_to_color);
+    CertificateImpl(CompressionFunction f, ColorList hash_to_color);
 
     const ColorList& get_hash_to_color() const;
 
@@ -67,13 +68,13 @@ private:
 /// @param lhs is the first certificate.
 /// @param rhs is the second certificate.
 /// @return Return true iff both certificates are equal.
-extern bool operator==(const Certificate& lhs, const Certificate& rhs);
+extern bool operator==(const CertificateImpl& lhs, const CertificateImpl& rhs);
 
 /// @brief Print a certificate to the ostream.
 /// @param out is the ostream.
 /// @param element is the certificate.
 /// @return a reference to the ostream.
-extern std::ostream& operator<<(std::ostream& out, const Certificate& element);
+extern std::ostream& operator<<(std::ostream& out, const CertificateImpl& element);
 
 /// @brief `compute_certificate` implements the color refinement algorithm.
 /// Sources: https://arxiv.org/pdf/1907.09582

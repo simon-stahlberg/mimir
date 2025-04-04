@@ -48,7 +48,7 @@ LiftedApplicableActionGeneratorImpl::LiftedApplicableActionGeneratorImpl(formali
 {
 }
 
-LiftedApplicableActionGeneratorImpl::LiftedApplicableActionGeneratorImpl(Problem problem, std::shared_ptr<IEventHandler> event_handler) :
+LiftedApplicableActionGeneratorImpl::LiftedApplicableActionGeneratorImpl(Problem problem, EventHandler event_handler) :
     m_problem(problem),
     m_event_handler(event_handler),
     m_action_grounding_data(),
@@ -72,7 +72,7 @@ LiftedApplicableActionGeneratorImpl::LiftedApplicableActionGeneratorImpl(Problem
 
 LiftedApplicableActionGenerator LiftedApplicableActionGeneratorImpl::create(Problem problem) { return create(problem, DefaultEventHandlerImpl::create()); }
 
-LiftedApplicableActionGenerator LiftedApplicableActionGeneratorImpl::create(Problem problem, std::shared_ptr<IEventHandler> event_handler)
+LiftedApplicableActionGenerator LiftedApplicableActionGeneratorImpl::create(Problem problem, EventHandler event_handler)
 {
     return std::shared_ptr<LiftedApplicableActionGeneratorImpl>(new LiftedApplicableActionGeneratorImpl(std::move(problem), std::move(event_handler)));
 }

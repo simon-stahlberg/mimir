@@ -31,20 +31,20 @@ namespace mimir::graphs::nauty
 using mimir::operator<<;
 
 /* Certificate */
-Certificate::Certificate(std::string nauty_certificate, mimir::graphs::ColorList canonical_initial_coloring) :
+CertificateImpl::CertificateImpl(std::string nauty_certificate, mimir::graphs::ColorList canonical_initial_coloring) :
     m_canonical_graph(std::move(nauty_certificate)),
     m_canonical_coloring(std::move(canonical_initial_coloring))
 {
     assert(std::is_sorted(m_canonical_coloring.begin(), m_canonical_coloring.end()));
 }
 
-const std::string& Certificate::get_canonical_graph() const { return m_canonical_graph; }
+const std::string& CertificateImpl::get_canonical_graph() const { return m_canonical_graph; }
 
-const mimir::graphs::ColorList& Certificate::get_canonical_coloring() const { return m_canonical_coloring; }
+const mimir::graphs::ColorList& CertificateImpl::get_canonical_coloring() const { return m_canonical_coloring; }
 
-bool operator==(const Certificate& lhs, const Certificate& rhs) { return loki::EqualTo<Certificate>()(lhs, rhs); }
+bool operator==(const CertificateImpl& lhs, const CertificateImpl& rhs) { return loki::EqualTo<CertificateImpl>()(lhs, rhs); }
 
-bool operator<(const Certificate& lhs, const Certificate& rhs)
+bool operator<(const CertificateImpl& lhs, const CertificateImpl& rhs)
 {
     if (&lhs != &rhs)
     {
@@ -57,7 +57,7 @@ bool operator<(const Certificate& lhs, const Certificate& rhs)
     return false;
 }
 
-std::ostream& operator<<(std::ostream& os, const Certificate& element)
+std::ostream& operator<<(std::ostream& os, const CertificateImpl& element)
 {
     os << "CertificateNauty(" << "canonical_graph=" << element.get_canonical_graph() << ", " << "canonical_coloring=" << element.get_canonical_coloring()
        << ")";

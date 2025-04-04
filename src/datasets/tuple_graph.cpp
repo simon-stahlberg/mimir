@@ -59,14 +59,18 @@ TupleGraphList TupleGraphImpl::create(StateSpace state_space, const ColorFunctio
 {
     auto tuple_graphs = TupleGraphList {};
 
+    /* Collect certificates to avoid costly recomputation. */
     auto state_to_certificate = StateToCertificate {};
     auto certificate_to_v_idx = CertificateMap<graphs::VertexIndex> {};
-    for (const auto& v : state_space->get_graph().get_vertices())
+    if (state_space->is_symmetry_reduced())
     {
-        const auto& certificate = graphs::get_certificate(v);
-        const auto state = graphs::get_state(v);
-        state_to_certificate.emplace(state, certificate);
-        certificate_to_v_idx.emplace(certificate.get(), v.get_index());
+        for (const auto& v : state_space->get_graph().get_vertices())
+        {
+            const auto& certificate = graphs::get_certificate(v);
+            const auto state = graphs::get_state(v);
+            state_to_certificate.emplace(state, certificate);
+            certificate_to_v_idx.emplace(certificate.get(), v.get_index());
+        }
     }
 
     for (const auto& v : state_space->get_graph().get_vertices())

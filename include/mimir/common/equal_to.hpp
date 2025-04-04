@@ -10,40 +10,24 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
+ *<
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "cista/containers/dynamic_bitset.h"
+#ifndef MIMIR_COMMON_EQUAL_TO_HPP_
+#define MIMIR_COMMON_EQUAL_TO_HPP_
 
-#include "cista/serialization.h"
-#include "mimir/common/hash.hpp"
-#include "mimir/formalism/ground_action.hpp"
+#include <loki/details/utils/equal_to.hpp>
+#include <memory>
 
-#include <gtest/gtest.h>
-
-namespace mimir::tests
+namespace mimir
 {
-TEST(CistaTests, CistaDynamicBitsetIteratorTest)
+template<typename T>
+struct SharedPtrDerefEqualTo
 {
-    size_t num_bits = 200;
-    auto bitset = cista::raw::dynamic_bitset<uint64_t>(num_bits);
-    bitset.set(0);
-    bitset.set(2);
-    bitset.set(4);
-    bitset.set(99);
+    bool operator()(const std::shared_ptr<T>& lhs, const std::shared_ptr<T>& rhs) const { return loki::EqualTo<std::decay_t<T>>()(*lhs, *rhs); }
+};
+}
 
-    auto it = bitset.begin();
-    auto end = bitset.end();
-    EXPECT_EQ(*it, 0);
-    ++it;
-    EXPECT_EQ(*it, 2);
-    ++it;
-    EXPECT_EQ(*it, 4);
-    ++it;
-    EXPECT_EQ(*it, 99);
-    ++it;
-    EXPECT_EQ(it, end);
-}
-}
+#endif

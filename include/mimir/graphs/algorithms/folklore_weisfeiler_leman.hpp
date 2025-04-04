@@ -18,9 +18,12 @@
 #ifndef MIMIR_GRAPHS_ALGORITHMS_FOLKLORE_WEISFEILER_LEMAN_HPP_
 #define MIMIR_GRAPHS_ALGORITHMS_FOLKLORE_WEISFEILER_LEMAN_HPP_
 
+#include "mimir/common/equal_to.hpp"
+#include "mimir/common/hash.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types.hpp"
 #include "mimir/graphs/algorithms/color_refinement.hpp"
+#include "mimir/graphs/algorithms/declarations.hpp"
 #include "mimir/graphs/algorithms/nauty.hpp"
 #include "mimir/graphs/graph_interface.hpp"
 #include "mimir/graphs/graph_properties.hpp"
@@ -38,10 +41,10 @@
 namespace mimir::graphs::kfwl
 {
 
-/// @brief `Certificate` encapsulates the final tuple colorings and the decoding tables.
+/// @brief `CertificateImpl` encapsulates the final tuple colorings and the decoding tables.
 /// @tparam K is the dimensionality.
 template<size_t K>
-class Certificate
+class CertificateImpl
 {
 public:
     /* Compression of new color to map (C(bar{v}), {{(c_1^1, ...,c_k^1), ..., (c_1^r, ...,c_k^r)}}) to an integer color for bar{v} in V^k */
@@ -49,7 +52,7 @@ public:
         std::unordered_map<std::pair<Color, std::vector<ColorArray<K>>>, Color, loki::Hash<std::pair<Color, std::vector<ColorArray<K>>>>>;
     using CanonicalConfigurationCompressionFunction = std::map<std::pair<Color, std::vector<ColorArray<K>>>, Color>;
 
-    Certificate(ConfigurationCompressionFunction f, ColorList hash_to_color);
+    CertificateImpl(ConfigurationCompressionFunction f, ColorList hash_to_color);
 
     const CanonicalConfigurationCompressionFunction& get_canonical_configuration_compression_function() const;
     const ColorList& get_canonical_coloring() const;
@@ -67,21 +70,22 @@ private:
 };
 
 /// @brief `IsomorphismTypeCompressionFunction` encapsulates mappings from canonical subgraphs to colors.
-using IsomorphismTypeCompressionFunction = std::unordered_map<nauty::Certificate, Color, loki::Hash<nauty::Certificate>, loki::EqualTo<nauty::Certificate>>;
+using IsomorphismTypeCompressionFunction =
+    std::unordered_map<nauty::Certificate, Color, SharedPtrDerefHash<nauty::CertificateImpl>, SharedPtrDerefEqualTo<nauty::CertificateImpl>>;
 
 /// @brief Compare two certificates for equality.
 /// @param lhs is the first certificate.
 /// @param rhs is the second certificate.
 /// @return Return true iff both certificates are equal.
 template<size_t K>
-bool operator==(const Certificate<K>& lhs, const Certificate<K>& rhs);
+bool operator==(const CertificateImpl<K>& lhs, const CertificateImpl<K>& rhs);
 
 /// @brief Print a certificate to the ostream.
 /// @param out is the ostream.
 /// @param element is the certificate.
 /// @return a reference to the ostream.
 template<size_t K>
-std::ostream& operator<<(std::ostream& out, const Certificate<K>& element);
+std::ostream& operator<<(std::ostream& out, const CertificateImpl<K>& element);
 
 /// @brief Compute the perfect hash of the given k-tuple.
 /// @tparam K is the dimensionality.

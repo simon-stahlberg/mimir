@@ -21,6 +21,7 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
 #include "mimir/search/declarations.hpp"
+#include "mimir/search/match_tree/declarations.hpp"
 #include "mimir/search/match_tree/match_tree.hpp"
 
 namespace mimir::search
@@ -41,15 +42,13 @@ public:
     using DefaultEventHandler = axiom_evaluator::grounded::DefaultEventHandler;
 
     GroundedAxiomEvaluatorImpl(formalism::Problem problem,
-                               std::vector<std::unique_ptr<match_tree::MatchTree<formalism::GroundAxiomImpl>>>&& match_tree_partitioning,
+                               match_tree::MatchTreeList<formalism::GroundAxiomImpl>&& match_tree_partitioning,
                                EventHandler event_handler);
 
-    static GroundedAxiomEvaluator create(formalism::Problem problem,
-                                         std::vector<std::unique_ptr<match_tree::MatchTree<formalism::GroundAxiomImpl>>>&& match_tree_partitioning);
+    static GroundedAxiomEvaluator create(formalism::Problem problem, match_tree::MatchTreeList<formalism::GroundAxiomImpl>&& match_tree_partitioning);
 
-    static GroundedAxiomEvaluator create(formalism::Problem problem,
-                                         std::vector<std::unique_ptr<match_tree::MatchTree<formalism::GroundAxiomImpl>>>&& match_tree_partitioning,
-                                         EventHandler event_handler);
+    static GroundedAxiomEvaluator
+    create(formalism::Problem problem, match_tree::MatchTreeList<formalism::GroundAxiomImpl>&& match_tree_partitioning, EventHandler event_handler);
 
     // Uncopyable
     GroundedAxiomEvaluatorImpl(const GroundedAxiomEvaluatorImpl& other) = delete;
@@ -72,7 +71,7 @@ public:
 
 private:
     formalism::Problem m_problem;
-    std::vector<std::unique_ptr<match_tree::MatchTree<formalism::GroundAxiomImpl>>> m_match_tree_partitioning;
+    match_tree::MatchTreeList<formalism::GroundAxiomImpl> m_match_tree_partitioning;
     EventHandler m_event_handler;
 };
 

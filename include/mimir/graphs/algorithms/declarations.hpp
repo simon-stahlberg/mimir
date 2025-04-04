@@ -15,35 +15,34 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "cista/containers/dynamic_bitset.h"
+#ifndef MIMIR_GRAPHS_ALGORITHMS_DECLARATIONS_HPP_
+#define MIMIR_GRAPHS_ALGORITHMS_DECLARATIONS_HPP_
 
-#include "cista/serialization.h"
-#include "mimir/common/hash.hpp"
-#include "mimir/formalism/ground_action.hpp"
+#include <cstddef>
+#include <memory>
 
-#include <gtest/gtest.h>
-
-namespace mimir::tests
+namespace mimir::graphs
 {
-TEST(CistaTests, CistaDynamicBitsetIteratorTest)
+namespace nauty
 {
-    size_t num_bits = 200;
-    auto bitset = cista::raw::dynamic_bitset<uint64_t>(num_bits);
-    bitset.set(0);
-    bitset.set(2);
-    bitset.set(4);
-    bitset.set(99);
+class CertificateImpl;
+using Certificate = std::shared_ptr<CertificateImpl>;
+}
 
-    auto it = bitset.begin();
-    auto end = bitset.end();
-    EXPECT_EQ(*it, 0);
-    ++it;
-    EXPECT_EQ(*it, 2);
-    ++it;
-    EXPECT_EQ(*it, 4);
-    ++it;
-    EXPECT_EQ(*it, 99);
-    ++it;
-    EXPECT_EQ(it, end);
+namespace color_refinement
+{
+class CertificateImpl;
+using Certificate = std::shared_ptr<CertificateImpl>;
 }
+
+namespace kfwl
+{
+template<size_t K>
+class CertificateImpl;
+template<size_t K>
+using Certificate = std::shared_ptr<CertificateImpl<K>>;
 }
+
+}
+
+#endif

@@ -21,6 +21,7 @@
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types.hpp"
 #include "mimir/graphs/algorithms/color_refinement.hpp"
+#include "mimir/graphs/algorithms/folklore_weisfeiler_leman.hpp"
 #include "mimir/graphs/algorithms/nauty.hpp"
 #include "mimir/graphs/graph_interface.hpp"
 #include "mimir/graphs/graph_properties.hpp"
@@ -39,10 +40,10 @@ namespace mimir::graphs::kfwl
 {
 using mimir::operator<<;
 
-/// @brief `Certificate` encapsulates the final tuple colorings and the decoding tables.
+/// @brief `CertificateImpl` encapsulates the final tuple colorings and the decoding tables.
 /// @tparam K is the dimensionality.
 template<size_t K>
-Certificate<K>::Certificate(ConfigurationCompressionFunction f, ColorList hash_to_color) :
+CertificateImpl<K>::CertificateImpl(ConfigurationCompressionFunction f, ColorList hash_to_color) :
     m_hash_to_color(std::move(hash_to_color)),
     m_f(f.begin(), f.end()),
     m_canonical_coloring(m_hash_to_color.begin(), m_hash_to_color.end())
@@ -51,27 +52,27 @@ Certificate<K>::Certificate(ConfigurationCompressionFunction f, ColorList hash_t
 }
 
 template<size_t K>
-const Certificate<K>::CanonicalConfigurationCompressionFunction& Certificate<K>::get_canonical_configuration_compression_function() const
+const CertificateImpl<K>::CanonicalConfigurationCompressionFunction& CertificateImpl<K>::get_canonical_configuration_compression_function() const
 {
     return m_f;
 }
 
 template<size_t K>
-const ColorList& Certificate<K>::get_canonical_coloring() const
+const ColorList& CertificateImpl<K>::get_canonical_coloring() const
 {
     return m_canonical_coloring;
 }
 
 template<size_t K>
-bool operator==(const Certificate<K>& lhs, const Certificate<K>& rhs)
+bool operator==(const CertificateImpl<K>& lhs, const CertificateImpl<K>& rhs)
 {
-    return loki::EqualTo<Certificate<K>>()(lhs, rhs);
+    return loki::EqualTo<CertificateImpl<K>>()(lhs, rhs);
 }
 
 template<size_t K>
-std::ostream& operator<<(std::ostream& out, const Certificate<K>& element)
+std::ostream& operator<<(std::ostream& out, const CertificateImpl<K>& element)
 {
-    out << "Certificate" << K << "FWL(" << "canonical_coloring=" << element.get_canonical_coloring() << ", "
+    out << "CertificateImpl" << K << "FWL(" << "canonical_coloring=" << element.get_canonical_coloring() << ", "
         << "canonical_configuration_compression_function=" << element.get_canonical_configuration_compression_function() << ")";
     return out;
 }
@@ -227,7 +228,7 @@ Certificate<K> compute_certificate(const G& graph, IsomorphismTypeCompressionFun
     auto L = ColorSet(hash_to_color.begin(), hash_to_color.end());
 
     /* Refine colors of k-tuples. */
-    auto f = typename Certificate<K>::ConfigurationCompressionFunction();
+    auto f = typename CertificateImpl<K>::ConfigurationCompressionFunction();
     auto M = std::vector<std::pair<Index, ColorArray<K>>>();
     auto M_replaced = std::vector<std::tuple<Color, std::vector<ColorArray<K>>, Index>>();
     // (line 3-18): subroutine to find stable coloring
@@ -297,7 +298,7 @@ Certificate<K> compute_certificate(const G& graph, IsomorphismTypeCompressionFun
     }
 
     /* Return the certificate */
-    return Certificate(std::move(f), std::move(hash_to_color));
+    return std::make_shared<CertificateImpl<K>>(std::move(f), std::move(hash_to_color));
 }
 }
 

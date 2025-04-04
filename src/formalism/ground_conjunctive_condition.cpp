@@ -18,7 +18,7 @@
 #include "mimir/formalism/ground_conjunctive_condition.hpp"
 
 #include "mimir/common/concepts.hpp"
-#include "mimir/common/hash_cista.hpp"
+#include "mimir/common/hash.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/ground_function_expressions.hpp"

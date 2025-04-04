@@ -177,14 +177,14 @@ GroundedAxiomEvaluator DeleteRelaxedProblemExplorator::create_grounded_axiom_eva
     start_time = std::chrono::high_resolution_clock::now();
 
     /* Create a MatchTree for each partition. */
-    auto match_tree_partitioning = std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>> {};
+    auto match_tree_partitioning = std::vector<std::unique_ptr<match_tree::MatchTreeImpl<GroundAxiomImpl>>> {};
     for (size_t i = 0; i < num_partitions; ++i)
     {
         event_handler->on_start_build_axiom_match_tree(i);
 
         const auto& ground_axioms = ground_axiom_partitioning.at(i);
 
-        auto match_tree = match_tree::MatchTree<GroundAxiomImpl>::create(pddl_repositories, ground_axioms, options);
+        auto match_tree = match_tree::MatchTreeImpl<GroundAxiomImpl>::create(pddl_repositories, ground_axioms, options);
 
         event_handler->on_finish_build_axiom_match_tree(*match_tree);
 
@@ -239,7 +239,7 @@ DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator(cons
 
     event_handler->on_start_build_action_match_tree();
 
-    auto match_tree = match_tree::MatchTree<GroundActionImpl>::create(pddl_repositories, ground_actions, options);
+    auto match_tree = match_tree::MatchTreeImpl<GroundActionImpl>::create(pddl_repositories, ground_actions, options);
 
     event_handler->on_finish_build_action_match_tree(*match_tree);
 

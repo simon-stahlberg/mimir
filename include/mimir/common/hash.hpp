@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_COMMON_HASH_CISTA_HPP_
-#define MIMIR_COMMON_HASH_CISTA_HPP_
+#ifndef MIMIR_COMMON_HASH_HPP_
+#define MIMIR_COMMON_HASH_HPP_
 
 #include "cista/containers/dual_dynamic_bitset.h"
 #include "cista/containers/dynamic_bitset.h"
@@ -26,6 +26,15 @@
 #include "cista/containers/vector.h"
 
 #include <loki/details/utils/hash.hpp>
+
+namespace mimir
+{
+template<typename T>
+struct SharedPtrDerefHash
+{
+    size_t operator()(const std::shared_ptr<T>& ptr) const { return loki::Hash<std::decay_t<T>>()(*ptr); }
+};
+}
 
 /**
  * We inject additional hash specializations into the loki::Hash.

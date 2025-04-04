@@ -20,7 +20,7 @@
 
 #include "cista/serialization.h"
 #include "mimir/buffering/byte_buffer_segmented.h"
-#include "mimir/common/hash_cista.hpp"
+#include "mimir/common/hash.hpp"
 #include "mimir/common/memory.hpp"
 
 #include <absl/container/flat_hash_set.h>

@@ -17,7 +17,7 @@
 
 #include "mimir/formalism/ground_axiom.hpp"
 
-#include "mimir/common/hash_cista.hpp"
+#include "mimir/common/hash.hpp"
 #include "mimir/formalism/problem.hpp"
 
 namespace mimir::formalism

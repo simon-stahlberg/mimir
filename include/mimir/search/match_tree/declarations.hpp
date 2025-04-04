@@ -90,7 +90,11 @@ struct Options;
 struct Statistics;
 
 template<formalism::HasConjunctiveCondition E>
-class MatchTree;
+class MatchTreeImpl;
+template<formalism::HasConjunctiveCondition E>
+using MatchTree = std::unique_ptr<MatchTreeImpl<E>>;
+template<formalism::HasConjunctiveCondition E>
+using MatchTreeList = std::vector<MatchTree<E>>;
 
 /**
  * Aliases

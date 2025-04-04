@@ -19,6 +19,7 @@
 #define MIMIR_GRAPHS_ALGORITHMS_NAUTY_HPP_
 
 #include "mimir/common/printers.hpp"
+#include "mimir/graphs/algorithms/declarations.hpp"
 #include "mimir/graphs/concrete/digraph_vertex_colored.hpp"
 #include "mimir/graphs/declarations.hpp"
 #include "mimir/graphs/graph_interface.hpp"
@@ -35,8 +36,8 @@ namespace mimir::graphs::nauty
 class DenseGraphImpl;
 class SparseGraphImpl;
 
-/// @brief `Certificate` encapsulates a canonical graph representation of a vertex-colored graph.
-class Certificate
+/// @brief `CertificateImpl` encapsulates a canonical graph representation of a vertex-colored graph.
+class CertificateImpl
 {
 private:
     /* Core members for comparing certificates. */
@@ -46,11 +47,11 @@ private:
     mimir::graphs::ColorList m_canonical_coloring;
 
 public:
-    Certificate(std::string canonical_graph, mimir::graphs::ColorList canonical_coloring);
-    Certificate(const Certificate& other) = delete;
-    Certificate& operator=(const Certificate& other) = delete;
-    Certificate(Certificate&& other) = default;
-    Certificate& operator=(Certificate&& other) = default;
+    CertificateImpl(std::string canonical_graph, mimir::graphs::ColorList canonical_coloring);
+    CertificateImpl(const CertificateImpl& other) = delete;
+    CertificateImpl& operator=(const CertificateImpl& other) = delete;
+    CertificateImpl(CertificateImpl&& other) = default;
+    CertificateImpl& operator=(CertificateImpl&& other) = default;
 
     const std::string& get_canonical_graph() const;
     const mimir::graphs::ColorList& get_canonical_coloring() const;
@@ -61,10 +62,10 @@ public:
     auto identifying_members() const { return std::tuple(std::cref(get_canonical_graph()), std::cref(get_canonical_coloring())); }
 };
 
-extern bool operator==(const Certificate& lhs, const Certificate& rhs);
-extern bool operator<(const Certificate& lhs, const Certificate& rhs);
+extern bool operator==(const CertificateImpl& lhs, const CertificateImpl& rhs);
+extern bool operator<(const CertificateImpl& lhs, const CertificateImpl& rhs);
 
-extern std::ostream& operator<<(std::ostream& os, const Certificate& element);
+extern std::ostream& operator<<(std::ostream& os, const CertificateImpl& element);
 
 /// @brief `DenseGraph` encapsulates a dense graph representation compatible with Nauty.
 class DenseGraph
@@ -204,12 +205,12 @@ public:
     friend Certificate compute_certificate(const SparseGraph& graph);
 };
 
-/// @brief Compute the nauty graph `Certificate` for a given graph that satisfies the `mimir::graphs::IsVertexColoredGraph` graph concept.
+/// @brief Compute the nauty graph `CertificateImpl` for a given graph that satisfies the `mimir::graphs::IsVertexColoredGraph` graph concept.
 /// This function internally uses the `SparseGraph` representation for simplicity.
 /// To use `DenseGraph`, one has to construct it and call `compute_certificate`.
 /// @tparam is the type of the graph.
 /// @param graph is the graph that satisfies the `mimir::graphs::IsVertexColoredGraph` graph concept.
-/// @return is the compressed nauty graph `Certificate`.
+/// @return is the compressed nauty graph `CertificateImpl`.
 template<mimir::graphs::IsVertexColoredGraph Graph>
 Certificate compute_certificate(const Graph& graph)
 {
