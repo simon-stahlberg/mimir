@@ -19,10 +19,8 @@
 #define MIMIR_GRAPHS_ALGORITHMS_FOLKLORE_WEISFEILER_LEMAN_IMPL_HPP_
 
 #include "mimir/common/printers.hpp"
-#include "mimir/common/types.hpp"
 #include "mimir/graphs/algorithms/color_refinement.hpp"
-#include "mimir/graphs/algorithms/folklore_weisfeiler_leman.hpp"
-#include "mimir/graphs/algorithms/nauty.hpp"
+#include "mimir/graphs/algorithms/folklore_weisfeiler_leman_decl.hpp"
 #include "mimir/graphs/graph_interface.hpp"
 #include "mimir/graphs/graph_properties.hpp"
 #include "mimir/graphs/graph_traversal_interface.hpp"
@@ -30,7 +28,6 @@
 
 #include <cassert>
 #include <cmath>
-#include <loki/details/utils/hash.hpp>
 #include <map>
 #include <set>
 #include <unordered_map>
@@ -38,7 +35,6 @@
 
 namespace mimir::graphs::kfwl
 {
-using mimir::operator<<;
 
 /// @brief `CertificateImpl` encapsulates the final tuple colorings and the decoding tables.
 /// @tparam K is the dimensionality.
@@ -72,8 +68,11 @@ bool operator==(const CertificateImpl<K>& lhs, const CertificateImpl<K>& rhs)
 template<size_t K>
 std::ostream& operator<<(std::ostream& out, const CertificateImpl<K>& element)
 {
-    out << "CertificateImpl" << K << "FWL(" << "canonical_coloring=" << element.get_canonical_coloring() << ", "
-        << "canonical_configuration_compression_function=" << element.get_canonical_configuration_compression_function() << ")";
+    out << "CertificateImpl" << K << "FWL(" << "canonical_coloring=";
+    mimir::operator<<(out, element.get_canonical_coloring());
+    out << ", " << "canonical_configuration_compression_function=";
+    mimir::operator<<(out, element.get_canonical_configuration_compression_function());
+    out << ")";
     return out;
 }
 
@@ -140,9 +139,6 @@ std::pair<ColorList, ColorMap<IndexList>> compute_ordered_isomorphism_types(cons
     auto hash_to_color = ColorList(num_hashes);
     auto color_to_hashes = ColorMap<IndexList>();
 
-    auto subgraph = nauty::SparseGraph(K);
-    auto subgraph_coloring = ColorList();
-
     // Subroutine to compute (ordered) isomorphic types of all k-tuples of vertices.
     auto v_to_i = IndexMap<Index>();
     for (size_t hash = 0; hash < num_hashes; ++hash)
@@ -155,27 +151,26 @@ std::pair<ColorList, ColorMap<IndexList>> compute_ordered_isomorphism_types(cons
             v_to_i.emplace(t[i], v_to_i.size());
         }
 
-        // Initialize empty subgraph and coloring
-        const auto subgraph_num_vertices = v_to_i.size();
-        subgraph.clear(subgraph_num_vertices);
-        subgraph_coloring.resize(subgraph_num_vertices);
-
         // Instantiate vertex-colored subgraph.
+        auto subgraph = graphs::StaticVertexColoredDigraph();
+        for (const auto [v1, i1] : v_to_i)
+        {
+            subgraph.add_vertex(get_color(graph.get_vertex(v_to_vertex.at(v1))));
+        }
         for (const auto [v1, i1] : v_to_i)
         {
             for (const auto [v2, i2] : v_to_i)
             {
                 if (adj_matrix[v1][v2])
                 {
-                    subgraph.add_edge(i1, i2);
+                    subgraph.add_directed_edge(i1, i2);
                 }
             }
-            subgraph_coloring[i1] = get_color(graph.get_vertex(v_to_vertex.at(v1)));
         }
-        subgraph.add_vertex_coloring(subgraph_coloring);
 
         // Isomorphism function is shared among several runs to ensure canonical form for different runs.
-        auto result = iso_type_function.emplace(compute_certificate(subgraph), iso_type_function.size());
+        auto result = iso_type_function.emplace(std::make_shared<nauty::SparseGraph>(nauty::compute_canonical_graph(nauty::SparseGraph(subgraph))),
+                                                iso_type_function.size());
 
         const auto color = result.first->second;
         hash_to_color.at(hash) = color;
@@ -236,7 +231,11 @@ Certificate<K> compute_certificate(const G& graph, IsomorphismTypeCompressionFun
     while (!L.empty())
     {
         if (debug)
-            std::cout << "L: " << L << std::endl;
+        {
+            std::cout << "L: ";
+            mimir::operator<<(std::cout, L);
+            std::cout << std::endl;
+        }
 
         // Clear data structures that are reused.
         M.clear();
@@ -275,7 +274,11 @@ Certificate<K> compute_certificate(const G& graph, IsomorphismTypeCompressionFun
         std::sort(M.begin(), M.end());
 
         if (debug)
-            std::cout << "M: " << M << std::endl;
+        {
+            std::cout << "M: ";
+            mimir::operator<<(std::cout, M);
+            std::cout << std::endl;
+        }
 
         // (line 16): Scan M and replace tuples (vec{v},c_1^1,...,c_k^1,...,vec{v},c_1^r,...,c_k^r) with single tuple
         // (C(vec{v}),(c_1^1,...,c_k^1),...,(c_1^r,...,c_k^r))
@@ -285,7 +288,11 @@ Certificate<K> compute_certificate(const G& graph, IsomorphismTypeCompressionFun
         std::sort(M_replaced.begin(), M_replaced.end());
 
         if (debug)
-            std::cout << "M_replaced: " << M_replaced << std::endl;
+        {
+            std::cout << "M_replaced: ";
+            mimir::operator<<(std::cout, M_replaced);
+            std::cout << std::endl;
+        }
 
         // (line 18): Split color classes
         color_refinement::split_color_classes(M_replaced, f, max_color, hash_to_color, color_to_hashes, L);

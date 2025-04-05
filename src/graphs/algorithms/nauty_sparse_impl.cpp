@@ -17,8 +17,6 @@
 
 #include "nauty_sparse_impl.hpp"
 
-#include "nauty_utils.hpp"
-
 #include <algorithm>
 #include <boost/iostreams/copy.hpp>
 #include <boost/iostreams/filter/gzip.hpp>
@@ -27,331 +25,161 @@
 #include <sstream>
 #include <stdexcept>
 
-namespace mimir::graphs::nauty
+namespace mimir::graphs::nauty::details
 {
 
-void SparseGraphImpl::copy_graph_data(const sparsegraph& in_graph, sparsegraph& out_graph) const
+void SparseGraphImpl::initialize_sparsegraph()
 {
-    std::copy(in_graph.v, in_graph.v + n_, out_graph.v);
-    std::copy(in_graph.d, in_graph.d + n_, out_graph.d);
-    std::copy(in_graph.e, in_graph.e + in_graph.nde, out_graph.e);
-    out_graph.nde = in_graph.nde;
+    SG_INIT(m_graph);
+    m_graph.nde = m_nde;
+    m_graph.v = m_v.data();
+    m_graph.nv = m_nv;
+    m_graph.d = m_d.data();
+    m_graph.e = m_e.data();
+    m_graph.vlen = m_vlen;
+    m_graph.dlen = m_dlen;
+    m_graph.elen = m_elen;
 }
 
-void SparseGraphImpl::initialize_graph_data(sparsegraph& out_graph) const
+SparseGraphImpl::SparseGraphImpl(size_t nde,
+                                 std::vector<size_t> v,
+                                 int nv,
+                                 std::vector<int> d,
+                                 std::vector<int> e,
+                                 size_t vlen,
+                                 size_t dlen,
+                                 size_t elen,
+                                 std::vector<int> lab,
+                                 std::vector<int> ptn,
+                                 std::vector<uint32_t> coloring) :
+    m_nde(nde),
+    m_v(std::move(v)),
+    m_nv(nv),
+    m_d(std::move(d)),
+    m_e(std::move(e)),
+    m_vlen(vlen),
+    m_dlen(dlen),
+    m_elen(elen),
+    m_lab(std::move(lab)),
+    m_ptn(std::move(ptn)),
+    m_coloring(std::move(coloring)),
+    m_graph()
 {
-    out_graph.nv = n_;
-    out_graph.nde = 0;  // No edges yet
-    std::fill(out_graph.d, out_graph.d + n_, 0);
-    for (size_t i = 0; i < n_; ++i)
-    {
-        out_graph.v[i] = i * n_;
-    }
-    std::fill(out_graph.e, out_graph.e + n_ * n_, 0);
-}
-
-void SparseGraphImpl::allocate_graph(sparsegraph& out_graph) const
-{
-    if (n_ > 0)
-    {
-        // Allocate the sparse graph structure, assuming a complete graph
-        SG_INIT(out_graph);
-        SG_ALLOC(out_graph, n_, n_ * n_, "malloc");
-    }
-    else
-    {
-        // Initialize lengths to zero when n is zero
-        out_graph.vlen = 0;
-        out_graph.dlen = 0;
-        out_graph.elen = 0;
-    }
-
-    initialize_graph_data(out_graph);
-}
-
-void SparseGraphImpl::deallocate_graph(sparsegraph& the_graph) const
-{
-    if (c_ > 0)
-    {
-        // Deallocate the sparse graph structure
-        SG_FREE(the_graph);
-    }
-}
-
-SparseGraphImpl::SparseGraphImpl(size_t num_vertices) :
-    n_(num_vertices),
-    c_(n_),
-    adj_matrix_(c_ * c_, false),
-    use_default_ptn_(true),
-    canon_coloring_(n_, 0),
-    lab_(c_),
-    ptn_(c_),
-    canon_graph_repr_(),
-    canon_graph_compressed_repr_()
-{
-    allocate_graph(graph_);
-    allocate_graph(canon_graph_);
+    initialize_sparsegraph();
 }
 
 SparseGraphImpl::SparseGraphImpl(const SparseGraphImpl& other) :
-    n_(other.n_),
-    c_(other.c_),
-    adj_matrix_(other.adj_matrix_),
-    use_default_ptn_(other.use_default_ptn_),
-    canon_coloring_(other.n_, 0),
-    lab_(other.lab_),
-    ptn_(other.ptn_),
-    canon_graph_repr_(),
-    canon_graph_compressed_repr_()
+    m_nde(other.get_nde()),
+    m_v(other.get_v()),
+    m_nv(other.get_nv()),
+    m_d(other.get_d()),
+    m_e(other.get_e()),
+    m_vlen(other.get_vlen()),
+    m_dlen(other.get_dlen()),
+    m_elen(other.get_elen()),
+    m_lab(other.get_lab()),
+    m_ptn(other.get_ptn()),
+    m_coloring(other.get_coloring()),
+    m_graph()
 {
-    canon_graph_repr_.str(other.canon_graph_repr_.str());
-    canon_graph_compressed_repr_.str(other.canon_graph_compressed_repr_.str());
-
-    allocate_graph(graph_);
-    allocate_graph(canon_graph_);
-
-    copy_graph_data(other.graph_, graph_);
-    copy_graph_data(other.canon_graph_, canon_graph_);
+    initialize_sparsegraph();
 }
 
 SparseGraphImpl& SparseGraphImpl::operator=(const SparseGraphImpl& other)
 {
     if (this != &other)
     {
-        deallocate_graph(graph_);
-        deallocate_graph(canon_graph_);
-
-        n_ = other.n_;
-        c_ = other.c_;
-        adj_matrix_ = other.adj_matrix_;
-        use_default_ptn_ = other.use_default_ptn_;
-        canon_coloring_ = other.canon_coloring_;
-        lab_ = other.lab_;
-        ptn_ = other.ptn_;
-        canon_graph_repr_.str(other.canon_graph_repr_.str());
-        canon_graph_compressed_repr_.str(other.canon_graph_compressed_repr_.str());
-
-        allocate_graph(graph_);
-        allocate_graph(canon_graph_);
-
-        copy_graph_data(other.graph_, graph_);
-        copy_graph_data(other.canon_graph_, canon_graph_);
+        m_nde = other.get_nde();
+        m_v = other.get_v();
+        m_nv = other.get_nv();
+        m_d = other.get_d();
+        m_e = other.get_e();
+        m_vlen = other.get_vlen();
+        m_dlen = other.get_dlen();
+        m_elen = other.get_elen();
+        initialize_sparsegraph();
     }
+
     return *this;
 }
 
-SparseGraphImpl::SparseGraphImpl(SparseGraphImpl&& other) noexcept :
-    n_(other.n_),
-    c_(other.c_),
-    adj_matrix_(other.adj_matrix_),
-    graph_(other.graph_),
-    use_default_ptn_(other.use_default_ptn_),
-    canon_coloring_(std::move(other.canon_coloring_)),
-    lab_(std::move(other.lab_)),
-    ptn_(std::move(other.ptn_)),
-    canon_graph_(other.canon_graph_),
-    canon_graph_repr_(std::move(other.canon_graph_repr_)),
-    canon_graph_compressed_repr_(std::move(other.canon_graph_compressed_repr_))
+size_t SparseGraphImpl::get_nde() const { return m_nde; }
+
+const std::vector<size_t>& SparseGraphImpl::get_v() const { return m_v; }
+
+int SparseGraphImpl::get_nv() const { return m_nv; }
+
+const std::vector<int>& SparseGraphImpl::get_d() const { return m_d; }
+
+const std::vector<int>& SparseGraphImpl::get_e() const { return m_e; }
+
+size_t SparseGraphImpl::get_vlen() const { return m_vlen; }
+
+size_t SparseGraphImpl::get_dlen() const { return m_dlen; }
+
+size_t SparseGraphImpl::get_elen() const { return m_elen; }
+
+const std::vector<int>& SparseGraphImpl::get_lab() const { return m_lab; }
+
+const std::vector<int>& SparseGraphImpl::get_ptn() const { return m_ptn; }
+
+const std::vector<uint32_t>& SparseGraphImpl::get_coloring() const { return m_coloring; }
+
+SparseGraphImpl SparseGraphImpl::compute_canonical_graph()
 {
-    SG_INIT(other.graph_);
-    SG_INIT(other.canon_graph_);
-}
-
-SparseGraphImpl& SparseGraphImpl::operator=(SparseGraphImpl&& other) noexcept
-
-{
-    if (this != &other)
-    {
-        deallocate_graph(graph_);
-        deallocate_graph(canon_graph_);
-
-        n_ = other.n_;
-        c_ = other.c_;
-        adj_matrix_ = other.adj_matrix_;
-        use_default_ptn_ = other.use_default_ptn_;
-        canon_coloring_ = std::move(other.canon_coloring_);
-        lab_ = std::move(other.lab_);
-        ptn_ = std::move(other.ptn_);
-        canon_graph_repr_ = std::move(other.canon_graph_repr_);
-        canon_graph_compressed_repr_ = std::move(other.canon_graph_compressed_repr_);
-
-        graph_ = other.graph_;
-        SG_INIT(other.graph_);
-
-        canon_graph_ = other.canon_graph_;
-        SG_INIT(other.canon_graph_);
-    }
-    return *this;
-}
-
-SparseGraphImpl::~SparseGraphImpl()
-{
-    deallocate_graph(graph_);
-    deallocate_graph(canon_graph_);
-}
-
-void SparseGraphImpl::add_vertex_coloring(const mimir::graphs::ColorList& vertex_coloring)
-{
-    if (vertex_coloring.size() != n_)
-    {
-        throw std::out_of_range("SparseGraphImpl::add_vertex_coloring: The vertex coloring is incompatible with number of vertices in the graph.");
-    }
-
-    canon_coloring_ = vertex_coloring;
-    std::sort(canon_coloring_.begin(), canon_coloring_.end());
-
-    initialize_lab_and_ptr(vertex_coloring, lab_, ptn_);
-    use_default_ptn_ = false;
-}
-
-void SparseGraphImpl::add_edge(size_t source, size_t target)
-{
-    if (source >= n_ || target >= n_)
-    {
-        throw std::out_of_range("SparseGraphImpl::add_edge: Source or target vertex out of range.");
-    }
-
-    if (!adj_matrix_.at(source * n_ + target))
-    {
-        adj_matrix_.at(source * n_ + target) = true;
-
-        graph_.e[source * n_ + graph_.d[source]] = target;
-        ++graph_.d[source];
-        ++graph_.nde;
-    }
-}
-
-Certificate SparseGraphImpl::compute_certificate()
-{
-    bool is_directed_ = is_directed();
-    bool has_loop_ = has_loop();
-
-    if (!is_directed_ && has_loop_)
-    {
-        throw std::logic_error("SparseGraphImpl::compute_certificate: Nauty does not support loops on undirected graphs.");
-    }
-
     static DEFAULTOPTIONS_SPARSEGRAPH(options);
-    options.defaultptn = use_default_ptn_;
+    options.defaultptn = FALSE;
     options.getcanon = TRUE;
-    options.digraph = is_directed_;
+    options.digraph = FALSE;
     options.writeautoms = FALSE;
 
-    auto orbits = std::vector<int>(this->n_);
+    auto orbits = std::vector<int>(m_nv);
 
     statsblk stats;
 
-    std::fill(canon_graph_.d, canon_graph_.d + n_, 0);
-    std::fill(canon_graph_.v, canon_graph_.v + n_, 0);
-    std::fill(canon_graph_.e, canon_graph_.e + n_ * n_, 0);
+    auto canon_graph = SparseGraphImpl(*this);
 
-    sparsenauty(&graph_, lab_.data(), ptn_.data(), orbits.data(), &options, &stats, &canon_graph_);
+    // std::cout << "Graph before: " << *this << std::endl;
+    std::cout << "Canongraph before: " << canon_graph << std::endl;
+
+    auto lab = m_lab;  ///< copy this because nauty modifies it.
+    auto ptn = m_ptn;  ///< copy this because nauty modifies it.
+    sparsenauty(&m_graph, canon_graph.m_lab.data(), canon_graph.m_ptn.data(), orbits.data(), &options, &stats, &canon_graph.m_graph);
 
     // According to documentation:
     //   canon_graph has contiguous adjacency lists that are not necessarily sorted
-    sortlists_sg(&canon_graph_);
+    sortlists_sg(&canon_graph.m_graph);
 
-    // Clear streams
-    canon_graph_repr_.str(std::string());
-    canon_graph_repr_.clear();
-    canon_graph_compressed_repr_.str(std::string());
-    canon_graph_compressed_repr_.clear();
+    // std::cout << "Graph after: " << *this << std::endl;
+    std::cout << "Canongraph after: " << canon_graph << std::endl << std::endl;
 
-    // Compute conon graph repr.
-    canon_graph_repr_ << canon_graph_;
-
-    // Compress canon graph repr.
-    boost::iostreams::filtering_ostream boost_filtering_ostream;
-    boost_filtering_ostream.push(boost::iostreams::gzip_compressor());
-    boost_filtering_ostream.push(canon_graph_compressed_repr_);
-    boost::iostreams::copy(canon_graph_repr_, boost_filtering_ostream);
-    boost::iostreams::close(boost_filtering_ostream);
-    // We usually see compression ratio ~ 2
-    // std::cout << "Compression ratio: " << (double) canon_graph_repr_.str().size() / canon_graph_compressed_repr_.str().size() << std::endl;
-
-    return std::make_shared<CertificateImpl>(canon_graph_compressed_repr_.str(), canon_coloring_);
+    return canon_graph;
 }
 
-void SparseGraphImpl::clear(size_t num_vertices)
+std::ostream& operator<<(std::ostream& out, const SparseGraphImpl& graph)
 {
-    use_default_ptn_ = true;
-
-    if (num_vertices > c_)
-    {
-        /* Reallocate memory. */
-        deallocate_graph(graph_);
-        deallocate_graph(canon_graph_);
-
-        n_ = num_vertices;
-        c_ = num_vertices;
-        canon_coloring_ = mimir::graphs::ColorList(n_, 0);
-        lab_ = std::vector<int>(n_);
-        ptn_ = std::vector<int>(n_);
-        adj_matrix_ = std::vector<bool>(n_ * n_, false);
-
-        allocate_graph(graph_);
-        allocate_graph(canon_graph_);
-    }
-    else
-    {
-        /* Reuse memory. */
-        n_ = num_vertices;
-        std::fill(canon_coloring_.begin(), canon_coloring_.begin() + n_, 0);
-        std::fill(adj_matrix_.begin(), adj_matrix_.begin() + n_ * n_, false);
-
-        initialize_graph_data(graph_);
-        initialize_graph_data(canon_graph_);
-    }
-}
-
-bool SparseGraphImpl::is_directed() const
-{
-    for (size_t source = 0; source < n_; ++source)
-    {
-        for (size_t target = source + 1; target < n_; ++target)
-        {
-            if (adj_matrix_.at(source * n_ + target) != adj_matrix_.at(target * n_ + source))
-            {
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
-bool SparseGraphImpl::has_loop() const
-{
-    for (size_t source = 0; source < n_; ++source)
-    {
-        if (adj_matrix_.at(source * n_ + source))
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
-std::ostream& operator<<(std::ostream& out, const sparsegraph& graph)
-{
-    // TODO: we could use log_2(nv) many bits to encode the adjacency lists
-    // and log_2(nde) to encode number of transitions and degrees to save memory.
-    out << "nv:" << graph.nv << "\n"
-        << "nde:" << graph.nde << "\n"
-        << "d:";
-    for (int i = 0; i < graph.nv; ++i)
-    {
-        out << graph.d[i] << (i == graph.nv - 1 ? "\n" : ",");
-    }
-    out << "v:";
-    for (int i = 0; i < graph.nv; ++i)
-    {
-        out << graph.v[i] << (i == graph.nv - 1 ? "\n" : ",");
-    }
-    out << "e:";
-    for (size_t i = 0; i < graph.nde; ++i)
-    {
-        out << graph.e[i] << (i == graph.nde - 1 ? "\n" : ",");
-    }
+    out << "nde:" << graph.get_nde() << "\n"
+        << "v: ";
+    mimir::operator<<(out, graph.get_v());
+    out << "\n"
+        << "nv:" << graph.get_nv() << "\n"
+        << "d: ";
+    mimir::operator<<(out, graph.get_d());
+    out << "\n"
+        << "e: ";
+    mimir::operator<<(out, graph.get_e());
+    out << "\n"
+        << "vlen: " << graph.get_vlen() << "\n"
+        << "dlen: " << graph.get_dlen() << "\n"
+        << "elen: " << graph.get_elen() << "\n"
+        << "lab: ";
+    mimir::operator<<(out, graph.get_lab());
+    out << "\n"
+        << "ptn: ";
+    mimir::operator<<(out, graph.get_ptn());
+    out << "\n"
+        << "coloring: ";
+    mimir::operator<<(out, graph.get_coloring());
 
     return out;
 }

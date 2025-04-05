@@ -24,66 +24,68 @@
 
 #include <nausparse.h>
 #include <nauty.h>
+#include <span>
 #include <sstream>
 #include <string>
 #include <vector>
 
-namespace mimir::graphs::nauty
+namespace mimir::graphs::nauty::details
 {
 
 class SparseGraphImpl
 {
 private:
-    // num_vertices
-    size_t n_;
-    // vertex capacity
-    size_t c_;
-    // Track existing edges to avoid duplicates
-    std::vector<bool> adj_matrix_;
+    size_t m_nde;
+    std::vector<size_t> m_v;
+    int m_nv;
+    std::vector<int> m_d;
+    std::vector<int> m_e;
+    size_t m_vlen;
+    size_t m_dlen;
+    size_t m_elen;
+    std::vector<int> m_lab;
+    std::vector<int> m_ptn;
+    std::vector<uint32_t> m_coloring;
 
-    // The input graph
-    sparsegraph graph_;
-    bool use_default_ptn_;
+    // The nauty graph that consumes the data above.
+    sparsegraph m_graph;
 
-    mimir::graphs::ColorList canon_coloring_;
-    std::vector<int> lab_;
-    std::vector<int> ptn_;
-
-    // The canonical graph
-    sparsegraph canon_graph_;
-
-    // Output streams
-    std::stringstream canon_graph_repr_;
-    std::stringstream canon_graph_compressed_repr_;
-
-    void copy_graph_data(const sparsegraph& in_graph, sparsegraph& out_graph) const;
-
-    void initialize_graph_data(sparsegraph& out_graph) const;
-
-    void allocate_graph(sparsegraph& out_graph) const;
-    void deallocate_graph(sparsegraph& the_graph) const;
+    void initialize_sparsegraph();
 
 public:
-    explicit SparseGraphImpl(size_t num_vertices);
+    SparseGraphImpl(size_t nde,
+                    std::vector<size_t> v,
+                    int nv,
+                    std::vector<int> d,
+                    std::vector<int> e,
+                    size_t vlen,
+                    size_t dlen,
+                    size_t elen,
+                    std::vector<int> lab,
+                    std::vector<int> ptn,
+                    std::vector<uint32_t> coloring);
+
     SparseGraphImpl(const SparseGraphImpl& other);
     SparseGraphImpl& operator=(const SparseGraphImpl& other);
-    SparseGraphImpl(SparseGraphImpl&& other) noexcept;
-    SparseGraphImpl& operator=(SparseGraphImpl&& other) noexcept;
-    ~SparseGraphImpl();
+    SparseGraphImpl(SparseGraphImpl&& other) noexcept = default;
+    SparseGraphImpl& operator=(SparseGraphImpl&& other) noexcept = default;
 
-    void add_edge(size_t source, size_t target);
+    SparseGraphImpl compute_canonical_graph();
 
-    void add_vertex_coloring(const mimir::graphs::ColorList& vertex_coloring);
-
-    Certificate compute_certificate();
-
-    void clear(size_t num_vertices);
-
-    bool is_directed() const;
-    bool has_loop() const;
+    size_t get_nde() const;
+    const std::vector<size_t>& get_v() const;
+    int get_nv() const;
+    const std::vector<int>& get_d() const;
+    const std::vector<int>& get_e() const;
+    size_t get_vlen() const;
+    size_t get_dlen() const;
+    size_t get_elen() const;
+    const std::vector<int>& get_lab() const;
+    const std::vector<int>& get_ptn() const;
+    const std::vector<uint32_t>& get_coloring() const;
 };
 
-extern std::ostream& operator<<(std::ostream& out, const sparsegraph& graph);
+extern std::ostream& operator<<(std::ostream& out, const SparseGraphImpl& graph);
 
 }
 

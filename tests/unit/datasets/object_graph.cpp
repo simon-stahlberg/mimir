@@ -35,34 +35,6 @@ using namespace mimir::graphs;
 namespace mimir::tests
 {
 
-TEST(MimirTests, DataSetsObjectGraphDenseTest)
-{
-    const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
-    const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
-
-    auto options = state_space::Options();
-    options.symmetry_pruning = false;
-    const auto context = search::SearchContextImpl::create(domain_file, problem_file);
-    const auto state_space = StateSpaceImpl::create(context, options);
-    const auto color_function = ColorFunctionImpl::create(context->get_problem());
-
-    auto certificates = std::unordered_set<nauty::Certificate, SharedPtrDerefHash<nauty::CertificateImpl>, SharedPtrDerefEqualTo<nauty::CertificateImpl>> {};
-
-    for (const auto& vertex : state_space.value()->get_graph().get_vertices())
-    {
-        const auto state = get_state(vertex);
-        const auto& problem = get_problem(vertex);
-
-        const auto object_graph = create_object_graph(state, *problem, *color_function);
-
-        auto certificate = compute_certificate(nauty::DenseGraph(object_graph));
-
-        certificates.insert(std::move(certificate));
-    }
-
-    EXPECT_EQ(certificates.size(), 12);
-}
-
 TEST(MimirTests, DataSetsObjectGraphSparseTest)
 {
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
@@ -74,18 +46,13 @@ TEST(MimirTests, DataSetsObjectGraphSparseTest)
     const auto state_space = StateSpaceImpl::create(context, options);
     const auto color_function = ColorFunctionImpl::create(context->get_problem());
 
-    auto certificates = std::unordered_set<nauty::Certificate, SharedPtrDerefHash<nauty::CertificateImpl>, SharedPtrDerefEqualTo<nauty::CertificateImpl>> {};
+    auto certificates =
+        std::unordered_set<std::shared_ptr<nauty::SparseGraph>, SharedPtrDerefHash<nauty::SparseGraph>, SharedPtrDerefEqualTo<nauty::SparseGraph>> {};
 
     for (const auto& vertex : state_space.value()->get_graph().get_vertices())
     {
-        const auto state = get_state(vertex);
-        const auto& problem = get_problem(vertex);
-
-        const auto object_graph = create_object_graph(state, *problem, *color_function);
-
-        auto certificate = compute_certificate(nauty::SparseGraph(object_graph));
-
-        certificates.insert(std::move(certificate));
+        certificates.insert(std::make_shared<nauty::SparseGraph>(
+            nauty::compute_canonical_graph(nauty::SparseGraph(create_object_graph(get_state(vertex), *get_problem(vertex), *color_function)))));
     }
 
     EXPECT_EQ(certificates.size(), 12);

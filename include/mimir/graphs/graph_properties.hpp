@@ -66,6 +66,20 @@ bool is_multi_graph(const G& graph)
 }
 
 template<typename G>
+    requires IsEdgeListGraph<G>
+bool is_loopless(const G& graph)
+{
+    for (const auto& edge : graph.get_edges())
+    {
+        if (edge.get_source() == edge.get_target())
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+template<typename G>
     requires IsVertexListGraph<G> && IsIncidenceGraph<G>
 bool is_acyclic(const G& graph)
 {

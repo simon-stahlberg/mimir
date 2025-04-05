@@ -18,7 +18,6 @@
 #include "mimir/graphs/algorithms/nauty.hpp"
 
 #include "mimir/common/types.hpp"
-#include "nauty_dense_impl.hpp"
 #include "nauty_sparse_impl.hpp"
 
 #include <cassert>
@@ -28,94 +27,61 @@
 
 namespace mimir::graphs::nauty
 {
-using mimir::operator<<;
-
-/* Certificate */
-CertificateImpl::CertificateImpl(std::string nauty_certificate, mimir::graphs::ColorList canonical_initial_coloring) :
-    m_canonical_graph(std::move(nauty_certificate)),
-    m_canonical_coloring(std::move(canonical_initial_coloring))
-{
-    assert(std::is_sorted(m_canonical_coloring.begin(), m_canonical_coloring.end()));
-}
-
-const std::string& CertificateImpl::get_canonical_graph() const { return m_canonical_graph; }
-
-const mimir::graphs::ColorList& CertificateImpl::get_canonical_coloring() const { return m_canonical_coloring; }
-
-bool operator==(const CertificateImpl& lhs, const CertificateImpl& rhs) { return loki::EqualTo<CertificateImpl>()(lhs, rhs); }
-
-bool operator<(const CertificateImpl& lhs, const CertificateImpl& rhs)
-{
-    if (&lhs != &rhs)
-    {
-        if (lhs.get_canonical_coloring() == rhs.get_canonical_coloring())
-        {
-            return lhs.get_canonical_graph() < rhs.get_canonical_graph();
-        }
-        return lhs.get_canonical_coloring() < rhs.get_canonical_coloring();
-    }
-    return false;
-}
-
-std::ostream& operator<<(std::ostream& os, const CertificateImpl& element)
-{
-    os << "CertificateNauty(" << "canonical_graph=" << element.get_canonical_graph() << ", " << "canonical_coloring=" << element.get_canonical_coloring()
-       << ")";
-    return os;
-}
-
-/* Graph */
-DenseGraph::DenseGraph() : m_impl(std::make_unique<DenseGraphImpl>(0)) {}
-
-DenseGraph::DenseGraph(size_t num_vertices) : m_impl(std::make_unique<DenseGraphImpl>(num_vertices)) {}
-
-DenseGraph::DenseGraph(const DenseGraph& other) : m_impl(std::make_unique<DenseGraphImpl>(*other.m_impl)) {}
-
-DenseGraph& DenseGraph::operator=(const DenseGraph& other)
-{
-    if (this != &other)
-    {
-        m_impl = std::make_unique<DenseGraphImpl>(*other.m_impl);
-    }
-    return *this;
-}
-
-DenseGraph::DenseGraph(DenseGraph&& other) noexcept : m_impl(std::move(other.m_impl)) {}
-
-DenseGraph& DenseGraph::operator=(DenseGraph&& other) noexcept
-{
-    if (this != &other)
-    {
-        std::swap(m_impl, other.m_impl);
-    }
-    return *this;
-}
-
-DenseGraph::~DenseGraph() = default;
-
-void DenseGraph::add_vertex_coloring(const mimir::graphs::ColorList& vertex_coloring) { m_impl->add_vertex_coloring(vertex_coloring); }
-
-void DenseGraph::add_edge(size_t source, size_t target) { m_impl->add_edge(source, target); }
-
-void DenseGraph::clear(size_t num_vertices) { m_impl->clear(num_vertices); }
-
-bool DenseGraph::is_directed() const { return m_impl->is_directed(); }
-
-Certificate compute_certificate(const DenseGraph& graph) { return graph.m_impl->compute_certificate(); }
 
 /* SparseGraph*/
 
-SparseGraph::SparseGraph() : m_impl(std::make_unique<SparseGraphImpl>(0)) {}
+SparseGraph::SparseGraph() :
+    SparseGraph(0,
+                std::vector<size_t> {},
+                0,
+                std::vector<int> {},
+                std::vector<int> {},
+                0,
+                0,
+                0,
+                std::vector<int> {},
+                std::vector<int> {},
+                std::vector<uint32_t> {})
+{
+}
 
-SparseGraph::SparseGraph(size_t num_vertices) : m_impl(std::make_unique<SparseGraphImpl>(num_vertices)) {}
+SparseGraph::SparseGraph(size_t nde,
+                         std::vector<size_t> v,
+                         int nv,
+                         std::vector<int> d,
+                         std::vector<int> e,
+                         size_t vlen,
+                         size_t dlen,
+                         size_t elen,
+                         std::vector<int> lab,
+                         std::vector<int> ptn,
+                         std::vector<uint32_t> coloring)
+{
+}
 
-SparseGraph::SparseGraph(const SparseGraph& other) : m_impl(std::make_unique<SparseGraphImpl>(*other.m_impl)) {}
+void SparseGraph::initialize(size_t nde,
+                             std::vector<size_t> v,
+                             int nv,
+                             std::vector<int> d,
+                             std::vector<int> e,
+                             size_t vlen,
+                             size_t dlen,
+                             size_t elen,
+                             std::vector<int> lab,
+                             std::vector<int> ptn,
+                             std::vector<uint32_t> coloring)
+{
+    m_impl = std::make_unique<
+        details::SparseGraphImpl>(nde, v, nv, std::move(d), std::move(e), vlen, dlen, elen, std::move(lab), std::move(ptn), std::move(coloring));
+}
+
+SparseGraph::SparseGraph(const SparseGraph& other) : m_impl(std::make_unique<details::SparseGraphImpl>(*other.m_impl)) {}
 
 SparseGraph& SparseGraph::operator=(const SparseGraph& other)
 {
     if (this != &other)
     {
-        m_impl = std::make_unique<SparseGraphImpl>(*other.m_impl);
+        m_impl = std::make_unique<details::SparseGraphImpl>(*other.m_impl);
     }
     return *this;
 }
@@ -133,13 +99,40 @@ SparseGraph& SparseGraph::operator=(SparseGraph&& other) noexcept
 
 SparseGraph::~SparseGraph() = default;
 
-void SparseGraph::add_vertex_coloring(const mimir::graphs::ColorList& vertex_coloring) { m_impl->add_vertex_coloring(vertex_coloring); }
+size_t SparseGraph::get_nde() const { return m_impl->get_nde(); }
 
-void SparseGraph::add_edge(size_t source, size_t target) { m_impl->add_edge(source, target); }
+const std::vector<size_t>& SparseGraph::get_v() const { return m_impl->get_v(); }
 
-void SparseGraph::clear(size_t num_vertices) { m_impl->clear(num_vertices); }
+int SparseGraph::get_nv() const { return m_impl->get_nv(); }
 
-bool SparseGraph::is_directed() const { return m_impl->is_directed(); }
+const std::vector<int>& SparseGraph::get_d() const { return m_impl->get_d(); }
 
-Certificate compute_certificate(const SparseGraph& graph) { return graph.m_impl->compute_certificate(); }
+const std::vector<int>& SparseGraph::get_e() const { return m_impl->get_e(); }
+
+size_t SparseGraph::get_vlen() const { return m_impl->get_vlen(); }
+
+size_t SparseGraph::get_dlen() const { return m_impl->get_dlen(); }
+
+size_t SparseGraph::get_elen() const { return m_impl->get_elen(); }
+
+const std::vector<int>& SparseGraph::get_lab() const { return m_impl->get_lab(); }
+
+const std::vector<int>& SparseGraph::get_ptn() const { return m_impl->get_ptn(); }
+
+const std::vector<uint32_t>& SparseGraph::get_coloring() const { return m_impl->get_coloring(); }
+
+std::ostream& operator<<(std::ostream& out, const SparseGraph& graph)
+{
+    out << *graph.m_impl;
+
+    return out;
+}
+
+SparseGraph compute_canonical_graph(const SparseGraph& graph)
+{
+    auto result = SparseGraph();
+    result.m_impl = std::make_unique<details::SparseGraphImpl>(graph.m_impl->compute_canonical_graph());
+    return result;
+}
+
 }

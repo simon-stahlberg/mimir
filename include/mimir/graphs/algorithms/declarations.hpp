@@ -25,8 +25,7 @@ namespace mimir::graphs
 {
 namespace nauty
 {
-class CertificateImpl;
-using Certificate = std::shared_ptr<CertificateImpl>;
+class SparseGraph;
 }
 
 namespace color_refinement
