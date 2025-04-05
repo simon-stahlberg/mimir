@@ -17,13 +17,9 @@
 
 #include "nauty_sparse_impl.hpp"
 
-#include <algorithm>
-#include <boost/iostreams/copy.hpp>
-#include <boost/iostreams/filter/gzip.hpp>
-#include <boost/iostreams/filtering_stream.hpp>
+#include "mimir/common/printers.hpp"
+
 #include <iostream>
-#include <sstream>
-#include <stdexcept>
 
 namespace mimir::graphs::nauty::details
 {
@@ -63,7 +59,8 @@ SparseGraphImpl::SparseGraphImpl(size_t nde,
     m_lab(std::move(lab)),
     m_ptn(std::move(ptn)),
     m_coloring(std::move(coloring)),
-    m_graph()
+    m_graph(),
+    m_is_canonical(false)
 {
     initialize_sparsegraph();
 }
@@ -80,7 +77,8 @@ SparseGraphImpl::SparseGraphImpl(const SparseGraphImpl& other) :
     m_lab(other.get_lab()),
     m_ptn(other.get_ptn()),
     m_coloring(other.get_coloring()),
-    m_graph()
+    m_graph(),
+    m_is_canonical(other.m_is_canonical)
 {
     initialize_sparsegraph();
 }
@@ -97,6 +95,8 @@ SparseGraphImpl& SparseGraphImpl::operator=(const SparseGraphImpl& other)
         m_vlen = other.get_vlen();
         m_dlen = other.get_dlen();
         m_elen = other.get_elen();
+        m_graph = sparsegraph();
+        m_is_canonical = other.m_is_canonical;
         initialize_sparsegraph();
     }
 
@@ -125,8 +125,30 @@ const std::vector<int>& SparseGraphImpl::get_ptn() const { return m_ptn; }
 
 const std::vector<uint32_t>& SparseGraphImpl::get_coloring() const { return m_coloring; }
 
-SparseGraphImpl SparseGraphImpl::compute_canonical_graph()
+const std::vector<int>& SparseGraphImpl::get_pi() const
 {
+    if (!m_is_canonical)
+    {
+        throw std::runtime_error("SparseGraphImpl::get_pi(): Expected canonical form.");
+    }
+    return m_pi;
+}
+
+const std::vector<int>& SparseGraphImpl::get_pi_inverse() const
+{
+    if (!m_is_canonical)
+    {
+        throw std::runtime_error("SparseGraphImpl::get_pi(): Expected canonical form.");
+    }
+    return m_pi_inverse;
+}
+
+void SparseGraphImpl::canonize()
+{
+    if (m_is_canonical)
+        return;
+    m_is_canonical = true;
+
     static DEFAULTOPTIONS_SPARSEGRAPH(options);
     options.defaultptn = FALSE;
     options.getcanon = TRUE;
@@ -139,21 +161,27 @@ SparseGraphImpl SparseGraphImpl::compute_canonical_graph()
 
     auto canon_graph = SparseGraphImpl(*this);
 
-    // std::cout << "Graph before: " << *this << std::endl;
-    std::cout << "Canongraph before: " << canon_graph << std::endl;
+    // std::cout << "Canongraph before: " << canon_graph << std::endl;
 
-    auto lab = m_lab;  ///< copy this because nauty modifies it.
-    auto ptn = m_ptn;  ///< copy this because nauty modifies it.
     sparsenauty(&m_graph, canon_graph.m_lab.data(), canon_graph.m_ptn.data(), orbits.data(), &options, &stats, &canon_graph.m_graph);
 
     // According to documentation:
     //   canon_graph has contiguous adjacency lists that are not necessarily sorted
     sortlists_sg(&canon_graph.m_graph);
 
-    // std::cout << "Graph after: " << *this << std::endl;
-    std::cout << "Canongraph after: " << canon_graph << std::endl << std::endl;
+    // std::cout << "Canongraph after: " << canon_graph << std::endl << std::endl;
 
-    return canon_graph;
+    m_pi.resize(m_nv);
+    m_pi_inverse.resize(m_nv);
+    for (int i = 0; i < m_nv; ++i)
+    {
+        int v_idx = m_lab[i];
+        int cannon_v_idx = canon_graph.m_lab[i];
+        m_pi[v_idx] = cannon_v_idx;          // π maps original → canonical
+        m_pi_inverse[cannon_v_idx] = v_idx;  // π⁻¹ maps canonical → original
+    }
+
+    std::swap(*this, canon_graph);
 }
 
 std::ostream& operator<<(std::ostream& out, const SparseGraphImpl& graph)

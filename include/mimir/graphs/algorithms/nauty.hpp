@@ -19,14 +19,10 @@
 #define MIMIR_GRAPHS_ALGORITHMS_NAUTY_HPP_
 
 #include "mimir/common/printers.hpp"
-#include "mimir/graphs/algorithms/declarations.hpp"
-#include "mimir/graphs/concrete/digraph_vertex_colored.hpp"
 #include "mimir/graphs/declarations.hpp"
 #include "mimir/graphs/graph_interface.hpp"
 #include "mimir/graphs/graph_properties.hpp"
 
-#include <loki/details/utils/equal_to.hpp>
-#include <loki/details/utils/hash.hpp>
 #include <memory>
 #include <ostream>
 #include <vector>
@@ -156,7 +152,7 @@ public:
     SparseGraph& operator=(SparseGraph&& other) noexcept;
     ~SparseGraph();
 
-    friend SparseGraph compute_canonical_graph(const SparseGraph& graph);
+    SparseGraph& canonize();
 
     friend std::ostream& operator<<(std::ostream& out, const SparseGraph& graph);
 
@@ -172,6 +168,15 @@ public:
     const std::vector<int>& get_ptn() const;
     const std::vector<uint32_t>& get_coloring() const;
 
+    /// @brief Return vertex permutation from input graph to canonical graphs.
+    /// Throws an exception if canonize() was not called before.
+    /// @return
+    const std::vector<int>& get_pi() const;
+    /// @brief Return permutation from canonical graph to input graph.
+    /// Throws an exception if canonize() was not called before.
+    /// @return
+    const std::vector<int>& get_pi_inverse() const;
+
     auto identifying_members() const
     {
         return std::tuple(get_nde(),
@@ -185,8 +190,6 @@ public:
                           std::cref(get_coloring()));
     }
 };
-
-extern SparseGraph compute_canonical_graph(const SparseGraph& graph);
 
 extern std::ostream& operator<<(std::ostream& out, const SparseGraph& graph);
 

@@ -128,11 +128,14 @@ std::ostream& operator<<(std::ostream& out, const SparseGraph& graph)
     return out;
 }
 
-SparseGraph compute_canonical_graph(const SparseGraph& graph)
+SparseGraph& SparseGraph::canonize()
 {
-    auto result = SparseGraph();
-    result.m_impl = std::make_unique<details::SparseGraphImpl>(graph.m_impl->compute_canonical_graph());
-    return result;
+    m_impl->canonize();
+    return *this;
 }
+
+const std::vector<int>& SparseGraph::get_pi() const { return m_impl->get_pi(); }
+
+const std::vector<int>& SparseGraph::get_pi_inverse() const { return m_impl->get_pi_inverse(); }
 
 }

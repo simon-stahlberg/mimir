@@ -91,11 +91,6 @@ using ColoredEdge = Edge<Color>;
 /// @return the color of the edge.
 inline Color get_color(const ColoredEdge& edge) { return edge.get_property<0>(); }
 
-template<typename T>
-concept IsEdgeColoredGraph = requires(T::EdgeType edge) {
-    { get_color(edge) } -> std::same_as<Color>;
-};
-
 }
 
 #endif

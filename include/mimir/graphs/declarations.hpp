@@ -20,9 +20,9 @@
 
 // Do not include headers with transitive dependencies.
 #include "mimir/common/types.hpp"
-#include "mimir/graphs/algorithms/declarations.hpp"
 
 #include <array>
+#include <cstddef>
 #include <cstdint>
 #include <limits>
 #include <unordered_map>

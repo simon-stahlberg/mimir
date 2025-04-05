@@ -39,8 +39,11 @@ bool operator==(const CertificateImpl& lhs, const CertificateImpl& rhs) { return
 
 std::ostream& operator<<(std::ostream& out, const CertificateImpl& element)
 {
-    out << "CertificateColorRefinement(" << "canonical_coloring=" << element.get_canonical_coloring() << ", "
-        << "canonical_compression_function=" << element.get_canonical_compression_function() << ")";
+    out << "CertificateColorRefinement(" << "canonical_coloring=";
+    mimir::operator<<(out, element.get_canonical_coloring());
+    out << ", " << "canonical_compression_function=";
+    mimir::operator<<(out, element.get_canonical_compression_function());
+    out << ")";
     return out;
 }
 

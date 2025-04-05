@@ -18,15 +18,9 @@
 #ifndef SRC_GRAPHS_ALGORITHMS_NAUTY_SPARSE_IMPL_HPP_
 #define SRC_GRAPHS_ALGORITHMS_NAUTY_SPARSE_IMPL_HPP_
 
-// Only include nauty_sparse_impl.hpp in a source file to avoid transitive includes of nauty.h.
-#include "mimir/graphs/algorithms/nauty.hpp"
-#include "mimir/graphs/declarations.hpp"
-
 #include <nausparse.h>
 #include <nauty.h>
-#include <span>
-#include <sstream>
-#include <string>
+#include <ostream>
 #include <vector>
 
 namespace mimir::graphs::nauty::details
@@ -50,6 +44,10 @@ private:
     // The nauty graph that consumes the data above.
     sparsegraph m_graph;
 
+    bool m_is_canonical;
+    std::vector<int> m_pi;
+    std::vector<int> m_pi_inverse;
+
     void initialize_sparsegraph();
 
 public:
@@ -70,7 +68,7 @@ public:
     SparseGraphImpl(SparseGraphImpl&& other) noexcept = default;
     SparseGraphImpl& operator=(SparseGraphImpl&& other) noexcept = default;
 
-    SparseGraphImpl compute_canonical_graph();
+    void canonize();
 
     size_t get_nde() const;
     const std::vector<size_t>& get_v() const;
@@ -83,6 +81,15 @@ public:
     const std::vector<int>& get_lab() const;
     const std::vector<int>& get_ptn() const;
     const std::vector<uint32_t>& get_coloring() const;
+
+    /// @brief Return vertex permutation from input graph to canonical graphs.
+    /// Throws an exception if canonize() was not called before.
+    /// @return
+    const std::vector<int>& get_pi() const;
+    /// @brief Return permutation from canonical graph to input graph.
+    /// Throws an exception if canonize() was not called before.
+    /// @return
+    const std::vector<int>& get_pi_inverse() const;
 };
 
 extern std::ostream& operator<<(std::ostream& out, const SparseGraphImpl& graph);

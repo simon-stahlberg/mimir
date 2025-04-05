@@ -338,9 +338,9 @@ private:
             /* Map state to representative vertex. */
             if (!m_state_to_certificate.contains(state))
             {
-                m_state_to_certificate.emplace(state,
-                                               std::make_shared<graphs::nauty::SparseGraph>(graphs::nauty::compute_canonical_graph(
-                                                   graphs::nauty::SparseGraph(create_object_graph(state, problem, m_color_function)))));
+                m_state_to_certificate.emplace(
+                    state,
+                    std::make_shared<graphs::nauty::SparseGraph>(graphs::nauty::SparseGraph(create_object_graph(state, problem, m_color_function)).canonize()));
             }
 
             const auto problem_v_idx = m_certificate_to_v_idx.at(m_state_to_certificate.at(state).get());

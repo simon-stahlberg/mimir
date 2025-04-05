@@ -51,8 +51,8 @@ TEST(MimirTests, DataSetsObjectGraphSparseTest)
 
     for (const auto& vertex : state_space.value()->get_graph().get_vertices())
     {
-        certificates.insert(std::make_shared<nauty::SparseGraph>(
-            nauty::compute_canonical_graph(nauty::SparseGraph(create_object_graph(get_state(vertex), *get_problem(vertex), *color_function)))));
+        certificates.insert(
+            std::make_shared<nauty::SparseGraph>(nauty::SparseGraph(create_object_graph(get_state(vertex), *get_problem(vertex), *color_function)).canonize()));
     }
 
     EXPECT_EQ(certificates.size(), 12);
