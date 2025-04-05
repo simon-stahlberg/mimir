@@ -60,22 +60,22 @@ TupleGraphList TupleGraphImpl::create(StateSpace state_space, const ColorFunctio
     auto tuple_graphs = TupleGraphList {};
 
     /* Collect certificates to avoid costly recomputation. */
-    auto state_to_certificate = StateToCertificate {};
     auto certificate_to_v_idx = CertificateMap<graphs::VertexIndex> {};
+    auto state_to_certificate = StateToCertificate {};
     if (state_space->is_symmetry_reduced())
     {
         for (const auto& v : state_space->get_graph().get_vertices())
         {
             const auto& certificate = graphs::get_certificate(v);
             const auto state = graphs::get_state(v);
-            state_to_certificate.emplace(state, certificate);
             certificate_to_v_idx.emplace(certificate.get(), v.get_index());
+            state_to_certificate.emplace(state, certificate);
         }
     }
 
     for (const auto& v : state_space->get_graph().get_vertices())
     {
-        tuple_graphs.push_back(create_tuple_graph(v, state_space, color_function, options));
+        tuple_graphs.push_back(create_tuple_graph(v, state_space, color_function, certificate_to_v_idx, state_to_certificate, options));
     }
 
     return tuple_graphs;

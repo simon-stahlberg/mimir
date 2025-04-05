@@ -107,10 +107,9 @@ private:
     const graphs::ProblemVertex& m_problem_vertex;
     const StateSpace& m_state_space;
     const formalism::ColorFunctionImpl& m_color_function;
+    const CertificateMap<graphs::VertexIndex>& m_certificate_to_v_idx;
+    StateToCertificate& m_state_to_certificate;
     const TupleGraphImpl::Options& m_options;
-
-    StateToCertificate m_state_to_certificate;
-    CertificateMap<graphs::VertexIndex> m_certificate_to_v_idx;
 
     graphs::StaticTupleGraph m_internal_tuple_graph;
     IndexGroupedVectorBuilder<const Index> m_v_idxs_grouped_by_distance;
@@ -330,28 +329,21 @@ private:
         m_novel_t_idx_to_problem_v_idxs.clear();
         m_problem_v_idx_to_novel_t_idxs.clear();
 
-        std::cout << "compute_next_novel_tuple_indices" << std::endl;
-
         const auto& problem = *m_state_space->get_search_context()->get_problem();
 
         for (const auto& state : m_curr_states)
         {
+            m_novelty_table.compute_novel_tuples(state, m_novel_tuples_vec);
+
+            /* Map state to representative vertex. */
             if (!m_state_to_certificate.contains(state))
             {
                 m_state_to_certificate.emplace(state, graphs::nauty::compute_certificate(create_object_graph(state, problem, m_color_function)));
             }
-        }
 
-        for (const auto& problem_v_idx : m_curr_problem_v_idxs)
-        {
-            m_novelty_table.compute_novel_tuples(get_state(m_state_space->get_graph().get_vertex(problem_v_idx)), m_novel_tuples_vec);
+            const auto problem_v_idx = m_certificate_to_v_idx.at(m_state_to_certificate.at(state).get());
 
-            std::cout << "STATE=";
-            mimir::operator<<(std::cout,
-                              std::make_tuple(get_state(m_state_space->get_graph().get_vertex(problem_v_idx)),
-                                              std::cref(*m_state_space->get_search_context()->get_problem())));
-            std::cout << std::endl;
-
+            /* Map novel tuples between representative vertex. */
             for (const auto& novel_tuple : m_novel_tuples_vec)
             {
                 const auto it = m_tuple_to_index.find(novel_tuple);
@@ -505,10 +497,14 @@ public:
     TupleGraphArityGreaterZeroComputation(const graphs::ProblemVertex& problem_vertex,
                                           const StateSpace& state_space,
                                           const formalism::ColorFunctionImpl& color_function,
+                                          const CertificateMap<graphs::VertexIndex>& certificate_to_v_idx,
+                                          StateToCertificate& state_to_certificate,
                                           const TupleGraphImpl::Options& options) :
         m_problem_vertex(problem_vertex),
         m_state_space(state_space),
         m_color_function(color_function),
+        m_certificate_to_v_idx(certificate_to_v_idx),
+        m_state_to_certificate(state_to_certificate),
         m_options(options),
         m_internal_tuple_graph(),
         m_v_idxs_grouped_by_distance(),
@@ -554,17 +550,23 @@ public:
 static TupleGraph create_tuple_graph_width_greater_zero(const graphs::ProblemVertex& problem_vertex,
                                                         const StateSpace& state_space,
                                                         const formalism::ColorFunctionImpl& color_function,
+                                                        const CertificateMap<graphs::VertexIndex>& certificate_to_v_idx,
+                                                        StateToCertificate& state_to_certificate,
                                                         const TupleGraphImpl::Options& options)
 {
-    return TupleGraphArityGreaterZeroComputation(problem_vertex, state_space, color_function, options).compute_and_get_result();
+    return TupleGraphArityGreaterZeroComputation(problem_vertex, state_space, color_function, certificate_to_v_idx, state_to_certificate, options)
+        .compute_and_get_result();
 }
 
 TupleGraph create_tuple_graph(const graphs::ProblemVertex& problem_vertex,
                               const StateSpace& state_space,
                               const ColorFunctionImpl& color_function,
+                              const CertificateMap<graphs::VertexIndex>& certificate_to_v_idx,
+                              StateToCertificate& state_to_certificate,
                               const TupleGraphImpl::Options& options)
 {
-    return (options.width == 0) ? create_tuple_graph_width_zero(problem_vertex, state_space) :
-                                  create_tuple_graph_width_greater_zero(problem_vertex, state_space, color_function, options);
+    return (options.width == 0) ?
+               create_tuple_graph_width_zero(problem_vertex, state_space) :
+               create_tuple_graph_width_greater_zero(problem_vertex, state_space, color_function, certificate_to_v_idx, state_to_certificate, options);
 }
 }
