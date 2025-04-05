@@ -25,10 +25,6 @@
 #include "mimir/graphs/graph_vertices.hpp"
 #include "mimir/graphs/static_graph.hpp"
 
-#include <ranges>
-#include <span>
-#include <vector>
-
 namespace mimir::graphs
 {
 

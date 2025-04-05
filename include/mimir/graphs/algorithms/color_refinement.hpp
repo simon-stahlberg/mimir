@@ -24,6 +24,7 @@
 #include "mimir/graphs/graph_traversal_interface.hpp"
 #include "mimir/graphs/graph_vertices.hpp"
 
+#include <algorithm>
 #include <cassert>
 #include <iostream>
 #include <loki/details/utils/equal_to.hpp>

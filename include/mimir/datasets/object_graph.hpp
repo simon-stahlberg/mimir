@@ -32,15 +32,31 @@ namespace mimir::datasets
  * ObjectGraph
  */
 
-/// @brief Create an object graph as a vertex colored graph for a given state.
-/// It can be used for state equivalence testing or as input to graph neural networks.
-/// @param state is the state.
-/// @param problem is the Problem.
-/// @param pddl_repositories is the PDDLRepository.
-/// @param color_function is the function used to color the vertices in the object graph.
-/// @return a vertex colored graph that precisely represents the given state.
-extern graphs::StaticVertexColoredDigraph
-create_object_graph(search::State state, const formalism::ProblemImpl& problem, const formalism::ColorFunctionImpl& color_function);
+class ObjectGraph
+{
+private:
+    graphs::StaticVertexColoredDigraph m_graph;
+
+    formalism::ObjectMap<graphs::VertexIndex> m_object_to_v_idx;
+    formalism::ToObjectMap<graphs::VertexIndex> m_v_idx_to_object;
+
+public:
+    /// @brief Create an `ObjectGraph` for a given `search::State` from a given `formalism::ProblemImpl` using the given `formalism::ColorFunctionImpl`.
+    /// @param state is the state.
+    /// @param problem is the Problem.
+    /// @param color_function is the function used to color the vertices in the object graph.
+    ObjectGraph(search::State state, const formalism::ProblemImpl& problem, const formalism::ColorFunctionImpl& color_function);
+
+    /// @brief Apply a given permutation to a given list of objects.
+    /// @param objects is the list of objects to permute.
+    /// @param v_idx_permutation is the vertex index permutation.
+    /// @return is the list of permuted objects.
+    formalism::ObjectList apply_permutation(const formalism::ObjectList& objects, const std::vector<int>& v_idx_permutation) const;
+
+    /// @brief Get the underlying `graphs::StaticVertexColoredDigraph`.
+    /// @return the underlying `graphs::StaticVertexColoredDigraph`.
+    const graphs::StaticVertexColoredDigraph& get_graph() const;
+};
 
 }
 

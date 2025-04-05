@@ -24,13 +24,16 @@
 #include "mimir/common/types.hpp"
 #include "mimir/graphs/algorithms/color_refinement.hpp"
 #include "mimir/graphs/algorithms/nauty.hpp"
+#include "mimir/graphs/concrete/digraph_vertex_colored.hpp"
 #include "mimir/graphs/declarations.hpp"
 #include "mimir/graphs/graph_interface.hpp"
 #include "mimir/graphs/graph_properties.hpp"
 #include "mimir/graphs/graph_traversal_interface.hpp"
 #include "mimir/graphs/graph_vertices.hpp"
 
+#include <algorithm>
 #include <cassert>
+#include <cstddef>
 #include <iostream>
 #include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
@@ -251,8 +254,7 @@ std::pair<ColorList, ColorMap<IndexList>> compute_ordered_isomorphism_types(cons
         }
 
         // Isomorphism function is shared among several runs to ensure canonical form for different runs.
-        auto result = iso_type_function.emplace(std::make_shared<nauty::SparseGraph>(nauty::compute_canonical_graph(nauty::SparseGraph(subgraph))),
-                                                iso_type_function.size());
+        auto result = iso_type_function.emplace(std::make_shared<nauty::SparseGraph>(nauty::SparseGraph(subgraph).canonize()), iso_type_function.size());
 
         const auto color = result.first->second;
         hash_to_color.at(hash) = color;

@@ -136,8 +136,7 @@ private:
 
     auto compute_canonical_graph(State state)
     {
-        return std::make_shared<graphs::nauty::SparseGraph>(
-            graphs::nauty::SparseGraph(create_object_graph(state, *m_problem, m_symm_data.color_function)).canonize());
+        return std::make_shared<nauty::SparseGraph>(nauty::SparseGraph(ObjectGraph(state, *m_problem, m_symm_data.color_function).get_graph()).canonize());
     }
 
     void on_expand_state_impl(State state) {}
