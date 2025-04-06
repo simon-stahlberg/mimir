@@ -57,9 +57,6 @@ public:
     auto identifying_members() const { return std::tuple(std::cref(get_name()), get_parameter_index()); }
 };
 
-static_assert(IsFormalismEntity<VariableImpl>);
-static_assert(IsFormalismEntity<Variable>);
-
 extern std::ostream& operator<<(std::ostream& out, const VariableImpl& element);
 
 extern std::ostream& operator<<(std::ostream& out, Variable element);

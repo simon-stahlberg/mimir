@@ -21,10 +21,10 @@
 #include "mimir/common/types.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/graphs/algorithms/nauty.hpp"
-#include "mimir/graphs/declarations.hpp"
 #include "mimir/graphs/graph_edges.hpp"
 #include "mimir/graphs/graph_vertices.hpp"
 #include "mimir/graphs/static_graph.hpp"
+#include "mimir/graphs/types.hpp"
 #include "mimir/search/declarations.hpp"
 
 namespace mimir::graphs

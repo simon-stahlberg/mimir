@@ -19,9 +19,9 @@
 #define MIMIR_GRAPHS_ALGORITHMS_NAUTY_HPP_
 
 #include "mimir/common/printers.hpp"
-#include "mimir/graphs/declarations.hpp"
 #include "mimir/graphs/graph_interface.hpp"
 #include "mimir/graphs/graph_properties.hpp"
+#include "mimir/graphs/types.hpp"
 
 #include <memory>
 #include <ostream>

@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_GRAPHS_DECLARATIONS_HPP_
-#define MIMIR_GRAPHS_DECLARATIONS_HPP_
+#ifndef MIMIR_GRAPHS_TYPES_HPP_
+#define MIMIR_GRAPHS_TYPES_HPP_
 
 // Do not include headers with transitive dependencies.
 #include "mimir/common/types.hpp"
@@ -52,6 +52,8 @@ using Color = uint32_t;
 using ColorList = std::vector<Color>;
 template<size_t K>
 using ColorArray = std::array<Color, K>;
+template<size_t K>
+using ColorArrayList = std::vector<ColorArray<K>>;
 using ColorSet = std::unordered_set<Color>;
 template<typename T>
 using ColorMap = std::unordered_map<Color, T>;

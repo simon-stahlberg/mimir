@@ -19,11 +19,11 @@
 #define MIMIR_GRAPHS_DYNAMIC_GRAPH_IMPL_HPP_
 
 #include "mimir/common/concepts.hpp"
-#include "mimir/graphs/declarations.hpp"
 #include "mimir/graphs/dynamic_graph_interface.hpp"
 #include "mimir/graphs/graph_edge_interface.hpp"
 #include "mimir/graphs/graph_traversal_interface.hpp"
 #include "mimir/graphs/graph_vertex_interface.hpp"
+#include "mimir/graphs/types.hpp"
 
 #include <boost/hana.hpp>
 #include <cassert>

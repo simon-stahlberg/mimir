@@ -18,7 +18,7 @@
 #ifndef MIMIR_GRAPHS_GRAPH_VERTEX_INTERFACE_HPP_
 #define MIMIR_GRAPHS_GRAPH_VERTEX_INTERFACE_HPP_
 
-#include "mimir/graphs/declarations.hpp"
+#include "mimir/graphs/types.hpp"
 
 #include <concepts>
 

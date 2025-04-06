@@ -277,9 +277,6 @@ class TermImpl;
 using Term = const TermImpl*;
 using TermList = std::vector<Term>;
 
-template<typename T>
-concept IsFormalismEntity = requires { typename std::decay_t<std::remove_pointer_t<T>>::FormalismEntity; };
-
 static_assert(IsHanaMap<PredicateLists<StaticTag>>);
 
 }

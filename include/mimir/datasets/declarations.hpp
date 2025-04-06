@@ -20,7 +20,7 @@
 
 // Do not include headers with transitive dependencies.
 #include "mimir/graphs/algorithms/nauty.hpp"
-#include "mimir/graphs/declarations.hpp"
+#include "mimir/graphs/types.hpp"
 #include "mimir/search/declarations.hpp"
 
 #include <cstdint>

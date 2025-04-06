@@ -25,11 +25,11 @@
 #include "mimir/graphs/algorithms/color_refinement.hpp"
 #include "mimir/graphs/algorithms/nauty.hpp"
 #include "mimir/graphs/concrete/digraph_vertex_colored.hpp"
-#include "mimir/graphs/declarations.hpp"
 #include "mimir/graphs/graph_interface.hpp"
 #include "mimir/graphs/graph_properties.hpp"
 #include "mimir/graphs/graph_traversal_interface.hpp"
 #include "mimir/graphs/graph_vertices.hpp"
+#include "mimir/graphs/types.hpp"
 
 #include <algorithm>
 #include <cassert>
@@ -39,6 +39,7 @@
 #include <loki/details/utils/hash.hpp>
 #include <map>
 #include <memory>
+#include <tuple>
 #include <unordered_map>
 #include <vector>
 
@@ -52,9 +53,8 @@ class CertificateImpl
 {
 public:
     /* Compression of new color to map (C(bar{v}), {{(c_1^1, ...,c_k^1), ..., (c_1^r, ...,c_k^r)}}) to an integer color for bar{v} in V^k */
-    using ConfigurationCompressionFunction =
-        std::unordered_map<std::pair<Color, std::vector<ColorArray<K>>>, Color, loki::Hash<std::pair<Color, std::vector<ColorArray<K>>>>>;
-    using CanonicalConfigurationCompressionFunction = std::map<std::pair<Color, std::vector<ColorArray<K>>>, Color>;
+    using ConfigurationCompressionFunction = std::unordered_map<std::pair<Color, ColorArrayList<K>>, Color, loki::Hash<std::pair<Color, ColorArrayList<K>>>>;
+    using CanonicalConfigurationCompressionFunction = std::map<std::pair<Color, ColorArrayList<K>>, Color>;
 
     CertificateImpl(ConfigurationCompressionFunction f, ColorList hash_to_color);
 
@@ -309,7 +309,7 @@ std::shared_ptr<CertificateImpl<K>> compute_certificate(const G& graph, Isomorph
     /* Refine colors of k-tuples. */
     auto f = typename CertificateImpl<K>::ConfigurationCompressionFunction();
     auto M = std::vector<std::pair<Index, ColorArray<K>>>();
-    auto M_replaced = std::vector<std::tuple<Color, std::vector<ColorArray<K>>, Index>>();
+    auto M_replaced = std::vector<std::tuple<Color, ColorArrayList<K>, Index>>();
     // (line 3-18): subroutine to find stable coloring
 
     while (!L.empty())

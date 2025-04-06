@@ -116,7 +116,6 @@
 #include "mimir/graphs/concrete/digraph.hpp"
 #include "mimir/graphs/concrete/digraph_edge_colored.hpp"
 #include "mimir/graphs/concrete/digraph_vertex_colored.hpp"
-#include "mimir/graphs/declarations.hpp"
 #include "mimir/graphs/dynamic_graph.hpp"
 #include "mimir/graphs/dynamic_graph_interface.hpp"
 #include "mimir/graphs/graph_edge_interface.hpp"
@@ -128,6 +127,7 @@
 #include "mimir/graphs/graph_vertices.hpp"
 #include "mimir/graphs/static_graph.hpp"
 #include "mimir/graphs/static_graph_interface.hpp"
+#include "mimir/graphs/types.hpp"
 
 /**
  * Algorithms
