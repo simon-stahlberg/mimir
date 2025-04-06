@@ -21,35 +21,71 @@
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/state.hpp"
 
+#include <random>
+
 using namespace mimir::formalism;
 using namespace mimir::search;
 
 namespace mimir::datasets
 {
 
-/**
- * ObjectGraph
- */
-
-static void
+/// @brief Add object vertices to the graph.
+/// This function ensures that objects are sorted by their global index to ensure structural consistency across states within the same problem.
+/// @param state
+/// @param problem
+/// @param color_function
+/// @param out_digraph
+/// @return
+static ObjectMap<graphs::VertexIndex>
 add_objects_graph_structures(State state, const ProblemImpl& problem, const ColorFunctionImpl& color_function, graphs::StaticVertexColoredDigraph& out_digraph)
 {
-    for (const auto& object : problem.get_problem_and_domain_objects())
+    auto objects = ObjectSet {};
+
+    const auto add_atom_objects_func = [&](auto&& atom) { objects.insert(atom->get_objects().begin(), atom->get_objects().end()); };
+
+    for (const auto& atom : problem.get_static_initial_atoms())
     {
-        const auto vertex_color = color_function.get_color(object);
-        const auto v_idx = out_digraph.add_vertex(vertex_color);
-        assert(v_idx == object->get_index());
+        add_atom_objects_func(atom);
     }
+    for (const auto& atom_index : state->get_atoms<FluentTag>())
+    {
+        add_atom_objects_func(problem.get_repositories().get_ground_atom<FluentTag>(atom_index));
+    }
+    for (const auto& atom_index : state->get_atoms<DerivedTag>())
+    {
+        add_atom_objects_func(problem.get_repositories().get_ground_atom<DerivedTag>(atom_index));
+    }
+
+    auto index_to_object = std::vector<std::pair<Index, Object>> {};
+    for (const auto& object : objects)
+    {
+        index_to_object.emplace_back(object->get_index(), object);
+    }
+
+    std::sort(index_to_object.begin(), index_to_object.end());
+
+    auto object_to_vertex_index = ObjectMap<graphs::VertexIndex> {};
+    for (const auto& [index, object] : index_to_object)
+    {
+        object_to_vertex_index.emplace(object, out_digraph.add_vertex(color_function.get_color(object)));
+    }
+
+    return object_to_vertex_index;
 }
 
 template<IsStaticOrFluentOrDerivedTag P>
-static void add_ground_atom_graph_structures(const ColorFunctionImpl& color_function, GroundAtom<P> atom, graphs::StaticVertexColoredDigraph& out_digraph)
+static void add_ground_atom_graph_structures(const ColorFunctionImpl& color_function,
+                                             const ObjectMap<graphs::VertexIndex>& object_to_vertex_index,
+                                             GroundAtom<P> atom,
+                                             graphs::StaticVertexColoredDigraph& out_digraph)
 {
     for (size_t pos = 0; pos < atom->get_arity(); ++pos)
     {
         const auto vertex_color = color_function.get_color(atom, pos);
         const auto vertex_index = out_digraph.add_vertex(vertex_color);
-        out_digraph.add_undirected_edge(vertex_index, atom->get_objects().at(pos)->get_index());
+
+        out_digraph.add_undirected_edge(vertex_index, object_to_vertex_index.at(atom->get_objects().at(pos)));
+
         if (pos > 0)
         {
             out_digraph.add_undirected_edge(vertex_index - 1, vertex_index);
@@ -57,29 +93,54 @@ static void add_ground_atom_graph_structures(const ColorFunctionImpl& color_func
     }
 }
 
-static void add_ground_atoms_graph_structures(State state,
-                                              const ProblemImpl& problem,
-                                              const ColorFunctionImpl& color_function,
+template<IsStaticOrFluentOrDerivedTag P>
+static void add_ground_atoms_graph_structures(const ColorFunctionImpl& color_function,
+                                              const ObjectMap<graphs::VertexIndex>& object_to_vertex_index,
+                                              const GroundAtomList<P>& atoms,
                                               graphs::StaticVertexColoredDigraph& out_digraph)
 {
-    for (const auto& atom : problem.get_repositories().get_ground_atoms_from_indices<StaticTag>(problem.get_static_initial_positive_atoms_bitset()))
+    auto canonical_structure_to_atom = std::vector<std::tuple<Index, IndexList, GroundAtom<P>>> {};
+
+    for (const auto& atom : atoms)
     {
-        add_ground_atom_graph_structures(color_function, atom, out_digraph);
+        auto object_indices = IndexList {};
+        for (const auto& object : atom->get_objects())
+        {
+            object_indices.push_back(object->get_index());
+        }
+        canonical_structure_to_atom.emplace_back(atom->get_predicate()->get_index(), object_indices, atom);
     }
-    for (const auto& atom : problem.get_repositories().get_ground_atoms_from_indices<FluentTag>(state->get_atoms<FluentTag>()))
+
+    std::sort(canonical_structure_to_atom.begin(), canonical_structure_to_atom.end());
+
+    for (const auto& [predicate_index, object_indices, atom] : canonical_structure_to_atom)
     {
-        add_ground_atom_graph_structures(color_function, atom, out_digraph);
-    }
-    for (const auto& atom : problem.get_repositories().get_ground_atoms_from_indices<DerivedTag>(state->get_atoms<DerivedTag>()))
-    {
-        add_ground_atom_graph_structures(color_function, atom, out_digraph);
+        add_ground_atom_graph_structures(color_function, object_to_vertex_index, atom, out_digraph);
     }
 }
 
+static void add_ground_atoms_graph_structures(State state,
+                                              const ProblemImpl& problem,
+                                              const ColorFunctionImpl& color_function,
+                                              const ObjectMap<graphs::VertexIndex>& object_to_vertex_index,
+                                              graphs::StaticVertexColoredDigraph& out_digraph)
+{
+    add_ground_atoms_graph_structures(color_function, object_to_vertex_index, problem.get_static_initial_atoms(), out_digraph);
+
+    add_ground_atoms_graph_structures(color_function,
+                                      object_to_vertex_index,
+                                      problem.get_repositories().get_ground_atoms_from_indices<FluentTag>(state->get_atoms<FluentTag>()),
+                                      out_digraph);
+
+    add_ground_atoms_graph_structures(color_function,
+                                      object_to_vertex_index,
+                                      problem.get_repositories().get_ground_atoms_from_indices<DerivedTag>(state->get_atoms<DerivedTag>()),
+                                      out_digraph);
+}
+
 template<IsStaticOrFluentOrDerivedTag P>
-static void add_ground_literal_graph_structures(State state,
-                                                const ProblemImpl& problem,
-                                                const ColorFunctionImpl& color_function,
+static void add_ground_literal_graph_structures(const ColorFunctionImpl& color_function,
+                                                const ObjectMap<graphs::VertexIndex>& object_to_vertex_index,
                                                 GroundLiteral<P> literal,
                                                 graphs::StaticVertexColoredDigraph& out_digraph)
 {
@@ -87,7 +148,9 @@ static void add_ground_literal_graph_structures(State state,
     {
         const auto vertex_color = color_function.get_color(literal, pos);
         const auto vertex_index = out_digraph.add_vertex(vertex_color);
-        out_digraph.add_undirected_edge(vertex_index, literal->get_atom()->get_objects().at(pos)->get_index());
+
+        out_digraph.add_undirected_edge(vertex_index, object_to_vertex_index.at(literal->get_atom()->get_objects().at(pos)));
+
         if (pos > 0)
         {
             out_digraph.add_undirected_edge(vertex_index - 1, vertex_index);
@@ -95,37 +158,55 @@ static void add_ground_literal_graph_structures(State state,
     }
 }
 
-static void add_ground_goal_literals_graph_structures(State state,
-                                                      const ProblemImpl& problem,
-                                                      const ColorFunctionImpl& color_function,
-                                                      graphs::StaticVertexColoredDigraph& out_digraph)
+template<IsStaticOrFluentOrDerivedTag P>
+static void add_ground_literals_graph_structures(const ColorFunctionImpl& color_function,
+                                                 const ObjectMap<graphs::VertexIndex>& object_to_vertex_index,
+                                                 GroundLiteralList<P> literals,
+                                                 graphs::StaticVertexColoredDigraph& out_digraph)
 {
-    for (const auto& literal : problem.get_goal_condition<StaticTag>())
+    auto canonical_structure_to_literal = std::vector<std::tuple<Index, IndexList, bool, GroundLiteral<P>>> {};
+
+    for (const auto& literal : literals)
     {
-        add_ground_literal_graph_structures(state, problem, color_function, literal, out_digraph);
+        auto object_indices = IndexList {};
+        for (const auto& object : literal->get_atom()->get_objects())
+        {
+            object_indices.push_back(object->get_index());
+        }
+        canonical_structure_to_literal.emplace_back(literal->get_atom()->get_predicate()->get_index(), object_indices, literal->get_polarity(), literal);
     }
-    for (const auto& literal : problem.get_goal_condition<FluentTag>())
+
+    std::sort(canonical_structure_to_literal.begin(), canonical_structure_to_literal.end());
+
+    for (const auto& [predicate_index, object_indices, polarity, literal] : canonical_structure_to_literal)
     {
-        add_ground_literal_graph_structures(state, problem, color_function, literal, out_digraph);
-    }
-    for (const auto& literal : problem.get_goal_condition<DerivedTag>())
-    {
-        add_ground_literal_graph_structures(state, problem, color_function, literal, out_digraph);
+        add_ground_literal_graph_structures(color_function, object_to_vertex_index, literal, out_digraph);
     }
 }
 
-graphs::StaticVertexColoredDigraph
-create_object_graph(search::State state, const formalism::ProblemImpl& problem, const formalism::ColorFunctionImpl& color_function)
+static void add_ground_goal_literals_graph_structures(const ProblemImpl& problem,
+                                                      const ColorFunctionImpl& color_function,
+                                                      const ObjectMap<graphs::VertexIndex>& object_to_vertex_index,
+                                                      graphs::StaticVertexColoredDigraph& out_digraph)
 {
-    auto graph = graphs::StaticVertexColoredDigraph();
+    add_ground_literals_graph_structures(color_function, object_to_vertex_index, problem.get_goal_condition<StaticTag>(), out_digraph);
 
-    add_objects_graph_structures(state, problem, color_function, graph);
+    add_ground_literals_graph_structures(color_function, object_to_vertex_index, problem.get_goal_condition<FluentTag>(), out_digraph);
 
-    add_ground_atoms_graph_structures(state, problem, color_function, graph);
+    add_ground_literals_graph_structures(color_function, object_to_vertex_index, problem.get_goal_condition<DerivedTag>(), out_digraph);
+}
 
-    add_ground_goal_literals_graph_structures(state, problem, color_function, graph);
+graphs::StaticVertexColoredDigraph create_object_graph(State state, const ProblemImpl& problem, const ColorFunctionImpl& color_function)
+{
+    auto vertex_colored_digraph = graphs::StaticVertexColoredDigraph();
 
-    return graph;
+    const auto object_to_vertex_index = add_objects_graph_structures(state, problem, color_function, vertex_colored_digraph);
+
+    add_ground_atoms_graph_structures(state, problem, color_function, object_to_vertex_index, vertex_colored_digraph);
+
+    add_ground_goal_literals_graph_structures(problem, color_function, object_to_vertex_index, vertex_colored_digraph);
+
+    return vertex_colored_digraph;
 }
 
 }

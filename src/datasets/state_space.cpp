@@ -548,7 +548,7 @@ compute_problem_graph_with_symmetry_reduction(const SearchContext& context, cons
                     {
                         std::cout << "Permuted action is applicable in state." << std::endl;
 
-                        break;
+                        // break;
                     }
                     else
                     {

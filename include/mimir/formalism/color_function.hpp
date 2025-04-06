@@ -43,18 +43,18 @@ public:
     static ColorFunction create(GeneralizedProblem generalized_problem);
     static ColorFunction create(Problem problem);
 
-    /// @brief get color of object.
+    /// @brief Get the color of an object vertex.
     graphs::Color get_color(Object object) const;
 
-    /// @brief Get unique color of state atom.
+    /// @brief Get the color of a positional argument vertex associated with a ground atom.
     template<IsStaticOrFluentOrDerivedTag P>
     graphs::Color get_color(GroundAtom<P> atom, size_t pos) const;
 
-    /// @brief Get unique color of goal literal.
+    /// @brief Get the color of a positional argument vertex associated with a ground literal.
     template<IsStaticOrFluentOrDerivedTag P>
     graphs::Color get_color(GroundLiteral<P> literal, size_t pos) const;
 
-    /// @brief Get name of color.
+    /// @brief Get the name of a color.
     const std::string& get_color_name(graphs::Color color) const;
 };
 

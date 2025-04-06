@@ -37,6 +37,7 @@ ColorFunctionImpl::ColorFunctionImpl(GeneralizedProblem generalized_problem,
 
 ColorFunction ColorFunctionImpl::create(GeneralizedProblem generalized_problem)
 {
+    /* Assign global colors and global positional argument vertex indices. */
     auto color_to_name = std::unordered_map<graphs::Color, std::string> {};
     auto predicate_to_color_offsets = PredicateMaps<graphs::Color, StaticTag, FluentTag, DerivedTag> {};
 
@@ -54,6 +55,7 @@ ColorFunction ColorFunctionImpl::create(GeneralizedProblem generalized_problem)
 
                                   for (size_t i = 0; i < predicate->get_arity(); ++i)
                                   {
+                                      color_to_name.emplace(next_color++, fmt::format("{}_{}", to_string(predicate), i));
                                       color_to_name.emplace(next_color++, fmt::format("{}_{}_negative", to_string(predicate), i));
                                       color_to_name.emplace(next_color++, fmt::format("{}_{}_positive", to_string(predicate), i));
                                   }
@@ -72,6 +74,7 @@ ColorFunction ColorFunctionImpl::create(GeneralizedProblem generalized_problem)
 
             for (size_t i = 0; i < predicate->get_arity(); ++i)
             {
+                color_to_name.emplace(next_color++, fmt::format("{}_{}", to_string(predicate), i));
                 color_to_name.emplace(next_color++, fmt::format("{}_{}_negative", to_string(predicate), i));
                 color_to_name.emplace(next_color++, fmt::format("{}_{}_positive", to_string(predicate), i));
             }
@@ -91,7 +94,7 @@ graphs::Color ColorFunctionImpl::get_color(GroundAtom<P> atom, size_t pos) const
 {
     assert(pos < atom->get_predicate()->get_arity());
 
-    return boost::hana::at_key(m_predicate_to_color_offsets, boost::hana::type<P> {}).at(atom->get_predicate()) + 2 * pos;
+    return boost::hana::at_key(m_predicate_to_color_offsets, boost::hana::type<P> {}).at(atom->get_predicate()) + 3 * pos;
 }
 
 template graphs::Color ColorFunctionImpl::get_color(GroundAtom<StaticTag> atom, size_t pos) const;
@@ -103,7 +106,7 @@ graphs::Color ColorFunctionImpl::get_color(GroundLiteral<P> literal, size_t pos)
 {
     assert(pos < literal->get_atom()->get_predicate()->get_arity());
 
-    return boost::hana::at_key(m_predicate_to_color_offsets, boost::hana::type<P> {}).at(literal->get_atom()->get_predicate()) + 2 * pos
+    return boost::hana::at_key(m_predicate_to_color_offsets, boost::hana::type<P> {}).at(literal->get_atom()->get_predicate()) + 3 * pos + 1
            + literal->get_polarity();
 }
 
