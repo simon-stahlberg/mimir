@@ -159,6 +159,9 @@ public:
     /* Grounding */
 
     template<IsStaticOrFluentOrDerivedTag P>
+    GroundAtom<P> get_or_create_ground_atom(Predicate<P> predicate, ObjectList objects);
+
+    template<IsStaticOrFluentOrDerivedTag P>
     GroundLiteral<P> ground(Literal<P> literal, const ObjectList& binding);
 
     GroundFunctionExpression ground(FunctionExpression fexpr, const ObjectList& binding);

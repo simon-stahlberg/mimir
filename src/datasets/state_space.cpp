@@ -24,6 +24,7 @@
 #include "mimir/formalism/ground_action.hpp"
 #include "mimir/formalism/parser.hpp"
 #include "mimir/formalism/problem.hpp"
+#include "mimir/formalism/repositories.hpp"
 #include "mimir/graphs/algorithms/nauty.hpp"
 #include "mimir/graphs/bgl/graph_algorithms.hpp"
 #include "mimir/graphs/bgl/static_graph_algorithms.hpp"
@@ -32,6 +33,7 @@
 #include "mimir/search/algorithms/brfs/event_handlers/interface.hpp"
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 #include "mimir/search/algorithms/strategies/pruning_strategy.hpp"
+#include "mimir/search/applicability.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/axiom_evaluators.hpp"
@@ -45,6 +47,8 @@
 #include "mimir/search/search_space.hpp"
 #include "mimir/search/state.hpp"
 #include "mimir/search/state_repository.hpp"
+
+#include <deque>
 
 using namespace mimir::formalism;
 using namespace mimir::search;
@@ -136,7 +140,7 @@ private:
 
     auto compute_canonical_graph(State state)
     {
-        return std::make_shared<nauty::SparseGraph>(nauty::SparseGraph(ObjectGraph(state, *m_problem, m_symm_data.color_function).get_graph()).canonize());
+        return std::make_shared<nauty::SparseGraph>(nauty::SparseGraph(create_object_graph(state, *m_problem, m_symm_data.color_function)).canonize());
     }
 
     void on_expand_state_impl(State state) {}
@@ -406,16 +410,209 @@ perform_reachability_analysis(SearchContext context, graphs::StaticProblemGraph 
                                             std::move(unsolvable_vertices));
 }
 
+static State permute_state(State state, StateRepositoryImpl& repository, ProblemImpl& problem, const std::vector<int>& permutation)
+{
+    auto permuted_atoms = GroundAtomList<FluentTag> {};
+    for (const auto& atom_index : state->get_atoms<FluentTag>())
+    {
+        const auto ground_atom = problem.get_repositories().get_ground_atom<FluentTag>(atom_index);
+
+        auto permuted_binding = ObjectList {};
+        for (const auto& object : ground_atom->get_objects())
+        {
+            permuted_binding.push_back(problem.get_repositories().get_object(permutation.at(object->get_index())));
+        }
+
+        const auto predicate = ground_atom->get_predicate();
+
+        permuted_atoms.push_back(problem.get_or_create_ground_atom(predicate, permuted_binding));
+    }
+
+    // TODO: must update numeric variables!
+    return repository.get_or_create_state(permuted_atoms, state->get_numeric_variables());
+}
+
+static GroundAction permute_action(GroundAction action, ProblemImpl& problem, const std::vector<int>& permutation)
+{
+    auto permuted_binding = ObjectList {};
+    for (const auto& object_index : action->get_object_indices())
+    {
+        permuted_binding.push_back(problem.get_repositories().get_object(permutation.at(object_index)));
+    }
+
+    const auto lifted_action = problem.get_domain()->get_actions().at(action->get_action_index());
+
+    return problem.ground(lifted_action, permuted_binding);
+}
+
 static std::optional<StateSpace>
 compute_problem_graph_with_symmetry_reduction(const SearchContext& context, const ColorFunctionImpl& color_function, const StateSpaceImpl::Options& options)
 {
+    const auto problem = context->get_problem();
+    const auto state_repository = context->get_state_repository();
+    const auto applicable_action_generator = context->get_applicable_action_generator();
+    const auto goal_test = ProblemGoalStrategyImpl::create(context->get_problem());
+
+    // Map nauty::SparseGraph -> Representative State and ObjectGraph
+    // The State makes it into the final graph.
+    // The ObjectGraph contains permutations needed to fix conflicts during backtracking.
+    // When applying a permutation on a state, we have to update the mapping here.
+    CertificateMap<search::State> class_representative;
+    StateToCertificate certificates;
+
+    StateSet visited_states;
+
+    struct Entry
+    {
+        search::State state;
+        ContinuousCost metric_value;
+        formalism::GroundActionList applicable_actions;
+        size_t pos;
+
+        bool has_next() const { return pos != applicable_actions.size(); }
+    };
+
+    auto deque = std::deque<Entry> {};
+
+    const auto initial_state = state_repository->get_or_create_initial_state();
+    auto sparse_graph = std::make_shared<nauty::SparseGraph>(create_object_graph(initial_state, *problem, color_function));
+    sparse_graph->canonize();
+    class_representative.emplace(sparse_graph.get(), initial_state);
+    certificates.emplace(initial_state, sparse_graph);
+    visited_states.insert(initial_state);
+    const auto initial_metric_value = compute_initial_state_metric_value(*problem);
+    auto initial_applicable_actions = formalism::GroundActionList {};
+    for (const auto& action : applicable_action_generator->create_applicable_action_generator(initial_state))
+    {
+        initial_applicable_actions.push_back(action);
+    }
+    deque.push_back(Entry { initial_state, initial_metric_value, initial_applicable_actions, 0 });
+
+    while (!deque.empty())
+    {
+        if (deque.back().has_next())
+        {
+            auto& entry = deque.back();
+
+            auto state = entry.state;
+            auto metric_value = entry.metric_value;
+            auto action = entry.applicable_actions.at(entry.pos++);
+            const auto [successor_state, successor_metric_value] = state_repository->get_or_create_successor_state(state, action, metric_value);
+
+            if (visited_states.contains(successor_state))
+            {
+                continue;
+            }
+            visited_states.insert(successor_state);
+
+            std::cout << std::endl;
+            std::cout << "State" << std::endl;
+            mimir::operator<<(std::cout, std::make_tuple(state, std::cref(*problem)));
+            std::cout << std::endl;
+            std::cout << "Action" << std::endl;
+            mimir::operator<<(std::cout, std::make_tuple(action, std::cref(*problem), formalism::GroundActionImpl::PlanFormatterTag {}));
+            std::cout << std::endl;
+            std::cout << "Successor state" << std::endl;
+            mimir::operator<<(std::cout, std::make_tuple(successor_state, std::cref(*problem)));
+            std::cout << std::endl;
+
+            auto successor_sparse_graph = std::make_shared<nauty::SparseGraph>(create_object_graph(successor_state, *problem, color_function));
+            successor_sparse_graph->canonize();
+
+            auto it = class_representative.find(successor_sparse_graph.get());
+            if (it != class_representative.end())
+            {
+                const auto& representative_sparse_graph = *it->first.get();
+                const auto representative_state = it->second;
+
+                std::cout << "Representative state" << std::endl;
+                mimir::operator<<(std::cout, std::make_tuple(representative_state, std::cref(*problem)));
+                std::cout << std::endl;
+
+                if (successor_state != representative_state)
+                {
+                    /* Mismatched class representatives! backtrack and fix. */
+                    std::cout << "Mismatched class representative! " << std::endl;
+
+                    // while (true)
+                    //{
+                    const auto permutation = nauty::compute_permutation(*successor_sparse_graph, representative_sparse_graph);
+
+                    const auto permuted_action = permute_action(action, *problem, permutation);
+
+                    std::cout << "Permuted action" << std::endl;
+                    mimir::operator<<(std::cout, std::make_tuple(permuted_action, std::cref(*problem), formalism::GroundActionImpl::PlanFormatterTag {}));
+                    std::cout << std::endl;
+
+                    if (is_applicable(permuted_action, *problem, search::DenseState(state)))
+                    {
+                        std::cout << "Permuted action is applicable in state." << std::endl;
+
+                        break;
+                    }
+                    else
+                    {
+                        std::cout << "Permuted action is inapplicable in state." << std::endl;
+
+                        const auto permuted_state = permute_state(state, *state_repository, *problem, permutation);
+
+                        std::cout << "Permuted state" << std::endl;
+                        mimir::operator<<(std::cout, std::make_tuple(permuted_state, std::cref(*problem)));
+                        std::cout << std::endl;
+
+                        // deque.pop_back();
+
+                        // auto& prev_entry = deque.back();
+                        // state = prev_entry.state;
+                        // metric_value = prev_entry.metric_value;
+                        // action = entry.applicable_actions.at(prev_entry.pos);
+                    }
+                    //}
+                }
+                else
+                {
+                    std::cout << "Matched class representative! " << std::endl;
+                }
+
+                continue;
+            }
+            else
+            {
+                /* New class representative! */
+                std::cout << "New class representative! " << std::endl;
+
+                class_representative.emplace(successor_sparse_graph.get(), successor_state);
+                certificates.emplace(successor_state, successor_sparse_graph);
+            }
+
+            auto successor_applicable_actions = formalism::GroundActionList {};
+            for (const auto& successor_action : applicable_action_generator->create_applicable_action_generator(successor_state))
+            {
+                successor_applicable_actions.push_back(successor_action);
+            }
+
+            // std::cout << "Push successor state: " << successor_state->get_index() << std::endl;
+            // mimir::operator<<(std::cout, std::make_tuple(successor_state, std::cref(*problem)));
+            // std::cout << std::endl;
+
+            deque.push_back(Entry { successor_state, successor_metric_value, successor_applicable_actions, 0 });
+        }
+        else
+        {
+            deque.pop_back();
+        }
+    }
+
+    std::cout << "Num visited states: " << visited_states.size() << std::endl;
+    std::cout << "Num representative states: " << class_representative.size() << std::endl;
+
+    /* Old */
+
     auto graph = graphs::StaticProblemGraph();
     auto goal_vertices = IndexSet {};
 
     auto symm_data = SymmetriesData(color_function);
 
-    const auto state_repository = context->get_state_repository();
-    const auto goal_test = ProblemGoalStrategyImpl::create(context->get_problem());
     const auto event_handler =
         std::make_shared<SymmetryReducedProblemGraphEventHandler>(context->get_problem(), options, graph, goal_vertices, symm_data, false);
     const auto pruning_strategy = std::make_shared<SymmetryStatePruning>(symm_data);
@@ -522,5 +719,4 @@ Index StateSpaceImpl::get_initial_vertex() const { return m_initial_vertex; }
 const IndexSet& StateSpaceImpl::get_goal_vertices() const { return m_goal_vertices; }
 
 const IndexSet& StateSpaceImpl::get_unsolvable_vertices() const { return m_unsolvable_vertices; }
-
 }

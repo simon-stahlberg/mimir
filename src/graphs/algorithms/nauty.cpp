@@ -138,4 +138,48 @@ const std::vector<int>& SparseGraph::get_pi() const { return m_impl->get_pi(); }
 
 const std::vector<int>& SparseGraph::get_pi_inverse() const { return m_impl->get_pi_inverse(); }
 
+std::vector<int>& apply_permutation(const std::vector<int>& pi, std::vector<int>& ref_vec)
+{
+    for (size_t i = 0; i < ref_vec.size(); ++i)
+    {
+        ref_vec[i] = pi[ref_vec[i]];
+    }
+
+    return ref_vec;
+}
+
+std::vector<int> compute_lab_permutation(const SparseGraph& source, const SparseGraph& target)
+{
+    assert(loki::EqualTo<SparseGraph>()(source, target));
+
+    const auto& source_lab = source.get_lab();
+    const auto& target_lab = target.get_lab();
+
+    auto target_v_idx_to_index = std::unordered_map<int, int> {};
+    for (int i = 0; i < target.get_nv(); ++i)
+    {
+        target_v_idx_to_index[target_lab[i]] = i;
+    }
+
+    auto phi = std::vector<int>(source.get_nv());
+    for (int i = 0; i < source.get_nv(); ++i)
+    {
+        phi[i] = target_v_idx_to_index.at(source_lab[i]);
+    }
+
+    return phi;
+}
+
+std::vector<int> compute_permutation(const SparseGraph& source, const SparseGraph& target)
+{
+    assert(loki::EqualTo<SparseGraph>()(source, target));
+
+    auto permutation = std::vector<int>(source.get_nv());
+    std::iota(permutation.begin(), permutation.end(), 0);
+
+    apply_permutation(source.get_pi_inverse(), apply_permutation(compute_lab_permutation(source, target), apply_permutation(source.get_pi(), permutation)));
+
+    return permutation;
+}
+
 }

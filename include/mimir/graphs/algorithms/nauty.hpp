@@ -191,6 +191,17 @@ public:
     }
 };
 
+extern std::vector<int>& apply_permutation(const std::vector<int>& pi, std::vector<int>& ref_vec);
+
+/// @brief Compute the permutation induced by the isomorphism from the source `SparseGraph` to the target `SparseGraph`.
+/// Assumes that there exists an isomorphism from source to target.
+/// @param source the source `SparseGraph` in the permutation.
+/// @param target the target `SparseGraph` in the permutation.
+/// @return
+extern std::vector<int> compute_lab_permutation(const SparseGraph& source, const SparseGraph& target);
+
+extern std::vector<int> compute_permutation(const SparseGraph& source, const SparseGraph& target);
+
 extern std::ostream& operator<<(std::ostream& out, const SparseGraph& graph);
 
 }

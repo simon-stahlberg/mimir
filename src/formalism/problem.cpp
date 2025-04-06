@@ -415,6 +415,18 @@ static void ground_terms(const TermList& terms, const ObjectList& binding, Objec
     }
 }
 
+// Atom
+
+template<IsStaticOrFluentOrDerivedTag P>
+GroundAtom<P> ProblemImpl::get_or_create_ground_atom(Predicate<P> predicate, ObjectList objects)
+{
+    return m_repositories.get_or_create_ground_atom(predicate, std::move(objects));
+}
+
+template GroundAtom<StaticTag> ProblemImpl::get_or_create_ground_atom(Predicate<StaticTag> predicate, ObjectList ObjectList);
+template GroundAtom<FluentTag> ProblemImpl::get_or_create_ground_atom(Predicate<FluentTag> predicate, ObjectList ObjectList);
+template GroundAtom<DerivedTag> ProblemImpl::get_or_create_ground_atom(Predicate<DerivedTag> predicate, ObjectList ObjectList);
+
 // Literal
 
 template<IsStaticOrFluentOrDerivedTag P>

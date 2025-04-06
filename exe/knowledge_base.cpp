@@ -58,7 +58,7 @@ int main(int argc, char** argv)
             const auto& pss_i = generalized_state_space->get_state_spaces()[i];
             std::cout << i << ". has num vertices: " << pss_i->get_graph().get_num_vertices() << " and num edges: " << pss_i->get_graph().get_num_edges()
                       << std::endl;
-            std::cout << pss_i->get_graph() << std::endl;
+            // std::cout << pss_i->get_graph() << std::endl;
         }
 
         std::cout << "Class graph has num vertices: " << generalized_state_space->get_graph().get_num_vertices()
@@ -73,8 +73,8 @@ int main(int argc, char** argv)
         {
             for (const auto& tuple_graph : tuple_graphs)
             {
-                std::cout << "Class vertex index: " << class_v_idx++ << std::endl;
-                std::cout << *tuple_graph << std::endl;
+                // std::cout << "Class vertex index: " << class_v_idx++ << std::endl;
+                // std::cout << *tuple_graph << std::endl;
             }
         }
     }
