@@ -19,6 +19,7 @@
 #define MIMIR_GRAPHS_ALGORITHMS_NAUTY_HPP_
 
 #include "mimir/common/printers.hpp"
+#include "mimir/graphs/color.hpp"
 #include "mimir/graphs/graph_interface.hpp"
 #include "mimir/graphs/graph_properties.hpp"
 #include "mimir/graphs/types.hpp"
@@ -51,7 +52,7 @@ private:
                 size_t elen,
                 std::vector<int> lab,
                 std::vector<int> ptn,
-                std::vector<uint32_t> coloring);
+                std::vector<const AbstractColor*> coloring);
 
     void initialize(size_t nde,
                     std::vector<size_t> v,
@@ -63,7 +64,7 @@ private:
                     size_t elen,
                     std::vector<int> lab,
                     std::vector<int> ptn,
-                    std::vector<uint32_t> coloring);
+                    std::vector<const AbstractColor*> coloring);
 
 public:
     SparseGraph();
@@ -122,7 +123,7 @@ public:
 
         /* Add vertex coloring. */
 
-        auto color_vertex_pairs = std::vector<std::pair<uint32_t, uint32_t>> {};
+        auto color_vertex_pairs = std::vector<std::pair<const AbstractColor*, uint32_t>> {};
         color_vertex_pairs.reserve(nv);
         for (const auto& vertex : graph.get_vertices())
         {
@@ -132,7 +133,7 @@ public:
 
         auto lab = std::vector<int>(nv, 0);
         auto ptn = std::vector<int>(nv, 0);
-        auto coloring = std::vector<uint32_t> {};
+        auto coloring = std::vector<const AbstractColor*> {};
         coloring.reserve(nv);
         for (int i = 1; i < nv; ++i)
         {
@@ -166,7 +167,7 @@ public:
     size_t get_elen() const;
     const std::vector<int>& get_lab() const;
     const std::vector<int>& get_ptn() const;
-    const std::vector<uint32_t>& get_coloring() const;
+    const std::vector<const AbstractColor*>& get_coloring() const;
 
     /// @brief Return vertex permutation from input graph to canonical graphs.
     /// Throws an exception if canonize() was not called before.

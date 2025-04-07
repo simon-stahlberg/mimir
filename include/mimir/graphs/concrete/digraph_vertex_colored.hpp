@@ -18,6 +18,7 @@
 #ifndef MIMIR_GRAPHS_DIGRAPH_VERTEX_COLORED_HPP_
 #define MIMIR_GRAPHS_DIGRAPH_VERTEX_COLORED_HPP_
 
+#include "mimir/graphs/color.hpp"
 #include "mimir/graphs/dynamic_graph.hpp"
 #include "mimir/graphs/graph_edge_interface.hpp"
 #include "mimir/graphs/graph_edges.hpp"
@@ -31,6 +32,11 @@ namespace mimir::graphs
 /**
  * Type aliases
  */
+
+using AbstractColoredVertex = Vertex<std::unique_ptr<AbstractColor>>;
+using StaticAbstractVertexColoredDigraph = StaticGraph<AbstractColoredVertex, EmptyEdge>;
+
+inline auto get_color(const Vertex<std::unique_ptr<AbstractColor>>& vertex) { return vertex.get_property<0>().get(); }
 
 using StaticVertexColoredDigraph = StaticGraph<ColoredVertex, EmptyEdge>;
 using StaticVertexColoredForwardDigraph = StaticForwardGraph<StaticGraph<ColoredVertex, EmptyEdge>>;

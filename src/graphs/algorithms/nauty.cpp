@@ -41,7 +41,7 @@ SparseGraph::SparseGraph() :
                 0,
                 std::vector<int> {},
                 std::vector<int> {},
-                std::vector<uint32_t> {})
+                std::vector<const AbstractColor*> {})
 {
 }
 
@@ -55,7 +55,7 @@ SparseGraph::SparseGraph(size_t nde,
                          size_t elen,
                          std::vector<int> lab,
                          std::vector<int> ptn,
-                         std::vector<uint32_t> coloring)
+                         std::vector<const AbstractColor*> coloring)
 {
 }
 
@@ -69,7 +69,7 @@ void SparseGraph::initialize(size_t nde,
                              size_t elen,
                              std::vector<int> lab,
                              std::vector<int> ptn,
-                             std::vector<uint32_t> coloring)
+                             std::vector<const AbstractColor*> coloring)
 {
     m_impl = std::make_unique<
         details::SparseGraphImpl>(nde, v, nv, std::move(d), std::move(e), vlen, dlen, elen, std::move(lab), std::move(ptn), std::move(coloring));
@@ -119,7 +119,7 @@ const std::vector<int>& SparseGraph::get_lab() const { return m_impl->get_lab();
 
 const std::vector<int>& SparseGraph::get_ptn() const { return m_impl->get_ptn(); }
 
-const std::vector<uint32_t>& SparseGraph::get_coloring() const { return m_impl->get_coloring(); }
+const std::vector<const AbstractColor*>& SparseGraph::get_coloring() const { return m_impl->get_coloring(); }
 
 std::ostream& operator<<(std::ostream& out, const SparseGraph& graph)
 {

@@ -32,7 +32,7 @@ namespace mimir::datasets
 /// @param state is the state.
 /// @param problem is the Problem.
 /// @param color_function is the function used to color the vertices in the object graph.
-extern graphs::StaticVertexColoredDigraph create_object_graph(search::State state, const formalism::ProblemImpl& problem);
+extern graphs::StaticAbstractVertexColoredDigraph create_object_graph(search::State state, const formalism::ProblemImpl& problem);
 
 }
 

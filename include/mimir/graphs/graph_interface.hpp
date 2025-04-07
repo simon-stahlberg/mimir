@@ -88,12 +88,12 @@ concept IsBidirectionalGraph = requires(T a, VertexIndex vertex, EdgeIndex edge)
 
 template<typename T>
 concept IsVertexColoredGraph = requires(T::VertexType vertex) {
-    { get_color(vertex) } -> std::same_as<Color>;
+    { get_color(vertex) };
 };
 
 template<typename T>
 concept IsEdgeColoredGraph = requires(T::EdgeType edge) {
-    { get_color(edge) } -> std::same_as<Color>;
+    { get_color(edge) };
 };
 
 }

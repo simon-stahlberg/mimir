@@ -468,6 +468,14 @@ static std::optional<StateSpace> compute_problem_graph_with_symmetry_reduction(c
     const auto initial_state = state_repository->get_or_create_initial_state();
     auto sparse_graph = std::make_shared<nauty::SparseGraph>(create_object_graph(initial_state, *problem));
     sparse_graph->canonize();
+    // const auto canonical_initial_state = permute_state(initial_state, *state_repository, *problem, sparse_graph->get_pi());
+    // std::cout << "Initial state" << std::endl;
+    // mimir::operator<<(std::cout, std::make_tuple(initial_state, std::cref(*problem)));
+    // std::cout << std::endl;
+    // std::cout << "Canonical initial state" << std::endl;
+    // mimir::operator<<(std::cout, std::make_tuple(canonical_initial_state, std::cref(*problem)));
+    // std::cout << std::endl;
+
     class_representative.emplace(sparse_graph.get(), initial_state);
     certificates.emplace(initial_state, sparse_graph);
     visited_states.insert(initial_state);
@@ -529,36 +537,13 @@ static std::optional<StateSpace> compute_problem_graph_with_symmetry_reduction(c
                     //{
                     const auto permutation = nauty::compute_permutation(*successor_sparse_graph, representative_sparse_graph);
 
-                    const auto permuted_action = permute_action(action, *problem, permutation);
+                    action = permute_action(action, *problem, permutation);
 
                     std::cout << "Permuted action" << std::endl;
-                    mimir::operator<<(std::cout, std::make_tuple(permuted_action, std::cref(*problem), formalism::GroundActionImpl::PlanFormatterTag {}));
+                    mimir::operator<<(std::cout, std::make_tuple(action, std::cref(*problem), formalism::GroundActionImpl::PlanFormatterTag {}));
                     std::cout << std::endl;
 
-                    if (is_applicable(permuted_action, *problem, search::DenseState(state)))
-                    {
-                        std::cout << "Permuted action is applicable in state." << std::endl;
-
-                        // break;
-                    }
-                    else
-                    {
-                        std::cout << "Permuted action is inapplicable in state." << std::endl;
-
-                        const auto permuted_state = permute_state(state, *state_repository, *problem, permutation);
-
-                        std::cout << "Permuted state" << std::endl;
-                        mimir::operator<<(std::cout, std::make_tuple(permuted_state, std::cref(*problem)));
-                        std::cout << std::endl;
-
-                        // deque.pop_back();
-
-                        // auto& prev_entry = deque.back();
-                        // state = prev_entry.state;
-                        // metric_value = prev_entry.metric_value;
-                        // action = entry.applicable_actions.at(prev_entry.pos);
-                    }
-                    //}
+                    assert(is_applicable(action, *problem, search::DenseState(state)));
                 }
                 else
                 {
