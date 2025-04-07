@@ -106,7 +106,6 @@ class TupleGraphArityGreaterZeroComputation
 private:
     const graphs::ProblemVertex& m_problem_vertex;
     const StateSpace& m_state_space;
-    const formalism::ColorFunctionImpl& m_color_function;
     const CertificateMap<graphs::VertexIndex>& m_certificate_to_v_idx;
     StateToCertificate& m_state_to_certificate;
     const TupleGraphImpl::Options& m_options;
@@ -340,7 +339,7 @@ private:
             {
                 m_state_to_certificate.emplace(
                     state,
-                    std::make_shared<graphs::nauty::SparseGraph>(graphs::nauty::SparseGraph(create_object_graph(state, problem, m_color_function)).canonize()));
+                    std::make_shared<graphs::nauty::SparseGraph>(graphs::nauty::SparseGraph(create_object_graph(state, problem)).canonize()));
             }
 
             const auto problem_v_idx = m_certificate_to_v_idx.at(m_state_to_certificate.at(state).get());
@@ -498,13 +497,11 @@ private:
 public:
     TupleGraphArityGreaterZeroComputation(const graphs::ProblemVertex& problem_vertex,
                                           const StateSpace& state_space,
-                                          const formalism::ColorFunctionImpl& color_function,
                                           const CertificateMap<graphs::VertexIndex>& certificate_to_v_idx,
                                           StateToCertificate& state_to_certificate,
                                           const TupleGraphImpl::Options& options) :
         m_problem_vertex(problem_vertex),
         m_state_space(state_space),
-        m_color_function(color_function),
         m_certificate_to_v_idx(certificate_to_v_idx),
         m_state_to_certificate(state_to_certificate),
         m_options(options),
@@ -551,24 +548,20 @@ public:
 
 static TupleGraph create_tuple_graph_width_greater_zero(const graphs::ProblemVertex& problem_vertex,
                                                         const StateSpace& state_space,
-                                                        const formalism::ColorFunctionImpl& color_function,
                                                         const CertificateMap<graphs::VertexIndex>& certificate_to_v_idx,
                                                         StateToCertificate& state_to_certificate,
                                                         const TupleGraphImpl::Options& options)
 {
-    return TupleGraphArityGreaterZeroComputation(problem_vertex, state_space, color_function, certificate_to_v_idx, state_to_certificate, options)
-        .compute_and_get_result();
+    return TupleGraphArityGreaterZeroComputation(problem_vertex, state_space, certificate_to_v_idx, state_to_certificate, options).compute_and_get_result();
 }
 
 TupleGraph create_tuple_graph(const graphs::ProblemVertex& problem_vertex,
                               const StateSpace& state_space,
-                              const ColorFunctionImpl& color_function,
                               const CertificateMap<graphs::VertexIndex>& certificate_to_v_idx,
                               StateToCertificate& state_to_certificate,
                               const TupleGraphImpl::Options& options)
 {
-    return (options.width == 0) ?
-               create_tuple_graph_width_zero(problem_vertex, state_space) :
-               create_tuple_graph_width_greater_zero(problem_vertex, state_space, color_function, certificate_to_v_idx, state_to_certificate, options);
+    return (options.width == 0) ? create_tuple_graph_width_zero(problem_vertex, state_space) :
+                                  create_tuple_graph_width_greater_zero(problem_vertex, state_space, certificate_to_v_idx, state_to_certificate, options);
 }
 }

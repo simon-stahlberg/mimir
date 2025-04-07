@@ -18,7 +18,6 @@
 #include "mimir/datasets/tuple_graph.hpp"
 
 #include "mimir/datasets/state_space.hpp"
-#include "mimir/formalism/color_function.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/search_context.hpp"
 #include "mimir/search/state.hpp"
@@ -50,13 +49,6 @@ const IndexGroupedVector<const Index>& TupleGraphImpl::get_problem_vertices_grou
 
 TupleGraphList TupleGraphImpl::create(StateSpace state_space, const Options& options)
 {
-    auto color_function = ColorFunctionImpl::create(state_space->get_search_context()->get_problem());
-
-    return create(state_space, *color_function, options);
-}
-
-TupleGraphList TupleGraphImpl::create(StateSpace state_space, const ColorFunctionImpl& color_function, const Options& options)
-{
     auto tuple_graphs = TupleGraphList {};
 
     /* Collect certificates to avoid costly recomputation. */
@@ -75,7 +67,7 @@ TupleGraphList TupleGraphImpl::create(StateSpace state_space, const ColorFunctio
 
     for (const auto& v : state_space->get_graph().get_vertices())
     {
-        tuple_graphs.push_back(create_tuple_graph(v, state_space, color_function, certificate_to_v_idx, state_to_certificate, options));
+        tuple_graphs.push_back(create_tuple_graph(v, state_space, certificate_to_v_idx, state_to_certificate, options));
     }
 
     return tuple_graphs;

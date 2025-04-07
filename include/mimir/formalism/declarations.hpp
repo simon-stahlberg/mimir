@@ -65,9 +65,6 @@ using GroundActionSet = std::unordered_set<GroundAction>;
 class GeneralizedProblemImpl;
 using GeneralizedProblem = std::shared_ptr<GeneralizedProblemImpl>;
 
-class ColorFunctionImpl;
-using ColorFunction = std::shared_ptr<ColorFunctionImpl>;
-
 template<IsStaticOrFluentOrDerivedTag P>
 class AtomImpl;
 template<IsStaticOrFluentOrDerivedTag P>

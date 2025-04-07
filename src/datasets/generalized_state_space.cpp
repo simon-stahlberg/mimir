@@ -21,7 +21,6 @@
 #include "mimir/datasets/generalized_state_space/options.hpp"
 #include "mimir/datasets/object_graph.hpp"
 #include "mimir/datasets/state_space.hpp"
-#include "mimir/formalism/color_function.hpp"
 #include "mimir/formalism/generalized_problem.hpp"
 #include "mimir/formalism/ground_action.hpp"
 #include "mimir/formalism/parser.hpp"

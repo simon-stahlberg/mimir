@@ -28,12 +28,11 @@
 namespace mimir::datasets
 {
 
-/// @brief Create an `ObjectGraph` for a given `search::State` from a given `formalism::ProblemImpl` using the given `formalism::ColorFunctionImpl`.
+/// @brief Create an `ObjectGraph` for a given `search::State` from a given `formalism::ProblemImpl`.
 /// @param state is the state.
 /// @param problem is the Problem.
 /// @param color_function is the function used to color the vertices in the object graph.
-extern graphs::StaticVertexColoredDigraph
-create_object_graph(search::State state, const formalism::ProblemImpl& problem, const formalism::ColorFunctionImpl& color_function);
+extern graphs::StaticVertexColoredDigraph create_object_graph(search::State state, const formalism::ProblemImpl& problem);
 
 }
 

@@ -61,8 +61,6 @@ public:
     /// @return are the `TupleGraph` for each vertex in the given `StateSpace`.
     static TupleGraphList create(StateSpace state_space, const Options& options = Options());
 
-    static TupleGraphList create(StateSpace state_space, const formalism::ColorFunctionImpl& color_function, const Options& options = Options());
-
     const StateSpace& get_state_space() const;
     const graphs::InternalTupleGraph& get_graph() const;
     const IndexGroupedVector<const Index>& get_vertices_grouped_by_distance() const;

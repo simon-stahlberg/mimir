@@ -88,6 +88,11 @@ public:
     const ToPredicateMap<std::string, P>& get_name_to_predicate() const;
     const ToPredicateMaps<std::string, StaticTag, FluentTag, DerivedTag>& get_hana_name_to_predicate();
 
+    template<IsStaticOrFluentOrDerivedTag P>
+    Index get_color(Predicate<P> predicate, size_t pos) const;
+    template<IsStaticOrFluentOrDerivedTag P>
+    Index get_color(Predicate<P> predicate, size_t pos, bool polarity) const;
+
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.

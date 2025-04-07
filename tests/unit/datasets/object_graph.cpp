@@ -20,7 +20,6 @@
 #include "mimir/common/equal_to.hpp"
 #include "mimir/common/hash.hpp"
 #include "mimir/datasets/state_space.hpp"
-#include "mimir/formalism/color_function.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/graphs/algorithms/nauty.hpp"
 #include "mimir/search/search_context.hpp"
@@ -44,15 +43,13 @@ TEST(MimirTests, DataSetsObjectGraphSparseTest)
     options.symmetry_pruning = false;
     const auto context = search::SearchContextImpl::create(domain_file, problem_file);
     const auto state_space = StateSpaceImpl::create(context, options);
-    const auto color_function = ColorFunctionImpl::create(context->get_problem());
 
     auto certificates =
         std::unordered_set<std::shared_ptr<nauty::SparseGraph>, SharedPtrDerefHash<nauty::SparseGraph>, SharedPtrDerefEqualTo<nauty::SparseGraph>> {};
 
     for (const auto& vertex : state_space.value()->get_graph().get_vertices())
     {
-        certificates.insert(
-            std::make_shared<nauty::SparseGraph>(nauty::SparseGraph(create_object_graph(get_state(vertex), *get_problem(vertex), *color_function)).canonize()));
+        certificates.insert(std::make_shared<nauty::SparseGraph>(nauty::SparseGraph(create_object_graph(get_state(vertex), *get_problem(vertex))).canonize()));
     }
 
     EXPECT_EQ(certificates.size(), 12);

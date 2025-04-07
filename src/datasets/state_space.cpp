@@ -19,7 +19,6 @@
 
 #include "mimir/common/timers.hpp"
 #include "mimir/datasets/object_graph.hpp"
-#include "mimir/formalism/color_function.hpp"
 #include "mimir/formalism/generalized_problem.hpp"
 #include "mimir/formalism/ground_action.hpp"
 #include "mimir/formalism/parser.hpp"
@@ -94,19 +93,12 @@ namespace mimir::datasets
 
 struct SymmetriesData
 {
-    const ColorFunctionImpl& color_function;
     CertificateMap<search::State> class_representative;
     StateToCertificate state_to_certificate;
     StateSet prunable_states;
     ValueSet<std::pair<graphs::VertexIndex, graphs::VertexIndex>> m_edges;
 
-    explicit SymmetriesData(const ColorFunctionImpl& color_function) :
-        color_function(color_function),
-        class_representative(),
-        state_to_certificate(),
-        prunable_states()
-    {
-    }
+    SymmetriesData() : class_representative(), state_to_certificate(), prunable_states() {}
 };
 
 /// @brief `SymmetryStatePruning` extends the brfs pruning strategy by additionally pruning symmetric states.
@@ -140,7 +132,7 @@ private:
 
     auto compute_canonical_graph(State state)
     {
-        return std::make_shared<nauty::SparseGraph>(nauty::SparseGraph(create_object_graph(state, *m_problem, m_symm_data.color_function)).canonize());
+        return std::make_shared<nauty::SparseGraph>(nauty::SparseGraph(create_object_graph(state, *m_problem)).canonize());
     }
 
     void on_expand_state_impl(State state) {}
@@ -445,8 +437,7 @@ static GroundAction permute_action(GroundAction action, ProblemImpl& problem, co
     return problem.ground(lifted_action, permuted_binding);
 }
 
-static std::optional<StateSpace>
-compute_problem_graph_with_symmetry_reduction(const SearchContext& context, const ColorFunctionImpl& color_function, const StateSpaceImpl::Options& options)
+static std::optional<StateSpace> compute_problem_graph_with_symmetry_reduction(const SearchContext& context, const StateSpaceImpl::Options& options)
 {
     const auto problem = context->get_problem();
     const auto state_repository = context->get_state_repository();
@@ -475,7 +466,7 @@ compute_problem_graph_with_symmetry_reduction(const SearchContext& context, cons
     auto deque = std::deque<Entry> {};
 
     const auto initial_state = state_repository->get_or_create_initial_state();
-    auto sparse_graph = std::make_shared<nauty::SparseGraph>(create_object_graph(initial_state, *problem, color_function));
+    auto sparse_graph = std::make_shared<nauty::SparseGraph>(create_object_graph(initial_state, *problem));
     sparse_graph->canonize();
     class_representative.emplace(sparse_graph.get(), initial_state);
     certificates.emplace(initial_state, sparse_graph);
@@ -516,7 +507,7 @@ compute_problem_graph_with_symmetry_reduction(const SearchContext& context, cons
             mimir::operator<<(std::cout, std::make_tuple(successor_state, std::cref(*problem)));
             std::cout << std::endl;
 
-            auto successor_sparse_graph = std::make_shared<nauty::SparseGraph>(create_object_graph(successor_state, *problem, color_function));
+            auto successor_sparse_graph = std::make_shared<nauty::SparseGraph>(create_object_graph(successor_state, *problem));
             successor_sparse_graph->canonize();
 
             auto it = class_representative.find(successor_sparse_graph.get());
@@ -611,7 +602,7 @@ compute_problem_graph_with_symmetry_reduction(const SearchContext& context, cons
     auto graph = graphs::StaticProblemGraph();
     auto goal_vertices = IndexSet {};
 
-    auto symm_data = SymmetriesData(color_function);
+    auto symm_data = SymmetriesData();
 
     const auto event_handler =
         std::make_shared<SymmetryReducedProblemGraphEventHandler>(context->get_problem(), options, graph, goal_vertices, symm_data, false);
@@ -662,21 +653,11 @@ StateSpaceImpl::StateSpaceImpl(bool is_symmetry_reduced,
 
 std::optional<StateSpace> StateSpaceImpl::create(search::SearchContext context, const Options& options)
 {
-    return create(context, *ColorFunctionImpl::create(context->get_problem()), options);
-}
-
-std::optional<StateSpace> StateSpaceImpl::create(search::SearchContext context, const ColorFunctionImpl& color_function, const Options& options)
-{
-    return (options.symmetry_pruning) ? compute_problem_graph_with_symmetry_reduction(context, color_function, options) :
+    return (options.symmetry_pruning) ? compute_problem_graph_with_symmetry_reduction(context, options) :
                                         compute_problem_graph_without_symmetry_reduction(context, options);
 }
 
 StateSpaceList StateSpaceImpl::create(search::GeneralizedSearchContext contexts, const Options& options)
-{
-    return create(contexts, *ColorFunctionImpl::create(contexts->get_generalized_problem()), options);
-}
-
-StateSpaceList StateSpaceImpl::create(search::GeneralizedSearchContext contexts, const ColorFunctionImpl& color_function, const Options& options)
 {
     auto state_spaces = StateSpaceList {};
 
@@ -687,7 +668,7 @@ StateSpaceList StateSpaceImpl::create(search::GeneralizedSearchContext contexts,
             continue;
         }
 
-        auto result = (options.symmetry_pruning) ? compute_problem_graph_with_symmetry_reduction(context, color_function, options) :
+        auto result = (options.symmetry_pruning) ? compute_problem_graph_with_symmetry_reduction(context, options) :
                                                    compute_problem_graph_without_symmetry_reduction(context, options);
 
         if (!result)

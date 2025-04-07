@@ -13,7 +13,6 @@ INPUT                 = \
     "include/mimir/formalism/atom.hpp" \
     "include/mimir/formalism/axiom_stratification.hpp" \
     "include/mimir/formalism/axiom.hpp" \
-    "include/mimir/formalism/color_function.hpp" \
     "include/mimir/formalism/conjunctive_condition.hpp" \
     "include/mimir/formalism/consistency_graph.hpp" \
     "include/mimir/formalism/declarations.hpp" \

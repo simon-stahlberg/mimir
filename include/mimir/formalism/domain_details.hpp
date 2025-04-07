@@ -39,6 +39,9 @@ struct PredicateDetails
 
     ToPredicateMaps<std::string, StaticTag, FluentTag, DerivedTag> name_to_predicate;
 
+    std::unordered_map<Index, std::string> color_to_name;  ///< for visualizations
+    PredicateMaps<Index, StaticTag, FluentTag, DerivedTag> predicate_to_color_offsets;
+
     PredicateDetails();
     PredicateDetails(const DomainImpl& domain);
 };

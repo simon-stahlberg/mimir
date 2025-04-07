@@ -36,7 +36,6 @@
 #include "mimir/formalism/action.hpp"
 #include "mimir/formalism/assignment_set.hpp"
 #include "mimir/formalism/atom.hpp"
-#include "mimir/formalism/color_function.hpp"
 #include "mimir/formalism/consistency_graph.hpp"
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/effects.hpp"
