@@ -31,6 +31,7 @@ public:
     bool operator==(const AbstractColor& other) const;
     bool operator<(const AbstractColor& other) const;
 
+    virtual std::ostream& to_ostream(std::ostream& out) const = 0;
     virtual bool is_equal_to(const AbstractColor& other) const = 0;
     virtual bool is_less_than(const AbstractColor& other) const = 0;
     virtual size_t hash() const = 0;
@@ -43,6 +44,13 @@ public:
     VariadicColor(Ts... colors) : m_colors(std::move(colors)...) {}
 
     const std::tuple<Ts...>& get_colors() const { return m_colors; }
+
+    std::ostream& to_ostream(std::ostream& out) const override
+    {
+        out << m_colors;
+
+        return out;
+    }
 
     bool is_equal_to(const AbstractColor& other) const override
     {
@@ -71,6 +79,20 @@ private:
     std::tuple<Ts...> m_colors;
 };
 
+extern std::ostream& operator<<(std::ostream& out, const AbstractColor& color);
+
 }
+
+template<>
+struct loki::Hash<mimir::graphs::AbstractColor>
+{
+    size_t operator()(const mimir::graphs::AbstractColor& color) const;
+};
+
+template<>
+struct loki::EqualTo<mimir::graphs::AbstractColor>
+{
+    bool operator()(const mimir::graphs::AbstractColor& lhs, const mimir::graphs::AbstractColor& rhs) const;
+};
 
 #endif

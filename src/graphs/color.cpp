@@ -26,4 +26,19 @@ namespace mimir::graphs
 bool AbstractColor::operator==(const AbstractColor& other) const { return this->is_equal_to(other); }
 
 bool AbstractColor::operator<(const AbstractColor& other) const { return this->is_less_than(other); }
+
+std::ostream& operator<<(std::ostream& out, const AbstractColor& color)
+{
+    color.to_ostream(out);
+
+    return out;
+}
+
+}
+
+size_t loki::Hash<mimir::graphs::AbstractColor>::operator()(const mimir::graphs::AbstractColor& color) const { return color.hash(); }
+
+bool loki::EqualTo<mimir::graphs::AbstractColor>::operator()(const mimir::graphs::AbstractColor& lhs, const mimir::graphs::AbstractColor& rhs) const
+{
+    return lhs == rhs;
 }

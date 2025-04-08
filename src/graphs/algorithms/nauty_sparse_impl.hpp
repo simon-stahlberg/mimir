@@ -18,6 +18,7 @@
 #ifndef SRC_GRAPHS_ALGORITHMS_NAUTY_SPARSE_IMPL_HPP_
 #define SRC_GRAPHS_ALGORITHMS_NAUTY_SPARSE_IMPL_HPP_
 
+#include "mimir/common/deref_shared_ptr.hpp"
 #include "mimir/graphs/color.hpp"
 
 #include <nausparse.h>
@@ -41,7 +42,7 @@ private:
     size_t m_elen;
     std::vector<int> m_lab;
     std::vector<int> m_ptn;
-    std::vector<const AbstractColor*> m_coloring;
+    std::vector<DerefSharedPtr<const AbstractColor>> m_coloring;
 
     // The nauty graph that consumes the data above.
     sparsegraph m_graph;
@@ -63,7 +64,7 @@ public:
                     size_t elen,
                     std::vector<int> lab,
                     std::vector<int> ptn,
-                    std::vector<const AbstractColor*> coloring);
+                    std::vector<DerefSharedPtr<const AbstractColor>> coloring);
 
     SparseGraphImpl(const SparseGraphImpl& other);
     SparseGraphImpl& operator=(const SparseGraphImpl& other);
@@ -82,7 +83,7 @@ public:
     size_t get_elen() const;
     const std::vector<int>& get_lab() const;
     const std::vector<int>& get_ptn() const;
-    const std::vector<const AbstractColor*>& get_coloring() const;
+    const std::vector<DerefSharedPtr<const AbstractColor>>& get_coloring() const;
 
     /// @brief Return vertex permutation from input graph to canonical graphs.
     /// Throws an exception if canonize() was not called before.

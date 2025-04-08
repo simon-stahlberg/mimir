@@ -145,30 +145,6 @@ template const ToPredicateMap<std::string, DerivedTag>& DomainImpl::get_name_to_
 
 const ToPredicateMaps<std::string, StaticTag, FluentTag, DerivedTag>& DomainImpl::get_hana_name_to_predicate() { return m_details.predicate.name_to_predicate; }
 
-template<IsStaticOrFluentOrDerivedTag P>
-Index DomainImpl::get_color(Predicate<P> predicate, size_t pos) const
-{
-    assert(pos < predicate->get_arity());
-
-    return boost::hana::at_key(m_details.predicate.predicate_to_color_offsets, boost::hana::type<P> {}).at(predicate) + 3 * pos + 1;
-}
-
-template Index DomainImpl::get_color(Predicate<StaticTag> predicate, size_t pos) const;
-template Index DomainImpl::get_color(Predicate<FluentTag> predicate, size_t pos) const;
-template Index DomainImpl::get_color(Predicate<DerivedTag> predicate, size_t pos) const;
-
-template<IsStaticOrFluentOrDerivedTag P>
-Index DomainImpl::get_color(Predicate<P> predicate, size_t pos, bool polarity) const
-{
-    assert(pos < predicate->get_arity());
-
-    return boost::hana::at_key(m_details.predicate.predicate_to_color_offsets, boost::hana::type<P> {}).at(predicate) + 3 * pos + 1 + 1 + polarity;
-}
-
-template Index DomainImpl::get_color(Predicate<StaticTag> predicate, size_t pos, bool polarity) const;
-template Index DomainImpl::get_color(Predicate<FluentTag> predicate, size_t pos, bool polarity) const;
-template Index DomainImpl::get_color(Predicate<DerivedTag> predicate, size_t pos, bool polarity) const;
-
 /**
  * Details
  */
@@ -183,9 +159,9 @@ domain::ConstantDetails::ConstantDetails(const DomainImpl& domain) : parent(&dom
     }
 }
 
-domain::PredicateDetails::PredicateDetails() : parent(nullptr), name_to_predicate(), color_to_name(), predicate_to_color_offsets() {}
+domain::PredicateDetails::PredicateDetails() : parent(nullptr), name_to_predicate() {}
 
-domain::PredicateDetails::PredicateDetails(const DomainImpl& domain) : parent(&domain), name_to_predicate(), color_to_name(), predicate_to_color_offsets()
+domain::PredicateDetails::PredicateDetails(const DomainImpl& domain) : parent(&domain), name_to_predicate()
 {
     boost::hana::for_each(domain.get_hana_predicates(),
                           [&](auto&& pair)
@@ -195,27 +171,6 @@ domain::PredicateDetails::PredicateDetails(const DomainImpl& domain) : parent(&d
                               for (const auto& predicate : value)
                               {
                                   boost::hana::at_key(name_to_predicate, key).emplace(predicate->get_name(), predicate);
-                              }
-                          });
-
-    auto next_color = 1;  // color 0 is reserved for objects
-
-    boost::hana::for_each(domain.get_hana_predicates(),
-                          [&](auto&& pair)
-                          {
-                              const auto& key = boost::hana::first(pair);
-                              const auto& value = boost::hana::second(pair);
-
-                              for (const auto& predicate : value)
-                              {
-                                  boost::hana::at_key(predicate_to_color_offsets, key).emplace(predicate, next_color);
-
-                                  for (size_t i = 0; i < predicate->get_arity(); ++i)
-                                  {
-                                      color_to_name.emplace(next_color++, fmt::format("{}_{}", to_string(predicate), i));
-                                      color_to_name.emplace(next_color++, fmt::format("{}_{}_negative", to_string(predicate), i));
-                                      color_to_name.emplace(next_color++, fmt::format("{}_{}_positive", to_string(predicate), i));
-                                  }
                               }
                           });
 }

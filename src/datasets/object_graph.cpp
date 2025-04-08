@@ -30,11 +30,11 @@ namespace mimir::datasets
 {
 
 template<IsStaticOrFluentOrDerivedTag P>
-static void add_object_graph_structures(GroundAtom<P> atom, ObjectMap<PredicateLists<StaticTag, FluentTag, DerivedTag>>& ref_objects)
+static void add_object_graph_structures(GroundAtom<P> atom, ObjectMap<PredicateVariantList>& ref_objects)
 {
     if (atom->get_arity() == 1)
     {
-        boost::hana::at_key(ref_objects.at(atom->get_objects().front()), boost::hana::type<P> {}).push_back(atom->get_predicate());
+        ref_objects.at(atom->get_objects().front()).push_back(atom->get_predicate());
     }
 }
 
@@ -48,13 +48,13 @@ static void add_object_graph_structures(GroundAtom<P> atom, ObjectMap<PredicateL
 static ObjectMap<graphs::VertexIndex>
 add_objects_graph_structures(State state, const ProblemImpl& problem, graphs::StaticAbstractVertexColoredDigraph& out_digraph)
 {
-    auto object_to_color = ObjectMap<PredicateLists<StaticTag, FluentTag, DerivedTag>> {};
+    auto object_to_color = ObjectMap<PredicateVariantList> {};
 
     const auto add_atom_objects_func = [&](auto&& atom)
     {
         for (const auto& object : atom->get_objects())
         {
-            object_to_color[object] = PredicateLists<StaticTag, FluentTag, DerivedTag>();
+            object_to_color[object] = PredicateVariantList();
         }
     };
 
@@ -95,13 +95,9 @@ add_objects_graph_structures(State state, const ProblemImpl& problem, graphs::St
     auto object_to_vertex_index = ObjectMap<graphs::VertexIndex> {};
     for (const auto& [index, object] : index_to_object)
     {
-        object_to_vertex_index.emplace(
-            object,
-            out_digraph.add_vertex(std::unique_ptr<graphs::AbstractColor>(
-                std::make_unique<graphs::VariadicColor<PredicateList<StaticTag>, PredicateList<FluentTag>, PredicateList<DerivedTag>>>(
-                    boost::hana::at_key(object_to_color.at(object), boost::hana::type<StaticTag> {}),
-                    boost::hana::at_key(object_to_color.at(object), boost::hana::type<FluentTag> {}),
-                    boost::hana::at_key(object_to_color.at(object), boost::hana::type<DerivedTag> {})))));
+        object_to_vertex_index.emplace(object,
+                                       out_digraph.add_vertex(std::shared_ptr<graphs::AbstractColor>(
+                                           std::make_shared<graphs::VariadicColor<PredicateVariantList>>(object_to_color.at(object)))));
     }
 
     return object_to_vertex_index;
@@ -115,9 +111,8 @@ static void add_ground_atom_graph_structures(const ProblemImpl& problem,
 {
     for (size_t pos = 0; pos < atom->get_arity(); ++pos)
     {
-        const auto vertex_color = problem.get_domain()->get_color(atom->get_predicate(), pos);
-        const auto vertex_index =
-            out_digraph.add_vertex(std::unique_ptr<graphs::AbstractColor>(std::make_unique<graphs::VariadicColor<graphs::Color>>(vertex_color)));
+        const auto vertex_index = out_digraph.add_vertex(
+            std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<PredicateVariant, Index>>(atom->get_predicate(), pos)));
 
         out_digraph.add_undirected_edge(vertex_index, object_to_vertex_index.at(atom->get_objects().at(pos)));
 
@@ -180,9 +175,8 @@ static void add_ground_literal_graph_structures(const ProblemImpl& problem,
 {
     for (size_t pos = 0; pos < literal->get_atom()->get_arity(); ++pos)
     {
-        const auto vertex_color = problem.get_domain()->get_color(literal->get_atom()->get_predicate(), pos, literal->get_polarity());
-        const auto vertex_index =
-            out_digraph.add_vertex(std::unique_ptr<graphs::AbstractColor>(std::make_unique<graphs::VariadicColor<graphs::Color>>(vertex_color)));
+        const auto vertex_index = out_digraph.add_vertex(std::shared_ptr<graphs::AbstractColor>(
+            std::make_shared<graphs::VariadicColor<PredicateVariant, Index, bool>>(literal->get_atom()->get_predicate(), pos, literal->get_polarity())));
 
         out_digraph.add_undirected_edge(vertex_index, object_to_vertex_index.at(literal->get_atom()->get_objects().at(pos)));
 

@@ -235,6 +235,8 @@ template<IsStaticOrFluentOrDerivedTag P>
 class PredicateImpl;
 template<IsStaticOrFluentOrDerivedTag P>
 using Predicate = const PredicateImpl<P>*;
+using PredicateVariant = std::variant<Predicate<StaticTag>, Predicate<FluentTag>, Predicate<DerivedTag>>;
+using PredicateVariantList = std::vector<PredicateVariant>;
 template<IsStaticOrFluentOrDerivedTag P>
 using PredicateList = std::vector<Predicate<P>>;
 template<IsStaticOrFluentOrDerivedTag... Ps>
