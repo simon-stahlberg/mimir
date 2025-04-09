@@ -19,13 +19,18 @@ for object in problem.get_problem_and_domain_objects():
 applicable_action_generator = search.LiftedApplicableActionGenerator(problem)
 axiom_evaluator = search.LiftedAxiomEvaluator(problem)
 state_repository = search.StateRepository(axiom_evaluator)
+problem_goal_strategy = search.ProblemGoalStrategy(problem)
+
+# Empty static goal is trivially satisfied
+assert(problem_goal_strategy.test_static_goal())
 
 initial_state, initial_metric_value = state_repository.get_or_create_initial_state()
 print(initial_state.to_string(problem))
+assert(not problem_goal_strategy.test_dynamic_goal(initial_state))
 
 move_rooma_roomb_action = problem.ground(actions_by_name["move"], formalism.ObjectList([objects_by_name["rooma"], objects_by_name["roomb"]]))
 print(move_rooma_roomb_action.to_string(problem))
 
 successor_state, successor_metric_value = state_repository.get_or_create_successor_state(initial_state, move_rooma_roomb_action, initial_metric_value)
-
 print(successor_state.to_string(problem))
+assert(not problem_goal_strategy.test_dynamic_goal(successor_state))
