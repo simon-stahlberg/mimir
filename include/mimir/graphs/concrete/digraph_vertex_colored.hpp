@@ -38,35 +38,11 @@ using StaticAbstractVertexColoredDigraph = StaticGraph<AbstractColoredVertex, Em
 
 inline const auto& get_color(const Vertex<std::shared_ptr<AbstractColor>>& vertex) { return vertex.get_property<0>(); }
 
-using StaticVertexColoredDigraph = StaticGraph<ColoredVertex, EmptyEdge>;
-using StaticVertexColoredForwardDigraph = StaticForwardGraph<StaticGraph<ColoredVertex, EmptyEdge>>;
-using StaticVertexColoredBidirectionalDigraph = StaticBidirectionalGraph<StaticGraph<ColoredVertex, EmptyEdge>>;
-
-using DynamicVertexColoredDigraph = DynamicGraph<ColoredVertex, EmptyEdge>;
-
-/**
- * Static graph assertions
- */
-
-static_assert(IsStaticGraph<StaticVertexColoredDigraph>);
-static_assert(!IsDynamicGraph<StaticVertexColoredDigraph>);
-static_assert(IsStaticGraph<StaticVertexColoredForwardDigraph>);
-static_assert(!IsDynamicGraph<StaticVertexColoredForwardDigraph>);
-static_assert(IsStaticGraph<StaticVertexColoredBidirectionalDigraph>);
-static_assert(!IsDynamicGraph<StaticVertexColoredBidirectionalDigraph>);
-
-/**
- * Dynamic graph assertions
- */
-
-static_assert(!IsStaticGraph<DynamicVertexColoredDigraph>);
-static_assert(IsDynamicGraph<DynamicVertexColoredDigraph>);
-
 /**
  * Pretty printing
  */
 
-extern std::ostream& operator<<(std::ostream& out, const StaticVertexColoredDigraph& graph);
+extern std::ostream& operator<<(std::ostream& out, const StaticAbstractVertexColoredDigraph& graph);
 
 }
 

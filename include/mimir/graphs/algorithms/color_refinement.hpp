@@ -19,6 +19,7 @@
 #define MIMIR_GRAPHS_ALGORITHMS_COLOR_REFINEMENT_HPP_
 
 #include "mimir/common/printers.hpp"
+#include "mimir/graphs/color.hpp"
 #include "mimir/graphs/graph_interface.hpp"
 #include "mimir/graphs/graph_properties.hpp"
 #include "mimir/graphs/graph_traversal_interface.hpp"
@@ -40,27 +41,25 @@ namespace mimir::graphs::color_refinement
 class CertificateImpl
 {
 public:
+    using AbstractColorCompressionFunction = std::map<DerefSharedPtr<AbstractColor>, Color>;
+
     using CompressionFunction = std::unordered_map<std::pair<Color, ColorList>, Color, loki::Hash<std::pair<Color, ColorList>>>;
 
     using CanonicalCompressionFunction = std::map<std::pair<Color, ColorList>, Color>;
 
-    CertificateImpl(CompressionFunction f, ColorList hash_to_color);
+    CertificateImpl(AbstractColorCompressionFunction c, CompressionFunction f);
 
-    const ColorList& get_hash_to_color() const;
-
+    const AbstractColorCompressionFunction& get_abstract_color_compression_function() const;
     const CanonicalCompressionFunction& get_canonical_compression_function() const;
-    const ColorList& get_canonical_coloring() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(std::cref(get_canonical_compression_function()), std::cref(get_canonical_coloring())); }
+    auto identifying_members() const { return std::tuple(std::cref(get_canonical_compression_function()), std::cref(get_canonical_compression_function())); }
 
 private:
-    ColorList m_hash_to_color;
-
+    AbstractColorCompressionFunction m_c;
     CanonicalCompressionFunction m_f;
-    ColorList m_canonical_coloring;
 };
 
 /// @brief Compare two certificates for equality.
@@ -215,6 +214,19 @@ std::shared_ptr<CertificateImpl> compute_certificate(const G& graph)
     /* Fetch some data. */
     const auto num_vertices = graph.get_num_vertices();
 
+    /* Canonize and compress the AbstractColors to a list of integers. */
+    auto c = CertificateImpl::AbstractColorCompressionFunction {};
+    auto canonical_coloring = std::vector<DerefSharedPtr<AbstractColor>> {};
+    for (const auto& vertex : graph.get_vertices())
+    {
+        canonical_coloring.push_back(get_color(vertex));
+    }
+    std::sort(canonical_coloring.begin(), canonical_coloring.end());
+    for (const auto& color : canonical_coloring)
+    {
+        c.emplace(color, c.size());
+    }
+
     // (line 1-2): Initialize vertex colors and perfect hashes for vertex indices.
     auto vertex_to_hash = IndexMap<Index>();
     auto hash_to_vertex = IndexMap<Index>();
@@ -229,7 +241,7 @@ std::shared_ptr<CertificateImpl> compute_certificate(const G& graph)
         vertex_to_hash.emplace(vertex.get_index(), hash);
         hash_to_vertex.emplace(hash, vertex.get_index());
 
-        const auto color = get_color(vertex);
+        const auto color = c.at(get_color(vertex));
         max_color = std::max(max_color, color);
         hash_to_color[hash] = color;
         color_to_hashes[color].push_back(hash);
@@ -302,7 +314,7 @@ std::shared_ptr<CertificateImpl> compute_certificate(const G& graph)
     }
 
     /* Return the certificate */
-    return std::make_shared<CertificateImpl>(std::move(f), std::move(hash_to_color));
+    return std::make_shared<CertificateImpl>(std::move(c), std::move(f));
 }
 }
 

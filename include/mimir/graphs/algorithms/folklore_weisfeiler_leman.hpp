@@ -52,25 +52,28 @@ template<size_t K>
 class CertificateImpl
 {
 public:
+    using AbstractColorCompressionFunction = std::map<DerefSharedPtr<AbstractColor>, Color>;
+
     /* Compression of new color to map (C(bar{v}), {{(c_1^1, ...,c_k^1), ..., (c_1^r, ...,c_k^r)}}) to an integer color for bar{v} in V^k */
     using ConfigurationCompressionFunction = std::unordered_map<std::pair<Color, ColorArrayList<K>>, Color, loki::Hash<std::pair<Color, ColorArrayList<K>>>>;
     using CanonicalConfigurationCompressionFunction = std::map<std::pair<Color, ColorArrayList<K>>, Color>;
 
-    CertificateImpl(ConfigurationCompressionFunction f, ColorList hash_to_color);
+    CertificateImpl(AbstractColorCompressionFunction c, ConfigurationCompressionFunction f);
 
+    const AbstractColorCompressionFunction& get_abstract_color_compression_function() const;
     const CanonicalConfigurationCompressionFunction& get_canonical_configuration_compression_function() const;
-    const ColorList& get_canonical_coloring() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(std::cref(get_canonical_configuration_compression_function()), std::cref(get_canonical_coloring())); }
+    auto identifying_members() const
+    {
+        return std::tuple(std::cref(get_abstract_color_compression_function()), std::cref(get_canonical_configuration_compression_function()));
+    }
 
 private:
-    ColorList m_hash_to_color;
-
+    AbstractColorCompressionFunction m_c;
     CanonicalConfigurationCompressionFunction m_f;
-    ColorList m_canonical_coloring;
 };
 
 /// @brief `IsomorphismTypeCompressionFunction` encapsulates mappings from canonical subgraphs to colors.
@@ -124,24 +127,20 @@ std::shared_ptr<CertificateImpl<K>> compute_certificate(const G& graph, Isomorph
 /// @brief `CertificateImpl` encapsulates the final tuple colorings and the decoding tables.
 /// @tparam K is the dimensionality.
 template<size_t K>
-CertificateImpl<K>::CertificateImpl(ConfigurationCompressionFunction f, ColorList hash_to_color) :
-    m_hash_to_color(std::move(hash_to_color)),
-    m_f(f.begin(), f.end()),
-    m_canonical_coloring(m_hash_to_color.begin(), m_hash_to_color.end())
+CertificateImpl<K>::CertificateImpl(AbstractColorCompressionFunction c, ConfigurationCompressionFunction f) : m_c(std::move(c)), m_f(f.begin(), f.end())
 {
-    std::sort(m_canonical_coloring.begin(), m_canonical_coloring.end());
+}
+
+template<size_t K>
+const CertificateImpl<K>::AbstractColorCompressionFunction& CertificateImpl<K>::get_abstract_color_compression_function() const
+{
+    return m_c;
 }
 
 template<size_t K>
 const CertificateImpl<K>::CanonicalConfigurationCompressionFunction& CertificateImpl<K>::get_canonical_configuration_compression_function() const
 {
     return m_f;
-}
-
-template<size_t K>
-const ColorList& CertificateImpl<K>::get_canonical_coloring() const
-{
-    return m_canonical_coloring;
 }
 
 template<size_t K>
@@ -153,8 +152,8 @@ bool operator==(const CertificateImpl<K>& lhs, const CertificateImpl<K>& rhs)
 template<size_t K>
 std::ostream& operator<<(std::ostream& out, const CertificateImpl<K>& element)
 {
-    out << "CertificateImpl" << K << "FWL(" << "canonical_coloring=";
-    mimir::operator<<(out, element.get_canonical_coloring());
+    out << "CertificateImpl" << K << "FWL(" << "abstract_color_compression_function=";
+    mimir::operator<<(out, element.get_abstract_color_compression_function());
     out << ", " << "canonical_configuration_compression_function=";
     mimir::operator<<(out, element.get_canonical_configuration_compression_function());
     out << ")";
@@ -196,7 +195,7 @@ IndexArray<K> hash_to_tuple(size_t hash, size_t num_vertices)
 /// @return two mappings: k-tuple hash to color and color to k-tuple hashes.
 template<size_t K, typename G>
     requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G>  //
-std::pair<ColorList, ColorMap<IndexList>> compute_ordered_isomorphism_types(const G& graph, IsomorphismTypeCompressionFunction& iso_type_function)
+auto compute_ordered_isomorphism_types(const G& graph, IsomorphismTypeCompressionFunction& iso_type_function)
 {
     const auto num_vertices = graph.get_num_vertices();
     const auto num_hashes = std::pow(num_vertices, K);
@@ -221,6 +220,19 @@ std::pair<ColorList, ColorMap<IndexList>> compute_ordered_isomorphism_types(cons
         }
     }
 
+    /* Canonize and compress the AbstractColors to a list of integers. */
+    auto c = typename CertificateImpl<K>::AbstractColorCompressionFunction {};
+    auto canonical_coloring = std::vector<DerefSharedPtr<AbstractColor>> {};
+    for (const auto& vertex : graph.get_vertices())
+    {
+        canonical_coloring.push_back(get_color(vertex));
+    }
+    std::sort(canonical_coloring.begin(), canonical_coloring.end());
+    for (const auto& color : canonical_coloring)
+    {
+        c.emplace(color, c.size());
+    }
+
     auto hash_to_color = ColorList(num_hashes);
     auto color_to_hashes = ColorMap<IndexList>();
 
@@ -237,7 +249,7 @@ std::pair<ColorList, ColorMap<IndexList>> compute_ordered_isomorphism_types(cons
         }
 
         // Instantiate vertex-colored subgraph.
-        auto subgraph = graphs::StaticVertexColoredDigraph();
+        auto subgraph = graphs::StaticAbstractVertexColoredDigraph();
         for (const auto [v1, i1] : v_to_i)
         {
             subgraph.add_vertex(get_color(graph.get_vertex(v_to_vertex.at(v1))));
@@ -261,7 +273,7 @@ std::pair<ColorList, ColorMap<IndexList>> compute_ordered_isomorphism_types(cons
         color_to_hashes[color].push_back(hash);
     }
 
-    return std::make_pair(hash_to_color, color_to_hashes);
+    return std::tuple(c, hash_to_color, color_to_hashes);
 }
 
 template<size_t K, typename G>
@@ -287,21 +299,17 @@ std::shared_ptr<CertificateImpl<K>> compute_certificate(const G& graph, Isomorph
                   << "num_hashes=" << num_hashes << std::endl;
     }
 
-    /* Compute max color used in graph. */
-    auto max_color = Color();
-    for (const auto& vertex : graph.get_vertex_indices())
-    {
-        max_color = std::max(max_color, get_color(graph.get_vertex(vertex)));
-    }
-
     /* Compute isomorphism types. */
+    auto c = typename CertificateImpl<K>::AbstractColorCompressionFunction();
     auto hash_to_color = ColorList();
     auto color_to_hashes = ColorMap<IndexList>();
 
-    const auto [hash_to_color_, color_to_hashes_] = compute_ordered_isomorphism_types<K>(graph, iso_type_function);
-
+    const auto [c_, hash_to_color_, color_to_hashes_] = compute_ordered_isomorphism_types<K>(graph, iso_type_function);
+    c = std::move(c_);
     hash_to_color = std::move(hash_to_color_);
     color_to_hashes = std::move(color_to_hashes_);
+
+    auto max_color = graphs::Color(c.size());
 
     /* Initialize work list of color. */
     auto L = ColorSet(hash_to_color.begin(), hash_to_color.end());
@@ -389,7 +397,7 @@ std::shared_ptr<CertificateImpl<K>> compute_certificate(const G& graph, Isomorph
     }
 
     /* Return the certificate */
-    return std::make_shared<CertificateImpl<K>>(std::move(f), std::move(hash_to_color));
+    return std::make_shared<CertificateImpl<K>>(std::move(c), std::move(f));
 }
 }
 

@@ -16,7 +16,7 @@ def test_applicable_action_generator_ownership():
     applicable_action_generator = search.LiftedApplicableActionGenerator(problem)
     axiom_evaluator = search.LiftedAxiomEvaluator(problem)
     state_repository = search.StateRepository(axiom_evaluator)
-    initial_state = state_repository.get_or_create_initial_state()
+    initial_state, initial_metric_value = state_repository.get_or_create_initial_state()
     actions = applicable_action_generator.generate_applicable_actions(initial_state)
 
     assert len(actions) == 6

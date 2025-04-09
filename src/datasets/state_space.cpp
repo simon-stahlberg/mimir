@@ -39,7 +39,6 @@
 #include "mimir/search/delete_relaxed_problem_explorator.hpp"
 #include "mimir/search/generalized_search_context.hpp"
 #include "mimir/search/heuristics/blind.hpp"
-#include "mimir/search/metric.hpp"
 #include "mimir/search/openlists/priority_queue.hpp"
 #include "mimir/search/search_context.hpp"
 #include "mimir/search/search_node.hpp"
@@ -402,188 +401,8 @@ perform_reachability_analysis(SearchContext context, graphs::StaticProblemGraph 
                                             std::move(unsolvable_vertices));
 }
 
-static State permute_state(State state, StateRepositoryImpl& repository, ProblemImpl& problem, const std::vector<int>& permutation)
-{
-    auto permuted_atoms = GroundAtomList<FluentTag> {};
-    for (const auto& atom_index : state->get_atoms<FluentTag>())
-    {
-        const auto ground_atom = problem.get_repositories().get_ground_atom<FluentTag>(atom_index);
-
-        auto permuted_binding = ObjectList {};
-        for (const auto& object : ground_atom->get_objects())
-        {
-            permuted_binding.push_back(problem.get_repositories().get_object(permutation.at(object->get_index())));
-        }
-
-        const auto predicate = ground_atom->get_predicate();
-
-        permuted_atoms.push_back(problem.get_or_create_ground_atom(predicate, permuted_binding));
-    }
-
-    // TODO: must update numeric variables!
-    return repository.get_or_create_state(permuted_atoms, state->get_numeric_variables());
-}
-
-static GroundAction permute_action(GroundAction action, ProblemImpl& problem, const std::vector<int>& permutation)
-{
-    auto permuted_binding = ObjectList {};
-    for (const auto& object_index : action->get_object_indices())
-    {
-        permuted_binding.push_back(problem.get_repositories().get_object(permutation.at(object_index)));
-    }
-
-    const auto lifted_action = problem.get_domain()->get_actions().at(action->get_action_index());
-
-    return problem.ground(lifted_action, permuted_binding);
-}
-
 static std::optional<StateSpace> compute_problem_graph_with_symmetry_reduction(const SearchContext& context, const StateSpaceImpl::Options& options)
 {
-    const auto problem = context->get_problem();
-    const auto state_repository = context->get_state_repository();
-    const auto applicable_action_generator = context->get_applicable_action_generator();
-    const auto goal_test = ProblemGoalStrategyImpl::create(context->get_problem());
-
-    // Map nauty::SparseGraph -> Representative State and ObjectGraph
-    // The State makes it into the final graph.
-    // The ObjectGraph contains permutations needed to fix conflicts during backtracking.
-    // When applying a permutation on a state, we have to update the mapping here.
-    CertificateMap<search::State> class_representative;
-    StateToCertificate certificates;
-
-    StateSet visited_states;
-
-    struct Entry
-    {
-        search::State state;
-        ContinuousCost metric_value;
-        formalism::GroundActionList applicable_actions;
-        size_t pos;
-
-        bool has_next() const { return pos != applicable_actions.size(); }
-    };
-
-    auto deque = std::deque<Entry> {};
-
-    const auto initial_state = state_repository->get_or_create_initial_state();
-    auto sparse_graph = std::make_shared<nauty::SparseGraph>(create_object_graph(initial_state, *problem));
-    sparse_graph->canonize();
-    // const auto canonical_initial_state = permute_state(initial_state, *state_repository, *problem, sparse_graph->get_pi());
-    // std::cout << "Initial state" << std::endl;
-    // mimir::operator<<(std::cout, std::make_tuple(initial_state, std::cref(*problem)));
-    // std::cout << std::endl;
-    // std::cout << "Canonical initial state" << std::endl;
-    // mimir::operator<<(std::cout, std::make_tuple(canonical_initial_state, std::cref(*problem)));
-    // std::cout << std::endl;
-
-    class_representative.emplace(sparse_graph.get(), initial_state);
-    certificates.emplace(initial_state, sparse_graph);
-    visited_states.insert(initial_state);
-    const auto initial_metric_value = compute_initial_state_metric_value(*problem);
-    auto initial_applicable_actions = formalism::GroundActionList {};
-    for (const auto& action : applicable_action_generator->create_applicable_action_generator(initial_state))
-    {
-        initial_applicable_actions.push_back(action);
-    }
-    deque.push_back(Entry { initial_state, initial_metric_value, initial_applicable_actions, 0 });
-
-    while (!deque.empty())
-    {
-        if (deque.back().has_next())
-        {
-            auto& entry = deque.back();
-
-            auto state = entry.state;
-            auto metric_value = entry.metric_value;
-            auto action = entry.applicable_actions.at(entry.pos++);
-            const auto [successor_state, successor_metric_value] = state_repository->get_or_create_successor_state(state, action, metric_value);
-
-            if (visited_states.contains(successor_state))
-            {
-                continue;
-            }
-            visited_states.insert(successor_state);
-
-            std::cout << std::endl;
-            std::cout << "State" << std::endl;
-            mimir::operator<<(std::cout, std::make_tuple(state, std::cref(*problem)));
-            std::cout << std::endl;
-            std::cout << "Action" << std::endl;
-            mimir::operator<<(std::cout, std::make_tuple(action, std::cref(*problem), formalism::GroundActionImpl::PlanFormatterTag {}));
-            std::cout << std::endl;
-            std::cout << "Successor state" << std::endl;
-            mimir::operator<<(std::cout, std::make_tuple(successor_state, std::cref(*problem)));
-            std::cout << std::endl;
-
-            auto successor_sparse_graph = std::make_shared<nauty::SparseGraph>(create_object_graph(successor_state, *problem));
-            successor_sparse_graph->canonize();
-
-            auto it = class_representative.find(successor_sparse_graph.get());
-            if (it != class_representative.end())
-            {
-                const auto& representative_sparse_graph = *it->first.get();
-                const auto representative_state = it->second;
-
-                std::cout << "Representative state" << std::endl;
-                mimir::operator<<(std::cout, std::make_tuple(representative_state, std::cref(*problem)));
-                std::cout << std::endl;
-
-                if (successor_state != representative_state)
-                {
-                    /* Mismatched class representatives! backtrack and fix. */
-                    std::cout << "Mismatched class representative! " << std::endl;
-
-                    // while (true)
-                    //{
-                    const auto permutation = nauty::compute_permutation(*successor_sparse_graph, representative_sparse_graph);
-
-                    action = permute_action(action, *problem, permutation);
-
-                    std::cout << "Permuted action" << std::endl;
-                    mimir::operator<<(std::cout, std::make_tuple(action, std::cref(*problem), formalism::GroundActionImpl::PlanFormatterTag {}));
-                    std::cout << std::endl;
-
-                    assert(is_applicable(action, *problem, search::DenseState(state)));
-                }
-                else
-                {
-                    std::cout << "Matched class representative! " << std::endl;
-                }
-
-                continue;
-            }
-            else
-            {
-                /* New class representative! */
-                std::cout << "New class representative! " << std::endl;
-
-                class_representative.emplace(successor_sparse_graph.get(), successor_state);
-                certificates.emplace(successor_state, successor_sparse_graph);
-            }
-
-            auto successor_applicable_actions = formalism::GroundActionList {};
-            for (const auto& successor_action : applicable_action_generator->create_applicable_action_generator(successor_state))
-            {
-                successor_applicable_actions.push_back(successor_action);
-            }
-
-            // std::cout << "Push successor state: " << successor_state->get_index() << std::endl;
-            // mimir::operator<<(std::cout, std::make_tuple(successor_state, std::cref(*problem)));
-            // std::cout << std::endl;
-
-            deque.push_back(Entry { successor_state, successor_metric_value, successor_applicable_actions, 0 });
-        }
-        else
-        {
-            deque.pop_back();
-        }
-    }
-
-    std::cout << "Num visited states: " << visited_states.size() << std::endl;
-    std::cout << "Num representative states: " << class_representative.size() << std::endl;
-
-    /* Old */
-
     auto graph = graphs::StaticProblemGraph();
     auto goal_vertices = IndexSet {};
 
@@ -592,7 +411,10 @@ static std::optional<StateSpace> compute_problem_graph_with_symmetry_reduction(c
     const auto event_handler =
         std::make_shared<SymmetryReducedProblemGraphEventHandler>(context->get_problem(), options, graph, goal_vertices, symm_data, false);
     const auto pruning_strategy = std::make_shared<SymmetryStatePruning>(symm_data);
-    const auto result = find_solution(context, state_repository->get_or_create_initial_state(), event_handler, goal_test, pruning_strategy, true);
+    const auto state_repository = context->get_state_repository();
+    const auto goal_test = ProblemGoalStrategyImpl::create(context->get_problem());
+    const auto [initial_state, initial_g_value] = state_repository->get_or_create_initial_state();
+    const auto result = find_solution(context, initial_state, event_handler, goal_test, pruning_strategy, true);
 
     if (result.status != EXHAUSTED)
     {
@@ -611,7 +433,8 @@ static std::optional<StateSpace> compute_problem_graph_without_symmetry_reductio
     const auto goal_test = ProblemGoalStrategyImpl::create(context->get_problem());
     const auto event_handler = std::make_shared<ProblemGraphEventHandler>(context->get_problem(), options, graph, goal_vertices, false);
     const auto pruning_strategy = DuplicatePruningStrategyImpl::create();
-    const auto result = find_solution(context, state_repository->get_or_create_initial_state(), event_handler, goal_test, pruning_strategy, true);
+    const auto [initial_state, initial_g_value] = state_repository->get_or_create_initial_state();
+    const auto result = find_solution(context, initial_state, event_handler, goal_test, pruning_strategy, true);
 
     if (result.status != EXHAUSTED)
     {

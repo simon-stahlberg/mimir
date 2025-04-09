@@ -64,13 +64,14 @@ public:
 
     /// @brief Get or create the extended initial state of the underlying problem.
     /// @return the extended initial state.
-    State get_or_create_initial_state();
+    std::pair<State, ContinuousCost> get_or_create_initial_state();
 
     /// @brief Get or create the extended state for a given set of ground `atoms`.
     /// @param atoms the ground atoms.
     /// @param workspace is the workspace containing preallocated memory.
     /// @return the extended state.
-    State get_or_create_state(const formalism::GroundAtomList<formalism::FluentTag>& atoms, const FlatDoubleList& fluent_numeric_variables);
+    std::pair<State, ContinuousCost> get_or_create_state(const formalism::GroundAtomList<formalism::FluentTag>& atoms,
+                                                         const FlatDoubleList& fluent_numeric_variables);
 
     /// @brief Get or create the extended successor state when applying the given ground `action` in the given `state`.
     /// @param state is the state.
@@ -122,6 +123,12 @@ public:
     /// @return the number of bytes for storing storing the extended state portions.
     size_t get_estimated_memory_usage_in_bytes_for_extended_state_portion() const;
 };
+
+/**
+ * Utils
+ */
+
+extern ContinuousCost compute_state_metric_value(State state, const formalism::ProblemImpl& problem);
 
 }
 

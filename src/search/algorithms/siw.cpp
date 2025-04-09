@@ -78,11 +78,13 @@ SearchResult find_solution(const SearchContext& context,
                            brfs::EventHandler brfs_event_handler_,
                            GoalStrategy goal_strategy_)
 {
+    auto& problem = *context->get_problem();
     auto& applicable_action_generator = *context->get_applicable_action_generator();
     auto& state_repository = *context->get_state_repository();
 
     const auto max_arity = max_arity_;
-    const auto start_state = (start_state_) ? start_state_ : state_repository.get_or_create_initial_state();
+    const auto [start_state, start_g_value] =
+        (start_state_) ? std::make_pair(start_state_, compute_state_metric_value(start_state_, problem)) : state_repository.get_or_create_initial_state();
     const auto siw_event_handler = (siw_event_handler_) ? siw_event_handler_ : DefaultEventHandlerImpl::create(context->get_problem());
     const auto iw_event_handler = (iw_event_handler_) ? iw_event_handler_ : iw::DefaultEventHandlerImpl::create(context->get_problem());
     const auto brfs_event_handler = (brfs_event_handler_) ? brfs_event_handler_ : brfs::DefaultEventHandlerImpl::create(context->get_problem());

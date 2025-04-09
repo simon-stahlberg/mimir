@@ -344,6 +344,8 @@ void bind_search(nb::module_& m)
         ;
 
     /* StateRepositoryImpl */
+    m.def("compute_state_metric_value", &compute_state_metric_value, nb::arg("state"), nb::arg("problem"));
+
     nb::class_<StateRepositoryImpl>(m, "StateRepository")  //
         .def(nb::init<AxiomEvaluator>(), nb::arg("axiom_evaluator"))
         .def("get_or_create_initial_state", &StateRepositoryImpl::get_or_create_initial_state, nb::rv_policy::reference_internal)
@@ -399,6 +401,17 @@ void bind_search(nb::module_& m)
         .def_rw("status", &SearchResult::status)
         .def_rw("plan", &SearchResult::plan)
         .def_rw("goal_state", &SearchResult::goal_state);
+
+    // GoalStrategy
+    nb::class_<IGoalStrategy>(m, "GoalStrategy")
+        .def("test_static_goal", &IGoalStrategy::test_static_goal)
+        .def("test_dynamic_goal", &IGoalStrategy::test_dynamic_goal, nb::arg("state"));
+
+    nb::class_<ProblemGoalStrategyImpl, IGoalStrategy>(m, "ProblemGoalStrategy")
+        .def(nb::init<formalism::Problem>(), nb::arg("problem"))
+        .def("test_static_goal", &ProblemGoalStrategyImpl::test_static_goal)
+        .def("test_dynamic_goal", &ProblemGoalStrategyImpl::test_dynamic_goal, nb::arg("state"))
+        .def_static("create", &ProblemGoalStrategyImpl::create, nb::arg("problem"));
 
     // AStar
     nb::class_<astar::Statistics>(m, "AStarStatistics")  //

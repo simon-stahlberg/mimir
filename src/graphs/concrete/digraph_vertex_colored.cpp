@@ -32,13 +32,13 @@ template class DynamicGraph<ColoredVertex, EmptyEdge>;
  * Pretty printing
  */
 
-std::ostream& operator<<(std::ostream& out, const StaticVertexColoredDigraph& graph)
+std::ostream& operator<<(std::ostream& out, const StaticAbstractVertexColoredDigraph& graph)
 {
     out << "digraph {\n";
     for (const auto& vertex : graph.get_vertices())
     {
         out << "t" << vertex.get_index() << "[";
-        out << "label=\"" << get_color(vertex) << "\"]\n";
+        out << "label=\"" << *get_color(vertex) << "\"]\n";
     }
     for (const auto& vertex : graph.get_vertices())
     {

@@ -28,14 +28,14 @@ TEST(MimirTests, GraphsAlgorithmsColorRefinementTest)
 {
     {
         /* The famous two triangle / sixgon example */
-        auto two_triangle = graphs::StaticVertexColoredDigraph();
+        auto two_triangle = graphs::StaticAbstractVertexColoredDigraph();
         {
-            auto v1 = two_triangle.add_vertex(graphs::Color(0));
-            auto v2 = two_triangle.add_vertex(graphs::Color(0));
-            auto v3 = two_triangle.add_vertex(graphs::Color(0));
-            auto v4 = two_triangle.add_vertex(graphs::Color(0));
-            auto v5 = two_triangle.add_vertex(graphs::Color(0));
-            auto v6 = two_triangle.add_vertex(graphs::Color(0));
+            auto v1 = two_triangle.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(0)));
+            auto v2 = two_triangle.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(0)));
+            auto v3 = two_triangle.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(0)));
+            auto v4 = two_triangle.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(0)));
+            auto v5 = two_triangle.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(0)));
+            auto v6 = two_triangle.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(0)));
             two_triangle.add_undirected_edge(v1, v2);
             two_triangle.add_undirected_edge(v2, v3);
             two_triangle.add_undirected_edge(v3, v1);
@@ -45,14 +45,14 @@ TEST(MimirTests, GraphsAlgorithmsColorRefinementTest)
         }
         auto two_triangle_certificate = *graphs::color_refinement::compute_certificate(two_triangle);
 
-        auto sixgon = graphs::StaticVertexColoredDigraph();
+        auto sixgon = graphs::StaticAbstractVertexColoredDigraph();
         {
-            auto v1 = sixgon.add_vertex(graphs::Color(0));
-            auto v2 = sixgon.add_vertex(graphs::Color(0));
-            auto v3 = sixgon.add_vertex(graphs::Color(0));
-            auto v4 = sixgon.add_vertex(graphs::Color(0));
-            auto v5 = sixgon.add_vertex(graphs::Color(0));
-            auto v6 = sixgon.add_vertex(graphs::Color(0));
+            auto v1 = sixgon.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(0)));
+            auto v2 = sixgon.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(0)));
+            auto v3 = sixgon.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(0)));
+            auto v4 = sixgon.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(0)));
+            auto v5 = sixgon.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(0)));
+            auto v6 = sixgon.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(0)));
             sixgon.add_undirected_edge(v1, v2);
             sixgon.add_undirected_edge(v2, v3);
             sixgon.add_undirected_edge(v3, v4);
@@ -67,14 +67,15 @@ TEST(MimirTests, GraphsAlgorithmsColorRefinementTest)
 
     {
         /* The famous two triangle / sixgon example with missmatched colors */
-        auto two_triangle = graphs::StaticVertexColoredDigraph();
+        auto two_triangle = graphs::StaticAbstractVertexColoredDigraph();
         {
-            auto v1 = two_triangle.add_vertex(graphs::Color(1));  // We change this color to 1 to make it distinguishable from the sixgon
-            auto v2 = two_triangle.add_vertex(graphs::Color(0));
-            auto v3 = two_triangle.add_vertex(graphs::Color(0));
-            auto v4 = two_triangle.add_vertex(graphs::Color(0));
-            auto v5 = two_triangle.add_vertex(graphs::Color(0));
-            auto v6 = two_triangle.add_vertex(graphs::Color(0));
+            auto v1 = two_triangle.add_vertex(std::shared_ptr<graphs::AbstractColor>(
+                std::make_shared<graphs::VariadicColor<graphs::Color>>(1)));  // We change this color to 1 to make it distinguishable from the sixgon
+            auto v2 = two_triangle.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(0)));
+            auto v3 = two_triangle.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(0)));
+            auto v4 = two_triangle.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(0)));
+            auto v5 = two_triangle.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(0)));
+            auto v6 = two_triangle.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(0)));
             two_triangle.add_undirected_edge(v1, v2);
             two_triangle.add_undirected_edge(v2, v3);
             two_triangle.add_undirected_edge(v3, v1);
@@ -84,14 +85,14 @@ TEST(MimirTests, GraphsAlgorithmsColorRefinementTest)
         }
         auto two_triangle_certificate = *graphs::color_refinement::compute_certificate(two_triangle);
 
-        auto sixgon = graphs::StaticVertexColoredDigraph();
+        auto sixgon = graphs::StaticAbstractVertexColoredDigraph();
         {
-            auto v1 = sixgon.add_vertex(graphs::Color(0));
-            auto v2 = sixgon.add_vertex(graphs::Color(0));
-            auto v3 = sixgon.add_vertex(graphs::Color(0));
-            auto v4 = sixgon.add_vertex(graphs::Color(0));
-            auto v5 = sixgon.add_vertex(graphs::Color(0));
-            auto v6 = sixgon.add_vertex(graphs::Color(0));
+            auto v1 = sixgon.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(0)));
+            auto v2 = sixgon.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(0)));
+            auto v3 = sixgon.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(0)));
+            auto v4 = sixgon.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(0)));
+            auto v5 = sixgon.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(0)));
+            auto v6 = sixgon.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(0)));
             sixgon.add_undirected_edge(v1, v2);
             sixgon.add_undirected_edge(v2, v3);
             sixgon.add_undirected_edge(v3, v4);
@@ -106,18 +107,18 @@ TEST(MimirTests, GraphsAlgorithmsColorRefinementTest)
 
     {
         /* 2-vertex graphs where the order of colors is flipped to test canonical decoding table. */
-        auto line_graph_1 = graphs::StaticVertexColoredDigraph();
+        auto line_graph_1 = graphs::StaticAbstractVertexColoredDigraph();
         {
-            auto v1 = line_graph_1.add_vertex(graphs::Color(1));
-            auto v2 = line_graph_1.add_vertex(graphs::Color(0));
+            auto v1 = line_graph_1.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(1)));
+            auto v2 = line_graph_1.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(0)));
             line_graph_1.add_undirected_edge(v1, v2);
         }
         auto line_graph_1_certificate = *graphs::color_refinement::compute_certificate(line_graph_1);
 
-        auto line_graph_2 = graphs::StaticVertexColoredDigraph();
+        auto line_graph_2 = graphs::StaticAbstractVertexColoredDigraph();
         {
-            auto v1 = line_graph_2.add_vertex(graphs::Color(0));
-            auto v2 = line_graph_2.add_vertex(graphs::Color(1));
+            auto v1 = line_graph_2.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(0)));
+            auto v2 = line_graph_2.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(1)));
             line_graph_2.add_undirected_edge(v1, v2);
         }
         auto line_graph_2_certificate = *graphs::color_refinement::compute_certificate(line_graph_2);

@@ -95,6 +95,8 @@ SparseGraphImpl& SparseGraphImpl::operator=(const SparseGraphImpl& other)
         m_vlen = other.get_vlen();
         m_dlen = other.get_dlen();
         m_elen = other.get_elen();
+        m_lab = other.get_lab();
+        m_ptn = other.get_ptn();
         m_graph = sparsegraph();
         m_is_canonical = other.m_is_canonical;
         initialize_sparsegraph();
@@ -161,7 +163,7 @@ void SparseGraphImpl::canonize()
 
     auto canon_graph = SparseGraphImpl(*this);
 
-    std::cout << "Canongraph before: " << canon_graph << std::endl;
+    // std::cout << "Canongraph before: " << canon_graph << std::endl;
 
     sparsenauty(&m_graph, canon_graph.m_lab.data(), canon_graph.m_ptn.data(), orbits.data(), &options, &stats, &canon_graph.m_graph);
 
@@ -169,22 +171,30 @@ void SparseGraphImpl::canonize()
     //   canon_graph has contiguous adjacency lists that are not necessarily sorted
     sortlists_sg(&canon_graph.m_graph);
 
-    std::cout << "Canongraph after: " << canon_graph << std::endl;
+    // std::cout << "Canongraph after: " << canon_graph << std::endl;
+
+    auto label_to_index = std::unordered_map<int, int> {};
+    auto canon_label_to_index = std::unordered_map<int, int> {};
+    for (int i = 0; i < get_nv(); ++i)
+    {
+        label_to_index.emplace(m_lab[i], i);
+        canon_label_to_index.emplace(canon_graph.m_lab[i], i);
+    }
 
     canon_graph.m_pi.resize(m_nv);
     canon_graph.m_pi_inverse.resize(m_nv);
     for (int i = 0; i < m_nv; ++i)
     {
-        canon_graph.m_pi[canon_graph.m_lab[i]] = i;          // pi maps original -> canonical
-        canon_graph.m_pi_inverse[i] = canon_graph.m_lab[i];  // pi_inverse maps canonical -> original
+        canon_graph.m_pi[i] = label_to_index[canon_graph.m_lab[i]];    // pi maps original -> canonical
+        canon_graph.m_pi_inverse[i] = canon_label_to_index[m_lab[i]];  // pi_inverse maps canonical -> original
     }
 
-    std::cout << "pi: ";
-    mimir::operator<<(std::cout, canon_graph.m_pi);
-    std::cout << std::endl;
-    std::cout << "pi_inverse: ";
-    mimir::operator<<(std::cout, canon_graph.m_pi_inverse);
-    std::cout << std::endl;
+    // std::cout << "pi: ";
+    // mimir::operator<<(std::cout, canon_graph.m_pi);
+    // std::cout << std::endl;
+    // std::cout << "pi_inverse: ";
+    // mimir::operator<<(std::cout, canon_graph.m_pi_inverse);
+    // std::cout << std::endl;
 
     std::swap(*this, canon_graph);
 }

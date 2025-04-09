@@ -159,7 +159,7 @@ public:
     /* Grounding */
 
     template<IsStaticOrFluentOrDerivedTag P>
-    GroundAtom<P> get_or_create_ground_atom(Predicate<P> predicate, ObjectList objects);
+    GroundAtom<P> get_or_create_ground_atom(Predicate<P> predicate, const ObjectList& objects);
 
     template<IsStaticOrFluentOrDerivedTag P>
     GroundLiteral<P> ground(Literal<P> literal, const ObjectList& binding);
@@ -174,7 +174,7 @@ public:
     template<IsStaticOrFluentOrAuxiliaryTag F>
     GroundFunction<F> ground(Function<F> function, const ObjectList& binding);
 
-    GroundAction ground(Action action, ObjectList binding);
+    GroundAction ground(Action action, const ObjectList& binding);
 
     /* Lifting */
 

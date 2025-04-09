@@ -26,7 +26,6 @@
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
 #include "mimir/search/heuristics/interface.hpp"
-#include "mimir/search/metric.hpp"
 #include "mimir/search/openlists/interface.hpp"
 #include "mimir/search/openlists/priority_queue.hpp"
 #include "mimir/search/plan.hpp"
@@ -81,7 +80,8 @@ SearchResult find_solution(const SearchContext& context,
     auto& applicable_action_generator = *context->get_applicable_action_generator();
     auto& state_repository = *context->get_state_repository();
 
-    const auto start_state = (start_state_) ? start_state_ : state_repository.get_or_create_initial_state();
+    const auto [start_state, start_g_value] =
+        (start_state_) ? std::make_pair(start_state_, compute_state_metric_value(start_state_, problem)) : state_repository.get_or_create_initial_state();
     const auto event_handler = (event_handler_) ? event_handler_ : DefaultEventHandlerImpl::create(context->get_problem());
     const auto goal_strategy = (goal_strategy_) ? goal_strategy_ : ProblemGoalStrategyImpl::create(context->get_problem());
     const auto pruning_strategy = (pruning_strategy_) ? pruning_strategy_ : NoPruningStrategyImpl::create();
@@ -108,7 +108,6 @@ SearchResult find_solution(const SearchContext& context,
 
     event_handler->on_start_search(start_state);
 
-    const auto start_g_value = compute_initial_state_metric_value(problem);
     if (start_g_value == UNDEFINED_CONTINUOUS_COST)
     {
         throw std::runtime_error("find_solution_astar(...): evaluating the metric on the start state yielded NaN.");

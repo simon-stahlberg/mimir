@@ -14,7 +14,7 @@ def test_state_repository_ownership():
     problem = formalism.Problem.create(domain_filepath, problem_filepath)
     axiom_evaluator = search.LiftedAxiomEvaluator(problem)
     state_repository = search.StateRepository(axiom_evaluator)
-    initial_state = state_repository.get_or_create_initial_state()
+    initial_state, initial_metric_value = state_repository.get_or_create_initial_state()
 
     del state_repository
 

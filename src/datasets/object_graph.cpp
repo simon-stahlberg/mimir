@@ -95,6 +95,8 @@ add_objects_graph_structures(State state, const ProblemImpl& problem, graphs::St
     auto object_to_vertex_index = ObjectMap<graphs::VertexIndex> {};
     for (const auto& [index, object] : index_to_object)
     {
+        // Can we assume canonical sorting of PredicateVariantList?
+
         object_to_vertex_index.emplace(object,
                                        out_digraph.add_vertex(std::shared_ptr<graphs::AbstractColor>(
                                            std::make_shared<graphs::VariadicColor<PredicateVariantList>>(object_to_color.at(object)))));
@@ -109,16 +111,23 @@ static void add_ground_atom_graph_structures(const ProblemImpl& problem,
                                              GroundAtom<P> atom,
                                              graphs::StaticAbstractVertexColoredDigraph& out_digraph)
 {
-    for (size_t pos = 0; pos < atom->get_arity(); ++pos)
+    if (atom->get_arity() == 0)
     {
-        const auto vertex_index = out_digraph.add_vertex(
-            std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<PredicateVariant, Index>>(atom->get_predicate(), pos)));
-
-        out_digraph.add_undirected_edge(vertex_index, object_to_vertex_index.at(atom->get_objects().at(pos)));
-
-        if (pos > 0)
+        out_digraph.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<PredicateVariant>>(atom->get_predicate())));
+    }
+    else if (atom->get_arity() > 1)
+    {
+        for (size_t pos = 0; pos < atom->get_arity(); ++pos)
         {
-            out_digraph.add_undirected_edge(vertex_index - 1, vertex_index);
+            const auto vertex_index = out_digraph.add_vertex(
+                std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<PredicateVariant, Index>>(atom->get_predicate(), pos)));
+
+            out_digraph.add_undirected_edge(vertex_index, object_to_vertex_index.at(atom->get_objects().at(pos)));
+
+            if (pos > 0)
+            {
+                out_digraph.add_undirected_edge(vertex_index - 1, vertex_index);
+            }
         }
     }
 }
@@ -173,16 +182,24 @@ static void add_ground_literal_graph_structures(const ProblemImpl& problem,
                                                 GroundLiteral<P> literal,
                                                 graphs::StaticAbstractVertexColoredDigraph& out_digraph)
 {
-    for (size_t pos = 0; pos < literal->get_atom()->get_arity(); ++pos)
+    if (literal->get_atom()->get_arity() == 0)
     {
-        const auto vertex_index = out_digraph.add_vertex(std::shared_ptr<graphs::AbstractColor>(
-            std::make_shared<graphs::VariadicColor<PredicateVariant, Index, bool>>(literal->get_atom()->get_predicate(), pos, literal->get_polarity())));
-
-        out_digraph.add_undirected_edge(vertex_index, object_to_vertex_index.at(literal->get_atom()->get_objects().at(pos)));
-
-        if (pos > 0)
+        out_digraph.add_vertex(std::shared_ptr<graphs::AbstractColor>(
+            std::make_shared<graphs::VariadicColor<PredicateVariant, bool>>(literal->get_atom()->get_predicate(), literal->get_polarity())));
+    }
+    else if (literal->get_atom()->get_arity() > 1)
+    {
+        for (size_t pos = 0; pos < literal->get_atom()->get_arity(); ++pos)
         {
-            out_digraph.add_undirected_edge(vertex_index - 1, vertex_index);
+            const auto vertex_index = out_digraph.add_vertex(std::shared_ptr<graphs::AbstractColor>(
+                std::make_shared<graphs::VariadicColor<PredicateVariant, Index, bool>>(literal->get_atom()->get_predicate(), pos, literal->get_polarity())));
+
+            out_digraph.add_undirected_edge(vertex_index, object_to_vertex_index.at(literal->get_atom()->get_objects().at(pos)));
+
+            if (pos > 0)
+            {
+                out_digraph.add_undirected_edge(vertex_index - 1, vertex_index);
+            }
         }
     }
 }

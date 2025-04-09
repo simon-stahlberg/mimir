@@ -593,6 +593,8 @@ void bind_formalism(nb::module_& m)
         .def("get_domain", &ProblemImpl::get_domain, nb::rv_policy::copy)
         .def("get_requirements", &ProblemImpl::get_requirements, nb::rv_policy::copy)
         .def("get_objects", &ProblemImpl::get_objects, nb::rv_policy::copy)
+        .def("get_problem_and_domain_objects", &ProblemImpl::get_problem_and_domain_objects, nb::rv_policy::copy)
+        .def("get_problem_and_domain_derived_predicates", &ProblemImpl::get_problem_and_domain_derived_predicates, nb::rv_policy::copy)
         .def("get_static_initial_literals", &ProblemImpl::get_initial_literals<StaticTag>, nb::rv_policy::copy)
         .def("get_fluent_initial_literals", &ProblemImpl::get_initial_literals<FluentTag>, nb::rv_policy::copy)
         .def("get_static_function_values", &ProblemImpl::get_initial_function_values<StaticTag>, nb::rv_policy::copy)
@@ -605,64 +607,171 @@ void bind_formalism(nb::module_& m)
         .def("get_static_initial_atoms", &ProblemImpl::get_static_initial_atoms, nb::rv_policy::copy)
         .def("get_fluent_initial_atoms", &ProblemImpl::get_fluent_initial_atoms, nb::rv_policy::copy)
         .def("get_static_assignment_set", &ProblemImpl::get_static_assignment_set, nb::rv_policy::copy)
-        .def("get_or_create_variable", &ProblemImpl::get_or_create_variable, nb::arg("name"), nb::arg("parameter_index"))
-        .def("get_or_create_term", nb::overload_cast<Variable>(&ProblemImpl::get_or_create_term), nb::arg("variable"))
-        .def("get_or_create_term", nb::overload_cast<Object>(&ProblemImpl::get_or_create_term), nb::arg("object"))
-        .def("get_or_create_atom", &ProblemImpl::get_or_create_atom<StaticTag>, nb::arg("predicate"), nb::arg("terms"))
-        .def("get_or_create_atom", &ProblemImpl::get_or_create_atom<FluentTag>, nb::arg("predicate"), nb::arg("terms"))
-        .def("get_or_create_atom", &ProblemImpl::get_or_create_atom<DerivedTag>, nb::arg("predicate"), nb::arg("terms"))
-        .def("get_or_create_literal", &ProblemImpl::get_or_create_literal<StaticTag>, nb::arg("polarity"), nb::arg("atom"))
-        .def("get_or_create_literal", &ProblemImpl::get_or_create_literal<FluentTag>, nb::arg("polarity"), nb::arg("atom"))
-        .def("get_or_create_literal", &ProblemImpl::get_or_create_literal<DerivedTag>, nb::arg("polarity"), nb::arg("atom"))
-        .def("get_or_create_function", &ProblemImpl::get_or_create_function<StaticTag>, nb::arg("function_skeleton"), nb::arg("terms"), nb::arg("mapping"))
-        .def("get_or_create_function", &ProblemImpl::get_or_create_function<FluentTag>, nb::arg("function_skeleton"), nb::arg("terms"), nb::arg("mapping"))
-        .def("get_or_create_function", &ProblemImpl::get_or_create_function<AuxiliaryTag>, nb::arg("function_skeleton"), nb::arg("terms"), nb::arg("mapping"))
-        .def("get_or_create_function_expression_number", &ProblemImpl::get_or_create_function_expression_number, nb::arg("number"))
+        .def("ground",
+             static_cast<GroundAction (ProblemImpl::*)(Action, const ObjectList&)>(&ProblemImpl::ground),
+             nb::arg("action"),
+             nb::arg("binding"),
+             nb::rv_policy::reference_internal)
+        .def("ground",
+             static_cast<GroundFunctionExpression (ProblemImpl::*)(FunctionExpression, const ObjectList&)>(&ProblemImpl::ground),
+             nb::arg("function_expression"),
+             nb::arg("binding"),
+             nb::rv_policy::reference_internal)
+        .def("ground",
+             static_cast<GroundNumericConstraint (ProblemImpl::*)(NumericConstraint, const ObjectList&)>(&ProblemImpl::ground),
+             nb::arg("numeric_constraint"),
+             nb::arg("binding"),
+             nb::rv_policy::reference_internal)
+        .def("get_or_create_ground_atom",
+             &ProblemImpl::get_or_create_ground_atom<StaticTag>,
+             nb::arg("predicate"),
+             nb::arg("objects"),
+             nb::rv_policy::reference_internal)
+        .def("get_or_create_ground_atom",
+             &ProblemImpl::get_or_create_ground_atom<FluentTag>,
+             nb::arg("predicate"),
+             nb::arg("objects"),
+             nb::rv_policy::reference_internal)
+        .def("get_or_create_ground_atom",
+             &ProblemImpl::get_or_create_ground_atom<DerivedTag>,
+             nb::arg("predicate"),
+             nb::arg("objects"),
+             nb::rv_policy::reference_internal)
+        .def("ground",
+             nb::overload_cast<Literal<StaticTag>, const ObjectList&>(&ProblemImpl::ground<StaticTag>),
+             nb::arg("literal"),
+             nb::arg("binding"),
+             nb::rv_policy::reference_internal)
+        .def("ground",
+             nb::overload_cast<Literal<FluentTag>, const ObjectList&>(&ProblemImpl::ground<FluentTag>),
+             nb::arg("literal"),
+             nb::arg("binding"),
+             nb::rv_policy::reference_internal)
+        .def("ground",
+             nb::overload_cast<Literal<DerivedTag>, const ObjectList&>(&ProblemImpl::ground<DerivedTag>),
+             nb::arg("literal"),
+             nb::arg("binding"),
+             nb::rv_policy::reference_internal)
+        .def("ground",
+             nb::overload_cast<NumericEffect<FluentTag>, const ObjectList&>(&ProblemImpl::ground<FluentTag>),
+             nb::arg("numeric_effect"),
+             nb::arg("binding"),
+             nb::rv_policy::reference_internal)
+        .def("ground",
+             nb::overload_cast<NumericEffect<AuxiliaryTag>, const ObjectList&>(&ProblemImpl::ground<AuxiliaryTag>),
+             nb::arg("numeric_effect"),
+             nb::arg("binding"),
+             nb::rv_policy::reference_internal)
+        .def("ground",
+             nb::overload_cast<Function<StaticTag>, const ObjectList&>(&ProblemImpl::ground<StaticTag>),
+             nb::arg("function"),
+             nb::arg("binding"),
+             nb::rv_policy::reference_internal)
+        .def("ground",
+             nb::overload_cast<Function<FluentTag>, const ObjectList&>(&ProblemImpl::ground<FluentTag>),
+             nb::arg("function"),
+             nb::arg("binding"),
+             nb::rv_policy::reference_internal)
+        .def("ground",
+             nb::overload_cast<Function<AuxiliaryTag>, const ObjectList&>(&ProblemImpl::ground<AuxiliaryTag>),
+             nb::arg("function"),
+             nb::arg("binding"),
+             nb::rv_policy::reference_internal)
+        .def("get_or_create_variable", &ProblemImpl::get_or_create_variable, nb::arg("name"), nb::arg("parameter_index"), nb::rv_policy::reference_internal)
+        .def("get_or_create_term", nb::overload_cast<Variable>(&ProblemImpl::get_or_create_term), nb::arg("variable"), nb::rv_policy::reference_internal)
+        .def("get_or_create_term", nb::overload_cast<Object>(&ProblemImpl::get_or_create_term), nb::arg("object"), nb::rv_policy::reference_internal)
+        .def("get_or_create_atom", &ProblemImpl::get_or_create_atom<StaticTag>, nb::arg("predicate"), nb::arg("terms"), nb::rv_policy::reference_internal)
+        .def("get_or_create_atom", &ProblemImpl::get_or_create_atom<FluentTag>, nb::arg("predicate"), nb::arg("terms"), nb::rv_policy::reference_internal)
+        .def("get_or_create_atom", &ProblemImpl::get_or_create_atom<DerivedTag>, nb::arg("predicate"), nb::arg("terms"), nb::rv_policy::reference_internal)
+        .def("get_or_create_literal", &ProblemImpl::get_or_create_literal<StaticTag>, nb::arg("polarity"), nb::arg("atom"), nb::rv_policy::reference_internal)
+        .def("get_or_create_literal", &ProblemImpl::get_or_create_literal<FluentTag>, nb::arg("polarity"), nb::arg("atom"), nb::rv_policy::reference_internal)
+        .def("get_or_create_literal", &ProblemImpl::get_or_create_literal<DerivedTag>, nb::arg("polarity"), nb::arg("atom"), nb::rv_policy::reference_internal)
+        .def("get_or_create_function",
+             &ProblemImpl::get_or_create_function<StaticTag>,
+             nb::arg("function_skeleton"),
+             nb::arg("terms"),
+             nb::arg("mapping"),
+             nb::rv_policy::reference_internal)
+        .def("get_or_create_function",
+             &ProblemImpl::get_or_create_function<FluentTag>,
+             nb::arg("function_skeleton"),
+             nb::arg("terms"),
+             nb::arg("mapping"),
+             nb::rv_policy::reference_internal)
+        .def("get_or_create_function",
+             &ProblemImpl::get_or_create_function<AuxiliaryTag>,
+             nb::arg("function_skeleton"),
+             nb::arg("terms"),
+             nb::arg("mapping"),
+             nb::rv_policy::reference_internal)
+        .def("get_or_create_function_expression_number",
+             &ProblemImpl::get_or_create_function_expression_number,
+             nb::arg("number"),
+             nb::rv_policy::reference_internal)
         .def("get_or_create_function_expression_binary_operator",
              &ProblemImpl::get_or_create_function_expression_binary_operator,
              nb::arg("binary_operator"),
              nb::arg("left"),
-             nb::arg("right"))
+             nb::arg("right"),
+             nb::rv_policy::reference_internal)
         .def("get_or_create_function_expression_multi_operator",
              &ProblemImpl::get_or_create_function_expression_multi_operator,
              nb::arg("multi_operator"),
-             nb::arg("function_expressions"))
-        .def("get_or_create_function_expression_minus", &ProblemImpl::get_or_create_function_expression_minus, nb::arg("function_expression"))
-        .def("get_or_create_function_expression_function", &ProblemImpl::get_or_create_function_expression_function<StaticTag>, nb::arg("static_function"))
-        .def("get_or_create_function_expression_function", &ProblemImpl::get_or_create_function_expression_function<FluentTag>, nb::arg("fluent_function"))
+             nb::arg("function_expressions"),
+             nb::rv_policy::reference_internal)
+        .def("get_or_create_function_expression_minus",
+             &ProblemImpl::get_or_create_function_expression_minus,
+             nb::arg("function_expression"),
+             nb::rv_policy::reference_internal)
+        .def("get_or_create_function_expression_function",
+             &ProblemImpl::get_or_create_function_expression_function<StaticTag>,
+             nb::arg("static_function"),
+             nb::rv_policy::reference_internal)
+        .def("get_or_create_function_expression_function",
+             &ProblemImpl::get_or_create_function_expression_function<FluentTag>,
+             nb::arg("fluent_function"),
+             nb::rv_policy::reference_internal)
         .def(
             "get_or_create_function_expression",
             [](ProblemImpl& self, FunctionExpressionNumber fexpr) { return self.get_or_create_function_expression(fexpr); },
-            nb::arg("function_expression"))
+            nb::arg("function_expression"),
+            nb::rv_policy::reference_internal)
         .def(
             "get_or_create_function_expression",
             [](ProblemImpl& self, FunctionExpressionBinaryOperator fexpr) { return self.get_or_create_function_expression(fexpr); },
-            nb::arg("function_expression"))
+            nb::arg("function_expression"),
+            nb::rv_policy::reference_internal)
         .def(
             "get_or_create_function_expression",
             [](ProblemImpl& self, FunctionExpressionMultiOperator fexpr) { return self.get_or_create_function_expression(fexpr); },
-            nb::arg("function_expression"))
+            nb::arg("function_expression"),
+            nb::rv_policy::reference_internal)
         .def(
             "get_or_create_function_expression",
             [](ProblemImpl& self, FunctionExpressionMinus fexpr) { return self.get_or_create_function_expression(fexpr); },
-            nb::arg("function_expression"))
+            nb::arg("function_expression"),
+            nb::rv_policy::reference_internal)
         .def("get_or_create_function_expression",
              nb::overload_cast<FunctionExpressionFunction<StaticTag>>(&ProblemImpl::get_or_create_function_expression<StaticTag>),
-             nb::arg("function_expression"))
+             nb::arg("function_expression"),
+             nb::rv_policy::reference_internal)
         .def("get_or_create_function_expression",
              nb::overload_cast<FunctionExpressionFunction<FluentTag>>(&ProblemImpl::get_or_create_function_expression<FluentTag>),
-             nb::arg("function_expression"))
+             nb::arg("function_expression"),
+             nb::rv_policy::reference_internal)
         .def("get_or_create_numeric_constraint",
              &ProblemImpl::get_or_create_numeric_constraint,
              nb::arg("comparator"),
              nb::arg("left_expression"),
              nb::arg("right_expression"),
-             nb::arg("terms"))
+             nb::arg("terms"),
+             nb::rv_policy::reference_internal)
         .def("get_or_create_conjunctive_condition",
              &ProblemImpl::get_or_create_conjunctive_condition,
              nb::arg("parameters"),
              nb::arg("literals"),
-             nb::arg("numeric_constraints"));
+             nb::arg("numeric_constraints"),
+             nb::rv_policy::reference_internal);
     nb::bind_vector<ProblemList>(m, "ProblemList");
 
     /* GeneralizedProblem */

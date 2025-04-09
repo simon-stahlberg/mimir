@@ -418,14 +418,14 @@ static void ground_terms(const TermList& terms, const ObjectList& binding, Objec
 // Atom
 
 template<IsStaticOrFluentOrDerivedTag P>
-GroundAtom<P> ProblemImpl::get_or_create_ground_atom(Predicate<P> predicate, ObjectList objects)
+GroundAtom<P> ProblemImpl::get_or_create_ground_atom(Predicate<P> predicate, const ObjectList& objects)
 {
     return m_repositories.get_or_create_ground_atom(predicate, std::move(objects));
 }
 
-template GroundAtom<StaticTag> ProblemImpl::get_or_create_ground_atom(Predicate<StaticTag> predicate, ObjectList ObjectList);
-template GroundAtom<FluentTag> ProblemImpl::get_or_create_ground_atom(Predicate<FluentTag> predicate, ObjectList ObjectList);
-template GroundAtom<DerivedTag> ProblemImpl::get_or_create_ground_atom(Predicate<DerivedTag> predicate, ObjectList ObjectList);
+template GroundAtom<StaticTag> ProblemImpl::get_or_create_ground_atom(Predicate<StaticTag> predicate, const ObjectList& objects);
+template GroundAtom<FluentTag> ProblemImpl::get_or_create_ground_atom(Predicate<FluentTag> predicate, const ObjectList& objects);
+template GroundAtom<DerivedTag> ProblemImpl::get_or_create_ground_atom(Predicate<DerivedTag> predicate, const ObjectList& objects);
 
 // Literal
 
@@ -776,7 +776,7 @@ static void ground_and_fill_optional(ProblemImpl& problem,
     }
 }
 
-GroundAction ProblemImpl::ground(Action action, ObjectList binding)
+GroundAction ProblemImpl::ground(Action action, const ObjectList& binding)
 {
     /* 1. Check if grounding is cached */
 
@@ -1061,7 +1061,7 @@ GroundAction ProblemImpl::ground(Action action, ObjectList binding)
 
     /* 3. Insert to groundings table */
 
-    grounding_table.emplace(std::move(binding), GroundAction(grounded_action));
+    grounding_table.emplace(binding, GroundAction(grounded_action));
 
     /* 4. Return the resulting ground action */
 

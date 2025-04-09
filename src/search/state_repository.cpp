@@ -26,13 +26,25 @@
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/applicability.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
-#include "mimir/search/metric.hpp"
 #include "mimir/search/search_context.hpp"
 
 using namespace mimir::formalism;
 
 namespace mimir::search
 {
+
+ContinuousCost compute_state_metric_value(State state, const ProblemImpl& problem)
+{
+    if (problem.get_auxiliary_function_value().has_value())
+    {
+        return problem.get_auxiliary_function_value().value()->get_number();
+    }
+
+    return problem.get_optimization_metric().has_value() ? evaluate(problem.get_optimization_metric().value()->get_function_expression(),
+                                                                    problem.get_initial_function_to_value<StaticTag>(),
+                                                                    state->get_numeric_variables()) :
+                                                           0.;
+}
 
 StateRepositoryImpl::StateRepositoryImpl(AxiomEvaluator axiom_evaluator) :
     m_axiom_evaluator(std::move(axiom_evaluator)),
@@ -52,7 +64,7 @@ StateRepositoryImpl::StateRepositoryImpl(AxiomEvaluator axiom_evaluator) :
 
 StateRepository StateRepositoryImpl::create(AxiomEvaluator axiom_evaluator) { return std::make_shared<StateRepositoryImpl>(axiom_evaluator); }
 
-State StateRepositoryImpl::get_or_create_initial_state()
+std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_initial_state()
 {
     const auto problem = m_axiom_evaluator->get_problem();
     return get_or_create_state(problem->get_fluent_initial_atoms(), problem->get_initial_function_to_value<FluentTag>());
@@ -82,7 +94,8 @@ static void update_state_numeric_variables_ptr(const FlatDoubleList& state_numer
     state_numeric_variables_ptr = &state_numeric_variables;
 }
 
-State StateRepositoryImpl::get_or_create_state(const GroundAtomList<FluentTag>& atoms, const FlatDoubleList& fluent_numeric_variables)
+std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const GroundAtomList<FluentTag>& atoms,
+                                                                          const FlatDoubleList& fluent_numeric_variables)
 {
     // Index
     auto& state_index = m_state_builder.get_index();
@@ -122,25 +135,23 @@ State StateRepositoryImpl::get_or_create_state(const GroundAtomList<FluentTag>& 
     update_state_numeric_variables_ptr(**fluent_numeric_iter, state_fluent_numeric_variables_ptr);
 
     /* 2.2. Propositional state */
+    for (const auto& atom : atoms)
     {
-        for (const auto& atom : atoms)
-        {
-            dense_fluent_atoms.set(atom->get_index());
-        }
+        dense_fluent_atoms.set(atom->get_index());
+    }
 
-        update_reached_fluent_atoms(dense_fluent_atoms, m_reached_fluent_atoms);
+    update_reached_fluent_atoms(dense_fluent_atoms, m_reached_fluent_atoms);
 
-        translate_dense_into_sorted_compressed_sparse(dense_fluent_atoms, m_state_fluent_atoms);
+    translate_dense_into_sorted_compressed_sparse(dense_fluent_atoms, m_state_fluent_atoms);
 
-        const auto [fluent_iter, fluent_inserted] = m_fluent_atoms_set.insert(m_state_fluent_atoms);
-        update_state_atoms_ptr(**fluent_iter, state_fluent_atoms_ptr);
+    const auto [fluent_iter, fluent_inserted] = m_fluent_atoms_set.insert(m_state_fluent_atoms);
+    update_state_atoms_ptr(**fluent_iter, state_fluent_atoms_ptr);
 
-        // Test whether there exists an extended state for the given non extended state
-        auto state_iter = m_states.find(m_state_builder);
-        if (state_iter != m_states.end())
-        {
-            return state_iter->get();
-        }
+    // Test whether there exists an extended state for the given non extended state
+    auto state_iter = m_states.find(m_state_builder);
+    if (state_iter != m_states.end())
+    {
+        return { state_iter->get(), compute_state_metric_value(state_iter->get(), *m_axiom_evaluator->get_problem()) };
     }
 
     /* 3. Apply axioms to construct extended state. */
@@ -161,7 +172,9 @@ State StateRepositoryImpl::get_or_create_state(const GroundAtomList<FluentTag>& 
     }
 
     // Cache and return the extended state.
-    return m_states.insert(m_state_builder).first->get();
+    state_iter = m_states.insert(m_state_builder).first;
+
+    return { state_iter->get(), compute_state_metric_value(state_iter->get(), *m_axiom_evaluator->get_problem()) };
 }
 
 std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_successor_state(State state, GroundAction action, ContinuousCost state_metric_value)

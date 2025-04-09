@@ -78,7 +78,8 @@ SearchResult find_solution(const SearchContext& context,
     auto& applicable_action_generator = *context->get_applicable_action_generator();
     auto& state_repository = *context->get_state_repository();
 
-    const auto start_state = (start_state_) ? start_state_ : state_repository.get_or_create_initial_state();
+    const auto [start_state, start_g_value] =
+        (start_state_) ? std::make_pair(start_state_, compute_state_metric_value(start_state_, problem)) : state_repository.get_or_create_initial_state();
     const auto event_handler = (event_handler_) ? event_handler_ : DefaultEventHandlerImpl::create(context->get_problem());
     const auto goal_strategy = (goal_strategy_) ? goal_strategy_ : ProblemGoalStrategyImpl::create(context->get_problem());
     const auto pruning_strategy = (pruning_strategy_) ? pruning_strategy_ : DuplicatePruningStrategyImpl::create();

@@ -31,6 +31,12 @@ from pymimir._pymimir.advanced.search import (
     ConjunctiveConditionSatisficingBindingGenerator
 )
 
+# GoalStrategy
+from pymimir._pymimir.advanced.search import (
+    GoalStrategy,
+    ProblemGoalStrategy
+)
+
 # AStar
 from pymimir._pymimir.advanced.search import (
     AStarStatistics,

@@ -39,7 +39,6 @@
 #include "mimir/search/delete_relaxed_problem_explorator.hpp"
 #include "mimir/search/generalized_search_context.hpp"
 #include "mimir/search/heuristics/blind.hpp"
-#include "mimir/search/metric.hpp"
 #include "mimir/search/openlists/priority_queue.hpp"
 #include "mimir/search/search_node.hpp"
 #include "mimir/search/search_space.hpp"

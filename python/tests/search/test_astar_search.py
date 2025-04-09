@@ -85,7 +85,7 @@ def test_astar_search():
     blind_heuristic = CustomBlindHeuristic()
     goal_count_heuristic = CustomGoalCountHeuristic(search_context.get_problem())
     event_handler = CustomEventHandler()
-    initial_state = search_context.get_state_repository().get_or_create_initial_state()
+    initial_state, initial_metric_value = search_context.get_state_repository().get_or_create_initial_state()
     default_event_handler = search.DefaultAStarEventHandler(search_context.get_problem(), False)
 
     result = search.find_solution_astar(search_context, blind_heuristic, initial_state, event_handler)

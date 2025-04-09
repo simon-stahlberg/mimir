@@ -63,7 +63,7 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem) 
         m_delete_free_object_to_unrelaxed_object.emplace(object, unrelaxed_objects_by_name.at(object->get_name()));
     }
 
-    auto initial_state = delete_free_state_repository.get_or_create_initial_state();
+    auto [initial_state, initial_metric_value] = delete_free_state_repository.get_or_create_initial_state();
 
     auto dense_state = DenseState(initial_state);
     auto state = initial_state;

@@ -21,7 +21,6 @@
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/axiom_evaluators.hpp"
-#include "mimir/search/metric.hpp"
 #include "mimir/search/search_context.hpp"
 
 #include <gtest/gtest.h>
@@ -43,8 +42,7 @@ TEST(MimirTests, SearchStateRepositoryImplTest)
 
     auto& applicable_action_generator = *search_context->get_applicable_action_generator();
     auto& state_repository = *search_context->get_state_repository();
-    auto initial_state = state_repository.get_or_create_initial_state();
-    auto initial_state_metric_value = compute_initial_state_metric_value(*search_context->get_problem());
+    auto [initial_state, initial_state_metric_value] = state_repository.get_or_create_initial_state();
 
     for (const auto& action : applicable_action_generator.create_applicable_action_generator(initial_state))
     {
