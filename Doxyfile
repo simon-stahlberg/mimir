@@ -76,6 +76,7 @@ INPUT                 = \
     "include/mimir/graphs/declarations.hpp" \
     "include/mimir/graphs/dynamic_graph_interface.hpp" \
     "include/mimir/graphs/dynamic_graph_decl.hpp" \
+    "include/mimir/graphs/color.hpp" \
     "include/mimir/graphs/graph_edge_interface.hpp" \
     "include/mimir/graphs/graph_edges.hpp" \
     "include/mimir/graphs/graph_interface.hpp" \

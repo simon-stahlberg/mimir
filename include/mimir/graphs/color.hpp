@@ -18,6 +18,8 @@
 #ifndef MIMIR_GRAPHS_COLOR_HPP_
 #define MIMIR_GRAPHS_COLOR_HPP_
 
+#include "mimir/common/printers.hpp"
+
 #include <cstddef>
 #include <loki/loki.hpp>
 
@@ -47,7 +49,7 @@ public:
 
     std::ostream& to_ostream(std::ostream& out) const override
     {
-        out << m_colors;
+        mimir::operator<<(out, m_colors);
 
         return out;
     }
