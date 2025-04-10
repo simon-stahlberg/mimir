@@ -585,7 +585,7 @@ void bind_formalism(nb::module_& m)
         .def("__str__", [](const ProblemImpl& self) { return to_string(self); })
         .def("__repr__", [](const ProblemImpl& self) { return to_string(self); })
         .def("get_index", &ProblemImpl::get_index, nb::rv_policy::copy)
-        .def("get_repositories", &ProblemImpl::get_repositories, nb::rv_policy::copy)
+        .def("get_repositories", &ProblemImpl::get_repositories, nb::rv_policy::reference_internal)
         .def("get_filepath",
              [](const ProblemImpl& self)
              { return (self.get_filepath().has_value()) ? std::optional<std::string>(self.get_filepath()->string()) : std::nullopt; })

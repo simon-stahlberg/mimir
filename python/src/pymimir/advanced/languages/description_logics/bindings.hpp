@@ -27,6 +27,7 @@ void bind_constructor(nb::module_& m, const std::string& class_name)
         .def("evaluate", &languages::dl::IConstructor<D>::evaluate, nb::rv_policy::reference_internal, "evaluation_context"_a)
         .def("accept", &languages::dl::IConstructor<D>::accept, "visitor"_a)
         .def("get_index", &languages::dl::IConstructor<D>::get_index);
+
     nb::bind_vector<languages::dl::ConstructorList<D>>(m, (class_name + "List").c_str());
 };
 }
