@@ -118,6 +118,7 @@ from pymimir._pymimir.advanced.formalism import (
     FunctionExpressionMinus,
     FunctionExpressionMultiOperator,
     FunctionExpressionNumber,
+    NumericConstraint,
     Object,
     ObjectList,
     OptimizationMetric,
