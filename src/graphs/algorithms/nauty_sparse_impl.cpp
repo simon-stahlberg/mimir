@@ -47,7 +47,7 @@ SparseGraphImpl::SparseGraphImpl(size_t nde,
                                  size_t elen,
                                  std::vector<int> lab,
                                  std::vector<int> ptn,
-                                 std::vector<DerefSharedPtr<const AbstractColor>> coloring) :
+                                 ColorList coloring) :
     m_nde(nde),
     m_v(std::move(v)),
     m_nv(nv),
@@ -125,7 +125,7 @@ const std::vector<int>& SparseGraphImpl::get_lab() const { return m_lab; }
 
 const std::vector<int>& SparseGraphImpl::get_ptn() const { return m_ptn; }
 
-const std::vector<DerefSharedPtr<const AbstractColor>>& SparseGraphImpl::get_coloring() const { return m_coloring; }
+const ColorList& SparseGraphImpl::get_coloring() const { return m_coloring; }
 
 const std::vector<int>& SparseGraphImpl::get_pi() const
 {

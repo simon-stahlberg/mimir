@@ -27,15 +27,6 @@
 
 #include <loki/details/utils/hash.hpp>
 
-namespace mimir
-{
-template<typename T>
-struct SharedPtrDerefHash
-{
-    size_t operator()(const std::shared_ptr<T>& ptr) const { return loki::Hash<std::decay_t<T>>()(*ptr); }
-};
-}
-
 /**
  * We inject additional hash specializations into the loki::Hash.
  */

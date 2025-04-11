@@ -29,14 +29,14 @@ TEST(MimirTests, GraphsAlgorithmsFolkloreWeisfeilerLemanTest)
     {
         /* The famous two triangle / sixgon example */
         auto iso_type_function = graphs::kfwl::IsomorphismTypeCompressionFunction();
-        auto two_triangle = graphs::StaticAbstractVertexColoredDigraph();
+        auto two_triangle = graphs::StaticVertexColoredDigraph();
         {
-            auto v1 = two_triangle.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(0)));
-            auto v2 = two_triangle.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(0)));
-            auto v3 = two_triangle.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(0)));
-            auto v4 = two_triangle.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(0)));
-            auto v5 = two_triangle.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(0)));
-            auto v6 = two_triangle.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(0)));
+            auto v1 = two_triangle.add_vertex(graphs::Color(graphs::ColorIndex(0)));
+            auto v2 = two_triangle.add_vertex(graphs::Color(graphs::ColorIndex(0)));
+            auto v3 = two_triangle.add_vertex(graphs::Color(graphs::ColorIndex(0)));
+            auto v4 = two_triangle.add_vertex(graphs::Color(graphs::ColorIndex(0)));
+            auto v5 = two_triangle.add_vertex(graphs::Color(graphs::ColorIndex(0)));
+            auto v6 = two_triangle.add_vertex(graphs::Color(graphs::ColorIndex(0)));
             two_triangle.add_undirected_edge(v1, v2);
             two_triangle.add_undirected_edge(v2, v3);
             two_triangle.add_undirected_edge(v3, v1);
@@ -46,14 +46,14 @@ TEST(MimirTests, GraphsAlgorithmsFolkloreWeisfeilerLemanTest)
         }
         auto two_triangle_certificate = *graphs::kfwl::compute_certificate<2>(two_triangle, iso_type_function);
 
-        auto sixgon = graphs::StaticAbstractVertexColoredDigraph();
+        auto sixgon = graphs::StaticVertexColoredDigraph();
         {
-            auto v1 = sixgon.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(0)));
-            auto v2 = sixgon.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(0)));
-            auto v3 = sixgon.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(0)));
-            auto v4 = sixgon.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(0)));
-            auto v5 = sixgon.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(0)));
-            auto v6 = sixgon.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(0)));
+            auto v1 = sixgon.add_vertex(graphs::Color(graphs::ColorIndex(0)));
+            auto v2 = sixgon.add_vertex(graphs::Color(graphs::ColorIndex(0)));
+            auto v3 = sixgon.add_vertex(graphs::Color(graphs::ColorIndex(0)));
+            auto v4 = sixgon.add_vertex(graphs::Color(graphs::ColorIndex(0)));
+            auto v5 = sixgon.add_vertex(graphs::Color(graphs::ColorIndex(0)));
+            auto v6 = sixgon.add_vertex(graphs::Color(graphs::ColorIndex(0)));
             sixgon.add_undirected_edge(v1, v2);
             sixgon.add_undirected_edge(v2, v3);
             sixgon.add_undirected_edge(v3, v4);
@@ -69,18 +69,18 @@ TEST(MimirTests, GraphsAlgorithmsFolkloreWeisfeilerLemanTest)
     {
         /* 2-vertex graphs where the order of colors is flipped to test canonical decoding table. */
         auto iso_type_function = graphs::kfwl::IsomorphismTypeCompressionFunction();
-        auto line_graph_1 = graphs::StaticAbstractVertexColoredDigraph();
+        auto line_graph_1 = graphs::StaticVertexColoredDigraph();
         {
-            auto v1 = line_graph_1.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(1)));
-            auto v2 = line_graph_1.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(0)));
+            auto v1 = line_graph_1.add_vertex(graphs::Color(graphs::ColorIndex(1)));
+            auto v2 = line_graph_1.add_vertex(graphs::Color(graphs::ColorIndex(0)));
             line_graph_1.add_undirected_edge(v1, v2);
         }
         auto line_graph_1_certificate = *graphs::kfwl::compute_certificate<2>(line_graph_1, iso_type_function);
 
-        auto line_graph_2 = graphs::StaticAbstractVertexColoredDigraph();
+        auto line_graph_2 = graphs::StaticVertexColoredDigraph();
         {
-            auto v1 = line_graph_2.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(0)));
-            auto v2 = line_graph_2.add_vertex(std::shared_ptr<graphs::AbstractColor>(std::make_shared<graphs::VariadicColor<graphs::Color>>(1)));
+            auto v1 = line_graph_2.add_vertex(graphs::Color(graphs::ColorIndex(0)));
+            auto v2 = line_graph_2.add_vertex(graphs::Color(graphs::ColorIndex(1)));
             line_graph_2.add_undirected_edge(v1, v2);
         }
         auto line_graph_2_certificate = *graphs::kfwl::compute_certificate<2>(line_graph_2, iso_type_function);

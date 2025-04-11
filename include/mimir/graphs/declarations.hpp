@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Dominik Drexler and Simon Stahlberg
+ * Copyright (C) 2023 Dominik Drexler
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -10,22 +10,21 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *<
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_COMMON_EQUAL_TO_HPP_
-#define MIMIR_COMMON_EQUAL_TO_HPP_
+#ifndef MIMIR_GRAPHS_DECLARATIONS_HPP_
+#define MIMIR_GRAPHS_DECLARATIONS_HPP_
 
-#include "mimir/common/concepts.hpp"
-
-#include <loki/details/utils/equal_to.hpp>
 #include <memory>
+#include <vector>
 
-namespace mimir
+namespace mimir::graphs
 {
-
+class Color;
+using ColorList = std::vector<Color>;
 }
 
 #endif

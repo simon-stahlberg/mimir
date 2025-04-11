@@ -27,7 +27,7 @@ namespace mimir::datasets
 extern TupleGraph create_tuple_graph(const graphs::ProblemVertex& problem_vertex,
                                      const StateSpace& state_space,
                                      const CertificateMap<graphs::VertexIndex>& certificate_to_v_idx,
-                                     StateToCertificate& state_to_certificate,
+                                     ToCertificateMap<search::State>& state_to_certificate,
                                      const TupleGraphImpl::Options& options);
 }
 

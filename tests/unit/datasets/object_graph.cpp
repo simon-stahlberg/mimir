@@ -44,12 +44,11 @@ TEST(MimirTests, DataSetsObjectGraphSparseTest)
     const auto context = search::SearchContextImpl::create(domain_file, problem_file);
     const auto state_space = StateSpaceImpl::create(context, options);
 
-    auto certificates =
-        std::unordered_set<std::shared_ptr<nauty::SparseGraph>, SharedPtrDerefHash<nauty::SparseGraph>, SharedPtrDerefEqualTo<nauty::SparseGraph>> {};
+    auto certificates = UnorderedSet<nauty::SparseGraph> {};
 
     for (const auto& vertex : state_space.value()->get_graph().get_vertices())
     {
-        certificates.insert(std::make_shared<nauty::SparseGraph>(nauty::SparseGraph(create_object_graph(get_state(vertex), *get_problem(vertex))).canonize()));
+        certificates.insert(nauty::SparseGraph(create_object_graph(get_state(vertex), *get_problem(vertex))).canonize());
     }
 
     EXPECT_EQ(certificates.size(), 12);

@@ -31,17 +31,7 @@ namespace mimir::graphs::nauty
 /* SparseGraph*/
 
 SparseGraph::SparseGraph() :
-    SparseGraph(0,
-                std::vector<size_t> {},
-                0,
-                std::vector<int> {},
-                std::vector<int> {},
-                0,
-                0,
-                0,
-                std::vector<int> {},
-                std::vector<int> {},
-                std::vector<DerefSharedPtr<const AbstractColor>> {})
+    SparseGraph(0, std::vector<size_t> {}, 0, std::vector<int> {}, std::vector<int> {}, 0, 0, 0, std::vector<int> {}, std::vector<int> {}, ColorList {})
 {
 }
 
@@ -55,7 +45,7 @@ SparseGraph::SparseGraph(size_t nde,
                          size_t elen,
                          std::vector<int> lab,
                          std::vector<int> ptn,
-                         std::vector<DerefSharedPtr<const AbstractColor>> coloring)
+                         ColorList coloring)
 {
 }
 
@@ -69,33 +59,19 @@ void SparseGraph::initialize(size_t nde,
                              size_t elen,
                              std::vector<int> lab,
                              std::vector<int> ptn,
-                             std::vector<DerefSharedPtr<const AbstractColor>> coloring)
+                             ColorList coloring)
 {
-    m_impl = std::make_unique<
+    m_impl = std::make_shared<
         details::SparseGraphImpl>(nde, v, nv, std::move(d), std::move(e), vlen, dlen, elen, std::move(lab), std::move(ptn), std::move(coloring));
 }
 
-SparseGraph::SparseGraph(const SparseGraph& other) : m_impl(std::make_unique<details::SparseGraphImpl>(*other.m_impl)) {}
+SparseGraph::SparseGraph(const SparseGraph& other) = default;
 
-SparseGraph& SparseGraph::operator=(const SparseGraph& other)
-{
-    if (this != &other)
-    {
-        m_impl = std::make_unique<details::SparseGraphImpl>(*other.m_impl);
-    }
-    return *this;
-}
+SparseGraph& SparseGraph::operator=(const SparseGraph& other) = default;
 
-SparseGraph::SparseGraph(SparseGraph&& other) noexcept : m_impl(std::move(other.m_impl)) {}
+SparseGraph::SparseGraph(SparseGraph&& other) noexcept = default;
 
-SparseGraph& SparseGraph::operator=(SparseGraph&& other) noexcept
-{
-    if (this != &other)
-    {
-        std::swap(m_impl, other.m_impl);
-    }
-    return *this;
-}
+SparseGraph& SparseGraph::operator=(SparseGraph&& other) noexcept = default;
 
 SparseGraph::~SparseGraph() = default;
 
@@ -119,7 +95,7 @@ const std::vector<int>& SparseGraph::get_lab() const { return m_impl->get_lab();
 
 const std::vector<int>& SparseGraph::get_ptn() const { return m_impl->get_ptn(); }
 
-const std::vector<DerefSharedPtr<const AbstractColor>>& SparseGraph::get_coloring() const { return m_impl->get_coloring(); }
+const ColorList& SparseGraph::get_coloring() const { return m_impl->get_coloring(); }
 
 std::ostream& operator<<(std::ostream& out, const SparseGraph& graph)
 {

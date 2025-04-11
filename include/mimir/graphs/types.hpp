@@ -48,15 +48,15 @@ using Degree = uint32_t;
 using DegreeList = std::vector<Degree>;
 using DegreeMap = std::unordered_map<VertexIndex, Degree>;
 
-using Color = uint32_t;
-using ColorList = std::vector<Color>;
+using ColorIndex = uint32_t;
+using ColorIndexList = std::vector<ColorIndex>;
 template<size_t K>
-using ColorArray = std::array<Color, K>;
+using ColorIndexArray = std::array<ColorIndex, K>;
 template<size_t K>
-using ColorArrayList = std::vector<ColorArray<K>>;
-using ColorSet = std::unordered_set<Color>;
+using ColorIndexArrayList = std::vector<ColorIndexArray<K>>;
+using ColorIndexSet = std::unordered_set<ColorIndex>;
 template<typename T>
-using ColorMap = std::unordered_map<Color, T>;
+using ColorIndexMap = std::unordered_map<ColorIndex, T>;
 
 }
 

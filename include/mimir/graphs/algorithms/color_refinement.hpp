@@ -41,15 +41,15 @@ namespace mimir::graphs::color_refinement
 class CertificateImpl
 {
 public:
-    using AbstractColorCompressionFunction = std::map<DerefSharedPtr<AbstractColor>, Color>;
+    using ColorCompressionFunction = std::map<Color, ColorIndex>;
 
-    using CompressionFunction = std::unordered_map<std::pair<Color, ColorList>, Color, loki::Hash<std::pair<Color, ColorList>>>;
+    using CompressionFunction = UnorderedMap<std::pair<ColorIndex, ColorIndexList>, ColorIndex>;
 
-    using CanonicalCompressionFunction = std::map<std::pair<Color, ColorList>, Color>;
+    using CanonicalCompressionFunction = std::map<std::pair<ColorIndex, ColorIndexList>, ColorIndex>;
 
-    CertificateImpl(AbstractColorCompressionFunction c, CompressionFunction f);
+    CertificateImpl(ColorCompressionFunction c, CompressionFunction f);
 
-    const AbstractColorCompressionFunction& get_abstract_color_compression_function() const;
+    const ColorCompressionFunction& get_abstract_color_compression_function() const;
     const CanonicalCompressionFunction& get_canonical_compression_function() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
@@ -58,7 +58,7 @@ public:
     auto identifying_members() const { return std::tuple(std::cref(get_canonical_compression_function()), std::cref(get_canonical_compression_function())); }
 
 private:
-    AbstractColorCompressionFunction m_c;
+    ColorCompressionFunction m_c;
     CanonicalCompressionFunction m_f;
 };
 
@@ -93,8 +93,8 @@ std::shared_ptr<CertificateImpl> compute_certificate(const G& graph);
 /// @param out_M_replaced
 template<typename ColorType>
 void replace_tuples(const std::vector<std::pair<Index, ColorType>>& M,
-                    const ColorList& hash_to_color,
-                    std::vector<std::tuple<Color, std::vector<ColorType>, Index>>& out_M_replaced)
+                    const ColorIndexList& hash_to_color,
+                    std::vector<std::tuple<ColorIndex, std::vector<ColorType>, Index>>& out_M_replaced)
 {
     // Subroutine to construct signatures.
     auto it = M.begin();
@@ -126,12 +126,12 @@ void replace_tuples(const std::vector<std::pair<Index, ColorType>>& M,
 /// @param out_color_to_hashes
 /// @param out_L
 template<typename ColorType>
-void split_color_classes(const std::vector<std::tuple<Color, std::vector<ColorType>, Index>>& M_replaced,
-                         std::unordered_map<std::pair<Color, std::vector<ColorType>>, Color, loki::Hash<std::pair<Color, std::vector<ColorType>>>>& ref_f,
-                         Color& ref_max_color,
-                         ColorList& ref_hash_to_color,
-                         ColorMap<IndexList>& out_color_to_hashes,
-                         ColorSet& out_L)
+void split_color_classes(const std::vector<std::tuple<ColorIndex, std::vector<ColorType>, Index>>& M_replaced,
+                         UnorderedMap<std::pair<ColorIndex, std::vector<ColorType>>, ColorIndex>& ref_f,
+                         ColorIndex& ref_max_color,
+                         ColorIndexList& ref_hash_to_color,
+                         ColorIndexMap<IndexList>& out_color_to_hashes,
+                         ColorIndexSet& out_L)
 {
     out_color_to_hashes.clear();
     out_L.clear();
@@ -214,9 +214,9 @@ std::shared_ptr<CertificateImpl> compute_certificate(const G& graph)
     /* Fetch some data. */
     const auto num_vertices = graph.get_num_vertices();
 
-    /* Canonize and compress the AbstractColors to a list of integers. */
-    auto c = CertificateImpl::AbstractColorCompressionFunction {};
-    auto canonical_coloring = std::vector<DerefSharedPtr<AbstractColor>> {};
+    /* Canonize and compress the IColors to a list of integers. */
+    auto c = CertificateImpl::ColorCompressionFunction {};
+    auto canonical_coloring = ColorList {};
     for (const auto& vertex : graph.get_vertices())
     {
         canonical_coloring.push_back(get_color(vertex));
@@ -230,11 +230,11 @@ std::shared_ptr<CertificateImpl> compute_certificate(const G& graph)
     // (line 1-2): Initialize vertex colors and perfect hashes for vertex indices.
     auto vertex_to_hash = IndexMap<Index>();
     auto hash_to_vertex = IndexMap<Index>();
-    auto max_color = Color();
-    auto hash_to_color = ColorList(num_vertices);
-    auto color_to_hashes = ColorMap<IndexList>();
+    auto max_color = ColorIndex();
+    auto hash_to_color = ColorIndexList(num_vertices);
+    auto color_to_hashes = ColorIndexMap<IndexList>();
     // (line 1-2): Initialize work list.
-    auto L = ColorSet();
+    auto L = ColorIndexSet();
     for (const auto& vertex : graph.get_vertices())
     {
         const auto hash = vertex_to_hash.size();
@@ -250,8 +250,8 @@ std::shared_ptr<CertificateImpl> compute_certificate(const G& graph)
 
     // (line 1-2): Initialize multi set.
     auto f = CertificateImpl::CompressionFunction();
-    auto M = std::vector<std::pair<Index, Color>>();
-    auto M_replaced = std::vector<std::tuple<Color, ColorList, Index>>();
+    auto M = std::vector<std::pair<Index, ColorIndex>>();
+    auto M_replaced = std::vector<std::tuple<ColorIndex, ColorIndexList, Index>>();
     // (line 3): Process work list until all vertex colors have stabilized.
     while (!L.empty())
     {

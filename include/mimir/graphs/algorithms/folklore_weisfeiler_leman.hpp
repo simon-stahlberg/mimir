@@ -52,15 +52,15 @@ template<size_t K>
 class CertificateImpl
 {
 public:
-    using AbstractColorCompressionFunction = std::map<DerefSharedPtr<AbstractColor>, Color>;
+    using ColorCompressionFunction = std::map<Color, ColorIndex>;
 
     /* Compression of new color to map (C(bar{v}), {{(c_1^1, ...,c_k^1), ..., (c_1^r, ...,c_k^r)}}) to an integer color for bar{v} in V^k */
-    using ConfigurationCompressionFunction = std::unordered_map<std::pair<Color, ColorArrayList<K>>, Color, loki::Hash<std::pair<Color, ColorArrayList<K>>>>;
-    using CanonicalConfigurationCompressionFunction = std::map<std::pair<Color, ColorArrayList<K>>, Color>;
+    using ConfigurationCompressionFunction = UnorderedMap<std::pair<ColorIndex, ColorIndexArrayList<K>>, ColorIndex>;
+    using CanonicalConfigurationCompressionFunction = std::map<std::pair<ColorIndex, ColorIndexArrayList<K>>, ColorIndex>;
 
-    CertificateImpl(AbstractColorCompressionFunction c, ConfigurationCompressionFunction f);
+    CertificateImpl(ColorCompressionFunction c, ConfigurationCompressionFunction f);
 
-    const AbstractColorCompressionFunction& get_abstract_color_compression_function() const;
+    const ColorCompressionFunction& get_abstract_color_compression_function() const;
     const CanonicalConfigurationCompressionFunction& get_canonical_configuration_compression_function() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
@@ -72,13 +72,12 @@ public:
     }
 
 private:
-    AbstractColorCompressionFunction m_c;
+    ColorCompressionFunction m_c;
     CanonicalConfigurationCompressionFunction m_f;
 };
 
 /// @brief `IsomorphismTypeCompressionFunction` encapsulates mappings from canonical subgraphs to colors.
-using IsomorphismTypeCompressionFunction =
-    std::unordered_map<std::shared_ptr<nauty::SparseGraph>, Color, SharedPtrDerefHash<nauty::SparseGraph>, SharedPtrDerefEqualTo<nauty::SparseGraph>>;
+using IsomorphismTypeCompressionFunction = UnorderedMap<nauty::SparseGraph, ColorIndex>;
 
 /// @brief Compare two certificates for equality.
 /// @param lhs is the first certificate.
@@ -127,12 +126,12 @@ std::shared_ptr<CertificateImpl<K>> compute_certificate(const G& graph, Isomorph
 /// @brief `CertificateImpl` encapsulates the final tuple colorings and the decoding tables.
 /// @tparam K is the dimensionality.
 template<size_t K>
-CertificateImpl<K>::CertificateImpl(AbstractColorCompressionFunction c, ConfigurationCompressionFunction f) : m_c(std::move(c)), m_f(f.begin(), f.end())
+CertificateImpl<K>::CertificateImpl(ColorCompressionFunction c, ConfigurationCompressionFunction f) : m_c(std::move(c)), m_f(f.begin(), f.end())
 {
 }
 
 template<size_t K>
-const CertificateImpl<K>::AbstractColorCompressionFunction& CertificateImpl<K>::get_abstract_color_compression_function() const
+const CertificateImpl<K>::ColorCompressionFunction& CertificateImpl<K>::get_abstract_color_compression_function() const
 {
     return m_c;
 }
@@ -220,9 +219,9 @@ auto compute_ordered_isomorphism_types(const G& graph, IsomorphismTypeCompressio
         }
     }
 
-    /* Canonize and compress the AbstractColors to a list of integers. */
-    auto c = typename CertificateImpl<K>::AbstractColorCompressionFunction {};
-    auto canonical_coloring = std::vector<DerefSharedPtr<AbstractColor>> {};
+    /* Canonize and compress the IColors to a list of integers. */
+    auto c = typename CertificateImpl<K>::ColorCompressionFunction {};
+    auto canonical_coloring = ColorList {};
     for (const auto& vertex : graph.get_vertices())
     {
         canonical_coloring.push_back(get_color(vertex));
@@ -233,8 +232,8 @@ auto compute_ordered_isomorphism_types(const G& graph, IsomorphismTypeCompressio
         c.emplace(color, c.size());
     }
 
-    auto hash_to_color = ColorList(num_hashes);
-    auto color_to_hashes = ColorMap<IndexList>();
+    auto hash_to_color = ColorIndexList(num_hashes);
+    auto color_to_hashes = ColorIndexMap<IndexList>();
 
     // Subroutine to compute (ordered) isomorphic types of all k-tuples of vertices.
     auto v_to_i = IndexMap<Index>();
@@ -249,7 +248,7 @@ auto compute_ordered_isomorphism_types(const G& graph, IsomorphismTypeCompressio
         }
 
         // Instantiate vertex-colored subgraph.
-        auto subgraph = graphs::StaticAbstractVertexColoredDigraph();
+        auto subgraph = graphs::StaticVertexColoredDigraph();
         for (const auto [v1, i1] : v_to_i)
         {
             subgraph.add_vertex(get_color(graph.get_vertex(v_to_vertex.at(v1))));
@@ -266,7 +265,7 @@ auto compute_ordered_isomorphism_types(const G& graph, IsomorphismTypeCompressio
         }
 
         // Isomorphism function is shared among several runs to ensure canonical form for different runs.
-        auto result = iso_type_function.emplace(std::make_shared<nauty::SparseGraph>(nauty::SparseGraph(subgraph).canonize()), iso_type_function.size());
+        auto result = iso_type_function.emplace(nauty::SparseGraph(subgraph).canonize(), iso_type_function.size());
 
         const auto color = result.first->second;
         hash_to_color.at(hash) = color;
@@ -300,24 +299,24 @@ std::shared_ptr<CertificateImpl<K>> compute_certificate(const G& graph, Isomorph
     }
 
     /* Compute isomorphism types. */
-    auto c = typename CertificateImpl<K>::AbstractColorCompressionFunction();
-    auto hash_to_color = ColorList();
-    auto color_to_hashes = ColorMap<IndexList>();
+    auto c = typename CertificateImpl<K>::ColorCompressionFunction();
+    auto hash_to_color = ColorIndexList();
+    auto color_to_hashes = ColorIndexMap<IndexList>();
 
     const auto [c_, hash_to_color_, color_to_hashes_] = compute_ordered_isomorphism_types<K>(graph, iso_type_function);
     c = std::move(c_);
     hash_to_color = std::move(hash_to_color_);
     color_to_hashes = std::move(color_to_hashes_);
 
-    auto max_color = graphs::Color(c.size());
+    auto max_color = ColorIndex(c.size());
 
     /* Initialize work list of color. */
-    auto L = ColorSet(hash_to_color.begin(), hash_to_color.end());
+    auto L = ColorIndexSet(hash_to_color.begin(), hash_to_color.end());
 
     /* Refine colors of k-tuples. */
     auto f = typename CertificateImpl<K>::ConfigurationCompressionFunction();
-    auto M = std::vector<std::pair<Index, ColorArray<K>>>();
-    auto M_replaced = std::vector<std::tuple<Color, ColorArrayList<K>, Index>>();
+    auto M = std::vector<std::pair<Index, ColorIndexArray<K>>>();
+    auto M_replaced = std::vector<std::tuple<ColorIndex, ColorIndexArrayList<K>, Index>>();
     // (line 3-18): subroutine to find stable coloring
 
     while (!L.empty())
@@ -345,7 +344,7 @@ std::shared_ptr<CertificateImpl<K>> compute_certificate(const G& graph, Isomorph
                     for (size_t u = 0; u < num_vertices; ++u)
                     {
                         // C[\vec{v}[1,u]],...,C[\vec{v}[k,u]]
-                        auto k_coloring = ColorArray<K>();
+                        auto k_coloring = ColorIndexArray<K>();
                         for (size_t i = 0; i < K; ++i)
                         {
                             // \vec{x} = \vec{v}[i,u]

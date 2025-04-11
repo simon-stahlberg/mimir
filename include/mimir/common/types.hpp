@@ -30,7 +30,9 @@
 
 namespace mimir
 {
-using Count = uint32_t;
+/**
+ * Index
+ */
 
 using Index = uint32_t;
 using IndexList = std::vector<Index>;
@@ -42,23 +44,36 @@ using IndexMap = std::unordered_map<Index, T>;
 template<typename Key>
 using ToIndexMap = std::unordered_map<Key, Index, loki::Hash<Key>, loki::EqualTo<Key>>;
 
-template<typename Key, typename Value>
-using KeyValueMap = std::unordered_map<Key, Value, loki::Hash<Key>, loki::EqualTo<Key>>;
-
-template<typename Value>
-using ValueSet = std::unordered_set<Value, loki::Hash<Value>, loki::EqualTo<Value>>;
-
 static const Index MAX_INDEX = std::numeric_limits<Index>::max();
+
+/**
+ * ContinuousCost
+ */
 
 using ContinuousCost = double;
 using ContinuousCostList = std::vector<ContinuousCost>;
 using ContinuousCostMatrix = std::vector<ContinuousCostList>;
+
+static const ContinuousCost UNDEFINED_CONTINUOUS_COST = std::numeric_limits<ContinuousCost>::max();
+
+/**
+ * DiscreteCost
+ */
+
 using DiscreteCost = int32_t;
 using DiscreteCostList = std::vector<DiscreteCost>;
 using DiscreteCostMatrix = std::vector<ContinuousCostList>;
 
 static const DiscreteCost UNDEFINED_DISCRETE_COST = std::numeric_limits<DiscreteCost>::max();
-static const ContinuousCost UNDEFINED_CONTINUOUS_COST = std::numeric_limits<ContinuousCost>::max();
+
+/**
+ * Containers
+ */
+
+template<typename Key, typename Value>
+using UnorderedMap = std::unordered_map<Key, Value, loki::Hash<Key>, loki::EqualTo<Key>>;
+template<typename Value>
+using UnorderedSet = std::unordered_set<Value, loki::Hash<Value>, loki::EqualTo<Value>>;
 
 }
 

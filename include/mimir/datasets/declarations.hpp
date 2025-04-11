@@ -42,13 +42,11 @@ class TupleGraphImpl;
 using TupleGraph = std::shared_ptr<TupleGraphImpl>;
 using TupleGraphList = std::vector<TupleGraph>;
 
-/// @brief Uniqueness test of certificates while mapping them to a representative state.
-/// Hash and compare of `loki::ObserverPtr<T>` is specialized to use the dereferenced pointer.
 template<typename Value>
-using CertificateMap = KeyValueMap<loki::ObserverPtr<graphs::nauty::SparseGraph>, Value>;
+using CertificateMap = UnorderedMap<graphs::nauty::SparseGraph, Value>;
 
-/// @brief Cache computed state certificates.
-using StateToCertificate = search::StateMap<std::shared_ptr<graphs::nauty::SparseGraph>>;
+template<typename Key>
+using ToCertificateMap = UnorderedMap<Key, graphs::nauty::SparseGraph>;
 
 }
 

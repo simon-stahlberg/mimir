@@ -33,16 +33,17 @@ namespace mimir::graphs
  * Type aliases
  */
 
-using AbstractColoredVertex = Vertex<std::shared_ptr<AbstractColor>>;
-using StaticAbstractVertexColoredDigraph = StaticGraph<AbstractColoredVertex, EmptyEdge>;
+using StaticVertexColoredDigraph = StaticGraph<ColoredVertex, EmptyEdge>;
+using StaticEdgeColoredForwardDigraph = StaticForwardGraph<StaticGraph<ColoredVertex, ColoredEdge>>;
+using StaticEdgeColoredBidirectionalDigraph = StaticBidirectionalGraph<StaticGraph<ColoredVertex, ColoredEdge>>;
 
-inline const auto& get_color(const Vertex<std::shared_ptr<AbstractColor>>& vertex) { return vertex.get_property<0>(); }
+using DynamicEdgeColoredDigraph = DynamicGraph<ColoredVertex, ColoredEdge>;
 
 /**
  * Pretty printing
  */
 
-extern std::ostream& operator<<(std::ostream& out, const StaticAbstractVertexColoredDigraph& graph);
+extern std::ostream& operator<<(std::ostream& out, const StaticVertexColoredDigraph& graph);
 
 }
 

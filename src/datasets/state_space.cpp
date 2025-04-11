@@ -93,9 +93,9 @@ namespace mimir::datasets
 struct SymmetriesData
 {
     CertificateMap<search::State> class_representative;
-    StateToCertificate state_to_certificate;
+    ToCertificateMap<search::State> state_to_certificate;
     StateSet prunable_states;
-    ValueSet<std::pair<graphs::VertexIndex, graphs::VertexIndex>> m_edges;
+    UnorderedSet<std::pair<graphs::VertexIndex, graphs::VertexIndex>> m_edges;
 
     SymmetriesData() : class_representative(), state_to_certificate(), prunable_states() {}
 };
@@ -129,10 +129,7 @@ private:
     /* Implement AlgorithmEventHandlerBase interface */
     friend class brfs::EventHandlerBase<SymmetryReducedProblemGraphEventHandler>;
 
-    auto compute_canonical_graph(State state)
-    {
-        return std::make_shared<nauty::SparseGraph>(nauty::SparseGraph(create_object_graph(state, *m_problem)).canonize());
-    }
+    auto compute_canonical_graph(State state) { return nauty::SparseGraph(create_object_graph(state, *m_problem)).canonize(); }
 
     void on_expand_state_impl(State state) {}
 
@@ -143,7 +140,7 @@ private:
         const auto source_v_idx = m_state_to_vertex_index.at(state);
 
         auto tmp_certificate = compute_canonical_graph(successor_state);
-        auto it = m_symm_data.class_representative.find(tmp_certificate.get());
+        auto it = m_symm_data.class_representative.find(tmp_certificate);
         const auto is_symmetric = (it != m_symm_data.class_representative.end());
 
         if (is_symmetric)
@@ -172,7 +169,7 @@ private:
             const auto certificate = graphs::get_certificate(m_graph.get_vertex(target_v_idx));
 
             m_symm_data.state_to_certificate.emplace(successor_state, certificate);
-            m_symm_data.class_representative.emplace(certificate.get(), successor_state);
+            m_symm_data.class_representative.emplace(certificate, successor_state);
 
             m_state_to_vertex_index.emplace(successor_state, target_v_idx);
             m_graph.add_directed_edge(source_v_idx, target_v_idx, action, m_problem, action_cost);
@@ -192,7 +189,7 @@ private:
         m_state_to_vertex_index.emplace(start_state, v_idx);
 
         const auto certificate = graphs::get_certificate(m_graph.get_vertex(v_idx));
-        m_symm_data.class_representative.emplace(certificate.get(), start_state);
+        m_symm_data.class_representative.emplace(certificate, start_state);
         m_symm_data.state_to_certificate.emplace(start_state, certificate);
     }
 
@@ -255,16 +252,10 @@ private:
     void on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state)
     {
         const auto source_vertex_index = m_state_to_vertex_index.at(state);
-        const auto target_vertex_index = m_state_to_vertex_index.contains(successor_state) ? m_state_to_vertex_index.at(successor_state) :
-                                                                                             m_graph.add_vertex(successor_state,
-                                                                                                                m_problem,
-                                                                                                                std::shared_ptr<nauty::SparseGraph>(nullptr),
-                                                                                                                DiscreteCost(0),
-                                                                                                                ContinuousCost(0),
-                                                                                                                false,
-                                                                                                                false,
-                                                                                                                false,
-                                                                                                                false);
+        const auto target_vertex_index =
+            m_state_to_vertex_index.contains(successor_state) ?
+                m_state_to_vertex_index.at(successor_state) :
+                m_graph.add_vertex(successor_state, m_problem, nauty::SparseGraph(), DiscreteCost(0), ContinuousCost(0), false, false, false, false);
         m_state_to_vertex_index.emplace(successor_state, target_vertex_index);
         m_graph.add_directed_edge(source_vertex_index, target_vertex_index, action, m_problem, action_cost);
     }
@@ -277,15 +268,7 @@ private:
 
     void on_start_search_impl(State start_state)
     {
-        const auto v_idx = m_graph.add_vertex(start_state,
-                                              m_problem,
-                                              std::shared_ptr<nauty::SparseGraph>(nullptr),
-                                              DiscreteCost(0),
-                                              ContinuousCost(0),
-                                              false,
-                                              false,
-                                              false,
-                                              false);
+        const auto v_idx = m_graph.add_vertex(start_state, m_problem, nauty::SparseGraph(), DiscreteCost(0), ContinuousCost(0), false, false, false, false);
         m_state_to_vertex_index.emplace(start_state, v_idx);
     }
 

@@ -53,14 +53,14 @@ TupleGraphList TupleGraphImpl::create(StateSpace state_space, const Options& opt
 
     /* Collect certificates to avoid costly recomputation. */
     auto certificate_to_v_idx = CertificateMap<graphs::VertexIndex> {};
-    auto state_to_certificate = StateToCertificate {};
+    auto state_to_certificate = ToCertificateMap<search::State> {};
     if (state_space->is_symmetry_reduced())
     {
         for (const auto& v : state_space->get_graph().get_vertices())
         {
             const auto& certificate = graphs::get_certificate(v);
             const auto state = graphs::get_state(v);
-            certificate_to_v_idx.emplace(certificate.get(), v.get_index());
+            certificate_to_v_idx.emplace(certificate, v.get_index());
             state_to_certificate.emplace(state, certificate);
         }
     }

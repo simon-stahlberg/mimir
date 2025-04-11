@@ -18,6 +18,8 @@
 #ifndef MIMIR_GRAPHS_GRAPH_VERTICES_HPP_
 #define MIMIR_GRAPHS_GRAPH_VERTICES_HPP_
 
+#include "mimir/graphs/color.hpp"
+#include "mimir/graphs/declarations.hpp"
 #include "mimir/graphs/graph_vertex_interface.hpp"
 
 #include <loki/details/utils/equal_to.hpp>
@@ -69,14 +71,9 @@ using EmptyVertex = Vertex<>;
  * ColoredVertex
  */
 
-/// @brief `ColoredVertex` is a vertex with a color `VertexProperties`.
-/// For readability of code that uses a `ColoredVertex`, we provide a free function get_color to access the color of a given vertex.
 using ColoredVertex = Vertex<Color>;
 
-/// @brief Get the color of a colored vertex.
-/// @param edge the colored vertex.
-/// @return the color of the vertex.
-inline Color get_color(const ColoredVertex& vertex) { return vertex.get_property<0>(); }
+inline const auto& get_color(const Vertex<Color>& vertex) { return vertex.get_property<0>(); }
 
 }
 

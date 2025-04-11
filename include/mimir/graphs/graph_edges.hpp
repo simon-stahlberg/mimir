@@ -18,6 +18,8 @@
 #ifndef MIMIR_GRAPHS_GRAPH_EDGES_HPP_
 #define MIMIR_GRAPHS_GRAPH_EDGES_HPP_
 
+#include "mimir/graphs/color.hpp"
+#include "mimir/graphs/declarations.hpp"
 #include "mimir/graphs/graph_edge_interface.hpp"
 
 #include <loki/details/utils/equal_to.hpp>
@@ -82,14 +84,9 @@ using EmptyEdge = Edge<>;
  * ColoredEdge
  */
 
-/// @brief `ColoredEdge` is an edge with a color `EdgeProperties`.
-/// For readability of code that uses a `ColoredEdge`, we provide a free function get_color to access the color of a given edge.
 using ColoredEdge = Edge<Color>;
 
-/// @brief Get the color of a colored edge.
-/// @param edge the colored edge.
-/// @return the color of the edge.
-inline Color get_color(const ColoredEdge& edge) { return edge.get_property<0>(); }
+inline const auto& get_color(const Edge<Color>& edge) { return edge.get_property<0>(); }
 
 }
 

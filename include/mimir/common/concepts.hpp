@@ -62,6 +62,11 @@ concept IsHanaMap = std::same_as<typename boost::hana::tag_of<T>::type, boost::h
 template<typename T>
 concept IsVariant = requires { typename std::variant_size<T>::type; };
 
+template<typename T>
+concept IsDereferencable = requires(T t) {
+    { *t } -> std::convertible_to<const typename std::remove_reference_t<decltype(*t)>>;
+};
+
 }
 
 #endif

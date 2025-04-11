@@ -385,6 +385,8 @@ ConjunctiveCondition Repositories::get_or_create_conjunctive_condition(VariableL
                                         [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
                           });
 
+    std::sort(numeric_constraints.begin(), numeric_constraints.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+
     return boost::hana::at_key(m_repositories, boost::hana::type<ConjunctiveConditionImpl> {})
         .get_or_create(std::move(parameters), std::move(literals), std::move(nullary_ground_literals), std::move(numeric_constraints));
 }

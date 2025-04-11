@@ -36,7 +36,7 @@ namespace mimir::graphs
 
 /// @typedef ProblemVertex
 /// @brief `ProblemVertex` encapsulates information about a vertex in a `ProblemGraph`
-using ProblemVertex = Vertex<search::State, formalism::Problem, std::shared_ptr<nauty::SparseGraph>, DiscreteCost, ContinuousCost, bool, bool, bool, bool>;
+using ProblemVertex = Vertex<search::State, formalism::Problem, nauty::SparseGraph, DiscreteCost, ContinuousCost, bool, bool, bool, bool>;
 using ProblemVertexList = std::vector<ProblemVertex>;
 
 /// @brief Get the `State` of the given `ProblemVertex`.
@@ -52,7 +52,7 @@ inline const formalism::Problem& get_problem(const ProblemVertex& vertex) { retu
 /// @brief Get the `nauty::SparseGraph` of the given `ProblemVertex`.
 /// @param vertex is a `ProblemVertex`.
 /// @return the `nauty::SparseGraph` of the given `ProblemVertex` in the `ProblemGraph` if it was computed, and otherwise nullptr.
-inline const std::shared_ptr<nauty::SparseGraph>& get_certificate(const ProblemVertex& vertex) { return vertex.get_property<2>(); }
+inline const nauty::SparseGraph& get_certificate(const ProblemVertex& vertex) { return vertex.get_property<2>(); }
 
 /// @brief Get the unit goal distance of the given `ProblemVertex`.
 /// @param vertex is a `ProblemVertex`.

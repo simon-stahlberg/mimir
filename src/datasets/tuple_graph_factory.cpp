@@ -107,7 +107,7 @@ private:
     const graphs::ProblemVertex& m_problem_vertex;
     const StateSpace& m_state_space;
     const CertificateMap<graphs::VertexIndex>& m_certificate_to_v_idx;
-    StateToCertificate& m_state_to_certificate;
+    ToCertificateMap<search::State>& m_state_to_certificate;
     const TupleGraphImpl::Options& m_options;
 
     graphs::StaticTupleGraph m_internal_tuple_graph;
@@ -337,12 +337,10 @@ private:
             /* Map state to representative vertex. */
             if (!m_state_to_certificate.contains(state))
             {
-                m_state_to_certificate.emplace(
-                    state,
-                    std::make_shared<graphs::nauty::SparseGraph>(graphs::nauty::SparseGraph(create_object_graph(state, problem)).canonize()));
+                m_state_to_certificate.emplace(state, graphs::nauty::SparseGraph(create_object_graph(state, problem)).canonize());
             }
 
-            const auto problem_v_idx = m_certificate_to_v_idx.at(m_state_to_certificate.at(state).get());
+            const auto problem_v_idx = m_certificate_to_v_idx.at(m_state_to_certificate.at(state));
 
             /* Map novel tuples between representative vertex. */
             for (const auto& novel_tuple : m_novel_tuples_vec)
@@ -498,7 +496,7 @@ public:
     TupleGraphArityGreaterZeroComputation(const graphs::ProblemVertex& problem_vertex,
                                           const StateSpace& state_space,
                                           const CertificateMap<graphs::VertexIndex>& certificate_to_v_idx,
-                                          StateToCertificate& state_to_certificate,
+                                          ToCertificateMap<search::State>& state_to_certificate,
                                           const TupleGraphImpl::Options& options) :
         m_problem_vertex(problem_vertex),
         m_state_space(state_space),
@@ -549,7 +547,7 @@ public:
 static TupleGraph create_tuple_graph_width_greater_zero(const graphs::ProblemVertex& problem_vertex,
                                                         const StateSpace& state_space,
                                                         const CertificateMap<graphs::VertexIndex>& certificate_to_v_idx,
-                                                        StateToCertificate& state_to_certificate,
+                                                        ToCertificateMap<search::State>& state_to_certificate,
                                                         const TupleGraphImpl::Options& options)
 {
     return TupleGraphArityGreaterZeroComputation(problem_vertex, state_space, certificate_to_v_idx, state_to_certificate, options).compute_and_get_result();
@@ -558,7 +556,7 @@ static TupleGraph create_tuple_graph_width_greater_zero(const graphs::ProblemVer
 TupleGraph create_tuple_graph(const graphs::ProblemVertex& problem_vertex,
                               const StateSpace& state_space,
                               const CertificateMap<graphs::VertexIndex>& certificate_to_v_idx,
-                              StateToCertificate& state_to_certificate,
+                              ToCertificateMap<search::State>& state_to_certificate,
                               const TupleGraphImpl::Options& options)
 {
     return (options.width == 0) ? create_tuple_graph_width_zero(problem_vertex, state_space) :

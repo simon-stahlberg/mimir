@@ -105,7 +105,7 @@ static GeneralizedStateSpace compute_generalized_state_space_with_symmetry_reduc
     {
         const auto& graph = state_space->get_graph();
 
-        if (certificate_to_class_v_idx.contains(graphs::get_certificate(graph.get_vertex(0)).get()))
+        if (certificate_to_class_v_idx.contains(graphs::get_certificate(graph.get_vertex(0))))
         {
             continue;  ///< StateSpace is isomorphic to a previous one.
         }
@@ -122,7 +122,7 @@ static GeneralizedStateSpace compute_generalized_state_space_with_symmetry_reduc
 
             const auto& certificate = graphs::get_certificate(v);
 
-            auto it = certificate_to_class_v_idx.find(certificate.get());
+            auto it = certificate_to_class_v_idx.find(certificate);
 
             if (it == certificate_to_class_v_idx.end())
             {
@@ -147,7 +147,7 @@ static GeneralizedStateSpace compute_generalized_state_space_with_symmetry_reduc
 
                 class_graph.add_vertex(v_idx, state_space_idx);
 
-                certificate_to_class_v_idx.emplace(certificate.get(), v_idx);
+                certificate_to_class_v_idx.emplace(certificate, v_idx);
 
                 problem_v_idx_to_class_v_idx.emplace(v_idx, class_v_idx);
             }

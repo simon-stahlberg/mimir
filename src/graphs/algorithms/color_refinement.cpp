@@ -21,9 +21,9 @@ namespace mimir::graphs::color_refinement
 {
 
 /* CertificateImpl */
-CertificateImpl::CertificateImpl(AbstractColorCompressionFunction c, CompressionFunction f) : m_c(std::move(c)), m_f(f.begin(), f.end()) {}
+CertificateImpl::CertificateImpl(ColorCompressionFunction c, CompressionFunction f) : m_c(std::move(c)), m_f(f.begin(), f.end()) {}
 
-const CertificateImpl::AbstractColorCompressionFunction& CertificateImpl::get_abstract_color_compression_function() const { return m_c; }
+const CertificateImpl::ColorCompressionFunction& CertificateImpl::get_abstract_color_compression_function() const { return m_c; }
 
 const CertificateImpl::CanonicalCompressionFunction& CertificateImpl::get_canonical_compression_function() const { return m_f; }
 

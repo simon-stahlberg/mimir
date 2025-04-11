@@ -20,25 +20,37 @@
 namespace mimir::graphs
 {
 /**
- * AbstractColor
+ * IColor
  */
 
-bool AbstractColor::operator==(const AbstractColor& other) const { return this->is_equal_to(other); }
-
-bool AbstractColor::operator<(const AbstractColor& other) const { return this->is_less_than(other); }
-
-std::ostream& operator<<(std::ostream& out, const AbstractColor& color)
+std::ostream& operator<<(std::ostream& out, const IColor& color)
 {
-    color.to_ostream(out);
+    color.operator<<(out);
+
+    return out;
+}
+
+/**
+ * Color
+ */
+
+bool Color::operator==(const Color& other) const { return loki::EqualTo<IColor>()(*m_color, *other.m_color); }
+
+bool Color::operator<(const Color& other) const { return *m_color < *other.m_color; }
+
+size_t Color::hash() const { return m_color->hash(); }
+
+std::ostream& operator<<(std::ostream& out, const Color& color)
+{
+    color.m_color->operator<<(out);
 
     return out;
 }
 
 }
 
-size_t loki::Hash<mimir::graphs::AbstractColor>::operator()(const mimir::graphs::AbstractColor& color) const { return color.hash(); }
+size_t loki::Hash<mimir::graphs::IColor>::operator()(const mimir::graphs::IColor& color) const { return color.hash(); }
 
-bool loki::EqualTo<mimir::graphs::AbstractColor>::operator()(const mimir::graphs::AbstractColor& lhs, const mimir::graphs::AbstractColor& rhs) const
-{
-    return lhs == rhs;
-}
+bool loki::EqualTo<mimir::graphs::IColor>::operator()(const mimir::graphs::IColor& lhs, const mimir::graphs::IColor& rhs) const { return lhs == rhs; }
+
+size_t loki::Hash<mimir::graphs::Color>::operator()(const mimir::graphs::Color& color) const { return color.hash(); }

@@ -41,7 +41,7 @@ class SparseGraphImpl;
 class SparseGraph
 {
 private:
-    std::unique_ptr<details::SparseGraphImpl> m_impl;
+    std::shared_ptr<details::SparseGraphImpl> m_impl;
 
     SparseGraph(size_t nde,
                 std::vector<size_t> v,
@@ -53,7 +53,7 @@ private:
                 size_t elen,
                 std::vector<int> lab,
                 std::vector<int> ptn,
-                std::vector<DerefSharedPtr<const AbstractColor>> coloring);
+                ColorList coloring);
 
     void initialize(size_t nde,
                     std::vector<size_t> v,
@@ -65,7 +65,7 @@ private:
                     size_t elen,
                     std::vector<int> lab,
                     std::vector<int> ptn,
-                    std::vector<DerefSharedPtr<const AbstractColor>> coloring);
+                    ColorList coloring);
 
 public:
     SparseGraph();
@@ -124,17 +124,17 @@ public:
 
         /* Add vertex coloring. */
 
-        auto color_vertex_pairs = std::vector<std::pair<DerefSharedPtr<const AbstractColor>, uint32_t>> {};
+        auto color_vertex_pairs = std::vector<std::pair<Color, uint32_t>> {};
         color_vertex_pairs.reserve(nv);
         for (const auto& vertex : graph.get_vertices())
         {
             color_vertex_pairs.emplace_back(get_color(vertex), remap.at(vertex.get_index()));
         }
-        std::sort(color_vertex_pairs.begin(), color_vertex_pairs.end(), [](auto&& lhs, auto&& rhs) { return *lhs.first < *rhs.first; });
+        std::sort(color_vertex_pairs.begin(), color_vertex_pairs.end());
 
         auto lab = std::vector<int>(nv, 0);
         auto ptn = std::vector<int>(nv, 0);
-        auto coloring = std::vector<DerefSharedPtr<const AbstractColor>> {};
+        auto coloring = ColorList {};
         coloring.reserve(nv);
         for (int i = 1; i < nv; ++i)
         {
@@ -168,7 +168,7 @@ public:
     size_t get_elen() const;
     const std::vector<int>& get_lab() const;
     const std::vector<int>& get_ptn() const;
-    const std::vector<DerefSharedPtr<const AbstractColor>>& get_coloring() const;
+    const ColorList& get_coloring() const;
 
     /// @brief Return vertex permutation from input graph to canonical graphs.
     /// Throws an exception if canonize() was not called before.
