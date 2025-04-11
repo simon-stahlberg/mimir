@@ -17,7 +17,7 @@
 
 #include "mimir/graphs/algorithms/color_refinement.hpp"
 
-#include "mimir/graphs/concrete/digraph_vertex_colored.hpp"
+#include "mimir/graphs/concrete/vertex_colored_graph.hpp"
 
 #include <gtest/gtest.h>
 
@@ -28,7 +28,7 @@ TEST(MimirTests, GraphsAlgorithmsColorRefinementTest)
 {
     {
         /* The famous two triangle / sixgon example */
-        auto two_triangle = graphs::StaticVertexColoredDigraph();
+        auto two_triangle = graphs::StaticVertexColoredGraph();
         {
             auto v1 = two_triangle.add_vertex(graphs::Color(graphs::ColorIndex(0)));
             auto v2 = two_triangle.add_vertex(graphs::Color(graphs::ColorIndex(0)));
@@ -45,7 +45,7 @@ TEST(MimirTests, GraphsAlgorithmsColorRefinementTest)
         }
         auto two_triangle_certificate = *graphs::color_refinement::compute_certificate(two_triangle);
 
-        auto sixgon = graphs::StaticVertexColoredDigraph();
+        auto sixgon = graphs::StaticVertexColoredGraph();
         {
             auto v1 = sixgon.add_vertex(graphs::Color(graphs::ColorIndex(0)));
             auto v2 = sixgon.add_vertex(graphs::Color(graphs::ColorIndex(0)));
@@ -67,7 +67,7 @@ TEST(MimirTests, GraphsAlgorithmsColorRefinementTest)
 
     {
         /* The famous two triangle / sixgon example with missmatched colors */
-        auto two_triangle = graphs::StaticVertexColoredDigraph();
+        auto two_triangle = graphs::StaticVertexColoredGraph();
         {
             auto v1 = two_triangle.add_vertex(graphs::Color(graphs::ColorIndex(1)));  // We change this color to 1 to make it distinguishable from the sixgon
             auto v2 = two_triangle.add_vertex(graphs::Color(graphs::ColorIndex(0)));
@@ -84,7 +84,7 @@ TEST(MimirTests, GraphsAlgorithmsColorRefinementTest)
         }
         auto two_triangle_certificate = *graphs::color_refinement::compute_certificate(two_triangle);
 
-        auto sixgon = graphs::StaticVertexColoredDigraph();
+        auto sixgon = graphs::StaticVertexColoredGraph();
         {
             auto v1 = sixgon.add_vertex(graphs::Color(graphs::ColorIndex(0)));
             auto v2 = sixgon.add_vertex(graphs::Color(graphs::ColorIndex(0)));
@@ -106,7 +106,7 @@ TEST(MimirTests, GraphsAlgorithmsColorRefinementTest)
 
     {
         /* 2-vertex graphs where the order of colors is flipped to test canonical decoding table. */
-        auto line_graph_1 = graphs::StaticVertexColoredDigraph();
+        auto line_graph_1 = graphs::StaticVertexColoredGraph();
         {
             auto v1 = line_graph_1.add_vertex(graphs::Color(graphs::ColorIndex(1)));
             auto v2 = line_graph_1.add_vertex(graphs::Color(graphs::ColorIndex(0)));
@@ -114,7 +114,7 @@ TEST(MimirTests, GraphsAlgorithmsColorRefinementTest)
         }
         auto line_graph_1_certificate = *graphs::color_refinement::compute_certificate(line_graph_1);
 
-        auto line_graph_2 = graphs::StaticVertexColoredDigraph();
+        auto line_graph_2 = graphs::StaticVertexColoredGraph();
         {
             auto v1 = line_graph_2.add_vertex(graphs::Color(graphs::ColorIndex(0)));
             auto v2 = line_graph_2.add_vertex(graphs::Color(graphs::ColorIndex(1)));

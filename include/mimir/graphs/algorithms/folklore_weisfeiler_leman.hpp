@@ -24,7 +24,7 @@
 #include "mimir/common/types.hpp"
 #include "mimir/graphs/algorithms/color_refinement.hpp"
 #include "mimir/graphs/algorithms/nauty.hpp"
-#include "mimir/graphs/concrete/digraph_vertex_colored.hpp"
+#include "mimir/graphs/concrete/vertex_colored_graph.hpp"
 #include "mimir/graphs/graph_interface.hpp"
 #include "mimir/graphs/graph_properties.hpp"
 #include "mimir/graphs/graph_traversal_interface.hpp"
@@ -248,7 +248,7 @@ auto compute_ordered_isomorphism_types(const G& graph, IsomorphismTypeCompressio
         }
 
         // Instantiate vertex-colored subgraph.
-        auto subgraph = graphs::StaticVertexColoredDigraph();
+        auto subgraph = graphs::StaticVertexColoredGraph();
         for (const auto [v1, i1] : v_to_i)
         {
             subgraph.add_vertex(get_color(graph.get_vertex(v_to_vertex.at(v1))));

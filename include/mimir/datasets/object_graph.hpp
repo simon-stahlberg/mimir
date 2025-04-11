@@ -20,7 +20,7 @@
 
 #include "mimir/datasets/declarations.hpp"
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/graphs/concrete/digraph_vertex_colored.hpp"
+#include "mimir/graphs/concrete/vertex_colored_graph.hpp"
 #include "mimir/search/declarations.hpp"
 
 #include <ostream>
@@ -31,8 +31,7 @@ namespace mimir::datasets
 /// @brief Create an `ObjectGraph` for a given `search::State` from a given `formalism::ProblemImpl`.
 /// @param state is the state.
 /// @param problem is the Problem.
-/// @param color_function is the function used to color the vertices in the object graph.
-extern graphs::StaticVertexColoredDigraph create_object_graph(search::State state, const formalism::ProblemImpl& problem);
+extern graphs::StaticVertexColoredGraph create_object_graph(search::State state, const formalism::ProblemImpl& problem);
 
 }
 

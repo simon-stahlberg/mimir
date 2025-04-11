@@ -84,7 +84,7 @@ class Color
 {
 public:
     template<typename... Ts>
-    Color(Ts... colors) : m_color(std::shared_ptr<IColor>(std::make_shared<VariadicColor<Ts...>>(std::move(colors)...)))
+    Color(Ts... colors) : m_color(std::make_shared<VariadicColor<Ts...>>(std::move(colors)...))
     {
     }
 

@@ -15,9 +15,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_GRAPHS_DIGRAPH_EDGE_COLORED_HPP_
-#define MIMIR_GRAPHS_DIGRAPH_EDGE_COLORED_HPP_
+#ifndef MIMIR_GRAPHS_DIGRAPH_VERTEX_COLORED_HPP_
+#define MIMIR_GRAPHS_DIGRAPH_VERTEX_COLORED_HPP_
 
+#include "mimir/graphs/color.hpp"
 #include "mimir/graphs/dynamic_graph.hpp"
 #include "mimir/graphs/graph_edge_interface.hpp"
 #include "mimir/graphs/graph_edges.hpp"
@@ -32,25 +33,18 @@ namespace mimir::graphs
  * Type aliases
  */
 
-using StaticEdgeColoredDigraph = StaticGraph<ColoredVertex, ColoredEdge>;
-using StaticEdgeColoredForwardDigraph = StaticForwardGraph<StaticGraph<ColoredVertex, ColoredEdge>>;
-using StaticEdgeColoredBidirectionalDigraph = StaticBidirectionalGraph<StaticGraph<ColoredVertex, ColoredEdge>>;
+using StaticVertexColoredGraph = StaticGraph<ColoredVertex, EmptyEdge>;
+using StaticVertexColoredForwardGraph = StaticForwardGraph<StaticGraph<ColoredVertex, EmptyEdge>>;
+using StaticVertexColoredBidirectionalGraph = StaticBidirectionalGraph<StaticGraph<ColoredVertex, EmptyEdge>>;
 
-using DynamicEdgeColoredDigraph = DynamicGraph<ColoredVertex, ColoredEdge>;
-
-/**
- * Static graph assertions
- */
-
-static_assert(IsStaticGraph<StaticEdgeColoredDigraph>);
-static_assert(IsStaticGraph<StaticEdgeColoredForwardDigraph>);
-static_assert(IsStaticGraph<StaticEdgeColoredBidirectionalDigraph>);
+using DynamicVertexColoredGraph = DynamicGraph<ColoredVertex, EmptyEdge>;
 
 /**
- * Dynamic graph assertions
+ * Pretty printing
  */
 
-static_assert(IsDynamicGraph<DynamicEdgeColoredDigraph>);
+extern std::ostream& operator<<(std::ostream& out, const StaticVertexColoredGraph& graph);
 
 }
+
 #endif

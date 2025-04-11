@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/graphs/concrete/digraph_edge_colored.hpp"
+#include "mimir/graphs/concrete/edge_colored_graph.hpp"
 
 #include <algorithm>
 

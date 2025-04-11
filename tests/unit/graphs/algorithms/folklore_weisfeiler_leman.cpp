@@ -17,7 +17,7 @@
 
 #include "mimir/graphs/algorithms/folklore_weisfeiler_leman.hpp"
 
-#include "mimir/graphs/concrete/digraph_vertex_colored.hpp"
+#include "mimir/graphs/concrete/vertex_colored_graph.hpp"
 
 #include <gtest/gtest.h>
 
@@ -29,7 +29,7 @@ TEST(MimirTests, GraphsAlgorithmsFolkloreWeisfeilerLemanTest)
     {
         /* The famous two triangle / sixgon example */
         auto iso_type_function = graphs::kfwl::IsomorphismTypeCompressionFunction();
-        auto two_triangle = graphs::StaticVertexColoredDigraph();
+        auto two_triangle = graphs::StaticVertexColoredGraph();
         {
             auto v1 = two_triangle.add_vertex(graphs::Color(graphs::ColorIndex(0)));
             auto v2 = two_triangle.add_vertex(graphs::Color(graphs::ColorIndex(0)));
@@ -46,7 +46,7 @@ TEST(MimirTests, GraphsAlgorithmsFolkloreWeisfeilerLemanTest)
         }
         auto two_triangle_certificate = *graphs::kfwl::compute_certificate<2>(two_triangle, iso_type_function);
 
-        auto sixgon = graphs::StaticVertexColoredDigraph();
+        auto sixgon = graphs::StaticVertexColoredGraph();
         {
             auto v1 = sixgon.add_vertex(graphs::Color(graphs::ColorIndex(0)));
             auto v2 = sixgon.add_vertex(graphs::Color(graphs::ColorIndex(0)));
@@ -69,7 +69,7 @@ TEST(MimirTests, GraphsAlgorithmsFolkloreWeisfeilerLemanTest)
     {
         /* 2-vertex graphs where the order of colors is flipped to test canonical decoding table. */
         auto iso_type_function = graphs::kfwl::IsomorphismTypeCompressionFunction();
-        auto line_graph_1 = graphs::StaticVertexColoredDigraph();
+        auto line_graph_1 = graphs::StaticVertexColoredGraph();
         {
             auto v1 = line_graph_1.add_vertex(graphs::Color(graphs::ColorIndex(1)));
             auto v2 = line_graph_1.add_vertex(graphs::Color(graphs::ColorIndex(0)));
@@ -77,7 +77,7 @@ TEST(MimirTests, GraphsAlgorithmsFolkloreWeisfeilerLemanTest)
         }
         auto line_graph_1_certificate = *graphs::kfwl::compute_certificate<2>(line_graph_1, iso_type_function);
 
-        auto line_graph_2 = graphs::StaticVertexColoredDigraph();
+        auto line_graph_2 = graphs::StaticVertexColoredGraph();
         {
             auto v1 = line_graph_2.add_vertex(graphs::Color(graphs::ColorIndex(0)));
             auto v2 = line_graph_2.add_vertex(graphs::Color(graphs::ColorIndex(1)));

@@ -10,21 +10,21 @@ from pymimir._pymimir.advanced.graphs import (
     EmptyEdge,
     ColoredEdge,
 
-    # EmptyStaticGraph
-    EmptyStaticGraph,
-    ImmutableEmptyStaticGraph,
-    ForwardEmptyStaticGraph,
-    BidirectionalEmptyStaticGraph,
+    # StaticEmptyGraph
+    StaticEmptyGraph,
+    ImmutableStaticEmptyGraph,
+    ForwardStaticEmptyGraph,
+    BidirectionalStaticEmptyGraph,
 
-    # VertexColoredStaticGraph
-    VertexColoredStaticGraph,
-    ImmutableVertexColoredStaticGraph,
-    ForwardVertexColoredStaticGraph,
-    BidirectionalVertexColoredStaticGraph,
+    # StaticVertexColoredGraph
+    StaticVertexColoredGraph,
+    ImmutableStaticVertexColoredGraph,
+    ForwardStaticVertexColoredGraph,
+    BidirectionalStaticVertexColoredGraph,
 
-    # EdgeColoredStaticGraph
-    EdgeColoredStaticGraph,
-    ImmutableEdgeColoredStaticGraph,
-    ForwardEdgeColoredStaticGraph,
-    BidirectionalEdgeColoredStaticGraph,
+    # StaticEdgeColoredGraph
+    StaticEdgeColoredGraph,
+    ImmutableStaticEdgeColoredGraph,
+    ForwardStaticEdgeColoredGraph,
+    BidirectionalStaticEdgeColoredGraph,
 )

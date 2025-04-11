@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/graphs/concrete/digraph_vertex_colored.hpp"
+#include "mimir/graphs/concrete/vertex_colored_graph.hpp"
 
 #include <algorithm>
 
@@ -32,7 +32,7 @@ template class DynamicGraph<ColoredVertex, EmptyEdge>;
  * Pretty printing
  */
 
-std::ostream& operator<<(std::ostream& out, const StaticVertexColoredDigraph& graph)
+std::ostream& operator<<(std::ostream& out, const StaticVertexColoredGraph& graph)
 {
     out << "digraph {\n";
     for (const auto& vertex : graph.get_vertices())
