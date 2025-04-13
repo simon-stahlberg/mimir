@@ -12,7 +12,7 @@ problem_filepath_2 = str(ROOT_DIR / "data" / "gripper" / "p-2-0.pddl")
 search_context_options = search.SearchContextOptions()
 search_context_options.mode = search.SearchMode.GROUNDED
 
-generalized_search_context = search.GeneralizedSearchContext(domain_filepath, [problem_filepath_1, problem_filepath_2], search_context_options)
+generalized_search_context = search.GeneralizedSearchContext.create(domain_filepath, [problem_filepath_1, problem_filepath_2], search_context_options)
 
 # Create KnowledgeBase
 state_space_options = datasets.StateSpaceOptions()
@@ -84,6 +84,7 @@ for e2_idx in graph.get_backward_adjacent_edge_indices(v_idx):
 ### To access low level information about state and actions, we can use the mappings encoded in the GeneralizedStateSpace
 
 for vertex in graph.get_vertices():
+    # Map class vertex to problem vertex
     problem_vertex = generalized_state_space.get_problem_vertex(vertex)
 
     state = problem_vertex.get_property_0() # state (State)
@@ -95,17 +96,14 @@ for vertex in graph.get_vertices():
     problem_vertex.get_property_6() # is unsolvable ? (bool)
     problem_vertex.get_property_7() # is alive (bool)
 
-    problem = generalized_state_space.get_problem(vertex)
-
     print(state.to_string(problem))
 
 for edge in graph.get_edges():
+    # Map class edge to problem edge
     problem_edge = generalized_state_space.get_problem_edge(edge)
 
     action = problem_edge.get_property_0() # action (GroundAction)
     problem = problem_edge.get_property_1() # problem (Problem)
     action_cost = problem_edge.get_property_2() # cost (double)
-
-    problem = generalized_state_space.get_problem(edge)
 
     print(action.to_string(problem))

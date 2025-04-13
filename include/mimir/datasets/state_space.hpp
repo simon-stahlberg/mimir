@@ -66,7 +66,8 @@ public:
     /// @brief Create a `StateSpace` from the given `search::SearchContext` and the given `Options`.
     /// @param context is the `search::SearchContext`.
     /// @param options are the `Options`
-    /// @return the `StateSpace` if successfully created from the given `Options` and otherwise `std::nullopt`.
+    /// @return Optionally returns the StateSpace upon successful expansion paired with optionally returing canonical state representations when symmetry
+    /// reduction is enabled.
     static std::optional<std::pair<StateSpace, std::optional<CertificateMaps>>> create(search::SearchContext context, const Options& options = Options());
 
     static std::vector<std::pair<StateSpace, std::optional<CertificateMaps>>> create(search::GeneralizedSearchContext contexts,
