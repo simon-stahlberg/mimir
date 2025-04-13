@@ -855,18 +855,28 @@ const TupleIndexMapper& DynamicNoveltyTable::get_tuple_index_mapper() const { re
  * NoveltyPruning
  */
 
-ArityZeroNoveltyPruningStrategy::ArityZeroNoveltyPruningStrategy(State initial_state) : m_initial_state(initial_state) {}
+ArityZeroNoveltyPruningStrategyImpl::ArityZeroNoveltyPruningStrategyImpl(State initial_state) : m_initial_state(initial_state) {}
 
-bool ArityZeroNoveltyPruningStrategy::test_prune_initial_state(const State state) { return false; }
+ArityZeroNoveltyPruningStrategy ArityZeroNoveltyPruningStrategyImpl::create(State initial_state)
+{
+    return std::make_shared<ArityZeroNoveltyPruningStrategyImpl>(initial_state);
+}
 
-bool ArityZeroNoveltyPruningStrategy::test_prune_successor_state(const State state, const State succ_state, bool is_new_succ)
+bool ArityZeroNoveltyPruningStrategyImpl::test_prune_initial_state(const State state) { return false; }
+
+bool ArityZeroNoveltyPruningStrategyImpl::test_prune_successor_state(const State state, const State succ_state, bool is_new_succ)
 {
     return state != m_initial_state || state == succ_state;
 }
 
-ArityKNoveltyPruningStrategy::ArityKNoveltyPruningStrategy(size_t arity, size_t num_atoms) : m_novelty_table(arity) {}
+ArityKNoveltyPruningStrategyImpl::ArityKNoveltyPruningStrategyImpl(size_t arity, size_t num_atoms) : m_novelty_table(arity) {}
 
-bool ArityKNoveltyPruningStrategy::test_prune_initial_state(const State state)
+ArityKNoveltyPruningStrategy ArityKNoveltyPruningStrategyImpl::create(size_t arity, size_t num_atoms)
+{
+    return std::make_shared<ArityKNoveltyPruningStrategyImpl>(arity, num_atoms);
+}
+
+bool ArityKNoveltyPruningStrategyImpl::test_prune_initial_state(const State state)
 {
     if (m_generated_states.count(state->get_index()))
     {
@@ -878,7 +888,7 @@ bool ArityKNoveltyPruningStrategy::test_prune_initial_state(const State state)
     return !m_novelty_table.test_novelty_and_update_table(state);
 }
 
-bool ArityKNoveltyPruningStrategy::test_prune_successor_state(const State state, const State succ_state, bool is_new_succ)
+bool ArityKNoveltyPruningStrategyImpl::test_prune_successor_state(const State state, const State succ_state, bool is_new_succ)
 {
     if (state == succ_state)
     {
@@ -934,8 +944,8 @@ SearchResult find_solution(const SearchContext& context,
                               start_state,
                               brfs_event_handler,
                               goal_strategy,
-                              std::make_shared<ArityKNoveltyPruningStrategy>(cur_arity, INITIAL_TABLE_ATOMS)) :
-                find_solution(context, start_state, brfs_event_handler, goal_strategy, std::make_shared<ArityZeroNoveltyPruningStrategy>(start_state));
+                              std::make_shared<ArityKNoveltyPruningStrategyImpl>(cur_arity, INITIAL_TABLE_ATOMS)) :
+                find_solution(context, start_state, brfs_event_handler, goal_strategy, std::make_shared<ArityZeroNoveltyPruningStrategyImpl>(start_state));
 
         iw_event_handler->on_end_arity_search(brfs_event_handler->get_statistics());
 

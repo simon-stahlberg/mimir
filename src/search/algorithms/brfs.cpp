@@ -150,11 +150,9 @@ SearchResult find_solution(const SearchContext& context,
                                              search_nodes.size(),
                                              problem.get_num_ground_actions(),
                                              problem.get_num_ground_axioms());
-                if (!event_handler->is_quiet())
-                {
-                    applicable_action_generator.on_end_search();
-                    state_repository.get_axiom_evaluator()->on_end_search();
-                }
+
+                applicable_action_generator.on_end_search();
+                state_repository.get_axiom_evaluator()->on_end_search();
 
                 auto plan_actions = GroundActionList {};
                 auto state_trajectory = IndexList {};

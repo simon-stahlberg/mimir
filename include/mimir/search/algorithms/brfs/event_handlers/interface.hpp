@@ -81,7 +81,6 @@ public:
     virtual void on_exhausted() = 0;
 
     virtual const Statistics& get_statistics() const = 0;
-    virtual bool is_quiet() const = 0;
 };
 
 /**
@@ -244,7 +243,7 @@ public:
 
     /// @brief Get the statistics.
     const Statistics& get_statistics() const override { return m_statistics; }
-    bool is_quiet() const override { return m_quiet; }
+    bool is_quiet() const { return m_quiet; }
 };
 
 }

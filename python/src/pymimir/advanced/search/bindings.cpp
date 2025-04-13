@@ -10,6 +10,31 @@ using namespace mimir::formalism;
 namespace mimir::bindings
 {
 
+class IPyGoalStrategy : public IGoalStrategy
+{
+public:
+    NB_TRAMPOLINE(IGoalStrategy, 2);
+
+    /* Trampoline (need one for each virtual function) */
+    bool test_static_goal() override { NB_OVERRIDE_PURE(test_static_goal); }
+
+    bool test_dynamic_goal(State state) override { NB_OVERRIDE_PURE(test_dynamic_goal, state); }
+};
+
+class IPyPruningStrategy : public IPruningStrategy
+{
+public:
+    NB_TRAMPOLINE(IPruningStrategy, 2);
+
+    /* Trampoline (need one for each virtual function) */
+    bool test_prune_initial_state(State state) override { NB_OVERRIDE_PURE(test_prune_initial_state, state); }
+
+    bool test_prune_successor_state(State state, State succ_state, bool is_new_succ) override
+    {
+        NB_OVERRIDE_PURE(test_prune_successor_state, state, succ_state, is_new_succ);
+    }
+};
+
 class IPyHeuristic : public IHeuristic
 {
 public:
@@ -27,7 +52,7 @@ public:
 class IPyAStarEventHandler : public astar::IEventHandler
 {
 public:
-    NB_TRAMPOLINE(astar::IEventHandler, 13);
+    NB_TRAMPOLINE(astar::IEventHandler, 14);
 
     /* Trampoline (need one for each virtual function) */
     void on_expand_state(State state) override { NB_OVERRIDE_PURE(on_expand_state, state); }
@@ -79,6 +104,62 @@ public:
     void on_unsolvable() override { NB_OVERRIDE_PURE(on_unsolvable); }
     void on_exhausted() override { NB_OVERRIDE_PURE(on_exhausted); }
     const astar::Statistics& get_statistics() const override { NB_OVERRIDE_PURE(get_statistics); }
+};
+
+class IPyBrFSEventHandler : public brfs::IEventHandler
+{
+public:
+    NB_TRAMPOLINE(brfs::IEventHandler, 12);
+
+    /* Trampoline (need one for each virtual function) */
+    void on_expand_state(State state) override { NB_OVERRIDE_PURE(on_expand_state, state); }
+
+    void on_expand_goal_state(State state) override { NB_OVERRIDE_PURE(on_expand_goal_state, state); }
+
+    void on_generate_state(State state, GroundAction action, ContinuousCost action_cost, State successor_state) override
+    {
+        NB_OVERRIDE_PURE(on_generate_state, state, action, action_cost, successor_state);
+    }
+    void on_generate_state_in_search_tree(State state, GroundAction action, ContinuousCost action_cost, State successor_state) override
+    {
+        NB_OVERRIDE_PURE(on_generate_state_in_search_tree, state, action, action_cost, successor_state);
+    }
+    void on_generate_state_not_in_search_tree(State state, GroundAction action, ContinuousCost action_cost, State successor_state) override
+    {
+        NB_OVERRIDE_PURE(on_generate_state_not_in_search_tree, state, action, action_cost, successor_state);
+    }
+
+    void on_finish_g_layer() override { NB_OVERRIDE_PURE(on_finish_g_layer); }
+    void on_start_search(State start_state) override { NB_OVERRIDE_PURE(on_start_search, start_state); }
+    void on_end_search(uint64_t num_reached_fluent_atoms,
+                       uint64_t num_reached_derived_atoms,
+                       uint64_t num_bytes_for_unextended_state_portion,
+                       uint64_t num_bytes_for_extended_state_portion,
+                       uint64_t num_bytes_for_nodes,
+                       uint64_t num_bytes_for_actions,
+                       uint64_t num_bytes_for_axioms,
+                       uint64_t num_states,
+                       uint64_t num_nodes,
+                       uint64_t num_actions,
+                       uint64_t num_axioms) override
+    {
+        NB_OVERRIDE_PURE(on_end_search,
+                         num_reached_fluent_atoms,
+                         num_reached_derived_atoms,
+                         num_bytes_for_unextended_state_portion,
+                         num_bytes_for_extended_state_portion,
+                         num_bytes_for_nodes,
+                         num_bytes_for_actions,
+                         num_bytes_for_axioms,
+                         num_states,
+                         num_nodes,
+                         num_actions,
+                         num_axioms);
+    }
+    void on_solved(const Plan& plan) override { NB_OVERRIDE_PURE(on_solved, plan); }
+    void on_unsolvable() override { NB_OVERRIDE_PURE(on_unsolvable); }
+    void on_exhausted() override { NB_OVERRIDE_PURE(on_exhausted); }
+    const brfs::Statistics& get_statistics() const override { NB_OVERRIDE_PURE(get_statistics); }
 };
 
 void bind_search(nb::module_& m)
@@ -403,18 +484,35 @@ void bind_search(nb::module_& m)
         .def_rw("goal_state", &SearchResult::goal_state);
 
     // GoalStrategy
-    nb::class_<IGoalStrategy>(m, "GoalStrategy")
+    nb::class_<IGoalStrategy, IPyGoalStrategy>(m, "IGoalStrategy")
+        .def(nb::init<>())
         .def("test_static_goal", &IGoalStrategy::test_static_goal)
         .def("test_dynamic_goal", &IGoalStrategy::test_dynamic_goal, nb::arg("state"));
 
-    nb::class_<ProblemGoalStrategyImpl, IGoalStrategy>(m, "ProblemGoalStrategy")
-        .def(nb::init<formalism::Problem>(), nb::arg("problem"))
-        .def("test_static_goal", &ProblemGoalStrategyImpl::test_static_goal)
-        .def("test_dynamic_goal", &ProblemGoalStrategyImpl::test_dynamic_goal, nb::arg("state"))
+    nb::class_<ProblemGoalStrategyImpl, IGoalStrategy>(m, "ProblemGoalStrategy")  //
         .def_static("create", &ProblemGoalStrategyImpl::create, nb::arg("problem"));
+
+    // PruningStrategy
+    nb::class_<IPruningStrategy, IPyPruningStrategy>(m, "IPruningStrategy")
+        .def(nb::init<>())
+        .def("test_prune_initial_state", &IPruningStrategy::test_prune_initial_state)
+        .def("test_prune_successor_state", &IPruningStrategy::test_prune_successor_state);
+
+    nb::class_<NoPruningStrategyImpl, IPruningStrategy>(m, "NoPruningStrategy")  //
+        .def_static("create", &NoPruningStrategyImpl::create);
+
+    nb::class_<DuplicatePruningStrategyImpl, IPruningStrategy>(m, "DuplicatePruningStrategy")  //
+        .def_static("create", &DuplicatePruningStrategyImpl::create);
+
+    nb::class_<iw::ArityZeroNoveltyPruningStrategyImpl, IPruningStrategy>(m, "ArityZeroNoveltyPruningStrategy")  //
+        .def_static("create", &iw::ArityZeroNoveltyPruningStrategyImpl::create, nb::arg("initial_state"));
+
+    nb::class_<iw::ArityKNoveltyPruningStrategyImpl, IPruningStrategy>(m, "ArityKNoveltyPruningStrategy")  //
+        .def_static("create", &iw::ArityKNoveltyPruningStrategyImpl::create, nb::arg("arity"), nb::arg("num_atoms"));
 
     // AStar
     nb::class_<astar::Statistics>(m, "AStarStatistics")  //
+        .def(nb::init<>())
         .def("get_num_generated", &astar::Statistics::get_num_generated)
         .def("get_num_expanded", &astar::Statistics::get_num_expanded)
         .def("get_num_deadends", &astar::Statistics::get_num_deadends)
@@ -460,6 +558,7 @@ void bind_search(nb::module_& m)
 
     // BrFS
     nb::class_<brfs::Statistics>(m, "BrFSStatistics")  //
+        .def(nb::init<>())
         .def("get_num_generated", &brfs::Statistics::get_num_generated)
         .def("get_num_expanded", &brfs::Statistics::get_num_expanded)
         .def("get_num_deadends", &brfs::Statistics::get_num_deadends)
@@ -469,8 +568,21 @@ void bind_search(nb::module_& m)
         .def("get_num_deadends_until_g_value", &brfs::Statistics::get_num_deadends_until_g_value)
         .def("get_num_pruned_until_g_value", &brfs::Statistics::get_num_pruned_until_g_value);
 
-    nb::class_<brfs::IEventHandler>(m, "IBrFSEventHandler")  //
+    nb::class_<brfs::IEventHandler, IPyBrFSEventHandler>(m, "IBrFSEventHandler")  //
+        .def(nb::init<>())
+        .def("on_expand_state", &brfs::IEventHandler::on_expand_state)
+        .def("on_expand_goal_state", &brfs::IEventHandler::on_expand_goal_state)
+        .def("on_generate_state", &brfs::IEventHandler::on_generate_state)
+        .def("on_generate_state_in_search_tree", &brfs::IEventHandler::on_generate_state_in_search_tree)
+        .def("on_generate_state_not_in_search_tree", &brfs::IEventHandler::on_generate_state_not_in_search_tree)
+        .def("on_finish_g_layer", &brfs::IEventHandler::on_finish_g_layer)
+        .def("on_start_search", &brfs::IEventHandler::on_start_search)
+        .def("on_end_search", &brfs::IEventHandler::on_end_search)
+        .def("on_solved", &brfs::IEventHandler::on_solved)
+        .def("on_unsolvable", &brfs::IEventHandler::on_unsolvable)
+        .def("on_exhausted", &brfs::IEventHandler::on_exhausted)
         .def("get_statistics", &brfs::IEventHandler::get_statistics);
+
     nb::class_<brfs::DefaultEventHandlerImpl, brfs::IEventHandler>(m,
                                                                    "DefaultBrFSEventHandler")  //
         .def(nb::init<Problem, bool>(), nb::arg("problem"), nb::arg("quiet") = true);
@@ -489,6 +601,7 @@ void bind_search(nb::module_& m)
 
     // IW
     nb::class_<iw::TupleIndexMapper>(m, "TupleIndexMapper")  //
+        .def(nb::init<size_t, size_t>(), nb::arg("arity"), nb::arg("num_atoms"))
         .def("to_tuple_index", &iw::TupleIndexMapper::to_tuple_index, nb::arg("atom_indices"))
         .def(
             "to_atom_indices",
@@ -499,6 +612,7 @@ void bind_search(nb::module_& m)
                 return atom_indices;
             },
             nb::arg("tuple_index"))
+        .def("initialize", &iw::TupleIndexMapper::initialize, nb::arg("arity"), nb::arg("num_atoms"))
         .def("tuple_index_to_string", &iw::TupleIndexMapper::tuple_index_to_string, nb::arg("tuple_index"))
         .def("get_num_atoms", &iw::TupleIndexMapper::get_num_atoms)
         .def("get_arity", &iw::TupleIndexMapper::get_arity)
@@ -506,7 +620,34 @@ void bind_search(nb::module_& m)
         .def("get_max_tuple_index", &iw::TupleIndexMapper::get_max_tuple_index)
         .def("get_empty_tuple_index", &iw::TupleIndexMapper::get_empty_tuple_index);
 
+    nb::class_<iw::StateTupleIndexGenerator>(m, "StateTupleIndexGenerator")  //
+        .def(nb::init<const iw::TupleIndexMapper*>(), nb::arg("tuple_index_mapper"))
+        .def(
+            "__iter__",
+            [](iw::StateTupleIndexGenerator& self, State state)
+            {
+                return nb::make_iterator(nb::type<iw::StateTupleIndexGenerator>(),
+                                         "Iterator over atom tuples of size at most the arity as specified in the tuple index mapper.",
+                                         self.begin(state),
+                                         self.end());
+            },
+            nb::keep_alive<0, 1>());
+
+    nb::class_<iw::StatePairTupleIndexGenerator>(m, "StatePairTupleIndexGenerator")  //
+        .def(nb::init<const iw::TupleIndexMapper*>(), nb::arg("tuple_index_mapper"))
+        .def(
+            "__iter__",
+            [](iw::StatePairTupleIndexGenerator& self, State state, State succ_state)
+            {
+                return nb::make_iterator(nb::type<iw::StatePairTupleIndexGenerator>(),
+                                         "Iterator over atom tuples of size at most the arity as specified in the tuple index mapper.",
+                                         self.begin(state, succ_state),
+                                         self.end());
+            },
+            nb::keep_alive<0, 1>());
+
     nb::class_<iw::Statistics>(m, "IWStatistics")  //
+        .def(nb::init<>())
         .def("get_effective_width", &iw::Statistics::get_effective_width)
         .def("get_brfs_statistics_by_arity", &iw::Statistics::get_brfs_statistics_by_arity);
 
@@ -527,6 +668,7 @@ void bind_search(nb::module_& m)
 
     // SIW
     nb::class_<siw::Statistics>(m, "SIWStatistics")  //
+        .def(nb::init<>())
         .def("get_maximum_effective_width", &siw::Statistics::get_maximum_effective_width)
         .def("get_average_effective_width", &siw::Statistics::get_average_effective_width)
         .def("get_iw_statistics_by_subproblem", &siw::Statistics::get_iw_statistics_by_subproblem);

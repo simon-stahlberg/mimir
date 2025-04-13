@@ -141,6 +141,13 @@ class NoPruningStrategyImpl;
 using NoPruningStrategy = std::shared_ptr<NoPruningStrategyImpl>;
 class DuplicatePruningStrategyImpl;
 using DuplicatePruningStrategy = std::shared_ptr<DuplicatePruningStrategyImpl>;
+namespace iw
+{
+class ArityZeroNoveltyPruningStrategyImpl;
+using ArityZeroNoveltyPruningStrategy = std::shared_ptr<ArityZeroNoveltyPruningStrategyImpl>;
+class ArityKNoveltyPruningStrategyImpl;
+using ArityKNoveltyPruningStrategy = std::shared_ptr<ArityKNoveltyPruningStrategyImpl>;
+}
 
 class IGoalStrategy;
 using GoalStrategy = std::shared_ptr<IGoalStrategy>;

@@ -70,6 +70,9 @@
  */
 
 #include "mimir/search/algorithms.hpp"
+#include "mimir/search/algorithms/iw/novelty_table.hpp"
+#include "mimir/search/algorithms/iw/pruning_strategy.hpp"
+#include "mimir/search/algorithms/iw/tuple_index_mapper.hpp"
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 #include "mimir/search/algorithms/strategies/pruning_strategy.hpp"
 #include "mimir/search/applicable_action_generators.hpp"

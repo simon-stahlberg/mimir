@@ -36,6 +36,8 @@ class CustomEventHandler(search.IAStarEventHandler):
     def __init__(self):
         super().__init__()
 
+        self.statistics = search.AStarStatistics()
+
     def on_expand_state(self, state : search.State):
         pass
 
@@ -74,6 +76,9 @@ class CustomEventHandler(search.IAStarEventHandler):
 
     def on_exhausted(self):
         pass
+
+    def get_statistics(self):
+        return self.statistics
 
 def test_astar_search():
     """ Test parsing a PDDL domain and problem file.

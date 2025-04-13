@@ -33,8 +33,14 @@ from pymimir._pymimir.advanced.search import (
 
 # GoalStrategy
 from pymimir._pymimir.advanced.search import (
-    GoalStrategy,
-    ProblemGoalStrategy
+    IGoalStrategy,
+    ProblemGoalStrategy,
+
+    IPruningStrategy,
+    NoPruningStrategy,
+    DuplicatePruningStrategy,
+    ArityZeroNoveltyPruningStrategy,
+    ArityKNoveltyPruningStrategy,
 )
 
 # AStar
@@ -63,6 +69,8 @@ from pymimir._pymimir.advanced.search import (
     find_solution_iw,
 
     TupleIndexMapper,
+    StateTupleIndexGenerator,
+    StatePairTupleIndexGenerator,
 )
 
 # SIW
