@@ -41,17 +41,17 @@ graph = generalized_state_space.get_graph()
 # Iterate over vertices
 for vertex in graph.get_vertices():
     # Access vertex properties (Sorry for the generic names!)
-    vertex.get_index() # graph vertex index (int)
-    vertex.get_property_0() # class vertex index (int)
+    vertex.get_index()      # class vertex index (int)
+    vertex.get_property_0() # problem vertex index (int)
     vertex.get_property_1() # problem index (int)
 
 # Iterate over edges
 for edge in graph.get_edges():
     # Access edge properties (Sorry for the generic names!)
-    edge.get_index() # graph edge index (int)
-    edge.get_source() # graph source index (int)
-    edge.get_target() # graph target index (int)
-    edge.get_property_0() # class edge index (int)
+    edge.get_index()      # class edge index (int)
+    edge.get_source()     # class source vertex index (int)
+    edge.get_target()     # class target vertex index (int)
+    edge.get_property_0() # problem edge index (int)
     edge.get_property_1() # problem index (int)
 
 ### Iteration over adjacent structures, for the example of an initial state
@@ -87,14 +87,15 @@ for vertex in graph.get_vertices():
     # Map class vertex to problem vertex
     problem_vertex = generalized_state_space.get_problem_vertex(vertex)
 
-    state = problem_vertex.get_property_0() # state (State)
+    problem_vertex.get_index()                # vertex index
+    state = problem_vertex.get_property_0()   # state (State)
     problem = problem_vertex.get_property_1() # problem (Problem)
-    problem_vertex.get_property_2() # unit goal distance (int)
-    problem_vertex.get_property_3() # action goal distance (double)
-    problem_vertex.get_property_4() # is initial ? (bool)
-    problem_vertex.get_property_5() # is goal ? (bool)
-    problem_vertex.get_property_6() # is unsolvable ? (bool)
-    problem_vertex.get_property_7() # is alive (bool)
+    problem_vertex.get_property_2()           # unit goal distance (int)
+    problem_vertex.get_property_3()           # action goal distance (double)
+    problem_vertex.get_property_4()           # is initial ? (bool)
+    problem_vertex.get_property_5()           # is goal ? (bool)
+    problem_vertex.get_property_6()           # is unsolvable ? (bool)
+    problem_vertex.get_property_7()           # is alive (bool)
 
     print(state.to_string(problem))
 
@@ -102,8 +103,11 @@ for edge in graph.get_edges():
     # Map class edge to problem edge
     problem_edge = generalized_state_space.get_problem_edge(edge)
 
-    action = problem_edge.get_property_0() # action (GroundAction)
-    problem = problem_edge.get_property_1() # problem (Problem)
+    problem_edge.get_index()                    # edge index
+    problem_edge.get_source()                   # source vertex index
+    problem_edge.get_target()                   # target vertex index
+    action = problem_edge.get_property_0()      # action (GroundAction)
+    problem = problem_edge.get_property_1()     # problem (Problem)
     action_cost = problem_edge.get_property_2() # cost (double)
 
     print(action.to_string(problem))
