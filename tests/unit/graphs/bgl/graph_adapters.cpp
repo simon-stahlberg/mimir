@@ -33,9 +33,9 @@ TEST(MimirTests, GraphsVertexListGraphTest)
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
 
-    const auto state_space = datasets::StateSpaceImpl::create(
+    const auto state_space_result = datasets::StateSpaceImpl::create(
         search::SearchContextImpl::create(domain_file, problem_file, search::SearchContextImpl::Options(search::SearchContextImpl::SearchMode::GROUNDED)));
-    auto graph = graphs::DirectionTaggedType(state_space.value()->get_graph(), graphs::ForwardTag {});
+    auto graph = graphs::DirectionTaggedType(state_space_result->first->get_graph(), graphs::ForwardTag {});
 
     EXPECT_EQ(num_vertices(graph), 28);
 
@@ -52,9 +52,9 @@ TEST(MimirTests, GraphsIncidenceGraphTest)
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
 
-    const auto state_space = datasets::StateSpaceImpl::create(
+    const auto state_space_result = datasets::StateSpaceImpl::create(
         search::SearchContextImpl::create(domain_file, problem_file, search::SearchContextImpl::Options(search::SearchContextImpl::SearchMode::GROUNDED)));
-    const auto& graph = state_space.value()->get_graph();
+    const auto& graph = state_space_result->first->get_graph();
     auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::ForwardTag {});
 
     size_t transition_count = 0;

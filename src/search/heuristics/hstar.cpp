@@ -35,7 +35,7 @@ HStarHeuristicImpl::HStarHeuristicImpl(const SearchContext& context) : m_estimat
     auto state_space = datasets::StateSpaceImpl::create(context, state_space_options);
     assert(state_space);
 
-    for (const auto& v : state_space.value()->get_graph().get_vertices())
+    for (const auto& v : state_space->first->get_graph().get_vertices())
     {
         m_estimates.emplace(graphs::get_state(v), graphs::get_action_goal_distance(v));
     }

@@ -42,11 +42,11 @@ TEST(MimirTests, DataSetsObjectGraphSparseTest)
     auto options = state_space::Options();
     options.symmetry_pruning = false;
     const auto context = search::SearchContextImpl::create(domain_file, problem_file);
-    const auto state_space = StateSpaceImpl::create(context, options);
+    const auto state_space_result = StateSpaceImpl::create(context, options);
 
     auto certificates = UnorderedSet<nauty::SparseGraph> {};
 
-    for (const auto& vertex : state_space.value()->get_graph().get_vertices())
+    for (const auto& vertex : state_space_result->first->get_graph().get_vertices())
     {
         certificates.insert(nauty::SparseGraph(create_object_graph(get_state(vertex), *get_problem(vertex))).canonize());
     }

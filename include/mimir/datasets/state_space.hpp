@@ -67,9 +67,10 @@ public:
     /// @param context is the `search::SearchContext`.
     /// @param options are the `Options`
     /// @return the `StateSpace` if successfully created from the given `Options` and otherwise `std::nullopt`.
-    static std::optional<StateSpace> create(search::SearchContext context, const Options& options = Options());
+    static std::optional<std::pair<StateSpace, std::optional<CertificateMaps>>> create(search::SearchContext context, const Options& options = Options());
 
-    static StateSpaceList create(search::GeneralizedSearchContext contexts, const Options& options = Options());
+    static std::vector<std::pair<StateSpace, std::optional<CertificateMaps>>> create(search::GeneralizedSearchContext contexts,
+                                                                                     const Options& options = Options());
 
     /**
      * Getters

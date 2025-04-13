@@ -88,13 +88,12 @@ for vertex in graph.get_vertices():
 
     state = problem_vertex.get_property_0() # state (State)
     problem = problem_vertex.get_property_1() # problem (Problem)
-    # problem_vertex.get_property_2() # certificate (optional<nauty::Certificate>)
-    problem_vertex.get_property_3() # unit goal distance (int)
-    problem_vertex.get_property_4() # action goal distance (double)
-    problem_vertex.get_property_5() # is initial ? (bool)
-    problem_vertex.get_property_6() # is goal ? (bool)
-    problem_vertex.get_property_7() # is unsolvable ? (bool)
-    problem_vertex.get_property_8() # is alive (bool)
+    problem_vertex.get_property_2() # unit goal distance (int)
+    problem_vertex.get_property_3() # action goal distance (double)
+    problem_vertex.get_property_4() # is initial ? (bool)
+    problem_vertex.get_property_5() # is goal ? (bool)
+    problem_vertex.get_property_6() # is unsolvable ? (bool)
+    problem_vertex.get_property_7() # is alive (bool)
 
     problem = generalized_state_space.get_problem(vertex)
 

@@ -78,7 +78,8 @@ namespace mimir::datasets
  * GeneralizedStateSpaceImpl
  */
 
-static GeneralizedStateSpace compute_generalized_state_space_with_symmetry_reduction(StateSpaceList state_spaces)
+static std::pair<GeneralizedStateSpace, CertificateMapsList>
+compute_generalized_state_space_with_symmetry_reduction(const std::vector<std::pair<StateSpace, std::optional<CertificateMaps>>>& state_spaces)
 {
     /* Step 2: Compute the `ClassGraph` by looping through the `StaticProblemGraphs`.
         Meanwhile, translate each `StaticProblemGraph` into a `ProblemGraph` that maps to the `ClassVertices` and `ClassEdges`
@@ -100,12 +101,17 @@ static GeneralizedStateSpace compute_generalized_state_space_with_symmetry_reduc
     auto class_e_idxs = std::unordered_map<EdgePair, graphs::EdgeIndex, loki::Hash<EdgePair>, loki::EqualTo<EdgePair>> {};
 
     auto final_state_spaces = StateSpaceList {};
+    auto final_certificate_maps = CertificateMapsList {};
 
-    for (const auto& state_space : state_spaces)
+    for (const auto& [state_space, certificate_maps] : state_spaces)
     {
+        assert(certificate_maps.has_value());
+
         const auto& graph = state_space->get_graph();
 
-        if (certificate_to_class_v_idx.contains(graphs::get_certificate(graph.get_vertex(0))))
+        const auto& initial_state_certificate = certificate_maps->state_to_cert.at(graphs::get_state(graph.get_vertex(0)));
+
+        if (certificate_to_class_v_idx.contains(initial_state_certificate))
         {
             continue;  ///< StateSpace is isomorphic to a previous one.
         }
@@ -120,7 +126,7 @@ static GeneralizedStateSpace compute_generalized_state_space_with_symmetry_reduc
         {
             const auto v_idx = v.get_index();
 
-            const auto& certificate = graphs::get_certificate(v);
+            const auto& certificate = certificate_maps->state_to_cert.at(graphs::get_state(v));
 
             auto it = certificate_to_class_v_idx.find(certificate);
 
@@ -192,20 +198,23 @@ static GeneralizedStateSpace compute_generalized_state_space_with_symmetry_reduc
         }
 
         final_state_spaces.push_back(state_space);
+        final_certificate_maps.push_back(certificate_maps.value());
 
         ++state_space_idx;
     }
 
-    return std::make_shared<GeneralizedStateSpaceImpl>(std::move(final_state_spaces),
-                                                       graphs::ClassGraph(std::move(class_graph)),
-                                                       std::move(initial_vertices),
-                                                       std::move(goal_vertices),
-                                                       std::move(unsolvable_vertices),
-                                                       std::move(vertex_mappings),
-                                                       std::move(edge_mappings));
+    return { std::make_shared<GeneralizedStateSpaceImpl>(std::move(final_state_spaces),
+                                                         graphs::ClassGraph(std::move(class_graph)),
+                                                         std::move(initial_vertices),
+                                                         std::move(goal_vertices),
+                                                         std::move(unsolvable_vertices),
+                                                         std::move(vertex_mappings),
+                                                         std::move(edge_mappings)),
+             final_certificate_maps };
 }
 
-static GeneralizedStateSpace compute_generalized_state_space_without_symmetry_reduction(StateSpaceList state_spaces)
+static GeneralizedStateSpace
+compute_generalized_state_space_without_symmetry_reduction(const std::vector<std::pair<StateSpace, std::optional<CertificateMaps>>>& state_space_results)
 {
     /* Step 2: Compute the `ClassGraph` by looping through the `StaticProblemGraphs`.
         Meanwhile, translate each `StaticProblemGraph` into a `ProblemGraph` that maps to the `ClassVertices` and `ClassEdges`
@@ -221,8 +230,9 @@ static GeneralizedStateSpace compute_generalized_state_space_without_symmetry_re
     auto edge_mappings = std::unordered_map<const ProblemImpl*, graphs::EdgeIndexList> {};
 
     auto state_space_idx = Index(0);
+    auto state_spaces = StateSpaceList {};
 
-    for (const auto& state_space : state_spaces)
+    for (const auto& [state_space, certificate_maps] : state_space_results)
     {
         const auto& graph = state_space->get_graph();
 
@@ -259,6 +269,7 @@ static GeneralizedStateSpace compute_generalized_state_space_without_symmetry_re
         }
 
         ++state_space_idx;
+        state_spaces.push_back(state_space);
     }
 
     return std::make_shared<GeneralizedStateSpaceImpl>(std::move(state_spaces),
@@ -287,10 +298,19 @@ GeneralizedStateSpaceImpl::GeneralizedStateSpaceImpl(StateSpaceList state_spaces
 {
 }
 
-GeneralizedStateSpace GeneralizedStateSpaceImpl::create(StateSpaceList state_spaces, const Options& options)
+std::pair<GeneralizedStateSpace, std::optional<std::vector<CertificateMaps>>>
+GeneralizedStateSpaceImpl::create(const std::vector<std::pair<StateSpace, std::optional<CertificateMaps>>>& state_spaces, const Options& options)
 {
-    return (options.symmetry_pruning) ? compute_generalized_state_space_with_symmetry_reduction(state_spaces) :
-                                        compute_generalized_state_space_without_symmetry_reduction(state_spaces);
+    if (options.symmetry_pruning)
+    {
+        auto result = compute_generalized_state_space_with_symmetry_reduction(state_spaces);
+
+        return std::make_pair(std::move(result.first), std::make_optional(std::move(result.second)));
+    }
+    else
+    {
+        return { compute_generalized_state_space_without_symmetry_reduction(state_spaces), std::nullopt };
+    }
 }
 
 const StateSpaceList& GeneralizedStateSpaceImpl::get_state_spaces() const { return m_state_spaces; }

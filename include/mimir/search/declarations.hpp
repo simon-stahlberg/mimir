@@ -86,7 +86,7 @@ using DefaultEventHandler = std::shared_ptr<DefaultEventHandlerImpl>;
 
 namespace applicable_action_generator::lifted
 {
-struct Statistics;
+class Statistics;
 class IEventHandler;
 using EventHandler = std::shared_ptr<IEventHandler>;
 class DebugEventHandlerImpl;
@@ -116,7 +116,7 @@ using DefaultEventHandler = std::shared_ptr<DefaultEventHandlerImpl>;
 
 namespace axiom_evaluator::lifted
 {
-struct Statistics;
+class Statistics;
 class IEventHandler;
 using EventHandler = std::shared_ptr<IEventHandler>;
 class DebugEventHandlerImpl;

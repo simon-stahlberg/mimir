@@ -34,9 +34,9 @@ TEST(MimirTests, GraphsDijkstraShortestPathTest)
         const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
 
-        const auto state_space = datasets::StateSpaceImpl::create(
+        const auto state_space_result = datasets::StateSpaceImpl::create(
             search::SearchContextImpl::create(domain_file, problem_file, search::SearchContextImpl::Options(search::SearchContextImpl::SearchMode::GROUNDED)));
-        const auto& graph = state_space.value()->get_graph();
+        const auto& graph = state_space_result->first->get_graph();
         auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::ForwardTag {});
 
         const auto edge_costs = std::vector<double>(graph.get_num_edges(), 1);
@@ -44,7 +44,7 @@ TEST(MimirTests, GraphsDijkstraShortestPathTest)
         const auto [predecessor_map, distance_map] = graphs::bgl::dijkstra_shortest_paths(tagged_graph, edge_costs, states.begin(), states.end());
 
         EXPECT_EQ(distance_map.at(0), 0);
-        for (const auto& goal_state : state_space.value()->get_goal_vertices())
+        for (const auto& goal_state : state_space_result->first->get_goal_vertices())
         {
             EXPECT_GT(distance_map.at(goal_state), 0);
         }
@@ -55,16 +55,16 @@ TEST(MimirTests, GraphsDijkstraShortestPathTest)
         const auto domain_file = fs::path(std::string(DATA_DIR) + "spanner/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "spanner/test_problem.pddl");
 
-        const auto state_space = datasets::StateSpaceImpl::create(
+        const auto state_space_result = datasets::StateSpaceImpl::create(
             search::SearchContextImpl::create(domain_file, problem_file, search::SearchContextImpl::Options(search::SearchContextImpl::SearchMode::GROUNDED)));
-        const auto& graph = state_space.value()->get_graph();
+        const auto& graph = state_space_result->first->get_graph();
         auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::BackwardTag {});
 
         const auto edge_costs = std::vector<double>(graph.get_num_edges(), 1);
         const auto [predecessor_map, distance_map] = graphs::bgl::dijkstra_shortest_paths(tagged_graph,
                                                                                           edge_costs,
-                                                                                          state_space.value()->get_goal_vertices().begin(),
-                                                                                          state_space.value()->get_goal_vertices().end());
+                                                                                          state_space_result->first->get_goal_vertices().begin(),
+                                                                                          state_space_result->first->get_goal_vertices().end());
 
         EXPECT_EQ(distance_map.at(0), 4);
         // There is one deadend state.
@@ -78,16 +78,16 @@ TEST(MimirTests, GraphsFloydWarshallAllPairsShortestPathTest)
         const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
 
-        const auto state_space = datasets::StateSpaceImpl::create(
+        const auto state_space_result = datasets::StateSpaceImpl::create(
             search::SearchContextImpl::create(domain_file, problem_file, search::SearchContextImpl::Options(search::SearchContextImpl::SearchMode::GROUNDED)));
-        const auto& graph = state_space.value()->get_graph();
+        const auto& graph = state_space_result->first->get_graph();
         auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::ForwardTag {});
 
         const auto edge_costs = std::vector<double>(graph.get_num_edges(), 1);
         const auto distance_matrix = graphs::bgl::floyd_warshall_all_pairs_shortest_paths(tagged_graph, edge_costs);
 
         auto min_goal_distance = std::numeric_limits<ContinuousCost>::infinity();
-        for (const auto& goal_state : state_space.value()->get_goal_vertices())
+        for (const auto& goal_state : state_space_result->first->get_goal_vertices())
         {
             min_goal_distance = std::min(min_goal_distance, distance_matrix[goal_state][0]);
         }
@@ -108,16 +108,16 @@ TEST(MimirTests, GraphsFloydWarshallAllPairsShortestPathTest)
         const auto domain_file = fs::path(std::string(DATA_DIR) + "spanner/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "spanner/test_problem.pddl");
 
-        const auto state_space = datasets::StateSpaceImpl::create(
+        const auto state_space_result = datasets::StateSpaceImpl::create(
             search::SearchContextImpl::create(domain_file, problem_file, search::SearchContextImpl::Options(search::SearchContextImpl::SearchMode::GROUNDED)));
-        const auto& graph = state_space.value()->get_graph();
+        const auto& graph = state_space_result->first->get_graph();
         auto tagged_graph = graphs::DirectionTaggedType(graph, graphs::BackwardTag {});
 
         const auto edge_costs = ContinuousCostList(graph.get_num_edges(), 1);
         const auto distance_matrix = graphs::bgl::floyd_warshall_all_pairs_shortest_paths(tagged_graph, edge_costs);
 
         auto min_goal_distance = std::numeric_limits<ContinuousCost>::infinity();
-        for (const auto& goal_state : state_space.value()->get_goal_vertices())
+        for (const auto& goal_state : state_space_result->first->get_goal_vertices())
         {
             min_goal_distance = std::min(min_goal_distance, distance_matrix[goal_state][0]);
         }

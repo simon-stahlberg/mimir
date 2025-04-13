@@ -44,25 +44,44 @@ KnowledgeBaseImpl::KnowledgeBaseImpl(formalism::Domain domain,
 
 KnowledgeBase KnowledgeBaseImpl::create(search::GeneralizedSearchContext contexts, const Options& options)
 {
-    auto state_spaces = StateSpaceImpl::create(contexts, options.state_space_options);
+    auto state_spaces_result = StateSpaceImpl::create(contexts, options.state_space_options);
 
-    auto generalized_state_space = std::optional<GeneralizedStateSpace> { std::nullopt };
+    auto generalized_state_space_result = std::optional<std::pair<GeneralizedStateSpace, std::optional<CertificateMapsList>>> { std::nullopt };
     if (options.generalized_state_space_options)
     {
-        generalized_state_space = GeneralizedStateSpaceImpl::create(state_spaces, options.generalized_state_space_options.value());
+        generalized_state_space_result = GeneralizedStateSpaceImpl::create(state_spaces_result, options.generalized_state_space_options.value());
 
-        state_spaces = generalized_state_space.value()->get_state_spaces();  ///< update state spaces after potential symmetry pruning
+        state_spaces_result.clear();
+        for (size_t i = 0; i < generalized_state_space_result.value().first->get_state_spaces().size(); ++i)
+        {
+            state_spaces_result.emplace_back(generalized_state_space_result.value().first->get_state_spaces().at(i),
+                                             generalized_state_space_result.value().second ? generalized_state_space_result.value().second->at(i) :
+                                                                                             std::optional<CertificateMaps>());
+        }
     }
 
     auto tuple_graphs = std::optional<std::vector<TupleGraphList>> { std::nullopt };
     if (options.tuple_graph_options)
     {
         auto tmp_tuple_graphs = std::vector<TupleGraphList> {};
-        for (const auto& state_space : state_spaces)
+        for (auto& [state_space, certificate_maps] : state_spaces_result)
         {
-            tmp_tuple_graphs.push_back(TupleGraphImpl::create(state_space, options.tuple_graph_options.value()));
+            tmp_tuple_graphs.push_back(TupleGraphImpl::create(state_space, certificate_maps, options.tuple_graph_options.value()));
         }
         tuple_graphs = std::move(tmp_tuple_graphs);
+    }
+
+    /* Create final results */
+    auto state_spaces = StateSpaceList {};
+    for (const auto& [state_space, certificate_maps] : state_spaces_result)
+    {
+        state_spaces.push_back(state_space);
+    }
+
+    auto generalized_state_space = std::optional<GeneralizedStateSpace> {};
+    if (generalized_state_space_result)
+    {
+        generalized_state_space = generalized_state_space_result->first;
     }
 
     return std::make_shared<KnowledgeBaseImpl>(contexts->get_domain(), std::move(state_spaces), std::move(generalized_state_space), std::move(tuple_graphs));

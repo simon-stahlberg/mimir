@@ -49,13 +49,14 @@ void bind_datasets(nb::module_& m)
     nb::class_<StateSpaceImpl>(m, "StateSpace")
         .def_static(
             "create",
-            [](search::SearchContext context, const StateSpaceImpl::Options& options) -> std::optional<StateSpace>
+            [](search::SearchContext context, const StateSpaceImpl::Options& options) -> std::optional<std::pair<StateSpace, std::optional<CertificateMaps>>>
             { return StateSpaceImpl::create(context, options); },
             "context"_a,
             "options"_a = StateSpaceImpl::Options())
         .def_static(
             "create",
-            [](search::GeneralizedSearchContext contexts, const StateSpaceImpl::Options& options) -> StateSpaceList
+            [](search::GeneralizedSearchContext contexts,
+               const StateSpaceImpl::Options& options) -> std::vector<std::pair<StateSpace, std::optional<CertificateMaps>>>
             { return StateSpaceImpl::create(contexts, options); },
             "contexts"_a,
             "options"_a = StateSpaceImpl::Options())

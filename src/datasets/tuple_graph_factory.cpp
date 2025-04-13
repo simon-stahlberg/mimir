@@ -36,6 +36,7 @@ class TupleGraphArityZeroComputation
 private:
     const graphs::ProblemVertex& m_problem_vertex;
     const StateSpace& m_state_space;
+    std::optional<CertificateMaps>& m_certificate_maps;
 
     graphs::StaticTupleGraph m_internal_tuple_graph;
     IndexGroupedVectorBuilder<const Index> m_v_idxs_grouped_by_distance;
@@ -53,7 +54,7 @@ private:
         m_v_idxs_grouped_by_distance.add_group_element(m_root_v_idx);
     }
 
-    void compute_distance_one_vertices()
+    void compute_distance_one_vertices_without_symmetry_reduction()
     {
         m_v_idxs_grouped_by_distance.start_group();
         m_problem_v_idxs_grouped_by_distance.start_group();
@@ -73,10 +74,52 @@ private:
         }
     }
 
+    void compute_distance_one_vertices_with_symmetry_reduction()
+    {
+        m_v_idxs_grouped_by_distance.start_group();
+        m_problem_v_idxs_grouped_by_distance.start_group();
+
+        const auto root_state = graphs::get_state(m_problem_vertex);
+        auto& applicable_action_generator = *m_state_space->get_search_context()->get_applicable_action_generator();
+        auto& state_repository = *m_state_space->get_search_context()->get_state_repository();
+        const auto& problem = *m_state_space->get_search_context()->get_problem();
+
+        auto novel_problem_v_idxs = graphs::VertexIndexSet {};
+        novel_problem_v_idxs.insert(m_problem_vertex.get_index());
+
+        for (const auto& action : applicable_action_generator.create_applicable_action_generator(root_state))
+        {
+            const auto [successor_state, successor_state_metric] =
+                state_repository.get_or_create_successor_state(root_state, action, compute_state_metric_value(root_state, problem));
+
+            if (!m_certificate_maps->state_to_cert.contains(successor_state))
+            {
+                m_certificate_maps->state_to_cert.emplace(successor_state,
+                                                          graphs::nauty::SparseGraph(create_object_graph(successor_state, problem)).canonize());
+            }
+
+            const auto problem_v_idx = m_certificate_maps->cert_to_v_idx.at(m_certificate_maps->state_to_cert.at(successor_state));
+
+            if (!novel_problem_v_idxs.contains(problem_v_idx))
+            {
+                novel_problem_v_idxs.insert(problem_v_idx);
+
+                const auto v_idx = m_internal_tuple_graph.add_vertex(search::iw::AtomIndexList {}, IndexList { problem_v_idx });
+                m_internal_tuple_graph.add_directed_edge(m_root_v_idx, v_idx);
+
+                m_v_idxs_grouped_by_distance.add_group_element(v_idx);
+                m_problem_v_idxs_grouped_by_distance.add_group_element(problem_v_idx);
+            }
+        }
+    }
+
 public:
-    TupleGraphArityZeroComputation(const graphs::ProblemVertex& problem_vertex, const StateSpace& state_space) :
+    TupleGraphArityZeroComputation(const graphs::ProblemVertex& problem_vertex,
+                                   const StateSpace& state_space,
+                                   std::optional<CertificateMaps>& certificate_maps) :
         m_problem_vertex(problem_vertex),
         m_state_space(state_space),
+        m_certificate_maps(certificate_maps),
         m_internal_tuple_graph(),
         m_v_idxs_grouped_by_distance(),
         m_problem_v_idxs_grouped_by_distance()
@@ -87,7 +130,7 @@ public:
     {
         compute_distance_zero_vertices();
 
-        compute_distance_one_vertices();
+        (m_certificate_maps) ? compute_distance_one_vertices_with_symmetry_reduction() : compute_distance_one_vertices_without_symmetry_reduction();
 
         return std::make_shared<TupleGraphImpl>(m_state_space,
                                                 graphs::InternalTupleGraph(std::move(m_internal_tuple_graph)),
@@ -96,9 +139,10 @@ public:
     }
 };
 
-static TupleGraph create_tuple_graph_width_zero(const graphs::ProblemVertex& problem_vertex, const StateSpace& state_space)
+static TupleGraph
+create_tuple_graph_width_zero(const graphs::ProblemVertex& problem_vertex, const StateSpace& state_space, std::optional<CertificateMaps>& certificate_maps)
 {
-    return TupleGraphArityZeroComputation(problem_vertex, state_space).compute_and_get_result();
+    return TupleGraphArityZeroComputation(problem_vertex, state_space, certificate_maps).compute_and_get_result();
 }
 
 class TupleGraphArityGreaterZeroComputation
@@ -106,8 +150,7 @@ class TupleGraphArityGreaterZeroComputation
 private:
     const graphs::ProblemVertex& m_problem_vertex;
     const StateSpace& m_state_space;
-    const CertificateMap<graphs::VertexIndex>& m_certificate_to_v_idx;
-    ToCertificateMap<search::State>& m_state_to_certificate;
+    std::optional<CertificateMaps>& m_certificate_maps;
     const TupleGraphImpl::Options& m_options;
 
     graphs::StaticTupleGraph m_internal_tuple_graph;
@@ -240,8 +283,7 @@ private:
         }
 
         {
-            (m_state_space->is_symmetry_reduced()) ? compute_next_novel_tuple_indices_with_symmetry_reduction() :
-                                                     compute_next_novel_tuple_indices_without_symmetry_reduction();
+            (m_certificate_maps) ? compute_next_novel_tuple_indices_with_symmetry_reduction() : compute_next_novel_tuple_indices_without_symmetry_reduction();
 
             if (m_novel_t_idxs_set.empty())
             {
@@ -335,12 +377,12 @@ private:
             m_novelty_table.compute_novel_tuples(state, m_novel_tuples_vec);
 
             /* Map state to representative vertex. */
-            if (!m_state_to_certificate.contains(state))
+            if (!m_certificate_maps->state_to_cert.contains(state))
             {
-                m_state_to_certificate.emplace(state, graphs::nauty::SparseGraph(create_object_graph(state, problem)).canonize());
+                m_certificate_maps->state_to_cert.emplace(state, graphs::nauty::SparseGraph(create_object_graph(state, problem)).canonize());
             }
 
-            const auto problem_v_idx = m_certificate_to_v_idx.at(m_state_to_certificate.at(state));
+            const auto problem_v_idx = m_certificate_maps->cert_to_v_idx.at(m_certificate_maps->state_to_cert.at(state));
 
             /* Map novel tuples between representative vertex. */
             for (const auto& novel_tuple : m_novel_tuples_vec)
@@ -495,13 +537,11 @@ private:
 public:
     TupleGraphArityGreaterZeroComputation(const graphs::ProblemVertex& problem_vertex,
                                           const StateSpace& state_space,
-                                          const CertificateMap<graphs::VertexIndex>& certificate_to_v_idx,
-                                          ToCertificateMap<search::State>& state_to_certificate,
+                                          std::optional<CertificateMaps>& certificate_maps,
                                           const TupleGraphImpl::Options& options) :
         m_problem_vertex(problem_vertex),
         m_state_space(state_space),
-        m_certificate_to_v_idx(certificate_to_v_idx),
-        m_state_to_certificate(state_to_certificate),
+        m_certificate_maps(certificate_maps),
         m_options(options),
         m_internal_tuple_graph(),
         m_v_idxs_grouped_by_distance(),
@@ -546,20 +586,18 @@ public:
 
 static TupleGraph create_tuple_graph_width_greater_zero(const graphs::ProblemVertex& problem_vertex,
                                                         const StateSpace& state_space,
-                                                        const CertificateMap<graphs::VertexIndex>& certificate_to_v_idx,
-                                                        ToCertificateMap<search::State>& state_to_certificate,
+                                                        std::optional<CertificateMaps>& certificate_maps,
                                                         const TupleGraphImpl::Options& options)
 {
-    return TupleGraphArityGreaterZeroComputation(problem_vertex, state_space, certificate_to_v_idx, state_to_certificate, options).compute_and_get_result();
+    return TupleGraphArityGreaterZeroComputation(problem_vertex, state_space, certificate_maps, options).compute_and_get_result();
 }
 
 TupleGraph create_tuple_graph(const graphs::ProblemVertex& problem_vertex,
                               const StateSpace& state_space,
-                              const CertificateMap<graphs::VertexIndex>& certificate_to_v_idx,
-                              ToCertificateMap<search::State>& state_to_certificate,
+                              std::optional<CertificateMaps>& certificate_maps,
                               const TupleGraphImpl::Options& options)
 {
-    return (options.width == 0) ? create_tuple_graph_width_zero(problem_vertex, state_space) :
-                                  create_tuple_graph_width_greater_zero(problem_vertex, state_space, certificate_to_v_idx, state_to_certificate, options);
+    return (options.width == 0) ? create_tuple_graph_width_zero(problem_vertex, state_space, certificate_maps) :
+                                  create_tuple_graph_width_greater_zero(problem_vertex, state_space, certificate_maps, options);
 }
 }

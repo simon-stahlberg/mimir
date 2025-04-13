@@ -92,12 +92,11 @@ namespace mimir::datasets
 
 struct SymmetriesData
 {
-    CertificateMap<search::State> class_representative;
-    ToCertificateMap<search::State> state_to_certificate;
+    CertificateMaps certificate_maps;
     StateSet prunable_states;
     UnorderedSet<std::pair<graphs::VertexIndex, graphs::VertexIndex>> m_edges;
 
-    SymmetriesData() : class_representative(), state_to_certificate(), prunable_states() {}
+    SymmetriesData() : certificate_maps(), prunable_states() {}
 };
 
 /// @brief `SymmetryStatePruning` extends the brfs pruning strategy by additionally pruning symmetric states.
@@ -139,9 +138,9 @@ private:
     {
         const auto source_v_idx = m_state_to_vertex_index.at(state);
 
-        auto tmp_certificate = compute_canonical_graph(successor_state);
-        auto it = m_symm_data.class_representative.find(tmp_certificate);
-        const auto is_symmetric = (it != m_symm_data.class_representative.end());
+        auto certificate = compute_canonical_graph(successor_state);
+        auto it = m_symm_data.certificate_maps.cert_to_v_idx.find(certificate);
+        const auto is_symmetric = (it != m_symm_data.certificate_maps.cert_to_v_idx.end());
 
         if (is_symmetric)
         {
@@ -149,7 +148,7 @@ private:
 
             /* Always add novel edges between symmetric states. */
 
-            const auto target_v_idx = m_state_to_vertex_index.at(it->second);
+            const auto target_v_idx = it->second;
             if (m_symm_data.m_edges.emplace(source_v_idx, target_v_idx).second)  ///< avoid adding parallel edges
             {
                 m_graph.add_directed_edge(source_v_idx, target_v_idx, action, m_problem, action_cost);
@@ -164,12 +163,10 @@ private:
 
             assert(m_graph.get_num_vertices() == m_state_to_vertex_index.size());
 
-            const auto target_v_idx =
-                m_graph.add_vertex(successor_state, m_problem, std::move(tmp_certificate), DiscreteCost(0), ContinuousCost(0), false, false, false, false);
-            const auto certificate = graphs::get_certificate(m_graph.get_vertex(target_v_idx));
+            const auto target_v_idx = m_graph.add_vertex(successor_state, m_problem, DiscreteCost(0), ContinuousCost(0), false, false, false, false);
 
-            m_symm_data.state_to_certificate.emplace(successor_state, certificate);
-            m_symm_data.class_representative.emplace(certificate, successor_state);
+            m_symm_data.certificate_maps.state_to_cert.emplace(successor_state, certificate);
+            m_symm_data.certificate_maps.cert_to_v_idx.emplace(certificate, target_v_idx);
 
             m_state_to_vertex_index.emplace(successor_state, target_v_idx);
             m_graph.add_directed_edge(source_v_idx, target_v_idx, action, m_problem, action_cost);
@@ -184,13 +181,12 @@ private:
 
     void on_start_search_impl(State start_state)
     {
-        const auto v_idx =
-            m_graph.add_vertex(start_state, m_problem, compute_canonical_graph(start_state), DiscreteCost(0), ContinuousCost(0), false, false, false, false);
+        const auto v_idx = m_graph.add_vertex(start_state, m_problem, DiscreteCost(0), ContinuousCost(0), false, false, false, false);
         m_state_to_vertex_index.emplace(start_state, v_idx);
 
-        const auto certificate = graphs::get_certificate(m_graph.get_vertex(v_idx));
-        m_symm_data.class_representative.emplace(certificate, start_state);
-        m_symm_data.state_to_certificate.emplace(start_state, certificate);
+        const auto certificate = compute_canonical_graph(start_state);
+        m_symm_data.certificate_maps.state_to_cert.emplace(start_state, certificate);
+        m_symm_data.certificate_maps.cert_to_v_idx.emplace(certificate, v_idx);
     }
 
     void on_end_search_impl(uint64_t num_reached_fluent_atoms,
@@ -252,10 +248,9 @@ private:
     void on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state)
     {
         const auto source_vertex_index = m_state_to_vertex_index.at(state);
-        const auto target_vertex_index =
-            m_state_to_vertex_index.contains(successor_state) ?
-                m_state_to_vertex_index.at(successor_state) :
-                m_graph.add_vertex(successor_state, m_problem, nauty::SparseGraph(), DiscreteCost(0), ContinuousCost(0), false, false, false, false);
+        const auto target_vertex_index = m_state_to_vertex_index.contains(successor_state) ?
+                                             m_state_to_vertex_index.at(successor_state) :
+                                             m_graph.add_vertex(successor_state, m_problem, DiscreteCost(0), ContinuousCost(0), false, false, false, false);
         m_state_to_vertex_index.emplace(successor_state, target_vertex_index);
         m_graph.add_directed_edge(source_vertex_index, target_vertex_index, action, m_problem, action_cost);
     }
@@ -268,7 +263,7 @@ private:
 
     void on_start_search_impl(State start_state)
     {
-        const auto v_idx = m_graph.add_vertex(start_state, m_problem, nauty::SparseGraph(), DiscreteCost(0), ContinuousCost(0), false, false, false, false);
+        const auto v_idx = m_graph.add_vertex(start_state, m_problem, DiscreteCost(0), ContinuousCost(0), false, false, false, false);
         m_state_to_vertex_index.emplace(start_state, v_idx);
     }
 
@@ -361,15 +356,8 @@ perform_reachability_analysis(SearchContext context, graphs::StaticProblemGraph 
         const auto is_unsolvable = unsolvable_vertices.contains(problem_v_idx);
         const auto is_alive = (!(is_goal || is_unsolvable));
 
-        final_graph.add_vertex(graphs::get_state(v),
-                               graphs::get_problem(v),
-                               graphs::get_certificate(v),
-                               unit_goal_distance,
-                               action_goal_distance,
-                               is_initial,
-                               is_goal,
-                               is_unsolvable,
-                               is_alive);
+        final_graph
+            .add_vertex(graphs::get_state(v), graphs::get_problem(v), unit_goal_distance, action_goal_distance, is_initial, is_goal, is_unsolvable, is_alive);
     }
     for (const auto& e : bidir_graph.get_edges())
     {
@@ -384,7 +372,8 @@ perform_reachability_analysis(SearchContext context, graphs::StaticProblemGraph 
                                             std::move(unsolvable_vertices));
 }
 
-static std::optional<StateSpace> compute_problem_graph_with_symmetry_reduction(const SearchContext& context, const StateSpaceImpl::Options& options)
+static std::optional<std::pair<StateSpace, CertificateMaps>> compute_problem_graph_with_symmetry_reduction(const SearchContext& context,
+                                                                                                           const StateSpaceImpl::Options& options)
 {
     auto graph = graphs::StaticProblemGraph();
     auto goal_vertices = IndexSet {};
@@ -404,7 +393,14 @@ static std::optional<StateSpace> compute_problem_graph_with_symmetry_reduction(c
         return std::nullopt;  ///< ran out of resources.
     }
 
-    return perform_reachability_analysis(context, std::move(graph), std::move(goal_vertices), options);
+    auto state_space = perform_reachability_analysis(context, std::move(graph), std::move(goal_vertices), options);
+
+    if (!state_space)
+    {
+        return std::nullopt;
+    }
+
+    return std::make_pair(state_space.value(), std::move(symm_data.certificate_maps));
 }
 
 static std::optional<StateSpace> compute_problem_graph_without_symmetry_reduction(const SearchContext& context, const StateSpaceImpl::Options& options)
@@ -442,15 +438,29 @@ StateSpaceImpl::StateSpaceImpl(bool is_symmetry_reduced,
 {
 }
 
-std::optional<StateSpace> StateSpaceImpl::create(search::SearchContext context, const Options& options)
+std::optional<std::pair<StateSpace, std::optional<CertificateMaps>>> StateSpaceImpl::create(search::SearchContext context, const Options& options)
 {
-    return (options.symmetry_pruning) ? compute_problem_graph_with_symmetry_reduction(context, options) :
-                                        compute_problem_graph_without_symmetry_reduction(context, options);
+    if (options.symmetry_pruning)
+    {
+        if (auto result = compute_problem_graph_with_symmetry_reduction(context, options))
+        {
+            return std::make_optional(std::make_pair(result->first, std::make_optional(result->second)));
+        }
+        return std::nullopt;
+    }
+    else
+    {
+        if (auto result = compute_problem_graph_without_symmetry_reduction(context, options))
+        {
+            return std::make_optional(std::make_pair(result.value(), std::nullopt));
+        }
+        return std::nullopt;
+    }
 }
 
-StateSpaceList StateSpaceImpl::create(search::GeneralizedSearchContext contexts, const Options& options)
+std::vector<std::pair<StateSpace, std::optional<CertificateMaps>>> StateSpaceImpl::create(search::GeneralizedSearchContext contexts, const Options& options)
 {
-    auto state_spaces = StateSpaceList {};
+    auto state_spaces = std::vector<std::pair<StateSpace, std::optional<CertificateMaps>>> {};
 
     for (const auto& context : contexts->get_search_contexts())
     {
@@ -459,8 +469,7 @@ StateSpaceList StateSpaceImpl::create(search::GeneralizedSearchContext contexts,
             continue;
         }
 
-        auto result = (options.symmetry_pruning) ? compute_problem_graph_with_symmetry_reduction(context, options) :
-                                                   compute_problem_graph_without_symmetry_reduction(context, options);
+        auto result = create(context, options);
 
         if (!result)
         {
@@ -474,7 +483,7 @@ StateSpaceList StateSpaceImpl::create(search::GeneralizedSearchContext contexts,
     {
         std::sort(state_spaces.begin(),
                   state_spaces.end(),
-                  [](auto&& lhs, auto&& rhs) { return lhs->get_graph().get_num_vertices() < rhs->get_graph().get_num_vertices(); });
+                  [](auto&& lhs, auto&& rhs) { return lhs.first->get_graph().get_num_vertices() < rhs.first->get_graph().get_num_vertices(); });
     }
 
     return state_spaces;

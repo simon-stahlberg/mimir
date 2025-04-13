@@ -59,7 +59,7 @@ public:
     /// @brief Create the `TupleGraph` for each vertex in the given `StateSpace`.
     /// @param state_space is the `StateSpace`
     /// @return are the `TupleGraph` for each vertex in the given `StateSpace`.
-    static TupleGraphList create(StateSpace state_space, const Options& options = Options());
+    static TupleGraphList create(StateSpace state_space, std::optional<CertificateMaps>& certificate_maps, const Options& options = Options());
 
     const StateSpace& get_state_space() const;
     const graphs::InternalTupleGraph& get_graph() const;

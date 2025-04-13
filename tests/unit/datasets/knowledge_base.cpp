@@ -178,6 +178,7 @@ TEST(MimirTests, DatasetsKnowledgeBaseConstructor2Test)
 
     auto context = search::GeneralizedSearchContextImpl::create(domain_file, std::vector<fs::path> { problem1_file, problem2_file });
 
+    /* Width 1 */
     {
         /* Without symmetry reduction two weakly connected components. */
 
@@ -269,6 +270,100 @@ TEST(MimirTests, DatasetsKnowledgeBaseConstructor2Test)
 
         EXPECT_EQ(num_tuple_graph_vertices, 76);
         EXPECT_EQ(num_tuple_graph_edges, 70);
+    }
+
+    /* Width 0 */
+    {
+        /* Without symmetry reduction two weakly connected components. */
+
+        auto kb_options = KnowledgeBaseImpl::Options();
+
+        auto& state_space_options = kb_options.state_space_options;
+        state_space_options.symmetry_pruning = false;
+
+        auto& generalized_state_space_options = kb_options.generalized_state_space_options;
+        generalized_state_space_options = GeneralizedStateSpaceImpl::Options();
+        generalized_state_space_options->symmetry_pruning = false;
+
+        auto& tuple_graph_options = kb_options.tuple_graph_options;
+        tuple_graph_options = TupleGraphImpl::Options();
+        tuple_graph_options->width = 0;
+
+        auto kb = KnowledgeBaseImpl::create(context, kb_options);
+
+        // Test generalized state space.
+        const auto& generalized_state_space = kb->get_generalized_state_space().value();
+        const auto& class_graph = generalized_state_space->get_graph();
+
+        EXPECT_EQ(class_graph.get_num_vertices(), 36);
+        EXPECT_EQ(class_graph.get_num_edges(), 128);
+        EXPECT_EQ(generalized_state_space->get_initial_vertices().size(), 2);
+        EXPECT_EQ(generalized_state_space->get_goal_vertices().size(), 4);
+        EXPECT_EQ(generalized_state_space->get_unsolvable_vertices().size(), 0);
+
+        // Test tuple graph collection.
+        EXPECT_EQ(kb->get_tuple_graphs().value().at(0).size(), 8);
+        EXPECT_EQ(kb->get_tuple_graphs().value().at(1).size(), 28);
+
+        auto num_tuple_graph_vertices = size_t(0);
+        auto num_tuple_graph_edges = size_t(0);
+        for (const auto& tuple_graph_list : kb->get_tuple_graphs().value())
+        {
+            for (const auto& tuple_graph : tuple_graph_list)
+            {
+                num_tuple_graph_vertices += tuple_graph->get_graph().get_num_vertices();
+                num_tuple_graph_edges += tuple_graph->get_graph().get_num_edges();
+            }
+        }
+
+        EXPECT_EQ(num_tuple_graph_vertices, 128);
+        EXPECT_EQ(num_tuple_graph_edges, 92);
+    }
+
+    {
+        /* With symmetry reduction one weakly connected component. */
+        auto kb_options = knowledge_base::Options();
+
+        auto& state_space_options = kb_options.state_space_options;
+        state_space_options.symmetry_pruning = true;
+
+        auto& generalized_state_space_options = kb_options.generalized_state_space_options;
+        generalized_state_space_options = generalized_state_space::Options();
+        generalized_state_space_options->symmetry_pruning = true;
+
+        auto& tuple_graph_options = kb_options.tuple_graph_options;
+        tuple_graph_options = tuple_graph::Options();
+        tuple_graph_options->width = 0;
+
+        auto kb = KnowledgeBaseImpl::create(context, kb_options);
+
+        // Test generalized state space.
+        const auto& generalized_state_space = kb->get_generalized_state_space().value();
+        const auto& class_graph = generalized_state_space->get_graph();
+
+        EXPECT_EQ(class_graph.get_num_vertices(), 18);
+        EXPECT_EQ(class_graph.get_num_edges(), 52);
+        EXPECT_EQ(generalized_state_space->get_initial_vertices().size(), 2);
+        EXPECT_EQ(generalized_state_space->get_goal_vertices().size(), 4);
+        EXPECT_EQ(generalized_state_space->get_unsolvable_vertices().size(), 0);
+
+        // Test tuple graph collection.
+        EXPECT_EQ(kb->get_tuple_graphs().value().at(0).size(), 6);
+        EXPECT_EQ(kb->get_tuple_graphs().value().at(1).size(), 12);
+
+        auto num_tuple_graph_vertices = size_t(0);
+        auto num_tuple_graph_edges = size_t(0);
+        for (const auto& tuple_graph_list : kb->get_tuple_graphs().value())
+        {
+            for (const auto& tuple_graph : tuple_graph_list)
+            {
+                num_tuple_graph_vertices += tuple_graph->get_graph().get_num_vertices();
+                num_tuple_graph_edges += tuple_graph->get_graph().get_num_edges();
+            }
+        }
+
+        EXPECT_EQ(num_tuple_graph_vertices, 52);
+        EXPECT_EQ(num_tuple_graph_edges, 34);
     }
 }
 

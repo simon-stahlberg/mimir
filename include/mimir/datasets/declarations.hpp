@@ -48,6 +48,14 @@ using CertificateMap = UnorderedMap<graphs::nauty::SparseGraph, Value>;
 template<typename Key>
 using ToCertificateMap = UnorderedMap<Key, graphs::nauty::SparseGraph>;
 
+struct CertificateMaps
+{
+    ToCertificateMap<search::State> state_to_cert;
+    CertificateMap<graphs::VertexIndex> cert_to_v_idx;
+};
+
+using CertificateMapsList = std::vector<CertificateMaps>;
+
 }
 
 #endif

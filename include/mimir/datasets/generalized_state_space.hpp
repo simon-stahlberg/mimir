@@ -80,7 +80,8 @@ public:
     /// Note that the constructor may internally prune irrelevant `StateSpace` if detected by symmetry reduction.
     /// @param state_spaces is the `StateSpaceList`.
     /// @param options are the options used to derive the `GeneralizedStateSpace`.
-    static GeneralizedStateSpace create(StateSpaceList state_spaces, const Options& options);
+    static std::pair<GeneralizedStateSpace, std::optional<CertificateMapsList>>
+    create(const std::vector<std::pair<StateSpace, std::optional<CertificateMaps>>>& state_spaces, const Options& options);
 
     /**
      * Getters

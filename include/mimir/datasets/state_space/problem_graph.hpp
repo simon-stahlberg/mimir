@@ -36,7 +36,7 @@ namespace mimir::graphs
 
 /// @typedef ProblemVertex
 /// @brief `ProblemVertex` encapsulates information about a vertex in a `ProblemGraph`
-using ProblemVertex = Vertex<search::State, formalism::Problem, nauty::SparseGraph, DiscreteCost, ContinuousCost, bool, bool, bool, bool>;
+using ProblemVertex = Vertex<search::State, formalism::Problem, DiscreteCost, ContinuousCost, bool, bool, bool, bool>;
 using ProblemVertexList = std::vector<ProblemVertex>;
 
 /// @brief Get the `State` of the given `ProblemVertex`.
@@ -49,40 +49,35 @@ inline search::State get_state(const ProblemVertex& vertex) { return vertex.get_
 /// @return the `formalism::Problem` of the given `ProblemVertex` in the `ProblemGraph`.
 inline const formalism::Problem& get_problem(const ProblemVertex& vertex) { return vertex.get_property<1>(); }
 
-/// @brief Get the `nauty::SparseGraph` of the given `ProblemVertex`.
-/// @param vertex is a `ProblemVertex`.
-/// @return the `nauty::SparseGraph` of the given `ProblemVertex` in the `ProblemGraph` if it was computed, and otherwise nullptr.
-inline const nauty::SparseGraph& get_certificate(const ProblemVertex& vertex) { return vertex.get_property<2>(); }
-
 /// @brief Get the unit goal distance of the given `ProblemVertex`.
 /// @param vertex is a `ProblemVertex`.
 /// @return the unit goal distance of the given `ProblemVertex`.
-inline DiscreteCost get_unit_goal_distance(const ProblemVertex& vertex) { return vertex.get_property<3>(); }
+inline DiscreteCost get_unit_goal_distance(const ProblemVertex& vertex) { return vertex.get_property<2>(); }
 
 /// @brief Get the action cost goal distance of the given `ProblemVertex`.
 /// @param vertex is a `ProblemVertex`
 /// @return the action cost goal distance of the given `ProblemVertex`.
-inline ContinuousCost get_action_goal_distance(const ProblemVertex& vertex) { return vertex.get_property<4>(); }
+inline ContinuousCost get_action_goal_distance(const ProblemVertex& vertex) { return vertex.get_property<3>(); }
 
 /// @brief Get information whether the representative associated with the given `ProblemVertex` is an initial vertex.
 /// @param vertex is a `ProblemVertex`.
 /// @return true if the representative associated with the given `ProblemVertex` is an initial vertex, and false otherwise.
-inline bool is_initial(const ProblemVertex& vertex) { return vertex.get_property<5>(); }
+inline bool is_initial(const ProblemVertex& vertex) { return vertex.get_property<4>(); }
 
 /// @brief Get information whether the representative associated with the given `ProblemVertex` is a goal vertex.
 /// @param vertex is a `ProblemVertex`.
 /// @return true if the representative associated with the given `ProblemVertex` is a goal vertex, and false otherwise.
-inline bool is_goal(const ProblemVertex& vertex) { return vertex.get_property<6>(); }
+inline bool is_goal(const ProblemVertex& vertex) { return vertex.get_property<5>(); }
 
 /// @brief Get information whether the representative associated with the given `ProblemVertex` is an unsolvable vertex.
 /// @param vertex is a `ProblemVertex`.
 /// @return true if the representative associated with the given `ProblemVertex` is an unsolvable vertex, and false otherwise.
-inline bool is_unsolvable(const ProblemVertex& vertex) { return vertex.get_property<7>(); }
+inline bool is_unsolvable(const ProblemVertex& vertex) { return vertex.get_property<6>(); }
 
 /// @brief Get information whether the representative associated with the given `ProblemVertex` is an alive vertex.
 /// @param vertex is a `ProblemVertex`.
 /// @return true if the representative associated with the given `ProblemVertex` is an alive vertex, and false otherwise.
-inline bool is_alive(const ProblemVertex& vertex) { return vertex.get_property<8>(); }
+inline bool is_alive(const ProblemVertex& vertex) { return vertex.get_property<7>(); }
 
 /// @typedef ProblemEdge
 /// @brief `ProblemEdge` encapsulates information about an edge in a `ProblemGraph`.

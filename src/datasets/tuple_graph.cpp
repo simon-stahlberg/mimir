@@ -47,27 +47,13 @@ const IndexGroupedVector<const Index>& TupleGraphImpl::get_vertices_grouped_by_d
 
 const IndexGroupedVector<const Index>& TupleGraphImpl::get_problem_vertices_grouped_by_distance() const { return m_problem_v_idxs_grouped_by_distance; }
 
-TupleGraphList TupleGraphImpl::create(StateSpace state_space, const Options& options)
+TupleGraphList TupleGraphImpl::create(StateSpace state_space, std::optional<CertificateMaps>& certificate_maps, const Options& options)
 {
     auto tuple_graphs = TupleGraphList {};
 
-    /* Collect certificates to avoid costly recomputation. */
-    auto certificate_to_v_idx = CertificateMap<graphs::VertexIndex> {};
-    auto state_to_certificate = ToCertificateMap<search::State> {};
-    if (state_space->is_symmetry_reduced())
-    {
-        for (const auto& v : state_space->get_graph().get_vertices())
-        {
-            const auto& certificate = graphs::get_certificate(v);
-            const auto state = graphs::get_state(v);
-            certificate_to_v_idx.emplace(certificate, v.get_index());
-            state_to_certificate.emplace(state, certificate);
-        }
-    }
-
     for (const auto& v : state_space->get_graph().get_vertices())
     {
-        tuple_graphs.push_back(create_tuple_graph(v, state_space, certificate_to_v_idx, state_to_certificate, options));
+        tuple_graphs.push_back(create_tuple_graph(v, state_space, certificate_maps, options));
     }
 
     return tuple_graphs;
