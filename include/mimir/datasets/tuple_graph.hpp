@@ -63,8 +63,8 @@ public:
 
     const StateSpace& get_state_space() const;
     const graphs::InternalTupleGraph& get_graph() const;
-    const IndexGroupedVector<const Index>& get_vertices_grouped_by_distance() const;
-    const IndexGroupedVector<const Index>& get_problem_vertices_grouped_by_distance() const;
+    const IndexGroupedVector<const Index>& get_tuple_vertex_indices_grouped_by_distance() const;
+    const IndexGroupedVector<const Index>& get_problem_vertex_indices_grouped_by_distance() const;
 };
 
 using TupleGraphList = std::vector<TupleGraph>;

@@ -43,9 +43,9 @@ const StateSpace& TupleGraphImpl::get_state_space() const { return m_state_space
 
 const graphs::InternalTupleGraph& TupleGraphImpl::get_graph() const { return m_graph; }
 
-const IndexGroupedVector<const Index>& TupleGraphImpl::get_vertices_grouped_by_distance() const { return m_v_idxs_grouped_by_distance; }
+const IndexGroupedVector<const Index>& TupleGraphImpl::get_tuple_vertex_indices_grouped_by_distance() const { return m_v_idxs_grouped_by_distance; }
 
-const IndexGroupedVector<const Index>& TupleGraphImpl::get_problem_vertices_grouped_by_distance() const { return m_problem_v_idxs_grouped_by_distance; }
+const IndexGroupedVector<const Index>& TupleGraphImpl::get_problem_vertex_indices_grouped_by_distance() const { return m_problem_v_idxs_grouped_by_distance; }
 
 TupleGraphList TupleGraphImpl::create(StateSpace state_space, std::optional<CertificateMaps>& certificate_maps, const Options& options)
 {
@@ -70,12 +70,12 @@ std::ostream& operator<<(std::ostream& out, const TupleGraphImpl& tuple_graph)
         << "rankdir=\"LR\"" << "\n";
 
     // 3. Tuple nodes.
-    for (const auto& v_idx : tuple_graph.get_vertices_grouped_by_distance().front())
+    for (const auto& v_idx : tuple_graph.get_tuple_vertex_indices_grouped_by_distance().front())
     {
         out << "Dangling" << v_idx << " [ label = \"\", style = invis ]\n";
     }
 
-    for (const auto group : tuple_graph.get_vertices_grouped_by_distance())
+    for (const auto group : tuple_graph.get_tuple_vertex_indices_grouped_by_distance())
     {
         for (const auto& v_idx : group)
         {
@@ -104,12 +104,12 @@ std::ostream& operator<<(std::ostream& out, const TupleGraphImpl& tuple_graph)
     // 4. Group states with same distance together
     // 5. Tuple edges
     out << "{\n";
-    for (const auto& v_idx : tuple_graph.get_vertices_grouped_by_distance().front())
+    for (const auto& v_idx : tuple_graph.get_tuple_vertex_indices_grouped_by_distance().front())
     {
         out << "Dangling" << v_idx << "->t" << v_idx << "\n";
     }
     out << "}\n";
-    for (const auto group : tuple_graph.get_vertices_grouped_by_distance())
+    for (const auto group : tuple_graph.get_tuple_vertex_indices_grouped_by_distance())
     {
         out << "{\n";
         for (const auto& v_idx : group)

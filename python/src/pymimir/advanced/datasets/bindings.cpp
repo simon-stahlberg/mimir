@@ -13,10 +13,12 @@ void bind_datasets(nb::module_& m)
 {
     bind_vertex<graphs::ProblemVertex>(m, PyVertexProperties<graphs::ProblemVertex>::name);
     bind_vertex<graphs::ClassVertex>(m, PyVertexProperties<graphs::ClassVertex>::name);
+    bind_vertex<graphs::TupleGraphVertex>(m, PyVertexProperties<graphs::TupleGraphVertex>::name);
     bind_edge<graphs::ProblemEdge>(m, PyEdgeProperties<graphs::ProblemEdge>::name);
     bind_edge<graphs::ClassEdge>(m, PyEdgeProperties<graphs::ClassEdge>::name);
-    bind_static_graph<graphs::ProblemVertex, graphs::ProblemEdge>(m, "ProblemStaticGraph");
-    bind_static_graph<graphs::ClassVertex, graphs::ClassEdge>(m, "ClassStaticGraph");
+    bind_static_graph<graphs::ProblemVertex, graphs::ProblemEdge>(m, "StaticProblemGraph");
+    bind_static_graph<graphs::ClassVertex, graphs::ClassEdge>(m, "StaticClassGraph");
+    bind_static_graph<graphs::TupleGraphVertex, graphs::EmptyEdge>(m, "StaticTupleGraph");
 
     nb::class_<StateSpaceImpl::Options>(m, "StateSpaceOptions")
         .def(nb::init<>())
@@ -47,6 +49,7 @@ void bind_datasets(nb::module_& m)
         .def_rw("tuple_graph_options", &KnowledgeBaseImpl::Options::tuple_graph_options);
 
     nb::class_<StateSpaceImpl>(m, "StateSpace")
+        .def("__str__", [](const StateSpaceImpl& self) { return to_string(self.get_graph()); })
         .def_static(
             "create",
             [](search::SearchContext context, const StateSpaceImpl::Options& options) -> std::optional<std::pair<StateSpace, std::optional<CertificateMaps>>>
@@ -67,6 +70,7 @@ void bind_datasets(nb::module_& m)
         .def("get_unsolvable_vertices", &StateSpaceImpl::get_unsolvable_vertices, nb::rv_policy::copy);
 
     nb::class_<GeneralizedStateSpaceImpl>(m, "GeneralizedStateSpace")
+        .def("__str__", [](const GeneralizedStateSpaceImpl& self) { return to_string(self.get_graph()); })
         .def_static("create", &GeneralizedStateSpaceImpl::create, "state_spaces"_a, "options"_a = GeneralizedStateSpaceImpl::Options())
         .def("get_state_spaces", &GeneralizedStateSpaceImpl::get_state_spaces, nb::rv_policy::copy)
         .def("get_graph", &GeneralizedStateSpaceImpl::get_graph, nb::rv_policy::reference_internal)
@@ -90,9 +94,34 @@ void bind_datasets(nb::module_& m)
              &GeneralizedStateSpaceImpl::create_induced_subgraph_from_problem_indices,
              nb::rv_policy::take_ownership);
 
+    nb::class_<TupleGraphImpl>(m, "TupleGraph")
+        .def("__str__", [](const TupleGraphImpl& self) { return to_string(self); })
+        .def("get_state_space", &TupleGraphImpl::get_state_space, nb::rv_policy::copy)
+        .def("get_graph", &TupleGraphImpl::get_graph, nb::rv_policy::reference_internal)
+        .def("get_tuple_vertex_indices_grouped_by_distance",
+             [](const TupleGraphImpl& self)
+             {
+                 auto result = std::vector<graphs::VertexIndexList> {};
+                 for (const auto& group : self.get_tuple_vertex_indices_grouped_by_distance())
+                 {
+                     result.push_back(graphs::VertexIndexList(group.begin(), group.end()));
+                 }
+                 return result;
+             })
+        .def("get_problem_vertex_indices_grouped_by_distance",
+             [](const TupleGraphImpl& self)
+             {
+                 auto result = std::vector<graphs::VertexIndexList> {};
+                 for (const auto& group : self.get_problem_vertex_indices_grouped_by_distance())
+                 {
+                     result.push_back(graphs::VertexIndexList(group.begin(), group.end()));
+                 }
+                 return result;
+             });
+
     nb::class_<KnowledgeBaseImpl>(m, "KnowledgeBase")
         .def_static("create", &KnowledgeBaseImpl::create, "contexts"_a, "options"_a = KnowledgeBaseImpl::Options())
-        .def("get_generalized_state_space", &KnowledgeBaseImpl::get_generalized_state_space, nb::rv_policy::reference_internal);
+        .def("get_generalized_state_space", &KnowledgeBaseImpl::get_generalized_state_space, nb::rv_policy::reference_internal)
+        .def("get_tuple_graphs", &KnowledgeBaseImpl::get_tuple_graphs, nb::rv_policy::copy);
 }
-
 }

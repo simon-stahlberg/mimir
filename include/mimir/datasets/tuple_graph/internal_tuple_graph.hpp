@@ -34,10 +34,7 @@ inline const search::iw::AtomIndexList& get_atom_tuple(const TupleGraphVertex& v
 
 inline const IndexList& get_problem_vertices(const TupleGraphVertex& vertex) { return vertex.get_property<1>(); }
 
-using TupleGraphEdge = Edge<>;
-using TupleGraphEdgeList = std::vector<TupleGraphEdge>;
-
-using StaticTupleGraph = StaticGraph<TupleGraphVertex, TupleGraphEdge>;
+using StaticTupleGraph = StaticGraph<TupleGraphVertex, EmptyEdge>;
 using InternalTupleGraph = StaticBidirectionalGraph<StaticTupleGraph>;
 }
 

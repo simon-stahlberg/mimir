@@ -21,9 +21,13 @@ state_space_options.symmetry_pruning = True
 generalized_state_space_options = datasets.GeneralizedStateSpaceOptions()
 generalized_state_space_options.symmetry_pruning = True
 
+tuple_graph_options = datasets.TupleGraphOptions()
+tuple_graph_options.width = 1
+
 knowledge_base_options = datasets.KnowledgeBaseOptions()
 knowledge_base_options.state_space_options = state_space_options
 knowledge_base_options.generalized_state_space_options = generalized_state_space_options
+knowledge_base_options.tuple_graph_options = tuple_graph_options
 
 knowledge_base = datasets.KnowledgeBase.create(generalized_search_context, knowledge_base_options)
 
@@ -111,3 +115,12 @@ for edge in graph.get_edges():
     action_cost = problem_edge.get_property_2() # cost (double)
 
     print(action.to_string(problem))
+
+for tuple_graphs in knowledge_base.get_tuple_graphs():
+    for tuple_graph in tuple_graphs:
+        tuple_graph.get_graph()                                      # The internal tuple graph structre
+        tuple_graph.get_state_space()                                # The corresponding state space
+        tuple_graph.get_problem_vertex_indices_grouped_by_distance() # The problem vertex indices grouped by distance
+        tuple_graph.get_tuple_vertex_indices_grouped_by_distance()   # The tuple vertex indices grouped by distance
+
+        print(str(tuple_graph))

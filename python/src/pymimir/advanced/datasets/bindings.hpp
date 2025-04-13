@@ -21,6 +21,12 @@ struct PyVertexProperties<mm::graphs::ClassVertex>
 };
 
 template<>
+struct PyVertexProperties<mm::graphs::TupleGraphVertex>
+{
+    static constexpr const char* name = "TupleGraphVertex";
+};
+
+template<>
 struct PyEdgeProperties<mm::graphs::ProblemEdge>
 {
     static constexpr const char* name = "ProblemEdge";

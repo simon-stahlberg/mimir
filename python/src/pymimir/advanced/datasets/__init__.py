@@ -4,22 +4,29 @@ from pymimir._pymimir.advanced.datasets import (
     # Vertices
     ProblemVertex,
     ProblemEdge,
+    TupleGraphVertex,
 
     # Edges
     ClassVertex,
     ClassEdge,
 
-    # ProblemStaticGraph
-    ProblemStaticGraph,
-    ImmutableProblemStaticGraph,
-    ForwardProblemStaticGraph,
-    BidirectionalProblemStaticGraph,
+    # StaticProblemGraph
+    StaticProblemGraph,
+    ImmutableStaticProblemGraph,
+    ForwardStaticProblemGraph,
+    BidirectionalStaticProblemGraph,
 
-    # ClassStaticGraph
-    ClassStaticGraph,
-    ImmutableClassStaticGraph,
-    ForwardClassStaticGraph,
-    BidirectionalClassStaticGraph,
+    # StaticClassGraph
+    StaticClassGraph,
+    ImmutableStaticClassGraph,
+    ForwardStaticClassGraph,
+    BidirectionalStaticClassGraph,
+
+    # StaticTupleGraph
+    StaticTupleGraph,
+    ImmutableStaticTupleGraph,
+    ForwardStaticTupleGraph,
+    BidirectionalStaticTupleGraph,
 
     # StateSpace
     StateSpace,
@@ -31,6 +38,7 @@ from pymimir._pymimir.advanced.datasets import (
 
     # TupleGraph
     TupleGraphOptions,
+    TupleGraph,
 
     # KnowledgeBase
     KnowledgeBase,
@@ -42,16 +50,22 @@ __all__ = [
     "ProblemEdge",
     "ClassVertex",
     "ClassEdge",
+    "TupleGraphVertex",
 
-    "ProblemStaticGraph",
-    "ImmutableProblemStaticGraph",
-    "ForwardProblemStaticGraph",
-    "BidirectionalProblemStaticGraph",
+    "StaticProblemGraph",
+    "ImmutableStaticProblemGraph",
+    "ForwardStaticProblemGraph",
+    "BidirectionalStaticProblemGraph",
 
-    "ClassStaticGraph",
-    "ImmutableClassStaticGraph",
-    "ForwardClassStaticGraph",
-    "BidirectionalClassStaticGraph",
+    "StaticClassGraph",
+    "ImmutableStaticClassGraph",
+    "ForwardStaticClassGraph",
+    "BidirectionalStaticClassGraph",
+
+    "StaticTupleGraph",
+    "ImmutableStaticTupleGraph",
+    "ForwardStaticTupleGraph",
+    "BidirectionalStaticTupleGraph",
 
     "GeneralizedStateSpace",
     "GeneralizedStateSpaceOptions",

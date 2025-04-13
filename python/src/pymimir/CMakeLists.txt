@@ -39,6 +39,7 @@ set(MODULES
     _pymimir.advanced.graphs
     _pymimir.advanced.formalism
     _pymimir.advanced.search
+    _pymimir.advanced.datasets
     _pymimir.advanced.languages
     _pymimir.advanced.languages.description_logics
 )
