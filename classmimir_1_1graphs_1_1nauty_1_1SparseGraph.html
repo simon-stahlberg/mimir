@@ -89,14 +89,11 @@ $(function() {
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a0445c3477d4ca6883e4391bb982b0ad9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html#a0445c3477d4ca6883e4391bb982b0ad9">SparseGraph</a> ()</td></tr>
-<tr class="memdesc:a0445c3477d4ca6883e4391bb982b0ad9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an empty <code><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html" title="SparseGraph encapsulates a sparse graph representation compatible with Nauty.">SparseGraph</a></code> with zero vertices.  <br /></td></tr>
 <tr class="separator:a0445c3477d4ca6883e4391bb982b0ad9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8d1bd7b87d8280072989ffd894972638"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html#a8d1bd7b87d8280072989ffd894972638">SparseGraph</a> (size_t <a class="el" href="namespacemimir_1_1graphs.html#a383f83f85a6611d7889328a86171a655">num_vertices</a>)</td></tr>
-<tr class="memdesc:a8d1bd7b87d8280072989ffd894972638"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create <code><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html" title="SparseGraph encapsulates a sparse graph representation compatible with Nauty.">SparseGraph</a></code> with <code>num_vertices</code> many vertices and zero edges.  <br /></td></tr>
-<tr class="separator:a8d1bd7b87d8280072989ffd894972638"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afe4d9a63f2146da2ad137cfd65b50122"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsVertexColoredGraph.html">mimir::graphs::IsVertexColoredGraph</a> Graph&gt; </td></tr>
-<tr class="memitem:afe4d9a63f2146da2ad137cfd65b50122"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html#afe4d9a63f2146da2ad137cfd65b50122">SparseGraph</a> (const Graph &amp;graph)</td></tr>
-<tr class="separator:afe4d9a63f2146da2ad137cfd65b50122"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1112bfe9c5497fbe009a66a45d0e00c3"><td class="memTemplParams" colspan="2">template&lt;typename Graph &gt; <br />
+requires IsVertexListGraph&lt;Graph&gt; &amp;&amp; IsEdgeListGraph&lt;Graph&gt; &amp;&amp; IsVertexColoredGraph&lt;Graph&gt;</td></tr>
+<tr class="memitem:a1112bfe9c5497fbe009a66a45d0e00c3"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html#a1112bfe9c5497fbe009a66a45d0e00c3">SparseGraph</a> (const Graph &amp;graph)</td></tr>
+<tr class="separator:a1112bfe9c5497fbe009a66a45d0e00c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1ad19c0382b77e6a5d39a80ea66c8085"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html#a1ad19c0382b77e6a5d39a80ea66c8085">SparseGraph</a> (const <a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html">SparseGraph</a> &amp;other)</td></tr>
 <tr class="separator:a1ad19c0382b77e6a5d39a80ea66c8085"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5dcb60d0001cff6d4a577ef2cc1908dd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html">SparseGraph</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html#a5dcb60d0001cff6d4a577ef2cc1908dd">operator=</a> (const <a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html">SparseGraph</a> &amp;other)</td></tr>
@@ -107,29 +104,49 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:adf17e2e212fea7ce7af56b0d150f02aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa5b7b51065b1b593388eac078a8ab594"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html#aa5b7b51065b1b593388eac078a8ab594">~SparseGraph</a> ()</td></tr>
 <tr class="separator:aa5b7b51065b1b593388eac078a8ab594"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a154ba31092dd832b263ce6f52497d3f3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html#a154ba31092dd832b263ce6f52497d3f3">add_vertex_coloring</a> (const <a class="el" href="namespacemimir_1_1graphs.html#aaf545c08ff61f9d6d1e2034e520253c0">mimir::graphs::ColorList</a> &amp;vertex_coloring)</td></tr>
-<tr class="memdesc:a154ba31092dd832b263ce6f52497d3f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add colors to the vertices of the graph.  <br /></td></tr>
-<tr class="separator:a154ba31092dd832b263ce6f52497d3f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a26c6336e842ed39304a315e6a0bc0060"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html#a26c6336e842ed39304a315e6a0bc0060">add_edge</a> (size_t <a class="el" href="namespacemimir_1_1graphs.html#af891e9004f3adc58c29b3c56ed70fcb9">source</a>, size_t <a class="el" href="namespacemimir_1_1graphs.html#a99ec4019eda342e0f9bbb6c28672bda9">target</a>)</td></tr>
-<tr class="memdesc:a26c6336e842ed39304a315e6a0bc0060"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a directed edge to the graph.  <br /></td></tr>
-<tr class="separator:a26c6336e842ed39304a315e6a0bc0060"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab38f3882a982eeaf0c5a12a7afc47273"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html#ab38f3882a982eeaf0c5a12a7afc47273">clear</a> (size_t <a class="el" href="namespacemimir_1_1graphs.html#a383f83f85a6611d7889328a86171a655">num_vertices</a>)</td></tr>
-<tr class="memdesc:ab38f3882a982eeaf0c5a12a7afc47273"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear the graph data structures by changing the number of vertices and removing all edges.  <br /></td></tr>
-<tr class="separator:ab38f3882a982eeaf0c5a12a7afc47273"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a75e89d2b1e3a4b0473871b80821d8970"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html#a75e89d2b1e3a4b0473871b80821d8970">is_directed</a> () const</td></tr>
-<tr class="memdesc:a75e89d2b1e3a4b0473871b80821d8970"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true iff the graph is directed.  <br /></td></tr>
-<tr class="separator:a75e89d2b1e3a4b0473871b80821d8970"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4dfc06685c5f30f2fd0d70dedcd36f01"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html">SparseGraph</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html#a4dfc06685c5f30f2fd0d70dedcd36f01">canonize</a> ()</td></tr>
+<tr class="separator:a4dfc06685c5f30f2fd0d70dedcd36f01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e0c9ea99014ed30b76c027348d49b04"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html#a2e0c9ea99014ed30b76c027348d49b04">get_nde</a> () const</td></tr>
+<tr class="separator:a2e0c9ea99014ed30b76c027348d49b04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61255834dd425993c29327c3b3eb4066"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; size_t &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html#a61255834dd425993c29327c3b3eb4066">get_v</a> () const</td></tr>
+<tr class="separator:a61255834dd425993c29327c3b3eb4066"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c218f6bf842e7e9d178d5faef2885c9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html#a7c218f6bf842e7e9d178d5faef2885c9">get_nv</a> () const</td></tr>
+<tr class="separator:a7c218f6bf842e7e9d178d5faef2885c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82865a53db17c5366afbf5b370b17b4e"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; int &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html#a82865a53db17c5366afbf5b370b17b4e">get_d</a> () const</td></tr>
+<tr class="separator:a82865a53db17c5366afbf5b370b17b4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af44712bea5c60d69d1890b1876030836"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; int &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html#af44712bea5c60d69d1890b1876030836">get_e</a> () const</td></tr>
+<tr class="separator:af44712bea5c60d69d1890b1876030836"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28b0194a8118db57f70320bee721c32f"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html#a28b0194a8118db57f70320bee721c32f">get_vlen</a> () const</td></tr>
+<tr class="separator:a28b0194a8118db57f70320bee721c32f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c235fc57e26fe27e1033b57e272b0b4"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html#a6c235fc57e26fe27e1033b57e272b0b4">get_dlen</a> () const</td></tr>
+<tr class="separator:a6c235fc57e26fe27e1033b57e272b0b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae88f91b064401ceaf97038234c0f558"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html#aae88f91b064401ceaf97038234c0f558">get_elen</a> () const</td></tr>
+<tr class="separator:aae88f91b064401ceaf97038234c0f558"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99fa05f6a718b54735864bfb84b2cbae"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; int &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html#a99fa05f6a718b54735864bfb84b2cbae">get_lab</a> () const</td></tr>
+<tr class="separator:a99fa05f6a718b54735864bfb84b2cbae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a968af2b5457e7dccf9e14f1178b9bd36"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; int &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html#a968af2b5457e7dccf9e14f1178b9bd36">get_ptn</a> () const</td></tr>
+<tr class="separator:a968af2b5457e7dccf9e14f1178b9bd36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc5f9f1164103a856e208c7a57e8bace"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir_1_1graphs.html#aaf545c08ff61f9d6d1e2034e520253c0">ColorList</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html#adc5f9f1164103a856e208c7a57e8bace">get_coloring</a> () const</td></tr>
+<tr class="separator:adc5f9f1164103a856e208c7a57e8bace"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac79458af005405652e665c207afd78e"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; int &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html#aac79458af005405652e665c207afd78e">get_pi</a> () const</td></tr>
+<tr class="memdesc:aac79458af005405652e665c207afd78e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return vertex permutation from input graph to canonical graphs. Throws an exception if <a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html#a4dfc06685c5f30f2fd0d70dedcd36f01">canonize()</a> was not called before.  <br /></td></tr>
+<tr class="separator:aac79458af005405652e665c207afd78e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1722d4c593b159cd970cfe5dc1e8d0c"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; int &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html#ab1722d4c593b159cd970cfe5dc1e8d0c">get_pi_inverse</a> () const</td></tr>
+<tr class="memdesc:ab1722d4c593b159cd970cfe5dc1e8d0c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return permutation from canonical graph to input graph. Throws an exception if <a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html#a4dfc06685c5f30f2fd0d70dedcd36f01">canonize()</a> was not called before.  <br /></td></tr>
+<tr class="separator:ab1722d4c593b159cd970cfe5dc1e8d0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6163946e5f6fc6ae707cf3938d44b61"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html#ae6163946e5f6fc6ae707cf3938d44b61">identifying_members</a> () const</td></tr>
+<tr class="separator:ae6163946e5f6fc6ae707cf3938d44b61"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
 Friends</h2></td></tr>
-<tr class="memitem:abbcf5127551c2b9b2fd021320fe874a8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1Certificate.html">Certificate</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html#abbcf5127551c2b9b2fd021320fe874a8">compute_certificate</a> (const <a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html">SparseGraph</a> &amp;graph)</td></tr>
-<tr class="separator:abbcf5127551c2b9b2fd021320fe874a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a74dbd72599f661693c7c58844bd464"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html#a3a74dbd72599f661693c7c58844bd464">operator&lt;&lt;</a> (std::ostream &amp;out, const <a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html">SparseGraph</a> &amp;graph)</td></tr>
+<tr class="separator:a3a74dbd72599f661693c7c58844bd464"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><code><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html" title="SparseGraph encapsulates a sparse graph representation compatible with Nauty.">SparseGraph</a></code> encapsulates a sparse graph representation compatible with Nauty. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a0445c3477d4ca6883e4391bb982b0ad9" name="a0445c3477d4ca6883e4391bb982b0ad9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0445c3477d4ca6883e4391bb982b0ad9">&#9670;&#160;</a></span>SparseGraph() <span class="overload">[1/5]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a0445c3477d4ca6883e4391bb982b0ad9">&#9670;&#160;</a></span>SparseGraph() <span class="overload">[1/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -143,51 +160,16 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Create an empty <code><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html" title="SparseGraph encapsulates a sparse graph representation compatible with Nauty.">SparseGraph</a></code> with zero vertices. </p>
-
 </div>
 </div>
-<a id="a8d1bd7b87d8280072989ffd894972638" name="a8d1bd7b87d8280072989ffd894972638"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8d1bd7b87d8280072989ffd894972638">&#9670;&#160;</a></span>SparseGraph() <span class="overload">[2/5]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">mimir::graphs::nauty::SparseGraph::SparseGraph </td>
-          <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>num_vertices</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Create <code><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html" title="SparseGraph encapsulates a sparse graph representation compatible with Nauty.">SparseGraph</a></code> with <code>num_vertices</code> many vertices and zero edges. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">num_vertices</td><td>is the number of vertices in the graph. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="afe4d9a63f2146da2ad137cfd65b50122" name="afe4d9a63f2146da2ad137cfd65b50122"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afe4d9a63f2146da2ad137cfd65b50122">&#9670;&#160;</a></span>SparseGraph() <span class="overload">[3/5]</span></h2>
+<a id="a1112bfe9c5497fbe009a66a45d0e00c3" name="a1112bfe9c5497fbe009a66a45d0e00c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1112bfe9c5497fbe009a66a45d0e00c3">&#9670;&#160;</a></span>SparseGraph() <span class="overload">[2/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsVertexColoredGraph.html">mimir::graphs::IsVertexColoredGraph</a> Graph&gt; </div>
+template&lt;typename Graph &gt; <br />
+requires IsVertexListGraph&lt;Graph&gt; &amp;&amp; IsEdgeListGraph&lt;Graph&gt; &amp;&amp; IsVertexColoredGraph&lt;Graph&gt;</div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -210,7 +192,7 @@ template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsVertexColoredGraph.h
 </div>
 </div>
 <a id="a1ad19c0382b77e6a5d39a80ea66c8085" name="a1ad19c0382b77e6a5d39a80ea66c8085"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1ad19c0382b77e6a5d39a80ea66c8085">&#9670;&#160;</a></span>SparseGraph() <span class="overload">[4/5]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ad19c0382b77e6a5d39a80ea66c8085">&#9670;&#160;</a></span>SparseGraph() <span class="overload">[3/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -228,7 +210,7 @@ template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsVertexColoredGraph.h
 </div>
 </div>
 <a id="a12b93fba7a95b07585cf816caaebf46c" name="a12b93fba7a95b07585cf816caaebf46c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a12b93fba7a95b07585cf816caaebf46c">&#9670;&#160;</a></span>SparseGraph() <span class="overload">[5/5]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a12b93fba7a95b07585cf816caaebf46c">&#9670;&#160;</a></span>SparseGraph() <span class="overload">[4/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -271,103 +253,31 @@ template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsVertexColoredGraph.h
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a26c6336e842ed39304a315e6a0bc0060" name="a26c6336e842ed39304a315e6a0bc0060"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a26c6336e842ed39304a315e6a0bc0060">&#9670;&#160;</a></span>add_edge()</h2>
+<a id="a4dfc06685c5f30f2fd0d70dedcd36f01" name="a4dfc06685c5f30f2fd0d70dedcd36f01"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4dfc06685c5f30f2fd0d70dedcd36f01">&#9670;&#160;</a></span>canonize()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void mimir::graphs::nauty::SparseGraph::add_edge </td>
+          <td class="memname"><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html">SparseGraph</a> &amp; mimir::graphs::nauty::SparseGraph::canonize </td>
           <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>source</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>target</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Add a directed edge to the graph. </p>
-<p>Throws an exception if <code>source</code> or <code>target</code> is out of bounds. </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">source</td><td>is the index of the source vertex. </td></tr>
-    <tr><td class="paramname">target</td><td>is the index of the target vertex. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a154ba31092dd832b263ce6f52497d3f3" name="a154ba31092dd832b263ce6f52497d3f3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a154ba31092dd832b263ce6f52497d3f3">&#9670;&#160;</a></span>add_vertex_coloring()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void mimir::graphs::nauty::SparseGraph::add_vertex_coloring </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespacemimir_1_1graphs.html#aaf545c08ff61f9d6d1e2034e520253c0">mimir::graphs::ColorList</a> &amp;&#160;</td>
-          <td class="paramname"><em>vertex_coloring</em></td><td>)</td>
+          <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Add colors to the vertices of the graph. </p>
-<p>Throws an exception if the size of the <code>vertex_coloring</code> is not equal to the number of vertices in the graph. </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">vertex_coloring</td><td>are the colors of the vertices. </td></tr>
-  </table>
-  </dd>
-</dl>
-
 </div>
 </div>
-<a id="ab38f3882a982eeaf0c5a12a7afc47273" name="ab38f3882a982eeaf0c5a12a7afc47273"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab38f3882a982eeaf0c5a12a7afc47273">&#9670;&#160;</a></span>clear()</h2>
+<a id="adc5f9f1164103a856e208c7a57e8bace" name="adc5f9f1164103a856e208c7a57e8bace"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc5f9f1164103a856e208c7a57e8bace">&#9670;&#160;</a></span>get_coloring()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void mimir::graphs::nauty::SparseGraph::clear </td>
-          <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>num_vertices</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Clear the graph data structures by changing the number of vertices and removing all edges. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">num_vertices</td><td>is the new number of vertices. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a75e89d2b1e3a4b0473871b80821d8970" name="a75e89d2b1e3a4b0473871b80821d8970"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a75e89d2b1e3a4b0473871b80821d8970">&#9670;&#160;</a></span>is_directed()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool mimir::graphs::nauty::SparseGraph::is_directed </td>
+          <td class="memname">const <a class="el" href="namespacemimir_1_1graphs.html#aaf545c08ff61f9d6d1e2034e520253c0">ColorList</a> &amp; mimir::graphs::nauty::SparseGraph::get_coloring </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -375,7 +285,240 @@ template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsVertexColoredGraph.h
       </table>
 </div><div class="memdoc">
 
-<p>Return true iff the graph is directed. </p>
+</div>
+</div>
+<a id="a82865a53db17c5366afbf5b370b17b4e" name="a82865a53db17c5366afbf5b370b17b4e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82865a53db17c5366afbf5b370b17b4e">&#9670;&#160;</a></span>get_d()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; int &gt; &amp; mimir::graphs::nauty::SparseGraph::get_d </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6c235fc57e26fe27e1033b57e272b0b4" name="a6c235fc57e26fe27e1033b57e272b0b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c235fc57e26fe27e1033b57e272b0b4">&#9670;&#160;</a></span>get_dlen()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t mimir::graphs::nauty::SparseGraph::get_dlen </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af44712bea5c60d69d1890b1876030836" name="af44712bea5c60d69d1890b1876030836"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af44712bea5c60d69d1890b1876030836">&#9670;&#160;</a></span>get_e()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; int &gt; &amp; mimir::graphs::nauty::SparseGraph::get_e </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aae88f91b064401ceaf97038234c0f558" name="aae88f91b064401ceaf97038234c0f558"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae88f91b064401ceaf97038234c0f558">&#9670;&#160;</a></span>get_elen()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t mimir::graphs::nauty::SparseGraph::get_elen </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a99fa05f6a718b54735864bfb84b2cbae" name="a99fa05f6a718b54735864bfb84b2cbae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99fa05f6a718b54735864bfb84b2cbae">&#9670;&#160;</a></span>get_lab()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; int &gt; &amp; mimir::graphs::nauty::SparseGraph::get_lab </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2e0c9ea99014ed30b76c027348d49b04" name="a2e0c9ea99014ed30b76c027348d49b04"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e0c9ea99014ed30b76c027348d49b04">&#9670;&#160;</a></span>get_nde()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t mimir::graphs::nauty::SparseGraph::get_nde </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7c218f6bf842e7e9d178d5faef2885c9" name="a7c218f6bf842e7e9d178d5faef2885c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c218f6bf842e7e9d178d5faef2885c9">&#9670;&#160;</a></span>get_nv()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int mimir::graphs::nauty::SparseGraph::get_nv </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aac79458af005405652e665c207afd78e" name="aac79458af005405652e665c207afd78e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac79458af005405652e665c207afd78e">&#9670;&#160;</a></span>get_pi()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; int &gt; &amp; mimir::graphs::nauty::SparseGraph::get_pi </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return vertex permutation from input graph to canonical graphs. Throws an exception if <a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html#a4dfc06685c5f30f2fd0d70dedcd36f01">canonize()</a> was not called before. </p>
+<dl class="section return"><dt>Returns</dt><dd></dd></dl>
+
+</div>
+</div>
+<a id="ab1722d4c593b159cd970cfe5dc1e8d0c" name="ab1722d4c593b159cd970cfe5dc1e8d0c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1722d4c593b159cd970cfe5dc1e8d0c">&#9670;&#160;</a></span>get_pi_inverse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; int &gt; &amp; mimir::graphs::nauty::SparseGraph::get_pi_inverse </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return permutation from canonical graph to input graph. Throws an exception if <a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html#a4dfc06685c5f30f2fd0d70dedcd36f01">canonize()</a> was not called before. </p>
+<dl class="section return"><dt>Returns</dt><dd></dd></dl>
+
+</div>
+</div>
+<a id="a968af2b5457e7dccf9e14f1178b9bd36" name="a968af2b5457e7dccf9e14f1178b9bd36"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a968af2b5457e7dccf9e14f1178b9bd36">&#9670;&#160;</a></span>get_ptn()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; int &gt; &amp; mimir::graphs::nauty::SparseGraph::get_ptn </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a61255834dd425993c29327c3b3eb4066" name="a61255834dd425993c29327c3b3eb4066"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61255834dd425993c29327c3b3eb4066">&#9670;&#160;</a></span>get_v()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; size_t &gt; &amp; mimir::graphs::nauty::SparseGraph::get_v </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a28b0194a8118db57f70320bee721c32f" name="a28b0194a8118db57f70320bee721c32f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28b0194a8118db57f70320bee721c32f">&#9670;&#160;</a></span>get_vlen()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t mimir::graphs::nauty::SparseGraph::get_vlen </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae6163946e5f6fc6ae707cf3938d44b61" name="ae6163946e5f6fc6ae707cf3938d44b61"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6163946e5f6fc6ae707cf3938d44b61">&#9670;&#160;</a></span>identifying_members()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto mimir::graphs::nauty::SparseGraph::identifying_members </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>
@@ -424,8 +567,8 @@ template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsVertexColoredGraph.h
 </div>
 </div>
 <h2 class="groupheader">Friends And Related Function Documentation</h2>
-<a id="abbcf5127551c2b9b2fd021320fe874a8" name="abbcf5127551c2b9b2fd021320fe874a8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abbcf5127551c2b9b2fd021320fe874a8">&#9670;&#160;</a></span>compute_certificate</h2>
+<a id="a3a74dbd72599f661693c7c58844bd464" name="a3a74dbd72599f661693c7c58844bd464"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a74dbd72599f661693c7c58844bd464">&#9670;&#160;</a></span>operator&lt;&lt;</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -434,11 +577,21 @@ template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsVertexColoredGraph.h
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1Certificate.html">Certificate</a> compute_certificate </td>
+          <td class="memname">std::ostream &amp; operator&lt;&lt; </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html">SparseGraph</a> &amp;&#160;</td>
-          <td class="paramname"><em>graph</em></td><td>)</td>
+          <td class="paramtype">std::ostream &amp;&#160;</td>
+          <td class="paramname"><em>out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const <a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html">SparseGraph</a> &amp;&#160;</td>
+          <td class="paramname"><em>graph</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>

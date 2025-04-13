@@ -79,7 +79,8 @@ $(function() {
   <div class="headertitle"><div class="title">graph_properties.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="graph__edges_8hpp_source.html">mimir/graphs/graph_edges.hpp</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="graph__algorithms_8hpp_source.html">mimir/graphs/bgl/graph_algorithms.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="graph__edges_8hpp_source.html">mimir/graphs/graph_edges.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="graph__interface_8hpp_source.html">mimir/graphs/graph_interface.hpp</a>&quot;</code><br />
 <code>#include &lt;loki/details/utils/hash.hpp&gt;</code><br />
 <code>#include &lt;unordered_set&gt;</code><br />
@@ -103,6 +104,14 @@ requires IsEdgeListGraph&lt;G&gt;</td></tr>
 requires IsEdgeListGraph&lt;G&gt;</td></tr>
 <tr class="memitem:a2fb23c4687749ba2063a71ccf7115f67"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a2fb23c4687749ba2063a71ccf7115f67">mimir::graphs::is_multi_graph</a> (const G &amp;graph)</td></tr>
 <tr class="separator:a2fb23c4687749ba2063a71ccf7115f67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade17ba3ffd51f93a643429fefe188184"><td class="memTemplParams" colspan="2">template&lt;typename G &gt; <br />
+requires IsEdgeListGraph&lt;G&gt;</td></tr>
+<tr class="memitem:ade17ba3ffd51f93a643429fefe188184"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#ade17ba3ffd51f93a643429fefe188184">mimir::graphs::is_loopless</a> (const G &amp;graph)</td></tr>
+<tr class="separator:ade17ba3ffd51f93a643429fefe188184"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf5904abe2a8f636bb7a3107a0f42662"><td class="memTemplParams" colspan="2">template&lt;typename G &gt; <br />
+requires IsVertexListGraph&lt;G&gt; &amp;&amp; IsIncidenceGraph&lt;G&gt;</td></tr>
+<tr class="memitem:aaf5904abe2a8f636bb7a3107a0f42662"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#aaf5904abe2a8f636bb7a3107a0f42662">mimir::graphs::is_acyclic</a> (const G &amp;graph)</td></tr>
+<tr class="separator:aaf5904abe2a8f636bb7a3107a0f42662"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

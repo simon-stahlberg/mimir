@@ -80,12 +80,12 @@ $(function() {
   <div class="headertitle"><div class="title">nauty.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;mimir/common/printers.hpp&quot;</code><br />
-<code>#include &quot;<a class="el" href="digraph__vertex__colored_8hpp_source.html">mimir/graphs/concrete/digraph_vertex_colored.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="graphs_2declarations_8hpp_source.html">mimir/graphs/declarations.hpp</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;mimir/common/deref_shared_ptr.hpp&quot;</code><br />
+<code>#include &quot;mimir/common/printers.hpp&quot;</code><br />
+<code>#include &quot;<a class="el" href="color_8hpp_source.html">mimir/graphs/color.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="graph__interface_8hpp_source.html">mimir/graphs/graph_interface.hpp</a>&quot;</code><br />
-<code>#include &lt;loki/details/utils/equal_to.hpp&gt;</code><br />
-<code>#include &lt;loki/details/utils/hash.hpp&gt;</code><br />
+<code>#include &quot;<a class="el" href="graph__properties_8hpp_source.html">mimir/graphs/graph_properties.hpp</a>&quot;</code><br />
+<code>#include &quot;mimir/graphs/types.hpp&quot;</code><br />
 <code>#include &lt;memory&gt;</code><br />
 <code>#include &lt;ostream&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
@@ -94,12 +94,6 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1Certificate.html">mimir::graphs::nauty::Certificate</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1Certificate.html" title="Certificate encapsulates a canonical graph representation of a vertex-colored graph.">Certificate</a></code> encapsulates a canonical graph representation of a vertex-colored graph.  <a href="classmimir_1_1graphs_1_1nauty_1_1Certificate.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1DenseGraph.html">mimir::graphs::nauty::DenseGraph</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1DenseGraph.html" title="DenseGraph encapsulates a dense graph representation compatible with Nauty.">DenseGraph</a></code> encapsulates a dense graph representation compatible with Nauty.  <a href="classmimir_1_1graphs_1_1nauty_1_1DenseGraph.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html">mimir::graphs::nauty::SparseGraph</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html" title="SparseGraph encapsulates a sparse graph representation compatible with Nauty.">SparseGraph</a></code> encapsulates a sparse graph representation compatible with Nauty.  <a href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -113,19 +107,20 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacemimir_1_1graphs_1_1nauty"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1nauty.html">mimir::graphs::nauty</a></td></tr>
 <tr class="memdesc:namespacemimir_1_1graphs_1_1nauty"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wrap a namespace around nauty's interface. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacemimir_1_1graphs_1_1nauty_1_1details"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1nauty_1_1details.html">mimir::graphs::nauty::details</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:adda0c10ee55cbfa57e68834aff6998f4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1nauty.html#adda0c10ee55cbfa57e68834aff6998f4">mimir::graphs::nauty::operator==</a> (const Certificate &amp;lhs, const Certificate &amp;rhs)</td></tr>
-<tr class="separator:adda0c10ee55cbfa57e68834aff6998f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7cfe9dff305eb0d272818469060b8cdd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1nauty.html#a7cfe9dff305eb0d272818469060b8cdd">mimir::graphs::nauty::operator&lt;</a> (const Certificate &amp;lhs, const Certificate &amp;rhs)</td></tr>
-<tr class="separator:a7cfe9dff305eb0d272818469060b8cdd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af08a8aa5d749c5a1f14b341658ec3eeb"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1nauty.html#af08a8aa5d749c5a1f14b341658ec3eeb">mimir::graphs::nauty::operator&lt;&lt;</a> (std::ostream &amp;os, const Certificate &amp;element)</td></tr>
-<tr class="separator:af08a8aa5d749c5a1f14b341658ec3eeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad654d7b6e349d7e1b1470744d0f90b6d"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="conceptmimir_1_1graphs_1_1IsVertexColoredGraph.html">mimir::graphs::IsVertexColoredGraph</a> Graph&gt; </td></tr>
-<tr class="memitem:ad654d7b6e349d7e1b1470744d0f90b6d"><td class="memTemplItemLeft" align="right" valign="top">Certificate&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1nauty.html#ad654d7b6e349d7e1b1470744d0f90b6d">mimir::graphs::nauty::compute_certificate</a> (const Graph &amp;graph)</td></tr>
-<tr class="memdesc:ad654d7b6e349d7e1b1470744d0f90b6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the nauty graph <code><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1Certificate.html" title="Certificate encapsulates a canonical graph representation of a vertex-colored graph.">Certificate</a></code> for a given graph that satisfies the <code><a class="el" href="conceptmimir_1_1graphs_1_1IsVertexColoredGraph.html">mimir::graphs::IsVertexColoredGraph</a></code> graph concept. This function internally uses the <code><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html" title="SparseGraph encapsulates a sparse graph representation compatible with Nauty.">SparseGraph</a></code> representation for simplicity. To use <code><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1DenseGraph.html" title="DenseGraph encapsulates a dense graph representation compatible with Nauty.">DenseGraph</a></code>, one has to construct it and call <code>compute_certificate</code>.  <br /></td></tr>
-<tr class="separator:ad654d7b6e349d7e1b1470744d0f90b6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6988f9968c1e495674d8041533744d7f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1nauty.html#a6988f9968c1e495674d8041533744d7f">mimir::graphs::nauty::apply_permutation</a> (const std::vector&lt; int &gt; &amp;pi, std::vector&lt; int &gt; &amp;ref_vec)</td></tr>
+<tr class="separator:a6988f9968c1e495674d8041533744d7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9e0042eee29f6e9d974de4b3e6e998d"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1nauty.html#ae9e0042eee29f6e9d974de4b3e6e998d">mimir::graphs::nauty::compute_lab_permutation</a> (const SparseGraph &amp;source, const SparseGraph &amp;target)</td></tr>
+<tr class="memdesc:ae9e0042eee29f6e9d974de4b3e6e998d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the permutation induced by the isomorphism from the source <code><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html" title="SparseGraph encapsulates a sparse graph representation compatible with Nauty.">SparseGraph</a></code> to the target <code><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html" title="SparseGraph encapsulates a sparse graph representation compatible with Nauty.">SparseGraph</a></code>. Assumes that there exists an isomorphism from source to target.  <br /></td></tr>
+<tr class="separator:ae9e0042eee29f6e9d974de4b3e6e998d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a713699f7e400872928713deebb4b61cd"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1nauty.html#a713699f7e400872928713deebb4b61cd">mimir::graphs::nauty::compute_permutation</a> (const SparseGraph &amp;source, const SparseGraph &amp;target)</td></tr>
+<tr class="separator:a713699f7e400872928713deebb4b61cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25ed380938e0be6682d1d49614af7848"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1nauty.html#a25ed380938e0be6682d1d49614af7848">mimir::graphs::nauty::operator&lt;&lt;</a> (std::ostream &amp;out, const SparseGraph &amp;graph)</td></tr>
+<tr class="separator:a25ed380938e0be6682d1d49614af7848"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

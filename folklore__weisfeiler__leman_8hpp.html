@@ -81,29 +81,36 @@ $(function() {
   <div class="headertitle"><div class="title">folklore_weisfeiler_leman.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;mimir/common/printers.hpp&quot;</code><br />
+<div class="textblock"><code>#include &quot;mimir/common/equal_to.hpp&quot;</code><br />
+<code>#include &quot;mimir/common/hash.hpp&quot;</code><br />
+<code>#include &quot;mimir/common/printers.hpp&quot;</code><br />
 <code>#include &quot;<a class="el" href="common_2types_8hpp_source.html">mimir/common/types.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="color__refinement_8hpp_source.html">mimir/graphs/algorithms/color_refinement.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="nauty_8hpp_source.html">mimir/graphs/algorithms/nauty.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="vertex__colored__graph_8hpp_source.html">mimir/graphs/concrete/vertex_colored_graph.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="graph__interface_8hpp_source.html">mimir/graphs/graph_interface.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="graph__properties_8hpp_source.html">mimir/graphs/graph_properties.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="graph__traversal__interface_8hpp_source.html">mimir/graphs/graph_traversal_interface.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="graph__vertices_8hpp_source.html">mimir/graphs/graph_vertices.hpp</a>&quot;</code><br />
+<code>#include &quot;mimir/graphs/types.hpp&quot;</code><br />
+<code>#include &lt;algorithm&gt;</code><br />
 <code>#include &lt;cassert&gt;</code><br />
+<code>#include &lt;cstddef&gt;</code><br />
+<code>#include &lt;iostream&gt;</code><br />
 <code>#include &lt;loki/details/utils/equal_to.hpp&gt;</code><br />
 <code>#include &lt;loki/details/utils/hash.hpp&gt;</code><br />
 <code>#include &lt;map&gt;</code><br />
-<code>#include &lt;set&gt;</code><br />
+<code>#include &lt;memory&gt;</code><br />
+<code>#include &lt;tuple&gt;</code><br />
 <code>#include &lt;unordered_map&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
-<code>#include &quot;<a class="el" href="folklore__weisfeiler__leman__impl_8hpp_source.html">mimir/graphs/algorithms/folklore_weisfeiler_leman_impl.hpp</a>&quot;</code><br />
 </div>
 <p><a href="folklore__weisfeiler__leman_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1kfwl_1_1Certificate.html">mimir::graphs::kfwl::Certificate&lt; K &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code><a class="el" href="classmimir_1_1graphs_1_1kfwl_1_1Certificate.html" title="Certificate encapsulates the final tuple colorings and the decoding tables.">Certificate</a></code> encapsulates the final tuple colorings and the decoding tables.  <a href="classmimir_1_1graphs_1_1kfwl_1_1Certificate.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1kfwl_1_1CertificateImpl.html">mimir::graphs::kfwl::CertificateImpl&lt; K &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code><a class="el" href="classmimir_1_1graphs_1_1kfwl_1_1CertificateImpl.html" title="CertificateImpl encapsulates the final tuple colorings and the decoding tables.">CertificateImpl</a></code> encapsulates the final tuple colorings and the decoding tables.  <a href="classmimir_1_1graphs_1_1kfwl_1_1CertificateImpl.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
@@ -117,20 +124,20 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a6a35ce6559c7ea8d256c561a047b4ef2"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1kfwl.html#a6a35ce6559c7ea8d256c561a047b4ef2">mimir::graphs::kfwl::IsomorphismTypeCompressionFunction</a> = std::unordered_map&lt; nauty::Certificate, Color, loki::Hash&lt; nauty::Certificate &gt;, loki::EqualTo&lt; nauty::Certificate &gt; &gt;</td></tr>
-<tr class="memdesc:a6a35ce6559c7ea8d256c561a047b4ef2"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>IsomorphismTypeCompressionFunction</code> encapsulates mappings from canonical subgraphs to colors.  <br /></td></tr>
-<tr class="separator:a6a35ce6559c7ea8d256c561a047b4ef2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92675c1f71de7c8bb4d35af1a754ced2"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1kfwl.html#a92675c1f71de7c8bb4d35af1a754ced2">mimir::graphs::kfwl::IsomorphismTypeCompressionFunction</a> = UnorderedMap&lt; nauty::SparseGraph, ColorIndex &gt;</td></tr>
+<tr class="memdesc:a92675c1f71de7c8bb4d35af1a754ced2"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>IsomorphismTypeCompressionFunction</code> encapsulates mappings from canonical subgraphs to colors.  <br /></td></tr>
+<tr class="separator:a92675c1f71de7c8bb4d35af1a754ced2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:af8a043136f2e665f8443c22b1472e581"><td class="memTemplParams" colspan="2">template&lt;size_t K&gt; </td></tr>
-<tr class="memitem:af8a043136f2e665f8443c22b1472e581"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1kfwl.html#af8a043136f2e665f8443c22b1472e581">mimir::graphs::kfwl::operator==</a> (const Certificate&lt; K &gt; &amp;lhs, const Certificate&lt; K &gt; &amp;rhs)</td></tr>
-<tr class="memdesc:af8a043136f2e665f8443c22b1472e581"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compare two certificates for equality.  <br /></td></tr>
-<tr class="separator:af8a043136f2e665f8443c22b1472e581"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0b95b34e47a26af1c80f27ce6df857e0"><td class="memTemplParams" colspan="2">template&lt;size_t K&gt; </td></tr>
-<tr class="memitem:a0b95b34e47a26af1c80f27ce6df857e0"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1kfwl.html#a0b95b34e47a26af1c80f27ce6df857e0">mimir::graphs::kfwl::operator&lt;&lt;</a> (std::ostream &amp;out, const Certificate&lt; K &gt; &amp;element)</td></tr>
-<tr class="memdesc:a0b95b34e47a26af1c80f27ce6df857e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print a certificate to the ostream.  <br /></td></tr>
-<tr class="separator:a0b95b34e47a26af1c80f27ce6df857e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c5a6b2509fee5b7fdfe2fa5d2090585"><td class="memTemplParams" colspan="2">template&lt;size_t K&gt; </td></tr>
+<tr class="memitem:a3c5a6b2509fee5b7fdfe2fa5d2090585"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1kfwl.html#a3c5a6b2509fee5b7fdfe2fa5d2090585">mimir::graphs::kfwl::operator==</a> (const CertificateImpl&lt; K &gt; &amp;lhs, const CertificateImpl&lt; K &gt; &amp;rhs)</td></tr>
+<tr class="memdesc:a3c5a6b2509fee5b7fdfe2fa5d2090585"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compare two certificates for equality.  <br /></td></tr>
+<tr class="separator:a3c5a6b2509fee5b7fdfe2fa5d2090585"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab822108a2d63d68b8af543c5484d3e82"><td class="memTemplParams" colspan="2">template&lt;size_t K&gt; </td></tr>
+<tr class="memitem:ab822108a2d63d68b8af543c5484d3e82"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1kfwl.html#ab822108a2d63d68b8af543c5484d3e82">mimir::graphs::kfwl::operator&lt;&lt;</a> (std::ostream &amp;out, const CertificateImpl&lt; K &gt; &amp;element)</td></tr>
+<tr class="memdesc:ab822108a2d63d68b8af543c5484d3e82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print a certificate to the ostream.  <br /></td></tr>
+<tr class="separator:ab822108a2d63d68b8af543c5484d3e82"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad05841aaed12ad4b37e8446c92597773"><td class="memTemplParams" colspan="2">template&lt;size_t K&gt; </td></tr>
 <tr class="memitem:ad05841aaed12ad4b37e8446c92597773"><td class="memTemplItemLeft" align="right" valign="top">size_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1kfwl.html#ad05841aaed12ad4b37e8446c92597773">mimir::graphs::kfwl::tuple_to_hash</a> (const IndexArray&lt; K &gt; &amp;tuple, size_t num_vertices)</td></tr>
 <tr class="memdesc:ad05841aaed12ad4b37e8446c92597773"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the perfect hash of the given k-tuple.  <br /></td></tr>
@@ -139,11 +146,16 @@ Functions</h2></td></tr>
 <tr class="memitem:a6374e2bcf2319cea5ec9cee898b5039b"><td class="memTemplItemLeft" align="right" valign="top">IndexArray&lt; K &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1kfwl.html#a6374e2bcf2319cea5ec9cee898b5039b">mimir::graphs::kfwl::hash_to_tuple</a> (size_t hash, size_t num_vertices)</td></tr>
 <tr class="memdesc:a6374e2bcf2319cea5ec9cee898b5039b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the k-tuple of the perfect hash. This operation takes O(k) time.  <br /></td></tr>
 <tr class="separator:a6374e2bcf2319cea5ec9cee898b5039b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0a27094ee7fea6714bb9334e85acbdc4"><td class="memTemplParams" colspan="2">template&lt;size_t K, typename G &gt; <br />
+<tr class="memitem:a71674ee2c5de24bc317d74d2fb7f69ba"><td class="memTemplParams" colspan="2">template&lt;std::size_t K, typename G &gt; <br />
 requires IsVertexListGraph&lt;G&gt; &amp;&amp; IsIncidenceGraph&lt;G&gt; &amp;&amp; IsVertexColoredGraph&lt;G&gt;</td></tr>
-<tr class="memitem:a0a27094ee7fea6714bb9334e85acbdc4"><td class="memTemplItemLeft" align="right" valign="top">Certificate&lt; K &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1kfwl.html#a0a27094ee7fea6714bb9334e85acbdc4">mimir::graphs::kfwl::compute_certificate</a> (const G &amp;graph, IsomorphismTypeCompressionFunction &amp;iso_type_function)</td></tr>
-<tr class="memdesc:a0a27094ee7fea6714bb9334e85acbdc4"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>compute_certificate</code> implements the k-dimensional Folklore Weisfeiler-Leman algorithm. Source: <a href="https://arxiv.org/pdf/1907.09582">https://arxiv.org/pdf/1907.09582</a>  <br /></td></tr>
-<tr class="separator:a0a27094ee7fea6714bb9334e85acbdc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71674ee2c5de24bc317d74d2fb7f69ba"><td class="memTemplItemLeft" align="right" valign="top">std::shared_ptr&lt; CertificateImpl&lt; K &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1kfwl.html#a71674ee2c5de24bc317d74d2fb7f69ba">mimir::graphs::kfwl::compute_certificate</a> (const G &amp;graph, IsomorphismTypeCompressionFunction &amp;iso_type_function)</td></tr>
+<tr class="memdesc:a71674ee2c5de24bc317d74d2fb7f69ba"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>compute_certificate</code> implements the k-dimensional Folklore Weisfeiler-Leman algorithm. Source: <a href="https://arxiv.org/pdf/1907.09582">https://arxiv.org/pdf/1907.09582</a>  <br /></td></tr>
+<tr class="separator:a71674ee2c5de24bc317d74d2fb7f69ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab14d520df1b888ed206041d35aabcc52"><td class="memTemplParams" colspan="2">template&lt;size_t K, typename G &gt; <br />
+requires IsVertexListGraph&lt;G&gt; &amp;&amp; IsIncidenceGraph&lt;G&gt; &amp;&amp; IsVertexColoredGraph&lt;G&gt;</td></tr>
+<tr class="memitem:ab14d520df1b888ed206041d35aabcc52"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1kfwl.html#ab14d520df1b888ed206041d35aabcc52">mimir::graphs::kfwl::compute_ordered_isomorphism_types</a> (const G &amp;graph, IsomorphismTypeCompressionFunction &amp;iso_type_function)</td></tr>
+<tr class="memdesc:ab14d520df1b888ed206041d35aabcc52"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the ordered isomorphism types of all k-tuples in the graph.  <br /></td></tr>
+<tr class="separator:ab14d520df1b888ed206041d35aabcc52"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

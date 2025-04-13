@@ -13,13 +13,12 @@ var searchData=
   ['isedgelistgraph_10',['IsEdgeListGraph',['../conceptmimir_1_1graphs_1_1IsEdgeListGraph.html',1,'mimir::graphs']]],
   ['isfluentorauxiliarytag_11',['IsFluentOrAuxiliaryTag',['../conceptmimir_1_1formalism_1_1IsFluentOrAuxiliaryTag.html',1,'mimir::formalism']]],
   ['isfluentorderivedtag_12',['IsFluentOrDerivedTag',['../conceptmimir_1_1formalism_1_1IsFluentOrDerivedTag.html',1,'mimir::formalism']]],
-  ['isformalismentity_13',['IsFormalismEntity',['../conceptmimir_1_1formalism_1_1IsFormalismEntity.html',1,'mimir::formalism']]],
-  ['isincidencegraph_14',['IsIncidenceGraph',['../conceptmimir_1_1graphs_1_1IsIncidenceGraph.html',1,'mimir::graphs']]],
-  ['isstaticgraph_15',['IsStaticGraph',['../conceptmimir_1_1graphs_1_1IsStaticGraph.html',1,'mimir::graphs']]],
-  ['isstaticorfluentorauxiliarytag_16',['IsStaticOrFluentOrAuxiliaryTag',['../conceptmimir_1_1formalism_1_1IsStaticOrFluentOrAuxiliaryTag.html',1,'mimir::formalism']]],
-  ['isstaticorfluentorderivedtag_17',['IsStaticOrFluentOrDerivedTag',['../conceptmimir_1_1formalism_1_1IsStaticOrFluentOrDerivedTag.html',1,'mimir::formalism']]],
-  ['isstaticorfluenttag_18',['IsStaticOrFluentTag',['../conceptmimir_1_1formalism_1_1IsStaticOrFluentTag.html',1,'mimir::formalism']]],
-  ['isvertex_19',['IsVertex',['../conceptmimir_1_1graphs_1_1IsVertex.html',1,'mimir::graphs']]],
-  ['isvertexcoloredgraph_20',['IsVertexColoredGraph',['../conceptmimir_1_1graphs_1_1IsVertexColoredGraph.html',1,'mimir::graphs']]],
-  ['isvertexlistgraph_21',['IsVertexListGraph',['../conceptmimir_1_1graphs_1_1IsVertexListGraph.html',1,'mimir::graphs']]]
+  ['isincidencegraph_13',['IsIncidenceGraph',['../conceptmimir_1_1graphs_1_1IsIncidenceGraph.html',1,'mimir::graphs']]],
+  ['isstaticgraph_14',['IsStaticGraph',['../conceptmimir_1_1graphs_1_1IsStaticGraph.html',1,'mimir::graphs']]],
+  ['isstaticorfluentorauxiliarytag_15',['IsStaticOrFluentOrAuxiliaryTag',['../conceptmimir_1_1formalism_1_1IsStaticOrFluentOrAuxiliaryTag.html',1,'mimir::formalism']]],
+  ['isstaticorfluentorderivedtag_16',['IsStaticOrFluentOrDerivedTag',['../conceptmimir_1_1formalism_1_1IsStaticOrFluentOrDerivedTag.html',1,'mimir::formalism']]],
+  ['isstaticorfluenttag_17',['IsStaticOrFluentTag',['../conceptmimir_1_1formalism_1_1IsStaticOrFluentTag.html',1,'mimir::formalism']]],
+  ['isvertex_18',['IsVertex',['../conceptmimir_1_1graphs_1_1IsVertex.html',1,'mimir::graphs']]],
+  ['isvertexcoloredgraph_19',['IsVertexColoredGraph',['../conceptmimir_1_1graphs_1_1IsVertexColoredGraph.html',1,'mimir::graphs']]],
+  ['isvertexlistgraph_20',['IsVertexListGraph',['../conceptmimir_1_1graphs_1_1IsVertexListGraph.html',1,'mimir::graphs']]]
 ];

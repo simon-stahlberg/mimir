@@ -82,12 +82,14 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;mimir/common/grouped_vector.hpp&quot;</code><br />
-<code>#include &quot;<a class="el" href="generalized__state__space_8hpp_source.html">mimir/datasets/generalized_state_space.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="datasets_2declarations_8hpp_source.html">mimir/datasets/declarations.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="internal__tuple__graph_8hpp_source.html">mimir/datasets/tuple_graph/internal_tuple_graph.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="datasets_2tuple__graph_2options_8hpp_source.html">mimir/datasets/tuple_graph/options.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="formalism_2declarations_8hpp_source.html">mimir/formalism/declarations.hpp</a>&quot;</code><br />
 <code>#include &quot;mimir/graphs/static_graph.hpp&quot;</code><br />
 <code>#include &quot;<a class="el" href="novelty__table_8hpp_source.html">mimir/search/algorithms/iw/novelty_table.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="tuple__index__generators_8hpp_source.html">mimir/search/algorithms/iw/tuple_index_generators.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="tuple__index__mapper_8hpp_source.html">mimir/search/algorithms/iw/tuple_index_mapper.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="state_8hpp_source.html">mimir/search/state.hpp</a>&quot;</code><br />
 <code>#include &lt;ostream&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
 </div>
@@ -97,40 +99,21 @@ $(function() {
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1datasets_1_1TupleGraphImpl.html">mimir::datasets::TupleGraphImpl</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmimir_1_1datasets_1_1TupleGraphImpl_1_1Options.html">mimir::datasets::TupleGraphImpl::Options</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
 <tr class="memitem:namespacemimir"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir.html">mimir</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacemimir_1_1graphs"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html">mimir::graphs</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacemimir_1_1datasets"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1datasets.html">mimir::datasets</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a40ad24baa6642beb75cd2d720a07f2f5"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a40ad24baa6642beb75cd2d720a07f2f5">mimir::graphs::TupleGraphVertex</a> = Vertex&lt; search::iw::AtomIndexList, IndexList &gt;</td></tr>
-<tr class="memdesc:a40ad24baa6642beb75cd2d720a07f2f5"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>TupleGraphVertex</code> encapsulates information about a vertex in a tuple graph.  <br /></td></tr>
-<tr class="separator:a40ad24baa6642beb75cd2d720a07f2f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a78aaf762d44ebe5f609efd50b800dd95"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a78aaf762d44ebe5f609efd50b800dd95">mimir::graphs::TupleGraphVertexList</a> = std::vector&lt; TupleGraphVertex &gt;</td></tr>
-<tr class="separator:a78aaf762d44ebe5f609efd50b800dd95"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afc9f5b658a079f1cb248b164b7433512"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#afc9f5b658a079f1cb248b164b7433512">mimir::graphs::TupleGraphEdge</a> = Edge&lt;&gt;</td></tr>
-<tr class="separator:afc9f5b658a079f1cb248b164b7433512"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad7b9cb62cd0876cb19eb97771783eb74"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#ad7b9cb62cd0876cb19eb97771783eb74">mimir::graphs::TupleGraphEdgeList</a> = std::vector&lt; TupleGraphEdge &gt;</td></tr>
-<tr class="separator:ad7b9cb62cd0876cb19eb97771783eb74"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a09ea49a33bf8ac82406f8d9cd7e95f1f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a09ea49a33bf8ac82406f8d9cd7e95f1f">mimir::graphs::StaticTupleGraph</a> = StaticGraph&lt; TupleGraphVertex, TupleGraphEdge &gt;</td></tr>
-<tr class="separator:a09ea49a33bf8ac82406f8d9cd7e95f1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a59f908cee5f00c5e604ef2442951bd9b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a59f908cee5f00c5e604ef2442951bd9b">mimir::graphs::InternalTupleGraph</a> = StaticBidirectionalGraph&lt; StaticTupleGraph &gt;</td></tr>
-<tr class="separator:a59f908cee5f00c5e604ef2442951bd9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e3f6853ebb2f76d2e5e1fcac8fa6531"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1datasets.html#a5e3f6853ebb2f76d2e5e1fcac8fa6531">mimir::datasets::TupleGraphList</a> = std::vector&lt; TupleGraph &gt;</td></tr>
+<tr class="separator:a5e3f6853ebb2f76d2e5e1fcac8fa6531"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:aad9e4e485da3fd7c5d189b61448ade42"><td class="memItemLeft" align="right" valign="top">const search::iw::AtomIndexList &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#aad9e4e485da3fd7c5d189b61448ade42">mimir::graphs::get_atom_tuple</a> (const TupleGraphVertex &amp;vertex)</td></tr>
-<tr class="separator:aad9e4e485da3fd7c5d189b61448ade42"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab7058f319d92abbb392a2866fe96f369"><td class="memItemLeft" align="right" valign="top">const IndexList &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#ab7058f319d92abbb392a2866fe96f369">mimir::graphs::get_problem_vertices</a> (const TupleGraphVertex &amp;vertex)</td></tr>
-<tr class="separator:ab7058f319d92abbb392a2866fe96f369"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac98f6cb9161d7e632fa88ebade965a13"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1datasets.html#ac98f6cb9161d7e632fa88ebade965a13">mimir::datasets::operator&lt;&lt;</a> (std::ostream &amp;out, const TupleGraphImpl &amp;tuple_graph)</td></tr>
 <tr class="separator:ac98f6cb9161d7e632fa88ebade965a13"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>

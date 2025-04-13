@@ -82,35 +82,35 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1color__refinement_1_1Certificate.html">Certificate</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code><a class="el" href="classmimir_1_1graphs_1_1color__refinement_1_1Certificate.html" title="Certificate encapsulates the canonical coloring and the canonical compression function (decoding tabl...">Certificate</a></code> encapsulates the canonical coloring and the canonical compression function (decoding table).  <a href="classmimir_1_1graphs_1_1color__refinement_1_1Certificate.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1color__refinement_1_1CertificateImpl.html">CertificateImpl</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code><a class="el" href="classmimir_1_1graphs_1_1color__refinement_1_1CertificateImpl.html" title="CertificateImpl encapsulates the canonical coloring and the canonical compression function (decoding ...">CertificateImpl</a></code> encapsulates the canonical coloring and the canonical compression function (decoding table).  <a href="classmimir_1_1graphs_1_1color__refinement_1_1CertificateImpl.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a19fe79c73ad583f3e4876aa06f118e5f"><td class="memTemplParams" colspan="2">template&lt;typename ColorType &gt; </td></tr>
-<tr class="memitem:a19fe79c73ad583f3e4876aa06f118e5f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1color__refinement.html#a19fe79c73ad583f3e4876aa06f118e5f">replace_tuples</a> (const std::vector&lt; std::pair&lt; <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>, ColorType &gt; &gt; &amp;M, const <a class="el" href="namespacemimir_1_1graphs.html#aaf545c08ff61f9d6d1e2034e520253c0">ColorList</a> &amp;hash_to_color, std::vector&lt; std::tuple&lt; <a class="el" href="namespacemimir_1_1graphs.html#a49a593bc779d87d0f30c85978758b971">Color</a>, std::vector&lt; ColorType &gt;, <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> &gt; &gt; &amp;out_M_replaced)</td></tr>
-<tr class="memdesc:a19fe79c73ad583f3e4876aa06f118e5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace tuples by grouping colors with same hash.  <br /></td></tr>
-<tr class="separator:a19fe79c73ad583f3e4876aa06f118e5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abb7f2364f5291c9cbae284a3e652fc6b"><td class="memTemplParams" colspan="2">template&lt;typename ColorType &gt; </td></tr>
-<tr class="memitem:abb7f2364f5291c9cbae284a3e652fc6b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1color__refinement.html#abb7f2364f5291c9cbae284a3e652fc6b">split_color_classes</a> (const std::vector&lt; std::tuple&lt; <a class="el" href="namespacemimir_1_1graphs.html#a49a593bc779d87d0f30c85978758b971">Color</a>, std::vector&lt; ColorType &gt;, <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> &gt; &gt; &amp;M_replaced, std::unordered_map&lt; std::pair&lt; <a class="el" href="namespacemimir_1_1graphs.html#a49a593bc779d87d0f30c85978758b971">Color</a>, std::vector&lt; ColorType &gt; &gt;, <a class="el" href="namespacemimir_1_1graphs.html#a49a593bc779d87d0f30c85978758b971">Color</a>, loki::Hash&lt; std::pair&lt; <a class="el" href="namespacemimir_1_1graphs.html#a49a593bc779d87d0f30c85978758b971">Color</a>, std::vector&lt; ColorType &gt; &gt; &gt; &gt; &amp;ref_f, <a class="el" href="namespacemimir_1_1graphs.html#a49a593bc779d87d0f30c85978758b971">Color</a> &amp;ref_max_color, <a class="el" href="namespacemimir_1_1graphs.html#aaf545c08ff61f9d6d1e2034e520253c0">ColorList</a> &amp;ref_hash_to_color, <a class="el" href="namespacemimir_1_1graphs.html#ab80cb70c9cacef8d4f60518ba4bf5d08">ColorMap</a>&lt; <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a> &gt; &amp;out_color_to_hashes, <a class="el" href="namespacemimir_1_1graphs.html#a5063b65d76d453bb2cb97310619fe4bd">ColorSet</a> &amp;out_L)</td></tr>
-<tr class="memdesc:abb7f2364f5291c9cbae284a3e652fc6b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Split the color classes into new colors.  <br /></td></tr>
-<tr class="separator:abb7f2364f5291c9cbae284a3e652fc6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5365401ec40ae8011b6d9a3701718aa4"><td class="memTemplParams" colspan="2">template&lt;typename G &gt; <br />
+<tr class="memitem:acfc0aa3bca4cc7bac2648741e45e10a0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1color__refinement.html#acfc0aa3bca4cc7bac2648741e45e10a0">operator==</a> (const <a class="el" href="classmimir_1_1graphs_1_1color__refinement_1_1CertificateImpl.html">CertificateImpl</a> &amp;lhs, const <a class="el" href="classmimir_1_1graphs_1_1color__refinement_1_1CertificateImpl.html">CertificateImpl</a> &amp;rhs)</td></tr>
+<tr class="memdesc:acfc0aa3bca4cc7bac2648741e45e10a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compare two certificates for equality.  <br /></td></tr>
+<tr class="separator:acfc0aa3bca4cc7bac2648741e45e10a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4409623ea85e7fd7f055f13901d9fb91"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1color__refinement.html#a4409623ea85e7fd7f055f13901d9fb91">operator&lt;&lt;</a> (std::ostream &amp;out, const <a class="el" href="classmimir_1_1graphs_1_1color__refinement_1_1CertificateImpl.html">CertificateImpl</a> &amp;element)</td></tr>
+<tr class="memdesc:a4409623ea85e7fd7f055f13901d9fb91"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print a certificate to the ostream.  <br /></td></tr>
+<tr class="separator:a4409623ea85e7fd7f055f13901d9fb91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abecfcc3334ee0e837383c16f179d5953"><td class="memTemplParams" colspan="2">template&lt;typename G &gt; <br />
 requires IsVertexListGraph&lt;G&gt; &amp;&amp; IsIncidenceGraph&lt;G&gt; &amp;&amp; IsVertexColoredGraph&lt;G&gt;</td></tr>
-<tr class="memitem:a5365401ec40ae8011b6d9a3701718aa4"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classmimir_1_1graphs_1_1color__refinement_1_1Certificate.html">Certificate</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1color__refinement.html#a5365401ec40ae8011b6d9a3701718aa4">compute_certificate</a> (const G &amp;graph)</td></tr>
-<tr class="memdesc:a5365401ec40ae8011b6d9a3701718aa4"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>compute_certificate</code> implements the color refinement algorithm. Sources: <a href="https://arxiv.org/pdf/1907.09582">https://arxiv.org/pdf/1907.09582</a>  <br /></td></tr>
-<tr class="separator:a5365401ec40ae8011b6d9a3701718aa4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0133225986117bd7c7a842b3048afe22"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1color__refinement.html#a0133225986117bd7c7a842b3048afe22">operator==</a> (const <a class="el" href="classmimir_1_1graphs_1_1color__refinement_1_1Certificate.html">Certificate</a> &amp;lhs, const <a class="el" href="classmimir_1_1graphs_1_1color__refinement_1_1Certificate.html">Certificate</a> &amp;rhs)</td></tr>
-<tr class="memdesc:a0133225986117bd7c7a842b3048afe22"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compare two certificates for equality.  <br /></td></tr>
-<tr class="separator:a0133225986117bd7c7a842b3048afe22"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7e9a772c4c68764cb0e13d006469f41e"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1color__refinement.html#a7e9a772c4c68764cb0e13d006469f41e">operator&lt;&lt;</a> (std::ostream &amp;out, const <a class="el" href="classmimir_1_1graphs_1_1color__refinement_1_1Certificate.html">Certificate</a> &amp;element)</td></tr>
-<tr class="memdesc:a7e9a772c4c68764cb0e13d006469f41e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print a certificate to the ostream.  <br /></td></tr>
-<tr class="separator:a7e9a772c4c68764cb0e13d006469f41e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abecfcc3334ee0e837383c16f179d5953"><td class="memTemplItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classmimir_1_1graphs_1_1color__refinement_1_1CertificateImpl.html">CertificateImpl</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1color__refinement.html#abecfcc3334ee0e837383c16f179d5953">compute_certificate</a> (const G &amp;graph)</td></tr>
+<tr class="memdesc:abecfcc3334ee0e837383c16f179d5953"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>compute_certificate</code> implements the color refinement algorithm. Sources: <a href="https://arxiv.org/pdf/1907.09582">https://arxiv.org/pdf/1907.09582</a>  <br /></td></tr>
+<tr class="separator:abecfcc3334ee0e837383c16f179d5953"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af369c7ad5e5bc4bf6118158230664fe1"><td class="memTemplParams" colspan="2">template&lt;typename ColorType &gt; </td></tr>
+<tr class="memitem:af369c7ad5e5bc4bf6118158230664fe1"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1color__refinement.html#af369c7ad5e5bc4bf6118158230664fe1">replace_tuples</a> (const std::vector&lt; std::pair&lt; <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>, ColorType &gt; &gt; &amp;M, const ColorIndexList &amp;hash_to_color, std::vector&lt; std::tuple&lt; ColorIndex, std::vector&lt; ColorType &gt;, <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> &gt; &gt; &amp;out_M_replaced)</td></tr>
+<tr class="memdesc:af369c7ad5e5bc4bf6118158230664fe1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace tuples by grouping colors with same hash.  <br /></td></tr>
+<tr class="separator:af369c7ad5e5bc4bf6118158230664fe1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77ad88778eba29c62317970c92d90e3f"><td class="memTemplParams" colspan="2">template&lt;typename ColorType &gt; </td></tr>
+<tr class="memitem:a77ad88778eba29c62317970c92d90e3f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1color__refinement.html#a77ad88778eba29c62317970c92d90e3f">split_color_classes</a> (const std::vector&lt; std::tuple&lt; ColorIndex, std::vector&lt; ColorType &gt;, <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> &gt; &gt; &amp;M_replaced, <a class="el" href="namespacemimir.html#aee46b4137604f4323c701f026b7c4780">UnorderedMap</a>&lt; std::pair&lt; ColorIndex, std::vector&lt; ColorType &gt; &gt;, ColorIndex &gt; &amp;ref_f, ColorIndex &amp;ref_max_color, ColorIndexList &amp;ref_hash_to_color, ColorIndexMap&lt; <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a> &gt; &amp;out_color_to_hashes, ColorIndexSet &amp;out_L)</td></tr>
+<tr class="memdesc:a77ad88778eba29c62317970c92d90e3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Split the color classes into new colors.  <br /></td></tr>
+<tr class="separator:a77ad88778eba29c62317970c92d90e3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a5365401ec40ae8011b6d9a3701718aa4" name="a5365401ec40ae8011b6d9a3701718aa4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5365401ec40ae8011b6d9a3701718aa4">&#9670;&#160;</a></span>compute_certificate()</h2>
+<a id="abecfcc3334ee0e837383c16f179d5953" name="abecfcc3334ee0e837383c16f179d5953"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abecfcc3334ee0e837383c16f179d5953">&#9670;&#160;</a></span>compute_certificate()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -119,7 +119,7 @@ template&lt;typename G &gt; <br />
 requires IsVertexListGraph&lt;G&gt; &amp;&amp; IsIncidenceGraph&lt;G&gt; &amp;&amp; IsVertexColoredGraph&lt;G&gt;</div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classmimir_1_1graphs_1_1color__refinement_1_1Certificate.html">Certificate</a> mimir::graphs::color_refinement::compute_certificate </td>
+          <td class="memname">std::shared_ptr&lt; <a class="el" href="classmimir_1_1graphs_1_1color__refinement_1_1CertificateImpl.html">CertificateImpl</a> &gt; mimir::graphs::color_refinement::compute_certificate </td>
           <td>(</td>
           <td class="paramtype">const G &amp;&#160;</td>
           <td class="paramname"><em>graph</em></td><td>)</td>
@@ -139,8 +139,8 @@ requires IsVertexListGraph&lt;G&gt; &amp;&amp; IsIncidenceGraph&lt;G&gt; &amp;&a
 
 </div>
 </div>
-<a id="a7e9a772c4c68764cb0e13d006469f41e" name="a7e9a772c4c68764cb0e13d006469f41e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7e9a772c4c68764cb0e13d006469f41e">&#9670;&#160;</a></span>operator&lt;&lt;()</h2>
+<a id="a4409623ea85e7fd7f055f13901d9fb91" name="a4409623ea85e7fd7f055f13901d9fb91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4409623ea85e7fd7f055f13901d9fb91">&#9670;&#160;</a></span>operator&lt;&lt;()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -154,7 +154,7 @@ requires IsVertexListGraph&lt;G&gt; &amp;&amp; IsIncidenceGraph&lt;G&gt; &amp;&a
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classmimir_1_1graphs_1_1color__refinement_1_1Certificate.html">Certificate</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classmimir_1_1graphs_1_1color__refinement_1_1CertificateImpl.html">CertificateImpl</a> &amp;&#160;</td>
           <td class="paramname"><em>element</em>&#160;</td>
         </tr>
         <tr>
@@ -177,8 +177,8 @@ requires IsVertexListGraph&lt;G&gt; &amp;&amp; IsIncidenceGraph&lt;G&gt; &amp;&a
 
 </div>
 </div>
-<a id="a0133225986117bd7c7a842b3048afe22" name="a0133225986117bd7c7a842b3048afe22"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0133225986117bd7c7a842b3048afe22">&#9670;&#160;</a></span>operator==()</h2>
+<a id="acfc0aa3bca4cc7bac2648741e45e10a0" name="acfc0aa3bca4cc7bac2648741e45e10a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfc0aa3bca4cc7bac2648741e45e10a0">&#9670;&#160;</a></span>operator==()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -186,13 +186,13 @@ requires IsVertexListGraph&lt;G&gt; &amp;&amp; IsIncidenceGraph&lt;G&gt; &amp;&a
         <tr>
           <td class="memname">bool mimir::graphs::color_refinement::operator== </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classmimir_1_1graphs_1_1color__refinement_1_1Certificate.html">Certificate</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classmimir_1_1graphs_1_1color__refinement_1_1CertificateImpl.html">CertificateImpl</a> &amp;&#160;</td>
           <td class="paramname"><em>lhs</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classmimir_1_1graphs_1_1color__refinement_1_1Certificate.html">Certificate</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classmimir_1_1graphs_1_1color__refinement_1_1CertificateImpl.html">CertificateImpl</a> &amp;&#160;</td>
           <td class="paramname"><em>rhs</em>&#160;</td>
         </tr>
         <tr>
@@ -215,8 +215,8 @@ requires IsVertexListGraph&lt;G&gt; &amp;&amp; IsIncidenceGraph&lt;G&gt; &amp;&a
 
 </div>
 </div>
-<a id="a19fe79c73ad583f3e4876aa06f118e5f" name="a19fe79c73ad583f3e4876aa06f118e5f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a19fe79c73ad583f3e4876aa06f118e5f">&#9670;&#160;</a></span>replace_tuples()</h2>
+<a id="af369c7ad5e5bc4bf6118158230664fe1" name="af369c7ad5e5bc4bf6118158230664fe1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af369c7ad5e5bc4bf6118158230664fe1">&#9670;&#160;</a></span>replace_tuples()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -232,13 +232,13 @@ template&lt;typename ColorType &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="namespacemimir_1_1graphs.html#aaf545c08ff61f9d6d1e2034e520253c0">ColorList</a> &amp;&#160;</td>
+          <td class="paramtype">const ColorIndexList &amp;&#160;</td>
           <td class="paramname"><em>hash_to_color</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; std::tuple&lt; <a class="el" href="namespacemimir_1_1graphs.html#a49a593bc779d87d0f30c85978758b971">Color</a>, std::vector&lt; ColorType &gt;, <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> &gt; &gt; &amp;&#160;</td>
+          <td class="paramtype">std::vector&lt; std::tuple&lt; ColorIndex, std::vector&lt; ColorType &gt;, <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> &gt; &gt; &amp;&#160;</td>
           <td class="paramname"><em>out_M_replaced</em>&#160;</td>
         </tr>
         <tr>
@@ -250,7 +250,7 @@ template&lt;typename ColorType &gt; </div>
 </div><div class="memdoc">
 
 <p>Replace tuples by grouping colors with same hash. </p>
-<dl class="tparams"><dt>Template Parameters</dt><dd>
+<p>Implementations </p><dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">ColorType</td><td></td></tr>
   </table>
@@ -267,8 +267,8 @@ template&lt;typename ColorType &gt; </div>
 
 </div>
 </div>
-<a id="abb7f2364f5291c9cbae284a3e652fc6b" name="abb7f2364f5291c9cbae284a3e652fc6b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abb7f2364f5291c9cbae284a3e652fc6b">&#9670;&#160;</a></span>split_color_classes()</h2>
+<a id="a77ad88778eba29c62317970c92d90e3f" name="a77ad88778eba29c62317970c92d90e3f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77ad88778eba29c62317970c92d90e3f">&#9670;&#160;</a></span>split_color_classes()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -278,37 +278,37 @@ template&lt;typename ColorType &gt; </div>
         <tr>
           <td class="memname">void mimir::graphs::color_refinement::split_color_classes </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; std::tuple&lt; <a class="el" href="namespacemimir_1_1graphs.html#a49a593bc779d87d0f30c85978758b971">Color</a>, std::vector&lt; ColorType &gt;, <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> &gt; &gt; &amp;&#160;</td>
+          <td class="paramtype">const std::vector&lt; std::tuple&lt; ColorIndex, std::vector&lt; ColorType &gt;, <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> &gt; &gt; &amp;&#160;</td>
           <td class="paramname"><em>M_replaced</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::unordered_map&lt; std::pair&lt; <a class="el" href="namespacemimir_1_1graphs.html#a49a593bc779d87d0f30c85978758b971">Color</a>, std::vector&lt; ColorType &gt; &gt;, <a class="el" href="namespacemimir_1_1graphs.html#a49a593bc779d87d0f30c85978758b971">Color</a>, loki::Hash&lt; std::pair&lt; <a class="el" href="namespacemimir_1_1graphs.html#a49a593bc779d87d0f30c85978758b971">Color</a>, std::vector&lt; ColorType &gt; &gt; &gt; &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemimir.html#aee46b4137604f4323c701f026b7c4780">UnorderedMap</a>&lt; std::pair&lt; ColorIndex, std::vector&lt; ColorType &gt; &gt;, ColorIndex &gt; &amp;&#160;</td>
           <td class="paramname"><em>ref_f</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1graphs.html#a49a593bc779d87d0f30c85978758b971">Color</a> &amp;&#160;</td>
+          <td class="paramtype">ColorIndex &amp;&#160;</td>
           <td class="paramname"><em>ref_max_color</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1graphs.html#aaf545c08ff61f9d6d1e2034e520253c0">ColorList</a> &amp;&#160;</td>
+          <td class="paramtype">ColorIndexList &amp;&#160;</td>
           <td class="paramname"><em>ref_hash_to_color</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1graphs.html#ab80cb70c9cacef8d4f60518ba4bf5d08">ColorMap</a>&lt; <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a> &gt; &amp;&#160;</td>
+          <td class="paramtype">ColorIndexMap&lt; <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>out_color_to_hashes</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1graphs.html#a5063b65d76d453bb2cb97310619fe4bd">ColorSet</a> &amp;&#160;</td>
+          <td class="paramtype">ColorIndexSet &amp;&#160;</td>
           <td class="paramname"><em>out_L</em>&#160;</td>
         </tr>
         <tr>
@@ -322,7 +322,7 @@ template&lt;typename ColorType &gt; </div>
 <p>Split the color classes into new colors. </p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">ColorType</td><td>is Color for color-refinement and ColorArray&lt;K&gt; for k-FWL. </td></tr>
+    <tr><td class="paramname">ColorType</td><td>is <a class="el" href="classmimir_1_1graphs_1_1Color.html">Color</a> for color-refinement and ColorArray&lt;K&gt; for k-FWL. </td></tr>
   </table>
   </dd>
 </dl>

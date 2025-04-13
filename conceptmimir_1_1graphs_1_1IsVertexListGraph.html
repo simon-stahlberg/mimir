@@ -80,14 +80,13 @@ $(function() {
 <p><code>#include &lt;<a class="el" href="graph__interface_8hpp_source.html">graph_interface.hpp</a>&gt;</code></p>
 <h2 class="groupheader">Concept definition</h2>
 <div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><span class="keyword">concept </span><a class="code hl_concept" href="conceptmimir_1_1graphs_1_1IsVertexListGraph.html">mimir::graphs::IsVertexListGraph</a> =  <span class="keyword">requires</span>(T a, <a class="code hl_typedef" href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">VertexIndex</a> vertex) {</div>
+<div class="line"><span class="keyword">concept </span><a class="code hl_concept" href="conceptmimir_1_1graphs_1_1IsVertexListGraph.html">mimir::graphs::IsVertexListGraph</a> =  <span class="keyword">requires</span>(T a, VertexIndex vertex) {</div>
 <div class="line">    <span class="keyword">typename</span> T::VertexIndexConstIterator;</div>
 <div class="line"> </div>
 <div class="line">    { a.get_vertex_indices() } -&gt; IsRangeOver&lt;VertexIndex&gt;;</div>
 <div class="line">    { a.get_num_vertices() } -&gt; std::same_as&lt;size_t&gt;;</div>
 <div class="line">}</div>
 <div class="ttc" id="aconceptmimir_1_1graphs_1_1IsVertexListGraph_html"><div class="ttname"><a href="conceptmimir_1_1graphs_1_1IsVertexListGraph.html">mimir::graphs::IsVertexListGraph</a></div><div class="ttdef"><b>Definition:</b> graph_interface.hpp:39</div></div>
-<div class="ttc" id="anamespacemimir_1_1graphs_html_ae161655b92dcc377fd96929764fb446e"><div class="ttname"><a href="namespacemimir_1_1graphs.html#ae161655b92dcc377fd96929764fb446e">mimir::graphs::VertexIndex</a></div><div class="ttdeci">Index VertexIndex</div><div class="ttdef"><b>Definition:</b> declarations.hpp:38</div></div>
 </div><!-- fragment --><a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A collection of graph concepts required by many graph algorithms. </p>
 </div></div><!-- contents -->

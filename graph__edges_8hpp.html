@@ -76,13 +76,14 @@ $(function() {
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#concepts">Concepts</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">graph_edges.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="graph__edge__interface_8hpp_source.html">mimir/graphs/graph_edge_interface.hpp</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="color_8hpp_source.html">mimir/graphs/color.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="graphs_2declarations_8hpp_source.html">mimir/graphs/declarations.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="graph__edge__interface_8hpp_source.html">mimir/graphs/graph_edge_interface.hpp</a>&quot;</code><br />
 <code>#include &lt;loki/details/utils/equal_to.hpp&gt;</code><br />
 <code>#include &lt;loki/details/utils/hash.hpp&gt;</code><br />
 </div>
@@ -101,25 +102,18 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacemimir_1_1graphs"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html">mimir::graphs</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="concepts" name="concepts"></a>
-Concepts</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptmimir_1_1graphs_1_1IsEdgeColoredGraph.html">mimir::graphs::IsEdgeColoredGraph</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
 <tr class="memitem:a9f1a6ea5cc813f955882325765a23481"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a9f1a6ea5cc813f955882325765a23481">mimir::graphs::EmptyEdge</a> = Edge&lt;&gt;</td></tr>
 <tr class="memdesc:a9f1a6ea5cc813f955882325765a23481"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>EmptyEdge</code> is an edge without <code>EdgeProperties</code>.  <br /></td></tr>
 <tr class="separator:a9f1a6ea5cc813f955882325765a23481"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3448a32cbbc684ee132505b97d44ccff"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a3448a32cbbc684ee132505b97d44ccff">mimir::graphs::ColoredEdge</a> = Edge&lt; Color &gt;</td></tr>
-<tr class="memdesc:a3448a32cbbc684ee132505b97d44ccff"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>ColoredEdge</code> is an edge with a color <code>EdgeProperties</code>. For readability of code that uses a <code>ColoredEdge</code>, we provide a free function get_color to access the color of a given edge.  <br /></td></tr>
 <tr class="separator:a3448a32cbbc684ee132505b97d44ccff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:aee6bd747a02992dc5bcd8eb9e24b83e8"><td class="memItemLeft" align="right" valign="top">Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#aee6bd747a02992dc5bcd8eb9e24b83e8">mimir::graphs::get_color</a> (const ColoredEdge &amp;edge)</td></tr>
-<tr class="memdesc:aee6bd747a02992dc5bcd8eb9e24b83e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the color of a colored edge.  <br /></td></tr>
-<tr class="separator:aee6bd747a02992dc5bcd8eb9e24b83e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af123c6b596929d538677b94d43c7597e"><td class="memItemLeft" align="right" valign="top">const auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#af123c6b596929d538677b94d43c7597e">mimir::graphs::get_color</a> (const Edge&lt; Color &gt; &amp;edge)</td></tr>
+<tr class="separator:af123c6b596929d538677b94d43c7597e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

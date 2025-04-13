@@ -84,11 +84,11 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1iw_1_1ArityKNoveltyPruningStrategy.html">ArityKNoveltyPruningStrategy</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1iw_1_1ArityKNoveltyPruningStrategyImpl.html">ArityKNoveltyPruningStrategyImpl</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1iw_1_1ArityZeroNoveltyPruningStrategy.html">ArityZeroNoveltyPruningStrategy</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1iw_1_1ArityZeroNoveltyPruningStrategyImpl.html">ArityZeroNoveltyPruningStrategyImpl</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1iw_1_1DefaultEventHandler.html">DefaultEventHandler</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1iw_1_1DefaultEventHandlerImpl.html">DefaultEventHandlerImpl</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1iw_1_1DynamicNoveltyTable.html">DynamicNoveltyTable</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code><a class="el" href="classmimir_1_1search_1_1iw_1_1DynamicNoveltyTable.html" title="DynamicNoveltyTable encapsulates a table to test novelty of tuples of atoms of size at most arity....">DynamicNoveltyTable</a></code> encapsulates a table to test novelty of tuples of atoms of size at most arity. It automatically resizes when the atoms do not fit into the table anymore. When the table resizes, tuple indices are remapped to take into account the higher number of atoms.  <a href="classmimir_1_1search_1_1iw_1_1DynamicNoveltyTable.html#details">More...</a><br /></td></tr>
@@ -125,12 +125,18 @@ Typedefs</h2></td></tr>
 <tr class="separator:a8bd60ed942274143509cad0cefc1eb1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a111578df00f00f630c5c7f7e4301d374"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1iw.html#a111578df00f00f630c5c7f7e4301d374">TupleIndexSet</a> = std::unordered_set&lt; <a class="el" href="namespacemimir_1_1search_1_1iw.html#a172ed9e552b26251f2bfadea54f8fc8c">TupleIndex</a> &gt;</td></tr>
 <tr class="separator:a111578df00f00f630c5c7f7e4301d374"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad95d3a35161cfa9d6c92376171c476b2"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1iw.html#ad95d3a35161cfa9d6c92376171c476b2">ArityZeroNoveltyPruningStrategy</a> = std::shared_ptr&lt; <a class="el" href="classmimir_1_1search_1_1iw_1_1ArityZeroNoveltyPruningStrategyImpl.html">ArityZeroNoveltyPruningStrategyImpl</a> &gt;</td></tr>
+<tr class="separator:ad95d3a35161cfa9d6c92376171c476b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adac4d9a66e49464d9195e893786db507"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1iw.html#adac4d9a66e49464d9195e893786db507">ArityKNoveltyPruningStrategy</a> = std::shared_ptr&lt; <a class="el" href="classmimir_1_1search_1_1iw_1_1ArityKNoveltyPruningStrategyImpl.html">ArityKNoveltyPruningStrategyImpl</a> &gt;</td></tr>
+<tr class="separator:adac4d9a66e49464d9195e893786db507"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0cfc7c8bc925d39521afb70a6f286e78"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1iw.html#a0cfc7c8bc925d39521afb70a6f286e78">EventHandler</a> = std::shared_ptr&lt; <a class="el" href="classmimir_1_1search_1_1iw_1_1IEventHandler.html">IEventHandler</a> &gt;</td></tr>
 <tr class="separator:a0cfc7c8bc925d39521afb70a6f286e78"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:accd8722bbdd07c723c7637c61b46faff"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1iw.html#accd8722bbdd07c723c7637c61b46faff">DefaultEventHandler</a> = std::shared_ptr&lt; <a class="el" href="classmimir_1_1search_1_1iw_1_1DefaultEventHandlerImpl.html">DefaultEventHandlerImpl</a> &gt;</td></tr>
+<tr class="separator:accd8722bbdd07c723c7637c61b46faff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ad09b77aaff833f06807c68a557338c3a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structmimir_1_1search_1_1SearchResult.html">SearchResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1iw.html#ad09b77aaff833f06807c68a557338c3a">find_solution</a> (const <a class="el" href="classmimir_1_1search_1_1SearchContext.html">SearchContext</a> &amp;context, <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> start_state=nullptr, size_t max_arity=<a class="el" href="namespacemimir_1_1search_1_1iw.html#a2993fe0a3cf9225e388f3bb8a0a998d5">MAX_ARITY</a> - 1, <a class="el" href="namespacemimir_1_1search_1_1iw.html#a0cfc7c8bc925d39521afb70a6f286e78">EventHandler</a> iw_event_handler=nullptr, <a class="el" href="namespacemimir_1_1search_1_1brfs.html#aec84ed22d7437b783307c6977246a864">brfs::EventHandler</a> brfs_event_handler=nullptr, <a class="el" href="namespacemimir_1_1search.html#a9bb7ef83efbfd45dfdff36bbdd659cfe">GoalStrategy</a> goal_strategy=nullptr)</td></tr>
+<tr class="memitem:ad09b77aaff833f06807c68a557338c3a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structmimir_1_1search_1_1SearchResult.html">SearchResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1iw.html#ad09b77aaff833f06807c68a557338c3a">find_solution</a> (const <a class="el" href="namespacemimir_1_1search.html#a3e28e19bd124916aa6c7834103ea2357">SearchContext</a> &amp;context, <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> start_state=nullptr, size_t max_arity=<a class="el" href="namespacemimir_1_1search_1_1iw.html#a2993fe0a3cf9225e388f3bb8a0a998d5">MAX_ARITY</a> - 1, <a class="el" href="namespacemimir_1_1search_1_1iw.html#a0cfc7c8bc925d39521afb70a6f286e78">EventHandler</a> iw_event_handler=nullptr, <a class="el" href="namespacemimir_1_1search_1_1brfs.html#aec84ed22d7437b783307c6977246a864">brfs::EventHandler</a> brfs_event_handler=nullptr, <a class="el" href="namespacemimir_1_1search.html#a9bb7ef83efbfd45dfdff36bbdd659cfe">GoalStrategy</a> goal_strategy=nullptr)</td></tr>
 <tr class="separator:ad09b77aaff833f06807c68a557338c3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2dce1f8c126880f928c015d43cfa5a28"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1iw.html#a2dce1f8c126880f928c015d43cfa5a28">operator&lt;&lt;</a> (std::ostream &amp;os, const <a class="el" href="classmimir_1_1search_1_1iw_1_1Statistics.html">Statistics</a> &amp;statistics)</td></tr>
 <tr class="separator:a2dce1f8c126880f928c015d43cfa5a28"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -143,6 +149,34 @@ Variables</h2></td></tr>
 <tr class="separator:a69bcf737af67e2786bc4dc46a5edb2d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Typedef Documentation</h2>
+<a id="adac4d9a66e49464d9195e893786db507" name="adac4d9a66e49464d9195e893786db507"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adac4d9a66e49464d9195e893786db507">&#9670;&#160;</a></span>ArityKNoveltyPruningStrategy</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespacemimir_1_1search_1_1iw.html#adac4d9a66e49464d9195e893786db507">mimir::search::iw::ArityKNoveltyPruningStrategy</a> = typedef std::shared_ptr&lt;<a class="el" href="classmimir_1_1search_1_1iw_1_1ArityKNoveltyPruningStrategyImpl.html">ArityKNoveltyPruningStrategyImpl</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad95d3a35161cfa9d6c92376171c476b2" name="ad95d3a35161cfa9d6c92376171c476b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad95d3a35161cfa9d6c92376171c476b2">&#9670;&#160;</a></span>ArityZeroNoveltyPruningStrategy</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespacemimir_1_1search_1_1iw.html#ad95d3a35161cfa9d6c92376171c476b2">mimir::search::iw::ArityZeroNoveltyPruningStrategy</a> = typedef std::shared_ptr&lt;<a class="el" href="classmimir_1_1search_1_1iw_1_1ArityZeroNoveltyPruningStrategyImpl.html">ArityZeroNoveltyPruningStrategyImpl</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a15ed633a10d649b3dc95f29191a95daa" name="a15ed633a10d649b3dc95f29191a95daa"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a15ed633a10d649b3dc95f29191a95daa">&#9670;&#160;</a></span>AtomIndex</h2>
 
@@ -166,6 +200,20 @@ Variables</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">using <a class="el" href="namespacemimir_1_1search_1_1iw.html#a9fcc54c6fd413c59b11d99105279654e">mimir::search::iw::AtomIndexList</a> = typedef std::vector&lt;<a class="el" href="namespacemimir_1_1search_1_1iw.html#a15ed633a10d649b3dc95f29191a95daa">AtomIndex</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="accd8722bbdd07c723c7637c61b46faff" name="accd8722bbdd07c723c7637c61b46faff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#accd8722bbdd07c723c7637c61b46faff">&#9670;&#160;</a></span>DefaultEventHandler</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespacemimir_1_1search_1_1iw.html#accd8722bbdd07c723c7637c61b46faff">mimir::search::iw::DefaultEventHandler</a> = typedef std::shared_ptr&lt;<a class="el" href="classmimir_1_1search_1_1iw_1_1DefaultEventHandlerImpl.html">DefaultEventHandlerImpl</a>&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -267,7 +315,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="structmimir_1_1search_1_1SearchResult.html">SearchResult</a> mimir::search::iw::find_solution </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classmimir_1_1search_1_1SearchContext.html">SearchContext</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacemimir_1_1search.html#a3e28e19bd124916aa6c7834103ea2357">SearchContext</a> &amp;&#160;</td>
           <td class="paramname"><em>context</em>, </td>
         </tr>
         <tr>

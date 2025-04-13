@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['remove_5fif_5funsolvable_0',['remove_if_unsolvable',['../structmimir_1_1datasets_1_1StateSpaceImpl_1_1Options.html#a40802c452394d49b8cd81eb78c4bf770',1,'mimir::datasets::StateSpaceImpl::Options']]],
+  ['remove_5fif_5funsolvable_0',['remove_if_unsolvable',['../structmimir_1_1datasets_1_1state__space_1_1Options.html#a1836807ad9918e541ea129c08dc1a873',1,'mimir::datasets::state_space::Options']]],
   ['role_5fatomic_5fgoal_1',['role_atomic_goal',['../namespacemimir_1_1languages_1_1dl_1_1keywords.html#a3a6d848c8f69931139a189368a8c356e',1,'mimir::languages::dl::keywords']]],
   ['role_5fatomic_5fstate_2',['role_atomic_state',['../namespacemimir_1_1languages_1_1dl_1_1keywords.html#a6036abc260bc731081ee9ba8e1769996',1,'mimir::languages::dl::keywords']]],
   ['role_5fcomplement_3',['role_complement',['../namespacemimir_1_1languages_1_1dl_1_1keywords.html#aaee3cbc743bcec3a3f3550b03f8fc8c3',1,'mimir::languages::dl::keywords']]],

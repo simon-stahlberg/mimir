@@ -75,22 +75,16 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#namespaces">Namespaces</a> &#124;
-<a href="#typedef-members">Typedefs</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#namespaces">Namespaces</a>  </div>
   <div class="headertitle"><div class="title">state_space.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="common_2types_8hpp_source.html">mimir/common/types.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="datasets_2declarations_8hpp_source.html">mimir/datasets/declarations.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="datasets_2state__space_2options_8hpp_source.html">mimir/datasets/state_space/options.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="problem__graph_8hpp_source.html">mimir/datasets/state_space/problem_graph.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="formalism_2declarations_8hpp_source.html">mimir/formalism/declarations.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="nauty_8hpp_source.html">mimir/graphs/algorithms/nauty.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="graphs_2declarations_8hpp_source.html">mimir/graphs/declarations.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="graph__edges_8hpp_source.html">mimir/graphs/graph_edges.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="graph__vertices_8hpp_source.html">mimir/graphs/graph_vertices.hpp</a>&quot;</code><br />
-<code>#include &quot;mimir/graphs/static_graph.hpp&quot;</code><br />
 <code>#include &quot;<a class="el" href="search_2declarations_8hpp_source.html">mimir/search/declarations.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="search__context_8hpp_source.html">mimir/search/search_context.hpp</a>&quot;</code><br />
 </div>
 <p><a href="state__space_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -99,84 +93,13 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1datasets_1_1StateSpaceImpl.html">mimir::datasets::StateSpaceImpl</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code><a class="el" href="classmimir_1_1datasets_1_1StateSpaceImpl.html" title="StateSpaceImpl encapsulates a the state transition model of a problems.">StateSpaceImpl</a></code> encapsulates a the state transition model of a problems.  <a href="classmimir_1_1datasets_1_1StateSpaceImpl.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmimir_1_1datasets_1_1StateSpaceImpl_1_1Options.html">mimir::datasets::StateSpaceImpl::Options</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
 <tr class="memitem:namespacemimir"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir.html">mimir</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacemimir_1_1graphs"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html">mimir::graphs</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacemimir_1_1datasets"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1datasets.html">mimir::datasets</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
-Typedefs</h2></td></tr>
-<tr class="memitem:a4401dfeb9aa3b9b2f3925044ee7a6e71"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71">mimir::graphs::ProblemVertex</a> = Vertex&lt; search::State, formalism::Problem, std::shared_ptr&lt; const nauty::Certificate &gt;, DiscreteCost, ContinuousCost, bool, bool, bool, bool &gt;</td></tr>
-<tr class="memdesc:a4401dfeb9aa3b9b2f3925044ee7a6e71"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>ProblemVertex</code> encapsulates information about a vertex in a <code>ProblemGraph</code>  <br /></td></tr>
-<tr class="separator:a4401dfeb9aa3b9b2f3925044ee7a6e71"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6849af3a319ee009030dc943e8f30f13"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a6849af3a319ee009030dc943e8f30f13">mimir::graphs::ProblemVertexList</a> = std::vector&lt; ProblemVertex &gt;</td></tr>
-<tr class="separator:a6849af3a319ee009030dc943e8f30f13"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a27cce2a7fdacae54f936c2eb0174b4c8"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a27cce2a7fdacae54f936c2eb0174b4c8">mimir::graphs::ProblemEdge</a> = Edge&lt; formalism::GroundAction, formalism::Problem, ContinuousCost &gt;</td></tr>
-<tr class="memdesc:a27cce2a7fdacae54f936c2eb0174b4c8"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>ProblemEdge</code> encapsulates information about an edge in a <code>ProblemGraph</code>.  <br /></td></tr>
-<tr class="separator:a27cce2a7fdacae54f936c2eb0174b4c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0eca8513881fbe716ea6fa3186b18041"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a0eca8513881fbe716ea6fa3186b18041">mimir::graphs::ProblemEdgeList</a> = std::vector&lt; ProblemEdge &gt;</td></tr>
-<tr class="separator:a0eca8513881fbe716ea6fa3186b18041"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad3db9abada0afd5e64ce07e086c4ddb8"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#ad3db9abada0afd5e64ce07e086c4ddb8">mimir::graphs::StaticProblemGraph</a> = StaticGraph&lt; ProblemVertex, ProblemEdge &gt;</td></tr>
-<tr class="separator:ad3db9abada0afd5e64ce07e086c4ddb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afbec461401afc102f0fefd0fc40f41e8"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#afbec461401afc102f0fefd0fc40f41e8">mimir::graphs::StaticProblemGraphList</a> = std::vector&lt; StaticProblemGraph &gt;</td></tr>
-<tr class="separator:afbec461401afc102f0fefd0fc40f41e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae90d83d97c61e149eec8e753a8f19589"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#ae90d83d97c61e149eec8e753a8f19589">mimir::graphs::ProblemGraph</a> = StaticBidirectionalGraph&lt; StaticProblemGraph &gt;</td></tr>
-<tr class="memdesc:ae90d83d97c61e149eec8e753a8f19589"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>ProblemGraph</code> implements a directed graph representing the state space of a single problem.  <br /></td></tr>
-<tr class="separator:ae90d83d97c61e149eec8e753a8f19589"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a14f777b696bfc1d97cbff3d1a30732f8"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a14f777b696bfc1d97cbff3d1a30732f8">mimir::graphs::ProblemGraphList</a> = std::vector&lt; ProblemGraph &gt;</td></tr>
-<tr class="separator:a14f777b696bfc1d97cbff3d1a30732f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
-Functions</h2></td></tr>
-<tr class="memitem:a851219d315d92f035d53daa1113a11a0"><td class="memItemLeft" align="right" valign="top">search::State&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a851219d315d92f035d53daa1113a11a0">mimir::graphs::get_state</a> (const ProblemVertex &amp;vertex)</td></tr>
-<tr class="memdesc:a851219d315d92f035d53daa1113a11a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the <code>State</code> of the given <code>ProblemVertex</code>.  <br /></td></tr>
-<tr class="separator:a851219d315d92f035d53daa1113a11a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1545cc0e6f705073e363e66a8173fd4a"><td class="memItemLeft" align="right" valign="top">const formalism::Problem &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a1545cc0e6f705073e363e66a8173fd4a">mimir::graphs::get_problem</a> (const ProblemVertex &amp;vertex)</td></tr>
-<tr class="memdesc:a1545cc0e6f705073e363e66a8173fd4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the <code><a class="el" href="namespacemimir_1_1formalism.html#a18a62fffd7784a50a9304da9b0a2a7d1">formalism::Problem</a></code> of the given <code>ProblemVertex</code>.  <br /></td></tr>
-<tr class="separator:a1545cc0e6f705073e363e66a8173fd4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac2ba49f7925fa5d6e098c5bdedfb694e"><td class="memItemLeft" align="right" valign="top">const std::shared_ptr&lt; const nauty::Certificate &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#ac2ba49f7925fa5d6e098c5bdedfb694e">mimir::graphs::get_certificate</a> (const ProblemVertex &amp;vertex)</td></tr>
-<tr class="memdesc:ac2ba49f7925fa5d6e098c5bdedfb694e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the <code><a class="el" href="classmimir_1_1graphs_1_1nauty_1_1Certificate.html" title="Certificate encapsulates a canonical graph representation of a vertex-colored graph.">nauty::Certificate</a></code> of the given <code>ProblemVertex</code>.  <br /></td></tr>
-<tr class="separator:ac2ba49f7925fa5d6e098c5bdedfb694e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4f2ec001f1cff7ed0bc86fa1849add30"><td class="memItemLeft" align="right" valign="top">DiscreteCost&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a4f2ec001f1cff7ed0bc86fa1849add30">mimir::graphs::get_unit_goal_distance</a> (const ProblemVertex &amp;vertex)</td></tr>
-<tr class="memdesc:a4f2ec001f1cff7ed0bc86fa1849add30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the unit goal distance of the given <code>ProblemVertex</code>.  <br /></td></tr>
-<tr class="separator:a4f2ec001f1cff7ed0bc86fa1849add30"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af953c67867feb3ee3239f90924cf0140"><td class="memItemLeft" align="right" valign="top">ContinuousCost&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#af953c67867feb3ee3239f90924cf0140">mimir::graphs::get_action_goal_distance</a> (const ProblemVertex &amp;vertex)</td></tr>
-<tr class="memdesc:af953c67867feb3ee3239f90924cf0140"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the action cost goal distance of the given <code>ProblemVertex</code>.  <br /></td></tr>
-<tr class="separator:af953c67867feb3ee3239f90924cf0140"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a00e4add96fc8e7d6aa515680e93cc4c9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a00e4add96fc8e7d6aa515680e93cc4c9">mimir::graphs::is_initial</a> (const ProblemVertex &amp;vertex)</td></tr>
-<tr class="memdesc:a00e4add96fc8e7d6aa515680e93cc4c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get information whether the representative associated with the given <code>ProblemVertex</code> is an initial vertex.  <br /></td></tr>
-<tr class="separator:a00e4add96fc8e7d6aa515680e93cc4c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8e0d7ca14ee2546ea7889049a109184d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a8e0d7ca14ee2546ea7889049a109184d">mimir::graphs::is_goal</a> (const ProblemVertex &amp;vertex)</td></tr>
-<tr class="memdesc:a8e0d7ca14ee2546ea7889049a109184d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get information whether the representative associated with the given <code>ProblemVertex</code> is a goal vertex.  <br /></td></tr>
-<tr class="separator:a8e0d7ca14ee2546ea7889049a109184d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a684fbcd62edb3f04c89d273a65e3448e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a684fbcd62edb3f04c89d273a65e3448e">mimir::graphs::is_unsolvable</a> (const ProblemVertex &amp;vertex)</td></tr>
-<tr class="memdesc:a684fbcd62edb3f04c89d273a65e3448e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get information whether the representative associated with the given <code>ProblemVertex</code> is an unsolvable vertex.  <br /></td></tr>
-<tr class="separator:a684fbcd62edb3f04c89d273a65e3448e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7267f74aeba8a39adba0a6b9979e6412"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a7267f74aeba8a39adba0a6b9979e6412">mimir::graphs::is_alive</a> (const ProblemVertex &amp;vertex)</td></tr>
-<tr class="memdesc:a7267f74aeba8a39adba0a6b9979e6412"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get information whether the representative associated with the given <code>ProblemVertex</code> is an alive vertex.  <br /></td></tr>
-<tr class="separator:a7267f74aeba8a39adba0a6b9979e6412"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a88c64d17c2e35ff629899ec795060e17"><td class="memItemLeft" align="right" valign="top">formalism::GroundAction&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a88c64d17c2e35ff629899ec795060e17">mimir::graphs::get_action</a> (const ProblemEdge &amp;edge)</td></tr>
-<tr class="memdesc:a88c64d17c2e35ff629899ec795060e17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the <code>GroundAction</code> of the given <code>ProblemEdge</code>.  <br /></td></tr>
-<tr class="separator:a88c64d17c2e35ff629899ec795060e17"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1546e3bf926b018cf0ee06ec6fc62d23"><td class="memItemLeft" align="right" valign="top">const formalism::Problem &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a1546e3bf926b018cf0ee06ec6fc62d23">mimir::graphs::get_problem</a> (const ProblemEdge &amp;edge)</td></tr>
-<tr class="memdesc:a1546e3bf926b018cf0ee06ec6fc62d23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the <code><a class="el" href="namespacemimir_1_1formalism.html#a18a62fffd7784a50a9304da9b0a2a7d1">formalism::Problem</a></code> of the given <code>ProblemEdge</code>.  <br /></td></tr>
-<tr class="separator:a1546e3bf926b018cf0ee06ec6fc62d23"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abdc9761dce5abf6f85bcaf6964a3efac"><td class="memItemLeft" align="right" valign="top">ContinuousCost&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#abdc9761dce5abf6f85bcaf6964a3efac">mimir::graphs::get_action_cost</a> (const ProblemEdge &amp;edge)</td></tr>
-<tr class="memdesc:abdc9761dce5abf6f85bcaf6964a3efac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the action cost associated with the <code>GroundAction</code> of the given <code>ProblemEdge</code>  <br /></td></tr>
-<tr class="separator:abdc9761dce5abf6f85bcaf6964a3efac"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2b24ba02d47da876e9a813489ef20051"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a2b24ba02d47da876e9a813489ef20051">mimir::graphs::operator&lt;&lt;</a> (std::ostream &amp;out, const ProblemVertex &amp;vertex)</td></tr>
-<tr class="memdesc:a2b24ba02d47da876e9a813489ef20051"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a string representation of the given <code>ProblemVertex</code> to the <code>std::ostream</code> buffer.  <br /></td></tr>
-<tr class="separator:a2b24ba02d47da876e9a813489ef20051"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4083bcd8fa366ec54a82480ff2c56868"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a4083bcd8fa366ec54a82480ff2c56868">mimir::graphs::operator&lt;&lt;</a> (std::ostream &amp;out, const ProblemEdge &amp;edge)</td></tr>
-<tr class="memdesc:a4083bcd8fa366ec54a82480ff2c56868"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a string representation of the given <code>ProblemEdge</code> to the <code>std::ostream</code> buffer.  <br /></td></tr>
-<tr class="separator:a4083bcd8fa366ec54a82480ff2c56868"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

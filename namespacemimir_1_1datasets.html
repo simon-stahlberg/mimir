@@ -74,6 +74,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#namespaces">Namespaces</a> &#124;
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#func-members">Functions</a>  </div>
@@ -81,9 +82,18 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:namespacemimir_1_1datasets_1_1generalized__state__space"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1datasets_1_1generalized__state__space.html">generalized_state_space</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacemimir_1_1datasets_1_1state__space"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1datasets_1_1state__space.html">state_space</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacemimir_1_1datasets_1_1tuple__graph"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1datasets_1_1tuple__graph.html">tuple_graph</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1datasets_1_1GeneralizedColorFunctionImpl.html">GeneralizedColorFunctionImpl</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmimir_1_1datasets_1_1CertificateMaps.html">CertificateMaps</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1datasets_1_1GeneralizedStateSpaceImpl.html">GeneralizedStateSpaceImpl</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>GeneralizedStateSpace</code> is an additional graph build on top of <code>StateSpaceList</code> to represent the state transition model of a class of problems.  <a href="classmimir_1_1datasets_1_1GeneralizedStateSpaceImpl.html#details">More...</a><br /></td></tr>
@@ -99,8 +109,8 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:ad2ec5a8f43031fb6e73b70dce14975d9"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1datasets.html#ad2ec5a8f43031fb6e73b70dce14975d9">GeneralizedColorFunction</a> = std::shared_ptr&lt; <a class="el" href="classmimir_1_1datasets_1_1GeneralizedColorFunctionImpl.html">GeneralizedColorFunctionImpl</a> &gt;</td></tr>
-<tr class="separator:ad2ec5a8f43031fb6e73b70dce14975d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e3f6853ebb2f76d2e5e1fcac8fa6531"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1datasets.html#a5e3f6853ebb2f76d2e5e1fcac8fa6531">TupleGraphList</a> = std::vector&lt; <a class="el" href="namespacemimir_1_1datasets.html#ab946d1fdfcbb7541855da96b86797cb2">TupleGraph</a> &gt;</td></tr>
+<tr class="separator:a5e3f6853ebb2f76d2e5e1fcac8fa6531"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac77871da00480c4f226f77c8c4180c6e"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1datasets.html#ac77871da00480c4f226f77c8c4180c6e">KnowledgeBase</a> = std::shared_ptr&lt; <a class="el" href="classmimir_1_1datasets_1_1KnowledgeBaseImpl.html">KnowledgeBaseImpl</a> &gt;</td></tr>
 <tr class="separator:ac77871da00480c4f226f77c8c4180c6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af50a91edae78e6166a7c7aea0f40fdd6"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1datasets.html#af50a91edae78e6166a7c7aea0f40fdd6">StateSpace</a> = std::shared_ptr&lt; <a class="el" href="classmimir_1_1datasets_1_1StateSpaceImpl.html">StateSpaceImpl</a> &gt;</td></tr>
@@ -111,27 +121,28 @@ Typedefs</h2></td></tr>
 <tr class="separator:ac68caf5b1da70d554f0dab5faf0349c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab946d1fdfcbb7541855da96b86797cb2"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1datasets.html#ab946d1fdfcbb7541855da96b86797cb2">TupleGraph</a> = std::shared_ptr&lt; <a class="el" href="classmimir_1_1datasets_1_1TupleGraphImpl.html">TupleGraphImpl</a> &gt;</td></tr>
 <tr class="separator:ab946d1fdfcbb7541855da96b86797cb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5e3f6853ebb2f76d2e5e1fcac8fa6531"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1datasets.html#a5e3f6853ebb2f76d2e5e1fcac8fa6531">TupleGraphList</a> = std::vector&lt; <a class="el" href="namespacemimir_1_1datasets.html#ab946d1fdfcbb7541855da96b86797cb2">TupleGraph</a> &gt;</td></tr>
-<tr class="separator:a5e3f6853ebb2f76d2e5e1fcac8fa6531"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa666dc38d9c39ccc94dd1509ada6cd15"><td class="memTemplParams" colspan="2">template&lt;typename Value &gt; </td></tr>
-<tr class="memitem:aa666dc38d9c39ccc94dd1509ada6cd15"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1datasets.html#aa666dc38d9c39ccc94dd1509ada6cd15">CertificateMap</a> = <a class="el" href="namespacemimir.html#abff7428eb26239bc927eb869830c7dda">KeyValueMap</a>&lt; loki::ObserverPtr&lt; const <a class="el" href="classmimir_1_1graphs_1_1nauty_1_1Certificate.html">graphs::nauty::Certificate</a> &gt;, Value &gt;</td></tr>
-<tr class="memdesc:aa666dc38d9c39ccc94dd1509ada6cd15"><td class="mdescLeft">&#160;</td><td class="mdescRight">Uniqueness test of certificates while mapping them to a representative state. Hash and compare of <code>loki::ObserverPtr&lt;T&gt;</code> is specialized to use the dereferenced pointer.  <br /></td></tr>
-<tr class="separator:aa666dc38d9c39ccc94dd1509ada6cd15"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aabe6118d634ea08defb9b50088d5a4a7"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1datasets.html#aabe6118d634ea08defb9b50088d5a4a7">StateToCertificate</a> = <a class="el" href="namespacemimir_1_1search.html#aec70abac117d5db7b44760206563df7f">search::StateMap</a>&lt; std::shared_ptr&lt; const <a class="el" href="classmimir_1_1graphs_1_1nauty_1_1Certificate.html">graphs::nauty::Certificate</a> &gt; &gt;</td></tr>
-<tr class="memdesc:aabe6118d634ea08defb9b50088d5a4a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cache computed state certificates.  <br /></td></tr>
-<tr class="separator:aabe6118d634ea08defb9b50088d5a4a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab52edd5d58e27c2de52847d5ffe29f49"><td class="memTemplParams" colspan="2">template&lt;typename Value &gt; </td></tr>
+<tr class="memitem:ab52edd5d58e27c2de52847d5ffe29f49"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1datasets.html#ab52edd5d58e27c2de52847d5ffe29f49">CertificateMap</a> = <a class="el" href="namespacemimir.html#aee46b4137604f4323c701f026b7c4780">UnorderedMap</a>&lt; <a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html">graphs::nauty::SparseGraph</a>, Value &gt;</td></tr>
+<tr class="separator:ab52edd5d58e27c2de52847d5ffe29f49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95e73b94865ec7ae59a389008ee1161a"><td class="memTemplParams" colspan="2">template&lt;typename Key &gt; </td></tr>
+<tr class="memitem:a95e73b94865ec7ae59a389008ee1161a"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1datasets.html#a95e73b94865ec7ae59a389008ee1161a">ToCertificateMap</a> = <a class="el" href="namespacemimir.html#aee46b4137604f4323c701f026b7c4780">UnorderedMap</a>&lt; Key, <a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html">graphs::nauty::SparseGraph</a> &gt;</td></tr>
+<tr class="separator:a95e73b94865ec7ae59a389008ee1161a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30a615ac05cb4457def5904629e2cea9"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1datasets.html#a30a615ac05cb4457def5904629e2cea9">CertificateMapsList</a> = std::vector&lt; <a class="el" href="structmimir_1_1datasets_1_1CertificateMaps.html">CertificateMaps</a> &gt;</td></tr>
+<tr class="separator:a30a615ac05cb4457def5904629e2cea9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a5fda9265989005a828141f4182365ca7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1graphs.html#ad1ecfbb2e8fff3f99afd88ee58116c31">graphs::StaticVertexColoredDigraph</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1datasets.html#a5fda9265989005a828141f4182365ca7">create_object_graph</a> (<a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">search::State</a> state, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;problem, const <a class="el" href="classmimir_1_1datasets_1_1GeneralizedColorFunctionImpl.html">GeneralizedColorFunctionImpl</a> &amp;color_function, bool mark_true_goal_literals=false)</td></tr>
-<tr class="memdesc:a5fda9265989005a828141f4182365ca7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an object graph as a vertex colored graph for a given state. It can be used for state equivalence testing or as input to graph neural networks.  <br /></td></tr>
-<tr class="separator:a5fda9265989005a828141f4182365ca7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac98f6cb9161d7e632fa88ebade965a13"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1datasets.html#ac98f6cb9161d7e632fa88ebade965a13">operator&lt;&lt;</a> (std::ostream &amp;out, const <a class="el" href="classmimir_1_1datasets_1_1TupleGraphImpl.html">TupleGraphImpl</a> &amp;tuple_graph)</td></tr>
 <tr class="separator:ac98f6cb9161d7e632fa88ebade965a13"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff6743b4ae81b8302a135143d2cff30e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1graphs.html#aa255ca9313d5355722194f089e9b6115">graphs::StaticVertexColoredGraph</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1datasets.html#aff6743b4ae81b8302a135143d2cff30e">create_object_graph</a> (<a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">search::State</a> state, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;problem)</td></tr>
+<tr class="memdesc:aff6743b4ae81b8302a135143d2cff30e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an <code>ObjectGraph</code> for a given <code><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">search::State</a></code> from a given <code><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a></code>.  <br /></td></tr>
+<tr class="separator:aff6743b4ae81b8302a135143d2cff30e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Typedef Documentation</h2>
-<a id="aa666dc38d9c39ccc94dd1509ada6cd15" name="aa666dc38d9c39ccc94dd1509ada6cd15"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa666dc38d9c39ccc94dd1509ada6cd15">&#9670;&#160;</a></span>CertificateMap</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Implementation of TupleGraphs (Lipovetzky and Geffner ECAI2012) Source: <a href="https://www-i6.informatik.rwth-aachen.de/~hector.geffner/www.dtic.upf.edu/~hgeffner/width-ecai-2012.pdf">https://www-i6.informatik.rwth-aachen.de/~hector.geffner/www.dtic.upf.edu/~hgeffner/width-ecai-2012.pdf</a> </p>
+</div><h2 class="groupheader">Typedef Documentation</h2>
+<a id="ab52edd5d58e27c2de52847d5ffe29f49" name="ab52edd5d58e27c2de52847d5ffe29f49"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab52edd5d58e27c2de52847d5ffe29f49">&#9670;&#160;</a></span>CertificateMap</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -139,23 +150,21 @@ Functions</h2></td></tr>
 template&lt;typename Value &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="namespacemimir_1_1datasets.html#aa666dc38d9c39ccc94dd1509ada6cd15">mimir::datasets::CertificateMap</a> = typedef <a class="el" href="namespacemimir.html#abff7428eb26239bc927eb869830c7dda">KeyValueMap</a>&lt;loki::ObserverPtr&lt;const <a class="el" href="classmimir_1_1graphs_1_1nauty_1_1Certificate.html">graphs::nauty::Certificate</a>&gt;, Value&gt;</td>
+          <td class="memname">using <a class="el" href="namespacemimir_1_1datasets.html#ab52edd5d58e27c2de52847d5ffe29f49">mimir::datasets::CertificateMap</a> = typedef <a class="el" href="namespacemimir.html#aee46b4137604f4323c701f026b7c4780">UnorderedMap</a>&lt;<a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html">graphs::nauty::SparseGraph</a>, Value&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Uniqueness test of certificates while mapping them to a representative state. Hash and compare of <code>loki::ObserverPtr&lt;T&gt;</code> is specialized to use the dereferenced pointer. </p>
-
 </div>
 </div>
-<a id="ad2ec5a8f43031fb6e73b70dce14975d9" name="ad2ec5a8f43031fb6e73b70dce14975d9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad2ec5a8f43031fb6e73b70dce14975d9">&#9670;&#160;</a></span>GeneralizedColorFunction</h2>
+<a id="a30a615ac05cb4457def5904629e2cea9" name="a30a615ac05cb4457def5904629e2cea9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30a615ac05cb4457def5904629e2cea9">&#9670;&#160;</a></span>CertificateMapsList</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="namespacemimir_1_1datasets.html#ad2ec5a8f43031fb6e73b70dce14975d9">mimir::datasets::GeneralizedColorFunction</a> = typedef std::shared_ptr&lt;<a class="el" href="classmimir_1_1datasets_1_1GeneralizedColorFunctionImpl.html">GeneralizedColorFunctionImpl</a>&gt;</td>
+          <td class="memname">using <a class="el" href="namespacemimir_1_1datasets.html#a30a615ac05cb4457def5904629e2cea9">mimir::datasets::CertificateMapsList</a> = typedef std::vector&lt;<a class="el" href="structmimir_1_1datasets_1_1CertificateMaps.html">CertificateMaps</a>&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -218,19 +227,19 @@ template&lt;typename Value &gt; </div>
 
 </div>
 </div>
-<a id="aabe6118d634ea08defb9b50088d5a4a7" name="aabe6118d634ea08defb9b50088d5a4a7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aabe6118d634ea08defb9b50088d5a4a7">&#9670;&#160;</a></span>StateToCertificate</h2>
+<a id="a95e73b94865ec7ae59a389008ee1161a" name="a95e73b94865ec7ae59a389008ee1161a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95e73b94865ec7ae59a389008ee1161a">&#9670;&#160;</a></span>ToCertificateMap</h2>
 
 <div class="memitem">
 <div class="memproto">
+<div class="memtemplate">
+template&lt;typename Key &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="namespacemimir_1_1datasets.html#aabe6118d634ea08defb9b50088d5a4a7">mimir::datasets::StateToCertificate</a> = typedef <a class="el" href="namespacemimir_1_1search.html#aec70abac117d5db7b44760206563df7f">search::StateMap</a>&lt;std::shared_ptr&lt;const <a class="el" href="classmimir_1_1graphs_1_1nauty_1_1Certificate.html">graphs::nauty::Certificate</a>&gt; &gt;</td>
+          <td class="memname">using <a class="el" href="namespacemimir_1_1datasets.html#a95e73b94865ec7ae59a389008ee1161a">mimir::datasets::ToCertificateMap</a> = typedef <a class="el" href="namespacemimir.html#aee46b4137604f4323c701f026b7c4780">UnorderedMap</a>&lt;Key, <a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html">graphs::nauty::SparseGraph</a>&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>Cache computed state certificates. </p>
 
 </div>
 </div>
@@ -263,14 +272,14 @@ template&lt;typename Value &gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a5fda9265989005a828141f4182365ca7" name="a5fda9265989005a828141f4182365ca7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5fda9265989005a828141f4182365ca7">&#9670;&#160;</a></span>create_object_graph()</h2>
+<a id="aff6743b4ae81b8302a135143d2cff30e" name="aff6743b4ae81b8302a135143d2cff30e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff6743b4ae81b8302a135143d2cff30e">&#9670;&#160;</a></span>create_object_graph()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacemimir_1_1graphs.html#ad1ecfbb2e8fff3f99afd88ee58116c31">graphs::StaticVertexColoredDigraph</a> mimir::datasets::create_object_graph </td>
+          <td class="memname"><a class="el" href="namespacemimir_1_1graphs.html#aa255ca9313d5355722194f089e9b6115">graphs::StaticVertexColoredGraph</a> mimir::datasets::create_object_graph </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">search::State</a>&#160;</td>
           <td class="paramname"><em>state</em>, </td>
@@ -279,19 +288,7 @@ template&lt;typename Value &gt; </div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;&#160;</td>
-          <td class="paramname"><em>problem</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classmimir_1_1datasets_1_1GeneralizedColorFunctionImpl.html">GeneralizedColorFunctionImpl</a> &amp;&#160;</td>
-          <td class="paramname"><em>color_function</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>mark_true_goal_literals</em> = <code>false</code>&#160;</td>
+          <td class="paramname"><em>problem</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -301,18 +298,14 @@ template&lt;typename Value &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Create an object graph as a vertex colored graph for a given state. It can be used for state equivalence testing or as input to graph neural networks. </p>
-<p>ObjectGraph </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Create an <code>ObjectGraph</code> for a given <code><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">search::State</a></code> from a given <code><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a></code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">state</td><td>is the state. </td></tr>
     <tr><td class="paramname">problem</td><td>is the Problem. </td></tr>
-    <tr><td class="paramname">pddl_repositories</td><td>is the PDDLRepository. </td></tr>
-    <tr><td class="paramname">color_function</td><td>is the function used to color the vertices in the object graph. </td></tr>
-    <tr><td class="paramname">mark_true_goal_literals</td><td>represents whether literals that are true should have a special color. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>a vertex colored graph that precisely represents the given state. </dd></dl>
 
 </div>
 </div>

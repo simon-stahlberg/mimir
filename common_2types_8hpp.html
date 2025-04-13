@@ -97,8 +97,6 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:afddaa926fffc5b2e91165ec172b86c36"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir.html#afddaa926fffc5b2e91165ec172b86c36">mimir::Count</a> = uint32_t</td></tr>
-<tr class="separator:afddaa926fffc5b2e91165ec172b86c36"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab800c69cfcabbde81050b3d05b9c2fa4"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">mimir::Index</a> = uint32_t</td></tr>
 <tr class="separator:ab800c69cfcabbde81050b3d05b9c2fa4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a434766af663adf7a52331374b790b6dc"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">mimir::IndexList</a> = std::vector&lt; Index &gt;</td></tr>
@@ -114,12 +112,6 @@ Typedefs</h2></td></tr>
 <tr class="memitem:ae3df802892bf968ae4746210b05b3f34"><td class="memTemplParams" colspan="2">template&lt;typename Key &gt; </td></tr>
 <tr class="memitem:ae3df802892bf968ae4746210b05b3f34"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir.html#ae3df802892bf968ae4746210b05b3f34">mimir::ToIndexMap</a> = std::unordered_map&lt; Key, Index, loki::Hash&lt; Key &gt;, loki::EqualTo&lt; Key &gt; &gt;</td></tr>
 <tr class="separator:ae3df802892bf968ae4746210b05b3f34"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abff7428eb26239bc927eb869830c7dda"><td class="memTemplParams" colspan="2">template&lt;typename Key , typename Value &gt; </td></tr>
-<tr class="memitem:abff7428eb26239bc927eb869830c7dda"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir.html#abff7428eb26239bc927eb869830c7dda">mimir::KeyValueMap</a> = std::unordered_map&lt; Key, Value, loki::Hash&lt; Key &gt;, loki::EqualTo&lt; Key &gt; &gt;</td></tr>
-<tr class="separator:abff7428eb26239bc927eb869830c7dda"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a28358129e9b17cdf4157d6b556470fc8"><td class="memTemplParams" colspan="2">template&lt;typename Value &gt; </td></tr>
-<tr class="memitem:a28358129e9b17cdf4157d6b556470fc8"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir.html#a28358129e9b17cdf4157d6b556470fc8">mimir::ValueSet</a> = std::unordered_set&lt; Value, loki::Hash&lt; Value &gt;, loki::EqualTo&lt; Value &gt; &gt;</td></tr>
-<tr class="separator:a28358129e9b17cdf4157d6b556470fc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a93a14d8288fcdd5f70bbdb166dcf9359"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">mimir::ContinuousCost</a> = double</td></tr>
 <tr class="separator:a93a14d8288fcdd5f70bbdb166dcf9359"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a311e7c8779449c7599fd42d976c22527"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir.html#a311e7c8779449c7599fd42d976c22527">mimir::ContinuousCostList</a> = std::vector&lt; ContinuousCost &gt;</td></tr>
@@ -132,6 +124,12 @@ Typedefs</h2></td></tr>
 <tr class="separator:aa3085f9a656656be6ed0ac38b44d3bbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7d3fb3cabedc59968eaaa7636d73cf90"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir.html#a7d3fb3cabedc59968eaaa7636d73cf90">mimir::DiscreteCostMatrix</a> = std::vector&lt; ContinuousCostList &gt;</td></tr>
 <tr class="separator:a7d3fb3cabedc59968eaaa7636d73cf90"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee46b4137604f4323c701f026b7c4780"><td class="memTemplParams" colspan="2">template&lt;typename Key , typename Value &gt; </td></tr>
+<tr class="memitem:aee46b4137604f4323c701f026b7c4780"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir.html#aee46b4137604f4323c701f026b7c4780">mimir::UnorderedMap</a> = std::unordered_map&lt; Key, Value, loki::Hash&lt; Key &gt;, loki::EqualTo&lt; Key &gt; &gt;</td></tr>
+<tr class="separator:aee46b4137604f4323c701f026b7c4780"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae79add80a6dc77dfb2e6eaac1c250b97"><td class="memTemplParams" colspan="2">template&lt;typename Value &gt; </td></tr>
+<tr class="memitem:ae79add80a6dc77dfb2e6eaac1c250b97"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir.html#ae79add80a6dc77dfb2e6eaac1c250b97">mimir::UnorderedSet</a> = std::unordered_set&lt; Value, loki::Hash&lt; Value &gt;, loki::EqualTo&lt; Value &gt; &gt;</td></tr>
+<tr class="separator:ae79add80a6dc77dfb2e6eaac1c250b97"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

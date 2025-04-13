@@ -75,7 +75,6 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#concepts">Concepts</a> &#124;
 <a href="#typedef-members">Typedefs</a>  </div>
   <div class="headertitle"><div class="title">declarations.hpp File Reference</div></div>
 </div><!--header-->
@@ -104,11 +103,6 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacemimir_1_1formalism"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html">mimir::formalism</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="concepts" name="concepts"></a>
-Concepts</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptmimir_1_1formalism_1_1IsFormalismEntity.html">mimir::formalism::IsFormalismEntity</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
 <tr class="memitem:a16ba33fd0aa156fcdee20109759ef107"><td class="memTemplParams" colspan="2">template&lt;typename... Ts&gt; </td></tr>
@@ -130,6 +124,8 @@ Typedefs</h2></td></tr>
 <tr class="separator:a34df8c35896b9c6bc7826fff84d2692f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0d504387af9e67aae0cf16385fc8e825"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#a0d504387af9e67aae0cf16385fc8e825">mimir::formalism::GroundActionSet</a> = std::unordered_set&lt; GroundAction &gt;</td></tr>
 <tr class="separator:a0d504387af9e67aae0cf16385fc8e825"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2143262482cef1afa22c1da7feb9c006"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#a2143262482cef1afa22c1da7feb9c006">mimir::formalism::GeneralizedProblem</a> = std::shared_ptr&lt; GeneralizedProblemImpl &gt;</td></tr>
+<tr class="separator:a2143262482cef1afa22c1da7feb9c006"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0bbeb941c9f2bcc5db5dda9e77d9ad3c"><td class="memTemplParams" colspan="2">template&lt;IsStaticOrFluentOrDerivedTag P&gt; </td></tr>
 <tr class="memitem:a0bbeb941c9f2bcc5db5dda9e77d9ad3c"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#a0bbeb941c9f2bcc5db5dda9e77d9ad3c">mimir::formalism::Atom</a> = const AtomImpl&lt; P &gt; *</td></tr>
 <tr class="separator:a0bbeb941c9f2bcc5db5dda9e77d9ad3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -291,6 +287,10 @@ Typedefs</h2></td></tr>
 <tr class="memitem:a62a850b37be0730b5f889f780d541f5f"><td class="memTemplParams" colspan="2">template&lt;IsStaticOrFluentOrDerivedTag P&gt; </td></tr>
 <tr class="memitem:a62a850b37be0730b5f889f780d541f5f"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#a62a850b37be0730b5f889f780d541f5f">mimir::formalism::Predicate</a> = const PredicateImpl&lt; P &gt; *</td></tr>
 <tr class="separator:a62a850b37be0730b5f889f780d541f5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aecea2ff78780118e31a6466462ab6118"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#aecea2ff78780118e31a6466462ab6118">mimir::formalism::PredicateVariant</a> = std::variant&lt; Predicate&lt; StaticTag &gt;, Predicate&lt; FluentTag &gt;, Predicate&lt; DerivedTag &gt; &gt;</td></tr>
+<tr class="separator:aecea2ff78780118e31a6466462ab6118"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6b72e75523cae4ca9200f0b9a2aa847"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#aa6b72e75523cae4ca9200f0b9a2aa847">mimir::formalism::PredicateVariantList</a> = std::vector&lt; PredicateVariant &gt;</td></tr>
+<tr class="separator:aa6b72e75523cae4ca9200f0b9a2aa847"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa4647d157734e45d33719b2e2626a210"><td class="memTemplParams" colspan="2">template&lt;IsStaticOrFluentOrDerivedTag P&gt; </td></tr>
 <tr class="memitem:aa4647d157734e45d33719b2e2626a210"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1formalism.html#aa4647d157734e45d33719b2e2626a210">mimir::formalism::PredicateList</a> = std::vector&lt; Predicate&lt; P &gt; &gt;</td></tr>
 <tr class="separator:aa4647d157734e45d33719b2e2626a210"><td class="memSeparator" colspan="2">&#160;</td></tr>

@@ -83,13 +83,13 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1siw_1_1DefaultEventHandler.html">DefaultEventHandler</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1siw_1_1DefaultEventHandlerImpl.html">DefaultEventHandlerImpl</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1siw_1_1EventHandlerBase.html">EventHandlerBase</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1siw_1_1IEventHandler.html">IEventHandler</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1siw_1_1ProblemGoalStrategyCounter.html">ProblemGoalStrategyCounter</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1siw_1_1ProblemGoalStrategyImplCounter.html">ProblemGoalStrategyImplCounter</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1siw_1_1Statistics.html">Statistics</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -98,15 +98,31 @@ Classes</h2></td></tr>
 Typedefs</h2></td></tr>
 <tr class="memitem:a594a770fc60227fc964870c63c52ef34"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1siw.html#a594a770fc60227fc964870c63c52ef34">EventHandler</a> = std::shared_ptr&lt; <a class="el" href="classmimir_1_1search_1_1siw_1_1IEventHandler.html">IEventHandler</a> &gt;</td></tr>
 <tr class="separator:a594a770fc60227fc964870c63c52ef34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3fa8fa22587a8654c466932aba177afc"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1siw.html#a3fa8fa22587a8654c466932aba177afc">DefaultEventHandler</a> = std::shared_ptr&lt; <a class="el" href="classmimir_1_1search_1_1siw_1_1DefaultEventHandlerImpl.html">DefaultEventHandlerImpl</a> &gt;</td></tr>
+<tr class="separator:a3fa8fa22587a8654c466932aba177afc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a05efc516ac18661cac6d903e7a92b545"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structmimir_1_1search_1_1SearchResult.html">SearchResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1siw.html#a05efc516ac18661cac6d903e7a92b545">find_solution</a> (const <a class="el" href="classmimir_1_1search_1_1SearchContext.html">SearchContext</a> &amp;context, <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> start_state=nullptr, size_t max_arity=<a class="el" href="namespacemimir_1_1search_1_1iw.html#a2993fe0a3cf9225e388f3bb8a0a998d5">iw::MAX_ARITY</a> - 1, <a class="el" href="namespacemimir_1_1search_1_1siw.html#a594a770fc60227fc964870c63c52ef34">EventHandler</a> siw_event_handler=nullptr, <a class="el" href="namespacemimir_1_1search_1_1iw.html#a0cfc7c8bc925d39521afb70a6f286e78">iw::EventHandler</a> iw_event_handler=nullptr, <a class="el" href="namespacemimir_1_1search_1_1brfs.html#aec84ed22d7437b783307c6977246a864">brfs::EventHandler</a> brfs_event_handler=nullptr, <a class="el" href="namespacemimir_1_1search.html#a9bb7ef83efbfd45dfdff36bbdd659cfe">GoalStrategy</a> goal_strategy=nullptr)</td></tr>
+<tr class="memitem:a05efc516ac18661cac6d903e7a92b545"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structmimir_1_1search_1_1SearchResult.html">SearchResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1siw.html#a05efc516ac18661cac6d903e7a92b545">find_solution</a> (const <a class="el" href="namespacemimir_1_1search.html#a3e28e19bd124916aa6c7834103ea2357">SearchContext</a> &amp;context, <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> start_state=nullptr, size_t max_arity=<a class="el" href="namespacemimir_1_1search_1_1iw.html#a2993fe0a3cf9225e388f3bb8a0a998d5">iw::MAX_ARITY</a> - 1, <a class="el" href="namespacemimir_1_1search_1_1siw.html#a594a770fc60227fc964870c63c52ef34">EventHandler</a> siw_event_handler=nullptr, <a class="el" href="namespacemimir_1_1search_1_1iw.html#a0cfc7c8bc925d39521afb70a6f286e78">iw::EventHandler</a> iw_event_handler=nullptr, <a class="el" href="namespacemimir_1_1search_1_1brfs.html#aec84ed22d7437b783307c6977246a864">brfs::EventHandler</a> brfs_event_handler=nullptr, <a class="el" href="namespacemimir_1_1search.html#a9bb7ef83efbfd45dfdff36bbdd659cfe">GoalStrategy</a> goal_strategy=nullptr)</td></tr>
 <tr class="separator:a05efc516ac18661cac6d903e7a92b545"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a36de051e25cf298415083e84598b7488"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1siw.html#a36de051e25cf298415083e84598b7488">operator&lt;&lt;</a> (std::ostream &amp;os, const <a class="el" href="classmimir_1_1search_1_1siw_1_1Statistics.html">Statistics</a> &amp;statistics)</td></tr>
 <tr class="separator:a36de051e25cf298415083e84598b7488"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Typedef Documentation</h2>
+<a id="a3fa8fa22587a8654c466932aba177afc" name="a3fa8fa22587a8654c466932aba177afc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3fa8fa22587a8654c466932aba177afc">&#9670;&#160;</a></span>DefaultEventHandler</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespacemimir_1_1search_1_1siw.html#a3fa8fa22587a8654c466932aba177afc">mimir::search::siw::DefaultEventHandler</a> = typedef std::shared_ptr&lt;<a class="el" href="classmimir_1_1search_1_1siw_1_1DefaultEventHandlerImpl.html">DefaultEventHandlerImpl</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a594a770fc60227fc964870c63c52ef34" name="a594a770fc60227fc964870c63c52ef34"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a594a770fc60227fc964870c63c52ef34">&#9670;&#160;</a></span>EventHandler</h2>
 
@@ -131,7 +147,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="structmimir_1_1search_1_1SearchResult.html">SearchResult</a> mimir::search::siw::find_solution </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classmimir_1_1search_1_1SearchContext.html">SearchContext</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacemimir_1_1search.html#a3e28e19bd124916aa6c7834103ea2357">SearchContext</a> &amp;&#160;</td>
           <td class="paramname"><em>context</em>, </td>
         </tr>
         <tr>
