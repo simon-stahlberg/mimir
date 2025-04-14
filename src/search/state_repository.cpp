@@ -143,6 +143,7 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
     update_reached_fluent_atoms(dense_fluent_atoms, m_reached_fluent_atoms);
 
     translate_dense_into_sorted_compressed_sparse(dense_fluent_atoms, m_state_fluent_atoms);
+    valla::insert(m_state_fluent_atoms, m_tree_table, m_root_table);
 
     const auto [fluent_iter, fluent_inserted] = m_fluent_atoms_set.insert(m_state_fluent_atoms);
     update_state_atoms_ptr(**fluent_iter, state_fluent_atoms_ptr);
@@ -165,6 +166,7 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
             update_reached_derived_atoms(dense_derived_atoms, m_reached_derived_atoms);
 
             translate_dense_into_sorted_compressed_sparse(dense_derived_atoms, m_state_derived_atoms);
+            valla::insert(m_state_derived_atoms, m_tree_table, m_root_table);
 
             const auto [derived_iter, derived_inserted] = m_derived_atoms_set.insert(m_state_derived_atoms);
             update_state_atoms_ptr(**derived_iter, state_derived_atoms_ptr);
@@ -369,6 +371,7 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
     update_reached_fluent_atoms(dense_fluent_atoms, m_reached_fluent_atoms);
 
     translate_dense_into_sorted_compressed_sparse(dense_fluent_atoms, m_state_fluent_atoms);
+    valla::insert(m_state_fluent_atoms, m_tree_table, m_root_table);
 
     const auto [fluent_iter, fluent_inserted] = m_fluent_atoms_set.insert(m_state_fluent_atoms);
     update_state_atoms_ptr(**fluent_iter, state_fluent_atoms_ptr);
@@ -394,6 +397,7 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
             update_reached_fluent_atoms(dense_derived_atoms, m_reached_derived_atoms);
 
             translate_dense_into_sorted_compressed_sparse(dense_derived_atoms, m_state_derived_atoms);
+            valla::insert(m_state_derived_atoms, m_tree_table, m_root_table);
 
             const auto [iter, inserted] = m_derived_atoms_set.insert(m_state_derived_atoms);
             update_state_atoms_ptr(**iter, state_derived_atoms_ptr);
@@ -414,7 +418,11 @@ const FlatBitset& StateRepositoryImpl::get_reached_derived_ground_atoms_bitset()
 
 const AxiomEvaluator& StateRepositoryImpl::get_axiom_evaluator() const { return m_axiom_evaluator; }
 
-size_t StateRepositoryImpl::get_estimated_memory_usage_in_bytes_for_unextended_state_portion() const { return m_states.get_estimated_memory_usage_in_bytes(); }
+size_t StateRepositoryImpl::get_estimated_memory_usage_in_bytes_for_unextended_state_portion() const
+{
+    std::cout << "Tree compression memory usage in bytes: " << m_root_table.get_memory_usage() + m_tree_table.size() << std::endl;
+    return m_states.get_estimated_memory_usage_in_bytes();
+}
 
 size_t StateRepositoryImpl::get_estimated_memory_usage_in_bytes_for_extended_state_portion() const
 {

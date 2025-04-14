@@ -48,14 +48,6 @@ struct StateImpl
 
     bool numeric_constraints_hold(const formalism::GroundNumericConstraintList& numeric_constraints, const FlatDoubleList& static_numeric_variables) const;
 
-    /// @brief log(N) operation, ideally, we get rid of it, perhaps useful to expose to python users
-    template<formalism::IsFluentOrDerivedTag P>
-    bool literal_holds(formalism::GroundLiteral<P> literal) const;
-
-    /// @brief N*log(N) operation, ideally (currently unused), perhaps useful to expose to python users
-    template<formalism::IsFluentOrDerivedTag P>
-    bool literals_hold(const formalism::GroundLiteralList<P>& literals) const;
-
     template<formalism::IsFluentOrDerivedTag P>
     bool literals_hold(const FlatIndexList& positive_atoms, const FlatIndexList& negative_atoms) const;
 
@@ -63,10 +55,13 @@ struct StateImpl
 
     Index get_index() const;
 
+    /// @brief Returns a range over the ground atom indices for the given tag `P` in the state.
+    /// @tparam P is the tag.
+    /// @return
     template<formalism::IsFluentOrDerivedTag P>
-    const FlatIndexList& get_atoms() const;
+    auto get_atoms() const;
 
-    const FlatDoubleList& get_numeric_variables() const;
+    const auto& get_numeric_variables() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -91,7 +86,43 @@ private:
     FlatExternalPtr<const FlatDoubleList>& get_numeric_variables();
 };
 
-static_assert(loki::HasIdentifyingMembers<StateImpl>);  // This is my concept...
+template<formalism::IsFluentOrDerivedTag P>
+auto StateImpl::get_atoms() const
+{
+    if constexpr (std::is_same_v<P, formalism::FluentTag>)
+    {
+        if (!m_fluent_atoms)
+        {
+            return std::ranges::subrange(StateImpl::s_empty_fluent_atoms.begin(), StateImpl::s_empty_fluent_atoms.end());
+        }
+        assert(std::is_sorted(m_fluent_atoms->begin(), m_fluent_atoms->end()));
+        return std::ranges::subrange(m_fluent_atoms->begin(), m_fluent_atoms->end());
+    }
+    else if constexpr (std::is_same_v<P, formalism::DerivedTag>)
+    {
+        if (!m_derived_atoms)
+        {
+            return std::ranges::subrange(StateImpl::s_empty_derived_atoms.begin(), StateImpl::s_empty_derived_atoms.end());
+        }
+        // StateRepositoryImpl ensures that m_derived_atoms is a valid pointer to a FlatIndexList.
+        assert(std::is_sorted(m_derived_atoms->begin(), m_derived_atoms->end()));
+        return std::ranges::subrange(m_derived_atoms->begin(), m_derived_atoms->end());
+    }
+    else
+    {
+        static_assert(dependent_false<P>::value, "Missing implementation for IsStaticOrFluentOrDerivedTag.");
+    }
+}
+
+inline const auto& StateImpl::get_numeric_variables() const
+{
+    if (!m_numeric_variables)
+    {
+        return StateImpl::s_empty_numeric_variables;
+    }
+    // StateRepositoryImpl ensures that m_numeric_variables is a valid pointer to a FlatDoubleList.
+    return *m_numeric_variables;
+}
 
 /// @brief STL does not define operator== for std::span.
 inline bool operator==(const std::span<const State>& lhs, const std::span<const State>& rhs)

@@ -138,6 +138,7 @@ public:
         using pointer = value_type*;
         using reference = value_type&;
         using iterator_category = std::forward_iterator_tag;
+        using iterator_concept = std::forward_iterator_tag;
 
         constexpr const_iterator() :
             bit_width_(0),
@@ -177,6 +178,18 @@ public:
         constexpr const_iterator& operator++()
         {
             ++pos_;
+            return *this;
+        }
+        constexpr const_iterator operator+(difference_type n) const
+        {
+            const_iterator tmp = *this;
+            tmp += n;
+            return tmp;
+        }
+
+        constexpr const_iterator& operator+=(difference_type n)
+        {
+            pos_ += n;
             return *this;
         }
         constexpr const_iterator operator++(int)

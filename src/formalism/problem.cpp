@@ -1451,36 +1451,45 @@ problem::GoalDetails::GoalDetails(const ProblemImpl& problem, const InitialDetai
         }
     }
 
-    boost::hana::for_each(problem.get_hana_goal_condition(),
-                          [this](auto&& pair)
-                          {
-                              const auto& key = boost::hana::first(pair);
-                              const auto& value = boost::hana::second(pair);
+    boost::hana::for_each(
+        problem.get_hana_goal_condition(),
+        [this](auto&& pair)
+        {
+            const auto& key = boost::hana::first(pair);
+            const auto& value = boost::hana::second(pair);
 
-                              boost::hana::at_key(negative_goal_atoms, key) = filter_ground_atoms(value, false);
-                              boost::hana::at_key(positive_goal_atoms, key) = filter_ground_atoms(value, true);
+            boost::hana::at_key(negative_goal_atoms, key) = filter_ground_atoms(value, false);
+            boost::hana::at_key(positive_goal_atoms, key) = filter_ground_atoms(value, true);
+            std::sort(boost::hana::at_key(negative_goal_atoms, key).begin(),
+                      boost::hana::at_key(negative_goal_atoms, key).end(),
+                      [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
+            std::sort(boost::hana::at_key(positive_goal_atoms, key).begin(),
+                      boost::hana::at_key(positive_goal_atoms, key).end(),
+                      [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
 
-                              for (const auto& literal : value)
-                              {
-                                  if (literal->get_polarity())
-                                  {
-                                      boost::hana::at_key(positive_goal_atoms_bitset, key).set(literal->get_atom()->get_index());
-                                  }
-                                  else
-                                  {
-                                      boost::hana::at_key(negative_goal_atoms_bitset, key).set(literal->get_atom()->get_index());
-                                  }
-                              }
+            for (const auto& literal : value)
+            {
+                if (literal->get_polarity())
+                {
+                    boost::hana::at_key(positive_goal_atoms_bitset, key).set(literal->get_atom()->get_index());
+                }
+                else
+                {
+                    boost::hana::at_key(negative_goal_atoms_bitset, key).set(literal->get_atom()->get_index());
+                }
+            }
 
-                              for (const auto& atom_index : boost::hana::at_key(negative_goal_atoms_bitset, key))
-                              {
-                                  boost::hana::at_key(negative_goal_atoms_indices, key).push_back(atom_index);
-                              }
-                              for (const auto& atom_index : boost::hana::at_key(positive_goal_atoms_bitset, key))
-                              {
-                                  boost::hana::at_key(positive_goal_atoms_indices, key).push_back(atom_index);
-                              }
-                          });
+            for (const auto& atom_index : boost::hana::at_key(negative_goal_atoms_bitset, key))
+            {
+                boost::hana::at_key(negative_goal_atoms_indices, key).push_back(atom_index);
+            }
+            std::sort(boost::hana::at_key(negative_goal_atoms_indices, key).begin(), boost::hana::at_key(negative_goal_atoms_indices, key).end());
+            for (const auto& atom_index : boost::hana::at_key(positive_goal_atoms_bitset, key))
+            {
+                boost::hana::at_key(positive_goal_atoms_indices, key).push_back(atom_index);
+            }
+            std::sort(boost::hana::at_key(positive_goal_atoms_indices, key).begin(), boost::hana::at_key(positive_goal_atoms_indices, key).end());
+        });
 }
 
 problem::AxiomDetails::AxiomDetails() : parent(nullptr) {}

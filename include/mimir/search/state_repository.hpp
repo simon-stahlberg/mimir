@@ -23,6 +23,7 @@
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/dense_state.hpp"
 #include "mimir/search/state.hpp"
+#include "mimir/valla/tree_compression.hpp"
 
 namespace mimir::search
 {
@@ -34,10 +35,15 @@ private:
     bool m_problem_or_domain_has_axioms;  ///< flag that indicates whether axiom evaluation must trigger.
 
     StateImplSet m_states;  ///< Stores all created extended states.
+
     // TODO: merge both members below?
     FlatIndexListSet m_fluent_atoms_set;               ///< Stores all created fluent atom lists.
     FlatIndexListSet m_derived_atoms_set;              ///< Stores all created derived atom lists.
     FlatDoubleListSet m_fluent_numeric_variables_set;  ///< Stores all created fluent numeric variable lists.
+
+    // Just to see memory consumption
+    valla::IndexedHashSet m_tree_table;
+    valla::IndexedHashSet m_root_table;
 
     FlatBitset m_reached_fluent_atoms;   ///< Stores all encountered fluent atoms.
     FlatBitset m_reached_derived_atoms;  ///< Stores all encountered derived atoms.
