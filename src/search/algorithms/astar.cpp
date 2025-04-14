@@ -142,7 +142,7 @@ SearchResult find_solution(const SearchContext& context,
     auto f_value = start_f_value;
     openlist.insert(start_f_value, start_state);
 
-    event_handler->on_finish_f_layer(0);
+    event_handler->on_finish_f_layer(f_value);
 
     while (!openlist.empty())
     {

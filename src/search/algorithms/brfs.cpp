@@ -115,7 +115,7 @@ SearchResult find_solution(const SearchContext& context,
 
     auto g_value = DiscreteCost(0);
 
-    event_handler->on_finish_g_layer();
+    event_handler->on_finish_g_layer(g_value);
 
     while (!queue.empty())
     {
@@ -129,7 +129,7 @@ SearchResult find_solution(const SearchContext& context,
         {
             applicable_action_generator.on_finish_search_layer();
             state_repository.get_axiom_evaluator()->on_finish_search_layer();
-            event_handler->on_finish_g_layer();
+            event_handler->on_finish_g_layer(g_value);
             g_value = get_g_value(search_node);
         }
 

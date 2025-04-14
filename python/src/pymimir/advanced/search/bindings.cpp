@@ -129,7 +129,7 @@ public:
         NB_OVERRIDE_PURE(on_generate_state_not_in_search_tree, state, action, action_cost, successor_state);
     }
 
-    void on_finish_g_layer() override { NB_OVERRIDE_PURE(on_finish_g_layer); }
+    void on_finish_g_layer(DiscreteCost g_value) override { NB_OVERRIDE_PURE(on_finish_g_layer, g_value); }
     void on_start_search(State start_state) override { NB_OVERRIDE_PURE(on_start_search, start_state); }
     void on_end_search(uint64_t num_reached_fluent_atoms,
                        uint64_t num_reached_derived_atoms,

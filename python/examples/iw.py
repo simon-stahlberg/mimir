@@ -62,7 +62,7 @@ class CustomBrFSEventHandler(search.IBrFSEventHandler):
     def on_generate_state_not_in_search_tree(self, state : search.State, action : formalism.GroundAction, action_cost: float, successor_state: search.State):
         pass
 
-    def on_finish_g_layer(self):
+    def on_finish_g_layer(self, g_value : int):
         pass
 
     def on_start_search(self, start_state : search.State):

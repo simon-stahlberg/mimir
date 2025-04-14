@@ -53,7 +53,7 @@ public:
     virtual void on_generate_state_not_in_search_tree(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) = 0;
 
     /// @brief React on finishing expanding a g-layer.
-    virtual void on_finish_g_layer() = 0;
+    virtual void on_finish_g_layer(DiscreteCost g_value) = 0;
 
     /// @brief React on starting a search.
     virtual void on_start_search(State start_state) = 0;
@@ -151,16 +151,14 @@ public:
         }
     }
 
-    void on_finish_g_layer() override
+    void on_finish_g_layer(DiscreteCost g_value) override
     {
         m_statistics.on_finish_g_layer();
 
         if (!m_quiet)
         {
             assert(!m_statistics.get_num_expanded_until_g_value().empty());
-            self().on_finish_g_layer_impl(m_statistics.get_num_expanded_until_g_value().size() - 1,
-                                          m_statistics.get_num_expanded_until_g_value().back(),
-                                          m_statistics.get_num_generated_until_g_value().back());
+            self().on_finish_g_layer_impl(g_value, m_statistics.get_num_expanded_until_g_value().back(), m_statistics.get_num_generated_until_g_value().back());
         }
     }
 
