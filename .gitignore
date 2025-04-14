@@ -1,3 +1,6 @@
+# Virtual environments
+.venv
+
 # VSCode
 .vscode
 .vscode/settings.json
