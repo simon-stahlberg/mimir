@@ -88,10 +88,8 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
     // Fluent atoms
     auto& dense_fluent_atoms = m_dense_state_builder.get_atoms<FluentTag>();
     dense_fluent_atoms.unset_all();
-    // Derived atoms
     auto& dense_derived_atoms = m_dense_state_builder.get_atoms<DerivedTag>();
     dense_derived_atoms.unset_all();
-    // Numeric variables
     auto& dense_fluent_numeric_variables = m_dense_state_builder.get_numeric_variables();
     /* Temporaries */
     m_state_fluent_atoms.clear();
@@ -298,11 +296,8 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
     m_applied_positive_effect_atoms.unset_all();
 
     /* Dense state */
-    // Fluent atoms
     auto& dense_fluent_atoms = dense_state.get_atoms<FluentTag>();
-    // Derived atoms
     auto& dense_derived_atoms = dense_state.get_atoms<DerivedTag>();
-    // Numeric variables
     auto& dense_fluent_numeric_variables = dense_state.get_numeric_variables();
     /* Metric value */
     auto successor_state_metric_value = state_metric_value;

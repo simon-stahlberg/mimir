@@ -48,7 +48,7 @@ public:
     template<formalism::IsFluentOrDerivedTag P>
     bool literals_hold(const FlatIndexList& positive_atoms, const FlatIndexList& negative_atoms) const;
 
-    /* Immutable Getters */
+    /* Getters */
 
     /// @brief Get the index of the state.
     /// @return
@@ -100,11 +100,11 @@ private:
     friend class StateRepositoryImpl;
 
     Index m_index;
-
+    /* Propositional variables */
     const valla::IndexedHashSet* m_tree_table;
     valla::Slot m_fluent_atoms;
     valla::Slot m_derived_atoms;
-
+    /* Numeric variables */
     const FlatDoubleList* m_numeric_variables;
 };
 
