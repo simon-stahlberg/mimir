@@ -18,6 +18,7 @@
 #ifndef VALLA_INCLUDE_DECLARATIONS_HPP_
 #define VALLA_INCLUDE_DECLARATIONS_HPP_
 
+#include <cassert>
 #include <iostream>
 #include <memory>
 #include <mutex>
@@ -33,6 +34,21 @@ namespace valla
 
 using Index = uint32_t;  ///< Enough space for 4,294,967,295 indices
 using Slot = uint64_t;   ///< A slot is made up of two indices.
+
+static constexpr const Slot NULL_SLOT = Slot(-1);  ///< meaning is like nullptr
+
+/// @brief Pack two uint32_t into a uint64_t.
+inline Slot make_slot(Index lhs, Index rhs) { return Slot(lhs) << 32 | rhs; }
+
+/// @brief Unpack two uint32_t from a uint64_t.
+inline std::pair<Index, Index> read_slot(Slot slot) { return { Index(slot >> 32), slot & (Index(-1)) }; }
+
+/// @brief Unpack a uint32_t from a uint64_t at a specific position (0 => left, 1 => right)
+inline Index read_pos(Slot slot, size_t pos)
+{
+    assert(pos < 2);
+    return Index((slot >> ((1 - pos) * 32)));
+}
 
 using State = std::vector<Index>;
 }

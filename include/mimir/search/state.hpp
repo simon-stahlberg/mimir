@@ -24,6 +24,8 @@
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
+#include "mimir/valla/indexed_hash_set.hpp"
+#include "mimir/valla/tree_compression.hpp"
 
 #include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
@@ -36,12 +38,11 @@ namespace mimir::search
 struct StateImpl
 {
     Index m_index = Index(0);
-    FlatExternalPtr<const FlatIndexList> m_fluent_atoms = nullptr;
-    FlatExternalPtr<const FlatIndexList> m_derived_atoms = nullptr;
+    FlatExternalPtr<const valla::IndexedHashSet> m_tree_table = nullptr;
+    valla::Slot m_fluent_atoms = valla::NULL_SLOT;
+    valla::Slot m_derived_atoms = valla::NULL_SLOT;
     FlatExternalPtr<const FlatDoubleList> m_numeric_variables = nullptr;
 
-    static const FlatIndexList s_empty_fluent_atoms;        ///< Returned, if m_fluent_atoms is a nullptr.
-    static const FlatIndexList s_empty_derived_atoms;       ///< Returned, if m_derived_atoms is a nullptr.
     static const FlatDoubleList s_empty_numeric_variables;  ///< Returned, if m_numeric_variables is a nullptr.
 
     bool numeric_constraint_holds(formalism::GroundNumericConstraint numeric_constraint, const FlatDoubleList& static_numeric_variables) const;
@@ -54,6 +55,8 @@ struct StateImpl
     /* Immutable Getters */
 
     Index get_index() const;
+
+    const valla::IndexedHashSet& get_tree_table() const;
 
     /// @brief Returns a range over the ground atom indices for the given tag `P` in the state.
     /// @tparam P is the tag.
@@ -71,7 +74,7 @@ struct StateImpl
     auto identifying_members() const
     {
         // The pointers uniquely identify the state, derived atoms not needed.
-        return std::make_tuple(m_fluent_atoms.get(), m_numeric_variables.get());
+        return std::make_tuple(m_fluent_atoms, m_numeric_variables.get());
     }
 
 private:
@@ -81,8 +84,9 @@ private:
 
     Index& get_index();
 
-    FlatExternalPtr<const FlatIndexList>& get_fluent_atoms();
-    FlatExternalPtr<const FlatIndexList>& get_derived_atoms();
+    FlatExternalPtr<const valla::IndexedHashSet>& get_tree_table();
+    valla::Slot& get_fluent_atoms();
+    valla::Slot& get_derived_atoms();
     FlatExternalPtr<const FlatDoubleList>& get_numeric_variables();
 };
 
@@ -91,22 +95,13 @@ auto StateImpl::get_atoms() const
 {
     if constexpr (std::is_same_v<P, formalism::FluentTag>)
     {
-        if (!m_fluent_atoms)
-        {
-            return std::ranges::subrange(StateImpl::s_empty_fluent_atoms.begin(), StateImpl::s_empty_fluent_atoms.end());
-        }
-        assert(std::is_sorted(m_fluent_atoms->begin(), m_fluent_atoms->end()));
-        return std::ranges::subrange(m_fluent_atoms->begin(), m_fluent_atoms->end());
+        assert(std::is_sorted(valla::begin(m_fluent_atoms, get_tree_table()), valla::end()));
+        return std::ranges::subrange(valla::begin(m_fluent_atoms, get_tree_table()), valla::end());
     }
     else if constexpr (std::is_same_v<P, formalism::DerivedTag>)
     {
-        if (!m_derived_atoms)
-        {
-            return std::ranges::subrange(StateImpl::s_empty_derived_atoms.begin(), StateImpl::s_empty_derived_atoms.end());
-        }
-        // StateRepositoryImpl ensures that m_derived_atoms is a valid pointer to a FlatIndexList.
-        assert(std::is_sorted(m_derived_atoms->begin(), m_derived_atoms->end()));
-        return std::ranges::subrange(m_derived_atoms->begin(), m_derived_atoms->end());
+        assert(std::is_sorted(valla::begin(m_derived_atoms, get_tree_table()), valla::end()));
+        return std::ranges::subrange(valla::begin(m_derived_atoms, get_tree_table()), valla::end());
     }
     else
     {

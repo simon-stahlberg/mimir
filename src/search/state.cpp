@@ -31,10 +31,6 @@ namespace mimir::search
 
 /* State */
 
-const FlatIndexList StateImpl::s_empty_fluent_atoms = FlatIndexList();
-
-const FlatIndexList StateImpl::s_empty_derived_atoms = FlatIndexList();
-
 const FlatDoubleList StateImpl::s_empty_numeric_variables = FlatDoubleList();
 
 bool StateImpl::numeric_constraint_holds(GroundNumericConstraint numeric_constraint, const FlatDoubleList& static_numeric_variables) const
@@ -67,9 +63,13 @@ Index StateImpl::get_index() const { return m_index; }
 
 Index& StateImpl::get_index() { return m_index; }
 
-FlatExternalPtr<const FlatIndexList>& StateImpl::get_fluent_atoms() { return m_fluent_atoms; }
+const valla::IndexedHashSet& StateImpl::get_tree_table() const { return *m_tree_table; }
 
-FlatExternalPtr<const FlatIndexList>& StateImpl::get_derived_atoms() { return m_derived_atoms; }
+FlatExternalPtr<const valla::IndexedHashSet>& StateImpl::get_tree_table() { return m_tree_table; }
+
+valla::Slot& StateImpl::get_fluent_atoms() { return m_fluent_atoms; }
+
+valla::Slot& StateImpl::get_derived_atoms() { return m_derived_atoms; }
 
 FlatExternalPtr<const FlatDoubleList>& StateImpl::get_numeric_variables() { return m_numeric_variables; }
 

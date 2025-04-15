@@ -59,7 +59,7 @@ public:
 
     size_t size() const { return m_index_to_slot.size(); }
 
-    size_t get_memory_usage() const { return mimir::get_memory_usage_in_bytes(m_slot_to_index) + m_index_to_slot.size() * sizeof(Slot); }
+    size_t get_memory_usage() const { return mimir::get_memory_usage_in_bytes(m_slot_to_index) + m_index_to_slot.capacity() * sizeof(Slot); }
 
 private:
     absl::flat_hash_map<Slot, Index> m_slot_to_index;

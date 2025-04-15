@@ -26,23 +26,19 @@
 #include <cmath>
 #include <concepts>
 #include <iostream>
+#include <ranges>
 
 namespace valla
 {
-
-/// @brief Pack two uint32_t into a uint64_t.
-inline Slot make_slot(Index lhs, Index rhs) { return Slot(lhs) << 32 | rhs; }
-
-/// @brief Unpack two uint32_t from a uint64_t.
-inline std::pair<Index, Index> read_slot(Slot slot) { return { Index(slot >> 32), slot & (Index(-1)) }; }
 
 /// @brief Recursively insert the elements from `it` until `end` into the `table`.
 /// @param it points to the first element.
 /// @param end points after the last element.
 /// @param table is the table to uniquely insert the slots.
 /// @return the index of the slot at the root.
-template<typename Iterator>
-Index insert_recursively(Iterator it, Iterator end, IndexedHashSet& table)
+template<std::forward_iterator Iterator>
+    requires std::same_as<std::iter_value_t<Iterator>, Index>
+inline Index insert_recursively(Iterator it, Iterator end, IndexedHashSet& table)
 {
     const auto len = static_cast<size_t>(std::distance(it, end));
 
@@ -129,6 +125,88 @@ inline void read_state(Index root_index, const IndexedHashSet& tree_table, const
 
     read_state_recursively(tree_index, len, tree_table, out_state);
 }
+
+class const_iterator
+{
+private:
+    const IndexedHashSet* m_tree_table;
+
+    struct Entry
+    {
+        Index m_index;
+        uint32_t m_size;
+    };
+
+    std::vector<Entry> m_stack;
+
+    Index m_value;
+
+    static constexpr const Index END_POS = Index(-1);
+
+    void advance()
+    {
+        while (!m_stack.empty())
+        {
+            auto entry = m_stack.back();
+            m_stack.pop_back();
+
+            if (entry.m_size == 1)
+            {
+                m_value = entry.m_index;
+                return;
+            }
+
+            const auto [left, right] = read_slot(m_tree_table->get_slot(entry.m_index));
+
+            Index mid = std::bit_floor(entry.m_size - 1);
+
+            // Emplace right first to ensure left is visited first in dfs.
+            m_stack.emplace_back(right, entry.m_size - mid);
+            m_stack.emplace_back(left, mid);
+        }
+
+        m_value = END_POS;
+    }
+
+public:
+    using difference_type = std::ptrdiff_t;
+    using value_type = Index;
+    using pointer = value_type*;
+    using reference = value_type&;
+    using iterator_category = std::forward_iterator_tag;
+
+    const_iterator() : m_tree_table(nullptr), m_stack(), m_value(END_POS) {}
+    const_iterator(const IndexedHashSet* tree_table, Slot root, bool begin) : m_tree_table(tree_table), m_stack(), m_value(END_POS)
+    {
+        if (begin)
+        {
+            const auto [tree_idx, size] = read_slot(root);
+            if (size > 0)  ///< Push to stack only if there leafs
+            {
+                m_stack.emplace_back(tree_idx, size);
+                advance();
+            }
+        }
+    }
+    value_type operator*() const { return m_value; }
+    const_iterator& operator++()
+    {
+        advance();
+        return *this;
+    }
+    const_iterator operator++(int)
+    {
+        auto it = *this;
+        ++it;
+        return it;
+    }
+    bool operator==(const const_iterator& other) const { return m_value == other.m_value; }
+    bool operator!=(const const_iterator& other) const { return !(*this == other); }
+};
+
+inline const_iterator begin(Slot root, const IndexedHashSet& tree_table) { return const_iterator(&tree_table, root, true); }
+
+inline const_iterator end() { return const_iterator(); }
 
 }
 

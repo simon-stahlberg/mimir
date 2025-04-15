@@ -100,19 +100,22 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
     // Index
     auto& state_index = m_state_builder.get_index();
 
+    auto& tree_table = m_state_builder.get_tree_table();
+    tree_table = &m_tree_table;
+
     // Fluent atoms
     auto& dense_fluent_atoms = m_dense_state_builder.get_atoms<FluentTag>();
     dense_fluent_atoms.unset_all();
     m_state_fluent_atoms.clear();
     auto& state_fluent_atoms_ptr = m_state_builder.get_fluent_atoms();
-    state_fluent_atoms_ptr = nullptr;
+    state_fluent_atoms_ptr = 0;
 
     // Derived atoms
     auto& dense_derived_atoms = m_dense_state_builder.get_atoms<DerivedTag>();
     dense_derived_atoms.unset_all();
     m_state_derived_atoms.clear();
     auto& state_derived_atoms_ptr = m_state_builder.get_derived_atoms();
-    state_derived_atoms_ptr = nullptr;
+    state_derived_atoms_ptr = 0;
 
     // Numeric variables
     auto& dense_fluent_numeric_variables = m_dense_state_builder.get_numeric_variables();
@@ -140,13 +143,13 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
         dense_fluent_atoms.set(atom->get_index());
     }
 
+    translate_dense_into_sorted_compressed_sparse(dense_fluent_atoms, m_state_fluent_atoms);
+    state_fluent_atoms_ptr = m_root_table.get_slot(valla::insert(m_state_fluent_atoms, m_tree_table, m_root_table).first->second);
+
     update_reached_fluent_atoms(dense_fluent_atoms, m_reached_fluent_atoms);
 
-    translate_dense_into_sorted_compressed_sparse(dense_fluent_atoms, m_state_fluent_atoms);
-    valla::insert(m_state_fluent_atoms, m_tree_table, m_root_table);
-
-    const auto [fluent_iter, fluent_inserted] = m_fluent_atoms_set.insert(m_state_fluent_atoms);
-    update_state_atoms_ptr(**fluent_iter, state_fluent_atoms_ptr);
+    // const auto [fluent_iter, fluent_inserted] = m_fluent_atoms_set.insert(m_state_fluent_atoms);
+    // update_state_atoms_ptr(**fluent_iter, state_fluent_atoms_ptr);
 
     // Test whether there exists an extended state for the given non extended state
     auto state_iter = m_states.find(m_state_builder);
@@ -163,13 +166,13 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
             assert(dense_derived_atoms.count() == 0);
             m_axiom_evaluator->generate_and_apply_axioms(m_dense_state_builder);
 
+            translate_dense_into_sorted_compressed_sparse(dense_derived_atoms, m_state_derived_atoms);
+            state_derived_atoms_ptr = m_root_table.get_slot(valla::insert(m_state_derived_atoms, m_tree_table, m_root_table).first->second);
+
             update_reached_derived_atoms(dense_derived_atoms, m_reached_derived_atoms);
 
-            translate_dense_into_sorted_compressed_sparse(dense_derived_atoms, m_state_derived_atoms);
-            valla::insert(m_state_derived_atoms, m_tree_table, m_root_table);
-
-            const auto [derived_iter, derived_inserted] = m_derived_atoms_set.insert(m_state_derived_atoms);
-            update_state_atoms_ptr(**derived_iter, state_derived_atoms_ptr);
+            // const auto [derived_iter, derived_inserted] = m_derived_atoms_set.insert(m_state_derived_atoms);
+            // update_state_atoms_ptr(**derived_iter, state_derived_atoms_ptr);
         }
     }
 
@@ -332,17 +335,20 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
     // Index
     auto& state_index = m_state_builder.get_index();
 
+    auto& tree_table = m_state_builder.get_tree_table();
+    tree_table = &m_tree_table;
+
     // Fluent atoms
     auto& dense_fluent_atoms = dense_state.get_atoms<FluentTag>();
     m_state_fluent_atoms.clear();
     auto& state_fluent_atoms_ptr = m_state_builder.get_fluent_atoms();
-    state_fluent_atoms_ptr = nullptr;
+    state_fluent_atoms_ptr = 0;
 
     // Derived atoms
     auto& dense_derived_atoms = dense_state.get_atoms<DerivedTag>();
     m_state_derived_atoms.clear();
     auto& state_derived_atoms_ptr = m_state_builder.get_derived_atoms();
-    state_derived_atoms_ptr = nullptr;
+    state_derived_atoms_ptr = 0;
 
     // Numeric variables
     auto& dense_fluent_numeric_variables = dense_state.get_numeric_variables();
@@ -368,13 +374,13 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
                          dense_fluent_numeric_variables,
                          successor_state_metric_value);
 
+    translate_dense_into_sorted_compressed_sparse(dense_fluent_atoms, m_state_fluent_atoms);
+    state_fluent_atoms_ptr = m_root_table.get_slot(valla::insert(m_state_fluent_atoms, m_tree_table, m_root_table).first->second);
+
     update_reached_fluent_atoms(dense_fluent_atoms, m_reached_fluent_atoms);
 
-    translate_dense_into_sorted_compressed_sparse(dense_fluent_atoms, m_state_fluent_atoms);
-    valla::insert(m_state_fluent_atoms, m_tree_table, m_root_table);
-
-    const auto [fluent_iter, fluent_inserted] = m_fluent_atoms_set.insert(m_state_fluent_atoms);
-    update_state_atoms_ptr(**fluent_iter, state_fluent_atoms_ptr);
+    // const auto [fluent_iter, fluent_inserted] = m_fluent_atoms_set.insert(m_state_fluent_atoms);
+    // update_state_atoms_ptr(**fluent_iter, state_fluent_atoms_ptr);
 
     const auto [fluent_numeric_iter, fluent_numeric_inserted] = m_fluent_numeric_variables_set.insert(dense_fluent_numeric_variables);
     update_state_numeric_variables_ptr(**fluent_numeric_iter, state_fluent_numeric_variables_ptr);
@@ -394,13 +400,13 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
             dense_derived_atoms.unset_all();  ///< Important: now we must clear the buffer before evaluating for the updated fluent atoms.
             m_axiom_evaluator->generate_and_apply_axioms(dense_state);
 
+            translate_dense_into_sorted_compressed_sparse(dense_derived_atoms, m_state_derived_atoms);
+            state_derived_atoms_ptr = m_root_table.get_slot(valla::insert(m_state_derived_atoms, m_tree_table, m_root_table).first->second);
+
             update_reached_fluent_atoms(dense_derived_atoms, m_reached_derived_atoms);
 
-            translate_dense_into_sorted_compressed_sparse(dense_derived_atoms, m_state_derived_atoms);
-            valla::insert(m_state_derived_atoms, m_tree_table, m_root_table);
-
-            const auto [iter, inserted] = m_derived_atoms_set.insert(m_state_derived_atoms);
-            update_state_atoms_ptr(**iter, state_derived_atoms_ptr);
+            // const auto [iter, inserted] = m_derived_atoms_set.insert(m_state_derived_atoms);
+            // update_state_atoms_ptr(**iter, state_derived_atoms_ptr);
         }
     }
 
