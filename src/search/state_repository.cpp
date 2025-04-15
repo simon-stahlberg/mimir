@@ -69,12 +69,6 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_initial_stat
     return get_or_create_state(problem->get_fluent_initial_atoms(), problem->get_initial_function_to_value<FluentTag>());
 }
 
-static void translate_dense_into_sorted_compressed_sparse(const FlatBitset& dense, FlatIndexList& ref_sparse)
-{
-    insert_into_vector(dense, ref_sparse);
-    ref_sparse.compress();
-}
-
 static void update_reached_fluent_atoms(const FlatBitset& state_fluent_atoms, FlatBitset& ref_reached_fluent_atoms)
 {
     ref_reached_fluent_atoms |= state_fluent_atoms;
@@ -94,11 +88,14 @@ static void update_state_numeric_variables_ptr(const FlatDoubleList& state_numer
 std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const GroundAtomList<FluentTag>& atoms,
                                                                           const FlatDoubleList& fluent_numeric_variables)
 {
+    auto& tree_table = m_axiom_evaluator->get_problem()->get_tree_table();
+    auto& root_table = m_axiom_evaluator->get_problem()->get_root_table();
+
     // Index
     auto& state_index = m_state_builder.get_index();
 
-    auto& tree_table = m_state_builder.get_tree_table();
-    tree_table = &m_tree_table;
+    auto& state_tree_table = m_state_builder.get_tree_table();
+    state_tree_table = &tree_table;
 
     // Fluent atoms
     auto& dense_fluent_atoms = m_dense_state_builder.get_atoms<FluentTag>();
@@ -140,8 +137,7 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
         dense_fluent_atoms.set(atom->get_index());
     }
 
-    translate_dense_into_sorted_compressed_sparse(dense_fluent_atoms, m_state_fluent_atoms);
-    state_fluent_atoms_ptr = m_root_table.get_slot(valla::insert(m_state_fluent_atoms, m_tree_table, m_root_table).first->second);
+    state_fluent_atoms_ptr = root_table.get_slot(valla::insert(dense_fluent_atoms, tree_table, root_table).first->second);
 
     update_reached_fluent_atoms(dense_fluent_atoms, m_reached_fluent_atoms);
 
@@ -160,8 +156,7 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
             assert(dense_derived_atoms.count() == 0);
             m_axiom_evaluator->generate_and_apply_axioms(m_dense_state_builder);
 
-            translate_dense_into_sorted_compressed_sparse(dense_derived_atoms, m_state_derived_atoms);
-            state_derived_atoms_ptr = m_root_table.get_slot(valla::insert(m_state_derived_atoms, m_tree_table, m_root_table).first->second);
+            state_derived_atoms_ptr = root_table.get_slot(valla::insert(dense_derived_atoms, tree_table, root_table).first->second);
 
             update_reached_derived_atoms(dense_derived_atoms, m_reached_derived_atoms);
         }
@@ -319,6 +314,8 @@ std::pair<State, ContinuousCost>
 StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dense_state, GroundAction action, ContinuousCost state_metric_value)
 {
     const auto& problem = *m_axiom_evaluator->get_problem();
+    auto& tree_table = m_axiom_evaluator->get_problem()->get_tree_table();
+    auto& root_table = m_axiom_evaluator->get_problem()->get_root_table();
 
     m_applied_negative_effect_atoms.unset_all();
     m_applied_positive_effect_atoms.unset_all();
@@ -326,8 +323,8 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
     // Index
     auto& state_index = m_state_builder.get_index();
 
-    auto& tree_table = m_state_builder.get_tree_table();
-    tree_table = &m_tree_table;
+    auto& state_tree_table = m_state_builder.get_tree_table();
+    state_tree_table = &tree_table;
 
     // Fluent atoms
     auto& dense_fluent_atoms = dense_state.get_atoms<FluentTag>();
@@ -365,8 +362,7 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
                          dense_fluent_numeric_variables,
                          successor_state_metric_value);
 
-    translate_dense_into_sorted_compressed_sparse(dense_fluent_atoms, m_state_fluent_atoms);
-    state_fluent_atoms_ptr = m_root_table.get_slot(valla::insert(m_state_fluent_atoms, m_tree_table, m_root_table).first->second);
+    state_fluent_atoms_ptr = root_table.get_slot(valla::insert(dense_fluent_atoms, tree_table, root_table).first->second);
 
     update_reached_fluent_atoms(dense_fluent_atoms, m_reached_fluent_atoms);
 
@@ -388,8 +384,7 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
             dense_derived_atoms.unset_all();  ///< Important: now we must clear the buffer before evaluating for the updated fluent atoms.
             m_axiom_evaluator->generate_and_apply_axioms(dense_state);
 
-            translate_dense_into_sorted_compressed_sparse(dense_derived_atoms, m_state_derived_atoms);
-            state_derived_atoms_ptr = m_root_table.get_slot(valla::insert(m_state_derived_atoms, m_tree_table, m_root_table).first->second);
+            state_derived_atoms_ptr = root_table.get_slot(valla::insert(dense_derived_atoms, tree_table, root_table).first->second);
 
             update_reached_fluent_atoms(dense_derived_atoms, m_reached_derived_atoms);
         }
@@ -409,5 +404,10 @@ const FlatBitset& StateRepositoryImpl::get_reached_derived_ground_atoms_bitset()
 
 const AxiomEvaluator& StateRepositoryImpl::get_axiom_evaluator() const { return m_axiom_evaluator; }
 
-size_t StateRepositoryImpl::get_estimated_memory_usage_in_bytes_for_states() const { return m_root_table.get_memory_usage() + m_tree_table.get_memory_usage(); }
+size_t StateRepositoryImpl::get_estimated_memory_usage_in_bytes_for_states() const
+{
+    auto& tree_table = m_axiom_evaluator->get_problem()->get_tree_table();
+    auto& root_table = m_axiom_evaluator->get_problem()->get_root_table();
+    return tree_table.get_memory_usage() + root_table.get_memory_usage();
+}
 }

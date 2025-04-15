@@ -32,6 +32,8 @@
 
 namespace mimir::search
 {
+inline uint64_t szudzik_pair(uint64_t a, uint64_t b) { return (a >= b) ? (a * a + b) : (b * b + a); }
+
 /// @brief `StateImpl` encapsulates the fluent and derived atoms of a planning state.
 /// We refer to the fluent atoms as the non-extended state
 /// and the fluent and derived atoms as the extended state.
@@ -74,7 +76,8 @@ struct StateImpl
     auto identifying_members() const
     {
         // The pointers uniquely identify the state, derived atoms not needed.
-        return std::make_tuple(m_fluent_atoms, m_numeric_variables.get());
+        const auto [left, right] = valla::read_slot(m_fluent_atoms);
+        return std::make_tuple(szudzik_pair(left, right), m_numeric_variables.get());
     }
 
 private:

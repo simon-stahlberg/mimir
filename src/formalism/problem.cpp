@@ -239,6 +239,9 @@ const AxiomList& ProblemImpl::get_problem_and_domain_axioms() const { return m_p
  * Additional members
  */
 
+valla::IndexedHashSet& ProblemImpl::get_tree_table() { return m_tree_table; }
+valla::IndexedHashSet& ProblemImpl::get_root_table() { return m_root_table; }
+
 /* Initial state */
 
 const GroundAtomList<StaticTag>& ProblemImpl::get_static_initial_atoms() const { return m_details.initial.positive_static_initial_atoms; }

@@ -23,6 +23,8 @@
 #include "mimir/formalism/problem_details.hpp"
 #include "mimir/formalism/repositories.hpp"
 
+#include <valla/indexed_hash_set.hpp>
+
 namespace mimir::formalism
 {
 class ProblemImpl
@@ -50,6 +52,9 @@ private:
     // Below: add additional members if needed and initialize them in the constructor
 
     problem::Details m_details;  ///< We hide the details in a struct.
+
+    valla::IndexedHashSet m_tree_table;
+    valla::IndexedHashSet m_root_table;
 
     ProblemImpl(Index index,
                 Repositories repositories,
@@ -110,6 +115,9 @@ public:
     /**
      * Additional members
      */
+
+    valla::IndexedHashSet& get_tree_table();
+    valla::IndexedHashSet& get_root_table();
 
     /* Initial state */
     const GroundAtomList<StaticTag>& get_static_initial_atoms() const;

@@ -40,10 +40,6 @@ private:
 
     FlatDoubleListSet m_fluent_numeric_variables_set;  ///< Stores all created fluent numeric variable lists.
 
-    // Just to see memory consumption
-    valla::IndexedHashSet m_tree_table;
-    valla::IndexedHashSet m_root_table;
-
     FlatBitset m_reached_fluent_atoms;   ///< Stores all encountered fluent atoms.
     FlatBitset m_reached_derived_atoms;  ///< Stores all encountered derived atoms.
 
