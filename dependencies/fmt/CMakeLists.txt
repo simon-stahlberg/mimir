@@ -3,7 +3,6 @@ project(InstallFMT)
 
 include(ExternalProject)
 
-
 message(STATUS "Dependency \"fmt\"...")
 
 # Attempt to find the installed fmt library

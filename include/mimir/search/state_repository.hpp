@@ -23,7 +23,9 @@
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/dense_state.hpp"
 #include "mimir/search/state.hpp"
-#include "mimir/valla/tree_compression.hpp"
+
+#include <valla/indexed_hash_set.hpp>
+#include <valla/tree_compression.hpp>
 
 namespace mimir::search
 {
@@ -36,9 +38,6 @@ private:
 
     StateImplSet m_states;  ///< Stores all created extended states.
 
-    // TODO: merge both members below?
-    FlatIndexListSet m_fluent_atoms_set;               ///< Stores all created fluent atom lists.
-    FlatIndexListSet m_derived_atoms_set;              ///< Stores all created derived atom lists.
     FlatDoubleListSet m_fluent_numeric_variables_set;  ///< Stores all created fluent numeric variable lists.
 
     // Just to see memory consumption
@@ -121,13 +120,9 @@ public:
     /// @return the axiom evaluator.
     const AxiomEvaluator& get_axiom_evaluator() const;
 
-    /// @brief Get the total number of bytes used for storing the unextended state portions.
-    /// @return the number of bytes for storing storing the unextended state portions.
-    size_t get_estimated_memory_usage_in_bytes_for_unextended_state_portion() const;
-
-    /// @brief Get the total number of bytes used for storing the extended state portions.
-    /// @return the number of bytes for storing storing the extended state portions.
-    size_t get_estimated_memory_usage_in_bytes_for_extended_state_portion() const;
+    /// @brief Get the total number of bytes used for storing the states.
+    /// @return the number of bytes for storing storing the states.
+    size_t get_estimated_memory_usage_in_bytes_for_states() const;
 };
 
 /**

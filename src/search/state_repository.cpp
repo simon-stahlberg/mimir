@@ -50,7 +50,6 @@ StateRepositoryImpl::StateRepositoryImpl(AxiomEvaluator axiom_evaluator) :
     m_axiom_evaluator(std::move(axiom_evaluator)),
     m_problem_or_domain_has_axioms(!m_axiom_evaluator->get_problem()->get_problem_and_domain_axioms().empty()),
     m_states(),
-    m_derived_atoms_set(),
     m_reached_fluent_atoms(),
     m_reached_derived_atoms(),
     m_state_builder(),
@@ -85,8 +84,6 @@ static void update_reached_derived_atoms(const FlatBitset& state_derived_atoms, 
 {
     ref_reached_derived_atoms |= state_derived_atoms;
 }
-
-static void update_state_atoms_ptr(const FlatIndexList& state_atoms, FlatExternalPtr<const FlatIndexList>& state_atoms_ptr) { state_atoms_ptr = &state_atoms; }
 
 static void update_state_numeric_variables_ptr(const FlatDoubleList& state_numeric_variables,
                                                FlatExternalPtr<const FlatDoubleList>& state_numeric_variables_ptr)
@@ -148,9 +145,6 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
 
     update_reached_fluent_atoms(dense_fluent_atoms, m_reached_fluent_atoms);
 
-    // const auto [fluent_iter, fluent_inserted] = m_fluent_atoms_set.insert(m_state_fluent_atoms);
-    // update_state_atoms_ptr(**fluent_iter, state_fluent_atoms_ptr);
-
     // Test whether there exists an extended state for the given non extended state
     auto state_iter = m_states.find(m_state_builder);
     if (state_iter != m_states.end())
@@ -170,9 +164,6 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
             state_derived_atoms_ptr = m_root_table.get_slot(valla::insert(m_state_derived_atoms, m_tree_table, m_root_table).first->second);
 
             update_reached_derived_atoms(dense_derived_atoms, m_reached_derived_atoms);
-
-            // const auto [derived_iter, derived_inserted] = m_derived_atoms_set.insert(m_state_derived_atoms);
-            // update_state_atoms_ptr(**derived_iter, state_derived_atoms_ptr);
         }
     }
 
@@ -379,9 +370,6 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
 
     update_reached_fluent_atoms(dense_fluent_atoms, m_reached_fluent_atoms);
 
-    // const auto [fluent_iter, fluent_inserted] = m_fluent_atoms_set.insert(m_state_fluent_atoms);
-    // update_state_atoms_ptr(**fluent_iter, state_fluent_atoms_ptr);
-
     const auto [fluent_numeric_iter, fluent_numeric_inserted] = m_fluent_numeric_variables_set.insert(dense_fluent_numeric_variables);
     update_state_numeric_variables_ptr(**fluent_numeric_iter, state_fluent_numeric_variables_ptr);
 
@@ -404,9 +392,6 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
             state_derived_atoms_ptr = m_root_table.get_slot(valla::insert(m_state_derived_atoms, m_tree_table, m_root_table).first->second);
 
             update_reached_fluent_atoms(dense_derived_atoms, m_reached_derived_atoms);
-
-            // const auto [iter, inserted] = m_derived_atoms_set.insert(m_state_derived_atoms);
-            // update_state_atoms_ptr(**iter, state_derived_atoms_ptr);
         }
     }
 
@@ -424,14 +409,5 @@ const FlatBitset& StateRepositoryImpl::get_reached_derived_ground_atoms_bitset()
 
 const AxiomEvaluator& StateRepositoryImpl::get_axiom_evaluator() const { return m_axiom_evaluator; }
 
-size_t StateRepositoryImpl::get_estimated_memory_usage_in_bytes_for_unextended_state_portion() const
-{
-    std::cout << "Tree compression memory usage in bytes: " << m_root_table.get_memory_usage() + m_tree_table.size() << std::endl;
-    return m_states.get_estimated_memory_usage_in_bytes();
-}
-
-size_t StateRepositoryImpl::get_estimated_memory_usage_in_bytes_for_extended_state_portion() const
-{
-    return m_derived_atoms_set.get_estimated_memory_usage_in_bytes();
-}
+size_t StateRepositoryImpl::get_estimated_memory_usage_in_bytes_for_states() const { return m_root_table.get_memory_usage() + m_tree_table.get_memory_usage(); }
 }

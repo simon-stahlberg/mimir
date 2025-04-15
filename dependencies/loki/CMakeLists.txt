@@ -9,8 +9,6 @@ message(STATUS "Dependency \"loki\"...")
 find_package(loki QUIET PATHS ${CMAKE_INSTALL_PREFIX} NO_DEFAULT_PATH)
 
 if (NOT loki_FOUND)
-
-
     list(APPEND CMAKE_ARGS
             -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
             -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}

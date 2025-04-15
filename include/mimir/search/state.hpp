@@ -24,11 +24,11 @@
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/valla/indexed_hash_set.hpp"
-#include "mimir/valla/tree_compression.hpp"
 
 #include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
+#include <valla/indexed_hash_set.hpp>
+#include <valla/tree_compression.hpp>
 
 namespace mimir::search
 {
@@ -39,8 +39,8 @@ struct StateImpl
 {
     Index m_index = Index(0);
     FlatExternalPtr<const valla::IndexedHashSet> m_tree_table = nullptr;
-    valla::Slot m_fluent_atoms = valla::NULL_SLOT;
-    valla::Slot m_derived_atoms = valla::NULL_SLOT;
+    valla::Slot m_fluent_atoms = valla::EMPTY_ROOT_SLOT;
+    valla::Slot m_derived_atoms = valla::EMPTY_ROOT_SLOT;
     FlatExternalPtr<const FlatDoubleList> m_numeric_variables = nullptr;
 
     static const FlatDoubleList s_empty_numeric_variables;  ///< Returned, if m_numeric_variables is a nullptr.

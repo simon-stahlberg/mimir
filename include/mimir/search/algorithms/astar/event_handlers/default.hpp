@@ -52,8 +52,7 @@ private:
 
     void on_end_search_impl(uint64_t num_reached_fluent_atoms,
                             uint64_t num_reached_derived_atoms,
-                            uint64_t num_bytes_for_unextended_state_portion,
-                            uint64_t num_bytes_for_extended_state_portion,
+                            uint64_t num_bytes_for_states,
                             uint64_t num_bytes_for_nodes,
                             uint64_t num_bytes_for_actions,
                             uint64_t num_bytes_for_axioms,
