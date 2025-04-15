@@ -32,19 +32,13 @@
 
 namespace mimir::search
 {
-inline uint64_t szudzik_pair(uint64_t a, uint64_t b) { return (a >= b) ? (a * a + b) : (b * b + a); }
 
 /// @brief `StateImpl` encapsulates the fluent and derived atoms of a planning state.
 /// We refer to the fluent atoms as the non-extended state
 /// and the fluent and derived atoms as the extended state.
-struct StateImpl
+class StateImpl
 {
-    Index m_index = Index(0);
-    FlatExternalPtr<const valla::IndexedHashSet> m_tree_table = nullptr;
-    valla::Slot m_fluent_atoms = valla::EMPTY_ROOT_SLOT;
-    valla::Slot m_derived_atoms = valla::EMPTY_ROOT_SLOT;
-    FlatExternalPtr<const FlatDoubleList> m_numeric_variables = nullptr;
-
+public:
     static const FlatDoubleList s_empty_numeric_variables;  ///< Returned, if m_numeric_variables is a nullptr.
 
     bool numeric_constraint_holds(formalism::GroundNumericConstraint numeric_constraint, const FlatDoubleList& static_numeric_variables) const;
@@ -56,16 +50,22 @@ struct StateImpl
 
     /* Immutable Getters */
 
+    /// @brief Get the index of the state.
+    /// @return
     Index get_index() const;
 
+    /// @brief Get the tree table where the slots are stored.
+    /// @return
     const valla::IndexedHashSet& get_tree_table() const;
 
-    /// @brief Returns a range over the ground atom indices for the given tag `P` in the state.
+    /// @brief Get a range over the ground atom indices for the given tag `P` in the state.
     /// @tparam P is the tag.
     /// @return
     template<formalism::IsFluentOrDerivedTag P>
     auto get_atoms() const;
 
+    /// @brief Get the numeric variables in the state.
+    /// @return
     const auto& get_numeric_variables() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
@@ -76,21 +76,36 @@ struct StateImpl
     auto identifying_members() const
     {
         // The pointers uniquely identify the state, derived atoms not needed.
-        const auto [left, right] = valla::read_slot(m_fluent_atoms);
-        return std::make_tuple(szudzik_pair(left, right), m_numeric_variables.get());
+        return std::make_tuple(szudzik_pair(valla::read_pos(m_fluent_atoms, 0), valla::read_pos(m_fluent_atoms, 1)), m_numeric_variables);
     }
 
 private:
-    /* Mutable Getters */
+    StateImpl(Index index,
+              const valla::IndexedHashSet& tree_table,
+              valla::Slot fluent_atoms,
+              valla::Slot derived_atoms,
+              const FlatDoubleList& numeric_variables) :
+        m_index(index),
+        m_tree_table(&tree_table),
+        m_fluent_atoms(fluent_atoms),
+        m_derived_atoms(derived_atoms),
+        m_numeric_variables(&numeric_variables)
+    {
+    }
 
-    friend class StateRepositoryImpl;  ///< Given exclusive write access to a state.
+    // Give access to the constructor.
+    template<typename T, typename Hash, typename EqualTo>
+    friend class loki::SegmentedRepository;
 
-    Index& get_index();
+    friend class StateRepositoryImpl;
 
-    FlatExternalPtr<const valla::IndexedHashSet>& get_tree_table();
-    valla::Slot& get_fluent_atoms();
-    valla::Slot& get_derived_atoms();
-    FlatExternalPtr<const FlatDoubleList>& get_numeric_variables();
+    Index m_index;
+
+    const valla::IndexedHashSet* m_tree_table;
+    valla::Slot m_fluent_atoms;
+    valla::Slot m_derived_atoms;
+
+    const FlatDoubleList* m_numeric_variables;
 };
 
 template<formalism::IsFluentOrDerivedTag P>
@@ -128,7 +143,7 @@ inline bool operator==(const std::span<const State>& lhs, const std::span<const 
     return (lhs.data() == rhs.data()) && (lhs.size() == rhs.size());
 }
 
-using StateImplSet = mimir::buffering::UnorderedSet<StateImpl>;
+using StateImplSet = loki::SegmentedRepository<StateImpl>;
 
 }
 

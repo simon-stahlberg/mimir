@@ -61,17 +61,7 @@ template bool StateImpl::literals_hold<DerivedTag>(const FlatIndexList& positive
 
 Index StateImpl::get_index() const { return m_index; }
 
-Index& StateImpl::get_index() { return m_index; }
-
 const valla::IndexedHashSet& StateImpl::get_tree_table() const { return *m_tree_table; }
-
-FlatExternalPtr<const valla::IndexedHashSet>& StateImpl::get_tree_table() { return m_tree_table; }
-
-valla::Slot& StateImpl::get_fluent_atoms() { return m_fluent_atoms; }
-
-valla::Slot& StateImpl::get_derived_atoms() { return m_derived_atoms; }
-
-FlatExternalPtr<const FlatDoubleList>& StateImpl::get_numeric_variables() { return m_numeric_variables; }
 
 }
 
