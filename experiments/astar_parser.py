@@ -26,6 +26,7 @@ def ensure_minimum_times(content, props):
 class AStarParser(Parser):
     """
     Successful Run:
+    Tree compression memory usage in bytes: 1400
     [AStar] Search time: 56ms
     [AStar] Number of generated states: 9543
     [AStar] Number of expanded states: 2000
@@ -62,6 +63,7 @@ class AStarParser(Parser):
         self.add_pattern("num_reachable_fluent_atoms", r"Number of reached fluent atoms: (\d+)", type=int)
         self.add_pattern("num_reachable_derived_atoms", r"Number of reached derived atoms: (\d+)", type=int)
 
+        self.add_pattern("memory_in_bytes_for_state_tree_compression", r"Tree compression memory usage in bytes: (\d+)", type=int)
         self.add_pattern("memory_in_bytes_for_unextended_state_portions", r"Number of bytes for unextended state portions: (\d+)", type=int)
         self.add_pattern("memory_in_bytes_per_unextended_state_portion", r"Number of bytes per unextended state portion: (\d+)", type=int)
         self.add_pattern("memory_in_bytes_for_extended_state_portions", r"Number of bytes for extended state portions: (\d+)", type=int)
