@@ -24,9 +24,6 @@
 #include "mimir/search/dense_state.hpp"
 #include "mimir/search/state.hpp"
 
-#include <valla/indexed_hash_set.hpp>
-#include <valla/tree_compression.hpp>
-
 namespace mimir::search
 {
 

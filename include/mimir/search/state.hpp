@@ -27,11 +27,13 @@
 
 #include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
+#include <valla/delta_tree_compression.hpp>
 #include <valla/indexed_hash_set.hpp>
 #include <valla/tree_compression.hpp>
 
 namespace mimir::search
 {
+namespace v = valla::delta;
 
 /// @brief `StateImpl` encapsulates the fluent and derived atoms of a planning state.
 /// We refer to the fluent atoms as the non-extended state
@@ -113,13 +115,13 @@ auto StateImpl::get_atoms() const
 {
     if constexpr (std::is_same_v<P, formalism::FluentTag>)
     {
-        assert(std::is_sorted(valla::begin(m_fluent_atoms, get_tree_table()), valla::end()));
-        return std::ranges::subrange(valla::begin(m_fluent_atoms, get_tree_table()), valla::end());
+        assert(std::is_sorted(v::begin(m_fluent_atoms, get_tree_table()), v::end()));
+        return std::ranges::subrange(v::begin(m_fluent_atoms, get_tree_table()), v::end());
     }
     else if constexpr (std::is_same_v<P, formalism::DerivedTag>)
     {
-        assert(std::is_sorted(valla::begin(m_derived_atoms, get_tree_table()), valla::end()));
-        return std::ranges::subrange(valla::begin(m_derived_atoms, get_tree_table()), valla::end());
+        assert(std::is_sorted(v::begin(m_derived_atoms, get_tree_table()), v::end()));
+        return std::ranges::subrange(v::begin(m_derived_atoms, get_tree_table()), v::end());
     }
     else
     {

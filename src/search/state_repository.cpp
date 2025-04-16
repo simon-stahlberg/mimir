@@ -28,10 +28,15 @@
 #include "mimir/search/axiom_evaluators/interface.hpp"
 #include "mimir/search/search_context.hpp"
 
+#include <valla/delta_tree_compression.hpp>
+#include <valla/indexed_hash_set.hpp>
+#include <valla/tree_compression.hpp>
+
 using namespace mimir::formalism;
 
 namespace mimir::search
 {
+namespace v = valla::delta;
 
 ContinuousCost compute_state_metric_value(State state, const ProblemImpl& problem)
 {
@@ -113,7 +118,7 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
         dense_fluent_atoms.set(atom->get_index());
     }
 
-    state_fluent_atoms_slot = root_table.get_slot(valla::insert(dense_fluent_atoms, tree_table, root_table).first->second);
+    state_fluent_atoms_slot = root_table.get_slot(v::insert(dense_fluent_atoms, tree_table, root_table).first->second);
 
     update_reached_fluent_atoms(dense_fluent_atoms, m_reached_fluent_atoms);
 
@@ -131,7 +136,7 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
             assert(dense_derived_atoms.count() == 0);
             m_axiom_evaluator->generate_and_apply_axioms(m_dense_state_builder);
 
-            state_derived_atoms_slot = root_table.get_slot(valla::insert(dense_derived_atoms, tree_table, root_table).first->second);
+            state_derived_atoms_slot = root_table.get_slot(v::insert(dense_derived_atoms, tree_table, root_table).first->second);
 
             update_reached_derived_atoms(dense_derived_atoms, m_reached_derived_atoms);
         }
@@ -321,7 +326,7 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
                          dense_fluent_numeric_variables,
                          successor_state_metric_value);
 
-    state_fluent_atoms_slot = root_table.get_slot(valla::insert(dense_fluent_atoms, tree_table, root_table).first->second);
+    state_fluent_atoms_slot = root_table.get_slot(v::insert(dense_fluent_atoms, tree_table, root_table).first->second);
 
     update_reached_fluent_atoms(dense_fluent_atoms, m_reached_fluent_atoms);
 
@@ -342,7 +347,7 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
             dense_derived_atoms.unset_all();  ///< Important: now we must clear the buffer before evaluating for the updated fluent atoms.
             m_axiom_evaluator->generate_and_apply_axioms(dense_state);
 
-            state_derived_atoms_slot = root_table.get_slot(valla::insert(dense_derived_atoms, tree_table, root_table).first->second);
+            state_derived_atoms_slot = root_table.get_slot(v::insert(dense_derived_atoms, tree_table, root_table).first->second);
 
             update_reached_fluent_atoms(dense_derived_atoms, m_reached_derived_atoms);
         }
