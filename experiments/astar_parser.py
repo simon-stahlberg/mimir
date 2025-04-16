@@ -62,10 +62,6 @@ class AStarParser(Parser):
         self.add_pattern("num_reachable_fluent_atoms", r"Number of reached fluent atoms: (\d+)", type=int)
         self.add_pattern("num_reachable_derived_atoms", r"Number of reached derived atoms: (\d+)", type=int)
 
-        self.add_pattern("memory_in_bytes_for_unextended_state_portions", r"Number of bytes for unextended state portions: (\d+)", type=int)
-        self.add_pattern("memory_in_bytes_per_unextended_state_portion", r"Number of bytes per unextended state portion: (\d+)", type=int)
-        self.add_pattern("memory_in_bytes_for_extended_state_portions", r"Number of bytes for extended state portions: (\d+)", type=int)
-        self.add_pattern("memory_in_bytes_per_extended_state_portion", r"Number of bytes per extended state portion: (\d+)", type=int)
         self.add_pattern("memory_in_bytes_for_states", r"Number of bytes for states: (\d+)", type=int)
         self.add_pattern("memory_in_bytes_per_state", r"Number of bytes per state: (\d+)", type=int)
         self.add_pattern("memory_in_bytes_for_nodes", r"Number of bytes for nodes: (\d+)", type=int)

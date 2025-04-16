@@ -63,10 +63,6 @@ ATTRIBUTES = [
     "num_reachable_fluent_atoms",
     "num_reachable_derived_atoms",
 
-    "memory_in_bytes_for_unextended_state_portions",
-    "memory_in_bytes_per_unextended_state_portion",
-    "memory_in_bytes_for_extended_state_portions",
-    "memory_in_bytes_per_extended_state_portion",
     "memory_in_bytes_for_states",
     "memory_in_bytes_per_state",
     "memory_in_bytes_for_nodes",

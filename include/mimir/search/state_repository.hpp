@@ -33,11 +33,9 @@ private:
     AxiomEvaluator m_axiom_evaluator;     ///< The axiom evaluator.
     bool m_problem_or_domain_has_axioms;  ///< flag that indicates whether axiom evaluation must trigger.
 
-    StateImplSet m_states;  ///< Stores all created extended states.
-    // TODO: merge both members below?
-    FlatIndexListSet m_fluent_atoms_set;               ///< Stores all created fluent atom lists.
-    FlatIndexListSet m_derived_atoms_set;              ///< Stores all created derived atom lists.
-    FlatDoubleListSet m_fluent_numeric_variables_set;  ///< Stores all created fluent numeric variable lists.
+    StateImplSet m_states;                     ///< Stores all created extended states.
+    FlatIndexListSet m_flat_index_list_set;    ///< Stores all created atom lists.
+    FlatDoubleListSet m_flat_double_list_set;  ///< Stores all created numeric variable lists.
 
     FlatBitset m_reached_fluent_atoms;   ///< Stores all encountered fluent atoms.
     FlatBitset m_reached_derived_atoms;  ///< Stores all encountered derived atoms.
@@ -117,11 +115,7 @@ public:
 
     /// @brief Get the total number of bytes used for storing the unextended state portions.
     /// @return the number of bytes for storing storing the unextended state portions.
-    size_t get_estimated_memory_usage_in_bytes_for_unextended_state_portion() const;
-
-    /// @brief Get the total number of bytes used for storing the extended state portions.
-    /// @return the number of bytes for storing storing the extended state portions.
-    size_t get_estimated_memory_usage_in_bytes_for_extended_state_portion() const;
+    size_t get_estimated_memory_usage_in_bytes_for_states() const;
 };
 
 /**

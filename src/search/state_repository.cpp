@@ -50,7 +50,7 @@ StateRepositoryImpl::StateRepositoryImpl(AxiomEvaluator axiom_evaluator) :
     m_axiom_evaluator(std::move(axiom_evaluator)),
     m_problem_or_domain_has_axioms(!m_axiom_evaluator->get_problem()->get_problem_and_domain_axioms().empty()),
     m_states(),
-    m_derived_atoms_set(),
+    m_flat_index_list_set(),
     m_reached_fluent_atoms(),
     m_reached_derived_atoms(),
     m_state_builder(),
@@ -130,7 +130,7 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
     /* 2.1 Numeric state variables */
     dense_fluent_numeric_variables = fluent_numeric_variables;
 
-    const auto [fluent_numeric_iter, fluent_numeric_inserted] = m_fluent_numeric_variables_set.insert(dense_fluent_numeric_variables);
+    const auto [fluent_numeric_iter, fluent_numeric_inserted] = m_flat_double_list_set.insert(dense_fluent_numeric_variables);
 
     update_state_numeric_variables_ptr(**fluent_numeric_iter, state_fluent_numeric_variables_ptr);
 
@@ -144,7 +144,7 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
 
     translate_dense_into_sorted_compressed_sparse(dense_fluent_atoms, m_state_fluent_atoms);
 
-    const auto [fluent_iter, fluent_inserted] = m_fluent_atoms_set.insert(m_state_fluent_atoms);
+    const auto [fluent_iter, fluent_inserted] = m_flat_index_list_set.insert(m_state_fluent_atoms);
     update_state_atoms_ptr(**fluent_iter, state_fluent_atoms_ptr);
 
     // Test whether there exists an extended state for the given non extended state
@@ -166,7 +166,7 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
 
             translate_dense_into_sorted_compressed_sparse(dense_derived_atoms, m_state_derived_atoms);
 
-            const auto [derived_iter, derived_inserted] = m_derived_atoms_set.insert(m_state_derived_atoms);
+            const auto [derived_iter, derived_inserted] = m_flat_index_list_set.insert(m_state_derived_atoms);
             update_state_atoms_ptr(**derived_iter, state_derived_atoms_ptr);
         }
     }
@@ -370,10 +370,10 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
 
     translate_dense_into_sorted_compressed_sparse(dense_fluent_atoms, m_state_fluent_atoms);
 
-    const auto [fluent_iter, fluent_inserted] = m_fluent_atoms_set.insert(m_state_fluent_atoms);
+    const auto [fluent_iter, fluent_inserted] = m_flat_index_list_set.insert(m_state_fluent_atoms);
     update_state_atoms_ptr(**fluent_iter, state_fluent_atoms_ptr);
 
-    const auto [fluent_numeric_iter, fluent_numeric_inserted] = m_fluent_numeric_variables_set.insert(dense_fluent_numeric_variables);
+    const auto [fluent_numeric_iter, fluent_numeric_inserted] = m_flat_double_list_set.insert(dense_fluent_numeric_variables);
     update_state_numeric_variables_ptr(**fluent_numeric_iter, state_fluent_numeric_variables_ptr);
 
     // Check if non-extended state exists in cache
@@ -395,7 +395,7 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
 
             translate_dense_into_sorted_compressed_sparse(dense_derived_atoms, m_state_derived_atoms);
 
-            const auto [iter, inserted] = m_derived_atoms_set.insert(m_state_derived_atoms);
+            const auto [iter, inserted] = m_flat_index_list_set.insert(m_state_derived_atoms);
             update_state_atoms_ptr(**iter, state_derived_atoms_ptr);
         }
     }
@@ -414,10 +414,9 @@ const FlatBitset& StateRepositoryImpl::get_reached_derived_ground_atoms_bitset()
 
 const AxiomEvaluator& StateRepositoryImpl::get_axiom_evaluator() const { return m_axiom_evaluator; }
 
-size_t StateRepositoryImpl::get_estimated_memory_usage_in_bytes_for_unextended_state_portion() const { return m_states.get_estimated_memory_usage_in_bytes(); }
-
-size_t StateRepositoryImpl::get_estimated_memory_usage_in_bytes_for_extended_state_portion() const
+size_t StateRepositoryImpl::get_estimated_memory_usage_in_bytes_for_states() const
 {
-    return m_derived_atoms_set.get_estimated_memory_usage_in_bytes();
+    return m_flat_index_list_set.get_estimated_memory_usage_in_bytes() + m_flat_double_list_set.get_estimated_memory_usage_in_bytes();
 }
+
 }
