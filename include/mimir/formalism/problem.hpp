@@ -51,6 +51,9 @@ private:
 
     problem::Details m_details;  ///< We hide the details in a struct.
 
+    FlatIndexListSet m_flat_index_list_set;    ///< Stores all created atom lists.
+    FlatDoubleListSet m_flat_double_list_set;  ///< Stores all created numeric variable lists.
+
     ProblemImpl(Index index,
                 Repositories repositories,
                 std::optional<fs::path> filepath,
@@ -106,6 +109,13 @@ public:
     const std::optional<OptimizationMetric>& get_optimization_metric() const;
     const AxiomList& get_axioms() const;
     const AxiomList& get_problem_and_domain_axioms() const;
+
+    FlatIndexListSet& get_flat_index_list_set();
+    FlatDoubleListSet& get_flat_double_list_set();
+
+    /// @brief Get the total number of bytes.
+    /// @return the number of bytes.
+    size_t get_estimated_memory_usage_in_bytes() const;
 
     /**
      * Additional members

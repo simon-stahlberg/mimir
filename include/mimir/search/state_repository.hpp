@@ -33,9 +33,7 @@ private:
     AxiomEvaluator m_axiom_evaluator;     ///< The axiom evaluator.
     bool m_problem_or_domain_has_axioms;  ///< flag that indicates whether axiom evaluation must trigger.
 
-    StateImplSet m_states;                     ///< Stores all created extended states.
-    FlatIndexListSet m_flat_index_list_set;    ///< Stores all created atom lists.
-    FlatDoubleListSet m_flat_double_list_set;  ///< Stores all created numeric variable lists.
+    StateImplSet m_states;  ///< Stores all created extended states.
 
     FlatBitset m_reached_fluent_atoms;   ///< Stores all encountered fluent atoms.
     FlatBitset m_reached_derived_atoms;  ///< Stores all encountered derived atoms.
@@ -115,10 +113,6 @@ public:
     /// @brief Get the underlying axiom evaluator.
     /// @return the axiom evaluator.
     const AxiomEvaluator& get_axiom_evaluator() const;
-
-    /// @brief Get the total number of bytes used for storing the unextended state portions.
-    /// @return the number of bytes for storing storing the unextended state portions.
-    size_t get_estimated_memory_usage_in_bytes_for_states() const;
 };
 
 /**

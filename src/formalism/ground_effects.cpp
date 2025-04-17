@@ -73,13 +73,13 @@ template class GroundNumericEffectImpl<AuxiliaryTag>;
 
 /* GroundConjunctiveEffect */
 
-FlatIndexList& GroundConjunctiveEffect::get_positive_effects() { return m_positive_effects; }
+FlatExternalPtr<const FlatIndexList>& GroundConjunctiveEffect::get_positive_effects_ptr() { return m_positive_effects; }
 
-const FlatIndexList& GroundConjunctiveEffect::get_positive_effects() const { return m_positive_effects; }
+const FlatIndexList& GroundConjunctiveEffect::get_positive_effects() const { return *m_positive_effects; }
 
-FlatIndexList& GroundConjunctiveEffect::get_negative_effects() { return m_negative_effects; }
+FlatExternalPtr<const FlatIndexList>& GroundConjunctiveEffect::get_negative_effects_ptr() { return m_negative_effects; }
 
-const FlatIndexList& GroundConjunctiveEffect::get_negative_effects() const { return m_negative_effects; }
+const FlatIndexList& GroundConjunctiveEffect::get_negative_effects() const { return *m_negative_effects; }
 
 GroundNumericEffectList<FluentTag>& GroundConjunctiveEffect::get_fluent_numeric_effects() { return m_fluent_numeric_effects; }
 

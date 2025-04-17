@@ -83,7 +83,9 @@ ProblemImpl::ProblemImpl(Index index,
     m_optimization_metric(std::move(optimization_metric)),
     m_axioms(std::move(axioms)),
     m_problem_and_domain_axioms(std::move(problem_and_domain_axioms)),
-    m_details()
+    m_details(),
+    m_flat_index_list_set(),
+    m_flat_double_list_set()
 {
     assert(is_all_unique(get_objects()));
     assert(is_all_unique(get_derived_predicates()));
@@ -234,6 +236,15 @@ const std::optional<OptimizationMetric>& ProblemImpl::get_optimization_metric() 
 const AxiomList& ProblemImpl::get_axioms() const { return m_axioms; }
 
 const AxiomList& ProblemImpl::get_problem_and_domain_axioms() const { return m_problem_and_domain_axioms; }
+
+FlatIndexListSet& ProblemImpl::get_flat_index_list_set() { return m_flat_index_list_set; }
+
+FlatDoubleListSet& ProblemImpl::get_flat_double_list_set() { return m_flat_double_list_set; }
+
+size_t ProblemImpl::get_estimated_memory_usage_in_bytes() const
+{
+    return m_flat_index_list_set.get_estimated_memory_usage_in_bytes() + m_flat_double_list_set.get_estimated_memory_usage_in_bytes();
+}
 
 /**
  * Additional members
@@ -803,55 +814,58 @@ GroundAction ProblemImpl::ground(Action action, const ObjectList& binding)
     }
     // objects.compress();
 
+    auto positive_index_list = FlatIndexList {};
+    auto negative_index_list = FlatIndexList {};
+
     /* Conjunctive precondition */
     {
         auto& conjunctive_condition = action_builder.get_conjunctive_condition();
-        auto& positive_fluent_precondition = conjunctive_condition.get_positive_precondition<FluentTag>();
-        auto& negative_fluent_precondition = conjunctive_condition.get_negative_precondition<FluentTag>();
-        auto& positive_static_precondition = conjunctive_condition.get_positive_precondition<StaticTag>();
-        auto& negative_static_precondition = conjunctive_condition.get_negative_precondition<StaticTag>();
-        auto& positive_derived_precondition = conjunctive_condition.get_positive_precondition<DerivedTag>();
-        auto& negative_derived_precondition = conjunctive_condition.get_negative_precondition<DerivedTag>();
+
+        positive_index_list.clear();
+        negative_index_list.clear();
+        ground_and_fill_vector(*this, action->get_conjunctive_condition()->get_literals<FluentTag>(), positive_index_list, negative_index_list, binding);
+        positive_index_list.compress();
+        negative_index_list.compress();
+        auto& positive_fluent_precondition_ptr = conjunctive_condition.get_positive_precondition_ptr<FluentTag>();
+        auto& negative_fluent_precondition_ptr = conjunctive_condition.get_negative_precondition_ptr<FluentTag>();
+        positive_fluent_precondition_ptr = m_flat_index_list_set.insert(positive_index_list).first->get();
+        negative_fluent_precondition_ptr = m_flat_index_list_set.insert(negative_index_list).first->get();
+
+        positive_index_list.clear();
+        negative_index_list.clear();
+        ground_and_fill_vector(*this, action->get_conjunctive_condition()->get_literals<StaticTag>(), positive_index_list, negative_index_list, binding);
+        positive_index_list.compress();
+        negative_index_list.compress();
+        auto& positive_static_precondition_ptr = conjunctive_condition.get_positive_precondition_ptr<StaticTag>();
+        auto& negative_static_precondition_ptr = conjunctive_condition.get_negative_precondition_ptr<StaticTag>();
+        positive_static_precondition_ptr = m_flat_index_list_set.insert(positive_index_list).first->get();
+        negative_static_precondition_ptr = m_flat_index_list_set.insert(negative_index_list).first->get();
+
+        positive_index_list.clear();
+        negative_index_list.clear();
+        ground_and_fill_vector(*this, action->get_conjunctive_condition()->get_literals<DerivedTag>(), positive_index_list, negative_index_list, binding);
+        positive_index_list.compress();
+        negative_index_list.compress();
+        auto& positive_derived_precondition_ptr = conjunctive_condition.get_positive_precondition_ptr<DerivedTag>();
+        auto& negative_derived_precondition_ptr = conjunctive_condition.get_negative_precondition_ptr<DerivedTag>();
+        positive_derived_precondition_ptr = m_flat_index_list_set.insert(positive_index_list).first->get();
+        negative_derived_precondition_ptr = m_flat_index_list_set.insert(negative_index_list).first->get();
+
         auto& numeric_constraints = conjunctive_condition.get_numeric_constraints();
-        positive_fluent_precondition.clear();
-        negative_fluent_precondition.clear();
-        positive_static_precondition.clear();
-        negative_static_precondition.clear();
-        positive_derived_precondition.clear();
-        negative_derived_precondition.clear();
         numeric_constraints.clear();
-        ground_and_fill_vector(*this,
-                               action->get_conjunctive_condition()->get_literals<FluentTag>(),
-                               positive_fluent_precondition,
-                               negative_fluent_precondition,
-                               binding);
-        ground_and_fill_vector(*this,
-                               action->get_conjunctive_condition()->get_literals<StaticTag>(),
-                               positive_static_precondition,
-                               negative_static_precondition,
-                               binding);
-        ground_and_fill_vector(*this,
-                               action->get_conjunctive_condition()->get_literals<DerivedTag>(),
-                               positive_derived_precondition,
-                               negative_derived_precondition,
-                               binding);
-        positive_fluent_precondition.compress();
-        negative_fluent_precondition.compress();
-        positive_static_precondition.compress();
-        negative_static_precondition.compress();
-        positive_derived_precondition.compress();
-        negative_derived_precondition.compress();
         ground_and_fill_vector(*this, action->get_conjunctive_condition()->get_numeric_constraints(), binding, numeric_constraints);
 
         /* Conjunctive propositional effects */
         auto& conjunctive_effect = action_builder.get_conjunctive_effect();
-        auto& positive_effect = conjunctive_effect.get_positive_effects();
-        auto& negative_effect = conjunctive_effect.get_negative_effects();
-        positive_effect.clear();
-        negative_effect.clear();
-        ground_and_fill_vector(*this, action->get_conjunctive_effect()->get_literals(), positive_effect, negative_effect, binding);
-        positive_effect.compress();
-        negative_effect.compress();
+        positive_index_list.clear();
+        negative_index_list.clear();
+        ground_and_fill_vector(*this, action->get_conjunctive_effect()->get_literals(), positive_index_list, negative_index_list, binding);
+        positive_index_list.compress();
+        negative_index_list.compress();
+        auto& positive_effect_ptr = conjunctive_effect.get_positive_effects_ptr();
+        auto& negative_effect_ptr = conjunctive_effect.get_negative_effects_ptr();
+        positive_effect_ptr = m_flat_index_list_set.insert(positive_index_list).first->get();
+        negative_effect_ptr = m_flat_index_list_set.insert(negative_index_list).first->get();
 
         /* Conjunctive numerical effects */
         auto& fluent_numerical_effects = conjunctive_effect.get_fluent_numeric_effects();
@@ -904,63 +918,76 @@ GroundAction ProblemImpl::ground(Action action, const ObjectList& binding)
                     }
                     auto& cond_effect_j = cond_effects.at(j++);
                     auto& cond_conjunctive_condition_j = cond_effect_j.get_conjunctive_condition();
-                    auto& cond_positive_fluent_precondition_j = cond_conjunctive_condition_j.get_positive_precondition<FluentTag>();
-                    auto& cond_negative_fluent_precondition_j = cond_conjunctive_condition_j.get_negative_precondition<FluentTag>();
-                    auto& cond_positive_static_precondition_j = cond_conjunctive_condition_j.get_positive_precondition<StaticTag>();
-                    auto& cond_negative_static_precondition_j = cond_conjunctive_condition_j.get_negative_precondition<StaticTag>();
-                    auto& cond_positive_derived_precondition_j = cond_conjunctive_condition_j.get_positive_precondition<DerivedTag>();
-                    auto& cond_negative_derived_precondition_j = cond_conjunctive_condition_j.get_negative_precondition<DerivedTag>();
-                    auto& cond_numeric_constraints_j = cond_conjunctive_condition_j.get_numeric_constraints();
-                    auto& cond_conjunctive_effect_j = cond_effect_j.get_conjunctive_effect();
-                    auto& cond_positive_effect_j = cond_conjunctive_effect_j.get_positive_effects();
-                    auto& cond_negative_effect_j = cond_conjunctive_effect_j.get_negative_effects();
-                    cond_positive_fluent_precondition_j.clear();
-                    cond_negative_fluent_precondition_j.clear();
-                    cond_positive_static_precondition_j.clear();
-                    cond_negative_static_precondition_j.clear();
-                    cond_positive_derived_precondition_j.clear();
-                    cond_negative_derived_precondition_j.clear();
-                    cond_numeric_constraints_j.clear();
-                    cond_positive_effect_j.clear();
-                    cond_negative_effect_j.clear();
 
-                    /* Propositional precondition */
+                    positive_index_list.clear();
+                    negative_index_list.clear();
                     ground_and_fill_vector(*this,
                                            lifted_cond_effect->get_conjunctive_condition()->get_literals<FluentTag>(),
-                                           cond_positive_fluent_precondition_j,
-                                           cond_negative_fluent_precondition_j,
+                                           positive_index_list,
+                                           negative_index_list,
                                            binding_cond_effect);
+                    positive_index_list.compress();
+                    negative_index_list.compress();
+                    auto& cond_positive_fluent_precondition_ptr_j = cond_conjunctive_condition_j.get_positive_precondition_ptr<FluentTag>();
+                    auto& cond_negative_fluent_precondition_ptr_j = cond_conjunctive_condition_j.get_negative_precondition_ptr<FluentTag>();
+                    cond_positive_fluent_precondition_ptr_j = m_flat_index_list_set.insert(positive_index_list).first->get();
+                    cond_negative_fluent_precondition_ptr_j = m_flat_index_list_set.insert(negative_index_list).first->get();
+
+                    positive_index_list.clear();
+                    negative_index_list.clear();
                     ground_and_fill_vector(*this,
                                            lifted_cond_effect->get_conjunctive_condition()->get_literals<StaticTag>(),
-                                           cond_positive_static_precondition_j,
-                                           cond_negative_static_precondition_j,
+                                           positive_index_list,
+                                           negative_index_list,
                                            binding_cond_effect);
+                    positive_index_list.compress();
+                    negative_index_list.compress();
+                    auto& cond_positive_static_precondition_ptr_j = cond_conjunctive_condition_j.get_positive_precondition_ptr<StaticTag>();
+                    auto& cond_negative_static_precondition_ptr_j = cond_conjunctive_condition_j.get_negative_precondition_ptr<StaticTag>();
+                    cond_positive_static_precondition_ptr_j = m_flat_index_list_set.insert(positive_index_list).first->get();
+                    cond_negative_static_precondition_ptr_j = m_flat_index_list_set.insert(negative_index_list).first->get();
+
+                    positive_index_list.clear();
+                    negative_index_list.clear();
                     ground_and_fill_vector(*this,
                                            lifted_cond_effect->get_conjunctive_condition()->get_literals<DerivedTag>(),
-                                           cond_positive_derived_precondition_j,
-                                           cond_negative_derived_precondition_j,
+                                           positive_index_list,
+                                           negative_index_list,
                                            binding_cond_effect);
-                    cond_positive_fluent_precondition_j.compress();
-                    cond_negative_fluent_precondition_j.compress();
-                    cond_positive_static_precondition_j.compress();
-                    cond_negative_static_precondition_j.compress();
-                    cond_positive_derived_precondition_j.compress();
-                    cond_negative_derived_precondition_j.compress();
+                    positive_index_list.compress();
+                    negative_index_list.compress();
+                    auto& cond_positive_derived_precondition_ptr_j = cond_conjunctive_condition_j.get_positive_precondition_ptr<DerivedTag>();
+                    auto& cond_negative_derived_precondition_ptr_j = cond_conjunctive_condition_j.get_negative_precondition_ptr<DerivedTag>();
+                    cond_positive_derived_precondition_ptr_j = m_flat_index_list_set.insert(positive_index_list).first->get();
+                    cond_negative_derived_precondition_ptr_j = m_flat_index_list_set.insert(negative_index_list).first->get();
+
+                    auto& cond_conjunctive_effect_j = cond_effect_j.get_conjunctive_effect();
+
+                    positive_index_list.clear();
+                    negative_index_list.clear();
+                    ground_and_fill_vector(*this,
+                                           lifted_cond_effect->get_conjunctive_effect()->get_literals(),
+                                           positive_index_list,
+                                           negative_index_list,
+                                           binding_cond_effect);
+                    positive_index_list.compress();
+                    negative_index_list.compress();
+                    auto& cond_positive_effect_ptr_j = cond_conjunctive_effect_j.get_positive_effects_ptr();
+                    auto& cond_negative_effect_ptr_j = cond_conjunctive_effect_j.get_negative_effects_ptr();
+                    cond_positive_effect_ptr_j = m_flat_index_list_set.insert(positive_index_list).first->get();
+                    cond_negative_effect_ptr_j = m_flat_index_list_set.insert(negative_index_list).first->get();
+
+                    /* Numeric constraints */
+
+                    auto& cond_numeric_constraints_j = cond_conjunctive_condition_j.get_numeric_constraints();
+                    cond_numeric_constraints_j.clear();
                     ground_and_fill_vector(*this,
                                            lifted_cond_effect->get_conjunctive_condition()->get_numeric_constraints(),
                                            binding_cond_effect,
                                            cond_numeric_constraints_j);
 
-                    /* Propositional effect */
-                    ground_and_fill_vector(*this,
-                                           lifted_cond_effect->get_conjunctive_effect()->get_literals(),
-                                           cond_positive_effect_j,
-                                           cond_negative_effect_j,
-                                           binding_cond_effect);
-                    cond_positive_effect_j.compress();
-                    cond_negative_effect_j.compress();
-
                     /* Numeric effect */
+
                     auto& cond_fluent_numerical_effects_j = cond_conjunctive_effect_j.get_fluent_numeric_effects();
                     auto& cond_auxiliary_numerical_effect_j = cond_conjunctive_effect_j.get_auxiliary_numeric_effect();
                     cond_fluent_numerical_effects_j.clear();
@@ -986,58 +1013,66 @@ GroundAction ProblemImpl::ground(Action action, const ObjectList& binding)
                 }
                 auto& cond_effect = cond_effects.at(j++);
                 auto& cond_conjunctive_condition = cond_effect.get_conjunctive_condition();
-                auto& cond_positive_fluent_precondition = cond_conjunctive_condition.get_positive_precondition<FluentTag>();
-                auto& cond_negative_fluent_precondition = cond_conjunctive_condition.get_negative_precondition<FluentTag>();
-                auto& cond_positive_static_precondition = cond_conjunctive_condition.get_positive_precondition<StaticTag>();
-                auto& cond_negative_static_precondition = cond_conjunctive_condition.get_negative_precondition<StaticTag>();
-                auto& cond_positive_derived_precondition = cond_conjunctive_condition.get_positive_precondition<DerivedTag>();
-                auto& cond_negative_derived_precondition = cond_conjunctive_condition.get_negative_precondition<DerivedTag>();
-                auto& cond_numeric_constraints = cond_conjunctive_condition.get_numeric_constraints();
-                auto& cond_conjunctive_effect = cond_effect.get_conjunctive_effect();
-                auto& cond_positive_effect = cond_conjunctive_effect.get_positive_effects();
-                auto& cond_negative_effect = cond_conjunctive_effect.get_negative_effects();
-                cond_positive_fluent_precondition.clear();
-                cond_negative_fluent_precondition.clear();
-                cond_positive_static_precondition.clear();
-                cond_negative_static_precondition.clear();
-                cond_positive_derived_precondition.clear();
-                cond_negative_derived_precondition.clear();
-                cond_numeric_constraints.clear();
-                cond_positive_effect.clear();
-                cond_negative_effect.clear();
 
-                /* Propositional precondition */
+                positive_index_list.clear();
+                negative_index_list.clear();
                 ground_and_fill_vector(*this,
                                        lifted_cond_effect->get_conjunctive_condition()->get_literals<FluentTag>(),
-                                       cond_positive_fluent_precondition,
-                                       cond_negative_fluent_precondition,
+                                       positive_index_list,
+                                       negative_index_list,
                                        binding);
+                positive_index_list.compress();
+                negative_index_list.compress();
+                auto& cond_positive_fluent_precondition_ptr = cond_conjunctive_condition.get_positive_precondition_ptr<FluentTag>();
+                auto& cond_negative_fluent_precondition_ptr = cond_conjunctive_condition.get_negative_precondition_ptr<FluentTag>();
+                cond_positive_fluent_precondition_ptr = m_flat_index_list_set.insert(positive_index_list).first->get();
+                cond_negative_fluent_precondition_ptr = m_flat_index_list_set.insert(negative_index_list).first->get();
+
+                positive_index_list.clear();
+                negative_index_list.clear();
                 ground_and_fill_vector(*this,
                                        lifted_cond_effect->get_conjunctive_condition()->get_literals<StaticTag>(),
-                                       cond_positive_static_precondition,
-                                       cond_negative_static_precondition,
+                                       positive_index_list,
+                                       negative_index_list,
                                        binding);
+                positive_index_list.compress();
+                negative_index_list.compress();
+                auto& cond_positive_static_precondition_ptr = cond_conjunctive_condition.get_positive_precondition_ptr<StaticTag>();
+                auto& cond_negative_static_precondition_ptr = cond_conjunctive_condition.get_negative_precondition_ptr<StaticTag>();
+                cond_positive_static_precondition_ptr = m_flat_index_list_set.insert(positive_index_list).first->get();
+                cond_negative_static_precondition_ptr = m_flat_index_list_set.insert(negative_index_list).first->get();
+
+                positive_index_list.clear();
+                negative_index_list.clear();
                 ground_and_fill_vector(*this,
                                        lifted_cond_effect->get_conjunctive_condition()->get_literals<DerivedTag>(),
-                                       cond_positive_derived_precondition,
-                                       cond_negative_derived_precondition,
+                                       positive_index_list,
+                                       negative_index_list,
                                        binding);
-                cond_positive_fluent_precondition.compress();
-                cond_negative_fluent_precondition.compress();
-                cond_positive_static_precondition.compress();
-                cond_negative_static_precondition.compress();
-                cond_positive_derived_precondition.compress();
-                cond_negative_derived_precondition.compress();
-                ground_and_fill_vector(*this, lifted_cond_effect->get_conjunctive_condition()->get_numeric_constraints(), binding, cond_numeric_constraints);
+                positive_index_list.compress();
+                negative_index_list.compress();
+                auto& cond_positive_derived_precondition_ptr = cond_conjunctive_condition.get_positive_precondition_ptr<DerivedTag>();
+                auto& cond_negative_derived_precondition_ptr = cond_conjunctive_condition.get_negative_precondition_ptr<DerivedTag>();
+                cond_positive_derived_precondition_ptr = m_flat_index_list_set.insert(positive_index_list).first->get();
+                cond_negative_derived_precondition_ptr = m_flat_index_list_set.insert(negative_index_list).first->get();
 
-                /* Propositional effect */
-                ground_and_fill_vector(*this,
-                                       lifted_cond_effect->get_conjunctive_effect()->get_literals(),
-                                       cond_positive_effect,
-                                       cond_negative_effect,
-                                       binding);
-                cond_positive_effect.compress();
-                cond_negative_effect.compress();
+                auto& cond_conjunctive_effect = cond_effect.get_conjunctive_effect();
+
+                positive_index_list.clear();
+                negative_index_list.clear();
+                ground_and_fill_vector(*this, lifted_cond_effect->get_conjunctive_effect()->get_literals(), positive_index_list, negative_index_list, binding);
+                positive_index_list.compress();
+                negative_index_list.compress();
+                auto& cond_positive_effect_ptr = cond_conjunctive_effect.get_positive_effects_ptr();
+                auto& cond_negative_effect_ptr = cond_conjunctive_effect.get_negative_effects_ptr();
+                cond_positive_effect_ptr = m_flat_index_list_set.insert(positive_index_list).first->get();
+                cond_negative_effect_ptr = m_flat_index_list_set.insert(negative_index_list).first->get();
+
+                /* Numeric constraint */
+
+                auto& cond_numeric_constraints = cond_conjunctive_condition.get_numeric_constraints();
+                cond_numeric_constraints.clear();
+                ground_and_fill_vector(*this, lifted_cond_effect->get_conjunctive_condition()->get_numeric_constraints(), binding, cond_numeric_constraints);
 
                 /* Numeric effect*/
                 auto& cond_fluent_numerical_effects_j = cond_conjunctive_effect.get_fluent_numeric_effects();
@@ -1242,43 +1277,44 @@ GroundAxiom ProblemImpl::ground(Axiom axiom, ObjectList binding)
     }
     // objects.compress();
 
+    auto positive_index_list = FlatIndexList {};
+    auto negative_index_list = FlatIndexList {};
+
     /* Precondition */
     auto& conjunctive_condition = axiom_builder.get_conjunctive_condition();
-    auto& positive_fluent_precondition = conjunctive_condition.get_positive_precondition<FluentTag>();
-    auto& negative_fluent_precondition = conjunctive_condition.get_negative_precondition<FluentTag>();
-    auto& positive_static_precondition = conjunctive_condition.get_positive_precondition<StaticTag>();
-    auto& negative_static_precondition = conjunctive_condition.get_negative_precondition<StaticTag>();
-    auto& positive_derived_precondition = conjunctive_condition.get_positive_precondition<DerivedTag>();
-    auto& negative_derived_precondition = conjunctive_condition.get_negative_precondition<DerivedTag>();
+
+    positive_index_list.clear();
+    negative_index_list.clear();
+    ground_and_fill_vector(*this, axiom->get_conjunctive_condition()->get_literals<FluentTag>(), positive_index_list, negative_index_list, binding);
+    positive_index_list.compress();
+    negative_index_list.compress();
+    auto& positive_fluent_precondition_ptr = conjunctive_condition.get_positive_precondition_ptr<FluentTag>();
+    auto& negative_fluent_precondition_ptr = conjunctive_condition.get_negative_precondition_ptr<FluentTag>();
+    positive_fluent_precondition_ptr = m_flat_index_list_set.insert(positive_index_list).first->get();
+    negative_fluent_precondition_ptr = m_flat_index_list_set.insert(negative_index_list).first->get();
+
+    positive_index_list.clear();
+    negative_index_list.clear();
+    ground_and_fill_vector(*this, axiom->get_conjunctive_condition()->get_literals<StaticTag>(), positive_index_list, negative_index_list, binding);
+    positive_index_list.compress();
+    negative_index_list.compress();
+    auto& positive_static_precondition_ptr = conjunctive_condition.get_positive_precondition_ptr<StaticTag>();
+    auto& negative_static_precondition_ptr = conjunctive_condition.get_negative_precondition_ptr<StaticTag>();
+    positive_static_precondition_ptr = m_flat_index_list_set.insert(positive_index_list).first->get();
+    negative_static_precondition_ptr = m_flat_index_list_set.insert(negative_index_list).first->get();
+
+    positive_index_list.clear();
+    negative_index_list.clear();
+    ground_and_fill_vector(*this, axiom->get_conjunctive_condition()->get_literals<DerivedTag>(), positive_index_list, negative_index_list, binding);
+    positive_index_list.compress();
+    negative_index_list.compress();
+    auto& positive_derived_precondition_ptr = conjunctive_condition.get_positive_precondition_ptr<DerivedTag>();
+    auto& negative_derived_precondition_ptr = conjunctive_condition.get_negative_precondition_ptr<DerivedTag>();
+    positive_derived_precondition_ptr = m_flat_index_list_set.insert(positive_index_list).first->get();
+    negative_derived_precondition_ptr = m_flat_index_list_set.insert(negative_index_list).first->get();
+
     auto& numeric_constraints = conjunctive_condition.get_numeric_constraints();
-    positive_fluent_precondition.clear();
-    negative_fluent_precondition.clear();
-    positive_static_precondition.clear();
-    negative_static_precondition.clear();
-    positive_derived_precondition.clear();
-    negative_derived_precondition.clear();
     numeric_constraints.clear();
-    ground_and_fill_vector(*this,
-                           axiom->get_conjunctive_condition()->get_literals<FluentTag>(),
-                           positive_fluent_precondition,
-                           negative_fluent_precondition,
-                           binding);
-    ground_and_fill_vector(*this,
-                           axiom->get_conjunctive_condition()->get_literals<StaticTag>(),
-                           positive_static_precondition,
-                           negative_static_precondition,
-                           binding);
-    ground_and_fill_vector(*this,
-                           axiom->get_conjunctive_condition()->get_literals<DerivedTag>(),
-                           positive_derived_precondition,
-                           negative_derived_precondition,
-                           binding);
-    positive_fluent_precondition.compress();
-    negative_fluent_precondition.compress();
-    positive_static_precondition.compress();
-    negative_static_precondition.compress();
-    positive_derived_precondition.compress();
-    negative_derived_precondition.compress();
     ground_and_fill_vector(*this, axiom->get_conjunctive_condition()->get_numeric_constraints(), binding, numeric_constraints);
 
     /* Effect */

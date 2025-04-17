@@ -62,20 +62,20 @@ SplitSet NodeSplitterBase<Derived_, E>::compute_splits(const std::span<const E*>
         const auto& conjunctive_condition = element->get_conjunctive_condition();
 
         /* Fluent */
-        for (const auto& index : conjunctive_condition.template get_positive_precondition<formalism::FluentTag>().compressed_range())
+        for (const auto& index : conjunctive_condition.template get_positive_precondition<formalism::FluentTag>())
         {
             ++fluent_atom_distributions[this->m_pddl_repositories.template get_ground_atom<formalism::FluentTag>(index)].num_true_elements;
         }
-        for (const auto& index : conjunctive_condition.template get_negative_precondition<formalism::FluentTag>().compressed_range())
+        for (const auto& index : conjunctive_condition.template get_negative_precondition<formalism::FluentTag>())
         {
             ++fluent_atom_distributions[this->m_pddl_repositories.template get_ground_atom<formalism::FluentTag>(index)].num_false_elements;
         }
         /* Derived */
-        for (const auto& index : conjunctive_condition.template get_positive_precondition<formalism::DerivedTag>().compressed_range())
+        for (const auto& index : conjunctive_condition.template get_positive_precondition<formalism::DerivedTag>())
         {
             ++derived_atom_distributions[this->m_pddl_repositories.template get_ground_atom<formalism::DerivedTag>(index)].num_true_elements;
         }
-        for (const auto& index : conjunctive_condition.template get_negative_precondition<formalism::DerivedTag>().compressed_range())
+        for (const auto& index : conjunctive_condition.template get_negative_precondition<formalism::DerivedTag>())
         {
             ++derived_atom_distributions[this->m_pddl_repositories.template get_ground_atom<formalism::DerivedTag>(index)].num_false_elements;
         }

@@ -30,26 +30,106 @@ namespace mimir::formalism
 class GroundConjunctiveCondition
 {
 private:
-    FlatIndexList m_positive_static_atoms = FlatIndexList();
-    FlatIndexList m_negative_static_atoms = FlatIndexList();
-    FlatIndexList m_positive_fluent_atoms = FlatIndexList();
-    FlatIndexList m_negative_fluent_atoms = FlatIndexList();
-    FlatIndexList m_positive_derived_atoms = FlatIndexList();
-    FlatIndexList m_negative_derived_atoms = FlatIndexList();
+    FlatExternalPtr<const FlatIndexList> m_positive_static_atoms = nullptr;
+    FlatExternalPtr<const FlatIndexList> m_negative_static_atoms = nullptr;
+    FlatExternalPtr<const FlatIndexList> m_positive_fluent_atoms = nullptr;
+    FlatExternalPtr<const FlatIndexList> m_negative_fluent_atoms = nullptr;
+    FlatExternalPtr<const FlatIndexList> m_positive_derived_atoms = nullptr;
+    FlatExternalPtr<const FlatIndexList> m_negative_derived_atoms = nullptr;
     FlatExternalPtrList<const GroundNumericConstraintImpl> m_numeric_constraints = FlatExternalPtrList<const GroundNumericConstraintImpl>();
 
 public:
     using FormalismEntity = void;
 
     template<IsStaticOrFluentOrDerivedTag P>
-    FlatIndexList& get_positive_precondition();
-    template<IsStaticOrFluentOrDerivedTag P>
-    const FlatIndexList& get_positive_precondition() const;
+    auto& get_positive_precondition_ptr()
+    {
+        if constexpr (std::is_same_v<P, StaticTag>)
+        {
+            return m_positive_static_atoms;
+        }
+        else if constexpr (std::is_same_v<P, FluentTag>)
+        {
+            return m_positive_fluent_atoms;
+        }
+        else if constexpr (std::is_same_v<P, DerivedTag>)
+        {
+            return m_positive_derived_atoms;
+        }
+        else
+        {
+            static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
+        }
+    }
 
     template<IsStaticOrFluentOrDerivedTag P>
-    FlatIndexList& get_negative_precondition();
+    auto get_positive_precondition() const
+    {
+        if constexpr (std::is_same_v<P, StaticTag>)
+        {
+            assert(std::is_sorted(m_positive_static_atoms->compressed_begin(), m_positive_static_atoms->compressed_end()));
+            return m_positive_static_atoms->compressed_range();
+        }
+        else if constexpr (std::is_same_v<P, FluentTag>)
+        {
+            assert(std::is_sorted(m_positive_fluent_atoms->compressed_begin(), m_positive_fluent_atoms->compressed_end()));
+            return m_positive_fluent_atoms->compressed_range();
+        }
+        else if constexpr (std::is_same_v<P, DerivedTag>)
+        {
+            assert(std::is_sorted(m_positive_derived_atoms->compressed_begin(), m_positive_derived_atoms->compressed_end()));
+            return m_positive_derived_atoms->compressed_range();
+        }
+        else
+        {
+            static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
+        }
+    }
+
     template<IsStaticOrFluentOrDerivedTag P>
-    const FlatIndexList& get_negative_precondition() const;
+    auto& get_negative_precondition_ptr()
+    {
+        if constexpr (std::is_same_v<P, StaticTag>)
+        {
+            return m_negative_static_atoms;
+        }
+        else if constexpr (std::is_same_v<P, FluentTag>)
+        {
+            return m_negative_fluent_atoms;
+        }
+        else if constexpr (std::is_same_v<P, DerivedTag>)
+        {
+            return m_negative_derived_atoms;
+        }
+        else
+        {
+            static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
+        }
+    }
+
+    template<IsStaticOrFluentOrDerivedTag P>
+    auto get_negative_precondition() const
+    {
+        if constexpr (std::is_same_v<P, StaticTag>)
+        {
+            assert(std::is_sorted(m_negative_static_atoms->compressed_begin(), m_negative_static_atoms->compressed_end()));
+            return m_negative_static_atoms->compressed_range();
+        }
+        else if constexpr (std::is_same_v<P, FluentTag>)
+        {
+            assert(std::is_sorted(m_negative_fluent_atoms->compressed_begin(), m_negative_fluent_atoms->compressed_end()));
+            return m_negative_fluent_atoms->compressed_range();
+        }
+        else if constexpr (std::is_same_v<P, DerivedTag>)
+        {
+            assert(std::is_sorted(m_negative_derived_atoms->compressed_begin(), m_negative_derived_atoms->compressed_end()));
+            return m_negative_derived_atoms->compressed_range();
+        }
+        else
+        {
+            static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
+        }
+    }
 
     FlatExternalPtrList<const GroundNumericConstraintImpl>& get_numeric_constraints();
     const FlatExternalPtrList<const GroundNumericConstraintImpl>& get_numeric_constraints() const;

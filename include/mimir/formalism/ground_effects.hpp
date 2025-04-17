@@ -74,17 +74,19 @@ using GroundNumericEffectList = cista::offset::vector<FlatExternalPtr<const Grou
 class GroundConjunctiveEffect
 {
 private:
-    FlatIndexList m_positive_effects = FlatIndexList();
-    FlatIndexList m_negative_effects = FlatIndexList();
+    FlatExternalPtr<const FlatIndexList> m_positive_effects = nullptr;
+    FlatExternalPtr<const FlatIndexList> m_negative_effects = nullptr;
     GroundNumericEffectList<FluentTag> m_fluent_numeric_effects = GroundNumericEffectList<FluentTag>();
     cista::optional<FlatExternalPtr<const GroundNumericEffectImpl<AuxiliaryTag>>> m_auxiliary_numeric_effect = std::nullopt;
 
 public:
     /* Propositional effects */
-    FlatIndexList& get_positive_effects();
+    FlatExternalPtr<const FlatIndexList>& get_positive_effects_ptr();
+
     const FlatIndexList& get_positive_effects() const;
 
-    FlatIndexList& get_negative_effects();
+    FlatExternalPtr<const FlatIndexList>& get_negative_effects_ptr();
+
     const FlatIndexList& get_negative_effects() const;
 
     /* Numeric effects */
