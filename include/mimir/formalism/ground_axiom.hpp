@@ -30,56 +30,43 @@
 
 namespace mimir::formalism
 {
-struct GroundEffectDerivedLiteral
-{
-    bool polarity = false;
-    Index atom_index = Index(0);
-};
-
 class GroundAxiomImpl
 {
 private:
-    Index m_index = Index(0);
-    Index m_axiom_index = Index(0);
-    FlatIndexList m_object_indices = FlatIndexList();
-    GroundConjunctiveCondition m_conjunctive_condition = GroundConjunctiveCondition();
-    GroundEffectDerivedLiteral m_literal = GroundEffectDerivedLiteral();
+    Index m_index;
+    Axiom m_axiom;
+    ObjectList m_objects;
+    GroundConjunctiveCondition m_conjunctive_condition;
+    GroundLiteral<DerivedTag> m_literal;
+
+    GroundAxiomImpl(Index index, Axiom axiom, ObjectList objects, GroundConjunctiveCondition conjunctive_condition, GroundLiteral<DerivedTag> literal);
+
+    // Give access to the constructor.
+    template<typename T, typename Hash, typename EqualTo>
+    friend class loki::SegmentedRepository;
 
 public:
     using FormalismEntity = void;
 
-    Index& get_index();
+    // moveable but not copyable
+    GroundAxiomImpl(const GroundAxiomImpl& other) = delete;
+    GroundAxiomImpl& operator=(const GroundAxiomImpl& other) = delete;
+    GroundAxiomImpl(GroundAxiomImpl&& other) = default;
+    GroundAxiomImpl& operator=(GroundAxiomImpl&& other) = default;
+
     Index get_index() const;
-
-    Index& get_axiom();
-    Index get_axiom_index() const;
-
-    FlatIndexList& get_object_indices();
-    const FlatIndexList& get_object_indices() const;
-
-    /* Conjunctive part */
-    GroundConjunctiveCondition& get_conjunctive_condition();
-    const GroundConjunctiveCondition& get_conjunctive_condition() const;
-
-    /* Effect*/
-    GroundEffectDerivedLiteral& get_derived_effect();
-    const GroundEffectDerivedLiteral& get_derived_effect() const;
+    Axiom get_axiom() const;
+    const ObjectList& get_objects() const;
+    GroundConjunctiveCondition get_conjunctive_condition() const;
+    GroundLiteral<DerivedTag> get_literal() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     ///
     /// Only return the lifted schema index and the binding because they imply the rest.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_axiom_index(), std::cref(get_object_indices())); }
-
-    auto cista_members() noexcept { return std::tie(m_index, m_axiom_index, m_object_indices, m_conjunctive_condition, m_literal); }
+    auto identifying_members() const { return std::tuple(get_axiom(), std::cref(get_objects())); }
 };
-
-/**
- * Mimir types
- */
-
-using GroundAxiomImplSet = mimir::buffering::UnorderedSet<GroundAxiomImpl>;
 }
 
 namespace mimir
@@ -87,9 +74,6 @@ namespace mimir
 /**
  * Pretty printing
  */
-
-template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundEffectDerivedLiteral, const formalism::ProblemImpl&>& data);
 
 template<>
 std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundAxiom, const formalism::ProblemImpl&>& data);

@@ -34,15 +34,32 @@ namespace mimir::formalism
 class GroundActionImpl
 {
 private:
-    Index m_index = Index(0);
-    Index m_action_index = Index(0);
-    FlatIndexList m_object_indices = FlatIndexList();
-    GroundConjunctiveCondition m_conjunctive_precondition = GroundConjunctiveCondition();
-    GroundConjunctiveEffect m_conjunctive_effect = GroundConjunctiveEffect();
-    GroundEffectConditionalList m_conditional_effects = GroundEffectConditionalList();
+    Index m_index;
+    Action m_action;
+    ObjectList m_object_indices;
+    GroundConjunctiveCondition m_conjunctive_precondition;
+    GroundConjunctiveEffect m_conjunctive_effect;
+    GroundConditionalEffectList m_conditional_effects;
+
+    GroundActionImpl(Index index,
+                     Action action,
+                     ObjectList object_indices,
+                     GroundConjunctiveCondition conjunctive_precondition,
+                     GroundConjunctiveEffect conjunctive_effect,
+                     GroundConditionalEffectList conditional_effects);
+
+    // Give access to the constructor.
+    template<typename T, typename Hash, typename EqualTo>
+    friend class loki::SegmentedRepository;
 
 public:
     using FormalismEntity = void;
+
+    // moveable but not copyable
+    GroundActionImpl(const GroundActionImpl& other) = delete;
+    GroundActionImpl& operator=(const GroundActionImpl& other) = delete;
+    GroundActionImpl(GroundActionImpl&& other) = default;
+    GroundActionImpl& operator=(GroundActionImpl&& other) = default;
 
     /// @brief `FullFormatterTag` is used to dispatch the operator<< overload that prints the entire action.
     struct FullFormatterTag
@@ -53,34 +70,19 @@ public:
     {
     };
 
-    Index& get_index();
-    Index& get_action_index();
-    FlatIndexList& get_objects();
-
     Index get_index() const;
-    Index get_action_index() const;
-    const FlatIndexList& get_object_indices() const;
-
-    /* Conjunctive part */
-    GroundConjunctiveCondition& get_conjunctive_condition();
+    Action get_action() const;
+    const ObjectList& get_objects() const;
     const GroundConjunctiveCondition& get_conjunctive_condition() const;
-    GroundConjunctiveEffect& get_conjunctive_effect();
     const GroundConjunctiveEffect& get_conjunctive_effect() const;
-    /* Conditional effects */
-    GroundEffectConditionalList& get_conditional_effects();
-    const GroundEffectConditionalList& get_conditional_effects() const;
+    const GroundConditionalEffectList& get_conditional_effects() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     ///
     /// Only return the lifted schema index and the binding because they imply the rest.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(get_action_index(), std::cref(get_object_indices())); }
-
-    auto cista_members() noexcept
-    {
-        return std::tie(m_index, m_action_index, m_object_indices, m_conjunctive_precondition, m_conjunctive_effect, m_conditional_effects);
-    }
+    auto identifying_members() const { return std::tuple(get_action(), std::cref(get_objects())); }
 };
 
 /// @brief STL does not define operator== for std::span.
@@ -88,21 +90,11 @@ inline bool operator==(const std::span<const GroundAction>& lhs, const std::span
 {
     return (lhs.data() == rhs.data()) && (lhs.size() == rhs.size());
 }
-
-/**
- * Mimir types
- */
-
-using GroundActionImplSet = mimir::buffering::UnorderedSet<GroundActionImpl>;
-
-/**
- * Pretty printing
- */
-
 }
 
 namespace mimir
 {
+
 template<>
 std::ostream& operator<<(std::ostream& os,
                          const std::tuple<formalism::GroundAction, const formalism::ProblemImpl&, formalism::GroundActionImpl::FullFormatterTag>& data);

@@ -49,8 +49,6 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
-    using FormalismEntity = void;
-
     // moveable but not copyable
     GroundNumericEffectImpl(const GroundNumericEffectImpl& other) = delete;
     GroundNumericEffectImpl& operator=(const GroundNumericEffectImpl& other) = delete;
@@ -68,57 +66,68 @@ public:
     auto identifying_members() const { return std::tuple(get_assign_operator(), get_function(), get_function_expression()); }
 };
 
-template<IsFluentOrAuxiliaryTag F>
-using GroundNumericEffectList = cista::offset::vector<FlatExternalPtr<const GroundNumericEffectImpl<F>>>;
-
-class GroundConjunctiveEffect
+class GroundConjunctiveEffectImpl
 {
 private:
-    FlatExternalPtr<const FlatIndexList> m_positive_effects = nullptr;
-    FlatExternalPtr<const FlatIndexList> m_negative_effects = nullptr;
-    GroundNumericEffectList<FluentTag> m_fluent_numeric_effects = GroundNumericEffectList<FluentTag>();
-    cista::optional<FlatExternalPtr<const GroundNumericEffectImpl<AuxiliaryTag>>> m_auxiliary_numeric_effect = std::nullopt;
+    Index m_index;
+    const FlatIndexList* m_positive_effects;
+    const FlatIndexList* m_negative_effects;
+    GroundNumericEffectList<FluentTag> m_fluent_numeric_effects;
+    std::optional<GroundNumericEffect<AuxiliaryTag>> m_auxiliary_numeric_effect;
+
+    GroundConjunctiveEffectImpl(Index index,
+                                const FlatIndexList* positive_effects,
+                                const FlatIndexList* negative_effects,
+                                GroundNumericEffectList<FluentTag> fluent_numeric_effects,
+                                std::optional<GroundNumericEffect<AuxiliaryTag>> auxiliary_numeric_effect);
+
+    // Give access to the constructor.
+    template<typename T, typename Hash, typename EqualTo>
+    friend class loki::SegmentedRepository;
 
 public:
-    /* Propositional effects */
-    FlatExternalPtr<const FlatIndexList>& get_positive_effects_ptr();
+    // moveable but not copyable
+    GroundConjunctiveEffectImpl(const GroundConjunctiveEffectImpl& other) = delete;
+    GroundConjunctiveEffectImpl& operator=(const GroundConjunctiveEffectImpl& other) = delete;
+    GroundConjunctiveEffectImpl(GroundConjunctiveEffectImpl&& other) = default;
+    GroundConjunctiveEffectImpl& operator=(GroundConjunctiveEffectImpl&& other) = default;
 
+    Index get_index() const;
     const FlatIndexList& get_positive_effects() const;
-
-    FlatExternalPtr<const FlatIndexList>& get_negative_effects_ptr();
-
     const FlatIndexList& get_negative_effects() const;
-
-    /* Numeric effects */
-    GroundNumericEffectList<FluentTag>& get_fluent_numeric_effects();
     const GroundNumericEffectList<FluentTag>& get_fluent_numeric_effects() const;
+    const std::optional<GroundNumericEffect<AuxiliaryTag>>& get_auxiliary_numeric_effect() const;
 
-    cista::optional<FlatExternalPtr<const GroundNumericEffectImpl<AuxiliaryTag>>>& get_auxiliary_numeric_effect();
-    const cista::optional<FlatExternalPtr<const GroundNumericEffectImpl<AuxiliaryTag>>>& get_auxiliary_numeric_effect() const;
-
-    auto cista_members() noexcept { return std::tie(m_positive_effects, m_negative_effects, m_fluent_numeric_effects, m_auxiliary_numeric_effect); }
+    auto identifying_members() noexcept { return std::tuple(m_positive_effects, m_negative_effects, m_fluent_numeric_effects, m_auxiliary_numeric_effect); }
 };
 
-class GroundConditionalEffect
+class GroundConditionalEffectImpl
 {
 private:
-    GroundConjunctiveCondition m_conjunctive_condition = GroundConjunctiveCondition();
-    GroundConjunctiveEffect m_conjunctive_effect = GroundConjunctiveEffect();
+    Index m_index;
+    GroundConjunctiveCondition m_conjunctive_condition;
+    GroundConjunctiveEffect m_conjunctive_effect;
+
+    GroundConditionalEffectImpl(Index index, GroundConjunctiveCondition conjunctive_condition, GroundConjunctiveEffect conjunctive_effect);
+
+    // Give access to the constructor.
+    template<typename T, typename Hash, typename EqualTo>
+    friend class loki::SegmentedRepository;
 
 public:
-    /* Precondition */
-    GroundConjunctiveCondition& get_conjunctive_condition();
-    const GroundConjunctiveCondition& get_conjunctive_condition() const;
+    // moveable but not copyable
+    GroundConditionalEffectImpl(const GroundConditionalEffectImpl& other) = delete;
+    GroundConditionalEffectImpl& operator=(const GroundConditionalEffectImpl& other) = delete;
+    GroundConditionalEffectImpl(GroundConditionalEffectImpl&& other) = default;
+    GroundConditionalEffectImpl& operator=(GroundConditionalEffectImpl&& other) = default;
 
-    /* Effect */
-    GroundConjunctiveEffect& get_conjunctive_effect();
+    Index get_index() const;
+    const GroundConjunctiveCondition& get_conjunctive_condition() const;
     const GroundConjunctiveEffect& get_conjunctive_effect() const;
 
     /* Utility */
-    auto cista_members() noexcept { return std::tie(m_conjunctive_condition, m_conjunctive_effect); }
+    auto identifying_mebers() const { return std::tuple(m_conjunctive_condition, m_conjunctive_effect); }
 };
-
-using GroundEffectConditionalList = cista::offset::vector<GroundConditionalEffect>;
 
 /**
  * Utils

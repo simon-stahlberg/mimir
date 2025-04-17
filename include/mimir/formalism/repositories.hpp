@@ -92,12 +92,17 @@ using NumericEffectRepository = loki::SegmentedRepository<NumericEffectImpl<F>>;
 template<IsFluentOrAuxiliaryTag F>
 using GroundNumericEffectRepository = loki::SegmentedRepository<GroundNumericEffectImpl<F>>;
 using ConjunctiveEffectRepository = loki::SegmentedRepository<ConjunctiveEffectImpl>;
+using GroundConjunctiveEffectRepository = loki::SegmentedRepository<GroundConjunctiveEffectImpl>;
 using ConditionalEffectRepository = loki::SegmentedRepository<ConditionalEffectImpl>;
+using GroundConditionalEffectRepository = loki::SegmentedRepository<GroundConditionalEffectImpl>;
 using NumericConstraintRepository = loki::SegmentedRepository<NumericConstraintImpl>;
 using GroundNumericConstraintRepository = loki::SegmentedRepository<GroundNumericConstraintImpl>;
 using ConjunctiveConditionRepository = loki::SegmentedRepository<ConjunctiveConditionImpl>;
+using GroundConjunctiveConditionRepository = loki::SegmentedRepository<GroundConjunctiveConditionImpl>;
 using ActionRepository = loki::SegmentedRepository<ActionImpl>;
+using GroundActionRepository = loki::SegmentedRepository<GroundActionImpl>;
 using AxiomRepository = loki::SegmentedRepository<AxiomImpl>;
+using GroundAxiomRepository = loki::SegmentedRepository<GroundAxiomImpl>;
 using OptimizationMetricRepository = loki::SegmentedRepository<OptimizationMetricImpl>;
 
 using HanaRepositories = boost::hana::map<
@@ -153,12 +158,17 @@ using HanaRepositories = boost::hana::map<
     boost::hana::pair<boost::hana::type<GroundNumericEffectImpl<FluentTag>>, GroundNumericEffectRepository<FluentTag>>,
     boost::hana::pair<boost::hana::type<GroundNumericEffectImpl<AuxiliaryTag>>, GroundNumericEffectRepository<AuxiliaryTag>>,
     boost::hana::pair<boost::hana::type<ConjunctiveEffectImpl>, ConjunctiveEffectRepository>,
+    boost::hana::pair<boost::hana::type<GroundConjunctiveEffectImpl>, GroundConjunctiveEffectRepository>,
     boost::hana::pair<boost::hana::type<ConditionalEffectImpl>, ConditionalEffectRepository>,
+    boost::hana::pair<boost::hana::type<GroundConditionalEffectImpl>, GroundConditionalEffectRepository>,
     boost::hana::pair<boost::hana::type<NumericConstraintImpl>, NumericConstraintRepository>,
     boost::hana::pair<boost::hana::type<GroundNumericConstraintImpl>, GroundNumericConstraintRepository>,
     boost::hana::pair<boost::hana::type<ConjunctiveConditionImpl>, ConjunctiveConditionRepository>,
+    boost::hana::pair<boost::hana::type<GroundConjunctiveConditionImpl>, GroundConjunctiveConditionRepository>,
     boost::hana::pair<boost::hana::type<ActionImpl>, ActionRepository>,
+    boost::hana::pair<boost::hana::type<GroundActionImpl>, GroundActionRepository>,
     boost::hana::pair<boost::hana::type<AxiomImpl>, AxiomRepository>,
+    boost::hana::pair<boost::hana::type<GroundAxiomImpl>, GroundAxiomRepository>,
     boost::hana::pair<boost::hana::type<OptimizationMetricImpl>, OptimizationMetricRepository>>;
 
 /// @brief `PDDLRepositories` encapsulates repositories for the unique instantiation of PDDL formalism related structures.
@@ -285,14 +295,24 @@ public:
     GroundNumericEffect<F>
     get_or_create_ground_numeric_effect(loki::AssignOperatorEnum assign_operator, GroundFunction<F> function, GroundFunctionExpression function_expression);
 
-    /// @brief Get or create a simple effect for the given parameters.
+    /// @brief Get or create a universally quantified conjunctive effect for the given parameters.
     ConjunctiveEffect get_or_create_conjunctive_effect(VariableList parameters,
                                                        LiteralList<FluentTag> effects,
                                                        NumericEffectList<FluentTag> fluent_numeric_effects,
                                                        std::optional<NumericEffect<AuxiliaryTag>> auxiliary_numeric_effect);
 
-    /// @brief Get or create a universal conditional simple effect for the given parameters.
+    /// @brief Get or create a ground conjunctive effect for the given parameters.
+    GroundConjunctiveEffect get_or_create_ground_conjunctive_effect(const FlatIndexList* positive_effects,
+                                                                    const FlatIndexList* negative_effects,
+                                                                    GroundNumericEffectList<FluentTag> fluent_numeric_effects,
+                                                                    std::optional<const GroundNumericEffect<AuxiliaryTag>> auxiliary_numeric_effect);
+
+    /// @brief Get or create a conditional effect for the given parameters.
     ConditionalEffect get_or_create_conditional_effect(ConjunctiveCondition conjunctive_condition, ConjunctiveEffect conjunctive_effect);
+
+    /// @brief Get or create a ground conditional effect for the given parameters.
+    GroundConditionalEffect get_or_create_ground_conditional_effect(GroundConjunctiveCondition conjunctive_condition,
+                                                                    GroundConjunctiveEffect conjunctive_effect);
 
     /// @brief Get or create a numeric constraint for the given parameters.
     NumericConstraint get_or_create_numeric_constraint(loki::BinaryComparatorEnum binary_comparator,
@@ -310,6 +330,15 @@ public:
                                                              LiteralLists<StaticTag, FluentTag, DerivedTag> literals,
                                                              NumericConstraintList numeric_constraints);
 
+    /// @brief Get or create a ground conjunctive condition for the given parameters.
+    GroundConjunctiveCondition get_or_create_ground_conjunctive_condition(const FlatIndexList* positive_static_atoms,
+                                                                          const FlatIndexList* negative_static_atoms,
+                                                                          const FlatIndexList* positive_fluent_atoms,
+                                                                          const FlatIndexList* negative_fluent_atoms,
+                                                                          const FlatIndexList* positive_derived_atoms,
+                                                                          const FlatIndexList* negative_derived_atoms,
+                                                                          GroundNumericConstraintList numeric_constraints);
+
     /// @brief Get or create an action for the given parameters.
     Action get_or_create_action(std::string name,
                                 size_t original_arity,
@@ -317,8 +346,18 @@ public:
                                 ConjunctiveEffect conjunctive_effect,
                                 ConditionalEffectList conditional_effects);
 
-    /// @brief Get or create a derived predicate for the given parameters.
+    /// @brief get or create a ground action for the given parameters.
+    GroundAction get_or_create_ground_action(Action action,
+                                             ObjectList binding,
+                                             GroundConjunctiveCondition condition,
+                                             GroundConjunctiveEffect effect,
+                                             GroundConditionalEffectList conditional_effects);
+
+    /// @brief Get or create an axiom for the given parameters.
     Axiom get_or_create_axiom(ConjunctiveCondition precondition, Literal<DerivedTag> effect_literal);
+
+    /// @brief Get or create a ground axiom for the given parameters.
+    GroundAxiom get_or_create_ground_axiom(Axiom axiom, ObjectList binding, GroundConjunctiveCondition condition, GroundLiteral<DerivedTag> effect);
 
     /// @brief Get or create an optimization metric for the given parameters.
     OptimizationMetric get_or_create_optimization_metric(loki::OptimizationMetricEnum metric, GroundFunctionExpression function_expression);

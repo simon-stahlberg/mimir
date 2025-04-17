@@ -98,17 +98,22 @@ template<IsFluentOrAuxiliaryTag F>
 class GroundNumericEffectImpl;
 template<IsFluentOrAuxiliaryTag F>
 using GroundNumericEffect = const GroundNumericEffectImpl<F>*;
+template<IsFluentOrAuxiliaryTag F>
+using GroundNumericEffectList = std::vector<GroundNumericEffect<F>>;
 
 class ConjunctiveEffectImpl;
 using ConjunctiveEffect = const ConjunctiveEffectImpl*;
 
-class GroundConjunctiveEffect;
+class GroundConjunctiveEffectImpl;
+using GroundConjunctiveEffect = const GroundConjunctiveEffectImpl*;
 
 class ConditionalEffectImpl;
 using ConditionalEffect = const ConditionalEffectImpl*;
 using ConditionalEffectList = std::vector<ConditionalEffect>;
 
-class GroundConditionalEffect;
+class GroundConditionalEffectImpl;
+using GroundConditionalEffect = const GroundConditionalEffectImpl*;
+using GroundConditionalEffectList = std::vector<GroundConditionalEffect>;
 
 class FunctionExpressionNumberImpl;
 using FunctionExpressionNumber = const FunctionExpressionNumberImpl*;
@@ -270,7 +275,8 @@ using VariableSet = std::unordered_set<Variable>;
 class ConjunctiveConditionImpl;
 using ConjunctiveCondition = const ConjunctiveConditionImpl*;
 
-class GroundConjunctiveCondition;
+class GroundConjunctiveConditionImpl;
+using GroundConjunctiveCondition = const GroundConjunctiveConditionImpl*;
 
 class TermImpl;
 using Term = const TermImpl*;

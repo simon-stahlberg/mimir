@@ -341,9 +341,27 @@ ConjunctiveEffect Repositories::get_or_create_conjunctive_effect(VariableList pa
         .get_or_create(std::move(parameters), std::move(effects), std::move(fluent_numeric_effects), std::move(auxiliary_numeric_effect));
 }
 
+GroundConjunctiveEffect Repositories::get_or_create_ground_conjunctive_effect(const FlatIndexList* positive_effects,
+                                                                              const FlatIndexList* negative_effects,
+                                                                              GroundNumericEffectList<FluentTag> fluent_numeric_effects,
+                                                                              std::optional<const GroundNumericEffect<AuxiliaryTag>> auxiliary_numeric_effect)
+{
+    /* Canonize before uniqueness test. */
+    std::sort(fluent_numeric_effects.begin(), fluent_numeric_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+
+    return boost::hana::at_key(m_repositories, boost::hana::type<GroundConjunctiveEffectImpl> {})
+        .get_or_create(positive_effects, negative_effects, std::move(fluent_numeric_effects), std::move(auxiliary_numeric_effect));
+}
+
 ConditionalEffect Repositories::get_or_create_conditional_effect(ConjunctiveCondition conjunctive_condition, ConjunctiveEffect conjunctive_effect)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<ConditionalEffectImpl> {}).get_or_create(conjunctive_condition, conjunctive_effect);
+}
+
+GroundConditionalEffect Repositories::get_or_create_ground_conditional_effect(GroundConjunctiveCondition conjunctive_condition,
+                                                                              GroundConjunctiveEffect conjunctive_effect)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<GroundConditionalEffectImpl> {}).get_or_create(conjunctive_condition, conjunctive_effect);
 }
 
 NumericConstraint Repositories::get_or_create_numeric_constraint(loki::BinaryComparatorEnum binary_comparator,
@@ -391,6 +409,24 @@ ConjunctiveCondition Repositories::get_or_create_conjunctive_condition(VariableL
         .get_or_create(std::move(parameters), std::move(literals), std::move(nullary_ground_literals), std::move(numeric_constraints));
 }
 
+GroundConjunctiveCondition Repositories::get_or_create_ground_conjunctive_condition(const FlatIndexList* positive_static_atoms,
+                                                                                    const FlatIndexList* negative_static_atoms,
+                                                                                    const FlatIndexList* positive_fluent_atoms,
+                                                                                    const FlatIndexList* negative_fluent_atoms,
+                                                                                    const FlatIndexList* positive_derived_atoms,
+                                                                                    const FlatIndexList* negative_derived_atoms,
+                                                                                    GroundNumericConstraintList numeric_constraints)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<GroundConjunctiveConditionImpl> {})
+        .get_or_create(positive_static_atoms,
+                       negative_static_atoms,
+                       positive_fluent_atoms,
+                       negative_fluent_atoms,
+                       positive_derived_atoms,
+                       negative_derived_atoms,
+                       std::move(numeric_constraints));
+}
+
 Action Repositories::get_or_create_action(std::string name,
                                           size_t original_arity,
                                           ConjunctiveCondition conjunctive_condition,
@@ -404,9 +440,27 @@ Action Repositories::get_or_create_action(std::string name,
         .get_or_create(std::move(name), original_arity, std::move(conjunctive_condition), std::move(conjunctive_effect), std::move(conditional_effects));
 }
 
+GroundAction Repositories::get_or_create_ground_action(Action action,
+                                                       ObjectList binding,
+                                                       GroundConjunctiveCondition condition,
+                                                       GroundConjunctiveEffect effect,
+                                                       GroundConditionalEffectList conditional_effects)
+{
+    /* Canonize before uniqueness test */
+    std::sort(conditional_effects.begin(), conditional_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+
+    return boost::hana::at_key(m_repositories, boost::hana::type<GroundActionImpl> {})
+        .get_or_create(action, std::move(binding), std::move(condition), std::move(effect), std::move(conditional_effects));
+}
+
 Axiom Repositories::get_or_create_axiom(ConjunctiveCondition conjunctive_condition, Literal<DerivedTag> literal)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<AxiomImpl> {}).get_or_create(std::move(conjunctive_condition), std::move(literal));
+}
+
+GroundAxiom Repositories::get_or_create_ground_axiom(Axiom axiom, ObjectList binding, GroundConjunctiveCondition condition, GroundLiteral<DerivedTag> effect)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<GroundAxiomImpl> {}).get_or_create(axiom, std::move(binding), condition, effect);
 }
 
 OptimizationMetric Repositories::get_or_create_optimization_metric(loki::OptimizationMetricEnum metric, GroundFunctionExpression function_expression)

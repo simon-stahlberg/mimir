@@ -27,40 +27,39 @@
 
 namespace mimir::formalism
 {
-class GroundConjunctiveCondition
+class GroundConjunctiveConditionImpl
 {
 private:
-    FlatExternalPtr<const FlatIndexList> m_positive_static_atoms = nullptr;
-    FlatExternalPtr<const FlatIndexList> m_negative_static_atoms = nullptr;
-    FlatExternalPtr<const FlatIndexList> m_positive_fluent_atoms = nullptr;
-    FlatExternalPtr<const FlatIndexList> m_negative_fluent_atoms = nullptr;
-    FlatExternalPtr<const FlatIndexList> m_positive_derived_atoms = nullptr;
-    FlatExternalPtr<const FlatIndexList> m_negative_derived_atoms = nullptr;
-    FlatExternalPtrList<const GroundNumericConstraintImpl> m_numeric_constraints = FlatExternalPtrList<const GroundNumericConstraintImpl>();
+    Index m_index;
+    const FlatIndexList* m_positive_static_atoms;
+    const FlatIndexList* m_negative_static_atoms;
+    const FlatIndexList* m_positive_fluent_atoms;
+    const FlatIndexList* m_negative_fluent_atoms;
+    const FlatIndexList* m_positive_derived_atoms;
+    const FlatIndexList* m_negative_derived_atoms;
+    GroundNumericConstraintList m_numeric_constraints;
+
+    GroundConjunctiveConditionImpl(Index index,
+                                   const FlatIndexList* m_positive_static_atoms,
+                                   const FlatIndexList* m_negative_static_atoms,
+                                   const FlatIndexList* m_positive_fluent_atoms,
+                                   const FlatIndexList* m_negative_fluent_atoms,
+                                   const FlatIndexList* m_positive_derived_atoms,
+                                   const FlatIndexList* m_negative_derived_atoms,
+                                   GroundNumericConstraintList m_numeric_constraints);
+
+    // Give access to the constructor.
+    template<typename T, typename Hash, typename EqualTo>
+    friend class loki::SegmentedRepository;
 
 public:
-    using FormalismEntity = void;
+    // moveable but not copyable
+    GroundConjunctiveConditionImpl(const GroundConjunctiveConditionImpl& other) = delete;
+    GroundConjunctiveConditionImpl& operator=(const GroundConjunctiveConditionImpl& other) = delete;
+    GroundConjunctiveConditionImpl(GroundConjunctiveConditionImpl&& other) = default;
+    GroundConjunctiveConditionImpl& operator=(GroundConjunctiveConditionImpl&& other) = default;
 
-    template<IsStaticOrFluentOrDerivedTag P>
-    auto& get_positive_precondition_ptr()
-    {
-        if constexpr (std::is_same_v<P, StaticTag>)
-        {
-            return m_positive_static_atoms;
-        }
-        else if constexpr (std::is_same_v<P, FluentTag>)
-        {
-            return m_positive_fluent_atoms;
-        }
-        else if constexpr (std::is_same_v<P, DerivedTag>)
-        {
-            return m_positive_derived_atoms;
-        }
-        else
-        {
-            static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
-        }
-    }
+    Index get_index() const;
 
     template<IsStaticOrFluentOrDerivedTag P>
     auto get_positive_precondition() const
@@ -79,27 +78,6 @@ public:
         {
             assert(std::is_sorted(m_positive_derived_atoms->compressed_begin(), m_positive_derived_atoms->compressed_end()));
             return m_positive_derived_atoms->compressed_range();
-        }
-        else
-        {
-            static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
-        }
-    }
-
-    template<IsStaticOrFluentOrDerivedTag P>
-    auto& get_negative_precondition_ptr()
-    {
-        if constexpr (std::is_same_v<P, StaticTag>)
-        {
-            return m_negative_static_atoms;
-        }
-        else if constexpr (std::is_same_v<P, FluentTag>)
-        {
-            return m_negative_fluent_atoms;
-        }
-        else if constexpr (std::is_same_v<P, DerivedTag>)
-        {
-            return m_negative_derived_atoms;
         }
         else
         {
@@ -131,18 +109,17 @@ public:
         }
     }
 
-    FlatExternalPtrList<const GroundNumericConstraintImpl>& get_numeric_constraints();
-    const FlatExternalPtrList<const GroundNumericConstraintImpl>& get_numeric_constraints() const;
+    const GroundNumericConstraintList& get_numeric_constraints() const;
 
-    auto cista_members() noexcept
+    auto identifying_members() const
     {
-        return std::tie(m_positive_static_atoms,
-                        m_negative_static_atoms,
-                        m_positive_fluent_atoms,
-                        m_negative_fluent_atoms,
-                        m_positive_derived_atoms,
-                        m_negative_derived_atoms,
-                        m_numeric_constraints);
+        return std::tuple(m_positive_static_atoms,
+                          m_negative_static_atoms,
+                          m_positive_fluent_atoms,
+                          m_negative_fluent_atoms,
+                          m_positive_derived_atoms,
+                          m_negative_derived_atoms,
+                          m_numeric_constraints);
     }
 };
 

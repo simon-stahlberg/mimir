@@ -110,6 +110,7 @@ public:
     const AxiomList& get_axioms() const;
     const AxiomList& get_problem_and_domain_axioms() const;
 
+    // TODO: change this to get_or_create
     FlatIndexListSet& get_flat_index_list_set();
     FlatDoubleListSet& get_flat_double_list_set();
 
