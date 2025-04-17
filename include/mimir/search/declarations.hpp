@@ -41,7 +41,7 @@ class StateRepositoryImpl;
 using StateRepository = std::shared_ptr<StateRepositoryImpl>;
 
 // State
-struct StateImpl;
+class StateImpl;
 using State = const StateImpl*;
 using StateList = std::vector<State>;
 using StateSet = std::unordered_set<State>;

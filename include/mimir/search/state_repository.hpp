@@ -39,7 +39,6 @@ private:
     FlatBitset m_reached_derived_atoms;  ///< Stores all encountered derived atoms.
 
     /* Memory for reuse */
-    StateImpl m_state_builder;
     DenseState m_dense_state_builder;
 
     FlatBitset m_applied_positive_effect_atoms;

@@ -52,7 +52,6 @@ StateRepositoryImpl::StateRepositoryImpl(AxiomEvaluator axiom_evaluator) :
     m_states(),
     m_reached_fluent_atoms(),
     m_reached_derived_atoms(),
-    m_state_builder(),
     m_dense_state_builder(),
     m_applied_positive_effect_atoms(),
     m_applied_negative_effect_atoms(),
@@ -88,46 +87,24 @@ static void update_reached_derived_atoms(const FlatBitset& state_derived_atoms, 
     ref_reached_derived_atoms |= state_derived_atoms;
 }
 
-static void update_state_atoms_ptr(const FlatIndexList& state_atoms, FlatExternalPtr<const FlatIndexList>& state_atoms_ptr) { state_atoms_ptr = &state_atoms; }
-
-static void update_state_numeric_variables_ptr(const FlatDoubleList& state_numeric_variables,
-                                               FlatExternalPtr<const FlatDoubleList>& state_numeric_variables_ptr)
-{
-    state_numeric_variables_ptr = &state_numeric_variables;
-}
-
 std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const GroundAtomList<FluentTag>& atoms,
                                                                           const FlatDoubleList& fluent_numeric_variables)
 {
     auto& problem = *m_axiom_evaluator->get_problem();
 
-    // Index
-    auto& state_index = m_state_builder.get_index();
-
-    // Fluent atoms
+    /* Dense state */
     auto& dense_fluent_atoms = m_dense_state_builder.get_atoms<FluentTag>();
     dense_fluent_atoms.unset_all();
-    m_state_fluent_atoms.clear();
-    auto& state_fluent_atoms_ptr = m_state_builder.get_fluent_atoms();
-    state_fluent_atoms_ptr = &m_empty_index_list;
-
-    // Derived atoms
     auto& dense_derived_atoms = m_dense_state_builder.get_atoms<DerivedTag>();
     dense_derived_atoms.unset_all();
-    m_state_derived_atoms.clear();
-    auto& state_derived_atoms_ptr = m_state_builder.get_derived_atoms();
-    state_derived_atoms_ptr = &m_empty_index_list;
-
-    // Numeric variables
     auto& dense_fluent_numeric_variables = m_dense_state_builder.get_numeric_variables();
-    auto& state_fluent_numeric_variables_ptr = m_state_builder.get_numeric_variables();
-    state_fluent_numeric_variables_ptr = &m_empty_double_list;
-
-    /* 1. Set state index */
-
-    {
-        state_index = m_states.size();
-    }
+    /* Temporaries */
+    m_state_fluent_atoms.clear();
+    m_state_derived_atoms.clear();
+    /* Sparse state */
+    const FlatIndexList* state_fluent_atoms = &m_empty_index_list;
+    const FlatIndexList* state_derived_atoms = &m_empty_index_list;
+    const FlatDoubleList* state_numeric_variables = &m_empty_double_list;
 
     /* 2. Construct non-extended state */
 
@@ -135,8 +112,7 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
     dense_fluent_numeric_variables = fluent_numeric_variables;
 
     const auto [fluent_numeric_iter, fluent_numeric_inserted] = problem.get_flat_double_list_set().insert(dense_fluent_numeric_variables);
-
-    update_state_numeric_variables_ptr(**fluent_numeric_iter, state_fluent_numeric_variables_ptr);
+    state_numeric_variables = fluent_numeric_iter->get();
 
     /* 2.2. Propositional state */
     for (const auto& atom : atoms)
@@ -148,14 +124,13 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
 
     translate_dense_into_sorted_compressed_sparse(dense_fluent_atoms, m_state_fluent_atoms);
 
-    const auto [fluent_iter, fluent_inserted] = problem.get_flat_index_list_set().insert(m_state_fluent_atoms);
-    update_state_atoms_ptr(**fluent_iter, state_fluent_atoms_ptr);
+    const auto [fluent_atoms_iter, fluent_atoms_inserted] = problem.get_flat_index_list_set().insert(m_state_fluent_atoms);
+    state_fluent_atoms = fluent_atoms_iter->get();
 
     // Test whether there exists an extended state for the given non extended state
-    auto state_iter = m_states.find(m_state_builder);
-    if (state_iter != m_states.end())
+    if (auto state = m_states.find(StateImpl(-1, state_fluent_atoms, state_derived_atoms, state_numeric_variables)))
     {
-        return { state_iter->get(), compute_state_metric_value(state_iter->get(), *m_axiom_evaluator->get_problem()) };
+        return { state, compute_state_metric_value(state, *m_axiom_evaluator->get_problem()) };
     }
 
     /* 3. Apply axioms to construct extended state. */
@@ -171,16 +146,14 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
             translate_dense_into_sorted_compressed_sparse(dense_derived_atoms, m_state_derived_atoms);
 
             const auto [derived_iter, derived_inserted] = problem.get_flat_index_list_set().insert(m_state_derived_atoms);
-            update_state_atoms_ptr(**derived_iter, state_derived_atoms_ptr);
+            state_derived_atoms = derived_iter->get();
         }
     }
 
     // Cache and return the extended state.
-    assert(m_state_builder.get_fluent_atoms()->is_compressed());
-    assert(m_state_builder.get_derived_atoms()->is_compressed());
-    state_iter = m_states.insert(m_state_builder).first;
+    auto state = m_states.get_or_create(state_fluent_atoms, state_derived_atoms, state_numeric_variables);
 
-    return { state_iter->get(), compute_state_metric_value(state_iter->get(), *m_axiom_evaluator->get_problem()) };
+    return { state, compute_state_metric_value(state, *m_axiom_evaluator->get_problem()) };
 }
 
 std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_successor_state(State state, GroundAction action, ContinuousCost state_metric_value)
@@ -330,35 +303,23 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
 {
     auto& problem = *m_axiom_evaluator->get_problem();
 
-    m_applied_negative_effect_atoms.unset_all();
-    m_applied_positive_effect_atoms.unset_all();
-
-    // Index
-    auto& state_index = m_state_builder.get_index();
-
-    // Fluent atoms
+    /* Dense state*/
     auto& dense_fluent_atoms = dense_state.get_atoms<FluentTag>();
     m_state_fluent_atoms.clear();
-    auto& state_fluent_atoms_ptr = m_state_builder.get_fluent_atoms();
-    state_fluent_atoms_ptr = &m_empty_index_list;
-
-    // Derived atoms
     auto& dense_derived_atoms = dense_state.get_atoms<DerivedTag>();
     m_state_derived_atoms.clear();
-    auto& state_derived_atoms_ptr = m_state_builder.get_derived_atoms();
-    state_derived_atoms_ptr = &m_empty_index_list;
-
-    // Numeric variables
     auto& dense_fluent_numeric_variables = dense_state.get_numeric_variables();
-    auto& state_fluent_numeric_variables_ptr = m_state_builder.get_numeric_variables();
-    state_fluent_numeric_variables_ptr = &m_empty_double_list;
+    /* Temporaries */
+    m_state_fluent_atoms.clear();
+    m_state_derived_atoms.clear();
+    m_applied_negative_effect_atoms.unset_all();
+    m_applied_positive_effect_atoms.unset_all();
+    /* Sparse state */
+    const FlatIndexList* state_fluent_atoms = &m_empty_index_list;
+    const FlatIndexList* state_derived_atoms = &m_empty_index_list;
+    const FlatDoubleList* state_numeric_variables = &m_empty_double_list;
 
     auto successor_state_metric_value = state_metric_value;
-
-    /* 1. Set the state index. */
-    {
-        state_index = m_states.size();
-    }
 
     /* 2. Apply action effects to construct non-extended state. */
 
@@ -377,16 +338,15 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
     translate_dense_into_sorted_compressed_sparse(dense_fluent_atoms, m_state_fluent_atoms);
 
     const auto [fluent_iter, fluent_inserted] = problem.get_flat_index_list_set().insert(m_state_fluent_atoms);
-    update_state_atoms_ptr(**fluent_iter, state_fluent_atoms_ptr);
+    state_fluent_atoms = fluent_iter->get();
 
     const auto [fluent_numeric_iter, fluent_numeric_inserted] = problem.get_flat_double_list_set().insert(dense_fluent_numeric_variables);
-    update_state_numeric_variables_ptr(**fluent_numeric_iter, state_fluent_numeric_variables_ptr);
+    state_numeric_variables = fluent_numeric_iter->get();
 
     // Check if non-extended state exists in cache
-    const auto state_iter = m_states.find(m_state_builder);
-    if (state_iter != m_states.end())
+    if (auto state = m_states.find(StateImpl(-1, state_fluent_atoms, state_derived_atoms, state_numeric_variables)))
     {
-        return { state_iter->get(), successor_state_metric_value };
+        return { state, successor_state_metric_value };
     }
 
     /* 3. If necessary, apply axioms to construct extended state. */
@@ -402,12 +362,12 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
             translate_dense_into_sorted_compressed_sparse(dense_derived_atoms, m_state_derived_atoms);
 
             const auto [iter, inserted] = problem.get_flat_index_list_set().insert(m_state_derived_atoms);
-            update_state_atoms_ptr(**iter, state_derived_atoms_ptr);
+            state_derived_atoms = iter->get();
         }
     }
 
     // Cache and return the extended state.
-    return { m_states.insert(m_state_builder).first->get(), successor_state_metric_value };
+    return { m_states.get_or_create(state_fluent_atoms, state_derived_atoms, state_numeric_variables), successor_state_metric_value };
 }
 
 const Problem& StateRepositoryImpl::get_problem() const { return m_axiom_evaluator->get_problem(); }

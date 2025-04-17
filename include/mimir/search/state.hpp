@@ -33,12 +33,51 @@ namespace mimir::search
 /// @brief `StateImpl` encapsulates the fluent and derived atoms of a planning state.
 /// We refer to the fluent atoms as the non-extended state
 /// and the fluent and derived atoms as the extended state.
-struct StateImpl
+class StateImpl
 {
-    Index m_index = Index(0);
-    FlatExternalPtr<const FlatIndexList> m_fluent_atoms = nullptr;
-    FlatExternalPtr<const FlatIndexList> m_derived_atoms = nullptr;
-    FlatExternalPtr<const FlatDoubleList> m_numeric_variables = nullptr;
+private:
+    Index m_index;
+    const FlatIndexList* m_fluent_atoms;
+    const FlatIndexList* m_derived_atoms;
+    const FlatDoubleList* m_numeric_variables;
+
+    StateImpl(Index index, const FlatIndexList* fluent_atoms, const FlatIndexList* derived_atoms, const FlatDoubleList* numeric_variables);
+
+    friend class StateRepositoryImpl;  ///< Given exclusive write access to a state.
+
+    // Give access to the constructor.
+    template<typename T, typename Hash, typename EqualTo>
+    friend class loki::SegmentedRepository;
+
+public:
+    /**
+     * Getters
+     */
+
+    Index get_index() const;
+
+    template<formalism::IsFluentOrDerivedTag P>
+    auto get_atoms() const
+    {
+        if constexpr (std::is_same_v<P, formalism::FluentTag>)
+        {
+            return m_fluent_atoms->compressed_range();
+        }
+        else if constexpr (std::is_same_v<P, formalism::DerivedTag>)
+        {
+            return m_derived_atoms->compressed_range();
+        }
+        else
+        {
+            static_assert(dependent_false<P>::value, "Missing implementation for IsStaticOrFluentOrDerivedTag.");
+        }
+    }
+
+    const FlatDoubleList& get_numeric_variables() const;
+
+    /**
+     * Utils
+     */
 
     bool numeric_constraint_holds(formalism::GroundNumericConstraint numeric_constraint, const FlatDoubleList& static_numeric_variables) const;
 
@@ -51,32 +90,6 @@ struct StateImpl
         return is_supseteq(get_atoms<P>(), positive_atoms) && are_disjoint(get_atoms<P>(), negative_atoms);
     }
 
-    /* Immutable Getters */
-
-    Index get_index() const;
-
-    template<formalism::IsFluentOrDerivedTag P>
-    auto get_atoms() const
-    {
-        if constexpr (std::is_same_v<P, formalism::FluentTag>)
-        {
-            assert(std::is_sorted(m_fluent_atoms->compressed_begin(), m_fluent_atoms->compressed_end()));
-            return m_fluent_atoms->compressed_range();
-        }
-        else if constexpr (std::is_same_v<P, formalism::DerivedTag>)
-        {
-            // StateRepositoryImpl ensures that m_derived_atoms is a valid pointer to a FlatIndexList.
-            assert(std::is_sorted(m_derived_atoms->compressed_begin(), m_derived_atoms->compressed_end()));
-            return m_derived_atoms->compressed_range();
-        }
-        else
-        {
-            static_assert(dependent_false<P>::value, "Missing implementation for IsStaticOrFluentOrDerivedTag.");
-        }
-    }
-
-    const FlatDoubleList& get_numeric_variables() const;
-
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     ///
@@ -85,22 +98,11 @@ struct StateImpl
     auto identifying_members() const
     {
         // The pointers uniquely identify the state, derived atoms not needed.
-        return std::make_tuple(m_fluent_atoms.get(), m_numeric_variables.get());
+        return std::make_tuple(m_fluent_atoms, m_numeric_variables);
     }
-
-private:
-    /* Mutable Getters */
-
-    friend class StateRepositoryImpl;  ///< Given exclusive write access to a state.
-
-    Index& get_index();
-
-    FlatExternalPtr<const FlatIndexList>& get_fluent_atoms();
-    FlatExternalPtr<const FlatIndexList>& get_derived_atoms();
-    FlatExternalPtr<const FlatDoubleList>& get_numeric_variables();
 };
 
-static_assert(loki::HasIdentifyingMembers<StateImpl>);  // This is my concept...
+static_assert(loki::HasIdentifyingMembers<StateImpl>);
 
 /// @brief STL does not define operator== for std::span.
 inline bool operator==(const std::span<const State>& lhs, const std::span<const State>& rhs)
@@ -108,7 +110,7 @@ inline bool operator==(const std::span<const State>& lhs, const std::span<const 
     return (lhs.data() == rhs.data()) && (lhs.size() == rhs.size());
 }
 
-using StateImplSet = mimir::buffering::UnorderedSet<StateImpl>;
+using StateImplSet = loki::SegmentedRepository<StateImpl>;
 
 }
 

@@ -31,6 +31,16 @@ namespace mimir::search
 
 /* State */
 
+StateImpl::StateImpl(Index index, const FlatIndexList* fluent_atoms, const FlatIndexList* derived_atoms, const FlatDoubleList* numeric_variables) :
+    m_index(index),
+    m_fluent_atoms(fluent_atoms),
+    m_derived_atoms(derived_atoms),
+    m_numeric_variables(numeric_variables)
+{
+    assert(std::is_sorted(m_fluent_atoms->compressed_begin(), m_fluent_atoms->compressed_end()));
+    assert(std::is_sorted(m_derived_atoms->compressed_begin(), m_derived_atoms->compressed_end()));
+}
+
 bool StateImpl::numeric_constraint_holds(GroundNumericConstraint numeric_constraint, const FlatDoubleList& static_numeric_variables) const
 {
     return evaluate(numeric_constraint, static_numeric_variables, get_numeric_variables());
@@ -50,19 +60,7 @@ bool StateImpl::numeric_constraints_hold(const GroundNumericConstraintList& nume
 
 Index StateImpl::get_index() const { return m_index; }
 
-const FlatDoubleList& StateImpl::get_numeric_variables() const
-{
-    // StateRepositoryImpl ensures that m_numeric_variables is a valid pointer to a FlatDoubleList.
-    return *m_numeric_variables;
-}
-
-Index& StateImpl::get_index() { return m_index; }
-
-FlatExternalPtr<const FlatIndexList>& StateImpl::get_fluent_atoms() { return m_fluent_atoms; }
-
-FlatExternalPtr<const FlatIndexList>& StateImpl::get_derived_atoms() { return m_derived_atoms; }
-
-FlatExternalPtr<const FlatDoubleList>& StateImpl::get_numeric_variables() { return m_numeric_variables; }
+const FlatDoubleList& StateImpl::get_numeric_variables() const { return *m_numeric_variables; }
 
 }
 
