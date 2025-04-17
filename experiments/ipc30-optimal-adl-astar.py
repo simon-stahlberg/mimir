@@ -64,14 +64,9 @@ ATTRIBUTES = [
     "num_reachable_fluent_atoms",
     "num_reachable_derived_atoms",
 
-    "memory_in_bytes_for_states",
-    "memory_in_bytes_per_state",
     "memory_in_bytes_for_nodes",
     "memory_in_bytes_per_node",
-    "memory_in_bytes_for_actions",
-    "memory_in_bytes_per_action",
-    "memory_in_bytes_for_axioms",
-    "memory_in_bytes_per_axiom",
+    "memory_in_bytes_for_problem",
     "total_memory_in_bytes",
 
     "num_of_states",

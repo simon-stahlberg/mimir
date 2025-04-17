@@ -62,14 +62,9 @@ class AStarParser(Parser):
         self.add_pattern("num_reachable_fluent_atoms", r"Number of reached fluent atoms: (\d+)", type=int)
         self.add_pattern("num_reachable_derived_atoms", r"Number of reached derived atoms: (\d+)", type=int)
 
-        self.add_pattern("memory_in_bytes_for_states", r"Number of bytes for states: (\d+)", type=int)
-        self.add_pattern("memory_in_bytes_per_state", r"Number of bytes per state: (\d+)", type=int)
         self.add_pattern("memory_in_bytes_for_nodes", r"Number of bytes for nodes: (\d+)", type=int)
         self.add_pattern("memory_in_bytes_per_node", r"Number of bytes per node: (\d+)", type=int)
-        self.add_pattern("memory_in_bytes_for_actions", r"Number of bytes for actions: (\d+)", type=int)
-        self.add_pattern("memory_in_bytes_per_action", r"Number of bytes per action: (\d+)", type=int)
-        self.add_pattern("memory_in_bytes_for_axioms", r"Number of bytes for axioms: (\d+)", type=int)
-        self.add_pattern("memory_in_bytes_per_axiom", r"Number of bytes per axiom: (\d+)", type=int)
+        self.add_pattern("memory_in_bytes_for_problem", r"Number of bytes for states: (\d+)", type=int)
         self.add_pattern("total_memory_in_bytes", r"Total number of bytes used: (\d+)", type=int)
 
         self.add_pattern("num_of_states", r"Number of states: (\d+)", type=int)
