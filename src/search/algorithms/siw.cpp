@@ -48,20 +48,15 @@ ProblemGoalStrategyImplCounter::ProblemGoalStrategyImplCounter(Problem problem, 
 int ProblemGoalStrategyImplCounter::count_unsatisfied_goals(State state) const
 {
     int num_unsatisfied_goals = 0;
-    for (const auto& literal : m_problem->get_goal_condition<FluentTag>())
-    {
-        if (!state->literal_holds(literal))
-        {
-            ++num_unsatisfied_goals;
-        }
-    }
-    for (const auto& literal : m_problem->get_goal_condition<DerivedTag>())
-    {
-        if (!state->literal_holds(literal))
-        {
-            ++num_unsatisfied_goals;
-        }
-    }
+
+    num_unsatisfied_goals += count_set_difference(m_problem->get_positive_goal_atoms_indices<FluentTag>().uncompressed_range(), state->get_atoms<FluentTag>());
+    num_unsatisfied_goals +=
+        count_set_difference(m_problem->get_positive_goal_atoms_indices<DerivedTag>().uncompressed_range(), state->get_atoms<DerivedTag>());
+    num_unsatisfied_goals +=
+        count_set_intersection(m_problem->get_negative_goal_atoms_indices<FluentTag>().uncompressed_range(), state->get_atoms<FluentTag>());
+    num_unsatisfied_goals +=
+        count_set_intersection(m_problem->get_negative_goal_atoms_indices<DerivedTag>().uncompressed_range(), state->get_atoms<DerivedTag>());
+
     return num_unsatisfied_goals;
 }
 

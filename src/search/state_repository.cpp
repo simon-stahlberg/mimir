@@ -58,8 +58,11 @@ StateRepositoryImpl::StateRepositoryImpl(AxiomEvaluator axiom_evaluator) :
     m_applied_positive_effect_atoms(),
     m_applied_negative_effect_atoms(),
     m_state_fluent_atoms(),
-    m_state_derived_atoms()
+    m_state_derived_atoms(),
+    m_empty_index_list(),
+    m_empty_double_list()
 {
+    m_empty_index_list.compress();
 }
 
 StateRepository StateRepositoryImpl::create(AxiomEvaluator axiom_evaluator) { return std::make_shared<StateRepositoryImpl>(axiom_evaluator); }
@@ -105,19 +108,19 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
     dense_fluent_atoms.unset_all();
     m_state_fluent_atoms.clear();
     auto& state_fluent_atoms_ptr = m_state_builder.get_fluent_atoms();
-    state_fluent_atoms_ptr = nullptr;
+    state_fluent_atoms_ptr = &m_empty_index_list;
 
     // Derived atoms
     auto& dense_derived_atoms = m_dense_state_builder.get_atoms<DerivedTag>();
     dense_derived_atoms.unset_all();
     m_state_derived_atoms.clear();
     auto& state_derived_atoms_ptr = m_state_builder.get_derived_atoms();
-    state_derived_atoms_ptr = nullptr;
+    state_derived_atoms_ptr = &m_empty_index_list;
 
     // Numeric variables
     auto& dense_fluent_numeric_variables = m_dense_state_builder.get_numeric_variables();
     auto& state_fluent_numeric_variables_ptr = m_state_builder.get_numeric_variables();
-    state_fluent_numeric_variables_ptr = nullptr;
+    state_fluent_numeric_variables_ptr = &m_empty_double_list;
 
     /* 1. Set state index */
 
@@ -172,6 +175,8 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
     }
 
     // Cache and return the extended state.
+    assert(m_state_builder.get_fluent_atoms()->is_compressed());
+    assert(m_state_builder.get_derived_atoms()->is_compressed());
     state_iter = m_states.insert(m_state_builder).first;
 
     return { state_iter->get(), compute_state_metric_value(state_iter->get(), *m_axiom_evaluator->get_problem()) };
@@ -270,8 +275,8 @@ static void apply_action_effects(GroundAction action,
     const auto& const_fluent_numeric_variables = state->get_numeric_variables();
     const auto& const_static_numeric_variables = problem.get_initial_function_to_value<StaticTag>();
 
-    insert_into_bitset(conjunctive_effect.get_negative_effects(), ref_negative_applied_effects);
-    insert_into_bitset(conjunctive_effect.get_positive_effects(), ref_positive_applied_effects);
+    insert_into_bitset(conjunctive_effect.get_negative_effects().compressed_range(), ref_negative_applied_effects);
+    insert_into_bitset(conjunctive_effect.get_positive_effects().compressed_range(), ref_positive_applied_effects);
 
     collect_applied_fluent_numeric_effects(conjunctive_effect.get_fluent_numeric_effects(),
                                            const_static_numeric_variables,
@@ -289,8 +294,8 @@ static void apply_action_effects(GroundAction action,
     {
         if (is_applicable(conditional_effect, problem, dense_state))
         {
-            insert_into_bitset(conditional_effect.get_conjunctive_effect().get_negative_effects(), ref_negative_applied_effects);
-            insert_into_bitset(conditional_effect.get_conjunctive_effect().get_positive_effects(), ref_positive_applied_effects);
+            insert_into_bitset(conditional_effect.get_conjunctive_effect().get_negative_effects().compressed_range(), ref_negative_applied_effects);
+            insert_into_bitset(conditional_effect.get_conjunctive_effect().get_positive_effects().compressed_range(), ref_positive_applied_effects);
             collect_applied_fluent_numeric_effects(conditional_effect.get_conjunctive_effect().get_fluent_numeric_effects(),
                                                    const_static_numeric_variables,
                                                    const_fluent_numeric_variables,
@@ -334,18 +339,18 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
     auto& dense_fluent_atoms = dense_state.get_atoms<FluentTag>();
     m_state_fluent_atoms.clear();
     auto& state_fluent_atoms_ptr = m_state_builder.get_fluent_atoms();
-    state_fluent_atoms_ptr = nullptr;
+    state_fluent_atoms_ptr = &m_empty_index_list;
 
     // Derived atoms
     auto& dense_derived_atoms = dense_state.get_atoms<DerivedTag>();
     m_state_derived_atoms.clear();
     auto& state_derived_atoms_ptr = m_state_builder.get_derived_atoms();
-    state_derived_atoms_ptr = nullptr;
+    state_derived_atoms_ptr = &m_empty_index_list;
 
     // Numeric variables
     auto& dense_fluent_numeric_variables = dense_state.get_numeric_variables();
     auto& state_fluent_numeric_variables_ptr = m_state_builder.get_numeric_variables();
-    state_fluent_numeric_variables_ptr = nullptr;
+    state_fluent_numeric_variables_ptr = &m_empty_double_list;
 
     auto successor_state_metric_value = state_metric_value;
 

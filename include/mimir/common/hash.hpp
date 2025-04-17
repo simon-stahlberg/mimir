@@ -21,6 +21,7 @@
 #include "cista/containers/dual_dynamic_bitset.h"
 #include "cista/containers/dynamic_bitset.h"
 #include "cista/containers/external_ptr.h"
+#include "cista/containers/flexible_delta_index_vector.h"
 #include "cista/containers/flexible_index_vector.h"
 #include "cista/containers/tuple.h"
 #include "cista/containers/vector.h"
@@ -133,6 +134,27 @@ struct loki::Hash<cista::basic_vector<T, Ptr, IndexPointers, TemplateSizeType, A
         }
 
         return aggregated_hash;
+    }
+};
+
+/* FlexibleDeltaIndexVector */
+
+template<std::unsigned_integral IndexType, template<typename> typename Ptr>
+struct loki::Hash<cista::basic_flexible_delta_index_vector<IndexType, Ptr>>
+{
+    using Type = cista::basic_flexible_delta_index_vector<IndexType, Ptr>;
+
+    size_t operator()(const Type& vector) const
+    {
+        size_t seed = vector.size();
+        size_t hash[2] = { 0, 0 };
+
+        loki::MurmurHash3_x64_128(vector.blocks().data(), vector.blocks().size() * sizeof(IndexType), seed, hash);
+
+        loki::hash_combine(seed, hash[0]);
+        loki::hash_combine(seed, hash[1]);
+
+        return seed;
     }
 };
 

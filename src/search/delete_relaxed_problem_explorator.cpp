@@ -157,7 +157,7 @@ GroundedAxiomEvaluator DeleteRelaxedProblemExplorator::create_grounded_axiom_eva
              m_delete_relax_transformer.get_unrelaxed_axioms(m_delete_free_problem->get_repositories().get_axiom(delete_free_ground_axiom->get_axiom_index())))
         {
             auto binding = translate_from_delete_free_to_unrelaxed_problem(
-                m_delete_free_problem->get_repositories().get_objects_from_indices(delete_free_ground_axiom->get_object_indices()),
+                m_delete_free_problem->get_repositories().get_objects_from_indices(delete_free_ground_axiom->get_object_indices().uncompressed_range()),
                 m_delete_free_object_to_unrelaxed_object);
 
             auto ground_axiom = problem.ground(axiom, std::move(binding));
@@ -221,7 +221,7 @@ DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator(cons
                  m_delete_free_problem->get_repositories().get_action(delete_free_ground_action->get_action_index())))
         {
             auto binding = translate_from_delete_free_to_unrelaxed_problem(
-                m_delete_free_problem->get_repositories().get_objects_from_indices(delete_free_ground_action->get_object_indices()),
+                m_delete_free_problem->get_repositories().get_objects_from_indices(delete_free_ground_action->get_object_indices().uncompressed_range()),
                 m_delete_free_object_to_unrelaxed_object);
 
             auto grounded_action = problem.ground(action, std::move(binding));

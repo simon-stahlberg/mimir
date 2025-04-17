@@ -50,6 +50,9 @@ private:
     FlatIndexList m_state_fluent_atoms;
     FlatIndexList m_state_derived_atoms;
 
+    FlatIndexList m_empty_index_list;
+    FlatDoubleList m_empty_double_list;
+
 public:
     explicit StateRepositoryImpl(AxiomEvaluator axiom_evaluator);
 

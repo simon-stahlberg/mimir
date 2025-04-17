@@ -408,6 +408,18 @@ void serialize(Ctx& c, basic_external_ptr<T> const* origin, offset_t const pos)
 }
 
 template<typename Ctx, std::unsigned_integral IndexType, template<typename> typename Ptr>
+void serialize(Ctx& c, basic_flexible_delta_index_vector<IndexType, Ptr> const* origin, offset_t const pos)
+{
+    using Type = basic_flexible_delta_index_vector<IndexType, Ptr>;
+    serialize(c, &origin->bit_width_, pos + cista_member_offset(Type, bit_width_));
+    serialize(c, &origin->bit_width_log2_, pos + cista_member_offset(Type, bit_width_log2_));
+    serialize(c, &origin->elements_per_block_, pos + cista_member_offset(Type, elements_per_block_));
+    serialize(c, &origin->elements_per_block_log2_, pos + cista_member_offset(Type, elements_per_block_log2_));
+    serialize(c, &origin->size_, pos + cista_member_offset(Type, size_));
+    serialize(c, &origin->blocks_, pos + cista_member_offset(Type, blocks_));
+}
+
+template<typename Ctx, std::unsigned_integral IndexType, template<typename> typename Ptr>
 void serialize(Ctx& c, basic_flexible_index_vector<IndexType, Ptr> const* origin, offset_t const pos)
 {
     using Type = basic_flexible_index_vector<IndexType, Ptr>;
@@ -1066,6 +1078,18 @@ template<typename Ctx, typename T, typename Fn>
 void recurse(Ctx&, basic_external_ptr<T> el, Fn&& fn)
 {
     fn(&el->el_);
+}
+
+// --- FLEXIBLE_DELTA_INDEX_VECTOR ---
+template<typename Ctx, std::unsigned_integral IndexType, template<typename> typename Ptr, typename Fn>
+void recurse(Ctx&, basic_flexible_delta_index_vector<IndexType, Ptr>* el, Fn&& fn)
+{
+    fn(&el->bit_width_);
+    fn(&el->bit_width_log2_);
+    fn(&el->elements_per_block_);
+    fn(&el->elements_per_block_log2_);
+    fn(&el->size_);
+    fn(&el->blocks_);
 }
 
 // --- FLEXIBLE_INDEX_VECTOR ---

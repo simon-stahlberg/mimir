@@ -37,17 +37,17 @@ FlatIndexList& GroundConjunctiveCondition::get_positive_precondition()
 {
     if constexpr (std::is_same_v<P, StaticTag>)
     {
-        assert(std::is_sorted(m_positive_static_atoms.cbegin(), m_positive_static_atoms.cend()));
+        // assert(std::is_sorted(m_positive_static_atoms.uncompressed_begin(), m_positive_static_atoms.uncompressed_end()));
         return m_positive_static_atoms;
     }
     else if constexpr (std::is_same_v<P, FluentTag>)
     {
-        assert(std::is_sorted(m_positive_fluent_atoms.cbegin(), m_positive_fluent_atoms.cend()));
+        // assert(std::is_sorted(m_positive_fluent_atoms.uncompressed_begin(), m_positive_fluent_atoms.uncompressed_end()));
         return m_positive_fluent_atoms;
     }
     else if constexpr (std::is_same_v<P, DerivedTag>)
     {
-        assert(std::is_sorted(m_positive_derived_atoms.cbegin(), m_positive_derived_atoms.cend()));
+        // assert(std::is_sorted(m_positive_derived_atoms.uncompressed_begin(), m_positive_derived_atoms.uncompressed_end()));
         return m_positive_derived_atoms;
     }
     else
@@ -65,17 +65,17 @@ const FlatIndexList& GroundConjunctiveCondition::get_positive_precondition() con
 {
     if constexpr (std::is_same_v<P, StaticTag>)
     {
-        assert(std::is_sorted(m_positive_static_atoms.begin(), m_positive_static_atoms.end()));
+        assert(std::is_sorted(m_positive_static_atoms.compressed_begin(), m_positive_static_atoms.compressed_end()));
         return m_positive_static_atoms;
     }
     else if constexpr (std::is_same_v<P, FluentTag>)
     {
-        assert(std::is_sorted(m_positive_fluent_atoms.begin(), m_positive_fluent_atoms.end()));
+        assert(std::is_sorted(m_positive_fluent_atoms.compressed_begin(), m_positive_fluent_atoms.compressed_end()));
         return m_positive_fluent_atoms;
     }
     else if constexpr (std::is_same_v<P, DerivedTag>)
     {
-        assert(std::is_sorted(m_positive_derived_atoms.begin(), m_positive_derived_atoms.end()));
+        assert(std::is_sorted(m_positive_derived_atoms.compressed_begin(), m_positive_derived_atoms.compressed_end()));
         return m_positive_derived_atoms;
     }
     else
@@ -93,17 +93,17 @@ FlatIndexList& GroundConjunctiveCondition::get_negative_precondition()
 {
     if constexpr (std::is_same_v<P, StaticTag>)
     {
-        assert(std::is_sorted(m_negative_static_atoms.cbegin(), m_negative_static_atoms.cend()));
+        // assert(std::is_sorted(m_negative_static_atoms.uncompressed_begin(), m_negative_static_atoms.uncompressed_end()));
         return m_negative_static_atoms;
     }
     else if constexpr (std::is_same_v<P, FluentTag>)
     {
-        assert(std::is_sorted(m_negative_fluent_atoms.cbegin(), m_negative_fluent_atoms.cend()));
+        // assert(std::is_sorted(m_negative_fluent_atoms.uncompressed_begin(), m_negative_fluent_atoms.uncompressed_end()));
         return m_negative_fluent_atoms;
     }
     else if constexpr (std::is_same_v<P, DerivedTag>)
     {
-        assert(std::is_sorted(m_negative_derived_atoms.cbegin(), m_negative_derived_atoms.cend()));
+        // assert(std::is_sorted(m_negative_derived_atoms.uncompressed_begin(), m_negative_derived_atoms.uncompressed_end()));
         return m_negative_derived_atoms;
     }
     else
@@ -121,17 +121,17 @@ const FlatIndexList& GroundConjunctiveCondition::get_negative_precondition() con
 {
     if constexpr (std::is_same_v<P, StaticTag>)
     {
-        assert(std::is_sorted(m_negative_static_atoms.begin(), m_negative_static_atoms.end()));
+        assert(std::is_sorted(m_negative_static_atoms.compressed_begin(), m_negative_static_atoms.compressed_end()));
         return m_negative_static_atoms;
     }
     else if constexpr (std::is_same_v<P, FluentTag>)
     {
-        assert(std::is_sorted(m_negative_fluent_atoms.begin(), m_negative_fluent_atoms.end()));
+        assert(std::is_sorted(m_negative_fluent_atoms.compressed_begin(), m_negative_fluent_atoms.compressed_end()));
         return m_negative_fluent_atoms;
     }
     else if constexpr (std::is_same_v<P, DerivedTag>)
     {
-        assert(std::is_sorted(m_negative_derived_atoms.begin(), m_negative_derived_atoms.end()));
+        assert(std::is_sorted(m_negative_derived_atoms.compressed_begin(), m_negative_derived_atoms.compressed_end()));
         return m_negative_derived_atoms;
     }
     else
@@ -177,12 +177,18 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundCon
     auto negative_derived_precondition = formalism::GroundAtomList<formalism::DerivedTag> {};
     const auto& ground_numeric_constraints = conjunctive_condition.get_numeric_constraints();
 
-    problem.get_repositories().get_ground_atoms_from_indices<formalism::StaticTag>(positive_static_precondition_indices, positive_static_precondition);
-    problem.get_repositories().get_ground_atoms_from_indices<formalism::StaticTag>(negative_static_precondition_indices, negative_static_precondition);
-    problem.get_repositories().get_ground_atoms_from_indices<formalism::FluentTag>(positive_fluent_precondition_indices, positive_fluent_precondition);
-    problem.get_repositories().get_ground_atoms_from_indices<formalism::FluentTag>(negative_fluent_precondition_indices, negative_fluent_precondition);
-    problem.get_repositories().get_ground_atoms_from_indices<formalism::DerivedTag>(positive_derived_precondition_indices, positive_derived_precondition);
-    problem.get_repositories().get_ground_atoms_from_indices<formalism::DerivedTag>(negative_derived_precondition_indices, negative_derived_precondition);
+    problem.get_repositories().get_ground_atoms_from_indices<formalism::StaticTag>(positive_static_precondition_indices.compressed_range(),
+                                                                                   positive_static_precondition);
+    problem.get_repositories().get_ground_atoms_from_indices<formalism::StaticTag>(negative_static_precondition_indices.compressed_range(),
+                                                                                   negative_static_precondition);
+    problem.get_repositories().get_ground_atoms_from_indices<formalism::FluentTag>(positive_fluent_precondition_indices.compressed_range(),
+                                                                                   positive_fluent_precondition);
+    problem.get_repositories().get_ground_atoms_from_indices<formalism::FluentTag>(negative_fluent_precondition_indices.compressed_range(),
+                                                                                   negative_fluent_precondition);
+    problem.get_repositories().get_ground_atoms_from_indices<formalism::DerivedTag>(positive_derived_precondition_indices.compressed_range(),
+                                                                                    positive_derived_precondition);
+    problem.get_repositories().get_ground_atoms_from_indices<formalism::DerivedTag>(negative_derived_precondition_indices.compressed_range(),
+                                                                                    negative_derived_precondition);
 
     os << "positive static precondition=";
     mimir::operator<<(os, positive_static_precondition);

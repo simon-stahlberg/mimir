@@ -31,12 +31,6 @@ namespace mimir::search
 
 /* State */
 
-const FlatIndexList StateImpl::s_empty_fluent_atoms = FlatIndexList();
-
-const FlatIndexList StateImpl::s_empty_derived_atoms = FlatIndexList();
-
-const FlatDoubleList StateImpl::s_empty_numeric_variables = FlatDoubleList();
-
 bool StateImpl::numeric_constraint_holds(GroundNumericConstraint numeric_constraint, const FlatDoubleList& static_numeric_variables) const
 {
     return evaluate(numeric_constraint, static_numeric_variables, get_numeric_variables());
@@ -54,80 +48,10 @@ bool StateImpl::numeric_constraints_hold(const GroundNumericConstraintList& nume
     return true;
 }
 
-template<IsFluentOrDerivedTag P>
-bool StateImpl::literal_holds(GroundLiteral<P> literal) const
-{
-    return literal->get_polarity() == contains(get_atoms<P>(), literal->get_atom()->get_index());
-}
-
-template bool StateImpl::literal_holds(GroundLiteral<FluentTag> literal) const;
-template bool StateImpl::literal_holds(GroundLiteral<DerivedTag> literal) const;
-
-template<IsFluentOrDerivedTag P>
-bool StateImpl::literals_hold(const GroundLiteralList<P>& literals) const
-{
-    for (const auto& literal : literals)
-    {
-        if (!literal_holds(literal))
-        {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-template bool StateImpl::literals_hold(const GroundLiteralList<FluentTag>& literals) const;
-template bool StateImpl::literals_hold(const GroundLiteralList<DerivedTag>& literals) const;
-
-template<IsFluentOrDerivedTag P>
-bool StateImpl::literals_hold(const FlatIndexList& positive_atoms, const FlatIndexList& negative_atoms) const
-{
-    return is_supseteq(get_atoms<P>(), positive_atoms) && are_disjoint(get_atoms<P>(), negative_atoms);
-}
-
-template bool StateImpl::literals_hold<FluentTag>(const FlatIndexList& positive_atoms, const FlatIndexList& negative_atoms) const;
-template bool StateImpl::literals_hold<DerivedTag>(const FlatIndexList& positive_atoms, const FlatIndexList& negative_atoms) const;
-
 Index StateImpl::get_index() const { return m_index; }
-
-template<IsFluentOrDerivedTag P>
-const FlatIndexList& StateImpl::get_atoms() const
-{
-    if constexpr (std::is_same_v<P, FluentTag>)
-    {
-        if (!m_fluent_atoms)
-        {
-            return StateImpl::s_empty_fluent_atoms;
-        }
-        assert(std::is_sorted(m_fluent_atoms->begin(), m_fluent_atoms->end()));
-        return *m_fluent_atoms;
-    }
-    else if constexpr (std::is_same_v<P, DerivedTag>)
-    {
-        if (!m_derived_atoms)
-        {
-            return StateImpl::s_empty_derived_atoms;
-        }
-        // StateRepositoryImpl ensures that m_derived_atoms is a valid pointer to a FlatIndexList.
-        assert(std::is_sorted(m_derived_atoms->begin(), m_derived_atoms->end()));
-        return *m_derived_atoms;
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for IsStaticOrFluentOrDerivedTag.");
-    }
-}
-
-template const FlatIndexList& StateImpl::get_atoms<FluentTag>() const;
-template const FlatIndexList& StateImpl::get_atoms<DerivedTag>() const;
 
 const FlatDoubleList& StateImpl::get_numeric_variables() const
 {
-    if (!m_numeric_variables)
-    {
-        return StateImpl::s_empty_numeric_variables;
-    }
     // StateRepositoryImpl ensures that m_numeric_variables is a valid pointer to a FlatDoubleList.
     return *m_numeric_variables;
 }

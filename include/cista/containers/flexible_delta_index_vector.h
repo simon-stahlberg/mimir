@@ -22,7 +22,7 @@ namespace cista
 {
 
 template<std::unsigned_integral IndexType, template<typename> typename Ptr>
-struct basic_flexible_index_vector
+struct basic_flexible_delta_index_vector
 {
 private:
     template<std::unsigned_integral T>
@@ -53,7 +53,7 @@ private:
 public:
     using value_type = IndexType;
 
-    basic_flexible_index_vector() :
+    basic_flexible_delta_index_vector() :
         bit_width_(get_bit_width<IndexType>()),
         bit_width_log2_(std::bit_width(bit_width_) - 1),
         elements_per_block_(get_bit_width<IndexType>() >> bit_width_log2_),
@@ -63,7 +63,7 @@ public:
     {
     }
 
-    basic_flexible_index_vector(size_t size) :
+    basic_flexible_delta_index_vector(size_t size) :
         bit_width_(get_bit_width<IndexType>()),
         bit_width_log2_(std::bit_width(bit_width_) - 1),
         elements_per_block_(get_bit_width<IndexType>() >> bit_width_log2_),
@@ -73,7 +73,7 @@ public:
     {
     }
 
-    basic_flexible_index_vector(size_t size, IndexType default_value) :
+    basic_flexible_delta_index_vector(size_t size, IndexType default_value) :
         bit_width_(get_bit_width<IndexType>()),
         bit_width_log2_(std::bit_width(bit_width_) - 1),
         elements_per_block_(get_bit_width<IndexType>() >> bit_width_log2_),
@@ -83,7 +83,7 @@ public:
     {
     }
 
-    basic_flexible_index_vector(std::initializer_list<IndexType> init_list) :
+    basic_flexible_delta_index_vector(std::initializer_list<IndexType> init_list) :
         bit_width_(get_bit_width<IndexType>()),
         bit_width_log2_(std::bit_width(bit_width_) - 1),
         elements_per_block_(get_bit_width<IndexType>() >> bit_width_log2_),
@@ -150,7 +150,6 @@ public:
             bit_width_log2_(0),
             elements_per_block_(0),
             elements_per_block_log2_(0)
-
         {
         }
         constexpr const_iterator(const IndexType* blocks,
@@ -184,7 +183,7 @@ public:
         }
         constexpr const_iterator& operator++()
         {
-            value_ = extract_value_at_position(++pos_);
+            value_ += extract_value_at_position(++pos_);
             return *this;
         }
         constexpr const_iterator operator++(int)
@@ -310,16 +309,18 @@ public:
     IndexType& operator[](size_t pos)
     {
         assert(!is_compressed());
-
         return blocks_[pos];
     }
 
-    IndexType operator[](size_t pos) const { return extract_value_at_position(pos); }
+    IndexType operator[](size_t pos) const
+    {
+        assert(!is_compressed());
+        return extract_value_at_position(pos);
+    }
 
     IndexType& at(size_t pos)
     {
         assert(!is_compressed());
-
         if (pos >= size_)
         {
             throw std::out_of_range("Index out of bounds in const operator[]");
@@ -330,6 +331,7 @@ public:
 
     IndexType at(size_t pos) const
     {
+        assert(!is_compressed());
         if (pos >= size_)
         {
             throw std::out_of_range("Index out of bounds in const operator[]");
@@ -346,18 +348,14 @@ public:
     {
         assert(!is_compressed());
 
-        if (blocks_.empty())
+        IndexType max_delta = blocks_.empty() ? IndexType(0) : blocks_[0];
+        for (size_t i = 1; i < blocks_.size(); ++i)
         {
-            bit_width_ = 1;
-            bit_width_log2_ = 0;
-            elements_per_block_ = get_bit_width<IndexType>();
-            elements_per_block_log2_ = std::bit_width(elements_per_block_) - 1;
-            return;
+            assert(blocks_[i] >= blocks_[i - 1]);
+            max_delta = std::max(max_delta, static_cast<IndexType>(blocks_[i] - blocks_[i - 1]));
         }
 
-        IndexType max_index = *std::max_element(blocks_.begin(), blocks_.end());
-
-        if (max_index == 0)
+        if (max_delta == 0)
         {
             bit_width_ = 1;
             bit_width_log2_ = 0;
@@ -366,13 +364,13 @@ public:
         }
         else
         {
-            bit_width_ = std::bit_ceil(static_cast<IndexType>(std::bit_width(max_index)));
+            bit_width_ = std::bit_ceil(static_cast<IndexType>(std::bit_width(max_delta)));
             bit_width_log2_ = std::bit_width(bit_width_) - 1;
             elements_per_block_ = get_bit_width<IndexType>() >> bit_width_log2_;
             elements_per_block_log2_ = std::bit_width(elements_per_block_) - 1;
         }
 
-        // std::cout << "max_index: " << max_index << "\n"
+        // std::cout << "max_delta: " << max_delta << "\n"
         //           << "bit_width_: " << static_cast<size_t>(bit_width_) << "\n"
         //           << "bit_width_log2_: " << static_cast<size_t>(bit_width_log2_) << "\n"
         //           << "elements_per_block_: " << static_cast<size_t>(elements_per_block_) << "\n"
@@ -396,12 +394,16 @@ public:
         size_t element_index = 0;                         ///< the index of an element in the packed_buffer
         [[maybe_unused]] size_t element_count = 0;        ///< just for assertion.
 
+        IndexType prev = 0;
         for (IndexType block : blocks_)
         {
+            IndexType delta = block - prev;
+            prev = block;
+
             ++element_count;
 
             // Mask the current block to ensure it's within the bit width
-            IndexType value = block & mask;
+            IndexType value = delta & mask;
 
             // Add the value into the current packed buffer
             assert(shift_bits < sizeof(IndexType) * 8);
@@ -445,6 +447,7 @@ public:
     uint8_t elements_per_block_log2() const { return elements_per_block_log2_; };
 
     IndexType size() const { return size_; }
+    bool empty() const { return size_ == 0; }
     const cista::basic_vector<IndexType, Ptr>& blocks() const { return blocks_; }
 
     /**
@@ -460,7 +463,7 @@ public:
 };
 
 template<std::unsigned_integral IndexType, template<typename> typename Ptr>
-constexpr bool operator==(const basic_flexible_index_vector<IndexType, Ptr>& lhs, const basic_flexible_index_vector<IndexType, Ptr>& rhs)
+constexpr bool operator==(const basic_flexible_delta_index_vector<IndexType, Ptr>& lhs, const basic_flexible_delta_index_vector<IndexType, Ptr>& rhs)
 {
     // TODO: Do we want to allow comparison of compressed and uncompressed?
 
@@ -477,13 +480,13 @@ constexpr bool operator==(const basic_flexible_index_vector<IndexType, Ptr>& lhs
 namespace raw
 {
 template<std::unsigned_integral IndexType>
-using flexible_index_vector = basic_flexible_index_vector<IndexType, ptr>;
+using flexible_delta_index_vector = basic_flexible_delta_index_vector<IndexType, ptr>;
 }
 
 namespace offset
 {
 template<std::unsigned_integral IndexType>
-using flexible_index_vector = basic_flexible_index_vector<IndexType, ptr>;
+using flexible_delta_index_vector = basic_flexible_delta_index_vector<IndexType, ptr>;
 }
 
 }  // namespace cista

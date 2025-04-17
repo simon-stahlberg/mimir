@@ -82,7 +82,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundAxi
     const auto [axiom, problem] = data;
 
     auto binding = formalism::ObjectList {};
-    for (const auto object_index : axiom->get_object_indices())
+    for (const auto object_index : axiom->get_object_indices().uncompressed_range())
     {
         binding.push_back(problem.get_repositories().get_object(object_index));
     }

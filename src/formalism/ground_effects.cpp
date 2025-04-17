@@ -165,8 +165,8 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundCon
     const auto& fluent_numeric_effects = conjunctive_effect.get_fluent_numeric_effects();
     const auto& auxiliary_numeric_effect = conjunctive_effect.get_auxiliary_numeric_effect();
 
-    problem.get_repositories().get_ground_atoms_from_indices<formalism::FluentTag>(positive_literal_indices, positive_literals);
-    problem.get_repositories().get_ground_atoms_from_indices<formalism::FluentTag>(negative_literal_indices, negative_literals);
+    problem.get_repositories().get_ground_atoms_from_indices<formalism::FluentTag>(positive_literal_indices.compressed_range(), positive_literals);
+    problem.get_repositories().get_ground_atoms_from_indices<formalism::FluentTag>(negative_literal_indices.compressed_range(), negative_literals);
 
     os << "delete effects=";
     mimir::operator<<(os, negative_literals);

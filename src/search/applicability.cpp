@@ -73,8 +73,8 @@ bool nullary_conditions_hold(ConjunctiveCondition conjunctive_condition, const P
 template<IsStaticOrFluentOrDerivedTag P>
 bool is_applicable(const GroundConjunctiveCondition& conjunctive_condition, const FlatBitset& atoms)
 {
-    return is_supseteq(atoms, conjunctive_condition.template get_positive_precondition<P>())  //
-           && are_disjoint(atoms, conjunctive_condition.template get_negative_precondition<P>());
+    return is_supseteq(atoms, conjunctive_condition.template get_positive_precondition<P>().compressed_range())  //
+           && are_disjoint(atoms, conjunctive_condition.template get_negative_precondition<P>().compressed_range());
 }
 
 template bool is_applicable<StaticTag>(const GroundConjunctiveCondition& conjunctive_condition, const FlatBitset& atoms);
@@ -86,7 +86,8 @@ template bool is_applicable<DerivedTag>(const GroundConjunctiveCondition& conjun
 template<IsFluentOrDerivedTag P>
 bool is_statically_applicable(const GroundConjunctiveCondition& conjunctive_condition)
 {
-    return are_disjoint(conjunctive_condition.template get_positive_precondition<P>(), conjunctive_condition.template get_negative_precondition<P>());
+    return are_disjoint(conjunctive_condition.template get_positive_precondition<P>().compressed_range(),
+                        conjunctive_condition.template get_negative_precondition<P>().compressed_range());
 }
 
 template bool is_statically_applicable<FluentTag>(const GroundConjunctiveCondition& conjunctive_condition);

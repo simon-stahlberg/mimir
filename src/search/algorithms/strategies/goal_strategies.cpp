@@ -30,9 +30,10 @@ bool ProblemGoalStrategyImpl::test_static_goal() { return m_problem->static_goal
 bool ProblemGoalStrategyImpl::test_dynamic_goal(State state)
 {
     // This uses the efficient check.
-    return state->literals_hold<FluentTag>(m_problem->get_positive_goal_atoms_indices<FluentTag>(), m_problem->get_negative_goal_atoms_indices<FluentTag>())
-           && state->literals_hold<DerivedTag>(m_problem->get_positive_goal_atoms_indices<DerivedTag>(),
-                                               m_problem->get_negative_goal_atoms_indices<DerivedTag>())
+    return state->literals_hold<FluentTag>(m_problem->get_positive_goal_atoms_indices<FluentTag>().uncompressed_range(),
+                                           m_problem->get_negative_goal_atoms_indices<FluentTag>().uncompressed_range())
+           && state->literals_hold<DerivedTag>(m_problem->get_positive_goal_atoms_indices<DerivedTag>().uncompressed_range(),
+                                               m_problem->get_negative_goal_atoms_indices<DerivedTag>().uncompressed_range())
            && state->numeric_constraints_hold(m_problem->get_numeric_goal_condition(), m_problem->get_initial_function_to_value<StaticTag>());
 }
 

@@ -40,31 +40,40 @@ struct StateImpl
     FlatExternalPtr<const FlatIndexList> m_derived_atoms = nullptr;
     FlatExternalPtr<const FlatDoubleList> m_numeric_variables = nullptr;
 
-    static const FlatIndexList s_empty_fluent_atoms;        ///< Returned, if m_fluent_atoms is a nullptr.
-    static const FlatIndexList s_empty_derived_atoms;       ///< Returned, if m_derived_atoms is a nullptr.
-    static const FlatDoubleList s_empty_numeric_variables;  ///< Returned, if m_numeric_variables is a nullptr.
-
     bool numeric_constraint_holds(formalism::GroundNumericConstraint numeric_constraint, const FlatDoubleList& static_numeric_variables) const;
 
     bool numeric_constraints_hold(const formalism::GroundNumericConstraintList& numeric_constraints, const FlatDoubleList& static_numeric_variables) const;
 
-    /// @brief log(N) operation, ideally, we get rid of it, perhaps useful to expose to python users
-    template<formalism::IsFluentOrDerivedTag P>
-    bool literal_holds(formalism::GroundLiteral<P> literal) const;
-
-    /// @brief N*log(N) operation, ideally (currently unused), perhaps useful to expose to python users
-    template<formalism::IsFluentOrDerivedTag P>
-    bool literals_hold(const formalism::GroundLiteralList<P>& literals) const;
-
-    template<formalism::IsFluentOrDerivedTag P>
-    bool literals_hold(const FlatIndexList& positive_atoms, const FlatIndexList& negative_atoms) const;
+    template<formalism::IsFluentOrDerivedTag P, std::ranges::forward_range Range1, std::ranges::forward_range Range2>
+        requires IsRangeOver<Range1, Index> && IsRangeOver<Range2, Index>
+    bool literals_hold(const Range1& positive_atoms, const Range2& negative_atoms) const
+    {
+        return is_supseteq(get_atoms<P>(), positive_atoms) && are_disjoint(get_atoms<P>(), negative_atoms);
+    }
 
     /* Immutable Getters */
 
     Index get_index() const;
 
     template<formalism::IsFluentOrDerivedTag P>
-    const FlatIndexList& get_atoms() const;
+    auto get_atoms() const
+    {
+        if constexpr (std::is_same_v<P, formalism::FluentTag>)
+        {
+            assert(std::is_sorted(m_fluent_atoms->compressed_begin(), m_fluent_atoms->compressed_end()));
+            return m_fluent_atoms->compressed_range();
+        }
+        else if constexpr (std::is_same_v<P, formalism::DerivedTag>)
+        {
+            // StateRepositoryImpl ensures that m_derived_atoms is a valid pointer to a FlatIndexList.
+            assert(std::is_sorted(m_derived_atoms->compressed_begin(), m_derived_atoms->compressed_end()));
+            return m_derived_atoms->compressed_range();
+        }
+        else
+        {
+            static_assert(dependent_false<P>::value, "Missing implementation for IsStaticOrFluentOrDerivedTag.");
+        }
+    }
 
     const FlatDoubleList& get_numeric_variables() const;
 

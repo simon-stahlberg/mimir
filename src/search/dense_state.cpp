@@ -78,15 +78,6 @@ bool DenseState::literals_hold(const GroundLiteralList<P>& literals) const
     return true;
 }
 
-template<IsFluentOrDerivedTag P>
-bool DenseState::literals_hold(const FlatIndexList& positive_atoms, const FlatIndexList& negative_atoms) const
-{
-    return is_supseteq(get_atoms<P>(), positive_atoms) && are_disjoint(get_atoms<P>(), negative_atoms);
-}
-
-template bool DenseState::literals_hold<FluentTag>(const FlatIndexList& positive_atoms, const FlatIndexList& negative_atoms) const;
-template bool DenseState::literals_hold<DerivedTag>(const FlatIndexList& positive_atoms, const FlatIndexList& negative_atoms) const;
-
 Index DenseState::get_index() const { return m_index; }
 
 template<IsFluentOrDerivedTag P>

@@ -71,7 +71,7 @@ std::ostream& operator<<(std::ostream& os,
     const auto& [action, problem, tag] = data;
 
     auto binding = formalism::ObjectList {};
-    for (const auto object_index : action->get_object_indices())
+    for (const auto object_index : action->get_object_indices().uncompressed_range())
     {
         binding.push_back(problem.get_repositories().get_object(object_index));
     }
@@ -105,9 +105,11 @@ std::ostream& operator<<(std::ostream& os,
     const auto action = problem.get_repositories().get_action(ground_action->get_action_index());
     os << "(" << action->get_name();
     // Only take objects w.r.t. to the original action parameters
-    for (size_t i = 0; i < action->get_original_arity(); ++i)
+    for (auto it = ground_action->get_object_indices().uncompressed_begin();
+         it != ground_action->get_object_indices().uncompressed_begin() + action->get_original_arity();
+         ++it)
     {
-        os << " " << *problem.get_repositories().get_object(ground_action->get_object_indices()[i]);
+        os << " " << *problem.get_repositories().get_object(*it);
     }
     os << ")";
     return os;

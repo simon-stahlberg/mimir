@@ -247,7 +247,8 @@ const FlatBitset& ProblemImpl::get_static_initial_positive_atoms_bitset() const 
 
 const FlatIndexList& ProblemImpl::get_static_initial_positive_atoms_indices() const
 {
-    assert(std::is_sorted(m_details.initial.positive_static_initial_atoms_indices.begin(), m_details.initial.positive_static_initial_atoms_indices.end()));
+    assert(std::is_sorted(m_details.initial.positive_static_initial_atoms_indices.uncompressed_begin(),
+                          m_details.initial.positive_static_initial_atoms_indices.uncompressed_end()));
     return m_details.initial.positive_static_initial_atoms_indices;
 }
 
@@ -487,8 +488,8 @@ static void ground_and_fill_vector(ProblemImpl& problem,
             ref_negative_indices.push_back(grounded_literal->get_atom()->get_index());
         }
     }
-    std::sort(ref_positive_indices.begin(), ref_positive_indices.end());
-    std::sort(ref_negative_indices.begin(), ref_negative_indices.end());
+    std::sort(ref_positive_indices.uncompressed_begin(), ref_positive_indices.uncompressed_end());
+    std::sort(ref_negative_indices.uncompressed_begin(), ref_negative_indices.uncompressed_end());
 }
 
 template void ground_and_fill_vector(ProblemImpl& problem,
@@ -800,7 +801,7 @@ GroundAction ProblemImpl::ground(Action action, const ObjectList& binding)
     {
         objects.push_back(obj->get_index());
     }
-    objects.compress();
+    // objects.compress();
 
     /* Conjunctive precondition */
     {
@@ -956,6 +957,8 @@ GroundAction ProblemImpl::ground(Action action, const ObjectList& binding)
                                            cond_positive_effect_j,
                                            cond_negative_effect_j,
                                            binding_cond_effect);
+                    cond_positive_effect_j.compress();
+                    cond_negative_effect_j.compress();
 
                     /* Numeric effect */
                     auto& cond_fluent_numerical_effects_j = cond_conjunctive_effect_j.get_fluent_numeric_effects();
@@ -1033,6 +1036,8 @@ GroundAction ProblemImpl::ground(Action action, const ObjectList& binding)
                                        cond_positive_effect,
                                        cond_negative_effect,
                                        binding);
+                cond_positive_effect.compress();
+                cond_negative_effect.compress();
 
                 /* Numeric effect*/
                 auto& cond_fluent_numerical_effects_j = cond_conjunctive_effect.get_fluent_numeric_effects();
@@ -1235,7 +1240,7 @@ GroundAxiom ProblemImpl::ground(Axiom axiom, ObjectList binding)
     {
         objects.push_back(obj->get_index());
     }
-    objects.compress();
+    // objects.compress();
 
     /* Precondition */
     auto& conjunctive_condition = axiom_builder.get_conjunctive_condition();

@@ -252,10 +252,6 @@ void bind_search(nb::module_& m)
         .def("__eq__", [](const StateImpl& lhs, const StateImpl& rhs) { return lhs.get_index() == rhs.get_index(); })
         .def("get_fluent_atoms", nb::overload_cast<>(&StateImpl::get_atoms<FluentTag>, nb::const_))
         .def("get_derived_atoms", nb::overload_cast<>(&StateImpl::get_atoms<DerivedTag>, nb::const_))
-        .def("literal_holds", nb::overload_cast<GroundLiteral<FluentTag>>(&StateImpl::literal_holds<FluentTag>, nb::const_), nb::arg("literal"))
-        .def("literal_holds", nb::overload_cast<GroundLiteral<DerivedTag>>(&StateImpl::literal_holds<DerivedTag>, nb::const_), nb::arg("literal"))
-        .def("literals_hold", nb::overload_cast<const GroundLiteralList<FluentTag>&>(&StateImpl::literals_hold<FluentTag>, nb::const_), nb::arg("literals"))
-        .def("literals_hold", nb::overload_cast<const GroundLiteralList<DerivedTag>&>(&StateImpl::literals_hold<DerivedTag>, nb::const_), nb::arg("literals"))
         .def(
             "to_string",
             [](const StateImpl& self, const ProblemImpl& problem)
