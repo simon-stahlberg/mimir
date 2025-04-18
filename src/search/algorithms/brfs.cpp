@@ -103,6 +103,9 @@ SearchResult find_solution(const SearchContext& context,
         return result;
     }
 
+    const auto& ground_action_repository = boost::hana::at_key(problem.get_repositories().get_hana_repositories(), boost::hana::type<GroundActionImpl> {});
+    const auto& ground_axiom_repository = boost::hana::at_key(problem.get_repositories().get_hana_repositories(), boost::hana::type<GroundAxiomImpl> {});
+
     auto applicable_actions = GroundActionList {};
 
     if (pruning_strategy->test_prune_initial_state(start_state))
@@ -145,8 +148,8 @@ SearchResult find_solution(const SearchContext& context,
                                              search_nodes.get_estimated_memory_usage_in_bytes(),
                                              state_repository.get_state_count(),
                                              search_nodes.size(),
-                                             problem.get_num_ground_actions(),
-                                             problem.get_num_ground_axioms());
+                                             ground_action_repository.size(),
+                                             ground_axiom_repository.size());
 
                 applicable_action_generator.on_end_search();
                 state_repository.get_axiom_evaluator()->on_end_search();
@@ -200,8 +203,8 @@ SearchResult find_solution(const SearchContext& context,
                                  search_nodes.get_estimated_memory_usage_in_bytes(),
                                  state_repository.get_state_count(),
                                  search_nodes.size(),
-                                 problem.get_num_ground_actions(),
-                                 problem.get_num_ground_axioms());
+                                 ground_action_repository.size(),
+                                 ground_axiom_repository.size());
     event_handler->on_exhausted();
 
     result.status = SearchStatus::EXHAUSTED;

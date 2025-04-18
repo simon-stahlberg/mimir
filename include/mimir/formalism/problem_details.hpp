@@ -141,9 +141,9 @@ struct GroundingDetails
 
     /* For ground actions and axioms we also create a reusable builder. */
 
-    std::vector<std::pair<GroundActionImpl, GroundingTable<GroundAction>>> per_action_data;
+    std::vector<GroundingTable<GroundAction>> per_action_data;
 
-    std::vector<std::pair<GroundAxiomImpl, GroundingTable<GroundAxiom>>> per_axiom_data;
+    std::vector<GroundingTable<GroundAxiom>> per_axiom_data;
 
     GroundingDetails();
     GroundingDetails(const ProblemImpl& problem);

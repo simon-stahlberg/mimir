@@ -795,19 +795,19 @@ GroundConjunctiveCondition ProblemImpl::ground(ConjunctiveCondition conjunctive_
 
     positive_index_list.clear();
     negative_index_list.clear();
-    ground_and_fill_vector(*this, conjunctive_condition->get_literals<FluentTag>(), positive_index_list, negative_index_list, binding);
-    positive_index_list.compress();
-    negative_index_list.compress();
-    const auto positive_fluent_precondition_ptr = m_flat_index_list_set.insert(positive_index_list).first->get();
-    const auto negative_fluent_precondition_ptr = m_flat_index_list_set.insert(negative_index_list).first->get();
-
-    positive_index_list.clear();
-    negative_index_list.clear();
     ground_and_fill_vector(*this, conjunctive_condition->get_literals<StaticTag>(), positive_index_list, negative_index_list, binding);
     positive_index_list.compress();
     negative_index_list.compress();
     const auto positive_static_precondition_ptr = m_flat_index_list_set.insert(positive_index_list).first->get();
     const auto negative_static_precondition_ptr = m_flat_index_list_set.insert(negative_index_list).first->get();
+
+    positive_index_list.clear();
+    negative_index_list.clear();
+    ground_and_fill_vector(*this, conjunctive_condition->get_literals<FluentTag>(), positive_index_list, negative_index_list, binding);
+    positive_index_list.compress();
+    negative_index_list.compress();
+    const auto positive_fluent_precondition_ptr = m_flat_index_list_set.insert(positive_index_list).first->get();
+    const auto negative_fluent_precondition_ptr = m_flat_index_list_set.insert(negative_index_list).first->get();
 
     positive_index_list.clear();
     negative_index_list.clear();
@@ -820,10 +820,10 @@ GroundConjunctiveCondition ProblemImpl::ground(ConjunctiveCondition conjunctive_
     auto numeric_constraints = GroundNumericConstraintList {};
     ground_and_fill_vector(*this, conjunctive_condition->get_numeric_constraints(), binding, numeric_constraints);
 
-    return m_repositories.get_or_create_ground_conjunctive_condition(positive_fluent_precondition_ptr,
-                                                                     negative_fluent_precondition_ptr,
-                                                                     positive_static_precondition_ptr,
+    return m_repositories.get_or_create_ground_conjunctive_condition(positive_static_precondition_ptr,
                                                                      negative_static_precondition_ptr,
+                                                                     positive_fluent_precondition_ptr,
+                                                                     negative_fluent_precondition_ptr,
                                                                      positive_derived_precondition_ptr,
                                                                      negative_derived_precondition_ptr,
                                                                      std::move(numeric_constraints));
@@ -864,7 +864,7 @@ GroundAction ProblemImpl::ground(Action action, const ObjectList& binding)
 {
     /* 1. Check if grounding is cached */
 
-    auto& [action_builder, grounding_table] = m_details.grounding.per_action_data.at(action->get_index());
+    auto& grounding_table = m_details.grounding.per_action_data.at(action->get_index());
 
     auto it = grounding_table.find(binding);
     if (it != grounding_table.end())
@@ -890,8 +890,6 @@ GroundAction ProblemImpl::ground(Action action, const ObjectList& binding)
     const auto num_lifted_cond_effects = action->get_conditional_effects().size();
     if (num_lifted_cond_effects > 0)
     {
-        size_t j = 0;  ///< position in cond_effects
-
         for (size_t i = 0; i < num_lifted_cond_effects; ++i)
         {
             const auto& lifted_cond_effect = action->get_conditional_effects().at(i);
@@ -934,6 +932,35 @@ GroundAction ProblemImpl::ground(Action action, const ObjectList& binding)
     /* 4. Return the resulting ground action */
 
     return grounded_action;
+}
+
+// Axiom
+
+GroundAxiom ProblemImpl::ground(Axiom axiom, const ObjectList& binding)
+{
+    /* 1. Check if grounding is cached */
+
+    auto& grounding_table = m_details.grounding.per_axiom_data.at(axiom->get_index());
+    auto it = grounding_table.find(binding);
+    if (it != grounding_table.end())
+    {
+        return it->second;
+    }
+
+    /* 2. Ground the axiom */
+
+    auto grounded_conjunctive_condition = ground(axiom->get_conjunctive_condition(), binding);
+    auto grounded_literal = ground(axiom->get_literal(), binding);
+
+    auto grounded_axiom = m_repositories.get_or_create_ground_axiom(axiom, binding, grounded_conjunctive_condition, grounded_literal);
+
+    /* 3. Insert to groundings table */
+
+    grounding_table.emplace(binding, GroundAxiom(grounded_axiom));
+
+    /* 4. Return the resulting ground axiom */
+
+    return grounded_axiom;
 }
 
 /* Lifting */
@@ -1054,147 +1081,6 @@ ConjunctiveCondition ProblemImpl::get_or_create_conjunctive_condition(VariableLi
                                                                       NumericConstraintList numeric_constraints)
 {
     return m_repositories.get_or_create_conjunctive_condition(std::move(parameters), std::move(literals), std::move(numeric_constraints));
-}
-
-/* Accessors */
-
-const GroundActionList& ProblemImpl::get_ground_actions() const { return m_details.grounding.ground_actions_by_index; }
-
-GroundAction ProblemImpl::get_ground_action(Index action_index) const { return m_details.grounding.ground_actions_by_index.at(action_index); }
-
-size_t ProblemImpl::get_num_ground_actions() const { return m_details.grounding.ground_actions_by_index.size(); }
-
-size_t ProblemImpl::get_estimated_memory_usage_in_bytes_for_actions() const
-{
-    const auto usage1 = m_details.grounding.ground_actions.get_estimated_memory_usage_in_bytes();
-    const auto usage2 = m_details.grounding.ground_actions_by_index.capacity() * sizeof(GroundAction);
-    auto usage3 = size_t(0);
-
-    for (const auto& [action_builder, grounding_table] : m_details.grounding.per_action_data)
-    {
-        usage3 += get_memory_usage_in_bytes(grounding_table);
-    }
-
-    return usage1 + usage2 + usage3;
-}
-
-// Axiom
-
-GroundAxiom ProblemImpl::ground(Axiom axiom, const ObjectList& binding)
-{
-    /* 1. Check if grounding is cached */
-
-    auto& [axiom_builder, grounding_table] = m_details.grounding.per_axiom_data.at(axiom->get_index());
-    auto it = grounding_table.find(binding);
-    if (it != grounding_table.end())
-    {
-        return it->second;
-    }
-
-    /* 2. Ground the axiom */
-
-    /* Header */
-
-    axiom_builder.get_index() = m_details.grounding.ground_axioms.size();
-    axiom_builder.get_axiom() = axiom->get_index();
-    auto& objects = axiom_builder.get_object_indices();
-    objects.clear();
-    for (const auto& obj : binding)
-    {
-        objects.push_back(obj->get_index());
-    }
-    // objects.compress();
-
-    auto positive_index_list = FlatIndexList {};
-    auto negative_index_list = FlatIndexList {};
-
-    /* Precondition */
-    auto& conjunctive_condition = axiom_builder.get_conjunctive_condition();
-
-    positive_index_list.clear();
-    negative_index_list.clear();
-    ground_and_fill_vector(*this, axiom->get_conjunctive_condition()->get_literals<FluentTag>(), positive_index_list, negative_index_list, binding);
-    positive_index_list.compress();
-    negative_index_list.compress();
-    auto& positive_fluent_precondition_ptr = conjunctive_condition.get_positive_precondition_ptr<FluentTag>();
-    auto& negative_fluent_precondition_ptr = conjunctive_condition.get_negative_precondition_ptr<FluentTag>();
-    positive_fluent_precondition_ptr = m_flat_index_list_set.insert(positive_index_list).first->get();
-    negative_fluent_precondition_ptr = m_flat_index_list_set.insert(negative_index_list).first->get();
-
-    positive_index_list.clear();
-    negative_index_list.clear();
-    ground_and_fill_vector(*this, axiom->get_conjunctive_condition()->get_literals<StaticTag>(), positive_index_list, negative_index_list, binding);
-    positive_index_list.compress();
-    negative_index_list.compress();
-    auto& positive_static_precondition_ptr = conjunctive_condition.get_positive_precondition_ptr<StaticTag>();
-    auto& negative_static_precondition_ptr = conjunctive_condition.get_negative_precondition_ptr<StaticTag>();
-    positive_static_precondition_ptr = m_flat_index_list_set.insert(positive_index_list).first->get();
-    negative_static_precondition_ptr = m_flat_index_list_set.insert(negative_index_list).first->get();
-
-    positive_index_list.clear();
-    negative_index_list.clear();
-    ground_and_fill_vector(*this, axiom->get_conjunctive_condition()->get_literals<DerivedTag>(), positive_index_list, negative_index_list, binding);
-    positive_index_list.compress();
-    negative_index_list.compress();
-    auto& positive_derived_precondition_ptr = conjunctive_condition.get_positive_precondition_ptr<DerivedTag>();
-    auto& negative_derived_precondition_ptr = conjunctive_condition.get_negative_precondition_ptr<DerivedTag>();
-    positive_derived_precondition_ptr = m_flat_index_list_set.insert(positive_index_list).first->get();
-    negative_derived_precondition_ptr = m_flat_index_list_set.insert(negative_index_list).first->get();
-
-    auto& numeric_constraints = conjunctive_condition.get_numeric_constraints();
-    numeric_constraints.clear();
-    ground_and_fill_vector(*this, axiom->get_conjunctive_condition()->get_numeric_constraints(), binding, numeric_constraints);
-
-    /* Effect */
-
-    // The effect literal might only use the first few objects of the complete binding
-    // Therefore, we can prevent the literal grounding table from unnecessarily growing
-    // by restricting the binding to only the relevant part
-    const auto effect_literal_arity = axiom->get_literal()->get_atom()->get_arity();
-    const auto is_complete_binding_relevant_for_head = (binding.size() == effect_literal_arity);
-    const auto grounded_literal = is_complete_binding_relevant_for_head ?
-                                      ground(axiom->get_literal(), binding) :
-                                      ground(axiom->get_literal(), ObjectList(binding.begin(), binding.begin() + effect_literal_arity));
-    assert(grounded_literal->get_polarity());
-    axiom_builder.get_derived_effect().polarity = true;
-    axiom_builder.get_derived_effect().atom_index = grounded_literal->get_atom()->get_index();
-
-    const auto [iter, inserted] = m_details.grounding.ground_axioms.insert(axiom_builder);
-    const auto grounded_axiom = iter->get();
-
-    if (inserted)
-    {
-        m_details.grounding.ground_axioms_by_index.push_back(grounded_axiom);
-    }
-
-    /* 3. Insert to groundings table */
-
-    grounding_table.emplace(binding, GroundAxiom(grounded_axiom));
-
-    /* 4. Return the resulting ground axiom */
-
-    return grounded_axiom;
-}
-
-const GroundAxiomList& ProblemImpl::get_ground_axioms() const { return m_details.grounding.ground_axioms_by_index; }
-
-GroundAxiom ProblemImpl::get_ground_axiom(Index axiom_index) const { return m_details.grounding.ground_axioms_by_index.at(axiom_index); }
-
-size_t ProblemImpl::get_num_ground_axioms() const { return m_details.grounding.ground_axioms_by_index.size(); }
-
-size_t ProblemImpl::get_estimated_memory_usage_in_bytes_for_axioms() const
-{
-    const auto usage1 = m_details.grounding.ground_axioms.get_estimated_memory_usage_in_bytes();
-    const auto usage2 = m_details.grounding.ground_axioms_by_index.capacity() * sizeof(GroundAxiom);
-    auto usage3 = size_t(0);
-    // TODO: add memory usage of per_axiom_data
-    for (const auto& [axiom_builder, grounding_table] : m_details.grounding.per_axiom_data)
-    {
-        // TODO: add memory usage of axiom_builder
-        usage3 += get_memory_usage_in_bytes(grounding_table);
-    }
-
-    return usage1 + usage2 + usage3;
 }
 
 const problem::ActionGroundingInfoList& problem::GroundingDetails::get_action_infos() const

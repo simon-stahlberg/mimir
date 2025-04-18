@@ -19,6 +19,7 @@
 
 #include "mimir/formalism/conjunctive_condition.hpp"
 #include "mimir/formalism/domain.hpp"
+#include "mimir/formalism/ground_axiom.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/applicability.hpp"
@@ -93,6 +94,8 @@ void LiftedAxiomEvaluatorImpl::generate_and_apply_axioms(DenseState& dense_state
 
     /* 2. Fixed point computation */
 
+    const auto& ground_axiom_repository = boost::hana::at_key(problem.get_repositories().get_hana_repositories(), boost::hana::type<GroundAxiomImpl> {});
+
     auto applicable_axioms = GroundAxiomList {};
 
     for (const auto& partition : problem.get_problem_and_domain_axiom_partitioning())
@@ -128,7 +131,7 @@ void LiftedAxiomEvaluatorImpl::generate_and_apply_axioms(DenseState& dense_state
                                                                                   static_numeric_assignment_set,
                                                                                   m_numeric_assignment_set))
                 {
-                    const auto num_ground_axioms = problem.get_num_ground_axioms();
+                    const auto num_ground_axioms = ground_axiom_repository.size();
 
                     const auto ground_axiom = m_problem->ground(axiom, std::move(binding));
 
@@ -136,8 +139,8 @@ void LiftedAxiomEvaluatorImpl::generate_and_apply_axioms(DenseState& dense_state
 
                     m_event_handler->on_ground_axiom(ground_axiom);
 
-                    (problem.get_num_ground_axioms() > num_ground_axioms) ? m_event_handler->on_ground_axiom_cache_miss(ground_axiom) :
-                                                                            m_event_handler->on_ground_axiom_cache_hit(ground_axiom);
+                    (ground_axiom_repository.size() > num_ground_axioms) ? m_event_handler->on_ground_axiom_cache_miss(ground_axiom) :
+                                                                           m_event_handler->on_ground_axiom_cache_hit(ground_axiom);
 
                     applicable_axioms.emplace_back(ground_axiom);
                 }

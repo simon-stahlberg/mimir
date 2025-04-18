@@ -241,18 +241,6 @@ public:
                                                              LiteralLists<StaticTag, FluentTag, DerivedTag> literals,
                                                              NumericConstraintList numeric_constraints);
 
-    /* Accessors */
-
-    const GroundActionList& get_ground_actions() const;
-    GroundAction get_ground_action(Index action_index) const;
-    size_t get_num_ground_actions() const;
-    size_t get_estimated_memory_usage_in_bytes_for_actions() const;
-
-    const GroundAxiomList& get_ground_axioms() const;
-    GroundAxiom get_ground_axiom(Index axiom_index) const;
-    size_t get_num_ground_axioms() const;
-    size_t get_estimated_memory_usage_in_bytes_for_axioms() const;
-
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.

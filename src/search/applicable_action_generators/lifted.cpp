@@ -111,6 +111,8 @@ mimir::generator<GroundAction> LiftedApplicableActionGeneratorImpl::create_appli
 
     m_event_handler->on_start_generating_applicable_actions();
 
+    const auto& ground_action_repository = boost::hana::at_key(problem.get_repositories().get_hana_repositories(), boost::hana::type<GroundActionImpl> {});
+
     for (auto& condition_grounder : m_action_grounding_data)
     {
         // We move this check here to avoid unnecessary creations of mimir::generator.
@@ -125,7 +127,7 @@ mimir::generator<GroundAction> LiftedApplicableActionGeneratorImpl::create_appli
                                                                           static_numeric_assignment_set,
                                                                           m_numeric_assignment_set))
         {
-            const auto num_ground_actions = problem.get_num_ground_actions();
+            const auto num_ground_actions = ground_action_repository.size();
 
             const auto ground_action = m_problem->ground(condition_grounder.get_action(), std::move(binding));
 
@@ -133,8 +135,8 @@ mimir::generator<GroundAction> LiftedApplicableActionGeneratorImpl::create_appli
 
             m_event_handler->on_ground_action(ground_action);
 
-            (problem.get_num_ground_actions() > num_ground_actions) ? m_event_handler->on_ground_action_cache_miss(ground_action) :
-                                                                      m_event_handler->on_ground_action_cache_hit(ground_action);
+            (ground_action_repository.size() > num_ground_actions) ? m_event_handler->on_ground_action_cache_miss(ground_action) :
+                                                                     m_event_handler->on_ground_action_cache_hit(ground_action);
 
             co_yield ground_action;
         }

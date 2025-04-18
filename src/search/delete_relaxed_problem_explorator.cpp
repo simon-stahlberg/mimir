@@ -150,7 +150,8 @@ GroundedAxiomEvaluator DeleteRelaxedProblemExplorator::create_grounded_axiom_eva
     /* Store ground axioms in corresponding partition. */
     auto ground_axiom_partitioning = std::vector<GroundAxiomList>(num_partitions);
 
-    for (const auto& delete_free_ground_axiom : m_delete_free_problem->get_ground_axioms())
+    for (const auto& delete_free_ground_axiom :
+         boost::hana::at_key(m_delete_free_problem->get_repositories().get_hana_repositories(), boost::hana::type<GroundAxiomImpl> {}))
     {
         // Map relaxed to unrelaxed actions and ground them with the same arguments.
         for (const auto& axiom : m_delete_relax_transformer.get_unrelaxed_axioms(delete_free_ground_axiom->get_axiom()))
@@ -211,7 +212,8 @@ DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator(cons
     auto& pddl_repositories = problem.get_repositories();
 
     auto ground_actions = GroundActionList {};
-    for (const auto& delete_free_ground_action : m_delete_free_problem->get_ground_actions())
+    for (const auto& delete_free_ground_action :
+         boost::hana::at_key(m_delete_free_problem->get_repositories().get_hana_repositories(), boost::hana::type<GroundActionImpl> {}))
     {
         // Map relaxed to unrelaxed actions and ground them with the same arguments.
         for (const auto& action : m_delete_relax_transformer.get_unrelaxed_actions(delete_free_ground_action->get_action()))

@@ -98,7 +98,7 @@ public:
     const GroundNumericEffectList<FluentTag>& get_fluent_numeric_effects() const;
     const std::optional<GroundNumericEffect<AuxiliaryTag>>& get_auxiliary_numeric_effect() const;
 
-    auto identifying_members() noexcept { return std::tuple(m_positive_effects, m_negative_effects, m_fluent_numeric_effects, m_auxiliary_numeric_effect); }
+    auto identifying_members() const { return std::tuple(m_positive_effects, m_negative_effects, m_fluent_numeric_effects, m_auxiliary_numeric_effect); }
 };
 
 class GroundConditionalEffectImpl
@@ -125,7 +125,7 @@ public:
     GroundConjunctiveCondition get_conjunctive_condition() const;
     GroundConjunctiveEffect get_conjunctive_effect() const;
 
-    auto identifying_mebers() const { return std::tuple(m_conjunctive_condition, m_conjunctive_effect); }
+    auto identifying_members() const { return std::tuple(get_conjunctive_condition(), get_conjunctive_effect()); }
 };
 
 /**
