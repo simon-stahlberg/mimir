@@ -68,7 +68,7 @@ class CustomBrFSEventHandler(search.IBrFSEventHandler):
     def on_start_search(self, start_state : search.State):
         pass
 
-    def on_end_search(self, num_reached_fluent_atoms : int, num_reached_derived_atoms: int, num_bytes_for_states: int, num_bytes_for_nodes: int, num_bytes_for_actions: int, num_bytes_for_axioms: int, num_states: int, num_nodes: int, num_actions: int, num_axioms: int):
+    def on_end_search(self, num_reached_fluent_atoms : int, num_reached_derived_atoms: int, num_bytes_for_problem: int, num_bytes_for_nodes: int, num_states: int, num_nodes: int, num_actions: int, num_axioms: int):
         pass
 
     def on_solved(self, plan: search.Plan):

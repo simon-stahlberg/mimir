@@ -406,37 +406,42 @@ void bind_formalism(nb::module_& m)
     bind_ground_numeric_effect("AuxiliaryGroundNumericEffect", AuxiliaryTag {});
 
     /* GroundConjunctiveCondition */
-    nb::class_<GroundConjunctiveCondition>(m, "GroundConjunctiveCondition")
-        .def("get_fluent_positive_condition",
-             nb::overload_cast<>(&GroundConjunctiveCondition::get_positive_precondition<FluentTag>, nb::const_),
-             nb::rv_policy::copy)
+    nb::class_<GroundConjunctiveConditionImpl>(m, "GroundConjunctiveCondition")
+        .def("get_index", &GroundConjunctiveConditionImpl::get_index, nb::rv_policy::copy)
         .def("get_static_positive_condition",
-             nb::overload_cast<>(&GroundConjunctiveCondition::get_positive_precondition<StaticTag>, nb::const_),
-             nb::rv_policy::copy)
+             [](const GroundConjunctiveConditionImpl& self)
+             { return IndexList(self.get_positive_precondition<StaticTag>().begin(), self.get_positive_precondition<StaticTag>().end()); })
+        .def("get_fluent_positive_condition",
+             [](const GroundConjunctiveConditionImpl& self)
+             { return IndexList(self.get_positive_precondition<FluentTag>().begin(), self.get_positive_precondition<FluentTag>().end()); })
         .def("get_derived_positive_condition",
-             nb::overload_cast<>(&GroundConjunctiveCondition::get_positive_precondition<DerivedTag>, nb::const_),
-             nb::rv_policy::copy)
-        .def("get_fluent_negative_condition",
-             nb::overload_cast<>(&GroundConjunctiveCondition::get_negative_precondition<FluentTag>, nb::const_),
-             nb::rv_policy::copy)
+             [](const GroundConjunctiveConditionImpl& self)
+             { return IndexList(self.get_positive_precondition<DerivedTag>().begin(), self.get_positive_precondition<DerivedTag>().end()); })
         .def("get_static_negative_condition",
-             nb::overload_cast<>(&GroundConjunctiveCondition::get_negative_precondition<StaticTag>, nb::const_),
-             nb::rv_policy::copy)
+             [](const GroundConjunctiveConditionImpl& self)
+             { return IndexList(self.get_negative_precondition<StaticTag>().begin(), self.get_negative_precondition<StaticTag>().end()); })
+        .def("get_fluent_negative_condition",
+             [](const GroundConjunctiveConditionImpl& self)
+             { return IndexList(self.get_negative_precondition<FluentTag>().begin(), self.get_negative_precondition<FluentTag>().end()); })
         .def("get_derived_negative_condition",
-             nb::overload_cast<>(&GroundConjunctiveCondition::get_negative_precondition<DerivedTag>, nb::const_),
-             nb::rv_policy::copy);
+             [](const GroundConjunctiveConditionImpl& self)
+             { return IndexList(self.get_negative_precondition<DerivedTag>().begin(), self.get_negative_precondition<DerivedTag>().end()); });
 
     /* GroundConjunctiveEffect */
-    nb::class_<GroundConjunctiveEffect>(m, "GroundConjunctiveEffect")
-        .def("get_positive_effects", nb::overload_cast<>(&GroundConjunctiveEffect::get_positive_effects, nb::const_), nb::rv_policy::copy)
-        .def("get_negative_effects", nb::overload_cast<>(&GroundConjunctiveEffect::get_negative_effects, nb::const_), nb::rv_policy::copy)
-        .def("get_fluent_numeric_effects", nb::overload_cast<>(&GroundConjunctiveEffect::get_fluent_numeric_effects, nb::const_), nb::rv_policy::copy)
-        .def("get_auxiliary_numeric_effect", nb::overload_cast<>(&GroundConjunctiveEffect::get_auxiliary_numeric_effect, nb::const_), nb::rv_policy::copy);
+    nb::class_<GroundConjunctiveEffectImpl>(m, "GroundConjunctiveEffect")
+        .def("get_index", &GroundConjunctiveEffectImpl::get_index, nb::rv_policy::copy)
+        .def("get_positive_effects",
+             [](const GroundConjunctiveEffectImpl& self) { return IndexList(self.get_positive_effects().begin(), self.get_positive_effects().end()); })
+        .def("get_negative_effects",
+             [](const GroundConjunctiveEffectImpl& self) { return IndexList(self.get_negative_effects().begin(), self.get_negative_effects().end()); })
+        .def("get_fluent_numeric_effects", nb::overload_cast<>(&GroundConjunctiveEffectImpl::get_fluent_numeric_effects, nb::const_), nb::rv_policy::copy)
+        .def("get_auxiliary_numeric_effect", nb::overload_cast<>(&GroundConjunctiveEffectImpl::get_auxiliary_numeric_effect, nb::const_), nb::rv_policy::copy);
 
     /* GroundConditionalEffect */
-    nb::class_<GroundConditionalEffect>(m, "GroundConditionalEffect")
-        .def("get_conjunctive_condition", nb::overload_cast<>(&GroundConditionalEffect::get_conjunctive_condition, nb::const_), nb::rv_policy::copy)
-        .def("get_conjunctive_effect", nb::overload_cast<>(&GroundConditionalEffect::get_conjunctive_effect, nb::const_), nb::rv_policy::copy);
+    nb::class_<GroundConditionalEffectImpl>(m, "GroundConditionalEffect")
+        .def("get_index", &GroundConditionalEffectImpl::get_index, nb::rv_policy::copy)
+        .def("get_conjunctive_condition", &GroundConditionalEffectImpl::get_conjunctive_condition, nb::rv_policy::reference_internal)
+        .def("get_conjunctive_effect", &GroundConditionalEffectImpl::get_conjunctive_effect, nb::rv_policy::reference_internal);
 
     /* GroundAction */
     nb::class_<GroundActionImpl>(m, "GroundAction")  //
@@ -459,18 +464,13 @@ void bind_formalism(nb::module_& m)
                  ss << std::make_tuple(GroundAction(&self), std::cref(problem), GroundActionImpl::PlanFormatterTag {});
                  return ss.str();
              })
-        .def("get_index", nb::overload_cast<>(&GroundActionImpl::get_index, nb::const_), nb::rv_policy::copy)
-        .def("get_action_index", nb::overload_cast<>(&GroundActionImpl::get_action_index, nb::const_), nb::rv_policy::copy)
-        .def("get_object_indices", nb::overload_cast<>(&GroundActionImpl::get_object_indices, nb::const_), nb::rv_policy::copy)
-        .def("get_conjunctive_condition", nb::overload_cast<>(&GroundActionImpl::get_conjunctive_condition, nb::const_), nb::rv_policy::copy)
-        .def("get_conjunctive_effect", nb::overload_cast<>(&GroundActionImpl::get_conjunctive_effect, nb::const_), nb::rv_policy::copy)
-        .def("get_conditional_effects", nb::overload_cast<>(&GroundActionImpl::get_conditional_effects, nb::const_), nb::rv_policy::copy);
+        .def("get_index", &GroundActionImpl::get_index, nb::rv_policy::copy)
+        .def("get_action", &GroundActionImpl::get_action, nb::rv_policy::reference_internal)
+        .def("get_objects", &GroundActionImpl::get_objects, nb::rv_policy::copy)
+        .def("get_conjunctive_condition", &GroundActionImpl::get_conjunctive_condition, nb::rv_policy::reference_internal)
+        .def("get_conjunctive_effect", &GroundActionImpl::get_conjunctive_effect, nb::rv_policy::reference_internal)
+        .def("get_conditional_effects", &GroundActionImpl::get_conditional_effects, nb::rv_policy::reference_internal);
     nb::bind_vector<GroundActionList>(m, "GroundActionList");
-
-    /* GroundEffectDerivedLiteral */
-    nb::class_<GroundEffectDerivedLiteral>(m, "GroundEffectDerivedLiteral")
-        .def_ro("polarity", &GroundEffectDerivedLiteral::polarity, nb::rv_policy::copy)
-        .def_ro("atom_index", &GroundEffectDerivedLiteral::atom_index, nb::rv_policy::copy);
 
     /* GroundAxiom */
     nb::class_<GroundAxiomImpl>(m, "GroundAxiom")  //
@@ -483,11 +483,11 @@ void bind_formalism(nb::module_& m)
                  ss << std::make_tuple(GroundAxiom(&self), std::cref(problem));
                  return ss.str();
              })
-        .def("get_index", nb::overload_cast<>(&GroundAxiomImpl::get_index, nb::const_), nb::rv_policy::copy)
-        .def("get_axiom_index", nb::overload_cast<>(&GroundAxiomImpl::get_axiom_index, nb::const_), nb::rv_policy::copy)
-        .def("get_object_indices", nb::overload_cast<>(&GroundAxiomImpl::get_object_indices, nb::const_), nb::rv_policy::copy)
-        .def("get_conjunctive_condition", nb::overload_cast<>(&GroundAxiomImpl::get_conjunctive_condition, nb::const_), nb::rv_policy::copy)
-        .def("get_derived_effect", nb::overload_cast<>(&GroundAxiomImpl::get_derived_effect, nb::const_), nb::rv_policy::copy);
+        .def("get_index", &GroundAxiomImpl::get_index, nb::rv_policy::copy)
+        .def("get_axiom", &GroundAxiomImpl::get_axiom, nb::rv_policy::reference_internal)
+        .def("get_objects", &GroundAxiomImpl::get_objects, nb::rv_policy::copy)
+        .def("get_conjunctive_condition", &GroundAxiomImpl::get_conjunctive_condition, nb::rv_policy::reference_internal)
+        .def("get_literal", &GroundAxiomImpl::get_literal, nb::rv_policy::reference_internal);
     nb::bind_vector<GroundAxiomList>(m, "GroundAxiomList");
 
     /* Repositories*/

@@ -246,8 +246,8 @@ static void apply_action_effects(GroundAction action,
     const auto& const_fluent_numeric_variables = state->get_numeric_variables();
     const auto& const_static_numeric_variables = problem.get_initial_function_to_value<StaticTag>();
 
-    insert_into_bitset(conjunctive_effect->get_negative_effects().compressed_range(), ref_negative_applied_effects);
-    insert_into_bitset(conjunctive_effect->get_positive_effects().compressed_range(), ref_positive_applied_effects);
+    insert_into_bitset(conjunctive_effect->get_negative_effects(), ref_negative_applied_effects);
+    insert_into_bitset(conjunctive_effect->get_positive_effects(), ref_positive_applied_effects);
 
     collect_applied_fluent_numeric_effects(conjunctive_effect->get_fluent_numeric_effects(),
                                            const_static_numeric_variables,
@@ -265,8 +265,8 @@ static void apply_action_effects(GroundAction action,
     {
         if (is_applicable(conditional_effect, problem, dense_state))
         {
-            insert_into_bitset(conditional_effect->get_conjunctive_effect()->get_negative_effects().compressed_range(), ref_negative_applied_effects);
-            insert_into_bitset(conditional_effect->get_conjunctive_effect()->get_positive_effects().compressed_range(), ref_positive_applied_effects);
+            insert_into_bitset(conditional_effect->get_conjunctive_effect()->get_negative_effects(), ref_negative_applied_effects);
+            insert_into_bitset(conditional_effect->get_conjunctive_effect()->get_positive_effects(), ref_positive_applied_effects);
             collect_applied_fluent_numeric_effects(conditional_effect->get_conjunctive_effect()->get_fluent_numeric_effects(),
                                                    const_static_numeric_variables,
                                                    const_fluent_numeric_variables,

@@ -93,8 +93,8 @@ public:
     GroundConjunctiveEffectImpl& operator=(GroundConjunctiveEffectImpl&& other) = default;
 
     Index get_index() const;
-    const FlatIndexList& get_positive_effects() const;
-    const FlatIndexList& get_negative_effects() const;
+    auto get_positive_effects() const { return m_positive_effects->compressed_range(); }
+    auto get_negative_effects() const { return m_negative_effects->compressed_range(); }
     const GroundNumericEffectList<FluentTag>& get_fluent_numeric_effects() const;
     const std::optional<GroundNumericEffect<AuxiliaryTag>>& get_auxiliary_numeric_effect() const;
 

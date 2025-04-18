@@ -62,46 +62,10 @@ public:
     Index get_index() const;
 
     template<IsStaticOrFluentOrDerivedTag P>
-    auto get_positive_precondition() const
-    {
-        if constexpr (std::is_same_v<P, StaticTag>)
-        {
-            return m_positive_static_atoms->compressed_range();
-        }
-        else if constexpr (std::is_same_v<P, FluentTag>)
-        {
-            return m_positive_fluent_atoms->compressed_range();
-        }
-        else if constexpr (std::is_same_v<P, DerivedTag>)
-        {
-            return m_positive_derived_atoms->compressed_range();
-        }
-        else
-        {
-            static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
-        }
-    }
+    auto get_positive_precondition() const;
 
     template<IsStaticOrFluentOrDerivedTag P>
-    auto get_negative_precondition() const
-    {
-        if constexpr (std::is_same_v<P, StaticTag>)
-        {
-            return m_negative_static_atoms->compressed_range();
-        }
-        else if constexpr (std::is_same_v<P, FluentTag>)
-        {
-            return m_negative_fluent_atoms->compressed_range();
-        }
-        else if constexpr (std::is_same_v<P, DerivedTag>)
-        {
-            return m_negative_derived_atoms->compressed_range();
-        }
-        else
-        {
-            static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
-        }
-    }
+    auto get_negative_precondition() const;
 
     const GroundNumericConstraintList& get_numeric_constraints() const;
 
@@ -116,6 +80,52 @@ public:
                           m_numeric_constraints);
     }
 };
+
+/**
+ * Implementations
+ */
+
+template<IsStaticOrFluentOrDerivedTag P>
+auto GroundConjunctiveConditionImpl::get_positive_precondition() const
+{
+    if constexpr (std::is_same_v<P, StaticTag>)
+    {
+        return m_positive_static_atoms->compressed_range();
+    }
+    else if constexpr (std::is_same_v<P, FluentTag>)
+    {
+        return m_positive_fluent_atoms->compressed_range();
+    }
+    else if constexpr (std::is_same_v<P, DerivedTag>)
+    {
+        return m_positive_derived_atoms->compressed_range();
+    }
+    else
+    {
+        static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
+    }
+}
+
+template<IsStaticOrFluentOrDerivedTag P>
+auto GroundConjunctiveConditionImpl::get_negative_precondition() const
+{
+    if constexpr (std::is_same_v<P, StaticTag>)
+    {
+        return m_negative_static_atoms->compressed_range();
+    }
+    else if constexpr (std::is_same_v<P, FluentTag>)
+    {
+        return m_negative_fluent_atoms->compressed_range();
+    }
+    else if constexpr (std::is_same_v<P, DerivedTag>)
+    {
+        return m_negative_derived_atoms->compressed_range();
+    }
+    else
+    {
+        static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
+    }
+}
 
 }
 

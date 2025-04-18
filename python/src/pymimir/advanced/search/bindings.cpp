@@ -474,6 +474,7 @@ void bind_search(nb::module_& m)
         .def("test_dynamic_goal", &IGoalStrategy::test_dynamic_goal, nb::arg("state"));
 
     nb::class_<ProblemGoalStrategyImpl, IGoalStrategy>(m, "ProblemGoalStrategy")  //
+        .def(nb::init<Problem>())
         .def_static("create", &ProblemGoalStrategyImpl::create, nb::arg("problem"));
 
     // PruningStrategy
@@ -483,15 +484,19 @@ void bind_search(nb::module_& m)
         .def("test_prune_successor_state", &IPruningStrategy::test_prune_successor_state);
 
     nb::class_<NoPruningStrategyImpl, IPruningStrategy>(m, "NoPruningStrategy")  //
+        .def(nb::init<>())
         .def_static("create", &NoPruningStrategyImpl::create);
 
     nb::class_<DuplicatePruningStrategyImpl, IPruningStrategy>(m, "DuplicatePruningStrategy")  //
+        .def(nb::init<>())
         .def_static("create", &DuplicatePruningStrategyImpl::create);
 
     nb::class_<iw::ArityZeroNoveltyPruningStrategyImpl, IPruningStrategy>(m, "ArityZeroNoveltyPruningStrategy")  //
+        .def(nb::init<State>())
         .def_static("create", &iw::ArityZeroNoveltyPruningStrategyImpl::create, nb::arg("initial_state"));
 
     nb::class_<iw::ArityKNoveltyPruningStrategyImpl, IPruningStrategy>(m, "ArityKNoveltyPruningStrategy")  //
+        .def(nb::init<size_t, size_t>())
         .def_static("create", &iw::ArityKNoveltyPruningStrategyImpl::create, nb::arg("arity"), nb::arg("num_atoms"));
 
     // AStar

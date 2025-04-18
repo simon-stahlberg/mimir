@@ -108,7 +108,6 @@ from pymimir._pymimir.advanced.formalism import (
     GroundConjunctiveCondition,
     GroundConjunctiveEffect,
     GroundConditionalEffect,
-    GroundEffectDerivedLiteral,
     GroundFunctionExpression,
     GroundFunctionExpressionList,
     GroundFunctionExpressionBinaryOperator,

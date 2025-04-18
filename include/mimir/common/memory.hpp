@@ -21,6 +21,10 @@
 #include <absl/container/flat_hash_map.h>
 #include <absl/container/flat_hash_set.h>
 
+#if defined(__linux__) || defined(__APPLE__)
+#include <sys/resource.h>
+#endif
+
 namespace mimir
 {
 
@@ -49,6 +53,27 @@ inline size_t get_memory_usage_in_bytes(const absl::flat_hash_map<Key, Value, Ha
     // Total memory usage
     return element_memory + metadata_memory;
 }
+
+inline uint64_t get_peak_memory_usage()
+{
+#if defined(__linux__) || defined(__APPLE__)
+    struct rusage usage
+    {
+    };
+    if (getrusage(RUSAGE_SELF, &usage) == 0)
+    {
+#if defined(__APPLE__)
+        // On macOS, ru_maxrss is in bytes
+        return usage.ru_maxrss;
+#else
+        // On Linux, ru_maxrss is in kilobytes
+        return static_cast<std::uint64_t>(usage.ru_maxrss) * 1024;
+#endif
+    }
+    return 0;
+#endif
+}
+
 }
 
 #endif
