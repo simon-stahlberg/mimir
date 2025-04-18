@@ -139,6 +139,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a618bd59593077e4a7e8ac3c81ca57f95"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a83072b1d536ea34446caa8b2ed1d106f"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir_1_1formalism.html#a7cd0587581fbee63f4259db05099d378">AxiomList</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#a83072b1d536ea34446caa8b2ed1d106f">get_problem_and_domain_axioms</a> () const</td></tr>
 <tr class="separator:a83072b1d536ea34446caa8b2ed1d106f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad476f9542e08e4f08bce20439865706a"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#ad476f9542e08e4f08bce20439865706a">get_estimated_memory_usage_in_bytes</a> () const</td></tr>
+<tr class="memdesc:ad476f9542e08e4f08bce20439865706a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the total number of bytes.  <br /></td></tr>
+<tr class="separator:ad476f9542e08e4f08bce20439865706a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a677f896fe7e10941c8bc95b57585a1ae"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir_1_1formalism.html#ad2cdf01cac990bae340bbeac0fcb8a45">GroundAtomList</a>&lt; <a class="el" href="structmimir_1_1formalism_1_1StaticTag.html">StaticTag</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#a677f896fe7e10941c8bc95b57585a1ae">get_static_initial_atoms</a> () const</td></tr>
 <tr class="separator:a677f896fe7e10941c8bc95b57585a1ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2c61d81bf5bb51a4f2ce541cc599aa48"><td class="memItemLeft" align="right" valign="top">const FlatBitset &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#a2c61d81bf5bb51a4f2ce541cc599aa48">get_static_initial_positive_atoms_bitset</a> () const</td></tr>
@@ -195,6 +198,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ad524807412ad87ce2f37f787c011ffe3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a78038f255758c88bf8a747b6151960ed"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="classmimir_1_1formalism_1_1AxiomPartition.html">AxiomPartition</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#a78038f255758c88bf8a747b6151960ed">get_problem_and_domain_axiom_partitioning</a> () const</td></tr>
 <tr class="separator:a78038f255758c88bf8a747b6151960ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a973b0bc42cd370fa3a2dc9a6ebfe4be4"><td class="memItemLeft" align="right" valign="top">const FlatIndexList *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#a973b0bc42cd370fa3a2dc9a6ebfe4be4">get_or_create_index_list</a> (const FlatIndexList &amp;list)</td></tr>
+<tr class="separator:a973b0bc42cd370fa3a2dc9a6ebfe4be4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adef6a10734115e41677e514561670d20"><td class="memItemLeft" align="right" valign="top">const FlatDoubleList *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#adef6a10734115e41677e514561670d20">get_or_create_double_list</a> (const FlatDoubleList &amp;list)</td></tr>
+<tr class="separator:adef6a10734115e41677e514561670d20"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad34432800e5683ebeb6318199b76d898"><td class="memTemplParams" colspan="2">template&lt;IsStaticOrFluentOrDerivedTag P&gt; </td></tr>
 <tr class="memitem:ad34432800e5683ebeb6318199b76d898"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#a6138c3dd23d47ca2ba928221d30421d9">GroundAtom</a>&lt; P &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#ad34432800e5683ebeb6318199b76d898">get_or_create_ground_atom</a> (<a class="el" href="namespacemimir_1_1formalism.html#a62a850b37be0730b5f889f780d541f5f">Predicate</a>&lt; P &gt; predicate, const <a class="el" href="namespacemimir_1_1formalism.html#aa2fd2f5631e2c7f1d86769c4fb71b49f">ObjectList</a> &amp;objects)</td></tr>
 <tr class="separator:ad34432800e5683ebeb6318199b76d898"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -211,8 +218,16 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a94dd69736df69569c1686222cc416abd"><td class="memTemplParams" colspan="2">template&lt;IsStaticOrFluentOrAuxiliaryTag F&gt; </td></tr>
 <tr class="memitem:a94dd69736df69569c1686222cc416abd"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#ae46c31eed244a0f2ffed561eda03f477">GroundFunction</a>&lt; F &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#a94dd69736df69569c1686222cc416abd">ground</a> (<a class="el" href="namespacemimir_1_1formalism.html#a381e8ec7176b32c35162ba02492c23ad">Function</a>&lt; F &gt; function, const <a class="el" href="namespacemimir_1_1formalism.html#aa2fd2f5631e2c7f1d86769c4fb71b49f">ObjectList</a> &amp;binding)</td></tr>
 <tr class="separator:a94dd69736df69569c1686222cc416abd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b364a01e26316089990eabcfd5a4390"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#ae6be4f47a98fbd506e6b3fb055dff01e">GroundConjunctiveCondition</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#a1b364a01e26316089990eabcfd5a4390">ground</a> (<a class="el" href="namespacemimir_1_1formalism.html#aebe252b6157987560ca677cf1cab2fd2">ConjunctiveCondition</a> conjunctive_condition, const <a class="el" href="namespacemimir_1_1formalism.html#aa2fd2f5631e2c7f1d86769c4fb71b49f">ObjectList</a> &amp;binding)</td></tr>
+<tr class="separator:a1b364a01e26316089990eabcfd5a4390"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa651be82a7e3da6a835048fa1290a828"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#ae3545ebdf396e6d86aa08f40712fd195">GroundConjunctiveEffect</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#aa651be82a7e3da6a835048fa1290a828">ground</a> (<a class="el" href="namespacemimir_1_1formalism.html#a7d696a1727cae563678507f892f38317">ConjunctiveEffect</a> conjunctive_effect, const <a class="el" href="namespacemimir_1_1formalism.html#aa2fd2f5631e2c7f1d86769c4fb71b49f">ObjectList</a> &amp;binding)</td></tr>
+<tr class="separator:aa651be82a7e3da6a835048fa1290a828"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace921f8c435bb72c32e0dd73d050acaa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#a4f44f35e9b34b454b7444e3f875578b9">GroundConditionalEffect</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#ace921f8c435bb72c32e0dd73d050acaa">ground</a> (<a class="el" href="namespacemimir_1_1formalism.html#aa9365cac32bdb38111c065f150c2840a">ConditionalEffect</a> conditional_effect, const <a class="el" href="namespacemimir_1_1formalism.html#aa2fd2f5631e2c7f1d86769c4fb71b49f">ObjectList</a> &amp;binding)</td></tr>
+<tr class="separator:ace921f8c435bb72c32e0dd73d050acaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab10a593c45bb2c618c1a8d7066b99a4e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">GroundAction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#ab10a593c45bb2c618c1a8d7066b99a4e">ground</a> (<a class="el" href="namespacemimir_1_1formalism.html#ab18fc18ecb8e6e594a5c655c9821b2c7">Action</a> action, const <a class="el" href="namespacemimir_1_1formalism.html#aa2fd2f5631e2c7f1d86769c4fb71b49f">ObjectList</a> &amp;binding)</td></tr>
 <tr class="separator:ab10a593c45bb2c618c1a8d7066b99a4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16d6a12863638104dc13a28ac24e0d9f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#ade75e2d740a744903d9e02cec519a937">GroundAxiom</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#a16d6a12863638104dc13a28ac24e0d9f">ground</a> (<a class="el" href="namespacemimir_1_1formalism.html#a9646c16f7fd0330190c043eb2ae8c0a6">Axiom</a> axiom, const <a class="el" href="namespacemimir_1_1formalism.html#aa2fd2f5631e2c7f1d86769c4fb71b49f">ObjectList</a> &amp;binding)</td></tr>
+<tr class="separator:a16d6a12863638104dc13a28ac24e0d9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aafa689d63422a1815caff5f249ccd5c9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#ae091943bce648feb4d2f64c72afbfbf7">Variable</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#aafa689d63422a1815caff5f249ccd5c9">get_or_create_variable</a> (std::string name, size_t parameter_index)</td></tr>
 <tr class="separator:aafa689d63422a1815caff5f249ccd5c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a666269382a512ab5e812bddad56af06c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#a464fd2852275efe9690c3a507132cf65">Term</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#a666269382a512ab5e812bddad56af06c">get_or_create_term</a> (<a class="el" href="namespacemimir_1_1formalism.html#ae091943bce648feb4d2f64c72afbfbf7">Variable</a> variable)</td></tr>
@@ -254,24 +269,6 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a09ceb15fcd2b2cbea78a25a83f0e97f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3b03d0af5fb896324cbf3bb04c42a188"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#aebe252b6157987560ca677cf1cab2fd2">ConjunctiveCondition</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#a3b03d0af5fb896324cbf3bb04c42a188">get_or_create_conjunctive_condition</a> (<a class="el" href="namespacemimir_1_1formalism.html#aec01442d5c638acd5d89fb576934c04b">VariableList</a> parameters, <a class="el" href="namespacemimir_1_1formalism.html#a8820d4cc130b828726a6eb0c03f8e58f">LiteralLists</a>&lt; <a class="el" href="structmimir_1_1formalism_1_1StaticTag.html">StaticTag</a>, <a class="el" href="structmimir_1_1formalism_1_1FluentTag.html">FluentTag</a>, <a class="el" href="structmimir_1_1formalism_1_1DerivedTag.html">DerivedTag</a> &gt; literals, <a class="el" href="namespacemimir_1_1formalism.html#a0889d2be2ff494dbf81378be0f4f9b50">NumericConstraintList</a> numeric_constraints)</td></tr>
 <tr class="separator:a3b03d0af5fb896324cbf3bb04c42a188"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab407b4151396c6dde2bad3c8db89c1e7"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir_1_1formalism.html#a34df8c35896b9c6bc7826fff84d2692f">GroundActionList</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#ab407b4151396c6dde2bad3c8db89c1e7">get_ground_actions</a> () const</td></tr>
-<tr class="separator:ab407b4151396c6dde2bad3c8db89c1e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a73c2622f01a909a78501446f094ac7f2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">GroundAction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#a73c2622f01a909a78501446f094ac7f2">get_ground_action</a> (<a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> action_index) const</td></tr>
-<tr class="separator:a73c2622f01a909a78501446f094ac7f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a993dbcd31584afaf499d6a24a5888802"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#a993dbcd31584afaf499d6a24a5888802">get_num_ground_actions</a> () const</td></tr>
-<tr class="separator:a993dbcd31584afaf499d6a24a5888802"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9d326c92a6cc2a595d79212d4d3ff945"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#a9d326c92a6cc2a595d79212d4d3ff945">get_estimated_memory_usage_in_bytes_for_actions</a> () const</td></tr>
-<tr class="separator:a9d326c92a6cc2a595d79212d4d3ff945"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaeebf984f17653eb0d3d1ab36e950894"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#ade75e2d740a744903d9e02cec519a937">GroundAxiom</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#aaeebf984f17653eb0d3d1ab36e950894">ground</a> (<a class="el" href="namespacemimir_1_1formalism.html#a9646c16f7fd0330190c043eb2ae8c0a6">Axiom</a> axiom, <a class="el" href="namespacemimir_1_1formalism.html#aa2fd2f5631e2c7f1d86769c4fb71b49f">ObjectList</a> binding)</td></tr>
-<tr class="separator:aaeebf984f17653eb0d3d1ab36e950894"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4ef63e8f1e8551b5e2b912347643bb66"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir_1_1formalism.html#a69cafca93d780d553f1071481c570519">GroundAxiomList</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#a4ef63e8f1e8551b5e2b912347643bb66">get_ground_axioms</a> () const</td></tr>
-<tr class="separator:a4ef63e8f1e8551b5e2b912347643bb66"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a007044b426a6c4857b0610776e0e2b98"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#ade75e2d740a744903d9e02cec519a937">GroundAxiom</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#a007044b426a6c4857b0610776e0e2b98">get_ground_axiom</a> (<a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> axiom_index) const</td></tr>
-<tr class="separator:a007044b426a6c4857b0610776e0e2b98"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af13239b0391446721f8beba3719e6205"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#af13239b0391446721f8beba3719e6205">get_num_ground_axioms</a> () const</td></tr>
-<tr class="separator:af13239b0391446721f8beba3719e6205"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab4969817784b7aca6d8b28d5d79a9282"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#ab4969817784b7aca6d8b28d5d79a9282">get_estimated_memory_usage_in_bytes_for_axioms</a> () const</td></tr>
-<tr class="separator:ab4969817784b7aca6d8b28d5d79a9282"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aec94434827279cdcc3d760060305ce9b"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#aec94434827279cdcc3d760060305ce9b">identifying_members</a> () const</td></tr>
 <tr class="memdesc:aec94434827279cdcc3d760060305ce9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a tuple of const references to the members that uniquely identify an object. This enables the automatic generation of <code>loki::Hash</code> and <code>loki::EqualTo</code> specializations.  <br /></td></tr>
 <tr class="separator:aec94434827279cdcc3d760060305ce9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -450,14 +447,14 @@ Friends</h2></td></tr>
 
 </div>
 </div>
-<a id="a9d326c92a6cc2a595d79212d4d3ff945" name="a9d326c92a6cc2a595d79212d4d3ff945"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9d326c92a6cc2a595d79212d4d3ff945">&#9670;&#160;</a></span>get_estimated_memory_usage_in_bytes_for_actions()</h2>
+<a id="ad476f9542e08e4f08bce20439865706a" name="ad476f9542e08e4f08bce20439865706a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad476f9542e08e4f08bce20439865706a">&#9670;&#160;</a></span>get_estimated_memory_usage_in_bytes()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">size_t mimir::formalism::ProblemImpl::get_estimated_memory_usage_in_bytes_for_actions </td>
+          <td class="memname">size_t mimir::formalism::ProblemImpl::get_estimated_memory_usage_in_bytes </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -465,22 +462,8 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-</div>
-</div>
-<a id="ab4969817784b7aca6d8b28d5d79a9282" name="ab4969817784b7aca6d8b28d5d79a9282"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab4969817784b7aca6d8b28d5d79a9282">&#9670;&#160;</a></span>get_estimated_memory_usage_in_bytes_for_axioms()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">size_t mimir::formalism::ProblemImpl::get_estimated_memory_usage_in_bytes_for_axioms </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
+<p>Get the total number of bytes. </p>
+<dl class="section return"><dt>Returns</dt><dd>the number of bytes. </dd></dl>
 
 </div>
 </div>
@@ -528,76 +511,6 @@ template&lt;IsStaticOrFluentOrDerivedTag P&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">const <a class="el" href="namespacemimir_1_1formalism.html#ad32949f384c2a4c2b47a718103106f98">GroundLiteralList</a>&lt; P &gt; &amp; mimir::formalism::ProblemImpl::get_goal_condition </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a73c2622f01a909a78501446f094ac7f2" name="a73c2622f01a909a78501446f094ac7f2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a73c2622f01a909a78501446f094ac7f2">&#9670;&#160;</a></span>get_ground_action()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">GroundAction</a> mimir::formalism::ProblemImpl::get_ground_action </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>&#160;</td>
-          <td class="paramname"><em>action_index</em></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ab407b4151396c6dde2bad3c8db89c1e7" name="ab407b4151396c6dde2bad3c8db89c1e7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab407b4151396c6dde2bad3c8db89c1e7">&#9670;&#160;</a></span>get_ground_actions()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">const <a class="el" href="namespacemimir_1_1formalism.html#a34df8c35896b9c6bc7826fff84d2692f">GroundActionList</a> &amp; mimir::formalism::ProblemImpl::get_ground_actions </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a007044b426a6c4857b0610776e0e2b98" name="a007044b426a6c4857b0610776e0e2b98"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a007044b426a6c4857b0610776e0e2b98">&#9670;&#160;</a></span>get_ground_axiom()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="namespacemimir_1_1formalism.html#ade75e2d740a744903d9e02cec519a937">GroundAxiom</a> mimir::formalism::ProblemImpl::get_ground_axiom </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>&#160;</td>
-          <td class="paramname"><em>axiom_index</em></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a4ef63e8f1e8551b5e2b912347643bb66" name="a4ef63e8f1e8551b5e2b912347643bb66"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4ef63e8f1e8551b5e2b912347643bb66">&#9670;&#160;</a></span>get_ground_axioms()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">const <a class="el" href="namespacemimir_1_1formalism.html#a69cafca93d780d553f1071481c570519">GroundAxiomList</a> &amp; mimir::formalism::ProblemImpl::get_ground_axioms </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -945,40 +858,6 @@ template&lt;IsStaticOrFluentOrDerivedTag P&gt; </div>
 
 </div>
 </div>
-<a id="a993dbcd31584afaf499d6a24a5888802" name="a993dbcd31584afaf499d6a24a5888802"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a993dbcd31584afaf499d6a24a5888802">&#9670;&#160;</a></span>get_num_ground_actions()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">size_t mimir::formalism::ProblemImpl::get_num_ground_actions </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="af13239b0391446721f8beba3719e6205" name="af13239b0391446721f8beba3719e6205"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af13239b0391446721f8beba3719e6205">&#9670;&#160;</a></span>get_num_ground_axioms()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">size_t mimir::formalism::ProblemImpl::get_num_ground_axioms </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="ac4fe904459dfaa16aa9ca9455d9b2ce1" name="ac4fe904459dfaa16aa9ca9455d9b2ce1"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac4fe904459dfaa16aa9ca9455d9b2ce1">&#9670;&#160;</a></span>get_numeric_goal_condition()</h2>
 
@@ -1088,6 +967,24 @@ template&lt;IsStaticOrFluentOrDerivedTag P&gt; </div>
           <td></td>
           <td>)</td>
           <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adef6a10734115e41677e514561670d20" name="adef6a10734115e41677e514561670d20"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adef6a10734115e41677e514561670d20">&#9670;&#160;</a></span>get_or_create_double_list()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const FlatDoubleList * mimir::formalism::ProblemImpl::get_or_create_double_list </td>
+          <td>(</td>
+          <td class="paramtype">const FlatDoubleList &amp;&#160;</td>
+          <td class="paramname"><em>list</em></td><td>)</td>
+          <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1364,6 +1261,24 @@ template&lt;IsStaticOrFluentOrDerivedTag P&gt; </div>
           <td></td>
           <td>)</td>
           <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a973b0bc42cd370fa3a2dc9a6ebfe4be4" name="a973b0bc42cd370fa3a2dc9a6ebfe4be4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a973b0bc42cd370fa3a2dc9a6ebfe4be4">&#9670;&#160;</a></span>get_or_create_index_list()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const FlatIndexList * mimir::formalism::ProblemImpl::get_or_create_index_list </td>
+          <td>(</td>
+          <td class="paramtype">const FlatIndexList &amp;&#160;</td>
+          <td class="paramname"><em>list</em></td><td>)</td>
+          <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1750,7 +1665,7 @@ template&lt;IsStaticOrFluentOrDerivedTag P&gt; </div>
 </div>
 </div>
 <a id="ab10a593c45bb2c618c1a8d7066b99a4e" name="ab10a593c45bb2c618c1a8d7066b99a4e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab10a593c45bb2c618c1a8d7066b99a4e">&#9670;&#160;</a></span>ground() <span class="overload">[1/7]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ab10a593c45bb2c618c1a8d7066b99a4e">&#9670;&#160;</a></span>ground() <span class="overload">[1/10]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1777,8 +1692,8 @@ template&lt;IsStaticOrFluentOrDerivedTag P&gt; </div>
 
 </div>
 </div>
-<a id="aaeebf984f17653eb0d3d1ab36e950894" name="aaeebf984f17653eb0d3d1ab36e950894"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aaeebf984f17653eb0d3d1ab36e950894">&#9670;&#160;</a></span>ground() <span class="overload">[2/7]</span></h2>
+<a id="a16d6a12863638104dc13a28ac24e0d9f" name="a16d6a12863638104dc13a28ac24e0d9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16d6a12863638104dc13a28ac24e0d9f">&#9670;&#160;</a></span>ground() <span class="overload">[2/10]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1792,7 +1707,91 @@ template&lt;IsStaticOrFluentOrDerivedTag P&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#aa2fd2f5631e2c7f1d86769c4fb71b49f">ObjectList</a>&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacemimir_1_1formalism.html#aa2fd2f5631e2c7f1d86769c4fb71b49f">ObjectList</a> &amp;&#160;</td>
+          <td class="paramname"><em>binding</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ace921f8c435bb72c32e0dd73d050acaa" name="ace921f8c435bb72c32e0dd73d050acaa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace921f8c435bb72c32e0dd73d050acaa">&#9670;&#160;</a></span>ground() <span class="overload">[3/10]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacemimir_1_1formalism.html#a4f44f35e9b34b454b7444e3f875578b9">GroundConditionalEffect</a> mimir::formalism::ProblemImpl::ground </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#aa9365cac32bdb38111c065f150c2840a">ConditionalEffect</a>&#160;</td>
+          <td class="paramname"><em>conditional_effect</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacemimir_1_1formalism.html#aa2fd2f5631e2c7f1d86769c4fb71b49f">ObjectList</a> &amp;&#160;</td>
+          <td class="paramname"><em>binding</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1b364a01e26316089990eabcfd5a4390" name="a1b364a01e26316089990eabcfd5a4390"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b364a01e26316089990eabcfd5a4390">&#9670;&#160;</a></span>ground() <span class="overload">[4/10]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacemimir_1_1formalism.html#ae6be4f47a98fbd506e6b3fb055dff01e">GroundConjunctiveCondition</a> mimir::formalism::ProblemImpl::ground </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#aebe252b6157987560ca677cf1cab2fd2">ConjunctiveCondition</a>&#160;</td>
+          <td class="paramname"><em>conjunctive_condition</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacemimir_1_1formalism.html#aa2fd2f5631e2c7f1d86769c4fb71b49f">ObjectList</a> &amp;&#160;</td>
+          <td class="paramname"><em>binding</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa651be82a7e3da6a835048fa1290a828" name="aa651be82a7e3da6a835048fa1290a828"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa651be82a7e3da6a835048fa1290a828">&#9670;&#160;</a></span>ground() <span class="overload">[5/10]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacemimir_1_1formalism.html#ae3545ebdf396e6d86aa08f40712fd195">GroundConjunctiveEffect</a> mimir::formalism::ProblemImpl::ground </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#a7d696a1727cae563678507f892f38317">ConjunctiveEffect</a>&#160;</td>
+          <td class="paramname"><em>conjunctive_effect</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacemimir_1_1formalism.html#aa2fd2f5631e2c7f1d86769c4fb71b49f">ObjectList</a> &amp;&#160;</td>
           <td class="paramname"><em>binding</em>&#160;</td>
         </tr>
         <tr>
@@ -1806,7 +1805,7 @@ template&lt;IsStaticOrFluentOrDerivedTag P&gt; </div>
 </div>
 </div>
 <a id="a94dd69736df69569c1686222cc416abd" name="a94dd69736df69569c1686222cc416abd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a94dd69736df69569c1686222cc416abd">&#9670;&#160;</a></span>ground() <span class="overload">[3/7]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a94dd69736df69569c1686222cc416abd">&#9670;&#160;</a></span>ground() <span class="overload">[6/10]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1836,7 +1835,7 @@ template&lt;IsStaticOrFluentOrAuxiliaryTag F&gt; </div>
 </div>
 </div>
 <a id="a39e945ae134699ebb169e59daf4a5bff" name="a39e945ae134699ebb169e59daf4a5bff"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a39e945ae134699ebb169e59daf4a5bff">&#9670;&#160;</a></span>ground() <span class="overload">[4/7]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a39e945ae134699ebb169e59daf4a5bff">&#9670;&#160;</a></span>ground() <span class="overload">[7/10]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1864,7 +1863,7 @@ template&lt;IsStaticOrFluentOrAuxiliaryTag F&gt; </div>
 </div>
 </div>
 <a id="aab8b47057481a74f20284b16402a3674" name="aab8b47057481a74f20284b16402a3674"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aab8b47057481a74f20284b16402a3674">&#9670;&#160;</a></span>ground() <span class="overload">[5/7]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aab8b47057481a74f20284b16402a3674">&#9670;&#160;</a></span>ground() <span class="overload">[8/10]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1894,7 +1893,7 @@ template&lt;IsStaticOrFluentOrDerivedTag P&gt; </div>
 </div>
 </div>
 <a id="a5adf8937365d48549df10717b35fe5cd" name="a5adf8937365d48549df10717b35fe5cd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5adf8937365d48549df10717b35fe5cd">&#9670;&#160;</a></span>ground() <span class="overload">[6/7]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a5adf8937365d48549df10717b35fe5cd">&#9670;&#160;</a></span>ground() <span class="overload">[9/10]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1922,7 +1921,7 @@ template&lt;IsStaticOrFluentOrDerivedTag P&gt; </div>
 </div>
 </div>
 <a id="a7c032e08c454bf1e38f3fc75b707b29a" name="a7c032e08c454bf1e38f3fc75b707b29a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7c032e08c454bf1e38f3fc75b707b29a">&#9670;&#160;</a></span>ground() <span class="overload">[7/7]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c032e08c454bf1e38f3fc75b707b29a">&#9670;&#160;</a></span>ground() <span class="overload">[10/10]</span></h2>
 
 <div class="memitem">
 <div class="memproto">

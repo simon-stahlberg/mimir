@@ -140,7 +140,6 @@ var menudata={children:[
 {text:"v",url:"functions_func_v.html#index_v"},
 {text:"~",url:"functions_func_~.html#index__7E"}]},
 {text:"Variables",url:"functions_vars.html",children:[
-{text:"a",url:"functions_vars.html#index_a"},
 {text:"c",url:"functions_vars.html#index_c"},
 {text:"d",url:"functions_vars.html#index_d"},
 {text:"e",url:"functions_vars.html#index_e"},
@@ -171,11 +170,11 @@ var menudata={children:[
 {text:"Enumerations",url:"functions_enum.html"},
 {text:"Related Functions",url:"functions_rela.html",children:[
 {text:"c",url:"functions_rela.html#index_c"},
-{text:"d",url:"functions_rela.html#index_d"},
-{text:"e",url:"functions_rela.html#index_e"},
-{text:"l",url:"functions_rela.html#index_l"},
-{text:"o",url:"functions_rela.html#index_o"},
-{text:"p",url:"functions_rela.html#index_p"},
-{text:"s",url:"functions_rela.html#index_s"}]}]}]},
+{text:"d",url:"functions_rela_d.html#index_d"},
+{text:"e",url:"functions_rela_e.html#index_e"},
+{text:"l",url:"functions_rela_l.html#index_l"},
+{text:"o",url:"functions_rela_o.html#index_o"},
+{text:"p",url:"functions_rela_p.html#index_p"},
+{text:"s",url:"functions_rela_s.html#index_s"}]}]}]},
 {text:"Files",url:"files.html",children:[
 {text:"File List",url:"files.html"}]}]}

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['goal_5fstate_0',['goal_state',['../structmimir_1_1search_1_1SearchResult.html#a68c42567c760a40341f005fc73cd9626',1,'mimir::search::SearchResult']]]
+  ['initial_5ftable_5fatoms_0',['INITIAL_TABLE_ATOMS',['../namespacemimir_1_1search_1_1iw.html#a69bcf737af67e2786bc4dc46a5edb2d0',1,'mimir::search::iw']]]
 ];

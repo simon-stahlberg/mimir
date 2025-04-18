@@ -136,9 +136,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a2a69219c8473e6aa18f5cd5f7ba97e86"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1astar_1_1IEventHandler.html#a2a69219c8473e6aa18f5cd5f7ba97e86">on_start_search</a> (<a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> start_state)=0</td></tr>
 <tr class="memdesc:a2a69219c8473e6aa18f5cd5f7ba97e86"><td class="mdescLeft">&#160;</td><td class="mdescRight">React on starting a search.  <br /></td></tr>
 <tr class="separator:a2a69219c8473e6aa18f5cd5f7ba97e86"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a17833e16f0aba6a3c3a4ef15f8fec731"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1astar_1_1IEventHandler.html#a17833e16f0aba6a3c3a4ef15f8fec731">on_end_search</a> (uint64_t num_reached_fluent_atoms, uint64_t num_reached_derived_atoms, uint64_t num_bytes_for_states, uint64_t num_bytes_for_nodes, uint64_t num_bytes_for_actions, uint64_t num_bytes_for_axioms, uint64_t num_states, uint64_t num_nodes, uint64_t num_actions, uint64_t num_axioms)=0</td></tr>
-<tr class="memdesc:a17833e16f0aba6a3c3a4ef15f8fec731"><td class="mdescLeft">&#160;</td><td class="mdescRight">React on ending a search.  <br /></td></tr>
-<tr class="separator:a17833e16f0aba6a3c3a4ef15f8fec731"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae12904a3e55faf7d76737ece3f6a35d0"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1astar_1_1IEventHandler.html#ae12904a3e55faf7d76737ece3f6a35d0">on_end_search</a> (uint64_t num_reached_fluent_atoms, uint64_t num_reached_derived_atoms, uint64_t num_bytes_for_problem, uint64_t num_bytes_for_nodes, uint64_t num_states, uint64_t num_nodes, uint64_t num_actions, uint64_t num_axioms)=0</td></tr>
+<tr class="memdesc:ae12904a3e55faf7d76737ece3f6a35d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">React on ending a search.  <br /></td></tr>
+<tr class="separator:ae12904a3e55faf7d76737ece3f6a35d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4f904167201b75cb6252a84468c03baf"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1astar_1_1IEventHandler.html#a4f904167201b75cb6252a84468c03baf">on_solved</a> (const <a class="el" href="classmimir_1_1search_1_1Plan.html">Plan</a> &amp;plan)=0</td></tr>
 <tr class="memdesc:a4f904167201b75cb6252a84468c03baf"><td class="mdescLeft">&#160;</td><td class="mdescRight">React on solving a search.  <br /></td></tr>
 <tr class="separator:a4f904167201b75cb6252a84468c03baf"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -237,8 +237,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a17833e16f0aba6a3c3a4ef15f8fec731" name="a17833e16f0aba6a3c3a4ef15f8fec731"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a17833e16f0aba6a3c3a4ef15f8fec731">&#9670;&#160;</a></span>on_end_search()</h2>
+<a id="ae12904a3e55faf7d76737ece3f6a35d0" name="ae12904a3e55faf7d76737ece3f6a35d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae12904a3e55faf7d76737ece3f6a35d0">&#9670;&#160;</a></span>on_end_search()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -262,25 +262,13 @@ Public Member Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">uint64_t&#160;</td>
-          <td class="paramname"><em>num_bytes_for_states</em>, </td>
+          <td class="paramname"><em>num_bytes_for_problem</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">uint64_t&#160;</td>
           <td class="paramname"><em>num_bytes_for_nodes</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint64_t&#160;</td>
-          <td class="paramname"><em>num_bytes_for_actions</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint64_t&#160;</td>
-          <td class="paramname"><em>num_bytes_for_axioms</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -321,7 +309,7 @@ Public Member Functions</h2></td></tr>
 
 <p>React on ending a search. </p>
 
-<p>Implemented in <a class="el" href="classmimir_1_1search_1_1astar_1_1EventHandlerBase.html#a5836fe23ac34d810ff551ab5bbbbe89f">mimir::search::astar::EventHandlerBase&lt; Derived_ &gt;</a>, <a class="el" href="classmimir_1_1search_1_1astar_1_1EventHandlerBase.html#a5836fe23ac34d810ff551ab5bbbbe89f">mimir::search::astar::EventHandlerBase&lt; DebugEventHandlerImpl &gt;</a>, and <a class="el" href="classmimir_1_1search_1_1astar_1_1EventHandlerBase.html#a5836fe23ac34d810ff551ab5bbbbe89f">mimir::search::astar::EventHandlerBase&lt; DefaultEventHandlerImpl &gt;</a>.</p>
+<p>Implemented in <a class="el" href="classmimir_1_1search_1_1astar_1_1EventHandlerBase.html#a9791677f3b82cf8aecb510629cd1623a">mimir::search::astar::EventHandlerBase&lt; Derived_ &gt;</a>, <a class="el" href="classmimir_1_1search_1_1astar_1_1EventHandlerBase.html#a9791677f3b82cf8aecb510629cd1623a">mimir::search::astar::EventHandlerBase&lt; DebugEventHandlerImpl &gt;</a>, and <a class="el" href="classmimir_1_1search_1_1astar_1_1EventHandlerBase.html#a9791677f3b82cf8aecb510629cd1623a">mimir::search::astar::EventHandlerBase&lt; DefaultEventHandlerImpl &gt;</a>.</p>
 
 </div>
 </div>
