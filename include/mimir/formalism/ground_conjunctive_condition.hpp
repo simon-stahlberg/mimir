@@ -40,13 +40,13 @@ private:
     GroundNumericConstraintList m_numeric_constraints;
 
     GroundConjunctiveConditionImpl(Index index,
-                                   const FlatIndexList* m_positive_static_atoms,
-                                   const FlatIndexList* m_negative_static_atoms,
-                                   const FlatIndexList* m_positive_fluent_atoms,
-                                   const FlatIndexList* m_negative_fluent_atoms,
-                                   const FlatIndexList* m_positive_derived_atoms,
-                                   const FlatIndexList* m_negative_derived_atoms,
-                                   GroundNumericConstraintList m_numeric_constraints);
+                                   const FlatIndexList* positive_static_atoms,
+                                   const FlatIndexList* negative_static_atoms,
+                                   const FlatIndexList* positive_fluent_atoms,
+                                   const FlatIndexList* negative_fluent_atoms,
+                                   const FlatIndexList* positive_derived_atoms,
+                                   const FlatIndexList* negative_derived_atoms,
+                                   GroundNumericConstraintList numeric_constraints);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>

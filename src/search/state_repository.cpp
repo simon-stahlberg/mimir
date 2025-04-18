@@ -218,7 +218,7 @@ static void collect_applied_fluent_numeric_effects(const GroundNumericEffectList
         {
             ref_numeric_variables.resize(index + 1, UNDEFINED_CONTINUOUS_COST);
         }
-        const auto assign_operator_and_value = evaluate(numeric_effect.get(), static_numeric_variables, fluent_numeric_variables);
+        const auto assign_operator_and_value = evaluate(numeric_effect, static_numeric_variables, fluent_numeric_variables);
 
         apply_numeric_effect(assign_operator_and_value, ref_numeric_variables[index]);
     }
@@ -249,16 +249,16 @@ static void apply_action_effects(GroundAction action,
     const auto& const_fluent_numeric_variables = state->get_numeric_variables();
     const auto& const_static_numeric_variables = problem.get_initial_function_to_value<StaticTag>();
 
-    insert_into_bitset(conjunctive_effect.get_negative_effects().compressed_range(), ref_negative_applied_effects);
-    insert_into_bitset(conjunctive_effect.get_positive_effects().compressed_range(), ref_positive_applied_effects);
+    insert_into_bitset(conjunctive_effect->get_negative_effects().compressed_range(), ref_negative_applied_effects);
+    insert_into_bitset(conjunctive_effect->get_positive_effects().compressed_range(), ref_positive_applied_effects);
 
-    collect_applied_fluent_numeric_effects(conjunctive_effect.get_fluent_numeric_effects(),
+    collect_applied_fluent_numeric_effects(conjunctive_effect->get_fluent_numeric_effects(),
                                            const_static_numeric_variables,
                                            const_fluent_numeric_variables,
                                            ref_fluent_numeric_variables);
-    if (conjunctive_effect.get_auxiliary_numeric_effect().has_value())
+    if (conjunctive_effect->get_auxiliary_numeric_effect().has_value())
     {
-        collect_applied_auxiliary_numeric_effects(conjunctive_effect.get_auxiliary_numeric_effect().value().get(),
+        collect_applied_auxiliary_numeric_effects(conjunctive_effect->get_auxiliary_numeric_effect().value(),
                                                   const_static_numeric_variables,
                                                   const_fluent_numeric_variables,
                                                   ref_successor_state_metric_score);
@@ -268,15 +268,15 @@ static void apply_action_effects(GroundAction action,
     {
         if (is_applicable(conditional_effect, problem, dense_state))
         {
-            insert_into_bitset(conditional_effect.get_conjunctive_effect().get_negative_effects().compressed_range(), ref_negative_applied_effects);
-            insert_into_bitset(conditional_effect.get_conjunctive_effect().get_positive_effects().compressed_range(), ref_positive_applied_effects);
-            collect_applied_fluent_numeric_effects(conditional_effect.get_conjunctive_effect().get_fluent_numeric_effects(),
+            insert_into_bitset(conditional_effect->get_conjunctive_effect()->get_negative_effects().compressed_range(), ref_negative_applied_effects);
+            insert_into_bitset(conditional_effect->get_conjunctive_effect()->get_positive_effects().compressed_range(), ref_positive_applied_effects);
+            collect_applied_fluent_numeric_effects(conditional_effect->get_conjunctive_effect()->get_fluent_numeric_effects(),
                                                    const_static_numeric_variables,
                                                    const_fluent_numeric_variables,
                                                    ref_fluent_numeric_variables);
-            if (conditional_effect.get_conjunctive_effect().get_auxiliary_numeric_effect().has_value())
+            if (conditional_effect->get_conjunctive_effect()->get_auxiliary_numeric_effect().has_value())
             {
-                collect_applied_auxiliary_numeric_effects(conditional_effect.get_conjunctive_effect().get_auxiliary_numeric_effect().value().get(),
+                collect_applied_auxiliary_numeric_effects(conditional_effect->get_conjunctive_effect()->get_auxiliary_numeric_effect().value(),
                                                           const_static_numeric_variables,
                                                           const_fluent_numeric_variables,
                                                           ref_successor_state_metric_score);

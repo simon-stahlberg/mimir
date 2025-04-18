@@ -83,9 +83,9 @@ void GroundedAxiomEvaluatorImpl::generate_and_apply_axioms(DenseState& dense_sta
             {
                 assert(is_applicable(grounded_axiom, *m_problem, dense_state));
 
-                assert(grounded_axiom->get_derived_effect().polarity);
+                assert(grounded_axiom->get_literal()->get_polarity());
 
-                const auto grounded_atom_index = grounded_axiom->get_derived_effect().atom_index;
+                const auto grounded_atom_index = grounded_axiom->get_literal()->get_atom()->get_index();
 
                 if (!dense_derived_atoms.get(grounded_atom_index))
                 {

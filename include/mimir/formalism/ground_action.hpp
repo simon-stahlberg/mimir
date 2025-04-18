@@ -36,14 +36,14 @@ class GroundActionImpl
 private:
     Index m_index;
     Action m_action;
-    ObjectList m_object_indices;
+    ObjectList m_objects;
     GroundConjunctiveCondition m_conjunctive_precondition;
     GroundConjunctiveEffect m_conjunctive_effect;
     GroundConditionalEffectList m_conditional_effects;
 
     GroundActionImpl(Index index,
                      Action action,
-                     ObjectList object_indices,
+                     ObjectList objects,
                      GroundConjunctiveCondition conjunctive_precondition,
                      GroundConjunctiveEffect conjunctive_effect,
                      GroundConditionalEffectList conditional_effects);
@@ -73,8 +73,8 @@ public:
     Index get_index() const;
     Action get_action() const;
     const ObjectList& get_objects() const;
-    const GroundConjunctiveCondition& get_conjunctive_condition() const;
-    const GroundConjunctiveEffect& get_conjunctive_effect() const;
+    GroundConjunctiveCondition get_conjunctive_condition() const;
+    GroundConjunctiveEffect get_conjunctive_effect() const;
     const GroundConditionalEffectList& get_conditional_effects() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.

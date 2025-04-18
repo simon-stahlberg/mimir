@@ -32,9 +32,28 @@ namespace mimir::formalism
 
 /* GroundConjunctiveCondition */
 
-FlatExternalPtrList<const GroundNumericConstraintImpl>& GroundConjunctiveCondition::get_numeric_constraints() { return m_numeric_constraints; }
+GroundConjunctiveConditionImpl::GroundConjunctiveConditionImpl(Index index,
+                                                               const FlatIndexList* positive_static_atoms,
+                                                               const FlatIndexList* negative_static_atoms,
+                                                               const FlatIndexList* positive_fluent_atoms,
+                                                               const FlatIndexList* negative_fluent_atoms,
+                                                               const FlatIndexList* positive_derived_atoms,
+                                                               const FlatIndexList* negative_derived_atoms,
+                                                               GroundNumericConstraintList numeric_constraints) :
+    m_index(index),
+    m_positive_static_atoms(positive_static_atoms),
+    m_negative_static_atoms(negative_static_atoms),
+    m_positive_fluent_atoms(positive_fluent_atoms),
+    m_negative_fluent_atoms(negative_fluent_atoms),
+    m_positive_derived_atoms(positive_derived_atoms),
+    m_negative_derived_atoms(negative_derived_atoms),
+    m_numeric_constraints(std::move(numeric_constraints))
+{
+}
 
-const FlatExternalPtrList<const GroundNumericConstraintImpl>& GroundConjunctiveCondition::get_numeric_constraints() const { return m_numeric_constraints; }
+Index GroundConjunctiveConditionImpl::get_index() const { return m_index; }
+
+const GroundNumericConstraintList& GroundConjunctiveConditionImpl::get_numeric_constraints() const { return m_numeric_constraints; }
 
 }
 
@@ -50,12 +69,12 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundCon
 {
     const auto& [conjunctive_condition, problem] = data;
 
-    const auto& positive_static_precondition_indices = conjunctive_condition.get_positive_precondition<formalism::StaticTag>();
-    const auto& negative_static_precondition_indices = conjunctive_condition.get_negative_precondition<formalism::StaticTag>();
-    const auto& positive_fluent_precondition_indices = conjunctive_condition.get_positive_precondition<formalism::FluentTag>();
-    const auto& negative_fluent_precondition_indices = conjunctive_condition.get_negative_precondition<formalism::FluentTag>();
-    const auto& positive_derived_precondition_indices = conjunctive_condition.get_positive_precondition<formalism::DerivedTag>();
-    const auto& negative_derived_precondition_indices = conjunctive_condition.get_negative_precondition<formalism::DerivedTag>();
+    const auto positive_static_precondition_indices = conjunctive_condition->get_positive_precondition<formalism::StaticTag>();
+    const auto negative_static_precondition_indices = conjunctive_condition->get_negative_precondition<formalism::StaticTag>();
+    const auto positive_fluent_precondition_indices = conjunctive_condition->get_positive_precondition<formalism::FluentTag>();
+    const auto negative_fluent_precondition_indices = conjunctive_condition->get_negative_precondition<formalism::FluentTag>();
+    const auto positive_derived_precondition_indices = conjunctive_condition->get_positive_precondition<formalism::DerivedTag>();
+    const auto negative_derived_precondition_indices = conjunctive_condition->get_negative_precondition<formalism::DerivedTag>();
 
     auto positive_static_precondition = formalism::GroundAtomList<formalism::StaticTag> {};
     auto negative_static_precondition = formalism::GroundAtomList<formalism::StaticTag> {};
@@ -63,7 +82,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundCon
     auto negative_fluent_precondition = formalism::GroundAtomList<formalism::FluentTag> {};
     auto positive_derived_precondition = formalism::GroundAtomList<formalism::DerivedTag> {};
     auto negative_derived_precondition = formalism::GroundAtomList<formalism::DerivedTag> {};
-    const auto& ground_numeric_constraints = conjunctive_condition.get_numeric_constraints();
+    const auto& ground_numeric_constraints = conjunctive_condition->get_numeric_constraints();
 
     problem.get_repositories().get_ground_atoms_from_indices<formalism::StaticTag>(positive_static_precondition_indices, positive_static_precondition);
     problem.get_repositories().get_ground_atoms_from_indices<formalism::StaticTag>(negative_static_precondition_indices, negative_static_precondition);

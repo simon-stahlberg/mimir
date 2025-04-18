@@ -31,29 +31,32 @@ namespace mimir::formalism
 
 /* GroundActionImpl */
 
-Index& GroundActionImpl::get_index() { return m_index; }
+GroundActionImpl::GroundActionImpl(Index index,
+                                   Action action,
+                                   ObjectList objects,
+                                   GroundConjunctiveCondition conjunctive_precondition,
+                                   GroundConjunctiveEffect conjunctive_effect,
+                                   GroundConditionalEffectList conditional_effects) :
+    m_index(index),
+    m_action(action),
+    m_objects(std::move(objects)),
+    m_conjunctive_precondition(conjunctive_precondition),
+    m_conjunctive_effect(conjunctive_effect),
+    m_conditional_effects(std::move(conditional_effects))
+{
+}
 
 Index GroundActionImpl::get_index() const { return m_index; }
 
-Index& GroundActionImpl::get_action_index() { return m_action_index; }
+Action GroundActionImpl::get_action() const { return m_action; }
 
-Index GroundActionImpl::get_action_index() const { return m_action_index; }
+const ObjectList& GroundActionImpl::get_objects() const { return m_objects; }
 
-FlatIndexList& GroundActionImpl::get_objects() { return m_object_indices; }
+GroundConjunctiveCondition GroundActionImpl::get_conjunctive_condition() const { return m_conjunctive_precondition; }
 
-const FlatIndexList& GroundActionImpl::get_object_indices() const { return m_object_indices; }
+GroundConjunctiveEffect GroundActionImpl::get_conjunctive_effect() const { return m_conjunctive_effect; }
 
-GroundConjunctiveCondition& GroundActionImpl::get_conjunctive_condition() { return m_conjunctive_precondition; }
-
-const GroundConjunctiveCondition& GroundActionImpl::get_conjunctive_condition() const { return m_conjunctive_precondition; }
-
-GroundConjunctiveEffect& GroundActionImpl::get_conjunctive_effect() { return m_conjunctive_effect; }
-
-const GroundConjunctiveEffect& GroundActionImpl::get_conjunctive_effect() const { return m_conjunctive_effect; }
-
-GroundEffectConditionalList& GroundActionImpl::get_conditional_effects() { return m_conditional_effects; }
-
-const GroundEffectConditionalList& GroundActionImpl::get_conditional_effects() const { return m_conditional_effects; }
+const GroundConditionalEffectList& GroundActionImpl::get_conditional_effects() const { return m_conditional_effects; }
 
 }
 
@@ -70,22 +73,16 @@ std::ostream& operator<<(std::ostream& os,
 {
     const auto& [action, problem, tag] = data;
 
-    auto binding = formalism::ObjectList {};
-    for (const auto object_index : action->get_object_indices().uncompressed_range())
-    {
-        binding.push_back(problem.get_repositories().get_object(object_index));
-    }
-
     const auto& conjunctive_condition = action->get_conjunctive_condition();
     const auto& conjunctive_effect = action->get_conjunctive_effect();
     const auto& conditional_effects = action->get_conditional_effects();
 
-    os << "Action("                                                                                         //
-       << "index=" << action->get_index() << ", "                                                           //
-       << "name=" << problem.get_repositories().get_action(action->get_action_index())->get_name() << ", "  //
-       << "binding=" << binding << ", "                                                                     //
-       << std::make_tuple(conjunctive_condition, std::cref(problem)) << ", "                                //
-       << std::make_tuple(conjunctive_effect, std::cref(problem))                                           //
+    os << "Action("                                                           //
+       << "index=" << action->get_index() << ", "                             //
+       << "name=" << action->get_action()->get_name() << ", "                 //
+       << "binding=" << action->get_objects() << ", "                         //
+       << std::make_tuple(conjunctive_condition, std::cref(problem)) << ", "  //
+       << std::make_tuple(conjunctive_effect, std::cref(problem))             //
        << ", " << "conditional_effects=[";
     for (const auto& cond_effect : conditional_effects)
     {
@@ -100,16 +97,13 @@ template<>
 std::ostream& operator<<(std::ostream& os,
                          const std::tuple<formalism::GroundAction, const formalism::ProblemImpl&, formalism::GroundActionImpl::PlanFormatterTag>& data)
 {
-    const auto& [ground_action, problem, tag] = data;
-
-    const auto action = problem.get_repositories().get_action(ground_action->get_action_index());
-    os << "(" << action->get_name();
+    const auto& [action, problem, tag] = data;
+    ;
+    os << "(" << action->get_action()->get_name();
     // Only take objects w.r.t. to the original action parameters
-    for (auto it = ground_action->get_object_indices().uncompressed_begin();
-         it != ground_action->get_object_indices().uncompressed_begin() + action->get_original_arity();
-         ++it)
+    for (auto it = action->get_objects().begin(); it != action->get_objects().begin() + action->get_action()->get_original_arity(); ++it)
     {
-        os << " " << *problem.get_repositories().get_object(*it);
+        os << " " << **it;
     }
     os << ")";
     return os;

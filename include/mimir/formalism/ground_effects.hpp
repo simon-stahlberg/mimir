@@ -122,10 +122,9 @@ public:
     GroundConditionalEffectImpl& operator=(GroundConditionalEffectImpl&& other) = default;
 
     Index get_index() const;
-    const GroundConjunctiveCondition& get_conjunctive_condition() const;
-    const GroundConjunctiveEffect& get_conjunctive_effect() const;
+    GroundConjunctiveCondition get_conjunctive_condition() const;
+    GroundConjunctiveEffect get_conjunctive_effect() const;
 
-    /* Utility */
     auto identifying_mebers() const { return std::tuple(m_conjunctive_condition, m_conjunctive_effect); }
 };
 

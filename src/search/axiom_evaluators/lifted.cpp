@@ -149,9 +149,9 @@ void LiftedAxiomEvaluatorImpl::generate_and_apply_axioms(DenseState& dense_state
 
             for (const auto& grounded_axiom : applicable_axioms)
             {
-                assert(grounded_axiom->get_derived_effect().polarity);
+                assert(grounded_axiom->get_literal()->get_polarity());
 
-                const auto grounded_atom_index = grounded_axiom->get_derived_effect().atom_index;
+                const auto grounded_atom_index = grounded_axiom->get_literal()->get_atom()->get_index();
 
                 if (!dense_derived_atoms.get(grounded_atom_index))
                 {

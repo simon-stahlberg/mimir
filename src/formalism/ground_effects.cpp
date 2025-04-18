@@ -73,39 +73,45 @@ template class GroundNumericEffectImpl<AuxiliaryTag>;
 
 /* GroundConjunctiveEffect */
 
-FlatExternalPtr<const FlatIndexList>& GroundConjunctiveEffect::get_positive_effects_ptr() { return m_positive_effects; }
-
-const FlatIndexList& GroundConjunctiveEffect::get_positive_effects() const { return *m_positive_effects; }
-
-FlatExternalPtr<const FlatIndexList>& GroundConjunctiveEffect::get_negative_effects_ptr() { return m_negative_effects; }
-
-const FlatIndexList& GroundConjunctiveEffect::get_negative_effects() const { return *m_negative_effects; }
-
-GroundNumericEffectList<FluentTag>& GroundConjunctiveEffect::get_fluent_numeric_effects() { return m_fluent_numeric_effects; }
-
-const GroundNumericEffectList<FluentTag>& GroundConjunctiveEffect::get_fluent_numeric_effects() const { return m_fluent_numeric_effects; }
-
-cista::optional<FlatExternalPtr<const GroundNumericEffectImpl<AuxiliaryTag>>>& GroundConjunctiveEffect::get_auxiliary_numeric_effect()
+GroundConjunctiveEffectImpl::GroundConjunctiveEffectImpl(Index index,
+                                                         const FlatIndexList* positive_effects,
+                                                         const FlatIndexList* negative_effects,
+                                                         GroundNumericEffectList<FluentTag> fluent_numeric_effects,
+                                                         std::optional<GroundNumericEffect<AuxiliaryTag>> auxiliary_numeric_effect) :
+    m_index(index),
+    m_positive_effects(positive_effects),
+    m_negative_effects(negative_effects),
+    m_fluent_numeric_effects(std::move(fluent_numeric_effects)),
+    m_auxiliary_numeric_effect(std::move(auxiliary_numeric_effect))
 {
-    return m_auxiliary_numeric_effect;
 }
 
-const cista::optional<FlatExternalPtr<const GroundNumericEffectImpl<AuxiliaryTag>>>& GroundConjunctiveEffect::get_auxiliary_numeric_effect() const
-{
-    return m_auxiliary_numeric_effect;
-}
+Index GroundConjunctiveEffectImpl::get_index() const { return m_index; }
+
+const FlatIndexList& GroundConjunctiveEffectImpl::get_positive_effects() const { return *m_positive_effects; }
+
+const FlatIndexList& GroundConjunctiveEffectImpl::get_negative_effects() const { return *m_negative_effects; }
+
+const GroundNumericEffectList<FluentTag>& GroundConjunctiveEffectImpl::get_fluent_numeric_effects() const { return m_fluent_numeric_effects; }
+
+const std::optional<GroundNumericEffect<AuxiliaryTag>>& GroundConjunctiveEffectImpl::get_auxiliary_numeric_effect() const { return m_auxiliary_numeric_effect; }
 
 /* GroundConditionalEffect */
 
-/* Precondition */
-GroundConjunctiveCondition& GroundConditionalEffect::get_conjunctive_condition() { return m_conjunctive_condition; }
+GroundConditionalEffectImpl::GroundConditionalEffectImpl(Index index,
+                                                         GroundConjunctiveCondition conjunctive_condition,
+                                                         GroundConjunctiveEffect conjunctive_effect) :
+    m_index(index),
+    m_conjunctive_condition(conjunctive_condition),
+    m_conjunctive_effect(conjunctive_effect)
+{
+}
 
-const GroundConjunctiveCondition& GroundConditionalEffect::get_conjunctive_condition() const { return m_conjunctive_condition; }
+Index GroundConditionalEffectImpl::get_index() const { return m_index; }
 
-/* Effect */
-GroundConjunctiveEffect& GroundConditionalEffect::get_conjunctive_effect() { return m_conjunctive_effect; }
+GroundConjunctiveCondition GroundConditionalEffectImpl::get_conjunctive_condition() const { return m_conjunctive_condition; }
 
-const GroundConjunctiveEffect& GroundConditionalEffect::get_conjunctive_effect() const { return m_conjunctive_effect; }
+GroundConjunctiveEffect GroundConditionalEffectImpl::get_conjunctive_effect() const { return m_conjunctive_effect; }
 
 /**
  * Utils
@@ -157,13 +163,13 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundCon
 {
     const auto& [conjunctive_effect, problem] = data;
 
-    const auto& positive_literal_indices = conjunctive_effect.get_positive_effects();
-    const auto& negative_literal_indices = conjunctive_effect.get_negative_effects();
+    const auto& positive_literal_indices = conjunctive_effect->get_positive_effects();
+    const auto& negative_literal_indices = conjunctive_effect->get_negative_effects();
 
     auto positive_literals = formalism::GroundAtomList<formalism::FluentTag> {};
     auto negative_literals = formalism::GroundAtomList<formalism::FluentTag> {};
-    const auto& fluent_numeric_effects = conjunctive_effect.get_fluent_numeric_effects();
-    const auto& auxiliary_numeric_effect = conjunctive_effect.get_auxiliary_numeric_effect();
+    const auto& fluent_numeric_effects = conjunctive_effect->get_fluent_numeric_effects();
+    const auto& auxiliary_numeric_effect = conjunctive_effect->get_auxiliary_numeric_effect();
 
     problem.get_repositories().get_ground_atoms_from_indices<formalism::FluentTag>(positive_literal_indices.compressed_range(), positive_literals);
     problem.get_repositories().get_ground_atoms_from_indices<formalism::FluentTag>(negative_literal_indices.compressed_range(), negative_literals);
@@ -176,8 +182,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundCon
     mimir::operator<<(os, fluent_numeric_effects);
     if (auxiliary_numeric_effect)
     {
-        os << ", auxiliary numeric effects=";
-        mimir::operator<<(os, auxiliary_numeric_effect.value());
+        os << ", auxiliary numeric effects=" << auxiliary_numeric_effect.value();
     }
     else
     {
@@ -192,8 +197,8 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundCon
 {
     const auto& [cond_effect_proxy, problem] = data;
 
-    os << std::make_tuple(cond_effect_proxy.get_conjunctive_condition(), std::cref(problem)) << ", "
-       << std::make_tuple(cond_effect_proxy.get_conjunctive_effect(), std::cref(problem));
+    os << std::make_tuple(cond_effect_proxy->get_conjunctive_condition(), std::cref(problem)) << ", "
+       << std::make_tuple(cond_effect_proxy->get_conjunctive_effect(), std::cref(problem));
 
     return os;
 }

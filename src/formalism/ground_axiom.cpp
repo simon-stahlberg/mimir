@@ -25,25 +25,28 @@ namespace mimir::formalism
 
 /* GroundAxiom */
 
-Index& GroundAxiomImpl::get_index() { return m_index; }
+GroundAxiomImpl::GroundAxiomImpl(Index index,
+                                 Axiom axiom,
+                                 ObjectList objects,
+                                 GroundConjunctiveCondition conjunctive_condition,
+                                 GroundLiteral<DerivedTag> literal) :
+    m_index(index),
+    m_axiom(axiom),
+    m_objects(std::move(objects)),
+    m_conjunctive_condition(conjunctive_condition),
+    m_literal(literal)
+{
+}
 
 Index GroundAxiomImpl::get_index() const { return m_index; }
 
-Index& GroundAxiomImpl::get_axiom() { return m_axiom_index; }
+Axiom GroundAxiomImpl::get_axiom() const { return m_axiom; }
 
-Index GroundAxiomImpl::get_axiom_index() const { return m_axiom_index; }
+const ObjectList& GroundAxiomImpl::get_objects() const { return m_objects; }
 
-FlatIndexList& GroundAxiomImpl::get_object_indices() { return m_object_indices; }
+GroundConjunctiveCondition GroundAxiomImpl::get_conjunctive_condition() const { return m_conjunctive_condition; }
 
-const FlatIndexList& GroundAxiomImpl::get_object_indices() const { return m_object_indices; }
-
-GroundConjunctiveCondition& GroundAxiomImpl::get_conjunctive_condition() { return m_conjunctive_condition; }
-
-const GroundConjunctiveCondition& GroundAxiomImpl::get_conjunctive_condition() const { return m_conjunctive_condition; }
-
-GroundEffectDerivedLiteral& GroundAxiomImpl::get_derived_effect() { return m_literal; }
-
-const GroundEffectDerivedLiteral& GroundAxiomImpl::get_derived_effect() const { return m_literal; }
+GroundLiteral<DerivedTag> GroundAxiomImpl::get_literal() const { return m_literal; }
 
 }
 
@@ -55,46 +58,16 @@ namespace mimir
  */
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundEffectDerivedLiteral, const formalism::ProblemImpl&>& data)
-{
-    const auto [derived_effect, problem] = data;
-
-    const auto& ground_atom = problem.get_repositories().get_ground_atom<formalism::DerivedTag>(derived_effect.atom_index);
-
-    if (derived_effect.polarity)
-    {
-        os << "(not ";
-    }
-
-    os << *ground_atom;
-
-    if (derived_effect.polarity)
-    {
-        os << ")";
-    }
-
-    return os;
-}
-
-template<>
 std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundAxiom, const formalism::ProblemImpl&>& data)
 {
     const auto [axiom, problem] = data;
 
-    auto binding = formalism::ObjectList {};
-    for (const auto object_index : axiom->get_object_indices().uncompressed_range())
-    {
-        binding.push_back(problem.get_repositories().get_object(object_index));
-    }
-
-    const auto& conjunctive_condition = axiom->get_conjunctive_condition();
-
-    os << "Axiom("                                                                                                                                   //
-       << "index=" << axiom->get_index() << ", "                                                                                                     //
-       << "name=" << problem.get_repositories().get_axiom(axiom->get_axiom_index())->get_literal()->get_atom()->get_predicate()->get_name() << ", "  //
-       << "binding=" << binding << ", "                                                                                                              //
-       << std::make_tuple(conjunctive_condition, std::cref(problem)) << ", "                                                                         //
-       << "effect=" << std::make_tuple(axiom->get_derived_effect(), std::cref(problem)) << ")";
+    os << "Axiom("                                                                          //
+       << "index=" << axiom->get_index() << ", "                                            //
+       << "name=" << axiom->get_literal()->get_atom()->get_predicate()->get_name() << ", "  //
+       << "binding=" << axiom->get_objects() << ", "                                        //
+       << std::make_tuple(axiom->get_conjunctive_condition(), std::cref(problem)) << ", "   //
+       << "effect=" << axiom->get_literal() << ")";
 
     return os;
 }

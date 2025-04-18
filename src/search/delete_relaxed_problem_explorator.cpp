@@ -153,12 +153,9 @@ GroundedAxiomEvaluator DeleteRelaxedProblemExplorator::create_grounded_axiom_eva
     for (const auto& delete_free_ground_axiom : m_delete_free_problem->get_ground_axioms())
     {
         // Map relaxed to unrelaxed actions and ground them with the same arguments.
-        for (const auto& axiom :
-             m_delete_relax_transformer.get_unrelaxed_axioms(m_delete_free_problem->get_repositories().get_axiom(delete_free_ground_axiom->get_axiom_index())))
+        for (const auto& axiom : m_delete_relax_transformer.get_unrelaxed_axioms(delete_free_ground_axiom->get_axiom()))
         {
-            auto binding = translate_from_delete_free_to_unrelaxed_problem(
-                m_delete_free_problem->get_repositories().get_objects_from_indices(delete_free_ground_axiom->get_object_indices().uncompressed_range()),
-                m_delete_free_object_to_unrelaxed_object);
+            auto binding = translate_from_delete_free_to_unrelaxed_problem(delete_free_ground_axiom->get_objects(), m_delete_free_object_to_unrelaxed_object);
 
             auto ground_axiom = problem.ground(axiom, std::move(binding));
 
@@ -217,12 +214,9 @@ DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator(cons
     for (const auto& delete_free_ground_action : m_delete_free_problem->get_ground_actions())
     {
         // Map relaxed to unrelaxed actions and ground them with the same arguments.
-        for (const auto& action : m_delete_relax_transformer.get_unrelaxed_actions(
-                 m_delete_free_problem->get_repositories().get_action(delete_free_ground_action->get_action_index())))
+        for (const auto& action : m_delete_relax_transformer.get_unrelaxed_actions(delete_free_ground_action->get_action()))
         {
-            auto binding = translate_from_delete_free_to_unrelaxed_problem(
-                m_delete_free_problem->get_repositories().get_objects_from_indices(delete_free_ground_action->get_object_indices().uncompressed_range()),
-                m_delete_free_object_to_unrelaxed_object);
+            auto binding = translate_from_delete_free_to_unrelaxed_problem(delete_free_ground_action->get_objects(), m_delete_free_object_to_unrelaxed_object);
 
             auto grounded_action = problem.ground(action, std::move(binding));
 

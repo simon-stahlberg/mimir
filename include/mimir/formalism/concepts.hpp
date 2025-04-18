@@ -32,7 +32,7 @@ concept IsFormalismEntity = requires { typename std::decay_t<std::remove_pointer
 
 template<typename T>
 concept HasConjunctiveCondition = requires(const T a) {
-    { a.get_conjunctive_condition() } -> std::same_as<const GroundConjunctiveCondition&>;
+    { a.get_conjunctive_condition() } -> std::same_as<GroundConjunctiveCondition>;
 };
 
 }

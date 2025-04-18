@@ -43,7 +43,7 @@ private:
 
     StateImpl(Index index, const FlatIndexList* fluent_atoms, const FlatIndexList* derived_atoms, const FlatDoubleList* numeric_variables);
 
-    friend class StateRepositoryImpl;  ///< Given exclusive write access to a state.
+    friend class StateRepositoryImpl;
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -55,24 +55,8 @@ public:
      */
 
     Index get_index() const;
-
     template<formalism::IsFluentOrDerivedTag P>
-    auto get_atoms() const
-    {
-        if constexpr (std::is_same_v<P, formalism::FluentTag>)
-        {
-            return m_fluent_atoms->compressed_range();
-        }
-        else if constexpr (std::is_same_v<P, formalism::DerivedTag>)
-        {
-            return m_derived_atoms->compressed_range();
-        }
-        else
-        {
-            static_assert(dependent_false<P>::value, "Missing implementation for IsStaticOrFluentOrDerivedTag.");
-        }
-    }
-
+    auto get_atoms() const;
     const FlatDoubleList& get_numeric_variables() const;
 
     /**
@@ -85,32 +69,40 @@ public:
 
     template<formalism::IsFluentOrDerivedTag P, std::ranges::forward_range Range1, std::ranges::forward_range Range2>
         requires IsRangeOver<Range1, Index> && IsRangeOver<Range2, Index>
-    bool literals_hold(const Range1& positive_atoms, const Range2& negative_atoms) const
-    {
-        return is_supseteq(get_atoms<P>(), positive_atoms) && are_disjoint(get_atoms<P>(), negative_atoms);
-    }
+    bool literals_hold(const Range1& positive_atoms, const Range2& negative_atoms) const;
 
-    /// @brief Return a tuple of const references to the members that uniquely identify an object.
-    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
-    ///
-    /// Only return the non-extended portion of a state because it implies the extended portion.
-    /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const
-    {
-        // The pointers uniquely identify the state, derived atoms not needed.
-        return std::make_tuple(m_fluent_atoms, m_numeric_variables);
-    }
+    auto identifying_members() const { return std::make_tuple(m_fluent_atoms, m_numeric_variables); }
 };
 
-static_assert(loki::HasIdentifyingMembers<StateImpl>);
+using StateImplSet = loki::SegmentedRepository<StateImpl>;
 
-/// @brief STL does not define operator== for std::span.
-inline bool operator==(const std::span<const State>& lhs, const std::span<const State>& rhs)
+/**
+ * Implementations
+ */
+
+template<formalism::IsFluentOrDerivedTag P>
+auto StateImpl::get_atoms() const
 {
-    return (lhs.data() == rhs.data()) && (lhs.size() == rhs.size());
+    if constexpr (std::is_same_v<P, formalism::FluentTag>)
+    {
+        return m_fluent_atoms->compressed_range();
+    }
+    else if constexpr (std::is_same_v<P, formalism::DerivedTag>)
+    {
+        return m_derived_atoms->compressed_range();
+    }
+    else
+    {
+        static_assert(dependent_false<P>::value, "Missing implementation for IsStaticOrFluentOrDerivedTag.");
+    }
 }
 
-using StateImplSet = loki::SegmentedRepository<StateImpl>;
+template<formalism::IsFluentOrDerivedTag P, std::ranges::forward_range Range1, std::ranges::forward_range Range2>
+    requires IsRangeOver<Range1, Index> && IsRangeOver<Range2, Index>
+bool StateImpl::literals_hold(const Range1& positive_atoms, const Range2& negative_atoms) const
+{
+    return is_supseteq(get_atoms<P>(), positive_atoms) && are_disjoint(get_atoms<P>(), negative_atoms);
+}
 
 }
 

@@ -36,21 +36,19 @@ extern bool nullary_conditions_hold(formalism::ConjunctiveCondition precondition
  * GroundConjunctiveCondition
  */
 
-extern bool is_dynamically_applicable(const formalism::GroundConjunctiveCondition& conjunctive_condition,
-                                      const formalism::ProblemImpl& problem,
-                                      const DenseState& dense_state);
-
-extern bool is_statically_applicable(const formalism::GroundConjunctiveCondition& conjunctive_condition, const FlatBitset& static_positive_atoms);
-
 extern bool
-is_applicable(const formalism::GroundConjunctiveCondition& conjunctive_condition, const formalism::ProblemImpl& problem, const DenseState& dense_state);
+is_dynamically_applicable(formalism::GroundConjunctiveCondition conjunctive_condition, const formalism::ProblemImpl& problem, const DenseState& dense_state);
+
+extern bool is_statically_applicable(formalism::GroundConjunctiveCondition conjunctive_condition, const FlatBitset& static_positive_atoms);
+
+extern bool is_applicable(formalism::GroundConjunctiveCondition conjunctive_condition, const formalism::ProblemImpl& problem, const DenseState& dense_state);
 
 /**
  * GroundConjunctiveEffect
  */
 
 /// @brief Return true iff all functions in numeric effects are well-defined in the state.
-extern bool is_applicable(const formalism::GroundConjunctiveEffect& conjunctive_effect, const formalism::ProblemImpl& problem, const DenseState& dense_state);
+extern bool is_applicable(formalism::GroundConjunctiveEffect conjunctive_effect, const formalism::ProblemImpl& problem, const DenseState& dense_state);
 
 /**
  * GroundConditionalEffect
@@ -60,7 +58,7 @@ extern bool is_applicable(const formalism::GroundConjunctiveEffect& conjunctive_
 /// i.e., the conjunctive condition and the conjunctive effect are applicable.
 /// More formally, consider conditional effect c = <pre, eff>.
 /// app(c) <=> app(pre) && app(eff)
-extern bool is_applicable(const formalism::GroundConditionalEffect& conditional_effect, const formalism::ProblemImpl& problem, const DenseState& dense_state);
+extern bool is_applicable(formalism::GroundConditionalEffect conditional_effect, const formalism::ProblemImpl& problem, const DenseState& dense_state);
 
 /// @brief Return true iff the conditional effect is applicable in the problem and state when it fires,
 /// i.e., when the conjunctive condition is applicable then the effect must also be applicable.
@@ -71,8 +69,7 @@ extern bool is_applicable(const formalism::GroundConditionalEffect& conditional_
 ///        <=> !(!app(eff) && app(pre))
 /// Now we have a more efficient form that tests app(eff) before app(pre).
 /// If we use this, we should always assert via is_applicable.
-extern bool
-is_applicable_if_fires(const formalism::GroundConditionalEffect& conditional_effect, const formalism::ProblemImpl& problem, const DenseState& dense_state);
+extern bool is_applicable_if_fires(formalism::GroundConditionalEffect conditional_effect, const formalism::ProblemImpl& problem, const DenseState& dense_state);
 
 /**
  * GroundAction

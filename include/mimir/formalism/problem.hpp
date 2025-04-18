@@ -185,7 +185,15 @@ public:
     template<IsStaticOrFluentOrAuxiliaryTag F>
     GroundFunction<F> ground(Function<F> function, const ObjectList& binding);
 
+    GroundConjunctiveCondition ground(ConjunctiveCondition conjunctive_condition, const ObjectList& binding);
+
+    GroundConjunctiveEffect ground(ConjunctiveEffect conjunctive_effect, const ObjectList& binding);
+
+    GroundConditionalEffect ground(ConditionalEffect conditional_effect, const ObjectList& binding);
+
     GroundAction ground(Action action, const ObjectList& binding);
+
+    GroundAxiom ground(Axiom axiom, const ObjectList& binding);
 
     /* Lifting */
 
@@ -239,8 +247,6 @@ public:
     GroundAction get_ground_action(Index action_index) const;
     size_t get_num_ground_actions() const;
     size_t get_estimated_memory_usage_in_bytes_for_actions() const;
-
-    GroundAxiom ground(Axiom axiom, ObjectList binding);
 
     const GroundAxiomList& get_ground_axioms() const;
     GroundAxiom get_ground_axiom(Index axiom_index) const;

@@ -97,7 +97,10 @@ using CandidateParameterObjectBindingList = std::vector<CandidateParameterObject
 
 struct ConditionalEffectGroundingInfo
 {
-    explicit ConditionalEffectGroundingInfo(CandidateParameterObjectBindingList candidate_variable_bindings) : candidate_variable_bindings(std::move(candidate_variable_bindings)){}
+    explicit ConditionalEffectGroundingInfo(CandidateParameterObjectBindingList candidate_variable_bindings) :
+        candidate_variable_bindings(std::move(candidate_variable_bindings))
+    {
+    }
 
     CandidateParameterObjectBindingList candidate_variable_bindings;
 };
@@ -106,7 +109,7 @@ using ConditionalEffectGroundingInfoList = std::vector<ConditionalEffectGroundin
 
 struct ActionGroundingInfo
 {
-    explicit ActionGroundingInfo(ConditionalEffectGroundingInfoList conditional_effect_infos) : conditional_effect_infos(std::move(conditional_effect_infos)){}
+    explicit ActionGroundingInfo(ConditionalEffectGroundingInfoList conditional_effect_infos) : conditional_effect_infos(std::move(conditional_effect_infos)) {}
 
     ConditionalEffectGroundingInfoList conditional_effect_infos;
 };
@@ -138,12 +141,8 @@ struct GroundingDetails
 
     /* For ground actions and axioms we also create a reusable builder. */
 
-    GroundActionImplSet ground_actions;
-    GroundActionList ground_actions_by_index;
     std::vector<std::pair<GroundActionImpl, GroundingTable<GroundAction>>> per_action_data;
 
-    GroundAxiomImplSet ground_axioms;
-    GroundAxiomList ground_axioms_by_index;
     std::vector<std::pair<GroundAxiomImpl, GroundingTable<GroundAxiom>>> per_axiom_data;
 
     GroundingDetails();
