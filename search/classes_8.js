@@ -17,5 +17,6 @@ var searchData=
   ['iheuristic_14',['IHeuristic',['../classmimir_1_1search_1_1IHeuristic.html',1,'mimir::search']]],
   ['increasenumericaleffectimpl_15',['IncreaseNumericalEffectImpl',['../classmimir_1_1languages_1_1general__policies_1_1IncreaseNumericalEffectImpl.html',1,'mimir::languages::general_policies']]],
   ['ipruningstrategy_16',['IPruningStrategy',['../classmimir_1_1search_1_1IPruningStrategy.html',1,'mimir::search']]],
-  ['ivisitor_17',['IVisitor',['../classmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1IVisitor.html',1,'mimir::languages::dl::cnf_grammar::IVisitor'],['../classmimir_1_1languages_1_1dl_1_1grammar_1_1IVisitor.html',1,'mimir::languages::dl::grammar::IVisitor'],['../classmimir_1_1languages_1_1dl_1_1IVisitor.html',1,'mimir::languages::dl::IVisitor'],['../classmimir_1_1languages_1_1general__policies_1_1IVisitor.html',1,'mimir::languages::general_policies::IVisitor']]]
+  ['irefinementpruningfunction_17',['IRefinementPruningFunction',['../classmimir_1_1languages_1_1dl_1_1IRefinementPruningFunction.html',1,'mimir::languages::dl']]],
+  ['ivisitor_18',['IVisitor',['../classmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1IVisitor.html',1,'mimir::languages::dl::cnf_grammar::IVisitor'],['../classmimir_1_1languages_1_1dl_1_1grammar_1_1IVisitor.html',1,'mimir::languages::dl::grammar::IVisitor'],['../classmimir_1_1languages_1_1dl_1_1IVisitor.html',1,'mimir::languages::dl::IVisitor'],['../classmimir_1_1languages_1_1general__policies_1_1IVisitor.html',1,'mimir::languages::general_policies::IVisitor']]]
 ];
