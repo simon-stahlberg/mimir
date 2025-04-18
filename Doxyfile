@@ -193,7 +193,6 @@ INPUT                 = \
     "include/mimir/search/declarations.hpp" \
     "include/mimir/search/delete_relaxed_problem_explorator.hpp" \
     "include/mimir/search/generalized_search_context.hpp" \
-    "include/mimir/search/metric.hpp" \
     "include/mimir/search/plan.hpp" \
     "include/mimir/search/search_context.hpp" \
     "include/mimir/search/search_node.hpp" \
