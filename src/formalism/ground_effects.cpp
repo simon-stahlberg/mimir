@@ -84,6 +84,14 @@ GroundConjunctiveEffectImpl::GroundConjunctiveEffectImpl(Index index,
     m_fluent_numeric_effects(std::move(fluent_numeric_effects)),
     m_auxiliary_numeric_effect(std::move(auxiliary_numeric_effect))
 {
+    assert(m_positive_effects->is_compressed());
+    assert(m_negative_effects->is_compressed());
+
+    assert(std::is_sorted(m_positive_effects->compressed_begin(), m_positive_effects->compressed_end()));
+    assert(std::is_sorted(m_negative_effects->compressed_begin(), m_negative_effects->compressed_end()));
+    assert(std::is_sorted(m_fluent_numeric_effects.begin(),
+                          m_fluent_numeric_effects.end(),
+                          [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); }));
 }
 
 Index GroundConjunctiveEffectImpl::get_index() const { return m_index; }

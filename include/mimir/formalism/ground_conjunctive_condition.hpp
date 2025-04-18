@@ -66,17 +66,14 @@ public:
     {
         if constexpr (std::is_same_v<P, StaticTag>)
         {
-            assert(std::is_sorted(m_positive_static_atoms->compressed_begin(), m_positive_static_atoms->compressed_end()));
             return m_positive_static_atoms->compressed_range();
         }
         else if constexpr (std::is_same_v<P, FluentTag>)
         {
-            assert(std::is_sorted(m_positive_fluent_atoms->compressed_begin(), m_positive_fluent_atoms->compressed_end()));
             return m_positive_fluent_atoms->compressed_range();
         }
         else if constexpr (std::is_same_v<P, DerivedTag>)
         {
-            assert(std::is_sorted(m_positive_derived_atoms->compressed_begin(), m_positive_derived_atoms->compressed_end()));
             return m_positive_derived_atoms->compressed_range();
         }
         else
@@ -90,17 +87,14 @@ public:
     {
         if constexpr (std::is_same_v<P, StaticTag>)
         {
-            assert(std::is_sorted(m_negative_static_atoms->compressed_begin(), m_negative_static_atoms->compressed_end()));
             return m_negative_static_atoms->compressed_range();
         }
         else if constexpr (std::is_same_v<P, FluentTag>)
         {
-            assert(std::is_sorted(m_negative_fluent_atoms->compressed_begin(), m_negative_fluent_atoms->compressed_end()));
             return m_negative_fluent_atoms->compressed_range();
         }
         else if constexpr (std::is_same_v<P, DerivedTag>)
         {
-            assert(std::is_sorted(m_negative_derived_atoms->compressed_begin(), m_negative_derived_atoms->compressed_end()));
             return m_negative_derived_atoms->compressed_range();
         }
         else

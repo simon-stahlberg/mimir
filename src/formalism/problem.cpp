@@ -237,10 +237,6 @@ const AxiomList& ProblemImpl::get_axioms() const { return m_axioms; }
 
 const AxiomList& ProblemImpl::get_problem_and_domain_axioms() const { return m_problem_and_domain_axioms; }
 
-FlatIndexListSet& ProblemImpl::get_flat_index_list_set() { return m_flat_index_list_set; }
-
-FlatDoubleListSet& ProblemImpl::get_flat_double_list_set() { return m_flat_double_list_set; }
-
 size_t ProblemImpl::get_estimated_memory_usage_in_bytes() const
 {
     return m_flat_index_list_set.get_estimated_memory_usage_in_bytes() + m_flat_double_list_set.get_estimated_memory_usage_in_bytes();
@@ -426,6 +422,11 @@ static void ground_terms(const TermList& terms, const ObjectList& binding, Objec
             term->get_variant());
     }
 }
+
+// Index and double lists
+const FlatIndexList* ProblemImpl::get_or_create_index_list(const FlatIndexList& list) { return m_flat_index_list_set.insert(list).first->get(); }
+
+const FlatDoubleList* ProblemImpl::get_or_create_double_list(const FlatDoubleList& list) { return m_flat_double_list_set.insert(list).first->get(); }
 
 // Atom
 
@@ -798,24 +799,24 @@ GroundConjunctiveCondition ProblemImpl::ground(ConjunctiveCondition conjunctive_
     ground_and_fill_vector(*this, conjunctive_condition->get_literals<StaticTag>(), positive_index_list, negative_index_list, binding);
     positive_index_list.compress();
     negative_index_list.compress();
-    const auto positive_static_precondition_ptr = m_flat_index_list_set.insert(positive_index_list).first->get();
-    const auto negative_static_precondition_ptr = m_flat_index_list_set.insert(negative_index_list).first->get();
+    const auto positive_static_precondition_ptr = get_or_create_index_list(positive_index_list);
+    const auto negative_static_precondition_ptr = get_or_create_index_list(negative_index_list);
 
     positive_index_list.clear();
     negative_index_list.clear();
     ground_and_fill_vector(*this, conjunctive_condition->get_literals<FluentTag>(), positive_index_list, negative_index_list, binding);
     positive_index_list.compress();
     negative_index_list.compress();
-    const auto positive_fluent_precondition_ptr = m_flat_index_list_set.insert(positive_index_list).first->get();
-    const auto negative_fluent_precondition_ptr = m_flat_index_list_set.insert(negative_index_list).first->get();
+    const auto positive_fluent_precondition_ptr = get_or_create_index_list(positive_index_list);
+    const auto negative_fluent_precondition_ptr = get_or_create_index_list(negative_index_list);
 
     positive_index_list.clear();
     negative_index_list.clear();
     ground_and_fill_vector(*this, conjunctive_condition->get_literals<DerivedTag>(), positive_index_list, negative_index_list, binding);
     positive_index_list.compress();
     negative_index_list.compress();
-    const auto positive_derived_precondition_ptr = m_flat_index_list_set.insert(positive_index_list).first->get();
-    const auto negative_derived_precondition_ptr = m_flat_index_list_set.insert(negative_index_list).first->get();
+    const auto positive_derived_precondition_ptr = get_or_create_index_list(positive_index_list);
+    const auto negative_derived_precondition_ptr = get_or_create_index_list(negative_index_list);
 
     auto numeric_constraints = GroundNumericConstraintList {};
     ground_and_fill_vector(*this, conjunctive_condition->get_numeric_constraints(), binding, numeric_constraints);
@@ -839,8 +840,8 @@ GroundConjunctiveEffect ProblemImpl::ground(ConjunctiveEffect conjunctive_effect
     ground_and_fill_vector(*this, conjunctive_effect->get_literals(), positive_index_list, negative_index_list, binding);
     positive_index_list.compress();
     negative_index_list.compress();
-    const auto positive_effect_ptr = m_flat_index_list_set.insert(positive_index_list).first->get();
-    const auto negative_effect_ptr = m_flat_index_list_set.insert(negative_index_list).first->get();
+    const auto positive_effect_ptr = get_or_create_index_list(positive_index_list);
+    const auto negative_effect_ptr = get_or_create_index_list(negative_index_list);
 
     /* Conjunctive numerical effects */
     auto fluent_numerical_effects = GroundNumericEffectList<FluentTag> {};

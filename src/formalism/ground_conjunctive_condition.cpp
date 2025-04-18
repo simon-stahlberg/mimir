@@ -49,6 +49,19 @@ GroundConjunctiveConditionImpl::GroundConjunctiveConditionImpl(Index index,
     m_negative_derived_atoms(negative_derived_atoms),
     m_numeric_constraints(std::move(numeric_constraints))
 {
+    assert(m_positive_static_atoms->is_compressed());
+    assert(m_negative_static_atoms->is_compressed());
+    assert(m_positive_fluent_atoms->is_compressed());
+    assert(m_negative_fluent_atoms->is_compressed());
+    assert(m_positive_derived_atoms->is_compressed());
+    assert(m_negative_derived_atoms->is_compressed());
+
+    assert(std::is_sorted(m_positive_static_atoms->compressed_begin(), m_positive_static_atoms->compressed_end()));
+    assert(std::is_sorted(m_negative_static_atoms->compressed_begin(), m_negative_static_atoms->compressed_end()));
+    assert(std::is_sorted(m_positive_fluent_atoms->compressed_begin(), m_positive_fluent_atoms->compressed_end()));
+    assert(std::is_sorted(m_negative_fluent_atoms->compressed_begin(), m_negative_fluent_atoms->compressed_end()));
+    assert(std::is_sorted(m_positive_derived_atoms->compressed_begin(), m_positive_derived_atoms->compressed_end()));
+    assert(std::is_sorted(m_negative_derived_atoms->compressed_begin(), m_negative_derived_atoms->compressed_end()));
 }
 
 Index GroundConjunctiveConditionImpl::get_index() const { return m_index; }

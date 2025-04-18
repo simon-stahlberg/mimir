@@ -111,8 +111,7 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
     /* 2.1 Numeric state variables */
     dense_fluent_numeric_variables = fluent_numeric_variables;
 
-    const auto [fluent_numeric_iter, fluent_numeric_inserted] = problem.get_flat_double_list_set().insert(dense_fluent_numeric_variables);
-    state_numeric_variables = fluent_numeric_iter->get();
+    state_numeric_variables = problem.get_or_create_double_list(dense_fluent_numeric_variables);
 
     /* 2.2. Propositional state */
     for (const auto& atom : atoms)
@@ -124,8 +123,7 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
 
     translate_dense_into_sorted_compressed_sparse(dense_fluent_atoms, m_state_fluent_atoms);
 
-    const auto [fluent_atoms_iter, fluent_atoms_inserted] = problem.get_flat_index_list_set().insert(m_state_fluent_atoms);
-    state_fluent_atoms = fluent_atoms_iter->get();
+    state_fluent_atoms = problem.get_or_create_index_list(m_state_fluent_atoms);
 
     // Test whether there exists an extended state for the given non extended state
     if (auto state = m_states.find(StateImpl(-1, state_fluent_atoms, state_derived_atoms, state_numeric_variables)))
@@ -145,8 +143,7 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
 
             translate_dense_into_sorted_compressed_sparse(dense_derived_atoms, m_state_derived_atoms);
 
-            const auto [derived_iter, derived_inserted] = problem.get_flat_index_list_set().insert(m_state_derived_atoms);
-            state_derived_atoms = derived_iter->get();
+            state_derived_atoms = problem.get_or_create_index_list(m_state_derived_atoms);
         }
     }
 
@@ -337,11 +334,9 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
 
     translate_dense_into_sorted_compressed_sparse(dense_fluent_atoms, m_state_fluent_atoms);
 
-    const auto [fluent_iter, fluent_inserted] = problem.get_flat_index_list_set().insert(m_state_fluent_atoms);
-    state_fluent_atoms = fluent_iter->get();
+    state_fluent_atoms = problem.get_or_create_index_list(m_state_fluent_atoms);
 
-    const auto [fluent_numeric_iter, fluent_numeric_inserted] = problem.get_flat_double_list_set().insert(dense_fluent_numeric_variables);
-    state_numeric_variables = fluent_numeric_iter->get();
+    state_numeric_variables = problem.get_or_create_double_list(dense_fluent_numeric_variables);
 
     // Check if non-extended state exists in cache
     if (auto state = m_states.find(StateImpl(-1, state_fluent_atoms, state_derived_atoms, state_numeric_variables)))
@@ -361,8 +356,7 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
 
             translate_dense_into_sorted_compressed_sparse(dense_derived_atoms, m_state_derived_atoms);
 
-            const auto [iter, inserted] = problem.get_flat_index_list_set().insert(m_state_derived_atoms);
-            state_derived_atoms = iter->get();
+            state_derived_atoms = problem.get_or_create_index_list(m_state_derived_atoms);
         }
     }
 

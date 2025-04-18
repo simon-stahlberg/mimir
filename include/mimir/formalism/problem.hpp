@@ -110,10 +110,6 @@ public:
     const AxiomList& get_axioms() const;
     const AxiomList& get_problem_and_domain_axioms() const;
 
-    // TODO: change this to get_or_create
-    FlatIndexListSet& get_flat_index_list_set();
-    FlatDoubleListSet& get_flat_double_list_set();
-
     /// @brief Get the total number of bytes.
     /// @return the number of bytes.
     size_t get_estimated_memory_usage_in_bytes() const;
@@ -168,6 +164,9 @@ public:
     const std::vector<AxiomPartition>& get_problem_and_domain_axiom_partitioning() const;
 
     /* Grounding */
+
+    const FlatIndexList* get_or_create_index_list(const FlatIndexList& list);
+    const FlatDoubleList* get_or_create_double_list(const FlatDoubleList& list);
 
     template<IsStaticOrFluentOrDerivedTag P>
     GroundAtom<P> get_or_create_ground_atom(Predicate<P> predicate, const ObjectList& objects);
