@@ -49,11 +49,8 @@ Mimir is a C++20-based generalized planning library with Python bindings, design
   Delete relaxation is used to identify a set of grounded actions that may be applicable in potential successor states.
   This set is then used to initialize the data structure outlined in the article [*"The Fast Downward Planning System"* by Malte Helmert (JAIR 2006)](https://jair.org/index.php/jair/article/view/10457) to efficiently identify all applicable actions in given states. While this grounding process often results in significant performance improvements, it may not always be feasible in practice.
 
-- **State Representation:**
-  States are represented using a compressed sparse vector representation that contains all ground atoms that are true in the state. The compression step identifies the largest bit-width required to store all ground atoms. Internally, we unpack states into dense bitset representations for constant time randomized access.
-
-- **Ground Action and Axiom Representations:**
-  Ground action and axioms are complex composite structures. Similar to states, we represent them using a single compressed sparse vector. However, we do never unpack them, as having unpacked states suffices for efficient applicability checks.
+- **State, Ground Action, and Ground Axiom Representations:**
+  Mimir is optimized to work well not only on small but also on large input problems using tree compression where elements are constructed uniquely and shared among structures. States are represented using a compressed sparse vector representation that contains all ground atom indices that are true in the state. The compression step identifies the largest bit-width required to store the delta encoded sorted vectors of ground atom indices. Internally, we unpack states into dense bitset representations for constant time randomized access. Similar to states, we represent ground actions and axioms using compressed sparse sorted vectors of ground atom indices and additional tree structures to represent ground function expressions. However, we do never unpack them, as having unpacked states suffices for efficient applicability checks.
 
 ## Getting Started (Python)
 
