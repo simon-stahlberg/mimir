@@ -1,3 +1,6 @@
+""" This example illustrates the interface of the central component for data generation.
+"""
+
 import pymimir.advanced.search as search
 import pymimir.advanced.datasets as datasets
 

@@ -1,3 +1,6 @@
+""" This example illustrates the interface of the description logics component.
+"""
+
 import pymimir.advanced.formalism as formalism
 import pymimir.advanced.search as search
 import pymimir.advanced.datasets as datasets
@@ -10,7 +13,7 @@ ROOT_DIR = (Path(__file__).parent.parent.parent).absolute()
 domain_filepath = str(ROOT_DIR / "data" / "gripper" / "domain.pddl")
 problem_filepath = str(ROOT_DIR / "data" / "gripper" / "p-2-0.pddl")
 
-# Create a state space (could also use knowledge base)
+# Create some states
 state_space, certificates = datasets.StateSpace.create(search.SearchContext.create(domain_filepath, problem_filepath))
 domain = state_space.get_search_context().get_problem().get_domain()
 

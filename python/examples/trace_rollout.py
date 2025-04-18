@@ -1,3 +1,7 @@
+""" This example illustrates how to create traces string representations of actions and objects 
+    that may be obtained from plans of external planners.
+"""
+
 import pymimir.advanced.search as search
 import pymimir.advanced.formalism as formalism
 

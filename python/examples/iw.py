@@ -1,3 +1,6 @@
+""" This example illustrates the interface for the iterative width search algorithm and utilities.
+"""
+
 import pymimir.advanced.formalism as formalism
 import pymimir.advanced.search as search
 
