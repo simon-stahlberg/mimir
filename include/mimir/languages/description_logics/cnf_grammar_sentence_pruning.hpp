@@ -31,11 +31,11 @@
 namespace mimir::languages::dl
 {
 
-/// @brief `RefinementPruningFunction` defines an interface for pruning dl constructors (= features).
-class RefinementPruningFunction
+/// @brief `IRefinementPruningFunction` defines an interface for pruning dl constructors (= features).
+class IRefinementPruningFunction
 {
 public:
-    virtual ~RefinementPruningFunction() = default;
+    virtual ~IRefinementPruningFunction() = default;
 
     /// @brief Tests whether the given concept should be pruned.
     /// @param concept_ is the concept to be tested
@@ -58,17 +58,17 @@ public:
     virtual bool should_prune(Constructor<NumericalTag> numerical) = 0;
 };
 
-/// @brief `RefinementStateListPruningFunction` implements a pruning function based on a given state list.
+/// @brief `StateListRefinementPruningFunction` implements a pruning function based on a given state list.
 /// A feature is pruned if it does not evaluate differently on at least one state compared to a previously tested feature.
 /// This ensures that only features with unique evaluations across all states are retained.
-class RefinementStateListPruningFunction : public RefinementPruningFunction
+class StateListRefinementPruningFunction : public IRefinementPruningFunction
 {
 public:
-    explicit RefinementStateListPruningFunction(const datasets::GeneralizedStateSpace& generalized_state_space);
+    explicit StateListRefinementPruningFunction(const datasets::GeneralizedStateSpace& generalized_state_space);
 
-    RefinementStateListPruningFunction(const datasets::GeneralizedStateSpace& generalized_state_space, const graphs::ClassGraph& class_graph);
+    StateListRefinementPruningFunction(const datasets::GeneralizedStateSpace& generalized_state_space, const graphs::ClassGraph& class_graph);
 
-    RefinementStateListPruningFunction(formalism::ProblemMap<search::StateList> state_partitioning);
+    StateListRefinementPruningFunction(formalism::ProblemMap<search::StateList> state_partitioning);
 
     /// @brief Tests whether a concept should be pruned.
     /// @param concept_ The concept to evaluate.

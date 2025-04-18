@@ -1,10 +1,15 @@
 # Python Bindings Design Strategy
 
-For efficiency and correctness reasons we follow two design principles:
+For efficiency and correctness reasons, we follow two design principles:
 
-1. For every C++ type, there must be corresponding Python type, e.g., C++ `StateList` <=> Python `StateList`. We specifically disallow type casters because they are an ad-hoc solution that strictly require copying.
-2. For every mutable C++ type `T`, there must be two corresponding Python types `T` and `ImmutableT`. This should be done by providing a binding for `PyImmutable<T>` with name `ImmutableT`. The binding for `PyImmutable<T>` should only contain access to const methods. Now, when returning a const reference to an mutable type `T`, we can simply wrap it into `PyImmutable<T>` to restrict the python user interface toward immutability. An alternative way is simply copying such that mutation does not modify internal data but it is much less efficient.
+1. One-to-one-mapping: 
+
+Every C++ type must have a corresponding Python type, e.g., C++ `StateList` <=> Python `StateList`. We discourage type casters because they strictly copy back and forth.
+
+2. Emulating const-semantics: 
+
+Every C++ type `T` with functions that mutate the object must have two corresponding Python types, `T` and `ImmutableT`. This should be done by providing a bindings for `T` with the name `T` and `PyImmutable<T>` with the name `ImmutableT`. The binding of `T` contains all functions and the binding for `PyImmutable<T>` must only contain const methods. Therefore, `PyImmutable<T>` restricts the interface and we can simply wrap return values when returning `const T&`. 
 
 # Open tasks
 
-- Create template machinary needed to emulate const correctness using `PyImmutable<T>`
+- Create template machinery needed to emulate const correctness using `PyImmutable<T>`.

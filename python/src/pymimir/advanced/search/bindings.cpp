@@ -242,8 +242,26 @@ void bind_search(nb::module_& m)
     nb::class_<StateImpl>(m, "State")  //
         .def("__hash__", [](const StateImpl& self) { return self.get_index(); })
         .def("__eq__", [](const StateImpl& lhs, const StateImpl& rhs) { return lhs.get_index() == rhs.get_index(); })
-        .def("get_fluent_atoms", nb::overload_cast<>(&StateImpl::get_atoms<FluentTag>, nb::const_))
-        .def("get_derived_atoms", nb::overload_cast<>(&StateImpl::get_atoms<DerivedTag>, nb::const_))
+        .def(
+            "get_fluent_atoms",
+            [](const StateImpl& self)
+            {
+                return nb::make_iterator(nb::type<nb::iterator>(),
+                                         "Iterator over fluent state atom indices.",
+                                         self.get_atoms<FluentTag>().begin(),
+                                         self.get_atoms<FluentTag>().end());
+            },
+            nb::keep_alive<0, 1>())
+        .def(
+            "get_derived_atoms",
+            [](const StateImpl& self)
+            {
+                return nb::make_iterator(nb::type<nb::iterator>(),
+                                         "Iterator over derived state atom indices.",
+                                         self.get_atoms<DerivedTag>().begin(),
+                                         self.get_atoms<DerivedTag>().end());
+            },
+            nb::keep_alive<0, 1>())
         .def(
             "to_string",
             [](const StateImpl& self, const ProblemImpl& problem)

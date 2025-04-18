@@ -64,6 +64,18 @@ public:
     void visit(dl::NumericalDistance constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
 };
 
+class IPyRefinementPruningFunction : public dl::IRefinementPruningFunction
+{
+public:
+    NB_TRAMPOLINE(dl::IRefinementPruningFunction, 4);
+
+    /* Trampoline (need one for each virtual function) */
+    bool should_prune(dl::Constructor<dl::ConceptTag> constructor) override { NB_OVERRIDE_PURE(should_prune, constructor); }
+    bool should_prune(dl::Constructor<dl::RoleTag> constructor) override { NB_OVERRIDE_PURE(should_prune, constructor); }
+    bool should_prune(dl::Constructor<dl::BooleanTag> constructor) override { NB_OVERRIDE_PURE(should_prune, constructor); }
+    bool should_prune(dl::Constructor<dl::NumericalTag> constructor) override { NB_OVERRIDE_PURE(should_prune, constructor); }
+};
+
 void bind_languages_description_logics(nb::module_& m)
 {
     nb::enum_<dl::cnf_grammar::GrammarSpecificationEnum>(m, "GrammarSpecificationEnum")  //
@@ -358,6 +370,25 @@ void bind_languages_description_logics(nb::module_& m)
 
         .def("get_repositories", &dl::cnf_grammar::Grammar::get_repositories, nb::rv_policy::reference_internal)
         .def("get_domain", &dl::cnf_grammar::Grammar::get_domain, nb::rv_policy::reference_internal);
+
+    nb::class_<dl::IRefinementPruningFunction, IPyRefinementPruningFunction>(m, "IRefinementPruningFunction")
+        .def(nb::init<>())
+        .def("should_prune", nb::overload_cast<dl::Constructor<dl::ConceptTag>>(&dl::IRefinementPruningFunction::should_prune), "concept"_a)
+        .def("should_prune", nb::overload_cast<dl::Constructor<dl::RoleTag>>(&dl::IRefinementPruningFunction::should_prune), "role"_a)
+        .def("should_prune", nb::overload_cast<dl::Constructor<dl::BooleanTag>>(&dl::IRefinementPruningFunction::should_prune), "boolean"_a)
+        .def("should_prune", nb::overload_cast<dl::Constructor<dl::NumericalTag>>(&dl::IRefinementPruningFunction::should_prune), "numerical"_a);
+
+    nb::class_<dl::StateListRefinementPruningFunction, dl::IRefinementPruningFunction>(m, "StateListRefinementPruningFunction")
+        .def(nb::init<const mimir::datasets::GeneralizedStateSpace&>())
+        .def(nb::init<const mimir::datasets::GeneralizedStateSpace&, const mimir::graphs::ClassGraph&>())
+        .def(nb::init<mimir::formalism::ProblemMap<mimir::search::StateList>>());
+
+    nb::class_<dl::cnf_grammar::GeneratedSentencesContainer>(m, "GeneratedSentencesContainer")  //
+        .def(nb::init<>());
+
+    nb::class_<dl::cnf_grammar::GeneratorVisitor>(m, "GeneratorVisitor")
+        .def(nb::init<dl::IRefinementPruningFunction&, dl::cnf_grammar::GeneratedSentencesContainer&, dl::Repositories&, size_t>())
+        .def("visit", nb::overload_cast<const dl::cnf_grammar::Grammar&>(&dl::cnf_grammar::GeneratorVisitor::visit));
 }
 
 }

@@ -110,7 +110,7 @@ TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarVisitorSentenceGeneratorTes
 
     auto kb = KnowledgeBaseImpl::create(context, kb_options);
 
-    auto pruning_function = dl::RefinementStateListPruningFunction(kb->get_generalized_state_space().value());
+    auto pruning_function = dl::StateListRefinementPruningFunction(kb->get_generalized_state_space().value());
 
     dl::cnf_grammar::GeneratedSentencesContainer sentences;
     dl::Repositories repositories;
@@ -160,7 +160,7 @@ TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarVisitorSentenceGeneratorFra
 
     auto kb = KnowledgeBaseImpl::create(context, kb_options);
 
-    auto pruning_function = dl::RefinementStateListPruningFunction(kb->get_generalized_state_space().value());
+    auto pruning_function = dl::StateListRefinementPruningFunction(kb->get_generalized_state_space().value());
 
     dl::cnf_grammar::GeneratedSentencesContainer sentences;
     dl::Repositories repositories;

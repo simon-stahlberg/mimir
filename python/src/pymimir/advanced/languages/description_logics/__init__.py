@@ -68,4 +68,6 @@ from pymimir.pymimir.advanced.languages.description_logics import (
 
 from pymimir.pymimir.advanced.languages.description_logics import (
     CNFGrammar,
+    StateListRefinementPruningFunction,
+    GeneratorVisitor,
 )

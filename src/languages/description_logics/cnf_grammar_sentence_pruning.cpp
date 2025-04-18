@@ -26,15 +26,15 @@ namespace mimir::languages::dl
 {
 
 /**
- * RefinementStateListPruningFunction
+ * StateListRefinementPruningFunction
  */
 
-RefinementStateListPruningFunction::RefinementStateListPruningFunction(const datasets::GeneralizedStateSpace& generalized_state_space) :
-    RefinementStateListPruningFunction(generalized_state_space, generalized_state_space->get_graph())
+StateListRefinementPruningFunction::StateListRefinementPruningFunction(const datasets::GeneralizedStateSpace& generalized_state_space) :
+    StateListRefinementPruningFunction(generalized_state_space, generalized_state_space->get_graph())
 {
 }
 
-RefinementStateListPruningFunction::RefinementStateListPruningFunction(const datasets::GeneralizedStateSpace& generalized_state_space,
+StateListRefinementPruningFunction::StateListRefinementPruningFunction(const datasets::GeneralizedStateSpace& generalized_state_space,
                                                                        const graphs::ClassGraph& class_graph)
 {
     for (const auto& vertex : class_graph.get_vertices())
@@ -46,23 +46,23 @@ RefinementStateListPruningFunction::RefinementStateListPruningFunction(const dat
     }
 }
 
-RefinementStateListPruningFunction::RefinementStateListPruningFunction(ProblemMap<search::StateList> state_partitioning) :
-    RefinementPruningFunction(),
+StateListRefinementPruningFunction::StateListRefinementPruningFunction(ProblemMap<search::StateList> state_partitioning) :
+    IRefinementPruningFunction(),
     m_state_partitioning(state_partitioning),
     m_repositories()
 {
 }
 
-bool RefinementStateListPruningFunction::should_prune(Constructor<ConceptTag> concept_) { return should_prune_impl(concept_); }
+bool StateListRefinementPruningFunction::should_prune(Constructor<ConceptTag> concept_) { return should_prune_impl(concept_); }
 
-bool RefinementStateListPruningFunction::should_prune(Constructor<RoleTag> role) { return should_prune_impl(role); }
+bool StateListRefinementPruningFunction::should_prune(Constructor<RoleTag> role) { return should_prune_impl(role); }
 
-bool RefinementStateListPruningFunction::should_prune(Constructor<BooleanTag> boolean) { return should_prune_impl(boolean); }
+bool StateListRefinementPruningFunction::should_prune(Constructor<BooleanTag> boolean) { return should_prune_impl(boolean); }
 
-bool RefinementStateListPruningFunction::should_prune(Constructor<NumericalTag> numerical) { return should_prune_impl(numerical); }
+bool StateListRefinementPruningFunction::should_prune(Constructor<NumericalTag> numerical) { return should_prune_impl(numerical); }
 
 template<IsConceptOrRoleOrBooleanOrNumericalTag D>
-bool RefinementStateListPruningFunction::should_prune_impl(Constructor<D> constructor)
+bool StateListRefinementPruningFunction::should_prune_impl(Constructor<D> constructor)
 {
     auto denotations = DenotationList<D>();
 
@@ -83,9 +83,9 @@ bool RefinementStateListPruningFunction::should_prune_impl(Constructor<D> constr
     return !inserted;
 }
 
-template bool RefinementStateListPruningFunction::should_prune_impl(Constructor<ConceptTag> constructor);
-template bool RefinementStateListPruningFunction::should_prune_impl(Constructor<RoleTag> constructor);
-template bool RefinementStateListPruningFunction::should_prune_impl(Constructor<BooleanTag> constructor);
-template bool RefinementStateListPruningFunction::should_prune_impl(Constructor<NumericalTag> constructor);
+template bool StateListRefinementPruningFunction::should_prune_impl(Constructor<ConceptTag> constructor);
+template bool StateListRefinementPruningFunction::should_prune_impl(Constructor<RoleTag> constructor);
+template bool StateListRefinementPruningFunction::should_prune_impl(Constructor<BooleanTag> constructor);
+template bool StateListRefinementPruningFunction::should_prune_impl(Constructor<NumericalTag> constructor);
 
 }

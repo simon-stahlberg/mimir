@@ -34,7 +34,7 @@ namespace mimir::languages::dl::cnf_grammar
  * Concept
  */
 
-GeneratorVisitor::GeneratorVisitor(RefinementPruningFunction& pruning_function,
+GeneratorVisitor::GeneratorVisitor(IRefinementPruningFunction& pruning_function,
                                    GeneratedSentencesContainer& sentences,
                                    dl::Repositories& repositories,
                                    size_t max_syntactic_complexity) :

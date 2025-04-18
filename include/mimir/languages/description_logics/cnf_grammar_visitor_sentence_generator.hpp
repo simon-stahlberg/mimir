@@ -100,7 +100,7 @@ using HanaGeneratorStatistics = HanaMappedContainer<GeneratorStatistics, Concept
 class GeneratorVisitor : public RecurseVisitor
 {
 private:
-    RefinementPruningFunction& m_pruning_function;
+    IRefinementPruningFunction& m_pruning_function;
     GeneratedSentencesContainer& m_sentences;
     dl::Repositories& m_repositories;
     size_t m_max_syntactic_complexity;
@@ -113,7 +113,7 @@ private:
     std::any m_result;
 
 public:
-    GeneratorVisitor(RefinementPruningFunction& pruning_function,
+    GeneratorVisitor(IRefinementPruningFunction& pruning_function,
                      GeneratedSentencesContainer& sentences,
                      dl::Repositories& repositories,
                      size_t max_syntactic_complexity);
