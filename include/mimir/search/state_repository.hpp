@@ -66,7 +66,7 @@ public:
 
     /// @brief Get or create the extended state for a given set of ground `atoms`.
     /// @param atoms the ground atoms.
-    /// @param workspace is the workspace containing preallocated memory.
+    /// @param fluent_numeric_variables are the numeric variables in the state.
     /// @return the extended state.
     std::pair<State, ContinuousCost> get_or_create_state(const formalism::GroundAtomList<formalism::FluentTag>& atoms,
                                                          const FlatDoubleList& fluent_numeric_variables);
@@ -75,7 +75,6 @@ public:
     /// @param state is the state.
     /// @param action is the ground action.
     /// @param state_metric_value is the metric value of the state.
-    /// @param workspace is the workspace containing preallocated memory.
     /// @return the extended successor state and its metric value.
     std::pair<State, ContinuousCost> get_or_create_successor_state(State state, formalism::GroundAction action, ContinuousCost state_metric_value);
 
@@ -84,7 +83,6 @@ public:
     /// @param dense_state is the dense state.
     /// @param action is the ground action.
     /// @param state_metric_value is the metric value of the dense state.
-    /// @param workspace is the workspace containing preallocated memory.
     /// @return the extended successor state and its metric value.
     std::pair<State, ContinuousCost> get_or_create_successor_state(State state,  ///< for parallel application of numeric effects
                                                                    DenseState& dense_state,

@@ -299,8 +299,8 @@ inline size_t count_set_intersection(const Range1& lhs, const Range2& rhs)
     return result;
 }
 
-template<typename Range>
-    requires IsConvertibleRangeOver<Range, Index>  //
+template<std::ranges::forward_range Range>
+    requires IsConvertibleRangeOver<Range, Index>
 void insert_into_bitset(const Range& range, FlatBitset& ref_bitset)
 {
     for (const auto& element : range)
@@ -309,8 +309,8 @@ void insert_into_bitset(const Range& range, FlatBitset& ref_bitset)
     }
 }
 
-template<typename Range>
-    requires IsConvertibleRangeOver<Range, Index>  //
+template<std::ranges::forward_range Range>
+    requires IsConvertibleRangeOver<Range, Index>
 void insert_into_vector(const Range& range, FlatIndexList& ref_vec)
 {
     for (const auto& element : range)

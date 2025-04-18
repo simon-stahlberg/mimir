@@ -70,7 +70,6 @@ public:
 
     /// @brief Create a grounded applicable action generator for the given state.
     /// @param state is the state.
-    /// @param workspace is the workspace. There is no specific workspace in the grounded case and it should not be initialized.
     /// @return a generator to yield the applicable actions for the given state.
     mimir::generator<formalism::GroundAction> create_applicable_action_generator(State state) override;
     mimir::generator<formalism::GroundAction> create_applicable_action_generator(const DenseState& dense_state) override;

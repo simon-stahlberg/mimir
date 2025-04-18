@@ -25,7 +25,7 @@ using namespace nb::literals;
 namespace mimir::bindings
 {
 
-NB_MODULE(_pymimir, m)
+NB_MODULE(pymimir, m)
 {
     // Create submodules before binding to avoid missing bindings
     auto advanced = m.def_submodule("advanced");

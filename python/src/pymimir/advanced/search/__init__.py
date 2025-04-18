@@ -1,14 +1,14 @@
 # Import all classes for better IDE support
 
 # Enums
-from pymimir._pymimir.advanced.search import (
+from pymimir.pymimir.advanced.search import (
     SearchMode,
     SearchNodeStatus,
     SearchStatus,
 )
 
 # Common
-from pymimir._pymimir.advanced.search import (   
+from pymimir.pymimir.advanced.search import (   
     BlindHeuristic,
     DeleteRelaxedProblemExplorator,
     IApplicableActionGenerator,
@@ -25,14 +25,14 @@ from pymimir._pymimir.advanced.search import (
 )
 
 # SatisficingBindingGenerator
-from pymimir._pymimir.advanced.search import (
+from pymimir.pymimir.advanced.search import (
     ActionSatisficingBindingGenerator,
     AxiomSatisficingBindingGenerator,
     ConjunctiveConditionSatisficingBindingGenerator
 )
 
 # GoalStrategy
-from pymimir._pymimir.advanced.search import (
+from pymimir.pymimir.advanced.search import (
     IGoalStrategy,
     ProblemGoalStrategy,
 
@@ -44,7 +44,7 @@ from pymimir._pymimir.advanced.search import (
 )
 
 # AStar
-from pymimir._pymimir.advanced.search import (
+from pymimir.pymimir.advanced.search import (
     AStarStatistics,
     IAStarEventHandler,
     DebugAStarEventHandler,
@@ -53,7 +53,7 @@ from pymimir._pymimir.advanced.search import (
 )
 
 # BrFs
-from pymimir._pymimir.advanced.search import (
+from pymimir.pymimir.advanced.search import (
     BrFSStatistics,
     IBrFSEventHandler,
     DebugBrFSEventHandler,
@@ -62,7 +62,7 @@ from pymimir._pymimir.advanced.search import (
 )
 
 # IW
-from pymimir._pymimir.advanced.search import (
+from pymimir.pymimir.advanced.search import (
     IWStatistics,
     IIWEventHandler,
     DefaultIWEventHandler,
@@ -74,7 +74,7 @@ from pymimir._pymimir.advanced.search import (
 )
 
 # SIW
-from pymimir._pymimir.advanced.search import (
+from pymimir.pymimir.advanced.search import (
     SIWStatistics,
     ISIWEventHandler,
     DefaultSIWEventHandler,
@@ -82,7 +82,7 @@ from pymimir._pymimir.advanced.search import (
 )
 
 # Lifted
-from pymimir._pymimir.advanced.search import (
+from pymimir.pymimir.advanced.search import (
     DebugLiftedApplicableActionGeneratorEventHandler,
     DefaultLiftedApplicableActionGeneratorEventHandler,
     LiftedApplicableActionGenerator,
@@ -92,7 +92,7 @@ from pymimir._pymimir.advanced.search import (
 )
 
 # Grounded
-from pymimir._pymimir.advanced.search import (
+from pymimir.pymimir.advanced.search import (
     DebugGroundedApplicableActionGeneratorEventHandler,
     DefaultGroundedApplicableActionGeneratorEventHandler,
     GroundedApplicableActionGenerator,

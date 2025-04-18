@@ -69,13 +69,84 @@ void bind_languages_description_logics(nb::module_& m)
     nb::enum_<dl::cnf_grammar::GrammarSpecificationEnum>(m, "GrammarSpecificationEnum")  //
         .value("FRANCES_ET_AL_AAAI2021", dl::cnf_grammar::GrammarSpecificationEnum::FRANCES_ET_AL_AAAI2021);
 
-    bind_constructor<dl::ConceptTag>(m, "ConceptConstructor");
-    bind_constructor<dl::RoleTag>(m, "RoleConstructor");
-    bind_constructor<dl::BooleanTag>(m, "BooleanConstructor");
-    bind_constructor<dl::NumericalTag>(m, "NumericalConstructor");
+    bind_constructor<dl::ConceptTag>(m, "Concept");
+    bind_constructor<dl::RoleTag>(m, "Role");
+    bind_constructor<dl::BooleanTag>(m, "Boolean");
+    bind_constructor<dl::NumericalTag>(m, "Numerical");
 
-    nb::class_<dl::ConceptBotImpl, dl::IConstructor<dl::ConceptTag>>(m, "ConceptBotConstructor");
-    nb::class_<dl::ConceptTopImpl, dl::IConstructor<dl::ConceptTag>>(m, "ConceptTopConstructor");
+    nb::class_<dl::ConceptBotImpl, dl::IConstructor<dl::ConceptTag>>(m, "ConceptBot");
+    nb::class_<dl::ConceptTopImpl, dl::IConstructor<dl::ConceptTag>>(m, "ConceptTop");
+    bind_concept_atomic_state<formalism::StaticTag>(m, "ConceptStaticAtomicState");
+    bind_concept_atomic_state<formalism::FluentTag>(m, "ConceptFluentAtomicState");
+    bind_concept_atomic_state<formalism::DerivedTag>(m, "ConceptDerivedAtomicState");
+    bind_concept_atomic_goal<formalism::StaticTag>(m, "ConceptStaticAtomicGoal");
+    bind_concept_atomic_goal<formalism::FluentTag>(m, "ConceptFluentAtomicGoal");
+    bind_concept_atomic_goal<formalism::DerivedTag>(m, "ConceptDerivedAtomicGoal");
+    nb::class_<dl::ConceptIntersectionImpl, dl::IConstructor<dl::ConceptTag>>(m, "ConceptIntersection")
+        .def("get_left_concept", &dl::ConceptIntersectionImpl::get_left_concept, nb::rv_policy::reference_internal)
+        .def("get_right_concept", &dl::ConceptIntersectionImpl::get_right_concept, nb::rv_policy::reference_internal);
+    nb::class_<dl::ConceptUnionImpl, dl::IConstructor<dl::ConceptTag>>(m, "ConceptUnion")
+        .def("get_left_concept", &dl::ConceptUnionImpl::get_left_concept, nb::rv_policy::reference_internal)
+        .def("get_right_concept", &dl::ConceptUnionImpl::get_right_concept, nb::rv_policy::reference_internal);
+    nb::class_<dl::ConceptNegationImpl, dl::IConstructor<dl::ConceptTag>>(m, "ConceptNegation")
+        .def("get_concept", &dl::ConceptNegationImpl::get_concept, nb::rv_policy::reference_internal);
+    nb::class_<dl::ConceptValueRestrictionImpl, dl::IConstructor<dl::ConceptTag>>(m, "ConceptValueRestriction")
+        .def("get_role", &dl::ConceptValueRestrictionImpl::get_role, nb::rv_policy::reference_internal)
+        .def("get_concept", &dl::ConceptValueRestrictionImpl::get_concept, nb::rv_policy::reference_internal);
+    nb::class_<dl::ConceptExistentialQuantificationImpl, dl::IConstructor<dl::ConceptTag>>(m, "ConceptExistentialQuantification")
+        .def("get_role", &dl::ConceptExistentialQuantificationImpl::get_role, nb::rv_policy::reference_internal)
+        .def("get_concept", &dl::ConceptExistentialQuantificationImpl::get_concept, nb::rv_policy::reference_internal);
+    nb::class_<dl::ConceptRoleValueMapContainmentImpl, dl::IConstructor<dl::ConceptTag>>(m, "ConceptRoleValueMapContainment")
+        .def("get_left_role", &dl::ConceptRoleValueMapContainmentImpl::get_left_role, nb::rv_policy::reference_internal)
+        .def("get_right_role", &dl::ConceptRoleValueMapContainmentImpl::get_right_role, nb::rv_policy::reference_internal);
+    nb::class_<dl::ConceptRoleValueMapEqualityImpl, dl::IConstructor<dl::ConceptTag>>(m, "ConceptRoleValueMapEquality")
+        .def("get_left_role", &dl::ConceptRoleValueMapEqualityImpl::get_left_role, nb::rv_policy::reference_internal)
+        .def("get_right_role", &dl::ConceptRoleValueMapEqualityImpl::get_right_role, nb::rv_policy::reference_internal);
+    nb::class_<dl::ConceptNominalImpl, dl::IConstructor<dl::ConceptTag>>(m, "ConceptNominal")
+        .def("get_object", &dl::ConceptNominalImpl::get_object, nb::rv_policy::reference_internal);
+
+    nb::class_<dl::RoleUniversalImpl, dl::IConstructor<dl::RoleTag>>(m, "RoleUniversal");
+    bind_role_atomic_state<formalism::StaticTag>(m, "RoleStaticAtomicState");
+    bind_role_atomic_state<formalism::FluentTag>(m, "RoleFluentAtomicState");
+    bind_role_atomic_state<formalism::DerivedTag>(m, "RoleDerivedAtomicState");
+    bind_role_atomic_goal<formalism::StaticTag>(m, "RoleStaticAtomicGoal");
+    bind_role_atomic_goal<formalism::FluentTag>(m, "RoleFluentAtomicGoal");
+    bind_role_atomic_goal<formalism::DerivedTag>(m, "RoleDerivedAtomicGoal");
+    nb::class_<dl::RoleIntersectionImpl, dl::IConstructor<dl::RoleTag>>(m, "RoleIntersection")
+        .def("get_left_role", &dl::RoleIntersectionImpl::get_left_role, nb::rv_policy::reference_internal)
+        .def("get_right_role", &dl::RoleIntersectionImpl::get_right_role, nb::rv_policy::reference_internal);
+    nb::class_<dl::RoleUnionImpl, dl::IConstructor<dl::RoleTag>>(m, "RoleUnion")
+        .def("get_left_role", &dl::RoleUnionImpl::get_left_role, nb::rv_policy::reference_internal)
+        .def("get_right_role", &dl::RoleUnionImpl::get_right_role, nb::rv_policy::reference_internal);
+    nb::class_<dl::RoleComplementImpl, dl::IConstructor<dl::RoleTag>>(m, "RoleComplement")
+        .def("get_role", &dl::RoleComplementImpl::get_role, nb::rv_policy::reference_internal);
+    nb::class_<dl::RoleInverseImpl, dl::IConstructor<dl::RoleTag>>(m, "RoleInverse")
+        .def("get_role", &dl::RoleInverseImpl::get_role, nb::rv_policy::reference_internal);
+    nb::class_<dl::RoleCompositionImpl, dl::IConstructor<dl::RoleTag>>(m, "RoleComposition")
+        .def("get_left_role", &dl::RoleCompositionImpl::get_left_role, nb::rv_policy::reference_internal)
+        .def("get_right_role", &dl::RoleCompositionImpl::get_right_role, nb::rv_policy::reference_internal);
+    nb::class_<dl::RoleTransitiveClosureImpl, dl::IConstructor<dl::RoleTag>>(m, "RoleTransitiveClosure")
+        .def("get_role", &dl::RoleTransitiveClosureImpl::get_role, nb::rv_policy::reference_internal);
+    nb::class_<dl::RoleReflexiveTransitiveClosureImpl, dl::IConstructor<dl::RoleTag>>(m, "RoleReflexiveTransitiveClosure")
+        .def("get_role", &dl::RoleReflexiveTransitiveClosureImpl::get_role, nb::rv_policy::reference_internal);
+    nb::class_<dl::RoleRestrictionImpl, dl::IConstructor<dl::RoleTag>>(m, "RoleRestriction")
+        .def("get_role", &dl::RoleRestrictionImpl::get_role, nb::rv_policy::reference_internal)
+        .def("get_concept", &dl::RoleRestrictionImpl::get_concept, nb::rv_policy::reference_internal);
+    nb::class_<dl::RoleIdentityImpl, dl::IConstructor<dl::RoleTag>>(m, "RoleIdentity")
+        .def("get_concept", &dl::RoleIdentityImpl::get_concept, nb::rv_policy::reference_internal);
+
+    bind_boolean_atomic_state<formalism::StaticTag>(m, "BooleanStaticAtomicState");
+    bind_boolean_atomic_state<formalism::FluentTag>(m, "BooleanFluentAtomicState");
+    bind_boolean_atomic_state<formalism::DerivedTag>(m, "BooleanDerivedAtomicState");
+    bind_boolean_nonempty<dl::ConceptTag>(m, "BooleanConceptNonempty");
+    bind_boolean_nonempty<dl::RoleTag>(m, "BooleanRoleNonempty");
+
+    bind_numerical_count<dl::ConceptTag>(m, "NumericalConceptCount");
+    bind_numerical_count<dl::RoleTag>(m, "NumericalRoleCount");
+    nb::class_<dl::NumericalDistanceImpl, dl::IConstructor<dl::NumericalTag>>(m, "NumericalDistance")
+        .def("get_left_concept", &dl::NumericalDistanceImpl::get_left_concept, nb::rv_policy::reference_internal)
+        .def("get_role", &dl::NumericalDistanceImpl::get_role, nb::rv_policy::reference_internal)
+        .def("get_right_concept", &dl::NumericalDistanceImpl::get_right_concept, nb::rv_policy::reference_internal);
 
     nb::class_<dl::Repositories>(m, "Repositories")
         .def(nb::init<>())
@@ -275,11 +346,9 @@ void bind_languages_description_logics(nb::module_& m)
 
     nb::class_<dl::cnf_grammar::Grammar>(m, "CNFGrammar")
         .def(nb::init<const std::string&, formalism::Domain>(), "bnf_description"_a, "domain"_a)
-
         .def_static("create", &dl::cnf_grammar::Grammar::create, "type"_a, "domain"_a)
-
+        .def("__str__", [](const dl::cnf_grammar::Grammar& self) { return to_string(self); })
         .def("accept", &dl::cnf_grammar::Grammar::accept, "visitor"_a)
-
         .def("test_match",
              [](const dl::cnf_grammar::Grammar& self, const dl::Constructor<dl::NumericalTag> constructor) { return self.test_match(constructor); })
         .def("test_match", [](const dl::cnf_grammar::Grammar& self, const dl::Constructor<dl::RoleTag> constructor) { return self.test_match(constructor); })

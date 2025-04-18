@@ -1,22 +1,63 @@
 
 # Enums
-from pymimir._pymimir.advanced.languages.description_logics import (
+from pymimir.pymimir.advanced.languages.description_logics import (
     GrammarSpecificationEnum,
 )
 
 # DL constructors
-from pymimir._pymimir.advanced.languages.description_logics import (
-    ConceptConstructor,
-    ConceptConstructorList,
-    RoleConstructor,
-    RoleConstructorList,
-    BooleanConstructor,
-    BooleanConstructorList,
-    NumericalConstructor,
-    NumericalConstructorList,
+from pymimir.pymimir.advanced.languages.description_logics import (
+    Concept,
+    ConceptList,
+    Role,
+    RoleList,
+    Boolean,
+    BooleanList,
+    Numerical,
+    NumericalList,
 
-    ConceptBotConstructor,
-    ConceptTopConstructor,
+    ConceptBot,
+    ConceptTop,
+    ConceptStaticAtomicState,
+    ConceptFluentAtomicState,
+    ConceptDerivedAtomicState,
+    ConceptStaticAtomicGoal,
+    ConceptFluentAtomicGoal,
+    ConceptDerivedAtomicGoal,
+    ConceptIntersection,
+    ConceptUnion,
+    ConceptNegation,
+    ConceptValueRestriction,
+    ConceptExistentialQuantification,
+    ConceptRoleValueMapContainment,
+    ConceptRoleValueMapEquality,
+    ConceptNominal,
+
+    RoleUniversal,
+    RoleStaticAtomicState,
+    RoleFluentAtomicState,
+    RoleDerivedAtomicState,
+    RoleStaticAtomicGoal,
+    RoleFluentAtomicGoal,
+    RoleDerivedAtomicGoal,
+    RoleIntersection,
+    RoleUnion,
+    RoleComplement,
+    RoleInverse,
+    RoleComposition,
+    RoleTransitiveClosure,
+    RoleReflexiveTransitiveClosure,
+    RoleRestriction,
+    RoleIdentity,
+
+    BooleanStaticAtomicState,
+    BooleanFluentAtomicState,
+    BooleanDerivedAtomicState,
+    BooleanConceptNonempty,
+    BooleanRoleNonempty,
+
+    NumericalConceptCount,
+    NumericalRoleCount,
+    NumericalDistance,
 
     Repositories,
 
@@ -25,6 +66,6 @@ from pymimir._pymimir.advanced.languages.description_logics import (
 
 # CNF grammar
 
-from pymimir._pymimir.advanced.languages.description_logics import (
+from pymimir.pymimir.advanced.languages.description_logics import (
     CNFGrammar,
 )

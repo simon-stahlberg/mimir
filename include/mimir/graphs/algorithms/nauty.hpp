@@ -18,7 +18,6 @@
 #ifndef MIMIR_GRAPHS_ALGORITHMS_NAUTY_HPP_
 #define MIMIR_GRAPHS_ALGORITHMS_NAUTY_HPP_
 
-#include "mimir/common/deref_shared_ptr.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/graphs/color.hpp"
 #include "mimir/graphs/graph_interface.hpp"

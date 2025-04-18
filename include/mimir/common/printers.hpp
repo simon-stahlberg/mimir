@@ -19,8 +19,6 @@
 #define MIMIR_COMMON_PRINTERS_HPP_
 
 #include "mimir/common/concepts.hpp"
-#include "mimir/common/deref_observer_ptr.hpp"
-#include "mimir/common/deref_shared_ptr.hpp"
 
 #include <array>
 #include <map>
@@ -95,12 +93,6 @@ std::ostream& operator<<(std::ostream& os, const std::variant<T1, T2, T3>& varia
 
 template<IsHanaMap Map>
 std::ostream& operator<<(std::ostream& os, const Map& map);
-
-template<typename T>
-std::ostream& operator<<(std::ostream& os, const DerefObserverPtr<T>& ptr);
-
-template<typename T>
-std::ostream& operator<<(std::ostream& os, const DerefSharedPtr<T>& ptr);
 
 /**
  * Definitions
@@ -247,20 +239,6 @@ std::ostream& operator<<(std::ostream& os, const Map& map)
                               os << "{ " << KeyType::name << " : " << value << " }, ";
                           });
     os << " }";
-    return os;
-}
-
-template<typename T>
-std::ostream& operator<<(std::ostream& os, const DerefObserverPtr<T>& ptr)
-{
-    os << *ptr;
-    return os;
-}
-
-template<typename T>
-std::ostream& operator<<(std::ostream& os, const DerefSharedPtr<T>& ptr)
-{
-    os << *ptr;
     return os;
 }
 

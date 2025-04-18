@@ -118,11 +118,8 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
     {
         dense_fluent_atoms.set(atom->get_index());
     }
-
     update_reached_fluent_atoms(dense_fluent_atoms, m_reached_fluent_atoms);
-
     translate_dense_into_sorted_compressed_sparse(dense_fluent_atoms, m_state_fluent_atoms);
-
     state_fluent_atoms = problem.get_or_create_index_list(m_state_fluent_atoms);
 
     // Test whether there exists an extended state for the given non extended state
@@ -136,13 +133,9 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
         if (m_problem_or_domain_has_axioms)
         {
             // Evaluate axioms
-            assert(dense_derived_atoms.count() == 0);
             m_axiom_evaluator->generate_and_apply_axioms(m_dense_state_builder);
-
             update_reached_derived_atoms(dense_derived_atoms, m_reached_derived_atoms);
-
             translate_dense_into_sorted_compressed_sparse(dense_derived_atoms, m_state_derived_atoms);
-
             state_derived_atoms = problem.get_or_create_index_list(m_state_derived_atoms);
         }
     }
@@ -329,13 +322,9 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
                          m_applied_positive_effect_atoms,
                          dense_fluent_numeric_variables,
                          successor_state_metric_value);
-
     update_reached_fluent_atoms(dense_fluent_atoms, m_reached_fluent_atoms);
-
     translate_dense_into_sorted_compressed_sparse(dense_fluent_atoms, m_state_fluent_atoms);
-
     state_fluent_atoms = problem.get_or_create_index_list(m_state_fluent_atoms);
-
     state_numeric_variables = problem.get_or_create_double_list(dense_fluent_numeric_variables);
 
     // Check if non-extended state exists in cache
@@ -351,11 +340,8 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
             // Evaluate axioms
             dense_derived_atoms.unset_all();  ///< Important: now we must clear the buffer before evaluating for the updated fluent atoms.
             m_axiom_evaluator->generate_and_apply_axioms(dense_state);
-
             update_reached_fluent_atoms(dense_derived_atoms, m_reached_derived_atoms);
-
             translate_dense_into_sorted_compressed_sparse(dense_derived_atoms, m_state_derived_atoms);
-
             state_derived_atoms = problem.get_or_create_index_list(m_state_derived_atoms);
         }
     }

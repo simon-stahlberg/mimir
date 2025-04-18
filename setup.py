@@ -95,7 +95,7 @@ setup(
     install_requires=["cmake>=3.21"],
     packages=find_packages(where="python/src"),
     package_dir={"": "python/src"},
-    ext_modules=[CMakeExtension("_pymimir")],
+    ext_modules=[CMakeExtension("pymimir")],
     cmdclass={"build_ext": CMakeBuild},
     zip_safe=False,
     extras_require={

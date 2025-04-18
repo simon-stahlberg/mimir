@@ -1,6 +1,6 @@
 # Import all classes for better IDE support
 
-from pymimir._pymimir.advanced.common import (
+from pymimir.pymimir.advanced.common import (
     FlatBitset,
     FlatDoubleList,
     FlatIndexList,

@@ -7,7 +7,7 @@ find_package(nanobind CONFIG REQUIRED PATHS ${CMAKE_PREFIX_PATH} NO_DEFAULT_PATH
 # Set result variables
 find_package(nanobind)
 
-nanobind_add_module(_pymimir
+nanobind_add_module(pymimir
     advanced/main.cpp 
     advanced/common/bindings.cpp 
     advanced/formalism/bindings.cpp 
@@ -17,31 +17,32 @@ nanobind_add_module(_pymimir
     advanced/languages/description_logics/bindings.cpp
 )
 
-target_link_libraries(_pymimir PRIVATE mimir::core)
+target_link_libraries(pymimir PRIVATE mimir::core)
 
-install(TARGETS _pymimir DESTINATION "pymimir")
+install(TARGETS pymimir DESTINATION "pymimir")
 
 ## Create and install stub for root module.
 nanobind_add_stub(
-    _pymimir_stub
-    MODULE _pymimir
+    pymimir_stub
+    MODULE pymimir
     OUTPUT __init__.pyi
+    MARKER_FILE py.typed
     PYTHON_PATH "."
-    DEPENDS _pymimir
+    DEPENDS pymimir
 )
 
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/__init__.pyi" DESTINATION "pymimir")
 
 ## Create and install stub for submodules.
 set(MODULES
-    _pymimir.advanced
-    _pymimir.advanced.common 
-    _pymimir.advanced.graphs
-    _pymimir.advanced.formalism
-    _pymimir.advanced.search
-    _pymimir.advanced.datasets
-    _pymimir.advanced.languages
-    _pymimir.advanced.languages.description_logics
+    pymimir.advanced
+    pymimir.advanced.common 
+    pymimir.advanced.graphs
+    pymimir.advanced.formalism
+    pymimir.advanced.search
+    pymimir.advanced.datasets
+    pymimir.advanced.languages
+    pymimir.advanced.languages.description_logics
 )
 
 foreach(mod IN LISTS MODULES)
@@ -49,11 +50,11 @@ foreach(mod IN LISTS MODULES)
     string(REPLACE "." "_" mod_id "${mod}")
 
     # Target name must be globally unique in CMake
-    set(stub_target "${mod_id}_stub")
+    set(stub_target "${mod_id}")
 
-    # Strip "_pymimir." prefix from module name for output path
+    # Strip "pymimir." prefix from module name for output path
     set(trimmed_mod "${mod}")
-    string(REGEX REPLACE "^_pymimir\\." "" trimmed_mod "${trimmed_mod}")
+    string(REGEX REPLACE "^pymimir\\." "" trimmed_mod "${trimmed_mod}")
     string(REPLACE "." "/" mod_path "${trimmed_mod}")
 
     set(stub_output "${mod_path}/__init__.pyi")
@@ -65,7 +66,7 @@ foreach(mod IN LISTS MODULES)
         MODULE ${mod}
         OUTPUT ${stub_output}
         PYTHON_PATH "."
-        DEPENDS _pymimir
+        DEPENDS pymimir
     )
 
     install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${stub_output}"

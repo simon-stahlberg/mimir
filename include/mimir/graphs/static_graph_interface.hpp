@@ -35,7 +35,7 @@ concept IsStaticGraph = requires(T a) {
     requires IsAdjacencyGraph<T>;
     requires IsBidirectionalGraph<T>;
 
-    // Ensure that DynamicGraph uses std::vector to store vertices and edges.
+    // Ensure that StaticGraph uses std::vector to store vertices and edges.
     { a.get_vertices() } -> std::same_as<const std::vector<typename T::VertexType>&>;
     { a.get_edges() } -> std::same_as<const std::vector<typename T::EdgeType>&>;
 };
