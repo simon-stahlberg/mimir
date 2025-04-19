@@ -790,21 +790,24 @@ void bind_formalism(nb::module_& m)
         .def("get_static_initial_atoms", &ProblemImpl::get_static_initial_atoms, nb::rv_policy::copy)
         .def("get_fluent_initial_atoms", &ProblemImpl::get_fluent_initial_atoms, nb::rv_policy::copy)
         .def("get_static_assignment_set", &ProblemImpl::get_static_assignment_set, nb::rv_policy::copy)
-        .def("ground",
-             static_cast<GroundAction (ProblemImpl::*)(Action, const ObjectList&)>(&ProblemImpl::ground),
-             nb::arg("action"),
-             nb::arg("binding"),
-             nb::rv_policy::reference_internal)
-        .def("ground",
-             static_cast<GroundFunctionExpression (ProblemImpl::*)(FunctionExpression, const ObjectList&)>(&ProblemImpl::ground),
-             nb::arg("function_expression"),
-             nb::arg("binding"),
-             nb::rv_policy::reference_internal)
-        .def("ground",
-             static_cast<GroundNumericConstraint (ProblemImpl::*)(NumericConstraint, const ObjectList&)>(&ProblemImpl::ground),
-             nb::arg("numeric_constraint"),
-             nb::arg("binding"),
-             nb::rv_policy::reference_internal)
+        .def(
+            "ground",
+            [](ProblemImpl& self, Action lifted, const ObjectList& binding) -> GroundAction { return self.ground(lifted, binding); },
+            nb::arg("action"),
+            nb::arg("binding"),
+            nb::rv_policy::reference_internal)
+        .def(
+            "ground",
+            [](ProblemImpl& self, FunctionExpression lifted, const ObjectList& binding) -> GroundFunctionExpression { return self.ground(lifted, binding); },
+            nb::arg("function_expression"),
+            nb::arg("binding"),
+            nb::rv_policy::reference_internal)
+        .def(
+            "ground",
+            [](ProblemImpl& self, NumericConstraint lifted, const ObjectList& binding) -> GroundNumericConstraint { return self.ground(lifted, binding); },
+            nb::arg("numeric_constraint"),
+            nb::arg("binding"),
+            nb::rv_policy::reference_internal)
         .def("get_or_create_ground_atom",
              &ProblemImpl::get_or_create_ground_atom<StaticTag>,
              nb::arg("predicate"),
@@ -820,46 +823,57 @@ void bind_formalism(nb::module_& m)
              nb::arg("predicate"),
              nb::arg("objects"),
              nb::rv_policy::reference_internal)
-        .def("ground",
-             nb::overload_cast<Literal<StaticTag>, const ObjectList&>(&ProblemImpl::ground<StaticTag>),
-             nb::arg("literal"),
-             nb::arg("binding"),
-             nb::rv_policy::reference_internal)
-        .def("ground",
-             nb::overload_cast<Literal<FluentTag>, const ObjectList&>(&ProblemImpl::ground<FluentTag>),
-             nb::arg("literal"),
-             nb::arg("binding"),
-             nb::rv_policy::reference_internal)
-        .def("ground",
-             nb::overload_cast<Literal<DerivedTag>, const ObjectList&>(&ProblemImpl::ground<DerivedTag>),
-             nb::arg("literal"),
-             nb::arg("binding"),
-             nb::rv_policy::reference_internal)
-        .def("ground",
-             nb::overload_cast<NumericEffect<FluentTag>, const ObjectList&>(&ProblemImpl::ground<FluentTag>),
-             nb::arg("numeric_effect"),
-             nb::arg("binding"),
-             nb::rv_policy::reference_internal)
-        .def("ground",
-             nb::overload_cast<NumericEffect<AuxiliaryTag>, const ObjectList&>(&ProblemImpl::ground<AuxiliaryTag>),
-             nb::arg("numeric_effect"),
-             nb::arg("binding"),
-             nb::rv_policy::reference_internal)
-        .def("ground",
-             nb::overload_cast<Function<StaticTag>, const ObjectList&>(&ProblemImpl::ground<StaticTag>),
-             nb::arg("function"),
-             nb::arg("binding"),
-             nb::rv_policy::reference_internal)
-        .def("ground",
-             nb::overload_cast<Function<FluentTag>, const ObjectList&>(&ProblemImpl::ground<FluentTag>),
-             nb::arg("function"),
-             nb::arg("binding"),
-             nb::rv_policy::reference_internal)
-        .def("ground",
-             nb::overload_cast<Function<AuxiliaryTag>, const ObjectList&>(&ProblemImpl::ground<AuxiliaryTag>),
-             nb::arg("function"),
-             nb::arg("binding"),
-             nb::rv_policy::reference_internal)
+        .def(
+            "ground",
+            [](ProblemImpl& self, Literal<StaticTag> lifted, const ObjectList& binding) -> GroundLiteral<StaticTag> { return self.ground(lifted, binding); },
+            nb::arg("literal"),
+            nb::arg("binding"),
+            nb::rv_policy::reference_internal)
+        .def(
+            "ground",
+            [](ProblemImpl& self, Literal<FluentTag> lifted, const ObjectList& binding) -> GroundLiteral<FluentTag> { return self.ground(lifted, binding); },
+            nb::arg("literal"),
+            nb::arg("binding"),
+            nb::rv_policy::reference_internal)
+        .def(
+            "ground",
+            [](ProblemImpl& self, Literal<DerivedTag> lifted, const ObjectList& binding) -> GroundLiteral<DerivedTag> { return self.ground(lifted, binding); },
+            nb::arg("literal"),
+            nb::arg("binding"),
+            nb::rv_policy::reference_internal)
+        .def(
+            "ground",
+            [](ProblemImpl& self, NumericEffect<FluentTag> lifted, const ObjectList& binding) -> GroundNumericEffect<FluentTag>
+            { return self.ground(lifted, binding); },
+            nb::arg("numeric_effect"),
+            nb::arg("binding"),
+            nb::rv_policy::reference_internal)
+        .def(
+            "ground",
+            [](ProblemImpl& self, NumericEffect<AuxiliaryTag> lifted, const ObjectList& binding) -> GroundNumericEffect<AuxiliaryTag>
+            { return self.ground(lifted, binding); },
+            nb::arg("numeric_effect"),
+            nb::arg("binding"),
+            nb::rv_policy::reference_internal)
+        .def(
+            "ground",
+            [](ProblemImpl& self, Function<StaticTag> lifted, const ObjectList& binding) -> GroundFunction<StaticTag> { return self.ground(lifted, binding); },
+            nb::arg("function"),
+            nb::arg("binding"),
+            nb::rv_policy::reference_internal)
+        .def(
+            "ground",
+            [](ProblemImpl& self, Function<FluentTag> lifted, const ObjectList& binding) -> GroundFunction<FluentTag> { return self.ground(lifted, binding); },
+            nb::arg("function"),
+            nb::arg("binding"),
+            nb::rv_policy::reference_internal)
+        .def(
+            "ground",
+            [](ProblemImpl& self, Function<AuxiliaryTag> lifted, const ObjectList& binding) -> GroundFunction<AuxiliaryTag>
+            { return self.ground(lifted, binding); },
+            nb::arg("function"),
+            nb::arg("binding"),
+            nb::rv_policy::reference_internal)
         .def("get_or_create_variable", &ProblemImpl::get_or_create_variable, nb::arg("name"), nb::arg("parameter_index"), nb::rv_policy::reference_internal)
         .def("get_or_create_term", nb::overload_cast<Variable>(&ProblemImpl::get_or_create_term), nb::arg("variable"), nb::rv_policy::reference_internal)
         .def("get_or_create_term", nb::overload_cast<Object>(&ProblemImpl::get_or_create_term), nb::arg("object"), nb::rv_policy::reference_internal)
@@ -949,12 +963,28 @@ void bind_formalism(nb::module_& m)
              nb::arg("right_expression"),
              nb::arg("terms"),
              nb::rv_policy::reference_internal)
-        .def("get_or_create_conjunctive_condition",
-             &ProblemImpl::get_or_create_conjunctive_condition,
-             nb::arg("parameters"),
-             nb::arg("literals"),
-             nb::arg("numeric_constraints"),
-             nb::rv_policy::reference_internal);
+        .def(
+            "get_or_create_conjunctive_condition",
+            [](ProblemImpl& self,
+               VariableList parameters,
+               LiteralList<StaticTag> static_literals,
+               LiteralList<FluentTag> fluent_literals,
+               LiteralList<DerivedTag> derived_literals,
+               NumericConstraintList numeric_constraints)
+            {
+                return self.get_or_create_conjunctive_condition(
+                    std::move(parameters),
+                    boost::hana::make_map(boost::hana::make_pair(boost::hana::type_c<StaticTag>, static_literals),
+                                          boost::hana::make_pair(boost::hana::type_c<FluentTag>, fluent_literals),
+                                          boost::hana::make_pair(boost::hana::type_c<DerivedTag>, derived_literals)),
+                    std::move(numeric_constraints));
+            },
+            nb::arg("parameters"),
+            nb::arg("static_literals"),
+            nb::arg("fluent_literals"),
+            nb::arg("derived_literals"),
+            nb::arg("numeric_constraints"),
+            nb::rv_policy::reference_internal);
     nb::bind_vector<ProblemList>(m, "ProblemList");
 
     /* GeneralizedProblem */

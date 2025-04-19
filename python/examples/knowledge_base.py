@@ -47,21 +47,23 @@ graph = generalized_state_space.get_graph()
 
 # Iterate over vertices
 for vertex in graph.get_vertices():
-    # Access vertex properties (Sorry for the generic names!)
-    vertex.get_index()      # class vertex index (int)
-    vertex.get_property_0() # problem vertex index (int)
-    vertex.get_property_1() # problem index (int)
+    # Acces vertex properties through generic member of free functions
+    vertex.get_index()      
+    assert(vertex.get_property_0() == datasets.get_problem_vertex_index(vertex)) 
+    assert(vertex.get_property_1() == datasets.get_problem_index(vertex))
+    
 
 # Iterate over edges
 for edge in graph.get_edges():
-    # Access edge properties (Sorry for the generic names!)
-    edge.get_index()      # class edge index (int)
-    edge.get_source()     # class source vertex index (int)
-    edge.get_target()     # class target vertex index (int)
-    edge.get_property_0() # problem edge index (int)
-    edge.get_property_1() # problem index (int)
+    # Access edge properties through generic member of free functions
+    edge.get_index()  
+    edge.get_source()   
+    edge.get_target()   
+    assert(edge.get_property_0() == datasets.get_problem_edge_index(edge)) 
+    assert(edge.get_property_1() == datasets.get_problem_index(edge))
 
 ### Iteration over adjacent structures, for the example of an initial state
+assert(len(initial_vertices) == 2)
 v_idx = initial_vertices.pop()
 
 for vertex in graph.get_forward_adjacent_vertices(v_idx):
@@ -93,37 +95,36 @@ for e2_idx in graph.get_backward_adjacent_edge_indices(v_idx):
 for vertex in graph.get_vertices():
     # Map class vertex to problem vertex
     problem_vertex = generalized_state_space.get_problem_vertex(vertex)
-
-    problem_vertex.get_index()                # vertex index
-    state = problem_vertex.get_property_0()   # state (State)
-    problem = problem_vertex.get_property_1() # problem (Problem)
-    problem_vertex.get_property_2()           # unit goal distance (int)
-    problem_vertex.get_property_3()           # action goal distance (double)
-    problem_vertex.get_property_4()           # is initial ? (bool)
-    problem_vertex.get_property_5()           # is goal ? (bool)
-    problem_vertex.get_property_6()           # is unsolvable ? (bool)
-    problem_vertex.get_property_7()           # is alive (bool)
-
-    print(state.to_string(problem))
+    # Acces vertex properties through generic member of free functions
+    problem_vertex.get_index()
+    assert(problem_vertex.get_property_0() == datasets.get_state(problem_vertex))
+    assert(problem_vertex.get_property_1() == datasets.get_problem(problem_vertex))
+    assert(problem_vertex.get_property_2() == datasets.get_unit_goal_distance(problem_vertex))     
+    assert(problem_vertex.get_property_3() == datasets.get_action_goal_distance(problem_vertex))
+    assert(problem_vertex.get_property_4() == datasets.is_initial(problem_vertex))
+    assert(problem_vertex.get_property_5() == datasets.is_goal(problem_vertex))
+    assert(problem_vertex.get_property_6() == datasets.is_unsolvable(problem_vertex))
+    assert(problem_vertex.get_property_7() == datasets.is_alive(problem_vertex))
 
 for edge in graph.get_edges():
     # Map class edge to problem edge
     problem_edge = generalized_state_space.get_problem_edge(edge)
-
-    problem_edge.get_index()                    # edge index
-    problem_edge.get_source()                   # source vertex index
-    problem_edge.get_target()                   # target vertex index
-    action = problem_edge.get_property_0()      # action (GroundAction)
-    problem = problem_edge.get_property_1()     # problem (Problem)
-    action_cost = problem_edge.get_property_2() # cost (double)
-
-    print(action.to_string(problem))
+    # Access edge properties through generic member of free functions
+    problem_edge.get_index()
+    problem_edge.get_source()
+    problem_edge.get_target()
+    assert(problem_edge.get_property_0() == datasets.get_action(problem_edge))
+    assert(problem_edge.get_property_1() == datasets.get_problem(problem_edge))
+    assert(problem_edge.get_property_2() == datasets.get_action_cost(problem_edge))
 
 for tuple_graphs in knowledge_base.get_tuple_graphs():
     for tuple_graph in tuple_graphs:
-        tuple_graph.get_graph()                                      # The internal tuple graph structre
-        tuple_graph.get_state_space()                                # The corresponding state space
-        tuple_graph.get_problem_vertex_indices_grouped_by_distance() # The problem vertex indices grouped by distance
-        tuple_graph.get_tuple_vertex_indices_grouped_by_distance()   # The tuple vertex indices grouped by distance
+        tuple_graph.get_graph()
+        tuple_graph.get_state_space()
+        tuple_graph.get_problem_vertex_indices_grouped_by_distance()
+        tuple_graph.get_tuple_vertex_indices_grouped_by_distance()
 
-        print(str(tuple_graph))
+        for vertex in tuple_graph.get_graph().get_vertices():
+            vertex.get_index()
+            assert(vertex.get_property_0() == datasets.get_atom_tuple(vertex))
+            assert(vertex.get_property_1() == datasets.get_problem_vertices(vertex))
