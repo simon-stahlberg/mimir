@@ -23,6 +23,10 @@ namespace mimir::graphs
  * IColor
  */
 
+bool IColor::operator==(const IColor& other) const { return equal_to(other); }
+
+bool IColor::operator<(const IColor& other) const { return less(other); }
+
 std::ostream& operator<<(std::ostream& out, const IColor& color)
 {
     out << color.str();
@@ -33,7 +37,7 @@ std::ostream& operator<<(std::ostream& out, const IColor& color)
  * Color
  */
 
-Color::Color(std::shared_ptr<IColor> color) : m_color(std::move(color)) {}
+Color::Color(nb::ref<IColor> color) : m_color(std::move(color)) { std::cout << "EXPLICIT" << std::endl; }
 
 bool Color::operator==(const Color& other) const { return loki::EqualTo<IColor>()(*m_color, *other.m_color); }
 

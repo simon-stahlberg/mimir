@@ -68,7 +68,7 @@ get_or_create_search_node(size_t state_index, const AStarSearchNodeImpl& default
  */
 
 SearchResult find_solution(const SearchContext& context,
-                           Heuristic heuristic,
+                           const Heuristic& heuristic,
                            State start_state_,
                            EventHandler event_handler_,
                            GoalStrategy goal_strategy_,

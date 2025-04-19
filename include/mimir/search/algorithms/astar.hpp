@@ -31,7 +31,7 @@ namespace mimir::search::astar
 {
 
 extern SearchResult find_solution(const SearchContext& context,
-                                  Heuristic heuristic,
+                                  const Heuristic& heuristic,
                                   State start_state = nullptr,
                                   EventHandler event_handler = nullptr,
                                   GoalStrategy goal_strategy = nullptr,

@@ -3,9 +3,11 @@ find_package(Python 3.8
   OPTIONAL_COMPONENTS Development.SABIModule)
   
 find_package(nanobind CONFIG REQUIRED PATHS ${CMAKE_PREFIX_PATH} NO_DEFAULT_PATH)
-
 # Set result variables
 find_package(nanobind)
+if(nanobind_FOUND)
+  message(STATUS "Found nanobind: ${NB_DIR} (found version ${nanobind_VERSION})")
+endif()
 
 nanobind_add_module(pymimir
     advanced/main.cpp 
@@ -18,6 +20,8 @@ nanobind_add_module(pymimir
 )
 
 target_link_libraries(pymimir PRIVATE mimir::core)
+
+target_include_directories(pymimir PRIVATE "${NB_DIR}/include")
 
 install(TARGETS pymimir DESTINATION "pymimir")
 
