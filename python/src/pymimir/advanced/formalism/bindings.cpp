@@ -991,23 +991,15 @@ void bind_formalism(nb::module_& m)
     nb::class_<GeneralizedProblemImpl>(m, "GeneralizedProblem")
         .def_static(
             "create",
-            [](std::string domain_filepath, std::vector<std::string> problem_filepaths, loki::Options options)
-            {
-                std::vector<fs::path> paths;
-                paths.reserve(problem_filepaths.size());
-                for (const auto& filepath : problem_filepaths)
-                {
-                    paths.emplace_back(filepath);
-                }
-                return GeneralizedProblemImpl::create(fs::path(std::move(domain_filepath)), std::move(paths), std::move(options));
-            },
+            [](const fs::path& domain_filepath, const std::vector<fs::path>& problem_filepaths, const loki::Options& options)
+            { return GeneralizedProblemImpl::create(domain_filepath, problem_filepaths, options); },
             nb::arg("domain_filepath"),
             nb::arg("problem_filepaths"),
             nb::arg("options") = loki::Options())
         .def_static(
             "create",
-            [](std::string domain_filepath, std::string problems_directory, loki::Options options)
-            { return GeneralizedProblemImpl::create(fs::path(std::move(domain_filepath)), fs::path(std::move(problems_directory)), std::move(options)); },
+            [](const fs::path& domain_filepath, const fs::path& problems_directory, const loki::Options& options)
+            { return GeneralizedProblemImpl::create(domain_filepath, problems_directory, options); },
             nb::arg("domain_filepath"),
             nb::arg("problems_directory"),
             nb::arg("options") = loki::Options())

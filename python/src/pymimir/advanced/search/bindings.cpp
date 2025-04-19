@@ -175,6 +175,17 @@ void bind_search(nb::module_& m)
         .value("UNSOLVABLE", SearchStatus::UNSOLVABLE)
         .export_values();
 
+    nb::enum_<match_tree::SplitMetricEnum>(m, "MatchTreeSplitMetric")
+        .value("FREQUENCY", match_tree::SplitMetricEnum::FREQUENCY)
+        .value("GINI", match_tree::SplitMetricEnum::GINI);
+
+    nb::enum_<match_tree::SplitStrategyEnum>(m, "MatchTreeSplitStrategy")  //
+        .value("DYNAMIC", match_tree::SplitStrategyEnum::DYNAMIC);
+
+    nb::enum_<match_tree::OptimizationDirectionEnum>(m, "MatchTreeOptimizationDirection")
+        .value("MINIMIZE", match_tree::OptimizationDirectionEnum::MINIMIZE)
+        .value("MAXIMIZE", match_tree::OptimizationDirectionEnum::MAXIMIZE);
+
     /* SearchContext */
 
     nb::class_<SearchContextImpl::Options>(m, "SearchContextOptions")
@@ -185,8 +196,8 @@ void bind_search(nb::module_& m)
     nb::class_<SearchContextImpl>(m, "SearchContext")
         .def_static(
             "create",
-            [](const std::string& domain_filepath, const std::string& problem_filepath, const SearchContextImpl::Options& options) -> SearchContext
-            { return SearchContextImpl::create(fs::path(domain_filepath), fs::path(problem_filepath), options); },
+            [](const fs::path& domain_filepath, const fs::path& problem_filepath, const SearchContextImpl::Options& options) -> SearchContext
+            { return SearchContextImpl::create(domain_filepath, problem_filepath, options); },
             nb::arg("domain_filepath"),
             nb::arg("problem_filepath"),
             nb::arg("options") = SearchContextImpl::Options())
@@ -207,23 +218,15 @@ void bind_search(nb::module_& m)
     nb::class_<GeneralizedSearchContextImpl>(m, "GeneralizedSearchContext")
         .def_static(
             "create",
-            [](std::string domain_filepath, std::vector<std::string> problem_filepaths, SearchContextImpl::Options options) -> GeneralizedSearchContext
-            {
-                std::vector<fs::path> paths;
-                paths.reserve(problem_filepaths.size());
-                for (const auto& filepath : problem_filepaths)
-                {
-                    paths.emplace_back(filepath);
-                }
-                return GeneralizedSearchContextImpl::create(fs::path(std::move(domain_filepath)), std::move(paths), std::move(options));
-            },
+            [](const fs::path& domain_filepath, const std::vector<fs::path>& problem_filepaths, const SearchContextImpl::Options& options)
+                -> GeneralizedSearchContext { return GeneralizedSearchContextImpl::create(domain_filepath, problem_filepaths, options); },
             nb::arg("domain_filepath"),
             nb::arg("problem_filepaths"),
             nb::arg("options") = SearchContextImpl::Options())
         .def_static(
             "create",
-            [](std::string domain_filepath, std::string problems_directory, const SearchContextImpl::Options& options) -> GeneralizedSearchContext
-            { return GeneralizedSearchContextImpl::create(fs::path(std::move(domain_filepath)), fs::path(std::move(problems_directory)), std::move(options)); },
+            [](const fs::path& domain_filepath, const fs::path& problems_directory, const SearchContextImpl::Options& options) -> GeneralizedSearchContext
+            { return GeneralizedSearchContextImpl::create(domain_filepath, problems_directory, options); },
             nb::arg("domain_filepath"),
             nb::arg("problems_directory"),
             nb::arg("options") = SearchContextImpl::Options())

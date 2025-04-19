@@ -98,11 +98,9 @@ configure_ccache()
 configure_boost()
 find_package(Boost ${BOOST_MIN_VERSION} REQUIRED COMPONENTS iostreams PATHS ${CMAKE_PREFIX_PATH} NO_DEFAULT_PATH)
 if(Boost_FOUND)
-  include_directories(${Boost_INCLUDE_DIRS})
   message(STATUS "Found Boost: ${Boost_DIR} (found version ${Boost_VERSION})")
 endif()
 
-find_package(ZLIB REQUIRED)
 
 configure_loki()
 find_package(loki ${LOKI_MIN_VERSION} COMPONENTS parsers REQUIRED PATHS ${CMAKE_PREFIX_PATH} NO_DEFAULT_PATH)
@@ -110,21 +108,18 @@ find_package(loki ${LOKI_MIN_VERSION} COMPONENTS parsers REQUIRED PATHS ${CMAKE_
 # TODO(Dominik): NO_DEFAULT_PATH does not work
 find_package(Nauty REQUIRED)
 if(Nauty_FOUND)
-  include_directories(${Nauty_INCLUDE_DIR})
   message(STATUS "Found Nauty: ${NAUTY_LIBRARY} ${NAUTY_INCLUDE_DIR}")
 endif()
 
 
 find_package(fmt REQUIRED PATHS ${CMAKE_PREFIX_PATH} NO_DEFAULT_PATH)
 if(fmt_FOUND)
-  include_directories(${fmt_INCLUDE_DIRS})
   message(STATUS "Found fmt: ${fmt_DIR} (found version ${fmt_VERSION})")
 endif()
 
 
 find_package(absl CONFIG REQUIRED PATHS ${CMAKE_PREFIX_PATH} NO_DEFAULT_PATH)
 if(absl_FOUND)
-  include_directories(${absl_INCLUDE_DIRS})
   message(STATUS "Found absl: ${absl_DIR} (found version ${absl_VERSION})")
 endif()
 

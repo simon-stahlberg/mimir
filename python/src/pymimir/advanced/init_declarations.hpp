@@ -25,12 +25,14 @@
 #include <nanobind/stl/array.h>
 #include <nanobind/stl/bind_map.h>     ///< TODO: implement our own with PyImmutable
 #include <nanobind/stl/bind_vector.h>  ///< TODO: implement our own with PyImmutable
+#include <nanobind/stl/filesystem.h>
 #include <nanobind/stl/map.h>
 #include <nanobind/stl/optional.h>  ///< for optional support
 #include <nanobind/stl/optional.h>
 #include <nanobind/stl/set.h>
 #include <nanobind/stl/shared_ptr.h>  ///< for shared ownerships
 #include <nanobind/stl/string.h>      ///< for string support
+#include <nanobind/stl/tuple.h>
 #include <nanobind/stl/unordered_map.h>
 #include <nanobind/stl/unordered_set.h>
 #include <nanobind/stl/vector.h>

@@ -5,12 +5,14 @@ from pymimir.pymimir.advanced.search import (
     SearchMode,
     SearchNodeStatus,
     SearchStatus,
+    MatchTreeSplitMetric,
+    MatchTreeSplitStrategy,
+    MatchTreeOptimizationDirection,
 )
 
 # Common
 from pymimir.pymimir.advanced.search import (   
     BlindHeuristic,
-    DeleteRelaxedProblemExplorator,
     IApplicableActionGenerator,
     IAxiomEvaluator,
     IHeuristic,
@@ -99,4 +101,6 @@ from pymimir.pymimir.advanced.search import (
     GroundedAxiomEvaluator,
     IGroundedApplicableActionGeneratorEventHandler,
     IGroundedAxiomEvaluatorEventHandler,
+    DeleteRelaxedProblemExplorator,
+    MatchTreeOptions,
 )

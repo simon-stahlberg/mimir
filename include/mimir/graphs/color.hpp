@@ -33,8 +33,7 @@ public:
 
     virtual bool operator==(const IColor& other) const = 0;
     virtual bool operator<(const IColor& other) const = 0;
-    virtual std::ostream& operator<<(std::ostream& out) const = 0;
-
+    virtual std::string str() const = 0;
     virtual size_t hash() const = 0;
 };
 
@@ -67,11 +66,11 @@ public:
         return typeid(*this).before(typeid(other));
     }
 
-    std::ostream& operator<<(std::ostream& out) const override
+    std::string str() const override
     {
-        mimir::operator<<(out, m_colors);
-
-        return out;
+        auto ss = std::stringstream {};
+        mimir::operator<<(ss, m_colors);
+        return ss.str();
     }
 
     size_t hash() const override { return loki::Hash<std::tuple<Ts...>>()(get_colors()); }
@@ -83,6 +82,8 @@ private:
 class Color
 {
 public:
+    explicit Color(std::shared_ptr<IColor> color);
+
     template<typename... Ts>
     Color(Ts... colors) : m_color(std::make_shared<VariadicColor<Ts...>>(std::move(colors)...))
     {
@@ -90,8 +91,7 @@ public:
 
     bool operator==(const Color& other) const;
     bool operator<(const Color& other) const;
-
-    friend std::ostream& operator<<(std::ostream& out, const Color& color);
+    std::string str() const;
     size_t hash() const;
 
 private:

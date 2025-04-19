@@ -141,8 +141,11 @@ public:
             ptn[i - 1] = (color_vertex_pairs[i - 1].first != color_vertex_pairs[i].first) ? 0 : 1;
             coloring.push_back(color_vertex_pairs[i - 1].first);
         }
-        lab[nv - 1] = color_vertex_pairs[nv - 1].second;
-        ptn[nv - 1] = 0;
+        if (nv > 0)
+        {
+            lab[nv - 1] = color_vertex_pairs[nv - 1].second;
+            ptn[nv - 1] = 0;
+        }
 
         initialize(nde, v, nv, d, e, vlen, dlen, elen, lab, ptn, coloring);
     }
