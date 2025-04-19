@@ -101,8 +101,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a5ff7d249c7d18d5984d9bc78a1cacce0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2f7abd17a653bbefbf3f359ebb0e89c8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1VariadicColor.html#a2f7abd17a653bbefbf3f359ebb0e89c8">operator&lt;</a> (const <a class="el" href="classmimir_1_1graphs_1_1IColor.html">IColor</a> &amp;other) const override</td></tr>
 <tr class="separator:a2f7abd17a653bbefbf3f359ebb0e89c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa3b24fbaac0711888e7621ba649530ae"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1VariadicColor.html#aa3b24fbaac0711888e7621ba649530ae">operator&lt;&lt;</a> (std::ostream &amp;out) const override</td></tr>
-<tr class="separator:aa3b24fbaac0711888e7621ba649530ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0cbc981192cad5dc1f4b8475202c4107"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1VariadicColor.html#a0cbc981192cad5dc1f4b8475202c4107">str</a> () const override</td></tr>
+<tr class="separator:a0cbc981192cad5dc1f4b8475202c4107"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7f904d8b8000da81f1e8df80565cc2a0"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1VariadicColor.html#a7f904d8b8000da81f1e8df80565cc2a0">hash</a> () const override</td></tr>
 <tr class="separator:a7f904d8b8000da81f1e8df80565cc2a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classmimir_1_1graphs_1_1IColor"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classmimir_1_1graphs_1_1IColor')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classmimir_1_1graphs_1_1IColor.html">mimir::graphs::IColor</a></td></tr>
@@ -112,8 +112,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a17330e23b0282335ccb0ffe131622939 inherit pub_methods_classmimir_1_1graphs_1_1IColor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acae24f35d7a93df7ec71f7da08a4c61f inherit pub_methods_classmimir_1_1graphs_1_1IColor"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1IColor.html#acae24f35d7a93df7ec71f7da08a4c61f">operator&lt;</a> (const <a class="el" href="classmimir_1_1graphs_1_1IColor.html">IColor</a> &amp;other) const =0</td></tr>
 <tr class="separator:acae24f35d7a93df7ec71f7da08a4c61f inherit pub_methods_classmimir_1_1graphs_1_1IColor"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a74d0e2bd461da2760c199f87b9d8d53c inherit pub_methods_classmimir_1_1graphs_1_1IColor"><td class="memItemLeft" align="right" valign="top">virtual std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1IColor.html#a74d0e2bd461da2760c199f87b9d8d53c">operator&lt;&lt;</a> (std::ostream &amp;out) const =0</td></tr>
-<tr class="separator:a74d0e2bd461da2760c199f87b9d8d53c inherit pub_methods_classmimir_1_1graphs_1_1IColor"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82347a0a22c707412b94d74dc0f288f5 inherit pub_methods_classmimir_1_1graphs_1_1IColor"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1IColor.html#a82347a0a22c707412b94d74dc0f288f5">str</a> () const =0</td></tr>
+<tr class="separator:a82347a0a22c707412b94d74dc0f288f5 inherit pub_methods_classmimir_1_1graphs_1_1IColor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a25332e2841c0d92016121716ec691393 inherit pub_methods_classmimir_1_1graphs_1_1IColor"><td class="memItemLeft" align="right" valign="top">virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1IColor.html#a25332e2841c0d92016121716ec691393">hash</a> () const =0</td></tr>
 <tr class="separator:a25332e2841c0d92016121716ec691393 inherit pub_methods_classmimir_1_1graphs_1_1IColor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -233,36 +233,6 @@ template&lt;typename... Ts&gt; </div>
 
 </div>
 </div>
-<a id="aa3b24fbaac0711888e7621ba649530ae" name="aa3b24fbaac0711888e7621ba649530ae"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa3b24fbaac0711888e7621ba649530ae">&#9670;&#160;</a></span>operator&lt;&lt;()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename... Ts&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::ostream &amp; <a class="el" href="classmimir_1_1graphs_1_1VariadicColor.html">mimir::graphs::VariadicColor</a>&lt; Ts &gt;::operator&lt;&lt; </td>
-          <td>(</td>
-          <td class="paramtype">std::ostream &amp;&#160;</td>
-          <td class="paramname"><em>out</em></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classmimir_1_1graphs_1_1IColor.html#a74d0e2bd461da2760c199f87b9d8d53c">mimir::graphs::IColor</a>.</p>
-
-</div>
-</div>
 <a id="a5ff7d249c7d18d5984d9bc78a1cacce0" name="a5ff7d249c7d18d5984d9bc78a1cacce0"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5ff7d249c7d18d5984d9bc78a1cacce0">&#9670;&#160;</a></span>operator==()</h2>
 
@@ -290,6 +260,35 @@ template&lt;typename... Ts&gt; </div>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classmimir_1_1graphs_1_1IColor.html#a17330e23b0282335ccb0ffe131622939">mimir::graphs::IColor</a>.</p>
+
+</div>
+</div>
+<a id="a0cbc981192cad5dc1f4b8475202c4107" name="a0cbc981192cad5dc1f4b8475202c4107"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0cbc981192cad5dc1f4b8475202c4107">&#9670;&#160;</a></span>str()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename... Ts&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string <a class="el" href="classmimir_1_1graphs_1_1VariadicColor.html">mimir::graphs::VariadicColor</a>&lt; Ts &gt;::str </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classmimir_1_1graphs_1_1IColor.html#a82347a0a22c707412b94d74dc0f288f5">mimir::graphs::IColor</a>.</p>
 
 </div>
 </div>
