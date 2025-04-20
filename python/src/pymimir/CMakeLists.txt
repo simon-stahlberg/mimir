@@ -21,8 +21,6 @@ nanobind_add_module(pymimir
 
 target_link_libraries(pymimir PRIVATE mimir::core)
 
-target_include_directories(pymimir PRIVATE "${NB_DIR}/include")
-
 install(TARGETS pymimir DESTINATION "pymimir")
 
 ## Stubgen
