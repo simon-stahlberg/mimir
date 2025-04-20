@@ -14,24 +14,6 @@ class CustomBlindHeuristic(search.IHeuristic):
         return 0.
 
 
-class CustomGoalCountHeuristic(search.IHeuristic):
-    def __init__(self, problem : formalism.Problem):
-        super().__init__()  
-        self.problem = problem
-
-        self.num_goal_literals = len(self.problem.get_fluent_goal_condition()) + len(self.problem.get_derived_goal_condition())
-
-    def compute_heuristic(self, state : search.State, is_goal_state: bool) -> float:
-        num_satisfied_goal_literals = 0
-        for literal in self.problem.get_fluent_goal_condition():
-            if state.literal_holds(literal):
-                num_satisfied_goal_literals += 1
-        for literal in self.problem.get_derived_goal_condition():
-            if state.literal_holds(literal):
-                num_satisfied_goal_literals += 1
-
-        return self.num_goal_literals - num_satisfied_goal_literals
-
 class CustomEventHandler(search.IAStarEventHandler):
     def __init__(self):
         super().__init__()
@@ -88,12 +70,12 @@ def test_astar_search():
     search_context = search.SearchContext.create(domain_filepath, problem_filepath)
 
     blind_heuristic = CustomBlindHeuristic()
-    goal_count_heuristic = CustomGoalCountHeuristic(search_context.get_problem())
+    initial_state, _ = search_context.get_state_repository().get_or_create_initial_state()
     event_handler = CustomEventHandler()
-    initial_state, initial_metric_value = search_context.get_state_repository().get_or_create_initial_state()
-    default_event_handler = search.DefaultAStarEventHandler(search_context.get_problem(), False)
+    problem_goal_stategy = search.ProblemGoalStrategy(search_context.get_problem())
+    no_pruning_strategy = search.NoPruningStrategy()
 
-    result = search.find_solution_astar(search_context, blind_heuristic, initial_state, event_handler)
+    result = search.find_solution_astar(search_context, blind_heuristic, initial_state, event_handler, problem_goal_stategy, no_pruning_strategy)
 
     assert result.status == search.SearchStatus.SOLVED
     assert len(result.plan) == 3

@@ -10,13 +10,18 @@ from pathlib import Path
 
 ROOT_DIR = (Path(__file__).parent.parent.parent).absolute()
 
-domain_filepath = str(ROOT_DIR / "data" / "gripper" / "domain.pddl")
-problem_filepath = str(ROOT_DIR / "data" / "gripper" / "p-2-0.pddl")
+def main():
+    domain_filepath = str(ROOT_DIR / "data" / "gripper" / "domain.pddl")
+    problem_filepath = str(ROOT_DIR / "data" / "gripper" / "p-2-0.pddl")
 
-# Create some states
-state_space, certificates = datasets.StateSpace.create(search.SearchContext.create(domain_filepath, problem_filepath))
-domain = state_space.get_search_context().get_problem().get_domain()
+    # Create some states
+    state_space, certificates = datasets.StateSpace.create(search.SearchContext.create(domain_filepath, problem_filepath))
+    domain = state_space.get_search_context().get_problem().get_domain()
 
-# Create a CNFGrammar for the domain.
-grammar = description_logics.CNFGrammar.create(description_logics.GrammarSpecificationEnum.FRANCES_ET_AL_AAAI2021, domain)
-print(grammar)
+    # Create a CNFGrammar for the domain.
+    grammar = description_logics.CNFGrammar.create(description_logics.GrammarSpecificationEnum.FRANCES_ET_AL_AAAI2021, domain)
+    print(grammar)
+
+
+if __name__ == "__main__":
+    main()

@@ -1,6 +1,6 @@
 # Python Bindings Design Strategy
 
-For efficiency and correctness reasons, we follow two design principles:
+For efficiency and correctness reasons, we follow three design principles:
 
 1. One-to-one-mapping: 
 
@@ -9,6 +9,10 @@ Every C++ type must have a corresponding Python type, e.g., C++ `StateList` <=> 
 2. Emulating const-semantics: 
 
 Every C++ type `T` with functions that mutate the object must have two corresponding Python types, `T` and `ImmutableT`. This should be done by providing a bindings for `T` with the name `T` and `PyImmutable<T>` with the name `ImmutableT`. The binding of `T` contains all functions and the binding for `PyImmutable<T>` must only contain const methods. Therefore, `PyImmutable<T>` restricts the interface and we can simply wrap return values when returning `const T&`. 
+
+3. Reference-leaks:
+
+Classes subclassed in Python (using `nb::trampoline`) cannot be be stored long-term inside C++ as this causes reference leaks. While this can in principle 
 
 # Open tasks
 

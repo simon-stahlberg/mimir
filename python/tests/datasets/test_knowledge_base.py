@@ -15,17 +15,12 @@ def test_knowledge_base_without_symmetry_reduction():
 
     state_space_options = datasets.StateSpaceOptions()
     state_space_options.symmetry_pruning = False 
-
     generalized_state_space_options = datasets.GeneralizedStateSpaceOptions()
     generalized_state_space_options.symmetry_pruning = False
-
     knowledge_base_options = datasets.KnowledgeBaseOptions()
     knowledge_base_options.state_space_options = state_space_options
     knowledge_base_options.generalized_state_space_options = generalized_state_space_options
-
-    generalized_search_context = search.GeneralizedSearchContext.create(domain_filepath, [problem_filepath_1, problem_filepath_2])
-
-    knowledge_base = datasets.KnowledgeBase.create(generalized_search_context, knowledge_base_options)
+    knowledge_base = datasets.KnowledgeBase.create(search.GeneralizedSearchContext.create(domain_filepath, [problem_filepath_1, problem_filepath_2]), knowledge_base_options)
 
     generalized_state_space = knowledge_base.get_generalized_state_space()
 
@@ -44,17 +39,12 @@ def test_knowledge_base_with_symmetry_reduction():
 
     state_space_options = datasets.StateSpaceOptions()
     state_space_options.symmetry_pruning = True 
-
     generalized_state_space_options = datasets.GeneralizedStateSpaceOptions()
     generalized_state_space_options.symmetry_pruning = True
-
     knowledge_base_options = datasets.KnowledgeBaseOptions()
     knowledge_base_options.state_space_options = state_space_options
     knowledge_base_options.generalized_state_space_options = generalized_state_space_options
-
-    generalized_search_context = search.GeneralizedSearchContext.create(domain_filepath, [problem_filepath_1, problem_filepath_2])
-
-    knowledge_base = datasets.KnowledgeBase.create(generalized_search_context, knowledge_base_options)
+    knowledge_base = datasets.KnowledgeBase.create(search.GeneralizedSearchContext.create(domain_filepath, [problem_filepath_1, problem_filepath_2]), knowledge_base_options)
 
     generalized_state_space = knowledge_base.get_generalized_state_space()
 

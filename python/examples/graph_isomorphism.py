@@ -11,32 +11,39 @@ class MyColor(graphs.IColor):
         super().__init__()
         self._color = (a, b)
 
-    def equal(self, other : "MyColor"):
+    def __eq__(self, other : "MyColor"):
         return self._color == other._color 
 
-    def less(self, other : "MyColor"):
+    def __lt__(self, other : "MyColor"):
         return self._color < other._color
 
-    def str(self):
+    def __str__(self):
         return str(self._color)
 
-    def hash(self):
+    def __hash__(self):
         return hash(self._color)
 
-graph1 = graphs.StaticVertexColoredGraph()
-graph1.add_vertex(graphs.Color(MyColor(1, 2)))
-graph1.add_vertex(graphs.Color(MyColor(2, 1)))
+def main():
+    # Passing the Python subclass MyColor into C++ and storing it there causes some major issues...
+    graph1 = graphs.StaticVertexColoredGraph()
+    color1 = graphs.Color(MyColor(1, 2))
+    color2 = graphs.Color(MyColor(2, 1))
+    graph1.add_vertex(color1)
+    graph1.add_vertex(color2)
 
-graph2 = graphs.StaticVertexColoredGraph()
-graph2.add_vertex(graphs.Color(MyColor(2, 1)))
-graph2.add_vertex(graphs.Color(MyColor(1, 2)))
+    graph2 = graphs.StaticVertexColoredGraph()
+    graph2.add_vertex(color2)
+    graph2.add_vertex(color1)
 
-# nauty_graph1 = graphs.NautySparseGraph(graph1)
-# nauty_graph2 = graphs.NautySparseGraph(graph2)
-# 
-# assert(nauty_graph1 != nauty_graph2)
-# 
-# nauty_graph1.canonize()
-# nauty_graph2.canonize()
-# 
-# assert(nauty_graph1 != nauty_graph2)
+    nauty_graph1 = graphs.NautySparseGraph(graph1)
+    nauty_graph2 = graphs.NautySparseGraph(graph2)
+    
+    assert(nauty_graph1 != nauty_graph2)
+    
+    nauty_graph1.canonize()
+    nauty_graph2.canonize()
+     
+    assert(nauty_graph1 == nauty_graph2)
+
+if __name__ == "__main__":
+    main()

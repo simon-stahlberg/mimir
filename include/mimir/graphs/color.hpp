@@ -23,25 +23,19 @@
 
 #include <cstddef>
 #include <loki/loki.hpp>
-#include <nanobind/intrusive/counter.h>
-#include <nanobind/intrusive/ref.h>
 
 namespace mimir::graphs
 {
-namespace nb = nanobind;
 
 /// @brief `IColor` is the abstract base class for a color in vertex-colored graphs.
 /// https://nanobind.readthedocs.io/en/latest/ownership_adv.html#intrusive-reference-counting
-class IColor : public nb::intrusive_base
+class IColor
 {
 public:
     virtual ~IColor() = default;
 
-    bool operator==(const IColor& other) const;
-    bool operator<(const IColor& other) const;
-
-    virtual bool equal_to(const IColor& other) const = 0;
-    virtual bool less(const IColor& other) const = 0;
+    virtual bool operator==(const IColor& other) const = 0;
+    virtual bool operator<(const IColor& other) const = 0;
     virtual std::string str() const = 0;
     virtual size_t hash() const = 0;
 };
@@ -50,11 +44,11 @@ template<typename... Ts>
 class VariadicColor : public IColor
 {
 public:
-    VariadicColor(Ts... colors) : m_colors(std::move(colors)...) { std::cout << "VARIADIC" << std::endl; }
+    VariadicColor(Ts... colors) : m_colors(std::move(colors)...) {}
 
     const std::tuple<Ts...>& get_colors() const { return m_colors; }
 
-    bool equal_to(const IColor& other) const override
+    bool operator==(const IColor& other) const override
     {
         if (typeid(*this) == typeid(other))
         {
@@ -64,7 +58,7 @@ public:
         return false;
     }
 
-    bool less(const IColor& other) const override
+    bool operator<(const IColor& other) const override
     {
         if (typeid(*this) == typeid(other))
         {
@@ -95,11 +89,11 @@ public:
     /// Notice that Python users have to manually declare different types of colors by deriving from IColor
     /// while C++ users can make usage of the `VariadicColor` in the constructor below.
     /// @param color
-    explicit Color(nb::ref<IColor> color);
+    explicit Color(std::shared_ptr<IColor> color);
 
     /// @brief The variadic constructor for C++ managed `IColor`.
     template<typename... Ts>
-    Color(Ts... colors) : m_color(new VariadicColor<Ts...>(std::move(colors)...))
+    Color(Ts... colors) : m_color(std::make_shared<VariadicColor<Ts...>>(std::move(colors)...))
     {
     }
 
@@ -108,8 +102,9 @@ public:
     std::string str() const;
     size_t hash() const;
 
+    std::shared_ptr<IColor> m_color;
+
 private:
-    nb::ref<IColor> m_color;
 };
 
 extern std::ostream& operator<<(std::ostream& out, const IColor& color);

@@ -17,7 +17,6 @@
 
 #include "init_declarations.hpp"
 
-#include <nanobind/intrusive/counter.inl>
 #include <nanobind/nanobind.h>
 
 namespace nb = nanobind;
@@ -28,18 +27,6 @@ namespace mimir::bindings
 
 NB_MODULE(pymimir, m)
 {
-    nb::intrusive_init(
-        [](PyObject* o) noexcept
-        {
-            nb::gil_scoped_acquire guard;
-            Py_INCREF(o);
-        },
-        [](PyObject* o) noexcept
-        {
-            nb::gil_scoped_acquire guard;
-            Py_DECREF(o);
-        });
-
     // Create submodules before binding to avoid missing bindings
     auto advanced = m.def_submodule("advanced");
     m.attr("advanced") = advanced;
