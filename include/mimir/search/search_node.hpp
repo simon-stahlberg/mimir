@@ -33,6 +33,8 @@ enum SearchNodeStatus
     GOAL = 4,
 };
 
+/// @brief `SearchNodeImpl` encapsulates per state information during search.
+/// @tparam ...SearchNodeProperties
 template<typename... SearchNodeProperties>
 struct SearchNodeImpl
 {

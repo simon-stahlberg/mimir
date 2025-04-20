@@ -114,6 +114,47 @@ void FormatterVisitor::visit(GeneralPolicy policy)
     }
 }
 
+std::ostream& operator<<(std::ostream& out, const ICondition& condition)
+{
+    auto visitor = FormatterVisitor(out);
+    condition.accept(visitor);
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const IEffect& effect)
+{
+    auto visitor = FormatterVisitor(out);
+    effect.accept(visitor);
+    return out;
+}
+
+template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
+std::ostream& operator<<(std::ostream& out, const NamedFeatureImpl<D>& feature)
+{
+    auto visitor = FormatterVisitor(out);
+    feature.accept(visitor);
+    return out;
+}
+
+template std::ostream& operator<<(std::ostream& out, const NamedFeatureImpl<dl::ConceptTag>& feature);
+template std::ostream& operator<<(std::ostream& out, const NamedFeatureImpl<dl::RoleTag>& feature);
+template std::ostream& operator<<(std::ostream& out, const NamedFeatureImpl<dl::BooleanTag>& feature);
+template std::ostream& operator<<(std::ostream& out, const NamedFeatureImpl<dl::NumericalTag>& feature);
+
+std::ostream& operator<<(std::ostream& out, const RuleImpl& rule)
+{
+    auto visitor = FormatterVisitor(out);
+    rule.accept(visitor);
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const GeneralPolicyImpl& policy)
+{
+    auto visitor = FormatterVisitor(out);
+    policy.accept(visitor);
+    return out;
+}
+
 std::ostream& operator<<(std::ostream& out, Condition condition)
 {
     auto visitor = FormatterVisitor(out);

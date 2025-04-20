@@ -44,11 +44,8 @@ private:
 
 public:
     explicit DeleteRelaxedProblemExplorator(formalism::Problem problem);
-
-    // Uncopyable
     DeleteRelaxedProblemExplorator(const DeleteRelaxedProblemExplorator& other) = delete;
     DeleteRelaxedProblemExplorator& operator=(const DeleteRelaxedProblemExplorator& other) = delete;
-    // Unmovable
     DeleteRelaxedProblemExplorator(DeleteRelaxedProblemExplorator&& other) = delete;
     DeleteRelaxedProblemExplorator& operator=(DeleteRelaxedProblemExplorator&& other) = delete;
 

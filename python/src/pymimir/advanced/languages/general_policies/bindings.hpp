@@ -14,20 +14,8 @@ void bind_named_feature(nb::module_& m, const std::string& class_name)
     nb::class_<Type>(m, class_name.c_str())
         .def("__eq__", [](const Type& lhs, const Type& rhs) { return &lhs == &rhs; })
         .def("__hash__", [](const Type& self) { return &self; })
-        .def("__str__",
-             [](const Type& self)
-             {
-                 auto out = std::stringstream {};
-                 out << &self;
-                 return out.str();
-             })
-        .def("__repr__",
-             [](const Type& self)
-             {
-                 auto out = std::stringstream {};
-                 out << &self;
-                 return out.str();
-             })
+        .def("__str__", [](const Type& self) { return to_string(self); })
+        .def("__repr__", [](const Type& self) { return to_string(self); })
         .def("get_index", &Type::get_index)
         .def("get_name", &Type::get_name, nb::rv_policy::reference_internal)
         .def("get_feature", &Type::get_feature, nb::rv_policy::reference_internal);

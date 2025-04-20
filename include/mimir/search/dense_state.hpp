@@ -27,7 +27,8 @@
 namespace mimir::search
 {
 
-/// @brief `DenseState` is an intermediate representation of a `StateImpl`
+/// @brief `DenseState` is an intermediate representation of a `StateImpl`.
+/// We use it internally for constant time randomized access.
 struct DenseState
 {
     Index m_index = Index(0);

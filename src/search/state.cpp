@@ -41,6 +41,24 @@ StateImpl::StateImpl(Index index, const FlatIndexList* fluent_atoms, const FlatI
     assert(std::is_sorted(m_derived_atoms->compressed_begin(), m_derived_atoms->compressed_end()));
 }
 
+template<IsFluentOrDerivedTag P>
+bool StateImpl::literal_holds(GroundLiteral<P> literal) const
+{
+    return (std::find(get_atoms<P>().begin(), get_atoms<P>().end(), literal->get_index()) != get_atoms<P>().end()) == literal->get_polarity();
+}
+
+template bool StateImpl::literal_holds(GroundLiteral<FluentTag> literal) const;
+template bool StateImpl::literal_holds(GroundLiteral<DerivedTag> literal) const;
+
+template<IsFluentOrDerivedTag P>
+bool StateImpl::literals_hold(const GroundLiteralList<P>& literals) const
+{
+    return std::all_of(literals.begin(), literals.end(), [this](auto&& arg) { return this->literal_holds(arg); });
+}
+
+template bool StateImpl::literals_hold(const GroundLiteralList<FluentTag>& literals) const;
+template bool StateImpl::literals_hold(const GroundLiteralList<DerivedTag>& literals) const;
+
 bool StateImpl::numeric_constraint_holds(GroundNumericConstraint numeric_constraint, const FlatDoubleList& static_numeric_variables) const
 {
     return evaluate(numeric_constraint, static_numeric_variables, get_numeric_variables());
@@ -48,14 +66,9 @@ bool StateImpl::numeric_constraint_holds(GroundNumericConstraint numeric_constra
 
 bool StateImpl::numeric_constraints_hold(const GroundNumericConstraintList& numeric_constraints, const FlatDoubleList& static_numeric_variables) const
 {
-    for (const auto& constraint : numeric_constraints)
-    {
-        if (!numeric_constraint_holds(constraint, static_numeric_variables))
-        {
-            return false;
-        }
-    }
-    return true;
+    return std::all_of(numeric_constraints.begin(),
+                       numeric_constraints.end(),
+                       [this, &static_numeric_variables](auto&& arg) { return this->numeric_constraint_holds(arg, static_numeric_variables); });
 }
 
 Index StateImpl::get_index() const { return m_index; }

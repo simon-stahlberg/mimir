@@ -42,36 +42,61 @@ void bind_module_definitions(nb::module_& m)
     bind_named_feature<dl::BooleanTag>(m, "NamedBoolean");
     bind_named_feature<dl::NumericalTag>(m, "NamedNumerical");
 
-    nb::class_<ICondition>(m, "Condition");
+    nb::class_<ICondition>(m, "Condition")  //
+        .def("__str__", [](const ICondition& self) { return to_string(self); })
+        .def("evaluate", &ICondition::evaluate, nb::rv_policy::copy, "evaluation_context"_a)
+        .def("accept", &ICondition::accept, "visitor"_a)
+        .def("get_index", &ICondition::get_index, nb::rv_policy::copy);
     nb::bind_vector<ConditionList>(m, "ConditionList");
 
-    nb::class_<PositiveBooleanConditionImpl, ICondition>(m, "PositiveBooleanCondition");
+    nb::class_<PositiveBooleanConditionImpl, ICondition>(m, "PositiveBooleanCondition")
+        .def("get_feature", &PositiveBooleanConditionImpl::get_feature, nb::rv_policy::reference_internal);
 
-    nb::class_<NegativeBooleanConditionImpl, ICondition>(m, "NegativeBooleanCondition");
+    nb::class_<NegativeBooleanConditionImpl, ICondition>(m, "NegativeBooleanCondition")
+        .def("get_feature", &NegativeBooleanConditionImpl::get_feature, nb::rv_policy::reference_internal);
 
-    nb::class_<GreaterNumericalConditionImpl, ICondition>(m, "GreaterNumericalCondition");
+    nb::class_<GreaterNumericalConditionImpl, ICondition>(m, "GreaterNumericalCondition")
+        .def("get_feature", &GreaterNumericalConditionImpl::get_feature, nb::rv_policy::reference_internal);
 
-    nb::class_<EqualNumericalConditionImpl, ICondition>(m, "EqualNumericalCondition");
+    nb::class_<EqualNumericalConditionImpl, ICondition>(m, "EqualNumericalCondition")
+        .def("get_feature", &EqualNumericalConditionImpl::get_feature, nb::rv_policy::reference_internal);
 
-    nb::class_<IEffect>(m, "Effect");
+    nb::class_<IEffect>(m, "Effect")  //
+        .def("__str__", [](const IEffect& self) { return to_string(self); })
+        .def("evaluate", &IEffect::evaluate, nb::rv_policy::copy, "source_evaluation_context"_a, "target_evaluation_context"_a)
+        .def("accept", &IEffect::accept, "visitor"_a)
+        .def("get_index", &IEffect::get_index, nb::rv_policy::copy);
     nb::bind_vector<EffectList>(m, "EffectList");
 
-    nb::class_<PositiveBooleanEffectImpl, IEffect>(m, "PositiveBooleanEffect");
+    nb::class_<PositiveBooleanEffectImpl, IEffect>(m, "PositiveBooleanEffect")
+        .def("get_feature", &PositiveBooleanEffectImpl::get_feature, nb::rv_policy::reference_internal);
 
-    nb::class_<NegativeBooleanEffectImpl, IEffect>(m, "NegativeBooleanEffect");
+    nb::class_<NegativeBooleanEffectImpl, IEffect>(m, "NegativeBooleanEffect")
+        .def("get_feature", &NegativeBooleanEffectImpl::get_feature, nb::rv_policy::reference_internal);
 
-    nb::class_<UnchangedBooleanEffectImpl, IEffect>(m, "UnchangedBooleanEffect");
+    nb::class_<UnchangedBooleanEffectImpl, IEffect>(m, "UnchangedBooleanEffect")
+        .def("get_feature", &UnchangedBooleanEffectImpl::get_feature, nb::rv_policy::reference_internal);
 
-    nb::class_<IncreaseNumericalEffectImpl, IEffect>(m, "IncreaseNumericalEffect");
+    nb::class_<IncreaseNumericalEffectImpl, IEffect>(m, "IncreaseNumericalEffect")
+        .def("get_feature", &IncreaseNumericalEffectImpl::get_feature, nb::rv_policy::reference_internal);
 
-    nb::class_<DecreaseNumericalEffectImpl, IEffect>(m, "DecreaseNumericalEffect");
+    nb::class_<DecreaseNumericalEffectImpl, IEffect>(m, "DecreaseNumericalEffect")
+        .def("get_feature", &DecreaseNumericalEffectImpl::get_feature, nb::rv_policy::reference_internal);
 
-    nb::class_<UnchangedNumericalEffectImpl, IEffect>(m, "UnchangedNumericalEffect");
+    nb::class_<UnchangedNumericalEffectImpl, IEffect>(m, "UnchangedNumericalEffect")
+        .def("get_feature", &UnchangedNumericalEffectImpl::get_feature, nb::rv_policy::reference_internal);
 
-    nb::class_<RuleImpl>(m, "Rule");
+    nb::class_<RuleImpl>(m, "Rule")  //
+        .def("__str__", [](const RuleImpl& self) { return to_string(self); })
+        .def("evaluate", &RuleImpl::evaluate, nb::rv_policy::copy, "source_evaluation_context"_a, "target_evaluation_context"_a)
+        .def("accept", &RuleImpl::accept, "visitor"_a)
+        .def("get_index", &RuleImpl::get_index, nb::rv_policy::copy)
+        .def("get_conditions", &RuleImpl::get_conditions, nb::rv_policy::copy)
+        .def("get_effects", &RuleImpl::get_effects, nb::rv_policy::copy);
     nb::bind_vector<RuleList>(m, "RuleList");
 
-    nb::class_<GeneralPolicyImpl>(m, "GeneralPolicy");
+    nb::class_<GeneralPolicyImpl>(m, "GeneralPolicy")  //
+        .def("__str__", [](const GeneralPolicyImpl& self) { return to_string(self); });
 }
 
 }

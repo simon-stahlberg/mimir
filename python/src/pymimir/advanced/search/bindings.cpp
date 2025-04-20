@@ -272,7 +272,11 @@ void bind_module_definitions(nb::module_& m)
                 return ss.str();
             },
             nb::arg("problem"))
-        .def("get_index", nb::overload_cast<>(&StateImpl::get_index, nb::const_));
+        .def("literal_holds", &StateImpl::literal_holds<FluentTag>, nb::rv_policy::copy, "literal"_a)
+        .def("literal_holds", &StateImpl::literal_holds<DerivedTag>, nb::rv_policy::copy, "literal"_a)
+        .def("literal_holds", &StateImpl::literals_hold<FluentTag>, nb::rv_policy::copy, "literals"_a)
+        .def("literal_holds", &StateImpl::literals_hold<DerivedTag>, nb::rv_policy::copy, "literals"_a)
+        .def("get_index", &StateImpl::get_index);
     nb::bind_vector<StateList>(m, "StateList");
 
     /* Plan */

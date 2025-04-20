@@ -30,9 +30,7 @@
 
 namespace mimir::search
 {
-/// @brief `StateImpl` encapsulates the fluent and derived atoms of a planning state.
-/// We refer to the fluent atoms as the non-extended state
-/// and the fluent and derived atoms as the extended state.
+/// @brief `StateImpl` encapsulates the fluent and derived atoms, and numeric variables of a planning state.
 class StateImpl
 {
 private:
@@ -62,6 +60,20 @@ public:
     /**
      * Utils
      */
+
+    /// @brief Check whether the literal holds in the state using binary search over the atoms in the state.
+    /// @tparam P is the literal type.
+    /// @param literal is the literal.
+    /// @return true if the literal holds in the state, and false otherwise.
+    template<formalism::IsFluentOrDerivedTag P>
+    bool literal_holds(formalism::GroundLiteral<P> literal) const;
+
+    /// @brief Check whether all literals hold in the state using binary searches over the atoms in the state.
+    /// @tparam P is the literal type.
+    /// @param literals are the literals.
+    /// @return true if all literals hold in the state, and false otherwise.
+    template<formalism::IsFluentOrDerivedTag P>
+    bool literals_hold(const formalism::GroundLiteralList<P>& literals) const;
 
     bool numeric_constraint_holds(formalism::GroundNumericConstraint numeric_constraint, const FlatDoubleList& static_numeric_variables) const;
 

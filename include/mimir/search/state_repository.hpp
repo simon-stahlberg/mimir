@@ -60,30 +60,30 @@ public:
     StateRepositoryImpl(StateRepositoryImpl&& other) = delete;
     StateRepositoryImpl& operator=(StateRepositoryImpl&& other) = delete;
 
-    /// @brief Get or create the extended initial state of the underlying problem.
-    /// @return the extended initial state.
+    /// @brief Get or create the initial state of the underlying problem.
+    /// @return the initial state and its associated metric value, which is 0 in the case of :action-costs.
     std::pair<State, ContinuousCost> get_or_create_initial_state();
 
-    /// @brief Get or create the extended state for a given set of ground `atoms`.
+    /// @brief Get or create the state for a given set of ground `atoms`.
     /// @param atoms the ground atoms.
     /// @param fluent_numeric_variables are the numeric variables in the state.
-    /// @return the extended state.
+    /// @return the state and its associated metric value, which is 0 in the case of :action-costs.
     std::pair<State, ContinuousCost> get_or_create_state(const formalism::GroundAtomList<formalism::FluentTag>& atoms,
                                                          const FlatDoubleList& fluent_numeric_variables);
 
-    /// @brief Get or create the extended successor state when applying the given ground `action` in the given `state`.
+    /// @brief Get or create the successor state when applying the given ground `action` in the given `state`.
     /// @param state is the state.
     /// @param action is the ground action.
     /// @param state_metric_value is the metric value of the state.
-    /// @return the extended successor state and its metric value.
+    /// @return the successor state and its associated metric value.
     std::pair<State, ContinuousCost> get_or_create_successor_state(State state, formalism::GroundAction action, ContinuousCost state_metric_value);
 
-    /// @brief Get or create the extended successor state when applying the given ground `action` in the given state identifed by the `state_fluent_atoms` and
+    /// @brief Get or create the successor state when applying the given ground `action` in the given state identifed by the `state_fluent_atoms` and
     /// `derived_atoms`. The input parameters `dense_state` are modified, meaning that side effects have to be taken into account.
     /// @param dense_state is the dense state.
     /// @param action is the ground action.
     /// @param state_metric_value is the metric value of the dense state.
-    /// @return the extended successor state and its metric value.
+    /// @return the successor state and its associated metric value.
     std::pair<State, ContinuousCost> get_or_create_successor_state(State state,  ///< for parallel application of numeric effects
                                                                    DenseState& dense_state,
                                                                    formalism::GroundAction action,
@@ -100,11 +100,11 @@ public:
     size_t get_state_count() const;
 
     /// @brief Return the reached fluent ground atoms.
-    /// @return a bitset that stores the fluent ground atom indices.
+    /// @return a bitset that stores the reached fluent ground atom indices.
     const FlatBitset& get_reached_fluent_ground_atoms_bitset() const;
 
     /// @brief Return the reached derived ground atoms.
-    /// @return a bitset that stores the derived ground atom indices.
+    /// @return a bitset that stores the reached derived ground atom indices.
     const FlatBitset& get_reached_derived_ground_atoms_bitset() const;
 
     /// @brief Get the underlying axiom evaluator.
