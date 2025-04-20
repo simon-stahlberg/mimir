@@ -2,10 +2,10 @@
 
 using namespace mimir;
 
-namespace mimir::bindings
+namespace mimir::common
 {
 
-void bind_common(nb::module_& m)
+void bind_module_definitions(nb::module_& m)
 {
     nb::class_<FlatDoubleList>(m, "FlatDoubleList").def(nb::init<>());
 

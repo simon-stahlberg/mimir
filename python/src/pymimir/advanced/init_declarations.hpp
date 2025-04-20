@@ -114,13 +114,16 @@ NB_MAKE_OPAQUE(mm::languages::dl::cnf_grammar::SubstitutionRuleList<mm::language
 NB_MAKE_OPAQUE(mm::languages::dl::cnf_grammar::SubstitutionRuleList<mm::languages::dl::BooleanTag>);
 NB_MAKE_OPAQUE(mm::languages::dl::cnf_grammar::SubstitutionRuleList<mm::languages::dl::NumericalTag>);
 
-namespace mimir::bindings
+NB_MAKE_OPAQUE(mm::languages::general_policies::NamedFeatureList<mm::languages::dl::ConceptTag>);
+NB_MAKE_OPAQUE(mm::languages::general_policies::NamedFeatureList<mm::languages::dl::RoleTag>);
+NB_MAKE_OPAQUE(mm::languages::general_policies::NamedFeatureList<mm::languages::dl::BooleanTag>);
+NB_MAKE_OPAQUE(mm::languages::general_policies::NamedFeatureList<mm::languages::dl::NumericalTag>);
+NB_MAKE_OPAQUE(mm::languages::general_policies::ConditionList);
+NB_MAKE_OPAQUE(mm::languages::general_policies::EffectList);
+NB_MAKE_OPAQUE(mm::languages::general_policies::RuleList);
+
+namespace mimir
 {
-
-/**
- * Constness
- */
-
 template<typename T>
 struct PyImmutable
 {
@@ -133,17 +136,37 @@ struct PyImmutable
  * init - declarations:
  */
 
-extern void bind_common(nb::module_& m);
-
-extern void bind_formalism(nb::module_& m);
-extern void bind_graphs(nb::module_& m);
-
-extern void bind_search(nb::module_& m);
-
-extern void bind_datasets(nb::module_& m);
-
-extern void bind_languages_description_logics(nb::module_& m);
-
+namespace common
+{
+extern void bind_module_definitions(nb::module_& m);
+}
+namespace formalism
+{
+extern void bind_module_definitions(nb::module_& m);
+}
+namespace graphs
+{
+extern void bind_module_definitions(nb::module_& m);
+}
+namespace search
+{
+extern void bind_module_definitions(nb::module_& m);
+}
+namespace datasets
+{
+extern void bind_module_definitions(nb::module_& m);
+}
+namespace languages
+{
+namespace dl
+{
+extern void bind_module_definitions(nb::module_& m);
+}
+namespace general_policies
+{
+extern void bind_module_definitions(nb::module_& m);
+}
+}
 }
 
 #endif

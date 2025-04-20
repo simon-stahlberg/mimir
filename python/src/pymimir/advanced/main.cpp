@@ -22,7 +22,7 @@
 namespace nb = nanobind;
 using namespace nb::literals;
 
-namespace mimir::bindings
+namespace mimir
 {
 
 NB_MODULE(pymimir, m)
@@ -45,18 +45,21 @@ NB_MODULE(pymimir, m)
     advanced.attr("languages") = languages;
     auto description_logics = languages.def_submodule("description_logics");
     languages.attr("description_logics") = description_logics;
+    auto general_policies = languages.def_submodule("general_policies");
+    languages.attr("general_policies") = general_policies;
 
-    bind_common(common);
+    common::bind_module_definitions(common);
 
-    bind_formalism(formalism);
+    formalism::bind_module_definitions(formalism);
 
-    bind_graphs(graphs);
+    graphs::bind_module_definitions(graphs);
 
-    bind_search(search);
+    search::bind_module_definitions(search);
 
-    bind_datasets(datasets);
+    datasets::bind_module_definitions(datasets);
 
-    bind_languages_description_logics(description_logics);
+    languages::dl::bind_module_definitions(description_logics);
+    languages::general_policies::bind_module_definitions(general_policies);
 }
 
 }

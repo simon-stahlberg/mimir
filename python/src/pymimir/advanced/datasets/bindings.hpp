@@ -5,35 +5,35 @@
 #include "../graphs/bindings.hpp"
 #include "../init_declarations.hpp"
 
-namespace mimir::bindings
+namespace mimir::graphs
 {
 
 template<>
-struct PyVertexProperties<mm::graphs::ProblemVertex>
+struct PyVertexProperties<ProblemVertex>
 {
     static constexpr const char* name = "ProblemVertex";
 };
 
 template<>
-struct PyVertexProperties<mm::graphs::ClassVertex>
+struct PyVertexProperties<ClassVertex>
 {
     static constexpr const char* name = "ClassVertex";
 };
 
 template<>
-struct PyVertexProperties<mm::graphs::TupleGraphVertex>
+struct PyVertexProperties<TupleGraphVertex>
 {
     static constexpr const char* name = "TupleGraphVertex";
 };
 
 template<>
-struct PyEdgeProperties<mm::graphs::ProblemEdge>
+struct PyEdgeProperties<ProblemEdge>
 {
     static constexpr const char* name = "ProblemEdge";
 };
 
 template<>
-struct PyEdgeProperties<mm::graphs::ClassEdge>
+struct PyEdgeProperties<ClassEdge>
 {
     static constexpr const char* name = "ClassEdge";
 };

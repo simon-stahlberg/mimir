@@ -3,13 +3,13 @@
 #include "../init_declarations.hpp"
 
 using namespace mimir;
-using namespace mimir::datasets;
+using namespace mimir::graphs;
 using namespace mimir::formalism;
 
-namespace mimir::bindings
+namespace mimir::datasets
 {
 
-void bind_datasets(nb::module_& m)
+void bind_module_definitions(nb::module_& m)
 {
     /* ProblemGraph */
     bind_vertex<graphs::ProblemVertex>(m, PyVertexProperties<graphs::ProblemVertex>::name);

@@ -1,12 +1,9 @@
 #include "../init_declarations.hpp"
 
-using namespace mimir;
-using namespace mimir::formalism;
-
-namespace mimir::bindings
+namespace mimir::formalism
 {
 
-void bind_formalism(nb::module_& m)
+void bind_module_definitions(nb::module_& m)
 {
     nb::enum_<loki::RequirementEnum>(m, "RequirementEnum")
         .value("STRIPS", loki::RequirementEnum::STRIPS)
@@ -69,7 +66,7 @@ void bind_formalism(nb::module_& m)
         .def_rw("quiet", &loki::Options::quiet, "Suppress output");
 
     nb::class_<RequirementsImpl>(m, "Requirements")  //
-        .def("__hash__", [](const RequirementsImpl& self) { return &self; })
+        .def("__hash__", [](const RequirementsImpl& self) { return std::hash<Requirements> {}(&self); })
         .def("__eq__", [](const RequirementsImpl& lhs, const RequirementsImpl& rhs) { return &lhs == &rhs; })
         .def("__str__", [](const RequirementsImpl& self) { return to_string(self); })
         .def("__repr__", [](const RequirementsImpl& self) { return to_string(self); })
@@ -77,7 +74,7 @@ void bind_formalism(nb::module_& m)
         .def("get_requirements", &RequirementsImpl::get_requirements, nb::rv_policy::copy);
 
     nb::class_<ObjectImpl>(m, "Object")  //
-        .def("__hash__", [](const ObjectImpl& self) { return &self; })
+        .def("__hash__", [](const ObjectImpl& self) { return std::hash<Object> {}(&self); })
         .def("__eq__", [](const ObjectImpl& lhs, const ObjectImpl& rhs) { return &lhs == &rhs; })
         .def("__str__", [](const ObjectImpl& self) { return to_string(self); })
         .def("__repr__", [](const ObjectImpl& self) { return to_string(self); })
@@ -86,7 +83,7 @@ void bind_formalism(nb::module_& m)
     nb::bind_vector<ObjectList>(m, "ObjectList");
 
     nb::class_<VariableImpl>(m, "Variable")  //
-        .def("__hash__", [](const VariableImpl& self) { return &self; })
+        .def("__hash__", [](const VariableImpl& self) { return std::hash<Variable> {}(&self); })
         .def("__eq__", [](const VariableImpl& lhs, const VariableImpl& rhs) { return &lhs == &rhs; })
         .def("__str__", [](const VariableImpl& self) { return to_string(self); })
         .def("__repr__", [](const VariableImpl& self) { return to_string(self); })
@@ -95,7 +92,7 @@ void bind_formalism(nb::module_& m)
     nb::bind_vector<VariableList>(m, "VariableList");
 
     nb::class_<TermImpl>(m, "Term")  //
-        .def("__hash__", [](const TermImpl& self) { return &self; })
+        .def("__hash__", [](const TermImpl& self) { return std::hash<Term> {}(&self); })
         .def("__eq__", [](const TermImpl& lhs, const TermImpl& rhs) { return &lhs == &rhs; })
         .def(
             "get",
@@ -106,7 +103,7 @@ void bind_formalism(nb::module_& m)
     auto bind_predicate = [&]<typename Tag>(const std::string& class_name, Tag)
     {
         nb::class_<PredicateImpl<Tag>>(m, class_name.c_str())
-            .def("__hash__", [](const PredicateImpl<Tag>& self) { return &self; })
+            .def("__hash__", [](const PredicateImpl<Tag>& self) { return std::hash<Predicate<Tag>> {}(&self); })
             .def("__eq__", [](const PredicateImpl<Tag>& lhs, const PredicateImpl<Tag>& rhs) { return &lhs == &rhs; })
             .def("__str__", [](const PredicateImpl<Tag>& self) { return to_string(self); })
             .def("__repr__", [](const PredicateImpl<Tag>& self) { return to_string(self); })
@@ -124,7 +121,7 @@ void bind_formalism(nb::module_& m)
     auto bind_atom = [&]<typename Tag>(const std::string& class_name, Tag)
     {
         nb::class_<AtomImpl<Tag>>(m, class_name.c_str())
-            .def("__hash__", [](const AtomImpl<Tag>& self) { return &self; })
+            .def("__hash__", [](const AtomImpl<Tag>& self) { return std::hash<Atom<Tag>> {}(&self); })
             .def("__eq__", [](const AtomImpl<Tag>& lhs, const AtomImpl<Tag>& rhs) { return &lhs == &rhs; })
             .def("__str__", [](const AtomImpl<Tag>& self) { return to_string(self); })
             .def("__repr__", [](const AtomImpl<Tag>& self) { return to_string(self); })
@@ -141,7 +138,7 @@ void bind_formalism(nb::module_& m)
     auto bind_function_skeleton = [&]<typename Tag>(const std::string& class_name, Tag)
     {
         nb::class_<FunctionSkeletonImpl<Tag>>(m, class_name.c_str())
-            .def("__hash__", [](const FunctionSkeletonImpl<Tag>& self) { return &self; })
+            .def("__hash__", [](const FunctionSkeletonImpl<Tag>& self) { return std::hash<FunctionSkeleton<Tag>> {}(&self); })
             .def("__eq__", [](const FunctionSkeletonImpl<Tag>& lhs, const FunctionSkeletonImpl<Tag>& rhs) { return &lhs == &rhs; })
             .def("__str__", [](const FunctionSkeletonImpl<Tag>& self) { return to_string(self); })
             .def("__repr__", [](const FunctionSkeletonImpl<Tag>& self) { return to_string(self); })
@@ -157,7 +154,7 @@ void bind_formalism(nb::module_& m)
     auto bind_function = [&]<typename Tag>(const std::string& class_name, Tag)
     {
         nb::class_<FunctionImpl<Tag>>(m, class_name.c_str())
-            .def("__hash__", [](const FunctionImpl<Tag>& self) { return &self; })
+            .def("__hash__", [](const FunctionImpl<Tag>& self) { return std::hash<Function<Tag>> {}(&self); })
             .def("__eq__", [](const FunctionImpl<Tag>& lhs, const FunctionImpl<Tag>& rhs) { return &lhs == &rhs; })
             .def("__str__", [](const FunctionImpl<Tag>& self) { return to_string(self); })
             .def("__repr__", [](const FunctionImpl<Tag>& self) { return to_string(self); })
@@ -173,7 +170,7 @@ void bind_formalism(nb::module_& m)
     auto bind_ground_function = [&]<typename Tag>(const std::string& class_name, Tag)
     {
         nb::class_<GroundFunctionImpl<Tag>>(m, class_name.c_str())
-            .def("__hash__", [](const GroundFunctionImpl<Tag>& self) { return &self; })
+            .def("__hash__", [](const GroundFunctionImpl<Tag>& self) { return std::hash<GroundFunction<Tag>> {}(&self); })
             .def("__eq__", [](const GroundFunctionImpl<Tag>& lhs, const GroundFunctionImpl<Tag>& rhs) { return &lhs == &rhs; })
             .def("__str__", [](const GroundFunctionImpl<Tag>& self) { return to_string(self); })
             .def("__repr__", [](const GroundFunctionImpl<Tag>& self) { return to_string(self); })
@@ -189,7 +186,7 @@ void bind_formalism(nb::module_& m)
     auto bind_ground_atom = [&]<typename Tag>(const std::string& class_name, Tag)
     {
         nb::class_<GroundAtomImpl<Tag>>(m, class_name.c_str())
-            .def("__hash__", [](const GroundAtomImpl<Tag>& self) { return &self; })
+            .def("__hash__", [](const GroundAtomImpl<Tag>& self) { return std::hash<GroundAtom<Tag>> {}(&self); })
             .def("__eq__", [](const GroundAtomImpl<Tag>& lhs, const GroundAtomImpl<Tag>& rhs) { return &lhs == &rhs; })
             .def("__str__", [](const GroundAtomImpl<Tag>& self) { return to_string(self); })
             .def("__repr__", [](const GroundAtomImpl<Tag>& self) { return to_string(self); })
@@ -206,7 +203,7 @@ void bind_formalism(nb::module_& m)
     auto bind_ground_literal = [&]<typename Tag>(const std::string& class_name, Tag)
     {
         nb::class_<GroundLiteralImpl<Tag>>(m, class_name.c_str())
-            .def("__hash__", [](const GroundLiteralImpl<Tag>& self) { return &self; })
+            .def("__hash__", [](const GroundLiteralImpl<Tag>& self) { return std::hash<GroundLiteral<Tag>> {}(&self); })
             .def("__eq__", [](const GroundLiteralImpl<Tag>& lhs, const GroundLiteralImpl<Tag>& rhs) { return &lhs == &rhs; })
             .def("__str__", [](const GroundLiteralImpl<Tag>& self) { return to_string(self); })
             .def("__repr__", [](const GroundLiteralImpl<Tag>& self) { return to_string(self); })
@@ -222,7 +219,7 @@ void bind_formalism(nb::module_& m)
     auto bind_literal = [&]<typename Tag>(const std::string& class_name, Tag)
     {
         nb::class_<LiteralImpl<Tag>>(m, class_name.c_str())
-            .def("__hash__", [](const LiteralImpl<Tag>& self) { return &self; })
+            .def("__hash__", [](const LiteralImpl<Tag>& self) { return std::hash<Literal<Tag>> {}(&self); })
             .def("__eq__", [](const LiteralImpl<Tag>& lhs, const LiteralImpl<Tag>& rhs) { return &lhs == &rhs; })
             .def("__str__", [](const LiteralImpl<Tag>& self) { return to_string(self); })
             .def("__repr__", [](const LiteralImpl<Tag>& self) { return to_string(self); })
@@ -238,7 +235,7 @@ void bind_formalism(nb::module_& m)
     auto bind_ground_function_value = [&]<typename Tag>(const std::string& class_name, Tag)
     {
         nb::class_<GroundFunctionValueImpl<Tag>>(m, class_name.c_str())
-            .def("__hash__", [](const GroundFunctionValueImpl<Tag>& self) { return &self; })
+            .def("__hash__", [](const GroundFunctionValueImpl<Tag>& self) { return std::hash<GroundFunctionValue<Tag>> {}(&self); })
             .def("__eq__", [](const GroundFunctionValueImpl<Tag>& lhs, const GroundFunctionValueImpl<Tag>& rhs) { return &lhs == &rhs; })
             .def("__str__", [](const GroundFunctionValueImpl<Tag>& self) { return to_string(self); })
             .def("__repr__", [](const GroundFunctionValueImpl<Tag>& self) { return to_string(self); })
@@ -252,14 +249,14 @@ void bind_formalism(nb::module_& m)
     bind_ground_function_value("AuxiliaryGroundFunctionValue", AuxiliaryTag {});
 
     nb::class_<FunctionExpressionImpl>(m, "FunctionExpression")  //
-        .def("__hash__", [](const FunctionExpressionImpl& self) { return &self; })
+        .def("__hash__", [](const FunctionExpressionImpl& self) { return std::hash<FunctionExpression> {}(&self); })
         .def("__eq__", [](const FunctionExpressionImpl& lhs, const FunctionExpressionImpl& rhs) { return &lhs == &rhs; })
         .def("get",
              [](const FunctionExpressionImpl& fexpr) -> nb::object { return std::visit([](auto&& arg) { return nb::cast(arg); }, fexpr.get_variant()); });
     nb::bind_vector<FunctionExpressionList>(m, "FunctionExpressionList");
 
     nb::class_<FunctionExpressionNumberImpl>(m, "FunctionExpressionNumber")  //
-        .def("__hash__", [](const FunctionExpressionNumberImpl& self) { return &self; })
+        .def("__hash__", [](const FunctionExpressionNumberImpl& self) { return std::hash<FunctionExpressionNumber> {}(&self); })
         .def("__eq__", [](const FunctionExpressionNumberImpl& lhs, const FunctionExpressionNumberImpl& rhs) { return &lhs == &rhs; })
         .def("__str__", [](const FunctionExpressionNumberImpl& self) { return to_string(self); })
         .def("__repr__", [](const FunctionExpressionNumberImpl& self) { return to_string(self); })
@@ -267,7 +264,7 @@ void bind_formalism(nb::module_& m)
         .def("get_number", &FunctionExpressionNumberImpl::get_number, nb::rv_policy::copy);
 
     nb::class_<FunctionExpressionBinaryOperatorImpl>(m, "FunctionExpressionBinaryOperator")  //
-        .def("__hash__", [](const FunctionExpressionBinaryOperatorImpl& self) { return &self; })
+        .def("__hash__", [](const FunctionExpressionBinaryOperatorImpl& self) { return std::hash<FunctionExpressionBinaryOperator> {}(&self); })
         .def("__eq__", [](const FunctionExpressionBinaryOperatorImpl& lhs, const FunctionExpressionBinaryOperatorImpl& rhs) { return &lhs == &rhs; })
         .def("__str__", [](const FunctionExpressionBinaryOperatorImpl& self) { return to_string(self); })
         .def("__repr__", [](const FunctionExpressionBinaryOperatorImpl& self) { return to_string(self); })
@@ -277,7 +274,7 @@ void bind_formalism(nb::module_& m)
         .def("get_right_function_expression", &FunctionExpressionBinaryOperatorImpl::get_right_function_expression, nb::rv_policy::reference_internal);
 
     nb::class_<FunctionExpressionMultiOperatorImpl>(m, "FunctionExpressionMultiOperator")  //
-        .def("__hash__", [](const FunctionExpressionMultiOperatorImpl& self) { return &self; })
+        .def("__hash__", [](const FunctionExpressionMultiOperatorImpl& self) { return std::hash<FunctionExpressionMultiOperator> {}(&self); })
         .def("__eq__", [](const FunctionExpressionMultiOperatorImpl& lhs, const FunctionExpressionMultiOperatorImpl& rhs) { return &lhs == &rhs; })
         .def("__str__", [](const FunctionExpressionMultiOperatorImpl& self) { return to_string(self); })
         .def("__repr__", [](const FunctionExpressionMultiOperatorImpl& self) { return to_string(self); })
@@ -286,7 +283,7 @@ void bind_formalism(nb::module_& m)
         .def("get_function_expressions", &FunctionExpressionMultiOperatorImpl::get_function_expressions, nb::rv_policy::copy);
 
     nb::class_<FunctionExpressionMinusImpl>(m, "FunctionExpressionMinus")  //
-        .def("__hash__", [](const FunctionExpressionMinusImpl& self) { return &self; })
+        .def("__hash__", [](const FunctionExpressionMinusImpl& self) { return std::hash<FunctionExpressionMinus> {}(&self); })
         .def("__eq__", [](const FunctionExpressionMinusImpl& lhs, const FunctionExpressionMinusImpl& rhs) { return &lhs == &rhs; })
         .def("__str__", [](const FunctionExpressionMinusImpl& self) { return to_string(self); })
         .def("__repr__", [](const FunctionExpressionMinusImpl& self) { return to_string(self); })
@@ -296,7 +293,7 @@ void bind_formalism(nb::module_& m)
     auto bind_function_expression_function = [&]<typename Tag>(const std::string& class_name, Tag)
     {
         nb::class_<FunctionExpressionFunctionImpl<Tag>>(m, class_name.c_str())
-            .def("__hash__", [](const FunctionExpressionFunctionImpl<Tag>& self) { return &self; })
+            .def("__hash__", [](const FunctionExpressionFunctionImpl<Tag>& self) { return std::hash<FunctionExpressionFunction<Tag>> {}(&self); })
             .def("__eq__", [](const FunctionExpressionFunctionImpl<Tag>& lhs, const FunctionExpressionFunctionImpl<Tag>& rhs) { return &lhs == &rhs; })
             .def("__str__", [](const FunctionExpressionFunctionImpl<Tag>& self) { return to_string(self); })
             .def("__repr__", [](const FunctionExpressionFunctionImpl<Tag>& self) { return to_string(self); })
@@ -311,7 +308,7 @@ void bind_formalism(nb::module_& m)
     auto bind_numeric_effect = [&]<typename Tag>(const std::string& class_name, Tag)
     {
         nb::class_<NumericEffectImpl<Tag>>(m, class_name.c_str())
-            .def("__hash__", [](const NumericEffectImpl<Tag>& self) { return &self; })
+            .def("__hash__", [](const NumericEffectImpl<Tag>& self) { return std::hash<NumericEffect<Tag>> {}(&self); })
             .def("__eq__", [](const NumericEffectImpl<Tag>& lhs, const NumericEffectImpl<Tag>& rhs) { return &lhs == &rhs; })
             .def("__str__", [](const NumericEffectImpl<Tag>& self) { return to_string(self); })
             .def("__repr__", [](const NumericEffectImpl<Tag>& self) { return to_string(self); })
@@ -326,7 +323,7 @@ void bind_formalism(nb::module_& m)
 
     /* NumericConstraint */
     nb::class_<NumericConstraintImpl>(m, "NumericConstraint")  //
-        .def("__hash__", [](const NumericConstraintImpl& self) { return &self; })
+        .def("__hash__", [](const NumericConstraintImpl& self) { return std::hash<NumericConstraint> {}(&self); })
         .def("__eq__", [](const NumericConstraintImpl& lhs, const NumericConstraintImpl& rhs) { return &lhs == &rhs; })
         .def("__str__", [](const NumericConstraintImpl& self) { return to_string(self); })
         .def("__repr__", [](const NumericConstraintImpl& self) { return to_string(self); })
@@ -338,7 +335,7 @@ void bind_formalism(nb::module_& m)
 
     /* ConjunctiveCondition */
     nb::class_<ConjunctiveConditionImpl>(m, "ConjunctiveCondition")  //
-        .def("__hash__", [](const ConjunctiveConditionImpl& self) { return &self; })
+        .def("__hash__", [](const ConjunctiveConditionImpl& self) { return std::hash<ConjunctiveCondition> {}(&self); })
         .def("__eq__", [](const ConjunctiveConditionImpl& lhs, const ConjunctiveConditionImpl& rhs) { return &lhs == &rhs; })
         .def("__str__", [](const ConjunctiveConditionImpl& self) { return to_string(self); })
         .def("__repr__", [](const ConjunctiveConditionImpl& self) { return to_string(self); })
@@ -354,7 +351,7 @@ void bind_formalism(nb::module_& m)
 
     /* ConjunctiveEffectImpl */
     nb::class_<ConjunctiveEffectImpl>(m, "ConjunctiveEffect")  //
-        .def("__hash__", [](const ConjunctiveEffectImpl& self) { return &self; })
+        .def("__hash__", [](const ConjunctiveEffectImpl& self) { return std::hash<ConjunctiveEffect> {}(&self); })
         .def("__eq__", [](const ConjunctiveEffectImpl& lhs, const ConjunctiveEffectImpl& rhs) { return &lhs == &rhs; })
         .def("__str__", [](const ConjunctiveEffectImpl& self) { return to_string(self); })
         .def("__repr__", [](const ConjunctiveEffectImpl& self) { return to_string(self); })
@@ -366,7 +363,7 @@ void bind_formalism(nb::module_& m)
 
     /* ConditionalEffect */
     nb::class_<ConditionalEffectImpl>(m, "ConditionalEffect")  //
-        .def("__hash__", [](const ConditionalEffectImpl& self) { return &self; })
+        .def("__hash__", [](const ConditionalEffectImpl& self) { return std::hash<ConditionalEffect> {}(&self); })
         .def("__eq__", [](const ConditionalEffectImpl& lhs, const ConditionalEffectImpl& rhs) { return &lhs == &rhs; })
         .def("__str__", [](const ConditionalEffectImpl& self) { return to_string(self); })
         .def("__repr__", [](const ConditionalEffectImpl& self) { return to_string(self); })
@@ -377,7 +374,7 @@ void bind_formalism(nb::module_& m)
 
     /* Action */
     nb::class_<ActionImpl>(m, "Action")  //
-        .def("__hash__", [](const ActionImpl& self) { return &self; })
+        .def("__hash__", [](const ActionImpl& self) { return std::hash<Action> {}(&self); })
         .def("__eq__", [](const ActionImpl& lhs, const ActionImpl& rhs) { return &lhs == &rhs; })
         .def("__str__", [](const ActionImpl& self) { return to_string(self); })
         .def("__repr__", [](const ActionImpl& self) { return to_string(self); })
@@ -392,7 +389,7 @@ void bind_formalism(nb::module_& m)
 
     /* Axiom */
     nb::class_<AxiomImpl>(m, "Axiom")  //
-        .def("__hash__", [](const AxiomImpl& self) { return &self; })
+        .def("__hash__", [](const AxiomImpl& self) { return std::hash<Axiom> {}(&self); })
         .def("__eq__", [](const AxiomImpl& lhs, const AxiomImpl& rhs) { return &lhs == &rhs; })
         .def("__str__", [](const AxiomImpl& self) { return to_string(self); })
         .def("__repr__", [](const AxiomImpl& self) { return to_string(self); })
@@ -404,14 +401,14 @@ void bind_formalism(nb::module_& m)
 
     /* GroundFunctionExpression */
     nb::class_<GroundFunctionExpressionImpl>(m, "GroundFunctionExpression")  //
-        .def("__hash__", [](const GroundFunctionExpressionImpl& self) { return &self; })
+        .def("__hash__", [](const GroundFunctionExpressionImpl& self) { return std::hash<GroundFunctionExpression> {}(&self); })
         .def("__eq__", [](const GroundFunctionExpressionImpl& lhs, const GroundFunctionExpressionImpl& rhs) { return &lhs == &rhs; })
         .def("get",
              [](const GroundFunctionExpressionImpl& fexpr) -> nb::object { return std::visit([](auto&& arg) { return nb::cast(arg); }, fexpr.get_variant()); });
     nb::bind_vector<GroundFunctionExpressionList>(m, "GroundFunctionExpressionList");
 
     nb::class_<GroundFunctionExpressionNumberImpl>(m, "GroundFunctionExpressionNumber")  //
-        .def("__hash__", [](const GroundFunctionExpressionNumberImpl& self) { return &self; })
+        .def("__hash__", [](const GroundFunctionExpressionNumberImpl& self) { return std::hash<GroundFunctionExpressionNumber> {}(&self); })
         .def("__eq__", [](const GroundFunctionExpressionNumberImpl& lhs, const GroundFunctionExpressionNumberImpl& rhs) { return &lhs == &rhs; })
         .def("__str__", [](const GroundFunctionExpressionNumberImpl& self) { return to_string(self); })
         .def("__repr__", [](const GroundFunctionExpressionNumberImpl& self) { return to_string(self); })
@@ -419,7 +416,7 @@ void bind_formalism(nb::module_& m)
         .def("get_number", &GroundFunctionExpressionNumberImpl::get_number, nb::rv_policy::copy);
 
     nb::class_<GroundFunctionExpressionBinaryOperatorImpl>(m, "GroundFunctionExpressionBinaryOperator")  //
-        .def("__hash__", [](const GroundFunctionExpressionBinaryOperatorImpl& self) { return &self; })
+        .def("__hash__", [](const GroundFunctionExpressionBinaryOperatorImpl& self) { return std::hash<GroundFunctionExpressionBinaryOperator> {}(&self); })
         .def("__eq__",
              [](const GroundFunctionExpressionBinaryOperatorImpl& lhs, const GroundFunctionExpressionBinaryOperatorImpl& rhs) { return &lhs == &rhs; })
         .def("__str__", [](const GroundFunctionExpressionBinaryOperatorImpl& self) { return to_string(self); })
@@ -430,7 +427,7 @@ void bind_formalism(nb::module_& m)
         .def("get_right_function_expression", &GroundFunctionExpressionBinaryOperatorImpl::get_right_function_expression, nb::rv_policy::reference_internal);
 
     nb::class_<GroundFunctionExpressionMultiOperatorImpl>(m, "GroundFunctionExpressionMultiOperator")  //
-        .def("__hash__", [](const GroundFunctionExpressionMultiOperatorImpl& self) { return &self; })
+        .def("__hash__", [](const GroundFunctionExpressionMultiOperatorImpl& self) { return std::hash<GroundFunctionExpressionMultiOperator> {}(&self); })
         .def("__eq__", [](const GroundFunctionExpressionMultiOperatorImpl& lhs, const GroundFunctionExpressionMultiOperatorImpl& rhs) { return &lhs == &rhs; })
         .def("__str__", [](const GroundFunctionExpressionMultiOperatorImpl& self) { return to_string(self); })
         .def("__repr__", [](const GroundFunctionExpressionMultiOperatorImpl& self) { return to_string(self); })
@@ -439,7 +436,7 @@ void bind_formalism(nb::module_& m)
         .def("get_function_expressions", &GroundFunctionExpressionMultiOperatorImpl::get_function_expressions, nb::rv_policy::copy);
 
     nb::class_<GroundFunctionExpressionMinusImpl>(m, "GroundFunctionExpressionMinus")  //
-        .def("__hash__", [](const GroundFunctionExpressionMinusImpl& self) { return &self; })
+        .def("__hash__", [](const GroundFunctionExpressionMinusImpl& self) { return std::hash<GroundFunctionExpressionMinus> {}(&self); })
         .def("__eq__", [](const GroundFunctionExpressionMinusImpl& lhs, const GroundFunctionExpressionMinusImpl& rhs) { return &lhs == &rhs; })
         .def("__str__", [](const GroundFunctionExpressionMinusImpl& self) { return to_string(self); })
         .def("__repr__", [](const GroundFunctionExpressionMinusImpl& self) { return to_string(self); })
@@ -449,7 +446,7 @@ void bind_formalism(nb::module_& m)
     auto bind_ground_function_expression_function = [&]<typename Tag>(const std::string& class_name, Tag)
     {
         nb::class_<GroundFunctionExpressionFunctionImpl<Tag>>(m, class_name.c_str())
-            .def("__hash__", [](const GroundFunctionExpressionFunctionImpl<Tag>& self) { return &self; })
+            .def("__hash__", [](const GroundFunctionExpressionFunctionImpl<Tag>& self) { return std::hash<GroundFunctionExpressionFunction<Tag>> {}(&self); })
             .def("__eq__",
                  [](const GroundFunctionExpressionFunctionImpl<Tag>& lhs, const GroundFunctionExpressionFunctionImpl<Tag>& rhs) { return &lhs == &rhs; })
             .def("__str__", [](const GroundFunctionExpressionFunctionImpl<Tag>& self) { return to_string(self); })
@@ -463,7 +460,7 @@ void bind_formalism(nb::module_& m)
 
     /* OptimizationMetric */
     nb::class_<OptimizationMetricImpl>(m, "OptimizationMetric")  //
-        .def("__hash__", [](const OptimizationMetricImpl& self) { return &self; })
+        .def("__hash__", [](const OptimizationMetricImpl& self) { return std::hash<OptimizationMetric> {}(&self); })
         .def("__eq__", [](const OptimizationMetricImpl& lhs, const OptimizationMetricImpl& rhs) { return &lhs == &rhs; })
         .def("__str__", [](const OptimizationMetricImpl& self) { return to_string(self); })
         .def("__repr__", [](const OptimizationMetricImpl& self) { return to_string(self); })
@@ -474,7 +471,7 @@ void bind_formalism(nb::module_& m)
     auto bind_ground_numeric_effect = [&]<typename Tag>(const std::string& class_name, Tag)
     {
         nb::class_<GroundNumericEffectImpl<Tag>>(m, class_name.c_str())
-            .def("__hash__", [](const GroundNumericEffectImpl<Tag>& self) { return &self; })
+            .def("__hash__", [](const GroundNumericEffectImpl<Tag>& self) { return std::hash<GroundNumericEffect<Tag>> {}(&self); })
             .def("__eq__", [](const GroundNumericEffectImpl<Tag>& lhs, const GroundNumericEffectImpl<Tag>& rhs) { return &lhs == &rhs; })
             .def("__str__", [](const GroundNumericEffectImpl<Tag>& self) { return to_string(self); })
             .def("__repr__", [](const GroundNumericEffectImpl<Tag>& self) { return to_string(self); })
@@ -488,7 +485,7 @@ void bind_formalism(nb::module_& m)
 
     /* GroundNumericConstraint */
     nb::class_<GroundNumericConstraintImpl>(m, "GroundNumericConstraint")  //
-        .def("__hash__", [](const GroundNumericConstraintImpl& self) { return &self; })
+        .def("__hash__", [](const GroundNumericConstraintImpl& self) { return std::hash<GroundNumericConstraint> {}(&self); })
         .def("__eq__", [](const GroundNumericConstraintImpl& lhs, const GroundNumericConstraintImpl& rhs) { return &lhs == &rhs; })
         .def("__str__", [](const GroundNumericConstraintImpl& self) { return to_string(self); })
         .def("__repr__", [](const GroundNumericConstraintImpl& self) { return to_string(self); })
@@ -500,13 +497,13 @@ void bind_formalism(nb::module_& m)
 
     /* GroundConjunctiveCondition */
     nb::class_<GroundConjunctiveConditionImpl>(m, "GroundConjunctiveCondition")
-        .def("__hash__", [](const GroundConjunctiveConditionImpl& self) { return &self; })
+        .def("__hash__", [](const GroundConjunctiveConditionImpl& self) { return std::hash<GroundConjunctiveCondition> {}(&self); })
         .def("__eq__", [](const GroundConjunctiveConditionImpl& lhs, const GroundConjunctiveConditionImpl& rhs) { return &lhs == &rhs; })
         .def("to_string",
              [](const GroundConjunctiveConditionImpl& self, const ProblemImpl& problem)
              {
                  std::stringstream ss;
-                 ss << std::make_tuple(GroundConjunctiveCondition(&self), std::cref(problem));
+                 mimir::operator<<(ss, std::make_tuple(GroundConjunctiveCondition(&self), std::cref(problem)));
                  return ss.str();
              })
         .def("get_index", &GroundConjunctiveConditionImpl::get_index, nb::rv_policy::copy)
@@ -573,13 +570,13 @@ void bind_formalism(nb::module_& m)
 
     /* GroundConjunctiveEffect */
     nb::class_<GroundConjunctiveEffectImpl>(m, "GroundConjunctiveEffect")
-        .def("__hash__", [](const GroundConjunctiveEffectImpl& self) { return &self; })
+        .def("__hash__", [](const GroundConjunctiveEffectImpl& self) { return std::hash<GroundConjunctiveEffect> {}(&self); })
         .def("__eq__", [](const GroundConjunctiveEffectImpl& lhs, const GroundConjunctiveEffectImpl& rhs) { return &lhs == &rhs; })
         .def("to_string",
              [](const GroundConjunctiveEffectImpl& self, const ProblemImpl& problem)
              {
                  std::stringstream ss;
-                 ss << std::make_tuple(GroundConjunctiveEffect(&self), std::cref(problem));
+                 mimir::operator<<(ss, std::make_tuple(GroundConjunctiveEffect(&self), std::cref(problem)));
                  return ss.str();
              })
         .def("get_index", &GroundConjunctiveEffectImpl::get_index, nb::rv_policy::copy)
@@ -608,13 +605,13 @@ void bind_formalism(nb::module_& m)
 
     /* GroundConditionalEffect */
     nb::class_<GroundConditionalEffectImpl>(m, "GroundConditionalEffect")
-        .def("__hash__", [](const GroundConditionalEffectImpl& self) { return &self; })
+        .def("__hash__", [](const GroundConditionalEffectImpl& self) { return std::hash<GroundConditionalEffect> {}(&self); })
         .def("__eq__", [](const GroundConditionalEffectImpl& lhs, const GroundConditionalEffectImpl& rhs) { return &lhs == &rhs; })
         .def("to_string",
              [](const GroundConditionalEffectImpl& self, const ProblemImpl& problem)
              {
                  std::stringstream ss;
-                 ss << std::make_tuple(GroundConditionalEffect(&self), std::cref(problem));
+                 mimir::operator<<(ss, std::make_tuple(GroundConditionalEffect(&self), std::cref(problem)));
                  return ss.str();
              })
         .def("get_index", &GroundConditionalEffectImpl::get_index, nb::rv_policy::copy)
@@ -633,14 +630,14 @@ void bind_formalism(nb::module_& m)
              [](const GroundActionImpl& self, const ProblemImpl& problem)
              {
                  std::stringstream ss;
-                 ss << std::make_tuple(GroundAction(&self), std::cref(problem), GroundActionImpl::FullFormatterTag {});
+                 mimir::operator<<(ss, std::make_tuple(GroundAction(&self), std::cref(problem), GroundActionImpl::FullFormatterTag {}));
                  return ss.str();
              })
         .def("to_string_for_plan",
              [](const GroundActionImpl& self, const ProblemImpl& problem)
              {
                  std::stringstream ss;
-                 ss << std::make_tuple(GroundAction(&self), std::cref(problem), GroundActionImpl::PlanFormatterTag {});
+                 mimir::operator<<(ss, std::make_tuple(GroundAction(&self), std::cref(problem), GroundActionImpl::PlanFormatterTag {}));
                  return ss.str();
              })
         .def("get_index", &GroundActionImpl::get_index, nb::rv_policy::copy)
@@ -653,13 +650,13 @@ void bind_formalism(nb::module_& m)
 
     /* GroundAxiom */
     nb::class_<GroundAxiomImpl>(m, "GroundAxiom")  //
-        .def("__hash__", [](const GroundAxiomImpl& self) { return &self; })
+        .def("__hash__", [](const GroundAxiomImpl& self) { return std::hash<GroundAxiom> {}(&self); })
         .def("__eq__", [](const GroundAxiomImpl& lhs, const GroundAxiomImpl& rhs) { return &lhs == &rhs; })
         .def("to_string",
              [](const GroundAxiomImpl& self, const ProblemImpl& problem)
              {
                  std::stringstream ss;
-                 ss << std::make_tuple(GroundAxiom(&self), std::cref(problem));
+                 mimir::operator<<(ss, std::make_tuple(GroundAxiom(&self), std::cref(problem)));
                  return ss.str();
              })
         .def("get_index", &GroundAxiomImpl::get_index, nb::rv_policy::copy)
@@ -732,8 +729,6 @@ void bind_formalism(nb::module_& m)
 
     /* Domain */
     nb::class_<DomainImpl>(m, "Domain")  //
-        .def("__hash__", [](const DomainImpl& self) { return &self; })
-        .def("__eq__", [](const DomainImpl& lhs, const DomainImpl& rhs) { return &lhs == &rhs; })
         .def("__str__", [](const DomainImpl& self) { return to_string(self); })
         .def("__repr__", [](const DomainImpl& self) { return to_string(self); })
         .def("get_repositories", &DomainImpl::get_repositories, nb::rv_policy::reference_internal)
@@ -763,8 +758,6 @@ void bind_formalism(nb::module_& m)
             nb::arg("domain_filepath"),
             nb::arg("problem_filepath"),
             nb::arg("options") = loki::Options())
-        .def("__hash__", [](const ProblemImpl& self) { return &self; })
-        .def("__eq__", [](const ProblemImpl& lhs, const ProblemImpl& rhs) { return &lhs == &rhs; })
         .def("__str__", [](const ProblemImpl& self) { return to_string(self); })
         .def("__repr__", [](const ProblemImpl& self) { return to_string(self); })
         .def("get_index", &ProblemImpl::get_index, nb::rv_policy::copy)

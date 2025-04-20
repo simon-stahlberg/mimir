@@ -64,6 +64,7 @@
  */
 
 #include "mimir/languages/description_logics.hpp"
+#include "mimir/languages/general_policies.hpp"
 
 /**
  * Search

@@ -4,8 +4,8 @@
 
 #include <nanobind/trampoline.h>
 
-using namespace mimir;
-using namespace mimir::graphs;
+namespace mimir::graphs
+{
 
 class IPyColor : public IColor
 {
@@ -18,10 +18,7 @@ public:
     size_t hash() const override { NB_OVERRIDE_PURE_NAME("__hash__", hash); }
 };
 
-namespace mimir::bindings
-{
-
-void bind_graphs(nb::module_& m)
+void bind_module_definitions(nb::module_& m)
 {
     bind_vertex<EmptyVertex>(m, PyVertexProperties<EmptyVertex>::name);
     bind_vertex<ColoredVertex>(m, PyVertexProperties<ColoredVertex>::name);

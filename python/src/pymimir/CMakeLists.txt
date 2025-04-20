@@ -17,6 +17,7 @@ nanobind_add_module(pymimir
     advanced/search/bindings.cpp 
     advanced/datasets/bindings.cpp
     advanced/languages/description_logics/bindings.cpp
+    advanced/languages/general_policies/bindings.cpp
 )
 
 target_link_libraries(pymimir PRIVATE mimir::core)
@@ -34,6 +35,7 @@ set(MODULES
     pymimir.advanced.datasets
     pymimir.advanced.languages
     pymimir.advanced.languages.description_logics
+    pymimir.advanced.languages.general_policies
 )
 
 foreach(mod IN LISTS MODULES)

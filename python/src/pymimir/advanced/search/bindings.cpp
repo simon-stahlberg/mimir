@@ -3,11 +3,9 @@
 #include <nanobind/nanobind.h>
 #include <nanobind/trampoline.h>
 
-using namespace mimir;
-using namespace mimir::search;
 using namespace mimir::formalism;
 
-namespace mimir::bindings
+namespace mimir::search
 {
 
 class IPyGoalStrategy : public IGoalStrategy
@@ -150,7 +148,7 @@ public:
     const brfs::Statistics& get_statistics() const override { NB_OVERRIDE_PURE(get_statistics); }
 };
 
-void bind_search(nb::module_& m)
+void bind_module_definitions(nb::module_& m)
 {
     /* Enums */
     nb::enum_<SearchContextImpl::SearchMode>(m, "SearchMode")
@@ -243,8 +241,8 @@ void bind_search(nb::module_& m)
 
     /* State */
     nb::class_<StateImpl>(m, "State")  //
-        .def("__hash__", [](const StateImpl& self) { return self.get_index(); })
-        .def("__eq__", [](const StateImpl& lhs, const StateImpl& rhs) { return lhs.get_index() == rhs.get_index(); })
+        .def("__hash__", [](const StateImpl& self) { return std::hash<State> {}(&self); })
+        .def("__eq__", [](const StateImpl& lhs, const StateImpl& rhs) { return &lhs == &rhs; })
         .def(
             "get_fluent_atoms",
             [](const StateImpl& self)
@@ -270,7 +268,7 @@ void bind_search(nb::module_& m)
             [](const StateImpl& self, const ProblemImpl& problem)
             {
                 std::stringstream ss;
-                ss << std::make_tuple(State(&self), std::cref(problem));
+                mimir::operator<<(ss, std::make_tuple(State(&self), std::cref(problem)));
                 return ss.str();
             },
             nb::arg("problem"))

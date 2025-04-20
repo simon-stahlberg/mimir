@@ -5,12 +5,10 @@
 #include <nanobind/nanobind.h>
 #include <nanobind/trampoline.h>
 
-using namespace mimir;
-using namespace mimir::languages;
 using namespace mimir::formalism;
 using namespace mimir::search;
 
-namespace mimir::bindings
+namespace mimir::languages::dl
 {
 
 class IPyDLVisitor : public dl::IVisitor
@@ -76,7 +74,7 @@ public:
     bool should_prune(dl::Constructor<dl::NumericalTag> constructor) override { NB_OVERRIDE_PURE(should_prune, constructor); }
 };
 
-void bind_languages_description_logics(nb::module_& m)
+void bind_module_definitions(nb::module_& m)
 {
     nb::enum_<dl::cnf_grammar::GrammarSpecificationEnum>(m, "GrammarSpecificationEnum")  //
         .value("FRANCES_ET_AL_AAAI2021", dl::cnf_grammar::GrammarSpecificationEnum::FRANCES_ET_AL_AAAI2021);
