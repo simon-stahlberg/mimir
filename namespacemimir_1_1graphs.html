@@ -246,6 +246,12 @@ Typedefs</h2></td></tr>
 <tr class="separator:a67adc7ccb0d5c052d08f962f0878bda9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9b0e55e585b59f1d27173bc17e2b51fe"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a9b0e55e585b59f1d27173bc17e2b51fe">ColoredVertex</a> = <a class="el" href="classmimir_1_1graphs_1_1Vertex.html">Vertex</a>&lt; <a class="el" href="classmimir_1_1graphs_1_1Color.html">Color</a> &gt;</td></tr>
 <tr class="separator:a9b0e55e585b59f1d27173bc17e2b51fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a033c8d51a83679a59079fd11e3262c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a1a033c8d51a83679a59079fd11e3262c">PolicyVertex</a> = <a class="el" href="classmimir_1_1graphs_1_1Vertex.html">Vertex</a>&lt; <a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#a7296955dec808e7fc8002658b8320ed5">languages::general_policies::ConditionSet</a> &gt;</td></tr>
+<tr class="separator:a1a033c8d51a83679a59079fd11e3262c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f15803d1e740b98f5495aa8af9d0f94"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a6f15803d1e740b98f5495aa8af9d0f94">PolicyEdge</a> = <a class="el" href="classmimir_1_1graphs_1_1Edge.html">Edge</a>&lt; <a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#ad9b0fa649ce746a23c1646d2141038bd">languages::general_policies::EffectSet</a> &gt;</td></tr>
+<tr class="separator:a6f15803d1e740b98f5495aa8af9d0f94"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad407b09693d0799dc9b3a4c4e00b6c42"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#ad407b09693d0799dc9b3a4c4e00b6c42">PolicyGraph</a> = <a class="el" href="classmimir_1_1graphs_1_1DynamicGraph.html">DynamicGraph</a>&lt; <a class="el" href="namespacemimir_1_1graphs.html#a1a033c8d51a83679a59079fd11e3262c">PolicyVertex</a>, <a class="el" href="namespacemimir_1_1graphs.html#a6f15803d1e740b98f5495aa8af9d0f94">PolicyEdge</a> &gt;</td></tr>
+<tr class="separator:ad407b09693d0799dc9b3a4c4e00b6c42"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
@@ -392,6 +398,10 @@ requires IsVertexListGraph&lt;G&gt; &amp;&amp; IsIncidenceGraph&lt;G&gt;</td></t
 <tr class="memitem:aa54a871c7fe1db57ea928ea507ede90c"><td class="memTemplParams" colspan="2">template&lt;IsStaticGraph G&gt; </td></tr>
 <tr class="memitem:aa54a871c7fe1db57ea928ea507ede90c"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#aa54a871c7fe1db57ea928ea507ede90c">operator&lt;&lt;</a> (std::ostream &amp;out, const <a class="el" href="classmimir_1_1graphs_1_1StaticBidirectionalGraph.html">StaticBidirectionalGraph</a>&lt; G &gt; &amp;graph)</td></tr>
 <tr class="separator:aa54a871c7fe1db57ea928ea507ede90c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd15c4a698288b75a7e6713620fc415f"><td class="memItemLeft" align="right" valign="top">const auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#afd15c4a698288b75a7e6713620fc415f">get_conditions</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a1a033c8d51a83679a59079fd11e3262c">PolicyVertex</a> &amp;vertex)</td></tr>
+<tr class="separator:afd15c4a698288b75a7e6713620fc415f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ee74608d77de4651842606510862b67"><td class="memItemLeft" align="right" valign="top">const auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs.html#a5ee74608d77de4651842606510862b67">get_effects</a> (const <a class="el" href="namespacemimir_1_1graphs.html#a6f15803d1e740b98f5495aa8af9d0f94">PolicyEdge</a> &amp;edge)</td></tr>
+<tr class="separator:a5ee74608d77de4651842606510862b67"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Typedef Documentation</h2>
 <a id="a9861298646e808707570b3e2528af931" name="a9861298646e808707570b3e2528af931"></a>
@@ -599,6 +609,48 @@ requires IsVertexListGraph&lt;G&gt; &amp;&amp; IsIncidenceGraph&lt;G&gt;</td></t
       <table class="memname">
         <tr>
           <td class="memname">using <a class="el" href="namespacemimir_1_1graphs.html#a59f908cee5f00c5e604ef2442951bd9b">mimir::graphs::InternalTupleGraph</a> = typedef <a class="el" href="classmimir_1_1graphs_1_1StaticBidirectionalGraph.html">StaticBidirectionalGraph</a>&lt;<a class="el" href="namespacemimir_1_1graphs.html#aa77b03b4bf43d0a671912a77a874182a">StaticTupleGraph</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6f15803d1e740b98f5495aa8af9d0f94" name="a6f15803d1e740b98f5495aa8af9d0f94"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f15803d1e740b98f5495aa8af9d0f94">&#9670;&#160;</a></span>PolicyEdge</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespacemimir_1_1graphs.html#a6f15803d1e740b98f5495aa8af9d0f94">mimir::graphs::PolicyEdge</a> = typedef <a class="el" href="classmimir_1_1graphs_1_1Edge.html">Edge</a>&lt;<a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#ad9b0fa649ce746a23c1646d2141038bd">languages::general_policies::EffectSet</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad407b09693d0799dc9b3a4c4e00b6c42" name="ad407b09693d0799dc9b3a4c4e00b6c42"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad407b09693d0799dc9b3a4c4e00b6c42">&#9670;&#160;</a></span>PolicyGraph</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespacemimir_1_1graphs.html#ad407b09693d0799dc9b3a4c4e00b6c42">mimir::graphs::PolicyGraph</a> = typedef <a class="el" href="classmimir_1_1graphs_1_1DynamicGraph.html">DynamicGraph</a>&lt;<a class="el" href="namespacemimir_1_1graphs.html#a1a033c8d51a83679a59079fd11e3262c">PolicyVertex</a>, <a class="el" href="namespacemimir_1_1graphs.html#a6f15803d1e740b98f5495aa8af9d0f94">PolicyEdge</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1a033c8d51a83679a59079fd11e3262c" name="a1a033c8d51a83679a59079fd11e3262c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a033c8d51a83679a59079fd11e3262c">&#9670;&#160;</a></span>PolicyVertex</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespacemimir_1_1graphs.html#a1a033c8d51a83679a59079fd11e3262c">mimir::graphs::PolicyVertex</a> = typedef <a class="el" href="classmimir_1_1graphs_1_1Vertex.html">Vertex</a>&lt;<a class="el" href="namespacemimir_1_1languages_1_1general__policies.html#a7296955dec808e7fc8002658b8320ed5">languages::general_policies::ConditionSet</a>&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1173,6 +1225,58 @@ template&lt;IsEdgeListGraph Graph, IsDirection Direction&gt; </div>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classmimir_1_1graphs_1_1Vertex.html">Vertex</a>&lt; <a class="el" href="classmimir_1_1graphs_1_1Color.html">Color</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>vertex</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afd15c4a698288b75a7e6713620fc415f" name="afd15c4a698288b75a7e6713620fc415f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd15c4a698288b75a7e6713620fc415f">&#9670;&#160;</a></span>get_conditions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const auto &amp; mimir::graphs::get_conditions </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacemimir_1_1graphs.html#a1a033c8d51a83679a59079fd11e3262c">PolicyVertex</a> &amp;&#160;</td>
+          <td class="paramname"><em>vertex</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5ee74608d77de4651842606510862b67" name="a5ee74608d77de4651842606510862b67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ee74608d77de4651842606510862b67">&#9670;&#160;</a></span>get_effects()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const auto &amp; mimir::graphs::get_effects </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacemimir_1_1graphs.html#a6f15803d1e740b98f5495aa8af9d0f94">PolicyEdge</a> &amp;&#160;</td>
+          <td class="paramname"><em>edge</em></td><td>)</td>
           <td></td>
         </tr>
       </table>

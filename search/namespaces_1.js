@@ -17,7 +17,7 @@ var searchData=
   ['graphs_14',['graphs',['../namespacemimir_1_1graphs.html',1,'mimir']]],
   ['grounded_15',['grounded',['../namespacemimir_1_1search_1_1applicable__action__generator_1_1grounded.html',1,'mimir::search::applicable_action_generator::grounded'],['../namespacemimir_1_1search_1_1axiom__evaluator_1_1grounded.html',1,'mimir::search::axiom_evaluator::grounded']]],
   ['iw_16',['iw',['../namespacemimir_1_1search_1_1iw.html',1,'mimir::search']]],
-  ['keywords_17',['keywords',['../namespacemimir_1_1languages_1_1dl_1_1keywords.html',1,'mimir::languages::dl']]],
+  ['keywords_17',['keywords',['../namespacemimir_1_1languages_1_1dl_1_1keywords.html',1,'mimir::languages::dl::keywords'],['../namespacemimir_1_1languages_1_1general__policies_1_1keywords.html',1,'mimir::languages::general_policies::keywords']]],
   ['kfwl_18',['kfwl',['../namespacemimir_1_1graphs_1_1kfwl.html',1,'mimir::graphs']]],
   ['languages_19',['languages',['../namespacemimir_1_1languages.html',1,'mimir']]],
   ['lifted_20',['lifted',['../namespacemimir_1_1search_1_1applicable__action__generator_1_1lifted.html',1,'mimir::search::applicable_action_generator::lifted'],['../namespacemimir_1_1search_1_1axiom__evaluator_1_1lifted.html',1,'mimir::search::axiom_evaluator::lifted']]],
