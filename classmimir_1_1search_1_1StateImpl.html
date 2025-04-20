@@ -81,7 +81,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p><code><a class="el" href="classmimir_1_1search_1_1StateImpl.html" title="StateImpl encapsulates the fluent and derived atoms of a planning state. We refer to the fluent atoms...">StateImpl</a></code> encapsulates the fluent and derived atoms of a planning state. We refer to the fluent atoms as the non-extended state and the fluent and derived atoms as the extended state.  
+<p><code><a class="el" href="classmimir_1_1search_1_1StateImpl.html" title="StateImpl encapsulates the fluent and derived atoms, and numeric variables of a planning state.">StateImpl</a></code> encapsulates the fluent and derived atoms, and numeric variables of a planning state.  
  <a href="classmimir_1_1search_1_1StateImpl.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="state_8hpp_source.html">state.hpp</a>&gt;</code></p>
@@ -95,6 +95,14 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a8b7462864f278fea8be1597729da8295"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3c57b130383ab509ddf046e651a36e1c"><td class="memItemLeft" align="right" valign="top">const FlatDoubleList &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1StateImpl.html#a3c57b130383ab509ddf046e651a36e1c">get_numeric_variables</a> () const</td></tr>
 <tr class="separator:a3c57b130383ab509ddf046e651a36e1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47203505b88c23da8601fa8741b5a613"><td class="memTemplParams" colspan="2">template&lt;formalism::IsFluentOrDerivedTag P&gt; </td></tr>
+<tr class="memitem:a47203505b88c23da8601fa8741b5a613"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1StateImpl.html#a47203505b88c23da8601fa8741b5a613">literal_holds</a> (<a class="el" href="namespacemimir_1_1formalism.html#a25dbc32f90400bb34420aac94f20068d">formalism::GroundLiteral</a>&lt; P &gt; literal) const</td></tr>
+<tr class="memdesc:a47203505b88c23da8601fa8741b5a613"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check whether the literal holds in the state using binary search over the atoms in the state.  <br /></td></tr>
+<tr class="separator:a47203505b88c23da8601fa8741b5a613"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57c7ec44a0daf049425b13c1212075b3"><td class="memTemplParams" colspan="2">template&lt;formalism::IsFluentOrDerivedTag P&gt; </td></tr>
+<tr class="memitem:a57c7ec44a0daf049425b13c1212075b3"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1StateImpl.html#a57c7ec44a0daf049425b13c1212075b3">literals_hold</a> (const <a class="el" href="namespacemimir_1_1formalism.html#ad32949f384c2a4c2b47a718103106f98">formalism::GroundLiteralList</a>&lt; P &gt; &amp;literals) const</td></tr>
+<tr class="memdesc:a57c7ec44a0daf049425b13c1212075b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check whether all literals hold in the state using binary searches over the atoms in the state.  <br /></td></tr>
+<tr class="separator:a57c7ec44a0daf049425b13c1212075b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad67b4a487fb46d715e61802696a9ddc8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1StateImpl.html#ad67b4a487fb46d715e61802696a9ddc8">numeric_constraint_holds</a> (<a class="el" href="namespacemimir_1_1formalism.html#a9f99759167a64133e84f9864e207ad64">formalism::GroundNumericConstraint</a> numeric_constraint, const FlatDoubleList &amp;static_numeric_variables) const</td></tr>
 <tr class="separator:ad67b4a487fb46d715e61802696a9ddc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab166c6f7a0dea158b0080181a9729dae"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1StateImpl.html#ab166c6f7a0dea158b0080181a9729dae">numeric_constraints_hold</a> (const <a class="el" href="namespacemimir_1_1formalism.html#ad276de9b4f9ba0c96fea3d89c3993268">formalism::GroundNumericConstraintList</a> &amp;numeric_constraints, const FlatDoubleList &amp;static_numeric_variables) const</td></tr>
@@ -115,7 +123,7 @@ Friends</h2></td></tr>
 <tr class="separator:a9fe84bd09146359e041c5cdba10d6757"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p><code><a class="el" href="classmimir_1_1search_1_1StateImpl.html" title="StateImpl encapsulates the fluent and derived atoms of a planning state. We refer to the fluent atoms...">StateImpl</a></code> encapsulates the fluent and derived atoms of a planning state. We refer to the fluent atoms as the non-extended state and the fluent and derived atoms as the extended state. </p>
+<div class="textblock"><p><code><a class="el" href="classmimir_1_1search_1_1StateImpl.html" title="StateImpl encapsulates the fluent and derived atoms, and numeric variables of a planning state.">StateImpl</a></code> encapsulates the fluent and derived atoms, and numeric variables of a planning state. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a8b7462864f278fea8be1597729da8295" name="a8b7462864f278fea8be1597729da8295"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a8b7462864f278fea8be1597729da8295">&#9670;&#160;</a></span>get_atoms()</h2>
@@ -194,8 +202,78 @@ template&lt;formalism::IsFluentOrDerivedTag P&gt; </div>
 
 </div>
 </div>
+<a id="a47203505b88c23da8601fa8741b5a613" name="a47203505b88c23da8601fa8741b5a613"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47203505b88c23da8601fa8741b5a613">&#9670;&#160;</a></span>literal_holds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;formalism::IsFluentOrDerivedTag P&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">bool mimir::search::StateImpl::literal_holds </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#a25dbc32f90400bb34420aac94f20068d">formalism::GroundLiteral</a>&lt; P &gt;&#160;</td>
+          <td class="paramname"><em>literal</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Check whether the literal holds in the state using binary search over the atoms in the state. </p>
+<p>Utils </p><dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">P</td><td>is the literal type. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">literal</td><td>is the literal. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if the literal holds in the state, and false otherwise. </dd></dl>
+
+</div>
+</div>
+<a id="a57c7ec44a0daf049425b13c1212075b3" name="a57c7ec44a0daf049425b13c1212075b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57c7ec44a0daf049425b13c1212075b3">&#9670;&#160;</a></span>literals_hold() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;formalism::IsFluentOrDerivedTag P&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">bool mimir::search::StateImpl::literals_hold </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacemimir_1_1formalism.html#ad32949f384c2a4c2b47a718103106f98">formalism::GroundLiteralList</a>&lt; P &gt; &amp;&#160;</td>
+          <td class="paramname"><em>literals</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Check whether all literals hold in the state using binary searches over the atoms in the state. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">P</td><td>is the literal type. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">literals</td><td>are the literals. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if all literals hold in the state, and false otherwise. </dd></dl>
+
+</div>
+</div>
 <a id="a4038ecab056cf0889ec3862f3ef07a8e" name="a4038ecab056cf0889ec3862f3ef07a8e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4038ecab056cf0889ec3862f3ef07a8e">&#9670;&#160;</a></span>literals_hold()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a4038ecab056cf0889ec3862f3ef07a8e">&#9670;&#160;</a></span>literals_hold() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -250,7 +328,6 @@ requires IsRangeOver&lt;Range1, <a class="el" href="namespacemimir.html#ab800c69
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Utils </p>
 
 </div>
 </div>

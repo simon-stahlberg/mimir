@@ -96,16 +96,16 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ae9e8d6153388085cab8880ff5d84a94e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmimir_1_1search_1_1StateRepositoryImpl.html">StateRepositoryImpl</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1StateRepositoryImpl.html#ae9e8d6153388085cab8880ff5d84a94e">operator=</a> (<a class="el" href="classmimir_1_1search_1_1StateRepositoryImpl.html">StateRepositoryImpl</a> &amp;&amp;other)=delete</td></tr>
 <tr class="separator:ae9e8d6153388085cab8880ff5d84a94e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac213d0afabb6399a65a57282c4541775"><td class="memItemLeft" align="right" valign="top">std::pair&lt; <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1StateRepositoryImpl.html#ac213d0afabb6399a65a57282c4541775">get_or_create_initial_state</a> ()</td></tr>
-<tr class="memdesc:ac213d0afabb6399a65a57282c4541775"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get or create the extended initial state of the underlying problem.  <br /></td></tr>
+<tr class="memdesc:ac213d0afabb6399a65a57282c4541775"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get or create the initial state of the underlying problem.  <br /></td></tr>
 <tr class="separator:ac213d0afabb6399a65a57282c4541775"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa2a2184091009f7b54611128f49a2aee"><td class="memItemLeft" align="right" valign="top">std::pair&lt; <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1StateRepositoryImpl.html#aa2a2184091009f7b54611128f49a2aee">get_or_create_state</a> (const <a class="el" href="namespacemimir_1_1formalism.html#ad2cdf01cac990bae340bbeac0fcb8a45">formalism::GroundAtomList</a>&lt; <a class="el" href="structmimir_1_1formalism_1_1FluentTag.html">formalism::FluentTag</a> &gt; &amp;atoms, const FlatDoubleList &amp;fluent_numeric_variables)</td></tr>
-<tr class="memdesc:aa2a2184091009f7b54611128f49a2aee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get or create the extended state for a given set of ground <code>atoms</code>.  <br /></td></tr>
+<tr class="memdesc:aa2a2184091009f7b54611128f49a2aee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get or create the state for a given set of ground <code>atoms</code>.  <br /></td></tr>
 <tr class="separator:aa2a2184091009f7b54611128f49a2aee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa4efa9bda828d012b10e7ee9323cf746"><td class="memItemLeft" align="right" valign="top">std::pair&lt; <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1StateRepositoryImpl.html#aa4efa9bda828d012b10e7ee9323cf746">get_or_create_successor_state</a> (<a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> state, <a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">formalism::GroundAction</a> action, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> state_metric_value)</td></tr>
-<tr class="memdesc:aa4efa9bda828d012b10e7ee9323cf746"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get or create the extended successor state when applying the given ground <code>action</code> in the given <code>state</code>.  <br /></td></tr>
+<tr class="memdesc:aa4efa9bda828d012b10e7ee9323cf746"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get or create the successor state when applying the given ground <code>action</code> in the given <code>state</code>.  <br /></td></tr>
 <tr class="separator:aa4efa9bda828d012b10e7ee9323cf746"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9ee249d0363faffb994fcd8885d8ec49"><td class="memItemLeft" align="right" valign="top">std::pair&lt; <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1StateRepositoryImpl.html#a9ee249d0363faffb994fcd8885d8ec49">get_or_create_successor_state</a> (<a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> state, DenseState &amp;dense_state, <a class="el" href="namespacemimir_1_1formalism.html#aa73d5d8148329ca337aa8114b0ca16dc">formalism::GroundAction</a> action, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> state_metric_value)</td></tr>
-<tr class="memdesc:a9ee249d0363faffb994fcd8885d8ec49"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get or create the extended successor state when applying the given ground <code>action</code> in the given state identifed by the <code>state_fluent_atoms</code> and <code>derived_atoms</code>. The input parameters <code>dense_state</code> are modified, meaning that side effects have to be taken into account.  <br /></td></tr>
+<tr class="memdesc:a9ee249d0363faffb994fcd8885d8ec49"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get or create the successor state when applying the given ground <code>action</code> in the given state identifed by the <code>state_fluent_atoms</code> and <code>derived_atoms</code>. The input parameters <code>dense_state</code> are modified, meaning that side effects have to be taken into account.  <br /></td></tr>
 <tr class="separator:a9ee249d0363faffb994fcd8885d8ec49"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab7e9934a0856bfeea2ab50256b03e61d"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir_1_1formalism.html#a18a62fffd7784a50a9304da9b0a2a7d1">formalism::Problem</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1StateRepositoryImpl.html#ab7e9934a0856bfeea2ab50256b03e61d">get_problem</a> () const</td></tr>
 <tr class="separator:ab7e9934a0856bfeea2ab50256b03e61d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -268,8 +268,8 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Get or create the extended initial state of the underlying problem. </p>
-<dl class="section return"><dt>Returns</dt><dd>the extended initial state. </dd></dl>
+<p>Get or create the initial state of the underlying problem. </p>
+<dl class="section return"><dt>Returns</dt><dd>the initial state and its associated metric value, which is 0 in the case of :action-costs. </dd></dl>
 
 </div>
 </div>
@@ -299,7 +299,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Get or create the extended state for a given set of ground <code>atoms</code>. </p>
+<p>Get or create the state for a given set of ground <code>atoms</code>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">atoms</td><td>the ground atoms. </td></tr>
@@ -307,7 +307,7 @@ Static Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>the extended state. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>the state and its associated metric value, which is 0 in the case of :action-costs. </dd></dl>
 
 </div>
 </div>
@@ -349,7 +349,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Get or create the extended successor state when applying the given ground <code>action</code> in the given state identifed by the <code>state_fluent_atoms</code> and <code>derived_atoms</code>. The input parameters <code>dense_state</code> are modified, meaning that side effects have to be taken into account. </p>
+<p>Get or create the successor state when applying the given ground <code>action</code> in the given state identifed by the <code>state_fluent_atoms</code> and <code>derived_atoms</code>. The input parameters <code>dense_state</code> are modified, meaning that side effects have to be taken into account. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">dense_state</td><td>is the dense state. </td></tr>
@@ -358,7 +358,7 @@ Static Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>the extended successor state and its metric value. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>the successor state and its associated metric value. </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">state</td><td>for parallel application of numeric effects </td></tr>
@@ -400,7 +400,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Get or create the extended successor state when applying the given ground <code>action</code> in the given <code>state</code>. </p>
+<p>Get or create the successor state when applying the given ground <code>action</code> in the given <code>state</code>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">state</td><td>is the state. </td></tr>
@@ -409,7 +409,7 @@ Static Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>the extended successor state and its metric value. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>the successor state and its associated metric value. </dd></dl>
 
 </div>
 </div>
@@ -447,7 +447,7 @@ Static Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Return the reached derived ground atoms. </p>
-<dl class="section return"><dt>Returns</dt><dd>a bitset that stores the derived ground atom indices. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>a bitset that stores the reached derived ground atom indices. </dd></dl>
 
 </div>
 </div>
@@ -467,7 +467,7 @@ Static Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Return the reached fluent ground atoms. </p>
-<dl class="section return"><dt>Returns</dt><dd>a bitset that stores the fluent ground atom indices. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>a bitset that stores the reached fluent ground atom indices. </dd></dl>
 
 </div>
 </div>
