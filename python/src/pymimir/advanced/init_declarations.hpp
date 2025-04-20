@@ -97,6 +97,22 @@ NB_MAKE_OPAQUE(mm::languages::dl::ConstructorList<mm::languages::dl::ConceptTag>
 NB_MAKE_OPAQUE(mm::languages::dl::ConstructorList<mm::languages::dl::RoleTag>);
 NB_MAKE_OPAQUE(mm::languages::dl::ConstructorList<mm::languages::dl::BooleanTag>);
 NB_MAKE_OPAQUE(mm::languages::dl::ConstructorList<mm::languages::dl::NumericalTag>);
+NB_MAKE_OPAQUE(mm::languages::dl::cnf_grammar::ConstructorList<mm::languages::dl::ConceptTag>);
+NB_MAKE_OPAQUE(mm::languages::dl::cnf_grammar::ConstructorList<mm::languages::dl::RoleTag>);
+NB_MAKE_OPAQUE(mm::languages::dl::cnf_grammar::ConstructorList<mm::languages::dl::BooleanTag>);
+NB_MAKE_OPAQUE(mm::languages::dl::cnf_grammar::ConstructorList<mm::languages::dl::NumericalTag>);
+NB_MAKE_OPAQUE(mm::languages::dl::cnf_grammar::NonTerminalList<mm::languages::dl::ConceptTag>);
+NB_MAKE_OPAQUE(mm::languages::dl::cnf_grammar::NonTerminalList<mm::languages::dl::RoleTag>);
+NB_MAKE_OPAQUE(mm::languages::dl::cnf_grammar::NonTerminalList<mm::languages::dl::BooleanTag>);
+NB_MAKE_OPAQUE(mm::languages::dl::cnf_grammar::NonTerminalList<mm::languages::dl::NumericalTag>);
+NB_MAKE_OPAQUE(mm::languages::dl::cnf_grammar::DerivationRuleList<mm::languages::dl::ConceptTag>);
+NB_MAKE_OPAQUE(mm::languages::dl::cnf_grammar::DerivationRuleList<mm::languages::dl::RoleTag>);
+NB_MAKE_OPAQUE(mm::languages::dl::cnf_grammar::DerivationRuleList<mm::languages::dl::BooleanTag>);
+NB_MAKE_OPAQUE(mm::languages::dl::cnf_grammar::DerivationRuleList<mm::languages::dl::NumericalTag>);
+NB_MAKE_OPAQUE(mm::languages::dl::cnf_grammar::SubstitutionRuleList<mm::languages::dl::ConceptTag>);
+NB_MAKE_OPAQUE(mm::languages::dl::cnf_grammar::SubstitutionRuleList<mm::languages::dl::RoleTag>);
+NB_MAKE_OPAQUE(mm::languages::dl::cnf_grammar::SubstitutionRuleList<mm::languages::dl::BooleanTag>);
+NB_MAKE_OPAQUE(mm::languages::dl::cnf_grammar::SubstitutionRuleList<mm::languages::dl::NumericalTag>);
 
 namespace mimir::bindings
 {

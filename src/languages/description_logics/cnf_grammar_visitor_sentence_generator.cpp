@@ -31,6 +31,60 @@ namespace mimir::languages::dl::cnf_grammar
 {
 
 /**
+ * GeneratedSentencesContainer::
+ */
+
+const dl::ConstructorLists GeneratedSentencesContainer::empty_lists = dl::ConstructorLists();
+
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
+const GeneratedSentencesContainer::GeneratedConstructorsMap<D>& GeneratedSentencesContainer::get() const
+{
+    return boost::hana::at_key(m_generated_constructors, boost::hana::type<D> {});
+}
+
+template const GeneratedSentencesContainer::GeneratedConstructorsMap<ConceptTag>& GeneratedSentencesContainer::get() const;
+template const GeneratedSentencesContainer::GeneratedConstructorsMap<RoleTag>& GeneratedSentencesContainer::get() const;
+template const GeneratedSentencesContainer::GeneratedConstructorsMap<BooleanTag>& GeneratedSentencesContainer::get() const;
+template const GeneratedSentencesContainer::GeneratedConstructorsMap<NumericalTag>& GeneratedSentencesContainer::get() const;
+
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
+dl::ConstructorList<D>& GeneratedSentencesContainer::get(NonTerminal<D> nonterminal, size_t complexity)
+{
+    auto& constructors_by_complexity = boost::hana::at_key(m_generated_constructors, boost::hana::type<D> {})[nonterminal];
+    if (complexity >= constructors_by_complexity.size())
+    {
+        constructors_by_complexity.resize(complexity + 1);
+    }
+    return constructors_by_complexity[complexity];
+}
+
+template dl::ConstructorList<ConceptTag>& GeneratedSentencesContainer::get(NonTerminal<ConceptTag> nonterminal, size_t complexity);
+template dl::ConstructorList<RoleTag>& GeneratedSentencesContainer::get(NonTerminal<RoleTag> nonterminal, size_t complexity);
+template dl::ConstructorList<BooleanTag>& GeneratedSentencesContainer::get(NonTerminal<BooleanTag> nonterminal, size_t complexity);
+template dl::ConstructorList<NumericalTag>& GeneratedSentencesContainer::get(NonTerminal<NumericalTag> nonterminal, size_t complexity);
+
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
+const dl::ConstructorList<D>& GeneratedSentencesContainer::get(NonTerminal<D> nonterminal, size_t complexity) const
+{
+    const auto& container = boost::hana::at_key(m_generated_constructors, boost::hana::type<D> {});
+
+    auto it = container.find(nonterminal);
+    if (it == container.end() || complexity >= it->second.size())
+    {
+        return boost::hana::at_key(empty_lists, boost::hana::type<D> {});
+    }
+
+    return it->second.at(complexity);
+}
+
+template const dl::ConstructorList<ConceptTag>& GeneratedSentencesContainer::get(NonTerminal<ConceptTag> nonterminal, size_t complexity) const;
+template const dl::ConstructorList<RoleTag>& GeneratedSentencesContainer::get(NonTerminal<RoleTag> nonterminal, size_t complexity) const;
+template const dl::ConstructorList<BooleanTag>& GeneratedSentencesContainer::get(NonTerminal<BooleanTag> nonterminal, size_t complexity) const;
+template const dl::ConstructorList<NumericalTag>& GeneratedSentencesContainer::get(NonTerminal<NumericalTag> nonterminal, size_t complexity) const;
+
+GeneratedSentencesContainer::HanaGeneratedConstructorsMaps& GeneratedSentencesContainer::get_hana_generated_constructors() { return m_generated_constructors; }
+
+/**
  * Concept
  */
 
@@ -611,7 +665,7 @@ void GeneratorVisitor::visit(const Grammar& grammar)
     /* Generate */
     for (; m_complexity <= m_max_syntactic_complexity; ++m_complexity)
     {
-        boost::hana::for_each(grammar.get_derivation_rules(),
+        boost::hana::for_each(grammar.get_hana_derivation_rules(),
                               [&](auto&& pair)
                               {
                                   const auto& second = boost::hana::second(pair);
@@ -622,7 +676,7 @@ void GeneratorVisitor::visit(const Grammar& grammar)
                                   }
                               });
 
-        boost::hana::for_each(grammar.get_substitution_rules(),
+        boost::hana::for_each(grammar.get_hana_substitution_rules(),
                               [&](auto&& pair)
                               {
                                   const auto& second = boost::hana::second(pair);

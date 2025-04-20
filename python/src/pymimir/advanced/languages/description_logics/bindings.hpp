@@ -6,27 +6,35 @@
 
 namespace mimir::bindings
 {
+/**
+ * DL
+ */
+
 template<languages::dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 void bind_constructor(nb::module_& m, const std::string& class_name)
 {
-    nb::class_<languages::dl::IConstructor<D>>(m, class_name.c_str())
+    using ValueType = languages::dl::IConstructor<D>;
+
+    nb::class_<ValueType>(m, class_name.c_str())
+        .def("__eq__", [](const ValueType& lhs, const ValueType& rhs) { return &lhs == &rhs; })
+        .def("__hash__", [](const ValueType& self) { return &self; })
         .def("__str__",
-             [](const languages::dl::IConstructor<D>& self)
+             [](const ValueType& self)
              {
                  auto out = std::stringstream {};
                  out << &self;
                  return out.str();
              })
         .def("__repr__",
-             [](const languages::dl::IConstructor<D>& self)
+             [](const ValueType& self)
              {
                  auto out = std::stringstream {};
                  out << &self;
                  return out.str();
              })
-        .def("evaluate", &languages::dl::IConstructor<D>::evaluate, nb::rv_policy::reference_internal, "evaluation_context"_a)
-        .def("accept", &languages::dl::IConstructor<D>::accept, "visitor"_a)
-        .def("get_index", &languages::dl::IConstructor<D>::get_index);
+        .def("evaluate", &ValueType::evaluate, nb::rv_policy::reference_internal, "evaluation_context"_a)
+        .def("accept", &ValueType::accept, "visitor"_a)
+        .def("get_index", &ValueType::get_index);
 
     nb::bind_vector<languages::dl::ConstructorList<D>>(m, (class_name + "List").c_str());
 };
@@ -34,52 +42,271 @@ void bind_constructor(nb::module_& m, const std::string& class_name)
 template<formalism::IsStaticOrFluentOrDerivedTag P>
 void bind_concept_atomic_state(nb::module_& m, const std::string& class_name)
 {
-    nb::class_<languages::dl::ConceptAtomicStateImpl<P>, languages::dl::IConstructor<languages::dl::ConceptTag>>(m, class_name.c_str())  //
-        .def("get_predicate", &languages::dl::ConceptAtomicStateImpl<P>::get_predicate, nb::rv_policy::reference_internal);
+    using BaseType = languages::dl::IConstructor<languages::dl::ConceptTag>;
+    using ValueType = languages::dl::ConceptAtomicStateImpl<P>;
+
+    nb::class_<ValueType, BaseType>(m, class_name.c_str())  //
+        .def("get_predicate", &ValueType::get_predicate, nb::rv_policy::reference_internal);
 };
 
 template<formalism::IsStaticOrFluentOrDerivedTag P>
 void bind_concept_atomic_goal(nb::module_& m, const std::string& class_name)
 {
-    nb::class_<languages::dl::ConceptAtomicGoalImpl<P>, languages::dl::IConstructor<languages::dl::ConceptTag>>(m, class_name.c_str())  //
-        .def("get_predicate", &languages::dl::ConceptAtomicGoalImpl<P>::get_predicate, nb::rv_policy::reference_internal)
-        .def("get_polarity", &languages::dl::ConceptAtomicGoalImpl<P>::get_polarity, nb::rv_policy::copy);
+    using BaseType = languages::dl::IConstructor<languages::dl::ConceptTag>;
+    using ValueType = languages::dl::ConceptAtomicGoalImpl<P>;
+
+    nb::class_<ValueType, BaseType>(m, class_name.c_str())  //
+        .def("get_predicate", &ValueType::get_predicate, nb::rv_policy::reference_internal)
+        .def("get_polarity", &ValueType::get_polarity, nb::rv_policy::copy);
 };
 
 template<formalism::IsStaticOrFluentOrDerivedTag P>
 void bind_role_atomic_state(nb::module_& m, const std::string& class_name)
 {
-    nb::class_<languages::dl::RoleAtomicStateImpl<P>, languages::dl::IConstructor<languages::dl::RoleTag>>(m, class_name.c_str())  //
-        .def("get_predicate", &languages::dl::RoleAtomicStateImpl<P>::get_predicate, nb::rv_policy::reference_internal);
+    using BaseType = languages::dl::IConstructor<languages::dl::RoleTag>;
+    using ValueType = languages::dl::RoleAtomicStateImpl<P>;
+
+    nb::class_<ValueType, BaseType>(m, class_name.c_str())  //
+        .def("get_predicate", &ValueType::get_predicate, nb::rv_policy::reference_internal);
 };
 
 template<formalism::IsStaticOrFluentOrDerivedTag P>
 void bind_role_atomic_goal(nb::module_& m, const std::string& class_name)
 {
-    nb::class_<languages::dl::RoleAtomicGoalImpl<P>, languages::dl::IConstructor<languages::dl::RoleTag>>(m, class_name.c_str())  //
-        .def("get_predicate", &languages::dl::RoleAtomicGoalImpl<P>::get_predicate, nb::rv_policy::reference_internal)
-        .def("get_polarity", &languages::dl::RoleAtomicGoalImpl<P>::get_polarity, nb::rv_policy::copy);
+    using BaseType = languages::dl::IConstructor<languages::dl::RoleTag>;
+    using ValueType = languages::dl::RoleAtomicGoalImpl<P>;
+
+    nb::class_<ValueType, BaseType>(m, class_name.c_str())  //
+        .def("get_predicate", &ValueType::get_predicate, nb::rv_policy::reference_internal)
+        .def("get_polarity", &ValueType::get_polarity, nb::rv_policy::copy);
 };
 
 template<formalism::IsStaticOrFluentOrDerivedTag P>
 void bind_boolean_atomic_state(nb::module_& m, const std::string& class_name)
 {
-    nb::class_<languages::dl::BooleanAtomicStateImpl<P>, languages::dl::IConstructor<languages::dl::BooleanTag>>(m, class_name.c_str())  //
-        .def("get_predicate", &languages::dl::BooleanAtomicStateImpl<P>::get_predicate, nb::rv_policy::reference_internal);
+    using BaseType = languages::dl::IConstructor<languages::dl::BooleanTag>;
+    using ValueType = languages::dl::BooleanAtomicStateImpl<P>;
+
+    nb::class_<ValueType, BaseType>(m, class_name.c_str())  //
+        .def("get_predicate", &ValueType::get_predicate, nb::rv_policy::reference_internal);
 };
 
 template<languages::dl::IsConceptOrRoleTag D>
 void bind_boolean_nonempty(nb::module_& m, const std::string& class_name)
 {
-    nb::class_<languages::dl::BooleanNonemptyImpl<D>, languages::dl::IConstructor<languages::dl::BooleanTag>>(m, class_name.c_str())
-        .def("get_constructor", &languages::dl::BooleanNonemptyImpl<D>::get_constructor, nb::rv_policy::reference_internal);
+    using BaseType = languages::dl::IConstructor<languages::dl::BooleanTag>;
+    using ValueType = languages::dl::BooleanNonemptyImpl<D>;
+
+    nb::class_<ValueType, BaseType>(m, class_name.c_str())  //
+        .def("get_constructor", &ValueType::get_constructor, nb::rv_policy::reference_internal);
 };
 
 template<languages::dl::IsConceptOrRoleTag D>
 void bind_numerical_count(nb::module_& m, const std::string& class_name)
 {
-    nb::class_<languages::dl::NumericalCountImpl<D>, languages::dl::IConstructor<languages::dl::NumericalTag>>(m, class_name.c_str())
-        .def("get_constructor", &languages::dl::NumericalCountImpl<D>::get_constructor, nb::rv_policy::reference_internal);
+    using BaseType = languages::dl::IConstructor<languages::dl::NumericalTag>;
+    using ValueType = languages::dl::NumericalCountImpl<D>;
+
+    nb::class_<ValueType, BaseType>(m, class_name.c_str())  //
+        .def("get_constructor", &ValueType::get_constructor, nb::rv_policy::reference_internal);
+};
+
+/**
+ * CNFGrammar
+ */
+
+template<languages::dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
+void bind_cnf_grammar_constructor(nb::module_& m, const std::string& class_name)
+{
+    using ValueType = languages::dl::cnf_grammar::IConstructor<D>;
+
+    nb::class_<ValueType>(m, class_name.c_str())
+        .def("__eq__", [](const ValueType& lhs, const ValueType& rhs) { return &lhs == &rhs; })
+        .def("__hash__", [](const ValueType& self) { return &self; })
+        .def("__str__",
+             [](const ValueType& self)
+             {
+                 auto out = std::stringstream {};
+                 out << &self;
+                 return out.str();
+             })
+        .def("__repr__",
+             [](const ValueType& self)
+             {
+                 auto out = std::stringstream {};
+                 out << &self;
+                 return out.str();
+             })
+        .def("test_match", &ValueType::test_match, nb::rv_policy::copy, "constructor"_a, "grammar"_a)
+        .def("accept", &ValueType::accept, "visitor"_a)
+        .def("get_index", &ValueType::get_index);
+
+    nb::bind_vector<languages::dl::cnf_grammar::ConstructorList<D>>(m, (class_name + "List").c_str());
+};
+
+template<languages::dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
+void bind_cnf_grammar_nonterminal(nb::module_& m, const std::string& class_name)
+{
+    using ValueType = languages::dl::cnf_grammar::NonTerminalImpl<D>;
+
+    nb::class_<ValueType>(m, class_name.c_str())
+        .def("__eq__", [](const ValueType& lhs, const ValueType& rhs) { return &lhs == &rhs; })
+        .def("__hash__", [](const ValueType& self) { return std::hash<const ValueType*> {}(&self); })
+        .def("__str__",
+             [](const ValueType& self)
+             {
+                 auto out = std::stringstream {};
+                 out << &self;
+                 return out.str();
+             })
+        .def("__repr__",
+             [](const ValueType& self)
+             {
+                 auto out = std::stringstream {};
+                 out << &self;
+                 return out.str();
+             })
+        .def("test_match", &ValueType::test_match, nb::rv_policy::copy, "constructor"_a, "grammar"_a)
+        .def("accept", &ValueType::accept, "visitor"_a)
+        .def("get_index", &ValueType::get_index)
+        .def("get_name", &ValueType::get_name, nb::rv_policy::copy);
+
+    nb::bind_vector<languages::dl::cnf_grammar::NonTerminalList<D>>(m, (class_name + "List").c_str());
+};
+
+template<languages::dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
+void bind_cnf_grammar_derivation_rule(nb::module_& m, const std::string& class_name)
+{
+    using ValueType = languages::dl::cnf_grammar::DerivationRuleImpl<D>;
+
+    nb::class_<ValueType>(m, class_name.c_str())
+        .def("__eq__", [](const ValueType& lhs, const ValueType& rhs) { return &lhs == &rhs; })
+        .def("__hash__", [](const ValueType& self) { return &self; })
+        .def("__str__",
+             [](const ValueType& self)
+             {
+                 auto out = std::stringstream {};
+                 out << &self;
+                 return out.str();
+             })
+        .def("__repr__",
+             [](const ValueType& self)
+             {
+                 auto out = std::stringstream {};
+                 out << &self;
+                 return out.str();
+             })
+        .def("test_match", &ValueType::test_match, nb::rv_policy::copy, "constructor"_a, "grammar"_a)
+        .def("accept", &ValueType::accept, "visitor"_a)
+        .def("get_index", &ValueType::get_index)
+        .def("get_head", &ValueType::get_head, nb::rv_policy::reference_internal)
+        .def("get_body", &ValueType::get_body, nb::rv_policy::reference_internal);
+
+    nb::bind_vector<languages::dl::cnf_grammar::DerivationRuleList<D>>(m, (class_name + "List").c_str());
+};
+
+template<languages::dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
+void bind_cnf_grammar_substitution_rule(nb::module_& m, const std::string& class_name)
+{
+    using ValueType = languages::dl::cnf_grammar::SubstitutionRuleImpl<D>;
+
+    nb::class_<ValueType>(m, class_name.c_str())
+        .def("__eq__", [](const ValueType& lhs, const ValueType& rhs) { return &lhs == &rhs; })
+        .def("__hash__", [](const ValueType& self) { return &self; })
+        .def("__str__",
+             [](const ValueType& self)
+             {
+                 auto out = std::stringstream {};
+                 out << &self;
+                 return out.str();
+             })
+        .def("__repr__",
+             [](const ValueType& self)
+             {
+                 auto out = std::stringstream {};
+                 out << &self;
+                 return out.str();
+             })
+        .def("test_match", &ValueType::test_match, nb::rv_policy::copy, "constructor"_a, "grammar"_a)
+        .def("accept", &ValueType::accept, "visitor"_a)
+        .def("get_index", &ValueType::get_index)
+        .def("get_head", &ValueType::get_head, nb::rv_policy::reference_internal)
+        .def("get_body", &ValueType::get_body, nb::rv_policy::reference_internal);
+
+    nb::bind_vector<languages::dl::cnf_grammar::SubstitutionRuleList<D>>(m, (class_name + "List").c_str());
+};
+
+template<formalism::IsStaticOrFluentOrDerivedTag P>
+void bind_cnf_grammar_concept_atomic_state(nb::module_& m, const std::string& class_name)
+{
+    using BaseType = languages::dl::cnf_grammar::IConstructor<languages::dl::ConceptTag>;
+    using ValueType = languages::dl::cnf_grammar::ConceptAtomicStateImpl<P>;
+
+    nb::class_<ValueType, BaseType>(m, class_name.c_str())  //
+        .def("get_predicate", &ValueType::get_predicate, nb::rv_policy::reference_internal);
+};
+
+template<formalism::IsStaticOrFluentOrDerivedTag P>
+void bind_cnf_grammar_concept_atomic_goal(nb::module_& m, const std::string& class_name)
+{
+    using BaseType = languages::dl::cnf_grammar::IConstructor<languages::dl::ConceptTag>;
+    using ValueType = languages::dl::cnf_grammar::ConceptAtomicGoalImpl<P>;
+
+    nb::class_<ValueType, BaseType>(m,
+                                    class_name.c_str())  //
+        .def("get_predicate", &ValueType::get_predicate, nb::rv_policy::reference_internal)
+        .def("get_polarity", &ValueType::get_polarity, nb::rv_policy::copy);
+};
+
+template<formalism::IsStaticOrFluentOrDerivedTag P>
+void bind_cnf_grammar_role_atomic_state(nb::module_& m, const std::string& class_name)
+{
+    using BaseType = languages::dl::cnf_grammar::IConstructor<languages::dl::RoleTag>;
+    using ValueType = languages::dl::cnf_grammar::RoleAtomicStateImpl<P>;
+
+    nb::class_<ValueType, BaseType>(m, class_name.c_str())  //
+        .def("get_predicate", &ValueType::get_predicate, nb::rv_policy::reference_internal);
+};
+
+template<formalism::IsStaticOrFluentOrDerivedTag P>
+void bind_cnf_grammar_role_atomic_goal(nb::module_& m, const std::string& class_name)
+{
+    using BaseType = languages::dl::cnf_grammar::IConstructor<languages::dl::RoleTag>;
+    using ValueType = languages::dl::cnf_grammar::RoleAtomicGoalImpl<P>;
+
+    nb::class_<ValueType, BaseType>(m, class_name.c_str())  //
+        .def("get_predicate", &ValueType::get_predicate, nb::rv_policy::reference_internal)
+        .def("get_polarity", &ValueType::get_polarity, nb::rv_policy::copy);
+};
+
+template<formalism::IsStaticOrFluentOrDerivedTag P>
+void bind_cnf_grammar_boolean_atomic_state(nb::module_& m, const std::string& class_name)
+{
+    using BaseType = languages::dl::cnf_grammar::IConstructor<languages::dl::BooleanTag>;
+    using ValueType = languages::dl::cnf_grammar::BooleanAtomicStateImpl<P>;
+
+    nb::class_<ValueType, BaseType>(m, class_name.c_str())  //
+        .def("get_predicate", &ValueType::get_predicate, nb::rv_policy::reference_internal);
+};
+
+template<languages::dl::IsConceptOrRoleTag D>
+void bind_cnf_grammar_boolean_nonempty(nb::module_& m, const std::string& class_name)
+{
+    using BaseType = languages::dl::cnf_grammar::IConstructor<languages::dl::BooleanTag>;
+    using ValueType = languages::dl::cnf_grammar::BooleanNonemptyImpl<D>;
+
+    nb::class_<ValueType, BaseType>(m, class_name.c_str())  //
+        .def("get_constructor", &ValueType::get_nonterminal, nb::rv_policy::reference_internal);
+};
+
+template<languages::dl::IsConceptOrRoleTag D>
+void bind_cnf_grammar_numerical_count(nb::module_& m, const std::string& class_name)
+{
+    using BaseType = languages::dl::cnf_grammar::IConstructor<languages::dl::NumericalTag>;
+    using ValueType = languages::dl::cnf_grammar::NumericalCountImpl<D>;
+
+    nb::class_<ValueType, BaseType>(m, class_name.c_str())  //
+        .def("get_constructor", &ValueType::get_nonterminal, nb::rv_policy::reference_internal);
 };
 }
 

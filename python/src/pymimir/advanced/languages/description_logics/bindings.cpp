@@ -81,6 +81,10 @@ void bind_languages_description_logics(nb::module_& m)
     nb::enum_<dl::cnf_grammar::GrammarSpecificationEnum>(m, "GrammarSpecificationEnum")  //
         .value("FRANCES_ET_AL_AAAI2021", dl::cnf_grammar::GrammarSpecificationEnum::FRANCES_ET_AL_AAAI2021);
 
+    /**
+     * DL
+     */
+
     bind_constructor<dl::ConceptTag>(m, "Concept");
     bind_constructor<dl::RoleTag>(m, "Role");
     bind_constructor<dl::BooleanTag>(m, "Boolean");
@@ -356,20 +360,70 @@ void bind_languages_description_logics(nb::module_& m)
         .def("visit", nb::overload_cast<dl::NumericalCount<dl::RoleTag>>(&dl::IVisitor::visit))
         .def("visit", nb::overload_cast<dl::NumericalDistance>(&dl::IVisitor::visit));
 
+    nb::class_<dl::DenotationImpl<dl::ConceptTag>>(m, "ConceptDenotation");
+
+    nb::class_<dl::DenotationImpl<dl::RoleTag>>(m, "RoleDenotation");
+
+    nb::class_<dl::DenotationImpl<dl::BooleanTag>>(m, "BooleanDenotation")  //
+        .def("get_data", nb::overload_cast<>(&dl::DenotationImpl<dl::BooleanTag>::get_data, nb::const_), nb::rv_policy::copy);
+
+    nb::class_<dl::DenotationImpl<dl::NumericalTag>>(m, "NumericalDenotation")
+        .def("get_data", nb::overload_cast<>(&dl::DenotationImpl<dl::NumericalTag>::get_data, nb::const_), nb::rv_policy::copy);
+
+    nb::class_<dl::DenotationRepositories>(m, "DenotationRepositories")  //
+        .def(nb::init<>());
+
+    nb::class_<dl::EvaluationContext>(m, "EvaluationContext")  //
+        .def(nb::init<search::State, formalism::Problem, dl::DenotationRepositories&>(), "state"_a, "problem"_a, "denotation_repositories"_a);
+
+    /**
+     * CNFGrammar
+     */
+
+    bind_cnf_grammar_constructor<dl::ConceptTag>(m, "CNFConcept");
+    bind_cnf_grammar_constructor<dl::RoleTag>(m, "CNFRole");
+    bind_cnf_grammar_constructor<dl::BooleanTag>(m, "CNFBoolean");
+    bind_cnf_grammar_constructor<dl::NumericalTag>(m, "CNFNumerical");
+
+    bind_cnf_grammar_nonterminal<dl::ConceptTag>(m, "CNFConceptNonTerminal");
+    bind_cnf_grammar_nonterminal<dl::RoleTag>(m, "CNFRoleNonTerminal");
+    bind_cnf_grammar_nonterminal<dl::BooleanTag>(m, "CNFBooleanNonTerminal");
+    bind_cnf_grammar_nonterminal<dl::NumericalTag>(m, "CNFNumericalNonTerminal");
+
+    bind_cnf_grammar_derivation_rule<dl::ConceptTag>(m, "CNFConceptDerivationRule");
+    bind_cnf_grammar_derivation_rule<dl::RoleTag>(m, "CNFRoleDerivationRule");
+    bind_cnf_grammar_derivation_rule<dl::BooleanTag>(m, "CNFBooleanDerivationRule");
+    bind_cnf_grammar_derivation_rule<dl::NumericalTag>(m, "CNFNumericalDerivationRule");
+
+    bind_cnf_grammar_substitution_rule<dl::ConceptTag>(m, "CNFConceptSubstitutionRule");
+    bind_cnf_grammar_substitution_rule<dl::RoleTag>(m, "CNFRoleSubstitutionRule");
+    bind_cnf_grammar_substitution_rule<dl::BooleanTag>(m, "CNFBooleanSubstitutionRule");
+    bind_cnf_grammar_substitution_rule<dl::NumericalTag>(m, "CNFNumericalSubstitutionRule");
+
     nb::class_<dl::cnf_grammar::Grammar>(m, "CNFGrammar")
         .def(nb::init<const std::string&, formalism::Domain>(), "bnf_description"_a, "domain"_a)
         .def_static("create", &dl::cnf_grammar::Grammar::create, "type"_a, "domain"_a)
         .def("__str__", [](const dl::cnf_grammar::Grammar& self) { return to_string(self); })
         .def("accept", &dl::cnf_grammar::Grammar::accept, "visitor"_a)
-        .def("test_match",
-             [](const dl::cnf_grammar::Grammar& self, const dl::Constructor<dl::NumericalTag> constructor) { return self.test_match(constructor); })
-        .def("test_match", [](const dl::cnf_grammar::Grammar& self, const dl::Constructor<dl::RoleTag> constructor) { return self.test_match(constructor); })
-        .def("test_match", [](const dl::cnf_grammar::Grammar& self, const dl::Constructor<dl::BooleanTag> constructor) { return self.test_match(constructor); })
-        .def("test_match",
-             [](const dl::cnf_grammar::Grammar& self, const dl::Constructor<dl::NumericalTag> constructor) { return self.test_match(constructor); })
+        .def("test_match", [](const dl::cnf_grammar::Grammar& self, dl::Constructor<dl::ConceptTag> constructor) { return self.test_match(constructor); })
+        .def("test_match", [](const dl::cnf_grammar::Grammar& self, dl::Constructor<dl::RoleTag> constructor) { return self.test_match(constructor); })
+        .def("test_match", [](const dl::cnf_grammar::Grammar& self, dl::Constructor<dl::BooleanTag> constructor) { return self.test_match(constructor); })
+        .def("test_match", [](const dl::cnf_grammar::Grammar& self, dl::Constructor<dl::NumericalTag> constructor) { return self.test_match(constructor); })
 
         .def("get_repositories", &dl::cnf_grammar::Grammar::get_repositories, nb::rv_policy::reference_internal)
-        .def("get_domain", &dl::cnf_grammar::Grammar::get_domain, nb::rv_policy::reference_internal);
+        .def("get_domain", &dl::cnf_grammar::Grammar::get_domain, nb::rv_policy::reference_internal)
+        .def("get_concept_start_symbol", &dl::cnf_grammar::Grammar::get_start_symbol<dl::ConceptTag>, nb::rv_policy::reference_internal)
+        .def("get_role_start_symbol", &dl::cnf_grammar::Grammar::get_start_symbol<dl::RoleTag>, nb::rv_policy::reference_internal)
+        .def("get_boolean_start_symbol", &dl::cnf_grammar::Grammar::get_start_symbol<dl::BooleanTag>, nb::rv_policy::reference_internal)
+        .def("get_numerical_start_symbol", &dl::cnf_grammar::Grammar::get_start_symbol<dl::NumericalTag>, nb::rv_policy::reference_internal)
+        .def("get_concept_derivation_rules", &dl::cnf_grammar::Grammar::get_derivation_rules<dl::ConceptTag>, nb::rv_policy::reference_internal)
+        .def("get_role_derivation_rules", &dl::cnf_grammar::Grammar::get_derivation_rules<dl::RoleTag>, nb::rv_policy::reference_internal)
+        .def("get_boolean_derivation_rules", &dl::cnf_grammar::Grammar::get_derivation_rules<dl::BooleanTag>, nb::rv_policy::reference_internal)
+        .def("get_numerical_derivation_rules", &dl::cnf_grammar::Grammar::get_derivation_rules<dl::NumericalTag>, nb::rv_policy::reference_internal)
+        .def("get_concept_substitution_rules", &dl::cnf_grammar::Grammar::get_substitution_rules<dl::ConceptTag>, nb::rv_policy::reference_internal)
+        .def("get_role_substitution_rules", &dl::cnf_grammar::Grammar::get_substitution_rules<dl::RoleTag>, nb::rv_policy::reference_internal)
+        .def("get_boolean_substitution_rules", &dl::cnf_grammar::Grammar::get_substitution_rules<dl::BooleanTag>, nb::rv_policy::reference_internal)
+        .def("get_numerical_substitution_rules", &dl::cnf_grammar::Grammar::get_substitution_rules<dl::NumericalTag>, nb::rv_policy::reference_internal);
 
     nb::class_<dl::IRefinementPruningFunction, IPyRefinementPruningFunction>(m, "IRefinementPruningFunction")
         .def(nb::init<>())
@@ -384,7 +438,17 @@ void bind_languages_description_logics(nb::module_& m)
         .def(nb::init<mimir::formalism::ProblemMap<mimir::search::StateList>>());
 
     nb::class_<dl::cnf_grammar::GeneratedSentencesContainer>(m, "GeneratedSentencesContainer")  //
-        .def(nb::init<>());
+        .def(nb::init<>())
+        .def("get_concepts",
+             nb::overload_cast<>(&dl::cnf_grammar::GeneratedSentencesContainer::get<dl::ConceptTag>, nb::const_),
+             nb::rv_policy::reference_internal)
+        .def("get_roles", nb::overload_cast<>(&dl::cnf_grammar::GeneratedSentencesContainer::get<dl::RoleTag>, nb::const_), nb::rv_policy::reference_internal)
+        .def("get_booleans",
+             nb::overload_cast<>(&dl::cnf_grammar::GeneratedSentencesContainer::get<dl::BooleanTag>, nb::const_),
+             nb::rv_policy::reference_internal)
+        .def("get_numericals",
+             nb::overload_cast<>(&dl::cnf_grammar::GeneratedSentencesContainer::get<dl::NumericalTag>, nb::const_),
+             nb::rv_policy::reference_internal);
 
     nb::class_<dl::cnf_grammar::GeneratorVisitor>(m, "GeneratorVisitor")
         .def(nb::init<dl::IRefinementPruningFunction&, dl::cnf_grammar::GeneratedSentencesContainer&, dl::Repositories&, size_t>())

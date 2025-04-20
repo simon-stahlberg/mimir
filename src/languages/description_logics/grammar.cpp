@@ -88,9 +88,9 @@ template bool Grammar::test_match(dl::Constructor<RoleTag> constructor) const;
 
 void Grammar::accept(IVisitor& visitor) const { visitor.visit(*this); }
 
-const OptionalNonTerminals& Grammar::get_start_symbols() const { return m_start_symbols; }
+const OptionalNonTerminals& Grammar::get_hana_start_symbols() const { return m_start_symbols; }
 
-const DerivationRuleSets& Grammar::get_derivation_rules() const { return m_derivation_rules; }
+const DerivationRuleSets& Grammar::get_hana_derivation_rules() const { return m_derivation_rules; }
 
 const Domain& Grammar::get_domain() const { return m_domain; }
 

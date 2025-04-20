@@ -70,7 +70,7 @@ public:
 
     void visit(const Grammar& grammar) override
     {
-        boost::hana::for_each(grammar.get_start_symbols_container(),
+        boost::hana::for_each(grammar.get_hana_start_symbols(),
                               [&](auto&& pair)
                               {
                                   auto key = boost::hana::first(pair);
@@ -84,7 +84,7 @@ public:
                                   }
                               });
 
-        boost::hana::for_each(grammar.get_derivation_rules(),
+        boost::hana::for_each(grammar.get_hana_derivation_rules(),
                               [&](auto&& pair)
                               {
                                   auto key = boost::hana::first(pair);
@@ -103,7 +103,7 @@ public:
                                   }
                               });
 
-        boost::hana::for_each(grammar.get_substitution_rules(),
+        boost::hana::for_each(grammar.get_hana_substitution_rules(),
                               [&](auto&& pair)
                               {
                                   auto key = boost::hana::first(pair);
@@ -128,7 +128,7 @@ static Grammar eliminate_rules_with_identical_body(const Grammar& grammar)
 {
     auto inverse_derivation_rules = ConstructorToNonTerminalListMaps();
 
-    boost::hana::for_each(grammar.get_derivation_rules(),
+    boost::hana::for_each(grammar.get_hana_derivation_rules(),
                           [&](auto&& pair)
                           {
                               const auto& key = boost::hana::first(pair);
@@ -197,7 +197,7 @@ public:
 
     void visit(const Grammar& grammar) override
     {
-        boost::hana::for_each(grammar.get_start_symbols_container(),
+        boost::hana::for_each(grammar.get_hana_start_symbols(),
                               [&](auto&& pair)
                               {
                                   auto key = boost::hana::first(pair);
@@ -212,7 +212,7 @@ public:
                               });
 
         boost::hana::for_each(
-            grammar.get_derivation_rules(),
+            grammar.get_hana_derivation_rules(),
             [&](auto&& pair)
             {
                 auto key = boost::hana::first(pair);
@@ -229,7 +229,7 @@ public:
             });
 
         boost::hana::for_each(
-            grammar.get_substitution_rules(),
+            grammar.get_hana_substitution_rules(),
             [&](auto&& pair)
             {
                 auto key = boost::hana::first(pair);
@@ -253,7 +253,7 @@ static Grammar order_substitution_rules(const Grammar& grammar)
 {
     auto orderings = HanaSubstitutionNonTerminalOrderings {};
 
-    boost::hana::for_each(grammar.get_substitution_rules(),
+    boost::hana::for_each(grammar.get_hana_substitution_rules(),
                           [&](auto&& pair)
                           {
                               auto key = boost::hana::first(pair);
@@ -520,7 +520,7 @@ public:
 
     void visit(const Grammar& grammar) override
     {
-        boost::hana::for_each(grammar.get_start_symbols_container(),
+        boost::hana::for_each(grammar.get_hana_start_symbols(),
                               [&](auto&& pair)
                               {
                                   auto key = boost::hana::first(pair);
@@ -534,7 +534,7 @@ public:
                                   }
                               });
 
-        boost::hana::for_each(grammar.get_derivation_rules(),
+        boost::hana::for_each(grammar.get_hana_derivation_rules(),
                               [&](auto&& pair)
                               {
                                   auto key = boost::hana::first(pair);
@@ -554,7 +554,7 @@ public:
                                   }
                               });
 
-        boost::hana::for_each(grammar.get_substitution_rules(),
+        boost::hana::for_each(grammar.get_hana_substitution_rules(),
                               [&](auto&& pair)
                               {
                                   auto key = boost::hana::first(pair);

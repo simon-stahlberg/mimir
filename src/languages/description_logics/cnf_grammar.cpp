@@ -461,6 +461,49 @@ template bool Grammar::test_match(dl::Constructor<NumericalTag> constructor) con
 
 void Grammar::accept(IVisitor& visitor) const { visitor.visit(*this); }
 
+const Repositories& Grammar::get_repositories() const { return m_repositories; }
+
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
+const OptionalNonTerminal<D>& Grammar::get_start_symbol() const
+{
+    return boost::hana::at_key(m_start_symbols, boost::hana::type<D> {});
+}
+
+template const OptionalNonTerminal<ConceptTag>& Grammar::get_start_symbol() const;
+template const OptionalNonTerminal<RoleTag>& Grammar::get_start_symbol() const;
+template const OptionalNonTerminal<BooleanTag>& Grammar::get_start_symbol() const;
+template const OptionalNonTerminal<NumericalTag>& Grammar::get_start_symbol() const;
+
+const OptionalNonTerminals& Grammar::get_hana_start_symbols() const { return m_start_symbols; }
+
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
+const DerivationRuleList<D>& Grammar::get_derivation_rules() const
+{
+    return boost::hana::at_key(m_derivation_rules, boost::hana::type<D> {});
+}
+
+template const DerivationRuleList<ConceptTag>& Grammar::get_derivation_rules() const;
+template const DerivationRuleList<RoleTag>& Grammar::get_derivation_rules() const;
+template const DerivationRuleList<BooleanTag>& Grammar::get_derivation_rules() const;
+template const DerivationRuleList<NumericalTag>& Grammar::get_derivation_rules() const;
+
+const DerivationRuleLists& Grammar::get_hana_derivation_rules() const { return m_derivation_rules; }
+
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
+const SubstitutionRuleList<D>& Grammar::get_substitution_rules() const
+{
+    return boost::hana::at_key(m_substitution_rules, boost::hana::type<D> {});
+}
+
+template const SubstitutionRuleList<ConceptTag>& Grammar::get_substitution_rules() const;
+template const SubstitutionRuleList<RoleTag>& Grammar::get_substitution_rules() const;
+template const SubstitutionRuleList<BooleanTag>& Grammar::get_substitution_rules() const;
+template const SubstitutionRuleList<NumericalTag>& Grammar::get_substitution_rules() const;
+
+const SubstitutionRuleLists& Grammar::get_hana_substitution_rules() const { return m_substitution_rules; }
+
+const formalism::Domain& Grammar::get_domain() const { return m_domain; }
+
 const NonTerminalToDerivationRuleListMaps& Grammar::get_nonterminal_to_derivation_rules() const { return m_nonterminal_to_derivation_rules; }
 
 const NonTerminalToSubstitutionRuleListMaps& Grammar::get_nonterminal_to_substitution_rules() const { return m_nonterminal_to_substitution_rules; }

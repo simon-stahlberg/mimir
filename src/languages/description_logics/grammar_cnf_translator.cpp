@@ -99,7 +99,7 @@ struct EliminateChoiceVisitor : public CopyVisitor
 
     void visit(const Grammar& grammar) override
     {
-        boost::hana::for_each(grammar.get_start_symbols(),
+        boost::hana::for_each(grammar.get_hana_start_symbols(),
                               [&](auto&& pair)
                               {
                                   auto key = boost::hana::first(pair);
@@ -113,7 +113,7 @@ struct EliminateChoiceVisitor : public CopyVisitor
                                   }
                               });
 
-        boost::hana::for_each(grammar.get_derivation_rules(),
+        boost::hana::for_each(grammar.get_hana_derivation_rules(),
                               [&](auto&& pair)
                               {
                                   const auto& second = boost::hana::second(pair);
@@ -609,7 +609,7 @@ template void ToCNFVisitor::visit_impl(DerivationRule<NumericalTag> constructor)
 
 void ToCNFVisitor::visit(const Grammar& grammar)
 {
-    boost::hana::for_each(grammar.get_start_symbols(),
+    boost::hana::for_each(grammar.get_hana_start_symbols(),
                           [&](auto&& pair)
                           {
                               auto key = boost::hana::first(pair);
@@ -624,7 +624,7 @@ void ToCNFVisitor::visit(const Grammar& grammar)
                           });
 
     boost::hana::for_each(
-        grammar.get_derivation_rules(),
+        grammar.get_hana_derivation_rules(),
         [&](auto&& pair)
         {
             auto key = boost::hana::first(pair);

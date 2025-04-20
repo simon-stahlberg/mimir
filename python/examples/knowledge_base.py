@@ -45,22 +45,22 @@ def main():
 
     # Iterate over vertices
     for vertex in graph.get_vertices():
-        # Acces vertex properties through generic member of free functions
+        # Access vertex properties through generic member
         vertex.get_index()      
-        assert(vertex.get_property_0() == datasets.get_problem_vertex_index(vertex)) 
-        assert(vertex.get_property_1() == datasets.get_problem_index(vertex))
+        vertex.get_property_0()  # Problem graph vertex index
+        vertex.get_property_1()  # Problem index
         
 
     # Iterate over edges
     for edge in graph.get_edges():
-        # Access edge properties through generic member of free functions
+        # Access edge properties through generic member
         edge.get_index()  
         edge.get_source()   
         edge.get_target()   
-        assert(edge.get_property_0() == datasets.get_problem_edge_index(edge)) 
-        assert(edge.get_property_1() == datasets.get_problem_index(edge))
+        edge.get_property_0()  # Problem graph edge index
+        edge.get_property_1()  # Problem index
 
-    ### Iteration over adjacent structures, for the example of some initial state
+    ### Iterate over adjacent structures, for the example of some initial state
     v_idx = generalized_state_space.get_initial_vertices().pop()
 
     for vertex in graph.get_forward_adjacent_vertices(v_idx):
@@ -87,34 +87,36 @@ def main():
     for e2_idx in graph.get_backward_adjacent_edge_indices(v_idx):
         pass
 
-    ### To access low level information about state and actions, we can use the mappings encoded in the GeneralizedStateSpace
+    ### Access low-level information about state and actions using the mappings encoded in the GeneralizedStateSpace.
 
     for vertex in graph.get_vertices():
         # Map class vertex to problem vertex
         problem_vertex = generalized_state_space.get_problem_vertex(vertex)
-        # Acces vertex properties through generic member of free functions
+        # Acces vertex properties through generic member
         problem_vertex.get_index()
-        assert(problem_vertex.get_property_0() == datasets.get_state(problem_vertex))
-        assert(problem_vertex.get_property_1() == datasets.get_problem(problem_vertex))
-        assert(problem_vertex.get_property_2() == datasets.get_unit_goal_distance(problem_vertex))     
-        assert(problem_vertex.get_property_3() == datasets.get_action_goal_distance(problem_vertex))
-        assert(problem_vertex.get_property_4() == datasets.is_initial(problem_vertex))
-        assert(problem_vertex.get_property_5() == datasets.is_goal(problem_vertex))
-        assert(problem_vertex.get_property_6() == datasets.is_unsolvable(problem_vertex))
-        assert(problem_vertex.get_property_7() == datasets.is_alive(problem_vertex))
+        problem_vertex.get_property_0()  # State
+        problem_vertex.get_property_1()  # Problem
+        problem_vertex.get_property_2()  # Unit goal distance
+        problem_vertex.get_property_3()  # Action goal distance
+        problem_vertex.get_property_4()  # Is initial?
+        problem_vertex.get_property_5()  # Is goal?
+        problem_vertex.get_property_6()  # Is unsolvable?
+        problem_vertex.get_property_7()  # Is alive?
 
     for edge in graph.get_edges():
         # Map class edge to problem edge
         problem_edge = generalized_state_space.get_problem_edge(edge)
-        # Access edge properties through generic member of free functions
+        # Access edge properties through generic member
         problem_edge.get_index()
         problem_edge.get_source()
         problem_edge.get_target()
-        assert(problem_edge.get_property_0() == datasets.get_action(problem_edge))
-        assert(problem_edge.get_property_1() == datasets.get_problem(problem_edge))
-        assert(problem_edge.get_property_2() == datasets.get_action_cost(problem_edge))
+        problem_edge.get_property_0()  # GroundAction
+        problem_edge.get_property_1()  # Problem
+        problem_edge.get_property_2()  # Action cost
 
+    # Access the tuple graphs of each state space.
     for tuple_graphs in knowledge_base.get_tuple_graphs():
+        # Access the tuple graph in the state space.
         for tuple_graph in tuple_graphs:
             tuple_graph.get_graph()
             tuple_graph.get_state_space()
@@ -123,8 +125,8 @@ def main():
 
             for vertex in tuple_graph.get_graph().get_vertices():
                 vertex.get_index()
-                assert(vertex.get_property_0() == datasets.get_atom_tuple(vertex))
-                assert(vertex.get_property_1() == datasets.get_problem_vertices(vertex))
+                vertex.get_property_0()  # Atom tuple
+                vertex.get_property_1()  # Problem graph vertex indices
 
 
 if __name__ == "__main__":

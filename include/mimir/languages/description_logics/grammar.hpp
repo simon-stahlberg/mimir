@@ -73,8 +73,8 @@ public:
      * Getters
      */
 
-    const OptionalNonTerminals& get_start_symbols() const;
-    const DerivationRuleSets& get_derivation_rules() const;
+    const OptionalNonTerminals& get_hana_start_symbols() const;
+    const DerivationRuleSets& get_hana_derivation_rules() const;
     const formalism::Domain& get_domain() const;
     const NonTerminalToDerivationRuleSets& get_nonterminal_to_derivation_rules() const;
 };

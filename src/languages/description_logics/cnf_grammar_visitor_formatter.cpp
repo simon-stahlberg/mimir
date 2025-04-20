@@ -334,7 +334,7 @@ void FormatterVisitor::visit(const Grammar& grammar)
     {
         m_out << "[start_symbols]\n";
 
-        boost::hana::for_each(grammar.get_start_symbols_container(),
+        boost::hana::for_each(grammar.get_hana_start_symbols(),
                               [&](auto&& pair)
                               {
                                   const auto& key = boost::hana::first(pair);
@@ -354,7 +354,7 @@ void FormatterVisitor::visit(const Grammar& grammar)
     {
         m_out << "[grammar_rules]\n";
 
-        boost::hana::for_each(grammar.get_derivation_rules(),
+        boost::hana::for_each(grammar.get_hana_derivation_rules(),
                               [&](auto&& pair)
                               {
                                   const auto& second = boost::hana::second(pair);
@@ -371,7 +371,7 @@ void FormatterVisitor::visit(const Grammar& grammar)
     }
 
     {
-        boost::hana::for_each(grammar.get_substitution_rules(),
+        boost::hana::for_each(grammar.get_hana_substitution_rules(),
                               [&](auto&& pair)
                               {
                                   const auto& second = boost::hana::second(pair);

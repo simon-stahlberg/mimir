@@ -46,32 +46,24 @@ private:
     HanaGeneratedConstructorsMaps m_generated_constructors;
 
 public:
+    /// @brief Get all sentences generated for a given constructor tag `D`.
+    /// @tparam D is the constructor tag.
+    /// @return
     template<IsConceptOrRoleOrBooleanOrNumericalTag D>
-    dl::ConstructorList<D>& get(NonTerminal<D> nonterminal, size_t complexity)
-    {
-        auto& constructors_by_complexity = boost::hana::at_key(m_generated_constructors, boost::hana::type<D> {})[nonterminal];
-        if (complexity >= constructors_by_complexity.size())
-        {
-            constructors_by_complexity.resize(complexity + 1);
-        }
-        return constructors_by_complexity[complexity];
-    }
+    const GeneratedConstructorsMap<D>& get() const;
 
     template<IsConceptOrRoleOrBooleanOrNumericalTag D>
-    const dl::ConstructorList<D>& get(NonTerminal<D> nonterminal, size_t complexity) const
-    {
-        const auto& container = boost::hana::at_key(m_generated_constructors, boost::hana::type<D> {});
+    dl::ConstructorList<D>& get(NonTerminal<D> nonterminal, size_t complexity);
 
-        auto it = container.find(nonterminal);
-        if (it == container.end() || complexity >= it->second.size())
-        {
-            return boost::hana::at_key(empty_lists, boost::hana::type<D> {});
-        }
+    /// @brief Get all sentences generated for a given `nonterminal` with `complexity` and constructor tag `D`.
+    /// @tparam D
+    /// @param nonterminal
+    /// @param complexity
+    /// @return
+    template<IsConceptOrRoleOrBooleanOrNumericalTag D>
+    const dl::ConstructorList<D>& get(NonTerminal<D> nonterminal, size_t complexity) const;
 
-        return it->second.at(complexity);
-    }
-
-    HanaGeneratedConstructorsMaps& get_hana_generated_constructors() { return m_generated_constructors; }
+    HanaGeneratedConstructorsMaps& get_hana_generated_constructors();
 };
 
 template<IsConceptOrRoleOrBooleanOrNumericalTag D>

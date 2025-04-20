@@ -460,6 +460,7 @@ NumericalCountGrammarVisitor<D>::NumericalCountGrammarVisitor(NumericalCount<D> 
 template<IsConceptOrRoleTag D>
 void NumericalCountGrammarVisitor<D>::visit(dl::NumericalCount<D> constructor)
 {
+    m_result = m_grammar_constructor->get_nonterminal()->test_match(constructor->get_constructor(), m_grammar);
 }
 
 template class NumericalCountGrammarVisitor<ConceptTag>;

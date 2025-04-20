@@ -62,12 +62,37 @@ from pymimir.pymimir.advanced.languages.description_logics import (
     Repositories,
 
     ConstructorVisitor,
+
+    ConceptDenotation,
+    RoleDenotation,
+    BooleanDenotation,
+    NumericalDenotation,
+    DenotationRepositories,
+    EvaluationContext,
 )
 
 # CNF grammar
 
 from pymimir.pymimir.advanced.languages.description_logics import (
+    CNFConcept,
+    CNFRole,
+    CNFBoolean,
+    CNFNumerical,
+    CNFConceptNonTerminal,
+    CNFRoleNonTerminal,
+    CNFBooleanNonTerminal,
+    CNFNumericalNonTerminal,
+    CNFConceptDerivationRule,
+    CNFRoleDerivationRule,
+    CNFBooleanDerivationRule,
+    CNFNumericalDerivationRule,
+    CNFConceptSubstitutionRule,
+    CNFRoleSubstitutionRule,
+    CNFBooleanSubstitutionRule,
+    CNFNumericalSubstitutionRule,
+
     CNFGrammar,
     StateListRefinementPruningFunction,
+    GeneratedSentencesContainer,
     GeneratorVisitor,
 )

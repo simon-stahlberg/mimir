@@ -74,11 +74,17 @@ public:
      * Getters
      */
 
-    const Repositories& get_repositories() const { return m_repositories; }
-    const OptionalNonTerminals& get_start_symbols_container() const { return m_start_symbols; }
-    const DerivationRuleLists& get_derivation_rules() const { return m_derivation_rules; }
-    const SubstitutionRuleLists& get_substitution_rules() const { return m_substitution_rules; }
-    const formalism::Domain& get_domain() const { return m_domain; }
+    const Repositories& get_repositories() const;
+    template<IsConceptOrRoleOrBooleanOrNumericalTag D>
+    const OptionalNonTerminal<D>& get_start_symbol() const;
+    const OptionalNonTerminals& get_hana_start_symbols() const;
+    template<IsConceptOrRoleOrBooleanOrNumericalTag D>
+    const DerivationRuleList<D>& get_derivation_rules() const;
+    const DerivationRuleLists& get_hana_derivation_rules() const;
+    template<IsConceptOrRoleOrBooleanOrNumericalTag D>
+    const SubstitutionRuleList<D>& get_substitution_rules() const;
+    const SubstitutionRuleLists& get_hana_substitution_rules() const;
+    const formalism::Domain& get_domain() const;
     const NonTerminalToDerivationRuleListMaps& get_nonterminal_to_derivation_rules() const;
     const NonTerminalToSubstitutionRuleListMaps& get_nonterminal_to_substitution_rules() const;
 };

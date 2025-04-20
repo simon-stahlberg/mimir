@@ -209,7 +209,7 @@ template void RecurseVisitor::visit_impl(SubstitutionRule<NumericalTag> construc
 
 void RecurseVisitor::visit(const Grammar& grammar)
 {
-    boost::hana::for_each(grammar.get_start_symbols_container(),
+    boost::hana::for_each(grammar.get_hana_start_symbols(),
                           [&](auto&& pair)
                           {
                               const auto& second = boost::hana::second(pair);
@@ -220,7 +220,7 @@ void RecurseVisitor::visit(const Grammar& grammar)
                               }
                           });
 
-    boost::hana::for_each(grammar.get_derivation_rules(),
+    boost::hana::for_each(grammar.get_hana_derivation_rules(),
                           [&](auto&& pair)
                           {
                               const auto& second = boost::hana::second(pair);
@@ -231,7 +231,7 @@ void RecurseVisitor::visit(const Grammar& grammar)
                               }
                           });
 
-    boost::hana::for_each(grammar.get_substitution_rules(),
+    boost::hana::for_each(grammar.get_hana_substitution_rules(),
                           [&](auto&& pair)
                           {
                               const auto& second = boost::hana::second(pair);
@@ -566,7 +566,7 @@ template void CopyVisitor::visit_impl(SubstitutionRule<NumericalTag> constructor
 
 void CopyVisitor::visit(const Grammar& grammar)
 {
-    boost::hana::for_each(grammar.get_start_symbols_container(),
+    boost::hana::for_each(grammar.get_hana_start_symbols(),
                           [&](auto&& pair)
                           {
                               auto key = boost::hana::first(pair);
@@ -580,7 +580,7 @@ void CopyVisitor::visit(const Grammar& grammar)
                               }
                           });
 
-    boost::hana::for_each(grammar.get_derivation_rules(),
+    boost::hana::for_each(grammar.get_hana_derivation_rules(),
                           [&](auto&& pair)
                           {
                               auto key = boost::hana::first(pair);
@@ -594,7 +594,7 @@ void CopyVisitor::visit(const Grammar& grammar)
                               }
                           });
 
-    boost::hana::for_each(grammar.get_substitution_rules(),
+    boost::hana::for_each(grammar.get_hana_substitution_rules(),
                           [&](auto&& pair)
                           {
                               auto key = boost::hana::first(pair);

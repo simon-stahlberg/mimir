@@ -174,7 +174,7 @@ public:
 
     void accept(IVisitor& visitor) const override;
 
-    Index get_index() const;
+    Index get_index() const override;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -204,7 +204,7 @@ public:
 
     void accept(IVisitor& visitor) const override;
 
-    Index get_index() const;
+    Index get_index() const override;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -236,7 +236,7 @@ public:
 
     void accept(IVisitor& visitor) const override;
 
-    Index get_index() const;
+    Index get_index() const override;
     formalism::Predicate<P> get_predicate() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
@@ -270,7 +270,7 @@ public:
 
     void accept(IVisitor& visitor) const override;
 
-    Index get_index() const;
+    Index get_index() const override;
     formalism::Predicate<P> get_predicate() const;
     bool get_polarity() const;
 
@@ -304,7 +304,7 @@ public:
 
     void accept(IVisitor& visitor) const override;
 
-    Index get_index() const;
+    Index get_index() const override;
     NonTerminal<ConceptTag> get_left_concept() const;
     NonTerminal<ConceptTag> get_right_concept() const;
 
@@ -338,7 +338,7 @@ public:
 
     void accept(IVisitor& visitor) const override;
 
-    Index get_index() const;
+    Index get_index() const override;
     NonTerminal<ConceptTag> get_left_concept() const;
     NonTerminal<ConceptTag> get_right_concept() const;
 
@@ -371,7 +371,7 @@ public:
 
     void accept(IVisitor& visitor) const override;
 
-    Index get_index() const;
+    Index get_index() const override;
     NonTerminal<ConceptTag> get_concept() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
@@ -404,7 +404,7 @@ public:
 
     void accept(IVisitor& visitor) const override;
 
-    Index get_index() const;
+    Index get_index() const override;
     NonTerminal<RoleTag> get_role() const;
     NonTerminal<ConceptTag> get_concept() const;
 
@@ -438,7 +438,7 @@ public:
 
     void accept(IVisitor& visitor) const override;
 
-    Index get_index() const;
+    Index get_index() const override;
     NonTerminal<RoleTag> get_role() const;
     NonTerminal<ConceptTag> get_concept() const;
 
@@ -472,7 +472,7 @@ public:
 
     void accept(IVisitor& visitor) const override;
 
-    Index get_index() const;
+    Index get_index() const override;
     NonTerminal<RoleTag> get_left_role() const;
     NonTerminal<RoleTag> get_right_role() const;
 
@@ -506,7 +506,7 @@ public:
 
     void accept(IVisitor& visitor) const override;
 
-    Index get_index() const;
+    Index get_index() const override;
     NonTerminal<RoleTag> get_left_role() const;
     NonTerminal<RoleTag> get_right_role() const;
 
@@ -539,7 +539,7 @@ public:
 
     void accept(IVisitor& visitor) const override;
 
-    Index get_index() const;
+    Index get_index() const override;
     formalism::Object get_object() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
@@ -574,7 +574,7 @@ public:
 
     void accept(IVisitor& visitor) const override;
 
-    Index get_index() const;
+    Index get_index() const override;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -606,7 +606,7 @@ public:
 
     void accept(IVisitor& visitor) const override;
 
-    Index get_index() const;
+    Index get_index() const override;
     formalism::Predicate<P> get_predicate() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
@@ -640,7 +640,7 @@ public:
 
     void accept(IVisitor& visitor) const override;
 
-    Index get_index() const;
+    Index get_index() const override;
     formalism::Predicate<P> get_predicate() const;
     bool get_polarity() const;
 
@@ -674,7 +674,7 @@ public:
 
     void accept(IVisitor& visitor) const override;
 
-    Index get_index() const;
+    Index get_index() const override;
     NonTerminal<RoleTag> get_left_role() const;
     NonTerminal<RoleTag> get_right_role() const;
 
@@ -708,7 +708,7 @@ public:
 
     void accept(IVisitor& visitor) const override;
 
-    Index get_index() const;
+    Index get_index() const override;
     NonTerminal<RoleTag> get_left_role() const;
     NonTerminal<RoleTag> get_right_role() const;
 
@@ -741,7 +741,7 @@ public:
 
     void accept(IVisitor& visitor) const override;
 
-    Index get_index() const;
+    Index get_index() const override;
     NonTerminal<RoleTag> get_role() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
@@ -773,7 +773,7 @@ public:
 
     void accept(IVisitor& visitor) const override;
 
-    Index get_index() const;
+    Index get_index() const override;
     NonTerminal<RoleTag> get_role() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
@@ -806,7 +806,7 @@ public:
 
     void accept(IVisitor& visitor) const override;
 
-    Index get_index() const;
+    Index get_index() const override;
     NonTerminal<RoleTag> get_left_role() const;
     NonTerminal<RoleTag> get_right_role() const;
 
@@ -839,7 +839,7 @@ public:
 
     void accept(IVisitor& visitor) const override;
 
-    Index get_index() const;
+    Index get_index() const override;
     NonTerminal<RoleTag> get_role() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
@@ -871,7 +871,7 @@ public:
 
     void accept(IVisitor& visitor) const override;
 
-    Index get_index() const;
+    Index get_index() const override;
     NonTerminal<RoleTag> get_role() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
@@ -904,7 +904,7 @@ public:
 
     void accept(IVisitor& visitor) const override;
 
-    Index get_index() const;
+    Index get_index() const override;
     NonTerminal<RoleTag> get_role() const;
     NonTerminal<ConceptTag> get_concept() const;
 
@@ -937,7 +937,7 @@ public:
 
     void accept(IVisitor& visitor) const override;
 
-    Index get_index() const;
+    Index get_index() const override;
     NonTerminal<ConceptTag> get_concept() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
@@ -974,7 +974,7 @@ public:
 
     void accept(IVisitor& visitor) const override;
 
-    Index get_index() const;
+    Index get_index() const override;
     formalism::Predicate<P> get_predicate() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
@@ -1007,7 +1007,7 @@ public:
 
     void accept(IVisitor& visitor) const override;
 
-    Index get_index() const;
+    Index get_index() const override;
     NonTerminal<D> get_nonterminal() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
@@ -1044,7 +1044,7 @@ public:
 
     void accept(IVisitor& visitor) const override;
 
-    Index get_index() const;
+    Index get_index() const override;
     NonTerminal<D> get_nonterminal() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
@@ -1078,7 +1078,7 @@ public:
 
     void accept(IVisitor& visitor) const override;
 
-    Index get_index() const;
+    Index get_index() const override;
     NonTerminal<ConceptTag> get_left_concept() const;
     NonTerminal<RoleTag> get_role() const;
     NonTerminal<ConceptTag> get_right_concept() const;
