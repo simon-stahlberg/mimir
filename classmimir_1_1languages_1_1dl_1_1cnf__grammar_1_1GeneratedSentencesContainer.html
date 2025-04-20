@@ -87,11 +87,16 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:aea3abdfa00fbb5fe3a416aadda37e7e8"><td class="memTemplParams" colspan="2">template&lt;IsConceptOrRoleOrBooleanOrNumericalTag D&gt; </td></tr>
+<tr class="memitem:aea3abdfa00fbb5fe3a416aadda37e7e8"><td class="memTemplItemLeft" align="right" valign="top">const GeneratedConstructorsMap&lt; D &gt; &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1GeneratedSentencesContainer.html#aea3abdfa00fbb5fe3a416aadda37e7e8">get</a> () const</td></tr>
+<tr class="memdesc:aea3abdfa00fbb5fe3a416aadda37e7e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get all sentences generated for a given constructor tag <code>D</code>.  <br /></td></tr>
+<tr class="separator:aea3abdfa00fbb5fe3a416aadda37e7e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6e3bdbfef02a802e1f0704e2b643f950"><td class="memTemplParams" colspan="2">template&lt;IsConceptOrRoleOrBooleanOrNumericalTag D&gt; </td></tr>
 <tr class="memitem:a6e3bdbfef02a802e1f0704e2b643f950"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#acee11c8ab9ae5baaae81c65638ff3a25">dl::ConstructorList</a>&lt; D &gt; &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1GeneratedSentencesContainer.html#a6e3bdbfef02a802e1f0704e2b643f950">get</a> (<a class="el" href="namespacemimir_1_1languages_1_1dl_1_1cnf__grammar.html#a4a84f420bd4b602810ea1a2fb2e8c718">NonTerminal</a>&lt; D &gt; nonterminal, size_t complexity)</td></tr>
 <tr class="separator:a6e3bdbfef02a802e1f0704e2b643f950"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acd484c1d18238d7b67415985bd0d957b"><td class="memTemplParams" colspan="2">template&lt;IsConceptOrRoleOrBooleanOrNumericalTag D&gt; </td></tr>
 <tr class="memitem:acd484c1d18238d7b67415985bd0d957b"><td class="memTemplItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir_1_1languages_1_1dl.html#acee11c8ab9ae5baaae81c65638ff3a25">dl::ConstructorList</a>&lt; D &gt; &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1GeneratedSentencesContainer.html#acd484c1d18238d7b67415985bd0d957b">get</a> (<a class="el" href="namespacemimir_1_1languages_1_1dl_1_1cnf__grammar.html#a4a84f420bd4b602810ea1a2fb2e8c718">NonTerminal</a>&lt; D &gt; nonterminal, size_t complexity) const</td></tr>
+<tr class="memdesc:acd484c1d18238d7b67415985bd0d957b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get all sentences generated for a given <code>nonterminal</code> with <code>complexity</code> and constructor tag <code>D</code>.  <br /></td></tr>
 <tr class="separator:acd484c1d18238d7b67415985bd0d957b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4d9c5379c7a48d1fdd4eb03ceb1f725f"><td class="memItemLeft" align="right" valign="top">HanaGeneratedConstructorsMaps &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1GeneratedSentencesContainer.html#a4d9c5379c7a48d1fdd4eb03ceb1f725f">get_hana_generated_constructors</a> ()</td></tr>
 <tr class="separator:a4d9c5379c7a48d1fdd4eb03ceb1f725f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -99,16 +104,41 @@ Public Member Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Interface. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a6e3bdbfef02a802e1f0704e2b643f950" name="a6e3bdbfef02a802e1f0704e2b643f950"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6e3bdbfef02a802e1f0704e2b643f950">&#9670;&#160;</a></span>get() <span class="overload">[1/2]</span></h2>
+<a id="aea3abdfa00fbb5fe3a416aadda37e7e8" name="aea3abdfa00fbb5fe3a416aadda37e7e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea3abdfa00fbb5fe3a416aadda37e7e8">&#9670;&#160;</a></span>get() <span class="overload">[1/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;IsConceptOrRoleOrBooleanOrNumericalTag D&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const GeneratedConstructorsMap&lt; D &gt; &amp; mimir::languages::dl::cnf_grammar::GeneratedSentencesContainer::get </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get all sentences generated for a given constructor tag <code>D</code>. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">D</td><td>is the constructor tag. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd></dd></dl>
+
+</div>
+</div>
+<a id="a6e3bdbfef02a802e1f0704e2b643f950" name="a6e3bdbfef02a802e1f0704e2b643f950"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e3bdbfef02a802e1f0704e2b643f950">&#9670;&#160;</a></span>get() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;IsConceptOrRoleOrBooleanOrNumericalTag D&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#acee11c8ab9ae5baaae81c65638ff3a25">dl::ConstructorList</a>&lt; D &gt; &amp; mimir::languages::dl::cnf_grammar::GeneratedSentencesContainer::get </td>
@@ -128,25 +158,17 @@ template&lt;IsConceptOrRoleOrBooleanOrNumericalTag D&gt; </div>
           <td></td><td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
 </div>
 </div>
 <a id="acd484c1d18238d7b67415985bd0d957b" name="acd484c1d18238d7b67415985bd0d957b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acd484c1d18238d7b67415985bd0d957b">&#9670;&#160;</a></span>get() <span class="overload">[2/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#acd484c1d18238d7b67415985bd0d957b">&#9670;&#160;</a></span>get() <span class="overload">[3/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;IsConceptOrRoleOrBooleanOrNumericalTag D&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">const <a class="el" href="namespacemimir_1_1languages_1_1dl.html#acee11c8ab9ae5baaae81c65638ff3a25">dl::ConstructorList</a>&lt; D &gt; &amp; mimir::languages::dl::cnf_grammar::GeneratedSentencesContainer::get </td>
@@ -166,12 +188,23 @@ template&lt;IsConceptOrRoleOrBooleanOrNumericalTag D&gt; </div>
           <td></td><td> const</td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
+
+<p>Get all sentences generated for a given <code>nonterminal</code> with <code>complexity</code> and constructor tag <code>D</code>. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">D</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">nonterminal</td><td></td></tr>
+    <tr><td class="paramname">complexity</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd></dd></dl>
 
 </div>
 </div>
@@ -180,9 +213,6 @@ template&lt;IsConceptOrRoleOrBooleanOrNumericalTag D&gt; </div>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">HanaGeneratedConstructorsMaps &amp; mimir::languages::dl::cnf_grammar::GeneratedSentencesContainer::get_hana_generated_constructors </td>
@@ -191,11 +221,6 @@ template&lt;IsConceptOrRoleOrBooleanOrNumericalTag D&gt; </div>
           <td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
 </div>
