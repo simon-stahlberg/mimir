@@ -34,7 +34,7 @@ void bind_module_definitions(nb::module_& m)
 
     nb::class_<TupleGraphImpl::Options>(m, "TupleGraphOptions")
         .def(nb::init<>())
-        .def(nb::init<size_t, bool>(), nb::arg("width"), nb::arg("enable_dominance_pruning"))
+        .def(nb::init<size_t, bool>(), "width"_a, "enable_dominance_pruning"_a)
         .def_rw("width", &TupleGraphImpl::Options::width)
         .def_rw("enable_dominance_pruning", &TupleGraphImpl::Options::enable_dominance_pruning);
 
@@ -45,9 +45,9 @@ void bind_module_definitions(nb::module_& m)
     nb::class_<KnowledgeBaseImpl::Options>(m, "KnowledgeBaseOptions")
         .def(nb::init<>())
         .def(nb::init<const state_space::Options&, const GeneralizedStateSpaceImpl::Options&, const std::optional<TupleGraphImpl::Options>&>(),
-             nb::arg("state_space_options"),
-             nb::arg("generalized_state_space_options"),
-             nb::arg("tuple_graph_options") = std::nullopt)
+             "state_space_options"_a,
+             "generalized_state_space_options"_a,
+             "tuple_graph_options"_a = std::nullopt)
         .def_rw("state_space_options", &KnowledgeBaseImpl::Options::state_space_options)
         .def_rw("generalized_state_space_options", &KnowledgeBaseImpl::Options::generalized_state_space_options)
         .def_rw("tuple_graph_options", &KnowledgeBaseImpl::Options::tuple_graph_options);

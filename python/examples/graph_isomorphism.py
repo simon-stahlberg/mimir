@@ -13,7 +13,7 @@ def main():
 
     print(graph1)  # print dot representation of graph1
  
-    # graph2 will be isomorphic but declared in a different order.
+    # graph2 is isomorphic to graph1 but it is vertices are added in a different order.
     graph2 = graphs.StaticVertexColoredGraph()
     v1_2 = graph2.add_vertex(graphs.Color(2, "b"))
     v2_2 = graph2.add_vertex(graphs.Color(1, "a"))

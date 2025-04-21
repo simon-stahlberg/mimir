@@ -188,7 +188,7 @@ void bind_module_definitions(nb::module_& m)
 
     nb::class_<SearchContextImpl::Options>(m, "SearchContextOptions")
         .def(nb::init<>())
-        .def(nb::init<SearchContextImpl::SearchMode>(), nb::arg("mode"))
+        .def(nb::init<SearchContextImpl::SearchMode>(), "mode"_a)
         .def_rw("mode", &SearchContextImpl::Options::mode);
 
     nb::class_<SearchContextImpl>(m, "SearchContext")
@@ -196,18 +196,18 @@ void bind_module_definitions(nb::module_& m)
             "create",
             [](const fs::path& domain_filepath, const fs::path& problem_filepath, const SearchContextImpl::Options& options) -> SearchContext
             { return SearchContextImpl::create(domain_filepath, problem_filepath, options); },
-            nb::arg("domain_filepath"),
-            nb::arg("problem_filepath"),
-            nb::arg("options") = SearchContextImpl::Options())
+            "domain_filepath"_a,
+            "problem_filepath"_a,
+            "options"_a = SearchContextImpl::Options())
         .def_static("create",
                     nb::overload_cast<formalism::Problem, const SearchContextImpl::Options&>(&SearchContextImpl::create),
-                    nb::arg("problem"),
-                    nb::arg("options") = SearchContextImpl::Options())
+                    "problem"_a,
+                    "options"_a = SearchContextImpl::Options())
         .def_static("create",
                     nb::overload_cast<formalism::Problem, ApplicableActionGenerator, StateRepository>(&SearchContextImpl::create),
-                    nb::arg("problem"),
-                    nb::arg("applicable_action_generator"),
-                    nb::arg("state_repository"))
+                    "problem"_a,
+                    "applicable_action_generator"_a,
+                    "state_repository"_a)
         .def("get_problem", &SearchContextImpl::get_problem)
         .def("get_applicable_action_generator", &SearchContextImpl::get_applicable_action_generator)
         .def("get_state_repository", &SearchContextImpl::get_state_repository);
@@ -218,24 +218,24 @@ void bind_module_definitions(nb::module_& m)
             "create",
             [](const fs::path& domain_filepath, const std::vector<fs::path>& problem_filepaths, const SearchContextImpl::Options& options)
                 -> GeneralizedSearchContext { return GeneralizedSearchContextImpl::create(domain_filepath, problem_filepaths, options); },
-            nb::arg("domain_filepath"),
-            nb::arg("problem_filepaths"),
-            nb::arg("options") = SearchContextImpl::Options())
+            "domain_filepath"_a,
+            "problem_filepaths"_a,
+            "options"_a = SearchContextImpl::Options())
         .def_static(
             "create",
             [](const fs::path& domain_filepath, const fs::path& problems_directory, const SearchContextImpl::Options& options) -> GeneralizedSearchContext
             { return GeneralizedSearchContextImpl::create(domain_filepath, problems_directory, options); },
-            nb::arg("domain_filepath"),
-            nb::arg("problems_directory"),
-            nb::arg("options") = SearchContextImpl::Options())
+            "domain_filepath"_a,
+            "problems_directory"_a,
+            "options"_a = SearchContextImpl::Options())
         .def_static("create",
                     nb::overload_cast<formalism::GeneralizedProblem, const SearchContextImpl::Options&>(&GeneralizedSearchContextImpl::create),
-                    nb::arg("generalized_problem"),
-                    nb::arg("options") = SearchContextImpl::Options())
+                    "generalized_problem"_a,
+                    "options"_a = SearchContextImpl::Options())
         .def_static("create",
                     nb::overload_cast<formalism::GeneralizedProblem, SearchContextList>(&GeneralizedSearchContextImpl::create),
-                    nb::arg("generalized_problem"),
-                    nb::arg("search_contexts"))
+                    "generalized_problem"_a,
+                    "search_contexts"_a)
         .def("get_generalized_problem", &GeneralizedSearchContextImpl::get_generalized_problem)
         .def("get_search_contexts", &GeneralizedSearchContextImpl::get_search_contexts);
 
@@ -271,7 +271,7 @@ void bind_module_definitions(nb::module_& m)
                 mimir::operator<<(ss, std::make_tuple(State(&self), std::cref(problem)));
                 return ss.str();
             },
-            nb::arg("problem"))
+            "problem"_a)
         .def("literal_holds", &StateImpl::literal_holds<FluentTag>, nb::rv_policy::copy, "literal"_a)
         .def("literal_holds", &StateImpl::literal_holds<DerivedTag>, nb::rv_policy::copy, "literal"_a)
         .def("literal_holds", &StateImpl::literals_hold<FluentTag>, nb::rv_policy::copy, "literals"_a)
@@ -287,7 +287,7 @@ void bind_module_definitions(nb::module_& m)
 
     /* ConjunctiveConditionSatisficingBindingGenerator */
     nb::class_<ConjunctiveConditionSatisficingBindingGenerator>(m, "ConjunctiveConditionSatisficingBindingGenerator")  //
-        .def(nb::init<ConjunctiveCondition, Problem>(), nb::arg("conjunctive_condition"), nb::arg("problem"))
+        .def(nb::init<ConjunctiveCondition, Problem>(), "conjunctive_condition"_a, "problem"_a)
         .def(
             "generate_ground_conjunctions",
             [](ConjunctiveConditionSatisficingBindingGenerator& self, State state, size_t max_num_groundings)
@@ -307,11 +307,11 @@ void bind_module_definitions(nb::module_& m)
                 }
                 return result;
             },
-            nb::arg("state"),
-            nb::arg("max_num_groundings"));
+            "state"_a,
+            "max_num_groundings"_a);
 
     nb::class_<ActionSatisficingBindingGenerator>(m, "ActionSatisficingBindingGenerator")  //
-        .def(nb::init<Action, Problem>(), nb::arg("action"), nb::arg("problem"))
+        .def(nb::init<Action, Problem>(), "action"_a, "problem"_a)
         .def(
             "generate_ground_conjunctions",
             [](ConjunctiveConditionSatisficingBindingGenerator& self, State state, size_t max_num_groundings)
@@ -331,11 +331,11 @@ void bind_module_definitions(nb::module_& m)
                 }
                 return result;
             },
-            nb::arg("state"),
-            nb::arg("max_num_groundings"));
+            "state"_a,
+            "max_num_groundings"_a);
 
     nb::class_<AxiomSatisficingBindingGenerator>(m, "AxiomSatisficingBindingGenerator")  //
-        .def(nb::init<Axiom, Problem>(), nb::arg("axiom"), nb::arg("problem"))
+        .def(nb::init<Axiom, Problem>(), "axiom"_a, "problem"_a)
         .def(
             "generate_ground_conjunctions",
             [](ConjunctiveConditionSatisficingBindingGenerator& self, State state, size_t max_num_groundings)
@@ -355,8 +355,8 @@ void bind_module_definitions(nb::module_& m)
                 }
                 return result;
             },
-            nb::arg("state"),
-            nb::arg("max_num_groundings"));
+            "state"_a,
+            "max_num_groundings"_a);
 
     /* ApplicableActionGenerators */
     nb::class_<IApplicableActionGenerator>(m, "IApplicableActionGenerator")
@@ -373,7 +373,7 @@ void bind_module_definitions(nb::module_& m)
                 return actions;
             },
             nb::keep_alive<0, 1>(),
-            nb::arg("state"));
+            "state"_a);
 
     // Lifted
     nb::class_<LiftedApplicableActionGeneratorImpl::IEventHandler>(m,
@@ -388,8 +388,8 @@ void bind_module_definitions(nb::module_& m)
         .def(nb::init<>());
     nb::class_<LiftedApplicableActionGeneratorImpl, IApplicableActionGenerator>(m,
                                                                                 "LiftedApplicableActionGenerator")  //
-        .def(nb::init<Problem>(), nb::arg("problem"))
-        .def(nb::init<Problem, LiftedApplicableActionGeneratorImpl::EventHandler>(), nb::arg("problem"), nb::arg("event_handler"));
+        .def(nb::init<Problem>(), "problem"_a)
+        .def(nb::init<Problem, LiftedApplicableActionGeneratorImpl::EventHandler>(), "problem"_a, "event_handler"_a);
 
     // Grounded
     nb::class_<GroundedApplicableActionGeneratorImpl::IEventHandler>(m,
@@ -417,8 +417,8 @@ void bind_module_definitions(nb::module_& m)
                                                                                                          "DebugLiftedAxiomEvaluatorEventHandler")  //
         .def(nb::init<>());
     nb::class_<LiftedAxiomEvaluatorImpl, IAxiomEvaluator>(m, "LiftedAxiomEvaluator")  //
-        .def(nb::init<Problem>(), nb::arg("problem"))
-        .def(nb::init<Problem, LiftedAxiomEvaluatorImpl::EventHandler>(), nb::arg("problem"), nb::arg("event_handler"));
+        .def(nb::init<Problem>(), "problem"_a)
+        .def(nb::init<Problem, LiftedAxiomEvaluatorImpl::EventHandler>(), "problem"_a, "event_handler"_a);
 
     // Grounded
     nb::class_<GroundedAxiomEvaluatorImpl::IEventHandler>(m, "IGroundedAxiomEvaluatorEventHandler");  //
@@ -432,21 +432,17 @@ void bind_module_definitions(nb::module_& m)
         ;
 
     /* StateRepositoryImpl */
-    m.def("compute_state_metric_value", &compute_state_metric_value, nb::arg("state"), nb::arg("problem"));
+    m.def("compute_state_metric_value", &compute_state_metric_value, "state"_a, "problem"_a);
 
     nb::class_<StateRepositoryImpl>(m, "StateRepository")  //
-        .def(nb::init<AxiomEvaluator>(), nb::arg("axiom_evaluator"))
+        .def(nb::init<AxiomEvaluator>(), "axiom_evaluator"_a)
         .def("get_or_create_initial_state", &StateRepositoryImpl::get_or_create_initial_state, nb::rv_policy::reference_internal)
-        .def("get_or_create_state",
-             &StateRepositoryImpl::get_or_create_state,
-             nb::arg("atoms"),
-             nb::arg("numeric_variables"),
-             nb::rv_policy::reference_internal)
+        .def("get_or_create_state", &StateRepositoryImpl::get_or_create_state, "atoms"_a, "numeric_variables"_a, nb::rv_policy::reference_internal)
         .def("get_or_create_successor_state",
              nb::overload_cast<State, GroundAction, ContinuousCost>(&StateRepositoryImpl::get_or_create_successor_state),
-             nb::arg("state"),
-             nb::arg("action"),
-             nb::arg("state_metric_value"),
+             "state"_a,
+             "action"_a,
+             "state_metric_value"_a,
              nb::rv_policy::copy)
         .def("get_state_count", &StateRepositoryImpl::get_state_count, nb::rv_policy::copy)
         .def("get_reached_fluent_ground_atoms_bitset", &StateRepositoryImpl::get_reached_fluent_ground_atoms_bitset, nb::rv_policy::copy)
@@ -464,20 +460,20 @@ void bind_module_definitions(nb::module_& m)
         .def_rw("optimization_direction", &match_tree::Options::optimization_direction);
 
     nb::class_<DeleteRelaxedProblemExplorator>(m, "DeleteRelaxedProblemExplorator")
-        .def(nb::init<Problem>(), nb::arg("problem"))
+        .def(nb::init<Problem>(), "problem"_a)
         .def("create_grounded_axiom_evaluator",
              &DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator,
-             nb::arg("match_tree_options") = match_tree::Options(),
-             nb::arg("axiom_evaluator_event_handler") = nullptr)
+             "match_tree_options"_a = match_tree::Options(),
+             "axiom_evaluator_event_handler"_a = nullptr)
         .def("create_grounded_applicable_action_generator",
              &DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator,
-             nb::arg("match_tree_options") = match_tree::Options(),
-             nb::arg("axiom_evaluator_event_handler") = nullptr);
+             "match_tree_options"_a = match_tree::Options(),
+             "axiom_evaluator_event_handler"_a = nullptr);
 
     /* Heuristics */
     nb::class_<IHeuristic, IPyHeuristic>(m, "IHeuristic")  //
         .def(nb::init<>())
-        .def("compute_heuristic", &IHeuristic::compute_heuristic);
+        .def("compute_heuristic", &IHeuristic::compute_heuristic, "state"_a, "is_goal_state"_a);
 
     nb::class_<BlindHeuristicImpl, IHeuristic>(m, "BlindHeuristic").def(nb::init<Problem>());
 
@@ -494,17 +490,17 @@ void bind_module_definitions(nb::module_& m)
     nb::class_<IGoalStrategy, IPyGoalStrategy>(m, "IGoalStrategy")
         .def(nb::init<>())
         .def("test_static_goal", &IGoalStrategy::test_static_goal)
-        .def("test_dynamic_goal", &IGoalStrategy::test_dynamic_goal, nb::arg("state"));
+        .def("test_dynamic_goal", &IGoalStrategy::test_dynamic_goal, "state"_a);
 
     nb::class_<ProblemGoalStrategyImpl, IGoalStrategy>(m, "ProblemGoalStrategy")  //
-        .def(nb::init<Problem>())
-        .def_static("create", &ProblemGoalStrategyImpl::create, nb::arg("problem"));
+        .def(nb::init<Problem>(), "problem"_a)
+        .def_static("create", &ProblemGoalStrategyImpl::create, "problem"_a);
 
     // PruningStrategy
     nb::class_<IPruningStrategy, IPyPruningStrategy>(m, "IPruningStrategy")
         .def(nb::init<>())
-        .def("test_prune_initial_state", &IPruningStrategy::test_prune_initial_state)
-        .def("test_prune_successor_state", &IPruningStrategy::test_prune_successor_state);
+        .def("test_prune_initial_state", &IPruningStrategy::test_prune_initial_state, "initial_state"_a)
+        .def("test_prune_successor_state", &IPruningStrategy::test_prune_successor_state, "state"_a, "successor_state"_a, "is_new_successor"_a);
 
     nb::class_<NoPruningStrategyImpl, IPruningStrategy>(m, "NoPruningStrategy")  //
         .def(nb::init<>())
@@ -515,12 +511,12 @@ void bind_module_definitions(nb::module_& m)
         .def_static("create", &DuplicatePruningStrategyImpl::create);
 
     nb::class_<iw::ArityZeroNoveltyPruningStrategyImpl, IPruningStrategy>(m, "ArityZeroNoveltyPruningStrategy")  //
-        .def(nb::init<State>())
-        .def_static("create", &iw::ArityZeroNoveltyPruningStrategyImpl::create, nb::arg("initial_state"));
+        .def(nb::init<State>(), "initial_state"_a)
+        .def_static("create", &iw::ArityZeroNoveltyPruningStrategyImpl::create, "initial_state"_a);
 
     nb::class_<iw::ArityKNoveltyPruningStrategyImpl, IPruningStrategy>(m, "ArityKNoveltyPruningStrategy")  //
-        .def(nb::init<size_t, size_t>())
-        .def_static("create", &iw::ArityKNoveltyPruningStrategyImpl::create, nb::arg("arity"), nb::arg("num_atoms"));
+        .def(nb::init<size_t, size_t>(), "arity"_a, "num_atoms"_a)
+        .def_static("create", &iw::ArityKNoveltyPruningStrategyImpl::create, "arity"_a, "num_atoms"_a);
 
     // AStar
     nb::class_<astar::Statistics>(m, "AStarStatistics")  //
@@ -554,19 +550,19 @@ void bind_module_definitions(nb::module_& m)
 
     nb::class_<astar::DefaultEventHandlerImpl, astar::IEventHandler>(m,
                                                                      "DefaultAStarEventHandler")  //
-        .def(nb::init<Problem, bool>(), nb::arg("problem"), nb::arg("quiet") = true);
+        .def(nb::init<Problem, bool>(), "problem"_a, "quiet"_a = true);
     nb::class_<astar::DebugEventHandlerImpl, astar::IEventHandler>(m,
                                                                    "DebugAStarEventHandler")  //
-        .def(nb::init<Problem, bool>(), nb::arg("problem"), nb::arg("quiet") = true);
+        .def(nb::init<Problem, bool>(), "problem"_a, "quiet"_a = true);
 
     m.def("find_solution_astar",
           &astar::find_solution,
-          nb::arg("search_context"),
-          nb::arg("heuristic"),
-          nb::arg("start_state") = nullptr,
-          nb::arg("astar_event_handler") = nullptr,
-          nb::arg("goal_strategy") = nullptr,
-          nb::arg("pruning_strategy") = nullptr);
+          "search_context"_a,
+          "heuristic"_a,
+          "start_state"_a = nullptr,
+          "astar_event_handler"_a = nullptr,
+          "goal_strategy"_a = nullptr,
+          "pruning_strategy"_a = nullptr);
 
     // BrFS
     nb::class_<brfs::Statistics>(m, "BrFSStatistics")  //
@@ -597,24 +593,24 @@ void bind_module_definitions(nb::module_& m)
 
     nb::class_<brfs::DefaultEventHandlerImpl, brfs::IEventHandler>(m,
                                                                    "DefaultBrFSEventHandler")  //
-        .def(nb::init<Problem, bool>(), nb::arg("problem"), nb::arg("quiet") = true);
+        .def(nb::init<Problem, bool>(), "problem"_a, "quiet"_a = true);
     nb::class_<brfs::DebugEventHandlerImpl, brfs::IEventHandler>(m,
                                                                  "DebugBrFSEventHandler")  //
-        .def(nb::init<Problem, bool>(), nb::arg("problem"), nb::arg("quiet") = true);
+        .def(nb::init<Problem, bool>(), "problem"_a, "quiet"_a = true);
 
     m.def("find_solution_brfs",
           &brfs::find_solution,
-          nb::arg("search_context"),
-          nb::arg("start_state") = nullptr,
-          nb::arg("brfs_event_handler") = nullptr,
-          nb::arg("goal_strategy") = nullptr,
-          nb::arg("pruning_strategy") = nullptr,
-          nb::arg("exhaustive") = false);
+          "search_context"_a,
+          "start_state"_a = nullptr,
+          "brfs_event_handler"_a = nullptr,
+          "goal_strategy"_a = nullptr,
+          "pruning_strategy"_a = nullptr,
+          "exhaustive"_a = false);
 
     // IW
     nb::class_<iw::TupleIndexMapper>(m, "TupleIndexMapper")  //
-        .def(nb::init<size_t, size_t>(), nb::arg("arity"), nb::arg("num_atoms"))
-        .def("to_tuple_index", &iw::TupleIndexMapper::to_tuple_index, nb::arg("atom_indices"))
+        .def(nb::init<size_t, size_t>(), "arity"_a, "num_atoms"_a)
+        .def("to_tuple_index", &iw::TupleIndexMapper::to_tuple_index, "atom_indices"_a)
         .def(
             "to_atom_indices",
             [](const iw::TupleIndexMapper& self, const iw::TupleIndex tuple_index)
@@ -623,9 +619,9 @@ void bind_module_definitions(nb::module_& m)
                 self.to_atom_indices(tuple_index, atom_indices);
                 return atom_indices;
             },
-            nb::arg("tuple_index"))
-        .def("initialize", &iw::TupleIndexMapper::initialize, nb::arg("arity"), nb::arg("num_atoms"))
-        .def("tuple_index_to_string", &iw::TupleIndexMapper::tuple_index_to_string, nb::arg("tuple_index"))
+            "tuple_index"_a)
+        .def("initialize", &iw::TupleIndexMapper::initialize, "arity"_a, "num_atoms"_a)
+        .def("tuple_index_to_string", &iw::TupleIndexMapper::tuple_index_to_string, "tuple_index"_a)
         .def("get_num_atoms", &iw::TupleIndexMapper::get_num_atoms)
         .def("get_arity", &iw::TupleIndexMapper::get_arity)
         .def("get_factors", &iw::TupleIndexMapper::get_factors, nb::rv_policy::reference_internal)
@@ -633,7 +629,7 @@ void bind_module_definitions(nb::module_& m)
         .def("get_empty_tuple_index", &iw::TupleIndexMapper::get_empty_tuple_index);
 
     nb::class_<iw::StateTupleIndexGenerator>(m, "StateTupleIndexGenerator")  //
-        .def(nb::init<const iw::TupleIndexMapper*>(), nb::arg("tuple_index_mapper"))
+        .def(nb::init<const iw::TupleIndexMapper*>(), "tuple_index_mapper"_a)
         .def(
             "__iter__",
             [](iw::StateTupleIndexGenerator& self, State state)
@@ -646,7 +642,7 @@ void bind_module_definitions(nb::module_& m)
             nb::keep_alive<0, 1>());
 
     nb::class_<iw::StatePairTupleIndexGenerator>(m, "StatePairTupleIndexGenerator")  //
-        .def(nb::init<const iw::TupleIndexMapper*>(), nb::arg("tuple_index_mapper"))
+        .def(nb::init<const iw::TupleIndexMapper*>(), "tuple_index_mapper"_a)
         .def(
             "__iter__",
             [](iw::StatePairTupleIndexGenerator& self, State state, State succ_state)
@@ -666,17 +662,16 @@ void bind_module_definitions(nb::module_& m)
     nb::class_<iw::IEventHandler>(m, "IIWEventHandler")  //
         .def("get_statistics", &iw::IEventHandler::get_statistics);
 
-    nb::class_<iw::DefaultEventHandlerImpl, iw::IEventHandler>(m, "DefaultIWEventHandler")
-        .def(nb::init<Problem, bool>(), nb::arg("problem"), nb::arg("quiet") = true);
+    nb::class_<iw::DefaultEventHandlerImpl, iw::IEventHandler>(m, "DefaultIWEventHandler").def(nb::init<Problem, bool>(), "problem"_a, "quiet"_a = true);
 
     m.def("find_solution_iw",
           &iw::find_solution,
-          nb::arg("search_context"),
-          nb::arg("start_state") = nullptr,
-          nb::arg("max_arity") = nullptr,
-          nb::arg("iw_event_handler") = nullptr,
-          nb::arg("brfs_event_handler") = nullptr,
-          nb::arg("goal_strategy") = nullptr);
+          "search_context"_a,
+          "start_state"_a = nullptr,
+          "max_arity"_a = nullptr,
+          "iw_event_handler"_a = nullptr,
+          "brfs_event_handler"_a = nullptr,
+          "goal_strategy"_a = nullptr);
 
     // SIW
     nb::class_<siw::Statistics>(m, "SIWStatistics")  //
@@ -686,18 +681,17 @@ void bind_module_definitions(nb::module_& m)
         .def("get_iw_statistics_by_subproblem", &siw::Statistics::get_iw_statistics_by_subproblem);
     nb::class_<siw::IEventHandler>(m, "ISIWEventHandler")  //
         .def("get_statistics", &siw::IEventHandler::get_statistics);
-    nb::class_<siw::DefaultEventHandlerImpl, siw::IEventHandler>(m, "DefaultSIWEventHandler")
-        .def(nb::init<Problem, bool>(), nb::arg("problem"), nb::arg("quiet") = true);
+    nb::class_<siw::DefaultEventHandlerImpl, siw::IEventHandler>(m, "DefaultSIWEventHandler").def(nb::init<Problem, bool>(), "problem"_a, "quiet"_a = true);
 
     m.def("find_solution_siw",
           &siw::find_solution,
-          nb::arg("search_context"),
-          nb::arg("start_state") = nullptr,
-          nb::arg("max_arity") = nullptr,
-          nb::arg("siw_event_handler") = nullptr,
-          nb::arg("iw_event_handler") = nullptr,
-          nb::arg("brfs_event_handler") = nullptr,
-          nb::arg("goal_strategy") = nullptr);
+          "search_context"_a,
+          "start_state"_a = nullptr,
+          "max_arity"_a = nullptr,
+          "siw_event_handler"_a = nullptr,
+          "iw_event_handler"_a = nullptr,
+          "brfs_event_handler"_a = nullptr,
+          "goal_strategy"_a = nullptr);
 }
 
 }

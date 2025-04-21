@@ -702,10 +702,10 @@ void bind_module_definitions(nb::module_& m)
     auto bind_assignment_set = [&]<typename Tag>(const std::string& class_name, Tag)
     {
         nb::class_<AssignmentSet<Tag>>(m, class_name.c_str())
-            .def(nb::init<size_t, const PredicateList<Tag>&>(), nb::arg("num_objects"), nb::arg("predicates"))
+            .def(nb::init<size_t, const PredicateList<Tag>&>(), "num_objects"_a, "predicates"_a)
             .def("reset", &AssignmentSet<Tag>::reset)
-            .def("insert_ground_atoms", &AssignmentSet<Tag>::insert_ground_atoms, nb::arg("ground_atoms"))
-            .def("insert_ground_atom", &AssignmentSet<Tag>::insert_ground_atoms, nb::arg("ground_atom"));
+            .def("insert_ground_atoms", &AssignmentSet<Tag>::insert_ground_atoms, "ground_atoms"_a)
+            .def("insert_ground_atom", &AssignmentSet<Tag>::insert_ground_atoms, "ground_atom"_a);
     };
     bind_assignment_set("StaticAssignmentSet", StaticTag {});
     bind_assignment_set("FluentAssignmentSet", FluentTag {});
@@ -716,12 +716,9 @@ void bind_module_definitions(nb::module_& m)
     {
         nb::class_<NumericAssignmentSet<Tag>>(m, class_name.c_str())
             .def(nb::init<>())
-            .def(nb::init<size_t, const FunctionSkeletonList<Tag>&>(), nb::arg("num_objects"), nb::arg("function_skeletons"))
+            .def(nb::init<size_t, const FunctionSkeletonList<Tag>&>(), "num_objects"_a, "function_skeletons"_a)
             .def("reset", &NumericAssignmentSet<Tag>::reset)
-            .def("insert_ground_function_values",
-                 &NumericAssignmentSet<Tag>::insert_ground_function_values,
-                 nb::arg("ground_functions"),
-                 nb::arg("numeric_values"));
+            .def("insert_ground_function_values", &NumericAssignmentSet<Tag>::insert_ground_function_values, "ground_functions"_a, "numeric_values"_a);
     };
 
     bind_numeric_assignment_set("StaticNumericAssignmentSet", StaticTag {});
@@ -755,9 +752,9 @@ void bind_module_definitions(nb::module_& m)
             "create",
             [](const std::string& domain_filepath, const std::string& problem_filepath, const loki::Options& options)
             { return ProblemImpl::create(domain_filepath, problem_filepath, options); },
-            nb::arg("domain_filepath"),
-            nb::arg("problem_filepath"),
-            nb::arg("options") = loki::Options())
+            "domain_filepath"_a,
+            "problem_filepath"_a,
+            "options"_a = loki::Options())
         .def("__str__", [](const ProblemImpl& self) { return to_string(self); })
         .def("__repr__", [](const ProblemImpl& self) { return to_string(self); })
         .def("get_index", &ProblemImpl::get_index, nb::rv_policy::copy)
@@ -786,175 +783,160 @@ void bind_module_definitions(nb::module_& m)
         .def(
             "ground",
             [](ProblemImpl& self, Action lifted, const ObjectList& binding) -> GroundAction { return self.ground(lifted, binding); },
-            nb::arg("action"),
-            nb::arg("binding"),
+            "action"_a,
+            "binding"_a,
             nb::rv_policy::reference_internal)
         .def(
             "ground",
             [](ProblemImpl& self, FunctionExpression lifted, const ObjectList& binding) -> GroundFunctionExpression { return self.ground(lifted, binding); },
-            nb::arg("function_expression"),
-            nb::arg("binding"),
+            "function_expression"_a,
+            "binding"_a,
             nb::rv_policy::reference_internal)
         .def(
             "ground",
             [](ProblemImpl& self, NumericConstraint lifted, const ObjectList& binding) -> GroundNumericConstraint { return self.ground(lifted, binding); },
-            nb::arg("numeric_constraint"),
-            nb::arg("binding"),
+            "numeric_constraint"_a,
+            "binding"_a,
             nb::rv_policy::reference_internal)
-        .def("get_or_create_ground_atom",
-             &ProblemImpl::get_or_create_ground_atom<StaticTag>,
-             nb::arg("predicate"),
-             nb::arg("objects"),
-             nb::rv_policy::reference_internal)
-        .def("get_or_create_ground_atom",
-             &ProblemImpl::get_or_create_ground_atom<FluentTag>,
-             nb::arg("predicate"),
-             nb::arg("objects"),
-             nb::rv_policy::reference_internal)
-        .def("get_or_create_ground_atom",
-             &ProblemImpl::get_or_create_ground_atom<DerivedTag>,
-             nb::arg("predicate"),
-             nb::arg("objects"),
-             nb::rv_policy::reference_internal)
+        .def("get_or_create_ground_atom", &ProblemImpl::get_or_create_ground_atom<StaticTag>, "predicate"_a, "binding"_a, nb::rv_policy::reference_internal)
+        .def("get_or_create_ground_atom", &ProblemImpl::get_or_create_ground_atom<FluentTag>, "predicate"_a, "binding"_a, nb::rv_policy::reference_internal)
+        .def("get_or_create_ground_atom", &ProblemImpl::get_or_create_ground_atom<DerivedTag>, "predicate"_a, "binding"_a, nb::rv_policy::reference_internal)
         .def(
             "ground",
             [](ProblemImpl& self, Literal<StaticTag> lifted, const ObjectList& binding) -> GroundLiteral<StaticTag> { return self.ground(lifted, binding); },
-            nb::arg("literal"),
-            nb::arg("binding"),
+            "literal"_a,
+            "binding"_a,
             nb::rv_policy::reference_internal)
         .def(
             "ground",
             [](ProblemImpl& self, Literal<FluentTag> lifted, const ObjectList& binding) -> GroundLiteral<FluentTag> { return self.ground(lifted, binding); },
-            nb::arg("literal"),
-            nb::arg("binding"),
+            "literal"_a,
+            "binding"_a,
             nb::rv_policy::reference_internal)
         .def(
             "ground",
             [](ProblemImpl& self, Literal<DerivedTag> lifted, const ObjectList& binding) -> GroundLiteral<DerivedTag> { return self.ground(lifted, binding); },
-            nb::arg("literal"),
-            nb::arg("binding"),
+            "literal"_a,
+            "binding"_a,
             nb::rv_policy::reference_internal)
         .def(
             "ground",
             [](ProblemImpl& self, NumericEffect<FluentTag> lifted, const ObjectList& binding) -> GroundNumericEffect<FluentTag>
             { return self.ground(lifted, binding); },
-            nb::arg("numeric_effect"),
-            nb::arg("binding"),
+            "numeric_effect"_a,
+            "binding"_a,
             nb::rv_policy::reference_internal)
         .def(
             "ground",
             [](ProblemImpl& self, NumericEffect<AuxiliaryTag> lifted, const ObjectList& binding) -> GroundNumericEffect<AuxiliaryTag>
             { return self.ground(lifted, binding); },
-            nb::arg("numeric_effect"),
-            nb::arg("binding"),
+            "numeric_effect"_a,
+            "binding"_a,
             nb::rv_policy::reference_internal)
         .def(
             "ground",
             [](ProblemImpl& self, Function<StaticTag> lifted, const ObjectList& binding) -> GroundFunction<StaticTag> { return self.ground(lifted, binding); },
-            nb::arg("function"),
-            nb::arg("binding"),
+            "function"_a,
+            "binding"_a,
             nb::rv_policy::reference_internal)
         .def(
             "ground",
             [](ProblemImpl& self, Function<FluentTag> lifted, const ObjectList& binding) -> GroundFunction<FluentTag> { return self.ground(lifted, binding); },
-            nb::arg("function"),
-            nb::arg("binding"),
+            "function"_a,
+            "binding"_a,
             nb::rv_policy::reference_internal)
         .def(
             "ground",
             [](ProblemImpl& self, Function<AuxiliaryTag> lifted, const ObjectList& binding) -> GroundFunction<AuxiliaryTag>
             { return self.ground(lifted, binding); },
-            nb::arg("function"),
-            nb::arg("binding"),
+            "function"_a,
+            "binding"_a,
             nb::rv_policy::reference_internal)
-        .def("get_or_create_variable", &ProblemImpl::get_or_create_variable, nb::arg("name"), nb::arg("parameter_index"), nb::rv_policy::reference_internal)
-        .def("get_or_create_term", nb::overload_cast<Variable>(&ProblemImpl::get_or_create_term), nb::arg("variable"), nb::rv_policy::reference_internal)
-        .def("get_or_create_term", nb::overload_cast<Object>(&ProblemImpl::get_or_create_term), nb::arg("object"), nb::rv_policy::reference_internal)
-        .def("get_or_create_atom", &ProblemImpl::get_or_create_atom<StaticTag>, nb::arg("predicate"), nb::arg("terms"), nb::rv_policy::reference_internal)
-        .def("get_or_create_atom", &ProblemImpl::get_or_create_atom<FluentTag>, nb::arg("predicate"), nb::arg("terms"), nb::rv_policy::reference_internal)
-        .def("get_or_create_atom", &ProblemImpl::get_or_create_atom<DerivedTag>, nb::arg("predicate"), nb::arg("terms"), nb::rv_policy::reference_internal)
-        .def("get_or_create_literal", &ProblemImpl::get_or_create_literal<StaticTag>, nb::arg("polarity"), nb::arg("atom"), nb::rv_policy::reference_internal)
-        .def("get_or_create_literal", &ProblemImpl::get_or_create_literal<FluentTag>, nb::arg("polarity"), nb::arg("atom"), nb::rv_policy::reference_internal)
-        .def("get_or_create_literal", &ProblemImpl::get_or_create_literal<DerivedTag>, nb::arg("polarity"), nb::arg("atom"), nb::rv_policy::reference_internal)
+        .def("get_or_create_variable", &ProblemImpl::get_or_create_variable, "name"_a, "parameter_index"_a, nb::rv_policy::reference_internal)
+        .def("get_or_create_term", nb::overload_cast<Variable>(&ProblemImpl::get_or_create_term), "variable"_a, nb::rv_policy::reference_internal)
+        .def("get_or_create_term", nb::overload_cast<Object>(&ProblemImpl::get_or_create_term), "object"_a, nb::rv_policy::reference_internal)
+        .def("get_or_create_atom", &ProblemImpl::get_or_create_atom<StaticTag>, "predicate"_a, "terms"_a, nb::rv_policy::reference_internal)
+        .def("get_or_create_atom", &ProblemImpl::get_or_create_atom<FluentTag>, "predicate"_a, "terms"_a, nb::rv_policy::reference_internal)
+        .def("get_or_create_atom", &ProblemImpl::get_or_create_atom<DerivedTag>, "predicate"_a, "terms"_a, nb::rv_policy::reference_internal)
+        .def("get_or_create_literal", &ProblemImpl::get_or_create_literal<StaticTag>, "polarity"_a, "atom"_a, nb::rv_policy::reference_internal)
+        .def("get_or_create_literal", &ProblemImpl::get_or_create_literal<FluentTag>, "polarity"_a, "atom"_a, nb::rv_policy::reference_internal)
+        .def("get_or_create_literal", &ProblemImpl::get_or_create_literal<DerivedTag>, "polarity"_a, "atom"_a, nb::rv_policy::reference_internal)
         .def("get_or_create_function",
              &ProblemImpl::get_or_create_function<StaticTag>,
-             nb::arg("function_skeleton"),
-             nb::arg("terms"),
-             nb::arg("mapping"),
+             "function_skeleton"_a,
+             "terms"_a,
+             "mapping"_a,
              nb::rv_policy::reference_internal)
         .def("get_or_create_function",
              &ProblemImpl::get_or_create_function<FluentTag>,
-             nb::arg("function_skeleton"),
-             nb::arg("terms"),
-             nb::arg("mapping"),
+             "function_skeleton"_a,
+             "terms"_a,
+             "mapping"_a,
              nb::rv_policy::reference_internal)
         .def("get_or_create_function",
              &ProblemImpl::get_or_create_function<AuxiliaryTag>,
-             nb::arg("function_skeleton"),
-             nb::arg("terms"),
-             nb::arg("mapping"),
+             "function_skeleton"_a,
+             "terms"_a,
+             "mapping"_a,
              nb::rv_policy::reference_internal)
-        .def("get_or_create_function_expression_number",
-             &ProblemImpl::get_or_create_function_expression_number,
-             nb::arg("number"),
-             nb::rv_policy::reference_internal)
+        .def("get_or_create_function_expression_number", &ProblemImpl::get_or_create_function_expression_number, "number"_a, nb::rv_policy::reference_internal)
         .def("get_or_create_function_expression_binary_operator",
              &ProblemImpl::get_or_create_function_expression_binary_operator,
-             nb::arg("binary_operator"),
-             nb::arg("left"),
-             nb::arg("right"),
+             "binary_operator"_a,
+             "left"_a,
+             "right"_a,
              nb::rv_policy::reference_internal)
         .def("get_or_create_function_expression_multi_operator",
              &ProblemImpl::get_or_create_function_expression_multi_operator,
-             nb::arg("multi_operator"),
-             nb::arg("function_expressions"),
+             "multi_operator"_a,
+             "function_expressions"_a,
              nb::rv_policy::reference_internal)
         .def("get_or_create_function_expression_minus",
              &ProblemImpl::get_or_create_function_expression_minus,
-             nb::arg("function_expression"),
+             "function_expression"_a,
              nb::rv_policy::reference_internal)
         .def("get_or_create_function_expression_function",
              &ProblemImpl::get_or_create_function_expression_function<StaticTag>,
-             nb::arg("static_function"),
+             "function"_a,
              nb::rv_policy::reference_internal)
         .def("get_or_create_function_expression_function",
              &ProblemImpl::get_or_create_function_expression_function<FluentTag>,
-             nb::arg("fluent_function"),
+             "function"_a,
              nb::rv_policy::reference_internal)
         .def(
             "get_or_create_function_expression",
             [](ProblemImpl& self, FunctionExpressionNumber fexpr) { return self.get_or_create_function_expression(fexpr); },
-            nb::arg("function_expression"),
+            "function_expression"_a,
             nb::rv_policy::reference_internal)
         .def(
             "get_or_create_function_expression",
             [](ProblemImpl& self, FunctionExpressionBinaryOperator fexpr) { return self.get_or_create_function_expression(fexpr); },
-            nb::arg("function_expression"),
+            "function_expression"_a,
             nb::rv_policy::reference_internal)
         .def(
             "get_or_create_function_expression",
             [](ProblemImpl& self, FunctionExpressionMultiOperator fexpr) { return self.get_or_create_function_expression(fexpr); },
-            nb::arg("function_expression"),
+            "function_expression"_a,
             nb::rv_policy::reference_internal)
         .def(
             "get_or_create_function_expression",
             [](ProblemImpl& self, FunctionExpressionMinus fexpr) { return self.get_or_create_function_expression(fexpr); },
-            nb::arg("function_expression"),
+            "function_expression"_a,
             nb::rv_policy::reference_internal)
         .def("get_or_create_function_expression",
              nb::overload_cast<FunctionExpressionFunction<StaticTag>>(&ProblemImpl::get_or_create_function_expression<StaticTag>),
-             nb::arg("function_expression"),
+             "function_expression"_a,
              nb::rv_policy::reference_internal)
         .def("get_or_create_function_expression",
              nb::overload_cast<FunctionExpressionFunction<FluentTag>>(&ProblemImpl::get_or_create_function_expression<FluentTag>),
-             nb::arg("function_expression"),
+             "function_expression"_a,
              nb::rv_policy::reference_internal)
         .def("get_or_create_numeric_constraint",
              &ProblemImpl::get_or_create_numeric_constraint,
-             nb::arg("comparator"),
-             nb::arg("left_expression"),
-             nb::arg("right_expression"),
-             nb::arg("terms"),
+             "comparator"_a,
+             "left_expression"_a,
+             "right_expression"_a,
+             "terms"_a,
              nb::rv_policy::reference_internal)
         .def(
             "get_or_create_conjunctive_condition",
@@ -972,11 +954,11 @@ void bind_module_definitions(nb::module_& m)
                                           boost::hana::make_pair(boost::hana::type_c<DerivedTag>, derived_literals)),
                     std::move(numeric_constraints));
             },
-            nb::arg("parameters"),
-            nb::arg("static_literals"),
-            nb::arg("fluent_literals"),
-            nb::arg("derived_literals"),
-            nb::arg("numeric_constraints"),
+            "parameters"_a,
+            "static_literals"_a,
+            "fluent_literals"_a,
+            "derived_literals"_a,
+            "numeric_constraints"_a,
             nb::rv_policy::reference_internal);
     nb::bind_vector<ProblemList>(m, "ProblemList");
 
@@ -986,22 +968,22 @@ void bind_module_definitions(nb::module_& m)
             "create",
             [](const fs::path& domain_filepath, const std::vector<fs::path>& problem_filepaths, const loki::Options& options)
             { return GeneralizedProblemImpl::create(domain_filepath, problem_filepaths, options); },
-            nb::arg("domain_filepath"),
-            nb::arg("problem_filepaths"),
-            nb::arg("options") = loki::Options())
+            "domain_filepath"_a,
+            "problem_filepaths"_a,
+            "options"_a = loki::Options())
         .def_static(
             "create",
             [](const fs::path& domain_filepath, const fs::path& problems_directory, const loki::Options& options)
             { return GeneralizedProblemImpl::create(domain_filepath, problems_directory, options); },
-            nb::arg("domain_filepath"),
-            nb::arg("problems_directory"),
-            nb::arg("options") = loki::Options())
+            "domain_filepath"_a,
+            "problems_directory"_a,
+            "options"_a = loki::Options())
 
         .def_static(
             "create",
             [](Domain domain, ProblemList problems) { return GeneralizedProblemImpl::create(std::move(domain), std::move(problems)); },
-            nb::arg("domain"),
-            nb::arg("problems"))
+            "domain"_a,
+            "problems"_a)
         .def("get_domain", &GeneralizedProblemImpl::get_domain)
         .def("get_problems", &GeneralizedProblemImpl::get_problems);
 
@@ -1014,13 +996,13 @@ void bind_module_definitions(nb::module_& m)
             "__init__",
             [](Parser* self, std::string domain_filepath, loki::Options options)
             { new (self) Parser(std::filesystem::path(std::move(domain_filepath)), std::move(options)); },
-            nb::arg("domain_filepath"),
-            nb::arg("options") = loki::Options())
+            "domain_filepath"_a,
+            "options"_a = loki::Options())
         .def(
             "parse_problem",
             [](Parser& self, const std::string& problem_filepath, const loki::Options& options) { return self.parse_problem(problem_filepath, options); },
-            nb::arg("problem_filepath"),
-            nb::arg("options") = loki::Options())
+            "problem_filepath"_a,
+            "options"_a = loki::Options())
         .def("get_domain", &Parser::get_domain);
 
     /**
@@ -1028,8 +1010,8 @@ void bind_module_definitions(nb::module_& m)
      */
 
     nb::class_<Translator>(m, "Translator")
-        .def(nb::init<const Domain&>(), nb::arg("domain"))
-        .def("translate", &Translator::translate, nb::arg("problem"))
+        .def(nb::init<const Domain&>(), "domain"_a)
+        .def("translate", &Translator::translate, "problem"_a)
         .def("get_original_domain", &Translator::get_original_domain, nb::rv_policy::reference_internal)
         .def("get_translated_domain", &Translator::get_translated_domain, nb::rv_policy::reference_internal);
 }
