@@ -75,7 +75,6 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="classmimir_1_1graphs_1_1Color-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">mimir::graphs::Color Class Reference</div></div>
 </div><!--header-->
@@ -86,12 +85,12 @@ $(function() {
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ade0d3719fb34ece9fe7c6a594b123b56"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1Color.html#ade0d3719fb34ece9fe7c6a594b123b56">Color</a> (std::shared_ptr&lt; <a class="el" href="classmimir_1_1graphs_1_1IColor.html">IColor</a> &gt; color)</td></tr>
-<tr class="memdesc:ade0d3719fb34ece9fe7c6a594b123b56"><td class="mdescLeft">&#160;</td><td class="mdescRight">The constructor for Python managed <code><a class="el" href="classmimir_1_1graphs_1_1IColor.html" title="IColor is the abstract base class for a color in vertex-colored graphs. https://nanobind....">IColor</a></code>. Notice that Python users have to manually declare different types of colors by deriving from <a class="el" href="classmimir_1_1graphs_1_1IColor.html" title="IColor is the abstract base class for a color in vertex-colored graphs. https://nanobind....">IColor</a> while C++ users can make usage of the <code><a class="el" href="classmimir_1_1graphs_1_1VariadicColor.html">VariadicColor</a></code> in the constructor below.  <br /></td></tr>
+<tr class="memdesc:ade0d3719fb34ece9fe7c6a594b123b56"><td class="mdescLeft">&#160;</td><td class="mdescRight">The constructor for Python managed <code><a class="el" href="classmimir_1_1graphs_1_1IColor.html" title="IColor is the abstract base class for a color in vertex-colored graphs.">IColor</a></code>. Notice that Python users have to manually declare different types of colors by deriving from <a class="el" href="classmimir_1_1graphs_1_1IColor.html" title="IColor is the abstract base class for a color in vertex-colored graphs.">IColor</a> while C++ users can make usage of the <code><a class="el" href="classmimir_1_1graphs_1_1VariadicColor.html">VariadicColor</a></code> in the constructor below.  <br /></td></tr>
 <tr class="separator:ade0d3719fb34ece9fe7c6a594b123b56"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adb4abb2445552ff15738b1957585222b"><td class="memTemplParams" colspan="2">template&lt;typename... Ts&gt; </td></tr>
-<tr class="memitem:adb4abb2445552ff15738b1957585222b"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1Color.html#adb4abb2445552ff15738b1957585222b">Color</a> (Ts... colors)</td></tr>
-<tr class="memdesc:adb4abb2445552ff15738b1957585222b"><td class="mdescLeft">&#160;</td><td class="mdescRight">The variadic constructor for C++ managed <code><a class="el" href="classmimir_1_1graphs_1_1IColor.html" title="IColor is the abstract base class for a color in vertex-colored graphs. https://nanobind....">IColor</a></code>.  <br /></td></tr>
-<tr class="separator:adb4abb2445552ff15738b1957585222b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14c475889032af5a63ce7fe6c27b1b8c"><td class="memTemplParams" colspan="2">template&lt;typename... Ts&gt; </td></tr>
+<tr class="memitem:a14c475889032af5a63ce7fe6c27b1b8c"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1Color.html#a14c475889032af5a63ce7fe6c27b1b8c">Color</a> (<a class="el" href="classmimir_1_1graphs_1_1VariadicColor.html">VariadicColor</a>&lt; Ts... &gt; colors)</td></tr>
+<tr class="memdesc:a14c475889032af5a63ce7fe6c27b1b8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">The variadic constructor for C++ managed <code><a class="el" href="classmimir_1_1graphs_1_1IColor.html" title="IColor is the abstract base class for a color in vertex-colored graphs.">IColor</a></code>.  <br /></td></tr>
+<tr class="separator:a14c475889032af5a63ce7fe6c27b1b8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a94ecf8c50f47fc15bab5ba491c7a84ad"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1Color.html#a94ecf8c50f47fc15bab5ba491c7a84ad">operator==</a> (const <a class="el" href="classmimir_1_1graphs_1_1Color.html">Color</a> &amp;other) const</td></tr>
 <tr class="separator:a94ecf8c50f47fc15bab5ba491c7a84ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac2d5f8482e935e21e69e3f771ac48f13"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1Color.html#ac2d5f8482e935e21e69e3f771ac48f13">operator&lt;</a> (const <a class="el" href="classmimir_1_1graphs_1_1Color.html">Color</a> &amp;other) const</td></tr>
@@ -100,11 +99,6 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:adbc4d0729c5e266be399d261ef07c708"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab36b8f6880b1be6090c5a5e2dc766042"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1Color.html#ab36b8f6880b1be6090c5a5e2dc766042">hash</a> () const</td></tr>
 <tr class="separator:ab36b8f6880b1be6090c5a5e2dc766042"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
-Public Attributes</h2></td></tr>
-<tr class="memitem:ace1436a896c8994243015d17616677d4"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classmimir_1_1graphs_1_1IColor.html">IColor</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1Color.html#ace1436a896c8994243015d17616677d4">m_color</a></td></tr>
-<tr class="separator:ace1436a896c8994243015d17616677d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ade0d3719fb34ece9fe7c6a594b123b56" name="ade0d3719fb34ece9fe7c6a594b123b56"></a>
@@ -131,7 +125,7 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>The constructor for Python managed <code><a class="el" href="classmimir_1_1graphs_1_1IColor.html" title="IColor is the abstract base class for a color in vertex-colored graphs. https://nanobind....">IColor</a></code>. Notice that Python users have to manually declare different types of colors by deriving from <a class="el" href="classmimir_1_1graphs_1_1IColor.html" title="IColor is the abstract base class for a color in vertex-colored graphs. https://nanobind....">IColor</a> while C++ users can make usage of the <code><a class="el" href="classmimir_1_1graphs_1_1VariadicColor.html">VariadicColor</a></code> in the constructor below. </p>
+<p>The constructor for Python managed <code><a class="el" href="classmimir_1_1graphs_1_1IColor.html" title="IColor is the abstract base class for a color in vertex-colored graphs.">IColor</a></code>. Notice that Python users have to manually declare different types of colors by deriving from <a class="el" href="classmimir_1_1graphs_1_1IColor.html" title="IColor is the abstract base class for a color in vertex-colored graphs.">IColor</a> while C++ users can make usage of the <code><a class="el" href="classmimir_1_1graphs_1_1VariadicColor.html">VariadicColor</a></code> in the constructor below. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">color</td><td></td></tr>
@@ -141,8 +135,8 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="adb4abb2445552ff15738b1957585222b" name="adb4abb2445552ff15738b1957585222b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adb4abb2445552ff15738b1957585222b">&#9670;&#160;</a></span>Color() <span class="overload">[2/2]</span></h2>
+<a id="a14c475889032af5a63ce7fe6c27b1b8c" name="a14c475889032af5a63ce7fe6c27b1b8c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14c475889032af5a63ce7fe6c27b1b8c">&#9670;&#160;</a></span>Color() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -155,7 +149,7 @@ template&lt;typename... Ts&gt; </div>
         <tr>
           <td class="memname">mimir::graphs::Color::Color </td>
           <td>(</td>
-          <td class="paramtype">Ts...&#160;</td>
+          <td class="paramtype"><a class="el" href="classmimir_1_1graphs_1_1VariadicColor.html">VariadicColor</a>&lt; Ts... &gt;&#160;</td>
           <td class="paramname"><em>colors</em></td><td>)</td>
           <td></td>
         </tr>
@@ -167,7 +161,7 @@ template&lt;typename... Ts&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>The variadic constructor for C++ managed <code><a class="el" href="classmimir_1_1graphs_1_1IColor.html" title="IColor is the abstract base class for a color in vertex-colored graphs. https://nanobind....">IColor</a></code>. </p>
+<p>The variadic constructor for C++ managed <code><a class="el" href="classmimir_1_1graphs_1_1IColor.html" title="IColor is the abstract base class for a color in vertex-colored graphs.">IColor</a></code>. </p>
 
 </div>
 </div>
@@ -236,21 +230,6 @@ template&lt;typename... Ts&gt; </div>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<h2 class="groupheader">Member Data Documentation</h2>
-<a id="ace1436a896c8994243015d17616677d4" name="ace1436a896c8994243015d17616677d4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ace1436a896c8994243015d17616677d4">&#9670;&#160;</a></span>m_color</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::shared_ptr&lt;<a class="el" href="classmimir_1_1graphs_1_1IColor.html">IColor</a>&gt; mimir::graphs::Color::m_color</td>
         </tr>
       </table>
 </div><div class="memdoc">
