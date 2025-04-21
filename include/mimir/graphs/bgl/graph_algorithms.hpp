@@ -61,28 +61,6 @@ auto strong_components(const DirectionTaggedType<Graph, Direction>& g)
     return std::make_pair(num_components, c);
 }
 
-/*
-template<IsStaticGraph Graph, IsDirection Direction>
-IndexGroupedVector<std::pair<typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertices_size_type,
-                             typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor>>
-get_partitioning(typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertices_size_type num_components,
-                 std::vector<typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertices_size_type> component_map)
-{
-    using vertex_descriptor_type = typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor;
-    using vertices_size_type = typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertices_size_type;
-    using state_component_pair_t = std::pair<vertices_size_type, vertex_descriptor_type>;
-
-    auto partitioning = std::vector<state_component_pair_t>();
-    for (vertex_descriptor_type v = 0; v < component_map.size(); ++v)
-    {
-        partitioning.push_back({ component_map.at(v), v });
-    }
-    std::sort(std::begin(partitioning), std::end(partitioning));
-    return IndexGroupedVector<state_component_pair_t>::create(std::move(partitioning),
-                                                              [](const auto& prev, const auto& cur) { return prev.first != cur.first; });
-}
-*/
-
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // boost::breadth_first_search
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

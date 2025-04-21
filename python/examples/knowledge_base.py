@@ -32,7 +32,85 @@ def main():
     knowledge_base_options.tuple_graph_options = tuple_graph_options
     knowledge_base = datasets.KnowledgeBase.create(generalized_search_context, knowledge_base_options)
 
-    # Access GeneralizedStateSpace
+    # 1. Access the StateSpaces.
+    for state_space in knowledge_base.get_state_spaces():
+        graph = state_space.get_graph()
+        print("Dot representation of the StateSpace:")
+
+        # Run basic graph algorithms with switchable edge direction
+        edge_weights = [1] * graph.get_num_edges()
+        source_indices = [0,1,2]  # some vertices
+
+        graph.compute_strong_components()
+
+        graph.compute_forward_breadth_first_search(source_indices)
+        graph.compute_forward_depth_first_search(source_indices)
+        graph.compute_forward_floyd_warshall_all_pairs_shortest_paths(edge_weights)
+        graph.compute_forward_dijkstra_shortest_paths(edge_weights, source_indices)
+        try:
+            graph.compute_forward_topological_sort()  # graph is cyclic => this will throw ValueError
+        except ValueError:
+            pass
+        
+        graph.compute_backward_breadth_first_search(source_indices)
+        graph.compute_backward_depth_first_search(source_indices)
+        graph.compute_backward_floyd_warshall_all_pairs_shortest_paths(edge_weights)
+        graph.compute_backward_dijkstra_shortest_paths(edge_weights, source_indices)
+        try:
+            graph.compute_backward_topological_sort()  # graph is cyclic => this will throw ValueError
+        except ValueError:
+            pass
+
+        # Iterate over vertices
+        for vertex in graph.get_vertices():
+            # Access vertex properties through generic member
+            vertex.get_index()      
+            vertex.get_property_0()  # State
+            vertex.get_property_1()  # Problem
+            vertex.get_property_2()  # Unit goal distance
+            vertex.get_property_3()  # Action goal distance
+            vertex.get_property_4()  # Is initial?
+            vertex.get_property_5()  # Is goal?
+            vertex.get_property_6()  # Is unsolvable?
+            vertex.get_property_7()  # Is alive?
+
+            # Iterate over adjacent structures
+            for adj_vertex in graph.get_forward_adjacent_vertices(vertex.get_index()):
+                pass
+
+            for adj_vertex in graph.get_backward_adjacent_vertices(vertex.get_index()):
+                pass 
+
+            for adj_edge in graph.get_forward_adjacent_edges(vertex.get_index()):
+                pass 
+
+            for adj_edge in graph.get_backward_adjacent_edges(vertex.get_index()):
+                pass 
+
+            for adj_v_idx in graph.get_forward_adjacent_vertex_indices(vertex.get_index()):
+                pass 
+
+            for adj_v_idx in graph.get_backward_adjacent_vertex_indices(vertex.get_index()):
+                pass 
+
+            for adj_e_idx in graph.get_forward_adjacent_edge_indices(vertex.get_index()):
+                pass 
+
+            for adj_e_idx in graph.get_backward_adjacent_edge_indices(vertex.get_index()):
+                pass
+                
+        # Iterate over edges
+        for edge in graph.get_edges():
+            # Access edge properties through generic member
+            edge.get_index()  
+            edge.get_source()   
+            edge.get_target()   
+            edge.get_property_0()  # GroundAction
+            edge.get_property_1()  # Problem
+            edge.get_property_2()  # Action cost
+    
+
+    # 2. Access GeneralizedStateSpace
     generalized_state_space = knowledge_base.get_generalized_state_space()
 
     # Access GeneralizedStateSpace meta data
@@ -42,6 +120,31 @@ def main():
 
     # Access GeneralizedStateSpace graph
     graph = generalized_state_space.get_graph()
+    print("Dot represention of the GeneralizedStateSpace:")
+    print(graph)
+
+    # Run basic graph algorithms with switchable edge direction
+    edge_weights = [1] * graph.get_num_edges()
+    source_indices = [0,1,2]  # some vertices
+    graph.compute_strong_components()
+
+    graph.compute_forward_breadth_first_search(source_indices)
+    graph.compute_forward_depth_first_search(source_indices)
+    graph.compute_forward_floyd_warshall_all_pairs_shortest_paths(edge_weights)
+    graph.compute_forward_dijkstra_shortest_paths(edge_weights, source_indices)
+    try:
+        graph.compute_forward_topological_sort()  # graph is cyclic => this will throw ValueError
+    except ValueError:
+        pass
+    
+    graph.compute_backward_breadth_first_search(source_indices)
+    graph.compute_backward_depth_first_search(source_indices)
+    graph.compute_backward_floyd_warshall_all_pairs_shortest_paths(edge_weights)
+    graph.compute_backward_dijkstra_shortest_paths(edge_weights, source_indices)
+    try:
+        graph.compute_backward_topological_sort()  # graph is cyclic => this will throw ValueError
+    except ValueError:
+        pass
 
     # Iterate over vertices
     for vertex in graph.get_vertices():
@@ -49,8 +152,32 @@ def main():
         vertex.get_index()      
         vertex.get_property_0()  # Problem graph vertex index
         vertex.get_property_1()  # Problem index
-        
 
+        # Iterate over adjacent structures
+        for adj_vertex in graph.get_forward_adjacent_vertices(vertex.get_index()):
+            pass
+
+        for adj_vertex in graph.get_backward_adjacent_vertices(vertex.get_index()):
+            pass 
+
+        for adj_edge in graph.get_forward_adjacent_edges(vertex.get_index()):
+            pass 
+
+        for adj_edge in graph.get_backward_adjacent_edges(vertex.get_index()):
+            pass 
+
+        for adj_v_idx in graph.get_forward_adjacent_vertex_indices(vertex.get_index()):
+            pass 
+
+        for adj_v_idx in graph.get_backward_adjacent_vertex_indices(vertex.get_index()):
+            pass 
+
+        for adj_e_idx in graph.get_forward_adjacent_edge_indices(vertex.get_index()):
+            pass 
+
+        for adj_e_idx in graph.get_backward_adjacent_edge_indices(vertex.get_index()):
+            pass
+        
     # Iterate over edges
     for edge in graph.get_edges():
         # Access edge properties through generic member
@@ -60,35 +187,7 @@ def main():
         edge.get_property_0()  # Problem graph edge index
         edge.get_property_1()  # Problem index
 
-    ### Iterate over adjacent structures, for the example of some initial state
-    v_idx = generalized_state_space.get_initial_vertices().pop()
-
-    for vertex in graph.get_forward_adjacent_vertices(v_idx):
-        pass
-
-    for vertex in graph.get_backward_adjacent_vertices(v_idx):
-        pass 
-
-    for edge in graph.get_forward_adjacent_edges(v_idx):
-        pass 
-
-    for edge in graph.get_backward_adjacent_edges(v_idx):
-        pass 
-
-    for v2_idx in graph.get_forward_adjacent_vertex_indices(v_idx):
-        pass 
-
-    for v2_idx in graph.get_backward_adjacent_vertex_indices(v_idx):
-        pass 
-
-    for e2_idx in graph.get_forward_adjacent_edge_indices(v_idx):
-        pass 
-
-    for e2_idx in graph.get_backward_adjacent_edge_indices(v_idx):
-        pass
-
-    ### Access low-level information about state and actions using the mappings encoded in the GeneralizedStateSpace.
-
+    # Access low-level information about state and actions using the mappings encoded in the GeneralizedStateSpace.
     for vertex in graph.get_vertices():
         # Map class vertex to problem vertex
         problem_vertex = generalized_state_space.get_problem_vertex(vertex)
@@ -114,7 +213,7 @@ def main():
         problem_edge.get_property_1()  # Problem
         problem_edge.get_property_2()  # Action cost
 
-    # Access the tuple graphs of each state space.
+    # 3. Access the tuple graphs of each state space.
     for tuple_graphs in knowledge_base.get_tuple_graphs():
         # Access the tuple graph in the state space.
         for tuple_graph in tuple_graphs:
