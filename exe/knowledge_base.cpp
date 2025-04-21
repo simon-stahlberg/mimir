@@ -35,18 +35,13 @@ int main(int argc, char** argv)
     const auto problems_directory = fs::path { argv[2] };
 
     auto kb_options = KnowledgeBaseImpl::Options();
-
     auto& state_space_options = kb_options.state_space_options;
     state_space_options.symmetry_pruning = true;
-
     auto& generalized_state_space_options = kb_options.generalized_state_space_options;
     generalized_state_space_options = GeneralizedStateSpaceImpl::Options();
-    generalized_state_space_options->symmetry_pruning = true;
-
     auto& tuple_graph_options = kb_options.tuple_graph_options;
     tuple_graph_options = TupleGraphImpl::Options();
     tuple_graph_options->width = 1;
-
     auto kb = KnowledgeBaseImpl::create(GeneralizedSearchContextImpl::create(domain_file_path, problems_directory), kb_options);
 
     if (kb->get_generalized_state_space().has_value())

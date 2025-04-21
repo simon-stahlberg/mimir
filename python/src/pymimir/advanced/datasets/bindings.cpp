@@ -38,9 +38,8 @@ void bind_module_definitions(nb::module_& m)
         .def_rw("width", &TupleGraphImpl::Options::width)
         .def_rw("enable_dominance_pruning", &TupleGraphImpl::Options::enable_dominance_pruning);
 
-    nb::class_<GeneralizedStateSpaceImpl::Options>(m, "GeneralizedStateSpaceOptions")
-        .def(nb::init<>())
-        .def_rw("symmetry_pruning", &GeneralizedStateSpaceImpl::Options::symmetry_pruning);
+    nb::class_<GeneralizedStateSpaceImpl::Options>(m, "GeneralizedStateSpaceOptions")  //
+        .def(nb::init<>());
 
     nb::class_<KnowledgeBaseImpl::Options>(m, "KnowledgeBaseOptions")
         .def(nb::init<>())

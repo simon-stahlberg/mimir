@@ -100,14 +100,10 @@ TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarVisitorSentenceGeneratorTes
     auto context = search::GeneralizedSearchContextImpl::create(domain_file, std::vector<fs::path> { problem1_file, problem2_file });
 
     auto kb_options = KnowledgeBaseImpl::Options();
-
     auto& state_space_options = kb_options.state_space_options;
     state_space_options.symmetry_pruning = false;
-
     auto& generalized_state_space_options = kb_options.generalized_state_space_options;
     generalized_state_space_options = GeneralizedStateSpaceImpl::Options();
-    generalized_state_space_options->symmetry_pruning = false;
-
     auto kb = KnowledgeBaseImpl::create(context, kb_options);
 
     auto pruning_function = dl::StateListRefinementPruningFunction(kb->get_generalized_state_space().value());
@@ -150,14 +146,10 @@ TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarVisitorSentenceGeneratorFra
     auto context = search::GeneralizedSearchContextImpl::create(domain_file, std::vector<fs::path> { problem1_file, problem2_file });
 
     auto kb_options = KnowledgeBaseImpl::Options();
-
     auto& state_space_options = kb_options.state_space_options;
     state_space_options.symmetry_pruning = false;
-
     auto& generalized_state_space_options = kb_options.generalized_state_space_options;
     generalized_state_space_options = GeneralizedStateSpaceImpl::Options();
-    generalized_state_space_options->symmetry_pruning = false;
-
     auto kb = KnowledgeBaseImpl::create(context, kb_options);
 
     auto pruning_function = dl::StateListRefinementPruningFunction(kb->get_generalized_state_space().value());

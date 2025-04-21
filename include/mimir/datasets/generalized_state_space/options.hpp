@@ -22,9 +22,7 @@ namespace mimir::datasets::generalized_state_space
 {
 struct Options
 {
-    bool symmetry_pruning;
-
-    Options() : symmetry_pruning(false) {}
+    Options() {}
 };
 }
 

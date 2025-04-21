@@ -56,14 +56,10 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyGripperTest)
             /* Without symmetry reduction. */
 
             auto kb_options = KnowledgeBaseImpl::Options();
-
             auto& state_space_options = kb_options.state_space_options;
             state_space_options.symmetry_pruning = false;
-
             auto& generalized_state_space_options = kb_options.generalized_state_space_options;
             generalized_state_space_options = GeneralizedStateSpaceImpl::Options();
-            generalized_state_space_options->symmetry_pruning = false;
-
             auto kb = KnowledgeBaseImpl::create(context, kb_options);
 
             const auto& generalized_state_space = kb->get_generalized_state_space();
@@ -96,14 +92,10 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyGripperTest)
             /* With symmetry reduction. */
 
             auto kb_options = KnowledgeBaseImpl::Options();
-
             auto& state_space_options = kb_options.state_space_options;
             state_space_options.symmetry_pruning = true;
-
             auto& generalized_state_space_options = kb_options.generalized_state_space_options;
             generalized_state_space_options = GeneralizedStateSpaceImpl::Options();
-            generalized_state_space_options->symmetry_pruning = true;
-
             auto kb = KnowledgeBaseImpl::create(context, kb_options);
 
             const auto& generalized_state_space = kb->get_generalized_state_space();
@@ -159,14 +151,10 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyBlocks3opsTest)
             /* Without symmetry reduction. */
 
             auto kb_options = KnowledgeBaseImpl::Options();
-
             auto& state_space_options = kb_options.state_space_options;
             state_space_options.symmetry_pruning = false;
-
             auto& generalized_state_space_options = kb_options.generalized_state_space_options;
             generalized_state_space_options = GeneralizedStateSpaceImpl::Options();
-            generalized_state_space_options->symmetry_pruning = false;
-
             auto kb = KnowledgeBaseImpl::create(context, kb_options);
 
             const auto& generalized_state_space = kb->get_generalized_state_space();
@@ -199,14 +187,10 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyBlocks3opsTest)
             /* With symmetry reduction. */
 
             auto kb_options = KnowledgeBaseImpl::Options();
-
             auto& state_space_options = kb_options.state_space_options;
             state_space_options.symmetry_pruning = true;
-
             auto& generalized_state_space_options = kb_options.generalized_state_space_options;
             generalized_state_space_options = GeneralizedStateSpaceImpl::Options();
-            generalized_state_space_options->symmetry_pruning = true;
-
             auto kb = KnowledgeBaseImpl::create(context, kb_options);
 
             const auto& generalized_state_space = kb->get_generalized_state_space();
@@ -260,14 +244,10 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicySpannerTest)
             /* Without symmetry reduction. */
 
             auto kb_options = KnowledgeBaseImpl::Options();
-
             auto& state_space_options = kb_options.state_space_options;
             state_space_options.symmetry_pruning = false;
-
             auto& generalized_state_space_options = kb_options.generalized_state_space_options;
             generalized_state_space_options = GeneralizedStateSpaceImpl::Options();
-            generalized_state_space_options->symmetry_pruning = false;
-
             auto kb = KnowledgeBaseImpl::create(context, kb_options);
 
             const auto& generalized_state_space = kb->get_generalized_state_space();
@@ -300,14 +280,10 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicySpannerTest)
             /* With symmetry reduction. */
 
             auto kb_options = KnowledgeBaseImpl::Options();
-
             auto& state_space_options = kb_options.state_space_options;
             state_space_options.symmetry_pruning = true;
-
             auto& generalized_state_space_options = kb_options.generalized_state_space_options;
             generalized_state_space_options = GeneralizedStateSpaceImpl::Options();
-            generalized_state_space_options->symmetry_pruning = true;
-
             auto kb = KnowledgeBaseImpl::create(context, kb_options);
 
             const auto& generalized_state_space = kb->get_generalized_state_space();

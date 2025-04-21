@@ -21,9 +21,8 @@ def main():
 
     # Create KnowledgeBase
     state_space_options = datasets.StateSpaceOptions()
-    state_space_options.symmetry_pruning = True 
+    state_space_options.symmetry_pruning = False 
     generalized_state_space_options = datasets.GeneralizedStateSpaceOptions()
-    generalized_state_space_options.symmetry_pruning = True
     tuple_graph_options = datasets.TupleGraphOptions()
     tuple_graph_options.width = 1
     knowledge_base_options = datasets.KnowledgeBaseOptions()

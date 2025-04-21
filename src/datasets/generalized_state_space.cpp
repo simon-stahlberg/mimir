@@ -301,7 +301,7 @@ GeneralizedStateSpaceImpl::GeneralizedStateSpaceImpl(StateSpaceList state_spaces
 std::pair<GeneralizedStateSpace, std::optional<std::vector<CertificateMaps>>>
 GeneralizedStateSpaceImpl::create(const std::vector<std::pair<StateSpace, std::optional<CertificateMaps>>>& state_spaces, const Options& options)
 {
-    if (options.symmetry_pruning)
+    if (std::all_of(state_spaces.begin(), state_spaces.end(), [](auto&& arg) { return arg.second.has_value(); }))
     {
         auto result = compute_generalized_state_space_with_symmetry_reduction(state_spaces);
 
