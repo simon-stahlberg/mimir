@@ -434,6 +434,9 @@ private:
     TraversalDirectionToEdgesGroupedByVertex m_edge_indices_grouped_by_vertex;
 };
 
+template<IsVertex V, IsEdge E>
+std::ostream& operator<<(std::ostream& out, const StaticGraph<V, E>& graph);
+
 template<IsStaticGraph G>
 std::ostream& operator<<(std::ostream& out, const StaticForwardGraph<G>& graph);
 

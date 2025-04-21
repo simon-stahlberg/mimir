@@ -37,6 +37,8 @@ target_link_libraries(core Nauty::Nauty)
 target_link_libraries(core fmt::fmt)
 target_link_libraries(core -pthread)
 target_link_libraries(core absl::flat_hash_set absl::flat_hash_map)
+# target_include_directories(core PUBLIC ${Python3_INCLUDE_DIRS})
+# target_link_libraries(core ${PYTHON3_LIB_DIRS})
 
 # Use include depending on building or using from installed location
 target_include_directories(core

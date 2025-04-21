@@ -89,7 +89,7 @@ static ObjectMap<graphs::VertexIndex> add_objects_graph_structures(State state, 
     {
         // Can we assume canonical sorting of PredicateVariantList?
 
-        object_to_vertex_index.emplace(object, out_digraph.add_vertex(graphs::Color(object_to_color.at(object))));
+        object_to_vertex_index.emplace(object, out_digraph.add_vertex(graphs::Color(graphs::VariadicColor(object_to_color.at(object)))));
     }
 
     return object_to_vertex_index;
@@ -103,13 +103,13 @@ static void add_ground_atom_graph_structures(const ProblemImpl& problem,
 {
     if (atom->get_arity() == 0)
     {
-        out_digraph.add_vertex(graphs::Color(atom->get_predicate()));
+        out_digraph.add_vertex(graphs::Color(graphs::VariadicColor(atom->get_predicate())));
     }
     else if (atom->get_arity() > 1)
     {
         for (size_t pos = 0; pos < atom->get_arity(); ++pos)
         {
-            const auto vertex_index = out_digraph.add_vertex(graphs::Color(atom->get_predicate(), pos));
+            const auto vertex_index = out_digraph.add_vertex(graphs::Color(graphs::VariadicColor(atom->get_predicate(), pos)));
 
             out_digraph.add_undirected_edge(vertex_index, object_to_vertex_index.at(atom->get_objects().at(pos)));
 
@@ -173,13 +173,14 @@ static void add_ground_literal_graph_structures(const ProblemImpl& problem,
 {
     if (literal->get_atom()->get_arity() == 0)
     {
-        out_digraph.add_vertex(graphs::Color(literal->get_atom()->get_predicate(), literal->get_polarity()));
+        out_digraph.add_vertex(graphs::Color(graphs::VariadicColor(literal->get_atom()->get_predicate(), literal->get_polarity())));
     }
     else if (literal->get_atom()->get_arity() > 1)
     {
         for (size_t pos = 0; pos < literal->get_atom()->get_arity(); ++pos)
         {
-            const auto vertex_index = out_digraph.add_vertex(graphs::Color(literal->get_atom()->get_predicate(), pos, literal->get_polarity()));
+            const auto vertex_index =
+                out_digraph.add_vertex(graphs::Color(graphs::VariadicColor(literal->get_atom()->get_predicate(), pos, literal->get_polarity())));
 
             out_digraph.add_undirected_edge(vertex_index, object_to_vertex_index.at(literal->get_atom()->get_objects().at(pos)));
 

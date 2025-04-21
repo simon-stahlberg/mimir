@@ -17,8 +17,6 @@
 
 #include "init_declarations.hpp"
 
-#include <nanobind/nanobind.h>
-
 namespace nb = nanobind;
 using namespace nb::literals;
 

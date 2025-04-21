@@ -123,6 +123,12 @@ if(absl_FOUND)
   message(STATUS "Found absl: ${absl_DIR} (found version ${absl_VERSION})")
 endif()
 
+
+# find_package(Python3 REQUIRED 
+#   COMPONENTS Interpreter Development
+#   OPTIONAL_COMPONENTS Development.SABIModule)
+
+
 ##############################################################
 # Add library and executable targets
 ##############################################################

@@ -94,6 +94,7 @@ void bind_translated_static_graph(nb::module_& m, const std::string& name, const
     nb::class_<TranslatedGraphType>(m, (prefix + name).c_str())
         .def(nb::init<GraphType>())
         .def("__init__", [](TranslatedGraphType* self, const PyImmutableGraph& immutable) { new (self) TranslatedGraphType(immutable.obj_); })
+        .def("__str__", [](const TranslatedGraphType& self) { return to_string(self); })
         .def(
             "get_vertex_indices",
             [](const TranslatedGraphType& self)
@@ -262,6 +263,7 @@ void bind_static_graph(nb::module_& m, const std::string& name)
 
     nb::class_<GraphType>(m, name.c_str())
         .def(nb::init<>())
+        .def("__str__", [](const GraphType& self) { return to_string(self); })
         .def("clear", &GraphType::clear)
         .def("add_vertex",
              [](GraphType& self, nb::args args)
@@ -281,6 +283,14 @@ void bind_static_graph(nb::module_& m, const std::string& name)
              })
         .def("add_directed_edge",
              [](GraphType& self, VertexIndex source, VertexIndex target, const E& edge) { return self.add_directed_edge(source, target, edge); })
+        .def("add_undirected_edge",
+             [](GraphType& self, VertexIndex source, VertexIndex target, nb::args args)
+             {
+                 using PropertiesTuple = typename E::EdgePropertiesTypes;
+                 return std::apply([&](auto&&... unpacked_args)
+                                   { return self.add_undirected_edge(source, target, std::forward<decltype(unpacked_args)>(unpacked_args)...); },
+                                   cast<PropertiesTuple>(args));
+             })
         .def(
             "get_vertex_indices",
             [](const GraphType& self)
@@ -443,6 +453,7 @@ void bind_static_graph(nb::module_& m, const std::string& name)
 
     nb::class_<PyImmutable<GraphType>>(m, ("Immutable" + name).c_str())  //
         .def(nb::init<const GraphType&>())
+        .def("__str__", [](const PyImmutable<GraphType>& self) { return to_string(self.obj_); })
         .def(
             "get_vertex_indices",
             [](const PyImmutable<GraphType>& self)

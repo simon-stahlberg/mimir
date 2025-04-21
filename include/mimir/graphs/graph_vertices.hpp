@@ -18,6 +18,7 @@
 #ifndef MIMIR_GRAPHS_GRAPH_VERTICES_HPP_
 #define MIMIR_GRAPHS_GRAPH_VERTICES_HPP_
 
+#include "mimir/common/printers.hpp"
 #include "mimir/graphs/color.hpp"
 #include "mimir/graphs/declarations.hpp"
 #include "mimir/graphs/graph_vertex_interface.hpp"
@@ -59,6 +60,13 @@ private:
     VertexIndex m_index;
     std::tuple<VertexProperties...> m_properties;
 };
+
+template<typename... VertexProperties>
+std::ostream& operator<<(std::ostream& os, const Vertex<VertexProperties...>& vertex)
+{
+    mimir::operator<<(os, vertex.get_properties());
+    return os;
+}
 
 /**
  * EmptyVertex

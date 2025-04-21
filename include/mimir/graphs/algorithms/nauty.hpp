@@ -131,15 +131,19 @@ public:
         }
         std::sort(color_vertex_pairs.begin(), color_vertex_pairs.end());
 
-        auto lab = std::vector<int>(nv, 0);
-        auto ptn = std::vector<int>(nv, 0);
         auto coloring = ColorList {};
         coloring.reserve(nv);
+        for (const auto& [color, _] : color_vertex_pairs)
+        {
+            coloring.push_back(color);
+        }
+
+        auto lab = std::vector<int>(nv, 0);
+        auto ptn = std::vector<int>(nv, 0);
         for (int i = 1; i < nv; ++i)
         {
             lab[i - 1] = color_vertex_pairs[i - 1].second;
             ptn[i - 1] = (color_vertex_pairs[i - 1].first != color_vertex_pairs[i].first) ? 0 : 1;
-            coloring.push_back(color_vertex_pairs[i - 1].first);
         }
         if (nv > 0)
         {

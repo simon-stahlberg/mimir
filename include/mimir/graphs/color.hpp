@@ -23,12 +23,12 @@
 
 #include <cstddef>
 #include <loki/loki.hpp>
+#include <memory>
 
 namespace mimir::graphs
 {
 
 /// @brief `IColor` is the abstract base class for a color in vertex-colored graphs.
-/// https://nanobind.readthedocs.io/en/latest/ownership_adv.html#intrusive-reference-counting
 class IColor
 {
 public:
@@ -93,7 +93,7 @@ public:
 
     /// @brief The variadic constructor for C++ managed `IColor`.
     template<typename... Ts>
-    Color(Ts... colors) : m_color(std::make_shared<VariadicColor<Ts...>>(std::move(colors)...))
+    Color(VariadicColor<Ts...> colors) : m_color(std::make_shared<VariadicColor<Ts...>>(std::move(colors)))
     {
     }
 
@@ -102,9 +102,8 @@ public:
     std::string str() const;
     size_t hash() const;
 
-    std::shared_ptr<IColor> m_color;
-
 private:
+    std::shared_ptr<IColor> m_color;
 };
 
 extern std::ostream& operator<<(std::ostream& out, const IColor& color);

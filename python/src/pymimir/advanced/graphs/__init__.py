@@ -3,7 +3,6 @@
 
 from pymimir.pymimir.advanced.graphs import (
     # Color and graph isomorphism (nauty)
-    IColor,
     Color,
     NautySparseGraph,
 

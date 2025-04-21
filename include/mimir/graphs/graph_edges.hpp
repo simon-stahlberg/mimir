@@ -73,6 +73,13 @@ private:
     std::tuple<EdgeProperties...> m_properties;
 };
 
+template<typename... EdgeProperties>
+std::ostream& operator<<(std::ostream& os, const Edge<EdgeProperties...>& edge)
+{
+    mimir::operator<<(os, edge.get_properties());
+    return os;
+}
+
 /**
  * EmptyEdge
  */

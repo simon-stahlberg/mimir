@@ -21,6 +21,7 @@
 #include <iostream>
 #include <iterator>
 #include <mimir/mimir.hpp>
+#include <nanobind/intrusive/ref.h>
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/array.h>
 #include <nanobind/stl/bind_map.h>     ///< TODO: implement our own with PyImmutable

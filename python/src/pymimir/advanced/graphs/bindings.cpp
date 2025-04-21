@@ -7,15 +7,36 @@
 namespace mimir::graphs
 {
 
-class IPyColor : public IColor
+class PyColor : public IColor
 {
 public:
-    NB_TRAMPOLINE(IColor, 4);
+    PyColor(nb::args args) : m_tuple(nb::tuple(args)) {}
 
-    bool operator==(const IColor& other) const override { NB_OVERRIDE_PURE_NAME("__eq__", operator==, other); }
-    bool operator<(const IColor& other) const override { NB_OVERRIDE_PURE_NAME("__lt__", operator<, other); }
-    std::string str() const override { NB_OVERRIDE_PURE_NAME("__str__", str); }
-    size_t hash() const override { NB_OVERRIDE_PURE_NAME("__hash__", hash); }
+    bool operator==(const IColor& other) const override
+    {
+        if (typeid(*this) == typeid(other))
+        {
+            const auto& other_derived = static_cast<const PyColor&>(other);
+
+            return m_tuple.equal(other_derived.m_tuple);
+        }
+        return false;
+    }
+    bool operator<(const IColor& other) const override
+    {
+        if (typeid(*this) == typeid(other))
+        {
+            const auto& other_derived = static_cast<const PyColor&>(other);
+
+            return bool(nb::bool_(m_tuple.attr("__lt__")(other_derived.m_tuple)));
+        }
+        return typeid(*this).before(typeid(other));
+    }
+    std::string str() const override { return nb::str(m_tuple).c_str(); }
+    size_t hash() const override { return nb::hash(m_tuple); }
+
+private:
+    nb::tuple m_tuple;
 };
 
 void bind_module_definitions(nb::module_& m)
@@ -28,21 +49,19 @@ void bind_module_definitions(nb::module_& m)
     bind_static_graph<ColoredVertex, EmptyEdge>(m, "StaticVertexColoredGraph");
     bind_static_graph<ColoredVertex, ColoredEdge>(m, "StaticEdgeColoredGraph");
 
-    nb::class_<IColor, IPyColor>(m, "IColor")  //
-        .def(nb::init<>())
-        .def("__eq__", &IColor::operator==)
-        .def("__lt__", &IColor::operator<)
-        .def("__str__", &IColor::str)
-        .def("__hash__", &IColor::hash);
-
     nb::class_<Color>(m, "Color")  //
-        .def(nb::init<std::shared_ptr<IColor>>());
+        .def(nb::new_([](nb::args args) { return Color(std::shared_ptr<IColor>(std::make_shared<PyColor>(args))); }))
+        .def("__eq__", &Color::operator==)
+        .def("__lt__", &Color::operator<)
+        .def("__str__", &Color::str)
+        .def("__hash__", &Color::hash);
 
     nb::class_<nauty::SparseGraph>(m, "NautySparseGraph")
         .def(nb::init<const StaticGraph<ColoredVertex, EmptyEdge>&>())
         .def(nb::init<const StaticForwardGraph<StaticGraph<ColoredVertex, EmptyEdge>>&>())
         .def(nb::init<const StaticBidirectionalGraph<StaticGraph<ColoredVertex, EmptyEdge>>&>())
         .def("__eq__", [](const nauty::SparseGraph& lhs, const nauty::SparseGraph& rhs) { return loki::EqualTo<nauty::SparseGraph>()(lhs, rhs); })
+        .def("__ne__", [](const nauty::SparseGraph& lhs, const nauty::SparseGraph& rhs) { return !loki::EqualTo<nauty::SparseGraph>()(lhs, rhs); })
         .def("__hash__", [](const nauty::SparseGraph& self) { return loki::Hash<nauty::SparseGraph>()(self); })
         .def("canonize", &nauty::SparseGraph::canonize);
 }
