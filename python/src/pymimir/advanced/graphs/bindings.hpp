@@ -6,9 +6,20 @@
 
 namespace mimir::graphs
 {
+
+using PyVertex = Vertex<nanobind::tuple>;
+
+using PyEdge = Edge<nanobind::tuple>;
+
 template<IsVertex V>
 struct PyVertexProperties
 {
+};
+
+template<>
+struct PyVertexProperties<PyVertex>
+{
+    static constexpr const char* name = "PyVertex";
 };
 
 template<>
@@ -26,6 +37,12 @@ struct PyVertexProperties<ColoredVertex>
 template<IsEdge E>
 struct PyEdgeProperties
 {
+};
+
+template<>
+struct PyEdgeProperties<PyEdge>
+{
+    static constexpr const char* name = "PyEdge";
 };
 
 template<>

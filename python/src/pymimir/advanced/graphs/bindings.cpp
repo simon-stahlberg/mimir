@@ -41,10 +41,13 @@ private:
 
 void bind_module_definitions(nb::module_& m)
 {
+    bind_vertex<PyVertex>(m, PyVertexProperties<PyVertex>::name);
     bind_vertex<EmptyVertex>(m, PyVertexProperties<EmptyVertex>::name);
     bind_vertex<ColoredVertex>(m, PyVertexProperties<ColoredVertex>::name);
+    bind_edge<PyEdge>(m, PyEdgeProperties<PyEdge>::name);
     bind_edge<EmptyEdge>(m, PyEdgeProperties<EmptyEdge>::name);
     bind_edge<ColoredEdge>(m, PyEdgeProperties<ColoredEdge>::name);
+    bind_static_graph<PyVertex, PyEdge>(m, "StaticPyGraph");
     bind_static_graph<EmptyVertex, EmptyEdge>(m, "StaticEmptyGraph");
     bind_static_graph<ColoredVertex, EmptyEdge>(m, "StaticVertexColoredGraph");
     bind_static_graph<ColoredVertex, ColoredEdge>(m, "StaticEdgeColoredGraph");

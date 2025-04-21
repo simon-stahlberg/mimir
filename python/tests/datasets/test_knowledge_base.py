@@ -16,7 +16,6 @@ def test_knowledge_base_without_symmetry_reduction():
     state_space_options = datasets.StateSpaceOptions()
     state_space_options.symmetry_pruning = False 
     generalized_state_space_options = datasets.GeneralizedStateSpaceOptions()
-    generalized_state_space_options.symmetry_pruning = False
     knowledge_base_options = datasets.KnowledgeBaseOptions()
     knowledge_base_options.state_space_options = state_space_options
     knowledge_base_options.generalized_state_space_options = generalized_state_space_options
@@ -40,7 +39,6 @@ def test_knowledge_base_with_symmetry_reduction():
     state_space_options = datasets.StateSpaceOptions()
     state_space_options.symmetry_pruning = True 
     generalized_state_space_options = datasets.GeneralizedStateSpaceOptions()
-    generalized_state_space_options.symmetry_pruning = True
     knowledge_base_options = datasets.KnowledgeBaseOptions()
     knowledge_base_options.state_space_options = state_space_options
     knowledge_base_options.generalized_state_space_options = generalized_state_space_options

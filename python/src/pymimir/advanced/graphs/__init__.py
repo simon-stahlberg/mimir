@@ -7,12 +7,20 @@ from pymimir.pymimir.advanced.graphs import (
     NautySparseGraph,
 
     # Vertices
+    PyVertex,
     EmptyVertex,
     ColoredVertex,
 
     # Edges
+    PyEdge,
     EmptyEdge,
     ColoredEdge,
+
+    # StaticPyGraph
+    StaticPyGraph,
+    ImmutableStaticPyGraph,
+    ForwardStaticPyGraph,
+    BidirectionalStaticPyGraph,
 
     # StaticEmptyGraph
     StaticEmptyGraph,

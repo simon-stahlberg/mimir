@@ -18,9 +18,12 @@
 #ifndef MIMIR_PYTHON_INIT_DECLARATIONS_HPP
 #define MIMIR_PYTHON_INIT_DECLARATIONS_HPP
 
+#include "common/equal_to.hpp"
+#include "common/hash.hpp"
+#include "common/printers.hpp"
+//
 #include <iostream>
 #include <iterator>
-#include <mimir/mimir.hpp>
 #include <nanobind/intrusive/ref.h>
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/array.h>
@@ -37,6 +40,8 @@
 #include <nanobind/stl/unordered_map.h>
 #include <nanobind/stl/unordered_set.h>
 #include <nanobind/stl/vector.h>
+// Ensure mimir is included last to ensure that specializations are available
+#include <mimir/mimir.hpp>
 
 namespace nb = nanobind;
 using namespace nb::literals;
