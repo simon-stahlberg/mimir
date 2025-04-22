@@ -57,8 +57,7 @@ public:
     class VertexIndexConstIterator
     {
     private:
-        size_t m_pos;
-        const std::unordered_map<VertexIndex, V>* m_vertices;
+        VertexMap::const_iterator m_it;
 
         void advance();
 
@@ -70,7 +69,7 @@ public:
         using iterator_category = std::forward_iterator_tag;
 
         VertexIndexConstIterator();
-        VertexIndexConstIterator(const std::unordered_map<VertexIndex, V>& vertices, bool begin);
+        explicit VertexIndexConstIterator(VertexMap::const_iterator it);
         value_type operator*() const;
         VertexIndexConstIterator& operator++();
         VertexIndexConstIterator operator++(int);
@@ -81,8 +80,7 @@ public:
     class EdgeIndexConstIterator
     {
     private:
-        size_t m_pos;
-        const std::unordered_map<EdgeIndex, E>* m_edges;
+        EdgeMap::const_iterator m_it;
 
         void advance();
 
@@ -94,7 +92,7 @@ public:
         using iterator_category = std::forward_iterator_tag;
 
         EdgeIndexConstIterator();
-        EdgeIndexConstIterator(const std::unordered_map<EdgeIndex, E>& edges, bool begin);
+        explicit EdgeIndexConstIterator(EdgeMap::const_iterator it);
         value_type operator*() const;
         EdgeIndexConstIterator& operator++();
         EdgeIndexConstIterator operator++(int);

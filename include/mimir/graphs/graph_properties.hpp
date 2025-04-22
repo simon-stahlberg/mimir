@@ -18,7 +18,8 @@
 #ifndef MIMIR_GRAPHS_GRAPH_PROPERTIES_HPP_
 #define MIMIR_GRAPHS_GRAPH_PROPERTIES_HPP_
 
-#include "mimir/graphs/bgl/graph_algorithms.hpp"
+#include "mimir/graphs/bgl/dynamic_graph_algorithms.hpp"
+#include "mimir/graphs/bgl/static_graph_algorithms.hpp"
 #include "mimir/graphs/graph_edges.hpp"
 #include "mimir/graphs/graph_interface.hpp"
 

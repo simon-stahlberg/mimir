@@ -65,6 +65,7 @@ INPUT                 = \
     "include/mimir/graphs/algorithms/folklore_weisfeiler_leman_impl.hpp" \
     "include/mimir/graphs/algorithms/folklore_weisfeiler_leman.hpp" \
     "include/mimir/graphs/algorithms/nauty.hpp" \
+    "include/mimir/graphs/bgl/dynamic_graph_algorithms.hpp" \
     "include/mimir/graphs/bgl/graph_adapters.hpp" \
     "include/mimir/graphs/bgl/graph_algorithms.hpp" \
     "include/mimir/graphs/bgl/graph_traits.hpp" \

@@ -15,14 +15,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_GRAPHS_BGL_STATIC_GRAPH_ALGORITHMS_HPP_
-#define MIMIR_GRAPHS_BGL_STATIC_GRAPH_ALGORITHMS_HPP_
+#ifndef MIMIR_GRAPHS_BGL_DYNAMIC_GRAPH_ALGORITHMS_HPP_
+#define MIMIR_GRAPHS_BGL_DYNAMIC_GRAPH_ALGORITHMS_HPP_
 
 #include "mimir/common/concepts.hpp"
 #include "mimir/graphs/bgl/graph_adapters.hpp"
 #include "mimir/graphs/bgl/graph_traits.hpp"
 #include "mimir/graphs/bgl/property_maps.hpp"
-#include "mimir/graphs/static_graph_interface.hpp"
+#include "mimir/graphs/dynamic_graph_interface.hpp"
 
 #include <boost/graph/dijkstra_shortest_paths.hpp>
 #include <boost/graph/floyd_warshall_shortest.hpp>
@@ -44,15 +44,15 @@ namespace mimir::graphs::bgl
 /// @param g the graph.
 /// @return a pair of the number of strong components and a map from state to component.
 template<typename Graph, IsDirection Direction>
-    requires IsStaticGraph<Graph> && IsVertexListGraph<Graph> && IsVertexListGraph<Graph> && IsIncidenceGraph<Graph>
+    requires IsDynamicGraph<std::decay_t<Graph>> && IsVertexListGraph<Graph> && IsIncidenceGraph<Graph>
 auto strong_components(const DirectionTaggedType<Graph, Direction>& g)
 {
     using vertex_descriptor_type = typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor;
     using vertices_size_type = typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertices_size_type;
-    using ComponentMap = VectorReadWritePropertyMap<vertex_descriptor_type, vertices_size_type>;
+    using ComponentMap = UnorderedMapReadWritePropertyMap<vertex_descriptor_type, vertices_size_type>;
 
     auto vertex_index_map = TrivialReadPropertyMap<vertex_descriptor_type, vertex_descriptor_type>();
-    auto c = std::vector<vertices_size_type>(g.get().get_num_vertices());
+    auto c = std::unordered_map<vertex_descriptor_type, vertices_size_type>();
     auto component_map = ComponentMap(c);
 
     const auto num_components = boost::strong_components(g, component_map, boost::vertex_index_map(vertex_index_map));
@@ -64,27 +64,30 @@ auto strong_components(const DirectionTaggedType<Graph, Direction>& g)
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 template<typename Graph, IsDirection Direction, class SourceInputIter>
-    requires IsStaticGraph<Graph> && IsVertexListGraph<Graph> && IsVertexListGraph<Graph> && IsIncidenceGraph<Graph>
+    requires IsDynamicGraph<std::decay_t<Graph>> && IsVertexListGraph<Graph> && IsIncidenceGraph<Graph>
 auto breadth_first_search(const DirectionTaggedType<Graph, Direction>& g, SourceInputIter s_begin, SourceInputIter s_end)
 {
     using vertex_descriptor_type = typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor;
     using edge_descriptor_type = typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::edge_descriptor;
-    using PredecessorMap = VectorReadWritePropertyMap<vertex_descriptor_type, vertex_descriptor_type>;
-    using DistanceMap = VectorReadWritePropertyMap<vertex_descriptor_type, DiscreteCost>;
-    using ColorMap = VectorReadWritePropertyMap<vertex_descriptor_type, boost::default_color_type>;
+    using PredecessorMap = UnorderedMapReadWritePropertyMap<vertex_descriptor_type, vertex_descriptor_type>;
+    using DistanceMap = UnorderedMapReadWritePropertyMap<vertex_descriptor_type, DiscreteCost>;
+    using ColorMap = UnorderedMapReadWritePropertyMap<vertex_descriptor_type, boost::default_color_type>;
 
     auto buffer = boost::queue<vertex_descriptor_type>();
-    auto p = std::vector<vertex_descriptor_type>(g.get().get_num_vertices());
-    for (vertex_descriptor_type v = 0; v < g.get().get_num_vertices(); ++v)
+    auto p = std::unordered_map<vertex_descriptor_type, vertex_descriptor_type>();
+    for (vertex_descriptor_type v : g.get().get_vertex_indices())
     {
-        p.at(v) = v;
+        p[v] = v;
     }
     auto inf = std::numeric_limits<DiscreteCost>::max();
-    auto d = std::vector<DiscreteCost>(g.get().get_num_vertices());
-    std::fill(d.begin(), d.end(), inf);
+    auto d = std::unordered_map<vertex_descriptor_type, DiscreteCost>();
+    for (vertex_descriptor_type v : g.get().get_vertex_indices())
+    {
+        d[v] = inf;
+    }
     for (auto it = s_begin; it != s_end; ++it)
     {
-        d.at(*it) = DiscreteCost(0);
+        d[*it] = DiscreteCost(0);
     }
 
     struct BFSBoostVisitor : public boost::bfs_visitor<>
@@ -99,12 +102,12 @@ auto breadth_first_search(const DirectionTaggedType<Graph, Direction>& g, Source
             auto u = mimir::graphs::source(edge, graph);
             auto v = mimir::graphs::target(edge, graph);
             predecessors.set(v, u);
-            distances.set(v, distances.get().at(u) + 1);
+            distances.set(v, distances.get()[u] + 1);
         }
     };
     auto visitor = BFSBoostVisitor(PredecessorMap(p), DistanceMap(d));
 
-    auto c = std::vector<boost::default_color_type>(g.get().get_num_vertices());
+    auto c = std::unordered_map<vertex_descriptor_type, boost::default_color_type>();
     auto color_map = ColorMap(c);
     boost::breadth_first_search(g, s_begin, s_end, buffer, visitor, color_map);
 
@@ -116,18 +119,18 @@ auto breadth_first_search(const DirectionTaggedType<Graph, Direction>& g, Source
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 template<typename Graph, IsDirection Direction, class SourceInputIter>
-    requires IsStaticGraph<Graph> && IsVertexListGraph<Graph> && IsVertexListGraph<Graph> && IsIncidenceGraph<Graph>
+    requires IsDynamicGraph<std::decay_t<Graph>> && IsVertexListGraph<Graph> && IsIncidenceGraph<Graph>
 auto depth_first_search(const DirectionTaggedType<Graph, Direction>& g, SourceInputIter s_begin, SourceInputIter s_end)
 {
     using vertex_descriptor_type = typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor;
     using edge_descriptor_type = typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::edge_descriptor;
-    using ColorMap = VectorReadWritePropertyMap<vertex_descriptor_type, boost::default_color_type>;
-    using PredecessorMap = VectorReadWritePropertyMap<vertex_descriptor_type, vertex_descriptor_type>;
+    using ColorMap = UnorderedMapReadWritePropertyMap<vertex_descriptor_type, boost::default_color_type>;
+    using PredecessorMap = UnorderedMapReadWritePropertyMap<vertex_descriptor_type, vertex_descriptor_type>;
 
-    auto p = std::vector<vertex_descriptor_type>(g.get().get_num_vertices());
-    for (vertex_descriptor_type v = 0; v < g.get().get_num_vertices(); ++v)
+    auto p = std::unordered_map<vertex_descriptor_type, vertex_descriptor_type>();
+    for (vertex_descriptor_type v : g.get().get_vertex_indices())
     {
-        p.at(v) = v;
+        p[v] = v;
     }
 
     struct DefaultDFSBoostVisitor : public boost::dfs_visitor<>
@@ -145,12 +148,12 @@ auto depth_first_search(const DirectionTaggedType<Graph, Direction>& g, SourceIn
     };
     auto visitor = DefaultDFSBoostVisitor(PredecessorMap(p));
 
-    auto color_vector = std::vector<boost::default_color_type>(g.get().get_num_vertices());
-    auto color_map = ColorMap(color_vector);
+    auto c = std::unordered_map<vertex_descriptor_type, boost::default_color_type>();
+    auto color_map = ColorMap(c);
 
     for (; s_begin != s_end; ++s_begin)
     {
-        if (color_vector[*s_begin] == boost::white_color)
+        if (c[*s_begin] == boost::white_color)
         {
             boost::depth_first_search(g, visitor, color_map, *s_begin);
         }
@@ -164,15 +167,15 @@ auto depth_first_search(const DirectionTaggedType<Graph, Direction>& g, SourceIn
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 template<typename Graph, IsDirection Direction>
-    requires IsStaticGraph<Graph> && IsVertexListGraph<Graph> && IsVertexListGraph<Graph> && IsIncidenceGraph<Graph>
+    requires IsDynamicGraph<std::decay_t<Graph>> && IsVertexListGraph<Graph> && IsIncidenceGraph<Graph>
 auto topological_sort(const DirectionTaggedType<Graph, Direction>& g)
 {
     using vertex_descriptor_type = typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor;
 
-    using ColorMap = VectorReadWritePropertyMap<vertex_descriptor_type, boost::default_color_type>;
+    using ColorMap = UnorderedMapReadWritePropertyMap<vertex_descriptor_type, boost::default_color_type>;
 
-    auto d = std::vector<vertex_descriptor_type> {};
-    auto c = std::vector<boost::default_color_type>(g.get().get_num_vertices());
+    auto d = std::vector<vertex_descriptor_type>();
+    auto c = std::unordered_map<vertex_descriptor_type, boost::default_color_type>();
     auto color_map = ColorMap(c);
 
     boost::topological_sort(g, std::back_inserter(d), boost::color_map(color_map));
@@ -185,17 +188,17 @@ auto topological_sort(const DirectionTaggedType<Graph, Direction>& g)
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 template<typename Graph, IsDirection Direction, class SourceInputIter>
-    requires IsStaticGraph<Graph> && IsVertexListGraph<Graph> && IsIncidenceGraph<Graph>
-auto dijkstra_shortest_paths(const DirectionTaggedType<Graph, Direction>& g, const ContinuousCostList& w, SourceInputIter s_begin, SourceInputIter s_end)
+    requires IsDynamicGraph<std::decay_t<Graph>> && IsVertexListGraph<std::decay_t<Graph>> && IsIncidenceGraph<std::decay_t<Graph>>
+auto dijkstra_shortest_paths(const DirectionTaggedType<Graph, Direction>& g, const ContinuousCostMap& w, SourceInputIter s_begin, SourceInputIter s_end)
 {
     using vertex_descriptor_type = typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor;
     using edge_descriptor_type = typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::edge_descriptor;
 
-    auto p = std::vector<vertex_descriptor_type>(g.get().get_num_vertices());
-    auto predecessor_map = VectorReadWritePropertyMap<vertex_descriptor_type, vertex_descriptor_type>(p);
-    auto d = ContinuousCostList(g.get().get_num_vertices());
-    auto distance_map = VectorReadWritePropertyMap<vertex_descriptor_type, ContinuousCost>(d);
-    auto weight_map = VectorReadPropertyMap<edge_descriptor_type, ContinuousCost>(w);
+    auto p = std::unordered_map<vertex_descriptor_type, vertex_descriptor_type>();
+    auto predecessor_map = UnorderedMapReadWritePropertyMap<vertex_descriptor_type, vertex_descriptor_type>(p);
+    auto d = ContinuousCostMap();
+    auto distance_map = UnorderedMapReadWritePropertyMap<vertex_descriptor_type, ContinuousCost>(d);
+    auto weight_map = UnorderedMapReadPropertyMap<edge_descriptor_type, ContinuousCost>(w);
     auto vertex_index_map = TrivialReadPropertyMap<vertex_descriptor_type, vertex_descriptor_type>();
     auto compare = std::less<ContinuousCost>();
     auto combine = std::plus<ContinuousCost>();
@@ -224,20 +227,20 @@ auto dijkstra_shortest_paths(const DirectionTaggedType<Graph, Direction>& g, con
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 template<typename Graph, IsDirection Direction>
-    requires IsStaticGraph<Graph> && IsVertexListGraph<Graph> && IsEdgeListGraph<Graph>
-auto floyd_warshall_all_pairs_shortest_paths(const DirectionTaggedType<Graph, Direction>& g, const ContinuousCostList& w)
+    requires IsDynamicGraph<std::decay_t<Graph>> && IsVertexListGraph<std::decay_t<Graph>> && IsEdgeListGraph<std::decay_t<Graph>>
+auto floyd_warshall_all_pairs_shortest_paths(const DirectionTaggedType<Graph, Direction>& g, const ContinuousCostMap& w)
 {
     using vertex_descriptor_type = typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor;
     using edge_descriptor_type = typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::edge_descriptor;
 
-    using BasicMatrix = VectorBasicMatrix<vertex_descriptor_type, ContinuousCost>;
-    using WeightPropertyMap = VectorReadPropertyMap<edge_descriptor_type, ContinuousCost>;
+    using BasicMatrix = UnorderedMapBasicMatrix<vertex_descriptor_type, ContinuousCost>;
+    using WeightPropertyMap = UnorderedMapReadPropertyMap<edge_descriptor_type, ContinuousCost>;
 
-    auto m = std::vector<std::vector<ContinuousCost>>(g.get().get_num_vertices(), std::vector<ContinuousCost>(g.get().get_num_vertices()));
-    auto distance_matrix = BasicMatrix(m);
+    auto m = std::unordered_map<vertex_descriptor_type, std::unordered_map<vertex_descriptor_type, ContinuousCost>>();
+    auto distance_map = BasicMatrix(m);
     auto weight_map = WeightPropertyMap(w);
 
-    boost::floyd_warshall_all_pairs_shortest_paths(g, distance_matrix, boost::weight_map(weight_map));
+    boost::floyd_warshall_all_pairs_shortest_paths(g, distance_map, boost::weight_map(weight_map));
 
     return m;
 }

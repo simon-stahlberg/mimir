@@ -36,30 +36,10 @@ def main():
         graph = state_space.get_graph()
         print("Dot representation of the StateSpace:")
 
-        # Run basic graph algorithms with switchable edge direction
-        edge_weights = [1] * graph.get_num_edges()
-        source_indices = [0,1,2]  # some vertices
-
-        graph.compute_strong_components()
-
-        graph.compute_forward_breadth_first_search(source_indices)
-        graph.compute_forward_depth_first_search(source_indices)
-        graph.compute_forward_floyd_warshall_all_pairs_shortest_paths(edge_weights)
-        graph.compute_forward_dijkstra_shortest_paths(edge_weights, source_indices)
-        try:
-            graph.compute_forward_topological_sort()  # graph is cyclic => this will throw ValueError
-        except ValueError:
-            pass
-        
-        graph.compute_backward_breadth_first_search(source_indices)
-        graph.compute_backward_depth_first_search(source_indices)
-        graph.compute_backward_floyd_warshall_all_pairs_shortest_paths(edge_weights)
-        graph.compute_backward_dijkstra_shortest_paths(edge_weights, source_indices)
-        try:
-            graph.compute_backward_topological_sort()  # graph is cyclic => this will throw ValueError
-        except ValueError:
-            pass
-
+        # The graph is a specific instantiation of static graph which provides access to boost bgl. 
+        # For more information on provided functionality, see:
+        # https://github.com/simon-stahlberg/mimir/blob/main/python/examples/static_graph.py
+        # Since the graph is a specific instantiation, the vertices and edges contain context-specific information.
         # Iterate over vertices
         for vertex in graph.get_vertices():
             # Access vertex properties through generic member
@@ -71,33 +51,7 @@ def main():
             vertex.get_property_4()  # Is initial?
             vertex.get_property_5()  # Is goal?
             vertex.get_property_6()  # Is unsolvable?
-            vertex.get_property_7()  # Is alive?
-
-            # Iterate over adjacent structures
-            for adj_vertex in graph.get_forward_adjacent_vertices(vertex.get_index()):
-                pass
-
-            for adj_vertex in graph.get_backward_adjacent_vertices(vertex.get_index()):
-                pass 
-
-            for adj_edge in graph.get_forward_adjacent_edges(vertex.get_index()):
-                pass 
-
-            for adj_edge in graph.get_backward_adjacent_edges(vertex.get_index()):
-                pass 
-
-            for adj_v_idx in graph.get_forward_adjacent_vertex_indices(vertex.get_index()):
-                pass 
-
-            for adj_v_idx in graph.get_backward_adjacent_vertex_indices(vertex.get_index()):
-                pass 
-
-            for adj_e_idx in graph.get_forward_adjacent_edge_indices(vertex.get_index()):
-                pass 
-
-            for adj_e_idx in graph.get_backward_adjacent_edge_indices(vertex.get_index()):
-                pass
-                
+            vertex.get_property_7()  # Is alive?  
         # Iterate over edges
         for edge in graph.get_edges():
             # Access edge properties through generic member
@@ -122,61 +76,16 @@ def main():
     print("Dot represention of the GeneralizedStateSpace:")
     print(graph)
 
-    # Run basic graph algorithms with switchable edge direction
-    edge_weights = [1] * graph.get_num_edges()
-    source_indices = [0,1,2]  # some vertices
-    graph.compute_strong_components()
-
-    graph.compute_forward_breadth_first_search(source_indices)
-    graph.compute_forward_depth_first_search(source_indices)
-    graph.compute_forward_floyd_warshall_all_pairs_shortest_paths(edge_weights)
-    graph.compute_forward_dijkstra_shortest_paths(edge_weights, source_indices)
-    try:
-        graph.compute_forward_topological_sort()  # graph is cyclic => this will throw ValueError
-    except ValueError:
-        pass
-    
-    graph.compute_backward_breadth_first_search(source_indices)
-    graph.compute_backward_depth_first_search(source_indices)
-    graph.compute_backward_floyd_warshall_all_pairs_shortest_paths(edge_weights)
-    graph.compute_backward_dijkstra_shortest_paths(edge_weights, source_indices)
-    try:
-        graph.compute_backward_topological_sort()  # graph is cyclic => this will throw ValueError
-    except ValueError:
-        pass
-
+    # The graph is a specific instantiation of static graph which provides access to boost bgl. 
+    # For more information on provided functionality, see:
+    # https://github.com/simon-stahlberg/mimir/blob/main/python/examples/static_graph.py
+    # Since the graph is a specific instantiation, the vertices and edges contain context-specific information.
     # Iterate over vertices
     for vertex in graph.get_vertices():
         # Access vertex properties through generic member
         vertex.get_index()      
         vertex.get_property_0()  # Problem graph vertex index
         vertex.get_property_1()  # Problem index
-
-        # Iterate over adjacent structures
-        for adj_vertex in graph.get_forward_adjacent_vertices(vertex.get_index()):
-            pass
-
-        for adj_vertex in graph.get_backward_adjacent_vertices(vertex.get_index()):
-            pass 
-
-        for adj_edge in graph.get_forward_adjacent_edges(vertex.get_index()):
-            pass 
-
-        for adj_edge in graph.get_backward_adjacent_edges(vertex.get_index()):
-            pass 
-
-        for adj_v_idx in graph.get_forward_adjacent_vertex_indices(vertex.get_index()):
-            pass 
-
-        for adj_v_idx in graph.get_backward_adjacent_vertex_indices(vertex.get_index()):
-            pass 
-
-        for adj_e_idx in graph.get_forward_adjacent_edge_indices(vertex.get_index()):
-            pass 
-
-        for adj_e_idx in graph.get_backward_adjacent_edge_indices(vertex.get_index()):
-            pass
-        
     # Iterate over edges
     for edge in graph.get_edges():
         # Access edge properties through generic member
@@ -186,6 +95,7 @@ def main():
         edge.get_property_0()  # Problem graph edge index
         edge.get_property_1()  # Problem index
 
+    # The graph also represents an abstraction of a collection of state spaces.
     # Access low-level information about state and actions using the mappings encoded in the GeneralizedStateSpace.
     for vertex in graph.get_vertices():
         # Map class vertex to problem vertex
@@ -200,7 +110,6 @@ def main():
         problem_vertex.get_property_5()  # Is goal?
         problem_vertex.get_property_6()  # Is unsolvable?
         problem_vertex.get_property_7()  # Is alive?
-
     for edge in graph.get_edges():
         # Map class edge to problem edge
         problem_edge = generalized_state_space.get_problem_edge(edge)

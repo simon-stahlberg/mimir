@@ -53,6 +53,7 @@ static const Index MAX_INDEX = std::numeric_limits<Index>::max();
 using ContinuousCost = double;
 using ContinuousCostList = std::vector<ContinuousCost>;
 using ContinuousCostMatrix = std::vector<ContinuousCostList>;
+using ContinuousCostMap = std::unordered_map<Index, ContinuousCost>;
 
 static const ContinuousCost UNDEFINED_CONTINUOUS_COST = std::numeric_limits<ContinuousCost>::max();
 
@@ -63,6 +64,7 @@ static const ContinuousCost UNDEFINED_CONTINUOUS_COST = std::numeric_limits<Cont
 using DiscreteCost = int32_t;
 using DiscreteCostList = std::vector<DiscreteCost>;
 using DiscreteCostMatrix = std::vector<ContinuousCostList>;
+using DiscreteCostMap = std::unordered_map<Index, DiscreteCost>;
 
 static const DiscreteCost UNDEFINED_DISCRETE_COST = std::numeric_limits<DiscreteCost>::max();
 

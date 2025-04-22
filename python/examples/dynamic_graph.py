@@ -1,26 +1,34 @@
-""" This example illustrates the interface of a generic static graph taking arbitrary python tuples as vertex and edge property.
+""" This example illustrates the interface of a generic dynamic graph taking arbitrary python tuples as vertex and edge property.
+    Dynamic graph provide the additional functionality of vertex and edge removal at the cost of less efficient underlying data structures.
 """
 
 import pymimir.advanced.graphs as graphs
 
 
 def main():
-    graph = graphs.StaticPyGraph()
-    v0 = graph.add_vertex((0,0))
-    v1 = graph.add_vertex((0,1))
-    v2 = graph.add_vertex((1,1))
-    v3 = graph.add_vertex((1,0))
-    graph.add_undirected_edge(v0, v1, ("a",1))
-    graph.add_undirected_edge(v1, v2, ("b",2))
-    graph.add_undirected_edge(v2, v3, ("c",3))
-    graph.add_undirected_edge(v3, v0, ("d",4))
+    graph = graphs.DynamicPyGraph()
+    vx = graph.add_vertex(("dummy",))
+    v1 = graph.add_vertex((0,0))
+    v2 = graph.add_vertex((0,1))
+    v3 = graph.add_vertex((1,1))
+    v4 = graph.add_vertex((1,0))
+    graph.add_undirected_edge(v1, v2, ("a",1))
+    graph.add_undirected_edge(v2, v3, ("b",2))
+    graph.add_undirected_edge(v3, v4, ("c",3))
+    graph.add_undirected_edge(v4, v1, ("d",4))
+
+    graph.remove_vertex(vx)
+    assert(v1 == 1)
+    assert(v2 == 2)
+    assert(v3 == 3)
+    assert(v4 == 4)
 
     print(graph)
 
     # Run basic graph algorithms with switchable edge direction
 
-    edge_weights = [1] * graph.get_num_edges()
-    source_indices = [0,1]
+    edge_weights = {e_idx : 1 for e_idx in graph.get_edge_indices()}
+    source_indices = [1]
 
     graph.compute_strong_components()
 
@@ -43,7 +51,7 @@ def main():
         pass
 
     # Iterate over vertices
-    for vertex in graph.get_vertices():
+    for v_idx, vertex in graph.get_vertices().items():
         # Access vertex properties through generic member
         vertex.get_index()      
         vertex.get_property_0()  # python tuple
@@ -74,7 +82,7 @@ def main():
             pass
             
     # Iterate over edges
-    for edge in graph.get_edges():
+    for e_idx, edge in graph.get_edges().items():
         # Access edge properties through generic member
         edge.get_index()  
         edge.get_source()   

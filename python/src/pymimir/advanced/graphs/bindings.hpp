@@ -717,6 +717,231 @@ void bind_static_graph(nb::module_& m, const std::string& name)
     bind_translated_static_graph<BidirectionalGraphType, GraphType>(m, name, "Bidirectional");
 }
 
+///////////////////////////////////////////////////////////////////////////////
+/// DynamicGraph
+///////////////////////////////////////////////////////////////////////////////
+
+template<IsVertex V, IsEdge E>
+void bind_dynamic_graph(nb::module_& m, const std::string& name)
+{
+    /**
+     * Mutable version
+     */
+
+    using GraphType = DynamicGraph<V, E>;
+
+    nb::class_<GraphType>(m, name.c_str())
+        .def(nb::init<>())
+        .def("__str__", [](const GraphType& self) { return to_string(self); })
+        .def("clear", &GraphType::clear)
+        .def("add_vertex",
+             [](GraphType& self, nb::args args)
+             {
+                 using PropertiesTuple = typename V::VertexPropertiesTypes;
+                 return std::apply([&](auto&&... unpacked_args) { return self.add_vertex(std::forward<decltype(unpacked_args)>(unpacked_args)...); },
+                                   cast<PropertiesTuple>(args));
+             })
+        .def("add_vertex", [](GraphType& self, const V& vertex) { return self.add_vertex(vertex); })
+        .def("add_directed_edge",
+             [](GraphType& self, VertexIndex source, VertexIndex target, nb::args args)
+             {
+                 using PropertiesTuple = typename E::EdgePropertiesTypes;
+                 return std::apply([&](auto&&... unpacked_args)
+                                   { return self.add_directed_edge(source, target, std::forward<decltype(unpacked_args)>(unpacked_args)...); },
+                                   cast<PropertiesTuple>(args));
+             })
+        .def("add_directed_edge",
+             [](GraphType& self, VertexIndex source, VertexIndex target, const E& edge) { return self.add_directed_edge(source, target, edge); })
+        .def("add_undirected_edge",
+             [](GraphType& self, VertexIndex source, VertexIndex target, nb::args args)
+             {
+                 using PropertiesTuple = typename E::EdgePropertiesTypes;
+                 return std::apply([&](auto&&... unpacked_args)
+                                   { return self.add_undirected_edge(source, target, std::forward<decltype(unpacked_args)>(unpacked_args)...); },
+                                   cast<PropertiesTuple>(args));
+             })
+        .def(
+            "remove_vertex",
+            [](GraphType& self, VertexIndex vertex) { self.remove_vertex(vertex); },
+            "vertex_index"_a)
+        .def(
+            "remove_edge",
+            [](GraphType& self, EdgeIndex edge) { self.remove_edge(edge); },
+            "remove_edge"_a)
+        .def(
+            "get_vertex_indices",
+            [](const GraphType& self)
+            {
+                auto range = self.get_vertex_indices();
+                return nb::make_iterator(nb::type<GraphType>(), "Iterator over vertex indices", range.begin(), range.end());
+            },
+            nb::keep_alive<0, 1>())
+        .def(
+            "get_edge_indices",
+            [](const GraphType& self)
+            {
+                auto range = self.get_edge_indices();
+                return nb::make_iterator(nb::type<GraphType>(), "Iterator over edge indices", range.begin(), range.end());
+            },
+            nb::keep_alive<0, 1>())
+        .def(
+            "get_forward_adjacent_vertices",
+            [](const GraphType& self, VertexIndex vertex)
+            {
+                auto range = self.template get_adjacent_vertices<ForwardTag>(vertex);
+                return nb::make_iterator(nb::type<GraphType>(), "Iterator over forward adjacent vertices", range.begin(), range.end());
+            },
+            nb::keep_alive<0, 1>(),
+            "vertex_index"_a)
+        .def(
+            "get_backward_adjacent_vertices",
+            [](const GraphType& self, VertexIndex vertex)
+            {
+                auto range = self.template get_adjacent_vertices<BackwardTag>(vertex);
+                return nb::make_iterator(nb::type<GraphType>(), "Iterator over backward adjacent vertices", range.begin(), range.end());
+            },
+            nb::keep_alive<0, 1>(),
+            "vertex_index"_a)
+        .def(
+            "get_forward_adjacent_vertex_indices",
+            [](const GraphType& self, VertexIndex vertex)
+            {
+                auto range = self.template get_adjacent_vertex_indices<ForwardTag>(vertex);
+                return nb::make_iterator(nb::type<GraphType>(), "Iterator over forward adjacent vertex indices", range.begin(), range.end());
+            },
+            nb::keep_alive<0, 1>(),
+            "vertex_index"_a)
+        .def(
+            "get_backward_adjacent_vertex_indices",
+            [](const GraphType& self, VertexIndex vertex)
+            {
+                auto range = self.template get_adjacent_vertex_indices<BackwardTag>(vertex);
+                return nb::make_iterator(nb::type<GraphType>(), "Iterator over backward adjacent vertex indices", range.begin(), range.end());
+            },
+            nb::keep_alive<0, 1>(),
+            "vertex_index"_a)
+        .def(
+            "get_forward_adjacent_edges",
+            [](const GraphType& self, VertexIndex vertex)
+            {
+                auto range = self.template get_adjacent_edges<ForwardTag>(vertex);
+                return nb::make_iterator(nb::type<GraphType>(), "Iterator over forward adjacent edges", range.begin(), range.end());
+            },
+            nb::keep_alive<0, 1>(),
+            "vertex_index"_a)
+        .def(
+            "get_backward_adjacent_edges",
+            [](const GraphType& self, VertexIndex vertex)
+            {
+                auto range = self.template get_adjacent_edges<BackwardTag>(vertex);
+                return nb::make_iterator(nb::type<GraphType>(), "Iterator over backward adjacent edges", range.begin(), range.end());
+            },
+            nb::keep_alive<0, 1>(),
+            "vertex_index"_a)
+        .def(
+            "get_forward_adjacent_edge_indices",
+            [](const GraphType& self, VertexIndex vertex)
+            {
+                auto range = self.template get_adjacent_edge_indices<ForwardTag>(vertex);
+                return nb::make_iterator(nb::type<GraphType>(), "Iterator over forward adjacent edge indices", range.begin(), range.end());
+            },
+            nb::keep_alive<0, 1>(),
+            "vertex_index"_a)
+        .def(
+            "get_backward_adjacent_edge_indices",
+            [](const GraphType& self, VertexIndex vertex)
+            {
+                auto range = self.template get_adjacent_edge_indices<BackwardTag>(vertex);
+                return nb::make_iterator(nb::type<GraphType>(), "Iterator over forward backward edge indices", range.begin(), range.end());
+            },
+            nb::keep_alive<0, 1>(),
+            "vertex_index"_a)
+        .def("get_vertices", &GraphType::get_vertices)
+        .def("get_vertex", &GraphType::get_vertex, "vertex_index"_a)
+        .def("get_edges", &GraphType::get_edges)
+        .def("get_edge", &GraphType::get_vertex)
+        .def("get_num_vertices", &GraphType::get_num_vertices)
+        .def("get_num_edges", &GraphType::get_num_edges)
+        .def("get_forward_source", &GraphType::template get_source<ForwardTag>, "edge_index"_a)
+        .def("get_backward_source", &GraphType::template get_source<BackwardTag>, "edge_index"_a)
+        .def("get_forward_target", &GraphType::template get_target<ForwardTag>, "edge_index"_a)
+        .def("get_backward_target", &GraphType::template get_target<BackwardTag>, "edge_index"_a)
+        .def("get_forward_degrees", &GraphType::template get_degrees<ForwardTag>)
+        .def("get_backward_degrees", &GraphType::template get_degrees<BackwardTag>)
+        .def("get_forward_degree", &GraphType::template get_degree<ForwardTag>, "vertex_index"_a)
+        .def("get_backward_degree", &GraphType::template get_degree<BackwardTag>, "vertex_index"_a)
+        .def("compute_forward_topological_sort",
+             [](const GraphType& self) { return bgl::topological_sort(mimir::graphs::DirectionTaggedType(self, ForwardTag {})); })
+        .def("compute_backward_topological_sort",
+             [](const GraphType& self) { return bgl::topological_sort(mimir::graphs::DirectionTaggedType(self, BackwardTag {})); })
+        .def(
+            "compute_forward_floyd_warshall_all_pairs_shortest_paths",
+            [](const GraphType& self, const ContinuousCostMap& w)
+            { return bgl::floyd_warshall_all_pairs_shortest_paths(mimir::graphs::DirectionTaggedType(self, ForwardTag {}), w); },
+            "edge_weights"_a)
+        .def(
+            "compute_backward_floyd_warshall_all_pairs_shortest_paths",
+            [](const GraphType& self, const ContinuousCostMap& w)
+            { return bgl::floyd_warshall_all_pairs_shortest_paths(mimir::graphs::DirectionTaggedType(self, BackwardTag {}), w); },
+            "edge_weights"_a)
+        .def(
+            "compute_forward_breadth_first_search",
+            [](const GraphType& self, const VertexIndexList& source_vertex_indices) {
+                return bgl::breadth_first_search(mimir::graphs::DirectionTaggedType(self, ForwardTag {}),
+                                                 source_vertex_indices.begin(),
+                                                 source_vertex_indices.end());
+            },
+            "source_vertex_indices"_a)
+        .def(
+            "compute_backward_breadth_first_search",
+            [](const GraphType& self, const VertexIndexList& source_vertex_indices) {
+                return bgl::breadth_first_search(mimir::graphs::DirectionTaggedType(self, BackwardTag {}),
+                                                 source_vertex_indices.begin(),
+                                                 source_vertex_indices.end());
+            },
+            "source_vertex_indices"_a)
+        .def(
+            "compute_forward_depth_first_search",
+            [](const GraphType& self, const VertexIndexList& source_vertex_indices) {
+                return bgl::depth_first_search(mimir::graphs::DirectionTaggedType(self, ForwardTag {}),
+                                               source_vertex_indices.begin(),
+                                               source_vertex_indices.end());
+            },
+            "source_vertex_indices"_a)
+        .def(
+            "compute_backward_depth_first_search",
+            [](const GraphType& self, const VertexIndexList& source_vertex_indices) {
+                return bgl::depth_first_search(mimir::graphs::DirectionTaggedType(self, BackwardTag {}),
+                                               source_vertex_indices.begin(),
+                                               source_vertex_indices.end());
+            },
+            "source_vertex_indices"_a)
+        .def(
+            "compute_forward_dijkstra_shortest_paths",
+            [](const GraphType& self, const ContinuousCostMap& edge_weights, const VertexIndexList& source_vertex_indices)
+            {
+                return bgl::dijkstra_shortest_paths(mimir::graphs::DirectionTaggedType(self, ForwardTag {}),
+                                                    edge_weights,
+                                                    source_vertex_indices.begin(),
+                                                    source_vertex_indices.end());
+            },
+            "edge_weights"_a,
+            "source_vertex_indices"_a)
+        .def(
+            "compute_backward_dijkstra_shortest_paths",
+            [](const GraphType& self, const ContinuousCostMap& edge_weights, const VertexIndexList& source_vertex_indices)
+            {
+                return bgl::dijkstra_shortest_paths(mimir::graphs::DirectionTaggedType(self, BackwardTag {}),
+                                                    edge_weights,
+                                                    source_vertex_indices.begin(),
+                                                    source_vertex_indices.end());
+            },
+            "edge_weights"_a,
+            "source_vertex_indices"_a)
+        .def("compute_strong_components",
+             [](const GraphType& self) { return bgl::strong_components(mimir::graphs::DirectionTaggedType(self, ForwardTag {})); });
+}
+
 }
 
 #endif

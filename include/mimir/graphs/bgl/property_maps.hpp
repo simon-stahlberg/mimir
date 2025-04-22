@@ -46,8 +46,6 @@ class VectorBasicMatrix
 public:
     VectorBasicMatrix(std::vector<std::vector<V>>& matrix) : m_matrix(matrix) {}
 
-    static auto initialize_data(std::size_t num_vertices) { return std::vector<std::vector<V>>(num_vertices, std::vector<V>(num_vertices)); }
-
     auto& operator[](I i) { return m_matrix.get()[i]; }
 
     const auto& operator[](I i) const { return m_matrix.get()[i]; }
@@ -67,7 +65,7 @@ template<std::unsigned_integral I, typename V>
 class UnorderedMapBasicMatrix
 {
 public:
-    static auto initialize_data(std::size_t num_vertices) { return std::unordered_map<I, std::unordered_map<I, V>> {}; }
+    UnorderedMapBasicMatrix(std::unordered_map<I, std::unordered_map<I, V>>& matrix) : m_matrix(matrix) {}
 
     auto& operator[](I i) { return m_matrix.get()[i]; }
 
@@ -127,8 +125,6 @@ public:
 
     explicit VectorReadPropertyMap(const std::vector<Value>& data) : m_data(data) {}
 
-    static auto initialize_data(std::size_t num_vertices) { return std::vector<Value>(num_vertices); }
-
     const auto& get(I key) const { return m_data.get().at(key); }
 
     const auto& get() const { return m_data.get(); }
@@ -162,8 +158,6 @@ public:
     using category = boost::read_write_property_map_tag;
 
     explicit VectorReadWritePropertyMap(std::vector<Value>& data) : m_data(data) {}
-
-    static auto initialize_data(std::size_t num_vertices) { return std::vector<Value>(num_vertices); }
 
     const auto& get(I key) const { return m_data.get().at(key); }
     void set(I key, Value value) { m_data.get().at(key) = value; }
@@ -206,8 +200,6 @@ public:
 
     explicit UnorderedMapReadPropertyMap(const std::unordered_map<Key, Value>& distances) : m_distances(distances) {}
 
-    static auto initialize_data(std::size_t num_vertices) { return std::unordered_map<Key, Value> {}; }
-
     const auto& get(Key key) const { return m_distances.get().at(key); }
 
     const auto& get() const { return m_distances.get(); }
@@ -239,15 +231,16 @@ public:
     using reference = Value;
     using category = boost::read_write_property_map_tag;
 
-    explicit UnorderedMapReadWritePropertyMap(std::unordered_map<Key, Value>& distances) : m_distances(distances) {}
+    explicit UnorderedMapReadWritePropertyMap(std::unordered_map<Key, Value>& data) : m_data(data) {}
 
-    static auto initialize_data(std::size_t num_vertices) { return std::unordered_map<Key, Value> {}; }
+    const auto& get(Key key) const { return m_data.get()[key]; }
+    void set(Key key, Value value) { m_data.get()[key] = value; }
 
-    const auto& get(Key key) const { return m_distances.get()[key]; }
-    void set(Key key, Value value) { m_distances.get()[key] = value; }
+    auto& get() { return m_data.get(); }
+    const auto& get() const { return m_data.get(); }
 
 private:
-    std::reference_wrapper<std::unordered_map<Key, Value>> m_distances;
+    std::reference_wrapper<std::unordered_map<Key, Value>> m_data;
 };
 
 template<typename Key, typename Value>
@@ -261,45 +254,6 @@ inline void put(UnorderedMapReadWritePropertyMap<Key, Value>& m, Key key, Value 
 {
     m.set(key, value);
 }
-
-/**
- * PropertyMapTrait
- */
-
-template<typename G>
-struct PropertyMapTraits;
-
-template<IsStaticGraph G>
-struct PropertyMapTraits<G>
-{
-    template<std::unsigned_integral I, typename V>
-    using BasicMatrix = VectorBasicMatrix<I, V>;
-
-    template<typename Key, typename Value>
-    using TrivialReadPropertyMap = TrivialReadPropertyMap<Key, Value>;
-
-    template<std::unsigned_integral I, typename Value>
-    using ReadPropertyMap = VectorReadPropertyMap<I, Value>;
-
-    template<std::unsigned_integral I, typename Value>
-    using ReadWritePropertyMap = VectorReadWritePropertyMap<I, Value>;
-};
-
-template<IsDynamicGraph G>
-struct PropertyMapTraits<G>
-{
-    template<std::unsigned_integral I, typename V>
-    using BasicMatrix = UnorderedMapBasicMatrix<I, V>;
-
-    template<typename Key, typename Value>
-    using TrivialReadPropertyMap = TrivialReadPropertyMap<Key, Value>;
-
-    template<std::unsigned_integral I, typename Value>
-    using ReadPropertyMap = UnorderedMapReadPropertyMap<I, Value>;
-
-    template<std::unsigned_integral I, typename Value>
-    using ReadWritePropertyMap = UnorderedMapReadWritePropertyMap<I, Value>;
-};
 
 }
 

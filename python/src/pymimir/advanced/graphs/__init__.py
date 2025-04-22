@@ -21,6 +21,8 @@ from pymimir.pymimir.advanced.graphs import (
     ImmutableStaticPyGraph,
     ForwardStaticPyGraph,
     BidirectionalStaticPyGraph,
+    # DynamicPyGraph
+    DynamicPyGraph,
 
     # StaticEmptyGraph
     StaticEmptyGraph,

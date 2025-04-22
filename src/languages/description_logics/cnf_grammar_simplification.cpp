@@ -18,7 +18,7 @@
 #include "cnf_grammar_simplification.hpp"
 
 #include "mimir/common/printers.hpp"
-#include "mimir/graphs/bgl/graph_algorithms.hpp"
+#include "mimir/graphs/bgl/static_graph_algorithms.hpp"
 #include "mimir/graphs/static_graph.hpp"
 #include "mimir/languages/description_logics/cnf_grammar_visitor_formatter.hpp"
 

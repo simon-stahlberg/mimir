@@ -51,6 +51,7 @@ void bind_module_definitions(nb::module_& m)
     bind_static_graph<EmptyVertex, EmptyEdge>(m, "StaticEmptyGraph");
     bind_static_graph<ColoredVertex, EmptyEdge>(m, "StaticVertexColoredGraph");
     bind_static_graph<ColoredVertex, ColoredEdge>(m, "StaticEdgeColoredGraph");
+    bind_dynamic_graph<PyVertex, PyEdge>(m, "DynamicPyGraph");
 
     nb::class_<Color>(m, "Color")  //
         .def(nb::new_([](nb::args args) { return Color(std::shared_ptr<IColor>(std::make_shared<PyColor>(args))); }))

@@ -43,27 +43,23 @@ namespace mimir::graphs
 template<IsVertex V, IsEdge E>
 void DynamicGraph<V, E>::VertexIndexConstIterator::advance()
 {
-    ++m_pos;
+    ++m_it;
 }
 
 template<IsVertex V, IsEdge E>
-DynamicGraph<V, E>::VertexIndexConstIterator::VertexIndexConstIterator() : m_pos(-1), m_vertices(nullptr)
+DynamicGraph<V, E>::VertexIndexConstIterator::VertexIndexConstIterator() : m_it()
 {
 }
 
 template<IsVertex V, IsEdge E>
-DynamicGraph<V, E>::VertexIndexConstIterator::VertexIndexConstIterator(const std::unordered_map<VertexIndex, V>& vertices, bool begin) :
-    m_pos(begin ? 0 : vertices.size()),
-    m_vertices(&vertices)
+DynamicGraph<V, E>::VertexIndexConstIterator::VertexIndexConstIterator(VertexMap::const_iterator it) : m_it(it)
 {
 }
 
 template<IsVertex V, IsEdge E>
 DynamicGraph<V, E>::VertexIndexConstIterator::value_type DynamicGraph<V, E>::VertexIndexConstIterator::operator*() const
 {
-    assert(m_vertices);
-    assert(m_pos < m_vertices->size());
-    return m_vertices->at(m_pos).get_index();
+    return m_it->first;
 }
 
 template<IsVertex V, IsEdge E>
@@ -84,7 +80,7 @@ DynamicGraph<V, E>::VertexIndexConstIterator DynamicGraph<V, E>::VertexIndexCons
 template<IsVertex V, IsEdge E>
 bool DynamicGraph<V, E>::VertexIndexConstIterator::operator==(const VertexIndexConstIterator& other) const
 {
-    return (m_pos == other.m_pos);
+    return (m_it == other.m_it);
 }
 
 template<IsVertex V, IsEdge E>
@@ -98,27 +94,23 @@ bool DynamicGraph<V, E>::VertexIndexConstIterator::operator!=(const VertexIndexC
 template<IsVertex V, IsEdge E>
 void DynamicGraph<V, E>::EdgeIndexConstIterator::advance()
 {
-    ++m_pos;
+    ++m_it;
 }
 
 template<IsVertex V, IsEdge E>
-DynamicGraph<V, E>::EdgeIndexConstIterator::EdgeIndexConstIterator() : m_pos(-1), m_edges(nullptr)
+DynamicGraph<V, E>::EdgeIndexConstIterator::EdgeIndexConstIterator() : m_it()
 {
 }
 
 template<IsVertex V, IsEdge E>
-DynamicGraph<V, E>::EdgeIndexConstIterator::EdgeIndexConstIterator(const std::unordered_map<EdgeIndex, E>& edges, bool begin) :
-    m_pos(begin ? 0 : edges.size()),
-    m_edges(&edges)
+DynamicGraph<V, E>::EdgeIndexConstIterator::EdgeIndexConstIterator(EdgeMap::const_iterator it) : m_it(it)
 {
 }
 
 template<IsVertex V, IsEdge E>
 DynamicGraph<V, E>::EdgeIndexConstIterator::value_type DynamicGraph<V, E>::EdgeIndexConstIterator::operator*() const
 {
-    assert(m_edges);
-    assert(m_pos < m_edges->size());
-    return m_edges->at(m_pos).get_index();
+    return m_it->first;
 }
 
 template<IsVertex V, IsEdge E>
@@ -139,7 +131,7 @@ DynamicGraph<V, E>::EdgeIndexConstIterator DynamicGraph<V, E>::EdgeIndexConstIte
 template<IsVertex V, IsEdge E>
 bool DynamicGraph<V, E>::EdgeIndexConstIterator::operator==(const EdgeIndexConstIterator& other) const
 {
-    return (m_pos == other.m_pos);
+    return (m_it == other.m_it);
 }
 
 template<IsVertex V, IsEdge E>
@@ -651,15 +643,15 @@ DynamicGraph<V, E> DynamicGraph<V, E>::compute_induced_subgraph(const VertexInde
 template<IsVertex V, IsEdge E>
 std::ranges::subrange<typename DynamicGraph<V, E>::VertexIndexConstIterator> DynamicGraph<V, E>::get_vertex_indices() const
 {
-    return std::ranges::subrange(typename DynamicGraph<V, E>::VertexIndexConstIterator(m_vertices, true),
-                                 typename DynamicGraph<V, E>::VertexIndexConstIterator(m_vertices, false));
+    return std::ranges::subrange(typename DynamicGraph<V, E>::VertexIndexConstIterator(m_vertices.begin()),
+                                 typename DynamicGraph<V, E>::VertexIndexConstIterator(m_vertices.end()));
 }
 
 template<IsVertex V, IsEdge E>
 std::ranges::subrange<typename DynamicGraph<V, E>::EdgeIndexConstIterator> DynamicGraph<V, E>::get_edge_indices() const
 {
-    return std::ranges::subrange(typename DynamicGraph<V, E>::EdgeIndexConstIterator(m_edges, true),
-                                 typename DynamicGraph<V, E>::EdgeIndexConstIterator(m_edges, false));
+    return std::ranges::subrange(typename DynamicGraph<V, E>::EdgeIndexConstIterator(m_edges.begin()),
+                                 typename DynamicGraph<V, E>::EdgeIndexConstIterator(m_edges.end()));
 }
 
 template<IsVertex V, IsEdge E>

@@ -111,6 +111,7 @@
 
 #include "mimir/graphs/algorithms/color_refinement.hpp"
 #include "mimir/graphs/algorithms/folklore_weisfeiler_leman.hpp"
+#include "mimir/graphs/bgl/dynamic_graph_algorithms.hpp"
 #include "mimir/graphs/bgl/graph_adapters.hpp"
 #include "mimir/graphs/bgl/graph_algorithms.hpp"
 #include "mimir/graphs/bgl/graph_traits.hpp"
