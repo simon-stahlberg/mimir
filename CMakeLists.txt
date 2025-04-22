@@ -48,7 +48,8 @@ else()
     message("CMAKE_CXX_COMPILER_ID: ${CMAKE_CXX_COMPILER_ID}")
     # if(COMPILER_ID MATCHES "GNU")
     if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flto=auto -fcoroutines")  #  -fsanitize=address -fno-omit-frame-pointer -g
+        # When applying -fsanitize=address, also set it in dependencies (loki, abseil) via -DCMAKE_CXX_FLAGS="-fsanitize=address"
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flto=auto -fcoroutines") 
     elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flto -ftime-trace")  #  -fcoroutines-ts seems outdated
     endif()

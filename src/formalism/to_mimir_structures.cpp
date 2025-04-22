@@ -849,6 +849,8 @@ OptimizationMetric ToMimirStructures::translate_grounded(loki::OptimizationMetri
                                                           translate_grounded(optimization_metric->get_function_expression(), repositories));
 }
 
+ToMimirStructures::ToMimirStructures() : m_fluent_predicates(), m_derived_predicates(), m_fexpr_functions(), m_effect_function_skeletons() {}
+
 Domain ToMimirStructures::translate(const loki::Domain& domain, DomainBuilder& builder)
 {
     /* Perform static type analysis */

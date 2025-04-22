@@ -29,7 +29,8 @@ namespace mimir::formalism
 
 Parser::Parser(const fs::path& domain_filepath, const loki::Options& options) :
     m_loki_parser(domain_filepath, options),
-    m_loki_domain_translation_result(loki::translate(m_loki_parser.get_domain()))
+    m_loki_domain_translation_result(loki::translate(m_loki_parser.get_domain())),
+    m_domain()
 {
     auto loki_translated_domain = m_loki_domain_translation_result.get_translated_domain();
 

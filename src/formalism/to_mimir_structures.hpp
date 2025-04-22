@@ -183,6 +183,8 @@ private:
     OptimizationMetric translate_grounded(loki::OptimizationMetric optimization_metric, Repositories& repositories);
 
 public:
+    ToMimirStructures();
+
     Domain translate(const loki::Domain& domain, DomainBuilder& builder);
 
     Problem translate(const loki::Problem& problem, ProblemBuilder& builder);

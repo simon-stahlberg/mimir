@@ -15,7 +15,6 @@ def main():
     domain_filepath = str(ROOT_DIR / "data" / "gripper" / "domain.pddl")
     problem_filepath = str(ROOT_DIR / "data" / "gripper" / "p-1-0.pddl")
 
-    # Create some states
     search_context_options = search.SearchContextOptions()
     search_context_options.mode = search.SearchMode.GROUNDED
     generalized_search_context = search.GeneralizedSearchContext.create(domain_filepath, [problem_filepath], search_context_options)
@@ -34,18 +33,52 @@ def main():
 
     # Create a policy from description.
     general_policy = repositories.get_or_create_general_policy(
-        "[boolean_features]" \
-        "[numerical_features]" \
-        "[policy_rules]", 
-        knowledge_base.get_domain(), dl_repositories)
-    print(general_policy)
-    assert(general_policy.is_terminating(repositories))
-    assert(general_policy.solves(knowledge_base.get_generalized_state_space(), denotation_repositories) == general_policies.SolvabilityStatus.UNSOLVABLE)
+        """
+        [boolean_features]
+            <boolean_r_b> ::= 
+                @boolean_nonempty 
+                    @concept_existential_quantification 
+                        @role_atomic_goal "at" true 
+                        @concept_atomic_state "at-robby"
 
-    # Create a policy off-the-shelf.
-    general_policy = general_policies.GeneralPolicyFactory.get_or_create_general_policy_gripper(knowledge_base.get_domain(), repositories, dl_repositories)
+        [numerical_features]
+            <numerical_c> ::= 
+                @numerical_count 
+                    @concept_existential_quantification 
+                        @role_atomic_state "carry" 
+                        @concept_top
+            <numerical_b> ::=
+                @numerical_count 
+                    @concept_negation
+                        @concept_role_value_map_equality
+                            @role_atomic_state "at"
+                            @role_atomic_goal "at" true
+
+        [policy_rules]
+            { @negative_boolean_condition <boolean_r_b>, @equal_numerical_condition <numerical_c>, @greater_numerical_condition <numerical_b> } 
+            -> { @unchanged_boolean_effect <boolean_r_b>, @unchanged_numerical_effect <numerical_b>, @increase_numerical_effect <numerical_c> }
+            { @positive_boolean_condition <boolean_r_b>, @equal_numerical_condition <numerical_c>, @greater_numerical_condition <numerical_b> } 
+            -> { @negative_boolean_effect <boolean_r_b>, @unchanged_numerical_effect <numerical_b>, @unchanged_numerical_effect <numerical_c> }
+            { @positive_boolean_condition <boolean_r_b>, @greater_numerical_condition <numerical_c>, @greater_numerical_condition <numerical_b> } 
+            -> { @unchanged_boolean_effect <boolean_r_b>, @decrease_numerical_effect <numerical_c>, @decrease_numerical_effect <numerical_b> }
+            { @negative_boolean_condition <boolean_r_b>, @greater_numerical_condition <numerical_c>, @greater_numerical_condition <numerical_b> } 
+            -> { @positive_boolean_effect <boolean_r_b>, @unchanged_numerical_effect <numerical_b>, @unchanged_numerical_effect <numerical_c> }
+        """,
+        knowledge_base.get_domain(), dl_repositories)
+    # Print the identical string representation of the policy.
     print(general_policy)
+    # Test whether the policy is structurally terminating
     assert(general_policy.is_terminating(repositories))
+    # Test whether the policy solves the generalized state space.
+    assert(general_policy.solves(knowledge_base.get_generalized_state_space(), denotation_repositories) == general_policies.SolvabilityStatus.SOLVED)
+
+    # Create the policy from above off-the-shelf.
+    general_policy = general_policies.GeneralPolicyFactory.get_or_create_general_policy_gripper(knowledge_base.get_domain(), repositories, dl_repositories)
+    # Print the identical string representation of the policy.
+    print(general_policy)
+    # Test whether the policy is structurally terminating
+    assert(general_policy.is_terminating(repositories))
+    # Test whether the policy solves the generalized state space.
     assert(general_policy.solves(knowledge_base.get_generalized_state_space(), denotation_repositories) == general_policies.SolvabilityStatus.SOLVED)
 
 if __name__ == "__main__":
