@@ -25,16 +25,16 @@
 
 namespace mimir::languages::general_policies
 {
+enum class SolvabilityStatus
+{
+    SOLVED = 0,
+    CYCLIC = 1,
+    UNSOLVABLE = 2,
+};
+
 class GeneralPolicyImpl
 {
 public:
-    enum class SolvabilityStatus
-    {
-        SOLVED = 0,
-        CYCLIC = 1,
-        UNSOLVABLE = 2,
-    };
-
     /// @brief Return true if and only if there the state pair (transition) is compatible with a `Rule` in the `GeneralPolicyImpl`.
     /// @param source_context is the source context.
     /// @param target_context is the target context.

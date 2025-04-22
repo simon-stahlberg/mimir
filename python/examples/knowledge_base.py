@@ -43,25 +43,25 @@ def main():
         # Since the graph is a specific instantiation, the vertices and edges contain context-specific information.
         # Iterate over vertices
         for vertex in graph.get_vertices():
-            # Access vertex properties through generic member
+            # Access vertex properties through get_property_i or specific free function
             vertex.get_index()      
-            vertex.get_property_0()  # State
-            vertex.get_property_1()  # Problem
-            vertex.get_property_2()  # Unit goal distance
-            vertex.get_property_3()  # Action goal distance
-            vertex.get_property_4()  # Is initial?
-            vertex.get_property_5()  # Is goal?
-            vertex.get_property_6()  # Is unsolvable?
-            vertex.get_property_7()  # Is alive?  
+            datasets.get_state(vertex)
+            datasets.get_problem(vertex)
+            datasets.get_unit_goal_distance(vertex)
+            datasets.get_action_goal_distance(vertex)
+            datasets.is_initial(vertex)
+            datasets.is_goal(vertex)
+            datasets.is_unsolvable(vertex)
+            datasets.is_alive(vertex)
         # Iterate over edges
         for edge in graph.get_edges():
-            # Access edge properties through generic member
+            # Access edge properties through get_property_i or specific free function
             edge.get_index()  
             edge.get_source()   
             edge.get_target()   
-            edge.get_property_0()  # GroundAction
-            edge.get_property_1()  # Problem
-            edge.get_property_2()  # Action cost
+            datasets.get_action(edge)
+            datasets.get_problem(edge)
+            datasets.get_action_cost(edge)
     
 
     # 2. Access GeneralizedStateSpace
@@ -83,44 +83,44 @@ def main():
     # Since the graph is a specific instantiation, the vertices and edges contain context-specific information.
     # Iterate over vertices
     for vertex in graph.get_vertices():
-        # Access vertex properties through generic member
+        # Access vertex properties get_property_i or specific free function
         vertex.get_index()      
-        vertex.get_property_0()  # Problem graph vertex index
-        vertex.get_property_1()  # Problem index
+        datasets.get_problem_vertex_index(vertex)
+        datasets.get_problem_index(vertex)
     # Iterate over edges
     for edge in graph.get_edges():
-        # Access edge properties through generic member
+        # Access edge properties get_property_i or specific free function
         edge.get_index()  
         edge.get_source()   
         edge.get_target()   
-        edge.get_property_0()  # Problem graph edge index
-        edge.get_property_1()  # Problem index
+        datasets.get_problem_edge_index(edge)
+        datasets.get_problem_index(edge)
 
     # The graph also represents an abstraction of a collection of state spaces.
     # Access low-level information about state and actions using the mappings encoded in the GeneralizedStateSpace.
     for vertex in graph.get_vertices():
         # Map class vertex to problem vertex
         problem_vertex = generalized_state_space.get_problem_vertex(vertex)
-        # Acces vertex properties through generic member
+        # Acces vertex properties get_property_i or specific free function
         problem_vertex.get_index()
-        problem_vertex.get_property_0()  # State
-        problem_vertex.get_property_1()  # Problem
-        problem_vertex.get_property_2()  # Unit goal distance
-        problem_vertex.get_property_3()  # Action goal distance
-        problem_vertex.get_property_4()  # Is initial?
-        problem_vertex.get_property_5()  # Is goal?
-        problem_vertex.get_property_6()  # Is unsolvable?
-        problem_vertex.get_property_7()  # Is alive?
+        datasets.get_state(problem_vertex)
+        datasets.get_problem(problem_vertex)
+        datasets.get_unit_goal_distance(problem_vertex)
+        datasets.get_action_goal_distance(problem_vertex)
+        datasets.is_initial(problem_vertex)
+        datasets.is_goal(problem_vertex)
+        datasets.is_unsolvable(problem_vertex)
+        datasets.is_alive(problem_vertex)
     for edge in graph.get_edges():
         # Map class edge to problem edge
         problem_edge = generalized_state_space.get_problem_edge(edge)
-        # Access edge properties through generic member
+        # Access edge properties get_property_i or specific free function
         problem_edge.get_index()
         problem_edge.get_source()
         problem_edge.get_target()
-        problem_edge.get_property_0()  # GroundAction
-        problem_edge.get_property_1()  # Problem
-        problem_edge.get_property_2()  # Action cost
+        datasets.get_action(problem_edge)
+        datasets.get_problem(problem_edge)
+        datasets.get_action_cost(problem_edge)
 
     # 3. Access the tuple graphs of each state space.
     for tuple_graphs in knowledge_base.get_tuple_graphs():
@@ -133,8 +133,8 @@ def main():
 
             for vertex in tuple_graph.get_graph().get_vertices():
                 vertex.get_index()
-                vertex.get_property_0()  # Atom tuple
-                vertex.get_property_1()  # Problem graph vertex indices
+                datasets.get_atom_tuple(vertex)
+                datasets.get_problem_vertices(vertex)
 
 
 if __name__ == "__main__":

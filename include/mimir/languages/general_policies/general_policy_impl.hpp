@@ -32,7 +32,7 @@ namespace mimir::languages::general_policies
 {
 template<std::ranges::forward_range VertexIndices>
     requires std::same_as<std::ranges::range_value_t<VertexIndices>, graphs::VertexIndex>
-GeneralPolicyImpl::SolvabilityStatus
+SolvabilityStatus
 GeneralPolicyImpl::solves(const datasets::StateSpace& state_space, const VertexIndices& vertices, dl::DenotationRepositories& denotation_repositories) const
 {
     auto visited_v_idxs = graphs::VertexIndexSet {};
@@ -52,9 +52,9 @@ GeneralPolicyImpl::solves(const datasets::StateSpace& state_space, const VertexI
 
 template<std::ranges::forward_range VertexIndices>
     requires std::same_as<std::ranges::range_value_t<VertexIndices>, graphs::VertexIndex>
-GeneralPolicyImpl::SolvabilityStatus GeneralPolicyImpl::solves(const datasets::GeneralizedStateSpace& generalized_state_space,
-                                                               const VertexIndices& vertices,
-                                                               dl::DenotationRepositories& denotation_repositories) const
+SolvabilityStatus GeneralPolicyImpl::solves(const datasets::GeneralizedStateSpace& generalized_state_space,
+                                            const VertexIndices& vertices,
+                                            dl::DenotationRepositories& denotation_repositories) const
 {
     auto visited_v_idxs = graphs::VertexIndexSet {};
 

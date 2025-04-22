@@ -18,9 +18,7 @@ def main():
     # Create some states
     search_context_options = search.SearchContextOptions()
     search_context_options.mode = search.SearchMode.GROUNDED
-
     generalized_search_context = search.GeneralizedSearchContext.create(domain_filepath, [problem_filepath], search_context_options)
-
 
     state_space_options = datasets.StateSpaceOptions()
     state_space_options.symmetry_pruning = True 

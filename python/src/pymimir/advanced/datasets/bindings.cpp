@@ -13,15 +13,40 @@ void bind_module_definitions(nb::module_& m)
 {
     /* ProblemGraph */
     bind_vertex<graphs::ProblemVertex>(m, PyVertexProperties<graphs::ProblemVertex>::name);
+    m.def("get_state", [](const graphs::ProblemVertex& self) -> search::State { return graphs::get_state(self); }, "vertex"_a, nb::rv_policy::reference);
+    m.def("get_problem", [](const graphs::ProblemVertex& self) -> const Problem& { return graphs::get_problem(self); }, "vertex"_a, nb::rv_policy::reference);
+    m.def("get_unit_goal_distance", [](const graphs::ProblemVertex& self) -> DiscreteCost { return graphs::get_unit_goal_distance(self); }, "vertex"_a);
+    m.def("get_action_goal_distance", [](const graphs::ProblemVertex& self) -> ContinuousCost { return graphs::get_action_goal_distance(self); }, "vertex"_a);
+    m.def("is_initial", [](const graphs::ProblemVertex& self) -> bool { return graphs::is_initial(self); }, "vertex"_a);
+    m.def("is_goal", [](const graphs::ProblemVertex& self) -> bool { return graphs::is_goal(self); }, "vertex"_a);
+    m.def("is_unsolvable", [](const graphs::ProblemVertex& self) -> bool { return graphs::is_unsolvable(self); }, "vertex"_a);
+    m.def("is_alive", [](const graphs::ProblemVertex& self) -> bool { return graphs::is_alive(self); }, "vertex"_a);
     bind_edge<graphs::ProblemEdge>(m, PyEdgeProperties<graphs::ProblemEdge>::name);
+    m.def("get_action", [](const graphs::ProblemEdge& self) -> GroundAction { return graphs::get_action(self); }, "edge"_a, nb::rv_policy::reference);
+    m.def("get_problem", [](const graphs::ProblemEdge& self) -> const Problem& { return graphs::get_problem(self); }, "edge"_a, nb::rv_policy::reference);
+    m.def("get_action_cost", [](const graphs::ProblemEdge& self) -> ContinuousCost { return graphs::get_action_cost(self); }, "edge"_a);
     bind_static_graph<graphs::ProblemVertex, graphs::ProblemEdge>(m, "StaticProblemGraph");
 
     /* ClassGraph */
     bind_vertex<graphs::ClassVertex>(m, PyVertexProperties<graphs::ClassVertex>::name);
+    m.def("get_problem_vertex_index", [](const graphs::ClassVertex& self) -> Index { return graphs::get_problem_vertex_index(self); }, "vertex"_a);
+    m.def("get_problem_index", [](const graphs::ClassVertex& self) -> Index { return graphs::get_problem_index(self); }, "vertex"_a);
     bind_edge<graphs::ClassEdge>(m, PyEdgeProperties<graphs::ClassEdge>::name);
+    m.def("get_problem_edge_index", [](const graphs::ClassEdge& self) -> Index { return graphs::get_problem_edge_index(self); }, "vertex"_a);
+    m.def("get_problem_index", [](const graphs::ClassEdge& self) -> Index { return graphs::get_problem_index(self); }, "vertex"_a);
     bind_static_graph<graphs::ClassVertex, graphs::ClassEdge>(m, "StaticClassGraph");
 
     bind_vertex<graphs::TupleGraphVertex>(m, PyVertexProperties<graphs::TupleGraphVertex>::name);
+    m.def(
+        "get_atom_tuple",
+        [](const graphs::TupleGraphVertex& self) -> search::iw::AtomIndexList { return graphs::get_atom_tuple(self); },
+        "vertex"_a,
+        nb::rv_policy::copy);
+    m.def(
+        "get_problem_vertices",
+        [](const graphs::TupleGraphVertex& self) -> IndexList { return graphs::get_problem_vertices(self); },
+        "vertex"_a,
+        nb::rv_policy::copy);
     bind_static_graph<graphs::TupleGraphVertex, graphs::EmptyEdge>(m, "StaticTupleGraph");
 
     nb::class_<StateSpaceImpl::Options>(m, "StateSpaceOptions")

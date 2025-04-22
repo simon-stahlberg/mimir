@@ -133,7 +133,6 @@ public:
     class AdjacentVertexIndexConstIterator
     {
     private:
-        size_t m_pos;
         const std::unordered_map<EdgeIndex, E>* m_edges;
         std::unordered_set<EdgeIndex>::const_iterator m_slice_iter;
 
@@ -159,7 +158,6 @@ public:
     class AdjacentEdgeConstIterator
     {
     private:
-        size_t m_pos;
         const std::unordered_map<EdgeIndex, E>* m_edges;
         std::unordered_set<EdgeIndex>::const_iterator m_slice_iter;
 
@@ -185,7 +183,6 @@ public:
     class AdjacentEdgeIndexConstIterator
     {
     private:
-        size_t m_pos;
         const std::unordered_map<EdgeIndex, E>* m_edges;
         std::unordered_set<EdgeIndex>::const_iterator m_slice_iter;
 

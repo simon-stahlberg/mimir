@@ -57,7 +57,9 @@ using RuleRepository = SegmentedPDDLRepository<RuleImpl>;
 
 using GeneralPolicyRepository = SegmentedPDDLRepository<GeneralPolicyImpl>;
 
-using HanaRepositories = boost::hana::map<boost::hana::pair<boost::hana::type<NamedFeatureImpl<dl::BooleanTag>>, NamedFeatureRepository<dl::BooleanTag>>,
+using HanaRepositories = boost::hana::map<boost::hana::pair<boost::hana::type<NamedFeatureImpl<dl::ConceptTag>>, NamedFeatureRepository<dl::ConceptTag>>,
+                                          boost::hana::pair<boost::hana::type<NamedFeatureImpl<dl::RoleTag>>, NamedFeatureRepository<dl::RoleTag>>,
+                                          boost::hana::pair<boost::hana::type<NamedFeatureImpl<dl::BooleanTag>>, NamedFeatureRepository<dl::BooleanTag>>,
                                           boost::hana::pair<boost::hana::type<NamedFeatureImpl<dl::NumericalTag>>, NamedFeatureRepository<dl::NumericalTag>>,
                                           boost::hana::pair<boost::hana::type<PositiveBooleanConditionImpl>, PositiveBooleanConditionRepository>,
                                           boost::hana::pair<boost::hana::type<NegativeBooleanConditionImpl>, NegativeBooleanConditionRepository>,

@@ -13,4 +13,3 @@ Every C++ type `T` with functions that mutate the object must have two correspon
 # Open Issues/Tasks
 
 - Create template machinery needed to emulate const correctness using `PyImmutable<T>`.
-- Free functions such as `graphs::get_state(const graphs::ProblemVertex& vertex)` defined in datasets results in cast errors, i.e, "Unable to convert function return value to a Python type!". A solution is returning py::object but that results in unsatisfying generic stubs.

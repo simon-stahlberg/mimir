@@ -1,5 +1,5 @@
 
-from pymimir.pymimir.advance.languages.general_policies import (
+from pymimir.pymimir.advanced.languages.general_policies import (
     NamedConcept,
     NamedConceptList,
     NamedRole,
@@ -28,5 +28,10 @@ from pymimir.pymimir.advance.languages.general_policies import (
     Rule,
     RuleList,
     
+    SolvabilityStatus,
     GeneralPolicy,
+
+    Repositories,
+
+    GeneralPolicyFactory,
 )

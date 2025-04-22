@@ -28,6 +28,8 @@ NamedFeature<D> Repositories::get_or_create_named_feature(std::string name, dl::
     return boost::hana::at_key(m_repositories, boost::hana::type<NamedFeatureImpl<D>> {}).get_or_create(name, feature);
 }
 
+template NamedFeature<dl::ConceptTag> Repositories::get_or_create_named_feature(std::string name, dl::Constructor<dl::ConceptTag> feature);
+template NamedFeature<dl::RoleTag> Repositories::get_or_create_named_feature(std::string name, dl::Constructor<dl::RoleTag> feature);
 template NamedFeature<dl::BooleanTag> Repositories::get_or_create_named_feature(std::string name, dl::Constructor<dl::BooleanTag> feature);
 template NamedFeature<dl::NumericalTag> Repositories::get_or_create_named_feature(std::string name, dl::Constructor<dl::NumericalTag> feature);
 

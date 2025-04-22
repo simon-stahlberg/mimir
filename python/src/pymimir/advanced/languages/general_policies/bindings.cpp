@@ -2,7 +2,6 @@
 
 #include "../../init_declarations.hpp"
 
-#include <nanobind/nanobind.h>
 #include <nanobind/trampoline.h>
 
 using namespace mimir::formalism;
@@ -37,6 +36,11 @@ public:
 
 void bind_module_definitions(nb::module_& m)
 {
+    nb::enum_<SolvabilityStatus>(m, "SolvabilityStatus")  //
+        .value("SOLVED", SolvabilityStatus::SOLVED)
+        .value("CYCLIC", SolvabilityStatus::CYCLIC)
+        .value("UNSOLVABLE", SolvabilityStatus::UNSOLVABLE);
+
     bind_named_feature<dl::ConceptTag>(m, "NamedConcept");
     bind_named_feature<dl::RoleTag>(m, "NamedRole");
     bind_named_feature<dl::BooleanTag>(m, "NamedBoolean");
@@ -44,6 +48,9 @@ void bind_module_definitions(nb::module_& m)
 
     nb::class_<ICondition>(m, "Condition")  //
         .def("__str__", [](const ICondition& self) { return to_string(self); })
+        .def("__eq__", [](const ICondition& lhs, const ICondition& rhs) { return &lhs == &rhs; })
+        .def("__ne__", [](const ICondition& lhs, const ICondition& rhs) { return &lhs != &rhs; })
+        .def("__hash__", [](const ICondition& self) { return &self; })
         .def("evaluate", &ICondition::evaluate, nb::rv_policy::copy, "evaluation_context"_a)
         .def("accept", &ICondition::accept, "visitor"_a)
         .def("get_index", &ICondition::get_index, nb::rv_policy::copy);
@@ -63,6 +70,9 @@ void bind_module_definitions(nb::module_& m)
 
     nb::class_<IEffect>(m, "Effect")  //
         .def("__str__", [](const IEffect& self) { return to_string(self); })
+        .def("__eq__", [](const IEffect& lhs, const IEffect& rhs) { return &lhs == &rhs; })
+        .def("__ne__", [](const IEffect& lhs, const IEffect& rhs) { return &lhs != &rhs; })
+        .def("__hash__", [](const IEffect& self) { return &self; })
         .def("evaluate", &IEffect::evaluate, nb::rv_policy::copy, "source_evaluation_context"_a, "target_evaluation_context"_a)
         .def("accept", &IEffect::accept, "visitor"_a)
         .def("get_index", &IEffect::get_index, nb::rv_policy::copy);
@@ -88,6 +98,9 @@ void bind_module_definitions(nb::module_& m)
 
     nb::class_<RuleImpl>(m, "Rule")  //
         .def("__str__", [](const RuleImpl& self) { return to_string(self); })
+        .def("__eq__", [](const RuleImpl& lhs, const RuleImpl& rhs) { return &lhs == &rhs; })
+        .def("__ne__", [](const RuleImpl& lhs, const RuleImpl& rhs) { return &lhs != &rhs; })
+        .def("__hash__", [](const RuleImpl& self) { return &self; })
         .def("evaluate", &RuleImpl::evaluate, nb::rv_policy::copy, "source_evaluation_context"_a, "target_evaluation_context"_a)
         .def("accept", &RuleImpl::accept, "visitor"_a)
         .def("get_index", &RuleImpl::get_index, nb::rv_policy::copy)
@@ -96,7 +109,144 @@ void bind_module_definitions(nb::module_& m)
     nb::bind_vector<RuleList>(m, "RuleList");
 
     nb::class_<GeneralPolicyImpl>(m, "GeneralPolicy")  //
-        .def("__str__", [](const GeneralPolicyImpl& self) { return to_string(self); });
+        .def("__str__", [](const GeneralPolicyImpl& self) { return to_string(self); })
+        .def("__eq__", [](const GeneralPolicyImpl& lhs, const GeneralPolicyImpl& rhs) { return &lhs == &rhs; })
+        .def("__ne__", [](const GeneralPolicyImpl& lhs, const GeneralPolicyImpl& rhs) { return &lhs != &rhs; })
+        .def("__hash__", [](const GeneralPolicyImpl& self) { return std::hash<const GeneralPolicyImpl*>()(&self); })
+        .def("evaluate", &GeneralPolicyImpl::evaluate, "source_context"_a, "target_contest"_a)
+        .def("accept", &GeneralPolicyImpl::accept, "visitor"_a)
+        .def("is_terminating", nb::overload_cast<Repositories&>(&GeneralPolicyImpl::is_terminating, nb::const_), "repositories"_a)
+        .def(
+            "solves",
+            [](const GeneralPolicyImpl& self, const datasets::StateSpace& state_space, dl::DenotationRepositories& denotation_repositories) -> SolvabilityStatus
+            { return self.solves(state_space, denotation_repositories); },
+            "state_space"_a,
+            "denotation_repositories"_a)
+        .def(
+            "solves",
+            [](const GeneralPolicyImpl& self,
+               const datasets::StateSpace& state_space,
+               const graphs::VertexIndexList& vertices,
+               dl::DenotationRepositories& denotation_repositories) -> SolvabilityStatus
+            { return self.solves(state_space, vertices, denotation_repositories); },
+            "state_space"_a,
+            "vertex_indices"_a,
+            "denotation_repositories"_a)
+        .def(
+            "solves",
+            [](const GeneralPolicyImpl& self,
+               const datasets::GeneralizedStateSpace& state_space,
+               dl::DenotationRepositories& denotation_repositories) -> SolvabilityStatus { return self.solves(state_space, denotation_repositories); },
+            "state_space"_a,
+            "denotation_repositories"_a)
+        .def(
+            "solves",
+            [](const GeneralPolicyImpl& self,
+               const datasets::GeneralizedStateSpace& state_space,
+               const graphs::VertexIndexList& vertices,
+               dl::DenotationRepositories& denotation_repositories) -> SolvabilityStatus
+            { return self.solves(state_space, vertices, denotation_repositories); },
+            "state_space"_a,
+            "vertex_indices"_a,
+            "denotation_repositories"_a)
+        .def("get_index", &GeneralPolicyImpl::get_index)
+        .def("get_boolean_features", &GeneralPolicyImpl::get_features<dl::BooleanTag>, nb::rv_policy::copy)
+        .def("get_numerical_features", &GeneralPolicyImpl::get_features<dl::NumericalTag>, nb::rv_policy::copy)
+        .def("get_rules", &GeneralPolicyImpl::get_rules, nb::rv_policy::copy);
+
+    nb::class_<Repositories>(m, "Repositories")
+        .def(nb::init<>())
+        .def("get_or_create_named_feature",
+             &Repositories::get_or_create_named_feature<dl::ConceptTag>,
+             "name"_a,
+             "concept"_a,
+             nb::rv_policy::reference_internal)
+        .def("get_or_create_named_feature", &Repositories::get_or_create_named_feature<dl::RoleTag>, "name"_a, "role"_a, nb::rv_policy::reference_internal)
+        .def("get_or_create_named_feature",
+             &Repositories::get_or_create_named_feature<dl::BooleanTag>,
+             "name"_a,
+             "boolean"_a,
+             nb::rv_policy::reference_internal)
+        .def("get_or_create_named_feature",
+             &Repositories::get_or_create_named_feature<dl::NumericalTag>,
+             "name"_a,
+             "numerical"_a,
+             nb::rv_policy::reference_internal)
+        .def("get_or_create_positive_boolean_condition",
+             &Repositories::get_or_create_positive_boolean_condition,
+             "named_boolean",
+             nb::rv_policy::reference_internal)
+        .def("get_or_create_negative_boolean_condition",
+             &Repositories::get_or_create_negative_boolean_condition,
+             "named_boolean",
+             nb::rv_policy::reference_internal)
+        .def("get_or_create_greater_numerical_condition",
+             &Repositories::get_or_create_greater_numerical_condition,
+             "named_numerical",
+             nb::rv_policy::reference_internal)
+        .def("get_or_create_equal_numerical_condition",
+             &Repositories::get_or_create_equal_numerical_condition,
+             "named_numerical",
+             nb::rv_policy::reference_internal)
+        .def("get_or_create_positive_boolean_effect", &Repositories::get_or_create_positive_boolean_effect, "named_boolean", nb::rv_policy::reference_internal)
+        .def("get_or_create_negative_boolean_effect", &Repositories::get_or_create_negative_boolean_effect, "named_boolean", nb::rv_policy::reference_internal)
+        .def("get_or_create_unchanged_boolean_effect",
+             &Repositories::get_or_create_unchanged_boolean_effect,
+             "named_boolean",
+             nb::rv_policy::reference_internal)
+        .def("get_or_create_increase_numerical_effect",
+             &Repositories::get_or_create_increase_numerical_effect,
+             "named_numerical",
+             nb::rv_policy::reference_internal)
+        .def("get_or_create_decrease_numerical_effect",
+             &Repositories::get_or_create_decrease_numerical_effect,
+             "named_numerical",
+             nb::rv_policy::reference_internal)
+        .def("get_or_create_unchanged_numerical_effect",
+             &Repositories::get_or_create_unchanged_numerical_effect,
+             "named_numerical",
+             nb::rv_policy::reference_internal)
+        .def("get_or_create_rule", &Repositories::get_or_create_rule, "conditions"_a, "effects"_a, nb::rv_policy::reference_internal)
+        .def(
+            "get_or_create_general_policy",
+            [](Repositories& self, NamedFeatureList<dl::BooleanTag> named_booleans, NamedFeatureList<dl::NumericalTag> named_numericals, RuleList rules)
+                -> GeneralPolicy
+            {
+                return self.get_or_create_general_policy(
+                    boost::hana::make_map(boost::hana::make_pair(boost::hana::type_c<dl::BooleanTag>, std::move(named_booleans)),
+                                          boost::hana::make_pair(boost::hana::type_c<dl::NumericalTag>, std::move(named_numericals))),
+                    std::move(rules));
+            },
+            "boolean_features"_a,
+            "numerical_features"_a,
+            "rules"_a,
+            nb::rv_policy::reference_internal)
+        .def("get_or_create_general_policy",
+             nb::overload_cast<const std::string&, const formalism::DomainImpl&, dl::Repositories&>(&Repositories::get_or_create_general_policy),
+             "description"_a,
+             "domain"_a,
+             "dl_repositories"_a,
+             nb::rv_policy::reference_internal);
+
+    nb::class_<GeneralPolicyFactory>(m, "GeneralPolicyFactory")
+        .def_static("get_or_create_general_policy_gripper",
+                    &GeneralPolicyFactory::get_or_create_general_policy_gripper,
+                    "domain"_a,
+                    "repositories"_a,
+                    "dl_repositories"_a,
+                    nb::rv_policy::reference)
+        .def_static("get_or_create_general_policy_blocks3ops",
+                    &GeneralPolicyFactory::get_or_create_general_policy_blocks3ops,
+                    "domain"_a,
+                    "repositories"_a,
+                    "dl_repositories"_a,
+                    nb::rv_policy::reference)
+        .def_static("get_or_create_general_policy_spanner",
+                    &GeneralPolicyFactory::get_or_create_general_policy_spanner,
+                    "domain"_a,
+                    "repositories"_a,
+                    "dl_repositories"_a,
+                    nb::rv_policy::reference);
 }
 
 }

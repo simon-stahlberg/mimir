@@ -246,8 +246,7 @@ bool GeneralPolicyImpl::is_terminating(graphs::PolicyGraph& policy_graph, Reposi
     return false;
 }
 
-GeneralPolicyImpl::SolvabilityStatus GeneralPolicyImpl::solves(const datasets::StateSpace& state_space,
-                                                               dl::DenotationRepositories& denotation_repositories) const
+SolvabilityStatus GeneralPolicyImpl::solves(const datasets::StateSpace& state_space, dl::DenotationRepositories& denotation_repositories) const
 {
     auto alive_vertex_indices = graphs::VertexIndexList {};
     for (const auto& vertex : state_space->get_graph().get_vertices())
@@ -259,10 +258,10 @@ GeneralPolicyImpl::SolvabilityStatus GeneralPolicyImpl::solves(const datasets::S
     return solves(state_space, alive_vertex_indices, denotation_repositories);
 }
 
-GeneralPolicyImpl::SolvabilityStatus GeneralPolicyImpl::solves(const datasets::StateSpace& state_space,
-                                                               graphs::VertexIndex v_idx,
-                                                               dl::DenotationRepositories& denotation_repositories,
-                                                               graphs::VertexIndexSet& ref_visited_vertices) const
+SolvabilityStatus GeneralPolicyImpl::solves(const datasets::StateSpace& state_space,
+                                            graphs::VertexIndex v_idx,
+                                            dl::DenotationRepositories& denotation_repositories,
+                                            graphs::VertexIndexSet& ref_visited_vertices) const
 {
     if (ref_visited_vertices.contains(v_idx))
         return SolvabilityStatus::SOLVED;
@@ -364,17 +363,17 @@ GeneralPolicyImpl::SolvabilityStatus GeneralPolicyImpl::solves(const datasets::S
     return SolvabilityStatus::SOLVED;
 }
 
-GeneralPolicyImpl::SolvabilityStatus GeneralPolicyImpl::solves(const datasets::StateSpace& state_space,
-                                                               const graphs::VertexIndexList& vertices,
-                                                               dl::DenotationRepositories& denotation_repositories) const
+SolvabilityStatus GeneralPolicyImpl::solves(const datasets::StateSpace& state_space,
+                                            const graphs::VertexIndexList& vertices,
+                                            dl::DenotationRepositories& denotation_repositories) const
 {
     return solves<graphs::VertexIndexList>(state_space, vertices, denotation_repositories);
 }
 
-GeneralPolicyImpl::SolvabilityStatus GeneralPolicyImpl::solves(const datasets::GeneralizedStateSpace& generalized_state_space,
-                                                               graphs::VertexIndex v_idx,
-                                                               dl::DenotationRepositories& denotation_repositories,
-                                                               graphs::VertexIndexSet& ref_visited_vertices) const
+SolvabilityStatus GeneralPolicyImpl::solves(const datasets::GeneralizedStateSpace& generalized_state_space,
+                                            graphs::VertexIndex v_idx,
+                                            dl::DenotationRepositories& denotation_repositories,
+                                            graphs::VertexIndexSet& ref_visited_vertices) const
 {
     if (ref_visited_vertices.contains(v_idx))
         return SolvabilityStatus::SOLVED;
@@ -478,8 +477,8 @@ GeneralPolicyImpl::SolvabilityStatus GeneralPolicyImpl::solves(const datasets::G
     return SolvabilityStatus::SOLVED;
 }
 
-GeneralPolicyImpl::SolvabilityStatus GeneralPolicyImpl::solves(const datasets::GeneralizedStateSpace& generalized_state_space,
-                                                               dl::DenotationRepositories& denotation_repositories) const
+SolvabilityStatus GeneralPolicyImpl::solves(const datasets::GeneralizedStateSpace& generalized_state_space,
+                                            dl::DenotationRepositories& denotation_repositories) const
 {
     auto alive_vertex_indices = graphs::VertexIndexList {};
     for (const auto& vertex : generalized_state_space->get_graph().get_vertices())
@@ -491,9 +490,9 @@ GeneralPolicyImpl::SolvabilityStatus GeneralPolicyImpl::solves(const datasets::G
     return solves(generalized_state_space, alive_vertex_indices, denotation_repositories);
 }
 
-GeneralPolicyImpl::SolvabilityStatus GeneralPolicyImpl::solves(const datasets::GeneralizedStateSpace& generalized_state_space,
-                                                               const graphs::VertexIndexList& vertices,
-                                                               dl::DenotationRepositories& denotation_repositories) const
+SolvabilityStatus GeneralPolicyImpl::solves(const datasets::GeneralizedStateSpace& generalized_state_space,
+                                            const graphs::VertexIndexList& vertices,
+                                            dl::DenotationRepositories& denotation_repositories) const
 {
     return solves<graphs::VertexIndexList>(generalized_state_space, vertices, denotation_repositories);
 }
