@@ -72,7 +72,7 @@ class TestProblem(unittest.TestCase):
     #     domain = Domain(domain_path)
     #     problem = Problem(domain, problem_path)
     #     actual_requirements = problem.get_requirements()
-    #     expected_requirements = [':strips', ':typing'] # TODO: Dominik -- :typing is missing in the requirements of the problem.
+    #     expected_requirements = [':strips', ':typing'] # TODO: ":typing" is missing in the requirements of the problem.
     #     assert len(actual_requirements) == len(expected_requirements)
     #     for requirement in actual_requirements:
     #         assert requirement in expected_requirements
@@ -94,7 +94,7 @@ class TestProblem(unittest.TestCase):
         problem_path = DATA_DIR / 'blocks_4' / 'test_problem.pddl'
         domain = Domain(domain_path)
         problem = Problem(domain, problem_path)
-        actual_initial_atoms = problem.get_initial_atoms(skip_derived=True)  # TODO: Dominik -- Crashes with skip_derived=False
+        actual_initial_atoms = problem.get_initial_atoms()
         expected_initial_atoms = ['(arm-empty)', '(clear b2)', '(on-table b2)', '(clear b1)', '(on b1 b3)', '(on-table b3)']
         assert len(actual_initial_atoms) == len(expected_initial_atoms)
         for initial_atom in actual_initial_atoms:
@@ -133,17 +133,17 @@ class TestProblem(unittest.TestCase):
         assert actual_new_ground_literal.get_index() is not None
         assert str(actual_new_ground_literal) == expected_new_ground_literal
 
-    # def test_goal_condition(self):
-    #     domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
-    #     problem_path = DATA_DIR / 'blocks_4' / 'test_problem.pddl'
-    #     domain = Domain(domain_path)
-    #     problem = Problem(domain, problem_path)
-    #     actual_goal_condition = problem.get_goal_condition()  # TODO: Dominik -- Not implemented.
-    #     expected_goal_condition = ['(clear b2)', '(on b2 b3)', '(on-table b3)', '(clear b1)', '(on-table b1)']
-    #     assert len(actual_goal_condition) == len(expected_goal_condition)
-    #     for goal_literal in actual_goal_condition:
-    #         assert goal_literal.get_polarity() is True
-    #         assert str(goal_literal.get_atom()) in expected_goal_condition
+    def test_goal_condition(self):
+        domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
+        problem_path = DATA_DIR / 'blocks_4' / 'test_problem.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path)
+        actual_goal_condition = problem.get_goal_condition()
+        expected_goal_condition = ['(clear b2)', '(on b2 b3)', '(on-table b3)', '(clear b1)', '(on-table b1)']
+        assert len(actual_goal_condition) == len(expected_goal_condition)
+        for goal_literal in actual_goal_condition:
+            assert goal_literal.get_polarity() is True
+            assert str(goal_literal.get_atom()) in expected_goal_condition
 
 
 class TestAction(unittest.TestCase):
@@ -152,7 +152,7 @@ class TestAction(unittest.TestCase):
         domain = Domain(domain_path)
         action = domain.get_action('up')
         assert action.get_name() == 'up'
-        actual_precondition = action.get_conjunctive_condition()
+        actual_precondition = action.get_precondition()
         actual_parameters = actual_precondition.get_parameters()
         expected_parameters = ['?f1_0', '?f2_0']
         assert len(actual_parameters) == len(expected_parameters)
@@ -189,7 +189,7 @@ class TestAction(unittest.TestCase):
         domain = Domain(domain_path)
         action = domain.get_action('up')
         assert action.get_name() == 'up'
-        actual_effect = action.get_conjunctive_effect()
+        actual_effect = action.get_unconditional_effect()
         actual_parameters = actual_effect.get_parameters()
         expected_parameters = ['?f1_0', '?f2_0']
         assert len(actual_parameters) == len(expected_parameters)
@@ -211,6 +211,87 @@ class TestAction(unittest.TestCase):
         actual_conditiona_effect = action.get_conditional_effect()
         pass
 
+    def test_new_conjunctive_condition(self):
+        domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
+        problem_path = DATA_DIR / 'blocks_4' / 'test_problem.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path)
+        variables = problem.new_variable_list(['?a', '?b', '?c'])
+        predicate_on = domain.get_predicate('on')
+        atom_on_ab = problem.new_atom(predicate_on, [variables[0], variables[1]])
+        atom_on_bc = problem.new_atom(predicate_on, [variables[1], variables[2]])
+        literal_on_ab = problem.new_literal(atom_on_ab, True)
+        literal_on_bc = problem.new_literal(atom_on_bc, True)
+        literals = [literal_on_ab, literal_on_bc]
+        conjunctive_condition = problem.new_conjunctive_condition(variables, literals)
+        assert len(conjunctive_condition.get_parameters()) == len(variables)
+        for parameter in conjunctive_condition.get_parameters():
+            assert parameter.get_index() is not None
+            assert parameter in variables
+        assert len(conjunctive_condition.get_literals()) == len(literals)
+        for literal in conjunctive_condition.get_literals():
+            assert literal.get_index() is not None
+            assert literal in literals
+
+
+class TestState(unittest.TestCase):
+    def test_get_initial_state(self):
+        domain_path = DATA_DIR / 'miconic-fulladl' / 'domain.pddl'
+        problem_path = DATA_DIR / 'miconic-fulladl' / 'test_problem.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path)
+        initial_state = problem.get_initial_state()
+        assert initial_state.get_index() is not None
+
+    def test_get_ground_atoms(self):
+        domain_path = DATA_DIR / 'miconic-fulladl' / 'domain.pddl'
+        problem_path = DATA_DIR / 'miconic-fulladl' / 'test_problem.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path)
+        initial_state = problem.get_initial_state()
+        assert initial_state.get_index() is not None
+        initial_atoms = initial_state.get_ground_atoms()
+        initial_static_atoms = initial_state.get_ground_atoms(ignore_fluent=True, ignore_derived=True)
+        initial_fluent_atoms = initial_state.get_ground_atoms(ignore_static=True, ignore_derived=True)
+        initial_derived_atoms = initial_state.get_ground_atoms(ignore_static=True, ignore_fluent=True)
+        assert len(initial_atoms) == 24
+        assert len(initial_static_atoms) == 22
+        assert len(initial_fluent_atoms) == 1
+        assert len(initial_derived_atoms) == 1
+        for atom in initial_atoms:
+            assert atom.get_index() is not None
+            assert isinstance(atom, GroundAtom)
+
+    def test_contains(self):
+        domain_path = DATA_DIR / 'miconic-fulladl' / 'domain.pddl'
+        problem_path = DATA_DIR / 'miconic-fulladl' / 'test_problem.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path)
+        initial_state = problem.get_initial_state()
+        assert initial_state.contains_all(initial_state.get_ground_atoms())
+
+    def test_literal_holds(self):
+        domain_path = DATA_DIR / 'miconic-fulladl' / 'domain.pddl'
+        problem_path = DATA_DIR / 'miconic-fulladl' / 'test_problem.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path)
+        initial_state = problem.get_initial_state()
+        aag = ApplicableActionGenerator(problem)
+        actions = aag.get_applicable_actions(initial_state)
+        assert len(actions) > 0
+        for action in actions:
+            assert action.get_precondition().holds(initial_state)
+
+
+
+class TestGroundConjunctiveCondition(unittest.TestCase):
+    def test_holds(self):
+        domain_path = DATA_DIR / 'miconic-fulladl' / 'domain.pddl'
+        problem_path = DATA_DIR / 'miconic-fulladl' / 'test_problem.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path)
+        initial_state = problem.get_initial_state()
+        assert not problem.get_goal_condition().holds(initial_state)
 
 
 if __name__ == '__main__':
