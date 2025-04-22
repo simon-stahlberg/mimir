@@ -26,11 +26,12 @@ var searchData=
   ['directiontype_23',['DirectionType',['../classmimir_1_1graphs_1_1DirectionTaggedType.html#ac54836fc0ccbed92091e9a912aff97b6',1,'mimir::graphs::DirectionTaggedType']]],
   ['discretecost_24',['DiscreteCost',['../namespacemimir.html#a9a5965ca488a8a8f0d8bda41ceaf3385',1,'mimir']]],
   ['discretecostlist_25',['DiscreteCostList',['../namespacemimir.html#aa3085f9a656656be6ed0ac38b44d3bbb',1,'mimir']]],
-  ['discretecostmatrix_26',['DiscreteCostMatrix',['../namespacemimir.html#a7d3fb3cabedc59968eaaa7636d73cf90',1,'mimir']]],
-  ['domain_27',['Domain',['../namespacemimir_1_1formalism.html#a0705b57e5a6062fa24dac5fc9ce7c5f7',1,'mimir::formalism']]],
-  ['domainlist_28',['DomainList',['../namespacemimir_1_1formalism.html#aecae3748a6a12079c0b129a8de1fffcd',1,'mimir::formalism']]],
-  ['duplicatepruningstrategy_29',['DuplicatePruningStrategy',['../namespacemimir_1_1search.html#ad0abd467d13ad53c78adb6587fa041a6',1,'mimir::search']]],
-  ['dynamicdigraph_30',['DynamicDigraph',['../namespacemimir_1_1graphs.html#ad9f1a2449686d29b0f079ce118ed78b3',1,'mimir::graphs']]],
-  ['dynamicedgecoloredgraph_31',['DynamicEdgeColoredGraph',['../namespacemimir_1_1graphs.html#ac85012a00c5dc537cc4f464dcf1dd546',1,'mimir::graphs']]],
-  ['dynamicvertexcoloredgraph_32',['DynamicVertexColoredGraph',['../namespacemimir_1_1graphs.html#a7c4b4c802399f15c4c2669049afadcda',1,'mimir::graphs']]]
+  ['discretecostmap_26',['DiscreteCostMap',['../namespacemimir.html#adefcadf9e10612717dc2be49f3daee96',1,'mimir']]],
+  ['discretecostmatrix_27',['DiscreteCostMatrix',['../namespacemimir.html#a7d3fb3cabedc59968eaaa7636d73cf90',1,'mimir']]],
+  ['domain_28',['Domain',['../namespacemimir_1_1formalism.html#a0705b57e5a6062fa24dac5fc9ce7c5f7',1,'mimir::formalism']]],
+  ['domainlist_29',['DomainList',['../namespacemimir_1_1formalism.html#aecae3748a6a12079c0b129a8de1fffcd',1,'mimir::formalism']]],
+  ['duplicatepruningstrategy_30',['DuplicatePruningStrategy',['../namespacemimir_1_1search.html#ad0abd467d13ad53c78adb6587fa041a6',1,'mimir::search']]],
+  ['dynamicdigraph_31',['DynamicDigraph',['../namespacemimir_1_1graphs.html#ad9f1a2449686d29b0f079ce118ed78b3',1,'mimir::graphs']]],
+  ['dynamicedgecoloredgraph_32',['DynamicEdgeColoredGraph',['../namespacemimir_1_1graphs.html#ac85012a00c5dc537cc4f464dcf1dd546',1,'mimir::graphs']]],
+  ['dynamicvertexcoloredgraph_33',['DynamicVertexColoredGraph',['../namespacemimir_1_1graphs.html#a7c4b4c802399f15c4c2669049afadcda',1,'mimir::graphs']]]
 ];

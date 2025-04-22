@@ -76,13 +76,12 @@ $(function() {
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="classmimir_1_1graphs_1_1bgl_1_1UnorderedMapReadWritePropertyMap-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">mimir::graphs::bgl::UnorderedMapReadWritePropertyMap&lt; Key, Value &gt; Class Template Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p><code><a class="el" href="classmimir_1_1graphs_1_1bgl_1_1UnorderedMapReadWritePropertyMap.html" title="UnorderedMapReadWritePropertyMap provides read-write-access to the Value associated with a given Key ...">UnorderedMapReadWritePropertyMap</a></code> provides read-write-access to the <code>Value</code> associated with a given <code>Key</code> via a call to the <code><a class="el" href="classmimir_1_1graphs_1_1bgl_1_1UnorderedMapReadWritePropertyMap.html#abd5c7ed86c71ebca94ca45dbfa6fb229">get()</a></code> and <code><a class="el" href="namespacemimir_1_1graphs_1_1bgl.html#a5609a6902839612433035834c1c63335">put()</a></code> function for sparse graph structures whose underlying storage are unordered_maps.  
+<p><code><a class="el" href="classmimir_1_1graphs_1_1bgl_1_1UnorderedMapReadWritePropertyMap.html" title="UnorderedMapReadWritePropertyMap provides read-write-access to the Value associated with a given Key ...">UnorderedMapReadWritePropertyMap</a></code> provides read-write-access to the <code>Value</code> associated with a given <code>Key</code> via a call to the <code><a class="el" href="classmimir_1_1graphs_1_1bgl_1_1UnorderedMapReadWritePropertyMap.html#a8d04a5d79073043129937147f14b19af">get()</a></code> and <code><a class="el" href="namespacemimir_1_1graphs_1_1bgl.html#a5609a6902839612433035834c1c63335">put()</a></code> function for sparse graph structures whose underlying storage are unordered_maps.  
  <a href="classmimir_1_1graphs_1_1bgl_1_1UnorderedMapReadWritePropertyMap.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="property__maps_8hpp_source.html">property_maps.hpp</a>&gt;</code></p>
@@ -100,21 +99,20 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aa9c2cb148950737cadc9623d58444c6f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1bgl_1_1UnorderedMapReadWritePropertyMap.html#aa9c2cb148950737cadc9623d58444c6f">UnorderedMapReadWritePropertyMap</a> (std::unordered_map&lt; Key, Value &gt; &amp;distances)</td></tr>
-<tr class="separator:aa9c2cb148950737cadc9623d58444c6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b445ac33e11d57be4cc32a3955df52e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1bgl_1_1UnorderedMapReadWritePropertyMap.html#a3b445ac33e11d57be4cc32a3955df52e">UnorderedMapReadWritePropertyMap</a> (std::unordered_map&lt; Key, Value &gt; &amp;data)</td></tr>
+<tr class="separator:a3b445ac33e11d57be4cc32a3955df52e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abd5c7ed86c71ebca94ca45dbfa6fb229"><td class="memItemLeft" align="right" valign="top">const auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1bgl_1_1UnorderedMapReadWritePropertyMap.html#abd5c7ed86c71ebca94ca45dbfa6fb229">get</a> (Key key) const</td></tr>
 <tr class="separator:abd5c7ed86c71ebca94ca45dbfa6fb229"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab8d3d2438705b79a98641c92f81d7c67"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1bgl_1_1UnorderedMapReadWritePropertyMap.html#ab8d3d2438705b79a98641c92f81d7c67">set</a> (Key key, Value value)</td></tr>
 <tr class="separator:ab8d3d2438705b79a98641c92f81d7c67"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
-Static Public Member Functions</h2></td></tr>
-<tr class="memitem:ae1af64663c93f6363cf28cb8dd135df3"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1bgl_1_1UnorderedMapReadWritePropertyMap.html#ae1af64663c93f6363cf28cb8dd135df3">initialize_data</a> (std::size_t <a class="el" href="namespacemimir_1_1graphs.html#a383f83f85a6611d7889328a86171a655">num_vertices</a>)</td></tr>
-<tr class="separator:ae1af64663c93f6363cf28cb8dd135df3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d04a5d79073043129937147f14b19af"><td class="memItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1bgl_1_1UnorderedMapReadWritePropertyMap.html#a8d04a5d79073043129937147f14b19af">get</a> ()</td></tr>
+<tr class="separator:a8d04a5d79073043129937147f14b19af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a341dbd2c08f7637b65109527308462cf"><td class="memItemLeft" align="right" valign="top">const auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1bgl_1_1UnorderedMapReadWritePropertyMap.html#a341dbd2c08f7637b65109527308462cf">get</a> () const</td></tr>
+<tr class="separator:a341dbd2c08f7637b65109527308462cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;std::unsigned_integral Key, typename Value&gt;<br />
-class mimir::graphs::bgl::UnorderedMapReadWritePropertyMap&lt; Key, Value &gt;</div><p><code><a class="el" href="classmimir_1_1graphs_1_1bgl_1_1UnorderedMapReadWritePropertyMap.html" title="UnorderedMapReadWritePropertyMap provides read-write-access to the Value associated with a given Key ...">UnorderedMapReadWritePropertyMap</a></code> provides read-write-access to the <code>Value</code> associated with a given <code>Key</code> via a call to the <code><a class="el" href="classmimir_1_1graphs_1_1bgl_1_1UnorderedMapReadWritePropertyMap.html#abd5c7ed86c71ebca94ca45dbfa6fb229">get()</a></code> and <code><a class="el" href="namespacemimir_1_1graphs_1_1bgl.html#a5609a6902839612433035834c1c63335">put()</a></code> function for sparse graph structures whose underlying storage are unordered_maps. </p>
+class mimir::graphs::bgl::UnorderedMapReadWritePropertyMap&lt; Key, Value &gt;</div><p><code><a class="el" href="classmimir_1_1graphs_1_1bgl_1_1UnorderedMapReadWritePropertyMap.html" title="UnorderedMapReadWritePropertyMap provides read-write-access to the Value associated with a given Key ...">UnorderedMapReadWritePropertyMap</a></code> provides read-write-access to the <code>Value</code> associated with a given <code>Key</code> via a call to the <code><a class="el" href="classmimir_1_1graphs_1_1bgl_1_1UnorderedMapReadWritePropertyMap.html#a8d04a5d79073043129937147f14b19af">get()</a></code> and <code><a class="el" href="namespacemimir_1_1graphs_1_1bgl.html#a5609a6902839612433035834c1c63335">put()</a></code> function for sparse graph structures whose underlying storage are unordered_maps. </p>
 <p>Link to Boost docs: <a href="https://www.boost.org/doc/libs/1_82_0/libs/property_map/doc/ReadWritePropertyMap.html">https://www.boost.org/doc/libs/1_82_0/libs/property_map/doc/ReadWritePropertyMap.html</a> </p><dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">Key</td><td>is the key type. </td></tr>
@@ -188,8 +186,8 @@ template&lt;std::unsigned_integral Key, typename Value &gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="aa9c2cb148950737cadc9623d58444c6f" name="aa9c2cb148950737cadc9623d58444c6f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa9c2cb148950737cadc9623d58444c6f">&#9670;&#160;</a></span>UnorderedMapReadWritePropertyMap()</h2>
+<a id="a3b445ac33e11d57be4cc32a3955df52e" name="a3b445ac33e11d57be4cc32a3955df52e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b445ac33e11d57be4cc32a3955df52e">&#9670;&#160;</a></span>UnorderedMapReadWritePropertyMap()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -203,7 +201,7 @@ template&lt;std::unsigned_integral Key, typename Value &gt; </div>
           <td class="memname"><a class="el" href="classmimir_1_1graphs_1_1bgl_1_1UnorderedMapReadWritePropertyMap.html">mimir::graphs::bgl::UnorderedMapReadWritePropertyMap</a>&lt; Key, Value &gt;::UnorderedMapReadWritePropertyMap </td>
           <td>(</td>
           <td class="paramtype">std::unordered_map&lt; Key, Value &gt; &amp;&#160;</td>
-          <td class="paramname"><em>distances</em></td><td>)</td>
+          <td class="paramname"><em>data</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -217,8 +215,62 @@ template&lt;std::unsigned_integral Key, typename Value &gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a8d04a5d79073043129937147f14b19af" name="a8d04a5d79073043129937147f14b19af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d04a5d79073043129937147f14b19af">&#9670;&#160;</a></span>get() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;std::unsigned_integral Key, typename Value &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto &amp; <a class="el" href="classmimir_1_1graphs_1_1bgl_1_1UnorderedMapReadWritePropertyMap.html">mimir::graphs::bgl::UnorderedMapReadWritePropertyMap</a>&lt; Key, Value &gt;::get </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a341dbd2c08f7637b65109527308462cf" name="a341dbd2c08f7637b65109527308462cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a341dbd2c08f7637b65109527308462cf">&#9670;&#160;</a></span>get() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;std::unsigned_integral Key, typename Value &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const auto &amp; <a class="el" href="classmimir_1_1graphs_1_1bgl_1_1UnorderedMapReadWritePropertyMap.html">mimir::graphs::bgl::UnorderedMapReadWritePropertyMap</a>&lt; Key, Value &gt;::get </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="abd5c7ed86c71ebca94ca45dbfa6fb229" name="abd5c7ed86c71ebca94ca45dbfa6fb229"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abd5c7ed86c71ebca94ca45dbfa6fb229">&#9670;&#160;</a></span>get()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#abd5c7ed86c71ebca94ca45dbfa6fb229">&#9670;&#160;</a></span>get() <span class="overload">[3/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -239,34 +291,6 @@ template&lt;std::unsigned_integral Key, typename Value &gt; </div>
   </td>
   <td class="mlabels-right">
 <span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ae1af64663c93f6363cf28cb8dd135df3" name="ae1af64663c93f6363cf28cb8dd135df3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae1af64663c93f6363cf28cb8dd135df3">&#9670;&#160;</a></span>initialize_data()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;std::unsigned_integral Key, typename Value &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static auto <a class="el" href="classmimir_1_1graphs_1_1bgl_1_1UnorderedMapReadWritePropertyMap.html">mimir::graphs::bgl::UnorderedMapReadWritePropertyMap</a>&lt; Key, Value &gt;::initialize_data </td>
-          <td>(</td>
-          <td class="paramtype">std::size_t&#160;</td>
-          <td class="paramname"><em>num_vertices</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">

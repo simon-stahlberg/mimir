@@ -74,9 +74,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
-<a href="#namespaces">Namespaces</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#namespaces">Namespaces</a>  </div>
   <div class="headertitle"><div class="title">graph_algorithms.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -98,13 +96,6 @@ $(function() {
 </div>
 <p><a href="graph__algorithms_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmimir_1_1graphs_1_1bgl_1_1BFSBoostVisitor.html">mimir::graphs::bgl::BFSBoostVisitor&lt; PredecessorMap, DistanceMap &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmimir_1_1graphs_1_1bgl_1_1DefaultDFSBoostVisitor.html">mimir::graphs::bgl::DefaultDFSBoostVisitor&lt; PredecessorMap &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
 <tr class="memitem:namespacemimir"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir.html">mimir</a></td></tr>
@@ -113,26 +104,6 @@ Namespaces</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacemimir_1_1graphs_1_1bgl"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1bgl.html">mimir::graphs::bgl</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
-Functions</h2></td></tr>
-<tr class="memitem:a4645d7c52179236a6a0a002a8663ae8c"><td class="memTemplParams" colspan="2">template&lt;typename Graph , IsDirection Direction&gt; <br />
-requires IsVertexListGraph&lt;Graph&gt; &amp;&amp; IsIncidenceGraph&lt;Graph&gt;</td></tr>
-<tr class="memitem:a4645d7c52179236a6a0a002a8663ae8c"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1bgl.html#a4645d7c52179236a6a0a002a8663ae8c">mimir::graphs::bgl::strong_components</a> (const DirectionTaggedType&lt; Graph, Direction &gt; &amp;g)</td></tr>
-<tr class="memdesc:a4645d7c52179236a6a0a002a8663ae8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wrapper function for boost's strong_components algorithm.  <br /></td></tr>
-<tr class="separator:a4645d7c52179236a6a0a002a8663ae8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7c3660424d4758316139f146ca844789"><td class="memTemplParams" colspan="2">template&lt;typename Graph , IsDirection Direction, class SourceInputIter &gt; <br />
-requires IsVertexListGraph&lt;Graph&gt; &amp;&amp; IsIncidenceGraph&lt;Graph&gt;</td></tr>
-<tr class="memitem:a7c3660424d4758316139f146ca844789"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1bgl.html#a7c3660424d4758316139f146ca844789">mimir::graphs::bgl::breadth_first_search</a> (const DirectionTaggedType&lt; Graph, Direction &gt; &amp;g, SourceInputIter s_begin, SourceInputIter s_end)</td></tr>
-<tr class="separator:a7c3660424d4758316139f146ca844789"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5a8b9861c3376c24bb4ff8ca5fd98f61"><td class="memTemplParams" colspan="2">template&lt;typename Graph , IsDirection Direction, class SourceInputIter &gt; <br />
-requires IsVertexListGraph&lt;Graph&gt; &amp;&amp; IsIncidenceGraph&lt;Graph&gt;</td></tr>
-<tr class="memitem:a5a8b9861c3376c24bb4ff8ca5fd98f61"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1bgl.html#a5a8b9861c3376c24bb4ff8ca5fd98f61">mimir::graphs::bgl::depth_first_search</a> (const DirectionTaggedType&lt; Graph, Direction &gt; &amp;g, SourceInputIter s_begin, SourceInputIter s_end)</td></tr>
-<tr class="separator:a5a8b9861c3376c24bb4ff8ca5fd98f61"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afcb7f6b1d05ec020d99aa0876580b7bc"><td class="memTemplParams" colspan="2">template&lt;typename Graph , IsDirection Direction&gt; <br />
-requires IsVertexListGraph&lt;Graph&gt; &amp;&amp; IsIncidenceGraph&lt;Graph&gt;</td></tr>
-<tr class="memitem:afcb7f6b1d05ec020d99aa0876580b7bc"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1bgl.html#afcb7f6b1d05ec020d99aa0876580b7bc">mimir::graphs::bgl::topological_sort</a> (const DirectionTaggedType&lt; Graph, Direction &gt; &amp;g)</td></tr>
-<tr class="separator:afcb7f6b1d05ec020d99aa0876580b7bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->
