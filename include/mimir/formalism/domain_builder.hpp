@@ -44,7 +44,7 @@ private:
 
 public:
     /// @brief Create an empty builder.
-    DomainBuilder() = default;
+    DomainBuilder();
 
     /// @brief Finalizes the `Domain` and returns it.
     /// The `DomainBuilder` is in an invalid state afterwards.

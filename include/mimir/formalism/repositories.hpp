@@ -179,7 +179,7 @@ private:
     HanaRepositories m_repositories;
 
 public:
-    Repositories() = default;
+    Repositories();
 
     // delete copy and allow move
     Repositories(const Repositories& other) = delete;

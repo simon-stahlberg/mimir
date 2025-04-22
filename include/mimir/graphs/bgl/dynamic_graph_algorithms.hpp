@@ -50,8 +50,15 @@ auto strong_components(const DirectionTaggedType<Graph, Direction>& g)
     using vertex_descriptor_type = typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor;
     using vertices_size_type = typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertices_size_type;
     using ComponentMap = UnorderedMapReadWritePropertyMap<vertex_descriptor_type, vertices_size_type>;
+    using VertexIndexMap = UnorderedMapReadPropertyMap<vertex_descriptor_type, vertex_descriptor_type>;
 
-    auto vertex_index_map = TrivialReadPropertyMap<vertex_descriptor_type, vertex_descriptor_type>();
+    auto vertex_remap = std::unordered_map<vertex_descriptor_type, vertex_descriptor_type>();
+    for (vertex_descriptor_type v : g.get().get_vertex_indices())
+    {
+        vertex_remap[v] = vertex_remap.size();
+    }
+    auto vertex_index_map = VertexIndexMap(vertex_remap);
+
     auto c = std::unordered_map<vertex_descriptor_type, vertices_size_type>();
     auto component_map = ComponentMap(c);
 
@@ -193,13 +200,19 @@ auto dijkstra_shortest_paths(const DirectionTaggedType<Graph, Direction>& g, con
 {
     using vertex_descriptor_type = typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor;
     using edge_descriptor_type = typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::edge_descriptor;
+    using VertexIndexMap = UnorderedMapReadPropertyMap<vertex_descriptor_type, vertex_descriptor_type>;
 
     auto p = std::unordered_map<vertex_descriptor_type, vertex_descriptor_type>();
     auto predecessor_map = UnorderedMapReadWritePropertyMap<vertex_descriptor_type, vertex_descriptor_type>(p);
     auto d = ContinuousCostMap();
     auto distance_map = UnorderedMapReadWritePropertyMap<vertex_descriptor_type, ContinuousCost>(d);
     auto weight_map = UnorderedMapReadPropertyMap<edge_descriptor_type, ContinuousCost>(w);
-    auto vertex_index_map = TrivialReadPropertyMap<vertex_descriptor_type, vertex_descriptor_type>();
+    auto vertex_remap = std::unordered_map<vertex_descriptor_type, vertex_descriptor_type>();
+    for (vertex_descriptor_type v : g.get().get_vertex_indices())
+    {
+        vertex_remap[v] = vertex_remap.size();
+    }
+    auto vertex_index_map = VertexIndexMap(vertex_remap);
     auto compare = std::less<ContinuousCost>();
     auto combine = std::plus<ContinuousCost>();
     auto inf = std::numeric_limits<ContinuousCost>::infinity();

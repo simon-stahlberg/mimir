@@ -39,6 +39,7 @@ TEST(MimirTests, MimirFormalismTranslatorTest)
     std::cout << *domain << std::endl << std::endl;
     const auto problem = parser.parse_problem(problem_file);
     std::cout << *problem << std::endl;
+
     auto translator = Translator(domain);
     const auto translated_domain = translator.get_translated_domain();
     std::cout << *translator.get_translated_domain() << std::endl;

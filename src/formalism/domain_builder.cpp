@@ -34,6 +34,20 @@ static void verify_indexing_scheme(const std::vector<const T*>& elements, const 
     }
 }
 
+DomainBuilder::DomainBuilder() :
+    m_repositories(),
+    m_filepath(std::nullopt),
+    m_name(""),
+    m_requirements(nullptr),
+    m_constants(),
+    m_predicates(),
+    m_function_skeletons(),
+    m_auxiliary_function_skeleton(std::nullopt),
+    m_actions(),
+    m_axioms()
+{
+}
+
 Domain DomainBuilder::get_result()
 {
     std::sort(get_constants().begin(), get_constants().end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
