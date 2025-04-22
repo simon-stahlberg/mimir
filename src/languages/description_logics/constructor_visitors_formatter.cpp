@@ -237,18 +237,29 @@ void FormatterVisitor::visit(NumericalDistance constructor)
 }
 
 template<IsConceptOrRoleOrBooleanOrNumericalTag D>
-extern std::ostream& operator<<(std::ostream& out, const Constructor<D>& constructor)
+std::ostream& operator<<(std::ostream& out, Constructor<D> constructor)
 {
     auto visitor = FormatterVisitor(out);
-
     constructor->accept(visitor);
-
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, const Constructor<ConceptTag>& data);
-template std::ostream& operator<<(std::ostream& out, const Constructor<RoleTag>& data);
-template std::ostream& operator<<(std::ostream& out, const Constructor<BooleanTag>& data);
-template std::ostream& operator<<(std::ostream& out, const Constructor<NumericalTag>& data);
+template std::ostream& operator<<(std::ostream& out, Constructor<ConceptTag> data);
+template std::ostream& operator<<(std::ostream& out, Constructor<RoleTag> data);
+template std::ostream& operator<<(std::ostream& out, Constructor<BooleanTag> data);
+template std::ostream& operator<<(std::ostream& out, Constructor<NumericalTag> data);
+
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
+std::ostream& operator<<(std::ostream& out, const IConstructor<D>& constructor)
+{
+    auto visitor = FormatterVisitor(out);
+    constructor.accept(visitor);
+    return out;
+}
+
+template std::ostream& operator<<(std::ostream& out, const IConstructor<ConceptTag>& data);
+template std::ostream& operator<<(std::ostream& out, const IConstructor<RoleTag>& data);
+template std::ostream& operator<<(std::ostream& out, const IConstructor<BooleanTag>& data);
+template std::ostream& operator<<(std::ostream& out, const IConstructor<NumericalTag>& data);
 
 }

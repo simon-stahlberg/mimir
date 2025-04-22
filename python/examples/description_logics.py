@@ -25,13 +25,13 @@ def main():
     state_space_options = datasets.StateSpaceOptions()
     state_space_options.symmetry_pruning = True 
     generalized_state_space_options = datasets.GeneralizedStateSpaceOptions()
-    generalized_state_space_options.symmetry_pruning = True
     knowledge_base_options = datasets.KnowledgeBaseOptions()
     knowledge_base_options.state_space_options = state_space_options
     knowledge_base_options.generalized_state_space_options = generalized_state_space_options
     knowledge_base = datasets.KnowledgeBase.create(generalized_search_context, knowledge_base_options)
 
     # Create a CNFGrammar for the domain.
+    # You can also write down your own grammar in a BNF specification that will automatically be translated into a CNF representation.
     grammar = description_logics.CNFGrammar.create(description_logics.GrammarSpecificationEnum.FRANCES_ET_AL_AAAI2021, knowledge_base.get_domain())
 
     pruning_function = description_logics.StateListRefinementPruningFunction(knowledge_base.get_generalized_state_space())

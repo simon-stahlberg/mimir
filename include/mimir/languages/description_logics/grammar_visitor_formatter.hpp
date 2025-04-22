@@ -119,6 +119,15 @@ extern std::ostream& operator<<(std::ostream& out, NonTerminal<D> element);
 template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 extern std::ostream& operator<<(std::ostream& out, DerivationRule<D> element);
 
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
+extern std::ostream& operator<<(std::ostream& out, const IConstructor<D>& element);
+
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
+extern std::ostream& operator<<(std::ostream& out, const NonTerminalImpl<D>& element);
+
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
+extern std::ostream& operator<<(std::ostream& out, const DerivationRuleImpl<D>& element);
+
 extern std::ostream& operator<<(std::ostream& out, const Grammar& element);
 
 }

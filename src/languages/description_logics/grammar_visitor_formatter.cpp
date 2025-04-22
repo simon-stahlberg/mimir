@@ -381,9 +381,7 @@ template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 std::ostream& operator<<(std::ostream& out, Constructor<D> element)
 {
     auto visitor = FormatterVisitor(out);
-
     element->accept(visitor);
-
     return out;
 }
 
@@ -396,9 +394,7 @@ template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 std::ostream& operator<<(std::ostream& out, NonTerminal<D> element)
 {
     auto visitor = FormatterVisitor(out);
-
     element->accept(visitor);
-
     return out;
 }
 
@@ -411,9 +407,7 @@ template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 std::ostream& operator<<(std::ostream& out, DerivationRule<D> element)
 {
     auto visitor = FormatterVisitor(out);
-
     element->accept(visitor);
-
     return out;
 }
 
@@ -421,6 +415,45 @@ template std::ostream& operator<<(std::ostream& out, DerivationRule<ConceptTag> 
 template std::ostream& operator<<(std::ostream& out, DerivationRule<RoleTag> element);
 template std::ostream& operator<<(std::ostream& out, DerivationRule<BooleanTag> element);
 template std::ostream& operator<<(std::ostream& out, DerivationRule<NumericalTag> element);
+
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
+std::ostream& operator<<(std::ostream& out, const IConstructor<D>& element)
+{
+    auto visitor = FormatterVisitor(out);
+    element.accept(visitor);
+    return out;
+}
+
+template std::ostream& operator<<(std::ostream& out, const IConstructor<ConceptTag>& element);
+template std::ostream& operator<<(std::ostream& out, const IConstructor<RoleTag>& element);
+template std::ostream& operator<<(std::ostream& out, const IConstructor<BooleanTag>& element);
+template std::ostream& operator<<(std::ostream& out, const IConstructor<NumericalTag>& element);
+
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
+std::ostream& operator<<(std::ostream& out, const NonTerminalImpl<D>& element)
+{
+    auto visitor = FormatterVisitor(out);
+    element.accept(visitor);
+    return out;
+}
+
+template std::ostream& operator<<(std::ostream& out, const NonTerminalImpl<ConceptTag>& element);
+template std::ostream& operator<<(std::ostream& out, const NonTerminalImpl<RoleTag>& element);
+template std::ostream& operator<<(std::ostream& out, const NonTerminalImpl<BooleanTag>& element);
+template std::ostream& operator<<(std::ostream& out, const NonTerminalImpl<NumericalTag>& element);
+
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
+std::ostream& operator<<(std::ostream& out, const DerivationRuleImpl<D>& element)
+{
+    auto visitor = FormatterVisitor(out);
+    element.accept(visitor);
+    return out;
+}
+
+template std::ostream& operator<<(std::ostream& out, const DerivationRuleImpl<ConceptTag>& element);
+template std::ostream& operator<<(std::ostream& out, const DerivationRuleImpl<RoleTag>& element);
+template std::ostream& operator<<(std::ostream& out, const DerivationRuleImpl<BooleanTag>& element);
+template std::ostream& operator<<(std::ostream& out, const DerivationRuleImpl<NumericalTag>& element);
 
 std::ostream& operator<<(std::ostream& out, const Grammar& element)
 {
