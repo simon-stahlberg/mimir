@@ -66,7 +66,7 @@ from pymimir.pymimir.advanced.formalism import (
     FluentGroundFunctionExpressionFunction,
     FluentGroundNumericEffect,
     FluentNumericAssignmentSet,
-    
+
     StaticFunction,
     StaticFunctionList,
     StaticGroundFunction,
@@ -89,7 +89,7 @@ from pymimir.pymimir.advanced.formalism import (
 )
 
 from pymimir.pymimir.advanced.formalism import (
-    Action,  
+    Action,
     ActionList,
     Axiom,
     AxiomList,
