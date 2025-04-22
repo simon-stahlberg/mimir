@@ -35,6 +35,7 @@ def main():
     for state_space in knowledge_base.get_state_spaces():
         graph = state_space.get_graph()
         print("Dot representation of the StateSpace:")
+        print(graph)
 
         # The graph is a specific instantiation of static graph which provides access to boost bgl. 
         # For more information on provided functionality, see:

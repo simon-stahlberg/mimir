@@ -16,22 +16,10 @@ void bind_constructor(nb::module_& m, const std::string& class_name)
     using ValueType = IConstructor<D>;
 
     nb::class_<ValueType>(m, class_name.c_str())
+        .def("__str__", [](const ValueType& self) { return to_string(self); })
         .def("__eq__", [](const ValueType& lhs, const ValueType& rhs) { return &lhs == &rhs; })
+        .def("__ne__", [](const ValueType& lhs, const ValueType& rhs) { return &lhs != &rhs; })
         .def("__hash__", [](const ValueType& self) { return std::hash<const ValueType*> {}(&self); })
-        .def("__str__",
-             [](const ValueType& self)
-             {
-                 auto out = std::stringstream {};
-                 out << &self;
-                 return out.str();
-             })
-        .def("__repr__",
-             [](const ValueType& self)
-             {
-                 auto out = std::stringstream {};
-                 out << &self;
-                 return out.str();
-             })
         .def("evaluate", &ValueType::evaluate, nb::rv_policy::reference_internal, "evaluation_context"_a)
         .def("accept", &ValueType::accept, "visitor"_a)
         .def("get_index", &ValueType::get_index);
@@ -123,22 +111,10 @@ void bind_constructor(nb::module_& m, const std::string& class_name)
     using ValueType = IConstructor<D>;
 
     nb::class_<ValueType>(m, class_name.c_str())
+        .def("__str__", [](const ValueType& self) { return to_string(self); })
         .def("__eq__", [](const ValueType& lhs, const ValueType& rhs) { return &lhs == &rhs; })
+        .def("__ne__", [](const ValueType& lhs, const ValueType& rhs) { return &lhs != &rhs; })
         .def("__hash__", [](const ValueType& self) { return std::hash<const ValueType*> {}(&self); })
-        .def("__str__",
-             [](const ValueType& self)
-             {
-                 auto out = std::stringstream {};
-                 out << &self;
-                 return out.str();
-             })
-        .def("__repr__",
-             [](const ValueType& self)
-             {
-                 auto out = std::stringstream {};
-                 out << &self;
-                 return out.str();
-             })
         .def("test_match", &ValueType::test_match, nb::rv_policy::copy, "constructor"_a, "grammar"_a)
         .def("accept", &ValueType::accept, "visitor"_a)
         .def("get_index", &ValueType::get_index);
@@ -152,22 +128,10 @@ void bind_nonterminal(nb::module_& m, const std::string& class_name)
     using ValueType = NonTerminalImpl<D>;
 
     nb::class_<ValueType>(m, class_name.c_str())
+        .def("__str__", [](const ValueType& self) { return to_string(self); })
         .def("__eq__", [](const ValueType& lhs, const ValueType& rhs) { return &lhs == &rhs; })
+        .def("__ne__", [](const ValueType& lhs, const ValueType& rhs) { return &lhs != &rhs; })
         .def("__hash__", [](const ValueType& self) { return std::hash<const ValueType*> {}(&self); })
-        .def("__str__",
-             [](const ValueType& self)
-             {
-                 auto out = std::stringstream {};
-                 out << &self;
-                 return out.str();
-             })
-        .def("__repr__",
-             [](const ValueType& self)
-             {
-                 auto out = std::stringstream {};
-                 out << &self;
-                 return out.str();
-             })
         .def("test_match", &ValueType::test_match, nb::rv_policy::copy, "constructor"_a, "grammar"_a)
         .def("accept", &ValueType::accept, "visitor"_a)
         .def("get_index", &ValueType::get_index)
@@ -182,22 +146,10 @@ void bind_derivation_rule(nb::module_& m, const std::string& class_name)
     using ValueType = DerivationRuleImpl<D>;
 
     nb::class_<ValueType>(m, class_name.c_str())
+        .def("__str__", [](const ValueType& self) { return to_string(self); })
         .def("__eq__", [](const ValueType& lhs, const ValueType& rhs) { return &lhs == &rhs; })
+        .def("__ne__", [](const ValueType& lhs, const ValueType& rhs) { return &lhs != &rhs; })
         .def("__hash__", [](const ValueType& self) { return std::hash<const ValueType*> {}(&self); })
-        .def("__str__",
-             [](const ValueType& self)
-             {
-                 auto out = std::stringstream {};
-                 out << &self;
-                 return out.str();
-             })
-        .def("__repr__",
-             [](const ValueType& self)
-             {
-                 auto out = std::stringstream {};
-                 out << &self;
-                 return out.str();
-             })
         .def("test_match", &ValueType::test_match, nb::rv_policy::copy, "constructor"_a, "grammar"_a)
         .def("accept", &ValueType::accept, "visitor"_a)
         .def("get_index", &ValueType::get_index)
@@ -213,23 +165,10 @@ void bind_substitution_rule(nb::module_& m, const std::string& class_name)
     using ValueType = SubstitutionRuleImpl<D>;
 
     nb::class_<ValueType>(m, class_name.c_str())
+        .def("__str__", [](const ValueType& self) { return to_string(self); })
         .def("__eq__", [](const ValueType& lhs, const ValueType& rhs) { return &lhs == &rhs; })
         .def("__ne__", [](const ValueType& lhs, const ValueType& rhs) { return &lhs != &rhs; })
         .def("__hash__", [](const ValueType& self) { return std::hash<const ValueType*> {}(&self); })
-        .def("__str__",
-             [](const ValueType& self)
-             {
-                 auto out = std::stringstream {};
-                 out << &self;
-                 return out.str();
-             })
-        .def("__repr__",
-             [](const ValueType& self)
-             {
-                 auto out = std::stringstream {};
-                 out << &self;
-                 return out.str();
-             })
         .def("test_match", &ValueType::test_match, nb::rv_policy::copy, "constructor"_a, "grammar"_a)
         .def("accept", &ValueType::accept, "visitor"_a)
         .def("get_index", &ValueType::get_index)

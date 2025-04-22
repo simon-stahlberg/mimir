@@ -7,7 +7,7 @@ import pymimir.advanced.graphs as graphs
 
 def main():
     graph = graphs.DynamicPyGraph()
-    vx = graph.add_vertex(("dummy",))
+    vx = graph.add_vertex(("to_be_removed",))
     v1 = graph.add_vertex((0,0))
     v2 = graph.add_vertex((0,1))
     v3 = graph.add_vertex((1,1))
@@ -16,7 +16,6 @@ def main():
     graph.add_undirected_edge(v2, v3, ("b",2))
     graph.add_undirected_edge(v3, v4, ("c",3))
     graph.add_undirected_edge(v4, v1, ("d",4))
-
     graph.remove_vertex(vx)
     assert(v1 == 1)
     assert(v2 == 2)
