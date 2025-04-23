@@ -26,11 +26,11 @@ var searchData=
   ['is_5fgoal_23',['is_goal',['../namespacemimir_1_1graphs.html#a8e0d7ca14ee2546ea7889049a109184d',1,'mimir::graphs']]],
   ['is_5finitial_24',['is_initial',['../namespacemimir_1_1graphs.html#a00e4add96fc8e7d6aa515680e93cc4c9',1,'mimir::graphs']]],
   ['is_5floopless_25',['is_loopless',['../namespacemimir_1_1graphs.html#ade17ba3ffd51f93a643429fefe188184',1,'mimir::graphs']]],
-  ['is_5fmulti_5fgraph_26',['is_multi_graph',['../namespacemimir_1_1graphs.html#a2fb23c4687749ba2063a71ccf7115f67',1,'mimir::graphs']]],
+  ['is_5fmulti_26',['is_multi',['../namespacemimir_1_1graphs.html#a4c4790d8477b269d23e683a70a42e545',1,'mimir::graphs']]],
   ['is_5fquiet_27',['is_quiet',['../classmimir_1_1search_1_1siw_1_1IEventHandler.html#ab057d56d358464ead32aef4cbe4cb6e3',1,'mimir::search::siw::IEventHandler::is_quiet()'],['../classmimir_1_1search_1_1astar_1_1EventHandlerBase.html#af3627e63e18c0d2f0f007f2f18b28970',1,'mimir::search::astar::EventHandlerBase::is_quiet()'],['../classmimir_1_1search_1_1brfs_1_1EventHandlerBase.html#af1bdd66563026fca1487cbd247fb00b7',1,'mimir::search::brfs::EventHandlerBase::is_quiet()'],['../classmimir_1_1search_1_1iw_1_1IEventHandler.html#a9dc7bb30c3cf1880de7dd8a09c5f29e8',1,'mimir::search::iw::IEventHandler::is_quiet()'],['../classmimir_1_1search_1_1siw_1_1EventHandlerBase.html#ad0116f264fa0edc49a7d87b321e13318',1,'mimir::search::siw::EventHandlerBase::is_quiet()'],['../classmimir_1_1search_1_1iw_1_1EventHandlerBase.html#a8a0de6de8ab58672666a461c3475194d',1,'mimir::search::iw::EventHandlerBase::is_quiet()']]],
   ['is_5fstatically_5fapplicable_28',['is_statically_applicable',['../namespacemimir_1_1search.html#ade0882516653fa323b7230ca0fe38730',1,'mimir::search']]],
   ['is_5fsymmetry_5freduced_29',['is_symmetry_reduced',['../classmimir_1_1datasets_1_1StateSpaceImpl.html#a0efb57872daff4dafedb3053a317793c',1,'mimir::datasets::StateSpaceImpl']]],
   ['is_5fterminating_30',['is_terminating',['../classmimir_1_1languages_1_1policy__sketches_1_1PolicySketch.html#a2a743e66962a32543e03f0c761b30275',1,'mimir::languages::policy_sketches::PolicySketch::is_terminating()'],['../classmimir_1_1languages_1_1general__policies_1_1GeneralPolicyImpl.html#aa47901cacc6ccaa2f7b84201c3856704',1,'mimir::languages::general_policies::GeneralPolicyImpl::is_terminating()']]],
-  ['is_5fundirected_5fgraph_31',['is_undirected_graph',['../namespacemimir_1_1graphs.html#aa6c5054945e444779927da75a9cdddd4',1,'mimir::graphs']]],
+  ['is_5fundirected_31',['is_undirected',['../namespacemimir_1_1graphs.html#ac4f10cddc9fdf1be2db1886b5646d88a',1,'mimir::graphs']]],
   ['is_5funsolvable_32',['is_unsolvable',['../namespacemimir_1_1graphs.html#a684fbcd62edb3f04c89d273a65e3448e',1,'mimir::graphs']]]
 ];
