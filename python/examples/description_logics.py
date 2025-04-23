@@ -5,192 +5,352 @@ import pymimir.advanced.search as search
 import pymimir.advanced.datasets as datasets
 import pymimir.advanced.languages.description_logics as description_logics
 
+from functools import singledispatchmethod
 from pathlib import Path
 
 ROOT_DIR = (Path(__file__).parent.parent.parent).absolute()
 
 
-class MyVisitor(description_logics.ConstructorVisitor):
+class MyConstructorVisitor():
     """ Recursively visit the constructors. """
     def __init__(self):
-        super().__init__()
+        pass
 
-    def visit(self, constructor):
-        if isinstance(constructor, description_logics.ConceptBot):
-            self.visit_concept_bot(constructor)
-        elif isinstance(constructor, description_logics.ConceptTop):
-            self.visit_concept_top(constructor)
-        elif isinstance(constructor, description_logics.ConceptStaticAtomicState):
-            self.visit_concept_static_atomic_state(constructor)
-        elif isinstance(constructor, description_logics.ConceptFluentAtomicState):
-            self.visit_concept_fluent_atomic_state(constructor)
-        elif isinstance(constructor, description_logics.ConceptDerivedAtomicState):
-            self.visit_concept_derived_atomic_state(constructor)
-        elif isinstance(constructor, description_logics.ConceptStaticAtomicGoal):
-            self.visit_concept_static_atomic_goal(constructor)
-        elif isinstance(constructor, description_logics.ConceptFluentAtomicGoal):
-            self.visit_concept_fluent_atomic_goal(constructor)
-        elif isinstance(constructor, description_logics.ConceptDerivedAtomicGoal):
-            self.visit_concept_derived_atomic_goal(constructor)
-        elif isinstance(constructor, description_logics.ConceptIntersection):
-            self.visit_concept_intersection(constructor)
-        elif isinstance(constructor, description_logics.ConceptUnion):
-            self.visit_concept_union(constructor)
-        elif isinstance(constructor, description_logics.ConceptNegation):
-            self.visit_concept_negation(constructor)
-        elif isinstance(constructor, description_logics.ConceptValueRestriction):
-            self.visit_concept_value_restriction(constructor)
-        elif isinstance(constructor, description_logics.ConceptExistentialQuantification):
-            self.visit_concept_existential_quantification(constructor)
-        elif isinstance(constructor, description_logics.ConceptRoleValueMapContainment):
-            self.visit_concept_role_value_map_containment(constructor)
-        elif isinstance(constructor, description_logics.ConceptRoleValueMapEquality):
-            self.visit_concept_role_value_map_equality(constructor)
-        elif isinstance(constructor, description_logics.ConceptNominal):
-            self.visit_concept_nominal(constructor)
-        elif isinstance(constructor, description_logics.RoleUniversal):
-            self.visit_role_universal(constructor)
-        elif isinstance(constructor, description_logics.RoleStaticAtomicState):
-            self.visit_role_static_atomic_state(constructor)
-        elif isinstance(constructor, description_logics.RoleFluentAtomicState):
-            self.visit_role_fluent_atomic_state(constructor)
-        elif isinstance(constructor, description_logics.RoleDerivedAtomicState):
-            self.visit_role_derived_atomic_state(constructor)
-        elif isinstance(constructor, description_logics.RoleStaticAtomicGoal):
-            self.visit_role_static_atomic_goal(constructor)
-        elif isinstance(constructor, description_logics.RoleFluentAtomicGoal):
-            self.visit_role_fluent_atomic_goal(constructor)
-        elif isinstance(constructor, description_logics.RoleDerivedAtomicGoal):
-            self.visit_role_derived_atomic_goal(constructor)
-        elif isinstance(constructor, description_logics.RoleIntersection):
-            self.visit_role_intersection(constructor)
-        elif isinstance(constructor, description_logics.RoleUnion):
-            self.visit_role_union(constructor)
-        elif isinstance(constructor, description_logics.RoleComplement):
-            self.visit_role_complement(constructor)
-        elif isinstance(constructor, description_logics.RoleInverse):
-            self.visit_role_inverse(constructor)
-        elif isinstance(constructor, description_logics.RoleComposition):
-            self.visit_role_composition(constructor)
-        elif isinstance(constructor, description_logics.RoleTransitiveClosure):
-            self.visit_role_transitive_closure(constructor)
-        elif isinstance(constructor, description_logics.RoleReflexiveTransitiveClosure):
-            self.visit_role_reflexive_transitive_closure(constructor)
-        elif isinstance(constructor, description_logics.RoleRestriction):
-            self.visit_role_restriction(constructor)
-        elif isinstance(constructor, description_logics.RoleIdentity):
-            self.visit_role_identity(constructor)
-        elif isinstance(constructor, description_logics.BooleanStaticAtomicState):
-            self.visit_boolean_static_atomic_state(constructor)
-        elif isinstance(constructor, description_logics.BooleanFluentAtomicState):
-            self.visit_boolean_fluent_atomic_state(constructor)
-        elif isinstance(constructor, description_logics.BooleanDerivedAtomicState):
-            self.visit_boolean_derived_atomic_state(constructor)
-        elif isinstance(constructor, description_logics.BooleanConceptNonempty):
-            self.visit_boolean_nonempty_concept(constructor)
-        elif isinstance(constructor, description_logics.BooleanRoleNonempty):
-            self.visit_boolean_nonempty_role(constructor)
-        elif isinstance(constructor, description_logics.NumericalConceptCount):
-            self.visit_numerical_count_concept(constructor)
-        elif isinstance(constructor, description_logics.NumericalRoleCount):
-            self.visit_numerical_count_role(constructor)
-        elif isinstance(constructor, description_logics.NumericalDistance):
-            self.visit_numerical_distance(constructor)
-        else:
-            raise NotImplementedError(f"No visit handler for: {type(constructor)}")
+    @singledispatchmethod
+    def visit(self, arg):
+        raise NotImplementedError("Missing implementation for the constructor!")
 
-    def visit_concept_bot(self, constructor : description_logics.ConceptBot):
+    @visit.register
+    def _(self, constructor : description_logics.ConceptBot):
         pass
-    def visit_concept_top(self, constructor : description_logics.ConceptTop):
+    @visit.register
+    def _(self, constructor : description_logics.ConceptTop):
         pass
-    def visit_concept_static_atomic_state(self, constructor : description_logics.ConceptStaticAtomicState):
+    @visit.register
+    def _(self, constructor : description_logics.ConceptStaticAtomicState):
         pass
-    def visit_concept_fluent_atomic_state(self, constructor : description_logics.ConceptFluentAtomicState): 
+    @visit.register
+    def _(self, constructor : description_logics.ConceptFluentAtomicState): 
         pass
-    def visit_concept_derived_atomic_state(self, constructor : description_logics.ConceptDerivedAtomicState): 
+    @visit.register
+    def _(self, constructor : description_logics.ConceptDerivedAtomicState): 
         pass
-    def visit_concept_static_atomic_goal(self, constructor : description_logics.ConceptStaticAtomicGoal): 
+    @visit.register
+    def _(self, constructor : description_logics.ConceptStaticAtomicGoal): 
         pass
-    def visit_concept_fluent_atomic_goal(self, constructor : description_logics.ConceptFluentAtomicGoal): 
+    @visit.register
+    def _(self, constructor : description_logics.ConceptFluentAtomicGoal): 
         pass
-    def visit_concept_derived_atomic_goal(self, constructor : description_logics.ConceptDerivedAtomicGoal): 
+    @visit.register
+    def _(self, constructor : description_logics.ConceptDerivedAtomicGoal): 
         pass
-    def visit_concept_intersection(self, constructor : description_logics.ConceptIntersection): 
+    @visit.register
+    def _(self, constructor : description_logics.ConceptIntersection): 
         self.visit(constructor.get_left_concept())
         self.visit(constructor.get_right_concept())
-    def visit_concept_union(self, constructor : description_logics.ConceptUnion): 
+    @visit.register
+    def _(self, constructor : description_logics.ConceptUnion): 
         self.visit(constructor.get_left_concept())
         self.visit(constructor.get_right_concept())
-    def visit_concept_negation(self, constructor : description_logics.ConceptNegation): 
+    @visit.register
+    def _(self, constructor : description_logics.ConceptNegation): 
         self.visit(constructor.get_concept())
-    def visit_concept_value_restriction(self, constructor : description_logics.ConceptValueRestriction): 
-        self.visit(constructor.get_role())
-        self.visit(constructor.get_concept())
-    def visit_concept_existential_quantification(self, constructor : description_logics.ConceptExistentialQuantification): 
-        self.visit(constructor.get_role())
-        self.visit(constructor.get_concept())
-    def visit_concept_role_value_map_containment(self, constructor : description_logics.ConceptRoleValueMapContainment): 
-        self.visit(constructor.get_left_role())
-        self.visit(constructor.get_right_role())
-    def visit_concept_role_value_map_equality(self, constructor : description_logics.ConceptRoleValueMapEquality): 
-        self.visit(constructor.get_left_role())
-        self.visit(constructor.get_right_role())
-    def visit_concept_nominal(self, constructor : description_logics.ConceptNominal): 
-        pass
-    def visit_role_universal(self, constructor : description_logics.RoleUniversal): 
-        pass
-    def visit_role_static_atomic_state(self, constructor : description_logics.RoleStaticAtomicState): 
-        pass
-    def visit_role_fluent_atomic_state(self, constructor : description_logics.RoleFluentAtomicState): 
-        pass
-    def visit_role_derived_atomic_state(self, constructor : description_logics.RoleDerivedAtomicState): 
-        pass
-    def visit_role_static_atomic_goal(self, constructor : description_logics.RoleStaticAtomicGoal): 
-        pass
-    def visit_role_fluent_atomic_goal(self, constructor : description_logics.RoleFluentAtomicGoal): 
-        pass
-    def visit_role_derived_atomic_goal(self, constructor : description_logics.RoleDerivedAtomicGoal): 
-        pass
-    def visit_role_intersection(self, constructor : description_logics.RoleIntersection):
-        self.visit(constructor.get_left_role())
-        self.visit(constructor.get_right_role())
-    def visit_role_union(self, constructor : description_logics.RoleUnion): 
-        self.visit(constructor.get_left_role())
-        self.visit(constructor.get_right_role())
-    def visit_role_complement(self, constructor : description_logics.RoleComplement): 
-        self.visit(constructor.get_role())
-    def visit_role_inverse(self, constructor : description_logics.RoleInverse): 
-        self.visit(constructor.get_role())
-    def visit_role_composition(self, constructor : description_logics.RoleComposition): 
-        self.visit(constructor.get_left_role())
-        self.visit(constructor.get_right_role())
-    def visit_role_transitive_closure(self, constructor : description_logics.RoleTransitiveClosure): 
-        self.visit(constructor.get_role())
-    def visit_role_reflexive_transitive_closure(self, constructor : description_logics.RoleReflexiveTransitiveClosure): 
-        self.visit(constructor.get_role())
-    def visit_role_restriction(self, constructor : description_logics.RoleRestriction): 
+    @visit.register
+    def _(self, constructor : description_logics.ConceptValueRestriction): 
         self.visit(constructor.get_role())
         self.visit(constructor.get_concept())
-    def visit_role_identity(self, constructor : description_logics.RoleIdentity): 
+    @visit.register
+    def _(self, constructor : description_logics.ConceptExistentialQuantification): 
+        self.visit(constructor.get_role())
         self.visit(constructor.get_concept())
-    def visit_boolean_static_atomic_state(self, constructor : description_logics.BooleanStaticAtomicState): 
+    @visit.register
+    def _(self, constructor : description_logics.ConceptRoleValueMapContainment): 
+        self.visit(constructor.get_left_role())
+        self.visit(constructor.get_right_role())
+    @visit.register
+    def _(self, constructor : description_logics.ConceptRoleValueMapEquality): 
+        self.visit(constructor.get_left_role())
+        self.visit(constructor.get_right_role())
+    @visit.register
+    def _(self, constructor : description_logics.ConceptNominal): 
         pass
-    def visit_boolean_fluent_atomic_state(self, constructor : description_logics.BooleanFluentAtomicState): 
+    @visit.register
+    def _(self, constructor : description_logics.RoleUniversal): 
         pass
-    def visit_boolean_derived_atomic_state(self, constructor : description_logics.BooleanDerivedAtomicState): 
+    @visit.register
+    def _(self, constructor : description_logics.RoleStaticAtomicState): 
         pass
-    def visit_boolean_nonempty_concept(self, constructor : description_logics.BooleanConceptNonempty): 
+    @visit.register
+    def _(self, constructor : description_logics.RoleFluentAtomicState): 
+        pass
+    @visit.register
+    def _(self, constructor : description_logics.RoleDerivedAtomicState): 
+        pass
+    @visit.register
+    def _(self, constructor : description_logics.RoleStaticAtomicGoal): 
+        pass
+    @visit.register
+    def _(self, constructor : description_logics.RoleFluentAtomicGoal): 
+        pass
+    @visit.register
+    def _(self, constructor : description_logics.RoleDerivedAtomicGoal): 
+        pass
+    @visit.register
+    def _(self, constructor : description_logics.RoleIntersection):
+        self.visit(constructor.get_left_role())
+        self.visit(constructor.get_right_role())
+    @visit.register
+    def _(self, constructor : description_logics.RoleUnion): 
+        self.visit(constructor.get_left_role())
+        self.visit(constructor.get_right_role())
+    @visit.register
+    def _(self, constructor : description_logics.RoleComplement): 
+        self.visit(constructor.get_role())
+    @visit.register
+    def _(self, constructor : description_logics.RoleInverse): 
+        self.visit(constructor.get_role())
+    @visit.register
+    def _(self, constructor : description_logics.RoleComposition): 
+        self.visit(constructor.get_left_role())
+        self.visit(constructor.get_right_role())
+    @visit.register
+    def _(self, constructor : description_logics.RoleTransitiveClosure): 
+        self.visit(constructor.get_role())
+    @visit.register
+    def _(self, constructor : description_logics.RoleReflexiveTransitiveClosure): 
+        self.visit(constructor.get_role())
+    @visit.register
+    def _(self, constructor : description_logics.RoleRestriction): 
+        self.visit(constructor.get_role())
+        self.visit(constructor.get_concept())
+    @visit.register
+    def _(self, constructor : description_logics.RoleIdentity): 
+        self.visit(constructor.get_concept())
+    @visit.register
+    def _(self, constructor : description_logics.BooleanStaticAtomicState): 
+        pass
+    @visit.register
+    def _(self, constructor : description_logics.BooleanFluentAtomicState): 
+        pass
+    @visit.register
+    def _(self, constructor : description_logics.BooleanDerivedAtomicState): 
+        pass
+    @visit.register
+    def _(self, constructor : description_logics.BooleanConceptNonempty): 
         self.visit(constructor.get_constructor())
-    def visit_boolean_nonempty_role(self, constructor : description_logics.BooleanRoleNonempty): 
+    @visit.register
+    def _(self, constructor : description_logics.BooleanRoleNonempty): 
         self.visit(constructor.get_constructor())
-    def visit_numerical_count_concept(self, constructor : description_logics.NumericalConceptCount): 
+    @visit.register
+    def _(self, constructor : description_logics.NumericalConceptCount): 
         self.visit(constructor.get_constructor())
-    def visit_numerical_count_role(self, constructor : description_logics.NumericalRoleCount): 
+    @visit.register
+    def _(self, constructor : description_logics.NumericalRoleCount): 
         self.visit(constructor.get_constructor())
-    def visit_numerical_distance(self, constructor : description_logics.NumericalDistance): 
+    @visit.register
+    def _(self, constructor : description_logics.NumericalDistance): 
         self.visit(constructor.get_left_concept())
         self.visit(constructor.get_role())
         self.visit(constructor.get_left_concept())
+
+
+class MyCNFGrammarVisitor:
+    """ Recursively visit the CNF grammar. 
+        This can be useful to write a custom sentence generator.
+        An available example implementation is `description_logics.GeneratorVisitor`.
+    """
+    def __init__(self):
+        pass
+
+    @singledispatchmethod
+    def visit(self, arg):
+        raise NotImplementedError("Missing implementation for the constructor!")
+    
+    @visit.register
+    def _(self, constructor : description_logics.CNFConceptBot):
+        pass
+    @visit.register
+    def _(self, constructor : description_logics.CNFConceptTop):
+        pass
+    @visit.register
+    def _(self, constructor : description_logics.CNFConceptStaticAtomicState):
+        pass
+    @visit.register
+    def _(self, constructor : description_logics.CNFConceptFluentAtomicState): 
+        pass
+    @visit.register
+    def _(self, constructor : description_logics.CNFConceptDerivedAtomicState): 
+        pass
+    @visit.register
+    def _(self, constructor : description_logics.CNFConceptStaticAtomicGoal): 
+        pass
+    @visit.register
+    def _(self, constructor : description_logics.CNFConceptFluentAtomicGoal): 
+        pass
+    @visit.register
+    def _(self, constructor : description_logics.CNFConceptDerivedAtomicGoal): 
+        pass
+    @visit.register
+    def _(self, constructor : description_logics.CNFConceptIntersection): 
+        self.visit(constructor.get_left_concept())
+        self.visit(constructor.get_right_concept())
+    @visit.register
+    def _(self, constructor : description_logics.CNFConceptUnion): 
+        self.visit(constructor.get_left_concept())
+        self.visit(constructor.get_right_concept())
+    @visit.register
+    def _(self, constructor : description_logics.CNFConceptNegation): 
+        self.visit(constructor.get_concept())
+    @visit.register
+    def _(self, constructor : description_logics.CNFConceptValueRestriction): 
+        self.visit(constructor.get_role())
+        self.visit(constructor.get_concept())
+    @visit.register
+    def _(self, constructor : description_logics.CNFConceptExistentialQuantification): 
+        self.visit(constructor.get_role())
+        self.visit(constructor.get_concept())
+    @visit.register
+    def _(self, constructor : description_logics.CNFConceptRoleValueMapContainment): 
+        self.visit(constructor.get_left_role())
+        self.visit(constructor.get_right_role())
+    @visit.register
+    def _(self, constructor : description_logics.CNFConceptRoleValueMapEquality): 
+        self.visit(constructor.get_left_role())
+        self.visit(constructor.get_right_role())
+    @visit.register
+    def _(self, constructor : description_logics.CNFConceptNominal): 
+        pass
+    @visit.register
+    def _(self, constructor : description_logics.CNFRoleUniversal): 
+        pass
+    @visit.register
+    def _(self, constructor : description_logics.CNFRoleStaticAtomicState): 
+        pass
+    @visit.register
+    def _(self, constructor : description_logics.CNFRoleFluentAtomicState): 
+        pass
+    @visit.register
+    def _(self, constructor : description_logics.CNFRoleDerivedAtomicState): 
+        pass
+    @visit.register
+    def _(self, constructor : description_logics.CNFRoleStaticAtomicGoal): 
+        pass
+    @visit.register
+    def _(self, constructor : description_logics.CNFRoleFluentAtomicGoal): 
+        pass
+    @visit.register
+    def _(self, constructor : description_logics.CNFRoleDerivedAtomicGoal): 
+        pass
+    @visit.register
+    def _(self, constructor : description_logics.CNFRoleIntersection):
+        self.visit(constructor.get_left_role())
+        self.visit(constructor.get_right_role())
+    @visit.register
+    def _(self, constructor : description_logics.CNFRoleUnion): 
+        self.visit(constructor.get_left_role())
+        self.visit(constructor.get_right_role())
+    @visit.register
+    def _(self, constructor : description_logics.CNFRoleComplement): 
+        self.visit(constructor.get_role())
+    @visit.register
+    def _(self, constructor : description_logics.CNFRoleInverse): 
+        self.visit(constructor.get_role())
+    @visit.register
+    def _(self, constructor : description_logics.CNFRoleComposition): 
+        self.visit(constructor.get_left_role())
+        self.visit(constructor.get_right_role())
+    @visit.register
+    def _(self, constructor : description_logics.CNFRoleTransitiveClosure): 
+        self.visit(constructor.get_role())
+    @visit.register
+    def _(self, constructor : description_logics.CNFRoleReflexiveTransitiveClosure): 
+        self.visit(constructor.get_role())
+    @visit.register
+    def _(self, constructor : description_logics.CNFRoleRestriction): 
+        self.visit(constructor.get_role())
+        self.visit(constructor.get_concept())
+    @visit.register
+    def _(self, constructor : description_logics.CNFRoleIdentity): 
+        self.visit(constructor.get_concept())
+    @visit.register
+    def _(self, constructor : description_logics.CNFBooleanStaticAtomicState): 
+        pass
+    @visit.register
+    def _(self, constructor : description_logics.CNFBooleanFluentAtomicState): 
+        pass
+    @visit.register
+    def _(self, constructor : description_logics.CNFBooleanDerivedAtomicState): 
+        pass
+    @visit.register
+    def _(self, constructor : description_logics.CNFBooleanConceptNonempty): 
+        self.visit(constructor.get_constructor())
+    @visit.register
+    def _(self, constructor : description_logics.CNFBooleanRoleNonempty): 
+        self.visit(constructor.get_constructor())
+    @visit.register
+    def _(self, constructor : description_logics.CNFNumericalConceptCount): 
+        self.visit(constructor.get_constructor())
+    @visit.register
+    def _(self, constructor : description_logics.CNFNumericalRoleCount): 
+        self.visit(constructor.get_constructor())
+    @visit.register
+    def _(self, constructor : description_logics.CNFNumericalDistance): 
+        self.visit(constructor.get_left_concept())
+        self.visit(constructor.get_role())
+        self.visit(constructor.get_left_concept())
+    @visit.register
+    def _(self, nonterminal : description_logics.CNFConceptNonTerminal): 
+        pass
+    @visit.register
+    def _(self, nonterminal : description_logics.CNFRoleNonTerminal): 
+        pass
+    @visit.register
+    def _(self, nonterminal : description_logics.CNFBooleanNonTerminal): 
+        pass
+    @visit.register
+    def _(self, nonterminal : description_logics.CNFNumericalNonTerminal): 
+        pass
+    @visit.register
+    def _(self, rule : description_logics.CNFConceptDerivationRule): 
+        self.visit(rule.get_head())
+        self.visit(rule.get_body())
+    @visit.register
+    def _(self, rule : description_logics.CNFRoleDerivationRule): 
+        self.visit(rule.get_head())
+        self.visit(rule.get_body())
+    @visit.register
+    def _(self, rule : description_logics.CNFBooleanDerivationRule): 
+        self.visit(rule.get_head())
+        self.visit(rule.get_body())
+    @visit.register
+    def _(self, rule : description_logics.CNFNumericalDerivationRule): 
+        self.visit(rule.get_head())
+        self.visit(rule.get_body())
+    @visit.register
+    def _(self, rule : description_logics.CNFConceptSubstitutionRule): 
+        self.visit(rule.get_head())
+        self.visit(rule.get_body())
+    @visit.register
+    def _(self, rule : description_logics.CNFRoleSubstitutionRule): 
+        self.visit(rule.get_head())
+        self.visit(rule.get_body())
+    @visit.register
+    def _(self, rule : description_logics.CNFBooleanSubstitutionRule): 
+        self.visit(rule.get_head())
+        self.visit(rule.get_body())
+    @visit.register
+    def _(self, rule : description_logics.CNFNumericalSubstitutionRule): 
+        self.visit(rule.get_head())
+        self.visit(rule.get_body())
+    @visit.register
+    def _(self, grammar : description_logics.CNFGrammar): 
+        for symbol in [grammar.get_concept_start_symbol()] + [grammar.get_role_start_symbol()] + [grammar.get_boolean_start_symbol()] + [grammar.get_numerical_start_symbol()]:
+            if symbol is not None:
+                self.visit(symbol)
+        for rule in list(grammar.get_concept_derivation_rules()) + list(grammar.get_role_derivation_rules()) + list(grammar.get_boolean_derivation_rules()) + list(grammar.get_numerical_derivation_rules()):
+            self.visit(rule)
+        for rule in list(grammar.get_concept_substitution_rules()) + list(grammar.get_role_substitution_rules()) + list(grammar.get_boolean_substitution_rules()) + list(grammar.get_numerical_substitution_rules()):
+            self.visit(rule)
 
 
 def main():
@@ -224,6 +384,8 @@ def main():
     print("Input Grammar in CNF")
     print("================================================================================")
     print(grammar)
+    # Visit the grammar
+    MyCNFGrammarVisitor().visit(grammar)
 
     print("================================================================================")
     print("Generated concepts")
@@ -236,7 +398,7 @@ def main():
             # Check whether the sentence matches grammar specification
             assert(grammar.test_match(constructor))
             # Visit the constructor
-            constructor.accept(MyVisitor())
+            MyConstructorVisitor().visit(constructor)
 
     print("================================================================================")
     print("Generated roles")
@@ -249,7 +411,7 @@ def main():
             # Check whether the sentence matches grammar specification
             assert(grammar.test_match(constructor))
             # Visit the constructor
-            constructor.accept(MyVisitor())
+            MyConstructorVisitor().visit(constructor)
 
     print("================================================================================")
     print("Generated booleans")
@@ -262,7 +424,7 @@ def main():
             # Check whether the sentence matches grammar specification
             assert(grammar.test_match(constructor))
             # Visit the constructor
-            constructor.accept(MyVisitor())
+            MyConstructorVisitor().visit(constructor)
 
     print("================================================================================")
     print("Generated numericals")
@@ -275,7 +437,7 @@ def main():
             # Check whether the sentence matches grammar specification
             assert(grammar.test_match(constructor))
             # Visit the constructor
-            constructor.accept(MyVisitor())
+            MyConstructorVisitor().visit(constructor)
 
     print("================================================================================")
     print("Evaluate numericals")

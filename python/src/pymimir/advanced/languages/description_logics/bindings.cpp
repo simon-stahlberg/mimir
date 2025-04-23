@@ -11,75 +11,6 @@ using namespace mimir::search;
 namespace mimir::languages::dl
 {
 
-class IPyVisitor : public IVisitor
-{
-public:
-    NB_TRAMPOLINE(IVisitor, 40);
-
-    /* Trampoline (need one for each virtual function) */
-    void visit(ConceptBot constructor) override { NB_OVERRIDE_PURE_NAME("visit_concept_bot", visit, constructor); }
-    void visit(ConceptTop constructor) override { NB_OVERRIDE_PURE_NAME("visit_concept_top", visit, constructor); }
-    void visit(ConceptAtomicState<formalism::StaticTag> constructor) override
-    {
-        NB_OVERRIDE_PURE_NAME("visit_concept_static_atomic_state", visit, constructor);
-    }
-    void visit(ConceptAtomicState<formalism::FluentTag> constructor) override
-    {
-        NB_OVERRIDE_PURE_NAME("visit_concept_fluent_atomic_state", visit, constructor);
-    }
-    void visit(ConceptAtomicState<formalism::DerivedTag> constructor) override
-    {
-        NB_OVERRIDE_PURE_NAME("visit_concept_derived_atomic_state", visit, constructor);
-    }
-    void visit(ConceptAtomicGoal<formalism::StaticTag> constructor) override { NB_OVERRIDE_PURE_NAME("visit_concept_static_atomic_goal", visit, constructor); }
-    void visit(ConceptAtomicGoal<formalism::FluentTag> constructor) override { NB_OVERRIDE_PURE_NAME("visit_concept_fluent_atomic_goal", visit, constructor); }
-    void visit(ConceptAtomicGoal<formalism::DerivedTag> constructor) override
-    {
-        NB_OVERRIDE_PURE_NAME("visit_concept_derived_atomic_goal", visit, constructor);
-    }
-    void visit(ConceptIntersection constructor) override { NB_OVERRIDE_PURE_NAME("visit_concept_intersection", visit, constructor); }
-    void visit(ConceptUnion constructor) override { NB_OVERRIDE_PURE_NAME("visit_concept_union", visit, constructor); }
-    void visit(ConceptNegation constructor) override { NB_OVERRIDE_PURE_NAME("visit_concept_negation", visit, constructor); }
-    void visit(ConceptValueRestriction constructor) override { NB_OVERRIDE_PURE_NAME("visit_concept_value_restriction", visit, constructor); }
-    void visit(ConceptExistentialQuantification constructor) override { NB_OVERRIDE_PURE_NAME("visit_concept_existential_quantification", visit, constructor); }
-    void visit(ConceptRoleValueMapContainment constructor) override { NB_OVERRIDE_PURE_NAME("visit_concept_role_value_map_containment", visit, constructor); }
-    void visit(ConceptRoleValueMapEquality constructor) override { NB_OVERRIDE_PURE_NAME("visit_concept_role_value_map_equality", visit, constructor); }
-    void visit(ConceptNominal constructor) override { NB_OVERRIDE_PURE_NAME("visit_concept_nominal", visit, constructor); }
-    void visit(RoleUniversal constructor) override { NB_OVERRIDE_PURE_NAME("visit_role_universal", visit, constructor); }
-    void visit(RoleAtomicState<formalism::StaticTag> constructor) override { NB_OVERRIDE_PURE_NAME("visit_role_static_atomic_state", visit, constructor); }
-    void visit(RoleAtomicState<formalism::FluentTag> constructor) override { NB_OVERRIDE_PURE_NAME("visit_role_fluent_atomic_state", visit, constructor); }
-    void visit(RoleAtomicState<formalism::DerivedTag> constructor) override { NB_OVERRIDE_PURE_NAME("visit_role_derived_atomic_state", visit, constructor); }
-    void visit(RoleAtomicGoal<formalism::StaticTag> constructor) override { NB_OVERRIDE_PURE_NAME("visit_role_static_atomic_goal", visit, constructor); }
-    void visit(RoleAtomicGoal<formalism::FluentTag> constructor) override { NB_OVERRIDE_PURE_NAME("visit_role_fluent_atomic_goal", visit, constructor); }
-    void visit(RoleAtomicGoal<formalism::DerivedTag> constructor) override { NB_OVERRIDE_PURE_NAME("visit_role_derived_atomic_goal", visit, constructor); }
-    void visit(RoleIntersection constructor) override { NB_OVERRIDE_PURE_NAME("visit_role_intersection", visit, constructor); }
-    void visit(RoleUnion constructor) override { NB_OVERRIDE_PURE_NAME("visit_role_union", visit, constructor); }
-    void visit(RoleComplement constructor) override { NB_OVERRIDE_PURE_NAME("visit_role_complement", visit, constructor); }
-    void visit(RoleInverse constructor) override { NB_OVERRIDE_PURE_NAME("visit_role_inverse", visit, constructor); }
-    void visit(RoleComposition constructor) override { NB_OVERRIDE_PURE_NAME("visit_role_composition", visit, constructor); }
-    void visit(RoleTransitiveClosure constructor) override { NB_OVERRIDE_PURE_NAME("visit_role_transitive_closure", visit, constructor); }
-    void visit(RoleReflexiveTransitiveClosure constructor) override { NB_OVERRIDE_PURE_NAME("visit_role_reflexive_transitive_closure", visit, constructor); }
-    void visit(RoleRestriction constructor) override { NB_OVERRIDE_PURE_NAME("visit_role_restriction", visit, constructor); }
-    void visit(RoleIdentity constructor) override { NB_OVERRIDE_PURE_NAME("visit_role_identity", visit, constructor); }
-    void visit(BooleanAtomicState<formalism::StaticTag> constructor) override
-    {
-        NB_OVERRIDE_PURE_NAME("visit_boolean_static_atomic_state", visit, constructor);
-    }
-    void visit(BooleanAtomicState<formalism::FluentTag> constructor) override
-    {
-        NB_OVERRIDE_PURE_NAME("visit_boolean_fluent_atomic_state", visit, constructor);
-    }
-    void visit(BooleanAtomicState<formalism::DerivedTag> constructor) override
-    {
-        NB_OVERRIDE_PURE_NAME("visit_boolean_derived_atomic_state", visit, constructor);
-    }
-    void visit(BooleanNonempty<ConceptTag> constructor) override { NB_OVERRIDE_PURE_NAME("visit_boolean_nonempty_concept", visit, constructor); }
-    void visit(BooleanNonempty<RoleTag> constructor) override { NB_OVERRIDE_PURE_NAME("visit_boolean_nonempty_role", visit, constructor); }
-    void visit(NumericalCount<ConceptTag> constructor) override { NB_OVERRIDE_PURE_NAME("visit_numerical_count_concept", visit, constructor); }
-    void visit(NumericalCount<RoleTag> constructor) override { NB_OVERRIDE_PURE_NAME("visit_numerical_count_role", visit, constructor); }
-    void visit(NumericalDistance constructor) override { NB_OVERRIDE_PURE_NAME("visit_numerical_distance", visit, constructor); }
-};
-
 class IPyRefinementPruningFunction : public IRefinementPruningFunction
 {
 public:
@@ -91,71 +22,6 @@ public:
     bool should_prune(Constructor<BooleanTag> constructor) override { NB_OVERRIDE_PURE(should_prune, constructor); }
     bool should_prune(Constructor<NumericalTag> constructor) override { NB_OVERRIDE_PURE(should_prune, constructor); }
 };
-
-namespace cnf_grammar
-{
-class IPyVisitor : public cnf_grammar::IVisitor
-{
-public:
-    NB_TRAMPOLINE(cnf_grammar::IVisitor, 53);
-
-    /* Trampoline (need one for each virtual function) */
-    void visit(cnf_grammar::ConceptBot constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(cnf_grammar::ConceptTop constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(cnf_grammar::ConceptAtomicState<formalism::StaticTag> constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(cnf_grammar::ConceptAtomicState<formalism::FluentTag> constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(cnf_grammar::ConceptAtomicState<formalism::DerivedTag> constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(cnf_grammar::ConceptAtomicGoal<formalism::StaticTag> constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(cnf_grammar::ConceptAtomicGoal<formalism::FluentTag> constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(cnf_grammar::ConceptAtomicGoal<formalism::DerivedTag> constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(cnf_grammar::ConceptIntersection constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(cnf_grammar::ConceptUnion constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(cnf_grammar::ConceptNegation constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(cnf_grammar::ConceptValueRestriction constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(cnf_grammar::ConceptExistentialQuantification constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(cnf_grammar::ConceptRoleValueMapContainment constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(cnf_grammar::ConceptRoleValueMapEquality constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(cnf_grammar::ConceptNominal constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(cnf_grammar::RoleUniversal constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(cnf_grammar::RoleAtomicState<formalism::StaticTag> constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(cnf_grammar::RoleAtomicState<formalism::FluentTag> constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(cnf_grammar::RoleAtomicState<formalism::DerivedTag> constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(cnf_grammar::RoleAtomicGoal<formalism::StaticTag> constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(cnf_grammar::RoleAtomicGoal<formalism::FluentTag> constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(cnf_grammar::RoleAtomicGoal<formalism::DerivedTag> constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(cnf_grammar::RoleIntersection constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(cnf_grammar::RoleUnion constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(cnf_grammar::RoleComplement constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(cnf_grammar::RoleInverse constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(cnf_grammar::RoleComposition constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(cnf_grammar::RoleTransitiveClosure constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(cnf_grammar::RoleReflexiveTransitiveClosure constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(cnf_grammar::RoleRestriction constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(cnf_grammar::RoleIdentity constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(cnf_grammar::BooleanAtomicState<formalism::StaticTag> constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(cnf_grammar::BooleanAtomicState<formalism::FluentTag> constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(cnf_grammar::BooleanAtomicState<formalism::DerivedTag> constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(cnf_grammar::BooleanNonempty<ConceptTag> constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(cnf_grammar::BooleanNonempty<RoleTag> constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(cnf_grammar::NumericalCount<ConceptTag> constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(cnf_grammar::NumericalCount<RoleTag> constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(cnf_grammar::NumericalDistance constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(cnf_grammar::NonTerminal<ConceptTag> nonterminal) override { NB_OVERRIDE_PURE(visit, nonterminal); }
-    void visit(cnf_grammar::NonTerminal<RoleTag> nonterminal) override { NB_OVERRIDE_PURE(visit, nonterminal); }
-    void visit(cnf_grammar::NonTerminal<BooleanTag> nonterminal) override { NB_OVERRIDE_PURE(visit, nonterminal); }
-    void visit(cnf_grammar::NonTerminal<NumericalTag> nonterminal) override { NB_OVERRIDE_PURE(visit, nonterminal); }
-    void visit(cnf_grammar::DerivationRule<ConceptTag> derivation_rule) override { NB_OVERRIDE_PURE(visit, derivation_rule); }
-    void visit(cnf_grammar::DerivationRule<RoleTag> derivation_rule) override { NB_OVERRIDE_PURE(visit, derivation_rule); }
-    void visit(cnf_grammar::DerivationRule<BooleanTag> derivation_rule) override { NB_OVERRIDE_PURE(visit, derivation_rule); }
-    void visit(cnf_grammar::DerivationRule<NumericalTag> derivation_rule) override { NB_OVERRIDE_PURE(visit, derivation_rule); }
-    void visit(cnf_grammar::SubstitutionRule<ConceptTag> substitution_rule) override { NB_OVERRIDE_PURE(visit, substitution_rule); }
-    void visit(cnf_grammar::SubstitutionRule<RoleTag> substitution_rule) override { NB_OVERRIDE_PURE(visit, substitution_rule); }
-    void visit(cnf_grammar::SubstitutionRule<BooleanTag> substitution_rule) override { NB_OVERRIDE_PURE(visit, substitution_rule); }
-    void visit(cnf_grammar::SubstitutionRule<NumericalTag> substitution_rule) override { NB_OVERRIDE_PURE(visit, substitution_rule); }
-
-    void visit(const cnf_grammar::Grammar& grammar) override { NB_OVERRIDE_PURE(visit, grammar); }
-};
-}
 
 void bind_module_definitions(nb::module_& m)
 {
@@ -375,50 +241,6 @@ void bind_module_definitions(nb::module_& m)
              "role"_a,
              "right_concept"_a,
              nb::rv_policy::reference_internal);
-
-    /* ConstructorVisitor */
-    nb::class_<IVisitor, IPyVisitor>(m, "ConstructorVisitor")  //
-        .def(nb::init<>())
-        .def("visit_concept_bot", nb::overload_cast<ConceptBot>(&IVisitor::visit))
-        .def("visit_concept_top", nb::overload_cast<ConceptTop>(&IVisitor::visit))
-        .def("visit_concept_static_atomic_state", nb::overload_cast<ConceptAtomicState<formalism::StaticTag>>(&IVisitor::visit))
-        .def("visit_concept_fluent_atomic_state", nb::overload_cast<ConceptAtomicState<formalism::FluentTag>>(&IVisitor::visit))
-        .def("visit_concept_derived_atomic_state", nb::overload_cast<ConceptAtomicState<formalism::DerivedTag>>(&IVisitor::visit))
-        .def("visit_concept_static_atomic_goal", nb::overload_cast<ConceptAtomicGoal<formalism::StaticTag>>(&IVisitor::visit))
-        .def("visit_concept_fluent_atomic_goal", nb::overload_cast<ConceptAtomicGoal<formalism::FluentTag>>(&IVisitor::visit))
-        .def("visit_concept_derived_atomic_goal", nb::overload_cast<ConceptAtomicGoal<formalism::DerivedTag>>(&IVisitor::visit))
-        .def("visit_concept_intersection", nb::overload_cast<ConceptIntersection>(&IVisitor::visit))
-        .def("visit_concept_union", nb::overload_cast<ConceptUnion>(&IVisitor::visit))
-        .def("visit_concept_negation", nb::overload_cast<ConceptNegation>(&IVisitor::visit))
-        .def("visit_concept_value_restriction", nb::overload_cast<ConceptValueRestriction>(&IVisitor::visit))
-        .def("visit_concept_existential_quantification", nb::overload_cast<ConceptExistentialQuantification>(&IVisitor::visit))
-        .def("visit_concept_role_value_map_containment", nb::overload_cast<ConceptRoleValueMapContainment>(&IVisitor::visit))
-        .def("visit_concept_role_value_map_equality", nb::overload_cast<ConceptRoleValueMapEquality>(&IVisitor::visit))
-        .def("visit_concept_nominal", nb::overload_cast<ConceptNominal>(&IVisitor::visit))
-        .def("visit_role_universal", nb::overload_cast<RoleUniversal>(&IVisitor::visit))
-        .def("visit_role_static_atomic_state", nb::overload_cast<RoleAtomicState<formalism::StaticTag>>(&IVisitor::visit))
-        .def("visit_role_fluent_atomic_state", nb::overload_cast<RoleAtomicState<formalism::FluentTag>>(&IVisitor::visit))
-        .def("visit_role_derived_atomic_state", nb::overload_cast<RoleAtomicState<formalism::DerivedTag>>(&IVisitor::visit))
-        .def("visit_role_static_atomic_goal", nb::overload_cast<RoleAtomicGoal<formalism::StaticTag>>(&IVisitor::visit))
-        .def("visit_role_fluent_atomic_goal", nb::overload_cast<RoleAtomicGoal<formalism::FluentTag>>(&IVisitor::visit))
-        .def("visit_role_derived_atomic_goal", nb::overload_cast<RoleAtomicGoal<formalism::DerivedTag>>(&IVisitor::visit))
-        .def("visit_role_intersection", nb::overload_cast<RoleIntersection>(&IVisitor::visit))
-        .def("visit_role_union", nb::overload_cast<RoleUnion>(&IVisitor::visit))
-        .def("visit_role_complement", nb::overload_cast<RoleComplement>(&IVisitor::visit))
-        .def("visit_role_inverse", nb::overload_cast<RoleInverse>(&IVisitor::visit))
-        .def("visit_role_composition", nb::overload_cast<RoleComposition>(&IVisitor::visit))
-        .def("visit_role_transitive_closure", nb::overload_cast<RoleTransitiveClosure>(&IVisitor::visit))
-        .def("visit_role_reflexive_transitive_closure", nb::overload_cast<RoleReflexiveTransitiveClosure>(&IVisitor::visit))
-        .def("visit_role_restriction", nb::overload_cast<RoleRestriction>(&IVisitor::visit))
-        .def("visit_role_identity", nb::overload_cast<RoleIdentity>(&IVisitor::visit))
-        .def("visit_boolean_static_atomic_state", nb::overload_cast<BooleanAtomicState<formalism::StaticTag>>(&IVisitor::visit))
-        .def("visit_boolean_fluent_atomic_state", nb::overload_cast<BooleanAtomicState<formalism::FluentTag>>(&IVisitor::visit))
-        .def("visit_boolean_derived_atomic_state", nb::overload_cast<BooleanAtomicState<formalism::DerivedTag>>(&IVisitor::visit))
-        .def("visit_boolean_nonempty_concept", nb::overload_cast<BooleanNonempty<ConceptTag>>(&IVisitor::visit))
-        .def("visit_boolean_nonempty_role", nb::overload_cast<BooleanNonempty<RoleTag>>(&IVisitor::visit))
-        .def("visit_numerical_count_concept", nb::overload_cast<NumericalCount<ConceptTag>>(&IVisitor::visit))
-        .def("visit_numerical_count_role", nb::overload_cast<NumericalCount<RoleTag>>(&IVisitor::visit))
-        .def("visit_numerical_distance", nb::overload_cast<NumericalDistance>(&IVisitor::visit));
 
     nb::class_<DenotationImpl<ConceptTag>>(m, "ConceptDenotation");
 
@@ -760,63 +582,6 @@ void bind_module_definitions(nb::module_& m)
              "nonterminal"_a,
              "constructor"_a,
              nb::rv_policy::reference_internal);
-
-    /* CNFGrammarVisitor */
-    nb::class_<cnf_grammar::IVisitor, cnf_grammar::IPyVisitor>(m, "CNFGrammarVisitor")  //
-        .def(nb::init<>())
-        .def("visit", nb::overload_cast<cnf_grammar::ConceptBot>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::ConceptTop>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::ConceptAtomicState<formalism::StaticTag>>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::ConceptAtomicState<formalism::FluentTag>>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::ConceptAtomicState<formalism::DerivedTag>>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::ConceptAtomicGoal<formalism::StaticTag>>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::ConceptAtomicGoal<formalism::FluentTag>>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::ConceptAtomicGoal<formalism::DerivedTag>>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::ConceptIntersection>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::ConceptUnion>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::ConceptNegation>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::ConceptValueRestriction>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::ConceptExistentialQuantification>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::ConceptRoleValueMapContainment>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::ConceptRoleValueMapEquality>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::ConceptNominal>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::RoleUniversal>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::RoleAtomicState<formalism::StaticTag>>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::RoleAtomicState<formalism::FluentTag>>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::RoleAtomicState<formalism::DerivedTag>>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::RoleAtomicGoal<formalism::StaticTag>>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::RoleAtomicGoal<formalism::FluentTag>>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::RoleAtomicGoal<formalism::DerivedTag>>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::RoleIntersection>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::RoleUnion>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::RoleComplement>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::RoleInverse>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::RoleComposition>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::RoleTransitiveClosure>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::RoleReflexiveTransitiveClosure>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::RoleRestriction>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::RoleIdentity>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::BooleanAtomicState<formalism::StaticTag>>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::BooleanAtomicState<formalism::FluentTag>>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::BooleanAtomicState<formalism::DerivedTag>>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::BooleanNonempty<ConceptTag>>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::BooleanNonempty<RoleTag>>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::NumericalCount<ConceptTag>>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::NumericalCount<RoleTag>>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::NumericalDistance>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::NonTerminal<ConceptTag>>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::NonTerminal<RoleTag>>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::NonTerminal<BooleanTag>>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::NonTerminal<NumericalTag>>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::DerivationRule<ConceptTag>>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::DerivationRule<RoleTag>>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::DerivationRule<BooleanTag>>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::DerivationRule<NumericalTag>>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::SubstitutionRule<ConceptTag>>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::SubstitutionRule<RoleTag>>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::SubstitutionRule<BooleanTag>>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<cnf_grammar::SubstitutionRule<NumericalTag>>(&cnf_grammar::IVisitor::visit))
-        .def("visit", nb::overload_cast<const cnf_grammar::Grammar&>(&cnf_grammar::IVisitor::visit));
 
     nb::class_<IRefinementPruningFunction, IPyRefinementPruningFunction>(m, "IRefinementPruningFunction")
         .def(nb::init<>())

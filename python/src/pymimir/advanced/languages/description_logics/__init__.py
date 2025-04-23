@@ -57,8 +57,6 @@ from pymimir.pymimir.advanced.languages.description_logics import (
 
     Repositories,
 
-    ConstructorVisitor,
-
     ConceptDenotation,
     RoleDenotation,
     BooleanDenotation,
