@@ -6,10 +6,107 @@ import pymimir.advanced.search as search
 import pymimir.advanced.datasets as datasets
 import pymimir.advanced.languages.description_logics as description_logics
 
+from functools import singledispatchmethod
 from pathlib import Path
 
 ROOT_DIR = (Path(__file__).parent.parent.parent).absolute()
 
+class MyVisitor(description_logics.ConstructorVisitor):
+    def __init__(self):
+        super().__init__()
+
+    def visit(self, constructor : description_logics.ConceptBot):
+        pass
+    def visit(self, constructor : description_logics.ConceptTop):
+        pass
+    def visit(self, constructor : description_logics.ConceptStaticAtomicState):
+        pass
+    def visit(self, constructor : description_logics.ConceptFluentAtomicState): 
+        pass
+    def visit(self, constructor : description_logics.ConceptDerivedAtomicState): 
+        pass
+    def visit(self, constructor : description_logics.ConceptStaticAtomicGoal): 
+        pass
+    def visit(self, constructor : description_logics.ConceptFluentAtomicGoal): 
+        pass
+    def visit(self, constructor : description_logics.ConceptDerivedAtomicGoal): 
+        pass
+    def visit(self, constructor : description_logics.ConceptIntersection): 
+        constructor.get_left_concept().accept(self)
+        constructor.get_right_concept().accept(self)
+    def visit(self, constructor : description_logics.ConceptUnion): 
+        constructor.get_left_concept().accept(self)
+        constructor.get_right_concept().accept(self)
+    def visit(self, constructor : description_logics.ConceptNegation): 
+        constructor.get_concept().accept(self)
+    def visit(self, constructor : description_logics.ConceptValueRestriction): 
+        constructor.get_role().accept(self)
+        constructor.get_concept().accept(self)
+    def visit(self, constructor : description_logics.ConceptExistentialQuantification): 
+        constructor.get_role().accept(self)
+        constructor.get_concept().accept(self)
+    def visit(self, constructor : description_logics.ConceptRoleValueMapContainment): 
+        constructor.get_left_role().accept(self)
+        constructor.get_right_role().accept(self)
+    def visit(self, constructor : description_logics.ConceptRoleValueMapEquality): 
+        constructor.get_left_role().accept(self)
+        constructor.get_right_role().accept(self)
+    def visit(self, constructor : description_logics.ConceptNominal): 
+        pass
+    def visit(self, constructor : description_logics.RoleUniversal): 
+        pass
+    def visit(self, constructor : description_logics.RoleStaticAtomicState): 
+        pass
+    def visit(self, constructor : description_logics.RoleFluentAtomicState): 
+        pass
+    def visit(self, constructor : description_logics.RoleDerivedAtomicState): 
+        pass
+    def visit(self, constructor : description_logics.RoleStaticAtomicGoal): 
+        pass
+    def visit(self, constructor : description_logics.RoleFluentAtomicGoal): 
+        pass
+    def visit(self, constructor : description_logics.RoleDerivedAtomicGoal): 
+        pass
+    def visit(self, constructor : description_logics.RoleIntersection):
+        constructor.get_left_role().accept(self)
+        constructor.get_right_role().accept(self)
+    def visit(self, constructor : description_logics.RoleUnion): 
+        constructor.get_left_role().accept(self)
+        constructor.get_right_role().accept(self)
+    def visit(self, constructor : description_logics.RoleComplement): 
+        constructor.get_role().accept(self)
+    def visit(self, constructor : description_logics.RoleInverse): 
+        constructor.get_role().accept(self)
+    def visit(self, constructor : description_logics.RoleComposition): 
+        constructor.get_left_role().accept(self)
+        constructor.get_right_role().accept(self)
+    def visit(self, constructor : description_logics.RoleTransitiveClosure): 
+        constructor.get_role().accept(self)
+    def visit(self, constructor : description_logics.RoleReflexiveTransitiveClosure): 
+        constructor.get_role().accept(self)
+    def visit(self, constructor : description_logics.RoleRestriction): 
+        constructor.get_role().accept(self)
+        constructor.get_concept().accept(self)
+    def visit(self, constructor : description_logics.RoleIdentity): 
+        constructor.get_concept().accept(self)
+    def visit(self, constructor : description_logics.BooleanStaticAtomicState): 
+        pass
+    def visit(self, constructor : description_logics.BooleanFluentAtomicState): 
+        pass
+    def visit(self, constructor : description_logics.BooleanDerivedAtomicState): 
+        pass
+    def visit(self, constructor : description_logics.BooleanConceptNonempty): 
+        constructor.get_constructor().accept(self)
+    def visit(self, constructor : description_logics.BooleanRoleNonempty): 
+        constructor.get_constructor().accept(self)
+    def visit(self, constructor : description_logics.NumericalConceptCount): 
+        constructor.get_constructor().accept(self)
+    def visit(self, constructor : description_logics.NumericalRoleCount): 
+        constructor.get_constructor().accept(self)
+    def visit(self, constructor : description_logics.NumericalDistance): 
+        constructor.get_left_concept().accept(self)
+        constructor.get_role().accept(self)
+        constructor.get_left_concept().accept(self)
 
 def main():
     domain_filepath = str(ROOT_DIR / "data" / "gripper" / "domain.pddl")
@@ -49,9 +146,13 @@ def main():
     for complexity, constructors in enumerate(sentences.get_concepts().get(grammar.get_concept_start_symbol())):
         print("Complexity:", complexity)
         for constructor in constructors:
+            # Print the sentence
             print(f"    {constructor}")
-
+            print(type(constructor))
+            # Check whether the sentence matches grammar specification
             assert(grammar.test_match(constructor))
+            # Visit the constructor (WIP)
+            # constructor.accept(MyVisitor())
 
     print("================================================================================")
     print("Generated roles")
@@ -59,9 +160,12 @@ def main():
     for complexity, constructors in enumerate(sentences.get_roles().get(grammar.get_role_start_symbol())):
         print("Complexity:", complexity)
         for constructor in constructors:
+            # Print the sentence
             print(f"    {constructor}")
-
+            # Check whether the sentence matches grammar specification
             assert(grammar.test_match(constructor))
+            # Visit the constructor (WIP)
+            # constructor.accept(MyVisitor())
 
     print("================================================================================")
     print("Generated booleans")
@@ -69,9 +173,12 @@ def main():
     for complexity, constructors in enumerate(sentences.get_booleans().get(grammar.get_boolean_start_symbol())):
         print("Complexity:", complexity)
         for constructor in constructors:
+            # Print the sentence
             print(f"    {constructor}")
-
+            # Check whether the sentence matches grammar specification
             assert(grammar.test_match(constructor))
+            # Visit the constructor (WIP)
+            # constructor.accept(MyVisitor())
 
     print("================================================================================")
     print("Generated numericals")
@@ -79,9 +186,12 @@ def main():
     for complexity, constructors in enumerate(sentences.get_numericals().get(grammar.get_numerical_start_symbol())):
         print("Complexity:", complexity)
         for constructor in constructors:
+            # Print the sentence
             print(f"    {constructor}")
-
+            # Check whether the sentence matches grammar specification
             assert(grammar.test_match(constructor))
+            # Visit the constructor (WIP)
+            # constructor.accept(MyVisitor())
 
     print("================================================================================")
     print("Evaluate numericals")
