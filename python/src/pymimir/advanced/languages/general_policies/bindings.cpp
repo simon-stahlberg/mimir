@@ -10,30 +10,6 @@ using namespace mimir::search;
 namespace mimir::languages::general_policies
 {
 
-class IPyVisitor : public IVisitor
-{
-public:
-    NB_TRAMPOLINE(IVisitor, 40);
-
-    /* Trampoline (need one for each virtual function) */
-    void visit(PositiveBooleanCondition constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(NegativeBooleanCondition constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(GreaterNumericalCondition constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(EqualNumericalCondition constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(PositiveBooleanEffect constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(NegativeBooleanEffect constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(UnchangedBooleanEffect constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(IncreaseNumericalEffect constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(DecreaseNumericalEffect constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(UnchangedNumericalEffect constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(NamedFeature<dl::ConceptTag> constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(NamedFeature<dl::RoleTag> constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(NamedFeature<dl::NumericalTag> constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(NamedFeature<dl::BooleanTag> constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(Rule constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-    void visit(GeneralPolicy constructor) override { NB_OVERRIDE_PURE(visit, constructor); }
-};
-
 void bind_module_definitions(nb::module_& m)
 {
     nb::enum_<SolvabilityStatus>(m, "SolvabilityStatus")  //

@@ -6,9 +6,79 @@ import pymimir.advanced.datasets as datasets
 import pymimir.advanced.languages.description_logics as description_logics
 import pymimir.advanced.languages.general_policies as general_policies
 
+from functools import singledispatchmethod
 from pathlib import Path
 
+from description_logics import MyConstructorVisitor
+
 ROOT_DIR = (Path(__file__).parent.parent.parent).absolute()
+
+
+class MyGeneralPolicyVisitor:
+    """ Recursively visit the general policy. """
+    def __init__(self):
+        self.constructor_visitor = MyConstructorVisitor()
+
+    @singledispatchmethod
+    def visit(self, arg):
+        raise NotImplementedError("Missing implementation for the constructor!" )
+    
+    @visit.register
+    def _(self, feature : general_policies.NamedConcept):
+        self.constructor_visitor.visit(feature.get_feature())
+    @visit.register
+    def _(self, feature : general_policies.NamedRole):
+        self.constructor_visitor.visit(feature.get_feature())
+    @visit.register
+    def _(self, feature : general_policies.NamedBoolean):
+        self.constructor_visitor.visit(feature.get_feature())
+    @visit.register
+    def _(self, feature : general_policies.NamedNumerical):
+        self.constructor_visitor.visit(feature.get_feature())
+    @visit.register
+    def _(self, condition : general_policies.PositiveBooleanCondition):
+        self.visit(condition.get_feature())
+    @visit.register
+    def _(self, condition : general_policies.NegativeBooleanCondition):
+        self.visit(condition.get_feature())
+    @visit.register
+    def _(self, condition : general_policies.GreaterNumericalCondition):
+        self.visit(condition.get_feature())
+    @visit.register
+    def _(self, condition : general_policies.EqualNumericalCondition):
+        self.visit(condition.get_feature())
+    @visit.register
+    def _(self, effect : general_policies.PositiveBooleanEffect):
+        self.visit(effect.get_feature())
+    @visit.register
+    def _(self, effect : general_policies.NegativeBooleanEffect):
+        self.visit(effect.get_feature())
+    @visit.register
+    def _(self, effect : general_policies.UnchangedBooleanEffect):
+        self.visit(effect.get_feature())
+    @visit.register
+    def _(self, effect : general_policies.IncreaseNumericalEffect):
+        self.visit(effect.get_feature())
+    @visit.register
+    def _(self, effect : general_policies.DecreaseNumericalEffect):
+        self.visit(effect.get_feature())
+    @visit.register
+    def _(self, effect : general_policies.UnchangedNumericalEffect):
+        self.visit(effect.get_feature())
+    @visit.register
+    def _(self, rule : general_policies.Rule):
+        for condition in rule.get_conditions():
+            self.visit(condition)
+        for effect in rule.get_effects():
+            self.visit(effect)
+    @visit.register
+    def _(self, policy : general_policies.GeneralPolicy):
+        for boolean in policy.get_boolean_features():
+            self.visit(boolean)
+        for numerical in policy.get_boolean_features():
+            self.visit(numerical)
+        for rule in policy.get_rules():
+            self.visit(rule)
 
 
 def main():
@@ -67,6 +137,8 @@ def main():
         knowledge_base.get_domain(), dl_repositories)
     # Print the identical string representation of the policy.
     print(general_policy)
+    # Visit the policy
+    MyGeneralPolicyVisitor().visit(general_policy)
     # Test whether the policy is structurally terminating
     assert(general_policy.is_terminating(repositories))
     # Test whether the policy solves the generalized state space.
@@ -76,6 +148,8 @@ def main():
     general_policy = general_policies.GeneralPolicyFactory.get_or_create_general_policy_gripper(knowledge_base.get_domain(), repositories, dl_repositories)
     # Print the identical string representation of the policy.
     print(general_policy)
+    # Visit the policy
+    MyGeneralPolicyVisitor().visit(general_policy)
     # Test whether the policy is structurally terminating
     assert(general_policy.is_terminating(repositories))
     # Test whether the policy solves the generalized state space.
