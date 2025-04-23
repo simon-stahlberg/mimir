@@ -83,14 +83,14 @@ void bind_module_definitions(nb::module_& m)
             [](search::SearchContext context, const StateSpaceImpl::Options& options) -> std::optional<std::pair<StateSpace, std::optional<CertificateMaps>>>
             { return StateSpaceImpl::create(context, options); },
             "context"_a,
-            "options"_a = StateSpaceImpl::Options())
+            "options"_a)
         .def_static(
             "create",
             [](search::GeneralizedSearchContext contexts,
                const StateSpaceImpl::Options& options) -> std::vector<std::pair<StateSpace, std::optional<CertificateMaps>>>
             { return StateSpaceImpl::create(contexts, options); },
             "contexts"_a,
-            "options"_a = StateSpaceImpl::Options())
+            "options"_a)
         .def("get_search_context", &StateSpaceImpl::get_search_context, nb::rv_policy::copy)
         .def("get_graph", &StateSpaceImpl::get_graph, nb::rv_policy::reference_internal)
         .def("get_initial_vertex", &StateSpaceImpl::get_initial_vertex, nb::rv_policy::copy)
@@ -99,7 +99,7 @@ void bind_module_definitions(nb::module_& m)
 
     nb::class_<GeneralizedStateSpaceImpl>(m, "GeneralizedStateSpace")
         .def("__str__", [](const GeneralizedStateSpaceImpl& self) { return to_string(self.get_graph()); })
-        .def_static("create", &GeneralizedStateSpaceImpl::create, "state_spaces"_a, "options"_a = GeneralizedStateSpaceImpl::Options())
+        .def_static("create", &GeneralizedStateSpaceImpl::create, "state_spaces"_a, "options"_a)
         .def("get_state_spaces", &GeneralizedStateSpaceImpl::get_state_spaces, nb::rv_policy::copy)
         .def("get_graph", &GeneralizedStateSpaceImpl::get_graph, nb::rv_policy::reference_internal)
         .def("get_initial_vertices", &GeneralizedStateSpaceImpl::get_initial_vertices, nb::rv_policy::copy)
@@ -115,12 +115,8 @@ void bind_module_definitions(nb::module_& m)
         .def("get_problem_edge", &GeneralizedStateSpaceImpl::get_problem_edge, nb::rv_policy::reference_internal)
         .def("get_class_vertex", &GeneralizedStateSpaceImpl::get_class_vertex, nb::rv_policy::reference_internal)
         .def("get_class_edge", &GeneralizedStateSpaceImpl::get_class_edge, nb::rv_policy::reference_internal)
-        .def("create_induced_subgraph_from_class_vertex_indices",
-             &GeneralizedStateSpaceImpl::create_induced_subgraph_from_class_vertex_indices,
-             nb::rv_policy::take_ownership)
-        .def("create_induced_subgraph_from_problem_indices",
-             &GeneralizedStateSpaceImpl::create_induced_subgraph_from_problem_indices,
-             nb::rv_policy::take_ownership);
+        .def("create_induced_subgraph_from_class_vertex_indices", &GeneralizedStateSpaceImpl::create_induced_subgraph_from_class_vertex_indices)
+        .def("create_induced_subgraph_from_problem_indices", &GeneralizedStateSpaceImpl::create_induced_subgraph_from_problem_indices);
 
     nb::class_<TupleGraphImpl>(m, "TupleGraph")
         .def("__str__", [](const TupleGraphImpl& self) { return to_string(self); })
@@ -148,7 +144,7 @@ void bind_module_definitions(nb::module_& m)
              });
 
     nb::class_<KnowledgeBaseImpl>(m, "KnowledgeBase")
-        .def_static("create", &KnowledgeBaseImpl::create, "contexts"_a, "options"_a = KnowledgeBaseImpl::Options())
+        .def_static("create", &KnowledgeBaseImpl::create, "contexts"_a, "options"_a)
         .def("get_domain", &KnowledgeBaseImpl::get_domain, nb::rv_policy::reference_internal)
         .def("get_state_spaces", &KnowledgeBaseImpl::get_state_spaces, nb::rv_policy::copy)
         .def("get_generalized_state_space", &KnowledgeBaseImpl::get_generalized_state_space, nb::rv_policy::reference_internal)

@@ -51,4 +51,3 @@ def test_knowledge_base_with_symmetry_reduction():
     assert class_graph.get_num_edges() == 52
     assert len(generalized_state_space.get_goal_vertices()) == 4
     assert len(generalized_state_space.get_unsolvable_vertices()) == 0
-
