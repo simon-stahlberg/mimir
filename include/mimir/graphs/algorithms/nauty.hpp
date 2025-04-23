@@ -73,7 +73,7 @@ public:
         requires IsVertexListGraph<Graph> && IsEdgeListGraph<Graph> && IsVertexColoredGraph<Graph>
     explicit SparseGraph(const Graph& graph) : SparseGraph()
     {
-        if (is_multi_graph(graph))
+        if (is_multi(graph))
         {
             throw std::runtime_error("SparseGraph::SparseGraph(graph): Multi graph is not supported.");
         }
@@ -81,7 +81,7 @@ public:
         {
             throw std::runtime_error("SparseGraph::SparseGraph(graph): looping edges are not supported.");
         }
-        if (!is_undirected_graph(graph))
+        if (!is_undirected(graph))
         {
             throw std::runtime_error("SparseGraph::SparseGraph(graph): directed graphs are not supported due to bad performance. Please translate it into an "
                                      "undirected graph before using nauty.");

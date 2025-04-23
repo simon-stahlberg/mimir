@@ -284,6 +284,12 @@ void bind_translated_static_graph(nb::module_& m, const std::string& name, const
             "source_vertex_indices"_a)
         .def("compute_strong_components",
              [](const TranslatedGraphType& self) { return bgl::strong_components(mimir::graphs::DirectionTaggedType(self, ForwardTag {})); });
+
+    /* Graph properties. */
+    m.def("is_undirected", [](const TranslatedGraphType& self) { return is_undirected(self); });
+    m.def("is_multi", [](const TranslatedGraphType& self) { return is_multi(self); });
+    m.def("is_loopless", [](const TranslatedGraphType& self) { return is_loopless(self); });
+    m.def("is_acyclic", [](const TranslatedGraphType& self) { return is_acyclic(self); });
 }
 
 template<IsVertex V, IsEdge E>
@@ -498,6 +504,12 @@ void bind_static_graph(nb::module_& m, const std::string& name)
         .def("compute_strong_components",
              [](const GraphType& self) { return bgl::strong_components(mimir::graphs::DirectionTaggedType(self, ForwardTag {})); });
 
+    /* Graph properties. */
+    m.def("is_undirected", [](const GraphType& self) { return is_undirected(self); });
+    m.def("is_multi", [](const GraphType& self) { return is_multi(self); });
+    m.def("is_loopless", [](const GraphType& self) { return is_loopless(self); });
+    m.def("is_acyclic", [](const GraphType& self) { return is_acyclic(self); });
+
     /**
      * Immutable version
      */
@@ -699,6 +711,12 @@ void bind_static_graph(nb::module_& m, const std::string& name)
             "source_vertex_indices"_a)
         .def("compute_strong_components",
              [](const PyImmutable<GraphType>& self) { return bgl::strong_components(mimir::graphs::DirectionTaggedType(self.obj_, ForwardTag {})); });
+
+    /* Graph properties. */
+    m.def("is_undirected", [](const PyImmutable<GraphType>& self) { return is_undirected(self.obj_); });
+    m.def("is_multi", [](const PyImmutable<GraphType>& self) { return is_multi(self.obj_); });
+    m.def("is_loopless", [](const PyImmutable<GraphType>& self) { return is_loopless(self.obj_); });
+    m.def("is_acyclic", [](const PyImmutable<GraphType>& self) { return is_acyclic(self.obj_); });
 
     /**
      * Immutable forward version
@@ -940,6 +958,11 @@ void bind_dynamic_graph(nb::module_& m, const std::string& name)
             "source_vertex_indices"_a)
         .def("compute_strong_components",
              [](const GraphType& self) { return bgl::strong_components(mimir::graphs::DirectionTaggedType(self, ForwardTag {})); });
+    /* Graph properties. */
+    m.def("is_undirected", [](const GraphType& self) { return is_undirected(self); });
+    m.def("is_multi", [](const GraphType& self) { return is_multi(self); });
+    m.def("is_loopless", [](const GraphType& self) { return is_loopless(self); });
+    m.def("is_acyclic", [](const GraphType& self) { return is_acyclic(self); });
 }
 
 }

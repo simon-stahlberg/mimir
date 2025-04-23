@@ -279,7 +279,7 @@ template<size_t K, typename G>
     requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G>  //
 std::shared_ptr<CertificateImpl<K>> compute_certificate(const G& graph, IsomorphismTypeCompressionFunction& iso_type_function)
 {
-    if (!is_undirected_graph(graph))
+    if (!is_undirected(graph))
     {
         throw std::runtime_error("K-FWL does not support directed graphs because they can be translated into undirected graphs by introducing two vertices "
                                  "along the edge with different colors to encode the direction.");

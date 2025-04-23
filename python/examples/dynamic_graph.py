@@ -22,7 +22,16 @@ def main():
     assert(v3 == 3)
     assert(v4 == 4)
 
+    # Print dot representation of the graph.
+
     print(graph)
+
+    # Check properties of the graph.
+
+    assert(graphs.is_undirected(graph))
+    assert(graphs.is_loopless(graph))
+    assert(not graphs.is_acyclic(graph))
+    assert(not graphs.is_multi(graph))
 
     # Run basic graph algorithms with switchable edge direction
 

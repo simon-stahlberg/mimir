@@ -42,3 +42,11 @@ from pymimir.pymimir.advanced.graphs import (
     ForwardStaticEdgeColoredGraph,
     BidirectionalStaticEdgeColoredGraph,
 )
+
+# graph properties
+from pymimir.pymimir.advanced.graphs import (
+    is_undirected,
+    is_loopless,
+    is_acyclic,
+    is_multi,
+)

@@ -31,17 +31,19 @@ namespace mimir::graphs
 
 template<typename G>
     requires IsEdgeListGraph<G>  //
-bool is_undirected_graph(const G& graph)
+bool is_undirected(const G& graph)
 {
     // Create datastructure for efficient lookup
     auto directed_edges = std::unordered_set<std::pair<Index, Index>, loki::Hash<std::pair<Index, Index>>>();
-    for (const auto& edge : graph.get_edges())
+    for (const auto& e_idx : graph.get_edge_indices())
     {
+        const auto& edge = graph.get_edge(e_idx);
         directed_edges.emplace(edge.get_source(), edge.get_target());
     }
 
-    for (const auto& edge : graph.get_edges())
+    for (const auto& e_idx : graph.get_edge_indices())
     {
+        const auto& edge = graph.get_edge(e_idx);
         if (!directed_edges.contains(std::make_pair(edge.get_target(), edge.get_source())))
         {
             return false;  // found no matching anti-parallel edge => directed graph
@@ -53,11 +55,12 @@ bool is_undirected_graph(const G& graph)
 
 template<typename G>
     requires IsEdgeListGraph<G>  //
-bool is_multi_graph(const G& graph)
+bool is_multi(const G& graph)
 {
     auto directed_edges = std::unordered_set<std::pair<Index, Index>, loki::Hash<std::pair<Index, Index>>>();
-    for (const auto& edge : graph.get_edges())
+    for (const auto& e_idx : graph.get_edge_indices())
     {
+        const auto& edge = graph.get_edge(e_idx);
         if (!directed_edges.emplace(edge.get_source(), edge.get_target()).second)
         {
             return true;  // found parallel edge => multi-graph
@@ -70,8 +73,9 @@ template<typename G>
     requires IsEdgeListGraph<G>
 bool is_loopless(const G& graph)
 {
-    for (const auto& edge : graph.get_edges())
+    for (const auto& e_idx : graph.get_edge_indices())
     {
+        const auto& edge = graph.get_edge(e_idx);
         if (edge.get_source() == edge.get_target())
         {
             return false;

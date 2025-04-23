@@ -1,4 +1,5 @@
 """ This example illustrates the interface of a generic static graph taking arbitrary python tuples as vertex and edge property.
+    Static graphs dont allow vertex or edge removal allowing for most efficient data representation. 
 """
 
 import pymimir.advanced.graphs as graphs
@@ -15,7 +16,21 @@ def main():
     graph.add_undirected_edge(v2, v3, ("c",3))
     graph.add_undirected_edge(v3, v0, ("d",4))
 
+    # Print dot representation of the graph.
+
     print(graph)
+
+    # Check properties of the graph.
+
+    assert(graphs.is_undirected(graph))
+    assert(graphs.is_loopless(graph))
+    assert(not graphs.is_acyclic(graph))
+    assert(not graphs.is_multi(graph))
+
+    # Translate to immutable forward and bidirectional traversal optimized graphs 
+    # relevant for algorithms that traverse vertices or edges adjacent to a given vertex.
+    forward_graph = graphs.ForwardStaticPyGraph(graph)
+    bidirectional_graph = graphs.BidirectionalStaticPyGraph(graph)
 
     # Run basic graph algorithms with switchable edge direction
 

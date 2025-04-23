@@ -202,7 +202,7 @@ template<typename G>
     requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G>  //
 std::shared_ptr<CertificateImpl> compute_certificate(const G& graph)
 {
-    if (!is_undirected_graph(graph))
+    if (!is_undirected(graph))
     {
         throw std::runtime_error("Color-refinement does not support directed graphs because they can be translated into undirected graphs by introducing two "
                                  "vertices along the edge with different colors to encode the direction.");
