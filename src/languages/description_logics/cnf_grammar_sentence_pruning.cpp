@@ -29,13 +29,18 @@ namespace mimir::languages::dl
  * StateListRefinementPruningFunction
  */
 
-StateListRefinementPruningFunction::StateListRefinementPruningFunction(const datasets::GeneralizedStateSpace& generalized_state_space) :
-    StateListRefinementPruningFunction(generalized_state_space, generalized_state_space->get_graph())
+StateListRefinementPruningFunction::StateListRefinementPruningFunction(const datasets::GeneralizedStateSpace& generalized_state_space,
+                                                                       DenotationRepositories& ref_denotation_repositories) :
+    StateListRefinementPruningFunction(generalized_state_space, generalized_state_space->get_graph(), ref_denotation_repositories)
 {
 }
 
 StateListRefinementPruningFunction::StateListRefinementPruningFunction(const datasets::GeneralizedStateSpace& generalized_state_space,
-                                                                       const graphs::ClassGraph& class_graph)
+                                                                       const graphs::ClassGraph& class_graph,
+                                                                       DenotationRepositories& ref_denotation_repositories) :
+    m_denotation_repositories(ref_denotation_repositories),
+    m_denotations_repositories(),
+    m_state_partitioning()
 {
     for (const auto& vertex : class_graph.get_vertices())
     {
@@ -46,10 +51,12 @@ StateListRefinementPruningFunction::StateListRefinementPruningFunction(const dat
     }
 }
 
-StateListRefinementPruningFunction::StateListRefinementPruningFunction(ProblemMap<search::StateList> state_partitioning) :
+StateListRefinementPruningFunction::StateListRefinementPruningFunction(ProblemMap<search::StateList> state_partitioning,
+                                                                       DenotationRepositories& ref_denotation_repositories) :
     IRefinementPruningFunction(),
-    m_state_partitioning(state_partitioning),
-    m_repositories()
+    m_denotation_repositories(ref_denotation_repositories),
+    m_denotations_repositories(),
+    m_state_partitioning(state_partitioning)
 {
 }
 
@@ -70,7 +77,7 @@ bool StateListRefinementPruningFunction::should_prune_impl(Constructor<D> constr
     {
         for (const auto& state : states)
         {
-            auto evaluation_context = EvaluationContext(state, problem, m_repositories);
+            auto evaluation_context = EvaluationContext(state, problem, m_denotation_repositories);
 
             const auto denotation = constructor->evaluate(evaluation_context);
 
@@ -78,7 +85,7 @@ bool StateListRefinementPruningFunction::should_prune_impl(Constructor<D> constr
         }
     }
 
-    const auto inserted = boost::hana::at_key(m_denotations_repository, boost::hana::type<D> {}).insert(denotations).second;
+    const auto inserted = boost::hana::at_key(m_denotations_repositories, boost::hana::type<D> {}).insert(denotations).second;
 
     return !inserted;
 }

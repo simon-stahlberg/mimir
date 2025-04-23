@@ -374,7 +374,8 @@ def main():
     # You can also write down your own grammar in a BNF specification that will automatically be translated into a CNF representation.
     grammar = description_logics.CNFGrammar.create(description_logics.GrammarSpecificationEnum.FRANCES_ET_AL_AAAI2021, knowledge_base.get_domain())
 
-    pruning_function = description_logics.StateListRefinementPruningFunction(knowledge_base.get_generalized_state_space())
+    denotation_repositories = description_logics.DenotationRepositories()
+    pruning_function = description_logics.StateListRefinementPruningFunction(knowledge_base.get_generalized_state_space(), denotation_repositories)
     sentences = description_logics.GeneratedSentencesContainer()
     repositories = description_logics.Repositories()
     sentence_generator = description_logics.GeneratorVisitor(pruning_function, sentences, repositories, 5)
@@ -442,7 +443,7 @@ def main():
     print("================================================================================")
     print("Evaluate numericals")
     print("================================================================================")
-    denotation_repositories = description_logics.DenotationRepositories()
+    
     for complexity, constructors in enumerate(sentences.get_numericals().get(grammar.get_numerical_start_symbol())):
         print("Complexity:", complexity)
         for constructor in constructors:

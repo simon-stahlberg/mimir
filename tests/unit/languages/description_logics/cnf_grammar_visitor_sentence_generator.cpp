@@ -106,10 +106,11 @@ TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarVisitorSentenceGeneratorTes
     generalized_state_space_options = GeneralizedStateSpaceImpl::Options();
     auto kb = KnowledgeBaseImpl::create(context, kb_options);
 
-    auto pruning_function = dl::StateListRefinementPruningFunction(kb->get_generalized_state_space().value());
+    auto denotation_repositories = dl::DenotationRepositories();
+    auto pruning_function = dl::StateListRefinementPruningFunction(kb->get_generalized_state_space().value(), denotation_repositories);
 
-    dl::cnf_grammar::GeneratedSentencesContainer sentences;
-    dl::Repositories repositories;
+    auto sentences = dl::cnf_grammar::GeneratedSentencesContainer();
+    auto repositories = dl::Repositories();
     size_t max_complexity = 4;
     auto visitor = dl::cnf_grammar::GeneratorVisitor(pruning_function, sentences, repositories, max_complexity);
 
@@ -152,10 +153,11 @@ TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarVisitorSentenceGeneratorFra
     generalized_state_space_options = GeneralizedStateSpaceImpl::Options();
     auto kb = KnowledgeBaseImpl::create(context, kb_options);
 
-    auto pruning_function = dl::StateListRefinementPruningFunction(kb->get_generalized_state_space().value());
+    auto denotation_repositories = dl::DenotationRepositories();
+    auto pruning_function = dl::StateListRefinementPruningFunction(kb->get_generalized_state_space().value(), denotation_repositories);
 
-    dl::cnf_grammar::GeneratedSentencesContainer sentences;
-    dl::Repositories repositories;
+    auto sentences = dl::cnf_grammar::GeneratedSentencesContainer();
+    auto repositories = dl::Repositories();
     size_t max_complexity = 9;
     auto visitor = dl::cnf_grammar::GeneratorVisitor(pruning_function, sentences, repositories, max_complexity);
 

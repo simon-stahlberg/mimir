@@ -591,9 +591,14 @@ void bind_module_definitions(nb::module_& m)
         .def("should_prune", nb::overload_cast<Constructor<NumericalTag>>(&IRefinementPruningFunction::should_prune), "numerical"_a);
 
     nb::class_<StateListRefinementPruningFunction, IRefinementPruningFunction>(m, "StateListRefinementPruningFunction")
-        .def(nb::init<const mimir::datasets::GeneralizedStateSpace&>())
-        .def(nb::init<const mimir::datasets::GeneralizedStateSpace&, const mimir::graphs::ClassGraph&>())
-        .def(nb::init<mimir::formalism::ProblemMap<mimir::search::StateList>>());
+        .def(nb::init<const mimir::datasets::GeneralizedStateSpace&, DenotationRepositories&>(), "generalized_state_space"_a, "ref_denotation_repositories"_a)
+        .def(nb::init<const mimir::datasets::GeneralizedStateSpace&, const mimir::graphs::ClassGraph&, DenotationRepositories&>(),
+             "generalized_state_space"_a,
+             "class_graph"_a,
+             "ref_denotation_repositories"_a)
+        .def(nb::init<mimir::formalism::ProblemMap<mimir::search::StateList>, DenotationRepositories&>(),
+             "state_partitioning"_a,
+             "ref_denotation_repositories"_a);
 
     nb::class_<cnf_grammar::GeneratedSentencesContainer>(m, "GeneratedSentencesContainer")  //
         .def(nb::init<>())
@@ -605,7 +610,11 @@ void bind_module_definitions(nb::module_& m)
              nb::rv_policy::reference_internal);
 
     nb::class_<cnf_grammar::GeneratorVisitor>(m, "GeneratorVisitor")
-        .def(nb::init<IRefinementPruningFunction&, cnf_grammar::GeneratedSentencesContainer&, Repositories&, size_t>())
+        .def(nb::init<IRefinementPruningFunction&, cnf_grammar::GeneratedSentencesContainer&, Repositories&, size_t>(),
+             "refinement_pruning_function"_a,
+             "generated_sentences_container"_a,
+             "repositories"_a,
+             "max_complexity"_a)
         .def("visit", nb::overload_cast<const cnf_grammar::Grammar&>(&cnf_grammar::GeneratorVisitor::visit));
 }
 }

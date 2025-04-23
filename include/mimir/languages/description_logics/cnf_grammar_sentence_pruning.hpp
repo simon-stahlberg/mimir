@@ -64,11 +64,14 @@ public:
 class StateListRefinementPruningFunction : public IRefinementPruningFunction
 {
 public:
-    explicit StateListRefinementPruningFunction(const datasets::GeneralizedStateSpace& generalized_state_space);
+    explicit StateListRefinementPruningFunction(const datasets::GeneralizedStateSpace& generalized_state_space,
+                                                DenotationRepositories& ref_denotation_repositories);
 
-    StateListRefinementPruningFunction(const datasets::GeneralizedStateSpace& generalized_state_space, const graphs::ClassGraph& class_graph);
+    StateListRefinementPruningFunction(const datasets::GeneralizedStateSpace& generalized_state_space,
+                                       const graphs::ClassGraph& class_graph,
+                                       DenotationRepositories& ref_denotation_repositories);
 
-    StateListRefinementPruningFunction(formalism::ProblemMap<search::StateList> state_partitioning);
+    StateListRefinementPruningFunction(formalism::ProblemMap<search::StateList> state_partitioning, DenotationRepositories& ref_denotation_repositories);
 
     /// @brief Tests whether a concept should be pruned.
     /// @param concept_ The concept to evaluate.
@@ -94,11 +97,11 @@ private:
     template<IsConceptOrRoleOrBooleanOrNumericalTag D>
     bool should_prune_impl(Constructor<D> constructor);
 
+    DenotationRepositories& m_denotation_repositories;
+
+    DenotationListSets m_denotations_repositories;
+
     formalism::ProblemMap<search::StateList> m_state_partitioning;
-
-    DenotationRepositories m_repositories;
-
-    DenotationListSets m_denotations_repository;
 };
 
 }
