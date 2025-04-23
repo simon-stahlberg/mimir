@@ -11,7 +11,7 @@ from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext
 
 
-__version__ = "0.12.15"
+__version__ = "0.12.16"
 HERE = Path(__file__).resolve().parent
 
 
