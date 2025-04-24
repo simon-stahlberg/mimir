@@ -687,13 +687,13 @@ std::tuple<StaticGraph<V, E>, IndexList, IndexList> StaticGraph<V, E>::create_ve
 
     /* 2. Instantiate vertices */
 
-    auto visited = IndexSet {};
+    auto old_to_new_v_idx = IndexMap<Index> {};
     for (const auto& v_idx : vertex_indices)
     {
-        if (!visited.contains(v_idx))
+        if (!old_to_new_v_idx.contains(v_idx))
         {
-            visited.insert(v_idx);
-            subgraph.add_vertex(get_vertex(v_idx));
+            const auto new_v_idx = subgraph.add_vertex(get_vertex(v_idx));
+            old_to_new_v_idx.emplace(v_idx, new_v_idx);
             vertex_remap.push_back(v_idx);
         }
     }
@@ -703,9 +703,9 @@ std::tuple<StaticGraph<V, E>, IndexList, IndexList> StaticGraph<V, E>::create_ve
     {
         for (const auto& e : get_adjacent_edges<graphs::ForwardTag>(v_idx))
         {
-            if (visited.contains(e.get_target()))
+            if (old_to_new_v_idx.contains(e.get_target()))
             {
-                subgraph.add_directed_edge(vertex_remap.at(e.get_source()), vertex_remap.at(e.get_target()), e);
+                subgraph.add_directed_edge(old_to_new_v_idx.at(e.get_source()), old_to_new_v_idx.at(e.get_target()), e);
                 edge_remap.push_back(e.get_index());
             }
         }
