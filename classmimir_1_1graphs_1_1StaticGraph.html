@@ -146,6 +146,9 @@ requires HasEdgeProperties&lt;E, EdgeProperties...&gt;</td></tr>
 <tr class="memitem:aa5b30b3de408397fe1d24a28242438dc"><td class="memTemplItemLeft" align="right" valign="top">std::pair&lt; EdgeIndex, EdgeIndex &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#aa5b30b3de408397fe1d24a28242438dc">add_undirected_edge</a> (VertexIndex <a class="el" href="namespacemimir_1_1graphs.html#af891e9004f3adc58c29b3c56ed70fcb9">source</a>, VertexIndex <a class="el" href="namespacemimir_1_1graphs.html#a99ec4019eda342e0f9bbb6c28672bda9">target</a>, EdgeProperties &amp;&amp;... properties)</td></tr>
 <tr class="memdesc:aa5b30b3de408397fe1d24a28242438dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add two anti-parallel directed edges to the graph with the identical edge properties, representing the undirected edge.  <br /></td></tr>
 <tr class="separator:aa5b30b3de408397fe1d24a28242438dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a925d4f95a5f5a8e4a251a9b749ae9b93"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">StaticGraph</a>&lt; V, E &gt;, <a class="el" href="namespacemimir.html#ae8930d2bf96696bee6e7daa76bbef05b">IndexMap</a>&lt; <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> &gt;, <a class="el" href="namespacemimir.html#ae8930d2bf96696bee6e7daa76bbef05b">IndexMap</a>&lt; <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a925d4f95a5f5a8e4a251a9b749ae9b93">create_vertex_induced_subgraph</a> (const VertexIndexList &amp;vertex_indices) const</td></tr>
+<tr class="memdesc:a925d4f95a5f5a8e4a251a9b749ae9b93"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create the subgraph induced by the given vertices.  <br /></td></tr>
+<tr class="separator:a925d4f95a5f5a8e4a251a9b749ae9b93"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac3266d9667efd23705ea4eff80d63f7a"><td class="memItemLeft" align="right" valign="top">std::ranges::subrange&lt; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a8a1dfc92d8058452c8582afcfc628fdd">VertexIndexConstIterator</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#ac3266d9667efd23705ea4eff80d63f7a">get_vertex_indices</a> () const</td></tr>
 <tr class="separator:ac3266d9667efd23705ea4eff80d63f7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a29bba8cb0b006471f4529a6c4b68ec18"><td class="memItemLeft" align="right" valign="top">std::ranges::subrange&lt; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#aa52a5e426ddcb0c28f91c78d81cc2df3">EdgeIndexConstIterator</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a29bba8cb0b006471f4529a6c4b68ec18">get_edge_indices</a> () const</td></tr>
@@ -580,6 +583,35 @@ template&lt;IsVertex V, IsEdge E&gt; </div>
 </div><div class="memdoc">
 
 <p>Reinitialize the graph to an empty graph. </p>
+
+</div>
+</div>
+<a id="a925d4f95a5f5a8e4a251a9b749ae9b93" name="a925d4f95a5f5a8e4a251a9b749ae9b93"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a925d4f95a5f5a8e4a251a9b749ae9b93">&#9670;&#160;</a></span>create_vertex_induced_subgraph()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;IsVertex V, IsEdge E&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::tuple&lt; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">StaticGraph</a>&lt; V, E &gt;, <a class="el" href="namespacemimir.html#ae8930d2bf96696bee6e7daa76bbef05b">IndexMap</a>&lt; <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> &gt;, <a class="el" href="namespacemimir.html#ae8930d2bf96696bee6e7daa76bbef05b">IndexMap</a>&lt; <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> &gt; &gt; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">mimir::graphs::StaticGraph</a>&lt; V, E &gt;::create_vertex_induced_subgraph </td>
+          <td>(</td>
+          <td class="paramtype">const VertexIndexList &amp;&#160;</td>
+          <td class="paramname"><em>vertex_indices</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create the subgraph induced by the given vertices. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vertex_indices</td><td>is the given vector of vertex indices. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>the subgraph induced by the given vertices, the remappings of vertices and edges. </dd></dl>
 
 </div>
 </div>
