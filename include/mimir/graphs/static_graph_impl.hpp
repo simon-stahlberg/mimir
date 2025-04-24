@@ -699,9 +699,9 @@ std::tuple<StaticGraph<V, E>, IndexList, IndexList> StaticGraph<V, E>::create_ve
     }
 
     /* 3. Instantiate edges */
-    for (const auto& v_idx : vertex_indices)
+    for (const auto& [old_v_idx, new_v_idx] : old_to_new_v_idx)
     {
-        for (const auto& e : get_adjacent_edges<graphs::ForwardTag>(v_idx))
+        for (const auto& e : get_adjacent_edges<graphs::ForwardTag>(old_v_idx))
         {
             if (old_to_new_v_idx.contains(e.get_target()))
             {
