@@ -107,16 +107,22 @@ void bind_module_definitions(nb::module_& m)
         .def("get_unsolvable_vertices", &GeneralizedStateSpaceImpl::get_unsolvable_vertices, nb::rv_policy::copy)
         .def("get_state_space",
              nb::overload_cast<const graphs::ClassVertex&>(&GeneralizedStateSpaceImpl::get_state_space, nb::const_),
+             "class_vertex"_a,
              nb::rv_policy::reference_internal)
         .def("get_state_space",
              nb::overload_cast<const graphs::ClassEdge&>(&GeneralizedStateSpaceImpl::get_state_space, nb::const_),
+             "class_edge"_a,
              nb::rv_policy::reference_internal)
-        .def("get_problem_vertex", &GeneralizedStateSpaceImpl::get_problem_vertex, nb::rv_policy::reference_internal)
-        .def("get_problem_edge", &GeneralizedStateSpaceImpl::get_problem_edge, nb::rv_policy::reference_internal)
-        .def("get_class_vertex", &GeneralizedStateSpaceImpl::get_class_vertex, nb::rv_policy::reference_internal)
-        .def("get_class_edge", &GeneralizedStateSpaceImpl::get_class_edge, nb::rv_policy::reference_internal)
-        .def("create_induced_subgraph_from_class_vertex_indices", &GeneralizedStateSpaceImpl::create_induced_subgraph_from_class_vertex_indices)
-        .def("create_induced_subgraph_from_problem_indices", &GeneralizedStateSpaceImpl::create_induced_subgraph_from_problem_indices);
+        .def("get_problem_vertex", &GeneralizedStateSpaceImpl::get_problem_vertex, "class_vertex"_a, nb::rv_policy::reference_internal)
+        .def("get_problem_edge", &GeneralizedStateSpaceImpl::get_problem_edge, "class_edge"_a, nb::rv_policy::reference_internal)
+        .def("get_class_vertex", &GeneralizedStateSpaceImpl::get_class_vertex, "problem_vertex"_a, nb::rv_policy::reference_internal)
+        .def("get_class_edge", &GeneralizedStateSpaceImpl::get_class_edge, "problem_edge"_a, nb::rv_policy::reference_internal)
+        .def("create_induced_subgraph_from_class_vertex_indices",
+             &GeneralizedStateSpaceImpl::create_induced_subgraph_from_class_vertex_indices,
+             "class_vertex_indices"_a)
+        .def("create_induced_subgraph_from_problem_indices",
+             &GeneralizedStateSpaceImpl::create_induced_subgraph_from_problem_indices,
+             "problem_vertex_indices"_a);
 
     nb::class_<TupleGraphImpl>(m, "TupleGraph")
         .def("__str__", [](const TupleGraphImpl& self) { return to_string(self); })

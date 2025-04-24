@@ -140,11 +140,12 @@ public:
     /// @brief Create the induced `ClassGraph` by the given `class_vertex_indices`.
     /// This function copies the set of `graphs::ClassVertex`
     /// and all `graphs::ClassEdge` between those vertices into a new `ClassGraph`.
-    graphs::ClassGraph create_induced_subgraph_from_class_vertex_indices(const IndexList& class_vertex_indices) const;
+    std::tuple<graphs::ClassGraph, IndexMap<Index>, IndexMap<Index>>
+    create_induced_subgraph_from_class_vertex_indices(const IndexList& class_vertex_indices) const;
     /// @brief Create the induced `ClassGraph` by the given `problem_indices`.
     /// This function copies the corresponding sets of `graphs::ClassVertex`
     /// and `graphs::ClassEdge` into a new `ClassGraph`.
-    graphs::ClassGraph create_induced_subgraph_from_problem_indices(const IndexList& problem_indices) const;
+    std::tuple<graphs::ClassGraph, IndexMap<Index>, IndexMap<Index>> create_induced_subgraph_from_problem_indices(const IndexList& problem_indices) const;
 };
 }
 

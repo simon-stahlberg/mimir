@@ -678,6 +678,36 @@ std::pair<EdgeIndex, EdgeIndex> StaticGraph<V, E>::add_undirected_edge(VertexInd
 }
 
 template<IsVertex V, IsEdge E>
+std::tuple<StaticGraph<V, E>, IndexMap<Index>, IndexMap<Index>> StaticGraph<V, E>::create_vertex_induced_subgraph(const VertexIndexList& vertex_indices) const
+{
+    auto subgraph = StaticGraph<V, E>();
+    auto vertex_remap = IndexMap<Index> {};
+    auto edge_remap = IndexMap<Index> {};
+
+    /* 2. Instantiate vertices */
+
+    for (const auto& v_idx : vertex_indices)
+    {
+        if (!vertex_remap.contains(v_idx))  ///< skip duplicates
+            vertex_remap.emplace(v_idx, subgraph.add_vertex(get_vertex(v_idx)));
+    }
+
+    /* 3. Instantiate edges */
+    for (const auto& v_idx : vertex_indices)
+    {
+        for (const auto& e : get_adjacent_edges<graphs::ForwardTag>(v_idx))
+        {
+            if (vertex_remap.contains(e.get_target()))
+            {
+                edge_remap.emplace(e.get_index(), subgraph.add_directed_edge(vertex_remap.at(e.get_source()), vertex_remap.at(e.get_target()), e));
+            }
+        }
+    }
+
+    return std::make_tuple(std::move(subgraph), std::move(vertex_remap), std::move(edge_remap));
+}
+
+template<IsVertex V, IsEdge E>
 void StaticGraph<V, E>::clear()
 {
     m_vertices.clear();
@@ -911,6 +941,15 @@ StaticForwardGraph<G>::StaticForwardGraph(G graph) :
 }
 
 template<IsStaticGraph G>
+std::tuple<StaticForwardGraph<G>, IndexMap<Index>, IndexMap<Index>>
+StaticForwardGraph<G>::create_vertex_induced_subgraph(const VertexIndexList& vertex_indices) const
+{
+    auto [subgraph, vertex_remap, edge_remap] = m_graph.create_vertex_induced_subgraph(vertex_indices);
+
+    return std::make_tuple(StaticForwardGraph<G>(std::move(subgraph)), std::move(vertex_remap), std::move(edge_remap));
+}
+
+template<IsStaticGraph G>
 std::ranges::subrange<typename StaticForwardGraph<G>::VertexIndexConstIterator> StaticForwardGraph<G>::get_vertex_indices() const
 {
     return m_graph.get_vertex_indices();
@@ -1110,6 +1149,15 @@ StaticBidirectionalGraph<G>::StaticBidirectionalGraph(G graph) : m_graph(std::mo
 {
     boost::hana::at_key(m_edge_indices_grouped_by_vertex, boost::hana::type<ForwardTag> {}) = std::move(compute_index_grouped_edge_indices(m_graph, true));
     boost::hana::at_key(m_edge_indices_grouped_by_vertex, boost::hana::type<BackwardTag> {}) = std::move(compute_index_grouped_edge_indices(m_graph, false));
+}
+
+template<IsStaticGraph G>
+std::tuple<StaticBidirectionalGraph<G>, IndexMap<Index>, IndexMap<Index>>
+StaticBidirectionalGraph<G>::create_vertex_induced_subgraph(const VertexIndexList& vertex_indices) const
+{
+    auto [subgraph, vertex_remap, edge_remap] = m_graph.create_vertex_induced_subgraph(vertex_indices);
+
+    return std::make_tuple(StaticBidirectionalGraph<G>(std::move(subgraph)), std::move(vertex_remap), std::move(edge_remap));
 }
 
 template<IsStaticGraph G>

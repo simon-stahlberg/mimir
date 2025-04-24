@@ -14,9 +14,9 @@ def main():
     problem_filepath_1 = str(ROOT_DIR / "data" / "gripper" / "p-1-0.pddl")
     problem_filepath_2 = str(ROOT_DIR / "data" / "gripper" / "p-2-0.pddl")
 
+    # Create GeneralizedSearchContext
     search_context_options = search.SearchContextOptions()
     search_context_options.mode = search.SearchMode.GROUNDED
-
     generalized_search_context = search.GeneralizedSearchContext.create(domain_filepath, [problem_filepath_1, problem_filepath_2], search_context_options)
 
     # Create KnowledgeBase

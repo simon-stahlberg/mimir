@@ -357,11 +357,12 @@ def main():
     domain_filepath = str(ROOT_DIR / "data" / "gripper" / "domain.pddl")
     problem_filepath = str(ROOT_DIR / "data" / "gripper" / "p-1-0.pddl")
 
-    # Create some states
+    # Create GeneralizedSearchContext
     search_context_options = search.SearchContextOptions()
     search_context_options.mode = search.SearchMode.GROUNDED
     generalized_search_context = search.GeneralizedSearchContext.create(domain_filepath, [problem_filepath], search_context_options)
 
+    # Create KnowledgeBase
     state_space_options = datasets.StateSpaceOptions()
     state_space_options.symmetry_pruning = True 
     generalized_state_space_options = datasets.GeneralizedStateSpaceOptions()

@@ -347,49 +347,16 @@ const graphs::ClassEdge& GeneralizedStateSpaceImpl::get_class_edge(const graphs:
     return get_graph().get_edge(m_edge_mappings.at(graphs::get_problem(edge).get()).at(edge.get_index()));
 }
 
-static graphs::ClassGraph create_induced_subspace_helper(const IndexSet& subgraph_class_v_idxs, const graphs::ClassGraph& complete_graph)
+std::tuple<graphs::ClassGraph, IndexMap<Index>, IndexMap<Index>>
+GeneralizedStateSpaceImpl::create_induced_subgraph_from_class_vertex_indices(const IndexList& class_vertex_indices) const
 {
-    auto sub_graph = graphs::StaticClassGraph();
+    auto [subgraph, vertex_remap, edge_remap] = m_graph.get_graph().create_vertex_induced_subgraph(class_vertex_indices);
 
-    /* 2. Instantiate vertices */
-    auto old_to_new_class_v_idxs = IndexMap<Index> {};
-
-    for (const auto& class_v_idx : subgraph_class_v_idxs)
-    {
-        const auto& class_v = complete_graph.get_vertex(class_v_idx);
-
-        const auto new_class_v_idx = sub_graph.add_vertex(class_v);
-
-        old_to_new_class_v_idxs.emplace(class_v_idx, new_class_v_idx);
-    }
-
-    /* 3. Instantiate edges */
-    for (const auto& class_v_idx : subgraph_class_v_idxs)
-    {
-        for (const auto& class_e : complete_graph.get_adjacent_edges<graphs::ForwardTag>(class_v_idx))
-        {
-            if (subgraph_class_v_idxs.contains(class_e.get_target()))
-            {
-                const auto new_class_source_v_idx = old_to_new_class_v_idxs.at(class_e.get_source());
-                const auto new_class_target_v_idx = old_to_new_class_v_idxs.at(class_e.get_target());
-
-                sub_graph.add_directed_edge(new_class_source_v_idx, new_class_target_v_idx, class_e);
-            }
-        }
-    }
-
-    /* Return a `ClassStateSpace` that wraps a bidirectional `ClassGraph` obtained from the `StaticClassGraph`. */
-    return graphs::ClassGraph(std::move(sub_graph));
+    return std::make_tuple(graphs::ClassGraph(std::move(subgraph)), std::move(vertex_remap), std::move(edge_remap));
 }
 
-graphs::ClassGraph GeneralizedStateSpaceImpl::create_induced_subgraph_from_class_vertex_indices(const IndexList& class_vertex_indices) const
-{
-    auto unique_class_v_idxs = IndexSet(class_vertex_indices.begin(), class_vertex_indices.end());
-
-    return create_induced_subspace_helper(unique_class_v_idxs, get_graph());
-}
-
-graphs::ClassGraph GeneralizedStateSpaceImpl::create_induced_subgraph_from_problem_indices(const IndexList& problem_indices) const
+std::tuple<graphs::ClassGraph, IndexMap<Index>, IndexMap<Index>>
+GeneralizedStateSpaceImpl::create_induced_subgraph_from_problem_indices(const IndexList& problem_indices) const
 {
     /* Collect unique class vertices */
     auto unique_class_v_idxs = IndexSet {};
@@ -406,7 +373,10 @@ graphs::ClassGraph GeneralizedStateSpaceImpl::create_induced_subgraph_from_probl
         }
     }
 
-    return create_induced_subspace_helper(unique_class_v_idxs, get_graph());
+    auto [subgraph, vertex_remap, edge_remap] =
+        m_graph.get_graph().create_vertex_induced_subgraph(IndexList(unique_class_v_idxs.begin(), unique_class_v_idxs.end()));
+
+    return std::make_tuple(graphs::ClassGraph(std::move(subgraph)), std::move(vertex_remap), std::move(edge_remap));
 }
 
 }

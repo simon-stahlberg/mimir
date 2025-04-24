@@ -127,14 +127,14 @@ TEST(MimirTests, DatasetsKnowledgeBaseConstructorTest)
         /* Quick test for induced subgraph */
 
         // Test subspace from problem index 0
-        const auto& class_state_space_0 = generalized_state_space->create_induced_subgraph_from_problem_indices(IndexList { 0 });
+        const auto [class_state_space_0, vertex_remap_0, edge_remap_0] = generalized_state_space->create_induced_subgraph_from_problem_indices(IndexList { 0 });
         const auto& class_graph_0 = class_state_space_0.get_graph();
 
         EXPECT_EQ(class_graph_0.get_num_vertices(), 7);
         EXPECT_EQ(class_graph_0.get_num_edges(), 6);
 
         // Test subspace from problem index 1
-        const auto& class_state_space_1 = generalized_state_space->create_induced_subgraph_from_problem_indices(IndexList { 1 });
+        const auto [class_state_space_1, vertex_remap_1, edge_remap_1] = generalized_state_space->create_induced_subgraph_from_problem_indices(IndexList { 1 });
         const auto& class_graph_1 = class_state_space_1.get_graph();
 
         EXPECT_EQ(class_graph_1.get_num_vertices(), 8);
@@ -147,7 +147,8 @@ TEST(MimirTests, DatasetsKnowledgeBaseConstructorTest)
             class_vertex_indices.push_back(i);
         }
 
-        const auto& class_state_space_even = generalized_state_space->create_induced_subgraph_from_class_vertex_indices(class_vertex_indices);
+        const auto [class_state_space_even, vertex_remap_even, edge_remap_even] =
+            generalized_state_space->create_induced_subgraph_from_class_vertex_indices(class_vertex_indices);
         const auto& class_graph_even = class_state_space_even.get_graph();
 
         EXPECT_EQ(class_graph_even.get_num_vertices(), 6);
