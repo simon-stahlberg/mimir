@@ -105,7 +105,7 @@ numerical_distance_type const numerical_distance = "numerical_distance";
 
 inline auto predicate_name_string_parser()
 {
-    return lexeme[omit[lit('"')]] > raw[lexeme[alpha >> *(alnum | char_('-') | char_('_'))]] > lexeme[omit[lit('"')]];
+    return lexeme[omit[lit('"')]] > raw[lexeme[alpha >> *(alnum | char_('-') | char_('_') | char_('='))]] > lexeme[omit[lit('"')]];
 }
 inline auto object_name_string_parser() { return lexeme[omit[lit('"')]] > raw[lexeme[alpha >> *(alnum | char_('-') | char_('_'))]] > lexeme[omit[lit('"')]]; }
 inline auto bool_string_parser()
