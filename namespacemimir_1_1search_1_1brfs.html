@@ -107,8 +107,8 @@ Typedefs</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:afd46153c9e8b0dbd1f187fff87a42f42"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structmimir_1_1search_1_1SearchResult.html">SearchResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1brfs.html#afd46153c9e8b0dbd1f187fff87a42f42">find_solution</a> (const <a class="el" href="namespacemimir_1_1search.html#a3e28e19bd124916aa6c7834103ea2357">SearchContext</a> &amp;context, <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> start_state=nullptr, <a class="el" href="namespacemimir_1_1search_1_1brfs.html#aec84ed22d7437b783307c6977246a864">EventHandler</a> event_handler=nullptr, <a class="el" href="namespacemimir_1_1search.html#a9bb7ef83efbfd45dfdff36bbdd659cfe">GoalStrategy</a> goal_strategy=nullptr, <a class="el" href="namespacemimir_1_1search.html#a4a361738fff5acc4d7091c245f79ccf1">PruningStrategy</a> pruning_strategy=nullptr, bool exhaustive=false)</td></tr>
-<tr class="separator:afd46153c9e8b0dbd1f187fff87a42f42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6fd51552f0bbb5c3ffc63f72de4e6cfe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structmimir_1_1search_1_1SearchResult.html">SearchResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1brfs.html#a6fd51552f0bbb5c3ffc63f72de4e6cfe">find_solution</a> (const <a class="el" href="namespacemimir_1_1search.html#a3e28e19bd124916aa6c7834103ea2357">SearchContext</a> &amp;context, <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> start_state=nullptr, <a class="el" href="namespacemimir_1_1search_1_1brfs.html#aec84ed22d7437b783307c6977246a864">EventHandler</a> event_handler=nullptr, <a class="el" href="namespacemimir_1_1search.html#a9bb7ef83efbfd45dfdff36bbdd659cfe">GoalStrategy</a> goal_strategy=nullptr, <a class="el" href="namespacemimir_1_1search.html#a4a361738fff5acc4d7091c245f79ccf1">PruningStrategy</a> pruning_strategy=nullptr, bool stop_if_goal=true, uint32_t max_num_states=std::numeric_limits&lt; uint32_t &gt;::max(), uint32_t max_time_in_ms=std::numeric_limits&lt; uint32_t &gt;::max())</td></tr>
+<tr class="separator:a6fd51552f0bbb5c3ffc63f72de4e6cfe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab418576f770538ee1fb2d1e1a28353b7"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1brfs.html#ab418576f770538ee1fb2d1e1a28353b7">operator&lt;&lt;</a> (std::ostream &amp;os, const <a class="el" href="classmimir_1_1search_1_1brfs_1_1Statistics.html">Statistics</a> &amp;statistics)</td></tr>
 <tr class="separator:ab418576f770538ee1fb2d1e1a28353b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -171,8 +171,8 @@ Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="afd46153c9e8b0dbd1f187fff87a42f42" name="afd46153c9e8b0dbd1f187fff87a42f42"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afd46153c9e8b0dbd1f187fff87a42f42">&#9670;&#160;</a></span>find_solution()</h2>
+<a id="a6fd51552f0bbb5c3ffc63f72de4e6cfe" name="a6fd51552f0bbb5c3ffc63f72de4e6cfe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6fd51552f0bbb5c3ffc63f72de4e6cfe">&#9670;&#160;</a></span>find_solution()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -211,7 +211,19 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>exhaustive</em> = <code>false</code>&#160;</td>
+          <td class="paramname"><em>stop_if_goal</em> = <code>true</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>max_num_states</em> = <code>std::numeric_limits&lt;&#160;uint32_t&#160;&gt;::max()</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>max_time_in_ms</em> = <code>std::numeric_limits&lt;&#160;uint32_t&#160;&gt;::max()</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
