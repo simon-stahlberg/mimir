@@ -31,17 +31,38 @@ namespace mimir::languages::general_policies
 
 FormatterVisitor::FormatterVisitor(std::ostream& out) : m_out(out) {}
 
-void FormatterVisitor::visit(PositiveBooleanCondition effect) { m_out << keywords::positive_boolean_condition << " " << effect->get_feature()->get_name(); }
-void FormatterVisitor::visit(NegativeBooleanCondition effect) { m_out << keywords::negative_boolean_condition << " " << effect->get_feature()->get_name(); }
-void FormatterVisitor::visit(GreaterNumericalCondition effect) { m_out << keywords::greater_numerical_condition << " " << effect->get_feature()->get_name(); }
-void FormatterVisitor::visit(EqualNumericalCondition effect) { m_out << keywords::equal_numerical_condition << " " << effect->get_feature()->get_name(); }
+void FormatterVisitor::visit(PositiveBooleanCondition effect)
+{
+    m_out << "@" << keywords::positive_boolean_condition << " " << effect->get_feature()->get_name();
+}
+void FormatterVisitor::visit(NegativeBooleanCondition effect)
+{
+    m_out << "@" << keywords::negative_boolean_condition << " " << effect->get_feature()->get_name();
+}
+void FormatterVisitor::visit(GreaterNumericalCondition effect)
+{
+    m_out << "@" << keywords::greater_numerical_condition << " " << effect->get_feature()->get_name();
+}
+void FormatterVisitor::visit(EqualNumericalCondition effect)
+{
+    m_out << "@" << keywords::equal_numerical_condition << " " << effect->get_feature()->get_name();
+}
 
-void FormatterVisitor::visit(PositiveBooleanEffect effect) { m_out << keywords::positive_boolean_effect << " " << effect->get_feature()->get_name(); }
-void FormatterVisitor::visit(NegativeBooleanEffect effect) { m_out << keywords::negative_boolean_effect << " " << effect->get_feature()->get_name(); }
-void FormatterVisitor::visit(UnchangedBooleanEffect effect) { m_out << keywords::unchanged_boolean_effect << " " << effect->get_feature()->get_name(); }
-void FormatterVisitor::visit(IncreaseNumericalEffect effect) { m_out << keywords::increase_numerical_effect << " " << effect->get_feature()->get_name(); }
-void FormatterVisitor::visit(DecreaseNumericalEffect effect) { m_out << keywords::decrease_numerical_effect << " " << effect->get_feature()->get_name(); }
-void FormatterVisitor::visit(UnchangedNumericalEffect effect) { m_out << keywords::unchanged_numerical_effect << " " << effect->get_feature()->get_name(); }
+void FormatterVisitor::visit(PositiveBooleanEffect effect) { m_out << "@" << keywords::positive_boolean_effect << " " << effect->get_feature()->get_name(); }
+void FormatterVisitor::visit(NegativeBooleanEffect effect) { m_out << "@" << keywords::negative_boolean_effect << " " << effect->get_feature()->get_name(); }
+void FormatterVisitor::visit(UnchangedBooleanEffect effect) { m_out << "@" << keywords::unchanged_boolean_effect << " " << effect->get_feature()->get_name(); }
+void FormatterVisitor::visit(IncreaseNumericalEffect effect)
+{
+    m_out << "@" << keywords::increase_numerical_effect << " " << effect->get_feature()->get_name();
+}
+void FormatterVisitor::visit(DecreaseNumericalEffect effect)
+{
+    m_out << "@" << keywords::decrease_numerical_effect << " " << effect->get_feature()->get_name();
+}
+void FormatterVisitor::visit(UnchangedNumericalEffect effect)
+{
+    m_out << "@" << keywords::unchanged_numerical_effect << " " << effect->get_feature()->get_name();
+}
 
 void FormatterVisitor::visit(NamedFeature<dl::ConceptTag> feature)
 {
@@ -80,6 +101,7 @@ void FormatterVisitor::visit(Rule rule)
         first = false;
     }
     m_out << " } -> { ";
+    first = true;
     for (const auto& effect : rule->get_effects())
     {
         if (!first)

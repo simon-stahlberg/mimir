@@ -29,159 +29,165 @@ namespace mimir::languages::dl
 FormatterVisitor::FormatterVisitor(std::ostream& out) : m_out(out) {}
 
 /* Concepts */
-void FormatterVisitor::visit(ConceptBot constructor) { m_out << keywords::concept_bot; }
-void FormatterVisitor::visit(ConceptTop constructor) { m_out << keywords::concept_top; }
+void FormatterVisitor::visit(ConceptBot constructor) { m_out << "@" << keywords::concept_bot; }
+void FormatterVisitor::visit(ConceptTop constructor) { m_out << "@" << keywords::concept_top; }
 void FormatterVisitor::visit(ConceptAtomicState<StaticTag> constructor)
 {
-    m_out << keywords::concept_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
+    m_out << "@" << keywords::concept_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
 void FormatterVisitor::visit(ConceptAtomicState<FluentTag> constructor)
 {
-    m_out << keywords::concept_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
+    m_out << "@" << keywords::concept_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
 void FormatterVisitor::visit(ConceptAtomicState<DerivedTag> constructor)
 {
-    m_out << keywords::concept_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
+    m_out << "@" << keywords::concept_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
 void FormatterVisitor::visit(ConceptAtomicGoal<StaticTag> constructor)
 {
-    m_out << keywords::concept_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->get_polarity() ? "true" : "false");
+    m_out << "@" << keywords::concept_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" "
+          << (constructor->get_polarity() ? "true" : "false");
 }
 void FormatterVisitor::visit(ConceptAtomicGoal<FluentTag> constructor)
 {
-    m_out << keywords::concept_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->get_polarity() ? "true" : "false");
+    m_out << "@" << keywords::concept_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" "
+          << (constructor->get_polarity() ? "true" : "false");
 }
 void FormatterVisitor::visit(ConceptAtomicGoal<DerivedTag> constructor)
 {
-    m_out << keywords::concept_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->get_polarity() ? "true" : "false");
+    m_out << "@" << keywords::concept_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" "
+          << (constructor->get_polarity() ? "true" : "false");
 }
 void FormatterVisitor::visit(ConceptIntersection constructor)
 {
-    m_out << keywords::concept_intersection << " ";
+    m_out << "@" << keywords::concept_intersection << " ";
     constructor->get_left_concept()->accept(*this);
     m_out << " ";
     constructor->get_right_concept()->accept(*this);
 }
 void FormatterVisitor::visit(ConceptUnion constructor)
 {
-    m_out << keywords::concept_union << " ";
+    m_out << "@" << keywords::concept_union << " ";
     constructor->get_left_concept()->accept(*this);
     m_out << " ";
     constructor->get_right_concept()->accept(*this);
 }
 void FormatterVisitor::visit(ConceptNegation constructor)
 {
-    m_out << keywords::concept_negation << " ";
+    m_out << "@" << keywords::concept_negation << " ";
     constructor->get_concept()->accept(*this);
 }
 void FormatterVisitor::visit(ConceptValueRestriction constructor)
 {
-    m_out << keywords::concept_value_restriction << " ";
+    m_out << "@" << keywords::concept_value_restriction << " ";
     constructor->get_role()->accept(*this);
     m_out << " ";
     constructor->get_concept()->accept(*this);
 }
 void FormatterVisitor::visit(ConceptExistentialQuantification constructor)
 {
-    m_out << keywords::concept_existential_quantification << " ";
+    m_out << "@" << keywords::concept_existential_quantification << " ";
     constructor->get_role()->accept(*this);
     m_out << " ";
     constructor->get_concept()->accept(*this);
 }
 void FormatterVisitor::visit(ConceptRoleValueMapContainment constructor)
 {
-    m_out << keywords::concept_role_value_map_containment << " ";
+    m_out << "@" << keywords::concept_role_value_map_containment << " ";
     constructor->get_left_role()->accept(*this);
     m_out << " ";
     constructor->get_right_role()->accept(*this);
 }
 void FormatterVisitor::visit(ConceptRoleValueMapEquality constructor)
 {
-    m_out << keywords::concept_role_value_map_equality << " ";
+    m_out << "@" << keywords::concept_role_value_map_equality << " ";
     constructor->get_left_role()->accept(*this);
     m_out << " ";
     constructor->get_right_role()->accept(*this);
 }
-void FormatterVisitor::visit(ConceptNominal constructor) { m_out << keywords::concept_nominal << " " << constructor->get_object()->get_name(); }
+void FormatterVisitor::visit(ConceptNominal constructor) { m_out << "@" << keywords::concept_nominal << " " << constructor->get_object()->get_name(); }
 
 /* Roles */
 
-void FormatterVisitor::visit(RoleUniversal constructor) { m_out << keywords::role_universal; }
+void FormatterVisitor::visit(RoleUniversal constructor) { m_out << "@" << keywords::role_universal; }
 void FormatterVisitor::visit(RoleAtomicState<StaticTag> constructor)
 {
-    m_out << keywords::role_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
+    m_out << "@" << keywords::role_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
 void FormatterVisitor::visit(RoleAtomicState<FluentTag> constructor)
 {
-    m_out << keywords::role_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
+    m_out << "@" << keywords::role_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
 void FormatterVisitor::visit(RoleAtomicState<DerivedTag> constructor)
 {
-    m_out << keywords::role_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
+    m_out << "@" << keywords::role_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
 void FormatterVisitor::visit(RoleAtomicGoal<StaticTag> constructor)
 {
-    m_out << keywords::role_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->get_polarity() ? "true" : "false");
+    m_out << "@" << keywords::role_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" "
+          << (constructor->get_polarity() ? "true" : "false");
 }
 void FormatterVisitor::visit(RoleAtomicGoal<FluentTag> constructor)
 {
-    m_out << keywords::role_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->get_polarity() ? "true" : "false");
+    m_out << "@" << keywords::role_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" "
+          << (constructor->get_polarity() ? "true" : "false");
 }
 void FormatterVisitor::visit(RoleAtomicGoal<DerivedTag> constructor)
 {
-    m_out << keywords::role_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->get_polarity() ? "true" : "false");
+    m_out << "@" << keywords::role_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" "
+          << (constructor->get_polarity() ? "true" : "false");
 }
 void FormatterVisitor::visit(RoleIntersection constructor)
 {
-    m_out << keywords::role_intersection << " ";
+    m_out << "@" << keywords::role_intersection << " ";
     constructor->get_left_role()->accept(*this);
     m_out << " ";
     constructor->get_right_role()->accept(*this);
 }
 void FormatterVisitor::visit(RoleUnion constructor)
 {
-    m_out << keywords::role_union << " ";
+    m_out << "@" << keywords::role_union << " ";
     constructor->get_left_role()->accept(*this);
     m_out << " ";
     constructor->get_right_role()->accept(*this);
 }
 void FormatterVisitor::visit(RoleComplement constructor)
 {
-    m_out << keywords::role_complement << " ";
+    m_out << "@" << keywords::role_complement << " ";
     constructor->get_role()->accept(*this);
 }
 void FormatterVisitor::visit(RoleInverse constructor)
 {
-    m_out << keywords::role_inverse << " ";
+    m_out << "@" << keywords::role_inverse << " ";
     constructor->get_role()->accept(*this);
 }
 void FormatterVisitor::visit(RoleComposition constructor)
 {
-    m_out << keywords::role_composition << " ";
+    m_out << "@" << keywords::role_composition << " ";
     constructor->get_left_role()->accept(*this);
     m_out << " ";
     constructor->get_right_role()->accept(*this);
 }
 void FormatterVisitor::visit(RoleTransitiveClosure constructor)
 {
-    m_out << keywords::role_transitive_closure << " ";
+    m_out << "@" << keywords::role_transitive_closure << " ";
     constructor->get_role()->accept(*this);
 }
 void FormatterVisitor::visit(RoleReflexiveTransitiveClosure constructor)
 {
-    m_out << keywords::role_reflexive_transitive_closure << " ";
+    m_out << "@" << keywords::role_reflexive_transitive_closure << " ";
     constructor->get_role()->accept(*this);
 }
 void FormatterVisitor::visit(RoleRestriction constructor)
 {
-    m_out << keywords::role_restriction << " ";
+    m_out << "@" << keywords::role_restriction << " ";
     constructor->get_role()->accept(*this);
     m_out << " ";
     constructor->get_concept()->accept(*this);
 }
 void FormatterVisitor::visit(RoleIdentity constructor)
 {
-    m_out << keywords::role_identity << " ";
+    m_out << "@" << keywords::role_identity << " ";
     constructor->get_concept()->accept(*this);
 }
 
@@ -191,24 +197,24 @@ void FormatterVisitor::visit(RoleIdentity constructor)
 
 void FormatterVisitor::visit(BooleanAtomicState<StaticTag> constructor)
 {
-    m_out << keywords::boolean_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
+    m_out << "@" << keywords::boolean_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
 void FormatterVisitor::visit(BooleanAtomicState<FluentTag> constructor)
 {
-    m_out << keywords::boolean_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
+    m_out << "@" << keywords::boolean_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
 void FormatterVisitor::visit(BooleanAtomicState<DerivedTag> constructor)
 {
-    m_out << keywords::boolean_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
+    m_out << "@" << keywords::boolean_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
 void FormatterVisitor::visit(BooleanNonempty<ConceptTag> constructor)
 {
-    m_out << keywords::boolean_nonempty << " ";
+    m_out << "@" << keywords::boolean_nonempty << " ";
     constructor->get_constructor()->accept(*this);
 }
 void FormatterVisitor::visit(BooleanNonempty<RoleTag> constructor)
 {
-    m_out << keywords::boolean_nonempty << " ";
+    m_out << "@" << keywords::boolean_nonempty << " ";
     constructor->get_constructor()->accept(*this);
 }
 
@@ -218,17 +224,17 @@ void FormatterVisitor::visit(BooleanNonempty<RoleTag> constructor)
 
 void FormatterVisitor::visit(NumericalCount<ConceptTag> constructor)
 {
-    m_out << keywords::numerical_count << " ";
+    m_out << "@" << keywords::numerical_count << " ";
     constructor->get_constructor()->accept(*this);
 }
 void FormatterVisitor::visit(NumericalCount<RoleTag> constructor)
 {
-    m_out << keywords::numerical_count << " ";
+    m_out << "@" << keywords::numerical_count << " ";
     constructor->get_constructor()->accept(*this);
 }
 void FormatterVisitor::visit(NumericalDistance constructor)
 {
-    m_out << keywords::numerical_distance << " ";
+    m_out << "@" << keywords::numerical_distance << " ";
     constructor->get_left_concept()->accept(*this);
     m_out << " ";
     constructor->get_role()->accept(*this);
