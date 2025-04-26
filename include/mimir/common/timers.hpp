@@ -19,6 +19,7 @@
 #define MIMIR_COMMON_TIMERS_HPP_
 
 #include <chrono>
+#include <cstdint>
 
 namespace mimir
 {
@@ -30,7 +31,7 @@ private:
     bool m_isRunning;
 
 public:
-    explicit StopWatch(size_t timeout_ms) : m_timeout(timeout_ms), m_isRunning(false) {}
+    explicit StopWatch(uint32_t timeout_ms) : m_timeout(timeout_ms), m_isRunning(false) {}
 
     void start()
     {

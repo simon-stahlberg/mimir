@@ -605,7 +605,9 @@ void bind_module_definitions(nb::module_& m)
           "brfs_event_handler"_a = nullptr,
           "goal_strategy"_a = nullptr,
           "pruning_strategy"_a = nullptr,
-          "exhaustive"_a = false);
+          "stop_if_goal"_a = true,
+          "max_num_states"_a = std::numeric_limits<uint32_t>::max(),
+          "max_time_in_ms"_a = std::numeric_limits<uint32_t>::max());
 
     // IW
     nb::class_<iw::TupleIndexMapper>(m, "TupleIndexMapper")  //

@@ -61,6 +61,11 @@ from pymimir.pymimir.advanced.datasets import (
     KnowledgeBaseOptions,
 )
 
+# ObjectGraph 
+from pymimir.pymimir.advanced.datasets import (
+    create_object_graph
+)
+
 __all__ = [
     # StateSpace 
     ProblemVertex,
@@ -97,4 +102,7 @@ __all__ = [
     # KnowledgeBase
     KnowledgeBase,
     KnowledgeBaseOptions,
+
+    # ObjectGraph
+    create_object_graph
 ]

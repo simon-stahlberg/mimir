@@ -380,7 +380,7 @@ static std::optional<std::pair<StateSpace, CertificateMaps>> compute_problem_gra
     const auto state_repository = context->get_state_repository();
     const auto goal_test = ProblemGoalStrategyImpl::create(context->get_problem());
     const auto [initial_state, initial_g_value] = state_repository->get_or_create_initial_state();
-    const auto result = find_solution(context, initial_state, event_handler, goal_test, pruning_strategy, true);
+    const auto result = find_solution(context, initial_state, event_handler, goal_test, pruning_strategy, false, options.max_num_states);
 
     if (result.status != EXHAUSTED)
     {
@@ -407,7 +407,7 @@ static std::optional<StateSpace> compute_problem_graph_without_symmetry_reductio
     const auto event_handler = std::make_shared<ProblemGraphEventHandler>(context->get_problem(), options, graph, goal_vertices, false);
     const auto pruning_strategy = DuplicatePruningStrategyImpl::create();
     const auto [initial_state, initial_g_value] = state_repository->get_or_create_initial_state();
-    const auto result = find_solution(context, initial_state, event_handler, goal_test, pruning_strategy, true);
+    const auto result = find_solution(context, initial_state, event_handler, goal_test, pruning_strategy, false, options.max_num_states);
 
     if (result.status != EXHAUSTED)
     {

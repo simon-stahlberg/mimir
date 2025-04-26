@@ -112,18 +112,21 @@ extern std::ostream& operator<<(std::ostream& out, const Color& color);
 
 }
 
+/// @private
 template<>
 struct loki::Hash<mimir::graphs::IColor>
 {
     size_t operator()(const mimir::graphs::IColor& color) const;
 };
 
+/// @private
 template<>
 struct loki::EqualTo<mimir::graphs::IColor>
 {
     bool operator()(const mimir::graphs::IColor& lhs, const mimir::graphs::IColor& rhs) const;
 };
 
+/// @private
 template<>
 struct loki::Hash<mimir::graphs::Color>
 {

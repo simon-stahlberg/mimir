@@ -155,5 +155,7 @@ void bind_module_definitions(nb::module_& m)
         .def("get_state_spaces", &KnowledgeBaseImpl::get_state_spaces, nb::rv_policy::copy)
         .def("get_generalized_state_space", &KnowledgeBaseImpl::get_generalized_state_space, nb::rv_policy::reference_internal)
         .def("get_tuple_graphs", &KnowledgeBaseImpl::get_tuple_graphs, nb::rv_policy::copy);
+
+    m.def("create_object_graph", create_object_graph, "state"_a, "problem"_a);
 }
 }

@@ -29,67 +29,96 @@ using namespace mimir::search;
 namespace mimir::datasets
 {
 
-template<IsStaticOrFluentOrDerivedTag P>
-static void add_object_graph_structures(GroundAtom<P> atom, ObjectMap<PredicateVariantList>& ref_objects)
-{
-    if (atom->get_arity() == 1)
-    {
-        ref_objects.at(atom->get_objects().front()).push_back(atom->get_predicate());
-    }
-}
-
 static ObjectMap<graphs::VertexIndex> add_objects_graph_structures(State state, const ProblemImpl& problem, graphs::StaticVertexColoredGraph& out_digraph)
 {
-    auto object_to_color = ObjectMap<PredicateVariantList> {};
-
-    const auto add_atom_objects_func = [&](auto&& atom)
+    auto object_to_atom_color = ObjectMap<PredicateVariantList> {};
+    auto object_to_literal_color = ObjectMap<std::vector<std::pair<PredicateVariant, bool>>> {};
+    auto initialize_object_colors_func = [&](auto&& atom)
     {
         for (const auto& object : atom->get_objects())
         {
-            object_to_color[object] = PredicateVariantList();
+            object_to_atom_color[object] = PredicateVariantList();
+            object_to_literal_color[object] = std::vector<std::pair<PredicateVariant, bool>>();
         }
     };
-
     for (const auto& atom : problem.get_static_initial_atoms())
     {
-        add_atom_objects_func(atom);
+        initialize_object_colors_func(atom);
     }
     for (const auto& atom_index : state->get_atoms<FluentTag>())
     {
-        add_atom_objects_func(problem.get_repositories().get_ground_atom<FluentTag>(atom_index));
+        initialize_object_colors_func(problem.get_repositories().get_ground_atom<FluentTag>(atom_index));
     }
     for (const auto& atom_index : state->get_atoms<DerivedTag>())
     {
-        add_atom_objects_func(problem.get_repositories().get_ground_atom<DerivedTag>(atom_index));
+        initialize_object_colors_func(problem.get_repositories().get_ground_atom<DerivedTag>(atom_index));
     }
+    boost::hana::for_each(problem.get_hana_goal_condition(),
+                          [&](auto&& pair)
+                          {
+                              const auto& second = boost::hana::second(pair);
+                              for (const auto& literal : second)
+                              {
+                                  initialize_object_colors_func(literal->get_atom());
+                              }
+                          });
 
+    auto add_unary_atom_graph_structures_func = [&](auto&& atom)
+    {
+        if (atom->get_arity() == 1)
+        {
+            object_to_atom_color[atom->get_objects().front()].push_back(atom->get_predicate());
+        }
+    };
     for (const auto& atom : problem.get_static_initial_atoms())
     {
-        add_object_graph_structures(atom, object_to_color);
+        add_unary_atom_graph_structures_func(atom);
     }
     for (const auto& atom_index : state->get_atoms<FluentTag>())
     {
-        add_object_graph_structures(problem.get_repositories().get_ground_atom<FluentTag>(atom_index), object_to_color);
+        add_unary_atom_graph_structures_func(problem.get_repositories().get_ground_atom<FluentTag>(atom_index));
     }
     for (const auto& atom_index : state->get_atoms<DerivedTag>())
     {
-        add_object_graph_structures(problem.get_repositories().get_ground_atom<DerivedTag>(atom_index), object_to_color);
+        add_unary_atom_graph_structures_func(problem.get_repositories().get_ground_atom<DerivedTag>(atom_index));
     }
+    auto add_unary_literal_graph_structures_func = [&](auto&& literal)
+    {
+        if (literal->get_atom()->get_arity() == 1)
+        {
+            object_to_literal_color[literal->get_atom()->get_objects().front()].emplace_back(literal->get_atom()->get_predicate(), literal->get_polarity());
+        }
+    };
+    boost::hana::for_each(problem.get_hana_goal_condition(),
+                          [&](auto&& pair)
+                          {
+                              const auto& second = boost::hana::second(pair);
+                              for (const auto& literal : second)
+                              {
+                                  add_unary_literal_graph_structures_func(literal);
+                              }
+                          });
 
     auto index_to_object = std::vector<std::pair<Index, Object>> {};
-    for (const auto& [object, color] : object_to_color)
+    for (const auto& [object, color] : object_to_atom_color)
     {
         index_to_object.emplace_back(object->get_index(), object);
     }
-
+    for (const auto& [object, color] : object_to_literal_color)
+    {
+        index_to_object.emplace_back(object->get_index(), object);
+    }
     std::sort(index_to_object.begin(), index_to_object.end());
 
     auto object_to_vertex_index = ObjectMap<graphs::VertexIndex> {};
     for (const auto& [index, object] : index_to_object)
     {
-        // Can we assume canonical sorting of PredicateVariantList?
+        std::sort(object_to_atom_color[object].begin(), object_to_atom_color[object].end());
+        std::sort(object_to_literal_color[object].begin(), object_to_literal_color[object].end());
 
-        object_to_vertex_index.emplace(object, out_digraph.add_vertex(graphs::Color(graphs::VariadicColor(object_to_color.at(object)))));
+        object_to_vertex_index.emplace(
+            object,
+            out_digraph.add_vertex(graphs::Color(graphs::VariadicColor(object_to_atom_color[object], object_to_literal_color[object]))));
     }
 
     return object_to_vertex_index;

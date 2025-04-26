@@ -17,6 +17,7 @@
 
 #include "mimir/search/algorithms/brfs.hpp"
 
+#include "mimir/common/timers.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers/interface.hpp"
@@ -72,7 +73,9 @@ SearchResult find_solution(const SearchContext& context,
                            EventHandler event_handler_,
                            GoalStrategy goal_strategy_,
                            PruningStrategy pruning_strategy_,
-                           bool exhaustive)
+                           bool stop_if_goal,
+                           uint32_t max_num_states,
+                           uint32_t max_time_in_ms)
 {
     const auto& problem = *context->get_problem();
     auto& applicable_action_generator = *context->get_applicable_action_generator();
@@ -120,8 +123,17 @@ SearchResult find_solution(const SearchContext& context,
 
     event_handler->on_finish_g_layer(g_value);
 
+    auto stopwatch = StopWatch(max_time_in_ms);
+    stopwatch.start();
+
     while (!queue.empty())
     {
+        if (stopwatch.has_finished())
+        {
+            result.status = SearchStatus::OUT_OF_TIME;
+            return result;
+        }
+
         const auto state = queue.front();
         queue.pop_front();
 
@@ -140,7 +152,7 @@ SearchResult find_solution(const SearchContext& context,
         {
             event_handler->on_expand_goal_state(state);
 
-            if (!exhaustive)
+            if (stop_if_goal)
             {
                 event_handler->on_end_search(state_repository.get_reached_fluent_ground_atoms_bitset().count(),
                                              state_repository.get_reached_derived_ground_atoms_bitset().count(),
@@ -191,6 +203,12 @@ SearchResult find_solution(const SearchContext& context,
             set_g_value(successor_search_node, get_g_value(search_node) + 1);
 
             queue.emplace_back(successor_state);
+
+            if (search_nodes.size() >= max_num_states)
+            {
+                result.status = SearchStatus::OUT_OF_STATES;
+                return result;
+            }
         }
 
         /* Close state. */
