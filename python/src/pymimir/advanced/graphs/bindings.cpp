@@ -53,6 +53,22 @@ void bind_module_definitions(nb::module_& m)
     bind_static_graph<ColoredVertex, ColoredEdge>(m, "StaticEdgeColoredGraph");
     bind_dynamic_graph<PyVertex, PyEdge>(m, "DynamicPyGraph");
 
+    nb::class_<color_refinement::CertificateImpl>(m, "CertificateColorRefinement")
+        .def("__str__", [](const color_refinement::CertificateImpl& self) { return to_string(self); })
+        .def("__repr__", [](const color_refinement::CertificateImpl& self) { return to_string(self); })
+        .def("__eq__", [](const color_refinement::CertificateImpl& lhs, const color_refinement::CertificateImpl& rhs) { return lhs == rhs; })
+        .def("__ne__", [](const color_refinement::CertificateImpl& lhs, const color_refinement::CertificateImpl& rhs) { return lhs != rhs; })
+        .def("__hash__", [](const color_refinement::CertificateImpl& self) { return loki::Hash<color_refinement::CertificateImpl>()(self); })
+        .def("get_canonical_color_compression_function", &color_refinement::CertificateImpl::get_canonical_color_compression_function)
+        .def("get_canonical_configuration_compression_function", &color_refinement::CertificateImpl::get_canonical_configuration_compression_function)
+        .def("get_hash_to_color", &color_refinement::CertificateImpl::get_hash_to_color);
+    nb::class_<kfwl::IsomorphismTypeCompressionFunction>(m, "KFWLIsomorphismTypeCompressionFunction")  //
+        .def(nb::init<>());
+    // bind_static_graph instantiates certificate computation for 2,3,4
+    bind_kfwl_certificate<2>(m, "Certficate2FWL");
+    bind_kfwl_certificate<3>(m, "Certficate3FWL");
+    bind_kfwl_certificate<4>(m, "Certficate4FWL");
+
     nb::class_<Color>(m, "Color")  //
         .def(nb::new_([](nb::args args) { return Color(std::shared_ptr<IColor>(std::make_shared<PyColor>(args))); }))
         .def("__eq__", &Color::operator==)

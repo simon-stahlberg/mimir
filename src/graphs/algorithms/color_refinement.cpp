@@ -21,20 +21,29 @@ namespace mimir::graphs::color_refinement
 {
 
 /* CertificateImpl */
-CertificateImpl::CertificateImpl(ColorCompressionFunction c, CompressionFunction f) : m_c(std::move(c)), m_f(f.begin(), f.end()) {}
+CertificateImpl::CertificateImpl(CanonicalColorCompressionFunction c, ConfigurationCompressionFunction f, ColorIndexList hash_to_color) :
+    m_c(std::move(c)),
+    m_f(f.begin(), f.end()),
+    m_hash_to_color(std::move(hash_to_color))
+{
+}
 
-const CertificateImpl::ColorCompressionFunction& CertificateImpl::get_abstract_color_compression_function() const { return m_c; }
+const CertificateImpl::CanonicalColorCompressionFunction& CertificateImpl::get_canonical_color_compression_function() const { return m_c; }
 
-const CertificateImpl::CanonicalCompressionFunction& CertificateImpl::get_canonical_compression_function() const { return m_f; }
+const CertificateImpl::CanonicalConfigurationCompressionFunction& CertificateImpl::get_canonical_configuration_compression_function() const { return m_f; }
+
+const ColorIndexList& CertificateImpl::get_hash_to_color() const { return m_hash_to_color; }
 
 bool operator==(const CertificateImpl& lhs, const CertificateImpl& rhs) { return loki::EqualTo<CertificateImpl>()(lhs, rhs); }
 
 std::ostream& operator<<(std::ostream& out, const CertificateImpl& element)
 {
     out << "CertificateColorRefinement(" << "abstract_color_compression_function=";
-    mimir::operator<<(out, element.get_abstract_color_compression_function());
+    mimir::operator<<(out, element.get_canonical_color_compression_function());
     out << ", " << "canonical_compression_function=";
-    mimir::operator<<(out, element.get_canonical_compression_function());
+    mimir::operator<<(out, element.get_canonical_configuration_compression_function());
+    out << ", hash_to_color=";
+    mimir::operator<<(out, element.get_hash_to_color());
     out << ")";
     return out;
 }

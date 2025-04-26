@@ -286,6 +286,23 @@ void bind_translated_static_graph(nb::module_& m, const std::string& name, const
         .def("compute_strong_components",
              [](const TranslatedGraphType& self) { return bgl::strong_components(mimir::graphs::DirectionTaggedType(self, ForwardTag {})); });
 
+    if constexpr (IsVertexColoredGraph<TranslatedGraphType>)
+    {
+        m.def("compute_color_refinement_certificate", &color_refinement::compute_certificate<TranslatedGraphType>, "vertex_colored_graph"_a);
+        m.def("compute_2fwl_certificate",
+              &kfwl::compute_certificate<2, TranslatedGraphType>,
+              "vertex_colored_graph"_a,
+              "isomorphism_type_compression_function"_a);
+        m.def("compute_3fwl_certificate",
+              &kfwl::compute_certificate<3, TranslatedGraphType>,
+              "vertex_colored_graph"_a,
+              "isomorphism_type_compression_function"_a);
+        m.def("compute_4fwl_certificate",
+              &kfwl::compute_certificate<4, TranslatedGraphType>,
+              "vertex_colored_graph"_a,
+              "isomorphism_type_compression_function"_a);
+    }
+
     /* Graph properties. */
     m.def("is_undirected", [](const TranslatedGraphType& self) { return is_undirected(self); });
     m.def("is_multi", [](const TranslatedGraphType& self) { return is_multi(self); });
@@ -506,6 +523,14 @@ void bind_static_graph(nb::module_& m, const std::string& name)
         .def("compute_strong_components",
              [](const GraphType& self) { return bgl::strong_components(mimir::graphs::DirectionTaggedType(self, ForwardTag {})); });
 
+    if constexpr (IsVertexColoredGraph<GraphType>)
+    {
+        m.def("compute_color_refinement_certificate", &color_refinement::compute_certificate<GraphType>, "vertex_colored_graph"_a);
+        m.def("compute_2fwl_certificate", &kfwl::compute_certificate<2, GraphType>, "vertex_colored_graph"_a, "isomorphism_type_compression_function"_a);
+        m.def("compute_3fwl_certificate", &kfwl::compute_certificate<3, GraphType>, "vertex_colored_graph"_a, "isomorphism_type_compression_function"_a);
+        m.def("compute_4fwl_certificate", &kfwl::compute_certificate<4, GraphType>, "vertex_colored_graph"_a, "isomorphism_type_compression_function"_a);
+    }
+
     /* Graph properties. */
     m.def("is_undirected", [](const GraphType& self) { return is_undirected(self); });
     m.def("is_multi", [](const GraphType& self) { return is_multi(self); });
@@ -721,6 +746,30 @@ void bind_static_graph(nb::module_& m, const std::string& name)
             "source_vertex_indices"_a)
         .def("compute_strong_components",
              [](const PyImmutable<GraphType>& self) { return bgl::strong_components(mimir::graphs::DirectionTaggedType(self.obj_, ForwardTag {})); });
+
+    if constexpr (IsVertexColoredGraph<GraphType>)
+    {
+        m.def("compute_color_refinement_certificate",
+              [](const PyImmutable<GraphType>& self) { return color_refinement::compute_certificate<GraphType>(self.obj_); });
+        m.def(
+            "compute_2fwl_certificate",
+            [](const PyImmutable<GraphType>& self, kfwl::IsomorphismTypeCompressionFunction& f)
+            { return kfwl::compute_certificate<2, GraphType>(self.obj_, f); },
+            "vertex_colored_graph"_a,
+            "isomorphism_type_compression_function"_a);
+        m.def(
+            "compute_3fwl_certificate",
+            [](const PyImmutable<GraphType>& self, kfwl::IsomorphismTypeCompressionFunction& f)
+            { return kfwl::compute_certificate<3, GraphType>(self.obj_, f); },
+            "vertex_colored_graph"_a,
+            "isomorphism_type_compression_function"_a);
+        m.def(
+            "compute_4fwl_certificate",
+            [](const PyImmutable<GraphType>& self, kfwl::IsomorphismTypeCompressionFunction& f)
+            { return kfwl::compute_certificate<4, GraphType>(self.obj_, f); },
+            "vertex_colored_graph"_a,
+            "isomorphism_type_compression_function"_a);
+    }
 
     /* Graph properties. */
     m.def("is_undirected", [](const PyImmutable<GraphType>& self) { return is_undirected(self.obj_); });
@@ -973,6 +1022,20 @@ void bind_dynamic_graph(nb::module_& m, const std::string& name)
     m.def("is_multi", [](const GraphType& self) { return is_multi(self); });
     m.def("is_loopless", [](const GraphType& self) { return is_loopless(self); });
     m.def("is_acyclic", [](const GraphType& self) { return is_acyclic(self); });
+}
+
+template<size_t k>
+void bind_kfwl_certificate(nb::module_& m, const std::string& name)
+{
+    nb::class_<kfwl::CertificateImpl<k>>(m, name.c_str())  //
+        .def("__str__", [](const kfwl::CertificateImpl<k>& self) { return to_string(self); })
+        .def("__repr__", [](const kfwl::CertificateImpl<k>& self) { return to_string(self); })
+        .def("__eq__", [](const kfwl::CertificateImpl<k>& lhs, const kfwl::CertificateImpl<k>& rhs) { return lhs == rhs; })
+        .def("__ne__", [](const kfwl::CertificateImpl<k>& lhs, const kfwl::CertificateImpl<k>& rhs) { return lhs != rhs; })
+        .def("__hash__", [](const kfwl::CertificateImpl<k>& self) { return loki::Hash<kfwl::CertificateImpl<k>>()(self); })
+        .def("get_canonical_color_compression_function", &kfwl::CertificateImpl<k>::get_canonical_color_compression_function)
+        .def("get_canonical_configuration_compression_function", &kfwl::CertificateImpl<k>::get_canonical_configuration_compression_function)
+        .def("get_hash_to_color", &kfwl::CertificateImpl<k>::get_hash_to_color);
 }
 
 }

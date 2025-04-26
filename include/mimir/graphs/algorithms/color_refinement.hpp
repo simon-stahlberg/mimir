@@ -41,25 +41,30 @@ namespace mimir::graphs::color_refinement
 class CertificateImpl
 {
 public:
-    using ColorCompressionFunction = std::map<Color, ColorIndex>;
+    using CanonicalColorCompressionFunction = std::map<Color, ColorIndex>;
 
-    using CompressionFunction = UnorderedMap<std::pair<ColorIndex, ColorIndexList>, ColorIndex>;
+    using ConfigurationCompressionFunction = UnorderedMap<std::pair<ColorIndex, ColorIndexList>, ColorIndex>;
+    using CanonicalConfigurationCompressionFunction = std::map<std::pair<ColorIndex, ColorIndexList>, ColorIndex>;
 
-    using CanonicalCompressionFunction = std::map<std::pair<ColorIndex, ColorIndexList>, ColorIndex>;
+    CertificateImpl(CanonicalColorCompressionFunction c, ConfigurationCompressionFunction f, ColorIndexList hash_to_color);
 
-    CertificateImpl(ColorCompressionFunction c, CompressionFunction f);
-
-    const ColorCompressionFunction& get_abstract_color_compression_function() const;
-    const CanonicalCompressionFunction& get_canonical_compression_function() const;
+    const CanonicalColorCompressionFunction& get_canonical_color_compression_function() const;
+    const CanonicalConfigurationCompressionFunction& get_canonical_configuration_compression_function() const;
+    const ColorIndexList& get_hash_to_color() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::tuple(std::cref(get_canonical_compression_function()), std::cref(get_canonical_compression_function())); }
+    auto identifying_members() const
+    {
+        return std::tuple(std::cref(get_canonical_configuration_compression_function()), std::cref(get_canonical_configuration_compression_function()));
+    }
 
 private:
-    ColorCompressionFunction m_c;
-    CanonicalCompressionFunction m_f;
+    CanonicalColorCompressionFunction m_c;
+    CanonicalConfigurationCompressionFunction m_f;
+
+    ColorIndexList m_hash_to_color;  ///< Is essentially vertex index to color but name is kept consistent with kfwl.
 };
 
 /// @brief Compare two certificates for equality.
@@ -215,7 +220,7 @@ std::shared_ptr<CertificateImpl> compute_certificate(const G& graph)
     const auto num_vertices = graph.get_num_vertices();
 
     /* Canonize and compress the IColors to a list of integers. */
-    auto c = CertificateImpl::ColorCompressionFunction {};
+    auto c = CertificateImpl::CanonicalColorCompressionFunction {};
     auto canonical_coloring = ColorList {};
     for (const auto& vertex : graph.get_vertices())
     {
@@ -249,7 +254,7 @@ std::shared_ptr<CertificateImpl> compute_certificate(const G& graph)
     }
 
     // (line 1-2): Initialize multi set.
-    auto f = CertificateImpl::CompressionFunction();
+    auto f = CertificateImpl::ConfigurationCompressionFunction();
     auto M = std::vector<std::pair<Index, ColorIndex>>();
     auto M_replaced = std::vector<std::tuple<ColorIndex, ColorIndexList, Index>>();
     // (line 3): Process work list until all vertex colors have stabilized.
@@ -314,7 +319,7 @@ std::shared_ptr<CertificateImpl> compute_certificate(const G& graph)
     }
 
     /* Return the certificate */
-    return std::make_shared<CertificateImpl>(std::move(c), std::move(f));
+    return std::make_shared<CertificateImpl>(std::move(c), std::move(f), std::move(hash_to_color));
 }
 }
 

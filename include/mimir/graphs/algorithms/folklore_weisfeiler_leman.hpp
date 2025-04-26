@@ -52,32 +52,40 @@ template<size_t K>
 class CertificateImpl
 {
 public:
-    using ColorCompressionFunction = std::map<Color, ColorIndex>;
+    using CanonicalColorCompressionFunction = std::map<Color, ColorIndex>;
 
     /* Compression of new color to map (C(bar{v}), {{(c_1^1, ...,c_k^1), ..., (c_1^r, ...,c_k^r)}}) to an integer color for bar{v} in V^k */
     using ConfigurationCompressionFunction = UnorderedMap<std::pair<ColorIndex, ColorIndexArrayList<K>>, ColorIndex>;
     using CanonicalConfigurationCompressionFunction = std::map<std::pair<ColorIndex, ColorIndexArrayList<K>>, ColorIndex>;
 
-    CertificateImpl(ColorCompressionFunction c, ConfigurationCompressionFunction f);
+    CertificateImpl(CanonicalColorCompressionFunction c, ConfigurationCompressionFunction f, ColorIndexList hash_to_color);
 
-    const ColorCompressionFunction& get_abstract_color_compression_function() const;
+    const CanonicalColorCompressionFunction& get_canonical_color_compression_function() const;
     const CanonicalConfigurationCompressionFunction& get_canonical_configuration_compression_function() const;
+    const ColorIndexList& get_hash_to_color() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
     auto identifying_members() const
     {
-        return std::tuple(std::cref(get_abstract_color_compression_function()), std::cref(get_canonical_configuration_compression_function()));
+        return std::tuple(std::cref(get_canonical_color_compression_function()), std::cref(get_canonical_configuration_compression_function()));
     }
 
 private:
-    ColorCompressionFunction m_c;
+    CanonicalColorCompressionFunction m_c;
     CanonicalConfigurationCompressionFunction m_f;
+
+    ColorIndexList m_hash_to_color;
 };
 
 /// @brief `IsomorphismTypeCompressionFunction` encapsulates mappings from canonical subgraphs to colors.
-using IsomorphismTypeCompressionFunction = UnorderedMap<nauty::SparseGraph, ColorIndex>;
+struct IsomorphismTypeCompressionFunction
+{
+    UnorderedMap<nauty::SparseGraph, ColorIndex> data;
+
+    IsomorphismTypeCompressionFunction() = default;
+};
 
 /// @brief Compare two certificates for equality.
 /// @param lhs is the first certificate.
@@ -126,12 +134,15 @@ std::shared_ptr<CertificateImpl<K>> compute_certificate(const G& graph, Isomorph
 /// @brief `CertificateImpl` encapsulates the final tuple colorings and the decoding tables.
 /// @tparam K is the dimensionality.
 template<size_t K>
-CertificateImpl<K>::CertificateImpl(ColorCompressionFunction c, ConfigurationCompressionFunction f) : m_c(std::move(c)), m_f(f.begin(), f.end())
+CertificateImpl<K>::CertificateImpl(CanonicalColorCompressionFunction c, ConfigurationCompressionFunction f, ColorIndexList hash_to_color) :
+    m_c(std::move(c)),
+    m_f(f.begin(), f.end()),
+    m_hash_to_color(std::move(hash_to_color))
 {
 }
 
 template<size_t K>
-const CertificateImpl<K>::ColorCompressionFunction& CertificateImpl<K>::get_abstract_color_compression_function() const
+const CertificateImpl<K>::CanonicalColorCompressionFunction& CertificateImpl<K>::get_canonical_color_compression_function() const
 {
     return m_c;
 }
@@ -140,6 +151,12 @@ template<size_t K>
 const CertificateImpl<K>::CanonicalConfigurationCompressionFunction& CertificateImpl<K>::get_canonical_configuration_compression_function() const
 {
     return m_f;
+}
+
+template<size_t K>
+const ColorIndexList& CertificateImpl<K>::get_hash_to_color() const
+{
+    return m_hash_to_color;
 }
 
 template<size_t K>
@@ -152,9 +169,11 @@ template<size_t K>
 std::ostream& operator<<(std::ostream& out, const CertificateImpl<K>& element)
 {
     out << "CertificateImpl" << K << "FWL(" << "abstract_color_compression_function=";
-    mimir::operator<<(out, element.get_abstract_color_compression_function());
+    mimir::operator<<(out, element.get_canonical_color_compression_function());
     out << ", " << "canonical_configuration_compression_function=";
     mimir::operator<<(out, element.get_canonical_configuration_compression_function());
+    out << ", hash_to_color=";
+    mimir::operator<<(out, element.get_hash_to_color());
     out << ")";
     return out;
 }
@@ -220,7 +239,7 @@ auto compute_ordered_isomorphism_types(const G& graph, IsomorphismTypeCompressio
     }
 
     /* Canonize and compress the IColors to a list of integers. */
-    auto c = typename CertificateImpl<K>::ColorCompressionFunction {};
+    auto c = typename CertificateImpl<K>::CanonicalColorCompressionFunction {};
     auto canonical_coloring = ColorList {};
     for (const auto& vertex : graph.get_vertices())
     {
@@ -265,7 +284,7 @@ auto compute_ordered_isomorphism_types(const G& graph, IsomorphismTypeCompressio
         }
 
         // Isomorphism function is shared among several runs to ensure canonical form for different runs.
-        auto result = iso_type_function.emplace(nauty::SparseGraph(subgraph).canonize(), iso_type_function.size());
+        auto result = iso_type_function.data.emplace(nauty::SparseGraph(subgraph).canonize(), iso_type_function.data.size());
 
         const auto color = result.first->second;
         hash_to_color.at(hash) = color;
@@ -299,7 +318,7 @@ std::shared_ptr<CertificateImpl<K>> compute_certificate(const G& graph, Isomorph
     }
 
     /* Compute isomorphism types. */
-    auto c = typename CertificateImpl<K>::ColorCompressionFunction();
+    auto c = typename CertificateImpl<K>::CanonicalColorCompressionFunction();
     auto hash_to_color = ColorIndexList();
     auto color_to_hashes = ColorIndexMap<IndexList>();
 
@@ -396,7 +415,7 @@ std::shared_ptr<CertificateImpl<K>> compute_certificate(const G& graph, Isomorph
     }
 
     /* Return the certificate */
-    return std::make_shared<CertificateImpl<K>>(std::move(c), std::move(f));
+    return std::make_shared<CertificateImpl<K>>(std::move(c), std::move(f), std::move(hash_to_color));
 }
 }
 
