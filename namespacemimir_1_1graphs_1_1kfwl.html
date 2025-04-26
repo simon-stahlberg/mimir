@@ -75,7 +75,6 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#typedef-members">Typedefs</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">mimir::graphs::kfwl Namespace Reference</div></div>
 </div><!--header-->
@@ -86,12 +85,9 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1kfwl_1_1CertificateImpl.html">CertificateImpl</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code><a class="el" href="classmimir_1_1graphs_1_1kfwl_1_1CertificateImpl.html" title="CertificateImpl encapsulates the final tuple colorings and the decoding tables.">CertificateImpl</a></code> encapsulates the final tuple colorings and the decoding tables.  <a href="classmimir_1_1graphs_1_1kfwl_1_1CertificateImpl.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
-Typedefs</h2></td></tr>
-<tr class="memitem:a92675c1f71de7c8bb4d35af1a754ced2"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1kfwl.html#a92675c1f71de7c8bb4d35af1a754ced2">IsomorphismTypeCompressionFunction</a> = <a class="el" href="namespacemimir.html#aee46b4137604f4323c701f026b7c4780">UnorderedMap</a>&lt; <a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html">nauty::SparseGraph</a>, ColorIndex &gt;</td></tr>
-<tr class="memdesc:a92675c1f71de7c8bb4d35af1a754ced2"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>IsomorphismTypeCompressionFunction</code> encapsulates mappings from canonical subgraphs to colors.  <br /></td></tr>
-<tr class="separator:a92675c1f71de7c8bb4d35af1a754ced2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmimir_1_1graphs_1_1kfwl_1_1IsomorphismTypeCompressionFunction.html">IsomorphismTypeCompressionFunction</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code><a class="el" href="structmimir_1_1graphs_1_1kfwl_1_1IsomorphismTypeCompressionFunction.html" title="IsomorphismTypeCompressionFunction encapsulates mappings from canonical subgraphs to colors.">IsomorphismTypeCompressionFunction</a></code> encapsulates mappings from canonical subgraphs to colors.  <a href="structmimir_1_1graphs_1_1kfwl_1_1IsomorphismTypeCompressionFunction.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
@@ -113,32 +109,15 @@ Functions</h2></td></tr>
 <tr class="separator:a6374e2bcf2319cea5ec9cee898b5039b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a71674ee2c5de24bc317d74d2fb7f69ba"><td class="memTemplParams" colspan="2">template&lt;std::size_t K, typename G &gt; <br />
 requires IsVertexListGraph&lt;G&gt; &amp;&amp; IsIncidenceGraph&lt;G&gt; &amp;&amp; IsVertexColoredGraph&lt;G&gt;</td></tr>
-<tr class="memitem:a71674ee2c5de24bc317d74d2fb7f69ba"><td class="memTemplItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classmimir_1_1graphs_1_1kfwl_1_1CertificateImpl.html">CertificateImpl</a>&lt; K &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1kfwl.html#a71674ee2c5de24bc317d74d2fb7f69ba">compute_certificate</a> (const G &amp;graph, <a class="el" href="namespacemimir_1_1graphs_1_1kfwl.html#a92675c1f71de7c8bb4d35af1a754ced2">IsomorphismTypeCompressionFunction</a> &amp;iso_type_function)</td></tr>
+<tr class="memitem:a71674ee2c5de24bc317d74d2fb7f69ba"><td class="memTemplItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classmimir_1_1graphs_1_1kfwl_1_1CertificateImpl.html">CertificateImpl</a>&lt; K &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1kfwl.html#a71674ee2c5de24bc317d74d2fb7f69ba">compute_certificate</a> (const G &amp;graph, <a class="el" href="structmimir_1_1graphs_1_1kfwl_1_1IsomorphismTypeCompressionFunction.html">IsomorphismTypeCompressionFunction</a> &amp;iso_type_function)</td></tr>
 <tr class="memdesc:a71674ee2c5de24bc317d74d2fb7f69ba"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>compute_certificate</code> implements the k-dimensional Folklore Weisfeiler-Leman algorithm. Source: <a href="https://arxiv.org/pdf/1907.09582">https://arxiv.org/pdf/1907.09582</a>  <br /></td></tr>
 <tr class="separator:a71674ee2c5de24bc317d74d2fb7f69ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab14d520df1b888ed206041d35aabcc52"><td class="memTemplParams" colspan="2">template&lt;size_t K, typename G &gt; <br />
 requires IsVertexListGraph&lt;G&gt; &amp;&amp; IsIncidenceGraph&lt;G&gt; &amp;&amp; IsVertexColoredGraph&lt;G&gt;</td></tr>
-<tr class="memitem:ab14d520df1b888ed206041d35aabcc52"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1kfwl.html#ab14d520df1b888ed206041d35aabcc52">compute_ordered_isomorphism_types</a> (const G &amp;graph, <a class="el" href="namespacemimir_1_1graphs_1_1kfwl.html#a92675c1f71de7c8bb4d35af1a754ced2">IsomorphismTypeCompressionFunction</a> &amp;iso_type_function)</td></tr>
+<tr class="memitem:ab14d520df1b888ed206041d35aabcc52"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1kfwl.html#ab14d520df1b888ed206041d35aabcc52">compute_ordered_isomorphism_types</a> (const G &amp;graph, <a class="el" href="structmimir_1_1graphs_1_1kfwl_1_1IsomorphismTypeCompressionFunction.html">IsomorphismTypeCompressionFunction</a> &amp;iso_type_function)</td></tr>
 <tr class="memdesc:ab14d520df1b888ed206041d35aabcc52"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the ordered isomorphism types of all k-tuples in the graph.  <br /></td></tr>
 <tr class="separator:ab14d520df1b888ed206041d35aabcc52"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Typedef Documentation</h2>
-<a id="a92675c1f71de7c8bb4d35af1a754ced2" name="a92675c1f71de7c8bb4d35af1a754ced2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a92675c1f71de7c8bb4d35af1a754ced2">&#9670;&#160;</a></span>IsomorphismTypeCompressionFunction</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="namespacemimir_1_1graphs_1_1kfwl.html#a92675c1f71de7c8bb4d35af1a754ced2">mimir::graphs::kfwl::IsomorphismTypeCompressionFunction</a> = typedef <a class="el" href="namespacemimir.html#aee46b4137604f4323c701f026b7c4780">UnorderedMap</a>&lt;<a class="el" href="classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html">nauty::SparseGraph</a>, ColorIndex&gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p><code>IsomorphismTypeCompressionFunction</code> encapsulates mappings from canonical subgraphs to colors. </p>
-
-</div>
-</div>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="a71674ee2c5de24bc317d74d2fb7f69ba" name="a71674ee2c5de24bc317d74d2fb7f69ba"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a71674ee2c5de24bc317d74d2fb7f69ba">&#9670;&#160;</a></span>compute_certificate()</h2>
@@ -158,7 +137,7 @@ requires IsVertexListGraph&lt;G&gt; &amp;&amp; IsIncidenceGraph&lt;G&gt; &amp;&a
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1graphs_1_1kfwl.html#a92675c1f71de7c8bb4d35af1a754ced2">IsomorphismTypeCompressionFunction</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="structmimir_1_1graphs_1_1kfwl_1_1IsomorphismTypeCompressionFunction.html">IsomorphismTypeCompressionFunction</a> &amp;&#160;</td>
           <td class="paramname"><em>iso_type_function</em>&#160;</td>
         </tr>
         <tr>
@@ -199,7 +178,7 @@ requires IsVertexListGraph&lt;G&gt; &amp;&amp; IsIncidenceGraph&lt;G&gt; &amp;&a
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1graphs_1_1kfwl.html#a92675c1f71de7c8bb4d35af1a754ced2">IsomorphismTypeCompressionFunction</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="structmimir_1_1graphs_1_1kfwl_1_1IsomorphismTypeCompressionFunction.html">IsomorphismTypeCompressionFunction</a> &amp;&#160;</td>
           <td class="paramname"><em>iso_type_function</em>&#160;</td>
         </tr>
         <tr>

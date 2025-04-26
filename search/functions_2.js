@@ -1,7 +1,7 @@
 var searchData=
 [
   ['canonize_0',['canonize',['../classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html#a4dfc06685c5f30f2fd0d70dedcd36f01',1,'mimir::graphs::nauty::SparseGraph']]],
-  ['certificateimpl_1',['CertificateImpl',['../classmimir_1_1graphs_1_1color__refinement_1_1CertificateImpl.html#ac7320ec0aca6bfd8e3b2d3172f5a0e2e',1,'mimir::graphs::color_refinement::CertificateImpl::CertificateImpl()'],['../classmimir_1_1graphs_1_1kfwl_1_1CertificateImpl.html#a590de9d07695b6bb2756a32406c6d67b',1,'mimir::graphs::kfwl::CertificateImpl::CertificateImpl()']]],
+  ['certificateimpl_1',['CertificateImpl',['../classmimir_1_1graphs_1_1color__refinement_1_1CertificateImpl.html#a73b06b10c3f58aec709bed687d2ea00c',1,'mimir::graphs::color_refinement::CertificateImpl::CertificateImpl()'],['../classmimir_1_1graphs_1_1kfwl_1_1CertificateImpl.html#a95f0b529dec7d8e551ff0d0fedb197e7',1,'mimir::graphs::kfwl::CertificateImpl::CertificateImpl()']]],
   ['cista_5fmembers_2',['cista_members',['../structmimir_1_1search_1_1SearchNodeImpl.html#a83b17adec98d80138df86c290049c07b',1,'mimir::search::SearchNodeImpl']]],
   ['clear_3',['clear',['../classmimir_1_1graphs_1_1DynamicGraph.html#ab78e95248900c79a724e8dabb2e7e14f',1,'mimir::graphs::DynamicGraph::clear()'],['../classmimir_1_1graphs_1_1StaticGraph.html#abe0622b8c9e48cbe484f04e1960588e9',1,'mimir::graphs::StaticGraph::clear()']]],
   ['color_4',['Color',['../classmimir_1_1graphs_1_1Color.html#ade0d3719fb34ece9fe7c6a594b123b56',1,'mimir::graphs::Color::Color(std::shared_ptr&lt; IColor &gt; color)'],['../classmimir_1_1graphs_1_1Color.html#a14c475889032af5a63ce7fe6c27b1b8c',1,'mimir::graphs::Color::Color(VariadicColor&lt; Ts... &gt; colors)']]],
