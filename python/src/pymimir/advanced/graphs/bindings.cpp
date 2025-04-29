@@ -60,7 +60,22 @@ void bind_module_definitions(nb::module_& m)
         .def("__ne__", [](const color_refinement::CertificateImpl& lhs, const color_refinement::CertificateImpl& rhs) { return lhs != rhs; })
         .def("__hash__", [](const color_refinement::CertificateImpl& self) { return loki::Hash<color_refinement::CertificateImpl>()(self); })
         .def("get_canonical_color_compression_function", &color_refinement::CertificateImpl::get_canonical_color_compression_function)
-        .def("get_canonical_configuration_compression_function", &color_refinement::CertificateImpl::get_canonical_configuration_compression_function)
+        .def("get_canonical_configuration_compression_function",
+             [](const color_refinement::CertificateImpl& self)
+             {
+                 auto result = nb::dict {};
+                 for (const auto& [configuration, hash] : self.get_canonical_configuration_compression_function())
+                 {
+                     auto list = nb::list();
+                     for (const auto& element : configuration.second)
+                     {
+                         list.append(nb::int_(element));
+                     }
+                     auto key = nb::make_tuple(nb::int_(configuration.first), nb::tuple(list));
+                     result[key] = hash;
+                 }
+                 return result;
+             })
         .def("get_hash_to_color", &color_refinement::CertificateImpl::get_hash_to_color);
     nb::class_<kfwl::IsomorphismTypeCompressionFunction>(m, "KFWLIsomorphismTypeCompressionFunction")  //
         .def(nb::init<>());

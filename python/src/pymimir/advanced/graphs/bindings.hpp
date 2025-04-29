@@ -1034,7 +1034,27 @@ void bind_kfwl_certificate(nb::module_& m, const std::string& name)
         .def("__ne__", [](const kfwl::CertificateImpl<k>& lhs, const kfwl::CertificateImpl<k>& rhs) { return lhs != rhs; })
         .def("__hash__", [](const kfwl::CertificateImpl<k>& self) { return loki::Hash<kfwl::CertificateImpl<k>>()(self); })
         .def("get_canonical_color_compression_function", &kfwl::CertificateImpl<k>::get_canonical_color_compression_function)
-        .def("get_canonical_configuration_compression_function", &kfwl::CertificateImpl<k>::get_canonical_configuration_compression_function)
+        .def("get_canonical_configuration_compression_function",
+             [](const kfwl::CertificateImpl<k>& self)
+             {
+                 auto result = nb::dict {};
+                 for (const auto& [configuration, hash] : self.get_canonical_configuration_compression_function())
+                 {
+                     auto list = nb::list {};
+                     for (const auto& array : configuration.second)
+                     {
+                         auto inner = nb::list {};
+                         for (const auto& element : array)
+                         {
+                             inner.append(element);
+                         }
+                         list.append(nb::tuple(inner));
+                     }
+                     auto key = nb::make_tuple(nb::int_(configuration.first), nb::tuple(list));
+                     result[key] = hash;
+                 }
+                 return result;
+             })
         .def("get_hash_to_color", &kfwl::CertificateImpl<k>::get_hash_to_color);
 }
 
