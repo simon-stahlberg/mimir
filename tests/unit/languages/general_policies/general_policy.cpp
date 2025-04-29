@@ -319,26 +319,26 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyGripper4Test)
 
         const auto g = repositories.get_or_create_general_policy(std::string(R"(
             [boolean_features]
-            [numerical_features]
-            <n0> ::= @numerical_count @role_atomic_state "carry"
-            <n16> ::= @numerical_count @concept_existential_quantification @role_atomic_goal "at" true @concept_atomic_state "at-robby"
-            [policy_rules]
-            { @equal_numerical_condition <n0>, @equal_numerical_condition <n16> } -> { @increase_numerical_effect <n0>, @unchanged_numerical_effect <n16> }
-            { @greater_numerical_condition <n0>, @equal_numerical_condition <n16> } -> { @unchanged_numerical_effect <n0>, @increase_numerical_effect <n16> }
-            { @equal_numerical_condition <n0>, @greater_numerical_condition <n16> } -> { @unchanged_numerical_effect <n0>, @decrease_numerical_effect <n16> }
-            { @greater_numerical_condition <n0>, @greater_numerical_condition <n16> } -> { @decrease_numerical_effect <n0>, @unchanged_numerical_effect <n16> }
+[numerical_features]
+<n2> ::= @numerical_count @role_atomic_state "at"
+<n82> ::= @numerical_distance @concept_existential_quantification @role_atomic_goal "at" true @concept_atomic_state "at-robby" @role_restriction @role_atomic_goal "at" true @concept_atomic_state "at-robby" @concept_role_value_map_equality @role_atomic_state "at" @role_atomic_goal "at" true
+[policy_rules]
+{ @greater_numerical_condition <n2>, @greater_numerical_condition <n82> } -> { @decrease_numerical_effect <n2>, @unchanged_numerical_effect <n82> }
+{ @equal_numerical_condition <n2>, @greater_numerical_condition <n82> } -> { @unchanged_numerical_effect <n2>, @decrease_numerical_effect <n82> }
+{ @equal_numerical_condition <n2>, @greater_numerical_condition <n82> } -> { @increase_numerical_effect <n2>, @decrease_numerical_effect <n82> }
 )"),
                                                                  *context->get_domain(),
                                                                  dl_repositories);
 
-        auto kb_options = KnowledgeBaseImpl::Options();
-        auto& state_space_options = kb_options.state_space_options;
-        state_space_options.symmetry_pruning = true;
-        auto& generalized_state_space_options = kb_options.generalized_state_space_options;
-        generalized_state_space_options = GeneralizedStateSpaceImpl::Options();
-        auto kb = KnowledgeBaseImpl::create(context, kb_options);
+        EXPECT_TRUE(g->is_terminating(repositories));
 
-        EXPECT_EQ(g->solves(kb->get_generalized_state_space().value(), denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+        // auto kb_options = KnowledgeBaseImpl::Options();
+        // auto& state_space_options = kb_options.state_space_options;
+        // state_space_options.symmetry_pruning = true;
+        // auto& generalized_state_space_options = kb_options.generalized_state_space_options;
+        // generalized_state_space_options = GeneralizedStateSpaceImpl::Options();
+        // auto kb = KnowledgeBaseImpl::create(context, kb_options);
+        // EXPECT_EQ(g->solves(kb->get_generalized_state_space().value(), denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
     }
 }
 

@@ -68,7 +68,7 @@ IncreaseNumericalEffectImpl::IncreaseNumericalEffectImpl(Index index, NamedFeatu
 
 bool IncreaseNumericalEffectImpl::evaluate_impl(dl::EvaluationContext& source_context, dl::EvaluationContext& target_context) const
 {
-    DEBUG_LOG("[DEBUG] " << keywords::evaluate_with_debug_impl << ": feature=" << this->m_feature->get_feature()
+    DEBUG_LOG("[DEBUG] " << keywords::increase_numerical_effect << ": feature=" << this->m_feature->get_feature()
                          << " source_value=" << this->m_feature->get_feature()->evaluate(source_context)->get_data()
                          << " target_value=" << this->m_feature->get_feature()->evaluate(target_context)->get_data())
 

@@ -232,7 +232,7 @@ bool GeneralPolicyImpl::is_terminating(graphs::PolicyGraph& policy_graph, Reposi
         return true;
     }
 
-    bool edges_removed = (cur_num_edges < initial_num_edges);
+    bool edges_removed = (policy_graph.get_num_edges() < initial_num_edges);
 
     // Line 10
     if (edges_removed)
