@@ -618,8 +618,6 @@ void GeneratorVisitor::visit_impl(DerivationRule<D> rule)
 
             auto& target_location = m_sentences.get(rule->get_head(), m_complexity);
             target_location.push_back(sentence);
-
-            std::cout << sentence << std::endl;
         }
         else
         {
