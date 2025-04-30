@@ -11,7 +11,7 @@ from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext
 
 
-__version__ = "0.12.21"
+__version__ = "0.12.22"
 HERE = Path(__file__).resolve().parent
 
 
@@ -98,9 +98,12 @@ setup(
     ext_modules=[CMakeExtension("pymimir")],
     cmdclass={"build_ext": CMakeBuild},
     zip_safe=False,
+    exclude_package_data={
+        "": ["include/*", "lib/*"]
+    },
     extras_require={
-        'test': [
-            'pytest',
+        "test": [
+            "pytest",
         ],
     }
 )
