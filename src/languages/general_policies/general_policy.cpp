@@ -103,7 +103,7 @@ bool GeneralPolicyImpl::is_terminating(graphs::PolicyGraph& policy_graph, Reposi
     auto f_to_finite_witnesses = std::unordered_map<NamedFeatureVariant, graphs::EdgeIndexSet> {};
     auto f_to_infinite_witnesses = std::unordered_map<NamedFeatureVariant, graphs::EdgeIndexSet> {};
 
-    auto find_effect_witnesses_in_scc_func = [&](auto&& effect, const std::optional<graphs::EdgeIndexSet>& excluded_e_idxs) -> graphs::EdgeIndexSet
+    auto find_effect_witnesses_in_scc_func = [&component_map](auto&& effect, const std::optional<graphs::EdgeIndexSet>& excluded_e_idxs) -> graphs::EdgeIndexSet
     {
         auto witnesses = graphs::EdgeIndexSet {};
 
