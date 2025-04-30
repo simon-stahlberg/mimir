@@ -37,6 +37,7 @@
 namespace boost
 {
 
+/// @private
 /// Traits for a graph that are needed for the boost graph library.
 template<typename Graph, mimir::graphs::IsDirection Direction>
     requires mimir::graphs::IsVertexListGraph<Graph>    //

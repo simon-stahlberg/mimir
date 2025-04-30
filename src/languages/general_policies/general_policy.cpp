@@ -99,101 +99,83 @@ bool GeneralPolicyImpl::is_terminating(graphs::PolicyGraph& policy_graph, Reposi
     }
 
     // Lines 4-5
-    // f_inc: f -> e_idxs
-    // f_dec: f -> e_idxs
-    // Then select an f such that f_dec(f) > 0 and f_inc(f) = 0 and delete all edges f_dec(f).
 
-    auto f_dec = std::unordered_map<NamedFeatureVariant, graphs::EdgeIndexSet> {};
-    auto f_inc = std::unordered_map<NamedFeatureVariant, graphs::EdgeIndexSet> {};
+    auto f_to_finite_witnesses = std::unordered_map<NamedFeatureVariant, graphs::EdgeIndexSet> {};
+    auto f_to_infinite_witnesses = std::unordered_map<NamedFeatureVariant, graphs::EdgeIndexSet> {};
 
-    for (const auto& [e_idx, e] : policy_graph.get_edges())
+    auto find_effect_witnesses_in_scc_func = [&](auto&& effect, const std::optional<graphs::EdgeIndexSet>& excluded_e_idxs) -> graphs::EdgeIndexSet
     {
-        const auto src_component = component_map.at(e.get_source());
-        const auto dst_component = component_map.at(e.get_target());
+        auto witnesses = graphs::EdgeIndexSet {};
 
-        if (src_component != dst_component)
-            continue;  ///< not in scc
-
-        for (const auto& feature : get_all_features())
+        for (const auto& [e_idx, e] : policy_graph.get_edges())
         {
-            std::visit(
-                [&, e_idx = e_idx, e = e](auto&& arg)
-                {
-                    using T = std::decay_t<decltype(arg)>;
+            if (excluded_e_idxs && excluded_e_idxs.value().contains(e_idx))
+                continue;  ///< skip excluded edge.
 
-                    if constexpr (std::is_same_v<T, NamedFeature<dl::BooleanTag>>)
-                    {
-                        if (get_effects(e).contains(repositories.get_or_create_positive_boolean_effect(arg)))
-                        {
-                            f_inc[arg].insert(e_idx);
-                        }
-                        else if (get_effects(e).contains(repositories.get_or_create_negative_boolean_effect(arg)))
-                        {
-                            f_dec[arg].insert(e_idx);
-                        }
-                        else if (get_effects(e).contains(repositories.get_or_create_unchanged_boolean_effect(arg))) {}
-                        else
-                        {
-                            f_inc[arg].insert(e_idx);
-                            f_dec[arg].insert(e_idx);
-                        }
-                    }
-                    else if constexpr (std::is_same_v<T, NamedFeature<dl::NumericalTag>>)
-                    {
-                        if (get_effects(e).contains(repositories.get_or_create_increase_numerical_effect(arg)))
-                        {
-                            f_inc[arg].insert(e_idx);
-                        }
-                        else if (get_effects(e).contains(repositories.get_or_create_decrease_numerical_effect(arg)))
-                        {
-                            f_dec[arg].insert(e_idx);
-                        }
-                        else if (get_effects(e).contains(repositories.get_or_create_unchanged_numerical_effect(arg))) {}
-                        else
-                        {
-                            f_inc[arg].insert(e_idx);
-                            f_dec[arg].insert(e_idx);
-                        }
-                    }
-                    else
-                    {
-                        static_assert(dependent_false<T>::value, "Unhandled feature type");
-                    }
-                },
-                feature);
+            const auto src_component = component_map.at(e.get_source());
+            const auto dst_component = component_map.at(e.get_target());
+
+            if (src_component != dst_component)
+                continue;  ///< not in scc
+
+            if (get_effects(e).contains(effect))
+                witnesses.insert(e_idx);
         }
+
+        return witnesses;
+    };
+
+    for (const auto& feature : get_all_features())
+    {
+        std::visit(
+            [&](auto&& arg)
+            {
+                using T = std::decay_t<decltype(arg)>;
+
+                if constexpr (std::is_same_v<T, NamedFeature<dl::BooleanTag>>)
+                {
+                    const auto pos = repositories.get_or_create_positive_boolean_effect(arg);
+                    const auto neg = repositories.get_or_create_negative_boolean_effect(arg);
+
+                    // Assume pos is finite witness
+                    auto finite_witnesses = find_effect_witnesses_in_scc_func(pos, std::nullopt);
+                    auto infinite_witnesses = find_effect_witnesses_in_scc_func(neg, finite_witnesses);
+
+                    if (finite_witnesses.empty())
+                    {
+                        // Assume neg is finite witness
+                        finite_witnesses = find_effect_witnesses_in_scc_func(neg, std::nullopt);
+                        infinite_witnesses = find_effect_witnesses_in_scc_func(pos, finite_witnesses);
+                    }
+
+                    f_to_finite_witnesses[arg] = finite_witnesses;
+                    f_to_infinite_witnesses[arg] = infinite_witnesses;
+                }
+                else if constexpr (std::is_same_v<T, NamedFeature<dl::NumericalTag>>)
+                {
+                    const auto inc = repositories.get_or_create_increase_numerical_effect(arg);
+                    const auto dec = repositories.get_or_create_decrease_numerical_effect(arg);
+
+                    // dec is finite witness
+                    auto finite_witnesses = find_effect_witnesses_in_scc_func(dec, std::nullopt);
+                    auto infinite_witnesses = find_effect_witnesses_in_scc_func(inc, finite_witnesses);
+
+                    f_to_finite_witnesses[arg] = finite_witnesses;
+                    f_to_infinite_witnesses[arg] = infinite_witnesses;
+                }
+                else
+                {
+                    static_assert(dependent_false<T>::value, "Unhandled feature type");
+                }
+            },
+            feature);
     }
 
-    DEBUG_LOG("f_inc=" << f_inc)
-    DEBUG_LOG("f_dec=" << f_dec)
+    DEBUG_LOG("f_to_finite_witnesses=" << f_to_finite_witnesses)
+    DEBUG_LOG("f_to_infinite_witnesses=" << f_to_infinite_witnesses)
 
     const auto initial_num_edges = policy_graph.get_num_edges();
     auto cur_num_edges = initial_num_edges;
-
-    class RemoveFeatureVisitor : public NullVisitor
-    {
-    private:
-        graphs::EdgeIndex m_e_idx;
-        std::unordered_map<NamedFeatureVariant, graphs::EdgeIndexSet>& m_f_dec;
-        std::unordered_map<NamedFeatureVariant, graphs::EdgeIndexSet>& m_f_inc;
-
-    public:
-        RemoveFeatureVisitor(graphs::EdgeIndex e_idx,
-                             std::unordered_map<NamedFeatureVariant, graphs::EdgeIndexSet>& f_dec,
-                             std::unordered_map<NamedFeatureVariant, graphs::EdgeIndexSet>& f_inc) :
-            m_e_idx(e_idx),
-            m_f_dec(f_dec),
-            m_f_inc(f_inc)
-        {
-        }
-
-        void visit(PositiveBooleanEffect effect) override { m_f_inc.at(effect->get_feature()).erase(m_e_idx); }
-        void visit(NegativeBooleanEffect effect) override { m_f_dec.at(effect->get_feature()).erase(m_e_idx); }
-        void visit(UnchangedBooleanEffect effect) override {}
-        void visit(IncreaseNumericalEffect effect) override { m_f_inc.at(effect->get_feature()).erase(m_e_idx); }
-        void visit(DecreaseNumericalEffect effect) override { m_f_dec.at(effect->get_feature()).erase(m_e_idx); }
-        void visit(UnchangedNumericalEffect effect) override {}
-    };
 
     do
     {
@@ -204,15 +186,15 @@ bool GeneralPolicyImpl::is_terminating(graphs::PolicyGraph& policy_graph, Reposi
             std::visit(
                 [&](auto&& arg)
                 {
-                    if (f_dec.contains(arg) && f_dec.at(arg).size() > 0 && (!f_inc.contains(arg) || f_inc.at(arg).size() == 0))
+                    if (f_to_finite_witnesses.contains(arg) && f_to_finite_witnesses.at(arg).size() > 0
+                        && (!f_to_infinite_witnesses.contains(arg) || f_to_infinite_witnesses.at(arg).size() == 0))
                     {
-                        for (const auto& e_idx : graphs::EdgeIndexSet(f_dec.at(arg)))
+                        for (const auto& e_idx : graphs::EdgeIndexSet(f_to_finite_witnesses.at(arg)))
                         {
-                            auto visitor = RemoveFeatureVisitor(e_idx, f_dec, f_inc);
-                            for (const auto& effect : get_effects(policy_graph.get_edge(e_idx)))
-                            {
-                                effect->accept(visitor);
-                            }
+                            for (auto& [f, finite_witnesses] : f_to_finite_witnesses)
+                                finite_witnesses.erase(e_idx);
+                            for (auto& [f, infinite_witnesses] : f_to_infinite_witnesses)
+                                infinite_witnesses.erase(e_idx);
 
                             policy_graph.remove_edge(e_idx);
 

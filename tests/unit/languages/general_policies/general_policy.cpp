@@ -298,7 +298,7 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicySpannerTest)
     }
 }
 
-TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyGripper4Test)
+TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyGripperTerminationTest)
 {
     {
         const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
@@ -312,12 +312,8 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyGripper4Test)
         auto repositories = general_policies::Repositories();
         auto dl_repositories = dl::Repositories();
 
-        const auto general_policy =
-            general_policies::GeneralPolicyFactory::get_or_create_general_policy_gripper(*context->get_domain(), repositories, dl_repositories);
-
-        EXPECT_TRUE(general_policy->is_terminating(repositories));
-
-        const auto g = repositories.get_or_create_general_policy(std::string(R"(
+        {
+            const auto general_policy = repositories.get_or_create_general_policy(std::string(R"(
             [boolean_features]
 [numerical_features]
 <n2> ::= @numerical_count @role_atomic_state "at"
@@ -327,18 +323,32 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyGripper4Test)
 { @equal_numerical_condition <n2>, @greater_numerical_condition <n82> } -> { @unchanged_numerical_effect <n2>, @decrease_numerical_effect <n82> }
 { @equal_numerical_condition <n2>, @greater_numerical_condition <n82> } -> { @increase_numerical_effect <n2>, @decrease_numerical_effect <n82> }
 )"),
-                                                                 *context->get_domain(),
-                                                                 dl_repositories);
+                                                                                  *context->get_domain(),
+                                                                                  dl_repositories);
 
-        EXPECT_TRUE(g->is_terminating(repositories));
+            EXPECT_TRUE(general_policy->is_terminating(repositories));
+        }
 
-        // auto kb_options = KnowledgeBaseImpl::Options();
-        // auto& state_space_options = kb_options.state_space_options;
-        // state_space_options.symmetry_pruning = true;
-        // auto& generalized_state_space_options = kb_options.generalized_state_space_options;
-        // generalized_state_space_options = GeneralizedStateSpaceImpl::Options();
-        // auto kb = KnowledgeBaseImpl::create(context, kb_options);
-        // EXPECT_EQ(g->solves(kb->get_generalized_state_space().value(), denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+        {
+            const auto general_policy = repositories.get_or_create_general_policy(std::string(R"(
+            [boolean_features]
+<b0> ::= @boolean_nonempty @role_atomic_state "carry"
+<b2> ::= @boolean_nonempty @role_atomic_state "at"
+<b7> ::= @boolean_nonempty @concept_existential_quantification @role_atomic_goal "at" true @concept_atomic_state "at-robby"
+[numerical_features]
+[policy_rules]
+{ @negative_boolean_condition <b0>, @positive_boolean_condition <b2>, @positive_boolean_condition <b7> } -> { @unchanged_boolean_effect <b0>, @unchanged_boolean_effect <b2>, @negative_boolean_effect <b7> }
+{ @positive_boolean_condition <b0>, @negative_boolean_condition <b2>, @negative_boolean_condition <b7> } -> { @unchanged_boolean_effect <b0>, @unchanged_boolean_effect <b2>, @positive_boolean_effect <b7> }
+{ @positive_boolean_condition <b0>, @positive_boolean_condition <b2>, @positive_boolean_condition <b7> } -> { @negative_boolean_effect <b0>, @unchanged_boolean_effect <b2>, @unchanged_boolean_effect <b7> }
+{ @negative_boolean_condition <b0>, @positive_boolean_condition <b2>, @negative_boolean_condition <b7> } -> { @positive_boolean_effect <b0>, @unchanged_boolean_effect <b2>, @unchanged_boolean_effect <b7> }
+{ @positive_boolean_condition <b0>, @negative_boolean_condition <b2>, @positive_boolean_condition <b7> } -> { @unchanged_boolean_effect <b0>, @positive_boolean_effect <b2>, @unchanged_boolean_effect <b7> }
+{ @positive_boolean_condition <b0>, @positive_boolean_condition <b2>, @negative_boolean_condition <b7> } -> { @unchanged_boolean_effect <b0>, @unchanged_boolean_effect <b2>, @positive_boolean_effect <b7> }
+)"),
+                                                                                  *context->get_domain(),
+                                                                                  dl_repositories);
+
+            EXPECT_TRUE(!general_policy->is_terminating(repositories));
+        }
     }
 }
 
