@@ -1,4 +1,3 @@
-import glob
 import os
 import sys
 import subprocess
@@ -21,7 +20,7 @@ HERE = Path(__file__).resolve().parent
 class CMakeExtension(Extension):
     def __init__(self, name, sourcedir=""):
         Extension.__init__(self, name, sources=[])
-        self.sourcedir = os.path.abspath(sourcedir)
+        self.sourcedir = Path(os.path.abspath(sourcedir))
 
 
 class CMakeBuild(build_ext):
@@ -43,20 +42,20 @@ class CMakeBuild(build_ext):
 
         cmake_args = [
             f"-DCMAKE_BUILD_TYPE={build_type}",
-            f"-DCMAKE_INSTALL_PREFIX={str(temp_directory)}/dependencies/installs",
-            f"-DCMAKE_PREFIX_PATH={str(temp_directory)}/dependencies/installs",
+            f"-DCMAKE_INSTALL_PREFIX={str(temp_directory / 'dependencies' / 'installs')}",
+            f"-DCMAKE_PREFIX_PATH={str(temp_directory / 'dependencies' / 'installs')}",
             f"-DPython_EXECUTABLE={sys.executable}"
         ]
 
         subprocess.run(
-            ["cmake", "-S", f"{ext.sourcedir}/dependencies", "-B", f"{str(temp_directory)}/dependencies/build"] + cmake_args, cwd=str(temp_directory), check=True
+            ["cmake", "-S", f"{str(ext.sourcedir / 'dependencies')}", "-B", f"{str(temp_directory / 'dependencies' / 'build')}"] + cmake_args, cwd=str(temp_directory), check=True
         )
 
         subprocess.run(
-            ["cmake", "--build", f"{str(temp_directory)}/dependencies/build", f"-j{multiprocessing.cpu_count()}"]
+            ["cmake", "--build", f"{str(temp_directory / 'dependencies' / 'build')}", f"-j{multiprocessing.cpu_count()}"]
         )
 
-        shutil.rmtree(f"{str(temp_directory)}/dependencies/build")
+        shutil.rmtree(f"{str(temp_directory / 'dependencies' / 'build')}")
 
         #######################################################################
         # Build mimir
@@ -66,21 +65,30 @@ class CMakeBuild(build_ext):
             "-DBUILD_PYMIMIR=ON",
             f"-DMIMIR_VERSION_INFO={__version__}",
             f"-DCMAKE_BUILD_TYPE={build_type}",  # not used on MSVC, but no harm
-            f"-DCMAKE_PREFIX_PATH={str(temp_directory)}/dependencies/installs",
+            f"-DCMAKE_PREFIX_PATH={str(temp_directory / 'dependencies' / 'installs')}",
             f"-DPython_EXECUTABLE={sys.executable}"
         ]
 
         subprocess.run(
-            ["cmake", "-S", ext.sourcedir, "-B", f"{str(temp_directory)}/build"] + cmake_args, cwd=str(temp_directory), check=True
+            ["cmake", "-S", ext.sourcedir, "-B", f"{str(temp_directory / 'build')}"] + cmake_args, cwd=str(temp_directory), check=True
         )
 
         subprocess.run(
-            ["cmake", "--build", f"{str(temp_directory)}/build", f"-j{multiprocessing.cpu_count()}"], cwd=str(temp_directory), check=True
+            ["cmake", "--build", f"{str(temp_directory / 'build')}", f"-j{multiprocessing.cpu_count()}"], cwd=str(temp_directory), check=True
         )
 
         subprocess.run(
-            ["cmake", "--install", f"{str(temp_directory)}/build", "--prefix", f"{str(output_directory)}"], check=True
+            ["cmake", "--install", f"{str(temp_directory / 'build')}", "--prefix", f"{str(output_directory)}"], check=True
         )
+
+        # Remove unwanted directories.
+        unwanted_dirs = ["include", "lib"]
+        for unwanted_dir in unwanted_dirs:
+            dir_path = output_directory / unwanted_dir
+            if os.path.exists(dir_path):
+                shutil.rmtree(dir_path)
+                print(f"Removed {dir_path} from the wheel.")
+
 
 # The information here can also be placed in setup.cfg - better separation of
 # logic and declaration, and simpler if you include description/version in a file.
@@ -98,9 +106,6 @@ setup(
     ext_modules=[CMakeExtension("pymimir")],
     cmdclass={"build_ext": CMakeBuild},
     zip_safe=False,
-    exclude_package_data={
-        "": ["include/*", "lib/*"]
-    },
     extras_require={
         "test": [
             "pytest",
