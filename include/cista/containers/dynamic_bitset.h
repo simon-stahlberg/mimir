@@ -31,7 +31,7 @@ struct basic_dynamic_bitset
 
     static constexpr std::size_t block_size_log2 = std::bit_width(block_size) - 1;
     // 000...
-    static constexpr Block block_zeroes = 0;
+    static constexpr Block block_zeros = 0;
     // 111...
     static constexpr Block block_ones = Block(-1);
     // 100...
@@ -60,6 +60,17 @@ struct basic_dynamic_bitset
 
     constexpr basic_dynamic_bitset(size_t num_bits) : blocks_((num_bits / block_size) + 1) {}
 
+    constexpr basic_dynamic_bitset(const basic_dynamic_bitset& other) : blocks_(other.blocks_) {}
+
+    constexpr basic_dynamic_bitset& operator=(const basic_dynamic_bitset& other)
+    {
+        if (this != &other)
+        {
+            blocks_ = other.blocks_;
+        }
+        return *this;
+    }
+
     /**
      * Operators
      */
@@ -76,8 +87,8 @@ struct basic_dynamic_bitset
 
             for (std::size_t index = common_size; index < max_size; ++index)
             {
-                auto this_value = index < lhs.blocks_.size() ? lhs.blocks_[index] : block_zeroes;
-                auto other_value = index < rhs.blocks_.size() ? rhs.blocks_[index] : block_zeroes;
+                auto this_value = index < lhs.blocks_.size() ? lhs.blocks_[index] : block_zeros;
+                auto other_value = index < rhs.blocks_.size() ? rhs.blocks_[index] : block_zeros;
 
                 if (this_value != other_value)
                 {
@@ -185,7 +196,7 @@ struct basic_dynamic_bitset
 
         for (; last_non_default_block_index >= 0; --last_non_default_block_index)
         {
-            if (blocks_[last_non_default_block_index] != block_zeroes)
+            if (blocks_[last_non_default_block_index] != block_zeros)
             {
                 break;
             }
@@ -198,7 +209,7 @@ struct basic_dynamic_bitset
     {
         if (blocks_.size() < other.blocks_.size())
         {
-            blocks_.resize(other.blocks_.size(), block_zeroes);
+            blocks_.resize(other.blocks_.size(), block_zeros);
         }
     }
 
@@ -247,10 +258,24 @@ struct basic_dynamic_bitset
 
         if (index >= blocks_.size())
         {
-            blocks_.resize(index + 1, block_zeroes);
+            blocks_.resize(index + 1, block_zeros);
         }
 
         blocks_[index] |= (static_cast<Block>(1) << offset);  // Set the bit at the offset
+    }
+
+    constexpr void resize(size_t num_bits, bool value = false)
+    {
+        blocks_.clear();
+
+        if (num_bits > 0)
+        {
+            const std::size_t index = get_index(num_bits);
+            const std::size_t offset = get_offset(num_bits);
+            blocks_.reserve(index + 1);
+            blocks_.resize(index, value ? block_ones : block_zeros);
+            blocks_.push_back(value ? ((Block(1) << offset) - 1) : block_zeros);
+        }
     }
 
     /// @brief Unset a bit at a specific position
@@ -262,7 +287,7 @@ struct basic_dynamic_bitset
 
         if (index >= blocks_.size())
         {
-            blocks_.resize(index + 1, block_zeroes);
+            blocks_.resize(index + 1, block_zeros);
         }
 
         blocks_[index] &= ~(static_cast<Block>(1) << offset);  // Set the bit at the offset
@@ -286,6 +311,25 @@ struct basic_dynamic_bitset
         return *this;
     }
 
+    constexpr void negate(size_t size)
+    {
+        const size_t index = get_index(size);
+        const size_t offset = get_offset(size);
+
+        // Resize to fit negated atoms.
+        blocks_.resize(index + 1);
+
+        ~(*this);
+
+        // Set trailing bits to zero.
+        if (!blocks_.empty() && (blocks_.size() == index + 1) && (offset > 0))
+        {
+            Block& last_block = blocks_.back();
+            Block mask = (Block(1) << offset) - 1;
+            last_block &= mask;
+        }
+    }
+
     constexpr basic_dynamic_bitset operator|(const basic_dynamic_bitset& other) const
     {
         auto result = basic_dynamic_bitset(*this);
@@ -307,6 +351,33 @@ struct basic_dynamic_bitset
         while (other_it != other.blocks_.end())
         {
             *it |= *other_it;
+            ++it;
+            ++other_it;
+        }
+
+        return *this;
+    }
+
+    constexpr basic_dynamic_bitset operator^(const basic_dynamic_bitset& other) const
+    {
+        auto result = basic_dynamic_bitset(*this);
+        result ^= other;
+
+        return result;
+    }
+
+    constexpr basic_dynamic_bitset& operator^=(const basic_dynamic_bitset& other)
+    {
+        // Update blocks
+        resize_to_fit(other);
+        // Other blocks might still be smaller which is fine
+        assert(other.blocks_.size() <= blocks_.size());
+
+        auto it = blocks_.begin();
+        auto other_it = other.blocks_.begin();
+        while (other_it != other.blocks_.end())
+        {
+            *it ^= *other_it;
             ++it;
             ++other_it;
         }
@@ -436,6 +507,8 @@ struct basic_dynamic_bitset
         }
         return count;
     }
+
+    const cista::basic_vector<Block, Ptr>& blocks() const { return blocks_; }
 
     cista::basic_vector<Block, Ptr> blocks_ {};
 };

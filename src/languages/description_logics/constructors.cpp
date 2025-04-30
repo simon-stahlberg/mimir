@@ -59,9 +59,8 @@ void ConceptBotImpl::evaluate_impl(EvaluationContext& context) const
     // Fetch data
     auto& bitset = boost::hana::at_key(context.get_builders(), boost::hana::type<ConceptTag> {}).get_data();
 
+    // Compute result
     bitset.unset_all();
-
-    // Result is computed.
 }
 
 void ConceptBotImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
@@ -78,9 +77,9 @@ void ConceptTopImpl::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
     auto& bitset = boost::hana::at_key(context.get_builders(), boost::hana::type<ConceptTag> {}).get_data();
-    bitset.unset_all();
 
     // Compute result
+    bitset.unset_all();
     const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     for (size_t i = 0; i < num_objects; ++i)
     {
@@ -106,9 +105,9 @@ void ConceptAtomicStateImpl<P>::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
     auto& bitset = boost::hana::at_key(context.get_builders(), boost::hana::type<ConceptTag> {}).get_data();
-    bitset.unset_all();
 
     // Compute result
+    bitset.unset_all();
     for (const auto& atom_index : context.get_state()->get_atoms<P>())
     {
         const auto atom = context.get_problem()->get_repositories().template get_ground_atom<P>(atom_index);
@@ -128,9 +127,9 @@ void ConceptAtomicStateImpl<StaticTag>::evaluate_impl(EvaluationContext& context
 {
     // Fetch data
     auto& bitset = boost::hana::at_key(context.get_builders(), boost::hana::type<ConceptTag> {}).get_data();
-    bitset.unset_all();
 
     // Compute result
+    bitset.unset_all();
     for (const auto& atom : context.get_problem()->get_static_initial_atoms())
     {
         if (atom->get_predicate() == m_predicate)
@@ -182,9 +181,9 @@ void ConceptAtomicGoalImpl<P>::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
     auto& bitset = boost::hana::at_key(context.get_builders(), boost::hana::type<ConceptTag> {}).get_data();
-    bitset.unset_all();
 
     // Compute result
+    bitset.unset_all();
     for (const auto& literal : context.get_problem()->get_goal_condition<P>())
     {
         const auto atom = literal->get_atom();
@@ -246,10 +245,9 @@ void ConceptIntersectionImpl::evaluate_impl(EvaluationContext& context) const
 
     // Fetch data
     auto& bitset = boost::hana::at_key(context.get_builders(), boost::hana::type<ConceptTag> {}).get_data();
-    bitset.unset_all();
 
     // Compute result
-    bitset |= eval_left->get_data();
+    bitset = eval_left->get_data();
     bitset &= eval_right->get_data();
 }
 
@@ -280,10 +278,9 @@ void ConceptUnionImpl::evaluate_impl(EvaluationContext& context) const
 
     // Fetch data
     auto& bitset = boost::hana::at_key(context.get_builders(), boost::hana::type<ConceptTag> {}).get_data();
-    bitset.unset_all();
 
     // Compute result
-    bitset |= eval_left->get_data();
+    bitset = eval_left->get_data();
     bitset |= eval_right->get_data();
 }
 
@@ -309,16 +306,10 @@ void ConceptNegationImpl::evaluate_impl(EvaluationContext& context) const
     // Fetch data
     const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitset = boost::hana::at_key(context.get_builders(), boost::hana::type<ConceptTag> {}).get_data();
-    bitset.unset_all();
 
     // Compute result
-    for (size_t i = 0; i < num_objects; ++i)
-    {
-        if (!eval->get_data().get(i))
-        {
-            bitset.set(i);
-        }
-    }
+    bitset = eval->get_data();
+    bitset.negate(num_objects);
 }
 
 void ConceptNegationImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
@@ -339,30 +330,25 @@ ConceptValueRestrictionImpl::ConceptValueRestrictionImpl(Index index, Constructo
 }
 
 void ConceptValueRestrictionImpl::evaluate_impl(EvaluationContext& context) const
-{  // Evaluate children
+{
+    // Evaluate children
     const auto eval_role = m_role->evaluate(context);
     const auto eval_concept = m_concept->evaluate(context);
 
     // Fetch data
     const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitset = boost::hana::at_key(context.get_builders(), boost::hana::type<ConceptTag> {}).get_data();
-    bitset.unset_all();
+    auto& scratch_bitset = boost::hana::at_key(context.get_scratch_builders(), boost::hana::type<ConceptTag> {}).get_data();
 
     // Compute result
+    bitset.resize(num_objects, true);
     for (size_t i = 0; i < num_objects; ++i)
     {
-        bitset.set(i);
-    }
-    for (size_t i = 0; i < num_objects; ++i)
-    {
-        for (size_t j = 0; j < num_objects; ++j)
-        {
-            if (eval_role->get_data().at(i).get(j) && !eval_concept->get_data().get(j))
-            {
-                bitset.unset(i);
-                break;
-            }
-        }
+        scratch_bitset = eval_concept->get_data();
+        scratch_bitset.negate(num_objects);
+        scratch_bitset &= eval_role->get_data().at(i);
+        if (scratch_bitset.any())
+            bitset.unset(i);
     }
 }
 
@@ -394,19 +380,16 @@ void ConceptExistentialQuantificationImpl::evaluate_impl(EvaluationContext& cont
     // Fetch data
     const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitset = boost::hana::at_key(context.get_builders(), boost::hana::type<ConceptTag> {}).get_data();
-    bitset.unset_all();
+    auto& scratch_bitset = boost::hana::at_key(context.get_scratch_builders(), boost::hana::type<ConceptTag> {}).get_data();
 
     // Compute result
+    bitset.unset_all();
     for (size_t i = 0; i < num_objects; ++i)
     {
-        for (size_t j = 0; j < num_objects; ++j)
-        {
-            if (eval_role->get_data().at(i).get(j) && eval_concept->get_data().get(j))
-            {
-                bitset.set(i);
-                break;
-            }
-        }
+        scratch_bitset = eval_concept->get_data();
+        scratch_bitset &= eval_role->get_data().at(i);
+        if (scratch_bitset.any())
+            bitset.set(i);
     }
 }
 
@@ -438,23 +421,17 @@ void ConceptRoleValueMapContainmentImpl::evaluate_impl(EvaluationContext& contex
     // Fetch data
     const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitset = boost::hana::at_key(context.get_builders(), boost::hana::type<ConceptTag> {}).get_data();
-    bitset.unset_all();
+    auto& scratch_bitset = boost::hana::at_key(context.get_scratch_builders(), boost::hana::type<ConceptTag> {}).get_data();
 
     // Compute result
+    bitset.resize(num_objects, true);
     for (size_t i = 0; i < num_objects; ++i)
     {
-        bitset.set(i);
-    }
-    for (size_t i = 0; i < num_objects; ++i)
-    {
-        for (size_t j = 0; j < num_objects; ++j)
-        {
-            if (eval_left_role->get_data().at(i).get(j) && !eval_right_role->get_data().at(i).get(j))
-            {
-                bitset.unset(i);
-                break;
-            }
-        }
+        scratch_bitset = eval_right_role->get_data().at(i);
+        scratch_bitset.negate(num_objects);
+        scratch_bitset &= eval_left_role->get_data().at(i);
+        if (scratch_bitset.any())
+            bitset.unset(i);
     }
 }
 
@@ -486,23 +463,16 @@ void ConceptRoleValueMapEqualityImpl::evaluate_impl(EvaluationContext& context) 
     // Fetch data
     const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitset = boost::hana::at_key(context.get_builders(), boost::hana::type<ConceptTag> {}).get_data();
-    bitset.unset_all();
+    auto& scratch_bitset = boost::hana::at_key(context.get_scratch_builders(), boost::hana::type<ConceptTag> {}).get_data();
 
     // Compute result
+    bitset.resize(num_objects, true);
     for (size_t i = 0; i < num_objects; ++i)
     {
-        bitset.set(i);
-    }
-    for (size_t i = 0; i < num_objects; ++i)
-    {
-        for (size_t j = 0; j < num_objects; ++j)
-        {
-            if (eval_left_role->get_data().at(i).get(j) != eval_right_role->get_data().at(i).get(j))
-            {
-                bitset.unset(i);
-                break;
-            }
-        }
+        scratch_bitset = eval_right_role->get_data().at(i);
+        scratch_bitset ^= eval_left_role->get_data().at(i);
+        if (scratch_bitset.any())
+            bitset.unset(i);
     }
 }
 
@@ -527,9 +497,9 @@ void ConceptNominalImpl::evaluate_impl(EvaluationContext& context) const
 
     // Fetch data
     auto& bitset = boost::hana::at_key(context.get_builders(), boost::hana::type<ConceptTag> {}).get_data();
-    bitset.unset_all();
 
     // Compute result
+    bitset.unset_all();
     bitset.set(m_object->get_index());
 }
 
@@ -550,19 +520,12 @@ void RoleUniversalImpl::evaluate_impl(EvaluationContext& context) const
     // Fetch data
     const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitsets = boost::hana::at_key(context.get_builders(), boost::hana::type<RoleTag> {}).get_data();
+
+    // Compute result
     bitsets.resize(num_objects);
     for (auto& bitset : bitsets)
     {
-        bitset.unset_all();
-    }
-
-    // Compute result
-    for (size_t i = 0; i < num_objects; ++i)
-    {
-        for (size_t j = 0; j < num_objects; ++j)
-        {
-            bitsets.at(i).set(j);
-        }
+        bitset.resize(num_objects, true);
     }
 }
 
@@ -585,13 +548,13 @@ void RoleAtomicStateImpl<P>::evaluate_impl(EvaluationContext& context) const
     // Fetch data
     const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitsets = boost::hana::at_key(context.get_builders(), boost::hana::type<RoleTag> {}).get_data();
+
+    // Compute result
     bitsets.resize(num_objects);
     for (auto& bitset : bitsets)
     {
         bitset.unset_all();
     }
-
-    // Compute result
     for (const auto& atom_index : context.get_state()->get_atoms<P>())
     {
         const auto atom = context.get_problem()->get_repositories().template get_ground_atom<P>(atom_index);
@@ -616,13 +579,13 @@ void RoleAtomicStateImpl<StaticTag>::evaluate_impl(EvaluationContext& context) c
     // Fetch data
     const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitsets = boost::hana::at_key(context.get_builders(), boost::hana::type<RoleTag> {}).get_data();
+
+    // Compute result
     bitsets.resize(num_objects);
     for (auto& bitset : bitsets)
     {
         bitset.unset_all();
     }
-
-    // Compute result
     for (const auto& atom : context.get_problem()->get_static_initial_atoms())
     {
         if (atom->get_predicate() == m_predicate)
@@ -676,13 +639,13 @@ void RoleAtomicGoalImpl<P>::evaluate_impl(EvaluationContext& context) const
     // Fetch data
     const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitsets = boost::hana::at_key(context.get_builders(), boost::hana::type<RoleTag> {}).get_data();
+
+    // Compute result
     bitsets.resize(num_objects);
     for (auto& bitset : bitsets)
     {
         bitset.unset_all();
     }
-
-    // Compute result
     for (const auto& literal : context.get_problem()->get_goal_condition<P>())
     {
         const auto atom = literal->get_atom();
@@ -749,17 +712,13 @@ void RoleIntersectionImpl::evaluate_impl(EvaluationContext& context) const
 
     // Fetch data
     auto& bitsets = boost::hana::at_key(context.get_builders(), boost::hana::type<RoleTag> {}).get_data();
-    bitsets.resize(num_objects);
-    for (auto& bitset : bitsets)
-    {
-        bitset.unset_all();
-    }
 
     // Compute result
+    bitsets.resize(num_objects);
     for (size_t i = 0; i < num_objects; ++i)
     {
         auto& bitset = bitsets.at(i);
-        bitset |= eval_left->get_data().at(i);
+        bitset = eval_left->get_data().at(i);
         bitset &= eval_right->get_data().at(i);
     }
 }
@@ -792,17 +751,13 @@ void RoleUnionImpl::evaluate_impl(EvaluationContext& context) const
     // Fetch data
     const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitsets = boost::hana::at_key(context.get_builders(), boost::hana::type<RoleTag> {}).get_data();
-    bitsets.resize(num_objects);
-    for (auto& bitset : bitsets)
-    {
-        bitset.unset_all();
-    }
 
     // Compute result
+    bitsets.resize(num_objects);
     for (size_t i = 0; i < num_objects; ++i)
     {
         auto& bitset = bitsets.at(i);
-        bitset |= eval_left->get_data().at(i);
+        bitset = eval_left->get_data().at(i);
         bitset |= eval_right->get_data().at(i);
     }
 }
@@ -829,22 +784,14 @@ void RoleComplementImpl::evaluate_impl(EvaluationContext& context) const
     // Fetch data
     const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitsets = boost::hana::at_key(context.get_builders(), boost::hana::type<RoleTag> {}).get_data();
-    bitsets.resize(num_objects);
-    for (auto& bitset : bitsets)
-    {
-        bitset.unset_all();
-    }
 
     // Compute result
+    bitsets.resize(num_objects);
     for (size_t i = 0; i < num_objects; ++i)
     {
-        for (size_t j = 0; j < num_objects; ++j)
-        {
-            if (!eval_role->get_data().at(i).get(j))
-            {
-                bitsets.at(i).set(j);
-            }
-        }
+        auto& bitset = bitsets.at(i);
+        bitset = eval_role->get_data().at(i);
+        bitset.negate(num_objects);
     }
 }
 
@@ -868,13 +815,13 @@ void RoleInverseImpl::evaluate_impl(EvaluationContext& context) const
     // Fetch data
     const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitsets = boost::hana::at_key(context.get_builders(), boost::hana::type<RoleTag> {}).get_data();
+
+    // Compute result
     bitsets.resize(num_objects);
     for (auto& bitset : bitsets)
     {
         bitset.unset_all();
     }
-
-    // Compute result
     for (size_t i = 0; i < num_objects; ++i)
     {
         for (size_t j = 0; j < num_objects; ++j)
@@ -913,21 +860,19 @@ void RoleCompositionImpl::evaluate_impl(EvaluationContext& context) const
     // Fetch data
     const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitsets = boost::hana::at_key(context.get_builders(), boost::hana::type<RoleTag> {}).get_data();
+
+    // Compute result
     bitsets.resize(num_objects);
     for (auto& bitset : bitsets)
     {
         bitset.unset_all();
     }
 
-    // Compute result
     for (size_t i = 0; i < num_objects; ++i)
     {
-        for (size_t j = 0; j < num_objects; ++j)
+        for (const auto j : eval_left_role->get_data().at(i))
         {
-            if (eval_left_role->get_data().at(i).get(j))
-            {
-                bitsets.at(i) |= eval_right_role->get_data().at(j);
-            }
+            bitsets.at(i) |= eval_right_role->get_data().at(j);
         }
     }
 }
@@ -954,16 +899,12 @@ void RoleTransitiveClosureImpl::evaluate_impl(EvaluationContext& context) const
     // Fetch data
     const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitsets = boost::hana::at_key(context.get_builders(), boost::hana::type<RoleTag> {}).get_data();
-    bitsets.resize(num_objects);
-    for (auto& bitset : bitsets)
-    {
-        bitset.unset_all();
-    }
 
     // Compute result
+    bitsets.resize(num_objects);
     for (size_t i = 0; i < num_objects; ++i)
     {
-        bitsets.at(i) |= eval_role->get_data().at(i);
+        bitsets.at(i) = eval_role->get_data().at(i);
     }
     for (size_t k = 0; k < num_objects; ++k)
     {
@@ -997,16 +938,12 @@ void RoleReflexiveTransitiveClosureImpl::evaluate_impl(EvaluationContext& contex
     // Fetch data
     const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitsets = boost::hana::at_key(context.get_builders(), boost::hana::type<RoleTag> {}).get_data();
-    bitsets.resize(num_objects);
-    for (auto& bitset : bitsets)
-    {
-        bitset.unset_all();
-    }
 
     // Compute result
+    bitsets.resize(num_objects);
     for (size_t i = 0; i < num_objects; ++i)
     {
-        bitsets.at(i) |= eval_role->get_data().at(i);
+        bitsets.at(i) = eval_role->get_data().at(i);
     }
     for (size_t k = 0; k < num_objects; ++k)
     {
@@ -1051,21 +988,22 @@ void RoleRestrictionImpl::evaluate_impl(EvaluationContext& context) const
     // Fetch data
     const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitsets = boost::hana::at_key(context.get_builders(), boost::hana::type<RoleTag> {}).get_data();
+    auto& scratch_bitset = boost::hana::at_key(context.get_scratch_builders(), boost::hana::type<ConceptTag> {}).get_data();
+
+    // Compute result
     bitsets.resize(num_objects);
     for (auto& bitset : bitsets)
     {
         bitset.unset_all();
     }
-
-    // Compute result
     for (size_t i = 0; i < num_objects; ++i)
     {
-        for (size_t j = 0; j < num_objects; ++j)
+        scratch_bitset = eval_concept->get_data();
+        scratch_bitset &= eval_role->get_data().at(i);
+
+        for (const auto& j : scratch_bitset)
         {
-            if (eval_role->get_data().at(i).get(j) && eval_concept->get_data().get(j))
-            {
-                bitsets.at(i).set(j);
-            }
+            bitsets.at(i).set(j);
         }
     }
 }
@@ -1092,13 +1030,13 @@ void RoleIdentityImpl::evaluate_impl(EvaluationContext& context) const
     // Fetch data
     const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
     auto& bitsets = boost::hana::at_key(context.get_builders(), boost::hana::type<RoleTag> {}).get_data();
+
+    // Compute result
     bitsets.resize(num_objects);
     for (auto& bitset : bitsets)
     {
         bitset.unset_all();
     }
-
-    // Compute result
     for (size_t i = 0; i < num_objects; ++i)
     {
         if (eval_concept->get_data().get(i))

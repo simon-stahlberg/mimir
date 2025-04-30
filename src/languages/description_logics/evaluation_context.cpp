@@ -25,6 +25,7 @@ EvaluationContext::EvaluationContext(search::State state, Problem problem, Denot
     m_state(state),
     m_problem(problem),
     m_builders(),
+    m_scratch_builders(),
     m_repositories(ref_repositories)
 {
 }
@@ -34,6 +35,8 @@ search::State EvaluationContext::get_state() const { return m_state; }
 const Problem& EvaluationContext::get_problem() const { return m_problem; }
 
 Denotations& EvaluationContext::get_builders() { return m_builders; }
+
+Denotations& EvaluationContext::get_scratch_builders() { return m_scratch_builders; }
 
 DenotationRepositories& EvaluationContext::get_repositories() { return m_repositories; }
 

@@ -38,6 +38,7 @@ private:
     search::State m_state;
     formalism::Problem m_problem;
     Denotations m_builders;
+    Denotations m_scratch_builders;
     DenotationRepositories& m_repositories;
 
 public:
@@ -51,6 +52,8 @@ public:
     const formalism::Problem& get_problem() const;
 
     Denotations& get_builders();
+
+    Denotations& get_scratch_builders();
 
     DenotationRepositories& get_repositories();
 };

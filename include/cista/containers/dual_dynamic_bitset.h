@@ -31,7 +31,7 @@ struct basic_dual_dynamic_bitset
 
     static constexpr std::size_t block_size_log2 = std::bit_width(block_size) - 1;
     // 000...
-    static constexpr Block block_zeroes = 0;
+    static constexpr Block block_zeros = 0;
     // 111...
     static constexpr Block block_ones = Block(-1);
     // 100...
@@ -64,6 +64,18 @@ struct basic_dual_dynamic_bitset
     {
     }
 
+    constexpr basic_dual_dynamic_bitset(const basic_dual_dynamic_bitset& other) : default_bit_value_(other.default_bit_value_), blocks_(other.blocks_) {}
+
+    constexpr basic_dual_dynamic_bitset& operator=(const basic_dual_dynamic_bitset& other)
+    {
+        if (this != &other)
+        {
+            default_bit_value_ = other.default_bit_value_;
+            blocks_ = other.blocks_;
+        }
+        return *this;
+    }
+
     /**
      * Operators
      */
@@ -80,8 +92,8 @@ struct basic_dual_dynamic_bitset
 
             for (std::size_t index = common_size; index < max_size; ++index)
             {
-                auto this_value = index < lhs.blocks_.size() ? lhs.blocks_[index] : (lhs.default_bit_value_ ? block_ones : block_zeroes);
-                auto other_value = index < rhs.blocks_.size() ? rhs.blocks_[index] : (rhs.default_bit_value_ ? block_ones : block_zeroes);
+                auto this_value = index < lhs.blocks_.size() ? lhs.blocks_[index] : (lhs.default_bit_value_ ? block_ones : block_zeros);
+                auto other_value = index < rhs.blocks_.size() ? rhs.blocks_[index] : (rhs.default_bit_value_ ? block_ones : block_zeros);
 
                 if (this_value != other_value)
                 {
@@ -220,7 +232,7 @@ struct basic_dual_dynamic_bitset
     {
         int32_t last_non_default_block_index = blocks_.size() - 1;
 
-        const Block default_block = default_bit_value_ ? block_ones : block_zeroes;
+        const Block default_block = default_bit_value_ ? block_ones : block_zeros;
 
         for (; last_non_default_block_index >= 0; --last_non_default_block_index)
         {
@@ -237,7 +249,7 @@ struct basic_dual_dynamic_bitset
     {
         if (blocks_.size() < other.blocks_.size())
         {
-            blocks_.resize(other.blocks_.size(), default_bit_value_ ? block_ones : block_zeroes);
+            blocks_.resize(other.blocks_.size(), default_bit_value_ ? block_ones : block_zeros);
         }
     }
 
@@ -292,7 +304,7 @@ struct basic_dual_dynamic_bitset
 
         if (index >= blocks_.size())
         {
-            blocks_.resize(index + 1, default_bit_value_ ? block_ones : block_zeroes);
+            blocks_.resize(index + 1, default_bit_value_ ? block_ones : block_zeros);
         }
 
         blocks_[index] |= (static_cast<Block>(1) << offset);  // Set the bit at the offset
@@ -307,7 +319,7 @@ struct basic_dual_dynamic_bitset
 
         if (index >= blocks_.size())
         {
-            blocks_.resize(index + 1, default_bit_value_ ? block_ones : block_zeroes);
+            blocks_.resize(index + 1, default_bit_value_ ? block_ones : block_zeros);
         }
 
         blocks_[index] &= ~(static_cast<Block>(1) << offset);  // Set the bit at the offset

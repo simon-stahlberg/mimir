@@ -124,9 +124,9 @@ TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarVisitorSentenceGeneratorTes
 
     const auto& concept_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::ConceptTag> {});
 
-    EXPECT_EQ(concept_statistics.num_generated, 232);
-    EXPECT_EQ(concept_statistics.num_kept, 22);
-    EXPECT_EQ(concept_statistics.num_pruned, 210);
+    EXPECT_EQ(concept_statistics.num_generated, 237);
+    EXPECT_EQ(concept_statistics.num_kept, 34);
+    EXPECT_EQ(concept_statistics.num_pruned, 203);
 
     const auto& role_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::RoleTag> {});
 
@@ -169,9 +169,9 @@ TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarVisitorSentenceGeneratorFra
 
     const auto& concept_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::ConceptTag> {});
 
-    EXPECT_EQ(concept_statistics.num_generated, 4063);
-    EXPECT_EQ(concept_statistics.num_kept, 204);
-    EXPECT_EQ(concept_statistics.num_pruned, 3859);
+    EXPECT_EQ(concept_statistics.num_generated, 9587);
+    EXPECT_EQ(concept_statistics.num_kept, 974);
+    EXPECT_EQ(concept_statistics.num_pruned, 8613);
 
     const auto& role_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::RoleTag> {});
 
@@ -181,15 +181,15 @@ TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarVisitorSentenceGeneratorFra
 
     const auto& boolean_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::BooleanTag> {});
 
-    EXPECT_EQ(boolean_statistics.num_generated, 173);
-    EXPECT_EQ(boolean_statistics.num_kept, 38);
-    EXPECT_EQ(boolean_statistics.num_pruned, 135);
+    EXPECT_EQ(boolean_statistics.num_generated, 561);
+    EXPECT_EQ(boolean_statistics.num_kept, 74);
+    EXPECT_EQ(boolean_statistics.num_pruned, 487);
 
     const auto& numerical_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::NumericalTag> {});
 
-    EXPECT_EQ(numerical_statistics.num_generated, 2799);
-    EXPECT_EQ(numerical_statistics.num_kept, 203);
-    EXPECT_EQ(numerical_statistics.num_pruned, 2596);
+    EXPECT_EQ(numerical_statistics.num_generated, 3861);
+    EXPECT_EQ(numerical_statistics.num_kept, 467);
+    EXPECT_EQ(numerical_statistics.num_pruned, 3394);
 }
 
 }

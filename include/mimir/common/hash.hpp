@@ -51,7 +51,7 @@ struct loki::Hash<cista::basic_dual_dynamic_bitset<Block, Ptr>>
 
     size_t operator()(const Type& bitset) const
     {
-        const auto default_block = bitset.default_bit_value_ ? Type::block_ones : Type::block_zeroes;
+        const auto default_block = bitset.default_bit_value_ ? Type::block_ones : Type::block_zeros;
 
         // Find the last block that differs from the default block
         auto last_relevant_index = static_cast<int64_t>(bitset.blocks_.size()) - 1;
@@ -82,11 +82,11 @@ struct loki::Hash<cista::basic_dynamic_bitset<Block, Ptr>>
     {
         // Find the last block that differs from the default block
         auto last_relevant_index = static_cast<int64_t>(bitset.blocks_.size()) - 1;
-        for (; (last_relevant_index >= 0) && (bitset.blocks_[last_relevant_index] == Type::block_zeroes); --last_relevant_index) {}
+        for (; (last_relevant_index >= 0) && (bitset.blocks_[last_relevant_index] == Type::block_zeros); --last_relevant_index) {}
         size_t hashable_size = last_relevant_index + 1;
 
         // Compute a hash value up to and including this block
-        size_t seed = Type::block_zeroes;
+        size_t seed = Type::block_zeros;
         loki::hash_combine(seed, hashable_size);
         size_t hash[2] = { 0, 0 };
 
