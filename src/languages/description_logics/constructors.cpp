@@ -242,7 +242,7 @@ void ConceptIntersectionImpl::evaluate_impl(EvaluationContext& context) const
 {
     // Evaluate children
     const auto eval_left = m_left_concept->evaluate(context);
-    const auto eval_right = m_left_concept->evaluate(context);
+    const auto eval_right = m_right_concept->evaluate(context);
 
     // Fetch data
     auto& bitset = boost::hana::at_key(context.get_builders(), boost::hana::type<ConceptTag> {}).get_data();
@@ -276,7 +276,7 @@ void ConceptUnionImpl::evaluate_impl(EvaluationContext& context) const
 {
     // Evaluate children
     const auto eval_left = m_left_concept->evaluate(context);
-    const auto eval_right = m_left_concept->evaluate(context);
+    const auto eval_right = m_right_concept->evaluate(context);
 
     // Fetch data
     auto& bitset = boost::hana::at_key(context.get_builders(), boost::hana::type<ConceptTag> {}).get_data();
@@ -787,7 +787,7 @@ void RoleUnionImpl::evaluate_impl(EvaluationContext& context) const
 {
     // Evaluate children
     const auto eval_left = m_left_role->evaluate(context);
-    const auto eval_right = m_left_role->evaluate(context);
+    const auto eval_right = m_right_role->evaluate(context);
 
     // Fetch data
     const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
