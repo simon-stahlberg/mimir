@@ -596,9 +596,7 @@ void bind_module_definitions(nb::module_& m)
              "generalized_state_space"_a,
              "class_graph"_a,
              "ref_denotation_repositories"_a)
-        .def(nb::init<mimir::formalism::ProblemMap<mimir::search::StateList>, DenotationRepositories&>(),
-             "state_partitioning"_a,
-             "ref_denotation_repositories"_a);
+        .def(nb::init<mimir::search::StateProblemList, DenotationRepositories&>(), "states"_a, "ref_denotation_repositories"_a);
 
     nb::class_<cnf_grammar::GeneratedSentencesContainer>(m, "GeneratedSentencesContainer")  //
         .def(nb::init<>())

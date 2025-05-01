@@ -17,6 +17,19 @@ void bind_module_definitions(nb::module_& m)
         .value("CYCLIC", SolvabilityStatus::CYCLIC)
         .value("UNSOLVABLE", SolvabilityStatus::UNSOLVABLE);
 
+    nb::class_<GeneralPoliciesRefinementPruningFunction, dl::IRefinementPruningFunction>(m, "GeneralPoliciesPruningFunction")
+        .def(nb::init<const mimir::datasets::GeneralizedStateSpace&, dl::DenotationRepositories&>(),
+             "generalized_state_space"_a,
+             "ref_denotation_repositories"_a)
+        .def(nb::init<const mimir::datasets::GeneralizedStateSpace&, const mimir::graphs::ClassGraph&, dl::DenotationRepositories&>(),
+             "generalized_state_space"_a,
+             "class_graph"_a,
+             "ref_denotation_repositories"_a)
+        .def(nb::init<mimir::search::StateProblemList, mimir::search::StateProblemPairList, dl::DenotationRepositories&>(),
+             "states"_a,
+             "transitions"_a,
+             "ref_denotation_repositories"_a);
+
     bind_named_feature<dl::ConceptTag>(m, "NamedConcept");
     bind_named_feature<dl::RoleTag>(m, "NamedRole");
     bind_named_feature<dl::BooleanTag>(m, "NamedBoolean");

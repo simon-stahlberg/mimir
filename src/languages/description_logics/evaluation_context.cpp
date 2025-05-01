@@ -30,6 +30,10 @@ EvaluationContext::EvaluationContext(search::State state, Problem problem, Denot
 {
 }
 
+void EvaluationContext::set_state(search::State state) { m_state = state; }
+
+void EvaluationContext::set_problem(formalism::Problem problem) { m_problem = problem; }
+
 search::State EvaluationContext::get_state() const { return m_state; }
 
 const Problem& EvaluationContext::get_problem() const { return m_problem; }

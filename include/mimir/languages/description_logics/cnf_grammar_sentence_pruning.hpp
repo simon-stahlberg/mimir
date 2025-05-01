@@ -21,9 +21,7 @@
 #include "mimir/datasets/declarations.hpp"
 #include "mimir/datasets/generalized_state_space/class_graph.hpp"
 #include "mimir/languages/description_logics/constructor_repositories.hpp"
-#include "mimir/languages/description_logics/constructors.hpp"
-#include "mimir/languages/description_logics/evaluation_context.hpp"
-#include "mimir/languages/description_logics/grammar.hpp"
+#include "mimir/languages/description_logics/declarations.hpp"
 
 #include <boost/hana.hpp>
 #include <loki/loki.hpp>
@@ -64,14 +62,13 @@ public:
 class StateListRefinementPruningFunction : public IRefinementPruningFunction
 {
 public:
-    explicit StateListRefinementPruningFunction(const datasets::GeneralizedStateSpace& generalized_state_space,
-                                                DenotationRepositories& ref_denotation_repositories);
+    StateListRefinementPruningFunction(const datasets::GeneralizedStateSpace& generalized_state_space, DenotationRepositories& ref_denotation_repositories);
 
     StateListRefinementPruningFunction(const datasets::GeneralizedStateSpace& generalized_state_space,
                                        const graphs::ClassGraph& class_graph,
                                        DenotationRepositories& ref_denotation_repositories);
 
-    StateListRefinementPruningFunction(formalism::ProblemMap<search::StateList> state_partitioning, DenotationRepositories& ref_denotation_repositories);
+    StateListRefinementPruningFunction(search::StateProblemList states, DenotationRepositories& ref_denotation_repositories);
 
     /// @brief Tests whether a concept should be pruned.
     /// @param concept_ The concept to evaluate.
@@ -93,6 +90,12 @@ public:
     /// @return True if the role is pruned (i.e., its evaluation is not unique across states), false otherwise.
     bool should_prune(Constructor<NumericalTag> numerical) override;
 
+    /**
+     * Getters
+     */
+
+    const search::StateProblemList& get_states() const;
+
 private:
     template<IsConceptOrRoleOrBooleanOrNumericalTag D>
     bool should_prune_impl(Constructor<D> constructor);
@@ -101,7 +104,7 @@ private:
 
     DenotationListSets m_denotations_repositories;
 
-    formalism::ProblemMap<search::StateList> m_state_partitioning;
+    search::StateProblemList m_states;
 };
 
 }

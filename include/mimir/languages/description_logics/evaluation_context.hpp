@@ -45,6 +45,14 @@ public:
     EvaluationContext(search::State state, formalism::Problem problem, DenotationRepositories& ref_repositories);
 
     /**
+     * Setters
+     */
+
+    void set_state(search::State state);
+
+    void set_problem(formalism::Problem problem);
+
+    /**
      * Getters
      */
     search::State get_state() const;

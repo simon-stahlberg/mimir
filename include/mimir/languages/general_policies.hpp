@@ -18,6 +18,7 @@
 #ifndef MIMIR_LANGUAGES_GENERAL_POLICIES_HPP_
 #define MIMIR_LANGUAGES_GENERAL_POLICIES_HPP_
 
+#include "mimir/languages/general_policies/cnf_grammar_sentence_pruning.hpp"
 #include "mimir/languages/general_policies/condition_base.hpp"
 #include "mimir/languages/general_policies/condition_interface.hpp"
 #include "mimir/languages/general_policies/conditions.hpp"

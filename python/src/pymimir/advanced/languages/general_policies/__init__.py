@@ -34,4 +34,6 @@ from pymimir.pymimir.advanced.languages.general_policies import (
     Repositories,
 
     GeneralPolicyFactory,
+
+    GeneralPoliciesPruningFunction,
 )
