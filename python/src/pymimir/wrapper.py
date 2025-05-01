@@ -101,6 +101,7 @@ class Variable:
     _advanced_variable: 'AdvancedVariable' = None
 
     def __init__(self, advanced_variable: 'AdvancedVariable') -> None:
+        """Internal constructor for the Variable class; to create a variable, use the new() method."""
         assert isinstance(advanced_variable, AdvancedVariable), "Invalid variable type."
         self._advanced_variable = advanced_variable
 
@@ -176,7 +177,9 @@ class Predicate:
     _advanced_predicate: 'AdvancedPredicate' = None
 
     def __init__(self, advanced_predicate: 'AdvancedPredicate') -> None:
-        assert isinstance(advanced_predicate, AdvancedPredicate), "Invalid predicate type."
+        assert isinstance(advanced_predicate, AdvancedStaticPredicate) \
+            or isinstance(advanced_predicate, AdvancedFluentPredicate) \
+            or isinstance(advanced_predicate, AdvancedDerivedPredicate), "Invalid predicate type."
         self._advanced_predicate = advanced_predicate
 
     def get_index(self) -> 'int':
@@ -219,7 +222,10 @@ class GroundAtom:
     _advanced_ground_atom: 'AdvancedGroundAtom' = None
 
     def __init__(self, advanced_ground_atom: 'AdvancedGroundAtom') -> None:
-        assert isinstance(advanced_ground_atom, AdvancedGroundAtom), "Invalid ground atom type."
+        """Internal constructor for the GroundAtom class; to create a ground atom, use the new() method."""
+        assert isinstance(advanced_ground_atom, AdvancedStaticGroundAtom) \
+            or isinstance(advanced_ground_atom, AdvancedFluentGroundAtom) \
+            or isinstance(advanced_ground_atom, AdvancedDerivedGroundAtom), "Invalid ground atom type."
         self._advanced_ground_atom = advanced_ground_atom
 
     @staticmethod
@@ -279,7 +285,10 @@ class Atom:
     _advanced_atom: 'AdvancedAtom' = None
 
     def __init__(self, advanced_atom: 'AdvancedAtom') -> None:
-        assert isinstance(advanced_atom, AdvancedAtom), "Invalid atom type."
+        """Internal constructor for the Atom class; to create an atom, use the new() method."""
+        assert isinstance(advanced_atom, AdvancedStaticAtom) \
+            or isinstance(advanced_atom, AdvancedFluentAtom) \
+            or isinstance(advanced_atom, AdvancedDerivedAtom), "Invalid atom type."
         self._advanced_atom = advanced_atom
 
     @staticmethod
@@ -331,6 +340,7 @@ class GroundLiteral:
     _advanced_ground_literal: 'AdvancedGroundLiteral' = None
 
     def __init__(self, advanced_ground_literal: 'AdvancedGroundLiteral') -> None:
+        """Internal constructor for the GroundLiteral class; to create a ground literal, use the new() method."""
         assert isinstance(advanced_ground_literal, AdvancedGroundLiteral), "Invalid ground literal type."
         self._advanced_ground_literal = advanced_ground_literal
 
@@ -375,7 +385,10 @@ class Literal:
     _advanced_literal: 'AdvancedLiteral' = None
 
     def __init__(self, advanced_literal: 'AdvancedLiteral') -> None:
-        assert isinstance(advanced_literal, AdvancedLiteral), "Invalid literal type."
+        """Internal constructor for the Literal class; to create a literal, use the new() method."""
+        assert isinstance(advanced_literal, AdvancedStaticLiteral) \
+            or isinstance(advanced_literal, AdvancedFluentLiteral) \
+            or isinstance(advanced_literal, AdvancedDerivedLiteral), "Invalid literal type."
         self._advanced_literal = advanced_literal
 
     @staticmethod
@@ -728,7 +741,9 @@ class Domain:
 
     def get_requirements(self) -> 'list[str]':
         """Get the requirements of the domain."""
-        requirements = str(self._advanced_domain.get_requirements()).removeprefix('(:requirements').removesuffix(')').split()
+        # The requirements are returned as a string in the format '(:requirements :requirement1 :requirement2 ...)'.
+        # We remove the '(:requirements' prefix and the ')' suffix.
+        requirements = str(self._advanced_domain.get_requirements())[15:-1].split()
         return requirements
 
     def get_actions(self) -> 'list[Action]':
@@ -960,7 +975,10 @@ class State:
         Checks if a ground atom is contained in the state.
         """
         # TODO: This function is quite expensive. Expose a more efficient function on the C++ side.
-        assert isinstance(ground_atom, (GroundAtom, AdvancedGroundAtom)), "Invalid ground atom type."
+        assert isinstance(ground_atom, GroundAtom) \
+            or isinstance(ground_atom, AdvancedStaticGroundAtom) \
+            or isinstance(ground_atom, AdvancedFluentGroundAtom) \
+            or isinstance(ground_atom, AdvancedDerivedGroundAtom), "Invalid ground atom type."
         if isinstance(ground_atom, GroundAtom):
             if ground_atom.is_static():
                 return ground_atom.get_index() in self._problem._static_ground_atom_indices
@@ -968,7 +986,7 @@ class State:
                 return ground_atom.get_index() in self._advanced_state.get_fluent_atoms()
             if ground_atom.is_derived():
                 return ground_atom.get_index() in self._advanced_state.get_derived_atoms()
-        elif isinstance(ground_atom, AdvancedGroundAtom):
+        else:
             if isinstance(ground_atom, AdvancedStaticGroundAtom):
                 return ground_atom.get_index() in self._problem._static_ground_atom_indices
             if isinstance(ground_atom, AdvancedFluentGroundAtom):
@@ -981,7 +999,10 @@ class State:
         """
         Checks if all ground atoms are contained in the state.
         """
-        assert isinstance(ground_atoms, (list, AdvancedGroundAtomList)), "Invalid ground atoms type."
+        assert isinstance(ground_atoms, list) \
+            or isinstance(ground_atoms, AdvancedStaticGroundAtomList) \
+            or isinstance(ground_atoms, AdvancedFluentGroundAtomList) \
+            or isinstance(ground_atoms, AdvancedDerivedGroundAtomList), "Invalid ground atoms type."
         for ground_atom in ground_atoms:
             if not self.contains(ground_atom):
                 return False
@@ -991,7 +1012,10 @@ class State:
         """
         Checks if none of the ground atoms are contained in the state.
         """
-        assert isinstance(ground_atoms, (list, AdvancedGroundAtomList)), "Invalid ground atoms type."
+        assert isinstance(ground_atoms, list) \
+            or isinstance(ground_atoms, AdvancedStaticGroundAtomList) \
+            or isinstance(ground_atoms, AdvancedFluentGroundAtomList) \
+            or isinstance(ground_atoms, AdvancedDerivedGroundAtomList), "Invalid ground atoms type."
         for ground_atom in ground_atoms:
             if self.contains(ground_atom):
                 return False
