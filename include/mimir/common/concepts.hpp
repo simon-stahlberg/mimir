@@ -23,6 +23,7 @@
 #include <cstddef>
 #include <memory>
 #include <ranges>
+#include <string>
 #include <type_traits>
 #include <variant>
 
@@ -61,6 +62,9 @@ concept IsHanaMap = std::same_as<typename boost::hana::tag_of<T>::type, boost::h
 // Define a concept that checks whether T is a std::variant.
 template<typename T>
 concept IsVariant = requires { typename std::variant_size<T>::type; };
+
+template<typename T>
+concept IsString = std::is_same_v<std::remove_cvref_t<T>, std::string>;
 
 template<typename T>
 concept IsDereferencable = requires(T t) {

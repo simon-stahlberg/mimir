@@ -77,6 +77,12 @@ using UnorderedMap = std::unordered_map<Key, Value, loki::Hash<Key>, loki::Equal
 template<typename Value>
 using UnorderedSet = std::unordered_set<Value, loki::Hash<Value>, loki::EqualTo<Value>>;
 
+template<typename T, typename... Ds>
+using HanaContainer = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, T>...>;
+
+template<template<typename> typename T, typename... Ds>
+using HanaMappedContainer = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, T<Ds>>...>;
+
 }
 
 #endif

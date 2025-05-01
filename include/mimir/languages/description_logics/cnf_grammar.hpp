@@ -29,7 +29,8 @@ namespace mimir::languages::dl::cnf_grammar
 
 enum class GrammarSpecificationEnum
 {
-    FRANCES_ET_AL_AAAI2021 = 0,
+    COMPLETE,
+    FRANCES_ET_AL_AAAI2021,
 };
 
 class Grammar

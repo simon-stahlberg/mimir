@@ -18,6 +18,7 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_DECLARATIONS_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_DECLARATIONS_HPP_
 
+#include "mimir/common/types.hpp"
 #include "mimir/formalism/tags.hpp"
 #include "mimir/languages/description_logics/tags.hpp"
 
@@ -33,16 +34,6 @@ namespace mimir::languages::dl
 class Repositories;
 
 class EvaluationContext;
-
-/**
- * Common
- */
-
-template<typename T, IsConceptOrRoleOrBooleanOrNumericalTag... Ds>
-using HanaContainer = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, T>...>;
-
-template<template<typename> typename T, IsConceptOrRoleOrBooleanOrNumericalTag... Ds>
-using HanaMappedContainer = boost::hana::map<boost::hana::pair<boost::hana::type<Ds>, T<Ds>>...>;
 
 /**
  * Denotations
@@ -69,7 +60,7 @@ template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 using Constructor = const IConstructor<D>*;
 template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 using ConstructorList = std::vector<Constructor<D>>;
-using ConstructorLists = dl::HanaMappedContainer<ConstructorList, ConceptTag, RoleTag, BooleanTag, NumericalTag>;
+using ConstructorLists = HanaMappedContainer<ConstructorList, ConceptTag, RoleTag, BooleanTag, NumericalTag>;
 
 /* Concrete concepts */
 class ConceptTopImpl;
