@@ -1,4 +1,4 @@
-find_package(Python 3.8 REQUIRED 
+find_package(Python 3.8 REQUIRED
   COMPONENTS Interpreter Development.Module
   OPTIONAL_COMPONENTS Development.SABIModule)
 
@@ -11,11 +11,11 @@ endif()
 
 
 nanobind_add_module(pymimir
-    advanced/main.cpp 
-    advanced/common/bindings.cpp 
-    advanced/formalism/bindings.cpp 
-    advanced/graphs/bindings.cpp 
-    advanced/search/bindings.cpp 
+    advanced/main.cpp
+    advanced/common/bindings.cpp
+    advanced/formalism/bindings.cpp
+    advanced/graphs/bindings.cpp
+    advanced/search/bindings.cpp
     advanced/datasets/bindings.cpp
     advanced/languages/description_logics/bindings.cpp
     advanced/languages/general_policies/bindings.cpp
@@ -27,9 +27,9 @@ install(TARGETS pymimir DESTINATION "pymimir")
 
 ## Stubgen
 set(MODULES
-    pymimir
+    # pymimir  # Handled by __init__.py
     pymimir.advanced
-    pymimir.advanced.common 
+    pymimir.advanced.common
     pymimir.advanced.graphs
     pymimir.advanced.formalism
     pymimir.advanced.search
@@ -56,4 +56,3 @@ foreach(mod IN LISTS MODULES)
     install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${mod_output}"
             DESTINATION ${mod_path})
 endforeach()
-

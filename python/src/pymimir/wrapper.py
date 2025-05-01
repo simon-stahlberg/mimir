@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import TypeAlias, Union, Iterable
+from typing import  Union, Iterable
 
 from pymimir.advanced.formalism import Action as AdvancedAction
 from pymimir.advanced.formalism import ConditionalEffect as AdvancedConditionalEffect
@@ -54,22 +54,22 @@ from pymimir.advanced.search import State as AdvancedState
 # Type aliases for advanced types
 # -------------------------------
 
-AdvancedAtom: TypeAlias = Union[AdvancedStaticAtom, AdvancedFluentAtom, AdvancedDerivedAtom]
-AdvancedGroundAtom: TypeAlias = Union[AdvancedStaticGroundAtom, AdvancedFluentGroundAtom, AdvancedDerivedGroundAtom]
-AdvancedGroundAtomList: TypeAlias = Union[AdvancedStaticGroundAtomList, AdvancedFluentGroundAtomList, AdvancedDerivedGroundAtomList]
-AdvancedLiteral: TypeAlias = Union[AdvancedStaticLiteral, AdvancedFluentLiteral, AdvancedDerivedLiteral]
-AdvancedLiteralList: TypeAlias = Union[AdvancedStaticLiteralList, AdvancedFluentLiteralList, AdvancedDerivedLiteralList]
-AdvancedGroundLiteral: TypeAlias = Union[AdvancedStaticGroundLiteral, AdvancedFluentGroundLiteral, AdvancedDerivedGroundLiteral]
-AdvancedGroundLiteralList: TypeAlias = Union[AdvancedStaticGroundLiteralList, AdvancedFluentGroundLiteralList, AdvancedDerivedGroundLiteralList]
-AdvancedPredicate: TypeAlias = Union[AdvancedStaticPredicate, AdvancedFluentPredicate, AdvancedDerivedPredicate]
-AdvancedAxiomEvaluator: TypeAlias = Union[AdvancedGroundedAxiomEvaluator, AdvancedLiftedAxiomEvaluator]
+AdvancedAtom = Union[AdvancedStaticAtom, AdvancedFluentAtom, AdvancedDerivedAtom]
+AdvancedGroundAtom = Union[AdvancedStaticGroundAtom, AdvancedFluentGroundAtom, AdvancedDerivedGroundAtom]
+AdvancedGroundAtomList = Union[AdvancedStaticGroundAtomList, AdvancedFluentGroundAtomList, AdvancedDerivedGroundAtomList]
+AdvancedLiteral = Union[AdvancedStaticLiteral, AdvancedFluentLiteral, AdvancedDerivedLiteral]
+AdvancedLiteralList = Union[AdvancedStaticLiteralList, AdvancedFluentLiteralList, AdvancedDerivedLiteralList]
+AdvancedGroundLiteral = Union[AdvancedStaticGroundLiteral, AdvancedFluentGroundLiteral, AdvancedDerivedGroundLiteral]
+AdvancedGroundLiteralList = Union[AdvancedStaticGroundLiteralList, AdvancedFluentGroundLiteralList, AdvancedDerivedGroundLiteralList]
+AdvancedPredicate = Union[AdvancedStaticPredicate, AdvancedFluentPredicate, AdvancedDerivedPredicate]
+AdvancedAxiomEvaluator = Union[AdvancedGroundedAxiomEvaluator, AdvancedLiftedAxiomEvaluator]
 
 
 # ------------
 # Type aliases
 # ------------
 
-Term: TypeAlias = Union['Object', 'Variable']
+Term = Union['Object', 'Variable']
 
 
 # ----------------
