@@ -5,7 +5,7 @@ var searchData=
   ['cnf_5fgrammar_5fconstructor_5finterface_2ehpp_2',['cnf_grammar_constructor_interface.hpp',['../cnf__grammar__constructor__interface_8hpp.html',1,'']]],
   ['cnf_5fgrammar_5fconstructor_5frepositories_2ehpp_3',['cnf_grammar_constructor_repositories.hpp',['../cnf__grammar__constructor__repositories_8hpp.html',1,'']]],
   ['cnf_5fgrammar_5fconstructors_2ehpp_4',['cnf_grammar_constructors.hpp',['../cnf__grammar__constructors_8hpp.html',1,'']]],
-  ['cnf_5fgrammar_5fsentence_5fpruning_2ehpp_5',['cnf_grammar_sentence_pruning.hpp',['../cnf__grammar__sentence__pruning_8hpp.html',1,'']]],
+  ['cnf_5fgrammar_5fsentence_5fpruning_2ehpp_5',['cnf_grammar_sentence_pruning.hpp',['../description__logics_2cnf__grammar__sentence__pruning_8hpp.html',1,'(Global Namespace)'],['../general__policies_2cnf__grammar__sentence__pruning_8hpp.html',1,'(Global Namespace)']]],
   ['cnf_5fgrammar_5fvisitor_5fformatter_2ehpp_6',['cnf_grammar_visitor_formatter.hpp',['../cnf__grammar__visitor__formatter_8hpp.html',1,'']]],
   ['cnf_5fgrammar_5fvisitor_5finterface_2ehpp_7',['cnf_grammar_visitor_interface.hpp',['../cnf__grammar__visitor__interface_8hpp.html',1,'']]],
   ['cnf_5fgrammar_5fvisitor_5fsentence_5fgenerator_2ehpp_8',['cnf_grammar_visitor_sentence_generator.hpp',['../cnf__grammar__visitor__sentence__generator_8hpp.html',1,'']]],

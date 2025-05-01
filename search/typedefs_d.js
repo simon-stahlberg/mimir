@@ -25,8 +25,7 @@ var searchData=
   ['problemgraph_22',['ProblemGraph',['../namespacemimir_1_1graphs.html#ae90d83d97c61e149eec8e753a8f19589',1,'mimir::graphs']]],
   ['problemgraphlist_23',['ProblemGraphList',['../namespacemimir_1_1graphs.html#a14f777b696bfc1d97cbff3d1a30732f8',1,'mimir::graphs']]],
   ['problemlist_24',['ProblemList',['../namespacemimir_1_1formalism.html#a2233e56df2a111397ed13344298ef247',1,'mimir::formalism']]],
-  ['problemmap_25',['ProblemMap',['../namespacemimir_1_1formalism.html#a5f8b722c1afe021d18c4e745b450fd82',1,'mimir::formalism']]],
-  ['problemvertex_26',['ProblemVertex',['../namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71',1,'mimir::graphs']]],
-  ['problemvertexlist_27',['ProblemVertexList',['../namespacemimir_1_1graphs.html#a6849af3a319ee009030dc943e8f30f13',1,'mimir::graphs']]],
-  ['pruningstrategy_28',['PruningStrategy',['../namespacemimir_1_1search.html#a4a361738fff5acc4d7091c245f79ccf1',1,'mimir::search']]]
+  ['problemvertex_25',['ProblemVertex',['../namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71',1,'mimir::graphs']]],
+  ['problemvertexlist_26',['ProblemVertexList',['../namespacemimir_1_1graphs.html#a6849af3a319ee009030dc943e8f30f13',1,'mimir::graphs']]],
+  ['pruningstrategy_27',['PruningStrategy',['../namespacemimir_1_1search.html#a4a361738fff5acc4d7091c245f79ccf1',1,'mimir::search']]]
 ];

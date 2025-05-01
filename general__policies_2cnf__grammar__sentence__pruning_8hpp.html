@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Mimir: include/mimir/languages/description_logics/cnf_grammar_visitor_sentence_generator.hpp File Reference</title>
+<title>Mimir: include/mimir/languages/general_policies/cnf_grammar_sentence_pruning.hpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -69,34 +69,32 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_fff8445cbf07b404cfca102916921e4c.html">mimir</a></li><li class="navelem"><a class="el" href="dir_d5704f0c2c29d9efdd6fe7b028610927.html">languages</a></li><li class="navelem"><a class="el" href="dir_5458a29507bfea41087ba0ad51fffd61.html">description_logics</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_fff8445cbf07b404cfca102916921e4c.html">mimir</a></li><li class="navelem"><a class="el" href="dir_d5704f0c2c29d9efdd6fe7b028610927.html">languages</a></li><li class="navelem"><a class="el" href="dir_38f35b1cdd88c3427192b6e91c052238.html">general_policies</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#namespaces">Namespaces</a> &#124;
-<a href="#typedef-members">Typedefs</a>  </div>
-  <div class="headertitle"><div class="title">cnf_grammar_visitor_sentence_generator.hpp File Reference</div></div>
+<a href="#namespaces">Namespaces</a>  </div>
+  <div class="headertitle"><div class="title">cnf_grammar_sentence_pruning.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="description__logics_2cnf__grammar__sentence__pruning_8hpp_source.html">mimir/languages/description_logics/cnf_grammar_sentence_pruning.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="cnf__grammar__visitor__interface_8hpp_source.html">mimir/languages/description_logics/cnf_grammar_visitor_interface.hpp</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="datasets_2declarations_8hpp_source.html">mimir/datasets/declarations.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="class__graph_8hpp_source.html">mimir/datasets/generalized_state_space/class_graph.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="description__logics_2cnf__grammar__sentence__pruning_8hpp_source.html">mimir/languages/description_logics/cnf_grammar_sentence_pruning.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="constructor__repositories_8hpp_source.html">mimir/languages/description_logics/constructor_repositories.hpp</a>&quot;</code><br />
-<code>#include &lt;any&gt;</code><br />
-<code>#include &lt;unordered_map&gt;</code><br />
-<code>#include &lt;vector&gt;</code><br />
+<code>#include &quot;<a class="el" href="constructors_8hpp_source.html">mimir/languages/description_logics/constructors.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="languages_2description__logics_2declarations_8hpp_source.html">mimir/languages/description_logics/declarations.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="evaluation__context_8hpp_source.html">mimir/languages/description_logics/evaluation_context.hpp</a>&quot;</code><br />
+<code>#include &lt;boost/hana.hpp&gt;</code><br />
+<code>#include &lt;loki/loki.hpp&gt;</code><br />
 </div>
-<p><a href="cnf__grammar__visitor__sentence__generator_8hpp_source.html">Go to the source code of this file.</a></p>
+<p><a href="general__policies_2cnf__grammar__sentence__pruning_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1GeneratedSentencesContainer.html">mimir::languages::dl::cnf_grammar::GeneratedSentencesContainer</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface.  <a href="classmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1GeneratedSentencesContainer.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1GeneratorStatistics.html">mimir::languages::dl::cnf_grammar::GeneratorStatistics&lt; D &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1GeneratorVisitor.html">mimir::languages::dl::cnf_grammar::GeneratorVisitor</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPoliciesRefinementPruningFunction.html">mimir::languages::general_policies::GeneralPoliciesRefinementPruningFunction</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code><a class="el" href="classmimir_1_1languages_1_1general__policies_1_1GeneralPoliciesRefinementPruningFunction.html" title="GeneralPoliciesRefinementPruningFunction implements a pruning function based on a given state list....">GeneralPoliciesRefinementPruningFunction</a></code> implements a pruning function based on a given state list. A feature is pruned if it does not evaluate differently on at least one state compared to a previously tested feature. This ensures that only features with unique evaluations across all states are retained.  <a href="classmimir_1_1languages_1_1general__policies_1_1GeneralPoliciesRefinementPruningFunction.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
@@ -105,15 +103,8 @@ Namespaces</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacemimir_1_1languages"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages.html">mimir::languages</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacemimir_1_1languages_1_1dl"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl.html">mimir::languages::dl</a></td></tr>
+<tr class="memitem:namespacemimir_1_1languages_1_1general__policies"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1general__policies.html">mimir::languages::general_policies</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacemimir_1_1languages_1_1dl_1_1cnf__grammar"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1cnf__grammar.html">mimir::languages::dl::cnf_grammar</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
-Typedefs</h2></td></tr>
-<tr class="memitem:a94a2f6562ebf2bad7751de0c1515df30"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl_1_1cnf__grammar.html#a94a2f6562ebf2bad7751de0c1515df30">mimir::languages::dl::cnf_grammar::HanaGeneratorStatistics</a> = HanaMappedContainer&lt; GeneratorStatistics, ConceptTag, RoleTag, BooleanTag, NumericalTag &gt;</td></tr>
-<tr class="separator:a94a2f6562ebf2bad7751de0c1515df30"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

@@ -83,7 +83,7 @@ $(function() {
 <p><code><a class="el" href="classmimir_1_1languages_1_1dl_1_1StateListRefinementPruningFunction.html" title="StateListRefinementPruningFunction implements a pruning function based on a given state list....">StateListRefinementPruningFunction</a></code> implements a pruning function based on a given state list. A feature is pruned if it does not evaluate differently on at least one state compared to a previously tested feature. This ensures that only features with unique evaluations across all states are retained.  
  <a href="classmimir_1_1languages_1_1dl_1_1StateListRefinementPruningFunction.html#details">More...</a></p>
 
-<p><code>#include &lt;<a class="el" href="cnf__grammar__sentence__pruning_8hpp_source.html">cnf_grammar_sentence_pruning.hpp</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="description__logics_2cnf__grammar__sentence__pruning_8hpp_source.html">cnf_grammar_sentence_pruning.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for mimir::languages::dl::StateListRefinementPruningFunction:</div>
 <div class="dyncontent">
@@ -100,8 +100,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ab909771a5c7c4ef0558fdfd0aa25c71d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4778cf1c9d98a23d681afd4d9fdbdc29"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1StateListRefinementPruningFunction.html#a4778cf1c9d98a23d681afd4d9fdbdc29">StateListRefinementPruningFunction</a> (const <a class="el" href="namespacemimir_1_1datasets.html#ac68caf5b1da70d554f0dab5faf0349c6">datasets::GeneralizedStateSpace</a> &amp;generalized_state_space, const <a class="el" href="namespacemimir_1_1graphs.html#a7f055a18f6efd9b14e9f5708d28eb7e6">graphs::ClassGraph</a> &amp;class_graph, <a class="el" href="namespacemimir_1_1languages_1_1dl.html#ae030ae9ad477c663d14810bc63cdc251">DenotationRepositories</a> &amp;ref_denotation_repositories)</td></tr>
 <tr class="separator:a4778cf1c9d98a23d681afd4d9fdbdc29"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a15b639d582755b1ac608a58e31085535"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1StateListRefinementPruningFunction.html#a15b639d582755b1ac608a58e31085535">StateListRefinementPruningFunction</a> (<a class="el" href="namespacemimir_1_1formalism.html#a5f8b722c1afe021d18c4e745b450fd82">formalism::ProblemMap</a>&lt; <a class="el" href="namespacemimir_1_1search.html#a260f651b403f4ec3b82fa32aeed516b6">search::StateList</a> &gt; state_partitioning, <a class="el" href="namespacemimir_1_1languages_1_1dl.html#ae030ae9ad477c663d14810bc63cdc251">DenotationRepositories</a> &amp;ref_denotation_repositories)</td></tr>
-<tr class="separator:a15b639d582755b1ac608a58e31085535"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a582bae16bf2fdcd8c2e4a7ce2e040bae"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1StateListRefinementPruningFunction.html#a582bae16bf2fdcd8c2e4a7ce2e040bae">StateListRefinementPruningFunction</a> (<a class="el" href="namespacemimir_1_1search.html#ab23479ab4d0e3a613d6ac9f603326d0e">search::StateProblemList</a> states, <a class="el" href="namespacemimir_1_1languages_1_1dl.html#ae030ae9ad477c663d14810bc63cdc251">DenotationRepositories</a> &amp;ref_denotation_repositories)</td></tr>
+<tr class="separator:a582bae16bf2fdcd8c2e4a7ce2e040bae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aae52e4359b1252efe1583070aa6d01ca"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1StateListRefinementPruningFunction.html#aae52e4359b1252efe1583070aa6d01ca">should_prune</a> (<a class="el" href="namespacemimir_1_1languages_1_1dl.html#a2f5ecd6c57868865e0cf88c96d6b7e6f">Constructor</a>&lt; <a class="el" href="structmimir_1_1languages_1_1dl_1_1ConceptTag.html">ConceptTag</a> &gt; concept_) override</td></tr>
 <tr class="memdesc:aae52e4359b1252efe1583070aa6d01ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests whether a concept should be pruned.  <br /></td></tr>
 <tr class="separator:aae52e4359b1252efe1583070aa6d01ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -114,6 +114,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:af47ad0cec7dc351d2e5db5ce26606095"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1StateListRefinementPruningFunction.html#af47ad0cec7dc351d2e5db5ce26606095">should_prune</a> (<a class="el" href="namespacemimir_1_1languages_1_1dl.html#a2f5ecd6c57868865e0cf88c96d6b7e6f">Constructor</a>&lt; <a class="el" href="structmimir_1_1languages_1_1dl_1_1NumericalTag.html">NumericalTag</a> &gt; numerical) override</td></tr>
 <tr class="memdesc:af47ad0cec7dc351d2e5db5ce26606095"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests whether a role should be pruned.  <br /></td></tr>
 <tr class="separator:af47ad0cec7dc351d2e5db5ce26606095"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abcf4ffa4f70993b7a3d97451a55d2c38"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir_1_1search.html#ab23479ab4d0e3a613d6ac9f603326d0e">search::StateProblemList</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1StateListRefinementPruningFunction.html#abcf4ffa4f70993b7a3d97451a55d2c38">get_states</a> () const</td></tr>
+<tr class="separator:abcf4ffa4f70993b7a3d97451a55d2c38"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classmimir_1_1languages_1_1dl_1_1IRefinementPruningFunction"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classmimir_1_1languages_1_1dl_1_1IRefinementPruningFunction')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classmimir_1_1languages_1_1dl_1_1IRefinementPruningFunction.html">mimir::languages::dl::IRefinementPruningFunction</a></td></tr>
 <tr class="memitem:a54944d773e5a2b234f283dedf6fadad5 inherit pub_methods_classmimir_1_1languages_1_1dl_1_1IRefinementPruningFunction"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1IRefinementPruningFunction.html#a54944d773e5a2b234f283dedf6fadad5">~IRefinementPruningFunction</a> ()=default</td></tr>
 <tr class="separator:a54944d773e5a2b234f283dedf6fadad5 inherit pub_methods_classmimir_1_1languages_1_1dl_1_1IRefinementPruningFunction"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -138,9 +140,6 @@ Public Member Functions</h2></td></tr>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">mimir::languages::dl::StateListRefinementPruningFunction::StateListRefinementPruningFunction </td>
@@ -160,11 +159,6 @@ Public Member Functions</h2></td></tr>
           <td></td><td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
 </div>
@@ -203,8 +197,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a15b639d582755b1ac608a58e31085535" name="a15b639d582755b1ac608a58e31085535"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a15b639d582755b1ac608a58e31085535">&#9670;&#160;</a></span>StateListRefinementPruningFunction() <span class="overload">[3/3]</span></h2>
+<a id="a582bae16bf2fdcd8c2e4a7ce2e040bae" name="a582bae16bf2fdcd8c2e4a7ce2e040bae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a582bae16bf2fdcd8c2e4a7ce2e040bae">&#9670;&#160;</a></span>StateListRefinementPruningFunction() <span class="overload">[3/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -212,8 +206,8 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">mimir::languages::dl::StateListRefinementPruningFunction::StateListRefinementPruningFunction </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#a5f8b722c1afe021d18c4e745b450fd82">formalism::ProblemMap</a>&lt; <a class="el" href="namespacemimir_1_1search.html#a260f651b403f4ec3b82fa32aeed516b6">search::StateList</a> &gt;&#160;</td>
-          <td class="paramname"><em>state_partitioning</em>, </td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1search.html#ab23479ab4d0e3a613d6ac9f603326d0e">search::StateProblemList</a>&#160;</td>
+          <td class="paramname"><em>states</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -232,6 +226,24 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="abcf4ffa4f70993b7a3d97451a55d2c38" name="abcf4ffa4f70993b7a3d97451a55d2c38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abcf4ffa4f70993b7a3d97451a55d2c38">&#9670;&#160;</a></span>get_states()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="namespacemimir_1_1search.html#ab23479ab4d0e3a613d6ac9f603326d0e">search::StateProblemList</a> &amp; mimir::languages::dl::StateListRefinementPruningFunction::get_states </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Getters </p>
+
+</div>
+</div>
 <a id="a150cbed60b4f38ce2d7f71eb012edc2a" name="a150cbed60b4f38ce2d7f71eb012edc2a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a150cbed60b4f38ce2d7f71eb012edc2a">&#9670;&#160;</a></span>should_prune() <span class="overload">[1/4]</span></h2>
 
@@ -381,7 +393,7 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>include/mimir/languages/description_logics/<a class="el" href="cnf__grammar__sentence__pruning_8hpp_source.html">cnf_grammar_sentence_pruning.hpp</a></li>
+<li>include/mimir/languages/description_logics/<a class="el" href="description__logics_2cnf__grammar__sentence__pruning_8hpp_source.html">cnf_grammar_sentence_pruning.hpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
