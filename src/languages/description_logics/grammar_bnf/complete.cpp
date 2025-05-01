@@ -30,21 +30,29 @@ using namespace mimir::formalism;
 namespace mimir::languages::dl::cnf_grammar
 {
 
+static std::string quoted(const std::string& s) { return fmt::format("\"{}\"", s); }
+
+static std::string start(const std::string& s) { return fmt::format("{}_start", s); }
+
 template<dl::IsConceptOrRoleOrBooleanOrNumericalTag D>
 void add_start_symbol(std::stringstream& out)
 {
-    out << fmt::format("    <{}_start> = <{}>\n", D::name, D::name);
+    out << fmt::format("    <{}> = <{}>\n", start(D::name), D::name);
 }
 
 template<typename... Args>
-static void add_rule(std::stringstream& out, const std::string& keyword, std::vector<std::string>& head_names, const Args&... args)  //
+static void add_rule(std::stringstream& out, const std::string& keyword, const Args&... args)  //
 {
     out << fmt::format("    <{}> ::= @{} {}\n", keyword, keyword, fmt::join(std::vector<std::string> { args... }, " "));
+}
+
+template<typename... Args>
+static void add_rule_and_head(std::stringstream& out, const std::string& keyword, std::vector<std::string>& head_names, const Args&... args)  //
+{
+    add_rule(out, keyword, args...);
 
     head_names.push_back(fmt::format("<{}>", keyword));
 }
-
-static std::string quoted(const std::string& s) { return fmt::format("\"{}\"", s); }
 
 std::string create_complete_bnf(Domain domain)
 {
@@ -58,10 +66,15 @@ std::string create_complete_bnf(Domain domain)
 
     ss << "[grammar_rules]" << "\n";
 
+    add_rule(ss, start(ConceptTag::name), "<concept>");
+    add_rule(ss, start(RoleTag::name), "<role>");
+    add_rule(ss, start(BooleanTag::name), "<boolean>");
+    add_rule(ss, start(NumericalTag::name), "<numerical>");
+
     auto concept_head_names = std::vector<std::string> {};
 
-    add_rule(ss, dl::keywords::concept_bot, concept_head_names);
-    add_rule(ss, dl::keywords::concept_top, concept_head_names);
+    add_rule_and_head(ss, dl::keywords::concept_bot, concept_head_names);
+    add_rule_and_head(ss, dl::keywords::concept_top, concept_head_names);
     boost::hana::for_each(domain->get_hana_predicates(),
                           [&](auto&& pair)
                           {
@@ -70,22 +83,22 @@ std::string create_complete_bnf(Domain domain)
                               {
                                   if (predicate->get_arity() == 1)
                                   {
-                                      add_rule(ss, dl::keywords::concept_atomic_state, concept_head_names, predicate->get_name());
-                                      add_rule(ss, dl::keywords::concept_atomic_goal, concept_head_names, quoted(predicate->get_name()), "true");
-                                      add_rule(ss, dl::keywords::concept_atomic_goal, concept_head_names, quoted(predicate->get_name()), "false");
+                                      add_rule_and_head(ss, dl::keywords::concept_atomic_state, concept_head_names, predicate->get_name());
+                                      add_rule_and_head(ss, dl::keywords::concept_atomic_goal, concept_head_names, quoted(predicate->get_name()), "true");
+                                      add_rule_and_head(ss, dl::keywords::concept_atomic_goal, concept_head_names, quoted(predicate->get_name()), "false");
                                   }
                               }
                           });
-    add_rule(ss, dl::keywords::concept_intersection, concept_head_names, "<concept>", "<concept>");
-    add_rule(ss, dl::keywords::concept_union, concept_head_names, "<concept>", "<concept>");
-    add_rule(ss, dl::keywords::concept_negation, concept_head_names, "<concept>");
-    add_rule(ss, dl::keywords::concept_value_restriction, concept_head_names, "<role>", "<concept>");
-    add_rule(ss, dl::keywords::concept_existential_quantification, concept_head_names, "<role>", "<concept>");
-    add_rule(ss, dl::keywords::concept_role_value_map_containment, concept_head_names, "<role>", "<role>");
-    add_rule(ss, dl::keywords::concept_role_value_map_equality, concept_head_names, "<role>", "<role>");
+    add_rule_and_head(ss, dl::keywords::concept_intersection, concept_head_names, "<concept>", "<concept>");
+    add_rule_and_head(ss, dl::keywords::concept_union, concept_head_names, "<concept>", "<concept>");
+    add_rule_and_head(ss, dl::keywords::concept_negation, concept_head_names, "<concept>");
+    add_rule_and_head(ss, dl::keywords::concept_value_restriction, concept_head_names, "<role>", "<concept>");
+    add_rule_and_head(ss, dl::keywords::concept_existential_quantification, concept_head_names, "<role>", "<concept>");
+    add_rule_and_head(ss, dl::keywords::concept_role_value_map_containment, concept_head_names, "<role>", "<role>");
+    add_rule_and_head(ss, dl::keywords::concept_role_value_map_equality, concept_head_names, "<role>", "<role>");
     for (const auto& constant : domain->get_constants())
     {
-        add_rule(ss, dl::keywords::concept_nominal, concept_head_names, quoted(constant->get_name()));
+        add_rule_and_head(ss, dl::keywords::concept_nominal, concept_head_names, quoted(constant->get_name()));
     }
 
     return ss.str();
