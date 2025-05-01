@@ -129,6 +129,12 @@ Typedefs</h2></td></tr>
 <tr class="memitem:ae79add80a6dc77dfb2e6eaac1c250b97"><td class="memTemplParams" colspan="2">template&lt;typename Value &gt; </td></tr>
 <tr class="memitem:ae79add80a6dc77dfb2e6eaac1c250b97"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir.html#ae79add80a6dc77dfb2e6eaac1c250b97">UnorderedSet</a> = std::unordered_set&lt; Value, loki::Hash&lt; Value &gt;, loki::EqualTo&lt; Value &gt; &gt;</td></tr>
 <tr class="separator:ae79add80a6dc77dfb2e6eaac1c250b97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac3b01890e6c28bc83a26bb611b4517b"><td class="memTemplParams" colspan="2">template&lt;typename T , typename... Ds&gt; </td></tr>
+<tr class="memitem:aac3b01890e6c28bc83a26bb611b4517b"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir.html#aac3b01890e6c28bc83a26bb611b4517b">HanaContainer</a> = boost::hana::map&lt; boost::hana::pair&lt; boost::hana::type&lt; Ds &gt;, T &gt;... &gt;</td></tr>
+<tr class="separator:aac3b01890e6c28bc83a26bb611b4517b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ee51c0221c67e9cb3ccba90f948606e"><td class="memTemplParams" colspan="2">template&lt;template&lt; typename &gt; typename T, typename... Ds&gt; </td></tr>
+<tr class="memitem:a7ee51c0221c67e9cb3ccba90f948606e"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir.html#a7ee51c0221c67e9cb3ccba90f948606e">HanaMappedContainer</a> = boost::hana::map&lt; boost::hana::pair&lt; boost::hana::type&lt; Ds &gt;, T&lt; Ds &gt; &gt;... &gt;</td></tr>
+<tr class="separator:a7ee51c0221c67e9cb3ccba90f948606e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
@@ -266,6 +272,38 @@ Functions</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">using <a class="el" href="namespacemimir.html#a7d3fb3cabedc59968eaaa7636d73cf90">mimir::DiscreteCostMatrix</a> = typedef std::vector&lt;<a class="el" href="namespacemimir.html#a311e7c8779449c7599fd42d976c22527">ContinuousCostList</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aac3b01890e6c28bc83a26bb611b4517b" name="aac3b01890e6c28bc83a26bb611b4517b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac3b01890e6c28bc83a26bb611b4517b">&#9670;&#160;</a></span>HanaContainer</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , typename... Ds&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespacemimir.html#aac3b01890e6c28bc83a26bb611b4517b">mimir::HanaContainer</a> = typedef boost::hana::map&lt;boost::hana::pair&lt;boost::hana::type&lt;Ds&gt;, T&gt;...&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7ee51c0221c67e9cb3ccba90f948606e" name="a7ee51c0221c67e9cb3ccba90f948606e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ee51c0221c67e9cb3ccba90f948606e">&#9670;&#160;</a></span>HanaMappedContainer</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;template&lt; typename &gt; typename T, typename... Ds&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespacemimir.html#a7ee51c0221c67e9cb3ccba90f948606e">mimir::HanaMappedContainer</a> = typedef boost::hana::map&lt;boost::hana::pair&lt;boost::hana::type&lt;Ds&gt;, T&lt;Ds&gt; &gt;...&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">

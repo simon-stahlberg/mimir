@@ -79,7 +79,8 @@ $(function() {
   <div class="headertitle"><div class="title">declarations.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="formalism_2tags_8hpp_source.html">mimir/formalism/tags.hpp</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="common_2types_8hpp_source.html">mimir/common/types.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="formalism_2tags_8hpp_source.html">mimir/formalism/tags.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="languages_2description__logics_2tags_8hpp_source.html">mimir/languages/description_logics/tags.hpp</a>&quot;</code><br />
 <code>#include &lt;boost/hana.hpp&gt;</code><br />
 <code>#include &lt;loki/loki.hpp&gt;</code><br />
@@ -105,12 +106,6 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a1a7e4ddf7e84881035c6002d27241e13"><td class="memTemplParams" colspan="2">template&lt;typename T , IsConceptOrRoleOrBooleanOrNumericalTag... Ds&gt; </td></tr>
-<tr class="memitem:a1a7e4ddf7e84881035c6002d27241e13"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#a1a7e4ddf7e84881035c6002d27241e13">mimir::languages::dl::HanaContainer</a> = boost::hana::map&lt; boost::hana::pair&lt; boost::hana::type&lt; Ds &gt;, T &gt;... &gt;</td></tr>
-<tr class="separator:a1a7e4ddf7e84881035c6002d27241e13"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a00e437f04c4ea4824ef436c9be93caaa"><td class="memTemplParams" colspan="2">template&lt;template&lt; typename &gt; typename T, IsConceptOrRoleOrBooleanOrNumericalTag... Ds&gt; </td></tr>
-<tr class="memitem:a00e437f04c4ea4824ef436c9be93caaa"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#a00e437f04c4ea4824ef436c9be93caaa">mimir::languages::dl::HanaMappedContainer</a> = boost::hana::map&lt; boost::hana::pair&lt; boost::hana::type&lt; Ds &gt;, T&lt; Ds &gt; &gt;... &gt;</td></tr>
-<tr class="separator:a00e437f04c4ea4824ef436c9be93caaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5fb58daa88a73a4d955b36135ac1696d"><td class="memTemplParams" colspan="2">template&lt;IsConceptOrRoleOrBooleanOrNumericalTag D&gt; </td></tr>
 <tr class="memitem:a5fb58daa88a73a4d955b36135ac1696d"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#a5fb58daa88a73a4d955b36135ac1696d">mimir::languages::dl::Denotation</a> = const DenotationImpl&lt; D &gt; *</td></tr>
 <tr class="separator:a5fb58daa88a73a4d955b36135ac1696d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -128,8 +123,8 @@ Typedefs</h2></td></tr>
 <tr class="memitem:acee11c8ab9ae5baaae81c65638ff3a25"><td class="memTemplParams" colspan="2">template&lt;IsConceptOrRoleOrBooleanOrNumericalTag D&gt; </td></tr>
 <tr class="memitem:acee11c8ab9ae5baaae81c65638ff3a25"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#acee11c8ab9ae5baaae81c65638ff3a25">mimir::languages::dl::ConstructorList</a> = std::vector&lt; Constructor&lt; D &gt; &gt;</td></tr>
 <tr class="separator:acee11c8ab9ae5baaae81c65638ff3a25"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a55847478ce1534391408f3d874cc5dd3"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#a55847478ce1534391408f3d874cc5dd3">mimir::languages::dl::ConstructorLists</a> = dl::HanaMappedContainer&lt; ConstructorList, ConceptTag, RoleTag, BooleanTag, NumericalTag &gt;</td></tr>
-<tr class="separator:a55847478ce1534391408f3d874cc5dd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a372ab995c87da0f1c4381bd675a569a1"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#a372ab995c87da0f1c4381bd675a569a1">mimir::languages::dl::ConstructorLists</a> = HanaMappedContainer&lt; ConstructorList, ConceptTag, RoleTag, BooleanTag, NumericalTag &gt;</td></tr>
+<tr class="separator:a372ab995c87da0f1c4381bd675a569a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5dfffe7f76a4342bb986231c6487bdd5"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#a5dfffe7f76a4342bb986231c6487bdd5">mimir::languages::dl::ConceptTop</a> = const ConceptTopImpl *</td></tr>
 <tr class="separator:a5dfffe7f76a4342bb986231c6487bdd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aac6ffe5c269487e6ad0987696c06a4f3"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#aac6ffe5c269487e6ad0987696c06a4f3">mimir::languages::dl::ConceptBot</a> = const ConceptBotImpl *</td></tr>
