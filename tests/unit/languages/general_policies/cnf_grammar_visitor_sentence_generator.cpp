@@ -43,59 +43,10 @@ using namespace mimir::datasets;
 namespace mimir::tests
 {
 
-TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarVisitorSentenceGeneratorTest)
+TEST(MimirTests, LanguagesGeneralPoliciesCNFGrammarVisitorSentenceGeneratorTest)
 {
-    auto bnf_description = std::string(R"(
-    [start_symbols]
-        concept = <concept_start>
-        role = <role_start>
-
-    [grammar_rules]
-        <concept_start>                      ::= <concept>
-        <role_start>                         ::= <role>
-        <concept_bot>                        ::= @concept_bot
-        <concept_top>                        ::= @concept_top
-        <concept_ball_state>                 ::= @concept_atomic_state "ball"
-        <concept_ball_goal_false>            ::= @concept_atomic_goal "ball" false
-        <concept_ball_goal_true>             ::= @concept_atomic_goal "ball" true
-        <concept_gripper_state>              ::= @concept_atomic_state "gripper"
-        <concept_gripper_goal_false>         ::= @concept_atomic_goal "gripper" false
-        <concept_gripper_goal_true>          ::= @concept_atomic_goal "gripper" true
-        <concept_at-robby_state>             ::= @concept_atomic_state "at-robby"
-        <concept_at-robby_goal_false>        ::= @concept_atomic_goal "at-robby" false
-        <concept_at-robby_goal_true>         ::= @concept_atomic_goal "at-robby" true
-        <concept_free_state>                 ::= @concept_atomic_state "free"
-        <concept_free_goal_false>            ::= @concept_atomic_goal "free" false
-        <concept_free_goal_true>             ::= @concept_atomic_goal "free" true
-        <concept_negation>                   ::= @concept_negation <concept>
-        <concept_intersection>               ::= @concept_intersection <concept> <concept>
-        <concept_union>                      ::= @concept_union <concept> <concept>
-        <concept_value_restriction>          ::= @concept_value_restriction <role> <concept>
-        <concept_existential_quantification> ::= @concept_existential_quantification <role> <concept>
-        <concept>                            ::= <concept_bot> | <concept_top>
-                                                 | <concept_ball_state> | <concept_ball_goal_false> | <concept_ball_goal_true>
-                                                 | <concept_at-robby_state> | <concept_at-robby_goal_false> | <concept_at-robby_goal_true>
-                                                 | <concept_gripper_state> | <concept_gripper_goal_false> | <concept_gripper_goal_true>
-                                                 | <concept_free_state> | <concept_free_goal_false> | <concept_free_goal_true>
-                                                 | <concept_negation> | <concept_intersection> | <concept_union> | <concept_value_restriction>
-                                                 | <concept_existential_quantification>
-        <role_at_state>                      ::= @role_atomic_state "at"
-        <role_at_goal_false>                 ::= @role_atomic_goal "at" false
-        <role_at_goal_true>                  ::= @role_atomic_goal "at" true
-        <role_carry_state>                   ::= @role_atomic_state "carry"
-        <role_carry_goal_false>              ::= @role_atomic_goal "carry" false
-        <role_carry_goal_true>               ::= @role_atomic_goal "carry" true
-        <role_intersection>                  ::= @role_intersection <role> <role>
-        <role>                               ::= <role_at_state> | <role_at_goal_false> | <role_at_goal_true>
-                                                 | <role_carry_state> | <role_carry_goal_false> | <role_carry_goal_true>
-                                                 | <role_intersection>
-)");
-
-    /* Test two spanner problems with two locations and a single spanner each. */
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
-    // The spanner is at location 1.
     const auto problem1_file = fs::path(std::string(DATA_DIR) + "gripper/p-1-0.pddl");
-    // The spanner is at location 2.
     const auto problem2_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
 
     auto context = search::GeneralizedSearchContextImpl::create(domain_file, std::vector<fs::path> { problem1_file, problem2_file });
@@ -107,90 +58,89 @@ TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarVisitorSentenceGeneratorTes
     generalized_state_space_options = GeneralizedStateSpaceImpl::Options();
     auto kb = KnowledgeBaseImpl::create(context, kb_options);
 
-    auto denotation_repositories = dl::DenotationRepositories();
-    auto pruning_function = general_policies::GeneralPoliciesRefinementPruningFunction(kb->get_generalized_state_space().value(), denotation_repositories);
+    {
+        /**
+         * COMPLETE
+         */
 
-    auto sentences = dl::cnf_grammar::GeneratedSentencesContainer();
-    auto repositories = dl::Repositories();
-    size_t max_complexity = 4;
-    auto visitor = dl::cnf_grammar::GeneratorVisitor(pruning_function, sentences, repositories, max_complexity);
+        auto denotation_repositories = dl::DenotationRepositories();
+        auto pruning_function = general_policies::GeneralPoliciesRefinementPruningFunction(kb->get_generalized_state_space().value(), denotation_repositories);
+        auto sentences = dl::cnf_grammar::GeneratedSentencesContainer();
+        auto repositories = dl::Repositories();
+        size_t max_complexity = 5;
+        auto visitor = dl::cnf_grammar::GeneratorVisitor(pruning_function, sentences, repositories, max_complexity);
 
-    auto grammar = dl::grammar::Grammar(bnf_description, kb->get_domain());
+        auto cnf_grammar = dl::cnf_grammar::Grammar::create(dl::cnf_grammar::GrammarSpecificationEnum::COMPLETE, kb->get_domain());
+        std::cout << cnf_grammar << std::endl;
 
-    auto cnf_grammar = dl::cnf_grammar::Grammar(grammar);
+        visitor.visit(cnf_grammar);
 
-    std::cout << cnf_grammar << std::endl;
+        const auto& concept_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::ConceptTag> {});
 
-    visitor.visit(cnf_grammar);
+        EXPECT_EQ(concept_statistics.num_generated, 4322);
+        EXPECT_EQ(concept_statistics.num_kept, 222);
+        EXPECT_EQ(concept_statistics.num_pruned, 4100);
 
-    const auto& concept_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::ConceptTag> {});
+        const auto& role_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::RoleTag> {});
 
-    EXPECT_EQ(concept_statistics.num_generated, 237);
-    EXPECT_EQ(concept_statistics.num_kept, 34);
-    EXPECT_EQ(concept_statistics.num_pruned, 203);
+        EXPECT_EQ(role_statistics.num_generated, 3986);
+        EXPECT_EQ(role_statistics.num_kept, 715);
+        EXPECT_EQ(role_statistics.num_pruned, 3271);
 
-    const auto& role_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::RoleTag> {});
+        const auto& boolean_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::BooleanTag> {});
 
-    EXPECT_EQ(role_statistics.num_generated, 22);
-    EXPECT_EQ(role_statistics.num_kept, 5);
-    EXPECT_EQ(role_statistics.num_pruned, 17);
-}
+        EXPECT_EQ(boolean_statistics.num_generated, 308);
+        EXPECT_EQ(boolean_statistics.num_kept, 13);
+        EXPECT_EQ(boolean_statistics.num_pruned, 295);
 
-TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarVisitorSentenceGeneratorFrancesEtAlAAAI2021Test)
-{
-    /* Test two spanner problems with two locations and a single spanner each. */
-    const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
-    // The spanner is at location 1.
-    const auto problem1_file = fs::path(std::string(DATA_DIR) + "gripper/p-1-0.pddl");
-    // The spanner is at location 2.
-    const auto problem2_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
+        const auto& numerical_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::NumericalTag> {});
 
-    auto context = search::GeneralizedSearchContextImpl::create(domain_file, std::vector<fs::path> { problem1_file, problem2_file });
+        EXPECT_EQ(numerical_statistics.num_generated, 2504);
+        EXPECT_EQ(numerical_statistics.num_kept, 38);
+        EXPECT_EQ(numerical_statistics.num_pruned, 2466);
+    }
 
-    auto kb_options = KnowledgeBaseImpl::Options();
-    auto& state_space_options = kb_options.state_space_options;
-    state_space_options.symmetry_pruning = false;
-    auto& generalized_state_space_options = kb_options.generalized_state_space_options;
-    generalized_state_space_options = GeneralizedStateSpaceImpl::Options();
-    auto kb = KnowledgeBaseImpl::create(context, kb_options);
+    {
+        /**
+         * FRANCES_ET_AL_AAAI2021
+         */
 
-    auto denotation_repositories = dl::DenotationRepositories();
-    auto pruning_function = general_policies::GeneralPoliciesRefinementPruningFunction(kb->get_generalized_state_space().value(), denotation_repositories);
+        auto denotation_repositories = dl::DenotationRepositories();
+        auto pruning_function = general_policies::GeneralPoliciesRefinementPruningFunction(kb->get_generalized_state_space().value(), denotation_repositories);
+        auto sentences = dl::cnf_grammar::GeneratedSentencesContainer();
+        auto repositories = dl::Repositories();
+        size_t max_complexity = 5;
+        auto visitor = dl::cnf_grammar::GeneratorVisitor(pruning_function, sentences, repositories, max_complexity);
 
-    auto sentences = dl::cnf_grammar::GeneratedSentencesContainer();
-    auto repositories = dl::Repositories();
-    size_t max_complexity = 9;
-    auto visitor = dl::cnf_grammar::GeneratorVisitor(pruning_function, sentences, repositories, max_complexity);
+        auto cnf_grammar = dl::cnf_grammar::Grammar::create(dl::cnf_grammar::GrammarSpecificationEnum::FRANCES_ET_AL_AAAI2021, kb->get_domain());
+        std::cout << cnf_grammar << std::endl;
 
-    auto cnf_grammar = dl::cnf_grammar::Grammar::create(dl::cnf_grammar::GrammarSpecificationEnum::FRANCES_ET_AL_AAAI2021, kb->get_domain());
+        visitor.visit(cnf_grammar);
 
-    std::cout << cnf_grammar << std::endl;
+        const auto& concept_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::ConceptTag> {});
 
-    visitor.visit(cnf_grammar);
+        EXPECT_EQ(concept_statistics.num_generated, 788);
+        EXPECT_EQ(concept_statistics.num_kept, 85);
+        EXPECT_EQ(concept_statistics.num_pruned, 703);
 
-    const auto& concept_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::ConceptTag> {});
+        const auto& role_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::RoleTag> {});
 
-    EXPECT_EQ(concept_statistics.num_generated, 9587);
-    EXPECT_EQ(concept_statistics.num_kept, 974);
-    EXPECT_EQ(concept_statistics.num_pruned, 8613);
+        EXPECT_EQ(role_statistics.num_generated, 38);
+        EXPECT_EQ(role_statistics.num_kept, 9);
+        EXPECT_EQ(role_statistics.num_pruned, 29);
 
-    const auto& role_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::RoleTag> {});
+        const auto& boolean_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::BooleanTag> {});
 
-    EXPECT_EQ(role_statistics.num_generated, 38);
-    EXPECT_EQ(role_statistics.num_kept, 9);
-    EXPECT_EQ(role_statistics.num_pruned, 29);
+        EXPECT_EQ(boolean_statistics.num_generated, 61);
+        EXPECT_EQ(boolean_statistics.num_kept, 12);
+        EXPECT_EQ(boolean_statistics.num_pruned, 49);
 
-    const auto& boolean_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::BooleanTag> {});
+        const auto& numerical_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::NumericalTag> {});
 
-    EXPECT_EQ(boolean_statistics.num_generated, 561);
-    EXPECT_EQ(boolean_statistics.num_kept, 74);
-    EXPECT_EQ(boolean_statistics.num_pruned, 487);
-
-    const auto& numerical_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::NumericalTag> {});
-
-    EXPECT_EQ(numerical_statistics.num_generated, 3861);
-    EXPECT_EQ(numerical_statistics.num_kept, 261);
-    EXPECT_EQ(numerical_statistics.num_pruned, 3600);
+        EXPECT_EQ(numerical_statistics.num_generated, 61);
+        EXPECT_EQ(numerical_statistics.num_kept, 24);
+        EXPECT_EQ(numerical_statistics.num_pruned, 37);
+    }
 }
 
 }

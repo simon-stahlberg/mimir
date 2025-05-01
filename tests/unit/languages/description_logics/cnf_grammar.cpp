@@ -40,8 +40,8 @@ TEST(MimirTests, LanguagesDescriptionLogicsCNFGrammarParseTest)
         /* 1. Detect undefined body nonterminal. */
         auto bnf_description = std::string(R"(
     [start_symbols]
-        concept = <concept_start>
-        role = <role_start>
+        concept ::= <concept_start>
+        role ::= <role_start>
 
     [grammar_rules]
         <concept_start> ::= <concept>

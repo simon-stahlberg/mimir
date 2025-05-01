@@ -119,13 +119,13 @@ grammar_type const grammar = "grammar";
 // Grammar
 ///////////////////////////////////////////////////////////////////////////
 
-inline auto concept_non_terminal_string_parser() { return raw[lexeme["<concept" > *(alnum | char_('-') | char_('_')) > ">"]]; }
-inline auto role_non_terminal_string_parser() { return raw[lexeme["<role" > *(alnum | char_('-') | char_('_')) > ">"]]; }
-inline auto boolean_non_terminal_string_parser() { return raw[lexeme["<boolean" > *(alnum | char_('-') | char_('_')) > ">"]]; }
-inline auto numerical_non_terminal_string_parser() { return raw[lexeme["<numerical" > *(alnum | char_('-') | char_('_')) > ">"]]; }
+inline auto concept_non_terminal_string_parser() { return raw[lexeme["<concept" > *(alnum | char_('-') | char_('_') | char_('=')) > ">"]]; }
+inline auto role_non_terminal_string_parser() { return raw[lexeme["<role" > *(alnum | char_('-') | char_('_') | char_('=')) > ">"]]; }
+inline auto boolean_non_terminal_string_parser() { return raw[lexeme["<boolean" > *(alnum | char_('-') | char_('_') | char_('=')) > ">"]]; }
+inline auto numerical_non_terminal_string_parser() { return raw[lexeme["<numerical" > *(alnum | char_('-') | char_('_') | char_('=')) > ">"]]; }
 inline auto predicate_name_string_parser()
 {
-    return lexeme[omit[lit('"')]] > raw[lexeme[alpha >> *(alnum | char_('-') | char_('_') | char_('='))]] > lexeme[omit[lit('"')]];
+    return lexeme[omit[lit('"')]] > raw[lexeme[alpha >> *(alnum | char_('-') | char_('_')) | char_('=')]] > lexeme[omit[lit('"')]];
 }
 inline auto object_name_string_parser() { return lexeme[omit[lit('"')]] > raw[lexeme[alpha >> *(alnum | char_('-') | char_('_'))]] > lexeme[omit[lit('"')]]; }
 inline auto bool_string_parser()
@@ -190,11 +190,11 @@ const auto numerical_choice_def = numerical_non_terminal | numerical;
 const auto numerical_derivation_rule_def = numerical_non_terminal > "::=" > -(numerical_choice % lit("|"));
 
 const auto feature_category_derivation_rule_def = (concept_derivation_rule | role_derivation_rule | boolean_derivation_rule | numerical_derivation_rule);
-const auto grammar_head_def = lit("[start_symbols]")                                 //
-                              > -(lit("concept") > lit("=") > concept_non_terminal)  //
-                              > -(lit("role") > lit("=") > role_non_terminal)        //
-                              > -(lit("boolean") > lit("=") > boolean_non_terminal)  //
-                              > -(lit("numerical") > lit("=") > numerical_non_terminal);
+const auto grammar_head_def = lit("[start_symbols]")                                   //
+                              > -(lit("concept") > lit("::=") > concept_non_terminal)  //
+                              > -(lit("role") > lit("::=") > role_non_terminal)        //
+                              > -(lit("boolean") > lit("::=") > boolean_non_terminal)  //
+                              > -(lit("numerical") > lit("::=") > numerical_non_terminal);
 const auto grammar_body_def = lit("[grammar_rules]") > *feature_category_derivation_rule;
 const auto grammar_def = grammar_head > grammar_body;
 

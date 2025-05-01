@@ -311,7 +311,7 @@ std::string create_frances_et_al_aaai2021_bnf(Domain domain)
                               using KeyType = typename decltype(+key)::type;
 
                               // Format start symbol
-                              start_ss << fmt::format("    {} = <{}_start>\n", KeyType::name, KeyType::name);
+                              start_ss << fmt::format("    {} ::= <{}_start>\n", KeyType::name, KeyType::name);
 
                               // Format start rule
                               rule_ss << fmt::format("    <{}_start> ::= <{}>\n", KeyType::name, KeyType::name);

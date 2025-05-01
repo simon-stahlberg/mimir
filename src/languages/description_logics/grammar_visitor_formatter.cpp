@@ -344,7 +344,7 @@ void FormatterVisitor::visit(const Grammar& grammar)
                                   using FeatureType = typename decltype(+key)::type;
                                   if (second.has_value())
                                   {
-                                      m_out << "    " << FeatureType::name << " = ";
+                                      m_out << "    " << FeatureType::name << " ::= ";
 
                                       second.value()->accept(*this);
 
