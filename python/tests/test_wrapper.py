@@ -1,10 +1,10 @@
 import unittest
 
 from pathlib import Path
-from wrapper import *
+from pymimir import *
 
 
-DATA_DIR = (Path(__file__).parent.parent.parent.parent).absolute() / 'data'
+DATA_DIR = (Path(__file__).parent.parent.parent).absolute() / 'data'
 
 
 class TestDomain(unittest.TestCase):
@@ -283,7 +283,6 @@ class TestState(unittest.TestCase):
             assert action.get_precondition().holds(initial_state)
 
 
-
 class TestGroundConjunctiveCondition(unittest.TestCase):
     def test_holds(self):
         domain_path = DATA_DIR / 'miconic-fulladl' / 'domain.pddl'
@@ -292,6 +291,22 @@ class TestGroundConjunctiveCondition(unittest.TestCase):
         problem = Problem(domain, problem_path)
         initial_state = problem.get_initial_state()
         assert not problem.get_goal_condition().holds(initial_state)
+
+
+class TestApplicableActionGenerator(unittest.TestCase):
+    def test_get_applicable_actions(self):
+        domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
+        problem_path = DATA_DIR / 'blocks_4' / 'test_problem.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path)
+        initial_state = problem.get_initial_state()
+        aag = ApplicableActionGenerator(problem)
+        actions = aag.get_applicable_actions(initial_state)
+        assert len(actions) > 0
+        for index, action in enumerate(actions):
+            assert action.get_precondition().holds(initial_state)
+            successor_state =  action.apply(initial_state)
+            assert successor_state.get_index() == (index + 1)  # Index 0 is the initial state
 
 
 if __name__ == '__main__':

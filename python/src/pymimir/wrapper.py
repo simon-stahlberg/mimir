@@ -7,6 +7,7 @@ from pymimir.advanced.formalism import ConjunctiveCondition as AdvancedConjuncti
 from pymimir.advanced.formalism import ConjunctiveEffect as AdvancedConjunctiveEffect
 from pymimir.advanced.formalism import DerivedAtom as AdvancedDerivedAtom
 from pymimir.advanced.formalism import DerivedGroundAtom as AdvancedDerivedGroundAtom
+from pymimir.advanced.formalism import DerivedGroundAtomList as AdvancedDerivedGroundAtomList
 from pymimir.advanced.formalism import DerivedGroundLiteral as AdvancedDerivedGroundLiteral
 from pymimir.advanced.formalism import DerivedGroundLiteralList as AdvancedDerivedGroundLiteralList
 from pymimir.advanced.formalism import DerivedLiteral as AdvancedDerivedLiteral
@@ -15,13 +16,16 @@ from pymimir.advanced.formalism import DerivedPredicate as AdvancedDerivedPredic
 from pymimir.advanced.formalism import Domain as AdvancedDomain
 from pymimir.advanced.formalism import FluentAtom as AdvancedFluentAtom
 from pymimir.advanced.formalism import FluentGroundAtom as AdvancedFluentGroundAtom
+from pymimir.advanced.formalism import FluentGroundAtomList as AdvancedFluentGroundAtomList
 from pymimir.advanced.formalism import FluentGroundLiteral as AdvancedFluentGroundLiteral
 from pymimir.advanced.formalism import FluentGroundLiteralList as AdvancedFluentGroundLiteralList
 from pymimir.advanced.formalism import FluentLiteral as AdvancedFluentLiteral
 from pymimir.advanced.formalism import FluentLiteralList as AdvancedFluentLiteralList
 from pymimir.advanced.formalism import FluentPredicate as AdvancedFluentPredicate
 from pymimir.advanced.formalism import GroundAction as AdvancedGroundAction
+from pymimir.advanced.formalism import GroundConditionalEffect as AdvancedGroundConditionalEffect
 from pymimir.advanced.formalism import GroundConjunctiveCondition as AdvancedGroundConjunctiveCondition
+from pymimir.advanced.formalism import GroundConjunctiveEffect as AdvancedGroundConjunctiveEffect
 from pymimir.advanced.formalism import NumericConstraintList as AdvancedNumericConstraintList
 from pymimir.advanced.formalism import Object as AdvancedObject
 from pymimir.advanced.formalism import ObjectList as AdvancedObjectList
@@ -30,6 +34,7 @@ from pymimir.advanced.formalism import Problem as AdvancedProblem
 from pymimir.advanced.formalism import Repositories as AdvancedRepositories
 from pymimir.advanced.formalism import StaticAtom as AdvancedStaticAtom
 from pymimir.advanced.formalism import StaticGroundAtom as AdvancedStaticGroundAtom
+from pymimir.advanced.formalism import StaticGroundAtomList as AdvancedStaticGroundAtomList
 from pymimir.advanced.formalism import StaticGroundLiteral as AdvancedStaticGroundLiteral
 from pymimir.advanced.formalism import StaticGroundLiteralList as AdvancedStaticGroundLiteralList
 from pymimir.advanced.formalism import StaticLiteral as AdvancedStaticLiteral
@@ -45,13 +50,52 @@ from pymimir.advanced.search import SearchMode, SearchContext, SearchContextOpti
 from pymimir.advanced.search import State as AdvancedState
 
 
+# -------------------------------
+# Type aliases for advanced types
+# -------------------------------
+
 AdvancedAtom: TypeAlias = Union[AdvancedStaticAtom, AdvancedFluentAtom, AdvancedDerivedAtom]
 AdvancedGroundAtom: TypeAlias = Union[AdvancedStaticGroundAtom, AdvancedFluentGroundAtom, AdvancedDerivedGroundAtom]
+AdvancedGroundAtomList: TypeAlias = Union[AdvancedStaticGroundAtomList, AdvancedFluentGroundAtomList, AdvancedDerivedGroundAtomList]
 AdvancedLiteral: TypeAlias = Union[AdvancedStaticLiteral, AdvancedFluentLiteral, AdvancedDerivedLiteral]
+AdvancedLiteralList: TypeAlias = Union[AdvancedStaticLiteralList, AdvancedFluentLiteralList, AdvancedDerivedLiteralList]
 AdvancedGroundLiteral: TypeAlias = Union[AdvancedStaticGroundLiteral, AdvancedFluentGroundLiteral, AdvancedDerivedGroundLiteral]
+AdvancedGroundLiteralList: TypeAlias = Union[AdvancedStaticGroundLiteralList, AdvancedFluentGroundLiteralList, AdvancedDerivedGroundLiteralList]
 AdvancedPredicate: TypeAlias = Union[AdvancedStaticPredicate, AdvancedFluentPredicate, AdvancedDerivedPredicate]
 AdvancedAxiomEvaluator: TypeAlias = Union[AdvancedGroundedAxiomEvaluator, AdvancedLiftedAxiomEvaluator]
 
+
+# ------------
+# Type aliases
+# ------------
+
+Term: TypeAlias = Union['Object', 'Variable']
+
+
+# ----------------
+# Helper functions
+# ----------------
+
+def _split_ground_literal_list(literals: 'list[GroundLiteral]') -> 'tuple[AdvancedStaticGroundLiteralList, AdvancedFluentGroundLiteralList, AdvancedDerivedGroundLiteralList]':
+    """Split the ground literal list into static, fluent, and derived ground literals."""
+    advanced_static_ground_literals = AdvancedStaticGroundLiteralList([x._advanced_ground_literal for x in literals if isinstance(x._advanced_ground_literal, AdvancedStaticGroundLiteral)])
+    advanced_fluent_ground_literals = AdvancedFluentGroundLiteralList([x._advanced_ground_literal for x in literals if isinstance(x._advanced_ground_literal, AdvancedFluentGroundLiteral)])
+    advanced_derived_ground_literals = AdvancedDerivedGroundLiteralList([x._advanced_ground_literal for x in literals if isinstance(x._advanced_ground_literal, AdvancedDerivedGroundLiteral)])
+    assert len(advanced_static_ground_literals) + len(advanced_fluent_ground_literals) + len(advanced_derived_ground_literals) == len(literals), "Invalid ground literal list."
+    return advanced_static_ground_literals, advanced_fluent_ground_literals, advanced_derived_ground_literals
+
+def _split_literal_list(literals: 'list[Literal]') -> 'tuple[AdvancedStaticLiteralList, AdvancedFluentLiteralList, AdvancedDerivedLiteralList]':
+    """Split the literal list into static, fluent, and derived literals."""
+    advanced_static_literals = AdvancedStaticLiteralList([x._advanced_literal for x in literals if isinstance(x._advanced_literal, AdvancedStaticLiteral)])
+    advanced_fluent_literals = AdvancedFluentLiteralList([x._advanced_literal for x in literals if isinstance(x._advanced_literal, AdvancedFluentLiteral)])
+    advanced_derived_literals = AdvancedDerivedLiteralList([x._advanced_literal for x in literals if isinstance(x._advanced_literal, AdvancedDerivedLiteral)])
+    assert len(advanced_static_literals) + len(advanced_fluent_literals) + len(advanced_derived_literals) == len(literals), "Invalid literal list."
+    return advanced_static_literals, advanced_fluent_literals, advanced_derived_literals
+
+
+# -------
+# Classes
+# -------
 
 class Variable:
     _advanced_variable: 'AdvancedVariable' = None
@@ -59,6 +103,11 @@ class Variable:
     def __init__(self, advanced_variable: 'AdvancedVariable') -> None:
         assert isinstance(advanced_variable, AdvancedVariable), "Invalid variable type."
         self._advanced_variable = advanced_variable
+
+    @staticmethod
+    def new(name: 'str', parameter_index: 'int', problem: 'Problem') -> 'Variable':
+        """Create a new variable with the given name."""
+        return problem.new_variable(name, parameter_index)
 
     def get_index(self) -> 'int':
         """Get the index of the variable."""
@@ -122,9 +171,6 @@ class Object:
         return self._advanced_object == other._advanced_object
 
 
-Term: TypeAlias = Union[Object, Variable]
-
-
 class Predicate:
     """Predicate class for the PDDL domain."""
     _advanced_predicate: 'AdvancedPredicate' = None
@@ -176,6 +222,11 @@ class GroundAtom:
         assert isinstance(advanced_ground_atom, AdvancedGroundAtom), "Invalid ground atom type."
         self._advanced_ground_atom = advanced_ground_atom
 
+    @staticmethod
+    def new(predicate: 'Predicate', objects: 'list[Object]', problem: 'Problem') -> 'GroundAtom':
+        """Create a new ground atom with the given predicate and objects."""
+        return problem.new_ground_atom(predicate, objects)
+
     def get_index(self) -> 'int':
         """Get the index of the ground atom."""
         return self._advanced_ground_atom.get_index()
@@ -191,6 +242,18 @@ class GroundAtom:
     def get_arity(self) -> 'int':
         """Get the arity of the ground atom."""
         return self._advanced_ground_atom.get_arity()
+
+    def is_static(self) -> 'bool':
+        """Get whether the ground atom is static."""
+        return isinstance(self._advanced_ground_atom, AdvancedStaticGroundAtom)
+
+    def is_fluent(self) -> 'bool':
+        """Get whether the ground atom is fluent."""
+        return isinstance(self._advanced_ground_atom, AdvancedFluentGroundAtom)
+
+    def is_derived(self) -> 'bool':
+        """Get whether the ground atom is derived."""
+        return isinstance(self._advanced_ground_atom, AdvancedDerivedGroundAtom)
 
     def __str__(self):
         """Get the string representation of the ground atom."""
@@ -218,6 +281,11 @@ class Atom:
     def __init__(self, advanced_atom: 'AdvancedAtom') -> None:
         assert isinstance(advanced_atom, AdvancedAtom), "Invalid atom type."
         self._advanced_atom = advanced_atom
+
+    @staticmethod
+    def new(predicate: 'Predicate', terms: 'list[Term]', problem: 'Problem') -> 'Atom':
+        """Create a new atom with the given predicate and terms."""
+        return problem.new_atom(predicate, terms)
 
     def get_index(self) -> 'int':
         """Get the index of the atom."""
@@ -266,6 +334,11 @@ class GroundLiteral:
         assert isinstance(advanced_ground_literal, AdvancedGroundLiteral), "Invalid ground literal type."
         self._advanced_ground_literal = advanced_ground_literal
 
+    @staticmethod
+    def new(ground_atom: 'GroundAtom', polarity: 'bool', problem: 'Problem') -> 'GroundLiteral':
+        """Create a new ground literal with the given ground atom and polarity."""
+        return problem.new_ground_literal(ground_atom, polarity)
+
     def get_index(self) -> 'int':
         """Get the index of the ground literal."""
         return self._advanced_ground_literal.get_index()
@@ -297,15 +370,6 @@ class GroundLiteral:
         return self._advanced_ground_literal == other._advanced_ground_literal
 
 
-def _split_ground_literal_list(literals: 'list[GroundLiteral]') -> 'tuple[AdvancedStaticGroundLiteralList, AdvancedFluentGroundLiteralList, AdvancedDerivedGroundLiteralList]':
-    """Split the ground literal list into static, fluent, and derived ground literals."""
-    advanced_static_ground_literals = AdvancedStaticGroundLiteralList([x._advanced_ground_literal for x in literals if isinstance(x._advanced_ground_literal, AdvancedStaticGroundLiteral)])
-    advanced_fluent_ground_literals = AdvancedFluentGroundLiteralList([x._advanced_ground_literal for x in literals if isinstance(x._advanced_ground_literal, AdvancedFluentGroundLiteral)])
-    advanced_derived_ground_literals = AdvancedDerivedGroundLiteralList([x._advanced_ground_literal for x in literals if isinstance(x._advanced_ground_literal, AdvancedDerivedGroundLiteral)])
-    assert len(advanced_static_ground_literals) + len(advanced_fluent_ground_literals) + len(advanced_derived_ground_literals) == len(literals), "Invalid ground literal list."
-    return advanced_static_ground_literals, advanced_fluent_ground_literals, advanced_derived_ground_literals
-
-
 class Literal:
     """Literal class for the PDDL domain."""
     _advanced_literal: 'AdvancedLiteral' = None
@@ -313,6 +377,11 @@ class Literal:
     def __init__(self, advanced_literal: 'AdvancedLiteral') -> None:
         assert isinstance(advanced_literal, AdvancedLiteral), "Invalid literal type."
         self._advanced_literal = advanced_literal
+
+    @staticmethod
+    def new(atom: 'Atom', polarity: 'bool', problem: 'Problem') -> 'Literal':
+        """Create a new literal with the given atom and polarity."""
+        return problem.new_literal(atom, polarity)
 
     def get_index(self) -> 'int':
         """Get the index of the literal."""
@@ -345,17 +414,94 @@ class Literal:
         return self._advanced_literal == other._advanced_literal
 
 
-def _split_literal_list(literals: 'list[Literal]') -> 'tuple[AdvancedStaticLiteralList, AdvancedFluentLiteralList, AdvancedDerivedLiteralList]':
-    """Split the literal list into static, fluent, and derived literals."""
-    advanced_static_literals = AdvancedStaticLiteralList([x._advanced_literal for x in literals if isinstance(x._advanced_literal, AdvancedStaticLiteral)])
-    advanced_fluent_literals = AdvancedFluentLiteralList([x._advanced_literal for x in literals if isinstance(x._advanced_literal, AdvancedFluentLiteral)])
-    advanced_derived_literals = AdvancedDerivedLiteralList([x._advanced_literal for x in literals if isinstance(x._advanced_literal, AdvancedDerivedLiteral)])
-    assert len(advanced_static_literals) + len(advanced_fluent_literals) + len(advanced_derived_literals) == len(literals), "Invalid literal list."
-    return advanced_static_literals, advanced_fluent_literals, advanced_derived_literals
+class GroundEffect:
+    """GroundEffectList class for the PDDL domain."""
+    _advanced_ground_effect: 'AdvancedGroundConjunctiveEffect' = None
+
+    def __init__(self, advanced_effect: 'AdvancedGroundConjunctiveEffect', problem: 'Problem') -> None:
+        assert isinstance(advanced_effect, AdvancedGroundConjunctiveEffect), "Invalid conjunctive effect type."
+        assert isinstance(problem, Problem), "Invalid problem type."
+        self._advanced_ground_effect = advanced_effect
+        self._problem = problem
+
+    def get_index(self) -> 'int':
+        """Get the index of the ground effect list."""
+        return self._advanced_ground_effect.get_index()
+
+    def get_add_list(self) -> 'list[GroundAtom]':
+        """Get the add list of the ground effect."""
+        repositories = self._problem._advanced_problem.get_repositories()
+        advanced_ground_atoms = repositories.get_fluent_ground_atoms_from_indices(self._advanced_ground_effect.get_positive_effects())
+        return [GroundAtom(x) for x in advanced_ground_atoms]
+
+    def get_delete_list(self) -> 'list[GroundAtom]':
+        """Get the delete list of the ground effect."""
+        repositories = self._problem._advanced_problem.get_repositories()
+        advanced_ground_atoms = repositories.get_fluent_ground_atoms_from_indices(self._advanced_ground_effect.get_negative_effects())
+        return [GroundAtom(x) for x in advanced_ground_atoms]
+
+    def __str__(self):
+        """Get the string representation of the ground effect list."""
+        return self._advanced_ground_effect.to_string(self._problem._advanced_problem)
+
+    def __repr__(self):
+        """Get the string representation of the ground effect list."""
+        return self._advanced_ground_effect.to_string(self._problem._advanced_problem)
+
+    def __hash__(self) -> 'int':
+        """Get the hash of the ground effect list."""
+        return hash(self._advanced_ground_effect)
+
+    def __eq__(self, other: 'object') -> bool:
+        """Check if two ground effect lists are equal."""
+        if not isinstance(other, GroundEffect):
+            return False
+        return self._advanced_ground_effect == other._advanced_ground_effect
 
 
-class ConjunctiveEffect:
-    """ConjunctiveEffect class for the PDDL domain."""
+class GroundConditionalEffect:
+    """GroundConditionalEffect class for the PDDL domain."""
+    _advanced_conditional_effect: 'AdvancedGroundConditionalEffect' = None
+
+    def __init__(self, advanced_conditional_effect: 'AdvancedGroundConditionalEffect', problem: 'Problem') -> None:
+        assert isinstance(advanced_conditional_effect, AdvancedGroundConditionalEffect), "Invalid conditional effect type."
+        assert isinstance(problem, Problem), "Invalid problem type."
+        self._advanced_conditional_effect = advanced_conditional_effect
+        self._problem = problem
+
+    def get_index(self) -> 'int':
+        """Get the index of the ground conditional effect."""
+        return self._advanced_conditional_effect.get_index()
+
+    def get_condition(self) -> 'GroundConjunctiveCondition':
+        """Get the condition of the ground conditional effect."""
+        return GroundConjunctiveCondition(advanced_condition=self._advanced_conditional_effect.get_conjunctive_condition())
+
+    def get_effect(self) -> 'GroundEffect':
+        """Get the effect list of the ground conditional effect."""
+        return GroundEffect(self._advanced_conditional_effect.get_conjunctive_effect(), self._problem)
+
+    def __str__(self):
+        """Get the string representation of the ground conditional effect."""
+        return self._advanced_conditional_effect.to_string(self._problem._advanced_problem)
+
+    def __repr__(self):
+        """Get the string representation of the ground conditional effect."""
+        return self._advanced_conditional_effect.to_string(self._problem._advanced_problem)
+
+    def __hash__(self) -> 'int':
+        """Get the hash of the ground conditional effect."""
+        return hash(self._advanced_conditional_effect)
+
+    def __eq__(self, other: 'object') -> bool:
+        """Check if two ground conditional effects are equal."""
+        if not isinstance(other, GroundConditionalEffect):
+            return False
+        return self._advanced_conditional_effect == other._advanced_conditional_effect
+
+
+class Effect:
+    """EffectList class for the PDDL domain."""
     _advanced_conjunctive_effect: 'AdvancedConjunctiveEffect' = None
 
     def __init__(self, advanced_effect: 'AdvancedConjunctiveEffect') -> None:
@@ -363,32 +509,36 @@ class ConjunctiveEffect:
         self._advanced_conjunctive_effect = advanced_effect
 
     def get_index(self) -> 'int':
-        """Get the index of the conjunctive effect."""
+        """Get the index of the effect list."""
         return self._advanced_conjunctive_effect.get_index()
 
     def get_parameters(self) -> 'list[Variable]':
-        """Get the parameters of the conjunctive effect."""
+        """Get the parameters of the effect list."""
         return [Variable(x) for x in self._advanced_conjunctive_effect.get_parameters()]
 
     def get_literals(self) -> 'list[Literal]':
-        """Get the literals of the conjunctive effect."""
+        """Get the literals of the effect list."""
         return [Literal(x) for x in self._advanced_conjunctive_effect.get_literals()]
 
+    def __iter__(self) -> 'Iterable[Literal]':
+        """Get an iterator over the literals of the effect list."""
+        return iter(self.get_literals())
+
     def __str__(self):
-        """Get the string representation of the conjunctive effect."""
+        """Get the string representation of the effect list."""
         return str(self._advanced_conjunctive_effect)
 
     def __repr__(self):
-        """Get the string representation of the conjunctive effect."""
+        """Get the string representation of the effect list."""
         return repr(self._advanced_conjunctive_effect)
 
     def __hash__(self) -> 'int':
-        """Get the hash of the conjunctive effect."""
+        """Get the hash of the effect list."""
         return hash(self._advanced_conjunctive_effect)
 
     def __eq__(self, other: 'object') -> bool:
-        """Check if two conjunctive effects are equal."""
-        if not isinstance(other, ConjunctiveEffect):
+        """Check if two effect lists are equal."""
+        if not isinstance(other, Effect):
             return False
         return self._advanced_conjunctive_effect == other._advanced_conjunctive_effect
 
@@ -405,13 +555,13 @@ class ConditionalEffect:
         """Get the index of the conditional effect."""
         return self._advanced_conditional_effect.get_index()
 
-    def get_parameters(self) -> 'ConjunctiveCondition':
-        """Get the parameters of the conditional effect."""
-        return ConjunctiveCondition(self._advanced_conditional_effect.get_parameters())
-
-    def get_static_conditions(self) -> 'ConjunctiveEffect':
+    def get_conjunctive_condition(self) -> 'ConjunctiveCondition':
         """Get the static conditions of the conditional effect."""
-        return ConjunctiveEffect(self._advanced_conditional_effect.get_static_conditions())
+        return ConjunctiveCondition(self._advanced_conditional_effect.get_conjunctive_condition())
+
+    def get_conjunctive_effect(self) -> 'Effect':
+        """Get the effect list of the conditional effect."""
+        return Effect(self._advanced_conditional_effect.get_conjunctive_effect())
 
     def __str__(self):
         """Get the string representation of the conditional effect."""
@@ -460,13 +610,13 @@ class Action:
         """Get the conjunctive condition of the action."""
         return ConjunctiveCondition(self._advanced_action.get_conjunctive_condition())
 
-    def get_effect(self) -> 'tuple[ConjunctiveEffect, list[ConditionalEffect]]':
+    def get_effect(self) -> 'tuple[Effect, list[ConditionalEffect]]':
         """Get both the unconditional and conditional effects of the action."""
         return self.get_unconditional_effect(), self.get_conditional_effect()
 
-    def get_unconditional_effect(self) -> 'ConjunctiveEffect':
-        """Get the conjunctive effect of the action."""
-        return ConjunctiveEffect(self._advanced_action.get_conjunctive_effect())
+    def get_unconditional_effect(self) -> 'Effect':
+        """Get the effect list of the action."""
+        return Effect(self._advanced_action.get_conjunctive_effect())
 
     def get_conditional_effect(self) -> 'list[ConditionalEffect]':
         """Get the conditional effect of the action."""
@@ -515,6 +665,26 @@ class GroundAction:
     def get_precondition(self) -> 'GroundConjunctiveCondition':
         """Get the conjunctive condition of the ground action."""
         return GroundConjunctiveCondition(advanced_condition=self._advanced_ground_action.get_conjunctive_condition())
+
+    def get_effect(self) -> 'tuple[GroundEffect, list[GroundConditionalEffect]]':
+        """Get both the unconditional and conditional effects of the ground action."""
+        return self.get_unconditional_effect(), self.get_conditional_effect()
+
+    def get_unconditional_effect(self) -> 'GroundEffect':
+        """Get the effect list of the ground action."""
+        return GroundEffect(advanced_effect=self._advanced_ground_action.get_conjunctive_effect())
+
+    def get_conditional_effect(self) -> 'list[GroundConditionalEffect]':
+        """Get the conditional effect of the ground action."""
+        return [GroundConditionalEffect(x) for x in self._advanced_ground_action.get_conditional_effects()]
+
+    def apply(self, state: 'State') -> 'State':
+        """Apply the ground action to the given state."""
+        assert isinstance(state, State), "Invalid state type."
+        assert state._problem == self._problem, "State and action belong to different problems."
+        sr = self._problem._search_context.get_state_repository()
+        advanced_successor_state, _ = sr.get_or_create_successor_state(state._advanced_state, self._advanced_ground_action, 0.0)
+        return State(advanced_successor_state, self._problem)
 
     def __str__(self):
         """Get the string representation of the ground action."""
@@ -669,7 +839,7 @@ class Problem:
     def get_initial_state(self) -> 'State':
         """Get the initial state of the problem."""
         initial_state, _ = self._search_context.get_state_repository().get_or_create_initial_state()
-        return State(self, initial_state)
+        return State(initial_state, self)
 
     def get_initial_atoms(self, ignore_static = False, ignore_fluent = False, ignore_derived = False) -> 'list[GroundAtom]':
         """Get the initial atoms of the problem."""
@@ -757,7 +927,7 @@ class State:
     """
     Class representing a state in the search space.
     """
-    def __init__(self, problem: 'Problem', advanced_state: 'AdvancedState') -> None:
+    def __init__(self, advanced_state: 'AdvancedState', problem: 'Problem') -> None:
         self._problem = problem
         self._advanced_state = advanced_state
 
@@ -790,22 +960,40 @@ class State:
         Checks if a ground atom is contained in the state.
         """
         # TODO: This function is quite expensive. Expose a more efficient function on the C++ side.
-        assert isinstance(ground_atom, GroundAtom), "Invalid ground atom type."
-        if isinstance(ground_atom._advanced_ground_atom, AdvancedStaticGroundAtom):
-            return ground_atom.get_index() in self._problem._static_ground_atom_indices
-        if isinstance(ground_atom._advanced_ground_atom, AdvancedFluentGroundAtom):
-            return ground_atom.get_index() in self._advanced_state.get_fluent_atoms()
-        if isinstance(ground_atom._advanced_ground_atom, AdvancedDerivedGroundAtom):
-            return ground_atom.get_index() in self._advanced_state.get_derived_atoms()
+        assert isinstance(ground_atom, (GroundAtom, AdvancedGroundAtom)), "Invalid ground atom type."
+        if isinstance(ground_atom, GroundAtom):
+            if ground_atom.is_static():
+                return ground_atom.get_index() in self._problem._static_ground_atom_indices
+            if ground_atom.is_fluent():
+                return ground_atom.get_index() in self._advanced_state.get_fluent_atoms()
+            if ground_atom.is_derived():
+                return ground_atom.get_index() in self._advanced_state.get_derived_atoms()
+        elif isinstance(ground_atom, AdvancedGroundAtom):
+            if isinstance(ground_atom, AdvancedStaticGroundAtom):
+                return ground_atom.get_index() in self._problem._static_ground_atom_indices
+            if isinstance(ground_atom, AdvancedFluentGroundAtom):
+                return ground_atom.get_index() in self._advanced_state.get_fluent_atoms()
+            if isinstance(ground_atom, AdvancedDerivedGroundAtom):
+                return ground_atom.get_index() in self._advanced_state.get_derived_atoms()
         raise RuntimeError("Internal error, please report this issue.")
 
     def contains_all(self, ground_atoms: 'list[GroundAtom]') -> bool:
         """
         Checks if all ground atoms are contained in the state.
         """
-        assert isinstance(ground_atoms, list), "Invalid ground atoms type."
+        assert isinstance(ground_atoms, (list, AdvancedGroundAtomList)), "Invalid ground atoms type."
         for ground_atom in ground_atoms:
             if not self.contains(ground_atom):
+                return False
+        return True
+
+    def contains_none(self, ground_atoms: 'list[GroundAtom]') -> bool:
+        """
+        Checks if none of the ground atoms are contained in the state.
+        """
+        assert isinstance(ground_atoms, (list, AdvancedGroundAtomList)), "Invalid ground atoms type."
+        for ground_atom in ground_atoms:
+            if self.contains(ground_atom):
                 return False
         return True
 
@@ -818,7 +1006,7 @@ class State:
             return literal.get_polarity() == atom_is_in_state
         return self._advanced_state.literal_holds(literal)
 
-    def _literals_hold_static(self, literals: 'list[GroundLiteral]') -> bool:
+    def _literals_hold_static(self, literals: 'AdvancedStaticGroundLiteralList') -> bool:
         if len(literals) == 0:
             return True
         static_positive_indices = { literal.get_atom().get_index() for literal in literals if literal.get_polarity() }
@@ -826,12 +1014,12 @@ class State:
         return self._problem._static_ground_atom_indices.issuperset(static_positive_indices) and \
                self._problem._static_ground_atom_indices.isdisjoint(static_negative_indices)
 
-    def _literals_hold_fluent(self, literals: 'list[GroundLiteral]') -> bool:
+    def _literals_hold_fluent(self, literals: 'AdvancedFluentGroundLiteralList') -> bool:
         if len(literals) == 0:
             return True
         return self._advanced_state.literal_holds(literals)
 
-    def _literals_hold_derived(self, literals: 'list[GroundLiteral]') -> bool:
+    def _literals_hold_derived(self, literals: 'AdvancedDerivedGroundLiteralList') -> bool:
         if len(literals) == 0:
             return True
         return self._advanced_state.literal_holds(literals)
@@ -897,7 +1085,16 @@ class GroundConjunctiveCondition:
         """Check if the ground conjunctive condition holds in the given state."""
         assert isinstance(state, State), "Invalid state type."
         if self._advanced_condition is not None:
-            raise NotImplementedError("TODO.")
+            repositories = state._problem._advanced_problem.get_repositories()
+            static_negative = repositories.get_static_ground_atoms_from_indices(list(self._advanced_condition.get_static_negative_condition()))
+            static_positive = repositories.get_static_ground_atoms_from_indices(list(self._advanced_condition.get_static_positive_condition()))
+            fluent_negative = repositories.get_fluent_ground_atoms_from_indices(list(self._advanced_condition.get_fluent_negative_condition()))
+            fluent_positive = repositories.get_fluent_ground_atoms_from_indices(list(self._advanced_condition.get_fluent_positive_condition()))
+            derived_negative = repositories.get_derived_ground_atoms_from_indices(list(self._advanced_condition.get_derived_negative_condition()))
+            derived_positive = repositories.get_derived_ground_atoms_from_indices(list(self._advanced_condition.get_derived_positive_condition()))
+            holds_positive = state.contains_all(static_positive) and state.contains_all(fluent_positive) and state.contains_all(derived_positive)
+            holds_negative = state.contains_none(static_negative) and state.contains_none(fluent_negative) and state.contains_none(derived_negative)
+            return holds_positive and holds_negative
         else:
             return state._literals_hold_static(self._static_ground_literals) and \
                    state._literals_hold_fluent(self._fluent_ground_literals) and \
