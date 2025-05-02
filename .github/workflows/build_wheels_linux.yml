@@ -9,7 +9,7 @@ jobs:
   build_wheels:
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        python-version: ["cp38", "cp39", "cp310", "cp311", "cp312", "cp313"]
         platform: ["manylinux2014_x86_64", "manylinux2014_i686", "manylinux2014_aarch64", "manylinux2014_ppc64le", "manylinux2014_s390x"]
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
@@ -25,7 +25,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: "${{ matrix.python-version }}"
+        python-version: "3.10"  # Use a fixed version for the setup step
 
     - name: Install dependencies
       run: |
@@ -36,7 +36,7 @@ jobs:
       run: cibuildwheel --output-dir wheelhouse
       env:
         CIBW_PLATFORM: "${{ matrix.platform }}"
-        CIBW_BUILD: "cp${{ matrix.python-version | replace('.', '') }}-*"
+        CIBW_BUILD: "${{ matrix.python-version }}-*"
         CIBW_BUILD_VERBOSITY: "1"
 
     - name: Upload to PyPI
