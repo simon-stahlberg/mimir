@@ -10,9 +10,9 @@ jobs:
     strategy:
       matrix:
         # These architectures are too rare in practice:
-        # "manylinux_i686" (32-bit x86), "manylinux_ppc64le" (PowerPC), "manylinux_s390x" (IBM Z)
+        # "i686" (32-bit x86), "ppc64le" (PowerPC), "s390x" (IBM Z), "armv7l" (32-bit ARM)
         # The user can still build Mimir locally if they need it.
-        architecture: ["manylinux_x86_64", "manylinux_aarch64"]
+        architecture: ["x86_64"]  # TODO: Add "aarch64"
         python-version: ["cp38", "cp39", "cp310", "cp311", "cp312", "cp313"]
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
@@ -28,7 +28,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: "3.10"  # Use a fixed version for the setup step
+        python-version: "3.11"  # Use a fixed version for the setup step
 
     - name: Install dependencies
       run: |
@@ -36,10 +36,11 @@ jobs:
         python -m pip install --upgrade twine cibuildwheel
 
     - name: Build wheels
-      run: cibuildwheel --output-dir wheelhouse
+      run: cibuildwheel --output-dir wheelhouse --verbose
       env:
         CIBW_PLATFORM: "linux"
-        CIBW_BUILD: "${{ matrix.python-version }}-${{ matrix.architecture }}"
+        CIBW_BUILD: "${{ matrix.python-version }}-*"
+        CIBW_ARCHS: "${{ matrix.architecture }}"
         CIBW_BUILD_VERBOSITY: "1"
 
     - name: Upload to PyPI
