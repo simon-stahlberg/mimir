@@ -36,7 +36,7 @@ jobs:
         python -m pip install --upgrade twine cibuildwheel
 
     - name: Build wheels
-      run: cibuildwheel --output-dir wheelhouse --verbose
+      run: cibuildwheel --output-dir wheelhouse
       env:
         CIBW_PLATFORM: "linux"
         CIBW_BUILD: "${{ matrix.python-version }}-*"
