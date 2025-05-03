@@ -22,6 +22,7 @@
 #include "mimir/languages/description_logics/denotation_repositories.hpp"
 #include "mimir/languages/general_policies/declarations.hpp"
 #include "mimir/languages/general_policies/policy_graph.hpp"
+#include "mimir/search/algorithms/utils.hpp"
 
 namespace mimir::languages::general_policies
 {
@@ -114,6 +115,12 @@ public:
     SolvabilityStatus solves(const datasets::GeneralizedStateSpace& generalized_state_space,
                              const VertexIndices& vertices,
                              dl::DenotationRepositories& denotation_repositories) const;
+
+    /**
+     * Solvability of Problem.
+     */
+
+    search::SearchResult find_solution(const search::SearchContext& search_context) const;
 
     /// @brief Get the index.
     /// @return the index.

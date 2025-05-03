@@ -28,7 +28,14 @@
 #include "mimir/languages/general_policies/visitor_formatter.hpp"
 #include "mimir/languages/general_policies/visitor_interface.hpp"
 #include "mimir/languages/general_policies/visitor_null.hpp"
+#include "mimir/search/algorithms/brfs.hpp"
+#include "mimir/search/algorithms/strategies/pruning_strategy.hpp"
+#include "mimir/search/search_context.hpp"
 #include "mimir/search/state.hpp"
+#include "mimir/search/state_repository.hpp"
+
+using namespace mimir::formalism;
+using namespace mimir::search;
 
 namespace mimir::languages::general_policies
 {
@@ -478,6 +485,38 @@ SolvabilityStatus GeneralPolicyImpl::solves(const datasets::GeneralizedStateSpac
                                             dl::DenotationRepositories& denotation_repositories) const
 {
     return solves<graphs::VertexIndexList>(generalized_state_space, vertices, denotation_repositories);
+}
+
+class GeneralPolicyPruningStrategy : public IPruningStrategy
+{
+public:
+    bool test_prune_initial_state(State state) override { return false; }
+    bool test_prune_successor_state(State state, State succ_state, bool is_new_succ) override
+    {
+        m_src_context.set_state(state);
+        m_dst_context.set_state(state);
+        return !m_policy->evaluate(m_src_context, m_dst_context);
+    }
+
+    GeneralPolicyPruningStrategy(GeneralPolicy policy, Problem problem) :
+        m_policy(policy),
+        m_denotation_repositories(),
+        m_src_context(nullptr, problem, m_denotation_repositories),
+        m_dst_context(nullptr, problem, m_denotation_repositories)
+    {
+    }
+
+private:
+    GeneralPolicy m_policy;
+    dl::DenotationRepositories m_denotation_repositories;
+    dl::EvaluationContext m_src_context;
+    dl::EvaluationContext m_dst_context;
+};
+
+SearchResult GeneralPolicyImpl::find_solution(const SearchContext& search_context) const
+{
+    auto pruning_strategy = std::make_shared<GeneralPolicyPruningStrategy>(this, search_context->get_problem());
+    return brfs::find_solution(search_context, nullptr, nullptr, nullptr, pruning_strategy);
 }
 
 Index GeneralPolicyImpl::get_index() const { return m_index; }
