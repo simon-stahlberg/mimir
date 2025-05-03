@@ -86,15 +86,17 @@ void bind_module_definitions(nb::module_& m)
 
     nb::class_<Color>(m, "Color")  //
         .def(nb::new_([](nb::args args) { return Color(std::shared_ptr<IColor>(std::make_shared<PyColor>(args))); }))
+        .def("__str__", &Color::str)
         .def("__eq__", &Color::operator==)
         .def("__lt__", &Color::operator<)
-        .def("__str__", &Color::str)
         .def("__hash__", &Color::hash);
 
     nb::class_<nauty::SparseGraph>(m, "NautySparseGraph")
         .def(nb::init<const StaticGraph<ColoredVertex, EmptyEdge>&>())
         .def(nb::init<const StaticForwardGraph<StaticGraph<ColoredVertex, EmptyEdge>>&>())
         .def(nb::init<const StaticBidirectionalGraph<StaticGraph<ColoredVertex, EmptyEdge>>&>())
+        .def("__str__", [](const nauty::SparseGraph& self) { return to_string(self); })
+        .def("__repr__", [](const nauty::SparseGraph& self) { return to_string(self); })
         .def("__eq__", [](const nauty::SparseGraph& lhs, const nauty::SparseGraph& rhs) { return loki::EqualTo<nauty::SparseGraph>()(lhs, rhs); })
         .def("__ne__", [](const nauty::SparseGraph& lhs, const nauty::SparseGraph& rhs) { return !loki::EqualTo<nauty::SparseGraph>()(lhs, rhs); })
         .def("__hash__", [](const nauty::SparseGraph& self) { return loki::Hash<nauty::SparseGraph>()(self); })
