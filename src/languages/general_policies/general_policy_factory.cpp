@@ -183,4 +183,50 @@ GeneralPolicyFactory::get_or_create_general_policy_delivery(const formalism::Dom
     return repositories.get_or_create_general_policy(description, domain, dl_repositories);
 }
 
+GeneralPolicy
+GeneralPolicyFactory::get_or_create_general_policy_miconic(const formalism::DomainImpl& domain, Repositories& repositories, dl::Repositories& dl_repositories)
+{
+    // TODO: finish this
+    static auto description = std::string(R"(
+        [boolean_features]
+
+        [numerical_features]
+            <b> ::=
+                @numerical_count 
+                    @concept_atomic_state "boarded"
+
+            <w> ::=
+                @numerical_count 
+                    @concept_existential_quantification 
+                        @role_atomic_state "origin"
+                        @concept_top
+
+            <rb> ::= 
+                @numerical_count 
+                    @concept_value_restriction 
+                        @role_atomic_state "origin"
+                        @concept_atomic_state "lift-at"
+
+            <rl> ::=
+                @numerical_count 
+                    @concept_intersection 
+                        @concept_existential_quantification
+                            @role_atomic_state "destin"
+                            @concept_atomic-state "lift-at"
+
+
+        [policy_rules]
+            { @greater_numerical_condition <u>, @positive_boolean_condition <not_H>, @greater_numerical_condition <p> }
+            -> { @unchanged_boolean_effect <not_H>, @decrease_numerical_effect <p> }
+            { @greater_numerical_condition <u>, @positive_boolean_condition <not_H>, @equal_numerical_condition <p> }
+            -> { @negative_boolean_effect <not_H> }
+            { @greater_numerical_condition <u>, @negative_boolean_condition <not_H>, @greater_numerical_condition <t> }
+            -> { @unchanged_numerical_effect <u>, @unchanged_boolean_effect <not_H>, @decrease_numerical_effect <t> }
+            { @greater_numerical_condition <u>, @negative_boolean_condition <not_H>, @equal_numerical_condition <t> }
+            -> { @decrease_numerical_effect <u>, @positive_boolean_effect <not_H>, @unchanged_numerical_effect <p> }
+        )");
+
+    return repositories.get_or_create_general_policy(description, domain, dl_repositories);
+}
+
 }
