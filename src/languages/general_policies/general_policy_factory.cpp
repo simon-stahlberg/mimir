@@ -26,10 +26,10 @@ GeneralPolicyFactory::get_or_create_general_policy_gripper(const formalism::Doma
 {
     static auto description = std::string(R"(
         [boolean_features]
-            <boolean_r_b> ::= @boolean_nonempty @concept_existential_quantification @role_atomic_goal "at" true @concept_atomic_state "at-robby"
+            <r_b> ::= @boolean_nonempty @concept_existential_quantification @role_atomic_goal "at" true @concept_atomic_state "at-robby"
 
         [numerical_features]
-            <numerical_c> ::= @numerical_count @concept_existential_quantification @role_atomic_state "carry" @concept_top
+            <c> ::= @numerical_count @concept_existential_quantification @role_atomic_state "carry" @concept_top
             <numerical_b> ::=
                 @numerical_count 
                     @concept_negation
@@ -38,14 +38,14 @@ GeneralPolicyFactory::get_or_create_general_policy_gripper(const formalism::Doma
                             @role_atomic_goal "at" true
 
         [policy_rules]
-            { @negative_boolean_condition <boolean_r_b>, @equal_numerical_condition <numerical_c>, @greater_numerical_condition <numerical_b> } 
-            -> { @unchanged_boolean_effect <boolean_r_b>, @unchanged_numerical_effect <numerical_b>, @increase_numerical_effect <numerical_c> }
-            { @positive_boolean_condition <boolean_r_b>, @equal_numerical_condition <numerical_c>, @greater_numerical_condition <numerical_b> } 
-            -> { @negative_boolean_effect <boolean_r_b>, @unchanged_numerical_effect <numerical_b>, @unchanged_numerical_effect <numerical_c> }
-            { @positive_boolean_condition <boolean_r_b>, @greater_numerical_condition <numerical_c>, @greater_numerical_condition <numerical_b> } 
-            -> { @unchanged_boolean_effect <boolean_r_b>, @decrease_numerical_effect <numerical_c>, @decrease_numerical_effect <numerical_b> }
-            { @negative_boolean_condition <boolean_r_b>, @greater_numerical_condition <numerical_c>, @greater_numerical_condition <numerical_b> } 
-            -> { @positive_boolean_effect <boolean_r_b>, @unchanged_numerical_effect <numerical_b>, @unchanged_numerical_effect <numerical_c> }
+            { @negative_boolean_condition <r_b>, @equal_numerical_condition <c>, @greater_numerical_condition <numerical_b> } 
+            -> { @unchanged_boolean_effect <r_b>, @increase_numerical_effect <c>, @unchanged_numerical_effect <numerical_b> }
+            { @positive_boolean_condition <r_b>, @equal_numerical_condition <c>, @greater_numerical_condition <numerical_b> } 
+            -> { @negative_boolean_effect <r_b>, @unchanged_numerical_effect <c>, @unchanged_numerical_effect <numerical_b> }
+            { @positive_boolean_condition <r_b>, @greater_numerical_condition <c>, @greater_numerical_condition <numerical_b> } 
+            -> { @unchanged_boolean_effect <r_b>, @decrease_numerical_effect <c>, @decrease_numerical_effect <numerical_b> }
+            { @negative_boolean_condition <r_b>, @greater_numerical_condition <c>, @greater_numerical_condition <numerical_b> } 
+            -> { @positive_boolean_effect <r_b>, @unchanged_numerical_effect <c>, @unchanged_numerical_effect <numerical_b> }
         )");
 
     return repositories.get_or_create_general_policy(description, domain, dl_repositories);
@@ -59,14 +59,14 @@ GeneralPolicy GeneralPolicyFactory::get_or_create_general_policy_blocks3ops(cons
         [boolean_features]
 
         [numerical_features]
-            <numerical_c> ::= @numerical_count @concept_atomic_state "clear"
-            <numerical_t> ::=
+            <c> ::= @numerical_count @concept_atomic_state "clear"
+            <t> ::=
                 @numerical_count 
                     @concept_negation
                         @concept_role_value_map_equality
                             @role_atomic_state "on"
                             @role_atomic_goal "on" true
-            <numerical_bwp> ::= @numerical_count 
+            <bwp> ::= @numerical_count 
                 @concept_value_restriction 
                     @role_transitive_closure @role_atomic_state "on"
                     @concept_role_value_map_equality
@@ -74,14 +74,14 @@ GeneralPolicy GeneralPolicyFactory::get_or_create_general_policy_blocks3ops(cons
                         @role_atomic_goal "on" true
 
         [policy_rules]
-            { @greater_numerical_condition <numerical_c>, @greater_numerical_condition <numerical_t> } 
-            -> { @increase_numerical_effect <numerical_c>, @unchanged_numerical_effect <numerical_t>, @unchanged_numerical_effect <numerical_bwp> }
-            { @greater_numerical_condition <numerical_c>, @greater_numerical_condition <numerical_t> } 
-            -> { @increase_numerical_effect <numerical_c>, @increase_numerical_effect <numerical_bwp> }
-            { @greater_numerical_condition <numerical_c>, @greater_numerical_condition <numerical_t> } 
-            -> { @increase_numerical_effect <numerical_c>, @decrease_numerical_effect <numerical_t>, @unchanged_numerical_effect <numerical_bwp> }
-            { @greater_numerical_condition <numerical_c>, @greater_numerical_condition <numerical_t> } 
-            -> { @decrease_numerical_effect <numerical_c>, @decrease_numerical_effect <numerical_t>, @unchanged_numerical_effect <numerical_bwp> }
+            { @greater_numerical_condition <c>, @greater_numerical_condition <t> } 
+            -> { @increase_numerical_effect <c>, @unchanged_numerical_effect <t>, @unchanged_numerical_effect <bwp> }
+            { @greater_numerical_condition <c>, @greater_numerical_condition <t> } 
+            -> { @increase_numerical_effect <c>, @increase_numerical_effect <bwp> }
+            { @greater_numerical_condition <c>, @greater_numerical_condition <t> } 
+            -> { @increase_numerical_effect <c>, @decrease_numerical_effect <t>, @unchanged_numerical_effect <bwp> }
+            { @greater_numerical_condition <c>, @greater_numerical_condition <t> } 
+            -> { @decrease_numerical_effect <c>, @decrease_numerical_effect <t>, @unchanged_numerical_effect <bwp> }
         )");
 
     return repositories.get_or_create_general_policy(description, domain, dl_repositories);
@@ -92,7 +92,7 @@ GeneralPolicyFactory::get_or_create_general_policy_spanner(const formalism::Doma
 {
     static auto description = std::string(R"(
         [boolean_features]
-            <boolean_e> ::= 
+            <e> ::= 
                 @boolean_nonempty 
                     @concept_existential_quantification
                         @role_atomic_state "at"
@@ -103,13 +103,13 @@ GeneralPolicyFactory::get_or_create_general_policy_spanner(const formalism::Doma
 
 
         [numerical_features]
-            <numerical_h> ::= 
+            <h> ::= 
                 @numerical_count 
                     @concept_existential_quantification 
                         @role_atomic_state "at"
                         @concept_top
 
-            <numerical_n> ::=
+            <n> ::=
                 @numerical_count 
                     @concept_intersection
                         @concept_negation
@@ -117,12 +117,67 @@ GeneralPolicyFactory::get_or_create_general_policy_spanner(const formalism::Doma
                         @concept_atomic_goal "tightened" true
 
         [policy_rules]
-            { @greater_numerical_condition <numerical_n>, @greater_numerical_condition <numerical_h>, @positive_boolean_condition <boolean_e> } 
-            -> { @unchanged_numerical_effect <numerical_n>, @unchanged_numerical_effect <numerical_h> }
-            { @greater_numerical_condition <numerical_n>, @greater_numerical_condition <numerical_h>, @negative_boolean_condition <boolean_e> } 
-            -> { @unchanged_numerical_effect <numerical_n>, @decrease_numerical_effect <numerical_h> }
-            { @greater_numerical_condition <numerical_n>, @greater_numerical_condition <numerical_h>, @negative_boolean_condition <boolean_e> } 
-            -> { @decrease_numerical_effect <numerical_n>, @unchanged_numerical_effect <numerical_h>, @unchanged_boolean_effect <boolean_e> }
+            { @greater_numerical_condition <n>, @greater_numerical_condition <h>, @positive_boolean_condition <e> } 
+            -> { @unchanged_numerical_effect <n>, @unchanged_numerical_effect <h> }
+            { @greater_numerical_condition <n>, @greater_numerical_condition <h>, @negative_boolean_condition <e> } 
+            -> { @unchanged_numerical_effect <n>, @decrease_numerical_effect <h> }
+            { @greater_numerical_condition <n>, @greater_numerical_condition <h>, @negative_boolean_condition <e> } 
+            -> { @decrease_numerical_effect <n>, @unchanged_numerical_effect <h>, @unchanged_boolean_effect <e> }
+        )");
+
+    return repositories.get_or_create_general_policy(description, domain, dl_repositories);
+}
+
+GeneralPolicy
+GeneralPolicyFactory::get_or_create_general_policy_delivery(const formalism::DomainImpl& domain, Repositories& repositories, dl::Repositories& dl_repositories)
+{
+    static auto description = std::string(R"(
+        [boolean_features]
+            <not_H> ::= 
+                @boolean_nonempty @concept_atomic_state "empty"
+
+
+        [numerical_features]
+            <u> ::=
+                @numerical_count 
+                    @concept_negation
+                        @concept_role_value_map_equality
+                            @role_atomic_goal "at" true
+                            @role_atomic_state "at"
+
+            <t> ::= 
+                @numerical_distance 
+                    @concept_existential_quantification 
+                        @role_inverse @role_atomic_state "at" 
+                        @concept_atomic_state "truck" 
+                    @role_atomic_state "adjacent" 
+                    @concept_existential_quantification 
+                        @role_inverse @role_atomic_goal "at" true 
+                        @concept_top
+
+            <p> ::=
+                @numerical_distance 
+                    @concept_existential_quantification 
+                        @role_inverse @role_atomic_state "at" 
+                        @concept_atomic_state "truck" 
+                    @role_atomic_state "adjacent" 
+                    @concept_intersection 
+                        @concept_existential_quantification 
+                            @role_inverse @role_atomic_state "at" 
+                            @concept_atomic_state "package" 
+                        @concept_value_restriction 
+                            @role_inverse @role_atomic_goal "at" true 
+                            @concept_bot
+
+        [policy_rules]
+            { @greater_numerical_condition <u>, @positive_boolean_condition <not_H>, @greater_numerical_condition <p> }
+            -> { @unchanged_boolean_effect <not_H>, @decrease_numerical_effect <p> }
+            { @greater_numerical_condition <u>, @positive_boolean_condition <not_H>, @equal_numerical_condition <p> }
+            -> { @negative_boolean_effect <not_H> }
+            { @greater_numerical_condition <u>, @negative_boolean_condition <not_H>, @greater_numerical_condition <t> }
+            -> { @unchanged_numerical_effect <u>, @unchanged_boolean_effect <not_H>, @decrease_numerical_effect <t> }
+            { @greater_numerical_condition <u>, @negative_boolean_condition <not_H>, @equal_numerical_condition <t> }
+            -> { @decrease_numerical_effect <u>, @positive_boolean_effect <not_H>, @unchanged_numerical_effect <p> }
         )");
 
     return repositories.get_or_create_general_policy(description, domain, dl_repositories);

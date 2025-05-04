@@ -236,6 +236,12 @@ void bind_module_definitions(nb::module_& m)
                     "domain"_a,
                     "repositories"_a,
                     "dl_repositories"_a,
+                    nb::rv_policy::reference)
+        .def_static("get_or_create_general_policy_delivery",
+                    &GeneralPolicyFactory::get_or_create_general_policy_delivery,
+                    "domain"_a,
+                    "repositories"_a,
+                    "dl_repositories"_a,
                     nb::rv_policy::reference);
 }
 
