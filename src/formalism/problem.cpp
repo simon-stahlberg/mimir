@@ -85,7 +85,9 @@ ProblemImpl::ProblemImpl(Index index,
     m_problem_and_domain_axioms(std::move(problem_and_domain_axioms)),
     m_details(),
     m_flat_index_list_set(),
-    m_flat_double_list_set()
+    m_flat_double_list_set(),
+    m_tree_table(),
+    m_state_root_table()
 {
     assert(is_all_unique(get_objects()));
     assert(is_all_unique(get_derived_predicates()));
@@ -245,6 +247,9 @@ size_t ProblemImpl::get_estimated_memory_usage_in_bytes() const
 /**
  * Additional members
  */
+
+valla::IndexedHashSet& ProblemImpl::get_tree_table() { return m_tree_table; }
+valla::IndexedHashSet& ProblemImpl::get_state_root_table() { return m_state_root_table; }
 
 /* Initial state */
 
