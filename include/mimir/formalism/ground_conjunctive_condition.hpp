@@ -24,28 +24,35 @@
 
 #include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
+#include <valla/delta_tree_compression.hpp>
+#include <valla/indexed_hash_set.hpp>
+#include <valla/tree_compression.hpp>
 
 namespace mimir::formalism
 {
+namespace v = valla::delta;
+
 class GroundConjunctiveConditionImpl
 {
 private:
     Index m_index;
-    const FlatIndexList* m_positive_static_atoms;
-    const FlatIndexList* m_negative_static_atoms;
-    const FlatIndexList* m_positive_fluent_atoms;
-    const FlatIndexList* m_negative_fluent_atoms;
-    const FlatIndexList* m_positive_derived_atoms;
-    const FlatIndexList* m_negative_derived_atoms;
+    const valla::IndexedHashSet& m_tree_table;
+    valla::Slot m_positive_static_atoms;
+    valla::Slot m_negative_static_atoms;
+    valla::Slot m_positive_fluent_atoms;
+    valla::Slot m_negative_fluent_atoms;
+    valla::Slot m_positive_derived_atoms;
+    valla::Slot m_negative_derived_atoms;
     GroundNumericConstraintList m_numeric_constraints;
 
     GroundConjunctiveConditionImpl(Index index,
-                                   const FlatIndexList* positive_static_atoms,
-                                   const FlatIndexList* negative_static_atoms,
-                                   const FlatIndexList* positive_fluent_atoms,
-                                   const FlatIndexList* negative_fluent_atoms,
-                                   const FlatIndexList* positive_derived_atoms,
-                                   const FlatIndexList* negative_derived_atoms,
+                                   const valla::IndexedHashSet& tree_table,
+                                   valla::Slot positive_static_atoms,
+                                   valla::Slot negative_static_atoms,
+                                   valla::Slot positive_fluent_atoms,
+                                   valla::Slot negative_fluent_atoms,
+                                   valla::Slot positive_derived_atoms,
+                                   valla::Slot negative_derived_atoms,
                                    GroundNumericConstraintList numeric_constraints);
 
     // Give access to the constructor.
@@ -90,15 +97,15 @@ auto GroundConjunctiveConditionImpl::get_positive_precondition() const
 {
     if constexpr (std::is_same_v<P, StaticTag>)
     {
-        return m_positive_static_atoms->compressed_range();
+        return std::ranges::subrange(v::begin(m_positive_static_atoms, m_tree_table), v::end());
     }
     else if constexpr (std::is_same_v<P, FluentTag>)
     {
-        return m_positive_fluent_atoms->compressed_range();
+        return std::ranges::subrange(v::begin(m_positive_fluent_atoms, m_tree_table), v::end());
     }
     else if constexpr (std::is_same_v<P, DerivedTag>)
     {
-        return m_positive_derived_atoms->compressed_range();
+        return std::ranges::subrange(v::begin(m_positive_derived_atoms, m_tree_table), v::end());
     }
     else
     {
@@ -111,15 +118,15 @@ auto GroundConjunctiveConditionImpl::get_negative_precondition() const
 {
     if constexpr (std::is_same_v<P, StaticTag>)
     {
-        return m_negative_static_atoms->compressed_range();
+        return std::ranges::subrange(v::begin(m_negative_static_atoms, m_tree_table), v::end());
     }
     else if constexpr (std::is_same_v<P, FluentTag>)
     {
-        return m_negative_fluent_atoms->compressed_range();
+        return std::ranges::subrange(v::begin(m_negative_fluent_atoms, m_tree_table), v::end());
     }
     else if constexpr (std::is_same_v<P, DerivedTag>)
     {
-        return m_negative_derived_atoms->compressed_range();
+        return std::ranges::subrange(v::begin(m_negative_derived_atoms, m_tree_table), v::end());
     }
     else
     {

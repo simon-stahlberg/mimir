@@ -27,9 +27,13 @@
 
 #include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
+#include <valla/delta_tree_compression.hpp>
+#include <valla/indexed_hash_set.hpp>
+#include <valla/tree_compression.hpp>
 
 namespace mimir::formalism
 {
+namespace v = valla::delta;
 
 template<IsFluentOrAuxiliaryTag F>
 class GroundNumericEffectImpl
@@ -70,14 +74,16 @@ class GroundConjunctiveEffectImpl
 {
 private:
     Index m_index;
-    const FlatIndexList* m_positive_effects;
-    const FlatIndexList* m_negative_effects;
+    const valla::IndexedHashSet& m_tree_table;
+    valla::Slot m_positive_effects;
+    valla::Slot m_negative_effects;
     GroundNumericEffectList<FluentTag> m_fluent_numeric_effects;
     std::optional<GroundNumericEffect<AuxiliaryTag>> m_auxiliary_numeric_effect;
 
     GroundConjunctiveEffectImpl(Index index,
-                                const FlatIndexList* positive_effects,
-                                const FlatIndexList* negative_effects,
+                                const valla::IndexedHashSet& tree_table,
+                                valla::Slot positive_effects,
+                                valla::Slot negative_effects,
                                 GroundNumericEffectList<FluentTag> fluent_numeric_effects,
                                 std::optional<GroundNumericEffect<AuxiliaryTag>> auxiliary_numeric_effect);
 
@@ -93,8 +99,8 @@ public:
     GroundConjunctiveEffectImpl& operator=(GroundConjunctiveEffectImpl&& other) = default;
 
     Index get_index() const;
-    auto get_positive_effects() const { return m_positive_effects->compressed_range(); }
-    auto get_negative_effects() const { return m_negative_effects->compressed_range(); }
+    auto get_positive_effects() const { return std::ranges::subrange(v::begin(m_positive_effects, m_tree_table), v::end()); }
+    auto get_negative_effects() const { return std::ranges::subrange(v::begin(m_negative_effects, m_tree_table), v::end()); }
     const GroundNumericEffectList<FluentTag>& get_fluent_numeric_effects() const;
     const std::optional<GroundNumericEffect<AuxiliaryTag>>& get_auxiliary_numeric_effect() const;
 

@@ -74,21 +74,20 @@ template class GroundNumericEffectImpl<AuxiliaryTag>;
 /* GroundConjunctiveEffect */
 
 GroundConjunctiveEffectImpl::GroundConjunctiveEffectImpl(Index index,
-                                                         const FlatIndexList* positive_effects,
-                                                         const FlatIndexList* negative_effects,
+                                                         const valla::IndexedHashSet& tree_table,
+                                                         valla::Slot positive_effects,
+                                                         valla::Slot negative_effects,
                                                          GroundNumericEffectList<FluentTag> fluent_numeric_effects,
                                                          std::optional<GroundNumericEffect<AuxiliaryTag>> auxiliary_numeric_effect) :
     m_index(index),
+    m_tree_table(tree_table),
     m_positive_effects(positive_effects),
     m_negative_effects(negative_effects),
     m_fluent_numeric_effects(std::move(fluent_numeric_effects)),
     m_auxiliary_numeric_effect(std::move(auxiliary_numeric_effect))
 {
-    assert(m_positive_effects->is_compressed());
-    assert(m_negative_effects->is_compressed());
-
-    assert(std::is_sorted(m_positive_effects->compressed_begin(), m_positive_effects->compressed_end()));
-    assert(std::is_sorted(m_negative_effects->compressed_begin(), m_negative_effects->compressed_end()));
+    assert(std::is_sorted(v::begin(m_positive_effects, m_tree_table), v::end()));
+    assert(std::is_sorted(v::begin(m_negative_effects, m_tree_table), v::end()));
     assert(std::is_sorted(m_fluent_numeric_effects.begin(),
                           m_fluent_numeric_effects.end(),
                           [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); }));
