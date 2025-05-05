@@ -128,9 +128,9 @@ public:
 
     public:
         using difference_type = std::ptrdiff_t;
-        using value_type = IndexType;
-        using pointer = value_type*;
-        using reference = value_type&;
+        using value_type = uint32_t;
+        using pointer = uint32_t*;
+        using reference = uint32_t&;
         using iterator_category = std::forward_iterator_tag;
         using iterator_concept = std::forward_iterator_tag;
 
