@@ -27,19 +27,29 @@
 
 #include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
+#include <valla/delta_tree_compression.hpp>
+#include <valla/indexed_hash_set.hpp>
+#include <valla/tree_compression.hpp>
 
 namespace mimir::search
 {
+namespace v = valla::delta;
+
 /// @brief `StateImpl` encapsulates the fluent and derived atoms, and numeric variables of a planning state.
 class StateImpl
 {
 private:
     Index m_index;
-    const FlatIndexList* m_fluent_atoms;
-    const FlatIndexList* m_derived_atoms;
+    const valla::IndexedHashSet& m_tree_table;
+    valla::Slot m_fluent_atoms;
+    valla::Slot m_derived_atoms;
     const FlatDoubleList* m_numeric_variables;
 
-    StateImpl(Index index, const FlatIndexList* fluent_atoms, const FlatIndexList* derived_atoms, const FlatDoubleList* numeric_variables);
+    StateImpl(Index index,
+              const valla::IndexedHashSet& tree_table,
+              valla::Slot fluent_atoms,
+              valla::Slot derived_atoms,
+              const FlatDoubleList* numeric_variables);
 
     friend class StateRepositoryImpl;
 
@@ -53,6 +63,7 @@ public:
      */
 
     Index get_index() const;
+    const valla::IndexedHashSet& get_tree_table() const;
     template<formalism::IsFluentOrDerivedTag P>
     auto get_atoms() const;
     const FlatDoubleList& get_numeric_variables() const;
@@ -97,11 +108,11 @@ auto StateImpl::get_atoms() const
 {
     if constexpr (std::is_same_v<P, formalism::FluentTag>)
     {
-        return m_fluent_atoms->compressed_range();
+        return std::ranges::subrange(v::begin(m_fluent_atoms, get_tree_table()), v::end());
     }
     else if constexpr (std::is_same_v<P, formalism::DerivedTag>)
     {
-        return m_derived_atoms->compressed_range();
+        return std::ranges::subrange(v::begin(m_derived_atoms, get_tree_table()), v::end());
     }
     else
     {

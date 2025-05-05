@@ -28,10 +28,15 @@
 #include "mimir/search/axiom_evaluators/interface.hpp"
 #include "mimir/search/search_context.hpp"
 
+#include <valla/delta_tree_compression.hpp>
+#include <valla/indexed_hash_set.hpp>
+#include <valla/tree_compression.hpp>
+
 using namespace mimir::formalism;
 
 namespace mimir::search
 {
+namespace v = valla::delta;
 
 ContinuousCost compute_state_metric_value(State state, const ProblemImpl& problem)
 {
@@ -91,6 +96,8 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
                                                                           const FlatDoubleList& fluent_numeric_variables)
 {
     auto& problem = *m_axiom_evaluator->get_problem();
+    auto& tree_table = problem.get_tree_table();
+    auto& root_table = problem.get_state_root_table();
 
     /* Dense state */
     auto& dense_fluent_atoms = m_dense_state_builder.get_atoms<FluentTag>();
@@ -102,8 +109,8 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
     m_state_fluent_atoms.clear();
     m_state_derived_atoms.clear();
     /* Sparse state */
-    const FlatIndexList* state_fluent_atoms = &m_empty_index_list;
-    const FlatIndexList* state_derived_atoms = &m_empty_index_list;
+    auto state_fluent_atoms_slot = valla::Slot(0);
+    auto state_derived_atoms_slot = valla::Slot(0);
     const FlatDoubleList* state_numeric_variables = &m_empty_double_list;
 
     /* 2. Construct non-extended state */
@@ -118,14 +125,13 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
     {
         dense_fluent_atoms.set(atom->get_index());
     }
+
+    state_fluent_atoms_slot = root_table.get_slot(v::insert(dense_fluent_atoms, tree_table, root_table).first->second);
+
     update_reached_fluent_atoms(dense_fluent_atoms, m_reached_fluent_atoms);
-    translate_dense_into_sorted_compressed_sparse(dense_fluent_atoms, m_state_fluent_atoms);
-    assert(std::equal(m_state_fluent_atoms.compressed_begin(), m_state_fluent_atoms.compressed_end(), dense_fluent_atoms.begin()));
-    assert(std::equal(dense_fluent_atoms.begin(), dense_fluent_atoms.end(), m_state_fluent_atoms.compressed_begin()));
-    state_fluent_atoms = problem.get_or_create_index_list(m_state_fluent_atoms);
 
     // Test whether there exists an extended state for the given non extended state
-    if (auto state = m_states.find(StateImpl(-1, state_fluent_atoms, state_derived_atoms, state_numeric_variables)))
+    if (auto state = m_states.find(StateImpl(-1, tree_table, state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables)))
     {
         return { state, compute_state_metric_value(state, *m_axiom_evaluator->get_problem()) };
     }
@@ -136,16 +142,16 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
         {
             // Evaluate axioms
             m_axiom_evaluator->generate_and_apply_axioms(m_dense_state_builder);
+
+            state_derived_atoms_slot = root_table.get_slot(v::insert(dense_derived_atoms, tree_table, root_table).first->second);
+
             update_reached_derived_atoms(dense_derived_atoms, m_reached_derived_atoms);
             translate_dense_into_sorted_compressed_sparse(dense_derived_atoms, m_state_derived_atoms);
-            assert(std::equal(m_state_derived_atoms.compressed_begin(), m_state_derived_atoms.compressed_end(), dense_derived_atoms.begin()));
-            assert(std::equal(dense_derived_atoms.begin(), dense_derived_atoms.end(), m_state_derived_atoms.compressed_begin()));
-            state_derived_atoms = problem.get_or_create_index_list(m_state_derived_atoms);
         }
     }
 
     // Cache and return the extended state.
-    auto state = m_states.get_or_create(state_fluent_atoms, state_derived_atoms, state_numeric_variables);
+    auto state = m_states.get_or_create(tree_table, state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables);
 
     return { state, compute_state_metric_value(state, *m_axiom_evaluator->get_problem()) };
 }
@@ -280,6 +286,8 @@ std::pair<State, ContinuousCost>
 StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dense_state, GroundAction action, ContinuousCost state_metric_value)
 {
     auto& problem = *m_axiom_evaluator->get_problem();
+    auto& tree_table = problem.get_tree_table();
+    auto& root_table = problem.get_state_root_table();
 
     /* Dense state*/
     auto& dense_fluent_atoms = dense_state.get_atoms<FluentTag>();
@@ -293,8 +301,8 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
     m_applied_negative_effect_atoms.unset_all();
     m_applied_positive_effect_atoms.unset_all();
     /* Sparse state */
-    const FlatIndexList* state_fluent_atoms = &m_empty_index_list;
-    const FlatIndexList* state_derived_atoms = &m_empty_index_list;
+    auto state_fluent_atoms_slot = valla::Slot(0);
+    auto state_derived_atoms_slot = valla::Slot(0);
     const FlatDoubleList* state_numeric_variables = &m_empty_double_list;
 
     auto successor_state_metric_value = state_metric_value;
@@ -310,15 +318,14 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
                          m_applied_positive_effect_atoms,
                          dense_fluent_numeric_variables,
                          successor_state_metric_value);
+
+    state_fluent_atoms_slot = root_table.get_slot(v::insert(dense_fluent_atoms, tree_table, root_table).first->second);
+
     update_reached_fluent_atoms(dense_fluent_atoms, m_reached_fluent_atoms);
-    translate_dense_into_sorted_compressed_sparse(dense_fluent_atoms, m_state_fluent_atoms);
-    assert(std::equal(m_state_fluent_atoms.compressed_begin(), m_state_fluent_atoms.compressed_end(), dense_fluent_atoms.begin()));
-    assert(std::equal(dense_fluent_atoms.begin(), dense_fluent_atoms.end(), m_state_fluent_atoms.compressed_begin()));
-    state_fluent_atoms = problem.get_or_create_index_list(m_state_fluent_atoms);
     state_numeric_variables = problem.get_or_create_double_list(dense_fluent_numeric_variables);
 
     // Check if non-extended state exists in cache
-    if (auto state = m_states.find(StateImpl(-1, state_fluent_atoms, state_derived_atoms, state_numeric_variables)))
+    if (auto state = m_states.find(StateImpl(-1, tree_table, state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables)))
     {
         return { state, successor_state_metric_value };
     }
@@ -330,16 +337,15 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
             // Evaluate axioms
             dense_derived_atoms.unset_all();  ///< Important: now we must clear the buffer before evaluating for the updated fluent atoms.
             m_axiom_evaluator->generate_and_apply_axioms(dense_state);
+
+            state_derived_atoms_slot = root_table.get_slot(v::insert(dense_derived_atoms, tree_table, root_table).first->second);
+
             update_reached_fluent_atoms(dense_derived_atoms, m_reached_derived_atoms);
-            translate_dense_into_sorted_compressed_sparse(dense_derived_atoms, m_state_derived_atoms);
-            assert(std::equal(m_state_derived_atoms.compressed_begin(), m_state_derived_atoms.compressed_end(), dense_derived_atoms.begin()));
-            assert(std::equal(dense_derived_atoms.begin(), dense_derived_atoms.end(), m_state_derived_atoms.compressed_begin()));
-            state_derived_atoms = problem.get_or_create_index_list(m_state_derived_atoms);
         }
     }
 
     // Cache and return the extended state.
-    return { m_states.get_or_create(state_fluent_atoms, state_derived_atoms, state_numeric_variables), successor_state_metric_value };
+    return { m_states.get_or_create(tree_table, state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables), successor_state_metric_value };
 }
 
 const Problem& StateRepositoryImpl::get_problem() const { return m_axiom_evaluator->get_problem(); }
