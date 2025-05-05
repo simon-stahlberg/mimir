@@ -169,5 +169,5 @@ SUITE_PUSHWORLD = [
 ]
 
 SUITE_BELUGA2025_SCALABILITY_DETERMINISTIC = [
-    "beluga"
+    "scalability-deterministic"
 ]
