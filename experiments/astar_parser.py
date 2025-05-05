@@ -65,6 +65,7 @@ class AStarParser(Parser):
         self.add_pattern("memory_in_bytes_per_node", r"Number of bytes per node: (\d+)", type=int)
         self.add_pattern("memory_in_bytes_for_problem", r"Number of bytes for states: (\d+)", type=int)
         self.add_pattern("total_memory_in_bytes", r"Total number of bytes used: (\d+)", type=int)
+        self.add_pattern("peak_memory_usage_in_bytes", r"Peak memory usage in bytes: (\d+)", type=int)
 
         self.add_pattern("num_of_states", r"Number of states: (\d+)", type=int)
         self.add_pattern("num_of_nodes", r"Number of nodes: (\d+)", type=int)

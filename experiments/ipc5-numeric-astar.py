@@ -68,6 +68,7 @@ ATTRIBUTES = [
     "memory_in_bytes_per_node",
     "memory_in_bytes_for_problem",
     "total_memory_in_bytes",
+    "peak_memory_usage_in_bytes",
 
     "num_of_states",
     "num_of_nodes",
