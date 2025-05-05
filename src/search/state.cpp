@@ -31,14 +31,19 @@ namespace mimir::search
 
 /* State */
 
-StateImpl::StateImpl(Index index, const FlatIndexList* fluent_atoms, const FlatIndexList* derived_atoms, const FlatDoubleList* numeric_variables) :
+StateImpl::StateImpl(Index index,
+                     const valla::IndexedHashSet& tree_table,
+                     valla::Slot fluent_atoms,
+                     valla::Slot derived_atoms,
+                     const FlatDoubleList* numeric_variables) :
     m_index(index),
+    m_tree_table(tree_table),
     m_fluent_atoms(fluent_atoms),
     m_derived_atoms(derived_atoms),
     m_numeric_variables(numeric_variables)
 {
-    assert(std::is_sorted(m_fluent_atoms->compressed_begin(), m_fluent_atoms->compressed_end()));
-    assert(std::is_sorted(m_derived_atoms->compressed_begin(), m_derived_atoms->compressed_end()));
+    assert(std::is_sorted(v::begin(m_fluent_atoms, get_tree_table()), v::end()));
+    assert(std::is_sorted(v::begin(m_derived_atoms, get_tree_table()), v::end()));
 }
 
 template<IsFluentOrDerivedTag P>
@@ -72,6 +77,8 @@ bool StateImpl::numeric_constraints_hold(const GroundNumericConstraintList& nume
 }
 
 Index StateImpl::get_index() const { return m_index; }
+
+const valla::IndexedHashSet& StateImpl::get_tree_table() const { return m_tree_table; }
 
 const FlatDoubleList& StateImpl::get_numeric_variables() const { return *m_numeric_variables; }
 

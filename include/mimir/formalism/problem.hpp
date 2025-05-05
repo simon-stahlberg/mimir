@@ -23,6 +23,8 @@
 #include "mimir/formalism/problem_details.hpp"
 #include "mimir/formalism/repositories.hpp"
 
+#include <valla/indexed_hash_set.hpp>
+
 namespace mimir::formalism
 {
 class ProblemImpl
@@ -53,6 +55,9 @@ private:
 
     FlatIndexListSet m_flat_index_list_set;    ///< Stores all created atom lists.
     FlatDoubleListSet m_flat_double_list_set;  ///< Stores all created numeric variable lists.
+
+    valla::IndexedHashSet m_tree_table;
+    valla::IndexedHashSet m_state_root_table;
 
     ProblemImpl(Index index,
                 Repositories repositories,
@@ -129,6 +134,8 @@ public:
     const Predicate<DerivedTag>& get_problem_or_domain_derived_predicate(const std::string& name) const;
     const ToPredicateMap<std::string, DerivedTag>& get_name_to_derived_predicate() const;
     const ToPredicateMap<std::string, DerivedTag>& get_name_to_problem_or_domain_derived_predicate() const;
+    valla::IndexedHashSet& get_tree_table();
+    valla::IndexedHashSet& get_state_root_table();
 
     /* Initial state */
     const GroundAtomList<StaticTag>& get_static_initial_atoms() const;
