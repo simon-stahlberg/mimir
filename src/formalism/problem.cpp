@@ -266,7 +266,6 @@ const ToPredicateMap<std::string, DerivedTag>& ProblemImpl::get_name_to_problem_
 {
     return m_details.predicates.name_to_problem_or_domain_derived_predicate;
 }
-
 valla::IndexedHashSet& ProblemImpl::get_tree_table() { return m_tree_table; }
 valla::IndexedHashSet& ProblemImpl::get_state_root_table() { return m_state_root_table; }
 
