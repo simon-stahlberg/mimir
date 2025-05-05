@@ -29,7 +29,7 @@ class BaseReport(AbsoluteReport):
 
 DIR = Path(__file__).resolve().parent
 REPO = DIR.parent
-BENCHMARKS_DIR = Path(os.environ["BENCHMARKS_PDDL"]) / "downward-benchmarks"
+BENCHMARKS_DIR = Path(os.environ["BENCHMARKS_PDDL"]) / "autoscale-benchmarks-main" / "21.11-optimal-strips"
 
 NODE = platform.node()
 REMOTE = re.match(r"tetralith\d+.nsc.liu.se|n\d+", NODE)
@@ -38,13 +38,12 @@ if REMOTE:
         setup=TetralithEnvironment.DEFAULT_SETUP,
         memory_per_cpu="8G",
         extra_options="#SBATCH --account=naiss2024-5-421")
-    SUITE = utils.SUITE_IPC_OPTIMAL_ADL
+    SUITE = utils.SUITE_IPC_OPTIMAL_STRIPS
     TIME_LIMIT = 5 * 60  # 5 minutes
 else:
     ENV = LocalEnvironment(processes=12)
     SUITE = [
-        "miconic-fulladl:f1-0.pddl",
-        "miconic-fulladl:f14-0.pddl",
+        "miconic:p01.pddl",
     ]
     TIME_LIMIT = 3
 ATTRIBUTES = [

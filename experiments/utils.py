@@ -1,5 +1,5 @@
 
-SUITE_OPTIMAL_STRIPS = [
+SUITE_IPC_OPTIMAL_STRIPS = [
     "agricola-opt18-strips", 
     "airport", 
     "barman-opt11-strips", 
@@ -68,7 +68,7 @@ SUITE_OPTIMAL_STRIPS = [
     "zenotravel"
 ]
 
-SUITE_OPTIMAL_ADL = [
+SUITE_IPC_OPTIMAL_ADL = [
     "assembly", 
     "caldera-opt18-adl", 
     "caldera-split-opt18-adl", 
@@ -93,6 +93,51 @@ SUITE_OPTIMAL_ADL = [
     "settlers-opt18-adl", 
     "slitherlink-opt23-adl", 
     "trucks"
+]
+
+SUITE_AUTOSCALE_OPTIMAL_STRIPS = [
+    "agricola",
+    "airport",
+    "barman",
+    "blocksworld",
+    "childsnack",
+    "data-network",
+    "depots",
+    "driverlog",
+    "elevators",
+    "floortile",
+    "freecell",
+    "ged",
+    "grid",
+    "gripper",
+    "hiking",
+    "logistics",
+    "miconic",
+    "mprime",
+    "nomystery",
+    "openstacks",
+    "organic-synthesis-split",
+    "parcprinter",
+    "parking",
+    "pathways",
+    "pegsol",
+    "pipesworld-notankage",
+    "pipesworld-tankage",
+    "rovers",
+    "satellite",
+    "scanalyzer",
+    "snake",
+    "sokoban",
+    "storage",
+    "termes",
+    "tetris",
+    "thoughtful",
+    "tidybot",
+    "tpp",
+    "transport",
+    "visitall",
+    "woodworking",
+    "zenotravel",
 ]
 
 SUITE_HTG = [
