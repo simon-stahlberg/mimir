@@ -13,7 +13,6 @@ def invalid_plan_reported(content, props):
     props["invalid_plan_reported"] = int("val_plan_invalid" in props)
 
 def resolve_unexplained_errors(content, props):
-    print("unexplained_errors" in props, props["out_of_memory"], props["out_of_time"])
     if "unexplained_errors" in props and (props["out_of_memory"] == 1 or props["out_of_time"] == 1):
         del props["unexplained_errors"]
 

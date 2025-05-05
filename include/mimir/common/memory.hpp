@@ -20,9 +20,13 @@
 
 #include <absl/container/flat_hash_map.h>
 #include <absl/container/flat_hash_set.h>
+#include <fstream>
 
 #if defined(__linux__) || defined(__APPLE__)
 #include <sys/resource.h>
+#endif
+#if defined(__APPLE__)
+#include <mach/mach.h>
 #endif
 
 namespace mimir
@@ -54,24 +58,40 @@ inline size_t get_memory_usage_in_bytes(const absl::flat_hash_map<Key, Value, Ha
     return element_memory + metadata_memory;
 }
 
-inline uint64_t get_peak_memory_usage()
+inline int64_t get_peak_memory_usage_in_bytes()
 {
-#if defined(__linux__) || defined(__APPLE__)
-    struct rusage usage
-    {
-    };
-    if (getrusage(RUSAGE_SELF, &usage) == 0)
-    {
+    // On error, produces a warning on cerr and returns -1.
+    int64_t memory_in_kb = -1;
+
 #if defined(__APPLE__)
-        // On macOS, ru_maxrss is in bytes
-        return usage.ru_maxrss;
-#else
-        // On Linux, ru_maxrss is in kilobytes
-        return static_cast<std::uint64_t>(usage.ru_maxrss) * 1024;
-#endif
+    // Based on http://stackoverflow.com/questions/63166
+    task_basic_info t_info;
+    mach_msg_type_number_t t_info_count = TASK_BASIC_INFO_COUNT;
+
+    if (task_info(mach_task_self(), TASK_BASIC_INFO, reinterpret_cast<task_info_t>(&t_info), &t_info_count) == KERN_SUCCESS)
+    {
+        memory_in_kb = t_info.virtual_size / 1024;
     }
-    return 0;
+#else
+    std::ifstream procfile("/proc/self/status");
+    std::string word;
+    while (procfile >> word)
+    {
+        if (word == "VmPeak:")
+        {
+            procfile >> memory_in_kb;
+            break;
+        }
+        // Skip to end of line.
+        procfile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
+    if (procfile.fail())
+        memory_in_kb = -1;
 #endif
+
+    if (memory_in_kb == -1)
+        std::cerr << "warning: could not determine peak memory" << std::endl;
+    return memory_in_kb * 1024;
 }
 
 }

@@ -29,7 +29,7 @@ class BaseReport(AbsoluteReport):
 
 DIR = Path(__file__).resolve().parent
 REPO = DIR.parent
-BENCHMARKS_DIR = Path(os.environ["BENCHMARKS_PDDL"]) / "downward-benchmarks"
+BENCHMARKS_DIR = Path(os.environ["BENCHMARKS_PDDL"]) / "beluga2025"
 
 NODE = platform.node()
 REMOTE = re.match(r"tetralith\d+.nsc.liu.se|n\d+", NODE)
@@ -38,13 +38,12 @@ if REMOTE:
         setup=TetralithEnvironment.DEFAULT_SETUP,
         memory_per_cpu="8G",
         extra_options="#SBATCH --account=naiss2024-5-421")
-    SUITE = utils.SUITE_OPTIMAL_ADL
+    SUITE = utils.SUITE_BELUGA2025_SCALABILITY_DETERMINISTIC
     TIME_LIMIT = 30 * 60  # 30 minutes
 else:
     ENV = LocalEnvironment(processes=12)
     SUITE = [
-        "miconic-fulladl:f1-0.pddl",
-        "miconic-fulladl:f14-0.pddl",
+        "scalability-deterministic:problem_0_s42_j91_r9_oc83_f49.pddl",
     ]
     TIME_LIMIT = 3
 ATTRIBUTES = [

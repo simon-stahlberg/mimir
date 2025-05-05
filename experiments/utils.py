@@ -160,3 +160,14 @@ SUITE_IPC2023_NUMERIC = [
     "sugar",
     "tpp"
 ]
+
+SUITE_PUSHWORLD = [
+    "level1",
+    "level2",
+    "level3",
+    "level4",
+]
+
+SUITE_BELUGA2025_SCALABILITY_DETERMINISTIC = [
+    "beluga"
+]

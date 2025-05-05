@@ -108,7 +108,7 @@ int main(int argc, char** argv)
     std::cout << "[AStar] Total time: " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time)
               << std::endl;
 
-    std::cout << "Peak memory usage in bytes: " << get_peak_memory_usage() << std::endl;
+    std::cout << "Peak memory usage in bytes: " << get_peak_memory_usage_in_bytes() << std::endl;
 
     if (result.status == SearchStatus::SOLVED)
     {
