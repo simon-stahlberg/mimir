@@ -119,6 +119,9 @@ class SearchParser(Parser):
         self.add_function(ensure_minimum_times)
         self.add_function(make_add_score(self.max_memory_in_bytes))
 
+<<<<<<< HEAD:experiments/search_parser.py
         self.add_function(postprocess_initial_h_value)
 
+=======
+>>>>>>> 7bdd39a9 (added parsing of peak memory score, out of time and out of memory):experiments/astar_parser.py
         
