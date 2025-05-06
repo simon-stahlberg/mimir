@@ -114,11 +114,6 @@ public:
 
         IndexType extract_value_at_position(size_t pos) const
         {
-            if (bit_width_ == get_bit_width<IndexType>())  // Fast evaluate
-            {
-                return blocks_[pos];
-            }
-
             const size_t block_index = get_block_index(pos);
             const size_t element_index = get_element_index(pos);
             const size_t shift = (element_index << bit_width_log2_);
@@ -156,13 +151,15 @@ public:
             blocks_(blocks),
             size_(size),
             pos_(begin ? 0 : size),
-            mask_((static_cast<IndexType>(1) << bit_width) - 1),
+            mask_((std::numeric_limits<IndexType>::max() >> (get_bit_width<IndexType>() - bit_width))),
             value_(0),
             bit_width_(bit_width),
             bit_width_log2_(bit_width_log2),
             elements_per_block_(elements_per_block),
             elements_per_block_log2_(elements_per_block_log2)
         {
+            assert(bit_width_ > 0);
+
             if (begin && size > 0)
             {
                 value_ = extract_value_at_position(0);
@@ -378,18 +375,14 @@ public:
     {
         initialize_compressed_format();
 
-        if (bit_width_ == get_bit_width<IndexType>())
-        {
-            return;  // Already optimal
-        }
-
         // Now compress blocks_
-        const IndexType mask = (1ULL << bit_width_) - 1;  ///< Mask for extracting the required number of bits
-        size_t shift_bits = 0;                            ///< Tracks the bit position for packing smaller values
-        size_t packed_index = 0;                          ///< New position in blocks_ for writing packed data
-        IndexType packed_buffer = 0;                      ///< Buffer for packing smaller values
-        size_t element_index = 0;                         ///< the index of an element in the packed_buffer
-        [[maybe_unused]] size_t element_count = 0;        ///< just for assertion.
+        const IndexType mask =
+            std::numeric_limits<IndexType>::max() >> (get_bit_width<IndexType>() - bit_width_);  ///< Mask for extracting the required number of bits
+        size_t shift_bits = 0;                                                                   ///< Tracks the bit position for packing smaller values
+        size_t packed_index = 0;                                                                 ///< New position in blocks_ for writing packed data
+        IndexType packed_buffer = 0;                                                             ///< Buffer for packing smaller values
+        size_t element_index = 0;                                                                ///< the index of an element in the packed_buffer
+        [[maybe_unused]] size_t element_count = 0;                                               ///< just for assertion.
 
         IndexType prev = 0;
         for (IndexType block : blocks_)

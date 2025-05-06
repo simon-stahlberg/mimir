@@ -33,6 +33,7 @@ TEST(CistaTests, CistaDynamicBitsetIteratorTest)
     bitset.set(2);
     bitset.set(4);
     bitset.set(99);
+    bitset.set(std::numeric_limits<uint32_t>::max());
 
     auto it = bitset.begin();
     auto end = bitset.end();
@@ -43,6 +44,8 @@ TEST(CistaTests, CistaDynamicBitsetIteratorTest)
     EXPECT_EQ(*it, 4);
     ++it;
     EXPECT_EQ(*it, 99);
+    ++it;
+    EXPECT_EQ(*it, std::numeric_limits<uint32_t>::max());
     ++it;
     EXPECT_EQ(it, end);
 }

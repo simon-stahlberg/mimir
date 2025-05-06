@@ -120,6 +120,8 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
     }
     update_reached_fluent_atoms(dense_fluent_atoms, m_reached_fluent_atoms);
     translate_dense_into_sorted_compressed_sparse(dense_fluent_atoms, m_state_fluent_atoms);
+    assert(std::equal(m_state_fluent_atoms.compressed_begin(), m_state_fluent_atoms.compressed_end(), dense_fluent_atoms.begin()));
+    assert(std::equal(dense_fluent_atoms.begin(), dense_fluent_atoms.end(), m_state_fluent_atoms.compressed_begin()));
     state_fluent_atoms = problem.get_or_create_index_list(m_state_fluent_atoms);
 
     // Test whether there exists an extended state for the given non extended state
@@ -136,6 +138,8 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
             m_axiom_evaluator->generate_and_apply_axioms(m_dense_state_builder);
             update_reached_derived_atoms(dense_derived_atoms, m_reached_derived_atoms);
             translate_dense_into_sorted_compressed_sparse(dense_derived_atoms, m_state_derived_atoms);
+            assert(std::equal(m_state_derived_atoms.compressed_begin(), m_state_derived_atoms.compressed_end(), dense_derived_atoms.begin()));
+            assert(std::equal(dense_derived_atoms.begin(), dense_derived_atoms.end(), m_state_derived_atoms.compressed_begin()));
             state_derived_atoms = problem.get_or_create_index_list(m_state_derived_atoms);
         }
     }
@@ -324,6 +328,15 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
                          successor_state_metric_value);
     update_reached_fluent_atoms(dense_fluent_atoms, m_reached_fluent_atoms);
     translate_dense_into_sorted_compressed_sparse(dense_fluent_atoms, m_state_fluent_atoms);
+    if (!std::equal(m_state_fluent_atoms.compressed_begin(), m_state_fluent_atoms.compressed_end(), dense_fluent_atoms.begin()))
+    {
+        mimir::operator<<(std::cout, dense_fluent_atoms);
+        std::cout << std::endl;
+        mimir::operator<<(std::cout, m_state_fluent_atoms);
+        std::cout << std::endl;
+    }
+    assert(std::equal(m_state_fluent_atoms.compressed_begin(), m_state_fluent_atoms.compressed_end(), dense_fluent_atoms.begin()));
+    assert(std::equal(dense_fluent_atoms.begin(), dense_fluent_atoms.end(), m_state_fluent_atoms.compressed_begin()));
     state_fluent_atoms = problem.get_or_create_index_list(m_state_fluent_atoms);
     state_numeric_variables = problem.get_or_create_double_list(dense_fluent_numeric_variables);
 
@@ -342,6 +355,8 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
             m_axiom_evaluator->generate_and_apply_axioms(dense_state);
             update_reached_fluent_atoms(dense_derived_atoms, m_reached_derived_atoms);
             translate_dense_into_sorted_compressed_sparse(dense_derived_atoms, m_state_derived_atoms);
+            assert(std::equal(m_state_derived_atoms.compressed_begin(), m_state_derived_atoms.compressed_end(), dense_derived_atoms.begin()));
+            assert(std::equal(dense_derived_atoms.begin(), dense_derived_atoms.end(), m_state_derived_atoms.compressed_begin()));
             state_derived_atoms = problem.get_or_create_index_list(m_state_derived_atoms);
         }
     }

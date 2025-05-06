@@ -31,6 +31,10 @@ DenseState::DenseState(State state)
 {
     insert_into_bitset(state->get_atoms<FluentTag>(), m_fluent_atoms);
     insert_into_bitset(state->get_atoms<DerivedTag>(), m_derived_atoms);
+    assert(std::equal(state->get_atoms<FluentTag>().begin(), state->get_atoms<FluentTag>().end(), m_fluent_atoms.begin()));
+    assert(std::equal(m_fluent_atoms.begin(), m_fluent_atoms.end(), state->get_atoms<FluentTag>().begin()));
+    assert(std::equal(state->get_atoms<DerivedTag>().begin(), state->get_atoms<DerivedTag>().end(), m_derived_atoms.begin()));
+    assert(std::equal(m_derived_atoms.begin(), m_derived_atoms.end(), state->get_atoms<DerivedTag>().begin()));
     m_numeric_variables = state->get_numeric_variables();
 }
 
@@ -43,6 +47,10 @@ void DenseState::translate(State state, DenseState& out_state)
     derived_atoms.unset_all();
     insert_into_bitset(state->get_atoms<FluentTag>(), fluent_atoms);
     insert_into_bitset(state->get_atoms<DerivedTag>(), derived_atoms);
+    assert(std::equal(state->get_atoms<FluentTag>().begin(), state->get_atoms<FluentTag>().end(), fluent_atoms.begin()));
+    assert(std::equal(fluent_atoms.begin(), fluent_atoms.end(), state->get_atoms<FluentTag>().begin()));
+    assert(std::equal(state->get_atoms<DerivedTag>().begin(), state->get_atoms<DerivedTag>().end(), derived_atoms.begin()));
+    assert(std::equal(derived_atoms.begin(), derived_atoms.end(), state->get_atoms<DerivedTag>().begin()));
     numeric_variables = state->get_numeric_variables();
 }
 

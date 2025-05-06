@@ -90,7 +90,7 @@ TEST(CistaTests, CistaFlexibleIndexVectorIterateUncompressedTest)
 
     auto vec = Vector({ 1, 16, 2, 4, 9 });
 
-    // test default vector iterator ;-)
+    // test default vector iterator
     auto it = vec.uncompressed_begin();
     EXPECT_EQ(*it, 1);
     ++it;
