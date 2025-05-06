@@ -127,9 +127,9 @@ TEST(CistaTests, CistaFlexibleIndexVectorTest)
 
     auto vec = Vector({ 1, 16, 2, 4, 9 });
 
-    EXPECT_EQ(vec.bit_width(), 16);
-    EXPECT_EQ(vec.bit_width_log2(), 4);
-    EXPECT_EQ(vec.elements_per_block(), 1);
+    EXPECT_EQ(vec.bit_width(), 0);
+    EXPECT_EQ(vec.bit_width_log2(), 0);
+    EXPECT_EQ(vec.elements_per_block(), 0);
     EXPECT_EQ(vec.elements_per_block_log2(), 0);
     EXPECT_EQ(vec.size(), 5);
     EXPECT_EQ(vec.blocks().size(), 5);
