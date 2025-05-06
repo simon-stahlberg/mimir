@@ -216,3 +216,23 @@ SUITE_PUSHWORLD = [
 SUITE_BELUGA2025_SCALABILITY_DETERMINISTIC = [
     "scalability-deterministic"
 ]
+
+SUITE_MINEPDDL = [
+    "Bridge",
+    "Build_Cabin",
+    "Build_Cross",
+    "Build_Shape",
+    "Build_Wall",
+    "Build_Well",
+    "Climb_Place",
+    "Collect_Build_Shape",
+    "Cut_Tree",
+    "Gather_Multiple_Wood",
+    "Gather_Wood",
+    "Move_to_Location",
+    "Pickup_and_Place",
+    "Pickup_Diamond",
+    "Place_Wood",
+    "Scaled_Move_to_Location",
+    "Scaled_Move_to_Location_extended",
+]
