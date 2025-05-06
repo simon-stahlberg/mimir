@@ -69,6 +69,8 @@ ATTRIBUTES = [
     "total_memory_in_bytes",
     "peak_memory_usage_in_bytes",
 
+    "score_peak_memory_usage_in_bytes",
+    
     "num_of_states",
     "num_of_nodes",
     "num_of_actions",
@@ -84,7 +86,7 @@ MEMORY_LIMIT = 8000
 # Create a new experiment.
 exp = Experiment(environment=ENV)
 exp.add_parser(ErrorParser())
-exp.add_parser(AStarParser())
+exp.add_parser(AStarParser(max_memory_in_bytes=MEMORY_LIMIT * 1e6))
 
 PLANNER_DIR = REPO / "build" / "exe" / "planner_astar"
 
