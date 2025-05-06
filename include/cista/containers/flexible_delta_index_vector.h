@@ -53,41 +53,33 @@ private:
 public:
     using value_type = IndexType;
 
-    basic_flexible_delta_index_vector() :
-        bit_width_(get_bit_width<IndexType>()),
-        bit_width_log2_(std::bit_width(bit_width_) - 1),
-        elements_per_block_(get_bit_width<IndexType>() >> bit_width_log2_),
-        elements_per_block_log2_(std::bit_width(elements_per_block_) - 1),
-        size_(0),
-        blocks_()
-    {
-    }
+    basic_flexible_delta_index_vector() : bit_width_(0), bit_width_log2_(0), elements_per_block_(0), elements_per_block_log2_(0), size_(0), blocks_() {}
 
     basic_flexible_delta_index_vector(size_t size) :
-        bit_width_(get_bit_width<IndexType>()),
-        bit_width_log2_(std::bit_width(bit_width_) - 1),
-        elements_per_block_(get_bit_width<IndexType>() >> bit_width_log2_),
-        elements_per_block_log2_(std::bit_width(elements_per_block_) - 1),
+        bit_width_(0),
+        bit_width_log2_(0),
+        elements_per_block_(0),
+        elements_per_block_log2_(0),
         size_(size),
         blocks_(size)
     {
     }
 
     basic_flexible_delta_index_vector(size_t size, IndexType default_value) :
-        bit_width_(get_bit_width<IndexType>()),
-        bit_width_log2_(std::bit_width(bit_width_) - 1),
-        elements_per_block_(get_bit_width<IndexType>() >> bit_width_log2_),
-        elements_per_block_log2_(std::bit_width(elements_per_block_) - 1),
+        bit_width_(0),
+        bit_width_log2_(0),
+        elements_per_block_(0),
+        elements_per_block_log2_(0),
         size_(size),
         blocks_(size, default_value)
     {
     }
 
     basic_flexible_delta_index_vector(std::initializer_list<IndexType> init_list) :
-        bit_width_(get_bit_width<IndexType>()),
-        bit_width_log2_(std::bit_width(bit_width_) - 1),
-        elements_per_block_(get_bit_width<IndexType>() >> bit_width_log2_),
-        elements_per_block_log2_(std::bit_width(elements_per_block_) - 1),
+        bit_width_(0),
+        bit_width_log2_(0),
+        elements_per_block_(0),
+        elements_per_block_log2_(0),
         size_(init_list.size()),
         blocks_()
     {
@@ -95,7 +87,9 @@ public:
         blocks_.insert(blocks_.end(), init_list.begin(), init_list.end());
     }
 
-    bool is_compressed() const { return bit_width_ != get_bit_width<IndexType>(); }
+    /// @brief 0 is sentinel value for uncompressed!
+    /// @return
+    bool is_compressed() const { return bit_width_ != 0; }
 
     /**
      * Iterators
@@ -297,7 +291,10 @@ public:
 
     void clear()
     {
-        bit_width_ = get_bit_width<IndexType>();
+        bit_width_ = 0;
+        bit_width_log2_ = 0;
+        elements_per_block_ = 0;
+        elements_per_block_log2_ = 0;
         size_ = 0;
         blocks_.clear();
     }

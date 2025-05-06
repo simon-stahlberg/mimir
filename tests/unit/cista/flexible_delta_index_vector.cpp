@@ -119,6 +119,52 @@ TEST(CistaTests, CistaFlexibleIndexVectorIterateUncompressedTest)
     EXPECT_EQ(cit, vec.uncompressed_end());
 }
 
+TEST(CistaTests, CistaFlexibleIndexVectorIterateCompressedTest)
+{
+    namespace data = cista::offset;
+
+    using Vector = data::flexible_delta_index_vector<uint32_t>;
+
+    auto vec = Vector({ 0, std::numeric_limits<uint32_t>::max() });
+
+    {
+        // test default vector iterator ;-)
+        auto it = vec.uncompressed_begin();
+        EXPECT_EQ(*it, 0);
+        ++it;
+        EXPECT_EQ(*it, std::numeric_limits<uint32_t>::max());
+        ++it;
+        EXPECT_EQ(it, vec.uncompressed_end());
+
+        // test our custom const_iterator
+        auto cit = vec.uncompressed_begin();
+        EXPECT_EQ(*cit, 0);
+        ++cit;
+        EXPECT_EQ(*cit, std::numeric_limits<uint32_t>::max());
+        ++cit;
+        EXPECT_EQ(cit, vec.uncompressed_end());
+    }
+
+    vec.compress();
+
+    {
+        std::vector<uint8_t> buf;
+        {  // Serialize.
+            buf = cista::serialize(vec);
+        }
+
+        // Deserialize.
+        const auto& deserialized = *cista::deserialize<Vector>(buf.begin().base(), buf.end().base());
+
+        auto it = deserialized.compressed_begin();
+        EXPECT_EQ(*it, 0);
+        ++it;
+        EXPECT_EQ(*it, std::numeric_limits<uint32_t>::max());
+        ++it;
+        EXPECT_EQ(it, deserialized.compressed_end());
+    }
+}
+
 TEST(CistaTests, CistaFlexibleIndexVectorTest)
 {
     namespace data = cista::offset;
@@ -127,9 +173,9 @@ TEST(CistaTests, CistaFlexibleIndexVectorTest)
 
     auto vec = Vector({ 1, 2, 4, 9, 16 });
 
-    EXPECT_EQ(vec.bit_width(), 16);
-    EXPECT_EQ(vec.bit_width_log2(), 4);
-    EXPECT_EQ(vec.elements_per_block(), 1);
+    EXPECT_EQ(vec.bit_width(), 0);
+    EXPECT_EQ(vec.bit_width_log2(), 0);
+    EXPECT_EQ(vec.elements_per_block(), 0);
     EXPECT_EQ(vec.elements_per_block_log2(), 0);
     EXPECT_EQ(vec.size(), 5);
     EXPECT_EQ(vec.blocks().size(), 5);
