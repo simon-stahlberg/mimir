@@ -217,6 +217,7 @@ SUITE_BELUGA2025_SCALABILITY_DETERMINISTIC = [
     "scalability-deterministic"
 ]
 
+<<<<<<< HEAD
 
 SUITE_MINEPDDL = [
     "Bridge",
@@ -236,4 +237,8 @@ SUITE_MINEPDDL = [
     "Place_Wood",
     "Scaled_Move_to_Location",
     "Scaled_Move_to_Location_extended",
+=======
+SUITE_MINEPDDL = [
+    
+>>>>>>> 545de9ef (renamed experiments)
 ]
