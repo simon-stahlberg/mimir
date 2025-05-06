@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 
 from lab.parser import Parser
+from lab import tools
 
 
 def coverage(content, props):
@@ -8,6 +9,12 @@ def coverage(content, props):
 
 def unsolvable(content, props):
     props["unsolvable"] = int("exhausted" in props)
+
+def out_of_memory(content, props):
+    props["out_of_memory"] = int("std_bad_alloc" in props)
+
+def out_of_time(content, props):
+    props["out_of_time"] = int(props["out_of_memory"] == 0 and props["coverage"] == 0 and props["unsolvable"] == 0)
 
 def invalid_plan_reported(content, props):
     props["invalid_plan_reported"] = int("val_plan_invalid" in props)
@@ -21,6 +28,21 @@ def ensure_minimum_times(content, props):
         time = props.get(attr, None)
         if time is not None:
             props[attr] = max(time, 1) 
+
+def make_add_score(max_memory_in_bytes: int):
+    def add_scores(content, props):
+        success = props["coverage"] or props["unsolvable"]
+
+        props["score_peak_memory_usage_in_bytes"] = tools.compute_log_score(
+            success, props.get("peak_memory_usage_in_bytes"), lower_bound=2_000_000, upper_bound=max_memory_in_bytes
+        )
+
+    return add_scores
+
+
+    "score_peak_memory_usage_in_bytes",
+
+
 
 class AStarParser(Parser):
     """
@@ -48,8 +70,10 @@ class AStarParser(Parser):
     Goal not satisfied
     Plan invalid
     """
-    def __init__(self):
+    def __init__(self, max_memory_in_bytes):
         super().__init__()
+        self.max_memory_in_bytes = max_memory_in_bytes
+
         self.add_pattern("search_time", r"Search time: (\d+)ms", type=int)
         self.add_pattern("total_time", r"Total time: (\d+)ms", type=int)
         self.add_pattern("num_expanded", r"Number of expanded states: (\d+)", type=int)
@@ -67,6 +91,8 @@ class AStarParser(Parser):
         self.add_pattern("total_memory_in_bytes", r"Total number of bytes used: (\d+)", type=int)
         self.add_pattern("peak_memory_usage_in_bytes", r"Peak memory usage in bytes: (\d+)", type=int)
 
+        self.add_pattern("std_bad_alloc", r".*(std::bad_alloc).*", type=str, file="run.err")
+
         self.add_pattern("num_of_states", r"Number of states: (\d+)", type=int)
         self.add_pattern("num_of_nodes", r"Number of nodes: (\d+)", type=int)
         self.add_pattern("num_of_actions", r"Number of actions: (\d+)", type=int)
@@ -80,7 +106,12 @@ class AStarParser(Parser):
 
         self.add_function(coverage)
         self.add_function(unsolvable)
+        self.add_function(out_of_memory)
+        self.add_function(out_of_time)
         self.add_function(invalid_plan_reported)
 
         self.add_function(resolve_unexplained_errors)
         self.add_function(ensure_minimum_times)
+        self.add_function(make_add_score(self.max_memory_in_bytes))
+
+        

@@ -217,6 +217,7 @@ SUITE_BELUGA2025_SCALABILITY_DETERMINISTIC = [
     "scalability-deterministic"
 ]
 
+
 SUITE_MINEPDDL = [
     "Bridge",
     "Build_Cabin",
