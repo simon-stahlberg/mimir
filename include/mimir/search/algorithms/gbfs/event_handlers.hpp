@@ -15,22 +15,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_ALGORITHMS_HPP_
-#define MIMIR_SEARCH_ALGORITHMS_HPP_
+#ifndef MIMIR_SEARCH_ALGORITHMS_GBFS_EVENT_HANDLERS_HPP_
+#define MIMIR_SEARCH_ALGORITHMS_ASTAR_EVENT_HANDLERS_HPP_
 
 /**
  * Include all specializations here
  */
-
-#include "mimir/search/algorithms/astar.hpp"
-#include "mimir/search/algorithms/astar/event_handlers.hpp"
-#include "mimir/search/algorithms/brfs.hpp"
-#include "mimir/search/algorithms/brfs/event_handlers.hpp"
-#include "mimir/search/algorithms/gbfs.hpp"
-#include "mimir/search/algorithms/gbfs/event_handlers.hpp"
-#include "mimir/search/algorithms/iw.hpp"
-#include "mimir/search/algorithms/iw/event_handlers.hpp"
-#include "mimir/search/algorithms/siw.hpp"
-#include "mimir/search/algorithms/siw/event_handlers.hpp"
+#include "mimir/search/algorithms/gbfs/event_handlers/debug.hpp"
+#include "mimir/search/algorithms/gbfs/event_handlers/default.hpp"
 
 #endif

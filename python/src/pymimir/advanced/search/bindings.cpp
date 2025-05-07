@@ -148,6 +148,47 @@ public:
     const brfs::Statistics& get_statistics() const override { NB_OVERRIDE_PURE(get_statistics); }
 };
 
+class IPyGBFSEventHandler : public gbfs::IEventHandler
+{
+public:
+    NB_TRAMPOLINE(gbfs::IEventHandler, 10);
+
+    /* Trampoline (need one for each virtual function) */
+    void on_expand_state(State state) override { NB_OVERRIDE_PURE(on_expand_state, state); }
+
+    void on_expand_goal_state(State state) override { NB_OVERRIDE_PURE(on_expand_goal_state, state); }
+
+    void on_generate_state(State state, GroundAction action, ContinuousCost action_cost, State successor_state) override
+    {
+        NB_OVERRIDE_PURE(on_generate_state, state, action, action_cost, successor_state);
+    }
+    void on_prune_state(State state) override { NB_OVERRIDE_PURE(on_prune_state, state); }
+    void on_start_search(State start_state) override { NB_OVERRIDE_PURE(on_start_search, start_state); }
+    void on_end_search(uint64_t num_reached_fluent_atoms,
+                       uint64_t num_reached_derived_atoms,
+                       uint64_t num_bytes_for_problem,
+                       uint64_t num_bytes_for_nodes,
+                       uint64_t num_states,
+                       uint64_t num_nodes,
+                       uint64_t num_actions,
+                       uint64_t num_axioms) override
+    {
+        NB_OVERRIDE_PURE(on_end_search,
+                         num_reached_fluent_atoms,
+                         num_reached_derived_atoms,
+                         num_bytes_for_problem,
+                         num_bytes_for_nodes,
+                         num_states,
+                         num_nodes,
+                         num_actions,
+                         num_axioms);
+    }
+    void on_solved(const Plan& plan) override { NB_OVERRIDE_PURE(on_solved, plan); }
+    void on_unsolvable() override { NB_OVERRIDE_PURE(on_unsolvable); }
+    void on_exhausted() override { NB_OVERRIDE_PURE(on_exhausted); }
+    const gbfs::Statistics& get_statistics() const override { NB_OVERRIDE_PURE(get_statistics); }
+};
+
 void bind_module_definitions(nb::module_& m)
 {
     /* Enums */
@@ -608,6 +649,43 @@ void bind_module_definitions(nb::module_& m)
           "stop_if_goal"_a = true,
           "max_num_states"_a = std::numeric_limits<uint32_t>::max(),
           "max_time_in_ms"_a = std::numeric_limits<uint32_t>::max());
+
+    // GBFS
+    nb::class_<gbfs::Statistics>(m, "GBFSStatistics")  //
+        .def(nb::init<>())
+        .def("get_num_generated", &gbfs::Statistics::get_num_generated)
+        .def("get_num_expanded", &gbfs::Statistics::get_num_expanded)
+        .def("get_num_deadends", &gbfs::Statistics::get_num_deadends)
+        .def("get_num_pruned", &gbfs::Statistics::get_num_pruned);
+
+    nb::class_<gbfs::IEventHandler, IPyGBFSEventHandler>(m, "IGBFSEventHandler")  //
+        .def(nb::init<>())
+        .def("on_expand_state", &gbfs::IEventHandler::on_expand_state)
+        .def("on_expand_goal_state", &gbfs::IEventHandler::on_expand_goal_state)
+        .def("on_generate_state", &gbfs::IEventHandler::on_generate_state)
+        .def("on_prune_state", &gbfs::IEventHandler::on_prune_state)
+        .def("on_start_search", &gbfs::IEventHandler::on_start_search)
+        .def("on_end_search", &gbfs::IEventHandler::on_end_search)
+        .def("on_solved", &gbfs::IEventHandler::on_solved)
+        .def("on_unsolvable", &gbfs::IEventHandler::on_unsolvable)
+        .def("on_exhausted", &gbfs::IEventHandler::on_exhausted)
+        .def("get_statistics", &gbfs::IEventHandler::get_statistics);
+
+    nb::class_<gbfs::DefaultEventHandlerImpl, gbfs::IEventHandler>(m,
+                                                                   "DefaultGBFSEventHandler")  //
+        .def(nb::init<Problem, bool>(), "problem"_a, "quiet"_a = true);
+    nb::class_<gbfs::DebugEventHandlerImpl, gbfs::IEventHandler>(m,
+                                                                 "DebugGBFSEventHandler")  //
+        .def(nb::init<Problem, bool>(), "problem"_a, "quiet"_a = true);
+
+    m.def("find_solution_gbfs",
+          &gbfs::find_solution,
+          "search_context"_a,
+          "heuristic"_a,
+          "start_state"_a = nullptr,
+          "gbfs_event_handler"_a = nullptr,
+          "goal_strategy"_a = nullptr,
+          "pruning_strategy"_a = nullptr);
 
     // IW
     nb::class_<iw::TupleIndexMapper>(m, "TupleIndexMapper")  //

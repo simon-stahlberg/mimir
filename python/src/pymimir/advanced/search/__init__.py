@@ -63,6 +63,15 @@ from pymimir.pymimir.advanced.search import (
     find_solution_brfs,
 )
 
+# GBFS
+from pymimir.pymimir.advanced.search import (
+    GBFSStatistics,
+    IGBFSEventHandler,
+    DebugGBFSEventHandler,
+    DefaultGBFSEventHandler,
+    find_solution_gbfs,
+)
+
 # IW
 from pymimir.pymimir.advanced.search import (
     IWStatistics,
