@@ -24,14 +24,9 @@
 
 #include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
-#include <valla/delta_tree_compression.hpp>
-#include <valla/indexed_hash_set.hpp>
-#include <valla/tree_compression.hpp>
 
 namespace mimir::formalism
 {
-namespace v = valla::delta;
-
 class GroundConjunctiveConditionImpl
 {
 private:
