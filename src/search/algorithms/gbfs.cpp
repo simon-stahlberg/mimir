@@ -150,13 +150,6 @@ SearchResult find_solution(const SearchContext& context,
 
         auto search_node = get_or_create_search_node(state->get_index(), default_search_node, search_nodes);
 
-        /* Avoid unnecessary extra work by testing whether shortest distance was proven. */
-
-        if (search_node->get_status() == SearchNodeStatus::CLOSED || search_node->get_status() == SearchNodeStatus::DEAD_END)
-        {
-            continue;
-        }
-
         /* Test whether state achieves the dynamic goal. */
 
         if (search_node->get_status() == SearchNodeStatus::GOAL)
@@ -227,7 +220,7 @@ SearchResult find_solution(const SearchContext& context,
                 continue;
             }
 
-            /* Open state with updated h_value. */
+            /* Open state with computed h_value. */
 
             successor_search_node->get_status() = SearchNodeStatus::OPEN;
             successor_search_node->get_parent_state() = state->get_index();
