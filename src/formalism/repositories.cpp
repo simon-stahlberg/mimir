@@ -411,9 +411,8 @@ ConjunctiveEffect Repositories::get_or_create_conjunctive_effect(VariableList pa
         .get_or_create(std::move(parameters), std::move(effects), std::move(fluent_numeric_effects), std::move(auxiliary_numeric_effect));
 }
 
-GroundConjunctiveEffect Repositories::get_or_create_ground_conjunctive_effect(const valla::IndexedHashSet& tree_table,
-                                                                              valla::Slot positive_effects,
-                                                                              valla::Slot negative_effects,
+GroundConjunctiveEffect Repositories::get_or_create_ground_conjunctive_effect(const FlatIndexList* positive_effects,
+                                                                              const FlatIndexList* negative_effects,
                                                                               GroundNumericEffectList<FluentTag> fluent_numeric_effects,
                                                                               std::optional<const GroundNumericEffect<AuxiliaryTag>> auxiliary_numeric_effect)
 {
@@ -421,7 +420,7 @@ GroundConjunctiveEffect Repositories::get_or_create_ground_conjunctive_effect(co
     std::sort(fluent_numeric_effects.begin(), fluent_numeric_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
 
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundConjunctiveEffectImpl> {})
-        .get_or_create(tree_table, positive_effects, negative_effects, std::move(fluent_numeric_effects), std::move(auxiliary_numeric_effect));
+        .get_or_create(positive_effects, negative_effects, std::move(fluent_numeric_effects), std::move(auxiliary_numeric_effect));
 }
 
 ConditionalEffect Repositories::get_or_create_conditional_effect(ConjunctiveCondition conjunctive_condition, ConjunctiveEffect conjunctive_effect)
@@ -480,18 +479,16 @@ ConjunctiveCondition Repositories::get_or_create_conjunctive_condition(VariableL
         .get_or_create(std::move(parameters), std::move(literals), std::move(nullary_ground_literals), std::move(numeric_constraints));
 }
 
-GroundConjunctiveCondition Repositories::get_or_create_ground_conjunctive_condition(const valla::IndexedHashSet& tree_table,
-                                                                                    valla::Slot positive_static_atoms,
-                                                                                    valla::Slot negative_static_atoms,
-                                                                                    valla::Slot positive_fluent_atoms,
-                                                                                    valla::Slot negative_fluent_atoms,
-                                                                                    valla::Slot positive_derived_atoms,
-                                                                                    valla::Slot negative_derived_atoms,
+GroundConjunctiveCondition Repositories::get_or_create_ground_conjunctive_condition(const FlatIndexList* positive_static_atoms,
+                                                                                    const FlatIndexList* negative_static_atoms,
+                                                                                    const FlatIndexList* positive_fluent_atoms,
+                                                                                    const FlatIndexList* negative_fluent_atoms,
+                                                                                    const FlatIndexList* positive_derived_atoms,
+                                                                                    const FlatIndexList* negative_derived_atoms,
                                                                                     GroundNumericConstraintList numeric_constraints)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundConjunctiveConditionImpl> {})
-        .get_or_create(tree_table,
-                       positive_static_atoms,
+        .get_or_create(positive_static_atoms,
                        negative_static_atoms,
                        positive_fluent_atoms,
                        negative_fluent_atoms,

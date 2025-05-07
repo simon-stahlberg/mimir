@@ -33,16 +33,14 @@ namespace mimir::formalism
 /* GroundConjunctiveCondition */
 
 GroundConjunctiveConditionImpl::GroundConjunctiveConditionImpl(Index index,
-                                                               const valla::IndexedHashSet& tree_table,
-                                                               valla::Slot positive_static_atoms,
-                                                               valla::Slot negative_static_atoms,
-                                                               valla::Slot positive_fluent_atoms,
-                                                               valla::Slot negative_fluent_atoms,
-                                                               valla::Slot positive_derived_atoms,
-                                                               valla::Slot negative_derived_atoms,
+                                                               const FlatIndexList* positive_static_atoms,
+                                                               const FlatIndexList* negative_static_atoms,
+                                                               const FlatIndexList* positive_fluent_atoms,
+                                                               const FlatIndexList* negative_fluent_atoms,
+                                                               const FlatIndexList* positive_derived_atoms,
+                                                               const FlatIndexList* negative_derived_atoms,
                                                                GroundNumericConstraintList numeric_constraints) :
     m_index(index),
-    m_tree_table(tree_table),
     m_positive_static_atoms(positive_static_atoms),
     m_negative_static_atoms(negative_static_atoms),
     m_positive_fluent_atoms(positive_fluent_atoms),
@@ -51,12 +49,19 @@ GroundConjunctiveConditionImpl::GroundConjunctiveConditionImpl(Index index,
     m_negative_derived_atoms(negative_derived_atoms),
     m_numeric_constraints(std::move(numeric_constraints))
 {
-    assert(std::is_sorted(v::begin(m_positive_static_atoms, m_tree_table), v::end()));
-    assert(std::is_sorted(v::begin(m_negative_static_atoms, m_tree_table), v::end()));
-    assert(std::is_sorted(v::begin(m_positive_fluent_atoms, m_tree_table), v::end()));
-    assert(std::is_sorted(v::begin(m_negative_fluent_atoms, m_tree_table), v::end()));
-    assert(std::is_sorted(v::begin(m_positive_derived_atoms, m_tree_table), v::end()));
-    assert(std::is_sorted(v::begin(m_negative_derived_atoms, m_tree_table), v::end()));
+    assert(m_positive_static_atoms->is_compressed());
+    assert(m_negative_static_atoms->is_compressed());
+    assert(m_positive_fluent_atoms->is_compressed());
+    assert(m_negative_fluent_atoms->is_compressed());
+    assert(m_positive_derived_atoms->is_compressed());
+    assert(m_negative_derived_atoms->is_compressed());
+
+    assert(std::is_sorted(m_positive_static_atoms->compressed_begin(), m_positive_static_atoms->compressed_end()));
+    assert(std::is_sorted(m_negative_static_atoms->compressed_begin(), m_negative_static_atoms->compressed_end()));
+    assert(std::is_sorted(m_positive_fluent_atoms->compressed_begin(), m_positive_fluent_atoms->compressed_end()));
+    assert(std::is_sorted(m_negative_fluent_atoms->compressed_begin(), m_negative_fluent_atoms->compressed_end()));
+    assert(std::is_sorted(m_positive_derived_atoms->compressed_begin(), m_positive_derived_atoms->compressed_end()));
+    assert(std::is_sorted(m_negative_derived_atoms->compressed_begin(), m_negative_derived_atoms->compressed_end()));
 }
 
 Index GroundConjunctiveConditionImpl::get_index() const { return m_index; }

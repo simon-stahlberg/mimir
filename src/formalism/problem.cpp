@@ -489,8 +489,8 @@ template void ground_and_fill_bitset(ProblemImpl& problem,
 template<IsStaticOrFluentOrDerivedTag P>
 static void ground_and_fill_vector(ProblemImpl& problem,
                                    const std::vector<Literal<P>>& literals,
-                                   IndexList& ref_positive_indices,
-                                   IndexList& ref_negative_indices,
+                                   FlatIndexList& ref_positive_indices,
+                                   FlatIndexList& ref_negative_indices,
                                    const ObjectList& binding)
 {
     for (const auto& literal : literals)
@@ -506,24 +506,24 @@ static void ground_and_fill_vector(ProblemImpl& problem,
             ref_negative_indices.push_back(grounded_literal->get_atom()->get_index());
         }
     }
-    std::sort(ref_positive_indices.begin(), ref_positive_indices.end());
-    std::sort(ref_negative_indices.begin(), ref_negative_indices.end());
+    std::sort(ref_positive_indices.uncompressed_begin(), ref_positive_indices.uncompressed_end());
+    std::sort(ref_negative_indices.uncompressed_begin(), ref_negative_indices.uncompressed_end());
 }
 
 template void ground_and_fill_vector(ProblemImpl& problem,
                                      const std::vector<Literal<StaticTag>>& literals,
-                                     IndexList& ref_positive_indices,
-                                     IndexList& ref_negative_indices,
+                                     FlatIndexList& ref_positive_indices,
+                                     FlatIndexList& ref_negative_indices,
                                      const ObjectList& binding);
 template void ground_and_fill_vector(ProblemImpl& problem,
                                      const std::vector<Literal<FluentTag>>& literals,
-                                     IndexList& ref_positive_indices,
-                                     IndexList& ref_negative_indices,
+                                     FlatIndexList& ref_positive_indices,
+                                     FlatIndexList& ref_negative_indices,
                                      const ObjectList& binding);
 template void ground_and_fill_vector(ProblemImpl& problem,
                                      const std::vector<Literal<DerivedTag>>& literals,
-                                     IndexList& ref_positive_indices,
-                                     IndexList& ref_negative_indices,
+                                     FlatIndexList& ref_positive_indices,
+                                     FlatIndexList& ref_negative_indices,
                                      const ObjectList& binding);
 
 template<IsStaticOrFluentOrDerivedTag P>
@@ -797,50 +797,57 @@ static void ground_and_fill_optional(ProblemImpl& problem,
 
 GroundConjunctiveCondition ProblemImpl::ground(ConjunctiveCondition conjunctive_condition, const ObjectList& binding)
 {
-    auto positive_index_list = IndexList {};
-    auto negative_index_list = IndexList {};
+    auto positive_index_list = FlatIndexList {};
+    auto negative_index_list = FlatIndexList {};
 
     positive_index_list.clear();
     negative_index_list.clear();
     ground_and_fill_vector(*this, conjunctive_condition->get_literals<StaticTag>(), positive_index_list, negative_index_list, binding);
-    const auto positive_static_slot = m_root_table.get_slot(v::insert(positive_index_list, m_tree_table, m_root_table).first->second);
-    const auto negative_static_slot = m_root_table.get_slot(v::insert(negative_index_list, m_tree_table, m_root_table).first->second);
+    positive_index_list.compress();
+    negative_index_list.compress();
+    const auto positive_static_precondition_ptr = get_or_create_index_list(positive_index_list);
+    const auto negative_static_precondition_ptr = get_or_create_index_list(negative_index_list);
 
     positive_index_list.clear();
     negative_index_list.clear();
     ground_and_fill_vector(*this, conjunctive_condition->get_literals<FluentTag>(), positive_index_list, negative_index_list, binding);
-    const auto positive_fluent_slot = m_root_table.get_slot(v::insert(positive_index_list, m_tree_table, m_root_table).first->second);
-    const auto negative_fluent_slot = m_root_table.get_slot(v::insert(negative_index_list, m_tree_table, m_root_table).first->second);
+    positive_index_list.compress();
+    negative_index_list.compress();
+    const auto positive_fluent_precondition_ptr = get_or_create_index_list(positive_index_list);
+    const auto negative_fluent_precondition_ptr = get_or_create_index_list(negative_index_list);
 
     positive_index_list.clear();
     negative_index_list.clear();
     ground_and_fill_vector(*this, conjunctive_condition->get_literals<DerivedTag>(), positive_index_list, negative_index_list, binding);
-    const auto positive_derived_slot = m_root_table.get_slot(v::insert(positive_index_list, m_tree_table, m_root_table).first->second);
-    const auto negative_derived_slot = m_root_table.get_slot(v::insert(negative_index_list, m_tree_table, m_root_table).first->second);
+    positive_index_list.compress();
+    negative_index_list.compress();
+    const auto positive_derived_precondition_ptr = get_or_create_index_list(positive_index_list);
+    const auto negative_derived_precondition_ptr = get_or_create_index_list(negative_index_list);
 
     auto numeric_constraints = GroundNumericConstraintList {};
     ground_and_fill_vector(*this, conjunctive_condition->get_numeric_constraints(), binding, numeric_constraints);
 
-    return m_repositories.get_or_create_ground_conjunctive_condition(m_tree_table,
-                                                                     positive_static_slot,
-                                                                     negative_static_slot,
-                                                                     positive_fluent_slot,
-                                                                     negative_fluent_slot,
-                                                                     positive_derived_slot,
-                                                                     negative_derived_slot,
+    return m_repositories.get_or_create_ground_conjunctive_condition(positive_static_precondition_ptr,
+                                                                     negative_static_precondition_ptr,
+                                                                     positive_fluent_precondition_ptr,
+                                                                     negative_fluent_precondition_ptr,
+                                                                     positive_derived_precondition_ptr,
+                                                                     negative_derived_precondition_ptr,
                                                                      std::move(numeric_constraints));
 }
 
 GroundConjunctiveEffect ProblemImpl::ground(ConjunctiveEffect conjunctive_effect, const ObjectList& binding)
 {
-    auto positive_index_list = IndexList {};
-    auto negative_index_list = IndexList {};
+    auto positive_index_list = FlatIndexList {};
+    auto negative_index_list = FlatIndexList {};
 
     positive_index_list.clear();
     negative_index_list.clear();
     ground_and_fill_vector(*this, conjunctive_effect->get_literals(), positive_index_list, negative_index_list, binding);
-    const auto positive_static_slot = m_root_table.get_slot(v::insert(positive_index_list, m_tree_table, m_root_table).first->second);
-    const auto negative_static_slot = m_root_table.get_slot(v::insert(negative_index_list, m_tree_table, m_root_table).first->second);
+    positive_index_list.compress();
+    negative_index_list.compress();
+    const auto positive_effect_ptr = get_or_create_index_list(positive_index_list);
+    const auto negative_effect_ptr = get_or_create_index_list(negative_index_list);
 
     /* Conjunctive numerical effects */
     auto fluent_numerical_effects = GroundNumericEffectList<FluentTag> {};
@@ -848,9 +855,8 @@ GroundConjunctiveEffect ProblemImpl::ground(ConjunctiveEffect conjunctive_effect
     ground_and_fill_vector(*this, conjunctive_effect->get_fluent_numeric_effects(), binding, fluent_numerical_effects);
     ground_and_fill_optional(*this, conjunctive_effect->get_auxiliary_numeric_effect(), binding, auxiliary_numerical_effect);
 
-    return m_repositories.get_or_create_ground_conjunctive_effect(m_tree_table,
-                                                                  positive_static_slot,
-                                                                  negative_static_slot,
+    return m_repositories.get_or_create_ground_conjunctive_effect(positive_effect_ptr,
+                                                                  negative_effect_ptr,
                                                                   std::move(fluent_numerical_effects),
                                                                   std::move(auxiliary_numerical_effect));
 }

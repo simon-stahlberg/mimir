@@ -303,9 +303,8 @@ public:
                                                        std::optional<NumericEffect<AuxiliaryTag>> auxiliary_numeric_effect);
 
     /// @brief Get or create a ground conjunctive effect for the given parameters.
-    GroundConjunctiveEffect get_or_create_ground_conjunctive_effect(const valla::IndexedHashSet& tree_table,
-                                                                    valla::Slot positive_effects,
-                                                                    valla::Slot negative_effects,
+    GroundConjunctiveEffect get_or_create_ground_conjunctive_effect(const FlatIndexList* positive_effects,
+                                                                    const FlatIndexList* negative_effects,
                                                                     GroundNumericEffectList<FluentTag> fluent_numeric_effects,
                                                                     std::optional<const GroundNumericEffect<AuxiliaryTag>> auxiliary_numeric_effect);
 
@@ -333,13 +332,12 @@ public:
                                                              NumericConstraintList numeric_constraints);
 
     /// @brief Get or create a ground conjunctive condition for the given parameters.
-    GroundConjunctiveCondition get_or_create_ground_conjunctive_condition(const valla::IndexedHashSet& tree_table,
-                                                                          valla::Slot positive_static_atoms,
-                                                                          valla::Slot negative_static_atoms,
-                                                                          valla::Slot positive_fluent_atoms,
-                                                                          valla::Slot negative_fluent_atoms,
-                                                                          valla::Slot positive_derived_atoms,
-                                                                          valla::Slot negative_derived_atoms,
+    GroundConjunctiveCondition get_or_create_ground_conjunctive_condition(const FlatIndexList* positive_static_atoms,
+                                                                          const FlatIndexList* negative_static_atoms,
+                                                                          const FlatIndexList* positive_fluent_atoms,
+                                                                          const FlatIndexList* negative_fluent_atoms,
+                                                                          const FlatIndexList* positive_derived_atoms,
+                                                                          const FlatIndexList* negative_derived_atoms,
                                                                           GroundNumericConstraintList numeric_constraints);
 
     /// @brief Get or create an action for the given parameters.

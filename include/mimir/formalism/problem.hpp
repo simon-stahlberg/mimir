@@ -57,7 +57,6 @@ private:
     FlatDoubleListSet m_flat_double_list_set;  ///< Stores all created numeric variable lists.
 
     valla::IndexedHashSet m_tree_table;
-    valla::IndexedHashSet m_root_table;
     valla::IndexedHashSet m_state_root_table;
 
     ProblemImpl(Index index,
