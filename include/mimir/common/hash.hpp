@@ -28,6 +28,11 @@
 
 #include <loki/details/utils/hash.hpp>
 
+namespace mimir
+{
+inline uint64_t szudzik_pair(uint64_t a, uint64_t b) { return (a >= b) ? (a * a + b) : (b * b + a); }
+}
+
 /**
  * We inject additional hash specializations into the loki::Hash.
  */
