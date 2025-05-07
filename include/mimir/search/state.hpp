@@ -94,7 +94,10 @@ public:
         requires IsRangeOver<Range1, Index> && IsRangeOver<Range2, Index>
     bool literals_hold(const Range1& positive_atoms, const Range2& negative_atoms) const;
 
-    auto identifying_members() const { return std::make_tuple(m_fluent_atoms, m_numeric_variables); }
+    auto identifying_members() const
+    {
+        return std::make_tuple(szudzik_pair(valla::read_pos(m_fluent_atoms, 0), valla::read_pos(m_fluent_atoms, 1)), m_numeric_variables);
+    }
 };
 
 using StateImplSet = loki::SegmentedRepository<StateImpl>;
