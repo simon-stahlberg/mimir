@@ -10,7 +10,7 @@ from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext
 
 
-__version__ = "0.13.1"
+__version__ = "0.13.2"
 HERE = Path(__file__).resolve().parent
 
 

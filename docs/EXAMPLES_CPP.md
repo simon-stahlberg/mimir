@@ -14,7 +14,7 @@ The following code snippet parses and translates a domain `domain.pddl` and prob
 
 auto search_context_options = mimir::search::SearchContext::Options();
 search_context_options.mode = mimir::search::SearchContext::SearchMode::LIFTED;
-const auto search_context = mimir::search::SearchContext("domain.pddl", "problem.pddl", search_context_options);
+const auto search_context = mimir::search::SearchContext::create("domain.pddl", "problem.pddl", search_context_options);
 const auto result = mimir::search::brfs::find_solution(search_context);
 const auto status = result.status;
 const auto plan = result.plan;
