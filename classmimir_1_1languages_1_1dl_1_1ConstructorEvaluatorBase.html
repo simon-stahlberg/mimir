@@ -99,6 +99,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a9d3b2a641ee5b8b3985dade4ee5c7dfc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1ConstructorEvaluatorBase.html#a9d3b2a641ee5b8b3985dade4ee5c7dfc">accept</a> (<a class="el" href="classmimir_1_1languages_1_1dl_1_1IVisitor.html">IVisitor</a> &amp;visitor) const override</td></tr>
 <tr class="memdesc:a9d3b2a641ee5b8b3985dade4ee5c7dfc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accept a visitor.  <br /></td></tr>
 <tr class="separator:a9d3b2a641ee5b8b3985dade4ee5c7dfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a8bf5e4a1890661428b5b7605637590"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1ConstructorEvaluatorBase.html#a1a8bf5e4a1890661428b5b7605637590">get_complexity</a> () const override</td></tr>
+<tr class="memdesc:a1a8bf5e4a1890661428b5b7605637590"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the syntactic complexity of the constructor.  <br /></td></tr>
+<tr class="separator:a1a8bf5e4a1890661428b5b7605637590"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classmimir_1_1languages_1_1dl_1_1IConstructor"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classmimir_1_1languages_1_1dl_1_1IConstructor')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classmimir_1_1languages_1_1dl_1_1IConstructor.html">mimir::languages::dl::IConstructor&lt; D &gt;</a></td></tr>
 <tr class="memitem:a447c824aee1c302d852521ab53bf4ce8 inherit pub_methods_classmimir_1_1languages_1_1dl_1_1IConstructor"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1IConstructor.html#a447c824aee1c302d852521ab53bf4ce8">IConstructor</a> (const <a class="el" href="classmimir_1_1languages_1_1dl_1_1IConstructor.html">IConstructor</a> &amp;other)=delete</td></tr>
 <tr class="separator:a447c824aee1c302d852521ab53bf4ce8 inherit pub_methods_classmimir_1_1languages_1_1dl_1_1IConstructor"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -115,6 +118,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a03efc45f4c0a1321fb2b8a178257ca6d inherit pub_methods_classmimir_1_1languages_1_1dl_1_1IConstructor"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1IConstructor.html#a03efc45f4c0a1321fb2b8a178257ca6d">get_index</a> () const =0</td></tr>
 <tr class="memdesc:a03efc45f4c0a1321fb2b8a178257ca6d inherit pub_methods_classmimir_1_1languages_1_1dl_1_1IConstructor"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the index of the constructor.  <br /></td></tr>
 <tr class="separator:a03efc45f4c0a1321fb2b8a178257ca6d inherit pub_methods_classmimir_1_1languages_1_1dl_1_1IConstructor"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac34396ea0dc27591fdfaa6d7b489591f inherit pub_methods_classmimir_1_1languages_1_1dl_1_1IConstructor"><td class="memItemLeft" align="right" valign="top">virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1IConstructor.html#ac34396ea0dc27591fdfaa6d7b489591f">get_complexity</a> () const =0</td></tr>
+<tr class="memdesc:ac34396ea0dc27591fdfaa6d7b489591f inherit pub_methods_classmimir_1_1languages_1_1dl_1_1IConstructor"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the syntactic complexity of the constructor.  <br /></td></tr>
+<tr class="separator:ac34396ea0dc27591fdfaa6d7b489591f inherit pub_methods_classmimir_1_1languages_1_1dl_1_1IConstructor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -191,6 +197,37 @@ template&lt;IsConceptOrRoleOrBooleanOrNumericalTag D, typename Derived_ &gt; </d
 <p>Evaluate the dl constructor on the evaluation context. </p>
 
 <p>Implements <a class="el" href="classmimir_1_1languages_1_1dl_1_1IConstructor.html#ad46958be806110369faf1e64fbca2cab">mimir::languages::dl::IConstructor&lt; D &gt;</a>.</p>
+
+</div>
+</div>
+<a id="a1a8bf5e4a1890661428b5b7605637590" name="a1a8bf5e4a1890661428b5b7605637590"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a8bf5e4a1890661428b5b7605637590">&#9670;&#160;</a></span>get_complexity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;IsConceptOrRoleOrBooleanOrNumericalTag D, typename Derived_ &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t <a class="el" href="classmimir_1_1languages_1_1dl_1_1ConstructorEvaluatorBase.html">mimir::languages::dl::ConstructorEvaluatorBase</a>&lt; D, Derived_ &gt;::get_complexity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the syntactic complexity of the constructor. </p>
+
+<p>Implements <a class="el" href="classmimir_1_1languages_1_1dl_1_1IConstructor.html#ac34396ea0dc27591fdfaa6d7b489591f">mimir::languages::dl::IConstructor&lt; D &gt;</a>.</p>
 
 </div>
 </div>
