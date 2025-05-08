@@ -184,6 +184,10 @@ static void add_numeric_distance(std::stringstream& out, std::vector<std::string
     auto body_name = fmt::format("@{} <concept> @role_restriction <role_primitive> <concept_primitive> <concept>", dl::keywords::numerical_distance);
 
     out << fmt::format("    {} ::= {}\n", head_name, body_name);
+
+    body_name = fmt::format("@{} <concept> <role_primitive> <concept>", dl::keywords::numerical_distance);
+
+    out << fmt::format("    {} ::= {}\n", head_name, body_name);
 }
 
 std::string create_frances_et_al_aaai2021_bnf(Domain domain)
