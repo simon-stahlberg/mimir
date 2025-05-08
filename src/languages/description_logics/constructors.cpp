@@ -65,6 +65,8 @@ void ConceptBotImpl::evaluate_impl(EvaluationContext& context) const
 
 void ConceptBotImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
+size_t ConceptBotImpl::get_complexity_impl() const { return 1; }
+
 Index ConceptBotImpl::get_index() const { return m_index; }
 
 /**
@@ -88,6 +90,8 @@ void ConceptTopImpl::evaluate_impl(EvaluationContext& context) const
 }
 
 void ConceptTopImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
+
+size_t ConceptTopImpl::get_complexity_impl() const { return 1; }
 
 Index ConceptTopImpl::get_index() const { return m_index; }
 
@@ -149,6 +153,12 @@ void ConceptAtomicStateImpl<P>::accept_impl(IVisitor& visitor) const
 }
 
 template<IsStaticOrFluentOrDerivedTag P>
+size_t ConceptAtomicStateImpl<P>::get_complexity_impl() const
+{
+    return 1;
+}
+
+template<IsStaticOrFluentOrDerivedTag P>
 Index ConceptAtomicStateImpl<P>::get_index() const
 {
     return m_index;
@@ -205,6 +215,12 @@ void ConceptAtomicGoalImpl<P>::accept_impl(IVisitor& visitor) const
 }
 
 template<IsStaticOrFluentOrDerivedTag P>
+size_t ConceptAtomicGoalImpl<P>::get_complexity_impl() const
+{
+    return 1;
+}
+
+template<IsStaticOrFluentOrDerivedTag P>
 Index ConceptAtomicGoalImpl<P>::get_index() const
 {
     return m_index;
@@ -253,6 +269,8 @@ void ConceptIntersectionImpl::evaluate_impl(EvaluationContext& context) const
 
 void ConceptIntersectionImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
+size_t ConceptIntersectionImpl::get_complexity_impl() const { return m_left_concept->get_complexity() + m_right_concept->get_complexity() + 1; }
+
 Index ConceptIntersectionImpl::get_index() const { return m_index; }
 
 Constructor<ConceptTag> ConceptIntersectionImpl::get_left_concept() const { return m_left_concept; }
@@ -286,6 +304,8 @@ void ConceptUnionImpl::evaluate_impl(EvaluationContext& context) const
 
 void ConceptUnionImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
+size_t ConceptUnionImpl::get_complexity_impl() const { return m_left_concept->get_complexity() + m_right_concept->get_complexity() + 1; }
+
 Index ConceptUnionImpl::get_index() const { return m_index; }
 
 Constructor<ConceptTag> ConceptUnionImpl::get_left_concept() const { return m_left_concept; }
@@ -313,6 +333,8 @@ void ConceptNegationImpl::evaluate_impl(EvaluationContext& context) const
 }
 
 void ConceptNegationImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
+
+size_t ConceptNegationImpl::get_complexity_impl() const { return m_concept->get_complexity() + 1; }
 
 Index ConceptNegationImpl::get_index() const { return m_index; }
 
@@ -354,6 +376,8 @@ void ConceptValueRestrictionImpl::evaluate_impl(EvaluationContext& context) cons
 
 void ConceptValueRestrictionImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
+size_t ConceptValueRestrictionImpl::get_complexity_impl() const { return m_role->get_complexity() + m_concept->get_complexity() + 1; }
+
 Index ConceptValueRestrictionImpl::get_index() const { return m_index; }
 
 Constructor<RoleTag> ConceptValueRestrictionImpl::get_role() const { return m_role; }
@@ -394,6 +418,8 @@ void ConceptExistentialQuantificationImpl::evaluate_impl(EvaluationContext& cont
 }
 
 void ConceptExistentialQuantificationImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
+
+size_t ConceptExistentialQuantificationImpl::get_complexity_impl() const { return m_role->get_complexity() + m_concept->get_complexity() + 1; }
 
 Index ConceptExistentialQuantificationImpl::get_index() const { return m_index; }
 
@@ -437,6 +463,8 @@ void ConceptRoleValueMapContainmentImpl::evaluate_impl(EvaluationContext& contex
 
 void ConceptRoleValueMapContainmentImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
+size_t ConceptRoleValueMapContainmentImpl::get_complexity_impl() const { return m_left_role->get_complexity() + m_right_role->get_complexity() + 1; }
+
 Index ConceptRoleValueMapContainmentImpl::get_index() const { return m_index; }
 
 Constructor<RoleTag> ConceptRoleValueMapContainmentImpl::get_left_role() const { return m_left_role; }
@@ -478,6 +506,8 @@ void ConceptRoleValueMapEqualityImpl::evaluate_impl(EvaluationContext& context) 
 
 void ConceptRoleValueMapEqualityImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
+size_t ConceptRoleValueMapEqualityImpl::get_complexity_impl() const { return m_left_role->get_complexity() + m_right_role->get_complexity() + 1; }
+
 Index ConceptRoleValueMapEqualityImpl::get_index() const { return m_index; }
 
 Constructor<RoleTag> ConceptRoleValueMapEqualityImpl::get_left_role() const { return m_left_role; }
@@ -505,6 +535,8 @@ void ConceptNominalImpl::evaluate_impl(EvaluationContext& context) const
 
 void ConceptNominalImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
+size_t ConceptNominalImpl::get_complexity_impl() const { return 1; }
+
 Index ConceptNominalImpl::get_index() const { return m_index; }
 
 Object ConceptNominalImpl::get_object() const { return m_object; }
@@ -530,6 +562,8 @@ void RoleUniversalImpl::evaluate_impl(EvaluationContext& context) const
 }
 
 void RoleUniversalImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
+
+size_t RoleUniversalImpl::get_complexity_impl() const { return 1; }
 
 Index RoleUniversalImpl::get_index() const { return m_index; }
 
@@ -609,6 +643,12 @@ void RoleAtomicStateImpl<P>::accept_impl(IVisitor& visitor) const
 }
 
 template<IsStaticOrFluentOrDerivedTag P>
+size_t RoleAtomicStateImpl<P>::get_complexity_impl() const
+{
+    return 1;
+}
+
+template<IsStaticOrFluentOrDerivedTag P>
 Index RoleAtomicStateImpl<P>::get_index() const
 {
     return m_index;
@@ -671,6 +711,12 @@ void RoleAtomicGoalImpl<P>::accept_impl(IVisitor& visitor) const
 }
 
 template<IsStaticOrFluentOrDerivedTag P>
+size_t RoleAtomicGoalImpl<P>::get_complexity_impl() const
+{
+    return 1;
+}
+
+template<IsStaticOrFluentOrDerivedTag P>
 Index RoleAtomicGoalImpl<P>::get_index() const
 {
     return m_index;
@@ -725,6 +771,8 @@ void RoleIntersectionImpl::evaluate_impl(EvaluationContext& context) const
 
 void RoleIntersectionImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
+size_t RoleIntersectionImpl::get_complexity_impl() const { return m_left_role->get_complexity() + m_right_role->get_complexity() + 1; }
+
 Index RoleIntersectionImpl::get_index() const { return m_index; }
 
 Constructor<RoleTag> RoleIntersectionImpl::get_left_role() const { return m_left_role; }
@@ -764,6 +812,8 @@ void RoleUnionImpl::evaluate_impl(EvaluationContext& context) const
 
 void RoleUnionImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
+size_t RoleUnionImpl::get_complexity_impl() const { return m_left_role->get_complexity() + m_right_role->get_complexity() + 1; }
+
 Index RoleUnionImpl::get_index() const { return m_index; }
 
 Constructor<RoleTag> RoleUnionImpl::get_left_role() const { return m_left_role; }
@@ -796,6 +846,8 @@ void RoleComplementImpl::evaluate_impl(EvaluationContext& context) const
 }
 
 void RoleComplementImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
+
+size_t RoleComplementImpl::get_complexity_impl() const { return m_role->get_complexity() + 1; }
 
 Index RoleComplementImpl::get_index() const { return m_index; }
 
@@ -835,6 +887,8 @@ void RoleInverseImpl::evaluate_impl(EvaluationContext& context) const
 }
 
 void RoleInverseImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
+
+size_t RoleInverseImpl::get_complexity_impl() const { return m_role->get_complexity() + 1; }
 
 Index RoleInverseImpl::get_index() const { return m_index; }
 
@@ -879,6 +933,8 @@ void RoleCompositionImpl::evaluate_impl(EvaluationContext& context) const
 
 void RoleCompositionImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
+size_t RoleCompositionImpl::get_complexity_impl() const { return m_left_role->get_complexity() + m_right_role->get_complexity() + 1; }
+
 Index RoleCompositionImpl::get_index() const { return m_index; }
 
 Constructor<RoleTag> RoleCompositionImpl::get_left_role() const { return m_left_role; }
@@ -919,6 +975,8 @@ void RoleTransitiveClosureImpl::evaluate_impl(EvaluationContext& context) const
 }
 
 void RoleTransitiveClosureImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
+
+size_t RoleTransitiveClosureImpl::get_complexity_impl() const { return m_role->get_complexity() + 1; }
 
 Index RoleTransitiveClosureImpl::get_index() const { return m_index; }
 
@@ -963,6 +1021,8 @@ void RoleReflexiveTransitiveClosureImpl::evaluate_impl(EvaluationContext& contex
 }
 
 void RoleReflexiveTransitiveClosureImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
+
+size_t RoleReflexiveTransitiveClosureImpl::get_complexity_impl() const { return m_role->get_complexity() + 1; }
 
 Index RoleReflexiveTransitiveClosureImpl::get_index() const { return m_index; }
 
@@ -1010,6 +1070,8 @@ void RoleRestrictionImpl::evaluate_impl(EvaluationContext& context) const
 
 void RoleRestrictionImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
 
+size_t RoleRestrictionImpl::get_complexity_impl() const { return m_role->get_complexity() + m_concept->get_complexity() + 1; }
+
 Index RoleRestrictionImpl::get_index() const { return m_index; }
 
 Constructor<RoleTag> RoleRestrictionImpl::get_role() const { return m_role; }
@@ -1047,6 +1109,8 @@ void RoleIdentityImpl::evaluate_impl(EvaluationContext& context) const
 }
 
 void RoleIdentityImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
+
+size_t RoleIdentityImpl::get_complexity_impl() const { return m_concept->get_complexity() + 1; }
 
 Index RoleIdentityImpl::get_index() const { return m_index; }
 
@@ -1106,6 +1170,12 @@ void BooleanAtomicStateImpl<P>::accept_impl(IVisitor& visitor) const
 }
 
 template<IsStaticOrFluentOrDerivedTag P>
+size_t BooleanAtomicStateImpl<P>::get_complexity_impl() const
+{
+    return 1;
+}
+
+template<IsStaticOrFluentOrDerivedTag P>
 Index BooleanAtomicStateImpl<P>::get_index() const
 {
     return m_index;
@@ -1143,6 +1213,12 @@ template<IsConceptOrRoleTag D>
 void BooleanNonemptyImpl<D>::accept_impl(IVisitor& visitor) const
 {
     visitor.visit(this);
+}
+
+template<IsConceptOrRoleTag D>
+size_t BooleanNonemptyImpl<D>::get_complexity_impl() const
+{
+    return m_constructor->get_complexity() + 1;
 }
 
 template<IsConceptOrRoleTag D>
@@ -1186,6 +1262,12 @@ template<IsConceptOrRoleTag D>
 void NumericalCountImpl<D>::accept_impl(IVisitor& visitor) const
 {
     visitor.visit(this);
+}
+
+template<IsConceptOrRoleTag D>
+size_t NumericalCountImpl<D>::get_complexity_impl() const
+{
+    return m_constructor->get_complexity() + 1;
 }
 
 template<IsConceptOrRoleTag D>
@@ -1277,6 +1359,11 @@ void NumericalDistanceImpl::evaluate_impl(EvaluationContext& context) const
 }
 
 void NumericalDistanceImpl::accept_impl(IVisitor& visitor) const { visitor.visit(this); }
+
+size_t NumericalDistanceImpl::get_complexity_impl() const
+{
+    return m_left_concept->get_complexity() + m_role->get_complexity() + m_right_concept->get_complexity() + 1;
+}
 
 Index NumericalDistanceImpl::get_index() const { return m_index; }
 

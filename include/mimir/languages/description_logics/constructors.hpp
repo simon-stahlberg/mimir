@@ -49,6 +49,8 @@ private:
 
     void accept_impl(IVisitor& visitor) const;
 
+    size_t get_complexity_impl() const;
+
     friend class ConstructorEvaluatorBase<ConceptTag, ConceptBotImpl>;
 
 public:
@@ -80,6 +82,8 @@ private:
     void evaluate_impl(EvaluationContext& context) const;
 
     void accept_impl(IVisitor& visitor) const;
+
+    size_t get_complexity_impl() const;
 
     friend class ConstructorEvaluatorBase<ConceptTag, ConceptTopImpl>;
 
@@ -114,6 +118,8 @@ private:
     void evaluate_impl(EvaluationContext& context) const;
 
     void accept_impl(IVisitor& visitor) const;
+
+    size_t get_complexity_impl() const;
 
     friend class ConstructorEvaluatorBase<ConceptTag, ConceptAtomicStateImpl<P>>;
 
@@ -151,6 +157,8 @@ private:
 
     void accept_impl(IVisitor& visitor) const;
 
+    size_t get_complexity_impl() const;
+
     friend class ConstructorEvaluatorBase<ConceptTag, ConceptAtomicGoalImpl<P>>;
 
 public:
@@ -186,6 +194,8 @@ private:
     void evaluate_impl(EvaluationContext& context) const;
 
     void accept_impl(IVisitor& visitor) const;
+
+    size_t get_complexity_impl() const;
 
     friend class ConstructorEvaluatorBase<ConceptTag, ConceptIntersectionImpl>;
 
@@ -223,6 +233,8 @@ private:
 
     void accept_impl(IVisitor& visitor) const;
 
+    size_t get_complexity_impl() const;
+
     friend class ConstructorEvaluatorBase<ConceptTag, ConceptUnionImpl>;
 
 public:
@@ -258,6 +270,8 @@ private:
 
     void accept_impl(IVisitor& visitor) const;
 
+    size_t get_complexity_impl() const;
+
     friend class ConstructorEvaluatorBase<ConceptTag, ConceptNegationImpl>;
 
 public:
@@ -292,6 +306,8 @@ private:
     void evaluate_impl(EvaluationContext& context) const;
 
     void accept_impl(IVisitor& visitor) const;
+
+    size_t get_complexity_impl() const;
 
     friend class ConstructorEvaluatorBase<ConceptTag, ConceptValueRestrictionImpl>;
 
@@ -329,6 +345,8 @@ private:
 
     void accept_impl(IVisitor& visitor) const;
 
+    size_t get_complexity_impl() const;
+
     friend class ConstructorEvaluatorBase<ConceptTag, ConceptExistentialQuantificationImpl>;
 
 public:
@@ -364,6 +382,8 @@ private:
     void evaluate_impl(EvaluationContext& context) const;
 
     void accept_impl(IVisitor& visitor) const;
+
+    size_t get_complexity_impl() const;
 
     friend class ConstructorEvaluatorBase<ConceptTag, ConceptRoleValueMapContainmentImpl>;
 
@@ -401,6 +421,8 @@ private:
 
     void accept_impl(IVisitor& visitor) const;
 
+    size_t get_complexity_impl() const;
+
     friend class ConstructorEvaluatorBase<ConceptTag, ConceptRoleValueMapEqualityImpl>;
 
 public:
@@ -435,6 +457,8 @@ private:
     void evaluate_impl(EvaluationContext& context) const;
 
     void accept_impl(IVisitor& visitor) const;
+
+    size_t get_complexity_impl() const;
 
     friend class ConstructorEvaluatorBase<ConceptTag, ConceptNominalImpl>;
 
@@ -473,6 +497,8 @@ private:
 
     void accept_impl(IVisitor& visitor) const;
 
+    size_t get_complexity_impl() const;
+
     friend class ConstructorEvaluatorBase<RoleTag, RoleUniversalImpl>;
 
 public:
@@ -506,6 +532,8 @@ private:
     void evaluate_impl(EvaluationContext& context) const;
 
     void accept_impl(IVisitor& visitor) const;
+
+    size_t get_complexity_impl() const;
 
     friend class ConstructorEvaluatorBase<RoleTag, RoleAtomicStateImpl<P>>;
 
@@ -543,6 +571,8 @@ private:
 
     void accept_impl(IVisitor& visitor) const;
 
+    size_t get_complexity_impl() const;
+
     friend class ConstructorEvaluatorBase<RoleTag, RoleAtomicGoalImpl<P>>;
 
 public:
@@ -578,6 +608,8 @@ private:
     void evaluate_impl(EvaluationContext& context) const;
 
     void accept_impl(IVisitor& visitor) const;
+
+    size_t get_complexity_impl() const;
 
     friend class ConstructorEvaluatorBase<RoleTag, RoleIntersectionImpl>;
 
@@ -615,6 +647,8 @@ private:
 
     void accept_impl(IVisitor& visitor) const;
 
+    size_t get_complexity_impl() const;
+
     friend class ConstructorEvaluatorBase<RoleTag, RoleUnionImpl>;
 
 public:
@@ -650,6 +684,8 @@ private:
 
     void accept_impl(IVisitor& visitor) const;
 
+    size_t get_complexity_impl() const;
+
     friend class ConstructorEvaluatorBase<RoleTag, RoleComplementImpl>;
 
 public:
@@ -683,6 +719,8 @@ private:
     void evaluate_impl(EvaluationContext& context) const;
 
     void accept_impl(IVisitor& visitor) const;
+
+    size_t get_complexity_impl() const;
 
     friend class ConstructorEvaluatorBase<RoleTag, RoleInverseImpl>;
 
@@ -719,6 +757,8 @@ private:
 
     void accept_impl(IVisitor& visitor) const;
 
+    size_t get_complexity_impl() const;
+
     friend class ConstructorEvaluatorBase<RoleTag, RoleCompositionImpl>;
 
 public:
@@ -754,6 +794,8 @@ private:
 
     void accept_impl(IVisitor& visitor) const;
 
+    size_t get_complexity_impl() const;
+
     friend class ConstructorEvaluatorBase<RoleTag, RoleTransitiveClosureImpl>;
 
 public:
@@ -787,6 +829,8 @@ private:
     void evaluate_impl(EvaluationContext& context) const;
 
     void accept_impl(IVisitor& visitor) const;
+
+    size_t get_complexity_impl() const;
 
     friend class ConstructorEvaluatorBase<RoleTag, RoleReflexiveTransitiveClosureImpl>;
 
@@ -823,6 +867,8 @@ private:
 
     void accept_impl(IVisitor& visitor) const;
 
+    size_t get_complexity_impl() const;
+
     friend class ConstructorEvaluatorBase<RoleTag, RoleRestrictionImpl>;
 
 public:
@@ -857,6 +903,8 @@ private:
     void evaluate_impl(EvaluationContext& context) const;
 
     void accept_impl(IVisitor& visitor) const;
+
+    size_t get_complexity_impl() const;
 
     friend class ConstructorEvaluatorBase<RoleTag, RoleIdentityImpl>;
 
@@ -897,6 +945,8 @@ private:
 
     void accept_impl(IVisitor& visitor) const;
 
+    size_t get_complexity_impl() const;
+
     friend class ConstructorEvaluatorBase<BooleanTag, BooleanAtomicStateImpl<P>>;
 
 public:
@@ -931,6 +981,8 @@ private:
     void evaluate_impl(EvaluationContext& context) const;
 
     void accept_impl(IVisitor& visitor) const;
+
+    size_t get_complexity_impl() const;
 
     friend class ConstructorEvaluatorBase<BooleanTag, BooleanNonemptyImpl<D>>;
 
@@ -971,6 +1023,8 @@ private:
 
     void accept_impl(IVisitor& visitor) const;
 
+    size_t get_complexity_impl() const;
+
     friend class ConstructorEvaluatorBase<NumericalTag, NumericalCountImpl<D>>;
 
 public:
@@ -1006,6 +1060,8 @@ private:
     void evaluate_impl(EvaluationContext& context) const;
 
     void accept_impl(IVisitor& visitor) const;
+
+    size_t get_complexity_impl() const;
 
     friend class ConstructorEvaluatorBase<NumericalTag, NumericalDistanceImpl>;
 

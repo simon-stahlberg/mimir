@@ -22,6 +22,7 @@ void bind_constructor(nb::module_& m, const std::string& class_name)
         .def("__hash__", [](const ValueType& self) { return std::hash<const ValueType*> {}(&self); })
         .def("evaluate", &ValueType::evaluate, nb::rv_policy::reference_internal, "evaluation_context"_a)
         .def("accept", &ValueType::accept, "visitor"_a)
+        .def("get_complexity", &ValueType::get_complexity)
         .def("get_index", &ValueType::get_index);
 
     nb::bind_vector<ConstructorList<D>>(m, (class_name + "List").c_str());

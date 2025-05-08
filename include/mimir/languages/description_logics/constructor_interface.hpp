@@ -54,6 +54,8 @@ public:
 
     /// @brief Return the index of the constructor.
     virtual Index get_index() const = 0;
+    /// @brief Return the syntactic complexity of the constructor.
+    virtual size_t get_complexity() const = 0;
 };
 
 }

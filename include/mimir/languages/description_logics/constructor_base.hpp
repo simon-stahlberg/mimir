@@ -63,6 +63,8 @@ public:
     };
 
     void accept(IVisitor& visitor) const override { return self().accept_impl(visitor); }
+
+    size_t get_complexity() const override { return self().get_complexity_impl(); }
 };
 
 }
