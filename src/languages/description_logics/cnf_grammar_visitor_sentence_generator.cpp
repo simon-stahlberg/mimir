@@ -573,7 +573,7 @@ void GeneratorVisitor::visit(NumericalDistance constructor)
 
                 for (const auto& concept_left : m_sentences.get(constructor->get_left_concept(), i))
                 {
-                    for (const auto& role : m_sentences.get(constructor->get_role(), i))
+                    for (const auto& role : m_sentences.get(constructor->get_role(), j))
                     {
                         for (const auto& concept_right : m_sentences.get(constructor->get_right_concept(), k))
                         {
