@@ -77,11 +77,22 @@ Effect Repositories::get_or_create_unchanged_numerical_effect(NamedFeature<dl::N
 
 Rule Repositories::get_or_create_rule(ConditionList conditions, EffectList effects)
 {
+    // Sort lexicographically
+    std::sort(conditions.begin(), conditions.end(), [](auto&& lhs, auto&& rhs) { return to_string(lhs) < to_string(rhs); });
+    std::sort(effects.begin(), effects.end(), [](auto&& lhs, auto&& rhs) { return to_string(lhs) < to_string(rhs); });
+
     return boost::hana::at_key(m_repositories, boost::hana::type<RuleImpl> {}).get_or_create(std::move(conditions), std::move(effects));
 }
 
 GeneralPolicy Repositories::get_or_create_general_policy(NamedFeatureLists<dl::BooleanTag, dl::NumericalTag> features, RuleList rules)
 {
+    // Sort lexicographically
+    auto& booleans = boost::hana::at_key(features, boost::hana::type<dl::BooleanTag> {});
+    auto& numericals = boost::hana::at_key(features, boost::hana::type<dl::NumericalTag> {});
+    std::sort(booleans.begin(), booleans.end(), [](auto&& lhs, auto&& rhs) { return to_string(lhs) < to_string(rhs); });
+    std::sort(numericals.begin(), numericals.end(), [](auto&& lhs, auto&& rhs) { return to_string(lhs) < to_string(rhs); });
+    std::sort(rules.begin(), rules.end(), [](auto&& lhs, auto&& rhs) { return to_string(lhs) < to_string(rhs); });
+
     return boost::hana::at_key(m_repositories, boost::hana::type<GeneralPolicyImpl> {}).get_or_create(std::move(features), std::move(rules));
 }
 
