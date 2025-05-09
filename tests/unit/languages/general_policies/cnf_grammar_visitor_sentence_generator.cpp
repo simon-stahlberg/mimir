@@ -95,9 +95,9 @@ TEST(MimirTests, LanguagesGeneralPoliciesCNFGrammarVisitorSentenceGeneratorTest)
 
         const auto& numerical_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::NumericalTag> {});
 
-        EXPECT_EQ(numerical_statistics.num_generated, 2504);
-        EXPECT_EQ(numerical_statistics.num_kept, 38);
-        EXPECT_EQ(numerical_statistics.num_pruned, 2466);
+        EXPECT_EQ(numerical_statistics.num_generated, 2720);
+        EXPECT_EQ(numerical_statistics.num_kept, 41);
+        EXPECT_EQ(numerical_statistics.num_pruned, 2679);
     }
 
     {
@@ -137,9 +137,9 @@ TEST(MimirTests, LanguagesGeneralPoliciesCNFGrammarVisitorSentenceGeneratorTest)
 
         const auto& numerical_statistics = boost::hana::at_key(visitor.get_statistics(), boost::hana::type<dl::NumericalTag> {});
 
-        EXPECT_EQ(numerical_statistics.num_generated, 61);
-        EXPECT_EQ(numerical_statistics.num_kept, 24);
-        EXPECT_EQ(numerical_statistics.num_pruned, 37);
+        EXPECT_EQ(numerical_statistics.num_generated, 889);
+        EXPECT_EQ(numerical_statistics.num_kept, 33);
+        EXPECT_EQ(numerical_statistics.num_pruned, 856);
     }
 }
 

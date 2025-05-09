@@ -169,6 +169,18 @@ GeneralPolicyFactory::get_or_create_general_policy_delivery(const formalism::Dom
                             @role_inverse @role_atomic_goal "at" true 
                             @concept_bot
 
+            <x> ::= 
+                @numerical_distance 
+                    @concept_existential_quantification 
+                        @role_inverse @role_atomic_state "at" 
+                        @concept_atomic_state "empty" 
+                    @role_atomic_state "adjacent" 
+                    @concept_existential_quantification 
+                        @role_inverse @role_atomic_state "at" 
+                        @concept_intersection 
+                            @concept_atomic_state "package" 
+                            @concept_negation @concept_role_value_map_equality @role_atomic_state "at" @role_atomic_goal "at" true
+
         [policy_rules]
             { @greater_numerical_condition <u>, @positive_boolean_condition <not_H>, @greater_numerical_condition <p> }
             -> { @unchanged_boolean_effect <not_H>, @decrease_numerical_effect <p> }
