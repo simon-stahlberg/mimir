@@ -40,7 +40,7 @@ namespace mimir::search::gbfs
 {
 
 /**
- * AStar search node
+ * GBFS search node
  */
 
 using GBFSSearchNodeImpl = SearchNodeImpl<ContinuousCost, ContinuousCost>;
@@ -64,7 +64,7 @@ get_or_create_search_node(size_t state_index, const GBFSSearchNodeImpl& default_
 }
 
 /**
- * AStar
+ * GBFS
  */
 
 SearchResult find_solution(const SearchContext& context,
@@ -110,7 +110,7 @@ SearchResult find_solution(const SearchContext& context,
 
     if (start_g_value == UNDEFINED_CONTINUOUS_COST)
     {
-        throw std::runtime_error("find_solution_astar(...): evaluating the metric on the start state yielded NaN.");
+        throw std::runtime_error("find_solution(...): evaluating the metric on the start state yielded NaN.");
     }
     const auto start_h_value = heuristic->compute_heuristic(start_state, goal_strategy->test_dynamic_goal(start_state));
 
@@ -196,7 +196,7 @@ SearchResult find_solution(const SearchContext& context,
 
             if (successor_state_metric_value == UNDEFINED_CONTINUOUS_COST)
             {
-                throw std::runtime_error("find_solution_astar(...): evaluating the metric on the successor state yielded NaN.");
+                throw std::runtime_error("find_solution(...): evaluating the metric on the successor state yielded NaN.");
             }
 
             const bool is_new_successor_state = (successor_search_node->get_status() == SearchNodeStatus::NEW);
