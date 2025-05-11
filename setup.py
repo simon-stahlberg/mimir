@@ -82,7 +82,7 @@ class CMakeBuild(build_ext):
         )
 
         # Remove unwanted directories.
-        unwanted_dirs = ["include", "lib"]
+        unwanted_dirs = ["include", "lib", "lib64"]
         for unwanted_dir in unwanted_dirs:
             dir_path = output_directory / unwanted_dir
             if os.path.exists(dir_path):
