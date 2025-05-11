@@ -85,6 +85,8 @@ SearchResult find_solution(const SearchContext& context,
     const auto goal_strategy = (goal_strategy_) ? goal_strategy_ : ProblemGoalStrategyImpl::create(context->get_problem());
     const auto pruning_strategy = (pruning_strategy_) ? pruning_strategy_ : NoPruningStrategyImpl::create();
 
+    auto step = Index(0);
+
     auto result = SearchResult();
 
     /* Test static goal. */
@@ -103,7 +105,7 @@ SearchResult find_solution(const SearchContext& context,
                            cista::tuple<ContinuousCost, ContinuousCost> { std::numeric_limits<ContinuousCost>::infinity(), ContinuousCost(0) });
     auto search_nodes = SearchNodeImplVector<ContinuousCost, ContinuousCost>();
 
-    auto openlist = PriorityQueue<std::tuple<double, double>, State>();
+    auto openlist = PriorityQueue<std::tuple<double, double, Index>, State>();
 
     event_handler->on_start_search(start_state);
 
@@ -137,7 +139,7 @@ SearchResult find_solution(const SearchContext& context,
     }
 
     auto applicable_actions = GroundActionList {};
-    openlist.insert(std::make_tuple(start_h_value, start_g_value), start_state);
+    openlist.insert(std::make_tuple(start_h_value, start_g_value, step++), start_state);
 
     const auto& ground_action_repository = boost::hana::at_key(problem.get_repositories().get_hana_repositories(), boost::hana::type<GroundActionImpl> {});
     const auto& ground_axiom_repository = boost::hana::at_key(problem.get_repositories().get_hana_repositories(), boost::hana::type<GroundAxiomImpl> {});
@@ -236,7 +238,7 @@ SearchResult find_solution(const SearchContext& context,
 
             event_handler->on_generate_state(state, action, action_cost, successor_state);
 
-            openlist.insert(std::make_tuple(successor_h_value, successor_state_metric_value), successor_state);
+            openlist.insert(std::make_tuple(successor_h_value, successor_state_metric_value, step++), successor_state);
         }
 
         /* Close state. */
