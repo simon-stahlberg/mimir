@@ -20,6 +20,7 @@
 
 #include <concepts>
 #include <cstdint>
+#include <utility>
 
 namespace mimir::search
 {
@@ -39,10 +40,10 @@ private:
     constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 public:
-    template<typename T>
-    void insert(double priority, const T& item)
+    template<std::totally_ordered Key, typename T>
+    void insert(Key&& priority, T&& item)
     {
-        return self().insert_impl(priority, item);
+        return self().insert_impl(std::forward<Key>(priority), std::forward<T>(item));
     }
 
     decltype(auto) top() const { return self().top_impl(); }

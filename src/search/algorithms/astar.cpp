@@ -104,7 +104,7 @@ SearchResult find_solution(const SearchContext& context,
                             cista::tuple<ContinuousCost, ContinuousCost> { std::numeric_limits<ContinuousCost>::infinity(), ContinuousCost(0) });
     auto search_nodes = SearchNodeImplVector<ContinuousCost, ContinuousCost>();
 
-    auto openlist = PriorityQueue<State>();
+    auto openlist = PriorityQueue<double, State>();
 
     event_handler->on_start_search(start_state);
 

@@ -51,7 +51,6 @@ static void set_g_value(GBFSSearchNode node, ContinuousCost g_value) { node->get
 static void set_h_value(GBFSSearchNode node, ContinuousCost h_value) { node->get_property<1>() = h_value; }
 
 static ContinuousCost get_g_value(ConstGBFSSearchNode node) { return node->get_property<0>(); }
-static ContinuousCost get_h_value(ConstGBFSSearchNode node) { return node->get_property<1>(); }
 
 static GBFSSearchNode
 get_or_create_search_node(size_t state_index, const GBFSSearchNodeImpl& default_node, mimir::buffering::Vector<GBFSSearchNodeImpl>& search_nodes)
@@ -104,7 +103,7 @@ SearchResult find_solution(const SearchContext& context,
                            cista::tuple<ContinuousCost, ContinuousCost> { std::numeric_limits<ContinuousCost>::infinity(), ContinuousCost(0) });
     auto search_nodes = SearchNodeImplVector<ContinuousCost, ContinuousCost>();
 
-    auto openlist = PriorityQueue<State>();
+    auto openlist = PriorityQueue<std::tuple<double, double>, State>();
 
     event_handler->on_start_search(start_state);
 
@@ -138,7 +137,7 @@ SearchResult find_solution(const SearchContext& context,
     }
 
     auto applicable_actions = GroundActionList {};
-    openlist.insert(start_h_value, start_state);
+    openlist.insert(std::make_tuple(start_h_value, start_g_value), start_state);
 
     const auto& ground_action_repository = boost::hana::at_key(problem.get_repositories().get_hana_repositories(), boost::hana::type<GroundActionImpl> {});
     const auto& ground_axiom_repository = boost::hana::at_key(problem.get_repositories().get_hana_repositories(), boost::hana::type<GroundAxiomImpl> {});
@@ -149,39 +148,6 @@ SearchResult find_solution(const SearchContext& context,
         openlist.pop();
 
         auto search_node = get_or_create_search_node(state->get_index(), default_search_node, search_nodes);
-
-        /* Test whether state achieves the dynamic goal. */
-
-        if (search_node->get_status() == SearchNodeStatus::GOAL)
-        {
-            event_handler->on_expand_goal_state(state);
-
-            event_handler->on_end_search(state_repository.get_reached_fluent_ground_atoms_bitset().count(),
-                                         state_repository.get_reached_derived_ground_atoms_bitset().count(),
-                                         problem.get_estimated_memory_usage_in_bytes(),
-                                         search_nodes.get_estimated_memory_usage_in_bytes(),
-                                         state_repository.get_state_count(),
-                                         search_nodes.size(),
-                                         ground_action_repository.size(),
-                                         ground_axiom_repository.size());
-
-            applicable_action_generator.on_end_search();
-            state_repository.get_axiom_evaluator()->on_end_search();
-
-            auto plan_actions = GroundActionList {};
-            auto state_trajectory = IndexList {};
-            extract_state_trajectory(search_nodes, search_node, state->get_index(), state_trajectory);
-            const auto final_state_metric_value =
-                extract_ground_action_sequence(start_state, start_g_value, state_trajectory, applicable_action_generator, state_repository, plan_actions);
-            assert(final_state_metric_value == get_g_value(search_node));
-            result.plan = Plan(std::move(plan_actions), final_state_metric_value);
-            result.goal_state = state;
-            result.status = SearchStatus::SOLVED;
-
-            event_handler->on_solved(result.plan.value());
-
-            return result;
-        }
 
         /* Expand the successors of the state. */
 
@@ -201,16 +167,12 @@ SearchResult find_solution(const SearchContext& context,
 
             const bool is_new_successor_state = (successor_search_node->get_status() == SearchNodeStatus::NEW);
 
-            /* Skip visited states. */
+            /* Skip previously generated state. */
 
             if (!is_new_successor_state)
             {
                 continue;
             }
-
-            /* Close state. */
-
-            search_node->get_status() = SearchNodeStatus::CLOSED;
 
             /* Customization point 1: pruning strategy, default never prunes. */
 
@@ -220,18 +182,49 @@ SearchResult find_solution(const SearchContext& context,
                 continue;
             }
 
-            /* Open state with computed h_value. */
+            /* Open state. */
 
             successor_search_node->get_status() = SearchNodeStatus::OPEN;
             successor_search_node->get_parent_state() = state->get_index();
             set_g_value(successor_search_node, successor_state_metric_value);
 
-            // Compute heuristic if state is new.
+            /* Early goal test. */
+
             const auto successor_is_goal_state = goal_strategy->test_dynamic_goal(successor_state);
             if (successor_is_goal_state)
             {
                 successor_search_node->get_status() = SearchNodeStatus::GOAL;
+
+                event_handler->on_expand_goal_state(state);
+
+                event_handler->on_end_search(state_repository.get_reached_fluent_ground_atoms_bitset().count(),
+                                             state_repository.get_reached_derived_ground_atoms_bitset().count(),
+                                             problem.get_estimated_memory_usage_in_bytes(),
+                                             search_nodes.get_estimated_memory_usage_in_bytes(),
+                                             state_repository.get_state_count(),
+                                             search_nodes.size(),
+                                             ground_action_repository.size(),
+                                             ground_axiom_repository.size());
+                applicable_action_generator.on_end_search();
+                state_repository.get_axiom_evaluator()->on_end_search();
+
+                auto plan_actions = GroundActionList {};
+                auto state_trajectory = IndexList {};
+                extract_state_trajectory(search_nodes, successor_search_node, successor_state->get_index(), state_trajectory);
+                const auto final_state_metric_value =
+                    extract_ground_action_sequence(start_state, start_g_value, state_trajectory, applicable_action_generator, state_repository, plan_actions);
+                assert(final_state_metric_value == successor_state_metric_value);
+                result.plan = Plan(std::move(plan_actions), final_state_metric_value);
+                result.goal_state = state;
+                result.status = SearchStatus::SOLVED;
+
+                event_handler->on_solved(result.plan.value());
+
+                return result;
             }
+
+            /* Compute heuristic if state is new. */
+
             const auto successor_h_value = heuristic->compute_heuristic(successor_state, successor_is_goal_state);
             set_h_value(successor_search_node, successor_h_value);
 
@@ -243,8 +236,12 @@ SearchResult find_solution(const SearchContext& context,
 
             event_handler->on_generate_state(state, action, action_cost, successor_state);
 
-            openlist.insert(successor_h_value, successor_state);
+            openlist.insert(std::make_tuple(successor_h_value, successor_state_metric_value), successor_state);
         }
+
+        /* Close state. */
+
+        search_node->get_status() = SearchNodeStatus::CLOSED;
     }
 
     event_handler->on_end_search(state_repository.get_reached_fluent_ground_atoms_bitset().count(),

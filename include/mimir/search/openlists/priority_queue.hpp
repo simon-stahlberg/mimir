@@ -28,16 +28,16 @@ namespace mimir::search
 /**
  * Implementation class
  */
-template<typename T>
-class PriorityQueue : public IOpenList<PriorityQueue<T>>
+template<std::totally_ordered Key, typename T>
+class PriorityQueue : public IOpenList<PriorityQueue<Key, T>>
 {
 private:
     struct Entry
     {
-        double priority;
+        Key priority;
         T element;
 
-        Entry(double priority, T element) : priority(priority), element(std::move(element)) {}
+        Entry(Key priority, T element) : priority(std::move(priority)), element(std::move(element)) {}
     };
 
     struct EntryComparator
@@ -48,7 +48,7 @@ private:
     /* Implement IOpenList interface */
     friend class IOpenList<PriorityQueue>;
 
-    void insert_impl(double priority, const T& item) { m_priority_queue.emplace(priority, item); }
+    void insert_impl(Key priority, T item) { m_priority_queue.emplace(std::move(priority), std::move(item)); }
 
     const T& top_impl() const { return m_priority_queue.top().element; }
 

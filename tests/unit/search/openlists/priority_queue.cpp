@@ -26,13 +26,36 @@ namespace mimir::tests
 
 TEST(MimirTests, SearchOpenListsPriorityQueueTest)
 {
-    // Instantiate grounded version
-    auto priority_queue = PriorityQueue<int>();
-    priority_queue.insert(1.1, 42);
-    priority_queue.insert(2.2, 5);
+    auto priority_queue = PriorityQueue<double, int>();
+    priority_queue.insert(1.1, 0);
+    priority_queue.insert(2.2, 1);
     auto element = priority_queue.top();
     priority_queue.pop();
-    EXPECT_EQ(element, 42);
+    EXPECT_EQ(element, 0);
+    element = priority_queue.top();
+    priority_queue.pop();
+    EXPECT_EQ(element, 1);
+}
+
+TEST(MimirTests, SearchOpenListsPriorityQueue2Test)
+{
+    auto priority_queue = PriorityQueue<std::tuple<double, double>, int>();
+    priority_queue.insert(std::make_tuple(1.1, 5.1), 0);
+    priority_queue.insert(std::make_tuple(2.2, 3.1), 1);
+    priority_queue.insert(std::make_tuple(1.1, 4.1), 2);
+    priority_queue.insert(std::make_tuple(2.2, 2.1), 3);
+    auto element = priority_queue.top();
+    priority_queue.pop();
+    EXPECT_EQ(element, 2);
+    element = priority_queue.top();
+    priority_queue.pop();
+    EXPECT_EQ(element, 0);
+    element = priority_queue.top();
+    priority_queue.pop();
+    EXPECT_EQ(element, 3);
+    element = priority_queue.top();
+    priority_queue.pop();
+    EXPECT_EQ(element, 1);
 }
 
 }
