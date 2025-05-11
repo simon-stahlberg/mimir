@@ -296,9 +296,6 @@ Functions</h2></td></tr>
 <tr class="memitem:ad0c65a02d522a88cab41eba2358bf1aa"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#ad0c65a02d522a88cab41eba2358bf1aa">is_applicable</a> (<a class="el" href="namespacemimir_1_1formalism.html#ade75e2d740a744903d9e02cec519a937">formalism::GroundAxiom</a> axiom, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;problem, const DenseState &amp;dense_state)</td></tr>
 <tr class="memdesc:ad0c65a02d522a88cab41eba2358bf1aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true iff the ground axiom is applicable in the problem and state.  <br /></td></tr>
 <tr class="separator:ad0c65a02d522a88cab41eba2358bf1aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab8ebdedf7a9ee81ab743bf78e490b12c"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#ab8ebdedf7a9ee81ab743bf78e490b12c">operator&lt;&lt;</a> (std::ostream &amp;os, const std::tuple&lt; const <a class="el" href="classmimir_1_1search_1_1Plan.html">Plan</a> &amp;, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp; &gt; &amp;data)</td></tr>
-<tr class="memdesc:ab8ebdedf7a9ee81ab743bf78e490b12c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write the plan to an ostream.  <br /></td></tr>
-<tr class="separator:ab8ebdedf7a9ee81ab743bf78e490b12c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a89c37ce5136f2f1235701dc5c8f9ea81"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a89c37ce5136f2f1235701dc5c8f9ea81">extract_ground_action_sequence</a> (<a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> start_state, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> start_state_metric_value, const <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a> &amp;state_trajectory, <a class="el" href="classmimir_1_1search_1_1IApplicableActionGenerator.html">IApplicableActionGenerator</a> &amp;applicable_action_generator, <a class="el" href="classmimir_1_1search_1_1StateRepositoryImpl.html">StateRepositoryImpl</a> &amp;state_repository, <a class="el" href="namespacemimir_1_1formalism.html#a34df8c35896b9c6bc7826fff84d2692f">formalism::GroundActionList</a> &amp;out_ground_action_sequence)</td></tr>
 <tr class="memdesc:a89c37ce5136f2f1235701dc5c8f9ea81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the sequence of ground actions that generates the state_trajectory starting from the start_state.  <br /></td></tr>
 <tr class="separator:a89c37ce5136f2f1235701dc5c8f9ea81"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1360,36 +1357,6 @@ template&lt;typename... SearchNodeProperties&gt; </div>
 
 <p>Return true iff all nullary literals and constraints in the precondition hold, false otherwise. </p>
 <p>ConjunctiveCondition </p>
-
-</div>
-</div>
-<a id="ab8ebdedf7a9ee81ab743bf78e490b12c" name="ab8ebdedf7a9ee81ab743bf78e490b12c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab8ebdedf7a9ee81ab743bf78e490b12c">&#9670;&#160;</a></span>operator&lt;&lt;()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::ostream &amp; mimir::search::operator&lt;&lt; </td>
-          <td>(</td>
-          <td class="paramtype">std::ostream &amp;&#160;</td>
-          <td class="paramname"><em>os</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::tuple&lt; const <a class="el" href="classmimir_1_1search_1_1Plan.html">Plan</a> &amp;, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp; &gt; &amp;&#160;</td>
-          <td class="paramname"><em>data</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Write the plan to an ostream. </p>
 
 </div>
 </div>
