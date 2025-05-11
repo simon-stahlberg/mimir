@@ -85,6 +85,9 @@ SearchResult find_solution(const SearchContext& context,
     const auto goal_strategy = (goal_strategy_) ? goal_strategy_ : ProblemGoalStrategyImpl::create(context->get_problem());
     const auto pruning_strategy = (pruning_strategy_) ? pruning_strategy_ : NoPruningStrategyImpl::create();
 
+    const auto& ground_action_repository = boost::hana::at_key(problem.get_repositories().get_hana_repositories(), boost::hana::type<GroundActionImpl> {});
+    const auto& ground_axiom_repository = boost::hana::at_key(problem.get_repositories().get_hana_repositories(), boost::hana::type<GroundAxiomImpl> {});
+
     auto step = Index(0);
 
     auto result = SearchResult();
@@ -104,6 +107,30 @@ SearchResult find_solution(const SearchContext& context,
                            std::numeric_limits<Index>::max(),
                            cista::tuple<ContinuousCost, ContinuousCost> { std::numeric_limits<ContinuousCost>::infinity(), ContinuousCost(0) });
     auto search_nodes = SearchNodeImplVector<ContinuousCost, ContinuousCost>();
+
+    /* Test whether initial state is goal. */
+
+    if (goal_strategy->test_dynamic_goal(start_state))
+    {
+        event_handler->on_end_search(state_repository.get_reached_fluent_ground_atoms_bitset().count(),
+                                     state_repository.get_reached_derived_ground_atoms_bitset().count(),
+                                     problem.get_estimated_memory_usage_in_bytes(),
+                                     search_nodes.get_estimated_memory_usage_in_bytes(),
+                                     state_repository.get_state_count(),
+                                     search_nodes.size(),
+                                     ground_action_repository.size(),
+                                     ground_axiom_repository.size());
+        applicable_action_generator.on_end_search();
+        state_repository.get_axiom_evaluator()->on_end_search();
+
+        result.plan = Plan(GroundActionList {}, 0);
+        result.goal_state = start_state;
+        result.status = SearchStatus::SOLVED;
+
+        event_handler->on_solved(result.plan.value());
+
+        return result;
+    }
 
     auto openlist = PriorityQueue<std::tuple<double, double, Index>, State>();
 
@@ -140,9 +167,6 @@ SearchResult find_solution(const SearchContext& context,
 
     auto applicable_actions = GroundActionList {};
     openlist.insert(std::make_tuple(start_h_value, start_g_value, step++), start_state);
-
-    const auto& ground_action_repository = boost::hana::at_key(problem.get_repositories().get_hana_repositories(), boost::hana::type<GroundActionImpl> {});
-    const auto& ground_axiom_repository = boost::hana::at_key(problem.get_repositories().get_hana_repositories(), boost::hana::type<GroundAxiomImpl> {});
 
     while (!openlist.empty())
     {
