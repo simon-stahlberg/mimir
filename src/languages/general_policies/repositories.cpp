@@ -89,8 +89,26 @@ GeneralPolicy Repositories::get_or_create_general_policy(NamedFeatureLists<dl::B
     // Sort lexicographically
     auto& booleans = boost::hana::at_key(features, boost::hana::type<dl::BooleanTag> {});
     auto& numericals = boost::hana::at_key(features, boost::hana::type<dl::NumericalTag> {});
-    std::sort(booleans.begin(), booleans.end(), [](auto&& lhs, auto&& rhs) { return to_string(lhs) < to_string(rhs); });
-    std::sort(numericals.begin(), numericals.end(), [](auto&& lhs, auto&& rhs) { return to_string(lhs) < to_string(rhs); });
+    std::sort(booleans.begin(),
+              booleans.end(),
+              [](auto&& lhs, auto&& rhs)
+              {
+                  if (to_string(lhs->get_feature()) == to_string(rhs->get_feature()))
+                  {
+                      return to_string(lhs) < to_string(rhs);
+                  }
+                  return to_string(lhs->get_feature()) < to_string(rhs->get_feature());
+              });
+    std::sort(numericals.begin(),
+              numericals.end(),
+              [](auto&& lhs, auto&& rhs)
+              {
+                  if (to_string(lhs->get_feature()) == to_string(rhs->get_feature()))
+                  {
+                      return to_string(lhs) < to_string(rhs);
+                  }
+                  return to_string(lhs->get_feature()) < to_string(rhs->get_feature());
+              });
     std::sort(rules.begin(), rules.end(), [](auto&& lhs, auto&& rhs) { return to_string(lhs) < to_string(rhs); });
 
     return boost::hana::at_key(m_repositories, boost::hana::type<GeneralPolicyImpl> {}).get_or_create(std::move(features), std::move(rules));

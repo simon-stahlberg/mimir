@@ -29,10 +29,14 @@
 #include "mimir/languages/general_policies/visitor_interface.hpp"
 #include "mimir/languages/general_policies/visitor_null.hpp"
 #include "mimir/search/algorithms/brfs.hpp"
+#include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 #include "mimir/search/algorithms/strategies/pruning_strategy.hpp"
+#include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/search_context.hpp"
 #include "mimir/search/state.hpp"
 #include "mimir/search/state_repository.hpp"
+
+#include <stdexcept>
 
 using namespace mimir::formalism;
 using namespace mimir::search;
@@ -487,36 +491,150 @@ SolvabilityStatus GeneralPolicyImpl::solves(const datasets::GeneralizedStateSpac
     return solves<graphs::VertexIndexList>(generalized_state_space, vertices, denotation_repositories);
 }
 
-class GeneralPolicyPruningStrategy : public IPruningStrategy
+SolvabilityStatus GeneralPolicyImpl::solves(const search::SearchContext& search_context, dl::DenotationRepositories& denotation_repositories) const
 {
-public:
-    bool test_prune_initial_state(State state) override { return false; }
-    bool test_prune_successor_state(State state, State succ_state, bool is_new_succ) override
+    auto& state_repository = *search_context->get_state_repository();
+    auto& applicable_action_generator = *search_context->get_applicable_action_generator();
+
+    auto goal_strategy = ProblemGoalStrategyImpl::create(search_context->get_problem());
+
+    auto [initial_state, initial_state_metric_value] = state_repository.get_or_create_initial_state();
+    auto initial_applicable_actions = GroundActionList {};
+    for (const auto& action : applicable_action_generator.create_applicable_action_generator(initial_state))
     {
-        m_src_context.set_state(state);
-        m_dst_context.set_state(state);
-        return !m_policy->evaluate(m_src_context, m_dst_context);
+        initial_applicable_actions.push_back(action);
     }
 
-    GeneralPolicyPruningStrategy(GeneralPolicy policy, Problem problem) :
-        m_policy(policy),
-        m_denotation_repositories(),
-        m_src_context(nullptr, problem, m_denotation_repositories),
-        m_dst_context(nullptr, problem, m_denotation_repositories)
+    if (!goal_strategy->test_static_goal())
     {
+        return SolvabilityStatus::UNSOLVABLE;
     }
 
-private:
-    GeneralPolicy m_policy;
-    dl::DenotationRepositories m_denotation_repositories;
-    dl::EvaluationContext m_src_context;
-    dl::EvaluationContext m_dst_context;
-};
+    auto src_context = dl::EvaluationContext(nullptr, search_context->get_problem(), denotation_repositories);
+    auto dst_context = dl::EvaluationContext(nullptr, search_context->get_problem(), denotation_repositories);
 
-SearchResult GeneralPolicyImpl::find_solution(const SearchContext& search_context) const
+    struct Entry
+    {
+        State state;
+        double state_metric_value;
+        GroundActionList applicable_actions;
+        size_t pos;
+        bool has_compatible_edge;
+    };
+
+    auto stack = std::stack<Entry> {};
+    stack.push(Entry { initial_state, initial_state_metric_value, std::move(initial_applicable_actions), 0, false });
+
+    auto states_on_stack = StateSet {};
+    states_on_stack.insert(initial_state);
+
+    while (!stack.empty())
+    {
+        auto& entry = stack.top();
+
+        if (goal_strategy->test_dynamic_goal(entry.state))
+        {
+            stack.pop();
+            continue;
+        }
+        else if (entry.pos < entry.applicable_actions.size())
+        {
+            src_context.set_state(entry.state);
+
+            const auto [succ_state, succ_state_metric_value] =
+                state_repository.get_or_create_successor_state(entry.state, entry.applicable_actions.at(entry.pos++), entry.state_metric_value);
+
+            dst_context.set_state(succ_state);
+
+            auto is_compatible = evaluate(src_context, dst_context);
+
+            if (is_compatible)
+            {
+                entry.has_compatible_edge = true;
+
+                auto succ_applicable_actions = GroundActionList {};
+                for (const auto& action : applicable_action_generator.create_applicable_action_generator(succ_state))
+                {
+                    succ_applicable_actions.push_back(action);
+                }
+
+                stack.push(Entry { succ_state, succ_state_metric_value, std::move(succ_applicable_actions), 0, false });
+                states_on_stack.insert(succ_state);
+            }
+        }
+        else
+        {
+            if (!entry.has_compatible_edge)
+            {
+                return SolvabilityStatus::UNSOLVABLE;
+            }
+
+            stack.pop();
+        }
+    }
+
+    return SolvabilityStatus::SOLVED;
+}
+
+SearchResult GeneralPolicyImpl::find_solution(const SearchContext& search_context, dl::DenotationRepositories& denotation_repositories) const
 {
-    auto pruning_strategy = std::make_shared<GeneralPolicyPruningStrategy>(this, search_context->get_problem());
-    return brfs::find_solution(search_context, nullptr, nullptr, nullptr, pruning_strategy);
+    auto& state_repository = *search_context->get_state_repository();
+    auto& applicable_action_generator = *search_context->get_applicable_action_generator();
+
+    auto goal_strategy = ProblemGoalStrategyImpl::create(search_context->get_problem());
+
+    auto [cur_state, cur_state_metric_value] = state_repository.get_or_create_initial_state();
+
+    auto src_context = dl::EvaluationContext(nullptr, search_context->get_problem(), denotation_repositories);
+    auto dst_context = dl::EvaluationContext(nullptr, search_context->get_problem(), denotation_repositories);
+
+    auto plan = GroundActionList {};
+    auto result = SearchResult {};
+    auto visited = StateSet {};
+    visited.insert(cur_state);
+
+    /* Greedily follow the policy until reaching a goal state, or failing by finding no compatible edge or detecting a cycle. */
+    while (!goal_strategy->test_dynamic_goal(cur_state))
+    {
+        src_context.set_state(cur_state);
+
+        auto has_compatible_succ_state = false;
+
+        for (const auto& action : applicable_action_generator.create_applicable_action_generator(cur_state))
+        {
+            auto [succ_state, succ_state_metric_value] = state_repository.get_or_create_successor_state(cur_state, action, cur_state_metric_value);
+
+            dst_context.set_state(succ_state);
+
+            if (evaluate(src_context, dst_context))
+            {
+                if (visited.contains(succ_state))
+                {
+                    result.status = SearchStatus::FAILED;
+                    return result;
+                }
+                visited.insert(succ_state);
+
+                cur_state = succ_state;
+                cur_state_metric_value = succ_state_metric_value;
+                has_compatible_succ_state = true;
+                plan.push_back(action);
+                break;
+            }
+        }
+
+        if (!has_compatible_succ_state)
+        {
+            result.status = SearchStatus::FAILED;
+            return result;
+        }
+    }
+
+    result.status = SearchStatus::SOLVED;
+    result.goal_state = cur_state;
+    result.plan = Plan(plan, cur_state_metric_value);
+
+    return result;
 }
 
 Index GeneralPolicyImpl::get_index() const { return m_index; }

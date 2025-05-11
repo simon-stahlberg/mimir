@@ -10,11 +10,11 @@ def test_pddl_parser():
     """
     domain_filepath = str(ROOT_DIR / "data" / "gripper" / "domain.pddl")
     problem_filepath = str(ROOT_DIR / "data" / "gripper" / "test_problem.pddl")
-    parser = formalism.Parser(domain_filepath)
+    parser = formalism.Parser(domain_filepath, formalism.ParserOptions())
 
     domain = parser.get_domain()
 
-    problem = parser.parse_problem(problem_filepath)
+    problem = parser.parse_problem(problem_filepath, formalism.ParserOptions())
 
     assert(domain == problem.get_domain())
 

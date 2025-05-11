@@ -14,7 +14,7 @@ ROOT_DIR = (Path(__file__).parent.parent.parent).absolute()
 def main():
     domain_filepath = str(ROOT_DIR / "data" / "gripper" / "domain.pddl")
     problem_filepath = str(ROOT_DIR / "data" / "gripper" / "test_problem.pddl")
-    problem = formalism.Problem.create(domain_filepath, problem_filepath)
+    problem = formalism.Problem.create(domain_filepath, problem_filepath, formalism.ParserOptions())
 
     actions_by_name: Dict[str, formalism.GroundAction] = dict()
     for action in problem.get_domain().get_actions():

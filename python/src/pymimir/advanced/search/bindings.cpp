@@ -239,11 +239,8 @@ void bind_module_definitions(nb::module_& m)
             { return SearchContextImpl::create(domain_filepath, problem_filepath, options); },
             "domain_filepath"_a,
             "problem_filepath"_a,
-            "options"_a = SearchContextImpl::Options())
-        .def_static("create",
-                    nb::overload_cast<formalism::Problem, const SearchContextImpl::Options&>(&SearchContextImpl::create),
-                    "problem"_a,
-                    "options"_a = SearchContextImpl::Options())
+            "options"_a)
+        .def_static("create", nb::overload_cast<formalism::Problem, const SearchContextImpl::Options&>(&SearchContextImpl::create), "problem"_a, "options"_a)
         .def_static("create",
                     nb::overload_cast<formalism::Problem, ApplicableActionGenerator, StateRepository>(&SearchContextImpl::create),
                     "problem"_a,
@@ -261,18 +258,18 @@ void bind_module_definitions(nb::module_& m)
                 -> GeneralizedSearchContext { return GeneralizedSearchContextImpl::create(domain_filepath, problem_filepaths, options); },
             "domain_filepath"_a,
             "problem_filepaths"_a,
-            "options"_a = SearchContextImpl::Options())
+            "options"_a)
         .def_static(
             "create",
             [](const fs::path& domain_filepath, const fs::path& problems_directory, const SearchContextImpl::Options& options) -> GeneralizedSearchContext
             { return GeneralizedSearchContextImpl::create(domain_filepath, problems_directory, options); },
             "domain_filepath"_a,
             "problems_directory"_a,
-            "options"_a = SearchContextImpl::Options())
+            "options"_a)
         .def_static("create",
                     nb::overload_cast<formalism::GeneralizedProblem, const SearchContextImpl::Options&>(&GeneralizedSearchContextImpl::create),
                     "generalized_problem"_a,
-                    "options"_a = SearchContextImpl::Options())
+                    "options"_a)
         .def_static("create",
                     nb::overload_cast<formalism::GeneralizedProblem, SearchContextList>(&GeneralizedSearchContextImpl::create),
                     "generalized_problem"_a,
@@ -504,11 +501,11 @@ void bind_module_definitions(nb::module_& m)
         .def(nb::init<Problem>(), "problem"_a)
         .def("create_grounded_axiom_evaluator",
              &DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator,
-             "match_tree_options"_a = match_tree::Options(),
+             "match_tree_options"_a,
              "axiom_evaluator_event_handler"_a = nullptr)
         .def("create_grounded_applicable_action_generator",
              &DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator,
-             "match_tree_options"_a = match_tree::Options(),
+             "match_tree_options"_a,
              "axiom_evaluator_event_handler"_a = nullptr);
 
     /* Heuristics */

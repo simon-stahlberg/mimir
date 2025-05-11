@@ -138,7 +138,13 @@ void bind_module_definitions(nb::module_& m)
             "state_space"_a,
             "vertex_indices"_a,
             "denotation_repositories"_a)
-        .def("find_solution", &GeneralPolicyImpl::find_solution, "search_context"_a)
+        .def(
+            "solves",
+            [](const GeneralPolicyImpl& self, const search::SearchContext& context, dl::DenotationRepositories& denotation_repositories) -> SolvabilityStatus
+            { return self.solves(context, denotation_repositories); },
+            "search_context"_a,
+            "denotation_repositories"_a)
+        .def("find_solution", &GeneralPolicyImpl::find_solution, "search_context"_a, "denotation_repositories"_a)
         .def("get_index", &GeneralPolicyImpl::get_index)
         .def("get_boolean_features", &GeneralPolicyImpl::get_features<dl::BooleanTag>, nb::rv_policy::copy)
         .def("get_numerical_features", &GeneralPolicyImpl::get_features<dl::NumericalTag>, nb::rv_policy::copy)

@@ -60,7 +60,7 @@ def main():
     domain_filepath = str(ROOT_DIR / "data" / "gripper" / "domain.pddl")
     problem_filepath = str(ROOT_DIR / "data" / "gripper" / "p-2-0.pddl")
 
-    search_context = search.SearchContext.create(domain_filepath, problem_filepath)
+    search_context = search.SearchContext.create(domain_filepath, problem_filepath, search.SearchContextOptions())
 
     initial_state, _ = search_context.get_state_repository().get_or_create_initial_state()
 

@@ -29,6 +29,7 @@ from pymimir.advanced.formalism import GroundConjunctiveEffect as AdvancedGround
 from pymimir.advanced.formalism import NumericConstraintList as AdvancedNumericConstraintList
 from pymimir.advanced.formalism import Object as AdvancedObject
 from pymimir.advanced.formalism import ObjectList as AdvancedObjectList
+from pymimir.advanced.formalism import ParserOptions as AdvanceParserOptions
 from pymimir.advanced.formalism import Parser as AdvancedParser
 from pymimir.advanced.formalism import Problem as AdvancedProblem
 from pymimir.advanced.formalism import Repositories as AdvancedRepositories
@@ -732,7 +733,7 @@ class Domain:
             domain_path (Path): The file path to the domain definition file.
         """
         assert isinstance(domain_path, (Path, str)), "Invalid domain path type."
-        self._advanced_parser = AdvancedParser(str(domain_path))
+        self._advanced_parser = AdvancedParser(domain_path, AdvanceParserOptions())
         self._advanced_domain = self._advanced_parser.get_domain()
         self._repositories = self._advanced_domain.get_repositories()
 
@@ -816,7 +817,7 @@ class Problem:
             raise ValueError("Invalid mode. Use 'lifted' or 'grounded'.")
         search_mode = SearchMode.LIFTED if mode == 'lifted' else SearchMode.GROUNDED
         self._domain = domain
-        advanced_problem = domain._advanced_parser.parse_problem(str(problem_path))
+        advanced_problem = domain._advanced_parser.parse_problem(problem_path, AdvanceParserOptions())
         self._search_context = SearchContext.create(advanced_problem, SearchContextOptions(search_mode))
         self._advanced_problem = self._search_context.get_problem()
         self._static_ground_atom_indices = { atom.get_index() for atom in self._advanced_problem.get_static_initial_atoms() }

@@ -17,6 +17,7 @@
 
 #include "mimir/datasets/generalized_state_space.hpp"
 #include "mimir/datasets/knowledge_base.hpp"
+#include "mimir/datasets/state_space.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/languages/description_logics/constructor_repositories.hpp"
 #include "mimir/languages/general_policies/general_policy_factory.hpp"
@@ -72,16 +73,25 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyGripperTest)
 
             {
                 /* Test solvability on StateSpace 0. */
+                const auto state_space = kb->get_state_spaces().at(0);
 
-                EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+                EXPECT_EQ(general_policy->solves(state_space, denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+
+                EXPECT_EQ(general_policy->solves(state_space->get_search_context(), denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+
+                EXPECT_EQ(general_policy->find_solution(state_space->get_search_context(), denotation_repositories).status, search::SearchStatus::SOLVED);
             }
 
             {
                 /* Test solvability on StateSpace 1. */
 
-                const auto state_space_1 = kb->get_state_spaces().at(1);
+                const auto state_space = kb->get_state_spaces().at(1);
 
-                EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+                EXPECT_EQ(general_policy->solves(state_space, denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+
+                EXPECT_EQ(general_policy->solves(state_space->get_search_context(), denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+
+                EXPECT_EQ(general_policy->find_solution(state_space->get_search_context(), denotation_repositories).status, search::SearchStatus::SOLVED);
             }
         }
 
@@ -106,17 +116,25 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyGripperTest)
             {
                 /* Test solvability on StateSpace 0. */
 
-                const auto state_space_0 = kb->get_state_spaces().at(0);
+                const auto state_space = kb->get_state_spaces().at(0);
 
-                EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+                EXPECT_EQ(general_policy->solves(state_space, denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+
+                EXPECT_EQ(general_policy->solves(state_space->get_search_context(), denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+
+                EXPECT_EQ(general_policy->find_solution(state_space->get_search_context(), denotation_repositories).status, search::SearchStatus::SOLVED);
             }
 
             {
                 /* Test solvability on StateSpace 1. */
 
-                const auto state_space_1 = kb->get_state_spaces().at(1);
+                const auto state_space = kb->get_state_spaces().at(1);
 
-                EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+                EXPECT_EQ(general_policy->solves(state_space, denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+
+                EXPECT_EQ(general_policy->solves(state_space->get_search_context(), denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+
+                EXPECT_EQ(general_policy->find_solution(state_space->get_search_context(), denotation_repositories).status, search::SearchStatus::SOLVED);
             }
         }
     }
@@ -161,16 +179,25 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyBlocks3opsTest)
 
             {
                 /* Test solvability on StateSpace 0. */
+                const auto& state_space = kb->get_state_spaces().at(0);
 
-                EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+                EXPECT_EQ(general_policy->solves(state_space, denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+
+                EXPECT_EQ(general_policy->solves(state_space->get_search_context(), denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+
+                EXPECT_EQ(general_policy->find_solution(state_space->get_search_context(), denotation_repositories).status, search::SearchStatus::SOLVED);
             }
 
             {
                 /* Test solvability on StateSpace 1. */
 
-                const auto state_space_1 = kb->get_state_spaces().at(1);
+                const auto state_space = kb->get_state_spaces().at(1);
 
-                EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+                EXPECT_EQ(general_policy->solves(state_space, denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+
+                EXPECT_EQ(general_policy->solves(state_space->get_search_context(), denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+
+                EXPECT_EQ(general_policy->find_solution(state_space->get_search_context(), denotation_repositories).status, search::SearchStatus::SOLVED);
             }
         }
 
@@ -195,17 +222,25 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyBlocks3opsTest)
             {
                 /* Test solvability on StateSpace 0. */
 
-                const auto state_space_0 = kb->get_state_spaces().at(0);
+                const auto state_space = kb->get_state_spaces().at(0);
 
-                EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+                EXPECT_EQ(general_policy->solves(state_space, denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+
+                EXPECT_EQ(general_policy->solves(state_space->get_search_context(), denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+
+                EXPECT_EQ(general_policy->find_solution(state_space->get_search_context(), denotation_repositories).status, search::SearchStatus::SOLVED);
             }
 
             {
                 /* Test solvability on StateSpace 1. */
 
-                const auto state_space_1 = kb->get_state_spaces().at(1);
+                const auto state_space = kb->get_state_spaces().at(1);
 
-                EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+                EXPECT_EQ(general_policy->solves(state_space, denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+
+                EXPECT_EQ(general_policy->solves(state_space->get_search_context(), denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+
+                EXPECT_EQ(general_policy->find_solution(state_space->get_search_context(), denotation_repositories).status, search::SearchStatus::SOLVED);
             }
         }
     }
@@ -250,16 +285,25 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicySpannerTest)
 
             {
                 /* Test solvability on StateSpace 0. */
+                const auto state_space = kb->get_state_spaces().at(0);
 
-                EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+                EXPECT_EQ(general_policy->solves(state_space, denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+
+                EXPECT_EQ(general_policy->solves(state_space->get_search_context(), denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+
+                EXPECT_EQ(general_policy->find_solution(state_space->get_search_context(), denotation_repositories).status, search::SearchStatus::SOLVED);
             }
 
             {
                 /* Test solvability on StateSpace 1. */
 
-                const auto state_space_1 = kb->get_state_spaces().at(1);
+                const auto state_space = kb->get_state_spaces().at(1);
 
-                EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+                EXPECT_EQ(general_policy->solves(state_space, denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+
+                EXPECT_EQ(general_policy->solves(state_space->get_search_context(), denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+
+                EXPECT_EQ(general_policy->find_solution(state_space->get_search_context(), denotation_repositories).status, search::SearchStatus::SOLVED);
             }
         }
 
@@ -284,17 +328,25 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicySpannerTest)
             {
                 /* Test solvability on StateSpace 0. */
 
-                const auto state_space_0 = kb->get_state_spaces().at(0);
+                const auto state_space = kb->get_state_spaces().at(0);
 
-                EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+                EXPECT_EQ(general_policy->solves(state_space, denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+
+                EXPECT_EQ(general_policy->solves(state_space->get_search_context(), denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+
+                EXPECT_EQ(general_policy->find_solution(state_space->get_search_context(), denotation_repositories).status, search::SearchStatus::SOLVED);
             }
 
             {
                 /* Test solvability on StateSpace 1. */
 
-                const auto state_space_1 = kb->get_state_spaces().at(1);
+                const auto state_space = kb->get_state_spaces().at(1);
 
-                EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+                EXPECT_EQ(general_policy->solves(state_space, denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+
+                EXPECT_EQ(general_policy->solves(state_space->get_search_context(), denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+
+                EXPECT_EQ(general_policy->find_solution(state_space->get_search_context(), denotation_repositories).status, search::SearchStatus::SOLVED);
             }
         }
     }
@@ -340,15 +392,25 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyDeliveryTest)
             {
                 /* Test solvability on StateSpace 0. */
 
-                EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+                const auto state_space = kb->get_state_spaces().at(0);
+
+                EXPECT_EQ(general_policy->solves(state_space, denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+
+                EXPECT_EQ(general_policy->solves(state_space->get_search_context(), denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+
+                EXPECT_EQ(general_policy->find_solution(state_space->get_search_context(), denotation_repositories).status, search::SearchStatus::SOLVED);
             }
 
             {
                 /* Test solvability on StateSpace 1. */
 
-                const auto state_space_1 = kb->get_state_spaces().at(1);
+                const auto state_space = kb->get_state_spaces().at(1);
 
-                EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+                EXPECT_EQ(general_policy->solves(state_space, denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+
+                EXPECT_EQ(general_policy->solves(state_space->get_search_context(), denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+
+                EXPECT_EQ(general_policy->find_solution(state_space->get_search_context(), denotation_repositories).status, search::SearchStatus::SOLVED);
             }
         }
 
@@ -373,17 +435,25 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyDeliveryTest)
             {
                 /* Test solvability on StateSpace 0. */
 
-                const auto state_space_0 = kb->get_state_spaces().at(0);
+                const auto state_space = kb->get_state_spaces().at(0);
 
-                EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+                EXPECT_EQ(general_policy->solves(state_space, denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+
+                EXPECT_EQ(general_policy->solves(state_space->get_search_context(), denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+
+                EXPECT_EQ(general_policy->find_solution(state_space->get_search_context(), denotation_repositories).status, search::SearchStatus::SOLVED);
             }
 
             {
                 /* Test solvability on StateSpace 1. */
 
-                const auto state_space_1 = kb->get_state_spaces().at(1);
+                const auto state_space = kb->get_state_spaces().at(1);
 
-                EXPECT_EQ(general_policy->solves(kb->get_state_spaces().at(0), denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+                EXPECT_EQ(general_policy->solves(state_space, denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+
+                EXPECT_EQ(general_policy->solves(state_space->get_search_context(), denotation_repositories), general_policies::SolvabilityStatus::SOLVED);
+
+                EXPECT_EQ(general_policy->find_solution(state_space->get_search_context(), denotation_repositories).status, search::SearchStatus::SOLVED);
             }
         }
     }

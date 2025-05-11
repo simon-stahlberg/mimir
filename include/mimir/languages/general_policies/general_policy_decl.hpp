@@ -120,7 +120,9 @@ public:
      * Solvability of Problem.
      */
 
-    search::SearchResult find_solution(const search::SearchContext& search_context) const;
+    SolvabilityStatus solves(const search::SearchContext& search_context, dl::DenotationRepositories& denotation_repositories) const;
+
+    search::SearchResult find_solution(const search::SearchContext& search_context, dl::DenotationRepositories& denotation_repositories) const;
 
     /// @brief Get the index.
     /// @return the index.

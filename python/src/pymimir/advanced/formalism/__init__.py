@@ -128,6 +128,7 @@ from pymimir.pymimir.advanced.formalism import (
     OptimizationMetric,
     Repositories,
     Parser,
+    ParserOptions,
     Problem,
     ProblemList,
     Requirements,

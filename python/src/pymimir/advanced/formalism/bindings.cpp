@@ -763,7 +763,7 @@ void bind_module_definitions(nb::module_& m)
             { return ProblemImpl::create(domain_filepath, problem_filepath, options); },
             "domain_filepath"_a,
             "problem_filepath"_a,
-            "options"_a = loki::Options())
+            "options"_a)
         .def("__str__", [](const ProblemImpl& self) { return to_string(self); })
         .def("get_index", &ProblemImpl::get_index, nb::rv_policy::copy)
         .def("get_repositories", &ProblemImpl::get_repositories, nb::rv_policy::reference_internal)
@@ -978,14 +978,14 @@ void bind_module_definitions(nb::module_& m)
             { return GeneralizedProblemImpl::create(domain_filepath, problem_filepaths, options); },
             "domain_filepath"_a,
             "problem_filepaths"_a,
-            "options"_a = loki::Options())
+            "options"_a)
         .def_static(
             "create",
             [](const fs::path& domain_filepath, const fs::path& problems_directory, const loki::Options& options)
             { return GeneralizedProblemImpl::create(domain_filepath, problems_directory, options); },
             "domain_filepath"_a,
             "problems_directory"_a,
-            "options"_a = loki::Options())
+            "options"_a)
 
         .def_static(
             "create",
@@ -1000,17 +1000,8 @@ void bind_module_definitions(nb::module_& m)
      */
 
     nb::class_<Parser>(m, "Parser")
-        .def(
-            "__init__",
-            [](Parser* self, std::string domain_filepath, loki::Options options)
-            { new (self) Parser(std::filesystem::path(std::move(domain_filepath)), std::move(options)); },
-            "domain_filepath"_a,
-            "options"_a = loki::Options())
-        .def(
-            "parse_problem",
-            [](Parser& self, const std::string& problem_filepath, const loki::Options& options) { return self.parse_problem(problem_filepath, options); },
-            "problem_filepath"_a,
-            "options"_a = loki::Options())
+        .def(nb::init<const fs::path&, const loki::Options&>(), "domain_filepath"_a, "options"_a)
+        .def("parse_problem", &Parser::parse_problem, "problem_filepath"_a, "options"_a)
         .def("get_domain", &Parser::get_domain);
 
     /**

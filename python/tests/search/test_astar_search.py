@@ -67,7 +67,7 @@ def test_astar_search():
     """
     domain_filepath = str(ROOT_DIR / "data" / "gripper" / "domain.pddl")
     problem_filepath = str(ROOT_DIR / "data" / "gripper" / "test_problem.pddl")
-    search_context = search.SearchContext.create(domain_filepath, problem_filepath)
+    search_context = search.SearchContext.create(domain_filepath, problem_filepath, search.SearchContextOptions())
 
     blind_heuristic = CustomBlindHeuristic()
     initial_state, _ = search_context.get_state_repository().get_or_create_initial_state()

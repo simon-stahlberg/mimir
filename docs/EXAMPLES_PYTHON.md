@@ -11,7 +11,7 @@ import pymimir.advanced.search as search
 
 search_context_options = search.SearchContextOptions()
 search_context_options.mode = search.SearchMode.LIFTED
-search_context = search.SearchContext.create("domain.pddl", "problem.pddl")
+search_context = search.SearchContext.create("domain.pddl", "problem.pddl", search_context_options)
 result = search.find_solution_brfs(search_context)
 status = result.status
 plan = result.plan
