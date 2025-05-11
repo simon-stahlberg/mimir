@@ -319,6 +319,13 @@ void bind_module_definitions(nb::module_& m)
 
     /* Plan */
     nb::class_<Plan>(m, "Plan")  //
+        .def("to_string",
+             [](const Plan& self, const ProblemImpl& problem)
+             {
+                 std::stringstream ss;
+                 mimir::operator<<(ss, std::make_tuple(std::cref(self), std::cref(problem)));
+                 return ss.str();
+             })
         .def("__len__", [](const Plan& arg) { return arg.get_actions().size(); })
         .def("get_actions", &Plan::get_actions)
         .def("get_cost", &Plan::get_cost);

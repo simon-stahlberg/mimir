@@ -73,6 +73,8 @@ def main():
     assert(result.status == search.SearchStatus.SOLVED)
     assert(len(result.plan) == 5)
 
+    print(result.plan.to_string(search_context.get_problem()))
+
 
 if __name__ == "__main__":
     main()

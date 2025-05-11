@@ -32,9 +32,12 @@ const GroundActionList& Plan::get_actions() const { return m_actions; }
 
 ContinuousCost Plan::get_cost() const { return m_cost; }
 
-/* Utility */
+}
 
-std::ostream& operator<<(std::ostream& os, const std::tuple<const Plan&, const ProblemImpl&>& data)
+namespace mimir
+{
+template<>
+std::ostream& operator<<(std::ostream& os, const std::tuple<const search::Plan&, const ProblemImpl&>& data)
 {
     const auto& [plan, problem] = data;
 

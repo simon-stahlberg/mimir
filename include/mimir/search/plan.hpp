@@ -18,6 +18,7 @@
 #ifndef MIMIR_SEARCH_PLAN_HPP_
 #define MIMIR_SEARCH_PLAN_HPP_
 
+#include "mimir/common/printers.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
 
@@ -37,9 +38,13 @@ public:
 
     ContinuousCost get_cost() const;
 };
+}
 
+namespace mimir
+{
 /// @brief Write the plan to an ostream.
-extern std::ostream& operator<<(std::ostream& os, const std::tuple<const Plan&, const formalism::ProblemImpl&>& data);
+template<>
+std::ostream& operator<<(std::ostream& os, const std::tuple<const search::Plan&, const formalism::ProblemImpl&>& data);
 
 }
 
