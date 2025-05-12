@@ -528,7 +528,7 @@ GroundLiteral<P> ProblemImpl::ground(Literal<P> literal, const ObjectList& bindi
         polarity_grounding_tables.resize(predicate_index + 1);
     }
 
-    auto& grounding_table = polarity_grounding_tables.at(predicate_index);
+    // auto& grounding_table = polarity_grounding_tables.at(predicate_index);
 
     /* 3. Check if grounding is cached */
 
@@ -536,11 +536,11 @@ GroundLiteral<P> ProblemImpl::ground(Literal<P> literal, const ObjectList& bindi
     auto grounded_terms = ObjectList {};
     ground_terms(literal->get_atom()->get_terms(), binding, grounded_terms);
 
-    const auto it = grounding_table.find(grounded_terms);
-    if (it != grounding_table.end())
-    {
-        return it->second;
-    }
+    // const auto it = grounding_table.find(grounded_terms);
+    // if (it != grounding_table.end())
+    // {
+    //     return it->second;
+    // }
 
     /* 4. Ground the literal */
 
@@ -549,7 +549,7 @@ GroundLiteral<P> ProblemImpl::ground(Literal<P> literal, const ObjectList& bindi
 
     /* 5. Insert to grounding_table table */
 
-    grounding_table.emplace(std::move(grounded_terms), GroundLiteral<P>(grounded_literal));
+    // grounding_table.emplace(std::move(grounded_terms), GroundLiteral<P>(grounded_literal));
 
     /* 6. Return the resulting ground literal */
 
@@ -575,7 +575,7 @@ GroundFunction<F> ProblemImpl::ground(Function<F> function, const ObjectList& bi
         grounding_tables.resize(function_skeleton_index + 1);
     }
 
-    auto& grounding_table = grounding_tables.at(function_skeleton_index);
+    // auto& grounding_table = grounding_tables.at(function_skeleton_index);
 
     /* 3. Check if grounding is cached */
 
@@ -584,11 +584,11 @@ GroundFunction<F> ProblemImpl::ground(Function<F> function, const ObjectList& bi
     auto grounded_terms = ObjectList {};
     ground_terms(function->get_terms(), binding, grounded_terms);
 
-    const auto it = grounding_table.find(grounded_terms);
-    if (it != grounding_table.end())
-    {
-        return it->second;
-    }
+    // const auto it = grounding_table.find(grounded_terms);
+    // if (it != grounding_table.end())
+    // {
+    //     return it->second;
+    // }
 
     /* 4. Ground the function */
 
@@ -596,7 +596,7 @@ GroundFunction<F> ProblemImpl::ground(Function<F> function, const ObjectList& bi
 
     /* 5. Insert to grounding_table table */
 
-    grounding_table.emplace(std::move(grounded_terms), GroundFunction<F>(grounded_function));
+    // grounding_table.emplace(std::move(grounded_terms), GroundFunction<F>(grounded_function));
 
     /* 6. Return the resulting ground literal */
 
@@ -623,15 +623,15 @@ GroundFunctionExpression ProblemImpl::ground(FunctionExpression fexpr, const Obj
         grounding_tables.resize(fexpr_index + 1);
     }
 
-    auto& grounding_table = grounding_tables.at(fexpr_index);
+    // auto& grounding_table = grounding_tables.at(fexpr_index);
 
     /* 3. Check if grounding is cached */
 
-    const auto it = grounding_table.find(binding);
-    if (it != grounding_table.end())
-    {
-        return it->second;
-    }
+    // const auto it = grounding_table.find(binding);
+    // if (it != grounding_table.end())
+    // {
+    //     return it->second;
+    // }
 
     /* 4. Ground the function expression */
     const auto grounded_fexpr = std::visit(
@@ -719,7 +719,7 @@ GroundFunctionExpression ProblemImpl::ground(FunctionExpression fexpr, const Obj
 
     /* 5. Insert to grounding_table table */
 
-    grounding_table.emplace(binding, GroundFunctionExpression(grounded_fexpr));
+    // grounding_table.emplace(binding, GroundFunctionExpression(grounded_fexpr));
 
     /* 6. Return the resulting ground literal */
 
@@ -872,11 +872,11 @@ GroundAction ProblemImpl::ground(Action action, const ObjectList& binding)
     }
     auto& grounding_table = grounding_tables.at(action_index);
 
-    auto it = grounding_table.find(binding);
-    if (it != grounding_table.end())
-    {
-        return it->second;
-    }
+    // auto it = grounding_table.find(binding);
+    // if (it != grounding_table.end())
+    // {
+    //     return it->second;
+    // }
 
     /* 2. Ground the action */
 
@@ -928,7 +928,7 @@ GroundAction ProblemImpl::ground(Action action, const ObjectList& binding)
 
     /* 3. Insert to groundings table */
 
-    grounding_table.emplace(binding, GroundAction(grounded_action));
+    // grounding_table.emplace(binding, GroundAction(grounded_action));
 
     /* 4. Return the resulting ground action */
 
@@ -965,7 +965,7 @@ GroundAxiom ProblemImpl::ground(Axiom axiom, const ObjectList& binding)
 
     /* 3. Insert to groundings table */
 
-    grounding_table.emplace(binding, GroundAxiom(grounded_axiom));
+    // grounding_table.emplace(binding, GroundAxiom(grounded_axiom));
 
     /* 4. Return the resulting ground axiom */
 
