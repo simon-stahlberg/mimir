@@ -865,7 +865,14 @@ GroundAction ProblemImpl::ground(Action action, const ObjectList& binding)
 {
     /* 1. Check if grounding is cached */
 
-    auto& grounding_table = m_details.grounding.per_action_data.at(action->get_index());
+    auto& grounding_tables = boost::hana::at_key(m_details.grounding.grounding_tables, boost::hana::type<GroundAction> {});
+
+    const auto action_index = action->get_index();
+    if (action_index >= grounding_tables.size())
+    {
+        grounding_tables.resize(action_index + 1);
+    }
+    auto& grounding_table = grounding_tables.at(action_index);
 
     auto it = grounding_table.find(binding);
     if (it != grounding_table.end())
@@ -941,7 +948,15 @@ GroundAxiom ProblemImpl::ground(Axiom axiom, const ObjectList& binding)
 {
     /* 1. Check if grounding is cached */
 
-    auto& grounding_table = m_details.grounding.per_axiom_data.at(axiom->get_index());
+    auto& grounding_tables = boost::hana::at_key(m_details.grounding.grounding_tables, boost::hana::type<GroundAxiom> {});
+
+    const auto axiom_index = axiom->get_index();
+    if (axiom_index >= grounding_tables.size())
+    {
+        grounding_tables.resize(axiom_index + 1);
+    }
+    auto& grounding_table = grounding_tables.at(axiom_index);
+
     auto it = grounding_table.find(binding);
     if (it != grounding_table.end())
     {
@@ -1249,13 +1264,7 @@ problem::AxiomDetails::AxiomDetails(const ProblemImpl& problem) : parent(&proble
 
 problem::GroundingDetails::GroundingDetails() : parent(nullptr) {}
 
-problem::GroundingDetails::GroundingDetails(const ProblemImpl& problem) :
-    parent(&problem),
-    action_infos(std::nullopt),
-    per_action_data(problem.get_domain()->get_actions().size()),
-    per_axiom_data(problem.get_problem_and_domain_axioms().size())
-{
-}
+problem::GroundingDetails::GroundingDetails(const ProblemImpl& problem) : parent(&problem), action_infos(std::nullopt) {}
 
 problem::Details::Details() : parent(nullptr) {}
 

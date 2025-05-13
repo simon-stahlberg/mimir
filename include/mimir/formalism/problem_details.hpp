@@ -124,6 +124,7 @@ struct GroundingDetails
     const ActionGroundingInfoList& get_action_infos() const;      ///< lazily initializes problem-specific action infos.
 
     // A table for each pair (polarity,predicate_index) since those are context independent.
+    // TODO: In each literal, we would like to have a context-independent representation, i.e., FreeLiteral
 
     template<typename T>
     using LiteralGroundingTableList = std::array<std::vector<GroundingTable<T>>, 2>;
@@ -135,15 +136,13 @@ struct GroundingDetails
                          boost::hana::pair<boost::hana::type<GroundFunction<StaticTag>>, GroundingTableList<GroundFunction<StaticTag>>>,
                          boost::hana::pair<boost::hana::type<GroundFunction<FluentTag>>, GroundingTableList<GroundFunction<FluentTag>>>,
                          boost::hana::pair<boost::hana::type<GroundFunction<AuxiliaryTag>>, GroundingTableList<GroundFunction<AuxiliaryTag>>>,
-                         boost::hana::pair<boost::hana::type<GroundFunctionExpression>, GroundingTableList<GroundFunctionExpression>>>;
+                         boost::hana::pair<boost::hana::type<GroundFunctionExpression>, GroundingTableList<GroundFunctionExpression>>,
+                         boost::hana::pair<boost::hana::type<GroundAction>, GroundingTableList<GroundAction>>,
+                         boost::hana::pair<boost::hana::type<GroundAxiom>, GroundingTableList<GroundAxiom>>>;
 
     PDDLTypeToGroundingTable grounding_tables;
 
     /* For ground actions and axioms we also create a reusable builder. */
-
-    std::vector<GroundingTable<GroundAction>> per_action_data;
-
-    std::vector<GroundingTable<GroundAxiom>> per_axiom_data;
 
     GroundingDetails();
     GroundingDetails(const ProblemImpl& problem);
