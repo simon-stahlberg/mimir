@@ -81,13 +81,14 @@ class CMakeBuild(build_ext):
             ["cmake", "--install", f"{str(temp_directory / 'build')}", "--prefix", f"{str(output_directory)}"], check=True
         )
 
+        # This logic has a bug: see https://github.com/simon-stahlberg/mimir/actions/runs/14993018421
         # Remove unwanted directories.
-        unwanted_dirs = ["include", "lib", "lib64"]
-        for unwanted_dir in unwanted_dirs:
-            dir_path = output_directory / unwanted_dir
-            if os.path.exists(dir_path):
-                shutil.rmtree(dir_path)
-                print(f"Removed {dir_path} from the wheel.")
+        # unwanted_dirs = ["include", "lib", "lib64"]
+        # for unwanted_dir in unwanted_dirs:
+        #     dir_path = output_directory / unwanted_dir
+        #     if os.path.exists(dir_path):
+        #         shutil.rmtree(dir_path)
+        #         print(f"Removed {dir_path} from the wheel.")
 
 
 # The information here can also be placed in setup.cfg - better separation of
