@@ -21,3 +21,7 @@ plan = result.plan
 
 The project [Relational Neural Networks](https://github.com/simon-stahlberg/relational-neural-network-python) is implemented with Mimir and learns general policies using supervised learning.
 Please note that the project may be using an older version of Mimir and may not be compatible with the latest version.
+
+## Expressivity Requirement Analysis
+
+The project [Domain Expressivity Requirements Analysis](https://github.com/drexlerd/isomorphism-code) is implemented with Mimir and checks for failures to distinguish non-isomorphic states with the k-dimensional Weisfeiler-Leman algorithm (k-WL). The k-WL algorithm is an approximate graph isomorphism algorithm whose expressive power is equivalent to k+1 variable first-order logic with counting quantifiers.
