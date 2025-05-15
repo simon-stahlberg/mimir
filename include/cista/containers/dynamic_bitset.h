@@ -147,6 +147,7 @@ struct basic_dynamic_bitset
         using pointer = size_t*;
         using reference = size_t&;
         using iterator_category = std::forward_iterator_tag;
+        using iterator_concept = std::forward_iterator_tag;
 
         constexpr const_iterator() : blocks_(nullptr), num_blocks_(0), current_block_(0), current_pos_(no_position) {}
         constexpr const_iterator(const Block* blocks, size_t num_blocks, bool begin) :

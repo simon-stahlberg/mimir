@@ -39,7 +39,7 @@ template<typename T>
 concept IsArithmetic = std::is_arithmetic_v<T>;
 
 template<typename T, typename Value>
-concept IsRangeOver = std::ranges::range<T> && std::same_as<std::ranges::range_value_t<T>, Value>;
+concept IsRangeOver = std::ranges::range<T> && std::convertible_to<std::ranges::range_value_t<T>, Value>;
 
 template<typename T, typename Value>
 concept IsConvertibleRangeOver = std::ranges::range<T> && std::convertible_to<std::ranges::range_value_t<T>, Value>;

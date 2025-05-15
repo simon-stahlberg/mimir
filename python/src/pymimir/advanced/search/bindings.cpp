@@ -404,6 +404,12 @@ void bind_module_definitions(nb::module_& m)
             "max_num_groundings"_a);
 
     /* ApplicableActionGenerators */
+    m.def("is_applicable",
+          nb::overload_cast<formalism::GroundAction, const formalism::ProblemImpl&, State>(&search::is_applicable),
+          "action"_a,
+          "problem"_a,
+          "state"_a);
+
     nb::class_<IApplicableActionGenerator>(m, "IApplicableActionGenerator")
         .def("get_problem", &IApplicableActionGenerator::get_problem)
         .def(

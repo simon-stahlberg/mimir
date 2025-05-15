@@ -70,16 +70,13 @@ bool nullary_conditions_hold(ConjunctiveCondition conjunctive_condition, const P
  * GroundConjunctiveCondition
  */
 
-template<IsStaticOrFluentOrDerivedTag P>
-bool is_applicable(GroundConjunctiveCondition conjunctive_condition, const FlatBitset& atoms)
+template<IsStaticOrFluentOrDerivedTag P, std::ranges::forward_range Range>
+    requires IsRangeOver<Range, Index>
+bool is_applicable(GroundConjunctiveCondition conjunctive_condition, const Range& atoms)
 {
     return is_supseteq(atoms, conjunctive_condition->template get_positive_precondition<P>())  //
            && are_disjoint(atoms, conjunctive_condition->template get_negative_precondition<P>());
 }
-
-template bool is_applicable<StaticTag>(GroundConjunctiveCondition conjunctive_condition, const FlatBitset& atoms);
-template bool is_applicable<FluentTag>(GroundConjunctiveCondition conjunctive_condition, const FlatBitset& atoms);
-template bool is_applicable<DerivedTag>(GroundConjunctiveCondition conjunctive_condition, const FlatBitset& atoms);
 
 /// @brief Tests whether the fluents are statically applicable, i.e., contain no conflicting literals.
 /// Without this test we can observe conflicting preconditions in the test_problem of the Ferry domain.
@@ -88,9 +85,6 @@ bool is_statically_applicable(GroundConjunctiveCondition conjunctive_condition)
 {
     return are_disjoint(conjunctive_condition->template get_positive_precondition<P>(), conjunctive_condition->template get_negative_precondition<P>());
 }
-
-template bool is_statically_applicable<FluentTag>(GroundConjunctiveCondition conjunctive_condition);
-template bool is_statically_applicable<DerivedTag>(GroundConjunctiveCondition conjunctive_condition);
 
 static bool
 is_applicable(GroundConjunctiveCondition conjunctive_condition, const FlatDoubleList& static_numeric_variables, const FlatDoubleList& fluent_numeric_variables)
@@ -112,6 +106,13 @@ bool is_dynamically_applicable(GroundConjunctiveCondition conjunctive_condition,
            && is_applicable(conjunctive_condition, problem.get_initial_function_to_value<StaticTag>(), dense_state.get_numeric_variables());
 }
 
+bool is_dynamically_applicable(formalism::GroundConjunctiveCondition conjunctive_condition, const formalism::ProblemImpl& problem, State state)
+{
+    return is_applicable<FluentTag>(conjunctive_condition, state->get_atoms<FluentTag>())
+           && is_applicable<DerivedTag>(conjunctive_condition, state->get_atoms<DerivedTag>())
+           && is_applicable(conjunctive_condition, problem.get_initial_function_to_value<StaticTag>(), state->get_numeric_variables());
+}
+
 bool is_statically_applicable(GroundConjunctiveCondition conjunctive_condition, const FlatBitset& static_positive_atoms)
 {
     return is_applicable<StaticTag>(conjunctive_condition, static_positive_atoms)  //
@@ -122,6 +123,12 @@ bool is_statically_applicable(GroundConjunctiveCondition conjunctive_condition, 
 bool is_applicable(GroundConjunctiveCondition conjunctive_condition, const ProblemImpl& problem, const DenseState& dense_state)
 {
     return is_dynamically_applicable(conjunctive_condition, problem, dense_state)
+           && is_statically_applicable(conjunctive_condition, problem.get_static_initial_positive_atoms_bitset());
+}
+
+bool is_applicable(formalism::GroundConjunctiveCondition conjunctive_condition, const formalism::ProblemImpl& problem, State state)
+{
+    return is_dynamically_applicable(conjunctive_condition, problem, state)
            && is_statically_applicable(conjunctive_condition, problem.get_static_initial_positive_atoms_bitset());
 }
 
@@ -179,6 +186,15 @@ bool is_applicable(GroundConjunctiveEffect conjunctive_effect, const ProblemImpl
                                 dense_state.get_numeric_variables()));
 }
 
+bool is_applicable(formalism::GroundConjunctiveEffect conjunctive_effect, const formalism::ProblemImpl& problem, State state)
+{
+    return is_applicable(conjunctive_effect->get_fluent_numeric_effects(), problem.get_initial_function_to_value<StaticTag>(), state->get_numeric_variables())
+           && (!conjunctive_effect->get_auxiliary_numeric_effect().has_value()
+               || is_applicable(conjunctive_effect->get_auxiliary_numeric_effect().value(),
+                                problem.get_initial_function_to_value<StaticTag>(),
+                                state->get_numeric_variables()));
+}
+
 /**
  * GroundConditionalEffect
  */
@@ -189,10 +205,22 @@ bool is_applicable(GroundConditionalEffect conditional_effect, const ProblemImpl
            && is_applicable(conditional_effect->get_conjunctive_effect(), problem, dense_state);
 }
 
+bool is_applicable(formalism::GroundConditionalEffect conditional_effect, const formalism::ProblemImpl& problem, State state)
+{
+    return is_applicable(conditional_effect->get_conjunctive_condition(), problem, state)  //
+           && is_applicable(conditional_effect->get_conjunctive_effect(), problem, state);
+}
+
 bool is_applicable_if_fires(GroundConditionalEffect conditional_effect, const ProblemImpl& problem, const DenseState& dense_state)
 {
     return !(!is_applicable(conditional_effect->get_conjunctive_effect(), problem, dense_state)  //
              && is_applicable(conditional_effect->get_conjunctive_condition(), problem, dense_state));
+}
+
+bool is_applicable_if_fires(formalism::GroundConditionalEffect conditional_effect, const formalism::ProblemImpl& problem, State state)
+{
+    return !(!is_applicable(conditional_effect->get_conjunctive_effect(), problem, state)  //
+             && is_applicable(conditional_effect->get_conjunctive_condition(), problem, state));
 }
 
 /**
@@ -215,6 +243,15 @@ bool is_applicable(GroundAction action, const ProblemImpl& problem, const DenseS
            && std::all_of(action->get_conditional_effects().begin(),
                           action->get_conditional_effects().end(),
                           [&](auto&& arg) { return is_applicable_if_fires(arg, problem, dense_state); });
+}
+
+bool is_applicable(formalism::GroundAction action, const formalism::ProblemImpl& problem, State state)
+{
+    return is_applicable(action->get_conjunctive_condition(), problem, state)  //
+           && is_applicable(action->get_conjunctive_effect(), problem, state)
+           && std::all_of(action->get_conditional_effects().begin(),
+                          action->get_conditional_effects().end(),
+                          [&](auto&& arg) { return is_applicable_if_fires(arg, problem, state); });
 }
 
 /**
