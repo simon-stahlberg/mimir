@@ -12,6 +12,6 @@ var searchData=
   ['evaluate_5fmulti_5fbounds_9',['evaluate_multi_bounds',['../namespacemimir_1_1formalism.html#a41f4b03a63c4d89f2eb333fffded7060',1,'mimir::formalism']]],
   ['evaluationcontext_10',['EvaluationContext',['../classmimir_1_1languages_1_1dl_1_1EvaluationContext.html#a0397e0041e85a5c146833e2f256d6d43',1,'mimir::languages::dl::EvaluationContext']]],
   ['eventhandlerbase_11',['EventHandlerBase',['../classmimir_1_1search_1_1brfs_1_1EventHandlerBase.html#adbc686418ec7aa916cf4bb3956c87b7a',1,'mimir::search::brfs::EventHandlerBase::EventHandlerBase()'],['../classmimir_1_1search_1_1iw_1_1EventHandlerBase.html#aabae470b1169b744ad6b8aa87685aeee',1,'mimir::search::iw::EventHandlerBase::EventHandlerBase()'],['../classmimir_1_1search_1_1siw_1_1EventHandlerBase.html#a5bfb5e52d848143a0b721d717a3ab52e',1,'mimir::search::siw::EventHandlerBase::EventHandlerBase()'],['../classmimir_1_1search_1_1astar_1_1EventHandlerBase.html#a2f8e01d5bed69b01a423f7c35aa3fd0b',1,'mimir::search::astar::EventHandlerBase::EventHandlerBase()']]],
-  ['extract_5fground_5faction_5fsequence_12',['extract_ground_action_sequence',['../namespacemimir_1_1search.html#a89c37ce5136f2f1235701dc5c8f9ea81',1,'mimir::search']]],
-  ['extract_5fstate_5ftrajectory_13',['extract_state_trajectory',['../namespacemimir_1_1search.html#aabbfffa36875d5990b50f387f76b8521',1,'mimir::search']]]
+  ['extract_5fstate_5ftrajectory_12',['extract_state_trajectory',['../namespacemimir_1_1search.html#aabbfffa36875d5990b50f387f76b8521',1,'mimir::search']]],
+  ['extract_5ftotal_5fordered_5fplan_13',['extract_total_ordered_plan',['../namespacemimir_1_1search.html#a2a419993f23ec395ed379f7a002e0a4c',1,'mimir::search']]]
 ];

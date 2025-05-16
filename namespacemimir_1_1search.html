@@ -308,9 +308,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ad0c65a02d522a88cab41eba2358bf1aa"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#ad0c65a02d522a88cab41eba2358bf1aa">is_applicable</a> (<a class="el" href="namespacemimir_1_1formalism.html#ade75e2d740a744903d9e02cec519a937">formalism::GroundAxiom</a> axiom, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;problem, const DenseState &amp;dense_state)</td></tr>
 <tr class="memdesc:ad0c65a02d522a88cab41eba2358bf1aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true iff the ground axiom is applicable in the problem and state.  <br /></td></tr>
 <tr class="separator:ad0c65a02d522a88cab41eba2358bf1aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a89c37ce5136f2f1235701dc5c8f9ea81"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a89c37ce5136f2f1235701dc5c8f9ea81">extract_ground_action_sequence</a> (<a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> start_state, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> start_state_metric_value, const <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a> &amp;state_trajectory, <a class="el" href="classmimir_1_1search_1_1IApplicableActionGenerator.html">IApplicableActionGenerator</a> &amp;applicable_action_generator, <a class="el" href="classmimir_1_1search_1_1StateRepositoryImpl.html">StateRepositoryImpl</a> &amp;state_repository, <a class="el" href="namespacemimir_1_1formalism.html#a34df8c35896b9c6bc7826fff84d2692f">formalism::GroundActionList</a> &amp;out_ground_action_sequence)</td></tr>
-<tr class="memdesc:a89c37ce5136f2f1235701dc5c8f9ea81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the sequence of ground actions that generates the state_trajectory starting from the start_state.  <br /></td></tr>
-<tr class="separator:a89c37ce5136f2f1235701dc5c8f9ea81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a419993f23ec395ed379f7a002e0a4c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmimir_1_1search_1_1Plan.html">Plan</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a2a419993f23ec395ed379f7a002e0a4c">extract_total_ordered_plan</a> (<a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> start_state, <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> start_state_metric_value, const <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a> &amp;state_trajectory, <a class="el" href="classmimir_1_1search_1_1IApplicableActionGenerator.html">IApplicableActionGenerator</a> &amp;applicable_action_generator, <a class="el" href="classmimir_1_1search_1_1StateRepositoryImpl.html">StateRepositoryImpl</a> &amp;state_repository)</td></tr>
+<tr class="memdesc:a2a419993f23ec395ed379f7a002e0a4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the sequence of ground actions that generates the state_trajectory starting from the start_state.  <br /></td></tr>
+<tr class="separator:a2a419993f23ec395ed379f7a002e0a4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aabbfffa36875d5990b50f387f76b8521"><td class="memTemplParams" colspan="2">template&lt;typename... SearchNodeProperties&gt; </td></tr>
 <tr class="memitem:aabbfffa36875d5990b50f387f76b8521"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#aabbfffa36875d5990b50f387f76b8521">extract_state_trajectory</a> (const <a class="el" href="namespacemimir_1_1search.html#aaf1512d40175c86460c160ab1459e75b">SearchNodeImplVector</a>&lt; SearchNodeProperties... &gt; &amp;search_nodes, <a class="el" href="namespacemimir_1_1search.html#a9aa90519a1840f525567db76b474a3e3">ConstSearchNode</a>&lt; SearchNodeProperties... &gt; final_search_node, <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> final_state_index, <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a> &amp;out_trajectory)</td></tr>
 <tr class="memdesc:aabbfffa36875d5990b50f387f76b8521"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the state trajectory that ends in the the <code>final_state_index</code> associated with the <code>final_search_node</code>.  <br /></td></tr>
@@ -851,78 +851,6 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="a89c37ce5136f2f1235701dc5c8f9ea81" name="a89c37ce5136f2f1235701dc5c8f9ea81"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a89c37ce5136f2f1235701dc5c8f9ea81">&#9670;&#160;</a></span>extract_ground_action_sequence()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> mimir::search::extract_ground_action_sequence </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>&#160;</td>
-          <td class="paramname"><em>start_state</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a>&#160;</td>
-          <td class="paramname"><em>start_state_metric_value</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a> &amp;&#160;</td>
-          <td class="paramname"><em>state_trajectory</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classmimir_1_1search_1_1IApplicableActionGenerator.html">IApplicableActionGenerator</a> &amp;&#160;</td>
-          <td class="paramname"><em>applicable_action_generator</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classmimir_1_1search_1_1StateRepositoryImpl.html">StateRepositoryImpl</a> &amp;&#160;</td>
-          <td class="paramname"><em>state_repository</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#a34df8c35896b9c6bc7826fff84d2692f">formalism::GroundActionList</a> &amp;&#160;</td>
-          <td class="paramname"><em>out_ground_action_sequence</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Compute the sequence of ground actions that generates the state_trajectory starting from the start_state. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">start_state</td><td>is the start state. </td></tr>
-    <tr><td class="paramname">state_trajectory</td><td>is the state trajectory given by their indices. </td></tr>
-    <tr><td class="paramname"><a class="el" href="namespacemimir_1_1search_1_1applicable__action__generator.html">applicable_action_generator</a></td><td>is the applicable action generator. </td></tr>
-    <tr><td class="paramname">state_repository</td><td>is the state repository. </td></tr>
-    <tr><td class="paramname">out_ground_action_sequence</td><td>is the resulting state trajectory. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 <a id="aabbfffa36875d5990b50f387f76b8521" name="aabbfffa36875d5990b50f387f76b8521"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aabbfffa36875d5990b50f387f76b8521">&#9670;&#160;</a></span>extract_state_trajectory()</h2>
 
@@ -976,6 +904,72 @@ template&lt;typename... SearchNodeProperties&gt; </div>
     <tr><td class="paramname">final_search_node</td><td>is the final search node. </td></tr>
     <tr><td class="paramname">final_state_index</td><td>is the final state index. </td></tr>
     <tr><td class="paramname">out_trajectory</td><td>is the resulting state trajectory that ends in the <code>final_state_index</code> </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a2a419993f23ec395ed379f7a002e0a4c" name="a2a419993f23ec395ed379f7a002e0a4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a419993f23ec395ed379f7a002e0a4c">&#9670;&#160;</a></span>extract_total_ordered_plan()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classmimir_1_1search_1_1Plan.html">Plan</a> mimir::search::extract_total_ordered_plan </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>&#160;</td>
+          <td class="paramname"><em>start_state</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a>&#160;</td>
+          <td class="paramname"><em>start_state_metric_value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a> &amp;&#160;</td>
+          <td class="paramname"><em>state_trajectory</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classmimir_1_1search_1_1IApplicableActionGenerator.html">IApplicableActionGenerator</a> &amp;&#160;</td>
+          <td class="paramname"><em>applicable_action_generator</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classmimir_1_1search_1_1StateRepositoryImpl.html">StateRepositoryImpl</a> &amp;&#160;</td>
+          <td class="paramname"><em>state_repository</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compute the sequence of ground actions that generates the state_trajectory starting from the start_state. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">start_state</td><td>is the start state. </td></tr>
+    <tr><td class="paramname">state_trajectory</td><td>is the state trajectory given by their indices. </td></tr>
+    <tr><td class="paramname"><a class="el" href="namespacemimir_1_1search_1_1applicable__action__generator.html">applicable_action_generator</a></td><td>is the applicable action generator. </td></tr>
+    <tr><td class="paramname">state_repository</td><td>is the state repository. </td></tr>
+    <tr><td class="paramname">out_ground_action_sequence</td><td>is the resulting state trajectory. </td></tr>
   </table>
   </dd>
 </dl>
