@@ -31,19 +31,19 @@ namespace mimir::search
 /// @param applicable_action_generator is the applicable action generator.
 /// @param state_repository is the state repository.
 /// @param out_ground_action_sequence is the resulting state trajectory.
-inline ContinuousCost extract_ground_action_sequence(State start_state,
-                                                     ContinuousCost start_state_metric_value,
-                                                     const IndexList& state_trajectory,
-                                                     IApplicableActionGenerator& applicable_action_generator,
-                                                     StateRepositoryImpl& state_repository,
-                                                     formalism::GroundActionList& out_ground_action_sequence)
+inline Plan extract_total_ordered_plan(State start_state,
+                                       ContinuousCost start_state_metric_value,
+                                       const IndexList& state_trajectory,
+                                       IApplicableActionGenerator& applicable_action_generator,
+                                       StateRepositoryImpl& state_repository)
 {
     if (start_state->get_index() != state_trajectory.front())
     {
         throw std::runtime_error("extract_ground_action_sequence: the given start state must be the first state in the given state trajectory.");
     }
 
-    out_ground_action_sequence.clear();
+    auto actions = formalism::GroundActionList {};
+    auto states = StateList { start_state };
 
     auto state = start_state;
     auto state_metric_value = start_state_metric_value;
@@ -75,12 +75,13 @@ inline ContinuousCost extract_ground_action_sequence(State start_state,
         //                              std::cref(*state_repository.get_problem_context().get_repositories()))
         //           << std::endl;
         // std::cout << lowest_metric_value << " " << lowest_metric_value - state_metric_value << std::endl << std::endl << std::endl;
-        out_ground_action_sequence.push_back(lowest_action);
+        actions.push_back(lowest_action);
+        states.push_back(lowest_state);
         state = lowest_state;
         state_metric_value = lowest_metric_value;
     }
 
-    return state_metric_value;
+    return Plan(std::move(states), std::move(actions), state_metric_value);
 }
 
 /// @brief Compute the state trajectory that ends in the the `final_state_index` associated with the `final_search_node`.

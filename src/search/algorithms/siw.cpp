@@ -102,6 +102,7 @@ SearchResult find_solution(const SearchContext& context,
     }
 
     auto cur_state = start_state;
+    auto out_plan_states = StateList { start_state };
     auto out_plan_actions = GroundActionList {};
     auto out_plan_cost = ContinuousCost(0);
 
@@ -138,6 +139,7 @@ SearchResult find_solution(const SearchContext& context,
         }
 
         cur_state = sub_result.goal_state.value();
+        out_plan_states.insert(out_plan_states.end(), sub_result.plan.value().get_states().begin() + 1, sub_result.plan.value().get_states().end());
         out_plan_actions.insert(out_plan_actions.end(), sub_result.plan.value().get_actions().begin(), sub_result.plan.value().get_actions().end());
         out_plan_cost += sub_result.plan.value().get_cost();
 
@@ -150,7 +152,7 @@ SearchResult find_solution(const SearchContext& context,
         applicable_action_generator.on_end_search();
         state_repository.get_axiom_evaluator()->on_end_search();
     }
-    result.plan = Plan(std::move(out_plan_actions), out_plan_cost);
+    result.plan = Plan(std::move(out_plan_states), std::move(out_plan_actions), out_plan_cost);
     siw_event_handler->on_solved(result.plan.value());
     result.status = SearchStatus::SOLVED;
     return result;

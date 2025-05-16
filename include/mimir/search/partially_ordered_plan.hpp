@@ -15,40 +15,32 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_PLAN_HPP_
-#define MIMIR_SEARCH_PLAN_HPP_
+#ifndef MIMIR_SEARCH_PARTIALLY_ORDERED_PLAN_HPP_
+#define MIMIR_SEARCH_PARTIALLY_ORDERED_PLAN_HPP_
 
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
+#include "mimir/search/plan.hpp"
 
 namespace mimir::search
 {
 
-class Plan
+class PartiallyOrderedPlan
 {
 private:
-    StateList m_states;
-    formalism::GroundActionList m_actions;
-    ContinuousCost m_cost;
+    Plan m_t_o_plan;
+    std::vector<std::vector<bool>> m_precedes;
 
 public:
-    Plan(StateList states, formalism::GroundActionList actions, ContinuousCost cost);
+    explicit PartiallyOrderedPlan(Plan t_o_plan);
 
-    const StateList& get_states() const;
-    const formalism::GroundActionList& get_actions() const;
-    ContinuousCost get_cost() const;
-    size_t get_length() const;
+    bool must_precede(size_t i, size_t j) const;
+    Plan compute_t_o_plan_with_minimal_context_switches() const;
+
+    const Plan& get_t_o_plan() const;
+    const std::vector<std::vector<bool>>& get_precedes() const;
 };
-
-}
-
-namespace mimir
-{
-/// @brief Write the plan to an ostream.
-template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<const search::Plan&, const formalism::ProblemImpl&>& data);
-
 }
 
 #endif

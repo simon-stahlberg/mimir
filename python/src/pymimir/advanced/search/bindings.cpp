@@ -326,8 +326,9 @@ void bind_module_definitions(nb::module_& m)
                  mimir::operator<<(ss, std::make_tuple(std::cref(self), std::cref(problem)));
                  return ss.str();
              })
-        .def("__len__", [](const Plan& arg) { return arg.get_actions().size(); })
-        .def("get_actions", &Plan::get_actions)
+        .def("__len__", &Plan::get_length)
+        .def("get_states", &Plan::get_states, nb::rv_policy::copy)
+        .def("get_actions", &Plan::get_actions, nb::rv_policy::copy)
         .def("get_cost", &Plan::get_cost);
 
     /* ConjunctiveConditionSatisficingBindingGenerator */

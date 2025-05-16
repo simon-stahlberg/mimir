@@ -191,13 +191,10 @@ SearchResult find_solution(const SearchContext& context,
             applicable_action_generator.on_end_search();
             state_repository.get_axiom_evaluator()->on_end_search();
 
-            auto plan_actions = GroundActionList {};
             auto state_trajectory = IndexList {};
             extract_state_trajectory(search_nodes, search_node, state->get_index(), state_trajectory);
-            const auto final_state_metric_value =
-                extract_ground_action_sequence(start_state, start_g_value, state_trajectory, applicable_action_generator, state_repository, plan_actions);
-            assert(final_state_metric_value == get_g_value(search_node));
-            result.plan = Plan(std::move(plan_actions), final_state_metric_value);
+            result.plan = extract_total_ordered_plan(start_state, start_g_value, state_trajectory, applicable_action_generator, state_repository);
+            assert(result.plan->get_cost() == get_g_value(search_node));
             result.goal_state = state;
             result.status = SearchStatus::SOLVED;
 

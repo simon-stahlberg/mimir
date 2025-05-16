@@ -588,7 +588,8 @@ SearchResult GeneralPolicyImpl::find_solution(const SearchContext& search_contex
     auto src_context = dl::EvaluationContext(nullptr, search_context->get_problem(), denotation_repositories);
     auto dst_context = dl::EvaluationContext(nullptr, search_context->get_problem(), denotation_repositories);
 
-    auto plan = GroundActionList {};
+    auto states = StateList { cur_state };
+    auto actions = GroundActionList {};
     auto result = SearchResult {};
     auto visited = StateSet {};
     visited.insert(cur_state);
@@ -618,7 +619,8 @@ SearchResult GeneralPolicyImpl::find_solution(const SearchContext& search_contex
                 cur_state = succ_state;
                 cur_state_metric_value = succ_state_metric_value;
                 has_compatible_succ_state = true;
-                plan.push_back(action);
+                states.push_back(succ_state);
+                actions.push_back(action);
                 break;
             }
         }
@@ -632,7 +634,7 @@ SearchResult GeneralPolicyImpl::find_solution(const SearchContext& search_contex
 
     result.status = SearchStatus::SOLVED;
     result.goal_state = cur_state;
-    result.plan = Plan(plan, cur_state_metric_value);
+    result.plan = Plan(std::move(states), std::move(actions), cur_state_metric_value);
 
     return result;
 }
