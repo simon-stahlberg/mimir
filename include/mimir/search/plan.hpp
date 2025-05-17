@@ -43,13 +43,7 @@ public:
     size_t get_length() const;
 };
 
-}
-
-namespace mimir
-{
-/// @brief Write the plan to an ostream.
-template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<const search::Plan&, const formalism::ProblemImpl&>& data);
+extern std::ostream& operator<<(std::ostream& os, const search::Plan& plan);
 
 }
 

@@ -234,7 +234,8 @@ SearchResult find_solution(const SearchContext& context,
                 applicable_action_generator.on_end_search();
                 state_repository.get_axiom_evaluator()->on_end_search();
 
-                result.plan = extract_total_ordered_plan(start_state, start_g_value, search_node, state->get_index(), search_nodes, context);
+                result.plan =
+                    extract_total_ordered_plan(start_state, start_g_value, successor_search_node, successor_state->get_index(), search_nodes, context);
                 assert(result.plan->get_cost() == successor_state_metric_value);
                 result.goal_state = state;
                 result.status = SearchStatus::SOLVED;

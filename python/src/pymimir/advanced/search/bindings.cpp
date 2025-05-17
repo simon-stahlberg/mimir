@@ -320,13 +320,7 @@ void bind_module_definitions(nb::module_& m)
     /* Plan */
     nb::class_<Plan>(m, "Plan")  //
         .def(nb::init<SearchContext, StateList, GroundActionList, ContinuousCost>(), "search_context"_a, "states"_a, "actions"_a, "cost"_a)
-        .def("to_string",
-             [](const Plan& self, const ProblemImpl& problem)
-             {
-                 std::stringstream ss;
-                 mimir::operator<<(ss, std::make_tuple(std::cref(self), std::cref(problem)));
-                 return ss.str();
-             })
+        .def("__str__", [](const Plan& self) { return to_string(self); })
         .def("__len__", &Plan::get_length)
         .def("get_search_context", &Plan::get_search_context)
         .def("get_states", &Plan::get_states, nb::rv_policy::copy)

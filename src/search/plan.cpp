@@ -18,6 +18,7 @@
 #include "mimir/search/plan.hpp"
 
 #include "mimir/formalism/ground_action.hpp"
+#include "mimir/search/search_context.hpp"
 
 using namespace mimir::formalism;
 
@@ -44,18 +45,11 @@ ContinuousCost Plan::get_cost() const { return m_cost; }
 
 size_t Plan::get_length() const { return m_actions.size(); }
 
-}
-
-namespace mimir
+std::ostream& operator<<(std::ostream& os, const search::Plan& plan)
 {
-template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<const search::Plan&, const ProblemImpl&>& data)
-{
-    const auto& [plan, problem] = data;
-
     for (const auto& action : plan.get_actions())
     {
-        mimir::operator<<(os, std::make_tuple(action, std::cref(problem), GroundActionImpl::PlanFormatterTag {}));
+        mimir::operator<<(os, std::make_tuple(action, std::cref(*plan.get_search_context()->get_problem()), GroundActionImpl::PlanFormatterTag {}));
         os << "\n";
     }
     os << "; cost = " << plan.get_cost();
