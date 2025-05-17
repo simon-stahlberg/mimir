@@ -308,6 +308,8 @@ Functions</h2></td></tr>
 <tr class="memitem:ad0c65a02d522a88cab41eba2358bf1aa"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#ad0c65a02d522a88cab41eba2358bf1aa">is_applicable</a> (<a class="el" href="namespacemimir_1_1formalism.html#ade75e2d740a744903d9e02cec519a937">formalism::GroundAxiom</a> axiom, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;problem, const DenseState &amp;dense_state)</td></tr>
 <tr class="memdesc:ad0c65a02d522a88cab41eba2358bf1aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true iff the ground axiom is applicable in the problem and state.  <br /></td></tr>
 <tr class="separator:ad0c65a02d522a88cab41eba2358bf1aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1419bcbd506881cb7f60bff137c72545"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a1419bcbd506881cb7f60bff137c72545">operator&lt;&lt;</a> (std::ostream &amp;os, const <a class="el" href="classmimir_1_1search_1_1Plan.html">search::Plan</a> &amp;plan)</td></tr>
+<tr class="separator:a1419bcbd506881cb7f60bff137c72545"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ada2ebec817c5954b4911474d6a5457f5"><td class="memTemplParams" colspan="2">template&lt;typename... SearchNodeProperties&gt; </td></tr>
 <tr class="memitem:ada2ebec817c5954b4911474d6a5457f5"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#ada2ebec817c5954b4911474d6a5457f5">extract_state_trajectory</a> (const <a class="el" href="namespacemimir_1_1search.html#aaf1512d40175c86460c160ab1459e75b">SearchNodeImplVector</a>&lt; SearchNodeProperties... &gt; &amp;search_nodes, <a class="el" href="namespacemimir_1_1search.html#a9aa90519a1840f525567db76b474a3e3">ConstSearchNode</a>&lt; SearchNodeProperties... &gt; final_search_node, <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> final_state_index)</td></tr>
 <tr class="memdesc:ada2ebec817c5954b4911474d6a5457f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the state trajectory that ends in the the <code>final_state_index</code> associated with the <code>final_search_node</code>.  <br /></td></tr>
@@ -1571,6 +1573,34 @@ template&lt;typename... SearchNodeProperties&gt; </div>
 
 <p>Return true iff all nullary literals and constraints in the precondition hold, false otherwise. </p>
 <p>ConjunctiveCondition </p>
+
+</div>
+</div>
+<a id="a1419bcbd506881cb7f60bff137c72545" name="a1419bcbd506881cb7f60bff137c72545"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1419bcbd506881cb7f60bff137c72545">&#9670;&#160;</a></span>operator&lt;&lt;()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::ostream &amp; mimir::search::operator&lt;&lt; </td>
+          <td>(</td>
+          <td class="paramtype">std::ostream &amp;&#160;</td>
+          <td class="paramname"><em>os</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classmimir_1_1search_1_1Plan.html">search::Plan</a> &amp;&#160;</td>
+          <td class="paramname"><em>plan</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
 
 </div>
 </div>
