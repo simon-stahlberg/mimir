@@ -118,6 +118,18 @@ public:
      * Additional members
      */
 
+    /* Objects */
+    const Object get_object(const std::string& name) const;
+    const Object get_problem_or_domain_object(const std::string& name) const;
+    const ToObjectMap<std::string> get_name_to_object() const;
+    const ToObjectMap<std::string> get_name_to_problem_or_domain_object() const;
+
+    /* Predicates */
+    const Predicate<DerivedTag>& get_derived_predicate(const std::string& name) const;
+    const Predicate<DerivedTag>& get_problem_or_domain_derived_predicate(const std::string& name) const;
+    const ToPredicateMap<std::string, DerivedTag>& get_name_to_derived_predicate() const;
+    const ToPredicateMap<std::string, DerivedTag>& get_name_to_problem_or_domain_derived_predicate() const;
+
     /* Initial state */
     const GroundAtomList<StaticTag>& get_static_initial_atoms() const;
     const FlatBitset& get_static_initial_positive_atoms_bitset() const;

@@ -246,6 +246,25 @@ size_t ProblemImpl::get_estimated_memory_usage_in_bytes() const
  * Additional members
  */
 
+/* Objects */
+const Object ProblemImpl::get_object(const std::string& name) const { return get_name_to_object().at(name); }
+const Object ProblemImpl::get_problem_or_domain_object(const std::string& name) const { return get_name_to_problem_or_domain_object().at(name); }
+const ToObjectMap<std::string> ProblemImpl::get_name_to_object() const { return m_details.objects.name_to_object; }
+const ToObjectMap<std::string> ProblemImpl::get_name_to_problem_or_domain_object() const { return m_details.objects.name_to_problem_or_domain_object; }
+
+/* Predicates */
+
+const Predicate<DerivedTag>& ProblemImpl::get_derived_predicate(const std::string& name) const { return get_name_to_derived_predicate().at(name); }
+const Predicate<DerivedTag>& ProblemImpl::get_problem_or_domain_derived_predicate(const std::string& name) const
+{
+    return get_name_to_problem_or_domain_derived_predicate().at(name);
+}
+const ToPredicateMap<std::string, DerivedTag>& ProblemImpl::get_name_to_derived_predicate() const { return m_details.predicates.name_to_derived_predicate; }
+const ToPredicateMap<std::string, DerivedTag>& ProblemImpl::get_name_to_problem_or_domain_derived_predicate() const
+{
+    return m_details.predicates.name_to_problem_or_domain_derived_predicate;
+}
+
 /* Initial state */
 
 const GroundAtomList<StaticTag>& ProblemImpl::get_static_initial_atoms() const { return m_details.initial.positive_static_initial_atoms; }
@@ -1131,6 +1150,37 @@ const problem::ActionGroundingInfoList& problem::GroundingDetails::get_action_in
  * Details
  */
 
+problem::ObjectDetails::ObjectDetails() : parent(nullptr), name_to_object(), name_to_problem_or_domain_object() {}
+
+problem::ObjectDetails::ObjectDetails(const ProblemImpl& problem) : parent(&problem), name_to_object(), name_to_problem_or_domain_object()
+{
+    for (const auto& object : problem.get_objects())
+    {
+        name_to_object.emplace(object->get_name(), object);
+    }
+    for (const auto& object : problem.get_problem_and_domain_objects())
+    {
+        name_to_problem_or_domain_object.emplace(object->get_name(), object);
+    }
+}
+
+problem::PredicateDetails::PredicateDetails() : parent(nullptr), name_to_derived_predicate(), name_to_problem_or_domain_derived_predicate() {}
+
+problem::PredicateDetails::PredicateDetails(const ProblemImpl& problem) :
+    parent(&problem),
+    name_to_derived_predicate(),
+    name_to_problem_or_domain_derived_predicate()
+{
+    for (const auto& predicate : problem.get_derived_predicates())
+    {
+        name_to_derived_predicate.emplace(predicate->get_name(), predicate);
+    }
+    for (const auto& predicate : problem.get_problem_and_domain_derived_predicates())
+    {
+        name_to_problem_or_domain_derived_predicate.emplace(predicate->get_name(), predicate);
+    }
+}
+
 problem::InitialDetails::InitialDetails() : parent(nullptr) {}
 
 problem::InitialDetails::InitialDetails(const ProblemImpl& problem) :
@@ -1268,7 +1318,16 @@ problem::GroundingDetails::GroundingDetails(const ProblemImpl& problem) : parent
 
 problem::Details::Details() : parent(nullptr) {}
 
-problem::Details::Details(const ProblemImpl& problem) : parent(&problem), initial(problem), goal(problem, initial), axiom(problem), grounding(problem) {}
+problem::Details::Details(const ProblemImpl& problem) :
+    parent(&problem),
+    objects(problem),
+    predicates(problem),
+    initial(problem),
+    goal(problem, initial),
+    axiom(problem),
+    grounding(problem)
+{
+}
 
 /* Printing */
 std::ostream& operator<<(std::ostream& out, const ProblemImpl& element)

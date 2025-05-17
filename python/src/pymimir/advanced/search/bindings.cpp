@@ -301,6 +301,8 @@ void bind_module_definitions(nb::module_& m)
                                          self.get_atoms<DerivedTag>().end());
             },
             nb::keep_alive<0, 1>())
+        .def("get_numeric_variables",
+             [](const StateImpl& self) { return std::vector<double>(self.get_numeric_variables().begin(), self.get_numeric_variables().end()); })
         .def(
             "to_string",
             [](const StateImpl& self, const ProblemImpl& problem)

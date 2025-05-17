@@ -30,6 +30,32 @@
 namespace mimir::formalism::problem
 {
 
+struct ObjectDetails
+{
+    const ProblemImpl* parent;
+
+    ToObjectMap<std::string> name_to_object;
+    ToObjectMap<std::string> name_to_problem_or_domain_object;
+
+    ObjectDetails();
+    ObjectDetails(const ProblemImpl& problem);
+};
+
+/**
+ * Predicate
+ */
+
+struct PredicateDetails
+{
+    const ProblemImpl* parent;
+
+    ToPredicateMap<std::string, DerivedTag> name_to_derived_predicate;
+    ToPredicateMap<std::string, DerivedTag> name_to_problem_or_domain_derived_predicate;
+
+    PredicateDetails();
+    PredicateDetails(const ProblemImpl& problem);
+};
+
 /**
  * Initial
  */
@@ -152,6 +178,8 @@ struct Details
 {
     const ProblemImpl* parent;
 
+    ObjectDetails objects;
+    PredicateDetails predicates;
     InitialDetails initial;
     GoalDetails goal;
     AxiomDetails axiom;

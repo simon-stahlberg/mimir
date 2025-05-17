@@ -83,7 +83,10 @@ public:
 
     /* Additional members */
 
+    const Object get_constant(const std::string& name) const;
     const ToObjectMap<std::string> get_name_to_constant() const;
+    template<IsStaticOrFluentOrDerivedTag P>
+    const Predicate<P>& get_predicate(const std::string& name) const;
     template<IsStaticOrFluentOrDerivedTag P>
     const ToPredicateMap<std::string, P>& get_name_to_predicate() const;
     const ToPredicateMaps<std::string, StaticTag, FluentTag, DerivedTag>& get_hana_name_to_predicate();

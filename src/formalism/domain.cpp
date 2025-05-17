@@ -131,7 +131,19 @@ const ActionList& DomainImpl::get_actions() const { return m_actions; }
 
 const AxiomList& DomainImpl::get_axioms() const { return m_axioms; }
 
+const Object DomainImpl::get_constant(const std::string& name) const { return get_name_to_constant().at(name); }
+
 const ToObjectMap<std::string> DomainImpl::get_name_to_constant() const { return m_details.constant.name_to_constant; }
+
+template<IsStaticOrFluentOrDerivedTag P>
+const Predicate<P>& DomainImpl::get_predicate(const std::string& name) const
+{
+    return get_name_to_predicate<P>().at(name);
+}
+
+template const Predicate<StaticTag>& DomainImpl::get_predicate(const std::string& name) const;
+template const Predicate<FluentTag>& DomainImpl::get_predicate(const std::string& name) const;
+template const Predicate<DerivedTag>& DomainImpl::get_predicate(const std::string& name) const;
 
 template<IsStaticOrFluentOrDerivedTag P>
 const ToPredicateMap<std::string, P>& DomainImpl::get_name_to_predicate() const
