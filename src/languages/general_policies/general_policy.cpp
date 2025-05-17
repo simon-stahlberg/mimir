@@ -634,7 +634,7 @@ SearchResult GeneralPolicyImpl::find_solution(const SearchContext& search_contex
 
     result.status = SearchStatus::SOLVED;
     result.goal_state = cur_state;
-    result.plan = Plan(std::move(states), std::move(actions), cur_state_metric_value);
+    result.plan = Plan(search_context, std::move(states), std::move(actions), cur_state_metric_value);
 
     return result;
 }

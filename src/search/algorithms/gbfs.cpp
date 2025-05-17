@@ -123,7 +123,7 @@ SearchResult find_solution(const SearchContext& context,
         applicable_action_generator.on_end_search();
         state_repository.get_axiom_evaluator()->on_end_search();
 
-        result.plan = Plan(StateList { start_state }, GroundActionList {}, 0);
+        result.plan = Plan(context, StateList { start_state }, GroundActionList {}, 0);
         result.goal_state = start_state;
         result.status = SearchStatus::SOLVED;
 
@@ -234,9 +234,7 @@ SearchResult find_solution(const SearchContext& context,
                 applicable_action_generator.on_end_search();
                 state_repository.get_axiom_evaluator()->on_end_search();
 
-                auto state_trajectory = IndexList {};
-                extract_state_trajectory(search_nodes, successor_search_node, successor_state->get_index(), state_trajectory);
-                result.plan = extract_total_ordered_plan(start_state, start_g_value, state_trajectory, applicable_action_generator, state_repository);
+                result.plan = extract_total_ordered_plan(start_state, start_g_value, search_node, state->get_index(), search_nodes, context);
                 assert(result.plan->get_cost() == successor_state_metric_value);
                 result.goal_state = state;
                 result.status = SearchStatus::SOLVED;

@@ -43,7 +43,7 @@ void DefaultEventHandlerImpl::on_solved_impl(const Plan& plan) const
               << "[IW] Plan length: " << plan.get_actions().size() << std::endl;
     for (size_t i = 0; i < plan.get_actions().size(); ++i)
     {
-        std::cout << "[IW] " << i + 1 << ". ";
+        std::cout << "[IW] " << i << ". ";
         mimir::operator<<(std::cout, std::make_tuple(plan.get_actions()[i], std::cref(*m_problem), GroundActionImpl::PlanFormatterTag {}));
         std::cout << std::endl;
     }

@@ -152,7 +152,7 @@ SearchResult find_solution(const SearchContext& context,
         applicable_action_generator.on_end_search();
         state_repository.get_axiom_evaluator()->on_end_search();
     }
-    result.plan = Plan(std::move(out_plan_states), std::move(out_plan_actions), out_plan_cost);
+    result.plan = Plan(context, std::move(out_plan_states), std::move(out_plan_actions), out_plan_cost);
     siw_event_handler->on_solved(result.plan.value());
     result.status = SearchStatus::SOLVED;
     return result;

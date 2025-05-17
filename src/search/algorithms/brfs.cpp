@@ -166,10 +166,8 @@ SearchResult find_solution(const SearchContext& context,
                 applicable_action_generator.on_end_search();
                 state_repository.get_axiom_evaluator()->on_end_search();
 
-                auto state_trajectory = IndexList {};
-                extract_state_trajectory(search_nodes, search_node, state->get_index(), state_trajectory);
                 result.goal_state = state;
-                result.plan = extract_total_ordered_plan(start_state, start_g_value, state_trajectory, applicable_action_generator, state_repository);
+                result.plan = extract_total_ordered_plan(start_state, start_g_value, search_node, state->get_index(), search_nodes, context);
                 result.status = SearchStatus::SOLVED;
 
                 event_handler->on_solved(result.plan.value());

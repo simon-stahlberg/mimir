@@ -25,22 +25,50 @@
 namespace mimir::search
 {
 
+/// @brief Compute the state trajectory that ends in the the `final_state_index` associated with the `final_search_node`.
+/// @tparam ...SearchNodeProperties
+/// @param search_nodes are all search nodes.
+/// @param final_search_node is the final search node.
+/// @param final_state_index is the final state index.
+/// @param out_trajectory is the resulting state trajectory that ends in the `final_state_index`
+template<typename... SearchNodeProperties>
+IndexList extract_state_trajectory(const SearchNodeImplVector<SearchNodeProperties...>& search_nodes,
+                                   ConstSearchNode<SearchNodeProperties...> final_search_node,
+                                   Index final_state_index)
+{
+    auto trajectory = IndexList {};
+    trajectory.push_back(final_state_index);
+
+    auto cur_search_node = final_search_node;
+
+    while (cur_search_node->get_parent_state() != std::numeric_limits<Index>::max())
+    {
+        trajectory.push_back(cur_search_node->get_parent_state());
+
+        cur_search_node = search_nodes.at(cur_search_node->get_parent_state());
+    }
+
+    std::reverse(trajectory.begin(), trajectory.end());
+
+    return trajectory;
+}
+
 /// @brief Compute the sequence of ground actions that generates the state_trajectory starting from the start_state.
 /// @param start_state is the start state.
-/// @param state_trajectory is the state trajectory given by their indices.
-/// @param applicable_action_generator is the applicable action generator.
-/// @param state_repository is the state repository.
-/// @param out_ground_action_sequence is the resulting state trajectory.
+/// @param start_state_metric_value is the metric value of the start state
+/// @param final_search_node is the final search node.
+/// @param final_state_index is the final state index.
+/// @param search_nodes are all search nodes.
+/// @param context is the search context.
+template<typename... SearchNodeProperties>
 inline Plan extract_total_ordered_plan(State start_state,
                                        ContinuousCost start_state_metric_value,
-                                       const IndexList& state_trajectory,
-                                       IApplicableActionGenerator& applicable_action_generator,
-                                       StateRepositoryImpl& state_repository)
+                                       ConstSearchNode<SearchNodeProperties...> final_search_node,
+                                       Index final_state_index,
+                                       const SearchNodeImplVector<SearchNodeProperties...>& search_nodes,  //
+                                       const SearchContext& context)
 {
-    if (start_state->get_index() != state_trajectory.front())
-    {
-        throw std::runtime_error("extract_ground_action_sequence: the given start state must be the first state in the given state trajectory.");
-    }
+    const auto state_trajectory = extract_state_trajectory(search_nodes, final_search_node, final_state_index);
 
     auto actions = formalism::GroundActionList {};
     auto states = StateList { start_state };
@@ -55,9 +83,10 @@ inline Plan extract_total_ordered_plan(State start_state,
         auto lowest_state = State {};
         auto lowest_metric_value = std::numeric_limits<ContinuousCost>::infinity();
 
-        for (const auto& action : applicable_action_generator.create_applicable_action_generator(state))
+        for (const auto& action : context->get_applicable_action_generator()->create_applicable_action_generator(state))
         {
-            const auto [successor_state, successor_state_metric_value] = state_repository.get_or_create_successor_state(state, action, state_metric_value);
+            const auto [successor_state, successor_state_metric_value] =
+                context->get_state_repository()->get_or_create_successor_state(state, action, state_metric_value);
             if (successor_state->get_index() == state_trajectory.at(i + 1))
             {
                 if (successor_state_metric_value < lowest_metric_value)
@@ -81,34 +110,7 @@ inline Plan extract_total_ordered_plan(State start_state,
         state_metric_value = lowest_metric_value;
     }
 
-    return Plan(std::move(states), std::move(actions), state_metric_value);
-}
-
-/// @brief Compute the state trajectory that ends in the the `final_state_index` associated with the `final_search_node`.
-/// @tparam ...SearchNodeProperties
-/// @param search_nodes are all search nodes.
-/// @param final_search_node is the final search node.
-/// @param final_state_index is the final state index.
-/// @param out_trajectory is the resulting state trajectory that ends in the `final_state_index`
-template<typename... SearchNodeProperties>
-void extract_state_trajectory(const SearchNodeImplVector<SearchNodeProperties...>& search_nodes,  //
-                              ConstSearchNode<SearchNodeProperties...> final_search_node,
-                              Index final_state_index,
-                              IndexList& out_trajectory)
-{
-    out_trajectory.clear();
-    out_trajectory.push_back(final_state_index);
-
-    auto cur_search_node = final_search_node;
-
-    while (cur_search_node->get_parent_state() != std::numeric_limits<Index>::max())
-    {
-        out_trajectory.push_back(cur_search_node->get_parent_state());
-
-        cur_search_node = search_nodes.at(cur_search_node->get_parent_state());
-    }
-
-    std::reverse(out_trajectory.begin(), out_trajectory.end());
+    return Plan(context, std::move(states), std::move(actions), state_metric_value);
 }
 
 }

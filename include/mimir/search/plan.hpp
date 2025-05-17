@@ -28,13 +28,15 @@ namespace mimir::search
 class Plan
 {
 private:
+    SearchContext m_context;
     StateList m_states;
     formalism::GroundActionList m_actions;
     ContinuousCost m_cost;
 
 public:
-    Plan(StateList states, formalism::GroundActionList actions, ContinuousCost cost);
+    Plan(SearchContext context, StateList states, formalism::GroundActionList actions, ContinuousCost cost);
 
+    const SearchContext& get_search_context() const;
     const StateList& get_states() const;
     const formalism::GroundActionList& get_actions() const;
     ContinuousCost get_cost() const;

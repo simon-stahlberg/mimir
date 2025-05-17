@@ -319,6 +319,7 @@ void bind_module_definitions(nb::module_& m)
 
     /* Plan */
     nb::class_<Plan>(m, "Plan")  //
+        .def(nb::init<SearchContext, StateList, GroundActionList, ContinuousCost>(), "search_context"_a, "states"_a, "actions"_a, "cost"_a)
         .def("to_string",
              [](const Plan& self, const ProblemImpl& problem)
              {
@@ -327,9 +328,17 @@ void bind_module_definitions(nb::module_& m)
                  return ss.str();
              })
         .def("__len__", &Plan::get_length)
+        .def("get_search_context", &Plan::get_search_context)
         .def("get_states", &Plan::get_states, nb::rv_policy::copy)
         .def("get_actions", &Plan::get_actions, nb::rv_policy::copy)
         .def("get_cost", &Plan::get_cost);
+
+    /* PartiallyOrderedPlan*/
+    nb::class_<PartiallyOrderedPlan>(m, "PartiallyOrderedPlan")  //
+        .def(nb::init<Plan>(), "total_ordered_plan"_a)
+        .def("compute_totally_ordered_plan_with_maximal_makespan", &PartiallyOrderedPlan::compute_t_o_plan_with_maximal_makespan)
+        .def("get_totally_ordered_plan", &PartiallyOrderedPlan::get_t_o_plan, nb::rv_policy::reference_internal)  // Plan is immutable
+        .def("get_graph", [](const PartiallyOrderedPlan& self) { return PyImmutable<graphs::DynamicDigraph>(self.get_graph()); });
 
     /* ConjunctiveConditionSatisficingBindingGenerator */
     nb::class_<ConjunctiveConditionSatisficingBindingGenerator>(m, "ConjunctiveConditionSatisficingBindingGenerator")  //

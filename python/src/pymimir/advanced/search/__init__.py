@@ -18,6 +18,7 @@ from pymimir.pymimir.advanced.search import (
     IAxiomEvaluator,
     IHeuristic,
     Plan,
+    PartiallyOrderedPlan,
     SearchResult,
     State,
     StateList,

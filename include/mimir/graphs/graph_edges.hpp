@@ -76,6 +76,7 @@ private:
 template<typename... EdgeProperties>
 std::ostream& operator<<(std::ostream& os, const Edge<EdgeProperties...>& edge)
 {
+    os << "index=" << edge.get_index() << ", properties=";
     mimir::operator<<(os, edge.get_properties());
     return os;
 }

@@ -26,7 +26,15 @@ namespace mimir::search
 
 /* Plan */
 
-Plan::Plan(StateList states, GroundActionList actions, ContinuousCost cost) : m_states(std::move(states)), m_actions(std::move(actions)), m_cost(cost) {}
+Plan::Plan(SearchContext context, StateList states, GroundActionList actions, ContinuousCost cost) :
+    m_context(std::move(context)),
+    m_states(std::move(states)),
+    m_actions(std::move(actions)),
+    m_cost(cost)
+{
+}
+
+const SearchContext& Plan::get_search_context() const { return m_context; }
 
 const StateList& Plan::get_states() const { return m_states; }
 
