@@ -3,7 +3,7 @@ var searchData=
   ['parse_5fproblem_0',['parse_problem',['../classmimir_1_1formalism_1_1Parser.html#aff9d3288c933da79c496054884ea3561',1,'mimir::formalism::Parser']]],
   ['parser_1',['Parser',['../classmimir_1_1formalism_1_1Parser.html',1,'mimir::formalism::Parser'],['../classmimir_1_1formalism_1_1Parser.html#abad20fe452b4cc4ce944432bb601c293',1,'mimir::formalism::Parser::Parser()']]],
   ['parser_2ehpp_2',['parser.hpp',['../parser_8hpp.html',1,'']]],
-  ['plan_3',['Plan',['../classmimir_1_1search_1_1Plan.html',1,'mimir::search::Plan'],['../classmimir_1_1search_1_1Plan.html#a42235e1e24c9a00972b848990523f6f6',1,'mimir::search::Plan::Plan()']]],
+  ['plan_3',['Plan',['../classmimir_1_1search_1_1Plan.html',1,'mimir::search::Plan'],['../classmimir_1_1search_1_1Plan.html#a78872cec2cd7c8b6913dfa2b10ef655f',1,'mimir::search::Plan::Plan()']]],
   ['plan_4',['plan',['../structmimir_1_1search_1_1SearchResult.html#ad81d2706f5870a1fd4e27b5651953f4c',1,'mimir::search::SearchResult']]],
   ['plan_2ehpp_5',['plan.hpp',['../plan_8hpp.html',1,'']]],
   ['planformattertag_6',['PlanFormatterTag',['../structmimir_1_1formalism_1_1GroundActionImpl_1_1PlanFormatterTag.html',1,'mimir::formalism::GroundActionImpl']]],
