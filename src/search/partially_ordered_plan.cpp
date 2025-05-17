@@ -142,7 +142,7 @@ PartiallyOrderedPlan::PartiallyOrderedPlan(Plan t_o_plan) : m_t_o_plan(std::move
     }
 }
 
-Plan PartiallyOrderedPlan::compute_t_o_plan_with_maximal_makespan() const
+std::pair<Plan, IndexList> PartiallyOrderedPlan::compute_t_o_plan_with_maximal_makespan() const
 {
     auto top_sort = graphs::bgl::topological_sort(graphs::DirectionTaggedType(m_graph, graphs::BackwardTag {}));
 
@@ -167,7 +167,7 @@ Plan PartiallyOrderedPlan::compute_t_o_plan_with_maximal_makespan() const
     // Ensure that reordering preserves costs.
     assert(cur_state_metric_value == m_t_o_plan.get_cost());
 
-    return Plan(m_t_o_plan.get_search_context(), std::move(states), std::move(actions), cur_state_metric_value);
+    return std::make_pair(Plan(m_t_o_plan.get_search_context(), std::move(states), std::move(actions), cur_state_metric_value), top_sort);
 }
 
 const Plan& PartiallyOrderedPlan::get_t_o_plan() const { return m_t_o_plan; }

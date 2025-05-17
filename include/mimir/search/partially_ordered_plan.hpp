@@ -44,7 +44,7 @@ private:
 public:
     explicit PartiallyOrderedPlan(Plan t_o_plan);
 
-    Plan compute_t_o_plan_with_maximal_makespan() const;
+    std::pair<Plan, IndexList> compute_t_o_plan_with_maximal_makespan() const;
 
     const Plan& get_t_o_plan() const;
     const graphs::DynamicDigraph& get_graph() const;
