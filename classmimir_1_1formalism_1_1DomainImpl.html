@@ -125,8 +125,13 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:afab15998acf23203258f84682c67e4c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab985e6dff9a9f86fb449a40a52203990"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir_1_1formalism.html#a7cd0587581fbee63f4259db05099d378">AxiomList</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1DomainImpl.html#ab985e6dff9a9f86fb449a40a52203990">get_axioms</a> () const</td></tr>
 <tr class="separator:ab985e6dff9a9f86fb449a40a52203990"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2bc0762d0a358db3f22204e4129a282"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir_1_1formalism.html#acaf64f488a8195b48868e925aebd3b75">Object</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1DomainImpl.html#ad2bc0762d0a358db3f22204e4129a282">get_constant</a> (const std::string &amp;name) const</td></tr>
+<tr class="separator:ad2bc0762d0a358db3f22204e4129a282"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acd0f5a159934d6a8e840b8f56241e932"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir_1_1formalism.html#aac3bdcebeda7812ed9b54a40632c68a8">ToObjectMap</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1DomainImpl.html#acd0f5a159934d6a8e840b8f56241e932">get_name_to_constant</a> () const</td></tr>
 <tr class="separator:acd0f5a159934d6a8e840b8f56241e932"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4460c3a28cf633140df08915fa477687"><td class="memTemplParams" colspan="2">template&lt;IsStaticOrFluentOrDerivedTag P&gt; </td></tr>
+<tr class="memitem:a4460c3a28cf633140df08915fa477687"><td class="memTemplItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir_1_1formalism.html#a62a850b37be0730b5f889f780d541f5f">Predicate</a>&lt; P &gt; &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1DomainImpl.html#a4460c3a28cf633140df08915fa477687">get_predicate</a> (const std::string &amp;name) const</td></tr>
+<tr class="separator:a4460c3a28cf633140df08915fa477687"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad9103f382e9d1ffedb454dcee01595c7"><td class="memTemplParams" colspan="2">template&lt;IsStaticOrFluentOrDerivedTag P&gt; </td></tr>
 <tr class="memitem:ad9103f382e9d1ffedb454dcee01595c7"><td class="memTemplItemLeft" align="right" valign="top">const <a class="el" href="namespacemimir_1_1formalism.html#a10082352270d076842bf7112c4d0a681">ToPredicateMap</a>&lt; std::string, P &gt; &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1DomainImpl.html#ad9103f382e9d1ffedb454dcee01595c7">get_name_to_predicate</a> () const</td></tr>
 <tr class="separator:ad9103f382e9d1ffedb454dcee01595c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -254,6 +259,24 @@ Friends</h2></td></tr>
           <td class="memname">const <a class="el" href="namespacemimir_1_1formalism.html#a7cd0587581fbee63f4259db05099d378">AxiomList</a> &amp; mimir::formalism::DomainImpl::get_axioms </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad2bc0762d0a358db3f22204e4129a282" name="ad2bc0762d0a358db3f22204e4129a282"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2bc0762d0a358db3f22204e4129a282">&#9670;&#160;</a></span>get_constant()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="namespacemimir_1_1formalism.html#acaf64f488a8195b48868e925aebd3b75">Object</a> mimir::formalism::DomainImpl::get_constant </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
@@ -411,6 +434,26 @@ template&lt;IsStaticOrFluentOrDerivedTag P&gt; </div>
           <td class="memname">const <a class="el" href="namespacemimir_1_1formalism.html#a10082352270d076842bf7112c4d0a681">ToPredicateMap</a>&lt; std::string, P &gt; &amp; mimir::formalism::DomainImpl::get_name_to_predicate </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4460c3a28cf633140df08915fa477687" name="a4460c3a28cf633140df08915fa477687"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4460c3a28cf633140df08915fa477687">&#9670;&#160;</a></span>get_predicate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;IsStaticOrFluentOrDerivedTag P&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="namespacemimir_1_1formalism.html#a62a850b37be0730b5f889f780d541f5f">Predicate</a>&lt; P &gt; &amp; mimir::formalism::DomainImpl::get_predicate </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
