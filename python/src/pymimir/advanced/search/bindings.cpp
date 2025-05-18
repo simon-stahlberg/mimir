@@ -494,7 +494,13 @@ void bind_module_definitions(nb::module_& m)
     nb::class_<StateRepositoryImpl>(m, "StateRepository")  //
         .def(nb::init<AxiomEvaluator>(), "axiom_evaluator"_a)
         .def("get_or_create_initial_state", &StateRepositoryImpl::get_or_create_initial_state, nb::rv_policy::reference_internal)
-        .def("get_or_create_state", &StateRepositoryImpl::get_or_create_state, "atoms"_a, "numeric_variables"_a, nb::rv_policy::reference_internal)
+        .def(
+            "get_or_create_state",
+            [](StateRepositoryImpl& self, const GroundAtomList<FluentTag>& fluent_atoms, const ContinuousCostList& numeric_variables)
+            { return self.get_or_create_state(fluent_atoms, FlatDoubleList(numeric_variables.begin(), numeric_variables.end())); },
+            "fluent_atoms"_a,
+            "numeric_variables"_a,
+            nb::rv_policy::reference_internal)
         .def("get_or_create_successor_state",
              nb::overload_cast<State, GroundAction, ContinuousCost>(&StateRepositoryImpl::get_or_create_successor_state),
              "state"_a,

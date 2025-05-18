@@ -105,7 +105,10 @@ void FormatterVisitor::visit(ConceptRoleValueMapEquality constructor)
     m_out << " ";
     constructor->get_right_role()->accept(*this);
 }
-void FormatterVisitor::visit(ConceptNominal constructor) { m_out << "@" << keywords::concept_nominal << " " << constructor->get_object()->get_name(); }
+void FormatterVisitor::visit(ConceptNominal constructor)
+{
+    m_out << "@" << keywords::concept_nominal << " \"" << constructor->get_object()->get_name() << "\"";
+}
 
 /* Roles */
 
