@@ -328,13 +328,6 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
                          successor_state_metric_value);
     update_reached_fluent_atoms(dense_fluent_atoms, m_reached_fluent_atoms);
     translate_dense_into_sorted_compressed_sparse(dense_fluent_atoms, m_state_fluent_atoms);
-    if (!std::equal(m_state_fluent_atoms.compressed_begin(), m_state_fluent_atoms.compressed_end(), dense_fluent_atoms.begin()))
-    {
-        mimir::operator<<(std::cout, dense_fluent_atoms);
-        std::cout << std::endl;
-        mimir::operator<<(std::cout, m_state_fluent_atoms);
-        std::cout << std::endl;
-    }
     assert(std::equal(m_state_fluent_atoms.compressed_begin(), m_state_fluent_atoms.compressed_end(), dense_fluent_atoms.begin()));
     assert(std::equal(dense_fluent_atoms.begin(), dense_fluent_atoms.end(), m_state_fluent_atoms.compressed_begin()));
     state_fluent_atoms = problem.get_or_create_index_list(m_state_fluent_atoms);

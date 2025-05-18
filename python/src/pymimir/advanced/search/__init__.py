@@ -13,6 +13,7 @@ from pymimir.pymimir.advanced.search import (
 # Common
 from pymimir.pymimir.advanced.search import (   
     BlindHeuristic,
+    HStarHeuristic,
     is_applicable,
     IApplicableActionGenerator,
     IAxiomEvaluator,
@@ -23,6 +24,7 @@ from pymimir.pymimir.advanced.search import (
     State,
     StateList,
     StateRepository,
+    compute_state_metric_value,
     SearchContext,
     SearchContextOptions,
     GeneralizedSearchContext,

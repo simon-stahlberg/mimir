@@ -32,7 +32,7 @@
 #include <nanobind/stl/filesystem.h>
 #include <nanobind/stl/map.h>
 #include <nanobind/stl/optional.h>  ///< for optional support
-#include <nanobind/stl/optional.h>
+#include <nanobind/stl/pair.h>
 #include <nanobind/stl/set.h>
 #include <nanobind/stl/shared_ptr.h>  ///< for shared ownerships
 #include <nanobind/stl/string.h>      ///< for string support

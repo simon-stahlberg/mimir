@@ -122,8 +122,11 @@ int main(int argc, char** argv)
         plan_file << std::make_tuple(std::cref(result.plan.value()), std::cref(*problem));
         plan_file.close();
 
-        // auto po_plan = PartiallyOrderedPlan(result.plan.value());
-        // auto to_plan_with_maximal_makespan = po_plan.compute_t_o_plan_with_maximal_makespan();
+        auto po_plan = PartiallyOrderedPlan(result.plan.value());
+        auto to_plan_with_maximal_makespan = po_plan.compute_t_o_plan_with_maximal_makespan();
+
+        // std::cout << result.plan.value() << std::endl;
+        // std::cout << to_plan_with_maximal_makespan << std::endl;
     }
 
     return 0;
