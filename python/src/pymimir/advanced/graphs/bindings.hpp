@@ -111,7 +111,8 @@ void bind_translated_static_graph(nb::module_& m, const std::string& name, const
     nb::class_<TranslatedGraphType>(m, (prefix + name).c_str())
         .def(nb::init<GraphType>())
         .def("__init__", [](TranslatedGraphType* self, const PyImmutableGraph& immutable) { new (self) TranslatedGraphType(immutable.obj_); })
-        .def("create_vertex_induced_subgraph", &TranslatedGraphType::create_vertex_induced_subgraph, "vertex_indices")
+        .def("create_induced_subgraph", &TranslatedGraphType::create_induced_subgraph, "vertex_indices")
+        .def("create_undirected_graph", &TranslatedGraphType::create_undirected_graph)
         .def("__str__", [](const TranslatedGraphType& self) { return to_string(self); })
         .def(
             "get_vertex_indices",
@@ -321,7 +322,8 @@ void bind_static_graph(nb::module_& m, const std::string& name)
 
     nb::class_<GraphType>(m, name.c_str())
         .def(nb::init<>())
-        .def("create_vertex_induced_subgraph", &GraphType::create_vertex_induced_subgraph, "vertex_indices")
+        .def("create_induced_subgraph", &GraphType::create_induced_subgraph, "vertex_indices")
+        .def("create_undirected_graph", &GraphType::create_undirected_graph)
         .def("__str__", [](const GraphType& self) { return to_string(self); })
         .def("clear", &GraphType::clear)
         .def("add_vertex",
@@ -544,10 +546,10 @@ void bind_static_graph(nb::module_& m, const std::string& name)
     nb::class_<PyImmutable<GraphType>>(m, ("Immutable" + name).c_str())  //
         .def(nb::init<const GraphType&>())
         .def(
-            "create_vertex_induced_subgraph",
-            [](const PyImmutable<GraphType>& self, const graphs::VertexIndexList& vertex_indices)
-            { return self.obj_.create_vertex_induced_subgraph(vertex_indices); },
+            "create_induced_subgraph",
+            [](const PyImmutable<GraphType>& self, const graphs::VertexIndexList& vertex_indices) { return self.obj_.create_induced_subgraph(vertex_indices); },
             "vertex_indices")
+        .def("create_undirected_graph", [](const PyImmutable<GraphType>& self) { return self.obj_.create_undirected_graph(); })
         .def("__str__", [](const PyImmutable<GraphType>& self) { return to_string(self.obj_); })
         .def(
             "get_vertex_indices",
@@ -845,6 +847,8 @@ void bind_dynamic_graph(nb::module_& m, const std::string& name)
             "remove_edge",
             [](GraphType& self, EdgeIndex edge) { self.remove_edge(edge); },
             "remove_edge"_a)
+        .def("create_induced_subgraph", &GraphType::create_induced_subgraph, "vertex_indices")
+        .def("create_undirected_graph", &GraphType::create_undirected_graph)
         .def(
             "get_vertex_indices",
             [](const GraphType& self)

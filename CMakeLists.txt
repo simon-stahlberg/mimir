@@ -125,11 +125,6 @@ if(absl_FOUND)
 endif()
 
 
-# find_package(Python3 REQUIRED 
-#   COMPONENTS Interpreter Development
-#   OPTIONAL_COMPONENTS Development.SABIModule)
-
-
 ##############################################################
 # Add library and executable targets
 ##############################################################

@@ -35,6 +35,8 @@ namespace mimir
  */
 
 using Index = uint32_t;
+using IndexPair = std::pair<Index, Index>;
+using IndexPairList = std::vector<IndexPair>;
 using IndexList = std::vector<Index>;
 using IndexSet = std::unordered_set<Index>;
 template<size_t K>

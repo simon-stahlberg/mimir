@@ -350,7 +350,7 @@ const graphs::ClassEdge& GeneralizedStateSpaceImpl::get_class_edge(const graphs:
 std::tuple<graphs::ClassGraph, IndexList, IndexList>
 GeneralizedStateSpaceImpl::create_induced_subgraph_from_class_vertex_indices(const IndexList& class_vertex_indices) const
 {
-    auto [subgraph, vertex_remap, edge_remap] = m_graph.get_graph().create_vertex_induced_subgraph(class_vertex_indices);
+    auto [subgraph, vertex_remap, edge_remap] = m_graph.get_graph().create_induced_subgraph(class_vertex_indices);
 
     return std::make_tuple(graphs::ClassGraph(std::move(subgraph)), std::move(vertex_remap), std::move(edge_remap));
 }
@@ -373,8 +373,7 @@ GeneralizedStateSpaceImpl::create_induced_subgraph_from_problem_indices(const In
         }
     }
 
-    auto [subgraph, vertex_remap, edge_remap] =
-        m_graph.get_graph().create_vertex_induced_subgraph(IndexList(unique_class_v_idxs.begin(), unique_class_v_idxs.end()));
+    auto [subgraph, vertex_remap, edge_remap] = m_graph.get_graph().create_induced_subgraph(IndexList(unique_class_v_idxs.begin(), unique_class_v_idxs.end()));
 
     return std::make_tuple(graphs::ClassGraph(std::move(subgraph)), std::move(vertex_remap), std::move(edge_remap));
 }

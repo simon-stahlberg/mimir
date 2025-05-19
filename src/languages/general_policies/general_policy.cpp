@@ -98,7 +98,7 @@ bool GeneralPolicyImpl::is_terminating(graphs::PolicyGraph& policy_graph, Reposi
 
         for (const auto& [component, v_idxs] : sccs)
         {
-            auto policy_subgraph = policy_graph.compute_induced_subgraph(v_idxs);
+            auto [policy_subgraph, vertex_remap, edge_remap] = policy_graph.create_induced_subgraph(v_idxs);
 
             if (!is_terminating(policy_subgraph, repositories))
             {

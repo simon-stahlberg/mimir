@@ -678,7 +678,7 @@ std::pair<EdgeIndex, EdgeIndex> StaticGraph<V, E>::add_undirected_edge(VertexInd
 }
 
 template<IsVertex V, IsEdge E>
-std::tuple<StaticGraph<V, E>, IndexList, IndexList> StaticGraph<V, E>::create_vertex_induced_subgraph(const VertexIndexList& vertex_indices) const
+std::tuple<StaticGraph<V, E>, IndexList, IndexList> StaticGraph<V, E>::create_induced_subgraph(const VertexIndexList& vertex_indices) const
 {
     auto subgraph = StaticGraph<V, E>();
 
@@ -694,7 +694,7 @@ std::tuple<StaticGraph<V, E>, IndexList, IndexList> StaticGraph<V, E>::create_ve
         {
             const auto new_v_idx = subgraph.add_vertex(get_vertex(v_idx));
             old_to_new_v_idx.emplace(v_idx, new_v_idx);
-            vertex_remap.push_back(v_idx);
+            vertex_remap.push_back(new_v_idx);
         }
     }
 
@@ -712,6 +712,30 @@ std::tuple<StaticGraph<V, E>, IndexList, IndexList> StaticGraph<V, E>::create_ve
     }
 
     return std::make_tuple(std::move(subgraph), std::move(vertex_remap), std::move(edge_remap));
+}
+
+template<IsVertex V, IsEdge E>
+std::tuple<StaticGraph<V, E>, IndexList, IndexPairList> StaticGraph<V, E>::create_undirected_graph() const
+{
+    auto undirected_graph = StaticGraph<V, E>();
+
+    auto vertex_remap = IndexList {};
+    auto edge_remap = IndexPairList {};
+
+    for (const auto& v : get_vertices())
+    {
+        const auto new_v_idx = undirected_graph.add_vertex(v);
+        vertex_remap.push_back(new_v_idx);
+    }
+
+    for (const auto& e : get_edges())
+    {
+        const auto new_e_idx = undirected_graph.add_directed_edge(vertex_remap[e.get_source()], vertex_remap[e.get_target()], e);
+        const auto new_inverse_e_idx = undirected_graph.add_directed_edge(vertex_remap[e.get_target()], vertex_remap[e.get_source()], e);
+        edge_remap.push_back(std::make_pair(new_e_idx, new_inverse_e_idx));
+    }
+
+    return std::make_tuple(std::move(undirected_graph), std::move(vertex_remap), std::move(edge_remap));
 }
 
 template<IsVertex V, IsEdge E>
@@ -948,9 +972,17 @@ StaticForwardGraph<G>::StaticForwardGraph(G graph) :
 }
 
 template<IsStaticGraph G>
-std::tuple<StaticForwardGraph<G>, IndexList, IndexList> StaticForwardGraph<G>::create_vertex_induced_subgraph(const VertexIndexList& vertex_indices) const
+std::tuple<StaticForwardGraph<G>, IndexList, IndexList> StaticForwardGraph<G>::create_induced_subgraph(const VertexIndexList& vertex_indices) const
 {
-    auto [subgraph, vertex_remap, edge_remap] = m_graph.create_vertex_induced_subgraph(vertex_indices);
+    auto [subgraph, vertex_remap, edge_remap] = m_graph.create_induced_subgraph(vertex_indices);
+
+    return std::make_tuple(StaticForwardGraph<G>(std::move(subgraph)), std::move(vertex_remap), std::move(edge_remap));
+}
+
+template<IsStaticGraph G>
+std::tuple<StaticForwardGraph<G>, IndexList, IndexPairList> StaticForwardGraph<G>::create_undirected_graph() const
+{
+    auto [subgraph, vertex_remap, edge_remap] = m_graph.create_undirected_graph();
 
     return std::make_tuple(StaticForwardGraph<G>(std::move(subgraph)), std::move(vertex_remap), std::move(edge_remap));
 }
@@ -1158,10 +1190,17 @@ StaticBidirectionalGraph<G>::StaticBidirectionalGraph(G graph) : m_graph(std::mo
 }
 
 template<IsStaticGraph G>
-std::tuple<StaticBidirectionalGraph<G>, IndexList, IndexList>
-StaticBidirectionalGraph<G>::create_vertex_induced_subgraph(const VertexIndexList& vertex_indices) const
+std::tuple<StaticBidirectionalGraph<G>, IndexList, IndexList> StaticBidirectionalGraph<G>::create_induced_subgraph(const VertexIndexList& vertex_indices) const
 {
-    auto [subgraph, vertex_remap, edge_remap] = m_graph.create_vertex_induced_subgraph(vertex_indices);
+    auto [subgraph, vertex_remap, edge_remap] = m_graph.create_induced_subgraph(vertex_indices);
+
+    return std::make_tuple(StaticBidirectionalGraph<G>(std::move(subgraph)), std::move(vertex_remap), std::move(edge_remap));
+}
+
+template<IsStaticGraph G>
+std::tuple<StaticBidirectionalGraph<G>, IndexList, IndexPairList> StaticBidirectionalGraph<G>::create_undirected_graph() const
+{
+    auto [subgraph, vertex_remap, edge_remap] = m_graph.create_undirected_graph();
 
     return std::make_tuple(StaticBidirectionalGraph<G>(std::move(subgraph)), std::move(vertex_remap), std::move(edge_remap));
 }

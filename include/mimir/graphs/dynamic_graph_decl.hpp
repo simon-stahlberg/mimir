@@ -281,7 +281,20 @@ public:
      * Subgraph
      */
 
-    DynamicGraph compute_induced_subgraph(const VertexIndexList& vertices) const;
+    /// @brief Compute the subgraph induced by the given vertex indices.
+    /// @param vertices The vertex indices from the original graph to include in the subgraph.
+    /// @return A tuple consisting of:
+    ///         - The induced subgraph (with only the specified vertices and their connecting edges),
+    ///         - A mapping from original vertex indices to new vertex indices in the subgraph,
+    ///         - A mapping from original edge indices to new edge indices in the subgraph.
+    std::tuple<DynamicGraph, IndexMap<Index>, IndexMap<Index>> create_induced_subgraph(const VertexIndexList& vertices) const;
+
+    /// @brief Compute an undirected view of the graph by symmetrizing the directed edges.
+    /// @return A tuple consisting of:
+    ///         - The resulting undirected graph,
+    ///         - A mapping from original vertex indices to new vertex indices in the undirected graph,
+    ///         - A mapping from original edge indices to pairs of edge indices in the undirected graph.
+    std::tuple<DynamicGraph, IndexMap<Index>, IndexMap<IndexPair>> create_undirected_graph() const;
 
     /**
      * Iterators

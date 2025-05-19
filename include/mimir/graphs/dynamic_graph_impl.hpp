@@ -612,15 +612,17 @@ void DynamicGraph<V, E>::remove_edge(EdgeIndex edge)
 }
 
 template<IsVertex V, IsEdge E>
-DynamicGraph<V, E> DynamicGraph<V, E>::compute_induced_subgraph(const VertexIndexList& vertices) const
+std::tuple<DynamicGraph<V, E>, IndexMap<Index>, IndexMap<Index>> DynamicGraph<V, E>::create_induced_subgraph(const VertexIndexList& vertices) const
 {
     auto subgraph = DynamicGraph<V, E>();
 
-    auto remapping = std::unordered_map<VertexIndex, VertexIndex> {};
+    auto vertex_remap = IndexMap<Index> {};
+    auto edge_remap = IndexMap<Index> {};
 
     for (const auto& v_idx : vertices)
     {
-        remapping.emplace(v_idx, subgraph.add_vertex(get_vertex(v_idx)));
+        const auto new_v_idx = subgraph.add_vertex(get_vertex(v_idx));
+        vertex_remap.emplace(v_idx, new_v_idx);
     }
 
     for (const auto& v_idx : vertices)
@@ -630,14 +632,39 @@ DynamicGraph<V, E> DynamicGraph<V, E>::compute_induced_subgraph(const VertexInde
             const auto src_v_idx = e.get_source();
             const auto dst_v_idx = e.get_target();
 
-            if (remapping.contains(src_v_idx) && remapping.contains(dst_v_idx))
+            if (vertex_remap.contains(src_v_idx) && vertex_remap.contains(dst_v_idx))
             {
-                subgraph.add_directed_edge(remapping.at(src_v_idx), remapping.at(dst_v_idx), e);
+                const auto new_e_idx = subgraph.add_directed_edge(vertex_remap.at(src_v_idx), vertex_remap.at(dst_v_idx), e);
+                edge_remap.emplace(e.get_index(), new_e_idx);
             }
         }
     }
 
-    return subgraph;
+    return std::make_tuple(std::move(subgraph), std::move(vertex_remap), std::move(edge_remap));
+}
+
+template<IsVertex V, IsEdge E>
+std::tuple<DynamicGraph<V, E>, IndexMap<Index>, IndexMap<IndexPair>> DynamicGraph<V, E>::create_undirected_graph() const
+{
+    auto undirected_graph = DynamicGraph<V, E>();
+
+    auto vertex_remap = IndexMap<Index> {};
+    auto edge_remap = IndexMap<IndexPair> {};
+
+    for (const auto& [v_idx, v] : get_vertices())
+    {
+        const auto new_v_idx = undirected_graph.add_vertex(v);
+        vertex_remap.emplace(v_idx, new_v_idx);
+    }
+
+    for (const auto& [e_idx, e] : get_edges())
+    {
+        const auto new_e_idx = undirected_graph.add_directed_edge(vertex_remap[e.get_source()], vertex_remap[e.get_target()], e);
+        const auto new_inverse_e_idx = undirected_graph.add_directed_edge(vertex_remap[e.get_target()], vertex_remap[e.get_source()], e);
+        edge_remap.emplace(e_idx, std::make_pair(new_e_idx, new_inverse_e_idx));
+    }
+
+    return std::make_tuple(std::move(undirected_graph), std::move(vertex_remap), std::move(edge_remap));
 }
 
 template<IsVertex V, IsEdge E>
@@ -860,7 +887,6 @@ std::ostream& operator<<(std::ostream& out, const DynamicGraph<V, E>& graph)
 
     return out;
 }
-
 }
 
 #endif

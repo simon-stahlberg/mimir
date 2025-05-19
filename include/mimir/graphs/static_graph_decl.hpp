@@ -231,10 +231,20 @@ public:
         requires HasEdgeProperties<E, EdgeProperties...>
     std::pair<EdgeIndex, EdgeIndex> add_undirected_edge(VertexIndex source, VertexIndex target, EdgeProperties&&... properties);
 
-    /// @brief Create the subgraph induced by the given vertices.
-    /// @param vertex_indices is the given vector of vertex indices.
-    /// @return the subgraph induced by the given vertices, the remappings of vertices and edges.
-    std::tuple<StaticGraph<V, E>, IndexList, IndexList> create_vertex_induced_subgraph(const VertexIndexList& vertex_indices) const;
+    /// @brief Compute the subgraph induced by the given vertex indices.
+    /// @param vertices The vertex indices from the original graph to include in the subgraph.
+    /// @return A tuple consisting of:
+    ///         - The induced subgraph (with only the specified vertices and their connecting edges),
+    ///         - A mapping from original vertex indices to new vertex indices in the subgraph,
+    ///         - A mapping from original edge indices to new edge indices in the subgraph.
+    std::tuple<StaticGraph, IndexList, IndexList> create_induced_subgraph(const VertexIndexList& vertex_indices) const;
+
+    /// @brief Compute an undirected view of the graph by symmetrizing the directed edges.
+    /// @return A tuple consisting of:
+    ///         - The resulting undirected graph,
+    ///         - A mapping from original vertex indices to new vertex indices in the undirected graph,
+    ///         - A mapping from original edge indices to pairs of edge indices in the undirected graph.
+    std::tuple<StaticGraph, IndexList, IndexPairList> create_undirected_graph() const;
 
     /**
      * Iterators
@@ -320,7 +330,9 @@ public:
 
     explicit StaticForwardGraph(G graph);
 
-    std::tuple<StaticForwardGraph<G>, IndexList, IndexList> create_vertex_induced_subgraph(const VertexIndexList& vertex_indices) const;
+    std::tuple<StaticForwardGraph<G>, IndexList, IndexList> create_induced_subgraph(const VertexIndexList& vertex_indices) const;
+
+    std::tuple<StaticForwardGraph<G>, IndexList, IndexPairList> create_undirected_graph() const;
 
     /**
      * Iterators
@@ -394,7 +406,9 @@ public:
 
     explicit StaticBidirectionalGraph(G graph);
 
-    std::tuple<StaticBidirectionalGraph<G>, IndexList, IndexList> create_vertex_induced_subgraph(const VertexIndexList& vertex_indices) const;
+    std::tuple<StaticBidirectionalGraph<G>, IndexList, IndexList> create_induced_subgraph(const VertexIndexList& vertex_indices) const;
+
+    std::tuple<StaticBidirectionalGraph<G>, IndexList, IndexPairList> create_undirected_graph() const;
 
     /**
      * Iterators

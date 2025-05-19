@@ -34,7 +34,7 @@ template<typename G>
 bool is_undirected(const G& graph)
 {
     // Create datastructure for efficient lookup
-    auto directed_edges = std::unordered_set<std::pair<Index, Index>, loki::Hash<std::pair<Index, Index>>>();
+    auto directed_edges = UnorderedSet<IndexPair>();
     for (const auto& e_idx : graph.get_edge_indices())
     {
         const auto& edge = graph.get_edge(e_idx);
@@ -57,7 +57,7 @@ template<typename G>
     requires IsEdgeListGraph<G>  //
 bool is_multi(const G& graph)
 {
-    auto directed_edges = std::unordered_set<std::pair<Index, Index>, loki::Hash<std::pair<Index, Index>>>();
+    auto directed_edges = UnorderedSet<IndexPair>();
     for (const auto& e_idx : graph.get_edge_indices())
     {
         const auto& edge = graph.get_edge(e_idx);
