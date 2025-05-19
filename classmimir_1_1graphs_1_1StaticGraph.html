@@ -146,9 +146,12 @@ requires HasEdgeProperties&lt;E, EdgeProperties...&gt;</td></tr>
 <tr class="memitem:aa5b30b3de408397fe1d24a28242438dc"><td class="memTemplItemLeft" align="right" valign="top">std::pair&lt; EdgeIndex, EdgeIndex &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#aa5b30b3de408397fe1d24a28242438dc">add_undirected_edge</a> (VertexIndex <a class="el" href="namespacemimir_1_1graphs.html#af891e9004f3adc58c29b3c56ed70fcb9">source</a>, VertexIndex <a class="el" href="namespacemimir_1_1graphs.html#a99ec4019eda342e0f9bbb6c28672bda9">target</a>, EdgeProperties &amp;&amp;... properties)</td></tr>
 <tr class="memdesc:aa5b30b3de408397fe1d24a28242438dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add two anti-parallel directed edges to the graph with the identical edge properties, representing the undirected edge.  <br /></td></tr>
 <tr class="separator:aa5b30b3de408397fe1d24a28242438dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aba5380c0f2cbde29b9e3c1151c557312"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">StaticGraph</a>&lt; V, E &gt;, <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a>, <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#aba5380c0f2cbde29b9e3c1151c557312">create_vertex_induced_subgraph</a> (const VertexIndexList &amp;vertex_indices) const</td></tr>
-<tr class="memdesc:aba5380c0f2cbde29b9e3c1151c557312"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create the subgraph induced by the given vertices.  <br /></td></tr>
-<tr class="separator:aba5380c0f2cbde29b9e3c1151c557312"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d69225e80f8d0c8bdc0671934462ad2"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">StaticGraph</a>, <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a>, <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a9d69225e80f8d0c8bdc0671934462ad2">create_induced_subgraph</a> (const VertexIndexList &amp;vertex_indices) const</td></tr>
+<tr class="memdesc:a9d69225e80f8d0c8bdc0671934462ad2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the subgraph induced by the given vertex indices.  <br /></td></tr>
+<tr class="separator:a9d69225e80f8d0c8bdc0671934462ad2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a533a1656d73c938d6e71ef656fd455fd"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">StaticGraph</a>, <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a>, <a class="el" href="namespacemimir.html#ada0094defa67760c2beefd16b8fc281e">IndexPairList</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a533a1656d73c938d6e71ef656fd455fd">create_undirected_graph</a> () const</td></tr>
+<tr class="memdesc:a533a1656d73c938d6e71ef656fd455fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute an undirected view of the graph by symmetrizing the directed edges.  <br /></td></tr>
+<tr class="separator:a533a1656d73c938d6e71ef656fd455fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac3266d9667efd23705ea4eff80d63f7a"><td class="memItemLeft" align="right" valign="top">std::ranges::subrange&lt; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a8a1dfc92d8058452c8582afcfc628fdd">VertexIndexConstIterator</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#ac3266d9667efd23705ea4eff80d63f7a">get_vertex_indices</a> () const</td></tr>
 <tr class="separator:ac3266d9667efd23705ea4eff80d63f7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a29bba8cb0b006471f4529a6c4b68ec18"><td class="memItemLeft" align="right" valign="top">std::ranges::subrange&lt; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#aa52a5e426ddcb0c28f91c78d81cc2df3">EdgeIndexConstIterator</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html#a29bba8cb0b006471f4529a6c4b68ec18">get_edge_indices</a> () const</td></tr>
@@ -586,8 +589,8 @@ template&lt;IsVertex V, IsEdge E&gt; </div>
 
 </div>
 </div>
-<a id="aba5380c0f2cbde29b9e3c1151c557312" name="aba5380c0f2cbde29b9e3c1151c557312"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aba5380c0f2cbde29b9e3c1151c557312">&#9670;&#160;</a></span>create_vertex_induced_subgraph()</h2>
+<a id="a9d69225e80f8d0c8bdc0671934462ad2" name="a9d69225e80f8d0c8bdc0671934462ad2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d69225e80f8d0c8bdc0671934462ad2">&#9670;&#160;</a></span>create_induced_subgraph()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -595,7 +598,7 @@ template&lt;IsVertex V, IsEdge E&gt; </div>
 template&lt;IsVertex V, IsEdge E&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">std::tuple&lt; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">StaticGraph</a>&lt; V, E &gt;, <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a>, <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a> &gt; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">mimir::graphs::StaticGraph</a>&lt; V, E &gt;::create_vertex_induced_subgraph </td>
+          <td class="memname">std::tuple&lt; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">StaticGraph</a>, <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a>, <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a> &gt; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">mimir::graphs::StaticGraph</a>&lt; V, E &gt;::create_induced_subgraph </td>
           <td>(</td>
           <td class="paramtype">const VertexIndexList &amp;&#160;</td>
           <td class="paramname"><em>vertex_indices</em></td><td>)</td>
@@ -604,14 +607,46 @@ template&lt;IsVertex V, IsEdge E&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Create the subgraph induced by the given vertices. </p>
+<p>Compute the subgraph induced by the given vertex indices. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">vertex_indices</td><td>is the given vector of vertex indices. </td></tr>
+    <tr><td class="paramname">vertices</td><td>The vertex indices from the original graph to include in the subgraph. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>the subgraph induced by the given vertices, the remappings of vertices and edges. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>A tuple consisting of:<ul>
+<li>The induced subgraph (with only the specified vertices and their connecting edges),</li>
+<li>A mapping from original vertex indices to new vertex indices in the subgraph,</li>
+<li>A mapping from original edge indices to new edge indices in the subgraph. </li>
+</ul>
+</dd></dl>
+
+</div>
+</div>
+<a id="a533a1656d73c938d6e71ef656fd455fd" name="a533a1656d73c938d6e71ef656fd455fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a533a1656d73c938d6e71ef656fd455fd">&#9670;&#160;</a></span>create_undirected_graph()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;IsVertex V, IsEdge E&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::tuple&lt; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">StaticGraph</a>, <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a>, <a class="el" href="namespacemimir.html#ada0094defa67760c2beefd16b8fc281e">IndexPairList</a> &gt; <a class="el" href="classmimir_1_1graphs_1_1StaticGraph.html">mimir::graphs::StaticGraph</a>&lt; V, E &gt;::create_undirected_graph </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute an undirected view of the graph by symmetrizing the directed edges. </p>
+<dl class="section return"><dt>Returns</dt><dd>A tuple consisting of:<ul>
+<li>The resulting undirected graph,</li>
+<li>A mapping from original vertex indices to new vertex indices in the undirected graph,</li>
+<li>A mapping from original edge indices to pairs of edge indices in the undirected graph. </li>
+</ul>
+</dd></dl>
 
 </div>
 </div>

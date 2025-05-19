@@ -119,8 +119,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a27a85310a2b3983a05dab2908fcf74a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2dcbe8021a1477bfe985edf4f267fb7a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticBidirectionalGraph.html#a2dcbe8021a1477bfe985edf4f267fb7a">StaticBidirectionalGraph</a> (G graph)</td></tr>
 <tr class="separator:a2dcbe8021a1477bfe985edf4f267fb7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad72ea6bb8802573268510d906a3eb107"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; <a class="el" href="classmimir_1_1graphs_1_1StaticBidirectionalGraph.html">StaticBidirectionalGraph</a>&lt; G &gt;, <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a>, <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticBidirectionalGraph.html#ad72ea6bb8802573268510d906a3eb107">create_vertex_induced_subgraph</a> (const VertexIndexList &amp;vertex_indices) const</td></tr>
-<tr class="separator:ad72ea6bb8802573268510d906a3eb107"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:affba8a28d2b6f966bbcfe135c3e5d720"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; <a class="el" href="classmimir_1_1graphs_1_1StaticBidirectionalGraph.html">StaticBidirectionalGraph</a>&lt; G &gt;, <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a>, <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticBidirectionalGraph.html#affba8a28d2b6f966bbcfe135c3e5d720">create_induced_subgraph</a> (const VertexIndexList &amp;vertex_indices) const</td></tr>
+<tr class="separator:affba8a28d2b6f966bbcfe135c3e5d720"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f3e45de9b1864d7cfecbf962a1cd6b0"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; <a class="el" href="classmimir_1_1graphs_1_1StaticBidirectionalGraph.html">StaticBidirectionalGraph</a>&lt; G &gt;, <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a>, <a class="el" href="namespacemimir.html#ada0094defa67760c2beefd16b8fc281e">IndexPairList</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticBidirectionalGraph.html#a7f3e45de9b1864d7cfecbf962a1cd6b0">create_undirected_graph</a> () const</td></tr>
+<tr class="separator:a7f3e45de9b1864d7cfecbf962a1cd6b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2ccb371808379c39ff11da704f7647ca"><td class="memItemLeft" align="right" valign="top">std::ranges::subrange&lt; <a class="el" href="classmimir_1_1graphs_1_1StaticBidirectionalGraph.html#a00e592227c721ac8d594548aaadfd058">VertexIndexConstIterator</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticBidirectionalGraph.html#a2ccb371808379c39ff11da704f7647ca">get_vertex_indices</a> () const</td></tr>
 <tr class="separator:a2ccb371808379c39ff11da704f7647ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0fa5500f2f361fe4a66b1d7ee856e516"><td class="memItemLeft" align="right" valign="top">std::ranges::subrange&lt; <a class="el" href="classmimir_1_1graphs_1_1StaticBidirectionalGraph.html#ae9bfab2d938e7696c74ad6e6512a74d4">EdgeIndexConstIterator</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1StaticBidirectionalGraph.html#a0fa5500f2f361fe4a66b1d7ee856e516">get_edge_indices</a> () const</td></tr>
@@ -385,8 +387,8 @@ template&lt;IsStaticGraph G&gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="ad72ea6bb8802573268510d906a3eb107" name="ad72ea6bb8802573268510d906a3eb107"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad72ea6bb8802573268510d906a3eb107">&#9670;&#160;</a></span>create_vertex_induced_subgraph()</h2>
+<a id="affba8a28d2b6f966bbcfe135c3e5d720" name="affba8a28d2b6f966bbcfe135c3e5d720"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#affba8a28d2b6f966bbcfe135c3e5d720">&#9670;&#160;</a></span>create_induced_subgraph()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -394,10 +396,29 @@ template&lt;IsStaticGraph G&gt; </div>
 template&lt;IsStaticGraph G&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">std::tuple&lt; <a class="el" href="classmimir_1_1graphs_1_1StaticBidirectionalGraph.html">StaticBidirectionalGraph</a>&lt; G &gt;, <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a>, <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a> &gt; <a class="el" href="classmimir_1_1graphs_1_1StaticBidirectionalGraph.html">mimir::graphs::StaticBidirectionalGraph</a>&lt; G &gt;::create_vertex_induced_subgraph </td>
+          <td class="memname">std::tuple&lt; <a class="el" href="classmimir_1_1graphs_1_1StaticBidirectionalGraph.html">StaticBidirectionalGraph</a>&lt; G &gt;, <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a>, <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a> &gt; <a class="el" href="classmimir_1_1graphs_1_1StaticBidirectionalGraph.html">mimir::graphs::StaticBidirectionalGraph</a>&lt; G &gt;::create_induced_subgraph </td>
           <td>(</td>
           <td class="paramtype">const VertexIndexList &amp;&#160;</td>
           <td class="paramname"><em>vertex_indices</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7f3e45de9b1864d7cfecbf962a1cd6b0" name="a7f3e45de9b1864d7cfecbf962a1cd6b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f3e45de9b1864d7cfecbf962a1cd6b0">&#9670;&#160;</a></span>create_undirected_graph()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;IsStaticGraph G&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::tuple&lt; <a class="el" href="classmimir_1_1graphs_1_1StaticBidirectionalGraph.html">StaticBidirectionalGraph</a>&lt; G &gt;, <a class="el" href="namespacemimir.html#a434766af663adf7a52331374b790b6dc">IndexList</a>, <a class="el" href="namespacemimir.html#ada0094defa67760c2beefd16b8fc281e">IndexPairList</a> &gt; <a class="el" href="classmimir_1_1graphs_1_1StaticBidirectionalGraph.html">mimir::graphs::StaticBidirectionalGraph</a>&lt; G &gt;::create_undirected_graph </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
           <td> const</td>
         </tr>
       </table>

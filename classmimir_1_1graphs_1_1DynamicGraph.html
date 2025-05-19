@@ -152,8 +152,12 @@ requires HasEdgeProperties&lt;E, EdgeProperties...&gt;</td></tr>
 <tr class="memitem:a506fc838894a8d36488e1854dfec053d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1DynamicGraph.html#a506fc838894a8d36488e1854dfec053d">remove_edge</a> (EdgeIndex edge)</td></tr>
 <tr class="memdesc:a506fc838894a8d36488e1854dfec053d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove the given edge from the graph.  <br /></td></tr>
 <tr class="separator:a506fc838894a8d36488e1854dfec053d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adeef67eb979443665ffe88d19a9255a6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmimir_1_1graphs_1_1DynamicGraph.html">DynamicGraph</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1DynamicGraph.html#adeef67eb979443665ffe88d19a9255a6">compute_induced_subgraph</a> (const VertexIndexList &amp;<a class="el" href="namespacemimir_1_1graphs.html#a5a9a362e87c62d44bf9517b2f4b05dbb">vertices</a>) const</td></tr>
-<tr class="separator:adeef67eb979443665ffe88d19a9255a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab896bbae7394fe63773ac2066f7bbb87"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; <a class="el" href="classmimir_1_1graphs_1_1DynamicGraph.html">DynamicGraph</a>, <a class="el" href="namespacemimir.html#ae8930d2bf96696bee6e7daa76bbef05b">IndexMap</a>&lt; <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> &gt;, <a class="el" href="namespacemimir.html#ae8930d2bf96696bee6e7daa76bbef05b">IndexMap</a>&lt; <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1DynamicGraph.html#ab896bbae7394fe63773ac2066f7bbb87">create_induced_subgraph</a> (const VertexIndexList &amp;<a class="el" href="namespacemimir_1_1graphs.html#a5a9a362e87c62d44bf9517b2f4b05dbb">vertices</a>) const</td></tr>
+<tr class="memdesc:ab896bbae7394fe63773ac2066f7bbb87"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the subgraph induced by the given vertex indices.  <br /></td></tr>
+<tr class="separator:ab896bbae7394fe63773ac2066f7bbb87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac938f40d1a48b7802366cd7ec06a382"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; <a class="el" href="classmimir_1_1graphs_1_1DynamicGraph.html">DynamicGraph</a>, <a class="el" href="namespacemimir.html#ae8930d2bf96696bee6e7daa76bbef05b">IndexMap</a>&lt; <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> &gt;, <a class="el" href="namespacemimir.html#ae8930d2bf96696bee6e7daa76bbef05b">IndexMap</a>&lt; <a class="el" href="namespacemimir.html#ab45464d83d2a736a47f417b19ecbb484">IndexPair</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1DynamicGraph.html#aac938f40d1a48b7802366cd7ec06a382">create_undirected_graph</a> () const</td></tr>
+<tr class="memdesc:aac938f40d1a48b7802366cd7ec06a382"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute an undirected view of the graph by symmetrizing the directed edges.  <br /></td></tr>
+<tr class="separator:aac938f40d1a48b7802366cd7ec06a382"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5b7ddce4b1216056b421f975157d6d86"><td class="memItemLeft" align="right" valign="top">std::ranges::subrange&lt; <a class="el" href="classmimir_1_1graphs_1_1DynamicGraph_1_1VertexIndexConstIterator.html">VertexIndexConstIterator</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1DynamicGraph.html#a5b7ddce4b1216056b421f975157d6d86">get_vertex_indices</a> () const</td></tr>
 <tr class="separator:a5b7ddce4b1216056b421f975157d6d86"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4b0fd3fac9457004d5f072ceefc2916c"><td class="memItemLeft" align="right" valign="top">std::ranges::subrange&lt; <a class="el" href="classmimir_1_1graphs_1_1DynamicGraph_1_1EdgeIndexConstIterator.html">EdgeIndexConstIterator</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1graphs_1_1DynamicGraph.html#a4b0fd3fac9457004d5f072ceefc2916c">get_edge_indices</a> () const</td></tr>
@@ -562,8 +566,8 @@ template&lt;IsVertex V, IsEdge E&gt; </div>
 
 </div>
 </div>
-<a id="adeef67eb979443665ffe88d19a9255a6" name="adeef67eb979443665ffe88d19a9255a6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adeef67eb979443665ffe88d19a9255a6">&#9670;&#160;</a></span>compute_induced_subgraph()</h2>
+<a id="ab896bbae7394fe63773ac2066f7bbb87" name="ab896bbae7394fe63773ac2066f7bbb87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab896bbae7394fe63773ac2066f7bbb87">&#9670;&#160;</a></span>create_induced_subgraph()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -571,7 +575,7 @@ template&lt;IsVertex V, IsEdge E&gt; </div>
 template&lt;IsVertex V, IsEdge E&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classmimir_1_1graphs_1_1DynamicGraph.html">DynamicGraph</a> <a class="el" href="classmimir_1_1graphs_1_1DynamicGraph.html">mimir::graphs::DynamicGraph</a>&lt; V, E &gt;::compute_induced_subgraph </td>
+          <td class="memname">std::tuple&lt; <a class="el" href="classmimir_1_1graphs_1_1DynamicGraph.html">DynamicGraph</a>, <a class="el" href="namespacemimir.html#ae8930d2bf96696bee6e7daa76bbef05b">IndexMap</a>&lt; <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> &gt;, <a class="el" href="namespacemimir.html#ae8930d2bf96696bee6e7daa76bbef05b">IndexMap</a>&lt; <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> &gt; &gt; <a class="el" href="classmimir_1_1graphs_1_1DynamicGraph.html">mimir::graphs::DynamicGraph</a>&lt; V, E &gt;::create_induced_subgraph </td>
           <td>(</td>
           <td class="paramtype">const VertexIndexList &amp;&#160;</td>
           <td class="paramname"><em>vertices</em></td><td>)</td>
@@ -579,7 +583,47 @@ template&lt;IsVertex V, IsEdge E&gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Subgraph </p>
+
+<p>Compute the subgraph induced by the given vertex indices. </p>
+<p>Subgraph </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vertices</td><td>The vertex indices from the original graph to include in the subgraph. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A tuple consisting of:<ul>
+<li>The induced subgraph (with only the specified vertices and their connecting edges),</li>
+<li>A mapping from original vertex indices to new vertex indices in the subgraph,</li>
+<li>A mapping from original edge indices to new edge indices in the subgraph. </li>
+</ul>
+</dd></dl>
+
+</div>
+</div>
+<a id="aac938f40d1a48b7802366cd7ec06a382" name="aac938f40d1a48b7802366cd7ec06a382"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac938f40d1a48b7802366cd7ec06a382">&#9670;&#160;</a></span>create_undirected_graph()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;IsVertex V, IsEdge E&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::tuple&lt; <a class="el" href="classmimir_1_1graphs_1_1DynamicGraph.html">DynamicGraph</a>, <a class="el" href="namespacemimir.html#ae8930d2bf96696bee6e7daa76bbef05b">IndexMap</a>&lt; <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> &gt;, <a class="el" href="namespacemimir.html#ae8930d2bf96696bee6e7daa76bbef05b">IndexMap</a>&lt; <a class="el" href="namespacemimir.html#ab45464d83d2a736a47f417b19ecbb484">IndexPair</a> &gt; &gt; <a class="el" href="classmimir_1_1graphs_1_1DynamicGraph.html">mimir::graphs::DynamicGraph</a>&lt; V, E &gt;::create_undirected_graph </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute an undirected view of the graph by symmetrizing the directed edges. </p>
+<dl class="section return"><dt>Returns</dt><dd>A tuple consisting of:<ul>
+<li>The resulting undirected graph,</li>
+<li>A mapping from original vertex indices to new vertex indices in the undirected graph,</li>
+<li>A mapping from original edge indices to pairs of edge indices in the undirected graph. </li>
+</ul>
+</dd></dl>
 
 </div>
 </div>
