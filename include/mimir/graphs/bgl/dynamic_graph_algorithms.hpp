@@ -23,6 +23,7 @@
 #include "mimir/graphs/bgl/graph_traits.hpp"
 #include "mimir/graphs/bgl/property_maps.hpp"
 #include "mimir/graphs/dynamic_graph_interface.hpp"
+#include "mimir/graphs/graph_properties.hpp"
 
 #include <boost/graph/dijkstra_shortest_paths.hpp>
 #include <boost/graph/floyd_warshall_shortest.hpp>

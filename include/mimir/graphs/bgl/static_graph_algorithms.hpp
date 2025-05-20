@@ -22,6 +22,7 @@
 #include "mimir/graphs/bgl/graph_adapters.hpp"
 #include "mimir/graphs/bgl/graph_traits.hpp"
 #include "mimir/graphs/bgl/property_maps.hpp"
+#include "mimir/graphs/graph_properties.hpp"
 #include "mimir/graphs/static_graph_interface.hpp"
 
 #include <boost/graph/dijkstra_shortest_paths.hpp>
@@ -44,7 +45,7 @@ namespace mimir::graphs::bgl
 /// @param g the graph.
 /// @return a pair of the number of strong components and a map from state to component.
 template<typename Graph, IsDirection Direction>
-    requires IsStaticGraph<Graph> && IsVertexListGraph<Graph> && IsVertexListGraph<Graph> && IsIncidenceGraph<Graph>
+    requires IsStaticGraph<Graph> && IsVertexListGraph<Graph> && IsIncidenceGraph<Graph>
 auto strong_components(const DirectionTaggedType<Graph, Direction>& g)
 {
     using vertex_descriptor_type = typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor;
@@ -64,7 +65,7 @@ auto strong_components(const DirectionTaggedType<Graph, Direction>& g)
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 template<typename Graph, IsDirection Direction, class SourceInputIter>
-    requires IsStaticGraph<Graph> && IsVertexListGraph<Graph> && IsVertexListGraph<Graph> && IsIncidenceGraph<Graph>
+    requires IsStaticGraph<Graph> && IsVertexListGraph<Graph> && IsIncidenceGraph<Graph>
 auto breadth_first_search(const DirectionTaggedType<Graph, Direction>& g, SourceInputIter s_begin, SourceInputIter s_end)
 {
     using vertex_descriptor_type = typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor;
@@ -116,7 +117,7 @@ auto breadth_first_search(const DirectionTaggedType<Graph, Direction>& g, Source
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 template<typename Graph, IsDirection Direction, class SourceInputIter>
-    requires IsStaticGraph<Graph> && IsVertexListGraph<Graph> && IsVertexListGraph<Graph> && IsIncidenceGraph<Graph>
+    requires IsStaticGraph<Graph> && IsVertexListGraph<Graph> && IsIncidenceGraph<Graph>
 auto depth_first_search(const DirectionTaggedType<Graph, Direction>& g, SourceInputIter s_begin, SourceInputIter s_end)
 {
     using vertex_descriptor_type = typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor;
@@ -164,7 +165,7 @@ auto depth_first_search(const DirectionTaggedType<Graph, Direction>& g, SourceIn
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 template<typename Graph, IsDirection Direction>
-    requires IsStaticGraph<Graph> && IsVertexListGraph<Graph> && IsVertexListGraph<Graph> && IsIncidenceGraph<Graph>
+    requires IsStaticGraph<Graph> && IsVertexListGraph<Graph> && IsIncidenceGraph<Graph>
 auto topological_sort(const DirectionTaggedType<Graph, Direction>& g)
 {
     using vertex_descriptor_type = typename boost::graph_traits<DirectionTaggedType<Graph, Direction>>::vertex_descriptor;
