@@ -83,6 +83,7 @@ $(function() {
 <code>#include &quot;<a class="el" href="graph__adapters_8hpp_source.html">mimir/graphs/bgl/graph_adapters.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="graph__traits_8hpp_source.html">mimir/graphs/bgl/graph_traits.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="property__maps_8hpp_source.html">mimir/graphs/bgl/property_maps.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="graph__properties_8hpp_source.html">mimir/graphs/graph_properties.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="static__graph__interface_8hpp_source.html">mimir/graphs/static_graph_interface.hpp</a>&quot;</code><br />
 <code>#include &lt;boost/graph/dijkstra_shortest_paths.hpp&gt;</code><br />
 <code>#include &lt;boost/graph/floyd_warshall_shortest.hpp&gt;</code><br />
@@ -106,23 +107,23 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a9c76e586d8ba5216b798ccc2d4344ca7"><td class="memTemplParams" colspan="2">template&lt;typename Graph , IsDirection Direction&gt; <br />
-requires IsStaticGraph&lt;Graph&gt; &amp;&amp; IsVertexListGraph&lt;Graph&gt; &amp;&amp; IsVertexListGraph&lt;Graph&gt; &amp;&amp; IsIncidenceGraph&lt;Graph&gt;</td></tr>
-<tr class="memitem:a9c76e586d8ba5216b798ccc2d4344ca7"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1bgl.html#a9c76e586d8ba5216b798ccc2d4344ca7">mimir::graphs::bgl::strong_components</a> (const DirectionTaggedType&lt; Graph, Direction &gt; &amp;g)</td></tr>
-<tr class="memdesc:a9c76e586d8ba5216b798ccc2d4344ca7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wrapper function for boost's strong_components algorithm.  <br /></td></tr>
-<tr class="separator:a9c76e586d8ba5216b798ccc2d4344ca7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeb32b737f7bc8ffbf353e6e2ea4d42e1"><td class="memTemplParams" colspan="2">template&lt;typename Graph , IsDirection Direction, class SourceInputIter &gt; <br />
-requires IsStaticGraph&lt;Graph&gt; &amp;&amp; IsVertexListGraph&lt;Graph&gt; &amp;&amp; IsVertexListGraph&lt;Graph&gt; &amp;&amp; IsIncidenceGraph&lt;Graph&gt;</td></tr>
-<tr class="memitem:aeb32b737f7bc8ffbf353e6e2ea4d42e1"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1bgl.html#aeb32b737f7bc8ffbf353e6e2ea4d42e1">mimir::graphs::bgl::breadth_first_search</a> (const DirectionTaggedType&lt; Graph, Direction &gt; &amp;g, SourceInputIter s_begin, SourceInputIter s_end)</td></tr>
-<tr class="separator:aeb32b737f7bc8ffbf353e6e2ea4d42e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a32169381a2372b0b53b827cce2d3b8e6"><td class="memTemplParams" colspan="2">template&lt;typename Graph , IsDirection Direction, class SourceInputIter &gt; <br />
-requires IsStaticGraph&lt;Graph&gt; &amp;&amp; IsVertexListGraph&lt;Graph&gt; &amp;&amp; IsVertexListGraph&lt;Graph&gt; &amp;&amp; IsIncidenceGraph&lt;Graph&gt;</td></tr>
-<tr class="memitem:a32169381a2372b0b53b827cce2d3b8e6"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1bgl.html#a32169381a2372b0b53b827cce2d3b8e6">mimir::graphs::bgl::depth_first_search</a> (const DirectionTaggedType&lt; Graph, Direction &gt; &amp;g, SourceInputIter s_begin, SourceInputIter s_end)</td></tr>
-<tr class="separator:a32169381a2372b0b53b827cce2d3b8e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af17a736e9f96bb3d125e618efbe8e39d"><td class="memTemplParams" colspan="2">template&lt;typename Graph , IsDirection Direction&gt; <br />
-requires IsStaticGraph&lt;Graph&gt; &amp;&amp; IsVertexListGraph&lt;Graph&gt; &amp;&amp; IsVertexListGraph&lt;Graph&gt; &amp;&amp; IsIncidenceGraph&lt;Graph&gt;</td></tr>
-<tr class="memitem:af17a736e9f96bb3d125e618efbe8e39d"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1bgl.html#af17a736e9f96bb3d125e618efbe8e39d">mimir::graphs::bgl::topological_sort</a> (const DirectionTaggedType&lt; Graph, Direction &gt; &amp;g)</td></tr>
-<tr class="separator:af17a736e9f96bb3d125e618efbe8e39d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af708aaae827c3d8a3e2e426870601eb2"><td class="memTemplParams" colspan="2">template&lt;typename Graph , IsDirection Direction&gt; <br />
+requires IsStaticGraph&lt;Graph&gt; &amp;&amp; IsVertexListGraph&lt;Graph&gt; &amp;&amp; IsIncidenceGraph&lt;Graph&gt;</td></tr>
+<tr class="memitem:af708aaae827c3d8a3e2e426870601eb2"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1bgl.html#af708aaae827c3d8a3e2e426870601eb2">mimir::graphs::bgl::strong_components</a> (const DirectionTaggedType&lt; Graph, Direction &gt; &amp;g)</td></tr>
+<tr class="memdesc:af708aaae827c3d8a3e2e426870601eb2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wrapper function for boost's strong_components algorithm.  <br /></td></tr>
+<tr class="separator:af708aaae827c3d8a3e2e426870601eb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc4787afb723be97cce105053207b315"><td class="memTemplParams" colspan="2">template&lt;typename Graph , IsDirection Direction, class SourceInputIter &gt; <br />
+requires IsStaticGraph&lt;Graph&gt; &amp;&amp; IsVertexListGraph&lt;Graph&gt; &amp;&amp; IsIncidenceGraph&lt;Graph&gt;</td></tr>
+<tr class="memitem:afc4787afb723be97cce105053207b315"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1bgl.html#afc4787afb723be97cce105053207b315">mimir::graphs::bgl::breadth_first_search</a> (const DirectionTaggedType&lt; Graph, Direction &gt; &amp;g, SourceInputIter s_begin, SourceInputIter s_end)</td></tr>
+<tr class="separator:afc4787afb723be97cce105053207b315"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0955fec000a165cac69049b6c29acec1"><td class="memTemplParams" colspan="2">template&lt;typename Graph , IsDirection Direction, class SourceInputIter &gt; <br />
+requires IsStaticGraph&lt;Graph&gt; &amp;&amp; IsVertexListGraph&lt;Graph&gt; &amp;&amp; IsIncidenceGraph&lt;Graph&gt;</td></tr>
+<tr class="memitem:a0955fec000a165cac69049b6c29acec1"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1bgl.html#a0955fec000a165cac69049b6c29acec1">mimir::graphs::bgl::depth_first_search</a> (const DirectionTaggedType&lt; Graph, Direction &gt; &amp;g, SourceInputIter s_begin, SourceInputIter s_end)</td></tr>
+<tr class="separator:a0955fec000a165cac69049b6c29acec1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54aa69a559e861f25477349ba909898a"><td class="memTemplParams" colspan="2">template&lt;typename Graph , IsDirection Direction&gt; <br />
+requires IsStaticGraph&lt;Graph&gt; &amp;&amp; IsVertexListGraph&lt;Graph&gt; &amp;&amp; IsIncidenceGraph&lt;Graph&gt;</td></tr>
+<tr class="memitem:a54aa69a559e861f25477349ba909898a"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1bgl.html#a54aa69a559e861f25477349ba909898a">mimir::graphs::bgl::topological_sort</a> (const DirectionTaggedType&lt; Graph, Direction &gt; &amp;g)</td></tr>
+<tr class="separator:a54aa69a559e861f25477349ba909898a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9494dd2f571b2252b0ac0a1517982c22"><td class="memTemplParams" colspan="2">template&lt;typename Graph , IsDirection Direction, class SourceInputIter &gt; <br />
 requires IsStaticGraph&lt;Graph&gt; &amp;&amp; IsVertexListGraph&lt;Graph&gt; &amp;&amp; IsIncidenceGraph&lt;Graph&gt;</td></tr>
 <tr class="memitem:a9494dd2f571b2252b0ac0a1517982c22"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1graphs_1_1bgl.html#a9494dd2f571b2252b0ac0a1517982c22">mimir::graphs::bgl::dijkstra_shortest_paths</a> (const DirectionTaggedType&lt; Graph, Direction &gt; &amp;g, const ContinuousCostList &amp;w, SourceInputIter s_begin, SourceInputIter s_end)</td></tr>
