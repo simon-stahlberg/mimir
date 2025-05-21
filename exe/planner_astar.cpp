@@ -125,6 +125,7 @@ int main(int argc, char** argv)
         auto po_plan = PartiallyOrderedPlan(result.plan.value());
         auto to_plan_with_maximal_makespan = po_plan.compute_t_o_plan_with_maximal_makespan();
 
+        // std::cout << po_plan << std::endl;
         // std::cout << result.plan.value() << std::endl;
         // std::cout << to_plan_with_maximal_makespan << std::endl;
     }

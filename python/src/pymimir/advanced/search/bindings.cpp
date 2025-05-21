@@ -332,6 +332,7 @@ void bind_module_definitions(nb::module_& m)
     /* PartiallyOrderedPlan*/
     nb::class_<PartiallyOrderedPlan>(m, "PartiallyOrderedPlan")  //
         .def(nb::init<Plan>(), "total_ordered_plan"_a)
+        .def("__str__", [](const PartiallyOrderedPlan& self) { return to_string(self); })
         .def("compute_totally_ordered_plan_with_maximal_makespan", &PartiallyOrderedPlan::compute_t_o_plan_with_maximal_makespan)
         .def("get_totally_ordered_plan", &PartiallyOrderedPlan::get_t_o_plan, nb::rv_policy::reference_internal)  // Plan is immutable
         .def("get_graph", [](const PartiallyOrderedPlan& self) { return PyImmutable<graphs::DynamicDigraph>(self.get_graph()); });

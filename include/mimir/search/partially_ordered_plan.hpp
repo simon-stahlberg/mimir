@@ -28,7 +28,7 @@ namespace mimir::search
 {
 
 /// @brief `PartiallyOrderedPlan` (POP) represents a total-order plan (TOP) augmented with a strict partial order `<`, where `a_i < a_j` indicates that
-/// action `a_i` must strictly precede action `a_j` in any valid execution order. The relation `<` is transitive and irreflexive.
+/// action `a_i` must strictly precede action `a_j` in any valid execution order. The relation `<` is irreflexive.
 ///
 /// More precisely, `<(a_i, a_j)` holds if `a_i` adds a precondition of `a_j`, or if `a_i` deletes a precondition of `a_j`. This causal relation is defined
 /// independently of whether any conditional effects are actually triggered in preceding states.
@@ -49,6 +49,9 @@ public:
     const Plan& get_t_o_plan() const;
     const graphs::DynamicDigraph& get_graph() const;
 };
+
+extern std::ostream& operator<<(std::ostream& out, const PartiallyOrderedPlan& p_o_plan);
+
 }
 
 #endif
