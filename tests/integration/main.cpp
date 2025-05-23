@@ -117,7 +117,7 @@ int main(int argc, char** argv)
             std::cerr << "Error opening file!" << std::endl;
             return 1;
         }
-        plan_file << std::make_tuple(std::cref(result.plan.value()), std::cref(*problem));
+        plan_file << result.plan.value();
         plan_file.close();
     }
 

@@ -148,14 +148,24 @@ static bool is_applicable(GroundNumericEffect<FluentTag> effect,
                           std::vector<std::optional<loki::AssignOperatorEnum>>& s_fluent_numeric_changes)
 {
     const auto effect_index = effect->get_function()->get_index();
-    auto& fluent_numeric_change = s_fluent_numeric_changes.at(effect_index);
 
-    if (fluent_numeric_change && !is_compatible_numeric_effect(fluent_numeric_change.value(), effect->get_assign_operator()))
+    s_fluent_numeric_changes.resize(effect_index + 1, std::nullopt);
+    auto& recorded_change = s_fluent_numeric_changes.at(effect_index);
+    const bool is_incompatible_change = (recorded_change && !is_compatible_numeric_effect(recorded_change.value(), effect->get_assign_operator()));
+
+    if (is_incompatible_change)
         return false;
-    fluent_numeric_change = effect->get_assign_operator();
+    recorded_change = effect->get_assign_operator();
 
-    return ((effect_index < fluent_numeric_variables.size()) && (fluent_numeric_variables[effect_index] != UNDEFINED_CONTINUOUS_COST))
-           && (evaluate(effect->get_function_expression(), static_numeric_variables, fluent_numeric_variables) != UNDEFINED_CONTINUOUS_COST);
+    const auto is_update = (effect->get_assign_operator() != loki::AssignOperatorEnum::ASSIGN);
+    const auto modifies_undefined = (effect_index >= fluent_numeric_variables.size() || fluent_numeric_variables[effect_index] == UNDEFINED_CONTINUOUS_COST);
+
+    if (modifies_undefined && is_update)
+    {
+        return false;
+    }
+
+    return (evaluate(effect->get_function_expression(), static_numeric_variables, fluent_numeric_variables) != UNDEFINED_CONTINUOUS_COST);
 }
 
 static bool is_applicable(GroundNumericEffect<AuxiliaryTag> effect,
@@ -163,10 +173,14 @@ static bool is_applicable(GroundNumericEffect<AuxiliaryTag> effect,
                           const FlatDoubleList& fluent_numeric_variables,
                           std::optional<loki::AssignOperatorEnum>& s_auxiliary_numeric_change)
 {
-    if (s_auxiliary_numeric_change && !is_compatible_numeric_effect(s_auxiliary_numeric_change.value(), effect->get_assign_operator()))
-        return false;
-    s_auxiliary_numeric_change = effect->get_assign_operator();
+    auto& recorded_change = s_auxiliary_numeric_change;
+    const bool is_incompatible_change = (s_auxiliary_numeric_change && !is_compatible_numeric_effect(recorded_change.value(), effect->get_assign_operator()));
 
+    if (is_incompatible_change)
+        return false;
+    recorded_change = effect->get_assign_operator();
+
+    // For auxiliary total-cost, we assume it is well-defined in the initial state.
     return (evaluate(effect->get_function_expression(), static_numeric_variables, fluent_numeric_variables) != UNDEFINED_CONTINUOUS_COST);
 }
 

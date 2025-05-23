@@ -62,19 +62,26 @@ bool ActionSatisficingBindingGenerator::is_valid_binding(NumericEffect<FluentTag
     const auto ground_target_function = m_problem->ground(effect->get_function(), binding);
 
     const auto effect_index = ground_target_function->get_index();
-    auto& fluent_numeric_change = m_fluent_numeric_changes.at(effect_index);
 
-    if (fluent_numeric_change && !is_compatible_numeric_effect(fluent_numeric_change.value(), effect->get_assign_operator()))
+    m_fluent_numeric_changes.resize(effect_index + 1, std::nullopt);
+    auto& recorded_change = m_fluent_numeric_changes.at(effect_index);
+    const bool is_incompatible_change = (recorded_change && !is_compatible_numeric_effect(recorded_change.value(), effect->get_assign_operator()));
+
+    if (is_incompatible_change)
         return false;
-    fluent_numeric_change = effect->get_assign_operator();
+    recorded_change = effect->get_assign_operator();
 
     const auto ground_function_expression = m_problem->ground(effect->get_function_expression(), binding);
 
-    const auto result =
-        (effect_index < fluent_numeric_variables.size()) && (fluent_numeric_variables[effect_index] != UNDEFINED_CONTINUOUS_COST)
-        && (evaluate(ground_function_expression, m_problem->get_initial_function_to_value<StaticTag>(), fluent_numeric_variables) != UNDEFINED_CONTINUOUS_COST);
+    const auto is_update = (effect->get_assign_operator() != loki::AssignOperatorEnum::ASSIGN);
+    const auto modifies_undefined = (effect_index >= fluent_numeric_variables.size() || fluent_numeric_variables[effect_index] == UNDEFINED_CONTINUOUS_COST);
 
-    return result;
+    if (modifies_undefined && is_update)
+    {
+        return false;
+    }
+
+    return (evaluate(ground_function_expression, m_problem->get_initial_function_to_value<StaticTag>(), fluent_numeric_variables) != UNDEFINED_CONTINUOUS_COST);
 }
 
 template<>
@@ -82,9 +89,12 @@ bool ActionSatisficingBindingGenerator::is_valid_binding(NumericEffect<Auxiliary
                                                          const FlatDoubleList& fluent_numeric_variables,
                                                          const ObjectList& binding)
 {
-    if (m_auxiliary_numeric_change && !is_compatible_numeric_effect(m_auxiliary_numeric_change.value(), effect->get_assign_operator()))
+    auto& recorded_change = m_auxiliary_numeric_change;
+    const bool is_incompatible_change = (m_auxiliary_numeric_change && !is_compatible_numeric_effect(recorded_change.value(), effect->get_assign_operator()));
+
+    if (is_incompatible_change)
         return false;
-    m_auxiliary_numeric_change = effect->get_assign_operator();
+    recorded_change = effect->get_assign_operator();
 
     // For auxiliary total-cost, we assume it is well-defined in the initial state.
     const auto ground_function_expression = m_problem->ground(effect->get_function_expression(), binding);
