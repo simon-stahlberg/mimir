@@ -136,6 +136,8 @@ template<IsFluentOrAuxiliaryTag F>
 extern std::pair<loki::AssignOperatorEnum, ContinuousCost>
 evaluate(GroundNumericEffect<F> effect, const FlatDoubleList& static_numeric_variables, const FlatDoubleList& fluent_numeric_variables);
 
+extern bool is_compatible_numeric_effect(loki::AssignOperatorEnum lhs, loki::AssignOperatorEnum rhs);
+
 /**
  * Pretty printing
  */

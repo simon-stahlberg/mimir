@@ -28,7 +28,9 @@ namespace mimir::search
 
 ActionSatisficingBindingGenerator::ActionSatisficingBindingGenerator(Action action, Problem problem, std::shared_ptr<IEventHandler> event_handler) :
     SatisficingBindingGenerator<ActionSatisficingBindingGenerator>(action->get_conjunctive_condition(), problem, event_handler),
-    m_action(action)
+    m_action(action),
+    m_fluent_numeric_changes(),
+    m_auxiliary_numeric_change()
 {
 }
 
@@ -36,6 +38,9 @@ const Action& ActionSatisficingBindingGenerator::get_action() const { return m_a
 
 bool ActionSatisficingBindingGenerator::is_valid_binding_impl(const DenseState& dense_state, const ObjectList& binding)
 {
+    m_fluent_numeric_changes.assign(dense_state.get_numeric_variables().size(), std::nullopt);
+    m_auxiliary_numeric_change = std::nullopt;
+
     return is_valid_binding(m_action->get_conjunctive_effect(), dense_state, binding)
            && std::all_of(m_action->get_conditional_effects().begin(),
                           m_action->get_conditional_effects().end(),
@@ -55,11 +60,18 @@ bool ActionSatisficingBindingGenerator::is_valid_binding(NumericEffect<FluentTag
 {
     // For fluent, we have to check that the target function is well-defined.
     const auto ground_target_function = m_problem->ground(effect->get_function(), binding);
+
+    const auto effect_index = ground_target_function->get_index();
+    auto& fluent_numeric_change = m_fluent_numeric_changes.at(effect_index);
+
+    if (fluent_numeric_change && !is_compatible_numeric_effect(fluent_numeric_change.value(), effect->get_assign_operator()))
+        return false;
+    fluent_numeric_change = effect->get_assign_operator();
+
     const auto ground_function_expression = m_problem->ground(effect->get_function_expression(), binding);
 
     const auto result =
-        (ground_target_function->get_index() < fluent_numeric_variables.size())
-        && (fluent_numeric_variables[ground_target_function->get_index()] != UNDEFINED_CONTINUOUS_COST)
+        (effect_index < fluent_numeric_variables.size()) && (fluent_numeric_variables[effect_index] != UNDEFINED_CONTINUOUS_COST)
         && (evaluate(ground_function_expression, m_problem->get_initial_function_to_value<StaticTag>(), fluent_numeric_variables) != UNDEFINED_CONTINUOUS_COST);
 
     return result;
@@ -70,6 +82,10 @@ bool ActionSatisficingBindingGenerator::is_valid_binding(NumericEffect<Auxiliary
                                                          const FlatDoubleList& fluent_numeric_variables,
                                                          const ObjectList& binding)
 {
+    if (m_auxiliary_numeric_change && !is_compatible_numeric_effect(m_auxiliary_numeric_change.value(), effect->get_assign_operator()))
+        return false;
+    m_auxiliary_numeric_change = effect->get_assign_operator();
+
     // For auxiliary total-cost, we assume it is well-defined in the initial state.
     const auto ground_function_expression = m_problem->ground(effect->get_function_expression(), binding);
 

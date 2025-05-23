@@ -82,22 +82,35 @@ struct UnaryGroundAxiomState
     std::tuple<Ts...> m_data;
 };
 
-template<formalism::IsFluentOrDerivedTag P, typename... Ts>
-struct Proposition
-{
-    std::tuple<Ts...> m_data;
-
-    const FlatIndexList* m_precondition_of_action;
-    const FlatIndexList* m_precondition_of_axiom;
+template<typename T>
+concept IsProposition = requires(T a) {
+    { a.cost } -> std::same_as<ContinuousCost&>;
+    { a.is_goal } -> std::same_as<bool&>;
+    { a.precondition_of_action } -> std::same_as<const FlatIndexList*&>;
+    { a.precondition_of_axiom } -> std::same_as<const FlatIndexList*&>;
 };
-template<typename... Ts>
-using PropositionLayer = std::vector<Proposition<Ts...>>;
 
-/// @brief TODO: write generic traversal logic, forward calls to derived when specializations are necessary.
-/// @tparam ...Ts
-/// @tparam Derived
-template<typename Derived, typename... Ts>
-class RelaxedPlanningGraph : public Heuristic
+template<typename... Annotations>
+struct BaseProposition
+{
+    ContinuousCost cost = std::numeric_limits<ContinuousCost>::infinity();
+    bool is_goal = false;
+    const FlatIndexList* precondition_of_action = nullptr;
+    const FlatIndexList* precondition_of_axiom = nullptr;
+
+    std::tuple<Annotations...> m_annotations;
+
+    BaseProposition() = default;
+};
+
+static_assert(IsProposition<BaseProposition<>>);
+
+using FFProposition = BaseProposition<bool>;
+
+inline bool& is_marked(FFProposition& prop) { return std::get<0>(prop.m_annotations); }
+
+template<typename Derived, IsProposition Proposition>
+class RelaxedPlanningGraph : public IHeuristic
 {
 private:
     /// @brief Helper to cast to Derived.
@@ -107,15 +120,50 @@ private:
 public:
     RelaxedPlanningGraph(const DeleteRelaxedProblemExplorator& delete_relaxation);
 
-    double compute_heuristic(State state) override;
+    double compute_heuristic(State state, bool is_goal_state) override
+    {
+        explore();
+        return extract_impl();
+    }
+
+private:
+    void explore()
+    {
+        // TODO: dijkstra exploration
+    }
 
 private:
     UnaryGroundActionList m_unary_actions;
     UnaryGroundAxiomList m_unary_axioms;
 
-    PropositionLayer<formalism::FluentTag, Ts...> m_fluent_proposition_layer;
-    PropositionLayer<formalism::DerivedTag, Ts...> m_derived_proposition_layer;
+    std::vector<Proposition> m_fluent_proposition_layer;
+    std::vector<Proposition> m_derived_proposition_layer;
 };
+
+template<IsProposition Proposition>
+class MaxHeuristicTemplate : public RelaxedPlanningGraph<MaxHeuristicTemplate<Proposition>, Proposition>
+{
+public:
+private:
+};
+
+using MaxHeuristic = MaxHeuristicTemplate<BaseProposition<>>;
+
+template<IsProposition Proposition>
+class AddHeuristicTemplate : public RelaxedPlanningGraph<AddHeuristicTemplate<Proposition>, Proposition>
+{
+public:
+private:
+};
+
+using AddHeuristic = AddHeuristicTemplate<BaseProposition<>>;
+
+class FFHeuristic : public AddHeuristicTemplate<FFProposition>
+{
+public:
+private:
+};
+
 }
 
 #endif

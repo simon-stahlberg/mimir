@@ -38,6 +38,9 @@ private:
     /* Declare additional private members and functions. */
     formalism::Action m_action;
 
+    std::vector<std::optional<loki::AssignOperatorEnum>> m_fluent_numeric_changes;
+    std::optional<loki::AssignOperatorEnum> m_auxiliary_numeric_change;
+
     template<formalism::IsFluentOrAuxiliaryTag F>
     bool is_valid_binding(formalism::NumericEffect<F> effect, const FlatDoubleList& fluent_numeric_variables, const formalism::ObjectList& binding);
 
