@@ -49,16 +49,37 @@ public:
     DeleteRelaxedProblemExplorator(DeleteRelaxedProblemExplorator&& other) = delete;
     DeleteRelaxedProblemExplorator& operator=(DeleteRelaxedProblemExplorator&& other) = delete;
 
+    /// @brief Create all delete-relaxed-reachable ground atoms.
+    /// @tparam P is the predicate type.
+    /// @return a vector containing all delete-relaxed reachable ground atoms in the input problem.
+    template<formalism::IsFluentOrDerivedTag P>
+    formalism::GroundAtomList<P> create_ground_atoms() const;
+
+    /// @brief Create all delete-relaxed-reachable unrelaxed ground actions.
+    /// @return a vector containing all delete-relaxed-reachable unrelaxed ground actions.
     formalism::GroundActionList create_ground_actions() const;
+
+    /// @brief Create all delete-relaxed-reachable unrelaxed ground axioms.
+    /// @return a vector containing all delete-relaxed-reachable unrelaxed ground axioms.
     formalism::GroundAxiomList create_ground_axioms() const;
 
+    /// @brief Create a grounded axiom evaluator.
+    /// @param options the match tree options
+    /// @param event_handler the grounded axiom evaluator event handler.
+    /// @return a grounded axiom evaluator.
     GroundedAxiomEvaluator create_grounded_axiom_evaluator(const match_tree::Options& options = match_tree::Options(),
                                                            GroundedAxiomEvaluatorImpl::EventHandler event_handler = nullptr) const;
 
+    /// @brief Create a grounded applicable action generator.
+    /// @param options the match tree options
+    /// @param event_handler the grounded applicable action generator event handler.
+    /// @return a grounded applicable action generator.
     GroundedApplicableActionGenerator
     create_grounded_applicable_action_generator(const match_tree::Options& options = match_tree::Options(),
                                                 GroundedApplicableActionGeneratorImpl::EventHandler event_handler = nullptr) const;
 
+    /// @brief Get the input problem.
+    /// @return the input problem.
     const formalism::Problem& get_problem() const;
 };
 

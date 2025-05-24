@@ -73,4 +73,4 @@ In the future, see [development guidelines](docs/DEVELOPER_GUIDELINES.md) for in
 
 ## Long Term Goals
 
-One of Mimir's long term goal is increasing the support of PDDL features towards non-deterministic, probabilistic, and numeric planning.
+One of Mimir's long term goal is supporting non-deterministic and probabilistic planning.

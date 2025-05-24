@@ -17,6 +17,7 @@
 
 #include "mimir/search/delete_relaxed_problem_explorator.hpp"
 
+#include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/ground_axiom.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/formalism/translator/delete_relax.hpp"
@@ -121,6 +122,30 @@ static ObjectList translate_from_delete_free_to_unrelaxed_problem(const ObjectLi
     }
     return result;
 }
+
+template<IsFluentOrDerivedTag P>
+GroundAtomList<P> DeleteRelaxedProblemExplorator::create_ground_atoms() const
+{
+    auto result = GroundAtomList<P> {};
+
+    const auto& delete_free_atom_repository =
+        boost::hana::at_key(m_delete_free_problem->get_repositories().get_hana_repositories(), boost::hana::type<GroundAtomImpl<P>> {});
+    for (const auto& delete_free_ground_atom : delete_free_atom_repository)
+    {
+        const auto predicate = m_problem->get_domain()->get_predicate<P>(delete_free_ground_atom->get_predicate()->get_name());
+
+        auto binding = translate_from_delete_free_to_unrelaxed_problem(delete_free_ground_atom->get_objects(), m_delete_free_object_to_unrelaxed_object);
+
+        auto ground_atom = m_problem->get_or_create_ground_atom(predicate, binding);
+
+        result.push_back(ground_atom);
+    }
+
+    return result;
+}
+
+template GroundAtomList<FluentTag> DeleteRelaxedProblemExplorator::create_ground_atoms() const;
+template GroundAtomList<DerivedTag> DeleteRelaxedProblemExplorator::create_ground_atoms() const;
 
 GroundActionList DeleteRelaxedProblemExplorator::create_ground_actions() const
 {
