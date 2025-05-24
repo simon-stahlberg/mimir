@@ -239,24 +239,8 @@ static void apply_action_effects(GroundAction action,
                                  FlatDoubleList& ref_fluent_numeric_variables,
                                  ContinuousCost& ref_successor_state_metric_score)
 {
-    const auto& conjunctive_effect = action->get_conjunctive_effect();
     const auto& const_fluent_numeric_variables = state->get_numeric_variables();
     const auto& const_static_numeric_variables = problem.get_initial_function_to_value<StaticTag>();
-
-    insert_into_bitset(conjunctive_effect->get_negative_effects(), ref_negative_applied_effects);
-    insert_into_bitset(conjunctive_effect->get_positive_effects(), ref_positive_applied_effects);
-
-    collect_applied_fluent_numeric_effects(conjunctive_effect->get_fluent_numeric_effects(),
-                                           const_static_numeric_variables,
-                                           const_fluent_numeric_variables,
-                                           ref_fluent_numeric_variables);
-    if (conjunctive_effect->get_auxiliary_numeric_effect().has_value())
-    {
-        collect_applied_auxiliary_numeric_effects(conjunctive_effect->get_auxiliary_numeric_effect().value(),
-                                                  const_static_numeric_variables,
-                                                  const_fluent_numeric_variables,
-                                                  ref_successor_state_metric_score);
-    }
 
     for (const auto& conditional_effect : action->get_conditional_effects())
     {

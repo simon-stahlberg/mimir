@@ -137,16 +137,12 @@ ConditionalEffect DeleteRelaxTranslator::translate_level_2(ConditionalEffect eff
 
 Action DeleteRelaxTranslator::translate_level_2(Action action, Repositories& repositories)
 {
-    auto translated_conjunctive_effect = this->translate_level_0(action->get_conjunctive_effect(), repositories);
     auto translated_conditional_effects = this->translate_level_0(action->get_conditional_effects(), repositories);
 
     auto translated_conjunctive_condition = this->translate_level_0(action->get_conjunctive_condition(), repositories);
 
-    auto delete_relaxed_action = repositories.get_or_create_action(action->get_name(),
-                                                                   action->get_original_arity(),
-                                                                   translated_conjunctive_condition,
-                                                                   translated_conjunctive_effect,
-                                                                   translated_conditional_effects);
+    auto delete_relaxed_action =
+        repositories.get_or_create_action(action->get_name(), action->get_original_arity(), translated_conjunctive_condition, translated_conditional_effects);
 
     m_delete_to_normal_actions[delete_relaxed_action].push_back(action);
 

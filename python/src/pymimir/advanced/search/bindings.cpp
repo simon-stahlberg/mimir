@@ -525,6 +525,8 @@ void bind_module_definitions(nb::module_& m)
 
     nb::class_<DeleteRelaxedProblemExplorator>(m, "DeleteRelaxedProblemExplorator")
         .def(nb::init<Problem>(), "problem"_a)
+        .def("create_ground_actions", &DeleteRelaxedProblemExplorator::create_ground_actions)
+        .def("create_ground_axioms", &DeleteRelaxedProblemExplorator::create_ground_axioms)
         .def("create_grounded_axiom_evaluator",
              &DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator,
              "match_tree_options"_a,

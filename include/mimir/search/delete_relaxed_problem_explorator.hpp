@@ -49,6 +49,9 @@ public:
     DeleteRelaxedProblemExplorator(DeleteRelaxedProblemExplorator&& other) = delete;
     DeleteRelaxedProblemExplorator& operator=(DeleteRelaxedProblemExplorator&& other) = delete;
 
+    formalism::GroundActionList create_ground_actions() const;
+    formalism::GroundAxiomList create_ground_axioms() const;
+
     GroundedAxiomEvaluator create_grounded_axiom_evaluator(const match_tree::Options& options = match_tree::Options(),
                                                            GroundedAxiomEvaluatorImpl::EventHandler event_handler = nullptr) const;
 

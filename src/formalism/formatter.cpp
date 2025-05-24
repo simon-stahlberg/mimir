@@ -150,16 +150,13 @@ void write(const ActionImpl& element, T formatter, std::ostream& out)
     }
 
     out << std::string(formatter.indent, ' ') << ":effects ";
-    if (element.get_conjunctive_effect()->get_literals().empty() && element.get_conjunctive_effect()->get_fluent_numeric_effects().empty()
-        && !element.get_conjunctive_effect()->get_auxiliary_numeric_effect().has_value() && element.get_conditional_effects().empty())
+    if (element.get_conditional_effects().empty())
     {
         out << "()\n";
     }
     else
     {
         out << "(and ";
-
-        write(*element.get_conjunctive_effect(), formatter, out);
 
         for (const auto& effect : element.get_conditional_effects())
         {

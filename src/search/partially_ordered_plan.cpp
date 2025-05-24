@@ -54,8 +54,6 @@ static std::pair<FlatBitset, FlatBitset> get_effects(const ProblemImpl& problem,
 {
     auto positive = FlatBitset();
     auto negative = FlatBitset();
-    insert_into_bitset(action->get_conjunctive_effect()->get_positive_effects(), positive);
-    insert_into_bitset(action->get_conjunctive_effect()->get_negative_effects(), negative);
     for (const auto& cond_effect : action->get_conditional_effects())
     {
         if (is_applicable(cond_effect, problem, state))

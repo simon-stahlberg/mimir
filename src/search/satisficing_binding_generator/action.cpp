@@ -41,10 +41,9 @@ bool ActionSatisficingBindingGenerator::is_valid_binding_impl(const DenseState& 
     m_fluent_numeric_changes.assign(dense_state.get_numeric_variables().size(), std::nullopt);
     m_auxiliary_numeric_change = std::nullopt;
 
-    return is_valid_binding(m_action->get_conjunctive_effect(), dense_state, binding)
-           && std::all_of(m_action->get_conditional_effects().begin(),
-                          m_action->get_conditional_effects().end(),
-                          [&](auto&& arg) { return is_valid_binding_if_fires(arg, dense_state, binding); });
+    return std::all_of(m_action->get_conditional_effects().begin(),
+                       m_action->get_conditional_effects().end(),
+                       [&](auto&& arg) { return is_valid_binding_if_fires(arg, dense_state, binding); });
 }
 
 template<IsFluentOrAuxiliaryTag F>

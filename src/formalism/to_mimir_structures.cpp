@@ -464,15 +464,12 @@ ConjunctiveCondition ToMimirStructures::translate_lifted(loki::Condition conditi
     throw std::logic_error("Expected conjunctive condition.");
 }
 
-std::tuple<ConjunctiveEffect, ConditionalEffectList>
-ToMimirStructures::translate_lifted(loki::Effect effect, const VariableList& parameters, Repositories& repositories)
+ConditionalEffectList ToMimirStructures::translate_lifted(loki::Effect effect, const VariableList& parameters, Repositories& repositories)
 {
-    using ConjunctiveEffectData = std::tuple<LiteralList<FluentTag>, NumericEffectList<FluentTag>, std::optional<NumericEffect<AuxiliaryTag>>>;
     using ConditionalEffectData =
         std::unordered_map<ConjunctiveCondition, std::tuple<LiteralList<FluentTag>, NumericEffectList<FluentTag>, std::optional<NumericEffect<AuxiliaryTag>>>>;
 
-    const auto translate_effect_func =
-        [&](loki::Effect effect, ConjunctiveEffectData& ref_conjunctive_effect_data, ConditionalEffectData& ref_conditional_effect_data)
+    const auto translate_effect_func = [&](loki::Effect effect, ConditionalEffectData& ref_conditional_effect_data)
     {
         auto tmp_effect = effect;
 
@@ -493,9 +490,15 @@ ToMimirStructures::translate_lifted(loki::Effect effect, const VariableList& par
 
             tmp_effect = (*tmp_effect_when)->get_effect();
         }
+        if (!conjunctive_condition)
+        {
+            // Create empty conjunctive condition for unconditional effects
+            conjunctive_condition =
+                repositories.get_or_create_conjunctive_condition(VariableList {}, LiteralLists<StaticTag, FluentTag, DerivedTag> {}, NumericConstraintList {});
+        }
 
         // Fetch container to store the effects
-        auto& effect_data = (conjunctive_condition) ? ref_conditional_effect_data[conjunctive_condition] : ref_conjunctive_effect_data;
+        auto& effect_data = ref_conditional_effect_data[conjunctive_condition];
         auto& data_fluent_literals = std::get<0>(effect_data);
         auto& data_fluent_numeric_effects = std::get<1>(effect_data);
         auto& data_auxiliary_numeric_effect = std::get<2>(effect_data);
@@ -558,30 +561,20 @@ ToMimirStructures::translate_lifted(loki::Effect effect, const VariableList& par
     };
 
     /* Parse the effect */
-    auto conjunctive_effect_data = ConjunctiveEffectData {};
     auto conditional_effect_data = ConditionalEffectData {};
     // Parse conjunctive part
     if (const auto& effect_and = std::get_if<loki::EffectAnd>(&effect->get_effect()))
     {
         for (const auto& nested_effect : (*effect_and)->get_effects())
         {
-            translate_effect_func(nested_effect, conjunctive_effect_data, conditional_effect_data);
+            translate_effect_func(nested_effect, conditional_effect_data);
         }
     }
     else
     {
         // Parse non conjunctive
-        translate_effect_func(effect, conjunctive_effect_data, conditional_effect_data);
+        translate_effect_func(effect, conditional_effect_data);
     }
-
-    /* Instantiate conjunctive effect. */
-    auto& [conjunctive_effect_fluent_literals, conjunctive_effect_fluent_numeric_effects, conjunctive_effect_auxiliary_numeric_effects] =
-        conjunctive_effect_data;
-
-    const auto conjunctive_effect = repositories.get_or_create_conjunctive_effect(parameters,
-                                                                                  conjunctive_effect_fluent_literals,
-                                                                                  conjunctive_effect_fluent_numeric_effects,
-                                                                                  conjunctive_effect_auxiliary_numeric_effects);
 
     /* Instantiate conditional effects. */
     auto conditional_effects = ConditionalEffectList {};
@@ -597,7 +590,7 @@ ToMimirStructures::translate_lifted(loki::Effect effect, const VariableList& par
                                                                                                         cond_effect_auxiliary_numeric_effects)));
     }
 
-    return { conjunctive_effect, conditional_effects };
+    return conditional_effects;
 }
 
 Action ToMimirStructures::translate_lifted(loki::Action action, Repositories& repositories)
@@ -614,22 +607,14 @@ Action ToMimirStructures::translate_lifted(loki::Action action, Repositories& re
     }
 
     // 2. Translate effects
-    auto conjunctive_effect = ConjunctiveEffect { nullptr };
     auto conditional_effects = ConditionalEffectList {};
     if (action->get_effect().has_value())
     {
-        const auto [conjunctive_effect_, conditional_effects_] = translate_lifted(action->get_effect().value(), translated_parameters, repositories);
-        conjunctive_effect = conjunctive_effect_;
+        const auto conditional_effects_ = translate_lifted(action->get_effect().value(), translated_parameters, repositories);
         conditional_effects = conditional_effects_;
     }
-    else
-    {
-        // TODO: actions without effects are useless....
-        conjunctive_effect =
-            repositories.get_or_create_conjunctive_effect(translated_parameters, LiteralList<FluentTag> {}, NumericEffectList<FluentTag> {}, std::nullopt);
-    }
 
-    return repositories.get_or_create_action(action->get_name(), action->get_original_arity(), conjunctive_condition, conjunctive_effect, conditional_effects);
+    return repositories.get_or_create_action(action->get_name(), action->get_original_arity(), conjunctive_condition, conditional_effects);
 }
 
 Axiom ToMimirStructures::translate_lifted(loki::Axiom axiom, Repositories& repositories)

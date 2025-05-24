@@ -902,7 +902,6 @@ GroundAction ProblemImpl::ground(Action action, const ObjectList& binding)
     /* 2. Ground the action */
 
     auto ground_conjunctive_condition = ground(action->get_conjunctive_condition(), binding);
-    auto ground_conjunctive_effect = ground(action->get_conjunctive_effect(), binding);
 
     auto ground_conditional_effects = GroundConditionalEffectList {};
 
@@ -946,11 +945,7 @@ GroundAction ProblemImpl::ground(Action action, const ObjectList& binding)
         }
     }
 
-    auto grounded_action = m_repositories.get_or_create_ground_action(action,
-                                                                      binding,
-                                                                      ground_conjunctive_condition,
-                                                                      ground_conjunctive_effect,
-                                                                      std::move(ground_conditional_effects));
+    auto grounded_action = m_repositories.get_or_create_ground_action(action, binding, ground_conjunctive_condition, std::move(ground_conditional_effects));
 
     /* 3. Insert to groundings table */
 

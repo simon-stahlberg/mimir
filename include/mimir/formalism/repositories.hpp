@@ -341,18 +341,11 @@ public:
                                                                           GroundNumericConstraintList numeric_constraints);
 
     /// @brief Get or create an action for the given parameters.
-    Action get_or_create_action(std::string name,
-                                size_t original_arity,
-                                ConjunctiveCondition conjunctive_condition,
-                                ConjunctiveEffect conjunctive_effect,
-                                ConditionalEffectList conditional_effects);
+    Action get_or_create_action(std::string name, size_t original_arity, ConjunctiveCondition conjunctive_condition, ConditionalEffectList conditional_effects);
 
     /// @brief get or create a ground action for the given parameters.
-    GroundAction get_or_create_ground_action(Action action,
-                                             ObjectList binding,
-                                             GroundConjunctiveCondition condition,
-                                             GroundConjunctiveEffect effect,
-                                             GroundConditionalEffectList conditional_effects);
+    GroundAction
+    get_or_create_ground_action(Action action, ObjectList binding, GroundConjunctiveCondition condition, GroundConditionalEffectList conditional_effects);
 
     /// @brief Get or create an axiom for the given parameters.
     Axiom get_or_create_axiom(ConjunctiveCondition precondition, Literal<DerivedTag> effect_literal);

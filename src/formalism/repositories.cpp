@@ -500,27 +500,25 @@ GroundConjunctiveCondition Repositories::get_or_create_ground_conjunctive_condit
 Action Repositories::get_or_create_action(std::string name,
                                           size_t original_arity,
                                           ConjunctiveCondition conjunctive_condition,
-                                          ConjunctiveEffect conjunctive_effect,
                                           ConditionalEffectList conditional_effects)
 {
     /* Canonize before uniqueness test */
     std::sort(conditional_effects.begin(), conditional_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
 
     return boost::hana::at_key(m_repositories, boost::hana::type<ActionImpl> {})
-        .get_or_create(std::move(name), original_arity, std::move(conjunctive_condition), std::move(conjunctive_effect), std::move(conditional_effects));
+        .get_or_create(std::move(name), original_arity, std::move(conjunctive_condition), std::move(conditional_effects));
 }
 
 GroundAction Repositories::get_or_create_ground_action(Action action,
                                                        ObjectList binding,
                                                        GroundConjunctiveCondition condition,
-                                                       GroundConjunctiveEffect effect,
                                                        GroundConditionalEffectList conditional_effects)
 {
     /* Canonize before uniqueness test */
     std::sort(conditional_effects.begin(), conditional_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
 
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundActionImpl> {})
-        .get_or_create(action, std::move(binding), std::move(condition), std::move(effect), std::move(conditional_effects));
+        .get_or_create(action, std::move(binding), std::move(condition), std::move(conditional_effects));
 }
 
 Axiom Repositories::get_or_create_axiom(ConjunctiveCondition conjunctive_condition, Literal<DerivedTag> literal)

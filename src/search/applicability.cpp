@@ -348,7 +348,6 @@ bool is_dynamically_applicable(GroundAction action, const ProblemImpl& problem, 
     s_auxiliary_numeric_change = std::nullopt;
 
     return is_dynamically_applicable(action->get_conjunctive_condition(), problem, dense_state)  //
-           && is_applicable(action->get_conjunctive_effect(), problem, dense_state)
            && std::all_of(action->get_conditional_effects().begin(),
                           action->get_conditional_effects().end(),
                           [&](auto&& arg) { return is_applicable_if_fires(arg, problem, dense_state); });
@@ -360,7 +359,6 @@ bool is_applicable(GroundAction action, const ProblemImpl& problem, const DenseS
     s_auxiliary_numeric_change = std::nullopt;
 
     return is_applicable(action->get_conjunctive_condition(), problem, dense_state)  //
-           && is_applicable(action->get_conjunctive_effect(), problem, dense_state)
            && std::all_of(action->get_conditional_effects().begin(),
                           action->get_conditional_effects().end(),
                           [&](auto&& arg) { return is_applicable_if_fires(arg, problem, dense_state); });
@@ -372,7 +370,6 @@ bool is_applicable(GroundAction action, const ProblemImpl& problem, State state)
     s_auxiliary_numeric_change = std::nullopt;
 
     return is_applicable(action->get_conjunctive_condition(), problem, state)  //
-           && is_applicable(action->get_conjunctive_effect(), problem, state)
            && std::all_of(action->get_conditional_effects().begin(),
                           action->get_conditional_effects().end(),
                           [&](auto&& arg) { return is_applicable_if_fires(arg, problem, state); });

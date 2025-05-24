@@ -126,13 +126,9 @@ Action EncodeParameterIndexInVariables::translate_level_2(Action action, Reposit
 
     // Ensure in order translation
     const auto translated_precondition = this->translate_level_0(action->get_conjunctive_condition(), repositories);
-    const auto translated_conjunctive_effect = this->translate_level_0(action->get_conjunctive_effect(), repositories);
     const auto translated_conditional_effects = this->translate_level_0(action->get_conditional_effects(), repositories);
-    const auto translated_action = repositories.get_or_create_action(action->get_name(),
-                                                                     action->get_original_arity(),
-                                                                     translated_precondition,
-                                                                     translated_conjunctive_effect,
-                                                                     translated_conditional_effects);
+    const auto translated_action =
+        repositories.get_or_create_action(action->get_name(), action->get_original_arity(), translated_precondition, translated_conditional_effects);
 
     // Ensure that other translations definitely not use parameter indices
     m_variable_to_parameter_index.clear();

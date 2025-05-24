@@ -35,13 +35,11 @@ GroundActionImpl::GroundActionImpl(Index index,
                                    Action action,
                                    ObjectList objects,
                                    GroundConjunctiveCondition conjunctive_precondition,
-                                   GroundConjunctiveEffect conjunctive_effect,
                                    GroundConditionalEffectList conditional_effects) :
     m_index(index),
     m_action(action),
     m_objects(std::move(objects)),
     m_conjunctive_precondition(conjunctive_precondition),
-    m_conjunctive_effect(conjunctive_effect),
     m_conditional_effects(std::move(conditional_effects))
 {
 }
@@ -53,8 +51,6 @@ Action GroundActionImpl::get_action() const { return m_action; }
 const ObjectList& GroundActionImpl::get_objects() const { return m_objects; }
 
 GroundConjunctiveCondition GroundActionImpl::get_conjunctive_condition() const { return m_conjunctive_precondition; }
-
-GroundConjunctiveEffect GroundActionImpl::get_conjunctive_effect() const { return m_conjunctive_effect; }
 
 const GroundConditionalEffectList& GroundActionImpl::get_conditional_effects() const { return m_conditional_effects; }
 
@@ -74,7 +70,6 @@ std::ostream& operator<<(std::ostream& os,
     const auto& [action, problem, tag] = data;
 
     const auto& conjunctive_condition = action->get_conjunctive_condition();
-    const auto& conjunctive_effect = action->get_conjunctive_effect();
     const auto& conditional_effects = action->get_conditional_effects();
 
     os << "Action("                                                           //
@@ -82,7 +77,6 @@ std::ostream& operator<<(std::ostream& os,
        << "name=" << action->get_action()->get_name() << ", "                 //
        << "binding=" << action->get_objects() << ", "                         //
        << std::make_tuple(conjunctive_condition, std::cref(problem)) << ", "  //
-       << std::make_tuple(conjunctive_effect, std::cref(problem))             //
        << ", " << "conditional_effects=[";
     for (const auto& cond_effect : conditional_effects)
     {

@@ -62,6 +62,12 @@ public:
     Index get_index() const;
 
     template<IsStaticOrFluentOrDerivedTag P>
+    const FlatIndexList& get_compressed_positive_precondition() const;
+
+    template<IsStaticOrFluentOrDerivedTag P>
+    const FlatIndexList& get_compressed_negative_precondition() const;
+
+    template<IsStaticOrFluentOrDerivedTag P>
     auto get_positive_precondition() const;
 
     template<IsStaticOrFluentOrDerivedTag P>

@@ -29,17 +29,11 @@ private:
     std::string m_name;
     size_t m_original_arity;
     ConjunctiveCondition m_conjunctive_condition;
-    ConjunctiveEffect m_conjunctive_effect;
     ConditionalEffectList m_conditional_effects;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    ActionImpl(Index index,
-               std::string name,
-               size_t original_arity,
-               ConjunctiveCondition conjunctive_condition,
-               ConjunctiveEffect conjunctive_effect,
-               ConditionalEffectList conditional_effects);
+    ActionImpl(Index index, std::string name, size_t original_arity, ConjunctiveCondition conjunctive_condition, ConditionalEffectList conditional_effects);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -59,7 +53,6 @@ public:
     size_t get_original_arity() const;
     const VariableList& get_parameters() const;
     ConjunctiveCondition get_conjunctive_condition() const;
-    ConjunctiveEffect get_conjunctive_effect() const;
     const ConditionalEffectList& get_conditional_effects() const;
 
     size_t get_arity() const;
@@ -69,7 +62,7 @@ public:
     /// @return a tuple containing const references to the members defining the object's identity.
     auto identifying_members() const
     {
-        return std::tuple(std::cref(get_name()), get_arity(), get_conjunctive_condition(), get_conjunctive_effect(), std::cref(get_conditional_effects()));
+        return std::tuple(std::cref(get_name()), get_arity(), get_conjunctive_condition(), std::cref(get_conditional_effects()));
     }
 };
 

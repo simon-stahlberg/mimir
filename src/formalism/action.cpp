@@ -39,17 +39,14 @@ ActionImpl::ActionImpl(Index index,
                        std::string name,
                        size_t original_arity,
                        ConjunctiveCondition conjunctive_condition,
-                       ConjunctiveEffect conjunctive_effect,
                        ConditionalEffectList conditional_effects) :
     m_index(index),
     m_name(std::move(name)),
     m_original_arity(original_arity),
     m_conjunctive_condition(std::move(conjunctive_condition)),
-    m_conjunctive_effect(std::move(conjunctive_effect)),
     m_conditional_effects(std::move(conditional_effects))
 {
     assert(m_conjunctive_condition);
-    assert(m_conjunctive_effect);
     assert(is_all_unique(m_conditional_effects));
     assert(std::is_sorted(m_conditional_effects.begin(),
                           m_conditional_effects.end(),
@@ -65,8 +62,6 @@ size_t ActionImpl::get_original_arity() const { return m_original_arity; }
 const VariableList& ActionImpl::get_parameters() const { return m_conjunctive_condition->get_parameters(); }
 
 ConjunctiveCondition ActionImpl::get_conjunctive_condition() const { return m_conjunctive_condition; }
-
-ConjunctiveEffect ActionImpl::get_conjunctive_effect() const { return m_conjunctive_effect; }
 
 const ConditionalEffectList& ActionImpl::get_conditional_effects() const { return m_conditional_effects; }
 

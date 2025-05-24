@@ -271,7 +271,6 @@ protected:
     void prepare_level_2(Action action)
     {
         this->prepare_level_0(action->get_conjunctive_condition());
-        this->prepare_level_0(action->get_conjunctive_effect());
         this->prepare_level_0(action->get_conditional_effects());
     }
     void prepare_level_2(Axiom axiom)
@@ -549,7 +548,6 @@ protected:
         return repositories.get_or_create_action(action->get_name(),
                                                  action->get_original_arity(),
                                                  this->translate_level_0(action->get_conjunctive_condition(), repositories),
-                                                 this->translate_level_0(action->get_conjunctive_effect(), repositories),
                                                  this->translate_level_0(action->get_conditional_effects(), repositories));
     }
     Axiom translate_level_2(Axiom axiom, Repositories& repositories)

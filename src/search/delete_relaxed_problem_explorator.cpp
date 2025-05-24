@@ -17,6 +17,7 @@
 
 #include "mimir/search/delete_relaxed_problem_explorator.hpp"
 
+#include "mimir/formalism/ground_axiom.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/formalism/translator/delete_relax.hpp"
 #include "mimir/search/applicability.hpp"
@@ -121,6 +122,54 @@ static ObjectList translate_from_delete_free_to_unrelaxed_problem(const ObjectLi
     return result;
 }
 
+GroundActionList DeleteRelaxedProblemExplorator::create_ground_actions() const
+{
+    auto result = GroundActionList {};
+
+    for (const auto& delete_free_ground_action :
+         boost::hana::at_key(m_delete_free_problem->get_repositories().get_hana_repositories(), boost::hana::type<GroundActionImpl> {}))
+    {
+        // Map relaxed to unrelaxed actions and ground them with the same arguments.
+        for (const auto& action : m_delete_relax_transformer.get_unrelaxed_actions(delete_free_ground_action->get_action()))
+        {
+            auto binding = translate_from_delete_free_to_unrelaxed_problem(delete_free_ground_action->get_objects(), m_delete_free_object_to_unrelaxed_object);
+
+            auto grounded_action = m_problem->ground(action, std::move(binding));
+
+            if (is_statically_applicable(grounded_action->get_conjunctive_condition(), m_problem->get_static_initial_positive_atoms_bitset()))
+            {
+                result.push_back(grounded_action);
+            }
+        }
+    }
+
+    return result;
+}
+
+GroundAxiomList DeleteRelaxedProblemExplorator::create_ground_axioms() const
+{
+    auto result = GroundAxiomList {};
+
+    for (const auto& delete_free_ground_axiom :
+         boost::hana::at_key(m_delete_free_problem->get_repositories().get_hana_repositories(), boost::hana::type<GroundAxiomImpl> {}))
+    {
+        // Map relaxed to unrelaxed actions and ground them with the same arguments.
+        for (const auto& axiom : m_delete_relax_transformer.get_unrelaxed_axioms(delete_free_ground_axiom->get_axiom()))
+        {
+            auto binding = translate_from_delete_free_to_unrelaxed_problem(delete_free_ground_axiom->get_objects(), m_delete_free_object_to_unrelaxed_object);
+
+            auto ground_axiom = m_problem->ground(axiom, std::move(binding));
+
+            if (is_statically_applicable(ground_axiom->get_conjunctive_condition(), m_problem->get_static_initial_positive_atoms_bitset()))
+            {
+                result.push_back(ground_axiom);
+            }
+        }
+    }
+
+    return result;
+}
+
 GroundedAxiomEvaluator DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator(const match_tree::Options& options,
                                                                                        GroundedAxiomEvaluatorImpl::EventHandler event_handler) const
 {
@@ -149,22 +198,9 @@ GroundedAxiomEvaluator DeleteRelaxedProblemExplorator::create_grounded_axiom_eva
 
     /* Store ground axioms in corresponding partition. */
     auto ground_axiom_partitioning = std::vector<GroundAxiomList>(num_partitions);
-
-    for (const auto& delete_free_ground_axiom :
-         boost::hana::at_key(m_delete_free_problem->get_repositories().get_hana_repositories(), boost::hana::type<GroundAxiomImpl> {}))
+    for (const auto& ground_axiom : create_ground_axioms())
     {
-        // Map relaxed to unrelaxed actions and ground them with the same arguments.
-        for (const auto& axiom : m_delete_relax_transformer.get_unrelaxed_axioms(delete_free_ground_axiom->get_axiom()))
-        {
-            auto binding = translate_from_delete_free_to_unrelaxed_problem(delete_free_ground_axiom->get_objects(), m_delete_free_object_to_unrelaxed_object);
-
-            auto ground_axiom = problem.ground(axiom, std::move(binding));
-
-            if (is_statically_applicable(ground_axiom->get_conjunctive_condition(), problem.get_static_initial_positive_atoms_bitset()))
-            {
-                ground_axiom_partitioning.at(axiom_to_partition.at(axiom)).push_back(ground_axiom);
-            }
-        }
+        ground_axiom_partitioning.at(axiom_to_partition.at(ground_axiom->get_axiom())).push_back(ground_axiom);
     }
 
     auto end_time = std::chrono::high_resolution_clock::now();
@@ -211,23 +247,7 @@ DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator(cons
     auto& problem = *m_problem;
     auto& pddl_repositories = problem.get_repositories();
 
-    auto ground_actions = GroundActionList {};
-    for (const auto& delete_free_ground_action :
-         boost::hana::at_key(m_delete_free_problem->get_repositories().get_hana_repositories(), boost::hana::type<GroundActionImpl> {}))
-    {
-        // Map relaxed to unrelaxed actions and ground them with the same arguments.
-        for (const auto& action : m_delete_relax_transformer.get_unrelaxed_actions(delete_free_ground_action->get_action()))
-        {
-            auto binding = translate_from_delete_free_to_unrelaxed_problem(delete_free_ground_action->get_objects(), m_delete_free_object_to_unrelaxed_object);
-
-            auto grounded_action = problem.ground(action, std::move(binding));
-
-            if (is_statically_applicable(grounded_action->get_conjunctive_condition(), problem.get_static_initial_positive_atoms_bitset()))
-            {
-                ground_actions.push_back(grounded_action);
-            }
-        }
-    }
+    auto ground_actions = create_ground_actions();
 
     const auto end_time = std::chrono::high_resolution_clock::now();
     const auto total_time = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);

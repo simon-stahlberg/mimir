@@ -66,6 +66,48 @@ GroundConjunctiveConditionImpl::GroundConjunctiveConditionImpl(Index index,
 
 Index GroundConjunctiveConditionImpl::get_index() const { return m_index; }
 
+template<IsStaticOrFluentOrDerivedTag P>
+const FlatIndexList& GroundConjunctiveConditionImpl::get_compressed_positive_precondition() const
+{
+    if constexpr (std::is_same_v<P, StaticTag>)
+    {
+        return *m_positive_static_atoms;
+    }
+    else if constexpr (std::is_same_v<P, FluentTag>)
+    {
+        return *m_positive_fluent_atoms;
+    }
+    else if constexpr (std::is_same_v<P, DerivedTag>)
+    {
+        return *m_positive_derived_atoms;
+    }
+    else
+    {
+        static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
+    }
+}
+
+template<IsStaticOrFluentOrDerivedTag P>
+const FlatIndexList& GroundConjunctiveConditionImpl::get_compressed_negative_precondition() const
+{
+    if constexpr (std::is_same_v<P, StaticTag>)
+    {
+        return *m_negative_static_atoms;
+    }
+    else if constexpr (std::is_same_v<P, FluentTag>)
+    {
+        return *m_negative_fluent_atoms;
+    }
+    else if constexpr (std::is_same_v<P, DerivedTag>)
+    {
+        return *m_negative_derived_atoms;
+    }
+    else
+    {
+        static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
+    }
+}
+
 const GroundNumericConstraintList& GroundConjunctiveConditionImpl::get_numeric_constraints() const { return m_numeric_constraints; }
 
 }

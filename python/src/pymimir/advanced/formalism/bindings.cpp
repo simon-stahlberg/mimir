@@ -386,7 +386,6 @@ void bind_module_definitions(nb::module_& m)
         .def("get_name", &ActionImpl::get_name, nb::rv_policy::copy)
         .def("get_parameters", &ActionImpl::get_parameters, nb::rv_policy::copy)
         .def("get_conjunctive_condition", &ActionImpl::get_conjunctive_condition, nb::rv_policy::reference_internal)
-        .def("get_conjunctive_effect", &ActionImpl::get_conjunctive_effect, nb::rv_policy::reference_internal)
         .def("get_conditional_effects", &ActionImpl::get_conditional_effects, nb::rv_policy::copy)
         .def("get_arity", &ActionImpl::get_arity, nb::rv_policy::copy);
     nb::bind_vector<ActionList>(m, "ActionList");
@@ -653,7 +652,6 @@ void bind_module_definitions(nb::module_& m)
         .def("get_action", &GroundActionImpl::get_action, nb::rv_policy::reference_internal)
         .def("get_objects", &GroundActionImpl::get_objects, nb::rv_policy::copy)
         .def("get_conjunctive_condition", &GroundActionImpl::get_conjunctive_condition, nb::rv_policy::reference_internal)
-        .def("get_conjunctive_effect", &GroundActionImpl::get_conjunctive_effect, nb::rv_policy::reference_internal)
         .def("get_conditional_effects", &GroundActionImpl::get_conditional_effects, nb::rv_policy::reference_internal);
     nb::bind_vector<GroundActionList>(m, "GroundActionList");
 

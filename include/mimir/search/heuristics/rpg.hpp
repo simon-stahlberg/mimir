@@ -20,7 +20,9 @@
 
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/search/delete_relaxed_problem_explorator.hpp"
 #include "mimir/search/heuristics/interface.hpp"
+#include "mimir/search/openlists/priority_queue.hpp"
 
 namespace mimir::search::rpg
 {
@@ -28,21 +30,25 @@ class UnaryGroundAction
 {
 public:
     UnaryGroundAction(Index index,
-                      const FlatIndexList* fluent_preconditions,
-                      const FlatIndexList* derived_preconditions,
+                      const FlatIndexList& fluent_preconditions,
+                      const FlatIndexList& derived_preconditions,
+                      const std::optional<std::reference_wrapper<const FlatIndexList>>& cond_fluent_precondition,
+                      const std::optional<std::reference_wrapper<const FlatIndexList>>& cond_derived_precondition,
                       Index fluent_effect,
                       ContinuousCost cost);
 
     Index get_index() const;
-    const FlatIndexList* get_fluent_precondition() const;
-    const FlatIndexList* get_derived_precondition() const;
+    const FlatIndexList& get_fluent_precondition() const;
+    const FlatIndexList& get_derived_precondition() const;
     Index get_fluent_effect() const;
     ContinuousCost get_cost() const;
 
 private:
     Index m_index;
-    const FlatIndexList* m_fluent_precondition;
-    const FlatIndexList* m_derived_precondition;
+    const FlatIndexList& m_fluent_precondition;
+    const FlatIndexList& m_derived_precondition;
+    std::optional<std::reference_wrapper<const FlatIndexList>> m_cond_fluent_precondition;
+    std::optional<std::reference_wrapper<const FlatIndexList>> m_cond_derived_precondition;
     Index m_fluent_effect;
     ContinuousCost m_cost;
 };
@@ -62,14 +68,14 @@ public:
     UnaryGroundAxiom(Index index, const FlatIndexList* fluent_preconditions, const FlatIndexList* derived_preconditions, Index derived_effect);
 
     Index get_index() const;
-    const FlatIndexList* get_fluent_precondition() const;
-    const FlatIndexList* get_derived_precondition() const;
+    const FlatIndexList& get_fluent_precondition() const;
+    const FlatIndexList& get_derived_precondition() const;
     Index get_fluent_effect() const;
 
 private:
     Index m_index;
-    const FlatIndexList* m_fluent_precondition;
-    const FlatIndexList* m_derived_precondition;
+    const FlatIndexList& m_fluent_precondition;
+    const FlatIndexList& m_derived_precondition;
     Index m_derived_effect;
 };
 using UnaryGroundAxiomList = std::vector<UnaryGroundAxiom>;
@@ -118,26 +124,56 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    RelaxedPlanningGraph(const DeleteRelaxedProblemExplorator& delete_relaxation);
+    explicit RelaxedPlanningGraph(const DeleteRelaxedProblemExplorator& delete_relaxation) : m_unary_actions(), m_unary_axioms()
+    {
+        for (const auto& action : delete_relaxation.create_ground_actions())
+        {
+            for (const auto& atom_index : action->get_conjunctive_effect()->get_positive_effects())
+            {
+                m_unary_actions.push_back(UnaryGroundAction(m_unary_actions.size(),
+                                                            &action->get_conjunctive_condition()->get_compressed_positive_precondition<formalism::FluentTag>(),
+                                                            &action->get_conjunctive_condition()->get_compressed_positive_precondition<formalism::DerivedTag>(),
+                                                            atom_index));
+            }
+            for (const auto& cond_effect : action->get_conditional_effects())
+            {
+                for (const auto& atom_index : cond_effect->get_conjunctive_effect()->get_positive_effects()) {}
+            }
+        }
+    }
 
     double compute_heuristic(State state, bool is_goal_state) override
     {
-        explore();
+        reset();
+        dijkstra();
         return extract_impl();
     }
 
 private:
-    void explore()
+    void reset() {}
+
+    void dijkstra()
     {
         // TODO: dijkstra exploration
+        auto num_unsat_goals = m_fluent_proposition_layer.size() + m_derived_goal_propositions.size();
+        // TODO: apply axioms until none applicable
+        // TODO: apply actions until none applicable
+        while (!m_axiom_queue.empty() && !m_action_queue.empty()) {}
     }
 
 private:
     UnaryGroundActionList m_unary_actions;
     UnaryGroundAxiomList m_unary_axioms;
 
+protected:
     std::vector<Proposition> m_fluent_proposition_layer;
     std::vector<Proposition> m_derived_proposition_layer;
+
+    IndexList m_fluent_goal_propositions;
+    IndexList m_derived_goal_propositions;
+
+    PriorityQueue<ContinuousCost, Index> m_action_queue;
+    PriorityQueue<ContinuousCost, Index> m_axiom_queue;
 };
 
 template<IsProposition Proposition>
