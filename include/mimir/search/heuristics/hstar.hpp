@@ -33,10 +33,10 @@ public:
 
     static HStarHeuristic create(const SearchContext& context);
 
-    double compute_heuristic(State state, bool is_goal_state) override;
+    ContinuousCost compute_heuristic(State state, bool is_goal_state) override;
 
 private:
-    StateMap<double> m_estimates;
+    StateMap<ContinuousCost> m_estimates;
 };
 
 }

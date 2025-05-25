@@ -87,6 +87,10 @@ const FlatIndexList& GroundConjunctiveConditionImpl::get_compressed_positive_pre
     }
 }
 
+template const FlatIndexList& GroundConjunctiveConditionImpl::get_compressed_positive_precondition<StaticTag>() const;
+template const FlatIndexList& GroundConjunctiveConditionImpl::get_compressed_positive_precondition<FluentTag>() const;
+template const FlatIndexList& GroundConjunctiveConditionImpl::get_compressed_positive_precondition<DerivedTag>() const;
+
 template<IsStaticOrFluentOrDerivedTag P>
 const FlatIndexList& GroundConjunctiveConditionImpl::get_compressed_negative_precondition() const
 {
@@ -107,6 +111,10 @@ const FlatIndexList& GroundConjunctiveConditionImpl::get_compressed_negative_pre
         static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
     }
 }
+
+template const FlatIndexList& GroundConjunctiveConditionImpl::get_compressed_negative_precondition<StaticTag>() const;
+template const FlatIndexList& GroundConjunctiveConditionImpl::get_compressed_negative_precondition<FluentTag>() const;
+template const FlatIndexList& GroundConjunctiveConditionImpl::get_compressed_negative_precondition<DerivedTag>() const;
 
 const GroundNumericConstraintList& GroundConjunctiveConditionImpl::get_numeric_constraints() const { return m_numeric_constraints; }
 

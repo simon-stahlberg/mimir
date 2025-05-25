@@ -73,6 +73,12 @@ int main(int argc, char** argv)
     auto axiom_evaluator = AxiomEvaluator(nullptr);
     auto state_repository = StateRepository(nullptr);
 
+    auto heuristic = Heuristic(nullptr);
+    if (heuristic_type == 0)
+    {
+        heuristic = BlindHeuristicImpl::create(problem);
+    }
+
     if (grounded)
     {
         auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(problem);
@@ -82,6 +88,11 @@ int main(int argc, char** argv)
         axiom_evaluator = delete_relaxed_problem_explorator.create_grounded_axiom_evaluator(match_tree::Options(),
                                                                                             GroundedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create(false));
         state_repository = StateRepositoryImpl::create(axiom_evaluator);
+
+        if (heuristic_type == 1)
+        {
+            heuristic = rpg::MaxHeuristicImpl::create(delete_relaxed_problem_explorator);
+        }
     }
     else
     {
@@ -89,16 +100,16 @@ int main(int argc, char** argv)
             LiftedApplicableActionGeneratorImpl::create(problem, LiftedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create(false));
         axiom_evaluator = LiftedAxiomEvaluatorImpl::create(problem, LiftedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create(false));
         state_repository = StateRepositoryImpl::create(axiom_evaluator);
+
+        if (heuristic_type == 1)
+        {
+            throw std::runtime_error("Lifted hmax is not supported");
+        }
     }
 
     auto event_handler = (debug) ? astar::EventHandler { astar::DebugEventHandlerImpl::create(problem, false) } :
                                    astar::EventHandler { astar::DefaultEventHandlerImpl::create(problem, false) };
 
-    auto heuristic = Heuristic(nullptr);
-    if (heuristic_type == 0)
-    {
-        heuristic = BlindHeuristicImpl::create(problem);
-    }
     assert(heuristic);
 
     auto search_context = SearchContextImpl::create(problem, applicable_action_generator, state_repository);

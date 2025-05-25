@@ -39,7 +39,7 @@ public:
     NB_TRAMPOLINE(IHeuristic, 1);
 
     /* Trampoline (need one for each virtual function) */
-    double compute_heuristic(State state, bool is_goal_state) override
+    ContinuousCost compute_heuristic(State state, bool is_goal_state) override
     {
         NB_OVERRIDE_PURE(compute_heuristic, /* Name of function in C++ (must match Python name) */
                          state,             /* Argument(s) */

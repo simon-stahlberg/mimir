@@ -43,5 +43,5 @@ HStarHeuristicImpl::HStarHeuristicImpl(const SearchContext& context) : m_estimat
 
 HStarHeuristic HStarHeuristicImpl::create(const SearchContext& context) { return std::make_shared<HStarHeuristicImpl>(context); }
 
-double HStarHeuristicImpl::compute_heuristic(State state, bool is_goal_state) { return m_estimates.at(state); }
+ContinuousCost HStarHeuristicImpl::compute_heuristic(State state, bool is_goal_state) { return m_estimates.at(state); }
 }

@@ -82,6 +82,7 @@
 #include "mimir/search/delete_relaxed_problem_explorator.hpp"
 #include "mimir/search/generalized_search_context.hpp"
 #include "mimir/search/heuristics.hpp"
+#include "mimir/search/heuristics/rpg.hpp"
 #include "mimir/search/openlists.hpp"
 #include "mimir/search/partially_ordered_plan.hpp"
 #include "mimir/search/satisficing_binding_generators.hpp"

@@ -58,6 +58,7 @@ using ContinuousCostMatrix = std::vector<ContinuousCostList>;
 using ContinuousCostMap = std::unordered_map<Index, ContinuousCost>;
 
 static const ContinuousCost UNDEFINED_CONTINUOUS_COST = std::numeric_limits<ContinuousCost>::max();
+static const ContinuousCost INFINITY_CONTINUOUS_COST = std::numeric_limits<ContinuousCost>::infinity();
 
 /**
  * DiscreteCost
@@ -69,6 +70,7 @@ using DiscreteCostMatrix = std::vector<ContinuousCostList>;
 using DiscreteCostMap = std::unordered_map<Index, DiscreteCost>;
 
 static const DiscreteCost UNDEFINED_DISCRETE_COST = std::numeric_limits<DiscreteCost>::max();
+static const DiscreteCost MAX_DISCRETE_COST = std::numeric_limits<DiscreteCost>::max();
 
 /**
  * Containers
