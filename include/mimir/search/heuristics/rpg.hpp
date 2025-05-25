@@ -25,8 +25,6 @@
 #include "mimir/search/heuristics/interface.hpp"
 #include "mimir/search/openlists/priority_queue.hpp"
 
-#include <deque>
-
 namespace mimir::search::rpg
 {
 
@@ -161,8 +159,8 @@ private:
 public:
     ContinuousCost compute_heuristic(State state, bool is_goal_state) override
     {
-        self().reset_annotations_impl();
-        self().initialize_annotations_and_queue_impl(state);
+        initialize_annotations_and_queue(state);              ///< base annotations
+        self().initialize_annotations_and_queue_impl(state);  ///< derived annotations
         dijksta();
         const auto cost = self().extract_impl();
         // std::cout << "Cost: " << cost << std::endl;
@@ -300,7 +298,90 @@ private:
         }
     }
 
-    void reset() {}
+    void initialize_annotations_and_queue(State state)
+    {
+        m_action_annotations.resize(this->m_unary_actions.size());
+        for (size_t i = 0; i < this->m_unary_actions.size(); ++i)
+        {
+            auto& annotation = m_action_annotations[i];
+            const auto& action = this->m_unary_actions[i];
+            get_cost(annotation) = 0;
+            get_num_unsatisfied_preconditions(annotation) = action.get_num_preconditions();
+        }
+        m_axiom_annotations.resize(this->m_unary_axioms.size());
+        for (size_t i = 0; i < this->m_unary_axioms.size(); ++i)
+        {
+            auto& annotation = m_axiom_annotations[i];
+            const auto& axiom = this->m_unary_axioms[i];
+            get_cost(annotation) = 0;
+            get_num_unsatisfied_preconditions(annotation) = axiom.get_num_preconditions();
+        }
+        m_proposition_annotations.resize(this->m_propositions.size());
+        for (size_t i = 0; i < this->m_propositions.size(); ++i)
+        {
+            auto& annotation = m_proposition_annotations[i];
+            get_cost(annotation) = MAX_DISCRETE_COST;
+        }
+
+        m_queue.clear();
+
+        for (const auto atom_index : state->get_atoms<formalism::FluentTag>())
+        {
+            const auto proposition_index = this->m_fluent_offsets[atom_index];
+            auto& annotation = m_proposition_annotations[proposition_index];
+            get_cost(annotation) = 0;
+            m_queue.insert(0, QueueEntry { proposition_index, 0 });
+        }
+        for (const auto atom_index : state->get_atoms<formalism::DerivedTag>())
+        {
+            const auto proposition_index = this->m_derived_offsets[atom_index];
+            auto& annotation = m_proposition_annotations[proposition_index];
+            get_cost(annotation) = 0;
+            m_queue.insert(0, QueueEntry { proposition_index, 0 });
+        }
+        // Trivial dummy proposition to trigger actions and axioms without preconditions
+        auto& annotation = m_proposition_annotations[0];
+        get_cost(annotation) = 0;
+        m_queue.insert(0, QueueEntry { 0, 0 });
+    }
+
+    void on_process_action(const Proposition& proposition, const UnaryGroundAction& action)
+    {
+        auto& action_annotation = m_action_annotations[action.get_index()];
+
+        self().update_and_annotation_impl(proposition, action);
+
+        if (proposition.get_index() != DUMMY_PROPOSITION_INDEX)
+        {
+            --get_num_unsatisfied_preconditions(action_annotation);
+        }
+        if (get_num_unsatisfied_preconditions(action_annotation) == 0)
+        {
+            const auto effect_proposition_index = this->m_fluent_offsets[action.get_fluent_effect()];
+            const auto& effect_proposition = this->m_propositions[effect_proposition_index];
+
+            self().update_or_annotation_impl(action, effect_proposition);
+        }
+    }
+
+    void on_process_axiom(const Proposition& proposition, const UnaryGroundAxiom& axiom)
+    {
+        auto& axiom_annotation = m_axiom_annotations[axiom.get_index()];
+
+        self().update_and_annotation_impl(proposition, axiom);
+
+        if (proposition.get_index() != DUMMY_PROPOSITION_INDEX)
+        {
+            --get_num_unsatisfied_preconditions(axiom_annotation);
+        }
+        if (get_num_unsatisfied_preconditions(axiom_annotation) == 0)
+        {
+            const auto effect_proposition_index = this->m_derived_offsets[axiom.get_derived_effect()];
+            const auto& effect_proposition = this->m_propositions[effect_proposition_index];
+
+            self().update_or_annotation_impl(axiom, effect_proposition);
+        }
+    }
 
     void dijksta()
     {
@@ -312,10 +393,11 @@ private:
             m_queue.pop();
 
             const auto& proposition = m_propositions[entry.proposition_index];
+            const auto& annotation = m_proposition_annotations[entry.proposition_index];
 
             // std::cout << "Queue pop: " << entry.proposition_index << " " << entry.cost << std::endl;
 
-            if (self().on_expand_proposition_impl(proposition, entry.cost))
+            if (get_cost(annotation) < entry.cost)
             {
                 continue;
             }
@@ -329,13 +411,13 @@ private:
             {
                 const auto& action = m_unary_actions[action_index];
 
-                self().on_process_action_impl(proposition, action);
+                self().on_process_action(proposition, action);
             }
             for (const auto axiom_index : proposition.is_precondition_of_axioms())
             {
                 const auto& axiom = m_unary_axioms[axiom_index];
 
-                self().on_process_axiom_impl(proposition, axiom);
+                self().on_process_axiom(proposition, axiom);
             }
         }
 
@@ -348,7 +430,20 @@ private:
     UnaryGroundActionList m_unary_actions;
     UnaryGroundAxiomList m_unary_axioms;
 
+    AnnotationsList<DiscreteCost, size_t> m_action_annotations;
+    AnnotationsList<DiscreteCost, size_t> m_axiom_annotations;
+
+    static DiscreteCost& get_cost(Annotations<DiscreteCost, size_t>& annotation) { return std::get<0>(annotation); }
+    static DiscreteCost get_cost(const Annotations<DiscreteCost, size_t>& annotation) { return std::get<0>(annotation); }
+    static size_t& get_num_unsatisfied_preconditions(Annotations<DiscreteCost, size_t>& annotation) { return std::get<1>(annotation); }
+    static size_t get_num_unsatisfied_preconditions(const Annotations<DiscreteCost, size_t>& annotation) { return std::get<1>(annotation); }
+
     PropositionList m_propositions;
+
+    AnnotationsList<DiscreteCost> m_proposition_annotations;
+
+    static DiscreteCost& get_cost(Annotations<DiscreteCost>& annotation) { return std::get<0>(annotation); }
+    static DiscreteCost get_cost(const Annotations<DiscreteCost>& annotation) { return std::get<0>(annotation); }
 
     IndexList m_goal_propositions;
 
@@ -373,56 +468,15 @@ public:
     static MaxHeuristic create(const DeleteRelaxedProblemExplorator& delete_relaxation) { return std::make_shared<MaxHeuristicImpl>(delete_relaxation); }
 
 private:
-    void reset_annotations_impl()
-    {
-        m_action_annotations.resize(this->m_unary_actions.size());
-        for (size_t i = 0; i < this->m_unary_actions.size(); ++i)
-        {
-            auto& annotation = m_action_annotations[i];
-            const auto& action = this->m_unary_actions[i];
-            get_cost(annotation) = 0;
-            get_num_unsatisfied_preconditions(annotation) = action.get_num_preconditions();
-        }
-        m_axiom_annotations.resize(this->m_unary_axioms.size());
-        for (size_t i = 0; i < this->m_unary_axioms.size(); ++i)
-        {
-            auto& annotation = m_axiom_annotations[i];
-            const auto& axiom = this->m_unary_axioms[i];
-            get_cost(annotation) = 0;
-            get_num_unsatisfied_preconditions(annotation) = axiom.get_num_preconditions();
-        }
-        m_proposition_annotations.resize(this->m_propositions.size());
-        for (size_t i = 0; i < this->m_propositions.size(); ++i)
-        {
-            auto& annotation = m_proposition_annotations[i];
-            get_cost(annotation) = MAX_DISCRETE_COST;
-        }
-    }
-
+    /// @brief Additional initialization logic. Not needed for h_max.
+    /// @param state is the state
     void initialize_annotations_and_queue_impl(State state)
     {
-        m_queue.clear();
-
-        for (const auto atom_index : state->get_atoms<formalism::FluentTag>())
-        {
-            const auto proposition_index = this->m_fluent_offsets[atom_index];
-            auto& annotation = m_proposition_annotations[proposition_index];
-            get_cost(annotation) = 0;
-            m_queue.insert(0, QueueEntry { proposition_index, 0 });
-        }
-        for (const auto atom_index : state->get_atoms<formalism::DerivedTag>())
-        {
-            const auto proposition_index = this->m_derived_offsets[atom_index];
-            auto& annotation = m_proposition_annotations[proposition_index];
-            get_cost(annotation) = 0;
-            m_queue.insert(0, QueueEntry { proposition_index, 0 });
-        }
-        // Trivial dummy proposition to trigger actions and axioms without preconditions
-        auto& annotation = m_proposition_annotations[0];
-        get_cost(annotation) = 0;
-        m_queue.insert(0, QueueEntry { 0, 0 });
+        // Nothing to be done in h_max.
     }
 
+    /// @brief Extract h_max heuristic estimate from the goal propositions.
+    /// @return the h_max heuristic estimate.
     DiscreteCost extract_impl()
     {
         auto total_cost = DiscreteCost(0);
@@ -438,75 +492,59 @@ private:
         return total_cost;
     }
 
-    bool on_expand_proposition_impl(const Proposition& proposition, DiscreteCost cost)
+    /// @brief Update the "And"-action node with maximal cost.
+    /// @param proposition is the proposition.
+    /// @param axiom is the "And"-action node.
+    void update_and_annotation_impl(const Proposition& proposition, const UnaryGroundAction& action)
     {
-        const auto& annotation = m_proposition_annotations[proposition.get_index()];
-        const auto proposition_cost = get_cost(annotation);
-
-        // Return true iff the proposition was already processed at a lower dijkstra cost layer.
-        return proposition_cost < cost;
-    }
-
-    void on_apply_effect(Index effect_proposition_index, DiscreteCost prev_cost)
-    {
-        auto& proposition = this->m_proposition_annotations[effect_proposition_index];
-
-        if (prev_cost < get_cost(proposition))
-        {
-            get_cost(proposition) = prev_cost;
-            this->m_queue.insert(get_cost(proposition), QueueEntry { effect_proposition_index, prev_cost });
-        }
-    }
-
-    void on_process_action_impl(const Proposition& proposition, const UnaryGroundAction& action)
-    {
-        auto& proposition_annotation = m_proposition_annotations[proposition.get_index()];
-        auto& action_annotation = m_action_annotations[action.get_index()];
+        auto& proposition_annotation = this->m_proposition_annotations[proposition.get_index()];
+        auto& action_annotation = this->m_action_annotations[action.get_index()];
 
         get_cost(action_annotation) = std::max(get_cost(action_annotation), get_cost(proposition_annotation) + 1);  // actions assume unit cost 1.
-        if (proposition.get_index() != DUMMY_PROPOSITION_INDEX)
+    }
+
+    /// @brief Update the "And"-axiom node with maximal cost.
+    /// @param proposition is the proposition.
+    /// @param axiom is the "And"-axiom node.
+    void update_and_annotation_impl(const Proposition& proposition, const UnaryGroundAxiom& axiom)
+    {
+        auto& proposition_annotation = this->m_proposition_annotations[proposition.get_index()];
+        auto& axiom_annotation = this->m_axiom_annotations[axiom.get_index()];
+
+        get_cost(axiom_annotation) = std::max(get_cost(axiom_annotation), get_cost(proposition_annotation));
+    }
+
+    /// @brief Update the "Or"-proposition node with minimal cost and enqueue the proposition if cost is updated.
+    /// @param action is the action.
+    /// @param proposition is the "Or"-proposition node.
+    void update_or_annotation_impl(const UnaryGroundAction& action, const Proposition& proposition)
+    {
+        const auto& action_annotation = this->m_action_annotations[action.get_index()];
+        auto& proposition_annotation = this->m_proposition_annotations[proposition.get_index()];
+
+        if (get_cost(action_annotation) < get_cost(proposition_annotation))
         {
-            --get_num_unsatisfied_preconditions(action_annotation);
-        }
-        if (get_num_unsatisfied_preconditions(action_annotation) == 0)
-        {
-            const auto effect_proposition_index = this->m_fluent_offsets[action.get_fluent_effect()];
-            on_apply_effect(effect_proposition_index, get_cost(action_annotation));
+            get_cost(proposition_annotation) = get_cost(action_annotation);
+            this->m_queue.insert(get_cost(proposition_annotation), QueueEntry { proposition.get_index(), get_cost(proposition_annotation) });
         }
     }
 
-    void on_process_axiom_impl(const Proposition& proposition, const UnaryGroundAxiom& axiom)
+    /// @brief Update the "Or"-proposition node with minimal cost and enqueue the proposition if cost is updated.
+    /// @param axiom is the axiom.
+    /// @param proposition is the "Or"-proposition node.
+    void update_or_annotation_impl(const UnaryGroundAxiom& axiom, const Proposition& proposition)
     {
-        const auto& proposition_annotation = m_proposition_annotations[proposition.get_index()];
-        auto& axiom_annotation = m_axiom_annotations[axiom.get_index()];
+        const auto& axiom_annotation = this->m_axiom_annotations[axiom.get_index()];
+        auto& proposition_annotation = this->m_proposition_annotations[proposition.get_index()];
 
-        get_cost(axiom_annotation) = std::max(get_cost(axiom_annotation), get_cost(proposition_annotation));  // axioms have 0 cost.
-        if (proposition.get_index() != DUMMY_PROPOSITION_INDEX)
+        if (get_cost(axiom_annotation) < get_cost(proposition_annotation))
         {
-            --get_num_unsatisfied_preconditions(axiom_annotation);
-        }
-        if (get_num_unsatisfied_preconditions(axiom_annotation) == 0)
-        {
-            const auto effect_proposition_index = this->m_derived_offsets[axiom.get_derived_effect()];
-            on_apply_effect(effect_proposition_index, get_cost(axiom_annotation));
+            get_cost(proposition_annotation) = get_cost(axiom_annotation);
+            this->m_queue.insert(get_cost(proposition_annotation), QueueEntry { proposition.get_index(), get_cost(proposition_annotation) });
         }
     }
 
     friend class RelaxedPlanningGraph<MaxHeuristicImpl>;
-
-private:
-    AnnotationsList<DiscreteCost, size_t> m_action_annotations;
-    AnnotationsList<DiscreteCost, size_t> m_axiom_annotations;
-
-    static DiscreteCost& get_cost(Annotations<DiscreteCost, size_t>& annotation) { return std::get<0>(annotation); }
-    static DiscreteCost get_cost(const Annotations<DiscreteCost, size_t>& annotation) { return std::get<0>(annotation); }
-    static size_t& get_num_unsatisfied_preconditions(Annotations<DiscreteCost, size_t>& annotation) { return std::get<1>(annotation); }
-    static size_t get_num_unsatisfied_preconditions(const Annotations<DiscreteCost, size_t>& annotation) { return std::get<1>(annotation); }
-
-    AnnotationsList<DiscreteCost> m_proposition_annotations;
-
-    static DiscreteCost& get_cost(Annotations<DiscreteCost>& annotation) { return std::get<0>(annotation); }
-    static DiscreteCost get_cost(const Annotations<DiscreteCost>& annotation) { return std::get<0>(annotation); }
 };
 
 /**
@@ -517,27 +555,51 @@ class AddHeuristicImpl : public RelaxedPlanningGraph<AddHeuristicImpl>
 {
 public:
 private:
-    void reset_annotations_impl();
+    void initialize_annotations_and_queue_impl(State state) {}
 
     DiscreteCost extract_impl();
 
-    void on_process_action_impl(const Proposition& proposition, const UnaryGroundAction& action);
+    void update_and_annotation_impl(const Proposition& proposition, const UnaryGroundAction& action) {}
 
-    void on_process_axiom_impl(const Proposition& proposition, const UnaryGroundAxiom& axiom);
+    void update_and_annotation_impl(const Proposition& proposition, const UnaryGroundAxiom& axiom) {}
+
+    void update_or_annotation_impl(const UnaryGroundAction& action, const Proposition& proposition) {}
+
+    void update_or_annotation_impl(const UnaryGroundAxiom& axiom, const Proposition& proposition) {}
 
     friend class RelaxedPlanningGraph<AddHeuristicImpl>;
+};
+
+/**
+ * HSetAdd
+ */
+
+class SetAddHeuristicImpl : public RelaxedPlanningGraph<SetAddHeuristicImpl>
+{
+public:
+private:
+    void initialize_annotations_and_queue_impl(State state) {}
+
+    DiscreteCost extract_impl();
+
+    void update_and_annotation_impl(const Proposition& proposition, const UnaryGroundAction& action) {}
+
+    void update_and_annotation_impl(const Proposition& proposition, const UnaryGroundAxiom& axiom) {}
+
+    void update_or_annotation_impl(const UnaryGroundAction& action, const Proposition& proposition) {}
+
+    void update_or_annotation_impl(const UnaryGroundAxiom& axiom, const Proposition& proposition) {}
+
+    friend class RelaxedPlanningGraph<SetAddHeuristicImpl>;
 
 private:
-    AnnotationsList<size_t> m_action_annotations;
-    AnnotationsList<size_t> m_axiom_annotations;
+    AnnotationsList<IndexSet> m_ff_action_annotations;
+    AnnotationsList<IndexSet> m_ff_axiom_annotations;
 
-    static size_t& get_num_unsatisfied_preconditions(Annotations<size_t>& annotation) { return std::get<0>(annotation); }
-    static size_t get_num_unsatisfied_preconditions(const Annotations<size_t>& annotation) { return std::get<0>(annotation); }
+    AnnotationsList<IndexSet> m_sa_proposition_annotations;
 
-    AnnotationsList<DiscreteCost> m_proposition_annotations;
-
-    static DiscreteCost& get_cost(Annotations<DiscreteCost>& annotation) { return std::get<0>(annotation); }
-    static DiscreteCost get_cost(const Annotations<DiscreteCost>& annotation) { return std::get<0>(annotation); }
+    static IndexSet& get_achiever_set(Annotations<IndexSet>& annotation) { return std::get<0>(annotation); }
+    static const IndexSet& get_achiever_set(const Annotations<IndexSet>& annotation) { return std::get<0>(annotation); }
 };
 
 /**
@@ -548,29 +610,33 @@ class FFHeuristicImpl : public RelaxedPlanningGraph<FFHeuristicImpl>
 {
 public:
 private:
-    void reset_annotations_impl();
+    void initialize_annotations_and_queue_impl(State state) {}
 
     DiscreteCost extract_impl();
 
-    void on_process_action_impl(const Proposition& proposition, const UnaryGroundAction& action);
+    void update_and_annotation_impl(const Proposition& proposition, const UnaryGroundAction& action) {}
 
-    void on_process_axiom_impl(const Proposition& proposition, const UnaryGroundAxiom& axiom);
+    void update_and_annotation_impl(const Proposition& proposition, const UnaryGroundAxiom& axiom) {}
+
+    void update_or_annotation_impl(const UnaryGroundAction& action, const Proposition& proposition) {}
+
+    void update_or_annotation_impl(const UnaryGroundAxiom& axiom, const Proposition& proposition) {}
 
     friend class RelaxedPlanningGraph<FFHeuristicImpl>;
 
 private:
-    AnnotationsList<size_t> m_action_annotations;
-    AnnotationsList<size_t> m_axiom_annotations;
+    AnnotationsList<Index> m_ff_action_annotations;
+    AnnotationsList<Index> m_ff_axiom_annotations;
 
-    static size_t& get_num_unsatisfied_preconditions(Annotations<size_t>& annotation) { return std::get<0>(annotation); }
-    static size_t get_num_unsatisfied_preconditions(const Annotations<size_t>& annotation) { return std::get<0>(annotation); }
+    static Index& get_achiever(Annotations<Index>& annotation) { return std::get<0>(annotation); }
+    static Index get_achiever(const Annotations<Index>& annotation) { return std::get<0>(annotation); }
 
-    AnnotationsList<DiscreteCost, bool> m_proposition_annotations;
+    AnnotationsList<Index, bool> m_ff_proposition_annotations;
 
-    static DiscreteCost& get_cost(Annotations<DiscreteCost, bool>& annotation) { return std::get<0>(annotation); }
-    static DiscreteCost get_cost(const Annotations<DiscreteCost, bool>& annotation) { return std::get<0>(annotation); }
-    static bool& is_marked(Annotations<DiscreteCost, bool>& annotation) { return std::get<1>(annotation); }
-    static bool is_marked(const Annotations<DiscreteCost, bool>& annotation) { return std::get<1>(annotation); }
+    static Index& get_achiever(Annotations<Index, bool>& annotation) { return std::get<0>(annotation); }
+    static Index get_achiever(const Annotations<Index, bool>& annotation) { return std::get<0>(annotation); }
+    static bool& is_marked(Annotations<Index, bool>& annotation) { return std::get<1>(annotation); }
+    static bool is_marked(const Annotations<Index, bool>& annotation) { return std::get<1>(annotation); }
 };
 }
 
