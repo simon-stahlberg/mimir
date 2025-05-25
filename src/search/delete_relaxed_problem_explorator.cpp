@@ -124,6 +124,26 @@ static ObjectList translate_from_delete_free_to_unrelaxed_problem(const ObjectLi
 }
 
 template<IsFluentOrDerivedTag P>
+Predicate<P> get_predicate(const ProblemImpl& problem, const std::string& name)
+{
+    throw std::runtime_error("Unexpected call");
+}
+
+template<>
+Predicate<FluentTag> get_predicate<FluentTag>(const ProblemImpl& problem, const std::string& name)
+{
+    // Fluent predicates are always specified in the domain
+    return problem.get_domain()->get_predicate<FluentTag>(name);
+}
+
+template<>
+Predicate<DerivedTag> get_predicate<DerivedTag>(const ProblemImpl& problem, const std::string& name)
+{
+    // Derived predicates may appear in the problem mainly due to translation of complicated goals.
+    return problem.get_problem_or_domain_derived_predicate(name);
+}
+
+template<IsFluentOrDerivedTag P>
 GroundAtomList<P> DeleteRelaxedProblemExplorator::create_ground_atoms() const
 {
     auto result = GroundAtomList<P> {};
@@ -132,7 +152,7 @@ GroundAtomList<P> DeleteRelaxedProblemExplorator::create_ground_atoms() const
         boost::hana::at_key(m_delete_free_problem->get_repositories().get_hana_repositories(), boost::hana::type<GroundAtomImpl<P>> {});
     for (const auto& delete_free_ground_atom : delete_free_atom_repository)
     {
-        const auto predicate = m_problem->get_domain()->get_predicate<P>(delete_free_ground_atom->get_predicate()->get_name());
+        const auto predicate = get_predicate<P>(*m_problem, delete_free_ground_atom->get_predicate()->get_name());
 
         auto binding = translate_from_delete_free_to_unrelaxed_problem(delete_free_ground_atom->get_objects(), m_delete_free_object_to_unrelaxed_object);
 

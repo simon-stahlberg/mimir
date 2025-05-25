@@ -156,6 +156,8 @@ private:
 
     friend Derived;
 
+    static constexpr Index DUMMY_PROPOSITION_INDEX = 0;
+
 public:
     ContinuousCost compute_heuristic(State state, bool is_goal_state) override
     {
@@ -163,7 +165,7 @@ public:
         self().initialize_annotations_and_queue_impl(state);
         dijksta();
         const auto cost = self().extract_impl();
-        std::cout << "Cost: " << cost << std::endl;
+        // std::cout << "Cost: " << cost << std::endl;
         return (cost == MAX_DISCRETE_COST) ? INFINITY_CONTINUOUS_COST : cost;
     }
 
@@ -176,6 +178,7 @@ private:
     {
         auto is_fluent_precondition_of_action = IndexMap<IndexList> {};
         auto is_derived_precondtion_of_action = IndexMap<IndexList> {};
+        auto trivial_unary_actions = IndexList {};
 
         for (const auto& action : delete_relaxation.create_ground_actions())
         {
@@ -193,6 +196,15 @@ private:
                     {
                         is_derived_precondtion_of_action[pre_atom_index].push_back(unary_action_index);
                     }
+                    for (const auto& pre_atom_index : cond_effect->get_conjunctive_condition()->get_positive_precondition<formalism::FluentTag>())
+                    {
+                        is_fluent_precondition_of_action[pre_atom_index].push_back(unary_action_index);
+                    }
+                    for (const auto& pre_atom_index : cond_effect->get_conjunctive_condition()->get_positive_precondition<formalism::DerivedTag>())
+                    {
+                        is_derived_precondtion_of_action[pre_atom_index].push_back(unary_action_index);
+                    }
+
                     m_unary_actions.push_back(
                         UnaryGroundAction(unary_action_index,
                                           action->get_conjunctive_condition()->get_compressed_positive_precondition<formalism::FluentTag>(),
@@ -200,12 +212,18 @@ private:
                                           cond_effect->get_conjunctive_condition()->get_compressed_positive_precondition<formalism::FluentTag>(),
                                           cond_effect->get_conjunctive_condition()->get_compressed_positive_precondition<formalism::DerivedTag>(),
                                           eff_atom_index));
+
+                    if (m_unary_actions.back().get_num_preconditions() == 0)
+                    {
+                        trivial_unary_actions.push_back(unary_action_index);
+                    }
                 }
             }
         }
 
         auto is_fluent_precondition_of_axiom = IndexMap<IndexList> {};
         auto is_derived_precondition_of_axiom = IndexMap<IndexList> {};
+        auto trivial_unary_axioms = IndexList {};
 
         for (const auto& axiom : delete_relaxation.create_ground_axioms())
         {
@@ -223,11 +241,24 @@ private:
                                                       axiom->get_conjunctive_condition()->get_compressed_positive_precondition<formalism::FluentTag>(),
                                                       axiom->get_conjunctive_condition()->get_compressed_positive_precondition<formalism::DerivedTag>(),
                                                       axiom->get_literal()->get_atom()->get_index()));
+
+            if (m_unary_axioms.back().get_num_preconditions() == 0)
+            {
+                trivial_unary_axioms.push_back(unary_axiom_index);
+            }
         }
+
+        // std::cout << "Num trivial actions: " << trivial_unary_actions.size() << std::endl;
+        // std::cout << "Num trivial axioms: " << trivial_unary_axioms.size() << std::endl;
+
+        // We create a dummy proposition with index 0 that contains all trivial unary actions and axioms without preconditions.
+        m_propositions.emplace_back(m_propositions.size(), std::move(trivial_unary_actions), std::move(trivial_unary_axioms), false);
 
         for (const auto& atom : delete_relaxation.create_ground_atoms<formalism::FluentTag>())
         {
             const auto proposition_index = m_propositions.size();
+
+            // std::cout << proposition_index << " " << *atom << std::endl;
 
             if (atom->get_index() >= m_fluent_offsets.size())
             {
@@ -248,6 +279,8 @@ private:
         for (const auto& atom : delete_relaxation.create_ground_atoms<formalism::DerivedTag>())
         {
             const auto proposition_index = m_propositions.size();
+
+            // std::cout << proposition_index << " " << *atom << std::endl;
 
             if (atom->get_index() >= m_derived_offsets.size())
             {
@@ -280,29 +313,33 @@ private:
 
             const auto& proposition = m_propositions[entry.proposition_index];
 
-            if (proposition.is_goal() && --num_unsat_goals == 0)
-            {
-                return;
-            }
+            // std::cout << "Queue pop: " << entry.proposition_index << " " << entry.cost << std::endl;
 
             if (self().on_expand_proposition_impl(proposition, entry.cost))
             {
                 continue;
             }
 
+            if (proposition.is_goal() && --num_unsat_goals == 0)
+            {
+                return;
+            }
+
             for (const auto action_index : proposition.is_precondition_of_actions())
             {
                 const auto& action = m_unary_actions[action_index];
 
-                self().on_process_action_impl(proposition, entry.cost, action);
+                self().on_process_action_impl(proposition, action);
             }
             for (const auto axiom_index : proposition.is_precondition_of_axioms())
             {
                 const auto& axiom = m_unary_axioms[axiom_index];
 
-                self().on_process_axiom_impl(proposition, entry.cost, axiom);
+                self().on_process_axiom_impl(proposition, axiom);
             }
         }
+
+        // std::cout << "Num unsat goals: " << num_unsat_goals << std::endl;
     }
 
     IndexList m_fluent_offsets;
@@ -380,6 +417,10 @@ private:
             get_cost(annotation) = 0;
             m_queue.insert(0, QueueEntry { proposition_index, 0 });
         }
+        // Trivial dummy proposition to trigger actions and axioms without preconditions
+        auto& annotation = m_proposition_annotations[0];
+        get_cost(annotation) = 0;
+        m_queue.insert(0, QueueEntry { 0, 0 });
     }
 
     DiscreteCost extract_impl()
@@ -402,27 +443,31 @@ private:
         const auto& annotation = m_proposition_annotations[proposition.get_index()];
         const auto proposition_cost = get_cost(annotation);
 
+        // Return true iff the proposition was already processed at a lower dijkstra cost layer.
         return proposition_cost < cost;
     }
 
-    void on_apply_effect(Index effect_proposition_index, DiscreteCost action_cost)
+    void on_apply_effect(Index effect_proposition_index, DiscreteCost prev_cost)
     {
         auto& proposition = this->m_proposition_annotations[effect_proposition_index];
 
-        if (action_cost < get_cost(proposition))
+        if (prev_cost < get_cost(proposition))
         {
-            get_cost(proposition) = action_cost;
-            this->m_queue.insert(get_cost(proposition), QueueEntry { effect_proposition_index, action_cost });
+            get_cost(proposition) = prev_cost;
+            this->m_queue.insert(get_cost(proposition), QueueEntry { effect_proposition_index, prev_cost });
         }
     }
 
-    void on_process_action_impl(const Proposition& proposition, DiscreteCost cost, const UnaryGroundAction& action)
+    void on_process_action_impl(const Proposition& proposition, const UnaryGroundAction& action)
     {
         auto& proposition_annotation = m_proposition_annotations[proposition.get_index()];
         auto& action_annotation = m_action_annotations[action.get_index()];
 
         get_cost(action_annotation) = std::max(get_cost(action_annotation), get_cost(proposition_annotation) + 1);  // actions assume unit cost 1.
-        --get_num_unsatisfied_preconditions(action_annotation);
+        if (proposition.get_index() != DUMMY_PROPOSITION_INDEX)
+        {
+            --get_num_unsatisfied_preconditions(action_annotation);
+        }
         if (get_num_unsatisfied_preconditions(action_annotation) == 0)
         {
             const auto effect_proposition_index = this->m_fluent_offsets[action.get_fluent_effect()];
@@ -430,13 +475,16 @@ private:
         }
     }
 
-    void on_process_axiom_impl(const Proposition& proposition, DiscreteCost cost, const UnaryGroundAxiom& axiom)
+    void on_process_axiom_impl(const Proposition& proposition, const UnaryGroundAxiom& axiom)
     {
         const auto& proposition_annotation = m_proposition_annotations[proposition.get_index()];
         auto& axiom_annotation = m_axiom_annotations[axiom.get_index()];
 
         get_cost(axiom_annotation) = std::max(get_cost(axiom_annotation), get_cost(proposition_annotation));  // axioms have 0 cost.
-        --get_num_unsatisfied_preconditions(axiom_annotation);
+        if (proposition.get_index() != DUMMY_PROPOSITION_INDEX)
+        {
+            --get_num_unsatisfied_preconditions(axiom_annotation);
+        }
         if (get_num_unsatisfied_preconditions(axiom_annotation) == 0)
         {
             const auto effect_proposition_index = this->m_derived_offsets[axiom.get_derived_effect()];
@@ -473,9 +521,9 @@ private:
 
     DiscreteCost extract_impl();
 
-    void on_process_action_impl(const Proposition& proposition, DiscreteCost cost, const UnaryGroundAction& action);
+    void on_process_action_impl(const Proposition& proposition, const UnaryGroundAction& action);
 
-    void on_process_axiom_impl(const Proposition& proposition, DiscreteCost cost, const UnaryGroundAxiom& axiom);
+    void on_process_axiom_impl(const Proposition& proposition, const UnaryGroundAxiom& axiom);
 
     friend class RelaxedPlanningGraph<AddHeuristicImpl>;
 
@@ -504,9 +552,9 @@ private:
 
     DiscreteCost extract_impl();
 
-    void on_process_action_impl(const Proposition& proposition, DiscreteCost cost, const UnaryGroundAction& action);
+    void on_process_action_impl(const Proposition& proposition, const UnaryGroundAction& action);
 
-    void on_process_axiom_impl(const Proposition& proposition, DiscreteCost cost, const UnaryGroundAxiom& axiom);
+    void on_process_axiom_impl(const Proposition& proposition, const UnaryGroundAxiom& axiom);
 
     friend class RelaxedPlanningGraph<FFHeuristicImpl>;
 
