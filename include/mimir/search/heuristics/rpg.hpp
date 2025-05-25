@@ -18,11 +18,14 @@
 #ifndef MIMIR_SEARCH_HEURISTICS_RPG_HPP_
 #define MIMIR_SEARCH_HEURISTICS_RPG_HPP_
 
+#include "mimir/common/types.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/delete_relaxed_problem_explorator.hpp"
 #include "mimir/search/heuristics/interface.hpp"
 #include "mimir/search/openlists/priority_queue.hpp"
+
+#include <deque>
 
 namespace mimir::search::rpg
 {
@@ -32,78 +35,92 @@ public:
     UnaryGroundAction(Index index,
                       const FlatIndexList& fluent_preconditions,
                       const FlatIndexList& derived_preconditions,
-                      const FlatIndexList& cond_fluent_precondition,
-                      const FlatIndexList& cond_derived_precondition,
-                      Index fluent_effect);
+                      const FlatIndexList& cond_fluent_preconditions,
+                      const FlatIndexList& cond_derived_preconditions,
+                      Index fluent_effect) :
+        m_index(index),
+        m_fluent_preconditions(fluent_preconditions),
+        m_derived_preconditions(derived_preconditions),
+        m_cond_fluent_preconditions(cond_fluent_preconditions),
+        m_cond_derived_preconditions(cond_derived_preconditions),
+        m_fluent_effect(fluent_effect)
+    {
+    }
 
-    Index get_index() const;
-    const FlatIndexList& get_fluent_precondition() const;
-    const FlatIndexList& get_derived_precondition() const;
-    const FlatIndexList& get_cond_fluent_precondition() const;
-    const FlatIndexList& get_cond_derived_precondition() const;
-    Index get_fluent_effect() const;
+    Index get_index() const { return m_index; }
+    const FlatIndexList& get_fluent_preconditions() const { return m_fluent_preconditions; }
+    const FlatIndexList& get_derived_preconditions() const { return m_derived_preconditions; }
+    const FlatIndexList& get_cond_fluent_preconditions() const { return m_cond_fluent_preconditions; }
+    const FlatIndexList& get_cond_derived_preconditions() const { return m_cond_derived_preconditions; }
+    Index get_fluent_effect() const { return m_fluent_effect; }
 
 private:
     Index m_index;
-    const FlatIndexList& m_fluent_precondition;
-    const FlatIndexList& m_derived_precondition;
-    const FlatIndexList& m_cond_fluent_precondition;
-    const FlatIndexList& m_cond_derived_precondition;
+    const FlatIndexList& m_fluent_preconditions;
+    const FlatIndexList& m_derived_preconditions;
+    const FlatIndexList& m_cond_fluent_preconditions;
+    const FlatIndexList& m_cond_derived_preconditions;
     Index m_fluent_effect;
 };
 using UnaryGroundActionList = std::vector<UnaryGroundAction>;
 
-template<typename... Ts>
-struct UnaryGroundActionState
+struct UnaryGroundActionAnnotations
 {
     size_t num_unsatisfied_preconditions;
-
-    std::tuple<Ts...> m_data;
+    DiscreteCost cost;
 };
+using UnaryGroundActionAnnotationsList = std::vector<UnaryGroundActionAnnotations>;
 
 class UnaryGroundAxiom
 {
 public:
-    UnaryGroundAxiom(Index index, const FlatIndexList& fluent_preconditions, const FlatIndexList& derived_preconditions, Index derived_effect);
+    UnaryGroundAxiom(Index index, const FlatIndexList& fluent_preconditions, const FlatIndexList& derived_preconditions, Index derived_effect) :
+        m_index(index),
+        m_fluent_preconditions(fluent_preconditions),
+        m_derived_preconditions(derived_preconditions),
+        m_derived_effect(derived_effect)
+    {
+    }
 
-    Index get_index() const;
-    const FlatIndexList& get_fluent_precondition() const;
-    const FlatIndexList& get_derived_precondition() const;
-    Index get_fluent_effect() const;
+    Index get_index() const { return m_index; }
+    const FlatIndexList& get_fluent_precondition() const { return m_fluent_preconditions; }
+    const FlatIndexList& get_derived_precondition() const { return m_derived_preconditions; }
+    Index get_fluent_effect() const { return m_derived_effect; }
 
 private:
     Index m_index;
-    const FlatIndexList& m_fluent_precondition;
-    const FlatIndexList& m_derived_precondition;
+    const FlatIndexList& m_fluent_preconditions;
+    const FlatIndexList& m_derived_preconditions;
     Index m_derived_effect;
 };
 using UnaryGroundAxiomList = std::vector<UnaryGroundAxiom>;
 
-template<typename... Ts>
-struct UnaryGroundAxiomState
+struct UnaryGroundAxiomAnnotations
 {
     size_t num_unsatisfied_preconditions;
-
-    std::tuple<Ts...> m_data;
 };
+using UnaryGroundAxiomAnnotationsList = std::vector<UnaryGroundAxiomAnnotations>;
 
 class Proposition
 {
 public:
-    Proposition(IndexList is_precondition_of_action, IndexList is_precondition_of_axiom, bool is_goal) :
-        m_is_precondition_of_action(std::move(is_precondition_of_action)),
-        m_is_precondition_of_axiom(std::move(is_precondition_of_axiom)),
+    Proposition(Index index, IndexList is_precondition_of_actions, IndexList is_precondition_of_axioms, bool is_goal) :
+        m_index(index),
+        m_is_precondition_of_actions(std::move(is_precondition_of_actions)),
+        m_is_precondition_of_axioms(std::move(is_precondition_of_axioms)),
         m_is_goal(is_goal)
     {
     }
 
-    const IndexList& is_precondition_of_action() const;
-    const IndexList& is_precondition_of_axiom() const;
-    bool is_goal() const;
+    Index get_index() const { return m_index; }
+    const IndexList& is_precondition_of_actions() const { return m_is_precondition_of_actions; }
+    const IndexList& is_precondition_of_axioms() const { return m_is_precondition_of_axioms; }
+    bool is_goal() const { return m_is_goal; }
 
 private:
-    IndexList m_is_precondition_of_action;
-    IndexList m_is_precondition_of_axiom;
+    Index m_index;
+    IndexList m_is_precondition_of_actions;
+    IndexList m_is_precondition_of_axioms;
     bool m_is_goal;
 };
 
@@ -112,17 +129,11 @@ using PropositionList = std::vector<Proposition>;
 template<typename... Annotations>
 struct PropositionAnnotations
 {
-    ContinuousCost cost = std::numeric_limits<ContinuousCost>::infinity();
+    DiscreteCost cost = std::numeric_limits<DiscreteCost>::max();
     std::tuple<Annotations...> m_annotations;
 };
-
 template<typename... Annotations>
 using PropositionAnnotationsList = std::vector<PropositionAnnotations<Annotations...>>;
-
-using FFPropositionAnnotations = PropositionAnnotations<bool>;
-using FFPropositionAnnotationsList = std::vector<FFPropositionAnnotations>;
-
-inline bool& is_marked(FFPropositionAnnotations& prop) { return std::get<0>(prop.m_annotations); }
 
 template<typename Derived>
 class RelaxedPlanningGraph : public IHeuristic
@@ -132,8 +143,22 @@ private:
     constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
+    friend class Derived;
+
 public:
-    explicit RelaxedPlanningGraph(const DeleteRelaxedProblemExplorator& delete_relaxation) : m_unary_actions(), m_unary_axioms()
+    double compute_heuristic(State state, bool is_goal_state) override
+    {
+        self().initialize_annotations_impl();
+        brfs();
+        return self().extract_impl();
+    }
+
+private:
+    explicit RelaxedPlanningGraph(const DeleteRelaxedProblemExplorator& delete_relaxation) :
+        m_fluent_offsets(),
+        m_derived_offsets(),
+        m_unary_actions(),
+        m_unary_axioms()
     {
         auto is_fluent_precondition_of_action = IndexMap<IndexList> {};
         auto is_derived_precondtion_of_action = IndexMap<IndexList> {};
@@ -188,72 +213,169 @@ public:
 
         for (const auto& atom : delete_relaxation.create_ground_atoms<formalism::FluentTag>())
         {
-            m_fluent_proposition_layer.emplace_back(
-                std::move(is_fluent_precondition_of_action[atom->get_index()]),
-                std::move(is_derived_precondition_of_axiom[atom->get_index]),
-                delete_relaxation.get_problem()->get_positive_goal_atoms_bitset<formalism::FluentTag>().get(atom->get_index()));
+            const auto proposition_index = m_propositions.size();
+
+            if (atom->get_index() >= m_fluent_offsets.size())
+            {
+                m_fluent_offsets.resize(atom->get_index() + 1, MAX_INDEX);
+            }
+            m_fluent_offsets[atom->get_index()] = proposition_index;
+
+            const auto is_goal = delete_relaxation.get_problem()->get_positive_goal_atoms_bitset<formalism::FluentTag>().get(atom->get_index());
+
+            m_propositions.emplace_back(proposition_index,
+                                        std::move(is_fluent_precondition_of_action[atom->get_index()]),
+                                        std::move(is_derived_precondition_of_axiom[atom->get_index]),
+                                        is_goal);
+
+            if (is_goal)
+                m_goal_propositions.push_back(proposition_index);
         }
         for (const auto& atom : delete_relaxation.create_ground_atoms<formalism::DerivedTag>())
         {
-            m_derived_proposition_layer.emplace_back(
-                std::move(is_fluent_precondition_of_action[atom->get_index()]),
-                std::move(is_derived_precondition_of_axiom[atom->get_index]),
-                delete_relaxation.get_problem()->get_positive_goal_atoms_bitset<formalism::DerivedTag>().get(atom->get_index()));
+            const auto proposition_index = m_propositions.size();
+
+            if (atom->get_index() >= m_derived_offsets.size())
+            {
+                m_derived_offsets.resize(atom->get_index() + 1, MAX_INDEX);
+            }
+            m_derived_offsets[atom->get_index()] = proposition_index;
+
+            const auto is_goal = delete_relaxation.get_problem()->get_positive_goal_atoms_bitset<formalism::DerivedTag>().get(atom->get_index());
+
+            m_propositions.emplace_back(proposition_index,
+                                        std::move(is_fluent_precondition_of_action[atom->get_index()]),
+                                        std::move(is_derived_precondition_of_axiom[atom->get_index]),
+                                        delete_relaxation.get_problem()->get_positive_goal_atoms_bitset<formalism::DerivedTag>().get(atom->get_index()));
+
+            if (is_goal)
+                m_goal_propositions.push_back(proposition_index);
         }
     }
 
-    double compute_heuristic(State state, bool is_goal_state) override
+    struct QueueEntry
     {
-        reset();
-        brfs();
-        return extract_impl();
-    }
+        Index proposition_index;
+        DiscreteCost cost;
+    };
 
-private:
     void reset() {}
 
     void brfs()
     {
-        // TODO: dijkstra exploration
-        auto num_unsat_goals = m_fluent_proposition_layer.size() + m_derived_goal_propositions.size();
-        // TODO: apply axioms until none applicable
-        // TODO: apply actions until none applicable
-        while (!m_axiom_queue.empty() && !m_action_queue.empty()) {}
+        auto num_unsat_goals = m_goal_propositions.size();
+
+        while (!m_queue.empty())
+        {
+            const auto& entry = m_queue.front();
+            m_queue.pop_front();
+            const auto& proposition = m_propositions[entry.proposition_index];
+
+            if (proposition.is_goal() && --num_unsat_goals == 0)
+            {
+                return;
+            }
+
+            if (self().on_expand_proposition_impl(proposition, entry.cost))
+            {
+                return;
+            }
+
+            for (const auto action_index : proposition.is_precondition_of_action())
+            {
+                const auto& action = m_unary_actions[action_index];
+
+                self().on_process_action_impl(proposition, entry.distance, action);
+            }
+            for (const auto axiom_index : proposition.is_precondition_of_axiom())
+            {
+                const auto& axiom = m_unary_axioms[axiom_index];
+
+                self().on_process_axiom_impl(proposition, entry.distance, axiom);
+            }
+        }
     }
 
-private:
+    IndexList m_fluent_offsets;
+    IndexList m_derived_offsets;
+
     UnaryGroundActionList m_unary_actions;
     UnaryGroundAxiomList m_unary_axioms;
 
-protected:
-    std::vector<Proposition> m_fluent_proposition_layer;
-    std::vector<Proposition> m_derived_proposition_layer;
+    PropositionList m_propositions;
 
-    IndexList m_fluent_goal_propositions;
-    IndexList m_derived_goal_propositions;
+    IndexList m_goal_propositions;
 
-    PriorityQueue<ContinuousCost, Index> m_action_queue;
-    PriorityQueue<ContinuousCost, Index> m_axiom_queue;
+    std::deque<QueueEntry> m_queue;
 };
 
 class MaxHeuristic : public RelaxedPlanningGraph<MaxHeuristic>
 {
 public:
 private:
+    void initialize_annotations_impl();
+
+    double extract_impl();
+
+    bool on_expand_proposition_impl(const Proposition& proposition, DiscreteCost cost)
+    {
+        return m_proposition_annotations[proposition.get_index()].cost < cost;
+    }
+
+    void on_process_action_impl(const Proposition& proposition, DiscreteCost cost, const UnaryGroundAction& action);
+
+    void on_process_axiom_impl(const Proposition& proposition, DiscreteCost cost, const UnaryGroundAxiom& axiom);
+
+    friend class RelaxedPlanningGraph<MaxHeuristic>;
+
+private:
+    UnaryGroundActionAnnotationsList m_unary_action_states;
+    UnaryGroundAxiomAnnotationsList m_unary_axiom_states;
+
+    PropositionAnnotationsList<> m_proposition_annotations;
 };
 
 class AddHeuristic : public RelaxedPlanningGraph<AddHeuristic>
 {
 public:
 private:
+    void initialize_annotations_impl();
+
+    double extract_impl();
+
+    void on_process_action_impl(const Proposition& proposition, DiscreteCost cost, const UnaryGroundAction& action);
+
+    void on_process_axiom_impl(const Proposition& proposition, DiscreteCost cost, const UnaryGroundAxiom& axiom);
+
+    friend class RelaxedPlanningGraph<AddHeuristic>;
+
+private:
+    UnaryGroundActionAnnotationsList m_unary_action_states;
+    UnaryGroundAxiomAnnotationsList m_unary_axiom_states;
+
+    PropositionAnnotationsList<> m_proposition_annotations;
 };
 
 class FFHeuristic : public AddHeuristic
 {
 public:
 private:
-};
+    void initialize_annotations_impl();
 
+    double extract_impl();
+
+    void on_process_action_impl(const Proposition& proposition, DiscreteCost cost, const UnaryGroundAction& action);
+
+    void on_process_axiom_impl(const Proposition& proposition, DiscreteCost cost, const UnaryGroundAxiom& axiom);
+
+    friend class RelaxedPlanningGraph<MaxHeuristic>;
+
+private:
+    UnaryGroundActionAnnotationsList m_unary_action_states;
+    UnaryGroundAxiomAnnotationsList m_unary_axiom_states;
+
+    PropositionAnnotationsList<bool> m_proposition_annotations;
+};
 }
 
 #endif
