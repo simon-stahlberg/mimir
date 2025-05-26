@@ -33,12 +33,13 @@ public:
 private:
     /// @brief Initialize "And"-structure node annotations.
     /// Sets the cost for each structure node to 0.
-    void initialize_and_annotations_impl();
+    void initialize_and_annotations_impl(const rpg::UnaryGroundAction& action);
+    void initialize_and_annotations_impl(const rpg::UnaryGroundAxiom& axiom);
 
     /// @brief Initialize "Or"-proposition node annotations.
     /// Sets the cost for each prosition that is true in the state to 0, and otherwise to infinity.
-    /// @param state is the state.
-    void initialize_or_annotations_impl(State state);
+    void initialize_or_annotations_impl(const rpg::Proposition& proposition);
+    void initialize_or_annotations_and_queue_impl(const rpg::Proposition& proposition);
 
     /// @brief Update the "And"-action node with maximal cost.
     /// @param proposition is the proposition.

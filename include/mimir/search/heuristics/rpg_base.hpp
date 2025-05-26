@@ -194,8 +194,9 @@ private:
 public:
     ContinuousCost compute_heuristic(State state, bool is_goal_state) override
     {
-        self().initialize_and_annotations_impl();
-        self().initialize_or_annotations_impl(state);
+        self().initialize_and_annotations();
+        self().initialize_or_annotations();
+        self().initialize_or_annotations_and_queue(state);
         dijksta();
         return (m_num_unsat_goals > 0) ? INFINITY_CONTINUOUS_COST : self().extract_impl();
     }
@@ -496,6 +497,112 @@ private:
             }
         }
         std::sort(m_derived_atoms.begin(), m_derived_atoms.end());
+
+        m_action_annotations.resize(this->m_unary_actions.size());
+        m_axiom_annotations.resize(this->m_unary_axioms.size());
+        m_proposition_annotations.resize(this->m_propositions.size());
+    }
+
+    void initialize_and_annotations()
+    {
+        for (const auto& action : m_unary_actions)
+        {
+            self().initialize_and_annotations_impl(action);
+        }
+        for (const auto& axiom : m_unary_axioms)
+        {
+            self().initialize_and_annotations_impl(axiom);
+        }
+    }
+
+    void initialize_or_annotations()
+    {
+        for (const auto& proposition : m_propositions)
+        {
+            self().initialize_or_annotations_impl(proposition);
+        }
+    }
+
+    void initialize_or_annotations_and_queue(State state)
+    {
+        this->m_queue.clear();
+
+        {
+            auto it = state->get_atoms<formalism::FluentTag>().begin();
+            auto it2 = m_fluent_atoms.begin();
+            const auto end = state->get_atoms<formalism::FluentTag>().end();
+            const auto end2 = m_fluent_atoms.end();
+
+            while (it != end && it2 != end2)
+            {
+                if (*it == *it2)
+                {
+                    self().initialize_or_annotations_and_queue_impl(m_propositions[m_positive_fluent_offsets[*it]]);
+                    ++it;
+                    ++it2;
+                }
+                else if (*it < *it2)
+                {
+                    self().initialize_or_annotations_and_queue_impl(m_propositions[m_positive_fluent_offsets[*it]]);
+                    ++it;
+                }
+                else
+                {
+                    self().initialize_or_annotations_and_queue_impl(m_propositions[m_negative_fluent_offsets[*it2]]);
+                    ++it2;
+                }
+            }
+            while (it != end)
+            {
+                self().initialize_or_annotations_and_queue_impl(m_propositions[m_positive_fluent_offsets[*it]]);
+                ++it;
+            }
+            while (it2 != end2)
+            {
+                self().initialize_or_annotations_and_queue_impl(m_propositions[m_negative_fluent_offsets[*it2]]);
+                ++it2;
+            }
+        }
+
+        {
+            auto it = state->get_atoms<formalism::DerivedTag>().begin();
+            auto it2 = m_derived_atoms.begin();
+            const auto end = state->get_atoms<formalism::DerivedTag>().end();
+            const auto end2 = m_derived_atoms.end();
+
+            while (it != end && it2 != end2)
+            {
+                if (*it == *it2)
+                {
+                    self().initialize_or_annotations_and_queue_impl(m_propositions[this->m_positive_derived_offsets[*it]]);
+                    ++it;
+                    ++it2;
+                }
+                else if (*it < *it2)
+                {
+                    self().initialize_or_annotations_and_queue_impl(m_propositions[this->m_positive_derived_offsets[*it]]);
+                    ++it;
+                }
+                else
+                {
+                    self().initialize_or_annotations_and_queue_impl(m_propositions[this->m_negative_derived_offsets[*it2]]);
+                    ++it2;
+                }
+            }
+            while (it != end)
+            {
+                self().initialize_or_annotations_and_queue_impl(m_propositions[this->m_positive_derived_offsets[*it]]);
+                ++it;
+            }
+            while (it2 != end2)
+            {
+                self().initialize_or_annotations_and_queue_impl(m_propositions[this->m_negative_derived_offsets[*it2]]);
+                ++it2;
+            }
+        }
+
+        // Trivial dummy proposition to trigger actions and axioms without preconditions
+        self().initialize_or_annotations_and_queue_impl(m_propositions[0]);
     }
 
     void on_process_action(const Proposition& proposition, const UnaryGroundAction& action)
@@ -616,7 +723,6 @@ private:
 
     PriorityQueue<DiscreteCost, QueueEntry> m_queue;
 };
-
 }
 
 #endif

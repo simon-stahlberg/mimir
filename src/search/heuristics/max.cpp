@@ -29,145 +29,31 @@ MaxHeuristicImpl::MaxHeuristicImpl(const DeleteRelaxedProblemExplorator& delete_
 
 MaxHeuristic MaxHeuristicImpl::create(const DeleteRelaxedProblemExplorator& delete_relaxation) { return std::make_shared<MaxHeuristicImpl>(delete_relaxation); }
 
-void MaxHeuristicImpl::initialize_and_annotations_impl()
+void MaxHeuristicImpl::initialize_and_annotations_impl(const UnaryGroundAction& action)
 {
-    this->m_action_annotations.resize(this->m_unary_actions.size());
-    for (size_t i = 0; i < this->m_unary_actions.size(); ++i)
-    {
-        auto& annotation = this->m_action_annotations[i];
-        const auto& action = this->m_unary_actions[i];
-        get_cost(annotation) = 0;
-        get_num_unsatisfied_preconditions(annotation) = action.get_num_preconditions();
-    }
-    this->m_axiom_annotations.resize(this->m_unary_axioms.size());
-    for (size_t i = 0; i < this->m_unary_axioms.size(); ++i)
-    {
-        auto& annotation = this->m_axiom_annotations[i];
-        const auto& axiom = this->m_unary_axioms[i];
-        get_cost(annotation) = 0;
-        get_num_unsatisfied_preconditions(annotation) = axiom.get_num_preconditions();
-    }
+    auto& annotation = this->m_action_annotations[action.get_index()];
+    get_cost(annotation) = 0;
+    get_num_unsatisfied_preconditions(annotation) = action.get_num_preconditions();
 }
 
-void MaxHeuristicImpl::initialize_or_annotations_impl(State state)
+void MaxHeuristicImpl::initialize_and_annotations_impl(const UnaryGroundAxiom& axiom)
 {
-    this->m_proposition_annotations.resize(this->m_propositions.size());
-    for (size_t i = 0; i < this->m_propositions.size(); ++i)
-    {
-        auto& annotation = this->m_proposition_annotations[i];
-        get_cost(annotation) = MAX_DISCRETE_COST;
-    }
-
-    this->m_queue.clear();
-
-    {
-        auto it = state->get_atoms<formalism::FluentTag>().begin();
-        auto it2 = m_fluent_atoms.begin();
-        const auto end = state->get_atoms<formalism::FluentTag>().end();
-        const auto end2 = m_fluent_atoms.end();
-
-        while (it != end && it2 != end2)
-        {
-            if (*it == *it2)
-            {
-                const auto proposition_index = this->m_positive_fluent_offsets[*it];
-                auto& annotation = this->m_proposition_annotations[proposition_index];
-                get_cost(annotation) = 0;
-                this->m_queue.insert(0, QueueEntry { proposition_index, 0 });
-                ++it;
-                ++it2;
-            }
-            else if (*it < *it2)
-            {
-                const auto proposition_index = this->m_positive_fluent_offsets[*it];
-                auto& annotation = this->m_proposition_annotations[proposition_index];
-                get_cost(annotation) = 0;
-                this->m_queue.insert(0, QueueEntry { proposition_index, 0 });
-                ++it;
-            }
-            else
-            {
-                const auto proposition_index = this->m_negative_fluent_offsets[*it2];
-                auto& annotation = this->m_proposition_annotations[proposition_index];
-                get_cost(annotation) = 0;
-                this->m_queue.insert(0, QueueEntry { proposition_index, 0 });
-                ++it2;
-            }
-        }
-        while (it != end)
-        {
-            const auto proposition_index = this->m_positive_fluent_offsets[*it];
-            auto& annotation = this->m_proposition_annotations[proposition_index];
-            get_cost(annotation) = 0;
-            this->m_queue.insert(0, QueueEntry { proposition_index, 0 });
-            ++it;
-        }
-        while (it2 != end2)
-        {
-            const auto proposition_index = this->m_negative_fluent_offsets[*it2];
-            auto& annotation = this->m_proposition_annotations[proposition_index];
-            get_cost(annotation) = 0;
-            this->m_queue.insert(0, QueueEntry { proposition_index, 0 });
-            ++it2;
-        }
-    }
-
-    {
-        auto it = state->get_atoms<formalism::DerivedTag>().begin();
-        auto it2 = m_derived_atoms.begin();
-        const auto end = state->get_atoms<formalism::DerivedTag>().end();
-        const auto end2 = m_derived_atoms.end();
-
-        while (it != end && it2 != end2)
-        {
-            if (*it == *it2)
-            {
-                const auto proposition_index = this->m_positive_derived_offsets[*it];
-                auto& annotation = this->m_proposition_annotations[proposition_index];
-                get_cost(annotation) = 0;
-                this->m_queue.insert(0, QueueEntry { proposition_index, 0 });
-                ++it;
-                ++it2;
-            }
-            else if (*it < *it2)
-            {
-                const auto proposition_index = this->m_positive_derived_offsets[*it];
-                auto& annotation = this->m_proposition_annotations[proposition_index];
-                get_cost(annotation) = 0;
-                this->m_queue.insert(0, QueueEntry { proposition_index, 0 });
-                ++it;
-            }
-            else
-            {
-                const auto proposition_index = this->m_negative_derived_offsets[*it2];
-                auto& annotation = this->m_proposition_annotations[proposition_index];
-                get_cost(annotation) = 0;
-                this->m_queue.insert(0, QueueEntry { proposition_index, 0 });
-                ++it2;
-            }
-        }
-        while (it != end)
-        {
-            const auto proposition_index = this->m_positive_derived_offsets[*it];
-            auto& annotation = this->m_proposition_annotations[proposition_index];
-            get_cost(annotation) = 0;
-            this->m_queue.insert(0, QueueEntry { proposition_index, 0 });
-            ++it;
-        }
-        while (it2 != end2)
-        {
-            const auto proposition_index = this->m_negative_derived_offsets[*it2];
-            auto& annotation = this->m_proposition_annotations[proposition_index];
-            get_cost(annotation) = 0;
-            this->m_queue.insert(0, QueueEntry { proposition_index, 0 });
-            ++it2;
-        }
-    }
-
-    // Trivial dummy proposition to trigger actions and axioms without preconditions
-    auto& annotation = this->m_proposition_annotations[0];
+    auto& annotation = this->m_axiom_annotations[axiom.get_index()];
     get_cost(annotation) = 0;
-    this->m_queue.insert(0, QueueEntry { 0, 0 });
+    get_num_unsatisfied_preconditions(annotation) = axiom.get_num_preconditions();
+}
+
+void MaxHeuristicImpl::initialize_or_annotations_impl(const Proposition& proposition)
+{
+    auto& annotation = this->m_proposition_annotations[proposition.get_index()];
+    get_cost(annotation) = MAX_DISCRETE_COST;
+}
+
+void MaxHeuristicImpl::initialize_or_annotations_and_queue_impl(const Proposition& proposition)
+{
+    auto& annotation = this->m_proposition_annotations[proposition.get_index()];
+    get_cost(annotation) = 0;
+    this->m_queue.insert(0, QueueEntry { proposition.get_index(), 0 });
 }
 
 void MaxHeuristicImpl::update_and_annotation_impl(const Proposition& proposition, const UnaryGroundAction& action)
@@ -225,5 +111,4 @@ DiscreteCost MaxHeuristicImpl::extract_impl()
     }
     return total_cost;
 }
-
 }
