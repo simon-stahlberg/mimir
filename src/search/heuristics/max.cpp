@@ -60,20 +60,110 @@ void MaxHeuristicImpl::initialize_or_annotations_impl(State state)
 
     this->m_queue.clear();
 
-    for (const auto atom_index : state->get_atoms<formalism::FluentTag>())
     {
-        const auto proposition_index = this->m_fluent_offsets[atom_index];
-        auto& annotation = this->m_proposition_annotations[proposition_index];
-        get_cost(annotation) = 0;
-        this->m_queue.insert(0, QueueEntry { proposition_index, 0 });
+        auto it = state->get_atoms<formalism::FluentTag>().begin();
+        auto it2 = m_fluent_atoms.begin();
+        const auto end = state->get_atoms<formalism::FluentTag>().end();
+        const auto end2 = m_fluent_atoms.end();
+
+        while (it != end && it2 != end2)
+        {
+            if (*it == *it2)
+            {
+                const auto proposition_index = this->m_positive_fluent_offsets[*it];
+                auto& annotation = this->m_proposition_annotations[proposition_index];
+                get_cost(annotation) = 0;
+                this->m_queue.insert(0, QueueEntry { proposition_index, 0 });
+                ++it;
+                ++it2;
+            }
+            else if (*it < *it2)
+            {
+                const auto proposition_index = this->m_positive_fluent_offsets[*it];
+                auto& annotation = this->m_proposition_annotations[proposition_index];
+                get_cost(annotation) = 0;
+                this->m_queue.insert(0, QueueEntry { proposition_index, 0 });
+                ++it;
+            }
+            else
+            {
+                const auto proposition_index = this->m_negative_fluent_offsets[*it2];
+                auto& annotation = this->m_proposition_annotations[proposition_index];
+                get_cost(annotation) = 0;
+                this->m_queue.insert(0, QueueEntry { proposition_index, 0 });
+                ++it2;
+            }
+        }
+        while (it != end)
+        {
+            const auto proposition_index = this->m_positive_fluent_offsets[*it];
+            auto& annotation = this->m_proposition_annotations[proposition_index];
+            get_cost(annotation) = 0;
+            this->m_queue.insert(0, QueueEntry { proposition_index, 0 });
+            ++it;
+        }
+        while (it2 != end2)
+        {
+            const auto proposition_index = this->m_negative_fluent_offsets[*it2];
+            auto& annotation = this->m_proposition_annotations[proposition_index];
+            get_cost(annotation) = 0;
+            this->m_queue.insert(0, QueueEntry { proposition_index, 0 });
+            ++it2;
+        }
     }
-    for (const auto atom_index : state->get_atoms<formalism::DerivedTag>())
+
     {
-        const auto proposition_index = this->m_derived_offsets[atom_index];
-        auto& annotation = this->m_proposition_annotations[proposition_index];
-        get_cost(annotation) = 0;
-        this->m_queue.insert(0, QueueEntry { proposition_index, 0 });
+        auto it = state->get_atoms<formalism::DerivedTag>().begin();
+        auto it2 = m_derived_atoms.begin();
+        const auto end = state->get_atoms<formalism::DerivedTag>().end();
+        const auto end2 = m_derived_atoms.end();
+
+        while (it != end && it2 != end2)
+        {
+            if (*it == *it2)
+            {
+                const auto proposition_index = this->m_positive_derived_offsets[*it];
+                auto& annotation = this->m_proposition_annotations[proposition_index];
+                get_cost(annotation) = 0;
+                this->m_queue.insert(0, QueueEntry { proposition_index, 0 });
+                ++it;
+                ++it2;
+            }
+            else if (*it < *it2)
+            {
+                const auto proposition_index = this->m_positive_derived_offsets[*it];
+                auto& annotation = this->m_proposition_annotations[proposition_index];
+                get_cost(annotation) = 0;
+                this->m_queue.insert(0, QueueEntry { proposition_index, 0 });
+                ++it;
+            }
+            else
+            {
+                const auto proposition_index = this->m_negative_derived_offsets[*it2];
+                auto& annotation = this->m_proposition_annotations[proposition_index];
+                get_cost(annotation) = 0;
+                this->m_queue.insert(0, QueueEntry { proposition_index, 0 });
+                ++it2;
+            }
+        }
+        while (it != end)
+        {
+            const auto proposition_index = this->m_positive_derived_offsets[*it];
+            auto& annotation = this->m_proposition_annotations[proposition_index];
+            get_cost(annotation) = 0;
+            this->m_queue.insert(0, QueueEntry { proposition_index, 0 });
+            ++it;
+        }
+        while (it2 != end2)
+        {
+            const auto proposition_index = this->m_negative_derived_offsets[*it2];
+            auto& annotation = this->m_proposition_annotations[proposition_index];
+            get_cost(annotation) = 0;
+            this->m_queue.insert(0, QueueEntry { proposition_index, 0 });
+            ++it2;
+        }
     }
+
     // Trivial dummy proposition to trigger actions and axioms without preconditions
     auto& annotation = this->m_proposition_annotations[0];
     get_cost(annotation) = 0;

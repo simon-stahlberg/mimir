@@ -62,14 +62,14 @@ void AddHeuristicImpl::initialize_or_annotations_impl(State state)
 
     for (const auto atom_index : state->get_atoms<formalism::FluentTag>())
     {
-        const auto proposition_index = this->m_fluent_offsets[atom_index];
+        const auto proposition_index = this->m_positive_fluent_offsets[atom_index];
         auto& annotation = this->m_proposition_annotations[proposition_index];
         get_cost(annotation) = 0;
         this->m_queue.insert(0, QueueEntry { proposition_index, 0 });
     }
     for (const auto atom_index : state->get_atoms<formalism::DerivedTag>())
     {
-        const auto proposition_index = this->m_derived_offsets[atom_index];
+        const auto proposition_index = this->m_positive_derived_offsets[atom_index];
         auto& annotation = this->m_proposition_annotations[proposition_index];
         get_cost(annotation) = 0;
         this->m_queue.insert(0, QueueEntry { proposition_index, 0 });
