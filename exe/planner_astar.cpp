@@ -91,7 +91,7 @@ int main(int argc, char** argv)
 
         if (heuristic_type == 1)
         {
-            heuristic = rpg::MaxHeuristicImpl::create(delete_relaxed_problem_explorator);
+            heuristic = MaxHeuristicImpl::create(delete_relaxed_problem_explorator);
         }
     }
     else

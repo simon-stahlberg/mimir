@@ -136,15 +136,14 @@ class HStarHeuristicImpl;
 using HStarHeuristic = std::shared_ptr<HStarHeuristicImpl>;
 class BlindHeuristicImpl;
 using BlindHeuristic = std::shared_ptr<BlindHeuristicImpl>;
-namespace rpg
-{
 class MaxHeuristicImpl;
 using MaxHeuristic = std::shared_ptr<MaxHeuristicImpl>;
 class AddHeuristicImpl;
 using AddHeuristic = std::shared_ptr<AddHeuristicImpl>;
+class SetAddHeuristicImpl;
+using SetAddHeuristic = std::shared_ptr<SetAddHeuristicImpl>;
 class FFHeuristicImpl;
 using FFHeuristic = std::shared_ptr<FFHeuristicImpl>;
-}
 
 /* Algorithms */
 class IPruningStrategy;
