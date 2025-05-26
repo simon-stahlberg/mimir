@@ -774,7 +774,7 @@ void DynamicNoveltyTable::resize_to_fit(State state)
     resize_to_fit(*it);
 }
 
-void DynamicNoveltyTable::compute_novel_tuples(const State state, std::vector<AtomIndexList>& out_novel_tuples)
+void DynamicNoveltyTable::compute_novel_tuples(State state, std::vector<AtomIndexList>& out_novel_tuples)
 {
     out_novel_tuples.clear();
 
@@ -805,7 +805,7 @@ void DynamicNoveltyTable::insert_tuples(const std::vector<AtomIndexList>& tuples
     }
 }
 
-bool DynamicNoveltyTable::test_novelty_and_update_table(const State state)
+bool DynamicNoveltyTable::test_novelty_and_update_table(State state)
 {
     resize_to_fit(state);
 
@@ -826,7 +826,7 @@ bool DynamicNoveltyTable::test_novelty_and_update_table(const State state)
     return is_novel;
 }
 
-bool DynamicNoveltyTable::test_novelty_and_update_table(const State state, const State succ_state)
+bool DynamicNoveltyTable::test_novelty_and_update_table(State state, State succ_state)
 {
     resize_to_fit(state);
     resize_to_fit(succ_state);

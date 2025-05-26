@@ -84,6 +84,7 @@ from pymimir.pymimir.advanced.search import (
     find_solution_iw,
 
     TupleIndexMapper,
+    DynamicNoveltyTable,
     StateTupleIndexGenerator,
     StatePairTupleIndexGenerator,
 )
