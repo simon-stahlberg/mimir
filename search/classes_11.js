@@ -1,8 +1,8 @@
 var searchData=
 [
-  ['unchangedbooleaneffectimpl_0',['UnchangedBooleanEffectImpl',['../classmimir_1_1languages_1_1general__policies_1_1UnchangedBooleanEffectImpl.html',1,'mimir::languages::general_policies']]],
-  ['unchangednumericaleffectimpl_1',['UnchangedNumericalEffectImpl',['../classmimir_1_1languages_1_1general__policies_1_1UnchangedNumericalEffectImpl.html',1,'mimir::languages::general_policies']]],
-  ['unorderedmapbasicmatrix_2',['UnorderedMapBasicMatrix',['../classmimir_1_1graphs_1_1bgl_1_1UnorderedMapBasicMatrix.html',1,'mimir::graphs::bgl']]],
-  ['unorderedmapreadpropertymap_3',['UnorderedMapReadPropertyMap',['../classmimir_1_1graphs_1_1bgl_1_1UnorderedMapReadPropertyMap.html',1,'mimir::graphs::bgl']]],
-  ['unorderedmapreadwritepropertymap_4',['UnorderedMapReadWritePropertyMap',['../classmimir_1_1graphs_1_1bgl_1_1UnorderedMapReadWritePropertyMap.html',1,'mimir::graphs::bgl']]]
+  ['termimpl_0',['TermImpl',['../classmimir_1_1formalism_1_1TermImpl.html',1,'mimir::formalism']]],
+  ['translator_1',['Translator',['../classmimir_1_1formalism_1_1Translator.html',1,'mimir::formalism']]],
+  ['trivialreadpropertymap_2',['TrivialReadPropertyMap',['../structmimir_1_1graphs_1_1bgl_1_1TrivialReadPropertyMap.html',1,'mimir::graphs::bgl']]],
+  ['tuplegraphimpl_3',['TupleGraphImpl',['../classmimir_1_1datasets_1_1TupleGraphImpl.html',1,'mimir::datasets']]],
+  ['tupleindexmapper_4',['TupleIndexMapper',['../classmimir_1_1search_1_1iw_1_1TupleIndexMapper.html',1,'mimir::search::iw']]]
 ];

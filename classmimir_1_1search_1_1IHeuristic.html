@@ -96,8 +96,8 @@ Inheritance diagram for mimir::search::IHeuristic:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:aaa7c6e47edd6e21d8156e4d0752c65f4"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IHeuristic.html#aaa7c6e47edd6e21d8156e4d0752c65f4">~IHeuristic</a> ()=default</td></tr>
 <tr class="separator:aaa7c6e47edd6e21d8156e4d0752c65f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a157d6bfd7d967931a600871be01d041e"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IHeuristic.html#a157d6bfd7d967931a600871be01d041e">compute_heuristic</a> (<a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> state, bool is_goal_state)=0</td></tr>
-<tr class="separator:a157d6bfd7d967931a600871be01d041e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a241ca19d6c643956d16fce9df9a2496e"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IHeuristic.html#a241ca19d6c643956d16fce9df9a2496e">compute_heuristic</a> (<a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> state, bool is_goal_state)=0</td></tr>
+<tr class="separator:a241ca19d6c643956d16fce9df9a2496e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Interface class </p>
@@ -128,8 +128,8 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a157d6bfd7d967931a600871be01d041e" name="a157d6bfd7d967931a600871be01d041e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a157d6bfd7d967931a600871be01d041e">&#9670;&#160;</a></span>compute_heuristic()</h2>
+<a id="a241ca19d6c643956d16fce9df9a2496e" name="a241ca19d6c643956d16fce9df9a2496e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a241ca19d6c643956d16fce9df9a2496e">&#9670;&#160;</a></span>compute_heuristic()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -138,7 +138,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual double mimir::search::IHeuristic::compute_heuristic </td>
+          <td class="memname">virtual <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> mimir::search::IHeuristic::compute_heuristic </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a>&#160;</td>
           <td class="paramname"><em>state</em>, </td>
@@ -162,7 +162,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="classmimir_1_1search_1_1BlindHeuristicImpl.html#a0efda589a61cb1e84bfd16f879eda13f">mimir::search::BlindHeuristicImpl</a>, and <a class="el" href="classmimir_1_1search_1_1HStarHeuristicImpl.html#a68ce158d4f9dfa3e0dc7c304a79bda30">mimir::search::HStarHeuristicImpl</a>.</p>
+<p>Implemented in <a class="el" href="classmimir_1_1search_1_1BlindHeuristicImpl.html#aa8cf049c0ef863695f96b785aad3f83e">mimir::search::BlindHeuristicImpl</a>, and <a class="el" href="classmimir_1_1search_1_1HStarHeuristicImpl.html#ae20b25d4284f662ed61487cdea947af3">mimir::search::HStarHeuristicImpl</a>.</p>
 
 </div>
 </div>

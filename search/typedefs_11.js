@@ -1,9 +1,23 @@
 var searchData=
 [
-  ['unchangedbooleaneffect_0',['UnchangedBooleanEffect',['../namespacemimir_1_1languages_1_1general__policies.html#a4c33c104aff36fff7ca60ece6a281827',1,'mimir::languages::general_policies']]],
-  ['unchangedbooleaneffectrepository_1',['UnchangedBooleanEffectRepository',['../namespacemimir_1_1languages_1_1general__policies.html#acb1fc96c0bdda5367976ba0a57a057ad',1,'mimir::languages::general_policies']]],
-  ['unchangednumericaleffect_2',['UnchangedNumericalEffect',['../namespacemimir_1_1languages_1_1general__policies.html#a40afd8eb5dc094472c5d6fdc24835821',1,'mimir::languages::general_policies']]],
-  ['unchangednumericaleffectrepository_3',['UnchangedNumericalEffectRepository',['../namespacemimir_1_1languages_1_1general__policies.html#aa3c48a05c9ab6a110efec0a742d14d82',1,'mimir::languages::general_policies']]],
-  ['unorderedmap_4',['UnorderedMap',['../namespacemimir.html#aee46b4137604f4323c701f026b7c4780',1,'mimir']]],
-  ['unorderedset_5',['UnorderedSet',['../namespacemimir.html#ae79add80a6dc77dfb2e6eaac1c250b97',1,'mimir']]]
+  ['term_0',['Term',['../namespacemimir_1_1formalism.html#a464fd2852275efe9690c3a507132cf65',1,'mimir::formalism']]],
+  ['termlist_1',['TermList',['../namespacemimir_1_1formalism.html#af020fb353c583f3a1ebabd01f82e14fd',1,'mimir::formalism']]],
+  ['termrepository_2',['TermRepository',['../namespacemimir_1_1formalism.html#a95dd6d52854f4099e2fa789227eb5d52',1,'mimir::formalism']]],
+  ['tocertificatemap_3',['ToCertificateMap',['../namespacemimir_1_1datasets.html#a95e73b94865ec7ae59a389008ee1161a',1,'mimir::datasets']]],
+  ['toindexmap_4',['ToIndexMap',['../namespacemimir.html#ae3df802892bf968ae4746210b05b3f34',1,'mimir']]],
+  ['tonamedfeaturemap_5',['ToNamedFeatureMap',['../namespacemimir_1_1languages_1_1general__policies.html#a92109f62695385b0f61eb5c6ee7f9885',1,'mimir::languages::general_policies']]],
+  ['tonamedfeaturemaps_6',['ToNamedFeatureMaps',['../namespacemimir_1_1languages_1_1general__policies.html#ab22ec52c3ddee72b244271f2b267bacb',1,'mimir::languages::general_policies']]],
+  ['tononterminalmaps_7',['ToNonTerminalMaps',['../namespacemimir_1_1languages_1_1dl_1_1grammar.html#a12b836f9d6919ad7d2187ce5d03137da',1,'mimir::languages::dl::grammar']]],
+  ['toobjectmap_8',['ToObjectMap',['../namespacemimir_1_1formalism.html#aac3bdcebeda7812ed9b54a40632c68a8',1,'mimir::formalism']]],
+  ['topredicatemap_9',['ToPredicateMap',['../namespacemimir_1_1formalism.html#a10082352270d076842bf7112c4d0a681',1,'mimir::formalism']]],
+  ['topredicatemaps_10',['ToPredicateMaps',['../namespacemimir_1_1formalism.html#aea274de403aa2183d6415de217715439',1,'mimir::formalism']]],
+  ['tuplegraph_11',['TupleGraph',['../namespacemimir_1_1datasets.html#ab946d1fdfcbb7541855da96b86797cb2',1,'mimir::datasets']]],
+  ['tuplegraphlist_12',['TupleGraphList',['../namespacemimir_1_1datasets.html#a5e3f6853ebb2f76d2e5e1fcac8fa6531',1,'mimir::datasets']]],
+  ['tuplegraphvertex_13',['TupleGraphVertex',['../namespacemimir_1_1graphs.html#a40ad24baa6642beb75cd2d720a07f2f5',1,'mimir::graphs']]],
+  ['tuplegraphvertexlist_14',['TupleGraphVertexList',['../namespacemimir_1_1graphs.html#a78aaf762d44ebe5f609efd50b800dd95',1,'mimir::graphs']]],
+  ['tupleindex_15',['TupleIndex',['../namespacemimir_1_1search_1_1iw.html#a172ed9e552b26251f2bfadea54f8fc8c',1,'mimir::search::iw']]],
+  ['tupleindexlist_16',['TupleIndexList',['../namespacemimir_1_1search_1_1iw.html#a8bd60ed942274143509cad0cefc1eb1f',1,'mimir::search::iw']]],
+  ['tupleindexmapperlist_17',['TupleIndexMapperList',['../namespacemimir_1_1search_1_1iw.html#a1a938ab8134a48882f47a9eee361b600',1,'mimir::search::iw']]],
+  ['tupleindexset_18',['TupleIndexSet',['../namespacemimir_1_1search_1_1iw.html#a111578df00f00f630c5c7f7e4301d374',1,'mimir::search::iw']]],
+  ['type_19',['Type',['../classmimir_1_1formalism_1_1PredicateImpl.html#afc5cfca38c4ea62504136d9e6ecde2d8',1,'mimir::formalism::PredicateImpl::Type()'],['../classmimir_1_1formalism_1_1LiteralImpl.html#ad1a98ff8e6798d26c1242f45b20aacdd',1,'mimir::formalism::LiteralImpl::Type()'],['../classmimir_1_1formalism_1_1GroundLiteralImpl.html#a99b3fa7a0a30e267ea0337cf00bd1ca4',1,'mimir::formalism::GroundLiteralImpl::Type()'],['../classmimir_1_1formalism_1_1GroundFunctionImpl.html#a32c9bcab07a837fc3846c2d474cbeeae',1,'mimir::formalism::GroundFunctionImpl::Type()'],['../classmimir_1_1formalism_1_1GroundFunctionValueImpl.html#aad276b04532093057c5d0749c7659c49',1,'mimir::formalism::GroundFunctionValueImpl::Type()'],['../classmimir_1_1formalism_1_1GroundAtomImpl.html#a754716e073484577183f040a299ad9eb',1,'mimir::formalism::GroundAtomImpl::Type()'],['../classmimir_1_1formalism_1_1FunctionSkeletonImpl.html#a1abdf88dc9cb217fa0ccdb4473024782',1,'mimir::formalism::FunctionSkeletonImpl::Type()']]]
 ];
