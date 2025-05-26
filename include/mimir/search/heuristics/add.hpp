@@ -26,9 +26,9 @@ namespace mimir::search
 class AddHeuristicImpl : public rpg::RelaxedPlanningGraph<AddHeuristicImpl>
 {
 public:
-    explicit AddHeuristicImpl(const DeleteRelaxedProblemExplorator& delete_relaxation) : rpg::RelaxedPlanningGraph<AddHeuristicImpl>(delete_relaxation) {}
+    explicit AddHeuristicImpl(const DeleteRelaxedProblemExplorator& delete_relaxation);
 
-    static AddHeuristic create(const DeleteRelaxedProblemExplorator& delete_relaxation) { return std::make_shared<AddHeuristicImpl>(delete_relaxation); }
+    static AddHeuristic create(const DeleteRelaxedProblemExplorator& delete_relaxation);
 
 private:
     /// @brief Initialize "And"-structure node annotations.
@@ -39,10 +39,6 @@ private:
     /// Sets the cost for each prosition that is true in the state to 0, and otherwise to infinity.
     /// @param state is the state.
     void initialize_or_annotations_impl(State state);
-
-    /// @brief Extract h_max heuristic estimate from the goal propositions.
-    /// @return the h_max heuristic estimate.
-    DiscreteCost extract_impl();
 
     /// @brief Update the "And"-action node with maximal cost.
     /// @param proposition is the proposition.
@@ -63,6 +59,10 @@ private:
     /// @param axiom is the axiom.
     /// @param proposition is the "Or"-proposition node.
     void update_or_annotation_impl(const rpg::UnaryGroundAxiom& axiom, const rpg::Proposition& proposition);
+
+    /// @brief Extract h_max heuristic estimate from the goal propositions.
+    /// @return the h_max heuristic estimate.
+    DiscreteCost extract_impl();
 
     friend class rpg::RelaxedPlanningGraph<AddHeuristicImpl>;
 };

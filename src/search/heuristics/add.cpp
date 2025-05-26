@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/search/heuristics/max.hpp"
+#include "mimir/search/heuristics/add.hpp"
 
 namespace mimir::search
 {
@@ -25,11 +25,11 @@ using namespace rpg;
  * HMax
  */
 
-MaxHeuristicImpl::MaxHeuristicImpl(const DeleteRelaxedProblemExplorator& delete_relaxation) : RelaxedPlanningGraph<MaxHeuristicImpl>(delete_relaxation) {}
+AddHeuristicImpl::AddHeuristicImpl(const DeleteRelaxedProblemExplorator& delete_relaxation) : RelaxedPlanningGraph<AddHeuristicImpl>(delete_relaxation) {}
 
-MaxHeuristic MaxHeuristicImpl::create(const DeleteRelaxedProblemExplorator& delete_relaxation) { return std::make_shared<MaxHeuristicImpl>(delete_relaxation); }
+AddHeuristic AddHeuristicImpl::create(const DeleteRelaxedProblemExplorator& delete_relaxation) { return std::make_shared<AddHeuristicImpl>(delete_relaxation); }
 
-void MaxHeuristicImpl::initialize_and_annotations_impl()
+void AddHeuristicImpl::initialize_and_annotations_impl()
 {
     this->m_action_annotations.resize(this->m_unary_actions.size());
     for (size_t i = 0; i < this->m_unary_actions.size(); ++i)
@@ -49,7 +49,7 @@ void MaxHeuristicImpl::initialize_and_annotations_impl()
     }
 }
 
-void MaxHeuristicImpl::initialize_or_annotations_impl(State state)
+void AddHeuristicImpl::initialize_or_annotations_impl(State state)
 {
     this->m_proposition_annotations.resize(this->m_propositions.size());
     for (size_t i = 0; i < this->m_propositions.size(); ++i)
@@ -80,23 +80,23 @@ void MaxHeuristicImpl::initialize_or_annotations_impl(State state)
     this->m_queue.insert(0, QueueEntry { 0, 0 });
 }
 
-void MaxHeuristicImpl::update_and_annotation_impl(const Proposition& proposition, const UnaryGroundAction& action)
+void AddHeuristicImpl::update_and_annotation_impl(const Proposition& proposition, const UnaryGroundAction& action)
 {
     auto& proposition_annotation = this->m_proposition_annotations[proposition.get_index()];
     auto& action_annotation = this->m_action_annotations[action.get_index()];
 
-    get_cost(action_annotation) = std::max(get_cost(action_annotation), get_cost(proposition_annotation));
+    get_cost(action_annotation) += get_cost(proposition_annotation);
 }
 
-void MaxHeuristicImpl::update_and_annotation_impl(const Proposition& proposition, const UnaryGroundAxiom& axiom)
+void AddHeuristicImpl::update_and_annotation_impl(const Proposition& proposition, const UnaryGroundAxiom& axiom)
 {
     auto& proposition_annotation = this->m_proposition_annotations[proposition.get_index()];
     auto& axiom_annotation = this->m_axiom_annotations[axiom.get_index()];
 
-    get_cost(axiom_annotation) = std::max(get_cost(axiom_annotation), get_cost(proposition_annotation));
+    get_cost(axiom_annotation) = get_cost(proposition_annotation);
 }
 
-void MaxHeuristicImpl::update_or_annotation_impl(const UnaryGroundAction& action, const Proposition& proposition)
+void AddHeuristicImpl::update_or_annotation_impl(const UnaryGroundAction& action, const Proposition& proposition)
 {
     const auto& action_annotation = this->m_action_annotations[action.get_index()];
     auto& proposition_annotation = this->m_proposition_annotations[proposition.get_index()];
@@ -110,7 +110,7 @@ void MaxHeuristicImpl::update_or_annotation_impl(const UnaryGroundAction& action
     }
 }
 
-void MaxHeuristicImpl::update_or_annotation_impl(const UnaryGroundAxiom& axiom, const Proposition& proposition)
+void AddHeuristicImpl::update_or_annotation_impl(const UnaryGroundAxiom& axiom, const Proposition& proposition)
 {
     const auto& axiom_annotation = this->m_axiom_annotations[axiom.get_index()];
     auto& proposition_annotation = this->m_proposition_annotations[proposition.get_index()];
@@ -122,7 +122,7 @@ void MaxHeuristicImpl::update_or_annotation_impl(const UnaryGroundAxiom& axiom, 
     }
 }
 
-DiscreteCost MaxHeuristicImpl::extract_impl()
+DiscreteCost AddHeuristicImpl::extract_impl()
 {
     // Ensure that this function is called only if the goal is satisfied in the relaxed exploration.
     assert(this->m_num_unsat_goals == 0);
@@ -131,7 +131,7 @@ DiscreteCost MaxHeuristicImpl::extract_impl()
     for (const auto proposition_index : this->m_goal_propositions)
     {
         const auto& annotation = this->m_proposition_annotations[proposition_index];
-        total_cost = std::max(total_cost, get_cost(annotation));
+        total_cost += get_cost(annotation);
     }
     return total_cost;
 }

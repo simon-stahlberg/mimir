@@ -93,6 +93,10 @@ int main(int argc, char** argv)
         {
             heuristic = MaxHeuristicImpl::create(delete_relaxed_problem_explorator);
         }
+        else if (heuristic_type == 2)
+        {
+            heuristic = AddHeuristicImpl::create(delete_relaxed_problem_explorator);
+        }
     }
     else
     {
@@ -104,6 +108,10 @@ int main(int argc, char** argv)
         if (heuristic_type == 1)
         {
             throw std::runtime_error("Lifted hmax is not supported");
+        }
+        else if (heuristic_type == 2)
+        {
+            throw std::runtime_error("Lifted hadd is not supported");
         }
     }
 

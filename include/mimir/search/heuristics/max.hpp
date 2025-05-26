@@ -44,10 +44,6 @@ private:
     /// @param state is the state.
     void initialize_or_annotations_impl(State state);
 
-    /// @brief Extract h_max heuristic estimate from the goal propositions.
-    /// @return the h_max heuristic estimate.
-    DiscreteCost extract_impl();
-
     /// @brief Update the "And"-action node with maximal cost.
     /// @param proposition is the proposition.
     /// @param axiom is the "And"-action node.
@@ -67,6 +63,10 @@ private:
     /// @param axiom is the axiom.
     /// @param proposition is the "Or"-proposition node.
     void update_or_annotation_impl(const rpg::UnaryGroundAxiom& axiom, const rpg::Proposition& proposition);
+
+    /// @brief Extract h_max heuristic estimate from the goal propositions.
+    /// @return the h_max heuristic estimate.
+    DiscreteCost extract_impl();
 
     friend class rpg::RelaxedPlanningGraph<MaxHeuristicImpl>;
 };
