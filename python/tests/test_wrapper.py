@@ -184,25 +184,6 @@ class TestAction(unittest.TestCase):
             assert literal.get_index() is not None
             assert str(literal) in expected_derived_literals
 
-    def test_effect(self):
-        domain_path = DATA_DIR / 'miconic-fulladl' / 'domain.pddl'
-        domain = Domain(domain_path)
-        action = domain.get_action('up')
-        assert action.get_name() == 'up'
-        actual_effect = action.get_unconditional_effect()
-        actual_parameters = actual_effect.get_parameters()
-        expected_parameters = ['?f1_0', '?f2_0']
-        assert len(actual_parameters) == len(expected_parameters)
-        for parameter in actual_parameters:
-            assert parameter.get_index() is not None
-            assert parameter.get_name() in expected_parameters
-        actual_literals = actual_effect.get_literals()
-        expected_literals = ['(lift-at ?f2_0)', '(not (lift-at ?f1_0))']
-        assert len(actual_literals) == len(expected_literals)
-        for literal in actual_literals:
-            assert literal.get_index() is not None
-            assert str(literal) in expected_literals
-
     def test_conditional_effect(self):
         domain_path = DATA_DIR / 'miconic-fulladl' / 'domain.pddl'
         domain = Domain(domain_path)

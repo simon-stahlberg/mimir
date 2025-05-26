@@ -624,13 +624,9 @@ class Action:
         """Get the conjunctive condition of the action."""
         return ConjunctiveCondition(self._advanced_action.get_conjunctive_condition())
 
-    def get_effect(self) -> 'tuple[Effect, list[ConditionalEffect]]':
-        """Get both the unconditional and conditional effects of the action."""
-        return self.get_unconditional_effect(), self.get_conditional_effect()
-
-    def get_unconditional_effect(self) -> 'Effect':
-        """Get the effect list of the action."""
-        return Effect(self._advanced_action.get_conjunctive_effect())
+    def get_effect(self) -> 'tuple[list[ConditionalEffect]]':
+        """Get conditional effects of the action where the unconditional effects are represented as conditional effect without quantified precondition. """
+        return self.get_conditional_effect()
 
     def get_conditional_effect(self) -> 'list[ConditionalEffect]':
         """Get the conditional effect of the action."""
