@@ -606,6 +606,7 @@ private:
     void on_process_action(const Proposition& proposition, const UnaryGroundAction& action)
     {
         auto& action_annotation = m_action_annotations[action.get_index()];
+        const auto& proposition_annotation = m_proposition_annotations[proposition.get_index()];
 
         self().update_and_annotation_impl(proposition, action);
 
@@ -613,6 +614,9 @@ private:
         {
             --get_num_unsatisfied_preconditions(action_annotation);
         }
+
+        get_cost(action_annotation) = std::max(get_cost(action_annotation), get_cost(proposition_annotation) + 1);
+
         if (get_num_unsatisfied_preconditions(action_annotation) == 0)
         {
             std::cout << "Process satisfied action: " << action.get_index() << std::endl;
@@ -628,6 +632,7 @@ private:
     void on_process_axiom(const Proposition& proposition, const UnaryGroundAxiom& axiom)
     {
         auto& axiom_annotation = m_axiom_annotations[axiom.get_index()];
+        const auto& proposition_annotation = m_proposition_annotations[proposition.get_index()];
 
         self().update_and_annotation_impl(proposition, axiom);
 
@@ -635,6 +640,9 @@ private:
         {
             --get_num_unsatisfied_preconditions(axiom_annotation);
         }
+
+        get_cost(axiom_annotation) = std::max(get_cost(axiom_annotation), get_cost(proposition_annotation));
+
         if (get_num_unsatisfied_preconditions(axiom_annotation) == 0)
         {
             std::cout << "Process satisfied axiom: " << axiom.get_index() << std::endl;

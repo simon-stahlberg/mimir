@@ -77,7 +77,7 @@ void MaxHeuristicImpl::update_or_annotation_impl(const UnaryGroundAction& action
     const auto& action_annotation = this->m_action_annotations[action.get_index()];
     auto& proposition_annotation = this->m_proposition_annotations[proposition.get_index()];
 
-    const auto cost = get_cost(action_annotation) + 1;
+    const auto cost = get_cost(action_annotation);
 
     if (cost < get_cost(proposition_annotation))
     {
