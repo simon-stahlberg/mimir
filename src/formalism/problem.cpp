@@ -573,6 +573,8 @@ GroundLiteral<P> ProblemImpl::ground(Literal<P> literal, const ObjectList& bindi
     auto grounded_atom = m_repositories.get_or_create_ground_atom(literal->get_atom()->get_predicate(), grounded_terms);
     auto grounded_literal = m_repositories.get_or_create_ground_literal(literal->get_polarity(), grounded_atom);
 
+    std::cout << *grounded_atom << " " << grounded_atom->get_index() << std::endl;
+
     /* 5. Insert to grounding_table table */
 
     grounding_table.emplace(std::move(grounded_terms), GroundLiteral<P>(grounded_literal));

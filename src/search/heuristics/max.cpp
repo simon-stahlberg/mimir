@@ -109,6 +109,8 @@ DiscreteCost MaxHeuristicImpl::extract_impl()
         const auto& annotation = this->m_proposition_annotations[proposition_index];
         total_cost = std::max(total_cost, get_cost(annotation));
     }
+    std::cout << "Total cost: " << total_cost << std::endl;
+
     return total_cost;
 }
 }
