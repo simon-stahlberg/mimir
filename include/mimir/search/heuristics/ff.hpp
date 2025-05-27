@@ -38,7 +38,6 @@ private:
 
     /// @brief Initialize "Or"-proposition node annotations.
     /// Sets the cost for each prosition that is true in the state to 0, and otherwise to infinity.
-    /// @param state is the state.
     void initialize_or_annotations_impl(const rpg::Proposition& proposition);
     void initialize_or_annotations_and_queue_impl(const rpg::Proposition& proposition);
 
