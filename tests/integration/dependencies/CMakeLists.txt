@@ -6,6 +6,7 @@ project(mimir-integration)
 ##############################################################
 
 add_subdirectory(abseil)
+add_subdirectory(range-v3)
 add_subdirectory(boost)
 add_subdirectory(fmt)
 add_subdirectory(loki)

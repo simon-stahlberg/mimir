@@ -71,12 +71,21 @@ private:
 
     friend class rpg::RelaxedPlanningGraph<SetAddHeuristicImpl>;
 
-    rpg::AnnotationsList<IndexSet> m_setadd_action_annotations;
-    rpg::AnnotationsList<IndexSet> m_setadd_axiom_annotations;
+    HanaContainer<rpg::AnnotationsList<IndexSet>, rpg::Action, rpg::Axiom> m_setadd_structure_annotations;
+
+    template<rpg::IsStructure S>
+    auto& get_setadd_structure_annotations()
+    {
+        return boost::hana::at_key(m_setadd_structure_annotations, boost::hana::type<S> {});
+    }
 
     rpg::AnnotationsList<IndexSet> m_setadd_proposition_annotations;
 
+    auto& get_setadd_proposition_annotations() { return m_setadd_proposition_annotations; }
+
     IndexSet m_total_goal_annotations;
+
+    auto& get_total_goal_annotations() { return m_total_goal_annotations; }
 
     static IndexSet& get_achievers(rpg::Annotations<IndexSet>& annotation) { return std::get<0>(annotation); }
     static const IndexSet& get_achievers(const rpg::Annotations<IndexSet>& annotation) { return std::get<0>(annotation); }

@@ -51,22 +51,38 @@ public:
 
     Index get_index() const;
 
-    template<IsPolarity R, IsStaticOrFluentOrDerivedTag P>
-    const FlatIndexList& get_compressed_precondition() const;
+    /**
+     * Ranges
+     * TODO: add other generic ranges using ranges::views::concat
+     */
 
     template<IsPolarity R, IsStaticOrFluentOrDerivedTag P>
     auto get_precondition() const;
+
+    /**
+     * Accessors
+     * TODO: add other generic accessors over other template dimensions
+     */
+
+    template<IsPolarity R, IsStaticOrFluentOrDerivedTag P>
+    const FlatIndexList* get_compressed_precondition() const;
+
+    template<IsStaticOrFluentOrDerivedTag... Ps>
+    auto get_hana_compressed_precondition() const;
+
+    template<IsStaticOrFluentOrDerivedTag... Ps>
+    size_t get_num_preconditions() const;
 
     const GroundNumericConstraintList& get_numeric_constraints() const;
 
     auto identifying_members() const
     {
-        return std::tuple(&get_compressed_precondition<PositiveTag, StaticTag>(),
-                          &get_compressed_precondition<NegativeTag, StaticTag>(),
-                          &get_compressed_precondition<PositiveTag, FluentTag>(),
-                          &get_compressed_precondition<NegativeTag, FluentTag>(),
-                          &get_compressed_precondition<PositiveTag, DerivedTag>(),
-                          &get_compressed_precondition<NegativeTag, DerivedTag>(),
+        return std::tuple(get_compressed_precondition<PositiveTag, StaticTag>(),
+                          get_compressed_precondition<NegativeTag, StaticTag>(),
+                          get_compressed_precondition<PositiveTag, FluentTag>(),
+                          get_compressed_precondition<NegativeTag, FluentTag>(),
+                          get_compressed_precondition<PositiveTag, DerivedTag>(),
+                          get_compressed_precondition<NegativeTag, DerivedTag>(),
                           get_numeric_constraints());
     }
 };
@@ -79,6 +95,39 @@ template<IsPolarity R, IsStaticOrFluentOrDerivedTag P>
 auto GroundConjunctiveConditionImpl::get_precondition() const
 {
     return boost::hana::at_key(boost::hana::at_key(m_preconditions, boost::hana::type<R> {}), boost::hana::type<P> {})->compressed_range();
+}
+
+template<IsStaticOrFluentOrDerivedTag... Ps>
+auto GroundConjunctiveConditionImpl::get_hana_compressed_precondition() const
+{
+    return boost::hana::make_map(
+        boost::hana::make_pair(boost::hana::type<PositiveTag> {},
+                               boost::hana::make_map(boost::hana::make_pair(
+                                   boost::hana::type<Ps> {},
+                                   boost::hana::at_key(boost::hana::at_key(m_preconditions, boost::hana::type<PositiveTag> {}), boost::hana::type<Ps> {}))...)),
+        boost::hana::make_pair(
+            boost::hana::type<NegativeTag> {},
+            boost::hana::make_map(boost::hana::make_pair(
+                boost::hana::type<Ps> {},
+                boost::hana::at_key(boost::hana::at_key(m_preconditions, boost::hana::type<NegativeTag> {}), boost::hana::type<Ps> {}))...)));
+}
+
+template<IsStaticOrFluentOrDerivedTag... Ps>
+size_t GroundConjunctiveConditionImpl::get_num_preconditions() const
+{
+    auto result = size_t(0);
+    boost::hana::for_each(get_hana_compressed_precondition<Ps...>(),
+                          [this, &result](auto&& pair)
+                          {
+                              const auto& second = boost::hana::second(pair);
+                              boost::hana::for_each(second,
+                                                    [this, &result](auto&& pair2)
+                                                    {
+                                                        const auto second2 = boost::hana::second(pair2);
+                                                        result += second2->size();
+                                                    });
+                          });
+    return result;
 }
 
 }

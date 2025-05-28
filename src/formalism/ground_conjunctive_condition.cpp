@@ -40,41 +40,41 @@ GroundConjunctiveConditionImpl::GroundConjunctiveConditionImpl(
     m_preconditions(preconditions),
     m_numeric_constraints(std::move(numeric_constraints))
 {
-    assert((get_compressed_precondition<PositiveTag, StaticTag>().is_compressed()));
-    assert((get_compressed_precondition<PositiveTag, FluentTag>().is_compressed()));
-    assert((get_compressed_precondition<PositiveTag, DerivedTag>().is_compressed()));
-    assert((get_compressed_precondition<NegativeTag, StaticTag>().is_compressed()));
-    assert((get_compressed_precondition<NegativeTag, FluentTag>().is_compressed()));
-    assert((get_compressed_precondition<NegativeTag, DerivedTag>().is_compressed()));
+    assert((get_compressed_precondition<PositiveTag, StaticTag>()->is_compressed()));
+    assert((get_compressed_precondition<PositiveTag, FluentTag>()->is_compressed()));
+    assert((get_compressed_precondition<PositiveTag, DerivedTag>()->is_compressed()));
+    assert((get_compressed_precondition<NegativeTag, StaticTag>()->is_compressed()));
+    assert((get_compressed_precondition<NegativeTag, FluentTag>()->is_compressed()));
+    assert((get_compressed_precondition<NegativeTag, DerivedTag>()->is_compressed()));
 
-    assert((std::is_sorted(get_compressed_precondition<PositiveTag, StaticTag>().compressed_begin(),
-                           get_compressed_precondition<PositiveTag, StaticTag>().compressed_end())));
-    assert((std::is_sorted(get_compressed_precondition<PositiveTag, FluentTag>().compressed_begin(),
-                           get_compressed_precondition<PositiveTag, FluentTag>().compressed_end())));
-    assert((std::is_sorted(get_compressed_precondition<PositiveTag, DerivedTag>().compressed_begin(),
-                           get_compressed_precondition<PositiveTag, DerivedTag>().compressed_end())));
-    assert((std::is_sorted(get_compressed_precondition<NegativeTag, StaticTag>().compressed_begin(),
-                           get_compressed_precondition<NegativeTag, StaticTag>().compressed_end())));
-    assert((std::is_sorted(get_compressed_precondition<NegativeTag, FluentTag>().compressed_begin(),
-                           get_compressed_precondition<NegativeTag, FluentTag>().compressed_end())));
-    assert((std::is_sorted(get_compressed_precondition<NegativeTag, DerivedTag>().compressed_begin(),
-                           get_compressed_precondition<NegativeTag, DerivedTag>().compressed_end())));
+    assert((std::is_sorted(get_compressed_precondition<PositiveTag, StaticTag>()->compressed_begin(),
+                           get_compressed_precondition<PositiveTag, StaticTag>()->compressed_end())));
+    assert((std::is_sorted(get_compressed_precondition<PositiveTag, FluentTag>()->compressed_begin(),
+                           get_compressed_precondition<PositiveTag, FluentTag>()->compressed_end())));
+    assert((std::is_sorted(get_compressed_precondition<PositiveTag, DerivedTag>()->compressed_begin(),
+                           get_compressed_precondition<PositiveTag, DerivedTag>()->compressed_end())));
+    assert((std::is_sorted(get_compressed_precondition<NegativeTag, StaticTag>()->compressed_begin(),
+                           get_compressed_precondition<NegativeTag, StaticTag>()->compressed_end())));
+    assert((std::is_sorted(get_compressed_precondition<NegativeTag, FluentTag>()->compressed_begin(),
+                           get_compressed_precondition<NegativeTag, FluentTag>()->compressed_end())));
+    assert((std::is_sorted(get_compressed_precondition<NegativeTag, DerivedTag>()->compressed_begin(),
+                           get_compressed_precondition<NegativeTag, DerivedTag>()->compressed_end())));
 }
 
 Index GroundConjunctiveConditionImpl::get_index() const { return m_index; }
 
 template<IsPolarity R, IsStaticOrFluentOrDerivedTag P>
-const FlatIndexList& GroundConjunctiveConditionImpl::get_compressed_precondition() const
+const FlatIndexList* GroundConjunctiveConditionImpl::get_compressed_precondition() const
 {
-    return *boost::hana::at_key(boost::hana::at_key(m_preconditions, boost::hana::type<R> {}), boost::hana::type<P> {});
+    return boost::hana::at_key(boost::hana::at_key(m_preconditions, boost::hana::type<R> {}), boost::hana::type<P> {});
 }
 
-template const FlatIndexList& GroundConjunctiveConditionImpl::get_compressed_precondition<PositiveTag, StaticTag>() const;
-template const FlatIndexList& GroundConjunctiveConditionImpl::get_compressed_precondition<PositiveTag, FluentTag>() const;
-template const FlatIndexList& GroundConjunctiveConditionImpl::get_compressed_precondition<PositiveTag, DerivedTag>() const;
-template const FlatIndexList& GroundConjunctiveConditionImpl::get_compressed_precondition<NegativeTag, StaticTag>() const;
-template const FlatIndexList& GroundConjunctiveConditionImpl::get_compressed_precondition<NegativeTag, FluentTag>() const;
-template const FlatIndexList& GroundConjunctiveConditionImpl::get_compressed_precondition<NegativeTag, DerivedTag>() const;
+template const FlatIndexList* GroundConjunctiveConditionImpl::get_compressed_precondition<PositiveTag, StaticTag>() const;
+template const FlatIndexList* GroundConjunctiveConditionImpl::get_compressed_precondition<PositiveTag, FluentTag>() const;
+template const FlatIndexList* GroundConjunctiveConditionImpl::get_compressed_precondition<PositiveTag, DerivedTag>() const;
+template const FlatIndexList* GroundConjunctiveConditionImpl::get_compressed_precondition<NegativeTag, StaticTag>() const;
+template const FlatIndexList* GroundConjunctiveConditionImpl::get_compressed_precondition<NegativeTag, FluentTag>() const;
+template const FlatIndexList* GroundConjunctiveConditionImpl::get_compressed_precondition<NegativeTag, DerivedTag>() const;
 
 const GroundNumericConstraintList& GroundConjunctiveConditionImpl::get_numeric_constraints() const { return m_numeric_constraints; }
 

@@ -125,6 +125,12 @@ if(absl_FOUND)
 endif()
 
 
+find_package(range-v3 CONFIG REQUIRED PATHS ${CMAKE_PREFIX_PATH} NO_DEFAULT_PATH)
+if(range-v3_FOUND)
+  message(STATUS "Found range-v3: ${range-v3_DIR} (found version ${range-v3_VERSION})")
+endif()
+
+
 ##############################################################
 # Add library and executable targets
 ##############################################################
