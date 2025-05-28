@@ -25,7 +25,6 @@ endif ()
 ##############################################################
 
 add_subdirectory(abseil)
-add_subdirectory(range-v3)
 add_subdirectory(benchmark)
 add_subdirectory(boost)
 add_subdirectory(fmt)

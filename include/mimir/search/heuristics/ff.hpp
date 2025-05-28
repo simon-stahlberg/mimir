@@ -67,6 +67,8 @@ private:
 
     template<formalism::IsPolarity R, formalism::IsFluentOrDerivedTag P>
     void extract_relaxed_plan_and_preferred_operators_recursively(State state, const rpg::Action& action);
+    template<formalism::IsPolarity R, formalism::IsFluentOrDerivedTag P>
+    void extract_relaxed_plan_and_preferred_operators_recursively(State state, const rpg::Axiom& axiom);
     void extract_relaxed_plan_and_preferred_operators_recursively(State state, const rpg::Proposition& proposition);
 
     /// @brief Extract h_max heuristic estimate from the goal propositions.

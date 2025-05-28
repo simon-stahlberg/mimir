@@ -27,9 +27,6 @@
 #include "mimir/search/heuristics/interface.hpp"
 #include "mimir/search/openlists/priority_queue.hpp"
 
-#include <range/v3/view/all.hpp>
-#include <range/v3/view/concat.hpp>
-
 namespace mimir::search::rpg
 {
 
@@ -72,13 +69,6 @@ public:
     {
         return boost::hana::at_key(boost::hana::at_key(m_conditional_preconditions, boost::hana::type<R> {}), boost::hana::type<P> {});
     }
-    template<formalism::IsPolarity R, formalism::IsFluentOrDerivedTag P>
-    auto get_all_preconditions_range() const
-    {
-        return ::ranges::views::concat(
-            ::ranges::subrange(get_preconditions<R, P>()->compressed_begin(), get_preconditions<R, P>()->compressed_end()),
-            ::ranges::subrange(get_conditional_preconditions<R, P>()->compressed_begin(), get_conditional_preconditions<R, P>()->compressed_end()));
-    }
     size_t get_num_preconditions() const { return m_num_preconditions; }
     Index get_effect() const { return m_fluent_effect; }
     bool get_polarity() const { return m_polarity; }
@@ -115,11 +105,6 @@ public:
     {
         return boost::hana::at_key(boost::hana::at_key(m_preconditions, boost::hana::type<R> {}), boost::hana::type<P> {});
     }
-    template<formalism::IsPolarity R, formalism::IsFluentOrDerivedTag P>
-    auto get_all_preconditions_range() const
-    {
-        return get_preconditions<R, P>()->compressed_range();
-    }
     size_t get_num_preconditions() const { return m_num_preconditions; }
     Index get_effect() const { return m_derived_effect; }
     bool get_polarity() const { return m_polarity; }
@@ -136,10 +121,6 @@ using AxiomList = std::vector<Axiom>;
 template<typename T>
 concept IsStructure = requires(T a) {
     { a.get_index() } -> std::convertible_to<Index>;
-    { a.template get_all_preconditions_range<formalism::PositiveTag, formalism::FluentTag>() };   // TODO add return value check, i.e., RangeV3Over
-    { a.template get_all_preconditions_range<formalism::PositiveTag, formalism::DerivedTag>() };  // TODO add return value check, i.e., RangeV3Over
-    { a.template get_all_preconditions_range<formalism::NegativeTag, formalism::FluentTag>() };   // TODO add return value check, i.e., RangeV3Over
-    { a.template get_all_preconditions_range<formalism::NegativeTag, formalism::DerivedTag>() };  // TODO add return value check, i.e., RangeV3Over
     { a.get_num_preconditions() } -> std::convertible_to<size_t>;
     { a.get_effect() } -> std::convertible_to<Index>;
     { a.get_polarity() } -> std::convertible_to<bool>;
