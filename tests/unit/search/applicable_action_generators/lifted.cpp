@@ -55,7 +55,7 @@ TEST(MimirTests, SearchApplicableActionGeneratorsLiftedTest)
 
     const auto& axiom_evaluator_statistics = axiom_evaluator_event_handler->get_statistics();
     EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 472);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axiom_cache_misses_per_search_layer().back(), 16);
+    EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axiom_cache_misses_per_search_layer().back(), 15);
 
     const auto& brfs_statistics = brfs_event_handler->get_statistics();
     EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 105);

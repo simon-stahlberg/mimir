@@ -31,21 +31,11 @@ class GroundConjunctiveConditionImpl
 {
 private:
     Index m_index;
-    const FlatIndexList* m_positive_static_atoms;
-    const FlatIndexList* m_negative_static_atoms;
-    const FlatIndexList* m_positive_fluent_atoms;
-    const FlatIndexList* m_negative_fluent_atoms;
-    const FlatIndexList* m_positive_derived_atoms;
-    const FlatIndexList* m_negative_derived_atoms;
+    HanaContainer<HanaContainer<const FlatIndexList*, StaticTag, FluentTag, DerivedTag>, PositiveTag, NegativeTag> m_preconditions;
     GroundNumericConstraintList m_numeric_constraints;
 
     GroundConjunctiveConditionImpl(Index index,
-                                   const FlatIndexList* positive_static_atoms,
-                                   const FlatIndexList* negative_static_atoms,
-                                   const FlatIndexList* positive_fluent_atoms,
-                                   const FlatIndexList* negative_fluent_atoms,
-                                   const FlatIndexList* positive_derived_atoms,
-                                   const FlatIndexList* negative_derived_atoms,
+                                   HanaContainer<HanaContainer<const FlatIndexList*, StaticTag, FluentTag, DerivedTag>, PositiveTag, NegativeTag> preconditions,
                                    GroundNumericConstraintList numeric_constraints);
 
     // Give access to the constructor.
@@ -61,29 +51,23 @@ public:
 
     Index get_index() const;
 
-    template<IsStaticOrFluentOrDerivedTag P>
-    const FlatIndexList& get_compressed_positive_precondition() const;
+    template<IsPolarity R, IsStaticOrFluentOrDerivedTag P>
+    const FlatIndexList& get_compressed_precondition() const;
 
-    template<IsStaticOrFluentOrDerivedTag P>
-    const FlatIndexList& get_compressed_negative_precondition() const;
-
-    template<IsStaticOrFluentOrDerivedTag P>
-    auto get_positive_precondition() const;
-
-    template<IsStaticOrFluentOrDerivedTag P>
-    auto get_negative_precondition() const;
+    template<IsPolarity R, IsStaticOrFluentOrDerivedTag P>
+    auto get_precondition() const;
 
     const GroundNumericConstraintList& get_numeric_constraints() const;
 
     auto identifying_members() const
     {
-        return std::tuple(m_positive_static_atoms,
-                          m_negative_static_atoms,
-                          m_positive_fluent_atoms,
-                          m_negative_fluent_atoms,
-                          m_positive_derived_atoms,
-                          m_negative_derived_atoms,
-                          m_numeric_constraints);
+        return std::tuple(&get_compressed_precondition<PositiveTag, StaticTag>(),
+                          &get_compressed_precondition<NegativeTag, StaticTag>(),
+                          &get_compressed_precondition<PositiveTag, FluentTag>(),
+                          &get_compressed_precondition<NegativeTag, FluentTag>(),
+                          &get_compressed_precondition<PositiveTag, DerivedTag>(),
+                          &get_compressed_precondition<NegativeTag, DerivedTag>(),
+                          get_numeric_constraints());
     }
 };
 
@@ -91,46 +75,10 @@ public:
  * Implementations
  */
 
-template<IsStaticOrFluentOrDerivedTag P>
-auto GroundConjunctiveConditionImpl::get_positive_precondition() const
+template<IsPolarity R, IsStaticOrFluentOrDerivedTag P>
+auto GroundConjunctiveConditionImpl::get_precondition() const
 {
-    if constexpr (std::is_same_v<P, StaticTag>)
-    {
-        return m_positive_static_atoms->compressed_range();
-    }
-    else if constexpr (std::is_same_v<P, FluentTag>)
-    {
-        return m_positive_fluent_atoms->compressed_range();
-    }
-    else if constexpr (std::is_same_v<P, DerivedTag>)
-    {
-        return m_positive_derived_atoms->compressed_range();
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
-    }
-}
-
-template<IsStaticOrFluentOrDerivedTag P>
-auto GroundConjunctiveConditionImpl::get_negative_precondition() const
-{
-    if constexpr (std::is_same_v<P, StaticTag>)
-    {
-        return m_negative_static_atoms->compressed_range();
-    }
-    else if constexpr (std::is_same_v<P, FluentTag>)
-    {
-        return m_negative_fluent_atoms->compressed_range();
-    }
-    else if constexpr (std::is_same_v<P, DerivedTag>)
-    {
-        return m_negative_derived_atoms->compressed_range();
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
-    }
+    return boost::hana::at_key(boost::hana::at_key(m_preconditions, boost::hana::type<R> {}), boost::hana::type<P> {})->compressed_range();
 }
 
 }

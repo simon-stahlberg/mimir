@@ -88,13 +88,9 @@ struct GoalDetails
 
     bool m_static_goal_holds;
 
-    GroundAtomLists<StaticTag, FluentTag, DerivedTag> positive_goal_atoms;
-    FlatBitsets<StaticTag, FluentTag, DerivedTag> positive_goal_atoms_bitset;
-    FlatIndexLists<StaticTag, FluentTag, DerivedTag> positive_goal_atoms_indices;
-
-    GroundAtomLists<StaticTag, FluentTag, DerivedTag> negative_goal_atoms;
-    FlatBitsets<StaticTag, FluentTag, DerivedTag> negative_goal_atoms_bitset;
-    FlatIndexLists<StaticTag, FluentTag, DerivedTag> negative_goal_atoms_indices;
+    HanaContainer<GroundAtomLists<StaticTag, FluentTag, DerivedTag>, PositiveTag, NegativeTag> goal_atoms;
+    HanaContainer<FlatBitsets<StaticTag, FluentTag, DerivedTag>, PositiveTag, NegativeTag> goal_atoms_bitset;
+    HanaContainer<FlatIndexLists<StaticTag, FluentTag, DerivedTag>, PositiveTag, NegativeTag> goal_atoms_indices;
 
     GoalDetails();
     GoalDetails(const ProblemImpl& problem, const InitialDetails& initial);

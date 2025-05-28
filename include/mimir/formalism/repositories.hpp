@@ -303,8 +303,7 @@ public:
                                                        std::optional<NumericEffect<AuxiliaryTag>> auxiliary_numeric_effect);
 
     /// @brief Get or create a ground conjunctive effect for the given parameters.
-    GroundConjunctiveEffect get_or_create_ground_conjunctive_effect(const FlatIndexList* positive_effects,
-                                                                    const FlatIndexList* negative_effects,
+    GroundConjunctiveEffect get_or_create_ground_conjunctive_effect(HanaContainer<const FlatIndexList*, PositiveTag, NegativeTag> propositional_effects,
                                                                     GroundNumericEffectList<FluentTag> fluent_numeric_effects,
                                                                     std::optional<const GroundNumericEffect<AuxiliaryTag>> auxiliary_numeric_effect);
 
@@ -332,13 +331,9 @@ public:
                                                              NumericConstraintList numeric_constraints);
 
     /// @brief Get or create a ground conjunctive condition for the given parameters.
-    GroundConjunctiveCondition get_or_create_ground_conjunctive_condition(const FlatIndexList* positive_static_atoms,
-                                                                          const FlatIndexList* negative_static_atoms,
-                                                                          const FlatIndexList* positive_fluent_atoms,
-                                                                          const FlatIndexList* negative_fluent_atoms,
-                                                                          const FlatIndexList* positive_derived_atoms,
-                                                                          const FlatIndexList* negative_derived_atoms,
-                                                                          GroundNumericConstraintList numeric_constraints);
+    GroundConjunctiveCondition get_or_create_ground_conjunctive_condition(
+        HanaContainer<HanaContainer<const FlatIndexList*, StaticTag, FluentTag, DerivedTag>, PositiveTag, NegativeTag> preconditions,
+        GroundNumericConstraintList numeric_constraints);
 
     /// @brief Get or create an action for the given parameters.
     Action get_or_create_action(std::string name, size_t original_arity, ConjunctiveCondition conjunctive_condition, ConditionalEffectList conditional_effects);

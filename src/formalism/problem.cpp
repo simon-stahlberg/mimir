@@ -320,88 +320,58 @@ bool ProblemImpl::static_literal_holds(const GroundLiteral<StaticTag> literal) c
     return (literal->get_polarity() != get_static_initial_positive_atoms_bitset().get(literal->get_atom()->get_index()));
 }
 
-template<IsStaticOrFluentOrDerivedTag P>
-const GroundAtomList<P>& ProblemImpl::get_positive_goal_atoms() const
+template<IsPolarity R, IsStaticOrFluentOrDerivedTag P>
+const GroundAtomList<P>& ProblemImpl::get_goal_atoms() const
 {
-    return boost::hana::at_key(m_details.goal.positive_goal_atoms, boost::hana::type<P> {});
+    return boost::hana::at_key(boost::hana::at_key(m_details.goal.goal_atoms, boost::hana::type<R> {}), boost::hana::type<P> {});
 }
 
-template const GroundAtomList<StaticTag>& ProblemImpl::get_positive_goal_atoms<StaticTag>() const;
-template const GroundAtomList<FluentTag>& ProblemImpl::get_positive_goal_atoms<FluentTag>() const;
-template const GroundAtomList<DerivedTag>& ProblemImpl::get_positive_goal_atoms<DerivedTag>() const;
+template const GroundAtomList<StaticTag>& ProblemImpl::get_goal_atoms<PositiveTag, StaticTag>() const;
+template const GroundAtomList<FluentTag>& ProblemImpl::get_goal_atoms<PositiveTag, FluentTag>() const;
+template const GroundAtomList<DerivedTag>& ProblemImpl::get_goal_atoms<PositiveTag, DerivedTag>() const;
+template const GroundAtomList<StaticTag>& ProblemImpl::get_goal_atoms<NegativeTag, StaticTag>() const;
+template const GroundAtomList<FluentTag>& ProblemImpl::get_goal_atoms<NegativeTag, FluentTag>() const;
+template const GroundAtomList<DerivedTag>& ProblemImpl::get_goal_atoms<NegativeTag, DerivedTag>() const;
 
-const GroundAtomLists<StaticTag, FluentTag, DerivedTag>& ProblemImpl::get_hana_positive_goal_atoms() const { return m_details.goal.positive_goal_atoms; }
-
-template<IsStaticOrFluentOrDerivedTag P>
-const FlatBitset& ProblemImpl::get_positive_goal_atoms_bitset() const
+const HanaContainer<GroundAtomLists<StaticTag, FluentTag, DerivedTag>, PositiveTag, NegativeTag>& ProblemImpl::get_hana_goal_atoms() const
 {
-    return boost::hana::at_key(m_details.goal.positive_goal_atoms_bitset, boost::hana::type<P> {});
+    return m_details.goal.goal_atoms;
 }
 
-template const FlatBitset& ProblemImpl::get_positive_goal_atoms_bitset<StaticTag>() const;
-template const FlatBitset& ProblemImpl::get_positive_goal_atoms_bitset<FluentTag>() const;
-template const FlatBitset& ProblemImpl::get_positive_goal_atoms_bitset<DerivedTag>() const;
-
-const FlatBitsets<StaticTag, FluentTag, DerivedTag>& ProblemImpl::get_hana_positive_goal_atoms_bitset() const
+template<IsPolarity R, IsStaticOrFluentOrDerivedTag P>
+const FlatBitset& ProblemImpl::get_goal_atoms_bitset() const
 {
-    return m_details.goal.positive_goal_atoms_bitset;
+    return boost::hana::at_key(boost::hana::at_key(m_details.goal.goal_atoms_bitset, boost::hana::type<R> {}), boost::hana::type<P> {});
 }
 
-template<IsStaticOrFluentOrDerivedTag P>
-const FlatIndexList& ProblemImpl::get_positive_goal_atoms_indices() const
+template const FlatBitset& ProblemImpl::get_goal_atoms_bitset<PositiveTag, StaticTag>() const;
+template const FlatBitset& ProblemImpl::get_goal_atoms_bitset<PositiveTag, FluentTag>() const;
+template const FlatBitset& ProblemImpl::get_goal_atoms_bitset<PositiveTag, DerivedTag>() const;
+template const FlatBitset& ProblemImpl::get_goal_atoms_bitset<NegativeTag, StaticTag>() const;
+template const FlatBitset& ProblemImpl::get_goal_atoms_bitset<NegativeTag, FluentTag>() const;
+template const FlatBitset& ProblemImpl::get_goal_atoms_bitset<NegativeTag, DerivedTag>() const;
+
+const HanaContainer<FlatBitsets<StaticTag, FluentTag, DerivedTag>, PositiveTag, NegativeTag>& ProblemImpl::get_hana_goal_atoms_bitset() const
 {
-    return boost::hana::at_key(m_details.goal.positive_goal_atoms_indices, boost::hana::type<P> {});
+    return m_details.goal.goal_atoms_bitset;
 }
 
-template const FlatIndexList& ProblemImpl::get_positive_goal_atoms_indices<StaticTag>() const;
-template const FlatIndexList& ProblemImpl::get_positive_goal_atoms_indices<FluentTag>() const;
-template const FlatIndexList& ProblemImpl::get_positive_goal_atoms_indices<DerivedTag>() const;
-
-const FlatIndexLists<StaticTag, FluentTag, DerivedTag>& ProblemImpl::get_hana_positive_goal_atoms_indices() const
+template<IsPolarity R, IsStaticOrFluentOrDerivedTag P>
+const FlatIndexList& ProblemImpl::get_goal_atoms_indices() const
 {
-    return m_details.goal.positive_goal_atoms_indices;
+    return boost::hana::at_key(boost::hana::at_key(m_details.goal.goal_atoms_indices, boost::hana::type<R> {}), boost::hana::type<P> {});
 }
 
-template<IsStaticOrFluentOrDerivedTag P>
-const GroundAtomList<P>& ProblemImpl::get_negative_goal_atoms() const
+template const FlatIndexList& ProblemImpl::get_goal_atoms_indices<PositiveTag, StaticTag>() const;
+template const FlatIndexList& ProblemImpl::get_goal_atoms_indices<PositiveTag, FluentTag>() const;
+template const FlatIndexList& ProblemImpl::get_goal_atoms_indices<PositiveTag, DerivedTag>() const;
+template const FlatIndexList& ProblemImpl::get_goal_atoms_indices<NegativeTag, StaticTag>() const;
+template const FlatIndexList& ProblemImpl::get_goal_atoms_indices<NegativeTag, FluentTag>() const;
+template const FlatIndexList& ProblemImpl::get_goal_atoms_indices<NegativeTag, DerivedTag>() const;
+
+const HanaContainer<FlatIndexLists<StaticTag, FluentTag, DerivedTag>, PositiveTag, NegativeTag>& ProblemImpl::get_hana_goal_atoms_indices() const
 {
-    return boost::hana::at_key(m_details.goal.negative_goal_atoms, boost::hana::type<P> {});
-}
-
-template const GroundAtomList<StaticTag>& ProblemImpl::get_negative_goal_atoms<StaticTag>() const;
-template const GroundAtomList<FluentTag>& ProblemImpl::get_negative_goal_atoms<FluentTag>() const;
-template const GroundAtomList<DerivedTag>& ProblemImpl::get_negative_goal_atoms<DerivedTag>() const;
-
-const GroundAtomLists<StaticTag, FluentTag, DerivedTag>& ProblemImpl::get_hana_negative_goal_atoms() const { return m_details.goal.negative_goal_atoms; }
-
-template<IsStaticOrFluentOrDerivedTag P>
-const FlatBitset& ProblemImpl::get_negative_goal_atoms_bitset() const
-{
-    return boost::hana::at_key(m_details.goal.negative_goal_atoms_bitset, boost::hana::type<P> {});
-}
-
-template const FlatBitset& ProblemImpl::get_negative_goal_atoms_bitset<StaticTag>() const;
-template const FlatBitset& ProblemImpl::get_negative_goal_atoms_bitset<FluentTag>() const;
-template const FlatBitset& ProblemImpl::get_negative_goal_atoms_bitset<DerivedTag>() const;
-
-const FlatBitsets<StaticTag, FluentTag, DerivedTag>& ProblemImpl::get_hana_negative_goal_atoms_bitset() const
-{
-    return m_details.goal.negative_goal_atoms_bitset;
-}
-
-template<IsStaticOrFluentOrDerivedTag P>
-const FlatIndexList& ProblemImpl::get_negative_goal_atoms_indices() const
-{
-    return boost::hana::at_key(m_details.goal.negative_goal_atoms_indices, boost::hana::type<P> {});
-}
-
-template const FlatIndexList& ProblemImpl::get_negative_goal_atoms_indices<StaticTag>() const;
-template const FlatIndexList& ProblemImpl::get_negative_goal_atoms_indices<FluentTag>() const;
-template const FlatIndexList& ProblemImpl::get_negative_goal_atoms_indices<DerivedTag>() const;
-
-const FlatIndexLists<StaticTag, FluentTag, DerivedTag>& ProblemImpl::get_hana_negative_goal_atoms_indices() const
-{
-    return m_details.goal.negative_goal_atoms_indices;
+    return m_details.goal.goal_atoms_indices;
 }
 
 /* Axioms */
@@ -572,8 +542,6 @@ GroundLiteral<P> ProblemImpl::ground(Literal<P> literal, const ObjectList& bindi
 
     auto grounded_atom = m_repositories.get_or_create_ground_atom(literal->get_atom()->get_predicate(), grounded_terms);
     auto grounded_literal = m_repositories.get_or_create_ground_literal(literal->get_polarity(), grounded_atom);
-
-    std::cout << *grounded_atom << " " << grounded_atom->get_index() << std::endl;
 
     /* 5. Insert to grounding_table table */
 
@@ -842,13 +810,17 @@ GroundConjunctiveCondition ProblemImpl::ground(ConjunctiveCondition conjunctive_
     auto numeric_constraints = GroundNumericConstraintList {};
     ground_and_fill_vector(*this, conjunctive_condition->get_numeric_constraints(), binding, numeric_constraints);
 
-    return m_repositories.get_or_create_ground_conjunctive_condition(positive_static_precondition_ptr,
-                                                                     negative_static_precondition_ptr,
-                                                                     positive_fluent_precondition_ptr,
-                                                                     negative_fluent_precondition_ptr,
-                                                                     positive_derived_precondition_ptr,
-                                                                     negative_derived_precondition_ptr,
-                                                                     std::move(numeric_constraints));
+    return m_repositories.get_or_create_ground_conjunctive_condition(
+        boost::hana::make_map(
+            boost::hana::make_pair(boost::hana::type<PositiveTag> {},
+                                   boost::hana::make_map(boost::hana::make_pair(boost::hana::type<StaticTag> {}, positive_static_precondition_ptr),
+                                                         boost::hana::make_pair(boost::hana::type<FluentTag> {}, positive_fluent_precondition_ptr),
+                                                         boost::hana::make_pair(boost::hana::type<DerivedTag> {}, positive_derived_precondition_ptr))),
+            boost::hana::make_pair(boost::hana::type<NegativeTag> {},
+                                   boost::hana::make_map(boost::hana::make_pair(boost::hana::type<StaticTag> {}, negative_static_precondition_ptr),
+                                                         boost::hana::make_pair(boost::hana::type<FluentTag> {}, negative_fluent_precondition_ptr),
+                                                         boost::hana::make_pair(boost::hana::type<DerivedTag> {}, negative_derived_precondition_ptr)))),
+        std::move(numeric_constraints));
 }
 
 GroundConjunctiveEffect ProblemImpl::ground(ConjunctiveEffect conjunctive_effect, const ObjectList& binding)
@@ -870,10 +842,11 @@ GroundConjunctiveEffect ProblemImpl::ground(ConjunctiveEffect conjunctive_effect
     ground_and_fill_vector(*this, conjunctive_effect->get_fluent_numeric_effects(), binding, fluent_numerical_effects);
     ground_and_fill_optional(*this, conjunctive_effect->get_auxiliary_numeric_effect(), binding, auxiliary_numerical_effect);
 
-    return m_repositories.get_or_create_ground_conjunctive_effect(positive_effect_ptr,
-                                                                  negative_effect_ptr,
-                                                                  std::move(fluent_numerical_effects),
-                                                                  std::move(auxiliary_numerical_effect));
+    return m_repositories.get_or_create_ground_conjunctive_effect(
+        boost::hana::make_map(boost::hana::make_pair(boost::hana::type<PositiveTag> {}, positive_effect_ptr),
+                              boost::hana::make_pair(boost::hana::type<NegativeTag> {}, negative_effect_ptr)),
+        std::move(fluent_numerical_effects),
+        std::move(auxiliary_numerical_effect));
 }
 
 GroundConditionalEffect ProblemImpl::ground(ConditionalEffect conditional_effect, const ObjectList& binding)
@@ -1253,12 +1226,9 @@ problem::GoalDetails::GoalDetails() : parent(nullptr) {}
 problem::GoalDetails::GoalDetails(const ProblemImpl& problem, const InitialDetails& initial) :
     parent(&problem),
     m_static_goal_holds(false),
-    positive_goal_atoms(),
-    positive_goal_atoms_bitset(),
-    positive_goal_atoms_indices(),
-    negative_goal_atoms(),
-    negative_goal_atoms_bitset(),
-    negative_goal_atoms_indices()
+    goal_atoms(),
+    goal_atoms_bitset(),
+    goal_atoms_indices()
 {
     m_static_goal_holds = true;
     for (const auto& literal : problem.get_goal_condition<StaticTag>())
@@ -1269,36 +1239,44 @@ problem::GoalDetails::GoalDetails(const ProblemImpl& problem, const InitialDetai
         }
     }
 
-    boost::hana::for_each(problem.get_hana_goal_condition(),
-                          [this](auto&& pair)
-                          {
-                              const auto& key = boost::hana::first(pair);
-                              const auto& value = boost::hana::second(pair);
+    boost::hana::for_each(
+        problem.get_hana_goal_condition(),
+        [this](auto&& pair)
+        {
+            const auto& key = boost::hana::first(pair);
+            const auto& value = boost::hana::second(pair);
 
-                              boost::hana::at_key(negative_goal_atoms, key) = filter_ground_atoms(value, false);
-                              boost::hana::at_key(positive_goal_atoms, key) = filter_ground_atoms(value, true);
+            auto& negative_goal_atoms = boost::hana::at_key(boost::hana::at_key(goal_atoms, boost::hana::type<NegativeTag> {}), key);
+            auto& positive_goal_atoms = boost::hana::at_key(boost::hana::at_key(goal_atoms, boost::hana::type<PositiveTag> {}), key);
+            auto& negative_goal_atoms_bitset = boost::hana::at_key(boost::hana::at_key(goal_atoms_bitset, boost::hana::type<NegativeTag> {}), key);
+            auto& positive_goal_atoms_bitset = boost::hana::at_key(boost::hana::at_key(goal_atoms_bitset, boost::hana::type<PositiveTag> {}), key);
+            auto& negative_goal_atoms_indices = boost::hana::at_key(boost::hana::at_key(goal_atoms_indices, boost::hana::type<NegativeTag> {}), key);
+            auto& positive_goal_atoms_indices = boost::hana::at_key(boost::hana::at_key(goal_atoms_indices, boost::hana::type<PositiveTag> {}), key);
 
-                              for (const auto& literal : value)
-                              {
-                                  if (literal->get_polarity())
-                                  {
-                                      boost::hana::at_key(positive_goal_atoms_bitset, key).set(literal->get_atom()->get_index());
-                                  }
-                                  else
-                                  {
-                                      boost::hana::at_key(negative_goal_atoms_bitset, key).set(literal->get_atom()->get_index());
-                                  }
-                              }
+            negative_goal_atoms = filter_ground_atoms(value, false);
+            positive_goal_atoms = filter_ground_atoms(value, true);
 
-                              for (const auto& atom_index : boost::hana::at_key(negative_goal_atoms_bitset, key))
-                              {
-                                  boost::hana::at_key(negative_goal_atoms_indices, key).push_back(atom_index);
-                              }
-                              for (const auto& atom_index : boost::hana::at_key(positive_goal_atoms_bitset, key))
-                              {
-                                  boost::hana::at_key(positive_goal_atoms_indices, key).push_back(atom_index);
-                              }
-                          });
+            for (const auto& literal : value)
+            {
+                if (literal->get_polarity())
+                {
+                    positive_goal_atoms_bitset.set(literal->get_atom()->get_index());
+                }
+                else
+                {
+                    negative_goal_atoms_bitset.set(literal->get_atom()->get_index());
+                }
+            }
+
+            for (const auto& atom_index : negative_goal_atoms_bitset)
+            {
+                negative_goal_atoms_indices.push_back(atom_index);
+            }
+            for (const auto& atom_index : positive_goal_atoms_bitset)
+            {
+                positive_goal_atoms_indices.push_back(atom_index);
+            }
+        });
 }
 
 problem::AxiomDetails::AxiomDetails() : parent(nullptr) {}

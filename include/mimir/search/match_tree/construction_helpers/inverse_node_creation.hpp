@@ -32,7 +32,7 @@ template<formalism::HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P
 bool contains_positive(formalism::GroundAtom<P> atom, const E* element)
 {
     const auto& conjunctive_condition = element->get_conjunctive_condition();
-    const auto& positive_precondition = conjunctive_condition->template get_positive_precondition<P>();
+    const auto& positive_precondition = conjunctive_condition->template get_precondition<formalism::PositiveTag, P>();
     return (std::find(positive_precondition.begin(), positive_precondition.end(), atom->get_index()) != positive_precondition.end());
 }
 
@@ -40,7 +40,7 @@ template<formalism::HasConjunctiveCondition E, formalism::IsFluentOrDerivedTag P
 bool contains_negative(formalism::GroundAtom<P> atom, const E* element)
 {
     const auto& conjunctive_condition = element->get_conjunctive_condition();
-    const auto& negative_precondition = conjunctive_condition->template get_negative_precondition<P>();
+    const auto& negative_precondition = conjunctive_condition->template get_precondition<formalism::NegativeTag, P>();
     return (std::find(negative_precondition.begin(), negative_precondition.end(), atom->get_index()) != negative_precondition.end());
 }
 

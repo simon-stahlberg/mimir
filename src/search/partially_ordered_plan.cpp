@@ -37,14 +37,14 @@ static std::pair<FlatBitset, FlatBitset> get_conditions(const ProblemImpl& probl
 {
     auto positive = FlatBitset();
     auto negative = FlatBitset();
-    insert_into_bitset(action->get_conjunctive_condition()->get_positive_precondition<FluentTag>(), positive);
-    insert_into_bitset(action->get_conjunctive_condition()->get_negative_precondition<FluentTag>(), negative);
+    insert_into_bitset(action->get_conjunctive_condition()->get_precondition<PositiveTag, FluentTag>(), positive);
+    insert_into_bitset(action->get_conjunctive_condition()->get_precondition<NegativeTag, FluentTag>(), negative);
     for (const auto& cond_effect : action->get_conditional_effects())
     {
         if (is_applicable(cond_effect, problem, state))
         {
-            insert_into_bitset(cond_effect->get_conjunctive_condition()->get_positive_precondition<FluentTag>(), positive);
-            insert_into_bitset(cond_effect->get_conjunctive_condition()->get_negative_precondition<FluentTag>(), negative);
+            insert_into_bitset(cond_effect->get_conjunctive_condition()->get_precondition<PositiveTag, FluentTag>(), positive);
+            insert_into_bitset(cond_effect->get_conjunctive_condition()->get_precondition<NegativeTag, FluentTag>(), negative);
         }
     }
     return std::make_pair(std::move(positive), std::move(negative));
@@ -58,8 +58,8 @@ static std::pair<FlatBitset, FlatBitset> get_effects(const ProblemImpl& problem,
     {
         if (is_applicable(cond_effect, problem, state))
         {
-            insert_into_bitset(cond_effect->get_conjunctive_effect()->get_positive_effects(), positive);
-            insert_into_bitset(cond_effect->get_conjunctive_effect()->get_negative_effects(), negative);
+            insert_into_bitset(cond_effect->get_conjunctive_effect()->get_propositional_effects<PositiveTag>(), positive);
+            insert_into_bitset(cond_effect->get_conjunctive_effect()->get_propositional_effects<NegativeTag>(), negative);
         }
     }
     return std::make_pair(std::move(positive), std::move(negative));

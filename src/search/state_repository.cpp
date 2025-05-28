@@ -246,8 +246,8 @@ static void apply_action_effects(GroundAction action,
     {
         if (is_applicable(conditional_effect, problem, dense_state))
         {
-            insert_into_bitset(conditional_effect->get_conjunctive_effect()->get_negative_effects(), ref_negative_applied_effects);
-            insert_into_bitset(conditional_effect->get_conjunctive_effect()->get_positive_effects(), ref_positive_applied_effects);
+            insert_into_bitset(conditional_effect->get_conjunctive_effect()->get_propositional_effects<NegativeTag>(), ref_negative_applied_effects);
+            insert_into_bitset(conditional_effect->get_conjunctive_effect()->get_propositional_effects<PositiveTag>(), ref_positive_applied_effects);
             collect_applied_fluent_numeric_effects(conditional_effect->get_conjunctive_effect()->get_fluent_numeric_effects(),
                                                    const_static_numeric_variables,
                                                    const_fluent_numeric_variables,

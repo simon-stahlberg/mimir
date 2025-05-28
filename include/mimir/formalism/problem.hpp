@@ -151,25 +151,15 @@ public:
 
     bool static_goal_holds() const;
 
-    template<IsStaticOrFluentOrDerivedTag P>
-    const GroundAtomList<P>& get_positive_goal_atoms() const;
-    const GroundAtomLists<StaticTag, FluentTag, DerivedTag>& get_hana_positive_goal_atoms() const;
-    template<IsStaticOrFluentOrDerivedTag P>
-    const FlatBitset& get_positive_goal_atoms_bitset() const;
-    const FlatBitsets<StaticTag, FluentTag, DerivedTag>& get_hana_positive_goal_atoms_bitset() const;
-    template<IsStaticOrFluentOrDerivedTag P>
-    const FlatIndexList& get_positive_goal_atoms_indices() const;
-    const FlatIndexLists<StaticTag, FluentTag, DerivedTag>& get_hana_positive_goal_atoms_indices() const;
-
-    template<IsStaticOrFluentOrDerivedTag P>
-    const GroundAtomList<P>& get_negative_goal_atoms() const;
-    const GroundAtomLists<StaticTag, FluentTag, DerivedTag>& get_hana_negative_goal_atoms() const;
-    template<IsStaticOrFluentOrDerivedTag P>
-    const FlatBitset& get_negative_goal_atoms_bitset() const;
-    const FlatBitsets<StaticTag, FluentTag, DerivedTag>& get_hana_negative_goal_atoms_bitset() const;
-    template<IsStaticOrFluentOrDerivedTag P>
-    const FlatIndexList& get_negative_goal_atoms_indices() const;
-    const FlatIndexLists<StaticTag, FluentTag, DerivedTag>& get_hana_negative_goal_atoms_indices() const;
+    template<IsPolarity R, IsStaticOrFluentOrDerivedTag P>
+    const GroundAtomList<P>& get_goal_atoms() const;
+    const HanaContainer<GroundAtomLists<StaticTag, FluentTag, DerivedTag>, PositiveTag, NegativeTag>& get_hana_goal_atoms() const;
+    template<IsPolarity R, IsStaticOrFluentOrDerivedTag P>
+    const FlatBitset& get_goal_atoms_bitset() const;
+    const HanaContainer<FlatBitsets<StaticTag, FluentTag, DerivedTag>, PositiveTag, NegativeTag>& get_hana_goal_atoms_bitset() const;
+    template<IsPolarity R, IsStaticOrFluentOrDerivedTag P>
+    const FlatIndexList& get_goal_atoms_indices() const;
+    const HanaContainer<FlatIndexLists<StaticTag, FluentTag, DerivedTag>, PositiveTag, NegativeTag>& get_hana_goal_atoms_indices() const;
 
     /* Axioms */
 

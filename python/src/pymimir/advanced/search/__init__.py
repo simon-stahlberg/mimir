@@ -12,12 +12,9 @@ from pymimir.pymimir.advanced.search import (
 
 # Common
 from pymimir.pymimir.advanced.search import (   
-    BlindHeuristic,
-    HStarHeuristic,
     is_applicable,
     IApplicableActionGenerator,
     IAxiomEvaluator,
-    IHeuristic,
     Plan,
     PartiallyOrderedPlan,
     SearchResult,
@@ -28,6 +25,16 @@ from pymimir.pymimir.advanced.search import (
     SearchContext,
     SearchContextOptions,
     GeneralizedSearchContext,
+)
+
+# Heuristics 
+from pymimir.pymimir.advanced.search import (   
+    IHeuristic,
+    BlindHeuristic,
+    HStarHeuristic,
+    MaxHeuristic,
+    AddHeuristic,
+    SetAddHeuristic,
 )
 
 # SatisficingBindingGenerator

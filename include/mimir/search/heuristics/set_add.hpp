@@ -37,26 +37,30 @@ private:
     void initialize_and_annotations_impl(const rpg::UnaryGroundAxiom& axiom);
 
     /// @brief Initialize "Or"-proposition node annotations.
-    /// Sets the cost for each prosition that is true in the state to 0, and otherwise to infinity.
+    /// Sets the cost for each proposition that is true in the state to 0, and otherwise to infinity.
     void initialize_or_annotations_impl(const rpg::Proposition& proposition);
     void initialize_or_annotations_and_queue_impl(const rpg::Proposition& proposition);
 
-    /// @brief Update the "And"-action node with maximal cost.
+    /// @brief Update the "And"-action node.
+    /// Accumulate sets.
     /// @param proposition is the proposition.
     /// @param axiom is the "And"-action node.
     void update_and_annotation_impl(const rpg::Proposition& proposition, const rpg::UnaryGroundAction& action);
 
-    /// @brief Update the "And"-axiom node with maximal cost.
+    /// @brief Update the "And"-axiom node.
+    /// Choose maximal set among proposition and axiom.
     /// @param proposition is the proposition.
     /// @param axiom is the "And"-axiom node.
     void update_and_annotation_impl(const rpg::Proposition& proposition, const rpg::UnaryGroundAxiom& axiom);
 
-    /// @brief Update the "Or"-proposition node with minimal cost and enqueue the proposition if cost is updated.
+    /// @brief Update the "Or"-proposition node.
+    /// Choose maximal set among proposition and action achievers + action.
     /// @param action is the action.
     /// @param proposition is the "Or"-proposition node.
     void update_or_annotation_impl(const rpg::UnaryGroundAction& action, const rpg::Proposition& proposition);
 
-    /// @brief Update the "Or"-proposition node with minimal cost and enqueue the proposition if cost is updated.
+    /// @brief Update the "Or"-proposition node.
+    /// Choose maximal set among proposition and axiom achievers.
     /// @param axiom is the axiom.
     /// @param proposition is the "Or"-proposition node.
     void update_or_annotation_impl(const rpg::UnaryGroundAxiom& axiom, const rpg::Proposition& proposition);

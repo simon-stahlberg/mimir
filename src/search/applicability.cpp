@@ -80,8 +80,8 @@ template<IsStaticOrFluentOrDerivedTag P, std::ranges::forward_range Range>
     requires IsRangeOver<Range, Index>
 bool is_applicable(GroundConjunctiveCondition conjunctive_condition, const Range& atoms)
 {
-    return is_supseteq(atoms, conjunctive_condition->template get_positive_precondition<P>())  //
-           && are_disjoint(atoms, conjunctive_condition->template get_negative_precondition<P>());
+    return is_supseteq(atoms, conjunctive_condition->template get_precondition<PositiveTag, P>())  //
+           && are_disjoint(atoms, conjunctive_condition->template get_precondition<NegativeTag, P>());
 }
 
 /// @brief Tests whether the fluents are statically applicable, i.e., contain no conflicting literals.
@@ -89,7 +89,7 @@ bool is_applicable(GroundConjunctiveCondition conjunctive_condition, const Range
 template<IsFluentOrDerivedTag P>
 bool is_statically_applicable(GroundConjunctiveCondition conjunctive_condition)
 {
-    return are_disjoint(conjunctive_condition->template get_positive_precondition<P>(), conjunctive_condition->template get_negative_precondition<P>());
+    return are_disjoint(conjunctive_condition->template get_precondition<PositiveTag, P>(), conjunctive_condition->template get_precondition<NegativeTag, P>());
 }
 
 static bool

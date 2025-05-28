@@ -41,22 +41,22 @@ private:
     void initialize_or_annotations_impl(const rpg::Proposition& proposition);
     void initialize_or_annotations_and_queue_impl(const rpg::Proposition& proposition);
 
-    /// @brief Update the "And"-action node with maximal cost.
+    /// @brief Update the "And"-action node.
     /// @param proposition is the proposition.
     /// @param axiom is the "And"-action node.
     void update_and_annotation_impl(const rpg::Proposition& proposition, const rpg::UnaryGroundAction& action);
 
-    /// @brief Update the "And"-axiom node with maximal cost.
+    /// @brief Update the "And"-axiom node.
     /// @param proposition is the proposition.
     /// @param axiom is the "And"-axiom node.
     void update_and_annotation_impl(const rpg::Proposition& proposition, const rpg::UnaryGroundAxiom& axiom);
 
-    /// @brief Update the "Or"-proposition node with minimal cost and enqueue the proposition if cost is updated.
+    /// @brief Update the "Or"-proposition node.
     /// @param action is the action.
     /// @param proposition is the "Or"-proposition node.
     void update_or_annotation_impl(const rpg::UnaryGroundAction& action, const rpg::Proposition& proposition);
 
-    /// @brief Update the "Or"-proposition node with minimal cost and enqueue the proposition if cost is updated.
+    /// @brief Update the "Or"-proposition node.
     /// @param axiom is the axiom.
     /// @param proposition is the "Or"-proposition node.
     void update_or_annotation_impl(const rpg::UnaryGroundAxiom& axiom, const rpg::Proposition& proposition);

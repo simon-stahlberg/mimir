@@ -70,14 +70,12 @@ class GroundConjunctiveEffectImpl
 {
 private:
     Index m_index;
-    const FlatIndexList* m_positive_effects;
-    const FlatIndexList* m_negative_effects;
+    HanaContainer<const FlatIndexList*, PositiveTag, NegativeTag> m_propositional_effects;
     GroundNumericEffectList<FluentTag> m_fluent_numeric_effects;
     std::optional<GroundNumericEffect<AuxiliaryTag>> m_auxiliary_numeric_effect;
 
     GroundConjunctiveEffectImpl(Index index,
-                                const FlatIndexList* positive_effects,
-                                const FlatIndexList* negative_effects,
+                                HanaContainer<const FlatIndexList*, PositiveTag, NegativeTag> propositional_effects,
                                 GroundNumericEffectList<FluentTag> fluent_numeric_effects,
                                 std::optional<GroundNumericEffect<AuxiliaryTag>> auxiliary_numeric_effect);
 
@@ -93,12 +91,26 @@ public:
     GroundConjunctiveEffectImpl& operator=(GroundConjunctiveEffectImpl&& other) = default;
 
     Index get_index() const;
-    auto get_positive_effects() const { return m_positive_effects->compressed_range(); }
-    auto get_negative_effects() const { return m_negative_effects->compressed_range(); }
+    template<IsPolarity R>
+    const FlatIndexList& get_compressed_propositional_effects() const
+    {
+        return *boost::hana::at_key(m_propositional_effects, boost::hana::type<R> {});
+    }
+    template<IsPolarity R>
+    auto get_propositional_effects() const
+    {
+        return boost::hana::at_key(m_propositional_effects, boost::hana::type<R> {})->compressed_range();
+    }
     const GroundNumericEffectList<FluentTag>& get_fluent_numeric_effects() const;
     const std::optional<GroundNumericEffect<AuxiliaryTag>>& get_auxiliary_numeric_effect() const;
 
-    auto identifying_members() const { return std::tuple(m_positive_effects, m_negative_effects, m_fluent_numeric_effects, m_auxiliary_numeric_effect); }
+    auto identifying_members() const
+    {
+        return std::tuple(&get_compressed_propositional_effects<PositiveTag>(),
+                          &get_compressed_propositional_effects<NegativeTag>(),
+                          m_fluent_numeric_effects,
+                          m_auxiliary_numeric_effect);
+    }
 };
 
 class GroundConditionalEffectImpl

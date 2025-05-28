@@ -411,16 +411,16 @@ ConjunctiveEffect Repositories::get_or_create_conjunctive_effect(VariableList pa
         .get_or_create(std::move(parameters), std::move(effects), std::move(fluent_numeric_effects), std::move(auxiliary_numeric_effect));
 }
 
-GroundConjunctiveEffect Repositories::get_or_create_ground_conjunctive_effect(const FlatIndexList* positive_effects,
-                                                                              const FlatIndexList* negative_effects,
-                                                                              GroundNumericEffectList<FluentTag> fluent_numeric_effects,
-                                                                              std::optional<const GroundNumericEffect<AuxiliaryTag>> auxiliary_numeric_effect)
+GroundConjunctiveEffect
+Repositories::get_or_create_ground_conjunctive_effect(HanaContainer<const FlatIndexList*, PositiveTag, NegativeTag> propositional_effects,
+                                                      GroundNumericEffectList<FluentTag> fluent_numeric_effects,
+                                                      std::optional<const GroundNumericEffect<AuxiliaryTag>> auxiliary_numeric_effect)
 {
     /* Canonize before uniqueness test. */
     std::sort(fluent_numeric_effects.begin(), fluent_numeric_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
 
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundConjunctiveEffectImpl> {})
-        .get_or_create(positive_effects, negative_effects, std::move(fluent_numeric_effects), std::move(auxiliary_numeric_effect));
+        .get_or_create(std::move(propositional_effects), std::move(fluent_numeric_effects), std::move(auxiliary_numeric_effect));
 }
 
 ConditionalEffect Repositories::get_or_create_conditional_effect(ConjunctiveCondition conjunctive_condition, ConjunctiveEffect conjunctive_effect)
@@ -479,22 +479,12 @@ ConjunctiveCondition Repositories::get_or_create_conjunctive_condition(VariableL
         .get_or_create(std::move(parameters), std::move(literals), std::move(nullary_ground_literals), std::move(numeric_constraints));
 }
 
-GroundConjunctiveCondition Repositories::get_or_create_ground_conjunctive_condition(const FlatIndexList* positive_static_atoms,
-                                                                                    const FlatIndexList* negative_static_atoms,
-                                                                                    const FlatIndexList* positive_fluent_atoms,
-                                                                                    const FlatIndexList* negative_fluent_atoms,
-                                                                                    const FlatIndexList* positive_derived_atoms,
-                                                                                    const FlatIndexList* negative_derived_atoms,
-                                                                                    GroundNumericConstraintList numeric_constraints)
+GroundConjunctiveCondition Repositories::get_or_create_ground_conjunctive_condition(
+    HanaContainer<HanaContainer<const FlatIndexList*, StaticTag, FluentTag, DerivedTag>, PositiveTag, NegativeTag> preconditions,
+    GroundNumericConstraintList numeric_constraints)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundConjunctiveConditionImpl> {})
-        .get_or_create(positive_static_atoms,
-                       negative_static_atoms,
-                       positive_fluent_atoms,
-                       negative_fluent_atoms,
-                       positive_derived_atoms,
-                       negative_derived_atoms,
-                       std::move(numeric_constraints));
+        .get_or_create(preconditions, std::move(numeric_constraints));
 }
 
 Action Repositories::get_or_create_action(std::string name,

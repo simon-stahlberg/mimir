@@ -32,89 +32,49 @@ namespace mimir::formalism
 
 /* GroundConjunctiveCondition */
 
-GroundConjunctiveConditionImpl::GroundConjunctiveConditionImpl(Index index,
-                                                               const FlatIndexList* positive_static_atoms,
-                                                               const FlatIndexList* negative_static_atoms,
-                                                               const FlatIndexList* positive_fluent_atoms,
-                                                               const FlatIndexList* negative_fluent_atoms,
-                                                               const FlatIndexList* positive_derived_atoms,
-                                                               const FlatIndexList* negative_derived_atoms,
-                                                               GroundNumericConstraintList numeric_constraints) :
+GroundConjunctiveConditionImpl::GroundConjunctiveConditionImpl(
+    Index index,
+    HanaContainer<HanaContainer<const FlatIndexList*, StaticTag, FluentTag, DerivedTag>, PositiveTag, NegativeTag> preconditions,
+    GroundNumericConstraintList numeric_constraints) :
     m_index(index),
-    m_positive_static_atoms(positive_static_atoms),
-    m_negative_static_atoms(negative_static_atoms),
-    m_positive_fluent_atoms(positive_fluent_atoms),
-    m_negative_fluent_atoms(negative_fluent_atoms),
-    m_positive_derived_atoms(positive_derived_atoms),
-    m_negative_derived_atoms(negative_derived_atoms),
+    m_preconditions(preconditions),
     m_numeric_constraints(std::move(numeric_constraints))
 {
-    assert(m_positive_static_atoms->is_compressed());
-    assert(m_negative_static_atoms->is_compressed());
-    assert(m_positive_fluent_atoms->is_compressed());
-    assert(m_negative_fluent_atoms->is_compressed());
-    assert(m_positive_derived_atoms->is_compressed());
-    assert(m_negative_derived_atoms->is_compressed());
+    assert((get_compressed_precondition<PositiveTag, StaticTag>().is_compressed()));
+    assert((get_compressed_precondition<PositiveTag, FluentTag>().is_compressed()));
+    assert((get_compressed_precondition<PositiveTag, DerivedTag>().is_compressed()));
+    assert((get_compressed_precondition<NegativeTag, StaticTag>().is_compressed()));
+    assert((get_compressed_precondition<NegativeTag, FluentTag>().is_compressed()));
+    assert((get_compressed_precondition<NegativeTag, DerivedTag>().is_compressed()));
 
-    assert(std::is_sorted(m_positive_static_atoms->compressed_begin(), m_positive_static_atoms->compressed_end()));
-    assert(std::is_sorted(m_negative_static_atoms->compressed_begin(), m_negative_static_atoms->compressed_end()));
-    assert(std::is_sorted(m_positive_fluent_atoms->compressed_begin(), m_positive_fluent_atoms->compressed_end()));
-    assert(std::is_sorted(m_negative_fluent_atoms->compressed_begin(), m_negative_fluent_atoms->compressed_end()));
-    assert(std::is_sorted(m_positive_derived_atoms->compressed_begin(), m_positive_derived_atoms->compressed_end()));
-    assert(std::is_sorted(m_negative_derived_atoms->compressed_begin(), m_negative_derived_atoms->compressed_end()));
+    assert((std::is_sorted(get_compressed_precondition<PositiveTag, StaticTag>().compressed_begin(),
+                           get_compressed_precondition<PositiveTag, StaticTag>().compressed_end())));
+    assert((std::is_sorted(get_compressed_precondition<PositiveTag, FluentTag>().compressed_begin(),
+                           get_compressed_precondition<PositiveTag, FluentTag>().compressed_end())));
+    assert((std::is_sorted(get_compressed_precondition<PositiveTag, DerivedTag>().compressed_begin(),
+                           get_compressed_precondition<PositiveTag, DerivedTag>().compressed_end())));
+    assert((std::is_sorted(get_compressed_precondition<NegativeTag, StaticTag>().compressed_begin(),
+                           get_compressed_precondition<NegativeTag, StaticTag>().compressed_end())));
+    assert((std::is_sorted(get_compressed_precondition<NegativeTag, FluentTag>().compressed_begin(),
+                           get_compressed_precondition<NegativeTag, FluentTag>().compressed_end())));
+    assert((std::is_sorted(get_compressed_precondition<NegativeTag, DerivedTag>().compressed_begin(),
+                           get_compressed_precondition<NegativeTag, DerivedTag>().compressed_end())));
 }
 
 Index GroundConjunctiveConditionImpl::get_index() const { return m_index; }
 
-template<IsStaticOrFluentOrDerivedTag P>
-const FlatIndexList& GroundConjunctiveConditionImpl::get_compressed_positive_precondition() const
+template<IsPolarity R, IsStaticOrFluentOrDerivedTag P>
+const FlatIndexList& GroundConjunctiveConditionImpl::get_compressed_precondition() const
 {
-    if constexpr (std::is_same_v<P, StaticTag>)
-    {
-        return *m_positive_static_atoms;
-    }
-    else if constexpr (std::is_same_v<P, FluentTag>)
-    {
-        return *m_positive_fluent_atoms;
-    }
-    else if constexpr (std::is_same_v<P, DerivedTag>)
-    {
-        return *m_positive_derived_atoms;
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
-    }
+    return *boost::hana::at_key(boost::hana::at_key(m_preconditions, boost::hana::type<R> {}), boost::hana::type<P> {});
 }
 
-template const FlatIndexList& GroundConjunctiveConditionImpl::get_compressed_positive_precondition<StaticTag>() const;
-template const FlatIndexList& GroundConjunctiveConditionImpl::get_compressed_positive_precondition<FluentTag>() const;
-template const FlatIndexList& GroundConjunctiveConditionImpl::get_compressed_positive_precondition<DerivedTag>() const;
-
-template<IsStaticOrFluentOrDerivedTag P>
-const FlatIndexList& GroundConjunctiveConditionImpl::get_compressed_negative_precondition() const
-{
-    if constexpr (std::is_same_v<P, StaticTag>)
-    {
-        return *m_negative_static_atoms;
-    }
-    else if constexpr (std::is_same_v<P, FluentTag>)
-    {
-        return *m_negative_fluent_atoms;
-    }
-    else if constexpr (std::is_same_v<P, DerivedTag>)
-    {
-        return *m_negative_derived_atoms;
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
-    }
-}
-
-template const FlatIndexList& GroundConjunctiveConditionImpl::get_compressed_negative_precondition<StaticTag>() const;
-template const FlatIndexList& GroundConjunctiveConditionImpl::get_compressed_negative_precondition<FluentTag>() const;
-template const FlatIndexList& GroundConjunctiveConditionImpl::get_compressed_negative_precondition<DerivedTag>() const;
+template const FlatIndexList& GroundConjunctiveConditionImpl::get_compressed_precondition<PositiveTag, StaticTag>() const;
+template const FlatIndexList& GroundConjunctiveConditionImpl::get_compressed_precondition<PositiveTag, FluentTag>() const;
+template const FlatIndexList& GroundConjunctiveConditionImpl::get_compressed_precondition<PositiveTag, DerivedTag>() const;
+template const FlatIndexList& GroundConjunctiveConditionImpl::get_compressed_precondition<NegativeTag, StaticTag>() const;
+template const FlatIndexList& GroundConjunctiveConditionImpl::get_compressed_precondition<NegativeTag, FluentTag>() const;
+template const FlatIndexList& GroundConjunctiveConditionImpl::get_compressed_precondition<NegativeTag, DerivedTag>() const;
 
 const GroundNumericConstraintList& GroundConjunctiveConditionImpl::get_numeric_constraints() const { return m_numeric_constraints; }
 
@@ -132,12 +92,12 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundCon
 {
     const auto& [conjunctive_condition, problem] = data;
 
-    const auto positive_static_precondition_indices = conjunctive_condition->get_positive_precondition<formalism::StaticTag>();
-    const auto negative_static_precondition_indices = conjunctive_condition->get_negative_precondition<formalism::StaticTag>();
-    const auto positive_fluent_precondition_indices = conjunctive_condition->get_positive_precondition<formalism::FluentTag>();
-    const auto negative_fluent_precondition_indices = conjunctive_condition->get_negative_precondition<formalism::FluentTag>();
-    const auto positive_derived_precondition_indices = conjunctive_condition->get_positive_precondition<formalism::DerivedTag>();
-    const auto negative_derived_precondition_indices = conjunctive_condition->get_negative_precondition<formalism::DerivedTag>();
+    const auto positive_static_precondition_indices = conjunctive_condition->get_precondition<formalism::PositiveTag, formalism::StaticTag>();
+    const auto negative_static_precondition_indices = conjunctive_condition->get_precondition<formalism::NegativeTag, formalism::StaticTag>();
+    const auto positive_fluent_precondition_indices = conjunctive_condition->get_precondition<formalism::PositiveTag, formalism::FluentTag>();
+    const auto negative_fluent_precondition_indices = conjunctive_condition->get_precondition<formalism::NegativeTag, formalism::FluentTag>();
+    const auto positive_derived_precondition_indices = conjunctive_condition->get_precondition<formalism::PositiveTag, formalism::DerivedTag>();
+    const auto negative_derived_precondition_indices = conjunctive_condition->get_precondition<formalism::NegativeTag, formalism::DerivedTag>();
 
     auto positive_static_precondition = formalism::GroundAtomList<formalism::StaticTag> {};
     auto negative_static_precondition = formalism::GroundAtomList<formalism::StaticTag> {};

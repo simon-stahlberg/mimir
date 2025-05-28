@@ -521,8 +521,8 @@ void bind_module_definitions(nb::module_& m)
             {
                 return nb::make_iterator(nb::type<nb::iterator>(),
                                          "Iterator over positive static atom indices.",
-                                         self.get_positive_precondition<StaticTag>().begin(),
-                                         self.get_positive_precondition<StaticTag>().end());
+                                         self.get_precondition<PositiveTag, StaticTag>().begin(),
+                                         self.get_precondition<PositiveTag, StaticTag>().end());
             },
             nb::keep_alive<0, 1>())
         .def(
@@ -531,8 +531,8 @@ void bind_module_definitions(nb::module_& m)
             {
                 return nb::make_iterator(nb::type<nb::iterator>(),
                                          "Iterator over positive fluent atom indices.",
-                                         self.get_positive_precondition<FluentTag>().begin(),
-                                         self.get_positive_precondition<FluentTag>().end());
+                                         self.get_precondition<PositiveTag, FluentTag>().begin(),
+                                         self.get_precondition<PositiveTag, FluentTag>().end());
             },
             nb::keep_alive<0, 1>())
         .def(
@@ -541,8 +541,8 @@ void bind_module_definitions(nb::module_& m)
             {
                 return nb::make_iterator(nb::type<nb::iterator>(),
                                          "Iterator over positive derived atom indices.",
-                                         self.get_positive_precondition<DerivedTag>().begin(),
-                                         self.get_positive_precondition<DerivedTag>().end());
+                                         self.get_precondition<PositiveTag, DerivedTag>().begin(),
+                                         self.get_precondition<PositiveTag, DerivedTag>().end());
             },
             nb::keep_alive<0, 1>())
         .def(
@@ -551,8 +551,8 @@ void bind_module_definitions(nb::module_& m)
             {
                 return nb::make_iterator(nb::type<nb::iterator>(),
                                          "Iterator over negative static atom indices.",
-                                         self.get_negative_precondition<StaticTag>().begin(),
-                                         self.get_negative_precondition<StaticTag>().end());
+                                         self.get_precondition<NegativeTag, StaticTag>().begin(),
+                                         self.get_precondition<NegativeTag, StaticTag>().end());
             },
             nb::keep_alive<0, 1>())
         .def(
@@ -561,8 +561,8 @@ void bind_module_definitions(nb::module_& m)
             {
                 return nb::make_iterator(nb::type<nb::iterator>(),
                                          "Iterator over negative fluent atom indices.",
-                                         self.get_negative_precondition<FluentTag>().begin(),
-                                         self.get_negative_precondition<FluentTag>().end());
+                                         self.get_precondition<NegativeTag, FluentTag>().begin(),
+                                         self.get_precondition<NegativeTag, FluentTag>().end());
             },
             nb::keep_alive<0, 1>())
         .def(
@@ -571,8 +571,8 @@ void bind_module_definitions(nb::module_& m)
             {
                 return nb::make_iterator(nb::type<nb::iterator>(),
                                          "Iterator over negative derived atom indices.",
-                                         self.get_negative_precondition<DerivedTag>().begin(),
-                                         self.get_negative_precondition<DerivedTag>().end());
+                                         self.get_precondition<NegativeTag, DerivedTag>().begin(),
+                                         self.get_precondition<NegativeTag, DerivedTag>().end());
             },
             nb::keep_alive<0, 1>());
 
@@ -595,8 +595,8 @@ void bind_module_definitions(nb::module_& m)
             {
                 return nb::make_iterator(nb::type<nb::iterator>(),
                                          "Iterator over positive fluent atom indices.",
-                                         self.get_positive_effects().begin(),
-                                         self.get_positive_effects().end());
+                                         self.get_propositional_effects<PositiveTag>().begin(),
+                                         self.get_propositional_effects<PositiveTag>().end());
             },
             nb::keep_alive<0, 1>())
         .def(
@@ -605,8 +605,8 @@ void bind_module_definitions(nb::module_& m)
             {
                 return nb::make_iterator(nb::type<nb::iterator>(),
                                          "Iterator over negative fluent atom indices.",
-                                         self.get_negative_effects().begin(),
-                                         self.get_negative_effects().end());
+                                         self.get_propositional_effects<NegativeTag>().begin(),
+                                         self.get_propositional_effects<NegativeTag>().end());
             },
             nb::keep_alive<0, 1>())
         .def("get_fluent_numeric_effects", nb::overload_cast<>(&GroundConjunctiveEffectImpl::get_fluent_numeric_effects, nb::const_), nb::rv_policy::copy)

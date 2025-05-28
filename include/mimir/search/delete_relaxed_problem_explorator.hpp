@@ -50,6 +50,8 @@ public:
     DeleteRelaxedProblemExplorator& operator=(DeleteRelaxedProblemExplorator&& other) = delete;
 
     /// @brief Create all delete-relaxed-reachable ground atoms.
+    /// Note: this function is deprecated since it does not deliver the atoms in the unrelaxed task
+    /// because relaxed actions miss some...
     /// @tparam P is the predicate type.
     /// @return a vector containing all delete-relaxed reachable ground atoms in the input problem.
     template<formalism::IsFluentOrDerivedTag P>

@@ -547,6 +547,15 @@ void bind_module_definitions(nb::module_& m)
     nb::class_<HStarHeuristicImpl, IHeuristic>(m, "HStarHeuristic")  //
         .def(nb::init<SearchContext>(), "search_context"_a);
 
+    nb::class_<MaxHeuristicImpl, IHeuristic>(m, "MaxHeuristic")  //
+        .def(nb::init<const DeleteRelaxedProblemExplorator&>(), "delete_relaxed_problem_explorator"_a);
+
+    nb::class_<AddHeuristicImpl, IHeuristic>(m, "AddHeuristic")  //
+        .def(nb::init<const DeleteRelaxedProblemExplorator&>(), "delete_relaxed_problem_explorator"_a);
+
+    nb::class_<SetAddHeuristicImpl, IHeuristic>(m, "SetAddHeuristic")  //
+        .def(nb::init<const DeleteRelaxedProblemExplorator&>(), "delete_relaxed_problem_explorator"_a);
+
     /* Algorithms */
 
     // SearchResult

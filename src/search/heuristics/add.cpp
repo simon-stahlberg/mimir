@@ -69,7 +69,7 @@ void AddHeuristicImpl::update_and_annotation_impl(const Proposition& proposition
     auto& proposition_annotation = this->m_proposition_annotations[proposition.get_index()];
     auto& axiom_annotation = this->m_axiom_annotations[axiom.get_index()];
 
-    get_cost(axiom_annotation) = get_cost(proposition_annotation);
+    get_cost(axiom_annotation) = std::max(get_cost(proposition_annotation), get_cost(axiom_annotation));
 }
 
 void AddHeuristicImpl::update_or_annotation_impl(const UnaryGroundAction& action, const Proposition& proposition)

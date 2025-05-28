@@ -74,23 +74,23 @@ template class GroundNumericEffectImpl<AuxiliaryTag>;
 /* GroundConjunctiveEffect */
 
 GroundConjunctiveEffectImpl::GroundConjunctiveEffectImpl(Index index,
-                                                         const FlatIndexList* positive_effects,
-                                                         const FlatIndexList* negative_effects,
+                                                         HanaContainer<const FlatIndexList*, PositiveTag, NegativeTag> propositional_effects,
                                                          GroundNumericEffectList<FluentTag> fluent_numeric_effects,
                                                          std::optional<GroundNumericEffect<AuxiliaryTag>> auxiliary_numeric_effect) :
     m_index(index),
-    m_positive_effects(positive_effects),
-    m_negative_effects(negative_effects),
+    m_propositional_effects(propositional_effects),
     m_fluent_numeric_effects(std::move(fluent_numeric_effects)),
     m_auxiliary_numeric_effect(std::move(auxiliary_numeric_effect))
 {
-    assert(m_positive_effects->is_compressed());
-    assert(m_negative_effects->is_compressed());
+    assert(get_compressed_propositional_effects<PositiveTag>().is_compressed());
+    assert(get_compressed_propositional_effects<NegativeTag>().is_compressed());
 
-    assert(std::is_sorted(m_positive_effects->compressed_begin(), m_positive_effects->compressed_end()));
-    assert(std::is_sorted(m_negative_effects->compressed_begin(), m_negative_effects->compressed_end()));
-    assert(std::is_sorted(m_fluent_numeric_effects.begin(),
-                          m_fluent_numeric_effects.end(),
+    assert(std::is_sorted(get_compressed_propositional_effects<PositiveTag>().compressed_begin(),
+                          get_compressed_propositional_effects<PositiveTag>().compressed_end()));
+    assert(std::is_sorted(get_compressed_propositional_effects<NegativeTag>().compressed_begin(),
+                          get_compressed_propositional_effects<NegativeTag>().compressed_end()));
+    assert(std::is_sorted(get_fluent_numeric_effects().begin(),
+                          get_fluent_numeric_effects().end(),
                           [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); }));
 }
 
@@ -176,8 +176,8 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<formalism::GroundCon
 {
     const auto& [conjunctive_effect, problem] = data;
 
-    const auto positive_literal_indices = conjunctive_effect->get_positive_effects();
-    const auto negative_literal_indices = conjunctive_effect->get_negative_effects();
+    const auto positive_literal_indices = conjunctive_effect->get_propositional_effects<formalism::PositiveTag>();
+    const auto negative_literal_indices = conjunctive_effect->get_propositional_effects<formalism::NegativeTag>();
 
     auto positive_literals = formalism::GroundAtomList<formalism::FluentTag> {};
     auto negative_literals = formalism::GroundAtomList<formalism::FluentTag> {};
