@@ -16,6 +16,7 @@ if (NOT range-v3_FOUND)
             -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
             -DCMAKE_PREFIX_PATH=${CMAKE_INSTALL_PREFIX}
             -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+            -DRANGE_V3_TESTS=OFF
     )
 
     message(STATUS "Preparing external project \"range-v3\" with args:")
