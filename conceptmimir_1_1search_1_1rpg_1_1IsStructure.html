@@ -82,15 +82,11 @@ $(function() {
 <div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
 <div class="line"><span class="keyword">concept </span><a class="code hl_concept" href="conceptmimir_1_1search_1_1rpg_1_1IsStructure.html">mimir::search::rpg::IsStructure</a> =  <span class="keyword">requires</span>(T a) {</div>
 <div class="line">    { a.get_index() } -&gt; std::convertible_to&lt;Index&gt;;</div>
-<div class="line">    { a.template get_all_preconditions_range&lt;formalism::PositiveTag, formalism::FluentTag&gt;() };   </div>
-<div class="line">    { a.template get_all_preconditions_range&lt;formalism::PositiveTag, formalism::DerivedTag&gt;() };  </div>
-<div class="line">    { a.template get_all_preconditions_range&lt;formalism::NegativeTag, formalism::FluentTag&gt;() };   </div>
-<div class="line">    { a.template get_all_preconditions_range&lt;formalism::NegativeTag, formalism::DerivedTag&gt;() };  </div>
 <div class="line">    { a.get_num_preconditions() } -&gt; std::convertible_to&lt;size_t&gt;;</div>
 <div class="line">    { a.get_effect() } -&gt; std::convertible_to&lt;Index&gt;;</div>
 <div class="line">    { a.get_polarity() } -&gt; std::convertible_to&lt;bool&gt;;</div>
 <div class="line">}</div>
-<div class="ttc" id="aconceptmimir_1_1search_1_1rpg_1_1IsStructure_html"><div class="ttname"><a href="conceptmimir_1_1search_1_1rpg_1_1IsStructure.html">mimir::search::rpg::IsStructure</a></div><div class="ttdef"><b>Definition:</b> rpg_base.hpp:137</div></div>
+<div class="ttc" id="aconceptmimir_1_1search_1_1rpg_1_1IsStructure_html"><div class="ttname"><a href="conceptmimir_1_1search_1_1rpg_1_1IsStructure.html">mimir::search::rpg::IsStructure</a></div><div class="ttdef"><b>Definition:</b> rpg_base.hpp:122</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
