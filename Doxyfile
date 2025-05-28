@@ -192,6 +192,7 @@ INPUT                 = \
     "include/mimir/search/heuristics/hstar.hpp" \
     "include/mimir/search/heuristics/interface.hpp" \
     "include/mimir/search/heuristics/max.hpp" \
+    "include/mimir/search/heuristics/rpg_base.hpp" \
     "include/mimir/search/heuristics/set_add.hpp" \
     "include/mimir/search/match_tree/options.hpp" \
     "include/mimir/search/open_lists/interface.hpp" \

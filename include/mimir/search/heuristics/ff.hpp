@@ -33,8 +33,8 @@ public:
 private:
     /// @brief Initialize "And"-structure node annotations.
     /// Sets the cost for each structure node to 0.
-    void initialize_and_annotations_impl(const rpg::UnaryGroundAction& action);
-    void initialize_and_annotations_impl(const rpg::UnaryGroundAxiom& axiom);
+    void initialize_and_annotations_impl(const rpg::Action& action);
+    void initialize_and_annotations_impl(const rpg::Axiom& axiom);
 
     /// @brief Initialize "Or"-proposition node annotations.
     /// Sets the cost for each prosition that is true in the state to 0, and otherwise to infinity.
@@ -44,22 +44,22 @@ private:
     /// @brief Update the "And"-action node.
     /// @param proposition is the proposition.
     /// @param axiom is the "And"-action node.
-    void update_and_annotation_impl(const rpg::Proposition& proposition, const rpg::UnaryGroundAction& action);
+    void update_and_annotation_impl(const rpg::Proposition& proposition, const rpg::Action& action);
 
     /// @brief Update the "And"-axiom node.
     /// @param proposition is the proposition.
     /// @param axiom is the "And"-axiom node.
-    void update_and_annotation_impl(const rpg::Proposition& proposition, const rpg::UnaryGroundAxiom& axiom);
+    void update_and_annotation_impl(const rpg::Proposition& proposition, const rpg::Axiom& axiom);
 
     /// @brief Update the "Or"-proposition node.
     /// @param action is the action.
     /// @param proposition is the "Or"-proposition node.
-    void update_or_annotation_impl(const rpg::UnaryGroundAction& action, const rpg::Proposition& proposition);
+    void update_or_annotation_impl(const rpg::Action& action, const rpg::Proposition& proposition);
 
     /// @brief Update the "Or"-proposition node.
     /// @param axiom is the axiom.
     /// @param proposition is the "Or"-proposition node.
-    void update_or_annotation_impl(const rpg::UnaryGroundAxiom& axiom, const rpg::Proposition& proposition);
+    void update_or_annotation_impl(const rpg::Axiom& axiom, const rpg::Proposition& proposition);
 
     /// @brief Extract h_max heuristic estimate from the goal propositions.
     /// @return the h_max heuristic estimate.

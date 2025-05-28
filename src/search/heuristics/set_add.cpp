@@ -37,7 +37,7 @@ SetAddHeuristic SetAddHeuristicImpl::create(const DeleteRelaxedProblemExplorator
     return std::make_shared<SetAddHeuristicImpl>(delete_relaxation);
 }
 
-void SetAddHeuristicImpl::initialize_and_annotations_impl(const UnaryGroundAction& action)
+void SetAddHeuristicImpl::initialize_and_annotations_impl(const Action& action)
 {
     auto& annotation = this->m_action_annotations[action.get_index()];
     get_cost(annotation) = 0;
@@ -46,7 +46,7 @@ void SetAddHeuristicImpl::initialize_and_annotations_impl(const UnaryGroundActio
     get_achievers(setadd_annotation).clear();
 }
 
-void SetAddHeuristicImpl::initialize_and_annotations_impl(const UnaryGroundAxiom& axiom)
+void SetAddHeuristicImpl::initialize_and_annotations_impl(const Axiom& axiom)
 {
     auto& annotation = this->m_axiom_annotations[axiom.get_index()];
     get_cost(annotation) = 0;
@@ -70,7 +70,7 @@ void SetAddHeuristicImpl::initialize_or_annotations_and_queue_impl(const Proposi
     this->m_queue.insert(0, QueueEntry { proposition.get_index(), 0 });
 }
 
-void SetAddHeuristicImpl::update_and_annotation_impl(const Proposition& proposition, const UnaryGroundAction& action)
+void SetAddHeuristicImpl::update_and_annotation_impl(const Proposition& proposition, const Action& action)
 {
     auto& proposition_annotation = this->m_proposition_annotations[proposition.get_index()];
     auto& action_annotation = this->m_action_annotations[action.get_index()];
@@ -81,7 +81,7 @@ void SetAddHeuristicImpl::update_and_annotation_impl(const Proposition& proposit
     get_achievers(setadd_action_annotation).insert(get_achievers(setadd_proposition_annotation).begin(), get_achievers(setadd_proposition_annotation).end());
 }
 
-void SetAddHeuristicImpl::update_and_annotation_impl(const Proposition& proposition, const UnaryGroundAxiom& axiom)
+void SetAddHeuristicImpl::update_and_annotation_impl(const Proposition& proposition, const Axiom& axiom)
 {
     auto& proposition_annotation = this->m_proposition_annotations[proposition.get_index()];
     auto& axiom_annotation = this->m_axiom_annotations[axiom.get_index()];
@@ -92,7 +92,7 @@ void SetAddHeuristicImpl::update_and_annotation_impl(const Proposition& proposit
     get_achievers(setadd_axiom_annotation).insert(get_achievers(setadd_proposition_annotation).begin(), get_achievers(setadd_proposition_annotation).end());
 }
 
-void SetAddHeuristicImpl::update_or_annotation_impl(const UnaryGroundAction& action, const Proposition& proposition)
+void SetAddHeuristicImpl::update_or_annotation_impl(const Action& action, const Proposition& proposition)
 {
     const auto& action_annotation = this->m_action_annotations[action.get_index()];
     auto& proposition_annotation = this->m_proposition_annotations[proposition.get_index()];
@@ -112,7 +112,7 @@ void SetAddHeuristicImpl::update_or_annotation_impl(const UnaryGroundAction& act
     }
 }
 
-void SetAddHeuristicImpl::update_or_annotation_impl(const UnaryGroundAxiom& axiom, const Proposition& proposition)
+void SetAddHeuristicImpl::update_or_annotation_impl(const Axiom& axiom, const Proposition& proposition)
 {
     const auto& axiom_annotation = this->m_axiom_annotations[axiom.get_index()];
     auto& proposition_annotation = this->m_proposition_annotations[proposition.get_index()];

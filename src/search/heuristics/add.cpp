@@ -29,14 +29,14 @@ AddHeuristicImpl::AddHeuristicImpl(const DeleteRelaxedProblemExplorator& delete_
 
 AddHeuristic AddHeuristicImpl::create(const DeleteRelaxedProblemExplorator& delete_relaxation) { return std::make_shared<AddHeuristicImpl>(delete_relaxation); }
 
-void AddHeuristicImpl::initialize_and_annotations_impl(const UnaryGroundAction& action)
+void AddHeuristicImpl::initialize_and_annotations_impl(const Action& action)
 {
     auto& annotation = this->m_action_annotations[action.get_index()];
     get_cost(annotation) = 0;
     get_num_unsatisfied_preconditions(annotation) = action.get_num_preconditions();
 }
 
-void AddHeuristicImpl::initialize_and_annotations_impl(const UnaryGroundAxiom& axiom)
+void AddHeuristicImpl::initialize_and_annotations_impl(const Axiom& axiom)
 {
     auto& annotation = this->m_axiom_annotations[axiom.get_index()];
     get_cost(annotation) = 0;
@@ -56,7 +56,7 @@ void AddHeuristicImpl::initialize_or_annotations_and_queue_impl(const Propositio
     this->m_queue.insert(0, QueueEntry { proposition.get_index(), 0 });
 }
 
-void AddHeuristicImpl::update_and_annotation_impl(const Proposition& proposition, const UnaryGroundAction& action)
+void AddHeuristicImpl::update_and_annotation_impl(const Proposition& proposition, const Action& action)
 {
     auto& proposition_annotation = this->m_proposition_annotations[proposition.get_index()];
     auto& action_annotation = this->m_action_annotations[action.get_index()];
@@ -64,7 +64,7 @@ void AddHeuristicImpl::update_and_annotation_impl(const Proposition& proposition
     get_cost(action_annotation) += get_cost(proposition_annotation);
 }
 
-void AddHeuristicImpl::update_and_annotation_impl(const Proposition& proposition, const UnaryGroundAxiom& axiom)
+void AddHeuristicImpl::update_and_annotation_impl(const Proposition& proposition, const Axiom& axiom)
 {
     auto& proposition_annotation = this->m_proposition_annotations[proposition.get_index()];
     auto& axiom_annotation = this->m_axiom_annotations[axiom.get_index()];
@@ -72,7 +72,7 @@ void AddHeuristicImpl::update_and_annotation_impl(const Proposition& proposition
     get_cost(axiom_annotation) = std::max(get_cost(proposition_annotation), get_cost(axiom_annotation));
 }
 
-void AddHeuristicImpl::update_or_annotation_impl(const UnaryGroundAction& action, const Proposition& proposition)
+void AddHeuristicImpl::update_or_annotation_impl(const Action& action, const Proposition& proposition)
 {
     const auto& action_annotation = this->m_action_annotations[action.get_index()];
     auto& proposition_annotation = this->m_proposition_annotations[proposition.get_index()];
@@ -86,7 +86,7 @@ void AddHeuristicImpl::update_or_annotation_impl(const UnaryGroundAction& action
     }
 }
 
-void AddHeuristicImpl::update_or_annotation_impl(const UnaryGroundAxiom& axiom, const Proposition& proposition)
+void AddHeuristicImpl::update_or_annotation_impl(const Axiom& axiom, const Proposition& proposition)
 {
     const auto& axiom_annotation = this->m_axiom_annotations[axiom.get_index()];
     auto& proposition_annotation = this->m_proposition_annotations[proposition.get_index()];
