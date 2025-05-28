@@ -101,6 +101,10 @@ int main(int argc, char** argv)
         {
             heuristic = SetAddHeuristicImpl::create(delete_relaxed_problem_explorator);
         }
+        else if (heuristic_type == 4)
+        {
+            heuristic = FFHeuristicImpl::create(delete_relaxed_problem_explorator);
+        }
     }
     else
     {
@@ -111,15 +115,19 @@ int main(int argc, char** argv)
 
         if (heuristic_type == 1)
         {
-            throw std::runtime_error("Lifted hmax is not supported");
+            throw std::runtime_error("Lifted h_max is not supported");
         }
         else if (heuristic_type == 2)
         {
-            throw std::runtime_error("Lifted hadd is not supported");
+            throw std::runtime_error("Lifted h_add is not supported");
         }
         else if (heuristic_type == 3)
         {
-            throw std::runtime_error("Lifted hsetadd is not supported");
+            throw std::runtime_error("Lifted h_setadd is not supported");
+        }
+        else if (heuristic_type == 4)
+        {
+            throw std::runtime_error("Lifted h_ff is not supported");
         }
     }
 

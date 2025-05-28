@@ -35,6 +35,7 @@ from pymimir.pymimir.advanced.search import (
     MaxHeuristic,
     AddHeuristic,
     SetAddHeuristic,
+    FFHeuristic
 )
 
 # SatisficingBindingGenerator

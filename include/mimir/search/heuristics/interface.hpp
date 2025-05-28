@@ -18,6 +18,7 @@
 #ifndef MIMIR_SEARCH_HEURISTICS_INTERFACE_HPP_
 #define MIMIR_SEARCH_HEURISTICS_INTERFACE_HPP_
 
+#include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
 
 namespace mimir::search
@@ -33,6 +34,13 @@ public:
     virtual ~IHeuristic() = default;
 
     virtual ContinuousCost compute_heuristic(State state, bool is_goal_state) = 0;
+
+    virtual const formalism::GroundActionList& get_preferred_actions() const { return m_preferred_actions; }
+
+protected:
+    formalism::GroundActionList m_preferred_actions;
+
+    auto& get_preferred_actions() { return m_preferred_actions; }
 };
 
 }

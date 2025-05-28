@@ -44,12 +44,14 @@ class Action
 {
 public:
     Action(Index index,
+           formalism::GroundAction unrelaxed_action,
            ConditionsContainer preconditions,
            ConditionsContainer conditional_preconditions,
            size_t num_preconditions,
            Index fluent_effect,
            bool polarity) :
         m_index(index),
+        m_unrelaxed_action(unrelaxed_action),
         m_preconditions(preconditions),
         m_conditional_preconditions(conditional_preconditions),
         m_num_preconditions(num_preconditions),
@@ -59,6 +61,7 @@ public:
     }
 
     Index get_index() const { return m_index; }
+    formalism::GroundAction get_unrelaxed_action() const { return m_unrelaxed_action; }
     template<formalism::IsPolarity R, formalism::IsFluentOrDerivedTag P>
     auto get_preconditions() const
     {
@@ -82,6 +85,7 @@ public:
 
 private:
     Index m_index;
+    formalism::GroundAction m_unrelaxed_action;
     ConditionsContainer m_preconditions;
     ConditionsContainer m_conditional_preconditions;
     size_t m_num_preconditions;
@@ -216,11 +220,14 @@ private:
 public:
     ContinuousCost compute_heuristic(State state, bool is_goal_state) override
     {
+        if (is_goal_state)
+            return 0.;
+
         self().initialize_and_annotations();
         self().initialize_or_annotations();
         self().initialize_or_annotations_and_queue(state);
         dijksta();
-        return (m_num_unsat_goals > 0) ? INFINITY_CONTINUOUS_COST : self().extract_impl();
+        return (m_num_unsat_goals > 0) ? INFINITY_CONTINUOUS_COST : self().extract_impl(state);
     }
 
 private:
@@ -233,7 +240,17 @@ private:
         return boost::hana::at_key(boost::hana::at_key(container, boost::hana::type<R> {}), boost::hana::type<P> {});
     }
 
-    explicit RelaxedPlanningGraph(const DeleteRelaxedProblemExplorator& delete_relaxation) : m_offsets(), m_atom_indices(), m_structures(), m_num_unsat_goals(0)
+    explicit RelaxedPlanningGraph(const DeleteRelaxedProblemExplorator& delete_relaxation) :
+        m_problem(delete_relaxation.get_problem()),
+        m_offsets(),
+        m_atom_indices(),
+        m_structures(),
+        m_structure_annotations(),
+        m_propositions(),
+        m_proposition_annotations(),
+        m_goal_propositions(),
+        m_num_unsat_goals(0),
+        m_queue()
     {
         /**
          * Instantiate actions.
@@ -346,7 +363,7 @@ private:
                         get<formalism::NegativeTag, formalism::DerivedTag>(is_precondition_of_action)[pre_atom_index].push_back(unary_action_index);
                     }
 
-                    actions.push_back(Action(unary_action_index, preconditions, conditional_preconditions, num_preconditions, eff_atom_index, true));
+                    actions.push_back(Action(unary_action_index, action, preconditions, conditional_preconditions, num_preconditions, eff_atom_index, true));
 
                     if (actions.back().get_num_preconditions() == 0)
                     {
@@ -396,7 +413,7 @@ private:
                         get<formalism::NegativeTag, formalism::DerivedTag>(is_precondition_of_action)[pre_atom_index].push_back(unary_action_index);
                     }
 
-                    actions.push_back(Action(unary_action_index, preconditions, conditional_preconditions, num_preconditions, eff_atom_index, false));
+                    actions.push_back(Action(unary_action_index, action, preconditions, conditional_preconditions, num_preconditions, eff_atom_index, false));
 
                     if (actions.back().get_num_preconditions() == 0)
                     {
@@ -660,6 +677,10 @@ private:
 
         // std::cout << "Num unsat goals: " << num_unsat_goals << std::endl;
     }
+
+    formalism::Problem m_problem;
+
+    const formalism::ProblemImpl& get_problem() const { return *m_problem; }
 
     HanaContainer<HanaContainer<IndexList, formalism::FluentTag, formalism::DerivedTag>, formalism::PositiveTag, formalism::NegativeTag> m_offsets;
 
