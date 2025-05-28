@@ -11,5 +11,6 @@ var searchData=
   ['problembuilder_8',['ProblemBuilder',['../classmimir_1_1formalism_1_1ProblemBuilder.html',1,'mimir::formalism']]],
   ['problemgoalstrategyimpl_9',['ProblemGoalStrategyImpl',['../classmimir_1_1search_1_1ProblemGoalStrategyImpl.html',1,'mimir::search']]],
   ['problemgoalstrategyimplcounter_10',['ProblemGoalStrategyImplCounter',['../classmimir_1_1search_1_1siw_1_1ProblemGoalStrategyImplCounter.html',1,'mimir::search::siw']]],
-  ['problemimpl_11',['ProblemImpl',['../classmimir_1_1formalism_1_1ProblemImpl.html',1,'mimir::formalism']]]
+  ['problemimpl_11',['ProblemImpl',['../classmimir_1_1formalism_1_1ProblemImpl.html',1,'mimir::formalism']]],
+  ['proposition_12',['Proposition',['../classmimir_1_1search_1_1rpg_1_1Proposition.html',1,'mimir::search::rpg']]]
 ];

@@ -27,5 +27,6 @@ var searchData=
   ['problemlist_24',['ProblemList',['../namespacemimir_1_1formalism.html#a2233e56df2a111397ed13344298ef247',1,'mimir::formalism']]],
   ['problemvertex_25',['ProblemVertex',['../namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71',1,'mimir::graphs']]],
   ['problemvertexlist_26',['ProblemVertexList',['../namespacemimir_1_1graphs.html#a6849af3a319ee009030dc943e8f30f13',1,'mimir::graphs']]],
-  ['pruningstrategy_27',['PruningStrategy',['../namespacemimir_1_1search.html#a4a361738fff5acc4d7091c245f79ccf1',1,'mimir::search']]]
+  ['propositionlist_27',['PropositionList',['../namespacemimir_1_1search_1_1rpg.html#ae2022cc8c37d4cbfe3fa493f7c50be93',1,'mimir::search::rpg']]],
+  ['pruningstrategy_28',['PruningStrategy',['../namespacemimir_1_1search.html#a4a361738fff5acc4d7091c245f79ccf1',1,'mimir::search']]]
 ];
