@@ -77,11 +77,11 @@ void AddHeuristicImpl::update_or_annotation_impl(const UnaryGroundAction& action
     const auto& action_annotation = this->m_action_annotations[action.get_index()];
     auto& proposition_annotation = this->m_proposition_annotations[proposition.get_index()];
 
-    const auto cost = get_cost(action_annotation) + 1;
+    const auto firing_cost = get_cost(action_annotation) + 1;
 
-    if (cost < get_cost(proposition_annotation))
+    if (firing_cost < get_cost(proposition_annotation))
     {
-        get_cost(proposition_annotation) = cost;
+        get_cost(proposition_annotation) = firing_cost;
         this->m_queue.insert(get_cost(proposition_annotation), QueueEntry { proposition.get_index(), get_cost(proposition_annotation) });
     }
 }
@@ -109,6 +109,9 @@ DiscreteCost AddHeuristicImpl::extract_impl()
         const auto& annotation = this->m_proposition_annotations[proposition_index];
         total_cost += get_cost(annotation);
     }
+
+    std::cout << "Total cost: " << total_cost << std::endl;
+
     return total_cost;
 }
 

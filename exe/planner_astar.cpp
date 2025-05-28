@@ -97,6 +97,10 @@ int main(int argc, char** argv)
         {
             heuristic = AddHeuristicImpl::create(delete_relaxed_problem_explorator);
         }
+        else if (heuristic_type == 3)
+        {
+            heuristic = SetAddHeuristicImpl::create(delete_relaxed_problem_explorator);
+        }
     }
     else
     {
@@ -112,6 +116,10 @@ int main(int argc, char** argv)
         else if (heuristic_type == 2)
         {
             throw std::runtime_error("Lifted hadd is not supported");
+        }
+        else if (heuristic_type == 3)
+        {
+            throw std::runtime_error("Lifted hsetadd is not supported");
         }
     }
 

@@ -61,6 +61,27 @@ concept IsStaticOrFluentTag = std::is_same_v<T, StaticTag> || std::is_same_v<T, 
 template<typename T>
 concept IsFluentOrAuxiliaryTag = std::is_same_v<T, FluentTag> || std::is_same_v<T, AuxiliaryTag>;
 
+struct NegativeTag;
+
+/// @brief `PositiveTag` is a tag to declare that a type has positive polarity.
+struct PositiveTag
+{
+    using Inverse = NegativeTag;
+
+    static constexpr const char* name = "positive";
+};
+
+/// @brief `NegativeTag` is a tag to declare that a type has negative polarity.
+struct NegativeTag
+{
+    using Inverse = PositiveTag;
+
+    static constexpr const char* name = "negative";
+};
+
+template<typename T>
+concept IsPolarity = std::is_same_v<T, PositiveTag> || std::is_same_v<T, NegativeTag>;
+
 }
 
 #endif

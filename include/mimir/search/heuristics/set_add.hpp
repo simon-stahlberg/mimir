@@ -26,9 +26,9 @@ namespace mimir::search
 class SetAddHeuristicImpl : public rpg::RelaxedPlanningGraph<SetAddHeuristicImpl>
 {
 public:
-    explicit SetAddHeuristicImpl(const DeleteRelaxedProblemExplorator& delete_relaxation) : rpg::RelaxedPlanningGraph<SetAddHeuristicImpl>(delete_relaxation) {}
+    explicit SetAddHeuristicImpl(const DeleteRelaxedProblemExplorator& delete_relaxation);
 
-    static SetAddHeuristic create(const DeleteRelaxedProblemExplorator& delete_relaxation) { return std::make_shared<SetAddHeuristicImpl>(delete_relaxation); }
+    static SetAddHeuristic create(const DeleteRelaxedProblemExplorator& delete_relaxation);
 
 private:
     /// @brief Initialize "And"-structure node annotations.
@@ -66,6 +66,16 @@ private:
     DiscreteCost extract_impl();
 
     friend class rpg::RelaxedPlanningGraph<SetAddHeuristicImpl>;
+
+    rpg::AnnotationsList<IndexSet> m_setadd_action_annotations;
+    rpg::AnnotationsList<IndexSet> m_setadd_axiom_annotations;
+
+    rpg::AnnotationsList<IndexSet> m_setadd_proposition_annotations;
+
+    IndexSet m_total_goal_annotations;
+
+    static IndexSet& get_achievers(rpg::Annotations<IndexSet>& annotation) { return std::get<0>(annotation); }
+    static const IndexSet& get_achievers(const rpg::Annotations<IndexSet>& annotation) { return std::get<0>(annotation); }
 };
 
 }

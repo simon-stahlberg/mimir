@@ -128,6 +128,19 @@ using AnnotationsList = std::vector<Annotations<T...>>;
  * RelaxedPlanningGraph
  */
 
+/// @brief `RelaxedPlanningGraph` implements a common base class for heuristics based on the relaxed planning graph.
+///
+/// Notes: Deriving not x is not trivial, see footnote 1: https://www.ijcai.org/Proceedings/15/Papers/226.pdf
+/// "[...] if A_y = { y <- phi_i | i=1,...,k } is the set of axioms that define y,
+/// A_{not y} = { not y <- And_{i=1,...,k} not phi_i }, which is admissible
+/// because the derived value default value is taken to be neither true nor false."
+/// This translation is worst-case exponential due to CNF to DNF translation.
+/// The above is the way how fast downward does it: https://github.com/aibasel/downward/blob/main/src/search/tasks/default_value_axioms_task.h
+/// Fast downward also provides an approximation where not y <- T, i.e., not y is set to true immediately.
+/// We provide a stronger but cheaper approximation which is not y <- not phi_i for each i=1,...,k.
+/// In other words, we derive not y if at least one y <- phi_i fails to derive y.
+/// This is very cheap to represent and compute.
+/// @tparam Derived is the derived class.
 template<typename Derived>
 class RelaxedPlanningGraph : public IHeuristic
 {
@@ -152,8 +165,9 @@ public:
 
 private:
     explicit RelaxedPlanningGraph(const DeleteRelaxedProblemExplorator& delete_relaxation) :
-        m_positive_fluent_offsets(),
-        m_positive_derived_offsets(),
+        m_positive_offsets(),
+        m_negative_offsets(),
+        m_atom_indices(),
         m_unary_actions(),
         m_unary_axioms(),
         m_num_unsat_goals(0)
@@ -166,10 +180,6 @@ private:
 
         for (const auto& action : delete_relaxation.create_ground_actions())
         {
-            mimir::operator<<(std::cout,
-                              std::make_tuple(action, std::cref(*delete_relaxation.get_problem()), formalism::GroundActionImpl::FullFormatterTag {}));
-            std::cout << std::endl;
-
             for (const auto& cond_effect : action->get_conditional_effects())
             {
                 for (const auto& eff_atom_index : cond_effect->get_conjunctive_effect()->get_positive_effects())
@@ -295,6 +305,8 @@ private:
         auto is_negative_derived_precondition_of_axiom = IndexMap<IndexList> {};
         auto trivial_unary_axioms = IndexList {};
 
+        auto positive_head_to_unary_axiom = std::unordered_map<Index, IndexList> {};
+
         for (const auto& axiom : delete_relaxation.create_ground_axioms())
         {
             const auto unary_axiom_index = m_unary_axioms.size();
@@ -326,6 +338,8 @@ private:
                                      + axiom->get_conjunctive_condition()->get_compressed_negative_precondition<formalism::DerivedTag>().size(),
                                  axiom->get_literal()->get_atom()->get_index(),
                                  true));
+
+            positive_head_to_unary_axiom[axiom->get_literal()->get_atom()->get_index()].push_back(unary_axiom_index);
 
             if (m_unary_axioms.back().get_num_preconditions() == 0)
             {
@@ -375,34 +389,37 @@ private:
             }
         }
 
-        std::cout << "Num actions: " << m_unary_actions.size() << std::endl;
-        std::cout << "Num axioms: " << m_unary_axioms.size() << std::endl;
-        std::cout << "Num trivial actions: " << trivial_unary_actions.size() << std::endl;
-        std::cout << "Num trivial axioms: " << trivial_unary_axioms.size() << std::endl;
+        // std::cout << "Num actions: " << m_unary_actions.size() << std::endl;
+        // std::cout << "Num axioms: " << m_unary_axioms.size() << std::endl;
+        // std::cout << "Num trivial actions: " << trivial_unary_actions.size() << std::endl;
+        // std::cout << "Num trivial axioms: " << trivial_unary_axioms.size() << std::endl;
 
         // We create a dummy proposition with index 0 that contains all trivial unary actions and axioms without preconditions.
         m_propositions.emplace_back(m_propositions.size(), std::move(trivial_unary_actions), std::move(trivial_unary_axioms), false);
 
         const auto& fluent_ground_atom_repository = boost::hana::at_key(delete_relaxation.get_problem()->get_repositories().get_hana_repositories(),
                                                                         boost::hana::type<formalism::GroundAtomImpl<formalism::FluentTag>> {});
+        auto& fluent_atoms = get_atom_indices<formalism::FluentTag>();
+        auto& positive_fluent_offsets = get_positive_offsets<formalism::FluentTag>();
+        auto& negative_fluent_offsets = get_negative_offsets<formalism::FluentTag>();
 
         for (Index atom_index = 0; atom_index < fluent_ground_atom_repository.size(); ++atom_index)
         {
-            const auto& atom = fluent_ground_atom_repository.at(atom_index);
+            // const auto& atom = fluent_ground_atom_repository.at(atom_index);
 
-            m_fluent_atoms.push_back(atom_index);
+            fluent_atoms.push_back(atom_index);
 
             /* Positive */
             {
                 const auto proposition_index = m_propositions.size();
 
-                std::cout << proposition_index << " " << *atom << std::endl;
+                // std::cout << proposition_index << " " << *atom << std::endl;
 
-                if (atom_index >= m_positive_fluent_offsets.size())
+                if (atom_index >= positive_fluent_offsets.size())
                 {
-                    m_positive_fluent_offsets.resize(atom_index + 1, MAX_INDEX);
+                    positive_fluent_offsets.resize(atom_index + 1, MAX_INDEX);
                 }
-                m_positive_fluent_offsets[atom_index] = proposition_index;
+                positive_fluent_offsets[atom_index] = proposition_index;
 
                 const auto is_goal = delete_relaxation.get_problem()->get_positive_goal_atoms_bitset<formalism::FluentTag>().get(atom_index);
 
@@ -418,14 +435,13 @@ private:
             {
                 const auto proposition_index = m_propositions.size();
 
-                std::cout << proposition_index << " not "
-                          << delete_relaxation.get_problem()->get_repositories().get_ground_atom<formalism::FluentTag>(atom_index) << std::endl;
+                // std::cout << proposition_index << " not " << *atom << std::endl;
 
-                if (atom_index >= m_negative_fluent_offsets.size())
+                if (atom_index >= negative_fluent_offsets.size())
                 {
-                    m_negative_fluent_offsets.resize(atom_index + 1, MAX_INDEX);
+                    negative_fluent_offsets.resize(atom_index + 1, MAX_INDEX);
                 }
-                m_negative_fluent_offsets[atom_index] = proposition_index;
+                negative_fluent_offsets[atom_index] = proposition_index;
 
                 const auto is_goal = delete_relaxation.get_problem()->get_negative_goal_atoms_bitset<formalism::FluentTag>().get(atom_index);
 
@@ -438,28 +454,31 @@ private:
                     m_goal_propositions.push_back(proposition_index);
             }
         }
-        std::sort(m_fluent_atoms.begin(), m_fluent_atoms.end());
+        std::sort(fluent_atoms.begin(), fluent_atoms.end());
 
         const auto& derived_ground_atom_repository = boost::hana::at_key(delete_relaxation.get_problem()->get_repositories().get_hana_repositories(),
                                                                          boost::hana::type<formalism::GroundAtomImpl<formalism::DerivedTag>> {});
+        auto& derived_atoms = get_atom_indices<formalism::DerivedTag>();
+        auto& positive_derived_offsets = get_positive_offsets<formalism::DerivedTag>();
+        auto& negative_derived_offsets = get_negative_offsets<formalism::DerivedTag>();
 
         for (Index atom_index = 0; atom_index < derived_ground_atom_repository.size(); ++atom_index)
         {
-            const auto& atom = derived_ground_atom_repository.at(atom_index);
+            // const auto& atom = derived_ground_atom_repository.at(atom_index);
 
-            m_derived_atoms.push_back(atom_index);
+            derived_atoms.push_back(atom_index);
 
             /* Positive */
             {
                 const auto proposition_index = m_propositions.size();
 
-                std::cout << proposition_index << " " << *atom << " " << atom_index << std::endl;
+                // std::cout << proposition_index << " " << *atom << " " << atom_index << std::endl;
 
-                if (atom_index >= m_positive_derived_offsets.size())
+                if (atom_index >= positive_derived_offsets.size())
                 {
-                    m_positive_derived_offsets.resize(atom_index + 1, MAX_INDEX);
+                    positive_derived_offsets.resize(atom_index + 1, MAX_INDEX);
                 }
-                m_positive_derived_offsets[atom_index] = proposition_index;
+                positive_derived_offsets[atom_index] = proposition_index;
 
                 const auto is_goal = delete_relaxation.get_problem()->get_positive_goal_atoms_bitset<formalism::DerivedTag>().get(atom_index);
 
@@ -475,13 +494,13 @@ private:
             {
                 const auto proposition_index = m_propositions.size();
 
-                std::cout << proposition_index << " not " << *atom << " " << atom_index << std::endl;
+                // std::cout << proposition_index << " not " << *atom << " " << atom_index << std::endl;
 
-                if (atom_index >= m_negative_derived_offsets.size())
+                if (atom_index >= negative_derived_offsets.size())
                 {
-                    m_negative_derived_offsets.resize(atom_index + 1, MAX_INDEX);
+                    negative_derived_offsets.resize(atom_index + 1, MAX_INDEX);
                 }
-                m_negative_derived_offsets[atom_index] = proposition_index;
+                negative_derived_offsets[atom_index] = proposition_index;
 
                 const auto is_goal = delete_relaxation.get_problem()->get_negative_goal_atoms_bitset<formalism::DerivedTag>().get(atom_index);
 
@@ -494,7 +513,7 @@ private:
                     m_goal_propositions.push_back(proposition_index);
             }
         }
-        std::sort(m_derived_atoms.begin(), m_derived_atoms.end());
+        std::sort(derived_atoms.begin(), derived_atoms.end());
 
         m_action_annotations.resize(this->m_unary_actions.size());
         m_axiom_annotations.resize(this->m_unary_axioms.size());
@@ -521,83 +540,55 @@ private:
         }
     }
 
+    template<formalism::IsFluentOrDerivedTag P>
+    void initialize_or_annotations_and_queue(State state)
+    {
+        auto& positive_offsets = get_positive_offsets<P>();
+        auto& negative_offsets = get_negative_offsets<P>();
+        const auto& all_atoms = get_atom_indices<P>();
+        const auto& state_atoms = state->get_atoms<P>();
+        auto it = state_atoms.begin();
+        auto it2 = all_atoms.begin();
+        const auto end = state_atoms.end();
+        const auto end2 = all_atoms.end();
+
+        while (it != end && it2 != end2)
+        {
+            if (*it == *it2)
+            {
+                self().initialize_or_annotations_and_queue_impl(m_propositions[positive_offsets[*it]]);
+                ++it;
+                ++it2;
+            }
+            else if (*it < *it2)
+            {
+                self().initialize_or_annotations_and_queue_impl(m_propositions[positive_offsets[*it]]);
+                ++it;
+            }
+            else
+            {
+                self().initialize_or_annotations_and_queue_impl(m_propositions[negative_offsets[*it2]]);
+                ++it2;
+            }
+        }
+        while (it != end)
+        {
+            self().initialize_or_annotations_and_queue_impl(m_propositions[positive_offsets[*it]]);
+            ++it;
+        }
+        while (it2 != end2)
+        {
+            self().initialize_or_annotations_and_queue_impl(m_propositions[negative_offsets[*it2]]);
+            ++it2;
+        }
+    }
+
     void initialize_or_annotations_and_queue(State state)
     {
         this->m_queue.clear();
 
-        {
-            auto it = state->get_atoms<formalism::FluentTag>().begin();
-            auto it2 = m_fluent_atoms.begin();
-            const auto end = state->get_atoms<formalism::FluentTag>().end();
-            const auto end2 = m_fluent_atoms.end();
-
-            while (it != end && it2 != end2)
-            {
-                if (*it == *it2)
-                {
-                    self().initialize_or_annotations_and_queue_impl(m_propositions[m_positive_fluent_offsets[*it]]);
-                    ++it;
-                    ++it2;
-                }
-                else if (*it < *it2)
-                {
-                    self().initialize_or_annotations_and_queue_impl(m_propositions[m_positive_fluent_offsets[*it]]);
-                    ++it;
-                }
-                else
-                {
-                    self().initialize_or_annotations_and_queue_impl(m_propositions[m_negative_fluent_offsets[*it2]]);
-                    ++it2;
-                }
-            }
-            while (it != end)
-            {
-                self().initialize_or_annotations_and_queue_impl(m_propositions[m_positive_fluent_offsets[*it]]);
-                ++it;
-            }
-            while (it2 != end2)
-            {
-                self().initialize_or_annotations_and_queue_impl(m_propositions[m_negative_fluent_offsets[*it2]]);
-                ++it2;
-            }
-        }
-
-        {
-            auto it = state->get_atoms<formalism::DerivedTag>().begin();
-            auto it2 = m_derived_atoms.begin();
-            const auto end = state->get_atoms<formalism::DerivedTag>().end();
-            const auto end2 = m_derived_atoms.end();
-
-            while (it != end && it2 != end2)
-            {
-                if (*it == *it2)
-                {
-                    self().initialize_or_annotations_and_queue_impl(m_propositions[this->m_positive_derived_offsets[*it]]);
-                    ++it;
-                    ++it2;
-                }
-                else if (*it < *it2)
-                {
-                    self().initialize_or_annotations_and_queue_impl(m_propositions[this->m_positive_derived_offsets[*it]]);
-                    ++it;
-                }
-                else
-                {
-                    self().initialize_or_annotations_and_queue_impl(m_propositions[this->m_negative_derived_offsets[*it2]]);
-                    ++it2;
-                }
-            }
-            while (it != end)
-            {
-                self().initialize_or_annotations_and_queue_impl(m_propositions[this->m_positive_derived_offsets[*it]]);
-                ++it;
-            }
-            while (it2 != end2)
-            {
-                self().initialize_or_annotations_and_queue_impl(m_propositions[this->m_negative_derived_offsets[*it2]]);
-                ++it2;
-            }
-        }
+        initialize_or_annotations_and_queue<formalism::FluentTag>(state);
+        initialize_or_annotations_and_queue<formalism::DerivedTag>(state);
 
         // Trivial dummy proposition to trigger actions and axioms without preconditions
         self().initialize_or_annotations_and_queue_impl(m_propositions[0]);
@@ -606,7 +597,6 @@ private:
     void on_process_action(const Proposition& proposition, const UnaryGroundAction& action)
     {
         auto& action_annotation = m_action_annotations[action.get_index()];
-        const auto& proposition_annotation = m_proposition_annotations[proposition.get_index()];
 
         self().update_and_annotation_impl(proposition, action);
 
@@ -615,14 +605,12 @@ private:
             --get_num_unsatisfied_preconditions(action_annotation);
         }
 
-        get_cost(action_annotation) = std::max(get_cost(action_annotation), get_cost(proposition_annotation) + 1);
-
         if (get_num_unsatisfied_preconditions(action_annotation) == 0)
         {
-            std::cout << "Process satisfied action: " << action.get_index() << std::endl;
+            // std::cout << "Process satisfied action: " << action.get_index() << std::endl;
 
-            const auto effect_proposition_index = action.get_polarity() ? this->m_positive_fluent_offsets[action.get_fluent_effect()] :
-                                                                          this->m_negative_fluent_offsets[action.get_fluent_effect()];
+            const auto effect_proposition_index = action.get_polarity() ? get_positive_offsets<formalism::FluentTag>()[action.get_fluent_effect()] :
+                                                                          get_negative_offsets<formalism::FluentTag>()[action.get_fluent_effect()];
             const auto& effect_proposition = this->m_propositions[effect_proposition_index];
 
             self().update_or_annotation_impl(action, effect_proposition);
@@ -632,7 +620,6 @@ private:
     void on_process_axiom(const Proposition& proposition, const UnaryGroundAxiom& axiom)
     {
         auto& axiom_annotation = m_axiom_annotations[axiom.get_index()];
-        const auto& proposition_annotation = m_proposition_annotations[proposition.get_index()];
 
         self().update_and_annotation_impl(proposition, axiom);
 
@@ -641,14 +628,12 @@ private:
             --get_num_unsatisfied_preconditions(axiom_annotation);
         }
 
-        get_cost(axiom_annotation) = std::max(get_cost(axiom_annotation), get_cost(proposition_annotation));
-
         if (get_num_unsatisfied_preconditions(axiom_annotation) == 0)
         {
-            std::cout << "Process satisfied axiom: " << axiom.get_index() << std::endl;
+            // std::cout << "Process satisfied axiom: " << axiom.get_index() << std::endl;
 
-            const auto effect_proposition_index = axiom.get_polarity() ? this->m_positive_derived_offsets[axiom.get_derived_effect()] :
-                                                                         this->m_negative_derived_offsets[axiom.get_derived_effect()];
+            const auto effect_proposition_index = axiom.get_polarity() ? get_positive_offsets<formalism::DerivedTag>()[axiom.get_derived_effect()] :
+                                                                         get_negative_offsets<formalism::DerivedTag>()[axiom.get_derived_effect()];
             const auto& effect_proposition = this->m_propositions[effect_proposition_index];
 
             self().update_or_annotation_impl(axiom, effect_proposition);
@@ -667,7 +652,7 @@ private:
             const auto& proposition = m_propositions[entry.proposition_index];
             const auto& annotation = m_proposition_annotations[entry.proposition_index];
 
-            std::cout << "Queue pop: " << entry.proposition_index << " " << entry.cost << std::endl;
+            // std::cout << "Queue pop: " << entry.proposition_index << " " << entry.cost << std::endl;
 
             if (get_cost(annotation) < entry.cost)
             {
@@ -696,14 +681,29 @@ private:
         // std::cout << "Num unsat goals: " << num_unsat_goals << std::endl;
     }
 
-    IndexList m_positive_fluent_offsets;
-    IndexList m_positive_derived_offsets;
+    HanaContainer<IndexList, formalism::FluentTag, formalism::DerivedTag> m_positive_offsets;
 
-    IndexList m_negative_fluent_offsets;
-    IndexList m_negative_derived_offsets;
+    template<formalism::IsFluentOrDerivedTag P>
+    IndexList& get_positive_offsets()
+    {
+        return boost::hana::at_key(m_positive_offsets, boost::hana::type<P> {});
+    }
 
-    IndexList m_fluent_atoms;
-    IndexList m_derived_atoms;
+    HanaContainer<IndexList, formalism::FluentTag, formalism::DerivedTag> m_negative_offsets;
+
+    template<formalism::IsFluentOrDerivedTag P>
+    IndexList& get_negative_offsets()
+    {
+        return boost::hana::at_key(m_negative_offsets, boost::hana::type<P> {});
+    }
+
+    HanaContainer<IndexList, formalism::FluentTag, formalism::DerivedTag> m_atom_indices;
+
+    template<formalism::IsFluentOrDerivedTag P>
+    IndexList& get_atom_indices()
+    {
+        return boost::hana::at_key(m_atom_indices, boost::hana::type<P> {});
+    }
 
     UnaryGroundActionList m_unary_actions;
     UnaryGroundAxiomList m_unary_axioms;

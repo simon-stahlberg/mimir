@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_HEURISTICS_SET_ADD_HPP_
-#define MIMIR_SEARCH_HEURISTICS_SET_ADD_HPP_
+#ifndef MIMIR_SEARCH_HEURISTICS_FF_HPP_
+#define MIMIR_SEARCH_HEURISTICS_FF_HPP_
 
 #include "mimir/search/heuristics/rpg_base.hpp"
 
