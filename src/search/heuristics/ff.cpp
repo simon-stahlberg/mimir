@@ -103,7 +103,11 @@ void FFHeuristicImpl::update_or_annotation_impl(const Action& action, const Prop
         get_cost(proposition_annotations) = firing_cost;
 
         auto& ff_proposition_annotations = get_ff_proposition_annotations()[proposition.get_index()];
-        get_achiever(ff_proposition_annotations) = action.get_index();
+        if (get_achiever(ff_proposition_annotations) != MAX_INDEX
+            && action.get_num_preconditions() < this->get_structures<Action>()[get_achiever(ff_proposition_annotations)].get_num_preconditions())
+        {
+            get_achiever(ff_proposition_annotations) = action.get_index();
+        }
 
         this->m_queue.insert(get_cost(proposition_annotations), QueueEntry { proposition.get_index(), get_cost(proposition_annotations) });
     }
