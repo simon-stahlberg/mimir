@@ -1,0 +1,186 @@
+/*
+ * Copyright (C) 2023 Dominik Drexler and Simon Stahlberg
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+#include "mimir/mimir.hpp"
+
+#include <chrono>
+#include <fstream>
+#include <iostream>
+
+using namespace mimir;
+using namespace mimir::search;
+using namespace mimir::formalism;
+
+int main(int argc, char** argv)
+{
+    if (argc != 8)
+    {
+        std::cout << "Usage: planner_gbfs <domain:str> <problem:str> <plan:str> <eager:bool> <heuristic_type:int> <grounded:bool> <debug:bool>" << std::endl;
+        return 1;
+    }
+
+    const auto start_time = std::chrono::high_resolution_clock::now();
+
+    const auto domain_file_path = fs::path { argv[1] };
+    const auto problem_file_path = fs::path { argv[2] };
+    const auto plan_file_name = argv[3];
+    const auto eager = static_cast<bool>(std::atoi(argv[4]));
+    const auto heuristic_type = atoi(argv[5]);
+    const auto grounded = static_cast<bool>(std::atoi(argv[6]));
+    const auto debug = static_cast<bool>(std::atoi(argv[7]));
+
+    std::cout << "Parsing PDDL files..." << std::endl;
+
+    auto problem = ProblemImpl::create(domain_file_path, problem_file_path);
+
+    if (debug)
+    {
+        std::cout << "Domain:" << std::endl;
+        std::cout << problem->get_domain() << std::endl;
+
+        std::cout << std::endl;
+        std::cout << "Problem:" << std::endl;
+        std::cout << *problem << std::endl;
+
+        std::cout << std::endl;
+        std::cout << "Static Predicates:" << std::endl;
+        std::cout << problem->get_domain()->get_predicates<StaticTag>() << std::endl;
+
+        std::cout << std::endl;
+        std::cout << "Fluent Predicates:" << std::endl;
+        std::cout << problem->get_domain()->get_predicates<FluentTag>() << std::endl;
+
+        std::cout << std::endl;
+        std::cout << "Derived Predicates:" << std::endl;
+        std::cout << problem->get_domain()->get_predicates<DerivedTag>() << std::endl;
+        std::cout << std::endl;
+    }
+
+    auto applicable_action_generator = ApplicableActionGenerator(nullptr);
+    auto axiom_evaluator = AxiomEvaluator(nullptr);
+    auto state_repository = StateRepository(nullptr);
+
+    auto heuristic = Heuristic(nullptr);
+    if (heuristic_type == 0)
+    {
+        heuristic = BlindHeuristicImpl::create(problem);
+    }
+
+    if (grounded)
+    {
+        auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(problem);
+        applicable_action_generator = delete_relaxed_problem_explorator.create_grounded_applicable_action_generator(
+            match_tree::Options(),
+            GroundedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create(false));
+        axiom_evaluator = delete_relaxed_problem_explorator.create_grounded_axiom_evaluator(match_tree::Options(),
+                                                                                            GroundedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create(false));
+        state_repository = StateRepositoryImpl::create(axiom_evaluator);
+
+        if (heuristic_type == 1)
+        {
+            heuristic = MaxHeuristicImpl::create(delete_relaxed_problem_explorator);
+        }
+        else if (heuristic_type == 2)
+        {
+            heuristic = AddHeuristicImpl::create(delete_relaxed_problem_explorator);
+        }
+        else if (heuristic_type == 3)
+        {
+            heuristic = SetAddHeuristicImpl::create(delete_relaxed_problem_explorator);
+        }
+        else if (heuristic_type == 4)
+        {
+            heuristic = FFHeuristicImpl::create(delete_relaxed_problem_explorator);
+        }
+    }
+    else
+    {
+        applicable_action_generator =
+            LiftedApplicableActionGeneratorImpl::create(problem, LiftedApplicableActionGeneratorImpl::DefaultEventHandlerImpl::create(false));
+        axiom_evaluator = LiftedAxiomEvaluatorImpl::create(problem, LiftedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create(false));
+        state_repository = StateRepositoryImpl::create(axiom_evaluator);
+
+        if (heuristic_type == 1)
+        {
+            throw std::runtime_error("Lifted h_max is not supported");
+        }
+        else if (heuristic_type == 2)
+        {
+            throw std::runtime_error("Lifted h_add is not supported");
+        }
+        else if (heuristic_type == 3)
+        {
+            throw std::runtime_error("Lifted h_setadd is not supported");
+        }
+        else if (heuristic_type == 4)
+        {
+            throw std::runtime_error("Lifted h_ff is not supported");
+        }
+    }
+
+    auto result = SearchResult();
+
+    if (eager)
+    {
+        auto event_handler = (debug) ? gbfs_eager::EventHandler { gbfs_eager::DebugEventHandlerImpl::create(problem, false) } :
+                                       gbfs_eager::EventHandler { gbfs_eager::DefaultEventHandlerImpl::create(problem, false) };
+
+        assert(heuristic);
+
+        auto search_context = SearchContextImpl::create(problem, applicable_action_generator, state_repository);
+
+        result = gbfs_eager::find_solution(search_context, heuristic, nullptr, event_handler);
+    }
+    else
+    {
+        auto event_handler = (debug) ? gbfs_lazy::EventHandler { gbfs_lazy::DebugEventHandlerImpl::create(problem, false) } :
+                                       gbfs_lazy::EventHandler { gbfs_lazy::DefaultEventHandlerImpl::create(problem, false) };
+
+        assert(heuristic);
+
+        auto search_context = SearchContextImpl::create(problem, applicable_action_generator, state_repository);
+
+        result = gbfs_lazy::find_solution(search_context, heuristic, nullptr, event_handler);
+    }
+
+    std::cout << "[GBFS] Total time: " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time)
+              << std::endl;
+
+    std::cout << "Peak memory usage in bytes: " << get_peak_memory_usage_in_bytes() << std::endl;
+
+    if (result.status == SearchStatus::SOLVED)
+    {
+        std::ofstream plan_file;
+        plan_file.open(plan_file_name);
+        if (!plan_file.is_open())
+        {
+            std::cerr << "Error opening file!" << std::endl;
+            return 1;
+        }
+        plan_file << result.plan.value();
+        plan_file.close();
+
+        // auto po_plan = PartiallyOrderedPlan(result.plan.value());
+        // auto to_plan_with_maximal_makespan = po_plan.compute_t_o_plan_with_maximal_makespan();
+
+        // std::cout << po_plan << std::endl;
+        // std::cout << result.plan.value() << std::endl;
+        // std::cout << to_plan_with_maximal_makespan << std::endl;
+    }
+
+    return 0;
+}
