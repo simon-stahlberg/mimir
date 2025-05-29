@@ -20,7 +20,7 @@ sys.path.append(str(DIR.parent))
 
 from search_parser import SearchParser
 from error_parser import ErrorParser
-from utils import SUITE_MINEPDDL
+from utils import SUITE_IPC_OPTIMAL_STRIPS
 
 # Create custom report class with suitable info and error attributes.
 class BaseReport(AbsoluteReport):
@@ -34,7 +34,8 @@ class BaseReport(AbsoluteReport):
         "node",
     ]
 
-BENCHMARKS_DIR = Path(os.environ["BENCHMARKS_PDDL"]) / "mine-pddl"
+
+BENCHMARKS_DIR = Path(os.environ["BENCHMARKS_PDDL"]) / "downward-benchmarks"
 
 NODE = platform.node()
 REMOTE = re.match(r"tetralith\d+.nsc.liu.se|n\d+", NODE)
@@ -43,12 +44,13 @@ if REMOTE:
         setup=TetralithEnvironment.DEFAULT_SETUP,
         memory_per_cpu="8G",
         extra_options="#SBATCH --account=naiss2024-5-421")
-    SUITE = SUITE_MINEPDDL
-    TIME_LIMIT = 30 * 60  # 30 minutes
+    SUITE = SUITE_IPC_OPTIMAL_STRIPS
+    TIME_LIMIT = 5 * 60  # 5 minutes
 else:
     ENV = LocalEnvironment(processes=12)
     SUITE = [
-        "Pickup_Diamond:Pickup_Diamond_Easy.pddl",
+        "gripper:prob01.pddl",
+        "gripper:prob10.pddl",
     ]
     TIME_LIMIT = 3
 ATTRIBUTES = [
@@ -75,7 +77,7 @@ ATTRIBUTES = [
     "peak_memory_usage_in_bytes",
 
     "score_peak_memory_usage_in_bytes",
-    
+
     "num_of_states",
     "num_of_nodes",
     "num_of_actions",
@@ -91,23 +93,23 @@ MEMORY_LIMIT = 8000
 # Create a new experiment.
 exp = Experiment(environment=ENV)
 exp.add_parser(ErrorParser())
-exp.add_parser(SearchParser(max_memory_in_bytes=MEMORY_LIMIT * 1e6))
+exp.add_parser(SearchParser(MEMORY_LIMIT * 1e6))
 
-PLANNER_DIR = REPO / "build" / "exe" / "planner_astar"
+PLANNER_DIR = REPO / "build" / "exe" / "planner_gbfs"
 
 exp.add_resource("planner_exe", PLANNER_DIR)
-exp.add_resource("run_planner", DIR / "astar_run_planner.sh")
+exp.add_resource("run_planner", DIR / "gbfs_run_planner.sh")
 
 for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
-    ################ Grounded ################
+    ################ GBFS_LAZY ################
     run = exp.add_run()
     run.add_resource("domain", task.domain_file, symlink=True)
     run.add_resource("problem", task.problem_file, symlink=True)
     # 'ff' binary has to be on the PATH.
     # We could also use exp.add_resource().
     run.add_command(
-        "astar_planner",
-        ["{run_planner}", "{planner_exe}", "{domain}", "{problem}", "plan.out", "0", "1", "0"],
+        "gbfs_lazy_planner",
+        ["{run_planner}", "{planner_exe}", "{domain}", "{problem}", "plan.out", "0", "4", "1", "0"],
         time_limit=TIME_LIMIT,
         memory_limit=MEMORY_LIMIT,
     )
@@ -115,7 +117,7 @@ for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
     # 'domain', 'problem', 'algorithm', 'coverage'.
     run.set_property("domain", task.domain)
     run.set_property("problem", task.problem)
-    run.set_property("algorithm", "mimir-grounded-astar-blind")
+    run.set_property("algorithm", "mimir-grounded-gbfs-lazy-ff")
     # BaseReport needs the following properties:
     # 'time_limit', 'memory_limit'.
     run.set_property("time_limit", TIME_LIMIT)
@@ -123,17 +125,17 @@ for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
     # Every run has to have a unique id in the form of a list.
     # The algorithm name is only really needed when there are
     # multiple algorithms.
-    run.set_property("id", ["mimir-grounded-astar-blind", task.domain, task.problem])
+    run.set_property("id", ["mimir-grounded-gbfs-lazy-ff", task.domain, task.problem])
 
-    ################ Lifted ################
+    ################ GBFS_EAGER ################
     run = exp.add_run()
     run.add_resource("domain", task.domain_file, symlink=True)
     run.add_resource("problem", task.problem_file, symlink=True)
     # 'ff' binary has to be on the PATH.
     # We could also use exp.add_resource().
     run.add_command(
-        "astar_planner",
-        ["{run_planner}", "{planner_exe}", "{domain}", "{problem}", "plan.out", "0", "0", "0"],
+        "gbfs_eager_planner",
+        ["{run_planner}", "{planner_exe}", "{domain}", "{problem}", "plan.out", "1", "4", "1", "0"],
         time_limit=TIME_LIMIT,
         memory_limit=MEMORY_LIMIT,
     )
@@ -141,7 +143,7 @@ for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
     # 'domain', 'problem', 'algorithm', 'coverage'.
     run.set_property("domain", task.domain)
     run.set_property("problem", task.problem)
-    run.set_property("algorithm", "mimir-lifted-astar-blind")
+    run.set_property("algorithm", "mimir-grounded-gbfs-eager-ff")
     # BaseReport needs the following properties:
     # 'time_limit', 'memory_limit'.
     run.set_property("time_limit", TIME_LIMIT)
@@ -149,7 +151,8 @@ for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
     # Every run has to have a unique id in the form of a list.
     # The algorithm name is only really needed when there are
     # multiple algorithms.
-    run.set_property("id", ["mimir-lifted-astar-blind", task.domain, task.problem])
+    run.set_property("id", ["mimir-grounded-gbfs-eager-ff", task.domain, task.problem])
+
 
 # Add step that writes experiment files to disk.
 exp.add_step("build", exp.build)

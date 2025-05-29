@@ -3,6 +3,7 @@
 import platform
 import re
 import os
+import sys
 
 from pathlib import Path
 
@@ -11,9 +12,15 @@ from downward.reports.absolute import AbsoluteReport
 from lab.environments import TetralithEnvironment, LocalEnvironment
 from lab.experiment import Experiment
 from lab.reports import Attribute, geometric_mean
-from astar_parser import AStarParser
+
+DIR = Path(__file__).resolve().parent
+REPO = DIR.parent.parent
+
+sys.path.append(str(DIR.parent))
+
+from search_parser import SearchParser
 from error_parser import ErrorParser
-import utils
+from utils import SUITE_IPC_OPTIMAL_STRIPS
 
 # Create custom report class with suitable info and error attributes.
 class BaseReport(AbsoluteReport):
@@ -27,8 +34,6 @@ class BaseReport(AbsoluteReport):
         "node",
     ]
 
-DIR = Path(__file__).resolve().parent
-REPO = DIR.parent.parent
 BENCHMARKS_DIR = Path(os.environ["BENCHMARKS_PDDL"]) / "downward-benchmarks"
 
 NODE = platform.node()
@@ -38,7 +43,7 @@ if REMOTE:
         setup=TetralithEnvironment.DEFAULT_SETUP,
         memory_per_cpu="8G",
         extra_options="#SBATCH --account=naiss2024-5-421")
-    SUITE = utils.SUITE_IPC_OPTIMAL_STRIPS
+    SUITE = SUITE_IPC_OPTIMAL_STRIPS
     TIME_LIMIT = 30 * 60  # 30 minutes
 else:
     ENV = LocalEnvironment(processes=12)
@@ -87,7 +92,7 @@ MEMORY_LIMIT = 8000
 # Create a new experiment.
 exp = Experiment(environment=ENV)
 exp.add_parser(ErrorParser())
-exp.add_parser(AStarParser(max_memory_in_bytes=MEMORY_LIMIT * 1e6))
+exp.add_parser(SearchParser(max_memory_in_bytes=MEMORY_LIMIT * 1e6))
 
 PLANNER_DIR = REPO / "build" / "exe" / "planner_astar"
 

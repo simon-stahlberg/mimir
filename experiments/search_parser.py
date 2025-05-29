@@ -44,7 +44,7 @@ def make_add_score(max_memory_in_bytes: int):
 
 
 
-class AStarParser(Parser):
+class SearchParser(Parser):
     """
     Successful Run:
     [AStar] Search time: 56ms

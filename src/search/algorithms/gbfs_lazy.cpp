@@ -52,8 +52,8 @@ static void set_h_value(GBFSSearchNode node, ContinuousCost h_value) { node->get
 static void set_preferred(GBFSSearchNode node, bool preferred) { node->get_property<2>() = preferred; }
 
 static ContinuousCost get_g_value(ConstGBFSSearchNode node) { return node->get_property<0>(); }
-static ContinuousCost get_h_value(ConstGBFSSearchNode node) { return node->get_property<1>(); }
-static bool get_preferred(ConstGBFSSearchNode node) { return node->get_property<2>(); }
+// static ContinuousCost get_h_value(ConstGBFSSearchNode node) { return node->get_property<1>(); }
+// static bool get_preferred(ConstGBFSSearchNode node) { return node->get_property<2>(); }
 
 static GBFSSearchNode
 get_or_create_search_node(size_t state_index, const GBFSSearchNodeImpl& default_node, mimir::buffering::Vector<GBFSSearchNodeImpl>& search_nodes)
@@ -135,7 +135,7 @@ SearchResult find_solution(const SearchContext& context,
         return result;
     }
 
-    auto openlist = PriorityQueue<std::tuple<bool, double, double, Index>, State>();
+    auto openlist = PriorityQueue<std::tuple<double, double, Index>, State>();
 
     event_handler->on_start_search(start_state);
 
@@ -171,7 +171,7 @@ SearchResult find_solution(const SearchContext& context,
     }
 
     auto applicable_actions = GroundActionList {};
-    openlist.insert(std::make_tuple(!start_preferred, start_h_value, start_g_value, step++), start_state);
+    openlist.insert(std::make_tuple(start_h_value, start_g_value, step++), start_state);
 
     while (!openlist.empty())
     {
@@ -217,26 +217,13 @@ SearchResult find_solution(const SearchContext& context,
             }
 
             const auto is_preferred = preferred_actions.contains(action);
+            std::cout << "Is preferred? " << is_preferred << " num_preferred: " << preferred_actions.size() << std::endl;
             const auto is_new_successor_state = (successor_search_node->get_status() == SearchNodeStatus::NEW);
 
-            /* Reopen successor state if estimations improve. */
+            /* Skip previously generated state. */
 
             if (!is_new_successor_state)
             {
-                if (successor_search_node->get_status() == SearchNodeStatus::OPEN && successor_search_node->get_status() != SearchNodeStatus::DEAD_END)
-                {
-                    const auto better_h_value = state_h_value < get_h_value(successor_search_node);
-                    const auto better_preferred = !get_preferred(successor_search_node) && is_preferred;
-
-                    if (better_h_value || better_preferred)
-                    {
-                        const auto successor_preferred = get_preferred(successor_search_node) || is_preferred;
-                        openlist.insert(std::make_tuple(!successor_preferred, state_h_value, successor_state_metric_value, step++), successor_state);
-                        set_g_value(successor_search_node, successor_state_metric_value);
-                        set_h_value(successor_search_node, state_h_value);
-                        set_preferred(successor_search_node, successor_preferred);
-                    }
-                }
                 continue;
             }
 
@@ -290,7 +277,8 @@ SearchResult find_solution(const SearchContext& context,
 
             event_handler->on_generate_state(state, action, action_cost, successor_state);
 
-            openlist.insert(std::make_tuple(!is_preferred, state_h_value, successor_state_metric_value, step++), successor_state);
+            // Slightly penalize unpreferred states by adding 1e-6.
+            openlist.insert(std::make_tuple(state_h_value + (!is_preferred ? 1e-6 : 0.), successor_state_metric_value, step++), successor_state);
         }
     }
 
