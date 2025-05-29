@@ -10,18 +10,21 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
+ *<
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_ALGORITHMS_GBFS_EVENT_HANDLERS_HPP_
-#define MIMIR_SEARCH_ALGORITHMS_GBFS_EVENT_HANDLERS_HPP_
+#ifndef MIMIR_COMMON_TAGS_HPP_
+#define MIMIR_COMMON_TAGS_HPP_
 
-/**
- * Include all specializations here
- */
-#include "mimir/search/algorithms/gbfs/event_handlers/debug.hpp"
-#include "mimir/search/algorithms/gbfs/event_handlers/default.hpp"
+namespace mimir
+{
+
+struct UnitCostOneTag
+{
+};
+
+}
 
 #endif

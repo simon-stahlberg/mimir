@@ -15,12 +15,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/search/algorithms/gbfs.hpp"
+#include "mimir/search/algorithms/gbfs_eager.hpp"
 
 #include "mimir/formalism/ground_function_expressions.hpp"
 #include "mimir/formalism/metric.hpp"
 #include "mimir/formalism/problem.hpp"
-#include "mimir/search/algorithms/gbfs/event_handlers.hpp"
+#include "mimir/search/algorithms/gbfs_eager/event_handlers.hpp"
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 #include "mimir/search/algorithms/strategies/pruning_strategy.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
@@ -36,7 +36,7 @@
 
 using namespace mimir::formalism;
 
-namespace mimir::search::gbfs
+namespace mimir::search::gbfs_eager
 {
 
 /**
@@ -102,10 +102,9 @@ SearchResult find_solution(const SearchContext& context,
         return result;
     }
 
-    auto default_search_node =
-        GBFSSearchNodeImpl(SearchNodeStatus::NEW,
-                           std::numeric_limits<Index>::max(),
-                           cista::tuple<ContinuousCost, ContinuousCost> { std::numeric_limits<ContinuousCost>::infinity(), ContinuousCost(0) });
+    auto default_search_node = GBFSSearchNodeImpl(SearchNodeStatus::NEW,
+                                                  MAX_INDEX,
+                                                  cista::tuple<ContinuousCost, ContinuousCost> { ContinuousCost(INFINITY_CONTINUOUS_COST), ContinuousCost(0) });
     auto search_nodes = SearchNodeImplVector<ContinuousCost, ContinuousCost>();
 
     /* Test whether initial state is goal. */
@@ -143,7 +142,7 @@ SearchResult find_solution(const SearchContext& context,
     const auto start_h_value = heuristic->compute_heuristic(start_state, goal_strategy->test_dynamic_goal(start_state));
 
     auto start_search_node = get_or_create_search_node(start_state->get_index(), default_search_node, search_nodes);
-    start_search_node->get_status() = (start_h_value == std::numeric_limits<ContinuousCost>::infinity()) ? SearchNodeStatus::DEAD_END : SearchNodeStatus::OPEN;
+    start_search_node->get_status() = (start_h_value == INFINITY_CONTINUOUS_COST) ? SearchNodeStatus::DEAD_END : SearchNodeStatus::OPEN;
     set_g_value(start_search_node, start_g_value);
     set_h_value(start_search_node, start_h_value);
 
@@ -175,9 +174,20 @@ SearchResult find_solution(const SearchContext& context,
 
         auto search_node = get_or_create_search_node(state->get_index(), default_search_node, search_nodes);
 
+        /* Close state. */
+
+        if (search_node->get_status() == SearchNodeStatus::CLOSED || search_node->get_status() == SearchNodeStatus::DEAD_END)
+        {
+            continue;
+        }
+
         /* Expand the successors of the state. */
 
         event_handler->on_expand_state(state);
+
+        /* Ensure that the state is closed */
+
+        search_node->get_status() = SearchNodeStatus::CLOSED;
 
         for (const auto& action : applicable_action_generator.create_applicable_action_generator(state))
         {
@@ -245,12 +255,11 @@ SearchResult find_solution(const SearchContext& context,
                 return result;
             }
 
-            /* Compute heuristic if state is new. */
+            /* Compute heuristic since state is new. */
 
             const auto successor_h_value = heuristic->compute_heuristic(successor_state, successor_is_goal_state);
             set_h_value(successor_search_node, successor_h_value);
-
-            if (successor_h_value == std::numeric_limits<ContinuousCost>::infinity())
+            if (successor_h_value == INFINITY_CONTINUOUS_COST)
             {
                 successor_search_node->get_status() = SearchNodeStatus::DEAD_END;
                 continue;
@@ -260,10 +269,6 @@ SearchResult find_solution(const SearchContext& context,
 
             openlist.insert(std::make_tuple(successor_h_value, successor_state_metric_value, step++), successor_state);
         }
-
-        /* Close state. */
-
-        search_node->get_status() = SearchNodeStatus::CLOSED;
     }
 
     event_handler->on_end_search(state_repository.get_reached_fluent_ground_atoms_bitset().count(),

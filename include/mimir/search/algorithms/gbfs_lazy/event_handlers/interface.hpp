@@ -15,18 +15,18 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_ALGORITHMS_GBFS_EVENT_HANDLERS_INTERFACE_HPP_
-#define MIMIR_SEARCH_ALGORITHMS_GBFS_EVENT_HANDLERS_INTERFACE_HPP_
+#ifndef MIMIR_SEARCH_ALGORITHMS_GBFS_LAZY_EVENT_HANDLERS_INTERFACE_HPP_
+#define MIMIR_SEARCH_ALGORITHMS_GBFS_LAZY_EVENT_HANDLERS_INTERFACE_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/algorithms/gbfs/event_handlers/statistics.hpp"
+#include "mimir/search/algorithms/gbfs_lazy/event_handlers/statistics.hpp"
 #include "mimir/search/declarations.hpp"
 
 #include <chrono>
 #include <concepts>
 #include <cstdint>
 
-namespace mimir::search::gbfs
+namespace mimir::search::gbfs_lazy
 {
 
 /**

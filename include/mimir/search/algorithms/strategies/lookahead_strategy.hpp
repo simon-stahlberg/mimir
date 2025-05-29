@@ -15,27 +15,33 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_ALGORITHMS_GBFS_HPP_
-#define MIMIR_SEARCH_ALGORITHMS_GBFS_HPP_
+#ifndef MIMIR_SEARCH_ALGORITHMS_STRATEGIES_LOOKAHEAD_STRATEGY_HPP_
+#define MIMIR_SEARCH_ALGORITHMS_STRATEGIES_LOOKAHEAD_STRATEGY_HPP_
 
-#include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/algorithms/utils.hpp"
 #include "mimir/search/declarations.hpp"
 
-#include <memory>
-#include <optional>
-#include <vector>
-
-namespace mimir::search::gbfs
+namespace mimir::search
 {
 
-extern SearchResult find_solution(const SearchContext& context,
-                                  const Heuristic& heuristic,
-                                  State start_state = nullptr,
-                                  EventHandler event_handler = nullptr,
-                                  GoalStrategy goal_strategy = nullptr,
-                                  PruningStrategy pruning_strategy = nullptr);
+/// @brief `ILookaheadStrategy` encapsulates logic to perform greedy lookahead during search.
+class ILookaheadStrategy
+{
+public:
+    virtual ~ILookaheadStrategy() = default;
+
+    /// @brief Pass search execution to the lookahead strategy
+    /// @param state is the seed state of the lookahead.
+    /// @return
+    virtual bool execute_lookahead(State state) = 0;
+};
+
+/// @brief `LookaheadStrategyBase` implements a common base class to perform greedy lookahead rollouts during search.
+/// @tparam Derived is the type of the concrete derived class.
+template<typename Derived>
+class LookaheadStrategyBase
+{
+};
 
 }
 

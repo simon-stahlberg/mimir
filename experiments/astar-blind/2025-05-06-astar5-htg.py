@@ -28,7 +28,7 @@ class BaseReport(AbsoluteReport):
     ]
 
 DIR = Path(__file__).resolve().parent
-REPO = DIR.parent
+REPO = DIR.parent.parent
 BENCHMARKS_DIR = Path(os.environ["BENCHMARKS_PDDL"]) / "htg-domains" / "flat"
 
 NODE = platform.node()

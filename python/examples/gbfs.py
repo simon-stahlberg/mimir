@@ -17,7 +17,7 @@ class CustomBlindHeuristic(search.IHeuristic):
         return 0.
     
 
-class CustomGBFSEventHandler(search.IGBFSEventHandler):
+class CustomGBFSEventHandler(search.IGBFSEagerEventHandler):
     """A custom event handler to react on events during iw search.
     
     It is useful to collect custom statistics or create a search tree.
@@ -26,7 +26,7 @@ class CustomGBFSEventHandler(search.IGBFSEventHandler):
         super().__init__()
 
         self.problem = problem
-        self.statistics = search.GBFSStatistics()
+        self.statistics = search.GBFSEagerStatistics()
 
     def on_expand_state(self, state : search.State):
         pass
@@ -60,19 +60,41 @@ def main():
     domain_filepath = str(ROOT_DIR / "data" / "gripper" / "domain.pddl")
     problem_filepath = str(ROOT_DIR / "data" / "gripper" / "p-2-0.pddl")
 
-    search_context = search.SearchContext.create(domain_filepath, problem_filepath, search.SearchContextOptions())
+    # Create the search context
+    problem = formalism.Problem.create(domain_filepath, problem_filepath, formalism.ParserOptions())
+    applicable_action_generator = search.LiftedApplicableActionGenerator(problem)
+    axiom_evaluator = search.LiftedAxiomEvaluator(problem)
+    state_repository = search.StateRepository(axiom_evaluator)
+    search_context = search.SearchContext.create(problem, applicable_action_generator, state_repository)
 
-    initial_state, _ = search_context.get_state_repository().get_or_create_initial_state()
-
+    # Create some heuristics
     heuristic = CustomBlindHeuristic()
-    event_handler = CustomGBFSEventHandler(search_context.get_problem())
+    delete_relaxation = search.DeleteRelaxedProblemExplorator(problem)
+    heuristic = search.FFHeuristic(delete_relaxation)
+
+    # Create the goal strategy
     goal_strategy = search.ProblemGoalStrategy.create(search_context.get_problem())
 
-    result = search.find_solution_gbfs(search_context, heuristic, initial_state, event_handler, goal_strategy)
+    # GBFS Eager: evaluates heuristic on generated states; ignores preferred actions
+    event_handler = search.DefaultGBFSEagerEventHandler(search_context.get_problem())
+
+    result = search.find_solution_gbfs_eager(search_context, heuristic, None, event_handler, goal_strategy)
 
     assert(result.status == search.SearchStatus.SOLVED)
     assert(len(result.plan) == 5)
 
+    print(event_handler.get_statistics())
+    print(result.plan)
+
+    # GBFS Lazy: evaluates heuristic on expanded states; uses preferred actions
+    event_handler = search.DefaultGBFSLazyEventHandler(search_context.get_problem())
+
+    result = search.find_solution_gbfs_lazy(search_context, heuristic, None, event_handler, goal_strategy)
+
+    assert(result.status == search.SearchStatus.SOLVED)
+    assert(len(result.plan) == 5)
+
+    print(event_handler.get_statistics())
     print(result.plan)
 
 

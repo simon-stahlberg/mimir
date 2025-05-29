@@ -15,12 +15,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_ALGORITHMS_GBFS_EVENT_HANDLERS_MINIMAL_HPP_
-#define MIMIR_SEARCH_ALGORITHMS_GBFS_EVENT_HANDLERS_MINIMAL_HPP_
+#ifndef MIMIR_SEARCH_ALGORITHMS_GBFS_EAGER_EVENT_HANDLERS_MINIMAL_HPP_
+#define MIMIR_SEARCH_ALGORITHMS_GBFS_EAGER_EVENT_HANDLERS_MINIMAL_HPP_
 
-#include "mimir/search/algorithms/gbfs/event_handlers/interface.hpp"
+#include "mimir/search/algorithms/gbfs_eager/event_handlers/interface.hpp"
 
-namespace mimir::search::gbfs
+namespace mimir::search::gbfs_eager
 {
 
 /**

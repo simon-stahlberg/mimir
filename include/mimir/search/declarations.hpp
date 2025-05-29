@@ -187,8 +187,19 @@ class DefaultEventHandlerImpl;
 using DefaultEventHandler = std::shared_ptr<DefaultEventHandlerImpl>;
 }
 
-// GBFS
-namespace gbfs
+// GBFS_EAGER
+namespace gbfs_eager
+{
+class IEventHandler;
+using EventHandler = std::shared_ptr<IEventHandler>;
+class DebugEventHandlerImpl;
+using DebugEventHandler = std::shared_ptr<DebugEventHandlerImpl>;
+class DefaultEventHandlerImpl;
+using DefaultEventHandler = std::shared_ptr<DefaultEventHandlerImpl>;
+}
+
+// GBFS_LAZY
+namespace gbfs_lazy
 {
 class IEventHandler;
 using EventHandler = std::shared_ptr<IEventHandler>;

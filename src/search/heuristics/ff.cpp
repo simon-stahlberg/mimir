@@ -190,11 +190,11 @@ void FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively(S
     extract_relaxed_plan_and_preferred_operators_recursively<formalism::NegativeTag, formalism::FluentTag>(state, action);
     extract_relaxed_plan_and_preferred_operators_recursively<formalism::NegativeTag, formalism::DerivedTag>(state, action);
 
-    m_relaxed_plan.push_back(action.get_unrelaxed_action());
+    m_relaxed_plan.insert(action.get_unrelaxed_action());
 
     if (is_applicable(action.get_unrelaxed_action(), this->get_problem(), state))
     {
-        m_preferred_actions.push_back(action.get_unrelaxed_action());
+        m_preferred_actions.insert(action.get_unrelaxed_action());
     }
 }
 

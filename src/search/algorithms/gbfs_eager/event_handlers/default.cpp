@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/search/algorithms/gbfs/event_handlers/default.hpp"
+#include "mimir/search/algorithms/gbfs_eager/event_handlers/default.hpp"
 
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/ground_action.hpp"
@@ -26,7 +26,7 @@
 
 using namespace mimir::formalism;
 
-namespace mimir::search::gbfs
+namespace mimir::search::gbfs_eager
 {
 void DefaultEventHandlerImpl::on_expand_state_impl(State state) const {}
 

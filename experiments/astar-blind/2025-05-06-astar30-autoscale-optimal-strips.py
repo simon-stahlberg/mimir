@@ -28,7 +28,7 @@ class BaseReport(AbsoluteReport):
     ]
 
 DIR = Path(__file__).resolve().parent
-REPO = DIR.parent
+REPO = DIR.parent.parent
 BENCHMARKS_DIR = Path(os.environ["BENCHMARKS_PDDL"]) / "autoscale-benchmarks-main" / "21.11-optimal-strips"
 
 NODE = platform.node()

@@ -75,13 +75,22 @@ from pymimir.pymimir.advanced.search import (
     find_solution_brfs,
 )
 
-# GBFS
+# GBFS_EAGER
 from pymimir.pymimir.advanced.search import (
-    GBFSStatistics,
-    IGBFSEventHandler,
-    DebugGBFSEventHandler,
-    DefaultGBFSEventHandler,
-    find_solution_gbfs,
+    GBFSEagerStatistics,
+    IGBFSEagerEventHandler,
+    DebugGBFSEagerEventHandler,
+    DefaultGBFSEagerEventHandler,
+    find_solution_gbfs_eager,
+)
+
+# GBFS_LAZY
+from pymimir.pymimir.advanced.search import (
+    GBFSLazyStatistics,
+    IGBFSLazyEventHandler,
+    DebugGBFSLazyEventHandler,
+    DefaultGBFSLazyEventHandler,
+    find_solution_gbfs_lazy,
 )
 
 # IW

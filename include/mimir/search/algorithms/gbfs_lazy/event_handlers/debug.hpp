@@ -15,14 +15,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_ALGORITHMS_GBFS_EVENT_HANDLERS_DEBUG_HPP_
-#define MIMIR_SEARCH_ALGORITHMS_GBFS_EVENT_HANDLERS_DEBUG_HPP_
+#ifndef MIMIR_SEARCH_ALGORITHMS_GBFS_LAZY_EVENT_HANDLERS_DEBUG_HPP_
+#define MIMIR_SEARCH_ALGORITHMS_GBFS_LAZY_EVENT_HANDLERS_DEBUG_HPP_
 
-#include "mimir/search/algorithms/gbfs/event_handlers/interface.hpp"
+#include "mimir/search/algorithms/gbfs_lazy/event_handlers/interface.hpp"
 
 #include <iostream>
 
-namespace mimir::search::gbfs
+namespace mimir::search::gbfs_lazy
 {
 
 /**

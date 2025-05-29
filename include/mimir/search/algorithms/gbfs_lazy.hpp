@@ -15,31 +15,27 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_HEURISTICS_INTERFACE_HPP_
-#define MIMIR_SEARCH_HEURISTICS_INTERFACE_HPP_
+#ifndef MIMIR_SEARCH_ALGORITHMS_GBFS_LAZY_HPP_
+#define MIMIR_SEARCH_ALGORITHMS_GBFS_LAZY_HPP_
 
+#include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/search/algorithms/utils.hpp"
 #include "mimir/search/declarations.hpp"
 
-namespace mimir::search
+#include <memory>
+#include <optional>
+#include <vector>
+
+namespace mimir::search::gbfs_lazy
 {
 
-/**
- * Interface class
- */
-
-class IHeuristic
-{
-public:
-    virtual ~IHeuristic() = default;
-
-    virtual ContinuousCost compute_heuristic(State state, bool is_goal_state) = 0;
-
-    const formalism::GroundActionSet& get_preferred_actions() const { return m_preferred_actions; }
-
-protected:
-    formalism::GroundActionSet m_preferred_actions;
-};
+extern SearchResult find_solution(const SearchContext& context,
+                                  const Heuristic& heuristic,
+                                  State start_state = nullptr,
+                                  EventHandler event_handler = nullptr,
+                                  GoalStrategy goal_strategy = nullptr,
+                                  PruningStrategy pruning_strategy = nullptr);
 
 }
 

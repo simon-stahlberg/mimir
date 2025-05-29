@@ -137,8 +137,14 @@ SearchResult find_solution(const SearchContext& context,
         const auto state = queue.front();
         queue.pop_front();
 
-        // We need this before goal test for correct statistics reporting.
         auto search_node = get_or_create_search_node(state->get_index(), default_search_node, search_nodes);
+
+        /* Close state. */
+
+        if (search_node->get_status() == SearchNodeStatus::CLOSED || search_node->get_status() == SearchNodeStatus::DEAD_END)
+        {
+            continue;
+        }
 
         if (get_g_value(search_node) > g_value)
         {
@@ -176,7 +182,13 @@ SearchResult find_solution(const SearchContext& context,
             }
         }
 
+        /* Expand the successors of the state. */
+
         event_handler->on_expand_state(state);
+
+        /* Ensure that the state is closed */
+
+        search_node->get_status() = SearchNodeStatus::CLOSED;
 
         for (const auto& action : applicable_action_generator.create_applicable_action_generator(state))
         {
@@ -206,9 +218,6 @@ SearchResult find_solution(const SearchContext& context,
                 return result;
             }
         }
-
-        /* Close state. */
-        search_node->get_status() = SearchNodeStatus::CLOSED;
     }
 
     event_handler->on_end_search(state_repository.get_reached_fluent_ground_atoms_bitset().count(),
