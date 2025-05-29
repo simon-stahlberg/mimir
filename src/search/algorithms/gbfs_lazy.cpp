@@ -217,7 +217,6 @@ SearchResult find_solution(const SearchContext& context,
             }
 
             const auto is_preferred = preferred_actions.contains(action);
-            std::cout << "Is preferred? " << is_preferred << " num_preferred: " << preferred_actions.size() << std::endl;
             const auto is_new_successor_state = (successor_search_node->get_status() == SearchNodeStatus::NEW);
 
             /* Skip previously generated state. */
