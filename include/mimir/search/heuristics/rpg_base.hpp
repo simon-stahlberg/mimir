@@ -51,6 +51,7 @@ namespace mimir::search::rpg
 /// However, we could provide a stronger but cheaper approximation which is not y <- not phi_i for each i=1,...,k.
 /// In other words, we derive not y if at least one y <- phi_i fails to derive y.
 /// This is very cheap to represent and compute but requires a bit of thinking on how to implement it because it requires instantiating new conditions.
+/// I also tried pruning irrelevant unary actions and axioms in the exact way but it is too costly and the amound of pruned actions is too low.
 /// @tparam Derived is the derived class.
 template<typename Derived>
 class RelaxedPlanningGraph : public IHeuristic
@@ -150,7 +151,7 @@ private:
 
     void initialize_or_annotations()
     {
-        for (const auto& proposition : m_propositions)
+        for (const auto& proposition : get_propositions())
         {
             self().initialize_or_annotations_impl(proposition);
         }

@@ -43,75 +43,11 @@ void fill_precondition_of_structure(formalism::GroundConjunctiveCondition condit
     }
 }
 
-template<IsStructure S, formalism::IsPolarity R, formalism::IsFluentOrDerivedTag P>
-bool precondition_dominates(const S& prev_action, const S& action)
-{
-    return std::includes(prev_action.template get_preconditions<R, P>()->compressed_begin(),
-                         prev_action.template get_preconditions<R, P>()->compressed_end(),
-                         action.template get_preconditions<R, P>()->compressed_begin(),
-                         action.template get_preconditions<R, P>()->compressed_end());
-}
-
-template<formalism::IsPolarity R, formalism::IsFluentOrDerivedTag P>
-bool conditional_precondition_dominates(const Action& prev_action, const Action& action)
-{
-    return std::includes(prev_action.template get_conditional_preconditions<R, P>()->compressed_begin(),
-                         prev_action.template get_conditional_preconditions<R, P>()->compressed_end(),
-                         action.template get_conditional_preconditions<R, P>()->compressed_begin(),
-                         action.template get_conditional_preconditions<R, P>()->compressed_end());
-}
-
-inline bool action_dominates(const Action& prev_action, const Action action)
-{
-    return prev_action.get_effect() == action.get_effect()         //
-           && prev_action.get_polarity() == action.get_polarity()  //
-           && precondition_dominates<Action, formalism::PositiveTag, formalism::FluentTag>(prev_action, action)
-           && precondition_dominates<Action, formalism::PositiveTag, formalism::DerivedTag>(prev_action, action)
-           && precondition_dominates<Action, formalism::NegativeTag, formalism::FluentTag>(prev_action, action)
-           && precondition_dominates<Action, formalism::NegativeTag, formalism::DerivedTag>(prev_action, action)
-           && conditional_precondition_dominates<formalism::PositiveTag, formalism::FluentTag>(prev_action, action)
-           && conditional_precondition_dominates<formalism::PositiveTag, formalism::DerivedTag>(prev_action, action)
-           && conditional_precondition_dominates<formalism::NegativeTag, formalism::FluentTag>(prev_action, action)
-           && conditional_precondition_dominates<formalism::NegativeTag, formalism::DerivedTag>(prev_action, action);
-}
-
-inline bool is_action_dominated(const ActionList& actions, const Action action)
-{
-    for (const auto& prev_action : actions)
-    {
-        if (action_dominates(prev_action, action))
-            return true;
-    }
-    return false;
-}
-
-inline bool axiom_dominates(const Axiom& prev_axiom, const Axiom axiom)
-{
-    return prev_axiom.get_effect() == axiom.get_effect()         //
-           && prev_axiom.get_polarity() == axiom.get_polarity()  //
-           && precondition_dominates<Axiom, formalism::PositiveTag, formalism::FluentTag>(prev_axiom, axiom)
-           && precondition_dominates<Axiom, formalism::PositiveTag, formalism::DerivedTag>(prev_axiom, axiom)
-           && precondition_dominates<Axiom, formalism::NegativeTag, formalism::FluentTag>(prev_axiom, axiom)
-           && precondition_dominates<Axiom, formalism::NegativeTag, formalism::DerivedTag>(prev_axiom, axiom);
-}
-
-inline bool is_axiom_dominated(const AxiomList& axioms, const Axiom axiom)
-{
-    for (const auto& prev_axiom : axioms)
-    {
-        if (axiom_dominates(prev_axiom, axiom))
-            return true;
-    }
-    return false;
-}
-
 inline std::tuple<ActionList, IsPreconditionOfContainer, IndexList> instantiate_actions(const DeleteRelaxedProblemExplorator& delete_relaxation)
 {
     auto actions = ActionList {};
     auto is_precondition_of_action = IsPreconditionOfContainer {};
     auto trivial_unary_actions = IndexList {};
-
-    auto num_pruned_actions = size_t(0);
 
     for (const auto& action : delete_relaxation.create_ground_actions())
     {
@@ -156,15 +92,7 @@ inline std::tuple<ActionList, IsPreconditionOfContainer, IndexList> instantiate_
                                                                                               is_precondition_of_action,
                                                                                               unary_action_index);
 
-                auto tmp_action = Action(unary_action_index, action, preconditions, conditional_preconditions, num_preconditions, eff_atom_index, true);
-
-                if (is_action_dominated(actions, tmp_action))
-                {
-                    ++num_pruned_actions;
-                    continue;
-                }
-
-                actions.push_back(std::move(tmp_action));
+                actions.push_back(Action(unary_action_index, action, preconditions, conditional_preconditions, num_preconditions, eff_atom_index, true));
 
                 if (actions.back().get_num_preconditions() == 0)
                 {
@@ -203,15 +131,7 @@ inline std::tuple<ActionList, IsPreconditionOfContainer, IndexList> instantiate_
                                                                                               is_precondition_of_action,
                                                                                               unary_action_index);
 
-                auto tmp_action = Action(unary_action_index, action, preconditions, conditional_preconditions, num_preconditions, eff_atom_index, false);
-
-                if (is_action_dominated(actions, tmp_action))
-                {
-                    ++num_pruned_actions;
-                    continue;
-                }
-
-                actions.push_back(tmp_action);
+                actions.push_back(Action(unary_action_index, action, preconditions, conditional_preconditions, num_preconditions, eff_atom_index, false));
 
                 if (actions.back().get_num_preconditions() == 0)
                 {
@@ -221,7 +141,6 @@ inline std::tuple<ActionList, IsPreconditionOfContainer, IndexList> instantiate_
         }
     }
 
-    std::cout << "[RPG] Number of pruned unary actions: " << num_pruned_actions << std::endl;
     std::cout << "[RPG] Number of unary actions: " << actions.size() << std::endl;
 
     return std::make_tuple(std::move(actions), std::move(is_precondition_of_action), std::move(trivial_unary_actions));
@@ -232,8 +151,6 @@ inline std::tuple<AxiomList, IsPreconditionOfContainer, IndexList> instantiate_a
     auto axioms = AxiomList {};
     auto is_precondition_of_axiom = IsPreconditionOfContainer {};
     auto trivial_unary_axioms = IndexList {};
-
-    auto num_pruned_axioms = size_t(0);
 
     for (const auto& axiom : delete_relaxation.create_ground_axioms())
     {
@@ -259,15 +176,7 @@ inline std::tuple<AxiomList, IsPreconditionOfContainer, IndexList> instantiate_a
 
         auto preconditions = axiom->get_conjunctive_condition()->get_hana_compressed_precondition<formalism::FluentTag, formalism::DerivedTag>();
 
-        auto tmp_axiom = Axiom(unary_axiom_index, preconditions, num_preconditions, axiom->get_literal()->get_atom()->get_index(), true);
-
-        if (is_axiom_dominated(axioms, tmp_axiom))
-        {
-            ++num_pruned_axioms;
-            continue;
-        }
-
-        axioms.push_back(tmp_axiom);
+        axioms.push_back(Axiom(unary_axiom_index, preconditions, num_preconditions, axiom->get_literal()->get_atom()->get_index(), true));
 
         if (axioms.back().get_num_preconditions() == 0)
         {
@@ -275,7 +184,6 @@ inline std::tuple<AxiomList, IsPreconditionOfContainer, IndexList> instantiate_a
         }
     }
 
-    std::cout << "[RPG] Number of pruned unary axioms: " << num_pruned_axioms << std::endl;
     std::cout << "[RPG] Number of unary axioms: " << axioms.size() << std::endl;
 
     return std::make_tuple(std::move(axioms), std::move(is_precondition_of_axiom), std::move(trivial_unary_axioms));
