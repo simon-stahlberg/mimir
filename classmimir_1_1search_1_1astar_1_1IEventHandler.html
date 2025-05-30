@@ -127,9 +127,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a6914b5b34f820b2225a47c4e63b8a169"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4fa9d217e09b0ab5dc3f90c03b83ab77"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1astar_1_1IEventHandler.html#a4fa9d217e09b0ab5dc3f90c03b83ab77">on_close_state</a> (<a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> state)=0</td></tr>
 <tr class="separator:a4fa9d217e09b0ab5dc3f90c03b83ab77"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a87a7c83873d252aeff507efa992968b9"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1astar_1_1IEventHandler.html#a87a7c83873d252aeff507efa992968b9">on_finish_f_layer</a> (double f_value)=0</td></tr>
-<tr class="memdesc:a87a7c83873d252aeff507efa992968b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">React on finishing expanding a g-layer.  <br /></td></tr>
-<tr class="separator:a87a7c83873d252aeff507efa992968b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abdbc7132c74b04fcf95f30628db2ba45"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1astar_1_1IEventHandler.html#abdbc7132c74b04fcf95f30628db2ba45">on_finish_f_layer</a> (<a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a> f_value)=0</td></tr>
+<tr class="memdesc:abdbc7132c74b04fcf95f30628db2ba45"><td class="mdescLeft">&#160;</td><td class="mdescRight">React on finishing expanding a f-layer.  <br /></td></tr>
+<tr class="separator:abdbc7132c74b04fcf95f30628db2ba45"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8fd8dc1b8de5c30e57aa0d9acc5ece4b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1astar_1_1IEventHandler.html#a8fd8dc1b8de5c30e57aa0d9acc5ece4b">on_prune_state</a> (<a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> state)=0</td></tr>
 <tr class="memdesc:a8fd8dc1b8de5c30e57aa0d9acc5ece4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">React on pruning a state.  <br /></td></tr>
 <tr class="separator:a8fd8dc1b8de5c30e57aa0d9acc5ece4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -402,8 +402,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a87a7c83873d252aeff507efa992968b9" name="a87a7c83873d252aeff507efa992968b9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a87a7c83873d252aeff507efa992968b9">&#9670;&#160;</a></span>on_finish_f_layer()</h2>
+<a id="abdbc7132c74b04fcf95f30628db2ba45" name="abdbc7132c74b04fcf95f30628db2ba45"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abdbc7132c74b04fcf95f30628db2ba45">&#9670;&#160;</a></span>on_finish_f_layer()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -414,7 +414,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">virtual void mimir::search::astar::IEventHandler::on_finish_f_layer </td>
           <td>(</td>
-          <td class="paramtype">double&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a>&#160;</td>
           <td class="paramname"><em>f_value</em></td><td>)</td>
           <td></td>
         </tr>
@@ -426,9 +426,9 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>React on finishing expanding a g-layer. </p>
+<p>React on finishing expanding a f-layer. </p>
 
-<p>Implemented in <a class="el" href="classmimir_1_1search_1_1astar_1_1EventHandlerBase.html#a350d1ed11733368750ebb300bc5a1435">mimir::search::astar::EventHandlerBase&lt; Derived_ &gt;</a>, <a class="el" href="classmimir_1_1search_1_1astar_1_1EventHandlerBase.html#a350d1ed11733368750ebb300bc5a1435">mimir::search::astar::EventHandlerBase&lt; DebugEventHandlerImpl &gt;</a>, and <a class="el" href="classmimir_1_1search_1_1astar_1_1EventHandlerBase.html#a350d1ed11733368750ebb300bc5a1435">mimir::search::astar::EventHandlerBase&lt; DefaultEventHandlerImpl &gt;</a>.</p>
+<p>Implemented in <a class="el" href="classmimir_1_1search_1_1astar_1_1EventHandlerBase.html#a0a37a0cd0af78c439c6c937f92d67a89">mimir::search::astar::EventHandlerBase&lt; Derived_ &gt;</a>, <a class="el" href="classmimir_1_1search_1_1astar_1_1EventHandlerBase.html#a0a37a0cd0af78c439c6c937f92d67a89">mimir::search::astar::EventHandlerBase&lt; DebugEventHandlerImpl &gt;</a>, and <a class="el" href="classmimir_1_1search_1_1astar_1_1EventHandlerBase.html#a0a37a0cd0af78c439c6c937f92d67a89">mimir::search::astar::EventHandlerBase&lt; DefaultEventHandlerImpl &gt;</a>.</p>
 
 </div>
 </div>
