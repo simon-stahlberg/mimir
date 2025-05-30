@@ -50,7 +50,7 @@ private:
 
     void on_prune_state_impl(State state) const;
 
-    void on_start_search_impl(State start_state) const;
+    void on_start_search_impl(State start_state, ContinuousCost g_value, ContinuousCost h_value) const;
 
     void on_end_search_impl(uint64_t num_reached_fluent_atoms,
                             uint64_t num_reached_derived_atoms,

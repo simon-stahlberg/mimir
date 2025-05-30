@@ -83,6 +83,8 @@ ATTRIBUTES = [
     "num_of_actions",
     "num_of_axioms",
 
+    "initial_h_value",
+
     "cost",
     "length",
     "invalid_plan_reported",

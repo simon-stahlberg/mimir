@@ -48,7 +48,12 @@ void DefaultEventHandlerImpl::on_finish_f_layer_impl(double f_value, uint64_t nu
 
 void DefaultEventHandlerImpl::on_prune_state_impl(State state) const {}
 
-void DefaultEventHandlerImpl::on_start_search_impl(State start_state) const { std::cout << "[AStar] Search started." << std::endl; }
+void DefaultEventHandlerImpl::on_start_search_impl(State start_state, ContinuousCost g_value, ContinuousCost h_value) const
+{
+    std::cout << "[AStar] Search started.\n"
+              << "[AStar] Initial g_value: " << g_value << "\n"
+              << "[AStar] Initial h_value: " << h_value << std::endl;
+}
 
 void DefaultEventHandlerImpl::on_end_search_impl(uint64_t num_reached_fluent_atoms,
                                                  uint64_t num_reached_derived_atoms,

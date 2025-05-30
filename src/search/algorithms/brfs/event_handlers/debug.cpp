@@ -61,7 +61,7 @@ void DebugEventHandlerImpl::on_finish_g_layer_impl(uint32_t g_value, uint64_t nu
 void DebugEventHandlerImpl::on_start_search_impl(State start_state) const
 {
     std::cout << "[BrFS] Search started.\n"
-              << "[BrFS] Initial: ";
+              << "[BrFS] Initial state: ";
     mimir::operator<<(std::cout, std::make_tuple(start_state, std::cref(*m_problem)));
     std::cout << std::endl;
 }

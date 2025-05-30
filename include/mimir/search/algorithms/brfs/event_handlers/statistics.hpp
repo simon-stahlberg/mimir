@@ -119,6 +119,11 @@ public:
         return std::chrono::duration_cast<std::chrono::milliseconds>(m_search_end_time_point - m_search_start_time_point);
     }
 
+    std::chrono::milliseconds get_current_search_time_ms() const
+    {
+        return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - m_search_start_time_point);
+    }
+
     uint64_t get_num_reached_fluent_atoms() const { return m_num_reached_fluent_atoms; }
     uint64_t get_num_reached_derived_atoms() const { return m_num_reached_derived_atoms; }
     uint64_t get_num_bytes_for_problem() const { return m_num_bytes_for_problem; }

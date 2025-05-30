@@ -48,10 +48,12 @@ void DebugEventHandlerImpl::on_generate_state_impl(State state, GroundAction act
 
 void DebugEventHandlerImpl::on_prune_state_impl(State state) const {}
 
-void DebugEventHandlerImpl::on_start_search_impl(State start_state) const
+void DebugEventHandlerImpl::on_start_search_impl(State start_state, ContinuousCost g_value, ContinuousCost h_value) const
 {
     std::cout << "[GBFS] Search started.\n"
-              << "[GBFS] Initial: ";
+              << "[GBFS] Initial g_value: " << g_value << "\n"
+              << "[GBFS] Initial h_value: " << h_value << "\n"
+              << "[GBFS] Initial state: ";
     mimir::operator<<(std::cout, std::make_tuple(start_state, std::cref(*m_problem)));
     std::cout << std::endl;
 }

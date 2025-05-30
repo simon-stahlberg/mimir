@@ -98,6 +98,8 @@ class SearchParser(Parser):
         self.add_pattern("num_of_actions", r"Number of actions: (\d+)", type=int)
         self.add_pattern("num_of_axioms", r"Number of axioms: (\d+)", type=int)
 
+        self.add_pattern("initial_h_value", r"Initial h_value: (.+)", type=float)
+
         self.add_pattern("cost", r"Plan cost: (.+)", type=float)
         self.add_pattern("length", r"Plan length: (.+)", type=int)
         

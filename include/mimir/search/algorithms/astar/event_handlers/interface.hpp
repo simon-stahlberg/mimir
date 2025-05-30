@@ -67,7 +67,7 @@ public:
     virtual void on_prune_state(State state) = 0;
 
     /// @brief React on starting a search.
-    virtual void on_start_search(State start_state) = 0;
+    virtual void on_start_search(State start_state, ContinuousCost g_value, ContinuousCost h_value) = 0;
 
     /// @brief React on ending a search.
     virtual void on_end_search(uint64_t num_reached_fluent_atoms,
@@ -190,7 +190,7 @@ public:
         }
     }
 
-    void on_start_search(State start_state) override
+    void on_start_search(State start_state, ContinuousCost g_value, ContinuousCost h_value) override
     {
         m_statistics = Statistics();
 
@@ -198,7 +198,7 @@ public:
 
         if (!m_quiet)
         {
-            self().on_start_search_impl(start_state);
+            self().on_start_search_impl(start_state, g_value, h_value);
         }
     }
 

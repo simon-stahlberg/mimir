@@ -36,7 +36,12 @@ void DefaultEventHandlerImpl::on_generate_state_impl(State state, GroundAction a
 
 void DefaultEventHandlerImpl::on_prune_state_impl(State state) const {}
 
-void DefaultEventHandlerImpl::on_start_search_impl(State start_state) const { std::cout << "[GBFS] Search started." << std::endl; }
+void DefaultEventHandlerImpl::on_start_search_impl(State start_state, ContinuousCost g_value, ContinuousCost h_value) const
+{
+    std::cout << "[GBFS] Search started.\n"
+              << "[GBFS] Initial g_value: " << g_value << "\n"
+              << "[GBFS] Initial h_value: " << h_value << std::endl;
+}
 
 void DefaultEventHandlerImpl::on_end_search_impl(uint64_t num_reached_fluent_atoms,
                                                  uint64_t num_reached_derived_atoms,

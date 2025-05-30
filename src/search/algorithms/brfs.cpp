@@ -92,11 +92,11 @@ SearchResult find_solution(const SearchContext& context,
     auto search_nodes = SearchNodeImplVector<DiscreteCost>();
     auto queue = std::deque<State>();
 
-    event_handler->on_start_search(start_state);
-
     auto start_search_node = get_or_create_search_node(start_state->get_index(), default_search_node, search_nodes);
     start_search_node->get_status() = SearchNodeStatus::OPEN;
     set_g_value(start_search_node, 0);
+
+    event_handler->on_start_search(start_state);
 
     if (!goal_strategy->test_static_goal())
     {

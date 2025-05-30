@@ -133,13 +133,13 @@ SearchResult find_solution(const SearchContext& context,
 
     auto openlist = PriorityQueue<std::tuple<double, double, Index>, State>();
 
-    event_handler->on_start_search(start_state);
-
     if (start_g_value == UNDEFINED_CONTINUOUS_COST)
     {
         throw std::runtime_error("find_solution(...): evaluating the metric on the start state yielded NaN.");
     }
     const auto start_h_value = heuristic->compute_heuristic(start_state, goal_strategy->test_dynamic_goal(start_state));
+
+    event_handler->on_start_search(start_state, start_g_value, start_h_value);
 
     auto start_search_node = get_or_create_search_node(start_state->get_index(), default_search_node, search_nodes);
     start_search_node->get_status() = (start_h_value == INFINITY_CONTINUOUS_COST) ? SearchNodeStatus::DEAD_END : SearchNodeStatus::OPEN;

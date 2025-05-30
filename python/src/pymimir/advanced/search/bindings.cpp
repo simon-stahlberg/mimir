@@ -69,7 +69,10 @@ public:
     void on_close_state(State state) override { NB_OVERRIDE_PURE(on_close_state, state); }
     void on_finish_f_layer(double f_value) override { NB_OVERRIDE_PURE(on_finish_f_layer, f_value); }
     void on_prune_state(State state) override { NB_OVERRIDE_PURE(on_prune_state, state); }
-    void on_start_search(State start_state) override { NB_OVERRIDE_PURE(on_start_search, start_state); }
+    void on_start_search(State start_state, ContinuousCost g_value, ContinuousCost h_value) override
+    {
+        NB_OVERRIDE_PURE(on_start_search, start_state, g_value, h_value);
+    }
     void on_end_search(uint64_t num_reached_fluent_atoms,
                        uint64_t num_reached_derived_atoms,
                        uint64_t num_bytes_for_problem,
@@ -160,7 +163,10 @@ public:
         NB_OVERRIDE_PURE(on_generate_state, state, action, action_cost, successor_state);
     }
     void on_prune_state(State state) override { NB_OVERRIDE_PURE(on_prune_state, state); }
-    void on_start_search(State start_state) override { NB_OVERRIDE_PURE(on_start_search, start_state); }
+    void on_start_search(State start_state, ContinuousCost g_value, ContinuousCost h_value) override
+    {
+        NB_OVERRIDE_PURE(on_start_search, start_state, g_value, h_value);
+    }
     void on_end_search(uint64_t num_reached_fluent_atoms,
                        uint64_t num_reached_derived_atoms,
                        uint64_t num_bytes_for_problem,
@@ -201,7 +207,10 @@ public:
         NB_OVERRIDE_PURE(on_generate_state, state, action, action_cost, successor_state);
     }
     void on_prune_state(State state) override { NB_OVERRIDE_PURE(on_prune_state, state); }
-    void on_start_search(State start_state) override { NB_OVERRIDE_PURE(on_start_search, start_state); }
+    void on_start_search(State start_state, ContinuousCost g_value, ContinuousCost h_value) override
+    {
+        NB_OVERRIDE_PURE(on_start_search, start_state, g_value, h_value);
+    }
     void on_end_search(uint64_t num_reached_fluent_atoms,
                        uint64_t num_reached_derived_atoms,
                        uint64_t num_bytes_for_problem,

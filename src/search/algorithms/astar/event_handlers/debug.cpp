@@ -60,10 +60,12 @@ void DebugEventHandlerImpl::on_finish_f_layer_impl(double f_value, uint64_t num_
 
 void DebugEventHandlerImpl::on_prune_state_impl(State state) const {}
 
-void DebugEventHandlerImpl::on_start_search_impl(State start_state) const
+void DebugEventHandlerImpl::on_start_search_impl(State start_state, ContinuousCost g_value, ContinuousCost h_value) const
 {
     std::cout << "[AStar] Search started.\n"
-              << "[AStar] Initial: ";
+              << "[AStar] Initial g_value: " << g_value << "\n"
+              << "[AStar] Initial h_value: " << h_value << "\n"
+              << "[AStar] Initial state: ";
     mimir::operator<<(std::cout, std::make_tuple(start_state, std::cref(*m_problem)));
     std::cout << std::endl;
 }
