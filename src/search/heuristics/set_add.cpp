@@ -27,8 +27,8 @@ using namespace rpg;
 
 SetAddHeuristicImpl::SetAddHeuristicImpl(const DeleteRelaxedProblemExplorator& delete_relaxation) : RelaxedPlanningGraph<SetAddHeuristicImpl>(delete_relaxation)
 {
-    get_setadd_structure_annotations<Action>().resize(this->get_structures<Action>().size());
-    get_setadd_structure_annotations<Axiom>().resize(this->get_structures<Axiom>().size());
+    get_setadd_structure_annotations<Action>().resize(get<Action>(this->get_structures()).size());
+    get_setadd_structure_annotations<Axiom>().resize(get<Axiom>(this->get_structures()).size());
     get_setadd_proposition_annotations().resize(this->get_propositions().size());
 }
 
@@ -39,7 +39,7 @@ SetAddHeuristic SetAddHeuristicImpl::create(const DeleteRelaxedProblemExplorator
 
 void SetAddHeuristicImpl::initialize_and_annotations_impl(const Action& action)
 {
-    auto& annotations = this->get_structures_annotations<Action>()[action.get_index()];
+    auto& annotations = get<Action>(this->get_structures_annotations())[action.get_index()];
     get_cost(annotations) = 0;
     get_num_unsatisfied_preconditions(annotations) = action.get_num_preconditions();
     auto& setadd_annotations = get_setadd_structure_annotations<Action>()[action.get_index()];
@@ -48,7 +48,7 @@ void SetAddHeuristicImpl::initialize_and_annotations_impl(const Action& action)
 
 void SetAddHeuristicImpl::initialize_and_annotations_impl(const Axiom& axiom)
 {
-    auto& annotations = this->get_structures_annotations<Axiom>()[axiom.get_index()];
+    auto& annotations = get<Axiom>(this->get_structures_annotations())[axiom.get_index()];
     get_cost(annotations) = 0;
     get_num_unsatisfied_preconditions(annotations) = axiom.get_num_preconditions();
     auto& setadd_annotations = get_setadd_structure_annotations<Axiom>()[axiom.get_index()];
@@ -73,7 +73,7 @@ void SetAddHeuristicImpl::initialize_or_annotations_and_queue_impl(const Proposi
 void SetAddHeuristicImpl::update_and_annotation_impl(const Proposition& proposition, const Action& action)
 {
     auto& proposition_annotations = this->get_proposition_annotations()[proposition.get_index()];
-    auto& action_annotations = this->get_structures_annotations<Action>()[action.get_index()];
+    auto& action_annotations = get<Action>(this->get_structures_annotations())[action.get_index()];
     auto& setadd_proposition_annotations = get_setadd_proposition_annotations()[proposition.get_index()];
     auto& setadd_action_annotations = get_setadd_structure_annotations<Action>()[action.get_index()];
 
@@ -84,7 +84,7 @@ void SetAddHeuristicImpl::update_and_annotation_impl(const Proposition& proposit
 void SetAddHeuristicImpl::update_and_annotation_impl(const Proposition& proposition, const Axiom& axiom)
 {
     auto& proposition_annotations = this->get_proposition_annotations()[proposition.get_index()];
-    auto& axiom_annotations = this->get_structures_annotations<Axiom>()[axiom.get_index()];
+    auto& axiom_annotations = get<Axiom>(this->get_structures_annotations())[axiom.get_index()];
     auto& setadd_proposition_annotations = get_setadd_proposition_annotations()[proposition.get_index()];
     auto& setadd_axiom_annotations = get_setadd_structure_annotations<Axiom>()[axiom.get_index()];
 
@@ -94,7 +94,7 @@ void SetAddHeuristicImpl::update_and_annotation_impl(const Proposition& proposit
 
 void SetAddHeuristicImpl::update_or_annotation_impl(const Action& action, const Proposition& proposition)
 {
-    const auto& action_annotations = this->get_structures_annotations<Action>()[action.get_index()];
+    const auto& action_annotations = get<Action>(this->get_structures_annotations())[action.get_index()];
     auto& proposition_annotations = this->get_proposition_annotations()[proposition.get_index()];
 
     const auto firing_cost = get_cost(action_annotations) + 1;
@@ -114,7 +114,7 @@ void SetAddHeuristicImpl::update_or_annotation_impl(const Action& action, const 
 
 void SetAddHeuristicImpl::update_or_annotation_impl(const Axiom& axiom, const Proposition& proposition)
 {
-    const auto& axiom_annotations = this->get_structures_annotations<Axiom>()[axiom.get_index()];
+    const auto& axiom_annotations = get<Axiom>(this->get_structures_annotations())[axiom.get_index()];
     auto& proposition_annotations = this->get_proposition_annotations()[proposition.get_index()];
 
     if (get_cost(axiom_annotations) < get_cost(proposition_annotations))

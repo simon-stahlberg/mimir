@@ -29,8 +29,8 @@ using namespace rpg;
 
 FFHeuristicImpl::FFHeuristicImpl(const DeleteRelaxedProblemExplorator& delete_relaxation) : RelaxedPlanningGraph<FFHeuristicImpl>(delete_relaxation)
 {
-    get_ff_structures_annotations<Action>().resize(this->get_structures<Action>().size());
-    get_ff_structures_annotations<Axiom>().resize(this->get_structures<Axiom>().size());
+    get<Action>(get_ff_structures_annotations()).resize(get<Action>(this->get_structures()).size());
+    get<Axiom>(get_ff_structures_annotations()).resize(get<Axiom>(this->get_structures()).size());
     get_ff_proposition_annotations().resize(this->get_propositions().size());
 }
 
@@ -38,19 +38,19 @@ FFHeuristic FFHeuristicImpl::create(const DeleteRelaxedProblemExplorator& delete
 
 void FFHeuristicImpl::initialize_and_annotations_impl(const Action& action)
 {
-    auto& annotations = this->get_structures_annotations<Action>()[action.get_index()];
+    auto& annotations = get<Action>(this->get_structures_annotations())[action.get_index()];
     get_cost(annotations) = 0;
     get_num_unsatisfied_preconditions(annotations) = action.get_num_preconditions();
-    auto& ff_annotations = get_ff_structures_annotations<Action>()[action.get_index()];
+    auto& ff_annotations = get<Action>(get_ff_structures_annotations())[action.get_index()];
     get_achiever(ff_annotations) = MAX_INDEX;
 }
 
 void FFHeuristicImpl::initialize_and_annotations_impl(const Axiom& axiom)
 {
-    auto& annotations = this->get_structures_annotations<Axiom>()[axiom.get_index()];
+    auto& annotations = get<Axiom>(this->get_structures_annotations())[axiom.get_index()];
     get_cost(annotations) = 0;
     get_num_unsatisfied_preconditions(annotations) = axiom.get_num_preconditions();
-    auto& ff_annotations = get_ff_structures_annotations<Axiom>()[axiom.get_index()];
+    auto& ff_annotations = get<Axiom>(get_ff_structures_annotations())[axiom.get_index()];
     get_achiever(ff_annotations) = MAX_INDEX;
 }
 
@@ -73,8 +73,8 @@ void FFHeuristicImpl::initialize_or_annotations_and_queue_impl(const Proposition
 void FFHeuristicImpl::update_and_annotation_impl(const Proposition& proposition, const Action& action)
 {
     auto& proposition_annotations = this->get_proposition_annotations()[proposition.get_index()];
-    auto& action_annotations = this->get_structures_annotations<Action>()[action.get_index()];
-    auto& ff_action_annotations = get_ff_structures_annotations<Action>()[action.get_index()];
+    auto& action_annotations = get<Action>(this->get_structures_annotations())[action.get_index()];
+    auto& ff_action_annotations = get<Action>(get_ff_structures_annotations())[action.get_index()];
 
     get_cost(action_annotations) = std::max(get_cost(proposition_annotations), get_cost(action_annotations));
     get_achiever(ff_action_annotations) = proposition.get_index();
@@ -83,9 +83,9 @@ void FFHeuristicImpl::update_and_annotation_impl(const Proposition& proposition,
 void FFHeuristicImpl::update_and_annotation_impl(const Proposition& proposition, const Axiom& axiom)
 {
     auto& proposition_annotations = this->get_proposition_annotations()[proposition.get_index()];
-    auto& axiom_annotations = this->get_structures_annotations<Axiom>()[axiom.get_index()];
+    auto& axiom_annotations = get<Axiom>(this->get_structures_annotations())[axiom.get_index()];
     auto& ff_proposition_annotations = get_ff_proposition_annotations()[proposition.get_index()];
-    auto& ff_axiom_annotations = get_ff_structures_annotations<Axiom>()[axiom.get_index()];
+    auto& ff_axiom_annotations = get<Axiom>(get_ff_structures_annotations())[axiom.get_index()];
 
     get_cost(axiom_annotations) = get_cost(proposition_annotations);
     get_achiever(ff_axiom_annotations) = get_achiever(ff_proposition_annotations);  // Forward the achiever action
@@ -93,7 +93,7 @@ void FFHeuristicImpl::update_and_annotation_impl(const Proposition& proposition,
 
 void FFHeuristicImpl::update_or_annotation_impl(const Action& action, const Proposition& proposition)
 {
-    const auto& action_annotations = this->get_structures_annotations<Action>()[action.get_index()];
+    const auto& action_annotations = get<Action>(this->get_structures_annotations())[action.get_index()];
     auto& proposition_annotations = this->get_proposition_annotations()[proposition.get_index()];
 
     const auto firing_cost = get_cost(action_annotations) + 1;
@@ -111,7 +111,7 @@ void FFHeuristicImpl::update_or_annotation_impl(const Action& action, const Prop
 
 void FFHeuristicImpl::update_or_annotation_impl(const Axiom& axiom, const Proposition& proposition)
 {
-    const auto& axiom_annotations = this->get_structures_annotations<Axiom>()[axiom.get_index()];
+    const auto& axiom_annotations = get<Axiom>(this->get_structures_annotations())[axiom.get_index()];
     auto& proposition_annotations = this->get_proposition_annotations()[proposition.get_index()];
 
     if (get_cost(axiom_annotations) < get_cost(proposition_annotations))
@@ -119,7 +119,7 @@ void FFHeuristicImpl::update_or_annotation_impl(const Axiom& axiom, const Propos
         get_cost(proposition_annotations) = get_cost(axiom_annotations);
 
         auto& ff_proposition_annotations = get_ff_proposition_annotations()[proposition.get_index()];
-        auto& ff_axiom_annotations = get_ff_structures_annotations<Axiom>()[axiom.get_index()];
+        auto& ff_axiom_annotations = get<Axiom>(get_ff_structures_annotations())[axiom.get_index()];
         get_achiever(ff_proposition_annotations) = get_achiever(ff_axiom_annotations);  // Forward the achiever action
 
         this->m_queue.insert(get_cost(proposition_annotations), QueueEntry { proposition.get_index(), get_cost(proposition_annotations) });
@@ -131,11 +131,11 @@ void FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively(S
 {
     for (const auto& atom_index : action.template get_preconditions<R, P>()->compressed_range())
     {
-        extract_relaxed_plan_and_preferred_operators_recursively(state, this->get_propositions()[this->template get_offsets<R, P>()[atom_index]]);
+        extract_relaxed_plan_and_preferred_operators_recursively(state, this->get_propositions()[get<R, P>(this->get_offsets())[atom_index]]);
     }
     for (const auto& atom_index : action.template get_conditional_preconditions<R, P>()->compressed_range())
     {
-        extract_relaxed_plan_and_preferred_operators_recursively(state, this->get_propositions()[this->template get_offsets<R, P>()[atom_index]]);
+        extract_relaxed_plan_and_preferred_operators_recursively(state, this->get_propositions()[get<R, P>(this->get_offsets())[atom_index]]);
     }
 }
 
@@ -155,7 +155,7 @@ void FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively(S
 {
     for (const auto& atom_index : axiom.template get_preconditions<R, P>()->compressed_range())
     {
-        extract_relaxed_plan_and_preferred_operators_recursively(state, this->get_propositions()[this->template get_offsets<R, P>()[atom_index]]);
+        extract_relaxed_plan_and_preferred_operators_recursively(state, this->get_propositions()[get<R, P>(this->get_offsets())[atom_index]]);
     }
 }
 
@@ -179,7 +179,7 @@ void FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively(S
     if (get_achiever(ff_proposition_annotations) == MAX_INDEX)
         return;
 
-    const auto& action = this->get_structures<Action>()[get_achiever(ff_proposition_annotations)];
+    const auto& action = get<Action>(this->get_structures())[get_achiever(ff_proposition_annotations)];
 
     extract_relaxed_plan_and_preferred_operators_recursively<formalism::PositiveTag, formalism::FluentTag>(state, action);
     extract_relaxed_plan_and_preferred_operators_recursively<formalism::PositiveTag, formalism::DerivedTag>(state, action);

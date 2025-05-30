@@ -31,14 +31,14 @@ MaxHeuristic MaxHeuristicImpl::create(const DeleteRelaxedProblemExplorator& dele
 
 void MaxHeuristicImpl::initialize_and_annotations_impl(const Action& action)
 {
-    auto& annotations = this->get_structures_annotations<Action>()[action.get_index()];
+    auto& annotations = get<Action>(this->get_structures_annotations())[action.get_index()];
     get_cost(annotations) = 0;
     get_num_unsatisfied_preconditions(annotations) = action.get_num_preconditions();
 }
 
 void MaxHeuristicImpl::initialize_and_annotations_impl(const Axiom& axiom)
 {
-    auto& annotations = this->get_structures_annotations<Axiom>()[axiom.get_index()];
+    auto& annotations = get<Axiom>(this->get_structures_annotations())[axiom.get_index()];
     get_cost(annotations) = 0;
     get_num_unsatisfied_preconditions(annotations) = axiom.get_num_preconditions();
 }
@@ -59,7 +59,7 @@ void MaxHeuristicImpl::initialize_or_annotations_and_queue_impl(const Propositio
 void MaxHeuristicImpl::update_and_annotation_impl(const Proposition& proposition, const Action& action)
 {
     auto& proposition_annotations = this->get_proposition_annotations()[proposition.get_index()];
-    auto& action_annotations = this->get_structures_annotations<Action>()[action.get_index()];
+    auto& action_annotations = get<Action>(this->get_structures_annotations())[action.get_index()];
 
     get_cost(action_annotations) = std::max(get_cost(proposition_annotations), get_cost(action_annotations));
 }
@@ -67,14 +67,14 @@ void MaxHeuristicImpl::update_and_annotation_impl(const Proposition& proposition
 void MaxHeuristicImpl::update_and_annotation_impl(const Proposition& proposition, const Axiom& axiom)
 {
     auto& proposition_annotations = this->get_proposition_annotations()[proposition.get_index()];
-    auto& axiom_annotations = this->get_structures_annotations<Axiom>()[axiom.get_index()];
+    auto& axiom_annotations = get<Axiom>(this->get_structures_annotations())[axiom.get_index()];
 
     get_cost(axiom_annotations) = std::max(get_cost(axiom_annotations), get_cost(proposition_annotations));
 }
 
 void MaxHeuristicImpl::update_or_annotation_impl(const Action& action, const Proposition& proposition)
 {
-    const auto& action_annotations = this->get_structures_annotations<Action>()[action.get_index()];
+    const auto& action_annotations = get<Action>(this->get_structures_annotations())[action.get_index()];
     auto& proposition_annotations = this->get_proposition_annotations()[proposition.get_index()];
 
     const auto firing_cost = get_cost(action_annotations) + 1;
@@ -88,7 +88,7 @@ void MaxHeuristicImpl::update_or_annotation_impl(const Action& action, const Pro
 
 void MaxHeuristicImpl::update_or_annotation_impl(const Axiom& axiom, const Proposition& proposition)
 {
-    const auto& axiom_annotations = this->get_structures_annotations<Axiom>()[axiom.get_index()];
+    const auto& axiom_annotations = get<Axiom>(this->get_structures_annotations())[axiom.get_index()];
     auto& proposition_annotations = this->get_proposition_annotations()[proposition.get_index()];
 
     if (get_cost(axiom_annotations) < get_cost(proposition_annotations))

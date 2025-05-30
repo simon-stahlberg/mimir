@@ -23,6 +23,14 @@
 namespace mimir::search
 {
 
+using FFStructuresAnnotations = HanaContainer<rpg::AnnotationsList<Index>, rpg::Action, rpg::Axiom>;
+
+template<rpg::IsStructure S>
+inline auto& get(FFStructuresAnnotations& annotations)
+{
+    return boost::hana::at_key(annotations, boost::hana::type<S> {});
+}
+
 class FFHeuristicImpl : public rpg::RelaxedPlanningGraph<FFHeuristicImpl>
 {
 public:
@@ -78,13 +86,9 @@ private:
     friend class rpg::RelaxedPlanningGraph<FFHeuristicImpl>;
 
 private:
-    HanaContainer<rpg::AnnotationsList<Index>, rpg::Action, rpg::Axiom> m_ff_structure_annotations;
+    FFStructuresAnnotations m_ff_structure_annotations;
 
-    template<rpg::IsStructure S>
-    auto& get_ff_structures_annotations()
-    {
-        return boost::hana::at_key(m_ff_structure_annotations, boost::hana::type<S> {});
-    }
+    auto& get_ff_structures_annotations() { return m_ff_structure_annotations; }
 
     static Index& get_achiever(rpg::Annotations<Index>& annotation) { return std::get<0>(annotation); }
     static Index get_achiever(const rpg::Annotations<Index>& annotation) { return std::get<0>(annotation); }
