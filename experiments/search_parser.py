@@ -39,9 +39,9 @@ def make_add_score(max_memory_in_bytes: int):
 
     return add_scores
 
-
-    "score_peak_memory_usage_in_bytes",
-
+def postprocess_initial_h_value(content, props):
+    if "initial_h_value" in props:
+        props["initial_h_value"] = float(props["initial_h_value"])
 
 
 class SearchParser(Parser):
@@ -98,7 +98,7 @@ class SearchParser(Parser):
         self.add_pattern("num_of_actions", r"Number of actions: (\d+)", type=int)
         self.add_pattern("num_of_axioms", r"Number of axioms: (\d+)", type=int)
 
-        self.add_pattern("initial_h_value", r"Initial h_value: (.+)", type=float)
+        self.add_pattern("initial_h_value", r"Initial h_value: (.+)", type=str)
 
         self.add_pattern("cost", r"Plan cost: (.+)", type=float)
         self.add_pattern("length", r"Plan length: (.+)", type=int)
@@ -115,5 +115,7 @@ class SearchParser(Parser):
         self.add_function(resolve_unexplained_errors)
         self.add_function(ensure_minimum_times)
         self.add_function(make_add_score(self.max_memory_in_bytes))
+
+        self.add_function(postprocess_initial_h_value)
 
         
