@@ -44,7 +44,7 @@ class CustomEventHandler(search.IAStarEventHandler):
     def on_prune_state(self, state : search.State):
         pass
 
-    def on_start_search(self, start_state : search.State):
+    def on_start_search(self, start_state : search.State, g_value : float, h_value : float):
         pass
 
     def on_end_search(self, num_reached_fluent_atoms : int, num_reached_derived_atoms: int, num_bytes_for_problem: int, num_bytes_for_nodes: int, num_states: int, num_nodes: int, num_actions: int, num_axioms: int):
