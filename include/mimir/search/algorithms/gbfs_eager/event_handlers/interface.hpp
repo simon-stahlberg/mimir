@@ -56,6 +56,9 @@ public:
     /// @brief React on starting a search.
     virtual void on_start_search(State start_state, ContinuousCost g_value, ContinuousCost h_value) = 0;
 
+    /// @brief React on new best h_value
+    virtual void on_new_best_h_value(ContinuousCost h_value) = 0;
+
     /// @brief React on ending a search.
     virtual void on_end_search(uint64_t num_reached_fluent_atoms,
                                uint64_t num_reached_derived_atoms,
@@ -149,6 +152,14 @@ public:
         if (!m_quiet)
         {
             self().on_start_search_impl(start_state, g_value, h_value);
+        }
+    }
+
+    void on_new_best_h_value(ContinuousCost h_value) override
+    {
+        if (!m_quiet)
+        {
+            self().on_new_best_h_value_impl(h_value, m_statistics.get_num_expanded(), m_statistics.get_num_generated());
         }
     }
 

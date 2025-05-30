@@ -81,7 +81,7 @@ public:
      */
 
     /// @brief Store information for the layer
-    void on_finish_f_layer(double f_value)
+    void on_finish_f_layer(ContinuousCost f_value)
     {
         m_num_generated_until_f_value.emplace(f_value, m_num_generated);
         m_num_expanded_until_f_value.emplace(f_value, m_num_expanded);

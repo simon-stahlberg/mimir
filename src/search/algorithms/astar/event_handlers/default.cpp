@@ -40,7 +40,7 @@ void DefaultEventHandlerImpl::on_generate_state_not_relaxed_impl(State state, Gr
 
 void DefaultEventHandlerImpl::on_close_state_impl(State state) const {}
 
-void DefaultEventHandlerImpl::on_finish_f_layer_impl(double f_value, uint64_t num_expanded_states, uint64_t num_generated_states) const
+void DefaultEventHandlerImpl::on_finish_f_layer_impl(ContinuousCost f_value, uint64_t num_expanded_states, uint64_t num_generated_states) const
 {
     std::cout << "[AStar] Finished state expansion until f-layer " << f_value << " with num expanded states " << num_expanded_states
               << " and num generated states " << num_generated_states << " (" << get_statistics().get_current_search_time_ms().count() << " ms)" << std::endl;

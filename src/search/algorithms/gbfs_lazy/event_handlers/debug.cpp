@@ -58,6 +58,12 @@ void DebugEventHandlerImpl::on_start_search_impl(State start_state, ContinuousCo
     std::cout << std::endl;
 }
 
+void DebugEventHandlerImpl::on_new_best_h_value_impl(ContinuousCost h_value, uint64_t num_expanded_states, uint64_t num_generated_states) const
+{
+    std::cout << "[GBFS] New best h_value: " << h_value << " with num expanded states " << num_expanded_states << " and num generated states "
+              << num_generated_states << " (" << get_statistics().get_current_search_time_ms().count() << " ms)" << std::endl;
+}
+
 void DebugEventHandlerImpl::on_end_search_impl(uint64_t num_reached_fluent_atoms,
                                                uint64_t num_reached_derived_atoms,
                                                uint64_t num_bytes_for_problem,

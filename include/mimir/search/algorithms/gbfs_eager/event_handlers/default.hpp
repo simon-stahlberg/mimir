@@ -42,6 +42,8 @@ private:
 
     void on_start_search_impl(State start_state, ContinuousCost g_value, ContinuousCost h_value) const;
 
+    void on_new_best_h_value_impl(ContinuousCost h_value, uint64_t num_expanded_states, uint64_t num_generated_states) const;
+
     void on_end_search_impl(uint64_t num_reached_fluent_atoms,
                             uint64_t num_reached_derived_atoms,
                             uint64_t num_bytes_for_problem,

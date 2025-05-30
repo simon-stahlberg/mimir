@@ -25,29 +25,7 @@
 namespace mimir::search
 {
 
-/// @brief `IPolicyGuide` encapsulates logic to perform policy execution during search.
-class IPolicyGuide
-{
-public:
-    virtual ~IPolicyGuide() = default;
-
-    /// @brief Called when expanding a state.
-    /// @param state is the state.
-    virtual void on_expand(State state) = 0;
-
-    /// @brief Called when generating a state.
-    /// Set return value to true to select early and finished expanding.
-    /// @param action is the action.
-    /// @param successor_state is the successor state.
-    /// @return true if the successor state must be part of the rollout.
-    virtual bool on_generate(formalism::GroundAction action, State successor_state) = 0;
-
-    /// @brief Called when finished expanding the state.
-    /// @return the chosen successor state that must be part of the rollout.
-    virtual State get_choice() = 0;
-};
-
-struct PolicyOptions
+struct RolloutOptions
 {
     size_t rollout_limit;
     bool stop_if_goal;
@@ -55,21 +33,51 @@ struct PolicyOptions
     bool stop_if_cycle;
 };
 
-template<typename... SearchNodeProperties>
-class PolicyExecutor
+/// @brief `IRolloutGuide` encapsulates logic to perform policy execution during search.
+class IRolloutGuide
 {
 public:
-    explicit PolicyExecutor(PolicyGuide guide,
-                            GoalStrategy goal_strategy,
-                            const SearchNodeImplVector<SearchNodeProperties...>& search_nodes,
-                            const SearchContext& context,
-                            const PolicyOptions& options);
+    /// @brief Create a `IRolloutGuide` with minimal amount of options.
+    /// @param options
+    explicit IRolloutGuide(const RolloutOptions options);
 
-    void execute_lookahead(State state);
+    virtual ~IRolloutGuide() = default;
 
-    const StateList& get_rollout() const;
+    /// @brief Called when expanding a state.
+    /// @param state is the state.
+    virtual void on_expand(State state) = 0;
+
+    /// @brief Called when generating a state.
+    /// @param action is the action.
+    /// @param successor_state is the successor state.
+    /// @return true if the successor state must be part of the rollout. Can be used to enforce early termination of expansion step.
+    virtual bool on_generate(State state, formalism::GroundAction action, State successor_state) = 0;
+
+    /// @brief Called when finished expanding the state.
+    /// @return the optionally chosen successor state that must be part of the rollout. If none is given, the rollout terminates.
+    virtual std::optional<State> get_choice() = 0;
+
+protected:
+    RolloutOptions m_options;
+};
+
+/// @brief `RolloutExecutor` computes a rollout trajectory guided by a `RolloutGuide`.
+/// @tparam ...SearchNodeProperties
+template<typename... SearchNodeProperties>
+class RolloutExecutor
+{
+public:
+    explicit RolloutExecutor(RolloutGuide guide,
+                             GoalStrategy goal_strategy,
+                             SearchContext search_context,
+                             const SearchNodeImplVector<SearchNodeProperties...>& search_nodes);
+
+    const StateList& compute_rollout(State state);
 
 private:
+    RolloutGuide m_guide;
+    GoalStrategy m_goal_strategy;
+    SearchContext m_search_context;
     const SearchNodeImplVector<SearchNodeProperties...>& m_search_nodes;
 
     StateList m_rollout;

@@ -67,7 +67,7 @@ public:
         NB_OVERRIDE_PURE(on_generate_state_not_relaxed, state, action, action_cost, successor_state);
     }
     void on_close_state(State state) override { NB_OVERRIDE_PURE(on_close_state, state); }
-    void on_finish_f_layer(double f_value) override { NB_OVERRIDE_PURE(on_finish_f_layer, f_value); }
+    void on_finish_f_layer(ContinuousCost f_value) override { NB_OVERRIDE_PURE(on_finish_f_layer, f_value); }
     void on_prune_state(State state) override { NB_OVERRIDE_PURE(on_prune_state, state); }
     void on_start_search(State start_state, ContinuousCost g_value, ContinuousCost h_value) override
     {
@@ -151,7 +151,7 @@ public:
 class IPyGBFSEagerEventHandler : public gbfs_eager::IEventHandler
 {
 public:
-    NB_TRAMPOLINE(gbfs_eager::IEventHandler, 10);
+    NB_TRAMPOLINE(gbfs_eager::IEventHandler, 11);
 
     /* Trampoline (need one for each virtual function) */
     void on_expand_state(State state) override { NB_OVERRIDE_PURE(on_expand_state, state); }
@@ -167,6 +167,7 @@ public:
     {
         NB_OVERRIDE_PURE(on_start_search, start_state, g_value, h_value);
     }
+    void on_new_best_h_value(ContinuousCost h_value) override { NB_OVERRIDE_PURE(on_new_best_h_value, h_value); }
     void on_end_search(uint64_t num_reached_fluent_atoms,
                        uint64_t num_reached_derived_atoms,
                        uint64_t num_bytes_for_problem,
@@ -195,7 +196,7 @@ public:
 class IPyGBFSLazyEventHandler : public gbfs_lazy::IEventHandler
 {
 public:
-    NB_TRAMPOLINE(gbfs_lazy::IEventHandler, 10);
+    NB_TRAMPOLINE(gbfs_lazy::IEventHandler, 11);
 
     /* Trampoline (need one for each virtual function) */
     void on_expand_state(State state) override { NB_OVERRIDE_PURE(on_expand_state, state); }
@@ -211,6 +212,7 @@ public:
     {
         NB_OVERRIDE_PURE(on_start_search, start_state, g_value, h_value);
     }
+    void on_new_best_h_value(ContinuousCost h_value) override { NB_OVERRIDE_PURE(on_new_best_h_value, h_value); }
     void on_end_search(uint64_t num_reached_fluent_atoms,
                        uint64_t num_reached_derived_atoms,
                        uint64_t num_bytes_for_problem,
@@ -760,6 +762,7 @@ void bind_module_definitions(nb::module_& m)
         .def("on_generate_state", &gbfs_eager::IEventHandler::on_generate_state)
         .def("on_prune_state", &gbfs_eager::IEventHandler::on_prune_state)
         .def("on_start_search", &gbfs_eager::IEventHandler::on_start_search)
+        .def("on_new_best_h_value", &gbfs_eager::IEventHandler::on_new_best_h_value)
         .def("on_end_search", &gbfs_eager::IEventHandler::on_end_search)
         .def("on_solved", &gbfs_eager::IEventHandler::on_solved)
         .def("on_unsolvable", &gbfs_eager::IEventHandler::on_unsolvable)
@@ -798,6 +801,7 @@ void bind_module_definitions(nb::module_& m)
         .def("on_generate_state", &gbfs_lazy::IEventHandler::on_generate_state)
         .def("on_prune_state", &gbfs_lazy::IEventHandler::on_prune_state)
         .def("on_start_search", &gbfs_lazy::IEventHandler::on_start_search)
+        .def("on_new_best_h_value", &gbfs_lazy::IEventHandler::on_new_best_h_value)
         .def("on_end_search", &gbfs_lazy::IEventHandler::on_end_search)
         .def("on_solved", &gbfs_lazy::IEventHandler::on_solved)
         .def("on_unsolvable", &gbfs_lazy::IEventHandler::on_unsolvable)

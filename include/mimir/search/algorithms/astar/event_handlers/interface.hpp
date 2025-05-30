@@ -60,8 +60,8 @@ public:
 
     virtual void on_close_state(State state) = 0;
 
-    /// @brief React on finishing expanding a g-layer.
-    virtual void on_finish_f_layer(double f_value) = 0;
+    /// @brief React on finishing expanding a f-layer.
+    virtual void on_finish_f_layer(ContinuousCost f_value) = 0;
 
     /// @brief React on pruning a state.
     virtual void on_prune_state(State state) = 0;
@@ -167,7 +167,7 @@ public:
         }
     }
 
-    void on_finish_f_layer(double f_value) override
+    void on_finish_f_layer(ContinuousCost f_value) override
     {
         m_statistics.on_finish_f_layer(f_value);
 

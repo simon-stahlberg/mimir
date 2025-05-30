@@ -164,8 +164,8 @@ class IGoalStrategy;
 using GoalStrategy = std::shared_ptr<IGoalStrategy>;
 class ProblemGoalStrategyImpl;
 using ProblemGoalStrategy = std::shared_ptr<ProblemGoalStrategyImpl>;
-class IPolicyGuide;
-using PolicyGuide = std::shared_ptr<IPolicyGuide>;
+class IRolloutGuide;
+using RolloutGuide = std::shared_ptr<IRolloutGuide>;
 
 // AStar
 namespace astar

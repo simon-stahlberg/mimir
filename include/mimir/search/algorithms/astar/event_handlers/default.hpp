@@ -44,7 +44,7 @@ private:
 
     void on_close_state_impl(State state) const;
 
-    void on_finish_f_layer_impl(double f_value, uint64_t num_expanded_states, uint64_t num_generated_states) const;
+    void on_finish_f_layer_impl(ContinuousCost f_value, uint64_t num_expanded_states, uint64_t num_generated_states) const;
 
     void on_prune_state_impl(State state) const;
 
