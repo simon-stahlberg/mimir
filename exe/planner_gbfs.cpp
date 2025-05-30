@@ -27,9 +27,11 @@ using namespace mimir::formalism;
 
 int main(int argc, char** argv)
 {
-    if (argc != 8)
+    if (argc != 9)
     {
-        std::cout << "Usage: planner_gbfs <domain:str> <problem:str> <plan:str> <eager:bool> <heuristic_type:int> <grounded:bool> <debug:bool>" << std::endl;
+        std::cout
+            << "Usage: planner_gbfs <domain:str> <problem:str> <plan:str> <eager:bool> <pref_weight:int> <heuristic_type:int> <grounded:bool> <debug:bool>"
+            << std::endl;
         return 1;
     }
 
@@ -39,9 +41,10 @@ int main(int argc, char** argv)
     const auto problem_file_path = fs::path { argv[2] };
     const auto plan_file_name = argv[3];
     const auto eager = static_cast<bool>(std::atoi(argv[4]));
-    const auto heuristic_type = atoi(argv[5]);
-    const auto grounded = static_cast<bool>(std::atoi(argv[6]));
-    const auto debug = static_cast<bool>(std::atoi(argv[7]));
+    const auto pref_weight = static_cast<size_t>(atoi(argv[5]));
+    const auto heuristic_type = atoi(argv[6]);
+    const auto grounded = static_cast<bool>(std::atoi(argv[7]));
+    const auto debug = static_cast<bool>(std::atoi(argv[8]));
 
     std::cout << "Parsing PDDL files..." << std::endl;
 
@@ -154,7 +157,7 @@ int main(int argc, char** argv)
 
         auto search_context = SearchContextImpl::create(problem, applicable_action_generator, state_repository);
 
-        result = gbfs_lazy::find_solution(search_context, heuristic, nullptr, event_handler);
+        result = gbfs_lazy::find_solution(search_context, heuristic, nullptr, event_handler, nullptr, nullptr, std::array<size_t, 2> { pref_weight, 1 });
     }
 
     std::cout << "[GBFS] Total time: " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time)

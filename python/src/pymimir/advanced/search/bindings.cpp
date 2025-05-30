@@ -822,7 +822,8 @@ void bind_module_definitions(nb::module_& m)
           "start_state"_a = nullptr,
           "gbfs_event_handler"_a = nullptr,
           "goal_strategy"_a = nullptr,
-          "pruning_strategy"_a = nullptr);
+          "pruning_strategy"_a = nullptr,
+          "openlist_weights"_a = std::nullopt);
 
     // IW
     nb::class_<iw::TupleIndexMapper>(m, "TupleIndexMapper")  //

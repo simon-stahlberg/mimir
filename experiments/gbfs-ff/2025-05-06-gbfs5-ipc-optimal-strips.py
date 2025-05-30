@@ -104,30 +104,31 @@ exp.add_resource("run_planner", DIR / "gbfs_run_planner.sh")
 
 for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
     ################ GBFS_LAZY ################
-    run = exp.add_run()
-    run.add_resource("domain", task.domain_file, symlink=True)
-    run.add_resource("problem", task.problem_file, symlink=True)
-    # 'ff' binary has to be on the PATH.
-    # We could also use exp.add_resource().
-    run.add_command(
-        "gbfs_lazy_planner",
-        ["{run_planner}", "{planner_exe}", "{domain}", "{problem}", "plan.out", "0", "4", "1", "0"],
-        time_limit=TIME_LIMIT,
-        memory_limit=MEMORY_LIMIT,
-    )
-    # AbsoluteReport needs the following properties:
-    # 'domain', 'problem', 'algorithm', 'coverage'.
-    run.set_property("domain", task.domain)
-    run.set_property("problem", task.problem)
-    run.set_property("algorithm", "mimir-grounded-gbfs-lazy-ff")
-    # BaseReport needs the following properties:
-    # 'time_limit', 'memory_limit'.
-    run.set_property("time_limit", TIME_LIMIT)
-    run.set_property("memory_limit", MEMORY_LIMIT)
-    # Every run has to have a unique id in the form of a list.
-    # The algorithm name is only really needed when there are
-    # multiple algorithms.
-    run.set_property("id", ["mimir-grounded-gbfs-lazy-ff", task.domain, task.problem])
+    for i in [1,2,4,8,16,32,64]:
+        run = exp.add_run()
+        run.add_resource("domain", task.domain_file, symlink=True)
+        run.add_resource("problem", task.problem_file, symlink=True)
+        # 'ff' binary has to be on the PATH.
+        # We could also use exp.add_resource().
+        run.add_command(
+            f"gbfs_lazy_planner_{i}",
+            ["{run_planner}", "{planner_exe}", "{domain}", "{problem}", "plan.out", "0", str(i), "4", "1", "0"],
+            time_limit=TIME_LIMIT,
+            memory_limit=MEMORY_LIMIT,
+        )
+        # AbsoluteReport needs the following properties:
+        # 'domain', 'problem', 'algorithm', 'coverage'.
+        run.set_property("domain", task.domain)
+        run.set_property("problem", task.problem)
+        run.set_property("algorithm", f"mimir-grounded-gbfs-lazy-{i}-ff")
+        # BaseReport needs the following properties:
+        # 'time_limit', 'memory_limit'.
+        run.set_property("time_limit", TIME_LIMIT)
+        run.set_property("memory_limit", MEMORY_LIMIT)
+        # Every run has to have a unique id in the form of a list.
+        # The algorithm name is only really needed when there are
+        # multiple algorithms.
+        run.set_property("id", [f"mimir-grounded-gbfs-lazy-{i}-ff", task.domain, task.problem])
 
     ################ GBFS_EAGER ################
     run = exp.add_run()
@@ -137,7 +138,7 @@ for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
     # We could also use exp.add_resource().
     run.add_command(
         "gbfs_eager_planner",
-        ["{run_planner}", "{planner_exe}", "{domain}", "{problem}", "plan.out", "1", "4", "1", "0"],
+        ["{run_planner}", "{planner_exe}", "{domain}", "{problem}", "plan.out", "1", "1", "4", "1", "0"],
         time_limit=TIME_LIMIT,
         memory_limit=MEMORY_LIMIT,
     )
