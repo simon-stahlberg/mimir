@@ -19,6 +19,7 @@
 #define MIMIR_COMMON_CONCEPTS_HPP_
 
 #include <boost/hana.hpp>
+#include <cassert>
 #include <concepts>
 #include <cstddef>
 #include <memory>

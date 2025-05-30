@@ -43,6 +43,7 @@ add_gtest(search_iw_test                                   "search/algorithms/iw
 add_gtest(search_siw_test                                  "search/algorithms/siw.cpp")
 add_gtest(search_grounded_test                             "search/applicable_action_generators/grounded.cpp")
 add_gtest(search_lifted_test                               "search/applicable_action_generators/lifted.cpp")
+add_gtest(search_alternating_test                          "search/openlists/alternating.cpp")
 add_gtest(search_priority_queue_test                       "search/openlists/priority_queue.cpp")
 add_gtest(search_search_node_test                          "search/search_node.cpp")
 add_gtest(search_state_repository_test                     "search/state_repository.cpp")

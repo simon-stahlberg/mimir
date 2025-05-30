@@ -19,41 +19,35 @@
 #define MIMIR_SEARCH_OPENLISTS_INTERFACE_HPP_
 
 #include <concepts>
+#include <cstddef>
 #include <cstdint>
 #include <utility>
 
 namespace mimir::search
 {
 
-/**
- * Interface class
- */
-template<typename Derived_>
-class IOpenList
-{
-private:
-    IOpenList() = default;
-    friend Derived_;
+template<typename T>
+concept IsOpenList = requires(T a, typename T::KeyType key, typename T::ItemType item) {
+    requires std::totally_ordered<typename T::KeyType>;
 
-    /// @brief Helper to cast to Derived_.
-    constexpr const auto& self() const { return static_cast<const Derived_&>(*this); }
-    constexpr auto& self() { return static_cast<Derived_&>(*this); }
+    { a.insert(key, item) } -> std::same_as<void>;
+    { a.top() } -> std::convertible_to<typename T::ItemType>;
+    { a.pop() } -> std::same_as<void>;
+    { a.clear() } -> std::same_as<void>;
+    { a.empty() } -> std::same_as<bool>;
+    { a.size() } -> std::same_as<std::size_t>;
+};
 
-public:
-    template<std::totally_ordered Key, typename T>
-    void insert(Key&& priority, T&& item)
-    {
-        return self().insert_impl(std::forward<Key>(priority), std::forward<T>(item));
-    }
+template<typename First, typename... Rest>
+concept HaveSameItemType = (... && std::same_as<typename First::ItemType, typename Rest::ItemType>);
 
-    decltype(auto) top() const { return self().top_impl(); }
-
-    void pop() { self().pop_impl(); }
-
-    void clear() { self().clear_impl(); }
-
-    bool empty() const { return self().empty_impl(); }
-    std::size_t size() const { return self().size_impl(); }
+template<typename T>
+concept IsOpenListComposition = requires(T a, typename T::ItemType item) {
+    { a.top() } -> std::convertible_to<typename T::ItemType>;
+    { a.pop() } -> std::same_as<void>;
+    { a.clear() } -> std::same_as<void>;
+    { a.empty() } -> std::same_as<bool>;
+    { a.size() } -> std::same_as<std::size_t>;
 };
 
 }

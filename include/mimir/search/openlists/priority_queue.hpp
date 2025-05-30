@@ -20,24 +20,22 @@
 
 #include "mimir/search/openlists/interface.hpp"
 
+#include <cassert>
 #include <queue>
 
 namespace mimir::search
 {
 
-/**
- * Implementation class
- */
-template<std::totally_ordered Key, typename T>
-class PriorityQueue : public IOpenList<PriorityQueue<Key, T>>
+template<std::totally_ordered Key, typename Item>
+class PriorityQueue
 {
 private:
     struct Entry
     {
         Key priority;
-        T element;
+        Item item;
 
-        Entry(Key priority, T element) : priority(std::move(priority)), element(std::move(element)) {}
+        Entry(Key priority, Item item) : priority(std::move(priority)), item(std::move(item)) {}
     };
 
     struct EntryComparator
@@ -45,28 +43,40 @@ private:
         bool operator()(const Entry& l, const Entry& r) { return l.priority > r.priority; }
     };
 
-    /* Implement IOpenList interface */
-    friend class IOpenList<PriorityQueue>;
+public:
+    using KeyType = Key;
+    using ItemType = Item;
 
-    void insert_impl(Key priority, T item) { m_priority_queue.emplace(std::move(priority), std::move(item)); }
+    void insert(Key priority, Item item) { m_priority_queue.emplace(std::move(priority), std::move(item)); }
 
-    const T& top_impl() const { return m_priority_queue.top().element; }
+    const Item& top() const
+    {
+        assert(!empty());
+        return m_priority_queue.top().item;
+    }
 
-    void pop_impl() { m_priority_queue.pop(); }
+    void pop()
+    {
+        assert(!empty());
+        m_priority_queue.pop();
+    }
 
-    void clear_impl()
+    void clear()
     {
         auto tmp = std::priority_queue<Entry, std::vector<Entry>, EntryComparator> {};
         std::swap(m_priority_queue, tmp);
     }
 
-    bool empty_impl() const { return m_priority_queue.empty(); }
+    bool empty() const { return m_priority_queue.empty(); }
 
-    std::size_t size_impl() const { return m_priority_queue.size(); }
+    std::size_t size() const { return m_priority_queue.size(); }
 
+private:
     std::priority_queue<Entry, std::vector<Entry>, EntryComparator> m_priority_queue;
 };
 
-}  // namespace mimir
+static_assert((IsOpenList<PriorityQueue<int, int>>) );
+
+}
 
 #endif
