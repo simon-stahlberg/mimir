@@ -43,6 +43,9 @@ def postprocess_initial_h_value(content, props):
     if "initial_h_value" in props:
         props["initial_h_value"] = float(props["initial_h_value"])
 
+        if props["initial_h_value"] == float("inf"):
+            props["initial_h_value"] = 4_294_967_295
+
 
 class SearchParser(Parser):
     """
