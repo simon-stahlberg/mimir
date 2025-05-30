@@ -140,7 +140,6 @@ SearchResult find_solution(const SearchContext& context,
     }
 
     using OpenListType = PriorityQueue<std::tuple<double, double, Index>, State>;
-
     auto preferred_openlist = OpenListType();
     auto standard_openlist = OpenListType();
     auto openlist = AlternatingOpenList<OpenListType, OpenListType>(preferred_openlist, standard_openlist, openlist_weights);
@@ -294,7 +293,6 @@ SearchResult find_solution(const SearchContext& context,
 
             event_handler->on_generate_state(state, action, action_cost, successor_state);
 
-            // Slightly penalize unpreferred states by adding 1e-6.
             if (is_preferred)
             {
                 preferred_openlist.insert(std::make_tuple(state_h_value, successor_state_metric_value, step++), successor_state);
