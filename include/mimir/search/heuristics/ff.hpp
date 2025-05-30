@@ -100,7 +100,6 @@ private:
     formalism::GroundActionSet m_relaxed_plan;
 
     auto& get_relaxed_plan() { return m_relaxed_plan; }
-    auto& get_preferred_actions() { return this->m_preferred_actions; }
 
     static Index& get_achiever(rpg::Annotations<Index, bool>& annotation) { return std::get<0>(annotation); }
     static Index get_achiever(const rpg::Annotations<Index, bool>& annotation) { return std::get<0>(annotation); }

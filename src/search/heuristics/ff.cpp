@@ -190,7 +190,7 @@ void FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively(S
 
     if (is_applicable(action.get_unrelaxed_action(), this->get_problem(), state))
     {
-        m_preferred_actions.insert(action.get_unrelaxed_action());
+        this->m_preferred_actions.data.insert(action.get_unrelaxed_action());
     }
 }
 
@@ -200,7 +200,7 @@ DiscreteCost FFHeuristicImpl::extract_impl(State state)
     assert(this->m_num_unsat_goals == 0);
 
     get_relaxed_plan().clear();
-    get_preferred_actions().clear();
+    this->m_preferred_actions.data.clear();
 
     for (const auto proposition_index : this->get_goal_propositions())
     {

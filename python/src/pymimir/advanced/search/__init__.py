@@ -28,7 +28,8 @@ from pymimir.pymimir.advanced.search import (
 )
 
 # Heuristics 
-from pymimir.pymimir.advanced.search import (   
+from pymimir.pymimir.advanced.search import (  
+    PreferredActions, 
     IHeuristic,
     BlindHeuristic,
     HStarHeuristic,

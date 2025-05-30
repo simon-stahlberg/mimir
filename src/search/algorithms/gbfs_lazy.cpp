@@ -23,6 +23,7 @@
 #include "mimir/search/algorithms/gbfs_lazy/event_handlers.hpp"
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 #include "mimir/search/algorithms/strategies/pruning_strategy.hpp"
+#include "mimir/search/applicability.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
 #include "mimir/search/heuristics/interface.hpp"
@@ -195,6 +196,8 @@ SearchResult find_solution(const SearchContext& context,
             continue;
         }
         const auto& preferred_actions = heuristic->get_preferred_actions();
+        // Ensure that preferred actions are applicable.
+        assert(std::all_of(preferred_actions.data.begin(), preferred_actions.data.end(), [&](auto&& action) { return is_applicable(action, problem, state); }));
 
         /* Expand the successors of the state. */
 
@@ -216,7 +219,7 @@ SearchResult find_solution(const SearchContext& context,
                 throw std::runtime_error("find_solution(...): evaluating the metric on the successor state yielded NaN.");
             }
 
-            const auto is_preferred = preferred_actions.contains(action);
+            const auto is_preferred = preferred_actions.data.contains(action);
             const auto is_new_successor_state = (successor_search_node->get_status() == SearchNodeStatus::NEW);
 
             /* Skip previously generated state. */

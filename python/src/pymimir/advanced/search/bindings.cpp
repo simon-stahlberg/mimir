@@ -36,10 +36,12 @@ public:
 class IPyHeuristic : public IHeuristic
 {
 public:
-    NB_TRAMPOLINE(IHeuristic, 1);
+    NB_TRAMPOLINE(IHeuristic, 2);
 
     /* Trampoline (need one for each virtual function) */
     ContinuousCost compute_heuristic(State state, bool is_goal_state) override { NB_OVERRIDE_PURE(compute_heuristic, state, is_goal_state); }
+
+    const PreferredActions& get_preferred_actions() const override { NB_OVERRIDE(get_preferred_actions); }
 };
 
 class IPyAStarEventHandler : public astar::IEventHandler
@@ -573,10 +575,13 @@ void bind_module_definitions(nb::module_& m)
              "axiom_evaluator_event_handler"_a = nullptr);
 
     /* Heuristics */
+    nb::class_<PreferredActions>(m, "PreferredActions")  //
+        .def_rw("data", &PreferredActions::data);
+
     nb::class_<IHeuristic, IPyHeuristic>(m, "IHeuristic")  //
         .def(nb::init<>())
         .def("compute_heuristic", &IHeuristic::compute_heuristic, "state"_a, "is_goal_state"_a)
-        .def("get_preferred_actions", nb::overload_cast<>(&IHeuristic::get_preferred_actions, nb::const_), nb::rv_policy::reference_internal);
+        .def("get_preferred_actions", &IHeuristic::get_preferred_actions, nb::rv_policy::reference_internal);
 
     nb::class_<BlindHeuristicImpl, IHeuristic>(m, "BlindHeuristic")  //
         .def(nb::init<Problem>(), "problem"_a);

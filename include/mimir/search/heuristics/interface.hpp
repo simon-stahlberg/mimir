@@ -24,10 +24,15 @@
 namespace mimir::search
 {
 
-/**
- * Interface class
- */
+/// @brief `PreferredActions` encapsulates the preferred actions.
+/// We need this because nanobind cannot return references to type-casted objects.
+/// Unfortunately, there is no bind_unordered_set available, which would allow making it an opague type.
+struct PreferredActions
+{
+    formalism::GroundActionSet data;
+};
 
+/// @brief `IHeuristic` is the interface of a search heuristic.
 class IHeuristic
 {
 public:
@@ -35,10 +40,10 @@ public:
 
     virtual ContinuousCost compute_heuristic(State state, bool is_goal_state) = 0;
 
-    const formalism::GroundActionSet& get_preferred_actions() const { return m_preferred_actions; }
+    virtual const PreferredActions& get_preferred_actions() const { return m_preferred_actions; }
 
 protected:
-    formalism::GroundActionSet m_preferred_actions;
+    PreferredActions m_preferred_actions;
 };
 
 }
