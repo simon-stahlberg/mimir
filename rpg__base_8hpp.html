@@ -75,9 +75,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#namespaces">Namespaces</a> &#124;
-<a href="#concepts">Concepts</a> &#124;
-<a href="#typedef-members">Typedefs</a>  </div>
+<a href="#namespaces">Namespaces</a>  </div>
   <div class="headertitle"><div class="title">rpg_base.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -88,18 +86,16 @@ $(function() {
 <code>#include &quot;<a class="el" href="search_2declarations_8hpp_source.html">mimir/search/declarations.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="delete__relaxed__problem__explorator_8hpp_source.html">mimir/search/delete_relaxed_problem_explorator.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="heuristics_2interface_8hpp_source.html">mimir/search/heuristics/interface.hpp</a>&quot;</code><br />
+<code>#include &quot;mimir/search/heuristics/rpg/annotations.hpp&quot;</code><br />
+<code>#include &quot;mimir/search/heuristics/rpg/construction_helpers.hpp&quot;</code><br />
+<code>#include &quot;mimir/search/heuristics/rpg/proposition.hpp&quot;</code><br />
+<code>#include &quot;mimir/search/heuristics/rpg/structures.hpp&quot;</code><br />
 <code>#include &quot;mimir/search/openlists/priority_queue.hpp&quot;</code><br />
 </div>
 <p><a href="rpg__base_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1rpg_1_1Action.html">mimir::search::rpg::Action</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1rpg_1_1Axiom.html">mimir::search::rpg::Axiom</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1rpg_1_1Proposition.html">mimir::search::rpg::Proposition</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1rpg_1_1RelaxedPlanningGraph.html">mimir::search::rpg::RelaxedPlanningGraph&lt; Derived &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code><a class="el" href="classmimir_1_1search_1_1rpg_1_1RelaxedPlanningGraph.html" title="RelaxedPlanningGraph implements a common base class for heuristics based on the relaxed planning grap...">RelaxedPlanningGraph</a></code> implements a common base class for heuristics based on the relaxed planning graph.  <a href="classmimir_1_1search_1_1rpg_1_1RelaxedPlanningGraph.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -112,30 +108,6 @@ Namespaces</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacemimir_1_1search_1_1rpg"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1rpg.html">mimir::search::rpg</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="concepts" name="concepts"></a>
-Concepts</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptmimir_1_1search_1_1rpg_1_1IsStructure.html">mimir::search::rpg::IsStructure</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
-Typedefs</h2></td></tr>
-<tr class="memitem:ab2536a620ce68abff594b7e12eb0fae4"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1rpg.html#ab2536a620ce68abff594b7e12eb0fae4">mimir::search::rpg::ConditionsContainer</a> = HanaContainer&lt; HanaContainer&lt; const FlatIndexList *, formalism::FluentTag, formalism::DerivedTag &gt;, formalism::PositiveTag, formalism::NegativeTag &gt;</td></tr>
-<tr class="separator:ab2536a620ce68abff594b7e12eb0fae4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeed037e1a5901f41ec3de284a8326b09"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1rpg.html#aeed037e1a5901f41ec3de284a8326b09">mimir::search::rpg::ActionList</a> = std::vector&lt; Action &gt;</td></tr>
-<tr class="separator:aeed037e1a5901f41ec3de284a8326b09"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad8670f810483fcc7fde81ff436336835"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1rpg.html#ad8670f810483fcc7fde81ff436336835">mimir::search::rpg::AxiomList</a> = std::vector&lt; Axiom &gt;</td></tr>
-<tr class="separator:ad8670f810483fcc7fde81ff436336835"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa0977e5ca9d34a976bf1c00427da5033"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1rpg.html#aa0977e5ca9d34a976bf1c00427da5033">mimir::search::rpg::StructuresContainer</a> = boost::hana::map&lt; boost::hana::pair&lt; boost::hana::type&lt; Action &gt;, ActionList &gt;, boost::hana::pair&lt; boost::hana::type&lt; Axiom &gt;, AxiomList &gt; &gt;</td></tr>
-<tr class="separator:aa0977e5ca9d34a976bf1c00427da5033"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae2022cc8c37d4cbfe3fa493f7c50be93"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1rpg.html#ae2022cc8c37d4cbfe3fa493f7c50be93">mimir::search::rpg::PropositionList</a> = std::vector&lt; Proposition &gt;</td></tr>
-<tr class="separator:ae2022cc8c37d4cbfe3fa493f7c50be93"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acb18c1bcfb543c488586e961cbc32ca2"><td class="memTemplParams" colspan="2">template&lt;typename... T&gt; </td></tr>
-<tr class="memitem:acb18c1bcfb543c488586e961cbc32ca2"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1rpg.html#acb18c1bcfb543c488586e961cbc32ca2">mimir::search::rpg::Annotations</a> = std::tuple&lt; T... &gt;</td></tr>
-<tr class="separator:acb18c1bcfb543c488586e961cbc32ca2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af69f14b0388e4a38979d91f3fbbe0fad"><td class="memTemplParams" colspan="2">template&lt;typename... T&gt; </td></tr>
-<tr class="memitem:af69f14b0388e4a38979d91f3fbbe0fad"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1rpg.html#af69f14b0388e4a38979d91f3fbbe0fad">mimir::search::rpg::AnnotationsList</a> = std::vector&lt; Annotations&lt; T... &gt; &gt;</td></tr>
-<tr class="separator:af69f14b0388e4a38979d91f3fbbe0fad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

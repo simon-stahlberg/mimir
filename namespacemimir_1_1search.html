@@ -93,7 +93,9 @@ Namespaces</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacemimir_1_1search_1_1brfs"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1brfs.html">brfs</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacemimir_1_1search_1_1gbfs"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1gbfs.html">gbfs</a></td></tr>
+<tr class="memitem:namespacemimir_1_1search_1_1gbfs__eager"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1gbfs__eager.html">gbfs_eager</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacemimir_1_1search_1_1gbfs__lazy"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1gbfs__lazy.html">gbfs_lazy</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacemimir_1_1search_1_1iw"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search_1_1iw.html">iw</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -143,6 +145,7 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code><a class="el" href="classmimir_1_1search_1_1IGoalStrategy.html" title="IGoalStrategy encapsulates logic to test whether a state is a goal.">IGoalStrategy</a></code> encapsulates logic to test whether a state is a goal.  <a href="classmimir_1_1search_1_1IGoalStrategy.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IHeuristic.html">IHeuristic</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code><a class="el" href="classmimir_1_1search_1_1IHeuristic.html" title="IHeuristic is the interface of a search heuristic.">IHeuristic</a></code> is the interface of a search heuristic.  <a href="classmimir_1_1search_1_1IHeuristic.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IPruningStrategy.html">IPruningStrategy</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code><a class="el" href="classmimir_1_1search_1_1IPruningStrategy.html" title="IPruningStrategy encapsulates logic to test whether a newly generated state must be pruned or not.">IPruningStrategy</a></code> encapsulates logic to test whether a newly generated state must be pruned or not.  <a href="classmimir_1_1search_1_1IPruningStrategy.html#details">More...</a><br /></td></tr>
@@ -158,6 +161,9 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code><a class="el" href="classmimir_1_1search_1_1NoPruningStrategyImpl.html" title="NoPruningStrategyImpl never prunes a newly generated state.">NoPruningStrategyImpl</a></code> never prunes a newly generated state.  <a href="classmimir_1_1search_1_1NoPruningStrategyImpl.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1Plan.html">Plan</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmimir_1_1search_1_1PreferredActions.html">PreferredActions</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code><a class="el" href="structmimir_1_1search_1_1PreferredActions.html" title="PreferredActions encapsulates the preferred actions. We need this because nanobind cannot return refe...">PreferredActions</a></code> encapsulates the preferred actions. We need this because nanobind cannot return references to type-casted objects. Unfortunately, there is no bind_unordered_set available, which would allow making it an opague type.  <a href="structmimir_1_1search_1_1PreferredActions.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1ProblemGoalStrategyImpl.html">ProblemGoalStrategyImpl</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code><a class="el" href="classmimir_1_1search_1_1ProblemGoalStrategyImpl.html" title="ProblemGoalStrategyImpl identifies a state as a goal if and only if it satisfies the goal in the give...">ProblemGoalStrategyImpl</a></code> identifies a state as a goal if and only if it satisfies the goal in the given problem.  <a href="classmimir_1_1search_1_1ProblemGoalStrategyImpl.html#details">More...</a><br /></td></tr>
@@ -179,6 +185,8 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
+<tr class="memitem:a933b880606843ede78abcf92930005e8"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a933b880606843ede78abcf92930005e8">FFStructuresAnnotations</a> = <a class="el" href="namespacemimir.html#aac3b01890e6c28bc83a26bb611b4517b">HanaContainer</a>&lt; rpg::AnnotationsList&lt; <a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a> &gt;, rpg::Action, rpg::Axiom &gt;</td></tr>
+<tr class="separator:a933b880606843ede78abcf92930005e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9c6827a97589b886a675a579bf923d7f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a9c6827a97589b886a675a579bf923d7f">ActionSatisficingBindingGeneratorList</a> = std::vector&lt; <a class="el" href="classmimir_1_1search_1_1ActionSatisficingBindingGenerator.html">ActionSatisficingBindingGenerator</a> &gt;</td></tr>
 <tr class="separator:a9c6827a97589b886a675a579bf923d7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a13d60cfc56c4964bb02f624a1300d31a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a13d60cfc56c4964bb02f624a1300d31a">AxiomSatisficingBindingGeneratorList</a> = std::vector&lt; <a class="el" href="classmimir_1_1search_1_1AxiomSatisficingBindingGenerator.html">AxiomSatisficingBindingGenerator</a> &gt;</td></tr>
@@ -244,6 +252,8 @@ Typedefs</h2></td></tr>
 <tr class="separator:a9bb7ef83efbfd45dfdff36bbdd659cfe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9a571b54d28ae5b13535deb3650feb8f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a9a571b54d28ae5b13535deb3650feb8f">ProblemGoalStrategy</a> = std::shared_ptr&lt; <a class="el" href="classmimir_1_1search_1_1ProblemGoalStrategyImpl.html">ProblemGoalStrategyImpl</a> &gt;</td></tr>
 <tr class="separator:a9a571b54d28ae5b13535deb3650feb8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aadaaf5a91e530fa7a3d95a3836fedc40"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#aadaaf5a91e530fa7a3d95a3836fedc40">PolicyGuide</a> = std::shared_ptr&lt; IPolicyGuide &gt;</td></tr>
+<tr class="separator:aadaaf5a91e530fa7a3d95a3836fedc40"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1d1d1a8a38d9645816f01706de9dcb8a"><td class="memTemplParams" colspan="2">template&lt;typename... SearchNodeProperties&gt; </td></tr>
 <tr class="memitem:a1d1d1a8a38d9645816f01706de9dcb8a"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a1d1d1a8a38d9645816f01706de9dcb8a">SearchNode</a> = <a class="el" href="structmimir_1_1search_1_1SearchNodeImpl.html">SearchNodeImpl</a>&lt; SearchNodeProperties... &gt; *</td></tr>
 <tr class="separator:a1d1d1a8a38d9645816f01706de9dcb8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -284,6 +294,9 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a177209d4a1eb160089963c2fb19ee162"><td class="memTemplParams" colspan="2">template&lt;rpg::IsStructure S&gt; </td></tr>
+<tr class="memitem:a177209d4a1eb160089963c2fb19ee162"><td class="memTemplItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a177209d4a1eb160089963c2fb19ee162">get</a> (<a class="el" href="namespacemimir_1_1search.html#a933b880606843ede78abcf92930005e8">FFStructuresAnnotations</a> &amp;annotations)</td></tr>
+<tr class="separator:a177209d4a1eb160089963c2fb19ee162"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a015be262f3539bba08787ff8fcbadf4c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1search.html#a015be262f3539bba08787ff8fcbadf4c">nullary_conditions_hold</a> (<a class="el" href="namespacemimir_1_1formalism.html#aebe252b6157987560ca677cf1cab2fd2">formalism::ConjunctiveCondition</a> precondition, const <a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html">formalism::ProblemImpl</a> &amp;problem, const DenseState &amp;dense_state)</td></tr>
 <tr class="memdesc:a015be262f3539bba08787ff8fcbadf4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true iff all nullary literals and constraints in the precondition hold, false otherwise.  <br /></td></tr>
 <tr class="separator:a015be262f3539bba08787ff8fcbadf4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -480,6 +493,20 @@ template&lt;typename... SearchNodeProperties&gt; </div>
 
 </div>
 </div>
+<a id="a933b880606843ede78abcf92930005e8" name="a933b880606843ede78abcf92930005e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a933b880606843ede78abcf92930005e8">&#9670;&#160;</a></span>FFStructuresAnnotations</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespacemimir_1_1search.html#a933b880606843ede78abcf92930005e8">mimir::search::FFStructuresAnnotations</a> = typedef <a class="el" href="namespacemimir.html#aac3b01890e6c28bc83a26bb611b4517b">HanaContainer</a>&lt;rpg::AnnotationsList&lt;<a class="el" href="namespacemimir.html#ab800c69cfcabbde81050b3d05b9c2fa4">Index</a>&gt;, rpg::Action, rpg::Axiom&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a0341a48145ccab5bc210fc82b535a277" name="a0341a48145ccab5bc210fc82b535a277"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0341a48145ccab5bc210fc82b535a277">&#9670;&#160;</a></span>GeneralizedSearchContext</h2>
 
@@ -614,6 +641,20 @@ template&lt;typename... SearchNodeProperties&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using <a class="el" href="namespacemimir_1_1search.html#a026f7e73303f8654e785c7fac3f91fbb">mimir::search::NoPruningStrategy</a> = typedef std::shared_ptr&lt;<a class="el" href="classmimir_1_1search_1_1NoPruningStrategyImpl.html">NoPruningStrategyImpl</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aadaaf5a91e530fa7a3d95a3836fedc40" name="aadaaf5a91e530fa7a3d95a3836fedc40"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aadaaf5a91e530fa7a3d95a3836fedc40">&#9670;&#160;</a></span>PolicyGuide</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespacemimir_1_1search.html#aadaaf5a91e530fa7a3d95a3836fedc40">mimir::search::PolicyGuide</a> = typedef std::shared_ptr&lt;IPolicyGuide&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1065,6 +1106,34 @@ template&lt;typename... SearchNodeProperties&gt; </div>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a177209d4a1eb160089963c2fb19ee162" name="a177209d4a1eb160089963c2fb19ee162"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a177209d4a1eb160089963c2fb19ee162">&#9670;&#160;</a></span>get()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;rpg::IsStructure S&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto &amp; mimir::search::get </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1search.html#a933b880606843ede78abcf92930005e8">FFStructuresAnnotations</a> &amp;&#160;</td>
+          <td class="paramname"><em>annotations</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>

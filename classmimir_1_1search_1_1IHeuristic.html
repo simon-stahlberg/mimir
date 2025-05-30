@@ -75,12 +75,14 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classmimir_1_1search_1_1IHeuristic-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">mimir::search::IHeuristic Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
 </div><!--header-->
 <div class="contents">
+
+<p><code><a class="el" href="classmimir_1_1search_1_1IHeuristic.html" title="IHeuristic is the interface of a search heuristic.">IHeuristic</a></code> is the interface of a search heuristic.  
+ <a href="classmimir_1_1search_1_1IHeuristic.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="heuristics_2interface_8hpp_source.html">interface.hpp</a>&gt;</code></p>
 <div class="dynheader">
@@ -109,21 +111,16 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aaa7c6e47edd6e21d8156e4d0752c65f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a241ca19d6c643956d16fce9df9a2496e"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespacemimir.html#a93a14d8288fcdd5f70bbdb166dcf9359">ContinuousCost</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IHeuristic.html#a241ca19d6c643956d16fce9df9a2496e">compute_heuristic</a> (<a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">State</a> state, bool is_goal_state)=0</td></tr>
 <tr class="separator:a241ca19d6c643956d16fce9df9a2496e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9297431925247e501078e416b8cad246"><td class="memItemLeft" align="right" valign="top">virtual const <a class="el" href="namespacemimir_1_1formalism.html#a34df8c35896b9c6bc7826fff84d2692f">formalism::GroundActionList</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IHeuristic.html#a9297431925247e501078e416b8cad246">get_preferred_actions</a> () const</td></tr>
-<tr class="separator:a9297431925247e501078e416b8cad246"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
-Protected Member Functions</h2></td></tr>
-<tr class="memitem:a03870b128ea38727fc79519ecedd7084"><td class="memItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IHeuristic.html#a03870b128ea38727fc79519ecedd7084">get_preferred_actions</a> ()</td></tr>
-<tr class="separator:a03870b128ea38727fc79519ecedd7084"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac259e0066dbbbd8eaa46daae7212c9bd"><td class="memItemLeft" align="right" valign="top">virtual const <a class="el" href="structmimir_1_1search_1_1PreferredActions.html">PreferredActions</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IHeuristic.html#ac259e0066dbbbd8eaa46daae7212c9bd">get_preferred_actions</a> () const</td></tr>
+<tr class="separator:ac259e0066dbbbd8eaa46daae7212c9bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:aac0a4a72b7a4d070bb806008df4a9eaa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#a34df8c35896b9c6bc7826fff84d2692f">formalism::GroundActionList</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IHeuristic.html#aac0a4a72b7a4d070bb806008df4a9eaa">m_preferred_actions</a></td></tr>
-<tr class="separator:aac0a4a72b7a4d070bb806008df4a9eaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb97c4344fe4b25b98dbefb114271363"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structmimir_1_1search_1_1PreferredActions.html">PreferredActions</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1search_1_1IHeuristic.html#acb97c4344fe4b25b98dbefb114271363">m_preferred_actions</a></td></tr>
+<tr class="separator:acb97c4344fe4b25b98dbefb114271363"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Interface class </p>
+<div class="textblock"><p><code><a class="el" href="classmimir_1_1search_1_1IHeuristic.html" title="IHeuristic is the interface of a search heuristic.">IHeuristic</a></code> is the interface of a search heuristic. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="aaa7c6e47edd6e21d8156e4d0752c65f4" name="aaa7c6e47edd6e21d8156e4d0752c65f4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aaa7c6e47edd6e21d8156e4d0752c65f4">&#9670;&#160;</a></span>~IHeuristic()</h2>
@@ -189,8 +186,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a03870b128ea38727fc79519ecedd7084" name="a03870b128ea38727fc79519ecedd7084"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a03870b128ea38727fc79519ecedd7084">&#9670;&#160;</a></span>get_preferred_actions() <span class="overload">[1/2]</span></h2>
+<a id="ac259e0066dbbbd8eaa46daae7212c9bd" name="ac259e0066dbbbd8eaa46daae7212c9bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac259e0066dbbbd8eaa46daae7212c9bd">&#9670;&#160;</a></span>get_preferred_actions()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -199,32 +196,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">auto &amp; mimir::search::IHeuristic::get_preferred_actions </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a9297431925247e501078e416b8cad246" name="a9297431925247e501078e416b8cad246"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9297431925247e501078e416b8cad246">&#9670;&#160;</a></span>get_preferred_actions() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual const <a class="el" href="namespacemimir_1_1formalism.html#a34df8c35896b9c6bc7826fff84d2692f">formalism::GroundActionList</a> &amp; mimir::search::IHeuristic::get_preferred_actions </td>
+          <td class="memname">virtual const <a class="el" href="structmimir_1_1search_1_1PreferredActions.html">PreferredActions</a> &amp; mimir::search::IHeuristic::get_preferred_actions </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -240,8 +212,8 @@ Protected Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="aac0a4a72b7a4d070bb806008df4a9eaa" name="aac0a4a72b7a4d070bb806008df4a9eaa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aac0a4a72b7a4d070bb806008df4a9eaa">&#9670;&#160;</a></span>m_preferred_actions</h2>
+<a id="acb97c4344fe4b25b98dbefb114271363" name="acb97c4344fe4b25b98dbefb114271363"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb97c4344fe4b25b98dbefb114271363">&#9670;&#160;</a></span>m_preferred_actions</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -250,7 +222,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacemimir_1_1formalism.html#a34df8c35896b9c6bc7826fff84d2692f">formalism::GroundActionList</a> mimir::search::IHeuristic::m_preferred_actions</td>
+          <td class="memname"><a class="el" href="structmimir_1_1search_1_1PreferredActions.html">PreferredActions</a> mimir::search::IHeuristic::m_preferred_actions</td>
         </tr>
       </table>
   </td>
