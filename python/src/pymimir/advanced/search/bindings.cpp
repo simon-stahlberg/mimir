@@ -33,6 +33,15 @@ public:
     }
 };
 
+class IPyExplorationStrategy : public IExplorationStrategy
+{
+public:
+    NB_TRAMPOLINE(IExplorationStrategy, 1);
+
+    /* Trampoline (need one for each virtual function) */
+    bool on_generate_state(State state, GroundAction action, State succ_state) override { NB_OVERRIDE_PURE(on_generate_state, state, action, succ_state); }
+};
+
 class IPyHeuristic : public IHeuristic
 {
 public:
@@ -707,6 +716,11 @@ void bind_module_definitions(nb::module_& m)
         .def(nb::init<size_t, size_t>(), "arity"_a, "num_atoms"_a)
         .def_static("create", &iw::ArityKNoveltyPruningStrategyImpl::create, "arity"_a, "num_atoms"_a);
 
+    // ExplorationStrategy
+    nb::class_<IExplorationStrategy, IPyExplorationStrategy>(m, "IExplorationStrategy")
+        .def(nb::init<>())
+        .def("on_generate_state", &IExplorationStrategy::on_generate_state, "state"_a, "action"_a, "succ_state"_a);
+
     // AStar_EAGER
     nb::class_<astar_eager::Statistics>(m, "AStarEagerStatistics")  //
         .def(nb::init<>())
@@ -925,6 +939,7 @@ void bind_module_definitions(nb::module_& m)
           "gbfs_event_handler"_a = nullptr,
           "goal_strategy"_a = nullptr,
           "pruning_strategy"_a = nullptr,
+          "exploration_strategy"_a = nullptr,
           "openlist_weights"_a = std::nullopt);
 
     // IW

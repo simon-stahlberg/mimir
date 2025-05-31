@@ -56,6 +56,8 @@ from pymimir.pymimir.advanced.search import (
     DuplicatePruningStrategy,
     ArityZeroNoveltyPruningStrategy,
     ArityKNoveltyPruningStrategy,
+
+    IExplorationStrategy,
 )
 
 # AStar_EAGER

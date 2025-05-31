@@ -21,6 +21,7 @@
 #include "mimir/formalism/metric.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/algorithms/gbfs_lazy/event_handlers.hpp"
+#include "mimir/search/algorithms/strategies/exploration_strategy.hpp"
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 #include "mimir/search/algorithms/strategies/pruning_strategy.hpp"
 #include "mimir/search/applicability.hpp"
@@ -77,7 +78,8 @@ SearchResult find_solution(const SearchContext& context,
                            EventHandler event_handler_,
                            GoalStrategy goal_strategy_,
                            PruningStrategy pruning_strategy_,
-                           std::optional<std::array<size_t, 2>> openlist_weights_)
+                           ExplorationStategy exploration_strategy_,
+                           std::optional<std::array<size_t, 6>> openlist_weights_)
 {
     assert(heuristic);
 
@@ -90,7 +92,8 @@ SearchResult find_solution(const SearchContext& context,
     const auto event_handler = (event_handler_) ? event_handler_ : DefaultEventHandlerImpl::create(context->get_problem());
     const auto goal_strategy = (goal_strategy_) ? goal_strategy_ : ProblemGoalStrategyImpl::create(context->get_problem());
     const auto pruning_strategy = (pruning_strategy_) ? pruning_strategy_ : NoPruningStrategyImpl::create();
-    const auto openlist_weights = (openlist_weights_) ? openlist_weights_.value() : std::array<size_t, 2> { 1, 1 };
+    const auto openlist_weights = (openlist_weights_) ? openlist_weights_.value() : std::array<size_t, 6> { 1, 1, 1, 1, 1, 1 };
+    const auto exploration_stategy = exploration_strategy_;
 
     const auto& ground_action_repository = boost::hana::at_key(problem.get_repositories().get_hana_repositories(), boost::hana::type<GroundActionImpl> {});
     const auto& ground_axiom_repository = boost::hana::at_key(problem.get_repositories().get_hana_repositories(), boost::hana::type<GroundAxiomImpl> {});
@@ -140,9 +143,20 @@ SearchResult find_solution(const SearchContext& context,
     }
 
     using OpenListType = PriorityQueue<std::tuple<double, double, Index>, State>;
+    auto compatible_greedy_and_preferred_openlist = OpenListType();
+    auto compatible_greedy_openlist = OpenListType();
+    auto compatible_exhaustive_and_preferred_openlist = OpenListType();
+    auto compatible_exhaustive_openlist = OpenListType();
     auto preferred_openlist = OpenListType();
     auto standard_openlist = OpenListType();
-    auto openlist = AlternatingOpenList<OpenListType, OpenListType>(preferred_openlist, standard_openlist, openlist_weights);
+    auto openlist =
+        AlternatingOpenList<OpenListType, OpenListType, OpenListType, OpenListType, OpenListType, OpenListType>(compatible_greedy_and_preferred_openlist,
+                                                                                                                compatible_greedy_openlist,
+                                                                                                                compatible_exhaustive_and_preferred_openlist,
+                                                                                                                compatible_exhaustive_openlist,
+                                                                                                                preferred_openlist,
+                                                                                                                standard_openlist,
+                                                                                                                openlist_weights);
 
     if (start_g_value == UNDEFINED_CONTINUOUS_COST)
     {
@@ -179,7 +193,7 @@ SearchResult find_solution(const SearchContext& context,
     }
 
     auto applicable_actions = GroundActionList {};
-    preferred_openlist.insert(std::make_tuple(start_h_value, start_g_value, step++), start_state);
+    standard_openlist.insert(std::make_tuple(start_h_value, start_g_value, step++), start_state);
 
     while (!openlist.empty())
     {
@@ -220,6 +234,8 @@ SearchResult find_solution(const SearchContext& context,
         /* Ensure that the state is closed */
 
         search_node->get_status() = SearchNodeStatus::CLOSED;
+
+        auto first_compatible = true;
 
         for (const auto& action : applicable_action_generator.create_applicable_action_generator(state))
         {
@@ -293,7 +309,34 @@ SearchResult find_solution(const SearchContext& context,
 
             event_handler->on_generate_state(state, action, action_cost, successor_state);
 
-            if (is_preferred)
+            /* Exploration strategy */
+
+            auto is_compatible = false;
+
+            if (exploration_stategy)
+            {
+                is_compatible = exploration_stategy->on_generate_state(state, action, successor_state);
+            }
+
+            if (is_compatible && is_preferred && first_compatible)
+            {
+                first_compatible = false;
+                compatible_greedy_and_preferred_openlist.insert(std::make_tuple(state_h_value, successor_state_metric_value, step++), successor_state);
+            }
+            else if (is_compatible && first_compatible)
+            {
+                first_compatible = false;
+                compatible_greedy_openlist.insert(std::make_tuple(state_h_value, successor_state_metric_value, step++), successor_state);
+            }
+            else if (is_compatible && is_preferred)
+            {
+                compatible_exhaustive_and_preferred_openlist.insert(std::make_tuple(state_h_value, successor_state_metric_value, step++), successor_state);
+            }
+            else if (is_compatible)
+            {
+                compatible_exhaustive_openlist.insert(std::make_tuple(state_h_value, successor_state_metric_value, step++), successor_state);
+            }
+            else if (is_preferred)
             {
                 preferred_openlist.insert(std::make_tuple(state_h_value, successor_state_metric_value, step++), successor_state);
             }

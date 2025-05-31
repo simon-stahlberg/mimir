@@ -36,7 +36,8 @@ extern SearchResult find_solution(const SearchContext& context,
                                   EventHandler event_handler = nullptr,
                                   GoalStrategy goal_strategy = nullptr,
                                   PruningStrategy pruning_strategy = nullptr,
-                                  std::optional<std::array<size_t, 2>> openlist_weights = std::nullopt);
+                                  ExplorationStategy exploration_strategy = nullptr,
+                                  std::optional<std::array<size_t, 6>> openlist_weights = std::nullopt);
 
 }
 

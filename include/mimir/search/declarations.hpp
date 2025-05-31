@@ -164,8 +164,8 @@ class IGoalStrategy;
 using GoalStrategy = std::shared_ptr<IGoalStrategy>;
 class ProblemGoalStrategyImpl;
 using ProblemGoalStrategy = std::shared_ptr<ProblemGoalStrategyImpl>;
-class IRolloutGuide;
-using RolloutGuide = std::shared_ptr<IRolloutGuide>;
+class IExplorationStrategy;
+using ExplorationStategy = std::shared_ptr<IExplorationStrategy>;
 
 // AStar_EAGER
 namespace astar_eager

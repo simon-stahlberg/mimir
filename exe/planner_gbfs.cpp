@@ -177,7 +177,8 @@ int main(int argc, char** argv)
                                           event_handler,
                                           nullptr,
                                           nullptr,
-                                          std::array<size_t, 2> { weight_queue_preferred, weight_queue_standard });
+                                          nullptr,
+                                          std::array<size_t, 6> { 1, 1, 1, 1, weight_queue_preferred, weight_queue_standard });
     }
 
     std::cout << "[GBFS] Total time: " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time)
