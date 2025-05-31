@@ -1,21 +1,8 @@
 var searchData=
 [
-  ['searchcontextimpl_0',['SearchContextImpl',['../classmimir_1_1search_1_1SearchContextImpl.html',1,'mimir::search']]],
-  ['searchnodeimpl_1',['SearchNodeImpl',['../structmimir_1_1search_1_1SearchNodeImpl.html',1,'mimir::search']]],
-  ['searchresult_2',['SearchResult',['../structmimir_1_1search_1_1SearchResult.html',1,'mimir::search']]],
-  ['setaddheuristicimpl_3',['SetAddHeuristicImpl',['../classmimir_1_1search_1_1SetAddHeuristicImpl.html',1,'mimir::search']]],
-  ['sparsegraph_4',['SparseGraph',['../classmimir_1_1graphs_1_1nauty_1_1SparseGraph.html',1,'mimir::graphs::nauty']]],
-  ['stateimpl_5',['StateImpl',['../classmimir_1_1search_1_1StateImpl.html',1,'mimir::search']]],
-  ['statelistrefinementpruningfunction_6',['StateListRefinementPruningFunction',['../classmimir_1_1languages_1_1dl_1_1StateListRefinementPruningFunction.html',1,'mimir::languages::dl']]],
-  ['statepairtupleindexgenerator_7',['StatePairTupleIndexGenerator',['../classmimir_1_1search_1_1iw_1_1StatePairTupleIndexGenerator.html',1,'mimir::search::iw']]],
-  ['staterepositoryimpl_8',['StateRepositoryImpl',['../classmimir_1_1search_1_1StateRepositoryImpl.html',1,'mimir::search']]],
-  ['statespaceimpl_9',['StateSpaceImpl',['../classmimir_1_1datasets_1_1StateSpaceImpl.html',1,'mimir::datasets']]],
-  ['statetupleindexgenerator_10',['StateTupleIndexGenerator',['../classmimir_1_1search_1_1iw_1_1StateTupleIndexGenerator.html',1,'mimir::search::iw']]],
-  ['staticbidirectionalgraph_11',['StaticBidirectionalGraph',['../classmimir_1_1graphs_1_1StaticBidirectionalGraph.html',1,'mimir::graphs']]],
-  ['staticconsistencygraph_12',['StaticConsistencyGraph',['../classmimir_1_1formalism_1_1StaticConsistencyGraph.html',1,'mimir::formalism']]],
-  ['staticforwardgraph_13',['StaticForwardGraph',['../classmimir_1_1graphs_1_1StaticForwardGraph.html',1,'mimir::graphs']]],
-  ['staticgraph_14',['StaticGraph',['../classmimir_1_1graphs_1_1StaticGraph.html',1,'mimir::graphs']]],
-  ['statictag_15',['StaticTag',['../structmimir_1_1formalism_1_1StaticTag.html',1,'mimir::formalism']]],
-  ['statistics_16',['Statistics',['../structmimir_1_1search_1_1applicable__action__generator_1_1grounded_1_1Statistics.html',1,'mimir::search::applicable_action_generator::grounded::Statistics'],['../classmimir_1_1search_1_1applicable__action__generator_1_1lifted_1_1Statistics.html',1,'mimir::search::applicable_action_generator::lifted::Statistics'],['../classmimir_1_1search_1_1astar_1_1Statistics.html',1,'mimir::search::astar::Statistics'],['../structmimir_1_1search_1_1axiom__evaluator_1_1grounded_1_1Statistics.html',1,'mimir::search::axiom_evaluator::grounded::Statistics'],['../classmimir_1_1search_1_1axiom__evaluator_1_1lifted_1_1Statistics.html',1,'mimir::search::axiom_evaluator::lifted::Statistics'],['../classmimir_1_1search_1_1brfs_1_1Statistics.html',1,'mimir::search::brfs::Statistics'],['../classmimir_1_1search_1_1iw_1_1Statistics.html',1,'mimir::search::iw::Statistics'],['../classmimir_1_1search_1_1siw_1_1Statistics.html',1,'mimir::search::siw::Statistics']]],
-  ['substitutionruleimpl_17',['SubstitutionRuleImpl',['../classmimir_1_1languages_1_1dl_1_1cnf__grammar_1_1SubstitutionRuleImpl.html',1,'mimir::languages::dl::cnf_grammar']]]
+  ['termimpl_0',['TermImpl',['../classmimir_1_1formalism_1_1TermImpl.html',1,'mimir::formalism']]],
+  ['translator_1',['Translator',['../classmimir_1_1formalism_1_1Translator.html',1,'mimir::formalism']]],
+  ['trivialreadpropertymap_2',['TrivialReadPropertyMap',['../structmimir_1_1graphs_1_1bgl_1_1TrivialReadPropertyMap.html',1,'mimir::graphs::bgl']]],
+  ['tuplegraphimpl_3',['TupleGraphImpl',['../classmimir_1_1datasets_1_1TupleGraphImpl.html',1,'mimir::datasets']]],
+  ['tupleindexmapper_4',['TupleIndexMapper',['../classmimir_1_1search_1_1iw_1_1TupleIndexMapper.html',1,'mimir::search::iw']]]
 ];
