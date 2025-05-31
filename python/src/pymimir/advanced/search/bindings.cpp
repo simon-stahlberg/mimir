@@ -597,7 +597,7 @@ void bind_module_definitions(nb::module_& m)
     nb::class_<BlindHeuristicImpl, IHeuristic>(m, "BlindHeuristic")  //
         .def(nb::init<Problem>(), "problem"_a);
 
-    nb::class_<HStarHeuristicImpl, IHeuristic>(m, "HStarHeuristic")  //
+    nb::class_<PerfectHeuristicImpl, IHeuristic>(m, "PerfectHeuristic")  //
         .def(nb::init<SearchContext>(), "search_context"_a);
 
     nb::class_<MaxHeuristicImpl, IHeuristic>(m, "MaxHeuristic")  //

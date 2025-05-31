@@ -15,10 +15,9 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/mimir.hpp"
-
 #include <fstream>
 #include <iostream>
+#include <mimir/mimir.hpp>
 
 using namespace mimir::datasets;
 using namespace mimir::search;

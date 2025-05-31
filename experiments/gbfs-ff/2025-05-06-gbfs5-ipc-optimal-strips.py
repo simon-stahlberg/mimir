@@ -112,7 +112,7 @@ for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
         # We could also use exp.add_resource().
         run.add_command(
             f"gbfs_lazy_planner_{i}",
-            ["{run_planner}", "{planner_exe}", "{domain}", "{problem}", "plan.out", "0", str(i), "4", "1", "0"],
+            ["{run_planner}", "{planner_exe}", "{domain}", "{problem}", "plan.out", "0", str(i), "1", "ff", "1"],
             time_limit=TIME_LIMIT,
             memory_limit=MEMORY_LIMIT,
         )
@@ -138,7 +138,7 @@ for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
     # We could also use exp.add_resource().
     run.add_command(
         "gbfs_eager_planner",
-        ["{run_planner}", "{planner_exe}", "{domain}", "{problem}", "plan.out", "1", "1", "4", "1", "0"],
+        ["{run_planner}", "{planner_exe}", "{domain}", "{problem}", "plan.out", "1", "999", "999", "ff", "1"],
         time_limit=TIME_LIMIT,
         memory_limit=MEMORY_LIMIT,
     )

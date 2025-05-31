@@ -18,7 +18,11 @@
 #ifndef MIMIR_SEARCH_HEURISTICS_HPP_
 #define MIMIR_SEARCH_HEURISTICS_HPP_
 
+#include "mimir/search/heuristics/add.hpp"
 #include "mimir/search/heuristics/blind.hpp"
-#include "mimir/search/heuristics/hstar.hpp"
+#include "mimir/search/heuristics/ff.hpp"
+#include "mimir/search/heuristics/max.hpp"
+#include "mimir/search/heuristics/perfect.hpp"
+#include "mimir/search/heuristics/set_add.hpp"
 
 #endif

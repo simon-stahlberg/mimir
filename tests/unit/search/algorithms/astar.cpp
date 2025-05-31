@@ -75,7 +75,7 @@ public:
             }
             case HeuristicType::HSTAR:
             {
-                m_heuristic = HStarHeuristicImpl::create(m_search_context);
+                m_heuristic = PerfectHeuristicImpl::create(m_search_context);
                 break;
             }
             default:
@@ -135,7 +135,7 @@ public:
             }
             case HeuristicType::HSTAR:
             {
-                m_heuristic = HStarHeuristicImpl::create(m_search_context);
+                m_heuristic = PerfectHeuristicImpl::create(m_search_context);
                 break;
             }
             default:
@@ -161,7 +161,7 @@ public:
  * Gripper
  */
 
-TEST(MimirTests, SearchAlgorithmsAStarGroundedHStarGripperTest)
+TEST(MimirTests, SearchAlgorithmsAStarGroundedPerfectGripperTest)
 {
     auto astar = GroundedAStarPlanner(fs::path(std::string(DATA_DIR) + "gripper/domain.pddl"),
                                       fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl"),
@@ -178,7 +178,7 @@ TEST(MimirTests, SearchAlgorithmsAStarGroundedHStarGripperTest)
     EXPECT_EQ(astar_statistics.get_num_expanded_until_f_value().rbegin()->second, 0);
 }
 
-TEST(MimirTests, SearchAlgorithmsAStarLiftedHStarGripperTest)
+TEST(MimirTests, SearchAlgorithmsAStarLiftedPerfectGripperTest)
 {
     auto astar = LiftedAStarPlanner(fs::path(std::string(DATA_DIR) + "gripper/domain.pddl"),
                                     fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl"),

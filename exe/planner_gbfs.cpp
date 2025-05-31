@@ -15,11 +15,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/mimir.hpp"
+#include "utils.hpp"
 
+#include <argparse/argparse.hpp>
 #include <chrono>
 #include <fstream>
 #include <iostream>
+#include <mimir/mimir.hpp>
 
 using namespace mimir;
 using namespace mimir::search;
@@ -27,30 +29,58 @@ using namespace mimir::formalism;
 
 int main(int argc, char** argv)
 {
-    if (argc != 9)
+    auto program = argparse::ArgumentParser("Greedy best first search.");
+    program.add_argument("-D", "--domain-filepath").required().help("The path to the PDDL domain file.");
+    program.add_argument("-P", "--problem-filepath").required().help("The path to the PDDL problem file.");
+    program.add_argument("-O", "--plan-filepath").required().help("The path to the output plan file.");
+    program.add_argument("-E", "--enable-eager")
+        .default_value(size_t(0))
+        .scan<'u', size_t>()
+        .help("Non-zero values enable eager search. Defaults to lazy search.");
+    program.add_argument("-W0", "--weight-queue-preferred")
+        .default_value(size_t(64))
+        .scan<'u', size_t>()
+        .help("Weight of the heuristic preferred actions queue.");
+    program.add_argument("-W1", "--weight-queue-standard").default_value(size_t(1)).scan<'u', size_t>().help("Weight of the standard queue.");
+    program.add_argument("-H", "--heuristic-type").default_value("ff").choices("blind", "perfect", "max", "add", "setadd", "ff");
+    program.add_argument("-G", "--enable-grounding")
+        .default_value(size_t(0))
+        .scan<'u', size_t>()
+        .help("Non-zero values enabled grounding. Might be necessary for some features. Defaults to grounded.");
+    program.add_argument("-V", "--verbosity")
+        .default_value(size_t(0))
+        .scan<'u', size_t>()
+        .help("The verbosity level. Defaults to minimal amount of debug output.");
+
+    try
     {
-        std::cout
-            << "Usage: planner_gbfs <domain:str> <problem:str> <plan:str> <eager:bool> <pref_weight:int> <heuristic_type:int> <grounded:bool> <debug:bool>"
-            << std::endl;
-        return 1;
+        program.parse_args(argc, argv);
+    }
+    catch (const std::runtime_error& err)
+    {
+        std::cerr << err.what() << "\n";
+        std::cerr << program;
+        std::exit(1);
     }
 
-    const auto start_time = std::chrono::high_resolution_clock::now();
+    auto domain_file_path = program.get<std::string>("--domain-filepath");
+    auto problem_file_path = program.get<std::string>("--problem-filepath");
+    auto plan_file_name = program.get<std::string>("--plan-filepath");
 
-    const auto domain_file_path = fs::path { argv[1] };
-    const auto problem_file_path = fs::path { argv[2] };
-    const auto plan_file_name = argv[3];
-    const auto eager = static_cast<bool>(std::atoi(argv[4]));
-    const auto pref_weight = static_cast<size_t>(atoi(argv[5]));
-    const auto heuristic_type = atoi(argv[6]);
-    const auto grounded = static_cast<bool>(std::atoi(argv[7]));
-    const auto debug = static_cast<bool>(std::atoi(argv[8]));
+    auto eager = static_cast<bool>(program.get<size_t>("--enable-eager"));
+    auto weight_queue_preferred = program.get<size_t>("--weight-queue-preferred");
+    auto weight_queue_standard = program.get<size_t>("--weight-queue-standard");
+    auto heuristic_type = get_heuristic_type(program.get<std::string>("--heuristic-type"));
+    auto grounded = static_cast<bool>(program.get<size_t>("--enable-grounding"));
+    auto verbosity = program.get<size_t>("--verbosity");
+
+    const auto start_time = std::chrono::high_resolution_clock::now();
 
     std::cout << "Parsing PDDL files..." << std::endl;
 
     auto problem = ProblemImpl::create(domain_file_path, problem_file_path);
 
-    if (debug)
+    if (verbosity > 0)
     {
         std::cout << "Domain:" << std::endl;
         std::cout << problem->get_domain() << std::endl;
@@ -78,10 +108,6 @@ int main(int argc, char** argv)
     auto state_repository = StateRepository(nullptr);
 
     auto heuristic = Heuristic(nullptr);
-    if (heuristic_type == 0)
-    {
-        heuristic = BlindHeuristicImpl::create(problem);
-    }
 
     if (grounded)
     {
@@ -93,22 +119,14 @@ int main(int argc, char** argv)
                                                                                             GroundedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create(false));
         state_repository = StateRepositoryImpl::create(axiom_evaluator);
 
-        if (heuristic_type == 1)
-        {
+        if (heuristic_type == HeuristicType::MAX)
             heuristic = MaxHeuristicImpl::create(delete_relaxed_problem_explorator);
-        }
-        else if (heuristic_type == 2)
-        {
+        else if (heuristic_type == HeuristicType::ADD)
             heuristic = AddHeuristicImpl::create(delete_relaxed_problem_explorator);
-        }
-        else if (heuristic_type == 3)
-        {
+        else if (heuristic_type == HeuristicType::SETADD)
             heuristic = SetAddHeuristicImpl::create(delete_relaxed_problem_explorator);
-        }
-        else if (heuristic_type == 4)
-        {
+        else if (heuristic_type == HeuristicType::FF)
             heuristic = FFHeuristicImpl::create(delete_relaxed_problem_explorator);
-        }
     }
     else
     {
@@ -117,47 +135,46 @@ int main(int argc, char** argv)
         axiom_evaluator = LiftedAxiomEvaluatorImpl::create(problem, LiftedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create(false));
         state_repository = StateRepositoryImpl::create(axiom_evaluator);
 
-        if (heuristic_type == 1)
-        {
+        if (heuristic_type == HeuristicType::MAX)
             throw std::runtime_error("Lifted h_max is not supported");
-        }
-        else if (heuristic_type == 2)
-        {
+        else if (heuristic_type == HeuristicType::ADD)
             throw std::runtime_error("Lifted h_add is not supported");
-        }
-        else if (heuristic_type == 3)
-        {
+        else if (heuristic_type == HeuristicType::SETADD)
             throw std::runtime_error("Lifted h_setadd is not supported");
-        }
-        else if (heuristic_type == 4)
-        {
+        else if (heuristic_type == HeuristicType::FF)
             throw std::runtime_error("Lifted h_ff is not supported");
-        }
     }
+
+    auto search_context = SearchContextImpl::create(problem, applicable_action_generator, state_repository);
+
+    if (heuristic_type == HeuristicType::BLIND)
+        heuristic = BlindHeuristicImpl::create(problem);
+    else if (heuristic_type == HeuristicType::PERFECT)
+        heuristic = PerfectHeuristicImpl::create(search_context);
+
+    assert(heuristic);
 
     auto result = SearchResult();
 
     if (eager)
     {
-        auto event_handler = (debug) ? gbfs_eager::EventHandler { gbfs_eager::DebugEventHandlerImpl::create(problem, false) } :
-                                       gbfs_eager::EventHandler { gbfs_eager::DefaultEventHandlerImpl::create(problem, false) };
-
-        assert(heuristic);
-
-        auto search_context = SearchContextImpl::create(problem, applicable_action_generator, state_repository);
+        auto event_handler = (verbosity > 1) ? gbfs_eager::EventHandler { gbfs_eager::DebugEventHandlerImpl::create(problem, false) } :
+                                               gbfs_eager::EventHandler { gbfs_eager::DefaultEventHandlerImpl::create(problem, false) };
 
         result = gbfs_eager::find_solution(search_context, heuristic, nullptr, event_handler);
     }
     else
     {
-        auto event_handler = (debug) ? gbfs_lazy::EventHandler { gbfs_lazy::DebugEventHandlerImpl::create(problem, false) } :
-                                       gbfs_lazy::EventHandler { gbfs_lazy::DefaultEventHandlerImpl::create(problem, false) };
+        auto event_handler = (verbosity > 1) ? gbfs_lazy::EventHandler { gbfs_lazy::DebugEventHandlerImpl::create(problem, false) } :
+                                               gbfs_lazy::EventHandler { gbfs_lazy::DefaultEventHandlerImpl::create(problem, false) };
 
-        assert(heuristic);
-
-        auto search_context = SearchContextImpl::create(problem, applicable_action_generator, state_repository);
-
-        result = gbfs_lazy::find_solution(search_context, heuristic, nullptr, event_handler, nullptr, nullptr, std::array<size_t, 2> { pref_weight, 1 });
+        result = gbfs_lazy::find_solution(search_context,
+                                          heuristic,
+                                          nullptr,
+                                          event_handler,
+                                          nullptr,
+                                          nullptr,
+                                          std::array<size_t, 2> { weight_queue_preferred, weight_queue_standard });
     }
 
     std::cout << "[GBFS] Total time: " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time)

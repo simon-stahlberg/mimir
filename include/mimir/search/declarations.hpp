@@ -132,8 +132,8 @@ using DefaultEventHandler = std::shared_ptr<DefaultEventHandlerImpl>;
 /* Heuristics */
 class IHeuristic;
 using Heuristic = std::shared_ptr<IHeuristic>;
-class HStarHeuristicImpl;
-using HStarHeuristic = std::shared_ptr<HStarHeuristicImpl>;
+class PerfectHeuristicImpl;
+using PerfectHeuristic = std::shared_ptr<PerfectHeuristicImpl>;
 class BlindHeuristicImpl;
 using BlindHeuristic = std::shared_ptr<BlindHeuristicImpl>;
 class MaxHeuristicImpl;

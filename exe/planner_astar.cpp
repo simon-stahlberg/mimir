@@ -15,11 +15,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/mimir.hpp"
-
 #include <chrono>
 #include <fstream>
 #include <iostream>
+#include <mimir/mimir.hpp>
 
 using namespace mimir;
 using namespace mimir::search;

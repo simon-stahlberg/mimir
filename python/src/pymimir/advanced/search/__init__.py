@@ -32,7 +32,7 @@ from pymimir.pymimir.advanced.search import (
     PreferredActions, 
     IHeuristic,
     BlindHeuristic,
-    HStarHeuristic,
+    PerfectHeuristic,
     MaxHeuristic,
     AddHeuristic,
     SetAddHeuristic,
