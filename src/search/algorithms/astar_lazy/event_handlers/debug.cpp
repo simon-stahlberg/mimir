@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/search/algorithms/astar/event_handlers/debug.hpp"
+#include "mimir/search/algorithms/astar_lazy/event_handlers/debug.hpp"
 
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/ground_action.hpp"
@@ -24,7 +24,7 @@
 
 using namespace mimir::formalism;
 
-namespace mimir::search::astar
+namespace mimir::search::astar_lazy
 {
 void DebugEventHandlerImpl::on_expand_state_impl(State state) const
 {

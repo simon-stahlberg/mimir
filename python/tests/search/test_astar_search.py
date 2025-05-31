@@ -14,11 +14,11 @@ class CustomBlindHeuristic(search.IHeuristic):
         return 0.
 
 
-class CustomEventHandler(search.IAStarEventHandler):
+class CustomEventHandler(search.IAStarEagerEventHandler):
     def __init__(self):
         super().__init__()
 
-        self.statistics = search.AStarStatistics()
+        self.statistics = search.AStarEagerStatistics()
 
     def on_expand_state(self, state : search.State):
         pass
@@ -75,7 +75,7 @@ def test_astar_search():
     problem_goal_stategy = search.ProblemGoalStrategy(search_context.get_problem())
     no_pruning_strategy = search.NoPruningStrategy()
 
-    result = search.find_solution_astar(search_context, blind_heuristic, initial_state, event_handler, problem_goal_stategy, no_pruning_strategy)
+    result = search.find_solution_astar_eager(search_context, blind_heuristic, initial_state, event_handler, problem_goal_stategy, no_pruning_strategy)
 
     assert result.status == search.SearchStatus.SOLVED
     assert len(result.plan) == 3

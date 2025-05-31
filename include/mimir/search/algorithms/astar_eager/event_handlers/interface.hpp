@@ -15,18 +15,18 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_ALGORITHMS_ASTAR_EVENT_HANDLERS_INTERFACE_HPP_
-#define MIMIR_SEARCH_ALGORITHMS_ASTAR_EVENT_HANDLERS_INTERFACE_HPP_
+#ifndef MIMIR_SEARCH_ALGORITHMS_ASTAR_EAGER_EVENT_HANDLERS_INTERFACE_HPP_
+#define MIMIR_SEARCH_ALGORITHMS_ASTAR_EAGER_EVENT_HANDLERS_INTERFACE_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/algorithms/astar/event_handlers/statistics.hpp"
+#include "mimir/search/algorithms/astar_eager/event_handlers/statistics.hpp"
 #include "mimir/search/declarations.hpp"
 
 #include <chrono>
 #include <concepts>
 #include <cstdint>
 
-namespace mimir::search::astar
+namespace mimir::search::astar_eager
 {
 
 /**

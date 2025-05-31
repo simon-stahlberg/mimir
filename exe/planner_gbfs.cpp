@@ -40,8 +40,11 @@ int main(int argc, char** argv)
     program.add_argument("-W0", "--weight-queue-preferred")
         .default_value(size_t(64))
         .scan<'u', size_t>()
-        .help("Weight of the heuristic preferred actions queue.");
-    program.add_argument("-W1", "--weight-queue-standard").default_value(size_t(1)).scan<'u', size_t>().help("Weight of the standard queue.");
+        .help("Weight of the heuristic preferred actions queue. Ignored in eager search.");
+    program.add_argument("-W1", "--weight-queue-standard")
+        .default_value(size_t(1))
+        .scan<'u', size_t>()
+        .help("Weight of the standard queue. Ignored in eager search.");
     program.add_argument("-H", "--heuristic-type").default_value("ff").choices("blind", "perfect", "max", "add", "setadd", "ff");
     program.add_argument("-G", "--enable-grounding")
         .default_value(size_t(0))
@@ -63,9 +66,9 @@ int main(int argc, char** argv)
         std::exit(1);
     }
 
-    auto domain_file_path = program.get<std::string>("--domain-filepath");
-    auto problem_file_path = program.get<std::string>("--problem-filepath");
-    auto plan_file_name = program.get<std::string>("--plan-filepath");
+    auto domain_filepath = program.get<std::string>("--domain-filepath");
+    auto problem_filepath = program.get<std::string>("--problem-filepath");
+    auto plan_filepath = program.get<std::string>("--plan-filepath");
 
     auto eager = static_cast<bool>(program.get<size_t>("--enable-eager"));
     auto weight_queue_preferred = program.get<size_t>("--weight-queue-preferred");
@@ -78,7 +81,7 @@ int main(int argc, char** argv)
 
     std::cout << "Parsing PDDL files..." << std::endl;
 
-    auto problem = ProblemImpl::create(domain_file_path, problem_file_path);
+    auto problem = ProblemImpl::create(domain_filepath, problem_filepath);
 
     if (verbosity > 0)
     {
@@ -185,7 +188,7 @@ int main(int argc, char** argv)
     if (result.status == SearchStatus::SOLVED)
     {
         std::ofstream plan_file;
-        plan_file.open(plan_file_name);
+        plan_file.open(plan_filepath);
         if (!plan_file.is_open())
         {
             std::cerr << "Error opening file!" << std::endl;
@@ -193,13 +196,6 @@ int main(int argc, char** argv)
         }
         plan_file << result.plan.value();
         plan_file.close();
-
-        // auto po_plan = PartiallyOrderedPlan(result.plan.value());
-        // auto to_plan_with_maximal_makespan = po_plan.compute_t_o_plan_with_maximal_makespan();
-
-        // std::cout << po_plan << std::endl;
-        // std::cout << result.plan.value() << std::endl;
-        // std::cout << to_plan_with_maximal_makespan << std::endl;
     }
 
     return 0;

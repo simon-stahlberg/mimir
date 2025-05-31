@@ -15,22 +15,24 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_ALGORITHMS_ASTAR_EVENT_HANDLERS_MINIMAL_HPP_
-#define MIMIR_SEARCH_ALGORITHMS_ASTAR_EVENT_HANDLERS_MINIMAL_HPP_
+#ifndef MIMIR_SEARCH_ALGORITHMS_ASTAR_LAZY_EVENT_HANDLERS_DEBUG_HPP_
+#define MIMIR_SEARCH_ALGORITHMS_ASTAR_LAZY_EVENT_HANDLERS_DEBUG_HPP_
 
-#include "mimir/search/algorithms/astar/event_handlers/interface.hpp"
+#include "mimir/search/algorithms/astar_lazy/event_handlers/interface.hpp"
 
-namespace mimir::search::astar
+#include <iostream>
+
+namespace mimir::search::astar_lazy
 {
 
 /**
  * Implementation class
  */
-class DefaultEventHandlerImpl : public EventHandlerBase<DefaultEventHandlerImpl>
+class DebugEventHandlerImpl : public EventHandlerBase<DebugEventHandlerImpl>
 {
 private:
-    /* Implement EventHandlerBase interface */
-    friend class EventHandlerBase<DefaultEventHandlerImpl>;
+    /* Implement AlgorithmEventHandlerBase interface */
+    friend class EventHandlerBase<DebugEventHandlerImpl>;
 
     void on_expand_state_impl(State state) const;
 
@@ -66,9 +68,9 @@ private:
     void on_exhausted_impl() const;
 
 public:
-    DefaultEventHandlerImpl(formalism::Problem problem, bool quiet = true);
+    DebugEventHandlerImpl(formalism::Problem problem, bool quiet = true);
 
-    static DefaultEventHandler create(formalism::Problem problem, bool quiet = true);
+    static DebugEventHandler create(formalism::Problem problem, bool quiet = true);
 };
 
 }

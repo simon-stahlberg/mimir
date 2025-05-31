@@ -44,10 +44,10 @@ public:
     const PreferredActions& get_preferred_actions() const override { NB_OVERRIDE(get_preferred_actions); }
 };
 
-class IPyAStarEventHandler : public astar::IEventHandler
+class IPyAStarEagerEventHandler : public astar_eager::IEventHandler
 {
 public:
-    NB_TRAMPOLINE(astar::IEventHandler, 14);
+    NB_TRAMPOLINE(astar_eager::IEventHandler, 14);
 
     /* Trampoline (need one for each virtual function) */
     void on_expand_state(State state) override { NB_OVERRIDE_PURE(on_expand_state, state); }
@@ -95,7 +95,61 @@ public:
     void on_solved(const Plan& plan) override { NB_OVERRIDE_PURE(on_solved, plan); }
     void on_unsolvable() override { NB_OVERRIDE_PURE(on_unsolvable); }
     void on_exhausted() override { NB_OVERRIDE_PURE(on_exhausted); }
-    const astar::Statistics& get_statistics() const override { NB_OVERRIDE_PURE(get_statistics); }
+    const astar_eager::Statistics& get_statistics() const override { NB_OVERRIDE_PURE(get_statistics); }
+};
+
+class IPyAStarLazyEventHandler : public astar_lazy::IEventHandler
+{
+public:
+    NB_TRAMPOLINE(astar_lazy::IEventHandler, 14);
+
+    /* Trampoline (need one for each virtual function) */
+    void on_expand_state(State state) override { NB_OVERRIDE_PURE(on_expand_state, state); }
+
+    void on_expand_goal_state(State state) override { NB_OVERRIDE_PURE(on_expand_goal_state, state); }
+
+    void on_generate_state(State state, GroundAction action, ContinuousCost action_cost, State successor_state) override
+    {
+        NB_OVERRIDE_PURE(on_generate_state, state, action, action_cost, successor_state);
+    }
+    void on_generate_state_relaxed(State state, GroundAction action, ContinuousCost action_cost, State successor_state) override
+    {
+        NB_OVERRIDE_PURE(on_generate_state_relaxed, state, action, action_cost, successor_state);
+    }
+    void on_generate_state_not_relaxed(State state, GroundAction action, ContinuousCost action_cost, State successor_state) override
+    {
+        NB_OVERRIDE_PURE(on_generate_state_not_relaxed, state, action, action_cost, successor_state);
+    }
+    void on_close_state(State state) override { NB_OVERRIDE_PURE(on_close_state, state); }
+    void on_finish_f_layer(ContinuousCost f_value) override { NB_OVERRIDE_PURE(on_finish_f_layer, f_value); }
+    void on_prune_state(State state) override { NB_OVERRIDE_PURE(on_prune_state, state); }
+    void on_start_search(State start_state, ContinuousCost g_value, ContinuousCost h_value) override
+    {
+        NB_OVERRIDE_PURE(on_start_search, start_state, g_value, h_value);
+    }
+    void on_end_search(uint64_t num_reached_fluent_atoms,
+                       uint64_t num_reached_derived_atoms,
+                       uint64_t num_bytes_for_problem,
+                       uint64_t num_bytes_for_nodes,
+                       uint64_t num_states,
+                       uint64_t num_nodes,
+                       uint64_t num_actions,
+                       uint64_t num_axioms) override
+    {
+        NB_OVERRIDE_PURE(on_end_search,
+                         num_reached_fluent_atoms,
+                         num_reached_derived_atoms,
+                         num_bytes_for_problem,
+                         num_bytes_for_nodes,
+                         num_states,
+                         num_nodes,
+                         num_actions,
+                         num_axioms);
+    }
+    void on_solved(const Plan& plan) override { NB_OVERRIDE_PURE(on_solved, plan); }
+    void on_unsolvable() override { NB_OVERRIDE_PURE(on_unsolvable); }
+    void on_exhausted() override { NB_OVERRIDE_PURE(on_exhausted); }
+    const astar_lazy::Statistics& get_statistics() const override { NB_OVERRIDE_PURE(get_statistics); }
 };
 
 class IPyBrFSEventHandler : public brfs::IEventHandler
@@ -653,52 +707,100 @@ void bind_module_definitions(nb::module_& m)
         .def(nb::init<size_t, size_t>(), "arity"_a, "num_atoms"_a)
         .def_static("create", &iw::ArityKNoveltyPruningStrategyImpl::create, "arity"_a, "num_atoms"_a);
 
-    // AStar
-    nb::class_<astar::Statistics>(m, "AStarStatistics")  //
+    // AStar_EAGER
+    nb::class_<astar_eager::Statistics>(m, "AStarEagerStatistics")  //
         .def(nb::init<>())
-        .def("__str__", [](const astar::Statistics& self) { return to_string(self); })
-        .def("get_num_generated", &astar::Statistics::get_num_generated)
-        .def("get_num_expanded", &astar::Statistics::get_num_expanded)
-        .def("get_num_deadends", &astar::Statistics::get_num_deadends)
-        .def("get_num_pruned", &astar::Statistics::get_num_pruned)
-        .def("get_num_generated_until_f_value", &astar::Statistics::get_num_generated_until_f_value)
-        .def("get_num_expanded_until_f_value", &astar::Statistics::get_num_expanded_until_f_value)
-        .def("get_num_deadends_until_f_value", &astar::Statistics::get_num_deadends_until_f_value)
-        .def("get_num_pruned_until_f_value", &astar::Statistics::get_num_pruned_until_f_value);
+        .def("__str__", [](const astar_eager::Statistics& self) { return to_string(self); })
+        .def("get_num_generated", &astar_eager::Statistics::get_num_generated)
+        .def("get_num_expanded", &astar_eager::Statistics::get_num_expanded)
+        .def("get_num_deadends", &astar_eager::Statistics::get_num_deadends)
+        .def("get_num_pruned", &astar_eager::Statistics::get_num_pruned)
+        .def("get_num_generated_until_f_value", &astar_eager::Statistics::get_num_generated_until_f_value)
+        .def("get_num_expanded_until_f_value", &astar_eager::Statistics::get_num_expanded_until_f_value)
+        .def("get_num_deadends_until_f_value", &astar_eager::Statistics::get_num_deadends_until_f_value)
+        .def("get_num_pruned_until_f_value", &astar_eager::Statistics::get_num_pruned_until_f_value);
 
-    nb::class_<astar::IEventHandler, IPyAStarEventHandler>(m,
-                                                           "IAStarEventHandler")  //
+    nb::class_<astar_eager::IEventHandler, IPyAStarEagerEventHandler>(m,
+                                                                      "IAStarEagerEventHandler")  //
         .def(nb::init<>())
-        .def("on_expand_state", &astar::IEventHandler::on_expand_state)
-        .def("on_expand_goal_state", &astar::IEventHandler::on_expand_goal_state)
-        .def("on_generate_state", &astar::IEventHandler::on_generate_state)
-        .def("on_generate_state_relaxed", &astar::IEventHandler::on_generate_state_relaxed)
-        .def("on_generate_state_not_relaxed", &astar::IEventHandler::on_generate_state_not_relaxed)
-        .def("on_close_state", &astar::IEventHandler::on_close_state)
-        .def("on_finish_f_layer", &astar::IEventHandler::on_finish_f_layer)
-        .def("on_prune_state", &astar::IEventHandler::on_prune_state)
-        .def("on_start_search", &astar::IEventHandler::on_start_search)
-        .def("on_end_search", &astar::IEventHandler::on_end_search)
-        .def("on_solved", &astar::IEventHandler::on_solved)
-        .def("on_unsolvable", &astar::IEventHandler::on_unsolvable)
-        .def("on_exhausted", &astar::IEventHandler::on_exhausted)
-        .def("get_statistics", &astar::IEventHandler::get_statistics);
+        .def("on_expand_state", &astar_eager::IEventHandler::on_expand_state)
+        .def("on_expand_goal_state", &astar_eager::IEventHandler::on_expand_goal_state)
+        .def("on_generate_state", &astar_eager::IEventHandler::on_generate_state)
+        .def("on_generate_state_relaxed", &astar_eager::IEventHandler::on_generate_state_relaxed)
+        .def("on_generate_state_not_relaxed", &astar_eager::IEventHandler::on_generate_state_not_relaxed)
+        .def("on_close_state", &astar_eager::IEventHandler::on_close_state)
+        .def("on_finish_f_layer", &astar_eager::IEventHandler::on_finish_f_layer)
+        .def("on_prune_state", &astar_eager::IEventHandler::on_prune_state)
+        .def("on_start_search", &astar_eager::IEventHandler::on_start_search)
+        .def("on_end_search", &astar_eager::IEventHandler::on_end_search)
+        .def("on_solved", &astar_eager::IEventHandler::on_solved)
+        .def("on_unsolvable", &astar_eager::IEventHandler::on_unsolvable)
+        .def("on_exhausted", &astar_eager::IEventHandler::on_exhausted)
+        .def("get_statistics", &astar_eager::IEventHandler::get_statistics);
 
-    nb::class_<astar::DefaultEventHandlerImpl, astar::IEventHandler>(m,
-                                                                     "DefaultAStarEventHandler")  //
+    nb::class_<astar_eager::DefaultEventHandlerImpl, astar_eager::IEventHandler>(m,
+                                                                                 "DefaultAStarEagerEventHandler")  //
         .def(nb::init<Problem, bool>(), "problem"_a, "quiet"_a = true);
-    nb::class_<astar::DebugEventHandlerImpl, astar::IEventHandler>(m,
-                                                                   "DebugAStarEventHandler")  //
+    nb::class_<astar_eager::DebugEventHandlerImpl, astar_eager::IEventHandler>(m,
+                                                                               "DebugAStarEagerEventHandler")  //
         .def(nb::init<Problem, bool>(), "problem"_a, "quiet"_a = true);
 
-    m.def("find_solution_astar",
-          &astar::find_solution,
+    m.def("find_solution_astar_eager",
+          &astar_eager::find_solution,
           "search_context"_a,
           "heuristic"_a,
           "start_state"_a = nullptr,
           "astar_event_handler"_a = nullptr,
           "goal_strategy"_a = nullptr,
           "pruning_strategy"_a = nullptr);
+
+    // AStar_LAZY
+    nb::class_<astar_lazy::Statistics>(m, "AStarLazyStatistics")  //
+        .def(nb::init<>())
+        .def("__str__", [](const astar_lazy::Statistics& self) { return to_string(self); })
+        .def("get_num_generated", &astar_lazy::Statistics::get_num_generated)
+        .def("get_num_expanded", &astar_lazy::Statistics::get_num_expanded)
+        .def("get_num_deadends", &astar_lazy::Statistics::get_num_deadends)
+        .def("get_num_pruned", &astar_lazy::Statistics::get_num_pruned)
+        .def("get_num_generated_until_f_value", &astar_lazy::Statistics::get_num_generated_until_f_value)
+        .def("get_num_expanded_until_f_value", &astar_lazy::Statistics::get_num_expanded_until_f_value)
+        .def("get_num_deadends_until_f_value", &astar_lazy::Statistics::get_num_deadends_until_f_value)
+        .def("get_num_pruned_until_f_value", &astar_lazy::Statistics::get_num_pruned_until_f_value);
+
+    nb::class_<astar_lazy::IEventHandler, IPyAStarLazyEventHandler>(m,
+                                                                    "IAStarLazyEventHandler")  //
+        .def(nb::init<>())
+        .def("on_expand_state", &astar_lazy::IEventHandler::on_expand_state)
+        .def("on_expand_goal_state", &astar_lazy::IEventHandler::on_expand_goal_state)
+        .def("on_generate_state", &astar_lazy::IEventHandler::on_generate_state)
+        .def("on_generate_state_relaxed", &astar_lazy::IEventHandler::on_generate_state_relaxed)
+        .def("on_generate_state_not_relaxed", &astar_lazy::IEventHandler::on_generate_state_not_relaxed)
+        .def("on_close_state", &astar_lazy::IEventHandler::on_close_state)
+        .def("on_finish_f_layer", &astar_lazy::IEventHandler::on_finish_f_layer)
+        .def("on_prune_state", &astar_lazy::IEventHandler::on_prune_state)
+        .def("on_start_search", &astar_lazy::IEventHandler::on_start_search)
+        .def("on_end_search", &astar_lazy::IEventHandler::on_end_search)
+        .def("on_solved", &astar_lazy::IEventHandler::on_solved)
+        .def("on_unsolvable", &astar_lazy::IEventHandler::on_unsolvable)
+        .def("on_exhausted", &astar_lazy::IEventHandler::on_exhausted)
+        .def("get_statistics", &astar_lazy::IEventHandler::get_statistics);
+
+    nb::class_<astar_lazy::DefaultEventHandlerImpl, astar_lazy::IEventHandler>(m,
+                                                                               "DefaultAStarLazyEventHandler")  //
+        .def(nb::init<Problem, bool>(), "problem"_a, "quiet"_a = true);
+    nb::class_<astar_lazy::DebugEventHandlerImpl, astar_lazy::IEventHandler>(m,
+                                                                             "DebugAStarLazyEventHandler")  //
+        .def(nb::init<Problem, bool>(), "problem"_a, "quiet"_a = true);
+
+    m.def("find_solution_astar_lazy",
+          &astar_lazy::find_solution,
+          "search_context"_a,
+          "heuristic"_a,
+          "start_state"_a = nullptr,
+          "astar_event_handler"_a = nullptr,
+          "goal_strategy"_a = nullptr,
+          "pruning_strategy"_a = nullptr,
+          "openlist_weights"_a = std::nullopt);
 
     // BrFS
     nb::class_<brfs::Statistics>(m, "BrFSStatistics")  //

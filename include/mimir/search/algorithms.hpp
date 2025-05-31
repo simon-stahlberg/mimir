@@ -22,8 +22,10 @@
  * Include all specializations here
  */
 
-#include "mimir/search/algorithms/astar.hpp"
-#include "mimir/search/algorithms/astar/event_handlers.hpp"
+#include "mimir/search/algorithms/astar_eager.hpp"
+#include "mimir/search/algorithms/astar_eager/event_handlers.hpp"
+#include "mimir/search/algorithms/astar_lazy.hpp"
+#include "mimir/search/algorithms/astar_lazy/event_handlers.hpp"
 #include "mimir/search/algorithms/brfs.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers.hpp"
 #include "mimir/search/algorithms/gbfs_eager.hpp"

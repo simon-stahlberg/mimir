@@ -58,13 +58,22 @@ from pymimir.pymimir.advanced.search import (
     ArityKNoveltyPruningStrategy,
 )
 
-# AStar
+# AStar_EAGER
 from pymimir.pymimir.advanced.search import (
-    AStarStatistics,
-    IAStarEventHandler,
-    DebugAStarEventHandler,
-    DefaultAStarEventHandler,
-    find_solution_astar,
+    AStarEagerStatistics,
+    IAStarEagerEventHandler,
+    DebugAStarEagerEventHandler,
+    DefaultAStarEagerEventHandler,
+    find_solution_astar_eager,
+)
+
+# AStar_LAZY
+from pymimir.pymimir.advanced.search import (
+    AStarLazyStatistics,
+    IAStarLazyEventHandler,
+    DebugAStarLazyEventHandler,
+    DefaultAStarLazyEventHandler,
+    find_solution_astar_lazy,
 )
 
 # BrFs

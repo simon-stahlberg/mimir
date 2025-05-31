@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_ALGORITHMS_ASTAR_EVENT_HANDLERS_STATISTICS_HPP_
-#define MIMIR_SEARCH_ALGORITHMS_ASTAR_EVENT_HANDLERS_STATISTICS_HPP_
+#ifndef MIMIR_SEARCH_ALGORITHMS_ASTAR_LAZY_EVENT_HANDLERS_STATISTICS_HPP_
+#define MIMIR_SEARCH_ALGORITHMS_ASTAR_LAZY_EVENT_HANDLERS_STATISTICS_HPP_
 
 #include "mimir/common/arithmetics.hpp"
 
@@ -26,7 +26,7 @@
 #include <ostream>
 #include <vector>
 
-namespace mimir::search::astar
+namespace mimir::search::astar_lazy
 {
 
 class Statistics

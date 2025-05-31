@@ -167,8 +167,19 @@ using ProblemGoalStrategy = std::shared_ptr<ProblemGoalStrategyImpl>;
 class IRolloutGuide;
 using RolloutGuide = std::shared_ptr<IRolloutGuide>;
 
-// AStar
-namespace astar
+// AStar_EAGER
+namespace astar_eager
+{
+class IEventHandler;
+using EventHandler = std::shared_ptr<IEventHandler>;
+class DebugEventHandlerImpl;
+using DebugEventHandler = std::shared_ptr<DebugEventHandlerImpl>;
+class DefaultEventHandlerImpl;
+using DefaultEventHandler = std::shared_ptr<DefaultEventHandlerImpl>;
+}
+
+// AStar_LAZY
+namespace astar_lazy
 {
 class IEventHandler;
 using EventHandler = std::shared_ptr<IEventHandler>;

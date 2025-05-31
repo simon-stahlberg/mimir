@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_ALGORITHMS_GBFS_LAZY_HPP_
-#define MIMIR_SEARCH_ALGORITHMS_GBFS_LAZY_HPP_
+#ifndef MIMIR_SEARCH_ALGORITHMS_ASTAR_LAZY_HPP_
+#define MIMIR_SEARCH_ALGORITHMS_ASTAR_LAZY_HPP_
 
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
@@ -27,7 +27,7 @@
 #include <optional>
 #include <vector>
 
-namespace mimir::search::gbfs_lazy
+namespace mimir::search::astar_lazy
 {
 
 extern SearchResult find_solution(const SearchContext& context,

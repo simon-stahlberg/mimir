@@ -15,17 +15,19 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/search/algorithms/astar.hpp"
+#include "mimir/search/algorithms/astar_lazy.hpp"
 
 #include "mimir/formalism/ground_function_expressions.hpp"
 #include "mimir/formalism/metric.hpp"
 #include "mimir/formalism/problem.hpp"
-#include "mimir/search/algorithms/astar/event_handlers.hpp"
+#include "mimir/search/algorithms/astar_lazy/event_handlers.hpp"
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 #include "mimir/search/algorithms/strategies/pruning_strategy.hpp"
+#include "mimir/search/applicability.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
 #include "mimir/search/heuristics/interface.hpp"
+#include "mimir/search/openlists/alternating.hpp"
 #include "mimir/search/openlists/interface.hpp"
 #include "mimir/search/openlists/priority_queue.hpp"
 #include "mimir/search/plan.hpp"
@@ -36,7 +38,7 @@
 
 using namespace mimir::formalism;
 
-namespace mimir::search::astar
+namespace mimir::search::astar_lazy
 {
 
 /**
@@ -72,7 +74,8 @@ SearchResult find_solution(const SearchContext& context,
                            State start_state_,
                            EventHandler event_handler_,
                            GoalStrategy goal_strategy_,
-                           PruningStrategy pruning_strategy_)
+                           PruningStrategy pruning_strategy_,
+                           std::optional<std::array<size_t, 2>> openlist_weights_)
 {
     assert(heuristic);
 
@@ -85,6 +88,10 @@ SearchResult find_solution(const SearchContext& context,
     const auto event_handler = (event_handler_) ? event_handler_ : DefaultEventHandlerImpl::create(context->get_problem());
     const auto goal_strategy = (goal_strategy_) ? goal_strategy_ : ProblemGoalStrategyImpl::create(context->get_problem());
     const auto pruning_strategy = (pruning_strategy_) ? pruning_strategy_ : NoPruningStrategyImpl::create();
+    const auto openlist_weights = (openlist_weights_) ? openlist_weights_.value() : std::array<size_t, 2> { 1, 1 };
+
+    const auto& ground_action_repository = boost::hana::at_key(problem.get_repositories().get_hana_repositories(), boost::hana::type<GroundActionImpl> {});
+    const auto& ground_axiom_repository = boost::hana::at_key(problem.get_repositories().get_hana_repositories(), boost::hana::type<GroundAxiomImpl> {});
 
     auto result = SearchResult();
 
@@ -104,7 +111,10 @@ SearchResult find_solution(const SearchContext& context,
                             cista::tuple<ContinuousCost, ContinuousCost> { ContinuousCost(INFINITY_CONTINUOUS_COST), ContinuousCost(0) });
     auto search_nodes = SearchNodeImplVector<ContinuousCost, ContinuousCost>();
 
-    auto openlist = PriorityQueue<double, State>();
+    using OpenListType = PriorityQueue<double, State>;
+    auto preferred_openlist = OpenListType();
+    auto standard_openlist = OpenListType();
+    auto openlist = AlternatingOpenList<OpenListType, OpenListType>(preferred_openlist, standard_openlist, openlist_weights);
 
     if (start_g_value == UNDEFINED_CONTINUOUS_COST)
     {
@@ -140,12 +150,9 @@ SearchResult find_solution(const SearchContext& context,
 
     auto applicable_actions = GroundActionList {};
     auto f_value = start_f_value;
-    openlist.insert(start_f_value, start_state);
+    preferred_openlist.insert(start_f_value, start_state);
 
     event_handler->on_finish_f_layer(f_value);
-
-    const auto& ground_action_repository = boost::hana::at_key(problem.get_repositories().get_hana_repositories(), boost::hana::type<GroundActionImpl> {});
-    const auto& ground_axiom_repository = boost::hana::at_key(problem.get_repositories().get_hana_repositories(), boost::hana::type<GroundAxiomImpl> {});
 
     while (!openlist.empty())
     {
@@ -158,6 +165,14 @@ SearchResult find_solution(const SearchContext& context,
 
         if (search_node->get_status() == SearchNodeStatus::CLOSED || search_node->get_status() == SearchNodeStatus::DEAD_END)
         {
+            continue;
+        }
+
+        const auto state_h_value = heuristic->compute_heuristic(state, search_node->get_status() == SearchNodeStatus::GOAL);
+        set_h_value(search_node, state_h_value);
+        if (state_h_value == INFINITY_CONTINUOUS_COST)
+        {
+            search_node->get_status() = SearchNodeStatus::DEAD_END;
             continue;
         }
 
@@ -201,6 +216,10 @@ SearchResult find_solution(const SearchContext& context,
             return result;
         }
 
+        const auto& preferred_actions = heuristic->get_preferred_actions();
+        // Ensure that preferred actions are applicable.
+        assert(std::all_of(preferred_actions.data.begin(), preferred_actions.data.end(), [&](auto&& action) { return is_applicable(action, problem, state); }));
+
         /* Expand the successors of the state. */
 
         event_handler->on_expand_state(state);
@@ -223,6 +242,7 @@ SearchResult find_solution(const SearchContext& context,
 
             event_handler->on_generate_state(state, action, action_cost, successor_state);
 
+            const auto is_preferred = preferred_actions.data.contains(action);
             const bool is_new_successor_state = (successor_search_node->get_status() == SearchNodeStatus::NEW);
 
             /* Customization point 1: pruning strategy, default never prunes. */
@@ -242,33 +262,30 @@ SearchResult find_solution(const SearchContext& context,
                 successor_search_node->get_status() = SearchNodeStatus::OPEN;
                 successor_search_node->get_parent_state() = state->get_index();
                 set_g_value(successor_search_node, successor_state_metric_value);
+
                 if (is_new_successor_state)
                 {
-                    // Compute heuristic if state is new.
                     const auto successor_is_goal_state = goal_strategy->test_dynamic_goal(successor_state);
                     if (successor_is_goal_state)
                     {
                         successor_search_node->get_status() = SearchNodeStatus::GOAL;
                     }
-                    const auto successor_h_value = heuristic->compute_heuristic(successor_state, successor_is_goal_state);
-                    set_h_value(successor_search_node, successor_h_value);
 
-                    if (successor_h_value == INFINITY_CONTINUOUS_COST)
-                    {
-                        successor_search_node->get_status() = SearchNodeStatus::DEAD_END;
-                        continue;
-                    }
-                }
-
-                if (successor_search_node->get_status() == SearchNodeStatus::DEAD_END)
-                {
-                    continue;
+                    set_h_value(successor_search_node, state_h_value);
                 }
 
                 event_handler->on_generate_state_relaxed(state, action, action_cost, successor_state);
 
-                const auto successor_f_value = get_g_value(successor_search_node) + get_h_value(successor_search_node);
-                openlist.insert(successor_f_value, successor_state);
+                const auto successor_f_value = get_g_value(successor_search_node) + state_h_value;
+
+                if (is_preferred)
+                {
+                    preferred_openlist.insert(successor_f_value, successor_state);
+                }
+                else
+                {
+                    standard_openlist.insert(successor_f_value, successor_state);
+                }
             }
             else
             {

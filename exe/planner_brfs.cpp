@@ -15,6 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <argparse/argparse.hpp>
 #include <chrono>
 #include <fstream>
 #include <iostream>
@@ -26,25 +27,43 @@ using namespace mimir::formalism;
 
 int main(int argc, char** argv)
 {
-    if (argc != 6)
+    auto program = argparse::ArgumentParser("AStar search.");
+    program.add_argument("-D", "--domain-filepath").required().help("The path to the PDDL domain file.");
+    program.add_argument("-P", "--problem-filepath").required().help("The path to the PDDL problem file.");
+    program.add_argument("-O", "--plan-filepath").required().help("The path to the output plan file.");
+    program.add_argument("-G", "--enable-grounding")
+        .default_value(size_t(0))
+        .scan<'u', size_t>()
+        .help("Non-zero values enabled grounding. Might be necessary for some features. Defaults to grounded.");
+    program.add_argument("-V", "--verbosity")
+        .default_value(size_t(0))
+        .scan<'u', size_t>()
+        .help("The verbosity level. Defaults to minimal amount of debug output.");
+
+    try
     {
-        std::cout << "Usage: planner_brfs <domain:str> <problem:str> <plan:str> <grounded:bool> <debug:bool>" << std::endl;
-        return 1;
+        program.parse_args(argc, argv);
     }
+    catch (const std::runtime_error& err)
+    {
+        std::cerr << err.what() << "\n";
+        std::cerr << program;
+        std::exit(1);
+    }
+
+    auto domain_filepath = program.get<std::string>("--domain-filepath");
+    auto problem_filepath = program.get<std::string>("--problem-filepath");
+    auto plan_filepath = program.get<std::string>("--plan-filepath");
+    auto grounded = static_cast<bool>(program.get<size_t>("--enable-grounding"));
+    auto verbosity = program.get<size_t>("--verbosity");
 
     const auto start_time = std::chrono::high_resolution_clock::now();
 
-    const auto domain_file_path = fs::path { argv[1] };
-    const auto problem_file_path = fs::path { argv[2] };
-    const auto plan_file_name = argv[3];
-    const auto grounded = static_cast<bool>(std::atoi(argv[4]));
-    const auto debug = static_cast<bool>(std::atoi(argv[5]));
-
     std::cout << "Parsing PDDL files..." << std::endl;
 
-    auto problem = ProblemImpl::create(domain_file_path, problem_file_path);
+    auto problem = ProblemImpl::create(domain_filepath, problem_filepath);
 
-    if (debug)
+    if (verbosity > 0)
     {
         std::cout << "Domain:" << std::endl;
         std::cout << problem->get_domain() << std::endl;
@@ -89,8 +108,8 @@ int main(int argc, char** argv)
         state_repository = StateRepositoryImpl::create(axiom_evaluator);
     }
 
-    auto event_handler = (debug) ? brfs::EventHandler { brfs::DebugEventHandlerImpl::create(problem, false) } :
-                                   brfs::EventHandler { brfs::DefaultEventHandlerImpl::create(problem, false) };
+    auto event_handler = (verbosity > 1) ? brfs::EventHandler { brfs::DebugEventHandlerImpl::create(problem, false) } :
+                                           brfs::EventHandler { brfs::DefaultEventHandlerImpl::create(problem, false) };
 
     auto search_context = SearchContextImpl::create(problem, applicable_action_generator, state_repository);
 
@@ -102,7 +121,7 @@ int main(int argc, char** argv)
     if (result.status == SearchStatus::SOLVED)
     {
         std::ofstream plan_file;
-        plan_file.open(plan_file_name);
+        plan_file.open(plan_filepath);
         if (!plan_file.is_open())
         {
             std::cerr << "Error opening file!" << std::endl;

@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/search/algorithms/astar.hpp"
+#include "mimir/search/algorithms/astar_eager.hpp"
 
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/algorithms.hpp"
@@ -52,7 +52,7 @@ private:
     LiftedAxiomEvaluator m_axiom_evaluator;
     StateRepository m_state_repository;
     Heuristic m_heuristic;
-    astar::EventHandler m_astar_event_handler;
+    astar_eager::EventHandler m_astar_event_handler;
     SearchContext m_search_context;
 
 public:
@@ -63,7 +63,7 @@ public:
         m_axiom_evaluator_event_handler(LiftedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create()),
         m_axiom_evaluator(LiftedAxiomEvaluatorImpl::create(m_problem, m_axiom_evaluator_event_handler)),
         m_state_repository(StateRepositoryImpl::create(m_axiom_evaluator)),
-        m_astar_event_handler(astar::DefaultEventHandlerImpl::create(m_problem)),
+        m_astar_event_handler(astar_eager::DefaultEventHandlerImpl::create(m_problem)),
         m_search_context(SearchContextImpl::create(m_problem, m_applicable_action_generator, m_state_repository))
     {
         switch (type)
@@ -85,9 +85,9 @@ public:
         }
     }
 
-    SearchResult find_solution() { return astar::find_solution(m_search_context, m_heuristic, nullptr, m_astar_event_handler); }
+    SearchResult find_solution() { return astar_eager::find_solution(m_search_context, m_heuristic, nullptr, m_astar_event_handler); }
 
-    const astar::Statistics& get_algorithm_statistics() const { return m_astar_event_handler->get_statistics(); }
+    const astar_eager::Statistics& get_algorithm_statistics() const { return m_astar_event_handler->get_statistics(); }
 
     const LiftedApplicableActionGeneratorImpl::Statistics& get_applicable_action_generator_statistics() const
     {
@@ -109,7 +109,7 @@ private:
     GroundedAxiomEvaluator m_axiom_evaluator;
     StateRepository m_state_repository;
     Heuristic m_heuristic;
-    astar::EventHandler m_astar_event_handler;
+    astar_eager::EventHandler m_astar_event_handler;
     SearchContext m_search_context;
 
 public:
@@ -123,7 +123,7 @@ public:
         m_axiom_evaluator_event_handler(GroundedAxiomEvaluatorImpl::DefaultEventHandlerImpl::create()),
         m_axiom_evaluator(m_delete_relaxed_problem_explorator.create_grounded_axiom_evaluator(match_tree::Options(), m_axiom_evaluator_event_handler)),
         m_state_repository(StateRepositoryImpl::create(m_axiom_evaluator)),
-        m_astar_event_handler(astar::DefaultEventHandlerImpl::create(m_problem)),
+        m_astar_event_handler(astar_eager::DefaultEventHandlerImpl::create(m_problem)),
         m_search_context(SearchContextImpl::create(m_problem, m_applicable_action_generator, m_state_repository))
     {
         switch (type)
@@ -145,9 +145,9 @@ public:
         }
     }
 
-    SearchResult find_solution() { return astar::find_solution(m_search_context, m_heuristic, nullptr, m_astar_event_handler); }
+    SearchResult find_solution() { return astar_eager::find_solution(m_search_context, m_heuristic, nullptr, m_astar_event_handler); }
 
-    const astar::Statistics& get_algorithm_statistics() const { return m_astar_event_handler->get_statistics(); }
+    const astar_eager::Statistics& get_algorithm_statistics() const { return m_astar_event_handler->get_statistics(); }
 
     const GroundedApplicableActionGeneratorImpl::Statistics& get_applicable_action_generator_statistics() const
     {
