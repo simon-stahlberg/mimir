@@ -125,6 +125,11 @@ if(absl_FOUND)
 endif()
 
 
+find_package(argparse CONFIG REQUIRED PATHS ${CMAKE_PREFIX_PATH} NO_DEFAULT_PATH)
+if(argparse_FOUND)
+  message(STATUS "Found argparse: ${argparse_DIR} (found version ${argparse_VERSION})")
+endif()
+
 ##############################################################
 # Add library and executable targets
 ##############################################################

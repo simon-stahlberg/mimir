@@ -44,6 +44,7 @@ private:
     bool cur_empty()
     {
         assert(m_pos < N);
+
         auto result = bool();
         visit_at(m_queues, m_pos, [&result](auto&& queue) { result = queue.get().empty(); });
 
@@ -53,6 +54,7 @@ private:
     size_t cur_size()
     {
         assert(m_pos < N);
+
         auto result = size();
         visit_at(m_queues, m_pos, [&result](auto&& queue) { result = queue.get().size(); });
 
@@ -68,8 +70,6 @@ private:
 
     void find_next_nonempty_queue()
     {
-        assert(!cur_empty());
-
         do
         {
             if (++m_pos == N)
