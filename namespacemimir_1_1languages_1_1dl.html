@@ -139,7 +139,7 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmimir_1_1languages_1_1dl_1_1DenotationImpl_3_01RoleTag_01_4.html">DenotationImpl&lt; RoleTag &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1DenotationRepository.html">DenotationRepository</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classmimir_1_1languages_1_1dl_1_1DenotationRepository.html" title="DenotationRepository encapsulate logic for obtaining unique denotation views and caching.">DenotationRepository</a> encapsulate logic for obtaining unique denotation views and caching.  <a href="classmimir_1_1languages_1_1dl_1_1DenotationRepository.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classmimir_1_1languages_1_1dl_1_1DenotationRepository.html" title="DenotationRepository encapsulate logic for storing and retrieving unique views onto denotations.">DenotationRepository</a> encapsulate logic for storing and retrieving unique views onto denotations.  <a href="classmimir_1_1languages_1_1dl_1_1DenotationRepository.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1EvaluationContext.html">EvaluationContext</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -367,6 +367,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a351c0b0d331b3d0b7e76459cb6f6fa63"><td class="memTemplParams" colspan="2">template&lt;IsConceptOrRoleOrBooleanOrNumericalTag D&gt; </td></tr>
 <tr class="memitem:a351c0b0d331b3d0b7e76459cb6f6fa63"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#a351c0b0d331b3d0b7e76459cb6f6fa63">operator&lt;&lt;</a> (std::ostream &amp;out, const <a class="el" href="classmimir_1_1languages_1_1dl_1_1IConstructor.html">IConstructor</a>&lt; D &gt; &amp;constructor)</td></tr>
 <tr class="separator:a351c0b0d331b3d0b7e76459cb6f6fa63"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa1c3f602d7cc829a6dfbae6f09b670b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#aaa1c3f602d7cc829a6dfbae6f09b670b">clear</a> (<a class="el" href="namespacemimir_1_1languages_1_1dl.html#ae030ae9ad477c663d14810bc63cdc251">DenotationRepositories</a> &amp;repositories)</td></tr>
+<tr class="memdesc:aaa1c3f602d7cc829a6dfbae6f09b670b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear all <a class="el" href="classmimir_1_1languages_1_1dl_1_1DenotationRepository.html" title="DenotationRepository encapsulate logic for storing and retrieving unique views onto denotations.">DenotationRepository</a>.  <br /></td></tr>
+<tr class="separator:aaa1c3f602d7cc829a6dfbae6f09b670b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Typedef Documentation</h2>
 <a id="aa153f6b9192682a9e37a4c3bb6712705" name="aa153f6b9192682a9e37a4c3bb6712705"></a>
@@ -1350,6 +1353,32 @@ template&lt;formalism::IsStaticOrFluentOrDerivedTag P&gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="aaa1c3f602d7cc829a6dfbae6f09b670b" name="aaa1c3f602d7cc829a6dfbae6f09b670b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa1c3f602d7cc829a6dfbae6f09b670b">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void mimir::languages::dl::clear </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#ae030ae9ad477c663d14810bc63cdc251">DenotationRepositories</a> &amp;&#160;</td>
+          <td class="paramname"><em>repositories</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clear all <a class="el" href="classmimir_1_1languages_1_1dl_1_1DenotationRepository.html" title="DenotationRepository encapsulate logic for storing and retrieving unique views onto denotations.">DenotationRepository</a>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">repositories</td><td>is the container of all denotation repositories. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a351c0b0d331b3d0b7e76459cb6f6fa63" name="a351c0b0d331b3d0b7e76459cb6f6fa63"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a351c0b0d331b3d0b7e76459cb6f6fa63">&#9670;&#160;</a></span>operator&lt;&lt;() <span class="overload">[1/2]</span></h2>
 

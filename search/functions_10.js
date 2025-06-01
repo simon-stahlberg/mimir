@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['searchnodeimpl_0',['SearchNodeImpl',['../structmimir_1_1search_1_1SearchNodeImpl.html#af8c9b72f6ea6ab3af1686569b6ec669f',1,'mimir::search::SearchNodeImpl::SearchNodeImpl(SearchNodeStatus status, Index parent_state_index, cista::tuple&lt; SearchNodeProperties... &gt; properties)'],['../structmimir_1_1search_1_1SearchNodeImpl.html#a5ae947451f886f47085f3491af8868a5',1,'mimir::search::SearchNodeImpl::SearchNodeImpl()=default']]],
+  ['searchnodeimpl_0',['SearchNodeImpl',['../structmimir_1_1search_1_1SearchNodeImpl.html#a8b648ff1e3527a458a63c9419442a7e0',1,'mimir::search::SearchNodeImpl::SearchNodeImpl(SearchNodeStatus status, Index parent_state_index, SearchNodeProperties... properties)'],['../structmimir_1_1search_1_1SearchNodeImpl.html#a5ae947451f886f47085f3491af8868a5',1,'mimir::search::SearchNodeImpl::SearchNodeImpl()=default']]],
   ['set_1',['set',['../classmimir_1_1graphs_1_1bgl_1_1VectorReadWritePropertyMap.html#a796b1586b3bb85c59f21f865067be84a',1,'mimir::graphs::bgl::VectorReadWritePropertyMap::set()'],['../classmimir_1_1graphs_1_1bgl_1_1UnorderedMapReadWritePropertyMap.html#ab8d3d2438705b79a98641c92f81d7c67',1,'mimir::graphs::bgl::UnorderedMapReadWritePropertyMap::set()']]],
   ['set_5fnum_5factions_2',['set_num_actions',['../classmimir_1_1search_1_1brfs_1_1Statistics.html#a3945ea0610d337a3a10c1c8537d37740',1,'mimir::search::brfs::Statistics']]],
   ['set_5fnum_5faxioms_3',['set_num_axioms',['../classmimir_1_1search_1_1brfs_1_1Statistics.html#a27a5e47adc8ca70d6397b4d35d03f2a9',1,'mimir::search::brfs::Statistics']]],

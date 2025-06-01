@@ -65,8 +65,8 @@ var searchData=
   ['options_2ehpp_62',['options.hpp',['../datasets_2generalized__state__space_2options_8hpp.html',1,'(Global Namespace)'],['../datasets_2state__space_2options_8hpp.html',1,'(Global Namespace)'],['../datasets_2tuple__graph_2options_8hpp.html',1,'(Global Namespace)'],['../search_2match__tree_2options_8hpp.html',1,'(Global Namespace)']]],
   ['out_5fdegree_63',['out_degree',['../namespacemimir_1_1graphs.html#a785ee03c652662e2dcb87ebac8bc2c39',1,'mimir::graphs']]],
   ['out_5fedges_64',['out_edges',['../namespacemimir_1_1graphs.html#af1f5694323fbda713b550daad37fae19',1,'mimir::graphs']]],
-  ['out_5fof_5fmemory_65',['OUT_OF_MEMORY',['../namespacemimir_1_1search.html#a79d5077b9be5c161f50658bf63e0fcf8a5cb06bea1eda2ed82d31772d9fd687ed',1,'mimir::search']]],
-  ['out_5fof_5fstates_66',['OUT_OF_STATES',['../namespacemimir_1_1search.html#a79d5077b9be5c161f50658bf63e0fcf8a28f3af856dc3cad2860543c831ce4dda',1,'mimir::search']]],
-  ['out_5fof_5ftime_67',['OUT_OF_TIME',['../namespacemimir_1_1search.html#a79d5077b9be5c161f50658bf63e0fcf8a216b865fc3360876c93541a5ccb2e295',1,'mimir::search']]],
+  ['out_5fof_5fmemory_65',['OUT_OF_MEMORY',['../namespacemimir_1_1search.html#a79d5077b9be5c161f50658bf63e0fcf8ac56ddb8056b120c9d5fee05981f219c6',1,'mimir::search']]],
+  ['out_5fof_5fstates_66',['OUT_OF_STATES',['../namespacemimir_1_1search.html#a79d5077b9be5c161f50658bf63e0fcf8aebf1775a88fa60af9d6024946a43179c',1,'mimir::search']]],
+  ['out_5fof_5ftime_67',['OUT_OF_TIME',['../namespacemimir_1_1search.html#a79d5077b9be5c161f50658bf63e0fcf8a7573e4840f2a7f8b1308ccd3d302e396',1,'mimir::search']]],
   ['output_5fdot_5ffile_68',['output_dot_file',['../structmimir_1_1search_1_1match__tree_1_1Options.html#a31509aa1b133ec8de7cb842fb77f849e',1,'mimir::search::match_tree::Options']]]
 ];

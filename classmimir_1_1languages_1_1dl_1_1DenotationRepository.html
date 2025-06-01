@@ -80,7 +80,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p><a class="el" href="classmimir_1_1languages_1_1dl_1_1DenotationRepository.html" title="DenotationRepository encapsulate logic for obtaining unique denotation views and caching.">DenotationRepository</a> encapsulate logic for obtaining unique denotation views and caching.  
+<p><a class="el" href="classmimir_1_1languages_1_1dl_1_1DenotationRepository.html" title="DenotationRepository encapsulate logic for storing and retrieving unique views onto denotations.">DenotationRepository</a> encapsulate logic for storing and retrieving unique views onto denotations.  
  <a href="classmimir_1_1languages_1_1dl_1_1DenotationRepository.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="denotation__repositories_8hpp_source.html">denotation_repositories.hpp</a>&gt;</code></p>
@@ -88,14 +88,40 @@ $(function() {
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ac2da44563acfdc972a9eb0e623bc3178"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#a5fb58daa88a73a4d955b36135ac1696d">Denotation</a>&lt; D &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1DenotationRepository.html#ac2da44563acfdc972a9eb0e623bc3178">insert</a> (<a class="el" href="namespacemimir_1_1languages_1_1dl.html#a2f5ecd6c57868865e0cf88c96d6b7e6f">Constructor</a>&lt; D &gt; constructor, <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">search::State</a> state, const <a class="el" href="structmimir_1_1languages_1_1dl_1_1DenotationImpl.html">DenotationImpl</a>&lt; D &gt; &amp;denotation)</td></tr>
+<tr class="memdesc:ac2da44563acfdc972a9eb0e623bc3178"><td class="mdescLeft">&#160;</td><td class="mdescRight">Uniquely insert the denotation for the constructor and state in the repository.  <br /></td></tr>
 <tr class="separator:ac2da44563acfdc972a9eb0e623bc3178"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acca508269f40b6c7f60a8477a5168ef7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1languages_1_1dl.html#a5fb58daa88a73a4d955b36135ac1696d">Denotation</a>&lt; D &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1DenotationRepository.html#acca508269f40b6c7f60a8477a5168ef7">get_if</a> (<a class="el" href="namespacemimir_1_1languages_1_1dl.html#a2f5ecd6c57868865e0cf88c96d6b7e6f">Constructor</a>&lt; D &gt; constructor, <a class="el" href="namespacemimir_1_1search.html#a9e6c1063da386716070dfb0f09f5b777">search::State</a> state) const</td></tr>
+<tr class="memdesc:acca508269f40b6c7f60a8477a5168ef7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the denotation for the constructor and state if it exists, and otherwise, return nullptr.  <br /></td></tr>
 <tr class="separator:acca508269f40b6c7f60a8477a5168ef7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f3ccae69eb82586383fb26ca37b4193"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1languages_1_1dl_1_1DenotationRepository.html#a7f3ccae69eb82586383fb26ca37b4193">clear</a> ()</td></tr>
+<tr class="memdesc:a7f3ccae69eb82586383fb26ca37b4193"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear the repository. Does not quarantee to free memory.  <br /></td></tr>
+<tr class="separator:a7f3ccae69eb82586383fb26ca37b4193"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;IsConceptOrRoleOrBooleanOrNumericalTag D&gt;<br />
-class mimir::languages::dl::DenotationRepository&lt; D &gt;</div><p><a class="el" href="classmimir_1_1languages_1_1dl_1_1DenotationRepository.html" title="DenotationRepository encapsulate logic for obtaining unique denotation views and caching.">DenotationRepository</a> encapsulate logic for obtaining unique denotation views and caching. </p>
+class mimir::languages::dl::DenotationRepository&lt; D &gt;</div><p><a class="el" href="classmimir_1_1languages_1_1dl_1_1DenotationRepository.html" title="DenotationRepository encapsulate logic for storing and retrieving unique views onto denotations.">DenotationRepository</a> encapsulate logic for storing and retrieving unique views onto denotations. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="a7f3ccae69eb82586383fb26ca37b4193" name="a7f3ccae69eb82586383fb26ca37b4193"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f3ccae69eb82586383fb26ca37b4193">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;IsConceptOrRoleOrBooleanOrNumericalTag D&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classmimir_1_1languages_1_1dl_1_1DenotationRepository.html">mimir::languages::dl::DenotationRepository</a>&lt; D &gt;::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clear the repository. Does not quarantee to free memory. </p>
+
+</div>
+</div>
 <a id="acca508269f40b6c7f60a8477a5168ef7" name="acca508269f40b6c7f60a8477a5168ef7"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#acca508269f40b6c7f60a8477a5168ef7">&#9670;&#160;</a></span>get_if()</h2>
 
@@ -123,6 +149,16 @@ template&lt;IsConceptOrRoleOrBooleanOrNumericalTag D&gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Get the denotation for the constructor and state if it exists, and otherwise, return nullptr. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">constructor</td><td>is the constructor. </td></tr>
+    <tr><td class="paramname">state</td><td>is the state. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>the denotation if it exists, and otherwise, return nullptr. </dd></dl>
 
 </div>
 </div>
@@ -159,6 +195,17 @@ template&lt;IsConceptOrRoleOrBooleanOrNumericalTag D&gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Uniquely insert the denotation for the constructor and state in the repository. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">constructor</td><td>is the constructor. </td></tr>
+    <tr><td class="paramname">state</td><td>is the state. </td></tr>
+    <tr><td class="paramname">denotation</td><td>is the denotation. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>the unique denotation for the constructor and state. </dd></dl>
 
 </div>
 </div>
