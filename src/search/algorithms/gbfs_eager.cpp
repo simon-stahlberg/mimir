@@ -17,6 +17,7 @@
 
 #include "mimir/search/algorithms/gbfs_eager.hpp"
 
+#include "mimir/common/timers.hpp"
 #include "mimir/formalism/ground_function_expressions.hpp"
 #include "mimir/formalism/metric.hpp"
 #include "mimir/formalism/problem.hpp"
@@ -162,8 +163,17 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
     auto applicable_actions = GroundActionList {};
     openlist.insert(std::make_tuple(start_h_value, start_g_value, step++), start_state);
 
+    auto stopwatch = StopWatch(options.max_time_in_ms);
+    stopwatch.start();
+
     while (!openlist.empty())
     {
+        if (stopwatch.has_finished())
+        {
+            result.status = SearchStatus::OUT_OF_TIME;
+            return result;
+        }
+
         const auto state = openlist.top();
         openlist.pop();
 
@@ -197,6 +207,12 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
             }
 
             const bool is_new_successor_state = (successor_search_node->get_status() == SearchNodeStatus::NEW);
+
+            if (is_new_successor_state && search_nodes.size() >= options.max_num_states)
+            {
+                result.status = SearchStatus::OUT_OF_STATES;
+                return result;
+            }
 
             /* Skip previously generated state. */
 

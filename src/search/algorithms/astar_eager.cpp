@@ -17,6 +17,7 @@
 
 #include "mimir/search/algorithms/astar_eager.hpp"
 
+#include "mimir/common/timers.hpp"
 #include "mimir/formalism/ground_function_expressions.hpp"
 #include "mimir/formalism/metric.hpp"
 #include "mimir/formalism/problem.hpp"
@@ -140,8 +141,17 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
 
     event_handler->on_finish_f_layer(f_value);
 
+    auto stopwatch = StopWatch(options.max_time_in_ms);
+    stopwatch.start();
+
     while (!openlist.empty())
     {
+        if (stopwatch.has_finished())
+        {
+            result.status = SearchStatus::OUT_OF_TIME;
+            return result;
+        }
+
         const auto state = openlist.top();
         openlist.pop();
 
@@ -217,6 +227,12 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
             event_handler->on_generate_state(state, action, action_cost, successor_state);
 
             const bool is_new_successor_state = (successor_search_node->get_status() == SearchNodeStatus::NEW);
+
+            if (is_new_successor_state && search_nodes.size() >= options.max_num_states)
+            {
+                result.status = SearchStatus::OUT_OF_STATES;
+                return result;
+            }
 
             /* Customization point 1: pruning strategy, default never prunes. */
 
