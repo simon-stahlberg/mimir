@@ -944,6 +944,7 @@ void bind_module_definitions(nb::module_& m)
         .def_rw("event_handler", &gbfs_lazy::Options::event_handler)
         .def_rw("goal_strategy", &gbfs_lazy::Options::goal_strategy)
         .def_rw("pruning_strategy", &gbfs_lazy::Options::pruning_strategy)
+        .def_rw("exploration_strategy", &gbfs_lazy::Options::exploration_strategy)
         .def_rw("max_num_states", &gbfs_lazy::Options::max_num_states)
         .def_rw("max_time_in_ms", &gbfs_lazy::Options::max_time_in_ms)
         .def_rw("openlist_weights", &gbfs_lazy::Options::openlist_weights);
