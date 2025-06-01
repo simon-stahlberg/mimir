@@ -63,13 +63,13 @@ def main():
 
     search_context = search.SearchContext.create(domain_filepath, problem_filepath, search.SearchContextOptions())
 
-    initial_state, _ = search_context.get_state_repository().get_or_create_initial_state()
+    iw_options = search.IWOptions()
+    iw_options.iw_event_handler = search.DefaultIWEventHandler(search_context.get_problem())
+    iw_options.brfs_event_handler = CustomBrFSEventHandler(search_context.get_problem())
+    iw_options.goal_strategy = search.ProblemGoalStrategy.create(search_context.get_problem())
+    iw_options.max_arity = 3
 
-    iw_event_handler = search.DefaultIWEventHandler(search_context.get_problem())
-    brfs_event_handler = CustomBrFSEventHandler(search_context.get_problem())
-    goal_strategy = search.ProblemGoalStrategy.create(search_context.get_problem())
-
-    result = search.find_solution_iw(search_context, initial_state, 3, iw_event_handler, brfs_event_handler, goal_strategy)
+    result = search.find_solution_iw(search_context, iw_options)
 
     assert(result.status == search.SearchStatus.SOLVED)
     assert(len(result.plan) == 5)

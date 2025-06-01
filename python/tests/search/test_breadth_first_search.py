@@ -11,7 +11,10 @@ def test_breadth_first_search():
     domain_filepath = str(ROOT_DIR / "data" / "gripper" / "domain.pddl")
     problem_filepath = str(ROOT_DIR / "data" / "gripper" / "test_problem.pddl")
     search_context = search.SearchContext.create(domain_filepath, problem_filepath, search.SearchContextOptions())
-    result = search.find_solution_brfs(search_context)
+
+    brfs_options = search.BrFSOptions()
+    
+    result = search.find_solution_brfs(search_context, brfs_options)
 
     assert result.status == search.SearchStatus.SOLVED
     assert len(result.plan) == 3

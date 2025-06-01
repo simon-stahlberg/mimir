@@ -85,7 +85,13 @@ public:
         }
     }
 
-    SearchResult find_solution() { return astar_eager::find_solution(m_search_context, m_heuristic, nullptr, m_astar_event_handler); }
+    SearchResult find_solution()
+    {
+        auto astar_options = astar_eager::Options();
+        astar_options.event_handler = m_astar_event_handler;
+
+        return astar_eager::find_solution(m_search_context, m_heuristic, astar_options);
+    }
 
     const astar_eager::Statistics& get_algorithm_statistics() const { return m_astar_event_handler->get_statistics(); }
 
@@ -145,7 +151,13 @@ public:
         }
     }
 
-    SearchResult find_solution() { return astar_eager::find_solution(m_search_context, m_heuristic, nullptr, m_astar_event_handler); }
+    SearchResult find_solution()
+    {
+        auto astar_options = astar_eager::Options();
+        astar_options.event_handler = m_astar_event_handler;
+
+        return astar_eager::find_solution(m_search_context, m_heuristic, astar_options);
+    }
 
     const astar_eager::Statistics& get_algorithm_statistics() const { return m_astar_event_handler->get_statistics(); }
 

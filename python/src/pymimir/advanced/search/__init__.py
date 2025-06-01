@@ -66,6 +66,7 @@ from pymimir.pymimir.advanced.search import (
     IAStarEagerEventHandler,
     DebugAStarEagerEventHandler,
     DefaultAStarEagerEventHandler,
+    AStarEagerOptions,
     find_solution_astar_eager,
 )
 
@@ -75,6 +76,7 @@ from pymimir.pymimir.advanced.search import (
     IAStarLazyEventHandler,
     DebugAStarLazyEventHandler,
     DefaultAStarLazyEventHandler,
+    AStarLazyOptions,
     find_solution_astar_lazy,
 )
 
@@ -84,6 +86,7 @@ from pymimir.pymimir.advanced.search import (
     IBrFSEventHandler,
     DebugBrFSEventHandler,
     DefaultBrFSEventHandler,
+    BrFSOptions,
     find_solution_brfs,
 )
 
@@ -93,6 +96,7 @@ from pymimir.pymimir.advanced.search import (
     IGBFSEagerEventHandler,
     DebugGBFSEagerEventHandler,
     DefaultGBFSEagerEventHandler,
+    GBFSEagerOptions,
     find_solution_gbfs_eager,
 )
 
@@ -102,6 +106,7 @@ from pymimir.pymimir.advanced.search import (
     IGBFSLazyEventHandler,
     DebugGBFSLazyEventHandler,
     DefaultGBFSLazyEventHandler,
+    GBFSLazyOptions,
     find_solution_gbfs_lazy,
 )
 
@@ -110,6 +115,7 @@ from pymimir.pymimir.advanced.search import (
     IWStatistics,
     IIWEventHandler,
     DefaultIWEventHandler,
+    IWOptions,
     find_solution_iw,
 
     TupleIndexMapper,
@@ -123,6 +129,7 @@ from pymimir.pymimir.advanced.search import (
     SIWStatistics,
     ISIWEventHandler,
     DefaultSIWEventHandler,
+    SIWOptions,
     find_solution_siw,
 )
 

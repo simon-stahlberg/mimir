@@ -164,21 +164,21 @@ int main(int argc, char** argv)
         auto event_handler = (verbosity > 1) ? gbfs_eager::EventHandler { gbfs_eager::DebugEventHandlerImpl::create(problem, false) } :
                                                gbfs_eager::EventHandler { gbfs_eager::DefaultEventHandlerImpl::create(problem, false) };
 
-        result = gbfs_eager::find_solution(search_context, heuristic, nullptr, event_handler);
+        auto gbfs_options = gbfs_eager::Options();
+        gbfs_options.event_handler = event_handler;
+
+        result = gbfs_eager::find_solution(search_context, heuristic, gbfs_options);
     }
     else
     {
         auto event_handler = (verbosity > 1) ? gbfs_lazy::EventHandler { gbfs_lazy::DebugEventHandlerImpl::create(problem, false) } :
                                                gbfs_lazy::EventHandler { gbfs_lazy::DefaultEventHandlerImpl::create(problem, false) };
 
-        result = gbfs_lazy::find_solution(search_context,
-                                          heuristic,
-                                          nullptr,
-                                          event_handler,
-                                          nullptr,
-                                          nullptr,
-                                          nullptr,
-                                          std::array<size_t, 6> { 1, 1, 1, 1, weight_queue_preferred, weight_queue_standard });
+        auto gbfs_options = gbfs_lazy::Options();
+        gbfs_options.event_handler = event_handler;
+        gbfs_options.openlist_weights = std::array<size_t, 6> { 1, 1, 1, 1, weight_queue_preferred, weight_queue_standard };
+
+        result = gbfs_lazy::find_solution(search_context, heuristic, gbfs_options);
     }
 
     std::cout << "[GBFS] Total time: " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time)

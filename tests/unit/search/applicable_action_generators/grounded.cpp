@@ -49,7 +49,10 @@ TEST(MimirTests, SearchApplicableActionGeneratorsGroundedTest)
     const auto brfs_event_handler = brfs::DefaultEventHandlerImpl::create(problem);
     const auto search_context = SearchContextImpl::create(problem, applicable_action_generator, state_repository);
 
-    const auto result = brfs::find_solution(search_context, nullptr, brfs_event_handler);
+    auto brfs_options = brfs::Options();
+    brfs_options.event_handler = brfs_event_handler;
+
+    const auto result = brfs::find_solution(search_context, brfs_options);
     EXPECT_EQ(result.status, SearchStatus::SOLVED);
 
     const auto& applicable_action_generator_statistics = applicable_action_generator_event_handler->get_statistics();

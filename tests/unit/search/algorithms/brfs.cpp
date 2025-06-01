@@ -60,7 +60,13 @@ public:
     {
     }
 
-    SearchResult find_solution() { return brfs::find_solution(m_search_context, nullptr, m_brfs_event_handler); }
+    SearchResult find_solution()
+    {
+        auto brfs_options = brfs::Options();
+        brfs_options.event_handler = m_brfs_event_handler;
+
+        return brfs::find_solution(m_search_context, brfs_options);
+    }
 
     const brfs::Statistics& get_algorithm_statistics() const { return m_brfs_event_handler->get_statistics(); }
 
@@ -102,7 +108,13 @@ public:
     {
     }
 
-    SearchResult find_solution() { return brfs::find_solution(m_search_context, nullptr, m_brfs_event_handler); }
+    SearchResult find_solution()
+    {
+        auto brfs_options = brfs::Options();
+        brfs_options.event_handler = m_brfs_event_handler;
+
+        return brfs::find_solution(m_search_context, brfs_options);
+    }
 
     const brfs::Statistics& get_algorithm_statistics() const { return m_brfs_event_handler->get_statistics(); }
 

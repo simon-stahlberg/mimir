@@ -114,7 +114,12 @@ int main(int argc, char** argv)
 
     auto search_context = SearchContextImpl::create(problem, applicable_action_generator, state_repository);
 
-    auto result = iw::find_solution(search_context, nullptr, arity, iw_event_handler, brfs_event_handler);
+    auto iw_options = iw::Options();
+    iw_options.max_arity = arity;
+    iw_options.iw_event_handler = iw_event_handler;
+    iw_options.brfs_event_handler = brfs_event_handler;
+
+    auto result = iw::find_solution(search_context, iw_options);
 
     if (result.status == SearchStatus::SOLVED)
     {

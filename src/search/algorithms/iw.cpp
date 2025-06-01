@@ -907,23 +907,19 @@ bool ArityKNoveltyPruningStrategyImpl::test_prune_successor_state(const State st
 
 /* IterativeWidthAlgorithm */
 
-SearchResult find_solution(const SearchContext& context,
-                           State start_state_,
-                           size_t max_arity_,
-                           EventHandler iw_event_handler_,
-                           brfs::EventHandler brfs_event_handler_,
-                           GoalStrategy goal_strategy_)
+SearchResult find_solution(const SearchContext& context, const Options& options)
 {
     auto& problem = *context->get_problem();
     auto& applicable_action_generator = *context->get_applicable_action_generator();
     auto& state_repository = *context->get_state_repository();
 
-    const auto max_arity = max_arity_;
-    const auto [start_state, start_g_value] =
-        (start_state_) ? std::make_pair(start_state_, compute_state_metric_value(start_state_, problem)) : state_repository.get_or_create_initial_state();
-    const auto iw_event_handler = (iw_event_handler_) ? iw_event_handler_ : DefaultEventHandlerImpl::create(context->get_problem());
-    const auto brfs_event_handler = (brfs_event_handler_) ? brfs_event_handler_ : brfs::DefaultEventHandlerImpl::create(context->get_problem());
-    const auto goal_strategy = (goal_strategy_) ? goal_strategy_ : ProblemGoalStrategyImpl::create(context->get_problem());
+    const auto max_arity = options.max_arity;
+    const auto [start_state, start_g_value] = (options.start_state) ?
+                                                  std::make_pair(options.start_state, compute_state_metric_value(options.start_state, problem)) :
+                                                  state_repository.get_or_create_initial_state();
+    const auto iw_event_handler = (options.iw_event_handler) ? options.iw_event_handler : DefaultEventHandlerImpl::create(context->get_problem());
+    const auto brfs_event_handler = (options.brfs_event_handler) ? options.brfs_event_handler : brfs::DefaultEventHandlerImpl::create(context->get_problem());
+    const auto goal_strategy = (options.goal_strategy) ? options.goal_strategy : ProblemGoalStrategyImpl::create(context->get_problem());
 
     if (max_arity >= MAX_ARITY)
     {
@@ -938,14 +934,20 @@ SearchResult find_solution(const SearchContext& context,
     {
         iw_event_handler->on_start_arity_search(start_state, cur_arity);
 
-        const auto result =
-            (cur_arity > 0) ?
-                find_solution(context,
-                              start_state,
-                              brfs_event_handler,
-                              goal_strategy,
-                              std::make_shared<ArityKNoveltyPruningStrategyImpl>(cur_arity, INITIAL_TABLE_ATOMS)) :
-                find_solution(context, start_state, brfs_event_handler, goal_strategy, std::make_shared<ArityZeroNoveltyPruningStrategyImpl>(start_state));
+        auto options_i = brfs::Options();
+        options_i.start_state = start_state;
+        options_i.event_handler = brfs_event_handler;
+        options_i.goal_strategy = goal_strategy;
+        if (cur_arity > 0)
+        {
+            options_i.pruning_strategy = std::make_shared<ArityKNoveltyPruningStrategyImpl>(cur_arity, INITIAL_TABLE_ATOMS);
+        }
+        else
+        {
+            options_i.pruning_strategy = std::make_shared<ArityZeroNoveltyPruningStrategyImpl>(start_state);
+        }
+
+        const auto result = find_solution(context, options_i);
 
         iw_event_handler->on_end_arity_search(brfs_event_handler->get_statistics());
 

@@ -69,7 +69,13 @@ public:
 
     SearchResult find_solution()
     {
-        return siw::find_solution(m_search_context, nullptr, m_arity, m_siw_event_handler, m_iw_event_handler, m_brfs_event_handler);
+        auto siw_options = siw::Options();
+        siw_options.max_arity = m_arity;
+        siw_options.siw_event_handler = m_siw_event_handler;
+        siw_options.iw_event_handler = m_iw_event_handler;
+        siw_options.brfs_event_handler = m_brfs_event_handler;
+
+        return siw::find_solution(m_search_context, siw_options);
     }
 
     const siw::Statistics& get_iw_statistics() const { return m_siw_event_handler->get_statistics(); }
@@ -120,7 +126,13 @@ public:
 
     SearchResult find_solution()
     {
-        return siw::find_solution(m_search_context, nullptr, m_arity, m_siw_event_handler, m_iw_event_handler, m_brfs_event_handler);
+        auto siw_options = siw::Options();
+        siw_options.max_arity = m_arity;
+        siw_options.siw_event_handler = m_siw_event_handler;
+        siw_options.iw_event_handler = m_iw_event_handler;
+        siw_options.brfs_event_handler = m_brfs_event_handler;
+
+        return siw::find_solution(m_search_context, siw_options);
     }
 
     const siw::Statistics& get_iw_statistics() const { return m_siw_event_handler->get_statistics(); }

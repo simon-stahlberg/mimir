@@ -759,14 +759,16 @@ void bind_module_definitions(nb::module_& m)
                                                                                "DebugAStarEagerEventHandler")  //
         .def(nb::init<Problem, bool>(), "problem"_a, "quiet"_a = true);
 
-    m.def("find_solution_astar_eager",
-          &astar_eager::find_solution,
-          "search_context"_a,
-          "heuristic"_a,
-          "start_state"_a = nullptr,
-          "astar_event_handler"_a = nullptr,
-          "goal_strategy"_a = nullptr,
-          "pruning_strategy"_a = nullptr);
+    nb::class_<astar_eager::Options>(m, "AStarEagerOptions")  //
+        .def(nb::init<>())
+        .def_rw("start_state", &astar_eager::Options::start_state)
+        .def_rw("event_handler", &astar_eager::Options::event_handler)
+        .def_rw("goal_strategy", &astar_eager::Options::goal_strategy)
+        .def_rw("pruning_strategy", &astar_eager::Options::pruning_strategy)
+        .def_rw("max_num_states", &astar_eager::Options::max_num_states)
+        .def_rw("max_time_in_ms", &astar_eager::Options::max_time_in_ms);
+
+    m.def("find_solution_astar_eager", &astar_eager::find_solution, "search_context"_a, "heuristic"_a, "options"_a);
 
     // AStar_LAZY
     nb::class_<astar_lazy::Statistics>(m, "AStarLazyStatistics")  //
@@ -806,15 +808,17 @@ void bind_module_definitions(nb::module_& m)
                                                                              "DebugAStarLazyEventHandler")  //
         .def(nb::init<Problem, bool>(), "problem"_a, "quiet"_a = true);
 
-    m.def("find_solution_astar_lazy",
-          &astar_lazy::find_solution,
-          "search_context"_a,
-          "heuristic"_a,
-          "start_state"_a = nullptr,
-          "astar_event_handler"_a = nullptr,
-          "goal_strategy"_a = nullptr,
-          "pruning_strategy"_a = nullptr,
-          "openlist_weights"_a = std::nullopt);
+    nb::class_<astar_lazy::Options>(m, "AStarLazyOptions")  //
+        .def(nb::init<>())
+        .def_rw("start_state", &astar_lazy::Options::start_state)
+        .def_rw("event_handler", &astar_lazy::Options::event_handler)
+        .def_rw("goal_strategy", &astar_lazy::Options::goal_strategy)
+        .def_rw("pruning_strategy", &astar_lazy::Options::pruning_strategy)
+        .def_rw("max_num_states", &astar_lazy::Options::max_num_states)
+        .def_rw("max_time_in_ms", &astar_lazy::Options::max_time_in_ms)
+        .def_rw("openlist_weights", &astar_lazy::Options::openlist_weights);
+
+    m.def("find_solution_astar_lazy", &astar_lazy::find_solution, "search_context"_a, "heuristic"_a, "options"_a);
 
     // BrFS
     nb::class_<brfs::Statistics>(m, "BrFSStatistics")  //
@@ -851,16 +855,17 @@ void bind_module_definitions(nb::module_& m)
                                                                  "DebugBrFSEventHandler")  //
         .def(nb::init<Problem, bool>(), "problem"_a, "quiet"_a = true);
 
-    m.def("find_solution_brfs",
-          &brfs::find_solution,
-          "search_context"_a,
-          "start_state"_a = nullptr,
-          "brfs_event_handler"_a = nullptr,
-          "goal_strategy"_a = nullptr,
-          "pruning_strategy"_a = nullptr,
-          "stop_if_goal"_a = true,
-          "max_num_states"_a = std::numeric_limits<uint32_t>::max(),
-          "max_time_in_ms"_a = std::numeric_limits<uint32_t>::max());
+    nb::class_<brfs::Options>(m, "BrFSOptions")  //
+        .def(nb::init<>())
+        .def_rw("start_state", &brfs::Options::start_state)
+        .def_rw("event_handler", &brfs::Options::event_handler)
+        .def_rw("goal_strategy", &brfs::Options::goal_strategy)
+        .def_rw("pruning_strategy", &brfs::Options::pruning_strategy)
+        .def_rw("stop_if_goal", &brfs::Options::stop_if_goal)
+        .def_rw("max_num_states", &brfs::Options::max_num_states)
+        .def_rw("max_time_in_ms", &brfs::Options::max_time_in_ms);
+
+    m.def("find_solution_brfs", &brfs::find_solution, "search_context"_a, "options"_a);
 
     // GBFS_EAGER
     nb::class_<gbfs_eager::Statistics>(m, "GBFSEagerStatistics")  //
@@ -892,14 +897,16 @@ void bind_module_definitions(nb::module_& m)
                                                                              "DebugGBFSEagerEventHandler")  //
         .def(nb::init<Problem, bool>(), "problem"_a, "quiet"_a = true);
 
-    m.def("find_solution_gbfs_eager",
-          &gbfs_eager::find_solution,
-          "search_context"_a,
-          "heuristic"_a,
-          "start_state"_a = nullptr,
-          "gbfs_event_handler"_a = nullptr,
-          "goal_strategy"_a = nullptr,
-          "pruning_strategy"_a = nullptr);
+    nb::class_<gbfs_eager::Options>(m, "GBFSEagerOptions")  //
+        .def(nb::init<>())
+        .def_rw("start_state", &gbfs_eager::Options::start_state)
+        .def_rw("event_handler", &gbfs_eager::Options::event_handler)
+        .def_rw("goal_strategy", &gbfs_eager::Options::goal_strategy)
+        .def_rw("pruning_strategy", &gbfs_eager::Options::pruning_strategy)
+        .def_rw("max_num_states", &gbfs_eager::Options::max_num_states)
+        .def_rw("max_time_in_ms", &gbfs_eager::Options::max_time_in_ms);
+
+    m.def("find_solution_gbfs_eager", &gbfs_eager::find_solution, "search_context"_a, "heuristic"_a, "options"_a);
 
     // GBFS_LAZY
     nb::class_<gbfs_lazy::Statistics>(m, "GBFSLazyStatistics")  //
@@ -931,16 +938,17 @@ void bind_module_definitions(nb::module_& m)
                                                                            "DebugGBFSLazyEventHandler")  //
         .def(nb::init<Problem, bool>(), "problem"_a, "quiet"_a = true);
 
-    m.def("find_solution_gbfs_lazy",
-          &gbfs_lazy::find_solution,
-          "search_context"_a,
-          "heuristic"_a,
-          "start_state"_a = nullptr,
-          "gbfs_event_handler"_a = nullptr,
-          "goal_strategy"_a = nullptr,
-          "pruning_strategy"_a = nullptr,
-          "exploration_strategy"_a = nullptr,
-          "openlist_weights"_a = std::nullopt);
+    nb::class_<gbfs_lazy::Options>(m, "GBFSLazyOptions")  //
+        .def(nb::init<>())
+        .def_rw("start_state", &gbfs_lazy::Options::start_state)
+        .def_rw("event_handler", &gbfs_lazy::Options::event_handler)
+        .def_rw("goal_strategy", &gbfs_lazy::Options::goal_strategy)
+        .def_rw("pruning_strategy", &gbfs_lazy::Options::pruning_strategy)
+        .def_rw("max_num_states", &gbfs_lazy::Options::max_num_states)
+        .def_rw("max_time_in_ms", &gbfs_lazy::Options::max_time_in_ms)
+        .def_rw("openlist_weights", &gbfs_lazy::Options::openlist_weights);
+
+    m.def("find_solution_gbfs_lazy", &gbfs_lazy::find_solution, "search_context"_a, "heuristic"_a, "options"_a);
 
     // IW
     nb::class_<iw::TupleIndexMapper>(m, "TupleIndexMapper")  //
@@ -1021,14 +1029,15 @@ void bind_module_definitions(nb::module_& m)
 
     nb::class_<iw::DefaultEventHandlerImpl, iw::IEventHandler>(m, "DefaultIWEventHandler").def(nb::init<Problem, bool>(), "problem"_a, "quiet"_a = true);
 
-    m.def("find_solution_iw",
-          &iw::find_solution,
-          "search_context"_a,
-          "start_state"_a = nullptr,
-          "max_arity"_a = nullptr,
-          "iw_event_handler"_a = nullptr,
-          "brfs_event_handler"_a = nullptr,
-          "goal_strategy"_a = nullptr);
+    nb::class_<iw::Options>(m, "IWOptions")  //
+        .def(nb::init<>())
+        .def_rw("start_state", &iw::Options::start_state)
+        .def_rw("iw_event_handler", &iw::Options::iw_event_handler)
+        .def_rw("brfs_event_handler", &iw::Options::brfs_event_handler)
+        .def_rw("goal_strategy", &iw::Options::goal_strategy)
+        .def_rw("max_arity", &iw::Options::max_arity);
+
+    m.def("find_solution_iw", &iw::find_solution, "search_context"_a, "options"_a);
 
     // SIW
     nb::class_<siw::Statistics>(m, "SIWStatistics")  //
@@ -1041,15 +1050,16 @@ void bind_module_definitions(nb::module_& m)
         .def("get_statistics", &siw::IEventHandler::get_statistics);
     nb::class_<siw::DefaultEventHandlerImpl, siw::IEventHandler>(m, "DefaultSIWEventHandler").def(nb::init<Problem, bool>(), "problem"_a, "quiet"_a = true);
 
-    m.def("find_solution_siw",
-          &siw::find_solution,
-          "search_context"_a,
-          "start_state"_a = nullptr,
-          "max_arity"_a = nullptr,
-          "siw_event_handler"_a = nullptr,
-          "iw_event_handler"_a = nullptr,
-          "brfs_event_handler"_a = nullptr,
-          "goal_strategy"_a = nullptr);
+    nb::class_<siw::Options>(m, "SIWOptions")  //
+        .def(nb::init<>())
+        .def_rw("start_state", &siw::Options::start_state)
+        .def_rw("siw_event_handler", &siw::Options::siw_event_handler)
+        .def_rw("iw_event_handler", &siw::Options::iw_event_handler)
+        .def_rw("brfs_event_handler", &siw::Options::brfs_event_handler)
+        .def_rw("goal_strategy", &siw::Options::goal_strategy)
+        .def_rw("max_arity", &siw::Options::max_arity);
+
+    m.def("find_solution_siw", &siw::find_solution, "search_context"_a, "options"_a);
 }
 
 }

@@ -380,7 +380,13 @@ static std::optional<std::pair<StateSpace, CertificateMaps>> compute_problem_gra
     const auto state_repository = context->get_state_repository();
     const auto goal_test = ProblemGoalStrategyImpl::create(context->get_problem());
     const auto [initial_state, initial_g_value] = state_repository->get_or_create_initial_state();
-    const auto result = find_solution(context, initial_state, event_handler, goal_test, pruning_strategy, false, options.max_num_states);
+    auto brfs_options = brfs::Options();
+    brfs_options.start_state = initial_state;
+    brfs_options.event_handler = event_handler;
+    brfs_options.pruning_strategy = pruning_strategy;
+    brfs_options.stop_if_goal = false;
+    brfs_options.max_num_states = options.max_num_states;
+    const auto result = find_solution(context, brfs_options);
 
     if (result.status != SearchStatus::EXHAUSTED)
     {
@@ -407,7 +413,13 @@ static std::optional<StateSpace> compute_problem_graph_without_symmetry_reductio
     const auto event_handler = std::make_shared<ProblemGraphEventHandler>(context->get_problem(), options, graph, goal_vertices, false);
     const auto pruning_strategy = DuplicatePruningStrategyImpl::create();
     const auto [initial_state, initial_g_value] = state_repository->get_or_create_initial_state();
-    const auto result = find_solution(context, initial_state, event_handler, goal_test, pruning_strategy, false, options.max_num_states);
+    auto brfs_options = brfs::Options();
+    brfs_options.start_state = initial_state;
+    brfs_options.event_handler = event_handler;
+    brfs_options.pruning_strategy = pruning_strategy;
+    brfs_options.stop_if_goal = false;
+    brfs_options.max_num_states = options.max_num_states;
+    const auto result = find_solution(context, brfs_options);
 
     if (result.status != SearchStatus::EXHAUSTED)
     {

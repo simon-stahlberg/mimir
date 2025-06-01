@@ -68,7 +68,15 @@ public:
     {
     }
 
-    SearchResult find_solution() { return iw::find_solution(m_search_context, nullptr, m_arity, m_iw_event_handler, m_brfs_event_handler); }
+    SearchResult find_solution()
+    {
+        auto iw_options = iw::Options();
+        iw_options.max_arity = m_arity;
+        iw_options.iw_event_handler = m_iw_event_handler;
+        iw_options.brfs_event_handler = m_brfs_event_handler;
+
+        return iw::find_solution(m_search_context, iw_options);
+    }
 
     const iw::Statistics& get_iw_statistics() const { return m_iw_event_handler->get_statistics(); }
 
@@ -114,7 +122,15 @@ public:
     {
     }
 
-    SearchResult find_solution() { return iw::find_solution(m_search_context, nullptr, m_arity, m_iw_event_handler, m_brfs_event_handler); }
+    SearchResult find_solution()
+    {
+        auto iw_options = iw::Options();
+        iw_options.max_arity = m_arity;
+        iw_options.iw_event_handler = m_iw_event_handler;
+        iw_options.brfs_event_handler = m_brfs_event_handler;
+
+        return iw::find_solution(m_search_context, iw_options);
+    }
 
     const iw::Statistics& get_iw_statistics() const { return m_iw_event_handler->get_statistics(); }
 

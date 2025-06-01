@@ -23,20 +23,27 @@
 #include "mimir/search/algorithms/utils.hpp"
 #include "mimir/search/declarations.hpp"
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <vector>
 
 namespace mimir::search::astar_lazy
 {
+struct Options
+{
+    State start_state = nullptr;
+    EventHandler event_handler = nullptr;
+    GoalStrategy goal_strategy = nullptr;
+    PruningStrategy pruning_strategy = nullptr;
+    uint32_t max_num_states = std::numeric_limits<uint32_t>::max();
+    uint32_t max_time_in_ms = std::numeric_limits<uint32_t>::max();
+    std::array<size_t, 2> openlist_weights = { 1, 1 };
 
-extern SearchResult find_solution(const SearchContext& context,
-                                  const Heuristic& heuristic,
-                                  State start_state = nullptr,
-                                  EventHandler event_handler = nullptr,
-                                  GoalStrategy goal_strategy = nullptr,
-                                  PruningStrategy pruning_strategy = nullptr,
-                                  std::optional<std::array<size_t, 2>> openlist_weights = std::nullopt);
+    Options() = default;
+};
+
+extern SearchResult find_solution(const SearchContext& context, const Heuristic& heuristic, const Options& options = Options());
 
 }
 

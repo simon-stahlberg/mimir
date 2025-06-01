@@ -29,13 +29,19 @@
 
 namespace mimir::search::gbfs_eager
 {
+struct Options
+{
+    State start_state = nullptr;
+    EventHandler event_handler = nullptr;
+    GoalStrategy goal_strategy = nullptr;
+    PruningStrategy pruning_strategy = nullptr;
+    uint32_t max_num_states = std::numeric_limits<uint32_t>::max();
+    uint32_t max_time_in_ms = std::numeric_limits<uint32_t>::max();
 
-extern SearchResult find_solution(const SearchContext& context,
-                                  const Heuristic& heuristic,
-                                  State start_state = nullptr,
-                                  EventHandler event_handler = nullptr,
-                                  GoalStrategy goal_strategy = nullptr,
-                                  PruningStrategy pruning_strategy = nullptr);
+    Options() = default;
+};
+
+extern SearchResult find_solution(const SearchContext& context, const Heuristic& heuristic, const Options& options = Options());
 
 }
 

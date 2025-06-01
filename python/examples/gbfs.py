@@ -1,4 +1,4 @@
-""" This example illustrates the interface for the iterative width search algorithm and utilities.
+""" This example illustrates the interface for the greedy best first search algorithm.
 """
 
 import pymimir.advanced.formalism as formalism
@@ -71,7 +71,6 @@ def main():
     search_context = search.SearchContext.create(problem, applicable_action_generator, state_repository)
 
     # Create some heuristics
-    heuristic = CustomBlindHeuristic()
     delete_relaxation = search.DeleteRelaxedProblemExplorator(problem)
     heuristic = search.FFHeuristic(delete_relaxation)
 
@@ -79,25 +78,29 @@ def main():
     goal_strategy = search.ProblemGoalStrategy.create(search_context.get_problem())
 
     # GBFS Eager: evaluates heuristic on generated states; ignores preferred actions
-    event_handler = search.DefaultGBFSEagerEventHandler(search_context.get_problem())
+    gbfs_eager_options = search.GBFSEagerOptions()
+    gbfs_eager_options.event_handler =  search.DefaultGBFSEagerEventHandler(search_context.get_problem())
+    gbfs_eager_options.goal_strategy = goal_strategy
 
-    result = search.find_solution_gbfs_eager(search_context, heuristic, None, event_handler, goal_strategy)
+    result = search.find_solution_gbfs_eager(search_context, heuristic, gbfs_eager_options)
 
     assert(result.status == search.SearchStatus.SOLVED)
     assert(len(result.plan) == 5)
 
-    print(event_handler.get_statistics())
+    print(gbfs_eager_options.event_handler.get_statistics())
     print(result.plan)
 
     # GBFS Lazy: evaluates heuristic on expanded states; uses preferred actions
-    event_handler = search.DefaultGBFSLazyEventHandler(search_context.get_problem())
+    gbfs_lazy_options = search.GBFSLazyOptions()
+    gbfs_lazy_options.event_handler =  search.DefaultGBFSLazyEventHandler(search_context.get_problem())
+    gbfs_lazy_options.goal_strategy = goal_strategy
 
-    result = search.find_solution_gbfs_lazy(search_context, heuristic, None, event_handler, goal_strategy)
+    result = search.find_solution_gbfs_lazy(search_context, heuristic, gbfs_lazy_options)
 
     assert(result.status == search.SearchStatus.SOLVED)
     assert(len(result.plan) == 5)
 
-    print(event_handler.get_statistics())
+    print(gbfs_lazy_options.event_handler.get_statistics())
     print(result.plan)
 
 

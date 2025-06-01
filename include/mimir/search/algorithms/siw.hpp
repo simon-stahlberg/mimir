@@ -23,14 +23,19 @@
 
 namespace mimir::search::siw
 {
+struct Options
+{
+    State start_state = nullptr;
+    EventHandler siw_event_handler = nullptr;
+    iw::EventHandler iw_event_handler = nullptr;
+    brfs::EventHandler brfs_event_handler = nullptr;
+    GoalStrategy goal_strategy = nullptr;
+    size_t max_arity = iw::MAX_ARITY - 1;
 
-extern SearchResult find_solution(const SearchContext& context,
-                                  State start_state = nullptr,
-                                  size_t max_arity = iw::MAX_ARITY - 1,
-                                  EventHandler siw_event_handler = nullptr,
-                                  iw::EventHandler iw_event_handler = nullptr,
-                                  brfs::EventHandler brfs_event_handler = nullptr,
-                                  GoalStrategy goal_strategy = nullptr);
+    Options() = default;
+};
+
+extern SearchResult find_solution(const SearchContext& context, const Options& options = Options());
 }
 
 #endif

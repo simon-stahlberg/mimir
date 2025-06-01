@@ -113,7 +113,10 @@ int main(int argc, char** argv)
 
     auto search_context = SearchContextImpl::create(problem, applicable_action_generator, state_repository);
 
-    auto result = brfs::find_solution(search_context, nullptr, event_handler);
+    auto brfs_options = brfs::Options();
+    brfs_options.event_handler = event_handler;
+
+    auto result = brfs::find_solution(search_context, brfs_options);
 
     std::cout << "[BrFS] Total time: " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time)
               << std::endl;

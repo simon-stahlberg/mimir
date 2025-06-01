@@ -164,20 +164,19 @@ int main(int argc, char** argv)
         auto event_handler = (verbosity > 1) ? astar_eager::EventHandler { astar_eager::DebugEventHandlerImpl::create(problem, false) } :
                                                astar_eager::EventHandler { astar_eager::DefaultEventHandlerImpl::create(problem, false) };
 
-        result = astar_eager::find_solution(search_context, heuristic, nullptr, event_handler);
+        auto astar_options = astar_eager::Options();
+        astar_options.event_handler = event_handler;
+        result = astar_eager::find_solution(search_context, heuristic, astar_options);
     }
     else
     {
         auto event_handler = (verbosity > 1) ? astar_lazy::EventHandler { astar_lazy::DebugEventHandlerImpl::create(problem, false) } :
                                                astar_lazy::EventHandler { astar_lazy::DefaultEventHandlerImpl::create(problem, false) };
 
-        result = astar_lazy::find_solution(search_context,
-                                           heuristic,
-                                           nullptr,
-                                           event_handler,
-                                           nullptr,
-                                           nullptr,
-                                           std::array<size_t, 2> { weight_queue_preferred, weight_queue_standard });
+        auto astar_options = astar_lazy::Options();
+        astar_options.event_handler = event_handler;
+        astar_options.openlist_weights = std::array<size_t, 2> { weight_queue_preferred, weight_queue_standard };
+        result = astar_lazy::find_solution(search_context, heuristic, astar_options);
     }
 
     std::cout << "[ASTAR] Total time: " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time)

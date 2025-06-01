@@ -30,14 +30,21 @@
 namespace mimir::search::gbfs_lazy
 {
 
-extern SearchResult find_solution(const SearchContext& context,
-                                  const Heuristic& heuristic,
-                                  State start_state = nullptr,
-                                  EventHandler event_handler = nullptr,
-                                  GoalStrategy goal_strategy = nullptr,
-                                  PruningStrategy pruning_strategy = nullptr,
-                                  ExplorationStategy exploration_strategy = nullptr,
-                                  std::optional<std::array<size_t, 6>> openlist_weights = std::nullopt);
+struct Options
+{
+    State start_state = nullptr;
+    EventHandler event_handler = nullptr;
+    GoalStrategy goal_strategy = nullptr;
+    PruningStrategy pruning_strategy = nullptr;
+    ExplorationStategy exploration_strategy = nullptr;
+    uint32_t max_num_states = std::numeric_limits<uint32_t>::max();
+    uint32_t max_time_in_ms = std::numeric_limits<uint32_t>::max();
+    std::array<size_t, 6> openlist_weights = { 1, 1, 1, 1, 64, 1 };
+
+    Options() = default;
+};
+
+extern SearchResult find_solution(const SearchContext& context, const Heuristic& heuristic, const Options& options = Options());
 
 }
 

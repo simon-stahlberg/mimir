@@ -28,15 +28,20 @@
 
 namespace mimir::search::brfs
 {
+struct Options
+{
+    State start_state = nullptr;
+    EventHandler event_handler = nullptr;
+    GoalStrategy goal_strategy = nullptr;
+    PruningStrategy pruning_strategy = nullptr;
+    bool stop_if_goal = true;
+    uint32_t max_num_states = std::numeric_limits<uint32_t>::max();
+    uint32_t max_time_in_ms = std::numeric_limits<uint32_t>::max();
 
-extern SearchResult find_solution(const SearchContext& context,
-                                  State start_state = nullptr,
-                                  EventHandler event_handler = nullptr,
-                                  GoalStrategy goal_strategy = nullptr,
-                                  PruningStrategy pruning_strategy = nullptr,
-                                  bool stop_if_goal = true,
-                                  uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
-                                  uint32_t max_time_in_ms = std::numeric_limits<uint32_t>::max());
+    Options() = default;
+};
+
+extern SearchResult find_solution(const SearchContext& context, const Options& options = Options());
 
 }
 

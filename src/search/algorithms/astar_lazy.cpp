@@ -69,13 +69,7 @@ get_or_create_search_node(size_t state_index, const AStarSearchNodeImpl& default
  * AStar
  */
 
-SearchResult find_solution(const SearchContext& context,
-                           const Heuristic& heuristic,
-                           State start_state_,
-                           EventHandler event_handler_,
-                           GoalStrategy goal_strategy_,
-                           PruningStrategy pruning_strategy_,
-                           std::optional<std::array<size_t, 2>> openlist_weights_)
+SearchResult find_solution(const SearchContext& context, const Heuristic& heuristic, const Options& options)
 {
     assert(heuristic);
 
@@ -83,12 +77,13 @@ SearchResult find_solution(const SearchContext& context,
     auto& applicable_action_generator = *context->get_applicable_action_generator();
     auto& state_repository = *context->get_state_repository();
 
-    const auto [start_state, start_g_value] =
-        (start_state_) ? std::make_pair(start_state_, compute_state_metric_value(start_state_, problem)) : state_repository.get_or_create_initial_state();
-    const auto event_handler = (event_handler_) ? event_handler_ : DefaultEventHandlerImpl::create(context->get_problem());
-    const auto goal_strategy = (goal_strategy_) ? goal_strategy_ : ProblemGoalStrategyImpl::create(context->get_problem());
-    const auto pruning_strategy = (pruning_strategy_) ? pruning_strategy_ : NoPruningStrategyImpl::create();
-    const auto openlist_weights = (openlist_weights_) ? openlist_weights_.value() : std::array<size_t, 2> { 1, 1 };
+    const auto [start_state, start_g_value] = (options.start_state) ?
+                                                  std::make_pair(options.start_state, compute_state_metric_value(options.start_state, problem)) :
+                                                  state_repository.get_or_create_initial_state();
+    const auto event_handler = (options.event_handler) ? options.event_handler : DefaultEventHandlerImpl::create(context->get_problem());
+    const auto goal_strategy = (options.goal_strategy) ? options.goal_strategy : ProblemGoalStrategyImpl::create(context->get_problem());
+    const auto pruning_strategy = (options.pruning_strategy) ? options.pruning_strategy : NoPruningStrategyImpl::create();
+    const auto openlist_weights = options.openlist_weights;
 
     const auto& ground_action_repository = boost::hana::at_key(problem.get_repositories().get_hana_repositories(), boost::hana::type<GroundActionImpl> {});
     const auto& ground_axiom_repository = boost::hana::at_key(problem.get_repositories().get_hana_repositories(), boost::hana::type<GroundAxiomImpl> {});
