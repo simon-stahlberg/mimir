@@ -26,7 +26,7 @@ var searchData=
   ['positivetag_23',['PositiveTag',['../structmimir_1_1formalism_1_1PositiveTag.html',1,'mimir::formalism']]],
   ['predicate_24',['Predicate',['../namespacemimir_1_1formalism.html#a62a850b37be0730b5f889f780d541f5f',1,'mimir::formalism']]],
   ['predicate_2ehpp_25',['predicate.hpp',['../predicate_8hpp.html',1,'']]],
-  ['predicateimpl_26',['PredicateImpl',['../classmimir_1_1formalism_1_1PredicateImpl.html',1,'mimir::formalism::PredicateImpl&lt; P &gt;'],['../classmimir_1_1formalism_1_1PredicateImpl.html#a7784a4ec26c1e5758856283a87f72bd2',1,'mimir::formalism::PredicateImpl::PredicateImpl(const PredicateImpl &amp;other)=delete'],['../classmimir_1_1formalism_1_1PredicateImpl.html#a952a7393c178526608932e47d3162c7e',1,'mimir::formalism::PredicateImpl::PredicateImpl(PredicateImpl &amp;&amp;other)=default']]],
+  ['predicateimpl_26',['PredicateImpl',['../classmimir_1_1formalism_1_1PredicateImpl.html',1,'mimir::formalism::PredicateImpl&lt; P &gt;'],['../classmimir_1_1formalism_1_1PredicateImpl.html#a952a7393c178526608932e47d3162c7e',1,'mimir::formalism::PredicateImpl::PredicateImpl(PredicateImpl &amp;&amp;other)=default'],['../classmimir_1_1formalism_1_1PredicateImpl.html#a7784a4ec26c1e5758856283a87f72bd2',1,'mimir::formalism::PredicateImpl::PredicateImpl(const PredicateImpl &amp;other)=delete']]],
   ['predicatelist_27',['PredicateList',['../namespacemimir_1_1formalism.html#aa4647d157734e45d33719b2e2626a210',1,'mimir::formalism']]],
   ['predicatelists_28',['PredicateLists',['../namespacemimir_1_1formalism.html#aa72569b0ace4bb713c6177385cdbf03a',1,'mimir::formalism']]],
   ['predicatemap_29',['PredicateMap',['../namespacemimir_1_1formalism.html#a9a37f78f953b3ca05bba90a1391803c9',1,'mimir::formalism']]],
@@ -54,8 +54,9 @@ var searchData=
   ['problemvertex_51',['ProblemVertex',['../namespacemimir_1_1graphs.html#a4401dfeb9aa3b9b2f3925044ee7a6e71',1,'mimir::graphs']]],
   ['problemvertexlist_52',['ProblemVertexList',['../namespacemimir_1_1graphs.html#a6849af3a319ee009030dc943e8f30f13',1,'mimir::graphs']]],
   ['property_5fmaps_2ehpp_53',['property_maps.hpp',['../property__maps_8hpp.html',1,'']]],
-  ['pruning_5fstrategy_2ehpp_54',['pruning_strategy.hpp',['../strategies_2pruning__strategy_8hpp.html',1,'(Global Namespace)'],['../iw_2pruning__strategy_8hpp.html',1,'(Global Namespace)']]],
-  ['pruningstrategy_55',['PruningStrategy',['../namespacemimir_1_1search.html#a4a361738fff5acc4d7091c245f79ccf1',1,'mimir::search']]],
-  ['push_5fback_5falgorithm_5fstatistics_56',['push_back_algorithm_statistics',['../classmimir_1_1search_1_1iw_1_1Statistics.html#ae487fccdbea1c12c75ee88441e139539',1,'mimir::search::iw::Statistics::push_back_algorithm_statistics()'],['../classmimir_1_1search_1_1siw_1_1Statistics.html#a12f62fa40dd1b59cfc0c8506683a9acf',1,'mimir::search::siw::Statistics::push_back_algorithm_statistics()']]],
-  ['put_57',['put',['../namespacemimir_1_1graphs_1_1bgl.html#a5609a6902839612433035834c1c63335',1,'mimir::graphs::bgl::put(VectorReadWritePropertyMap&lt; I, Value &gt; &amp;m, I key, Value value)'],['../namespacemimir_1_1graphs_1_1bgl.html#aac0bcaa946466f4cfc38a2beaf236082',1,'mimir::graphs::bgl::put(UnorderedMapReadWritePropertyMap&lt; Key, Value &gt; &amp;m, Key key, Value value)']]]
+  ['pruning_5fstrategy_54',['pruning_strategy',['../structmimir_1_1search_1_1brfs_1_1Options.html#ad2b1b4291e0ddb134a113d4265fbb8f5',1,'mimir::search::brfs::Options']]],
+  ['pruning_5fstrategy_2ehpp_55',['pruning_strategy.hpp',['../strategies_2pruning__strategy_8hpp.html',1,'(Global Namespace)'],['../iw_2pruning__strategy_8hpp.html',1,'(Global Namespace)']]],
+  ['pruningstrategy_56',['PruningStrategy',['../namespacemimir_1_1search.html#a4a361738fff5acc4d7091c245f79ccf1',1,'mimir::search']]],
+  ['push_5fback_5falgorithm_5fstatistics_57',['push_back_algorithm_statistics',['../classmimir_1_1search_1_1siw_1_1Statistics.html#a12f62fa40dd1b59cfc0c8506683a9acf',1,'mimir::search::siw::Statistics::push_back_algorithm_statistics()'],['../classmimir_1_1search_1_1iw_1_1Statistics.html#ae487fccdbea1c12c75ee88441e139539',1,'mimir::search::iw::Statistics::push_back_algorithm_statistics()']]],
+  ['put_58',['put',['../namespacemimir_1_1graphs_1_1bgl.html#a5609a6902839612433035834c1c63335',1,'mimir::graphs::bgl::put(VectorReadWritePropertyMap&lt; I, Value &gt; &amp;m, I key, Value value)'],['../namespacemimir_1_1graphs_1_1bgl.html#aac0bcaa946466f4cfc38a2beaf236082',1,'mimir::graphs::bgl::put(UnorderedMapReadWritePropertyMap&lt; Key, Value &gt; &amp;m, Key key, Value value)']]]
 ];
