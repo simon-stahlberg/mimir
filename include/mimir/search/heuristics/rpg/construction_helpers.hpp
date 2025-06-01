@@ -141,7 +141,7 @@ inline std::tuple<ActionList, IsPreconditionOfContainer, IndexList> instantiate_
         }
     }
 
-    std::cout << "[RPG] Number of unary actions: " << actions.size() << std::endl;
+    // std::cout << "[RPG] Number of unary actions: " << actions.size() << std::endl;
 
     return std::make_tuple(std::move(actions), std::move(is_precondition_of_action), std::move(trivial_unary_actions));
 }
@@ -184,7 +184,7 @@ inline std::tuple<AxiomList, IsPreconditionOfContainer, IndexList> instantiate_a
         }
     }
 
-    std::cout << "[RPG] Number of unary axioms: " << axioms.size() << std::endl;
+    // std::cout << "[RPG] Number of unary axioms: " << axioms.size() << std::endl;
 
     return std::make_tuple(std::move(axioms), std::move(is_precondition_of_axiom), std::move(trivial_unary_axioms));
 }
