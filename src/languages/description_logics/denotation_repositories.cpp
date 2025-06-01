@@ -46,9 +46,25 @@ Denotation<D> DenotationRepository<D>::get_if(Constructor<D> constructor, search
     return it->second;
 }
 
+template<IsConceptOrRoleOrBooleanOrNumericalTag D>
+void DenotationRepository<D>::clear()
+{
+    m_storage.clear();
+    m_cached_dynamic_denotations.clear();
+}
+
 template class DenotationRepository<ConceptTag>;
 template class DenotationRepository<RoleTag>;
 template class DenotationRepository<BooleanTag>;
 template class DenotationRepository<NumericalTag>;
 
+void clear(DenotationRepositories& repositories)
+{
+    boost::hana::for_each(repositories,
+                          [](auto&& pair)
+                          {
+                              auto& repository = boost::hana::second(pair);
+                              repository.clear();
+                          });
+}
 }

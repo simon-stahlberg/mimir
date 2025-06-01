@@ -253,7 +253,8 @@ void bind_module_definitions(nb::module_& m)
         .def("get_data", nb::overload_cast<>(&DenotationImpl<NumericalTag>::get_data, nb::const_), nb::rv_policy::copy);
 
     nb::class_<DenotationRepositories>(m, "DenotationRepositories")  //
-        .def(nb::init<>());
+        .def(nb::init<>())
+        .def("clear", [](DenotationRepositories& self) { clear(self); });
 
     nb::class_<EvaluationContext>(m, "EvaluationContext")  //
         .def(nb::init<search::State, formalism::Problem, DenotationRepositories&>(), "state"_a, "problem"_a, "denotation_repositories"_a);

@@ -382,7 +382,7 @@ static std::optional<std::pair<StateSpace, CertificateMaps>> compute_problem_gra
     const auto [initial_state, initial_g_value] = state_repository->get_or_create_initial_state();
     const auto result = find_solution(context, initial_state, event_handler, goal_test, pruning_strategy, false, options.max_num_states);
 
-    if (result.status != EXHAUSTED)
+    if (result.status != SearchStatus::EXHAUSTED)
     {
         return std::nullopt;  ///< ran out of resources.
     }
@@ -409,7 +409,7 @@ static std::optional<StateSpace> compute_problem_graph_without_symmetry_reductio
     const auto [initial_state, initial_g_value] = state_repository->get_or_create_initial_state();
     const auto result = find_solution(context, initial_state, event_handler, goal_test, pruning_strategy, false, options.max_num_states);
 
-    if (result.status != EXHAUSTED)
+    if (result.status != SearchStatus::EXHAUSTED)
     {
         return std::nullopt;  ///< ran out of resources.
     }

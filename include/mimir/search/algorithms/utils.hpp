@@ -26,7 +26,7 @@
 namespace mimir::search
 {
 
-enum SearchStatus
+enum class SearchStatus
 {
     IN_PROGRESS,
     OUT_OF_TIME,

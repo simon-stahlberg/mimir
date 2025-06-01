@@ -46,17 +46,19 @@ namespace mimir::search::gbfs_lazy
  * GBFS search node
  */
 
-using GBFSSearchNodeImpl = SearchNodeImpl<ContinuousCost, ContinuousCost, bool>;
+using GBFSSearchNodeImpl = SearchNodeImpl<ContinuousCost, ContinuousCost, bool, bool>;
 using GBFSSearchNode = GBFSSearchNodeImpl*;
 using ConstGBFSSearchNode = const GBFSSearchNodeImpl*;
 
 static void set_g_value(GBFSSearchNode node, ContinuousCost g_value) { node->get_property<0>() = g_value; }
 static void set_h_value(GBFSSearchNode node, ContinuousCost h_value) { node->get_property<1>() = h_value; }
-static void set_preferred(GBFSSearchNode node, bool preferred) { node->get_property<2>() = preferred; }
+static void set_h_preferredness(GBFSSearchNode node, bool preferred) { node->get_property<2>() = preferred; }
+static void set_pi_compatibility(GBFSSearchNode node, bool compatible) { node->get_property<3>() = compatible; }
 
 static ContinuousCost get_g_value(ConstGBFSSearchNode node) { return node->get_property<0>(); }
-// static ContinuousCost get_h_value(ConstGBFSSearchNode node) { return node->get_property<1>(); }
-// static bool get_preferred(ConstGBFSSearchNode node) { return node->get_property<2>(); }
+[[maybe_unused]] static ContinuousCost get_h_value(ConstGBFSSearchNode node) { return node->get_property<1>(); }
+[[maybe_unused]] static bool get_h_preferredness(ConstGBFSSearchNode node) { return node->get_property<2>(); }
+[[maybe_unused]] static bool get_pi_compatibility(ConstGBFSSearchNode node) { return node->get_property<3>(); }
 
 static GBFSSearchNode
 get_or_create_search_node(size_t state_index, const GBFSSearchNodeImpl& default_node, mimir::buffering::Vector<GBFSSearchNodeImpl>& search_nodes)
@@ -112,11 +114,8 @@ SearchResult find_solution(const SearchContext& context,
         return result;
     }
 
-    auto default_search_node =
-        GBFSSearchNodeImpl(SearchNodeStatus::NEW,
-                           MAX_INDEX,
-                           cista::tuple<ContinuousCost, ContinuousCost, bool> { ContinuousCost(INFINITY_CONTINUOUS_COST), ContinuousCost(0), false });
-    auto search_nodes = SearchNodeImplVector<ContinuousCost, ContinuousCost, bool>();
+    auto default_search_node = GBFSSearchNodeImpl(SearchNodeStatus::NEW, MAX_INDEX, ContinuousCost(INFINITY_CONTINUOUS_COST), ContinuousCost(0), false, false);
+    auto search_nodes = SearchNodeImplVector<ContinuousCost, ContinuousCost, bool, bool>();
 
     /* Test whether initial state is goal. */
 
@@ -142,21 +141,22 @@ SearchResult find_solution(const SearchContext& context,
         return result;
     }
 
+    using GreedyOpenListType = PriorityQueue<Index, State>;
     using OpenListType = PriorityQueue<std::tuple<double, double, Index>, State>;
-    auto compatible_greedy_and_preferred_openlist = OpenListType();
-    auto compatible_greedy_openlist = OpenListType();
+    auto compatible_greedy_and_preferred_openlist = GreedyOpenListType();
+    auto compatible_greedy_openlist = GreedyOpenListType();
     auto compatible_exhaustive_and_preferred_openlist = OpenListType();
     auto compatible_exhaustive_openlist = OpenListType();
     auto preferred_openlist = OpenListType();
     auto standard_openlist = OpenListType();
-    auto openlist =
-        AlternatingOpenList<OpenListType, OpenListType, OpenListType, OpenListType, OpenListType, OpenListType>(compatible_greedy_and_preferred_openlist,
-                                                                                                                compatible_greedy_openlist,
-                                                                                                                compatible_exhaustive_and_preferred_openlist,
-                                                                                                                compatible_exhaustive_openlist,
-                                                                                                                preferred_openlist,
-                                                                                                                standard_openlist,
-                                                                                                                openlist_weights);
+    auto openlist = AlternatingOpenList<GreedyOpenListType, GreedyOpenListType, OpenListType, OpenListType, OpenListType, OpenListType>(
+        compatible_greedy_and_preferred_openlist,
+        compatible_greedy_openlist,
+        compatible_exhaustive_and_preferred_openlist,
+        compatible_exhaustive_openlist,
+        preferred_openlist,
+        standard_openlist,
+        openlist_weights);
 
     if (start_g_value == UNDEFINED_CONTINUOUS_COST)
     {
@@ -172,7 +172,8 @@ SearchResult find_solution(const SearchContext& context,
     start_search_node->get_status() = (start_h_value == INFINITY_CONTINUOUS_COST) ? SearchNodeStatus::DEAD_END : SearchNodeStatus::OPEN;
     set_g_value(start_search_node, start_g_value);
     set_h_value(start_search_node, start_h_value);
-    set_preferred(start_search_node, start_preferred);
+    set_h_preferredness(start_search_node, start_preferred);
+    set_pi_compatibility(start_search_node, false);
 
     /* Test whether start state is deadend. */
 
@@ -256,6 +257,10 @@ SearchResult find_solution(const SearchContext& context,
 
             if (!is_new_successor_state)
             {
+                if (get_pi_compatibility(successor_search_node))
+                {
+                    first_compatible = false;
+                }
                 continue;
             }
 
@@ -273,7 +278,7 @@ SearchResult find_solution(const SearchContext& context,
             successor_search_node->get_parent_state() = state->get_index();
             set_g_value(successor_search_node, successor_state_metric_value);
             set_h_value(successor_search_node, state_h_value);
-            set_preferred(successor_search_node, is_preferred);
+            set_h_preferredness(successor_search_node, is_preferred);
 
             /* Early goal test. */
 
@@ -316,17 +321,18 @@ SearchResult find_solution(const SearchContext& context,
             if (exploration_stategy)
             {
                 is_compatible = exploration_stategy->on_generate_state(state, action, successor_state);
+                set_pi_compatibility(successor_search_node, is_compatible);
             }
 
             if (is_compatible && is_preferred && first_compatible)
             {
                 first_compatible = false;
-                compatible_greedy_and_preferred_openlist.insert(std::make_tuple(state_h_value, successor_state_metric_value, step++), successor_state);
+                compatible_greedy_and_preferred_openlist.insert(step++, successor_state);
             }
             else if (is_compatible && first_compatible)
             {
                 first_compatible = false;
-                compatible_greedy_openlist.insert(std::make_tuple(state_h_value, successor_state_metric_value, step++), successor_state);
+                compatible_greedy_openlist.insert(step++, successor_state);
             }
             else if (is_compatible && is_preferred)
             {

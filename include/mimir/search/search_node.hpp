@@ -39,10 +39,10 @@ template<typename... SearchNodeProperties>
 struct SearchNodeImpl
 {
     SearchNodeImpl() = default;
-    SearchNodeImpl(SearchNodeStatus status, Index parent_state_index, cista::tuple<SearchNodeProperties...> properties) :
+    SearchNodeImpl(SearchNodeStatus status, Index parent_state_index, SearchNodeProperties... properties) :
         m_status(status),
         m_parent_state_index(parent_state_index),
-        m_properties(properties)
+        m_properties(cista::tuple<SearchNodeProperties...> { std::move(properties)... })
     {
     }
 

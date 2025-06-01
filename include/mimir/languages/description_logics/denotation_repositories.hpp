@@ -30,7 +30,7 @@
 namespace mimir::languages::dl
 {
 
-/// @brief DenotationRepository encapsulate logic for obtaining unique denotation views and caching.
+/// @brief DenotationRepository encapsulate logic for storing and retrieving unique views onto denotations.
 template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 class DenotationRepository
 {
@@ -43,12 +43,28 @@ private:
     std::unordered_map<Key, Denotation<D>, loki::Hash<Key>, loki::EqualTo<Key>> m_cached_dynamic_denotations;
 
 public:
+    /// @brief Uniquely insert the denotation for the constructor and state in the repository.
+    /// @param constructor is the constructor.
+    /// @param state is the state.
+    /// @param denotation is the denotation.
+    /// @return the unique denotation for the constructor and state.
     Denotation<D> insert(Constructor<D> constructor, search::State state, const DenotationImpl<D>& denotation);
 
+    /// @brief Get the denotation for the constructor and state if it exists, and otherwise, return nullptr.
+    /// @param constructor is the constructor.
+    /// @param state is the state.
+    /// @return the denotation if it exists, and otherwise, return nullptr.
     Denotation<D> get_if(Constructor<D> constructor, search::State state) const;
+
+    /// @brief Clear the repository. Does not quarantee to free memory.
+    void clear();
 };
 
 using DenotationRepositories = HanaMappedContainer<DenotationRepository, ConceptTag, RoleTag, BooleanTag, NumericalTag>;
+
+/// @brief Clear all DenotationRepository.
+/// @param repositories is the container of all denotation repositories.
+extern void clear(DenotationRepositories& repositories);
 
 }
 

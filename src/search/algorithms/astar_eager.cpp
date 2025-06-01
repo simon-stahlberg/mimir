@@ -101,10 +101,7 @@ SearchResult find_solution(const SearchContext& context,
         return result;
     }
 
-    auto default_search_node =
-        AStarSearchNodeImpl(SearchNodeStatus::NEW,
-                            MAX_INDEX,
-                            cista::tuple<ContinuousCost, ContinuousCost> { ContinuousCost(INFINITY_CONTINUOUS_COST), ContinuousCost(0) });
+    auto default_search_node = AStarSearchNodeImpl(SearchNodeStatus::NEW, MAX_INDEX, ContinuousCost(INFINITY_CONTINUOUS_COST), ContinuousCost(0));
     auto search_nodes = SearchNodeImplVector<ContinuousCost, ContinuousCost>();
 
     auto openlist = PriorityQueue<double, State>();
