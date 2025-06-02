@@ -101,6 +101,30 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
     auto default_search_node = AStarSearchNodeImpl(SearchNodeStatus::NEW, MAX_INDEX, ContinuousCost(INFINITY_CONTINUOUS_COST), ContinuousCost(0));
     auto search_nodes = SearchNodeImplVector<ContinuousCost, ContinuousCost>();
 
+    /* Test whether initial state is goal. */
+
+    if (goal_strategy->test_dynamic_goal(start_state))
+    {
+        event_handler->on_end_search(state_repository.get_reached_fluent_ground_atoms_bitset().count(),
+                                     state_repository.get_reached_derived_ground_atoms_bitset().count(),
+                                     problem.get_estimated_memory_usage_in_bytes(),
+                                     search_nodes.get_estimated_memory_usage_in_bytes(),
+                                     state_repository.get_state_count(),
+                                     search_nodes.size(),
+                                     ground_action_repository.size(),
+                                     ground_axiom_repository.size());
+        applicable_action_generator.on_end_search();
+        state_repository.get_axiom_evaluator()->on_end_search();
+
+        result.plan = Plan(context, StateList { start_state }, GroundActionList {}, 0);
+        result.goal_state = start_state;
+        result.status = SearchStatus::SOLVED;
+
+        event_handler->on_solved(result.plan.value());
+
+        return result;
+    }
+
     auto openlist = PriorityQueue<double, State>();
 
     if (start_g_value == UNDEFINED_CONTINUOUS_COST)
