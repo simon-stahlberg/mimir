@@ -734,7 +734,8 @@ void bind_module_definitions(nb::module_& m)
         .def("get_num_generated_until_f_value", &astar_eager::Statistics::get_num_generated_until_f_value)
         .def("get_num_expanded_until_f_value", &astar_eager::Statistics::get_num_expanded_until_f_value)
         .def("get_num_deadends_until_f_value", &astar_eager::Statistics::get_num_deadends_until_f_value)
-        .def("get_num_pruned_until_f_value", &astar_eager::Statistics::get_num_pruned_until_f_value);
+        .def("get_num_pruned_until_f_value", &astar_eager::Statistics::get_num_pruned_until_f_value)
+        .def("get_search_time_ms", &astar_eager::Statistics::get_search_time_ms);
 
     nb::class_<astar_eager::IEventHandler, IPyAStarEagerEventHandler>(m,
                                                                       "IAStarEagerEventHandler")  //
@@ -783,7 +784,8 @@ void bind_module_definitions(nb::module_& m)
         .def("get_num_generated_until_f_value", &astar_lazy::Statistics::get_num_generated_until_f_value)
         .def("get_num_expanded_until_f_value", &astar_lazy::Statistics::get_num_expanded_until_f_value)
         .def("get_num_deadends_until_f_value", &astar_lazy::Statistics::get_num_deadends_until_f_value)
-        .def("get_num_pruned_until_f_value", &astar_lazy::Statistics::get_num_pruned_until_f_value);
+        .def("get_num_pruned_until_f_value", &astar_lazy::Statistics::get_num_pruned_until_f_value)
+        .def("get_search_time_ms", &astar_lazy::Statistics::get_search_time_ms);
 
     nb::class_<astar_lazy::IEventHandler, IPyAStarLazyEventHandler>(m,
                                                                     "IAStarLazyEventHandler")  //
@@ -833,7 +835,8 @@ void bind_module_definitions(nb::module_& m)
         .def("get_num_generated_until_g_value", &brfs::Statistics::get_num_generated_until_g_value)
         .def("get_num_expanded_until_g_value", &brfs::Statistics::get_num_expanded_until_g_value)
         .def("get_num_deadends_until_g_value", &brfs::Statistics::get_num_deadends_until_g_value)
-        .def("get_num_pruned_until_g_value", &brfs::Statistics::get_num_pruned_until_g_value);
+        .def("get_num_pruned_until_g_value", &brfs::Statistics::get_num_pruned_until_g_value)
+        .def("get_search_time_ms", &brfs::Statistics::get_search_time_ms);
 
     nb::class_<brfs::IEventHandler, IPyBrFSEventHandler>(m, "IBrFSEventHandler")  //
         .def(nb::init<>())
@@ -876,7 +879,8 @@ void bind_module_definitions(nb::module_& m)
         .def("get_num_generated", &gbfs_eager::Statistics::get_num_generated)
         .def("get_num_expanded", &gbfs_eager::Statistics::get_num_expanded)
         .def("get_num_deadends", &gbfs_eager::Statistics::get_num_deadends)
-        .def("get_num_pruned", &gbfs_eager::Statistics::get_num_pruned);
+        .def("get_num_pruned", &gbfs_eager::Statistics::get_num_pruned)
+        .def("get_search_time_ms", &gbfs_eager::Statistics::get_search_time_ms);
 
     nb::class_<gbfs_eager::IEventHandler, IPyGBFSEagerEventHandler>(m, "IGBFSEagerEventHandler")  //
         .def(nb::init<>())
@@ -917,7 +921,8 @@ void bind_module_definitions(nb::module_& m)
         .def("get_num_generated", &gbfs_lazy::Statistics::get_num_generated)
         .def("get_num_expanded", &gbfs_lazy::Statistics::get_num_expanded)
         .def("get_num_deadends", &gbfs_lazy::Statistics::get_num_deadends)
-        .def("get_num_pruned", &gbfs_lazy::Statistics::get_num_pruned);
+        .def("get_num_pruned", &gbfs_lazy::Statistics::get_num_pruned)
+        .def("get_search_time_ms", &gbfs_lazy::Statistics::get_search_time_ms);
 
     nb::class_<gbfs_lazy::IEventHandler, IPyGBFSLazyEventHandler>(m, "IGBFSLazyEventHandler")  //
         .def(nb::init<>())
@@ -1025,7 +1030,8 @@ void bind_module_definitions(nb::module_& m)
         .def(nb::init<>())
         .def("__str__", [](const iw::Statistics& self) { return to_string(self); })
         .def("get_effective_width", &iw::Statistics::get_effective_width)
-        .def("get_brfs_statistics_by_arity", &iw::Statistics::get_brfs_statistics_by_arity);
+        .def("get_brfs_statistics_by_arity", &iw::Statistics::get_brfs_statistics_by_arity)
+        .def("get_search_time_ms", &iw::Statistics::get_search_time_ms);
 
     nb::class_<iw::IEventHandler>(m, "IIWEventHandler")  //
         .def("get_statistics", &iw::IEventHandler::get_statistics);
@@ -1048,7 +1054,9 @@ void bind_module_definitions(nb::module_& m)
         .def("__str__", [](const siw::Statistics& self) { return to_string(self); })
         .def("get_maximum_effective_width", &siw::Statistics::get_maximum_effective_width)
         .def("get_average_effective_width", &siw::Statistics::get_average_effective_width)
-        .def("get_iw_statistics_by_subproblem", &siw::Statistics::get_iw_statistics_by_subproblem);
+        .def("get_iw_statistics_by_subproblem", &siw::Statistics::get_iw_statistics_by_subproblem)
+        .def("get_search_time_ms", &siw::Statistics::get_search_time_ms);
+
     nb::class_<siw::IEventHandler>(m, "ISIWEventHandler")  //
         .def("get_statistics", &siw::IEventHandler::get_statistics);
     nb::class_<siw::DefaultEventHandlerImpl, siw::IEventHandler>(m, "DefaultSIWEventHandler").def(nb::init<Problem, bool>(), "problem"_a, "quiet"_a = true);
