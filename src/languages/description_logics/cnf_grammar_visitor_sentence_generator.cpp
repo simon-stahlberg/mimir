@@ -94,6 +94,7 @@ GeneratorVisitor::GeneratorVisitor(IRefinementPruningFunction& pruning_function,
                                    size_t max_syntactic_complexity) :
     m_pruning_function(pruning_function),
     m_sentences(sentences),
+    m_const_sentences(sentences),
     m_repositories(repositories),
     m_max_syntactic_complexity(max_syntactic_complexity),
     m_complexity(1)
@@ -164,9 +165,9 @@ void GeneratorVisitor::visit(ConceptIntersection constructor)
 
             auto& generated = boost::hana::at_key(m_generated, boost::hana::type<ConceptTag> {});
 
-            for (const auto& left_concept : m_sentences.get(constructor->get_left_concept(), i))
+            for (const auto& left_concept : m_const_sentences.get(constructor->get_left_concept(), i))
             {
-                for (const auto& right_concept : m_sentences.get(constructor->get_right_concept(), j))
+                for (const auto& right_concept : m_const_sentences.get(constructor->get_right_concept(), j))
                 {
                     generated.push_back(m_repositories.get_or_create_concept_intersection(left_concept, right_concept));
                 }
@@ -187,9 +188,9 @@ void GeneratorVisitor::visit(ConceptUnion constructor)
 
             auto& generated = boost::hana::at_key(m_generated, boost::hana::type<ConceptTag> {});
 
-            for (const auto& left_concept : m_sentences.get(constructor->get_left_concept(), i))
+            for (const auto& left_concept : m_const_sentences.get(constructor->get_left_concept(), i))
             {
-                for (const auto& right_concept : m_sentences.get(constructor->get_right_concept(), j))
+                for (const auto& right_concept : m_const_sentences.get(constructor->get_right_concept(), j))
                 {
                     generated.push_back(m_repositories.get_or_create_concept_union(left_concept, right_concept));
                 }
@@ -203,7 +204,7 @@ void GeneratorVisitor::visit(ConceptNegation constructor)
     {
         auto& generated = boost::hana::at_key(m_generated, boost::hana::type<ConceptTag> {});
 
-        for (const auto& concept_ : m_sentences.get(constructor->get_concept(), m_complexity - 1))
+        for (const auto& concept_ : m_const_sentences.get(constructor->get_concept(), m_complexity - 1))
         {
             generated.push_back(m_repositories.get_or_create_concept_negation(concept_));
         }
@@ -219,9 +220,9 @@ void GeneratorVisitor::visit(ConceptValueRestriction constructor)
 
             auto& generated = boost::hana::at_key(m_generated, boost::hana::type<ConceptTag> {});
 
-            for (const auto& role : m_sentences.get(constructor->get_role(), i))
+            for (const auto& role : m_const_sentences.get(constructor->get_role(), i))
             {
-                for (const auto& concept_ : m_sentences.get(constructor->get_concept(), j))
+                for (const auto& concept_ : m_const_sentences.get(constructor->get_concept(), j))
                 {
                     generated.push_back(m_repositories.get_or_create_concept_value_restriction(role, concept_));
                 }
@@ -239,9 +240,9 @@ void GeneratorVisitor::visit(ConceptExistentialQuantification constructor)
 
             auto& generated = boost::hana::at_key(m_generated, boost::hana::type<ConceptTag> {});
 
-            for (const auto& role : m_sentences.get(constructor->get_role(), i))
+            for (const auto& role : m_const_sentences.get(constructor->get_role(), i))
             {
-                for (const auto& concept_ : m_sentences.get(constructor->get_concept(), j))
+                for (const auto& concept_ : m_const_sentences.get(constructor->get_concept(), j))
                 {
                     generated.push_back(m_repositories.get_or_create_concept_existential_quantification(role, concept_));
                 }
@@ -259,9 +260,9 @@ void GeneratorVisitor::visit(ConceptRoleValueMapContainment constructor)
 
             auto& generated = boost::hana::at_key(m_generated, boost::hana::type<ConceptTag> {});
 
-            for (const auto& left_role : m_sentences.get(constructor->get_left_role(), i))
+            for (const auto& left_role : m_const_sentences.get(constructor->get_left_role(), i))
             {
-                for (const auto& right_role : m_sentences.get(constructor->get_right_role(), j))
+                for (const auto& right_role : m_const_sentences.get(constructor->get_right_role(), j))
                 {
                     generated.push_back(m_repositories.get_or_create_concept_role_value_map_containment(left_role, right_role));
                 }
@@ -282,9 +283,9 @@ void GeneratorVisitor::visit(ConceptRoleValueMapEquality constructor)
 
             auto& generated = boost::hana::at_key(m_generated, boost::hana::type<ConceptTag> {});
 
-            for (const auto& left_role : m_sentences.get(constructor->get_left_role(), i))
+            for (const auto& left_role : m_const_sentences.get(constructor->get_left_role(), i))
             {
-                for (const auto& right_role : m_sentences.get(constructor->get_right_role(), j))
+                for (const auto& right_role : m_const_sentences.get(constructor->get_right_role(), j))
                 {
                     generated.push_back(m_repositories.get_or_create_concept_role_value_map_equality(left_role, right_role));
                 }
@@ -348,9 +349,9 @@ void GeneratorVisitor::visit(RoleIntersection constructor)
 
             auto& generated = boost::hana::at_key(m_generated, boost::hana::type<RoleTag> {});
 
-            for (const auto& left_role : m_sentences.get(constructor->get_left_role(), i))
+            for (const auto& left_role : m_const_sentences.get(constructor->get_left_role(), i))
             {
-                for (const auto& right_role : m_sentences.get(constructor->get_right_role(), j))
+                for (const auto& right_role : m_const_sentences.get(constructor->get_right_role(), j))
                 {
                     generated.push_back(m_repositories.get_or_create_role_intersection(left_role, right_role));
                 }
@@ -371,9 +372,9 @@ void GeneratorVisitor::visit(RoleUnion constructor)
 
             auto& generated = boost::hana::at_key(m_generated, boost::hana::type<RoleTag> {});
 
-            for (const auto& left_role : m_sentences.get(constructor->get_left_role(), i))
+            for (const auto& left_role : m_const_sentences.get(constructor->get_left_role(), i))
             {
-                for (const auto& right_role : m_sentences.get(constructor->get_right_role(), j))
+                for (const auto& right_role : m_const_sentences.get(constructor->get_right_role(), j))
                 {
                     generated.push_back(m_repositories.get_or_create_role_union(left_role, right_role));
                 }
@@ -387,7 +388,7 @@ void GeneratorVisitor::visit(RoleComplement constructor)
     {
         auto& generated = boost::hana::at_key(m_generated, boost::hana::type<RoleTag> {});
 
-        for (const auto& role : m_sentences.get(constructor->get_role(), m_complexity - 1))
+        for (const auto& role : m_const_sentences.get(constructor->get_role(), m_complexity - 1))
         {
             generated.push_back(m_repositories.get_or_create_role_complement(role));
         }
@@ -399,7 +400,7 @@ void GeneratorVisitor::visit(RoleInverse constructor)
     {
         auto& generated = boost::hana::at_key(m_generated, boost::hana::type<RoleTag> {});
 
-        for (const auto& role : m_sentences.get(constructor->get_role(), m_complexity - 1))
+        for (const auto& role : m_const_sentences.get(constructor->get_role(), m_complexity - 1))
         {
             generated.push_back(m_repositories.get_or_create_role_inverse(role));
         }
@@ -415,9 +416,9 @@ void GeneratorVisitor::visit(RoleComposition constructor)
 
             auto& generated = boost::hana::at_key(m_generated, boost::hana::type<RoleTag> {});
 
-            for (const auto& left_role : m_sentences.get(constructor->get_left_role(), i))
+            for (const auto& left_role : m_const_sentences.get(constructor->get_left_role(), i))
             {
-                for (const auto& right_role : m_sentences.get(constructor->get_right_role(), j))
+                for (const auto& right_role : m_const_sentences.get(constructor->get_right_role(), j))
                 {
                     generated.push_back(m_repositories.get_or_create_role_composition(left_role, right_role));
                 }
@@ -431,7 +432,7 @@ void GeneratorVisitor::visit(RoleTransitiveClosure constructor)
     {
         auto& generated = boost::hana::at_key(m_generated, boost::hana::type<RoleTag> {});
 
-        for (const auto& role : m_sentences.get(constructor->get_role(), m_complexity - 1))
+        for (const auto& role : m_const_sentences.get(constructor->get_role(), m_complexity - 1))
         {
             generated.push_back(m_repositories.get_or_create_role_transitive_closure(role));
         }
@@ -443,7 +444,7 @@ void GeneratorVisitor::visit(RoleReflexiveTransitiveClosure constructor)
     {
         auto& generated = boost::hana::at_key(m_generated, boost::hana::type<RoleTag> {});
 
-        for (const auto& role : m_sentences.get(constructor->get_role(), m_complexity - 1))
+        for (const auto& role : m_const_sentences.get(constructor->get_role(), m_complexity - 1))
         {
             generated.push_back(m_repositories.get_or_create_role_reflexive_transitive_closure(role));
         }
@@ -459,9 +460,9 @@ void GeneratorVisitor::visit(RoleRestriction constructor)
 
             auto& generated = boost::hana::at_key(m_generated, boost::hana::type<RoleTag> {});
 
-            for (const auto& role : m_sentences.get(constructor->get_role(), i))
+            for (const auto& role : m_const_sentences.get(constructor->get_role(), i))
             {
-                for (const auto& concept_ : m_sentences.get(constructor->get_concept(), j))
+                for (const auto& concept_ : m_const_sentences.get(constructor->get_concept(), j))
                 {
                     generated.push_back(m_repositories.get_or_create_role_restriction(role, concept_));
                 }
@@ -475,7 +476,7 @@ void GeneratorVisitor::visit(RoleIdentity constructor)
     {
         auto& generated = boost::hana::at_key(m_generated, boost::hana::type<RoleTag> {});
 
-        for (const auto& concept_ : m_sentences.get(constructor->get_concept(), m_complexity - 1))
+        for (const auto& concept_ : m_const_sentences.get(constructor->get_concept(), m_complexity - 1))
         {
             generated.push_back(m_repositories.get_or_create_role_identity(concept_));
         }
@@ -510,7 +511,7 @@ void GeneratorVisitor::visit(BooleanNonempty<ConceptTag> constructor)
     {
         auto& generated = boost::hana::at_key(m_generated, boost::hana::type<BooleanTag> {});
 
-        for (const auto& concept_ : m_sentences.get(constructor->get_nonterminal(), m_complexity - 1))
+        for (const auto& concept_ : m_const_sentences.get(constructor->get_nonterminal(), m_complexity - 1))
         {
             generated.push_back(m_repositories.get_or_create_boolean_nonempty(concept_));
         }
@@ -522,7 +523,7 @@ void GeneratorVisitor::visit(BooleanNonempty<RoleTag> constructor)
     {
         auto& generated = boost::hana::at_key(m_generated, boost::hana::type<BooleanTag> {});
 
-        for (const auto& role : m_sentences.get(constructor->get_nonterminal(), m_complexity - 1))
+        for (const auto& role : m_const_sentences.get(constructor->get_nonterminal(), m_complexity - 1))
         {
             generated.push_back(m_repositories.get_or_create_boolean_nonempty(role));
         }
@@ -539,7 +540,7 @@ void GeneratorVisitor::visit(NumericalCount<ConceptTag> constructor)
     {
         auto& generated = boost::hana::at_key(m_generated, boost::hana::type<NumericalTag> {});
 
-        for (const auto& concept_ : m_sentences.get(constructor->get_nonterminal(), m_complexity - 1))
+        for (const auto& concept_ : m_const_sentences.get(constructor->get_nonterminal(), m_complexity - 1))
         {
             generated.push_back(m_repositories.get_or_create_numerical_count(concept_));
         }
@@ -552,7 +553,7 @@ void GeneratorVisitor::visit(NumericalCount<RoleTag> constructor)
     {
         auto& generated = boost::hana::at_key(m_generated, boost::hana::type<NumericalTag> {});
 
-        for (const auto& role : m_sentences.get(constructor->get_nonterminal(), m_complexity - 1))
+        for (const auto& role : m_const_sentences.get(constructor->get_nonterminal(), m_complexity - 1))
         {
             generated.push_back(m_repositories.get_or_create_numerical_count(role));
         }
@@ -561,7 +562,7 @@ void GeneratorVisitor::visit(NumericalCount<RoleTag> constructor)
 
 void GeneratorVisitor::visit(NumericalDistance constructor)
 {
-    if (m_complexity >= 3)
+    if (m_complexity >= 4)
     {
         auto& generated = boost::hana::at_key(m_generated, boost::hana::type<NumericalTag> {});
 
@@ -571,11 +572,11 @@ void GeneratorVisitor::visit(NumericalDistance constructor)
             {
                 size_t k = m_complexity - i - j - 1;
 
-                for (const auto& concept_left : m_sentences.get(constructor->get_left_concept(), i))
+                for (const auto& concept_left : m_const_sentences.get(constructor->get_left_concept(), i))
                 {
-                    for (const auto& role : m_sentences.get(constructor->get_role(), j))
+                    for (const auto& role : m_const_sentences.get(constructor->get_role(), j))
                     {
-                        for (const auto& concept_right : m_sentences.get(constructor->get_right_concept(), k))
+                        for (const auto& concept_right : m_const_sentences.get(constructor->get_right_concept(), k))
                         {
                             generated.push_back(m_repositories.get_or_create_numerical_distance(concept_left, role, concept_right));
                         }
@@ -646,7 +647,7 @@ void GeneratorVisitor::visit(SubstitutionRule<NumericalTag> rule) { visit_impl(r
 template<IsConceptOrRoleOrBooleanOrNumericalTag D>
 void GeneratorVisitor::visit_impl(SubstitutionRule<D> rule)
 {
-    auto& source_location = m_sentences.get(rule->get_body(), m_complexity);
+    auto& source_location = m_const_sentences.get(rule->get_body(), m_complexity);
     auto& target_location = m_sentences.get(rule->get_head(), m_complexity);
     target_location.insert(target_location.end(), source_location.begin(), source_location.end());
 }

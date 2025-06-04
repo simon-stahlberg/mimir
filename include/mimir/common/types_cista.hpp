@@ -38,7 +38,7 @@ namespace mimir
 
 using FlatBitset = cista::offset::dynamic_bitset<uint64_t>;
 /* IndexList */
-using FlatIndexList = cista::offset::flexible_delta_index_vector<Index>;
+using FlatIndexList = cista::offset::flexible_index_vector<Index>;
 using FlatIndexListSet = mimir::buffering::UnorderedSet<FlatIndexList>;
 /* ExternalPtr */
 template<typename T>

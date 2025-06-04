@@ -91,9 +91,11 @@ void AddHeuristicImpl::update_or_annotation_impl(const Axiom& axiom, const Propo
     const auto& axiom_annotations = get<Axiom>(this->get_structures_annotations())[axiom.get_index()];
     auto& proposition_annotations = this->get_proposition_annotations()[proposition.get_index()];
 
-    if (get_cost(axiom_annotations) < get_cost(proposition_annotations))
+    const auto firing_cost = get_cost(axiom_annotations);
+
+    if (firing_cost < get_cost(proposition_annotations))
     {
-        get_cost(proposition_annotations) = get_cost(axiom_annotations);
+        get_cost(proposition_annotations) = firing_cost;
         this->m_queue.insert(get_cost(proposition_annotations), QueueEntry { proposition.get_index(), get_cost(proposition_annotations) });
     }
 }

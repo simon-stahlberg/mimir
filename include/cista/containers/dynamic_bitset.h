@@ -265,18 +265,20 @@ struct basic_dynamic_bitset
         blocks_[index] |= (static_cast<Block>(1) << offset);  // Set the bit at the offset
     }
 
-    constexpr void resize(size_t num_bits, bool value = false)
+    constexpr void set_all(size_t num_bits, bool value = false)
     {
         blocks_.clear();
 
-        if (num_bits > 0)
-        {
-            const std::size_t index = get_index(num_bits);
-            const std::size_t offset = get_offset(num_bits);
-            blocks_.reserve(index + 1);
-            blocks_.resize(index, value ? block_ones : block_zeros);
-            blocks_.push_back(value ? ((Block(1) << offset) - 1) : block_zeros);
-        }
+        if (num_bits == 0)
+            return;
+
+        const size_t last_bit = num_bits - 1;
+        const size_t required_blocks = get_index(last_bit) + 1;
+        const size_t offset = get_offset(last_bit);
+
+        blocks_.resize(required_blocks - 1, value ? block_ones : block_zeros);
+        Block last = value ? ((offset == block_size - 1) ? block_ones : ((Block(1) << (offset + 1)) - 1)) : block_zeros;
+        blocks_.emplace_back(last);
     }
 
     /// @brief Unset a bit at a specific position
@@ -312,21 +314,25 @@ struct basic_dynamic_bitset
         return *this;
     }
 
-    constexpr void negate(size_t size)
+    constexpr void negate(size_t num_bits)
     {
-        const size_t index = get_index(size);
-        const size_t offset = get_offset(size);
+        if (num_bits == 0)
+            return;
+
+        const size_t last_bit = num_bits - 1;
+        const size_t index = get_index(last_bit);
+        const size_t offset = get_offset(last_bit);
 
         // Resize to fit negated atoms.
-        blocks_.resize(index + 1);
+        blocks_.resize(index + 1, block_zeros);
 
         ~(*this);
 
-        // Set trailing bits to zero.
-        if (!blocks_.empty() && (blocks_.size() == index + 1) && (offset > 0))
+        // Mask out extra bits in the last block
+        if (offset < block_size - 1)
         {
             Block& last_block = blocks_.back();
-            Block mask = (Block(1) << offset) - 1;
+            Block mask = (Block(1) << (offset + 1)) - 1;
             last_block &= mask;
         }
     }

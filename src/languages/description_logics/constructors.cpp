@@ -38,6 +38,7 @@
 #include "mimir/formalism/requirements.hpp"
 #include "mimir/formalism/term.hpp"
 #include "mimir/formalism/variable.hpp"
+#include "mimir/languages/description_logics/constructor_visitor_formatter.hpp"
 #include "mimir/languages/description_logics/constructor_visitor_interface.hpp"
 #include "mimir/languages/description_logics/evaluation_context.hpp"
 
@@ -363,7 +364,7 @@ void ConceptValueRestrictionImpl::evaluate_impl(EvaluationContext& context) cons
     auto& scratch_bitset = boost::hana::at_key(context.get_scratch_builders(), boost::hana::type<ConceptTag> {}).get_data();
 
     // Compute result
-    bitset.resize(num_objects, true);
+    bitset.set_all(num_objects, true);
     for (size_t i = 0; i < num_objects; ++i)
     {
         scratch_bitset = eval_concept->get_data();
@@ -450,7 +451,8 @@ void ConceptRoleValueMapContainmentImpl::evaluate_impl(EvaluationContext& contex
     auto& scratch_bitset = boost::hana::at_key(context.get_scratch_builders(), boost::hana::type<ConceptTag> {}).get_data();
 
     // Compute result
-    bitset.resize(num_objects, true);
+    bitset.unset_all();
+    bitset.set_all(num_objects, true);
     for (size_t i = 0; i < num_objects; ++i)
     {
         scratch_bitset = eval_right_role->get_data().at(i);
@@ -494,7 +496,7 @@ void ConceptRoleValueMapEqualityImpl::evaluate_impl(EvaluationContext& context) 
     auto& scratch_bitset = boost::hana::at_key(context.get_scratch_builders(), boost::hana::type<ConceptTag> {}).get_data();
 
     // Compute result
-    bitset.resize(num_objects, true);
+    bitset.set_all(num_objects, true);
     for (size_t i = 0; i < num_objects; ++i)
     {
         scratch_bitset = eval_right_role->get_data().at(i);
@@ -557,7 +559,7 @@ void RoleUniversalImpl::evaluate_impl(EvaluationContext& context) const
     bitsets.resize(num_objects);
     for (auto& bitset : bitsets)
     {
-        bitset.resize(num_objects, true);
+        bitset.set_all(num_objects, true);
     }
 }
 
@@ -1308,6 +1310,7 @@ void NumericalDistanceImpl::evaluate_impl(EvaluationContext& context) const
     using DistanceType = typename DenotationImpl<NumericalTag>::DenotationType;
     const auto MAX_DISTANCE = std::numeric_limits<DistanceType>::max();
     numerical = MAX_DISTANCE;
+    const auto num_objects = context.get_problem()->get_problem_and_domain_objects().size();
 
     // Compute result
     if (!eval_left_concept->any() || !eval_right_concept->any())
@@ -1322,7 +1325,7 @@ void NumericalDistanceImpl::evaluate_impl(EvaluationContext& context) const
     }
 
     auto deque = std::deque<Index> {};
-    auto distances = std::vector<DistanceType>(context.get_problem()->get_problem_and_domain_objects().size(), MAX_DISTANCE);
+    auto distances = std::vector<DistanceType>(num_objects, MAX_DISTANCE);
     for (const auto& object_index : eval_left_concept->get_data())
     {
         deque.push_back(object_index);
@@ -1336,6 +1339,8 @@ void NumericalDistanceImpl::evaluate_impl(EvaluationContext& context) const
 
         const auto source_dist = distances[source];
         assert(source_dist != MAX_DISTANCE);
+
+        assert(source < context.get_problem()->get_problem_and_domain_objects().size());
 
         for (const auto& target : eval_role->get_data().at(source))
         {

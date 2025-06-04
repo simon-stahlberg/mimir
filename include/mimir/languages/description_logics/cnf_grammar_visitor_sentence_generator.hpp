@@ -94,6 +94,7 @@ class GeneratorVisitor : public RecurseVisitor
 private:
     IRefinementPruningFunction& m_pruning_function;
     GeneratedSentencesContainer& m_sentences;
+    const GeneratedSentencesContainer& m_const_sentences;
     dl::Repositories& m_repositories;
     size_t m_max_syntactic_complexity;
 

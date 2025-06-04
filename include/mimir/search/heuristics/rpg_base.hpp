@@ -34,24 +34,17 @@
 namespace mimir::search::rpg
 {
 
-/**
- * RelaxedPlanningGraph
- */
-
 /// @brief `RelaxedPlanningGraph` implements a common base class for heuristics based on the relaxed planning graph.
 ///
-/// Notes: Deriving not x is not trivial, see footnote 1: https://www.ijcai.org/Proceedings/15/Papers/226.pdf
+/// Notes: Deriving not-y is not trivial, see footnote 1: https://www.ijcai.org/Proceedings/15/Papers/226.pdf
 /// "[...] if A_y = { y <- phi_i | i=1,...,k } is the set of axioms that define y,
-/// A_{not y} = { not y <- And_{i=1,...,k} not phi_i }, which is admissible
+/// A_{not-y} = { not-y <- And_{i=1,...,k} not phi_i }, which is admissible
 /// because the derived value default value is taken to be neither true nor false."
 /// This translation is worst-case exponential due to CNF to DNF translation.
-/// The above is the way how fast downward does it: https://github.com/aibasel/downward/blob/main/src/search/tasks/default_value_axioms_task.h
-/// Fast downward also provides an approximation where not y <- T, i.e., not y is set to true immediately.
-/// For simplicity, we follow this approach.
-/// However, we could provide a stronger but cheaper approximation which is not y <- not phi_i for each i=1,...,k.
-/// In other words, we derive not y if at least one y <- phi_i fails to derive y.
-/// This is very cheap to represent and compute but requires a bit of thinking on how to implement it because it requires instantiating new conditions.
-/// I also tried pruning irrelevant unary actions and axioms in the exact way but it is too costly and the amound of pruned actions is too low.
+/// Therefore, we set not-y to true in the first layer, i.e., not-y <- T.
+/// Under this assumption, we could remove all negated derived propositions from the graph, but we keep them for extendability.
+/// Furthermore, an experiment has shown that pruning irrelevant unary actions and axioms is too expensive
+/// where an action or axiom is considered irrelevant if one with a smaller index has the same effect but with less or equal constrained preconditions.
 /// @tparam Derived is the derived class.
 template<typename Derived>
 class RelaxedPlanningGraph : public IHeuristic

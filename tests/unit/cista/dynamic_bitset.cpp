@@ -49,4 +49,26 @@ TEST(CistaTests, CistaDynamicBitsetIteratorTest)
     ++it;
     EXPECT_EQ(it, end);
 }
+
+TEST(CistaTests, CistaDynamicBitsetSetAllTest)
+{
+    auto bitset = cista::raw::dynamic_bitset<uint64_t>();
+    bitset.set_all(128, true);
+
+    EXPECT_EQ(bitset.count(), 128);
+    EXPECT_EQ(bitset.blocks().size(), 2);
+}
+
+TEST(CistaTests, CistaDynamicBitsetNegateTest)
+{
+    auto bitset = cista::raw::dynamic_bitset<uint64_t>(100);
+    bitset.set(50);
+    bitset.set(70);
+    bitset.negate(100);
+
+    EXPECT_TRUE(bitset.get(49));
+    EXPECT_FALSE(bitset.get(50));
+    EXPECT_FALSE(bitset.get(70));
+    EXPECT_FALSE(bitset.get(100));
+}
 }
