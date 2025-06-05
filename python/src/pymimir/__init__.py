@@ -1,8 +1,7 @@
 from . import advanced as advanced
 
-from .wrapper import (
+from .wrapper_formalism import (
     Action,
-    ApplicableActionGenerator,
     Atom,
     ConditionalEffect,
     ConjunctiveCondition,
@@ -18,5 +17,17 @@ from .wrapper import (
     Object,
     Predicate,
     Problem,
-    Variable
+    State,
+    Variable,
+)
+
+from .wrapper_search import (
+    Heuristic,
+    AddHeuristic,
+    BlindHeuristic,
+    MaxHeuristic,
+    PerfectHeuristic,
+    SetAddHeuristic,
+    SearchResult,
+    astar_eager
 )

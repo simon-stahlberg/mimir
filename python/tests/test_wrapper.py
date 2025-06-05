@@ -154,25 +154,25 @@ class TestAction(unittest.TestCase):
         assert action.get_name() == 'up'
         actual_precondition = action.get_precondition()
         actual_parameters = actual_precondition.get_parameters()
-        expected_parameters = ['?f1_0', '?f2_0']
+        expected_parameters = ['?f1_0_0', '?f2_0_1']
         assert len(actual_parameters) == len(expected_parameters)
         for parameter in actual_parameters:
             assert parameter.get_index() is not None
             assert parameter.get_name() in expected_parameters
         actual_all_literals = actual_precondition.get_literals()
-        expected_all_literals = ['(floor ?f1_0)', '(floor ?f2_0)', '(above ?f1_0 ?f2_0)', '(lift-at ?f1_0)', '(not (axiom_8))']
+        expected_all_literals = ['(floor ?f1_0_0)', '(floor ?f2_0_1)', '(above ?f1_0_0 ?f2_0_1)', '(lift-at ?f1_0_0)', '(not (axiom_8))']
         assert len(actual_all_literals) == len(expected_all_literals)
         for literal in actual_all_literals:
             assert literal.get_index() is not None
             assert str(literal) in expected_all_literals
         actual_static_literals = actual_precondition.get_literals(False, True, True)
-        expected_static_literals  = ['(floor ?f1_0)', '(floor ?f2_0)', '(above ?f1_0 ?f2_0)']
+        expected_static_literals  = ['(floor ?f1_0_0)', '(floor ?f2_0_1)', '(above ?f1_0_0 ?f2_0_1)']
         assert len(actual_static_literals) == len(expected_static_literals)
         for literal in actual_static_literals:
             assert literal.get_index() is not None
             assert str(literal) in expected_static_literals
         actual_fluent_literals = actual_precondition.get_literals(True, False, True)
-        expected_fluent_literals  = ['(lift-at ?f1_0)']
+        expected_fluent_literals  = ['(lift-at ?f1_0_0)']
         assert len(actual_fluent_literals) == len(expected_fluent_literals)
         for literal in actual_fluent_literals:
             assert literal.get_index() is not None
@@ -197,13 +197,13 @@ class TestAction(unittest.TestCase):
         assert len(actual_condition.get_nullary_ground_literals()) == 0
         actual_effect = actual_conditional_effect[0].get_effect()
         actual_parameters = actual_effect.get_parameters()
-        expected_parameters = ['?f1_0', '?f2_0']
+        expected_parameters = ['?f1_0_0', '?f2_0_1']
         assert len(actual_parameters) == len(expected_parameters)
         for parameter in actual_parameters:
             assert parameter.get_index() is not None
             assert parameter.get_name() in expected_parameters
         actual_literals = actual_effect.get_literals()
-        expected_literals = ['(lift-at ?f2_0)', '(not (lift-at ?f1_0))']
+        expected_literals = ['(lift-at ?f2_0_1)', '(not (lift-at ?f1_0_0))']
         assert len(actual_literals) == len(expected_literals)
         for literal in actual_literals:
             assert literal.get_index() is not None
@@ -270,10 +270,10 @@ class TestState(unittest.TestCase):
         initial_static_atoms = initial_state.get_ground_atoms(ignore_fluent=True, ignore_derived=True)
         initial_fluent_atoms = initial_state.get_ground_atoms(ignore_static=True, ignore_derived=True)
         initial_derived_atoms = initial_state.get_ground_atoms(ignore_static=True, ignore_fluent=True)
-        assert len(initial_atoms) == 24
+        assert len(initial_atoms) == 28
         assert len(initial_static_atoms) == 22
         assert len(initial_fluent_atoms) == 1
-        assert len(initial_derived_atoms) == 1
+        assert len(initial_derived_atoms) == 5
         for atom in initial_atoms:
             assert atom.get_index() is not None
             assert isinstance(atom, GroundAtom)
@@ -292,11 +292,23 @@ class TestState(unittest.TestCase):
         domain = Domain(domain_path)
         problem = Problem(domain, problem_path)
         initial_state = problem.get_initial_state()
-        aag = ApplicableActionGenerator(problem)
-        actions = aag.get_applicable_actions(initial_state)
+        actions = initial_state.generate_applicable_actions()
         assert len(actions) > 0
         for action in actions:
             assert action.get_precondition().holds(initial_state)
+
+    def test_generate_applicable_actions(self):
+        domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
+        problem_path = DATA_DIR / 'blocks_4' / 'test_problem.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path)
+        initial_state = problem.get_initial_state()
+        actions = initial_state.generate_applicable_actions()
+        assert len(actions) > 0
+        for index, action in enumerate(actions):
+            assert action.get_precondition().holds(initial_state)
+            successor_state =  action.apply(initial_state)
+            assert successor_state.get_index() == (index + 1)  # Index 0 is the initial state
 
 
 class TestGroundConjunctiveCondition(unittest.TestCase):
@@ -309,20 +321,35 @@ class TestGroundConjunctiveCondition(unittest.TestCase):
         assert not problem.get_goal_condition().holds(initial_state)
 
 
-class TestApplicableActionGenerator(unittest.TestCase):
-    def test_get_applicable_actions(self):
+class TestSearchAlgorithms(unittest.TestCase):
+    def test_custom_heuristic(self):
+        domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
+        problem_path = DATA_DIR / 'blocks_4' / 'test_problem.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path, mode='lifted')
+        initial_state = problem.get_initial_state()
+        class CustomHeuristic(Heuristic):
+            def compute_value(self, state: State, is_goal_state: bool) -> float:
+                return 0.0 if is_goal_state else 1.0
+        heuristic = CustomHeuristic()
+        result = astar_eager(problem, initial_state, heuristic)
+        assert result.status == "solved"
+        assert result.solution is not None
+        assert len(result.solution) == 4
+        assert result.solution_cost == 4.0
+
+    def test_astar_eager(self):
         domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
         problem_path = DATA_DIR / 'blocks_4' / 'test_problem.pddl'
         domain = Domain(domain_path)
         problem = Problem(domain, problem_path)
         initial_state = problem.get_initial_state()
-        aag = ApplicableActionGenerator(problem)
-        actions = aag.get_applicable_actions(initial_state)
-        assert len(actions) > 0
-        for index, action in enumerate(actions):
-            assert action.get_precondition().holds(initial_state)
-            successor_state =  action.apply(initial_state)
-            assert successor_state.get_index() == (index + 1)  # Index 0 is the initial state
+        heuristic = BlindHeuristic(problem)
+        result = astar_eager(problem, initial_state, heuristic)
+        assert result.status == "solved"
+        assert result.solution is not None
+        assert len(result.solution) == 4
+        assert result.solution_cost == 4.0
 
 
 if __name__ == '__main__':

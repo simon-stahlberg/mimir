@@ -29,8 +29,8 @@ from pymimir.advanced.formalism import GroundConjunctiveEffect as AdvancedGround
 from pymimir.advanced.formalism import NumericConstraintList as AdvancedNumericConstraintList
 from pymimir.advanced.formalism import Object as AdvancedObject
 from pymimir.advanced.formalism import ObjectList as AdvancedObjectList
-from pymimir.advanced.formalism import ParserOptions as AdvanceParserOptions
 from pymimir.advanced.formalism import Parser as AdvancedParser
+from pymimir.advanced.formalism import ParserOptions as AdvancedParserOptions
 from pymimir.advanced.formalism import Problem as AdvancedProblem
 from pymimir.advanced.formalism import Repositories as AdvancedRepositories
 from pymimir.advanced.formalism import StaticAtom as AdvancedStaticAtom
@@ -43,10 +43,9 @@ from pymimir.advanced.formalism import StaticLiteralList as AdvancedStaticLitera
 from pymimir.advanced.formalism import StaticPredicate as AdvancedStaticPredicate
 from pymimir.advanced.formalism import Term as AdvancedTerm
 from pymimir.advanced.formalism import TermList as AdvancedTermList
+from pymimir.advanced.formalism import Translator as AdvancedTranslator
 from pymimir.advanced.formalism import Variable as AdvancedVariable
 from pymimir.advanced.formalism import VariableList as AdvancedVariableList
-from pymimir.advanced.search import GroundedAxiomEvaluator as AdvancedGroundedAxiomEvaluator
-from pymimir.advanced.search import LiftedAxiomEvaluator as AdvancedLiftedAxiomEvaluator
 from pymimir.advanced.search import SearchMode, SearchContext, SearchContextOptions
 from pymimir.advanced.search import State as AdvancedState
 
@@ -63,7 +62,6 @@ AdvancedLiteralList = Union[AdvancedStaticLiteralList, AdvancedFluentLiteralList
 AdvancedGroundLiteral = Union[AdvancedStaticGroundLiteral, AdvancedFluentGroundLiteral, AdvancedDerivedGroundLiteral]
 AdvancedGroundLiteralList = Union[AdvancedStaticGroundLiteralList, AdvancedFluentGroundLiteralList, AdvancedDerivedGroundLiteralList]
 AdvancedPredicate = Union[AdvancedStaticPredicate, AdvancedFluentPredicate, AdvancedDerivedPredicate]
-AdvancedAxiomEvaluator = Union[AdvancedGroundedAxiomEvaluator, AdvancedLiftedAxiomEvaluator]
 
 
 # ------------
@@ -714,6 +712,7 @@ class GroundAction:
 class Domain:
     """Domain class for the PDDL domain."""
     _advanced_parser: 'AdvancedParser' = None
+    _advanced_translator: 'AdvancedTranslator' = None
     _advanced_domain: 'AdvancedDomain' = None
     _repositories: 'AdvancedRepositories' = None
 
@@ -725,8 +724,10 @@ class Domain:
             domain_path (Path): The file path to the domain definition file.
         """
         assert isinstance(domain_path, (Path, str)), "Invalid domain path type."
-        self._advanced_parser = AdvancedParser(domain_path, AdvanceParserOptions())
-        self._advanced_domain = self._advanced_parser.get_domain()
+        self._advanced_parser = AdvancedParser(domain_path, AdvancedParserOptions())
+        original_domain = self._advanced_parser.get_domain()
+        self._advanced_translator = AdvancedTranslator(original_domain)
+        self._advanced_domain = self._advanced_translator.get_translated_domain()
         self._repositories = self._advanced_domain.get_repositories()
 
     def get_name(self) -> 'str':
@@ -809,9 +810,9 @@ class Problem:
             raise ValueError("Invalid mode. Use 'lifted' or 'grounded'.")
         search_mode = SearchMode.LIFTED if mode == 'lifted' else SearchMode.GROUNDED
         self._domain = domain
-        advanced_problem = domain._advanced_parser.parse_problem(problem_path, AdvanceParserOptions())
-        self._search_context = SearchContext.create(advanced_problem, SearchContextOptions(search_mode))
-        self._advanced_problem = self._search_context.get_problem()
+        original_problem = domain._advanced_parser.parse_problem(problem_path, AdvancedParserOptions())
+        self._advanced_problem = domain._advanced_translator.translate(original_problem)
+        self._search_context = SearchContext.create(self._advanced_problem, SearchContextOptions(search_mode))
         self._static_ground_atom_indices = { atom.get_index() for atom in self._advanced_problem.get_static_initial_atoms() }
 
     def _to_advanced_term(self, term: 'Term') -> 'AdvancedTerm':
@@ -1052,6 +1053,19 @@ class State:
         holds = holds and self._literals_hold_derived(advanced_derived_ground_literals)
         return holds
 
+    def generate_applicable_actions(self, cache_result = False) -> 'list[GroundAction]':
+        """
+        Generates a list of all applicable ground actions in the state.
+        """
+        if cache_result and hasattr(self, '_applicable_actions'):
+            return self._applicable_actions
+        aag = self._problem._search_context.get_applicable_action_generator()
+        result = [GroundAction(x, self._problem) for x in aag.generate_applicable_actions(self._advanced_state)]
+        result.sort(key=lambda x: x.get_index())  # Sort by index for consistency
+        if cache_result:
+            self._applicable_actions = result
+        return result
+
     def __str__(self) -> 'str':
         """
         Returns a string representation of the state.
@@ -1190,18 +1204,3 @@ class ConjunctiveCondition:
         if not isinstance(other, ConjunctiveCondition):
             return False
         return self._advanced_conjunctive_condition == other._advanced_conjunctive_condition
-
-
-class ApplicableActionGenerator:
-    """
-    Class to generate applicable actions for a given state.
-    """
-    def __init__(self, problem: 'Problem'):
-        self._problem = problem
-        self._aag = problem._search_context.get_applicable_action_generator()
-
-    def get_applicable_actions(self, state: 'State') -> 'list[GroundAction]':
-        """
-        Returns the applicable ground actions for the given state.
-        """
-        return [GroundAction(ground_action, self._problem) for ground_action in self._aag.generate_applicable_actions(state._advanced_state)]
