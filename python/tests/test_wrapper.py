@@ -184,13 +184,48 @@ class TestAction(unittest.TestCase):
             assert literal.get_index() is not None
             assert str(literal) in expected_derived_literals
 
+    def test_unconditional_effect(self):
+        domain_path = DATA_DIR / 'miconic-fulladl' / 'domain.pddl'
+        domain = Domain(domain_path)
+        action = domain.get_action('up')
+        assert action.get_name() == 'up'
+        actual_conditional_effect = action.get_conditional_effect()
+        assert len(actual_conditional_effect) == 1
+        actual_condition = actual_conditional_effect[0].get_condition()
+        assert len(actual_condition.get_parameters()) == 0
+        assert len(actual_condition.get_literals()) == 0
+        assert len(actual_condition.get_nullary_ground_literals()) == 0
+        actual_effect = actual_conditional_effect[0].get_effect()
+        actual_parameters = actual_effect.get_parameters()
+        expected_parameters = ['?f1_0', '?f2_0']
+        assert len(actual_parameters) == len(expected_parameters)
+        for parameter in actual_parameters:
+            assert parameter.get_index() is not None
+            assert parameter.get_name() in expected_parameters
+        actual_literals = actual_effect.get_literals()
+        expected_literals = ['(lift-at ?f2_0)', '(not (lift-at ?f1_0))']
+        assert len(actual_literals) == len(expected_literals)
+        for literal in actual_literals:
+            assert literal.get_index() is not None
+            assert str(literal) in expected_literals
+
     def test_conditional_effect(self):
         domain_path = DATA_DIR / 'miconic-fulladl' / 'domain.pddl'
         domain = Domain(domain_path)
         action = domain.get_action('stop')
         assert action.get_name() == 'stop'
-        actual_conditiona_effect = action.get_conditional_effect()
-        pass
+        actual_conditional_effect = action.get_conditional_effect()
+        assert len(actual_conditional_effect) == 2
+        # First conditional effect
+        actual_first_condition = actual_conditional_effect[0].get_condition()
+        assert len(actual_first_condition.get_parameters()) == 1
+        assert len(actual_first_condition.get_literals()) == 3
+        assert len(actual_first_condition.get_nullary_ground_literals()) == 0
+        # Second conditional effect
+        actual_second_condition = actual_conditional_effect[1].get_condition()
+        assert len(actual_second_condition.get_parameters()) == 1
+        assert len(actual_second_condition.get_literals()) == 3
+        assert len(actual_second_condition.get_nullary_ground_literals()) == 0
 
     def test_new_conjunctive_condition(self):
         domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'

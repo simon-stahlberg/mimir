@@ -125,7 +125,7 @@ class Variable:
 
     def __repr__(self) -> 'str':
         """Get the string representation of the variable."""
-        return repr(self._advanced_variable)
+        return str(self._advanced_variable)
 
     def __hash__(self) -> 'int':
         """Get the hash of the variable."""
@@ -160,7 +160,7 @@ class Object:
 
     def __repr__(self) -> 'str':
         """Get the string representation of the object."""
-        return repr(self._advanced_object)
+        return str(self._advanced_object)
 
     def __hash__(self) -> 'int':
         """Get the hash of the object."""
@@ -205,7 +205,7 @@ class Predicate:
 
     def __repr__(self):
         """Get the string representation of the predicate."""
-        return repr(self._advanced_predicate)
+        return str(self._advanced_predicate)
 
     def __hash__(self) -> 'int':
         """Get the hash of the predicate."""
@@ -268,7 +268,7 @@ class GroundAtom:
 
     def __repr__(self):
         """Get the string representation of the ground atom."""
-        return repr(self._advanced_ground_atom)
+        return str(self._advanced_ground_atom)
 
     def __hash__(self) -> 'int':
         """Get the hash of the ground atom."""
@@ -323,7 +323,7 @@ class Atom:
 
     def __repr__(self):
         """Get the string representation of the atom."""
-        return repr(self._advanced_atom)
+        return str(self._advanced_atom)
 
     def __hash__(self) -> 'int':
         """Get the hash of the atom."""
@@ -368,7 +368,7 @@ class GroundLiteral:
 
     def __repr__(self):
         """Get the string representation of the ground literal."""
-        return repr(self._advanced_ground_literal)
+        return str(self._advanced_ground_literal)
 
     def __hash__(self) -> 'int':
         """Get the hash of the ground literal."""
@@ -415,7 +415,7 @@ class Literal:
 
     def __repr__(self) -> 'str':
         """Get the string representation of the literal."""
-        return repr(self._advanced_literal)
+        return str(self._advanced_literal)
 
     def __hash__(self) -> 'int':
         """Get the hash of the literal."""
@@ -544,7 +544,7 @@ class Effect:
 
     def __repr__(self):
         """Get the string representation of the effect list."""
-        return repr(self._advanced_conjunctive_effect)
+        return str(self._advanced_conjunctive_effect)
 
     def __hash__(self) -> 'int':
         """Get the hash of the effect list."""
@@ -569,11 +569,11 @@ class ConditionalEffect:
         """Get the index of the conditional effect."""
         return self._advanced_conditional_effect.get_index()
 
-    def get_conjunctive_condition(self) -> 'ConjunctiveCondition':
+    def get_condition(self) -> 'ConjunctiveCondition':
         """Get the static conditions of the conditional effect."""
         return ConjunctiveCondition(self._advanced_conditional_effect.get_conjunctive_condition())
 
-    def get_conjunctive_effect(self) -> 'Effect':
+    def get_effect(self) -> 'Effect':
         """Get the effect list of the conditional effect."""
         return Effect(self._advanced_conditional_effect.get_conjunctive_effect())
 
@@ -583,7 +583,7 @@ class ConditionalEffect:
 
     def __repr__(self):
         """Get the string representation of the conditional effect."""
-        return repr(self._advanced_conditional_effect)
+        return str(self._advanced_conditional_effect)
 
     def __hash__(self) -> 'int':
         """Get the hash of the conditional effect."""
@@ -624,10 +624,6 @@ class Action:
         """Get the conjunctive condition of the action."""
         return ConjunctiveCondition(self._advanced_action.get_conjunctive_condition())
 
-    def get_effect(self) -> 'tuple[list[ConditionalEffect]]':
-        """Get conditional effects of the action where the unconditional effects are represented as conditional effect without quantified precondition. """
-        return self.get_conditional_effect()
-
     def get_conditional_effect(self) -> 'list[ConditionalEffect]':
         """Get the conditional effect of the action."""
         return [ConditionalEffect(x) for x in self._advanced_action.get_conditional_effects()]
@@ -638,7 +634,7 @@ class Action:
 
     def __repr__(self):
         """Get the string representation of the action."""
-        return repr(self._advanced_action)
+        return str(self._advanced_action)
 
     def __hash__(self) -> 'int':
         """Get the hash of the action."""
@@ -1183,7 +1179,7 @@ class ConjunctiveCondition:
 
     def __repr__(self):
         """Get the string representation of the conjunctive condition."""
-        return repr(self._advanced_conjunctive_condition)
+        return str(self._advanced_conjunctive_condition)
 
     def __hash__(self) -> 'int':
         """Get the hash of the conjunctive condition."""
