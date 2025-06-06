@@ -23,3 +23,30 @@ def test_astar_search():
 
     assert result.status == search.SearchStatus.SOLVED
     assert len(result.plan) == 3
+
+
+def test_astar_search_2():
+    domain_filepath = str(ROOT_DIR / "data" / "blocks_4" / "domain.pddl")
+    problem_filepath = str(ROOT_DIR / "data" / "blocks_4" / "test_problem.pddl")
+
+    parser = formalism.Parser(domain_filepath, formalism.ParserOptions())
+    problem = parser.parse_problem(problem_filepath, formalism.ParserOptions())
+
+    translator = formalism.Translator(parser.get_domain())
+    domain = translator.get_translated_domain()
+    problem = translator.translate(problem)
+
+    axiom_evaluator = search.LiftedAxiomEvaluator(problem)
+    state_repository = search.StateRepository(axiom_evaluator)
+    applicable_action_generator = search.LiftedApplicableActionGenerator(problem)
+
+    search_context = search.SearchContext.create(problem, applicable_action_generator, state_repository)
+
+    heuristic = search.BlindHeuristic(problem)
+
+    astar_options = search.AStarEagerOptions()
+
+    result = search.find_solution_astar_eager(search_context, heuristic, astar_options)
+
+    assert result.status == search.SearchStatus.SOLVED
+    assert len(result.plan) == 4
