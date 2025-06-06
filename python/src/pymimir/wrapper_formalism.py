@@ -651,6 +651,7 @@ class GroundAction:
 
     def __init__(self, advanced_ground_action: 'AdvancedGroundAction', problem: 'Problem') -> None:
         assert isinstance(advanced_ground_action, AdvancedGroundAction), "Invalid ground action type."
+        assert isinstance(problem, Problem), "Invalid problem type."
         self._advanced_ground_action = advanced_ground_action
         self._problem = problem
 
@@ -937,6 +938,8 @@ class State:
     Class representing a state in the search space.
     """
     def __init__(self, advanced_state: 'AdvancedState', problem: 'Problem') -> None:
+        assert isinstance(advanced_state, AdvancedState), "Invalid advanced state type."
+        assert isinstance(problem, Problem), "Invalid problem type."
         self._problem = problem
         self._advanced_state = advanced_state
 
@@ -1108,6 +1111,9 @@ class GroundConjunctiveCondition:
             self._advanced_condition = advanced_condition
         else:
             assert static_ground_literals is not None and fluent_ground_literals is not None and derived_ground_literals is not None, "All literal lists must be provided if advanced_condition is not used."
+            assert isinstance(static_ground_literals, AdvancedStaticGroundLiteralList), "Invalid static ground literals type."
+            assert isinstance(fluent_ground_literals, AdvancedFluentGroundLiteralList), "Invalid fluent ground literals type."
+            assert isinstance(derived_ground_literals, AdvancedDerivedGroundLiteralList), "Invalid derived ground literals type."
             self._static_ground_literals = static_ground_literals
             self._fluent_ground_literals = fluent_ground_literals
             self._derived_ground_literals = derived_ground_literals

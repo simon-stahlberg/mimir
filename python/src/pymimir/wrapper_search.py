@@ -1,3 +1,6 @@
+from typing import Callable
+
+from pymimir.advanced.formalism import GroundAction as AdvancedGroundAction
 from pymimir.advanced.search import AddHeuristic as AdvancedAddHeuristic
 from pymimir.advanced.search import BlindHeuristic as AdvancedBlindHeuristic
 from pymimir.advanced.search import DeleteRelaxedProblemExplorator as AdvancedDeleteRelaxedProblemExplorator
@@ -43,6 +46,7 @@ class Heuristic:
 class AddHeuristic(Heuristic):
     def __init__(self, problem: 'Problem'):
         super().__init__()
+        assert isinstance(problem, Problem), "Problem must be an instance of Problem."
         delete_relaxed = AdvancedDeleteRelaxedProblemExplorator(problem._advanced_problem)
         self._advanced_heuristic = AdvancedAddHeuristic(delete_relaxed)
 
@@ -53,6 +57,7 @@ class AddHeuristic(Heuristic):
 class BlindHeuristic(Heuristic):
     def __init__(self, problem: 'Problem'):
         super().__init__()
+        assert isinstance(problem, Problem), "Problem must be an instance of Problem."
         self._advanced_heuristic = AdvancedBlindHeuristic(problem._advanced_problem)
 
     def compute_value(self, state: 'State', is_goal_state: bool) -> float:
@@ -62,6 +67,7 @@ class BlindHeuristic(Heuristic):
 class MaxHeuristic(Heuristic):
     def __init__(self, problem: 'Problem'):
         super().__init__()
+        assert isinstance(problem, Problem), "Problem must be an instance of Problem."
         delete_relaxed = AdvancedDeleteRelaxedProblemExplorator(problem._advanced_problem)
         self._advanced_heuristic = AdvancedMaxHeuristic(delete_relaxed)
 
@@ -72,6 +78,7 @@ class MaxHeuristic(Heuristic):
 class PerfectHeuristic(Heuristic):
     def __init__(self, problem: 'Problem'):
         super().__init__()
+        assert isinstance(problem, Problem), "Problem must be an instance of Problem."
         self._advanced_heuristic = AdvancedPerfectHeuristic(problem._search_context)
 
     def compute_value(self, state: 'State', is_goal_state: bool) -> float:
@@ -81,6 +88,7 @@ class PerfectHeuristic(Heuristic):
 class SetAddHeuristic(Heuristic):
     def __init__(self, problem: 'Problem'):
         super().__init__()
+        assert isinstance(problem, Problem), "Problem must be an instance of Problem."
         delete_relaxed = AdvancedDeleteRelaxedProblemExplorator(problem._advanced_problem)
         self._advanced_heuristic = AdvancedSetAddHeuristic(delete_relaxed)
 
@@ -101,6 +109,8 @@ class AdvancedHeuristicProxy(AdvancedHeuristicBase):
         :param problem: The problem associated with the heuristic.
         """
         super().__init__()
+        assert isinstance(heuristic, Heuristic), "Heuristic must be an instance of Heuristic."
+        assert isinstance(problem, Problem), "Problem must be an instance of Problem."
         self._heuristic = heuristic
         self._problem = problem
 
@@ -135,6 +145,12 @@ def astar_eager(
     heuristic: 'Heuristic',
     max_time_seconds: float = -1,
     max_num_states: int = -1,
+    on_close_state: Callable[['AdvancedState'], None] = None,
+    on_expand_goal_state: Callable[['AdvancedState'], None] = None,
+    on_expand_state: Callable[['AdvancedState'], None] = None,
+    on_finish_f_layer: Callable[['float'], None] = None,
+    on_generate_state: Callable[['AdvancedState', 'AdvancedGroundAction', float, 'AdvancedState'], None] = None,
+    on_prune_state: Callable[['AdvancedState'], None] = None
     ) -> SearchResult:
     """
     A* search algorithm with eager evaluation.
@@ -151,21 +167,53 @@ def astar_eager(
     assert isinstance(heuristic, Heuristic), "Heuristic must be an instance of Heuristic."
     assert isinstance(max_time_seconds, (int, float)), "max_time_seconds must be an int or float."
     assert isinstance(max_num_states, int), "max_num_states must be an int."
-    # Custom event handler
+    # Define the event handler with the provided callbacks
     class EventHandler(AdvancedAStarEagerEventHandler):
-        def on_close_state(self, arg): pass
-        def on_end_search(self, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7): pass
-        def on_exhausted(self): pass
-        def on_expand_goal_state(self, arg): pass
-        def on_expand_state(self, arg): pass
-        def on_finish_f_layer(self, arg): pass
-        def on_generate_state_not_relaxed(self, arg0, arg1, arg2, arg3): pass
-        def on_generate_state_relaxed(self, arg0, arg1, arg2, arg3): pass
-        def on_generate_state(self, arg0, arg1, arg2, arg3): pass
-        def on_prune_state(self, arg): pass
-        def on_solved(self, arg): pass
-        def on_start_search(self, arg0, arg1, arg2): pass
-        def on_unsolvable(self): pass
+        def on_close_state(self, advanced_state: 'AdvancedState'):
+            nonlocal problem, on_close_state
+            if on_close_state:
+                state = State(advanced_state, problem)
+                on_close_state(state)
+        def on_end_search(self, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7):
+            pass  # Ignored
+        def on_exhausted(self):
+            pass  # Ignored
+        def on_expand_goal_state(self, advanced_state: 'AdvancedState'):
+            nonlocal problem, on_expand_goal_state
+            if on_expand_goal_state:
+                state = State(advanced_state, problem)
+                on_expand_goal_state(state)
+        def on_expand_state(self, advanced_state: 'AdvancedState'):
+            nonlocal problem, on_expand_state
+            if on_expand_state:
+                state = State(advanced_state, problem)
+                on_expand_state(state)
+        def on_finish_f_layer(self, arg):
+            nonlocal problem, on_finish_f_layer
+            if on_finish_f_layer:
+                on_finish_f_layer(arg)
+        def on_generate_state_not_relaxed(self, arg0, arg1, arg2, arg3):
+            pass  # Ignored
+        def on_generate_state_relaxed(self, arg0, arg1, arg2, arg3):
+            pass  # Ignored
+        def on_generate_state(self, advanced_state: 'AdvancedState', advanced_action: 'AdvancedGroundAction', action_cost: float, advanced_successor_state: 'AdvancedState'):
+            nonlocal problem, on_generate_state
+            if on_generate_state:
+                state = State(advanced_state, problem)
+                action = GroundAction(advanced_action, problem)
+                successor_state = State(advanced_successor_state, problem)
+                on_generate_state(state, action, action_cost, successor_state)
+        def on_prune_state(self, advanced_state: 'AdvancedState'):
+            nonlocal problem, on_prune_state
+            if on_prune_state:
+                state = State(advanced_state, problem)
+                on_prune_state(state)
+        def on_solved(self, arg):
+            pass  # Ignored
+        def on_start_search(self, arg0, arg1, arg2):
+            pass  # Ignored
+        def on_unsolvable(self):
+            pass  # Ignored
     # Create options for the A* search
     advanced_options = AdvancedAStarEagerOptions()
     if max_time_seconds > 0: advanced_options.max_time_in_ms = int(max_time_seconds * 1000)

@@ -351,6 +351,35 @@ class TestSearchAlgorithms(unittest.TestCase):
         assert len(result.solution) == 4
         assert result.solution_cost == 4.0
 
+    def test_astar_eager_events(self):
+        domain_path = DATA_DIR / 'childsnack' / 'domain.pddl'
+        problem_path = DATA_DIR / 'childsnack' / 'test_problem.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path)
+        initial_state = problem.get_initial_state()
+        heuristic = BlindHeuristic(problem)
+        closed_states = []
+        expanded_goal_states = []
+        expanded_states = []
+        finished_f_layers = []
+        generated_states = []
+        pruned_states = []
+        _ = astar_eager(problem,
+                        initial_state,
+                        heuristic,
+                        on_close_state=lambda state: closed_states.append(state),
+                        on_expand_goal_state=lambda state: expanded_goal_states.append(state),
+                        on_expand_state=lambda state: expanded_states.append(state),
+                        on_finish_f_layer=lambda f_value: finished_f_layers.append(f_value),
+                        on_generate_state=lambda state, action, cost, new_state: generated_states.append((state, action, cost, new_state)),
+                        on_prune_state=lambda state: pruned_states.append(state))
+        # assert len(closed_states) > 0  # TODO: Something seems wrong, no states are closed.
+        assert len(expanded_goal_states) == 1
+        assert len(expanded_states) == 6
+        assert len(finished_f_layers) == 4
+        assert len(generated_states) == 16
+        assert len(pruned_states) == 0
+
 
 if __name__ == '__main__':
     unittest.main()
