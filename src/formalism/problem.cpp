@@ -1088,6 +1088,57 @@ ConjunctiveCondition ProblemImpl::get_or_create_conjunctive_condition(VariableLi
     return m_repositories.get_or_create_conjunctive_condition(std::move(parameters), std::move(literals), std::move(numeric_constraints));
 }
 
+GroundConjunctiveCondition ProblemImpl::get_or_create_ground_conjunctive_condition(GroundLiteralList<StaticTag> static_literals,
+                                                                                   GroundLiteralList<FluentTag> fluent_literals,
+                                                                                   GroundLiteralList<DerivedTag> derived_literals)
+{
+    auto positive_index_list = FlatIndexList {};
+    auto negative_index_list = FlatIndexList {};
+
+    auto populate_index_lists = [&positive_index_list, &negative_index_list](const auto& literals)
+    {
+        positive_index_list.clear();
+        negative_index_list.clear();
+        for (const auto& literal : literals)
+        {
+            if (literal->get_polarity())
+            {
+                positive_index_list.push_back(literal->get_atom()->get_index());
+            }
+            else
+            {
+                negative_index_list.push_back(literal->get_atom()->get_index());
+            }
+        }
+        positive_index_list.compress();
+        negative_index_list.compress();
+    };
+
+    populate_index_lists(static_literals);
+    const auto positive_static_condition_ptr = get_or_create_index_list(positive_index_list);
+    const auto negative_static_condition_ptr = get_or_create_index_list(negative_index_list);
+
+    populate_index_lists(fluent_literals);
+    const auto positive_fluent_condition_ptr = get_or_create_index_list(positive_index_list);
+    const auto negative_fluent_condition_ptr = get_or_create_index_list(negative_index_list);
+
+    populate_index_lists(derived_literals);
+    const auto positive_derived_condition_ptr = get_or_create_index_list(positive_index_list);
+    const auto negative_derived_condition_ptr = get_or_create_index_list(negative_index_list);
+
+    return m_repositories.get_or_create_ground_conjunctive_condition(
+        boost::hana::make_map(
+            boost::hana::make_pair(boost::hana::type<PositiveTag> {},
+                                   boost::hana::make_map(boost::hana::make_pair(boost::hana::type<StaticTag> {}, positive_static_condition_ptr),
+                                                         boost::hana::make_pair(boost::hana::type<FluentTag> {}, positive_fluent_condition_ptr),
+                                                         boost::hana::make_pair(boost::hana::type<DerivedTag> {}, positive_derived_condition_ptr))),
+            boost::hana::make_pair(boost::hana::type<NegativeTag> {},
+                                   boost::hana::make_map(boost::hana::make_pair(boost::hana::type<StaticTag> {}, negative_static_condition_ptr),
+                                                         boost::hana::make_pair(boost::hana::type<FluentTag> {}, negative_fluent_condition_ptr),
+                                                         boost::hana::make_pair(boost::hana::type<DerivedTag> {}, negative_derived_condition_ptr)))),
+        GroundNumericConstraintList {});
+}
+
 const problem::ActionGroundingInfoList& problem::GroundingDetails::get_action_infos() const
 {
     if (!action_infos.has_value())

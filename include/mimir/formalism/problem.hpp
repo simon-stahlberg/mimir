@@ -242,6 +242,10 @@ public:
                                                              LiteralLists<StaticTag, FluentTag, DerivedTag> literals,
                                                              NumericConstraintList numeric_constraints);
 
+    GroundConjunctiveCondition get_or_create_ground_conjunctive_condition(GroundLiteralList<StaticTag> static_literals,
+                                                                          GroundLiteralList<FluentTag> fluent_literals,
+                                                                          GroundLiteralList<DerivedTag> derived_literals);
+
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
