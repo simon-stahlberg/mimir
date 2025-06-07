@@ -46,6 +46,7 @@ from pymimir.advanced.formalism import TermList as AdvancedTermList
 from pymimir.advanced.formalism import Translator as AdvancedTranslator
 from pymimir.advanced.formalism import Variable as AdvancedVariable
 from pymimir.advanced.formalism import VariableList as AdvancedVariableList
+from pymimir.advanced.search import ConjunctiveConditionSatisficingBindingGenerator
 from pymimir.advanced.search import SearchMode, SearchContext, SearchContextOptions
 from pymimir.advanced.search import State as AdvancedState
 
@@ -1153,6 +1154,16 @@ class GroundConjunctiveCondition:
         else:
             return len(self._static_ground_literals) + len(self._fluent_ground_literals) + len(self._derived_ground_literals)
 
+    def __str__(self):
+        all_literals = []
+        all_literals.extend(self._static_ground_literals)
+        all_literals.extend(self._fluent_ground_literals)
+        all_literals.extend(self._derived_ground_literals)
+        return "GroundConjunctiveCondition([" + ", ".join(str(x) for x in all_literals) + "])"
+
+    def __repr__(self):
+        return str(self)
+
 
 class ConjunctiveCondition:
     _advanced_conjunctive_condition: 'AdvancedConjunctiveCondition' = None
@@ -1187,12 +1198,6 @@ class ConjunctiveCondition:
             ground_literals.extend([GroundLiteral(x) for x in self._advanced_conjunctive_condition.get_nullary_ground_derived_literals()])
         return ground_literals
 
-    def ground(self, state: 'State') -> 'Iterable[GroundConjunctiveCondition]':
-        """Ground the conjunctive condition in the given state."""
-        assert isinstance(state, State), "Invalid state type."
-        # state._problem._advanced_problem.ground(self._advanced_conjunctive_condition, state._advanced_state)
-        raise NotImplementedError("Grounding not implemented yet.")
-
     def __str__(self):
         """Get the string representation of the conjunctive condition."""
         return str(self._advanced_conjunctive_condition)
@@ -1210,3 +1215,28 @@ class ConjunctiveCondition:
         if not isinstance(other, ConjunctiveCondition):
             return False
         return self._advanced_conjunctive_condition == other._advanced_conjunctive_condition
+
+
+class ConjunctiveConditionGrounder:
+    def __init__(self, conjunctive_condition: 'ConjunctiveCondition', problem: 'Problem') -> None:
+        assert isinstance(problem, Problem), "Invalid problem type."
+        assert isinstance(conjunctive_condition, ConjunctiveCondition), "Invalid conjunctive condition type."
+        self._problem = problem
+        self._conjunctive_condition = conjunctive_condition
+        self._grounder = ConjunctiveConditionSatisficingBindingGenerator(conjunctive_condition._advanced_conjunctive_condition, problem._advanced_problem)
+
+    def ground(self, state: 'State', max_groundings: int = -1) -> 'list[GroundConjunctiveCondition]':
+        """Ground the conjunctive condition.
+
+        Args:
+            state (State): The state to ground the condition in.
+            max_groundings (int): The maximum number of groundings to generate. If -1, all groundings are generated.
+        """
+        assert isinstance(state, State), "Invalid state type."
+        if max_groundings < 0:
+            max_groundings = 1_000_000_000  # Generate all groundings
+        result = []
+        foo = self._grounder.generate_ground_conjunctions(state._advanced_state, max_groundings)
+        for objects, (static_ground_literals, fluent_ground_literals, derived_ground_literals) in foo:
+            result.append(GroundConjunctiveCondition(static_ground_literals, fluent_ground_literals, derived_ground_literals))
+        return result

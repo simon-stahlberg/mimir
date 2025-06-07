@@ -5,6 +5,7 @@ from .wrapper_formalism import (
     Atom,
     ConditionalEffect,
     ConjunctiveCondition,
+    ConjunctiveConditionGrounder,
     Domain,
     Effect,
     GroundAction,

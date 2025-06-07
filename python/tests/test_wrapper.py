@@ -320,6 +320,19 @@ class TestGroundConjunctiveCondition(unittest.TestCase):
         initial_state = problem.get_initial_state()
         assert not problem.get_goal_condition().holds(initial_state)
 
+    def test_grounder(self):
+        domain_path = DATA_DIR / 'gripper' / 'domain.pddl'
+        problem_path = DATA_DIR / 'gripper' / 'test_problem.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path)
+        initial_state = problem.get_initial_state()
+        pickup_condition = domain.get_action('pick').get_precondition()
+        grounder = ConjunctiveConditionGrounder(pickup_condition, problem)
+        all_groundings = grounder.ground(initial_state)
+        single_grounding = grounder.ground(initial_state, 1)
+        assert len(all_groundings) == 4
+        assert len(single_grounding) == 1
+
 
 class TestSearchAlgorithms(unittest.TestCase):
     def test_custom_heuristic(self):
@@ -431,6 +444,7 @@ class TestSearchAlgorithms(unittest.TestCase):
         assert heuristic.compute_value(initial_state, True) == 0.0
         assert heuristic.compute_value(initial_state, False) == 4.0
         assert len(heuristic.compute_preferred_actions()) == 2
+
 
 if __name__ == '__main__':
     unittest.main()
