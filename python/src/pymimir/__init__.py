@@ -29,5 +29,6 @@ from .wrapper_search import (
     PerfectHeuristic,
     SetAddHeuristic,
     SearchResult,
+    FFHeuristic,
     astar_eager
 )

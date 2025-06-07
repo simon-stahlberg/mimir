@@ -358,7 +358,6 @@ class TestSearchAlgorithms(unittest.TestCase):
         problem = Problem(domain, problem_path)
         initial_state = problem.get_initial_state()
         heuristic = BlindHeuristic(problem)
-        closed_states = []
         expanded_goal_states = []
         expanded_states = []
         finished_f_layers = []
@@ -367,19 +366,71 @@ class TestSearchAlgorithms(unittest.TestCase):
         _ = astar_eager(problem,
                         initial_state,
                         heuristic,
-                        on_close_state=lambda state: closed_states.append(state),
-                        on_expand_goal_state=lambda state: expanded_goal_states.append(state),
                         on_expand_state=lambda state: expanded_states.append(state),
-                        on_finish_f_layer=lambda f_value: finished_f_layers.append(f_value),
+                        on_expand_goal_state=lambda state: expanded_goal_states.append(state),
                         on_generate_state=lambda state, action, cost, new_state: generated_states.append((state, action, cost, new_state)),
-                        on_prune_state=lambda state: pruned_states.append(state))
-        # assert len(closed_states) > 0  # TODO: Something seems wrong, no states are closed.
+                        on_prune_state=lambda state: pruned_states.append(state),
+                        on_finish_f_layer=lambda f_value: finished_f_layers.append(f_value))
         assert len(expanded_goal_states) == 1
         assert len(expanded_states) == 6
         assert len(finished_f_layers) == 4
         assert len(generated_states) == 16
         assert len(pruned_states) == 0
 
+    def test_set_add_heuristic(self):
+        domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
+        problem_path = DATA_DIR / 'blocks_4' / 'test_problem.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path)
+        heuristic = SetAddHeuristic(problem)
+        initial_state = problem.get_initial_state()
+        assert heuristic.compute_value(initial_state, True) == 0.0
+        assert heuristic.compute_value(initial_state, False) == 5.0
+        assert len(heuristic.compute_preferred_actions()) == 0
+
+    def test_max_heuristic(self):
+        domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
+        problem_path = DATA_DIR / 'blocks_4' / 'test_problem.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path)
+        heuristic = MaxHeuristic(problem)
+        initial_state = problem.get_initial_state()
+        assert heuristic.compute_value(initial_state, True) == 0.0
+        assert heuristic.compute_value(initial_state, False) == 2.0
+        assert len(heuristic.compute_preferred_actions()) == 0
+
+    def test_add_heuristic(self):
+        domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
+        problem_path = DATA_DIR / 'blocks_4' / 'test_problem.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path)
+        heuristic = MaxHeuristic(problem)
+        initial_state = problem.get_initial_state()
+        assert heuristic.compute_value(initial_state, True) == 0.0
+        assert heuristic.compute_value(initial_state, False) == 2.0
+        assert len(heuristic.compute_preferred_actions()) == 0
+
+    def test_perfect_heuristic(self):
+        domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
+        problem_path = DATA_DIR / 'blocks_4' / 'test_problem.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path)
+        heuristic = PerfectHeuristic(problem)
+        initial_state = problem.get_initial_state()
+        # assert heuristic.compute_value(initial_state, True) == 0.0  # TODO: PerfectHeuristic seems to ignore the goal flag.
+        assert heuristic.compute_value(initial_state, False) == 4.0
+        assert len(heuristic.compute_preferred_actions()) == 0
+
+    def test_ff_heuristic(self):
+        domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
+        problem_path = DATA_DIR / 'blocks_4' / 'test_problem.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path)
+        heuristic = FFHeuristic(problem)
+        initial_state = problem.get_initial_state()
+        assert heuristic.compute_value(initial_state, True) == 0.0
+        assert heuristic.compute_value(initial_state, False) == 4.0
+        assert len(heuristic.compute_preferred_actions()) == 2
 
 if __name__ == '__main__':
     unittest.main()

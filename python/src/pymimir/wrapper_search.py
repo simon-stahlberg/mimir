@@ -4,6 +4,7 @@ from pymimir.advanced.formalism import GroundAction as AdvancedGroundAction
 from pymimir.advanced.search import AddHeuristic as AdvancedAddHeuristic
 from pymimir.advanced.search import BlindHeuristic as AdvancedBlindHeuristic
 from pymimir.advanced.search import DeleteRelaxedProblemExplorator as AdvancedDeleteRelaxedProblemExplorator
+from pymimir.advanced.search import FFHeuristic as AdvancedFFHeuristic
 from pymimir.advanced.search import IHeuristic as AdvancedHeuristicBase
 from pymimir.advanced.search import MaxHeuristic as AdvancedMaxHeuristic
 from pymimir.advanced.search import PerfectHeuristic as AdvancedPerfectHeuristic
@@ -33,11 +34,10 @@ class Heuristic:
         """
         raise NotImplementedError("This method should be overridden by subclasses.")
 
-    def compute_preferred_actions(self, state: 'State') -> 'set[GroundAction]':
+    def compute_preferred_actions(self) -> 'set[GroundAction]':
         """
-        Get preferred actions for a given state.
+        Get preferred actions for the last computed state.
 
-        :param state: The state for which to get preferred actions.
         :return: A set of GroundAction representing the preferred actions.
         """
         raise NotImplementedError("This method should be overridden by subclasses.")
@@ -47,53 +47,88 @@ class AddHeuristic(Heuristic):
     def __init__(self, problem: 'Problem'):
         super().__init__()
         assert isinstance(problem, Problem), "Problem must be an instance of Problem."
+        self._problem = problem
         delete_relaxed = AdvancedDeleteRelaxedProblemExplorator(problem._advanced_problem)
         self._advanced_heuristic = AdvancedAddHeuristic(delete_relaxed)
 
     def compute_value(self, state: 'State', is_goal_state: bool) -> float:
         return self._advanced_heuristic.compute_heuristic(state._advanced_state, is_goal_state)
 
+    def compute_preferred_actions(self) -> 'set[GroundAction]':
+        return { GroundAction(advanced_ground_action, self._problem) for advanced_ground_action in self._advanced_heuristic.get_preferred_actions().data }
+
 
 class BlindHeuristic(Heuristic):
     def __init__(self, problem: 'Problem'):
         super().__init__()
         assert isinstance(problem, Problem), "Problem must be an instance of Problem."
+        self._problem = problem
         self._advanced_heuristic = AdvancedBlindHeuristic(problem._advanced_problem)
 
     def compute_value(self, state: 'State', is_goal_state: bool) -> float:
         self._advanced_heuristic.compute_heuristic(state._advanced_state, is_goal_state)
+
+    def compute_preferred_actions(self) -> 'set[GroundAction]':
+        return { GroundAction(advanced_ground_action, self._problem) for advanced_ground_action in self._advanced_heuristic.get_preferred_actions().data }
 
 
 class MaxHeuristic(Heuristic):
     def __init__(self, problem: 'Problem'):
         super().__init__()
         assert isinstance(problem, Problem), "Problem must be an instance of Problem."
+        self._problem = problem
         delete_relaxed = AdvancedDeleteRelaxedProblemExplorator(problem._advanced_problem)
         self._advanced_heuristic = AdvancedMaxHeuristic(delete_relaxed)
 
     def compute_value(self, state: 'State', is_goal_state: bool) -> float:
         return self._advanced_heuristic.compute_heuristic(state._advanced_state, is_goal_state)
 
+    def compute_preferred_actions(self) -> 'set[GroundAction]':
+        return { GroundAction(advanced_ground_action, self._problem) for advanced_ground_action in self._advanced_heuristic.get_preferred_actions().data }
+
 
 class PerfectHeuristic(Heuristic):
     def __init__(self, problem: 'Problem'):
         super().__init__()
         assert isinstance(problem, Problem), "Problem must be an instance of Problem."
+        self._problem = problem
         self._advanced_heuristic = AdvancedPerfectHeuristic(problem._search_context)
 
     def compute_value(self, state: 'State', is_goal_state: bool) -> float:
         return self._advanced_heuristic.compute_heuristic(state._advanced_state, is_goal_state)
+
+    def compute_preferred_actions(self) -> 'set[GroundAction]':
+        return { GroundAction(advanced_ground_action, self._problem) for advanced_ground_action in self._advanced_heuristic.get_preferred_actions().data }
 
 
 class SetAddHeuristic(Heuristic):
     def __init__(self, problem: 'Problem'):
         super().__init__()
         assert isinstance(problem, Problem), "Problem must be an instance of Problem."
+        self._problem = problem
         delete_relaxed = AdvancedDeleteRelaxedProblemExplorator(problem._advanced_problem)
         self._advanced_heuristic = AdvancedSetAddHeuristic(delete_relaxed)
 
     def compute_value(self, state: 'State', is_goal_state: bool) -> float:
         return self._advanced_heuristic.compute_heuristic(state._advanced_state, is_goal_state)
+
+    def compute_preferred_actions(self) -> 'set[GroundAction]':
+        return { GroundAction(advanced_ground_action, self._problem) for advanced_ground_action in self._advanced_heuristic.get_preferred_actions().data }
+
+
+class FFHeuristic(Heuristic):
+    def __init__(self, problem: 'Problem'):
+        super().__init__()
+        assert isinstance(problem, Problem), "Problem must be an instance of Problem."
+        self._problem = problem
+        delete_relaxed = AdvancedDeleteRelaxedProblemExplorator(problem._advanced_problem)
+        self._advanced_heuristic = AdvancedFFHeuristic(delete_relaxed)
+
+    def compute_value(self, state: 'State', is_goal_state: bool) -> float:
+        return self._advanced_heuristic.compute_heuristic(state._advanced_state, is_goal_state)
+
+    def compute_preferred_actions(self) -> 'set[GroundAction]':
+        return { GroundAction(advanced_ground_action, self._problem) for advanced_ground_action in self._advanced_heuristic.get_preferred_actions().data }
 
 
 # -----------------
@@ -121,7 +156,7 @@ class AdvancedHeuristicProxy(AdvancedHeuristicBase):
     def get_preferred_actions(self, advanced_state: 'AdvancedState') -> AdvancedPreferredActions:
         state = State(advanced_state, self._problem)
         preferred_actions = AdvancedPreferredActions()
-        preferred_actions.data = self._heuristic.compute_preferred_actions(state)
+        preferred_actions.data = { action._advanced_ground_action for action in self._heuristic.compute_preferred_actions(state) }
         return preferred_actions
 
 
@@ -145,12 +180,11 @@ def astar_eager(
     heuristic: 'Heuristic',
     max_time_seconds: float = -1,
     max_num_states: int = -1,
-    on_close_state: Callable[['AdvancedState'], None] = None,
-    on_expand_goal_state: Callable[['AdvancedState'], None] = None,
     on_expand_state: Callable[['AdvancedState'], None] = None,
-    on_finish_f_layer: Callable[['float'], None] = None,
+    on_expand_goal_state: Callable[['AdvancedState'], None] = None,
     on_generate_state: Callable[['AdvancedState', 'AdvancedGroundAction', float, 'AdvancedState'], None] = None,
-    on_prune_state: Callable[['AdvancedState'], None] = None
+    on_prune_state: Callable[['AdvancedState'], None] = None,
+    on_finish_f_layer: Callable[['float'], None] = None
     ) -> SearchResult:
     """
     A* search algorithm with eager evaluation.
@@ -169,11 +203,8 @@ def astar_eager(
     assert isinstance(max_num_states, int), "max_num_states must be an int."
     # Define the event handler with the provided callbacks
     class EventHandler(AdvancedAStarEagerEventHandler):
-        def on_close_state(self, advanced_state: 'AdvancedState'):
-            nonlocal problem, on_close_state
-            if on_close_state:
-                state = State(advanced_state, problem)
-                on_close_state(state)
+        def on_close_state(self, arg0):
+            pass # Ignored
         def on_end_search(self, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7):
             pass  # Ignored
         def on_exhausted(self):

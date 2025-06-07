@@ -640,7 +640,7 @@ void bind_module_definitions(nb::module_& m)
              })
         .def("__eq__", [](const GroundActionImpl& lhs, const GroundActionImpl& rhs) { return &lhs == &rhs; })
         .def("__ne__", [](const GroundActionImpl& lhs, const GroundActionImpl& rhs) { return &lhs != &rhs; })
-        .def("__hash__", [](const GroundActionImpl& self) { return &self; })
+        .def("__hash__", [](const GroundActionImpl& self) { return reinterpret_cast<std::uintptr_t>(&self); })
         .def("to_string_for_plan",
              [](const GroundActionImpl& self, const ProblemImpl& problem)
              {
