@@ -270,6 +270,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a09ceb15fcd2b2cbea78a25a83f0e97f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3b03d0af5fb896324cbf3bb04c42a188"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#aebe252b6157987560ca677cf1cab2fd2">ConjunctiveCondition</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#a3b03d0af5fb896324cbf3bb04c42a188">get_or_create_conjunctive_condition</a> (<a class="el" href="namespacemimir_1_1formalism.html#aec01442d5c638acd5d89fb576934c04b">VariableList</a> parameters, <a class="el" href="namespacemimir_1_1formalism.html#a8820d4cc130b828726a6eb0c03f8e58f">LiteralLists</a>&lt; <a class="el" href="structmimir_1_1formalism_1_1StaticTag.html">StaticTag</a>, <a class="el" href="structmimir_1_1formalism_1_1FluentTag.html">FluentTag</a>, <a class="el" href="structmimir_1_1formalism_1_1DerivedTag.html">DerivedTag</a> &gt; literals, <a class="el" href="namespacemimir_1_1formalism.html#a0889d2be2ff494dbf81378be0f4f9b50">NumericConstraintList</a> numeric_constraints)</td></tr>
 <tr class="separator:a3b03d0af5fb896324cbf3bb04c42a188"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c8510134dff64711e297477b46382e9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemimir_1_1formalism.html#ae6be4f47a98fbd506e6b3fb055dff01e">GroundConjunctiveCondition</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#a1c8510134dff64711e297477b46382e9">get_or_create_ground_conjunctive_condition</a> (<a class="el" href="namespacemimir_1_1formalism.html#ad32949f384c2a4c2b47a718103106f98">GroundLiteralList</a>&lt; <a class="el" href="structmimir_1_1formalism_1_1StaticTag.html">StaticTag</a> &gt; static_literals, <a class="el" href="namespacemimir_1_1formalism.html#ad32949f384c2a4c2b47a718103106f98">GroundLiteralList</a>&lt; <a class="el" href="structmimir_1_1formalism_1_1FluentTag.html">FluentTag</a> &gt; fluent_literals, <a class="el" href="namespacemimir_1_1formalism.html#ad32949f384c2a4c2b47a718103106f98">GroundLiteralList</a>&lt; <a class="el" href="structmimir_1_1formalism_1_1DerivedTag.html">DerivedTag</a> &gt; derived_literals)</td></tr>
+<tr class="separator:a1c8510134dff64711e297477b46382e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aec94434827279cdcc3d760060305ce9b"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmimir_1_1formalism_1_1ProblemImpl.html#aec94434827279cdcc3d760060305ce9b">identifying_members</a> () const</td></tr>
 <tr class="memdesc:aec94434827279cdcc3d760060305ce9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a tuple of const references to the members that uniquely identify an object. This enables the automatic generation of <code>loki::Hash</code> and <code>loki::EqualTo</code> specializations.  <br /></td></tr>
 <tr class="separator:aec94434827279cdcc3d760060305ce9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1311,6 +1313,40 @@ template&lt;IsStaticOrFluentOrDerivedTag P&gt; </div>
           <td></td>
           <td class="paramtype">const <a class="el" href="namespacemimir_1_1formalism.html#aa2fd2f5631e2c7f1d86769c4fb71b49f">ObjectList</a> &amp;&#160;</td>
           <td class="paramname"><em>objects</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1c8510134dff64711e297477b46382e9" name="a1c8510134dff64711e297477b46382e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c8510134dff64711e297477b46382e9">&#9670;&#160;</a></span>get_or_create_ground_conjunctive_condition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacemimir_1_1formalism.html#ae6be4f47a98fbd506e6b3fb055dff01e">GroundConjunctiveCondition</a> mimir::formalism::ProblemImpl::get_or_create_ground_conjunctive_condition </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#ad32949f384c2a4c2b47a718103106f98">GroundLiteralList</a>&lt; <a class="el" href="structmimir_1_1formalism_1_1StaticTag.html">StaticTag</a> &gt;&#160;</td>
+          <td class="paramname"><em>static_literals</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#ad32949f384c2a4c2b47a718103106f98">GroundLiteralList</a>&lt; <a class="el" href="structmimir_1_1formalism_1_1FluentTag.html">FluentTag</a> &gt;&#160;</td>
+          <td class="paramname"><em>fluent_literals</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemimir_1_1formalism.html#ad32949f384c2a4c2b47a718103106f98">GroundLiteralList</a>&lt; <a class="el" href="structmimir_1_1formalism_1_1DerivedTag.html">DerivedTag</a> &gt;&#160;</td>
+          <td class="paramname"><em>derived_literals</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
