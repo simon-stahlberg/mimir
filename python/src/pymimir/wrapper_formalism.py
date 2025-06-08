@@ -341,7 +341,9 @@ class GroundLiteral:
 
     def __init__(self, advanced_ground_literal: 'AdvancedGroundLiteral') -> None:
         """Internal constructor for the GroundLiteral class; to create a ground literal, use the new() method."""
-        assert isinstance(advanced_ground_literal, AdvancedGroundLiteral), "Invalid ground literal type."
+        assert isinstance(advanced_ground_literal, AdvancedStaticGroundLiteral) \
+            or isinstance(advanced_ground_literal, AdvancedFluentGroundLiteral) \
+            or isinstance(advanced_ground_literal, AdvancedDerivedGroundLiteral), "Invalid ground literal type."
         self._advanced_ground_literal = advanced_ground_literal
 
     @staticmethod
