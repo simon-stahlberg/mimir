@@ -333,6 +333,20 @@ class TestGroundConjunctiveCondition(unittest.TestCase):
         assert len(all_groundings) == 4
         assert len(single_grounding) == 1
 
+    def test_lift(self):
+        domain_path = DATA_DIR / 'gripper' / 'domain.pddl'
+        problem_path = DATA_DIR / 'gripper' / 'test_problem2.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path)
+        grounded_goal = problem.get_goal_condition()
+        lifted_goal = grounded_goal.lift()
+        assert len(lifted_goal.get_parameters()) == 3
+        assert len(lifted_goal.get_literals()) == 2
+        assert lifted_goal.get_literals()[0].get_atom().get_terms()[0] == lifted_goal.get_parameters()[0]
+        assert lifted_goal.get_literals()[0].get_atom().get_terms()[1] == lifted_goal.get_parameters()[1]
+        assert lifted_goal.get_literals()[1].get_atom().get_terms()[0] == lifted_goal.get_parameters()[2]
+        assert lifted_goal.get_literals()[1].get_atom().get_terms()[1] == lifted_goal.get_parameters()[1]
+
 
 class TestSearchAlgorithms(unittest.TestCase):
     def test_custom_heuristic(self):

@@ -306,7 +306,7 @@ class Atom:
 
     def get_terms(self) -> 'list[Union[Object, Variable]]':
         """Get the terms of the atom."""
-        return [Object(x) if isinstance(x, AdvancedObject) else Variable(x) for x in self._advanced_atom.get_terms()]
+        return [Object(x.get()) if isinstance(x.get(), AdvancedObject) else Variable(x.get()) for x in self._advanced_atom.get_terms()]
 
     def get_variables(self) -> 'list[Variable]':
         """Get the variables of the atom."""
@@ -886,6 +886,7 @@ class Problem:
     def new_atom(self, predicate: 'Predicate', terms: 'list[Term]') -> 'Atom':
         """Create an atom from the given predicate and terms."""
         assert isinstance(predicate, Predicate), "Invalid predicate type."
+        assert isinstance(terms, list), "Invalid terms type."
         advanced_terms = AdvancedTermList([self._to_advanced_term(term) for term in terms])
         return Atom(self._advanced_problem.get_or_create_atom(predicate._advanced_predicate, advanced_terms))
 
@@ -910,7 +911,7 @@ class Problem:
         advanced_atom = self._advanced_problem.get_or_create_atom(predicate._advanced_predicate, advanced_terms)
         advanced_literal = self._advanced_problem.get_or_create_literal(polarity, advanced_atom)
         advanced_objects = ground_atom._advanced_ground_atom.get_objects()
-        return self._advanced_problem.ground(advanced_literal, advanced_objects)
+        return GroundLiteral(self._advanced_problem.ground(advanced_literal, advanced_objects))
 
     def new_variable(self, name: 'str', parameter_index: 'int') -> 'Variable':
         assert isinstance(name, str), "Invalid variable name type."
@@ -1104,52 +1105,68 @@ class GroundConjunctiveCondition:
         Initialize the ground conjunctive condition with the given parameters. It is not possible to create AdvancedGroundConjunctiveCondition directly, so this class is used as a wrapper.
         """
         assert isinstance(advanced_condition, AdvancedGroundConjunctiveCondition), "Invalid advanced condition type."
+        assert isinstance(problem, Problem), "Invalid problem type."
         self._advanced_condition = advanced_condition
         self._problem = problem
-        # TODO: Perhaps we should cache the ground literals here, so that we do not have to create them every time we iterate over the condition.
+        repositories = problem._advanced_problem.get_repositories()
+        self._static_neg_advanced_ground_atoms = repositories.get_static_ground_atoms_from_indices(list(self._advanced_condition.get_static_negative_condition()))
+        self._static_pos_advanced_ground_atoms = repositories.get_static_ground_atoms_from_indices(list(self._advanced_condition.get_static_positive_condition()))
+        self._fluent_neg_advanced_ground_atoms = repositories.get_fluent_ground_atoms_from_indices(list(self._advanced_condition.get_fluent_negative_condition()))
+        self._fluent_pos_advanced_ground_atoms = repositories.get_fluent_ground_atoms_from_indices(list(self._advanced_condition.get_fluent_positive_condition()))
+        self._derived_neg_advanced_ground_atoms = repositories.get_derived_ground_atoms_from_indices(list(self._advanced_condition.get_derived_negative_condition()))
+        self._derived_pos_advanced_ground_atoms = repositories.get_derived_ground_atoms_from_indices(list(self._advanced_condition.get_derived_positive_condition()))
+        self._static_pos_ground_atoms = [GroundAtom(x) for x in self._static_pos_advanced_ground_atoms]
+        self._static_neg_ground_atoms = [GroundAtom(x) for x in self._static_neg_advanced_ground_atoms]
+        self._fluent_pos_ground_atoms = [GroundAtom(x) for x in self._fluent_pos_advanced_ground_atoms]
+        self._fluent_neg_ground_atoms = [GroundAtom(x) for x in self._fluent_neg_advanced_ground_atoms]
+        self._derived_pos_ground_atoms = [GroundAtom(x) for x in self._derived_pos_advanced_ground_atoms]
+        self._derived_neg_ground_atoms = [GroundAtom(x) for x in self._derived_neg_advanced_ground_atoms]
+        self._static_ground_literals = [GroundLiteral.new(x, True, self._problem) for x in self._static_pos_ground_atoms]
+        self._static_ground_literals += [GroundLiteral.new(x, False, self._problem) for x in self._static_neg_ground_atoms]
+        self._fluent_ground_literals = [GroundLiteral.new(x, True, self._problem) for x in self._fluent_pos_ground_atoms]
+        self._fluent_ground_literals += [GroundLiteral.new(x, False, self._problem) for x in self._fluent_neg_ground_atoms]
+        self._derived_ground_literals = [GroundLiteral.new(x, True, self._problem) for x in self._derived_pos_ground_atoms]
+        self._derived_ground_literals += [GroundLiteral.new(x, False, self._problem) for x in self._derived_neg_ground_atoms]
 
     def holds(self, state: 'State') -> bool:
         """Check if the ground conjunctive condition holds in the given state."""
         assert isinstance(state, State), "Invalid state type."
-        repositories = state._problem._advanced_problem.get_repositories()
-        static_negative = repositories.get_static_ground_atoms_from_indices(list(self._advanced_condition.get_static_negative_condition()))
-        static_positive = repositories.get_static_ground_atoms_from_indices(list(self._advanced_condition.get_static_positive_condition()))
-        fluent_negative = repositories.get_fluent_ground_atoms_from_indices(list(self._advanced_condition.get_fluent_negative_condition()))
-        fluent_positive = repositories.get_fluent_ground_atoms_from_indices(list(self._advanced_condition.get_fluent_positive_condition()))
-        derived_negative = repositories.get_derived_ground_atoms_from_indices(list(self._advanced_condition.get_derived_negative_condition()))
-        derived_positive = repositories.get_derived_ground_atoms_from_indices(list(self._advanced_condition.get_derived_positive_condition()))
-        holds_positive = state.contains_all(static_positive) and state.contains_all(fluent_positive) and state.contains_all(derived_positive)
-        holds_negative = state.contains_none(static_negative) and state.contains_none(fluent_negative) and state.contains_none(derived_negative)
+        holds_positive = state.contains_all(self._static_pos_advanced_ground_atoms) and state.contains_all(self._fluent_pos_advanced_ground_atoms) and state.contains_all(self._derived_pos_advanced_ground_atoms)
+        holds_negative = state.contains_none(self._static_neg_advanced_ground_atoms) and state.contains_none(self._fluent_neg_advanced_ground_atoms) and state.contains_none(self._derived_neg_advanced_ground_atoms)
         return holds_positive and holds_negative
+
+    def lift(self) -> 'ConjunctiveCondition':
+        """Lift the ground conjunctive condition to a conjunctive condition."""
+        variable_map = {}
+        lifted_literals = []
+        for literal in self.__iter__():
+            predicate = literal.get_atom().get_predicate()
+            polarity = literal.get_polarity()
+            grounded_terms = literal.get_atom().get_terms()
+            lifted_terms = []
+            for obj in grounded_terms:
+                if obj.get_index() in variable_map:
+                    variable = variable_map[obj.get_index()]
+                else:
+                    variable_id = len(variable_map)
+                    variable = Variable.new(f'?x{variable_id}', variable_id, self._problem)
+                    variable_map[obj.get_index()] = variable
+                lifted_terms.append(variable)
+            lifted_atom = Atom.new(predicate, lifted_terms, self._problem)
+            lifted_literals.append(Literal.new(lifted_atom, polarity, self._problem))
+        variables = list(variable_map.values())
+        variables.sort(key=lambda x: x.get_index())
+        return ConjunctiveCondition.new(variables, lifted_literals, self._problem)
 
     def __iter__(self) -> 'Iterable[GroundLiteral]':
         """Iterate over all literals in the ground conjunctive condition."""
-        # Get the indices of the literals.
-        static_positive_indices = list(self._advanced_condition.get_static_positive_condition())
-        static_negative_indices = list(self._advanced_condition.get_static_negative_condition())
-        fluent_positive_indices = list(self._advanced_condition.get_fluent_positive_condition())
-        fluent_negative_indices = list(self._advanced_condition.get_fluent_negative_condition())
-        derived_positive_indices = list(self._advanced_condition.get_derived_positive_condition())
-        derived_negative_indices = list(self._advanced_condition.get_derived_negative_condition())
-        repositories = self._problem._advanced_problem.get_repositories()
-        # Create GroundAtom objects from the indices.
-        static_positive_ground_atoms = [GroundAtom(x) for x in repositories.get_static_ground_atoms_from_indices(static_positive_indices)]
-        static_negative_ground_atoms = [GroundAtom(x) for x in repositories.get_static_ground_atoms_from_indices(static_negative_indices)]
-        fluent_positive_ground_atoms = [GroundAtom(x) for x in repositories.get_fluent_ground_atoms_from_indices(fluent_positive_indices)]
-        fluent_negative_ground_atoms = [GroundAtom(x) for x in repositories.get_fluent_ground_atoms_from_indices(fluent_negative_indices)]
-        derived_positive_ground_atoms = [GroundAtom(x) for x in repositories.get_derived_ground_atoms_from_indices(derived_positive_indices)]
-        derived_negative_ground_atoms = [GroundAtom(x) for x in repositories.get_derived_ground_atoms_from_indices(derived_negative_indices)]
-        # Create and return GroundLiteral objects from the ground atoms.
-        yield from [GroundLiteral.new(x, True, self._problem) for x in static_positive_ground_atoms]
-        yield from [GroundLiteral.new(x, False, self._problem) for x in static_negative_ground_atoms]
-        yield from [GroundLiteral.new(x, True, self._problem) for x in fluent_positive_ground_atoms]
-        yield from [GroundLiteral.new(x, False, self._problem) for x in fluent_negative_ground_atoms]
-        yield from [GroundLiteral.new(x, True, self._problem) for x in derived_positive_ground_atoms]
-        yield from [GroundLiteral.new(x, False, self._problem) for x in derived_negative_ground_atoms]
+        yield from self._static_ground_literals
+        yield from self._fluent_ground_literals
+        yield from self._derived_ground_literals
 
     def __len__(self) -> 'int':
         """Get the number of literals in the ground conjunctive condition."""
-        return len(list(self.__iter__()))
+        return len(self._static_ground_literals) + len(self._fluent_ground_literals) + len(self._derived_ground_literals)
 
     def __str__(self):
         return "GroundConjunctiveCondition([" + ", ".join(str(x) for x in self.__iter__()) + "])"
@@ -1166,7 +1183,7 @@ class ConjunctiveCondition:
         self._advanced_conjunctive_condition = advanced_condition
 
     @staticmethod
-    def new(problem: 'Problem', variables: 'list[Variable]', literals: 'list[Literal]') -> 'ConjunctiveCondition':
+    def new(variables: 'list[Variable]', literals: 'list[Literal]', problem: 'Problem') -> 'ConjunctiveCondition':
         """Create a conjunctive condition from the given parameters, literals, and ground literals.
 
         Args:
@@ -1176,14 +1193,14 @@ class ConjunctiveCondition:
 
         Returns:
             ConjunctiveCondition: The created conjunctive condition.
-
         """
-        assert isinstance(problem, Problem), "Invalid problem type."
         assert isinstance(variables, list), "Invalid variables type."
         assert isinstance(literals, list), "Invalid literals type."
+        assert isinstance(problem, Problem), "Invalid problem type."
         advanced_problem = problem._advanced_problem
+        advanced_variables = AdvancedVariableList([x._advanced_variable for x in variables])
         static_literals, fluent_literals, derived_literals = _split_literal_list(literals)
-        return ConjunctiveCondition(advanced_problem.get_or_create_conjunctive_condition(variables,
+        return ConjunctiveCondition(advanced_problem.get_or_create_conjunctive_condition(advanced_variables,
                                                                                          static_literals,
                                                                                          fluent_literals,
                                                                                          derived_literals,
