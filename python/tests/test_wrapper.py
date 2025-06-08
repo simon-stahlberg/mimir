@@ -399,7 +399,7 @@ class TestSearchAlgorithms(unittest.TestCase):
         initial_state = problem.get_initial_state()
         assert heuristic.compute_value(initial_state, True) == 0.0
         assert heuristic.compute_value(initial_state, False) == 5.0
-        assert len(heuristic.compute_preferred_actions()) == 0
+        assert len(heuristic.get_preferred_actions()) == 0
 
     def test_max_heuristic(self):
         domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
@@ -410,7 +410,7 @@ class TestSearchAlgorithms(unittest.TestCase):
         initial_state = problem.get_initial_state()
         assert heuristic.compute_value(initial_state, True) == 0.0
         assert heuristic.compute_value(initial_state, False) == 2.0
-        assert len(heuristic.compute_preferred_actions()) == 0
+        assert len(heuristic.get_preferred_actions()) == 0
 
     def test_add_heuristic(self):
         domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
@@ -421,7 +421,7 @@ class TestSearchAlgorithms(unittest.TestCase):
         initial_state = problem.get_initial_state()
         assert heuristic.compute_value(initial_state, True) == 0.0
         assert heuristic.compute_value(initial_state, False) == 2.0
-        assert len(heuristic.compute_preferred_actions()) == 0
+        assert len(heuristic.get_preferred_actions()) == 0
 
     def test_perfect_heuristic(self):
         domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
@@ -432,7 +432,7 @@ class TestSearchAlgorithms(unittest.TestCase):
         initial_state = problem.get_initial_state()
         # assert heuristic.compute_value(initial_state, True) == 0.0  # TODO: PerfectHeuristic seems to ignore the goal flag.
         assert heuristic.compute_value(initial_state, False) == 4.0
-        assert len(heuristic.compute_preferred_actions()) == 0
+        assert len(heuristic.get_preferred_actions()) == 0
 
     def test_ff_heuristic(self):
         domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
@@ -443,7 +443,7 @@ class TestSearchAlgorithms(unittest.TestCase):
         initial_state = problem.get_initial_state()
         assert heuristic.compute_value(initial_state, True) == 0.0
         assert heuristic.compute_value(initial_state, False) == 4.0
-        assert len(heuristic.compute_preferred_actions()) == 2
+        assert len(heuristic.get_preferred_actions()) == 2
 
 
 if __name__ == '__main__':
