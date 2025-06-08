@@ -188,7 +188,7 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
         return result;
     }
 
-    const auto use_exploration_strategy = std::all_of(options.openlist_weights.begin(), options.openlist_weights.begin() + 4, [](double w) { return w > 0; });
+    const auto use_exploration_strategy = std::any_of(options.openlist_weights.begin(), options.openlist_weights.begin() + 4, [](double w) { return w > 0; });
     auto applicable_actions = GroundActionList {};
     standard_openlist.insert(std::make_tuple(start_h_value, start_g_value, step++), start_state);
 

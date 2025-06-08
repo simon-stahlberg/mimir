@@ -492,7 +492,7 @@ TEST(MimirTests, LanguagesGeneralPoliciesGeneralPolicyGripperTerminationTest)
 
         {
             const auto general_policy = repositories.get_or_create_general_policy(std::string(R"(
-            [boolean_features]
+[boolean_features]
 <b0> ::= @boolean_nonempty @role_atomic_state "carry"
 <b2> ::= @boolean_nonempty @role_atomic_state "at"
 <b7> ::= @boolean_nonempty @concept_existential_quantification @role_atomic_goal "at" true @concept_atomic_state "at-robby"
