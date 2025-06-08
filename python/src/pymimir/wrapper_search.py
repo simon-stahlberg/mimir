@@ -135,7 +135,7 @@ class FFHeuristic(Heuristic):
 # Search algorithms
 # -----------------
 
-class AdvancedHeuristicProxy(AdvancedHeuristicBase):
+class AdvancedHeuristicAdapter(AdvancedHeuristicBase):
     def __init__(self, heuristic: 'Heuristic', problem: 'Problem'):
         """
         Proxy class for a heuristic that wraps a Heuristic instance.
@@ -255,7 +255,7 @@ def astar_eager(
     if hasattr(heuristic, '_advanced_heuristic') and isinstance(heuristic._advanced_heuristic, AdvancedHeuristicBase):
         advanced_heuristic = heuristic._advanced_heuristic
     elif isinstance(heuristic, Heuristic):
-        advanced_heuristic = AdvancedHeuristicProxy(heuristic, problem)
+        advanced_heuristic = AdvancedHeuristicAdapter(heuristic, problem)
     else:
         raise TypeError("Heuristic must be an instance of Heuristic.")
     # Invoke the A* search algorithm
