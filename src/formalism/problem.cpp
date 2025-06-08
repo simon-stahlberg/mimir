@@ -1110,6 +1110,8 @@ GroundConjunctiveCondition ProblemImpl::get_or_create_ground_conjunctive_conditi
                 negative_index_list.push_back(literal->get_atom()->get_index());
             }
         }
+        std::sort(positive_index_list.uncompressed_begin(), positive_index_list.uncompressed_end());
+        std::sort(negative_index_list.uncompressed_begin(), negative_index_list.uncompressed_end());
         positive_index_list.compress();
         negative_index_list.compress();
     };
