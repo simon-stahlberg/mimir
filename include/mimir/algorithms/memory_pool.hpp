@@ -29,23 +29,48 @@ template<typename T>
 class MemoryPool;
 
 template<typename T>
-class MemoryPoolPointer
+class MemoryPoolUniquePtr
 {
 private:
     MemoryPool<T>* m_pool;
     T* m_object;
 
-public:
-    MemoryPoolPointer(MemoryPool<T>* pool, T* object) : m_pool(pool), m_object(object) { assert(pool && object); }
-
-    ~MemoryPoolPointer()
+private:
+    void deallocate() noexcept
     {
         if (m_pool && m_object)
         {
             m_pool->free(m_object);
         }
+        m_pool = nullptr;
         m_object = nullptr;
     }
+
+public:
+    MemoryPoolUniquePtr(MemoryPool<T>* pool, T* object) : m_pool(pool), m_object(object) { assert(pool && object); }
+    // Non-copyable
+    MemoryPoolUniquePtr(const MemoryPoolUniquePtr&) = delete;
+    MemoryPoolUniquePtr& operator=(const MemoryPoolUniquePtr&) = delete;
+    // Movable
+    MemoryPoolUniquePtr(MemoryPoolUniquePtr&& other) noexcept : m_pool(other.m_pool), m_object(other.m_object)
+    {
+        other.m_pool = nullptr;
+        other.m_object = nullptr;
+    }
+    MemoryPoolUniquePtr& operator=(MemoryPoolUniquePtr&& other) noexcept
+    {
+        if (this != &other)
+        {
+            deallocate();
+            m_pool = other.m_pool;
+            m_object = other.m_object;
+            other.m_pool = nullptr;
+            other.m_object = nullptr;
+        }
+        return *this;
+    }
+
+    ~MemoryPoolUniquePtr() noexcept { deallocate(); }
 
     T& operator*() const
     {
@@ -57,6 +82,16 @@ public:
     {
         assert(m_object);
         return m_object;
+    }
+
+    bool operator()() const noexcept { return m_object != nullptr; }
+
+    T* release() noexcept
+    {
+        T* temp = m_object;
+        m_object = nullptr;
+        m_pool = nullptr;
+        return temp;
     }
 };
 
@@ -71,17 +106,24 @@ private:
 
     void allocate()
     {
-        m_storage.push_back(std::make_unique<T>(T {}));
+        m_storage.push_back(std::make_unique<T>());
         m_stack.push(m_storage.back().get());
     }
 
     void free(T* element) { m_stack.push(element); }
 
     template<typename>
-    friend class MemoryPoolPointer;
+    friend class MemoryPoolUniquePtr;
 
 public:
-    [[nodiscard]] MemoryPoolPointer<T> get_or_allocate()
+    MemoryPool() : m_storage(), m_stack() {}
+    // Non-copyable to prevent dangling memory pool pointers.
+    MemoryPool(const MemoryPool& other) = delete;
+    MemoryPool& operator=(const MemoryPool& other) = delete;
+    MemoryPool(MemoryPool&& other) noexcept = delete;
+    MemoryPool& operator=(MemoryPool&& other) noexcept = delete;
+
+    [[nodiscard]] MemoryPoolUniquePtr<T> get_or_allocate()
     {
         if (m_stack.empty())
         {
@@ -89,7 +131,7 @@ public:
         }
         T* element = m_stack.top();
         m_stack.pop();
-        return MemoryPoolPointer<T>(this, element);
+        return MemoryPoolUniquePtr<T>(this, element);
     }
 
     [[nodiscard]] size_t get_size() const { return m_storage.size(); }
@@ -99,4 +141,4 @@ public:
 
 }
 
-#endif  // MIMIR_ALLOCATORS_MEMORY_POOL_HPP_
+#endif
