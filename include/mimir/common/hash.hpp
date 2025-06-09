@@ -31,6 +31,8 @@
 namespace mimir
 {
 inline uint64_t szudzik_pair(uint64_t a, uint64_t b) { return (a >= b) ? (a * a + b) : (b * b + a); }
+
+inline uint64_t cantor_pair(uint64_t a, uint64_t b) { return (((a + b) * (a + b + 1)) >> 1) + b; }
 }
 
 /**
