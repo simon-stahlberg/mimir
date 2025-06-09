@@ -327,9 +327,8 @@ class TestGroundConjunctiveCondition(unittest.TestCase):
         problem = Problem(domain, problem_path)
         initial_state = problem.get_initial_state()
         pickup_condition = domain.get_action('pick').get_precondition()
-        grounder = ConjunctiveConditionGrounder(pickup_condition, problem)
-        all_groundings = grounder.ground(initial_state)
-        single_grounding = grounder.ground(initial_state, 1)
+        all_groundings = pickup_condition.ground(initial_state)
+        single_grounding = pickup_condition.ground(initial_state, 1)
         assert len(all_groundings) == 4
         assert len(single_grounding) == 1
 

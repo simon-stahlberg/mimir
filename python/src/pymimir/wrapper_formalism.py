@@ -98,7 +98,7 @@ def _split_literal_list(literals: 'list[Literal]') -> 'tuple[AdvancedStaticLiter
 # -------
 
 class Variable:
-    _advanced_variable: 'AdvancedVariable' = None
+    """Class representing variables."""
 
     def __init__(self, advanced_variable: 'AdvancedVariable') -> None:
         """Internal constructor for the Variable class; to create a variable, use the new() method."""
@@ -138,8 +138,7 @@ class Variable:
 
 
 class Object:
-    """Object class for the PDDL domain."""
-    _advanced_object: 'AdvancedObject' = None
+    """Class representing objects in the PDDL domain."""
 
     def __init__(self, advanced_object: 'AdvancedObject') -> None:
         assert isinstance(advanced_object, AdvancedObject), "Invalid object type."
@@ -173,8 +172,7 @@ class Object:
 
 
 class Predicate:
-    """Predicate class for the PDDL domain."""
-    _advanced_predicate: 'AdvancedPredicate' = None
+    """Class representing predicates in the PDDL domain."""
 
     def __init__(self, advanced_predicate: 'AdvancedPredicate') -> None:
         assert isinstance(advanced_predicate, AdvancedStaticPredicate) \
@@ -218,8 +216,7 @@ class Predicate:
 
 
 class GroundAtom:
-    """GroundAtom class for the PDDL domain."""
-    _advanced_ground_atom: 'AdvancedGroundAtom' = None
+    """Class representing ground atoms in the PDDL domain."""
 
     def __init__(self, advanced_ground_atom: 'AdvancedGroundAtom') -> None:
         """Internal constructor for the GroundAtom class; to create a ground atom, use the new() method."""
@@ -281,8 +278,7 @@ class GroundAtom:
 
 
 class Atom:
-    """Atom class for the PDDL domain."""
-    _advanced_atom: 'AdvancedAtom' = None
+    """Class representing atoms in the PDDL domain."""
 
     def __init__(self, advanced_atom: 'AdvancedAtom') -> None:
         """Internal constructor for the Atom class; to create an atom, use the new() method."""
@@ -337,7 +333,6 @@ class Atom:
 
 class GroundLiteral:
     """GroundLiteral class for the PDDL domain."""
-    _advanced_ground_literal: 'AdvancedGroundLiteral' = None
 
     def __init__(self, advanced_ground_literal: 'AdvancedGroundLiteral') -> None:
         """Internal constructor for the GroundLiteral class; to create a ground literal, use the new() method."""
@@ -384,7 +379,6 @@ class GroundLiteral:
 
 class Literal:
     """Literal class for the PDDL domain."""
-    _advanced_literal: 'AdvancedLiteral' = None
 
     def __init__(self, advanced_literal: 'AdvancedLiteral') -> None:
         """Internal constructor for the Literal class; to create a literal, use the new() method."""
@@ -430,8 +424,7 @@ class Literal:
 
 
 class GroundEffect:
-    """GroundEffectList class for the PDDL domain."""
-    _advanced_ground_effect: 'AdvancedGroundConjunctiveEffect' = None
+    """Class representing ground effects in the PDDL domain."""
 
     def __init__(self, advanced_effect: 'AdvancedGroundConjunctiveEffect', problem: 'Problem') -> None:
         assert isinstance(advanced_effect, AdvancedGroundConjunctiveEffect), "Invalid conjunctive effect type."
@@ -476,7 +469,6 @@ class GroundEffect:
 
 class GroundConditionalEffect:
     """GroundConditionalEffect class for the PDDL domain."""
-    _advanced_conditional_effect: 'AdvancedGroundConditionalEffect' = None
 
     def __init__(self, advanced_conditional_effect: 'AdvancedGroundConditionalEffect', problem: 'Problem') -> None:
         assert isinstance(advanced_conditional_effect, AdvancedGroundConditionalEffect), "Invalid conditional effect type."
@@ -516,8 +508,7 @@ class GroundConditionalEffect:
 
 
 class Effect:
-    """EffectList class for the PDDL domain."""
-    _advanced_conjunctive_effect: 'AdvancedConjunctiveEffect' = None
+    """Class representing effects in the PDDL domain."""
 
     def __init__(self, advanced_effect: 'AdvancedConjunctiveEffect') -> None:
         assert isinstance(advanced_effect, AdvancedConjunctiveEffect), "Invalid conjunctive effect type."
@@ -559,8 +550,7 @@ class Effect:
 
 
 class ConditionalEffect:
-    """ConditionalEffect class for the PDDL domain."""
-    _advanced_conditional_effect: 'AdvancedConditionalEffect' = None
+    """Class representing conditional effects in the PDDL domain."""
 
     def __init__(self, advanced_conditional_effect: 'AdvancedConditionalEffect') -> None:
         assert isinstance(advanced_conditional_effect, AdvancedConditionalEffect), "Invalid conditional effect type."
@@ -599,7 +589,6 @@ class ConditionalEffect:
 
 class Action:
     """Class representing action schemas in the domain."""
-    _advanced_action: 'AdvancedAction' = None
 
     def __init__(self, advanced_action: 'AdvancedAction') -> None:
         assert isinstance(advanced_action, AdvancedAction), "Invalid action type."
@@ -650,7 +639,6 @@ class Action:
 
 class GroundAction:
     """Class representing ground actions in the problem."""
-    _advanced_ground_action: 'AdvancedGroundAction' = None
 
     def __init__(self, advanced_ground_action: 'AdvancedGroundAction', problem: 'Problem') -> None:
         assert isinstance(advanced_ground_action, AdvancedGroundAction), "Invalid ground action type."
@@ -714,11 +702,7 @@ class GroundAction:
 
 
 class Domain:
-    """Domain class for the PDDL domain."""
-    _advanced_parser: 'AdvancedParser' = None
-    _advanced_translator: 'AdvancedTranslator' = None
-    _advanced_domain: 'AdvancedDomain' = None
-    _repositories: 'AdvancedRepositories' = None
+    """Class representing the PDDL domain."""
 
     def __init__(self, domain_path: 'Union[Path, str]') -> None:
         """
@@ -792,11 +776,7 @@ class Domain:
 
 
 class Problem:
-    """Problem class for the PDDL problem."""
-    _domain: 'Domain' = None
-    _search_context: 'SearchContext' = None
-    _advanced_problem: 'AdvancedProblem' = None
-    _static_ground_atom_indices: 'set[int]' = None
+    """Class representing the PDDL problem."""
 
     def __init__(self, domain: 'Domain', problem_path: Union[Path, str], mode: 'str' = 'lifted') -> None:
         """
@@ -931,17 +911,19 @@ class Problem:
         advanced_variables = AdvancedVariableList([x._advanced_variable for x in variables])
         advanced_static_literals, advanced_fluent_literals, advanced_derived_literals = _split_literal_list(literals)
         advanced_numeric_constraints = AdvancedNumericConstraintList()
-        return ConjunctiveCondition(self._advanced_problem.get_or_create_conjunctive_condition(advanced_variables,
-                                                                                               advanced_static_literals,
-                                                                                               advanced_fluent_literals,
-                                                                                               advanced_derived_literals,
-                                                                                               advanced_numeric_constraints))
+        advanced_conjunctive_condition = self._advanced_problem.get_or_create_conjunctive_condition(advanced_variables,
+                                                                                                    advanced_static_literals,
+                                                                                                    advanced_fluent_literals,
+                                                                                                    advanced_derived_literals,
+                                                                                                    advanced_numeric_constraints)
+        return ConjunctiveCondition(advanced_conjunctive_condition)
 
 
 class State:
     """
     Class representing a state in the search space.
     """
+
     def __init__(self, advanced_state: 'AdvancedState', problem: 'Problem') -> None:
         assert isinstance(advanced_state, AdvancedState), "Invalid advanced state type."
         assert isinstance(problem, Problem), "Invalid problem type."
@@ -1102,6 +1084,8 @@ class State:
 
 
 class GroundConjunctiveCondition:
+    """Class representing a ground conjunctive condition of ground literals."""
+
     def __init__(self, advanced_condition: 'AdvancedGroundConjunctiveCondition', problem: 'Problem') -> None:
         """
         Initialize the ground conjunctive condition with the given parameters. It is not possible to create AdvancedGroundConjunctiveCondition directly, so this class is used as a wrapper.
@@ -1178,7 +1162,7 @@ class GroundConjunctiveCondition:
 
 
 class ConjunctiveCondition:
-    _advanced_conjunctive_condition: 'AdvancedConjunctiveCondition' = None
+    """Class representing a conjunctive condition of literals."""
 
     def __init__(self, advanced_condition: 'AdvancedConjunctiveCondition') -> None:
         assert isinstance(advanced_condition, AdvancedConjunctiveCondition), "Invalid conjunctive condition type."
@@ -1202,11 +1186,12 @@ class ConjunctiveCondition:
         advanced_problem = problem._advanced_problem
         advanced_variables = AdvancedVariableList([x._advanced_variable for x in variables])
         static_literals, fluent_literals, derived_literals = _split_literal_list(literals)
-        return ConjunctiveCondition(advanced_problem.get_or_create_conjunctive_condition(advanced_variables,
-                                                                                         static_literals,
-                                                                                         fluent_literals,
-                                                                                         derived_literals,
-                                                                                         AdvancedNumericConstraintList()))
+        advanced_conjunctive_condition = advanced_problem.get_or_create_conjunctive_condition(advanced_variables,
+                                                                                              static_literals,
+                                                                                              fluent_literals,
+                                                                                              derived_literals,
+                                                                                              AdvancedNumericConstraintList())
+        return ConjunctiveCondition(advanced_conjunctive_condition)
 
     @staticmethod
     def parse(problem: 'Problem', **words) -> 'ConjunctiveCondition':
@@ -1254,6 +1239,29 @@ class ConjunctiveCondition:
             ground_literals.extend([GroundLiteral(x) for x in self._advanced_conjunctive_condition.get_nullary_ground_derived_literals()])
         return ground_literals
 
+    def ground(self, state: 'State', max_groundings: int = -1) -> 'list[GroundConjunctiveCondition]':
+        """Ground the conjunctive condition.
+
+        Args:
+            state (State): The state to ground the condition in.
+            max_groundings (int): The maximum number of groundings to generate. If -1, all groundings are generated.
+        """
+        assert isinstance(state, State), "Invalid state type."
+        if max_groundings < 0:
+            max_groundings = 1_000_000_000  # Generate all groundings
+        problem = state._problem
+        advanced_problem = problem._advanced_problem
+        if not hasattr(self, '_satisficing_binding_generator'):
+            self._satisficing_binding_generator = ConjunctiveConditionSatisficingBindingGenerator(self._advanced_conjunctive_condition, advanced_problem)
+        result = []
+        groundings = self._satisficing_binding_generator.generate_ground_conjunctions(state._advanced_state, max_groundings)
+        for objects, (static_ground_literals, fluent_ground_literals, derived_ground_literals) in groundings:
+            advanced_condition = advanced_problem.get_or_create_ground_conjunctive_condition(static_ground_literals,
+                                                                                             fluent_ground_literals,
+                                                                                             derived_ground_literals)
+            result.append(GroundConjunctiveCondition(advanced_condition, problem))
+        return result
+
     def __str__(self):
         """Get the string representation of the conjunctive condition."""
         return str(self._advanced_conjunctive_condition)
@@ -1271,32 +1279,3 @@ class ConjunctiveCondition:
         if not isinstance(other, ConjunctiveCondition):
             return False
         return self._advanced_conjunctive_condition == other._advanced_conjunctive_condition
-
-
-class ConjunctiveConditionGrounder:
-    def __init__(self, conjunctive_condition: 'ConjunctiveCondition', problem: 'Problem') -> None:
-        assert isinstance(problem, Problem), "Invalid problem type."
-        assert isinstance(conjunctive_condition, ConjunctiveCondition), "Invalid conjunctive condition type."
-        self._problem = problem
-        self._conjunctive_condition = conjunctive_condition
-        self._grounder = ConjunctiveConditionSatisficingBindingGenerator(conjunctive_condition._advanced_conjunctive_condition, problem._advanced_problem)
-
-    def ground(self, state: 'State', max_groundings: int = -1) -> 'list[GroundConjunctiveCondition]':
-        """Ground the conjunctive condition.
-
-        Args:
-            state (State): The state to ground the condition in.
-            max_groundings (int): The maximum number of groundings to generate. If -1, all groundings are generated.
-        """
-        assert isinstance(state, State), "Invalid state type."
-        if max_groundings < 0:
-            max_groundings = 1_000_000_000  # Generate all groundings
-        result = []
-        advanced_problem = self._problem._advanced_problem
-        groundings = self._grounder.generate_ground_conjunctions(state._advanced_state, max_groundings)
-        for objects, (static_ground_literals, fluent_ground_literals, derived_ground_literals) in groundings:
-            advanced_condition = advanced_problem.get_or_create_ground_conjunctive_condition(static_ground_literals,
-                                                                                             fluent_ground_literals,
-                                                                                             derived_ground_literals)
-            result.append(GroundConjunctiveCondition(advanced_condition, self._problem))
-        return result
