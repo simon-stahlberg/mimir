@@ -66,6 +66,8 @@ public:
     const valla::IndexedHashSet& get_tree_table() const;
     template<formalism::IsFluentOrDerivedTag P>
     auto get_atoms() const;
+    template<formalism::IsFluentOrDerivedTag P>
+    valla::Slot get_atoms_slot() const;
     const FlatDoubleList& get_numeric_variables() const;
 
     /**
@@ -96,7 +98,7 @@ public:
 
     auto identifying_members() const
     {
-        return std::make_tuple(szudzik_pair(valla::read_pos(m_fluent_atoms, 0), valla::read_pos(m_fluent_atoms, 1)), m_numeric_variables);
+        return std::make_tuple(cantor_pair(valla::read_pos(m_fluent_atoms, 0), valla::read_pos(m_fluent_atoms, 1)), m_numeric_variables);
     }
 };
 
@@ -123,6 +125,23 @@ auto StateImpl::get_atoms() const
     }
 }
 
+template<formalism::IsFluentOrDerivedTag P>
+valla::Slot StateImpl::get_atoms_slot() const
+{
+    if constexpr (std::is_same_v<P, formalism::FluentTag>)
+    {
+        return m_fluent_atoms;
+    }
+    else if constexpr (std::is_same_v<P, formalism::DerivedTag>)
+    {
+        return m_derived_atoms;
+    }
+    else
+    {
+        static_assert(dependent_false<P>::value, "Missing implementation for IsStaticOrFluentOrDerivedTag.");
+    }
+}
+
 template<formalism::IsFluentOrDerivedTag P, std::ranges::forward_range Range1, std::ranges::forward_range Range2>
     requires IsRangeOver<Range1, Index> && IsRangeOver<Range2, Index>
 bool StateImpl::literals_hold(const Range1& positive_atoms, const Range2& negative_atoms) const
@@ -130,6 +149,19 @@ bool StateImpl::literals_hold(const Range1& positive_atoms, const Range2& negati
     return is_supseteq(get_atoms<P>(), positive_atoms) && are_disjoint(get_atoms<P>(), negative_atoms);
 }
 
+}
+
+namespace loki
+{
+template<>
+struct EqualTo<mimir::search::StateImpl>
+{
+    bool operator()(const mimir::search::StateImpl& lhs, const mimir::search::StateImpl& rhs) const
+    {
+        return (lhs.get_atoms_slot<mimir::formalism::FluentTag>() == rhs.get_atoms_slot<mimir::formalism::FluentTag>()
+                && lhs.get_numeric_variables() == rhs.get_numeric_variables());
+    }
+};
 }
 
 namespace mimir
