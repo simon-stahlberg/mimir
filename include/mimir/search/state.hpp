@@ -159,7 +159,7 @@ struct EqualTo<mimir::search::StateImpl>
     bool operator()(const mimir::search::StateImpl& lhs, const mimir::search::StateImpl& rhs) const
     {
         return (lhs.get_atoms_slot<mimir::formalism::FluentTag>() == rhs.get_atoms_slot<mimir::formalism::FluentTag>()
-                && lhs.get_numeric_variables() == rhs.get_numeric_variables());
+                && &lhs.get_numeric_variables() == &rhs.get_numeric_variables());
     }
 };
 }
