@@ -1061,11 +1061,11 @@ class State:
         holds = holds and self._literals_hold_derived(advanced_derived_ground_literals)
         return holds
 
-    def generate_applicable_actions(self, cache_result = False) -> 'list[GroundAction]':
+    def generate_applicable_actions(self, cache_result = True) -> 'list[GroundAction]':
         """
         Generates a list of all applicable ground actions in the state.
         """
-        if cache_result and hasattr(self, '_applicable_actions'):
+        if hasattr(self, '_applicable_actions'):
             return self._applicable_actions
         aag = self._problem._search_context.get_applicable_action_generator()
         result = [GroundAction(x, self._problem) for x in aag.generate_applicable_actions(self._advanced_state)]
