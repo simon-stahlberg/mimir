@@ -87,7 +87,8 @@ ProblemImpl::ProblemImpl(Index index,
     m_flat_index_list_set(),
     m_flat_double_list_set(),
     m_tree_table(),
-    m_state_root_table()
+    m_bitset_pool(),
+    m_state_root_table(m_bitset_pool)
 {
     assert(is_all_unique(get_objects()));
     assert(is_all_unique(get_derived_predicates()));
@@ -266,8 +267,10 @@ const ToPredicateMap<std::string, DerivedTag>& ProblemImpl::get_name_to_problem_
 {
     return m_details.predicates.name_to_problem_or_domain_derived_predicate;
 }
+
 valla::IndexedHashSet& ProblemImpl::get_tree_table() { return m_tree_table; }
-valla::IndexedHashSet& ProblemImpl::get_state_root_table() { return m_state_root_table; }
+valla::RootIndexedHashSet& ProblemImpl::get_state_root_table() { return m_state_root_table; }
+valla::BitsetPool& ProblemImpl::get_bitset_pool() { return m_bitset_pool; }
 
 /* Initial state */
 
@@ -872,11 +875,11 @@ GroundAction ProblemImpl::ground(Action action, const ObjectList& binding)
     }
     auto& grounding_table = grounding_tables.at(action_index);
 
-    // auto it = grounding_table.find(binding);
-    // if (it != grounding_table.end())
-    // {
-    //     return it->second;
-    // }
+    auto it = grounding_table.find(binding);
+    if (it != grounding_table.end())
+    {
+        return it->second;
+    }
 
     /* 2. Ground the action */
 
@@ -928,7 +931,7 @@ GroundAction ProblemImpl::ground(Action action, const ObjectList& binding)
 
     /* 3. Insert to groundings table */
 
-    // grounding_table.emplace(binding, GroundAction(grounded_action));
+    grounding_table.emplace(binding, GroundAction(grounded_action));
 
     /* 4. Return the resulting ground action */
 
@@ -965,7 +968,7 @@ GroundAxiom ProblemImpl::ground(Axiom axiom, const ObjectList& binding)
 
     /* 3. Insert to groundings table */
 
-    // grounding_table.emplace(binding, GroundAxiom(grounded_axiom));
+    grounding_table.emplace(binding, GroundAxiom(grounded_axiom));
 
     /* 4. Return the resulting ground axiom */
 

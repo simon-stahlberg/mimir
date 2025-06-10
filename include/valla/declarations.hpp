@@ -19,6 +19,7 @@
 #define VALLA_INCLUDE_DECLARATIONS_HPP_
 
 #include <cassert>
+#include <functional>
 #include <iostream>
 #include <memory>
 #include <mutex>
@@ -30,7 +31,7 @@
 
 namespace valla
 {
-// Observe: there is no sentinel value requires in constrast to several other tree compression data structures.
+// Observe: there is no sentinel value required in contrast to several other tree compression data structures.
 
 using Index = uint32_t;  ///< Enough space for 4,294,967,295 indices
 using Slot = uint64_t;   ///< A slot is made up of two indices.
@@ -51,6 +52,39 @@ inline Index read_pos(Slot slot, size_t pos)
 
 using State = std::vector<Index>;
 using RootIndices = std::vector<Index>;
+
+/**
+ * Printing
+ */
+
+inline std::ostream& operator<<(std::ostream& out, const State& state)
+{
+    out << "[";
+    for (const auto x : state)
+    {
+        out << x << ", ";
+    }
+    out << "]";
+
+    return out;
+}
+
+/**
+ * Hashing
+ */
+
+template<typename T>
+inline void hash_combine(size_t& seed, const T& value)
+{
+    seed ^= std::hash<std::decay_t<T>> {}(value) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+}
+
+inline uint64_t cantor_pair(uint64_t a, uint64_t b) { return (((a + b) * (a + b + 1)) >> 1) + b; }
+
+struct SlotHash
+{
+    size_t operator()(Slot slot) const { return cantor_pair(read_pos(slot, 0), read_pos(slot, 1)); }
+};
 
 }
 

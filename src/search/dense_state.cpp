@@ -47,6 +47,18 @@ void DenseState::translate(State state, DenseState& out_state)
     derived_atoms.unset_all();
     insert_into_bitset(state->get_atoms<FluentTag>(), fluent_atoms);
     insert_into_bitset(state->get_atoms<DerivedTag>(), derived_atoms);
+    // std::cout << "[";
+    // for (const auto atom : state->get_atoms<FluentTag>())
+    // {
+    //     std::cout << atom << ", ";
+    // }
+    // std::cout << "]" << std::endl;
+    // std::cout << "[";
+    // for (const auto atom : fluent_atoms)
+    // {
+    //     std::cout << atom << ", ";
+    // }
+    // std::cout << "]" << std::endl;
     assert(std::equal(state->get_atoms<FluentTag>().begin(), state->get_atoms<FluentTag>().end(), fluent_atoms.begin()));
     assert(std::equal(fluent_atoms.begin(), fluent_atoms.end(), state->get_atoms<FluentTag>().begin()));
     assert(std::equal(state->get_atoms<DerivedTag>().begin(), state->get_atoms<DerivedTag>().end(), derived_atoms.begin()));

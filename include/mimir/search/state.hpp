@@ -23,33 +23,33 @@
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/problem.hpp"
 #include "mimir/search/declarations.hpp"
 
 #include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
+#include <memory>
+#include <valla/canonical_tree_compression.hpp>
 #include <valla/delta_tree_compression.hpp>
 #include <valla/indexed_hash_set.hpp>
+#include <valla/root_slot.hpp>
 #include <valla/tree_compression.hpp>
 
 namespace mimir::search
 {
-namespace v = valla::delta;
+namespace v = valla::canonical;
 
 /// @brief `StateImpl` encapsulates the fluent and derived atoms, and numeric variables of a planning state.
 class StateImpl
 {
 private:
     Index m_index;
-    const valla::IndexedHashSet& m_tree_table;
-    valla::Slot m_fluent_atoms;
-    valla::Slot m_derived_atoms;
+    formalism::Problem m_problem;
+    valla::RootSlot m_fluent_atoms;
+    valla::RootSlot m_derived_atoms;
     const FlatDoubleList* m_numeric_variables;
 
-    StateImpl(Index index,
-              const valla::IndexedHashSet& tree_table,
-              valla::Slot fluent_atoms,
-              valla::Slot derived_atoms,
-              const FlatDoubleList* numeric_variables);
+    StateImpl(Index index, formalism::Problem problem, valla::RootSlot fluent_atoms, valla::RootSlot derived_atoms, const FlatDoubleList* numeric_variables);
 
     friend class StateRepositoryImpl;
 
@@ -63,11 +63,11 @@ public:
      */
 
     Index get_index() const;
-    const valla::IndexedHashSet& get_tree_table() const;
+    const formalism::Problem& get_problem() const;
     template<formalism::IsFluentOrDerivedTag P>
     auto get_atoms() const;
     template<formalism::IsFluentOrDerivedTag P>
-    valla::Slot get_atoms_slot() const;
+    valla::RootSlot get_atoms_slot() const;
     const FlatDoubleList& get_numeric_variables() const;
 
     /**
@@ -96,10 +96,7 @@ public:
         requires IsRangeOver<Range1, Index> && IsRangeOver<Range2, Index>
     bool literals_hold(const Range1& positive_atoms, const Range2& negative_atoms) const;
 
-    auto identifying_members() const
-    {
-        return std::make_tuple(cantor_pair(valla::read_pos(m_fluent_atoms, 0), valla::read_pos(m_fluent_atoms, 1)), m_numeric_variables);
-    }
+    auto identifying_members() const { return std::make_tuple(valla::RootSlotHash(m_problem->get_bitset_pool())(m_fluent_atoms), m_numeric_variables); }
 };
 
 using StateImplSet = loki::SegmentedRepository<StateImpl>;
@@ -113,11 +110,11 @@ auto StateImpl::get_atoms() const
 {
     if constexpr (std::is_same_v<P, formalism::FluentTag>)
     {
-        return std::ranges::subrange(v::begin(m_fluent_atoms, get_tree_table()), v::end());
+        return std::ranges::subrange(v::begin(m_fluent_atoms, m_problem->get_tree_table(), m_problem->get_bitset_pool()), v::end());
     }
     else if constexpr (std::is_same_v<P, formalism::DerivedTag>)
     {
-        return std::ranges::subrange(v::begin(m_derived_atoms, get_tree_table()), v::end());
+        return std::ranges::subrange(v::begin(m_derived_atoms, m_problem->get_tree_table(), m_problem->get_bitset_pool()), v::end());
     }
     else
     {
@@ -126,7 +123,7 @@ auto StateImpl::get_atoms() const
 }
 
 template<formalism::IsFluentOrDerivedTag P>
-valla::Slot StateImpl::get_atoms_slot() const
+valla::RootSlot StateImpl::get_atoms_slot() const
 {
     if constexpr (std::is_same_v<P, formalism::FluentTag>)
     {
@@ -158,8 +155,9 @@ struct EqualTo<mimir::search::StateImpl>
 {
     bool operator()(const mimir::search::StateImpl& lhs, const mimir::search::StateImpl& rhs) const
     {
-        return (lhs.get_atoms_slot<mimir::formalism::FluentTag>() == rhs.get_atoms_slot<mimir::formalism::FluentTag>()
-                && &lhs.get_numeric_variables() == &rhs.get_numeric_variables());
+        return valla::RootSlotEqualTo(lhs.get_problem()->get_bitset_pool())(lhs.get_atoms_slot<mimir::formalism::FluentTag>(),
+                                                                            rhs.get_atoms_slot<mimir::formalism::FluentTag>())
+               && (&lhs.get_numeric_variables() == &rhs.get_numeric_variables());
     }
 };
 }
