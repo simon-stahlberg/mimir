@@ -88,7 +88,7 @@ ProblemImpl::ProblemImpl(Index index,
     m_flat_double_list_set(),
     m_tree_table(),
     m_bitset_pool(),
-    m_state_root_table(m_bitset_pool)
+    m_state_root_table()
 {
     assert(is_all_unique(get_objects()));
     assert(is_all_unique(get_derived_predicates()));

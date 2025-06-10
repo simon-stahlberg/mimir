@@ -18,6 +18,10 @@
 #ifndef VALLA_INCLUDE_BITSET_POOL_HPP_
 #define VALLA_INCLUDE_BITSET_POOL_HPP_
 
+#include "valla/declarations.hpp"
+
+#include <absl/container/flat_hash_set.h>
+#include <bitset>
 #include <limits>
 #include <vector>
 
@@ -30,44 +34,72 @@ class BitsetConstView;
 class BitsetView
 {
 private:
-    uint32_t m_segment;
-    uint32_t m_offset;
+    uint64_t* m_blocks;
+    size_t m_num_blocks;
 
 public:
-    BitsetView() : m_segment(-1), m_offset(-1) {}
-    BitsetView(uint32_t segment, uint32_t offset);
+    BitsetView();
+    BitsetView(uint64_t* blocks, size_t num_blocks);
 
-    bool get(size_t bit, const BitsetPool& pool) const;
+    bool get(size_t bit) const;
 
-    void set(size_t bit, BitsetPool& pool);
+    void set(size_t bit);
 
-    uint32_t get_segment() const;
-    uint32_t get_offset() const;
+    uint64_t* get_blocks() const;
+    size_t get_num_blocks() const;
 };
 
-static_assert(sizeof(BitsetView) == 8);
+static_assert(sizeof(BitsetView) == 16);
 
 class BitsetConstView
 {
 private:
-    uint32_t m_segment;
-    uint32_t m_offset;
+    const uint64_t* m_blocks;
+    size_t m_num_blocks;
 
 public:
-    BitsetConstView() : m_segment(-1), m_offset(-1) {}
-    BitsetConstView(uint32_t segment, uint32_t offset);
+    BitsetConstView();
+    BitsetConstView(const uint64_t* blocks, size_t num_blocks);
 
     /// @brief Implicit conversion from mutable BitsetView.
     /// @param view
     BitsetConstView(BitsetView view);
 
-    bool get(size_t bit, const BitsetPool& pool) const;
+    bool get(size_t bit) const;
 
-    uint32_t get_segment() const;
-    uint32_t get_offset() const;
+    const uint64_t* get_blocks() const;
+    size_t get_num_blocks() const;
 };
 
-static_assert(sizeof(BitsetView) == 8);
+static_assert(sizeof(BitsetView) == 16);
+
+struct BitsetHash
+{
+private:
+    size_t m_num_blocks;
+
+public:
+    size_t operator()(BitsetView el) const;
+
+    size_t operator()(BitsetConstView el) const;
+
+    template<typename Bitset>
+    size_t hash(Bitset el) const;
+};
+
+struct BitsetEqualTo
+{
+private:
+    size_t m_common_num_blocks;
+
+public:
+    bool operator()(BitsetView lhs, BitsetView rhs) const;
+
+    bool operator()(BitsetConstView lhs, BitsetConstView rhs) const;
+
+    template<typename Bitset>
+    size_t equal_to(Bitset lhs, Bitset rhs) const;
+};
 
 class BitsetPool
 {
@@ -76,16 +108,24 @@ private:
     size_t m_segment;
     size_t m_offset;
 
+    size_t m_last_allocated_num_blocks;
+
+    absl::flat_hash_set<BitsetConstView, BitsetHash, BitsetEqualTo> m_uniqueness;
+
     static constexpr const size_t MAX_SEGMENT_SIZE = std::numeric_limits<uint32_t>::max() >> 6;
 
     static constexpr const size_t INITIAL_SEGMENT_SIZE = 1024;
 
-    void resize_to_fit(size_t num_bits);
+    void resize_to_fit(size_t num_blocks);
 
 public:
     BitsetPool();
 
-    BitsetView allocate(size_t num_bits);
+    BitsetView allocate(size_t num_blocks);
+
+    void pop_allocation();
+
+    auto insert(BitsetConstView view);
 
     std::vector<uint64_t>& get_segment(size_t segment);
 
@@ -96,69 +136,98 @@ public:
  * BitsetView
  */
 
-inline BitsetView::BitsetView(uint32_t segment, uint32_t offset) : m_segment(segment), m_offset(offset) {}
+inline BitsetView::BitsetView() : m_blocks(nullptr), m_num_blocks(0) {}
 
-inline bool BitsetView::get(size_t bit, const BitsetPool& pool) const
+inline BitsetView::BitsetView(uint64_t* blocks, size_t num_blocks) : m_blocks(blocks), m_num_blocks(num_blocks) {}
+
+inline bool BitsetView::get(size_t bit) const
 {
-    const auto& segment = pool.get_segment(m_segment);
+    size_t block_index = bit / 64;
+    size_t bit_index = bit % 64;
 
-    size_t offset = m_offset + bit;
-    size_t block_index = offset / 64;
-    size_t bit_index = offset % 64;
-
-    return segment[block_index] & (uint64_t(1) << bit_index);
+    return m_blocks[block_index] & (uint64_t(1) << bit_index);
 }
 
-inline void BitsetView::set(size_t bit, BitsetPool& pool)
+inline void BitsetView::set(size_t bit)
 {
-    auto& segment = pool.get_segment(m_segment);
+    size_t block_index = bit / 64;
+    size_t bit_index = bit % 64;
 
-    size_t offset = m_offset + bit;
-    size_t block_index = offset / 64;
-    size_t bit_index = offset % 64;
-
-    segment[block_index] |= (uint64_t(1) << bit_index);
+    m_blocks[block_index] |= (uint64_t(1) << bit_index);
 }
 
-inline uint32_t BitsetView::get_segment() const { return m_segment; }
+inline uint64_t* BitsetView::get_blocks() const { return m_blocks; }
 
-inline uint32_t BitsetView::get_offset() const { return m_offset; }
+inline size_t BitsetView::get_num_blocks() const { return m_num_blocks; }
 
 /**
  * BitsetConstView
  */
 
-inline BitsetConstView::BitsetConstView(uint32_t segment, uint32_t offset) : m_segment(segment), m_offset(offset) {}
+inline BitsetConstView::BitsetConstView() : m_blocks(nullptr), m_num_blocks(0) {}
 
-inline BitsetConstView::BitsetConstView(BitsetView view) : m_segment(view.get_segment()), m_offset(view.get_offset()) {}
+inline BitsetConstView::BitsetConstView(const uint64_t* blocks, size_t num_blocks) : m_blocks(blocks), m_num_blocks(num_blocks) {}
 
-inline bool BitsetConstView::get(size_t bit, const BitsetPool& pool) const
+inline BitsetConstView::BitsetConstView(BitsetView view) : m_blocks(view.get_blocks()), m_num_blocks(view.get_num_blocks()) {}
+
+inline bool BitsetConstView::get(size_t bit) const
 {
-    const auto& segment = pool.get_segment(m_segment);
+    size_t block_index = bit / 64;
+    size_t bit_index = bit % 64;
 
-    size_t offset = m_offset + bit;
-    size_t block_index = offset / 64;
-    size_t bit_index = offset % 64;
-
-    return segment[block_index] & (uint64_t(1) << bit_index);
+    return m_blocks[block_index] & (uint64_t(1) << bit_index);
 }
 
-inline uint32_t BitsetConstView::get_segment() const { return m_segment; }
+inline const uint64_t* BitsetConstView::get_blocks() const { return m_blocks; }
 
-inline uint32_t BitsetConstView::get_offset() const { return m_offset; }
+inline size_t BitsetConstView::get_num_blocks() const { return m_num_blocks; }
+
+/**
+ * BitsetHash
+ */
+
+inline size_t BitsetHash::operator()(BitsetView el) const { return hash(el); }
+
+inline size_t BitsetHash::operator()(BitsetConstView el) const { return hash(el); }
+
+template<typename Bitset>
+size_t BitsetHash::hash(Bitset el) const
+{
+    size_t seed = el.get_num_blocks();
+    for (size_t i = 0; i < el.get_num_blocks(); ++i)
+    {
+        valla::hash_combine(seed, el.get_blocks()[i]);
+    }
+    return seed;
+}
+
+/**
+ * BitsetEqualTo
+ */
+
+inline bool BitsetEqualTo::operator()(BitsetView lhs, BitsetView rhs) const { return equal_to(lhs, rhs); }
+
+inline bool BitsetEqualTo::operator()(BitsetConstView lhs, BitsetConstView rhs) const { return equal_to(lhs, rhs); }
+
+template<typename Bitset>
+size_t BitsetEqualTo::equal_to(Bitset lhs, Bitset rhs) const
+{
+    if (lhs.get_num_blocks() != rhs.get_num_blocks())
+        return false;
+    return std::equal(lhs.get_blocks(), lhs.get_blocks() + lhs.get_num_blocks(), rhs.get_blocks(), rhs.get_blocks() + rhs.get_num_blocks());
+}
 
 /**
  * BitsetPool
  */
 
-inline void BitsetPool::resize_to_fit(size_t num_bits)
+inline void BitsetPool::resize_to_fit(size_t num_blocks)
 {
-    const auto remaining_bits = (m_segments.back().size() * 64) - m_offset;
+    const auto remaining_blocks = m_segments.back().size() - m_offset;
 
-    if (remaining_bits < num_bits)
+    if (remaining_blocks < num_blocks)
     {
-        const auto needed_blocks = (num_bits + 63) / 64;
-        const auto new_segment_size = std::min(std::max(m_segments.back().size() * 2, needed_blocks), MAX_SEGMENT_SIZE);
+        const auto new_segment_size = std::max(m_segments.back().size() * 2, num_blocks);
 
         m_segments.push_back(std::vector<uint64_t>(new_segment_size, uint64_t(0)));
         ++m_segment;
@@ -166,17 +235,32 @@ inline void BitsetPool::resize_to_fit(size_t num_bits)
     }
 }
 
-inline BitsetPool::BitsetPool() : m_segments(1, std::vector<uint64_t>(INITIAL_SEGMENT_SIZE, uint64_t(0))), m_segment(0), m_offset(0) {}
-
-inline BitsetView BitsetPool::allocate(size_t num_bits)
+inline BitsetPool::BitsetPool() :
+    m_segments(1, std::vector<uint64_t>(INITIAL_SEGMENT_SIZE, uint64_t(0))),
+    m_segment(0),
+    m_offset(0),
+    m_last_allocated_num_blocks(0)
 {
-    resize_to_fit(num_bits);
+}
 
-    auto view = BitsetView(m_segment, m_offset);
-    m_offset += num_bits;
+inline BitsetView BitsetPool::allocate(size_t num_blocks)
+{
+    resize_to_fit(num_blocks);
+
+    auto view = BitsetView(m_segments.back().data() + m_offset, num_blocks);
+    m_offset += num_blocks;
+    m_last_allocated_num_blocks = num_blocks;
 
     return view;
 }
+
+inline void BitsetPool::pop_allocation()
+{
+    m_offset -= m_last_allocated_num_blocks;
+    m_last_allocated_num_blocks = 0;
+}
+
+inline auto BitsetPool::insert(BitsetConstView view) { return m_uniqueness.insert(view); }
 
 inline std::vector<uint64_t>& BitsetPool::get_segment(size_t segment)
 {
