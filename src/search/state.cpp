@@ -38,8 +38,8 @@ StateImpl::StateImpl(Index index, Problem problem, valla::RootSlot fluent_atoms,
     m_derived_atoms(derived_atoms),
     m_numeric_variables(numeric_variables)
 {
-    assert(std::is_sorted(v::begin(m_fluent_atoms, m_problem->get_tree_table(), m_problem->get_bitset_pool()), v::end()));
-    assert(std::is_sorted(v::begin(m_derived_atoms, m_problem->get_tree_table(), m_problem->get_bitset_pool()), v::end()));
+    assert(std::is_sorted(v::begin(m_fluent_atoms, m_problem->get_tree_table()), v::end()));
+    assert(std::is_sorted(v::begin(m_derived_atoms, m_problem->get_tree_table()), v::end()));
 }
 
 template<IsFluentOrDerivedTag P>

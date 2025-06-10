@@ -96,7 +96,7 @@ public:
         requires IsRangeOver<Range1, Index> && IsRangeOver<Range2, Index>
     bool literals_hold(const Range1& positive_atoms, const Range2& negative_atoms) const;
 
-    auto identifying_members() const { return std::make_tuple(valla::RootSlotHash(m_problem->get_bitset_pool())(m_fluent_atoms), m_numeric_variables); }
+    auto identifying_members() const { return std::make_tuple(valla::RootSlotHash()(m_fluent_atoms), m_numeric_variables); }
 };
 
 using StateImplSet = loki::SegmentedRepository<StateImpl>;
@@ -110,11 +110,11 @@ auto StateImpl::get_atoms() const
 {
     if constexpr (std::is_same_v<P, formalism::FluentTag>)
     {
-        return std::ranges::subrange(v::begin(m_fluent_atoms, m_problem->get_tree_table(), m_problem->get_bitset_pool()), v::end());
+        return std::ranges::subrange(v::begin(m_fluent_atoms, m_problem->get_tree_table()), v::end());
     }
     else if constexpr (std::is_same_v<P, formalism::DerivedTag>)
     {
-        return std::ranges::subrange(v::begin(m_derived_atoms, m_problem->get_tree_table(), m_problem->get_bitset_pool()), v::end());
+        return std::ranges::subrange(v::begin(m_derived_atoms, m_problem->get_tree_table()), v::end());
     }
     else
     {
@@ -155,8 +155,7 @@ struct EqualTo<mimir::search::StateImpl>
 {
     bool operator()(const mimir::search::StateImpl& lhs, const mimir::search::StateImpl& rhs) const
     {
-        return valla::RootSlotEqualTo(lhs.get_problem()->get_bitset_pool())(lhs.get_atoms_slot<mimir::formalism::FluentTag>(),
-                                                                            rhs.get_atoms_slot<mimir::formalism::FluentTag>())
+        return valla::RootSlotEqualTo()(lhs.get_atoms_slot<mimir::formalism::FluentTag>(), rhs.get_atoms_slot<mimir::formalism::FluentTag>())
                && (&lhs.get_numeric_variables() == &rhs.get_numeric_variables());
     }
 };
