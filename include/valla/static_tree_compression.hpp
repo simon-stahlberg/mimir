@@ -35,6 +35,7 @@ namespace valla::static_tree
 /// @brief Recursively insert the elements from `it` until `end` into the `table`.
 /// @param it points to the first element.
 /// @param end points after the last element.
+/// @param size is the number of elements in the range from it to end.
 /// @param table is the table to uniquely insert the slots.
 /// @return the index of the slot at the root.
 template<std::forward_iterator Iterator>
@@ -69,11 +70,12 @@ template<std::forward_iterator Iterator>
 inline auto emplace_recursively(Iterator it, Iterator end, size_t size, IndexedHashSet& table)
 {
     if (size == 1)
-        return std::pair{*it, false};
+        return std::pair { *it, false };
 
-    if (size == 2){
+    if (size == 2)
+    {
         auto [iter, inserted] = table.insert_slot(make_slot(*it, *(it + 1)));
-        return std::pair{iter->second, inserted};
+        return std::pair { iter->second, inserted };
     }
 
     /* Divide */
@@ -86,9 +88,7 @@ inline auto emplace_recursively(Iterator it, Iterator end, size_t size, IndexedH
 
     auto [iter, inserted] = table.insert_slot(make_slot(left_index, right_index));
 
-    return std::pair{iter->second, left_inserted || right_inserted || inserted};
-
-
+    return std::pair { iter->second, left_inserted || right_inserted || inserted };
 }
 
 /// @brief Inserts the elements from the given `state` into the `tree_table` and the `root_table`.
@@ -103,14 +103,14 @@ auto insert(const Range& state, IndexedHashSet& tree_table, RootIndices& root_ta
     // Note: O(1) for random access iterators, and O(N) otherwise by repeatedly calling operator++.
     const auto size = static_cast<size_t>(std::distance(state.begin(), state.end()));
 
-    if (size == 0)                                                     ///< Special case for empty state.
-        return std::pair{root_table.size(), false};  ///< Len 0 marks the empty state, the tree index can be arbitrary so we set it to 0.
+    if (size == 0)                                      ///< Special case for empty state.
+        return std::pair { root_table.size(), false };  ///< Len 0 marks the empty state, the tree index can be arbitrary so we set it to 0.
 
     auto [index, inserted] = emplace_recursively(state.begin(), state.end(), size, tree_table);
     if (!inserted && size >= 2)
-        return std::pair{root_table.size(), false};  ///< The state already exists.
+        return std::pair { root_table.size(), false };  ///< The state already exists.
     root_table.emplace_back(index);
-    return std::pair{root_table.size()-1, inserted};
+    return std::pair { root_table.size() - 1, inserted };
 }
 
 /// @brief Recursively reads the state from the tree induced by the given `index` and the `len`.

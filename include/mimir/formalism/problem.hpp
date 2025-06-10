@@ -23,7 +23,9 @@
 #include "mimir/formalism/problem_details.hpp"
 #include "mimir/formalism/repositories.hpp"
 
+#include <valla/bitset_pool.hpp>
 #include <valla/indexed_hash_set.hpp>
+#include <valla/root_slot.hpp>
 
 namespace mimir::formalism
 {
@@ -57,7 +59,8 @@ private:
     FlatDoubleListSet m_flat_double_list_set;  ///< Stores all created numeric variable lists.
 
     valla::IndexedHashSet m_tree_table;
-    valla::IndexedHashSet m_state_root_table;
+    valla::BitsetPool m_bitset_pool;
+    valla::RootIndexedHashSet m_state_root_table;
 
     ProblemImpl(Index index,
                 Repositories repositories,
@@ -134,8 +137,10 @@ public:
     const Predicate<DerivedTag>& get_problem_or_domain_derived_predicate(const std::string& name) const;
     const ToPredicateMap<std::string, DerivedTag>& get_name_to_derived_predicate() const;
     const ToPredicateMap<std::string, DerivedTag>& get_name_to_problem_or_domain_derived_predicate() const;
+
     valla::IndexedHashSet& get_tree_table();
-    valla::IndexedHashSet& get_state_root_table();
+    valla::RootIndexedHashSet& get_state_root_table();
+    valla::BitsetPool& get_bitset_pool();
 
     /* Initial state */
     const GroundAtomList<StaticTag>& get_static_initial_atoms() const;
