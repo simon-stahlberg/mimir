@@ -55,6 +55,8 @@ inline Index insert_recursively(Iterator it, Iterator end, size_t size, BitsetVi
         Index i1 = *it;
         Index i2 = *(it + 1);
 
+        // std::cout << "base_insert: i1=" << i1 << " i2=" << i2 << " bit=" << bit << " comp" << (i2 < i1) << std::endl;
+
         if (i2 < i1)
         {
             std::swap(i1, i2);
@@ -72,6 +74,8 @@ inline Index insert_recursively(Iterator it, Iterator end, size_t size, BitsetVi
 
     Index i1 = insert_recursively(it, mid_it, mid, view, 2 * bit + 1, table);
     Index i2 = insert_recursively(mid_it, end, size - mid, view, 2 * bit + 2, table);
+
+    // std::cout << "inductive_insert: i1=" << i1 << " i2=" << i2 << " bit=" << bit << " comp" << (i2 < i1) << std::endl;
 
     if (i2 < i1)
     {
@@ -101,7 +105,10 @@ auto insert(const Range& state, IndexedHashSet& tree_table, RootIndexedHashSet& 
             RootSlot(make_slot(Index(0), Index(0)), pool.allocate(0)));  ///< Len 0 marks the empty state, the tree index can be arbitrary so we set it to 0.
 
     // Since we represent the ordering as a binary tree, there is some padding because we round up to use 64 bit blocks for efficiency.
+    // std::cout << "num bits=" << std::bit_ceil(size) << std::endl;
     auto ordering = pool.allocate((std::bit_ceil(size) + 63) / 64);
+
+    // std::cout << "bitset_ptr=" << ordering.get_blocks() << std::endl;
 
     size_t bit = 0;
     const auto tree_index = insert_recursively(state.begin(), state.end(), size, ordering, bit, tree_table);
@@ -111,6 +118,7 @@ auto insert(const Range& state, IndexedHashSet& tree_table, RootIndexedHashSet& 
     if (!result.second)
     {
         pool.pop_allocation();
+        // std::cout << "EXISTS" << std::endl;
     }
 
     return root_table.insert_slot(RootSlot(make_slot(tree_index, size), *result.first));
@@ -137,6 +145,8 @@ inline void read_state_recursively(Index index, size_t size, BitsetConstView ord
     /* Base case */
     if (size == 2)
     {
+        // std::cout << "base_read: i1=" << i1 << " i2=" << i2 << " bit=" << bit << " comp" << must_swap << std::endl;
+
         if (must_swap)
             std::swap(i1, i2);
         ref_state.push_back(i1);
@@ -146,6 +156,8 @@ inline void read_state_recursively(Index index, size_t size, BitsetConstView ord
 
     /* Divide */
     const auto mid = std::bit_floor(size - 1);
+
+    // std::cout << "inductive_read: i1=" << i1 << " i2=" << i2 << " bit=" << bit << " comp" << must_swap << std::endl;
 
     if (must_swap)
         std::swap(i1, i2);
@@ -168,6 +180,8 @@ inline void read_state(Index tree_index, size_t size, BitsetConstView ordering, 
         return;
 
     size_t bit = 0;
+
+    // std::cout << "bitset_ptr=" << ordering.get_blocks() << std::endl;
 
     read_state_recursively(tree_index, size, ordering, tree_table, bit, out_state);
 }
