@@ -98,7 +98,7 @@ public:
     bool operator()(BitsetConstView lhs, BitsetConstView rhs) const;
 
     template<typename Bitset>
-    size_t equal_to(Bitset lhs, Bitset rhs) const;
+    bool equal_to(Bitset lhs, Bitset rhs) const;
 };
 
 class BitsetPool
@@ -210,7 +210,7 @@ inline bool BitsetEqualTo::operator()(BitsetView lhs, BitsetView rhs) const { re
 inline bool BitsetEqualTo::operator()(BitsetConstView lhs, BitsetConstView rhs) const { return equal_to(lhs, rhs); }
 
 template<typename Bitset>
-size_t BitsetEqualTo::equal_to(Bitset lhs, Bitset rhs) const
+bool BitsetEqualTo::equal_to(Bitset lhs, Bitset rhs) const
 {
     if (lhs.get_num_blocks() != rhs.get_num_blocks())
         return false;
@@ -256,6 +256,8 @@ inline BitsetView BitsetPool::allocate(size_t num_blocks)
 
 inline void BitsetPool::pop_allocation()
 {
+    auto& segment = m_segments.back();
+    std::fill(segment.begin() + m_offset - m_last_allocated_num_blocks, segment.begin() + m_offset, uint64_t(0));
     m_offset -= m_last_allocated_num_blocks;
     m_last_allocated_num_blocks = 0;
 }
