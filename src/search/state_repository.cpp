@@ -28,6 +28,7 @@
 #include "mimir/search/axiom_evaluators/interface.hpp"
 #include "mimir/search/search_context.hpp"
 
+#include <valla/canonical_delta_tree_compression.hpp>
 #include <valla/canonical_tree_compression.hpp>
 #include <valla/delta_tree_compression.hpp>
 #include <valla/indexed_hash_set.hpp>
@@ -37,7 +38,7 @@ using namespace mimir::formalism;
 
 namespace mimir::search
 {
-namespace v = valla::canonical;
+namespace v = valla::canonical_delta;
 
 ContinuousCost compute_state_metric_value(State state, const ProblemImpl& problem)
 {
