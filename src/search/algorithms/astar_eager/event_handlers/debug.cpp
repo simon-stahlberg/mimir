@@ -29,9 +29,8 @@ namespace mimir::search::astar_eager
 void DebugEventHandlerImpl::on_expand_state_impl(State state) const
 {
     std::cout << "[AStar] ----------------------------------------\n"
-              << "[AStar] State: ";
-    mimir::operator<<(std::cout, std::make_tuple(state, std::cref(*m_problem)));
-    std::cout << std::endl << std::endl;
+              << "[AStar] State: " << state << std::endl
+              << std::endl;
 }
 
 void DebugEventHandlerImpl::on_expand_goal_state_impl(State state) const {}
@@ -41,9 +40,8 @@ void DebugEventHandlerImpl::on_generate_state_impl(State state, GroundAction act
     std::cout << "[AStar] Action: ";
     mimir::operator<<(std::cout, std::make_tuple(action, std::cref(*m_problem), GroundActionImpl::FullFormatterTag {}));
     std::cout << "\n"
-              << "[AStar] Successor: ";
-    mimir::operator<<(std::cout, std::make_tuple(successor_state, std::cref(*m_problem)));
-    std::cout << "\n" << std::endl;
+              << "[AStar] Successor: " << successor_state << "\n"
+              << std::endl;
 }
 
 void DebugEventHandlerImpl::on_generate_state_relaxed_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const {}
@@ -65,9 +63,7 @@ void DebugEventHandlerImpl::on_start_search_impl(State start_state, ContinuousCo
     std::cout << "[AStar] Search started.\n"
               << "[AStar] Initial g_value: " << g_value << "\n"
               << "[AStar] Initial h_value: " << h_value << "\n"
-              << "[AStar] Initial state: ";
-    mimir::operator<<(std::cout, std::make_tuple(start_state, std::cref(*m_problem)));
-    std::cout << std::endl;
+              << "[AStar] Initial state: " << start_state << std::endl;
 }
 
 void DebugEventHandlerImpl::on_end_search_impl(uint64_t num_reached_fluent_atoms,

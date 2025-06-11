@@ -393,6 +393,7 @@ void bind_module_definitions(nb::module_& m)
 
     /* State */
     nb::class_<StateImpl>(m, "State")  //
+        .def("__str__", [](const StateImpl& self) { return to_string(&self); })
         .def("__hash__", [](const StateImpl& self) { return std::hash<State> {}(&self); })
         .def("__eq__", [](const StateImpl& lhs, const StateImpl& rhs) { return &lhs == &rhs; })
         .def(
@@ -417,15 +418,6 @@ void bind_module_definitions(nb::module_& m)
             nb::keep_alive<0, 1>())
         .def("get_numeric_variables",
              [](const StateImpl& self) { return std::vector<double>(self.get_numeric_variables().begin(), self.get_numeric_variables().end()); })
-        .def(
-            "to_string",
-            [](const StateImpl& self, const ProblemImpl& problem)
-            {
-                std::stringstream ss;
-                mimir::operator<<(ss, std::make_tuple(State(&self), std::cref(problem)));
-                return ss.str();
-            },
-            "problem"_a)
         .def("literal_holds", &StateImpl::literal_holds<FluentTag>, nb::rv_policy::copy, "literal"_a)
         .def("literal_holds", &StateImpl::literal_holds<DerivedTag>, nb::rv_policy::copy, "literal"_a)
         .def("literal_holds", &StateImpl::literals_hold<FluentTag>, nb::rv_policy::copy, "literals"_a)
