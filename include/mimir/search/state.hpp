@@ -29,6 +29,7 @@
 #include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
 #include <memory>
+#include <valla/canonical_delta_tree_compression.hpp>
 #include <valla/canonical_tree_compression.hpp>
 #include <valla/delta_tree_compression.hpp>
 #include <valla/indexed_hash_set.hpp>
@@ -37,7 +38,7 @@
 
 namespace mimir::search
 {
-namespace v = valla::canonical;
+namespace v = valla::canonical_delta;
 
 /// @brief `StateImpl` encapsulates the fluent and derived atoms, and numeric variables of a planning state.
 class StateImpl

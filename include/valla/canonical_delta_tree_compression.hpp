@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef VALLA_INCLUDE_CANONICAL_TREE_COMPRESSION_HPP_
-#define VALLA_INCLUDE_CANONICAL_TREE_COMPRESSION_HPP_
+#ifndef VALLA_INCLUDE_CANONICAL_DELTA_TREE_COMPRESSION_HPP_
+#define VALLA_INCLUDE_CANONICAL_DELTA_TREE_COMPRESSION_HPP_
 
 #include "valla/bitset_pool.hpp"
 #include "valla/declarations.hpp"
@@ -32,39 +32,41 @@
 #include <ranges>
 #include <stack>
 
-namespace valla::canonical
+namespace valla::canonical_delta
 {
 
 /// @brief Recursively insert the elements from `it` until `end` into the `table`.
 /// @param it points to the first element.
 /// @param end points after the last element.
 /// @param size is the number of elements in the range from it to end.
-/// @param view is the ordering.
-/// @param bit is the position in the ordering for the next tree node being created.
 /// @param table is the table to uniquely insert the slots.
 /// @return the index of the slot at the root.
 template<std::forward_iterator Iterator>
     requires std::same_as<std::iter_value_t<Iterator>, Index>
-inline Index insert_recursively(Iterator it, Iterator end, size_t size, Bitset view, size_t bit, IndexedHashSet& table)
+inline Index insert_recursively(Iterator it, Iterator end, size_t size, Bitset view, size_t bit, IndexedHashSet& table, Index& prev)
 {
     /* Base cases */
     if (size == 1)
-        return *it;  ///< Skip node creation
+    {
+        Index delta = *it - prev;
+        prev = *it;
+        return delta;  ///< Skip node creation
+    }
 
     if (size == 2)
     {
         Index i1 = *it;
         Index i2 = *(it + 1);
-
-        // std::cout << "base_insert: i1=" << i1 << " i2=" << i2 << " bit=" << bit << " comp" << (i2 < i1) << std::endl;
-
         if (i2 < i1)
         {
             std::swap(i1, i2);
             view.set(bit);
         }
 
-        return table.insert_slot(make_slot(i1, i2)).first->second;
+        Index left_delta = i1 - prev;
+        Index right_delta = i2 - i1;
+        prev = i2;
+        return table.insert_slot(make_slot(left_delta, right_delta)).first->second;
     }
 
     /* Divide */
@@ -73,10 +75,8 @@ inline Index insert_recursively(Iterator it, Iterator end, size_t size, Bitset v
     /* Conquer */
     const auto mid_it = it + mid;
 
-    Index i1 = insert_recursively(it, mid_it, mid, view, 2 * bit + 1, table);
-    Index i2 = insert_recursively(mid_it, end, size - mid, view, 2 * bit + 2, table);
-
-    // std::cout << "inductive_insert: i1=" << i1 << " i2=" << i2 << " bit=" << bit << " comp" << (i2 < i1) << std::endl;
+    auto i1 = insert_recursively(it, mid_it, mid, view, 2 * bit + 1, table, prev);
+    auto i2 = insert_recursively(mid_it, end, size - mid, view, 2 * bit + 2, table, prev);
 
     if (i2 < i1)
     {
@@ -115,7 +115,8 @@ auto insert(const Range& state, IndexedHashSet& tree_table, RootIndexedHashSet& 
     // std::cout << "bitset_ptr=" << ordering.get_blocks() << std::endl;
 
     const auto bit = size_t(0);
-    const auto tree_index = insert_recursively(state.begin(), state.end(), size, ordering, bit, tree_table);
+    auto prev = Index(0);
+    const auto tree_index = insert_recursively(state.begin(), state.end(), size, ordering, bit, tree_table, prev);
 
     // Undo the bitset allocation when proven that an identical bitset already exists
     const auto result = repo.insert(ordering);
@@ -132,12 +133,13 @@ auto insert(const Range& state, IndexedHashSet& tree_table, RootIndexedHashSet& 
 /// @param size is the length of the state that defines the shape of the tree at the index.
 /// @param tree_table is the tree table.
 /// @param out_state is the output state.
-inline void read_state_recursively(Index index, size_t size, size_t bit, const Bitset& ordering, const IndexedHashSet& tree_table, State& ref_state)
+inline void
+read_state_recursively(Index index, size_t size, size_t bit, const Bitset& ordering, const IndexedHashSet& tree_table, State& ref_state, Index& prev)
 {
     /* Base case */
     if (size == 1)
     {
-        ref_state.push_back(index);
+        ref_state.push_back(prev += index);
         return;
     }
 
@@ -150,21 +152,17 @@ inline void read_state_recursively(Index index, size_t size, size_t bit, const B
     /* Base case */
     if (size == 2)
     {
-        // std::cout << "base_read: i1=" << i1 << " i2=" << i2 << " bit=" << bit << " comp" << must_swap << std::endl;
-
-        ref_state.push_back(i1);
-        ref_state.push_back(i2);
+        ref_state.push_back(prev += i1);
+        ref_state.push_back(prev += i2);
         return;
     }
 
     /* Divide */
     const auto mid = std::bit_floor(size - 1);
 
-    // std::cout << "inductive_read: i1=" << i1 << " i2=" << i2 << " bit=" << bit << " comp" << must_swap << std::endl;
-
     /* Conquer */
-    read_state_recursively(i1, mid, 2 * bit + 1, ordering, tree_table, ref_state);
-    read_state_recursively(i2, size - mid, 2 * bit + 2, ordering, tree_table, ref_state);
+    read_state_recursively(i1, mid, 2 * bit + 1, ordering, tree_table, ref_state, prev);
+    read_state_recursively(i2, size - mid, 2 * bit + 2, ordering, tree_table, ref_state, prev);
 }
 
 /// @brief Read the `out_state` from the given `tree_index` from the `tree_table`.
@@ -180,10 +178,8 @@ inline void read_state(Index tree_index, size_t size, const Bitset& ordering, co
         return;
 
     const auto bit = size_t(0);
-
-    // std::cout << "bitset_ptr=" << ordering.get_blocks() << std::endl;
-
-    read_state_recursively(tree_index, size, bit, ordering, tree_table, out_state);
+    auto prev = Index(0);
+    read_state_recursively(tree_index, size, bit, ordering, tree_table, out_state, prev);
 }
 
 /// @brief Read the `out_state` from the given `root_index` from the `root_table`.
@@ -236,7 +232,7 @@ private:
 
             if (entry.m_size == 1)
             {
-                m_value = entry.m_index;
+                m_value += entry.m_index;
                 return;
             }
 
@@ -279,10 +275,10 @@ public:
         if (begin)
         {
             const auto [tree_idx, size] = read_slot(root->get_slot());
-
             if (size > 0)  ///< Push to stack only if there leafs
             {
-                m_stack->emplace_back(tree_idx, size, 0);
+                m_value = Index(0);
+                m_stack->emplace_back(tree_idx, size);
                 advance();
             }
         }
@@ -303,7 +299,7 @@ public:
     bool operator!=(const const_iterator& other) const { return !(*this == other); }
 };
 
-inline const_iterator begin(const RootSlot& root, const IndexedHashSet& tree_table) { return const_iterator(&tree_table, &root, true); }
+inline const_iterator begin(const RootSlot root, const IndexedHashSet& tree_table) { return const_iterator(&tree_table, &root, true); }
 
 inline const_iterator end() { return const_iterator(); }
 

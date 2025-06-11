@@ -15,15 +15,15 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_ALGORITHMS_MEMORY_POOL_HPP_
-#define MIMIR_ALGORITHMS_MEMORY_POOL_HPP_
+#ifndef VALLA_INCLUDE_DETAILS_MEMORY_POOL_HPP_
+#define VALLA_INCLUDE_DETAILS_MEMORY_POOL_HPP_
 
 #include <cassert>
 #include <memory>
 #include <stack>
 #include <vector>
 
-namespace mimir
+namespace valla
 {
 template<typename T>
 class MemoryPool;
