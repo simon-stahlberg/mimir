@@ -24,7 +24,6 @@
 namespace valla
 {
 /// @brief `RootSlot` encapsulates a base slot consisting of the slot encoding the tree node index and the size, and the ordering bitset.
-/// The number of ordering bits is n + 1, i.e., one for each tree node.
 struct RootSlot
 {
     Slot slot;
@@ -32,24 +31,26 @@ struct RootSlot
 
     RootSlot() : slot(0), ordering() {}
     RootSlot(Slot slot, BitsetConstView ordering) : slot(slot), ordering(ordering) {}
+
+    Slot get_slot() const { return slot; }
+    Index get_index() const { return read_pos(slot, 0); }
+    Index get_size() const { return read_pos(slot, 1); }
+    BitsetConstView get_ordering() const { return ordering; }
 };
 
 struct RootSlotHash
 {
 public:
-    size_t operator()(RootSlot el) const
-    {
-        size_t seed = 0;
-        hash_combine(seed, el.ordering.get_blocks());
-        hash_combine(seed, SlotHash {}(el.slot));
-        return seed;
-    }
+    size_t operator()(RootSlot el) const { return cantor_pair(cantor_pair(el.get_index(), el.get_size()), el.get_ordering().get_index()); }
 };
 
 struct RootSlotEqualTo
 {
 public:
-    bool operator()(RootSlot lhs, RootSlot rhs) const { return lhs.slot == rhs.slot && lhs.ordering.get_blocks() == rhs.ordering.get_blocks(); }
+    bool operator()(RootSlot lhs, RootSlot rhs) const
+    {
+        return lhs.get_slot() == rhs.get_slot() && lhs.get_ordering().get_index() == rhs.get_ordering().get_index();
+    }
 };
 
 class RootIndexedHashSet

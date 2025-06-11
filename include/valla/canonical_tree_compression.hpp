@@ -118,7 +118,6 @@ auto insert(const Range& state, IndexedHashSet& tree_table, RootIndexedHashSet& 
     if (!result.second)
     {
         pool.pop_allocation();
-        // std::cout << "EXISTS" << std::endl;
     }
 
     return root_table.insert_slot(RootSlot(make_slot(tree_index, size), *result.first));
