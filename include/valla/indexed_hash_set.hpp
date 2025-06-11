@@ -71,7 +71,7 @@ public:
     }
 
 private:
-    absl::flat_hash_map<Slot, Index> m_slot_to_index;
+    absl::flat_hash_map<Slot, Index, SlotHash> m_slot_to_index;
     std::vector<Slot> m_index_to_slot;
 };
 }
