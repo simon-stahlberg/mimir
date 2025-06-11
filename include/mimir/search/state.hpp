@@ -44,12 +44,16 @@ class StateImpl
 {
 private:
     Index m_index;
-    formalism::Problem m_problem;
-    valla::RootSlot m_fluent_atoms;
-    valla::RootSlot m_derived_atoms;
+    const formalism::ProblemImpl* m_problem;
+    const valla::RootSlot* m_fluent_atoms;
+    const valla::RootSlot* m_derived_atoms;
     const FlatDoubleList* m_numeric_variables;
 
-    StateImpl(Index index, formalism::Problem problem, valla::RootSlot fluent_atoms, valla::RootSlot derived_atoms, const FlatDoubleList* numeric_variables);
+    StateImpl(Index index,
+              const formalism::ProblemImpl* problem,
+              const valla::RootSlot* fluent_atoms,
+              const valla::RootSlot* derived_atoms,
+              const FlatDoubleList* numeric_variables);
 
     friend class StateRepositoryImpl;
 
@@ -63,11 +67,11 @@ public:
      */
 
     Index get_index() const;
-    const formalism::Problem& get_problem() const;
+    const formalism::ProblemImpl& get_problem() const;
     template<formalism::IsFluentOrDerivedTag P>
     auto get_atoms() const;
     template<formalism::IsFluentOrDerivedTag P>
-    valla::RootSlot get_atoms_slot() const;
+    const valla::RootSlot& get_atoms_slot() const;
     const FlatDoubleList& get_numeric_variables() const;
 
     /**
@@ -96,8 +100,10 @@ public:
         requires IsRangeOver<Range1, Index> && IsRangeOver<Range2, Index>
     bool literals_hold(const Range1& positive_atoms, const Range2& negative_atoms) const;
 
-    auto identifying_members() const { return std::make_tuple(valla::RootSlotHash()(m_fluent_atoms), m_numeric_variables); }
+    auto identifying_members() const { return std::make_tuple(valla::RootSlotHash()(*m_fluent_atoms)); }
 };
+
+static_assert(sizeof(StateImpl) == 40);
 
 using StateImplSet = loki::SegmentedRepository<StateImpl>;
 
@@ -110,11 +116,11 @@ auto StateImpl::get_atoms() const
 {
     if constexpr (std::is_same_v<P, formalism::FluentTag>)
     {
-        return std::ranges::subrange(v::begin(m_fluent_atoms, m_problem->get_tree_table()), v::end());
+        return std::ranges::subrange(v::begin(*m_fluent_atoms, m_problem->get_tree_table()), v::end());
     }
     else if constexpr (std::is_same_v<P, formalism::DerivedTag>)
     {
-        return std::ranges::subrange(v::begin(m_derived_atoms, m_problem->get_tree_table()), v::end());
+        return std::ranges::subrange(v::begin(*m_derived_atoms, m_problem->get_tree_table()), v::end());
     }
     else
     {
@@ -123,15 +129,15 @@ auto StateImpl::get_atoms() const
 }
 
 template<formalism::IsFluentOrDerivedTag P>
-valla::RootSlot StateImpl::get_atoms_slot() const
+const valla::RootSlot& StateImpl::get_atoms_slot() const
 {
     if constexpr (std::is_same_v<P, formalism::FluentTag>)
     {
-        return m_fluent_atoms;
+        return *m_fluent_atoms;
     }
     else if constexpr (std::is_same_v<P, formalism::DerivedTag>)
     {
-        return m_derived_atoms;
+        return *m_derived_atoms;
     }
     else
     {
@@ -155,8 +161,7 @@ struct EqualTo<mimir::search::StateImpl>
 {
     bool operator()(const mimir::search::StateImpl& lhs, const mimir::search::StateImpl& rhs) const
     {
-        return valla::RootSlotEqualTo()(lhs.get_atoms_slot<mimir::formalism::FluentTag>(), rhs.get_atoms_slot<mimir::formalism::FluentTag>())
-               && (&lhs.get_numeric_variables() == &rhs.get_numeric_variables());
+        return valla::RootSlotEqualTo()(lhs.get_atoms_slot<mimir::formalism::FluentTag>(), rhs.get_atoms_slot<mimir::formalism::FluentTag>());
     }
 };
 }

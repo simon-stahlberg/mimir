@@ -88,7 +88,8 @@ ProblemImpl::ProblemImpl(Index index,
     m_flat_double_list_set(),
     m_tree_table(),
     m_bitset_pool(),
-    m_state_root_table()
+    m_bitset_repository(m_bitset_pool),
+    m_state_root_table(m_bitset_repository)
 {
     assert(is_all_unique(get_objects()));
     assert(is_all_unique(get_derived_predicates()));
@@ -271,6 +272,11 @@ const ToPredicateMap<std::string, DerivedTag>& ProblemImpl::get_name_to_problem_
 valla::IndexedHashSet& ProblemImpl::get_tree_table() { return m_tree_table; }
 valla::RootIndexedHashSet& ProblemImpl::get_state_root_table() { return m_state_root_table; }
 valla::BitsetPool& ProblemImpl::get_bitset_pool() { return m_bitset_pool; }
+valla::BitsetRepository& ProblemImpl::get_bitset_repository() { return m_bitset_repository; }
+const valla::IndexedHashSet& ProblemImpl::get_tree_table() const { return m_tree_table; }
+const valla::RootIndexedHashSet& ProblemImpl::get_state_root_table() const { return m_state_root_table; }
+const valla::BitsetPool& ProblemImpl::get_bitset_pool() const { return m_bitset_pool; }
+const valla::BitsetRepository& ProblemImpl::get_bitset_repository() const { return m_bitset_repository; }
 
 /* Initial state */
 
