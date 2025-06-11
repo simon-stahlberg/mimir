@@ -82,36 +82,36 @@ const formalism::ProblemImpl& StateImpl::get_problem() const { return *m_problem
 
 const FlatDoubleList& StateImpl::get_numeric_variables() const { return *m_numeric_variables; }
 
-}
-
-namespace mimir
-{
 /**
  * Pretty printing
  */
 
-template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<search::State, const ProblemImpl&>& data)
+std::ostream& operator<<(std::ostream& os, search::State state)
 {
-    const auto& [state, problem] = data;
-
     auto fluent_ground_atoms = GroundAtomList<FluentTag> {};
     auto static_ground_atoms = GroundAtomList<StaticTag> {};
     auto derived_ground_atoms = GroundAtomList<DerivedTag> {};
     auto fluent_function_values = std::vector<std::pair<GroundFunction<FluentTag>, ContinuousCost>> {};
 
-    problem.get_repositories().get_ground_atoms_from_indices(state->get_atoms<FluentTag>(), fluent_ground_atoms);
-    problem.get_repositories().get_ground_atoms_from_indices(problem.get_static_initial_positive_atoms_bitset(), static_ground_atoms);
-    problem.get_repositories().get_ground_atoms_from_indices(state->get_atoms<DerivedTag>(), derived_ground_atoms);
-    problem.get_repositories().get_ground_function_values(state->get_numeric_variables(), fluent_function_values);
+    state->get_problem().get_repositories().get_ground_atoms_from_indices(state->get_atoms<FluentTag>(), fluent_ground_atoms);
+    state->get_problem().get_repositories().get_ground_atoms_from_indices(state->get_problem().get_static_initial_positive_atoms_bitset(), static_ground_atoms);
+    state->get_problem().get_repositories().get_ground_atoms_from_indices(state->get_atoms<DerivedTag>(), derived_ground_atoms);
+    state->get_problem().get_repositories().get_ground_function_values(state->get_numeric_variables(), fluent_function_values);
 
     // Sort by name for easier comparison
     std::sort(fluent_ground_atoms.begin(), fluent_ground_atoms.end(), [](const auto& lhs, const auto& rhs) { return to_string(*lhs) < to_string(*rhs); });
     std::sort(static_ground_atoms.begin(), static_ground_atoms.end(), [](const auto& lhs, const auto& rhs) { return to_string(*lhs) < to_string(*rhs); });
     std::sort(derived_ground_atoms.begin(), derived_ground_atoms.end(), [](const auto& lhs, const auto& rhs) { return to_string(*lhs) < to_string(*rhs); });
 
-    os << "State(" << "index=" << state->get_index() << ", " << "fluent atoms=" << fluent_ground_atoms << ", " << "static atoms=" << static_ground_atoms << ", "
-       << "derived atoms=" << derived_ground_atoms << ", " << "fluent numerics=" << fluent_function_values << ")";
+    os << "State(" << "index=" << state->get_index() << ", " << "fluent atoms=";
+    mimir::operator<<(os, fluent_ground_atoms);
+    os << ", " << "static atoms=";
+    mimir::operator<<(os, static_ground_atoms);
+    os << ", " << "derived atoms=";
+    mimir::operator<<(os, derived_ground_atoms);
+    os << ", " << "fluent numerics=";
+    mimir::operator<<(os, fluent_function_values);
+    os << ")";
 
     return os;
 }

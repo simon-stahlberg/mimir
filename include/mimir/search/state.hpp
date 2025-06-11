@@ -153,6 +153,12 @@ bool StateImpl::literals_hold(const Range1& positive_atoms, const Range2& negati
     return is_supseteq(get_atoms<P>(), positive_atoms) && are_disjoint(get_atoms<P>(), negative_atoms);
 }
 
+/**
+ * Pretty printing
+ */
+
+std::ostream& operator<<(std::ostream& os, search::State state);
+
 }
 
 namespace loki
@@ -165,16 +171,6 @@ struct EqualTo<mimir::search::StateImpl>
         return valla::RootSlotEqualTo()(lhs.get_atoms_slot<mimir::formalism::FluentTag>(), rhs.get_atoms_slot<mimir::formalism::FluentTag>());
     }
 };
-}
-
-namespace mimir
-{
-/**
- * Pretty printing
- */
-
-template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<search::State, const formalism::ProblemImpl&>& data);
 }
 
 #endif

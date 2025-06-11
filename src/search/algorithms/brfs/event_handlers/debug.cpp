@@ -29,9 +29,8 @@ namespace mimir::search::brfs
 void DebugEventHandlerImpl::on_expand_state_impl(State state) const
 {
     std::cout << "[BrFS] ----------------------------------------\n"
-              << "[BrFS] State: ";
-    mimir::operator<<(std::cout, std::make_tuple(state, std::cref(*m_problem)));
-    std::cout << std::endl << std::endl;
+              << "[BrFS] State: " << state << "\n"
+              << std::endl;
 }
 
 void DebugEventHandlerImpl::on_expand_goal_state_impl(State state) const {}
@@ -41,9 +40,8 @@ void DebugEventHandlerImpl::on_generate_state_impl(State state, GroundAction act
     std::cout << "[BrFS] Action: ";
     mimir::operator<<(std::cout, std::make_tuple(action, std::cref(*m_problem), GroundActionImpl::FullFormatterTag {}));
     std::cout << "\n"
-              << "[BrFS] Successor: ";
-    mimir::operator<<(std::cout, std::make_tuple(successor_state, std::cref(*m_problem)));
-    std::cout << "\n" << std::endl;
+              << "[BrFS] Successor: " << successor_state << "\n"
+              << std::endl;
 }
 
 void DebugEventHandlerImpl::on_generate_state_in_search_tree_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const {}
@@ -61,9 +59,7 @@ void DebugEventHandlerImpl::on_finish_g_layer_impl(uint32_t g_value, uint64_t nu
 void DebugEventHandlerImpl::on_start_search_impl(State start_state) const
 {
     std::cout << "[BrFS] Search started.\n"
-              << "[BrFS] Initial state: ";
-    mimir::operator<<(std::cout, std::make_tuple(start_state, std::cref(*m_problem)));
-    std::cout << std::endl;
+              << "[BrFS] Initial state: " << start_state << std::endl;
 }
 
 void DebugEventHandlerImpl::on_end_search_impl(uint64_t num_reached_fluent_atoms,

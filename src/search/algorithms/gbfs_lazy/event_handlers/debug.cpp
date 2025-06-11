@@ -29,9 +29,8 @@ namespace mimir::search::gbfs_lazy
 void DebugEventHandlerImpl::on_expand_state_impl(State state) const
 {
     std::cout << "[GBFS] ----------------------------------------\n"
-              << "[GBFS] State: ";
-    mimir::operator<<(std::cout, std::make_tuple(state, std::cref(*m_problem)));
-    std::cout << std::endl << std::endl;
+              << "[GBFS] State: " << state << "\n"
+              << std::endl;
 }
 
 void DebugEventHandlerImpl::on_expand_goal_state_impl(State state) const {}
@@ -41,9 +40,8 @@ void DebugEventHandlerImpl::on_generate_state_impl(State state, GroundAction act
     std::cout << "[GBFS] Action: ";
     mimir::operator<<(std::cout, std::make_tuple(action, std::cref(*m_problem), GroundActionImpl::FullFormatterTag {}));
     std::cout << "\n"
-              << "[GBFS] Successor: ";
-    mimir::operator<<(std::cout, std::make_tuple(successor_state, std::cref(*m_problem)));
-    std::cout << "\n" << std::endl;
+              << "[GBFS] Successor: " << successor_state << "\n"
+              << std::endl;
 }
 
 void DebugEventHandlerImpl::on_prune_state_impl(State state) const {}
@@ -53,9 +51,7 @@ void DebugEventHandlerImpl::on_start_search_impl(State start_state, ContinuousCo
     std::cout << "[GBFS] Search started.\n"
               << "[GBFS] Initial g_value: " << g_value << "\n"
               << "[GBFS] Initial h_value: " << h_value << "\n"
-              << "[GBFS] Initial state: ";
-    mimir::operator<<(std::cout, std::make_tuple(start_state, std::cref(*m_problem)));
-    std::cout << std::endl;
+              << "[GBFS] Initial state: " << start_state << std::endl;
 }
 
 void DebugEventHandlerImpl::on_new_best_h_value_impl(ContinuousCost h_value, uint64_t num_expanded_states, uint64_t num_generated_states) const
