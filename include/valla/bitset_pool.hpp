@@ -35,18 +35,20 @@ class BitsetView
 {
 private:
     uint64_t* m_blocks;
-    size_t m_num_blocks;
+    uint32_t m_num_blocks;
+    Index m_index;
 
 public:
     BitsetView();
-    BitsetView(uint64_t* blocks, size_t num_blocks);
+    BitsetView(uint64_t* blocks, uint32_t num_blocks, Index index);
 
     bool get(size_t bit) const;
 
     void set(size_t bit);
 
     uint64_t* get_blocks() const;
-    size_t get_num_blocks() const;
+    uint32_t get_num_blocks() const;
+    Index get_index() const;
 };
 
 static_assert(sizeof(BitsetView) == 16);
@@ -55,11 +57,12 @@ class BitsetConstView
 {
 private:
     const uint64_t* m_blocks;
-    size_t m_num_blocks;
+    uint32_t m_num_blocks;
+    Index m_index;
 
 public:
     BitsetConstView();
-    BitsetConstView(const uint64_t* blocks, size_t num_blocks);
+    BitsetConstView(const uint64_t* blocks, uint32_t num_blocks, Index index);
 
     /// @brief Implicit conversion from mutable BitsetView.
     /// @param view
@@ -68,7 +71,8 @@ public:
     bool get(size_t bit) const;
 
     const uint64_t* get_blocks() const;
-    size_t get_num_blocks() const;
+    uint32_t get_num_blocks() const;
+    Index get_index() const;
 };
 
 static_assert(sizeof(BitsetView) == 16);
@@ -107,6 +111,7 @@ private:
     std::vector<std::vector<uint64_t>> m_segments;
     size_t m_segment;
     size_t m_offset;
+    size_t m_size;
 
     size_t m_last_allocated_num_blocks;
 
@@ -130,15 +135,17 @@ public:
     std::vector<uint64_t>& get_segment(size_t segment);
 
     const std::vector<uint64_t>& get_segment(size_t segment) const;
+
+    size_t size() const;
 };
 
 /**
  * BitsetView
  */
 
-inline BitsetView::BitsetView() : m_blocks(nullptr), m_num_blocks(0) {}
+inline BitsetView::BitsetView() : m_blocks(nullptr), m_num_blocks(0), m_index(0) {}
 
-inline BitsetView::BitsetView(uint64_t* blocks, size_t num_blocks) : m_blocks(blocks), m_num_blocks(num_blocks) {}
+inline BitsetView::BitsetView(uint64_t* blocks, uint32_t num_blocks, Index index) : m_blocks(blocks), m_num_blocks(num_blocks), m_index(index) {}
 
 inline bool BitsetView::get(size_t bit) const
 {
@@ -158,17 +165,21 @@ inline void BitsetView::set(size_t bit)
 
 inline uint64_t* BitsetView::get_blocks() const { return m_blocks; }
 
-inline size_t BitsetView::get_num_blocks() const { return m_num_blocks; }
+inline uint32_t BitsetView::get_num_blocks() const { return m_num_blocks; }
+
+inline Index BitsetView::get_index() const { return m_index; }
 
 /**
  * BitsetConstView
  */
 
-inline BitsetConstView::BitsetConstView() : m_blocks(nullptr), m_num_blocks(0) {}
+inline BitsetConstView::BitsetConstView() : m_blocks(nullptr), m_num_blocks(0), m_index(0) {}
 
-inline BitsetConstView::BitsetConstView(const uint64_t* blocks, size_t num_blocks) : m_blocks(blocks), m_num_blocks(num_blocks) {}
+inline BitsetConstView::BitsetConstView(const uint64_t* blocks, uint32_t num_blocks, Index index) : m_blocks(blocks), m_num_blocks(num_blocks), m_index(index)
+{
+}
 
-inline BitsetConstView::BitsetConstView(BitsetView view) : m_blocks(view.get_blocks()), m_num_blocks(view.get_num_blocks()) {}
+inline BitsetConstView::BitsetConstView(BitsetView view) : m_blocks(view.get_blocks()), m_num_blocks(view.get_num_blocks()), m_index(view.get_index()) {}
 
 inline bool BitsetConstView::get(size_t bit) const
 {
@@ -180,7 +191,9 @@ inline bool BitsetConstView::get(size_t bit) const
 
 inline const uint64_t* BitsetConstView::get_blocks() const { return m_blocks; }
 
-inline size_t BitsetConstView::get_num_blocks() const { return m_num_blocks; }
+inline uint32_t BitsetConstView::get_num_blocks() const { return m_num_blocks; }
+
+inline Index BitsetConstView::get_index() const { return m_index; }
 
 /**
  * BitsetHash
@@ -239,6 +252,7 @@ inline BitsetPool::BitsetPool() :
     m_segments(1, std::vector<uint64_t>(INITIAL_SEGMENT_SIZE, uint64_t(0))),
     m_segment(0),
     m_offset(0),
+    m_size(0),
     m_last_allocated_num_blocks(0)
 {
 }
@@ -247,7 +261,7 @@ inline BitsetView BitsetPool::allocate(size_t num_blocks)
 {
     resize_to_fit(num_blocks);
 
-    auto view = BitsetView(m_segments.back().data() + m_offset, num_blocks);
+    auto view = BitsetView(m_segments.back().data() + m_offset, num_blocks, m_size++);
     m_offset += num_blocks;
     m_last_allocated_num_blocks = num_blocks;
 
@@ -259,6 +273,7 @@ inline void BitsetPool::pop_allocation()
     auto& segment = m_segments.back();
     std::fill(segment.begin() + m_offset - m_last_allocated_num_blocks, segment.begin() + m_offset, uint64_t(0));
     m_offset -= m_last_allocated_num_blocks;
+    --m_size;
     m_last_allocated_num_blocks = 0;
 }
 
@@ -275,6 +290,8 @@ inline const std::vector<uint64_t>& BitsetPool::get_segment(size_t segment) cons
     assert(segment < m_segments.size());
     return m_segments[segment];
 }
+
+inline size_t BitsetPool::size() const { return m_size; }
 }
 
 #endif
