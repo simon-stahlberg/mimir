@@ -1,5 +1,5 @@
-#ifndef INCLUDE_MIMIR_ALGORITHMS_GENERATOR
-#define INCLUDE_MIMIR_ALGORITHMS_GENERATOR
+#ifndef MIMIR_INCLUDE_ALGORITHMS_GENERATOR
+#define MIMIR_INCLUDE_ALGORITHMS_GENERATOR
 ///////////////////////////////////////////////////////////////////////////////
 // Reference implementation of std::generator proposal P2168.
 //
@@ -52,7 +52,7 @@ public:
     template<typename... _Args>
     _T& construct(_Args&&... __args) noexcept(std::is_nothrow_constructible_v<_T, _Args...>)
     {
-        return *::new (static_cast<void*>(std::addressof(__value_))) _T((_Args &&) __args...);
+        return *::new (static_cast<void*>(std::addressof(__value_))) _T((_Args&&) __args...);
     }
 
     void destruct() noexcept(std::is_nothrow_destructible_v<_T>) { __value_.~_T(); }
@@ -121,9 +121,13 @@ namespace ranges
 template<typename _Rng, typename _Allocator = use_allocator_arg>
 struct elements_of
 {
-    explicit constexpr elements_of(_Rng&& __rng) noexcept requires std::is_default_constructible_v<_Allocator> : __range(static_cast<_Rng&&>(__rng)) {}
+    explicit constexpr elements_of(_Rng&& __rng) noexcept
+        requires std::is_default_constructible_v<_Allocator>
+        : __range(static_cast<_Rng&&>(__rng))
+    {
+    }
 
-    constexpr elements_of(_Rng&& __rng, _Allocator&& __alloc) noexcept : __range((_Rng &&) __rng), __alloc((_Allocator &&) __alloc) {}
+    constexpr elements_of(_Rng&& __rng, _Allocator&& __alloc) noexcept : __range((_Rng&&) __rng), __alloc((_Allocator&&) __alloc) {}
 
     constexpr elements_of(elements_of&&) noexcept = default;
 
@@ -198,7 +202,8 @@ public:
 };
 
 template<typename _Alloc>
-requires(!__allocator_needs_to_be_stored<_Alloc>) class __promise_base_alloc<_Alloc>
+    requires(!__allocator_needs_to_be_stored<_Alloc>)
+class __promise_base_alloc<_Alloc>
 {
 public:
     static void* operator new(std::size_t __size)
@@ -285,15 +290,15 @@ struct __generator_promise_base
 
     std::suspend_always yield_value(_Ref&& __x) noexcept(std::is_nothrow_move_constructible_v<_Ref>)
     {
-        __root_->__value_.construct((_Ref &&) __x);
+        __root_->__value_.construct((_Ref&&) __x);
         return {};
     }
 
     template<typename _T>
-    requires(!std::is_reference_v<_Ref>)
-        && std::is_convertible_v<_T, _Ref> std::suspend_always yield_value(_T&& __x) noexcept(std::is_nothrow_constructible_v<_Ref, _T>)
+        requires(!std::is_reference_v<_Ref>) && std::is_convertible_v<_T, _Ref>
+    std::suspend_always yield_value(_T&& __x) noexcept(std::is_nothrow_constructible_v<_Ref, _T>)
     {
-        __root_->__value_.construct((_T &&) __x);
+        __root_->__value_.construct((_T&&) __x);
         return {};
     }
 
@@ -306,7 +311,7 @@ struct __generator_promise_base
             // Taking ownership of the generator ensures frame are destroyed
             // in the reverse order of their execution.
             :
-            __gen_((_Gen &&) __g)
+            __gen_((_Gen&&) __g)
         {
         }
 

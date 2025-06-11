@@ -97,7 +97,7 @@ public:
 
     bool numeric_constraints_hold(const formalism::GroundNumericConstraintList& numeric_constraints, const FlatDoubleList& static_numeric_variables) const;
 
-    template<formalism::IsFluentOrDerivedTag P, std::ranges::forward_range Range1, std::ranges::forward_range Range2>
+    template<formalism::IsFluentOrDerivedTag P, std::ranges::input_range Range1, std::ranges::input_range Range2>
         requires IsRangeOver<Range1, Index> && IsRangeOver<Range2, Index>
     bool literals_hold(const Range1& positive_atoms, const Range2& negative_atoms) const;
 
@@ -146,7 +146,7 @@ const valla::RootSlot& StateImpl::get_atoms_slot() const
     }
 }
 
-template<formalism::IsFluentOrDerivedTag P, std::ranges::forward_range Range1, std::ranges::forward_range Range2>
+template<formalism::IsFluentOrDerivedTag P, std::ranges::input_range Range1, std::ranges::input_range Range2>
     requires IsRangeOver<Range1, Index> && IsRangeOver<Range2, Index>
 bool StateImpl::literals_hold(const Range1& positive_atoms, const Range2& negative_atoms) const
 {

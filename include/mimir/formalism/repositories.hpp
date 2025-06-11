@@ -362,31 +362,31 @@ public:
     // GroundNumericConstraint
     GroundNumericConstraint get_ground_numeric_constraint(size_t numeric_constraint_index) const;
 
-    template<std::ranges::forward_range Iterable>
+    template<std::ranges::input_range Iterable>
     void get_ground_numeric_constraints_from_indices(const Iterable& numeric_constraint_indices,
                                                      GroundNumericConstraintList& out_ground_numeric_constraints) const;
 
-    template<std::ranges::forward_range Iterable>
+    template<std::ranges::input_range Iterable>
     GroundNumericConstraintList get_ground_numeric_constraints_from_indices(const Iterable& numeric_constraint_indices) const;
 
     // GroundNumericEffect
     template<IsFluentOrAuxiliaryTag F>
     GroundNumericEffect<F> get_ground_numeric_effect(size_t numeric_effect_index) const;
 
-    template<IsFluentOrAuxiliaryTag F, std::ranges::forward_range Iterable>
+    template<IsFluentOrAuxiliaryTag F, std::ranges::input_range Iterable>
     void get_ground_numeric_effects_from_indices(const Iterable& numeric_effect_indices, GroundNumericEffectList<F>& out_ground_numeric_effect) const;
 
-    template<IsFluentOrAuxiliaryTag F, std::ranges::forward_range Iterable>
+    template<IsFluentOrAuxiliaryTag F, std::ranges::input_range Iterable>
     GroundNumericEffectList<F> get_ground_numeric_effects_from_indices(const Iterable& numeric_effect_indices) const;
 
     // GroundAtom
     template<IsStaticOrFluentOrDerivedTag P>
     GroundAtom<P> get_ground_atom(size_t atom_index) const;
 
-    template<IsStaticOrFluentOrDerivedTag P, std::ranges::forward_range Iterable>
+    template<IsStaticOrFluentOrDerivedTag P, std::ranges::input_range Iterable>
     void get_ground_atoms_from_indices(const Iterable& atom_indices, GroundAtomList<P>& out_ground_atoms) const;
 
-    template<IsStaticOrFluentOrDerivedTag P, std::ranges::forward_range Iterable>
+    template<IsStaticOrFluentOrDerivedTag P, std::ranges::input_range Iterable>
     GroundAtomList<P> get_ground_atoms_from_indices(const Iterable& atom_indices) const;
 
     template<IsStaticOrFluentOrDerivedTag P>
@@ -408,10 +408,10 @@ public:
     // Object
     Object get_object(size_t object_index) const;
 
-    template<std::ranges::forward_range Iterable>
+    template<std::ranges::input_range Iterable>
     void get_objects_from_indices(const Iterable& object_indices, ObjectList& out_objects) const;
 
-    template<std::ranges::forward_range Iterable>
+    template<std::ranges::input_range Iterable>
     ObjectList get_objects_from_indices(const Iterable& object_indices) const;
 
     // Action
@@ -426,7 +426,7 @@ public:
  */
 
 // GroundNumericConstraint
-template<std::ranges::forward_range Iterable>
+template<std::ranges::input_range Iterable>
 void Repositories::get_ground_numeric_constraints_from_indices(const Iterable& numeric_constraint_indices,
                                                                GroundNumericConstraintList& out_ground_numeric_constraints) const
 {
@@ -438,7 +438,7 @@ void Repositories::get_ground_numeric_constraints_from_indices(const Iterable& n
     }
 }
 
-template<std::ranges::forward_range Iterable>
+template<std::ranges::input_range Iterable>
 GroundNumericConstraintList Repositories::get_ground_numeric_constraints_from_indices(const Iterable& numeric_constraint_indices) const
 {
     auto result = GroundNumericConstraintList {};
@@ -447,7 +447,7 @@ GroundNumericConstraintList Repositories::get_ground_numeric_constraints_from_in
 }
 
 // GroundNumericEffect
-template<IsFluentOrAuxiliaryTag F, std::ranges::forward_range Iterable>
+template<IsFluentOrAuxiliaryTag F, std::ranges::input_range Iterable>
 void Repositories::get_ground_numeric_effects_from_indices(const Iterable& numeric_effect_indices, GroundNumericEffectList<F>& out_ground_numeric_effect) const
 {
     out_ground_numeric_effect.clear();
@@ -458,7 +458,7 @@ void Repositories::get_ground_numeric_effects_from_indices(const Iterable& numer
     }
 }
 
-template<IsFluentOrAuxiliaryTag F, std::ranges::forward_range Iterable>
+template<IsFluentOrAuxiliaryTag F, std::ranges::input_range Iterable>
 GroundNumericEffectList<F> Repositories::get_ground_numeric_effects_from_indices(const Iterable& numeric_effect_indices) const
 {
     auto result = GroundNumericEffectList<F> {};
@@ -467,7 +467,7 @@ GroundNumericEffectList<F> Repositories::get_ground_numeric_effects_from_indices
 }
 
 // Atom
-template<IsStaticOrFluentOrDerivedTag P, std::ranges::forward_range Iterable>
+template<IsStaticOrFluentOrDerivedTag P, std::ranges::input_range Iterable>
 void Repositories::get_ground_atoms_from_indices(const Iterable& atom_indices, GroundAtomList<P>& out_ground_atoms) const
 {
     out_ground_atoms.clear();
@@ -478,7 +478,7 @@ void Repositories::get_ground_atoms_from_indices(const Iterable& atom_indices, G
     }
 }
 
-template<IsStaticOrFluentOrDerivedTag P, std::ranges::forward_range Iterable>
+template<IsStaticOrFluentOrDerivedTag P, std::ranges::input_range Iterable>
 GroundAtomList<P> Repositories::get_ground_atoms_from_indices(const Iterable& atom_indices) const
 {
     auto result = GroundAtomList<P> {};
@@ -503,7 +503,7 @@ auto Repositories::get_ground_atoms() const
     return std::ranges::subrange(factory.begin(), factory.end());
 }
 
-template<std::ranges::forward_range Iterable>
+template<std::ranges::input_range Iterable>
 void Repositories::get_objects_from_indices(const Iterable& object_indices, ObjectList& out_objects) const
 {
     out_objects.clear();
@@ -513,7 +513,7 @@ void Repositories::get_objects_from_indices(const Iterable& object_indices, Obje
     }
 }
 
-template<std::ranges::forward_range Iterable>
+template<std::ranges::input_range Iterable>
 ObjectList Repositories::get_objects_from_indices(const Iterable& object_indices) const
 {
     auto objects = ObjectList {};

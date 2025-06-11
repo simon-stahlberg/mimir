@@ -86,9 +86,7 @@ public:
     {
         resize_to_fit();
 
-        auto& element = m_index_to_slot[m_segment][m_offset];
-
-        element = std::move(slot);
+        const auto& element = m_index_to_slot[m_segment][m_offset] = slot;
 
         const auto result = m_slot_to_index.emplace(&element, m_size);
 
@@ -137,7 +135,7 @@ public:
     }
 
 private:
-    absl::flat_hash_map<RootSlot*, Index, DerefRootSlotHash, DerefRootSlotEqualTo> m_slot_to_index;
+    absl::flat_hash_map<const RootSlot*, Index, DerefRootSlotHash, DerefRootSlotEqualTo> m_slot_to_index;
     std::vector<std::vector<RootSlot>> m_index_to_slot;
     size_t m_segment;
     size_t m_offset;

@@ -20,7 +20,7 @@
 
 #include "valla/bitset_pool.hpp"
 #include "valla/declarations.hpp"
-#include "valla/details/memory_pool.hpp"
+#include "valla/details/shared_memory_pool.hpp"
 #include "valla/indexed_hash_set.hpp"
 #include "valla/root_slot.hpp"
 
@@ -41,7 +41,7 @@ namespace valla::canonical_delta
 /// @param size is the number of elements in the range from it to end.
 /// @param table is the table to uniquely insert the slots.
 /// @return the index of the slot at the root.
-template<std::forward_iterator Iterator>
+template<std::input_iterator Iterator>
     requires std::same_as<std::iter_value_t<Iterator>, Index>
 inline Index insert_recursively(Iterator it, Iterator end, size_t size, Bitset view, size_t bit, IndexedHashSet& table, Index& prev)
 {
@@ -92,7 +92,7 @@ inline Index insert_recursively(Iterator it, Iterator end, size_t size, Bitset v
 /// @param tree_table is the tree table whose nodes encode the tree structure without size information.
 /// @param root_table is the root_table whose nodes encode the root tree index + the size of the state that defines the tree structure.
 /// @return A pair (it, bool) where it points to the entry in the root table and bool is true if and only if the state was newly inserted.
-template<std::ranges::forward_range Range>
+template<std::ranges::input_range Range>
     requires std::same_as<std::ranges::range_value_t<Range>, Index>
 auto insert(const Range& state, IndexedHashSet& tree_table, RootIndexedHashSet& root_table, BitsetPool& pool, BitsetRepository& repo)
 {
@@ -204,7 +204,7 @@ struct Entry
     Index m_bit;
 };
 
-static thread_local MemoryPool<std::vector<Entry>> s_stack_pool = MemoryPool<std::vector<Entry>> {};
+static thread_local SharedMemoryPool<std::vector<Entry>> s_stack_pool = SharedMemoryPool<std::vector<Entry>> {};
 
 inline void copy(const std::vector<Entry>& src, std::vector<Entry>& dst)
 {
@@ -212,16 +212,29 @@ inline void copy(const std::vector<Entry>& src, std::vector<Entry>& dst)
     dst.insert(dst.end(), src.begin(), src.end());
 }
 
+/// @brief
+/// Note: This iterator intentionally omits post-increment (operator++(int))
+/// for efficiency reasons, and therefore does not satisfy std::input_iterator.
 class const_iterator
 {
 private:
     const IndexedHashSet* m_tree_table;
     const Bitset* m_ordering;
-    MemoryPoolUniquePtr<std::vector<Entry>> m_stack;
+    SharedMemoryPoolPtr<std::vector<Entry>> m_stack;
 
     Index m_value;
 
     static constexpr const Index END_POS = Index(-1);
+
+    const_iterator(const IndexedHashSet* tree_table, const Bitset* ordering, SharedMemoryPoolPtr<std::vector<Entry>> stack, Index value) :
+        m_tree_table(tree_table),
+        m_ordering(ordering),
+        m_stack(stack),
+        m_value(value)
+    {
+    }
+
+    const_iterator clone() const { return const_iterator(m_tree_table, m_ordering, m_stack.clone(), m_value); }
 
     void advance()
     {
@@ -257,9 +270,9 @@ public:
     using difference_type = std::ptrdiff_t;
     using value_type = Index;
     using pointer = value_type*;
-    using reference = value_type&;
-    using iterator_category = std::forward_iterator_tag;
-    using iterator_concept = std::forward_iterator_tag;
+    using reference = value_type;
+    using iterator_category = std::input_iterator_tag;
+    using iterator_concept = std::input_iterator_tag;
 
     const_iterator() : m_tree_table(nullptr), m_stack(s_stack_pool.get_or_allocate()), m_value(END_POS) {}
     const_iterator(const IndexedHashSet* tree_table, const RootSlot* root, bool begin) :
@@ -291,13 +304,15 @@ public:
     }
     const_iterator operator++(int)
     {
-        auto it = *this;
-        ++it;
-        return it;
+        auto tmp = clone();
+        ++(*this);
+        return tmp;
     }
     bool operator==(const const_iterator& other) const { return m_value == other.m_value; }
     bool operator!=(const const_iterator& other) const { return !(*this == other); }
 };
+
+static_assert(std::input_iterator<const_iterator>);
 
 inline const_iterator begin(const RootSlot root, const IndexedHashSet& tree_table) { return const_iterator(&tree_table, &root, true); }
 

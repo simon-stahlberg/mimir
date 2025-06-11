@@ -114,12 +114,12 @@ protected:
     /* Implement ITranslator interface */
     friend class ITranslator<RecursiveCachedBaseTranslator<Derived_>>;
 
-    template<std::ranges::forward_range Range>
+    template<std::ranges::input_range Range>
     void prepare_level_1(const Range& range)
     {
         self().prepare_level_2(range);
     }
-    template<std::ranges::forward_range Range>
+    template<std::ranges::input_range Range>
     void prepare_level_2(const Range& range)
     {
         std::ranges::for_each(range, [this](auto&& arg) { this->prepare_level_0(arg); });

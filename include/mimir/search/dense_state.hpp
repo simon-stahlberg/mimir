@@ -50,7 +50,7 @@ struct DenseState
     template<formalism::IsFluentOrDerivedTag P>
     bool literals_hold(const formalism::GroundLiteralList<P>& literals) const;
 
-    template<formalism::IsFluentOrDerivedTag P, std::ranges::forward_range Range1, std::ranges::forward_range Range2>
+    template<formalism::IsFluentOrDerivedTag P, std::ranges::input_range Range1, std::ranges::input_range Range2>
         requires IsRangeOver<Range1, Index> && IsRangeOver<Range2, Index>
     bool literals_hold(const Range1& positive_atoms, const Range2& negative_atoms) const
     {

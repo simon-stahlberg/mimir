@@ -73,12 +73,12 @@ public:
 
     /// @brief Return true if and only if the `GeneralPolicyImpl` solves all `graphs::ProblemVertex` identified by the given `VertexIndices` in the
     /// `graphs::ProblemGraph` of the given `datasets::StateSpace`.
-    /// @tparam VertexIndices is the type of the `std::ranges::forward_range` over `graphs::VertexIndex`.
+    /// @tparam VertexIndices is the type of the `std::ranges::input_range` over `graphs::VertexIndex`.
     /// @param state_space is the `datasets::StateSpace`.
     /// @param vertices are the vertex indices, each identifying a `graphs::ProblemVertex.
     /// @param denotation_repositories is the repository that stores feature denotations to avoid expensive recomputations.
     /// @return is the `SolvabilityStatus`.
-    template<std::ranges::forward_range VertexIndices>
+    template<std::ranges::input_range VertexIndices>
         requires std::same_as<std::ranges::range_value_t<VertexIndices>, graphs::VertexIndex>
     SolvabilityStatus solves(const datasets::StateSpace& state_space, const VertexIndices& vertices, dl::DenotationRepositories& denotation_repositories) const;
 
@@ -105,12 +105,12 @@ public:
 
     /// @brief Return true if and only if the `GeneralPolicyImpl` solves all `graphs::ClassVertex` identified by the given `VertexIndices` in the
     /// `graphs::ClassGraph` of the given `datasets::GeneralizedStateSpace`.
-    /// @tparam VertexIndices is the type of the `std::ranges::forward_range` over `graphs::VertexIndex`.
+    /// @tparam VertexIndices is the type of the `std::ranges::input_range` over `graphs::VertexIndex`.
     /// @param generalized_state_space is the `datasets::GeneralizedStateSpace`.
     /// @param vertices are the vertex indices, each identifying a `graphs::ClassVertex.
     /// @param denotation_repositories is the repository that stores feature denotations to avoid expensive recomputations.
     /// @return is the `SolvabilityStatus`.
-    template<std::ranges::forward_range VertexIndices>
+    template<std::ranges::input_range VertexIndices>
         requires std::same_as<std::ranges::range_value_t<VertexIndices>, graphs::VertexIndex>
     SolvabilityStatus solves(const datasets::GeneralizedStateSpace& generalized_state_space,
                              const VertexIndices& vertices,

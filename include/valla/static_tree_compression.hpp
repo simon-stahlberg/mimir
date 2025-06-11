@@ -96,7 +96,7 @@ inline auto emplace_recursively(Iterator it, Iterator end, size_t size, IndexedH
 /// @param tree_table is the tree table whose nodes encode the tree structure without size information.
 /// @param root_table is the root_table whose nodes encode the root tree index ONLY.
 /// @return A pair (it, bool) where it points to the entry in the root table and bool is true if and only if the state was newly inserted.
-template<std::ranges::forward_range Range>
+template<std::ranges::input_range Range>
     requires std::same_as<std::ranges::range_value_t<Range>, Index>
 auto insert(const Range& state, IndexedHashSet& tree_table, RootIndices& root_table)
 {
