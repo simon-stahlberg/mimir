@@ -56,37 +56,21 @@ static_assert(sizeof(Bitset*) == 8);
 
 struct BitsetHash
 {
-private:
-    size_t m_num_blocks;
-
-public:
     size_t operator()(const Bitset& el) const;
 };
 
 struct BitsetEqualTo
 {
-private:
-    size_t m_common_num_blocks;
-
-public:
     bool operator()(const Bitset& lhs, const Bitset& rhs) const;
 };
 
 struct DerefBitsetHash
 {
-private:
-    size_t m_num_blocks;
-
-public:
     size_t operator()(const Bitset* el) const;
 };
 
 struct DerefBitsetEqualTo
 {
-private:
-    size_t m_common_num_blocks;
-
-public:
     bool operator()(const Bitset* lhs, const Bitset* rhs) const;
 };
 
@@ -155,6 +139,8 @@ inline Bitset::Bitset(uint64_t* blocks, uint32_t num_bits, Index index) : m_bloc
 
 inline bool Bitset::get(size_t bit) const
 {
+    assert(bit < get_num_bits());
+
     size_t block_index = bit / 64;
     size_t bit_index = bit % 64;
 
@@ -163,6 +149,8 @@ inline bool Bitset::get(size_t bit) const
 
 inline void Bitset::set(size_t bit)
 {
+    assert(bit < get_num_bits());
+
     size_t block_index = bit / 64;
     size_t bit_index = bit % 64;
 
@@ -199,7 +187,7 @@ inline bool BitsetEqualTo::operator()(const Bitset& lhs, const Bitset& rhs) cons
 {
     if (lhs.get_num_bits() != rhs.get_num_bits())
         return false;
-    return std::equal(lhs.get_blocks(), lhs.get_blocks() + lhs.get_num_blocks(), rhs.get_blocks(), rhs.get_blocks() + rhs.get_num_blocks());
+    return std::equal(lhs.get_blocks(), lhs.get_blocks() + lhs.get_num_blocks(), rhs.get_blocks());
 }
 
 /**
@@ -256,6 +244,8 @@ inline Bitset BitsetPool::allocate(uint32_t num_bits)
 
 inline void BitsetPool::pop_allocation()
 {
+    assert(m_offset >= m_last_allocated_num_blocks);
+
     auto& segment = m_segments.back();
     std::fill(segment.begin() + m_offset - m_last_allocated_num_blocks, segment.begin() + m_offset, uint64_t(0));
     m_offset -= m_last_allocated_num_blocks;
@@ -299,9 +289,7 @@ inline auto BitsetRepository::insert(Bitset bitset)
 {
     resize_to_fit();
 
-    auto& element = m_segments[m_segment][m_offset];
-
-    element = std::move(bitset);
+    const auto& element = m_segments[m_segment][m_offset] = bitset;
 
     const auto result = m_uniqueness.emplace(&element);
 

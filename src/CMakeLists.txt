@@ -20,6 +20,9 @@ foreach(subdir ${SUBDIRECTORIES})
     file(GLOB_RECURSE TMP_PUBLIC_HEADER_FILES "../include/cista/*.h" "../include/cista/**/*.h")
     list(APPEND MIMIR_PUBLIC_HEADER_FILES ${TMP_PUBLIC_HEADER_FILES})
 
+    file(GLOB_RECURSE TMP_PUBLIC_HEADER_FILES "../include/valla/*.hpp" "../include/valla/**/*.hpp")
+    list(APPEND MIMIR_PUBLIC_HEADER_FILES ${TMP_PUBLIC_HEADER_FILES})
+
     file(GLOB_RECURSE TMP_PUBLIC_HEADER_FILES "../include/nanobind/*.h" "../include/nanobind/**/*.h")
     list(APPEND MIMIR_PUBLIC_HEADER_FILES ${TMP_PUBLIC_HEADER_FILES})
 endforeach()

@@ -76,7 +76,7 @@ bool nullary_conditions_hold(ConjunctiveCondition conjunctive_condition, const P
  * GroundConjunctiveCondition
  */
 
-template<IsStaticOrFluentOrDerivedTag P, std::ranges::forward_range Range>
+template<IsStaticOrFluentOrDerivedTag P, std::ranges::input_range Range>
     requires IsRangeOver<Range, Index>
 bool is_applicable(GroundConjunctiveCondition conjunctive_condition, const Range& atoms)
 {

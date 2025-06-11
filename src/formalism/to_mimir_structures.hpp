@@ -60,7 +60,7 @@ private:
     std::unordered_set<std::string> m_fexpr_functions;            ///< Functions that appear in a lifted function expression, i.e., numeric effect or constraint
     std::unordered_set<std::string> m_effect_function_skeletons;  ///< Functions that appear in an effect
 
-    template<std::ranges::forward_range Range>
+    template<std::ranges::input_range Range>
     void prepare(const Range& range)
     {
         std::for_each(std::begin(range), std::end(range), [&](auto&& arg) { this->prepare(arg); });

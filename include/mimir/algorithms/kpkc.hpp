@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_ALGORITHMS_KPKC_HPP_
-#define MIMIR_ALGORITHMS_KPKC_HPP_
+#ifndef MIMIR_INCLUDE_ALGORITHMS_KPKC_HPP_
+#define MIMIR_INCLUDE_ALGORITHMS_KPKC_HPP_
 
 #include "mimir/algorithms/generator.hpp"
 

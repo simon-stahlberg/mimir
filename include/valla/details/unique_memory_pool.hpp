@@ -15,33 +15,35 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_ALGORITHMS_MEMORY_POOL_HPP_
-#define MIMIR_ALGORITHMS_MEMORY_POOL_HPP_
+#ifndef VALLA_INCLUDE_DETAILS_UNIQUE_MEMORY_POOL_HPP_
+#define VALLA_INCLUDE_DETAILS_UNIQUE_MEMORY_POOL_HPP_
 
 #include <cassert>
+#include <concepts>
 #include <memory>
 #include <stack>
 #include <vector>
 
-namespace mimir
+namespace valla
 {
 template<typename T>
-class MemoryPool;
+    requires std::default_initializable<T>
+class UniqueMemoryPool;
 
 template<typename T>
-class MemoryPoolUniquePtr
+    requires std::default_initializable<T>
+class UniqueMemoryPoolPtr
 {
 private:
-    MemoryPool<T>* m_pool;
+    UniqueMemoryPool<T>* m_pool;
     T* m_object;
 
 private:
     void deallocate()
     {
-        if (m_pool && m_object)
-        {
-            m_pool->free(m_object);
-        }
+        assert(m_pool && m_object);
+
+        m_pool->free(m_object);
         m_pool = nullptr;
         m_object = nullptr;
     }
@@ -55,46 +57,58 @@ private:
     }
 
 public:
-    MemoryPoolUniquePtr(MemoryPool<T>* pool, T* object) : m_pool(pool), m_object(object) { assert(pool && object); }
+    UniqueMemoryPoolPtr() : UniqueMemoryPoolPtr(nullptr, nullptr) {}
+
+    UniqueMemoryPoolPtr(UniqueMemoryPool<T>* pool, T* object) : m_pool(pool), m_object(object) {}
+
     /// @brief Copy other into this through an additional allocation from the pool.
     /// Requires a user define copy operation of the data.
     /// @param other
-    MemoryPoolUniquePtr(const MemoryPoolUniquePtr& other) : m_pool(nullptr), m_object(nullptr)
+    UniqueMemoryPoolPtr(const UniqueMemoryPoolPtr& other) : m_pool(nullptr), m_object(nullptr)
     {
         if (other.m_pool && other.m_object)
         {
-            assert(other.m_pool);
             *this = other.m_pool->get_or_allocate();
             copy(*other.m_object, *m_object);
         }
     }
+
     /// @brief Assign other into this through an additional allocation from the pool.
     /// Requires a user define copy operation of the data.
     /// @param other
     /// @return
-    MemoryPoolUniquePtr& operator=(const MemoryPoolUniquePtr& other)
+    UniqueMemoryPoolPtr& operator=(const UniqueMemoryPoolPtr& other)
     {
         if (this != &other)
         {
             if (other.m_pool && other.m_object)
             {
                 m_pool = other.m_pool;
+                if (!m_object)
+                {
+                    auto pointer = m_pool->get_or_allocate();
+                    m_object = pointer.release();
+                }
                 copy(*other.m_object, *m_object);
             }
         }
         return *this;
     }
+
     // Movable
-    MemoryPoolUniquePtr(MemoryPoolUniquePtr&& other) noexcept : m_pool(other.m_pool), m_object(other.m_object)
+    UniqueMemoryPoolPtr(UniqueMemoryPoolPtr&& other) noexcept : m_pool(other.m_pool), m_object(other.m_object)
     {
         other.m_pool = nullptr;
         other.m_object = nullptr;
     }
-    MemoryPoolUniquePtr& operator=(MemoryPoolUniquePtr&& other) noexcept
+
+    UniqueMemoryPoolPtr& operator=(UniqueMemoryPoolPtr&& other) noexcept
     {
         if (this != &other)
         {
-            deallocate();
+            if (m_pool && m_object)
+                deallocate();
+
             m_pool = other.m_pool;
             m_object = other.m_object;
             other.m_pool = nullptr;
@@ -103,7 +117,11 @@ public:
         return *this;
     }
 
-    ~MemoryPoolUniquePtr() { deallocate(); }
+    ~UniqueMemoryPoolPtr()
+    {
+        if (m_pool && m_object)
+            deallocate();
+    }
 
     T& operator*() const
     {
@@ -121,34 +139,32 @@ public:
 };
 
 template<typename T>
-class MemoryPool
+    requires std::default_initializable<T>
+class UniqueMemoryPool
 {
 private:
-    // TODO: maybe we want a segmented vector here in the future
-    // to store several objects persistently in 1 segment.
     std::vector<std::unique_ptr<T>> m_storage;
     std::stack<T*> m_stack;
 
     void allocate()
     {
-        m_storage.push_back(std::make_unique<T>());
+        m_storage.push_back(std::make_unique<T>(T()));
         m_stack.push(m_storage.back().get());
     }
 
     void free(T* element) { m_stack.push(element); }
 
-    template<typename>
-    friend class MemoryPoolUniquePtr;
+    friend class UniqueMemoryPoolPtr<T>;
 
 public:
     // Non-copyable to prevent dangling memory pool pointers.
-    MemoryPool() = default;
-    MemoryPool(const MemoryPool& other) = delete;
-    MemoryPool& operator=(const MemoryPool& other) = delete;
-    MemoryPool(MemoryPool&& other) = delete;
-    MemoryPool& operator=(MemoryPool&& other) = delete;
+    UniqueMemoryPool() = default;
+    UniqueMemoryPool(const UniqueMemoryPool& other) = delete;
+    UniqueMemoryPool& operator=(const UniqueMemoryPool& other) = delete;
+    UniqueMemoryPool(UniqueMemoryPool&& other) = delete;
+    UniqueMemoryPool& operator=(UniqueMemoryPool&& other) = delete;
 
-    [[nodiscard]] MemoryPoolUniquePtr<T> get_or_allocate()
+    [[nodiscard]] UniqueMemoryPoolPtr<T> get_or_allocate()
     {
         if (m_stack.empty())
         {
@@ -156,7 +172,7 @@ public:
         }
         T* element = m_stack.top();
         m_stack.pop();
-        return MemoryPoolUniquePtr<T>(this, element);
+        return UniqueMemoryPoolPtr<T>(this, element);
     }
 
     [[nodiscard]] size_t get_size() const { return m_storage.size(); }

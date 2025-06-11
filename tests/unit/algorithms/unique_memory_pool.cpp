@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/algorithms/memory_pool.hpp"
+#include "mimir/algorithms/unique_memory_pool.hpp"
 
 #include <gtest/gtest.h>
 #include <string>
@@ -23,9 +23,9 @@
 namespace mimir::tests
 {
 
-TEST(MimirTests, AlgorithmsMemoryPoolTest)
+TEST(MimirTests, AlgorithmsUniqueMemoryPoolTest)
 {
-    MemoryPool<std::vector<int>> pool;
+    UniqueMemoryPool<std::vector<int>> pool;
     EXPECT_EQ(pool.get_size(), 0);
     auto object_0 = pool.get_or_allocate();
     EXPECT_EQ(pool.get_size(), 1);

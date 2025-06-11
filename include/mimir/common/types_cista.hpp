@@ -139,7 +139,7 @@ std::ostream& operator<<(std::ostream& os, const FlatExternalPtr<T>& ptr)
 /// @param bitset
 /// @param range
 /// @return
-template<std::ranges::forward_range Range>
+template<std::ranges::input_range Range>
     requires IsRangeOver<Range, Index>
 inline bool are_disjoint(const FlatBitset& bitset, const Range& range)
 {
@@ -153,7 +153,7 @@ inline bool are_disjoint(const FlatBitset& bitset, const Range& range)
     return true;
 }
 
-template<std::ranges::forward_range Range1, std::ranges::forward_range Range2>
+template<std::ranges::input_range Range1, std::ranges::input_range Range2>
     requires IsRangeOver<Range1, Index> && IsRangeOver<Range2, Index>
 inline bool are_disjoint(const Range1& lhs, const Range2& rhs)
 {
@@ -190,7 +190,7 @@ inline bool are_disjoint(const Range1& lhs, const Range2& rhs)
 /// @param bitset
 /// @param range
 /// @return
-template<std::ranges::forward_range Range>
+template<std::ranges::input_range Range>
     requires IsRangeOver<Range, Index>
 inline bool is_supseteq(const FlatBitset& bitset, const Range& range)
 {
@@ -209,7 +209,7 @@ inline bool is_supseteq(const FlatBitset& bitset, const Range& range)
 /// @param lhs
 /// @param rhs
 /// @return
-template<std::ranges::forward_range Range1, std::ranges::forward_range Range2>
+template<std::ranges::input_range Range1, std::ranges::input_range Range2>
     requires IsRangeOver<Range1, Index> && IsRangeOver<Range2, Index>
 inline bool is_supseteq(const Range1& lhs, const Range2& rhs)
 {
@@ -223,7 +223,7 @@ inline bool is_supseteq(const Range1& lhs, const Range2& rhs)
 /// @param lhs
 /// @param rhs
 /// @return
-template<std::ranges::forward_range Range1, std::ranges::forward_range Range2>
+template<std::ranges::input_range Range1, std::ranges::input_range Range2>
     requires IsRangeOver<Range1, Index> && IsRangeOver<Range2, Index>
 inline size_t count_set_difference(const Range1& lhs, const Range2& rhs)
 {
@@ -264,7 +264,7 @@ inline size_t count_set_difference(const Range1& lhs, const Range2& rhs)
 /// @param lhs
 /// @param rhs
 /// @return
-template<std::ranges::forward_range Range1, std::ranges::forward_range Range2>
+template<std::ranges::input_range Range1, std::ranges::input_range Range2>
     requires IsRangeOver<Range1, Index> && IsRangeOver<Range2, Index>
 inline size_t count_set_intersection(const Range1& lhs, const Range2& rhs)
 {
@@ -299,7 +299,7 @@ inline size_t count_set_intersection(const Range1& lhs, const Range2& rhs)
     return result;
 }
 
-template<std::ranges::forward_range Range>
+template<std::ranges::input_range Range>
     requires IsConvertibleRangeOver<Range, Index>
 void insert_into_bitset(const Range& range, FlatBitset& ref_bitset)
 {
@@ -309,7 +309,7 @@ void insert_into_bitset(const Range& range, FlatBitset& ref_bitset)
     }
 }
 
-template<std::ranges::forward_range Range>
+template<std::ranges::input_range Range>
     requires IsConvertibleRangeOver<Range, Index>
 void insert_into_vector(const Range& range, FlatIndexList& ref_vec)
 {
