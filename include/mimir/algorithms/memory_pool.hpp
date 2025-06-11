@@ -36,6 +36,7 @@ private:
     T* m_object;
 
 public:
+    MemoryPoolPointer() : m_pool(nullptr), m_object(nullptr) {}
     MemoryPoolPointer(MemoryPool<T>* pool, T* object) : m_pool(pool), m_object(object) { assert(pool && object); }
 
     ~MemoryPoolPointer()

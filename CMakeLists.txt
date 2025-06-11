@@ -54,7 +54,8 @@ else()
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flto -ftime-trace")  #  -fcoroutines-ts seems outdated
     endif()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
-    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -DNDEBUG -g -fno-inline -fno-lto")
+    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -DNDEBUG")
+    # set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -DNDEBUG -g -fno-inline -fno-lto")  this is slow but gives better feedback in valgrind
     set(CMAKE_CXX_FLAGS_PROFILING "-O3 -Wall -pg")
     set(CMAKE_CXX_FLAGS_DEBUG "-O0 -Wall -g3 -ggdb")
 endif()
