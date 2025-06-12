@@ -85,10 +85,6 @@ public:
 
     void pop_allocation();
 
-    std::vector<uint64_t>& get_segment(size_t segment);
-
-    const std::vector<uint64_t>& get_segment(size_t segment) const;
-
     size_t size() const;
 };
 
@@ -183,14 +179,12 @@ inline void BitsetPool::resize_to_fit(size_t num_blocks)
         const auto new_segment_size = std::max(m_segments.back().size() * 2, num_blocks);
 
         m_segments.push_back(std::vector<uint64_t>(new_segment_size, uint64_t(0)));
-        ++m_segment;
         m_offset = 0;
     }
 }
 
 inline BitsetPool::BitsetPool() :
     m_segments(1, std::vector<uint64_t>(INITIAL_SEGMENT_SIZE, uint64_t(0))),
-    m_segment(0),
     m_offset(0),
     m_size(0),
     m_last_allocated_num_blocks(0)
@@ -221,18 +215,6 @@ inline void BitsetPool::pop_allocation()
     m_last_allocated_num_blocks = 0;
 }
 
-inline std::vector<uint64_t>& BitsetPool::get_segment(size_t segment)
-{
-    assert(segment < m_segments.size());
-    return m_segments[segment];
-}
-
-inline const std::vector<uint64_t>& BitsetPool::get_segment(size_t segment) const
-{
-    assert(segment < m_segments.size());
-    return m_segments[segment];
-}
-
 inline size_t BitsetPool::size() const { return m_size; }
 
 /**
@@ -246,7 +228,6 @@ inline auto BitsetRepository::insert(Bitset bitset) { return m_uniqueness.emplac
 inline BitsetRepository::BitsetRepository(BitsetPool& pool) : m_uniqueness(), m_empty_bitset(*insert(pool.allocate(0)).first) {}
 
 inline size_t BitsetRepository::size() const { return m_uniqueness.size(); }
-
 }
 
 #endif

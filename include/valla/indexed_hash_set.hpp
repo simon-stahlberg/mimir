@@ -36,7 +36,7 @@ namespace valla
 class IndexedHashSet
 {
 public:
-    auto insert_slot(Slot slot)
+    auto insert(Slot slot)
     {
         const auto result = m_slot_to_index.emplace(slot, m_slot_to_index.size());
 

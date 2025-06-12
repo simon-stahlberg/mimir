@@ -184,7 +184,6 @@ int main(int argc, char** argv)
 
     std::cout << "Peak memory usage in bytes: " << get_peak_memory_usage_in_bytes() << std::endl;
     std::cout << "Num tree nodes: " << problem->get_tree_table().size() << std::endl;
-    std::cout << "Num root nodes: " << problem->get_state_root_table().size() << std::endl;
     std::cout << "Num ordering bitsets: " << problem->get_bitset_repository().size() << std::endl;
 
     if (result.status == SearchStatus::SOLVED)

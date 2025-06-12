@@ -32,15 +32,15 @@ namespace mimir::search
 /* State */
 
 StateImpl::StateImpl(Index index,
-                     const ProblemImpl* problem,
-                     const valla::RootSlot* fluent_atoms,
-                     const valla::RootSlot* derived_atoms,
+                     const formalism::ProblemImpl* problem,
+                     v::RootSlotType fluent_atoms,
+                     v::RootSlotType derived_atoms,
                      const FlatDoubleList* numeric_variables) :
-    m_index(index),
-    m_problem(std::move(problem)),
     m_fluent_atoms(fluent_atoms),
     m_derived_atoms(derived_atoms),
-    m_numeric_variables(numeric_variables)
+    m_numeric_variables(numeric_variables),
+    m_problem(std::move(problem)),
+    m_index(index)
 {
     assert(std::is_sorted(v::begin(*m_fluent_atoms, m_problem->get_tree_table()), v::end()));
     assert(std::is_sorted(v::begin(*m_derived_atoms, m_problem->get_tree_table()), v::end()));

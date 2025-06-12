@@ -61,7 +61,6 @@ private:
     valla::IndexedHashSet m_tree_table;
     valla::BitsetPool m_bitset_pool;
     valla::BitsetRepository m_bitset_repository;
-    valla::RootIndexedHashSet m_state_root_table;
 
     ProblemImpl(Index index,
                 Repositories repositories,
@@ -140,11 +139,9 @@ public:
     const ToPredicateMap<std::string, DerivedTag>& get_name_to_problem_or_domain_derived_predicate() const;
 
     valla::IndexedHashSet& get_tree_table();
-    valla::RootIndexedHashSet& get_state_root_table();
     valla::BitsetPool& get_bitset_pool();
     valla::BitsetRepository& get_bitset_repository();
     const valla::IndexedHashSet& get_tree_table() const;
-    const valla::RootIndexedHashSet& get_state_root_table() const;
     const valla::BitsetPool& get_bitset_pool() const;
     const valla::BitsetRepository& get_bitset_repository() const;
 
