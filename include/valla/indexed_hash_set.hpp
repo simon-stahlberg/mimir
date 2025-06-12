@@ -20,7 +20,6 @@
 
 #include "valla/declarations.hpp"
 
-#include <absl/container/flat_hash_map.h>
 #include <algorithm>
 #include <cassert>
 #include <cmath>

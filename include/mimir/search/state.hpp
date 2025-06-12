@@ -38,7 +38,7 @@
 
 namespace mimir::search
 {
-namespace v = valla::canonical_delta;
+namespace v = valla::canonical;
 
 /// @brief `StateImpl` encapsulates the fluent and derived atoms, and numeric variables of a planning state.
 class StateImpl

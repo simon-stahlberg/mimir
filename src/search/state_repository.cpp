@@ -38,7 +38,7 @@ using namespace mimir::formalism;
 
 namespace mimir::search
 {
-namespace v = valla::canonical_delta;
+namespace v = valla::canonical;
 
 ContinuousCost compute_state_metric_value(State state, const ProblemImpl& problem)
 {
@@ -113,8 +113,8 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
     m_state_fluent_atoms.clear();
     m_state_derived_atoms.clear();
     /* Sparse state */
-    auto state_fluent_atoms_slot = root_table.get_empty_root();
-    auto state_derived_atoms_slot = root_table.get_empty_root();
+    auto state_fluent_atoms_slot = &root_table.get_empty_root();
+    auto state_derived_atoms_slot = &root_table.get_empty_root();
     const FlatDoubleList* state_numeric_variables = &m_empty_double_list;
 
     /* 2. Construct non-extended state */
@@ -130,7 +130,7 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
         dense_fluent_atoms.set(atom->get_index());
     }
 
-    state_fluent_atoms_slot = v::insert(dense_fluent_atoms, tree_table, root_table, bitset_pool, bitset_repository).first->first;
+    state_fluent_atoms_slot = &v::insert(dense_fluent_atoms, tree_table, root_table, bitset_pool, bitset_repository).first->first;
 
     update_reached_fluent_atoms(dense_fluent_atoms, m_reached_fluent_atoms);
 
@@ -147,7 +147,7 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
             // Evaluate axioms
             m_axiom_evaluator->generate_and_apply_axioms(m_dense_state_builder);
 
-            state_derived_atoms_slot = v::insert(dense_derived_atoms, tree_table, root_table, bitset_pool, bitset_repository).first->first;
+            state_derived_atoms_slot = &v::insert(dense_derived_atoms, tree_table, root_table, bitset_pool, bitset_repository).first->first;
 
             update_reached_derived_atoms(dense_derived_atoms, m_reached_derived_atoms);
             translate_dense_into_sorted_compressed_sparse(dense_derived_atoms, m_state_derived_atoms);
@@ -307,8 +307,8 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
     m_applied_negative_effect_atoms.unset_all();
     m_applied_positive_effect_atoms.unset_all();
     /* Sparse state */
-    auto state_fluent_atoms_slot = root_table.get_empty_root();
-    auto state_derived_atoms_slot = root_table.get_empty_root();
+    auto state_fluent_atoms_slot = &root_table.get_empty_root();
+    auto state_derived_atoms_slot = &root_table.get_empty_root();
     const FlatDoubleList* state_numeric_variables = &m_empty_double_list;
 
     auto successor_state_metric_value = state_metric_value;
@@ -325,7 +325,7 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
                          dense_fluent_numeric_variables,
                          successor_state_metric_value);
 
-    state_fluent_atoms_slot = v::insert(dense_fluent_atoms, tree_table, root_table, bitset_pool, bitset_repository).first->first;
+    state_fluent_atoms_slot = &v::insert(dense_fluent_atoms, tree_table, root_table, bitset_pool, bitset_repository).first->first;
 
     update_reached_fluent_atoms(dense_fluent_atoms, m_reached_fluent_atoms);
     state_numeric_variables = problem.get_or_create_double_list(dense_fluent_numeric_variables);
@@ -344,7 +344,7 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
             dense_derived_atoms.unset_all();  ///< Important: now we must clear the buffer before evaluating for the updated fluent atoms.
             m_axiom_evaluator->generate_and_apply_axioms(dense_state);
 
-            state_derived_atoms_slot = v::insert(dense_derived_atoms, tree_table, root_table, bitset_pool, bitset_repository).first->first;
+            state_derived_atoms_slot = &v::insert(dense_derived_atoms, tree_table, root_table, bitset_pool, bitset_repository).first->first;
 
             update_reached_fluent_atoms(dense_derived_atoms, m_reached_derived_atoms);
         }
