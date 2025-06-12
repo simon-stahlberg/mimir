@@ -20,6 +20,7 @@
 
 #include "valla/bitset_pool.hpp"
 #include "valla/declarations.hpp"
+#include "valla/details/shared_memory_pool.hpp"
 #include "valla/indexed_hash_set.hpp"
 
 #include <algorithm>
@@ -32,6 +33,18 @@
 
 namespace valla::delta
 {
+
+/**
+ * Utility
+ */
+
+using RootSlotType = Slot;
+
+inline Slot get_empty_root_slot() { return Slot(0); }
+
+/**
+ * Insert recursively
+ */
 
 /// @brief Recursively insert the elements from `it` until `end` into the `table`.
 /// @param it points to the first element.
@@ -58,7 +71,7 @@ inline Index insert_recursively(Iterator it, Iterator end, size_t size, IndexedH
         Index left_delta = i1 - prev;
         Index right_delta = i2 - i1;
         prev = i2;
-        return table.insert_slot(make_slot(left_delta, right_delta)).first->second;
+        return table.insert(make_slot(left_delta, right_delta)).first->second;
     }
 
     /* Divide */
@@ -69,7 +82,7 @@ inline Index insert_recursively(Iterator it, Iterator end, size_t size, IndexedH
     const auto i1 = insert_recursively(it, mid_it, mid, table, prev);
     const auto i2 = insert_recursively(mid_it, end, size - mid, table, prev);
 
-    return table.insert_slot(make_slot(i1, i2)).first->second;
+    return table.insert(make_slot(i1, i2)).first->second;
 }
 
 /// @brief Inserts the elements from the given `state` into the `tree_table` and the `root_table`.
@@ -79,19 +92,23 @@ inline Index insert_recursively(Iterator it, Iterator end, size_t size, IndexedH
 /// @return A pair (it, bool) where it points to the entry in the root table and bool is true if and only if the state was newly inserted.
 template<std::ranges::input_range Range>
     requires std::same_as<std::ranges::range_value_t<Range>, Index>
-auto insert(const Range& state, IndexedHashSet& tree_table, IndexedHashSet& root_table)
+auto insert(const Range& state, IndexedHashSet& tree_table)
 {
     assert(std::is_sorted(state.begin(), state.end()));
 
     // Note: O(1) for random access iterators, and O(N) otherwise by repeatedly calling operator++.
     const auto size = static_cast<size_t>(std::distance(state.begin(), state.end()));
 
-    if (size == 0)                                                     ///< Special case for empty state.
-        return root_table.insert_slot(make_slot(Index(0), Index(0)));  ///< Len 0 marks the empty state, the tree index can be arbitrary so we set it to 0.
+    if (size == 0)                     ///< Special case for empty state.
+        return get_empty_root_slot();  ///< Len 0 marks the empty state, the tree index can be arbitrary so we set it to 0.
 
     auto prev = Index(0);
-    return root_table.insert_slot(make_slot(insert_recursively(state.begin(), state.end(), size, tree_table, prev), size));
+    return make_slot(insert_recursively(state.begin(), state.end(), size, tree_table, prev), size);
 }
+
+/**
+ * Read recursively
+ */
 
 /// @brief Recursively reads the state from the tree induced by the given `index` and the `len`.
 /// @param index is the index of the slot in the tree table.
@@ -146,37 +163,48 @@ inline void read_state(Index tree_index, size_t size, const IndexedHashSet& tree
 /// @param tree_table is the tree table.
 /// @param root_table is the root table.
 /// @param out_state is the output state.
-inline void read_state(Index root_index, const IndexedHashSet& tree_table, const IndexedHashSet& root_table, State& out_state)
+inline void read_state(Slot root_slot, const IndexedHashSet& tree_table, State& out_state)
 {
     /* Observe: a root slot wraps the root tree_index together with the length that defines the tree structure! */
-    const auto [tree_index, size] = read_slot(root_table.get_slot(root_index));
+    const auto [tree_index, size] = read_slot(root_slot);
 
     read_state(tree_index, size, tree_table, out_state);
+}
+
+/**
+ * ConstIterator
+ */
+
+struct Entry
+{
+    Index m_index;
+    Index m_size;
+    Index m_bit;
+};
+
+static thread_local SharedMemoryPool<std::vector<Entry>> s_stack_pool = SharedMemoryPool<std::vector<Entry>> {};
+
+inline void copy(const std::vector<Entry>& src, std::vector<Entry>& dst)
+{
+    dst.clear();
+    dst.insert(dst.end(), src.begin(), src.end());
 }
 
 class const_iterator
 {
 private:
     const IndexedHashSet* m_tree_table;
-
-    struct Entry
-    {
-        Index m_index;
-        Index m_size;
-    };
-
-    std::stack<Entry> m_stack;
-
+    SharedMemoryPoolPtr<std::vector<Entry>> m_stack;
     Index m_value;
 
     static constexpr const Index END_POS = Index(-1);
 
     void advance()
     {
-        while (!m_stack.empty())
+        while (!m_stack->empty())
         {
-            auto entry = m_stack.top();
-            m_stack.pop();
+            auto entry = m_stack->back();
+            m_stack->pop_back();
 
             if (entry.m_size == 1)
             {
@@ -189,8 +217,8 @@ private:
             Index mid = std::bit_floor(entry.m_size - 1);
 
             // Emplace i2 first to ensure i1 is visited first in dfs.
-            m_stack.emplace(i2, entry.m_size - mid);
-            m_stack.emplace(i1, mid);
+            m_stack->emplace_back(i2, entry.m_size - mid);
+            m_stack->emplace_back(i1, mid);
         }
 
         m_value = END_POS;
@@ -209,11 +237,14 @@ public:
     {
         if (begin)
         {
+            m_stack = s_stack_pool.get_or_allocate();
+            m_stack->clear();
+
             const auto [tree_idx, size] = read_slot(root);
             if (size > 0)  ///< Push to stack only if there leafs
             {
                 m_value = Index(0);
-                m_stack.emplace(tree_idx, size);
+                m_stack->emplace_back(tree_idx, size);
                 advance();
             }
         }

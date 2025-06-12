@@ -44,16 +44,16 @@ namespace v = valla::canonical;
 class StateImpl
 {
 private:
-    Index m_index;
-    const formalism::ProblemImpl* m_problem;
-    const valla::RootSlot* m_fluent_atoms;
-    const valla::RootSlot* m_derived_atoms;
+    v::RootSlotType m_fluent_atoms;
+    v::RootSlotType m_derived_atoms;
     const FlatDoubleList* m_numeric_variables;
+    const formalism::ProblemImpl* m_problem;
+    Index m_index;
 
     StateImpl(Index index,
               const formalism::ProblemImpl* problem,
-              const valla::RootSlot* fluent_atoms,
-              const valla::RootSlot* derived_atoms,
+              v::RootSlotType fluent_atoms,
+              v::RootSlotType derived_atoms,
               const FlatDoubleList* numeric_variables);
 
     friend class StateRepositoryImpl;
@@ -72,7 +72,7 @@ public:
     template<formalism::IsFluentOrDerivedTag P>
     auto get_atoms() const;
     template<formalism::IsFluentOrDerivedTag P>
-    const valla::RootSlot& get_atoms_slot() const;
+    const v::RootSlotType& get_atoms_slot() const;
     const FlatDoubleList& get_numeric_variables() const;
 
     /**
@@ -100,11 +100,9 @@ public:
     template<formalism::IsFluentOrDerivedTag P, std::ranges::input_range Range1, std::ranges::input_range Range2>
         requires IsRangeOver<Range1, Index> && IsRangeOver<Range2, Index>
     bool literals_hold(const Range1& positive_atoms, const Range2& negative_atoms) const;
-
-    auto identifying_members() const { return std::make_tuple(valla::RootSlotHash()(*m_fluent_atoms)); }
 };
 
-static_assert(sizeof(StateImpl) == 40);
+static_assert(sizeof(StateImpl) == 56);
 
 using StateImplSet = loki::SegmentedRepository<StateImpl>;
 
@@ -117,11 +115,11 @@ auto StateImpl::get_atoms() const
 {
     if constexpr (std::is_same_v<P, formalism::FluentTag>)
     {
-        return std::ranges::subrange(v::begin(*m_fluent_atoms, m_problem->get_tree_table()), v::end());
+        return std::ranges::subrange(v::begin(m_fluent_atoms, m_problem->get_tree_table()), v::end());
     }
     else if constexpr (std::is_same_v<P, formalism::DerivedTag>)
     {
-        return std::ranges::subrange(v::begin(*m_derived_atoms, m_problem->get_tree_table()), v::end());
+        return std::ranges::subrange(v::begin(m_derived_atoms, m_problem->get_tree_table()), v::end());
     }
     else
     {
@@ -130,15 +128,15 @@ auto StateImpl::get_atoms() const
 }
 
 template<formalism::IsFluentOrDerivedTag P>
-const valla::RootSlot& StateImpl::get_atoms_slot() const
+const v::RootSlotType& StateImpl::get_atoms_slot() const
 {
     if constexpr (std::is_same_v<P, formalism::FluentTag>)
     {
-        return *m_fluent_atoms;
+        return m_fluent_atoms;
     }
     else if constexpr (std::is_same_v<P, formalism::DerivedTag>)
     {
-        return *m_derived_atoms;
+        return m_derived_atoms;
     }
     else
     {
@@ -164,11 +162,21 @@ std::ostream& operator<<(std::ostream& os, search::State state);
 namespace loki
 {
 template<>
+struct Hash<mimir::search::StateImpl>
+{
+    size_t operator()(const mimir::search::StateImpl& el) const
+    {
+        return hash_combine(valla::RootSlotHash()(el.get_atoms_slot<mimir::formalism::FluentTag>()), reinterpret_cast<uintptr_t>(&el.get_numeric_variables()));
+    }
+};
+
+template<>
 struct EqualTo<mimir::search::StateImpl>
 {
     bool operator()(const mimir::search::StateImpl& lhs, const mimir::search::StateImpl& rhs) const
     {
-        return valla::RootSlotEqualTo()(lhs.get_atoms_slot<mimir::formalism::FluentTag>(), rhs.get_atoms_slot<mimir::formalism::FluentTag>());
+        return valla::RootSlotEqualTo()(lhs.get_atoms_slot<mimir::formalism::FluentTag>(), rhs.get_atoms_slot<mimir::formalism::FluentTag>())
+               && &lhs.get_numeric_variables() == &rhs.get_numeric_variables();
     }
 };
 }

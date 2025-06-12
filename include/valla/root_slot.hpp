@@ -64,11 +64,11 @@ private:
 public:
     const RootSlot& get_empty_root() const { return m_empty_root; }
 
-    auto insert_slot(RootSlot slot) { return m_slot_to_index.emplace(slot, m_slot_to_index.size()); }
+    auto insert(RootSlot slot) { return m_slot_to_index.emplace(slot, m_slot_to_index.size()); }
 
     explicit RootIndexedHashSet(const BitsetRepository& repository) :
         m_slot_to_index(),
-        m_empty_root(insert_slot(RootSlot(0, &repository.get_empty_bitset())).first->first)
+        m_empty_root(insert(RootSlot(0, &repository.get_empty_bitset())).first->first)
     {
     }
 
