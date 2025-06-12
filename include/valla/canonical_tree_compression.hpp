@@ -106,7 +106,7 @@ auto insert(const Range& state, IndexedHashSet& tree_table, RootIndexedHashSet& 
     {  ///< Special case for empty state.
         return root_table.insert_slot(
             RootSlot(make_slot(Index(0), Index(0)),
-                     *repo.insert(pool.allocate(0)).first));  ///< Len 0 marks the empty state, the tree index can be arbitrary so we set it to 0.
+                     &*repo.insert(pool.allocate(0)).first));  ///< Len 0 marks the empty state, the tree index can be arbitrary so we set it to 0.
     }
 
     // Since we represent the ordering as a binary tree, there is some padding because we round up to use 64 bit blocks for efficiency.
@@ -125,7 +125,7 @@ auto insert(const Range& state, IndexedHashSet& tree_table, RootIndexedHashSet& 
         pool.pop_allocation();
     }
 
-    return root_table.insert_slot(RootSlot(make_slot(tree_index, size), *result.first));
+    return root_table.insert_slot(RootSlot(make_slot(tree_index, size), &*result.first));
 }
 
 /// @brief Recursively reads the state from the tree induced by the given `index` and the `len`.
@@ -192,10 +192,9 @@ inline void read_state(Index tree_index, size_t size, const Bitset& ordering, co
 /// @param tree_table is the tree table.
 /// @param root_table is the root table.
 /// @param out_state is the output state.
-inline void read_state(Index root_index, const IndexedHashSet& tree_table, const RootIndexedHashSet& root_table, State& out_state)
+inline void read_state(const RootSlot& root_slot, const IndexedHashSet& tree_table, State& out_state)
 {
     /* Observe: a root slot wraps the root tree_index together with the length that defines the tree structure! */
-    const auto& root_slot = root_table.get_slot(root_index);
     const auto [tree_index, size] = read_slot(root_slot.slot);
     const auto ordering = root_slot.get_ordering();
 
