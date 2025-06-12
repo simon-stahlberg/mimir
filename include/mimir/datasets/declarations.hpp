@@ -35,6 +35,9 @@ class StateSpaceImpl;
 using StateSpace = std::shared_ptr<StateSpaceImpl>;
 using StateSpaceList = std::vector<StateSpace>;
 
+class StateSpaceSamplerImpl;
+using StateSpaceSampler = std::shared_ptr<StateSpaceSamplerImpl>;
+
 class GeneralizedStateSpaceImpl;
 using GeneralizedStateSpace = std::shared_ptr<GeneralizedStateSpaceImpl>;
 

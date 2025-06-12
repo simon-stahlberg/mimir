@@ -32,3 +32,8 @@ from .wrapper_search import (
     FFHeuristic,
     astar_eager
 )
+
+from .wrapper_datasets import (
+    StateSpaceSampler,
+    StateLabel
+)

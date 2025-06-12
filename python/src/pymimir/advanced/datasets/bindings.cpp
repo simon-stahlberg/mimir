@@ -2,6 +2,8 @@
 
 #include "../init_declarations.hpp"
 
+#include "mimir/datasets/state_space_sampler.hpp"
+
 using namespace mimir;
 using namespace mimir::graphs;
 using namespace mimir::formalism;
@@ -157,5 +159,25 @@ void bind_module_definitions(nb::module_& m)
         .def("get_tuple_graphs", &KnowledgeBaseImpl::get_tuple_graphs, nb::rv_policy::copy);
 
     m.def("create_object_graph", create_object_graph, "state"_a, "problem"_a);
+
+    /* StateSpaceSampler */
+    nb::class_<StateSpaceSamplerImpl>(m, "StateSpaceSampler")
+        .def(nb::init<StateSpace>(), "state_space"_a)
+        .def("get_state_space", &StateSpaceSamplerImpl::get_state_space, nb::rv_policy::reference_internal)
+        .def("sample_state", &StateSpaceSamplerImpl::sample_state, nb::rv_policy::reference_internal)
+        .def("sample_state_n_steps_from_goal", &StateSpaceSamplerImpl::sample_state_n_steps_from_goal, "n"_a, nb::rv_policy::reference_internal)
+        .def("sample_dead_end_state", &StateSpaceSamplerImpl::sample_dead_end_state, nb::rv_policy::reference_internal)
+        .def("get_num_states", &StateSpaceSamplerImpl::get_num_states)
+        .def("get_num_dead_end_states", &StateSpaceSamplerImpl::get_num_dead_end_states)
+        .def("get_num_alive_states", &StateSpaceSamplerImpl::get_num_alive_states)
+        .def("get_max_steps_to_goal", &StateSpaceSamplerImpl::get_max_steps_to_goal)
+        .def("is_dead_end_state", &StateSpaceSamplerImpl::is_dead_end_state, "state"_a)
+        .def("is_goal_state", &StateSpaceSamplerImpl::is_goal_state, "state"_a)
+        .def("is_initial_state", &StateSpaceSamplerImpl::is_initial_state, "state"_a)
+        .def("get_steps_to_goal", &StateSpaceSamplerImpl::get_steps_to_goal, "state"_a)
+        .def("get_cost_to_goal", &StateSpaceSamplerImpl::get_cost_to_goal, "state"_a)
+        .def("get_forward_transitions", &StateSpaceSamplerImpl::get_forward_transitions, "state"_a, nb::rv_policy::reference_internal)
+        .def("get_backward_transitions", &StateSpaceSamplerImpl::get_backward_transitions, "state"_a, nb::rv_policy::reference_internal)
+        .def("set_seed", &StateSpaceSamplerImpl::set_seed, "seed"_a);
 }
 }

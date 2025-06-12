@@ -41,6 +41,11 @@ from pymimir.pymimir.advanced.datasets import (
     GeneralizedStateSpaceOptions,
 )
 
+# StateSpaceSampler
+from pymimir.pymimir.advanced.datasets import (
+    StateSpaceSampler,
+)
+
 # TupleGraph
 from pymimir.pymimir.advanced.datasets import (
     TupleGraphVertex,
@@ -61,13 +66,13 @@ from pymimir.pymimir.advanced.datasets import (
     KnowledgeBaseOptions,
 )
 
-# ObjectGraph 
+# ObjectGraph
 from pymimir.pymimir.advanced.datasets import (
     create_object_graph
 )
 
 __all__ = [
-    # StateSpace 
+    # StateSpace
     ProblemVertex,
     ProblemEdge,
     StaticProblemGraph,
@@ -88,6 +93,9 @@ __all__ = [
 
     GeneralizedStateSpace,
     GeneralizedStateSpaceOptions,
+
+    # StateSpaceSampler
+    StateSpaceSampler,
 
     # TupleGraph
     TupleGraphVertex,
