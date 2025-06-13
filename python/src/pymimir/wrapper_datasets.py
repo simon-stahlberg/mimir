@@ -1,4 +1,4 @@
-from typing import Iterable
+from typing import Iterable, Union
 
 from pymimir.advanced.datasets import StateSpace as AdvancedStateSpace
 from pymimir.advanced.datasets import StateSpaceOptions as AdvancedStateSpaceOptions
@@ -11,7 +11,6 @@ from .wrapper_formalism import GroundAction, Problem, State
 # Datasets
 # --------
 
-
 class StateLabel:
     def __init__(
         self,
@@ -20,7 +19,18 @@ class StateLabel:
         is_goal: bool,
         is_dead_end: bool
     ):
-        """A class representing a labeled state with additional properties."""
+        """
+        A class representing a labeled state with additional properties.
+
+        :param steps_to_goal: The number of steps to reach the goal from this state.
+        :type steps_to_goal: int
+        :param is_initial: Whether this state is the initial state.
+        :type is_initial: bool
+        :param is_goal: Whether this state is a goal state.
+        :type is_goal: bool
+        :param is_dead_end: Whether this state is a dead-end state.
+        :type is_dead_end: bool
+        """
         self.steps_to_goal = steps_to_goal
         self.is_initial = is_initial
         self.is_goal = is_goal
@@ -33,15 +43,32 @@ class StateSpaceSampler:
     """
 
     def __init__(self, advanced_state_space_sampler: 'AdvancedStateSpaceSampler', problem: 'Problem'):
+        """
+        Internal constructor for the StateSpaceSampler class; to create a state space sampler, use the new() method.
+
+        :param advanced_state_space_sampler: An instance of AdvancedStateSpaceSampler.
+        :type advanced_state_space_sampler: AdvancedStateSpaceSampler
+        :param problem: An instance of Problem that this state space is associated with.
+        :type problem: Problem
+        """
         assert isinstance(advanced_state_space_sampler, AdvancedStateSpaceSampler), "Invalid state space sampler type."
         assert isinstance(problem, Problem), "Invalid problem type."
         self._advanced_state_space_sampler = advanced_state_space_sampler
         self._problem = problem
 
     @staticmethod
-    def new(problem: 'Problem', max_states: int = None, symmetry_pruning: bool = None) -> 'StateSpaceSampler':
+    def new(problem: 'Problem', max_states: int = None, symmetry_pruning: bool = None) -> 'Union[StateSpaceSampler, None]':
         """
         Create a new state space from a given problem.
+
+        :param problem: The problem to create the state space for.
+        :type problem: Problem
+        :param max_states: The maximum number of states before aborting, or None for no limit.
+        :type max_states: int or None
+        :param symmetry_pruning: Whether to apply symmetry pruning to the state space, or None for default behavior.
+        :type symmetry_pruning: bool or None
+        :return: A new StateSpaceSampler instance.
+        :rtype: Union[StateSpaceSampler, None]
         """
         if max_states is not None and max_states <= 0:
             raise ValueError("max_states must be a positive integer or None.")
@@ -64,6 +91,9 @@ class StateSpaceSampler:
         """
         Set the random seed for the state space sampler.
         This allows for reproducibility in sampling states.
+
+        :param seed: The seed to set for the random number generator.
+        :type seed: int
         """
         if not isinstance(seed, int):
             raise ValueError("Seed must be an integer.")
@@ -73,6 +103,11 @@ class StateSpaceSampler:
         """
         Get the label for a given state.
         Returns a StateLabel object with properties of the given state.
+
+        :param state: The state for which to get the label.
+        :type state: State
+        :return: A StateLabel object containing the properties of the state.
+        :rtype: StateLabel
         """
         if not isinstance(state, State):
             raise ValueError("state must be an instance of State.")
@@ -87,6 +122,9 @@ class StateSpaceSampler:
         """
         Sample a state from the state space.
         Returns a State object with the sampled state and its properties.
+
+        :return: A State object representing the sampled state.
+        :rtype: State
         """
         advanced_state = self._advanced_state_space_sampler.sample_state()
         return State(advanced_state, self._problem)
@@ -95,6 +133,11 @@ class StateSpaceSampler:
         """
         Sample a specified number of states from the state space.
         Returns an iterable of State objects.
+
+        :param num_states: The number of states to sample.
+        :type num_states: int
+        :return: An iterable of State objects.
+        :rtype: Iterable[State]
         """
         if num_states <= 0:
             raise ValueError("num_states must be a positive integer.")
@@ -104,6 +147,9 @@ class StateSpaceSampler:
         """
         Sample a dead-end state from the state space.
         Returns a State object with the sampled dead-end state.
+
+        :return: A State object representing the sampled dead-end state.
+        :rtype: State
         """
         advanced_state = self._advanced_state_space_sampler.sample_dead_end_state()
         return State(advanced_state, self._problem)
@@ -112,6 +158,11 @@ class StateSpaceSampler:
         """
         Sample a specified number of dead-end states from the state space.
         Returns an iterable of State objects.
+
+        :param num_states: The number of dead-end states to sample.
+        :type num_states: int
+        :return: An iterable of State objects representing dead-end states.
+        :rtype: Iterable[State]
         """
         if num_states <= 0:
             raise ValueError("num_states must be a positive integer.")
@@ -121,6 +172,11 @@ class StateSpaceSampler:
         """
         Sample a state that is n steps away from the goal.
         Returns a State object with the sampled state.
+
+        :param n: The number of steps away from the goal.
+        :type n: int
+        :return: A State object representing the sampled state n steps from the goal.
+        :rtype: State
         """
         if n < 0:
             raise ValueError("n must be a non-negative integer.")
@@ -131,6 +187,13 @@ class StateSpaceSampler:
         """
         Sample a specified number of states that are n steps away from the goal.
         Returns an iterable of State objects.
+
+        :param n: The number of steps away from the goal.
+        :type n: int
+        :param num_states: The number of states to sample.
+        :type num_states: int
+        :return: An iterable of State objects representing states n steps from the goal.
+        :rtype: Iterable[State]
         """
         if n < 0:
             raise ValueError("n must be a non-negative integer.")
@@ -142,6 +205,11 @@ class StateSpaceSampler:
         """
         Get the forward transitions from a given state.
         Returns an iterable of tuples containing the ground action and the resulting state.
+
+        :param state: The state from which to get the forward transitions.
+        :type state: State
+        :return: An iterable of tuples (GroundAction, State) representing the forward transitions.
+        :rtype: Iterable[tuple[GroundAction, State]]
         """
         if not isinstance(state, State):
             raise ValueError("state must be an instance of State.")
@@ -156,6 +224,11 @@ class StateSpaceSampler:
         """
         Get the backward transitions to a given state.
         Returns an iterable of tuples containing the ground action and the predecessor state.
+
+        :param state: The state to which to get the backward transitions.
+        :type state: State
+        :return: An iterable of tuples (GroundAction, State) representing the backward transitions.
+        :rtype: Iterable[tuple[GroundAction, State]]
         """
         if not isinstance(state, State):
             raise ValueError("state must be an instance of State.")
@@ -167,8 +240,20 @@ class StateSpaceSampler:
         )
 
     def __str__(self) -> str:
+        """
+        Return a string representation of the StateSpaceSampler.
+
+        :return: A string representation of the StateSpaceSampler.
+        :rtype: str
+        """
         num_states = self._advanced_state_space_sampler.get_num_states()
         return f"StateSpaceSampler({num_states} states)"
 
     def __repr__(self) -> str:
+        """
+        Return a string representation of the StateSpaceSampler.
+
+        :return: A string representation of the StateSpaceSampler.
+        :rtype: str
+        """
         return self.__str__()

@@ -77,7 +77,14 @@ Term = Union['Object', 'Variable']
 # ----------------
 
 def _split_ground_literal_list(literals: 'list[GroundLiteral]') -> 'tuple[AdvancedStaticGroundLiteralList, AdvancedFluentGroundLiteralList, AdvancedDerivedGroundLiteralList]':
-    """Split the ground literal list into static, fluent, and derived ground literals."""
+    """
+    Split the ground literal list into static, fluent, and derived ground literals.
+
+    :param literals: List of ground literals to split.
+    :type literals: list[GroundLiteral]
+    :return: Tuple containing lists of static, fluent, and derived ground literals.
+    :rtype: tuple[AdvancedStaticGroundLiteralList, AdvancedFluentGroundLiteralList, AdvancedDerivedGroundLiteralList]
+    """
     advanced_static_ground_literals = AdvancedStaticGroundLiteralList([x._advanced_ground_literal for x in literals if isinstance(x._advanced_ground_literal, AdvancedStaticGroundLiteral)])
     advanced_fluent_ground_literals = AdvancedFluentGroundLiteralList([x._advanced_ground_literal for x in literals if isinstance(x._advanced_ground_literal, AdvancedFluentGroundLiteral)])
     advanced_derived_ground_literals = AdvancedDerivedGroundLiteralList([x._advanced_ground_literal for x in literals if isinstance(x._advanced_ground_literal, AdvancedDerivedGroundLiteral)])
@@ -85,7 +92,14 @@ def _split_ground_literal_list(literals: 'list[GroundLiteral]') -> 'tuple[Advanc
     return advanced_static_ground_literals, advanced_fluent_ground_literals, advanced_derived_ground_literals
 
 def _split_literal_list(literals: 'list[Literal]') -> 'tuple[AdvancedStaticLiteralList, AdvancedFluentLiteralList, AdvancedDerivedLiteralList]':
-    """Split the literal list into static, fluent, and derived literals."""
+    """
+    Split the literal list into static, fluent, and derived literals.
+
+    :param literals: List of literals to split.
+    :type literals: list[Literal]
+    :return: Tuple containing lists of static, fluent, and derived literals.
+    :rtype: tuple[AdvancedStaticLiteralList, AdvancedFluentLiteralList, AdvancedDerivedLiteralList]
+    """
     advanced_static_literals = AdvancedStaticLiteralList([x._advanced_literal for x in literals if isinstance(x._advanced_literal, AdvancedStaticLiteral)])
     advanced_fluent_literals = AdvancedFluentLiteralList([x._advanced_literal for x in literals if isinstance(x._advanced_literal, AdvancedFluentLiteral)])
     advanced_derived_literals = AdvancedDerivedLiteralList([x._advanced_literal for x in literals if isinstance(x._advanced_literal, AdvancedDerivedLiteral)])
@@ -101,37 +115,85 @@ class Variable:
     """Class representing variables."""
 
     def __init__(self, advanced_variable: 'AdvancedVariable') -> None:
-        """Internal constructor for the Variable class; to create a variable, use the new() method."""
+        """
+        Internal constructor for the Variable class; to create a variable, use the new() method.
+
+        :param advanced_variable: An instance of an advanced variable.
+        :type advanced_variable: AdvancedVariable
+        """
         assert isinstance(advanced_variable, AdvancedVariable), "Invalid variable type."
         self._advanced_variable = advanced_variable
 
     @staticmethod
     def new(name: 'str', parameter_index: 'int', problem: 'Problem') -> 'Variable':
-        """Create a new variable with the given name."""
+        """
+        Create a new variable with the given name.
+
+        :param name: The name of the variable.
+        :type name: str
+        :param parameter_index: The index of the variable in the parameter list.
+        :type parameter_index: int
+        :param problem: The problem instance to which the variable belongs.
+        :type problem: Problem
+        :return: A new Variable instance.
+        :rtype: Variable
+        """
         return problem.new_variable(name, parameter_index)
 
     def get_index(self) -> 'int':
-        """Get the index of the variable."""
+        """
+        Get the index of the variable.
+
+        :return: The index of the variable.
+        :rtype: int
+        """
         return self._advanced_variable.get_index()
 
     def get_name(self) -> 'str':
-        """Get the name of the variable."""
+        """
+        Get the name of the variable.
+
+        :return: The name of the variable.
+        :rtype: str
+        """
         return self._advanced_variable.get_name()
 
     def __str__(self) -> 'str':
-        """Get the string representation of the variable."""
+        """
+        Get the string representation of the variable.
+
+        :return: The string representation of the variable.
+        :rtype: str
+        """
         return str(self._advanced_variable)
 
     def __repr__(self) -> 'str':
-        """Get the string representation of the variable."""
+        """
+        Get the string representation of the variable.
+
+        :return: The string representation of the variable.
+        :rtype: str
+        """
         return str(self._advanced_variable)
 
     def __hash__(self) -> 'int':
-        """Get the hash of the variable."""
+        """
+        Get the hash of the variable.
+
+        :return: The hash of the variable.
+        :rtype: int
+        """
         return hash(self._advanced_variable)
 
     def __eq__(self, other: 'object') -> bool:
-        """Check if two variables are equal."""
+        """
+        Check if two variables are equal.
+
+        :param other: The other variable to compare with.
+        :type other: object
+        :return: True if the variables are equal, False otherwise.
+        :rtype: bool
+        """
         if not isinstance(other, Variable):
             return False
         return self._advanced_variable == other._advanced_variable
@@ -141,31 +203,69 @@ class Object:
     """Class representing objects in the PDDL domain."""
 
     def __init__(self, advanced_object: 'AdvancedObject') -> None:
+        """
+        Internal constructor for the Object class; to create an object, use the new() method.
+
+        :param advanced_object: An instance of an advanced object.
+        :type advanced_object: AdvancedObject
+        """
         assert isinstance(advanced_object, AdvancedObject), "Invalid object type."
         self._advanced_object = advanced_object
 
     def get_index(self) -> 'int':
-        """Get the index of the object."""
+        """
+        Get the index of the object.
+
+        :return: The index of the object.
+        :rtype: int
+        """
         return self._advanced_object.get_index()
 
     def get_name(self) -> 'str':
-        """Get the name of the object."""
+        """
+        Get the name of the object.
+
+        :return: The name of the object.
+        :rtype: str
+        """
         return self._advanced_object.get_name()
 
     def __str__(self) -> 'str':
-        """Get the string representation of the object."""
+        """
+        Get the string representation of the object.
+
+        :return: The string representation of the object.
+        :rtype: str
+        """
         return str(self._advanced_object)
 
     def __repr__(self) -> 'str':
-        """Get the string representation of the object."""
+        """
+        Get the string representation of the object.
+
+        :return: The string representation of the object.
+        :rtype: str
+        """
         return str(self._advanced_object)
 
     def __hash__(self) -> 'int':
-        """Get the hash of the object."""
+        """
+        Get the hash of the object.
+
+        :return: The hash of the object.
+        :rtype: int
+        """
         return hash(self._advanced_object)
 
     def __eq__(self, other: 'object') -> bool:
-        """Check if two objects are equal."""
+        """
+        Check if two objects are equal.
+
+        :param other: The other object to compare with.
+        :type other: object
+        :return: True if the objects are equal, False otherwise.
+        :rtype: bool
+        """
         if not isinstance(other, Object):
             return False
         return self._advanced_object == other._advanced_object
@@ -175,41 +275,89 @@ class Predicate:
     """Class representing predicates in the PDDL domain."""
 
     def __init__(self, advanced_predicate: 'AdvancedPredicate') -> None:
+        """
+        Internal constructor for the Predicate class; to create a predicate, use the new() method.
+
+        :param advanced_predicate: An instance of an advanced predicate.
+        :type advanced_predicate: AdvancedPredicate
+        """
         assert isinstance(advanced_predicate, AdvancedStaticPredicate) \
             or isinstance(advanced_predicate, AdvancedFluentPredicate) \
             or isinstance(advanced_predicate, AdvancedDerivedPredicate), "Invalid predicate type."
         self._advanced_predicate = advanced_predicate
 
     def get_index(self) -> 'int':
-        """Get the index of the predicate."""
+        """
+        Get the index of the predicate.
+
+        :return: The index of the predicate.
+        :rtype: int
+        """
         return self._advanced_predicate.get_index()
 
     def get_name(self) -> 'str':
-        """Get the name of the predicate."""
+        """
+        Get the name of the predicate.
+
+        :return: The name of the predicate.
+        :rtype: str
+        """
         return self._advanced_predicate.get_name()
 
     def get_arity(self) -> 'int':
-        """Get the arity of the predicate."""
+        """
+        Get the arity of the predicate.
+
+        :return: The arity of the predicate.
+        :rtype: int
+        """
         return self._advanced_predicate.get_arity()
 
     def get_parameters(self) -> 'list[Variable]':
-        """Get the parameters of the predicate."""
+        """
+        Get the parameters of the predicate.
+
+        :return: A list of variables representing the parameters of the predicate.
+        :rtype: list[Variable]
+        """
         return [Variable(x) for x in self._advanced_predicate.get_parameters()]
 
     def __str__(self):
-        """Get the string representation of the predicate."""
+        """
+        Get the string representation of the predicate.
+
+        :return: The string representation of the predicate.
+        :rtype: str
+        """
         return str(self._advanced_predicate)
 
     def __repr__(self):
-        """Get the string representation of the predicate."""
+        """
+        Get the string representation of the predicate.
+
+        :return: The string representation of the predicate.
+        :rtype: str
+        """
         return str(self._advanced_predicate)
 
     def __hash__(self) -> 'int':
-        """Get the hash of the predicate."""
+        """
+        Get the hash of the predicate.
+
+        :return: The hash of the predicate.
+        :rtype: int
+        """
         return hash(self._advanced_predicate)
 
     def __eq__(self, other: 'object') -> bool:
-        """Check if two predicates are equal."""
+        """
+        Check if two predicates are equal.
+
+        :param other: The other predicate to compare with.
+        :type other: object
+        :return: True if the predicates are equal, False otherwise.
+        :rtype: bool
+        """
         if not isinstance(other, Predicate):
             return False
         return self._advanced_predicate == other._advanced_predicate
@@ -219,7 +367,12 @@ class GroundAtom:
     """Class representing ground atoms in the PDDL domain."""
 
     def __init__(self, advanced_ground_atom: 'AdvancedGroundAtom') -> None:
-        """Internal constructor for the GroundAtom class; to create a ground atom, use the new() method."""
+        """
+        Internal constructor for the GroundAtom class; to create a ground atom, use the new() method.
+
+        :param advanced_ground_atom: An instance of an advanced ground atom.
+        :type advanced_ground_atom: AdvancedGroundAtom
+        """
         assert isinstance(advanced_ground_atom, AdvancedStaticGroundAtom) \
             or isinstance(advanced_ground_atom, AdvancedFluentGroundAtom) \
             or isinstance(advanced_ground_atom, AdvancedDerivedGroundAtom), "Invalid ground atom type."
@@ -227,51 +380,119 @@ class GroundAtom:
 
     @staticmethod
     def new(predicate: 'Predicate', objects: 'list[Object]', problem: 'Problem') -> 'GroundAtom':
-        """Create a new ground atom with the given predicate and objects."""
+        """
+        Create a new ground atom with the given predicate and objects.
+
+        :param predicate: The predicate of the ground atom.
+        :type predicate: Predicate
+        :param objects: The objects of the ground atom.
+        :type objects: list[Object]
+        :param problem: The problem instance to which the ground atom belongs.
+        :type problem: Problem
+        :return: A new GroundAtom instance.
+        :rtype: GroundAtom
+        """
         return problem.new_ground_atom(predicate, objects)
 
     def get_index(self) -> 'int':
-        """Get the index of the ground atom."""
+        """
+        Get the index of the ground atom.
+
+        :return: The index of the ground atom.
+        :rtype: int
+        """
         return self._advanced_ground_atom.get_index()
 
     def get_predicate(self) -> 'Predicate':
-        """Get the predicate of the ground atom."""
+        """
+        Get the predicate of the ground atom.
+
+        :return: The predicate of the ground atom.
+        :rtype: Predicate
+        """
         return Predicate(self._advanced_ground_atom.get_predicate())
 
     def get_terms(self) -> 'list[Object]':
-        """Get the objects of the ground atom."""
+        """
+        Get the objects of the ground atom.
+
+        :return: A list of objects representing the terms of the ground atom.
+        :rtype: list[Object]
+        """
         return [Object(x) for x in self._advanced_ground_atom.get_objects()]
 
     def get_arity(self) -> 'int':
-        """Get the arity of the ground atom."""
+        """
+        Get the arity of the ground atom.
+
+        :return: The arity of the ground atom.
+        :rtype: int
+        """
         return self._advanced_ground_atom.get_arity()
 
     def is_static(self) -> 'bool':
-        """Get whether the ground atom is static."""
+        """
+        Get whether the ground atom is static.
+
+        :return: True if the ground atom is static, False otherwise.
+        :rtype: bool
+        """
         return isinstance(self._advanced_ground_atom, AdvancedStaticGroundAtom)
 
     def is_fluent(self) -> 'bool':
-        """Get whether the ground atom is fluent."""
+        """
+        Get whether the ground atom is fluent.
+
+        :return: True if the ground atom is fluent, False otherwise.
+        :rtype: bool
+        """
         return isinstance(self._advanced_ground_atom, AdvancedFluentGroundAtom)
 
     def is_derived(self) -> 'bool':
-        """Get whether the ground atom is derived."""
+        """
+        Get whether the ground atom is derived.
+
+        :return: True if the ground atom is derived, False otherwise.
+        :rtype: bool
+        """
         return isinstance(self._advanced_ground_atom, AdvancedDerivedGroundAtom)
 
     def __str__(self):
-        """Get the string representation of the ground atom."""
+        """
+        Get the string representation of the ground atom.
+
+        :return: The string representation of the ground atom.
+        :rtype: str
+        """
         return str(self._advanced_ground_atom)
 
     def __repr__(self):
-        """Get the string representation of the ground atom."""
+        """
+        Get the string representation of the ground atom.
+
+        :return: The string representation of the ground atom.
+        :rtype: str
+        """
         return str(self._advanced_ground_atom)
 
     def __hash__(self) -> 'int':
-        """Get the hash of the ground atom."""
+        """
+        Get the hash of the ground atom.
+
+        :return: The hash of the ground atom.
+        :rtype: int
+        """
         return hash(self._advanced_ground_atom)
 
     def __eq__(self, other: 'object') -> bool:
-        """Check if two ground atoms are equal."""
+        """
+        Check if two ground atoms are equal.
+
+        :param other: The other ground atom to compare with.
+        :type other: object
+        :return: True if the ground atoms are equal, False otherwise.
+        :rtype: bool
+        """
         if not isinstance(other, GroundAtom):
             return False
         return self._advanced_ground_atom == other._advanced_ground_atom
@@ -281,7 +502,12 @@ class Atom:
     """Class representing atoms in the PDDL domain."""
 
     def __init__(self, advanced_atom: 'AdvancedAtom') -> None:
-        """Internal constructor for the Atom class; to create an atom, use the new() method."""
+        """
+        Internal constructor for the Atom class; to create an atom, use the new() method.
+
+        :param advanced_atom: An instance of an advanced atom.
+        :type advanced_atom: AdvancedAtom
+        """
         assert isinstance(advanced_atom, AdvancedStaticAtom) \
             or isinstance(advanced_atom, AdvancedFluentAtom) \
             or isinstance(advanced_atom, AdvancedDerivedAtom), "Invalid atom type."
@@ -289,43 +515,101 @@ class Atom:
 
     @staticmethod
     def new(predicate: 'Predicate', terms: 'list[Term]', problem: 'Problem') -> 'Atom':
-        """Create a new atom with the given predicate and terms."""
+        """
+        Create a new atom with the given predicate and terms.
+
+        :param predicate: The predicate of the atom.
+        :type predicate: Predicate
+        :param terms: The terms of the atom, which can be a mix of Objects and Variables.
+        :type terms: list[Term]
+        :param problem: The problem instance to which the atom belongs.
+        :type problem: Problem
+        :return: A new Atom instance.
+        :rtype: Atom
+        """
         return problem.new_atom(predicate, terms)
 
     def get_index(self) -> 'int':
-        """Get the index of the atom."""
+        """
+        Get the index of the atom.
+
+        :return: The index of the atom.
+        :rtype: int
+        """
         return self._advanced_atom.get_index()
 
     def get_predicate(self) -> 'Predicate':
-        """Get the predicate of the atom."""
+        """
+        Get the predicate of the atom.
+
+        :return: The predicate of the atom.
+        :rtype: Predicate
+        """
         return Predicate(self._advanced_atom.get_predicate())
 
     def get_terms(self) -> 'list[Union[Object, Variable]]':
-        """Get the terms of the atom."""
+        """
+        Get the terms of the atom.
+
+        :return: A list of terms representing the terms of the atom, which can be a mix of Objects and Variables.
+        :rtype: list[Union[Object, Variable]]
+        """
         return [Object(x.get()) if isinstance(x.get(), AdvancedObject) else Variable(x.get()) for x in self._advanced_atom.get_terms()]
 
     def get_variables(self) -> 'list[Variable]':
-        """Get the variables of the atom."""
+        """
+        Get the variables of the atom.
+
+        :return: A list of variables representing the variables of the atom.
+        :rtype: list[Variable]
+        """
         return [Variable(x) for x in self._advanced_atom.get_variables()]
 
     def get_arity(self) -> 'int':
-        """Get the arity of the atom."""
+        """
+        Get the arity of the atom.
+
+        :return: The arity of the atom.
+        :rtype: int
+        """
         return len(self.get_terms())
 
     def __str__(self):
-        """Get the string representation of the atom."""
+        """
+        Get the string representation of the atom.
+
+        :return: The string representation of the atom.
+        :rtype: str
+        """
         return str(self._advanced_atom)
 
     def __repr__(self):
-        """Get the string representation of the atom."""
+        """
+        Get the string representation of the atom.
+
+        :return: The string representation of the atom.
+        :rtype: str
+        """
         return str(self._advanced_atom)
 
     def __hash__(self) -> 'int':
-        """Get the hash of the atom."""
+        """
+        Get the hash of the atom.
+
+        :return: The hash of the atom.
+        :rtype: int
+        """
         return hash(self._advanced_atom)
 
     def __eq__(self, other: 'object') -> bool:
-        """Check if two atoms are equal."""
+        """
+        Check if two atoms are equal.
+
+        :param other: The other atom to compare with.
+        :type other: object
+        :return: True if the atoms are equal, False otherwise.
+        :rtype: bool
+        """
         if not isinstance(other, Atom):
             return False
         return self._advanced_atom == other._advanced_atom
@@ -335,7 +619,12 @@ class GroundLiteral:
     """GroundLiteral class for the PDDL domain."""
 
     def __init__(self, advanced_ground_literal: 'AdvancedGroundLiteral') -> None:
-        """Internal constructor for the GroundLiteral class; to create a ground literal, use the new() method."""
+        """
+        Internal constructor for the GroundLiteral class; to create a ground literal, use the new() method.
+
+        :param advanced_ground_literal: An instance of an advanced ground literal.
+        :type advanced_ground_literal: AdvancedGroundLiteral
+        """
         assert isinstance(advanced_ground_literal, AdvancedStaticGroundLiteral) \
             or isinstance(advanced_ground_literal, AdvancedFluentGroundLiteral) \
             or isinstance(advanced_ground_literal, AdvancedDerivedGroundLiteral), "Invalid ground literal type."
@@ -343,35 +632,83 @@ class GroundLiteral:
 
     @staticmethod
     def new(ground_atom: 'GroundAtom', polarity: 'bool', problem: 'Problem') -> 'GroundLiteral':
-        """Create a new ground literal with the given ground atom and polarity."""
+        """
+        Create a new ground literal with the given ground atom and polarity.
+
+        :param ground_atom: The ground atom of the ground literal.
+        :type ground_atom: GroundAtom
+        :param polarity: The polarity of the ground literal (True for positive, False for negative).
+        :type polarity: bool
+        :param problem: The problem instance to which the ground literal belongs.
+        :type problem: Problem
+        :return: A new GroundLiteral instance.
+        :rtype: GroundLiteral
+        """
         return problem.new_ground_literal(ground_atom, polarity)
 
     def get_index(self) -> 'int':
-        """Get the index of the ground literal."""
+        """
+        Get the index of the ground literal.
+
+        :return: The index of the ground literal.
+        :rtype: int
+        """
         return self._advanced_ground_literal.get_index()
 
     def get_atom(self) -> 'GroundAtom':
-        """Get the atom of the ground literal."""
+        """
+        Get the atom of the ground literal.
+
+        :return: The atom of the ground literal.
+        :rtype: GroundAtom
+        """
         return GroundAtom(self._advanced_ground_literal.get_atom())
 
     def get_polarity(self) -> bool:
-        """Get the polarity of the ground literal."""
+        """
+        Get the polarity of the ground literal.
+
+        :return: True if the ground literal is positive, False if it is negative.
+        :rtype: bool
+        """
         return self._advanced_ground_literal.get_polarity()
 
     def __str__(self):
-        """Get the string representation of the ground literal."""
+        """
+        Get the string representation of the ground literal.
+
+        :return: The string representation of the ground literal.
+        :rtype: str
+        """
         return str(self._advanced_ground_literal)
 
     def __repr__(self):
-        """Get the string representation of the ground literal."""
+        """
+        Get the string representation of the ground literal.
+
+        :return: The string representation of the ground literal.
+        :rtype: str
+        """
         return str(self._advanced_ground_literal)
 
     def __hash__(self) -> 'int':
-        """Get the hash of the ground literal."""
+        """
+        Get the hash of the ground literal.
+
+        :return: The hash of the ground literal.
+        :rtype: int
+        """
         return hash(self._advanced_ground_literal)
 
     def __eq__(self, other: 'object') -> bool:
-        """Check if two ground literals are equal."""
+        """
+        Check if two ground literals are equal.
+
+        :param other: The other ground literal to compare with.
+        :type other: object
+        :return: True if the ground literals are equal, False otherwise.
+        :rtype: bool
+        """
         if not isinstance(other, GroundLiteral):
             return False
         return self._advanced_ground_literal == other._advanced_ground_literal
@@ -381,7 +718,12 @@ class Literal:
     """Literal class for the PDDL domain."""
 
     def __init__(self, advanced_literal: 'AdvancedLiteral') -> None:
-        """Internal constructor for the Literal class; to create a literal, use the new() method."""
+        """
+        Internal constructor for the Literal class; to create a literal, use the new() method.
+
+        :param advanced_literal: An instance of an advanced literal.
+        :type advanced_literal: AdvancedLiteral
+        """
         assert isinstance(advanced_literal, AdvancedStaticLiteral) \
             or isinstance(advanced_literal, AdvancedFluentLiteral) \
             or isinstance(advanced_literal, AdvancedDerivedLiteral), "Invalid literal type."
@@ -389,35 +731,83 @@ class Literal:
 
     @staticmethod
     def new(atom: 'Atom', polarity: 'bool', problem: 'Problem') -> 'Literal':
-        """Create a new literal with the given atom and polarity."""
+        """
+        Create a new literal with the given atom and polarity.
+
+        :param atom: The atom of the literal.
+        :type atom: Atom
+        :param polarity: The polarity of the literal (True for positive, False for negative).
+        :type polarity: bool
+        :param problem: The problem instance to which the literal belongs.
+        :type problem: Problem
+        :return: A new Literal instance.
+        :rtype: Literal
+        """
         return problem.new_literal(atom, polarity)
 
     def get_index(self) -> 'int':
-        """Get the index of the literal."""
+        """
+        Get the index of the literal.
+
+        :return: The index of the literal.
+        :rtype: int
+        """
         return self._advanced_literal.get_index()
 
     def get_atom(self) -> 'Atom':
-        """Get the atom of the literal."""
+        """
+        Get the atom of the literal.
+
+        :return: The atom of the literal.
+        :rtype: Atom
+        """
         return Atom(self._advanced_literal.get_atom())
 
     def get_polarity(self) -> bool:
-        """Get the polarity of the literal."""
+        """
+        Get the polarity of the literal.
+
+        :return: True if the literal is positive, False if it is negative.
+        :rtype: bool
+        """
         return self._advanced_literal.get_polarity()
 
     def __str__(self) -> 'str':
-        """Get the string representation of the literal."""
+        """
+        Get the string representation of the literal.
+
+        :return: The string representation of the literal.
+        :rtype: str
+        """
         return str(self._advanced_literal)
 
     def __repr__(self) -> 'str':
-        """Get the string representation of the literal."""
+        """
+        Get the string representation of the literal.
+
+        :return: The string representation of the literal.
+        :rtype: str
+        """
         return str(self._advanced_literal)
 
     def __hash__(self) -> 'int':
-        """Get the hash of the literal."""
+        """
+        Get the hash of the literal.
+
+        :return: The hash of the literal.
+        :rtype: int
+        """
         return hash(self._advanced_literal)
 
     def __eq__(self, other: 'object') -> bool:
-        """Check if two literals are equal."""
+        """
+        Check if two literals are equal.
+
+        :param other: The other literal to compare with.
+        :type other: object
+        :return: True if the literals are equal, False otherwise.
+        :rtype: bool
+        """
         if not isinstance(other, Literal):
             return False
         return self._advanced_literal == other._advanced_literal
@@ -427,41 +817,86 @@ class GroundEffect:
     """Class representing ground effects in the PDDL domain."""
 
     def __init__(self, advanced_effect: 'AdvancedGroundConjunctiveEffect', problem: 'Problem') -> None:
+        """
+        Internal constructor for the GroundEffect class; to create a ground effect, use the new() method.
+
+        :param advanced_effect: An instance of an advanced ground conjunctive effect.
+        :type advanced_effect: AdvancedGroundConjunctiveEffect
+        :param problem: The problem instance to which the ground effect belongs.
+        :type problem: Problem
+        """
         assert isinstance(advanced_effect, AdvancedGroundConjunctiveEffect), "Invalid conjunctive effect type."
         assert isinstance(problem, Problem), "Invalid problem type."
         self._advanced_ground_effect = advanced_effect
         self._problem = problem
 
     def get_index(self) -> 'int':
-        """Get the index of the ground effect list."""
+        """
+        Get the index of the ground effect list.
+
+        :return: The index of the ground effect list.
+        :rtype: int
+        """
         return self._advanced_ground_effect.get_index()
 
     def get_add_list(self) -> 'list[GroundAtom]':
-        """Get the add list of the ground effect."""
+        """
+        Get the add list of the ground effect.
+
+        :return: A list of ground atoms that are added by the ground effect.
+        :rtype: list[GroundAtom]
+        """
         repositories = self._problem._advanced_problem.get_repositories()
         advanced_ground_atoms = repositories.get_fluent_ground_atoms_from_indices(self._advanced_ground_effect.get_positive_effects())
         return [GroundAtom(x) for x in advanced_ground_atoms]
 
     def get_delete_list(self) -> 'list[GroundAtom]':
-        """Get the delete list of the ground effect."""
+        """
+        Get the delete list of the ground effect.
+
+        :return: A list of ground atoms that are deleted by the ground effect.
+        :rtype: list[GroundAtom]
+        """
         repositories = self._problem._advanced_problem.get_repositories()
         advanced_ground_atoms = repositories.get_fluent_ground_atoms_from_indices(self._advanced_ground_effect.get_negative_effects())
         return [GroundAtom(x) for x in advanced_ground_atoms]
 
     def __str__(self):
-        """Get the string representation of the ground effect list."""
+        """
+        Get the string representation of the ground effect list.
+
+        :return: The string representation of the ground effect list.
+        :rtype: str
+        """
         return self._advanced_ground_effect.to_string(self._problem._advanced_problem)
 
     def __repr__(self):
-        """Get the string representation of the ground effect list."""
+        """
+        Get the string representation of the ground effect list.
+
+        :return: The string representation of the ground effect list.
+        :rtype: str
+        """
         return self._advanced_ground_effect.to_string(self._problem._advanced_problem)
 
     def __hash__(self) -> 'int':
-        """Get the hash of the ground effect list."""
+        """
+        Get the hash of the ground effect list.
+
+        :return: The hash of the ground effect list.
+        :rtype: int
+        """
         return hash(self._advanced_ground_effect)
 
     def __eq__(self, other: 'object') -> bool:
-        """Check if two ground effect lists are equal."""
+        """
+        Check if two ground effect lists are equal.
+
+        :param other: The other ground effect list to compare with.
+        :type other: object
+        :return: True if the ground effect lists are equal, False otherwise.
+        :rtype: bool
+        """
         if not isinstance(other, GroundEffect):
             return False
         return self._advanced_ground_effect == other._advanced_ground_effect
@@ -471,37 +906,82 @@ class GroundConditionalEffect:
     """GroundConditionalEffect class for the PDDL domain."""
 
     def __init__(self, advanced_conditional_effect: 'AdvancedGroundConditionalEffect', problem: 'Problem') -> None:
+        """
+        Internal constructor for the GroundConditionalEffect class; to create a ground conditional effect, use the new() method.
+
+        :param advanced_conditional_effect: An instance of an advanced ground conditional effect.
+        :type advanced_conditional_effect: AdvancedGroundConditionalEffect
+        :param problem: The problem instance to which the ground conditional effect belongs.
+        :type problem: Problem
+        """
         assert isinstance(advanced_conditional_effect, AdvancedGroundConditionalEffect), "Invalid conditional effect type."
         assert isinstance(problem, Problem), "Invalid problem type."
         self._advanced_conditional_effect = advanced_conditional_effect
         self._problem = problem
 
     def get_index(self) -> 'int':
-        """Get the index of the ground conditional effect."""
+        """
+        Get the index of the ground conditional effect.
+
+        :return: The index of the ground conditional effect.
+        :rtype: int
+        """
         return self._advanced_conditional_effect.get_index()
 
     def get_condition(self) -> 'GroundConjunctiveCondition':
-        """Get the condition of the ground conditional effect."""
+        """
+        Get the condition of the ground conditional effect.
+
+        :return: The condition of the ground conditional effect.
+        :rtype: GroundConjunctiveCondition
+        """
         return GroundConjunctiveCondition(self._advanced_conditional_effect.get_conjunctive_condition(), self._problem)
 
     def get_effect(self) -> 'GroundEffect':
-        """Get the effect list of the ground conditional effect."""
+        """
+        Get the effect list of the ground conditional effect.
+
+        :return: The effect list of the ground conditional effect.
+        :rtype: GroundEffect
+        """
         return GroundEffect(self._advanced_conditional_effect.get_conjunctive_effect(), self._problem)
 
     def __str__(self):
-        """Get the string representation of the ground conditional effect."""
+        """
+        Get the string representation of the ground conditional effect.
+
+        :return: The string representation of the ground conditional effect.
+        :rtype: str
+        """
         return self._advanced_conditional_effect.to_string(self._problem._advanced_problem)
 
     def __repr__(self):
-        """Get the string representation of the ground conditional effect."""
+        """
+        Get the string representation of the ground conditional effect.
+
+        :return: The string representation of the ground conditional effect.
+        :rtype: str
+        """
         return self._advanced_conditional_effect.to_string(self._problem._advanced_problem)
 
     def __hash__(self) -> 'int':
-        """Get the hash of the ground conditional effect."""
+        """
+        Get the hash of the ground conditional effect.
+
+        :return: The hash of the ground conditional effect.
+        :rtype: int
+        """
         return hash(self._advanced_conditional_effect)
 
     def __eq__(self, other: 'object') -> bool:
-        """Check if two ground conditional effects are equal."""
+        """
+        Check if two ground conditional effects are equal.
+
+        :param other: The other ground conditional effect to compare with.
+        :type other: object
+        :return: True if the ground conditional effects are equal, False otherwise.
+        :rtype: bool
+        """
         if not isinstance(other, GroundConditionalEffect):
             return False
         return self._advanced_conditional_effect == other._advanced_conditional_effect
@@ -511,39 +991,87 @@ class Effect:
     """Class representing effects in the PDDL domain."""
 
     def __init__(self, advanced_effect: 'AdvancedConjunctiveEffect') -> None:
+        """
+        Internal constructor for the Effect class; to create an effect, use the new() method.
+
+        :param advanced_effect: An instance of an advanced conjunctive effect.
+        :type advanced_effect: AdvancedConjunctiveEffect
+        """
         assert isinstance(advanced_effect, AdvancedConjunctiveEffect), "Invalid conjunctive effect type."
         self._advanced_conjunctive_effect = advanced_effect
 
     def get_index(self) -> 'int':
-        """Get the index of the effect list."""
+        """
+        Get the index of the effect list.
+
+        :return: The index of the effect list.
+        :rtype: int
+        """
         return self._advanced_conjunctive_effect.get_index()
 
     def get_parameters(self) -> 'list[Variable]':
-        """Get the parameters of the effect list."""
+        """
+        Get the parameters of the effect list.
+
+        :return: A list of variables representing the parameters of the effect list.
+        :rtype: list[Variable]
+        """
         return [Variable(x) for x in self._advanced_conjunctive_effect.get_parameters()]
 
     def get_literals(self) -> 'list[Literal]':
-        """Get the literals of the effect list."""
+        """
+        Get the literals of the effect list.
+
+        :return: A list of literals representing the effect list.
+        :rtype: list[Literal]
+        """
         return [Literal(x) for x in self._advanced_conjunctive_effect.get_literals()]
 
     def __iter__(self) -> 'Iterable[Literal]':
-        """Get an iterator over the literals of the effect list."""
+        """
+        Get an iterator over the literals of the effect list.
+
+        :return: An iterator over the literals of the effect list.
+        :rtype: Iterable[Literal]
+        """
         return iter(self.get_literals())
 
     def __str__(self):
-        """Get the string representation of the effect list."""
+        """
+        Get the string representation of the effect list.
+
+        :return: The string representation of the effect list.
+        :rtype: str
+        """
         return str(self._advanced_conjunctive_effect)
 
     def __repr__(self):
-        """Get the string representation of the effect list."""
+        """
+        Get the string representation of the effect list.
+
+        :return: The string representation of the effect list.
+        :rtype: str
+        """
         return str(self._advanced_conjunctive_effect)
 
     def __hash__(self) -> 'int':
-        """Get the hash of the effect list."""
+        """
+        Get the hash of the effect list.
+
+        :return: The hash of the effect list.
+        :rtype: int
+        """
         return hash(self._advanced_conjunctive_effect)
 
     def __eq__(self, other: 'object') -> bool:
-        """Check if two effect lists are equal."""
+        """
+        Check if two effect lists are equal.
+
+        :param other: The other effect list to compare with.
+        :type other: object
+        :return: True if the effect lists are equal, False otherwise.
+        :rtype: bool
+        """
         if not isinstance(other, Effect):
             return False
         return self._advanced_conjunctive_effect == other._advanced_conjunctive_effect
@@ -553,35 +1081,78 @@ class ConditionalEffect:
     """Class representing conditional effects in the PDDL domain."""
 
     def __init__(self, advanced_conditional_effect: 'AdvancedConditionalEffect') -> None:
+        """
+        Internal constructor for the ConditionalEffect class; to create a conditional effect, use the new() method.
+
+        :param advanced_conditional_effect: An instance of an advanced conditional effect.
+        :type advanced_conditional_effect: AdvancedConditionalEffect
+        """
         assert isinstance(advanced_conditional_effect, AdvancedConditionalEffect), "Invalid conditional effect type."
         self._advanced_conditional_effect = advanced_conditional_effect
 
     def get_index(self) -> 'int':
-        """Get the index of the conditional effect."""
+        """
+        Get the index of the conditional effect.
+
+        :return: The index of the conditional effect.
+        :rtype: int
+        """
         return self._advanced_conditional_effect.get_index()
 
     def get_condition(self) -> 'ConjunctiveCondition':
-        """Get the static conditions of the conditional effect."""
+        """
+        Get the static conditions of the conditional effect.
+
+        :return: The conjunctive condition of the conditional effect.
+        :rtype: ConjunctiveCondition
+        """
         return ConjunctiveCondition(self._advanced_conditional_effect.get_conjunctive_condition())
 
     def get_effect(self) -> 'Effect':
-        """Get the effect list of the conditional effect."""
+        """
+        Get the effect list of the conditional effect.
+
+        :return: The effect list of the conditional effect.
+        :rtype: Effect
+        """
         return Effect(self._advanced_conditional_effect.get_conjunctive_effect())
 
     def __str__(self):
-        """Get the string representation of the conditional effect."""
+        """
+        Get the string representation of the conditional effect.
+
+        :return: The string representation of the conditional effect.
+        :rtype: str
+        """
         return str(self._advanced_conditional_effect)
 
     def __repr__(self):
-        """Get the string representation of the conditional effect."""
+        """
+        Get the string representation of the conditional effect.
+
+        :return: The string representation of the conditional effect.
+        :rtype: str
+        """
         return str(self._advanced_conditional_effect)
 
     def __hash__(self) -> 'int':
-        """Get the hash of the conditional effect."""
+        """
+        Get the hash of the conditional effect.
+
+        :return: The hash of the conditional effect.
+        :rtype: int
+        """
         return hash(self._advanced_conditional_effect)
 
     def __eq__(self, other: 'object') -> bool:
-        """Check if two conditional effects are equal."""
+        """
+        Check if two conditional effects are equal.
+
+        :param other: The other conditional effect to compare with.
+        :type other: object
+        :return: True if the conditional effects are equal, False otherwise.
+        :rtype: bool
+        """
         if not isinstance(other, ConditionalEffect):
             return False
         return self._advanced_conditional_effect == other._advanced_conditional_effect
@@ -591,47 +1162,105 @@ class Action:
     """Class representing action schemas in the domain."""
 
     def __init__(self, advanced_action: 'AdvancedAction') -> None:
+        """
+        Internal constructor for the Action class; to create an action, use the new() method.
+
+        :param advanced_action: An instance of an advanced action.
+        :type advanced_action: AdvancedAction
+        """
         assert isinstance(advanced_action, AdvancedAction), "Invalid action type."
         self._advanced_action = advanced_action
 
     def get_index(self) -> 'int':
-        """Get the index of the action."""
+        """
+        Get the index of the action.
+
+        :return: The index of the action.
+        :rtype: int
+        """
         return self._advanced_action.get_index()
 
     def get_arity(self) -> 'int':
-        """Get the arity of the action."""
+        """
+        Get the arity of the action.
+
+        :return: The arity of the action.
+        :rtype: int
+        """
         return self._advanced_action.get_arity()
 
     def get_name(self) -> 'str':
-        """Get the name of the action."""
+        """
+        Get the name of the action.
+
+        :return: The name of the action.
+        :rtype: str
+        """
         return self._advanced_action.get_name()
 
     def get_parameters(self) -> 'list[Variable]':
-        """Get the parameters of the action."""
+        """
+        Get the parameters of the action.
+
+        :return: A list of variables representing the parameters of the action.
+        :rtype: list[Variable]
+        """
         return [Variable(x) for x in self._advanced_action.get_parameters()]
 
     def get_precondition(self) -> 'ConjunctiveCondition':
-        """Get the conjunctive condition of the action."""
+        """
+        Get the conjunctive condition of the action.
+
+        :return: The conjunctive condition of the action.
+        :rtype: ConjunctiveCondition
+        """
         return ConjunctiveCondition(self._advanced_action.get_conjunctive_condition())
 
     def get_conditional_effect(self) -> 'list[ConditionalEffect]':
-        """Get the conditional effect of the action."""
+        """
+        Get the conditional effect of the action.
+
+        :return: A list of conditional effects of the action.
+        :rtype: list[ConditionalEffect]
+        """
         return [ConditionalEffect(x) for x in self._advanced_action.get_conditional_effects()]
 
     def __str__(self):
-        """Get the string representation of the action."""
+        """
+        Get the string representation of the action.
+
+        :return: The string representation of the action.
+        :rtype: str
+        """
         return str(self._advanced_action)
 
     def __repr__(self):
-        """Get the string representation of the action."""
+        """
+        Get the string representation of the action.
+
+        :return: The string representation of the action.
+        :rtype: str
+        """
         return str(self._advanced_action)
 
     def __hash__(self) -> 'int':
-        """Get the hash of the action."""
+        """
+        Get the hash of the action.
+
+        :return: The hash of the action.
+        :rtype: int
+        """
         return hash(self._advanced_action)
 
     def __eq__(self, other: 'object') -> bool:
-        """Check if two actions are equal."""
+        """
+        Check if two actions are equal.
+
+        :param other: The other action to compare with.
+        :type other: object
+        :return: True if the actions are equal, False otherwise.
+        :rtype: bool
+        """
         if not isinstance(other, Action):
             return False
         return self._advanced_action == other._advanced_action
@@ -641,41 +1270,91 @@ class GroundAction:
     """Class representing ground actions in the problem."""
 
     def __init__(self, advanced_ground_action: 'AdvancedGroundAction', problem: 'Problem') -> None:
+        """
+        Internal constructor for the GroundAction class; to create a ground action, use the new() method.
+
+        :param advanced_ground_action: An instance of an advanced ground action.
+        :type advanced_ground_action: AdvancedGroundAction
+        :param problem: The problem instance to which the ground action belongs.
+        :type problem: Problem
+        """
         assert isinstance(advanced_ground_action, AdvancedGroundAction), "Invalid ground action type."
         assert isinstance(problem, Problem), "Invalid problem type."
         self._advanced_ground_action = advanced_ground_action
         self._problem = problem
 
     def get_index(self) -> 'int':
-        """Get the index of the ground action."""
+        """
+        Get the index of the ground action.
+
+        :return: The index of the ground action.
+        :rtype: int
+        """
         return self._advanced_ground_action.get_index()
 
     def get_action(self) -> 'Action':
-        """Get the name of the ground action."""
+        """
+        Get the name of the ground action.
+
+        :return: The action schema of the ground action.
+        :rtype: Action
+        """
         return Action(self._advanced_ground_action.get_action())
 
     def get_objects(self) -> 'list[Object]':
-        """Get the objects of the ground action."""
+        """
+        Get the objects of the ground action.
+
+        :return: A list of objects representing the objects of the ground action.
+        :rtype: list[Object]
+        """
         return [Object(x) for x in self._advanced_ground_action.get_objects()]
 
     def get_precondition(self) -> 'GroundConjunctiveCondition':
-        """Get the conjunctive condition of the ground action."""
+        """
+        Get the conjunctive condition of the ground action.
+
+        :return: The conjunctive condition of the ground action.
+        :rtype: GroundConjunctiveCondition
+        """
         return GroundConjunctiveCondition(self._advanced_ground_action.get_conjunctive_condition(), self._problem)
 
     def get_effect(self) -> 'tuple[GroundEffect, list[GroundConditionalEffect]]':
-        """Get both the unconditional and conditional effects of the ground action."""
+        """
+        Get both the unconditional and conditional effects of the ground action.
+
+        :return: A tuple containing the unconditional effect and a list of conditional effects of the ground action.
+        :rtype: tuple[GroundEffect, list[GroundConditionalEffect]]
+        """
         return self.get_unconditional_effect(), self.get_conditional_effect()
 
     def get_unconditional_effect(self) -> 'GroundEffect':
-        """Get the effect list of the ground action."""
+        """
+        Get the effect list of the ground action.
+
+        :return: The unconditional effect of the ground action.
+        :rtype: GroundEffect
+        """
         return GroundEffect(advanced_effect=self._advanced_ground_action.get_conjunctive_effect())
 
     def get_conditional_effect(self) -> 'list[GroundConditionalEffect]':
-        """Get the conditional effect of the ground action."""
+        """
+        Get the conditional effect of the ground action.
+
+        :return: A list of conditional effects of the ground action.
+        :rtype: list[GroundConditionalEffect]
+        """
         return [GroundConditionalEffect(x) for x in self._advanced_ground_action.get_conditional_effects()]
 
     def apply(self, state: 'State') -> 'State':
-        """Apply the ground action to the given state."""
+        """
+        Apply the ground action to the given state.
+
+        :param state: The state to which the ground action will be applied.
+        :type state: State
+        :return: The resulting state after applying the ground action.
+        :rtype: State
+        """
         assert isinstance(state, State), "Invalid state type."
         assert state._problem == self._problem, "State and action belong to different problems."
         sr = self._problem._search_context.get_state_repository()
@@ -683,19 +1362,41 @@ class GroundAction:
         return State(advanced_successor_state, self._problem)
 
     def __str__(self):
-        """Get the string representation of the ground action."""
+        """
+        Get the string representation of the ground action.
+
+        :return: The string representation of the ground action.
+        :rtype: str
+        """
         return self._advanced_ground_action.to_string_for_plan(self._problem._advanced_problem)
 
     def __repr__(self):
-        """Get the string representation of the ground action."""
+        """
+        Get the string representation of the ground action.
+
+        :return: The string representation of the ground action.
+        :rtype: str
+        """
         return self._advanced_ground_action.to_string_for_plan(self._problem._advanced_problem)
 
     def __hash__(self) -> 'int':
-        """Get the hash of the ground action."""
+        """
+        Get the hash of the ground action.
+
+        :return: The hash of the ground action.
+        :rtype: int
+        """
         return hash(self._advanced_ground_action)
 
     def __eq__(self, other: 'object') -> bool:
-        """Check if two ground actions are equal."""
+        """
+        Check if two ground actions are equal.
+
+        :param other: The other ground action to compare with.
+        :type other: object
+        :return: True if the ground actions are equal, False otherwise.
+        :rtype: bool
+        """
         if not isinstance(other, GroundAction):
             return False
         return self._advanced_ground_action == other._advanced_ground_action
@@ -708,8 +1409,8 @@ class Domain:
         """
         Initialize the domain with the given path.
 
-        Args:
-            domain_path (Path): The file path to the domain definition file.
+        :param domain_path: The path to the domain definition file.
+        :type domain_path: Union[Path, str]
         """
         assert isinstance(domain_path, (Path, str)), "Invalid domain path type."
         self._advanced_parser = AdvancedParser(domain_path, AdvancedParserOptions())
@@ -719,21 +1420,44 @@ class Domain:
         self._repositories = self._advanced_domain.get_repositories()
 
     def get_name(self) -> 'str':
+        """
+        Get the name of the domain.
+
+        :return: The name of the domain.
+        :rtype: str
+        """
         return self._advanced_domain.get_name()
 
     def get_requirements(self) -> 'list[str]':
-        """Get the requirements of the domain."""
+        """
+        Get the requirements of the domain.
+
+        :return: A list of requirements of the domain.
+        :rtype: list[str]
+        """
         # The requirements are returned as a string in the format '(:requirements :requirement1 :requirement2 ...)'.
         # We remove the '(:requirements' prefix and the ')' suffix.
         requirements = str(self._advanced_domain.get_requirements())[15:-1].split()
         return requirements
 
     def get_actions(self) -> 'list[Action]':
-        """Get the actions of the domain."""
+        """
+        Get the actions of the domain.
+
+        :return: A list of actions in the domain.
+        :rtype: list[Action]
+        """
         return [Action(x) for x in self._advanced_domain.get_actions()]
 
     def get_action(self, action_name: 'str') -> 'Action':
-        """Get the action of the domain."""
+        """
+        Get the action of the domain.
+
+        :param action_name: The name of the action to retrieve.
+        :type action_name: str
+        :return: The action with the specified name.
+        :rtype: Action
+        """
         assert isinstance(action_name, str), "Invalid action name type."
         for action in self.get_actions():
             if action.get_name() == action_name:
@@ -741,11 +1465,23 @@ class Domain:
         raise ValueError(f"Action '{action_name}' not found in the domain.")
 
     def get_constants(self) -> 'list[Object]':
-        """Get the constants of the domain."""
+        """
+        Get the constants of the domain.
+
+        :return: A list of constants in the domain.
+        :rtype: list[Object]
+        """
         return [Object(x) for x in self._advanced_domain.get_constants()]
 
     def get_constant(self, constant_name: 'str') -> 'Object':
-        """Get the constant of the domain."""
+        """
+        Get the constant of the domain.
+
+        :param constant_name: The name of the constant to retrieve.
+        :type constant_name: str
+        :return: The constant with the specified name.
+        :rtype: Object
+        """
         assert isinstance(constant_name, str), "Invalid constant name type."
         for constant in self.get_constants():
             if constant.get_name() == constant_name:
@@ -753,7 +1489,18 @@ class Domain:
         raise ValueError(f"Constant '{constant_name}' not found in the domain.")
 
     def get_predicates(self, ignore_static = False, ignore_fluent = False, ignore_derived = False) -> 'list[Predicate]':
-        """Get the predicates of the domain."""
+        """
+        Get the predicates of the domain.
+
+        :param ignore_static: If True, do not include static predicates.
+        :type ignore_static: bool
+        :param ignore_fluent: If True, do not include fluent predicates.
+        :type ignore_fluent: bool
+        :param ignore_derived: If True, do not include derived predicates.
+        :type ignore_derived: bool
+        :return: A list of predicates in the domain.
+        :rtype: list[Predicate]
+        """
         assert isinstance(ignore_static, bool), "Invalid ignore_static type."
         assert isinstance(ignore_fluent, bool), "Invalid ignore_fluent type."
         assert isinstance(ignore_derived, bool), "Invalid ignore_derived type."
@@ -767,7 +1514,14 @@ class Domain:
         return predicates
 
     def get_predicate(self, predicate_name: 'str') -> 'Predicate':
-        """Get the predicate of the domain."""
+        """
+        Get the predicate of the domain.
+
+        :param predicate_name: The name of the predicate to retrieve.
+        :type predicate_name: str
+        :return: The predicate with the specified name.
+        :rtype: Predicate
+        """
         assert isinstance(predicate_name, str), "Invalid predicate name type."
         for predicate in self.get_predicates():
             if predicate.get_name() == predicate_name:
@@ -782,10 +1536,12 @@ class Problem:
         """
         Initialize the problem with the given domain, path, and mode.
 
-        Args:
-            domain (Domain): The PDDL domain.
-            problem_path (Path): The path to the problem definition file.
-            mode (str): The search mode, either 'lifted' or 'grounded'.
+        :param domain: The domain to which the problem belongs.
+        :type domain: Domain
+        :param problem_path: The path to the problem definition file.
+        :type problem_path: Union[Path, str]
+        :param mode: The mode of the problem, either 'lifted' or 'grounded'.
+        :type mode: str
         """
         assert isinstance(domain, Domain), "Invalid domain type."
         assert isinstance(problem_path, (Path, str)), "Invalid problem path type."
@@ -805,19 +1561,41 @@ class Problem:
         return self._advanced_problem.get_or_create_term(advanced_term)
 
     def get_index(self) -> 'int':
-        """Get the index of the problem."""
+        """
+        Get the index of the problem.
+
+        :return: The index of the problem.
+        :rtype: int
+        """
         return self._advanced_problem.get_index()
 
     def get_name(self) -> 'str':
-        """Get the name of the problem."""
+        """
+        Get the name of the problem.
+
+        :return: The name of the problem.
+        :rtype: str
+        """
         return self._advanced_problem.get_name()
 
     def get_objects(self) -> 'list[Object]':
-        """Get the objects of the problem."""
+        """
+        Get the objects of the problem.
+
+        :return: A list of objects in the problem.
+        :rtype: list[Object]
+        """
         return [Object(x) for x in self._advanced_problem.get_objects()]
 
     def get_object(self, object_name: 'str') -> 'Object':
-        """Get the object of the problem."""
+        """
+        Get the object of the problem.
+
+        :param object_name: The name of the object to retrieve.
+        :type object_name: str
+        :return: The object with the specified name.
+        :rtype: Object
+        """
         assert isinstance(object_name, str), "Invalid object name type."
         for obj in self.get_objects():
             if obj.get_name() == object_name:
@@ -825,17 +1603,38 @@ class Problem:
         raise ValueError(f"Object '{object_name}' not found in the problem.")
 
     def get_requirements(self) -> 'list[str]':
-        """Get the requirements of the problem."""
+        """
+        Get the requirements of the problem.
+
+        :return: A list of requirements of the problem.
+        :rtype: list[str]
+        """
         requirements = str(self._advanced_problem.get_requirements()).removeprefix('(:requirements').removesuffix(')').split()
         return requirements
 
     def get_initial_state(self) -> 'State':
-        """Get the initial state of the problem."""
+        """
+        Get the initial state of the problem.
+
+        :return: The initial state of the problem.
+        :rtype: State
+        """
         initial_state, _ = self._search_context.get_state_repository().get_or_create_initial_state()
         return State(initial_state, self)
 
     def get_initial_atoms(self, ignore_static = False, ignore_fluent = False, ignore_derived = False) -> 'list[GroundAtom]':
-        """Get the initial atoms of the problem."""
+        """
+        Get the initial atoms of the problem.
+
+        :param ignore_static: If True, do not include static atoms.
+        :type ignore_static: bool
+        :param ignore_fluent: If True, do not include fluent atoms.
+        :type ignore_fluent: bool
+        :param ignore_derived: If True, do not include derived atoms.
+        :type ignore_derived: bool
+        :return: A list of initial ground atoms in the problem.
+        :rtype: list[GroundAtom]
+        """
         assert isinstance(ignore_static, bool), "Invalid ignore_static type."
         assert isinstance(ignore_fluent, bool), "Invalid ignore_fluent type."
         assert isinstance(ignore_derived, bool), "Invalid ignore_derived type."
@@ -858,7 +1657,12 @@ class Problem:
         return initial_atoms
 
     def get_goal_condition(self) -> 'GroundConjunctiveCondition':
-        """Get the goal condition of the problem."""
+        """
+        Get the goal condition of the problem.
+
+        :return: The goal condition of the problem as a GroundConjunctiveCondition.
+        :rtype: GroundConjunctiveCondition
+        """
         static_goal = self._advanced_problem.get_static_goal_condition()
         fluent_goal = self._advanced_problem.get_fluent_goal_condition()
         derived_goal = self._advanced_problem.get_derived_goal_condition()
@@ -866,25 +1670,61 @@ class Problem:
         return GroundConjunctiveCondition(advanced_condition, self)
 
     def new_atom(self, predicate: 'Predicate', terms: 'list[Term]') -> 'Atom':
-        """Create an atom from the given predicate and terms."""
+        """
+        Create an atom from the given predicate and terms.
+
+        :param predicate: The predicate for the atom.
+        :type predicate: Predicate
+        :param terms: A list of terms (Objects or Variables) for the atom.
+        :type terms: list[Term]
+        :return: An Atom object representing the atom.
+        :rtype: Atom
+        """
         assert isinstance(predicate, Predicate), "Invalid predicate type."
         assert isinstance(terms, list), "Invalid terms type."
         advanced_terms = AdvancedTermList([self._to_advanced_term(term) for term in terms])
         return Atom(self._advanced_problem.get_or_create_atom(predicate._advanced_predicate, advanced_terms))
 
     def new_literal(self, atom: 'Atom', polarity: 'bool') -> 'Literal':
-        """Create a literal with the given polarity."""
+        """
+        Create a literal with the given polarity.
+
+        :param atom: The atom for the literal.
+        :type atom: Atom
+        :param polarity: The polarity of the literal (True for positive, False for negative).
+        :type polarity: bool
+        :return: A Literal object representing the literal.
+        :rtype: Literal
+        """
         assert isinstance(atom, Atom), "Invalid atom type."
         return Literal(self._advanced_problem.get_or_create_literal(polarity, atom._advanced_atom))
 
     def new_ground_atom(self, predicate: 'Predicate', objects: 'list[Object]') -> 'GroundAtom':
-        """Create a ground atom from the given predicate and objects."""
+        """
+        Create a ground atom from the given predicate and objects.
+
+        :param predicate: The predicate for the ground atom.
+        :type predicate: Predicate
+        :param objects: A list of objects for the ground atom.
+        :type objects: list[Object]
+        :return: A GroundAtom object representing the ground atom.
+        :rtype: GroundAtom
+        """
         assert isinstance(predicate, Predicate), "Invalid predicate type."
         advanced_objects = AdvancedObjectList([x._advanced_object for x in objects])
         return GroundAtom(self._advanced_problem.get_or_create_ground_atom(predicate._advanced_predicate, advanced_objects))
 
     def new_ground_literal(self, ground_atom: 'GroundAtom', polarity: 'bool') -> 'GroundLiteral':
-        """Create a ground literal with the given polarity."""
+        """
+        Create a ground literal with the given polarity.
+
+        :param ground_atom: The ground atom for the ground literal.
+        :type ground_atom: GroundAtom
+        :param polarity: The polarity of the ground literal (True for positive, False for negative).
+        :type polarity: bool
+        :return: A GroundLiteral object representing the ground literal.
+        :rtype: GroundLiteral
+        """
         assert isinstance(ground_atom, GroundAtom), "Invalid ground atom type."
         predicate = ground_atom.get_predicate()
         # variables = predicate.get_parameters()  # TODO: This does not work, for some reason.
@@ -896,16 +1736,43 @@ class Problem:
         return GroundLiteral(self._advanced_problem.ground(advanced_literal, advanced_objects))
 
     def new_variable(self, name: 'str', parameter_index: 'int') -> 'Variable':
+        """
+        Create a new variable with the given name and parameter index.
+
+        :param name: The name of the variable.
+        :type name: str
+        :param parameter_index: The index of the parameter for the variable.
+        :type parameter_index: int
+        :return: A Variable object representing the new variable.
+        :rtype: Variable
+        """
         assert isinstance(name, str), "Invalid variable name type."
         assert isinstance(parameter_index, int), "Invalid parameter index type."
         return Variable(self._advanced_problem.get_or_create_variable(name, parameter_index))
 
     def new_variable_list(self, names: 'list[str]') -> 'list[Variable]':
+        """
+        Create a list of new variables with the given names.
+
+        :param names: A list of names for the variables.
+        :type names: list[str]
+        :return: A list of Variable objects representing the new variables.
+        :rtype: list[Variable]
+        """
         assert isinstance(names, list), "Invalid names type."
         return [self.new_variable(name, parameter_index) for name, parameter_index in zip(names, range(len(names)))]
 
     def new_conjunctive_condition(self, variables: 'list[Variable]', literals: 'list[Literal]') -> 'ConjunctiveCondition':
-        """Create a conjunctive condition from the given parameters, literals, and ground literals."""
+        """
+        Create a conjunctive condition from the given parameters, literals, and ground literals.
+
+        :param variables: A list of variables for the conjunctive condition.
+        :type variables: list[Variable]
+        :param literals: A list of literals for the conjunctive condition.
+        :type literals: list[Literal]
+        :return: A ConjunctiveCondition object representing the conjunctive condition.
+        :rtype: ConjunctiveCondition
+        """
         assert isinstance(variables, list), "Invalid variables type."
         assert isinstance(literals, list), "Invalid literals type."
         advanced_variables = AdvancedVariableList([x._advanced_variable for x in variables])
@@ -925,6 +1792,14 @@ class State:
     """
 
     def __init__(self, advanced_state: 'AdvancedState', problem: 'Problem') -> None:
+        """
+        Internal constructor for the State class; to create a state, use the new() method.
+
+        :param advanced_state: An instance of an advanced state.
+        :type advanced_state: AdvancedState
+        :param problem: The problem instance to which the state belongs.
+        :type advanced_state: AdvancedState
+        """
         assert isinstance(advanced_state, AdvancedState), "Invalid advanced state type."
         assert isinstance(problem, Problem), "Invalid problem type."
         self._problem = problem
@@ -933,12 +1808,24 @@ class State:
     def get_index(self) -> 'int':
         """
         Returns the index of the state.
+
+        :return: The index of the state.
+        :rtype: int
         """
         return self._advanced_state.get_index()
 
     def get_ground_atoms(self, ignore_static = False, ignore_fluent = False, ignore_derived = False) -> 'list[GroundAtom]':
         """
         Returns the ground atoms of the state.
+
+        :param ignore_static: If True, do not include static ground atoms.
+        :type ignore_static: bool
+        :param ignore_fluent: If True, do not include fluent ground atoms.
+        :type ignore_fluent: bool
+        :param ignore_derived: If True, do not include derived ground atoms.
+        :type ignore_derived: bool
+        :return: A list of ground atoms in the state.
+        :rtype: list[GroundAtom]
         """
         ground_atoms = []
         if not ignore_static:
@@ -957,6 +1844,11 @@ class State:
     def contains(self, ground_atom: 'GroundAtom') -> bool:
         """
         Checks if a ground atom is contained in the state.
+
+        :param ground_atom: The ground atom to check for containment.
+        :type ground_atom: GroundAtom
+        :return: True if the ground atom is contained in the state, False otherwise.
+        :rtype: bool
         """
         # TODO: This function is quite expensive. Expose a more efficient function on the C++ side.
         assert isinstance(ground_atom, GroundAtom) \
@@ -982,6 +1874,11 @@ class State:
     def contains_all(self, ground_atoms: 'list[GroundAtom]') -> bool:
         """
         Checks if all ground atoms are contained in the state.
+
+        :param ground_atoms: A list of ground atoms to check for containment.
+        :type ground_atoms: list[GroundAtom]
+        :return: True if all ground atoms are contained in the state, False otherwise.
+        :rtype: bool
         """
         assert isinstance(ground_atoms, list) \
             or isinstance(ground_atoms, AdvancedStaticGroundAtomList) \
@@ -995,6 +1892,11 @@ class State:
     def contains_none(self, ground_atoms: 'list[GroundAtom]') -> bool:
         """
         Checks if none of the ground atoms are contained in the state.
+
+        :param ground_atoms: A list of ground atoms to check for containment.
+        :type ground_atoms: list[GroundAtom]
+        :return: True if none of the ground atoms are contained in the state, False otherwise.
+        :rtype: bool
         """
         assert isinstance(ground_atoms, list) \
             or isinstance(ground_atoms, AdvancedStaticGroundAtomList) \
@@ -1008,6 +1910,11 @@ class State:
     def literal_holds(self, literal: 'GroundLiteral') -> bool:
         """
         Checks if a literal holds in the state.
+
+        :param literal: The ground literal to check.
+        :type literal: GroundLiteral
+        :return: True if the literal holds in the state, False otherwise.
+        :rtype: bool
         """
         if isinstance(literal._advanced_ground_literal, AdvancedStaticGroundLiteral):
             atom_is_in_state = (literal.get_atom().get_index() in self._problem._static_ground_atom_indices)
@@ -1035,6 +1942,13 @@ class State:
     def literals_hold(self, literals: 'list[GroundLiteral]', test_static = False) -> bool:
         """
         Checks if all literals hold in the state.
+
+        :param literals: A list of ground literals to check.
+        :type literals: list[GroundLiteral]
+        :param test_static: If True, also check static literals.
+        :type test_static: bool
+        :return: True if all literals hold in the state, False otherwise.
+        :rtype: bool
         """
         assert isinstance(literals, list), "Invalid literals type."
         advanced_static_ground_literals, advanced_fluent_ground_literals, advanced_derived_ground_literals = _split_ground_literal_list(literals)
@@ -1046,6 +1960,11 @@ class State:
     def generate_applicable_actions(self, cache_result = True) -> 'list[GroundAction]':
         """
         Generates a list of all applicable ground actions in the state.
+
+        :param cache_result: If True, cache the result for future calls.
+        :type cache_result: bool
+        :return: A list of applicable ground actions in the state.
+        :rtype: list[GroundAction]
         """
         if hasattr(self, '_applicable_actions'):
             return self._applicable_actions
@@ -1059,24 +1978,38 @@ class State:
     def __str__(self) -> 'str':
         """
         Returns a string representation of the state.
+
+        :return: A string representation of the state.
+        :rtype: str
         """
         return self._advanced_state.to_string(self._problem._advanced_problem)
 
     def __repr__(self) -> 'str':
         """
         Returns a string representation of the state.
+
+        :return: A string representation of the state.
+        :rtype: str
         """
         return self.__str__()
 
     def __hash__(self) -> 'int':
         """
         Returns a hash of the state.
+
+        :return: A hash of the state.
+        :rtype: int
         """
         return hash(self._advanced_state)
 
     def __eq__(self, other) -> bool:
         """
         Checks if two states are equal.
+
+        :param other: The other state to compare with.
+        :type other: State
+        :return: True if the states are equal, False otherwise.
+        :rtype: bool
         """
         if not isinstance(other, State):
             return False
@@ -1089,6 +2022,11 @@ class GroundConjunctiveCondition:
     def __init__(self, advanced_condition: 'AdvancedGroundConjunctiveCondition', problem: 'Problem') -> None:
         """
         Initialize the ground conjunctive condition with the given parameters. It is not possible to create AdvancedGroundConjunctiveCondition directly, so this class is used as a wrapper.
+
+        :param advanced_condition: An instance of an advanced ground conjunctive condition.
+        :type advanced_condition: AdvancedGroundConjunctiveCondition
+        :param problem: The problem instance to which the ground conjunctive condition belongs.
+        :type problem: Problem
         """
         assert isinstance(advanced_condition, AdvancedGroundConjunctiveCondition), "Invalid advanced condition type."
         assert isinstance(problem, Problem), "Invalid problem type."
@@ -1115,14 +2053,26 @@ class GroundConjunctiveCondition:
         self._derived_ground_literals += [GroundLiteral.new(x, False, self._problem) for x in self._derived_neg_ground_atoms]
 
     def holds(self, state: 'State') -> bool:
-        """Check if the ground conjunctive condition holds in the given state."""
+        """
+        Check if the ground conjunctive condition holds in the given state.
+
+        :param state: The state to check the condition against.
+        :type state: State
+        :return: True if the condition holds in the state, False otherwise.
+        :rtype: bool
+        """
         assert isinstance(state, State), "Invalid state type."
         holds_positive = state.contains_all(self._static_pos_advanced_ground_atoms) and state.contains_all(self._fluent_pos_advanced_ground_atoms) and state.contains_all(self._derived_pos_advanced_ground_atoms)
         holds_negative = state.contains_none(self._static_neg_advanced_ground_atoms) and state.contains_none(self._fluent_neg_advanced_ground_atoms) and state.contains_none(self._derived_neg_advanced_ground_atoms)
         return holds_positive and holds_negative
 
     def lift(self) -> 'ConjunctiveCondition':
-        """Lift the ground conjunctive condition to a conjunctive condition."""
+        """
+        Lift the ground conjunctive condition to a conjunctive condition.
+
+        :return: A ConjunctiveCondition object representing the lifted condition.
+        :rtype: ConjunctiveCondition
+        """
         variable_map = {}
         lifted_literals = []
         for literal in self.__iter__():
@@ -1145,19 +2095,41 @@ class GroundConjunctiveCondition:
         return ConjunctiveCondition.new(variables, lifted_literals, self._problem)
 
     def __iter__(self) -> 'Iterable[GroundLiteral]':
-        """Iterate over all literals in the ground conjunctive condition."""
+        """
+        Iterate over all literals in the ground conjunctive condition.
+
+        :return: An iterable of GroundLiteral objects representing the literals in the condition.
+        :rtype: Iterable[GroundLiteral]
+        """
         yield from self._static_ground_literals
         yield from self._fluent_ground_literals
         yield from self._derived_ground_literals
 
     def __len__(self) -> 'int':
-        """Get the number of literals in the ground conjunctive condition."""
+        """
+        Get the number of literals in the ground conjunctive condition.
+
+        :return: The number of literals in the condition.
+        :rtype: int
+        """
         return len(self._static_ground_literals) + len(self._fluent_ground_literals) + len(self._derived_ground_literals)
 
     def __str__(self):
+        """
+        Get a string representation of the ground conjunctive condition.
+
+        :return: A string representation of the ground conjunctive condition.
+        :rtype: str
+        """
         return "GroundConjunctiveCondition([" + ", ".join(str(x) for x in self.__iter__()) + "])"
 
     def __repr__(self):
+        """
+        Get a string representation of the ground conjunctive condition.
+
+        :return: A string representation of the ground conjunctive condition.
+        :rtype: str
+        """
         return str(self)
 
 
@@ -1165,20 +2137,28 @@ class ConjunctiveCondition:
     """Class representing a conjunctive condition of literals."""
 
     def __init__(self, advanced_condition: 'AdvancedConjunctiveCondition') -> None:
+        """
+        Internal constructor for the ConjunctiveCondition class; to create a conjunctive condition, use the new() method.
+
+        :param advanced_condition: An instance of an advanced conjunctive condition.
+        :type advanced_condition: AdvancedConjunctiveCondition
+        """
         assert isinstance(advanced_condition, AdvancedConjunctiveCondition), "Invalid conjunctive condition type."
         self._advanced_conjunctive_condition = advanced_condition
 
     @staticmethod
     def new(variables: 'list[Variable]', literals: 'list[Literal]', problem: 'Problem') -> 'ConjunctiveCondition':
-        """Create a conjunctive condition from the given parameters, literals, and ground literals.
+        """
+        Create a conjunctive condition from the given parameters, literals, and ground literals.
 
-        Args:
-            problem (Problem): The problem to create the conjunctive condition for.
-            variables (list[Variable]): The variables of the conjunctive condition.
-            literals (list[Literal]): The literals of the conjunctive condition.
-
-        Returns:
-            ConjunctiveCondition: The created conjunctive condition.
+        :param variables: A list of variables for the conjunctive condition.
+        :type variables: list[Variable]
+        :param literals: A list of literals for the conjunctive condition.
+        :type literals: list[Literal]
+        :param problem: The problem instance to which the conjunctive condition belongs.
+        :type problem: Problem
+        :return: A ConjunctiveCondition object representing the conjunctive condition.
+        :rtype: ConjunctiveCondition
         """
         assert isinstance(variables, list), "Invalid variables type."
         assert isinstance(literals, list), "Invalid literals type."
@@ -1196,29 +2176,41 @@ class ConjunctiveCondition:
     @staticmethod
     def parse(problem: 'Problem', **words) -> 'ConjunctiveCondition':
         """Parse a conjunctive condition from the given words.
+        Example: ConjunctiveCondition.parse(problem, 'at', 'robot1', '?l', 'box', '?b', 'not', 'at', '?b', '?l')
 
-        Args:
-            problem (Problem): The problem to create the conjunctive condition for.
-            **words: A sequence of words representing polarities, predicate names, variables, and constants.
-
-        Returns:
-            ConjunctiveCondition: The parsed conjunctive condition.
-
-        Example:
-            >>> ConjunctiveCondition.parse(problem, 'at', 'robot1', '?l', 'box', '?b', 'not', 'at', '?b', '?l')
-            Note that the arity of the predicates determine the number of variables and constants that are expected.
-            The conjunctions are implicit.
+        :param problem: The problem to create the conjunctive condition for.
+        :type problem: Problem
+        :param words: A sequence of words representing polarities, predicate names, variables, and constants.
+        :type words: str
+        :return: A ConjunctiveCondition object representing the parsed condition.
+        :rtype: ConjunctiveCondition
         """
         assert isinstance(problem, Problem), "Invalid problem type."
         raise NotImplementedError("Parsing of conjunctive conditions is not implemented yet.")
 
 
     def get_parameters(self) -> 'list[Variable]':
-        """Get the parameters of the conjunctive condition."""
+        """
+        Get the parameters of the conjunctive condition.
+
+        :return: A list of variables representing the parameters of the conjunctive condition.
+        :rtype: list[Variable]
+        """
         return [Variable(x) for x in self._advanced_conjunctive_condition.get_parameters()]
 
     def get_literals(self, ignore_static = False, ignore_fluent = False, ignore_derived = False) -> 'list[Literal]':
-        """Get the literals of the conjunctive condition."""
+        """
+        Get the literals of the conjunctive condition.
+
+        :param ignore_static: If True, do not include static literals.
+        :type ignore_static: bool
+        :param ignore_fluent: If True, do not include fluent literals.
+        :type ignore_fluent: bool
+        :param ignore_derived: If True, do not include derived literals.
+        :type ignore_derived: bool
+        :return: A list of literals in the conjunctive condition.
+        :rtype: list[Literal]
+        """
         literals = []
         if not ignore_static:
             literals.extend([Literal(x) for x in self._advanced_conjunctive_condition.get_static_literals()])
@@ -1229,7 +2221,18 @@ class ConjunctiveCondition:
         return literals
 
     def get_nullary_ground_literals(self, ignore_static = False, ignore_fluent = False, ignore_derived = False) -> 'list[GroundLiteral]':
-        """Get the nullary ground literals of the conjunctive condition."""
+        """
+        Get the nullary ground literals of the conjunctive condition.
+
+        :param ignore_static: If True, do not include static ground literals.
+        :type ignore_static: bool
+        :param ignore_fluent: If True, do not include fluent ground literals.
+        :type ignore_fluent: bool
+        :param ignore_derived: If True, do not include derived ground literals.
+        :type ignore_derived: bool
+        :return: A list of nullary ground literals in the conjunctive condition.
+        :rtype: list[GroundLiteral]
+        """
         ground_literals = []
         if not ignore_static:
             ground_literals.extend([GroundLiteral(x) for x in self._advanced_conjunctive_condition.get_nullary_ground_static_literals()])
@@ -1240,11 +2243,15 @@ class ConjunctiveCondition:
         return ground_literals
 
     def ground(self, state: 'State', max_groundings: int = -1) -> 'list[GroundConjunctiveCondition]':
-        """Ground the conjunctive condition.
+        """
+        Ground the conjunctive condition.
 
-        Args:
-            state (State): The state to ground the condition in.
-            max_groundings (int): The maximum number of groundings to generate. If -1, all groundings are generated.
+        :param state: The state to ground the condition against.
+        :type state: State
+        :param max_groundings: The maximum number of groundings to generate. If -1, generate all groundings.
+        :type max_groundings: int
+        :return: A list of GroundConjunctiveCondition objects representing the grounded conditions.
+        :rtype: list[GroundConjunctiveCondition]
         """
         assert isinstance(state, State), "Invalid state type."
         if max_groundings < 0:
@@ -1263,19 +2270,41 @@ class ConjunctiveCondition:
         return result
 
     def __str__(self):
-        """Get the string representation of the conjunctive condition."""
+        """
+        Get the string representation of the conjunctive condition.
+
+        :return: A string representation of the conjunctive condition.
+        :rtype: str
+        """
         return str(self._advanced_conjunctive_condition)
 
     def __repr__(self):
-        """Get the string representation of the conjunctive condition."""
+        """
+        Get the string representation of the conjunctive condition.
+
+        :return: A string representation of the conjunctive condition.
+        :rtype: str
+        """
         return str(self._advanced_conjunctive_condition)
 
     def __hash__(self) -> 'int':
-        """Get the hash of the conjunctive condition."""
+        """
+        Get the hash of the conjunctive condition.
+
+        :return: A hash of the conjunctive condition.
+        :rtype: int
+        """
         return hash(self._advanced_conjunctive_condition)
 
     def __eq__(self, other: 'object') -> bool:
-        """Check if two conjunctive conditions are equal."""
+        """
+        Check if two conjunctive conditions are equal.
+
+        :param other: The other conjunctive condition to compare with.
+        :type other: ConjunctiveCondition
+        :return: True if the conjunctive conditions are equal, False otherwise.
+        :rtype: bool
+        """
         if not isinstance(other, ConjunctiveCondition):
             return False
         return self._advanced_conjunctive_condition == other._advanced_conjunctive_condition

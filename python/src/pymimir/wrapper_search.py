@@ -29,8 +29,11 @@ class Heuristic:
         Compute the heuristic value for a given state.
 
         :param state: The state for which to compute the heuristic.
+        :type state: State
         :param is_goal_state: Whether the state is a goal state.
+        :type is_goal_state: bool
         :return: The heuristic value.
+        :rtype: float
         """
         raise NotImplementedError("This method should be overridden by subclasses.")
 
@@ -39,12 +42,13 @@ class Heuristic:
         Get preferred actions for the last computed state.
 
         :return: A set of GroundAction representing the preferred actions.
+        :rtype: set[GroundAction]
         """
         raise NotImplementedError("This method should be overridden by subclasses.")
 
 
 class AddHeuristic(Heuristic):
-    def __init__(self, problem: 'Problem'):
+    def __init__(self, problem: 'Problem') -> None:
         super().__init__()
         assert isinstance(problem, Problem), "Problem must be an instance of Problem."
         self._problem = problem
@@ -59,7 +63,7 @@ class AddHeuristic(Heuristic):
 
 
 class BlindHeuristic(Heuristic):
-    def __init__(self, problem: 'Problem'):
+    def __init__(self, problem: 'Problem') -> None:
         super().__init__()
         assert isinstance(problem, Problem), "Problem must be an instance of Problem."
         self._problem = problem
@@ -73,7 +77,7 @@ class BlindHeuristic(Heuristic):
 
 
 class MaxHeuristic(Heuristic):
-    def __init__(self, problem: 'Problem'):
+    def __init__(self, problem: 'Problem') -> None:
         super().__init__()
         assert isinstance(problem, Problem), "Problem must be an instance of Problem."
         self._problem = problem
@@ -88,7 +92,7 @@ class MaxHeuristic(Heuristic):
 
 
 class PerfectHeuristic(Heuristic):
-    def __init__(self, problem: 'Problem'):
+    def __init__(self, problem: 'Problem') -> None:
         super().__init__()
         assert isinstance(problem, Problem), "Problem must be an instance of Problem."
         self._problem = problem
@@ -102,7 +106,7 @@ class PerfectHeuristic(Heuristic):
 
 
 class SetAddHeuristic(Heuristic):
-    def __init__(self, problem: 'Problem'):
+    def __init__(self, problem: 'Problem') -> None:
         super().__init__()
         assert isinstance(problem, Problem), "Problem must be an instance of Problem."
         self._problem = problem
@@ -117,7 +121,7 @@ class SetAddHeuristic(Heuristic):
 
 
 class FFHeuristic(Heuristic):
-    def __init__(self, problem: 'Problem'):
+    def __init__(self, problem: 'Problem') -> None:
         super().__init__()
         assert isinstance(problem, Problem), "Problem must be an instance of Problem."
         self._problem = problem
@@ -136,12 +140,14 @@ class FFHeuristic(Heuristic):
 # -----------------
 
 class AdvancedHeuristicAdapter(AdvancedHeuristicBase):
-    def __init__(self, heuristic: 'Heuristic', problem: 'Problem'):
+    def __init__(self, heuristic: 'Heuristic', problem: 'Problem') -> None:
         """
-        Proxy class for a heuristic that wraps a Heuristic instance.
+        An adapter class to wrap a Heuristic instance to the internal interface.
 
         :param heuristic: The heuristic to wrap.
+        :type heuristic: Heuristic
         :param problem: The problem associated with the heuristic.
+        :type problem: Problem
         """
         super().__init__()
         assert isinstance(heuristic, Heuristic), "Heuristic must be an instance of Heuristic."
@@ -161,12 +167,18 @@ class AdvancedHeuristicAdapter(AdvancedHeuristicBase):
 
 
 class SearchResult:
-    def __init__(self, status, solution: 'list[GroundAction]', solution_cost: float, goal_state: 'State'):
+    def __init__(self, status, solution: 'list[GroundAction]', solution_cost: float, goal_state: 'State') -> None:
         """
-        Represents the result of a search operation.
+        A class to encapsulate the result of a search operation.
 
-        :param actions: A list of GroundAction representing the solution path.
-        :param statistics: Statistics collected during the search.
+        :param status: The status of the search operation (e.g., 'solved', 'unsolvable').
+        :type status: str
+        :param solution: A list of GroundAction representing the solution path.
+        :type solution: list[GroundAction]
+        :param solution_cost: The total cost of the solution.
+        :type solution_cost: float
+        :param goal_state: The final state reached by the search.
+        :type goal_state: State
         """
         self.status = status
         self.solution = solution
@@ -190,11 +202,27 @@ def astar_eager(
     A* search algorithm with eager evaluation.
 
     :param problem: The problem to solve.
+    :type problem: Problem
     :param start_state: The initial state from which to start the search.
+    :type start_state: State
     :param heuristic: The heuristic function to use for the search.
+    :type heuristic: Heuristic
     :param max_time_seconds: Maximum time allowed for the search in seconds. Default is -1 (no limit).
+    :type max_time_seconds: float
     :param max_num_states: Maximum number of states to explore. Default is -1 (no limit).
-    :return: An instance of SearchResult containing the search status, solution, and goal state.
+    :type max_num_states: int
+    :param on_expand_state: Callback function called when a state is expanded.
+    :type on_expand_state: Callable[[AdvancedState], None]
+    :param on_expand_goal_state: Callback function called when a goal state is expanded.
+    :type on_expand_goal_state: Callable[[AdvancedState], None]
+    :param on_generate_state: Callback function called when a new state is generated.
+    :type on_generate_state: Callable[[AdvancedState, AdvancedGroundAction, float, AdvancedState], None]
+    :param on_prune_state: Callback function called when a state is pruned.
+    :type on_prune_state: Callable[[AdvancedState], None]
+    :param on_finish_f_layer: Callback function called when a layer of states is finished.
+    :type on_finish_f_layer: Callable[[float], None]
+    :return: A SearchResult object containing the status, solution, solution cost, and goal state.
+    :rtype: SearchResult
     """
     assert isinstance(problem, Problem), "Problem must be an instance of Problem."
     assert isinstance(start_state, State), "Start state must be an instance of State."
