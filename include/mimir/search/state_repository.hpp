@@ -99,6 +99,10 @@ public:
     /// @return the number of created states.
     size_t get_state_count() const;
 
+    /// @brief Return the state set with randomized access.
+    /// @return the state state with randomized access.
+    const StateImplSet& get_states() const;
+
     /// @brief Return the reached fluent ground atoms.
     /// @return a bitset that stores the reached fluent ground atom indices.
     const FlatBitset& get_reached_fluent_ground_atoms_bitset() const;

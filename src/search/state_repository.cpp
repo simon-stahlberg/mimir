@@ -356,6 +356,8 @@ const Problem& StateRepositoryImpl::get_problem() const { return m_axiom_evaluat
 
 size_t StateRepositoryImpl::get_state_count() const { return m_states.size(); }
 
+const StateImplSet& StateRepositoryImpl::get_states() const { return m_states; }
+
 const FlatBitset& StateRepositoryImpl::get_reached_fluent_ground_atoms_bitset() const { return m_reached_fluent_atoms; }
 
 const FlatBitset& StateRepositoryImpl::get_reached_derived_ground_atoms_bitset() const { return m_reached_derived_atoms; }
