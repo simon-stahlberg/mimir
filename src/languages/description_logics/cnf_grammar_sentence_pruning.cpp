@@ -80,7 +80,7 @@ bool StateListRefinementPruningFunction::should_prune_impl(Constructor<D> constr
 {
     auto denotations = DenotationList<D>();
 
-    auto eval_context = dl::EvaluationContext(nullptr, nullptr, m_denotation_repositories);
+    auto eval_context = dl::EvaluationContext(std::nullopt, nullptr, m_denotation_repositories);
 
     for (const auto& [state, problem] : m_states)
     {

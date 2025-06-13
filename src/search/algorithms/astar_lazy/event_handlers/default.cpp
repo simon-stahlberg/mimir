@@ -28,17 +28,27 @@ using namespace mimir::formalism;
 
 namespace mimir::search::astar_lazy
 {
-void DefaultEventHandlerImpl::on_expand_state_impl(State state) const {}
+void DefaultEventHandlerImpl::on_expand_state_impl(const State& state) const {}
 
-void DefaultEventHandlerImpl::on_expand_goal_state_impl(State state) const {}
+void DefaultEventHandlerImpl::on_expand_goal_state_impl(const State& state) const {}
 
-void DefaultEventHandlerImpl::on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const {}
+void DefaultEventHandlerImpl::on_generate_state_impl(const State& state, GroundAction action, ContinuousCost action_cost, const State& successor_state) const {}
 
-void DefaultEventHandlerImpl::on_generate_state_relaxed_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const {}
+void DefaultEventHandlerImpl::on_generate_state_relaxed_impl(const State& state,
+                                                             GroundAction action,
+                                                             ContinuousCost action_cost,
+                                                             const State& successor_state) const
+{
+}
 
-void DefaultEventHandlerImpl::on_generate_state_not_relaxed_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const {}
+void DefaultEventHandlerImpl::on_generate_state_not_relaxed_impl(const State& state,
+                                                                 GroundAction action,
+                                                                 ContinuousCost action_cost,
+                                                                 const State& successor_state) const
+{
+}
 
-void DefaultEventHandlerImpl::on_close_state_impl(State state) const {}
+void DefaultEventHandlerImpl::on_close_state_impl(const State& state) const {}
 
 void DefaultEventHandlerImpl::on_finish_f_layer_impl(ContinuousCost f_value, uint64_t num_expanded_states, uint64_t num_generated_states) const
 {
@@ -46,9 +56,9 @@ void DefaultEventHandlerImpl::on_finish_f_layer_impl(ContinuousCost f_value, uin
               << " and num generated states " << num_generated_states << " (" << get_statistics().get_current_search_time_ms().count() << " ms)" << std::endl;
 }
 
-void DefaultEventHandlerImpl::on_prune_state_impl(State state) const {}
+void DefaultEventHandlerImpl::on_prune_state_impl(const State& state) const {}
 
-void DefaultEventHandlerImpl::on_start_search_impl(State start_state, ContinuousCost g_value, ContinuousCost h_value) const
+void DefaultEventHandlerImpl::on_start_search_impl(const State& start_state, ContinuousCost g_value, ContinuousCost h_value) const
 {
     std::cout << "[AStar] Search started.\n"
               << "[AStar] Initial g_value: " << g_value << "\n"

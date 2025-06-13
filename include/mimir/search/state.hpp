@@ -202,7 +202,7 @@ template<formalism::IsFluentOrDerivedTag P, std::ranges::input_range Range1, std
     requires IsRangeOver<Range1, Index> && IsRangeOver<Range2, Index>
 bool State::literals_hold(const Range1& positive_atoms, const Range2& negative_atoms) const
 {
-    return m_internal->template literal_holds<P, Range1, Range2>(positive_atoms, negative_atoms, get_problem());
+    return m_internal->template literals_hold<P, Range1, Range2>(positive_atoms, negative_atoms, get_problem());
 }
 
 /**
@@ -253,7 +253,7 @@ struct EqualTo<mimir::search::State>
 namespace mimir::search
 {
 using StateList = std::vector<State>;
-using StateSet = std::unordered_set<State>;
+using StateSet = UnorderedSet<State>;
 template<typename T>
 using StateMap = UnorderedMap<State, T>;
 using StateProblem = std::pair<State, formalism::Problem>;

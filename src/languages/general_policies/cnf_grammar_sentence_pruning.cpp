@@ -31,8 +31,8 @@ bool GeneralPoliciesRefinementPruningFunction::should_prune_impl<dl::BooleanTag>
 {
     auto denotations = AbstractFeatureList {};
 
-    auto src_eval_context = dl::EvaluationContext(nullptr, nullptr, m_denotation_repositories);
-    auto dst_eval_context = dl::EvaluationContext(nullptr, nullptr, m_denotation_repositories);
+    auto src_eval_context = dl::EvaluationContext(std::nullopt, nullptr, m_denotation_repositories);
+    auto dst_eval_context = dl::EvaluationContext(std::nullopt, nullptr, m_denotation_repositories);
 
     for (const auto& [src, dst] : m_transitions)
     {
@@ -86,8 +86,8 @@ bool GeneralPoliciesRefinementPruningFunction::should_prune_impl<dl::NumericalTa
 {
     auto denotations = AbstractFeatureList {};
 
-    auto src_eval_context = dl::EvaluationContext(nullptr, nullptr, m_denotation_repositories);
-    auto dst_eval_context = dl::EvaluationContext(nullptr, nullptr, m_denotation_repositories);
+    auto src_eval_context = dl::EvaluationContext(std::nullopt, nullptr, m_denotation_repositories);
+    auto dst_eval_context = dl::EvaluationContext(std::nullopt, nullptr, m_denotation_repositories);
 
     for (const auto& [src, dst] : m_transitions)
     {

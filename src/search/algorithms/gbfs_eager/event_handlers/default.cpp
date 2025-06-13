@@ -28,15 +28,15 @@ using namespace mimir::formalism;
 
 namespace mimir::search::gbfs_eager
 {
-void DefaultEventHandlerImpl::on_expand_state_impl(State state) const {}
+void DefaultEventHandlerImpl::on_expand_state_impl(const State& state) const {}
 
-void DefaultEventHandlerImpl::on_expand_goal_state_impl(State state) const {}
+void DefaultEventHandlerImpl::on_expand_goal_state_impl(const State& state) const {}
 
-void DefaultEventHandlerImpl::on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const {}
+void DefaultEventHandlerImpl::on_generate_state_impl(const State& state, GroundAction action, ContinuousCost action_cost, const State& successor_state) const {}
 
-void DefaultEventHandlerImpl::on_prune_state_impl(State state) const {}
+void DefaultEventHandlerImpl::on_prune_state_impl(const State& state) const {}
 
-void DefaultEventHandlerImpl::on_start_search_impl(State start_state, ContinuousCost g_value, ContinuousCost h_value) const
+void DefaultEventHandlerImpl::on_start_search_impl(const State& start_state, ContinuousCost g_value, ContinuousCost h_value) const
 {
     std::cout << "[GBFS] Search started.\n"
               << "[GBFS] Initial g_value: " << g_value << "\n"

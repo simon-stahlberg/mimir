@@ -26,16 +26,16 @@ using namespace mimir::formalism;
 
 namespace mimir::search::gbfs_eager
 {
-void DebugEventHandlerImpl::on_expand_state_impl(State state) const
+void DebugEventHandlerImpl::on_expand_state_impl(const State& state) const
 {
     std::cout << "[GBFS] ----------------------------------------\n"
               << "[GBFS] State: " << state << "\n"
               << std::endl;
 }
 
-void DebugEventHandlerImpl::on_expand_goal_state_impl(State state) const {}
+void DebugEventHandlerImpl::on_expand_goal_state_impl(const State& state) const {}
 
-void DebugEventHandlerImpl::on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const
+void DebugEventHandlerImpl::on_generate_state_impl(const State& state, GroundAction action, ContinuousCost action_cost, const State& successor_state) const
 {
     std::cout << "[GBFS] Action: ";
     mimir::operator<<(std::cout, std::make_tuple(action, std::cref(*m_problem), GroundActionImpl::FullFormatterTag {}));
@@ -44,9 +44,9 @@ void DebugEventHandlerImpl::on_generate_state_impl(State state, GroundAction act
               << std::endl;
 }
 
-void DebugEventHandlerImpl::on_prune_state_impl(State state) const {}
+void DebugEventHandlerImpl::on_prune_state_impl(const State& state) const {}
 
-void DebugEventHandlerImpl::on_start_search_impl(State start_state, ContinuousCost g_value, ContinuousCost h_value) const
+void DebugEventHandlerImpl::on_start_search_impl(const State& start_state, ContinuousCost g_value, ContinuousCost h_value) const
 {
     std::cout << "[GBFS] Search started.\n"
               << "[GBFS] Initial g_value: " << g_value << "\n"

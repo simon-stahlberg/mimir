@@ -113,7 +113,7 @@ void ConceptAtomicStateImpl<P>::evaluate_impl(EvaluationContext& context) const
 
     // Compute result
     bitset.unset_all();
-    for (const auto& atom_index : context.get_state()->get_atoms<P>())
+    for (const auto& atom_index : context.get_state().get_atoms<P>())
     {
         const auto atom = context.get_problem()->get_repositories().template get_ground_atom<P>(atom_index);
 
@@ -591,7 +591,7 @@ void RoleAtomicStateImpl<P>::evaluate_impl(EvaluationContext& context) const
     {
         bitset.unset_all();
     }
-    for (const auto& atom_index : context.get_state()->get_atoms<P>())
+    for (const auto& atom_index : context.get_state().get_atoms<P>())
     {
         const auto atom = context.get_problem()->get_repositories().template get_ground_atom<P>(atom_index);
 
@@ -1135,7 +1135,7 @@ void BooleanAtomicStateImpl<P>::evaluate_impl(EvaluationContext& context) const
     boolean = false;
 
     // Compute result
-    for (const auto& atom_index : context.get_state()->get_atoms<P>())
+    for (const auto& atom_index : context.get_state().get_atoms<P>())
     {
         const auto atom = context.get_problem()->get_repositories().template get_ground_atom<P>(atom_index);
 

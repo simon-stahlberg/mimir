@@ -26,16 +26,16 @@ using namespace mimir::formalism;
 
 namespace mimir::search::astar_lazy
 {
-void DebugEventHandlerImpl::on_expand_state_impl(State state) const
+void DebugEventHandlerImpl::on_expand_state_impl(const State& state) const
 {
     std::cout << "[AStar] ----------------------------------------\n"
               << "[AStar] State: " << state << "\n"
               << std::endl;
 }
 
-void DebugEventHandlerImpl::on_expand_goal_state_impl(State state) const {}
+void DebugEventHandlerImpl::on_expand_goal_state_impl(const State& state) const {}
 
-void DebugEventHandlerImpl::on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const
+void DebugEventHandlerImpl::on_generate_state_impl(const State& state, GroundAction action, ContinuousCost action_cost, const State& successor_state) const
 {
     std::cout << "[AStar] Action: ";
     mimir::operator<<(std::cout, std::make_tuple(action, std::cref(*m_problem), GroundActionImpl::FullFormatterTag {}));
@@ -44,11 +44,21 @@ void DebugEventHandlerImpl::on_generate_state_impl(State state, GroundAction act
               << std::endl;
 }
 
-void DebugEventHandlerImpl::on_generate_state_relaxed_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const {}
+void DebugEventHandlerImpl::on_generate_state_relaxed_impl(const State& state,
+                                                           GroundAction action,
+                                                           ContinuousCost action_cost,
+                                                           const State& successor_state) const
+{
+}
 
-void DebugEventHandlerImpl::on_generate_state_not_relaxed_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) const {}
+void DebugEventHandlerImpl::on_generate_state_not_relaxed_impl(const State& state,
+                                                               GroundAction action,
+                                                               ContinuousCost action_cost,
+                                                               const State& successor_state) const
+{
+}
 
-void DebugEventHandlerImpl::on_close_state_impl(State state) const {}
+void DebugEventHandlerImpl::on_close_state_impl(const State& state) const {}
 
 void DebugEventHandlerImpl::on_finish_f_layer_impl(ContinuousCost f_value, uint64_t num_expanded_states, uint64_t num_generated_states) const
 {
@@ -56,9 +66,9 @@ void DebugEventHandlerImpl::on_finish_f_layer_impl(ContinuousCost f_value, uint6
               << " and num generated states " << num_generated_states << std::endl;
 }
 
-void DebugEventHandlerImpl::on_prune_state_impl(State state) const {}
+void DebugEventHandlerImpl::on_prune_state_impl(const State& state) const {}
 
-void DebugEventHandlerImpl::on_start_search_impl(State start_state, ContinuousCost g_value, ContinuousCost h_value) const
+void DebugEventHandlerImpl::on_start_search_impl(const State& start_state, ContinuousCost g_value, ContinuousCost h_value) const
 {
     std::cout << "[AStar] Search started.\n"
               << "[AStar] Initial g_value: " << g_value << "\n"

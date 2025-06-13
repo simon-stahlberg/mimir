@@ -31,7 +31,7 @@ namespace mimir::datasets
 /// @brief Create an `ObjectGraph` for a given `search::State` from a given `formalism::ProblemImpl`.
 /// @param state is the state.
 /// @param problem is the Problem.
-extern graphs::StaticVertexColoredGraph create_object_graph(search::State state, const formalism::ProblemImpl& problem);
+extern graphs::StaticVertexColoredGraph create_object_graph(const search::State& state, const formalism::ProblemImpl& problem);
 
 }
 

@@ -34,15 +34,15 @@ private:
     /* Implement AlgorithmEventHandlerBase interface */
     friend class EventHandlerBase<DebugEventHandlerImpl>;
 
-    void on_expand_state_impl(State state) const;
+    void on_expand_state_impl(const State& state) const;
 
-    void on_expand_goal_state_impl(State state) const;
+    void on_expand_goal_state_impl(const State& state) const;
 
-    void on_generate_state_impl(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) const;
+    void on_generate_state_impl(const State& state, formalism::GroundAction action, ContinuousCost action_cost, const State& successor_state) const;
 
-    void on_prune_state_impl(State state) const;
+    void on_prune_state_impl(const State& state) const;
 
-    void on_start_search_impl(State start_state, ContinuousCost g_value, ContinuousCost h_value) const;
+    void on_start_search_impl(const State& start_state, ContinuousCost g_value, ContinuousCost h_value) const;
 
     void on_new_best_h_value_impl(ContinuousCost h_value, uint64_t num_expanded_states, uint64_t num_generated_states) const;
 

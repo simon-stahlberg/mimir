@@ -22,6 +22,7 @@
 #include "mimir/graphs/algorithms/nauty.hpp"
 #include "mimir/graphs/types.hpp"
 #include "mimir/search/declarations.hpp"
+#include "mimir/search/state.hpp"
 
 #include <cstdint>
 #include <vector>
