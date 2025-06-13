@@ -48,6 +48,8 @@ using AStarSearchNodeImpl = SearchNodeImpl<ContinuousCost, ContinuousCost>;
 using AStarSearchNode = AStarSearchNodeImpl*;
 using ConstAStarSearchNode = const AStarSearchNodeImpl*;
 
+static_assert(sizeof(AStarSearchNodeImpl) == 24);
+
 static void set_g_value(AStarSearchNode node, ContinuousCost g_value) { node->get_property<0>() = g_value; }
 static void set_h_value(AStarSearchNode node, ContinuousCost h_value) { node->get_property<1>() = h_value; }
 

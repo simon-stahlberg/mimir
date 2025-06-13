@@ -186,6 +186,30 @@ int main(int argc, char** argv)
     std::cout << "Num tree nodes: " << problem->get_tree_table().size() << std::endl;
     std::cout << "Num ordering bitsets: " << problem->get_bitset_repository().size() << std::endl;
 
+    auto ordering_to_num_slots = UnorderedMap<const valla::Bitset*, size_t> {};
+    auto slot_to_num_orderings = UnorderedMap<valla::Slot, size_t> {};
+    // std::cout << "tree index: [";
+    for (const auto& state : search_context->get_state_repository()->get_states())
+    {
+        const auto fluent_atom_slot = state->get_atoms_slot<FluentTag>();
+        ++ordering_to_num_slots[&fluent_atom_slot.get_ordering()];
+        ++slot_to_num_orderings[fluent_atom_slot.get_slot()];
+        // std::cout << fluent_atom_slot.get_index() << ", ";
+    }
+    // std::cout << "]" << std::endl;
+    //  std::cout << "ordering_to_num_slots: [";
+    //  for (const auto& [ordering, size] : ordering_to_num_slots)
+    //  {
+    //      std::cout << size << ", ";
+    //  }
+    //  std::cout << "]" << std::endl;
+    //  std::cout << "slot_to_num_orderings: [";
+    //  for (const auto& [slot, size] : slot_to_num_orderings)
+    //  {
+    //      std::cout << size << ", ";
+    //  }
+    //  std::cout << "]" << std::endl;
+
     if (result.status == SearchStatus::SOLVED)
     {
         std::ofstream plan_file;
