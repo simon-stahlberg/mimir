@@ -74,14 +74,14 @@ private:
     void update_or_annotation_impl(const rpg::Axiom& axiom, const rpg::Proposition& proposition);
 
     template<formalism::IsPolarity R, formalism::IsFluentOrDerivedTag P>
-    void extract_relaxed_plan_and_preferred_operators_recursively(State state, const rpg::Action& action);
+    void extract_relaxed_plan_and_preferred_operators_recursively(const State& state, const rpg::Action& action);
     template<formalism::IsPolarity R, formalism::IsFluentOrDerivedTag P>
-    void extract_relaxed_plan_and_preferred_operators_recursively(State state, const rpg::Axiom& axiom);
-    void extract_relaxed_plan_and_preferred_operators_recursively(State state, const rpg::Proposition& proposition);
+    void extract_relaxed_plan_and_preferred_operators_recursively(const State& state, const rpg::Axiom& axiom);
+    void extract_relaxed_plan_and_preferred_operators_recursively(const State& state, const rpg::Proposition& proposition);
 
     /// @brief Extract h_max heuristic estimate from the goal propositions.
     /// @return the h_max heuristic estimate.
-    DiscreteCost extract_impl(State state);
+    DiscreteCost extract_impl(const State& state);
 
     friend class rpg::RelaxedPlanningGraph<FFHeuristicImpl>;
 

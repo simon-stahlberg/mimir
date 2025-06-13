@@ -30,16 +30,16 @@ class IPruningStrategy
 public:
     virtual ~IPruningStrategy() = default;
 
-    virtual bool test_prune_initial_state(State state) = 0;
-    virtual bool test_prune_successor_state(State state, State succ_state, bool is_new_succ) = 0;
+    virtual bool test_prune_initial_state(const State& state) = 0;
+    virtual bool test_prune_successor_state(const State& state, const State& succ_state, bool is_new_succ) = 0;
 };
 
 /// @brief `NoPruningStrategyImpl` never prunes a newly generated state.
 class NoPruningStrategyImpl : public IPruningStrategy
 {
 public:
-    bool test_prune_initial_state(State state) override;
-    bool test_prune_successor_state(State state, State succ_state, bool is_new_succ) override;
+    bool test_prune_initial_state(const State& state) override;
+    bool test_prune_successor_state(const State& state, const State& succ_state, bool is_new_succ) override;
 
     static NoPruningStrategy create();
 };
@@ -48,8 +48,8 @@ public:
 class DuplicatePruningStrategyImpl : public IPruningStrategy
 {
 public:
-    bool test_prune_initial_state(State state) override;
-    bool test_prune_successor_state(State state, State succ_state, bool is_new_succ) override;
+    bool test_prune_initial_state(const State& state) override;
+    bool test_prune_successor_state(const State& state, const State& succ_state, bool is_new_succ) override;
 
     static DuplicatePruningStrategy create();
 };

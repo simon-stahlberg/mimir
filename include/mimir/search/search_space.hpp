@@ -87,7 +87,7 @@ inline Plan extract_total_ordered_plan(State start_state,
         {
             const auto [successor_state, successor_state_metric_value] =
                 context->get_state_repository()->get_or_create_successor_state(state, action, state_metric_value);
-            if (successor_state->get_index() == state_trajectory.at(i + 1))
+            if (successor_state.get_index() == state_trajectory.at(i + 1))
             {
                 if (successor_state_metric_value < lowest_metric_value)
                 {

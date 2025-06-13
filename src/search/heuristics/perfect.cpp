@@ -43,5 +43,5 @@ PerfectHeuristicImpl::PerfectHeuristicImpl(const SearchContext& context) : m_est
 
 PerfectHeuristic PerfectHeuristicImpl::create(const SearchContext& context) { return std::make_shared<PerfectHeuristicImpl>(context); }
 
-ContinuousCost PerfectHeuristicImpl::compute_heuristic(State state, bool is_goal_state) { return m_estimates.at(state); }
+ContinuousCost PerfectHeuristicImpl::compute_heuristic(const State& state, bool is_goal_state) { return m_estimates.at(state); }
 }

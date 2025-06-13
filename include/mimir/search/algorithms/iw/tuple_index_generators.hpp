@@ -85,7 +85,7 @@ public:
         bool operator!=(const const_iterator& other) const;
     };
 
-    const_iterator begin(const State state);
+    const_iterator begin(const State& state);
     const_iterator begin(const AtomIndexList& atom_indices);  // for testing only
     const_iterator end() const;
 };
@@ -165,7 +165,7 @@ public:
         bool operator!=(const const_iterator& other) const;
     };
 
-    const_iterator begin(const State state, const State succ_state);
+    const_iterator begin(const State& state, const State& succ_state);
     const_iterator begin(const AtomIndexList& atom_indices, const AtomIndexList& add_atom_indices);  // for testing only
     const_iterator end() const;
 };

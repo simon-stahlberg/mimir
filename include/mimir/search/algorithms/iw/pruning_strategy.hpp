@@ -39,8 +39,8 @@ public:
 
     static ArityZeroNoveltyPruningStrategy create(State initial_state);
 
-    bool test_prune_initial_state(const State state) override;
-    bool test_prune_successor_state(const State state, const State succ_state, bool is_new_succ) override;
+    bool test_prune_initial_state(const State& state) override;
+    bool test_prune_successor_state(const State& state, const State& succ_state, bool is_new_succ) override;
 };
 
 class ArityKNoveltyPruningStrategyImpl : public IPruningStrategy
@@ -55,8 +55,8 @@ public:
 
     static ArityKNoveltyPruningStrategy create(size_t arity, size_t num_atoms);
 
-    bool test_prune_initial_state(const State state) override;
-    bool test_prune_successor_state(const State state, const State succ_state, bool is_new_succ) override;
+    bool test_prune_initial_state(const State& state) override;
+    bool test_prune_successor_state(const State& state, const State& succ_state, bool is_new_succ) override;
 };
 }
 

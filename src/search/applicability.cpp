@@ -112,11 +112,11 @@ bool is_dynamically_applicable(GroundConjunctiveCondition conjunctive_condition,
            && is_applicable(conjunctive_condition, problem.get_initial_function_to_value<StaticTag>(), dense_state.get_numeric_variables());
 }
 
-bool is_dynamically_applicable(GroundConjunctiveCondition conjunctive_condition, const ProblemImpl& problem, State state)
+bool is_dynamically_applicable(GroundConjunctiveCondition conjunctive_condition, const ProblemImpl& problem, const State& state)
 {
-    return is_applicable<FluentTag>(conjunctive_condition, state->get_atoms<FluentTag>())
-           && is_applicable<DerivedTag>(conjunctive_condition, state->get_atoms<DerivedTag>())
-           && is_applicable(conjunctive_condition, problem.get_initial_function_to_value<StaticTag>(), state->get_numeric_variables());
+    return is_applicable<FluentTag>(conjunctive_condition, state.get_atoms<FluentTag>())
+           && is_applicable<DerivedTag>(conjunctive_condition, state.get_atoms<DerivedTag>())
+           && is_applicable(conjunctive_condition, problem.get_initial_function_to_value<StaticTag>(), state.get_numeric_variables());
 }
 
 bool is_statically_applicable(GroundConjunctiveCondition conjunctive_condition, const FlatBitset& static_positive_atoms)
@@ -132,7 +132,7 @@ bool is_applicable(GroundConjunctiveCondition conjunctive_condition, const Probl
            && is_statically_applicable(conjunctive_condition, problem.get_static_initial_positive_atoms_bitset());
 }
 
-bool is_applicable(GroundConjunctiveCondition conjunctive_condition, const ProblemImpl& problem, State state)
+bool is_applicable(GroundConjunctiveCondition conjunctive_condition, const ProblemImpl& problem, const State& state)
 {
     return is_dynamically_applicable(conjunctive_condition, problem, state)
            && is_statically_applicable(conjunctive_condition, problem.get_static_initial_positive_atoms_bitset());
@@ -221,20 +221,20 @@ bool is_applicable(GroundConjunctiveEffect conjunctive_effect,
 
 bool is_applicable(GroundConjunctiveEffect conjunctive_effect,
                    const ProblemImpl& problem,
-                   State state,
+                   const State& state,
                    std::vector<std::optional<loki::AssignOperatorEnum>>& s_fluent_numeric_changes,
                    std::optional<loki::AssignOperatorEnum>& s_auxiliary_numeric_change)
 {
-    assert(s_fluent_numeric_changes.size() == state->get_numeric_variables().size());
+    assert(s_fluent_numeric_changes.size() == state.get_numeric_variables().size());
 
     return is_applicable(conjunctive_effect->get_fluent_numeric_effects(),
                          problem.get_initial_function_to_value<StaticTag>(),
-                         state->get_numeric_variables(),
+                         state.get_numeric_variables(),
                          s_fluent_numeric_changes)
            && (!conjunctive_effect->get_auxiliary_numeric_effect().has_value()
                || is_applicable(conjunctive_effect->get_auxiliary_numeric_effect().value(),
                                 problem.get_initial_function_to_value<StaticTag>(),
-                                state->get_numeric_variables(),
+                                state.get_numeric_variables(),
                                 s_auxiliary_numeric_change));
 }
 
@@ -246,9 +246,9 @@ bool is_applicable(GroundConjunctiveEffect conjunctive_effect, const ProblemImpl
     return is_applicable(conjunctive_effect, problem, dense_state, s_fluent_numeric_changes, s_auxiliary_numeric_change);
 }
 
-bool is_applicable(GroundConjunctiveEffect conjunctive_effect, const ProblemImpl& problem, State state)
+bool is_applicable(GroundConjunctiveEffect conjunctive_effect, const ProblemImpl& problem, const State& state)
 {
-    s_fluent_numeric_changes.assign(state->get_numeric_variables().size(), std::nullopt);
+    s_fluent_numeric_changes.assign(state.get_numeric_variables().size(), std::nullopt);
     s_auxiliary_numeric_change = std::nullopt;
 
     return is_applicable(conjunctive_effect, problem, state, s_fluent_numeric_changes, s_auxiliary_numeric_change);
@@ -272,11 +272,11 @@ bool is_applicable(GroundConditionalEffect conditional_effect,
 
 bool is_applicable(GroundConditionalEffect conditional_effect,
                    const ProblemImpl& problem,
-                   State state,
+                   const State& state,
                    std::vector<std::optional<loki::AssignOperatorEnum>>& s_fluent_numeric_changes,
                    std::optional<loki::AssignOperatorEnum>& s_auxiliary_numeric_change)
 {
-    assert(s_fluent_numeric_changes.size() == state->get_numeric_variables().size());
+    assert(s_fluent_numeric_changes.size() == state.get_numeric_variables().size());
 
     return is_applicable(conditional_effect->get_conjunctive_condition(), problem, state)  //
            && is_applicable(conditional_effect->get_conjunctive_effect(), problem, state, s_fluent_numeric_changes, s_auxiliary_numeric_change);
@@ -290,9 +290,9 @@ bool is_applicable(GroundConditionalEffect conditional_effect, const ProblemImpl
     return is_applicable(conditional_effect, problem, dense_state, s_fluent_numeric_changes, s_auxiliary_numeric_change);
 }
 
-bool is_applicable(GroundConditionalEffect conditional_effect, const ProblemImpl& problem, State state)
+bool is_applicable(GroundConditionalEffect conditional_effect, const ProblemImpl& problem, const State& state)
 {
-    s_fluent_numeric_changes.assign(state->get_numeric_variables().size(), std::nullopt);
+    s_fluent_numeric_changes.assign(state.get_numeric_variables().size(), std::nullopt);
     s_auxiliary_numeric_change = std::nullopt;
 
     return is_applicable(conditional_effect, problem, state, s_fluent_numeric_changes, s_auxiliary_numeric_change);
@@ -312,11 +312,11 @@ bool is_applicable_if_fires(GroundConditionalEffect conditional_effect,
 
 bool is_applicable_if_fires(GroundConditionalEffect conditional_effect,
                             const ProblemImpl& problem,
-                            State state,
+                            const State& state,
                             std::vector<std::optional<loki::AssignOperatorEnum>>& s_fluent_numeric_changes,
                             std::optional<loki::AssignOperatorEnum>& s_auxiliary_numeric_change)
 {
-    assert(s_fluent_numeric_changes.size() == state->get_numeric_variables().size());
+    assert(s_fluent_numeric_changes.size() == state.get_numeric_variables().size());
 
     return !(!is_applicable(conditional_effect->get_conjunctive_effect(), problem, state, s_fluent_numeric_changes, s_auxiliary_numeric_change)  //
              && is_applicable(conditional_effect->get_conjunctive_condition(), problem, state));
@@ -330,9 +330,9 @@ bool is_applicable_if_fires(GroundConditionalEffect conditional_effect, const Pr
     return is_applicable_if_fires(conditional_effect, problem, dense_state, s_fluent_numeric_changes, s_auxiliary_numeric_change);
 }
 
-bool is_applicable_if_fires(GroundConditionalEffect conditional_effect, const ProblemImpl& problem, State state)
+bool is_applicable_if_fires(GroundConditionalEffect conditional_effect, const ProblemImpl& problem, const State& state)
 {
-    s_fluent_numeric_changes.assign(state->get_numeric_variables().size(), std::nullopt);
+    s_fluent_numeric_changes.assign(state.get_numeric_variables().size(), std::nullopt);
     s_auxiliary_numeric_change = std::nullopt;
 
     return is_applicable_if_fires(conditional_effect, problem, state, s_fluent_numeric_changes, s_auxiliary_numeric_change);
@@ -364,9 +364,9 @@ bool is_applicable(GroundAction action, const ProblemImpl& problem, const DenseS
                           [&](auto&& arg) { return is_applicable_if_fires(arg, problem, dense_state); });
 }
 
-bool is_applicable(GroundAction action, const ProblemImpl& problem, State state)
+bool is_applicable(GroundAction action, const ProblemImpl& problem, const State& state)
 {
-    s_fluent_numeric_changes.assign(state->get_numeric_variables().size(), std::nullopt);
+    s_fluent_numeric_changes.assign(state.get_numeric_variables().size(), std::nullopt);
     s_auxiliary_numeric_change = std::nullopt;
 
     return is_applicable(action->get_conjunctive_condition(), problem, state)  //

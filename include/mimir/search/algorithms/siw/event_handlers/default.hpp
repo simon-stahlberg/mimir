@@ -32,9 +32,9 @@ private:
     /* Implement EventHandlerBase interface */
     friend class EventHandlerBase<DefaultEventHandlerImpl>;
 
-    void on_start_search_impl(State initial_state) const;
+    void on_start_search_impl(const State& initial_state) const;
 
-    void on_start_subproblem_search_impl(State initial_state) const;
+    void on_start_subproblem_search_impl(const State& initial_state) const;
 
     void on_end_subproblem_search_impl(const iw::Statistics& iw_statistics) const;
 

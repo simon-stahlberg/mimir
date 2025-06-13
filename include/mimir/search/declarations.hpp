@@ -40,18 +40,14 @@ using GeneralizedSearchContext = std::shared_ptr<GeneralizedSearchContextImpl>;
 class StateRepositoryImpl;
 using StateRepository = std::shared_ptr<StateRepositoryImpl>;
 
-// State
-class StateImpl;
-using State = const StateImpl*;
-using StateList = std::vector<State>;
-using StateSet = std::unordered_set<State>;
-template<typename T>
-using StateMap = std::unordered_map<State, T>;
-using StateProblem = std::pair<State, formalism::Problem>;
-using StateProblemPair = std::pair<StateProblem, StateProblem>;
-using StateProblemList = std::vector<StateProblem>;
-using StateProblemPairList = std::vector<StateProblemPair>;
+// InternalState
+class InternalStateImpl;
+using InternalState = const InternalStateImpl*;
 
+// State
+class State;
+
+// DenseState
 struct DenseState;
 
 /* DeleteRelaxedProblemExplorator */

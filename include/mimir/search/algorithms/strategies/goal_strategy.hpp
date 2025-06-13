@@ -31,7 +31,7 @@ public:
     virtual ~IGoalStrategy() = default;
 
     virtual bool test_static_goal() = 0;
-    virtual bool test_dynamic_goal(State state) = 0;
+    virtual bool test_dynamic_goal(const State& state) = 0;
 };
 
 /// @brief `ProblemGoalStrategyImpl` identifies a state as a goal if and only if it satisfies the goal in the given problem.
@@ -44,7 +44,7 @@ public:
     explicit ProblemGoalStrategyImpl(formalism::Problem problem);
 
     bool test_static_goal() override;
-    bool test_dynamic_goal(State state) override;
+    bool test_dynamic_goal(const State& state) override;
 
     static ProblemGoalStrategy create(formalism::Problem problem);
 };

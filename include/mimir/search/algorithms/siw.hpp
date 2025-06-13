@@ -20,12 +20,13 @@
 
 #include "mimir/search/algorithms/iw.hpp"
 #include "mimir/search/algorithms/iw/types.hpp"
+#include "mimir/search/state.hpp"
 
 namespace mimir::search::siw
 {
 struct Options
 {
-    State start_state = nullptr;
+    std::optional<State> start_state = std::nullopt;
     EventHandler siw_event_handler = nullptr;
     iw::EventHandler iw_event_handler = nullptr;
     brfs::EventHandler brfs_event_handler = nullptr;

@@ -35,7 +35,7 @@ public:
     /// @param action is the action.
     /// @param successor_state is the successor state.
     /// @return return true iff the state transition is exploration compatible.
-    virtual bool on_generate_state(State state, formalism::GroundAction action, State successor_state) = 0;
+    virtual bool on_generate_state(const State& state, formalism::GroundAction action, const State& successor_state) = 0;
 };
 
 }

@@ -26,6 +26,7 @@
 #include "mimir/graphs/static_graph.hpp"
 #include "mimir/graphs/types.hpp"
 #include "mimir/search/declarations.hpp"
+#include "mimir/search/state.hpp"
 
 namespace mimir::graphs
 {

@@ -20,7 +20,6 @@
 
 #include "mimir/buffering/unordered_set.h"
 #include "mimir/common/hash.hpp"
-#include "mimir/common/printers.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/problem.hpp"
@@ -38,23 +37,18 @@
 
 namespace mimir::search
 {
-namespace v = valla::canonical_delta;
+namespace v = valla::plain;
 
-/// @brief `StateImpl` encapsulates the fluent and derived atoms, and numeric variables of a planning state.
-class StateImpl
+/// @brief `InternalStateImpl` encapsulates the fluent and derived atoms, and numeric variables of a planning state.
+class InternalStateImpl
 {
 private:
     v::RootSlotType m_fluent_atoms;
     v::RootSlotType m_derived_atoms;
     const FlatDoubleList* m_numeric_variables;
-    const formalism::ProblemImpl* m_problem;
     Index m_index;
 
-    StateImpl(Index index,
-              const formalism::ProblemImpl* problem,
-              v::RootSlotType fluent_atoms,
-              v::RootSlotType derived_atoms,
-              const FlatDoubleList* numeric_variables);
+    InternalStateImpl(Index index, v::RootSlotType fluent_atoms, v::RootSlotType derived_atoms, const FlatDoubleList* numeric_variables);
 
     friend class StateRepositoryImpl;
 
@@ -68,7 +62,75 @@ public:
      */
 
     Index get_index() const;
+    template<formalism::IsFluentOrDerivedTag P>
+    auto get_atoms(const formalism::ProblemImpl& problem) const;
+    template<formalism::IsFluentOrDerivedTag P>
+    const v::RootSlotType& get_atoms_slot() const;
+    const FlatDoubleList& get_numeric_variables() const;
+
+    /**
+     * Utils
+     */
+
+    /// @brief Check whether the literal holds in the state using binary search over the atoms in the state.
+    /// @tparam P is the literal type.
+    /// @param literal is the literal.
+    /// @return true if the literal holds in the state, and false otherwise.
+    template<formalism::IsFluentOrDerivedTag P>
+    bool literal_holds(formalism::GroundLiteral<P> literal, const formalism::ProblemImpl& problem) const;
+
+    /// @brief Check whether all literals hold in the state using binary searches over the atoms in the state.
+    /// @tparam P is the literal type.
+    /// @param literals are the literals.
+    /// @return true if all literals hold in the state, and false otherwise.
+    template<formalism::IsFluentOrDerivedTag P>
+    bool literals_hold(const formalism::GroundLiteralList<P>& literals, const formalism::ProblemImpl& problem) const;
+
+    template<formalism::IsFluentOrDerivedTag P, std::ranges::input_range Range1, std::ranges::input_range Range2>
+        requires IsRangeOver<Range1, Index> && IsRangeOver<Range2, Index>
+    bool literals_hold(const Range1& positive_atoms, const Range2& negative_atoms, const formalism::ProblemImpl& problem) const;
+
+    bool numeric_constraint_holds(formalism::GroundNumericConstraint numeric_constraint, const FlatDoubleList& static_numeric_variables) const;
+
+    bool numeric_constraints_hold(const formalism::GroundNumericConstraintList& numeric_constraints, const FlatDoubleList& static_numeric_variables) const;
+};
+
+static_assert(sizeof(InternalStateImpl) == 32);
+
+using InternalStateImplSet = loki::SegmentedRepository<InternalStateImpl>;
+
+/**
+ * State
+ */
+
+class State
+{
+private:
+    InternalState m_internal;
+    const formalism::ProblemImpl* m_problem;
+
+    State(const InternalStateImpl& internal, const formalism::ProblemImpl& problem);
+
+    friend class StateRepositoryImpl;
+
+public:
+    State(const State&) = default;
+    State(State&&) noexcept = default;
+    State& operator=(const State&) = default;
+    State& operator=(State&&) noexcept = default;
+    ~State() = default;
+
+    bool operator==(const State& other) const noexcept;
+    bool operator!=(const State& other) const noexcept;
+
+    /**
+     * Getters
+     */
+
+    const InternalStateImpl& get_internal_state() const;
     const formalism::ProblemImpl& get_problem() const;
+
+    Index get_index() const;
     template<formalism::IsFluentOrDerivedTag P>
     auto get_atoms() const;
     template<formalism::IsFluentOrDerivedTag P>
@@ -102,41 +164,20 @@ public:
     bool literals_hold(const Range1& positive_atoms, const Range2& negative_atoms) const;
 };
 
-static_assert(sizeof(StateImpl) == 56);
-
-using StateImplSet = loki::SegmentedRepository<StateImpl>;
-
 /**
  * Implementations
  */
 
 template<formalism::IsFluentOrDerivedTag P>
-auto StateImpl::get_atoms() const
+auto InternalStateImpl::get_atoms(const formalism::ProblemImpl& problem) const
 {
     if constexpr (std::is_same_v<P, formalism::FluentTag>)
     {
-        return std::ranges::subrange(v::begin(m_fluent_atoms, m_problem->get_tree_table()), v::end());
+        return std::ranges::subrange(v::begin(m_fluent_atoms, problem.get_tree_table()), v::end());
     }
     else if constexpr (std::is_same_v<P, formalism::DerivedTag>)
     {
-        return std::ranges::subrange(v::begin(m_derived_atoms, m_problem->get_tree_table()), v::end());
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for IsStaticOrFluentOrDerivedTag.");
-    }
-}
-
-template<formalism::IsFluentOrDerivedTag P>
-const v::RootSlotType& StateImpl::get_atoms_slot() const
-{
-    if constexpr (std::is_same_v<P, formalism::FluentTag>)
-    {
-        return m_fluent_atoms;
-    }
-    else if constexpr (std::is_same_v<P, formalism::DerivedTag>)
-    {
-        return m_derived_atoms;
+        return std::ranges::subrange(v::begin(m_derived_atoms, problem.get_tree_table()), v::end());
     }
     else
     {
@@ -146,39 +187,79 @@ const v::RootSlotType& StateImpl::get_atoms_slot() const
 
 template<formalism::IsFluentOrDerivedTag P, std::ranges::input_range Range1, std::ranges::input_range Range2>
     requires IsRangeOver<Range1, Index> && IsRangeOver<Range2, Index>
-bool StateImpl::literals_hold(const Range1& positive_atoms, const Range2& negative_atoms) const
+bool InternalStateImpl::literals_hold(const Range1& positive_atoms, const Range2& negative_atoms, const formalism::ProblemImpl& problem) const
 {
-    return is_supseteq(get_atoms<P>(), positive_atoms) && are_disjoint(get_atoms<P>(), negative_atoms);
+    return is_supseteq(get_atoms<P>(problem), positive_atoms) && are_disjoint(get_atoms<P>(problem), negative_atoms);
+}
+
+template<formalism::IsFluentOrDerivedTag P>
+auto State::get_atoms() const
+{
+    return m_internal->template get_atoms<P>(get_problem());
+}
+
+template<formalism::IsFluentOrDerivedTag P, std::ranges::input_range Range1, std::ranges::input_range Range2>
+    requires IsRangeOver<Range1, Index> && IsRangeOver<Range2, Index>
+bool State::literals_hold(const Range1& positive_atoms, const Range2& negative_atoms) const
+{
+    return m_internal->template literal_holds<P, Range1, Range2>(positive_atoms, negative_atoms, get_problem());
 }
 
 /**
  * Pretty printing
  */
 
-std::ostream& operator<<(std::ostream& os, search::State state);
+std::ostream& operator<<(std::ostream& os, const search::State& state);
 
 }
 
 namespace loki
 {
 template<>
-struct Hash<mimir::search::StateImpl>
+struct Hash<mimir::search::InternalStateImpl>
 {
-    size_t operator()(const mimir::search::StateImpl& el) const
+    size_t operator()(const mimir::search::InternalStateImpl& el) const
     {
-        return hash_combine(valla::RootSlotHash()(el.get_atoms_slot<mimir::formalism::FluentTag>()), reinterpret_cast<uintptr_t>(&el.get_numeric_variables()));
+        return hash_combine(valla::SlotHash()(el.get_atoms_slot<mimir::formalism::FluentTag>()), reinterpret_cast<uintptr_t>(&el.get_numeric_variables()));
     }
 };
 
 template<>
-struct EqualTo<mimir::search::StateImpl>
+struct EqualTo<mimir::search::InternalStateImpl>
 {
-    bool operator()(const mimir::search::StateImpl& lhs, const mimir::search::StateImpl& rhs) const
+    bool operator()(const mimir::search::InternalStateImpl& lhs, const mimir::search::InternalStateImpl& rhs) const
     {
-        return valla::RootSlotEqualTo()(lhs.get_atoms_slot<mimir::formalism::FluentTag>(), rhs.get_atoms_slot<mimir::formalism::FluentTag>())
+        return lhs.get_atoms_slot<mimir::formalism::FluentTag>() == rhs.get_atoms_slot<mimir::formalism::FluentTag>()
                && &lhs.get_numeric_variables() == &rhs.get_numeric_variables();
     }
 };
+
+template<>
+struct Hash<mimir::search::State>
+{
+    size_t operator()(const mimir::search::State& el) const { return hash_combine(&el.get_internal_state(), &el.get_problem()); }
+};
+
+template<>
+struct EqualTo<mimir::search::State>
+{
+    bool operator()(const mimir::search::State& lhs, const mimir::search::State& rhs) const
+    {
+        return &lhs.get_internal_state() == &rhs.get_internal_state() && &lhs.get_problem() == &rhs.get_problem();
+    }
+};
+}
+
+namespace mimir::search
+{
+using StateList = std::vector<State>;
+using StateSet = std::unordered_set<State>;
+template<typename T>
+using StateMap = UnorderedMap<State, T>;
+using StateProblem = std::pair<State, formalism::Problem>;
+using StateProblemPair = std::pair<StateProblem, StateProblem>;
+using StateProblemList = std::vector<StateProblem>;
+using StateProblemPairList = std::vector<StateProblemPair>;
 }
 
 #endif

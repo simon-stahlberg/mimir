@@ -71,7 +71,7 @@ private:
 
     /// @brief Extract h_max heuristic estimate from the goal propositions.
     /// @return the h_max heuristic estimate.
-    DiscreteCost extract_impl(State state);
+    DiscreteCost extract_impl(const State& state);
 
     friend class rpg::RelaxedPlanningGraph<MaxHeuristicImpl>;
 };

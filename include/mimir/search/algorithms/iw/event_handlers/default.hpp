@@ -32,9 +32,9 @@ private:
     /* Implement EventHandlerBase interface */
     friend class EventHandlerBase<DefaultEventHandlerImpl>;
 
-    void on_start_search_impl(State initial_state) const;
+    void on_start_search_impl(const State& initial_state) const;
 
-    void on_start_arity_search_impl(State initial_state, size_t arity) const;
+    void on_start_arity_search_impl(const State& initial_state, size_t arity) const;
 
     void on_end_arity_search_impl(const brfs::Statistics& brfs_statistics) const;
 
