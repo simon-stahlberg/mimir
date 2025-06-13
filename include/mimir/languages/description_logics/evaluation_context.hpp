@@ -22,6 +22,7 @@
 #include "mimir/languages/description_logics/constructor_interface.hpp"
 #include "mimir/languages/description_logics/denotation_repositories.hpp"
 #include "mimir/search/declarations.hpp"
+#include "mimir/search/state.hpp"
 
 #include <concepts>
 #include <cstddef>
@@ -35,27 +36,27 @@ class EvaluationContext
 {
 private:
     /* Memory */
-    search::State m_state;
+    std::optional<search::State> m_state;
     formalism::Problem m_problem;
     Denotations m_builders;
     Denotations m_scratch_builders;
     DenotationRepositories& m_repositories;
 
 public:
-    EvaluationContext(search::State state, formalism::Problem problem, DenotationRepositories& ref_repositories);
+    EvaluationContext(std::optional<search::State> state, formalism::Problem problem, DenotationRepositories& ref_repositories);
 
     /**
      * Setters
      */
 
-    void set_state(search::State state);
+    void set_state(const search::State& state);
 
     void set_problem(formalism::Problem problem);
 
     /**
      * Getters
      */
-    search::State get_state() const;
+    const search::State& get_state() const;
 
     const formalism::Problem& get_problem() const;
 

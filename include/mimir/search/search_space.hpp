@@ -80,7 +80,7 @@ inline Plan extract_total_ordered_plan(State start_state,
     {
         // We have to take the (state,action) pair that yields lowest metric value.
         auto lowest_action = formalism::GroundAction { nullptr };
-        auto lowest_state = State { nullptr };
+        auto lowest_state = std::optional<State> { std::nullopt };
         auto lowest_metric_value = std::numeric_limits<ContinuousCost>::infinity();
 
         for (const auto& action : context->get_applicable_action_generator()->create_applicable_action_generator(state))
@@ -106,8 +106,8 @@ inline Plan extract_total_ordered_plan(State start_state,
         //           << std::endl;
         // std::cout << lowest_metric_value << " " << lowest_metric_value - state_metric_value << std::endl << std::endl << std::endl;
         actions.push_back(lowest_action);
-        states.push_back(lowest_state);
-        state = lowest_state;
+        states.push_back(lowest_state.value());
+        state = lowest_state.value();
         state_metric_value = lowest_metric_value;
     }
 

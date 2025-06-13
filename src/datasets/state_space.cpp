@@ -108,8 +108,8 @@ private:
 public:
     explicit SymmetryStatePruning(SymmetriesData& symm_data) : m_symm_data(symm_data) {}
 
-    bool test_prune_initial_state(State state) override { return false; }
-    bool test_prune_successor_state(State state, State succ_state, bool is_new_succ) override
+    bool test_prune_initial_state(const State& state) override { return false; }
+    bool test_prune_successor_state(const State& state, const State& succ_state, bool is_new_succ) override
     {
         return !is_new_succ || m_symm_data.prunable_states.contains(succ_state);
     }
@@ -128,13 +128,13 @@ private:
     /* Implement AlgorithmEventHandlerBase interface */
     friend class brfs::EventHandlerBase<SymmetryReducedProblemGraphEventHandler>;
 
-    auto compute_canonical_graph(State state) { return nauty::SparseGraph(create_object_graph(state, *m_problem)).canonize(); }
+    auto compute_canonical_graph(const State& state) { return nauty::SparseGraph(create_object_graph(state, *m_problem)).canonize(); }
 
-    void on_expand_state_impl(State state) {}
+    void on_expand_state_impl(const State& state) {}
 
-    void on_expand_goal_state_impl(State state) { m_goal_vertices.insert(m_state_to_vertex_index.at(state)); }
+    void on_expand_goal_state_impl(const State& state) { m_goal_vertices.insert(m_state_to_vertex_index.at(state)); }
 
-    void on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state)
+    void on_generate_state_impl(const State& state, GroundAction action, ContinuousCost action_cost, const State& successor_state)
     {
         const auto source_v_idx = m_state_to_vertex_index.at(state);
 
@@ -173,13 +173,13 @@ private:
         }
     }
 
-    void on_generate_state_in_search_tree_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) {}
+    void on_generate_state_in_search_tree_impl(const State& state, GroundAction action, ContinuousCost action_cost, const State& successor_state) {}
 
-    void on_generate_state_not_in_search_tree_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) {}
+    void on_generate_state_not_in_search_tree_impl(const State& state, GroundAction action, ContinuousCost action_cost, const State& successor_state) {}
 
     void on_finish_g_layer_impl(uint32_t g_value, uint64_t num_expanded_states, uint64_t num_generated_states) {}
 
-    void on_start_search_impl(State start_state)
+    void on_start_search_impl(const State& start_state)
     {
         const auto v_idx = m_graph.add_vertex(start_state, m_problem, DiscreteCost(0), ContinuousCost(0), false, false, false, false);
         m_state_to_vertex_index.emplace(start_state, v_idx);
@@ -234,15 +234,15 @@ private:
     /* Implement AlgorithmEventHandlerBase interface */
     friend class EventHandlerBase<ProblemGraphEventHandler>;
 
-    void on_expand_state_impl(State state)
+    void on_expand_state_impl(const State& state)
     {
         // if (!m_state_to_vertex_index.contains(state))
         //     m_state_to_vertex_index.emplace(state, m_graph.add_vertex(graphs::VertexIndex(-1), state, nullptr));
     }
 
-    void on_expand_goal_state_impl(State state) { m_goal_vertices.insert(m_state_to_vertex_index.at(state)); }
+    void on_expand_goal_state_impl(const State& state) { m_goal_vertices.insert(m_state_to_vertex_index.at(state)); }
 
-    void on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state)
+    void on_generate_state_impl(const State& state, GroundAction action, ContinuousCost action_cost, const State& successor_state)
     {
         const auto source_vertex_index = m_state_to_vertex_index.at(state);
         const auto target_vertex_index = m_state_to_vertex_index.contains(successor_state) ?
@@ -252,13 +252,13 @@ private:
         m_graph.add_directed_edge(source_vertex_index, target_vertex_index, action, m_problem, action_cost);
     }
 
-    void on_generate_state_in_search_tree_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) {}
+    void on_generate_state_in_search_tree_impl(const State& state, GroundAction action, ContinuousCost action_cost, const State& successor_state) {}
 
-    void on_generate_state_not_in_search_tree_impl(State state, GroundAction action, ContinuousCost action_cost, State successor_state) {}
+    void on_generate_state_not_in_search_tree_impl(const State& state, GroundAction action, ContinuousCost action_cost, const State& successor_state) {}
 
     void on_finish_g_layer_impl(uint32_t g_value, uint64_t num_expanded_states, uint64_t num_generated_states) {}
 
-    void on_start_search_impl(State start_state)
+    void on_start_search_impl(const State& start_state)
     {
         const auto v_idx = m_graph.add_vertex(start_state, m_problem, DiscreteCost(0), ContinuousCost(0), false, false, false, false);
         m_state_to_vertex_index.emplace(start_state, v_idx);

@@ -510,8 +510,8 @@ SolvabilityStatus GeneralPolicyImpl::solves(const search::SearchContext& search_
         return SolvabilityStatus::UNSOLVABLE;
     }
 
-    auto src_context = dl::EvaluationContext(nullptr, search_context->get_problem(), denotation_repositories);
-    auto dst_context = dl::EvaluationContext(nullptr, search_context->get_problem(), denotation_repositories);
+    auto src_context = dl::EvaluationContext(std::nullopt, search_context->get_problem(), denotation_repositories);
+    auto dst_context = dl::EvaluationContext(std::nullopt, search_context->get_problem(), denotation_repositories);
 
     struct Entry
     {
@@ -585,8 +585,8 @@ SearchResult GeneralPolicyImpl::find_solution(const SearchContext& search_contex
 
     auto [cur_state, cur_state_metric_value] = state_repository.get_or_create_initial_state();
 
-    auto src_context = dl::EvaluationContext(nullptr, search_context->get_problem(), denotation_repositories);
-    auto dst_context = dl::EvaluationContext(nullptr, search_context->get_problem(), denotation_repositories);
+    auto src_context = dl::EvaluationContext(std::nullopt, search_context->get_problem(), denotation_repositories);
+    auto dst_context = dl::EvaluationContext(std::nullopt, search_context->get_problem(), denotation_repositories);
 
     auto states = StateList { cur_state };
     auto actions = GroundActionList {};

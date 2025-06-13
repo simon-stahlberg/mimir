@@ -90,7 +90,7 @@ private:
         for (const auto& action : applicable_action_generator.create_applicable_action_generator(root_state))
         {
             const auto [successor_state, successor_state_metric] =
-                state_repository.get_or_create_successor_state(root_state, action, compute_state_metric_value(root_state, problem));
+                state_repository.get_or_create_successor_state(root_state, action, compute_state_metric_value(root_state));
 
             if (!m_certificate_maps->state_to_cert.contains(successor_state))
             {

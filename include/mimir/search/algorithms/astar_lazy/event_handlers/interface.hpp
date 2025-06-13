@@ -42,32 +42,33 @@ public:
     virtual ~IEventHandler() = default;
 
     /// @brief React on expanding a state. This is called immediately after popping from the queue.
-    virtual void on_expand_state(State state) = 0;
+    virtual void on_expand_state(const State& state) = 0;
 
     /// @brief React on expanding a goal `state`. This may be called after on_expand_state.
-    virtual void on_expand_goal_state(State state) = 0;
+    virtual void on_expand_goal_state(const State& state) = 0;
 
     /// @brief React on generating a successor `state` by applying an action.
-    virtual void on_generate_state(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) = 0;
+    virtual void on_generate_state(const State& state, formalism::GroundAction action, ContinuousCost action_cost, const State& successor_state) = 0;
 
     /// @brief React on generating a relaxed successor `state` by applying an action where
     /// a successor state is relaxed if the f value decreases.
-    virtual void on_generate_state_relaxed(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) = 0;
+    virtual void on_generate_state_relaxed(const State& state, formalism::GroundAction action, ContinuousCost action_cost, const State& successor_state) = 0;
 
     /// @brief React on generated an unrelaxed successor state by applying an action.
     /// a successors state is unrelaxed iff it is not relaxed.
-    virtual void on_generate_state_not_relaxed(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) = 0;
+    virtual void
+    on_generate_state_not_relaxed(const State& state, formalism::GroundAction action, ContinuousCost action_cost, const State& successor_state) = 0;
 
-    virtual void on_close_state(State state) = 0;
+    virtual void on_close_state(const State& state) = 0;
 
     /// @brief React on finishing expanding a f-layer.
     virtual void on_finish_f_layer(ContinuousCost f_value) = 0;
 
     /// @brief React on pruning a state.
-    virtual void on_prune_state(State state) = 0;
+    virtual void on_prune_state(const State& state) = 0;
 
     /// @brief React on starting a search.
-    virtual void on_start_search(State start_state, ContinuousCost g_value, ContinuousCost h_value) = 0;
+    virtual void on_start_search(const State& start_state, ContinuousCost g_value, ContinuousCost h_value) = 0;
 
     /// @brief React on ending a search.
     virtual void on_end_search(uint64_t num_reached_fluent_atoms,
@@ -115,7 +116,7 @@ private:
 public:
     EventHandlerBase(formalism::Problem problem, bool quiet = true) : m_statistics(), m_problem(problem), m_quiet(quiet) {}
 
-    void on_expand_state(State state) override
+    void on_expand_state(const State& state) override
     {
         m_statistics.increment_num_expanded();
 
@@ -125,7 +126,7 @@ public:
         }
     }
 
-    void on_expand_goal_state(State state) override
+    void on_expand_goal_state(const State& state) override
     {
         if (!m_quiet)
         {
@@ -133,7 +134,7 @@ public:
         }
     }
 
-    void on_generate_state(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) override
+    void on_generate_state(const State& state, formalism::GroundAction action, ContinuousCost action_cost, const State& successor_state) override
     {
         m_statistics.increment_num_generated();
 
@@ -143,7 +144,7 @@ public:
         }
     }
 
-    void on_generate_state_relaxed(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) override
+    void on_generate_state_relaxed(const State& state, formalism::GroundAction action, ContinuousCost action_cost, const State& successor_state) override
     {
         if (!m_quiet)
         {
@@ -151,7 +152,7 @@ public:
         }
     }
 
-    void on_generate_state_not_relaxed(State state, formalism::GroundAction action, ContinuousCost action_cost, State successor_state) override
+    void on_generate_state_not_relaxed(const State& state, formalism::GroundAction action, ContinuousCost action_cost, const State& successor_state) override
     {
         if (!m_quiet)
         {
@@ -159,7 +160,7 @@ public:
         }
     }
 
-    void on_close_state(State state) override
+    void on_close_state(const State& state) override
     {
         if (!m_quiet)
         {
@@ -180,7 +181,7 @@ public:
         }
     }
 
-    void on_prune_state(State state) override
+    void on_prune_state(const State& state) override
     {
         m_statistics.increment_num_pruned();
 
@@ -190,7 +191,7 @@ public:
         }
     }
 
-    void on_start_search(State start_state, ContinuousCost g_value, ContinuousCost h_value) override
+    void on_start_search(const State& start_state, ContinuousCost g_value, ContinuousCost h_value) override
     {
         m_statistics = Statistics();
 

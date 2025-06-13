@@ -25,9 +25,9 @@ using namespace mimir::formalism;
 
 namespace mimir::search::siw
 {
-void DefaultEventHandlerImpl::on_start_search_impl(State initial_state) const {}
+void DefaultEventHandlerImpl::on_start_search_impl(const State& initial_state) const {}
 
-void DefaultEventHandlerImpl::on_start_subproblem_search_impl(State initial_state) const { std::cout << "[SIW] Started search." << std::endl; }
+void DefaultEventHandlerImpl::on_start_subproblem_search_impl(const State& initial_state) const { std::cout << "[SIW] Started search." << std::endl; }
 
 void DefaultEventHandlerImpl::on_end_subproblem_search_impl(const iw::Statistics& iw_statistics) const {}
 
