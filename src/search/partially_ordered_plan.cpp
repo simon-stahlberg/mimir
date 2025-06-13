@@ -67,11 +67,11 @@ static std::pair<FlatBitset, FlatBitset> get_effects(const ProblemImpl& problem,
 
 static bool must_precede(const ProblemImpl& problem, State lhs_state, GroundAction lhs_action, State rhs_state, GroundAction rhs_action)
 {
-    if (!lhs_state->get_atoms<DerivedTag>().empty() || !rhs_state->get_atoms<DerivedTag>().empty())
+    if (!lhs_state.get_atoms<DerivedTag>().empty() || !rhs_state.get_atoms<DerivedTag>().empty())
     {
         throw std::runtime_error("must_precede(problem, lhs_state, lhs_action, rhs_state, rhs_action): Derived atoms not supported yet.");
     }
-    if (!lhs_state->get_numeric_variables().empty() || !rhs_state->get_numeric_variables().empty())
+    if (!lhs_state.get_numeric_variables().empty() || !rhs_state.get_numeric_variables().empty())
     {
         throw std::runtime_error("must_precede(problem, lhs_state, lhs_action, rhs_state, rhs_action): Numerical variables not supported yet.");
     }
@@ -148,7 +148,7 @@ std::pair<Plan, IndexList> PartiallyOrderedPlan::compute_t_o_plan_with_maximal_m
     auto actions = GroundActionList {};
 
     auto cur_state = m_t_o_plan.get_states().front();
-    auto cur_state_metric_value = compute_state_metric_value(cur_state, *m_t_o_plan.get_search_context()->get_problem());
+    auto cur_state_metric_value = compute_state_metric_value(cur_state);
     for (const auto& i : top_sort)
     {
         const auto action = m_t_o_plan.get_actions().at(i);

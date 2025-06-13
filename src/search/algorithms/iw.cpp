@@ -278,11 +278,11 @@ StateTupleIndexGenerator::const_iterator StateTupleIndexGenerator::begin(const A
     return const_iterator(this, true);
 }
 
-StateTupleIndexGenerator::const_iterator StateTupleIndexGenerator::begin(const State state)
+StateTupleIndexGenerator::const_iterator StateTupleIndexGenerator::begin(const State& state)
 {
     atom_indices.clear();
 
-    const auto& fluent_atoms = state->get_atoms<FluentTag>();
+    const auto& fluent_atoms = state.get_atoms<FluentTag>();
     atom_indices.insert(atom_indices.end(), fluent_atoms.begin(), fluent_atoms.end());
     // Add place holder to generate tuples of size < arity
     atom_indices.push_back(tuple_index_mapper->get_num_atoms());
@@ -633,12 +633,12 @@ bool StatePairTupleIndexGenerator::const_iterator::operator==(const const_iterat
 
 bool StatePairTupleIndexGenerator::const_iterator::operator!=(const const_iterator& other) const { return !(*this == other); }
 
-StatePairTupleIndexGenerator::const_iterator StatePairTupleIndexGenerator::begin(const State state, const State succ_state)
+StatePairTupleIndexGenerator::const_iterator StatePairTupleIndexGenerator::begin(const State& state, const State& succ_state)
 {
     a_atom_indices[0].clear();
     a_atom_indices[1].clear();
-    const auto& state_fluent_atoms = state->get_atoms<FluentTag>();
-    const auto& succ_state_fluent_atoms = succ_state->get_atoms<FluentTag>();
+    const auto& state_fluent_atoms = state.get_atoms<FluentTag>();
+    const auto& succ_state_fluent_atoms = succ_state.get_atoms<FluentTag>();
 
     auto it1 = succ_state_fluent_atoms.begin();
     auto it2 = state_fluent_atoms.begin();
@@ -760,9 +760,9 @@ void DynamicNoveltyTable::resize_to_fit(AtomIndex atom_index)
     m_table = std::move(new_table);
 }
 
-void DynamicNoveltyTable::resize_to_fit(State state)
+void DynamicNoveltyTable::resize_to_fit(const State& state)
 {
-    const auto& fluent_atoms = state->get_atoms<FluentTag>();
+    const auto& fluent_atoms = state.get_atoms<FluentTag>();
 
     const auto it = std::max_element(fluent_atoms.begin(), fluent_atoms.end());
 
@@ -774,7 +774,7 @@ void DynamicNoveltyTable::resize_to_fit(State state)
     resize_to_fit(*it);
 }
 
-void DynamicNoveltyTable::compute_novel_tuples(State state, std::vector<AtomIndexList>& out_novel_tuples)
+void DynamicNoveltyTable::compute_novel_tuples(const State& state, std::vector<AtomIndexList>& out_novel_tuples)
 {
     out_novel_tuples.clear();
 
@@ -805,7 +805,7 @@ void DynamicNoveltyTable::insert_tuples(const std::vector<AtomIndexList>& tuples
     }
 }
 
-bool DynamicNoveltyTable::test_novelty_and_update_table(State state)
+bool DynamicNoveltyTable::test_novelty_and_update_table(const State& state)
 {
     resize_to_fit(state);
 
@@ -826,7 +826,7 @@ bool DynamicNoveltyTable::test_novelty_and_update_table(State state)
     return is_novel;
 }
 
-bool DynamicNoveltyTable::test_novelty_and_update_table(State state, State succ_state)
+bool DynamicNoveltyTable::test_novelty_and_update_table(const State& state, const State& succ_state)
 {
     resize_to_fit(state);
     resize_to_fit(succ_state);
@@ -862,9 +862,9 @@ ArityZeroNoveltyPruningStrategy ArityZeroNoveltyPruningStrategyImpl::create(Stat
     return std::make_shared<ArityZeroNoveltyPruningStrategyImpl>(initial_state);
 }
 
-bool ArityZeroNoveltyPruningStrategyImpl::test_prune_initial_state(const State state) { return false; }
+bool ArityZeroNoveltyPruningStrategyImpl::test_prune_initial_state(const State& state) { return false; }
 
-bool ArityZeroNoveltyPruningStrategyImpl::test_prune_successor_state(const State state, const State succ_state, bool is_new_succ)
+bool ArityZeroNoveltyPruningStrategyImpl::test_prune_successor_state(const State& state, const State& succ_state, bool is_new_succ)
 {
     return state != m_initial_state || state == succ_state;
 }
@@ -876,31 +876,31 @@ ArityKNoveltyPruningStrategy ArityKNoveltyPruningStrategyImpl::create(size_t ari
     return std::make_shared<ArityKNoveltyPruningStrategyImpl>(arity, num_atoms);
 }
 
-bool ArityKNoveltyPruningStrategyImpl::test_prune_initial_state(const State state)
+bool ArityKNoveltyPruningStrategyImpl::test_prune_initial_state(const State& state)
 {
-    if (m_generated_states.count(state->get_index()))
+    if (m_generated_states.count(state.get_index()))
     {
         assert(!m_novelty_table.test_novelty_and_update_table(state));
         return true;
     }
-    m_generated_states.insert(state->get_index());
+    m_generated_states.insert(state.get_index());
 
     return !m_novelty_table.test_novelty_and_update_table(state);
 }
 
-bool ArityKNoveltyPruningStrategyImpl::test_prune_successor_state(const State state, const State succ_state, bool is_new_succ)
+bool ArityKNoveltyPruningStrategyImpl::test_prune_successor_state(const State& state, const State& succ_state, bool is_new_succ)
 {
     if (state == succ_state)
     {
         return true;
     }
 
-    if (m_generated_states.count(succ_state->get_index()))
+    if (m_generated_states.count(succ_state.get_index()))
     {
         assert(!m_novelty_table.test_novelty_and_update_table(state, succ_state));
         return true;
     }
-    m_generated_states.insert(succ_state->get_index());
+    m_generated_states.insert(succ_state.get_index());
 
     return !m_novelty_table.test_novelty_and_update_table(state, succ_state);
 }
@@ -909,13 +909,12 @@ bool ArityKNoveltyPruningStrategyImpl::test_prune_successor_state(const State st
 
 SearchResult find_solution(const SearchContext& context, const Options& options)
 {
-    auto& problem = *context->get_problem();
     auto& applicable_action_generator = *context->get_applicable_action_generator();
     auto& state_repository = *context->get_state_repository();
 
     const auto max_arity = options.max_arity;
     const auto [start_state, start_g_value] = (options.start_state) ?
-                                                  std::make_pair(options.start_state, compute_state_metric_value(options.start_state, problem)) :
+                                                  std::make_pair(options.start_state.value(), compute_state_metric_value(options.start_state.value())) :
                                                   state_repository.get_or_create_initial_state();
     const auto iw_event_handler = (options.iw_event_handler) ? options.iw_event_handler : DefaultEventHandlerImpl::create(context->get_problem());
     const auto brfs_event_handler = (options.brfs_event_handler) ? options.brfs_event_handler : brfs::DefaultEventHandlerImpl::create(context->get_problem());

@@ -27,14 +27,14 @@ ProblemGoalStrategyImpl::ProblemGoalStrategyImpl(Problem problem) : m_problem(pr
 
 bool ProblemGoalStrategyImpl::test_static_goal() { return m_problem->static_goal_holds(); }
 
-bool ProblemGoalStrategyImpl::test_dynamic_goal(State state)
+bool ProblemGoalStrategyImpl::test_dynamic_goal(const State& state)
 {
     // This uses the efficient check.
-    return state->literals_hold<FluentTag>(m_problem->get_goal_atoms_indices<PositiveTag, FluentTag>().uncompressed_range(),
-                                           m_problem->get_goal_atoms_indices<NegativeTag, FluentTag>().uncompressed_range())
-           && state->literals_hold<DerivedTag>(m_problem->get_goal_atoms_indices<PositiveTag, DerivedTag>().uncompressed_range(),
-                                               m_problem->get_goal_atoms_indices<NegativeTag, DerivedTag>().uncompressed_range())
-           && state->numeric_constraints_hold(m_problem->get_numeric_goal_condition(), m_problem->get_initial_function_to_value<StaticTag>());
+    return state.literals_hold<FluentTag>(m_problem->get_goal_atoms_indices<PositiveTag, FluentTag>().uncompressed_range(),
+                                          m_problem->get_goal_atoms_indices<NegativeTag, FluentTag>().uncompressed_range())
+           && state.literals_hold<DerivedTag>(m_problem->get_goal_atoms_indices<PositiveTag, DerivedTag>().uncompressed_range(),
+                                              m_problem->get_goal_atoms_indices<NegativeTag, DerivedTag>().uncompressed_range())
+           && state.numeric_constraints_hold(m_problem->get_numeric_goal_condition(), m_problem->get_initial_function_to_value<StaticTag>());
 }
 
 ProblemGoalStrategy ProblemGoalStrategyImpl::create(formalism::Problem problem) { return std::make_shared<ProblemGoalStrategyImpl>(problem); }

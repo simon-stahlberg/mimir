@@ -38,19 +38,20 @@ using namespace mimir::formalism;
 
 namespace mimir::search
 {
-namespace v = valla::canonical_delta;
+namespace v = valla::plain;
 
-ContinuousCost compute_state_metric_value(State state, const ProblemImpl& problem)
+ContinuousCost compute_state_metric_value(State state)
 {
-    if (problem.get_auxiliary_function_value().has_value())
+    if (state.get_problem().get_auxiliary_function_value().has_value())
     {
-        return problem.get_auxiliary_function_value().value()->get_number();
+        return state.get_problem().get_auxiliary_function_value().value()->get_number();
     }
 
-    return problem.get_optimization_metric().has_value() ? evaluate(problem.get_optimization_metric().value()->get_function_expression(),
-                                                                    problem.get_initial_function_to_value<StaticTag>(),
-                                                                    state->get_numeric_variables()) :
-                                                           0.;
+    return state.get_problem().get_optimization_metric().has_value() ?
+               evaluate(state.get_problem().get_optimization_metric().value()->get_function_expression(),
+                        state.get_problem().get_initial_function_to_value<StaticTag>(),
+                        state.get_numeric_variables()) :
+               0.;
 }
 
 StateRepositoryImpl::StateRepositoryImpl(AxiomEvaluator axiom_evaluator) :
@@ -112,8 +113,8 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
     m_state_fluent_atoms.clear();
     m_state_derived_atoms.clear();
     /* Sparse state */
-    auto state_fluent_atoms_slot = v::get_empty_root_slot(bitset_repository);
-    auto state_derived_atoms_slot = v::get_empty_root_slot(bitset_repository);
+    auto state_fluent_atoms_slot = v::get_empty_root_slot();
+    auto state_derived_atoms_slot = v::get_empty_root_slot();
     const FlatDoubleList* state_numeric_variables = &m_empty_double_list;
 
     /* 2. Construct non-extended state */
@@ -129,14 +130,15 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
         dense_fluent_atoms.set(atom->get_index());
     }
 
-    state_fluent_atoms_slot = v::insert(dense_fluent_atoms, tree_table, bitset_pool, bitset_repository);
+    state_fluent_atoms_slot = v::insert(dense_fluent_atoms, tree_table);
 
     update_reached_fluent_atoms(dense_fluent_atoms, m_reached_fluent_atoms);
 
     // Test whether there exists an extended state for the given non extended state
-    if (auto state = m_states.find(StateImpl(-1, &problem, state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables)))
+    if (auto internal_state = m_states.find(InternalStateImpl(-1, state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables)))
     {
-        return { state, compute_state_metric_value(state, *m_axiom_evaluator->get_problem()) };
+        auto state = State(*internal_state, problem);
+        return { state, compute_state_metric_value(state) };
     }
 
     /* 3. Apply axioms to construct extended state. */
@@ -146,7 +148,7 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
             // Evaluate axioms
             m_axiom_evaluator->generate_and_apply_axioms(m_dense_state_builder);
 
-            state_derived_atoms_slot = v::insert(dense_derived_atoms, tree_table, bitset_pool, bitset_repository);
+            state_derived_atoms_slot = v::insert(dense_derived_atoms, tree_table);
 
             update_reached_derived_atoms(dense_derived_atoms, m_reached_derived_atoms);
             translate_dense_into_sorted_compressed_sparse(dense_derived_atoms, m_state_derived_atoms);
@@ -154,9 +156,10 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
     }
 
     // Cache and return the extended state.
-    auto state = m_states.get_or_create(&problem, state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables);
+    auto internal_state = m_states.get_or_create(state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables);
+    auto state = State(*internal_state, problem);
 
-    return { state, compute_state_metric_value(state, *m_axiom_evaluator->get_problem()) };
+    return { state, compute_state_metric_value(state) };
 }
 
 std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_successor_state(State state, GroundAction action, ContinuousCost state_metric_value)
@@ -248,7 +251,7 @@ static void apply_action_effects(GroundAction action,
                                  FlatDoubleList& ref_fluent_numeric_variables,
                                  ContinuousCost& ref_successor_state_metric_score)
 {
-    const auto& const_fluent_numeric_variables = state->get_numeric_variables();
+    const auto& const_fluent_numeric_variables = state.get_numeric_variables();
     const auto& const_static_numeric_variables = problem.get_initial_function_to_value<StaticTag>();
 
     for (const auto& conditional_effect : action->get_conditional_effects())
@@ -305,8 +308,8 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
     m_applied_negative_effect_atoms.unset_all();
     m_applied_positive_effect_atoms.unset_all();
     /* Sparse state */
-    auto state_fluent_atoms_slot = v::get_empty_root_slot(bitset_repository);
-    auto state_derived_atoms_slot = v::get_empty_root_slot(bitset_repository);
+    auto state_fluent_atoms_slot = v::get_empty_root_slot();
+    auto state_derived_atoms_slot = v::get_empty_root_slot();
     const FlatDoubleList* state_numeric_variables = &m_empty_double_list;
 
     auto successor_state_metric_value = state_metric_value;
@@ -323,15 +326,16 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
                          dense_fluent_numeric_variables,
                          successor_state_metric_value);
 
-    state_fluent_atoms_slot = v::insert(dense_fluent_atoms, tree_table, bitset_pool, bitset_repository);
+    state_fluent_atoms_slot = v::insert(dense_fluent_atoms, tree_table);
 
     update_reached_fluent_atoms(dense_fluent_atoms, m_reached_fluent_atoms);
     state_numeric_variables = problem.get_or_create_double_list(dense_fluent_numeric_variables);
 
     // Check if non-extended state exists in cache
-    if (auto state = m_states.find(StateImpl(-1, &problem, state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables)))
+    if (auto internal_successor_state = m_states.find(InternalStateImpl(-1, state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables)))
     {
-        return { state, successor_state_metric_value };
+        auto successor_state = State(*internal_successor_state, problem);
+        return { successor_state, successor_state_metric_value };
     }
 
     /* 3. If necessary, apply axioms to construct extended state. */
@@ -342,21 +346,23 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
             dense_derived_atoms.unset_all();  ///< Important: now we must clear the buffer before evaluating for the updated fluent atoms.
             m_axiom_evaluator->generate_and_apply_axioms(dense_state);
 
-            state_derived_atoms_slot = v::insert(dense_derived_atoms, tree_table, bitset_pool, bitset_repository);
+            state_derived_atoms_slot = v::insert(dense_derived_atoms, tree_table);
 
             update_reached_fluent_atoms(dense_derived_atoms, m_reached_derived_atoms);
         }
     }
 
     // Cache and return the extended state.
-    return { m_states.get_or_create(&problem, state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables), successor_state_metric_value };
+    auto internal_successor_state = m_states.get_or_create(state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables);
+    auto successor_state = State(*internal_successor_state, problem);
+    return { successor_state, successor_state_metric_value };
 }
 
 const Problem& StateRepositoryImpl::get_problem() const { return m_axiom_evaluator->get_problem(); }
 
 size_t StateRepositoryImpl::get_state_count() const { return m_states.size(); }
 
-const StateImplSet& StateRepositoryImpl::get_states() const { return m_states; }
+const InternalStateImplSet& StateRepositoryImpl::get_states() const { return m_states; }
 
 const FlatBitset& StateRepositoryImpl::get_reached_fluent_ground_atoms_bitset() const { return m_reached_fluent_atoms; }
 

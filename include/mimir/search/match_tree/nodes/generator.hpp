@@ -34,9 +34,10 @@ protected:
     std::span<const E*> m_elements;
 
 public:
-    explicit ElementGeneratorNodeBase(std::span<const E*> elements) : m_elements(elements) {
+    explicit ElementGeneratorNodeBase(std::span<const E*> elements) : m_elements(elements)
+    {
         // Ensure sorted for deterministic behavior.
-        std::sort(m_elements.begin(), m_elements.end(), [](auto&& lhs, auto&& rhs){ return lhs->get_index() < rhs->get_index(); });
+        std::sort(m_elements.begin(), m_elements.end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
     }
 
     ElementGeneratorNodeBase(const ElementGeneratorNodeBase& other) = delete;

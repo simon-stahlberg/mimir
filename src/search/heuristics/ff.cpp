@@ -127,7 +127,7 @@ void FFHeuristicImpl::update_or_annotation_impl(const Axiom& axiom, const Propos
 }
 
 template<formalism::IsPolarity R, formalism::IsFluentOrDerivedTag P>
-void FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively(State state, const rpg::Action& action)
+void FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively(const State& state, const rpg::Action& action)
 {
     for (const auto& atom_index : action.template get_preconditions<R, P>()->compressed_range())
     {
@@ -140,18 +140,20 @@ void FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively(S
 }
 
 template void
-FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively<formalism::PositiveTag, formalism::FluentTag>(State state, const rpg::Action& action);
+FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively<formalism::PositiveTag, formalism::FluentTag>(const State& state,
+                                                                                                                        const rpg::Action& action);
 template void
-FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively<formalism::PositiveTag, formalism::DerivedTag>(State state,
+FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively<formalism::PositiveTag, formalism::DerivedTag>(const State& state,
                                                                                                                          const rpg::Action& action);
 template void
-FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively<formalism::NegativeTag, formalism::FluentTag>(State state, const rpg::Action& action);
+FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively<formalism::NegativeTag, formalism::FluentTag>(const State& state,
+                                                                                                                        const rpg::Action& action);
 template void
-FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively<formalism::NegativeTag, formalism::DerivedTag>(State state,
+FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively<formalism::NegativeTag, formalism::DerivedTag>(const State& state,
                                                                                                                          const rpg::Action& action);
 
 template<formalism::IsPolarity R, formalism::IsFluentOrDerivedTag P>
-void FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively(State state, const rpg::Axiom& axiom)
+void FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively(const State& state, const rpg::Axiom& axiom)
 {
     for (const auto& atom_index : axiom.template get_preconditions<R, P>()->compressed_range())
     {
@@ -159,16 +161,16 @@ void FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively(S
     }
 }
 
-template void FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively<formalism::PositiveTag, formalism::FluentTag>(State state,
+template void FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively<formalism::PositiveTag, formalism::FluentTag>(const State& state,
                                                                                                                                       const rpg::Axiom& axiom);
-template void FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively<formalism::PositiveTag, formalism::DerivedTag>(State state,
+template void FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively<formalism::PositiveTag, formalism::DerivedTag>(const State& state,
                                                                                                                                        const rpg::Axiom& axiom);
-template void FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively<formalism::NegativeTag, formalism::FluentTag>(State state,
+template void FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively<formalism::NegativeTag, formalism::FluentTag>(const State& state,
                                                                                                                                       const rpg::Axiom& axiom);
-template void FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively<formalism::NegativeTag, formalism::DerivedTag>(State state,
+template void FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively<formalism::NegativeTag, formalism::DerivedTag>(const State& state,
                                                                                                                                        const rpg::Axiom& axiom);
 
-void FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively(State state, const rpg::Proposition& proposition)
+void FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively(const State& state, const rpg::Proposition& proposition)
 {
     auto& ff_proposition_annotations = get_ff_proposition_annotations()[proposition.get_index()];
 
@@ -194,7 +196,7 @@ void FFHeuristicImpl::extract_relaxed_plan_and_preferred_operators_recursively(S
     }
 }
 
-DiscreteCost FFHeuristicImpl::extract_impl(State state)
+DiscreteCost FFHeuristicImpl::extract_impl(const State& state)
 {
     // Ensure that this function is called only if the goal is satisfied in the relaxed exploration.
     assert(this->m_num_unsat_goals == 0);

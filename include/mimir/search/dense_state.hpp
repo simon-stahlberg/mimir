@@ -37,9 +37,9 @@ struct DenseState
     FlatDoubleList m_numeric_variables = FlatDoubleList();
 
     DenseState() = default;
-    DenseState(State state);
+    DenseState(const State& state);
 
-    static void translate(State state, DenseState& out_state);
+    static void translate(const State& state, DenseState& out_state);
 
     template<formalism::IsFluentOrDerivedTag P>
     bool contains(formalism::GroundAtom<P> atom) const;

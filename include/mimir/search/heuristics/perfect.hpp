@@ -21,6 +21,7 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/heuristics/interface.hpp"
+#include "mimir/search/state.hpp"
 
 namespace mimir::search
 {
@@ -35,7 +36,7 @@ public:
 
     static PerfectHeuristic create(const SearchContext& context);
 
-    ContinuousCost compute_heuristic(State state, bool is_goal_state) override;
+    ContinuousCost compute_heuristic(const State& state, bool is_goal_state) override;
 
 private:
     StateMap<ContinuousCost> m_estimates;

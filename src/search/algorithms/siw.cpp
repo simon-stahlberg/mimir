@@ -39,42 +39,41 @@ namespace mimir::search::siw
 
 /* ProblemGoalStrategyImplCounter */
 
-ProblemGoalStrategyImplCounter::ProblemGoalStrategyImplCounter(Problem problem, State state) :
+ProblemGoalStrategyImplCounter::ProblemGoalStrategyImplCounter(Problem problem, const State& state) :
     m_problem(problem),
     m_initial_num_unsatisfied_goals(count_unsatisfied_goals(state))
 {
 }
 
-int ProblemGoalStrategyImplCounter::count_unsatisfied_goals(State state) const
+int ProblemGoalStrategyImplCounter::count_unsatisfied_goals(const State& state) const
 {
     int num_unsatisfied_goals = 0;
 
     num_unsatisfied_goals +=
-        count_set_difference(m_problem->get_goal_atoms_indices<PositiveTag, FluentTag>().uncompressed_range(), state->get_atoms<FluentTag>());
+        count_set_difference(m_problem->get_goal_atoms_indices<PositiveTag, FluentTag>().uncompressed_range(), state.get_atoms<FluentTag>());
     num_unsatisfied_goals +=
-        count_set_difference(m_problem->get_goal_atoms_indices<PositiveTag, DerivedTag>().uncompressed_range(), state->get_atoms<DerivedTag>());
+        count_set_difference(m_problem->get_goal_atoms_indices<PositiveTag, DerivedTag>().uncompressed_range(), state.get_atoms<DerivedTag>());
     num_unsatisfied_goals +=
-        count_set_intersection(m_problem->get_goal_atoms_indices<NegativeTag, FluentTag>().uncompressed_range(), state->get_atoms<FluentTag>());
+        count_set_intersection(m_problem->get_goal_atoms_indices<NegativeTag, FluentTag>().uncompressed_range(), state.get_atoms<FluentTag>());
     num_unsatisfied_goals +=
-        count_set_intersection(m_problem->get_goal_atoms_indices<NegativeTag, DerivedTag>().uncompressed_range(), state->get_atoms<DerivedTag>());
+        count_set_intersection(m_problem->get_goal_atoms_indices<NegativeTag, DerivedTag>().uncompressed_range(), state.get_atoms<DerivedTag>());
 
     return num_unsatisfied_goals;
 }
 
 bool ProblemGoalStrategyImplCounter::test_static_goal() { return m_problem->static_goal_holds(); }
 
-bool ProblemGoalStrategyImplCounter::test_dynamic_goal(State state) { return count_unsatisfied_goals(state) < m_initial_num_unsatisfied_goals; }
+bool ProblemGoalStrategyImplCounter::test_dynamic_goal(const State& state) { return count_unsatisfied_goals(state) < m_initial_num_unsatisfied_goals; }
 
 /* SIW */
 SearchResult find_solution(const SearchContext& context, const Options& options)
 {
-    auto& problem = *context->get_problem();
     auto& applicable_action_generator = *context->get_applicable_action_generator();
     auto& state_repository = *context->get_state_repository();
 
     const auto max_arity = options.max_arity;
     const auto [start_state, start_g_value] = (options.start_state) ?
-                                                  std::make_pair(options.start_state, compute_state_metric_value(options.start_state, problem)) :
+                                                  std::make_pair(options.start_state.value(), compute_state_metric_value(options.start_state.value())) :
                                                   state_repository.get_or_create_initial_state();
     const auto siw_event_handler = (options.siw_event_handler) ? options.siw_event_handler : DefaultEventHandlerImpl::create(context->get_problem());
     const auto iw_event_handler = (options.iw_event_handler) ? options.iw_event_handler : iw::DefaultEventHandlerImpl::create(context->get_problem());

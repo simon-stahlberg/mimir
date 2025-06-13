@@ -79,7 +79,7 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
     auto& state_repository = *context->get_state_repository();
 
     const auto [start_state, start_g_value] = (options.start_state) ?
-                                                  std::make_pair(options.start_state, compute_state_metric_value(options.start_state, problem)) :
+                                                  std::make_pair(options.start_state.value(), compute_state_metric_value(options.start_state.value())) :
                                                   state_repository.get_or_create_initial_state();
     const auto event_handler = (options.event_handler) ? options.event_handler : DefaultEventHandlerImpl::create(context->get_problem());
     const auto goal_strategy = (options.goal_strategy) ? options.goal_strategy : ProblemGoalStrategyImpl::create(context->get_problem());
@@ -142,7 +142,7 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
 
     event_handler->on_start_search(start_state, start_g_value, start_f_value);
 
-    auto start_search_node = get_or_create_search_node(start_state->get_index(), default_search_node, search_nodes);
+    auto start_search_node = get_or_create_search_node(start_state.get_index(), default_search_node, search_nodes);
     start_search_node->get_status() = (start_h_value == INFINITY_CONTINUOUS_COST) ? SearchNodeStatus::DEAD_END : SearchNodeStatus::OPEN;
     set_g_value(start_search_node, start_g_value);
     set_h_value(start_search_node, start_h_value);
@@ -185,7 +185,7 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
         const auto state = openlist.top();
         openlist.pop();
 
-        auto search_node = get_or_create_search_node(state->get_index(), default_search_node, search_nodes);
+        auto search_node = get_or_create_search_node(state.get_index(), default_search_node, search_nodes);
 
         /* Avoid unnecessary extra work by testing whether shortest distance was proven. */
 
@@ -232,7 +232,7 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
             applicable_action_generator.on_end_search();
             state_repository.get_axiom_evaluator()->on_end_search();
 
-            result.plan = extract_total_ordered_plan(start_state, start_g_value, search_node, state->get_index(), search_nodes, context);
+            result.plan = extract_total_ordered_plan(start_state, start_g_value, search_node, state.get_index(), search_nodes, context);
             assert(result.plan->get_cost() == get_g_value(search_node));
             result.goal_state = state;
             result.status = SearchStatus::SOLVED;
@@ -258,7 +258,7 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
         {
             const auto [successor_state, successor_state_metric_value] =
                 state_repository.get_or_create_successor_state(state, action, get_g_value(search_node));
-            auto successor_search_node = get_or_create_search_node(successor_state->get_index(), default_search_node, search_nodes);
+            auto successor_search_node = get_or_create_search_node(successor_state.get_index(), default_search_node, search_nodes);
             const auto action_cost = successor_state_metric_value - get_g_value(search_node);
 
             if (successor_state_metric_value == UNDEFINED_CONTINUOUS_COST)
@@ -292,7 +292,7 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
                 /* Open/Reopen state with updated f_value. */
 
                 successor_search_node->get_status() = SearchNodeStatus::OPEN;
-                successor_search_node->get_parent_state() = state->get_index();
+                successor_search_node->get_parent_state() = state.get_index();
                 set_g_value(successor_search_node, successor_state_metric_value);
 
                 if (is_new_successor_state)

@@ -75,7 +75,7 @@ SearchResult find_solution(const SearchContext& context, const Options& options)
     auto& state_repository = *context->get_state_repository();
 
     const auto [start_state, start_g_value] = (options.start_state) ?
-                                                  std::make_pair(options.start_state, compute_state_metric_value(options.start_state, problem)) :
+                                                  std::make_pair(options.start_state.value(), compute_state_metric_value(options.start_state.value())) :
                                                   state_repository.get_or_create_initial_state();
     const auto event_handler = (options.event_handler) ? options.event_handler : DefaultEventHandlerImpl::create(context->get_problem());
     const auto goal_strategy = (options.goal_strategy) ? options.goal_strategy : ProblemGoalStrategyImpl::create(context->get_problem());
@@ -86,7 +86,7 @@ SearchResult find_solution(const SearchContext& context, const Options& options)
     auto search_nodes = SearchNodeImplVector<DiscreteCost>();
     auto queue = std::deque<State>();
 
-    auto start_search_node = get_or_create_search_node(start_state->get_index(), default_search_node, search_nodes);
+    auto start_search_node = get_or_create_search_node(start_state.get_index(), default_search_node, search_nodes);
     start_search_node->get_status() = SearchNodeStatus::OPEN;
     set_g_value(start_search_node, 0);
 
@@ -131,7 +131,7 @@ SearchResult find_solution(const SearchContext& context, const Options& options)
         const auto state = queue.front();
         queue.pop_front();
 
-        auto search_node = get_or_create_search_node(state->get_index(), default_search_node, search_nodes);
+        auto search_node = get_or_create_search_node(state.get_index(), default_search_node, search_nodes);
 
         /* Close state. */
 
@@ -167,7 +167,7 @@ SearchResult find_solution(const SearchContext& context, const Options& options)
                 state_repository.get_axiom_evaluator()->on_end_search();
 
                 result.goal_state = state;
-                result.plan = extract_total_ordered_plan(start_state, start_g_value, search_node, state->get_index(), search_nodes, context);
+                result.plan = extract_total_ordered_plan(start_state, start_g_value, search_node, state.get_index(), search_nodes, context);
                 result.status = SearchStatus::SOLVED;
 
                 event_handler->on_solved(result.plan.value());
@@ -189,7 +189,7 @@ SearchResult find_solution(const SearchContext& context, const Options& options)
             /* Open state. */
             const auto [successor_state, successor_state_metric_value] =
                 state_repository.get_or_create_successor_state(state, action, get_g_value(search_node));
-            auto successor_search_node = get_or_create_search_node(successor_state->get_index(), default_search_node, search_nodes);
+            auto successor_search_node = get_or_create_search_node(successor_state.get_index(), default_search_node, search_nodes);
             auto action_cost = successor_state_metric_value - get_g_value(search_node);
 
             event_handler->on_generate_state(state, action, action_cost, successor_state);
@@ -201,7 +201,7 @@ SearchResult find_solution(const SearchContext& context, const Options& options)
             event_handler->on_generate_state_in_search_tree(state, action, action_cost, successor_state);
 
             successor_search_node->get_status() = SearchNodeStatus::OPEN;
-            successor_search_node->get_parent_state() = state->get_index();
+            successor_search_node->get_parent_state() = state.get_index();
             set_g_value(successor_search_node, get_g_value(search_node) + 1);
 
             queue.emplace_back(successor_state);

@@ -100,7 +100,7 @@ void AddHeuristicImpl::update_or_annotation_impl(const Axiom& axiom, const Propo
     }
 }
 
-DiscreteCost AddHeuristicImpl::extract_impl(State)
+DiscreteCost AddHeuristicImpl::extract_impl(const State&)
 {
     // Ensure that this function is called only if the goal is satisfied in the relaxed exploration.
     assert(this->m_num_unsat_goals == 0);
