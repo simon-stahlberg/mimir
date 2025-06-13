@@ -38,7 +38,7 @@ using namespace mimir::formalism;
 
 namespace mimir::search
 {
-namespace v = valla::canonical;
+namespace v = valla::canonical_delta;
 
 ContinuousCost compute_state_metric_value(State state, const ProblemImpl& problem)
 {
