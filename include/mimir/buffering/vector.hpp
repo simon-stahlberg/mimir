@@ -19,7 +19,7 @@
 #define MIMIR_BUFFERING_VECTOR_HPP_
 
 #include "cista/serialization.h"
-#include "mimir/buffering/byte_buffer_segmented.h"
+#include "mimir/buffering/byte_buffer_segmented.hpp"
 
 namespace mimir::buffering
 {
@@ -90,7 +90,7 @@ public:
      * Modifiers
      */
 
-    template<cista::mode Mode = cista::mode::NONE>
+    template<bool RequireAlignment = true, cista::mode Mode = cista::mode::NONE>
     void push_back(const T& element)
     {
         /* Serialize the element. */
@@ -100,16 +100,18 @@ public:
         /* Add padding to ensure that subsequent elements are aligned correctly. */
         size_t num_padding = (alignof(T) - (m_buf.size() % alignof(T))) % alignof(T);
         m_buf.buf_.insert(m_buf.buf_.end(), num_padding, 0);
-        if (m_buf.size() % alignof(T) != 0)
+        if constexpr (RequireAlignment)
         {
-            throw std::logic_error("mimir::buffering::Vector::insert: serialized buffer before write does not satisfy alignment requirements.");
+            assert(m_buf.size() % alignof(T) == 0
+                   && "mimir::buffering::Vector::insert: serialized buffer before write does not satisfy alignment requirements.");
         }
 
         /* Write the data to the storage. */
         auto begin = m_storage.write(m_buf.base(), m_buf.size());
-        if (reinterpret_cast<uintptr_t>(begin) % alignof(T) != 0)
+        if constexpr (RequireAlignment)
         {
-            throw std::logic_error("mimir::buffering::Vector::insert: serialized buffer after write does not satisfy alignment requirements.");
+            assert(reinterpret_cast<uintptr_t>(begin) % alignof(T) == 0
+                   && "mimir::buffering::Vector::insert: serialized buffer after write does not satisfy alignment requirements.");
         }
 
         /* Add the deserialized element to the vector. */

@@ -18,7 +18,7 @@
 #ifndef MIMIR_SEARCH_SEARCH_NODE_HPP_
 #define MIMIR_SEARCH_SEARCH_NODE_HPP_
 
-#include "mimir/buffering/vector.h"
+#include "mimir/buffering/vector.hpp"
 #include "mimir/common/types.hpp"
 
 namespace mimir::search
