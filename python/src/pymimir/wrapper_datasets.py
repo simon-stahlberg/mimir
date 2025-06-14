@@ -87,6 +87,15 @@ class StateSpaceSampler:
         advanced_state_space_sampler = AdvancedStateSpaceSampler(advanced_state_space)
         return StateSpaceSampler(advanced_state_space_sampler, problem)
 
+    def get_problem(self) -> 'Problem':
+        """
+        Get the problem instance associated with this state space sampler.
+
+        :return: The problem instance.
+        :rtype: Problem
+        """
+        return self._problem
+
     def set_seed(self, seed: int) -> None:
         """
         Set the random seed for the state space sampler.

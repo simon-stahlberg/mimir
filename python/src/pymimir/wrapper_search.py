@@ -55,6 +55,15 @@ class AddHeuristic(Heuristic):
         delete_relaxed = AdvancedDeleteRelaxedProblemExplorator(problem._advanced_problem)
         self._advanced_heuristic = AdvancedAddHeuristic(delete_relaxed)
 
+    def get_problem(self) -> 'Problem':
+        """
+        Get the problem instance associated with this heuristic.
+
+        :return: The problem instance.
+        :rtype: Problem
+        """
+        return self._problem
+
     def compute_value(self, state: 'State', is_goal_state: bool) -> float:
         return self._advanced_heuristic.compute_heuristic(state._advanced_state, is_goal_state)
 
@@ -68,6 +77,15 @@ class BlindHeuristic(Heuristic):
         assert isinstance(problem, Problem), "Problem must be an instance of Problem."
         self._problem = problem
         self._advanced_heuristic = AdvancedBlindHeuristic(problem._advanced_problem)
+
+    def get_problem(self) -> 'Problem':
+        """
+        Get the problem instance associated with this heuristic.
+
+        :return: The problem instance.
+        :rtype: Problem
+        """
+        return self._problem
 
     def compute_value(self, state: 'State', is_goal_state: bool) -> float:
         self._advanced_heuristic.compute_heuristic(state._advanced_state, is_goal_state)
@@ -84,6 +102,15 @@ class MaxHeuristic(Heuristic):
         delete_relaxed = AdvancedDeleteRelaxedProblemExplorator(problem._advanced_problem)
         self._advanced_heuristic = AdvancedMaxHeuristic(delete_relaxed)
 
+    def get_problem(self) -> 'Problem':
+        """
+        Get the problem instance associated with this heuristic.
+
+        :return: The problem instance.
+        :rtype: Problem
+        """
+        return self._problem
+
     def compute_value(self, state: 'State', is_goal_state: bool) -> float:
         return self._advanced_heuristic.compute_heuristic(state._advanced_state, is_goal_state)
 
@@ -97,6 +124,15 @@ class PerfectHeuristic(Heuristic):
         assert isinstance(problem, Problem), "Problem must be an instance of Problem."
         self._problem = problem
         self._advanced_heuristic = AdvancedPerfectHeuristic(problem._search_context)
+
+    def get_problem(self) -> 'Problem':
+        """
+        Get the problem instance associated with this heuristic.
+
+        :return: The problem instance.
+        :rtype: Problem
+        """
+        return self._problem
 
     def compute_value(self, state: 'State', is_goal_state: bool) -> float:
         return self._advanced_heuristic.compute_heuristic(state._advanced_state, is_goal_state)
@@ -113,6 +149,15 @@ class SetAddHeuristic(Heuristic):
         delete_relaxed = AdvancedDeleteRelaxedProblemExplorator(problem._advanced_problem)
         self._advanced_heuristic = AdvancedSetAddHeuristic(delete_relaxed)
 
+    def get_problem(self) -> 'Problem':
+        """
+        Get the problem instance associated with this heuristic.
+
+        :return: The problem instance.
+        :rtype: Problem
+        """
+        return self._problem
+
     def compute_value(self, state: 'State', is_goal_state: bool) -> float:
         return self._advanced_heuristic.compute_heuristic(state._advanced_state, is_goal_state)
 
@@ -127,6 +172,15 @@ class FFHeuristic(Heuristic):
         self._problem = problem
         delete_relaxed = AdvancedDeleteRelaxedProblemExplorator(problem._advanced_problem)
         self._advanced_heuristic = AdvancedFFHeuristic(delete_relaxed)
+
+    def get_problem(self) -> 'Problem':
+        """
+        Get the problem instance associated with this heuristic.
+
+        :return: The problem instance.
+        :rtype: Problem
+        """
+        return self._problem
 
     def compute_value(self, state: 'State', is_goal_state: bool) -> float:
         return self._advanced_heuristic.compute_heuristic(state._advanced_state, is_goal_state)
@@ -154,6 +208,9 @@ class AdvancedHeuristicAdapter(AdvancedHeuristicBase):
         assert isinstance(problem, Problem), "Problem must be an instance of Problem."
         self._heuristic = heuristic
         self._problem = problem
+
+    def get_problem(self) -> 'Problem':
+        return self._problem
 
     def compute_heuristic(self, advanced_state: 'AdvancedState', is_goal_state: bool) -> float:
         state = State(advanced_state, self._problem)

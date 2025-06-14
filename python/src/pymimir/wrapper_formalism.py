@@ -839,6 +839,15 @@ class GroundEffect:
         """
         return self._advanced_ground_effect.get_index()
 
+    def get_problem(self) -> 'Problem':
+        """
+        Get the problem instance to which the ground effect belongs.
+
+        :return: The problem instance.
+        :rtype: Problem
+        """
+        return self._problem
+
     def get_add_list(self) -> 'list[GroundAtom]':
         """
         Get the add list of the ground effect.
@@ -927,6 +936,15 @@ class GroundConditionalEffect:
         :rtype: int
         """
         return self._advanced_conditional_effect.get_index()
+
+    def get_problem(self) -> 'Problem':
+        """
+        Get the problem instance to which the ground conditional effect belongs.
+
+        :return: The problem instance.
+        :rtype: Problem
+        """
+        return self._problem
 
     def get_condition(self) -> 'GroundConjunctiveCondition':
         """
@@ -1291,6 +1309,15 @@ class GroundAction:
         :rtype: int
         """
         return self._advanced_ground_action.get_index()
+
+    def get_problem(self) -> 'Problem':
+        """
+        Get the problem instance to which the ground action belongs.
+
+        :return: The problem instance.
+        :rtype: Problem
+        """
+        return self._problem
 
     def get_action(self) -> 'Action':
         """
@@ -1814,6 +1841,15 @@ class State:
         """
         return self._advanced_state.get_index()
 
+    def get_problem(self) -> 'Problem':
+        """
+        Get the problem instance to which the state belongs.
+
+        :return: The problem instance.
+        :rtype: Problem
+        """
+        return self._problem
+
     def get_ground_atoms(self, ignore_static = False, ignore_fluent = False, ignore_derived = False) -> 'list[GroundAtom]':
         """
         Returns the ground atoms of the state.
@@ -2051,6 +2087,15 @@ class GroundConjunctiveCondition:
         self._fluent_ground_literals += [GroundLiteral.new(x, False, self._problem) for x in self._fluent_neg_ground_atoms]
         self._derived_ground_literals = [GroundLiteral.new(x, True, self._problem) for x in self._derived_pos_ground_atoms]
         self._derived_ground_literals += [GroundLiteral.new(x, False, self._problem) for x in self._derived_neg_ground_atoms]
+
+    def get_problem(self) -> 'Problem':
+        """
+        Get the problem instance to which the ground conjunctive condition belongs.
+
+        :return: The problem instance.
+        :rtype: Problem
+        """
+        return self._problem
 
     def holds(self, state: 'State') -> bool:
         """
