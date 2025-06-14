@@ -81,9 +81,10 @@ class StateSpaceSampler:
         if symmetry_pruning is not None:
             state_space_options.symmetry_pruning = symmetry_pruning
         # Create the advanced state space.
-        advanced_state_space, _ = AdvancedStateSpace.create(problem._search_context, state_space_options)
-        if advanced_state_space is None:
+        result = AdvancedStateSpace.create(problem._search_context, state_space_options)
+        if result is None:
             return None
+        advanced_state_space, _ = result
         advanced_state_space_sampler = AdvancedStateSpaceSampler(advanced_state_space)
         return StateSpaceSampler(advanced_state_space_sampler, problem)
 
