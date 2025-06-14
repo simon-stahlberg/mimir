@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_BUFFERING_UNORDERED_SET_HPP_
-#define MIMIR_BUFFERING_UNORDERED_SET_HPP_
+#ifndef MIMIR_BUFFERING_UNORDERED_MAP_HPP_
+#define MIMIR_BUFFERING_UNORDERED_MAP_HPP_
 
 #include "cista/serialization.h"
 #include "mimir/buffering/byte_buffer_segmented.h"
@@ -36,25 +36,25 @@ namespace mimir::buffering
 /// @tparam T is the underlying container type.
 /// @tparam Hash is a hash function that computes a hash value for a dereferenced pointer of type T.
 /// @tparam Equal is a comparison function that compares two dereferenced pointers of type T.
-template<typename T, typename Hash = loki::Hash<loki::ObserverPtr<const T>>, typename Equal = loki::EqualTo<loki::ObserverPtr<const T>>>
-class UnorderedSet
+template<typename T, typename Value, typename Hash = loki::Hash<loki::ObserverPtr<const T>>, typename Equal = loki::EqualTo<loki::ObserverPtr<const T>>>
+class UnorderedMap
 {
 private:
     // Persistent storage
     ByteBufferSegmented m_storage;
 
     // Data to be accessed, we use absl::flat_hash_set because it stores the data in contiguous memory.
-    absl::flat_hash_set<loki::ObserverPtr<const T>, Hash, Equal> m_elements;
+    absl::flat_hash_map<loki::ObserverPtr<const T>, Value, Hash, Equal> m_elements;
 
     // Serialization buffer
     cista::buf<std::vector<uint8_t>> m_buf;
 
 public:
-    explicit UnorderedSet(size_t initial_num_bytes_per_segment = 1024, size_t maximum_num_bytes_per_segment = 1024 * 1024) {}
-    UnorderedSet(const UnorderedSet& other) = delete;
-    UnorderedSet& operator=(const UnorderedSet& other) = delete;
-    UnorderedSet(UnorderedSet&& other) = default;
-    UnorderedSet& operator=(UnorderedSet&& other) = default;
+    explicit UnorderedMap(size_t initial_num_bytes_per_segment = 1024, size_t maximum_num_bytes_per_segment = 1024 * 1024) {}
+    UnorderedMap(const UnorderedMap& other) = delete;
+    UnorderedMap& operator=(const UnorderedMap& other) = delete;
+    UnorderedMap(UnorderedMap&& other) = default;
+    UnorderedMap& operator=(UnorderedMap&& other) = default;
 
     /**
      * Iterators
@@ -83,7 +83,7 @@ public:
     }
 
     template<cista::mode Mode = cista::mode::NONE>
-    auto insert(const T& element)
+    auto emplace(const T& element, const Value& value)
     {
         /* Check whether element exists already. */
         auto it = m_elements.find(&element);
@@ -100,15 +100,15 @@ public:
         size_t num_padding = (alignof(T) - (m_buf.size() % alignof(T))) % alignof(T);
         m_buf.buf_.insert(m_buf.buf_.end(), num_padding, 0);
         assert(m_buf.size() % alignof(T) == 0
-               && "mimir::buffering::UnorderedSet::insert: serialized buffer before write does not satisfy alignment requirements.");
+               && "mimir::buffering::UnorderedMap::insert: serialized buffer before write does not satisfy alignment requirements.");
 
         /* Write the data to the storage and return it. */
         auto begin = m_storage.write(m_buf.base(), m_buf.size());
         assert(reinterpret_cast<uintptr_t>(begin) % alignof(T) == 0
-               && "mimir::buffering::UnorderedSet::insert: serialized buffer after write does not satisfy alignment requirements.");
+               && "mimir::buffering::UnorderedMap::emplace: serialized buffer after write does not satisfy alignment requirements.");
 
         /* Add the deserialized element to the unordered_set and return it. */
-        return m_elements.insert(cista::deserialize<const T, Mode>(begin, begin + m_buf.size()));
+        return m_elements.emplace(cista::deserialize<const T, Mode>(begin, begin + m_buf.size()), value);
     }
 
     /**

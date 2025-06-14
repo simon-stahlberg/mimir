@@ -55,8 +55,11 @@ private:
 
     problem::Details m_details;  ///< We hide the details in a struct.
 
-    FlatIndexListSet m_flat_index_list_set;    ///< Stores all created atom lists.
-    FlatDoubleListSet m_flat_double_list_set;  ///< Stores all created numeric variable lists.
+    FlatIndexListMap m_flat_index_list_map;  ///< Stores all created atom lists.
+    std::vector<const FlatIndexList*> m_flat_index_lists;
+
+    FlatDoubleListMap m_flat_double_list_map;  ///< Stores all created numeric variable lists.
+    std::vector<const FlatDoubleList*> m_flat_double_lists;
 
     valla::IndexedHashSet m_tree_table;
     valla::BitsetPool m_bitset_pool;
@@ -126,6 +129,18 @@ public:
      * Additional members
      */
 
+    valla::IndexedHashSet& get_tree_table();
+    valla::BitsetPool& get_bitset_pool();
+    valla::BitsetRepository& get_bitset_repository();
+    const valla::IndexedHashSet& get_tree_table() const;
+    const valla::BitsetPool& get_bitset_pool() const;
+    const valla::BitsetRepository& get_bitset_repository() const;
+
+    std::pair<const FlatIndexList*, Index> get_or_create_index_list(const FlatIndexList& list);
+    const FlatIndexList* get_index_list(size_t pos) const;
+    std::pair<const FlatDoubleList*, Index> get_or_create_double_list(const FlatDoubleList& list);
+    const FlatDoubleList* get_double_list(size_t pos) const;
+
     /* Objects */
     const Object get_object(const std::string& name) const;
     const Object get_problem_or_domain_object(const std::string& name) const;
@@ -137,13 +152,6 @@ public:
     const Predicate<DerivedTag>& get_problem_or_domain_derived_predicate(const std::string& name) const;
     const ToPredicateMap<std::string, DerivedTag>& get_name_to_derived_predicate() const;
     const ToPredicateMap<std::string, DerivedTag>& get_name_to_problem_or_domain_derived_predicate() const;
-
-    valla::IndexedHashSet& get_tree_table();
-    valla::BitsetPool& get_bitset_pool();
-    valla::BitsetRepository& get_bitset_repository();
-    const valla::IndexedHashSet& get_tree_table() const;
-    const valla::BitsetPool& get_bitset_pool() const;
-    const valla::BitsetRepository& get_bitset_repository() const;
 
     /* Initial state */
     const GroundAtomList<StaticTag>& get_static_initial_atoms() const;
@@ -181,9 +189,6 @@ public:
     const std::vector<AxiomPartition>& get_problem_and_domain_axiom_partitioning() const;
 
     /* Grounding */
-
-    const FlatIndexList* get_or_create_index_list(const FlatIndexList& list);
-    const FlatDoubleList* get_or_create_double_list(const FlatDoubleList& list);
 
     template<IsStaticOrFluentOrDerivedTag P>
     GroundAtom<P> get_or_create_ground_atom(Predicate<P> predicate, const ObjectList& objects);
