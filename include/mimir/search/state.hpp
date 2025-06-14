@@ -43,6 +43,19 @@ namespace v = valla::plain;
 class InternalStateImpl
 {
 private:
+    // Idea for more compact design based on cista::basic_vector:
+    // bool m_self_allocated;  ///< flag to indicate whether the m_data pointer is self allocated or owned elsewhere
+    // The format of the data as follows:
+    // Header, 1 byte for each and 6 bytes total:
+    // - num bits for state index
+    // - num bits for fluent tree node index
+    // - num bits for fluent tree node size
+    // - num bits for derived tree node index
+    // - num bits for derived tree node size
+    // - num bits for numeric variables list index
+    // Footer, as many bits as needed for each of the 6 entries
+    // uint8_t* m_data;
+
     v::RootSlotType m_fluent_atoms;
     v::RootSlotType m_derived_atoms;
     Index m_numeric_variables;
@@ -65,11 +78,13 @@ public:
     template<formalism::IsFluentOrDerivedTag P>
     v::RootSlotType get_atoms() const;
     Index get_numeric_variables() const;
+
+    auto cista_members() { return std::tie(m_fluent_atoms, m_derived_atoms, m_numeric_variables, m_index); }
 };
 
 static_assert(sizeof(InternalStateImpl) == 24);
 
-using InternalStateImplSet = loki::SegmentedRepository<InternalStateImpl>;
+using InternalStateImplSet = buffering::UnorderedSet<InternalStateImpl>;
 
 /**
  * State
