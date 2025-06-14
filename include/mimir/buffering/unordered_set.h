@@ -60,9 +60,7 @@ public:
      * Iterators
      */
 
-    auto begin() { return m_elements.begin(); }
     auto begin() const { return m_elements.begin(); }
-    auto end() { return m_elements.end(); }
     auto end() const { return m_elements.end(); }
 
     /**
@@ -116,7 +114,6 @@ public:
      */
 
     size_t count(const T& key) const { return m_elements.count(&key); }
-    auto find(const T& key) { return m_elements.find(&key); }
     auto find(const T& key) const { return m_elements.find(&key); }
     bool contains(const T& key) const { return m_elements.contains(&key); }
 
