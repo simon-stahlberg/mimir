@@ -18,7 +18,8 @@
 #ifndef MIMIR_SEARCH_STATE_HPP_
 #define MIMIR_SEARCH_STATE_HPP_
 
-#include "mimir/buffering/unordered_set.h"
+#include "mimir/buffering/unordered_set.hpp"
+#include "mimir/buffering/utils.hpp"
 #include "mimir/common/hash.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
@@ -44,9 +45,9 @@ class InternalStateImpl
 {
 private:
     // Idea for more compact design based on cista::basic_vector:
-    // bool m_self_allocated;  ///< flag to indicate whether the m_data pointer is self allocated or owned elsewhere
+    bool m_self_allocated;  ///< flag to indicate whether the m_data pointer is self allocated or owned elsewhere
     // The format of the data as follows:
-    // Header, 1 byte for each and 6 bytes total:
+    // Header, 6 bit for each:
     // - num bits for state index
     // - num bits for fluent tree node index
     // - num bits for fluent tree node size
@@ -54,35 +55,55 @@ private:
     // - num bits for derived tree node size
     // - num bits for numeric variables list index
     // Footer, as many bits as needed for each of the 6 entries
-    // uint8_t* m_data;
+    uint8_t* m_data;
 
-    v::RootSlotType m_fluent_atoms;
-    v::RootSlotType m_derived_atoms;
-    Index m_numeric_variables;
-    Index m_index;
-
-    InternalStateImpl(Index index, v::RootSlotType fluent_atoms, v::RootSlotType derived_atoms, Index numeric_variables);
-
-    friend class StateRepositoryImpl;
-
-    // Give access to the constructor.
-    template<typename T, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    static constexpr size_t s_capacity = 29;  // 8 uint32_t: 6 * 6 bits (5 bytes) for header + 6 * 4 bytes (24 bytes) for footer
 
 public:
-    /**
-     * Getters
-     */
+    InternalStateImpl();
 
-    Index get_index() const;
-    template<formalism::IsFluentOrDerivedTag P>
-    v::RootSlotType get_atoms() const;
-    Index get_numeric_variables() const;
+    ~InternalStateImpl();
 
-    auto cista_members() { return std::tie(m_fluent_atoms, m_derived_atoms, m_numeric_variables, m_index); }
+    struct UnpackedData
+    {
+        v::RootSlotType fluent_atoms;
+        v::RootSlotType derived_atoms;
+        Index numeric_variables;
+        Index index;
+    };
+
+    void set_data(const UnpackedData& data);
+
+    UnpackedData get_data() const;
+
+    size_t buffer_size() const;
 };
 
-static_assert(sizeof(InternalStateImpl) == 24);
+template<typename Ctx>
+inline void serialize(Ctx& context, InternalStateImpl const* el, cista::offset_t const offset)
+{
+    using cista::serialize;
+
+    const auto buffer_size = el->buffer_size();
+
+    // serialize buffer_size many bytes from el.m_data
+    for (std::size_t i = 0; i < buffer_size; ++i)
+    {
+        cista::serialize(context, &el->m_data[i], offset + i);
+    }
+}
+
+template<typename Ctx>
+inline void deserialize(Ctx const& context, InternalStateImpl* el)
+{
+    using cista::deserialize;
+    // simply set the m_data to the pointer
+
+    auto* buffer_start = deserialize<uint8_t const*>(context);
+
+    el->m_data = const_cast<uint8_t*>(buffer_start);  // safe only if you know it's mutable
+    el->m_self_allocated = false;
+}
 
 using InternalStateImplSet = buffering::UnorderedSet<InternalStateImpl>;
 
@@ -95,6 +116,8 @@ class State
 private:
     InternalState m_internal;
     const formalism::ProblemImpl* m_problem;
+
+    InternalStateImpl::UnpackedData m_unpacked;
 
     State(const InternalStateImpl& internal, const formalism::ProblemImpl& problem);
 

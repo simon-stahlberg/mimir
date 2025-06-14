@@ -19,7 +19,7 @@
 #define MIMIR_BUFFERING_UNORDERED_SET_HPP_
 
 #include "cista/serialization.h"
-#include "mimir/buffering/byte_buffer_segmented.h"
+#include "mimir/buffering/byte_buffer_segmented.hpp"
 #include "mimir/common/hash.hpp"
 #include "mimir/common/memory.hpp"
 
@@ -80,7 +80,7 @@ public:
         m_elements.clear();
     }
 
-    template<cista::mode Mode = cista::mode::NONE>
+    template<bool RequireAlignment = true, cista::mode Mode = cista::mode::NONE>
     auto insert(const T& element)
     {
         /* Check whether element exists already. */
@@ -97,13 +97,19 @@ public:
         /* Add padding to ensure that subsequent elements are aligned correctly. */
         size_t num_padding = (alignof(T) - (m_buf.size() % alignof(T))) % alignof(T);
         m_buf.buf_.insert(m_buf.buf_.end(), num_padding, 0);
-        assert(m_buf.size() % alignof(T) == 0
-               && "mimir::buffering::UnorderedSet::insert: serialized buffer before write does not satisfy alignment requirements.");
+        if constexpr (RequireAlignment)
+        {
+            assert(m_buf.size() % alignof(T) == 0
+                   && "mimir::buffering::UnorderedSet::insert: serialized buffer before write does not satisfy alignment requirements.");
+        }
 
         /* Write the data to the storage and return it. */
         auto begin = m_storage.write(m_buf.base(), m_buf.size());
-        assert(reinterpret_cast<uintptr_t>(begin) % alignof(T) == 0
-               && "mimir::buffering::UnorderedSet::insert: serialized buffer after write does not satisfy alignment requirements.");
+        if constexpr (RequireAlignment)
+        {
+            assert(reinterpret_cast<uintptr_t>(begin) % alignof(T) == 0
+                   && "mimir::buffering::UnorderedSet::insert: serialized buffer after write does not satisfy alignment requirements.");
+        }
 
         /* Add the deserialized element to the unordered_set and return it. */
         return m_elements.insert(cista::deserialize<const T, Mode>(begin, begin + m_buf.size()));
