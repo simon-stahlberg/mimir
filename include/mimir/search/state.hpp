@@ -70,6 +70,23 @@ public:
         v::RootSlotType derived_atoms;
         Index numeric_variables;
         Index index;
+
+        template<formalism::IsFluentOrDerivedTag P>
+        v::RootSlotType get_atoms() const
+        {
+            if constexpr (std::is_same_v<P, formalism::FluentTag>)
+            {
+                return fluent_atoms;
+            }
+            else if constexpr (std::is_same_v<P, formalism::DerivedTag>)
+            {
+                return derived_atoms;
+            }
+            else
+            {
+                static_assert(dependent_false<P>::value, "Missing implementation for IsStaticOrFluentOrDerivedTag.");
+            }
+        }
     };
 
     void set_data(const UnpackedData& data);
@@ -77,6 +94,8 @@ public:
     UnpackedData get_data() const;
 
     size_t buffer_size() const;
+
+    const uint8_t* buffer() const;
 };
 
 template<typename Ctx>
@@ -98,6 +117,8 @@ inline void deserialize(Ctx const& context, InternalStateImpl* el)
 {
     using cista::deserialize;
     // simply set the m_data to the pointer
+
+    assert(!el->m_self_allocated);
 
     auto* buffer_start = deserialize<uint8_t const*>(context);
 
@@ -179,7 +200,7 @@ public:
 template<formalism::IsFluentOrDerivedTag P>
 auto State::get_atoms() const
 {
-    return std::ranges::subrange(v::begin(m_internal->template get_atoms<P>(), m_problem->get_tree_table()), v::end());
+    return std::ranges::subrange(v::begin(m_unpacked.get_atoms<P>(), m_problem->get_tree_table()), v::end());
 }
 
 template<formalism::IsFluentOrDerivedTag P, std::ranges::input_range Range1, std::ranges::input_range Range2>
@@ -204,7 +225,10 @@ struct Hash<mimir::search::InternalStateImpl>
 {
     size_t operator()(const mimir::search::InternalStateImpl& el) const
     {
-        return hash_combine(valla::SlotHash()(el.get_atoms<mimir::formalism::FluentTag>()), el.get_numeric_variables());
+        auto writer = mimir::buffering::UintReader<mimir::Index, mimir::Index, mimir::Index, mimir::Index, mimir::Index, mimir::Index>(el.buffer());
+        const auto [index, fluent_index, fluent_size, derived_index, derived_size, numeric_variables] = writer.read();
+
+        return hash_combine(valla::SlotHash()(valla::make_slot(fluent_index, fluent_size)), numeric_variables);
     }
 };
 
@@ -213,8 +237,13 @@ struct EqualTo<mimir::search::InternalStateImpl>
 {
     bool operator()(const mimir::search::InternalStateImpl& lhs, const mimir::search::InternalStateImpl& rhs) const
     {
-        return lhs.get_atoms<mimir::formalism::FluentTag>() == rhs.get_atoms<mimir::formalism::FluentTag>()
-               && lhs.get_numeric_variables() == rhs.get_numeric_variables();
+        auto lhs_writer = mimir::buffering::UintReader<mimir::Index, mimir::Index, mimir::Index, mimir::Index, mimir::Index, mimir::Index>(lhs.buffer());
+        const auto [lhs_index, lhs_fluent_index, lhs_fluent_size, lhs_derived_index, lhs_derived_size, lhs_numeric_variables] = lhs_writer.read();
+
+        auto rhs_writer = mimir::buffering::UintReader<mimir::Index, mimir::Index, mimir::Index, mimir::Index, mimir::Index, mimir::Index>(rhs.buffer());
+        const auto [rhs_index, rhs_fluent_index, rhs_fluent_size, rhs_derived_index, rhs_derived_size, rhs_numeric_variables] = rhs_writer.read();
+
+        return lhs_fluent_index == rhs_fluent_index && lhs_fluent_size == rhs_fluent_size && lhs_numeric_variables == rhs_numeric_variables;
     }
 };
 

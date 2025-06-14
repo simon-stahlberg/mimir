@@ -46,104 +46,47 @@ void InternalStateImpl::set_data(const UnpackedData& data)
 {
     assert(m_self_allocated && m_data);
 
-    std::memset(m_data, uint8_t(0), s_capacity);
-
-    size_t start_bit = 36;  // 6 * 6 bits
-
-    size_t num_bits_index = std::bit_width(data.index);
-    buffering::write_uint<Index>(m_data, 0, 6, num_bits_index);
-    buffering::write_uint<Index>(m_data, start_bit, start_bit + num_bits_index, data.index);
-    start_bit += num_bits_index;
+    auto writer = buffering::UintWriter<Index, Index, Index, Index, Index, Index>(m_data);
 
     const auto [fluent_index, fluent_size] = valla::read_slot(data.fluent_atoms);
-
-    size_t num_bits_fluent_index = std::bit_width(fluent_index);
-    buffering::write_uint<Index>(m_data, 6, 12, num_bits_fluent_index);
-    buffering::write_uint<Index>(m_data, start_bit, start_bit + num_bits_fluent_index, fluent_index);
-    start_bit += num_bits_fluent_index;
-
-    size_t num_bits_fluent_size = std::bit_width(valla::read_pos(fluent_size, 1));
-    buffering::write_uint<Index>(m_data, 12, 18, num_bits_fluent_size);
-    buffering::write_uint<Index>(m_data, start_bit, start_bit + num_bits_fluent_size, fluent_size);
-    start_bit += num_bits_fluent_size;
-
     const auto [derived_index, derived_size] = valla::read_slot(data.derived_atoms);
 
-    size_t num_bits_derived_index = std::bit_width(derived_index);
-    buffering::write_uint<Index>(m_data, 18, 24, num_bits_derived_index);
-    buffering::write_uint<Index>(m_data, start_bit, start_bit + num_bits_derived_index, derived_index);
-    start_bit += num_bits_derived_index;
-
-    size_t num_bits_derived_size = std::bit_width(derived_size);
-    buffering::write_uint<Index>(m_data, 24, 30, num_bits_derived_size);
-    buffering::write_uint<Index>(m_data, start_bit, start_bit + num_bits_derived_size, derived_size);
-    start_bit += num_bits_derived_size;
-
-    size_t num_bits_numeric = std::bit_width(data.numeric_variables);
-    buffering::write_uint<Index>(m_data, 30, 36, num_bits_numeric);
-    buffering::write_uint<Index>(m_data, start_bit, start_bit + num_bits_numeric, data.numeric_variables);
-    start_bit += num_bits_numeric;
+    writer.write(data.index, fluent_index, fluent_size, derived_index, derived_size, data.numeric_variables);
 }
 
 InternalStateImpl::UnpackedData InternalStateImpl::get_data() const
 {
     auto result = UnpackedData {};
-    size_t start_bit = 36;  // 6 * 6 bits
 
-    size_t num_bits_index = buffering::read_uint<size_t>(m_data, 0, 6);
+    auto writer = buffering::UintReader<Index, Index, Index, Index, Index, Index>(m_data);
 
-    result.index = buffering::read_uint<Index>(m_data, start_bit, start_bit + num_bits_index);
-    start_bit += num_bits_index;
+    const auto [index, fluent_index, fluent_size, derived_index, derived_size, numeric_variables] = writer.read();
 
-    size_t num_bits_fluent_index = buffering::read_uint<size_t>(m_data, 6, 12);
-    Index fluent_index = buffering::read_uint<Index>(m_data, start_bit, start_bit + num_bits_fluent_index);
-    start_bit += num_bits_fluent_index;
-
-    size_t num_bits_fluent_size = buffering::read_uint<size_t>(m_data, 12, 18);
-    Index fluent_size = buffering::read_uint<Index>(m_data, start_bit, start_bit + num_bits_fluent_size);
-    start_bit += num_bits_fluent_size;
-
+    result.index = index;
     result.fluent_atoms = valla::make_slot(fluent_index, fluent_size);
-
-    size_t num_bits_derived_index = buffering::read_uint<size_t>(m_data, 18, 24);
-    Index derived_index = buffering::read_uint<Index>(m_data, start_bit, start_bit + num_bits_derived_index);
-    start_bit += num_bits_derived_index;
-
-    size_t num_bits_derived_size = buffering::read_uint<size_t>(m_data, 24, 30);
-    Index derived_size = buffering::read_uint<Index>(m_data, start_bit, start_bit + num_bits_derived_size);
-    start_bit += num_bits_derived_size;
-
     result.derived_atoms = valla::make_slot(derived_index, derived_size);
-
-    size_t num_bits_numeric_size = buffering::read_uint<size_t>(m_data, 30, 36);
-    result.numeric_variables = buffering::read_uint<Index>(m_data, start_bit, start_bit + num_bits_numeric_size);
-    start_bit += num_bits_numeric_size;
+    result.numeric_variables = numeric_variables;
 
     return result;
 }
 
 size_t InternalStateImpl::buffer_size() const
 {
-    size_t start_bit = 36;  // Header: 6 fields * 6 bits
+    auto writer = buffering::UintReader<Index, Index, Index, Index, Index, Index>(m_data);
 
-    size_t total_bits = start_bit;
-
-    total_bits += buffering::read_uint<size_t>(m_data, 0, 6);    // index
-    total_bits += buffering::read_uint<size_t>(m_data, 6, 12);   // fluent index
-    total_bits += buffering::read_uint<size_t>(m_data, 12, 18);  // fluent size
-    total_bits += buffering::read_uint<size_t>(m_data, 18, 24);  // derived index
-    total_bits += buffering::read_uint<size_t>(m_data, 24, 30);  // derived size
-    total_bits += buffering::read_uint<size_t>(m_data, 30, 36);  // numeric vars
-
-    // ceil(total_bits / 8)
-    return (total_bits + 7) / 8;
+    return writer.buffer_size();
 }
+
+const uint8_t* InternalStateImpl::buffer() const { return m_data; }
 
 /**
  * State
  */
 
-State::State(const InternalStateImpl& internal, const formalism::ProblemImpl& problem) : m_internal(&internal), m_problem(&problem)
+State::State(const InternalStateImpl& internal, const formalism::ProblemImpl& problem) :
+    m_internal(&internal),
+    m_problem(&problem),
+    m_unpacked(m_internal->get_data())
 {
     assert(std::is_sorted(v::begin(m_internal->template get_atoms<FluentTag>(), m_problem->get_tree_table()), v::end()));
     assert(std::is_sorted(v::begin(m_internal->template get_atoms<DerivedTag>(), m_problem->get_tree_table()), v::end()));
@@ -187,9 +130,9 @@ const InternalStateImpl& State::get_internal_state() const { return *m_internal;
 
 const formalism::ProblemImpl& State::get_problem() const { return *m_problem; }
 
-Index State::get_index() const { return m_internal->get_index(); }
+Index State::get_index() const { return m_unpacked.index; }
 
-const FlatDoubleList& State::get_numeric_variables() const { return *m_problem->get_double_list(m_internal->get_numeric_variables()); }
+const FlatDoubleList& State::get_numeric_variables() const { return *m_problem->get_double_list(m_unpacked.numeric_variables); }
 
 /**
  * Pretty printing

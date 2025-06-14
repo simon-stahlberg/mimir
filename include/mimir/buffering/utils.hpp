@@ -21,6 +21,7 @@
 #include <concepts>
 #include <cstddef>
 #include <cstdint>
+#include <tuple>
 
 namespace mimir::buffering
 {
@@ -66,6 +67,91 @@ void write_uint(uint8_t* buffer, size_t start_bit, size_t end_bit, T value)
     }
 }
 
+template<std::unsigned_integral... Ts>
+struct UintWriter
+{
+private:
+    uint8_t* buffer;
+
+public:
+    UintWriter(uint8_t* buffer) : buffer(buffer) {}
+
+    void write(Ts... values)
+    {
+        size_t bit = 0;
+        ((
+             [&]
+             {
+                 using T = decltype(values);
+                 size_t num_bits = std::bit_width(values);
+                 write_uint<T>(buffer, bit, bit + 6, num_bits);
+                 bit += 6;
+                 write_uint<T>(buffer, bit, bit + num_bits, values);
+                 bit += num_bits;
+             }()),
+         ...);
+
+        // Set trailing bits in the last uint8_t to 0.
+        size_t used_bytes = (bit + 7) / 8;
+        size_t trailing_bits = 8 - (bit % 8);
+        if (trailing_bits != 8)
+        {
+            buffer[used_bytes - 1] &= uint8_t(-1) << trailing_bits;
+        }
+    }
+};
+
+template<std::unsigned_integral... Ts>
+struct UintReader
+{
+private:
+    const uint8_t* buffer;
+
+public:
+    UintReader(const uint8_t* buffer) : buffer(buffer) {}
+
+    std::tuple<Ts...> read() const
+    {
+        std::tuple<Ts...> result;
+        size_t bit = 0;
+
+        std::apply(
+            [this, &bit](auto&&... fields)
+            {
+                (
+                    [&](auto&& field)
+                    {
+                        using T = std::remove_cvref_t<decltype(field)>;
+                        size_t num_bits = read_uint<size_t>(buffer, bit, bit + 6);
+                        bit += 6;
+                        field = read_uint<T>(buffer, bit, bit + num_bits);
+                        bit += num_bits;
+                    }(fields),
+                    ...);
+            },
+            result);
+
+        return result;
+    }
+
+    size_t buffer_size() const
+    {
+        return [&]<std::size_t... Is>(std::index_sequence<Is...>)
+        {
+            size_t bit = 0;
+            ((
+                 [&]
+                 {
+                     size_t num_bits = read_uint<size_t>(buffer, bit, bit + 6);
+                     bit += 6 + num_bits;
+                 }(),
+                 static_cast<void>(Is)),
+             ...);
+
+            return (bit + 7) / 8;
+        }(std::make_index_sequence<sizeof...(Ts)> {});
+    }
+};
 }
 
 #endif
