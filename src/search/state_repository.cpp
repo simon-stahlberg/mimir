@@ -68,7 +68,12 @@ StateRepositoryImpl::StateRepositoryImpl(AxiomEvaluator axiom_evaluator) :
     m_empty_index_list(),
     m_empty_double_list()
 {
-    m_empty_index_list.compress();
+    // We could move this to Problem.
+    auto tmp_index_list = FlatIndexList {};
+    tmp_index_list.compress();
+    m_empty_index_list = m_axiom_evaluator->get_problem()->get_or_create_index_list(tmp_index_list).second;
+    auto tmp_double_list = FlatDoubleList {};
+    m_empty_double_list = m_axiom_evaluator->get_problem()->get_or_create_double_list(tmp_double_list).second;
 }
 
 StateRepository StateRepositoryImpl::create(AxiomEvaluator axiom_evaluator) { return std::make_shared<StateRepositoryImpl>(axiom_evaluator); }
@@ -115,14 +120,14 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
     /* Sparse state */
     auto state_fluent_atoms_slot = v::get_empty_root_slot();
     auto state_derived_atoms_slot = v::get_empty_root_slot();
-    const FlatDoubleList* state_numeric_variables = &m_empty_double_list;
+    auto state_numeric_variables = m_empty_double_list;
 
     /* 2. Construct non-extended state */
 
     /* 2.1 Numeric state variables */
     dense_fluent_numeric_variables = fluent_numeric_variables;
 
-    state_numeric_variables = problem.get_or_create_double_list(dense_fluent_numeric_variables);
+    state_numeric_variables = problem.get_or_create_double_list(dense_fluent_numeric_variables).second;
 
     /* 2.2. Propositional state */
     for (const auto& atom : atoms)
@@ -310,7 +315,7 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
     /* Sparse state */
     auto state_fluent_atoms_slot = v::get_empty_root_slot();
     auto state_derived_atoms_slot = v::get_empty_root_slot();
-    const FlatDoubleList* state_numeric_variables = &m_empty_double_list;
+    auto state_numeric_variables = m_empty_double_list;
 
     auto successor_state_metric_value = state_metric_value;
 
@@ -329,7 +334,7 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
     state_fluent_atoms_slot = v::insert(dense_fluent_atoms, tree_table);
 
     update_reached_fluent_atoms(dense_fluent_atoms, m_reached_fluent_atoms);
-    state_numeric_variables = problem.get_or_create_double_list(dense_fluent_numeric_variables);
+    state_numeric_variables = problem.get_or_create_double_list(dense_fluent_numeric_variables).second;
 
     // Check if non-extended state exists in cache
     if (auto internal_successor_state = m_states.find(InternalStateImpl(-1, state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables)))

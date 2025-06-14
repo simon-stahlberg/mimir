@@ -39,16 +39,6 @@ inline uint64_t cantor_pair(uint64_t a, uint64_t b) { return (((a + b) * (a + b 
  * We inject additional hash specializations into the loki::Hash.
  */
 
-/* ExternalPtr */
-
-template<typename T>
-struct loki::Hash<cista::basic_external_ptr<T>>
-{
-    using Type = cista::basic_external_ptr<T>;
-
-    size_t operator()(const Type& ptr) const { return loki::hash_combine(ptr.el_); }
-};
-
 /* DualDynamicBitset */
 
 template<typename Block, template<typename> typename Ptr>

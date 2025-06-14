@@ -44,11 +44,7 @@ private:
 
     void increase_capacity(size_t required_bytes)
     {
-        if (required_bytes > m_maximum_num_bytes_per_segment)
-        {
-            throw std::out_of_range("mimir::buffering::ByteBufferSegmented::increase_capacity: tried to increase capacity beyond maximum bytes per segment: "
-                                    + std::to_string(required_bytes) + " > " + std::to_string(m_maximum_num_bytes_per_segment));
-        }
+        assert(required_bytes <= m_maximum_num_bytes_per_segment && "increase_capacity: required_bytes exceeds m_maximum_num_bytes_per_segment");
 
         // Ensure that required bytes fit into a buffer.
         m_num_bytes_per_segment = std::max(required_bytes, m_num_bytes_per_segment);
@@ -82,10 +78,7 @@ public:
     ///        and otherwise, push_back a new segment first.
     uint8_t* write(const uint8_t* data, size_t amount)
     {
-        if (data == nullptr)
-        {
-            throw std::invalid_argument("mimir::buffering::ByteBufferSegmented::write(): data cannot be null");
-        }
+        assert(data && "mimir::buffering::ByteBufferSegmented::write(): data cannot be null");
 
         if (amount > (m_num_bytes_per_segment - m_current_segment_position))
         {

@@ -84,8 +84,10 @@ ProblemImpl::ProblemImpl(Index index,
     m_axioms(std::move(axioms)),
     m_problem_and_domain_axioms(std::move(problem_and_domain_axioms)),
     m_details(),
-    m_flat_index_list_set(),
-    m_flat_double_list_set(),
+    m_flat_index_list_map(),
+    m_flat_index_lists(),
+    m_flat_double_list_map(),
+    m_flat_double_lists(),
     m_tree_table(),
     m_bitset_pool(),
     m_bitset_repository(m_bitset_pool)
@@ -242,12 +244,56 @@ const AxiomList& ProblemImpl::get_problem_and_domain_axioms() const { return m_p
 
 size_t ProblemImpl::get_estimated_memory_usage_in_bytes() const
 {
-    return m_flat_index_list_set.get_estimated_memory_usage_in_bytes() + m_flat_double_list_set.get_estimated_memory_usage_in_bytes();
+    return m_flat_index_list_map.get_estimated_memory_usage_in_bytes() + m_flat_double_list_map.get_estimated_memory_usage_in_bytes();
 }
 
 /**
  * Additional members
  */
+
+valla::IndexedHashSet& ProblemImpl::get_tree_table() { return m_tree_table; }
+valla::BitsetPool& ProblemImpl::get_bitset_pool() { return m_bitset_pool; }
+valla::BitsetRepository& ProblemImpl::get_bitset_repository() { return m_bitset_repository; }
+const valla::IndexedHashSet& ProblemImpl::get_tree_table() const { return m_tree_table; }
+const valla::BitsetPool& ProblemImpl::get_bitset_pool() const { return m_bitset_pool; }
+const valla::BitsetRepository& ProblemImpl::get_bitset_repository() const { return m_bitset_repository; }
+
+std::pair<const FlatIndexList*, Index> ProblemImpl::get_or_create_index_list(const FlatIndexList& list)
+{
+    auto result = m_flat_index_list_map.emplace(list, m_flat_index_list_map.size());
+    const auto pointer = result.first->first.get();
+    const auto index = result.first->second;
+
+    if (result.second)
+    {
+        m_flat_index_lists.push_back(pointer);
+    }
+
+    return { pointer, index };
+}
+const FlatIndexList* ProblemImpl::get_index_list(size_t pos) const
+{
+    assert(pos < m_flat_index_lists.size());
+    return m_flat_index_lists[pos];
+}
+std::pair<const FlatDoubleList*, Index> ProblemImpl::get_or_create_double_list(const FlatDoubleList& list)
+{
+    auto result = m_flat_double_list_map.emplace(list, m_flat_double_list_map.size());
+    const auto pointer = result.first->first.get();
+    const auto index = result.first->second;
+
+    if (result.second)
+    {
+        m_flat_double_lists.push_back(pointer);
+    }
+
+    return { pointer, index };
+}
+const FlatDoubleList* ProblemImpl::get_double_list(size_t pos) const
+{
+    assert(pos < m_flat_double_lists.size());
+    return m_flat_double_lists[pos];
+}
 
 /* Objects */
 const Object ProblemImpl::get_object(const std::string& name) const { return get_name_to_object().at(name); }
@@ -267,13 +313,6 @@ const ToPredicateMap<std::string, DerivedTag>& ProblemImpl::get_name_to_problem_
 {
     return m_details.predicates.name_to_problem_or_domain_derived_predicate;
 }
-
-valla::IndexedHashSet& ProblemImpl::get_tree_table() { return m_tree_table; }
-valla::BitsetPool& ProblemImpl::get_bitset_pool() { return m_bitset_pool; }
-valla::BitsetRepository& ProblemImpl::get_bitset_repository() { return m_bitset_repository; }
-const valla::IndexedHashSet& ProblemImpl::get_tree_table() const { return m_tree_table; }
-const valla::BitsetPool& ProblemImpl::get_bitset_pool() const { return m_bitset_pool; }
-const valla::BitsetRepository& ProblemImpl::get_bitset_repository() const { return m_bitset_repository; }
 
 /* Initial state */
 
@@ -421,11 +460,6 @@ static void ground_terms(const TermList& terms, const ObjectList& binding, Objec
             term->get_variant());
     }
 }
-
-// Index and double lists
-const FlatIndexList* ProblemImpl::get_or_create_index_list(const FlatIndexList& list) { return m_flat_index_list_set.insert(list).first->get(); }
-
-const FlatDoubleList* ProblemImpl::get_or_create_double_list(const FlatDoubleList& list) { return m_flat_double_list_set.insert(list).first->get(); }
 
 // Atom
 
@@ -798,24 +832,24 @@ GroundConjunctiveCondition ProblemImpl::ground(ConjunctiveCondition conjunctive_
     ground_and_fill_vector(*this, conjunctive_condition->get_literals<StaticTag>(), positive_index_list, negative_index_list, binding);
     positive_index_list.compress();
     negative_index_list.compress();
-    const auto positive_static_precondition_ptr = get_or_create_index_list(positive_index_list);
-    const auto negative_static_precondition_ptr = get_or_create_index_list(negative_index_list);
+    const auto positive_static_precondition_ptr = get_or_create_index_list(positive_index_list).first;
+    const auto negative_static_precondition_ptr = get_or_create_index_list(negative_index_list).first;
 
     positive_index_list.clear();
     negative_index_list.clear();
     ground_and_fill_vector(*this, conjunctive_condition->get_literals<FluentTag>(), positive_index_list, negative_index_list, binding);
     positive_index_list.compress();
     negative_index_list.compress();
-    const auto positive_fluent_precondition_ptr = get_or_create_index_list(positive_index_list);
-    const auto negative_fluent_precondition_ptr = get_or_create_index_list(negative_index_list);
+    const auto positive_fluent_precondition_ptr = get_or_create_index_list(positive_index_list).first;
+    const auto negative_fluent_precondition_ptr = get_or_create_index_list(negative_index_list).first;
 
     positive_index_list.clear();
     negative_index_list.clear();
     ground_and_fill_vector(*this, conjunctive_condition->get_literals<DerivedTag>(), positive_index_list, negative_index_list, binding);
     positive_index_list.compress();
     negative_index_list.compress();
-    const auto positive_derived_precondition_ptr = get_or_create_index_list(positive_index_list);
-    const auto negative_derived_precondition_ptr = get_or_create_index_list(negative_index_list);
+    const auto positive_derived_precondition_ptr = get_or_create_index_list(positive_index_list).first;
+    const auto negative_derived_precondition_ptr = get_or_create_index_list(negative_index_list).first;
 
     auto numeric_constraints = GroundNumericConstraintList {};
     ground_and_fill_vector(*this, conjunctive_condition->get_numeric_constraints(), binding, numeric_constraints);
@@ -843,8 +877,8 @@ GroundConjunctiveEffect ProblemImpl::ground(ConjunctiveEffect conjunctive_effect
     ground_and_fill_vector(*this, conjunctive_effect->get_literals(), positive_index_list, negative_index_list, binding);
     positive_index_list.compress();
     negative_index_list.compress();
-    const auto positive_effect_ptr = get_or_create_index_list(positive_index_list);
-    const auto negative_effect_ptr = get_or_create_index_list(negative_index_list);
+    const auto positive_effect_ptr = get_or_create_index_list(positive_index_list).first;
+    const auto negative_effect_ptr = get_or_create_index_list(negative_index_list).first;
 
     /* Conjunctive numerical effects */
     auto fluent_numerical_effects = GroundNumericEffectList<FluentTag> {};
@@ -1127,16 +1161,16 @@ GroundConjunctiveCondition ProblemImpl::get_or_create_ground_conjunctive_conditi
     };
 
     populate_index_lists(static_literals);
-    const auto positive_static_condition_ptr = get_or_create_index_list(positive_index_list);
-    const auto negative_static_condition_ptr = get_or_create_index_list(negative_index_list);
+    const auto positive_static_condition_ptr = get_or_create_index_list(positive_index_list).first;
+    const auto negative_static_condition_ptr = get_or_create_index_list(negative_index_list).first;
 
     populate_index_lists(fluent_literals);
-    const auto positive_fluent_condition_ptr = get_or_create_index_list(positive_index_list);
-    const auto negative_fluent_condition_ptr = get_or_create_index_list(negative_index_list);
+    const auto positive_fluent_condition_ptr = get_or_create_index_list(positive_index_list).first;
+    const auto negative_fluent_condition_ptr = get_or_create_index_list(negative_index_list).first;
 
     populate_index_lists(derived_literals);
-    const auto positive_derived_condition_ptr = get_or_create_index_list(positive_index_list);
-    const auto negative_derived_condition_ptr = get_or_create_index_list(negative_index_list);
+    const auto positive_derived_condition_ptr = get_or_create_index_list(positive_index_list).first;
+    const auto negative_derived_condition_ptr = get_or_create_index_list(negative_index_list).first;
 
     return m_repositories.get_or_create_ground_conjunctive_condition(
         boost::hana::make_map(
