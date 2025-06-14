@@ -118,6 +118,47 @@ class StateSpaceSampler:
         is_dead_end = self._advanced_state_space_sampler.is_dead_end_state(advanced_state)
         return StateLabel(steps_to_goal, is_initial, is_goal, is_dead_end)
 
+    def num_states(self) -> int:
+        """
+        Get the number of states in the state space.
+        Returns the total number of states.
+
+        :return: The number of states in the state space.
+        :rtype: int
+        """
+        return self._advanced_state_space_sampler.get_num_states()
+
+    def num_dead_end_states(self) -> int:
+        """
+        Get the number of dead-end states in the state space.
+        Returns the total number of dead-end states.
+
+        :return: The number of dead-end states in the state space.
+        :rtype: int
+        """
+        return self._advanced_state_space_sampler.get_num_dead_end_states()
+
+    def num_alive_states(self) -> int:
+        """
+        Get the number of alive states in the state space.
+        Returns the total number of alive states.
+
+        :return: The number of alive states in the state space.
+        :rtype: int
+        """
+        return self._advanced_state_space_sampler.get_num_alive_states()
+
+    def max_steps_to_goal(self) -> int:
+        """
+        Get the maximum number of steps to reach the goal from any state in the state space.
+        Dead-end states are not considered in this calculation.
+        Returns the maximum steps to goal.
+
+        :return: The maximum number of steps to reach the goal.
+        :rtype: int
+        """
+        return self._advanced_state_space_sampler.get_max_steps_to_goal()
+
     def sample_state(self) -> 'State':
         """
         Sample a state from the state space.
