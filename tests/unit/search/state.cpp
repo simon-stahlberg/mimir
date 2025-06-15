@@ -1,0 +1,93 @@
+/*
+ * Copyright (C) 2023 Dominik Drexler and Simon Stahlberg
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+#include "mimir/search/state.hpp"
+
+#include <gtest/gtest.h>
+
+using namespace mimir::search;
+
+namespace mimir::tests
+{
+
+TEST(MimirTests, SearchStateReadWriteTest)
+{
+    auto builder = InternalStateImpl();
+
+    auto s0_in_data = InternalStateImpl::UnpackedData { valla::make_slot(4, 5), valla::make_slot(6, 7), 8, 9 };
+    builder.set_data(s0_in_data);
+    EXPECT_EQ(builder.buffer_size(), 7);
+    auto out_data = builder.get_data();
+    EXPECT_EQ(s0_in_data.index, out_data.index);
+    EXPECT_EQ(s0_in_data.fluent_atoms, out_data.fluent_atoms);
+    EXPECT_EQ(s0_in_data.derived_atoms, out_data.derived_atoms);
+    EXPECT_EQ(s0_in_data.numeric_variables, out_data.numeric_variables);
+}
+
+TEST(MimirTests, SearchStateSetBuilderReuseTest)
+{
+    auto builder = InternalStateImpl();
+    auto states = InternalStateImplSet();
+
+    auto s0_in_data = InternalStateImpl::UnpackedData { valla::make_slot(4, 5), valla::make_slot(6, 7), 8, 9 };
+    builder.set_data(s0_in_data);
+    EXPECT_EQ(builder.buffer_size(), 7);
+    auto s0_state = states.insert<false>(builder).first->get();
+
+    auto s1_in_data = InternalStateImpl::UnpackedData { valla::make_slot(5, 4), valla::make_slot(7, 6), 900, 800 };
+    builder.set_data(s1_in_data);
+    EXPECT_EQ(builder.buffer_size(), 9);
+    auto s1_state = states.insert<false>(builder).first->get();
+
+    // For some reason s1 overwrote s0.
+    EXPECT_EQ(states.size(), 2);
+
+    // For some reason s1 has same address as s0...
+    EXPECT_EQ(s1_state->buffer() - s0_state->buffer(), 7);
+
+    auto registed_data = s0_state->get_data();
+    EXPECT_EQ(s0_in_data.index, registed_data.index);
+    EXPECT_EQ(s0_in_data.fluent_atoms, registed_data.fluent_atoms);
+    EXPECT_EQ(s0_in_data.derived_atoms, registed_data.derived_atoms);
+    EXPECT_EQ(s0_in_data.numeric_variables, registed_data.numeric_variables);
+}
+
+TEST(MimirTests, SearchStateSetHashAndEqualToTest)
+{
+    auto s0_builder = InternalStateImpl();
+    auto s0_in_data = InternalStateImpl::UnpackedData { valla::make_slot(4, 5), valla::make_slot(6, 7), 8, 9 };
+    s0_builder.set_data(s0_in_data);
+    auto s0_hash = loki::Hash<InternalStateImpl> {}(s0_builder);
+    EXPECT_EQ(s0_hash, 175247764240);
+
+    auto s1_builder = InternalStateImpl();
+    auto s1_in_data = InternalStateImpl::UnpackedData { valla::make_slot(5, 4), valla::make_slot(7, 6), 900, 800 };
+    s1_builder.set_data(s1_in_data);
+    auto s1_hash = loki::Hash<InternalStateImpl> {}(s1_builder);
+    EXPECT_EQ(s1_hash, 175247764317);
+
+    auto s2_builder = InternalStateImpl();
+    auto s2_in_data = InternalStateImpl::UnpackedData { valla::make_slot(4, 5), valla::make_slot(6, 7), 8, 9 };
+    s2_builder.set_data(s2_in_data);
+    auto s2_hash = loki::Hash<InternalStateImpl> {}(s2_builder);
+    EXPECT_EQ(s2_hash, 175247764240);
+
+    EXPECT_FALSE(loki::EqualTo<InternalStateImpl> {}(s0_builder, s1_builder));
+    EXPECT_TRUE(loki::EqualTo<InternalStateImpl> {}(s0_builder, s2_builder));
+}
+
+}

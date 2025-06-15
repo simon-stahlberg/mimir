@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_BUFFERING_VECTOR_HPP_
-#define MIMIR_BUFFERING_VECTOR_HPP_
+#ifndef MIMIR_BUFFERING_CISTA_VECTOR_HPP_
+#define MIMIR_BUFFERING_CISTA_VECTOR_HPP_
 
 #include "cista/serialization.h"
 #include "mimir/buffering/byte_buffer_segmented.hpp"
@@ -24,11 +24,11 @@
 namespace mimir::buffering
 {
 
-/// @brief `Vector` is a container that stores buffers of a cista container of type T.
+/// @brief `CistaVector` is a container that stores buffers of a cista container of type T.
 /// It provides random access to the elements.
 /// @tparam T
 template<typename T>
-class Vector
+class CistaVector
 {
 private:
     // Persistent storage
@@ -44,22 +44,22 @@ private:
     {
         if (pos >= size())
         {
-            throw std::out_of_range("mimir::buffering::Vector::range_check: pos (which is " + std::to_string(pos) + ") >= this->size() (which is "
+            throw std::out_of_range("mimir::buffering::CistaVector::range_check: pos (which is " + std::to_string(pos) + ") >= this->size() (which is "
                                     + std::to_string(size()) + ")");
         }
     }
 
 public:
-    Vector(size_t initial_num_bytes_per_segment = 1024, size_t maximum_num_bytes_per_segment = 1024 * 1024) :
+    CistaVector(size_t initial_num_bytes_per_segment = 1024, size_t maximum_num_bytes_per_segment = 1024 * 1024) :
         m_storage(initial_num_bytes_per_segment, maximum_num_bytes_per_segment),
         m_elements(),
         m_buf()
     {
     }
-    Vector(const Vector& other) = default;
-    Vector& operator=(const Vector& other) = default;
-    Vector(Vector&& other) = default;
-    Vector& operator=(Vector&& other) = default;
+    CistaVector(const CistaVector& other) = default;
+    CistaVector& operator=(const CistaVector& other) = default;
+    CistaVector(CistaVector&& other) = default;
+    CistaVector& operator=(CistaVector&& other) = default;
 
     /**
      * Element access
@@ -98,12 +98,13 @@ public:
         cista::serialize<Mode>(m_buf, element);
 
         /* Add padding to ensure that subsequent elements are aligned correctly. */
-        size_t num_padding = (alignof(T) - (m_buf.size() % alignof(T))) % alignof(T);
-        m_buf.buf_.insert(m_buf.buf_.end(), num_padding, 0);
         if constexpr (RequireAlignment)
         {
+            size_t num_padding = (alignof(T) - (m_buf.size() % alignof(T))) % alignof(T);
+            m_buf.buf_.insert(m_buf.buf_.end(), num_padding, 0);
+
             assert(m_buf.size() % alignof(T) == 0
-                   && "mimir::buffering::Vector::insert: serialized buffer before write does not satisfy alignment requirements.");
+                   && "mimir::buffering::CistaVector::insert: serialized buffer before write does not satisfy alignment requirements.");
         }
 
         /* Write the data to the storage. */
@@ -111,7 +112,7 @@ public:
         if constexpr (RequireAlignment)
         {
             assert(reinterpret_cast<uintptr_t>(begin) % alignof(T) == 0
-                   && "mimir::buffering::Vector::insert: serialized buffer after write does not satisfy alignment requirements.");
+                   && "mimir::buffering::CistaVector::insert: serialized buffer after write does not satisfy alignment requirements.");
         }
 
         /* Add the deserialized element to the vector. */

@@ -67,31 +67,44 @@ void write_uint(uint8_t* buffer, size_t start_bit, size_t end_bit, T value)
     }
 }
 
-template<std::unsigned_integral... Ts>
-struct UintWriter
+class BufferWriter
 {
 private:
-    uint8_t* buffer;
+    std::vector<uint8_t> buffer;
+    size_t bit;
+
+    void resize_to_fit(size_t num_bits)
+    {
+        size_t required_bytes = (num_bits + 7) / 8;
+
+        if (buffer.size() < required_bytes)
+        {
+            buffer.resize(required_bytes);
+        }
+    }
 
 public:
-    UintWriter(uint8_t* buffer) : buffer(buffer) {}
+    BufferWriter() : buffer(), bit(0) {}
 
-    void write(Ts... values)
+    void reset()
     {
-        size_t bit = 0;
-        ((
-             [&]
-             {
-                 using T = decltype(values);
-                 size_t num_bits = std::bit_width(values);
-                 write_uint<T>(buffer, bit, bit + 6, num_bits);
-                 bit += 6;
-                 write_uint<T>(buffer, bit, bit + num_bits, values);
-                 bit += num_bits;
-             }()),
-         ...);
+        buffer.clear();
+        bit = 0;
+    }
 
-        // Set trailing bits in the last uint8_t to 0.
+    template<std::unsigned_integral T>
+    void write(T value)
+    {
+        size_t num_bits = std::bit_width(value);
+        resize_to_fit(bit + 6 + num_bits);
+        write_uint<T>(buffer.data(), bit, bit + 6, num_bits);
+        bit += 6;
+        write_uint<T>(buffer.data(), bit, bit + num_bits, value);
+        bit += num_bits;
+    }
+
+    void write_zero_padding()
+    {
         size_t used_bytes = (bit + 7) / 8;
         size_t trailing_bits = 8 - (bit % 8);
         if (trailing_bits != 8)
@@ -99,57 +112,26 @@ public:
             buffer[used_bytes - 1] &= uint8_t(-1) << trailing_bits;
         }
     }
+
+    const std::vector<uint8_t>& get_buffer() const { return buffer; }
 };
 
-template<std::unsigned_integral... Ts>
-struct UintReader
+class BufferReader
 {
 private:
     const uint8_t* buffer;
 
 public:
-    UintReader(const uint8_t* buffer) : buffer(buffer) {}
+    BufferReader(const uint8_t* buffer) : buffer(buffer) {}
 
-    std::tuple<Ts...> read() const
+    template<std::unsigned_integral T>
+    std::pair<T, size_t> read(size_t bit) const
     {
-        std::tuple<Ts...> result;
-        size_t bit = 0;
-
-        std::apply(
-            [this, &bit](auto&&... fields)
-            {
-                (
-                    [&](auto&& field)
-                    {
-                        using T = std::remove_cvref_t<decltype(field)>;
-                        size_t num_bits = read_uint<size_t>(buffer, bit, bit + 6);
-                        bit += 6;
-                        field = read_uint<T>(buffer, bit, bit + num_bits);
-                        bit += num_bits;
-                    }(fields),
-                    ...);
-            },
-            result);
-
-        return result;
-    }
-
-    size_t buffer_size() const
-    {
-        return [&]<std::size_t... Is>(std::index_sequence<Is...>)
-        {
-            size_t bit = 0;
-            ((
-                 [&]
-                 {
-                     size_t num_bits = read_uint<size_t>(buffer, bit, bit + 6);
-                     bit += 6 + num_bits;
-                 }(),
-                 static_cast<void>(Is)),
-             ...);
-
-            return (bit + 7) / 8;
-        }(std::make_index_sequence<sizeof...(Ts)> {});
+        size_t num_bits = read_uint<size_t>(buffer.data(), bit, bit + 6);
+        bit += 6;
+        T value = read_uint<T>(buffer.data(), bit, bit + num_bits);
+        bit += num_bits;
+        return std::make_pair(value, bit);
     }
 };
 }

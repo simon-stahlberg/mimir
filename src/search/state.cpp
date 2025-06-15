@@ -27,26 +27,85 @@
 
 using namespace mimir::formalism;
 
+namespace mimir::buffering
+{
+
+void Builder<PackedState>::set_data(Data<PackedState> data) { m_data = std::move(data); }
+
+void Builder<PackedState>::serialize()
+{
+    m_buffer.reset();
+    m_buffer.write<Index>(m_data.index);
+    m_buffer.write<Index>(m_data.fluent_atoms_index);
+    m_buffer.write<Index>(m_data.fluent_atoms_size);
+    m_buffer.write<Index>(m_data.derived_atoms_index);
+    m_buffer.write<Index>(m_data.derived_atoms_size);
+    m_buffer.write<Index>(m_data.numeric_variables);
+    m_buffer.write_zero_padding();
+}
+
+const BufferWriter& Builder<PackedState>::get_buffer() const { return m_buffer; }
+
+View<PackedState>::View(const uint8_t* buffer) : m_buffer(buffer) {}
+
+View<PackedState>::View(const Builder<PackedState>& builder) : m_buffer(builder.get_buffer_writer().get_buffer().data()) {}
+
+Data<PackedState> View<PackedState>::deserialize() const
+{
+    auto reader = BufferReader(m_buffer);
+    size_t bit = 0;
+    const auto [index_, bit_] = reader.read<Index>(bit);
+    bit = bit_;
+    const auto [fluent_atoms_index_, bit_] = reader.read<Index>(bit);
+    bit = bit_;
+    const auto [fluent_atoms_size_, bit_] = reader.read<Index>(bit);
+    bit = bit_;
+    const auto [derived_atoms_index_, bit_] = reader.read<Index>(bit);
+    bit = bit_;
+    const auto [derived_atoms_size_, bit_] = reader.read<Index>(bit);
+    bit = bit_;
+    const auto [numeric_variables_, bit_] = reader.read<Index>(bit);
+    bit = bit_;
+
+    auto result = Data<PackedState> {};
+    result.index = index_;
+    result.fluent_atoms_index = fluent_atoms_index_;
+    result.fluent_atoms_size = fluent_atoms_size_;
+    result.derived_atoms_index = derived_atoms_index_;
+    result.derived_atoms_size = derived_atoms_size_;
+    result.numeric_variables = numeric_variables_;
+
+    return result;
+}
+
+}
+
 namespace mimir::search
 {
 
 /* InternalState */
 
-InternalStateImpl::InternalStateImpl() : m_self_allocated(true), m_data(new uint8_t[s_capacity]) {}
+InternalStateImpl::InternalStateImpl() : m_data(new uint8_t[s_capacity])
+{
+    // Set flag indicating self allocation
+    *m_data |= 1;
+}
 
 InternalStateImpl::~InternalStateImpl()
 {
-    if (m_self_allocated && m_data)
+    if (is_self_allocated())
     {
         delete[] m_data;
     }
 }
 
+bool InternalStateImpl::is_self_allocated() const { return m_data && (*m_data & 1); }
+
 void InternalStateImpl::set_data(const UnpackedData& data)
 {
-    assert(m_self_allocated && m_data);
+    assert(is_self_allocated());
 
-    auto writer = buffering::UintWriter<Index, Index, Index, Index, Index, Index>(m_data);
+    auto writer = buffering::UintWriter<Index, Index, Index, Index, Index, Index>(m_data, 1);
 
     const auto [fluent_index, fluent_size] = valla::read_slot(data.fluent_atoms);
     const auto [derived_index, derived_size] = valla::read_slot(data.derived_atoms);
@@ -58,7 +117,7 @@ InternalStateImpl::UnpackedData InternalStateImpl::get_data() const
 {
     auto result = UnpackedData {};
 
-    auto writer = buffering::UintReader<Index, Index, Index, Index, Index, Index>(m_data);
+    auto writer = buffering::UintReader<Index, Index, Index, Index, Index, Index>(m_data, 1);
 
     const auto [index, fluent_index, fluent_size, derived_index, derived_size, numeric_variables] = writer.read();
 
@@ -72,9 +131,9 @@ InternalStateImpl::UnpackedData InternalStateImpl::get_data() const
 
 size_t InternalStateImpl::buffer_size() const
 {
-    auto writer = buffering::UintReader<Index, Index, Index, Index, Index, Index>(m_data);
+    auto writer = buffering::UintReader<Index, Index, Index, Index, Index, Index>(m_data, 1);
 
-    return writer.buffer_size();
+    return writer.buffer_size() + 1;
 }
 
 const uint8_t* InternalStateImpl::buffer() const { return m_data; }

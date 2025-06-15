@@ -18,7 +18,7 @@
 #ifndef MIMIR_SEARCH_SEARCH_NODE_HPP_
 #define MIMIR_SEARCH_SEARCH_NODE_HPP_
 
-#include "mimir/buffering/vector.hpp"
+#include "mimir/buffering/cista_vector.hpp"
 #include "mimir/common/types.hpp"
 
 namespace mimir::search
@@ -78,7 +78,7 @@ template<typename... SearchNodeProperties>
 using ConstSearchNode = const SearchNodeImpl<SearchNodeProperties...>*;
 
 template<typename... SearchNodeProperties>
-using SearchNodeImplVector = mimir::buffering::Vector<SearchNodeImpl<SearchNodeProperties...>>;
+using SearchNodeImplVector = mimir::buffering::CistaVector<SearchNodeImpl<SearchNodeProperties...>>;
 
 }
 

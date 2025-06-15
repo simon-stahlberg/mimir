@@ -33,6 +33,7 @@ private:
     AxiomEvaluator m_axiom_evaluator;     ///< The axiom evaluator.
     bool m_problem_or_domain_has_axioms;  ///< flag that indicates whether axiom evaluation must trigger.
 
+    InternalStateImpl m_state_builder;
     InternalStateImplSet m_states;  ///< Stores all created extended states.
 
     FlatBitset m_reached_fluent_atoms;   ///< Stores all encountered fluent atoms.

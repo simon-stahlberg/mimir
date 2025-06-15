@@ -18,7 +18,7 @@
 #ifndef MIMIR_BUFFERING_UNORDERED_MAP_HPP_
 #define MIMIR_BUFFERING_UNORDERED_MAP_HPP_
 
-#include "cista/serialization.h"
+#include "mimir/buffering/builder.hpp"
 #include "mimir/buffering/byte_buffer_segmented.hpp"
 #include "mimir/common/hash.hpp"
 #include "mimir/common/memory.hpp"
@@ -36,7 +36,7 @@ namespace mimir::buffering
 /// @tparam T is the underlying container type.
 /// @tparam Hash is a hash function that computes a hash value for a dereferenced pointer of type T.
 /// @tparam Equal is a comparison function that compares two dereferenced pointers of type T.
-template<typename T, typename Value, typename Hash = loki::Hash<loki::ObserverPtr<const T>>, typename Equal = loki::EqualTo<loki::ObserverPtr<const T>>>
+template<typename T, typename Value, typename Hash = loki::Hash<View<T>>, typename Equal = loki::EqualTo<View<T>>>
 class UnorderedMap
 {
 private:
@@ -44,7 +44,7 @@ private:
     ByteBufferSegmented m_storage;
 
     // Data to be accessed, we use absl::flat_hash_set because it stores the data in contiguous memory.
-    absl::flat_hash_map<loki::ObserverPtr<const T>, Value, Hash, Equal> m_elements;
+    absl::flat_hash_map<View<T>, Value, Hash, Equal> m_elements;
 
     // Serialization buffer
     cista::buf<std::vector<uint8_t>> m_buf;
@@ -80,48 +80,33 @@ public:
         m_elements.clear();
     }
 
-    template<bool RequireAlignment = true, cista::mode Mode = cista::mode::NONE>
-    auto emplace(const T& element, const Value& value)
+    auto emplace(const Builder<T>& builder, const Value& value)
     {
         /* Check whether element exists already. */
-        auto it = m_elements.find(&element);
+        auto it = m_elements.find(View<T>(builder));
         if (it != m_elements.end())
         {
             return std::make_pair(it, false);
         }
 
         /* Serialize the element. */
-        m_buf.reset();
-        cista::serialize<Mode>(m_buf, element);
-
-        /* Add padding to ensure that subsequent elements are aligned correctly. */
-        size_t num_padding = (alignof(T) - (m_buf.size() % alignof(T))) % alignof(T);
-        m_buf.buf_.insert(m_buf.buf_.end(), num_padding, 0);
-        if constexpr (RequireAlignment)
-        {
-            assert(m_buf.size() % alignof(T) == 0
-                   && "mimir::buffering::UnorderedMap::insert: serialized buffer before write does not satisfy alignment requirements.");
-        }
+        builder.serialize();
+        auto& buffer = builder.get_buffer_writer().get_buffer();
 
         /* Write the data to the storage and return it. */
-        auto begin = m_storage.write(m_buf.base(), m_buf.size());
-        if constexpr (RequireAlignment)
-        {
-            assert(reinterpret_cast<uintptr_t>(begin) % alignof(T) == 0
-                   && "mimir::buffering::UnorderedMap::emplace: serialized buffer after write does not satisfy alignment requirements.");
-        }
+        auto address = m_storage.write(buffer.data(), buffer.size());
 
         /* Add the deserialized element to the unordered_set and return it. */
-        return m_elements.emplace(cista::deserialize<const T, Mode>(begin, begin + m_buf.size()), value);
+        return m_elements.emplace(View<T>(address), value);
     }
 
     /**
      * Lookup
      */
 
-    size_t count(const T& key) const { return m_elements.count(&key); }
-    auto find(const T& key) const { return m_elements.find(&key); }
-    bool contains(const T& key) const { return m_elements.contains(&key); }
+    size_t count(const Builder<T>& builder) const { return m_elements.count(View<T>(builder)); }
+    auto find(const Builder<T>& builder) const { return m_elements.find(View<T>(builder)); }
+    bool contains(const Builder<T>& builder) const { return m_elements.contains(View<T>(builder)); }
 
     size_t get_estimated_memory_usage_in_bytes() const
     {
