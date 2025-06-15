@@ -1812,6 +1812,22 @@ class Problem:
                                                                                                     advanced_numeric_constraints)
         return ConjunctiveCondition(advanced_conjunctive_condition)
 
+    def new_ground_conjunctive_condition(self, ground_literals: 'list[GroundLiteral]') -> 'GroundConjunctiveCondition':
+        """
+        Create a ground conjunctive condition from the given ground literals.
+
+        :param ground_literals: A list of ground literals for the conjunctive condition.
+        :type ground_literals: list[GroundLiteral]
+        :param problem: The problem instance to which the ground conjunctive condition belongs.
+        :type problem: Problem
+        :return: A GroundConjunctiveCondition object representing the ground conjunctive condition.
+        :rtype: GroundConjunctiveCondition
+        """
+        assert isinstance(ground_literals, list), "Invalid ground literals type."
+        static_literals, fluent_literals, derived_literals = _split_ground_literal_list(ground_literals)
+        advanced_condition = self._advanced_problem.get_or_create_ground_conjunctive_condition(static_literals, fluent_literals, derived_literals)
+        return GroundConjunctiveCondition(advanced_condition, self)
+
 
 class State:
     """
@@ -2088,6 +2104,20 @@ class GroundConjunctiveCondition:
         self._derived_ground_literals = [GroundLiteral.new(x, True, self._problem) for x in self._derived_pos_ground_atoms]
         self._derived_ground_literals += [GroundLiteral.new(x, False, self._problem) for x in self._derived_neg_ground_atoms]
 
+    @staticmethod
+    def new(ground_literals: 'list[GroundLiteral]', problem: 'Problem') -> 'GroundConjunctiveCondition':
+        """
+        Create a ground conjunctive condition from the given ground literals.
+
+        :param ground_literals: A list of ground literals for the conjunctive condition.
+        :type ground_literals: list[GroundLiteral]
+        :param problem: The problem instance to which the ground conjunctive condition belongs.
+        :type problem: Problem
+        :return: A GroundConjunctiveCondition object representing the ground conjunctive condition.
+        :rtype: GroundConjunctiveCondition
+        """
+        return problem.new_ground_conjunctive_condition(ground_literals)
+
     def get_problem(self) -> 'Problem':
         """
         Get the problem instance to which the ground conjunctive condition belongs.
@@ -2205,18 +2235,7 @@ class ConjunctiveCondition:
         :return: A ConjunctiveCondition object representing the conjunctive condition.
         :rtype: ConjunctiveCondition
         """
-        assert isinstance(variables, list), "Invalid variables type."
-        assert isinstance(literals, list), "Invalid literals type."
-        assert isinstance(problem, Problem), "Invalid problem type."
-        advanced_problem = problem._advanced_problem
-        advanced_variables = AdvancedVariableList([x._advanced_variable for x in variables])
-        static_literals, fluent_literals, derived_literals = _split_literal_list(literals)
-        advanced_conjunctive_condition = advanced_problem.get_or_create_conjunctive_condition(advanced_variables,
-                                                                                              static_literals,
-                                                                                              fluent_literals,
-                                                                                              derived_literals,
-                                                                                              AdvancedNumericConstraintList())
-        return ConjunctiveCondition(advanced_conjunctive_condition)
+        return problem.new_conjunctive_condition(variables, literals)
 
     @staticmethod
     def parse(problem: 'Problem', **words) -> 'ConjunctiveCondition':

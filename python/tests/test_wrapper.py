@@ -346,6 +346,15 @@ class TestGroundConjunctiveCondition(unittest.TestCase):
         assert lifted_goal.get_literals()[1].get_atom().get_terms()[0] == lifted_goal.get_parameters()[2]
         assert lifted_goal.get_literals()[1].get_atom().get_terms()[1] == lifted_goal.get_parameters()[1]
 
+    def test_new_grounded_condition(self):
+        domain_path = DATA_DIR / 'blocks_4' / 'domain.pddl'
+        problem_path = DATA_DIR / 'blocks_4' / 'test_problem.pddl'
+        domain = Domain(domain_path)
+        problem = Problem(domain, problem_path)
+        ground_literals = [GroundLiteral.new(atom, True, problem) for atom in problem.get_initial_atoms(ignore_static=True, ignore_derived=True)]
+        ground_condition = GroundConjunctiveCondition.new(ground_literals, problem)
+        assert ground_condition.holds(problem.get_initial_state())
+
 
 class TestSearchAlgorithms(unittest.TestCase):
     def test_custom_heuristic(self):
