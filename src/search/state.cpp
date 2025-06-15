@@ -30,7 +30,31 @@ using namespace mimir::formalism;
 namespace mimir::buffering
 {
 
-void Builder<PackedState>::set_data(Data<PackedState> data) { m_data = std::move(data); }
+template<formalism::IsFluentOrDerivedTag P>
+v::RootSlotType Data<PackedState>::get_atoms() const
+{
+    if constexpr (std::is_same_v<P, formalism::FluentTag>)
+    {
+        return valla::make_slot(fluent_atoms_index, fluent_atoms_size);
+    }
+    else if constexpr (std::is_same_v<P, formalism::DerivedTag>)
+    {
+        return valla::make_slot(derived_atoms_index, derived_atoms_size);
+    }
+    else
+    {
+        static_assert(dependent_false<P>::value, "Missing implementation for IsFluentOrDerivedTag.");
+    }
+}
+
+template v::RootSlotType Data<PackedState>::get_atoms<FluentTag>() const;
+template v::RootSlotType Data<PackedState>::get_atoms<DerivedTag>() const;
+
+void Builder<PackedState>::serialize(Data<PackedState> data)
+{
+    m_data = std::move(data);
+    serialize();
+}
 
 void Builder<PackedState>::serialize()
 {
@@ -44,7 +68,7 @@ void Builder<PackedState>::serialize()
     m_buffer.write_zero_padding();
 }
 
-const BufferWriter& Builder<PackedState>::get_buffer() const { return m_buffer; }
+const BufferWriter& Builder<PackedState>::get_buffer_writer() const { return m_buffer; }
 
 View<PackedState>::View(const uint8_t* buffer) : m_buffer(buffer) {}
 
@@ -54,18 +78,18 @@ Data<PackedState> View<PackedState>::deserialize() const
 {
     auto reader = BufferReader(m_buffer);
     size_t bit = 0;
-    const auto [index_, bit_] = reader.read<Index>(bit);
-    bit = bit_;
-    const auto [fluent_atoms_index_, bit_] = reader.read<Index>(bit);
-    bit = bit_;
-    const auto [fluent_atoms_size_, bit_] = reader.read<Index>(bit);
-    bit = bit_;
-    const auto [derived_atoms_index_, bit_] = reader.read<Index>(bit);
-    bit = bit_;
-    const auto [derived_atoms_size_, bit_] = reader.read<Index>(bit);
-    bit = bit_;
-    const auto [numeric_variables_, bit_] = reader.read<Index>(bit);
-    bit = bit_;
+    const auto [index_, bit1_] = reader.read<Index>(bit);
+    bit = bit1_;
+    const auto [fluent_atoms_index_, bit2_] = reader.read<Index>(bit);
+    bit = bit2_;
+    const auto [fluent_atoms_size_, bit3_] = reader.read<Index>(bit);
+    bit = bit3_;
+    const auto [derived_atoms_index_, bit4_] = reader.read<Index>(bit);
+    bit = bit4_;
+    const auto [derived_atoms_size_, bit5_] = reader.read<Index>(bit);
+    bit = bit5_;
+    const auto [numeric_variables_, bit6_] = reader.read<Index>(bit);
+    bit = bit6_;
 
     auto result = Data<PackedState> {};
     result.index = index_;
@@ -78,77 +102,24 @@ Data<PackedState> View<PackedState>::deserialize() const
     return result;
 }
 
+const uint8_t* View<PackedState>::get_buffer() const { return m_buffer; }
+
 }
 
 namespace mimir::search
 {
 
-/* InternalState */
-
-InternalStateImpl::InternalStateImpl() : m_data(new uint8_t[s_capacity])
-{
-    // Set flag indicating self allocation
-    *m_data |= 1;
-}
-
-InternalStateImpl::~InternalStateImpl()
-{
-    if (is_self_allocated())
-    {
-        delete[] m_data;
-    }
-}
-
-bool InternalStateImpl::is_self_allocated() const { return m_data && (*m_data & 1); }
-
-void InternalStateImpl::set_data(const UnpackedData& data)
-{
-    assert(is_self_allocated());
-
-    auto writer = buffering::UintWriter<Index, Index, Index, Index, Index, Index>(m_data, 1);
-
-    const auto [fluent_index, fluent_size] = valla::read_slot(data.fluent_atoms);
-    const auto [derived_index, derived_size] = valla::read_slot(data.derived_atoms);
-
-    writer.write(data.index, fluent_index, fluent_size, derived_index, derived_size, data.numeric_variables);
-}
-
-InternalStateImpl::UnpackedData InternalStateImpl::get_data() const
-{
-    auto result = UnpackedData {};
-
-    auto writer = buffering::UintReader<Index, Index, Index, Index, Index, Index>(m_data, 1);
-
-    const auto [index, fluent_index, fluent_size, derived_index, derived_size, numeric_variables] = writer.read();
-
-    result.index = index;
-    result.fluent_atoms = valla::make_slot(fluent_index, fluent_size);
-    result.derived_atoms = valla::make_slot(derived_index, derived_size);
-    result.numeric_variables = numeric_variables;
-
-    return result;
-}
-
-size_t InternalStateImpl::buffer_size() const
-{
-    auto writer = buffering::UintReader<Index, Index, Index, Index, Index, Index>(m_data, 1);
-
-    return writer.buffer_size() + 1;
-}
-
-const uint8_t* InternalStateImpl::buffer() const { return m_data; }
-
 /**
  * State
  */
 
-State::State(const InternalStateImpl& internal, const formalism::ProblemImpl& problem) :
-    m_internal(&internal),
+State::State(buffering::View<buffering::PackedState> packed, const formalism::ProblemImpl& problem) :
+    m_packed(packed),
     m_problem(&problem),
-    m_unpacked(m_internal->get_data())
+    m_unpacked(m_packed.deserialize())
 {
-    assert(std::is_sorted(v::begin(m_internal->template get_atoms<FluentTag>(), m_problem->get_tree_table()), v::end()));
-    assert(std::is_sorted(v::begin(m_internal->template get_atoms<DerivedTag>(), m_problem->get_tree_table()), v::end()));
+    assert(std::is_sorted(v::begin(m_unpacked.template get_atoms<FluentTag>(), m_problem->get_tree_table()), v::end()));
+    assert(std::is_sorted(v::begin(m_unpacked.template get_atoms<DerivedTag>(), m_problem->get_tree_table()), v::end()));
 }
 
 bool State::operator==(const State& other) const noexcept { return loki::EqualTo<State> {}(*this, other); }
@@ -185,7 +156,7 @@ bool State::numeric_constraints_hold(const GroundNumericConstraintList& numeric_
                        [this, &static_numeric_variables](auto&& arg) { return this->numeric_constraint_holds(arg, static_numeric_variables); });
 }
 
-const InternalStateImpl& State::get_internal_state() const { return *m_internal; }
+buffering::View<buffering::PackedState> State::get_packed() const { return m_packed; }
 
 const formalism::ProblemImpl& State::get_problem() const { return *m_problem; }
 

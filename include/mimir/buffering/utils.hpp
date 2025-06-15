@@ -105,11 +105,10 @@ public:
 
     void write_zero_padding()
     {
-        size_t used_bytes = (bit + 7) / 8;
-        size_t trailing_bits = 8 - (bit % 8);
-        if (trailing_bits != 8)
+        size_t used_bits = bit % 8;
+        if (used_bits != 0)  // avoid clearing a completely used final byte.
         {
-            buffer[used_bytes - 1] &= uint8_t(-1) << trailing_bits;
+            buffer.back() &= uint8_t((1 << used_bits) - 1);
         }
     }
 
@@ -127,9 +126,9 @@ public:
     template<std::unsigned_integral T>
     std::pair<T, size_t> read(size_t bit) const
     {
-        size_t num_bits = read_uint<size_t>(buffer.data(), bit, bit + 6);
+        size_t num_bits = read_uint<size_t>(buffer, bit, bit + 6);
         bit += 6;
-        T value = read_uint<T>(buffer.data(), bit, bit + num_bits);
+        T value = read_uint<T>(buffer, bit, bit + num_bits);
         bit += num_bits;
         return std::make_pair(value, bit);
     }

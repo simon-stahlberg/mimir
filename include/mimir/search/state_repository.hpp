@@ -33,8 +33,8 @@ private:
     AxiomEvaluator m_axiom_evaluator;     ///< The axiom evaluator.
     bool m_problem_or_domain_has_axioms;  ///< flag that indicates whether axiom evaluation must trigger.
 
-    InternalStateImpl m_state_builder;
-    InternalStateImplSet m_states;  ///< Stores all created extended states.
+    buffering::PackedStateBuilder m_state_builder;
+    buffering::PackedStateSet m_states;  ///< Stores all created extended states.
 
     FlatBitset m_reached_fluent_atoms;   ///< Stores all encountered fluent atoms.
     FlatBitset m_reached_derived_atoms;  ///< Stores all encountered derived atoms.
@@ -102,7 +102,7 @@ public:
 
     /// @brief Return the state set with randomized access.
     /// @return the state state with randomized access.
-    const InternalStateImplSet& get_states() const;
+    const buffering::PackedStateSet& get_states() const;
 
     /// @brief Return the reached fluent ground atoms.
     /// @return a bitset that stores the reached fluent ground atom indices.

@@ -42,58 +42,7 @@ namespace mimir::buffering
 
 namespace v = valla::plain;
 
-struct PackedState
-{
-};
-
-template<>
-struct Data<PackedState>
-{
-    Index fluent_atoms_index;
-    Index fluent_atoms_size;
-    Index derived_atoms_index;
-    Index derived_atoms_size;
-    Index numeric_variables;
-    Index index;
-
-    template<formalism::IsFluentOrDerivedTag P>
-    Index get_atoms_index() const
-    {
-        if constexpr (std::is_same_v<P, formalism::FluentTag>)
-        {
-            return fluent_atoms_index;
-        }
-        else if constexpr (std::is_same_v<P, formalism::DerivedTag>)
-        {
-            return Index derived_atoms_index;
-            ;
-        }
-        else
-        {
-            static_assert(dependent_false<P>::value, "Missing implementation for IsStaticOrFluentOrDerivedTag.");
-        }
-    }
-
-    template<formalism::IsFluentOrDerivedTag P>
-    Index get_atoms_size() const
-    {
-        if constexpr (std::is_same_v<P, formalism::FluentTag>)
-        {
-            return fluent_atoms_size;
-        }
-        else if constexpr (std::is_same_v<P, formalism::DerivedTag>)
-        {
-            return derived_atoms_size;
-        }
-        else
-        {
-            static_assert(dependent_false<P>::value, "Missing implementation for IsStaticOrFluentOrDerivedTag.");
-        }
-    }
-};
-
 // The format of the data as follows:
-// - self allocated (1 bit)
 // - num bits b1 for state index (6 bit)
 // - state index (b1 bits)
 // - num bits b2 for fluent tree node index
@@ -106,7 +55,24 @@ struct Data<PackedState>
 // - derived tree node size (b5 bits)
 // - num bits b6 for numeric variables list index
 // - numeric variables list index (b6 bits)
-// Footer, as many bits as needed for each of the 6 entries
+struct PackedState
+{
+};
+
+template<>
+struct Data<PackedState>
+{
+    Index index;
+    Index fluent_atoms_index;
+    Index fluent_atoms_size;
+    Index derived_atoms_index;
+    Index derived_atoms_size;
+    Index numeric_variables;
+
+    template<formalism::IsFluentOrDerivedTag P>
+    v::RootSlotType get_atoms() const;
+};
+
 template<>
 class Builder<PackedState>
 {
@@ -115,12 +81,12 @@ private:
 
     BufferWriter m_buffer;
 
+    void serialize();
+
 public:
     Builder() = default;
 
-    void set_data(Data<PackedState> data);
-
-    void serialize();
+    void serialize(Data<PackedState> data);
 
     const BufferWriter& get_buffer_writer() const;
 };
@@ -137,9 +103,14 @@ public:
     View(const Builder<PackedState>& builder);
 
     Data<PackedState> deserialize() const;
+
+    const uint8_t* get_buffer() const;
 };
 
-using PackedStateSet = buffering::UnorderedSet<PackedState>;
+using PackedStateData = Data<PackedState>;
+using PackedStateBuilder = Builder<PackedState>;
+using PackedStateView = View<PackedState>;
+using PackedStateSet = UnorderedSet<PackedState>;
 }
 
 namespace mimir::search
@@ -153,12 +124,12 @@ namespace v = valla::plain;
 class State
 {
 private:
-    buffering::View<buffering::PackedState> m_internal;
+    buffering::View<buffering::PackedState> m_packed;
     const formalism::ProblemImpl* m_problem;
 
     buffering::Data<buffering::PackedState> m_unpacked;
 
-    State(const InternalStateImpl& internal, const formalism::ProblemImpl& problem);
+    State(buffering::View<buffering::PackedState> packed, const formalism::ProblemImpl& problem);
 
     friend class StateRepositoryImpl;
 
@@ -176,7 +147,7 @@ public:
      * Getters
      */
 
-    buffering::View<buffering::PackedState> get_internal_state() const;
+    buffering::View<buffering::PackedState> get_packed() const;
     const formalism::ProblemImpl& get_problem() const;
 
     Index get_index() const;
@@ -245,8 +216,8 @@ struct Hash<mimir::buffering::View<mimir::buffering::PackedState>>
 
     size_t operator()(V el) const
     {
-        // TODO
-        return 0;
+        auto unpacked = el.deserialize();
+        return hash_combine(valla::cantor_pair(unpacked.fluent_atoms_index, unpacked.fluent_atoms_size), unpacked.numeric_variables);
     }
 };
 
@@ -257,19 +228,18 @@ struct EqualTo<mimir::buffering::View<mimir::buffering::PackedState>>
 
     bool operator()(V lhs, V rhs) const
     {
-        // TODO
-        return false;
+        auto lhs_unpacked = lhs.deserialize();
+        auto rhs_unpacked = rhs.deserialize();
+        return lhs_unpacked.fluent_atoms_index == rhs_unpacked.fluent_atoms_index   //
+               && lhs_unpacked.fluent_atoms_size == rhs_unpacked.fluent_atoms_size  //
+               && lhs_unpacked.numeric_variables == rhs_unpacked.numeric_variables;
     }
 };
 
 template<>
 struct Hash<mimir::search::State>
 {
-    size_t operator()(const mimir::search::State& el) const
-    {
-        // TODO
-        return hash_combine(el.get_internal_state(), &el.get_problem());
-    }
+    size_t operator()(const mimir::search::State& el) const { return hash_combine(el.get_packed().get_buffer(), &el.get_problem()); }
 };
 
 template<>
@@ -277,8 +247,7 @@ struct EqualTo<mimir::search::State>
 {
     bool operator()(const mimir::search::State& lhs, const mimir::search::State& rhs) const
     {
-        // TODO
-        return lhs.get_internal_state() == rhs.get_internal_state() && &lhs.get_problem() == &rhs.get_problem();
+        return lhs.get_packed().get_buffer() == rhs.get_packed().get_buffer() && &lhs.get_problem() == &rhs.get_problem();
     }
 };
 }

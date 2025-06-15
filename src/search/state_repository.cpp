@@ -141,11 +141,16 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
     update_reached_fluent_atoms(dense_fluent_atoms, m_reached_fluent_atoms);
 
     // Test whether there exists an extended state for the given non extended state
-    m_state_builder.set_data(InternalStateImpl::UnpackedData { state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables, Index(-1) });
+    m_state_builder.serialize(buffering::PackedStateData { Index(-1),
+                                                           valla::first(state_fluent_atoms_slot),
+                                                           valla::second(state_fluent_atoms_slot),
+                                                           valla::first(state_derived_atoms_slot),
+                                                           valla::second(state_derived_atoms_slot),
+                                                           state_numeric_variables });
     auto it = m_states.find(m_state_builder);
     if (it != m_states.end())
     {
-        auto state = State(*(*it).get(), problem);
+        auto state = State(*it, problem);
         return { state, compute_state_metric_value(state) };
     }
 
@@ -164,10 +169,14 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
     }
 
     // Cache and return the extended state.
-    m_state_builder.set_data(
-        InternalStateImpl::UnpackedData { state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables, Index(m_states.size()) });
+    m_state_builder.serialize(buffering::PackedStateData { Index(m_states.size()),
+                                                           valla::first(state_fluent_atoms_slot),
+                                                           valla::second(state_fluent_atoms_slot),
+                                                           valla::first(state_derived_atoms_slot),
+                                                           valla::second(state_derived_atoms_slot),
+                                                           state_numeric_variables });
     auto result = m_states.insert(m_state_builder);
-    auto state = State(*(*result.first).get(), problem);
+    auto state = State(*result.first, problem);
 
     return { state, compute_state_metric_value(state) };
 }
@@ -342,11 +351,16 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
     state_numeric_variables = problem.get_or_create_double_list(dense_fluent_numeric_variables).second;
 
     // Check if non-extended state exists in cache
-    m_state_builder.set_data(InternalStateImpl::UnpackedData { state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables, Index(-1) });
+    m_state_builder.serialize(buffering::PackedStateData { Index(-1),
+                                                           valla::first(state_fluent_atoms_slot),
+                                                           valla::second(state_fluent_atoms_slot),
+                                                           valla::first(state_derived_atoms_slot),
+                                                           valla::second(state_derived_atoms_slot),
+                                                           state_numeric_variables });
     auto it = m_states.find(m_state_builder);
     if (it != m_states.end())
     {
-        auto successor_state = State(*(*it).get(), problem);
+        auto successor_state = State(*it, problem);
         return { successor_state, successor_state_metric_value };
     }
 
@@ -365,10 +379,14 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
     }
 
     // Cache and return the extended state.
-    m_state_builder.set_data(
-        InternalStateImpl::UnpackedData { state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables, Index(m_states.size()) });
+    m_state_builder.serialize(buffering::PackedStateData { Index(m_states.size()),
+                                                           valla::first(state_fluent_atoms_slot),
+                                                           valla::second(state_fluent_atoms_slot),
+                                                           valla::first(state_derived_atoms_slot),
+                                                           valla::second(state_derived_atoms_slot),
+                                                           state_numeric_variables });
     auto result = m_states.insert(m_state_builder);
-    auto successor_state = State(*(*result.first).get(), problem);
+    auto successor_state = State(*result.first, problem);
 
     return { successor_state, successor_state_metric_value };
 }
@@ -377,7 +395,7 @@ const Problem& StateRepositoryImpl::get_problem() const { return m_axiom_evaluat
 
 size_t StateRepositoryImpl::get_state_count() const { return m_states.size(); }
 
-const InternalStateImplSet& StateRepositoryImpl::get_states() const { return m_states; }
+const buffering::PackedStateSet& StateRepositoryImpl::get_states() const { return m_states; }
 
 const FlatBitset& StateRepositoryImpl::get_reached_fluent_ground_atoms_bitset() const { return m_reached_fluent_atoms; }
 

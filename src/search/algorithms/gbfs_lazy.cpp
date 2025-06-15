@@ -62,7 +62,7 @@ static ContinuousCost get_g_value(ConstGBFSSearchNode node) { return node->get_p
 [[maybe_unused]] static bool get_pi_compatibility(ConstGBFSSearchNode node) { return node->get_property<3>(); }
 
 static GBFSSearchNode
-get_or_create_search_node(size_t state_index, const GBFSSearchNodeImpl& default_node, mimir::buffering::Vector<GBFSSearchNodeImpl>& search_nodes)
+get_or_create_search_node(size_t state_index, const GBFSSearchNodeImpl& default_node, mimir::buffering::CistaVector<GBFSSearchNodeImpl>& search_nodes)
 {
     while (state_index >= search_nodes.size())
     {

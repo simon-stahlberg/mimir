@@ -55,7 +55,7 @@ static void set_g_value(BrFSSearchNode node, DiscreteCost g_value) { node->get_p
 static DiscreteCost get_g_value(ConstBrFSSearchNode node) { return node->get_property<0>(); }
 
 static BrFSSearchNode
-get_or_create_search_node(size_t state_index, const BrFSSearchNodeImpl& default_node, mimir::buffering::Vector<BrFSSearchNodeImpl>& search_nodes)
+get_or_create_search_node(size_t state_index, const BrFSSearchNodeImpl& default_node, mimir::buffering::CistaVector<BrFSSearchNodeImpl>& search_nodes)
 {
     while (state_index >= search_nodes.size())
     {

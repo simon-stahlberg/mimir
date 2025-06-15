@@ -18,7 +18,6 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_DENOTATION_REPOSITORIES_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_DENOTATION_REPOSITORIES_HPP_
 
-#include "mimir/buffering/unordered_set.hpp"
 #include "mimir/languages/description_logics/declarations.hpp"
 #include "mimir/languages/description_logics/denotations.hpp"
 #include "mimir/search/declarations.hpp"

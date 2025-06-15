@@ -18,8 +18,6 @@
 #ifndef MIMIR_FORMALISM_GROUND_EFFECTS_HPP_
 #define MIMIR_FORMALISM_GROUND_EFFECTS_HPP_
 
-#include "mimir/buffering/unordered_set.hpp"
-#include "mimir/buffering/vector.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"

@@ -57,7 +57,7 @@ static ContinuousCost get_g_value(ConstAStarSearchNode node) { return node->get_
 static ContinuousCost get_h_value(ConstAStarSearchNode node) { return node->get_property<1>(); }
 
 static AStarSearchNode
-get_or_create_search_node(size_t state_index, const AStarSearchNodeImpl& default_node, mimir::buffering::Vector<AStarSearchNodeImpl>& search_nodes)
+get_or_create_search_node(size_t state_index, const AStarSearchNodeImpl& default_node, mimir::buffering::CistaVector<AStarSearchNodeImpl>& search_nodes)
 {
     while (state_index >= search_nodes.size())
     {

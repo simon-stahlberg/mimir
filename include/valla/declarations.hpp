@@ -47,6 +47,10 @@ inline Slot make_slot(Index lhs, Index rhs) { return Slot(lhs) << 32 | rhs; }
 /// @brief Unpack two uint32_t from a uint64_t.
 inline std::pair<Index, Index> read_slot(Slot slot) { return { Index(slot >> 32), slot & (Index(-1)) }; }
 
+inline Index first(Slot slot) { return Index(slot >> 32); }
+
+inline Index second(Slot slot) { return Index(slot); }
+
 inline Index read_pos(Slot slot, size_t pos)
 {
     assert(pos < 2);

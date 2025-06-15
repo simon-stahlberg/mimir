@@ -54,7 +54,7 @@ static void set_h_value(GBFSSearchNode node, ContinuousCost h_value) { node->get
 static ContinuousCost get_g_value(ConstGBFSSearchNode node) { return node->get_property<0>(); }
 
 static GBFSSearchNode
-get_or_create_search_node(size_t state_index, const GBFSSearchNodeImpl& default_node, mimir::buffering::Vector<GBFSSearchNodeImpl>& search_nodes)
+get_or_create_search_node(size_t state_index, const GBFSSearchNodeImpl& default_node, mimir::buffering::CistaVector<GBFSSearchNodeImpl>& search_nodes)
 {
     while (state_index >= search_nodes.size())
     {

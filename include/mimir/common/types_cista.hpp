@@ -23,8 +23,8 @@
 #include "cista/containers/flexible_delta_index_vector.h"
 #include "cista/containers/flexible_index_vector.h"
 #include "cista/containers/vector.h"
-#include "mimir/buffering/unordered_map.hpp"
-#include "mimir/buffering/unordered_set.hpp"
+#include "mimir/buffering/cista_unordered_map.hpp"
+#include "mimir/buffering/cista_unordered_set.hpp"
 #include "mimir/common/concepts.hpp"
 #include "mimir/common/hash.hpp"
 #include "mimir/common/types.hpp"
@@ -40,10 +40,10 @@ namespace mimir
 using FlatBitset = cista::offset::dynamic_bitset<uint64_t>;
 /* IndexList */
 using FlatIndexList = cista::offset::flexible_index_vector<Index>;
-using FlatIndexListMap = mimir::buffering::UnorderedMap<FlatIndexList, Index>;
+using FlatIndexListMap = mimir::buffering::CistaUnorderedMap<FlatIndexList, Index>;
 /* DoubleList */
 using FlatDoubleList = cista::offset::vector<double>;
-using FlatDoubleListMap = mimir::buffering::UnorderedMap<FlatDoubleList, Index>;
+using FlatDoubleListMap = mimir::buffering::CistaUnorderedMap<FlatDoubleList, Index>;
 
 /**
  * Forward Declarations

@@ -21,9 +21,8 @@
 #include "mimir/buffering/builder.hpp"
 #include "mimir/buffering/byte_buffer_segmented.hpp"
 #include "mimir/common/hash.hpp"
-#include "mimir/common/memory.hpp"
 
-#include <absl/container/flat_hash_set.h>
+#include <absl/container/flat_hash_map.h>
 #include <functional>
 #include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
@@ -45,9 +44,6 @@ private:
 
     // Data to be accessed, we use absl::flat_hash_set because it stores the data in contiguous memory.
     absl::flat_hash_map<View<T>, Value, Hash, Equal> m_elements;
-
-    // Serialization buffer
-    cista::buf<std::vector<uint8_t>> m_buf;
 
 public:
     explicit UnorderedMap(size_t initial_num_bytes_per_segment = 1024, size_t maximum_num_bytes_per_segment = 1024 * 1024) {}
@@ -90,7 +86,6 @@ public:
         }
 
         /* Serialize the element. */
-        builder.serialize();
         auto& buffer = builder.get_buffer_writer().get_buffer();
 
         /* Write the data to the storage and return it. */
@@ -107,13 +102,6 @@ public:
     size_t count(const Builder<T>& builder) const { return m_elements.count(View<T>(builder)); }
     auto find(const Builder<T>& builder) const { return m_elements.find(View<T>(builder)); }
     bool contains(const Builder<T>& builder) const { return m_elements.contains(View<T>(builder)); }
-
-    size_t get_estimated_memory_usage_in_bytes() const
-    {
-        const auto usage1 = m_storage.capacity();
-        const auto usage2 = mimir::get_memory_usage_in_bytes(m_elements);
-        return usage1 + usage2;
-    }
 };
 
 }
