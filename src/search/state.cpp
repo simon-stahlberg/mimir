@@ -35,11 +35,11 @@ v::RootSlotType Data<PackedState>::get_atoms() const
 {
     if constexpr (std::is_same_v<P, formalism::FluentTag>)
     {
-        return valla::make_slot(fluent_atoms_index, fluent_atoms_size);
+        return valla::make_slot(fluent_atoms_index.value, fluent_atoms_size.value);
     }
     else if constexpr (std::is_same_v<P, formalism::DerivedTag>)
     {
-        return valla::make_slot(derived_atoms_index, derived_atoms_size);
+        return valla::make_slot(derived_atoms_index.value, derived_atoms_size.value);
     }
     else
     {
@@ -60,11 +60,11 @@ void Builder<PackedState>::serialize()
 {
     m_buffer.reset();
     m_buffer.write<Index>(m_data.index);
-    m_buffer.write<Index>(m_data.fluent_atoms_index);
-    m_buffer.write<Index>(m_data.fluent_atoms_size);
-    m_buffer.write<Index>(m_data.derived_atoms_index);
-    m_buffer.write<Index>(m_data.derived_atoms_size);
-    m_buffer.write<Index>(m_data.numeric_variables);
+    m_buffer.write(m_data.fluent_atoms_index);
+    m_buffer.write(m_data.fluent_atoms_size);
+    m_buffer.write(m_data.derived_atoms_index);
+    m_buffer.write(m_data.derived_atoms_size);
+    m_buffer.write(m_data.numeric_variables);
     m_buffer.write_zero_padding();
 }
 
@@ -74,21 +74,21 @@ View<PackedState>::View(const uint8_t* buffer) : m_buffer(buffer) {}
 
 View<PackedState>::View(const Builder<PackedState>& builder) : m_buffer(builder.get_buffer_writer().get_buffer().data()) {}
 
-Data<PackedState> View<PackedState>::deserialize() const
+std::pair<Data<PackedState>, size_t> View<PackedState>::deserialize() const
 {
     auto reader = BufferReader(m_buffer);
     size_t bit = 0;
-    const auto [index_, bit1_] = reader.read<Index>(bit);
+    const auto [index_, bit1_] = reader.read_uint<Index>(bit);
     bit = bit1_;
-    const auto [fluent_atoms_index_, bit2_] = reader.read<Index>(bit);
+    const auto [fluent_atoms_index_, bit2_] = reader.read_varuint<Index>(bit);
     bit = bit2_;
-    const auto [fluent_atoms_size_, bit3_] = reader.read<Index>(bit);
+    const auto [fluent_atoms_size_, bit3_] = reader.read_varuint<Index>(bit);
     bit = bit3_;
-    const auto [derived_atoms_index_, bit4_] = reader.read<Index>(bit);
+    const auto [derived_atoms_index_, bit4_] = reader.read_varuint<Index>(bit);
     bit = bit4_;
-    const auto [derived_atoms_size_, bit5_] = reader.read<Index>(bit);
+    const auto [derived_atoms_size_, bit5_] = reader.read_varuint<Index>(bit);
     bit = bit5_;
-    const auto [numeric_variables_, bit6_] = reader.read<Index>(bit);
+    const auto [numeric_variables_, bit6_] = reader.read_varuint<Index>(bit);
     bit = bit6_;
 
     auto result = Data<PackedState> {};
@@ -99,7 +99,7 @@ Data<PackedState> View<PackedState>::deserialize() const
     result.derived_atoms_size = derived_atoms_size_;
     result.numeric_variables = numeric_variables_;
 
-    return result;
+    return std::make_pair(result, bit);
 }
 
 const uint8_t* View<PackedState>::get_buffer() const { return m_buffer; }
@@ -116,7 +116,7 @@ namespace mimir::search
 State::State(buffering::View<buffering::PackedState> packed, const formalism::ProblemImpl& problem) :
     m_packed(packed),
     m_problem(&problem),
-    m_unpacked(m_packed.deserialize())
+    m_unpacked(m_packed.deserialize().first)
 {
     assert(std::is_sorted(v::begin(m_unpacked.template get_atoms<FluentTag>(), m_problem->get_tree_table()), v::end()));
     assert(std::is_sorted(v::begin(m_unpacked.template get_atoms<DerivedTag>(), m_problem->get_tree_table()), v::end()));
@@ -162,7 +162,7 @@ const formalism::ProblemImpl& State::get_problem() const { return *m_problem; }
 
 Index State::get_index() const { return m_unpacked.index; }
 
-const FlatDoubleList& State::get_numeric_variables() const { return *m_problem->get_double_list(m_unpacked.numeric_variables); }
+const FlatDoubleList& State::get_numeric_variables() const { return *m_problem->get_double_list(m_unpacked.numeric_variables.value); }
 
 /**
  * Pretty printing

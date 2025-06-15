@@ -62,12 +62,12 @@ struct PackedState
 template<>
 struct Data<PackedState>
 {
-    Index index;
-    Index fluent_atoms_index;
-    Index fluent_atoms_size;
-    Index derived_atoms_index;
-    Index derived_atoms_size;
-    Index numeric_variables;
+    Index index;  // complete 4 byte range for index for byte aligned hashing and comparison of the remainder.
+    VarUint<Index> fluent_atoms_index;
+    VarUint<Index> fluent_atoms_size;
+    VarUint<Index> derived_atoms_index;
+    VarUint<Index> derived_atoms_size;
+    VarUint<Index> numeric_variables;
 
     template<formalism::IsFluentOrDerivedTag P>
     v::RootSlotType get_atoms() const;
@@ -102,7 +102,7 @@ public:
 
     View(const Builder<PackedState>& builder);
 
-    Data<PackedState> deserialize() const;
+    std::pair<Data<PackedState>, size_t> deserialize() const;
 
     const uint8_t* get_buffer() const;
 };
@@ -129,11 +129,8 @@ private:
 
     buffering::Data<buffering::PackedState> m_unpacked;
 
-    State(buffering::View<buffering::PackedState> packed, const formalism::ProblemImpl& problem);
-
-    friend class StateRepositoryImpl;
-
 public:
+    State(buffering::View<buffering::PackedState> packed, const formalism::ProblemImpl& problem);
     State(const State&) = default;
     State(State&&) noexcept = default;
     State& operator=(const State&) = default;
@@ -216,8 +213,18 @@ struct Hash<mimir::buffering::View<mimir::buffering::PackedState>>
 
     size_t operator()(V el) const
     {
-        auto unpacked = el.deserialize();
-        return hash_combine(valla::cantor_pair(unpacked.fluent_atoms_index, unpacked.fluent_atoms_size), unpacked.numeric_variables);
+        size_t seed = 0;
+        size_t hash[2] = { 0, 0 };
+
+        const auto [data, num_bits] = el.deserialize();
+
+        // Hash everything except the state index. For simplicity, we include derived atoms.
+        loki::MurmurHash3_x64_128(el.get_buffer() + sizeof(mimir::Index), num_bits / 8 - 4, seed, hash);
+
+        loki::hash_combine(seed, hash[0]);
+        loki::hash_combine(seed, hash[1]);
+
+        return seed;
     }
 };
 
@@ -228,11 +235,13 @@ struct EqualTo<mimir::buffering::View<mimir::buffering::PackedState>>
 
     bool operator()(V lhs, V rhs) const
     {
-        auto lhs_unpacked = lhs.deserialize();
-        auto rhs_unpacked = rhs.deserialize();
-        return lhs_unpacked.fluent_atoms_index == rhs_unpacked.fluent_atoms_index   //
-               && lhs_unpacked.fluent_atoms_size == rhs_unpacked.fluent_atoms_size  //
-               && lhs_unpacked.numeric_variables == rhs_unpacked.numeric_variables;
+        auto [lhs_unpacked, lhs_size] = lhs.deserialize();
+        auto [rhs_unpacked, rhs_size] = rhs.deserialize();
+
+        // Compare fluent and numeric variables.
+        return lhs_unpacked.fluent_atoms_index.value == rhs_unpacked.fluent_atoms_index.value   //
+               && lhs_unpacked.fluent_atoms_size.value == rhs_unpacked.fluent_atoms_size.value  //
+               && lhs_unpacked.numeric_variables.value == rhs_unpacked.numeric_variables.value;
     }
 };
 

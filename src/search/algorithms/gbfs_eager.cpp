@@ -126,7 +126,7 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
         return result;
     }
 
-    auto openlist = PriorityQueue<std::tuple<double, double, Index>, State>();
+    auto openlist = PriorityQueue<std::tuple<double, double, Index>, buffering::PackedStateView>();
 
     if (start_g_value == UNDEFINED_CONTINUOUS_COST)
     {
@@ -161,7 +161,7 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
     }
 
     auto applicable_actions = GroundActionList {};
-    openlist.insert(std::make_tuple(start_h_value, start_g_value, step++), start_state);
+    openlist.insert(std::make_tuple(start_h_value, start_g_value, step++), start_state.get_packed());
 
     auto stopwatch = StopWatch(options.max_time_in_ms);
     stopwatch.start();
@@ -174,7 +174,7 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
             return result;
         }
 
-        const auto state = openlist.top();
+        const auto state = State(openlist.top(), problem);
         openlist.pop();
 
         auto search_node = get_or_create_search_node(state.get_index(), default_search_node, search_nodes);
@@ -283,7 +283,7 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
 
             event_handler->on_generate_state(state, action, action_cost, successor_state);
 
-            openlist.insert(std::make_tuple(successor_h_value, successor_state_metric_value, step++), successor_state);
+            openlist.insert(std::make_tuple(successor_h_value, successor_state_metric_value, step++), successor_state.get_packed());
         }
     }
 

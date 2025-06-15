@@ -84,7 +84,7 @@ SearchResult find_solution(const SearchContext& context, const Options& options)
     auto result = SearchResult();
     auto default_search_node = BrFSSearchNodeImpl { SearchNodeStatus::NEW, std::numeric_limits<Index>::max(), DiscreteCost(0) };
     auto search_nodes = SearchNodeImplVector<DiscreteCost>();
-    auto queue = std::deque<State>();
+    auto queue = std::deque<buffering::PackedStateView>();
 
     auto start_search_node = get_or_create_search_node(start_state.get_index(), default_search_node, search_nodes);
     start_search_node->get_status() = SearchNodeStatus::OPEN;
@@ -111,7 +111,7 @@ SearchResult find_solution(const SearchContext& context, const Options& options)
         return result;
     }
 
-    queue.emplace_back(start_state);
+    queue.emplace_back(start_state.get_packed());
 
     auto g_value = DiscreteCost(0);
 
@@ -128,7 +128,7 @@ SearchResult find_solution(const SearchContext& context, const Options& options)
             return result;
         }
 
-        const auto state = queue.front();
+        const auto state = State(queue.front(), problem);
         queue.pop_front();
 
         auto search_node = get_or_create_search_node(state.get_index(), default_search_node, search_nodes);
@@ -204,7 +204,7 @@ SearchResult find_solution(const SearchContext& context, const Options& options)
             successor_search_node->get_parent_state() = state.get_index();
             set_g_value(successor_search_node, get_g_value(search_node) + 1);
 
-            queue.emplace_back(successor_state);
+            queue.emplace_back(successor_state.get_packed());
 
             if (search_nodes.size() >= options.max_num_states)
             {

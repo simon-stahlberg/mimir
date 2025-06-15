@@ -127,7 +127,7 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
         return result;
     }
 
-    auto openlist = PriorityQueue<double, State>();
+    auto openlist = PriorityQueue<double, buffering::PackedStateView>();
 
     if (start_g_value == UNDEFINED_CONTINUOUS_COST)
     {
@@ -163,7 +163,7 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
 
     auto applicable_actions = GroundActionList {};
     auto f_value = start_f_value;
-    openlist.insert(start_f_value, start_state);
+    openlist.insert(start_f_value, start_state.get_packed());
 
     event_handler->on_finish_f_layer(f_value);
 
@@ -178,7 +178,7 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
             return result;
         }
 
-        const auto state = openlist.top();
+        const auto state = State(openlist.top(), problem);
         openlist.pop();
 
         auto search_node = get_or_create_search_node(state.get_index(), default_search_node, search_nodes);
@@ -303,7 +303,7 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
                 event_handler->on_generate_state_relaxed(state, action, action_cost, successor_state);
 
                 const auto successor_f_value = get_g_value(successor_search_node) + get_h_value(successor_search_node);
-                openlist.insert(successor_f_value, successor_state);
+                openlist.insert(successor_f_value, successor_state.get_packed());
             }
             else
             {

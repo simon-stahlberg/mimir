@@ -18,10 +18,13 @@
 #ifndef MIMIR_BUFFERING_UTILS_HPP_
 #define MIMIR_BUFFERING_UTILS_HPP_
 
+#include <bit>
 #include <concepts>
 #include <cstddef>
 #include <cstdint>
+#include <limits>
 #include <tuple>
+#include <vector>
 
 namespace mimir::buffering
 {
@@ -67,6 +70,17 @@ void write_uint(uint8_t* buffer, size_t start_bit, size_t end_bit, T value)
     }
 }
 
+template<std::unsigned_integral T>
+struct VarUint
+{
+    T value;
+
+    static constexpr size_t num_size_bits = std::bit_width(static_cast<std::make_unsigned_t<T>>(std::numeric_limits<T>::digits));
+
+    friend bool operator==(VarUint lhs, VarUint rhs) noexcept { return lhs.value == rhs.value; }
+    friend bool operator!=(VarUint lhs, VarUint rhs) noexcept { return !(lhs == rhs); }
+};
+
 class BufferWriter
 {
 private:
@@ -93,14 +107,22 @@ public:
     }
 
     template<std::unsigned_integral T>
+    void write(VarUint<T> element)
+    {
+        size_t num_bits = std::bit_width(element.value);
+        resize_to_fit(bit + VarUint<T>::num_size_bits + num_bits);
+        write_uint<T>(buffer.data(), bit, bit + VarUint<T>::num_size_bits, num_bits);
+        bit += VarUint<T>::num_size_bits;
+        write_uint<T>(buffer.data(), bit, bit + num_bits, element.value);
+        bit += num_bits;
+    }
+
+    template<std::unsigned_integral T>
     void write(T value)
     {
-        size_t num_bits = std::bit_width(value);
-        resize_to_fit(bit + 6 + num_bits);
-        write_uint<T>(buffer.data(), bit, bit + 6, num_bits);
-        bit += 6;
-        write_uint<T>(buffer.data(), bit, bit + num_bits, value);
-        bit += num_bits;
+        resize_to_fit(bit + std::numeric_limits<T>::digits);
+        write_uint<T>(buffer.data(), bit, bit + std::numeric_limits<T>::digits, value);
+        bit += std::numeric_limits<T>::digits;
     }
 
     void write_zero_padding()
@@ -124,13 +146,20 @@ public:
     BufferReader(const uint8_t* buffer) : buffer(buffer) {}
 
     template<std::unsigned_integral T>
-    std::pair<T, size_t> read(size_t bit) const
+    std::pair<VarUint<T>, size_t> read_varuint(size_t bit) const
     {
-        size_t num_bits = read_uint<size_t>(buffer, bit, bit + 6);
-        bit += 6;
-        T value = read_uint<T>(buffer, bit, bit + num_bits);
+        size_t num_bits = buffering::read_uint<size_t>(buffer, bit, bit + VarUint<T>::num_size_bits);
+        bit += VarUint<T>::num_size_bits;
+        T value = buffering::read_uint<T>(buffer, bit, bit + num_bits);
         bit += num_bits;
-        return std::make_pair(value, bit);
+        return std::make_pair(VarUint<T> { value }, bit);
+    }
+
+    template<std::unsigned_integral T>
+    std::pair<T, size_t> read_uint(size_t bit) const
+    {
+        T value = buffering::read_uint<T>(buffer, bit, bit + std::numeric_limits<T>::digits);
+        return std::make_pair(value, bit + std::numeric_limits<T>::digits);
     }
 };
 }
