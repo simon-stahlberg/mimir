@@ -214,7 +214,7 @@ struct Hash<mimir::buffering::View<mimir::buffering::PackedState>>
 
     size_t operator()(V el) const
     {
-        size_t seed = 0;
+        size_t seed = el.get_buffer_size();
         size_t hash[2] = { 0, 0 };
 
         loki::MurmurHash3_x64_128(el.get_buffer() + sizeof(uint8_t) + sizeof(mimir::Index),
