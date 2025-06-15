@@ -53,53 +53,56 @@ template v::RootSlotType Data<PackedState>::get_atoms<DerivedTag>() const;
 void Builder<PackedState>::serialize(Data<PackedState> data)
 {
     m_data = std::move(data);
+
     serialize();
 }
 
 void Builder<PackedState>::serialize()
 {
     m_buffer.reset();
-    m_buffer.write<Index>(m_data.index);
-    m_buffer.write(m_data.fluent_atoms_index);
-    m_buffer.write(m_data.fluent_atoms_size);
-    m_buffer.write(m_data.derived_atoms_index);
-    m_buffer.write(m_data.derived_atoms_size);
-    m_buffer.write(m_data.numeric_variables);
-    m_buffer.write_zero_padding();
+
+    m_buffer << buffering::AllocateByteSizePrefix<uint8_t> {};
+    m_buffer << m_data.index;
+    m_buffer << m_data.fluent_atoms_index;
+    m_buffer << m_data.fluent_atoms_size;
+    m_buffer << m_data.derived_atoms_index;
+    m_buffer << m_data.derived_atoms_size;
+    m_buffer << m_data.numeric_variables;
+    m_buffer << buffering::WriteZeroPadding {};
+    m_buffer << buffering::WriteByteSizePrefix<uint8_t> {};
 }
 
-const BufferWriter& Builder<PackedState>::get_buffer_writer() const { return m_buffer; }
+const StreamBufferWriter& Builder<PackedState>::get_buffer_writer() const { return m_buffer; }
 
 View<PackedState>::View(const uint8_t* buffer) : m_buffer(buffer) {}
 
 View<PackedState>::View(const Builder<PackedState>& builder) : m_buffer(builder.get_buffer_writer().get_buffer().data()) {}
 
-std::pair<Data<PackedState>, size_t> View<PackedState>::deserialize() const
+Data<PackedState> View<PackedState>::deserialize() const
 {
-    auto reader = BufferReader(m_buffer);
-    size_t bit = 0;
-    const auto [index_, bit1_] = reader.read_uint<Index>(bit);
-    bit = bit1_;
-    const auto [fluent_atoms_index_, bit2_] = reader.read_varuint<Index>(bit);
-    bit = bit2_;
-    const auto [fluent_atoms_size_, bit3_] = reader.read_varuint<Index>(bit);
-    bit = bit3_;
-    const auto [derived_atoms_index_, bit4_] = reader.read_varuint<Index>(bit);
-    bit = bit4_;
-    const auto [derived_atoms_size_, bit5_] = reader.read_varuint<Index>(bit);
-    bit = bit5_;
-    const auto [numeric_variables_, bit6_] = reader.read_varuint<Index>(bit);
-    bit = bit6_;
-
+    auto reader = StreamBufferReader(m_buffer);
+    auto prefix = buffering::ReadByteSizePrefix { uint8_t(0) };
     auto result = Data<PackedState> {};
-    result.index = index_;
-    result.fluent_atoms_index = fluent_atoms_index_;
-    result.fluent_atoms_size = fluent_atoms_size_;
-    result.derived_atoms_index = derived_atoms_index_;
-    result.derived_atoms_size = derived_atoms_size_;
-    result.numeric_variables = numeric_variables_;
 
-    return std::make_pair(result, bit);
+    reader >> prefix;
+    reader >> result.index;
+    reader >> result.fluent_atoms_index;
+    reader >> result.fluent_atoms_size;
+    reader >> result.derived_atoms_index;
+    reader >> result.derived_atoms_size;
+    reader >> result.numeric_variables;
+
+    return result;
+}
+
+size_t View<PackedState>::get_buffer_size() const
+{
+    auto reader = StreamBufferReader(m_buffer);
+    auto prefix = buffering::ReadByteSizePrefix { uint8_t(0) };
+
+    reader >> prefix;
+
+    return prefix.size;
 }
 
 const uint8_t* View<PackedState>::get_buffer() const { return m_buffer; }
@@ -116,7 +119,7 @@ namespace mimir::search
 State::State(buffering::View<buffering::PackedState> packed, const formalism::ProblemImpl& problem) :
     m_packed(packed),
     m_problem(&problem),
-    m_unpacked(m_packed.deserialize().first)
+    m_unpacked(m_packed.deserialize())
 {
     assert(std::is_sorted(v::begin(m_unpacked.template get_atoms<FluentTag>(), m_problem->get_tree_table()), v::end()));
     assert(std::is_sorted(v::begin(m_unpacked.template get_atoms<DerivedTag>(), m_problem->get_tree_table()), v::end()));

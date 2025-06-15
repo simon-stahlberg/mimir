@@ -30,10 +30,10 @@ TEST(MimirTests, SearchStateBuilderTest)
 
     auto in_data = buffering::PackedStateData { 4, 5, 6, 7, 8, 9 };
     builder.serialize(in_data);
-    EXPECT_EQ(builder.get_buffer_writer().get_buffer().size(), 7);
+    EXPECT_EQ(builder.get_buffer_writer().get_buffer().size(), 11);
 
     auto view = buffering::PackedStateView(builder);
-    auto [out_data, size] = view.deserialize();
+    auto out_data = view.deserialize();
     EXPECT_EQ(in_data.index, out_data.index);
     EXPECT_EQ(in_data.fluent_atoms_index, out_data.fluent_atoms_index);
     EXPECT_EQ(in_data.fluent_atoms_size, out_data.fluent_atoms_size);
@@ -49,19 +49,19 @@ TEST(MimirTests, SearchStateSetBuilderReuseTest)
 
     auto s0_in_data = buffering::PackedStateData { 4, 5, 6, 7, 8, 9 };
     builder.serialize(s0_in_data);
-    EXPECT_EQ(builder.get_buffer_writer().get_buffer().size(), 7);
+    EXPECT_EQ(builder.get_buffer_writer().get_buffer().size(), 11);
     auto s0_state = *states.insert(builder).first;
 
     auto s1_in_data = buffering::PackedStateData { 5, 4, 7, 6, 900, 800 };
     builder.serialize(s1_in_data);
-    EXPECT_EQ(builder.get_buffer_writer().get_buffer().size(), 9);
+    EXPECT_EQ(builder.get_buffer_writer().get_buffer().size(), 13);
     auto s1_state = *states.insert(builder).first;
 
     EXPECT_EQ(states.size(), 2);
 
-    EXPECT_EQ(s1_state.get_buffer() - s0_state.get_buffer(), 7);
+    EXPECT_EQ(s1_state.get_buffer() - s0_state.get_buffer(), 11);
 
-    auto [s0_out_data, s0_size] = s0_state.deserialize();
+    auto s0_out_data = s0_state.deserialize();
     EXPECT_EQ(s0_in_data.index, s0_out_data.index);
     EXPECT_EQ(s0_in_data.fluent_atoms_index, s0_out_data.fluent_atoms_index);
     EXPECT_EQ(s0_in_data.fluent_atoms_size, s0_out_data.fluent_atoms_size);
@@ -69,7 +69,7 @@ TEST(MimirTests, SearchStateSetBuilderReuseTest)
     EXPECT_EQ(s0_in_data.derived_atoms_size, s0_out_data.derived_atoms_size);
     EXPECT_EQ(s0_in_data.numeric_variables, s0_out_data.numeric_variables);
 
-    auto [s1_out_data, s1_size] = s1_state.deserialize();
+    auto s1_out_data = s1_state.deserialize();
     EXPECT_EQ(s1_in_data.index, s1_out_data.index);
     EXPECT_EQ(s1_in_data.fluent_atoms_index, s1_out_data.fluent_atoms_index);
     EXPECT_EQ(s1_in_data.fluent_atoms_size, s1_out_data.fluent_atoms_size);

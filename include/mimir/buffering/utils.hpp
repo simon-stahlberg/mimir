@@ -81,7 +81,21 @@ struct VarUint
     friend bool operator!=(VarUint lhs, VarUint rhs) noexcept { return !(lhs == rhs); }
 };
 
-class BufferWriter
+template<std::unsigned_integral T>
+struct AllocateByteSizePrefix
+{
+};
+
+template<std::unsigned_integral T>
+struct WriteByteSizePrefix
+{
+};
+
+struct WriteZeroPadding
+{
+};
+
+class StreamBufferWriter
 {
 private:
     std::vector<uint8_t> buffer;
@@ -98,7 +112,7 @@ private:
     }
 
 public:
-    BufferWriter() : buffer(), bit(0) {}
+    StreamBufferWriter() : buffer(), bit(0) {}
 
     void reset()
     {
@@ -107,7 +121,26 @@ public:
     }
 
     template<std::unsigned_integral T>
-    void write(VarUint<T> element)
+    StreamBufferWriter& operator<<(AllocateByteSizePrefix<T>)
+    {
+        assert(bit == 0);  // Ensure prefix.
+
+        resize_to_fit(std::numeric_limits<T>::digits);
+        bit += std::numeric_limits<T>::digits;
+
+        return *this;
+    }
+
+    template<std::unsigned_integral T>
+    StreamBufferWriter& operator<<(WriteByteSizePrefix<T> value)
+    {
+        write_uint<T>(buffer.data(), 0, std::numeric_limits<T>::digits, bit / 8);
+
+        return *this;
+    }
+
+    template<std::unsigned_integral T>
+    StreamBufferWriter& operator<<(VarUint<T> element)
     {
         size_t num_bits = std::bit_width(element.value);
         resize_to_fit(bit + VarUint<T>::num_size_bits + num_bits);
@@ -115,51 +148,77 @@ public:
         bit += VarUint<T>::num_size_bits;
         write_uint<T>(buffer.data(), bit, bit + num_bits, element.value);
         bit += num_bits;
+
+        return *this;
     }
 
     template<std::unsigned_integral T>
-    void write(T value)
+    StreamBufferWriter& operator<<(T value)
     {
         resize_to_fit(bit + std::numeric_limits<T>::digits);
         write_uint<T>(buffer.data(), bit, bit + std::numeric_limits<T>::digits, value);
         bit += std::numeric_limits<T>::digits;
+
+        return *this;
     }
 
-    void write_zero_padding()
+    StreamBufferWriter& operator<<(WriteZeroPadding)
     {
         size_t used_bits = bit % 8;
         if (used_bits != 0)  // avoid clearing a completely used final byte.
         {
             buffer.back() &= uint8_t((1 << used_bits) - 1);
         }
+
+        return *this;
     }
 
     const std::vector<uint8_t>& get_buffer() const { return buffer; }
+    const size_t get_bit() const { return bit; }
 };
 
-class BufferReader
+template<std::unsigned_integral T>
+struct ReadByteSizePrefix
+{
+    T size;
+};
+
+class StreamBufferReader
 {
 private:
     const uint8_t* buffer;
+    size_t bit;
 
 public:
-    BufferReader(const uint8_t* buffer) : buffer(buffer) {}
+    StreamBufferReader(const uint8_t* buffer) : buffer(buffer), bit(0) {}
 
     template<std::unsigned_integral T>
-    std::pair<VarUint<T>, size_t> read_varuint(size_t bit) const
+    StreamBufferReader& operator>>(ReadByteSizePrefix<T>& prefix)
     {
-        size_t num_bits = buffering::read_uint<size_t>(buffer, bit, bit + VarUint<T>::num_size_bits);
-        bit += VarUint<T>::num_size_bits;
-        T value = buffering::read_uint<T>(buffer, bit, bit + num_bits);
-        bit += num_bits;
-        return std::make_pair(VarUint<T> { value }, bit);
+        prefix.size = buffering::read_uint<T>(buffer, bit, bit + std::numeric_limits<T>::digits);
+        bit += std::numeric_limits<T>::digits;
+
+        return *this;
     }
 
     template<std::unsigned_integral T>
-    std::pair<T, size_t> read_uint(size_t bit) const
+    StreamBufferReader& operator>>(VarUint<T>& value)
     {
-        T value = buffering::read_uint<T>(buffer, bit, bit + std::numeric_limits<T>::digits);
-        return std::make_pair(value, bit + std::numeric_limits<T>::digits);
+        size_t num_bits = buffering::read_uint<size_t>(buffer, bit, bit + VarUint<T>::num_size_bits);
+        bit += VarUint<T>::num_size_bits;
+        value = VarUint<T>(buffering::read_uint<T>(buffer, bit, bit + num_bits));
+        bit += num_bits;
+
+        return *this;
+    }
+
+    template<std::unsigned_integral T>
+    StreamBufferReader& operator>>(T& value)
+    {
+        value = buffering::read_uint<T>(buffer, bit, bit + std::numeric_limits<T>::digits);
+        bit += std::numeric_limits<T>::digits;
+
+        return *this;
     }
 };
 }

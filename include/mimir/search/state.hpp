@@ -79,7 +79,7 @@ class Builder<PackedState>
 private:
     Data<PackedState> m_data;
 
-    BufferWriter m_buffer;
+    StreamBufferWriter m_buffer;
 
     void serialize();
 
@@ -88,7 +88,7 @@ public:
 
     void serialize(Data<PackedState> data);
 
-    const BufferWriter& get_buffer_writer() const;
+    const StreamBufferWriter& get_buffer_writer() const;
 };
 
 template<>
@@ -102,9 +102,10 @@ public:
 
     View(const Builder<PackedState>& builder);
 
-    std::pair<Data<PackedState>, size_t> deserialize() const;
+    Data<PackedState> deserialize() const;
 
     const uint8_t* get_buffer() const;
+    size_t get_buffer_size() const;
 };
 
 using PackedStateData = Data<PackedState>;
@@ -216,10 +217,10 @@ struct Hash<mimir::buffering::View<mimir::buffering::PackedState>>
         size_t seed = 0;
         size_t hash[2] = { 0, 0 };
 
-        const auto [data, num_bits] = el.deserialize();
-
-        // Hash everything except the state index. For simplicity, we include derived atoms.
-        loki::MurmurHash3_x64_128(el.get_buffer() + sizeof(mimir::Index), num_bits / 8 - 4, seed, hash);
+        loki::MurmurHash3_x64_128(el.get_buffer() + sizeof(uint8_t) + sizeof(mimir::Index),
+                                  el.get_buffer_size() - sizeof(uint8_t) - sizeof(mimir::Index),
+                                  seed,
+                                  hash);
 
         loki::hash_combine(seed, hash[0]);
         loki::hash_combine(seed, hash[1]);
@@ -235,20 +236,27 @@ struct EqualTo<mimir::buffering::View<mimir::buffering::PackedState>>
 
     bool operator()(V lhs, V rhs) const
     {
-        auto [lhs_unpacked, lhs_size] = lhs.deserialize();
-        auto [rhs_unpacked, rhs_size] = rhs.deserialize();
+        auto lhs_begin = lhs.get_buffer() + sizeof(uint8_t) + sizeof(mimir::Index);
+        auto rhs_begin = rhs.get_buffer() + sizeof(uint8_t) + sizeof(mimir::Index);
+        auto lhs_amount = lhs.get_buffer_size() - sizeof(uint8_t) - sizeof(mimir::Index);
+        auto rhs_amount = rhs.get_buffer_size() - sizeof(uint8_t) - sizeof(mimir::Index);
 
-        // Compare fluent and numeric variables.
-        return lhs_unpacked.fluent_atoms_index.value == rhs_unpacked.fluent_atoms_index.value   //
-               && lhs_unpacked.fluent_atoms_size.value == rhs_unpacked.fluent_atoms_size.value  //
-               && lhs_unpacked.numeric_variables.value == rhs_unpacked.numeric_variables.value;
+        if (lhs_amount != rhs_amount)
+        {
+            return false;
+        }
+
+        return std::equal(lhs_begin, lhs_begin + lhs_amount, rhs_begin);
     }
 };
 
 template<>
 struct Hash<mimir::search::State>
 {
-    size_t operator()(const mimir::search::State& el) const { return hash_combine(el.get_packed().get_buffer(), &el.get_problem()); }
+    size_t operator()(const mimir::search::State& el) const
+    {
+        return hash_combine(Hash<mimir::buffering::View<mimir::buffering::PackedState>> {}(el.get_packed()), &el.get_problem());
+    }
 };
 
 template<>
@@ -256,7 +264,8 @@ struct EqualTo<mimir::search::State>
 {
     bool operator()(const mimir::search::State& lhs, const mimir::search::State& rhs) const
     {
-        return lhs.get_packed().get_buffer() == rhs.get_packed().get_buffer() && &lhs.get_problem() == &rhs.get_problem();
+        return EqualTo<mimir::buffering::View<mimir::buffering::PackedState>> {}(lhs.get_packed(), rhs.get_packed())
+               && &lhs.get_problem() == &rhs.get_problem();
     }
 };
 }
