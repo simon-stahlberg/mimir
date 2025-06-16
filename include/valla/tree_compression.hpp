@@ -20,6 +20,7 @@
 
 #include "valla/declarations.hpp"
 #include "valla/details/shared_memory_pool.hpp"
+#include "valla/details/unique_memory_pool.hpp"
 #include "valla/indexed_hash_set.hpp"
 
 #include <algorithm>
@@ -168,7 +169,7 @@ struct Entry
     Index m_bit;
 };
 
-static thread_local SharedMemoryPool<std::vector<Entry>> s_stack_pool = SharedMemoryPool<std::vector<Entry>> {};
+static thread_local UniqueMemoryPool<std::vector<Entry>> s_stack_pool = UniqueMemoryPool<std::vector<Entry>> {};
 
 inline void copy(const std::vector<Entry>& src, std::vector<Entry>& dst)
 {
@@ -180,12 +181,12 @@ class const_iterator
 {
 private:
     const IndexedHashSet* m_tree_table;
-    SharedMemoryPoolPtr<std::vector<Entry>> m_stack;
+    UniqueMemoryPoolPtr<std::vector<Entry>> m_stack;
     Index m_value;
 
     static constexpr const Index END_POS = Index(-1);
 
-    const_iterator(const IndexedHashSet* tree_table, SharedMemoryPoolPtr<std::vector<Entry>> stack, Index value) :
+    const_iterator(const IndexedHashSet* tree_table, UniqueMemoryPoolPtr<std::vector<Entry>> stack, Index value) :
         m_tree_table(tree_table),
         m_stack(stack),
         m_value(value)
@@ -238,6 +239,7 @@ public:
             m_stack->clear();
 
             const auto [tree_idx, size] = read_slot(root);
+
             if (size > 0)  ///< Push to stack only if there leafs
             {
                 m_stack->emplace_back(tree_idx, size);

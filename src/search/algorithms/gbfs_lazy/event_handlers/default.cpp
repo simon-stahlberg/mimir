@@ -51,8 +51,6 @@ void DefaultEventHandlerImpl::on_new_best_h_value_impl(ContinuousCost h_value, u
 
 void DefaultEventHandlerImpl::on_end_search_impl(uint64_t num_reached_fluent_atoms,
                                                  uint64_t num_reached_derived_atoms,
-                                                 uint64_t num_bytes_for_problem,
-                                                 uint64_t num_bytes_for_nodes,
                                                  uint64_t num_states,
                                                  uint64_t num_nodes,
                                                  uint64_t num_actions,

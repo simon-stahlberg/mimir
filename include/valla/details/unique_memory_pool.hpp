@@ -117,6 +117,8 @@ public:
         return *this;
     }
 
+    UniqueMemoryPoolPtr clone() const { return UniqueMemoryPoolPtr(*this); }
+
     ~UniqueMemoryPoolPtr()
     {
         if (m_pool && m_object)

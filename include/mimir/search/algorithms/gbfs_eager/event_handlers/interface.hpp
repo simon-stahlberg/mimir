@@ -62,8 +62,6 @@ public:
     /// @brief React on ending a search.
     virtual void on_end_search(uint64_t num_reached_fluent_atoms,
                                uint64_t num_reached_derived_atoms,
-                               uint64_t num_bytes_for_problem,
-                               uint64_t num_bytes_for_nodes,
                                uint64_t num_states,
                                uint64_t num_nodes,
                                uint64_t num_actions,
@@ -165,8 +163,6 @@ public:
 
     void on_end_search(uint64_t num_reached_fluent_atoms,
                        uint64_t num_reached_derived_atoms,
-                       uint64_t num_bytes_for_problem,
-                       uint64_t num_bytes_for_nodes,
                        uint64_t num_states,
                        uint64_t num_nodes,
                        uint64_t num_actions,
@@ -176,8 +172,6 @@ public:
         m_statistics.set_search_end_time_point(std::chrono::high_resolution_clock::now());
         m_statistics.set_num_reached_fluent_atoms(num_reached_fluent_atoms);
         m_statistics.set_num_reached_derived_atoms(num_reached_derived_atoms);
-        m_statistics.set_num_bytes_for_problem(num_bytes_for_problem);
-        m_statistics.set_num_bytes_for_nodes(num_bytes_for_nodes);
         m_statistics.set_num_states(num_states);
         m_statistics.set_num_nodes(num_nodes);
         m_statistics.set_num_actions(num_actions);
@@ -185,14 +179,7 @@ public:
 
         if (!m_quiet)
         {
-            self().on_end_search_impl(num_reached_fluent_atoms,
-                                      num_reached_derived_atoms,
-                                      num_bytes_for_problem,
-                                      num_bytes_for_nodes,
-                                      num_states,
-                                      num_nodes,
-                                      num_actions,
-                                      num_axioms);
+            self().on_end_search_impl(num_reached_fluent_atoms, num_reached_derived_atoms, num_states, num_nodes, num_actions, num_axioms);
         }
     }
 

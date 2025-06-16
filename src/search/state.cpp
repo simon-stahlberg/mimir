@@ -32,8 +32,7 @@ namespace mimir::search
 
 /* InternalState */
 
-InternalStateImpl::InternalStateImpl(Index index, v::RootSlotType fluent_atoms, v::RootSlotType derived_atoms, Index numeric_variables) :
-    m_index(index),
+InternalStateImpl::InternalStateImpl(v::RootSlotType fluent_atoms, v::RootSlotType derived_atoms, Index numeric_variables) :
     m_fluent_atoms_index(valla::first(fluent_atoms)),
     m_fluent_atoms_size(valla::second(fluent_atoms)),
     m_derived_atoms_index(valla::first(derived_atoms)),
@@ -41,8 +40,6 @@ InternalStateImpl::InternalStateImpl(Index index, v::RootSlotType fluent_atoms, 
     m_numeric_variables(numeric_variables)
 {
 }
-
-Index InternalStateImpl::get_index() const { return m_index; }
 
 template<formalism::IsFluentOrDerivedTag P>
 v::RootSlotType InternalStateImpl::get_atoms() const
@@ -70,10 +67,10 @@ Index InternalStateImpl::get_numeric_variables() const { return m_numeric_variab
  * State
  */
 
-State::State(InternalState internal, const formalism::ProblemImpl& problem) : m_internal(internal), m_problem(&problem)
+State::State(const InternalStateImpl& internal, Index index, const formalism::ProblemImpl& problem) : m_internal(&internal), m_problem(&problem), m_index(index)
 {
-    assert(std::is_sorted(v::begin(internal->template get_atoms<FluentTag>(), m_problem->get_tree_table()), v::end()));
-    assert(std::is_sorted(v::begin(internal->template get_atoms<DerivedTag>(), m_problem->get_tree_table()), v::end()));
+    assert(std::is_sorted(get_atoms<FluentTag>().begin(), get_atoms<FluentTag>().end()));
+    assert(std::is_sorted(get_atoms<DerivedTag>().begin(), get_atoms<DerivedTag>().end()));
 }
 
 bool State::operator==(const State& other) const noexcept { return loki::EqualTo<State> {}(*this, other); }
@@ -114,7 +111,7 @@ InternalState State::get_internal() const { return m_internal; }
 
 const formalism::ProblemImpl& State::get_problem() const { return *m_problem; }
 
-Index State::get_index() const { return m_internal->get_index(); }
+Index State::get_index() const { return m_index; }
 
 const FlatDoubleList& State::get_numeric_variables() const { return *m_problem->get_double_list(m_internal->get_numeric_variables()); }
 

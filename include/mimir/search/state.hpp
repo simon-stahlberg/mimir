@@ -18,10 +18,8 @@
 #ifndef MIMIR_SEARCH_STATE_HPP_
 #define MIMIR_SEARCH_STATE_HPP_
 
-#include "mimir/buffering/builder.hpp"
-#include "mimir/buffering/unordered_set.hpp"
-#include "mimir/buffering/utils.hpp"
 #include "mimir/common/hash.hpp"
+#include "mimir/common/indexed_hash_set.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/problem.hpp"
@@ -49,14 +47,13 @@ namespace v = valla::plain;
 class InternalStateImpl
 {
 private:
-    Index m_index;
     Index m_fluent_atoms_index;
     Index m_fluent_atoms_size;
     Index m_derived_atoms_index;
     Index m_derived_atoms_size;
     Index m_numeric_variables;
 
-    InternalStateImpl(Index index, v::RootSlotType fluent_atoms, v::RootSlotType derived_atoms, Index numeric_variables);
+    InternalStateImpl(v::RootSlotType fluent_atoms, v::RootSlotType derived_atoms, Index numeric_variables);
 
     friend class StateRepositoryImpl;
 
@@ -69,13 +66,12 @@ public:
      * Getters
      */
 
-    Index get_index() const;
     template<formalism::IsFluentOrDerivedTag P>
     v::RootSlotType get_atoms() const;
     Index get_numeric_variables() const;
 };
 
-static_assert(sizeof(InternalStateImpl) == 24);
+static_assert(sizeof(InternalStateImpl) == 20);
 
 /**
  * State
@@ -86,9 +82,10 @@ class State
 private:
     InternalState m_internal;
     const formalism::ProblemImpl* m_problem;
+    Index m_index;
 
 public:
-    State(InternalState internal, const formalism::ProblemImpl& problem);
+    State(const InternalStateImpl& internal, Index index, const formalism::ProblemImpl& problem);
     State(const State&) = default;
     State(State&&) noexcept = default;
     State& operator=(const State&) = default;
@@ -151,7 +148,8 @@ template<formalism::IsFluentOrDerivedTag P, std::ranges::input_range Range1, std
     requires IsRangeOver<Range1, Index> && IsRangeOver<Range2, Index>
 bool State::literals_hold(const Range1& positive_atoms, const Range2& negative_atoms) const
 {
-    return is_supseteq(get_atoms<P>(), positive_atoms) && are_disjoint(get_atoms<P>(), negative_atoms);
+    auto atoms = get_atoms<P>();
+    return is_supseteq(atoms, positive_atoms) && are_disjoint(atoms, negative_atoms);
 }
 
 /**
@@ -170,15 +168,10 @@ struct Hash<mimir::search::InternalStateImpl>
     size_t operator()(const mimir::search::InternalStateImpl& el) const
     {
         static_assert(std::is_standard_layout_v<mimir::search::InternalStateImpl>, "InternalStateImpl must be standard layout");
-        static_assert(sizeof(mimir::search::InternalStateImpl) == sizeof(mimir::Index) * 6, "Unexpected padding in InternalStateImpl");
-
         size_t seed = 0;
         size_t hash[2] = { 0, 0 };
 
-        loki::MurmurHash3_x64_128(reinterpret_cast<const uint8_t*>(&el) + sizeof(mimir::Index),
-                                  sizeof(mimir::search::InternalStateImpl) - sizeof(mimir::Index),
-                                  seed,
-                                  hash);
+        loki::MurmurHash3_x64_128(reinterpret_cast<const uint8_t*>(&el), sizeof(mimir::search::InternalStateImpl), seed, hash);
 
         loki::hash_combine(seed, hash[0]);
         loki::hash_combine(seed, hash[1]);
@@ -194,6 +187,21 @@ struct EqualTo<mimir::search::InternalStateImpl>
     {
         return lhs.get_atoms<mimir::formalism::FluentTag>() == rhs.get_atoms<mimir::formalism::FluentTag>()
                && lhs.get_numeric_variables() == rhs.get_numeric_variables();
+    }
+};
+
+template<>
+struct Hash<ObserverPtr<const mimir::search::InternalStateImpl>>
+{
+    size_t operator()(ObserverPtr<const mimir::search::InternalStateImpl> el) const { return Hash<mimir::search::InternalStateImpl> {}(*el); }
+};
+
+template<>
+struct EqualTo<ObserverPtr<const mimir::search::InternalStateImpl>>
+{
+    bool operator()(ObserverPtr<const mimir::search::InternalStateImpl> lhs, ObserverPtr<const mimir::search::InternalStateImpl> rhs) const
+    {
+        return EqualTo<mimir::search::InternalStateImpl> {}(*lhs, *rhs);
     }
 };
 
@@ -218,7 +226,7 @@ struct EqualTo<mimir::search::State>
 
 namespace mimir::search
 {
-using InternalStateImplSet = absl::node_hash_set<InternalStateImpl, loki::Hash<InternalStateImpl>, loki::EqualTo<InternalStateImpl>>;
+using InternalStateImplMap = absl::node_hash_map<InternalStateImpl, Index, loki::Hash<InternalStateImpl>, loki::EqualTo<InternalStateImpl>>;
 
 using StateList = std::vector<State>;
 using StateSet = UnorderedSet<State>;

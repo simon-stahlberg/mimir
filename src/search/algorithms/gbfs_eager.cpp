@@ -44,18 +44,18 @@ namespace mimir::search::gbfs_eager
  * GBFS search node
  */
 
-using GBFSSearchNodeImpl = SearchNodeImpl<ContinuousCost, ContinuousCost>;
-using GBFSSearchNode = GBFSSearchNodeImpl*;
-using ConstGBFSSearchNode = const GBFSSearchNodeImpl*;
+using GBFSSearchNode = SearchNode<ContinuousCost, ContinuousCost>;
+using GBFSSearchNodeVector = SearchNodeVector<ContinuousCost, ContinuousCost>;
 
-static void set_g_value(GBFSSearchNode node, ContinuousCost g_value) { node->get_property<0>() = g_value; }
-static void set_h_value(GBFSSearchNode node, ContinuousCost h_value) { node->get_property<1>() = h_value; }
+static void set_g_value(GBFSSearchNode& node, ContinuousCost g_value) { node.get_property<0>() = g_value; }
+static void set_h_value(GBFSSearchNode& node, ContinuousCost h_value) { node.get_property<1>() = h_value; }
 
-static ContinuousCost get_g_value(ConstGBFSSearchNode node) { return node->get_property<0>(); }
+static ContinuousCost get_g_value(const GBFSSearchNode& node) { return node.get_property<0>(); }
 
-static GBFSSearchNode
-get_or_create_search_node(size_t state_index, const GBFSSearchNodeImpl& default_node, mimir::buffering::CistaVector<GBFSSearchNodeImpl>& search_nodes)
+static GBFSSearchNode& get_or_create_search_node(size_t state_index, GBFSSearchNodeVector& search_nodes)
 {
+    static constexpr auto default_node = GBFSSearchNode(SearchNodeStatus::NEW, MAX_INDEX, ContinuousCost(INFINITY_CONTINUOUS_COST), ContinuousCost(0));
+
     while (state_index >= search_nodes.size())
     {
         search_nodes.push_back(default_node);
@@ -99,8 +99,7 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
         return result;
     }
 
-    auto default_search_node = GBFSSearchNodeImpl(SearchNodeStatus::NEW, MAX_INDEX, ContinuousCost(INFINITY_CONTINUOUS_COST), ContinuousCost(0));
-    auto search_nodes = SearchNodeImplVector<ContinuousCost, ContinuousCost>();
+    auto search_nodes = GBFSSearchNodeVector();
 
     /* Test whether initial state is goal. */
 
@@ -108,8 +107,6 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
     {
         event_handler->on_end_search(state_repository.get_reached_fluent_ground_atoms_bitset().count(),
                                      state_repository.get_reached_derived_ground_atoms_bitset().count(),
-                                     problem.get_estimated_memory_usage_in_bytes(),
-                                     search_nodes.get_estimated_memory_usage_in_bytes(),
                                      state_repository.get_state_count(),
                                      search_nodes.size(),
                                      ground_action_repository.size(),
@@ -137,14 +134,14 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
 
     event_handler->on_start_search(start_state, start_g_value, start_h_value);
 
-    auto start_search_node = get_or_create_search_node(start_state.get_index(), default_search_node, search_nodes);
-    start_search_node->get_status() = (start_h_value == INFINITY_CONTINUOUS_COST) ? SearchNodeStatus::DEAD_END : SearchNodeStatus::OPEN;
+    auto& start_search_node = get_or_create_search_node(start_state.get_index(), search_nodes);
+    start_search_node.get_status() = (start_h_value == INFINITY_CONTINUOUS_COST) ? SearchNodeStatus::DEAD_END : SearchNodeStatus::OPEN;
     set_g_value(start_search_node, start_g_value);
     set_h_value(start_search_node, start_h_value);
 
     /* Test whether start state is deadend. */
 
-    if (start_search_node->get_status() == SearchNodeStatus::DEAD_END)
+    if (start_search_node.get_status() == SearchNodeStatus::DEAD_END)
     {
         event_handler->on_unsolvable();
 
@@ -174,14 +171,14 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
             return result;
         }
 
-        const auto state = State(openlist.top(), problem);
+        const auto state = state_repository.get_state(*openlist.top());
         openlist.pop();
 
-        auto search_node = get_or_create_search_node(state.get_index(), default_search_node, search_nodes);
+        auto& search_node = get_or_create_search_node(state.get_index(), search_nodes);
 
         /* Close state. */
 
-        if (search_node->get_status() == SearchNodeStatus::CLOSED || search_node->get_status() == SearchNodeStatus::DEAD_END)
+        if (search_node.get_status() == SearchNodeStatus::CLOSED || search_node.get_status() == SearchNodeStatus::DEAD_END)
         {
             continue;
         }
@@ -192,13 +189,13 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
 
         /* Ensure that the state is closed */
 
-        search_node->get_status() = SearchNodeStatus::CLOSED;
+        search_node.get_status() = SearchNodeStatus::CLOSED;
 
         for (const auto& action : applicable_action_generator.create_applicable_action_generator(state))
         {
             const auto [successor_state, successor_state_metric_value] =
                 state_repository.get_or_create_successor_state(state, action, get_g_value(search_node));
-            auto successor_search_node = get_or_create_search_node(successor_state.get_index(), default_search_node, search_nodes);
+            auto& successor_search_node = get_or_create_search_node(successor_state.get_index(), search_nodes);
             const auto action_cost = successor_state_metric_value - get_g_value(search_node);
 
             if (successor_state_metric_value == UNDEFINED_CONTINUOUS_COST)
@@ -206,7 +203,7 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
                 throw std::runtime_error("find_solution(...): evaluating the metric on the successor state yielded NaN.");
             }
 
-            const bool is_new_successor_state = (successor_search_node->get_status() == SearchNodeStatus::NEW);
+            const bool is_new_successor_state = (successor_search_node.get_status() == SearchNodeStatus::NEW);
 
             if (is_new_successor_state && search_nodes.size() >= options.max_num_states)
             {
@@ -231,8 +228,8 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
 
             /* Open state. */
 
-            successor_search_node->get_status() = SearchNodeStatus::OPEN;
-            successor_search_node->get_parent_state() = state.get_index();
+            successor_search_node.get_status() = SearchNodeStatus::OPEN;
+            successor_search_node.get_parent_state() = state.get_index();
             set_g_value(successor_search_node, successor_state_metric_value);
 
             /* Early goal test. */
@@ -240,14 +237,12 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
             const auto successor_is_goal_state = goal_strategy->test_dynamic_goal(successor_state);
             if (successor_is_goal_state)
             {
-                successor_search_node->get_status() = SearchNodeStatus::GOAL;
+                successor_search_node.get_status() = SearchNodeStatus::GOAL;
 
                 event_handler->on_expand_goal_state(state);
 
                 event_handler->on_end_search(state_repository.get_reached_fluent_ground_atoms_bitset().count(),
                                              state_repository.get_reached_derived_ground_atoms_bitset().count(),
-                                             problem.get_estimated_memory_usage_in_bytes(),
-                                             search_nodes.get_estimated_memory_usage_in_bytes(),
                                              state_repository.get_state_count(),
                                              search_nodes.size(),
                                              ground_action_repository.size(),
@@ -271,7 +266,7 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
             set_h_value(successor_search_node, successor_h_value);
             if (successor_h_value == INFINITY_CONTINUOUS_COST)
             {
-                successor_search_node->get_status() = SearchNodeStatus::DEAD_END;
+                successor_search_node.get_status() = SearchNodeStatus::DEAD_END;
                 continue;
             }
 
@@ -289,8 +284,6 @@ SearchResult find_solution(const SearchContext& context, const Heuristic& heuris
 
     event_handler->on_end_search(state_repository.get_reached_fluent_ground_atoms_bitset().count(),
                                  state_repository.get_reached_derived_ground_atoms_bitset().count(),
-                                 problem.get_estimated_memory_usage_in_bytes(),
-                                 search_nodes.get_estimated_memory_usage_in_bytes(),
                                  state_repository.get_state_count(),
                                  search_nodes.size(),
                                  ground_action_repository.size(),

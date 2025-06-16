@@ -68,6 +68,8 @@ private:
     {
         assert(m_object);
 
+        assert(m_object->first > 0 && "Double-free or underflow of ref count");
+
         --m_object->first;
 
         if (m_object->first == 0)

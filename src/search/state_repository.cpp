@@ -140,10 +140,10 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
     update_reached_fluent_atoms(dense_fluent_atoms, m_reached_fluent_atoms);
 
     // Test whether there exists an extended state for the given non extended state
-    auto it = m_states.find(InternalStateImpl(-1, state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables));
+    auto it = m_states.find(InternalStateImpl(state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables));
     if (it != m_states.end())
     {
-        auto state = State(&*it, problem);
+        auto state = State(it->first, it->second, problem);
         return { state, compute_state_metric_value(state) };
     }
 
@@ -162,8 +162,8 @@ std::pair<State, ContinuousCost> StateRepositoryImpl::get_or_create_state(const 
     }
 
     // Cache and return the extended state.
-    auto result = m_states.insert(InternalStateImpl(Index(m_states.size()), state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables));
-    auto state = State(&*result.first, problem);
+    auto result = m_states.emplace(InternalStateImpl(state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables), m_states.size());
+    auto state = State(result.first->first, result.first->second, problem);
 
     return { state, compute_state_metric_value(state) };
 }
@@ -338,10 +338,10 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
     state_numeric_variables = problem.get_or_create_double_list(dense_fluent_numeric_variables).second;
 
     // Check if non-extended state exists in cache
-    auto it = m_states.find(InternalStateImpl(-1, state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables));
+    auto it = m_states.find(InternalStateImpl(state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables));
     if (it != m_states.end())
     {
-        auto state = State(&*it, problem);
+        auto state = State(it->first, it->second, problem);
         return { state, successor_state_metric_value };
     }
 
@@ -360,17 +360,19 @@ StateRepositoryImpl::get_or_create_successor_state(State state, DenseState& dens
     }
 
     // Cache and return the extended state.
-    auto result = m_states.insert(InternalStateImpl(Index(m_states.size()), state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables));
-    auto successor_state = State(&*result.first, problem);
+    auto result = m_states.emplace(InternalStateImpl(state_fluent_atoms_slot, state_derived_atoms_slot, state_numeric_variables), m_states.size());
+    auto successor_state = State(result.first->first, result.first->second, problem);
 
     return { successor_state, successor_state_metric_value };
 }
+
+State StateRepositoryImpl::get_state(const InternalStateImpl& state) const { return State(state, m_states.at(state), *m_axiom_evaluator->get_problem()); }
 
 const Problem& StateRepositoryImpl::get_problem() const { return m_axiom_evaluator->get_problem(); }
 
 size_t StateRepositoryImpl::get_state_count() const { return m_states.size(); }
 
-const InternalStateImplSet& StateRepositoryImpl::get_states() const { return m_states; }
+const InternalStateImplMap& StateRepositoryImpl::get_states() const { return m_states; }
 
 const FlatBitset& StateRepositoryImpl::get_reached_fluent_ground_atoms_bitset() const { return m_reached_fluent_atoms; }
 

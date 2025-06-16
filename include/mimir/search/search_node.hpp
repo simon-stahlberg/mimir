@@ -18,8 +18,10 @@
 #ifndef MIMIR_SEARCH_SEARCH_NODE_HPP_
 #define MIMIR_SEARCH_SEARCH_NODE_HPP_
 
-#include "mimir/buffering/cista_vector.hpp"
+#include "mimir/common/segmented_vector.hpp"
 #include "mimir/common/types.hpp"
+
+#include <tuple>
 
 namespace mimir::search
 {
@@ -36,49 +38,42 @@ enum SearchNodeStatus
 /// @brief `SearchNodeImpl` encapsulates per state information during search.
 /// @tparam ...SearchNodeProperties
 template<typename... SearchNodeProperties>
-struct SearchNodeImpl
+class SearchNode
 {
-    SearchNodeImpl() = default;
-    SearchNodeImpl(SearchNodeStatus status, Index parent_state_index, SearchNodeProperties... properties) :
+public:
+    constexpr SearchNode() = default;
+    constexpr SearchNode(SearchNodeStatus status, Index parent_state_index, SearchNodeProperties... properties) :
         m_status(status),
         m_parent_state_index(parent_state_index),
-        m_properties(cista::tuple<SearchNodeProperties...> { std::move(properties)... })
+        m_properties(std::tuple<SearchNodeProperties...> { std::move(properties)... })
     {
     }
 
-    SearchNodeStatus& get_status() { return m_status; }
-    SearchNodeStatus get_status() const { return m_status; }
+    constexpr SearchNodeStatus& get_status() { return m_status; }
+    constexpr const SearchNodeStatus& get_status() const { return m_status; }
 
-    Index& get_parent_state() { return m_parent_state_index; }
-    Index get_parent_state() const { return m_parent_state_index; }
+    constexpr Index& get_parent_state() { return m_parent_state_index; }
+    constexpr const Index& get_parent_state() const { return m_parent_state_index; }
 
     template<size_t I>
-    auto& get_property()
+    constexpr auto& get_property()
     {
-        return cista::get<I>(m_properties);
+        return std::get<I>(m_properties);
     }
     template<size_t I>
-    const auto& get_property() const
+    constexpr const auto& get_property() const
     {
-        return cista::get<I>(m_properties);
+        return std::get<I>(m_properties);
     }
 
-    /// @brief Return all members to make them serializable by cista.
-    /// @return a tuple of references to all members.
-    auto cista_members() { return std::tie(m_status, m_parent_state_index, m_properties); }
-
+private:
     SearchNodeStatus m_status = SearchNodeStatus::NEW;
     Index m_parent_state_index = std::numeric_limits<Index>::max();
-    cista::tuple<SearchNodeProperties...> m_properties;
+    std::tuple<SearchNodeProperties...> m_properties;
 };
 
 template<typename... SearchNodeProperties>
-using SearchNode = SearchNodeImpl<SearchNodeProperties...>*;
-template<typename... SearchNodeProperties>
-using ConstSearchNode = const SearchNodeImpl<SearchNodeProperties...>*;
-
-template<typename... SearchNodeProperties>
-using SearchNodeImplVector = mimir::buffering::CistaVector<SearchNodeImpl<SearchNodeProperties...>>;
+using SearchNodeVector = SegmentedVector<SearchNode<SearchNodeProperties...>>;
 
 }
 

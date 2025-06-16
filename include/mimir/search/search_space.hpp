@@ -32,20 +32,20 @@ namespace mimir::search
 /// @param final_state_index is the final state index.
 /// @param out_trajectory is the resulting state trajectory that ends in the `final_state_index`
 template<typename... SearchNodeProperties>
-IndexList extract_state_trajectory(const SearchNodeImplVector<SearchNodeProperties...>& search_nodes,
-                                   ConstSearchNode<SearchNodeProperties...> final_search_node,
+IndexList extract_state_trajectory(const SearchNodeVector<SearchNodeProperties...>& search_nodes,
+                                   const SearchNode<SearchNodeProperties...>& final_search_node,
                                    Index final_state_index)
 {
     auto trajectory = IndexList {};
     trajectory.push_back(final_state_index);
 
-    auto cur_search_node = final_search_node;
+    auto cur_search_node = &final_search_node;
 
     while (cur_search_node->get_parent_state() != std::numeric_limits<Index>::max())
     {
         trajectory.push_back(cur_search_node->get_parent_state());
 
-        cur_search_node = search_nodes.at(cur_search_node->get_parent_state());
+        cur_search_node = &search_nodes.at(cur_search_node->get_parent_state());
     }
 
     std::reverse(trajectory.begin(), trajectory.end());
@@ -63,9 +63,9 @@ IndexList extract_state_trajectory(const SearchNodeImplVector<SearchNodeProperti
 template<typename... SearchNodeProperties>
 inline Plan extract_total_ordered_plan(State start_state,
                                        ContinuousCost start_state_metric_value,
-                                       ConstSearchNode<SearchNodeProperties...> final_search_node,
+                                       const SearchNode<SearchNodeProperties...>& final_search_node,
                                        Index final_state_index,
-                                       const SearchNodeImplVector<SearchNodeProperties...>& search_nodes,  //
+                                       const SearchNodeVector<SearchNodeProperties...>& search_nodes,
                                        const SearchContext& context)
 {
     const auto state_trajectory = extract_state_trajectory(search_nodes, final_search_node, final_state_index);

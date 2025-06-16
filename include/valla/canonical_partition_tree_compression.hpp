@@ -21,6 +21,7 @@
 #include "valla/bitset_pool.hpp"
 #include "valla/declarations.hpp"
 #include "valla/details/shared_memory_pool.hpp"
+#include "valla/details/unique_memory_pool.hpp"
 #include "valla/indexed_hash_set.hpp"
 #include "valla/root_slot.hpp"
 
@@ -266,7 +267,7 @@ struct Entry
     Index m_bit;
 };
 
-static thread_local SharedMemoryPool<std::vector<Entry>> s_stack_pool = SharedMemoryPool<std::vector<Entry>> {};
+static thread_local UniqueMemoryPool<std::vector<Entry>> s_stack_pool = UniqueMemoryPool<std::vector<Entry>> {};
 
 inline void copy(const std::vector<Entry>& src, std::vector<Entry>& dst)
 {
@@ -280,14 +281,14 @@ class const_iterator
 private:
     const IndexedHashSet* m_tree_table;
     const Bitset* m_ordering;
-    SharedMemoryPoolPtr<std::vector<Entry>> m_stack;
+    UniqueMemoryPoolPtr<std::vector<Entry>> m_stack;
     Index m_value;
 
     static constexpr const Index END_POS = Index(-1);
 
     static constexpr size_t stride = 2 * N + 1;
 
-    const_iterator(const IndexedHashSet* tree_table, const Bitset* ordering, SharedMemoryPoolPtr<std::vector<Entry>> stack, Index value) :
+    const_iterator(const IndexedHashSet* tree_table, const Bitset* ordering, UniqueMemoryPoolPtr<std::vector<Entry>> stack, Index value) :
         m_tree_table(tree_table),
         m_ordering(ordering),
         m_stack(stack),
